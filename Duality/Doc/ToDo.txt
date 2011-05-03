@@ -1,0 +1,31 @@
+﻿
+-->	Component PropertyEditors
+	-->	Create a general "ComponentPropertyEditor", similar to the "MemberwisePropertyEditor"
+	-->	Differences:
+		-->	Has an Icon and allows direct access to the Active-Checkbox
+		-->	Doesn't display "Component [..] Component in GameObj", not necessary here,
+			title area isn't split here at all
+		-->	Doesn't auto-generate sub-editors, but still provides utility methods for
+			creating generic Getter / Setter funcs for properties / fields
+		-->	Fires editor events
+		-->	No Reset / Init button
+		-->	Probably optional context menu button instead at that position
+	-->	Derives from GroupedPropertyEditor
+	-->	To achieve some of the differnces, extend the GroupedPropertyEditors header class
+		to be more flexible / customizable
+	-->	Previously existing "memberwise" ComponentPropertyEditor not needed anymore
+
+-->	Implement specialized Component PropertyEditors
+	-->	Transform
+	-->	SpriteRenderer
+	-->	..
+
+-->	Core Plugin Reloading needs to be updated according to Scene management
+	-->	Save-to-temporary-Scene-then-Reload breaks Scene.Current.
+	-->	Figure something out to prevent that.
+
+-->	Editor Skeletton
+	-->	Object Properties
+	-->	Run Game in Launcher
+	-->	Sandbox (Play | Pause | Reset)
+	-->	Plugin / VS integration

@@ -1,0 +1,30 @@
+﻿ICmpUpdatable							Indicates a Component that has per-frame updates
+	-->	OnUpdate
+ICmpGameObjectListener					Listens to its GameObjects "family" events
+	-->	OnGameObjectParentChanged
+	-->	OnGameObjectChildAdded
+	-->	OnGameObjectChildRemoved
+ICmpComponentListener					Listens to its Component sisters / brothers
+	-->	OnComponentAdded
+	-->	OnComponentRemoved
+ICmpInitializable						Wants to be properly initialized and disposed
+	-->	OnInit
+		-->	AfterSave
+		-->	Load
+		-->	Activate
+		-->	AddedToGameObject
+	-->	OnShutdown
+		-->	BeforeSave
+		-->	Deactivate
+		-->	RemovedFromGameObject
+ICmpCollisionListener					Watches out for collisions
+	-->	OnCollisionBegin
+	-->	OnCollisionEnd
+	-->	OnCollisionActive
+ICmpMouseListener						Interested in the mouse cursors movement
+	-->	OnMouseEnter
+	-->	OnMouseLeave
+	-->	OnMouseOver
+	-->	OnMouseDown
+	-->	OnMouseUp
+	-->	OnMouseDrag
