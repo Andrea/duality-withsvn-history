@@ -32,6 +32,7 @@
 			this.nameEditor = new System.Windows.Forms.TextBox();
 			this.activeEditor = new System.Windows.Forms.CheckBox();
 			this.tableLayout = new System.Windows.Forms.TableLayoutPanel();
+			this.buttonPrefabLinkDestroy = new System.Windows.Forms.Button();
 			this.buttonPrefabLinkShow = new System.Windows.Forms.Button();
 			this.buttonPrefabLinkRevert = new System.Windows.Forms.Button();
 			this.labelPrefabLink = new System.Windows.Forms.Label();
@@ -58,11 +59,20 @@
 			// 
 			resources.ApplyResources(this.tableLayout, "tableLayout");
 			this.tableLayout.BackColor = System.Drawing.Color.Transparent;
+			this.tableLayout.Controls.Add(this.buttonPrefabLinkDestroy, 4, 0);
 			this.tableLayout.Controls.Add(this.buttonPrefabLinkShow, 1, 0);
 			this.tableLayout.Controls.Add(this.buttonPrefabLinkRevert, 2, 0);
 			this.tableLayout.Controls.Add(this.labelPrefabLink, 0, 0);
 			this.tableLayout.Controls.Add(this.buttonPrefabLinkApply, 3, 0);
 			this.tableLayout.Name = "tableLayout";
+			// 
+			// buttonPrefabLinkDestroy
+			// 
+			this.buttonPrefabLinkDestroy.AutoEllipsis = true;
+			resources.ApplyResources(this.buttonPrefabLinkDestroy, "buttonPrefabLinkDestroy");
+			this.buttonPrefabLinkDestroy.Name = "buttonPrefabLinkDestroy";
+			this.buttonPrefabLinkDestroy.UseVisualStyleBackColor = true;
+			this.buttonPrefabLinkDestroy.Click += new System.EventHandler(this.buttonPrefabLinkDestroy_Click);
 			// 
 			// buttonPrefabLinkShow
 			// 
@@ -119,6 +129,7 @@
 		private System.Windows.Forms.Button buttonPrefabLinkRevert;
 		private System.Windows.Forms.Label labelPrefabLink;
 		private System.Windows.Forms.Button buttonPrefabLinkApply;
+		private System.Windows.Forms.Button buttonPrefabLinkDestroy;
 
 
 	}

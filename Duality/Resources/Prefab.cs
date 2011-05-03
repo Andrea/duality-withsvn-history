@@ -253,9 +253,9 @@ namespace Duality.Resources
 			// Lower prefab links later
 			if (deep)
 			{
-				foreach (GameObject child in this.obj.ChildrenDeep)
+				foreach (GameObject child in this.obj.Children)
 				{
-					if (child.PrefabLink != null) child.PrefabLink.Apply(false);
+					if (child.PrefabLink != null) child.PrefabLink.Apply(true);
 				}
 			}
 		}
@@ -304,6 +304,7 @@ namespace Duality.Resources
 
 		public void PushChange(object target, PropertyInfo prop, object value)
 		{
+			if (ReflectionHelper.MemberInfoEquals(prop, ReflectionHelper.Property_GameObject_Parent)) return; // Reject changing "Parent" as it would destroy the PrefabLink
 			if (this.changes == null) this.changes = new List<VarMod>();
 
 			GameObject targetObj = target as GameObject;

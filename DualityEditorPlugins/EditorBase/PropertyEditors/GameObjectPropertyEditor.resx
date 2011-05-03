@@ -181,7 +181,40 @@
     <value>Top, Bottom, Left, Right</value>
   </data>
   <data name="tableLayout.ColumnCount" type="System.Int32, mscorlib">
+    <value>5</value>
+  </data>
+  <data name="buttonPrefabLinkDestroy.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="buttonPrefabLinkDestroy.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="buttonPrefabLinkDestroy.Location" type="System.Drawing.Point, System.Drawing">
+    <value>214, 0</value>
+  </data>
+  <data name="buttonPrefabLinkDestroy.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 0, 0</value>
+  </data>
+  <data name="buttonPrefabLinkDestroy.Size" type="System.Drawing.Size, System.Drawing">
+    <value>52, 21</value>
+  </data>
+  <data name="buttonPrefabLinkDestroy.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
+  </data>
+  <data name="buttonPrefabLinkDestroy.Text" xml:space="preserve">
+    <value>Break</value>
+  </data>
+  <data name="&gt;&gt;buttonPrefabLinkDestroy.Name" xml:space="preserve">
+    <value>buttonPrefabLinkDestroy</value>
+  </data>
+  <data name="&gt;&gt;buttonPrefabLinkDestroy.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;buttonPrefabLinkDestroy.Parent" xml:space="preserve">
+    <value>tableLayout</value>
+  </data>
+  <data name="&gt;&gt;buttonPrefabLinkDestroy.ZOrder" xml:space="preserve">
+    <value>0</value>
   </data>
   <data name="buttonPrefabLinkShow.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
@@ -193,7 +226,7 @@
     <value>0, 0, 0, 0</value>
   </data>
   <data name="buttonPrefabLinkShow.Size" type="System.Drawing.Size, System.Drawing">
-    <value>67, 21</value>
+    <value>50, 21</value>
   </data>
   <data name="buttonPrefabLinkShow.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -211,19 +244,19 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;buttonPrefabLinkShow.ZOrder" xml:space="preserve">
-    <value>0</value>
+    <value>1</value>
   </data>
   <data name="buttonPrefabLinkRevert.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
   </data>
   <data name="buttonPrefabLinkRevert.Location" type="System.Drawing.Point, System.Drawing">
-    <value>131, 0</value>
+    <value>114, 0</value>
   </data>
   <data name="buttonPrefabLinkRevert.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>0, 0, 0, 0</value>
   </data>
   <data name="buttonPrefabLinkRevert.Size" type="System.Drawing.Size, System.Drawing">
-    <value>67, 21</value>
+    <value>50, 21</value>
   </data>
   <data name="buttonPrefabLinkRevert.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -241,7 +274,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;buttonPrefabLinkRevert.ZOrder" xml:space="preserve">
-    <value>1</value>
+    <value>2</value>
   </data>
   <data name="labelPrefabLink.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -274,19 +307,19 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;labelPrefabLink.ZOrder" xml:space="preserve">
-    <value>2</value>
+    <value>3</value>
   </data>
   <data name="buttonPrefabLinkApply.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
   </data>
   <data name="buttonPrefabLinkApply.Location" type="System.Drawing.Point, System.Drawing">
-    <value>198, 0</value>
+    <value>164, 0</value>
   </data>
   <data name="buttonPrefabLinkApply.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>0, 0, 0, 0</value>
   </data>
   <data name="buttonPrefabLinkApply.Size" type="System.Drawing.Size, System.Drawing">
-    <value>68, 21</value>
+    <value>50, 21</value>
   </data>
   <data name="buttonPrefabLinkApply.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -304,7 +337,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;buttonPrefabLinkApply.ZOrder" xml:space="preserve">
-    <value>3</value>
+    <value>4</value>
   </data>
   <data name="tableLayout.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 21</value>
@@ -334,14 +367,11 @@
     <value>0</value>
   </data>
   <data name="tableLayout.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
-    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="buttonPrefabLinkShow" Row="0" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="buttonPrefabLinkRevert" Row="0" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="labelPrefabLink" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="buttonPrefabLinkApply" Row="0" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="AutoSize,0,Percent,33,33445,Percent,33,33445,Percent,33,33111" /&gt;&lt;Rows Styles="Percent,100" /&gt;&lt;/TableLayoutSettings&gt;</value>
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="buttonPrefabLinkDestroy" Row="0" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="buttonPrefabLinkShow" Row="0" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="buttonPrefabLinkRevert" Row="0" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="labelPrefabLink" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="buttonPrefabLinkApply" Row="0" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="AutoSize,0,Percent,25,00146,Percent,25,00146,Percent,24,99895,Percent,24,99812" /&gt;&lt;Rows Styles="Percent,100" /&gt;&lt;/TableLayoutSettings&gt;</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <data name="$this.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
   <data name="$this.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
     <value>GrowAndShrink</value>
   </data>

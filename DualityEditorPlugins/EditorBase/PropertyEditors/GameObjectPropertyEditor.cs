@@ -220,5 +220,15 @@ namespace EditorBase.PropertyEditors
 			}
 			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionHelper.Property_GameObject_PrefabLink);
 		}
+		private void buttonPrefabLinkDestroy_Click(object sender, EventArgs e)
+		{
+			GameObject[] values = this.Getter().Cast<GameObject>().Where(o => o.PrefabLink != null).ToArray();
+
+			// Destroy all PrefabLinks
+			foreach (GameObject o in values) o.BreakPrefabLink();
+
+			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionHelper.Property_GameObject_PrefabLink);
+			this.PerformGetValue();
+		}
 	}
 }

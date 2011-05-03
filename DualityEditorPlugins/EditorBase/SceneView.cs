@@ -1190,12 +1190,14 @@ namespace EditorBase
 		}
 		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
 		{
-			if (e.HasProperty(ReflectionHelper.Property_GameObject_PrefabLink))
+			if (e.PrefabApplied || (e.HasProperty(ReflectionHelper.Property_GameObject_PrefabLink) && 
+									e.Objects.GameObjects.Any(o => o.PrefabLink == null)))
 				this.UpdatePrefabLinkStatus();
+
 			if (e.HasProperty(ReflectionHelper.Property_GameObject_Name))
 			{
 				foreach (GameObjectNode node in e.Objects.GameObjects.Select(g => this.FindNode(g)))
-					node.Text = node.Obj.Name;
+					if (node != null) node.Text = node.Obj.Name;
 			}
 		}
 		private void EditorForm_ResourceRenamed(object sender, ResourceRenamedEventArgs e)

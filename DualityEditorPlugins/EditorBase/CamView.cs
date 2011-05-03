@@ -78,6 +78,7 @@ namespace EditorBase
 		private	bool				mouseoverSelect		= false;
 		private	Vector3				selectionCenter	= Vector3.Zero;
 		private	float				selectionRadius	= 0.0f;
+		private	List<GameObject>	parentFreeSel	= new List<GameObject>();
 		private	ObjectSelection		activeRectSel	= new ObjectSelection();
 		private	ColorPickerDialog	bgColorDialog	= new ColorPickerDialog();
 
@@ -434,6 +435,13 @@ namespace EditorBase
 					new VertexP3(posTemp - down * 10.0f),
 					new VertexP3(posTemp + down * 10.0f));
 
+				// Draw angle marker
+				this.camComp.DrawDevice.AddVertices(new BatchInfo(DrawTechnique.Solid, clr), BeginMode.Lines,
+					new VertexP3(posTemp),
+					new VertexP3(posTemp + 
+						radTemp * scaleTemp * right * MathF.Sin(selObj.Transform.Angle - this.camObj.Transform.Angle) - 
+						radTemp * scaleTemp * down * MathF.Cos(selObj.Transform.Angle - this.camObj.Transform.Angle)));
+
 				// Draw boundary
 				if (radTemp > 0.0f)
 				{
@@ -642,13 +650,16 @@ namespace EditorBase
 			// Store in internal rect selection
 			ObjectSelection oldRectSel = this.activeRectSel;
 			this.activeRectSel = new ObjectSelection(picked.GameObject());
-			ObjectSelection added = (this.activeRectSel - oldRectSel) + (oldRectSel - this.activeRectSel);
 
 			// Apply internal selection to actual editor selection
-			if (shift)
-				this.SelectGameObj(added, MainForm.SelectMode.Append);
-			else if (ctrl)
-				this.SelectGameObj(added, MainForm.SelectMode.Toggle);
+			if (shift || ctrl)
+			{
+				if (this.activeRectSel.ObjectCount > 0)
+				{
+					ObjectSelection added = (this.activeRectSel - oldRectSel) + (oldRectSel - this.activeRectSel);
+					this.SelectGameObj(added, shift ? MainForm.SelectMode.Append : MainForm.SelectMode.Toggle);
+				}
+			}
 			else if (this.activeRectSel.ObjectCount > 0)
 				this.SelectGameObj(this.activeRectSel);
 			else
@@ -665,15 +676,13 @@ namespace EditorBase
 			movement = this.LockAxis(movement, this.actionAxisLock);
 			if (movement != Vector3.Zero)
 			{
-				foreach (Transform t in this.SelectedGameObj().Transform())
+				foreach (Transform t in this.parentFreeSel.Transform())
 				{
-					if (this.SelectedGameObj().Any(o => t.GameObj.IsChildOf(o))) continue;
-
 					t.Pos += movement;
 				}
 				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
 					this,
-					new ObjectSelection(this.SelectedGameObj().Transform()),
+					new ObjectSelection(this.parentFreeSel.Transform()),
 					ReflectionHelper.Property_Transform_RelativePos);
 			}
 			this.UpdateSelectionStats();
@@ -689,10 +698,8 @@ namespace EditorBase
 			float rotation = curAngle - lastAngle;
 			if (rotation != 0.0f)
 			{
-				foreach (Transform t in this.SelectedGameObj().Transform())
+				foreach (Transform t in this.parentFreeSel.Transform())
 				{
-					if (this.SelectedGameObj().Any(o => t.GameObj.IsChildOf(o))) continue;
-
 					Vector3 posRelCenter = t.Pos - this.selectionCenter;
 					Vector3 posRelCenterTarget = posRelCenter;
 					MathF.TransformCoord(ref posRelCenterTarget.X, ref posRelCenterTarget.Y, rotation);
@@ -703,7 +710,7 @@ namespace EditorBase
 				}
 				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
 					this,
-					new ObjectSelection(this.SelectedGameObj().Transform()),
+					new ObjectSelection(this.parentFreeSel.Transform()),
 					ReflectionHelper.Property_Transform_RelativePos,
 					ReflectionHelper.Property_Transform_RelativeAngle);
 			}
@@ -719,10 +726,8 @@ namespace EditorBase
 			float scale = MathF.Clamp(curRadius / lastRadius, 0.0001f, 10000.0f);
 			if (scale != 1.0f)
 			{
-				foreach (Transform t in this.SelectedGameObj().Transform())
+				foreach (Transform t in this.parentFreeSel.Transform())
 				{
-					if (this.SelectedGameObj().Any(o => t.GameObj.IsChildOf(o))) continue;
-
 					Vector3 scaleVec = new Vector3(scale, scale, scale);
 					//scaleVec = this.LockAxis(scaleVec, this.actionAxisLock, 1.0f);
 					Vector3 posRelCenter = t.Pos - this.selectionCenter;
@@ -734,7 +739,7 @@ namespace EditorBase
 				}
 				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
 					this,
-					new ObjectSelection(this.SelectedGameObj().Transform()),
+					new ObjectSelection(this.parentFreeSel.Transform()),
 					ReflectionHelper.Property_Transform_RelativePos,
 					ReflectionHelper.Property_Transform_RelativeScale);
 			}
@@ -1265,6 +1270,13 @@ namespace EditorBase
 		private void EditorForm_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if ((e.AffectedCategories & (ObjectSelection.Category.GameObject | ObjectSelection.Category.Component)) == ObjectSelection.Category.None) return;
+
+			// Remove removed objects
+			foreach (GameObject o in e.Removed.GameObjects) this.parentFreeSel.Remove(o);
+			// Remove objects whichs parents are now added
+			this.parentFreeSel.RemoveAll(t => e.Added.GameObjects.Any(o => t.IsChildOf(o)));
+			// Add objects whichs parents are not located in the current selection
+			this.parentFreeSel.AddRange(e.Added.GameObjects.Where(t => !this.SelectedGameObj().Any(o => t.IsChildOf(o))));
 
 			this.UpdateSelectionStats();
 			this.glControl.Invalidate();

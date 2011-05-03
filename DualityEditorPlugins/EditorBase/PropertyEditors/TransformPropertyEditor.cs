@@ -9,6 +9,8 @@ using System.Text;
 using System.Windows.Forms;
 using System.Reflection;
 
+using OpenTK;
+
 using Duality;
 using Duality.Components;
 using DualityEditor;
@@ -31,6 +33,57 @@ namespace EditorBase.PropertyEditors
 			this.SetStyle(ControlStyles.ResizeRedraw, true);
 		}
 
+		public void PerformSetPos()
+		{
+			Transform[] values = this.Getter().Cast<Transform>().ToArray();
+			Vector3 newPos = new Vector3((float)this.editorPosX.Value, (float)this.editorPosY.Value, (float)this.editorPosZ.Value);
+
+			if (this.relativeValues.Checked)	foreach (Transform t in values) t.RelativePos	= newPos;
+			else								foreach (Transform t in values) t.Pos			= newPos;
+
+			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionHelper.Property_Transform_RelativePos);
+		}
+		public void PerformSetScale()
+		{
+			Transform[] values = this.Getter().Cast<Transform>().ToArray();
+			Vector3 newScale = new Vector3((float)this.editorScaleX.Value, (float)this.editorScaleY.Value, (float)this.editorScaleZ.Value);
+
+			if (this.relativeValues.Checked)	foreach (Transform t in values) t.RelativeScale	= newScale;
+			else								foreach (Transform t in values) t.Scale			= newScale;
+
+			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionHelper.Property_Transform_RelativeScale);
+		}
+		public void PerformSetVel()
+		{
+			Transform[] values = this.Getter().Cast<Transform>().ToArray();
+			Vector3 newVel = new Vector3((float)this.editorVelX.Value, (float)this.editorVelY.Value, (float)this.editorVelZ.Value);
+
+			if (this.relativeValues.Checked)	foreach (Transform t in values) t.RelativeVel	= newVel;
+			else								foreach (Transform t in values) t.Vel			= newVel;
+
+			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionHelper.Property_Transform_RelativeVel);
+		}
+		public void PerformSetAngle(bool deg)
+		{
+			Transform[] values = this.Getter().Cast<Transform>().ToArray();
+			float newAngle = deg ? MathF.DegToRad((float)this.editorAngleDeg.Value) : (float)this.editorAngleRad.Value;
+
+			if (this.relativeValues.Checked)	foreach (Transform t in values) t.RelativeAngle	= newAngle;
+			else								foreach (Transform t in values) t.Angle			= newAngle;
+
+			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionHelper.Property_Transform_RelativeAngle);
+		}
+		public void PerformSetAngleVel(bool deg)
+		{
+			Transform[] values = this.Getter().Cast<Transform>().ToArray();
+			float newAngleVel = deg ? MathF.DegToRad((float)this.editorAngleVelDeg.Value) : (float)this.editorAngleVelRad.Value;
+
+			if (this.relativeValues.Checked)	foreach (Transform t in values) t.RelativeAngleVel	= newAngleVel;
+			else								foreach (Transform t in values) t.AngleVel			= newAngleVel;
+
+			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionHelper.Property_Transform_RelativeAngleVel);
+		}
+
 		public override void PerformGetValue()
 		{
 			base.PerformGetValue();
@@ -39,7 +92,86 @@ namespace EditorBase.PropertyEditors
 			this.updatingFromObj = true;
 			if (values.Any())
 			{
-				// ToDo
+				Vector3 pos, scale, vel;
+				float angle, angleVel;
+				bool[] multiple = new bool[5];
+
+				if (this.relativeValues.Checked)
+				{
+					pos.X = values.Average(t => t.RelativePos.X);
+					pos.Y = values.Average(t => t.RelativePos.Y);
+					pos.Z = values.Average(t => t.RelativePos.Z);
+					multiple[0] = values.Any(t => t.RelativePos != values.First().RelativePos);
+
+					scale.X = values.Average(t => t.RelativeScale.X);
+					scale.Y = values.Average(t => t.RelativeScale.Y);
+					scale.Z = values.Average(t => t.RelativeScale.Z);
+					multiple[1] = values.Any(t => t.RelativeScale != values.First().RelativeScale);
+
+					vel.X = values.Average(t => t.RelativeVel.X);
+					vel.Y = values.Average(t => t.RelativeVel.Y);
+					vel.Z = values.Average(t => t.RelativeVel.Z);
+					multiple[2] = values.Any(t => t.RelativeVel != values.First().RelativeVel);
+
+					angle = values.Average(t => t.RelativeAngle);
+					multiple[3] = values.Any(t => t.RelativeAngle != values.First().RelativeAngle);
+
+					angleVel = values.Average(t => t.RelativeAngleVel);
+					multiple[4] = values.Any(t => t.RelativeAngleVel != values.First().RelativeAngleVel);
+				}
+				else
+				{
+					pos.X = values.Average(t => t.Pos.X);
+					pos.Y = values.Average(t => t.Pos.Y);
+					pos.Z = values.Average(t => t.Pos.Z);
+					multiple[0] = values.Any(t => t.Pos != values.First().Pos);
+
+					scale.X = values.Average(t => t.Scale.X);
+					scale.Y = values.Average(t => t.Scale.Y);
+					scale.Z = values.Average(t => t.Scale.Z);
+					multiple[1] = values.Any(t => t.Scale != values.First().Scale);
+
+					vel.X = values.Average(t => t.Vel.X);
+					vel.Y = values.Average(t => t.Vel.Y);
+					vel.Z = values.Average(t => t.Vel.Z);
+					multiple[2] = values.Any(t => t.Vel != values.First().Vel);
+
+					angle = values.Average(t => t.Angle);
+					multiple[3] = values.Any(t => t.Angle != values.First().Angle);
+
+					angleVel = values.Average(t => t.AngleVel);
+					multiple[4] = values.Any(t => t.AngleVel != values.First().AngleVel);
+				}
+				angle = MathF.NormalizeAngle(angle);
+
+				this.editorPosX.Value = (decimal)pos.X;
+				this.editorPosY.Value = (decimal)pos.Y;
+				this.editorPosZ.Value = (decimal)pos.Z;
+				this.editorPosX.BackColor = this.editorPosY.BackColor = this.editorPosZ.BackColor = 
+					multiple[0] ? this.BackColorMultiple : this.BackColorDefault;
+
+				this.editorScaleX.Value = (decimal)scale.X;
+				this.editorScaleY.Value = (decimal)scale.Y;
+				this.editorScaleZ.Value = (decimal)scale.Z;
+				this.editorScaleX.BackColor = this.editorScaleY.BackColor = this.editorScaleZ.BackColor = 
+					multiple[1] ? this.BackColorMultiple : this.BackColorDefault;
+
+				this.editorVelX.Value = (decimal)vel.X;
+				this.editorVelY.Value = (decimal)vel.Y;
+				this.editorVelZ.Value = (decimal)vel.Z;
+				this.editorVelX.BackColor = this.editorVelY.BackColor = this.editorVelZ.BackColor = 
+					multiple[2] ? this.BackColorMultiple : this.BackColorDefault;
+
+				this.editorAngleRad.Value = (decimal)angle;
+				this.editorAngleDeg.Value = (decimal)MathF.RadToDeg(angle);
+				this.editorAngleRad.BackColor = this.editorAngleDeg.BackColor = 
+					multiple[3] ? this.BackColorMultiple : this.BackColorDefault;
+
+				this.editorAngleVelRad.Value = (decimal)angleVel;
+				this.editorAngleVelDeg.Value = (decimal)MathF.RadToDeg(angleVel);
+				this.editorAngleVelRad.BackColor = this.editorAngleVelDeg.BackColor = 
+					multiple[4] ? this.BackColorMultiple : this.BackColorDefault;
+
 				this.Invalidate();
 			}
 			this.updatingFromObj = false;
@@ -69,6 +201,89 @@ namespace EditorBase.PropertyEditors
 			e.Graphics.DrawLine(
 				new Pen(Color.FromArgb(128, Color.Black)),
 				this.ClientRectangle.Left, this.ClientRectangle.Bottom - 1, this.ClientRectangle.Right, this.ClientRectangle.Bottom - 1);
+		}
+
+		private void relativeValues_CheckedChanged(object sender, EventArgs e)
+		{
+			this.PerformGetValue();
+		}
+		private void editorPosX_ValueChanged(object sender, EventArgs e)
+		{
+			if (this.updatingFromObj) return;
+			this.PerformSetPos();
+			this.PerformGetValue();
+		}
+		private void editorPosY_ValueChanged(object sender, EventArgs e)
+		{
+			if (this.updatingFromObj) return;
+			this.PerformSetPos();
+			this.PerformGetValue();
+		}
+		private void editorPosZ_ValueChanged(object sender, EventArgs e)
+		{
+			if (this.updatingFromObj) return;
+			this.PerformSetPos();
+			this.PerformGetValue();
+		}
+		private void editorScaleX_ValueChanged(object sender, EventArgs e)
+		{
+			if (this.updatingFromObj) return;
+			this.PerformSetScale();
+			this.PerformGetValue();
+		}
+		private void editorScaleY_ValueChanged(object sender, EventArgs e)
+		{
+			if (this.updatingFromObj) return;
+			this.PerformSetScale();
+			this.PerformGetValue();
+		}
+		private void editorScaleZ_ValueChanged(object sender, EventArgs e)
+		{
+			if (this.updatingFromObj) return;
+			this.PerformSetScale();
+			this.PerformGetValue();
+		}
+		private void editorAngleDeg_ValueChanged(object sender, EventArgs e)
+		{
+			if (this.updatingFromObj) return;
+			this.PerformSetAngle(true);
+			this.PerformGetValue();
+		}
+		private void editorAngleRad_ValueChanged(object sender, EventArgs e)
+		{
+			if (this.updatingFromObj) return;
+			this.PerformSetAngle(false);
+			this.PerformGetValue();
+		}
+		private void editorVelX_ValueChanged(object sender, EventArgs e)
+		{
+			if (this.updatingFromObj) return;
+			this.PerformSetVel();
+			this.PerformGetValue();
+		}
+		private void editorVelY_ValueChanged(object sender, EventArgs e)
+		{
+			if (this.updatingFromObj) return;
+			this.PerformSetVel();
+			this.PerformGetValue();
+		}
+		private void editorVelZ_ValueChanged(object sender, EventArgs e)
+		{
+			if (this.updatingFromObj) return;
+			this.PerformSetVel();
+			this.PerformGetValue();
+		}
+		private void editorAngleVelDeg_ValueChanged(object sender, EventArgs e)
+		{
+			if (this.updatingFromObj) return;
+			this.PerformSetAngleVel(true);
+			this.PerformGetValue();
+		}
+		private void editorAngleVelRad_ValueChanged(object sender, EventArgs e)
+		{
+			if (this.updatingFromObj) return;
+			this.PerformSetAngleVel(false);
+			this.PerformGetValue();
 		}
 	}
 

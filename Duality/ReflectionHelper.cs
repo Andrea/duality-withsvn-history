@@ -27,6 +27,8 @@ namespace Duality
 		public static readonly PropertyInfo	Property_Transform_RelativePos;
 		public static readonly PropertyInfo	Property_Transform_RelativeAngle;
 		public static readonly PropertyInfo	Property_Transform_RelativeScale;
+		public static readonly PropertyInfo	Property_Transform_RelativeVel;
+		public static readonly PropertyInfo	Property_Transform_RelativeAngleVel;
 		
 
 		public static readonly FieldInfo Field_GameObject_Name;
@@ -57,6 +59,8 @@ namespace Duality
 			Property_Transform_RelativePos		= transform.GetProperty("RelativePos");
 			Property_Transform_RelativeAngle	= transform.GetProperty("RelativeAngle");
 			Property_Transform_RelativeScale	= transform.GetProperty("RelativeScale");
+			Property_Transform_RelativeVel		= transform.GetProperty("RelativeVel");
+			Property_Transform_RelativeAngleVel	= transform.GetProperty("RelativeAngleVel");
 
 			// Retrieve FieldInfo data
 			BindingFlags fieldFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
