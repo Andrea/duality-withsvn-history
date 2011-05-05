@@ -235,6 +235,7 @@ namespace DualityEditor.Controls.PropertyEditors
 					if (target != null) indexer.SetValue(target, curValue, new object[] {index});
 					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}
+				this.UpdateModifiedState();
 			};
 		}
 

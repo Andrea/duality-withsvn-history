@@ -37,6 +37,8 @@ namespace DualityEditor.Controls.PropertyEditors
 			object[] values = this.Getter().ToArray();
 
 			this.updatingFromObj = true;
+			this.UpdateModifiedState();
+			// Apply values to editors
 			if (!values.Any())
 				this.valueEditor.Value = 0;
 			else
@@ -64,6 +66,14 @@ namespace DualityEditor.Controls.PropertyEditors
 		    base.UpdateReadOnlyState();
 			this.valueEditor.ReadOnly = this.ReadOnly;
 			this.valueEditor.Increment = this.valueEditor.ReadOnly ? 0 : 1;
+		}
+		public override void UpdateModifiedState()
+		{
+			base.UpdateModifiedState();
+			// Set font boldness according to modified value
+			bool modified = this.ValueModified;
+			if (this.nameLabel.Font.Bold != modified)
+				this.nameLabel.Font = new Font(this.nameLabel.Font, modified ? FontStyle.Bold : FontStyle.Regular);
 		}
 
 		protected override void OnEditedTypeChanged()

@@ -24,7 +24,8 @@ namespace DualityEditor.Controls
 			Default		= All
 		}
 
-		private	MemberFlags	flags	= MemberFlags.Default;
+		protected	MemberFlags	flags	= MemberFlags.Default;
+		protected	Dictionary<PropertyEditor,MemberInfo>	memberMap	= new Dictionary<PropertyEditor,MemberInfo>();
 
 		public MemberwisePropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid, MemberFlags flags) : base(parentEditor, parentGrid)
 		{
@@ -37,6 +38,7 @@ namespace DualityEditor.Controls
 			base.InitContent();
 
 			this.ClearPropertyEditors();
+			this.memberMap.Clear();
 			if (this.EditedType != null)
 			{
 				// Generate and add property editors for the current type
@@ -57,6 +59,7 @@ namespace DualityEditor.Controls
 						e.Setter = prop.CanWrite ? this.CreatePropertyValueSetter(prop) : null;
 						e.PropertyName = prop.Name;
 						if (e is GroupedPropertyEditor) (e as GroupedPropertyEditor).Indent = 20;
+						this.memberMap[e] = prop;
 						this.AddPropertyEditor(e);
 					}
 				}
@@ -75,6 +78,7 @@ namespace DualityEditor.Controls
 						e.Setter = this.CreateFieldValueSetter(field);
 						e.PropertyName = field.Name;
 						if (e is GroupedPropertyEditor) (e as GroupedPropertyEditor).Indent = 20;
+						this.memberMap[e] = field;
 						this.AddPropertyEditor(e);
 					}
 				}
@@ -171,6 +175,7 @@ namespace DualityEditor.Controls
 					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}
 				this.OnPropertySet(property, targetArray);
+				this.UpdateModifiedState();
 
 				// Fixup struct values by assigning the modified struct copy to its original member
 				if (this.EditedType.IsValueType) this.Setter(targetArray);
@@ -191,6 +196,7 @@ namespace DualityEditor.Controls
 					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}
 				this.OnFieldSet(field, targetArray);
+				this.UpdateModifiedState();
 
 				// Fixup struct values by assigning the modified struct copy to its original member
 				if (this.EditedType.IsValueType) this.Setter(targetArray);

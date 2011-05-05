@@ -88,10 +88,6 @@ namespace DualityEditor.Controls
 			get { return null; }
 			set {}
 		}
-		public virtual object DisplayedValue
-		{
-			get { return null; }
-		}
 
 		public PropertyGrid ParentGrid
 		{
@@ -118,6 +114,14 @@ namespace DualityEditor.Controls
 		public bool ContentInitialized
 		{
 			get { return this.contentInit; }
+		}
+		public virtual object DisplayedValue
+		{
+			get { return null; }
+		}
+		public bool ValueModified
+		{
+			get { return this.parentEditor == null ? false : this.parentEditor.IsChildValueModified(this); }
 		}
 
 		public Color BackColorMultiple
@@ -146,8 +150,11 @@ namespace DualityEditor.Controls
 		{
 			this.contentInit = false;
 		}
-
 		public virtual void UpdateReadOnlyState() {}
+		public virtual void UpdateModifiedState() {}
+
+		protected virtual bool IsChildValueModified(PropertyEditor childEditor) { return false; }
+
 		protected virtual void OnEditedTypeChanged() {}
 		protected void OnValueEdited(object sender, PropertyGridValueEditedEventArgs args)
 		{

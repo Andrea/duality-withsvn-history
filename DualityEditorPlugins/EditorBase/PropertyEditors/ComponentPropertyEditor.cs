@@ -33,6 +33,15 @@ namespace EditorBase.PropertyEditors
 				ReflectionHelper.Property_Component_ActiveSingle);
 		}
 
+		protected override bool IsChildValueModified(PropertyEditor childEditor)
+		{
+			Component[] values = this.Getter().Cast<Component>().ToArray();
+			return values.Any(delegate (Component c)
+			{
+				Duality.Resources.PrefabLink l = c.GameObj.AffectedByPrefabLink;
+				return l != null && l.HasChange(c, this.memberMap[childEditor] as PropertyInfo);
+			});
+		}
 		protected override bool MemberPredicate(MemberInfo info)
 		{
 			if (info.DeclaringType == typeof(Component)) return false;

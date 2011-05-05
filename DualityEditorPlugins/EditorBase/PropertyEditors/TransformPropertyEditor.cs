@@ -90,6 +90,7 @@ namespace EditorBase.PropertyEditors
 			Transform[] values = this.Getter().Cast<Transform>().ToArray();
 
 			this.updatingFromObj = true;
+			this.UpdateModifiedState();
 			if (values.Any())
 			{
 				Vector3 pos, scale, vel;
@@ -186,6 +187,34 @@ namespace EditorBase.PropertyEditors
 		public override void UpdateReadOnlyState()
 		{
 			base.UpdateReadOnlyState();
+		}
+		public override void UpdateModifiedState()
+		{
+			base.UpdateModifiedState();
+			Transform[] values = this.Getter().Cast<Transform>().ToArray();
+			
+			// Set font boldness according to modified value
+			bool posModified		= false;
+			bool scaleModified		= false;
+			bool angleModified		= false;
+			bool velModified		= false;
+			bool angleVelModified	= false;
+			foreach (Transform c in values)
+			{
+				Duality.Resources.PrefabLink l = c.GameObj.AffectedByPrefabLink;
+				if (l == null) continue;
+				if (!posModified)		posModified			= l.HasChange(c, ReflectionHelper.Property_Transform_RelativePos);
+				if (!scaleModified)		scaleModified		= l.HasChange(c, ReflectionHelper.Property_Transform_RelativeScale);
+				if (!angleModified)		angleModified		= l.HasChange(c, ReflectionHelper.Property_Transform_RelativeAngle);
+				if (!velModified)		velModified			= l.HasChange(c, ReflectionHelper.Property_Transform_RelativeVel);
+				if (!angleVelModified)	angleVelModified	= l.HasChange(c, ReflectionHelper.Property_Transform_RelativeAngleVel);
+			}
+
+			if (this.labelPos.Font.Bold != posModified) this.labelPos.Font = new Font(this.labelPos.Font, posModified ? FontStyle.Bold : FontStyle.Regular);
+			if (this.labelScale.Font.Bold != scaleModified) this.labelScale.Font = new Font(this.labelScale.Font, scaleModified ? FontStyle.Bold : FontStyle.Regular);
+			if (this.labelAngle.Font.Bold != angleModified) this.labelAngle.Font = new Font(this.labelAngle.Font, angleModified ? FontStyle.Bold : FontStyle.Regular);
+			if (this.labelVel.Font.Bold != velModified) this.labelVel.Font = new Font(this.labelVel.Font, velModified ? FontStyle.Bold : FontStyle.Regular);
+			if (this.labelAngleVel.Font.Bold != angleVelModified) this.labelAngleVel.Font = new Font(this.labelAngleVel.Font, angleVelModified ? FontStyle.Bold : FontStyle.Regular);
 		}
 
 		protected override void OnPaint(PaintEventArgs e)

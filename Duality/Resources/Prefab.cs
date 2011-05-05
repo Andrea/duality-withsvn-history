@@ -352,6 +352,26 @@ namespace Duality.Resources
 				}
 			}
 		}
+		public bool HasChange(object target, PropertyInfo prop)
+		{
+			if (this.changes == null || this.changes.Count == 0) return false;
+
+			GameObject targetObj = target as GameObject;
+			Component targetComp = target as Component;
+			if (targetObj == null && targetComp != null) targetObj = targetComp.gameobj;
+
+			if (targetObj == null) 
+				throw new ArgumentException("Target object is not a valid child of this PrefabLinks GameObject", "target");
+
+			List<int> indexPath = this.obj.IndexPathOfChild(targetObj);
+			for (int i = 0; i < this.changes.Count; i++)
+			{
+				if (this.changes[i].childIndex.SequenceEqual(indexPath) && this.changes[i].prop == prop)
+					return true;
+			}
+
+			return false;
+		}
 		public void ClearChanges()
 		{
 			if (this.changes != null) this.changes.Clear();

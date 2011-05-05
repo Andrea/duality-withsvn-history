@@ -61,7 +61,7 @@ namespace EditorBase
 		}
 		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
 		{
-			if ((sender is PropertyEditor) && (sender as PropertyEditor).ParentGrid == this.propertyGrid) return;
+			if (!e.PrefabApplied && (sender is PropertyEditor) && (sender as PropertyEditor).ParentGrid == this.propertyGrid) return;
 
 			// Update values if anything changed that relates to the grids current selection
 			if (e.Objects.Components.GameObject().Any(o => this.propertyGrid.Selection.Contains(o)) ||

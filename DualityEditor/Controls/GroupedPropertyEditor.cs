@@ -14,8 +14,9 @@ namespace DualityEditor.Controls
 {
 	public partial class GroupedPropertyEditor : PropertyEditor
 	{
-		private	List<PropertyEditor>	propertyEditors	= new List<PropertyEditor>();
-		private	bool					activeState		= true;
+		private	List<PropertyEditor>	propertyEditors		= new List<PropertyEditor>();
+		private	bool					activeState			= true;
+		private	bool					modifiedStateCache	= false;
 
 		public override bool Expanded
 		{
@@ -84,6 +85,22 @@ namespace DualityEditor.Controls
 			base.UpdateReadOnlyState();
 			foreach (PropertyEditor e in this.propertyEditors)
 				e.UpdateReadOnlyState();
+		}
+		public override void UpdateModifiedState()
+		{
+			base.UpdateModifiedState();
+			this.modifiedStateCache = this.ValueModified;
+
+			// Set font boldness according to modified value
+			if (this.header.Font.Bold != this.modifiedStateCache)
+				this.header.Font = new Font(this.header.Font, this.modifiedStateCache ? FontStyle.Bold : FontStyle.Regular);
+
+			foreach (PropertyEditor e in this.propertyEditors)
+				e.UpdateModifiedState();
+		}
+		protected override bool IsChildValueModified(PropertyEditor childEditor)
+		{
+			return this.modifiedStateCache;
 		}
 
 		protected virtual void OnActiveStateChanged()
