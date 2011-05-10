@@ -210,6 +210,19 @@ namespace Duality
 
 			return resLibrary.Remove(path);
 		}
+		public static bool RenameContent(string path, string newPath)
+		{
+			Resource res;
+			if (resLibrary.TryGetValue(path, out res))
+			{
+				res.ChangePath(newPath);
+				resLibrary[newPath] = res;
+				resLibrary.Remove(path);
+				return true;
+			}
+			else
+				return false;
+		}
 		public static void UnregisterContentTree(string dir, bool dispose = true)
 		{
 			List<string> unregisterList = new List<string>(
@@ -219,6 +232,20 @@ namespace Duality
 
 			foreach (string p in unregisterList)
 				UnregisterContent(p, dispose);
+		}
+		public static void RenameContentTree(string dir, string newDir)
+		{
+			List<string> renameList = new List<string>(
+				from p in resLibrary.Keys
+				where !p.Contains(':') && PathHelper.IsPathLocatedIn(p, dir)
+				select p);
+
+			foreach (string p in renameList)
+			{
+				RenameContent(p, p.Replace(
+					dir + Path.DirectorySeparatorChar,
+					newDir + Path.DirectorySeparatorChar));
+			}
 		}
 		public static ContentRef<T> RequestContent<T>(string path) where T : Resource
 		{

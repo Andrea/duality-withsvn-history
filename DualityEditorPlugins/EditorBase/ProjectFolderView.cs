@@ -205,11 +205,7 @@ namespace EditorBase
 			protected override void OnNodePathChanged(string oldPath)
 			{
 				base.OnNodePathChanged(oldPath);
-
-				ContentProvider.UnregisterContent(this.res.Path);
 				this.res.Path = this.NodePath;
-
-				// Will auto-re-register if needed, don't register it here yet.
 			}
 
 			public static Type TypeFromContent(ContentRef<Resource> content)
@@ -239,6 +235,7 @@ namespace EditorBase
 
 		private	Dictionary<string,NodeBase>	pathIdToNode	= new Dictionary<string,NodeBase>();
 		private	FilteredTreeModel			folderModel		= null;
+		private	NodeBase					editingNode		= null;
 
 		private	NodeBase	flashNode		= null;
 		private	float		flashDuration	= 0.0f;
@@ -261,8 +258,10 @@ namespace EditorBase
 
 			this.nodeTextBoxName.DrawText += new EventHandler<Aga.Controls.Tree.NodeControls.DrawEventArgs>(nodeTextBoxName_DrawText);
 			this.nodeTextBoxName.EditorShowing += new CancelEventHandler(nodeTextBoxName_EditorShowing);
+			this.nodeTextBoxName.EditorHided += new EventHandler(nodeTextBoxName_EditorHided);
 			this.nodeTextBoxName.ChangesApplied += new EventHandler(nodeTextBoxName_ChangesApplied);
 		}
+
 		protected override void OnShown(EventArgs e)
 		{
 			base.OnShown(e);
@@ -901,12 +900,22 @@ namespace EditorBase
 		{
 			NodeBase node = this.folderView.SelectedNode.Tag as NodeBase;
 			if (node.ReadOnly) e.Cancel = true;
+			if (!e.Cancel)
+			{
+				this.editingNode = node;
+				this.folderView.ContextMenuStrip = null;
+			}
+		}
+		private void nodeTextBoxName_EditorHided(object sender, EventArgs e)
+		{
+			this.editingNode = null;
+			this.folderView.ContextMenuStrip = this.contextMenuNode;
 		}
 		private void nodeTextBoxName_ChangesApplied(object sender, EventArgs e)
 		{
 			NodeBase node = this.folderView.SelectedNode.Tag as NodeBase;
 			Node parentNode = node.Parent;
-			this.UnregisterNode(node);
+			this.UnregisterNodeTree(node);
 			node.Parent.Nodes.Remove(node);
 
 			string conflictPath;
@@ -918,7 +927,7 @@ namespace EditorBase
 			}
 
 			this.InsertNodeSorted(node, parentNode);
-			this.RegisterNode(node);
+			this.RegisterNodeTree(node);
 		}
 		private void timerFlashItem_Tick(object sender, EventArgs e)
 		{

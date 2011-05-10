@@ -12,12 +12,6 @@ namespace Duality
 	public abstract class Resource : IManageableObject, IDisposable
 	{
 		private	static	List<Resource>	finalizeSched	= new List<Resource>();
-		private	static	Resource		savingRes		= null;
-
-		public static Resource SaveInProgressRes
-		{
-			get { return savingRes; }
-		}
 
 		[NonSerialized]	protected	string	path		= null;
 		[NonSerialized]	private		bool	disposed	= false;
@@ -35,6 +29,10 @@ namespace Duality
 			get { return !this.Disposed; }
 		}
 
+		internal void ChangePath(string newPath)
+		{
+			this.path = newPath;
+		}
 		public void Save(string saveAsPath = null)
 		{
 			if (this.disposed) throw new ApplicationException("Can't save Ressource that already has been disposed.");
@@ -54,13 +52,11 @@ namespace Duality
 		}
 		public void Save(Stream str)
 		{
-			savingRes = this;
 			this.OnSaving();
 			BinaryFormatter formatter = DualityApp.RequestSerializer(null, new StreamingContext(
 				StreamingContextStates.File | StreamingContextStates.Persistence));
 			formatter.Serialize(str, this);
 			this.OnSaved();
-			savingRes = null;
 		}
 		public Resource Clone()
 		{

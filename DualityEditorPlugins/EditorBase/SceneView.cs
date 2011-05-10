@@ -72,7 +72,7 @@ namespace EditorBase
 				if (objNode != null) affectedByPrefabLink = affectedByPrefabLink && prefabLink.AffectsObject(objNode.Obj);
 
 				// Prefab-linked entities
-				if (affectedByPrefabLink && prefabLink.Prefab.IsAvailable)
+				if (affectedByPrefabLink && File.Exists(prefabLink.Prefab.Path)) //prefabLink.Prefab.IsAvailable) // Not sufficient - might be loaded but with a broken path
 					this.linkState = PrefabLinkState.Active;
 				else if (cmpNode == null && objNode.Obj.PrefabLink != null)
 					this.linkState = PrefabLinkState.Broken;
@@ -1205,17 +1205,17 @@ namespace EditorBase
 		}
 		private void EditorForm_ResourceRenamed(object sender, ResourceRenamedEventArgs e)
 		{
-			if (!typeof(Prefab).IsAssignableFrom(e.ContentType)) return;
+			if (!e.IsDirectory && !typeof(Prefab).IsAssignableFrom(e.ContentType)) return;
 			this.UpdatePrefabLinkStatus();
 		}
 		private void EditorForm_ResourceCreated(object sender, ResourceEventArgs e)
 		{
-			if (!typeof(Prefab).IsAssignableFrom(e.ContentType)) return;
+			if (!e.IsDirectory && !typeof(Prefab).IsAssignableFrom(e.ContentType)) return;
 			this.UpdatePrefabLinkStatus();
 		}
 		private void EditorForm_ResourceDeleted(object sender, ResourceEventArgs e)
 		{
-			if (!typeof(Prefab).IsAssignableFrom(e.ContentType)) return;
+			if (!e.IsDirectory && !typeof(Prefab).IsAssignableFrom(e.ContentType)) return;
 			this.UpdatePrefabLinkStatus();
 		}
 

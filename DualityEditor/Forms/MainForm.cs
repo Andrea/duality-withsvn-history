@@ -597,10 +597,9 @@ namespace DualityEditor.Forms
 		{
 			ResourceEventArgs args = new ResourceEventArgs(path);
 
-			if (args.IsDirectory)
-				ContentProvider.UnregisterContentTree(args.Path);
-			else
-				ContentProvider.UnregisterContent(args.Path);
+			// Unregister no-more existing resources
+			if (args.IsDirectory)	ContentProvider.UnregisterContentTree(args.Path);
+			else					ContentProvider.UnregisterContent(args.Path);
 
 			if (this.ResourceDeleted != null)
 				this.ResourceDeleted(this, args);
@@ -609,10 +608,11 @@ namespace DualityEditor.Forms
 		{
 			ResourceEventArgs args = new ResourceEventArgs(path);
 
-			if (args.IsDirectory)
-				ContentProvider.UnregisterContentTree(args.Path);
-			else if (Resource.SaveInProgressRes == null || Path.GetFullPath(Resource.SaveInProgressRes.Path) != Path.GetFullPath(args.Path))
-				ContentProvider.UnregisterContent(args.Path);
+			// Unregister Content in order to force a reload from file
+			//if (args.IsDirectory)
+			//    ContentProvider.UnregisterContentTree(args.Path);
+			//else if (Resource.SaveInProgressRes == null || Path.GetFullPath(Resource.SaveInProgressRes.Path) != Path.GetFullPath(args.Path))
+			//    ContentProvider.UnregisterContent(args.Path);
 
 			// When modifying prefabs, apply changes to all linked objects
 			if (args.IsResource && args.Content.Is<Prefab>())
@@ -629,9 +629,10 @@ namespace DualityEditor.Forms
 		{
 			ResourceRenamedEventArgs args = new ResourceRenamedEventArgs(path, oldPath);
 
-			if (args.IsDirectory)	ContentProvider.UnregisterContentTree(args.Path);
-			else					ContentProvider.UnregisterContent(args.Path);
-			
+			// Rename content registerations
+			if (args.IsDirectory)	ContentProvider.RenameContentTree(args.OldPath, args.Path);
+			else					ContentProvider.RenameContent(args.OldPath, args.Path);
+
 			// If we just renamed the currently loaded scene, relocate it
 			if (Scene.CurrentPath == oldPath) Scene.Current = Resource.LoadResource<Scene>(path);
 

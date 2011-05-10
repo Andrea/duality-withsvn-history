@@ -1,9 +1,4 @@
 ﻿
--->	Fix / Test: When renaming a scene that is currently loaded and modified,
-	all changes are lost by re-loading it. It should be auto-saved to
-	prevent data loss. Similar for all resources reloaded that way. Maybe
-	ask the user before saving them? Figure out some reasonable behaviour.
-
 -->	Implement specialized Component PropertyEditors
 	-->	SpriteRenderer
 	-->	..
