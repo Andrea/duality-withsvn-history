@@ -205,6 +205,7 @@ namespace EditorBase
 			protected override void OnNodePathChanged(string oldPath)
 			{
 				base.OnNodePathChanged(oldPath);
+
 				ContentProvider.UnregisterContent(this.res.Path);
 				this.res.Path = this.NodePath;
 

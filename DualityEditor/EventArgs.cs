@@ -119,6 +119,14 @@ namespace DualityEditor
 		{
 			get { return !this.isDirectory; }
 		}
+		public Type ContentType
+		{
+			get 
+			{
+				if (isDirectory) return null;
+				else return Resource.GetTypeByFileName(this.path);
+			}
+		}
 		public ContentRef<Resource> Content
 		{
 			get { return this.isDirectory ? ContentRef<Resource>.Null : new ContentRef<Resource>(null, this.path); }

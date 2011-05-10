@@ -25,6 +25,9 @@ namespace DualityEditor.Forms
 			private	Exception		error		= null;
 			private	List<string>	reloadSched	= null;
 			private	bool			recoverMode	= false;
+			private	bool			shutdown	= false;
+			private	Scene			tempScene	= null;
+			private	MainForm		mainForm	= null;
 
 			public bool Finished
 			{
@@ -51,6 +54,21 @@ namespace DualityEditor.Forms
 				get { return this.recoverMode; }
 				set { this.recoverMode = value; }
 			}
+			public bool Shutdown
+			{
+				get { return this.shutdown; }
+				set { this.shutdown = value; }
+			}
+			public Scene TempScene
+			{
+				get { return this.tempScene; }
+				set { this.tempScene = value; }
+			}
+			public MainForm MainForm
+			{
+				get { return this.mainForm; }
+				set { this.mainForm = value; }
+			}
 		}
 
 		public enum ReloaderState
@@ -65,7 +83,7 @@ namespace DualityEditor.Forms
 
 		Thread			worker			= null;
 		WorkerInterface	workerInterface	= null;
-		IWin32Window	owner			= null;
+		MainForm		owner			= null;
 		List<string>	reloadSchedule	= new List<string>();
 		ReloaderState	state			= ReloaderState.Idle;
 		int				waitTime		= 0;
@@ -108,7 +126,7 @@ namespace DualityEditor.Forms
 		}
 
 
-		public ReloadCorePluginDialog(IWin32Window owner)
+		public ReloadCorePluginDialog(MainForm owner)
 		{
 			this.InitializeComponent();
 			this.owner = owner;
@@ -139,6 +157,7 @@ namespace DualityEditor.Forms
 			this.Owner.SetTaskbarOverlayIcon(GeneralRes.Icon_Cog, GeneralRes.TaskBarOverlay_ReloadCorePlugin_Desc);
 
 			this.workerInterface = new WorkerInterface();
+			this.workerInterface.MainForm = this.owner;
 			if (this.state != ReloaderState.RecoverFromRestart)
 				this.workerInterface.ReloadSched = new List<string>(this.reloadSchedule);
 			else
@@ -152,6 +171,7 @@ namespace DualityEditor.Forms
 		protected override void OnClosed(EventArgs e)
 		{
 			base.OnClosed(e);
+			if (this.workerInterface.Shutdown) return;
 
 			this.Owner.SetTaskbarProgress(0.0f);
 			this.Owner.SetTaskbarProgressState(Windows7Taskbar.ThumbnailProgressState.NoProgress);
@@ -193,6 +213,8 @@ namespace DualityEditor.Forms
 				else if (this.workerInterface.Finished)
 				{
 					this.progressTimer.Stop();
+					// Re-Apply temporarily saved Scene
+					Scene.Current = this.workerInterface.TempScene;
 					this.Close();
 				}
 			}
@@ -204,7 +226,8 @@ namespace DualityEditor.Forms
 
 			try
 			{
-				Stream str;
+				Stream strScene;
+				Stream strData;
 				bool fullRestart = false;
 
 				if (!workInterface.RecoverMode)
@@ -221,21 +244,25 @@ namespace DualityEditor.Forms
 					if (fullRestart)
 					{
 						if (!Directory.Exists("Temp")) Directory.CreateDirectory("Temp");
-						str = File.Create(@"Temp\_reloadPluginData.tmp");
+						strScene = File.Create(@"Temp\_reloadPluginData_Scene.tmp");
+						strData = File.Create(@"Temp\_reloadPluginData_Data.tmp");
 					}
 					else
-						str = new MemoryStream(1024 * 1024 * 10);
+					{
+						strScene = new MemoryStream(1024 * 1024 * 10);
+						strData = new MemoryStream(512);
+					}
 
 					// Save current data
 					Log.Editor.Write("Saving data...");
-					Scene.Current.Save(str);
+					StreamWriter strDataWriter = new StreamWriter(strData);
+					strDataWriter.WriteLine(Scene.CurrentPath);
+					strDataWriter.Flush();
+					Scene.Current.Save(strScene);
 					workInterface.Progress += 0.4f;
 			
 					if (!fullRestart)
 					{
-						// Abandon all data
-						Scene.Current = null;
-
 						// Reload core plugins
 						Log.Editor.Write("Reloading core plugins...");
 						Log.Editor.PushIndent();
@@ -248,27 +275,39 @@ namespace DualityEditor.Forms
 						}
 						Log.Editor.PopIndent();
 
-						str.Seek(0, SeekOrigin.Begin);
+						strScene.Seek(0, SeekOrigin.Begin);
+						strData.Seek(0, SeekOrigin.Begin);
 					}
 					else
 					{
-						str.Close();
+						strScene.Close();
+						strData.Close();
 						bool debug = System.Diagnostics.Debugger.IsAttached;
+
+						// Close old form and wait for it to be closed
+						workInterface.Shutdown = true;
+						workInterface.MainForm.Invoke(new CloseMainFormDelegate(CloseMainForm), workInterface.MainForm);
+						while (workInterface.MainForm.Visible) { Thread.Sleep(20); }
 						Application.Exit();
+
 						Process newEditor = Process.Start(Application.ExecutablePath, "recover" + (debug ? " debug" : ""));
 						return;
 					}
 				}
 				else
 				{
-					str = File.OpenRead(@"Temp\_reloadPluginData.tmp");
+					strScene = File.OpenRead(@"Temp\_reloadPluginData_Scene.tmp");
+					strData = File.OpenRead(@"Temp\_reloadPluginData_Data.tmp");
 					workInterface.Progress = 0.6f;
 				}
 
 				// Reload data
 				Log.Editor.Write("Restoring data...");
-				Scene.Current = Resource.LoadResource<Scene>(str);
-				str.Close();
+				StreamReader strDataReader = new StreamReader(strData);
+				string scenePath = strDataReader.ReadLine();
+				workInterface.TempScene = Resource.LoadResource<Scene>(strScene, scenePath);
+				strScene.Close();
+				strData.Close();
 
 				workInterface.Progress = 1.0f;
 				workInterface.Finished = true;
@@ -278,6 +317,12 @@ namespace DualityEditor.Forms
 				Log.Editor.WriteError(e.ToString());
 				workInterface.Error = e;
 			}
+		}
+
+		private delegate void CloseMainFormDelegate(MainForm form);
+		private static void CloseMainForm(MainForm form)
+		{
+			form.Close();
 		}
 	}
 }

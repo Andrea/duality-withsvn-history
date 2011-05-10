@@ -105,22 +105,31 @@ namespace Duality
 			T newContent = null;
 			using (FileStream str = File.OpenRead(path))
 			{
-				newContent = LoadResource<T>(str);
+				newContent = LoadResource<T>(str, path);
 			}
-			if (newContent != null) newContent.path = path;
 			return newContent;
 		}
-		public static T LoadResource<T>(Stream str) where T : Resource
+		public static T LoadResource<T>(Stream str, string resPath = null) where T : Resource
 		{
 			T newContent = null;
-			BinaryFormatter formatter = DualityApp.RequestSerializer(null, new StreamingContext(
-				StreamingContextStates.File | StreamingContextStates.Persistence));
-			newContent = formatter.Deserialize(str) as T;
+			try
+			{
+				BinaryFormatter formatter = DualityApp.RequestSerializer(null, new StreamingContext(
+					StreamingContextStates.File | StreamingContextStates.Persistence));
+				newContent = formatter.Deserialize(str) as T;
 
-			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Editor) 
-				SerializationHelper.DeepResolveTypeReferences(newContent, DualityApp.PluginTypeBinder);
+				if (DualityApp.ExecContext == DualityApp.ExecutionContext.Editor) 
+					SerializationHelper.DeepResolveTypeReferences(newContent, DualityApp.PluginTypeBinder);
 
-			newContent.OnLoaded();
+				if (newContent != null) newContent.path = resPath;
+				newContent.OnLoaded();
+			}
+			catch (SerializationException e)
+			{
+				Log.Core.WriteError("Can't load {0} from Stream '{1}'",
+					ReflectionHelper.GetTypeString(typeof(T), ReflectionHelper.TypeStringAttrib.CSCodeIdentShort),
+					(str is FileStream) ? (str as FileStream).Name : str.ToString());
+			}
 			return newContent;
 		}
 

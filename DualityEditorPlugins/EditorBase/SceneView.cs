@@ -603,9 +603,12 @@ namespace EditorBase
 		}
 		protected void UpdateSceneLabel()
 		{
+			bool sceneAvail = Scene.Current != null;
+
+			this.toolStripButtonSelectSceneRes.Enabled = sceneAvail && !String.IsNullOrEmpty(Scene.Current.Path);
 			this.toolStripLabelSceneName.Text = String.Format("{0}: {1}",
 				PluginRes.EditorBaseRes.SceneNameLabel,
-				String.IsNullOrEmpty(Scene.Current.Name) ? PluginRes.EditorBaseRes.SceneNameNotYetSaved : Scene.Current.Name);
+				(!sceneAvail || String.IsNullOrEmpty(Scene.Current.Name)) ? PluginRes.EditorBaseRes.SceneNameNotYetSaved : Scene.Current.Name);
 		}
 		
 		private void textBoxFilter_TextChanged(object sender, EventArgs e)
@@ -1202,26 +1205,29 @@ namespace EditorBase
 		}
 		private void EditorForm_ResourceRenamed(object sender, ResourceRenamedEventArgs e)
 		{
+			if (!typeof(Prefab).IsAssignableFrom(e.ContentType)) return;
 			this.UpdatePrefabLinkStatus();
 		}
 		private void EditorForm_ResourceCreated(object sender, ResourceEventArgs e)
 		{
+			if (!typeof(Prefab).IsAssignableFrom(e.ContentType)) return;
 			this.UpdatePrefabLinkStatus();
 		}
 		private void EditorForm_ResourceDeleted(object sender, ResourceEventArgs e)
 		{
+			if (!typeof(Prefab).IsAssignableFrom(e.ContentType)) return;
 			this.UpdatePrefabLinkStatus();
 		}
 
 		private void Scene_Leaving(object sender, EventArgs e)
 		{
 			this.ClearObjects();
-			this.toolStripButtonSelectSceneRes.Enabled = false;
+			this.UpdateSceneLabel();
 		}
 		private void Scene_Entered(object sender, EventArgs e)
 		{
 			this.InitObjects();
-			this.toolStripButtonSelectSceneRes.Enabled = !String.IsNullOrEmpty(Scene.Current.Path);
+			this.UpdateSceneLabel();
 		}
 		private void Scene_RegisteredObjectComponentAdded(object sender, ComponentEventArgs e)
 		{

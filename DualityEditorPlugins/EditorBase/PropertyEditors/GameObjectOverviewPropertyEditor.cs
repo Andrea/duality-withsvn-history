@@ -96,10 +96,14 @@ namespace EditorBase.PropertyEditors
 			}
 
 			// Remove Component editors that aren't needed anymore
-			foreach (var pair in this.componentEditors)
+			var cmpEditorCopy = new Dictionary<Type,PropertyEditor>(this.componentEditors);
+			foreach (var pair in cmpEditorCopy)
 			{
 				if (!values.Any(o => o.GetComponent(pair.Key) != null))
+				{
 					this.RemovePropertyEditor(pair.Value);
+					this.componentEditors.Remove(pair.Key);
+				}
 			}
 
 			// Create the ones that are needed now and not added yet

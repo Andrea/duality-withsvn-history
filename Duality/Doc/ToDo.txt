@@ -3,10 +3,6 @@
 	-->	SpriteRenderer
 	-->	..
 
--->	Core Plugin Reloading needs to be updated according to Scene management
-	-->	Save-to-temporary-Scene-then-Reload breaks Scene.Current.
-	-->	Figure something out to prevent that.
-
 -->	Approach next step: Run Game in Launcher
 
 -->	Editor Skeletton

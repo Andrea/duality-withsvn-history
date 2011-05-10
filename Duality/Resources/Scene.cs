@@ -12,19 +12,33 @@ namespace Duality.Resources
 	[Serializable]
 	public sealed class Scene : Resource
 	{
-		private	static	Scene	current	= new Scene();
+		private	static	ContentRef<Scene>	current		= ContentRef<Scene>.Null;
+		private	static	bool				curAutoGen	= false;
 		public static Scene Current
 		{
-			get { return current; }
+			get
+			{
+				if (!curAutoGen && !current.IsAvailable)
+				{
+					curAutoGen = true;
+					Current = new Scene();
+					curAutoGen = false;
+				}
+				return current.Res;
+			}
 			set 
 			{
-				if (current != value)
+				if (current.Res != value)
 				{
-					if (current != null) OnLeaving();
-					current = value;
-					if (current != null) OnEntered();
+					OnLeaving();
+					current.Res = (value != null) ? value : new Scene();
+					OnEntered();
 				}
 			}
+		}
+		public static string CurrentPath
+		{
+			get { return current.Path; }
 		}
 
 		public static event EventHandler Leaving;
@@ -71,6 +85,9 @@ namespace Duality.Resources
 		{
 			get 
 			{ 
+				if (this.path == null) return null;
+				if (this.path.Length < 6) return "";
+
 				string fileName = System.IO.Path.GetFileNameWithoutExtension(this.path);
 				return fileName == null ? null : fileName.Substring(0, fileName.Length - 6); 
 			}

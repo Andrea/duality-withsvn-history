@@ -24,8 +24,7 @@ namespace Duality
 		{
 			get 
 			{ 
-				if ((this.contentInstance == null || this.contentInstance.Disposed) && !String.IsNullOrEmpty(this.contentPath))
-					this.RetrieveInstance();
+				if (this.contentInstance == null || this.contentInstance.Disposed) this.RetrieveInstance();
 				return this.contentInstance;
 			}
 			set
@@ -69,7 +68,6 @@ namespace Duality
 			get
 			{
 				if (this.contentInstance != null && !this.contentInstance.Disposed) return true;
-				if (String.IsNullOrEmpty(this.contentPath)) return false;
 				this.RetrieveInstance();
 				return this.contentInstance != null;
 			}
@@ -107,7 +105,12 @@ namespace Duality
 
 		private void RetrieveInstance()
 		{
-			this = ContentProvider.RequestContent<T>(this.contentPath);
+			if (!String.IsNullOrEmpty(this.contentPath))
+				this = ContentProvider.RequestContent<T>(this.contentPath);
+			else if (this.contentInstance != null && !String.IsNullOrEmpty(this.contentInstance.Path))
+				this = ContentProvider.RequestContent<T>(this.contentInstance.Path);
+			else
+				this.contentInstance = null;
 		}
 
 		public override string ToString()

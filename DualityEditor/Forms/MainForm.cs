@@ -601,9 +601,6 @@ namespace DualityEditor.Forms
 				ContentProvider.UnregisterContentTree(args.Path);
 			else
 				ContentProvider.UnregisterContent(args.Path);
-			
-			// When deleting the current scene - leave it
-			if (Scene.Current.Disposed) Scene.Current = new Scene();
 
 			if (this.ResourceDeleted != null)
 				this.ResourceDeleted(this, args);
@@ -626,20 +623,19 @@ namespace DualityEditor.Forms
 				this.NotifyObjPrefabApplied(this, new ObjectSelection(changedObjects));
 			}
 
-			if (this.ResourceModified != null)
-				this.ResourceModified(this, args);
+			if (this.ResourceModified != null) this.ResourceModified(this, args);
 		}
 		private void OnResourceRenamed(string path, string oldPath)
 		{
 			ResourceRenamedEventArgs args = new ResourceRenamedEventArgs(path, oldPath);
 
-			if (args.IsDirectory)
-				ContentProvider.UnregisterContentTree(args.Path);
-			else
-				ContentProvider.UnregisterContent(args.Path);
+			if (args.IsDirectory)	ContentProvider.UnregisterContentTree(args.Path);
+			else					ContentProvider.UnregisterContent(args.Path);
+			
+			// If we just renamed the currently loaded scene, relocate it
+			if (Scene.CurrentPath == oldPath) Scene.Current = Resource.LoadResource<Scene>(path);
 
-			if (this.ResourceRenamed != null)
-				this.ResourceRenamed(this, args);
+			if (this.ResourceRenamed != null) this.ResourceRenamed(this, args);
 		}
 
 		public bool ConfirmBreakPrefabLink(ObjectSelection obj = null)
