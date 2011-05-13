@@ -1283,11 +1283,8 @@ namespace EditorBase
 		}
 		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
 		{
-			if (e.HasAnyProperty(	ReflectionHelper.Property_Transform_RelativePos, 
-									ReflectionHelper.Property_Transform_RelativeAngle, 
-									ReflectionHelper.Property_Transform_RelativeScale,
-									ReflectionHelper.Property_Component_ActiveSingle,
-									ReflectionHelper.Property_GameObject_ActiveSingle))
+			if (e.HasProperty(ReflectionHelper.Property_GameObject_ActiveSingle) ||
+				e.Objects.Components.Any(c => c is Transform || c is Renderer))
 			{
 				this.UpdateSelectionStats();
 				this.glControl.Invalidate();

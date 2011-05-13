@@ -8,6 +8,7 @@ using System.IO;
 using System.Drawing;
 
 using Duality.Components;
+using Duality.Components.Renderers;
 
 namespace Duality
 {
@@ -29,6 +30,8 @@ namespace Duality
 		public static readonly PropertyInfo	Property_Transform_RelativeScale;
 		public static readonly PropertyInfo	Property_Transform_RelativeVel;
 		public static readonly PropertyInfo	Property_Transform_RelativeAngleVel;
+
+		public static readonly PropertyInfo	Property_SpriteRenderer_BoundRadius;
 		
 
 		public static readonly FieldInfo Field_GameObject_Name;
@@ -61,6 +64,9 @@ namespace Duality
 			Property_Transform_RelativeScale	= transform.GetProperty("RelativeScale");
 			Property_Transform_RelativeVel		= transform.GetProperty("RelativeVel");
 			Property_Transform_RelativeAngleVel	= transform.GetProperty("RelativeAngleVel");
+			
+			Type rendererSprite = typeof(SpriteRenderer);
+			Property_SpriteRenderer_BoundRadius	= rendererSprite.GetProperty("BoundRadius");
 
 			// Retrieve FieldInfo data
 			BindingFlags fieldFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;

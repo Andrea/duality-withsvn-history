@@ -24,7 +24,7 @@ namespace EditorBase.PropertyEditors
 		
 		public void PerformSetActive(bool active)
 		{
-			Component[] values = this.Getter().Cast<Component>().ToArray();
+			Component[] values = this.Getter().Cast<Component>().NotNull().ToArray();
 			foreach (Component c in values) c.ActiveSingle = active;
 
 			// Notify ActiveSingle changed
@@ -35,7 +35,7 @@ namespace EditorBase.PropertyEditors
 
 		protected override bool IsChildValueModified(PropertyEditor childEditor)
 		{
-			Component[] values = this.Getter().Cast<Component>().ToArray();
+			Component[] values = this.Getter().Cast<Component>().NotNull().ToArray();
 			return values.Any(delegate (Component c)
 			{
 				Duality.Resources.PrefabLink l = c.GameObj.AffectedByPrefabLink;
@@ -58,7 +58,7 @@ namespace EditorBase.PropertyEditors
 			}
 			else
 			{
-				this.ActiveState = (values.First() as Component).ActiveSingle;
+				this.ActiveState = (values.First(o => o is Component) as Component).ActiveSingle;
 			}
 		}
 		protected override void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)

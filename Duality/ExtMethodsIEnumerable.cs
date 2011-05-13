@@ -102,5 +102,10 @@ namespace Duality
             }
             return collection;
         }
+
+		public static IEnumerable<T> NotNull<T>(this IEnumerable<T> collection) where T : class
+		{
+			return collection.Where(i => i != null);
+		}
 	}
 }

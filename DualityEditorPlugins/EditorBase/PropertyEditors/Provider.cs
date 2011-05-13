@@ -5,6 +5,7 @@ using System.Text;
 
 using Duality;
 using Duality.Components;
+using Duality.Components.Renderers;
 using DualityEditor.Controls;
 
 namespace EditorBase.PropertyEditors
@@ -16,6 +17,8 @@ namespace EditorBase.PropertyEditors
 			if (baseType == typeof(GameObject))
 				return PropertyGrid.ProvidedEditorType.Specialized;
 			else if (baseType == typeof(Transform))
+				return PropertyGrid.ProvidedEditorType.Specialized;
+			else if (baseType == typeof(SpriteRenderer))
 				return PropertyGrid.ProvidedEditorType.Specialized;
 			else if (typeof(Component).IsAssignableFrom(baseType))
 				return PropertyGrid.ProvidedEditorType.General;
@@ -29,6 +32,8 @@ namespace EditorBase.PropertyEditors
 				e = new GameObjectOverviewPropertyEditor(parentEditor, parentGrid);
 			else if (baseType == typeof(Transform))
 				e = new TransformPropertyEditorContainer(parentEditor, parentGrid);
+			else if (baseType == typeof(SpriteRenderer))
+				e = new SpriteRendererPropertyEditor(parentEditor, parentGrid);
 			else if (typeof(Component).IsAssignableFrom(baseType))
 				e = new ComponentPropertyEditor(parentEditor, parentGrid);
 

@@ -1,11 +1,19 @@
 ﻿
 -->	Implement specialized Component PropertyEditors
+	-->	Camera
+		-->	Rect editor
+		-->	Vector3 / Vector2 editor
+		-->	IColorData editor with preview, dragdrop and color picker dialog
+		-->	BitMask editor
 	-->	SpriteRenderer
-	-->	..
+		-->	ContentRef<T> editor - does not allow editing the resources, but has dragdrop support and
+			can highlight the currently used resource in the ProjectFolderView
+		-->	BatchInfo / Material editor
+			-->	Dictionary<T,U> editor (maybe some keyvaluepair-like vertical subeditor duo and ICollection layout?)
 
 -->	Approach next step: Run Game in Launcher
+	-->	Test Camera setup & object velocity stuff
 
 -->	Editor Skeletton
-	-->	Run Game in Launcher
 	-->	Sandbox (Play | Pause | Reset)
 	-->	Plugin / VS integration

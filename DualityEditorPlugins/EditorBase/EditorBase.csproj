@@ -79,6 +79,9 @@
     <Compile Include="PropertyEditors\ComponentPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="PropertyEditors\SpriteRendererPropertyEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="PropertyEditors\TransformPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
