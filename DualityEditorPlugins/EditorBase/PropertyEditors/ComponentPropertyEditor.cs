@@ -19,7 +19,6 @@ namespace EditorBase.PropertyEditors
 		{
 			this.Header.ResetVisible = false;
 			this.Header.ActiveVisible = true;
-			this.Indent = 20;
 		}
 		
 		public void PerformSetActive(bool active)
@@ -74,8 +73,20 @@ namespace EditorBase.PropertyEditors
 		protected override void OnEditedTypeChanged()
 		{
 			base.OnEditedTypeChanged();
+
+			System.Drawing.Bitmap iconBitmap = CorePluginHelper.RequestTypeImage(this.EditedType, CorePluginHelper.ImageContext_Icon) as System.Drawing.Bitmap;
+			Duality.ColorFormat.ColorHSVA avgClr = iconBitmap != null ? iconBitmap.GetAverageColor().ToHsva() : Duality.ColorFormat.ColorHSVA.TransparentBlack;
+
 			this.Header.Text = ReflectionHelper.GetTypeString(this.EditedType, ReflectionHelper.TypeStringAttrib.CSCodeIdentShort);
-			this.Header.Icon = CorePluginHelper.RequestTypeImage(this.EditedType, CorePluginHelper.ImageContext_Icon);
+			this.Header.Icon = iconBitmap;
+			this.Header.ForeColor = ExtMethodsSystemDrawingColor.ColorFromHSV(
+				avgClr.h, 
+				0.15f, 
+				this.Header.ForeColor.GetHSVBrightness());
+			this.Header.BackColor = ExtMethodsSystemDrawingColor.ColorFromHSV(
+				avgClr.h, 
+				0.15f, 
+				this.Header.BackColor.GetHSVBrightness());
 		}
 	}
 }

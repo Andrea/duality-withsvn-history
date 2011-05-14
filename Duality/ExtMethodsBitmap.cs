@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
 
+using Duality;
 using Duality.ColorFormat;
 
 namespace Duality
@@ -152,6 +153,49 @@ namespace Duality
 
 			result.SetPixelDataRGBA(pixelData);
 			return result;
+		}
+		public static ColorRGBA GetAverageColor(this Bitmap bm, bool weightTransparent = true)
+		{
+			float[] sum = new float[4];
+			int count = 0;
+			ColorRGBA[] pixelData = bm.GetPixelDataRGBA();
+
+			if (weightTransparent)
+			{
+				for (int i = 0; i < pixelData.Length; i++)
+				{
+					sum[0] += pixelData[i].r * ((float)pixelData[i].a / 255.0f);
+					sum[1] += pixelData[i].g * ((float)pixelData[i].a / 255.0f);
+					sum[2] += pixelData[i].b * ((float)pixelData[i].a / 255.0f);
+					sum[3] += (float)pixelData[i].a / 255.0f;
+					++count;
+				}
+				if (sum[3] <= 0.001f) return ColorRGBA.TransparentBlack;
+
+				return new ColorRGBA(
+					(byte)MathF.Clamp((int)(sum[0] / sum[3]), 0, 255),
+					(byte)MathF.Clamp((int)(sum[1] / sum[3]), 0, 255),
+					(byte)MathF.Clamp((int)(sum[2] / sum[3]), 0, 255),
+					(byte)MathF.Clamp((int)(sum[3] / (float)count), 0, 255));
+			}
+			else
+			{
+				for (int i = 0; i < pixelData.Length; i++)
+				{
+					sum[0] += pixelData[i].r;
+					sum[1] += pixelData[i].g;
+					sum[2] += pixelData[i].b;
+					sum[3] += pixelData[i].a;
+					++count;
+				}
+				if (count == 0) return ColorRGBA.TransparentBlack;
+
+				return new ColorRGBA(
+					(byte)MathF.Clamp((int)(sum[0] / (float)count), 0, 255),
+					(byte)MathF.Clamp((int)(sum[1] / (float)count), 0, 255),
+					(byte)MathF.Clamp((int)(sum[2] / (float)count), 0, 255),
+					(byte)MathF.Clamp((int)(sum[3] / (float)count), 0, 255));
+			}
 		}
 
 		public static ColorRGBA[] GetPixelDataRGBA(this Bitmap bm)

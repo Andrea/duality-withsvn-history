@@ -8,6 +8,8 @@ using System.Drawing.Drawing2D;
 using System.ComponentModel;
 using System.Reflection;
 
+using OpenTK;
+using Duality;
 using DualityEditor.Controls.PropertyEditors;
 
 namespace DualityEditor.Controls
@@ -63,6 +65,15 @@ namespace DualityEditor.Controls
 				// Basic data type: String
 				else if (baseType == typeof(string))
 					e = new StringPropertyEditor(parentEditor, parentGrid);
+				// Rect
+				else if (baseType == typeof(Rect))
+					e = new RectPropertyEditor(parentEditor, parentGrid);
+				// Vector2
+				else if (baseType == typeof(Vector2))
+					e = new Vector2PropertyEditor(parentEditor, parentGrid);
+				// Vector3
+				else if (baseType == typeof(Vector3))
+					e = new Vector3PropertyEditor(parentEditor, parentGrid);
 				// IList collection
 				else if (typeof(System.Collections.IList).IsAssignableFrom(baseType))
 					e = new IListPropertyEditor(parentEditor, parentGrid);

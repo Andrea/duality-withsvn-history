@@ -1,6 +1,6 @@
 ﻿namespace DualityEditor.Controls.PropertyEditors
 {
-	partial class FlagEnumPropertyEditor
+	partial class FlagPropertyEditor
 	{
 		/// <summary> 
 		/// Erforderliche Designervariable.
@@ -29,7 +29,7 @@
 		private void InitializeComponent()
 		{
 			this.nameLabel = new System.Windows.Forms.Label();
-			this.valueEditor = new DualityEditor.Controls.EnumFlagCheckedListBox();
+			this.valueEditor = new DualityEditor.Controls.CustomFlagCheckedListBox();
 			this.SuspendLayout();
 			// 
 			// nameLabel
@@ -53,7 +53,7 @@
 			this.valueEditor.Name = "valueEditor";
 			this.valueEditor.Size = new System.Drawing.Size(153, 82);
 			this.valueEditor.TabIndex = 2;
-			this.valueEditor.EnumValueChanged += new System.EventHandler(this.valueEditor_EnumValueChanged);
+			this.valueEditor.FlagValueChanged += new System.EventHandler(this.valueEditor_FlagValueChanged);
 			// 
 			// FlagEnumPropertyEditor
 			// 
@@ -69,6 +69,6 @@
 		#endregion
 
 		private System.Windows.Forms.Label nameLabel;
-		private EnumFlagCheckedListBox valueEditor;
+		private CustomFlagCheckedListBox valueEditor;
 	}
 }

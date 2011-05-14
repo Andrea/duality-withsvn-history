@@ -41,7 +41,6 @@
 			// header
 			// 
 			resources.ApplyResources(this.header, "header");
-			this.header.ForeColor = System.Drawing.SystemColors.ActiveCaption;
 			this.header.Name = "header";
 			// 
 			// GroupedPropertyEditor

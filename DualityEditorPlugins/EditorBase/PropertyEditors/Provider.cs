@@ -20,6 +20,8 @@ namespace EditorBase.PropertyEditors
 				return PropertyGrid.ProvidedEditorType.Specialized;
 			else if (baseType == typeof(SpriteRenderer))
 				return PropertyGrid.ProvidedEditorType.Specialized;
+			else if (baseType == typeof(Camera))
+				return PropertyGrid.ProvidedEditorType.Specialized;
 			else if (typeof(Component).IsAssignableFrom(baseType))
 				return PropertyGrid.ProvidedEditorType.General;
 			else
@@ -34,6 +36,8 @@ namespace EditorBase.PropertyEditors
 				e = new TransformPropertyEditorContainer(parentEditor, parentGrid);
 			else if (baseType == typeof(SpriteRenderer))
 				e = new SpriteRendererPropertyEditor(parentEditor, parentGrid);
+			else if (baseType == typeof(Camera))
+				e = new CameraPropertyEditor(parentEditor, parentGrid);
 			else if (typeof(Component).IsAssignableFrom(baseType))
 				e = new ComponentPropertyEditor(parentEditor, parentGrid);
 

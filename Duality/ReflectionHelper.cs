@@ -31,7 +31,15 @@ namespace Duality
 		public static readonly PropertyInfo	Property_Transform_RelativeVel;
 		public static readonly PropertyInfo	Property_Transform_RelativeAngleVel;
 
+		public static readonly PropertyInfo	Property_Renderer_VisibilityGroup;
+
 		public static readonly PropertyInfo	Property_SpriteRenderer_BoundRadius;
+
+		public static readonly PropertyInfo	Property_Camera_OrthoAbs;
+		public static readonly PropertyInfo	Property_Camera_ViewportAbs;
+		public static readonly PropertyInfo	Property_Camera_DrawDevice;
+		public static readonly PropertyInfo	Property_Camera_TargetSize;
+		public static readonly PropertyInfo	Property_Camera_VisibilityMask;
 		
 
 		public static readonly FieldInfo Field_GameObject_Name;
@@ -64,9 +72,19 @@ namespace Duality
 			Property_Transform_RelativeScale	= transform.GetProperty("RelativeScale");
 			Property_Transform_RelativeVel		= transform.GetProperty("RelativeVel");
 			Property_Transform_RelativeAngleVel	= transform.GetProperty("RelativeAngleVel");
+
+			Type renderer = typeof(Renderer);
+			Property_Renderer_VisibilityGroup	= renderer.GetProperty("VisibilityGroup");
 			
 			Type rendererSprite = typeof(SpriteRenderer);
 			Property_SpriteRenderer_BoundRadius	= rendererSprite.GetProperty("BoundRadius");
+
+			Type camera = typeof(Camera);
+			Property_Camera_OrthoAbs		= camera.GetProperty("OrthoAbs");
+			Property_Camera_ViewportAbs		= camera.GetProperty("ViewportAbs");
+			Property_Camera_DrawDevice		= camera.GetProperty("DrawDevice");
+			Property_Camera_TargetSize		= camera.GetProperty("TargetSize");
+			Property_Camera_VisibilityMask	= camera.GetProperty("VisibilityMask");
 
 			// Retrieve FieldInfo data
 			BindingFlags fieldFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;

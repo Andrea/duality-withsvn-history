@@ -50,11 +50,12 @@ namespace DualityEditor.Controls
 					var propQuery = 
 						from p in propArr
 						where p.CanRead && p.GetIndexParameters().Length == 0 && this.MemberPredicate(p)
-						orderby ReflectionHelper.GetTypeHierarchyLevel(p.DeclaringType)
+						orderby ReflectionHelper.GetTypeHierarchyLevel(p.DeclaringType) ascending, p.Name
 						select p;
 					foreach (PropertyInfo prop in propQuery)
 					{
-						PropertyEditor e = this.ParentGrid.PropertyEditorProvider.CreateEditor(prop.PropertyType, this, this.ParentGrid);
+						PropertyEditor e = this.MemberEditor(prop);
+						if (e == null) e = this.ParentGrid.PropertyEditorProvider.CreateEditor(prop.PropertyType, this, this.ParentGrid);
 						e.Getter = this.CreatePropertyValueGetter(prop);
 						e.Setter = prop.CanWrite ? this.CreatePropertyValueSetter(prop) : null;
 						e.PropertyName = prop.Name;
@@ -69,11 +70,12 @@ namespace DualityEditor.Controls
 					var fieldQuery =
 						from f in fieldArr
 						where this.MemberPredicate(f)
-						orderby ReflectionHelper.GetTypeHierarchyLevel(f.DeclaringType)
+						orderby ReflectionHelper.GetTypeHierarchyLevel(f.DeclaringType) ascending, f.Name
 						select f;
 					foreach (FieldInfo field in fieldQuery)
 					{
-						PropertyEditor e = this.ParentGrid.PropertyEditorProvider.CreateEditor(field.FieldType, this, this.ParentGrid);
+						PropertyEditor e = this.MemberEditor(field);
+						if (e == null) e = this.ParentGrid.PropertyEditorProvider.CreateEditor(field.FieldType, this, this.ParentGrid);
 						e.Getter = this.CreateFieldValueGetter(field);
 						e.Setter = this.CreateFieldValueSetter(field);
 						e.PropertyName = field.Name;
@@ -91,6 +93,10 @@ namespace DualityEditor.Controls
 		protected virtual void OnAddingEditors()
 		{
 
+		}
+		protected virtual PropertyEditor MemberEditor(MemberInfo info)
+		{
+			return null;
 		}
 		protected virtual bool MemberPredicate(MemberInfo info)
 		{

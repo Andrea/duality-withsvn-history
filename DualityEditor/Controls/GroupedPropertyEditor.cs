@@ -261,6 +261,8 @@ namespace DualityEditor.Controls
 		protected internal GroupedPropertyEditorHeader()
 		{
 			this.DoubleBuffered = true;
+			this.ForeColor = Color.FromArgb(245, 245, 245);
+			this.BackColor = Color.FromArgb(200, 200, 200);
 			this.SetStyle(ControlStyles.ResizeRedraw, true);
 		}
 
@@ -333,8 +335,8 @@ namespace DualityEditor.Controls
 			Pen lowerRightPen = new Pen(Color.FromArgb(64, Color.Black));
 			LinearGradientBrush bgBrush = new LinearGradientBrush(
 				this.ClientRectangle, 
-				Color.FromArgb(245, 245, 245), 
-				Color.FromArgb(200, 200, 200),
+				this.ForeColor, 
+				this.BackColor,
 				90.0f);
 
 			e.Graphics.FillRectangle(bgBrush, this.ClientRectangle);

@@ -57,6 +57,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\Aga.Controls.dll</HintPath>
     </Reference>
+    <Reference Include="OpenTK, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Duality\OpenTK.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -119,6 +123,30 @@
     </Compile>
     <Compile Include="Controls\PropertyEditors\EnumPropertyEditor.Designer.cs">
       <DependentUpon>EnumPropertyEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\PropertyEditors\FlagPropertyEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\PropertyEditors\FlagPropertyEditor.Designer.cs">
+      <DependentUpon>FlagPropertyEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\PropertyEditors\Vector3PropertyEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\PropertyEditors\Vector3PropertyEditor.Designer.cs">
+      <DependentUpon>Vector3PropertyEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\PropertyEditors\Vector2PropertyEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\PropertyEditors\Vector2PropertyEditor.Designer.cs">
+      <DependentUpon>Vector2PropertyEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\PropertyEditors\RectPropertyEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\PropertyEditors\RectPropertyEditor.Designer.cs">
+      <DependentUpon>RectPropertyEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\PropertyEditors\NumericPropertyEditor.cs">
       <SubType>UserControl</SubType>
@@ -194,6 +222,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\PropertyEditors\EnumPropertyEditor.resx">
       <DependentUpon>EnumPropertyEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\PropertyEditors\FlagPropertyEditor.resx">
+      <DependentUpon>FlagPropertyEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\PropertyEditors\Vector3PropertyEditor.resx">
+      <DependentUpon>Vector3PropertyEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\PropertyEditors\Vector2PropertyEditor.resx">
+      <DependentUpon>Vector2PropertyEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\PropertyEditors\RectPropertyEditor.resx">
+      <DependentUpon>RectPropertyEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\PropertyEditors\NumericPropertyEditor.resx">
       <DependentUpon>NumericPropertyEditor.cs</DependentUpon>
