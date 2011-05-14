@@ -90,7 +90,11 @@
 			this.colorShowBox.UpperColor = System.Drawing.Color.Transparent;
 			this.colorShowBox.DragDrop += new System.Windows.Forms.DragEventHandler(this.colorShowBox_DragDrop);
 			this.colorShowBox.DragEnter += new System.Windows.Forms.DragEventHandler(this.colorShowBox_DragEnter);
+			this.colorShowBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.colorShowBox_MouseDoubleClick);
 			this.colorShowBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.colorShowBox_MouseDown);
+			this.colorShowBox.MouseLeave += new System.EventHandler(this.colorShowBox_MouseLeave);
+			this.colorShowBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.colorShowBox_MouseMove);
+			this.colorShowBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.colorShowBox_MouseUp);
 			// 
 			// IColorDataPropertyEditor
 			// 

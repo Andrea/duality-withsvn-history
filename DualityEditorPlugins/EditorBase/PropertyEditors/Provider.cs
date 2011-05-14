@@ -24,6 +24,8 @@ namespace EditorBase.PropertyEditors
 				return PropertyGrid.ProvidedEditorType.Specialized;
 			else if (typeof(Component).IsAssignableFrom(baseType))
 				return PropertyGrid.ProvidedEditorType.General;
+			else if (typeof(IContentRef).IsAssignableFrom(baseType))
+				return PropertyGrid.ProvidedEditorType.General;
 			else
 				return PropertyGrid.ProvidedEditorType.None;
 		}
@@ -40,6 +42,8 @@ namespace EditorBase.PropertyEditors
 				e = new CameraPropertyEditor(parentEditor, parentGrid);
 			else if (typeof(Component).IsAssignableFrom(baseType))
 				e = new ComponentPropertyEditor(parentEditor, parentGrid);
+			else if (typeof(IContentRef).IsAssignableFrom(baseType))
+				e = new ContentRefPropertyEditor(parentEditor, parentGrid);
 
 			e.EditedType = baseType;
 			return e;

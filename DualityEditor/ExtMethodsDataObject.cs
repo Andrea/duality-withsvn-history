@@ -52,6 +52,13 @@ namespace DualityEditor
 			ContentRef<Resource>[] refArray = data.GetData(typeof(ContentRef<Resource>[])) as ContentRef<Resource>[];
 			return refArray.Any(r => r.Is<T>());
 		}
+		public static bool ContainsContentRefs(this DataObject data, Type resType = null)
+		{
+			if (resType == null) resType = typeof(Resource);
+			if (!data.GetDataPresent(typeof(ContentRef<Resource>[]))) return false;
+			ContentRef<Resource>[] refArray = data.GetData(typeof(ContentRef<Resource>[])) as ContentRef<Resource>[];
+			return refArray.Any(r => r.Is(resType));
+		}
 		public static ContentRef<T>[] GetContentRefs<T>(this DataObject data) where T : Resource
 		{
 			if (!data.GetDataPresent(typeof(ContentRef<Resource>[]))) return null;
@@ -60,6 +67,17 @@ namespace DualityEditor
 				from r in refArray
 				where r.Is<T>()
 				select r.As<T>()
+				).ToArray();
+		}
+		public static ContentRef<Resource>[] GetContentRefs(this DataObject data, Type resType = null)
+		{
+			if (resType == null) resType = typeof(Resource);
+			if (!data.GetDataPresent(typeof(ContentRef<Resource>[]))) return null;
+			ContentRef<Resource>[] refArray = data.GetData(typeof(ContentRef<Resource>[])) as ContentRef<Resource>[];
+			return (
+				from r in refArray
+				where r.Is(resType)
+				select r
 				).ToArray();
 		}
 		

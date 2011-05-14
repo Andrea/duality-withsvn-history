@@ -75,7 +75,7 @@ namespace Duality.Components.Renderers
 				if (this.customMat.Textures != null && this.customMat.Textures.Count > 0)
 					uvRatio = this.customMat.Textures.Values.First().Res.UVRatio;
 			}
-			else
+			else if (this.sharedMat.IsAvailable)
 			{
 				if (this.sharedMat.Res.Textures != null && this.sharedMat.Res.Textures.Count > 0)
 					uvRatio = this.sharedMat.Res.Textures.Values.First().Res.UVRatio;
@@ -117,6 +117,7 @@ namespace Duality.Components.Renderers
 			base.CopyToInternal(target);
 			SpriteRenderer t = target as SpriteRenderer;
 			t.sharedMat	= this.sharedMat;
+			t.customMat	= this.customMat;
 			t.rect		= this.rect;
 		}
 	}

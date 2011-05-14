@@ -20,6 +20,7 @@ namespace DualityEditor.Controls.PropertyEditors
 	public partial class IColorDataPropertyEditor : PropertyEditor
 	{
 		private	bool	updatingFromObj	= false;
+		private	Point	dragBeginPos	= Point.Empty;
 
 		public override string PropertyName
 		{
@@ -106,9 +107,31 @@ namespace DualityEditor.Controls.PropertyEditors
 		
 		private void colorShowBox_MouseDown(object sender, MouseEventArgs e)
 		{
-			DataObject dragDropData = new DataObject();
-			dragDropData.AppendIColorData(new IColorData[] { this.DisplayedValue as IColorData });
-			this.DoDragDrop(dragDropData, DragDropEffects.All | DragDropEffects.Link);
+			this.dragBeginPos = e.Location;
+		}
+		private void colorShowBox_MouseLeave(object sender, EventArgs e)
+		{
+			this.dragBeginPos = Point.Empty;
+		}
+		private void colorShowBox_MouseMove(object sender, MouseEventArgs e)
+		{
+			if (this.dragBeginPos != Point.Empty)
+			{
+				if (Math.Abs(this.dragBeginPos.X - e.X) > 5 || Math.Abs(this.dragBeginPos.Y - e.Y) > 5)
+				{
+					DataObject dragDropData = new DataObject();
+					dragDropData.AppendIColorData(new IColorData[] { this.DisplayedValue as IColorData });
+					this.DoDragDrop(dragDropData, DragDropEffects.All | DragDropEffects.Link);
+				}
+			}
+		}
+		private void colorShowBox_MouseDoubleClick(object sender, MouseEventArgs e)
+		{
+			this.buttonOpenEditor_Click(sender, e);
+		}
+		private void colorShowBox_MouseUp(object sender, MouseEventArgs e)
+		{
+			this.dragBeginPos = Point.Empty;
 		}
 		private void colorShowBox_DragEnter(object sender, DragEventArgs e)
 		{

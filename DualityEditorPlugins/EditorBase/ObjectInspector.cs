@@ -25,6 +25,9 @@ namespace EditorBase
 {
 	public partial class ObjectInspector : DockContent
 	{
+		private	ObjectSelection.Category	selSchedMouseCat	= ObjectSelection.Category.None;
+		private	ObjectSelection				selSchedMouse		= null;
+
 		public ObjectInspector()
 		{
 			this.InitializeComponent();
@@ -46,18 +49,36 @@ namespace EditorBase
 			EditorBasePlugin.Instance.EditorForm.ObjectPropertyChanged -= this.EditorForm_ObjectPropertyChanged;
 		}
 
+		private void UpdateSelection(ObjectSelection sel, ObjectSelection.Category lastSelChange)
+		{
+			this.selSchedMouse = null;
+			this.selSchedMouseCat = ObjectSelection.Category.None;
+
+			if ((lastSelChange & ObjectSelection.Category.GameObject) != ObjectSelection.Category.None)
+				this.propertyGrid.SelectObjects(sel.GameObjects, scheduleMs: 500);
+			else if ((lastSelChange & ObjectSelection.Category.Component) != ObjectSelection.Category.None)
+				this.propertyGrid.SelectObjects(sel.Components, scheduleMs: 500);
+			else if ((lastSelChange & ObjectSelection.Category.Resource) != ObjectSelection.Category.None)
+				this.propertyGrid.SelectObjects(sel.Resources, sel.Resources.Any(r => r.Path.Contains(':')), 500);
+			else if ((lastSelChange & ObjectSelection.Category.Other) != ObjectSelection.Category.None)
+				this.propertyGrid.SelectObjects(sel.OtherObjects, scheduleMs: 500);
+			else
+				this.propertyGrid.SelectObjects(sel.Objects, scheduleMs: 500);
+		}
+
 		private void EditorForm_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			if ((e.AffectedCategories & ObjectSelection.Category.GameObject) != ObjectSelection.Category.None)
-				this.propertyGrid.SelectObjects(e.Current.GameObjects, scheduleMs: 500);
-			else if ((e.AffectedCategories & ObjectSelection.Category.Component) != ObjectSelection.Category.None)
-				this.propertyGrid.SelectObjects(e.Current.Components, scheduleMs: 500);
-			else if ((e.AffectedCategories & ObjectSelection.Category.Resource) != ObjectSelection.Category.None)
-				this.propertyGrid.SelectObjects(e.Current.Resources, e.Current.Resources.Any(r => r.Path.Contains(':')), 500);
-			else if ((e.AffectedCategories & ObjectSelection.Category.Other) != ObjectSelection.Category.None)
-				this.propertyGrid.SelectObjects(e.Current.OtherObjects, scheduleMs: 500);
+			// If a mouse button is pressed, reschedule the selection for later - there might be a drag in progress
+			if (Control.MouseButtons != System.Windows.Forms.MouseButtons.None)
+			{
+				this.selSchedMouse = e.Current;
+				this.selSchedMouseCat = e.AffectedCategories;
+				this.timerSelectSched.Enabled = true;
+			}
 			else
-				this.propertyGrid.SelectObjects(e.Current.Objects, scheduleMs: 500);
+			{
+				this.UpdateSelection(e.Current, e.AffectedCategories);
+			}
 		}
 		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
 		{
@@ -67,6 +88,25 @@ namespace EditorBase
 			if (e.Objects.Components.GameObject().Any(o => this.propertyGrid.Selection.Contains(o)) ||
 				e.Objects.Objects.Any(o => this.propertyGrid.Selection.Contains(o)))
 				this.propertyGrid.UpdateFromObjects(100);
+		}
+
+		private void timerSelectSched_Tick(object sender, EventArgs e)
+		{
+			if (this.selSchedMouse == null)
+			{
+				this.timerSelectSched.Enabled = false;
+			}
+			else if (Control.MouseButtons == System.Windows.Forms.MouseButtons.None)
+			{
+				// If no more mouse buttons are currently pressed, process previously scheduled selection change...
+				// .. but only if the cursor isn't located on this Control. That might mean something has been dragged here.
+				Point curRelPos = this.PointToClient(Cursor.Position);
+				if (curRelPos.X < 0 || curRelPos.Y < 0 || curRelPos.X > this.Bounds.Width || curRelPos.Y > this.Bounds.Height)
+				{
+					this.UpdateSelection(this.selSchedMouse, this.selSchedMouseCat);
+				}
+				this.timerSelectSched.Enabled = false;
+			}
 		}
 	}
 }

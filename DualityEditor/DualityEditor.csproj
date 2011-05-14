@@ -311,6 +311,7 @@
     <Content Include="OpenTK.GLControl.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\arrow_refresh.png" />
     <None Include="Resources\icon_color.png" />
     <None Include="Resources\add.png" />
     <None Include="Resources\cross.png" />

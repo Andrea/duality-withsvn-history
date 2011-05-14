@@ -10,9 +10,25 @@ using Duality.Resources;
 
 namespace Duality
 {
+	public interface IContentRef
+	{
+		Resource Res { get; }
+		Resource ResWeak { get; }
+		Type ResType { get; }
+		string Path { get; set; }
+		bool IsExplicitNull { get; }
+		bool IsAvailable { get; }
+		bool IsLoaded { get; }
+		bool IsDefaultContent { get; }
+
+		bool Is(Type resType);
+		bool Is<U>() where U : Resource;
+		ContentRef<U> As<U>() where U : Resource;
+	}
+
 	[Serializable]
 	[System.Diagnostics.DebuggerDisplay("ContentRef {Path}, {IsAvailable}")]
-	public struct ContentRef<T> : IEquatable<ContentRef<T>> where T : Resource
+	public struct ContentRef<T> : IEquatable<ContentRef<T>>, IContentRef where T : Resource
 	{
 		public static readonly ContentRef<T> Null = new ContentRef<T>(null);
 
@@ -79,18 +95,29 @@ namespace Duality
 				return this.contentInstance != null && !this.contentInstance.Disposed;
 			}
 		}
+		public bool IsDefaultContent
+		{
+			get { return this.contentPath != null && this.contentPath.Contains(':'); }
+		}
 
 		public ContentRef(T res, string altPath)
 		{
 			this.contentInstance = res;
-			this.contentPath = (res != null && !String.IsNullOrEmpty(res.Path)) ? res.Path : altPath;
+			if (res != null && !String.IsNullOrEmpty(res.Path))
+				this.contentPath = res.Path;
+			else 
+				this.contentPath = altPath;
 		}
 		public ContentRef(T res)
 		{
 			this.contentInstance = res;
 			this.contentPath = (res != null) ? res.Path : null;
 		}
-
+		
+		public bool Is(Type resType)
+		{
+			return resType.IsAssignableFrom(this.ResType);
+		}
 		public bool Is<U>() where U : Resource
 		{
 			return (this.contentInstance != null && !this.contentInstance.Disposed) ? 
@@ -129,6 +156,15 @@ namespace Duality
 		public bool Equals(ContentRef<T> other)
 		{
 			return this == other;
+		}
+
+		Resource IContentRef.Res
+		{
+			get { return this.Res; }
+		}
+		Resource IContentRef.ResWeak
+		{
+			get { return this.ResWeak; }
 		}
 
 		public static implicit operator ContentRef<T>(T res)
@@ -200,10 +236,13 @@ namespace Duality
 
 		public static void RegisterContent(string path, Resource content)
 		{
+			if (String.IsNullOrEmpty(path)) return;
 			resLibrary[path] = content;
 		}
 		public static bool UnregisterContent(string path, bool dispose = true)
 		{
+			if (String.IsNullOrEmpty(path)) return false;
+
 			// Dispose cached content
 			Resource res;
 			if (dispose && resLibrary.TryGetValue(path, out res)) res.Dispose();
@@ -212,6 +251,8 @@ namespace Duality
 		}
 		public static bool RenameContent(string path, string newPath)
 		{
+			if (String.IsNullOrEmpty(path)) return false;
+
 			Resource res;
 			if (resLibrary.TryGetValue(path, out res))
 			{
@@ -225,6 +266,8 @@ namespace Duality
 		}
 		public static void UnregisterContentTree(string dir, bool dispose = true)
 		{
+			if (String.IsNullOrEmpty(dir)) return;
+
 			List<string> unregisterList = new List<string>(
 				from p in resLibrary.Keys
 				where !p.Contains(':') && PathHelper.IsPathLocatedIn(p, dir)
@@ -235,6 +278,8 @@ namespace Duality
 		}
 		public static void RenameContentTree(string dir, string newDir)
 		{
+			if (String.IsNullOrEmpty(dir)) return;
+
 			List<string> renameList = new List<string>(
 				from p in resLibrary.Keys
 				where !p.Contains(':') && PathHelper.IsPathLocatedIn(p, dir)
@@ -249,12 +294,18 @@ namespace Duality
 		}
 		public static ContentRef<T> RequestContent<T>(string path) where T : Resource
 		{
+			if (String.IsNullOrEmpty(path)) return null;
+
 			// Return cached content
 			Resource res;
 			if (resLibrary.TryGetValue(path, out res)) return new ContentRef<T>(res as T, path);
 
 			// Load new content
 			return new ContentRef<T>(LoadContent(path) as T, path);
+		}
+		public static IContentRef RequestContent(string path)
+		{
+			return RequestContent<Resource>(path);
 		}
 
 		private static Resource LoadContent(string path)

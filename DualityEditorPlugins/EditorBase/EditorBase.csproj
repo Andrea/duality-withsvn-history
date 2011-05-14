@@ -67,6 +67,12 @@
     <Compile Include="ObjectInspector.Designer.cs">
       <DependentUpon>ObjectInspector.cs</DependentUpon>
     </Compile>
+    <Compile Include="PropertyEditors\ContentRefPropertyEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PropertyEditors\ContentRefPropertyEditor.Designer.cs">
+      <DependentUpon>ContentRefPropertyEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="PropertyEditors\GameObjectOverviewPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -139,6 +145,12 @@
     <EmbeddedResource Include="ObjectInspector.resx">
       <DependentUpon>ObjectInspector.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="PropertyEditors\ContentRefPropertyEditor.de.resx">
+      <DependentUpon>ContentRefPropertyEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PropertyEditors\ContentRefPropertyEditor.resx">
+      <DependentUpon>ContentRefPropertyEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="PropertyEditors\GameObjectPropertyEditor.de.resx">
       <DependentUpon>GameObjectPropertyEditor.cs</DependentUpon>
     </EmbeddedResource>
@@ -175,6 +187,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <None Include="Resources\arrow_refresh.png" />
     <None Include="PluginRes\wrench.ico" />
     <None Include="PluginRes\sceneview.ico" />
     <None Include="PluginRes\WorkingFolderIcon16.png" />

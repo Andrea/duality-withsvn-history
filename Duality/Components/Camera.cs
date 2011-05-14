@@ -809,6 +809,8 @@ namespace Duality.Components
 		}
 		void IDrawDevice.AddVertices<T>(BatchInfo material, BeginMode vertexMode, params T[] vertices)
 		{
+			if (material == null || material.Technique == null || !material.Technique.IsAvailable) return;
+
 			if (this.picking != 0)
 			{
 				material = new BatchInfo(
@@ -843,6 +845,7 @@ namespace Duality.Components
 		}
 		void IDrawDevice.AddVertices<T>(ContentRef<Material> material, BeginMode vertexMode, params T[] vertices)
 		{
+			if (!material.IsAvailable) return;
 			(this as IDrawDevice).AddVertices<T>(material.Res.InfoDirect, vertexMode, vertices);
 		}
 	}

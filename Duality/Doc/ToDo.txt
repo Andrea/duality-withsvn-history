@@ -1,8 +1,6 @@
 ﻿
 -->	Implement specialized Component PropertyEditors
 	-->	SpriteRenderer
-		-->	ContentRef<T> editor - does not allow editing the resources, but has dragdrop support and
-			can highlight the currently used resource in the ProjectFolderView
 		-->	BatchInfo / Material editor
 			-->	Dictionary<T,U> editor 
 				-->	Maybe some KeyValuePair-like vertical subeditor duo and ICollection layout?

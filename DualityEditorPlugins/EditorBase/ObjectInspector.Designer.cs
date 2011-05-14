@@ -28,10 +28,12 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ObjectInspector));
 			this.nodeStateIcon = new Aga.Controls.Tree.NodeControls.NodeStateIcon();
 			this.nodeTextBoxName = new Aga.Controls.Tree.NodeControls.NodeTextBox();
 			this.propertyGrid = new DualityEditor.Controls.PropertyGrid();
+			this.timerSelectSched = new System.Windows.Forms.Timer(this.components);
 			this.SuspendLayout();
 			// 
 			// nodeStateIcon
@@ -54,6 +56,11 @@
 			resources.ApplyResources(this.propertyGrid, "propertyGrid");
 			this.propertyGrid.Name = "propertyGrid";
 			// 
+			// timerSelectSched
+			// 
+			this.timerSelectSched.Interval = 50;
+			this.timerSelectSched.Tick += new System.EventHandler(this.timerSelectSched_Tick);
+			// 
 			// ObjectInspector
 			// 
 			resources.ApplyResources(this, "$this");
@@ -75,5 +82,6 @@
 		private Aga.Controls.Tree.NodeControls.NodeTextBox nodeTextBoxName;
 		private Aga.Controls.Tree.NodeControls.NodeStateIcon nodeStateIcon;
 		private DualityEditor.Controls.PropertyGrid propertyGrid;
+		private System.Windows.Forms.Timer timerSelectSched;
 	}
 }

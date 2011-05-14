@@ -120,7 +120,7 @@ namespace Duality
 				if (newContent != null) newContent.path = resPath;
 				newContent.OnLoaded();
 			}
-			catch (SerializationException e)
+			catch (SerializationException)
 			{
 				Log.Core.WriteError("Can't load {0} from Stream '{1}'",
 					ReflectionHelper.GetTypeString(typeof(T), ReflectionHelper.TypeStringAttrib.CSCodeIdentShort),
