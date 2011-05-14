@@ -10,6 +10,7 @@ using System.Reflection;
 
 using OpenTK;
 using Duality;
+using Duality.ColorFormat;
 using DualityEditor.Controls.PropertyEditors;
 
 namespace DualityEditor.Controls
@@ -74,6 +75,9 @@ namespace DualityEditor.Controls
 				// Vector3
 				else if (baseType == typeof(Vector3))
 					e = new Vector3PropertyEditor(parentEditor, parentGrid);
+				// IColorData
+				else if (typeof(IColorData).IsAssignableFrom(baseType))
+					e = new IColorDataPropertyEditor(parentEditor, parentGrid);
 				// IList collection
 				else if (typeof(System.Collections.IList).IsAssignableFrom(baseType))
 					e = new IListPropertyEditor(parentEditor, parentGrid);

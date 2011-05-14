@@ -38,8 +38,8 @@
 			this.posYStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.posZStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.angleStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-			this.axisLockXLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.springLabel = new System.Windows.Forms.ToolStripStatusLabel();
+			this.axisLockXLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.axisLockYLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.axisLockZLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.toolStrip.SuspendLayout();
@@ -129,17 +129,17 @@
 			resources.ApplyResources(this.angleStatusLabel, "angleStatusLabel");
 			this.angleStatusLabel.Name = "angleStatusLabel";
 			// 
-			// axisLockXLabel
-			// 
-			resources.ApplyResources(this.axisLockXLabel, "axisLockXLabel");
-			this.axisLockXLabel.ForeColor = System.Drawing.Color.Red;
-			this.axisLockXLabel.Name = "axisLockXLabel";
-			// 
 			// springLabel
 			// 
 			this.springLabel.Name = "springLabel";
 			resources.ApplyResources(this.springLabel, "springLabel");
 			this.springLabel.Spring = true;
+			// 
+			// axisLockXLabel
+			// 
+			resources.ApplyResources(this.axisLockXLabel, "axisLockXLabel");
+			this.axisLockXLabel.ForeColor = System.Drawing.Color.Red;
+			this.axisLockXLabel.Name = "axisLockXLabel";
 			// 
 			// axisLockYLabel
 			// 

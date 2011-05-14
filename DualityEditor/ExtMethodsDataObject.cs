@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using System.IO;
 
 using Duality;
+using Duality.ColorFormat;
 
 namespace DualityEditor
 {
@@ -60,6 +61,27 @@ namespace DualityEditor
 				where r.Is<T>()
 				select r.As<T>()
 				).ToArray();
+		}
+		
+		public static void AppendIColorData(this DataObject data, IEnumerable<IColorData> color)
+		{
+			if (!color.Any()) return;
+			data.SetData(color.ToArray());
+		}
+		public static bool ContainsIColorData(this DataObject data)
+		{
+			return data.GetDataPresent(typeof(IColorData[]));
+		}
+		public static T[] GetIColorData<T>(this DataObject data) where T : IColorData
+		{
+			if (!data.GetDataPresent(typeof(IColorData[]))) return null;
+			IColorData[] clrArray = data.GetData(typeof(IColorData[])) as IColorData[];
+
+			// Don't care which format? Great, just return the array as is
+			if (typeof(T) == typeof(IColorData)) return (T[])(object)clrArray;
+
+			// Convert to specific format
+			return clrArray.Select<IColorData,T>(ic => ic is T ? (T)ic : IColorDataCreator.FromIntRgba<T>(ic.ToIntRgba())).ToArray();
 		}
 
 		public static void AppendFiles(this DataObject data, IEnumerable<string> files)

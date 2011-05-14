@@ -1284,7 +1284,8 @@ namespace EditorBase
 		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
 		{
 			if (e.HasProperty(ReflectionHelper.Property_GameObject_ActiveSingle) ||
-				e.Objects.Components.Any(c => c is Transform || c is Renderer))
+				e.Objects.Components.Any(c => c is Transform || c is Renderer) ||
+				e.Objects.Resources.Any(r => r is Material))
 			{
 				this.UpdateSelectionStats();
 				this.glControl.Invalidate();

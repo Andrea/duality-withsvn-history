@@ -1,7 +1,5 @@
 ﻿
 -->	Implement specialized Component PropertyEditors
-	-->	Camera
-		-->	IColorData editor with preview, dragdrop and color picker dialog
 	-->	SpriteRenderer
 		-->	ContentRef<T> editor - does not allow editing the resources, but has dragdrop support and
 			can highlight the currently used resource in the ProjectFolderView

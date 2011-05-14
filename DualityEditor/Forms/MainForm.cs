@@ -569,6 +569,8 @@ namespace DualityEditor.Forms
 
 					PrefabLink link = obj != null ? obj.AffectedByPrefabLink : cmp.GameObj.AffectedByPrefabLink;
 					if (link == null) continue;
+					if (cmp != null && !link.AffectsObject(cmp)) continue;
+					if (obj != null && !link.AffectsObject(obj)) continue;
 
 					// Handle property changes regarding affected prefab links change lists
 					foreach (PropertyInfo info in args.PropInfos)

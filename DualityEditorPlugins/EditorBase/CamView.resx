@@ -121,31 +121,6 @@
     <value>17, 17</value>
   </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="toolStrip.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
-  </data>
-  <data name="toolStrip.Size" type="System.Drawing.Size, System.Drawing">
-    <value>539, 28</value>
-  </data>
-  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="toolStrip.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="toolStrip.Text" xml:space="preserve">
-    <value>toolStrip</value>
-  </data>
-  <data name="&gt;&gt;toolStrip.Name" xml:space="preserve">
-    <value>toolStrip</value>
-  </data>
-  <data name="&gt;&gt;toolStrip.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;toolStrip.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;toolStrip.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
   <data name="toggleParallaxity.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
@@ -178,21 +153,21 @@
   <data name="showBgColorDialog.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         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
-        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
+        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
 </value>
   </data>
   <data name="showBgColorDialog.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
@@ -203,6 +178,31 @@
   </data>
   <data name="showBgColorDialog.Text" xml:space="preserve">
     <value>Change Background Color</value>
+  </data>
+  <data name="toolStrip.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="toolStrip.Size" type="System.Drawing.Size, System.Drawing">
+    <value>539, 28</value>
+  </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="toolStrip.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="toolStrip.Text" xml:space="preserve">
+    <value>toolStrip</value>
+  </data>
+  <data name="&gt;&gt;toolStrip.Name" xml:space="preserve">
+    <value>toolStrip</value>
+  </data>
+  <data name="&gt;&gt;toolStrip.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStrip.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;toolStrip.ZOrder" xml:space="preserve">
+    <value>1</value>
   </data>
   <metadata name="statusStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>115, 17</value>
@@ -405,16 +405,16 @@
   <data name="&gt;&gt;angleStatusLabel.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripStatusLabel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;axisLockXLabel.Name" xml:space="preserve">
-    <value>axisLockXLabel</value>
-  </data>
-  <data name="&gt;&gt;axisLockXLabel.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripStatusLabel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="&gt;&gt;springLabel.Name" xml:space="preserve">
     <value>springLabel</value>
   </data>
   <data name="&gt;&gt;springLabel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripStatusLabel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;axisLockXLabel.Name" xml:space="preserve">
+    <value>axisLockXLabel</value>
+  </data>
+  <data name="&gt;&gt;axisLockXLabel.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripStatusLabel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;axisLockYLabel.Name" xml:space="preserve">

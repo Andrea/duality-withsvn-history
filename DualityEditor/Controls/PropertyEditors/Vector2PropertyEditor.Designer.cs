@@ -76,7 +76,7 @@
 			// 
 			this.editorY.DecimalPlaces = 2;
 			this.editorY.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.editorY.Location = new System.Drawing.Point(85, 0);
+			this.editorY.Location = new System.Drawing.Point(84, 0);
 			this.editorY.Margin = new System.Windows.Forms.Padding(0);
 			this.editorY.Maximum = new decimal(new int[] {
             100000000,
@@ -89,7 +89,7 @@
             0,
             -2147483648});
 			this.editorY.Name = "editorY";
-			this.editorY.Size = new System.Drawing.Size(46, 20);
+			this.editorY.Size = new System.Drawing.Size(47, 20);
 			this.editorY.TabIndex = 5;
 			this.editorY.ValueChanged += new System.EventHandler(this.editorY_ValueChanged);
 			// 
@@ -97,7 +97,7 @@
 			// 
 			this.labelY.AutoSize = true;
 			this.labelY.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.labelY.Location = new System.Drawing.Point(68, 0);
+			this.labelY.Location = new System.Drawing.Point(67, 0);
 			this.labelY.Name = "labelY";
 			this.labelY.Size = new System.Drawing.Size(14, 20);
 			this.labelY.TabIndex = 1;
@@ -108,7 +108,8 @@
 			// 
 			this.labelX.AutoSize = true;
 			this.labelX.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.labelX.Location = new System.Drawing.Point(3, 0);
+			this.labelX.Location = new System.Drawing.Point(0, 0);
+			this.labelX.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
 			this.labelX.Name = "labelX";
 			this.labelX.Size = new System.Drawing.Size(14, 20);
 			this.labelX.TabIndex = 0;
@@ -119,7 +120,7 @@
 			// 
 			this.editorX.DecimalPlaces = 2;
 			this.editorX.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.editorX.Location = new System.Drawing.Point(20, 0);
+			this.editorX.Location = new System.Drawing.Point(17, 0);
 			this.editorX.Margin = new System.Windows.Forms.Padding(0);
 			this.editorX.Maximum = new decimal(new int[] {
             100000000,
@@ -132,7 +133,7 @@
             0,
             -2147483648});
 			this.editorX.Name = "editorX";
-			this.editorX.Size = new System.Drawing.Size(45, 20);
+			this.editorX.Size = new System.Drawing.Size(47, 20);
 			this.editorX.TabIndex = 4;
 			this.editorX.ValueChanged += new System.EventHandler(this.editorX_ValueChanged);
 			// 

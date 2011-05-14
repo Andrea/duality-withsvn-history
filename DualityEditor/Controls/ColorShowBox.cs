@@ -74,7 +74,7 @@ namespace DualityEditor.Controls
 				this.ClientRectangle.Height / 2 + 1);
 			e.Graphics.FillRectangle(new SolidBrush(this.lowerColor),
 				this.ClientRectangle.X,
-				this.ClientRectangle.Y + this.ClientRectangle.Height - this.ClientRectangle.Height / 2,
+				this.ClientRectangle.Y + this.ClientRectangle.Height / 2 + 1,
 				this.ClientRectangle.Width,
 				this.ClientRectangle.Height / 2);
 		}

@@ -31,19 +31,19 @@
 			this.components = new System.ComponentModel.Container();
 			this.nameLabel = new System.Windows.Forms.Label();
 			this.tableLayout = new DualityEditor.Controls.DBTableLayoutPanel(this.components);
-			this.labelX = new System.Windows.Forms.Label();
-			this.labelY = new System.Windows.Forms.Label();
-			this.labelW = new System.Windows.Forms.Label();
-			this.labelH = new System.Windows.Forms.Label();
-			this.editorX = new System.Windows.Forms.NumericUpDown();
-			this.editorY = new System.Windows.Forms.NumericUpDown();
-			this.editorW = new System.Windows.Forms.NumericUpDown();
 			this.editorH = new System.Windows.Forms.NumericUpDown();
+			this.editorW = new System.Windows.Forms.NumericUpDown();
+			this.editorY = new System.Windows.Forms.NumericUpDown();
+			this.labelH = new System.Windows.Forms.Label();
+			this.labelW = new System.Windows.Forms.Label();
+			this.labelY = new System.Windows.Forms.Label();
+			this.labelX = new System.Windows.Forms.Label();
+			this.editorX = new System.Windows.Forms.NumericUpDown();
 			this.tableLayout.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.editorX)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.editorY)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.editorW)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.editorH)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.editorW)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.editorY)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.editorX)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// nameLabel
@@ -82,76 +82,43 @@
 			this.tableLayout.Size = new System.Drawing.Size(131, 39);
 			this.tableLayout.TabIndex = 2;
 			// 
-			// labelX
+			// editorH
 			// 
-			this.labelX.AutoSize = true;
-			this.labelX.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.labelX.Location = new System.Drawing.Point(3, 0);
-			this.labelX.Name = "labelX";
-			this.labelX.Size = new System.Drawing.Size(18, 19);
-			this.labelX.TabIndex = 0;
-			this.labelX.Text = "X";
-			this.labelX.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			// 
-			// labelY
-			// 
-			this.labelY.AutoSize = true;
-			this.labelY.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.labelY.Location = new System.Drawing.Point(70, 0);
-			this.labelY.Name = "labelY";
-			this.labelY.Size = new System.Drawing.Size(15, 19);
-			this.labelY.TabIndex = 1;
-			this.labelY.Text = "Y";
-			this.labelY.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			// 
-			// labelW
-			// 
-			this.labelW.AutoSize = true;
-			this.labelW.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.labelW.Location = new System.Drawing.Point(3, 19);
-			this.labelW.Name = "labelW";
-			this.labelW.Size = new System.Drawing.Size(18, 20);
-			this.labelW.TabIndex = 2;
-			this.labelW.Text = "W";
-			this.labelW.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			// 
-			// labelH
-			// 
-			this.labelH.AutoSize = true;
-			this.labelH.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.labelH.Location = new System.Drawing.Point(70, 19);
-			this.labelH.Name = "labelH";
-			this.labelH.Size = new System.Drawing.Size(15, 20);
-			this.labelH.TabIndex = 3;
-			this.labelH.Text = "H";
-			this.labelH.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			// 
-			// editorX
-			// 
-			this.editorX.DecimalPlaces = 2;
-			this.editorX.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.editorX.Location = new System.Drawing.Point(24, 0);
-			this.editorX.Margin = new System.Windows.Forms.Padding(0);
-			this.editorX.Maximum = new decimal(new int[] {
+			this.editorH.DecimalPlaces = 2;
+			this.editorH.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.editorH.Location = new System.Drawing.Point(86, 19);
+			this.editorH.Margin = new System.Windows.Forms.Padding(0);
+			this.editorH.Maximum = new decimal(new int[] {
             100000000,
             0,
             0,
             0});
-			this.editorX.Minimum = new decimal(new int[] {
+			this.editorH.Name = "editorH";
+			this.editorH.Size = new System.Drawing.Size(45, 20);
+			this.editorH.TabIndex = 7;
+			this.editorH.ValueChanged += new System.EventHandler(this.editorH_ValueChanged);
+			// 
+			// editorW
+			// 
+			this.editorW.DecimalPlaces = 2;
+			this.editorW.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.editorW.Location = new System.Drawing.Point(21, 19);
+			this.editorW.Margin = new System.Windows.Forms.Padding(0);
+			this.editorW.Maximum = new decimal(new int[] {
             100000000,
             0,
             0,
-            -2147483648});
-			this.editorX.Name = "editorX";
-			this.editorX.Size = new System.Drawing.Size(43, 20);
-			this.editorX.TabIndex = 4;
-			this.editorX.ValueChanged += new System.EventHandler(this.editorX_ValueChanged);
+            0});
+			this.editorW.Name = "editorW";
+			this.editorW.Size = new System.Drawing.Size(44, 20);
+			this.editorW.TabIndex = 6;
+			this.editorW.ValueChanged += new System.EventHandler(this.editorW_ValueChanged);
 			// 
 			// editorY
 			// 
 			this.editorY.DecimalPlaces = 2;
 			this.editorY.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.editorY.Location = new System.Drawing.Point(88, 0);
+			this.editorY.Location = new System.Drawing.Point(86, 0);
 			this.editorY.Margin = new System.Windows.Forms.Padding(0);
 			this.editorY.Maximum = new decimal(new int[] {
             100000000,
@@ -164,41 +131,76 @@
             0,
             -2147483648});
 			this.editorY.Name = "editorY";
-			this.editorY.Size = new System.Drawing.Size(43, 20);
+			this.editorY.Size = new System.Drawing.Size(45, 20);
 			this.editorY.TabIndex = 5;
 			this.editorY.ValueChanged += new System.EventHandler(this.editorY_ValueChanged);
 			// 
-			// editorW
+			// labelH
 			// 
-			this.editorW.DecimalPlaces = 2;
-			this.editorW.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.editorW.Location = new System.Drawing.Point(24, 19);
-			this.editorW.Margin = new System.Windows.Forms.Padding(0);
-			this.editorW.Maximum = new decimal(new int[] {
+			this.labelH.AutoSize = true;
+			this.labelH.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.labelH.Location = new System.Drawing.Point(68, 19);
+			this.labelH.Name = "labelH";
+			this.labelH.Size = new System.Drawing.Size(15, 20);
+			this.labelH.TabIndex = 3;
+			this.labelH.Text = "H";
+			this.labelH.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// labelW
+			// 
+			this.labelW.AutoSize = true;
+			this.labelW.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.labelW.Location = new System.Drawing.Point(0, 19);
+			this.labelW.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
+			this.labelW.Name = "labelW";
+			this.labelW.Size = new System.Drawing.Size(18, 20);
+			this.labelW.TabIndex = 2;
+			this.labelW.Text = "W";
+			this.labelW.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// labelY
+			// 
+			this.labelY.AutoSize = true;
+			this.labelY.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.labelY.Location = new System.Drawing.Point(68, 0);
+			this.labelY.Name = "labelY";
+			this.labelY.Size = new System.Drawing.Size(15, 19);
+			this.labelY.TabIndex = 1;
+			this.labelY.Text = "Y";
+			this.labelY.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// labelX
+			// 
+			this.labelX.AutoSize = true;
+			this.labelX.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.labelX.Location = new System.Drawing.Point(0, 0);
+			this.labelX.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
+			this.labelX.Name = "labelX";
+			this.labelX.Size = new System.Drawing.Size(18, 19);
+			this.labelX.TabIndex = 0;
+			this.labelX.Text = "X";
+			this.labelX.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// editorX
+			// 
+			this.editorX.DecimalPlaces = 2;
+			this.editorX.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.editorX.Location = new System.Drawing.Point(21, 0);
+			this.editorX.Margin = new System.Windows.Forms.Padding(0);
+			this.editorX.Maximum = new decimal(new int[] {
             100000000,
             0,
             0,
             0});
-			this.editorW.Name = "editorW";
-			this.editorW.Size = new System.Drawing.Size(43, 20);
-			this.editorW.TabIndex = 6;
-			this.editorW.ValueChanged += new System.EventHandler(this.editorW_ValueChanged);
-			// 
-			// editorH
-			// 
-			this.editorH.DecimalPlaces = 2;
-			this.editorH.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.editorH.Location = new System.Drawing.Point(88, 19);
-			this.editorH.Margin = new System.Windows.Forms.Padding(0);
-			this.editorH.Maximum = new decimal(new int[] {
+			this.editorX.Minimum = new decimal(new int[] {
             100000000,
             0,
             0,
-            0});
-			this.editorH.Name = "editorH";
-			this.editorH.Size = new System.Drawing.Size(43, 20);
-			this.editorH.TabIndex = 7;
-			this.editorH.ValueChanged += new System.EventHandler(this.editorH_ValueChanged);
+            -2147483648});
+			this.editorX.Name = "editorX";
+			this.editorX.Size = new System.Drawing.Size(44, 20);
+			this.editorX.TabIndex = 4;
+			this.editorX.ValueChanged += new System.EventHandler(this.editorX_ValueChanged);
 			// 
 			// RectPropertyEditor
 			// 
@@ -209,10 +211,10 @@
 			this.Size = new System.Drawing.Size(181, 39);
 			this.tableLayout.ResumeLayout(false);
 			this.tableLayout.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.editorX)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.editorY)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.editorW)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.editorH)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.editorW)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.editorY)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.editorX)).EndInit();
 			this.ResumeLayout(false);
 
 		}

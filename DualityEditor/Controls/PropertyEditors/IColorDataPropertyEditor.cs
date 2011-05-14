@@ -1,0 +1,142 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+using System.Reflection;
+
+using OpenTK;
+
+using Duality;
+using Duality.ColorFormat;
+
+using DualityEditor.Forms;
+
+namespace DualityEditor.Controls.PropertyEditors
+{
+	public partial class IColorDataPropertyEditor : PropertyEditor
+	{
+		private	bool	updatingFromObj	= false;
+
+		public override string PropertyName
+		{
+			get { return this.nameLabel.Text; }
+			set { this.nameLabel.Text = value; }
+		}
+		public override object DisplayedValue
+		{
+			get 
+			{ 
+				return IColorDataCreator.FromIntArgb((uint)this.colorShowBox.Color.ToArgb(), this.EditedType);
+			}
+		}
+
+		public IColorDataPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid)
+		{
+			this.InitializeComponent();
+			this.UpdateReadOnlyState();
+		}
+
+		public override void PerformGetValue()
+		{
+			base.PerformGetValue();
+			object[] values = this.Getter().ToArray();
+
+			this.updatingFromObj = true;
+			// Update modified state
+			this.UpdateModifiedState();
+			// Apply values to editors
+			if (!values.Any())
+			{
+				this.colorShowBox.Color = Color.Transparent;
+			}
+			else
+			{
+				IColorData first = (IColorData)values.NotNull().FirstOrDefault();
+				this.colorShowBox.Color = Color.FromArgb((int)first.ToIntArgb());
+
+				// No visual appearance of "multiple values" yet - need one?
+			}
+			this.updatingFromObj = false;
+		}
+		public override void PerformSetValue()
+		{
+			base.PerformSetValue();
+			if (this.ReadOnly) return;
+
+			this.SetterSingle(this.DisplayedValue);
+		}
+		public override void UpdateReadOnlyState()
+		{
+		    base.UpdateReadOnlyState();
+			this.buttonOpenEditor.Enabled = !this.ReadOnly;
+			this.colorShowBox.AllowDrop = !this.ReadOnly;
+		}
+		public override void UpdateModifiedState()
+		{
+			base.UpdateModifiedState();
+			// Set font boldness according to modified value
+			bool modified = this.ValueModified;
+			if (this.nameLabel.Font.Bold != modified)
+				this.nameLabel.Font = new Font(this.nameLabel.Font, modified ? FontStyle.Bold : FontStyle.Regular);
+		}
+
+		protected override void OnSizeChanged(EventArgs e)
+		{
+			base.OnSizeChanged(e);
+			this.nameLabel.Width = this.NameLabelWidth;
+		}
+
+		private void buttonOpenEditor_Click(object sender, EventArgs e)
+		{
+			ColorPickerDialog dialog = new ColorPickerDialog();
+			dialog.OldColor = this.colorShowBox.Color;
+			dialog.PrimaryAttribute = ColorPickerDialog.PrimaryAttrib.Hue;
+			if (dialog.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)	
+			{
+				this.colorShowBox.Color = dialog.SelectedColor;
+				this.PerformSetValue();
+				this.OnValueEdited(this.DisplayedValue);
+				this.PerformGetValue();
+			}
+		}
+		
+		private void colorShowBox_MouseDown(object sender, MouseEventArgs e)
+		{
+			DataObject dragDropData = new DataObject();
+			dragDropData.AppendIColorData(new IColorData[] { this.DisplayedValue as IColorData });
+			this.DoDragDrop(dragDropData, DragDropEffects.All | DragDropEffects.Link);
+		}
+		private void colorShowBox_DragEnter(object sender, DragEventArgs e)
+		{
+			DataObject dragDropData = e.Data as DataObject;
+			if (dragDropData != null && dragDropData.ContainsIColorData())
+			{
+				// Accept drop
+				e.Effect = e.AllowedEffect;
+			}
+		}
+		private void colorShowBox_DragDrop(object sender, DragEventArgs e)
+		{
+			DataObject dragDropData = e.Data as DataObject;
+			if (dragDropData != null && dragDropData.ContainsIColorData())
+			{
+				// Accept drop
+				e.Effect = e.AllowedEffect;
+
+				IColorData[] clr = dragDropData.GetIColorData<IColorData>();
+				Color newClr = Color.FromArgb((int)clr[0].ToIntArgb());
+				if (this.colorShowBox.Color != newClr)
+				{
+					this.colorShowBox.Color = newClr;
+					this.PerformSetValue();
+					this.OnValueEdited(this.DisplayedValue);
+					this.PerformGetValue();
+				}
+			}
+		}
+	}
+}

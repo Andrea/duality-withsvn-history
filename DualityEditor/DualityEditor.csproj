@@ -130,6 +130,12 @@
     <Compile Include="Controls\PropertyEditors\FlagPropertyEditor.Designer.cs">
       <DependentUpon>FlagPropertyEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\PropertyEditors\IColorDataPropertyEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\PropertyEditors\IColorDataPropertyEditor.Designer.cs">
+      <DependentUpon>IColorDataPropertyEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\PropertyEditors\Vector3PropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -226,6 +232,9 @@
     <EmbeddedResource Include="Controls\PropertyEditors\FlagPropertyEditor.resx">
       <DependentUpon>FlagPropertyEditor.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Controls\PropertyEditors\IColorDataPropertyEditor.resx">
+      <DependentUpon>IColorDataPropertyEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\PropertyEditors\Vector3PropertyEditor.resx">
       <DependentUpon>Vector3PropertyEditor.cs</DependentUpon>
     </EmbeddedResource>
@@ -302,6 +311,7 @@
     <Content Include="OpenTK.GLControl.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\icon_color.png" />
     <None Include="Resources\add.png" />
     <None Include="Resources\cross.png" />
     <None Include="Resources\CursorArrowActionScale.png" />
