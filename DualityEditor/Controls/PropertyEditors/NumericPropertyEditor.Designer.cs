@@ -37,12 +37,21 @@
 			// 
 			this.valueEditor.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.valueEditor.Location = new System.Drawing.Point(50, 0);
-			this.valueEditor.Maximum = decimal.MaxValue;
-			this.valueEditor.Minimum = decimal.MinValue;
+			this.valueEditor.Maximum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            0});
+			this.valueEditor.Minimum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            -2147483648});
 			this.valueEditor.Name = "valueEditor";
 			this.valueEditor.Size = new System.Drawing.Size(133, 20);
 			this.valueEditor.TabIndex = 0;
 			this.valueEditor.ValueChanged += new System.EventHandler(this.valueEditor_ValueChanged);
+			this.valueEditor.KeyDown += new System.Windows.Forms.KeyEventHandler(this.valueEditor_KeyDown);
 			// 
 			// nameLabel
 			// 
@@ -55,12 +64,12 @@
 			this.nameLabel.TabIndex = 1;
 			this.nameLabel.Text = "label1";
 			// 
-			// IntPropertyEditor
+			// NumericPropertyEditor
 			// 
 			this.Controls.Add(this.valueEditor);
 			this.Controls.Add(this.nameLabel);
 			this.Margin = new System.Windows.Forms.Padding(0);
-			this.Name = "IntPropertyEditor";
+			this.Name = "NumericPropertyEditor";
 			this.Size = new System.Drawing.Size(183, 20);
 			((System.ComponentModel.ISupportInitialize)(this.valueEditor)).EndInit();
 			this.ResumeLayout(false);

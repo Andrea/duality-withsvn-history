@@ -43,6 +43,7 @@ namespace DualityEditor.Controls
 		private	bool			contentInit			= false;
 
 		public event EventHandler<PropertyGridValueEditedEventArgs> ValueEdited = null;
+		public event EventHandler EditingFinished = null;
 		
 		public Type EditedType
 		{
@@ -156,6 +157,11 @@ namespace DualityEditor.Controls
 		protected virtual bool IsChildValueModified(PropertyEditor childEditor) { return false; }
 
 		protected virtual void OnEditedTypeChanged() {}
+		protected override void OnLeave(EventArgs e)
+		{
+			base.OnLeave(e);
+			this.OnEditingFinished();
+		}
 		protected void OnValueEdited(object sender, PropertyGridValueEditedEventArgs args)
 		{
 			if (this.ValueEdited != null)
@@ -164,6 +170,11 @@ namespace DualityEditor.Controls
 		protected void OnValueEdited(object value)
 		{
 			this.OnValueEdited(this, new PropertyGridValueEditedEventArgs(this, value));
+		}
+		protected void OnEditingFinished()
+		{
+			if (this.EditingFinished != null)
+				this.EditingFinished(this, EventArgs.Empty);
 		}
 	}
 }

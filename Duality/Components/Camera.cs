@@ -813,10 +813,10 @@ namespace Duality.Components
 
 			if (this.picking != 0)
 			{
-				material = new BatchInfo(
-					DrawTechnique.Picking,
-					new ColorRGBA((this.picking << 8) | 0xFF),
-					material.Textures);
+				if (material.Textures == null)
+					material = new BatchInfo(DrawTechnique.Picking, new ColorRGBA((this.picking << 8) | 0xFF), Texture.White);
+				else
+					material = new BatchInfo(DrawTechnique.Picking, new ColorRGBA((this.picking << 8) | 0xFF), material.Textures);
 			}
 			
 			if (material.Technique.Res.NeedsVertexPreprocess)

@@ -136,6 +136,9 @@
     <Compile Include="Controls\PropertyEditors\IColorDataPropertyEditor.Designer.cs">
       <DependentUpon>IColorDataPropertyEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\PropertyEditors\IDictionaryPropertyEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Controls\PropertyEditors\Vector3PropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>

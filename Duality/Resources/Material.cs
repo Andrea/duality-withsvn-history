@@ -217,7 +217,7 @@ namespace Duality.Resources
 
 			int techHash = this.technique.Res.GetHashCode();
 			int texHash = 0;
-			if (this.textures != null) foreach (var tex in this.textures.Values) texHash ^= tex.Res.GetHashCode();
+			if (this.textures != null) foreach (var tex in this.textures.Values) texHash ^= tex.IsAvailable ? tex.Res.GetHashCode() : 0;
 
 			return							// -- Priority ascending --
 				(techHash & 2047) << 0 |	// 11 Bit Technique

@@ -114,7 +114,19 @@ namespace Duality
 
 		public static object CreateInstanceOf(Type instanceType)
 		{
-			return Activator.CreateInstance(instanceType, true);
+			try
+			{
+				if (instanceType == typeof(string))
+					return "";
+				else if (typeof(Array).IsAssignableFrom(instanceType))
+					return Array.CreateInstance(instanceType.GetElementType(), 0);
+				else
+					return Activator.CreateInstance(instanceType, true);
+			}
+			catch (Exception)
+			{
+				return null;
+			}
 		}
 
 		public static bool MemberInfoEquals(MemberInfo lhs, MemberInfo rhs)

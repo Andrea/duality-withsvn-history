@@ -23,9 +23,11 @@ namespace Duality.Resources
 		public const string VirtualContentPath = ContentProvider.VirtualContentPath + "Pixmap:";
 		public const string ContentPath_DualityLogo256	= VirtualContentPath + "DualityLogo256";
 		public const string ContentPath_DualityLogoB256	= VirtualContentPath + "DualityLogoB256";
+		public const string ContentPath_White			= VirtualContentPath + "White";
 
 		public static ContentRef<Pixmap> DualityLogo256		{ get; private set; }
 		public static ContentRef<Pixmap> DualityLogoB256	{ get; private set; }
+		public static ContentRef<Pixmap> White				{ get; private set; }
 
 		internal static void InitDefaultContent()
 		{
@@ -33,14 +35,18 @@ namespace Duality.Resources
 			Pixmap tmp;
 
 			bm = new Bitmap(ReflectionHelper.GetEmbeddedResourceStream(System.Reflection.Assembly.GetExecutingAssembly(), @"Resources\Default\DualityLogo256.png"));
-			tmp = new Pixmap(bm.ColorTransparentPixels()); tmp.path = ContentPath_DualityLogo256;
+			tmp = new Pixmap(bm.ColorTransparentPixels(ColorRGBA.TransparentBlack)); tmp.path = ContentPath_DualityLogo256;
 			ContentProvider.RegisterContent(tmp.Path, tmp);
 			bm = new Bitmap(ReflectionHelper.GetEmbeddedResourceStream(System.Reflection.Assembly.GetExecutingAssembly(), @"Resources\Default\DualityLogoB256.png"));
-			tmp = new Pixmap(bm.ColorTransparentPixels()); tmp.path = ContentPath_DualityLogoB256;
+			tmp = new Pixmap(bm.ColorTransparentPixels(ColorRGBA.TransparentBlack)); tmp.path = ContentPath_DualityLogoB256;
+			ContentProvider.RegisterContent(tmp.Path, tmp);
+			bm = new Bitmap(1, 1); bm.SetPixel(0, 0, Color.FromArgb(255, 255, 255, 255));
+			tmp = new Pixmap(bm); tmp.path = ContentPath_White;
 			ContentProvider.RegisterContent(tmp.Path, tmp);
 
 			DualityLogo256	= ContentProvider.RequestContent<Pixmap>(ContentPath_DualityLogo256);
 			DualityLogoB256	= ContentProvider.RequestContent<Pixmap>(ContentPath_DualityLogoB256);
+			White			= ContentProvider.RequestContent<Pixmap>(ContentPath_White);
 		}
 
 

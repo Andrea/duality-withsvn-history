@@ -86,5 +86,9 @@ namespace DualityEditor.Controls.PropertyEditors
 			this.OnValueEdited(this.DisplayedValue);
 			this.PerformGetValue();
 		}
+		private void valueEditor_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.Return) this.OnEditingFinished();
+		}
 	}
 }

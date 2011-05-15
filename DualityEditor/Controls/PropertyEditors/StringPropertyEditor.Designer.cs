@@ -51,6 +51,7 @@
 			this.valueEditor.Size = new System.Drawing.Size(133, 20);
 			this.valueEditor.TabIndex = 2;
 			this.valueEditor.TextChanged += new System.EventHandler(this.valueEditor_TextChanged);
+			this.valueEditor.KeyDown += new System.Windows.Forms.KeyEventHandler(this.valueEditor_KeyDown);
 			// 
 			// StringPropertyEditor
 			// 

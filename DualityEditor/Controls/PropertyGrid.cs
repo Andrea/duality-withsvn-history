@@ -81,6 +81,9 @@ namespace DualityEditor.Controls
 				// IList collection
 				else if (typeof(System.Collections.IList).IsAssignableFrom(baseType))
 					e = new IListPropertyEditor(parentEditor, parentGrid);
+				// IDictionary collection
+				else if (typeof(System.Collections.IDictionary).IsAssignableFrom(baseType))
+					e = new IDictionaryPropertyEditor(parentEditor, parentGrid);
 				// Unknown data type
 				else
 				{
@@ -245,6 +248,11 @@ namespace DualityEditor.Controls
 		protected override void OnEnter(EventArgs e)
 		{
 			base.OnEnter(e);
+			if (this.updateScheduled) this.UpdateFromObjects();
+		}
+		protected override void OnMouseEnter(EventArgs e)
+		{
+			base.OnMouseEnter(e);
 			if (this.updateScheduled) this.UpdateFromObjects();
 		}
 		protected override Point ScrollToControl(Control activeControl)

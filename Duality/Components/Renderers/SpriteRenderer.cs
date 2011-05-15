@@ -72,12 +72,12 @@ namespace Duality.Components.Renderers
 			Vector2 uvRatio = Vector2.One;
 			if (this.customMat != null)
 			{
-				if (this.customMat.Textures != null && this.customMat.Textures.Count > 0)
+				if (this.customMat.Textures != null && this.customMat.Textures.Count > 0 && this.customMat.Textures.Values.First().IsAvailable)
 					uvRatio = this.customMat.Textures.Values.First().Res.UVRatio;
 			}
 			else if (this.sharedMat.IsAvailable)
 			{
-				if (this.sharedMat.Res.Textures != null && this.sharedMat.Res.Textures.Count > 0)
+				if (this.sharedMat.Res.Textures != null && this.sharedMat.Res.Textures.Count > 0 && this.sharedMat.Res.Textures.Values.First().IsAvailable)
 					uvRatio = this.sharedMat.Res.Textures.Values.First().Res.UVRatio;
 			}
 

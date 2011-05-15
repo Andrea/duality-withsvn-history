@@ -26,9 +26,11 @@ namespace Duality.Resources
 		public const string VirtualContentPath = ContentProvider.VirtualContentPath + "Texture:";
 		public const string ContentPath_DualityLogo256	= VirtualContentPath + "DualityLogo256";
 		public const string ContentPath_DualityLogoB256	= VirtualContentPath + "DualityLogoB256";
+		public const string ContentPath_White			= VirtualContentPath + "White";
 
 		public static ContentRef<Texture> DualityLogo256	{ get; private set; }
 		public static ContentRef<Texture> DualityLogoB256	{ get; private set; }
+		public static ContentRef<Texture> White				{ get; private set; }
 
 		internal static void InitDefaultContent()
 		{
@@ -38,9 +40,12 @@ namespace Duality.Resources
 			ContentProvider.RegisterContent(tmp.Path, tmp);
 			tmp = new Texture(Pixmap.DualityLogoB256); tmp.path = ContentPath_DualityLogoB256;
 			ContentProvider.RegisterContent(tmp.Path, tmp);
+			tmp = new Texture(Pixmap.White); tmp.path = ContentPath_White;
+			ContentProvider.RegisterContent(tmp.Path, tmp);
 
 			DualityLogo256	= ContentProvider.RequestContent<Texture>(ContentPath_DualityLogo256);
 			DualityLogoB256	= ContentProvider.RequestContent<Texture>(ContentPath_DualityLogoB256);
+			White			= ContentProvider.RequestContent<Texture>(ContentPath_White);
 		}
 
 

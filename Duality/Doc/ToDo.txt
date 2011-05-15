@@ -1,13 +1,11 @@
 ﻿
 -->	Implement specialized Component PropertyEditors
-	-->	SpriteRenderer
-		-->	BatchInfo / Material editor
-			-->	Dictionary<T,U> editor 
-				-->	Maybe some KeyValuePair-like vertical subeditor duo and ICollection layout?
-				-->	Not quite. Freely editing existing keys only leads to problems
-				-->	Don't allow it. Allow to create and delete KeyValuePairs, and to edit the values, but not the keys.
-				-->	Use ICollection layout with ToString()'d key as PropertyName for the listed PropertyEditors
-				-->	Creating a new pair: Use usually hidden dumy PropertyEditor at the end of the list
+	-->	BatchInfo / Material editor
+
+-->	Multiple PropertyGrids?
+	-->	ObjectInspector: GameObjects and Components
+	-->	ResourceInspector: Resources and "Other"
+	-->	Better workflow? Try it.
 
 -->	Approach next step: Run Game in Launcher
 	-->	Test Camera setup & object velocity stuff
