@@ -64,7 +64,7 @@ namespace Duality
 			this.CopyTo(r);
 			return r;
 		}
-		protected virtual void CopyTo(Resource r)
+		public virtual void CopyTo(Resource r)
 		{
 			r.path	= this.path;
 		}

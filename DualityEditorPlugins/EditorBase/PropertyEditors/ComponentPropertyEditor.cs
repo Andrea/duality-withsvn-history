@@ -19,6 +19,8 @@ namespace EditorBase.PropertyEditors
 		{
 			this.Header.ResetVisible = false;
 			this.Header.ActiveVisible = true;
+			this.Header.Text = null;
+			this.Header.ValueText = "Component";
 		}
 		
 		public void PerformSetActive(bool active)
@@ -50,15 +52,11 @@ namespace EditorBase.PropertyEditors
 		{
 			base.OnUpdateFromObjects(values);
 
-			this.Header.ValueText = null;
+			this.Header.Text = null;
 			if (!values.Any() || values.All(o => o == null))
-			{
 				this.ActiveState = false;
-			}
 			else
-			{
 				this.ActiveState = (values.First(o => o is Component) as Component).ActiveSingle;
-			}
 		}
 		protected override void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)
 		{
@@ -77,7 +75,7 @@ namespace EditorBase.PropertyEditors
 			System.Drawing.Bitmap iconBitmap = CorePluginHelper.RequestTypeImage(this.EditedType, CorePluginHelper.ImageContext_Icon) as System.Drawing.Bitmap;
 			Duality.ColorFormat.ColorHSVA avgClr = iconBitmap != null ? iconBitmap.GetAverageColor().ToHsva() : Duality.ColorFormat.ColorHSVA.TransparentBlack;
 
-			this.Header.Text = ReflectionHelper.GetTypeString(this.EditedType, ReflectionHelper.TypeStringAttrib.CSCodeIdentShort);
+			this.Header.ValueText = ReflectionHelper.GetTypeString(this.EditedType, ReflectionHelper.TypeStringAttrib.CSCodeIdentShort);
 			this.Header.Icon = iconBitmap;
 			this.Header.ForeColor = ExtMethodsSystemDrawingColor.ColorFromHSV(
 				avgClr.h, 

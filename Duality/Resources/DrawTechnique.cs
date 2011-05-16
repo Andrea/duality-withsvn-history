@@ -260,7 +260,7 @@ namespace Duality.Resources
 			return this.shader;
 		}
 
-		protected override void CopyTo(Resource r)
+		public override void CopyTo(Resource r)
 		{
 			base.CopyTo(r);
 			DrawTechnique c = r as DrawTechnique;

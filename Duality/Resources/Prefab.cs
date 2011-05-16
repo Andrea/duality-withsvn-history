@@ -118,7 +118,7 @@ namespace Duality.Resources
 			return child.GetComponent(cmpType) != null;
 		}
 
-		protected override void CopyTo(Resource r)
+		public override void CopyTo(Resource r)
 		{
 			base.CopyTo(r);
 			Prefab c = r as Prefab;

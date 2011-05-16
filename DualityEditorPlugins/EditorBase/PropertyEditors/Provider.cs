@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 using Duality;
+using Duality.Resources;
 using Duality.Components;
 using Duality.Components.Renderers;
 using DualityEditor.Controls;
@@ -21,6 +22,8 @@ namespace EditorBase.PropertyEditors
 			else if (baseType == typeof(SpriteRenderer))
 				return PropertyGrid.ProvidedEditorType.Specialized;
 			else if (baseType == typeof(Camera))
+				return PropertyGrid.ProvidedEditorType.Specialized;
+			else if (baseType == typeof(BatchInfo) || baseType == typeof(Material))
 				return PropertyGrid.ProvidedEditorType.Specialized;
 			else if (typeof(Component).IsAssignableFrom(baseType))
 				return PropertyGrid.ProvidedEditorType.General;
@@ -40,6 +43,8 @@ namespace EditorBase.PropertyEditors
 				e = new SpriteRendererPropertyEditor(parentEditor, parentGrid);
 			else if (baseType == typeof(Camera))
 				e = new CameraPropertyEditor(parentEditor, parentGrid);
+			else if (baseType == typeof(BatchInfo) || baseType == typeof(Material))
+				e = new BatchInfoPropertyEditor(parentEditor, parentGrid);
 			else if (typeof(Component).IsAssignableFrom(baseType))
 				e = new ComponentPropertyEditor(parentEditor, parentGrid);
 			else if (typeof(IContentRef).IsAssignableFrom(baseType))

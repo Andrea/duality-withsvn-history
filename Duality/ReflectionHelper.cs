@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 using System.IO;
 using System.Drawing;
 
+using Duality.Resources;
 using Duality.Components;
 using Duality.Components.Renderers;
 
@@ -41,6 +42,16 @@ namespace Duality
 		public static readonly PropertyInfo	Property_Camera_TargetSize;
 		public static readonly PropertyInfo	Property_Camera_VisibilityMask;
 		
+		public static readonly PropertyInfo	Property_BatchInfo_Technique;
+		public static readonly PropertyInfo	Property_BatchInfo_MainColor;
+		public static readonly PropertyInfo	Property_BatchInfo_Textures;
+		public static readonly PropertyInfo	Property_BatchInfo_Uniforms;
+		
+		public static readonly PropertyInfo	Property_Material_Technique;
+		public static readonly PropertyInfo	Property_Material_MainColor;
+		public static readonly PropertyInfo	Property_Material_Textures;
+		public static readonly PropertyInfo	Property_Material_Uniforms;
+
 
 		public static readonly FieldInfo Field_GameObject_Name;
 		public static readonly FieldInfo Field_GameObject_PrefabLink;
@@ -85,6 +96,18 @@ namespace Duality
 			Property_Camera_DrawDevice		= camera.GetProperty("DrawDevice");
 			Property_Camera_TargetSize		= camera.GetProperty("TargetSize");
 			Property_Camera_VisibilityMask	= camera.GetProperty("VisibilityMask");
+			
+			Type batchInfo = typeof(BatchInfo);
+			Property_BatchInfo_Technique	= batchInfo.GetProperty("Technique");
+			Property_BatchInfo_MainColor	= batchInfo.GetProperty("MainColor");
+			Property_BatchInfo_Textures		= batchInfo.GetProperty("Textures");
+			Property_BatchInfo_Uniforms		= batchInfo.GetProperty("Uniforms");
+			
+			Type material = typeof(Material);
+			Property_Material_Technique	= material.GetProperty("Technique");
+			Property_Material_MainColor	= material.GetProperty("MainColor");
+			Property_Material_Textures	= material.GetProperty("Textures");
+			Property_Material_Uniforms	= material.GetProperty("Uniforms");
 
 			// Retrieve FieldInfo data
 			BindingFlags fieldFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;

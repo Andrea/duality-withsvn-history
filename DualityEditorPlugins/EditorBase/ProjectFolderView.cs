@@ -826,7 +826,7 @@ namespace EditorBase
 
 						// Inject GameObject to Prefab
 						prefab.Inject(draggedObj);
-						prefab.Save();
+						EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(prefab), new System.Reflection.PropertyInfo[0]);
 
 						// Establish PrefabLink & clear previously existing changes
 						if (draggedObj.PrefabLink != null) draggedObj.PrefabLink.ClearChanges();

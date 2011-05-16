@@ -54,14 +54,7 @@ namespace DualityEditor.Controls
 						select p;
 					foreach (PropertyInfo prop in propQuery)
 					{
-						PropertyEditor e = this.MemberEditor(prop);
-						if (e == null) e = this.ParentGrid.PropertyEditorProvider.CreateEditor(prop.PropertyType, this, this.ParentGrid);
-						e.Getter = this.CreatePropertyValueGetter(prop);
-						e.Setter = prop.CanWrite ? this.CreatePropertyValueSetter(prop) : null;
-						e.PropertyName = prop.Name;
-						if (e is GroupedPropertyEditor) (e as GroupedPropertyEditor).Indent = 20;
-						this.memberMap[e] = prop;
-						this.AddPropertyEditor(e);
+						this.AddEditorForProperty(prop);
 					}
 				}
 				if ((this.flags & MemberFlags.Fields) != MemberFlags.None)
@@ -74,14 +67,7 @@ namespace DualityEditor.Controls
 						select f;
 					foreach (FieldInfo field in fieldQuery)
 					{
-						PropertyEditor e = this.MemberEditor(field);
-						if (e == null) e = this.ParentGrid.PropertyEditorProvider.CreateEditor(field.FieldType, this, this.ParentGrid);
-						e.Getter = this.CreateFieldValueGetter(field);
-						e.Setter = this.CreateFieldValueSetter(field);
-						e.PropertyName = field.Name;
-						if (e is GroupedPropertyEditor) (e as GroupedPropertyEditor).Indent = 20;
-						this.memberMap[e] = field;
-						this.AddPropertyEditor(e);
+						this.AddEditorForField(field);
 					}
 				}
 				this.EndUpdate();
@@ -101,6 +87,29 @@ namespace DualityEditor.Controls
 		protected virtual bool MemberPredicate(MemberInfo info)
 		{
 			return true;
+		}
+
+		public void AddEditorForProperty(PropertyInfo prop)
+		{
+			PropertyEditor e = this.MemberEditor(prop);
+			if (e == null) e = this.ParentGrid.PropertyEditorProvider.CreateEditor(prop.PropertyType, this, this.ParentGrid);
+			e.Getter = this.CreatePropertyValueGetter(prop);
+			e.Setter = prop.CanWrite ? this.CreatePropertyValueSetter(prop) : null;
+			e.PropertyName = prop.Name;
+			if (e is GroupedPropertyEditor) (e as GroupedPropertyEditor).Indent = 20;
+			this.memberMap[e] = prop;
+			this.AddPropertyEditor(e);
+		}
+		public void AddEditorForField(FieldInfo field)
+		{
+			PropertyEditor e = this.MemberEditor(field);
+			if (e == null) e = this.ParentGrid.PropertyEditorProvider.CreateEditor(field.FieldType, this, this.ParentGrid);
+			e.Getter = this.CreateFieldValueGetter(field);
+			e.Setter = this.CreateFieldValueSetter(field);
+			e.PropertyName = field.Name;
+			if (e is GroupedPropertyEditor) (e as GroupedPropertyEditor).Indent = 20;
+			this.memberMap[e] = field;
+			this.AddPropertyEditor(e);
 		}
 
 		public override void PerformGetValue()

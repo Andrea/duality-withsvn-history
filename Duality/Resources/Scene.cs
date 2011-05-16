@@ -176,7 +176,7 @@ namespace Duality.Resources
 			OnRegisteredObjectComponentRemoved(e);
 		}
 
-		protected override void CopyTo(Resource r)
+		public override void CopyTo(Resource r)
 		{
 			base.CopyTo(r);
 			Scene s = r as Scene;

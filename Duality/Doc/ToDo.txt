@@ -1,7 +1,4 @@
 ﻿
--->	Implement specialized Component PropertyEditors
-	-->	BatchInfo / Material editor
-
 -->	Multiple PropertyGrids?
 	-->	ObjectInspector: GameObjects and Components
 	-->	ResourceInspector: Resources and "Other"

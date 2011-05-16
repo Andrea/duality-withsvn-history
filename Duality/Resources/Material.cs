@@ -93,7 +93,7 @@ namespace Duality.Resources
 			this.info = new BatchInfo(technique, mainColor, textures, uniforms);
 		}
 
-		protected override void CopyTo(Resource r)
+		public override void CopyTo(Resource r)
 		{
 			base.CopyTo(r);
 			Material c = r as Material;
@@ -134,10 +134,7 @@ namespace Duality.Resources
 		public BatchInfo(Material source) : this(source.InfoDirect) {}
 		public BatchInfo(BatchInfo source)
 		{
-			this.technique = source.technique;
-			this.mainColor = source.mainColor;
-			this.textures = source.textures == null ? null : new Dictionary<string,ContentRef<Texture>>(source.textures);
-			this.uniforms = source.uniforms == null ? null : new Dictionary<string,float[]>(source.uniforms);
+			source.CopyTo(this);
 		}
 		public BatchInfo(ContentRef<DrawTechnique> technique, ColorFormat.ColorRGBA mainColor, ContentRef<Texture> mainTex) : this(technique, mainColor, null, null) 
 		{
@@ -152,6 +149,14 @@ namespace Duality.Resources
 			this.uniforms = uniforms;
 		}
 		
+		public void CopyTo(BatchInfo info)
+		{
+			info.technique = this.technique;
+			info.mainColor = this.mainColor;
+			info.textures = this.textures == null ? null : new Dictionary<string,ContentRef<Texture>>(this.textures);
+			info.uniforms = this.uniforms == null ? null : new Dictionary<string,float[]>(this.uniforms);
+		}
+
 		public void SetupForRendering(BatchInfo lastInfo)
 		{
 			if (object.ReferenceEquals(this, lastInfo)) return;
@@ -215,7 +220,7 @@ namespace Duality.Resources
 			// priorized BatchInfo sort indices. The lower 23 bits of this hash
 			// code are used.
 
-			int techHash = this.technique.Res.GetHashCode();
+			int techHash = this.technique.IsAvailable ? this.technique.Res.GetHashCode() : 0;
 			int texHash = 0;
 			if (this.textures != null) foreach (var tex in this.textures.Values) texHash ^= tex.IsAvailable ? tex.Res.GetHashCode() : 0;
 

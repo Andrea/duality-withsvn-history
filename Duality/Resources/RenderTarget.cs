@@ -330,7 +330,7 @@ namespace Duality.Resources
 				}
 			}
 		}
-		protected override void CopyTo(Resource r)
+		public override void CopyTo(Resource r)
 		{
 			base.CopyTo(r);
 			RenderTarget c = r as RenderTarget;

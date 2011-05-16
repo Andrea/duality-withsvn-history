@@ -88,6 +88,9 @@
     <Compile Include="PropertyEditors\CameraPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="PropertyEditors\BatchInfoPropertyEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="PropertyEditors\SpriteRendererPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>

@@ -81,6 +81,29 @@ namespace Duality.Resources
 					break;
 			}
 		}
+		public float[] InitDataByType()
+		{
+			switch (this.type)
+			{
+				case ShaderVarType.Int:
+					return new float[this.arraySize];
+				case ShaderVarType.Float:
+					return new float[this.arraySize];
+				case ShaderVarType.Vec2:
+					return new float[2];
+				case ShaderVarType.Vec3:
+					return new float[3];
+				case ShaderVarType.Vec4:
+					return new float[4];
+				case ShaderVarType.Mat2:
+					return new float[4];
+				case ShaderVarType.Mat3:
+					return new float[9];
+				case ShaderVarType.Mat4:
+					return new float[16];
+			}
+			return null;
+		}
 	}
 
 	[Serializable]
@@ -238,7 +261,7 @@ namespace Duality.Resources
 			}
 		}
 
-		protected override void CopyTo(Resource r)
+		public override void CopyTo(Resource r)
 		{
 			base.CopyTo(r);
 			AbstractShader c = r as AbstractShader;

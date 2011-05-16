@@ -586,6 +586,13 @@ namespace DualityEditor.Forms
 				}
 			}
 
+			// If a Resource's Properties are modified, save the Resource
+			if (args.Objects.ResourceCount > 0)
+			{
+				// This is probably not the best idea for generalized behaviour, but sufficient for now
+				foreach (Resource res in args.Objects.Resources) res.Save();
+			}
+
 			// Fire the actual event
 			if (this.ObjectPropertyChanged != null)
 				this.ObjectPropertyChanged(sender, args);

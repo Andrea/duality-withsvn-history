@@ -94,17 +94,14 @@ namespace DualityEditor.Controls
 						orderby (int)p.IsResponsibleFor(baseType) descending
 						select p;
 					IPropertyEditorProvider subProvider = availSubProviders.FirstOrDefault();
-					if (subProvider != null) return subProvider.CreateEditor(baseType, parentEditor, parentGrid);
+					if (subProvider != null)
+					{
+						e = subProvider.CreateEditor(baseType, parentEditor, parentGrid);
+						return e;
+					}
 
 					// If not, default to reflection-driven MemberwisePropertyEditor
 					e = new MemberwisePropertyEditor(parentEditor, parentGrid, MemberwisePropertyEditor.MemberFlags.Default);
-					if (parentEditor == null)
-					{
-						MemberwisePropertyEditor me = e as MemberwisePropertyEditor;
-						me.Header.ResetVisible = false;
-						me.Header.ExpandVisible = false;
-						me.Header.Text = null;
-					}
 				}
 
 				e.EditedType = baseType;
@@ -205,6 +202,15 @@ namespace DualityEditor.Controls
 			this.propertyEditor.Dock = DockStyle.Top;
 			this.Controls.Add(this.propertyEditor);
 			
+			// If its a grouped main editor, disable grouping features
+			if (this.propertyEditor is GroupedPropertyEditor)
+			{
+				GroupedPropertyEditor ge = this.propertyEditor as GroupedPropertyEditor;
+				ge.Header.ResetVisible = false;
+				ge.Header.ExpandVisible = false;
+				ge.Header.Text = null;
+			}
+
 			this.propertyEditor.Getter = this.ValueGetter;
 			this.propertyEditor.Setter = this.ValueSetter;
 			this.propertyEditor.Expanded = true;
