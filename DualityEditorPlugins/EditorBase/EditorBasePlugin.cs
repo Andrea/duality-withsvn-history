@@ -35,12 +35,14 @@ namespace EditorBase
 		private	ProjectFolderView	projectView		= null;
 		private	SceneView			sceneView		= null;
 		private	ObjectInspector		objView			= null;
+		private	ResourceInspector	resView			= null;
 		private	List<CamView>		camViews		= new List<CamView>();
 		private	bool				isLoading		= false;
 
 		private	ToolStripMenuItem	menuItemProjectView	= null;
 		private	ToolStripMenuItem	menuItemSceneView	= null;
 		private	ToolStripMenuItem	menuItemObjView		= null;
+		private	ToolStripMenuItem	menuItemResView		= null;
 		private	ToolStripMenuItem	menuItemCamView		= null;
 
 
@@ -66,6 +68,8 @@ namespace EditorBase
 				result = this.RequestSceneView();
 			else if (dockContentType == typeof(ObjectInspector))
 				result = this.RequestObjView();
+			else if (dockContentType == typeof(ResourceInspector))
+				result = this.RequestResView();
 			else
 				result = base.DeserializeDockContent(dockContentType);
 			this.isLoading = false;
@@ -120,7 +124,7 @@ namespace EditorBase
 			CorePluginHelper.RegisterTypeImage(typeof(Transform), PluginRes.EditorBaseRes.IconCmpTransform, CorePluginHelper.ImageContext_Icon);
 			CorePluginHelper.RegisterTypeImage(typeof(Camera), PluginRes.EditorBaseRes.IconCmpCamera, CorePluginHelper.ImageContext_Icon);
 
-			CorePluginHelper.RegisterPropertyEditorProvider(new PropertyEditors.GameObjectPropertyEditorProvider());
+			CorePluginHelper.RegisterPropertyEditorProvider(new PropertyEditors.PropertyEditorProvider());
 		}
 		public override void InitPlugin(MainForm main)
 		{
@@ -130,6 +134,7 @@ namespace EditorBase
 			this.menuItemProjectView = main.RequestMenu(Path.Combine(GeneralRes.MenuName_View, EditorBaseRes.MenuItemName_ProjectView));
 			this.menuItemSceneView = main.RequestMenu(Path.Combine(GeneralRes.MenuName_View, EditorBaseRes.MenuItemName_SceneView));
 			this.menuItemObjView = main.RequestMenu(Path.Combine(GeneralRes.MenuName_View, EditorBaseRes.MenuItemName_ObjView));
+			this.menuItemResView = main.RequestMenu(Path.Combine(GeneralRes.MenuName_View, EditorBaseRes.MenuItemName_ResView));
 			this.menuItemCamView = main.RequestMenu(Path.Combine(GeneralRes.MenuName_View, EditorBaseRes.MenuItemName_CamView));
 
 			// Configure menus
@@ -139,6 +144,8 @@ namespace EditorBase
 			this.menuItemSceneView.Click += new EventHandler(this.menuItemSceneView_Click);
 			this.menuItemObjView.Image = PluginRes.EditorBaseRes.IconObjView.ToBitmap();
 			this.menuItemObjView.Click += new EventHandler(this.menuItemObjView_Click);
+			this.menuItemResView.Image = PluginRes.EditorBaseRes.IconResView.ToBitmap();
+			this.menuItemResView.Click += new EventHandler(this.menuItemResView_Click);
 			this.menuItemCamView.Image = PluginRes.EditorBaseRes.IconEye.ToBitmap();
 			this.menuItemCamView.Click += new EventHandler(this.menuItemCamView_Click);
 		}
@@ -203,6 +210,26 @@ namespace EditorBase
 
 			return this.objView;
 		}
+		public ResourceInspector RequestResView()
+		{
+			if (this.resView == null || this.resView.IsDisposed)
+			{
+				this.resView = new ResourceInspector();
+				this.resView.FormClosed += delegate(object sender, FormClosedEventArgs e) { this.objView = null; };
+			}
+
+			if (!this.isLoading)
+			{
+				this.resView.Show(this.EditorForm.MainDockPanel);
+				if (this.resView.Pane != null)
+				{
+					this.resView.Pane.Activate();
+					this.resView.Focus();
+				}
+			}
+
+			return this.resView;
+		}
 		public CamView RequestCamView()
 		{
 			CamView cam = new CamView(this.camViews.Count);
@@ -232,6 +259,10 @@ namespace EditorBase
 		private void menuItemObjView_Click(object sender, EventArgs e)
 		{
 			this.RequestObjView();
+		}
+		private void menuItemResView_Click(object sender, EventArgs e)
+		{
+			this.RequestResView();
 		}
 		private void menuItemCamView_Click(object sender, EventArgs e)
 		{

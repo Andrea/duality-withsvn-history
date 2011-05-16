@@ -23,12 +23,12 @@ using DualityEditor.Controls;
 
 namespace EditorBase
 {
-	public partial class ObjectInspector : DockContent
+	public partial class ResourceInspector : DockContent
 	{
 		private	ObjectSelection.Category	selSchedMouseCat	= ObjectSelection.Category.None;
 		private	ObjectSelection				selSchedMouse		= null;
 
-		public ObjectInspector()
+		public ResourceInspector()
 		{
 			this.InitializeComponent();
 		}
@@ -54,10 +54,10 @@ namespace EditorBase
 			this.selSchedMouse = null;
 			this.selSchedMouseCat = ObjectSelection.Category.None;
 
-			if ((lastSelChange & ObjectSelection.Category.GameObject) != ObjectSelection.Category.None)
-				this.propertyGrid.SelectObjects(sel.GameObjects, scheduleMs: 300);
-			else if ((lastSelChange & ObjectSelection.Category.Component) != ObjectSelection.Category.None)
-				this.propertyGrid.SelectObjects(sel.Components.GameObject(), scheduleMs: 300);
+			if ((lastSelChange & ObjectSelection.Category.Resource) != ObjectSelection.Category.None)
+				this.propertyGrid.SelectObjects(sel.Resources, sel.Resources.Any(r => r.Path.Contains(':')), 300);
+			else if ((lastSelChange & ObjectSelection.Category.Other) != ObjectSelection.Category.None)
+				this.propertyGrid.SelectObjects(sel.OtherObjects, scheduleMs: 300);
 		}
 
 		private void EditorForm_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -79,8 +79,7 @@ namespace EditorBase
 			if (!e.PrefabApplied && (sender is PropertyEditor) && (sender as PropertyEditor).ParentGrid == this.propertyGrid) return;
 
 			// Update values if anything changed that relates to the grids current selection
-			if (e.Objects.Components.GameObject().Any(o => this.propertyGrid.Selection.Contains(o)) ||
-				e.Objects.GameObjects.Any(o => this.propertyGrid.Selection.Contains(o)))
+			if (e.Objects.Objects.Any(o => this.propertyGrid.Selection.Contains(o)))
 				this.propertyGrid.UpdateFromObjects(100);
 		}
 

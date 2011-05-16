@@ -61,6 +61,12 @@
       <DependentUpon>CamView.cs</DependentUpon>
     </Compile>
     <Compile Include="EditorBasePlugin.cs" />
+    <Compile Include="ResourceInspector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ResourceInspector.Designer.cs">
+      <DependentUpon>ResourceInspector.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectInspector.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -141,6 +147,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="CamView.resx">
       <DependentUpon>CamView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ResourceInspector.de.resx">
+      <DependentUpon>ResourceInspector.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ResourceInspector.resx">
+      <DependentUpon>ResourceInspector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ObjectInspector.de.resx">
       <DependentUpon>ObjectInspector.cs</DependentUpon>

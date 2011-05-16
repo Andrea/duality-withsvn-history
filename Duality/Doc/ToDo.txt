@@ -1,9 +1,4 @@
 ﻿
--->	Multiple PropertyGrids?
-	-->	ObjectInspector: GameObjects and Components
-	-->	ResourceInspector: Resources and "Other"
-	-->	Better workflow? Try it.
-
 -->	Approach next step: Run Game in Launcher
 	-->	Test Camera setup & object velocity stuff
 

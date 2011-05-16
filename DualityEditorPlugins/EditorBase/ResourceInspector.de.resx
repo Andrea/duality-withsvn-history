@@ -117,70 +117,32 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="CamView_Status_Angle" xml:space="preserve">
-    <value>Winkel: {0:F}°</value>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEx9
+        uCRdjMDRbanRdKlxUanDjmj/wItm/76IZP+7hWH/uYNf/7R+XP+yfFr/sXtY/597Z/9leJP/WXCS/3N1
+        hf+Rtcj/ue/1/1uNwd7Ikmz////////////////////////////cp3v//////+Hs9f9on8z/qsPY/8TU
+        4f+Cqsz/g8Ti/3ukx/8yYag7ypRu///////z8/P/u7u7/7u7u///////3Kd7//////90q9P/z9vi//78
+        9f/+/PD/+/ny/4Wpzf9ja4b/AAAAAMyXb///////8/Pz/7u7u////////////9yne///////aqrT//Dw
+        7f/+9+j/9+7k//z67f/F0d//XHKR/wAAAADRnHP///////Pz8/+7u7v/u7u7///////cp3v//////3Cy
+        1//i6Of//Pfr//315f/89+//qsTZ/2h+lP8AAAAA1J51///////z8/P/u7u7////////////3Kd7////
+        //+92ef/g7jU/+Lm5f/r7Of/zdfd/2qizf+gfmv/AAAAANWgdv//////u7u7/7u7u/+7u7v//////9yn
+        e///////+/j0/7zX5f9wsdX/b6zT/3Wr0f/k7vb/tX5c/wAAAADYonn//////7u7u///////////////
+        ///cp3v///////v28f/49O7/9/Lr//fw6v/27Oj//////7eBXv8AAAAA2aN5//////+2trb/u7u7////
+        ////////3Kd7///////38+3/9u/q//Xr5//z6uT/8ufe//////+6hWD/AAAAANukev//////////////
+        /////////////9yne///////////////////////////////////////vYdj/wAAAADcp3v/3Kd7/9yn
+        e//cp3v/3Kd7/9yne//cp3v/3Kd7/9yne//cp3v/3Kd7/9yne//cp3v/3Kd7/8CLZv8AAAAA3ayF/ei5
+        kv/ouZL/6LmS/+i5kv/ouZL/6LmS/+i5kv/ouZL/6LmS/+i5kv/ouZL/6LmS/+i5kv/BkG/9AAAAAKlx
+        UWvdsY303Kd7/9ymev/apHr/2KJ5/9Wgdv/UnnX/0p1z/8+acv/OmXD/y5Zv/8mUbP/Emnr0qXFRawAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAA//+sQf/4rEEAAKxBAACsQQABrEEAAaxBAAGsQQABrEEAAaxBAAGsQQABrEEAAaxBAAGsQQAB
+        rEEAAaxB//+sQQ==
+</value>
   </data>
-  <data name="CamView_Status_PosX" xml:space="preserve">
-    <value>X: {0:F}</value>
-  </data>
-  <data name="CamView_Status_PosY" xml:space="preserve">
-    <value>Y: {0:F}</value>
-  </data>
-  <data name="CamView_Status_PosZ" xml:space="preserve">
-    <value>Z: {0:F}</value>
-  </data>
-  <data name="MenuItemName_CamView" xml:space="preserve">
-    <value>Kamera</value>
-  </data>
-  <data name="MenuItemName_ObjView" xml:space="preserve">
-    <value>Objekteigenschaften</value>
-  </data>
-  <data name="MenuItemName_ProjectView" xml:space="preserve">
-    <value>Projektansicht</value>
-  </data>
-  <data name="MenuItemName_ResView" xml:space="preserve">
+  <data name="$this.Text" xml:space="preserve">
     <value>Ressourceneigenschaften</value>
-  </data>
-  <data name="MenuItemName_SceneView" xml:space="preserve">
-    <value>Szenenansicht</value>
-  </data>
-  <data name="NewFolderName" xml:space="preserve">
-    <value>Neuer Ordner</value>
-  </data>
-  <data name="ProjectFolderView_MsgBox_CantMove_Caption" xml:space="preserve">
-    <value>Datei kann nicht verschoben werden</value>
-  </data>
-  <data name="ProjectFolderView_MsgBox_CantMove_Text" xml:space="preserve">
-    <value>Die Datei kann nicht nach '{0}' verschoben werden, weil sie sonst eine existierende Datei überschreiben würde.</value>
-  </data>
-  <data name="ProjectFolderView_MsgBox_CantRename_Caption" xml:space="preserve">
-    <value>Datei kann nicht umbenannt werden</value>
-  </data>
-  <data name="ProjectFolderView_MsgBox_CantRename_Text" xml:space="preserve">
-    <value>Die Datei kann nicht in '{0}' umbenannt werden, weil sie sonst eine existierende Datei überschreiben würde.</value>
-  </data>
-  <data name="ProjectFolderView_MsgBox_ConfirmDeleteSelectedFiles_Caption" xml:space="preserve">
-    <value>Selektierte Dateien löschen?</value>
-  </data>
-  <data name="ProjectFolderView_MsgBox_ConfirmDeleteSelectedFiles_Text" xml:space="preserve">
-    <value>Sollen die ausgewählten Dateien wirklich gelöscht werden?</value>
-  </data>
-  <data name="ProjectNameLabel" xml:space="preserve">
-    <value>Projekt</value>
-  </data>
-  <data name="SceneNameLabel" xml:space="preserve">
-    <value>Szene</value>
-  </data>
-  <data name="SceneNameNotYetSaved" xml:space="preserve">
-    <value>Ungespeicherte Szene</value>
-  </data>
-  <data name="SceneView_MsgBox_ConfirmDeleteSelectedObjects_Caption" xml:space="preserve">
-    <value>Selektierte Objekte löschen?</value>
-  </data>
-  <data name="SceneView_MsgBox_ConfirmDeleteSelectedObjects_Text" xml:space="preserve">
-    <value>Sollen die ausgewählten Objekte wirklich gelöscht werden?</value>
-  </data>
-  <data name="SceneView_PrefabLink" xml:space="preserve">
-    <value>Verlinkt mit: {0}</value>
   </data>
 </root>

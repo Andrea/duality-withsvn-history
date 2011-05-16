@@ -11,7 +11,7 @@ using DualityEditor.Controls;
 
 namespace EditorBase.PropertyEditors
 {
-	public class GameObjectPropertyEditorProvider : PropertyGrid.IPropertyEditorProvider
+	public class PropertyEditorProvider : PropertyGrid.IPropertyEditorProvider
 	{
 		public PropertyGrid.ProvidedEditorType IsResponsibleFor(Type baseType)
 		{

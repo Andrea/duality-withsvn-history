@@ -53,6 +53,7 @@ namespace EditorBase.PropertyEditors
 			base.OnUpdateFromObjects(values);
 
 			this.Header.Text = null;
+			this.Header.ValueText = ReflectionHelper.GetTypeString(this.EditedType, ReflectionHelper.TypeStringAttrib.CSCodeIdentShort);
 			if (!values.Any() || values.All(o => o == null))
 				this.ActiveState = false;
 			else
@@ -75,6 +76,7 @@ namespace EditorBase.PropertyEditors
 			System.Drawing.Bitmap iconBitmap = CorePluginHelper.RequestTypeImage(this.EditedType, CorePluginHelper.ImageContext_Icon) as System.Drawing.Bitmap;
 			Duality.ColorFormat.ColorHSVA avgClr = iconBitmap != null ? iconBitmap.GetAverageColor().ToHsva() : Duality.ColorFormat.ColorHSVA.TransparentBlack;
 
+			this.Header.Text = null;
 			this.Header.ValueText = ReflectionHelper.GetTypeString(this.EditedType, ReflectionHelper.TypeStringAttrib.CSCodeIdentShort);
 			this.Header.Icon = iconBitmap;
 			this.Header.ForeColor = ExtMethodsSystemDrawingColor.ColorFromHSV(

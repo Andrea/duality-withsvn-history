@@ -120,8 +120,8 @@ namespace DualityLauncher
 				DualityApp.Keyboard.KeyDown += new EventHandler<KeyboardKeyEventArgs>(launcherWindow.Keyboard_KeyDown);
 
 				// Debug: Load test scene
-				Scene.Current = Resource.LoadResource<Scene>("scene.tmp");
-				Scene.Current.AbandonPrefabLinks();
+				//Scene.Current = Resource.LoadResource<Scene>("scene.tmp");
+				//Scene.Current.AbandonPrefabLinks();
 
 				// Run the DualityApp
 				launcherWindow.Run(60.0d, 60.0d);
