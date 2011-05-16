@@ -37,7 +37,7 @@ namespace DualityEditor.Controls
 		{
 			base.InitContent();
 
-			this.ClearPropertyEditors();
+			this.ClearContent();
 			this.memberMap.Clear();
 			if (this.EditedType != null)
 			{

@@ -265,6 +265,15 @@ namespace EditorBase.PluginRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Application Data ähnelt.
+        /// </summary>
+        public static string MenuItemName_AppData {
+            get {
+                return ResourceManager.GetString("MenuItemName_AppData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Camera ähnelt.
         /// </summary>
         public static string MenuItemName_CamView {
@@ -306,6 +315,15 @@ namespace EditorBase.PluginRes {
         public static string MenuItemName_SceneView {
             get {
                 return ResourceManager.GetString("MenuItemName_SceneView", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Default User Data ähnelt.
+        /// </summary>
+        public static string MenuItemName_UserData {
+            get {
+                return ResourceManager.GetString("MenuItemName_UserData", resourceCulture);
             }
         }
         

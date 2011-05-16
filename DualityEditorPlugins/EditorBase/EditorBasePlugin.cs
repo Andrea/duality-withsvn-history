@@ -44,6 +44,8 @@ namespace EditorBase
 		private	ToolStripMenuItem	menuItemObjView		= null;
 		private	ToolStripMenuItem	menuItemResView		= null;
 		private	ToolStripMenuItem	menuItemCamView		= null;
+		private	ToolStripMenuItem	menuItemAppData		= null;
+		private	ToolStripMenuItem	menuItemUserData	= null;
 
 
 		public override string Id
@@ -136,18 +138,23 @@ namespace EditorBase
 			this.menuItemObjView = main.RequestMenu(Path.Combine(GeneralRes.MenuName_View, EditorBaseRes.MenuItemName_ObjView));
 			this.menuItemResView = main.RequestMenu(Path.Combine(GeneralRes.MenuName_View, EditorBaseRes.MenuItemName_ResView));
 			this.menuItemCamView = main.RequestMenu(Path.Combine(GeneralRes.MenuName_View, EditorBaseRes.MenuItemName_CamView));
+			this.menuItemAppData = main.RequestMenu(Path.Combine(GeneralRes.MenuName_Settings, EditorBaseRes.MenuItemName_AppData));
+			this.menuItemUserData = main.RequestMenu(Path.Combine(GeneralRes.MenuName_Settings, EditorBaseRes.MenuItemName_UserData));
 
 			// Configure menus
 			this.menuItemProjectView.Image = PluginRes.EditorBaseRes.IconProjectView.ToBitmap();
-			this.menuItemProjectView.Click += new EventHandler(this.menuItemProjectView_Click);
 			this.menuItemSceneView.Image = PluginRes.EditorBaseRes.IconSceneView.ToBitmap();
-			this.menuItemSceneView.Click += new EventHandler(this.menuItemSceneView_Click);
 			this.menuItemObjView.Image = PluginRes.EditorBaseRes.IconObjView.ToBitmap();
-			this.menuItemObjView.Click += new EventHandler(this.menuItemObjView_Click);
 			this.menuItemResView.Image = PluginRes.EditorBaseRes.IconResView.ToBitmap();
-			this.menuItemResView.Click += new EventHandler(this.menuItemResView_Click);
 			this.menuItemCamView.Image = PluginRes.EditorBaseRes.IconEye.ToBitmap();
+
+			this.menuItemProjectView.Click += new EventHandler(this.menuItemProjectView_Click);
+			this.menuItemSceneView.Click += new EventHandler(this.menuItemSceneView_Click);
+			this.menuItemObjView.Click += new EventHandler(this.menuItemObjView_Click);
+			this.menuItemResView.Click += new EventHandler(this.menuItemResView_Click);
 			this.menuItemCamView.Click += new EventHandler(this.menuItemCamView_Click);
+			this.menuItemAppData.Click += new EventHandler(this.menuItemAppData_Click);
+			this.menuItemUserData.Click += new EventHandler(this.menuItemUserData_Click);
 		}
 		
 		public ProjectFolderView RequestProjectView()
@@ -267,6 +274,14 @@ namespace EditorBase
 		private void menuItemCamView_Click(object sender, EventArgs e)
 		{
 			this.RequestCamView();
+		}
+		private void menuItemAppData_Click(object sender, EventArgs e)
+		{
+			this.EditorForm.Select(this, new ObjectSelection(DualityApp.AppData));
+		}
+		private void menuItemUserData_Click(object sender, EventArgs e)
+		{
+			this.EditorForm.Select(this, new ObjectSelection(DualityApp.UserData));
 		}
 	}
 }

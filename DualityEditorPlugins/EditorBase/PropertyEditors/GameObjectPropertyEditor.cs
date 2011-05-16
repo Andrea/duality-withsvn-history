@@ -229,6 +229,7 @@ namespace EditorBase.PropertyEditors
 
 			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionHelper.Property_GameObject_PrefabLink);
 			this.PerformGetValue();
+			this.ParentEditor.UpdateModifiedState();
 		}
 	}
 }

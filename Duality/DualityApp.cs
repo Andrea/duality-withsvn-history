@@ -21,6 +21,9 @@ namespace Duality
 {
 	public static class DualityApp
 	{
+		public const string DefaultAppDataPath	= "appdata.dat";
+		public const string DefaultUserDataPath	= "userdata.dat";
+
 		public enum ExecutionContext
 		{
 			Terminated,
@@ -72,10 +75,16 @@ namespace Duality
 		private	static	IList<JoystickDevice>	joysticks			= null;
 		private	static	Random					rnd					= null;
 		private	static	ExecutionContext		execContext			= ExecutionContext.Terminated;
+		private	static	DualityAppData			appData				= null;
+		private	static	DualityUserData			userData			= null;
 
 		private	static	PluginSerializationBinder	pluginTypeBinder;
 		private	static	Dictionary<string,Assembly>	plugins;
 		private static	Dictionary<Type,List<Type>>	availTypeDict;
+
+		public static event EventHandler Initialized	= null;
+		public static event EventHandler Terminating	= null;
+		public static event EventHandler Updating		= null;
 
 
 		public static Vector2 TargetResolution
@@ -108,6 +117,16 @@ namespace Duality
 			get { return rnd; }
 			set { rnd = value; if (rnd == null) rnd = new Random(); }
 		}
+		public static DualityAppData AppData
+		{
+			get { return appData; }
+			set { appData = value; if (appData == null) appData = new DualityAppData(); }
+		}
+		public static DualityUserData UserData
+		{
+			get { return userData; }
+			set { userData = value; if (userData == null) userData = new DualityUserData(); }
+		}
 		public static GraphicsMode DefaultMode
 		{
 			get { return defaultMode; }
@@ -130,7 +149,7 @@ namespace Duality
 		}
 
 
-		public static void Init(ExecutionContext context = ExecutionContext.Unknown)
+		public static void Init(ExecutionContext context = ExecutionContext.Unknown, string[] args = null)
 		{
 			if (initialized) return;
 
@@ -150,7 +169,6 @@ namespace Duality
 			availTypeDict = new Dictionary<Type,List<Type>>();
 			pluginTypeBinder = new PluginSerializationBinder();
 
-
 			logfile = new StreamWriter("logfile.txt");
 			LogOutputFormat logfileSharedFormat = new LogOutputFormat();
 			Log.Game.RegisterOutput(new TextWriterLogOutput(logfile, "[Game]   ", logfileSharedFormat));
@@ -169,14 +187,18 @@ namespace Duality
 			AppDomain.CurrentDomain.AssemblyResolve		+= CurrentDomain_AssemblyResolve;
 
 			Log.Core.Write("DualityApp initialized");
-
+			Log.Core.Write("Debug Mode: {0}", System.Diagnostics.Debugger.IsAttached);
+			Log.Core.Write("Command line arguments: {0}", args != null ? args.ToString(", ") : "null");
 			LoadPlugins();
 
 			initialized = true;
+			OnInitialized();
 		}
 		public static void Terminate(bool unexpected = false)
 		{
 			if (!initialized) return;
+
+			if (!unexpected) OnTerminating();
 
 			if (unexpected)	Log.Core.WriteError("DualityApp terminated unexpectedly");
 			else			Log.Core.Write("DualityApp terminated");
@@ -213,6 +235,63 @@ namespace Duality
 			Resource.RunCleanup();
 		}
 		
+		public static void LoadAppData(string path = DefaultAppDataPath)
+		{
+			if (File.Exists(path))
+			{
+				try
+				{
+					using (FileStream str = File.OpenRead(path))
+					{
+						BinaryFormatter formatter = RequestSerializer(null, new StreamingContext(StreamingContextStates.File | StreamingContextStates.Persistence));
+						appData = formatter.Deserialize(str) as DualityAppData;
+					}
+				}
+				catch (Exception)
+				{
+					appData = new DualityAppData();
+				}
+			}
+			else
+				appData = new DualityAppData();
+		}
+		public static void LoadUserData(string path = DefaultUserDataPath)
+		{
+			if (File.Exists(path))
+			{
+				try
+				{
+					using (FileStream str = File.OpenRead(path))
+					{
+						BinaryFormatter formatter = RequestSerializer(null, new StreamingContext(StreamingContextStates.File | StreamingContextStates.Persistence));
+						userData = formatter.Deserialize(str) as DualityUserData;
+					}
+				}
+				catch (Exception)
+				{
+					userData = new DualityUserData();
+				}
+			}
+			else
+				userData = new DualityUserData();
+		}
+		public static void SaveAppData(string path = DefaultAppDataPath)
+		{
+			using (FileStream str = File.Open(path, FileMode.Create))
+			{
+				BinaryFormatter formatter = RequestSerializer(null, new StreamingContext(StreamingContextStates.File | StreamingContextStates.Persistence));
+				formatter.Serialize(str, appData);
+			}
+		}
+		public static void SaveUserData(string path = DefaultUserDataPath)
+		{
+			using (FileStream str = File.Open(path, FileMode.Create))
+			{
+				BinaryFormatter formatter = RequestSerializer(null, new StreamingContext(StreamingContextStates.File | StreamingContextStates.Persistence));
+				formatter.Serialize(str, userData);
+			}
+		}
+
 		public static void LoadPlugins()
 		{
 			plugins.Clear();
@@ -296,6 +375,27 @@ namespace Duality
 			return GetAvailDualityTypes(typeof(Duality.Resource)).FirstOrDefault(t => t.Name == typeName);
 		}
 
+		private static void OnInitialized()
+		{
+			LoadAppData();
+			LoadUserData();
+
+			if (Initialized != null)
+				Initialized(null, EventArgs.Empty);
+		}
+		private static void OnTerminating()
+		{
+			if (execContext != ExecutionContext.Editor) SaveUserData();
+
+			if (Terminating != null)
+				Terminating(null, EventArgs.Empty);
+		}
+		private static void OnUpdating()
+		{
+			if (Updating != null)
+				Updating(null, EventArgs.Empty);
+		}
+
 		private static void CurrentDomain_ProcessExit(object sender, EventArgs e)
 		{
 			Terminate();
@@ -314,6 +414,72 @@ namespace Duality
 				return plugin;
 			else
 				return null;
+		}
+	}
+
+	[Serializable]
+	public class DualityAppData
+	{
+		private	string				appName		= "Duality Application";
+		private	string				authorName	= "Unknown";
+		private	string				websiteUrl	= "http://www.fetzenet.de";
+		private	uint				version		= 0;
+		private	ContentRef<Scene>	startScene	= ContentRef<Scene>.Null;
+
+		public string AppName
+		{
+			get { return this.appName; }
+			set { this.appName = value; }
+		}
+		public string AuthorName
+		{
+			get { return this.authorName; }
+			set { this.authorName = value; }
+		}
+		public string WebsiteUrl
+		{
+			get { return this.websiteUrl; }
+			set { this.websiteUrl = value; }
+		}
+		public uint Version
+		{
+			get { return this.version; }
+			set { this.version = value; }
+		}
+		public ContentRef<Scene> StartScene
+		{
+			get { return this.startScene; }
+			set { this.startScene = value; }
+		}
+	}
+
+	[Serializable]
+	public class DualityUserData
+	{
+		private	string			userName		= "Unknown";
+		private	int				gfxWidth		= 800;
+		private	int				gfxHeight		= 600;
+		private	bool			gfxFullScreen	= true;
+
+		public string UserName
+		{
+			get { return this.userName; }
+			set { this.userName = value; }
+		}
+		public int GfxWidth
+		{
+			get { return this.gfxWidth; }
+			set { this.gfxWidth = value; }
+		}
+		public int GfxHeight
+		{
+			get { return this.gfxHeight; }
+			set { this.gfxHeight = value; }
+		}
+		public bool GfxFullScreen
+		{
+			get { return this.gfxFullScreen; }
+			set { this.gfxFullScreen = value; }
 		}
 	}
 }

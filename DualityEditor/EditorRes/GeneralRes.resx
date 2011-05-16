@@ -145,6 +145,9 @@
   <data name="MenuName_File" xml:space="preserve">
     <value>File</value>
   </data>
+  <data name="MenuName_Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
   <data name="MenuName_View" xml:space="preserve">
     <value>View</value>
   </data>

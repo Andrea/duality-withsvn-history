@@ -202,6 +202,9 @@
   <data name="IconSceneView" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>sceneview.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="MenuItemName_AppData" xml:space="preserve">
+    <value>Application Data</value>
+  </data>
   <data name="MenuItemName_CamView" xml:space="preserve">
     <value>Camera</value>
   </data>
@@ -216,6 +219,9 @@
   </data>
   <data name="MenuItemName_SceneView" xml:space="preserve">
     <value>Scene View</value>
+  </data>
+  <data name="MenuItemName_UserData" xml:space="preserve">
+    <value>Default User Data</value>
   </data>
   <data name="NewFolderName" xml:space="preserve">
     <value>New Folder</value>

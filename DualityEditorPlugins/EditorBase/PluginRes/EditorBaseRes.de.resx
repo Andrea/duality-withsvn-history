@@ -129,6 +129,9 @@
   <data name="CamView_Status_PosZ" xml:space="preserve">
     <value>Z: {0:F}</value>
   </data>
+  <data name="MenuItemName_AppData" xml:space="preserve">
+    <value>Programmdaten</value>
+  </data>
   <data name="MenuItemName_CamView" xml:space="preserve">
     <value>Kamera</value>
   </data>
@@ -143,6 +146,9 @@
   </data>
   <data name="MenuItemName_SceneView" xml:space="preserve">
     <value>Szenenansicht</value>
+  </data>
+  <data name="MenuItemName_UserData" xml:space="preserve">
+    <value>Standard Nutzereinstellungen</value>
   </data>
   <data name="NewFolderName" xml:space="preserve">
     <value>Neuer Ordner</value>

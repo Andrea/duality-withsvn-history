@@ -593,6 +593,16 @@ namespace DualityEditor.Forms
 				foreach (Resource res in args.Objects.Resources) res.Save();
 			}
 
+			// If DualityAppData or DualityUserData is modified, save it
+			if (args.Objects.OtherObjectCount > 0)
+			{
+				// This is probably not the best idea for generalized behaviour, but sufficient for now
+				if (args.Objects.OtherObjects.Any(o => o is DualityAppData))
+					DualityApp.SaveAppData();
+				else if (args.Objects.OtherObjects.Any(o => o is DualityUserData))
+					DualityApp.SaveUserData();
+			}
+
 			// Fire the actual event
 			if (this.ObjectPropertyChanged != null)
 				this.ObjectPropertyChanged(sender, args);

@@ -27,7 +27,13 @@ namespace EditorBase.PropertyEditors
 				return PropertyGrid.ProvidedEditorType.Specialized;
 			else if (typeof(Component).IsAssignableFrom(baseType))
 				return PropertyGrid.ProvidedEditorType.General;
+			else if (typeof(Resource).IsAssignableFrom(baseType))
+				return PropertyGrid.ProvidedEditorType.General;
 			else if (typeof(IContentRef).IsAssignableFrom(baseType))
+				return PropertyGrid.ProvidedEditorType.General;
+			else if (typeof(DualityAppData).IsAssignableFrom(baseType))
+				return PropertyGrid.ProvidedEditorType.General;
+			else if (typeof(DualityUserData).IsAssignableFrom(baseType))
 				return PropertyGrid.ProvidedEditorType.General;
 			else
 				return PropertyGrid.ProvidedEditorType.None;
@@ -47,8 +53,14 @@ namespace EditorBase.PropertyEditors
 				e = new BatchInfoPropertyEditor(parentEditor, parentGrid);
 			else if (typeof(Component).IsAssignableFrom(baseType))
 				e = new ComponentPropertyEditor(parentEditor, parentGrid);
+			else if (typeof(Resource).IsAssignableFrom(baseType))
+				e = new ResourcePropertyEditor(parentEditor, parentGrid);
 			else if (typeof(IContentRef).IsAssignableFrom(baseType))
 				e = new ContentRefPropertyEditor(parentEditor, parentGrid);
+			else if (typeof(DualityAppData).IsAssignableFrom(baseType))
+				e = new DualityAppDataPropertyEditor(parentEditor, parentGrid);
+			else if (typeof(DualityUserData).IsAssignableFrom(baseType))
+				e = new DualityUserDataPropertyEditor(parentEditor, parentGrid);
 
 			e.EditedType = baseType;
 			return e;

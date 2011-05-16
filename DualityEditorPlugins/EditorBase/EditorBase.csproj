@@ -61,6 +61,12 @@
       <DependentUpon>CamView.cs</DependentUpon>
     </Compile>
     <Compile Include="EditorBasePlugin.cs" />
+    <Compile Include="PropertyEditors\DualityAppDataPropertyEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PropertyEditors\ResourcePropertyEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="ResourceInspector.cs">
       <SubType>Form</SubType>
     </Compile>

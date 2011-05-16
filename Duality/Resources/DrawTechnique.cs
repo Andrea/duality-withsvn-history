@@ -101,6 +101,7 @@ namespace Duality.Resources
 			{ 
 				return 
 					this.blendType == BlendMode.Alpha ||
+					this.blendType == BlendMode.Add ||
 					this.blendType == BlendMode.Invert ||
 					this.blendType == BlendMode.Multiply ||
 					this.blendType == BlendMode.Light; 

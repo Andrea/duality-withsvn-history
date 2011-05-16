@@ -123,6 +123,9 @@
   <data name="MenuName_File" xml:space="preserve">
     <value>Datei</value>
   </data>
+  <data name="MenuName_Settings" xml:space="preserve">
+    <value>Einstellungen</value>
+  </data>
   <data name="MenuName_View" xml:space="preserve">
     <value>Ansicht</value>
   </data>
