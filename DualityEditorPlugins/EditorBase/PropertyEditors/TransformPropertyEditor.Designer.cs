@@ -266,10 +266,10 @@
             0,
             131072});
 			this.editorAngleRad.Maximum = new decimal(new int[] {
-            628,
+            62832,
             0,
             0,
-            131072});
+            262144});
 			this.editorAngleRad.Name = "editorAngleRad";
 			this.editorAngleRad.ValueChanged += new System.EventHandler(this.editorAngleRad_ValueChanged);
 			// 

@@ -106,6 +106,7 @@
 			this.folderView.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.folderView_ItemDrag);
 			this.folderView.NodeMouseDoubleClick += new System.EventHandler<Aga.Controls.Tree.TreeNodeAdvMouseEventArgs>(this.folderView_NodeMouseDoubleClick);
 			this.folderView.SelectionChanged += new System.EventHandler(this.folderView_SelectionChanged);
+			this.folderView.Expanding += new System.EventHandler<Aga.Controls.Tree.TreeViewAdvEventArgs>(this.folderView_Expanding);
 			this.folderView.DragDrop += new System.Windows.Forms.DragEventHandler(this.folderView_DragDrop);
 			this.folderView.DragOver += new System.Windows.Forms.DragEventHandler(this.folderView_DragOver);
 			this.folderView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.folderView_KeyDown);

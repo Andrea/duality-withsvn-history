@@ -28,7 +28,7 @@ namespace DualityEditor.Forms
 		}
 
 
-		private	const	string	UserDataFile			= "userdata.xml";
+		private	const	string	UserDataFile			= "editoruserdata.xml";
 		private	const	string	UserDataDockSeparator	= "<!-- DockPanel Data -->";
 
 		private	List<IFileImporter>		fileImporters		= new List<IFileImporter>();
@@ -115,12 +115,6 @@ namespace DualityEditor.Forms
 			if (!Directory.Exists(EditorHelper.SourceDirectory)) Directory.CreateDirectory(EditorHelper.SourceDirectory);
 			if (!Directory.Exists(EditorHelper.SourceMediaDirectory)) Directory.CreateDirectory(EditorHelper.SourceMediaDirectory);
 			if (!Directory.Exists(EditorHelper.SourceCodeDirectory)) Directory.CreateDirectory(EditorHelper.SourceCodeDirectory);
-
-			this.RequestMenu(EditorRes.GeneralRes.MenuName_File);
-			this.RequestMenu(EditorRes.GeneralRes.MenuName_View);
-
-			// Register file importers
-			this.RegisterFileImporter(new PixmapFileImporter());
 
 			DualityApp.Init(DualityApp.ExecutionContext.Editor);
 			this.LoadPlugins();

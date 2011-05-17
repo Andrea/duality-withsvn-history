@@ -92,7 +92,8 @@ namespace Duality
 		{
 			get
 			{
-				return this.contentInstance != null && !this.contentInstance.Disposed;
+				if (this.contentInstance != null && !this.contentInstance.Disposed) return true;
+				return ContentProvider.IsContentRegistered(this.contentPath);
 			}
 		}
 		public bool IsDefaultContent
@@ -291,6 +292,11 @@ namespace Duality
 					dir + Path.DirectorySeparatorChar,
 					newDir + Path.DirectorySeparatorChar));
 			}
+		}
+		public static bool IsContentRegistered(string path)
+		{
+			if (String.IsNullOrEmpty(path)) return false;
+			return resLibrary.ContainsKey(path);
 		}
 		public static ContentRef<T> RequestContent<T>(string path) where T : Resource
 		{

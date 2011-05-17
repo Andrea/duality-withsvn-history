@@ -31,8 +31,9 @@ namespace EditorBase
 					return Path.GetFullPath(nodePath).ToUpper();
 			}
 
-			private	string	nodePath	= null;
-			private	bool	readOnly	= false;
+			private	string	nodePath		= null;
+			private	bool	readOnly		= false;
+			private	bool	wasVisibleYet	= false;
 
 			public string NodePath
 			{
@@ -62,6 +63,11 @@ namespace EditorBase
 				this.readOnly = readOnly;
 			}
 			
+			public void NotifyVisible()
+			{
+				this.OnFirstVisible();
+				this.wasVisibleYet = true;
+			}
 			public void ApplyPathToName()
 			{
 				this.Text = this.GetNameFromPath(this.nodePath, this.nodePath.Contains(':'));
@@ -93,6 +99,7 @@ namespace EditorBase
 			{
 
 			}
+			protected virtual void OnFirstVisible() {}
 		}
 		public class DirectoryNode : NodeBase
 		{
@@ -155,14 +162,12 @@ namespace EditorBase
 				this.res.Path = path;
 				this.resType = Resource.GetTypeByFileName(path);
 				this.ApplyPathToName();
-				this.UpdateImage();
 			}
 			public ResourceNode(ContentRef<Resource> res) : base(res.Path, null, res.Path.Contains(':'))
 			{
 				this.res = res;
 				this.resType = TypeFromContent(res);
 				this.ApplyPathToName();
-				this.UpdateImage();
 			}
 
 			public void UpdateImage()
@@ -207,6 +212,11 @@ namespace EditorBase
 				base.OnNodePathChanged(oldPath);
 				this.res.Path = this.NodePath;
 			}
+			protected override void OnFirstVisible()
+			{
+				base.OnFirstVisible();
+				this.UpdateImage();
+			}
 
 			public static Type TypeFromContent(ContentRef<Resource> content)
 			{
@@ -216,7 +226,7 @@ namespace EditorBase
 			{
 				Image result = null;
 				if (type == typeof(Duality.Resources.Prefab))
-					result = CorePluginHelper.RequestTypeImage(type, (!resLink.IsExplicitNull && (resLink.Res as Duality.Resources.Prefab).ContainsData) ? 
+					result = CorePluginHelper.RequestTypeImage(type, (resLink.IsAvailable && (resLink.Res as Duality.Resources.Prefab).ContainsData) ? 
 						CorePluginHelper.ImageContext_Icon + "_Full" : 
 						CorePluginHelper.ImageContext_Icon);
 				else
@@ -348,8 +358,14 @@ namespace EditorBase
 
 			this.folderView.BeginUpdate();
 			this.ClearRessources();
-			while (nodeTree.Nodes.Count > 0) this.folderModel.Nodes.Add(nodeTree.Nodes[0]);
-			this.RegisterNodeTree(this.folderModel.Root);
+			while (nodeTree.Nodes.Count > 0)
+			{
+				Node n = nodeTree.Nodes[0];
+				NodeBase nb = n as NodeBase;
+				this.InsertNodeSorted(n, this.folderModel.Root);
+				this.RegisterNodeTree(n);
+				if (nb != null) nb.NotifyVisible();
+			}
 			this.folderView.EndUpdate();
 		}
 		protected void ClearRessources()
@@ -694,6 +710,11 @@ namespace EditorBase
 			}
 			return isVisible;
 		}
+		private void folderView_Expanding(object sender, TreeViewAdvEventArgs e)
+		{
+			NodeBase node = e.Node.Tag as NodeBase;
+			if (node != null) foreach (NodeBase childNode in node.Nodes) childNode.NotifyVisible();
+		}
 		private void folderView_NodeMouseDoubleClick(object sender, TreeNodeAdvMouseEventArgs e)
 		{
 			if (e.Node == null) return;
@@ -701,12 +722,26 @@ namespace EditorBase
 		}
 		private void folderView_SelectionChanged(object sender, EventArgs e)
 		{
-			object[] selRes = (
-					from vn in this.folderView.SelectedNodes
-					where (vn.Tag is ResourceNode) && (vn.Tag as ResourceNode).ResLink.IsAvailable
-					select (vn.Tag as ResourceNode).ResLink.Res
-					).ToArray();
+			// Retrieve selected ResourceNodes
+			ResourceNode[] selResNode = (
+				from vn in this.folderView.SelectedNodes
+				where vn.Tag is ResourceNode
+				select vn.Tag as ResourceNode
+				).ToArray();
+			// Load their Resource data, if not loaded yet
+			Resource[] selRes = (
+				from rn in selResNode
+				where rn.ResLink.IsAvailable
+				select rn.ResLink.Res
+				).ToArray();
 
+			// Some ResourceNodes might need to be loaded to display additional information.
+			// After loading the selected Resources, update their image according to possibly available new information
+			//foreach (ResourceNode resNode in selResNode)
+			//	resNode.UpdateImage();
+			// Note: Removed this. They'll now just grab their resource if available as soon as they need their data.
+
+			// Adjust editor-wide selection
 			if (selRes.Length > 0)
 				EditorBasePlugin.Instance.EditorForm.Select(this, new ObjectSelection(selRes));
 			else
@@ -1138,6 +1173,7 @@ namespace EditorBase
 					
 				this.InsertNodeSorted(newNode, parentNode);
 				this.RegisterNodeTree(newNode);
+				newNode.NotifyVisible();
 			}
 			// Add new directory tree
 			else if (e.IsDirectory)
@@ -1149,6 +1185,7 @@ namespace EditorBase
 
 				this.InsertNodeSorted(newNode, parentNode);
 				this.RegisterNodeTree(newNode);
+				newNode.NotifyVisible();
 			}
 
 			// Perform previously scheduled selection

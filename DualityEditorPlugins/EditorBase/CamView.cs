@@ -52,13 +52,14 @@ namespace EditorBase
 		}
 
 		public const float DefaultDisplayBoundRadius = 25.0f;
-		private static GLControl mainContextControl = new GLControl(new GraphicsMode(32, 24, 0, 16));
+		private static GLControl mainContextControl = null;
 
-		static CamView()
+		public static void InitMainContext()
 		{
+			if (mainContextControl != null) return;
+			mainContextControl = new GLControl(DualityApp.DefaultMode);
 			mainContextControl.MakeCurrent();
 			DualityApp.TargetMode = mainContextControl.Context.GraphicsMode;
-			ContentProvider.InitDefaultContent();
 		}
 
 

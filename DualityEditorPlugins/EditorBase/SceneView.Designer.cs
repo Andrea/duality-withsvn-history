@@ -256,7 +256,7 @@
 						| WeifenLuo.WinFormsUI.Docking.DockAreas.DockBottom)));
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
 			this.Name = "SceneView";
-			this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.DockRight;
+			this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.DockLeft;
 			this.toolStrip.ResumeLayout(false);
 			this.toolStrip.PerformLayout();
 			this.contextMenuNode.ResumeLayout(false);

@@ -105,6 +105,10 @@ namespace EditorBase
 		{
 			base.LoadPlugin();
 
+			// Initialize main OpenGL context
+			CamView.InitMainContext();
+			ContentProvider.InitDefaultContent();
+
 			// Register core resource lookups
 			CorePluginHelper.RegisterTypeImage(typeof(DrawTechnique), PluginRes.EditorBaseRes.IconResDrawTechnique, CorePluginHelper.ImageContext_Icon);
 			CorePluginHelper.RegisterTypeImage(typeof(FragmentShader), PluginRes.EditorBaseRes.IconResFragmentShader, CorePluginHelper.ImageContext_Icon);
@@ -155,6 +159,9 @@ namespace EditorBase
 			this.menuItemCamView.Click += new EventHandler(this.menuItemCamView_Click);
 			this.menuItemAppData.Click += new EventHandler(this.menuItemAppData_Click);
 			this.menuItemUserData.Click += new EventHandler(this.menuItemUserData_Click);
+
+			// Register file importers
+			main.RegisterFileImporter(new PixmapFileImporter());
 		}
 		
 		public ProjectFolderView RequestProjectView()
