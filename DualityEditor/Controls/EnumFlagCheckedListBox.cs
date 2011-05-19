@@ -41,6 +41,7 @@ namespace DualityEditor.Controls
 		{
 			base.OnFlagValueChanged();
 			this.enumValue = (Enum)Enum.ToObject(this.enumType, this.FlagValue);
+			this.OnEnumValueChanged();
 		}
 		protected void OnEnumValueChanged()
 		{
