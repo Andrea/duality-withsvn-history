@@ -1168,16 +1168,8 @@ namespace EditorBase
 		}
 		private void toolStripButtonSaveScene_Click(object sender, EventArgs e)
 		{
-			if (!String.IsNullOrEmpty(Scene.Current.Path))
-				Scene.Current.Save();
-			else
-			{
-				string basePath = Path.Combine(EditorHelper.DataDirectory, "Scene");
-				string path = PathHelper.GetFreePathName(basePath, ".Scene.res");
-				Scene.Current.Save(path);
-				this.UpdateSceneLabel();
-			}
-
+			EditorBasePlugin.Instance.EditorForm.SaveCurrentScene(false);
+			this.UpdateSceneLabel();
 			this.toolStripButtonSelectSceneRes_Click(sender, e);
 		}
 

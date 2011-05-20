@@ -198,6 +198,12 @@
     <Compile Include="Forms\ColorPickerDialog.Designer.cs">
       <DependentUpon>ColorPickerDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\AppRunningDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AppRunningDialog.Designer.cs">
+      <DependentUpon>AppRunningDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -264,6 +270,15 @@
     <EmbeddedResource Include="Forms\ColorPickerDialog.resx">
       <DependentUpon>ColorPickerDialog.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AppRunningDialog.de.resx">
+      <DependentUpon>AppRunningDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AppRunningDialog.resx">
+      <DependentUpon>AppRunningDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MainForm.de.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -314,6 +329,9 @@
     <Content Include="OpenTK.GLControl.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\disk_multiple.png" />
+    <None Include="Resources\application_bug.png" />
+    <None Include="Resources\application_go.png" />
     <None Include="Resources\arrow_refresh.png" />
     <None Include="Resources\icon_color.png" />
     <None Include="Resources\add.png" />

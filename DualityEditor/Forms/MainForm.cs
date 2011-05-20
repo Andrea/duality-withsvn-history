@@ -50,6 +50,7 @@ namespace DualityEditor.Forms
 		public	event	EventHandler	AfterReloadCorePlugins	= null;
 		public	event	EventHandler	BeforeUpdateDualityApp	= null;
 		public	event	EventHandler	AfterUpdateDualityApp	= null;
+		public	event	EventHandler	SaveAllProjectData		= null;
 		public	event	EventHandler<SelectionChangedEventArgs>			SelectionChanged		= null;
 		public	event	EventHandler<ObjectPropertyChangedEventArgs>	ObjectPropertyChanged	= null;
 		public	event	EventHandler<ResourceEventArgs>					ResourceCreated			= null;
@@ -116,7 +117,7 @@ namespace DualityEditor.Forms
 			if (!Directory.Exists(EditorHelper.SourceMediaDirectory)) Directory.CreateDirectory(EditorHelper.SourceMediaDirectory);
 			if (!Directory.Exists(EditorHelper.SourceCodeDirectory)) Directory.CreateDirectory(EditorHelper.SourceCodeDirectory);
 
-			DualityApp.Init(DualityApp.ExecutionContext.Editor);
+			DualityApp.Init(DualityApp.ExecutionContext.Editor, new string[] {"logfile", "logfile_editor"});
 			this.LoadPlugins();
 			this.LoadUserData();
 			this.InitPlugins();
@@ -195,6 +196,25 @@ namespace DualityEditor.Forms
 			this.selectionPrevious = this.selectionCurrent;
 			this.selectionCurrent = this.selectionCurrent.Clear(category);
 			this.OnSelectionChanged(sender);
+		}
+
+		public void SaveCurrentScene(bool skipYetUnsaved = true)
+		{
+			if (!String.IsNullOrEmpty(Scene.Current.Path))
+				Scene.Current.Save();
+			else
+			{
+				string basePath = Path.Combine(EditorHelper.DataDirectory, "Scene");
+				string path = PathHelper.GetFreePathName(basePath, ".Scene.res");
+				Scene.Current.Save(path);
+			}
+		}
+		public void RequestSaveAllProjectData()
+		{
+			this.SaveCurrentScene();
+
+			if (this.SaveAllProjectData != null)
+				this.SaveAllProjectData(this, EventArgs.Empty);
 		}
 
 		public void NotifyObjPrefabApplied(object sender, ObjectSelection obj)
@@ -829,6 +849,26 @@ namespace DualityEditor.Forms
 		private void Scene_Leaving(object sender, EventArgs e)
 		{
 			this.Deselect(this, ObjectSelection.Category.All);
+		}
+
+		private void actionRunApp_Click(object sender, EventArgs e)
+		{
+			this.RequestSaveAllProjectData();
+			System.Diagnostics.Process appProc = System.Diagnostics.Process.Start("DualityLauncher.exe");
+			AppRunningDialog runningDialog = new AppRunningDialog(appProc);
+			runningDialog.ShowDialog(this);
+		}
+		private void actionDebugApp_Click(object sender, EventArgs e)
+		{
+			this.RequestSaveAllProjectData();
+			System.Diagnostics.Process appProc = System.Diagnostics.Process.Start("DualityLauncher.exe", "debug");
+			AppRunningDialog runningDialog = new AppRunningDialog(appProc);
+			runningDialog.ShowDialog(this);
+		}
+		private void actionSaveAll_Click(object sender, EventArgs e)
+		{
+			this.RequestSaveAllProjectData();
+			System.Media.SystemSounds.Asterisk.Play();
 		}
 	}
 }

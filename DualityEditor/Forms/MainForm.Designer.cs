@@ -28,6 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
 			WeifenLuo.WinFormsUI.Docking.DockPanelSkin dockPanelSkin1 = new WeifenLuo.WinFormsUI.Docking.DockPanelSkin();
 			WeifenLuo.WinFormsUI.Docking.AutoHideStripSkin autoHideStripSkin1 = new WeifenLuo.WinFormsUI.Docking.AutoHideStripSkin();
 			WeifenLuo.WinFormsUI.Docking.DockPanelGradient dockPanelGradient1 = new WeifenLuo.WinFormsUI.Docking.DockPanelGradient();
@@ -43,7 +44,6 @@
 			WeifenLuo.WinFormsUI.Docking.DockPanelGradient dockPanelGradient3 = new WeifenLuo.WinFormsUI.Docking.DockPanelGradient();
 			WeifenLuo.WinFormsUI.Docking.TabGradient tabGradient6 = new WeifenLuo.WinFormsUI.Docking.TabGradient();
 			WeifenLuo.WinFormsUI.Docking.TabGradient tabGradient7 = new WeifenLuo.WinFormsUI.Docking.TabGradient();
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
 			this.dockPanel = new WeifenLuo.WinFormsUI.Docking.DockPanel();
 			this.mainMenuStrip = new System.Windows.Forms.MenuStrip();
 			this.BottomToolStripPanel = new System.Windows.Forms.ToolStripPanel();
@@ -54,20 +54,24 @@
 			this.pluginWatcher = new System.IO.FileSystemWatcher();
 			this.dataDirWatcher = new System.IO.FileSystemWatcher();
 			this.sourceDirWatcher = new System.IO.FileSystemWatcher();
+			this.mainToolStrip = new System.Windows.Forms.ToolStrip();
+			this.actionSaveAll = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.actionRunApp = new System.Windows.Forms.ToolStripButton();
+			this.actionDebugApp = new System.Windows.Forms.ToolStripButton();
 			((System.ComponentModel.ISupportInitialize)(this.pluginWatcher)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.dataDirWatcher)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.sourceDirWatcher)).BeginInit();
+			this.mainToolStrip.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// dockPanel
 			// 
 			this.dockPanel.ActiveAutoHideContent = null;
-			this.dockPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+			resources.ApplyResources(this.dockPanel, "dockPanel");
 			this.dockPanel.DockBackColor = System.Drawing.SystemColors.Control;
-			this.dockPanel.Location = new System.Drawing.Point(0, 24);
 			this.dockPanel.Name = "dockPanel";
 			this.dockPanel.ShowDocumentIcon = true;
-			this.dockPanel.Size = new System.Drawing.Size(916, 664);
 			dockPanelGradient1.EndColor = System.Drawing.SystemColors.ControlLight;
 			dockPanelGradient1.StartColor = System.Drawing.SystemColors.ControlLight;
 			autoHideStripSkin1.DockStripGradient = dockPanelGradient1;
@@ -114,51 +118,43 @@
 			dockPaneStripSkin1.ToolWindowGradient = dockPaneStripToolWindowGradient1;
 			dockPanelSkin1.DockPaneStripSkin = dockPaneStripSkin1;
 			this.dockPanel.Skin = dockPanelSkin1;
-			this.dockPanel.TabIndex = 0;
 			// 
 			// mainMenuStrip
 			// 
-			this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
+			resources.ApplyResources(this.mainMenuStrip, "mainMenuStrip");
 			this.mainMenuStrip.Name = "mainMenuStrip";
-			this.mainMenuStrip.Size = new System.Drawing.Size(916, 24);
-			this.mainMenuStrip.TabIndex = 2;
-			this.mainMenuStrip.Text = "menuStrip1";
 			// 
 			// BottomToolStripPanel
 			// 
-			this.BottomToolStripPanel.Location = new System.Drawing.Point(0, 0);
+			resources.ApplyResources(this.BottomToolStripPanel, "BottomToolStripPanel");
 			this.BottomToolStripPanel.Name = "BottomToolStripPanel";
 			this.BottomToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
 			this.BottomToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
-			this.BottomToolStripPanel.Size = new System.Drawing.Size(0, 0);
 			// 
 			// TopToolStripPanel
 			// 
-			this.TopToolStripPanel.Location = new System.Drawing.Point(0, 0);
+			resources.ApplyResources(this.TopToolStripPanel, "TopToolStripPanel");
 			this.TopToolStripPanel.Name = "TopToolStripPanel";
 			this.TopToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
 			this.TopToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
-			this.TopToolStripPanel.Size = new System.Drawing.Size(0, 0);
 			// 
 			// RightToolStripPanel
 			// 
-			this.RightToolStripPanel.Location = new System.Drawing.Point(0, 0);
+			resources.ApplyResources(this.RightToolStripPanel, "RightToolStripPanel");
 			this.RightToolStripPanel.Name = "RightToolStripPanel";
 			this.RightToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
 			this.RightToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
-			this.RightToolStripPanel.Size = new System.Drawing.Size(0, 0);
 			// 
 			// LeftToolStripPanel
 			// 
-			this.LeftToolStripPanel.Location = new System.Drawing.Point(0, 0);
+			resources.ApplyResources(this.LeftToolStripPanel, "LeftToolStripPanel");
 			this.LeftToolStripPanel.Name = "LeftToolStripPanel";
 			this.LeftToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
 			this.LeftToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
-			this.LeftToolStripPanel.Size = new System.Drawing.Size(0, 0);
 			// 
 			// ContentPanel
 			// 
-			this.ContentPanel.Size = new System.Drawing.Size(916, 639);
+			resources.ApplyResources(this.ContentPanel, "ContentPanel");
 			// 
 			// pluginWatcher
 			// 
@@ -190,21 +186,61 @@
 			this.sourceDirWatcher.Deleted += new System.IO.FileSystemEventHandler(this.sourceDirWatcher_Deleted);
 			this.sourceDirWatcher.Renamed += new System.IO.RenamedEventHandler(this.sourceDirWatcher_Renamed);
 			// 
+			// mainToolStrip
+			// 
+			this.mainToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+			this.mainToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.actionSaveAll,
+            this.toolStripSeparator1,
+            this.actionRunApp,
+            this.actionDebugApp});
+			resources.ApplyResources(this.mainToolStrip, "mainToolStrip");
+			this.mainToolStrip.Name = "mainToolStrip";
+			// 
+			// actionSaveAll
+			// 
+			this.actionSaveAll.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.actionSaveAll.Image = global::DualityEditor.Properties.Resources.disk_multiple;
+			resources.ApplyResources(this.actionSaveAll, "actionSaveAll");
+			this.actionSaveAll.Name = "actionSaveAll";
+			this.actionSaveAll.Click += new System.EventHandler(this.actionSaveAll_Click);
+			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			resources.ApplyResources(this.toolStripSeparator1, "toolStripSeparator1");
+			// 
+			// actionRunApp
+			// 
+			this.actionRunApp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.actionRunApp.Image = global::DualityEditor.Properties.Resources.application_go;
+			resources.ApplyResources(this.actionRunApp, "actionRunApp");
+			this.actionRunApp.Name = "actionRunApp";
+			this.actionRunApp.Click += new System.EventHandler(this.actionRunApp_Click);
+			// 
+			// actionDebugApp
+			// 
+			this.actionDebugApp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.actionDebugApp.Image = global::DualityEditor.Properties.Resources.application_bug;
+			resources.ApplyResources(this.actionDebugApp, "actionDebugApp");
+			this.actionDebugApp.Name = "actionDebugApp";
+			this.actionDebugApp.Click += new System.EventHandler(this.actionDebugApp_Click);
+			// 
 			// MainForm
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			resources.ApplyResources(this, "$this");
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(916, 688);
 			this.Controls.Add(this.dockPanel);
+			this.Controls.Add(this.mainToolStrip);
 			this.Controls.Add(this.mainMenuStrip);
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.IsMdiContainer = true;
 			this.MainMenuStrip = this.mainMenuStrip;
 			this.Name = "MainForm";
-			this.Text = "Duality Editor";
 			((System.ComponentModel.ISupportInitialize)(this.pluginWatcher)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.dataDirWatcher)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.sourceDirWatcher)).EndInit();
+			this.mainToolStrip.ResumeLayout(false);
+			this.mainToolStrip.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -222,6 +258,11 @@
 		private System.IO.FileSystemWatcher pluginWatcher;
 		private System.IO.FileSystemWatcher dataDirWatcher;
 		private System.IO.FileSystemWatcher sourceDirWatcher;
+		private System.Windows.Forms.ToolStrip mainToolStrip;
+		private System.Windows.Forms.ToolStripButton actionRunApp;
+		private System.Windows.Forms.ToolStripButton actionDebugApp;
+		private System.Windows.Forms.ToolStripButton actionSaveAll;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 	}
 }
 

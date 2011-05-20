@@ -123,13 +123,13 @@
 			// 
 			// editorAngleVelRad
 			// 
-			this.editorAngleVelRad.DecimalPlaces = 2;
+			this.editorAngleVelRad.DecimalPlaces = 3;
 			resources.ApplyResources(this.editorAngleVelRad, "editorAngleVelRad");
 			this.editorAngleVelRad.Increment = new decimal(new int[] {
             1,
             0,
             0,
-            65536});
+            131072});
 			this.editorAngleVelRad.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -150,13 +150,8 @@
 			// 
 			// editorAngleVelDeg
 			// 
-			this.editorAngleVelDeg.DecimalPlaces = 2;
+			this.editorAngleVelDeg.DecimalPlaces = 1;
 			resources.ApplyResources(this.editorAngleVelDeg, "editorAngleVelDeg");
-			this.editorAngleVelDeg.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
 			this.editorAngleVelDeg.Maximum = new decimal(new int[] {
             1000,
             0,

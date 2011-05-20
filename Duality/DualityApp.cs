@@ -64,6 +64,7 @@ namespace Duality
 		}
 
 		private	static	bool					initialized			= false;
+		private	static	string					logfilePath			= "logfile";
 		private	static	StreamWriter			logfile				= null;
 		private	static	RtfDocument				logfileRtf			= null;
 		private	static	Vector2					targetResolution	= Vector2.Zero;
@@ -153,6 +154,20 @@ namespace Duality
 		{
 			if (initialized) return;
 
+			// Process command line options
+			if (args != null)
+			{
+				int logArgIndex = args.IndexOfFirst("logfile");
+				if (logArgIndex != -1 && logArgIndex + 1 < args.Length) logArgIndex++;
+				else logArgIndex = -1;
+
+				// Enter debug mode
+				if (args.Contains("debug")) System.Diagnostics.Debugger.Launch();
+				// Set logfile path
+				if (logArgIndex != -1) logfilePath = args[logArgIndex];
+			}
+
+			// Determine available and default graphics modes
 			foreach (int samplecount in new int[] { 0, 2, 4, 6, 8, 16, 32, 48, 64 })
 			{
 				GraphicsMode mode = new GraphicsMode(32, 24, 0, samplecount);
@@ -169,7 +184,8 @@ namespace Duality
 			availTypeDict = new Dictionary<Type,List<Type>>();
 			pluginTypeBinder = new PluginSerializationBinder();
 
-			logfile = new StreamWriter("logfile.txt");
+			// Initialize Logfile
+			logfile = new StreamWriter(logfilePath + ".txt");
 			LogOutputFormat logfileSharedFormat = new LogOutputFormat();
 			Log.Game.RegisterOutput(new TextWriterLogOutput(logfile, "[Game]   ", logfileSharedFormat));
 			Log.Core.RegisterOutput(new TextWriterLogOutput(logfile, "[Core]   ", logfileSharedFormat));
@@ -204,7 +220,7 @@ namespace Duality
 			else			Log.Core.Write("DualityApp terminated");
 
 			logfile.Close();
-			logfileRtf.save("logfile.rtf");
+			logfileRtf.save(logfilePath + ".rtf");
 
 			initialized = false;
 			execContext = ExecutionContext.Terminated;

@@ -83,6 +83,9 @@ namespace DualityLauncher
 				// Debug: Debug Hotkeys
 				DualityApp.Keyboard.KeyDown += new EventHandler<KeyboardKeyEventArgs>(launcherWindow.Keyboard_KeyDown);
 
+				// Load the starting Scene
+				Scene.Current = DualityApp.AppData.StartScene.Res;
+
 				// Run the DualityApp
 				launcherWindow.Run(60.0d, 60.0d);
 			}
