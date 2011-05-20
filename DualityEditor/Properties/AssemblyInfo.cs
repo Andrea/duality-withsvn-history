@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("DualityEditor")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Fedja Adam")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("DualityEditor")]
-[assembly: AssemblyCopyright("Copyright © Fedja Adam 2010")]
+[assembly: AssemblyCopyright("Copyright © Fedja Adam 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

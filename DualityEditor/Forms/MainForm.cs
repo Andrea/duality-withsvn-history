@@ -15,6 +15,7 @@ using Duality.Components;
 using DualityEditor;
 
 using WeifenLuo.WinFormsUI.Docking;
+using Ionic.Zip;
 
 namespace DualityEditor.Forms
 {
@@ -116,6 +117,12 @@ namespace DualityEditor.Forms
 			if (!Directory.Exists(EditorHelper.SourceDirectory)) Directory.CreateDirectory(EditorHelper.SourceDirectory);
 			if (!Directory.Exists(EditorHelper.SourceMediaDirectory)) Directory.CreateDirectory(EditorHelper.SourceMediaDirectory);
 			if (!Directory.Exists(EditorHelper.SourceCodeDirectory)) Directory.CreateDirectory(EditorHelper.SourceCodeDirectory);
+
+			// Debug: Extract game plugin project template
+			using (ZipFile gamePluginZip = ZipFile.Read(ReflectionHelper.GetEmbeddedResourceStream(typeof(MainForm).Assembly,  @"Resources\GamePluginTemplate.zip")))
+			{
+				gamePluginZip.ExtractAll(EditorHelper.SourceCodeDirectory, ExtractExistingFileAction.DoNotOverwrite);
+			}
 
 			DualityApp.Init(DualityApp.ExecutionContext.Editor, new string[] {"logfile", "logfile_editor"});
 			this.LoadPlugins();

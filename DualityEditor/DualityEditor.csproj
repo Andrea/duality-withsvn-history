@@ -57,6 +57,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\Aga.Controls.dll</HintPath>
     </Reference>
+    <Reference Include="Ionic.Zip">
+      <HintPath>.\Ionic.Zip.dll</HintPath>
+    </Reference>
     <Reference Include="OpenTK, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Duality\OpenTK.dll</HintPath>
@@ -333,6 +336,7 @@
     <None Include="Resources\application_bug.png" />
     <None Include="Resources\application_go.png" />
     <None Include="Resources\arrow_refresh.png" />
+    <EmbeddedResource Include="Resources\GamePluginTemplate.zip" />
     <None Include="Resources\icon_color.png" />
     <None Include="Resources\add.png" />
     <None Include="Resources\cross.png" />

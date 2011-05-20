@@ -230,6 +230,7 @@ namespace Duality
 		{
 			Time.FrameTick();
 			Scene.Current.Update();
+			OnUpdating();
 			Resource.RunCleanup();
 		}
 		public static void Draw()
