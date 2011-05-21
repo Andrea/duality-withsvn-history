@@ -209,7 +209,7 @@ namespace DualityEditor.Forms
 		{
 			if (!String.IsNullOrEmpty(Scene.Current.Path))
 				Scene.Current.Save();
-			else
+			else if (!skipYetUnsaved)
 			{
 				string basePath = Path.Combine(EditorHelper.DataDirectory, "Scene");
 				string path = PathHelper.GetFreePathName(basePath, ".Scene.res");
