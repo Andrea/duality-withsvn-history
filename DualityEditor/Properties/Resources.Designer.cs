@@ -108,5 +108,12 @@ namespace DualityEditor.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        internal static System.Drawing.Bitmap page_white_csharp {
+            get {
+                object obj = ResourceManager.GetObject("page_white_csharp", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

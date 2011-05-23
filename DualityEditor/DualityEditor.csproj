@@ -332,6 +332,7 @@
     <Content Include="OpenTK.GLControl.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\page_white_csharp.png" />
     <None Include="Resources\disk_multiple.png" />
     <None Include="Resources\application_bug.png" />
     <None Include="Resources\application_go.png" />

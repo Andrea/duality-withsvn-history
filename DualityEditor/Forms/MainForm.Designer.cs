@@ -57,6 +57,8 @@
 			this.mainToolStrip = new System.Windows.Forms.ToolStrip();
 			this.actionSaveAll = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.actionOpenCode = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.actionRunApp = new System.Windows.Forms.ToolStripButton();
 			this.actionDebugApp = new System.Windows.Forms.ToolStripButton();
 			((System.ComponentModel.ISupportInitialize)(this.pluginWatcher)).BeginInit();
@@ -192,6 +194,8 @@
 			this.mainToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.actionSaveAll,
             this.toolStripSeparator1,
+            this.actionOpenCode,
+            this.toolStripSeparator2,
             this.actionRunApp,
             this.actionDebugApp});
 			resources.ApplyResources(this.mainToolStrip, "mainToolStrip");
@@ -209,6 +213,19 @@
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
 			resources.ApplyResources(this.toolStripSeparator1, "toolStripSeparator1");
+			// 
+			// actionOpenCode
+			// 
+			this.actionOpenCode.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.actionOpenCode.Image = global::DualityEditor.Properties.Resources.page_white_csharp;
+			resources.ApplyResources(this.actionOpenCode, "actionOpenCode");
+			this.actionOpenCode.Name = "actionOpenCode";
+			this.actionOpenCode.Click += new System.EventHandler(this.actionOpenCode_Click);
+			// 
+			// toolStripSeparator2
+			// 
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			resources.ApplyResources(this.toolStripSeparator2, "toolStripSeparator2");
 			// 
 			// actionRunApp
 			// 
@@ -263,6 +280,8 @@
 		private System.Windows.Forms.ToolStripButton actionDebugApp;
 		private System.Windows.Forms.ToolStripButton actionSaveAll;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+		private System.Windows.Forms.ToolStripButton actionOpenCode;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 	}
 }
 

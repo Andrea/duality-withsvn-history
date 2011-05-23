@@ -118,12 +118,6 @@ namespace DualityEditor.Forms
 			if (!Directory.Exists(EditorHelper.SourceMediaDirectory)) Directory.CreateDirectory(EditorHelper.SourceMediaDirectory);
 			if (!Directory.Exists(EditorHelper.SourceCodeDirectory)) Directory.CreateDirectory(EditorHelper.SourceCodeDirectory);
 
-			// Debug: Extract game plugin project template
-			using (ZipFile gamePluginZip = ZipFile.Read(ReflectionHelper.GetEmbeddedResourceStream(typeof(MainForm).Assembly,  @"Resources\GamePluginTemplate.zip")))
-			{
-				gamePluginZip.ExtractAll(EditorHelper.SourceCodeDirectory, ExtractExistingFileAction.DoNotOverwrite);
-			}
-
 			DualityApp.Init(DualityApp.ExecutionContext.Editor, new string[] {"logfile", "logfile_editor"});
 			this.LoadPlugins();
 			this.LoadUserData();
@@ -876,6 +870,18 @@ namespace DualityEditor.Forms
 		{
 			this.RequestSaveAllProjectData();
 			System.Media.SystemSounds.Asterisk.Play();
+		}
+		private void actionOpenCode_Click(object sender, EventArgs e)
+		{
+			string solutionPath = Path.Combine(EditorHelper.SourceCodeDirectory, "ProjectPlugins.sln");
+			if (!File.Exists(solutionPath))
+			{
+				using (ZipFile gamePluginZip = ZipFile.Read(ReflectionHelper.GetEmbeddedResourceStream(typeof(MainForm).Assembly,  @"Resources\GamePluginTemplate.zip")))
+				{
+					gamePluginZip.ExtractAll(EditorHelper.SourceCodeDirectory, ExtractExistingFileAction.DoNotOverwrite);
+				}
+			}
+			System.Diagnostics.Process.Start(solutionPath);
 		}
 	}
 }

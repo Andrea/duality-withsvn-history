@@ -102,6 +102,7 @@ namespace DualityEditor.Controls.PropertyEditors
 				this.PerformSetValue();
 				this.OnValueEdited(this.DisplayedValue);
 				this.PerformGetValue();
+				this.OnEditingFinished();
 			}
 		}
 		
@@ -158,6 +159,7 @@ namespace DualityEditor.Controls.PropertyEditors
 					this.PerformSetValue();
 					this.OnValueEdited(this.DisplayedValue);
 					this.PerformGetValue();
+					this.OnEditingFinished();
 				}
 			}
 		}

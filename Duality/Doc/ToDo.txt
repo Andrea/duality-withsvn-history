@@ -1,9 +1,5 @@
 ﻿
--->	Approach next step: Run Game in Launcher
-	-->	Test Camera setup & object velocity stuff
-
 -->	Usability
-	-->	TexturePropertyEditor that automatically reloads the Texture if needed (e.g. if the Pixmap base path changed)
 	-->	Find some generalized, Plugin-friendly interface for defining such special behaviour:
 		-->	Pixmap context menu in ProjectFolderView: Create Texture.
 			-->	Same for Rightclick-DragDrop of a Pixmap somewhere else
@@ -12,4 +8,3 @@
 
 -->	Editor Skeletton
 	-->	Sandbox (Play | Pause | Reset)
-	-->	Plugin / VS integration

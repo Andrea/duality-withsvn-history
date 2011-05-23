@@ -71,12 +71,12 @@ namespace Duality.ColorFormat
 			byte q = (byte)(vTemp * (1 - f * this.s));
 			byte t = (byte)(vTemp * (1 - (1 - f) * this.s));
 
-			if (hi == 0)		return new ColorRGBA(v, t, p, 255);
-			else if (hi == 1)	return new ColorRGBA(q, v, p, 255);
-			else if (hi == 2)	return new ColorRGBA(p, v, t, 255);
-			else if (hi == 3)	return new ColorRGBA(p, q, v, 255);
-			else if (hi == 4)	return new ColorRGBA(t, p, v, 255);
-			else				return new ColorRGBA(v, p, q, 255);
+			if (hi == 0)		return new ColorRGBA(v, t, p, (byte)(int)MathF.Clamp(this.a * 255.0f, 0.0f, 255.0f));
+			else if (hi == 1)	return new ColorRGBA(q, v, p, (byte)(int)MathF.Clamp(this.a * 255.0f, 0.0f, 255.0f));
+			else if (hi == 2)	return new ColorRGBA(p, v, t, (byte)(int)MathF.Clamp(this.a * 255.0f, 0.0f, 255.0f));
+			else if (hi == 3)	return new ColorRGBA(p, q, v, (byte)(int)MathF.Clamp(this.a * 255.0f, 0.0f, 255.0f));
+			else if (hi == 4)	return new ColorRGBA(t, p, v, (byte)(int)MathF.Clamp(this.a * 255.0f, 0.0f, 255.0f));
+			else				return new ColorRGBA(v, p, q, (byte)(int)MathF.Clamp(this.a * 255.0f, 0.0f, 255.0f));
 		}
 
 		public void SetIntRgba(uint rgba)
