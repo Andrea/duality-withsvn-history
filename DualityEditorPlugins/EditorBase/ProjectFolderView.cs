@@ -183,7 +183,7 @@ namespace EditorBase
 				string oldPath = this.NodePath;
 				string oldFileName = Path.GetFileName(oldPath);
 				string newPathBase = oldPath.Remove(oldPath.Length - oldFileName.Length, oldFileName.Length);
-				string newPath = newPathBase + this.Text + "." + Resource.GetFileExtByType(this.resType) + ".res";
+				string newPath = newPathBase + this.Text + "." + Resource.GetFileExtByType(this.resType) + Resource.FileExt;
 
 				if (File.Exists(newPath))
 				{
@@ -405,7 +405,7 @@ namespace EditorBase
 		protected NodeBase ScanFile(string filePath)
 		{
 			string ext = Path.GetExtension(filePath);
-			if (ext.ToLower() == ".res")
+			if (ext.ToLower() == Resource.FileExt)
 				return new ResourceNode(filePath);
 			else
 				return null;
@@ -599,7 +599,7 @@ namespace EditorBase
 		protected void CreateResource(Type type, TreeNodeAdv baseNode)
 		{
 			string basePath = this.GetInsertActionTargetBasePath(baseNode != null ? baseNode.Tag as NodeBase : null);
-			string nameExt = "." + Resource.GetFileExtByType(type) + ".res";
+			string nameExt = "." + Resource.GetFileExtByType(type) + Resource.FileExt;
 			string resPath = PathHelper.GetFreePathName(Path.Combine(basePath, type.Name), nameExt);
 
 			Resource resInstance = ReflectionHelper.CreateInstanceOf(type) as Resource;
@@ -1065,6 +1065,10 @@ namespace EditorBase
 				from vn in this.folderView.SelectedNodes
 				where vn.Tag is NodeBase
 				select vn.Tag as NodeBase);
+			List<ContentRef<Resource>> selResData = new List<ContentRef<Resource>>(
+				from n in selNodeData
+				where n is ResourceNode
+				select (n as ResourceNode).ResLink);
 
 			bool noSelect = selNodeData.Count == 0;
 			bool singleSelect = selNodeData.Count == 1;
@@ -1094,6 +1098,39 @@ namespace EditorBase
 			this.showInExplorerToolStripMenuItem.Visible = singleSelect && !anyReadOnly;
 			this.toolStripSeparatorShowInExplorer.Visible = singleSelect && !anyReadOnly;
 
+			// Provide custom actions
+			Type mainResType = null;
+			if (selResData.Any())
+			{
+				mainResType = selResData.First().ResType;
+				if (selResData.Any(cr => cr.ResType != mainResType)) mainResType = null;
+			}
+			for (int i = this.contextMenuNode.Items.Count - 1; i >= 0; i--)
+			{
+				if (this.contextMenuNode.Items[i].Tag is CorePluginHelper.IEditorAction)
+					this.contextMenuNode.Items.RemoveAt(i);
+			}
+			if (mainResType != null)
+			{
+				this.toolStripSeparatorCustomActions.Visible = true;
+				int baseIndex = this.contextMenuNode.Items.IndexOf(this.toolStripSeparatorCustomActions);
+				var customActions = CorePluginHelper.RequestEditorActions(
+						mainResType, 
+						CorePluginHelper.ActionContext_ContextMenu)
+					.ToArray();
+				foreach (var actionEntry in customActions)
+				{
+					ToolStripMenuItem actionItem = new ToolStripMenuItem(actionEntry.Name, actionEntry.Icon);
+					actionItem.Click += this.customResourceActionItem_Click;
+					actionItem.Tag = actionEntry;
+					this.contextMenuNode.Items.Insert(baseIndex, actionItem);
+					baseIndex++;
+				}
+			}
+			else
+			{
+				this.toolStripSeparatorCustomActions.Visible = false;
+			}
 
 			// Populate the "New" menu
 			while (this.newToolStripMenuItem.DropDownItems.Count > 2) this.newToolStripMenuItem.DropDownItems.RemoveAt(2);
@@ -1141,6 +1178,24 @@ namespace EditorBase
 			if (e.ClickedItem == this.folderToolStripMenuItem) return;
 			this.CreateResource(e.ClickedItem.Tag as Type, this.folderView.SelectedNode);
 		}
+		private void customResourceActionItem_Click(object sender, EventArgs e)
+		{
+			List<NodeBase> selNodeData = new List<NodeBase>(
+				from vn in this.folderView.SelectedNodes
+				where vn.Tag is NodeBase
+				select vn.Tag as NodeBase);
+			List<ContentRef<Resource>> selResData = new List<ContentRef<Resource>>(
+				from n in selNodeData
+				where n is ResourceNode
+				select (n as ResourceNode).ResLink);
+
+			ToolStripMenuItem clickedItem = sender as ToolStripMenuItem;
+			CorePluginHelper.IEditorAction action = clickedItem.Tag as CorePluginHelper.IEditorAction;
+			foreach (ContentRef<Resource> resRef in selResData)
+			{
+				action.Perform(resRef.Res);
+			}
+		}
 
 		private void toolStripButtonWorkDir_Click(object sender, EventArgs e)
 		{
@@ -1164,7 +1219,7 @@ namespace EditorBase
 		private void EditorForm_ResourceCreated(object sender, ResourceEventArgs e)
 		{
 			// Register newly detected ressource file
-			if (File.Exists(e.Path) && Path.GetExtension(e.Path).ToLower() == ".res")
+			if (File.Exists(e.Path) && Path.GetExtension(e.Path) == Resource.FileExt)
 			{
 				NodeBase newNode = this.ScanFile(e.Path);
 
@@ -1244,7 +1299,7 @@ namespace EditorBase
 			}
 
 			// If neccessary, check if the file is a ressource file and add it, if yes
-			if (registerRes && Path.GetExtension(e.Path).ToLower() == ".res")
+			if (registerRes && Path.GetExtension(e.Path).ToLower() == Resource.FileExt)
 			{
 				node = this.ScanFile(e.Path);
 

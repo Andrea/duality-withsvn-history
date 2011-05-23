@@ -1,8 +1,6 @@
 ﻿
 -->	Usability
 	-->	Find some generalized, Plugin-friendly interface for defining such special behaviour:
-		-->	Pixmap context menu in ProjectFolderView: Create Texture.
-			-->	Same for Rightclick-DragDrop of a Pixmap somewhere else
 		-->	Dragdrop Material to SpriteRenderer: Set SharedMaterial
 		-->	Dragdrop Material to GameObject (both CamView & SceneView): If it has a SpriteRenderer, set SharedMaterial
 

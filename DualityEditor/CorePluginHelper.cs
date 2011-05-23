@@ -16,7 +16,7 @@ namespace DualityEditor
 		private interface IResEntry {}
 		private struct ImageResEntry : IResEntry
 		{
-			public	Image		img;
+			public	Image	img;
 			public	string	context;
 
 			public ImageResEntry(Image img, string context)
@@ -34,10 +34,66 @@ namespace DualityEditor
 				this.provider = provider;
 			}
 		}
+		private struct EditorActionEntry : IResEntry
+		{
+			public	IEditorAction	action;
+			public	string			context;
+
+			public EditorActionEntry(IEditorAction action, string context)
+			{
+				this.action = action;
+				this.context = context;
+			}
+		}
+
+		public interface IEditorAction
+		{
+			string Name { get; }
+			Image Icon { get; }
+
+			void Perform(object obj);
+		}
+		public class EditorAction<T> : IEditorAction
+		{
+			private	string		name;
+			private	Image		icon;
+			private	Action<T>	action;
+
+			public string Name
+			{
+				get { return this.name; }
+			}
+			public Image Icon
+			{
+				get { return this.icon; }
+			}
+			public Action<T> Action
+			{
+				get { return this.action; }
+			}
+
+			public EditorAction(string name, Image icon, Action<T> action)
+			{
+				this.name = name;
+				this.icon = icon;
+				this.action = action;
+			}
+
+			public void Perform(T obj)
+			{
+				this.action(obj);
+			}
+			void IEditorAction.Perform(object obj)
+			{
+				this.Perform((T)obj);
+			}
+		}
 
 		public const string ImageContext_Icon = "Icon";
+		public const string ActionContext_ContextMenu = "ContextMenu";
 
 		private	static	Dictionary<Type,List<IResEntry>>	corePluginRes	= new Dictionary<Type,List<IResEntry>>();
+
 
 		private static void RegisterCorePluginRes(Type type, IResEntry res)
 		{
@@ -84,6 +140,7 @@ namespace DualityEditor
 			yield break;
 		}
 
+
 		public static void RegisterTypeImage(Type type, Image image, string context)
 		{
 			RegisterCorePluginRes(type, new ImageResEntry(image, context));
@@ -101,6 +158,23 @@ namespace DualityEditor
 		{
 			return new List<PropertyGrid.IPropertyEditorProvider>(
 				RequestCorePluginRes<PropertyEditorProviderResEntry>(typeof(object)).Select(e => e.provider));
+		}
+
+		public static void RegisterEditorAction<T>(string name, Image icon, Action<T> action, string context)
+		{
+			RegisterCorePluginRes(typeof(T), new EditorActionEntry(new EditorAction<T>(name, icon, action), context));
+		}
+		public static IEnumerable<EditorAction<T>> RequestEditorActions<T>(string context)
+		{
+			return from entry in RequestCorePluginRes<EditorActionEntry>(typeof(T))
+				   where entry.context == context
+				   select entry.action as EditorAction<T>;
+		}
+		public static IEnumerable<IEditorAction> RequestEditorActions(Type type, string context)
+		{
+			return from entry in RequestCorePluginRes<EditorActionEntry>(type)
+				   where entry.context == context
+				   select entry.action;
 		}
 	}
 }

@@ -13,6 +13,8 @@ namespace Duality.Resources
 	[Serializable]
 	public class VertexShader : AbstractShader
 	{
+		public new const string FileExt = ".VertexShader" + Resource.FileExt;
+
 		public const string VirtualContentPath = ContentProvider.VirtualContentPath + "VertexShader:";
 		public const string ContentPath_Minimal	= VirtualContentPath + "Minimal";
 

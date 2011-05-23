@@ -16,6 +16,8 @@ namespace Duality.Resources
 	[Serializable]
 	public class RenderTarget : Resource
 	{
+		public new const string FileExt = ".RenderTarget" + Resource.FileExt;
+
 		public static readonly ContentRef<RenderTarget> None = ContentRef<RenderTarget>.Null;
 
 		private static int			maxFboSamples	= -1;

@@ -161,6 +161,9 @@
   <metadata name="contextMenuNode.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>742, 17</value>
   </metadata>
+  <data name="toolStripSeparatorCustomActions.Size" type="System.Drawing.Size, System.Drawing">
+    <value>158, 6</value>
+  </data>
   <data name="folderToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>107, 22</value>
   </data>
@@ -232,7 +235,7 @@
     <value>Show in Explorer</value>
   </data>
   <data name="contextMenuNode.Size" type="System.Drawing.Size, System.Drawing">
-    <value>162, 192</value>
+    <value>162, 198</value>
   </data>
   <data name="&gt;&gt;contextMenuNode.Name" xml:space="preserve">
     <value>contextMenuNode</value>
@@ -503,6 +506,12 @@
   </data>
   <data name="&gt;&gt;showInExplorerToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparatorCustomActions.Name" xml:space="preserve">
+    <value>toolStripSeparatorCustomActions</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparatorCustomActions.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;nodeStateIcon.Name" xml:space="preserve">
     <value>nodeStateIcon</value>

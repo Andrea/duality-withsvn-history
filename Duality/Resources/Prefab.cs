@@ -32,6 +32,8 @@ namespace Duality.Resources
 	[Serializable]
 	public class Prefab : Resource
 	{
+		public new const string FileExt = ".Prefab" + Resource.FileExt;
+
 		private	GameObject	objTree	= null;
 
 		public bool ContainsData

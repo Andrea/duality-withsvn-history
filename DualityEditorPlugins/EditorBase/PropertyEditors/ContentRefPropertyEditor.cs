@@ -67,6 +67,7 @@ namespace EditorBase.PropertyEditors
 
 				this.contentPath = first.Path;
 				this.labelLinkedTo.Text = first.ToString();
+				this.labelLinkedTo.ForeColor = first.IsAvailable ? SystemColors.ControlText : Color.Red;
 
 				bool pathSet = !String.IsNullOrEmpty(this.contentPath);
 
@@ -124,7 +125,9 @@ namespace EditorBase.PropertyEditors
 		private void buttonReload_Click(object sender, EventArgs e)
 		{
 			ContentProvider.UnregisterContent(this.contentPath);
-			ContentProvider.RequestContent(this.contentPath);
+
+			this.PerformSetValue();
+			this.OnValueEdited(this.DisplayedValue);
 			this.PerformGetValue();
 		}
 		

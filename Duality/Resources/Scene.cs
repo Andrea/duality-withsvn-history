@@ -12,6 +12,8 @@ namespace Duality.Resources
 	[Serializable]
 	public sealed class Scene : Resource
 	{
+		public new const string FileExt = ".Scene" + Resource.FileExt;
+
 		private	static	ContentRef<Scene>	current		= ContentRef<Scene>.Null;
 		private	static	bool				curAutoGen	= false;
 		public static Scene Current

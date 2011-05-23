@@ -14,6 +14,8 @@ namespace Duality.Resources
 	[Serializable]
 	public class ShaderProgram : Resource
 	{
+		public new const string FileExt = ".ShaderProgram" + Resource.FileExt;
+
 		public const string VirtualContentPath = ContentProvider.VirtualContentPath + "ShaderProgram:";
 		public const string ContentPath_Minimal	= VirtualContentPath + "Minimal";
 		public const string ContentPath_Picking	= VirtualContentPath + "Picking";

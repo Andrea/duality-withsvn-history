@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-using DualityEditor;
+using Duality;
 using Duality.Resources;
+
+using DualityEditor;
 
 namespace EditorBase
 {
@@ -16,16 +18,15 @@ namespace EditorBase
 			string ext = Path.GetExtension(srcFile).ToLower();
 			return ext == ".png" || ext == ".bmp" || ext == ".jpg";
 		}
-		public void ImportFile(string srcFile, string targetDir)
+		public void ImportFile(string srcFile, string targetName, string targetDir)
 		{
-			string[] output = this.GetOutputFiles(srcFile, targetDir);
+			string[] output = this.GetOutputFiles(srcFile, targetName, targetDir);
 			Pixmap res = new Pixmap(srcFile);
 			res.Save(output[0]);
 		}
-		public string[] GetOutputFiles(string srcFile, string targetDir)
+		public string[] GetOutputFiles(string srcFile, string targetName, string targetDir)
 		{
-			string targetResPath = Path.Combine(targetDir, Path.GetFileNameWithoutExtension(srcFile));
-			targetResPath += ".Pixmap.res";
+			string targetResPath = PathHelper.GetFreePathName(Path.Combine(targetDir, targetName), Pixmap.FileExt);
 			return new string[] { targetResPath };
 		}
 	}

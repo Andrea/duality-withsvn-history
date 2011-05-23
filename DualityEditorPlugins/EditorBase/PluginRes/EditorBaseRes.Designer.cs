@@ -61,6 +61,24 @@ namespace EditorBase.PluginRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Create Material ähnelt.
+        /// </summary>
+        public static string ActionName_CreateMaterial {
+            get {
+                return ResourceManager.GetString("ActionName_CreateMaterial", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Create Texture ähnelt.
+        /// </summary>
+        public static string ActionName_CreateTexture {
+            get {
+                return ResourceManager.GetString("ActionName_CreateTexture", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Angle: {0:F}° ähnelt.
         /// </summary>
         public static string CamView_Status_Angle {

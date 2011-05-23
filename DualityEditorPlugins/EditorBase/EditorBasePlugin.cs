@@ -130,6 +130,17 @@ namespace EditorBase
 			CorePluginHelper.RegisterTypeImage(typeof(Transform), PluginRes.EditorBaseRes.IconCmpTransform, CorePluginHelper.ImageContext_Icon);
 			CorePluginHelper.RegisterTypeImage(typeof(Camera), PluginRes.EditorBaseRes.IconCmpCamera, CorePluginHelper.ImageContext_Icon);
 
+			CorePluginHelper.RegisterEditorAction<Pixmap>(
+				PluginRes.EditorBaseRes.ActionName_CreateTexture, 
+				PluginRes.EditorBaseRes.IconResTexture,
+				this.ActionPixmapCreateTexture, 
+				CorePluginHelper.ActionContext_ContextMenu);
+			CorePluginHelper.RegisterEditorAction<Texture>(
+				PluginRes.EditorBaseRes.ActionName_CreateMaterial, 
+				PluginRes.EditorBaseRes.IconResMaterial,
+				this.ActionTextureCreateMaterial, 
+				CorePluginHelper.ActionContext_ContextMenu);
+
 			CorePluginHelper.RegisterPropertyEditorProvider(new PropertyEditors.PropertyEditorProvider());
 		}
 		public override void InitPlugin(MainForm main)
@@ -289,6 +300,21 @@ namespace EditorBase
 		private void menuItemUserData_Click(object sender, EventArgs e)
 		{
 			this.EditorForm.Select(this, new ObjectSelection(DualityApp.UserData));
+		}
+
+		private void ActionPixmapCreateTexture(Pixmap pixmap)
+		{
+			string pathExt = Path.GetExtension(pixmap.Path);
+			string texPath = PathHelper.GetFreePathName(pixmap.Path.Substring(0, pixmap.Path.Length - pathExt.Length), Texture.FileExt);
+			Texture tex = new Texture(pixmap);
+			tex.Save(texPath);
+		}
+		private void ActionTextureCreateMaterial(Texture tex)
+		{
+			string pathExt = Path.GetExtension(tex.Path);
+			string matPath = PathHelper.GetFreePathName(tex.Path.Substring(0, tex.Path.Length - pathExt.Length), Material.FileExt);
+			Material mat = new Material(DrawTechnique.Mask, ColorRGBA.White, tex);
+			mat.Save(matPath);
 		}
 	}
 }

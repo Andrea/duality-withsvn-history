@@ -77,6 +77,7 @@ namespace EditorBase.PropertyEditors
 					this.displayedNameExt = "";
 				}
 				this.tableLayout.Enabled = values.Any(o => o.PrefabLink != null);
+				this.labelPrefabLink.ForeColor = values.All(o => o.PrefabLink == null || o.PrefabLink.Prefab.IsAvailable) ? Color.Blue : Color.Red;
 
 				this.Invalidate();
 			}
@@ -205,7 +206,7 @@ namespace EditorBase.PropertyEditors
 			GameObject[] values = this.Getter().Cast<GameObject>().Where(o => o.PrefabLink != null).ToArray();
 			foreach (GameObject o in values)
 			{
-				if (o.PrefabLink != null)
+				if (o.PrefabLink != null && o.PrefabLink.Prefab.IsAvailable)
 				{
 					Prefab prefab = o.PrefabLink.Prefab.Res;
 

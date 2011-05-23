@@ -13,6 +13,8 @@ namespace Duality.Resources
 	[Serializable]
 	public class DrawTechnique : Resource
 	{
+		public new const string FileExt = ".DrawTechnique" + Resource.FileExt;
+
 		public const string VirtualContentPath = ContentProvider.VirtualContentPath + "DrawTechnique:";
 		public const string ContentPath_Solid		= VirtualContentPath + "Solid";
 		public const string ContentPath_Mask		= VirtualContentPath + "Mask";

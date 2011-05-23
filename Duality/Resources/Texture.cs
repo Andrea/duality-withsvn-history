@@ -23,6 +23,8 @@ namespace Duality.Resources
 	[Serializable]
 	public class Texture : Resource
 	{
+		public new const string FileExt = ".Texture" + Resource.FileExt;
+
 		public const string VirtualContentPath = ContentProvider.VirtualContentPath + "Texture:";
 		public const string ContentPath_DualityLogo256	= VirtualContentPath + "DualityLogo256";
 		public const string ContentPath_DualityLogoB256	= VirtualContentPath + "DualityLogoB256";
@@ -344,7 +346,7 @@ namespace Duality.Resources
 
 			this.SetupInfo();
 
-			Bitmap bm = this.basePixmap.IsExplicitNull ? null : this.basePixmap.Res.PixelData;
+			Bitmap bm = this.basePixmap.IsAvailable ? this.basePixmap.Res.PixelData : null;
 			if (bm != null)
 			{
 				this.AdjustSize(bm.Width, bm.Height);

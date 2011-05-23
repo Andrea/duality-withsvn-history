@@ -20,6 +20,8 @@ namespace Duality.Resources
 	[Serializable]
 	public class Pixmap : Resource
 	{
+		public new const string FileExt = ".Pixmap" + Resource.FileExt;
+
 		public const string VirtualContentPath = ContentProvider.VirtualContentPath + "Pixmap:";
 		public const string ContentPath_DualityLogo256	= VirtualContentPath + "DualityLogo256";
 		public const string ContentPath_DualityLogoB256	= VirtualContentPath + "DualityLogoB256";

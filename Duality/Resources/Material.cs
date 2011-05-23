@@ -13,6 +13,8 @@ namespace Duality.Resources
 	[Serializable]
 	public class Material : Resource
 	{
+		public new const string FileExt = ".Material" + Resource.FileExt;
+
 		public const string VirtualContentPath = ContentProvider.VirtualContentPath + "Material:";
 		public const string ContentPath_SolidWhite		= VirtualContentPath + "SolidWhite";
 		public const string ContentPath_InvertWhite		= VirtualContentPath + "InvertWhite";
@@ -104,7 +106,7 @@ namespace Duality.Resources
 	[Serializable]
 	public class BatchInfo : IEquatable<BatchInfo>
 	{
-		private	ContentRef<DrawTechnique>	technique	= ContentRef<DrawTechnique>.Null;
+		private	ContentRef<DrawTechnique>	technique	= DrawTechnique.Mask;
 		private	ColorFormat.ColorRGBA		mainColor	= ColorFormat.ColorRGBA.White;
 		private	Dictionary<string,ContentRef<Texture>>	textures	= null;
 		private	Dictionary<string,float[]>				uniforms	= null;

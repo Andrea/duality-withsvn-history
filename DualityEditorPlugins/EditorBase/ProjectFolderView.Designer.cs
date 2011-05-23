@@ -46,6 +46,7 @@
 			this.renameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparatorShowInExplorer = new System.Windows.Forms.ToolStripSeparator();
 			this.showInExplorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparatorCustomActions = new System.Windows.Forms.ToolStripSeparator();
 			this.nodeStateIcon = new Aga.Controls.Tree.NodeControls.NodeStateIcon();
 			this.nodeTextBoxName = new Aga.Controls.Tree.NodeControls.NodeTextBox();
 			this.timerFlashItem = new System.Windows.Forms.Timer(this.components);
@@ -114,6 +115,7 @@
 			// contextMenuNode
 			// 
 			this.contextMenuNode.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripSeparatorCustomActions,
             this.newToolStripMenuItem,
             this.toolStripSeparatorNew,
             this.cutToolStripMenuItem,
@@ -197,6 +199,11 @@
 			this.showInExplorerToolStripMenuItem.Name = "showInExplorerToolStripMenuItem";
 			resources.ApplyResources(this.showInExplorerToolStripMenuItem, "showInExplorerToolStripMenuItem");
 			this.showInExplorerToolStripMenuItem.Click += new System.EventHandler(this.showInExplorerToolStripMenuItem_Click);
+			// 
+			// toolStripSeparatorCustomActions
+			// 
+			this.toolStripSeparatorCustomActions.Name = "toolStripSeparatorCustomActions";
+			resources.ApplyResources(this.toolStripSeparatorCustomActions, "toolStripSeparatorCustomActions");
 			// 
 			// nodeStateIcon
 			// 
@@ -322,5 +329,6 @@
 		private System.Windows.Forms.Panel panelBottom;
 		private System.Windows.Forms.TextBox textBoxFilter;
 		private System.Windows.Forms.Label labelFilter;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparatorCustomActions;
 	}
 }

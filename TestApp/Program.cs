@@ -37,7 +37,7 @@ namespace TestApp
 			DualityApp.Keyboard = this.Keyboard;
 			DualityApp.Joysticks = this.Joysticks;
 
-			//Scene.Current = Scene.LoadFrom("scene.tmp");
+			//Scene.Current = Scene.LoadFrom("scene" + Scene.FileExt);
 			//return;
 
 #if GEN_PREFABS
@@ -73,9 +73,9 @@ namespace TestApp
 			Scene.Current.RegisterObj(obj3);
 
 			Prefab prefab1 = new Prefab(obj);
-			prefab1.Save("obj.prefab.res");
+			prefab1.Save("obj" + Prefab.FileExt);
 #else
-			ContentRef<Prefab> prefab1 = ContentProvider.RequestContent<Prefab>("obj.prefab.res");
+			ContentRef<Prefab> prefab1 = ContentProvider.RequestContent<Prefab>("obj" + Prefab.FileExt);
 			Scene.Current.Graph.RegisterObjDeep(prefab1.Res.Instantiate());
 #endif
 			
@@ -92,9 +92,9 @@ namespace TestApp
 			Scene.Current.RegisterObj(cam);
 
 			Prefab prefab2 = new Prefab(cam);
-			prefab2.Save("cam.prefab.res");
+			prefab2.Save("cam" + Prefab.FileExt);
 #else
-			ContentRef<Prefab> prefab2 = ContentProvider.RequestContent<Prefab>("cam.prefab.res");
+			ContentRef<Prefab> prefab2 = ContentProvider.RequestContent<Prefab>("cam" + Prefab.FileExt);
 			Scene.Current.Graph.RegisterObjDeep(prefab2.Res.Instantiate());
 #endif
 
@@ -111,9 +111,9 @@ namespace TestApp
 			Scene.Current.RegisterObj(cam2);
 
 			Prefab prefab3 = new Prefab(cam2);
-			prefab3.Save("cam2.prefab.res");
+			prefab3.Save("cam2" + Prefab.FileExt);
 #else
-			ContentRef<Prefab> prefab3 = ContentProvider.RequestContent<Prefab>("cam2.prefab.res");
+			ContentRef<Prefab> prefab3 = ContentProvider.RequestContent<Prefab>("cam2" + Prefab.FileExt);
 			Scene.Current.Graph.RegisterObjDeep(prefab3.Res.Instantiate());
 #endif
 
@@ -122,7 +122,7 @@ namespace TestApp
 			    CreateRandomRect();
 			}
 
-			Scene.Current.Save("scene.tmp");
+			Scene.Current.Save("scene" + Scene.FileExt);
 		}
 
 		/// <summary>

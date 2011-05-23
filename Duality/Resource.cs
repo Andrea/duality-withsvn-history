@@ -11,6 +11,8 @@ namespace Duality
 	[Serializable]
 	public abstract class Resource : IManageableObject, IDisposable
 	{
+		public const string FileExt = ".res";
+
 		private	static	List<Resource>	finalizeSched	= new List<Resource>();
 
 		[NonSerialized]	protected	string	path		= null;

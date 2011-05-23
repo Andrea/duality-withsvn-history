@@ -206,7 +206,7 @@ namespace DualityEditor.Forms
 			else if (!skipYetUnsaved)
 			{
 				string basePath = Path.Combine(EditorHelper.DataDirectory, "Scene");
-				string path = PathHelper.GetFreePathName(basePath, ".Scene.res");
+				string path = PathHelper.GetFreePathName(basePath, Scene.FileExt);
 				Scene.Current.Save(path);
 			}
 		}
@@ -302,8 +302,8 @@ namespace DualityEditor.Forms
 		/// <returns></returns>
 		public bool IsImportFileExisting(string filePath)
 		{
-			string srcFilePath, targetDir;
-			this.PrepareImportFilePaths(filePath, out srcFilePath, out targetDir);
+			string srcFilePath, targetName, targetDir;
+			this.PrepareImportFilePaths(filePath, out srcFilePath, out targetName, out targetDir);
 
 			// Does the source file already exist?
 			if (File.Exists(srcFilePath)) return true;
@@ -313,7 +313,7 @@ namespace DualityEditor.Forms
 			{
 				if (i.CanImportFile(srcFilePath))
 				{
-					foreach (string file in i.GetOutputFiles(srcFilePath, targetDir))
+					foreach (string file in i.GetOutputFiles(srcFilePath, targetName, targetDir))
 					{
 						if (File.Exists(file)) return true;
 					}
@@ -332,8 +332,8 @@ namespace DualityEditor.Forms
 		public bool ImportFile(string filePath)
 		{
 			// Determine & check paths
-			string srcFilePath, targetDir;
-			this.PrepareImportFilePaths(filePath, out srcFilePath, out targetDir);
+			string srcFilePath, targetName, targetDir;
+			this.PrepareImportFilePaths(filePath, out srcFilePath, out targetName, out targetDir);
 
 			// Assure the directory exists
 			Directory.CreateDirectory(Path.GetDirectoryName(srcFilePath));
@@ -353,7 +353,7 @@ namespace DualityEditor.Forms
 				if (i.CanImportFile(srcFilePath))
 				{
 					// Import it
-					i.ImportFile(srcFilePath, targetDir);
+					i.ImportFile(srcFilePath, targetName, targetDir);
 					GC.Collect();
 					GC.WaitForPendingFinalizers();
 					return true;
@@ -367,12 +367,17 @@ namespace DualityEditor.Forms
 		/// <param name="filePath"></param>
 		/// <param name="srcFilePath"></param>
 		/// <param name="targetDir"></param>
-		private void PrepareImportFilePaths(string filePath, out string srcFilePath, out string targetDir)
+		private void PrepareImportFilePaths(string filePath, out string srcFilePath, out string targetName, out string targetDir)
 		{
 			srcFilePath = PathHelper.MakePathRelative(filePath, EditorHelper.DataDirectory);
 			if (srcFilePath.Contains("..")) srcFilePath = Path.GetFileName(srcFilePath);
+
 			targetDir = Path.GetDirectoryName(Path.Combine(EditorHelper.DataDirectory, srcFilePath));
-			srcFilePath = Path.Combine(EditorHelper.SourceMediaDirectory, srcFilePath);
+			targetName = Path.GetFileNameWithoutExtension(filePath);
+
+			srcFilePath = PathHelper.GetFreePathName(
+				Path.Combine(EditorHelper.SourceMediaDirectory, Path.GetFileNameWithoutExtension(srcFilePath)), 
+				Path.GetExtension(srcFilePath));
 		}
 
 		protected bool DisplayConfirmImportOverwrite(string importFilePath)
@@ -782,7 +787,7 @@ namespace DualityEditor.Forms
 			if (File.Exists(e.FullPath))
 			{
 				// Register newly detected ressource file
-				if (Path.GetExtension(e.FullPath).ToLower() == ".res")
+				if (Path.GetExtension(e.FullPath) == Resource.FileExt)
 				{
 					this.OnResourceCreated(e.FullPath);
 				}

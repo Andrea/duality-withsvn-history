@@ -13,6 +13,8 @@ namespace Duality.Resources
 	[Serializable]
 	public class FragmentShader : AbstractShader
 	{
+		public new const string FileExt = ".FragmentShader" + Resource.FileExt;
+
 		public const string VirtualContentPath = ContentProvider.VirtualContentPath + "FragmentShader:";
 		public const string ContentPath_Minimal	= VirtualContentPath + "Minimal";
 		public const string ContentPath_Picking	= VirtualContentPath + "Picking";
