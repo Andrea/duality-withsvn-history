@@ -304,14 +304,14 @@ namespace EditorBase
 
 		private void ActionPixmapCreateTexture(Pixmap pixmap)
 		{
-			string pathExt = Path.GetExtension(pixmap.Path);
+			string pathExt = Pixmap.FileExt;
 			string texPath = PathHelper.GetFreePathName(pixmap.Path.Substring(0, pixmap.Path.Length - pathExt.Length), Texture.FileExt);
 			Texture tex = new Texture(pixmap);
 			tex.Save(texPath);
 		}
 		private void ActionTextureCreateMaterial(Texture tex)
 		{
-			string pathExt = Path.GetExtension(tex.Path);
+			string pathExt = Texture.FileExt;
 			string matPath = PathHelper.GetFreePathName(tex.Path.Substring(0, tex.Path.Length - pathExt.Length), Material.FileExt);
 			Material mat = new Material(DrawTechnique.Mask, ColorRGBA.White, tex);
 			mat.Save(matPath);

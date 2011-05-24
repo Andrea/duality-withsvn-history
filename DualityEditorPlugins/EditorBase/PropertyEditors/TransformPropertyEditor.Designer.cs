@@ -65,6 +65,7 @@
 			this.editorPosX = new System.Windows.Forms.NumericUpDown();
 			this.relativeValues = new System.Windows.Forms.CheckBox();
 			this.separatorPanel2 = new System.Windows.Forms.Panel();
+			this.editorDeriveAngle = new System.Windows.Forms.CheckBox();
 			this.tableLayout.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.editorAngleVelRad)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.editorAngleVelDeg)).BeginInit();
@@ -85,6 +86,7 @@
 			// 
 			this.tableLayout.BackColor = System.Drawing.Color.Transparent;
 			resources.ApplyResources(this.tableLayout, "tableLayout");
+			this.tableLayout.Controls.Add(this.editorDeriveAngle, 0, 7);
 			this.tableLayout.Controls.Add(this.editorAngleVelRad, 4, 5);
 			this.tableLayout.Controls.Add(this.labelAngleVelRad, 3, 5);
 			this.tableLayout.Controls.Add(this.editorAngleVelDeg, 2, 5);
@@ -117,13 +119,13 @@
 			this.tableLayout.Controls.Add(this.separatorPanel, 0, 3);
 			this.tableLayout.Controls.Add(this.labelPosX, 1, 0);
 			this.tableLayout.Controls.Add(this.editorPosX, 2, 0);
-			this.tableLayout.Controls.Add(this.relativeValues, 0, 7);
-			this.tableLayout.Controls.Add(this.separatorPanel2, 0, 7);
+			this.tableLayout.Controls.Add(this.relativeValues, 3, 7);
+			this.tableLayout.Controls.Add(this.separatorPanel2, 0, 6);
 			this.tableLayout.Name = "tableLayout";
 			// 
 			// editorAngleVelRad
 			// 
-			this.editorAngleVelRad.DecimalPlaces = 3;
+			this.editorAngleVelRad.DecimalPlaces = 4;
 			resources.ApplyResources(this.editorAngleVelRad, "editorAngleVelRad");
 			this.editorAngleVelRad.Increment = new decimal(new int[] {
             1,
@@ -150,7 +152,7 @@
 			// 
 			// editorAngleVelDeg
 			// 
-			this.editorAngleVelDeg.DecimalPlaces = 1;
+			this.editorAngleVelDeg.DecimalPlaces = 2;
 			resources.ApplyResources(this.editorAngleVelDeg, "editorAngleVelDeg");
 			this.editorAngleVelDeg.Maximum = new decimal(new int[] {
             1000,
@@ -438,7 +440,7 @@
 			// relativeValues
 			// 
 			resources.ApplyResources(this.relativeValues, "relativeValues");
-			this.tableLayout.SetColumnSpan(this.relativeValues, 7);
+			this.tableLayout.SetColumnSpan(this.relativeValues, 4);
 			this.relativeValues.Name = "relativeValues";
 			this.relativeValues.UseVisualStyleBackColor = true;
 			this.relativeValues.CheckedChanged += new System.EventHandler(this.relativeValues_CheckedChanged);
@@ -449,6 +451,14 @@
 			this.tableLayout.SetColumnSpan(this.separatorPanel2, 7);
 			resources.ApplyResources(this.separatorPanel2, "separatorPanel2");
 			this.separatorPanel2.Name = "separatorPanel2";
+			// 
+			// editorDeriveAngle
+			// 
+			resources.ApplyResources(this.editorDeriveAngle, "editorDeriveAngle");
+			this.tableLayout.SetColumnSpan(this.editorDeriveAngle, 3);
+			this.editorDeriveAngle.Name = "editorDeriveAngle";
+			this.editorDeriveAngle.UseVisualStyleBackColor = true;
+			this.editorDeriveAngle.CheckedChanged += new System.EventHandler(this.editorDeriveAngle_CheckedChanged);
 			// 
 			// TransformPropertyEditor
 			// 
@@ -511,6 +521,7 @@
 		private System.Windows.Forms.Label labelAngleDeg;
 		private System.Windows.Forms.CheckBox relativeValues;
 		private System.Windows.Forms.Panel separatorPanel2;
+		private System.Windows.Forms.CheckBox editorDeriveAngle;
 
 
 

@@ -121,11 +121,47 @@
   <data name="tableLayout.ColumnCount" type="System.Int32, mscorlib">
     <value>7</value>
   </data>
+  <data name="editorDeriveAngle.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="editorDeriveAngle.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Left</value>
+  </data>
+  <data name="editorDeriveAngle.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="editorDeriveAngle.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 124</value>
+  </data>
+  <data name="editorDeriveAngle.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 0, 3, 3</value>
+  </data>
+  <data name="editorDeriveAngle.Size" type="System.Drawing.Size, System.Drawing">
+    <value>84, 17</value>
+  </data>
+  <data name="editorDeriveAngle.TabIndex" type="System.Int32, mscorlib">
+    <value>35</value>
+  </data>
+  <data name="editorDeriveAngle.Text" xml:space="preserve">
+    <value>DeriveAngle</value>
+  </data>
+  <data name="&gt;&gt;editorDeriveAngle.Name" xml:space="preserve">
+    <value>editorDeriveAngle</value>
+  </data>
+  <data name="&gt;&gt;editorDeriveAngle.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;editorDeriveAngle.Parent" xml:space="preserve">
+    <value>tableLayout</value>
+  </data>
+  <data name="&gt;&gt;editorDeriveAngle.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
   <data name="editorAngleVelRad.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
   </data>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="editorAngleVelRad.Location" type="System.Drawing.Point, System.Drawing">
     <value>149, 96</value>
   </data>
@@ -148,7 +184,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;editorAngleVelRad.ZOrder" xml:space="preserve">
-    <value>0</value>
+    <value>1</value>
   </data>
   <data name="labelAngleVelRad.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -184,7 +220,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;labelAngleVelRad.ZOrder" xml:space="preserve">
-    <value>1</value>
+    <value>2</value>
   </data>
   <data name="editorAngleVelDeg.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
@@ -211,7 +247,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;editorAngleVelDeg.ZOrder" xml:space="preserve">
-    <value>2</value>
+    <value>3</value>
   </data>
   <data name="labelAngleVelDeg.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -247,7 +283,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;labelAngleVelDeg.ZOrder" xml:space="preserve">
-    <value>3</value>
+    <value>4</value>
   </data>
   <data name="editorVelZ.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
@@ -274,7 +310,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;editorVelZ.ZOrder" xml:space="preserve">
-    <value>4</value>
+    <value>5</value>
   </data>
   <data name="labelVelZ.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -310,7 +346,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;labelVelZ.ZOrder" xml:space="preserve">
-    <value>5</value>
+    <value>6</value>
   </data>
   <data name="editorVelY.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
@@ -337,7 +373,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;editorVelY.ZOrder" xml:space="preserve">
-    <value>6</value>
+    <value>7</value>
   </data>
   <data name="labelVelY.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -373,7 +409,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;labelVelY.ZOrder" xml:space="preserve">
-    <value>7</value>
+    <value>8</value>
   </data>
   <data name="editorVelX.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
@@ -400,7 +436,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;editorVelX.ZOrder" xml:space="preserve">
-    <value>8</value>
+    <value>9</value>
   </data>
   <data name="labelVelX.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -436,7 +472,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;labelVelX.ZOrder" xml:space="preserve">
-    <value>9</value>
+    <value>10</value>
   </data>
   <data name="editorAngleRad.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
@@ -463,7 +499,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;editorAngleRad.ZOrder" xml:space="preserve">
-    <value>10</value>
+    <value>11</value>
   </data>
   <data name="labelAngleRad.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -499,7 +535,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;labelAngleRad.ZOrder" xml:space="preserve">
-    <value>11</value>
+    <value>12</value>
   </data>
   <data name="editorAngleDeg.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
@@ -526,7 +562,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;editorAngleDeg.ZOrder" xml:space="preserve">
-    <value>12</value>
+    <value>13</value>
   </data>
   <data name="labelAngleDeg.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -562,7 +598,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;labelAngleDeg.ZOrder" xml:space="preserve">
-    <value>13</value>
+    <value>14</value>
   </data>
   <data name="editorScaleZ.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
@@ -589,7 +625,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;editorScaleZ.ZOrder" xml:space="preserve">
-    <value>14</value>
+    <value>15</value>
   </data>
   <data name="labelScaleZ.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -625,7 +661,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;labelScaleZ.ZOrder" xml:space="preserve">
-    <value>15</value>
+    <value>16</value>
   </data>
   <data name="editorScaleY.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
@@ -652,7 +688,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;editorScaleY.ZOrder" xml:space="preserve">
-    <value>16</value>
+    <value>17</value>
   </data>
   <data name="labelScaleY.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -688,7 +724,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;labelScaleY.ZOrder" xml:space="preserve">
-    <value>17</value>
+    <value>18</value>
   </data>
   <data name="editorScaleX.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
@@ -715,7 +751,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;editorScaleX.ZOrder" xml:space="preserve">
-    <value>18</value>
+    <value>19</value>
   </data>
   <data name="labelScaleX.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -751,7 +787,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;labelScaleX.ZOrder" xml:space="preserve">
-    <value>19</value>
+    <value>20</value>
   </data>
   <data name="editorPosZ.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
@@ -778,7 +814,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;editorPosZ.ZOrder" xml:space="preserve">
-    <value>20</value>
+    <value>21</value>
   </data>
   <data name="labelPosZ.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -814,7 +850,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;labelPosZ.ZOrder" xml:space="preserve">
-    <value>21</value>
+    <value>22</value>
   </data>
   <data name="editorPosY.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
@@ -841,7 +877,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;editorPosY.ZOrder" xml:space="preserve">
-    <value>22</value>
+    <value>23</value>
   </data>
   <data name="labelPosY.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -877,7 +913,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;labelPosY.ZOrder" xml:space="preserve">
-    <value>23</value>
+    <value>24</value>
   </data>
   <data name="labelAngleVel.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -913,7 +949,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;labelAngleVel.ZOrder" xml:space="preserve">
-    <value>24</value>
+    <value>25</value>
   </data>
   <data name="labelVel.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -949,7 +985,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;labelVel.ZOrder" xml:space="preserve">
-    <value>25</value>
+    <value>26</value>
   </data>
   <data name="labelAngle.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -985,7 +1021,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;labelAngle.ZOrder" xml:space="preserve">
-    <value>26</value>
+    <value>27</value>
   </data>
   <data name="labelScale.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -1021,7 +1057,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;labelScale.ZOrder" xml:space="preserve">
-    <value>27</value>
+    <value>28</value>
   </data>
   <data name="labelPos.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -1057,7 +1093,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;labelPos.ZOrder" xml:space="preserve">
-    <value>28</value>
+    <value>29</value>
   </data>
   <data name="separatorPanel.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
@@ -1081,7 +1117,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;separatorPanel.ZOrder" xml:space="preserve">
-    <value>29</value>
+    <value>30</value>
   </data>
   <data name="labelPosX.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -1117,7 +1153,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;labelPosX.ZOrder" xml:space="preserve">
-    <value>30</value>
+    <value>31</value>
   </data>
   <data name="editorPosX.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
@@ -1144,13 +1180,16 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;editorPosX.ZOrder" xml:space="preserve">
-    <value>31</value>
+    <value>32</value>
   </data>
   <data name="relativeValues.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="relativeValues.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Right</value>
+  </data>
+  <data name="relativeValues.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
   </data>
   <data name="relativeValues.Location" type="System.Drawing.Point, System.Drawing">
     <value>168, 124</value>
@@ -1159,7 +1198,7 @@
     <value>3, 0, 3, 3</value>
   </data>
   <data name="relativeValues.Size" type="System.Drawing.Size, System.Drawing">
-    <value>124, 18</value>
+    <value>124, 17</value>
   </data>
   <data name="relativeValues.TabIndex" type="System.Int32, mscorlib">
     <value>34</value>
@@ -1177,7 +1216,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;relativeValues.ZOrder" xml:space="preserve">
-    <value>32</value>
+    <value>33</value>
   </data>
   <data name="separatorPanel2.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
@@ -1201,7 +1240,7 @@
     <value>tableLayout</value>
   </data>
   <data name="&gt;&gt;separatorPanel2.ZOrder" xml:space="preserve">
-    <value>33</value>
+    <value>34</value>
   </data>
   <data name="tableLayout.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
@@ -1213,7 +1252,7 @@
     <value>0, 0, 0, 0</value>
   </data>
   <data name="tableLayout.RowCount" type="System.Int32, mscorlib">
-    <value>8</value>
+    <value>9</value>
   </data>
   <data name="tableLayout.Size" type="System.Drawing.Size, System.Drawing">
     <value>295, 145</value>
@@ -1234,7 +1273,7 @@
     <value>0</value>
   </data>
   <data name="tableLayout.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
-    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="editorAngleVelRad" Row="5" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="labelAngleVelRad" Row="5" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="editorAngleVelDeg" Row="5" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="labelAngleVelDeg" Row="5" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="editorVelZ" Row="4" RowSpan="1" Column="6" ColumnSpan="1" /&gt;&lt;Control Name="labelVelZ" Row="4" RowSpan="1" Column="5" ColumnSpan="1" /&gt;&lt;Control Name="editorVelY" Row="4" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="labelVelY" Row="4" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="editorVelX" Row="4" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="labelVelX" Row="4" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="editorAngleRad" Row="2" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="labelAngleRad" Row="2" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="editorAngleDeg" Row="2" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="labelAngleDeg" Row="2" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="editorScaleZ" Row="1" RowSpan="1" Column="6" ColumnSpan="1" /&gt;&lt;Control Name="labelScaleZ" Row="1" RowSpan="1" Column="5" ColumnSpan="1" /&gt;&lt;Control Name="editorScaleY" Row="1" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="labelScaleY" Row="1" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="editorScaleX" Row="1" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="labelScaleX" Row="1" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="editorPosZ" Row="0" RowSpan="1" Column="6" ColumnSpan="1" /&gt;&lt;Control Name="labelPosZ" Row="0" RowSpan="1" Column="5" ColumnSpan="1" /&gt;&lt;Control Name="editorPosY" Row="0" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="labelPosY" Row="0" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="labelAngleVel" Row="5" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="labelVel" Row="4" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="labelAngle" Row="2" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="labelScale" Row="1" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="labelPos" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="separatorPanel" Row="3" RowSpan="1" Column="0" ColumnSpan="7" /&gt;&lt;Control Name="labelPosX" Row="0" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="editorPosX" Row="0" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="relativeValues" Row="7" RowSpan="1" Column="0" ColumnSpan="7" /&gt;&lt;Control Name="separatorPanel2" Row="7" RowSpan="1" Column="0" ColumnSpan="7" /&gt;&lt;/Controls&gt;&lt;Columns Styles="AutoSize,0,AutoSize,0,Percent,33,33333,AutoSize,0,Percent,33,33333,AutoSize,0,Percent,33,33333" /&gt;&lt;Rows Styles="AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,Absolute,20" /&gt;&lt;/TableLayoutSettings&gt;</value>
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="editorDeriveAngle" Row="7" RowSpan="1" Column="0" ColumnSpan="3" /&gt;&lt;Control Name="editorAngleVelRad" Row="5" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="labelAngleVelRad" Row="5" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="editorAngleVelDeg" Row="5" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="labelAngleVelDeg" Row="5" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="editorVelZ" Row="4" RowSpan="1" Column="6" ColumnSpan="1" /&gt;&lt;Control Name="labelVelZ" Row="4" RowSpan="1" Column="5" ColumnSpan="1" /&gt;&lt;Control Name="editorVelY" Row="4" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="labelVelY" Row="4" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="editorVelX" Row="4" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="labelVelX" Row="4" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="editorAngleRad" Row="2" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="labelAngleRad" Row="2" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="editorAngleDeg" Row="2" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="labelAngleDeg" Row="2" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="editorScaleZ" Row="1" RowSpan="1" Column="6" ColumnSpan="1" /&gt;&lt;Control Name="labelScaleZ" Row="1" RowSpan="1" Column="5" ColumnSpan="1" /&gt;&lt;Control Name="editorScaleY" Row="1" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="labelScaleY" Row="1" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="editorScaleX" Row="1" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="labelScaleX" Row="1" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="editorPosZ" Row="0" RowSpan="1" Column="6" ColumnSpan="1" /&gt;&lt;Control Name="labelPosZ" Row="0" RowSpan="1" Column="5" ColumnSpan="1" /&gt;&lt;Control Name="editorPosY" Row="0" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="labelPosY" Row="0" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="labelAngleVel" Row="5" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="labelVel" Row="4" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="labelAngle" Row="2" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="labelScale" Row="1" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="labelPos" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="separatorPanel" Row="3" RowSpan="1" Column="0" ColumnSpan="7" /&gt;&lt;Control Name="labelPosX" Row="0" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="editorPosX" Row="0" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="relativeValues" Row="7" RowSpan="1" Column="3" ColumnSpan="4" /&gt;&lt;Control Name="separatorPanel2" Row="6" RowSpan="1" Column="0" ColumnSpan="7" /&gt;&lt;/Controls&gt;&lt;Columns Styles="AutoSize,0,AutoSize,0,Percent,33,33333,AutoSize,0,Percent,33,33333,AutoSize,0,Percent,33,33333" /&gt;&lt;Rows Styles="AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,Absolute,20" /&gt;&lt;/TableLayoutSettings&gt;</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>

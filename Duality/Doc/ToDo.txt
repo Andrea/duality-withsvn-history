@@ -1,5 +1,36 @@
 ﻿
+-->	Determine which Visual Studio edition is present: Express or any other?
+	-->	If Express, create express solution, "normal" solution otherwise
+	-->	If Express, disable debug functionality, won't work here
+
+-->	Checklist for first Game: Asteroids
+	-->	Sound! Create a flexible, OpenAL-based sound system for Duality
+		-->	Both 2D and 3D
+			-->	2D are global, subset of them: budget-based audio pads (music, environment, ...)
+			-->	3D are local, require a position in space. Optional: GameObject reference
+				as parent object, treating own position as offset.
+			-->	SoundListener Component type. Unlike in Unity, there can be more than 1 (Splitscreen!)
+			-->	SoundEmitter Component type. For placing loop sounds in the level and having an
+				easy way to play sound effect without always having to create a custom Component
+				invoking the SoundManagers PlaySound methods
+		-->	Global sound manager (DualityApp.Sound), sounds are played by calling methods there,
+			returns reference to a sound instance
+		-->	Sound Resources
+			-->	AudioData : Resource	-->	Wraps up OggVorbis compressed data
+			-->	Sound : Resource		-->	References AudioData, holds attributes
+		-->	Streaming support for pads / music / unique sounds, streaming directly from memory
+	-->	Any Usability stuff that comes up while editing / creating the game
+
+	-->	Title Scene
+	-->	Game Scene (No levels, dynamically creates stages)
+	-->	Highscore Scene
+
+
 -->	Usability
+	-->	If a SpriteRenderer is attached a Material, consider auto-updating the Rect
+	-->	Non-Parallax objects shouldn't be pickable in a parallax CamView
+		-->	Selective picking / picking predicate
+	-->	Is it possible to recover from deleting classes in a plugin that are still used?
 	-->	Find some generalized, Plugin-friendly interface for defining such special behaviour:
 		-->	Dragdrop Material to SpriteRenderer: Set SharedMaterial
 		-->	Dragdrop Material to GameObject (both CamView & SceneView): If it has a SpriteRenderer, set SharedMaterial

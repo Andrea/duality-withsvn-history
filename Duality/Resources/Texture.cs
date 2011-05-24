@@ -399,10 +399,10 @@ namespace Duality.Resources
 						this.curUVRatio.Y = (float)this.height / (float)this.oglHeight;
 					}
 					else
-					{
 						this.curUVRatio = Vector2.One;
-					}
 				}
+				else
+					this.curUVRatio = Vector2.One;
 			}
 		}
 		public void SetupInfo()

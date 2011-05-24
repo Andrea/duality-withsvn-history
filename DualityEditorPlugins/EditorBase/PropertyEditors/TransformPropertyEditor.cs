@@ -83,6 +83,14 @@ namespace EditorBase.PropertyEditors
 
 			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionHelper.Property_Transform_RelativeAngleVel);
 		}
+		public void PerformSetDeriveAngle()
+		{
+			Transform[] values = this.Getter().Cast<Transform>().ToArray();
+
+			foreach (Transform t in values) t.DeriveAngle = this.editorDeriveAngle.Checked;
+
+			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionHelper.Property_Transform_DeriveAngle);
+		}
 
 		public override void PerformGetValue()
 		{
@@ -95,7 +103,8 @@ namespace EditorBase.PropertyEditors
 			{
 				Vector3 pos, scale, vel;
 				float angle, angleVel;
-				bool[] multiple = new bool[5];
+				bool deriveAngle;
+				bool[] multiple = new bool[6];
 
 				if (this.relativeValues.Checked)
 				{
@@ -143,6 +152,10 @@ namespace EditorBase.PropertyEditors
 					angleVel = values.Average(t => t.AngleVel);
 					multiple[4] = values.Any(t => t.AngleVel != values.First().AngleVel);
 				}
+
+				deriveAngle = values.First().DeriveAngle;
+				multiple[5] = values.Any(t => t.DeriveAngle != deriveAngle);
+
 				angle = MathF.NormalizeAngle(angle);
 
 				this.editorPosX.Value = (decimal)pos.X;
@@ -172,6 +185,10 @@ namespace EditorBase.PropertyEditors
 				this.editorAngleVelDeg.Value = (decimal)MathF.RadToDeg(angleVel);
 				this.editorAngleVelRad.BackColor = this.editorAngleVelDeg.BackColor = 
 					multiple[4] ? this.BackColorMultiple : this.BackColorDefault;
+
+				this.editorDeriveAngle.CheckState = 
+					multiple[5] ? CheckState.Indeterminate : 
+					(deriveAngle ? CheckState.Checked : CheckState.Unchecked);
 
 				this.Invalidate();
 			}
@@ -312,6 +329,12 @@ namespace EditorBase.PropertyEditors
 		{
 			if (this.updatingFromObj) return;
 			this.PerformSetAngleVel(false);
+			this.PerformGetValue();
+		}
+		private void editorDeriveAngle_CheckedChanged(object sender, EventArgs e)
+		{
+			if (this.updatingFromObj) return;
+			this.PerformSetDeriveAngle();
 			this.PerformGetValue();
 		}
 	}

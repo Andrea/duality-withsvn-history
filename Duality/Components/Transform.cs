@@ -15,6 +15,7 @@ namespace Duality.Components
 		private		float		angle			= 0.0f;
 		private		float		angleVel		= 0.0f;
 		private		Vector3		scale			= Vector3.One;
+		private		bool		deriveAngle		= true;
 
 		// Cached values, recalc on change
 		private		Transform	parentTransform	= null;
@@ -48,6 +49,32 @@ namespace Duality.Components
 		{
 			get { return this.scale; }
 			set { this.scale = value; this.UpdateAbs(); }
+		}
+		public bool DeriveAngle
+		{
+			get { return this.deriveAngle; }
+			set { this.deriveAngle = value; this.UpdateAbs(); }
+		}
+
+		public Vector3 RelativeForward
+		{
+			get 
+			{ 
+				return new Vector3(
+					MathF.Sin(this.RelativeAngle),
+					-MathF.Cos(this.RelativeAngle),
+					0.0f);
+			}
+		}
+		public Vector3 RelativeRight
+		{
+			get 
+			{
+				return new Vector3(
+					-MathF.Cos(this.RelativeAngle),
+					-MathF.Sin(this.RelativeAngle),
+					0.0f);
+			}
 		}
 
 		public Vector3 Pos
@@ -107,14 +134,10 @@ namespace Duality.Components
 			{ 
 				this.angleAbs = value;
 
-				if (this.parentTransform != null)
-				{
+				if (this.parentTransform != null && this.deriveAngle)
 					this.angle = this.angleAbs - this.parentTransform.angleAbs;
-				}
 				else
-				{
 					this.angle = value;
-				}
 
 				this.UpdateAbs(true);
 			}
@@ -126,14 +149,10 @@ namespace Duality.Components
 			{ 
 				this.angleVelAbs = value;
 
-				if (this.parentTransform != null)
-				{
+				if (this.parentTransform != null && this.deriveAngle)
 					this.angleVel = this.angleVelAbs - this.parentTransform.angleVelAbs;
-				}
 				else
-				{
 					this.angleVel = value;
-				}
 
 				this.UpdateAbs(true);
 			}
@@ -157,6 +176,27 @@ namespace Duality.Components
 				}
 
 				this.UpdateAbs(true);
+			}
+		}
+
+		public Vector3 Forward
+		{
+			get 
+			{ 
+				return new Vector3(
+					MathF.Sin(this.Angle),
+					-MathF.Cos(this.Angle),
+					0.0f);
+			}
+		}
+		public Vector3 Right
+		{
+			get 
+			{
+				return new Vector3(
+					-MathF.Cos(this.Angle),
+					-MathF.Sin(this.Angle),
+					0.0f);
 			}
 		}
 
@@ -244,13 +284,16 @@ namespace Duality.Components
 		}
 		private void Parent_EventComponentRemoving(object sender, ComponentEventArgs e)
 		{
-			Transform cmpTransform = e.Component as Transform;
-			if (cmpTransform == this.parentTransform)
+			if (this.parentTransform != null)
 			{
-				cmpTransform.GameObj.EventComponentAdded += this.Parent_EventComponentAdded;
-				cmpTransform.GameObj.EventComponentRemoving -= this.Parent_EventComponentRemoving;
-				this.parentTransform = null;
-				this.UpdateAbs();
+				Transform cmpTransform = e.Component as Transform;
+				if (cmpTransform == this.parentTransform)
+				{
+					cmpTransform.GameObj.EventComponentAdded += this.Parent_EventComponentAdded;
+					cmpTransform.GameObj.EventComponentRemoving -= this.Parent_EventComponentRemoving;
+					this.parentTransform = null;
+					this.UpdateAbs();
+				}
 			}
 		}
 
@@ -268,9 +311,17 @@ namespace Duality.Components
 				}
 				else
 				{
-					this.angleAbs = this.angle + this.parentTransform.angleAbs;
-					this.angleAbs = MathF.NormalizeAngle(this.angleAbs);
-					this.angleVelAbs = this.angleVel + this.parentTransform.angleVelAbs;
+					if (this.deriveAngle)
+					{
+						this.angleAbs = this.angle + this.parentTransform.angleAbs;
+						this.angleAbs = MathF.NormalizeAngle(this.angleAbs);
+						this.angleVelAbs = this.angleVel + this.parentTransform.angleVelAbs;
+					}
+					else
+					{
+						this.angleAbs = this.angle;
+						this.angleVelAbs = this.angleVel;
+					}
 					Vector3.Multiply(ref this.scale, ref this.parentTransform.scaleAbs, out this.scaleAbs);
 
 					Vector3.Multiply(ref this.pos, ref this.parentTransform.scaleAbs, out this.posAbs);
@@ -301,6 +352,7 @@ namespace Duality.Components
 			t.angle		= this.angle;
 			t.angleVel	= this.angleVel;
 			t.scale		= this.scale;
+			t.deriveAngle = this.deriveAngle;
 			t.UpdateAbs();
 		}
 	}
