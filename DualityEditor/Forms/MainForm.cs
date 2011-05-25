@@ -672,7 +672,8 @@ namespace DualityEditor.Forms
 			if (args.IsDirectory)	ContentProvider.RenameContentTree(args.OldPath, args.Path);
 			else					ContentProvider.RenameContent(args.OldPath, args.Path);
 
-			// If we just renamed the currently loaded scene, relocate it
+			// If we just renamed the currently loaded scene, relocate it.
+			// Doesn't trigger if done properly from inside the editor.
 			if (Scene.CurrentPath == oldPath) Scene.Current = Resource.LoadResource<Scene>(path);
 
 			if (this.ResourceRenamed != null) this.ResourceRenamed(this, args);

@@ -36,11 +36,13 @@ namespace Duality.Resources
 					current.Res = (value != null) ? value : new Scene();
 					OnEntered();
 				}
+				else
+					current.Res = (value != null) ? value : new Scene();
 			}
 		}
 		public static string CurrentPath
 		{
-			get { return current.Path; }
+			get { return current.Res != null ? current.Res.Path : current.Path; }
 		}
 
 		public static event EventHandler Leaving;

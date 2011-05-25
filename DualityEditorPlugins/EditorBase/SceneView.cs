@@ -1197,6 +1197,8 @@ namespace EditorBase
 		}
 		private void EditorForm_ResourceRenamed(object sender, ResourceRenamedEventArgs e)
 		{
+			if (e.Path == Scene.CurrentPath) this.UpdateSceneLabel();
+
 			if (!e.IsDirectory && !typeof(Prefab).IsAssignableFrom(e.ContentType)) return;
 			this.UpdatePrefabLinkStatus();
 		}
