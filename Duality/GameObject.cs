@@ -19,7 +19,7 @@ namespace Duality
 		private		List<GameObject>			children	= null;
 		private		Dictionary<Type,Component>	compMap		= new Dictionary<Type,Component>();
 		private		List<Component>				compList	= new List<Component>();
-		private		string						name		= "obj" + DualityApp.Rnd.Next().ToString();
+		private		string						name		= "obj" + MathF.Rnd.Next().ToString();
 		private		bool						active		= true;
 		private		bool						disposed	= false;
 

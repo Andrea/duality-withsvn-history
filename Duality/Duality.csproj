@@ -87,7 +87,6 @@
     <Compile Include="Log.cs" />
     <Compile Include="ObjectManager.cs" />
     <Compile Include="MathF.cs" />
-    <Compile Include="ObjectManagers\RessourceManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rect.cs" />
     <Compile Include="ObjectManagers\RendererManager.cs" />

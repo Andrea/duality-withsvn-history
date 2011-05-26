@@ -74,7 +74,6 @@ namespace Duality
 		private	static	MouseDevice				mouse				= null;
 		private	static	KeyboardDevice			keyboard			= null;
 		private	static	IList<JoystickDevice>	joysticks			= null;
-		private	static	Random					rnd					= null;
 		private	static	ExecutionContext		execContext			= ExecutionContext.Terminated;
 		private	static	DualityAppData			appData				= null;
 		private	static	DualityUserData			userData			= null;
@@ -112,11 +111,6 @@ namespace Duality
 		{
 			get { return joysticks; }
 			set { joysticks = value; }
-		}
-		public static Random Rnd
-		{
-			get { return rnd; }
-			set { rnd = value; if (rnd == null) rnd = new Random(); }
 		}
 		public static DualityAppData AppData
 		{
@@ -179,7 +173,6 @@ namespace Duality
 			}
 
 			execContext = context;
-			rnd = new Random((int)(DateTime.Now.Ticks % (long)int.MaxValue));
 			plugins = new Dictionary<string,Assembly>();
 			availTypeDict = new Dictionary<Type,List<Type>>();
 			pluginTypeBinder = new PluginSerializationBinder();

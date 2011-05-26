@@ -24,5 +24,18 @@ namespace Duality
 				list[i + 1] = key;
 			}
 		}
+
+		public static int IndexOfFirst<T>(this IList<T> collection, T val) where T : class
+		{
+			for (int i = 0; i < collection.Count; i++)
+				if (collection[i] == val) return i;
+			return -1;
+		}
+		public static int IndexOfFirst<T>(this IList<T> collection, Predicate<T> pred) where T : class
+		{
+			for (int i = 0; i < collection.Count; i++)
+				if (pred(collection[i])) return i;
+			return -1;
+		}
 	}
 }

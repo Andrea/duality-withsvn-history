@@ -24,7 +24,7 @@ namespace Duality
 		public const float RadAngle180 = Pi;
 		public const float RadAngle360 = TwoPi;
 
-		private static Random rnd = new Random();
+		private static Random rnd = new Random((int)(DateTime.Now.Ticks % (long)int.MaxValue));
 		public static Random Rnd
 		{
 			get { return rnd; }
