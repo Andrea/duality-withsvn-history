@@ -140,6 +140,15 @@ namespace DualityEditor.Forms
 
 			this.dualityAppSuspended = false;
 			Application.Idle += this.Application_Idle;
+
+			int source = OpenTK.Audio.OpenAL.AL.GenSource();
+			OpenTK.Audio.OpenAL.AL.Source(source, OpenTK.Audio.OpenAL.ALSourcei.Buffer, Sound.DroneLoop.Res.AlBuffer);
+			OpenTK.Audio.OpenAL.AL.SourcePlay(source);
+
+			MessageBox.Show("test");
+
+			OpenTK.Audio.OpenAL.AL.SourceStop(source);
+			OpenTK.Audio.OpenAL.AL.DeleteSource(source);
 		}
 
 		public ToolStripMenuItem RequestMenu(string menuPath)

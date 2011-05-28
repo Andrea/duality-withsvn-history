@@ -73,6 +73,7 @@ namespace Duality
 		private	static	GraphicsMode			defaultMode			= null;
 		private	static	MouseDevice				mouse				= null;
 		private	static	KeyboardDevice			keyboard			= null;
+		private	static	SoundDevice				sound				= null;
 		private	static	IList<JoystickDevice>	joysticks			= null;
 		private	static	ExecutionContext		execContext			= ExecutionContext.Terminated;
 		private	static	DualityAppData			appData				= null;
@@ -106,6 +107,10 @@ namespace Duality
 		{
 			get { return keyboard; }
 			set { keyboard = value; }
+		}
+		public static SoundDevice Sound
+		{
+			get { return sound; }
 		}
 		public static IList<JoystickDevice> Joysticks
 		{
@@ -198,6 +203,8 @@ namespace Duality
 			Log.Core.Write("DualityApp initialized");
 			Log.Core.Write("Debug Mode: {0}", System.Diagnostics.Debugger.IsAttached);
 			Log.Core.Write("Command line arguments: {0}", args != null ? args.ToString(", ") : "null");
+
+			sound = new SoundDevice();
 			LoadPlugins();
 
 			initialized = true;

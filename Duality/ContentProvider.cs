@@ -211,6 +211,8 @@ namespace Duality
 			Pixmap.InitDefaultContent();
 			Texture.InitDefaultContent();
 			Material.InitDefaultContent();
+			AudioData.InitDefaultContent();
+			Sound.InitDefaultContent();
 
 			// Make a list of all default content available
 			foreach (KeyValuePair<string,Resource> pair in resLibrary)

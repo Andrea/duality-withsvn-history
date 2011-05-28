@@ -35,10 +35,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <PlatformTarget>x86</PlatformTarget>
     <OutputPath>bin\x86\Debug\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <PlatformTarget>x86</PlatformTarget>
     <OutputPath>bin\x86\Release\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="OpenTK, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
@@ -72,6 +74,7 @@
     <Compile Include="ExtMethodsString.cs" />
     <Compile Include="GraphicsModeComparer.cs" />
     <Compile Include="ExtMethodsIEnumerable.cs" />
+    <Compile Include="OggVorbis\OggVorbis.cs" />
     <Compile Include="PathHelper.cs" />
     <Compile Include="ReflectionHelper.cs" />
     <Compile Include="ColorFormat\ColorRGBA.cs" />
@@ -92,17 +95,20 @@
     <Compile Include="ObjectManagers\RendererManager.cs" />
     <Compile Include="Resource.cs" />
     <Compile Include="Resources\AbstractShader.cs" />
+    <Compile Include="Resources\AudioData.cs" />
     <Compile Include="Resources\DrawTechnique.cs" />
     <Compile Include="Resources\FragmentShader.cs" />
     <Compile Include="Resources\ShaderProgram.cs" />
     <Compile Include="Resources\Material.cs" />
     <Compile Include="Resources\RenderTarget.cs" />
+    <Compile Include="Resources\Sound.cs" />
     <Compile Include="Resources\Texture.cs" />
     <Compile Include="Resources\Pixmap.cs" />
     <Compile Include="Resources\Prefab.cs" />
     <Compile Include="Resources\VertexShader.cs" />
     <Compile Include="RtfWriterLogOutput.cs" />
     <Compile Include="Resources\Scene.cs" />
+    <Compile Include="SoundDevice.cs" />
     <Compile Include="TextWriterLogOutput.cs" />
     <Compile Include="Time.cs" />
     <Compile Include="VertexFormat\IVertexData.cs" />
@@ -110,13 +116,30 @@
     <Compile Include="VertexFormat\VertexP3T2.cs" />
     <Compile Include="VertexFormat\VertexP3.cs" />
     <Compile Include="VertexFormat\VertexC4P3.cs" />
+    <Compile Include="OggVorbis\NativeMethods.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Doc\ICmpTypes.txt" />
     <Content Include="Doc\Konzept.txt" />
     <Content Include="Doc\ToDo.txt" />
+    <Content Include="OggvorbisDotNet.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OpenAL32.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="wrap_oal.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <EmbeddedResource Include="Resources\Default\DualityLogo256.png" />
     <EmbeddedResource Include="Resources\Default\DualityLogoB256.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Default\DroneLoop.ogg" />
+    <EmbeddedResource Include="Resources\Default\LogoJingle.ogg" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Default\Beep.ogg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
