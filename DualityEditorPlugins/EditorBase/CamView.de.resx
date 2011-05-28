@@ -118,6 +118,32 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="showBgColorDialog.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAM6SURBVDhPdZNZTNxVFIevpe2wqbGmpiY+tH0yPpjY1MYY
+        NSTWxIcmpgRCF9MQqSAVQRYHcAhVFlm0xI6yFUuFWjRNWAQdQOmgCCVFzMDAtAOUwiggQ8cOIzAw6+dJ
+        eLCYeP/58r83ued3fvfcc5W6f6BCdo2GxBwciWiNNe+ezBrfs1o6usfVaH10vHsisnFyXvPKlv33LzTm
+        F/ZrRva2vnjrefIWznB1pZR+TxVjvmqm1kuYdb7F/PzjXrslvGa5S+3aKnQrae+DliOmY7Ysat0NNFEv
+        n44W3mVQ+IM8vFzBt1rDmjUWT2ekgRL1yKbI+NmdoRPvtcX9/jkXPT+SSjlacqmmAANljFKCg3yCvndg
+        UYt/pg7fDzG4P9RUbArMVEY/Z/uSavevpEjO9/mKc1zkMnX0y3yGRjZEDmcxjKXCQA7+AT3LyQ+7nUfV
+        AaWZa29Ountdtk+TxgCf8AsNGOmgGxPXuCew0QZ3aqEvHy4nwLV6NgqPY3s2pFyFL92YKlibk+B5MT5L
+        pdAqeQe5LbPbeIMTYB+Aoa/hagl8nAwVOfg+ymR6X6hRRTiWVvVeD6cDXnRCTcDD9/IfC3pxCqw4wTIC
+        Ha1w/hykpUByEr7CAqzhYVMqzOJyffo3vGEH7SJ89ie0CUMLyLVB4I4frtugqQ+KGiBRjnFai1tXynjo
+        Y1YV1rtm+WA6SMoovD0IxUJ9vySUo4/0gkugbRWqbkKuAU5VQnYtjjcLMG1/slOpJl99vDHAF+Ly5BVI
+        b5REF6BOCt97CWYFnz4IeWIr8Qa89g2BSiPTURkMq0O5ShV6X4rIXvFVdPs4I0Enc8VJOpRpoTkPftPB
+        X7ImYR2ipaB5JhyZHQzujLk7pF7ev9kLsU794exl9E1+0iTg2FFxe0JcnIKe12EyDtaPiIjOhav4JqaD
+        1fyk4tP+bedXHQ+pp2wtUdF2ioo3uFQlBc+CC/HQKVhzpI/0fpbSFxk+YKBHlZ0fVok7tr6H3fZIFWIu
+        Dts+6joeZaMo4R4NmSu0py9jODHHd4fMtG/rWehWzamos9v+91XuUOann1B9+c8oo+HwA0ZLnOoyZ6iu
+        lnLVmfGt+nnffwP/Ab84hiD1j2hBAAAAAElFTkSuQmCC
+</value>
+  </data>
+  <data name="showBgColorDialog.Text" xml:space="preserve">
+    <value>Hintergrundfarbe wählen</value>
+  </data>
+  <data name="toggleAccMove.Text" xml:space="preserve">
+    <value>Beschleunigte Bewegung (A)</value>
+  </data>
   <data name="toggleParallaxity.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
@@ -134,29 +160,6 @@
   </data>
   <data name="toggleParallaxity.Text" xml:space="preserve">
     <value>Perspektivmodus umschalten</value>
-  </data>
-  <data name="showBgColorDialog.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAM7SURBVDhPdZNtTJtVFMevY1vZqCZilmDih22fjB9MXOZi
-        jBoSZ+KHJWZkBLaZhcgENxHkxQ7WhikvMtARV+VtOCbMoVnCi6BlVVYUYUSGKRTYCoxBFRBYXemAQvuU
-        /jwJHxwm3ie/PPcm9/zP/557rlIPD1RY5EDYob39EU2xjh2jWUNRSyVDUd465xND1hF93ei07rUN+x9e
-        6Bwv7db172x6+faLmGZOcnXxLF3+cga1CsZWipj0vMP09JOBueHtlQvXVORGodvJOx8dPmCPd2VR5aul
-        nhr5jDTyPj3Cn5gIcAVtqZJlZyz+Nr2FIvX4usjQma3hIx80x/3xBRf9P5FKCQZyqCAPC8UMUISbXELa
-        ezBrIDhRjfbjIXwf6UrXBSbKYl5wfUWF7yYpkvM0X3OOi1ymmi6ZT1DHqsjhKYTBVOjOJtht5kFKpM9z
-        UO1RuqmWhuR7N2T7OGl08ym/UouNVqzYuc59gdVmuFsFnblwORGu17CafxjX82ElSj9/cyxveUqCp8X4
-        JGVCk+Tt4Y7M7hAIjcBcN/R+A1eL4JMTUJqN9nEm47vCbUrvnl8yB/wcXwtgFCrX/Pwg/8FQAI/AogeG
-        +6G1Cc6fg7QUOJGMlp+HM2LbmNI7vd7PHsBbc2CYhc//gmahdwa5Nli7G4QbLqjvhIJaSJJjHDfgM55l
-        KDzKqbZ1LA9/OB4iZQDe7YFCoaZLEsrR+zvAK9C8BOW3IMcCx8rgVBXut/Owb366Tal6rSbBtsaX4vLo
-        FUivk0QXoFoK33EJJgXNHAKT2Er6Dd74lrUyG+PRGfSpfTlK5QdeiTjt00qtGicl6GiOOEmHYgM0mOB3
-        I/wtaxJXIEYKarLjzmyld2vcvV716u71Xoj1mPefWsBcHyRNAuIPitsj4uIYtL8Jo3GwckBEjF68hbew
-        763gZ5WQ9m87v+5+TD3jaoyOmaOgcJVL5VLwLLiQAG2CM1v6yBxkPn2Wvj0W2lXx+T6VtGXje9gxp1dh
-        jsLtmx3ew9EuChLvU5u5SEv6ApYjU3y/z0HLpvYZq2pIRZ3Z9L+vcotyPPuU6sx9Ttks+x+xDccrqyND
-        XWssUW0Z36lfdv038B8WgYZLyXjs+AAAAABJRU5ErkJggg==
-</value>
-  </data>
-  <data name="showBgColorDialog.Text" xml:space="preserve">
-    <value>Hintergrundfarbe wählen</value>
   </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

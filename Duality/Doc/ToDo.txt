@@ -1,8 +1,4 @@
 ﻿
--->	Determine which Visual Studio edition is present: Express or any other?
-	-->	If Express, create express solution, "normal" solution otherwise
-	-->	If Express, disable debug functionality, won't work here
-
 -->	Checklist for first Game: Asteroids
 	-->	Sound! Create a flexible, OpenAL-based sound system for Duality
 		-->	Both 2D and 3D

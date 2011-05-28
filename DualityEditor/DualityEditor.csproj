@@ -178,6 +178,9 @@
     <Compile Include="Controls\DBTableLayoutPanel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\ToolStrip\ToolStripCheckBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Controls\ToolStrip\ToolStripNumericUpDown.cs">
       <SubType>Component</SubType>
     </Compile>

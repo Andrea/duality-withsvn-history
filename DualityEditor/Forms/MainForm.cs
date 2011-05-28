@@ -118,6 +118,8 @@ namespace DualityEditor.Forms
 			if (!Directory.Exists(EditorHelper.SourceMediaDirectory)) Directory.CreateDirectory(EditorHelper.SourceMediaDirectory);
 			if (!Directory.Exists(EditorHelper.SourceCodeDirectory)) Directory.CreateDirectory(EditorHelper.SourceCodeDirectory);
 
+			this.actionDebugApp.Enabled = EditorHelper.IsJITDebuggerAvailable();
+
 			DualityApp.Init(DualityApp.ExecutionContext.Editor, new string[] {"logfile", "logfile_editor"});
 			this.LoadPlugins();
 			this.LoadUserData();
@@ -128,10 +130,8 @@ namespace DualityEditor.Forms
 			this.corePluginReloader.AfterEndReload		+= this.corePluginReloader_AfterEndReload;
 			this.pluginWatcher.EnableRaisingEvents = true;
 
-			Duality.Resources.Scene.Leaving += new EventHandler(this.Scene_Leaving);
-
-			// Load initial scene
-			Duality.Resources.Scene.Current = new Duality.Resources.Scene();
+			Scene.Leaving += new EventHandler(this.Scene_Leaving);
+			Scene.Current = new Scene();
 
 			this.dataDirWatcher.Path = EditorHelper.DataDirectory;
 			this.sourceDirWatcher.Path = EditorHelper.SourceDirectory;

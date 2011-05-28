@@ -30,9 +30,10 @@
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CamView));
 			this.toolStrip = new System.Windows.Forms.ToolStrip();
+			this.showBgColorDialog = new System.Windows.Forms.ToolStripButton();
+			this.toggleAccMove = new System.Windows.Forms.ToolStripButton();
 			this.toggleParallaxity = new System.Windows.Forms.ToolStripButton();
 			this.parallaxRefDist = new DualityEditor.Controls.ToolStrip.ToolStripNumericUpDown();
-			this.showBgColorDialog = new System.Windows.Forms.ToolStripButton();
 			this.statusStrip = new System.Windows.Forms.StatusStrip();
 			this.posXStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.posYStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -48,27 +49,47 @@
 			// 
 			// toolStrip
 			// 
+			resources.ApplyResources(this.toolStrip, "toolStrip");
 			this.toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.showBgColorDialog,
+            this.toggleAccMove,
             this.toggleParallaxity,
-            this.parallaxRefDist,
-            this.showBgColorDialog});
-			resources.ApplyResources(this.toolStrip, "toolStrip");
+            this.parallaxRefDist});
 			this.toolStrip.Name = "toolStrip";
+			// 
+			// showBgColorDialog
+			// 
+			resources.ApplyResources(this.showBgColorDialog, "showBgColorDialog");
+			this.showBgColorDialog.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.showBgColorDialog.Name = "showBgColorDialog";
+			this.showBgColorDialog.Click += new System.EventHandler(this.showBgColorDialog_Click);
+			// 
+			// toggleAccMove
+			// 
+			resources.ApplyResources(this.toggleAccMove, "toggleAccMove");
+			this.toggleAccMove.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.toggleAccMove.Checked = true;
+			this.toggleAccMove.CheckOnClick = true;
+			this.toggleAccMove.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.toggleAccMove.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.toggleAccMove.Image = global::EditorBase.Properties.Resources.arrow_right_accelerate;
+			this.toggleAccMove.Name = "toggleAccMove";
 			// 
 			// toggleParallaxity
 			// 
+			resources.ApplyResources(this.toggleParallaxity, "toggleParallaxity");
 			this.toggleParallaxity.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
 			this.toggleParallaxity.Checked = true;
 			this.toggleParallaxity.CheckOnClick = true;
 			this.toggleParallaxity.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.toggleParallaxity.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			resources.ApplyResources(this.toggleParallaxity, "toggleParallaxity");
 			this.toggleParallaxity.Name = "toggleParallaxity";
 			this.toggleParallaxity.CheckStateChanged += new System.EventHandler(this.toggleParallaxity_CheckStateChanged);
 			// 
 			// parallaxRefDist
 			// 
+			resources.ApplyResources(this.parallaxRefDist, "parallaxRefDist");
 			this.parallaxRefDist.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
 			this.parallaxRefDist.BackColor = System.Drawing.Color.Transparent;
 			this.parallaxRefDist.DecimalPlaces = 2;
@@ -79,7 +100,6 @@
             0});
 			this.parallaxRefDist.Name = "parallaxRefDist";
 			this.parallaxRefDist.NumericWidth = 75;
-			resources.ApplyResources(this.parallaxRefDist, "parallaxRefDist");
 			this.parallaxRefDist.Value = new decimal(new int[] {
             500,
             0,
@@ -87,15 +107,9 @@
             0});
 			this.parallaxRefDist.ValueChanged += new System.EventHandler(this.parallaxRefDist_ValueChanged);
 			// 
-			// showBgColorDialog
-			// 
-			this.showBgColorDialog.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			resources.ApplyResources(this.showBgColorDialog, "showBgColorDialog");
-			this.showBgColorDialog.Name = "showBgColorDialog";
-			this.showBgColorDialog.Click += new System.EventHandler(this.showBgColorDialog_Click);
-			// 
 			// statusStrip
 			// 
+			resources.ApplyResources(this.statusStrip, "statusStrip");
 			this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.posXStatusLabel,
             this.posYStatusLabel,
@@ -105,7 +119,6 @@
             this.axisLockXLabel,
             this.axisLockYLabel,
             this.axisLockZLabel});
-			resources.ApplyResources(this.statusStrip, "statusStrip");
 			this.statusStrip.Name = "statusStrip";
 			this.statusStrip.SizingGrip = false;
 			// 
@@ -131,8 +144,8 @@
 			// 
 			// springLabel
 			// 
-			this.springLabel.Name = "springLabel";
 			resources.ApplyResources(this.springLabel, "springLabel");
+			this.springLabel.Name = "springLabel";
 			this.springLabel.Spring = true;
 			// 
 			// axisLockXLabel
@@ -187,5 +200,6 @@
 		private System.Windows.Forms.ToolStripStatusLabel axisLockXLabel;
 		private System.Windows.Forms.ToolStripStatusLabel axisLockYLabel;
 		private System.Windows.Forms.ToolStripStatusLabel axisLockZLabel;
+		private System.Windows.Forms.ToolStripButton toggleAccMove;
 	}
 }

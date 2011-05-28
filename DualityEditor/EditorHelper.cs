@@ -6,6 +6,7 @@ using System.IO;
 using System.Reflection;
 using System.Drawing;
 using System.ComponentModel;
+using Microsoft.Win32;
 
 namespace DualityEditor
 {
@@ -15,8 +16,6 @@ namespace DualityEditor
 		public const string SourceDirectory			= @"Source";
 		public const string SourceMediaDirectory	= @"Source\Media";
 		public const string SourceCodeDirectory		= @"Source\Code";
-
-		private static Dictionary<Type,List<Type>> availTypeDict = new Dictionary<Type,List<Type>>();
 
 		public static bool CopyDirectory(string sourcePath, string targetPath)
 		{
@@ -30,6 +29,14 @@ namespace DualityEditor
 				CopyDirectory(subDir, Path.Combine(targetPath, Path.GetFileName(subDir)));
 
 			return true;
+		}
+		public static bool IsJITDebuggerAvailable()
+		{
+			return Registry.LocalMachine
+				.OpenSubKey("SOFTWARE")
+				.OpenSubKey("Microsoft")
+				.OpenSubKey(".NetFramework")
+				.GetValueNames().Contains("DbgManagedDebugger");
 		}
 	}
 }

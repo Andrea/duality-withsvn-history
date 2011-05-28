@@ -212,6 +212,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <None Include="Resources\arrow_right_accelerate.png" />
     <None Include="Resources\arrow_refresh.png" />
     <None Include="PluginRes\wrench.ico" />
     <None Include="PluginRes\sceneview.ico" />

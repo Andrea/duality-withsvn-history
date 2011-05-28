@@ -68,7 +68,8 @@ namespace EditorBase
 		private	GameObject			camObj			= null;
 		private	Camera				camComp			= null;
 		private	bool				camInternal		= false;
-		private	Point				camActionBeginLoc	= Point.Empty;
+		private	Point				camActionBeginLoc		= Point.Empty;
+		private Vector3				camActionBeginLocSpace	= Vector3.Zero;
 		private	CameraAction		camAction			= CameraAction.None;
 		private	Point				actionBeginLoc		= Point.Empty;
 		private Vector3				actionBeginLocSpace	= Vector3.Zero;
@@ -187,6 +188,7 @@ namespace EditorBase
 			node.SetAttribute("toggleParallaxity", this.toggleParallaxity.Checked.ToString());
 			node.SetAttribute("parallaxRefDist", this.parallaxRefDist.Value.ToString());
 			node.SetAttribute("bgColorArgb", this.bgColorDialog.SelectedColor.ToArgb().ToString());
+			node.SetAttribute("toggleAccMove", this.toggleAccMove.Checked.ToString());
 		}
 		internal void LoadUserData(System.Xml.XmlElement node)
 		{
@@ -203,6 +205,8 @@ namespace EditorBase
 				this.bgColorDialog.OldColor = Color.FromArgb(tryParseInt);
 				this.bgColorDialog.SelectedColor = this.bgColorDialog.OldColor;
 			}
+			if (bool.TryParse(node.GetAttribute("toggleAccMove"), out tryParseBool))
+				this.toggleAccMove.Checked = tryParseBool;
 		}
 
 		protected void InitGLControl()
@@ -811,11 +815,17 @@ namespace EditorBase
 		{
 			if (this.camAction == CameraAction.None)
 			{
-				if (e.Button == MouseButtons.Middle)
-					this.camAction = CameraAction.MoveCam;
-				else if (e.Button == MouseButtons.Right)
-					this.camAction = CameraAction.TurnCam;
 				this.camActionBeginLoc = e.Location;
+				if (e.Button == MouseButtons.Middle)
+				{
+					this.camAction = CameraAction.MoveCam;
+					this.camActionBeginLocSpace = this.camObj.Transform.RelativePos;
+				}
+				else if (e.Button == MouseButtons.Right)
+				{
+					this.camAction = CameraAction.TurnCam;
+					this.camActionBeginLocSpace = new Vector3(this.camObj.Transform.RelativeAngle, 0.0f, 0.0f);
+				}
 			}
 
 			if (this.action == MouseAction.None)
@@ -856,23 +866,32 @@ namespace EditorBase
 			{
 				if (this.toggleParallaxity.Checked)
 				{
-					float curVel = this.camObj.Transform.RelativeVel.Length * MathF.Sign(this.camObj.Transform.RelativeVel.Z);
-					Vector2 curTemp = new Vector2(
-						(e.X * 2.0f / this.glControl.Width) - 1.0f,
-						(e.Y * 2.0f / this.glControl.Height) - 1.0f);
-					MathF.TransformCoord(ref curTemp.X, ref curTemp.Y, this.camObj.Transform.RelativeAngle);
+					if (this.toggleAccMove.Checked)
+					{
+						float curVel = this.camObj.Transform.RelativeVel.Length * MathF.Sign(this.camObj.Transform.RelativeVel.Z);
+						Vector2 curTemp = new Vector2(
+							(e.X * 2.0f / this.glControl.Width) - 1.0f,
+							(e.Y * 2.0f / this.glControl.Height) - 1.0f);
+						MathF.TransformCoord(ref curTemp.X, ref curTemp.Y, this.camObj.Transform.RelativeAngle);
 
-					if (MathF.Sign(e.Delta) == MathF.Sign(curVel))
-						curVel *= 0.0125f * MathF.Abs(e.Delta);
-					curVel += 0.075f * e.Delta;
-					curVel = MathF.Sign(curVel) * MathF.Min(MathF.Abs(curVel), 500.0f);
+						if (MathF.Sign(e.Delta) == MathF.Sign(curVel))
+							curVel *= 0.0125f * MathF.Abs(e.Delta);
+						curVel += 0.075f * e.Delta;
+						curVel = MathF.Sign(curVel) * MathF.Min(MathF.Abs(curVel), 500.0f);
 
-					Vector3 movVec = new Vector3(
-						MathF.Sign(e.Delta) * MathF.Sign(curTemp.X) * MathF.Pow(curTemp.X, 2.0f), 
-						MathF.Sign(e.Delta) * MathF.Sign(curTemp.Y) * MathF.Pow(curTemp.Y, 2.0f), 
-						1.0f);
-					movVec.Normalize();
-					this.camObj.Transform.RelativeVel = movVec * curVel;
+						Vector3 movVec = new Vector3(
+							MathF.Sign(e.Delta) * MathF.Sign(curTemp.X) * MathF.Pow(curTemp.X, 2.0f), 
+							MathF.Sign(e.Delta) * MathF.Sign(curTemp.Y) * MathF.Pow(curTemp.Y, 2.0f), 
+							1.0f);
+						movVec.Normalize();
+						this.camObj.Transform.RelativeVel = movVec * curVel;
+					}
+					else
+					{
+						this.camObj.Transform.Pos += new Vector3(0.0f, 0.0f, e.Delta * 5 / 12);
+						this.glControl.Invalidate();
+						this.UpdateStatusTransformInfo();
+					}
 				}
 				else
 				{
@@ -884,6 +903,25 @@ namespace EditorBase
 		}
 		private void glControl_MouseMove(object sender, MouseEventArgs e)
 		{
+			if (!this.toggleAccMove.Checked)
+			{
+				if (this.camAction == CameraAction.MoveCam)
+				{
+					Vector3 movVec = new Vector3(
+						5.0f * (e.X - this.camActionBeginLoc.X),
+						5.0f * (e.Y - this.camActionBeginLoc.Y),
+						0.0f);
+					MathF.TransformCoord(ref movVec.X, ref movVec.Y, this.camObj.Transform.RelativeAngle);
+					this.camObj.Transform.RelativePos = this.camActionBeginLocSpace + movVec;
+				}
+				else if (this.camAction == CameraAction.TurnCam)
+				{
+					this.camObj.Transform.RelativeAngle = MathF.NormalizeAngle(this.camActionBeginLocSpace.X + 0.01f * (e.X - this.camActionBeginLoc.X));
+				}
+				this.glControl.Invalidate();
+				this.UpdateStatusTransformInfo();
+			}
+
 			if (this.action == MouseAction.RectSelection)
 				this.UpdateRectSelection(e.Location);
 			else if (this.action == MouseAction.MoveObj)
@@ -1057,6 +1095,25 @@ namespace EditorBase
 				List<GameObject> cloneList = this.CloneObjects(this.SelectedGameObj());
 				EditorBasePlugin.Instance.EditorForm.Select(this, new ObjectSelection(cloneList));
 			}
+			else if (e.KeyCode == Keys.A)
+			{
+				this.toggleAccMove.Checked = !this.toggleAccMove.Checked;
+
+				Point curPos = this.glControl.PointToClient(Cursor.Position);
+				if (this.camAction == CameraAction.MoveCam)
+				{
+					Vector3 movVec = new Vector3(
+						5.0f * (curPos.X - this.camActionBeginLoc.X),
+						5.0f * (curPos.Y - this.camActionBeginLoc.Y),
+						0.0f);
+					MathF.TransformCoord(ref movVec.X, ref movVec.Y, this.camObj.Transform.RelativeAngle);
+					this.camActionBeginLocSpace = this.camObj.Transform.RelativePos - movVec;
+				}
+				else if (this.camAction == CameraAction.TurnCam)
+				{
+					this.camActionBeginLocSpace = new Vector3(this.camObj.Transform.RelativeAngle - 0.01f * (curPos.X - this.camActionBeginLoc.X), 0.0f, 0.0f);
+				}
+			}
 			else
 			{
 				bool axisLockChanged = false;
@@ -1212,45 +1269,49 @@ namespace EditorBase
 			bool transformChanged = false;
 			Point cursorPos = this.glControl.PointToClient(Cursor.Position);
 
-			if (this.camAction == CameraAction.MoveCam)
+			if (this.toggleAccMove.Checked)
 			{
-				Vector3 moveVec = new Vector3(
-					0.125f * MathF.Sign(cursorPos.X - this.camActionBeginLoc.X) * MathF.Pow(MathF.Abs(cursorPos.X - this.camActionBeginLoc.X), 1.25f),
-					0.125f * MathF.Sign(cursorPos.Y - this.camActionBeginLoc.Y) * MathF.Pow(MathF.Abs(cursorPos.Y - this.camActionBeginLoc.Y), 1.25f),
-					this.camObj.Transform.RelativeVel.Z);
+				if (this.camAction == CameraAction.MoveCam)
+				{
+					Vector3 moveVec = new Vector3(
+						0.125f * MathF.Sign(cursorPos.X - this.camActionBeginLoc.X) * MathF.Pow(MathF.Abs(cursorPos.X - this.camActionBeginLoc.X), 1.25f),
+						0.125f * MathF.Sign(cursorPos.Y - this.camActionBeginLoc.Y) * MathF.Pow(MathF.Abs(cursorPos.Y - this.camActionBeginLoc.Y), 1.25f),
+						this.camObj.Transform.RelativeVel.Z);
 
-				MathF.TransformCoord(ref moveVec.X, ref moveVec.Y, this.camObj.Transform.Angle);
-				this.camObj.Transform.RelativeVel = moveVec;
+					MathF.TransformCoord(ref moveVec.X, ref moveVec.Y, this.camObj.Transform.Angle);
+					this.camObj.Transform.RelativeVel = moveVec;
 
-				transformChanged = true;
-			}
-			else if (this.camObj.Transform.RelativeVel.Length > 0.01f)
-			{
-				this.camObj.Transform.RelativeVel *= MathF.Pow(0.9f, Time.TimeMult);
-				transformChanged = true;
+					transformChanged = true;
+				}
+				else if (this.camObj.Transform.RelativeVel.Length > 0.01f)
+				{
+					this.camObj.Transform.RelativeVel *= MathF.Pow(0.9f, Time.TimeMult);
+					transformChanged = true;
+				}
+				else
+					this.camObj.Transform.RelativeVel = Vector3.Zero;
+			
+
+				if (this.camAction == CameraAction.TurnCam)
+				{
+					float turnDir = 
+						0.000125f * MathF.Sign(cursorPos.X - this.camActionBeginLoc.X) * 
+						MathF.Pow(MathF.Abs(cursorPos.X - this.camActionBeginLoc.X), 1.25f);
+					this.camObj.Transform.RelativeAngleVel = turnDir;
+
+					transformChanged = true;
+				}
+				else if (Math.Abs(this.camObj.Transform.RelativeAngleVel) > 0.001f)
+				{
+					this.camObj.Transform.RelativeAngleVel *= MathF.Pow(0.9f, Time.TimeMult);
+					transformChanged = true;
+				}
+				else
+					this.camObj.Transform.RelativeAngleVel = 0.0f;
 			}
 			else
 			{
 				this.camObj.Transform.RelativeVel = Vector3.Zero;
-			}
-			
-
-			if (this.camAction == CameraAction.TurnCam)
-			{
-				float turnDir = 
-					0.000125f * MathF.Sign(cursorPos.X - this.camActionBeginLoc.X) * 
-					MathF.Pow(MathF.Abs(cursorPos.X - this.camActionBeginLoc.X), 1.25f);
-				this.camObj.Transform.RelativeAngleVel = turnDir;
-
-				transformChanged = true;
-			}
-			else if (Math.Abs(this.camObj.Transform.RelativeAngleVel) > 0.001f)
-			{
-				this.camObj.Transform.RelativeAngleVel *= MathF.Pow(0.9f, Time.TimeMult);
-				transformChanged = true;
-			}
-			else
-			{
 				this.camObj.Transform.RelativeAngleVel = 0.0f;
 			}
 
