@@ -109,6 +109,7 @@
     <Compile Include="Resources\VertexShader.cs" />
     <Compile Include="RtfWriterLogOutput.cs" />
     <Compile Include="Resources\Scene.cs" />
+    <Compile Include="SoundBudgetPad.cs" />
     <Compile Include="SoundDevice.cs" />
     <Compile Include="SoundInstance.cs" />
     <Compile Include="TextWriterLogOutput.cs" />

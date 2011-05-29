@@ -10,6 +10,7 @@ using Duality.OggVorbis;
 
 namespace Duality.Resources
 {
+	[Serializable]
 	public class Sound : Resource
 	{
 		public new const string FileExt = ".Sound" + Resource.FileExt;
@@ -172,7 +173,7 @@ namespace Duality.Resources
 		{
 			base.OnDisposed(manually);
 			if (DualityApp.ExecContext != DualityApp.ExecutionContext.Terminated &&
-				this.alBuffer != 0)
+				this.alBuffer > AlBuffer_NotAvailable)
 			{
 				AL.DeleteBuffer(this.alBuffer);
 				this.alBuffer = 0;
@@ -184,6 +185,13 @@ namespace Duality.Resources
 			base.CopyTo(r);
 			Sound c = r as Sound;
 			c.forceStream = this.forceStream;
+			c.maxInstances = this.maxInstances;
+			c.minDistFactor = this.minDistFactor;
+			c.maxDistFactor = this.maxDistFactor;
+			c.volFactor = this.volFactor;
+			c.pitchFactor = this.pitchFactor;
+			c.fadeOutAt = this.fadeOutAt;
+			c.fadeOutTime = this.fadeOutTime;
 			c.LoadData(this.audioData);
 		}
 	}

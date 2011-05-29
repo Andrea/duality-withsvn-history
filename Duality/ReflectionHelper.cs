@@ -412,7 +412,7 @@ namespace Duality
 		/// <returns></returns>
 		public static bool IsSafeAssignType(Type t)
 		{
-			return t.IsPrimitive || t.IsEnum || t == typeof(string) || typeof(MemberInfo).IsAssignableFrom(t);
+			return t.IsPrimitive || t.IsEnum || t == typeof(string) || typeof(MemberInfo).IsAssignableFrom(t) || typeof(IContentRef).IsAssignableFrom(t);
 		}
 
 		public static T DeepCloneObject<T>(T instance)
@@ -738,8 +738,11 @@ namespace Duality
 				Type elemType = instanceType.GetElementType();
 				visited.Add(instance);
 
-				for (int i = 0; i < src.Length; ++i)
-					src.SetValue(DeepResolveTypeReferenceObject(((Array)instance).GetValue(i), binder, visited), i);
+				if (!IsSafeAssignType(elemType) || typeof(MemberInfo).IsAssignableFrom(elemType))
+				{
+					for (int i = 0; i < src.Length; ++i)
+						src.SetValue(DeepResolveTypeReferenceObject(((Array)instance).GetValue(i), binder, visited), i);
+				}
 
 				return instance;
 			}

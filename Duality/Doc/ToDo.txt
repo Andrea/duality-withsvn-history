@@ -2,7 +2,6 @@
 -->	Checklist for first Game: Asteroids
 
 	-->	Sound! Create a flexible, OpenAL-based sound system for Duality
-		-->	BudgetPad features
 		-->	SoundEmitter Component type. For placing loop sounds in the level and having an
 			easy way to play sound effect without always having to create a custom Component
 			invoking the SoundManagers PlaySound methods

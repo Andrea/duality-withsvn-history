@@ -61,6 +61,7 @@
       <DependentUpon>CamView.cs</DependentUpon>
     </Compile>
     <Compile Include="EditorBasePlugin.cs" />
+    <Compile Include="AudioDataFileImporter.cs" />
     <Compile Include="PixmapFileImporter.cs" />
     <Compile Include="PropertyEditors\DualityAppDataPropertyEditor.cs">
       <SubType>UserControl</SubType>
@@ -244,6 +245,8 @@
     <None Include="PluginRes\iconCmpUnknown.png" />
     <None Include="PluginRes\iconGameObjLink.png" />
     <None Include="PluginRes\iconGameObjLinkBroken.png" />
+    <None Include="PluginRes\iconResAudioData.png" />
+    <None Include="PluginRes\iconResSound.png" />
     <Content Include="PluginRes\projectview.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

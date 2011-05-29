@@ -120,6 +120,9 @@
   <data name="ActionName_CreateMaterial" xml:space="preserve">
     <value>Material erstellen</value>
   </data>
+  <data name="ActionName_CreateSound" xml:space="preserve">
+    <value>Sound erstellen</value>
+  </data>
   <data name="ActionName_CreateTexture" xml:space="preserve">
     <value>Texture erstellen</value>
   </data>

@@ -70,6 +70,7 @@ namespace Duality
 		private	float			fadeTimeSec		= 1.0f;
 
 		// Streaming
+		private	bool			strStreamed		= false;
 		private	IntPtr			strOvStr		= IntPtr.Zero;
 		private	int[]			strAlBuffers	= null;
 		private	Thread			strWorker		= null;
@@ -173,7 +174,10 @@ namespace Duality
 			{
 				if (this.strWorker != null && this.strWorker.IsAlive)
 				{
-					this.strWorker.Abort();
+					lock (this.strLock)
+					{
+						if (this.strOvStr != IntPtr.Zero) OV.EndStream(ref this.strOvStr);
+					}
 				}
 				this.strWorker = null;
 
@@ -257,12 +261,13 @@ namespace Duality
 			if (this.alSource <= AlSource_NotAvailable) return;
 			lock (this.strLock)
 			{
-				// Hack: Do not reuse before-streamed sources
-				if (this.SoundRef.Res.AlBuffer == Sound.AlBuffer_StreamMe)
+				// Do not reuse before-streamed sources OpenAL doesn't seem to like that.
+				if (this.strStreamed)
 				{
 					AL.DeleteSource(this.alSource);
 					this.alSource = AL.GenSource();
 				}
+				// Reuse other OpenAL sources
 				else
 				{
 					//int num = 0;
@@ -436,7 +441,7 @@ namespace Duality
 
 				#region Fading
 				bool fadeOut = false;
-				if (this.fadeTarget <= this.curFade) fadeOut = true;
+				if (this.fadeTarget <= 0.0f) fadeOut = true;
 				if (!this.paused)
 				{
 					if (this.fadeTarget != this.curFade)
@@ -462,6 +467,13 @@ namespace Duality
 
 				#region Sound state update
 				Sound res = this.snd.Res;
+				if (res == null)
+				{
+					DualityApp.Sound.UnregisterPlaying(this.snd, this.is3D);
+					this.Dispose();
+					return;
+				}
+
 				float optVolFactor = this.GetTypeVolFactor();
 				float minDistTemp = res.MinDist;
 				float maxDistTemp = res.MaxDist;
@@ -588,6 +600,7 @@ namespace Duality
 				{
 					if (res.AlBuffer == Sound.AlBuffer_StreamMe)
 					{
+						this.strStreamed = true;
 						this.strWorker = new Thread(ThreadStreamFunc);
 						this.strWorker.Start(this);
 					}
@@ -609,111 +622,108 @@ namespace Duality
 			{
 				lock (sndInst.strLock)
 				{
-					try
+					if (sndInst.Disposed) return;
+					DualityApp.Sound.CheckErrors();
+
+					ALSourceState stateTemp = ALSourceState.Stopped;
+					if (sndInst.alSource > AlSource_NotAvailable) stateTemp = AL.GetSourceState(sndInst.alSource);
+
+					if (stateTemp == ALSourceState.Stopped && sndInst.strStopReq)
 					{
-						if (sndInst.Disposed) return;
-						DualityApp.Sound.CheckErrors();
+						// Stopped intentionally due to Stop() or eof. If strStopReq is NOT set,
+						// the source stopped playing because it reached the end of the buffer
+						// but in fact only because we were too slow inserting new data.
+						return;
+					}
 
-						ALSourceState stateTemp = ALSourceState.Stopped;
-						if (sndInst.alSource > AlSource_NotAvailable) stateTemp = AL.GetSourceState(sndInst.alSource);
-
-						if (stateTemp == ALSourceState.Stopped && sndInst.strStopReq)
+					Sound res = sndInst.snd.Res;
+					if (res == null)
+					{
+						sndInst.Dispose();
+						return;
+					}
+					if (stateTemp == ALSourceState.Initial)
+					{
+						// Generate streaming buffers
+						sndInst.strAlBuffers = new int[3];
+						for (int i = 0; i < sndInst.strAlBuffers.Length; ++i)
 						{
-							// Stopped intentionally due to Stop() or eof. If strStopReq is NOT set,
-							// the source stopped playing because it reached the end of the buffer
-							// but in fact only because we were too slow inserting new data.
-							return;
+							AL.GenBuffers(1, out sndInst.strAlBuffers[i]);
 						}
 
-						Sound res = sndInst.snd.Res;
-						if (stateTemp == ALSourceState.Initial)
+						// Begin streaming
+						OV.BeginStreamFromMemory(res.Data.Res.OggVorbisData, out sndInst.strOvStr);
+
+						// Initially, completely fill all buffers
+						bool eof = false;
+						for (int i = 0; i < sndInst.strAlBuffers.Length; ++i)
 						{
-							// Generate streaming buffers
-							sndInst.strAlBuffers = new int[3];
-							for (int i = 0; i < sndInst.strAlBuffers.Length; ++i)
+							PcmData pcm;
+							eof = !OV.StreamChunk(sndInst.strOvStr, out pcm);
+							if (pcm.data.Length > 0)
 							{
-								AL.GenBuffers(1, out sndInst.strAlBuffers[i]);
+								AL.BufferData(
+									sndInst.strAlBuffers[i], 
+									pcm.channelCount == 1 ? ALFormat.Mono16 : ALFormat.Stereo16, 
+									pcm.data, 
+									pcm.data.Length, 
+									pcm.sampleRate);
+								AL.SourceQueueBuffer(sndInst.alSource, sndInst.strAlBuffers[i]);
+								if (eof) break;
 							}
+							else break;
+						}
 
-							// Begin streaming
-							OV.BeginStreamFromMemory(res.Data.Res.OggVorbisData, out sndInst.strOvStr);
+						// Initially play source
+						AL.SourcePlay(sndInst.alSource);
+						stateTemp = AL.GetSourceState(sndInst.alSource);
+					}
+					else
+					{
+						int num = 0;
+						AL.GetSource(sndInst.alSource, ALGetSourcei.BuffersProcessed, out num);
+						while (num > 0)
+						{
+							num--;
 
-							// Initially, completely fill all buffers
-							bool eof = false;
-							for (int i = 0; i < sndInst.strAlBuffers.Length; ++i)
+							int unqueued = 0;
+							unqueued = AL.SourceUnqueueBuffer(sndInst.alSource);
+
+							if (sndInst.strOvStr != IntPtr.Zero)
 							{
 								PcmData pcm;
-								eof = !OV.StreamChunk(sndInst.strOvStr, out pcm);
+								bool eof = !OV.StreamChunk(sndInst.strOvStr, out pcm);
 								if (pcm.data.Length > 0)
 								{
 									AL.BufferData(
-										sndInst.strAlBuffers[i], 
+										unqueued, 
 										pcm.channelCount == 1 ? ALFormat.Mono16 : ALFormat.Stereo16, 
 										pcm.data, 
 										pcm.data.Length, 
 										pcm.sampleRate);
-									AL.SourceQueueBuffer(sndInst.alSource, sndInst.strAlBuffers[i]);
-									if (eof) break;
 								}
-								else break;
-							}
-
-							// Initially play source
-							AL.SourcePlay(sndInst.alSource);
-							stateTemp = AL.GetSourceState(sndInst.alSource);
-						}
-						else
-						{
-							int num = 0;
-							AL.GetSource(sndInst.alSource, ALGetSourcei.BuffersProcessed, out num);
-							while (num > 0)
-							{
-								num--;
-
-								int unqueued = 0;
-								unqueued = AL.SourceUnqueueBuffer(sndInst.alSource);
-
-								if (sndInst.strOvStr != IntPtr.Zero)
+								AL.SourceQueueBuffer(sndInst.alSource, unqueued);
+								if (eof)
 								{
-									PcmData pcm;
-									bool eof = !OV.StreamChunk(sndInst.strOvStr, out pcm);
-									if (pcm.data.Length > 0)
+									OV.EndStream(ref sndInst.strOvStr);
+									if (sndInst.looped)
+										OV.BeginStreamFromMemory(res.Data.Res.OggVorbisData, out sndInst.strOvStr);
+									else
 									{
-										AL.BufferData(
-											unqueued, 
-											pcm.channelCount == 1 ? ALFormat.Mono16 : ALFormat.Stereo16, 
-											pcm.data, 
-											pcm.data.Length, 
-											pcm.sampleRate);
-									}
-									AL.SourceQueueBuffer(sndInst.alSource, unqueued);
-									if (eof)
-									{
-										OV.EndStream(ref sndInst.strOvStr);
-										if (sndInst.looped)
-											OV.BeginStreamFromMemory(res.Data.Res.OggVorbisData, out sndInst.strOvStr);
-										else
-										{
-											sndInst.strStopReq = true;
-											break;
-										}
+										sndInst.strStopReq = true;
+										break;
 									}
 								}
 							}
 						}
+					}
 
-						if (stateTemp == ALSourceState.Stopped && !sndInst.strStopReq)
-						{
-							// If the source stopped unintentionally, restart it. (See above)
-							AL.SourcePlay(sndInst.alSource);
-						}
-						DualityApp.Sound.CheckErrors();
-					}
-					catch (ThreadAbortException)
+					if (stateTemp == ALSourceState.Stopped && !sndInst.strStopReq)
 					{
-						if (sndInst.strOvStr != IntPtr.Zero) OV.EndStream(ref sndInst.strOvStr);
-						return;
+						// If the source stopped unintentionally, restart it. (See above)
+						AL.SourcePlay(sndInst.alSource);
 					}
+					DualityApp.Sound.CheckErrors();
 				}
 				Thread.Sleep(8);
 			}

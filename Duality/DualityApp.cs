@@ -219,6 +219,8 @@ namespace Duality
 			if (unexpected)	Log.Core.WriteError("DualityApp terminated unexpectedly");
 			else			Log.Core.Write("DualityApp terminated");
 
+			sound.Dispose();
+
 			logfile.Close();
 			logfileRtf.save(logfilePath + ".rtf");
 

@@ -242,6 +242,12 @@ namespace Duality
 			if (String.IsNullOrEmpty(path)) return;
 			resLibrary[path] = content;
 		}
+		public static bool IsContentRegistered(string path)
+		{
+			if (String.IsNullOrEmpty(path)) return false;
+			return resLibrary.ContainsKey(path);
+		}
+
 		public static bool UnregisterContent(string path, bool dispose = true)
 		{
 			if (String.IsNullOrEmpty(path)) return false;
@@ -252,6 +258,24 @@ namespace Duality
 
 			return resLibrary.Remove(path);
 		}
+		public static void UnregisterContentTree(string dir, bool dispose = true)
+		{
+			if (String.IsNullOrEmpty(dir)) return;
+
+			List<string> unregisterList = new List<string>(
+				from p in resLibrary.Keys
+				where !p.Contains(':') && PathHelper.IsPathLocatedIn(p, dir)
+				select p);
+
+			foreach (string p in unregisterList)
+				UnregisterContent(p, dispose);
+		}
+		public static void UnregisterAllContent<T>(bool dispose = true) where T : Resource
+		{
+			foreach (ContentRef<T> content in RequestAllContent<T>())
+				UnregisterContent(content.Path, dispose);
+		}
+
 		public static bool RenameContent(string path, string newPath)
 		{
 			if (String.IsNullOrEmpty(path)) return false;
@@ -266,18 +290,6 @@ namespace Duality
 			}
 			else
 				return false;
-		}
-		public static void UnregisterContentTree(string dir, bool dispose = true)
-		{
-			if (String.IsNullOrEmpty(dir)) return;
-
-			List<string> unregisterList = new List<string>(
-				from p in resLibrary.Keys
-				where !p.Contains(':') && PathHelper.IsPathLocatedIn(p, dir)
-				select p);
-
-			foreach (string p in unregisterList)
-				UnregisterContent(p, dispose);
 		}
 		public static void RenameContentTree(string dir, string newDir)
 		{
@@ -295,11 +307,7 @@ namespace Duality
 					newDir + Path.DirectorySeparatorChar));
 			}
 		}
-		public static bool IsContentRegistered(string path)
-		{
-			if (String.IsNullOrEmpty(path)) return false;
-			return resLibrary.ContainsKey(path);
-		}
+
 		public static ContentRef<T> RequestContent<T>(string path) where T : Resource
 		{
 			if (String.IsNullOrEmpty(path)) return null;
@@ -310,6 +318,15 @@ namespace Duality
 
 			// Load new content
 			return new ContentRef<T>(LoadContent(path) as T, path);
+		}
+		public static List<ContentRef<T>> RequestAllContent<T>() where T : Resource
+		{
+			List<ContentRef<T>> allContent = new List<ContentRef<T>>();
+			foreach (var v in resLibrary.Values)
+			{
+				if (v is T) allContent.Add((T)v);
+			}
+			return allContent;
 		}
 		public static IContentRef RequestContent(string path)
 		{

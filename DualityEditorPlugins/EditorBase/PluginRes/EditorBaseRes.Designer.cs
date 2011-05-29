@@ -70,6 +70,15 @@ namespace EditorBase.PluginRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Create Sound ähnelt.
+        /// </summary>
+        public static string ActionName_CreateSound {
+            get {
+                return ResourceManager.GetString("ActionName_CreateSound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Create Texture ähnelt.
         /// </summary>
         public static string ActionName_CreateTexture {
@@ -184,6 +193,13 @@ namespace EditorBase.PluginRes {
             }
         }
         
+        public static System.Drawing.Bitmap IconResAudioData {
+            get {
+                object obj = ResourceManager.GetObject("IconResAudioData", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         public static System.Drawing.Bitmap IconResDrawTechnique {
             get {
                 object obj = ResourceManager.GetObject("IconResDrawTechnique", resourceCulture);
@@ -243,6 +259,13 @@ namespace EditorBase.PluginRes {
         public static System.Drawing.Bitmap IconResShaderProgram {
             get {
                 object obj = ResourceManager.GetObject("IconResShaderProgram", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap IconResSound {
+            get {
+                object obj = ResourceManager.GetObject("IconResSound", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

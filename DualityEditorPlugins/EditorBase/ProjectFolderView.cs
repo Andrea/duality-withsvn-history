@@ -1126,11 +1126,10 @@ namespace EditorBase
 					this.contextMenuNode.Items.Insert(baseIndex, actionItem);
 					baseIndex++;
 				}
+				if (customActions.Length == 0) this.toolStripSeparatorCustomActions.Visible = false;
 			}
 			else
-			{
 				this.toolStripSeparatorCustomActions.Visible = false;
-			}
 
 			// Populate the "New" menu
 			while (this.newToolStripMenuItem.DropDownItems.Count > 2) this.newToolStripMenuItem.DropDownItems.RemoveAt(2);

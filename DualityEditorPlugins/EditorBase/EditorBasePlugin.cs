@@ -121,6 +121,8 @@ namespace EditorBase
 			CorePluginHelper.RegisterTypeImage(typeof(Texture), PluginRes.EditorBaseRes.IconResTexture, CorePluginHelper.ImageContext_Icon);
 			CorePluginHelper.RegisterTypeImage(typeof(VertexShader), PluginRes.EditorBaseRes.IconResVertexShader, CorePluginHelper.ImageContext_Icon);
 			CorePluginHelper.RegisterTypeImage(typeof(Scene), PluginRes.EditorBaseRes.IconResScene, CorePluginHelper.ImageContext_Icon);
+			CorePluginHelper.RegisterTypeImage(typeof(AudioData), PluginRes.EditorBaseRes.IconResAudioData, CorePluginHelper.ImageContext_Icon);
+			CorePluginHelper.RegisterTypeImage(typeof(Sound), PluginRes.EditorBaseRes.IconResSound, CorePluginHelper.ImageContext_Icon);
 
 			CorePluginHelper.RegisterTypeImage(typeof(GameObject), PluginRes.EditorBaseRes.IconGameObj, CorePluginHelper.ImageContext_Icon);
 			CorePluginHelper.RegisterTypeImage(typeof(GameObject), PluginRes.EditorBaseRes.IconGameObjLink, CorePluginHelper.ImageContext_Icon + "_Link");
@@ -139,6 +141,11 @@ namespace EditorBase
 				PluginRes.EditorBaseRes.ActionName_CreateMaterial, 
 				PluginRes.EditorBaseRes.IconResMaterial,
 				this.ActionTextureCreateMaterial, 
+				CorePluginHelper.ActionContext_ContextMenu);
+			CorePluginHelper.RegisterEditorAction<AudioData>(
+				PluginRes.EditorBaseRes.ActionName_CreateSound, 
+				PluginRes.EditorBaseRes.IconResSound,
+				this.ActionAudioDataCreateSound, 
 				CorePluginHelper.ActionContext_ContextMenu);
 
 			CorePluginHelper.RegisterPropertyEditorProvider(new PropertyEditors.PropertyEditorProvider());
@@ -173,6 +180,7 @@ namespace EditorBase
 
 			// Register file importers
 			main.RegisterFileImporter(new PixmapFileImporter());
+			main.RegisterFileImporter(new AudioDataFileImporter());
 		}
 		
 		public ProjectFolderView RequestProjectView()
@@ -315,6 +323,13 @@ namespace EditorBase
 			string matPath = PathHelper.GetFreePathName(tex.Path.Substring(0, tex.Path.Length - pathExt.Length), Material.FileExt);
 			Material mat = new Material(DrawTechnique.Mask, ColorRGBA.White, tex);
 			mat.Save(matPath);
+		}
+		private void ActionAudioDataCreateSound(AudioData data)
+		{
+			string pathExt = AudioData.FileExt;
+			string sndPath = PathHelper.GetFreePathName(data.Path.Substring(0, data.Path.Length - pathExt.Length), Sound.FileExt);
+			Sound snd = new Sound(data);
+			snd.Save(sndPath);
 		}
 	}
 }
