@@ -49,47 +49,46 @@
 			// 
 			// toolStrip
 			// 
-			resources.ApplyResources(this.toolStrip, "toolStrip");
 			this.toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.showBgColorDialog,
             this.toggleAccMove,
             this.toggleParallaxity,
             this.parallaxRefDist});
+			resources.ApplyResources(this.toolStrip, "toolStrip");
 			this.toolStrip.Name = "toolStrip";
 			// 
 			// showBgColorDialog
 			// 
-			resources.ApplyResources(this.showBgColorDialog, "showBgColorDialog");
 			this.showBgColorDialog.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			resources.ApplyResources(this.showBgColorDialog, "showBgColorDialog");
 			this.showBgColorDialog.Name = "showBgColorDialog";
 			this.showBgColorDialog.Click += new System.EventHandler(this.showBgColorDialog_Click);
 			// 
 			// toggleAccMove
 			// 
-			resources.ApplyResources(this.toggleAccMove, "toggleAccMove");
 			this.toggleAccMove.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
 			this.toggleAccMove.Checked = true;
 			this.toggleAccMove.CheckOnClick = true;
 			this.toggleAccMove.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.toggleAccMove.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.toggleAccMove.Image = global::EditorBase.Properties.Resources.arrow_right_accelerate;
+			resources.ApplyResources(this.toggleAccMove, "toggleAccMove");
 			this.toggleAccMove.Name = "toggleAccMove";
 			// 
 			// toggleParallaxity
 			// 
-			resources.ApplyResources(this.toggleParallaxity, "toggleParallaxity");
 			this.toggleParallaxity.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
 			this.toggleParallaxity.Checked = true;
 			this.toggleParallaxity.CheckOnClick = true;
 			this.toggleParallaxity.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.toggleParallaxity.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			resources.ApplyResources(this.toggleParallaxity, "toggleParallaxity");
 			this.toggleParallaxity.Name = "toggleParallaxity";
 			this.toggleParallaxity.CheckStateChanged += new System.EventHandler(this.toggleParallaxity_CheckStateChanged);
 			// 
 			// parallaxRefDist
 			// 
-			resources.ApplyResources(this.parallaxRefDist, "parallaxRefDist");
 			this.parallaxRefDist.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
 			this.parallaxRefDist.BackColor = System.Drawing.Color.Transparent;
 			this.parallaxRefDist.DecimalPlaces = 2;
@@ -100,6 +99,7 @@
             0});
 			this.parallaxRefDist.Name = "parallaxRefDist";
 			this.parallaxRefDist.NumericWidth = 75;
+			resources.ApplyResources(this.parallaxRefDist, "parallaxRefDist");
 			this.parallaxRefDist.Value = new decimal(new int[] {
             500,
             0,
@@ -109,7 +109,6 @@
 			// 
 			// statusStrip
 			// 
-			resources.ApplyResources(this.statusStrip, "statusStrip");
 			this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.posXStatusLabel,
             this.posYStatusLabel,
@@ -119,6 +118,7 @@
             this.axisLockXLabel,
             this.axisLockYLabel,
             this.axisLockZLabel});
+			resources.ApplyResources(this.statusStrip, "statusStrip");
 			this.statusStrip.Name = "statusStrip";
 			this.statusStrip.SizingGrip = false;
 			// 
@@ -144,8 +144,8 @@
 			// 
 			// springLabel
 			// 
-			resources.ApplyResources(this.springLabel, "springLabel");
 			this.springLabel.Name = "springLabel";
+			resources.ApplyResources(this.springLabel, "springLabel");
 			this.springLabel.Spring = true;
 			// 
 			// axisLockXLabel

@@ -230,6 +230,7 @@ namespace Duality
 		{
 			Time.FrameTick();
 			Scene.Current.Update();
+			sound.Update();
 			OnUpdating();
 			Resource.RunCleanup();
 		}
@@ -245,10 +246,8 @@ namespace Duality
 
 			Time.FrameTick();
 			Scene.Current.EditorUpdate();
-			foreach (GameObject obj in updateObjects.ActiveObjects)
-			{
-				obj.Update();
-			}
+			foreach (GameObject obj in updateObjects.ActiveObjects) obj.Update();
+			sound.Update();
 			Resource.RunCleanup();
 		}
 		
@@ -396,6 +395,7 @@ namespace Duality
 		{
 			LoadAppData();
 			LoadUserData();
+			sound.Init();
 
 			if (Initialized != null)
 				Initialized(null, EventArgs.Empty);
@@ -437,11 +437,13 @@ namespace Duality
 	[Serializable]
 	public class DualityAppData
 	{
-		private	string				appName		= "Duality Application";
-		private	string				authorName	= "Unknown";
-		private	string				websiteUrl	= "http://www.fetzenet.de";
-		private	uint				version		= 0;
-		private	ContentRef<Scene>	startScene	= ContentRef<Scene>.Null;
+		private	string				appName				= "Duality Application";
+		private	string				authorName			= "Unknown";
+		private	string				websiteUrl			= "http://www.fetzenet.de";
+		private	uint				version				= 0;
+		private	ContentRef<Scene>	startScene			= ContentRef<Scene>.Null;
+		private	float				speedOfSound		= 36.0f;
+		private	float				soundDopplerFactor	= 1.0f;
 
 		public string AppName
 		{
@@ -468,15 +470,29 @@ namespace Duality
 			get { return this.startScene; }
 			set { this.startScene = value; }
 		}
+		public float SpeedOfSound
+		{
+			get { return this.speedOfSound; }
+			set { this.speedOfSound = value; }
+		}
+		public float SoundDopplerFactor
+		{
+			get { return this.soundDopplerFactor; }
+			set { this.soundDopplerFactor = value; }
+		}
 	}
 
 	[Serializable]
 	public class DualityUserData
 	{
-		private	string			userName		= "Unknown";
-		private	int				gfxWidth		= 800;
-		private	int				gfxHeight		= 600;
-		private	bool			gfxFullScreen	= true;
+		private	string	userName		= "Unknown";
+		private	int		gfxWidth		= 800;
+		private	int		gfxHeight		= 600;
+		private	bool	gfxFullScreen	= true;
+		private	float	sfxEffectVol	= 1.0f;
+		private	float	sfxSpeechVol	= 1.0f;
+		private	float	sfxMusicVol		= 1.0f;
+		private	float	sfxMasterVol	= 1.0f;
 
 		public string UserName
 		{
@@ -497,6 +513,26 @@ namespace Duality
 		{
 			get { return this.gfxFullScreen; }
 			set { this.gfxFullScreen = value; }
+		}
+		public float SfxEffectVol
+		{
+			get { return this.sfxEffectVol; }
+			set { this.sfxEffectVol = value; }
+		}
+		public float SfxSpeechVol
+		{
+			get { return this.sfxSpeechVol; }
+			set { this.sfxSpeechVol = value; }
+		}
+		public float SfxMusicVol
+		{
+			get { return this.sfxMusicVol; }
+			set { this.sfxMusicVol = value; }
+		}
+		public float SfxMasterVol
+		{
+			get { return this.sfxMasterVol; }
+			set { this.sfxMasterVol = value; }
 		}
 	}
 }

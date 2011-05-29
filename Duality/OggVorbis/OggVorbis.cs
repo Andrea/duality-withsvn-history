@@ -146,9 +146,9 @@ namespace Duality.OggVorbis
 		public static bool StreamChunk(IntPtr vFPtr, out PcmData result)
 		{
 			MemoryStream dataStream = null;
-			bool eof = StreamChunk(vFPtr, ref dataStream, out result.channelCount, out result.sampleRate);
-			result.data = dataStream.ToArray();
-			return eof;
+			bool notEof = StreamChunk(vFPtr, ref dataStream, out result.channelCount, out result.sampleRate);
+			result.data = dataStream != null ? dataStream.ToArray() : new byte[0];
+			return notEof;
 		}
 	}
 }

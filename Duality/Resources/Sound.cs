@@ -38,18 +38,85 @@ namespace Duality.Resources
 			DroneLoop	= ContentProvider.RequestContent<Sound>(ContentPath_DroneLoop);
 			LogoJingle	= ContentProvider.RequestContent<Sound>(ContentPath_LogoJingle);
 		}
+		
+
+		public const int AlBuffer_NotAvailable = 0;
+		public const int AlBuffer_StreamMe = -1;
 
 
-		private	ContentRef<AudioData>	audioData;
-		[NonSerialized]	private	int		alBuffer;
+		private	bool	forceStream		= false;
+		private	int		maxInstances	= 5;
+		private	float	minDistFactor	= 1.0f;
+		private	float	maxDistFactor	= 1.0f;
+		private	float	volFactor		= 1.0f;
+		private	float	pitchFactor		= 1.0f;
+		private	float	fadeOutAt		= 0.0f;
+		private	float	fadeOutTime		= 0.0f;
+		private	ContentRef<AudioData>	audioData	= ContentRef<AudioData>.Null;
+		[NonSerialized]	private	int		alBuffer	= AlBuffer_NotAvailable;
 
 		public int AlBuffer
 		{
 			get { return this.alBuffer; }
 		}
+		public bool IsStreamed
+		{
+			get { return this.alBuffer == AlBuffer_StreamMe; }
+		}
 		public ContentRef<AudioData> Data
 		{
 			get { return this.audioData; }
+			set { this.audioData = value; this.ReloadData(); }
+		}
+		public bool ForceStream
+		{
+			get { return this.forceStream; }
+			set { this.forceStream = value; this.ReloadData(); }
+		}
+		public int MaxInstances
+		{
+			get { return this.maxInstances; }
+			set { this.maxInstances = value; }
+		}
+		public float VolumeFactor
+		{
+			get { return this.volFactor; }
+			set { this.volFactor = value; }
+		}
+		public float PitchFactor
+		{
+			get { return this.pitchFactor; }
+			set { this.pitchFactor = value; }
+		}
+		public float FadeOutAt
+		{
+			get { return this.fadeOutAt; }
+			set { this.fadeOutAt = value; }
+		}
+		public float FadeOutTime
+		{
+			get { return this.fadeOutTime; }
+			set { this.fadeOutTime = value; }
+		}
+		public float MinDistFactor
+		{
+			get { return this.minDistFactor; }
+			set { this.minDistFactor = value; }
+		}
+		public float MaxDistFactor
+		{
+			get { return this.maxDistFactor; }
+			set { this.maxDistFactor = value; }
+		}
+		public float MinDist
+		{
+			get { return DualityApp.Sound.DefaultMinDist * this.minDistFactor; }
+			set { this.minDistFactor = value / DualityApp.Sound.DefaultMinDist; }
+		}
+		public float MaxDist
+		{
+			get { return DualityApp.Sound.DefaultMaxDist * this.maxDistFactor; }
+			set { this.maxDistFactor = value / DualityApp.Sound.DefaultMaxDist; }
 		}
 
 		public Sound() {}
@@ -64,17 +131,36 @@ namespace Duality.Resources
 		}
 		public void LoadData(ContentRef<AudioData> audioData)
 		{
-			if (this.alBuffer == 0) this.alBuffer = AL.GenBuffer();
 			this.audioData = audioData;
 
+			// No AudioData available
+			if (!this.audioData.IsAvailable)
+			{
+				if (this.alBuffer > AlBuffer_NotAvailable) AL.DeleteBuffer(this.alBuffer);
+				this.alBuffer = AlBuffer_NotAvailable;
+				return;
+			}
+
+			bool stream = this.forceStream ? true : this.audioData.Res.OggVorbisData.Length > 1024 * 100;
+
+			// Streamed Audio
+			if (stream)
+			{
+				if (this.alBuffer > AlBuffer_NotAvailable) AL.DeleteBuffer(this.alBuffer);
+				this.alBuffer = AlBuffer_StreamMe;
+			}
 			// Non-Streamed Audio
-			PcmData pcm = OV.LoadFromMemory(audioData.Res.OggVorbisData);
-			AL.BufferData(
-				this.alBuffer,
-				pcm.channelCount == 1 ? OpenTK.Audio.OpenAL.ALFormat.Mono16 : OpenTK.Audio.OpenAL.ALFormat.Stereo16,
-				pcm.data.ToArray(), 
-				(int)pcm.data.Length, 
-				pcm.sampleRate);
+			else
+			{
+				if (this.alBuffer <= AlBuffer_NotAvailable) this.alBuffer = AL.GenBuffer();
+				PcmData pcm = OV.LoadFromMemory(audioData.Res.OggVorbisData);
+				AL.BufferData(
+					this.alBuffer,
+					pcm.channelCount == 1 ? ALFormat.Mono16 : ALFormat.Stereo16,
+					pcm.data.ToArray(), 
+					(int)pcm.data.Length, 
+					pcm.sampleRate);
+			}
 		}
 
 		[OnDeserialized]
@@ -97,6 +183,7 @@ namespace Duality.Resources
 		{
 			base.CopyTo(r);
 			Sound c = r as Sound;
+			c.forceStream = this.forceStream;
 			c.LoadData(this.audioData);
 		}
 	}

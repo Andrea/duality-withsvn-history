@@ -1,34 +1,16 @@
 ﻿
 -->	Checklist for first Game: Asteroids
-	-->	Sound! Create a flexible, OpenAL-based sound system for Duality
 
-		# SCHEDULE: #
-		-->	Distinguish between streamed / loaded sounds in Sound class
-		-->	Implement SoundInstance and simple 2D sound features in SoundManager
-			according to concept and the Nullpunkt sound system
-			-->	Implement it with streaming
-		-->	SoundListener component and 3D sound features
-			-->	Make SoundListener a "dummy" component that simply sets the SoundManagers
-				SoundListener-Property to the GameObject?
+	-->	Sound! Create a flexible, OpenAL-based sound system for Duality
 		-->	BudgetPad features
-		-->	SoundEmitter component
+		-->	SoundEmitter Component type. For placing loop sounds in the level and having an
+			easy way to play sound effect without always having to create a custom Component
+			invoking the SoundManagers PlaySound methods
+			-->	Should be able to maintain multiple sounds at once?
+			-->	Keep in mind what Nullpunkt needed for space ships: Multiple (loop) sounds
+				attached to a single object, each with their own offset, volume, etc.
 		-->	SoundEmitterPropertyEditor & Testing in editor
 			(Careful: SoundListener always needs to be at the currently active CamView cam)
-
-		-->	Both 2D and 3D
-			-->	2D are global, subset of them: budget-based audio pads (music, environment, ...)
-			-->	3D are local, require a position in space. Optional: GameObject reference
-				as parent object, treating own position as offset.
-			-->	SoundListener Component type. Only one at a time allowed to conform with OpenAL
-			-->	SoundEmitter Component type. For placing loop sounds in the level and having an
-				easy way to play sound effect without always having to create a custom Component
-				invoking the SoundManagers PlaySound methods
-				-->	Should be able to maintain multiple sounds at once?
-				-->	Keep in mind what Nullpunkt needed for space ships: Multiple (loop) sounds
-					attached to a single object, each with their own offset, volume, etc.
-		-->	Global sound manager (DualityApp.Sound), sounds are played by calling methods there,
-			returns reference to a sound instance
-		-->	Streaming support for pads / music / unique sounds, streaming directly from memory
 
 	-->	Any Usability stuff that comes up while editing / creating the game
 

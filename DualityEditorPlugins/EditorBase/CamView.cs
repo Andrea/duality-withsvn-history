@@ -153,6 +153,7 @@ namespace EditorBase
 			this.camObj = new GameObject();
 			this.camObj.Name = "CamView Camera " + this.runtimeId;
 			this.camObj.AddComponent<Transform>();
+			this.camObj.AddComponent<SoundListener>().MakeCurrent();
 
 			this.camComp = this.camObj.AddComponent<Camera>();
 			this.camComp.ClearColor = ColorRGBA.DarkGrey;
@@ -233,8 +234,9 @@ namespace EditorBase
 			this.glControl.MouseWheel += new MouseEventHandler(this.glControl_MouseWheel);
 			this.glControl.MouseMove += new MouseEventHandler(this.glControl_MouseMove);
 			this.glControl.LostFocus += new EventHandler(this.glControl_LostFocus);
+			this.glControl.GotFocus += new EventHandler(this.glControl_GotFocus);
 			this.glControl.KeyDown += new KeyEventHandler(this.glControl_KeyDown);
-			this.glControl.Resize += new EventHandler(glControl_Resize);
+			this.glControl.Resize += new EventHandler(this.glControl_Resize);
 			this.glControl.DragEnter += new DragEventHandler(this.glControl_DragEnter);
 			this.glControl.DragLeave += new EventHandler(this.glControl_DragLeave);
 			this.glControl.DragOver += new DragEventHandler(this.glControl_DragOver);
@@ -1077,6 +1079,10 @@ namespace EditorBase
 			// Render CamView
 			this.camComp.Render();
 			mainContextControl.SwapBuffers();
+		}
+		private void glControl_GotFocus(object sender, EventArgs e)
+		{
+			this.camObj.GetComponent<SoundListener>().MakeCurrent();
 		}
 		private void glControl_LostFocus(object sender, EventArgs e)
 		{
