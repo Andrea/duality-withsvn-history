@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ColorFormat\ColorHSVA.cs" />
+    <Compile Include="Components\SoundEmitter.cs" />
     <Compile Include="Components\SoundListener.cs" />
     <Compile Include="ConsoleLogOutput.cs" />
     <Compile Include="ContentProvider.cs" />

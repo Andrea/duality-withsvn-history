@@ -121,7 +121,7 @@ namespace DualityEditor
 		}
 		public ObjectSelection(IEnumerable<object> obj)
 		{
-			this.obj = new List<object>(obj.Where(o => o != null));
+			this.obj = new List<object>(obj.NotNull());
 		}
 		public ObjectSelection(params object[] obj) : this(obj as IEnumerable<object>) {}
 

@@ -45,6 +45,17 @@ namespace DualityEditor
 				this.context = context;
 			}
 		}
+		private	struct CategoryEntry : IResEntry
+		{
+			public	string[]	categoryTree;
+			public	string		context;
+
+			public CategoryEntry(string category, string context)
+			{
+				this.categoryTree = category.Split(new char[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
+				this.context = context;
+			}
+		}
 
 		public interface IEditorAction
 		{
@@ -90,6 +101,7 @@ namespace DualityEditor
 		}
 
 		public const string ImageContext_Icon = "Icon";
+		public const string CategoryContext_General = "General";
 		public const string ActionContext_ContextMenu = "ContextMenu";
 
 		private	static	Dictionary<Type,List<IResEntry>>	corePluginRes	= new Dictionary<Type,List<IResEntry>>();
@@ -148,6 +160,15 @@ namespace DualityEditor
 		public static Image RequestTypeImage(Type type, string context)
 		{
 			return RequestCorePluginRes<ImageResEntry>(type, e => e.context == context).img;
+		}
+
+		public static void RegisterTypeCategory(Type type, string category, string context)
+		{
+			RegisterCorePluginRes(type, new CategoryEntry(category, context));
+		}
+		public static string[] RequestTypeCategory(Type type, string context)
+		{
+			return RequestCorePluginRes<CategoryEntry>(type, e => e.context == context).categoryTree;
 		}
 
 		public static void RegisterPropertyEditorProvider(PropertyGrid.IPropertyEditorProvider provider)

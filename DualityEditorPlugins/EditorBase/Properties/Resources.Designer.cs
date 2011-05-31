@@ -130,6 +130,13 @@ namespace EditorBase.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap speaker {
+            get {
+                object obj = ResourceManager.GetObject("speaker", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap WorkingFolderIcon16 {
             get {
                 object obj = ResourceManager.GetObject("WorkingFolderIcon16", resourceCulture);

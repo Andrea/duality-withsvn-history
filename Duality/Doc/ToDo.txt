@@ -2,14 +2,11 @@
 -->	Checklist for first Game: Asteroids
 
 	-->	Sound! Create a flexible, OpenAL-based sound system for Duality
-		-->	SoundEmitter Component type. For placing loop sounds in the level and having an
-			easy way to play sound effect without always having to create a custom Component
-			invoking the SoundManagers PlaySound methods
-			-->	Should be able to maintain multiple sounds at once?
-			-->	Keep in mind what Nullpunkt needed for space ships: Multiple (loop) sounds
-				attached to a single object, each with their own offset, volume, etc.
-		-->	SoundEmitterPropertyEditor & Testing in editor
-			(Careful: SoundListener always needs to be at the currently active CamView cam)
+		-->	SoundEmitterPropertyEditor
+			-->	In addition to its member editors, directly parent each sound Sources editor
+				onto the SoundEmitter
+			-->	Create via dragdrop, Delete via button at Source editor
+			-->	Create a custom editor
 
 	-->	Any Usability stuff that comes up while editing / creating the game
 

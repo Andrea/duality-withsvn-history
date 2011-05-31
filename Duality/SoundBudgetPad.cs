@@ -167,9 +167,9 @@ namespace Duality
 			}
 			return false;
 		}
-		public SoundBudgetPad Push(ContentRef<Sound> snd, SoundType type, SoundBudgetPriority priority, float fadeInTimeSec = DefaultFadeInTime)
+		public SoundBudgetPad Push(ContentRef<Sound> snd, SoundBudgetPriority priority, float fadeInTimeSec = DefaultFadeInTime)
 		{
-			SoundInstance inst = DualityApp.Sound.PlaySound2D(snd, type);
+			SoundInstance inst = DualityApp.Sound.PlaySound2D(snd);
 			SoundBudgetPad bP = new SoundBudgetPad(inst, priority);
 			bP.Sound.Paused = true;
 			if (fadeInTimeSec > 0.05f) bP.Sound.BeginFadeIn(fadeInTimeSec);

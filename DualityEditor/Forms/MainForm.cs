@@ -701,7 +701,10 @@ namespace DualityEditor.Forms
 			if (result != DialogResult.Yes) return false;
 
 			foreach (PrefabLink link in linkList) link.Obj.BreakPrefabLink();
-			this.NotifyObjPropChanged(this, obj, ReflectionHelper.Property_GameObject_PrefabLink);
+			this.NotifyObjPropChanged(
+				this, 
+				new ObjectSelection(linkList.Select(l => l.Obj)), 
+				ReflectionHelper.Property_GameObject_PrefabLink);
 
 			return true;
 		}

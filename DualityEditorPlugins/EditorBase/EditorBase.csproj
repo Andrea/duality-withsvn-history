@@ -66,6 +66,9 @@
     <Compile Include="PropertyEditors\DualityAppDataPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="PropertyEditors\SoundPropertyEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="PropertyEditors\TexturePropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -199,6 +202,7 @@
     <EmbeddedResource Include="PluginRes\EditorBaseRes.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>EditorBaseRes.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ProjectFolderView.de.resx">
       <DependentUpon>ProjectFolderView.cs</DependentUpon>
@@ -213,6 +217,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <None Include="Resources\speaker.png" />
     <None Include="Resources\arrow_right_accelerate.png" />
     <None Include="Resources\arrow_refresh.png" />
     <None Include="PluginRes\wrench.ico" />
@@ -247,6 +252,7 @@
     <None Include="PluginRes\iconGameObjLinkBroken.png" />
     <None Include="PluginRes\iconResAudioData.png" />
     <None Include="PluginRes\iconResSound.png" />
+    <None Include="PluginRes\iconCmpSoundListener.png" />
     <Content Include="PluginRes\projectview.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

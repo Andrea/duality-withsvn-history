@@ -27,6 +27,8 @@ namespace EditorBase.PropertyEditors
 				return PropertyGrid.ProvidedEditorType.Specialized;
 			else if (typeof(Texture).IsAssignableFrom(baseType))
 				return PropertyGrid.ProvidedEditorType.Specialized;
+			else if (typeof(Sound).IsAssignableFrom(baseType))
+				return PropertyGrid.ProvidedEditorType.Specialized;
 			else if (typeof(Component).IsAssignableFrom(baseType))
 				return PropertyGrid.ProvidedEditorType.General;
 			else if (typeof(Resource).IsAssignableFrom(baseType))
@@ -55,6 +57,8 @@ namespace EditorBase.PropertyEditors
 				e = new BatchInfoPropertyEditor(parentEditor, parentGrid);
 			else if (typeof(Texture).IsAssignableFrom(baseType))
 				e = new TexturePropertyEditor(parentEditor, parentGrid);
+			else if (typeof(Sound).IsAssignableFrom(baseType))
+				e = new SoundPropertyEditor(parentEditor, parentGrid);
 			else if (typeof(Component).IsAssignableFrom(baseType))
 				e = new ComponentPropertyEditor(parentEditor, parentGrid);
 			else if (typeof(Resource).IsAssignableFrom(baseType))

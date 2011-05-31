@@ -138,6 +138,15 @@
   <data name="CamView_Status_PosZ" xml:space="preserve">
     <value>Z: {0:F}</value>
   </data>
+  <data name="Category_General" xml:space="preserve">
+    <value>Allgemein</value>
+  </data>
+  <data name="Category_Graphics" xml:space="preserve">
+    <value>Grafik</value>
+  </data>
+  <data name="Category_Sound" xml:space="preserve">
+    <value>Sound</value>
+  </data>
   <data name="MenuItemName_AppData" xml:space="preserve">
     <value>Programmdaten</value>
   </data>

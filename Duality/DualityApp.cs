@@ -444,7 +444,7 @@ namespace Duality
 		private	string				websiteUrl			= "http://www.fetzenet.de";
 		private	uint				version				= 0;
 		private	ContentRef<Scene>	startScene			= ContentRef<Scene>.Null;
-		private	float				speedOfSound		= 36.0f;
+		private	float				speedOfSound		= 360.0f;
 		private	float				soundDopplerFactor	= 1.0f;
 
 		public string AppName

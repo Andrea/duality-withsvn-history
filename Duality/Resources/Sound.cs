@@ -45,14 +45,15 @@ namespace Duality.Resources
 		public const int AlBuffer_StreamMe = -1;
 
 
-		private	bool	forceStream		= false;
-		private	int		maxInstances	= 5;
-		private	float	minDistFactor	= 1.0f;
-		private	float	maxDistFactor	= 1.0f;
-		private	float	volFactor		= 1.0f;
-		private	float	pitchFactor		= 1.0f;
-		private	float	fadeOutAt		= 0.0f;
-		private	float	fadeOutTime		= 0.0f;
+		private	bool		forceStream		= false;
+		private	int			maxInstances	= 5;
+		private	float		minDistFactor	= 1.0f;
+		private	float		maxDistFactor	= 1.0f;
+		private	float		volFactor		= 1.0f;
+		private	float		pitchFactor		= 1.0f;
+		private	float		fadeOutAt		= 0.0f;
+		private	float		fadeOutTime		= 0.0f;
+		private	SoundType	type			= SoundType.EffectWorld;
 		private	ContentRef<AudioData>	audioData	= ContentRef<AudioData>.Null;
 		[NonSerialized]	private	int		alBuffer	= AlBuffer_NotAvailable;
 
@@ -68,6 +69,11 @@ namespace Duality.Resources
 		{
 			get { return this.audioData; }
 			set { this.audioData = value; this.ReloadData(); }
+		}
+		public SoundType Type
+		{
+			get { return this.type; }
+			set { this.type = value; }
 		}
 		public bool ForceStream
 		{

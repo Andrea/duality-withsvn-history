@@ -25,6 +25,7 @@ namespace Duality
 		private	int						maxAlSources	= 0;
 		private	int						numPlaying2D	= 0;
 		private	int						numPlaying3D	= 0;
+		private	bool					mute			= false;
 
 
 		public AudioContext Context
@@ -58,6 +59,11 @@ namespace Duality
 			get { return (this.soundListener != null && this.soundListener.Transform != null) ? this.soundListener.Transform.Angle : 0.0f; }
 		}
 		
+		public bool Mute
+		{
+			get { return this.mute; }
+			set { this.mute = value; }
+		}
 		public float DefaultMinDist
 		{
 			get { return 350.0f; }
@@ -173,7 +179,7 @@ namespace Duality
 			// If no listener is defined, search one
 			if (this.soundListener == null)
 			{
-				this.soundListener = Scene.Current.Graph.AllObjects.GetComponents<SoundListener>(true).FirstOrDefault().GameObj;
+				this.soundListener = Scene.Current.Graph.AllObjects.GetComponents<SoundListener>(true).GameObject().FirstOrDefault();
 			}
 
 			float[] orientation = new float[6];
@@ -189,29 +195,30 @@ namespace Duality
 			orientation[3] = MathF.Sin(listenerAngle);	// up vector x value
 			orientation[4] = MathF.Cos(listenerAngle);	// up vector y value
 			AL.Listener(ALListenerfv.Orientation, ref orientation);
+			AL.Listener(ALListenerf.Gain, this.mute ? 0.0f : 1.0f);
 		}
 		
-		public SoundInstance PlaySound2D(ContentRef<Sound> snd, SoundType type = SoundType.EffectWorld)
+		public SoundInstance PlaySound2D(ContentRef<Sound> snd)
 		{
-			SoundInstance inst = new SoundInstance(snd, type);
+			SoundInstance inst = new SoundInstance(snd);
 			this.sounds.Add(inst);
 			return inst;
 		}
-		public SoundInstance PlaySound3D(ContentRef<Sound> snd, Vector3 pos, SoundType type = SoundType.EffectWorld)
+		public SoundInstance PlaySound3D(ContentRef<Sound> snd, Vector3 pos)
 		{
-			SoundInstance inst = new SoundInstance(snd, type, pos);
+			SoundInstance inst = new SoundInstance(snd, pos);
 			this.sounds.Add(inst);
 			return inst;
 		}
-		public SoundInstance PlaySound3D(ContentRef<Sound> snd, GameObject attachTo, SoundType type = SoundType.EffectWorld)
+		public SoundInstance PlaySound3D(ContentRef<Sound> snd, GameObject attachTo)
 		{
-			SoundInstance inst = new SoundInstance(snd, type, attachTo);
+			SoundInstance inst = new SoundInstance(snd, attachTo);
 			this.sounds.Add(inst);
 			return inst;
 		}
-		public SoundInstance PlaySound3D(ContentRef<Sound> snd, GameObject attachTo, Vector3 relativePos, SoundType type = SoundType.EffectWorld)
+		public SoundInstance PlaySound3D(ContentRef<Sound> snd, GameObject attachTo, Vector3 relativePos)
 		{
-			SoundInstance inst = new SoundInstance(snd, type, attachTo);
+			SoundInstance inst = new SoundInstance(snd, attachTo);
 			inst.Pos = relativePos;
 			this.sounds.Add(inst);
 			return inst;

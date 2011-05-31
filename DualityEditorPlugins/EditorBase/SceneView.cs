@@ -141,6 +141,12 @@ namespace EditorBase
 				if (result == null) result = PluginRes.EditorBaseRes.IconCmpUnknown;
 				return result;
 			}
+			public static string[] GetTypeCategory(Type type)
+			{
+				string[] result = CorePluginHelper.RequestTypeCategory(type, CorePluginHelper.CategoryContext_General);
+				if (result == null) result = new string[] { type.Assembly.FullName.Split(',')[0].Replace(".core", "") };
+				return result;
+			}
 		}
 
 
@@ -1128,11 +1134,51 @@ namespace EditorBase
 				{
 					bool hasRequirements = Component.GetRequiredComponents(cmpType).All(t => targetObj.GetComponent(t) != null);
 
+					// Generalte category item
+					string[] category = ComponentNode.GetTypeCategory(cmpType);
+					ToolStripMenuItem categoryItem = this.newToolStripMenuItem;
+					for (int i = 0; i < category.Length; i++)
+					{
+						ToolStripMenuItem subCatItem = categoryItem.DropDownItems.Find(category[i], false).FirstOrDefault() as ToolStripMenuItem;
+						if (subCatItem == null)
+						{
+							subCatItem = new ToolStripMenuItem(category[i]);
+							subCatItem.Name = category[i];
+							subCatItem.Tag = cmpType.Assembly;
+							subCatItem.DropDownItemClicked += this.newToolStripMenuItem_DropDownItemClicked;
+							categoryItem.DropDownItems.Add(subCatItem);
+						}
+						categoryItem = subCatItem;
+					}
+
 					ToolStripMenuItem cmpTypeItem = new ToolStripMenuItem(cmpType.Name, ComponentNode.GetTypeImage(cmpType));
 					cmpTypeItem.Tag = cmpType;
 					cmpTypeItem.Enabled = hasRequirements;
-					this.newToolStripMenuItem.DropDownItems.Add(cmpTypeItem);
+					categoryItem.DropDownItems.Add(cmpTypeItem);
 				}
+
+				// Sort components and categories
+				List<ToolStripMenuItem> newItems = new List<ToolStripMenuItem>(this.newToolStripMenuItem.DropDownItems.OfType<ToolStripMenuItem>());
+				newItems.RemoveAt(0);
+				while (this.newToolStripMenuItem.DropDownItems.Count > 2) this.newToolStripMenuItem.DropDownItems.RemoveAt(2);
+				newItems.Sort(delegate(ToolStripMenuItem item1, ToolStripMenuItem item2)
+				{
+					int result;
+
+					System.Reflection.Assembly assembly1 = item1.Tag is Type ? (item1.Tag as Type).Assembly : item1.Tag as System.Reflection.Assembly;
+					System.Reflection.Assembly assembly2 = item2.Tag is Type ? (item2.Tag as Type).Assembly : item2.Tag as System.Reflection.Assembly;
+					int score1 = assembly1 == typeof(DualityApp).Assembly ? 1 : 0;
+					int score2 = assembly2 == typeof(DualityApp).Assembly ? 1 : 0;
+					result = score2 - score1;
+					if (result != 0) return result;
+
+					result = Math.Sign(item1.DropDownItems.Count) - Math.Sign(item2.DropDownItems.Count);
+					if (result != 0) return result;
+
+					result = item1.Text.CompareTo(item2.Text);
+					return result;
+				});
+				this.newToolStripMenuItem.DropDownItems.AddRange(newItems.ToArray());
 			}
 		}
 

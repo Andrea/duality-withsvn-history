@@ -53,6 +53,12 @@ namespace Duality
 		public static readonly PropertyInfo	Property_Material_Textures;
 		public static readonly PropertyInfo	Property_Material_Uniforms;
 
+		public static readonly PropertyInfo	Property_Sound_AlBuffer;
+		public static readonly PropertyInfo	Property_Sound_MinDist;
+		public static readonly PropertyInfo	Property_Sound_MinDistFactor;
+		public static readonly PropertyInfo	Property_Sound_MaxDist;
+		public static readonly PropertyInfo	Property_Sound_MaxDistFactor;
+
 
 		public static readonly FieldInfo Field_GameObject_Name;
 		public static readonly FieldInfo Field_GameObject_PrefabLink;
@@ -110,6 +116,13 @@ namespace Duality
 			Property_Material_MainColor	= material.GetProperty("MainColor");
 			Property_Material_Textures	= material.GetProperty("Textures");
 			Property_Material_Uniforms	= material.GetProperty("Uniforms");
+
+			Type sound = typeof(Sound);
+			Property_Sound_AlBuffer			= sound.GetProperty("AlBuffer");
+			Property_Sound_MinDist			= sound.GetProperty("MinDist");
+			Property_Sound_MinDistFactor	= sound.GetProperty("MinDistFactor");
+			Property_Sound_MaxDist			= sound.GetProperty("MaxDist");
+			Property_Sound_MaxDistFactor	= sound.GetProperty("MaxDistFactor");
 
 			// Retrieve FieldInfo data
 			BindingFlags fieldFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;

@@ -54,7 +54,6 @@ namespace Duality
 		private	GameObject		attachedTo		= null;
 		private	Vector3			pos				= Vector3.Zero;
 		private	Vector3			vel				= Vector3.Zero;
-		private	SoundType		type			= SoundType.EffectWorld;
 		private	float			vol				= 1.0f;
 		private	float			pitch			= 1.0f;
 		private	bool			is3D			= false;
@@ -98,10 +97,6 @@ namespace Duality
 		{
 			get { return this.is3D; }
 		}						//	G
-		public SoundType Type
-		{
-			get { return this.type; }
-		}				//	G
 		public int Priority
 		{
 			get { return this.curPriority; }
@@ -206,24 +201,21 @@ namespace Duality
 		}
 
 		
-		internal SoundInstance(ContentRef<Sound> snd, SoundType type, GameObject attachObj)
+		internal SoundInstance(ContentRef<Sound> snd, GameObject attachObj)
 		{
 			this.attachedTo = attachObj;
 			this.is3D = true;
 			this.snd = snd;
-			this.type = type;
 		}
-		internal SoundInstance(ContentRef<Sound> snd, SoundType type, Vector3 pos)
+		internal SoundInstance(ContentRef<Sound> snd, Vector3 pos)
 		{
 			this.pos = pos;
 			this.is3D = true;
 			this.snd = snd;
-			this.type = type;
 		}
-		internal SoundInstance(ContentRef<Sound> snd, SoundType type)
+		internal SoundInstance(ContentRef<Sound> snd)
 		{
 			this.snd = snd;
-			this.type = type;
 			this.is3D = false;
 		}
 
@@ -377,7 +369,7 @@ namespace Duality
 		private float GetTypeVolFactor()
 		{
 			float optVolFactor;
-			switch (this.type)
+			switch (this.snd.IsAvailable ? this.snd.Res.Type : SoundType.EffectWorld)
 			{
 				case SoundType.EffectUI:
 					optVolFactor = DualityApp.UserData.SfxEffectVol;
@@ -402,8 +394,65 @@ namespace Duality
 		{
 			lock (this.strLock)
 			{
-				#region OpenAl source management
-				// Initial: Grab an OpenAL source
+				// Check existence of attachTo object
+				if (this.attachedTo != null && this.attachedTo.Disposed) this.attachedTo = null;
+
+				// Retrieve sound resource values
+				Sound res = this.snd.Res;
+				if (res == null)
+				{
+					DualityApp.Sound.UnregisterPlaying(this.snd, this.is3D);
+					this.Dispose();
+					return;
+				}
+				float optVolFactor = this.GetTypeVolFactor();
+				float minDistTemp = res.MinDist;
+				float maxDistTemp = res.MaxDist;
+				float volTemp = optVolFactor * res.VolumeFactor * this.vol * this.curFade;
+				float pitchTemp = res.PitchFactor * this.pitch;
+				float priorityTemp = 1000.0f;
+				priorityTemp *= volTemp;
+
+				// Calculate 3D source values, distance and priority
+				Vector3 posAbs = this.pos;
+				Vector3 velAbs = this.vel;
+				if (this.is3D)
+				{
+					Duality.Components.Transform attachTransform = this.attachedTo != null ? this.attachedTo.Transform : null;
+
+					// Attach to object
+					if (this.attachedTo != null && this.attachedTo != DualityApp.Sound.Listener)
+					{
+						MathF.TransformCoord(ref posAbs.X, ref posAbs.Y, attachTransform.Angle);
+						MathF.TransformCoord(ref velAbs.X, ref velAbs.Y, attachTransform.Angle);
+						posAbs += attachTransform.Pos;
+						velAbs += attachTransform.Vel;
+					}
+
+					// Distance check
+					Vector3 listenerPos = DualityApp.Sound.ListenerPos;
+					float dist;
+					if (this.attachedTo != DualityApp.Sound.Listener)
+						dist = MathF.Sqrt(
+							(posAbs.X - listenerPos.X) * (posAbs.X - listenerPos.X) +
+							(posAbs.Y - listenerPos.Y) * (posAbs.Y - listenerPos.Y) +
+							(posAbs.Z - listenerPos.Z) * (posAbs.Z - listenerPos.Z) * 0.25f);
+					else
+						dist = MathF.Sqrt(
+							posAbs.X * posAbs.X +
+							posAbs.Y * posAbs.Y +
+							posAbs.Z * posAbs.Z * 0.25f);
+					if (dist > maxDistTemp)
+					{
+						DualityApp.Sound.UnregisterPlaying(this.snd, this.is3D);
+						this.Dispose();
+						return;
+					}
+					else
+						priorityTemp *= Math.Max(0.0f, 1.0f - ((float)dist - minDistTemp) / (maxDistTemp - minDistTemp));
+				}
+
+				// Grab an OpenAL source, if not yet assigned
 				if (this.alSource == AlSource_NotYetAssigned)
 				{
 					if (this.GrabAlSource())
@@ -437,9 +486,8 @@ namespace Duality
 					this.Dispose();
 					return;
 				} 
-				#endregion
 
-				#region Fading
+				// Fading in and out
 				bool fadeOut = false;
 				if (this.fadeTarget <= 0.0f) fadeOut = true;
 				if (!this.paused)
@@ -463,24 +511,6 @@ namespace Duality
 					DualityApp.Sound.UnregisterPlaying(this.snd, this.is3D);
 					return;
 				}
-				#endregion
-
-				#region Sound state update
-				Sound res = this.snd.Res;
-				if (res == null)
-				{
-					DualityApp.Sound.UnregisterPlaying(this.snd, this.is3D);
-					this.Dispose();
-					return;
-				}
-
-				float optVolFactor = this.GetTypeVolFactor();
-				float minDistTemp = res.MinDist;
-				float maxDistTemp = res.MaxDist;
-				float volTemp = optVolFactor * res.VolumeFactor * this.vol * this.curFade;
-				float pitchTemp = res.PitchFactor * this.pitch;
-				float priorityTemp = 1000.0f;
-				priorityTemp *= volTemp;
 
 				// SlowMotion
 				//if (this.type == SoundType.EffectWorld)
@@ -503,55 +533,12 @@ namespace Duality
 				{
 					// Hack: Relative always dirty to support switching listeners without establishing a notifier-event
 					this.dirtyState |= DirtyFlag.Relative;
-
 					if (this.attachedTo != null) this.dirtyState |= DirtyFlag.AttachedTo;
 
-					// Check existence of attachTo object
-					if (this.attachedTo != null && this.attachedTo.Disposed)
-						this.attachedTo = null;
-
-					Vector3 posAbs = this.pos;
-					Vector3 velAbs = this.vel;
-					Duality.Components.Transform attachTransform = this.attachedTo != null ? this.attachedTo.Transform : null;
-
-					// Attach to object
-					if (this.attachedTo != null && this.attachedTo != DualityApp.Sound.Listener)
-					{
-						MathF.TransformCoord(ref posAbs.X, ref posAbs.Y, attachTransform.Angle);
-						MathF.TransformCoord(ref velAbs.X, ref velAbs.Y, attachTransform.Angle);
-						posAbs += attachTransform.Pos;
-						velAbs += attachTransform.Vel;
-					}
-
-					// Distance check
-					Vector3 listenerPos = DualityApp.Sound.ListenerPos;
-					float dist;
-					if (this.attachedTo != DualityApp.Sound.Listener)
-						dist = MathF.Sqrt(
-							(posAbs.X - listenerPos.X) * (posAbs.X - listenerPos.X) +
-							(posAbs.Y - listenerPos.Y) * (posAbs.Y - listenerPos.Y) +
-							(posAbs.Z - listenerPos.Z) * (posAbs.Z - listenerPos.Z) * 0.25f);
-					else
-						dist = MathF.Sqrt(
-							posAbs.X * posAbs.X +
-							posAbs.Y * posAbs.Y +
-							posAbs.Z * posAbs.Z * 0.25f);
-					if (dist > maxDistTemp)
-					{
-						DualityApp.Sound.UnregisterPlaying(this.snd, this.is3D);
-						this.Dispose();
-						return;
-					}
-					else
-						priorityTemp *= Math.Max(0.0f, 1.0f - ((float)dist - minDistTemp) / (maxDistTemp - minDistTemp));
-
-					// Set sound position
 					if ((this.dirtyState & DirtyFlag.Relative) != DirtyFlag.None)
 						AL.Source(this.alSource, ALSourceb.SourceRelative, this.attachedTo == DualityApp.Sound.Listener);
 					if ((this.dirtyState & DirtyFlag.Pos) != DirtyFlag.None)
 						AL.Source(this.alSource, ALSource3f.Position, posAbs.X, -posAbs.Y, -posAbs.Z * 0.5f);
-
-					// Set sound velocity
 					if ((this.dirtyState & DirtyFlag.Vel) != DirtyFlag.None)
 						AL.Source(this.alSource, ALSource3f.Velocity, velAbs.X, -velAbs.Y, -velAbs.Z);
 				}
@@ -593,9 +580,8 @@ namespace Duality
 
 				// Finish priority calculation
 				this.curPriority = (int)Math.Round(priorityTemp / Math.Sqrt(DualityApp.Sound.GetNumPlaying(this.snd))); 
-				#endregion
 
-				#region Initially play the source
+				// Initially play the source
 				if (stateTemp == ALSourceState.Initial && !this.paused)
 				{
 					if (res.AlBuffer == Sound.AlBuffer_StreamMe)
@@ -610,7 +596,6 @@ namespace Duality
 						AL.SourcePlay(this.alSource);
 					} 
 				}
-				#endregion
 			}
 		}
 
