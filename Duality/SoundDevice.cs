@@ -198,13 +198,13 @@ namespace Duality
 			AL.Listener(ALListenerf.Gain, this.mute ? 0.0f : 1.0f);
 		}
 		
-		public SoundInstance PlaySound2D(ContentRef<Sound> snd)
+		public SoundInstance PlaySound(ContentRef<Sound> snd)
 		{
 			SoundInstance inst = new SoundInstance(snd);
 			this.sounds.Add(inst);
 			return inst;
 		}
-		public SoundInstance PlaySound3D(ContentRef<Sound> snd, Vector3 pos)
+		public SoundInstance PlaySound(ContentRef<Sound> snd, Vector3 pos)
 		{
 			SoundInstance inst = new SoundInstance(snd, pos);
 			this.sounds.Add(inst);
