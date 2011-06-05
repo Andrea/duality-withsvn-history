@@ -4,10 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 
-using OpenTK.Audio.OpenAL;
-
-using Duality.OggVorbis;
-
 namespace Duality.Resources
 {
 	[Serializable]
@@ -39,13 +35,12 @@ namespace Duality.Resources
 			DroneLoop	= ContentProvider.RequestContent<Sound>(ContentPath_DroneLoop);
 			LogoJingle	= ContentProvider.RequestContent<Sound>(ContentPath_LogoJingle);
 		}
+
 		
+		public const int AlBuffer_NotAvailable = AudioData.AlBuffer_NotAvailable;
+		public const int AlBuffer_StreamMe = AudioData.AlBuffer_StreamMe;
 
-		public const int AlBuffer_NotAvailable = 0;
-		public const int AlBuffer_StreamMe = -1;
 
-
-		private	bool		forceStream		= false;
 		private	int			maxInstances	= 5;
 		private	float		minDistFactor	= 1.0f;
 		private	float		maxDistFactor	= 1.0f;
@@ -55,30 +50,16 @@ namespace Duality.Resources
 		private	float		fadeOutTime		= 0.0f;
 		private	SoundType	type			= SoundType.EffectWorld;
 		private	ContentRef<AudioData>	audioData	= ContentRef<AudioData>.Null;
-		[NonSerialized]	private	int		alBuffer	= AlBuffer_NotAvailable;
 
-		public int AlBuffer
-		{
-			get { return this.alBuffer; }
-		}
-		public bool IsStreamed
-		{
-			get { return this.alBuffer == AlBuffer_StreamMe; }
-		}
 		public ContentRef<AudioData> Data
 		{
 			get { return this.audioData; }
-			set { this.audioData = value; this.ReloadData(); }
+			set { this.LoadData(value); }
 		}
 		public SoundType Type
 		{
 			get { return this.type; }
 			set { this.type = value; }
-		}
-		public bool ForceStream
-		{
-			get { return this.forceStream; }
-			set { this.forceStream = value; this.ReloadData(); }
 		}
 		public int MaxInstances
 		{
@@ -125,6 +106,14 @@ namespace Duality.Resources
 			get { return DualityApp.Sound.DefaultMaxDist * this.maxDistFactor; }
 			set { this.maxDistFactor = value / DualityApp.Sound.DefaultMaxDist; }
 		}
+		public bool IsStreamed
+		{
+			get { return this.audioData.IsAvailable && this.audioData.Res.IsStreamed; }
+		}
+		public int AlBuffer
+		{
+			get { return this.audioData.IsAvailable ? this.audioData.Res.AlBuffer : AudioData.AlBuffer_NotAvailable; }
+		}
 
 		public Sound() {}
 		public Sound(ContentRef<AudioData> baseData)
@@ -132,65 +121,16 @@ namespace Duality.Resources
 			this.LoadData(baseData);
 		}
 
-		public void ReloadData()
+		public void LoadData(ContentRef<AudioData> data)
 		{
-			this.LoadData(this.audioData);
-		}
-		public void LoadData(ContentRef<AudioData> audioData)
-		{
-			this.audioData = audioData;
-
-			// No AudioData available
-			if (!this.audioData.IsAvailable)
-			{
-				if (this.alBuffer > AlBuffer_NotAvailable) AL.DeleteBuffer(this.alBuffer);
-				this.alBuffer = AlBuffer_NotAvailable;
-				return;
-			}
-
-			bool stream = this.forceStream ? true : this.audioData.Res.OggVorbisData.Length > 1024 * 100;
-
-			// Streamed Audio
-			if (stream)
-			{
-				if (this.alBuffer > AlBuffer_NotAvailable) AL.DeleteBuffer(this.alBuffer);
-				this.alBuffer = AlBuffer_StreamMe;
-			}
-			// Non-Streamed Audio
-			else
-			{
-				if (this.alBuffer <= AlBuffer_NotAvailable) this.alBuffer = AL.GenBuffer();
-				PcmData pcm = OV.LoadFromMemory(audioData.Res.OggVorbisData);
-				AL.BufferData(
-					this.alBuffer,
-					pcm.channelCount == 1 ? ALFormat.Mono16 : ALFormat.Stereo16,
-					pcm.data.ToArray(), 
-					(int)pcm.data.Length, 
-					pcm.sampleRate);
-			}
-		}
-
-		[OnDeserialized]
-		private void OnDeserialized(StreamingContext context)
-		{
-			this.LoadData(this.audioData);
-		}
-		protected override void OnDisposed(bool manually)
-		{
-			base.OnDisposed(manually);
-			if (DualityApp.ExecContext != DualityApp.ExecutionContext.Terminated &&
-				this.alBuffer > AlBuffer_NotAvailable)
-			{
-				AL.DeleteBuffer(this.alBuffer);
-				this.alBuffer = 0;
-			}
+			this.audioData = data;
+			if (this.audioData.IsAvailable) this.audioData.Res.SetupAlBuffer();
 		}
 
 		public override void CopyTo(Resource r)
 		{
 			base.CopyTo(r);
 			Sound c = r as Sound;
-			c.forceStream = this.forceStream;
 			c.maxInstances = this.maxInstances;
 			c.minDistFactor = this.minDistFactor;
 			c.maxDistFactor = this.maxDistFactor;

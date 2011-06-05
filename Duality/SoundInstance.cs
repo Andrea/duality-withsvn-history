@@ -473,7 +473,7 @@ namespace Duality
 				// If the source is stopped / finished, dispose and return
 				if (stateTemp == ALSourceState.Stopped)
 				{
-					if (this.snd.Res.AlBuffer != Sound.AlBuffer_StreamMe || this.strStopReq)
+					if (!this.snd.Res.IsStreamed || this.strStopReq)
 					{
 						DualityApp.Sound.UnregisterPlaying(this.snd, this.is3D);
 						this.Dispose();
@@ -556,7 +556,7 @@ namespace Duality
 				if ((this.dirtyState & DirtyFlag.RefDist) != DirtyFlag.None)
 					AL.Source(this.alSource, ALSourcef.ReferenceDistance, minDistTemp);
 				if ((this.dirtyState & DirtyFlag.Loop) != DirtyFlag.None)
-					AL.Source(this.alSource, ALSourceb.Looping, (this.looped && res.AlBuffer != Sound.AlBuffer_StreamMe));
+					AL.Source(this.alSource, ALSourceb.Looping, (this.looped && !res.IsStreamed));
 				if ((this.dirtyState & DirtyFlag.Vol) != DirtyFlag.None)
 					AL.Source(this.alSource, ALSourcef.Gain, volTemp);
 				if ((this.dirtyState & DirtyFlag.Pitch) != DirtyFlag.None)
@@ -584,7 +584,7 @@ namespace Duality
 				// Initially play the source
 				if (stateTemp == ALSourceState.Initial && !this.paused)
 				{
-					if (res.AlBuffer == Sound.AlBuffer_StreamMe)
+					if (res.IsStreamed)
 					{
 						this.strStreamed = true;
 						this.strWorker = new Thread(ThreadStreamFunc);
