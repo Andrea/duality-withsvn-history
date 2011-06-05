@@ -91,6 +91,7 @@ namespace Duality.Components
 			}
 
 			public Source() {}
+			public Source(ContentRef<Sound> snd, bool looped = true) : this(snd, looped, Vector3.Zero) {}
 			public Source(ContentRef<Sound> snd, bool looped, Vector3 offset)
 			{
 				this.sound = snd;
@@ -126,6 +127,19 @@ namespace Duality.Components
 
 				return true;
 			}
+
+			public Source Clone()
+			{
+				Source newSrc = new Source();
+				newSrc.sound			= this.sound;
+				newSrc.looped			= this.looped;
+				newSrc.paused			= this.paused;
+				newSrc.volume			= this.volume;
+				newSrc.pitch			= this.pitch;
+				newSrc.offset			= this.offset;
+				newSrc.hasBeenPlayed	= this.hasBeenPlayed;
+				return newSrc;
+			}
 		}
 
 		private	List<Source>	sources	= new List<Source>();
@@ -143,6 +157,7 @@ namespace Duality.Components
 		{
 			base.CopyToInternal(target);
 			SoundEmitter c = target as SoundEmitter;
+			c.sources = this.sources == null ? null : new List<Source>(this.sources.Select(s => s.Clone()));
 		}
 
 		void ICmpUpdatable.OnUpdate()

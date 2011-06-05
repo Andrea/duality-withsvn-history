@@ -23,11 +23,13 @@ namespace EditorBase.PropertyEditors
 				return PropertyGrid.ProvidedEditorType.Specialized;
 			else if (baseType == typeof(Camera))
 				return PropertyGrid.ProvidedEditorType.Specialized;
+			else if (baseType == typeof(SoundEmitter))
+				return PropertyGrid.ProvidedEditorType.Specialized;
 			else if (baseType == typeof(BatchInfo) || baseType == typeof(Material))
 				return PropertyGrid.ProvidedEditorType.Specialized;
-			else if (typeof(Texture).IsAssignableFrom(baseType))
+			else if (baseType == typeof(Texture))
 				return PropertyGrid.ProvidedEditorType.Specialized;
-			else if (typeof(Sound).IsAssignableFrom(baseType))
+			else if (baseType == typeof(Sound))
 				return PropertyGrid.ProvidedEditorType.Specialized;
 			else if (typeof(Component).IsAssignableFrom(baseType))
 				return PropertyGrid.ProvidedEditorType.General;
@@ -53,11 +55,13 @@ namespace EditorBase.PropertyEditors
 				e = new SpriteRendererPropertyEditor(parentEditor, parentGrid);
 			else if (baseType == typeof(Camera))
 				e = new CameraPropertyEditor(parentEditor, parentGrid);
+			else if (baseType == typeof(SoundEmitter))
+				e = new SoundEmitterPropertyEditor(parentEditor, parentGrid);
 			else if (baseType == typeof(BatchInfo) || baseType == typeof(Material))
 				e = new BatchInfoPropertyEditor(parentEditor, parentGrid);
-			else if (typeof(Texture).IsAssignableFrom(baseType))
+			else if (baseType == typeof(Texture))
 				e = new TexturePropertyEditor(parentEditor, parentGrid);
-			else if (typeof(Sound).IsAssignableFrom(baseType))
+			else if (baseType == typeof(Sound))
 				e = new SoundPropertyEditor(parentEditor, parentGrid);
 			else if (typeof(Component).IsAssignableFrom(baseType))
 				e = new ComponentPropertyEditor(parentEditor, parentGrid);

@@ -1,13 +1,5 @@
 ﻿
 -->	Checklist for first Game: Asteroids
-
-	-->	Sound! Create a flexible, OpenAL-based sound system for Duality
-		-->	SoundEmitterPropertyEditor
-			-->	In addition to its member editors, directly parent each sound Sources editor
-				onto the SoundEmitter
-			-->	Create via dragdrop, Delete via button at Source editor
-			-->	Create a custom editor
-
 	-->	Any Usability stuff that comes up while editing / creating the game
 
 	-->	Title Scene

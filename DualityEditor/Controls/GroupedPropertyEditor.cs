@@ -347,8 +347,16 @@ namespace DualityEditor.Controls
 			
 			StringFormat headerTextFormat = StringFormat.GenericDefault;
 			headerTextFormat.LineAlignment = StringAlignment.Center;
-			headerTextFormat.Trimming = StringTrimming.EllipsisCharacter;
-			headerTextFormat.FormatFlags |= StringFormatFlags.NoWrap;
+			if (this.Height <= 25)
+			{
+				headerTextFormat.Trimming = StringTrimming.EllipsisCharacter;
+				headerTextFormat.FormatFlags = StringFormatFlags.NoWrap;
+			}
+			else
+			{
+				headerTextFormat.Trimming = StringTrimming.EllipsisCharacter;
+				headerTextFormat.FormatFlags = StringFormatFlags.LineLimit;
+			}
 
 			Rectangle iconArea = this.IconArea;
 			Rectangle expandButtonArea = this.ExpandButtonArea;
@@ -356,14 +364,14 @@ namespace DualityEditor.Controls
 			Rectangle resetButtonArea = this.ResetButtonArea;
 			Rectangle headerTextArea = new Rectangle(
 				iconArea.Right + 3,
-				this.ClientRectangle.Y,
-				this.valueText != null ? ((this.Editor != null ? this.Editor.NameLabelWidth : this.ClientRectangle.Width / 2) - iconArea.Right - 3) : this.ClientRectangle.Width,
-				this.ClientRectangle.Height);
+				this.ClientRectangle.Y + 2,
+				this.valueText != null ? ((this.Editor != null ? this.Editor.NameLabelWidth : this.ClientRectangle.Width / 2) - iconArea.Right - 3 - resetButtonArea.Width) : this.ClientRectangle.Width - iconArea.Right - 3 - resetButtonArea.Width,
+				this.ClientRectangle.Height - 4);
 			Rectangle valueTextArea = new Rectangle(
 				!string.IsNullOrEmpty(this.Text) ? headerTextArea.Right : headerTextArea.Left,
-				this.ClientRectangle.Y,
+				this.ClientRectangle.Y + 2,
 				this.ClientRectangle.Width - ((!string.IsNullOrEmpty(this.Text) ? headerTextArea.Right : headerTextArea.Left) - this.ClientRectangle.Left) - (this.ClientRectangle.Right - resetButtonArea.Left),
-				this.ClientRectangle.Height);
+				this.ClientRectangle.Height - 4);
 
 			if (this.expandVisible)
 			{

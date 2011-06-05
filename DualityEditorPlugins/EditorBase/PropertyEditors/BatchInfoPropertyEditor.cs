@@ -335,6 +335,7 @@ namespace EditorBase.PropertyEditors
 						ReflectionHelper.Property_Material_Textures,
 						ReflectionHelper.Property_Material_Uniforms);
 				}
+				this.PerformGetValue();
 			}
 		}
 

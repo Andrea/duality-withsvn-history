@@ -81,11 +81,11 @@ namespace EditorBase.PropertyEditors
 			this.Header.Icon = iconBitmap;
 			this.Header.ForeColor = ExtMethodsSystemDrawingColor.ColorFromHSV(
 				avgClr.h, 
-				0.15f, 
+				0.05f + avgClr.s * 0.3f, 
 				this.Header.ForeColor.GetHSVBrightness());
 			this.Header.BackColor = ExtMethodsSystemDrawingColor.ColorFromHSV(
 				avgClr.h, 
-				0.15f, 
+				0.05f + avgClr.s * 0.3f, 
 				this.Header.BackColor.GetHSVBrightness());
 		}
 	}

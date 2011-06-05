@@ -59,6 +59,9 @@ namespace Duality
 		public static readonly PropertyInfo	Property_Sound_MaxDist;
 		public static readonly PropertyInfo	Property_Sound_MaxDistFactor;
 
+		public static readonly PropertyInfo	Property_SoundEmitter_Sources;
+		public static readonly PropertyInfo	Property_SoundEmitter_Source_Sound;
+
 
 		public static readonly FieldInfo Field_GameObject_Name;
 		public static readonly FieldInfo Field_GameObject_PrefabLink;
@@ -123,6 +126,12 @@ namespace Duality
 			Property_Sound_MinDistFactor	= sound.GetProperty("MinDistFactor");
 			Property_Sound_MaxDist			= sound.GetProperty("MaxDist");
 			Property_Sound_MaxDistFactor	= sound.GetProperty("MaxDistFactor");
+
+			Type soundEmitter = typeof(SoundEmitter);
+			Property_SoundEmitter_Sources	= soundEmitter.GetProperty("Sources");
+
+			Type soundEmitterSource = typeof(SoundEmitter.Source);
+			Property_SoundEmitter_Source_Sound	= soundEmitterSource.GetProperty("Sound");
 
 			// Retrieve FieldInfo data
 			BindingFlags fieldFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
