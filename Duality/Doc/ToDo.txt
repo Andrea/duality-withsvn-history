@@ -1,5 +1,16 @@
 ﻿
 -->	Checklist for first Game: Asteroids
+	-->	Proper SpriteRenderer
+		-->	Support for animated Textures
+			-->	Textures may contain an index-based atlas map.
+			-->	For animated or multi-textures, simply autogenerate it,
+				one index for each animation frame
+			-->	SpriteRenderer may animate inbetween any index range and at
+				any given speed (duration for the whole animation to complete)
+			-->	It may optionally smoothly fade between two animation steps by
+				internally drawing two rects, each with its own alpha value
+				-->	Sadly, requires TWO custom material infos for EACH SpriteRenderer
+
 	-->	Any Usability stuff that comes up while editing / creating the game
 
 	-->	Title Scene

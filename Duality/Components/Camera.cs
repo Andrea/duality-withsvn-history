@@ -473,18 +473,12 @@ namespace Duality.Components
 			this.RenderBatches(this.drawBufferZSort, ref vertexCount);
 
 			this.FinishBatchRendering();
-			//if (this.picking == 0)
-			//{
-			//    Log.Core.WriteTimed(1000, this.gameobj.FullName + "_DrawStats", "Draw stats {0}:\n{1}\n{2}", this.gameobj.FullName,
-			//        "\tBatches: " + (this.drawBuffer.Count + this.drawBufferZSort.Count),
-			//        "\tVertices: " + vertexCount);
-			//}
-			//else
-			//{
-			//    Log.Core.WriteTimed(1000, this.gameobj.FullName + "_Picking", "Picking {0}:\n{1}\n{2}", this.gameobj.FullName,
-			//        "\tBatches: " + (this.drawBuffer.Count + this.drawBufferZSort.Count),
-			//        "\tVertices: " + vertexCount);
-			//}
+			if (this.picking == 0)
+			{
+			    Log.Core.WriteTimed(1000, this.gameobj.FullName + "_DrawStats", "Draw stats {0}:\n{1}\n{2}", this.gameobj.FullName,
+			        "\tBatches: " + (this.drawBuffer.Count + this.drawBufferZSort.Count),
+			        "\tVertices: " + vertexCount);
+			}
 			this.drawBuffer.Clear();
 			this.drawBufferZSort.Clear();
 

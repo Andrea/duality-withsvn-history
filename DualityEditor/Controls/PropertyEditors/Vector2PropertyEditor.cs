@@ -17,6 +17,14 @@ namespace DualityEditor.Controls.PropertyEditors
 	{
 		private	bool	updatingFromObj	= false;
 
+		public NumericUpDown EditorX
+		{
+			get { return this.editorX; }
+		}
+		public NumericUpDown EditorY
+		{
+			get { return this.editorY; }
+		}
 		public override string PropertyName
 		{
 			get { return this.nameLabel.Text; }

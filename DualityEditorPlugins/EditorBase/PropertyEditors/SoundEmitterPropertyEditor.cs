@@ -12,6 +12,7 @@ using Duality.Components;
 
 using DualityEditor;
 using DualityEditor.Controls;
+using DualityEditor.Controls.PropertyEditors;
 using PropertyGrid = DualityEditor.Controls.PropertyGrid;
 
 namespace EditorBase.PropertyEditors
@@ -149,12 +150,33 @@ namespace EditorBase.PropertyEditors
 		public SoundEmitterSourcePropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid, MemberFlags.Default)
 		{
 			this.EditedType = typeof(SoundEmitter.Source);
-			System.Drawing.Color clr = this.Header.ForeColor;
-			this.Header.ForeColor = this.Header.BackColor;
-			this.Header.BackColor = clr;
-			this.Header.Height = 35;
+			this.Header.ForeColor	= GroupedPropertyEditorHeader.DefaultBackColor;
+			this.Header.BackColor	= GroupedPropertyEditorHeader.DefaultMidColor;
+			this.Header.Height		= GroupedPropertyEditorHeader.DefaultBigHeight;
 		}
 
+		protected override PropertyEditor MemberEditor(MemberInfo info)
+		{
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_SoundEmitter_Source_Volume))
+			{
+				NumericPropertyEditor e = new NumericPropertyEditor(this, this.ParentGrid);
+				e.EditedType = ReflectionHelper.Property_SoundEmitter_Source_Volume.PropertyType;
+				e.Editor.Minimum = 0.0m;
+				e.Editor.Maximum = 2.0m;
+				e.Editor.Increment = 0.1m;
+				return e;
+			}
+			else if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_SoundEmitter_Source_Pitch))
+			{
+				NumericPropertyEditor e = new NumericPropertyEditor(this, this.ParentGrid);
+				e.EditedType = ReflectionHelper.Property_SoundEmitter_Source_Volume.PropertyType;
+				e.Editor.Minimum = 0.0m;
+				e.Editor.Maximum = 10.0m;
+				e.Editor.Increment = 0.1m;
+				return e;
+			}
+			return base.MemberEditor(info);
+		}
 		protected override void OnUpdateFromObjects(object[] values)
 		{
 			base.OnUpdateFromObjects(values);

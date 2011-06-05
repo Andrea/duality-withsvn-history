@@ -354,5 +354,21 @@ namespace EditorBase.PropertyEditors
 					property);
 			}
 		}
+		protected override void OnEditedTypeChanged()
+		{
+			base.OnEditedTypeChanged();
+			if (this.EditedType == typeof(BatchInfo))
+			{
+				this.Header.ForeColor	= GroupedPropertyEditorHeader.DefaultBackColor;
+				this.Header.BackColor	= GroupedPropertyEditorHeader.DefaultMidColor;
+				this.Header.Height		= GroupedPropertyEditorHeader.DefaultBigHeight;
+			}
+			else
+			{
+				this.Header.ForeColor	= GroupedPropertyEditorHeader.DefaultForeColor;
+				this.Header.BackColor	= GroupedPropertyEditorHeader.DefaultBackColor;
+				this.Header.Height		= GroupedPropertyEditorHeader.DefaultHeight;
+			}
+		}
 	}
 }

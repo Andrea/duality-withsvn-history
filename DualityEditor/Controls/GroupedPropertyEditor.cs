@@ -148,6 +148,12 @@ namespace DualityEditor.Controls
 
 	public class GroupedPropertyEditorHeader : Control
 	{
+		public static new readonly Color	DefaultBackColor	= Color.FromArgb(200, 200, 200);
+		public static new readonly Color	DefaultForeColor	= Color.FromArgb(245, 245, 245);
+		public static readonly Color		DefaultMidColor		= Color.FromArgb(222, 222, 222);
+		public const int	DefaultHeight		= 20;
+		public const int	DefaultBigHeight	= 35;
+
 		private	bool	expandVisible	= true;
 		private	bool	activeVisible	= false;
 		private	bool	resetVisible	= true;
@@ -365,8 +371,9 @@ namespace DualityEditor.Controls
 			Rectangle headerTextArea = new Rectangle(
 				iconArea.Right + 3,
 				this.ClientRectangle.Y + 2,
-				this.valueText != null ? ((this.Editor != null ? this.Editor.NameLabelWidth : this.ClientRectangle.Width / 2) - iconArea.Right - 3 - resetButtonArea.Width) : this.ClientRectangle.Width - iconArea.Right - 3 - resetButtonArea.Width,
+				this.valueText != null ? ((this.Editor != null ? this.Editor.NameLabelWidth : this.ClientRectangle.Width / 2) - iconArea.Right - 3) : this.ClientRectangle.Width - iconArea.Right - 3,
 				this.ClientRectangle.Height - 4);
+			if (String.IsNullOrEmpty(this.valueText)) headerTextArea.Width -= resetButtonArea.Width;
 			Rectangle valueTextArea = new Rectangle(
 				!string.IsNullOrEmpty(this.Text) ? headerTextArea.Right : headerTextArea.Left,
 				this.ClientRectangle.Y + 2,

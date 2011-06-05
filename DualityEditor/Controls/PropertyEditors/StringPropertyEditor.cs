@@ -16,6 +16,10 @@ namespace DualityEditor.Controls.PropertyEditors
 	{
 		private	bool	updatingFromObj	= false;
 
+		public TextBox Editor
+		{
+			get { return this.valueEditor; }
+		}
 		public override string PropertyName
 		{
 			get { return this.nameLabel.Text; }

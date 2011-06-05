@@ -16,7 +16,19 @@ namespace DualityEditor.Controls.PropertyEditors
 	public partial class Vector3PropertyEditor : PropertyEditor
 	{
 		private	bool	updatingFromObj	= false;
-
+		
+		public NumericUpDown EditorX
+		{
+			get { return this.editorX; }
+		}
+		public NumericUpDown EditorY
+		{
+			get { return this.editorY; }
+		}
+		public NumericUpDown EditorZ
+		{
+			get { return this.editorZ; }
+		}
 		public override string PropertyName
 		{
 			get { return this.nameLabel.Text; }

@@ -14,8 +14,12 @@ namespace DualityEditor.Controls.PropertyEditors
 {
 	public partial class NumericPropertyEditor : PropertyEditor
 	{
-		private	bool	updatingFromObj	= false;
+		private	bool		updatingFromObj	= false;
 
+		public NumericUpDown Editor
+		{
+			get { return this.valueEditor; }
+		}
 		public override string PropertyName
 		{
 			get { return this.nameLabel.Text; }
@@ -64,8 +68,7 @@ namespace DualityEditor.Controls.PropertyEditors
 		public override void UpdateReadOnlyState()
 		{
 		    base.UpdateReadOnlyState();
-			this.valueEditor.ReadOnly = this.ReadOnly;
-			this.valueEditor.Increment = this.valueEditor.ReadOnly ? 0 : 1;
+			this.valueEditor.Enabled = !this.ReadOnly;
 		}
 		public override void UpdateModifiedState()
 		{

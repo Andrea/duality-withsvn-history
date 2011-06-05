@@ -18,9 +18,15 @@ namespace EditorBase.PropertyEditors
 
 		}
 
+		protected override void OnAddingEditors()
+		{
+			base.OnAddingEditors();
+			this.AddEditorForProperty(ReflectionHelper.Property_SpriteRenderer_CustomMaterial);
+		}
 		protected override bool MemberPredicate(System.Reflection.MemberInfo info)
 		{
 			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_SpriteRenderer_BoundRadius)) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_SpriteRenderer_CustomMaterial)) return false;
 			return base.MemberPredicate(info);
 		}
 		protected override PropertyEditor MemberEditor(System.Reflection.MemberInfo info)

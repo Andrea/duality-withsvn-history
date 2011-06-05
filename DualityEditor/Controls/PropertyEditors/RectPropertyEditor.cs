@@ -15,7 +15,23 @@ namespace DualityEditor.Controls.PropertyEditors
 	public partial class RectPropertyEditor : PropertyEditor
 	{
 		private	bool	updatingFromObj	= false;
-
+		
+		public NumericUpDown EditorX
+		{
+			get { return this.editorX; }
+		}
+		public NumericUpDown EditorY
+		{
+			get { return this.editorY; }
+		}
+		public NumericUpDown EditorW
+		{
+			get { return this.editorW; }
+		}
+		public NumericUpDown EditorH
+		{
+			get { return this.editorH; }
+		}
 		public override string PropertyName
 		{
 			get { return this.nameLabel.Text; }

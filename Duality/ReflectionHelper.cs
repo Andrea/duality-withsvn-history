@@ -36,6 +36,7 @@ namespace Duality
 		public static readonly PropertyInfo	Property_Renderer_VisibilityGroup;
 
 		public static readonly PropertyInfo	Property_SpriteRenderer_BoundRadius;
+		public static readonly PropertyInfo	Property_SpriteRenderer_CustomMaterial;
 
 		public static readonly PropertyInfo	Property_Camera_OrthoAbs;
 		public static readonly PropertyInfo	Property_Camera_ViewportAbs;
@@ -61,6 +62,8 @@ namespace Duality
 
 		public static readonly PropertyInfo	Property_SoundEmitter_Sources;
 		public static readonly PropertyInfo	Property_SoundEmitter_Source_Sound;
+		public static readonly PropertyInfo	Property_SoundEmitter_Source_Volume;
+		public static readonly PropertyInfo	Property_SoundEmitter_Source_Pitch;
 
 
 		public static readonly FieldInfo Field_GameObject_Name;
@@ -99,7 +102,8 @@ namespace Duality
 			Property_Renderer_VisibilityGroup	= renderer.GetProperty("VisibilityGroup");
 			
 			Type rendererSprite = typeof(SpriteRenderer);
-			Property_SpriteRenderer_BoundRadius	= rendererSprite.GetProperty("BoundRadius");
+			Property_SpriteRenderer_BoundRadius		= rendererSprite.GetProperty("BoundRadius");
+			Property_SpriteRenderer_CustomMaterial	= rendererSprite.GetProperty("CustomMaterial");
 
 			Type camera = typeof(Camera);
 			Property_Camera_OrthoAbs		= camera.GetProperty("OrthoAbs");
@@ -132,6 +136,8 @@ namespace Duality
 
 			Type soundEmitterSource = typeof(SoundEmitter.Source);
 			Property_SoundEmitter_Source_Sound	= soundEmitterSource.GetProperty("Sound");
+			Property_SoundEmitter_Source_Volume	= soundEmitterSource.GetProperty("Volume");
+			Property_SoundEmitter_Source_Pitch	= soundEmitterSource.GetProperty("Pitch");
 
 			// Retrieve FieldInfo data
 			BindingFlags fieldFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
