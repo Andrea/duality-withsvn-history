@@ -150,17 +150,17 @@ namespace EditorBase.PropertyEditors
 		public SoundEmitterSourcePropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid, MemberFlags.Default)
 		{
 			this.EditedType = typeof(SoundEmitter.Source);
-			this.Header.ForeColor	= ExtMethodsSystemDrawingColor.ColorFromHSV(
-				this.ParentEditor.BackColor.GetHSVHue(),
-				this.ParentEditor.BackColor.GetHSVSaturation(),
-				GroupedPropertyEditorHeader.DefaultBackColor.GetHSVBrightness());
-			this.Header.BackColor	= ExtMethodsSystemDrawingColor.ColorFromHSV(
-				this.ParentEditor.BackColor.GetHSVHue(),
-				this.ParentEditor.BackColor.GetHSVSaturation(),
-				GroupedPropertyEditorHeader.DefaultMidColor.GetHSVBrightness());
-			this.Header.Height		= GroupedPropertyEditorHeader.DefaultBigHeight;
+			this.Header.AcquireParentColors(true);
+			this.Header.Height = GroupedPropertyEditorHeader.DefaultBigHeight;
+			this.Indent = DefaultIndent;
 		}
 
+		protected override bool MemberPredicate(MemberInfo info)
+		{
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_SoundEmitter_Source_Disposed)) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_SoundEmitter_Source_Instance)) return false;
+			return base.MemberPredicate(info);
+		}
 		protected override PropertyEditor MemberEditor(MemberInfo info)
 		{
 			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_SoundEmitter_Source_Volume))

@@ -88,10 +88,11 @@ namespace EditorBase.PropertyEditors
 				0.15f + avgClr.s * 0.3f, 
 				this.Header.BackColor.GetHSVBrightness());
 			
-			this.BackColor = ExtMethodsSystemDrawingColor.ColorFromHSV(
-				avgClr.h, 
-				0.05f + avgClr.s * 0.05f, 
-				Control.DefaultBackColor.GetHSVBrightness());
+			// Nice at first glance, but far too many colors overall
+			//this.BackColor = ExtMethodsSystemDrawingColor.ColorFromHSV(
+			//    avgClr.h, 
+			//    0.05f + avgClr.s * 0.05f, 
+			//    Control.DefaultBackColor.GetHSVBrightness());
 		}
 	}
 }

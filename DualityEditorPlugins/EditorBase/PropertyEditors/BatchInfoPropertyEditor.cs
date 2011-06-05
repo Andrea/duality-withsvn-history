@@ -21,15 +21,8 @@ namespace EditorBase.PropertyEditors
 
 		public BatchInfoPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid, MemberFlags.Default)
 		{
-			this.Header.ForeColor	= ExtMethodsSystemDrawingColor.ColorFromHSV(
-				this.ParentEditor.BackColor.GetHSVHue(),
-				this.ParentEditor.BackColor.GetHSVSaturation(),
-				GroupedPropertyEditorHeader.DefaultBackColor.GetHSVBrightness());
-			this.Header.BackColor	= ExtMethodsSystemDrawingColor.ColorFromHSV(
-				this.ParentEditor.BackColor.GetHSVHue(),
-				this.ParentEditor.BackColor.GetHSVSaturation(),
-				GroupedPropertyEditorHeader.DefaultMidColor.GetHSVBrightness());
-			this.Header.Height		= GroupedPropertyEditorHeader.DefaultBigHeight;
+			this.Header.AcquireParentColors(true);
+			this.Header.Height = GroupedPropertyEditorHeader.DefaultBigHeight;
 		}
 
 		public override void  ClearContent()

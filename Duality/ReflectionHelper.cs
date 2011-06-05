@@ -45,6 +45,8 @@ namespace Duality
 		public static readonly PropertyInfo	Property_Camera_VisibilityMask;
 
 		public static readonly PropertyInfo	Property_SoundEmitter_Sources;
+		public static readonly PropertyInfo	Property_SoundEmitter_Source_Disposed;
+		public static readonly PropertyInfo	Property_SoundEmitter_Source_Instance;
 		public static readonly PropertyInfo	Property_SoundEmitter_Source_Sound;
 		public static readonly PropertyInfo	Property_SoundEmitter_Source_Volume;
 		public static readonly PropertyInfo	Property_SoundEmitter_Source_Pitch;
@@ -165,9 +167,11 @@ namespace Duality
 			Property_SoundEmitter_Sources	= soundEmitter.GetProperty("Sources");
 
 			Type soundEmitterSource = typeof(SoundEmitter.Source);
-			Property_SoundEmitter_Source_Sound	= soundEmitterSource.GetProperty("Sound");
-			Property_SoundEmitter_Source_Volume	= soundEmitterSource.GetProperty("Volume");
-			Property_SoundEmitter_Source_Pitch	= soundEmitterSource.GetProperty("Pitch");
+			Property_SoundEmitter_Source_Disposed	= soundEmitterSource.GetProperty("Disposed");
+			Property_SoundEmitter_Source_Instance	= soundEmitterSource.GetProperty("Instance");
+			Property_SoundEmitter_Source_Sound		= soundEmitterSource.GetProperty("Sound");
+			Property_SoundEmitter_Source_Volume		= soundEmitterSource.GetProperty("Volume");
+			Property_SoundEmitter_Source_Pitch		= soundEmitterSource.GetProperty("Pitch");
 
 			// Retrieve FieldInfo data
 			BindingFlags fieldFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;

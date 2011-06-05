@@ -96,7 +96,7 @@ namespace DualityEditor.Controls
 			e.Getter = this.CreatePropertyValueGetter(prop);
 			e.Setter = prop.CanWrite ? this.CreatePropertyValueSetter(prop) : null;
 			e.PropertyName = prop.Name;
-			if (e is GroupedPropertyEditor) (e as GroupedPropertyEditor).Indent = 20;
+			if (e is GroupedPropertyEditor) (e as GroupedPropertyEditor).Indent = DefaultIndent;
 			this.memberMap[e] = prop;
 			this.AddPropertyEditor(e);
 			return e;
@@ -108,7 +108,7 @@ namespace DualityEditor.Controls
 			e.Getter = this.CreateFieldValueGetter(field);
 			e.Setter = this.CreateFieldValueSetter(field);
 			e.PropertyName = field.Name;
-			if (e is GroupedPropertyEditor) (e as GroupedPropertyEditor).Indent = 20;
+			if (e is GroupedPropertyEditor) (e as GroupedPropertyEditor).Indent = DefaultIndent;
 			this.memberMap[e] = field;
 			this.AddPropertyEditor(e);
 			return e;

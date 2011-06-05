@@ -14,6 +14,8 @@ namespace DualityEditor.Controls
 {
 	public partial class GroupedPropertyEditor : PropertyEditor
 	{
+		public const int	DefaultIndent	= 20;
+
 		private	List<PropertyEditor>	propertyEditors		= new List<PropertyEditor>();
 		private	bool					activeState			= true;
 		private	bool					modifiedStateCache	= false;
@@ -73,6 +75,7 @@ namespace DualityEditor.Controls
 		protected GroupedPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid)
 		{
 			this.InitializeComponent();
+			this.Header.AcquireParentColors();
 		}
 		
 		public override void ClearContent()
@@ -267,9 +270,35 @@ namespace DualityEditor.Controls
 		protected internal GroupedPropertyEditorHeader()
 		{
 			this.DoubleBuffered = true;
-			this.ForeColor = Color.FromArgb(245, 245, 245);
-			this.BackColor = Color.FromArgb(200, 200, 200);
+			this.ForeColor = DefaultForeColor;
+			this.BackColor = DefaultBackColor;
 			this.SetStyle(ControlStyles.ResizeRedraw, true);
+		}
+		public void AcquireParentColors(bool bigMode = false)
+		{
+			PropertyEditor e = this.Editor.ParentEditor ?? this.Editor;
+			if (bigMode)
+			{
+				this.ForeColor	= ExtMethodsSystemDrawingColor.ColorFromHSV(
+					e.BackColor.GetHSVHue(),
+					e.BackColor.GetHSVSaturation(),
+					DefaultBackColor.GetHSVBrightness());
+				this.BackColor	= ExtMethodsSystemDrawingColor.ColorFromHSV(
+					e.BackColor.GetHSVHue(),
+					e.BackColor.GetHSVSaturation(),
+					DefaultMidColor.GetHSVBrightness());
+			}
+			else
+			{
+				this.ForeColor	= ExtMethodsSystemDrawingColor.ColorFromHSV(
+					e.BackColor.GetHSVHue(),
+					e.BackColor.GetHSVSaturation(),
+					DefaultForeColor.GetHSVBrightness());
+				this.BackColor	= ExtMethodsSystemDrawingColor.ColorFromHSV(
+					e.BackColor.GetHSVHue(),
+					e.BackColor.GetHSVSaturation(),
+					DefaultBackColor.GetHSVBrightness());
+			}
 		}
 
 		protected override void OnMouseDown(MouseEventArgs e)
@@ -482,8 +511,8 @@ namespace DualityEditor.Controls
 						resetButtonArea.Y - 1,
 						resetButtonArea.Width + 1,
 						resetButtonArea.Height + 1);
-					e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(128, this.ForeColor)), resetButtonBgArea);
-					e.Graphics.DrawRectangle(new Pen(this.ForeColor), resetButtonBgArea);
+					e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(128, DefaultForeColor)), resetButtonBgArea);
+					e.Graphics.DrawRectangle(new Pen(DefaultForeColor), resetButtonBgArea);
 				}
 				Image img = this.resetIsInit ? DualityEditor.Properties.Resources.add : DualityEditor.Properties.Resources.cross;
 				e.Graphics.DrawImage(
