@@ -237,9 +237,18 @@ namespace EditorBase.PropertyEditors
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			base.OnPaint(e);
+			
+			Color upperGradClr = ExtMethodsSystemDrawingColor.ColorFromHSV(
+				this.ParentEditor.BackColor.GetHSVHue(),
+				this.ParentEditor.BackColor.GetHSVSaturation(),
+				0.78f);
+			Color lowerGradClr = ExtMethodsSystemDrawingColor.ColorFromHSV(
+				this.ParentEditor.BackColor.GetHSVHue(),
+				this.ParentEditor.BackColor.GetHSVSaturation(),
+				0.86f);
 
 			e.Graphics.FillRectangle(
-				new LinearGradientBrush(this.ClientRectangle, Color.FromArgb(200, 200, 200), Color.FromArgb(220, 220, 220), 90.0f), 
+				new LinearGradientBrush(this.ClientRectangle, upperGradClr, lowerGradClr, 90.0f), 
 				this.ClientRectangle);
 			e.Graphics.DrawLine(
 				new Pen(Color.FromArgb(64, Color.White)),

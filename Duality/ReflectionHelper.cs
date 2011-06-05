@@ -43,12 +43,30 @@ namespace Duality
 		public static readonly PropertyInfo	Property_Camera_DrawDevice;
 		public static readonly PropertyInfo	Property_Camera_TargetSize;
 		public static readonly PropertyInfo	Property_Camera_VisibilityMask;
+
+		public static readonly PropertyInfo	Property_SoundEmitter_Sources;
+		public static readonly PropertyInfo	Property_SoundEmitter_Source_Sound;
+		public static readonly PropertyInfo	Property_SoundEmitter_Source_Volume;
+		public static readonly PropertyInfo	Property_SoundEmitter_Source_Pitch;
 		
+		public static readonly PropertyInfo	Property_Resource_Disposed;
+		public static readonly PropertyInfo	Property_Resource_Path;
+
+		public static readonly PropertyInfo	Property_Texture_Width;
+		public static readonly PropertyInfo	Property_Texture_Height;
+		public static readonly PropertyInfo	Property_Texture_Diameter;
+		public static readonly PropertyInfo	Property_Texture_OglWidth;
+		public static readonly PropertyInfo	Property_Texture_OglHeight;
+		public static readonly PropertyInfo	Property_Texture_UVRatio;
+		public static readonly PropertyInfo	Property_Texture_Mipmaps;
+		public static readonly PropertyInfo	Property_Texture_NeedsReload;
+
 		public static readonly PropertyInfo	Property_BatchInfo_Technique;
 		public static readonly PropertyInfo	Property_BatchInfo_MainColor;
 		public static readonly PropertyInfo	Property_BatchInfo_Textures;
 		public static readonly PropertyInfo	Property_BatchInfo_Uniforms;
 		
+		public static readonly PropertyInfo Property_Material_Info;
 		public static readonly PropertyInfo	Property_Material_Technique;
 		public static readonly PropertyInfo	Property_Material_MainColor;
 		public static readonly PropertyInfo	Property_Material_Textures;
@@ -60,11 +78,6 @@ namespace Duality
 		public static readonly PropertyInfo	Property_Sound_MaxDist;
 		public static readonly PropertyInfo	Property_Sound_MaxDistFactor;
 
-		public static readonly PropertyInfo	Property_SoundEmitter_Sources;
-		public static readonly PropertyInfo	Property_SoundEmitter_Source_Sound;
-		public static readonly PropertyInfo	Property_SoundEmitter_Source_Volume;
-		public static readonly PropertyInfo	Property_SoundEmitter_Source_Pitch;
-
 
 		public static readonly FieldInfo Field_GameObject_Name;
 		public static readonly FieldInfo Field_GameObject_PrefabLink;
@@ -72,6 +85,8 @@ namespace Duality
 		public static readonly FieldInfo Field_Transform_Pos;
 		public static readonly FieldInfo Field_Transform_Angle;
 		public static readonly FieldInfo Field_Transform_Scale;
+
+		public static readonly FieldInfo Field_Material_Info;
 
 
 		static ReflectionHelper()
@@ -112,6 +127,20 @@ namespace Duality
 			Property_Camera_TargetSize		= camera.GetProperty("TargetSize");
 			Property_Camera_VisibilityMask	= camera.GetProperty("VisibilityMask");
 			
+			Type resource = typeof(Resource);
+			Property_Resource_Disposed	= resource.GetProperty("Disposed");
+			Property_Resource_Path		= resource.GetProperty("Path");
+
+			Type texture = typeof(Texture);
+			Property_Texture_Width			= texture.GetProperty("Width");
+			Property_Texture_Height			= texture.GetProperty("Height");
+			Property_Texture_Diameter		= texture.GetProperty("Diameter");
+			Property_Texture_OglWidth		= texture.GetProperty("OglWidth");
+			Property_Texture_OglHeight		= texture.GetProperty("OglHeight");
+			Property_Texture_UVRatio		= texture.GetProperty("UVRatio");
+			Property_Texture_Mipmaps		= texture.GetProperty("Mipmaps");
+			Property_Texture_NeedsReload	= texture.GetProperty("NeedsReload");
+
 			Type batchInfo = typeof(BatchInfo);
 			Property_BatchInfo_Technique	= batchInfo.GetProperty("Technique");
 			Property_BatchInfo_MainColor	= batchInfo.GetProperty("MainColor");
@@ -119,6 +148,7 @@ namespace Duality
 			Property_BatchInfo_Uniforms		= batchInfo.GetProperty("Uniforms");
 			
 			Type material = typeof(Material);
+			Property_Material_Info		= material.GetProperty("Info");
 			Property_Material_Technique	= material.GetProperty("Technique");
 			Property_Material_MainColor	= material.GetProperty("MainColor");
 			Property_Material_Textures	= material.GetProperty("Textures");
@@ -147,6 +177,8 @@ namespace Duality
 			Field_Transform_Pos		= transform.GetField("pos", fieldFlags);
 			Field_Transform_Angle	= transform.GetField("angle", fieldFlags);
 			Field_Transform_Scale	= transform.GetField("scale", fieldFlags);
+
+			Field_Material_Info	= material.GetField("info", fieldFlags);
 		}
 
 

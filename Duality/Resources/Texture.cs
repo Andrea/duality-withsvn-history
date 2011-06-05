@@ -157,6 +157,7 @@ namespace Duality.Resources
 		protected	TextureWrapMode			wrapX		= TextureWrapMode.ClampToEdge;
 		protected	TextureWrapMode			wrapY		= TextureWrapMode.ClampToEdge;
 		protected	PixelInternalFormat		pixelformat	= PixelInternalFormat.Rgba;
+		protected	List<Rect>				atlas		= null;
 		[NonSerialized]	protected	int		glTexId		= 0;
 		[NonSerialized]	protected	float	diameter	= 0.0f;
 		[NonSerialized]	protected	int		oglWidth	= 0;
@@ -289,6 +290,14 @@ namespace Duality.Resources
 			get { return this.basePixmap; }
 			set { if (this.basePixmap.Res != value.Res) { this.basePixmap = value; this.needsReload = true; } }
 		}		//	GS
+		/// <summary>
+		/// [GET / SET] The Textures atlas array, distinguishing different areas in texture coordinates
+		/// </summary>
+		public List<Rect> Atlas
+		{
+			get { return this.atlas; }
+			set { this.atlas = value; }
+		}					//	GS
 
 
 		public Texture() {}
@@ -457,6 +466,7 @@ namespace Duality.Resources
 			c.wrapX = this.wrapX;
 			c.wrapY = this.wrapY;
 			c.pixelformat = this.pixelformat;
+			c.atlas = this.atlas == null ? null : new List<Rect>(this.atlas);
 			c.LoadData(this.basePixmap, this.oglSizeMode);
 		}
 	}

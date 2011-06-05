@@ -89,7 +89,7 @@ namespace DualityEditor.Controls
 			return true;
 		}
 
-		public void AddEditorForProperty(PropertyInfo prop)
+		public PropertyEditor AddEditorForProperty(PropertyInfo prop)
 		{
 			PropertyEditor e = this.MemberEditor(prop);
 			if (e == null) e = this.ParentGrid.PropertyEditorProvider.CreateEditor(prop.PropertyType, this, this.ParentGrid);
@@ -99,8 +99,9 @@ namespace DualityEditor.Controls
 			if (e is GroupedPropertyEditor) (e as GroupedPropertyEditor).Indent = 20;
 			this.memberMap[e] = prop;
 			this.AddPropertyEditor(e);
+			return e;
 		}
-		public void AddEditorForField(FieldInfo field)
+		public PropertyEditor AddEditorForField(FieldInfo field)
 		{
 			PropertyEditor e = this.MemberEditor(field);
 			if (e == null) e = this.ParentGrid.PropertyEditorProvider.CreateEditor(field.FieldType, this, this.ParentGrid);
@@ -110,6 +111,7 @@ namespace DualityEditor.Controls
 			if (e is GroupedPropertyEditor) (e as GroupedPropertyEditor).Indent = 20;
 			this.memberMap[e] = field;
 			this.AddPropertyEditor(e);
+			return e;
 		}
 
 		public override void PerformGetValue()

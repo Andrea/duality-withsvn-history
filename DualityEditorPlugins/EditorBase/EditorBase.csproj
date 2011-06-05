@@ -66,6 +66,9 @@
     <Compile Include="PropertyEditors\DualityAppDataPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="PropertyEditors\MaterialPropertyEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="PropertyEditors\SoundEmitterPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>

@@ -25,7 +25,9 @@ namespace EditorBase.PropertyEditors
 				return PropertyGrid.ProvidedEditorType.Specialized;
 			else if (baseType == typeof(SoundEmitter))
 				return PropertyGrid.ProvidedEditorType.Specialized;
-			else if (baseType == typeof(BatchInfo) || baseType == typeof(Material))
+			else if (baseType == typeof(BatchInfo))
+				return PropertyGrid.ProvidedEditorType.Specialized;
+			else if (baseType == typeof(Material))
 				return PropertyGrid.ProvidedEditorType.Specialized;
 			else if (baseType == typeof(Texture))
 				return PropertyGrid.ProvidedEditorType.Specialized;
@@ -57,8 +59,10 @@ namespace EditorBase.PropertyEditors
 				e = new CameraPropertyEditor(parentEditor, parentGrid);
 			else if (baseType == typeof(SoundEmitter))
 				e = new SoundEmitterPropertyEditor(parentEditor, parentGrid);
-			else if (baseType == typeof(BatchInfo) || baseType == typeof(Material))
+			else if (baseType == typeof(BatchInfo))
 				e = new BatchInfoPropertyEditor(parentEditor, parentGrid);
+			else if (baseType == typeof(Material))
+				e = new MaterialPropertyEditor(parentEditor, parentGrid);
 			else if (baseType == typeof(Texture))
 				e = new TexturePropertyEditor(parentEditor, parentGrid);
 			else if (baseType == typeof(Sound))

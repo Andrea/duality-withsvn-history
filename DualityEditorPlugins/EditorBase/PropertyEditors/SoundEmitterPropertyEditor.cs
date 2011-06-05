@@ -150,8 +150,14 @@ namespace EditorBase.PropertyEditors
 		public SoundEmitterSourcePropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid, MemberFlags.Default)
 		{
 			this.EditedType = typeof(SoundEmitter.Source);
-			this.Header.ForeColor	= GroupedPropertyEditorHeader.DefaultBackColor;
-			this.Header.BackColor	= GroupedPropertyEditorHeader.DefaultMidColor;
+			this.Header.ForeColor	= ExtMethodsSystemDrawingColor.ColorFromHSV(
+				this.ParentEditor.BackColor.GetHSVHue(),
+				this.ParentEditor.BackColor.GetHSVSaturation(),
+				GroupedPropertyEditorHeader.DefaultBackColor.GetHSVBrightness());
+			this.Header.BackColor	= ExtMethodsSystemDrawingColor.ColorFromHSV(
+				this.ParentEditor.BackColor.GetHSVHue(),
+				this.ParentEditor.BackColor.GetHSVSaturation(),
+				GroupedPropertyEditorHeader.DefaultMidColor.GetHSVBrightness());
 			this.Header.Height		= GroupedPropertyEditorHeader.DefaultBigHeight;
 		}
 

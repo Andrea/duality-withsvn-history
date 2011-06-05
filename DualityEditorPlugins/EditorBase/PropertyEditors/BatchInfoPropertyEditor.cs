@@ -21,6 +21,15 @@ namespace EditorBase.PropertyEditors
 
 		public BatchInfoPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid, MemberFlags.Default)
 		{
+			this.Header.ForeColor	= ExtMethodsSystemDrawingColor.ColorFromHSV(
+				this.ParentEditor.BackColor.GetHSVHue(),
+				this.ParentEditor.BackColor.GetHSVSaturation(),
+				GroupedPropertyEditorHeader.DefaultBackColor.GetHSVBrightness());
+			this.Header.BackColor	= ExtMethodsSystemDrawingColor.ColorFromHSV(
+				this.ParentEditor.BackColor.GetHSVHue(),
+				this.ParentEditor.BackColor.GetHSVSaturation(),
+				GroupedPropertyEditorHeader.DefaultMidColor.GetHSVBrightness());
+			this.Header.Height		= GroupedPropertyEditorHeader.DefaultBigHeight;
 		}
 
 		public override void  ClearContent()
@@ -36,17 +45,8 @@ namespace EditorBase.PropertyEditors
 		protected override void OnAddingEditors()
 		{
 			base.OnAddingEditors();
-
-			if (this.EditedType == typeof(BatchInfo))
-			{
-				this.AddEditorForProperty(ReflectionHelper.Property_BatchInfo_MainColor);
-				this.AddEditorForProperty(ReflectionHelper.Property_BatchInfo_Technique);
-			}
-			else if (this.EditedType == typeof(Material))
-			{
-				this.AddEditorForProperty(ReflectionHelper.Property_Material_MainColor);
-				this.AddEditorForProperty(ReflectionHelper.Property_Material_Technique);
-			}
+			this.AddEditorForProperty(ReflectionHelper.Property_BatchInfo_MainColor);
+			this.AddEditorForProperty(ReflectionHelper.Property_BatchInfo_Technique);
 		}
 		protected override void OnUpdateFromObjects(object[] values)
 		{
@@ -55,18 +55,9 @@ namespace EditorBase.PropertyEditors
 			if (values.Any(o => o != null))
 			{
 				IEnumerable<BatchInfo> batchInfos = null;
-				IEnumerable<Material> materials = null;
 				DrawTechnique refTech = null;
-				if (this.EditedType == typeof(BatchInfo))
-				{
-					batchInfos = values.Cast<BatchInfo>().NotNull();
-					refTech = batchInfos.First().Technique.Res;
-				}
-				else
-				{
-					materials = values.Cast<Material>().NotNull();
-					refTech = materials.First().Technique.Res;
-				}
+				batchInfos = values.Cast<BatchInfo>().NotNull();
+				refTech = batchInfos.First().Technique.Res;
 
 				// Retrieve data about shader variables
 				ShaderVarInfo[] varInfoArray = null;
@@ -94,23 +85,11 @@ namespace EditorBase.PropertyEditors
 						// Set Texture variables
 						if (varInfo.type == ShaderVarType.Sampler2D)
 						{
-							if (this.EditedType == typeof(BatchInfo))
+							foreach (BatchInfo info in batchInfos)
 							{
-								foreach (BatchInfo info in batchInfos)
-								{
-									if (info.Textures == null) info.Textures = new Dictionary<string,ContentRef<Texture>>();
-									if (!info.Textures.ContainsKey(varInfo.name))
-										info.Textures[varInfo.name] = ContentRef<Texture>.Null;
-								}
-							}
-							else
-							{
-								foreach (Material info in materials)
-								{
-									if (info.Textures == null) info.Textures = new Dictionary<string,ContentRef<Texture>>();
-									if (!info.Textures.ContainsKey(varInfo.name))
-										info.Textures[varInfo.name] = ContentRef<Texture>.Null;
-								}
+								if (info.Textures == null) info.Textures = new Dictionary<string,ContentRef<Texture>>();
+								if (!info.Textures.ContainsKey(varInfo.name))
+									info.Textures[varInfo.name] = ContentRef<Texture>.Null;
 							}
 						}
 						// Set other uniform variables
@@ -119,23 +98,11 @@ namespace EditorBase.PropertyEditors
 							float[] uniformVal = varInfo.InitDataByType();
 							if (uniformVal != null)
 							{
-								if (this.EditedType == typeof(BatchInfo))
+								foreach (BatchInfo info in batchInfos)
 								{
-									foreach (BatchInfo info in batchInfos)
-									{
-										if (info.Uniforms == null) info.Uniforms = new Dictionary<string,float[]>();
-										if (!info.Uniforms.ContainsKey(varInfo.name))
-											info.Uniforms[varInfo.name] = uniformVal;
-									}
-								}
-								else
-								{
-									foreach (Material info in materials)
-									{
-										if (info.Uniforms == null) info.Uniforms = new Dictionary<string,float[]>();
-										if (!info.Uniforms.ContainsKey(varInfo.name))
-											info.Uniforms[varInfo.name] = uniformVal;
-									}
+									if (info.Uniforms == null) info.Uniforms = new Dictionary<string,float[]>();
+									if (!info.Uniforms.ContainsKey(varInfo.name))
+										info.Uniforms[varInfo.name] = uniformVal;
 								}
 							}
 						}
@@ -143,8 +110,8 @@ namespace EditorBase.PropertyEditors
 				}
 
 				// Create editors according to existing variables
-				var texDict = (this.EditedType == typeof(BatchInfo)) ? batchInfos.First().Textures : materials.First().Textures;
-				var uniformDict = (this.EditedType == typeof(BatchInfo)) ? batchInfos.First().Uniforms : materials.First().Uniforms;
+				var texDict = batchInfos.First().Textures;
+				var uniformDict = batchInfos.First().Uniforms;
 				Dictionary<string,PropertyEditor> oldEditors = new Dictionary<string,PropertyEditor>(this.shaderVarEditors);
 				if (texDict != null)
 				{
@@ -194,52 +161,28 @@ namespace EditorBase.PropertyEditors
 		
 		protected Func<IEnumerable<object>> CreateTextureValueGetter(string name)
 		{
-			if (this.EditedType == typeof(BatchInfo))
-				return () => this.Getter().Cast<BatchInfo>().Select(o => o != null ? (object)o.Textures[name] : null);
-			else
-				return () => this.Getter().Cast<Material>().Select(o => o != null ? (object)o.Textures[name] : null);
+			return () => this.Getter().Cast<BatchInfo>().Select(o => o != null ? (object)o.Textures[name] : null);
 		}
 		protected Func<IEnumerable<object>> CreateUniformValueGetter(string name)
 		{
-			if (this.EditedType == typeof(BatchInfo))
-				return () => this.Getter().Cast<BatchInfo>().Select(o => o != null ? (object)o.Uniforms[name] : null);
-			else
-				return () => this.Getter().Cast<Material>().Select(o => o != null ? (object)o.Uniforms[name] : null);
+			return () => this.Getter().Cast<BatchInfo>().Select(o => o != null ? (object)o.Uniforms[name] : null);
 		}
 		protected Action<IEnumerable<object>> CreateTextureValueSetter(string name)
 		{
 			return delegate(IEnumerable<object> values)
 			{
 				IEnumerator<ContentRef<Texture>> valuesEnum = values.Cast<ContentRef<Texture>>().GetEnumerator();
-				BatchInfo[] batchInfoArray = null;
-				Material[] materialArray = null;
-				if (this.EditedType == typeof(BatchInfo))
-					batchInfoArray = this.Getter().Cast<BatchInfo>().ToArray();
-				else
-					materialArray = this.Getter().Cast<Material>().ToArray();
+				BatchInfo[] batchInfoArray = this.Getter().Cast<BatchInfo>().ToArray();
 
 				ContentRef<Texture> curValue = ContentRef<Texture>.Null;
 				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
-				if (this.EditedType == typeof(BatchInfo))
+				foreach (BatchInfo info in batchInfoArray)
 				{
-					foreach (BatchInfo info in batchInfoArray)
-					{
-						if (info != null) info.Textures[name] = curValue;
-						if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
-					}
-					this.OnPropertySet(ReflectionHelper.Property_BatchInfo_Textures, batchInfoArray);
-					this.UpdateModifiedState();
+					if (info != null) info.Textures[name] = curValue;
+					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}
-				else
-				{
-					foreach (Material info in materialArray)
-					{
-						if (info != null) info.Textures[name] = curValue;
-						if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
-					}
-					this.OnPropertySet(ReflectionHelper.Property_Material_Textures, materialArray);
-					this.UpdateModifiedState();
-				}
+				this.OnPropertySet(ReflectionHelper.Property_BatchInfo_Textures, batchInfoArray);
+				this.UpdateModifiedState();
 			};
 		}
 		protected Action<IEnumerable<object>> CreateUniformValueSetter(string name)
@@ -247,35 +190,17 @@ namespace EditorBase.PropertyEditors
 			return delegate(IEnumerable<object> values)
 			{
 				IEnumerator<float[]> valuesEnum = values.Cast<float[]>().GetEnumerator();
-				BatchInfo[] batchInfoArray = null;
-				Material[] materialArray = null;
-				if (this.EditedType == typeof(BatchInfo))
-					batchInfoArray = this.Getter().Cast<BatchInfo>().ToArray();
-				else
-					materialArray = this.Getter().Cast<Material>().ToArray();
+				BatchInfo[] batchInfoArray = this.Getter().Cast<BatchInfo>().ToArray();
 
 				float[] curValue = null;
 				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
-				if (this.EditedType == typeof(BatchInfo))
+				foreach (BatchInfo info in batchInfoArray)
 				{
-					foreach (BatchInfo info in batchInfoArray)
-					{
-						if (info != null) info.Uniforms[name] = curValue;
-						if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
-					}
-					this.OnPropertySet(ReflectionHelper.Property_BatchInfo_Textures, batchInfoArray);
-					this.UpdateModifiedState();
+					if (info != null) info.Uniforms[name] = curValue;
+					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}
-				else
-				{
-					foreach (Material info in materialArray)
-					{
-						if (info != null) info.Uniforms[name] = curValue;
-						if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
-					}
-					this.OnPropertySet(ReflectionHelper.Property_Material_Textures, materialArray);
-					this.UpdateModifiedState();
-				}
+				this.OnPropertySet(ReflectionHelper.Property_BatchInfo_Textures, batchInfoArray);
+				this.UpdateModifiedState();
 			};
 		}
 
@@ -306,34 +231,16 @@ namespace EditorBase.PropertyEditors
 
 				ContentRef<Material>[] ctRefs = dragDropData.GetContentRefs<Material>();
 				IEnumerable<object> values = this.Getter();
-				IEnumerable<BatchInfo> batchInfos = null;
-				IEnumerable<Material> materials = null;
-				if (this.EditedType == typeof(BatchInfo))
+				IEnumerable<BatchInfo> batchInfos = values.Cast<BatchInfo>().NotNull();
+				if (batchInfos.Any())
 				{
-					batchInfos = values.Cast<BatchInfo>().NotNull();
-					if (batchInfos.Any())
-					{
-						foreach (BatchInfo info in batchInfos) ctRefs[0].Res.Info.CopyTo(info);
-						// BatchInfos aren't usually referenced, they're nested. Make sure the change notification is passed on.
-						this.Setter(batchInfos);
-					}
-					else
-					{
-						this.SetterSingle(ctRefs[0].Res.Info);
-					}
+					foreach (BatchInfo info in batchInfos) ctRefs[0].Res.Info.CopyTo(info);
+					// BatchInfos aren't usually referenced, they're nested. Make sure the change notification is passed on.
+					this.Setter(batchInfos);
 				}
 				else
 				{
-					materials = values.Cast<Material>().NotNull();
-					foreach (Material info in materials) ctRefs[0].Res.CopyTo(info);
-
-					// If it's a Material, make sure editor events are fired
-					EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
-						new ObjectSelection(materials),
-						ReflectionHelper.Property_Material_MainColor,
-						ReflectionHelper.Property_Material_Technique,
-						ReflectionHelper.Property_Material_Textures,
-						ReflectionHelper.Property_Material_Uniforms);
+					this.SetterSingle(ctRefs[0].Res.Info);
 				}
 				this.PerformGetValue();
 			}
@@ -342,33 +249,8 @@ namespace EditorBase.PropertyEditors
 		protected override void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)
 		{
 			base.OnPropertySet(property, targets);
-
 			// BatchInfos aren't usually referenced, they're nested. Make sure the change notification is passed on.
-			if (this.EditedType == typeof(BatchInfo))
-				this.Setter(targets);
-			// If it's a Material, make sure editor events are fired
-			else
-			{
-				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
-					new ObjectSelection(targets),
-					property);
-			}
-		}
-		protected override void OnEditedTypeChanged()
-		{
-			base.OnEditedTypeChanged();
-			if (this.EditedType == typeof(BatchInfo))
-			{
-				this.Header.ForeColor	= GroupedPropertyEditorHeader.DefaultBackColor;
-				this.Header.BackColor	= GroupedPropertyEditorHeader.DefaultMidColor;
-				this.Header.Height		= GroupedPropertyEditorHeader.DefaultBigHeight;
-			}
-			else
-			{
-				this.Header.ForeColor	= GroupedPropertyEditorHeader.DefaultForeColor;
-				this.Header.BackColor	= GroupedPropertyEditorHeader.DefaultBackColor;
-				this.Header.Height		= GroupedPropertyEditorHeader.DefaultHeight;
-			}
+			this.Setter(targets);
 		}
 	}
 }
