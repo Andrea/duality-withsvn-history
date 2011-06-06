@@ -14,7 +14,9 @@ namespace DualityEditor.Controls.PropertyEditors
 {
 	public partial class RectPropertyEditor : PropertyEditor
 	{
-		private	bool	updatingFromObj	= false;
+		private	bool			updatingFromObj	= false;
+		private	Func<Rect,Rect>	converterGet	= null;
+		private	Func<Rect,Rect>	converterSet	= null;
 		
 		public NumericUpDown EditorX
 		{
@@ -32,6 +34,20 @@ namespace DualityEditor.Controls.PropertyEditors
 		{
 			get { return this.editorH; }
 		}
+		public Func<Rect,Rect> ConverterGet
+		{
+			get { return this.converterGet; }
+			set 
+			{ 
+				this.converterGet = value; 
+				if (this.Getter != null) this.PerformGetValue();
+			}
+		}
+		public Func<Rect,Rect> ConverterSet
+		{
+			get { return this.converterSet; }
+			set { this.converterSet = value; }
+		}
 		public override string PropertyName
 		{
 			get { return this.nameLabel.Text; }
@@ -40,7 +56,7 @@ namespace DualityEditor.Controls.PropertyEditors
 		public override object DisplayedValue
 		{
 			get 
-			{ 
+			{
 				return Convert.ChangeType(
 					new Rect(
 						(float)this.editorX.Value, 
@@ -60,7 +76,11 @@ namespace DualityEditor.Controls.PropertyEditors
 		public override void PerformGetValue()
 		{
 			base.PerformGetValue();
-			object[] values = this.Getter().ToArray();
+			object[] values;
+			if (this.converterGet != null)
+				values = this.Getter().Select(o => o != null ? this.converterGet((Rect)o) : o).ToArray();
+			else
+				values = this.Getter().ToArray();
 
 			this.updatingFromObj = true;
 			// Update modified state
@@ -102,7 +122,14 @@ namespace DualityEditor.Controls.PropertyEditors
 			base.PerformSetValue();
 			if (this.ReadOnly) return;
 
-			this.SetterSingle(this.DisplayedValue);
+			if (this.converterSet != null)
+				this.SetterSingle(Convert.ChangeType(this.converterSet(new Rect(
+					(float)this.editorX.Value, 
+					(float)this.editorY.Value, 
+					(float)this.editorW.Value, 
+					(float)this.editorH.Value)), this.EditedType));
+			else
+				this.SetterSingle(this.DisplayedValue);
 		}
 		public override void UpdateReadOnlyState()
 		{

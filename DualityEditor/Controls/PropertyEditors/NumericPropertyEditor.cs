@@ -132,19 +132,19 @@ namespace DualityEditor.Controls.PropertyEditors
 			}
 			else if (this.EditedType == typeof(float))
 			{
-				this.valueEditor.DecimalPlaces = 4;
+				this.valueEditor.DecimalPlaces = 2;
 				this.valueEditor.Minimum = decimal.MinValue;
 				this.valueEditor.Maximum = decimal.MaxValue;
 			}
 			else if (this.EditedType == typeof(double))
 			{
-				this.valueEditor.DecimalPlaces = 4;
+				this.valueEditor.DecimalPlaces = 2;
 				this.valueEditor.Minimum = decimal.MinValue;
 				this.valueEditor.Maximum = decimal.MaxValue;
 			}
 			else if (this.EditedType == typeof(decimal))
 			{
-				this.valueEditor.DecimalPlaces = 4;
+				this.valueEditor.DecimalPlaces = 2;
 				this.valueEditor.Minimum = decimal.MinValue;
 				this.valueEditor.Maximum = decimal.MaxValue;
 			}

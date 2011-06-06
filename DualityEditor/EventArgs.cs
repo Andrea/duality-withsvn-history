@@ -5,6 +5,7 @@ using System.Text;
 using System.Reflection;
 
 using Duality;
+using DualityEditor.Controls;
 
 namespace DualityEditor
 {
@@ -156,6 +157,21 @@ namespace DualityEditor
 		public ResourceRenamedEventArgs(string path, string oldPath) : base(path)
 		{
 			this.oldPath = oldPath;
+		}
+	}
+
+	public class PropertyEditorEventArgs : EventArgs
+	{
+		PropertyEditor editor;
+
+		public PropertyEditor Editor
+		{
+			get { return this.editor; }
+		}
+
+		public PropertyEditorEventArgs(PropertyEditor e)
+		{
+			this.editor = e;
 		}
 	}
 }

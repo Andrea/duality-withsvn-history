@@ -41,6 +41,20 @@ namespace EditorBase.PropertyEditors
 				e.AddFlag("All", (1UL << 32) - 1);
 				return e;
 			}
+			else if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_SpriteRenderer_Rect))
+			{
+				PropertyEditor e = this.ParentGrid.PropertyEditorProvider.CreateEditor(
+					ReflectionHelper.Property_SpriteRenderer_Rect.PropertyType, this, this.ParentGrid);
+				RectPropertyEditor rectEdit = e as RectPropertyEditor;
+				if (rectEdit != null)
+				{
+					rectEdit.EditorX.DecimalPlaces = 1;
+					rectEdit.EditorY.DecimalPlaces = 1;
+					rectEdit.EditorW.DecimalPlaces = 1;
+					rectEdit.EditorH.DecimalPlaces = 1;
+				}
+				return e;
+			}
 			return base.MemberEditor(info);
 		}
 	}

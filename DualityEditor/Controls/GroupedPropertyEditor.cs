@@ -20,6 +20,9 @@ namespace DualityEditor.Controls
 		private	bool					activeState			= true;
 		private	bool					modifiedStateCache	= false;
 
+		public event EventHandler<PropertyEditorEventArgs>	EditorAdded;
+		public event EventHandler<PropertyEditorEventArgs>	EditorRemoving;
+
 		public override bool Expanded
 		{
 			get { return this.tableLayout.Visible; }
@@ -128,10 +131,13 @@ namespace DualityEditor.Controls
 
 			this.propertyEditors.Add(editor);
 			this.tableLayout.Controls.Add(editor);
+
+			this.OnEditorAdded(editor);
 		}
 		protected void RemovePropertyEditor(PropertyEditor editor)
 		{
 			editor.ValueEdited -= this.OnValueEdited;
+			this.OnEditorRemoving(editor);
 
 			this.propertyEditors.Remove(editor);
 			this.tableLayout.Controls.Remove(editor);
@@ -142,10 +148,22 @@ namespace DualityEditor.Controls
 			foreach (PropertyEditor e in this.propertyEditors)
 			{
 				e.ValueEdited -= this.OnValueEdited;
+				this.OnEditorRemoving(e);
 			}
 			this.tableLayout.Controls.Clear();
 			this.propertyEditors.Clear();
 			this.ResumeLayout(true);
+		}
+
+		protected void OnEditorAdded(PropertyEditor e)
+		{
+			if (this.EditorAdded != null)
+				this.EditorAdded(this, new PropertyEditorEventArgs(e));
+		}
+		protected void OnEditorRemoving(PropertyEditor e)
+		{
+			if (this.EditorRemoving != null)
+				this.EditorRemoving(this, new PropertyEditorEventArgs(e));
 		}
 	}
 

@@ -37,6 +37,7 @@ namespace Duality
 
 		public static readonly PropertyInfo	Property_SpriteRenderer_BoundRadius;
 		public static readonly PropertyInfo	Property_SpriteRenderer_CustomMaterial;
+		public static readonly PropertyInfo	Property_SpriteRenderer_Rect;
 
 		public static readonly PropertyInfo	Property_Camera_OrthoAbs;
 		public static readonly PropertyInfo	Property_Camera_ViewportAbs;
@@ -62,6 +63,10 @@ namespace Duality
 		public static readonly PropertyInfo	Property_Texture_UVRatio;
 		public static readonly PropertyInfo	Property_Texture_Mipmaps;
 		public static readonly PropertyInfo	Property_Texture_NeedsReload;
+		public static readonly PropertyInfo	Property_Texture_AnimCols;
+		public static readonly PropertyInfo	Property_Texture_AnimRows;
+		public static readonly PropertyInfo	Property_Texture_AnimFrames;
+		public static readonly PropertyInfo	Property_Texture_Atlas;
 
 		public static readonly PropertyInfo	Property_BatchInfo_Technique;
 		public static readonly PropertyInfo	Property_BatchInfo_MainColor;
@@ -121,6 +126,7 @@ namespace Duality
 			Type rendererSprite = typeof(SpriteRenderer);
 			Property_SpriteRenderer_BoundRadius		= rendererSprite.GetProperty("BoundRadius");
 			Property_SpriteRenderer_CustomMaterial	= rendererSprite.GetProperty("CustomMaterial");
+			Property_SpriteRenderer_Rect			= rendererSprite.GetProperty("Rect");
 
 			Type camera = typeof(Camera);
 			Property_Camera_OrthoAbs		= camera.GetProperty("OrthoAbs");
@@ -142,6 +148,10 @@ namespace Duality
 			Property_Texture_UVRatio		= texture.GetProperty("UVRatio");
 			Property_Texture_Mipmaps		= texture.GetProperty("Mipmaps");
 			Property_Texture_NeedsReload	= texture.GetProperty("NeedsReload");
+			Property_Texture_AnimCols		= texture.GetProperty("AnimCols");
+			Property_Texture_AnimRows		= texture.GetProperty("AnimRows");
+			Property_Texture_AnimFrames		= texture.GetProperty("AnimFrames");
+			Property_Texture_Atlas			= texture.GetProperty("Atlas");
 
 			Type batchInfo = typeof(BatchInfo);
 			Property_BatchInfo_Technique	= batchInfo.GetProperty("Technique");

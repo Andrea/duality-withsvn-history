@@ -158,6 +158,8 @@ namespace Duality.Resources
 		protected	TextureWrapMode			wrapY		= TextureWrapMode.ClampToEdge;
 		protected	PixelInternalFormat		pixelformat	= PixelInternalFormat.Rgba;
 		protected	List<Rect>				atlas		= null;
+		protected	int						animCols	= 0;
+		protected	int						animRows	= 0;
 		[NonSerialized]	protected	int		glTexId		= 0;
 		[NonSerialized]	protected	float	diameter	= 0.0f;
 		[NonSerialized]	protected	int		oglWidth	= 0;
@@ -298,6 +300,31 @@ namespace Duality.Resources
 			get { return this.atlas; }
 			set { this.atlas = value; }
 		}					//	GS
+		/// <summary>
+		/// [GET / SET] Information about different animation frames contained in this Texture.
+		/// Setting this will lead to an auto-generated atlas map according to the animation.
+		/// </summary>
+		public int AnimCols
+		{
+			get { return this.animCols; }
+			set { this.GenerateAnimAtlas(value, value == 0 ? 0 : this.animRows); }
+		}						//	GS
+		/// <summary>
+		/// [GET / SET] Information about different animation frames contained in this Texture.
+		/// Setting this will lead to an auto-generated atlas map according to the animation.
+		/// </summary>
+		public int AnimRows
+		{
+			get { return this.animRows; }
+			set { this.GenerateAnimAtlas(value == 0 ? 0 : this.animCols, value); }
+		}						//	GS
+		/// <summary>
+		/// [GET] Total number of animation frames in this Texture
+		/// </summary>
+		public int AnimFrames
+		{
+			get { return this.animRows * this.animCols; }
+		}					//	G
 
 
 		public Texture() {}
@@ -332,6 +359,46 @@ namespace Duality.Resources
 			this.oglSizeMode = sizeMode;
 			this.AdjustSize(width, height);
 			this.SetupInfo();
+		}
+
+		public void GenerateAnimAtlas(int cols, int rows)
+		{
+			// Remove previously existing animation atlas data
+			int frames = this.animCols * this.animRows;
+			if (this.atlas != null) this.atlas.RemoveRange(0, Math.Min(frames, this.atlas.Count));
+
+			// Set up animation frame data
+			if (cols == 0 && rows == 0)
+			{
+				this.animCols = this.animRows = 0;
+				if (this.atlas != null && this.atlas.Count == 0) this.atlas = null;
+				return;
+			}
+			this.animCols = Math.Max(cols, 1);
+			this.animRows = Math.Max(rows, 1);
+
+			// Set up new atlas data
+			frames = this.animCols * this.animRows;
+			if (frames > 0)
+			{
+				if (this.atlas == null) this.atlas = new List<Rect>(frames);
+				int i = 0;
+				Vector2 frameSize = new Vector2(this.curUVRatio.X / this.animCols, this.curUVRatio.Y / this.animRows);
+				for (int y = 0; y < this.animRows; y++)
+				{
+					for (int x = 0; x < this.animCols; x++)
+					{
+						this.atlas.Insert(i, new Rect(
+							x * frameSize.X,
+							y * frameSize.Y,
+							frameSize.X,
+							frameSize.Y));
+						i++;
+					}
+				}
+			}
+			else if (this.atlas.Count == 0)
+				this.atlas = null;
 		}
 
 		public void ReloadData()
@@ -382,6 +449,9 @@ namespace Duality.Resources
 			}
 
 			GL.BindTexture(TextureTarget.Texture2D, lastTexId);
+
+			// Regenerate animation info in case, the current UVRatio changed
+			this.GenerateAnimAtlas(this.animCols, this.animRows);
 		}
 
 		protected void AdjustSize(int width, int height)
