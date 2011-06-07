@@ -15,11 +15,11 @@ namespace Duality.Components.Renderers
 	[RequiredComponent(typeof(Transform))]
 	public class SpriteRenderer : Renderer
 	{
-		private	Rect						rect		= Rect.AlignCenter(0, 0, 128, 128);
-		private	ContentRef<Material>		sharedMat	= Material.DualityLogo256;
-		private BatchInfo					customMat	= null;
+		protected	Rect					rect		= Rect.AlignCenter(0, 0, 128, 128);
+		protected	ContentRef<Material>	sharedMat	= Material.DualityLogo256;
+		protected BatchInfo					customMat	= null;
 		[NonSerialized]
-		private	VertexFormat.VertexP3T2[]	vertices	= null;
+		protected	VertexFormat.VertexP3T2[]	vertices	= null;
 
 		public override float BoundRadius
 		{
@@ -49,7 +49,22 @@ namespace Duality.Components.Renderers
 			this.sharedMat = mainMat;
 		}
 
-		public override void Draw(IDrawDevice device)
+		protected Texture RetrieveMainTex()
+		{
+			if (this.customMat != null && 
+				this.customMat.Textures != null && 
+				this.customMat.Textures.Count > 0 && 
+				this.customMat.Textures.Values.First().IsAvailable)
+				return this.customMat.Textures.Values.First().Res;
+			else if (this.sharedMat.IsAvailable && 
+				this.sharedMat.Res.Textures != null && 
+				this.sharedMat.Res.Textures.Count > 0 && 
+				this.sharedMat.Res.Textures.Values.First().IsAvailable)
+				return this.sharedMat.Res.Textures.Values.First().Res;
+			else
+				return null;
+		}
+		protected void PrepareVertices(ref VertexFormat.VertexP3T2[] vertices, IDrawDevice device, Rect uvRect)
 		{
 			Vector3 posTemp = this.gameobj.Transform.Pos;
 			float scaleTemp = 1.0f;
@@ -69,44 +84,41 @@ namespace Duality.Components.Renderers
 			MathF.TransdormDotVec(ref edge3, ref xDot, ref yDot);
 			MathF.TransdormDotVec(ref edge4, ref xDot, ref yDot);
 
-			Vector2 uvRatio = Vector2.One;
-			if (this.customMat != null)
-			{
-				if (this.customMat.Textures != null && this.customMat.Textures.Count > 0 && this.customMat.Textures.Values.First().IsAvailable)
-					uvRatio = this.customMat.Textures.Values.First().Res.UVRatio;
-			}
-			else if (this.sharedMat.IsAvailable)
-			{
-				if (this.sharedMat.Res.Textures != null && this.sharedMat.Res.Textures.Count > 0 && this.sharedMat.Res.Textures.Values.First().IsAvailable)
-					uvRatio = this.sharedMat.Res.Textures.Values.First().Res.UVRatio;
-			}
+			if (vertices == null) vertices = new VertexFormat.VertexP3T2[4];
 
-			if (this.vertices == null) this.vertices = new VertexFormat.VertexP3T2[4];
+			vertices[0].pos.X = posTemp.X + edge1.X;
+			vertices[0].pos.Y = posTemp.Y + edge1.Y;
+			vertices[0].pos.Z = posTemp.Z;
+			vertices[0].texCoord.X = uvRect.x;
+			vertices[0].texCoord.Y = uvRect.y;
 
-			this.vertices[0].pos.X = posTemp.X + edge1.X;
-			this.vertices[0].pos.Y = posTemp.Y + edge1.Y;
-			this.vertices[0].pos.Z = posTemp.Z;
-			this.vertices[0].texCoord.X = 0.0f;
-			this.vertices[0].texCoord.Y = 0.0f;
+			vertices[1].pos.X = posTemp.X + edge2.X;
+			vertices[1].pos.Y = posTemp.Y + edge2.Y;
+			vertices[1].pos.Z = posTemp.Z;
+			vertices[1].texCoord.X = uvRect.x;
+			vertices[1].texCoord.Y = uvRect.MaxY;
 
-			this.vertices[1].pos.X = posTemp.X + edge2.X;
-			this.vertices[1].pos.Y = posTemp.Y + edge2.Y;
-			this.vertices[1].pos.Z = posTemp.Z;
-			this.vertices[1].texCoord.X = 0.0f;
-			this.vertices[1].texCoord.Y = uvRatio.Y;
-
-			this.vertices[2].pos.X = posTemp.X + edge3.X;
-			this.vertices[2].pos.Y = posTemp.Y + edge3.Y;
-			this.vertices[2].pos.Z = posTemp.Z;
-			this.vertices[2].texCoord.X = uvRatio.X;
-			this.vertices[2].texCoord.Y = uvRatio.Y;
+			vertices[2].pos.X = posTemp.X + edge3.X;
+			vertices[2].pos.Y = posTemp.Y + edge3.Y;
+			vertices[2].pos.Z = posTemp.Z;
+			vertices[2].texCoord.X = uvRect.MaxX;
+			vertices[2].texCoord.Y = uvRect.MaxY;
 				
-			this.vertices[3].pos.X = posTemp.X + edge4.X;
-			this.vertices[3].pos.Y = posTemp.Y + edge4.Y;
-			this.vertices[3].pos.Z = posTemp.Z;
-			this.vertices[3].texCoord.X = uvRatio.X;
-			this.vertices[3].texCoord.Y = 0.0f;
+			vertices[3].pos.X = posTemp.X + edge4.X;
+			vertices[3].pos.Y = posTemp.Y + edge4.Y;
+			vertices[3].pos.Z = posTemp.Z;
+			vertices[3].texCoord.X = uvRect.MaxX;
+			vertices[3].texCoord.Y = uvRect.y;
+		}
 
+		public override void Draw(IDrawDevice device)
+		{
+			Texture mainTex = this.RetrieveMainTex();
+
+			Rect uvRect = new Rect(1.0f, 1.0f);
+			if (mainTex != null) uvRect = new Rect(mainTex.UVRatio.X, mainTex.UVRatio.Y);
+
+			this.PrepareVertices(ref this.vertices, device, uvRect);
 			if (this.customMat != null)
 				device.AddVertices(this.customMat, BeginMode.Quads, this.vertices);
 			else

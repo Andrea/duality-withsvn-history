@@ -473,12 +473,12 @@ namespace Duality.Components
 			this.RenderBatches(this.drawBufferZSort, ref vertexCount);
 
 			this.FinishBatchRendering();
-			if (this.picking == 0)
-			{
-			    Log.Core.WriteTimed(1000, this.gameobj.FullName + "_DrawStats", "Draw stats {0}:\n{1}\n{2}", this.gameobj.FullName,
-			        "\tBatches: " + (this.drawBuffer.Count + this.drawBufferZSort.Count),
-			        "\tVertices: " + vertexCount);
-			}
+			//if (this.picking == 0)
+			//{
+			//    Log.Core.WriteTimed(1000, this.gameobj.FullName + "_DrawStats", "Draw stats {0}:\n{1}\n{2}", this.gameobj.FullName,
+			//        "\tBatches: " + (this.drawBuffer.Count + this.drawBufferZSort.Count),
+			//        "\tVertices: " + vertexCount);
+			//}
 			this.drawBuffer.Clear();
 			this.drawBufferZSort.Clear();
 
@@ -520,7 +520,7 @@ namespace Duality.Components
 				(this.pickingBuffer[4 * (x + y * this.pickingTex.Width) + 0] << 16) |
 				(this.pickingBuffer[4 * (x + y * this.pickingTex.Width) + 1] << 8) |
 				(this.pickingBuffer[4 * (x + y * this.pickingTex.Width) + 2] << 0);
-			return rendererId == 0 ? null : this.pickingMap[rendererId - 1];
+			return (rendererId <= 0 || rendererId >= this.pickingMap.Count) ? null : this.pickingMap[rendererId - 1];
 		}
 		public HashSet<Renderer> PickRenderersIn(int x, int y, int w, int h)
 		{
@@ -716,6 +716,7 @@ namespace Duality.Components
 						renderBatch.Render(ref vertexOffset, ref lastBatchRendered);
 						vertexCount += renderBatch.VertexCount;
 					}
+					batchesSharingVBO[0].FinishVBO();
 					batchesSharingVBO.Clear();
 					lastBatch = null;
 				}

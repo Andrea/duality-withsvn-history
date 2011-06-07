@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ColorFormat\ColorHSVA.cs" />
+    <Compile Include="Components\Renderers\AnimSpriteRenderer.cs" />
     <Compile Include="Components\SoundEmitter.cs" />
     <Compile Include="Components\SoundListener.cs" />
     <Compile Include="ConsoleLogOutput.cs" />
@@ -116,6 +117,7 @@
     <Compile Include="TextWriterLogOutput.cs" />
     <Compile Include="Time.cs" />
     <Compile Include="VertexFormat\IVertexData.cs" />
+    <Compile Include="VertexFormat\VertexC4P3T2.cs" />
     <Compile Include="VertexFormat\VertexP3T2A2.cs" />
     <Compile Include="VertexFormat\VertexP3T2.cs" />
     <Compile Include="VertexFormat\VertexP3.cs" />

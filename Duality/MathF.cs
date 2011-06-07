@@ -263,9 +263,9 @@ namespace Duality
 			if (var >= min && var < max) return var;
 
 			if (var < min)
-				var = max + (var % max);
+				var = max + ((var - min) % max);
 			else
-				var = var % max;
+				var = min + var % (max - min);
 
 			return var;
 		}
@@ -274,9 +274,9 @@ namespace Duality
 			if (var >= min && var < max) return var;
 
 			if (var < min)
-				var = max + (var % max);
+				var = max + ((var - min) % max);
 			else
-				var = var % max;
+				var = min + var % (max - min);
 
 			return var;
 		}

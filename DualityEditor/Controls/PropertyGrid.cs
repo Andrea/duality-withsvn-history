@@ -17,16 +17,14 @@ namespace DualityEditor.Controls
 {
 	public partial class PropertyGrid : UserControl
 	{
-		public enum ProvidedEditorType
-		{
-			None		= 0,
-			General		= 1,
-			Specialized	= 2,
-			Override	= 3
-		}
+		public const int EditorPriority_None		= 0;
+		public const int EditorPriority_General		= 20;
+		public const int EditorPriority_Specialized	= 50;
+		public const int EditorPriority_Override	= 100;
+
 		public interface IPropertyEditorProvider
 		{
-			ProvidedEditorType IsResponsibleFor(Type baseType);
+			int IsResponsibleFor(Type baseType);
 			PropertyEditor CreateEditor(Type baseType, PropertyEditor parentEditor, PropertyGrid parentGrid);
 		}
 		public class MainEditorProvider : IPropertyEditorProvider
@@ -39,59 +37,59 @@ namespace DualityEditor.Controls
 				set { this.subProviders = value; }
 			}
 
-			public ProvidedEditorType IsResponsibleFor(Type baseType)
+			public int IsResponsibleFor(Type baseType)
 			{
-				return ProvidedEditorType.General;
+				return EditorPriority_General;
 			}
 			public PropertyEditor CreateEditor(Type baseType, PropertyEditor parentEditor, PropertyGrid parentGrid)
 			{
 				PropertyEditor e = null;
 
-				// Basic numeric data types
+				// --- Basic numeric data types ---
 				if (baseType == typeof(sbyte) || baseType == typeof(byte) ||
 					baseType == typeof(short) || baseType == typeof(ushort) ||
 					baseType == typeof(int) || baseType == typeof(uint) ||
 					baseType == typeof(long) || baseType == typeof(ulong) ||
 					baseType == typeof(float) || baseType == typeof(double) || baseType == typeof(decimal))
 					e = new NumericPropertyEditor(parentEditor, parentGrid);
-				// Basic data type: Boolean
+				// --- Basic data type: Boolean ---
 				else if (baseType == typeof(bool))
 					e = new BoolPropertyEditor(parentEditor, parentGrid);
-				// Basic data type: Flagged Enum
+				// --- Basic data type: Flagged Enum ---
 				else if (baseType.IsEnum && baseType.GetCustomAttributes(typeof(FlagsAttribute), true).Any())
 					e = new FlagEnumPropertyEditor(parentEditor, parentGrid);
-				// Basic data type: Other Enums
+				// --- Basic data type: Other Enums ---
 				else if (baseType.IsEnum)
 					e = new EnumPropertyEditor(parentEditor, parentGrid);
-				// Basic data type: String
+				// --- Basic data type: String ---
 				else if (baseType == typeof(string))
 					e = new StringPropertyEditor(parentEditor, parentGrid);
-				// Rect
+				// --- Rect ---
 				else if (baseType == typeof(Rect))
 					e = new RectPropertyEditor(parentEditor, parentGrid);
-				// Vector2
+				// --- Vector2 ---
 				else if (baseType == typeof(Vector2))
 					e = new Vector2PropertyEditor(parentEditor, parentGrid);
-				// Vector3
+				// --- Vector3 ---
 				else if (baseType == typeof(Vector3))
 					e = new Vector3PropertyEditor(parentEditor, parentGrid);
-				// IColorData
+				// --- IColorData ---
 				else if (typeof(IColorData).IsAssignableFrom(baseType))
 					e = new IColorDataPropertyEditor(parentEditor, parentGrid);
-				// IList collection
+				// --- IList collection ---
 				else if (typeof(System.Collections.IList).IsAssignableFrom(baseType))
 					e = new IListPropertyEditor(parentEditor, parentGrid);
-				// IDictionary collection
+				// --- IDictionary collection ---
 				else if (typeof(System.Collections.IDictionary).IsAssignableFrom(baseType))
 					e = new IDictionaryPropertyEditor(parentEditor, parentGrid);
-				// Unknown data type
+				// --- Unknown data type ---
 				else
 				{
 					// Ask around if any sub-editor can handle it and choose the most specialized
 					var availSubProviders = 
 						from p in this.subProviders
-						where p.IsResponsibleFor(baseType) != ProvidedEditorType.None
-						orderby (int)p.IsResponsibleFor(baseType) descending
+						where p.IsResponsibleFor(baseType) != EditorPriority_None
+						orderby p.IsResponsibleFor(baseType) descending
 						select p;
 					IPropertyEditorProvider subProvider = availSubProviders.FirstOrDefault();
 					if (subProvider != null)

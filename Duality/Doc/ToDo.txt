@@ -1,13 +1,5 @@
 ﻿
 -->	Checklist for first Game: Asteroids
-	-->	Proper SpriteRenderer
-		-->	Support for animated Textures
-			-->	SpriteRenderer may animate inbetween any index range and at
-				any given speed (duration for the whole animation to complete)
-			-->	It may optionally smoothly fade between two animation steps by
-				internally drawing two rects, each with its own alpha value
-				-->	Sadly, requires TWO custom material infos for EACH SpriteRenderer
-
 	-->	Previews for Pixmaps and Textures in Resource Inspector, if available?
 		-->	Display Width, Height (+ OglWidth / OglHeight) and (scaled) picture
 		-->	PixmapPreview : PropertyEditor

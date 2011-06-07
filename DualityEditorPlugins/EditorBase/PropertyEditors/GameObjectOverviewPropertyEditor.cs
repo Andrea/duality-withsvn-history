@@ -99,7 +99,7 @@ namespace EditorBase.PropertyEditors
 			var cmpEditorCopy = new Dictionary<Type,PropertyEditor>(this.componentEditors);
 			foreach (var pair in cmpEditorCopy)
 			{
-				if (!values.Any(o => o.GetComponent(pair.Key) != null))
+				if (!values.Any(o => o.GetComponent(pair.Key, true) != null))
 				{
 					this.RemovePropertyEditor(pair.Value);
 					this.componentEditors.Remove(pair.Key);

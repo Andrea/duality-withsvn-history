@@ -320,15 +320,15 @@ namespace Duality
 			}
 		}
 
-		public T GetComponent<T>() where T : class
+		public T GetComponent<T>(bool exactType = false) where T : class
 		{
-			return GetComponent(typeof(T)) as T;
+			return GetComponent(typeof(T), exactType) as T;
 		}
-		public Component GetComponent(Type t)
+		public Component GetComponent(Type t, bool exactType = false)
 		{
 			Component result = null;
-			if (!this.compMap.TryGetValue(t, out result))
-				return this.GetComponents(t).ElementAtOrDefault(0);
+			if (!this.compMap.TryGetValue(t, out result) && !exactType)
+				return this.GetComponents(t).FirstOrDefault();
 			else
 				return result;
 		}
