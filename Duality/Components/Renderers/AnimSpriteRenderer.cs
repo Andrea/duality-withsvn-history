@@ -20,7 +20,8 @@ namespace Duality.Components.Renderers
 			Once,
 			Loop,
 			PingPong,
-			RandomSingle
+			RandomSingle,
+			FixedSingle
 		}
 
 		private	int			animFirstFrame	= 0;
