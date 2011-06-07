@@ -29,11 +29,11 @@ namespace Duality.VertexFormat
 
 		void IVertexData.SetupVBO<T>(T[] vertexData, Duality.Resources.BatchInfo mat)
 		{
-			GL.EnableClientState(ArrayCap.ColorArray);
+			if (mat.Technique != Duality.Resources.DrawTechnique.Picking) GL.EnableClientState(ArrayCap.ColorArray);
 			GL.EnableClientState(ArrayCap.VertexArray);
 			GL.EnableClientState(ArrayCap.TextureCoordArray);
 
-			GL.ColorPointer(4, ColorPointerType.UnsignedByte, Size, (IntPtr)OffsetColor);
+			if (mat.Technique != Duality.Resources.DrawTechnique.Picking) GL.ColorPointer(4, ColorPointerType.UnsignedByte, Size, (IntPtr)OffsetColor);
 			GL.VertexPointer(3, VertexPointerType.Float, Size, (IntPtr)OffsetPos);
 			GL.TexCoordPointer(2, TexCoordPointerType.Float, Size, (IntPtr)OffsetTex0);
 
