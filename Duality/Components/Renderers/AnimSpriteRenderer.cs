@@ -31,8 +31,6 @@ namespace Duality.Components.Renderers
 		private	bool		animSmooth		= false;
 		private	float		animTime		= 0.0f;
 		private	int			animCycle		= 0;
-		[NonSerialized]
-		protected	VertexFormat.VertexC4P3T2[]	verticesSmooth	= null;
 
 		public int AnimFirstFrame
 		{
@@ -63,6 +61,25 @@ namespace Duality.Components.Renderers
 		{
 			get { return this.animSmooth; }
 			set { this.animSmooth = value; }
+		}
+		public bool IsAnimationRunning
+		{
+			get
+			{
+				switch (this.animLoopMode)
+				{
+					case LoopMode.FixedSingle:
+					case LoopMode.RandomSingle:
+						return false;
+					case LoopMode.Loop:
+					case LoopMode.PingPong:
+						return true;
+					case LoopMode.Once:
+						return this.animTime < this.animDuration;
+					default:
+						return false;
+				}
+			}
 		}
 
 
@@ -141,7 +158,7 @@ namespace Duality.Components.Renderers
 			MathF.TransdormDotVec(ref edge3, ref xDot, ref yDot);
 			MathF.TransdormDotVec(ref edge4, ref xDot, ref yDot);
 
-			if (vertices == null) vertices = new VertexFormat.VertexC4P3T2[8];
+			if (vertices == null || vertices.Length != 8) vertices = new VertexFormat.VertexC4P3T2[8];
 
 			vertices[0].pos.X = posTemp.X + edge1.X;
 			vertices[0].pos.Y = posTemp.Y + edge1.Y;
@@ -149,7 +166,7 @@ namespace Duality.Components.Renderers
 			vertices[0].texCoord.X = uvRect.x;
 			vertices[0].texCoord.Y = uvRect.y;
 			vertices[0].clr = new ColorRGBA(mainClr.r, mainClr.g, mainClr.b, 
-				(byte)MathF.Clamp((1.0f - curAnimFrameFade) * 255.0f, 0.0f, 255.0f));
+				(byte)MathF.Clamp((1.0f - curAnimFrameFade) * mainClr.a, 0.0f, 255.0f));
 
 			vertices[1].pos.X = posTemp.X + edge2.X;
 			vertices[1].pos.Y = posTemp.Y + edge2.Y;
@@ -178,7 +195,7 @@ namespace Duality.Components.Renderers
 			vertices[4].texCoord.X = uvRectNext.x;
 			vertices[4].texCoord.Y = uvRectNext.y;
 			vertices[4].clr = new ColorRGBA(mainClr.r, mainClr.g, mainClr.b, 
-				(byte)MathF.Clamp(curAnimFrameFade * 255.0f, 0.0f, 255.0f));
+				(byte)MathF.Clamp(curAnimFrameFade * mainClr.a, 0.0f, 255.0f));
 
 			vertices[5].pos.X = posTemp.X + edge2.X;
 			vertices[5].pos.Y = posTemp.Y + edge2.Y;
@@ -205,8 +222,9 @@ namespace Duality.Components.Renderers
 		public override void Draw(IDrawDevice device)
 		{
 			Texture mainTex = this.RetrieveMainTex();
+			ColorRGBA mainClr = this.RetrieveMainColor();
 
-			bool isAnimated = this.animFrameCount > 0 && this.animDuration > 0;
+			bool isAnimated = this.animFrameCount > 0 && this.animDuration > 0 && mainTex.Atlas != null;
 			int curAnimFrame = 0;
 			int nextAnimFrame = 0;
 			float curAnimFrameFade = 0.0f;
@@ -219,20 +237,20 @@ namespace Duality.Components.Renderers
 				{
 					float frameTemp = this.animFrameCount * this.animTime / (float)this.animDuration;
 					curAnimFrame = this.animFirstFrame + MathF.Clamp((int)frameTemp, 0, this.animFrameCount - 1);
-					curAnimFrame = MathF.Clamp(curAnimFrame, 0, MathF.Min(mainTex.Atlas.Count - 1, mainTex.AnimFrames - 1));
+					curAnimFrame = MathF.Clamp(curAnimFrame, 0, mainTex.AnimFrames - 1);
 
 					if (this.animSmooth)
 					{
 						if (this.animLoopMode == LoopMode.Loop)
 						{
 							nextAnimFrame = MathF.NormalizeVar(curAnimFrame + 1, this.animFirstFrame, this.animFirstFrame + this.animFrameCount);
-							nextAnimFrame = MathF.Clamp(nextAnimFrame, 0, MathF.Min(mainTex.Atlas.Count - 1, mainTex.AnimFrames - 1));
+							nextAnimFrame = MathF.Clamp(nextAnimFrame, 0, mainTex.AnimFrames - 1);
 							curAnimFrameFade = frameTemp - (int)frameTemp;
 						}
 						else if (this.animLoopMode == LoopMode.Once)
 						{
 							nextAnimFrame = MathF.Clamp(curAnimFrame + 1, this.animFirstFrame, this.animFirstFrame + this.animFrameCount - 1);
-							nextAnimFrame = MathF.Clamp(nextAnimFrame, 0, MathF.Min(mainTex.Atlas.Count - 1, mainTex.AnimFrames - 1));
+							nextAnimFrame = MathF.Clamp(nextAnimFrame, 0, mainTex.AnimFrames - 1);
 							curAnimFrameFade = frameTemp - (int)frameTemp;
 						}
 						else if (this.animLoopMode == LoopMode.PingPong)
@@ -240,13 +258,13 @@ namespace Duality.Components.Renderers
 							if (this.animCycle % 2 == 0)
 							{
 								nextAnimFrame = MathF.Clamp(curAnimFrame + 1, this.animFirstFrame, this.animFirstFrame + this.animFrameCount - 1);
-								nextAnimFrame = MathF.Clamp(nextAnimFrame, 0, MathF.Min(mainTex.Atlas.Count - 1, mainTex.AnimFrames - 1));
+								nextAnimFrame = MathF.Clamp(nextAnimFrame, 0, mainTex.AnimFrames - 1);
 								curAnimFrameFade = frameTemp - (int)frameTemp;
 							}
 							else
 							{
 								nextAnimFrame = MathF.Clamp(curAnimFrame - 1, this.animFirstFrame, this.animFirstFrame + this.animFrameCount - 1);
-								nextAnimFrame = MathF.Clamp(nextAnimFrame, 0, MathF.Min(mainTex.Atlas.Count - 1, mainTex.AnimFrames - 1));
+								nextAnimFrame = MathF.Clamp(nextAnimFrame, 0, mainTex.AnimFrames - 1);
 								curAnimFrameFade = 1.0f + MathF.Min((int)frameTemp, this.animFrameCount - 1) - frameTemp;
 							}
 						}
@@ -262,28 +280,14 @@ namespace Duality.Components.Renderers
 				uvRect = uvRectNext = new Rect(1.0f, 1.0f);
 
 			if (!animSmooth)
-			{
-				this.PrepareVertices(ref this.vertices, device, uvRect);
-				if (this.customMat != null)
-					device.AddVertices(this.customMat, BeginMode.Quads, this.vertices);
-				else
-					device.AddVertices(this.sharedMat, BeginMode.Quads, this.vertices);
-			}
+				this.PrepareVertices(ref this.vertices, device, mainClr, uvRect);
 			else
-			{
-				ColorRGBA mainClr;
-				if (this.customMat != null)
-					mainClr = this.customMat.MainColor;
-				else
-					mainClr = this.sharedMat.Res.MainColor;
+				this.PrepareVerticesSmooth(ref this.vertices, device, curAnimFrameFade, mainClr, uvRect, uvRectNext);
 
-				this.PrepareVerticesSmooth(ref this.verticesSmooth, device, curAnimFrameFade, mainClr, uvRect, uvRectNext);
-
-				if (this.customMat != null)
-					device.AddVertices(this.customMat, BeginMode.Quads, this.verticesSmooth);
-				else
-					device.AddVertices(this.sharedMat, BeginMode.Quads, this.verticesSmooth);
-			}
+			if (this.customMat != null)
+				device.AddVertices(this.customMat, BeginMode.Quads, this.vertices);
+			else
+				device.AddVertices(this.sharedMat, BeginMode.Quads, this.vertices);
 		}
 		internal override void CopyToInternal(Component target)
 		{

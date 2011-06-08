@@ -152,6 +152,7 @@ namespace EditorBase
 
 		private	Dictionary<object,NodeBase>	objToNode		= new Dictionary<object,NodeBase>();
 		private	FilteredTreeModel			objectModel		= null;
+		private	NodeBase					editingNode		= null;
 
 		private	NodeBase	flashNode		= null;
 		private	float		flashDuration	= 0.0f;
@@ -204,6 +205,7 @@ namespace EditorBase
 			this.nodeTextBoxName.ToolTipProvider = this.nodeStateIcon.ToolTipProvider = new ToolTipProvider();
 			this.nodeTextBoxName.DrawText += new EventHandler<Aga.Controls.Tree.NodeControls.DrawEventArgs>(nodeTextBoxName_DrawText);
 			this.nodeTextBoxName.EditorShowing += new CancelEventHandler(nodeTextBoxName_EditorShowing);
+			this.nodeTextBoxName.EditorHided += new EventHandler(nodeTextBoxName_EditorHided);
 			this.nodeTextBoxName.ChangesApplied += new EventHandler(nodeTextBoxName_ChangesApplied);
 		}
 		protected override void OnShown(EventArgs e)
@@ -874,6 +876,17 @@ namespace EditorBase
 
 			NodeBase node = this.objectView.SelectedNode.Tag as NodeBase;
 			if (!(node is GameObjectNode)) e.Cancel = true;
+
+			if (!e.Cancel)
+			{
+				this.editingNode = node;
+				this.objectView.ContextMenuStrip = null;
+			}
+		}
+		private void nodeTextBoxName_EditorHided(object sender, EventArgs e)
+		{
+			this.editingNode = null;
+			this.objectView.ContextMenuStrip = this.contextMenuNode;
 		}
 		private void nodeTextBoxName_ChangesApplied(object sender, EventArgs e)
 		{

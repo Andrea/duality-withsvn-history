@@ -39,6 +39,8 @@ namespace Duality
 		public static readonly PropertyInfo	Property_SpriteRenderer_CustomMaterial;
 		public static readonly PropertyInfo	Property_SpriteRenderer_Rect;
 
+		public static readonly PropertyInfo	Property_AnimSpriteRenderer_IsAnimationRunning;
+
 		public static readonly PropertyInfo	Property_Camera_OrthoAbs;
 		public static readonly PropertyInfo	Property_Camera_ViewportAbs;
 		public static readonly PropertyInfo	Property_Camera_DrawDevice;
@@ -127,6 +129,9 @@ namespace Duality
 			Property_SpriteRenderer_BoundRadius		= rendererSprite.GetProperty("BoundRadius");
 			Property_SpriteRenderer_CustomMaterial	= rendererSprite.GetProperty("CustomMaterial");
 			Property_SpriteRenderer_Rect			= rendererSprite.GetProperty("Rect");
+
+			Type rendererAnimSprite = typeof(AnimSpriteRenderer);
+			Property_AnimSpriteRenderer_IsAnimationRunning	= rendererAnimSprite.GetProperty("IsAnimationRunning");
 
 			Type camera = typeof(Camera);
 			Property_Camera_OrthoAbs		= camera.GetProperty("OrthoAbs");

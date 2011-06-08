@@ -4,6 +4,7 @@
 		-->	Display Width, Height (+ OglWidth / OglHeight) and (scaled) picture
 		-->	PixmapPreview : PropertyEditor
 		-->	TexturePreview : PropertyEditor
+			Support previewing specific frames
 
 	-->	Any Usability stuff that comes up while editing / creating the game
 
