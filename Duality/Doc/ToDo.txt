@@ -1,4 +1,28 @@
 ﻿
+-->	Get rid of vertex formats P3 and P3T2A2. Noone wants them.
+	
+	
+-->	Prototype a proper smooth sprite animation using a pixel shader
+	-->	Enable Editor to create, edit and set up shaders and custom drawtechniques
+	-->	Write the shader code
+	
+	-->	New Vertex format: C4P3T4A1
+		-->	Color, Position
+		-->	Two TexCoords packed into one vec4
+		-->	Custom float Vertex Attribute
+	-->	Rewrite AnimSpriteRenderer to use and parameterize new vertex format when smoothing.
+	-->	Rename "Smooth" property and field to "EmitSmoothShaderInput" or something.
+	-->	Assure the injected vertex data will also work without that specific shader, although
+		not being rendered smooth at all.
+	
+	-->	Think about how to integrate that smooth shader stuff into the Duality default content.
+		-->	Provide smooth shader DrawTechniques in a "SmoothAnimSprite" subfolder? Which to include?
+			-->	Solid, Mask, Add, Alpha, Light, Multiply, Invert
+			-->	Well, that's all of them. Just provide a special version for all of them.
+		-->	Auto-activate "EmitSmoothShaderInput" when assigning a Material that comes with a smooth anim shader
+		-->	Auto-deactivate it when assigning one that doesn't
+			
+
 -->	Checklist for first Game: Asteroids
 	-->	Any Usability stuff that comes up while editing / creating the game
 
