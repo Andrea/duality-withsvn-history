@@ -57,6 +57,9 @@ namespace Duality
 		public static readonly PropertyInfo	Property_Resource_Disposed;
 		public static readonly PropertyInfo	Property_Resource_Path;
 
+		public static readonly PropertyInfo	Property_Pixmap_PixelData;
+		public static readonly PropertyInfo	Property_Pixmap_PixelDataBasePath;
+
 		public static readonly PropertyInfo	Property_Texture_Width;
 		public static readonly PropertyInfo	Property_Texture_Height;
 		public static readonly PropertyInfo	Property_Texture_Diameter;
@@ -143,6 +146,10 @@ namespace Duality
 			Type resource = typeof(Resource);
 			Property_Resource_Disposed	= resource.GetProperty("Disposed");
 			Property_Resource_Path		= resource.GetProperty("Path");
+
+			Type pixmap = typeof(Pixmap);
+			Property_Pixmap_PixelData			= pixmap.GetProperty("PixelData");
+			Property_Pixmap_PixelDataBasePath	= pixmap.GetProperty("PixelDataBasePath");
 
 			Type texture = typeof(Texture);
 			Property_Texture_Width			= texture.GetProperty("Width");

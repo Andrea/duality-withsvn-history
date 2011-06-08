@@ -24,13 +24,13 @@ namespace Duality.Components.Renderers
 			FixedSingle
 		}
 
-		private	int			animFirstFrame	= 0;
-		private	int			animFrameCount	= 0;
-		private	int			animDuration	= 0;
-		private	LoopMode	animLoopMode	= LoopMode.Loop;
-		private	bool		animSmooth		= false;
-		private	float		animTime		= 0.0f;
-		private	int			animCycle		= 0;
+		private	int			animFirstFrame		= 0;
+		private	int			animFrameCount		= 0;
+		private	int			animDuration		= 0;
+		private	LoopMode	animLoopMode		= LoopMode.Loop;
+		private	bool		animSmooth			= false;
+		private	float		animTime			= 0.0f;
+		private	int			animCycle			= 0;
 
 		public int AnimFirstFrame
 		{
@@ -140,6 +140,14 @@ namespace Duality.Components.Renderers
 		
 		protected void PrepareVerticesSmooth(ref VertexFormat.VertexC4P3T2[] vertices, IDrawDevice device, float curAnimFrameFade, ColorRGBA mainClr, Rect uvRect, Rect uvRectNext)
 		{
+			DrawTechnique tech;
+			if (this.sharedMat.IsAvailable)
+				tech = this.sharedMat.Res.Technique.Res;
+			else if (this.customMat != null)
+				tech = this.customMat.Technique.Res;
+			else
+				tech = null;
+
 			Vector3 posTemp = this.gameobj.Transform.Pos;
 			float scaleTemp = 1.0f;
 			device.PreprocessCoords(this, ref posTemp, ref scaleTemp);
@@ -160,13 +168,33 @@ namespace Duality.Components.Renderers
 
 			if (vertices == null || vertices.Length != 8) vertices = new VertexFormat.VertexC4P3T2[8];
 
+			float alphaOld;
+			bool affectColor = false;
+			if (tech == DrawTechnique.Add.Res)
+			{
+				alphaOld = 1.0f - curAnimFrameFade;
+			}
+			else if (tech == DrawTechnique.Light.Res || tech == DrawTechnique.Multiply.Res || tech == DrawTechnique.Invert.Res)
+			{
+				alphaOld = 1.0f - curAnimFrameFade;
+				affectColor = true;
+			}
+			else
+			{
+				alphaOld = 1.0f - MathF.Max(curAnimFrameFade * 2.0f - 1.0f, 0.0f);
+				curAnimFrameFade = MathF.Min(curAnimFrameFade * 2.0f, 1.0f);
+			}
+
 			vertices[0].pos.X = posTemp.X + edge1.X;
 			vertices[0].pos.Y = posTemp.Y + edge1.Y;
 			vertices[0].pos.Z = posTemp.Z;
 			vertices[0].texCoord.X = uvRect.x;
 			vertices[0].texCoord.Y = uvRect.y;
-			vertices[0].clr = new ColorRGBA(mainClr.r, mainClr.g, mainClr.b, 
-				(byte)MathF.Clamp((1.0f - curAnimFrameFade) * mainClr.a, 0.0f, 255.0f));
+			vertices[0].clr = new ColorRGBA(
+				affectColor ? (byte)MathF.Clamp(alphaOld * mainClr.r, 0.0f, 255.0f) : mainClr.r, 
+				affectColor ? (byte)MathF.Clamp(alphaOld * mainClr.g, 0.0f, 255.0f) : mainClr.g, 
+				affectColor ? (byte)MathF.Clamp(alphaOld * mainClr.b, 0.0f, 255.0f) : mainClr.b, 
+				!affectColor ? (byte)MathF.Clamp(alphaOld * mainClr.a, 0.0f, 255.0f) : mainClr.a);
 
 			vertices[1].pos.X = posTemp.X + edge2.X;
 			vertices[1].pos.Y = posTemp.Y + edge2.Y;
@@ -194,8 +222,11 @@ namespace Duality.Components.Renderers
 			vertices[4].pos.Z = posTemp.Z;
 			vertices[4].texCoord.X = uvRectNext.x;
 			vertices[4].texCoord.Y = uvRectNext.y;
-			vertices[4].clr = new ColorRGBA(mainClr.r, mainClr.g, mainClr.b, 
-				(byte)MathF.Clamp(curAnimFrameFade * mainClr.a, 0.0f, 255.0f));
+			vertices[4].clr = new ColorRGBA(
+				affectColor ? (byte)MathF.Clamp(curAnimFrameFade * mainClr.r, 0.0f, 255.0f) : mainClr.r, 
+				affectColor ? (byte)MathF.Clamp(curAnimFrameFade * mainClr.g, 0.0f, 255.0f) : mainClr.g, 
+				affectColor ? (byte)MathF.Clamp(curAnimFrameFade * mainClr.b, 0.0f, 255.0f) : mainClr.b, 
+				!affectColor ? (byte)MathF.Clamp(curAnimFrameFade * mainClr.a, 0.0f, 255.0f) : mainClr.a);
 
 			vertices[5].pos.X = posTemp.X + edge2.X;
 			vertices[5].pos.Y = posTemp.Y + edge2.Y;
@@ -237,20 +268,20 @@ namespace Duality.Components.Renderers
 				{
 					float frameTemp = this.animFrameCount * this.animTime / (float)this.animDuration;
 					curAnimFrame = this.animFirstFrame + MathF.Clamp((int)frameTemp, 0, this.animFrameCount - 1);
-					curAnimFrame = MathF.Clamp(curAnimFrame, 0, mainTex.AnimFrames - 1);
+					curAnimFrame = MathF.Clamp(curAnimFrame, 0, mainTex.Atlas.Count - 1);
 
 					if (this.animSmooth)
 					{
 						if (this.animLoopMode == LoopMode.Loop)
 						{
 							nextAnimFrame = MathF.NormalizeVar(curAnimFrame + 1, this.animFirstFrame, this.animFirstFrame + this.animFrameCount);
-							nextAnimFrame = MathF.Clamp(nextAnimFrame, 0, mainTex.AnimFrames - 1);
+							nextAnimFrame = MathF.Clamp(nextAnimFrame, 0, mainTex.Atlas.Count - 1);
 							curAnimFrameFade = frameTemp - (int)frameTemp;
 						}
 						else if (this.animLoopMode == LoopMode.Once)
 						{
 							nextAnimFrame = MathF.Clamp(curAnimFrame + 1, this.animFirstFrame, this.animFirstFrame + this.animFrameCount - 1);
-							nextAnimFrame = MathF.Clamp(nextAnimFrame, 0, mainTex.AnimFrames - 1);
+							nextAnimFrame = MathF.Clamp(nextAnimFrame, 0, mainTex.Atlas.Count - 1);
 							curAnimFrameFade = frameTemp - (int)frameTemp;
 						}
 						else if (this.animLoopMode == LoopMode.PingPong)
@@ -258,13 +289,13 @@ namespace Duality.Components.Renderers
 							if (this.animCycle % 2 == 0)
 							{
 								nextAnimFrame = MathF.Clamp(curAnimFrame + 1, this.animFirstFrame, this.animFirstFrame + this.animFrameCount - 1);
-								nextAnimFrame = MathF.Clamp(nextAnimFrame, 0, mainTex.AnimFrames - 1);
+								nextAnimFrame = MathF.Clamp(nextAnimFrame, 0, mainTex.Atlas.Count - 1);
 								curAnimFrameFade = frameTemp - (int)frameTemp;
 							}
 							else
 							{
 								nextAnimFrame = MathF.Clamp(curAnimFrame - 1, this.animFirstFrame, this.animFirstFrame + this.animFrameCount - 1);
-								nextAnimFrame = MathF.Clamp(nextAnimFrame, 0, mainTex.AnimFrames - 1);
+								nextAnimFrame = MathF.Clamp(nextAnimFrame, 0, mainTex.Atlas.Count - 1);
 								curAnimFrameFade = 1.0f + MathF.Min((int)frameTemp, this.animFrameCount - 1) - frameTemp;
 							}
 						}

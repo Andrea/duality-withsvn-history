@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.Serialization;
 
@@ -18,9 +19,13 @@ namespace Duality.Resources
 	/// A Pixmap stores pixel data in system memory. 
 	/// </summary>
 	[Serializable]
-	public class Pixmap : Resource
+	public class Pixmap : Resource, ISerializable
 	{
 		public new const string FileExt = ".Pixmap" + Resource.FileExt;
+
+		protected const int ResFormat_Version_Unknown	= 0;
+		protected const int ResFormat_Version_Bitmap	= 1;
+		protected const int ResFormat_Version_Png		= 2;
 
 		public const string VirtualContentPath = ContentProvider.VirtualContentPath + "Pixmap:";
 		public const string ContentPath_DualityLogo256	= VirtualContentPath + "DualityLogo256";
@@ -75,6 +80,30 @@ namespace Duality.Resources
 		{
 			this.LoadPixelData(imagePath);
 		}
+		protected Pixmap(SerializationInfo info, StreamingContext context)
+        {
+			int version;
+			try { version = info.GetInt32("version"); }
+			catch (SerializationException) { version = ResFormat_Version_Unknown; }
+
+			if (version == ResFormat_Version_Bitmap)
+			{
+				this.data = info.GetValue("data", typeof(Bitmap)) as Bitmap;
+			}
+			else if (version == ResFormat_Version_Png)
+			{
+				byte[] dataBlock = (byte[])info.GetValue("data", typeof(byte[]));
+				this.data = dataBlock != null ? new Bitmap(new MemoryStream(dataBlock)) : null;
+			}
+			else
+			{
+				this.data = null;
+				byte[] dataBlock = (byte[])info.GetValue("data", typeof(byte[]));
+				this.data = dataBlock != null ? new Bitmap(new MemoryStream(dataBlock)) : null;
+			}
+
+			this.dataBasePath = info.GetString("dataBasePath");
+        }
 
 		public void SavePixelData(string imagePath = null)
 		{
@@ -110,6 +139,22 @@ namespace Duality.Resources
 			Pixmap c = r as Pixmap;
 			c.data			= this.data.Clone() as Bitmap;
 			c.dataBasePath	= this.dataBasePath;
+		}
+
+		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			info.AddValue("version", ResFormat_Version_Png);
+
+			if (this.data != null)
+			{
+				MemoryStream str = new MemoryStream(1024 * 64);
+				this.data.Save(str, System.Drawing.Imaging.ImageFormat.Png);
+				info.AddValue("data", str.ToArray());
+			}
+			else
+				info.AddValue("data", null);
+
+			info.AddValue("dataBasePath", this.dataBasePath);
 		}
 	}
 }

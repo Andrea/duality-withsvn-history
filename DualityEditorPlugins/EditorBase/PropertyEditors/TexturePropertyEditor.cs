@@ -18,10 +18,25 @@ namespace EditorBase.PropertyEditors
 {
 	public class TexturePropertyEditor : ResourcePropertyEditor
 	{
+		private TexturePreviewPropertyEditor preview = null;
+
 		public TexturePropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid)
 		{
 		}
 
+		public override void ClearContent()
+		{
+			base.ClearContent();
+			this.preview = null;
+		}
+		protected override void OnAddingEditors()
+		{
+			base.OnAddingEditors();
+			if (this.preview == null) this.preview = new TexturePreviewPropertyEditor(this, this.ParentGrid);
+			this.preview.EditedType = this.EditedType;
+			this.preview.Getter = this.Getter;
+			this.AddPropertyEditor(this.preview);
+		}
 		protected override PropertyEditor MemberEditor(MemberInfo info)
 		{
 			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Texture_Atlas))
@@ -29,11 +44,16 @@ namespace EditorBase.PropertyEditors
 				PropertyEditor e = this.ParentGrid.PropertyEditorProvider.CreateEditor(
 					ReflectionHelper.Property_Texture_Atlas.PropertyType, this, this.ParentGrid);
 				IListPropertyEditor listEdit = e as IListPropertyEditor;
-				if (listEdit != null) listEdit.EditorAdded += this.listEdit_EditorAdded;
+				if (listEdit != null)
+				{
+					listEdit.EditorAdded += this.AtlasList_EditorAdded;
+					listEdit.ValueEdited += this.AtlasList_ValueEdited;
+				}
 				return e;
 			}
 			return base.MemberEditor(info);
 		}
+
 		protected override bool MemberPredicate(MemberInfo info)
 		{
 			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Texture_Width)) return false;
@@ -63,13 +83,21 @@ namespace EditorBase.PropertyEditors
 
 			if (anyReload ||
 				ReflectionHelper.MemberInfoEquals(property, ReflectionHelper.Property_Texture_AnimCols) ||
-				ReflectionHelper.MemberInfoEquals(property, ReflectionHelper.Property_Texture_AnimRows))
+				ReflectionHelper.MemberInfoEquals(property, ReflectionHelper.Property_Texture_AnimRows) ||
+				ReflectionHelper.MemberInfoEquals(property, ReflectionHelper.Property_Texture_Atlas))
 			{
 				this.PerformGetValue();
 			}
 		}
-
-		private void listEdit_EditorAdded(object sender, PropertyEditorEventArgs e)
+		
+		private void AtlasList_ValueEdited(object sender, PropertyGridValueEditedEventArgs e)
+		{
+			this.preview.PerformGetValue();
+			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
+				this, new ObjectSelection(this.Getter()),
+				ReflectionHelper.Property_Texture_Atlas);
+		}
+		private void AtlasList_EditorAdded(object sender, PropertyEditorEventArgs e)
 		{
 			RectPropertyEditor rectEdit = e.Editor as RectPropertyEditor;
 			if (rectEdit != null)

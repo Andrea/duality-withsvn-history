@@ -28,6 +28,16 @@ namespace Duality
 			BottomRight
 		}
 
+		public static Bitmap SubImage(this Bitmap bm, int x, int y, int w, int h)
+		{
+			if (w == 0 || h == 0) return null;
+			Bitmap result = new Bitmap(w, h);
+			using (Graphics g = Graphics.FromImage((Image)result))
+			{
+				g.DrawImageUnscaledAndClipped(bm, new Rectangle(-x, -y, bm.Width, bm.Height));
+			}
+			return result;
+		}
 		public static Bitmap Resize(this Bitmap bm, int w, int h, ResizeOrigin origin = ResizeOrigin.TopLeft)
 		{
 			int x = 0;
@@ -53,13 +63,7 @@ namespace Duality
 				origin == ResizeOrigin.Right)
 				y = (h - bm.Height) / 2;
 
-			Bitmap result = new Bitmap(w, h);
-			using (Graphics g = Graphics.FromImage((Image)result))
-			{
-				g.DrawImageUnscaledAndClipped(bm, new Rectangle(x, y, Math.Min(bm.Width, w), Math.Min(bm.Height, h)));
-			}
-
-			return result;
+			return bm.SubImage(-x, -y, w, h);
 		}
 		public static Bitmap Rescale(this Bitmap bm, int w, int h, InterpolationMode mode = InterpolationMode.Bilinear)
 		{

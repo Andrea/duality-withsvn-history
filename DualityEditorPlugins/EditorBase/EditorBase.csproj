@@ -66,6 +66,21 @@
     <Compile Include="PropertyEditors\DualityAppDataPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="PropertyEditors\TexturePreviewPropertyEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PropertyEditors\TexturePreviewPropertyEditor.Designer.cs">
+      <DependentUpon>TexturePreviewPropertyEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PropertyEditors\PixmapPreviewPropertyEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PropertyEditors\PixmapPreviewPropertyEditor.Designer.cs">
+      <DependentUpon>PixmapPreviewPropertyEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PropertyEditors\PixmapPropertyEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="PropertyEditors\MaterialPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -167,6 +182,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="CamView.resx">
       <DependentUpon>CamView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PropertyEditors\TexturePreviewPropertyEditor.de.resx">
+      <DependentUpon>TexturePreviewPropertyEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PropertyEditors\TexturePreviewPropertyEditor.resx">
+      <DependentUpon>TexturePreviewPropertyEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PropertyEditors\PixmapPreviewPropertyEditor.de.resx">
+      <DependentUpon>PixmapPreviewPropertyEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PropertyEditors\PixmapPreviewPropertyEditor.resx">
+      <DependentUpon>PixmapPreviewPropertyEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ResourceInspector.de.resx">
       <DependentUpon>ResourceInspector.cs</DependentUpon>
