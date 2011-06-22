@@ -12,8 +12,8 @@ namespace Duality.VertexFormat
 		VertexP3,
 		VertexC4P3,
 		VertexC4P3T2,
+		VertexC4P3T4A1,
 		VertexP3T2,
-		VertexP3T2A2,
 
 		Count
 	}

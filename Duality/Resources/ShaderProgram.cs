@@ -17,11 +17,13 @@ namespace Duality.Resources
 		public new const string FileExt = ".ShaderProgram" + Resource.FileExt;
 
 		public const string VirtualContentPath = ContentProvider.VirtualContentPath + "ShaderProgram:";
-		public const string ContentPath_Minimal	= VirtualContentPath + "Minimal";
-		public const string ContentPath_Picking	= VirtualContentPath + "Picking";
+		public const string ContentPath_Minimal		= VirtualContentPath + "Minimal";
+		public const string ContentPath_Picking		= VirtualContentPath + "Picking";
+		public const string ContentPath_SmoothAnim	= VirtualContentPath + "SmoothAnim";
 
-		public static ContentRef<ShaderProgram> Minimal	{ get; private set; }
-		public static ContentRef<ShaderProgram> Picking	{ get; private set; }
+		public static ContentRef<ShaderProgram> Minimal		{ get; private set; }
+		public static ContentRef<ShaderProgram> Picking		{ get; private set; }
+		public static ContentRef<ShaderProgram> SmoothAnim	{ get; private set; }
 
 		internal static void InitDefaultContent()
 		{
@@ -31,9 +33,12 @@ namespace Duality.Resources
 			ContentProvider.RegisterContent(tmp.Path, tmp);
 			tmp = new ShaderProgram(VertexShader.Minimal, FragmentShader.Picking); tmp.path = ContentPath_Picking;
 			ContentProvider.RegisterContent(tmp.Path, tmp);
+			tmp = new ShaderProgram(VertexShader.SmoothAnim, FragmentShader.SmoothAnim); tmp.path = ContentPath_SmoothAnim;
+			ContentProvider.RegisterContent(tmp.Path, tmp);
 
 			Minimal	= ContentProvider.RequestContent<ShaderProgram>(ContentPath_Minimal);
 			Picking	= ContentProvider.RequestContent<ShaderProgram>(ContentPath_Picking);
+			SmoothAnim	= ContentProvider.RequestContent<ShaderProgram>(ContentPath_SmoothAnim);
 		}
 
 		public static readonly ContentRef<ShaderProgram> None	= ContentRef<ShaderProgram>.Null;
@@ -95,6 +100,7 @@ namespace Duality.Resources
 		public ShaderProgram(ContentRef<VertexShader> v, ContentRef<FragmentShader> f)
 		{
 			this.AttachShaders(v, f);
+			this.Compile();
 		}
 
 		public void AttachShaders()

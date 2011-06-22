@@ -16,6 +16,8 @@ namespace Duality.Resources
 		public new const string FileExt = ".DrawTechnique" + Resource.FileExt;
 
 		public const string VirtualContentPath = ContentProvider.VirtualContentPath + "DrawTechnique:";
+		public const string ContentDir_SmoothAnim	= VirtualContentPath + "SmoothAnim:";
+
 		public const string ContentPath_Solid		= VirtualContentPath + "Solid";
 		public const string ContentPath_Mask		= VirtualContentPath + "Mask";
 		public const string ContentPath_Add			= VirtualContentPath + "Add";
@@ -25,6 +27,14 @@ namespace Duality.Resources
 		public const string ContentPath_Invert		= VirtualContentPath + "Invert";
 		public const string ContentPath_Picking		= VirtualContentPath + "Picking";
 
+		public const string ContentPath_SmoothAnim_Solid	= ContentDir_SmoothAnim + "Solid";
+		public const string ContentPath_SmoothAnim_Mask		= ContentDir_SmoothAnim + "Mask";
+		public const string ContentPath_SmoothAnim_Add		= ContentDir_SmoothAnim + "Add";
+		public const string ContentPath_SmoothAnim_Alpha	= ContentDir_SmoothAnim + "Alpha";
+		public const string ContentPath_SmoothAnim_Multiply	= ContentDir_SmoothAnim + "Multiply";
+		public const string ContentPath_SmoothAnim_Light	= ContentDir_SmoothAnim + "Light";
+		public const string ContentPath_SmoothAnim_Invert	= ContentDir_SmoothAnim + "Invert";
+
 		public static ContentRef<DrawTechnique> Solid		{ get; private set; }
 		public static ContentRef<DrawTechnique> Mask		{ get; private set; }
 		public static ContentRef<DrawTechnique> Add			{ get; private set; }
@@ -33,6 +43,15 @@ namespace Duality.Resources
 		public static ContentRef<DrawTechnique> Light		{ get; private set; }
 		public static ContentRef<DrawTechnique> Invert		{ get; private set; }
 		public static ContentRef<DrawTechnique> Picking		{ get; private set; }
+
+		public static ContentRef<DrawTechnique> SmoothAnim_Solid	{ get; private set; }
+		public static ContentRef<DrawTechnique> SmoothAnim_Mask		{ get; private set; }
+		public static ContentRef<DrawTechnique> SmoothAnim_Add		{ get; private set; }
+		public static ContentRef<DrawTechnique> SmoothAnim_Alpha	{ get; private set; }
+		public static ContentRef<DrawTechnique> SmoothAnim_Multiply	{ get; private set; }
+		public static ContentRef<DrawTechnique> SmoothAnim_Light	{ get; private set; }
+		public static ContentRef<DrawTechnique> SmoothAnim_Invert	{ get; private set; }
+
 		public static bool MaskUseAlphaToCoverage 
 		{ 
 			get 
@@ -72,6 +91,28 @@ namespace Duality.Resources
 			tmp = new DrawTechnique(BlendMode.Mask, ShaderProgram.Picking);
 			tmp.path = ContentPath_Picking;
 			ContentProvider.RegisterContent(tmp.Path, tmp);
+			
+			tmp = new DrawTechnique(BlendMode.Solid, ShaderProgram.SmoothAnim);
+			tmp.path = ContentPath_SmoothAnim_Solid;
+			ContentProvider.RegisterContent(tmp.Path, tmp);
+			tmp = new DrawTechnique(BlendMode.Mask, ShaderProgram.SmoothAnim);
+			tmp.path = ContentPath_SmoothAnim_Mask;
+			ContentProvider.RegisterContent(tmp.Path, tmp);
+			tmp = new DrawTechnique(BlendMode.Add, ShaderProgram.SmoothAnim);
+			tmp.path = ContentPath_SmoothAnim_Add;
+			ContentProvider.RegisterContent(tmp.Path, tmp);
+			tmp = new DrawTechnique(BlendMode.Alpha, ShaderProgram.SmoothAnim);
+			tmp.path = ContentPath_SmoothAnim_Alpha;
+			ContentProvider.RegisterContent(tmp.Path, tmp);
+			tmp = new DrawTechnique(BlendMode.Multiply, ShaderProgram.SmoothAnim);
+			tmp.path = ContentPath_SmoothAnim_Multiply;
+			ContentProvider.RegisterContent(tmp.Path, tmp);
+			tmp = new DrawTechnique(BlendMode.Light, ShaderProgram.SmoothAnim);
+			tmp.path = ContentPath_SmoothAnim_Light;
+			ContentProvider.RegisterContent(tmp.Path, tmp);
+			tmp = new DrawTechnique(BlendMode.Invert, ShaderProgram.SmoothAnim);
+			tmp.path = ContentPath_SmoothAnim_Invert;
+			ContentProvider.RegisterContent(tmp.Path, tmp);
 
 			Solid		= ContentProvider.RequestContent<DrawTechnique>(ContentPath_Solid);
 			Mask		= ContentProvider.RequestContent<DrawTechnique>(ContentPath_Mask);
@@ -81,6 +122,14 @@ namespace Duality.Resources
 			Light		= ContentProvider.RequestContent<DrawTechnique>(ContentPath_Light);
 			Invert		= ContentProvider.RequestContent<DrawTechnique>(ContentPath_Invert);
 			Picking		= ContentProvider.RequestContent<DrawTechnique>(ContentPath_Picking);
+
+			SmoothAnim_Solid	= ContentProvider.RequestContent<DrawTechnique>(ContentPath_SmoothAnim_Solid);
+			SmoothAnim_Mask		= ContentProvider.RequestContent<DrawTechnique>(ContentPath_SmoothAnim_Mask);
+			SmoothAnim_Add		= ContentProvider.RequestContent<DrawTechnique>(ContentPath_SmoothAnim_Add);
+			SmoothAnim_Alpha	= ContentProvider.RequestContent<DrawTechnique>(ContentPath_SmoothAnim_Alpha);
+			SmoothAnim_Multiply	= ContentProvider.RequestContent<DrawTechnique>(ContentPath_SmoothAnim_Multiply);
+			SmoothAnim_Light	= ContentProvider.RequestContent<DrawTechnique>(ContentPath_SmoothAnim_Light);
+			SmoothAnim_Invert	= ContentProvider.RequestContent<DrawTechnique>(ContentPath_SmoothAnim_Invert);
 		}
 
 

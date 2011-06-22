@@ -110,12 +110,9 @@ namespace Duality.Resources
 			if (imagePath == null) imagePath = this.dataBasePath;
 
 			// We're saving this Pixmaps pixel data for the first time
-			if (this.dataBasePath == null)
-			{
-				this.dataBasePath = imagePath;
-			}
+			if (!this.path.Contains(':') && this.dataBasePath == null) this.dataBasePath = imagePath;
 
-			this.data.Save(this.dataBasePath);
+			this.data.Save(imagePath);
 		}
 		public void LoadPixelData(string imagePath = null)
 		{

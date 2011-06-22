@@ -106,7 +106,7 @@ namespace Duality.Resources
 			if (oggVorbisPath == null) oggVorbisPath = this.dataBasePath;
 
 			// We're saving this data for the first time
-			if (this.dataBasePath == null) this.dataBasePath = oggVorbisPath;
+			if (!this.path.Contains(':') && this.dataBasePath == null) this.dataBasePath = oggVorbisPath;
 
 			File.WriteAllBytes(oggVorbisPath, this.data);
 		}

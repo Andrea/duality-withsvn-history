@@ -395,9 +395,15 @@ namespace EditorBase
 		}
 		protected void InsertNodeSorted(Node newNode, Node parentNode)
 		{
-			Node insertBeforeNode = parentNode.Nodes.FirstOrDefault(node => 
-				((newNode is DirectoryNode) || !(node is DirectoryNode)) && 
-				String.Compare(node.Text, newNode.Text) > 0);
+			Node insertBeforeNode;
+			if (newNode is DirectoryNode)
+			{
+				insertBeforeNode = parentNode.Nodes.FirstOrDefault(node => node is DirectoryNode && String.Compare(node.Text, newNode.Text) > 0);
+				if (insertBeforeNode == null) insertBeforeNode = parentNode.Nodes.FirstOrDefault();
+			}
+			else
+				insertBeforeNode = parentNode.Nodes.FirstOrDefault(node => !(node is DirectoryNode) && String.Compare(node.Text, newNode.Text) > 0);
+
 			if (insertBeforeNode == null) parentNode.Nodes.Add(newNode);
 			else parentNode.Nodes.Insert(parentNode.Nodes.IndexOf(insertBeforeNode), newNode);
 		}

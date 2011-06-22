@@ -28,9 +28,12 @@ namespace Duality.Components.Renderers
 		private	int			animFrameCount		= 0;
 		private	int			animDuration		= 0;
 		private	LoopMode	animLoopMode		= LoopMode.Loop;
-		private	bool		animSmooth			= false;
 		private	float		animTime			= 0.0f;
 		private	int			animCycle			= 0;
+		private	bool		smoothShaderInput	= false;
+
+		private	VertexFormat.VertexC4P3T4A1[]	verticesSmooth	= null;
+
 
 		public int AnimFirstFrame
 		{
@@ -57,10 +60,10 @@ namespace Duality.Components.Renderers
 			get { return this.animLoopMode; }
 			set { this.animLoopMode = value; }
 		}
-		public bool AnimSmooth
+		public bool EmitSmoothShaderInput
 		{
-			get { return this.animSmooth; }
-			set { this.animSmooth = value; }
+			get { return this.smoothShaderInput; }
+			set { this.smoothShaderInput = value; }
 		}
 		public bool IsAnimationRunning
 		{
@@ -138,17 +141,8 @@ namespace Duality.Components.Renderers
 		}
 		void ICmpInitializable.OnShutdown(Component.ShutdownContext context) {}
 		
-		protected void PrepareVerticesSmooth(ref VertexFormat.VertexC4P3T2[] vertices, IDrawDevice device, float curAnimFrameFade, ColorRGBA mainClr, Rect uvRect, Rect uvRectNext)
+		protected void PrepareVerticesSmooth(ref VertexFormat.VertexC4P3T4A1[] vertices, IDrawDevice device, float curAnimFrameFade, ColorRGBA mainClr, Rect uvRect, Rect uvRectNext)
 		{
-			DrawTechnique tech;
-			if (this.sharedMat.IsAvailable)
-				tech = this.sharedMat.Res.Technique.Res;
-			else if (this.customMat != null)
-				tech = this.customMat.Technique.Res;
-			else
-				tech = null;
-			BlendMode blend = tech != null ? tech.Blending : BlendMode.Solid;
-
 			Vector3 posTemp = this.gameobj.Transform.Pos;
 			float scaleTemp = 1.0f;
 			device.PreprocessCoords(this, ref posTemp, ref scaleTemp);
@@ -167,88 +161,47 @@ namespace Duality.Components.Renderers
 			MathF.TransdormDotVec(ref edge3, ref xDot, ref yDot);
 			MathF.TransdormDotVec(ref edge4, ref xDot, ref yDot);
 
-			if (vertices == null || vertices.Length != 8) vertices = new VertexFormat.VertexC4P3T2[8];
-
-			float alphaOld;
-			bool affectColor = false;
-			if (blend == BlendMode.Add)
-			{
-				alphaOld = 1.0f - curAnimFrameFade;
-			}
-			else if (blend == BlendMode.Light || blend == BlendMode.Multiply || blend == BlendMode.Invert)
-			{
-				alphaOld = 1.0f - curAnimFrameFade;
-				affectColor = true;
-			}
-			else
-			{
-				alphaOld = 1.0f - MathF.Max(curAnimFrameFade * 2.0f - 1.0f, 0.0f);
-				curAnimFrameFade = MathF.Min(curAnimFrameFade * 2.0f, 1.0f);
-			}
+			if (vertices == null || vertices.Length != 4) vertices = new VertexFormat.VertexC4P3T4A1[4];
 
 			vertices[0].pos.X = posTemp.X + edge1.X;
 			vertices[0].pos.Y = posTemp.Y + edge1.Y;
 			vertices[0].pos.Z = posTemp.Z;
 			vertices[0].texCoord.X = uvRect.x;
 			vertices[0].texCoord.Y = uvRect.y;
-			vertices[0].clr = new ColorRGBA(
-				affectColor ? (byte)MathF.Clamp(alphaOld * mainClr.r, 0.0f, 255.0f) : mainClr.r, 
-				affectColor ? (byte)MathF.Clamp(alphaOld * mainClr.g, 0.0f, 255.0f) : mainClr.g, 
-				affectColor ? (byte)MathF.Clamp(alphaOld * mainClr.b, 0.0f, 255.0f) : mainClr.b, 
-				!affectColor ? (byte)MathF.Clamp(alphaOld * mainClr.a, 0.0f, 255.0f) : mainClr.a);
+			vertices[0].texCoord.Z = uvRectNext.x;
+			vertices[0].texCoord.W = uvRectNext.y;
+			vertices[0].clr = mainClr;
+			vertices[0].attrib = curAnimFrameFade;
 
 			vertices[1].pos.X = posTemp.X + edge2.X;
 			vertices[1].pos.Y = posTemp.Y + edge2.Y;
 			vertices[1].pos.Z = posTemp.Z;
 			vertices[1].texCoord.X = uvRect.x;
 			vertices[1].texCoord.Y = uvRect.MaxY;
-			vertices[1].clr = vertices[0].clr;
+			vertices[1].texCoord.Z = uvRectNext.x;
+			vertices[1].texCoord.W = uvRectNext.MaxY;
+			vertices[1].clr = mainClr;
+			vertices[1].attrib = curAnimFrameFade;
 
 			vertices[2].pos.X = posTemp.X + edge3.X;
 			vertices[2].pos.Y = posTemp.Y + edge3.Y;
 			vertices[2].pos.Z = posTemp.Z;
 			vertices[2].texCoord.X = uvRect.MaxX;
 			vertices[2].texCoord.Y = uvRect.MaxY;
-			vertices[2].clr = vertices[0].clr;
+			vertices[2].texCoord.Z = uvRectNext.MaxX;
+			vertices[2].texCoord.W = uvRectNext.MaxY;
+			vertices[2].clr = mainClr;
+			vertices[2].attrib = curAnimFrameFade;
 				
 			vertices[3].pos.X = posTemp.X + edge4.X;
 			vertices[3].pos.Y = posTemp.Y + edge4.Y;
 			vertices[3].pos.Z = posTemp.Z;
 			vertices[3].texCoord.X = uvRect.MaxX;
 			vertices[3].texCoord.Y = uvRect.y;
-			vertices[3].clr = vertices[0].clr;
-
-			vertices[4].pos.X = posTemp.X + edge1.X;
-			vertices[4].pos.Y = posTemp.Y + edge1.Y;
-			vertices[4].pos.Z = posTemp.Z;
-			vertices[4].texCoord.X = uvRectNext.x;
-			vertices[4].texCoord.Y = uvRectNext.y;
-			vertices[4].clr = new ColorRGBA(
-				affectColor ? (byte)MathF.Clamp(curAnimFrameFade * mainClr.r, 0.0f, 255.0f) : mainClr.r, 
-				affectColor ? (byte)MathF.Clamp(curAnimFrameFade * mainClr.g, 0.0f, 255.0f) : mainClr.g, 
-				affectColor ? (byte)MathF.Clamp(curAnimFrameFade * mainClr.b, 0.0f, 255.0f) : mainClr.b, 
-				!affectColor ? (byte)MathF.Clamp(curAnimFrameFade * mainClr.a, 0.0f, 255.0f) : mainClr.a);
-
-			vertices[5].pos.X = posTemp.X + edge2.X;
-			vertices[5].pos.Y = posTemp.Y + edge2.Y;
-			vertices[5].pos.Z = posTemp.Z;
-			vertices[5].texCoord.X = uvRectNext.x;
-			vertices[5].texCoord.Y = uvRectNext.MaxY;
-			vertices[5].clr = vertices[4].clr;
-
-			vertices[6].pos.X = posTemp.X + edge3.X;
-			vertices[6].pos.Y = posTemp.Y + edge3.Y;
-			vertices[6].pos.Z = posTemp.Z;
-			vertices[6].texCoord.X = uvRectNext.MaxX;
-			vertices[6].texCoord.Y = uvRectNext.MaxY;
-			vertices[6].clr = vertices[4].clr;
-				
-			vertices[7].pos.X = posTemp.X + edge4.X;
-			vertices[7].pos.Y = posTemp.Y + edge4.Y;
-			vertices[7].pos.Z = posTemp.Z;
-			vertices[7].texCoord.X = uvRectNext.MaxX;
-			vertices[7].texCoord.Y = uvRectNext.y;
-			vertices[7].clr = vertices[4].clr;
+			vertices[3].texCoord.Z = uvRectNext.MaxX;
+			vertices[3].texCoord.W = uvRectNext.y;
+			vertices[3].clr = mainClr;
+			vertices[3].attrib = curAnimFrameFade;
 		}
 
 		public override void Draw(IDrawDevice device)
@@ -271,7 +224,7 @@ namespace Duality.Components.Renderers
 					curAnimFrame = this.animFirstFrame + MathF.Clamp((int)frameTemp, 0, this.animFrameCount - 1);
 					curAnimFrame = MathF.Clamp(curAnimFrame, 0, mainTex.Atlas.Count - 1);
 
-					if (this.animSmooth)
+					if (this.smoothShaderInput)
 					{
 						if (this.animLoopMode == LoopMode.Loop)
 						{
@@ -311,15 +264,18 @@ namespace Duality.Components.Renderers
 			else
 				uvRect = uvRectNext = new Rect(1.0f, 1.0f);
 
-			if (!animSmooth)
+			if (!smoothShaderInput)
+			{
 				this.PrepareVertices(ref this.vertices, device, mainClr, uvRect);
+				if (this.customMat != null)	device.AddVertices(this.customMat, BeginMode.Quads, this.vertices);
+				else						device.AddVertices(this.sharedMat, BeginMode.Quads, this.vertices);
+			}
 			else
-				this.PrepareVerticesSmooth(ref this.vertices, device, curAnimFrameFade, mainClr, uvRect, uvRectNext);
-
-			if (this.customMat != null)
-				device.AddVertices(this.customMat, BeginMode.Quads, this.vertices);
-			else
-				device.AddVertices(this.sharedMat, BeginMode.Quads, this.vertices);
+			{
+				this.PrepareVerticesSmooth(ref this.verticesSmooth, device, curAnimFrameFade, mainClr, uvRect, uvRectNext);
+				if (this.customMat != null)	device.AddVertices(this.customMat, BeginMode.Quads, this.verticesSmooth);
+				else						device.AddVertices(this.sharedMat, BeginMode.Quads, this.verticesSmooth);
+			}
 		}
 		internal override void CopyToInternal(Component target)
 		{
@@ -331,7 +287,7 @@ namespace Duality.Components.Renderers
 			t.animFrameCount = this.animFrameCount;
 			t.animLoopMode = this.animLoopMode;
 			t.animTime = this.animTime;
-			t.animSmooth = this.animSmooth;
+			t.smoothShaderInput = this.smoothShaderInput;
 		}
 	}
 }

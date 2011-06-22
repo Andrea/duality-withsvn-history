@@ -9,6 +9,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using Microsoft.Win32;
 
+using Duality;
+
 namespace DualityEditor
 {
 	public static class EditorHelper
@@ -38,6 +40,15 @@ namespace DualityEditor
 				.OpenSubKey("Microsoft")
 				.OpenSubKey(".NetFramework")
 				.GetValueNames().Contains("DbgManagedDebugger");
+		}
+
+		public static string GenerateResourceSrcFilePath(Resource r, string srcFileExt)
+		{
+			string filePath = PathHelper.MakePathRelative(r.Path, EditorHelper.DataDirectory);
+			if (filePath.Contains("..")) filePath = Path.GetFileName(filePath);
+
+			string fileName = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(r.Path));
+			return PathHelper.GetFreePathName(Path.Combine(EditorHelper.SourceMediaDirectory, fileName), srcFileExt);
 		}
 	}
 }

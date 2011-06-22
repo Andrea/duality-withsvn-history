@@ -16,35 +16,33 @@ namespace Duality.Resources
 		public new const string FileExt = ".FragmentShader" + Resource.FileExt;
 
 		public const string VirtualContentPath = ContentProvider.VirtualContentPath + "FragmentShader:";
-		public const string ContentPath_Minimal	= VirtualContentPath + "Minimal";
-		public const string ContentPath_Picking	= VirtualContentPath + "Picking";
+		public const string ContentPath_Minimal		= VirtualContentPath + "Minimal";
+		public const string ContentPath_Picking		= VirtualContentPath + "Picking";
+		public const string ContentPath_SmoothAnim	= VirtualContentPath + "SmoothAnim";
 
 		public static ContentRef<FragmentShader> Minimal	{ get; private set; }
 		public static ContentRef<FragmentShader> Picking	{ get; private set; }
+		public static ContentRef<FragmentShader> SmoothAnim	{ get; private set; }
 
 		internal static void InitDefaultContent()
 		{
 			FragmentShader tmp;
 
 			tmp = new FragmentShader(); tmp.path = ContentPath_Minimal;
-			tmp.SetSource(
-				"uniform sampler2D mainTex;" + Environment.NewLine +
-				"void main()" + Environment.NewLine +
-				"{" + Environment.NewLine +
-				"	gl_FragColor = gl_Color * texture2D(mainTex, gl_TexCoord[0].st);" + Environment.NewLine +
-				"}");
-			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new FragmentShader(); tmp.path = ContentPath_Picking;
-			tmp.SetSource(
-				"uniform sampler2D mainTex;" + Environment.NewLine +
-				"void main()" + Environment.NewLine +
-				"{" + Environment.NewLine +
-				"	gl_FragColor = vec4(gl_Color.rgb, step(0.5, texture2D(mainTex, gl_TexCoord[0].st).a));" + Environment.NewLine +
-				"}");
+			tmp.LoadSource(ReflectionHelper.GetEmbeddedResourceStream(typeof(FragmentShader).Assembly, @"Resources\Default\Minimal.frag"));
 			ContentProvider.RegisterContent(tmp.Path, tmp);
 
-			Minimal	= ContentProvider.RequestContent<FragmentShader>(ContentPath_Minimal);
-			Picking	= ContentProvider.RequestContent<FragmentShader>(ContentPath_Picking);
+			tmp = new FragmentShader(); tmp.path = ContentPath_Picking;
+			tmp.LoadSource(ReflectionHelper.GetEmbeddedResourceStream(typeof(FragmentShader).Assembly, @"Resources\Default\Picking.frag"));
+			ContentProvider.RegisterContent(tmp.Path, tmp);
+
+			tmp = new FragmentShader(); tmp.path = ContentPath_SmoothAnim;
+			tmp.LoadSource(ReflectionHelper.GetEmbeddedResourceStream(typeof(FragmentShader).Assembly, @"Resources\Default\SmoothAnim.frag"));
+			ContentProvider.RegisterContent(tmp.Path, tmp);
+
+			Minimal		= ContentProvider.RequestContent<FragmentShader>(ContentPath_Minimal);
+			Picking		= ContentProvider.RequestContent<FragmentShader>(ContentPath_Picking);
+			SmoothAnim	= ContentProvider.RequestContent<FragmentShader>(ContentPath_SmoothAnim);
 		}
 
 

@@ -16,25 +16,26 @@ namespace Duality.Resources
 		public new const string FileExt = ".VertexShader" + Resource.FileExt;
 
 		public const string VirtualContentPath = ContentProvider.VirtualContentPath + "VertexShader:";
-		public const string ContentPath_Minimal	= VirtualContentPath + "Minimal";
+		public const string ContentPath_Minimal		= VirtualContentPath + "Minimal";
+		public const string ContentPath_SmoothAnim	= VirtualContentPath + "SmoothAnim";
 
-		public static ContentRef<VertexShader> Minimal	{ get; private set; }
+		public static ContentRef<VertexShader> Minimal		{ get; private set; }
+		public static ContentRef<VertexShader> SmoothAnim	{ get; private set; }
 
 		internal static void InitDefaultContent()
 		{
 			VertexShader tmp;
 
 			tmp = new VertexShader(); tmp.path = ContentPath_Minimal;
-			tmp.SetSource(
-				"void main()" + Environment.NewLine +
-				"{	" + Environment.NewLine +
-				"	gl_Position = ftransform();" + Environment.NewLine +
-				"	gl_TexCoord[0] = gl_MultiTexCoord0;" + Environment.NewLine +
-				"	gl_FrontColor = gl_Color;" + Environment.NewLine +
-				"}");
+			tmp.LoadSource(ReflectionHelper.GetEmbeddedResourceStream(typeof(FragmentShader).Assembly, @"Resources\Default\Minimal.vert"));
 			ContentProvider.RegisterContent(tmp.Path, tmp);
 
-			Minimal	= ContentProvider.RequestContent<VertexShader>(ContentPath_Minimal);
+			tmp = new VertexShader(); tmp.path = ContentPath_SmoothAnim;
+			tmp.LoadSource(ReflectionHelper.GetEmbeddedResourceStream(typeof(FragmentShader).Assembly, @"Resources\Default\SmoothAnim.vert"));
+			ContentProvider.RegisterContent(tmp.Path, tmp);
+
+			Minimal		= ContentProvider.RequestContent<VertexShader>(ContentPath_Minimal);
+			SmoothAnim	= ContentProvider.RequestContent<VertexShader>(ContentPath_SmoothAnim);
 		}
 
 

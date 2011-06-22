@@ -117,10 +117,10 @@
     <Compile Include="TextWriterLogOutput.cs" />
     <Compile Include="Time.cs" />
     <Compile Include="VertexFormat\IVertexData.cs" />
+    <Compile Include="VertexFormat\VertexC4P3T4A1.cs" />
     <Compile Include="VertexFormat\VertexC4P3T2.cs" />
-    <Compile Include="VertexFormat\VertexP3T2A2.cs" />
-    <Compile Include="VertexFormat\VertexP3T2.cs" />
     <Compile Include="VertexFormat\VertexP3.cs" />
+    <Compile Include="VertexFormat\VertexP3T2.cs" />
     <Compile Include="VertexFormat\VertexC4P3.cs" />
     <Compile Include="OggVorbis\NativeMethods.cs" />
   </ItemGroup>
@@ -146,6 +146,13 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Default\Beep.ogg" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Default\SmoothAnim.vert" />
+    <EmbeddedResource Include="Resources\Default\SmoothAnim.frag" />
+    <EmbeddedResource Include="Resources\Default\Picking.frag" />
+    <EmbeddedResource Include="Resources\Default\Minimal.frag" />
+    <EmbeddedResource Include="Resources\Default\Minimal.vert" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
