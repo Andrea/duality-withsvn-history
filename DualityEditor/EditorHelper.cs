@@ -6,6 +6,7 @@ using System.IO;
 using System.Reflection;
 using System.Drawing;
 using System.ComponentModel;
+using System.Diagnostics;
 using Microsoft.Win32;
 
 namespace DualityEditor

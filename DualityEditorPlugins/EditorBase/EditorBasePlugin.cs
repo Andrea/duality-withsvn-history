@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using System.Diagnostics;
 
 using Duality;
 using Duality.ObjectManagers;
@@ -142,6 +143,7 @@ namespace EditorBase
 			CorePluginHelper.RegisterTypeCategory(typeof(SoundEmitter), EditorBaseRes.Category_Sound, CorePluginHelper.CategoryContext_General);
 			CorePluginHelper.RegisterTypeCategory(typeof(SoundListener), EditorBaseRes.Category_Sound, CorePluginHelper.CategoryContext_General);
 
+			// Register conversion actions
 			CorePluginHelper.RegisterEditorAction<Pixmap>(
 				EditorBaseRes.ActionName_CreateTexture, 
 				EditorBaseRes.IconResTexture,
@@ -158,6 +160,14 @@ namespace EditorBase
 				this.ActionAudioDataCreateSound, 
 				CorePluginHelper.ActionContext_ContextMenu);
 
+			// Register open actions
+			CorePluginHelper.RegisterEditorAction<Pixmap>(null, null, this.ActionPixmapOpenRes, CorePluginHelper.ActionContext_OpenRes);
+			CorePluginHelper.RegisterEditorAction<AudioData>(null, null, this.ActionAudioDataOpenRes, CorePluginHelper.ActionContext_OpenRes);
+			CorePluginHelper.RegisterEditorAction<AbstractShader>(null, null, this.ActionAbstractShaderOpenRes, CorePluginHelper.ActionContext_OpenRes);
+			CorePluginHelper.RegisterEditorAction<Prefab>(null, null, this.ActionPrefabOpenRes, CorePluginHelper.ActionContext_OpenRes);
+			CorePluginHelper.RegisterEditorAction<Scene>(null, null, this.ActionSceneOpenRes, CorePluginHelper.ActionContext_OpenRes);
+
+			// Register PropertyEditor provider
 			CorePluginHelper.RegisterPropertyEditorProvider(new PropertyEditors.PropertyEditorProvider());
 		}
 		public override void InitPlugin(MainForm main)
@@ -341,6 +351,38 @@ namespace EditorBase
 			string sndPath = PathHelper.GetFreePathName(data.Path.Substring(0, data.Path.Length - pathExt.Length), Sound.FileExt);
 			Sound snd = new Sound(data);
 			snd.Save(sndPath);
+		}
+
+		private void ActionPixmapOpenRes(Pixmap pixmap)
+		{
+			if (pixmap != null && !String.IsNullOrEmpty(pixmap.PixelDataBasePath) && File.Exists(pixmap.PixelDataBasePath))
+			{
+				System.Diagnostics.Process.Start(pixmap.PixelDataBasePath);
+			}
+		}
+		private void ActionAudioDataOpenRes(AudioData audio)
+		{
+			if (audio != null && !String.IsNullOrEmpty(audio.OggVorbisDataBasePath) && File.Exists(audio.OggVorbisDataBasePath))
+			{
+				System.Diagnostics.Process.Start(audio.OggVorbisDataBasePath);
+			}
+		}
+		private void ActionAbstractShaderOpenRes(AbstractShader shader)
+		{
+			if (shader != null && !String.IsNullOrEmpty(shader.SourcePath) && File.Exists(shader.SourcePath))
+			{
+				System.Diagnostics.Process.Start(shader.SourcePath);
+			}
+		}
+		private void ActionPrefabOpenRes(Prefab prefab)
+		{
+			GameObject newObj = prefab.Instantiate();
+			Duality.Resources.Scene.Current.Graph.RegisterObjDeep(newObj);
+			EditorBasePlugin.Instance.EditorForm.Select(this, new ObjectSelection(newObj));
+		}
+		private void ActionSceneOpenRes(Scene scene)
+		{
+			Scene.Current = scene;
 		}
 	}
 }

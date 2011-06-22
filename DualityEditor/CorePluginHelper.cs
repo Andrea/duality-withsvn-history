@@ -100,9 +100,10 @@ namespace DualityEditor
 			}
 		}
 
-		public const string ImageContext_Icon = "Icon";
-		public const string CategoryContext_General = "General";
-		public const string ActionContext_ContextMenu = "ContextMenu";
+		public const string ImageContext_Icon			= "Icon";
+		public const string CategoryContext_General		= "General";
+		public const string ActionContext_ContextMenu	= "ContextMenu";
+		public const string ActionContext_OpenRes		= "OpenRes";
 
 		private	static	Dictionary<Type,List<IResEntry>>	corePluginRes	= new Dictionary<Type,List<IResEntry>>();
 
