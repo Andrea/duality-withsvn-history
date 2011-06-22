@@ -147,6 +147,7 @@ namespace Duality.Components.Renderers
 				tech = this.customMat.Technique.Res;
 			else
 				tech = null;
+			BlendMode blend = tech != null ? tech.Blending : BlendMode.Solid;
 
 			Vector3 posTemp = this.gameobj.Transform.Pos;
 			float scaleTemp = 1.0f;
@@ -170,11 +171,11 @@ namespace Duality.Components.Renderers
 
 			float alphaOld;
 			bool affectColor = false;
-			if (tech == DrawTechnique.Add.Res)
+			if (blend == BlendMode.Add)
 			{
 				alphaOld = 1.0f - curAnimFrameFade;
 			}
-			else if (tech == DrawTechnique.Light.Res || tech == DrawTechnique.Multiply.Res || tech == DrawTechnique.Invert.Res)
+			else if (blend == BlendMode.Light || blend == BlendMode.Multiply || blend == BlendMode.Invert)
 			{
 				alphaOld = 1.0f - curAnimFrameFade;
 				affectColor = true;
@@ -255,7 +256,7 @@ namespace Duality.Components.Renderers
 			Texture mainTex = this.RetrieveMainTex();
 			ColorRGBA mainClr = this.RetrieveMainColor();
 
-			bool isAnimated = this.animFrameCount > 0 && this.animDuration > 0 && mainTex.Atlas != null;
+			bool isAnimated = this.animFrameCount > 0 && this.animDuration > 0 && mainTex != null && mainTex.Atlas != null;
 			int curAnimFrame = 0;
 			int nextAnimFrame = 0;
 			float curAnimFrameFade = 0.0f;

@@ -3,7 +3,6 @@
 	
 	
 -->	Prototype a proper smooth sprite animation using a pixel shader
-	-->	Enable Editor to create, edit and set up shaders and custom drawtechniques
 	-->	Write the shader code
 	
 	-->	New Vertex format: C4P3T4A1

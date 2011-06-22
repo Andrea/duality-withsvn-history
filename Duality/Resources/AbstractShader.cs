@@ -124,6 +124,10 @@ namespace Duality.Resources
 		{
 			get { return this.varInfo; }
 		}
+		public string SourcePath
+		{
+			get { return this.sourcePath; }
+		}
 
 		public void SetSource(string source)
 		{
@@ -146,7 +150,7 @@ namespace Duality.Resources
 			this.compiled = false;
 			this.sourcePath = filePath;
 			this.source = "";
-			if (File.Exists(this.sourcePath)) return;
+			if (!File.Exists(this.sourcePath)) return;
 
 			this.source = File.ReadAllText(this.sourcePath);
 		}
@@ -171,10 +175,8 @@ namespace Duality.Resources
 			if (result == 0)
 			{
 				string infoLog = GL.GetShaderInfoLog(this.glShaderId);
-				throw new ApplicationException(string.Format(
-					"Error compiling {0}. InfoLog: {1}",
-					this.OglShaderType,
-					Environment.NewLine + infoLog));
+				Log.Core.WriteError("Error compiling {0}. InfoLog:\n{1}", this.OglShaderType, infoLog);
+				return;
 			}
 			this.compiled = true;
 

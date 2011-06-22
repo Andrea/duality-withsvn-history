@@ -80,6 +80,16 @@ namespace Duality.Resources
 		{
 			get { return this.varInfo; }
 		}
+		public ContentRef<VertexShader> Vertex
+		{
+			get { return this.vert; }
+			set { this.AttachShaders(value, this.frag); this.Compile(); }
+		}
+		public ContentRef<FragmentShader> Fragment
+		{
+			get { return this.frag; }
+			set { this.AttachShaders(this.vert, value); this.Compile(); }
+		}
 
 		public ShaderProgram() {}
 		public ShaderProgram(ContentRef<VertexShader> v, ContentRef<FragmentShader> f)
@@ -123,14 +133,18 @@ namespace Duality.Resources
 			if (result == 0)
 			{
 				string infoLog = GL.GetProgramInfoLog(this.glProgramId);
-				throw new ApplicationException(string.Format(
-					"Error compiling shader program. InfoLog: {0}",
-					Environment.NewLine + infoLog));
+				Log.Core.WriteError("Error compiling shader program. InfoLog:\n{0}", infoLog);
+				return;
 			}
 			this.compiled = true;
 
 			// Collect variable infos from sub programs
-			this.varInfo = new List<ShaderVarInfo>(this.vert.Res.VarInfo.Union(this.frag.Res.VarInfo)).ToArray();
+			if (this.frag.IsAvailable && this.vert.IsAvailable)
+				this.varInfo = new List<ShaderVarInfo>(this.vert.Res.VarInfo.Union(this.frag.Res.VarInfo)).ToArray();
+			else if (this.vert.IsAvailable)
+				this.varInfo = new List<ShaderVarInfo>(this.vert.Res.VarInfo).ToArray();
+			else
+				this.varInfo = new List<ShaderVarInfo>(this.frag.Res.VarInfo).ToArray();
 			// Determine actual variable locations
 			for (int i = 0; i < this.varInfo.Length; i++)
 			{

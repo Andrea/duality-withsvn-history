@@ -166,6 +166,7 @@ namespace EditorBase
 			EditorBasePlugin.Instance.EditorForm.AfterUpdateDualityApp += this.EditorForm_AfterUpdateDualityApp;
 			EditorBasePlugin.Instance.EditorForm.SelectionChanged += this.EditorForm_SelectionChanged;
 			EditorBasePlugin.Instance.EditorForm.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
+			EditorBasePlugin.Instance.EditorForm.ResourceModified += this.EditorForm_ResourceModified;
 			Scene.Leaving += this.Scene_Changed;
 			Scene.Entered += this.Scene_Changed;
 			Scene.GameObjectRegistered += this.Scene_Changed;
@@ -1353,9 +1354,17 @@ namespace EditorBase
 		{
 			if (e.HasProperty(ReflectionHelper.Property_GameObject_ActiveSingle) ||
 				e.Objects.Components.Any(c => c is Transform || c is Renderer) ||
-				e.Objects.Resources.Any(r => r is Material))
+				e.Objects.Resources.Any(r => r is Material || r is ShaderProgram || r is AbstractShader || r is DrawTechnique))
 			{
 				this.UpdateSelectionStats();
+				this.glControl.Invalidate();
+			}
+		}
+		private void EditorForm_ResourceModified(object sender, ResourceEventArgs e)
+		{
+			if (!e.IsResource) return;
+			if (e.Content.Is<Material>() || e.Content.Is<ShaderProgram>() || e.Content.Is<AbstractShader>() || e.Content.Is<DrawTechnique>())
+			{
 				this.glControl.Invalidate();
 			}
 		}

@@ -613,6 +613,8 @@ namespace EditorBase
 			ResourceNode resNode = node.Tag as ResourceNode;
 			if (resNode == null) return;
 
+			// Maybe replace this with a CorePluginHelper-Loopup? Provide some method to
+			// hook open actions, maybe use special EditorAction context?
 			if (resNode.ResType == typeof(Duality.Resources.Scene))
 			{
 				Duality.Resources.Scene.Current = resNode.ResLink.Res as Duality.Resources.Scene;
@@ -622,6 +624,30 @@ namespace EditorBase
 				GameObject newObj = (resNode.ResLink.Res as Duality.Resources.Prefab).Instantiate();
 				Duality.Resources.Scene.Current.Graph.RegisterObjDeep(newObj);
 				EditorBasePlugin.Instance.EditorForm.Select(this, new ObjectSelection(newObj));
+			}
+			else if (typeof(Duality.Resources.AbstractShader).IsAssignableFrom(resNode.ResType))
+			{
+				Duality.Resources.AbstractShader shader = resNode.ResLink.Res as Duality.Resources.AbstractShader;
+				if (shader != null && !String.IsNullOrEmpty(shader.SourcePath))
+				{
+					System.Diagnostics.Process.Start(shader.SourcePath);
+				}
+			}
+			else if (resNode.ResType == typeof(Duality.Resources.Pixmap))
+			{
+				Duality.Resources.Pixmap pixmap = resNode.ResLink.Res as Duality.Resources.Pixmap;
+				if (pixmap != null && !String.IsNullOrEmpty(pixmap.PixelDataBasePath))
+				{
+					System.Diagnostics.Process.Start(pixmap.PixelDataBasePath);
+				}
+			}
+			else if (resNode.ResType == typeof(Duality.Resources.AudioData))
+			{
+				Duality.Resources.AudioData audio = resNode.ResLink.Res as Duality.Resources.AudioData;
+				if (audio != null && !String.IsNullOrEmpty(audio.OggVorbisDataBasePath))
+				{
+					System.Diagnostics.Process.Start(audio.OggVorbisDataBasePath);
+				}
 			}
 		}
 

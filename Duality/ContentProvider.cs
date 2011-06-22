@@ -272,7 +272,7 @@ namespace Duality
 		}
 		public static void UnregisterAllContent<T>(bool dispose = true) where T : Resource
 		{
-			foreach (ContentRef<T> content in RequestAllContent<T>())
+			foreach (ContentRef<T> content in GetLoadedContent<T>())
 				UnregisterContent(content.Path, dispose);
 		}
 
@@ -319,7 +319,7 @@ namespace Duality
 			// Load new content
 			return new ContentRef<T>(LoadContent(path) as T, path);
 		}
-		public static List<ContentRef<T>> RequestAllContent<T>() where T : Resource
+		public static List<ContentRef<T>> GetLoadedContent<T>() where T : Resource
 		{
 			List<ContentRef<T>> allContent = new List<ContentRef<T>>();
 			foreach (var v in resLibrary.Values)

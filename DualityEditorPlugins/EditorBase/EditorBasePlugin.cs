@@ -191,6 +191,7 @@ namespace EditorBase
 			// Register file importers
 			main.RegisterFileImporter(new PixmapFileImporter());
 			main.RegisterFileImporter(new AudioDataFileImporter());
+			main.RegisterFileImporter(new ShaderFileImporter());
 		}
 		
 		public ProjectFolderView RequestProjectView()

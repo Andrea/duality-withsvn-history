@@ -24,10 +24,13 @@ namespace DualityEditor.Controls
 			}
 			set
 			{
-                
-				Items.Clear();
-				enumType = value.GetType(); // Store enum type
-				FillEnumMembers(); // Add items for enum members
+				Type valEnumType = value.GetType();
+                if (this.enumType != valEnumType)
+				{
+					this.Items.Clear();
+					this.enumType = valEnumType; // Store enum type
+					this.FillEnumMembers(); // Add items for enum members
+				}
 				this.SelectedItem = Enum.GetName(enumType, value);
 				this.OnEnumValueChanged();
 			}

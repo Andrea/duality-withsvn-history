@@ -40,6 +40,7 @@ namespace EditorBase
 
 			EditorBasePlugin.Instance.EditorForm.SelectionChanged += this.EditorForm_SelectionChanged;
 			EditorBasePlugin.Instance.EditorForm.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
+			EditorBasePlugin.Instance.EditorForm.ResourceModified += this.EditorForm_ResourceModified;
 		}
 		protected override void OnClosed(EventArgs e)
 		{
@@ -47,6 +48,7 @@ namespace EditorBase
 
 			EditorBasePlugin.Instance.EditorForm.SelectionChanged -= this.EditorForm_SelectionChanged;
 			EditorBasePlugin.Instance.EditorForm.ObjectPropertyChanged -= this.EditorForm_ObjectPropertyChanged;
+			EditorBasePlugin.Instance.EditorForm.ResourceModified -= this.EditorForm_ResourceModified;
 		}
 
 		private void UpdateSelection(ObjectSelection sel, ObjectSelection.Category lastSelChange)
@@ -82,6 +84,10 @@ namespace EditorBase
 			if (e.Objects.Components.GameObject().Any(o => this.propertyGrid.Selection.Contains(o)) ||
 				e.Objects.GameObjects.Any(o => this.propertyGrid.Selection.Contains(o)))
 				this.propertyGrid.UpdateFromObjects(100);
+		}
+		private void EditorForm_ResourceModified(object sender, ResourceEventArgs e)
+		{
+			this.propertyGrid.UpdateFromObjects(100);
 		}
 
 		private void timerSelectSched_Tick(object sender, EventArgs e)

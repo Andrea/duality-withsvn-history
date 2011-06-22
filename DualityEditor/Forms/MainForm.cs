@@ -58,7 +58,9 @@ namespace DualityEditor.Forms
 		public	event	EventHandler<ResourceEventArgs>					ResourceDeleted			= null;
 		public	event	EventHandler<ResourceEventArgs>					ResourceModified		= null;
 		public	event	EventHandler<ResourceRenamedEventArgs>			ResourceRenamed			= null;
-
+		public	event	EventHandler<FileSystemEventArgs>				SrcFileDeleted			= null;
+		public	event	EventHandler<FileSystemEventArgs>				SrcFileModified			= null;
+		public	event	EventHandler<FileSystemEventArgs>				SrcFileRenamed			= null;
 
 		public DockPanel MainDockPanel
 		{
@@ -348,18 +350,33 @@ namespace DualityEditor.Forms
 				File.Move(filePath, srcFilePath);
 
 			// Find an importer to handle the file import
-			foreach (IFileImporter i in this.fileImporters)
+			IFileImporter importer = this.fileImporters.FirstOrDefault(i => i.CanImportFile(srcFilePath));
+			if (importer != null)
 			{
-				if (i.CanImportFile(srcFilePath))
-				{
-					// Import it
-					i.ImportFile(srcFilePath, targetName, targetDir);
-					GC.Collect();
-					GC.WaitForPendingFinalizers();
-					return true;
-				}
+				// Import it
+				importer.ImportFile(srcFilePath, targetName, targetDir);
+				GC.Collect();
+				GC.WaitForPendingFinalizers();
+				return true;
 			}
-			return false;
+			else
+				return false;
+		}
+		/// <summary>
+		/// Re-imports the specified file, if it is referenced by a currently existing resource
+		/// </summary>
+		/// <param name="filePath"></param>
+		private void ReimportFile(string filePath)
+		{
+			// Find an importer to handle the file import
+			IFileImporter importer = this.fileImporters.FirstOrDefault(i => i.CanImportFile(filePath));
+			if (importer == null) return;
+
+			foreach (Resource r in ContentProvider.GetLoadedContent<Resource>())
+			{
+				if (!importer.IsUsingSrcFile(r, filePath)) continue;
+				importer.ReimportFile(r, filePath);
+			}
 		}
 		/// <summary>
 		/// Prepares file import by determining import directories from the specified file path
@@ -627,57 +644,6 @@ namespace DualityEditor.Forms
 			if (this.ObjectPropertyChanged != null)
 				this.ObjectPropertyChanged(sender, args);
 		}
-		private void OnResourceCreated(string path)
-		{
-			if (this.ResourceCreated != null)
-				this.ResourceCreated(this, new ResourceEventArgs(path));
-		}
-		private void OnResourceDeleted(string path)
-		{
-			ResourceEventArgs args = new ResourceEventArgs(path);
-
-			// Unregister no-more existing resources
-			if (args.IsDirectory)	ContentProvider.UnregisterContentTree(args.Path);
-			else					ContentProvider.UnregisterContent(args.Path);
-
-			if (this.ResourceDeleted != null)
-				this.ResourceDeleted(this, args);
-		}
-		private void OnResourceModified(string path)
-		{
-			ResourceEventArgs args = new ResourceEventArgs(path);
-
-			// Unregister Content in order to force a reload from file
-			//if (args.IsDirectory)
-			//    ContentProvider.UnregisterContentTree(args.Path);
-			//else if (Resource.SaveInProgressRes == null || Path.GetFullPath(Resource.SaveInProgressRes.Path) != Path.GetFullPath(args.Path))
-			//    ContentProvider.UnregisterContent(args.Path);
-
-			// When modifying prefabs, apply changes to all linked objects
-			if (args.IsResource && args.Content.Is<Prefab>())
-			{
-				ContentRef<Prefab> prefabRef = args.Content.As<Prefab>();
-				List<PrefabLink> appliedLinks = PrefabLink.ApplyAllLinks(Scene.Current.Graph.AllObjects, p => p.Prefab == prefabRef);
-				List<GameObject> changedObjects = new List<GameObject>(appliedLinks.Select(p => p.Obj));
-				this.NotifyObjPrefabApplied(this, new ObjectSelection(changedObjects));
-			}
-
-			if (this.ResourceModified != null) this.ResourceModified(this, args);
-		}
-		private void OnResourceRenamed(string path, string oldPath)
-		{
-			ResourceRenamedEventArgs args = new ResourceRenamedEventArgs(path, oldPath);
-
-			// Rename content registerations
-			if (args.IsDirectory)	ContentProvider.RenameContentTree(args.OldPath, args.Path);
-			else					ContentProvider.RenameContent(args.OldPath, args.Path);
-
-			// If we just renamed the currently loaded scene, relocate it.
-			// Doesn't trigger if done properly from inside the editor.
-			if (Scene.CurrentPath == oldPath) Scene.Current = Resource.LoadResource<Scene>(path);
-
-			if (this.ResourceRenamed != null) this.ResourceRenamed(this, args);
-		}
 
 		public bool ConfirmBreakPrefabLink(ObjectSelection obj = null)
 		{
@@ -784,7 +750,18 @@ namespace DualityEditor.Forms
 		
 		private void dataDirWatcher_Changed(object sender, FileSystemEventArgs e)
 		{
-			this.OnResourceModified(e.FullPath);
+			ResourceEventArgs args = new ResourceEventArgs(e.FullPath);
+
+			// When modifying prefabs, apply changes to all linked objects
+			if (args.IsResource && args.Content.Is<Prefab>())
+			{
+				ContentRef<Prefab> prefabRef = args.Content.As<Prefab>();
+				List<PrefabLink> appliedLinks = PrefabLink.ApplyAllLinks(Scene.Current.Graph.AllObjects, p => p.Prefab == prefabRef);
+				List<GameObject> changedObjects = new List<GameObject>(appliedLinks.Select(p => p.Obj));
+				this.NotifyObjPrefabApplied(this, new ObjectSelection(changedObjects));
+			}
+
+			if (this.ResourceModified != null) this.ResourceModified(this, args);
 		}
 		private void dataDirWatcher_Created(object sender, FileSystemEventArgs e)
 		{
@@ -793,7 +770,8 @@ namespace DualityEditor.Forms
 				// Register newly detected ressource file
 				if (Path.GetExtension(e.FullPath) == Resource.FileExt)
 				{
-					this.OnResourceCreated(e.FullPath);
+					if (this.ResourceCreated != null)
+						this.ResourceCreated(this, new ResourceEventArgs(e.FullPath));
 				}
 				// Import non-ressource file
 				else
@@ -816,29 +794,48 @@ namespace DualityEditor.Forms
 			else if (Directory.Exists(e.FullPath))
 			{
 				// Register newly detected ressource directory
-				this.OnResourceCreated(e.FullPath);
+				if (this.ResourceCreated != null)
+					this.ResourceCreated(this, new ResourceEventArgs(e.FullPath));
 			}
 		}
 		private void dataDirWatcher_Deleted(object sender, FileSystemEventArgs e)
 		{
-			this.OnResourceDeleted(e.FullPath);
+			ResourceEventArgs args = new ResourceEventArgs(e.FullPath);
+
+			// Unregister no-more existing resources
+			if (args.IsDirectory)	ContentProvider.UnregisterContentTree(args.Path);
+			else					ContentProvider.UnregisterContent(args.Path);
+
+			if (this.ResourceDeleted != null)
+				this.ResourceDeleted(this, args);
 		}
 		private void dataDirWatcher_Renamed(object sender, RenamedEventArgs e)
 		{
-			this.OnResourceRenamed(e.FullPath, e.OldFullPath);
+			ResourceRenamedEventArgs args = new ResourceRenamedEventArgs(e.FullPath, e.OldFullPath);
+
+			// Rename content registerations
+			if (args.IsDirectory)	ContentProvider.RenameContentTree(args.OldPath, args.Path);
+			else					ContentProvider.RenameContent(args.OldPath, args.Path);
+
+			// If we just renamed the currently loaded scene, relocate it.
+			// Doesn't trigger if done properly from inside the editor.
+			if (Scene.CurrentPath == e.OldFullPath) Scene.Current = Resource.LoadResource<Scene>(e.FullPath);
+
+			if (this.ResourceRenamed != null) this.ResourceRenamed(this, args);
 		}
 
 		private void sourceDirWatcher_Changed(object sender, FileSystemEventArgs e)
 		{
-			// Might auto-check for ressource files being based on the changed file and ask whether or not to reload it
+			this.ReimportFile(e.FullPath);
+			if (this.SrcFileModified != null) this.SrcFileModified(this, e);
 		}
 		private void sourceDirWatcher_Deleted(object sender, FileSystemEventArgs e)
 		{
-			// Might auto-check for ressource files being based on the changed file and ask whether or not to lose connection
+			if (this.SrcFileDeleted != null) this.SrcFileDeleted(this, e);
 		}
 		private void sourceDirWatcher_Renamed(object sender, RenamedEventArgs e)
 		{
-			// Might auto-check for ressource files being based on the changed file and ask whether or not to update the connection
+			if (this.SrcFileRenamed != null) this.SrcFileRenamed(this, e);
 		}
 
 		private void Application_Idle(object sender, EventArgs e)

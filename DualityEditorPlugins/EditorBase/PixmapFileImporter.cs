@@ -29,5 +29,18 @@ namespace EditorBase
 			string targetResPath = PathHelper.GetFreePathName(Path.Combine(targetDir, targetName), Pixmap.FileExt);
 			return new string[] { targetResPath };
 		}
+
+
+		public bool IsUsingSrcFile(Resource r, string srcFile)
+		{
+			Pixmap p = r as Pixmap;
+			return p != null && p.PixelDataBasePath == srcFile;
+		}
+		public void ReimportFile(Resource r, string srcFile)
+		{
+			Pixmap p = r as Pixmap;
+			p.LoadPixelData(srcFile);
+			p.Save();
+		}
 	}
 }

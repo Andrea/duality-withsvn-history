@@ -57,6 +57,13 @@ namespace Duality
 		public static readonly PropertyInfo	Property_Resource_Disposed;
 		public static readonly PropertyInfo	Property_Resource_Path;
 
+		public static readonly PropertyInfo	Property_DrawTechnique_Blending;
+
+		public static readonly PropertyInfo	Property_ShaderProgram_Compiled;
+		public static readonly PropertyInfo	Property_ShaderProgram_VarInfo;
+		public static readonly PropertyInfo	Property_ShaderProgram_Vertex;
+		public static readonly PropertyInfo	Property_ShaderProgram_Fragment;
+
 		public static readonly PropertyInfo	Property_Pixmap_PixelData;
 		public static readonly PropertyInfo	Property_Pixmap_PixelDataBasePath;
 
@@ -146,6 +153,15 @@ namespace Duality
 			Type resource = typeof(Resource);
 			Property_Resource_Disposed	= resource.GetProperty("Disposed");
 			Property_Resource_Path		= resource.GetProperty("Path");
+			
+			Type drawTech = typeof(DrawTechnique);
+			Property_DrawTechnique_Blending		= drawTech.GetProperty("Blending");
+			
+			Type shaderProgram = typeof(ShaderProgram);
+			Property_ShaderProgram_Compiled		= shaderProgram.GetProperty("Compiled");
+			Property_ShaderProgram_VarInfo		= shaderProgram.GetProperty("VarInfo");
+			Property_ShaderProgram_Vertex		= shaderProgram.GetProperty("Vertex");
+			Property_ShaderProgram_Fragment		= shaderProgram.GetProperty("Fragment");
 
 			Type pixmap = typeof(Pixmap);
 			Property_Pixmap_PixelData			= pixmap.GetProperty("PixelData");

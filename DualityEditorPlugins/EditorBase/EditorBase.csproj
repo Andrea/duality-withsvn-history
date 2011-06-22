@@ -62,38 +62,45 @@
     </Compile>
     <Compile Include="EditorBasePlugin.cs" />
     <Compile Include="AudioDataFileImporter.cs" />
+    <Compile Include="ShaderFileImporter.cs" />
     <Compile Include="PixmapFileImporter.cs" />
     <Compile Include="PropertyEditors\DualityAppDataPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="PropertyEditors\TexturePreviewPropertyEditor.cs">
+    <Compile Include="PropertyEditors\Resources\DrawTechniquePropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="PropertyEditors\TexturePreviewPropertyEditor.Designer.cs">
+    <Compile Include="PropertyEditors\Resources\ShaderProgramPropertyEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PropertyEditors\Resources\TexturePreviewPropertyEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PropertyEditors\Resources\TexturePreviewPropertyEditor.Designer.cs">
       <DependentUpon>TexturePreviewPropertyEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="PropertyEditors\PixmapPreviewPropertyEditor.cs">
+    <Compile Include="PropertyEditors\Resources\PixmapPreviewPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="PropertyEditors\PixmapPreviewPropertyEditor.Designer.cs">
+    <Compile Include="PropertyEditors\Resources\PixmapPreviewPropertyEditor.Designer.cs">
       <DependentUpon>PixmapPreviewPropertyEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="PropertyEditors\PixmapPropertyEditor.cs">
+    <Compile Include="PropertyEditors\Resources\PixmapPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="PropertyEditors\MaterialPropertyEditor.cs">
+    <Compile Include="PropertyEditors\Resources\MaterialPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="PropertyEditors\SoundEmitterPropertyEditor.cs">
+    <Compile Include="PropertyEditors\Components\SoundEmitterPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="PropertyEditors\SoundPropertyEditor.cs">
+    <Compile Include="PropertyEditors\Resources\SoundPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="PropertyEditors\TexturePropertyEditor.cs">
+    <Compile Include="PropertyEditors\Resources\TexturePropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="PropertyEditors\ResourcePropertyEditor.cs">
+    <Compile Include="PropertyEditors\Resources\ResourcePropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="ResourceInspector.cs">
@@ -123,22 +130,22 @@
     <Compile Include="PropertyEditors\GameObjectPropertyEditor.Designer.cs">
       <DependentUpon>GameObjectPropertyEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="PropertyEditors\ComponentPropertyEditor.cs">
+    <Compile Include="PropertyEditors\Components\ComponentPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="PropertyEditors\CameraPropertyEditor.cs">
+    <Compile Include="PropertyEditors\Components\CameraPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="PropertyEditors\BatchInfoPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="PropertyEditors\SpriteRendererPropertyEditor.cs">
+    <Compile Include="PropertyEditors\Components\SpriteRendererPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="PropertyEditors\TransformPropertyEditor.cs">
+    <Compile Include="PropertyEditors\Components\TransformPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="PropertyEditors\TransformPropertyEditor.Designer.cs">
+    <Compile Include="PropertyEditors\Components\TransformPropertyEditor.Designer.cs">
       <DependentUpon>TransformPropertyEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="PropertyEditors\Provider.cs" />
@@ -183,16 +190,16 @@
     <EmbeddedResource Include="CamView.resx">
       <DependentUpon>CamView.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PropertyEditors\TexturePreviewPropertyEditor.de.resx">
+    <EmbeddedResource Include="PropertyEditors\Resources\TexturePreviewPropertyEditor.de.resx">
       <DependentUpon>TexturePreviewPropertyEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PropertyEditors\TexturePreviewPropertyEditor.resx">
+    <EmbeddedResource Include="PropertyEditors\Resources\TexturePreviewPropertyEditor.resx">
       <DependentUpon>TexturePreviewPropertyEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PropertyEditors\PixmapPreviewPropertyEditor.de.resx">
+    <EmbeddedResource Include="PropertyEditors\Resources\PixmapPreviewPropertyEditor.de.resx">
       <DependentUpon>PixmapPreviewPropertyEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PropertyEditors\PixmapPreviewPropertyEditor.resx">
+    <EmbeddedResource Include="PropertyEditors\Resources\PixmapPreviewPropertyEditor.resx">
       <DependentUpon>PixmapPreviewPropertyEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ResourceInspector.de.resx">
@@ -219,10 +226,10 @@
     <EmbeddedResource Include="PropertyEditors\GameObjectPropertyEditor.resx">
       <DependentUpon>GameObjectPropertyEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PropertyEditors\TransformPropertyEditor.de.resx">
+    <EmbeddedResource Include="PropertyEditors\Components\TransformPropertyEditor.de.resx">
       <DependentUpon>TransformPropertyEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PropertyEditors\TransformPropertyEditor.resx">
+    <EmbeddedResource Include="PropertyEditors\Components\TransformPropertyEditor.resx">
       <DependentUpon>TransformPropertyEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SceneView.de.resx">

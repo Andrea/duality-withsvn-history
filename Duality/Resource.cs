@@ -60,6 +60,7 @@ namespace Duality
 			formatter.Serialize(str, this);
 			this.OnSaved();
 		}
+
 		public Resource Clone()
 		{
 			Resource r = ReflectionHelper.CreateInstanceOf(this.GetType()) as Resource;
@@ -70,6 +71,7 @@ namespace Duality
 		{
 			r.path	= this.path;
 		}
+
 		protected virtual void OnSaving() {}
 		protected virtual void OnSaved() {}
 		protected virtual void OnLoaded() {}

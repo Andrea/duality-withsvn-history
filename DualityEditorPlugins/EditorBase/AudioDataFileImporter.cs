@@ -29,5 +29,18 @@ namespace EditorBase
 			string targetResPath = PathHelper.GetFreePathName(Path.Combine(targetDir, targetName), AudioData.FileExt);
 			return new string[] { targetResPath };
 		}
+
+
+		public bool IsUsingSrcFile(Resource r, string srcFile)
+		{
+			AudioData a = r as AudioData;
+			return a != null && a.OggVorbisDataBasePath == srcFile;
+		}
+		public void ReimportFile(Resource r, string srcFile)
+		{
+			AudioData a = r as AudioData;
+			a.LoadOggVorbisData(srcFile);
+			a.Save();
+		}
 	}
 }
