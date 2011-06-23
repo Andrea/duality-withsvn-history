@@ -10,7 +10,6 @@ using System.Windows.Forms;
 using System.Reflection;
 
 using Duality;
-using Duality.Resources;
 using DualityEditor;
 using DualityEditor.Controls;
 using PropertyGrid = DualityEditor.Controls.PropertyGrid;
@@ -184,7 +183,7 @@ namespace EditorBase.PropertyEditors
 		private void buttonPrefabLinkShow_Click(object sender, EventArgs e)
 		{
 			GameObject[] values = this.Getter().Cast<GameObject>().Where(o => o.PrefabLink != null).ToArray();
-			PrefabLink link = values.First().PrefabLink;
+			Duality.Resources.PrefabLink link = values.First().PrefabLink;
 
 			ProjectFolderView view = EditorBasePlugin.Instance.RequestProjectView();
 			view.FlashNode(view.NodeFromPath(link.Prefab.Path));
@@ -196,7 +195,7 @@ namespace EditorBase.PropertyEditors
 
 			// Clear all changes and re-apply Prefabs
 			foreach (GameObject o in values) o.PrefabLink.ClearChanges();
-			PrefabLink.ApplyAllLinks(values);
+			Duality.Resources.PrefabLink.ApplyAllLinks(values);
 
 			EditorBasePlugin.Instance.EditorForm.NotifyObjPrefabApplied(this, new ObjectSelection(values));
 			this.PerformGetValue();
@@ -208,7 +207,7 @@ namespace EditorBase.PropertyEditors
 			{
 				if (o.PrefabLink != null && o.PrefabLink.Prefab.IsAvailable)
 				{
-					Prefab prefab = o.PrefabLink.Prefab.Res;
+					Duality.Resources.Prefab prefab = o.PrefabLink.Prefab.Res;
 
 					// Inject GameObject to Prefab
 					prefab.Inject(o);

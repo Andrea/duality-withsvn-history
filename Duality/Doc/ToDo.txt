@@ -1,4 +1,14 @@
 ﻿
+-->	Complete Font class
+	-->	See ToDo stuff in code
+	-->	Provide properties for rendering options & properly update when changing
+	-->	Additional font metric & other font options (char spacing, monospace support, etc.)
+	-->	Generate Pixmap & Texture
+	-->	Provide measure & render methods for strings
+
+	-->	What about formatted text?
+
+
 -->	Rendering Text? Ingame? How to?
 	-->	Provide a TextRenderer Component?
 	-->	There needs to be a more general way. Figure something out.

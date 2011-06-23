@@ -101,6 +101,7 @@
     <Compile Include="Resources\AudioData.cs" />
     <Compile Include="Resources\DrawTechnique.cs" />
     <Compile Include="Resources\FragmentShader.cs" />
+    <Compile Include="Resources\Font.cs" />
     <Compile Include="Resources\ShaderProgram.cs" />
     <Compile Include="Resources\Material.cs" />
     <Compile Include="Resources\RenderTarget.cs" />

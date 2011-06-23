@@ -9,7 +9,6 @@ using System.Windows.Forms;
 using System.Reflection;
 
 using Duality;
-using Duality.Resources;
 using DualityEditor;
 using DualityEditor.Controls;
 using PropertyGrid = DualityEditor.Controls.PropertyGrid;

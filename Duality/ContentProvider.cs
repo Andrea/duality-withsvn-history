@@ -154,6 +154,12 @@ namespace Duality
 			else
 				return base.Equals(obj);
 		}
+		public override int GetHashCode()
+		{
+			if (this.contentInstance != null) return this.contentInstance.GetHashCode();
+			else if (this.contentPath != null) return this.contentPath.GetHashCode();
+			else return base.GetHashCode();
+		}
 		public bool Equals(ContentRef<T> other)
 		{
 			return this == other;
@@ -211,6 +217,7 @@ namespace Duality
 			Pixmap.InitDefaultContent();
 			Texture.InitDefaultContent();
 			Material.InitDefaultContent();
+			Font.InitDefaultContent();
 			AudioData.InitDefaultContent();
 			Sound.InitDefaultContent();
 

@@ -82,6 +82,27 @@ namespace Duality
 			}
 			return result;
 		}
+		public static Bitmap Crop(this Bitmap bm, bool cropX = true, bool cropY = true)
+		{
+			if (!cropX && !cropY) return bm.Clone() as Bitmap;
+
+			ColorRGBA[] pixels = bm.GetPixelDataRGBA();
+			Rectangle bounds = new Rectangle(bm.Width, bm.Height, 0, 0);
+			for (int i = 0; i < pixels.Length; i++)
+			{
+				if (pixels[i].a == 0) continue;
+				int x = i % bm.Width;
+				int y = i / bm.Width;
+				bounds.X = Math.Min(bounds.X, x);
+				bounds.Y = Math.Min(bounds.Y, y);
+				bounds.Width = Math.Max(bounds.Width, x);
+				bounds.Height = Math.Max(bounds.Height, y);
+			}
+			bounds.Width = 1 + Math.Max(0, bounds.Width - bounds.X);
+			bounds.Height = 1 + Math.Max(0, bounds.Height - bounds.Y);
+
+			return bm.SubImage(cropX ? bounds.X : 0, cropY ? bounds.Y : 0, cropX ? bounds.Width : bm.Width, cropY ? bounds.Height : bm.Height);
+		}
 		public static Bitmap ColorTransparentPixels(this Bitmap bm)
 		{
 			Bitmap result = bm.Clone() as Bitmap;
