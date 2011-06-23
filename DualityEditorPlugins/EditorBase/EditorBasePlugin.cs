@@ -356,65 +356,17 @@ namespace EditorBase
 		private void ActionPixmapOpenRes(Pixmap pixmap)
 		{
 			if (pixmap == null) return;
-
-			// Default content: Use temporary location
-			if (pixmap.Path.Contains(':'))
-			{
-				string tmpLoc = Path.GetTempFileName() + ".png";
-				pixmap.SavePixelData(tmpLoc);
-				System.Diagnostics.Process.Start(tmpLoc);
-			}
-			// Other content: Use permanent src file location
-			else
-			{
-				if (String.IsNullOrEmpty(pixmap.PixelDataBasePath))
-					pixmap.SavePixelData(EditorHelper.GenerateResourceSrcFilePath(pixmap, ".png"));
-				else if (!File.Exists(pixmap.PixelDataBasePath))
-					pixmap.SavePixelData();
-				System.Diagnostics.Process.Start(pixmap.PixelDataBasePath);
-			}
+			EditorHelper.OpenResourceSrcFile(pixmap, ".png", pixmap.PixelDataBasePath, pixmap.SavePixelData);
 		}
 		private void ActionAudioDataOpenRes(AudioData audio)
 		{
 			if (audio == null) return;
-
-			// Default content: Use temporary location
-			if (audio.Path.Contains(':'))
-			{
-				string tmpLoc = Path.GetTempFileName() + ".ogg";
-				audio.SaveOggVorbisData(tmpLoc);
-				System.Diagnostics.Process.Start(tmpLoc);
-			}
-			// Other content: Use permanent src file location
-			else
-			{
-				if (String.IsNullOrEmpty(audio.OggVorbisDataBasePath))
-					audio.SaveOggVorbisData(EditorHelper.GenerateResourceSrcFilePath(audio, ".ogg"));
-				else if (!File.Exists(audio.OggVorbisDataBasePath))
-					audio.SaveOggVorbisData();
-				System.Diagnostics.Process.Start(audio.OggVorbisDataBasePath);
-			}
+			EditorHelper.OpenResourceSrcFile(audio, ".ogg", audio.OggVorbisDataBasePath, audio.SaveOggVorbisData);
 		}
 		private void ActionAbstractShaderOpenRes(AbstractShader shader)
 		{
 			if (shader == null) return;
-
-			// Default content: Use temporary location
-			if (shader.Path.Contains(':'))
-			{
-				string tmpLoc = Path.GetTempFileName() + (shader is FragmentShader ? ".frag" : ".vert");
-				shader.SaveSource(tmpLoc);
-				System.Diagnostics.Process.Start(tmpLoc);
-			}
-			// Other content: Use permanent src file location
-			else
-			{
-				if (String.IsNullOrEmpty(shader.SourcePath))
-					shader.SaveSource(EditorHelper.GenerateResourceSrcFilePath(shader, shader is FragmentShader ? ".frag" : ".vert"));
-				else if (!File.Exists(shader.SourcePath))
-					shader.SaveSource();
-				System.Diagnostics.Process.Start(shader.SourcePath);
-			}
+			EditorHelper.OpenResourceSrcFile(shader, shader is FragmentShader ? ".frag" : ".vert", shader.SourcePath, shader.SaveSource);
 		}
 		private void ActionPrefabOpenRes(Prefab prefab)
 		{
