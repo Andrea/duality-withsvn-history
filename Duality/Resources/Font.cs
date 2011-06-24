@@ -125,51 +125,6 @@ namespace Duality.Resources
 					}
 					glyphTempTypo = glyphTempTypo.Crop(true, false);
 
-					// Determine begin and width of the glyph "body"
-					int glyphBodyMinX = 0;
-					int glyphBodyMaxX = 0;
-					{
-						ColorRGBA[] glyphTempPixels = glyphTemp.GetPixelDataRGBA();
-						float colWeight = 0.0f;
-						float colWeightLast;
-						// Determine "body" boundaries
-						for (int gtp_x = 0; gtp_x < glyphTemp.Width; gtp_x++)
-						{
-							int gtp_count = 0;
-							for (int gtp_y = 0; gtp_y < glyphTemp.Height; gtp_y++)
-							{
-								int gtp_i = gtp_x + gtp_y * glyphTemp.Width;
-								gtp_count += glyphTempPixels[gtp_i].a;
-							}
-							colWeightLast = colWeight;
-							colWeight = (float)gtp_count / (255.0f * (float)glyphTemp.Height);
-							if (colWeight <= colWeightLast || colWeight > colWeightLast + 0.05f || colWeight > 0.1f)
-							{
-								glyphBodyMinX = gtp_x;
-								break;
-							}
-						}
-						colWeight = 0.0f;
-						for (int gtp_x = glyphTemp.Width - 1; gtp_x >= 0; gtp_x--)
-						{
-							int gtp_count = 0;
-							for (int gtp_y = 0; gtp_y < glyphTemp.Height; gtp_y++)
-							{
-								int gtp_i = gtp_x + gtp_y * glyphTemp.Width;
-								gtp_count += glyphTempPixels[gtp_i].a;
-							}
-							colWeightLast = colWeight;
-							colWeight = (float)gtp_count / (255.0f * (float)glyphTemp.Height);
-							if (colWeight <= colWeightLast || colWeight > colWeightLast + 0.05f || colWeight > 0.1f)
-							{
-								glyphBodyMaxX = gtp_x;
-								break;
-							}
-						}
-					}
-
-					// ToDo: Figure out if that experimental "glyph body" stuff is needed i.e. can be used or not.
-
 					// Memorize atlas coordinates & glyph data
 					glyphData[i].width = glyphTemp.Width;
 					glyphData[i].height = glyphTemp.Height;
@@ -179,13 +134,6 @@ namespace Duality.Resources
 					atlas[i].w = (float)glyphTemp.Width / (float)pxTemp.Width;
 					atlas[i].h = (float)this.font.Height / (float)pxTemp.Height;
 
-					// Debug
-					Log.Core.Write("{0}\t{1}\t{2}\t{3}",
-						str,
-						glyphData[i].width,
-						glyphData[i].height,
-						glyphData[i].offsetX);
-
 					// Draw it onto the font surface
 					if (x + glyphTemp.Width + 1 > pxTemp.Width)
 					{
@@ -194,10 +142,6 @@ namespace Duality.Resources
 					}
 
 					pxGraphics.DrawImageUnscaled(glyphTemp, x, y);
-					pxGraphics.DrawImageUnscaled(glyphTempTypo, x + glyphData[i].offsetX, y);
-					pxGraphics.DrawRectangle(Pens.Blue, x, y, glyphData[i].width, glyphData[i].height);
-					pxGraphics.DrawRectangle(Pens.Green, x + glyphData[i].offsetX, y + 1, glyphData[i].width - glyphData[i].offsetX, glyphData[i].height - 2);
-					pxGraphics.DrawRectangle(Pens.Red, x + glyphBodyMinX, y + 2, glyphBodyMaxX - glyphBodyMinX, glyphData[i].height - 4);
 
 					x += glyphTemp.Width + 1;
 				}
