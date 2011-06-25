@@ -70,6 +70,14 @@ namespace Duality.Resources
 			get { return this.dataBasePath; }
 			set { this.dataBasePath = value; }
 		}
+		public int Width
+		{
+			get { return this.data != null ? this.data.Width : 0; }
+		}
+		public int Height
+		{
+			get { return this.data != null ? this.data.Height : 0; }
+		}
  
 		public Pixmap() {}
 		public Pixmap(Bitmap image)

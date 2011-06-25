@@ -417,22 +417,30 @@ namespace Duality.Components
 					r.Draw(this);
 
 				VertexFormat.VertexP3T2[] textVert = null;
-				Font.GenericMonospace10.Res.DrawText("Das ist ein Test, jo *flupp*", 0 - this.GameObj.Transform.Pos.X, 0 - this.GameObj.Transform.Pos.Y, 500, 0.0f, 1.0f, ref textVert);
+				Font.GenericMonospace10.Res.DrawText("Das ist ein Test, jo *flupp*", ref textVert, 0 - this.GameObj.Transform.Pos.X, 0 - this.GameObj.Transform.Pos.Y);
 				this.DrawDevice.AddVertices(Font.GenericMonospace10.Res.Material, BeginMode.Quads, textVert);
 
 				textVert = null;
-				Font.GenericSansSerif12.Res.DrawText("Das ist ein Test, jo  *flupp*", 0 - this.GameObj.Transform.Pos.X, 100 - this.GameObj.Transform.Pos.Y, 500, 0.0f, 1.0f, ref textVert);
+				Font.GenericSansSerif12.Res.DrawText("Das ist ein Test, jo  *flupp*", ref textVert, 0 - this.GameObj.Transform.Pos.X, 100 - this.GameObj.Transform.Pos.Y);
 				this.DrawDevice.AddVertices(Font.GenericSansSerif12.Res.Material, BeginMode.Quads, textVert);
 				textVert = null;
-				Font.GenericSerif12.Res.DrawText("Franz jagt im komplett verwahrlosten Taxi quer durch Bayern", 0 - this.GameObj.Transform.Pos.X, 200 - this.GameObj.Transform.Pos.Y, 500, 0.0f, 1.0f, ref textVert);
+				Font.GenericSerif12.Res.DrawText("Franz jagt im komplett verwahrlosten Taxi quer durch Bayern", ref textVert, 0 - this.GameObj.Transform.Pos.X, 200 - this.GameObj.Transform.Pos.Y);
 				this.DrawDevice.AddVertices(Font.GenericSerif12.Res.Material, BeginMode.Quads, textVert);
 
 				textVert = null;
-				Font.GenericMonospace10.Res.DrawText(string.Format("Ortho: {0}", this.OrthoAbs), -100, -100, 500, 0.0f, 1.0f, ref textVert);
+				Font.GenericMonospace10.Res.DrawText(string.Format("Ortho: {0}", this.OrthoAbs), ref textVert, -100, -100);
 				this.DrawDevice.AddVertices(Font.GenericMonospace10.Res.Material, BeginMode.Quads, textVert);
 				textVert = null;
-				Font.GenericMonospace10.Res.DrawText(string.Format("Viewport: {0}", this.ViewportAbs), -100, -80, 500, 0.0f, 1.0f, ref textVert);
+				Font.GenericMonospace10.Res.DrawText(string.Format("Viewport: {0}", this.ViewportAbs), ref textVert, -100, -80);
 				this.DrawDevice.AddVertices(Font.GenericMonospace10.Res.Material, BeginMode.Quads, textVert);
+
+				Vector2 size = Font.GenericMonospace10.Res.MeasureText(string.Format("Viewport: {0}", this.ViewportAbs));
+				VertexP3[] sizeVert = new VertexP3[] {
+					new VertexP3(-100, -80, 500),
+					new VertexP3(-100 + size.X, -80, 500),
+					new VertexP3(-100 + size.X, -80 + size.Y, 500),
+					new VertexP3(-100, -80 + size.Y, 500) };
+				this.DrawDevice.AddVertices(Material.InvertWhite, BeginMode.LineLoop, sizeVert);
 			}
 			
 			// Setup picking RT

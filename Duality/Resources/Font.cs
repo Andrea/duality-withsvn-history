@@ -44,6 +44,7 @@ namespace Duality.Resources
 			tmp = new Font();
 			tmp.path = ContentPath_GenericSerif12;
 			tmp.SystemFont = new SysDrawFont(FontFamily.GenericSerif, 12, FontStyle.Regular);
+			tmp.Kerning = true;
 			tmp.GlyphRenderHint = RenderHint.Monochrome;
 			tmp.ReloadData();
 			ContentProvider.RegisterContent(tmp.Path, tmp);
@@ -51,6 +52,7 @@ namespace Duality.Resources
 			tmp = new Font();
 			tmp.path = ContentPath_GenericSansSerif12;
 			tmp.SystemFont = new SysDrawFont(FontFamily.GenericSansSerif, 12, FontStyle.Regular);
+			tmp.Kerning = true;
 			tmp.GlyphRenderHint = RenderHint.Monochrome;
 			tmp.ReloadData();
 			ContentProvider.RegisterContent(tmp.Path, tmp);
@@ -85,9 +87,11 @@ namespace Duality.Resources
 
 		public struct GlyphData
 		{
-			public	int	width;
-			public	int	height;
-			public	int	offsetX;
+			public	int		width;
+			public	int		height;
+			public	int		offsetX;
+			public	int[]	kerningSamplesLeft;
+			public	int[]	kerningSamplesRight;
 		}
 
 
@@ -98,6 +102,7 @@ namespace Duality.Resources
 		private	GlyphData[]	glyphs		= null;
 		private	float		spacing		= 0.0f;
 		private	bool		monospace	= false;
+		private	bool		kerning		= false;
 		[NonSerialized]	private	Material	mat				= null;
 		[NonSerialized]	private	Pixmap		pixelData		= null;
 		[NonSerialized]	private	Texture		texture			= null;
@@ -151,6 +156,11 @@ namespace Duality.Resources
 			get { return this.monospace; }
 			set { this.monospace = value; this.needsReload = true; }
 		}
+		public bool Kerning
+		{
+			get { return this.kerning; }
+			set { this.kerning = value; this.needsReload = true; }
+		}
 		public bool NeedsReload
 		{
 			get { return this.needsReload; }
@@ -166,11 +176,15 @@ namespace Duality.Resources
 		}
 		public int Ascent
 		{
-			get { return (int)(this.font.FontFamily.GetCellAscent(this.font.Style) * this.font.Size / this.font.FontFamily.GetEmHeight(this.font.Style)); }
+			get { return (int)Math.Round(this.font.FontFamily.GetCellAscent(this.font.Style) * this.font.Size / this.font.FontFamily.GetEmHeight(this.font.Style)); }
 		}
 		public int Descent
 		{
-			get { return (int)(this.font.FontFamily.GetCellDescent(this.font.Style) * this.font.Size / this.font.FontFamily.GetEmHeight(this.font.Style)); }
+			get { return (int)Math.Round(this.font.FontFamily.GetCellDescent(this.font.Style) * this.font.GetHeight() / this.font.FontFamily.GetLineSpacing(this.font.Style)); }
+		}
+		public int BaseLine
+		{
+			get { return (int)Math.Round(this.font.FontFamily.GetCellAscent(this.font.Style) * this.font.GetHeight() / this.font.FontFamily.GetLineSpacing(this.font.Style)); }
 		}
 
 
@@ -255,6 +269,64 @@ namespace Duality.Resources
 					atlas[i].w = (float)glyphTemp.Width / (float)pxTemp.Width;
 					atlas[i].h = (float)this.font.Height / (float)pxTemp.Height;
 
+					// Retrieve kerning information
+					if (this.kerning)
+					{
+						int sampleMultiOffset = glyphTemp.Height / 10;
+						int[] kerningY = new int[] {
+							this.BaseLine - this.Ascent + sampleMultiOffset,
+							this.BaseLine - this.Ascent * 2 / 3,
+							this.BaseLine - this.Ascent / 3,
+							this.BaseLine,
+							this.BaseLine + this.Descent - sampleMultiOffset};
+						this.glyphs[i].kerningSamplesLeft	= new int[5];
+						this.glyphs[i].kerningSamplesRight	= new int[5];
+						if (str != " ")
+						{
+							ColorRGBA[] glyphTempPx = glyphTemp.GetPixelDataRGBA();
+							int[] pxIndex = new int[3];
+							// Left side samples
+							for (int sampleIndex = 0; sampleIndex < this.glyphs[i].kerningSamplesLeft.Length; sampleIndex++)
+							{
+								pxIndex[0] = Math.Max(kerningY[sampleIndex] - sampleMultiOffset, 0) * glyphTemp.Width;
+								pxIndex[1] = kerningY[sampleIndex] * glyphTemp.Width;
+								pxIndex[2] = Math.Min(kerningY[sampleIndex] + sampleMultiOffset, glyphTemp.Height - 1) * glyphTemp.Width;
+								for (int m = 0; m < pxIndex.Length; m++)
+								{
+									while (glyphTempPx[pxIndex[m]].a == 0)
+									{
+										this.glyphs[i].kerningSamplesLeft[sampleIndex]++;
+										pxIndex[m]++;
+										if (this.glyphs[i].kerningSamplesLeft[sampleIndex] >= glyphTemp.Width / 2) break;
+									}
+								}
+								this.glyphs[i].kerningSamplesLeft[sampleIndex] = this.glyphs[i].kerningSamplesLeft[sampleIndex] / 3;
+							}
+							// Right side samples
+							for (int sampleIndex = 0; sampleIndex < this.glyphs[i].kerningSamplesRight.Length; sampleIndex++)
+							{
+								pxIndex[0] = Math.Max(kerningY[sampleIndex] - sampleMultiOffset, 0) * glyphTemp.Width + glyphTemp.Width - 1;
+								pxIndex[1] = kerningY[sampleIndex] * glyphTemp.Width + glyphTemp.Width - 1;
+								pxIndex[2] = Math.Min(kerningY[sampleIndex] + sampleMultiOffset, glyphTemp.Height - 1) * glyphTemp.Width + glyphTemp.Width - 1;
+								for (int m = 0; m < pxIndex.Length; m++)
+								{
+									while (glyphTempPx[pxIndex[m]].a == 0)
+									{
+										this.glyphs[i].kerningSamplesRight[sampleIndex]++;
+										pxIndex[m]--;
+										if (this.glyphs[i].kerningSamplesRight[sampleIndex] >= glyphTemp.Width / 2) break;
+									}
+								}
+								this.glyphs[i].kerningSamplesRight[sampleIndex] = this.glyphs[i].kerningSamplesRight[sampleIndex] / 3;
+							}
+						}
+					}
+					else
+					{
+						this.glyphs[i].kerningSamplesLeft	= null;
+						this.glyphs[i].kerningSamplesRight	= null;
+					}
+
 					// Draw it onto the font surface
 					pxGraphics.DrawImageUnscaled(glyphTemp, x, y);
 
@@ -284,6 +356,7 @@ namespace Duality.Resources
 			if (this.mat != null) this.mat.Dispose();
 			this.mat = new Material(this.hint == RenderHint.Monochrome ? DrawTechnique.Mask : DrawTechnique.Alpha, ColorRGBA.White, this.texture);
 		}
+
 		public bool GetGlyphData(char glyph, out GlyphData data)
 		{
 			int glyphId = (int)glyph;
@@ -298,59 +371,122 @@ namespace Duality.Resources
 				return true;
 			}
 		}
-
-		public void DrawText(string text, float x, float y, float z, float angle, float scale, ref VertexP3T2[] vertices)
+		public Bitmap GetGlyphBitmap(char glyph)
 		{
-			if (vertices == null || vertices.Length != text.Length * 4) vertices = new VertexP3T2[text.Length * 4];
+			Rect targetRect = this.texture.Atlas[CharLookup[(int)glyph]];
+			targetRect = targetRect.Transform(this.pixelData.Width / this.texture.UVRatio.X, this.pixelData.Height / this.texture.UVRatio.Y);
+			return this.pixelData.PixelData.SubImage(
+				MathF.RoundToInt(targetRect.x), 
+				MathF.RoundToInt(targetRect.y), 
+				MathF.RoundToInt(targetRect.w), 
+				MathF.RoundToInt(targetRect.h));
+		}
+
+		public void DrawText(string text, ref VertexP3T2[] vertices, float x, float y, float z = 0.0f, float angle = 0.0f, float scale = 1.0f)
+		{
+			this.DrawText(text, ref vertices);
 			
+			Vector3 offset = new Vector3(x, y, z);
 			Vector2 xDot, yDot;
 			MathF.GetTransformDotVec(angle, scale, out xDot, out yDot);
 
-			Vector2 curOffset = Vector2.Zero;
+			for (int i = 0; i < vertices.Length; i++)
+			{
+				Vector3 vertex = vertices[i].pos;
+
+				MathF.TransdormDotVec(ref vertex, ref xDot, ref yDot);
+				vertex += offset;
+
+				vertices[i].pos = vertex;
+			}
+		}
+		public void DrawText(string text, ref VertexP3T2[] vertices)
+		{
+			if (vertices == null || vertices.Length != text.Length * 4) vertices = new VertexP3T2[text.Length * 4];
+			
+			float curOffset = 0.0f;
 			char glyph;
 			GlyphData glyphData;
 			Rect uvRect;
-			Vector2 glyphXSize = Vector2.Zero;
-			Vector2 glyphXOff = Vector2.Zero;
-			Vector2 glyphXAdv = Vector2.Zero;
-			Vector2 glyphYSize = Vector2.Zero;
+			Vector2 glyphSize = Vector2.Zero;
+			float glyphXOff = 0.0f;
+			float glyphXAdv = 0.0f;
+			for (int i = 0; i < text.Length; i++)
+			{
+				glyph = text[i];
+				uvRect = this.texture.Atlas[CharLookup[(int)glyph]];
+
+				this.GetGlyphData(glyph, out glyphData);
+				glyphSize = new Vector2(glyphData.width, glyphData.height);
+				glyphXOff = -glyphData.offsetX;
+
+				if (this.kerning && !this.monospace)
+				{
+					char glyphNext = i + 1 < text.Length ? text[i + 1] : ' ';
+					GlyphData glyphDataNext;
+					this.GetGlyphData(glyphNext, out glyphDataNext);
+
+					int minSum = int.MaxValue;
+					for (int k = 0; k < glyphData.kerningSamplesRight.Length; k++)
+						minSum = Math.Min(minSum, glyphData.kerningSamplesRight[k] + glyphDataNext.kerningSamplesLeft[k]);
+
+					minSum = Math.Min(minSum, (int)Math.Round((glyphData.width + glyphDataNext.width) * 0.1f));
+					glyphXAdv = (this.monospace ? this.maxGlyphWidth : -glyphData.offsetX + glyphData.width) + this.spacing - minSum;
+				}
+				else
+					glyphXAdv = (this.monospace ? this.maxGlyphWidth : -glyphData.offsetX + glyphData.width) + this.spacing;
+
+				vertices[i * 4 + 0].pos.X = curOffset + glyphXOff;
+				vertices[i * 4 + 0].pos.Y = 0.0f;
+				vertices[i * 4 + 0].pos.Z = 0.0f;
+				vertices[i * 4 + 0].texCoord = uvRect.TopLeft;
+
+				vertices[i * 4 + 1].pos.X = curOffset + glyphXOff + glyphSize.X;
+				vertices[i * 4 + 1].pos.Y = 0.0f;
+				vertices[i * 4 + 1].pos.Z = 0.0f;
+				vertices[i * 4 + 1].texCoord = uvRect.TopRight;
+
+				vertices[i * 4 + 2].pos.X = curOffset + glyphXOff + glyphSize.X;
+				vertices[i * 4 + 2].pos.Y = glyphSize.Y;
+				vertices[i * 4 + 2].pos.Z = 0.0f;
+				vertices[i * 4 + 2].texCoord = uvRect.BottomRight;
+
+				vertices[i * 4 + 3].pos.X = curOffset + glyphXOff;
+				vertices[i * 4 + 3].pos.Y = glyphSize.Y;
+				vertices[i * 4 + 3].pos.Z = 0.0f;
+				vertices[i * 4 + 3].texCoord = uvRect.BottomLeft;
+
+				curOffset += glyphXAdv;
+			}
+		}
+		public Vector2 MeasureText(string text)
+		{
+			Vector2 textSize = Vector2.Zero;
+
+			float curOffset = 0.0f;
+			char glyph;
+			GlyphData glyphData;
+			Rect uvRect;
+			Vector2 glyphSize = Vector2.Zero;
+			float glyphXOff = 0.0f;
+			float glyphXAdv = 0.0f;
 			for (int i = 0; i < text.Length; i++)
 			{
 				glyph = text[i];
 				uvRect = this.texture.Atlas[CharLookup[(int)glyph]];
 				this.GetGlyphData(glyph, out glyphData);
 
-				glyphXSize = new Vector2(glyphData.width, 0.0f);
-				glyphXOff = new Vector2(-glyphData.offsetX, 0.0f);
-				glyphXAdv = new Vector2((this.monospace ? this.maxGlyphWidth : -glyphData.offsetX + glyphData.width) + this.spacing, 0.0f);
-				glyphYSize = new Vector2(0.0f, glyphData.height);
-				MathF.TransdormDotVec(ref glyphXSize, ref xDot, ref yDot);
-				MathF.TransdormDotVec(ref glyphXOff, ref xDot, ref yDot);
-				MathF.TransdormDotVec(ref glyphXAdv, ref xDot, ref yDot);
-				MathF.TransdormDotVec(ref glyphYSize, ref xDot, ref yDot);
+				glyphSize = new Vector2(glyphData.width, glyphData.height);
+				glyphXOff = -glyphData.offsetX;
+				glyphXAdv = (this.monospace ? this.maxGlyphWidth : -glyphData.offsetX + glyphData.width) + this.spacing;
 
-				vertices[i * 4 + 0].pos.X = x + curOffset.X + glyphXOff.X;
-				vertices[i * 4 + 0].pos.Y = y + curOffset.Y + glyphXOff.Y;
-				vertices[i * 4 + 0].pos.Z = z;
-				vertices[i * 4 + 0].texCoord = uvRect.TopLeft;
-
-				vertices[i * 4 + 1].pos.X = x + curOffset.X + glyphXOff.X + glyphXSize.X;
-				vertices[i * 4 + 1].pos.Y = y + curOffset.Y + glyphXOff.Y + glyphXSize.Y;
-				vertices[i * 4 + 1].pos.Z = z;
-				vertices[i * 4 + 1].texCoord = uvRect.TopRight;
-
-				vertices[i * 4 + 2].pos.X = x + curOffset.X + glyphXOff.X + glyphXSize.X + glyphYSize.X;
-				vertices[i * 4 + 2].pos.Y = y + curOffset.Y + glyphXOff.Y + glyphXSize.Y + glyphYSize.Y;
-				vertices[i * 4 + 2].pos.Z = z;
-				vertices[i * 4 + 2].texCoord = uvRect.BottomRight;
-
-				vertices[i * 4 + 3].pos.X = x + curOffset.X + glyphXOff.X + glyphYSize.X;
-				vertices[i * 4 + 3].pos.Y = y + curOffset.Y + glyphXOff.Y + glyphYSize.Y;
-				vertices[i * 4 + 3].pos.Z = z;
-				vertices[i * 4 + 3].texCoord = uvRect.BottomLeft;
+				textSize.X = Math.Max(textSize.X, curOffset + glyphXOff + glyphSize.X);
+				textSize.Y = Math.Max(textSize.Y, glyphSize.Y);
 
 				curOffset += glyphXAdv;
 			}
+
+			return textSize;
 		}
 
 		[OnDeserialized]

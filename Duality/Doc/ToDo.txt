@@ -1,10 +1,13 @@
 ﻿
--->	Complete Font class
-	-->	See ToDo stuff in code
-	-->	Hinting support?
-	-->	Provide measure & render methods for strings
-	-->	What about formatted text?
-
+-->	Formatted text
+	-->	static helper class providing static helper methods
+	-->	TextHelper
+	-->	Features to support:
+		-->	Colored Text
+		-->	Multiple Fonts
+		-->	Icon insertion (treated as glyphs)
+		-->	WordWrap / Multiline
+		-->	MaxWidth / MaxHeight, optionally cropping the actual text to fit
 
 -->	Rendering Text? Ingame? How to?
 	-->	Provide a TextRenderer Component?
