@@ -169,6 +169,23 @@ namespace Duality
 			return newRect;
 		}
 
+		public bool Contains(float x, float y)
+		{
+			return x >= this.MinX && x <= this.MaxX && y >= this.MinY && y <= this.MaxY;
+		}
+		public bool Contains(Vector2 pos)
+		{
+			return pos.X >= this.MinX && pos.X <= this.MaxX && pos.Y >= this.MinY && pos.Y <= this.MaxY;
+		}
+		public bool Contains(float x, float y, float w, float h)
+		{
+			return this.Contains(x, y) && this.Contains(x + w, y + h);
+		}
+		public bool Contains(Rect rect)
+		{
+			return this.Contains(rect.x, rect.y) && this.Contains(rect.x + rect.w, rect.y + rect.h);
+		}
+
 		public bool Equals(Rect other)
 		{
 			return 

@@ -115,6 +115,7 @@
     <Compile Include="SoundBudgetPad.cs" />
     <Compile Include="SoundDevice.cs" />
     <Compile Include="SoundInstance.cs" />
+    <Compile Include="TextHelper.cs" />
     <Compile Include="TextWriterLogOutput.cs" />
     <Compile Include="Time.cs" />
     <Compile Include="VertexFormat\IVertexData.cs" />

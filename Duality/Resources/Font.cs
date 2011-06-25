@@ -405,88 +405,144 @@ namespace Duality.Resources
 			if (vertices == null || vertices.Length != text.Length * 4) vertices = new VertexP3T2[text.Length * 4];
 			
 			float curOffset = 0.0f;
-			char glyph;
 			GlyphData glyphData;
 			Rect uvRect;
-			Vector2 glyphSize = Vector2.Zero;
-			float glyphXOff = 0.0f;
-			float glyphXAdv = 0.0f;
+			float glyphXOff;
+			float glyphXAdv;
 			for (int i = 0; i < text.Length; i++)
 			{
-				glyph = text[i];
-				uvRect = this.texture.Atlas[CharLookup[(int)glyph]];
-
-				this.GetGlyphData(glyph, out glyphData);
-				glyphSize = new Vector2(glyphData.width, glyphData.height);
-				glyphXOff = -glyphData.offsetX;
-
-				if (this.kerning && !this.monospace)
-				{
-					char glyphNext = i + 1 < text.Length ? text[i + 1] : ' ';
-					GlyphData glyphDataNext;
-					this.GetGlyphData(glyphNext, out glyphDataNext);
-
-					int minSum = int.MaxValue;
-					for (int k = 0; k < glyphData.kerningSamplesRight.Length; k++)
-						minSum = Math.Min(minSum, glyphData.kerningSamplesRight[k] + glyphDataNext.kerningSamplesLeft[k]);
-
-					minSum = Math.Min(minSum, (int)Math.Round((glyphData.width + glyphDataNext.width) * 0.1f));
-					glyphXAdv = (this.monospace ? this.maxGlyphWidth : -glyphData.offsetX + glyphData.width) + this.spacing - minSum;
-				}
-				else
-					glyphXAdv = (this.monospace ? this.maxGlyphWidth : -glyphData.offsetX + glyphData.width) + this.spacing;
+				this.ProcessTextAdv(text, i, out glyphData, out uvRect, out glyphXAdv, out glyphXOff);
 
 				vertices[i * 4 + 0].pos.X = curOffset + glyphXOff;
 				vertices[i * 4 + 0].pos.Y = 0.0f;
 				vertices[i * 4 + 0].pos.Z = 0.0f;
 				vertices[i * 4 + 0].texCoord = uvRect.TopLeft;
 
-				vertices[i * 4 + 1].pos.X = curOffset + glyphXOff + glyphSize.X;
+				vertices[i * 4 + 1].pos.X = curOffset + glyphXOff + glyphData.width;
 				vertices[i * 4 + 1].pos.Y = 0.0f;
 				vertices[i * 4 + 1].pos.Z = 0.0f;
 				vertices[i * 4 + 1].texCoord = uvRect.TopRight;
 
-				vertices[i * 4 + 2].pos.X = curOffset + glyphXOff + glyphSize.X;
-				vertices[i * 4 + 2].pos.Y = glyphSize.Y;
+				vertices[i * 4 + 2].pos.X = curOffset + glyphXOff + glyphData.width;
+				vertices[i * 4 + 2].pos.Y = glyphData.height;
 				vertices[i * 4 + 2].pos.Z = 0.0f;
 				vertices[i * 4 + 2].texCoord = uvRect.BottomRight;
 
 				vertices[i * 4 + 3].pos.X = curOffset + glyphXOff;
-				vertices[i * 4 + 3].pos.Y = glyphSize.Y;
+				vertices[i * 4 + 3].pos.Y = glyphData.height;
 				vertices[i * 4 + 3].pos.Z = 0.0f;
 				vertices[i * 4 + 3].texCoord = uvRect.BottomLeft;
 
 				curOffset += glyphXAdv;
 			}
 		}
+
 		public Vector2 MeasureText(string text)
 		{
 			Vector2 textSize = Vector2.Zero;
 
 			float curOffset = 0.0f;
-			char glyph;
 			GlyphData glyphData;
 			Rect uvRect;
-			Vector2 glyphSize = Vector2.Zero;
-			float glyphXOff = 0.0f;
-			float glyphXAdv = 0.0f;
+			float glyphXOff;
+			float glyphXAdv;
 			for (int i = 0; i < text.Length; i++)
 			{
-				glyph = text[i];
-				uvRect = this.texture.Atlas[CharLookup[(int)glyph]];
-				this.GetGlyphData(glyph, out glyphData);
+				this.ProcessTextAdv(text, i, out glyphData, out uvRect, out glyphXAdv, out glyphXOff);
 
-				glyphSize = new Vector2(glyphData.width, glyphData.height);
-				glyphXOff = -glyphData.offsetX;
-				glyphXAdv = (this.monospace ? this.maxGlyphWidth : -glyphData.offsetX + glyphData.width) + this.spacing;
-
-				textSize.X = Math.Max(textSize.X, curOffset + glyphXOff + glyphSize.X);
-				textSize.Y = Math.Max(textSize.Y, glyphSize.Y);
+				textSize.X = Math.Max(textSize.X, curOffset + glyphXOff + glyphData.width);
+				textSize.Y = Math.Max(textSize.Y, glyphData.height);
 
 				curOffset += glyphXAdv;
 			}
 
 			return textSize;
+		}
+		public string FitText(string text, float maxWidth)
+		{
+			Vector2 textSize = Vector2.Zero;
+
+			float curOffset = 0.0f;
+			GlyphData glyphData;
+			Rect uvRect;
+			float glyphXOff;
+			float glyphXAdv;
+			for (int i = 0; i < text.Length; i++)
+			{
+				this.ProcessTextAdv(text, i, out glyphData, out uvRect, out glyphXAdv, out glyphXOff);
+
+				textSize.X = Math.Max(textSize.X, curOffset + glyphXOff + glyphData.width);
+				textSize.Y = Math.Max(textSize.Y, glyphData.height);
+
+				if (textSize.X > maxWidth) return i > 1 ? text.Substring(0, i - 1) : "";
+
+				curOffset += glyphXAdv;
+			}
+
+			return text;
+		}
+		public Rect MeasureTextGlyph(string text, int index)
+		{
+			float curOffset = 0.0f;
+			GlyphData glyphData;
+			Rect uvRect;
+			float glyphXOff;
+			float glyphXAdv;
+			for (int i = 0; i < text.Length; i++)
+			{
+				this.ProcessTextAdv(text, i, out glyphData, out uvRect, out glyphXAdv, out glyphXOff);
+
+				if (i == index) return new Rect(curOffset + glyphXOff, 0, glyphData.width, glyphData.height);
+
+				curOffset += glyphXAdv;
+			}
+
+			return new Rect();
+		}
+		public int PickTextGlyph(string text, float x, float y)
+		{
+			float curOffset = 0.0f;
+			GlyphData glyphData;
+			Rect uvRect;
+			Rect glyphRect;
+			float glyphXOff;
+			float glyphXAdv;
+			for (int i = 0; i < text.Length; i++)
+			{
+				this.ProcessTextAdv(text, i, out glyphData, out uvRect, out glyphXAdv, out glyphXOff);
+
+				glyphRect = new Rect(curOffset + glyphXOff, 0, glyphData.width, glyphData.height);
+				if (glyphRect.Contains(x, y)) return i;
+
+				curOffset += glyphXAdv;
+			}
+
+			return -1;
+		}
+
+		private void ProcessTextAdv(string text, int index, out GlyphData glyphData, out Rect uvRect, out float glyphXAdv, out float glyphXOff)
+		{
+			char glyph = text[index];
+			uvRect = this.texture.Atlas[CharLookup[(int)glyph]];
+
+			this.GetGlyphData(glyph, out glyphData);
+			glyphXOff = -glyphData.offsetX;
+
+			if (this.kerning && !this.monospace)
+			{
+				char glyphNext = index + 1 < text.Length ? text[index + 1] : ' ';
+				GlyphData glyphDataNext;
+				this.GetGlyphData(glyphNext, out glyphDataNext);
+
+				int minSum = int.MaxValue;
+				for (int k = 0; k < glyphData.kerningSamplesRight.Length; k++)
+					minSum = Math.Min(minSum, glyphData.kerningSamplesRight[k] + glyphDataNext.kerningSamplesLeft[k]);
+
+				minSum = Math.Min(minSum, (int)Math.Round((glyphData.width + glyphDataNext.width) * 0.1f));
+				glyphXAdv = (this.monospace ? this.maxGlyphWidth : -glyphData.offsetX + glyphData.width) + this.spacing - minSum;
+			}
+			else
+				glyphXAdv = (this.monospace ? this.maxGlyphWidth : -glyphData.offsetX + glyphData.width) + this.spacing;
 		}
 
 		[OnDeserialized]
