@@ -416,6 +416,8 @@ namespace Duality.Components
 				foreach (Renderer r in Scene.Current.QueryVisibleRenderers(this.DrawDevice))
 					r.Draw(this);
 
+				FormattedText text = new FormattedText("////Blub /f[17]Test /i[5]//Yo//yo//YO");
+
 				VertexFormat.VertexP3T2[] textVert = null;
 				Font.GenericMonospace10.Res.DrawText("Das ist ein Test, jo *flupp*", ref textVert, 0 - this.GameObj.Transform.Pos.X, 0 - this.GameObj.Transform.Pos.Y);
 				this.DrawDevice.AddVertices(Font.GenericMonospace10.Res.Material, BeginMode.Quads, textVert);

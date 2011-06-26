@@ -1,7 +1,6 @@
 ﻿
 -->	Formatted text
-	-->	static helper class providing static helper methods
-	-->	TextHelper
+	-->	Display something, ToDo stuff
 	-->	Features to support:
 		-->	Colored Text
 		-->	Multiple Fonts
