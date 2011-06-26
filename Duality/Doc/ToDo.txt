@@ -7,7 +7,7 @@
 			-->	Keep an eye on PeekLineStats, it currently reacts only to newline elements
 			-->	How to split TextElements anyway..?
 			-->	Probably need API enhancements for that
-		-->	Horizontal text alignment
+		-->	Horizontal text alignment / MinWidth
 
 -->	Rendering Text? Ingame? How to?
 	-->	Provide a TextRenderer Component?
