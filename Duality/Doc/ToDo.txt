@@ -3,8 +3,10 @@
 	-->	Provide element measurement
 	-->	Provide element picking
 	-->	Features yet to support:
-		-->	WordWrap / Multiline
-		-->	MaxWidth / MaxHeight, optionally cropping the actual text to fit
+		-->	WordWrap / MaxWidth / MaxHeight, optionally cropping the actual text to fit
+			-->	Keep an eye on PeekLineStats, it currently reacts only to newline elements
+			-->	How to split TextElements anyway..?
+			-->	Probably need API enhancements for that
 		-->	Horizontal text alignment
 
 -->	Rendering Text? Ingame? How to?

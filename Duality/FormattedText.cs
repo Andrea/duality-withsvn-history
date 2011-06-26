@@ -133,7 +133,7 @@ namespace Duality
 			{
 				get { return this.lineBaseLine; }
 			}
-			public int ElemIndex
+			public int NextElemIndex
 			{
 				get { return this.elemIndex; }
 			}
@@ -214,7 +214,7 @@ namespace Duality
 				this.lineHeight = this.font.Height;
 
 				RenderState peekState = this.Clone();
-				while (peekState.ElemIndex < this.parent.elements.Length && !(this.parent.elements[peekState.ElemIndex] is NewLineElement)) 
+				while (peekState.NextElemIndex < this.parent.elements.Length && !(this.parent.elements[peekState.NextElemIndex] is NewLineElement)) 
 					peekState.NextElement();
 
 				this.lineBaseLine = peekState.LineBaseLine;
@@ -414,9 +414,9 @@ namespace Duality
 			RenderState lastState;
 			RenderState state = new RenderState(this);
 			Element elem;
-			while (state.ElemIndex < this.elements.Length)
+			while (state.NextElemIndex < this.elements.Length)
 			{
-				elem = this.elements[state.ElemIndex];
+				elem = this.elements[state.NextElemIndex];
 				lastState = state.Clone();
 				state.NextElement();
 
@@ -474,9 +474,9 @@ namespace Duality
 			Element elem;
 			Vector2 elemSize;
 			Vector2 elemOffset;
-			while (state.ElemIndex < this.elements.Length)
+			while (state.NextElemIndex < this.elements.Length)
 			{
-				elem = this.elements[state.ElemIndex];
+				elem = this.elements[state.NextElemIndex];
 				lastState = state.Clone();
 				state.NextElement();
 

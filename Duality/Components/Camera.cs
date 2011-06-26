@@ -418,7 +418,9 @@ namespace Duality.Components
 
 				FormattedText text = new FormattedText(
 					"/f[0]Franz jagt im komplett verwahrlosten Taxi quer durch Bayern/n" + 
-					"/f[1]Franz jagt im komplett verwahrlosten Taxi quer durch Bayern");
+					"/f[1]Franz jagt im komplett verwahrlosten Taxi quer durch Bayern/n" + 
+					"/f[2]Franz jagt im komplett verwahrlosten Taxi quer durch Bayern/n" + 
+					"/f[2]      jagt      mplett     ahr   te  T xi  ue    r h   yern");
 				text.SetFonts(Font.GenericSerif12, Font.GenericSansSerif12, Font.GenericMonospace10);
 				text.SetIcons(
 					new FormattedText.Icon(new Rect(0.0f, 0.0f, 0.5f, 0.5f), new Vector2(32, 32)), 
