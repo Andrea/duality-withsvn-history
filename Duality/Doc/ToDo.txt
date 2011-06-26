@@ -1,12 +1,11 @@
 ﻿
 -->	Formatted text
-	-->	Display something, ToDo stuff
-	-->	Features to support:
-		-->	Colored Text
-		-->	Multiple Fonts
-		-->	Icon insertion (treated as glyphs)
+	-->	Provide element measurement
+	-->	Provide element picking
+	-->	Features yet to support:
 		-->	WordWrap / Multiline
 		-->	MaxWidth / MaxHeight, optionally cropping the actual text to fit
+		-->	Horizontal text alignment
 
 -->	Rendering Text? Ingame? How to?
 	-->	Provide a TextRenderer Component?
@@ -15,6 +14,15 @@
 		-->	Text can also be stand-alone via Component
 		-->	Text can be formatted
 		-->	Provide a general method to emit vertex data based on a formatted text and additional params?
+
+
+-->	Figure out suitable RenderScreenOverlay-like system
+	-->	Goal: Rendering screen overlay that bypasses 
+		picking, camera rotation and center-aligned screen coordinates
+	-->	Use ICmpScreenOverlayRenderer interface instead of extending Renderer class?
+		-->	Pro: Great for debugging
+		-->	Pro: Doesn't really need Renderer stuff (bounding radius, etc.. )
+			because it is always visible, independent from camera transform, etc.
 
 
 -->	Checklist for first Game: Asteroids

@@ -416,33 +416,30 @@ namespace Duality.Components
 				foreach (Renderer r in Scene.Current.QueryVisibleRenderers(this.DrawDevice))
 					r.Draw(this);
 
-				FormattedText text = new FormattedText("////Blub /f[17]Test /i[5]//Yo//yo//YO");
+				FormattedText text = new FormattedText(
+					"/f[0]Franz jagt im komplett verwahrlosten Taxi quer durch Bayern/n" + 
+					"/f[1]Franz jagt im komplett verwahrlosten Taxi quer durch Bayern");
+				text.SetFonts(Font.GenericSerif12, Font.GenericSansSerif12, Font.GenericMonospace10);
+				text.SetIcons(
+					new FormattedText.Icon(new Rect(0.0f, 0.0f, 0.5f, 0.5f), new Vector2(32, 32)), 
+					new FormattedText.Icon(new Rect(0.5f, 0.0f, 0.5f, 0.5f), new Vector2(32, 32)), 
+					new FormattedText.Icon(new Rect(0.5f, 0.5f, 0.5f, 0.5f), new Vector2(32, 32)), 
+					new FormattedText.Icon(new Rect(0.0f, 0.5f, 0.5f, 0.5f), new Vector2(32, 32)));
 
-				VertexFormat.VertexP3T2[] textVert = null;
-				Font.GenericMonospace10.Res.DrawText("Das ist ein Test, jo *flupp*", ref textVert, 0 - this.GameObj.Transform.Pos.X, 0 - this.GameObj.Transform.Pos.Y);
-				this.DrawDevice.AddVertices(Font.GenericMonospace10.Res.Material, BeginMode.Quads, textVert);
+				VertexFormat.VertexC4P3T2[][] vertText = null;
+				VertexFormat.VertexC4P3T2[] vertIcon = null;
+				text.EmitVertices(ref vertText, ref vertIcon, -this.gameobj.Transform.Pos.X, -this.gameobj.Transform.Pos.Y);
+				this.DrawDevice.AddVertices(Font.GenericSerif12.Res.Material, BeginMode.Quads, vertText[0]);
+				this.DrawDevice.AddVertices(Font.GenericSansSerif12.Res.Material, BeginMode.Quads, vertText[1]);
+				this.DrawDevice.AddVertices(Font.GenericMonospace10.Res.Material, BeginMode.Quads, vertText[2]);
+				this.DrawDevice.AddVertices(Material.DualityLogo256, BeginMode.Quads, vertIcon);
 
-				textVert = null;
-				Font.GenericSansSerif12.Res.DrawText("Das ist ein Test, jo  *flupp*", ref textVert, 0 - this.GameObj.Transform.Pos.X, 100 - this.GameObj.Transform.Pos.Y);
-				this.DrawDevice.AddVertices(Font.GenericSansSerif12.Res.Material, BeginMode.Quads, textVert);
-				textVert = null;
-				Font.GenericSerif12.Res.DrawText("Franz jagt im komplett verwahrlosten Taxi quer durch Bayern", ref textVert, 0 - this.GameObj.Transform.Pos.X, 200 - this.GameObj.Transform.Pos.Y);
-				this.DrawDevice.AddVertices(Font.GenericSerif12.Res.Material, BeginMode.Quads, textVert);
-
-				textVert = null;
-				Font.GenericMonospace10.Res.DrawText(string.Format("Ortho: {0}", this.OrthoAbs), ref textVert, -100, -100);
-				this.DrawDevice.AddVertices(Font.GenericMonospace10.Res.Material, BeginMode.Quads, textVert);
-				textVert = null;
-				Font.GenericMonospace10.Res.DrawText(string.Format("Viewport: {0}", this.ViewportAbs), ref textVert, -100, -80);
-				this.DrawDevice.AddVertices(Font.GenericMonospace10.Res.Material, BeginMode.Quads, textVert);
-
-				Vector2 size = Font.GenericMonospace10.Res.MeasureText(string.Format("Viewport: {0}", this.ViewportAbs));
-				VertexP3[] sizeVert = new VertexP3[] {
-					new VertexP3(-100, -80, 500),
-					new VertexP3(-100 + size.X, -80, 500),
-					new VertexP3(-100 + size.X, -80 + size.Y, 500),
-					new VertexP3(-100, -80 + size.Y, 500) };
-				this.DrawDevice.AddVertices(Material.InvertWhite, BeginMode.LineLoop, sizeVert);
+				Vector2 size = text.Measure();
+				this.DrawDevice.AddVertices(Material.InvertWhite, BeginMode.LineLoop, new VertexP3[] {
+					new VertexP3(-0.5f - this.gameobj.Transform.Pos.X, -0.5f - this.gameobj.Transform.Pos.Y, 0),
+					new VertexP3(size.X + 0.5f - this.gameobj.Transform.Pos.X, -0.5f - this.gameobj.Transform.Pos.Y, 0),
+					new VertexP3(size.X + 0.5f - this.gameobj.Transform.Pos.X, size.Y + 0.5f - this.gameobj.Transform.Pos.Y, 0),
+					new VertexP3(-0.5f - this.gameobj.Transform.Pos.X, size.Y + 0.5f - this.gameobj.Transform.Pos.Y, 0)});
 			}
 			
 			// Setup picking RT
@@ -833,6 +830,7 @@ namespace Duality.Components
 		void IDrawDevice.AddVertices<T>(BatchInfo material, BeginMode vertexMode, params T[] vertices)
 		{
 			if (material == null || material.Technique == null || !material.Technique.IsAvailable) return;
+			if (vertices == null || vertices.Length == 0) return;
 
 			if (this.picking != 0)
 			{

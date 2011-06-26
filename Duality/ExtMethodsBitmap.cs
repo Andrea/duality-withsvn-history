@@ -85,7 +85,11 @@ namespace Duality
 		public static Bitmap Crop(this Bitmap bm, bool cropX = true, bool cropY = true)
 		{
 			if (!cropX && !cropY) return bm.Clone() as Bitmap;
-
+			Rectangle bounds = bm.OpaqueBounds();
+			return bm.SubImage(cropX ? bounds.X : 0, cropY ? bounds.Y : 0, cropX ? bounds.Width : bm.Width, cropY ? bounds.Height : bm.Height);
+		}
+		public static Rectangle OpaqueBounds(this Bitmap bm)
+		{
 			ColorRGBA[] pixels = bm.GetPixelDataRGBA();
 			Rectangle bounds = new Rectangle(bm.Width, bm.Height, 0, 0);
 			for (int i = 0; i < pixels.Length; i++)
@@ -101,7 +105,7 @@ namespace Duality
 			bounds.Width = 1 + Math.Max(0, bounds.Width - bounds.X);
 			bounds.Height = 1 + Math.Max(0, bounds.Height - bounds.Y);
 
-			return bm.SubImage(cropX ? bounds.X : 0, cropY ? bounds.Y : 0, cropX ? bounds.Width : bm.Width, cropY ? bounds.Height : bm.Height);
+			return bounds;
 		}
 		public static Bitmap ColorTransparentPixels(this Bitmap bm)
 		{
