@@ -87,28 +87,36 @@ namespace Duality
 				this.size = size;
 			}
 		}
+		public enum WrapMode
+		{
+			Glyph,
+			Word,
+			Element
+		}
 
 		private class RenderState
 		{
+			// General state data
 			private	FormattedText	parent;
 			private	int[]			vertTextIndex;
-			private	int				iconTextIndex;
+			private	int				vertIconIndex;
+			private	int				elemIndex;
+			private	Vector2			offset;
+			// Format state
 			private	int				fontIndex;
 			private	Font			font;
 			private	ColorRGBA		color;
-			private	Vector2			offset;
+			// Line stats
 			private	float			lineHeight;
 			private	int				lineBaseLine;
-			private	int				elemIndex;
+			// Current element data. Current == just 'been processed in NextElement()
+			private	Vector2			curElemOffset;
+			private	int				curElemVertTextIndex;
+			private	int				curElemVertIconIndex;
+			private	int				curElemWrapIndex;
+			private	string			curElemText;
 
-			public int[] TextVertexIndex
-			{
-				get { return this.vertTextIndex; }
-			}
-			public int IconVertexIndex
-			{
-				get { return this.iconTextIndex; }
-			}
+
 			public int FontIndex
 			{
 				get { return this.fontIndex; }
@@ -121,22 +129,31 @@ namespace Duality
 			{
 				get { return this.color; }
 			}
-			public Vector2 Offset
-			{
-				get { return this.offset; }
-			}
-			public float LineHeight
-			{
-				get { return this.lineHeight; }
-			}
 			public int LineBaseLine
 			{
 				get { return this.lineBaseLine; }
 			}
-			public int NextElemIndex
+			public int CurrentElemIndex
 			{
-				get { return this.elemIndex; }
+				get { return this.elemIndex - 1; }
 			}
+			public Vector2 CurrentElemOffset
+			{
+				get { return this.curElemOffset; }
+			}
+			public int CurrentElemTextVertexIndex
+			{
+				get { return this.curElemVertTextIndex; }
+			}
+			public int CurrentElemIconVertexIndex
+			{
+				get { return this.curElemVertIconIndex; }
+			}
+			public string CurrentElemText
+			{
+				get { return this.curElemText; }
+			}
+
 
 			public RenderState(FormattedText parent)
 			{
@@ -150,7 +167,7 @@ namespace Duality
 			{
 				this.parent = other.parent;
 				this.vertTextIndex = other.vertTextIndex.Clone() as int[];
-				this.iconTextIndex = other.iconTextIndex;
+				this.vertIconIndex = other.vertIconIndex;
 				this.fontIndex = other.fontIndex;
 				this.font = other.font;
 				this.color = other.color;
@@ -158,33 +175,102 @@ namespace Duality
 				this.lineHeight = other.lineHeight;
 				this.lineBaseLine = other.lineBaseLine;
 				this.elemIndex = other.elemIndex;
+
+				this.curElemOffset = other.curElemOffset;
+				this.curElemVertTextIndex = other.curElemVertTextIndex;
+				this.curElemVertIconIndex = other.curElemVertIconIndex;
+				this.curElemWrapIndex = other.curElemWrapIndex;
+				this.curElemText = other.curElemText;
 			}
 			public RenderState Clone()
 			{
 				return new RenderState(this);
 			}
 
-			public void NextElement()
+			public Element NextElement()
 			{
+				if (this.elemIndex >= this.parent.elements.Length) return null;
+				if (this.offset.Y + this.lineHeight > this.parent.maxHeight) return null;
 				Element elem = this.parent.elements[this.elemIndex];
+
 				if (elem is TextElement)
 				{
 					TextElement textElem = elem as TextElement;
 
-					Vector2 textElemSize = this.font.MeasureText(textElem.Text);
-					this.vertTextIndex[this.fontIndex] += textElem.Text.Length * 4;
+					string textToDisplay;
+					string fittingText;
+					// Word wrap by glyph / word
+					if (this.parent.maxWidth > 0 && this.parent.wrapMode != WrapMode.Element)
+					{
+						textToDisplay = textElem.Text.Substring(this.curElemWrapIndex, textElem.Text.Length - this.curElemWrapIndex);
+						fittingText = this.font.FitText(textToDisplay, this.parent.maxWidth - this.offset.X, this.parent.wrapMode == WrapMode.Word);
 
+						// If by-word results in instant line break: Do it by glyph instead
+						if (this.offset.X == 0 && fittingText.Length == 0 && this.parent.wrapMode == WrapMode.Word) 
+							fittingText = this.font.FitText(textToDisplay, this.parent.maxWidth - this.offset.X, false);
+
+						// If doing it by glyph results in an instant line break: Use at least one glyph anyway
+						if (this.offset.X == 0 && fittingText.Length == 0) fittingText = textToDisplay.Substring(0, 1);
+					}
+					// No word wrap (or by whole element)
+					else
+					{
+						textToDisplay = textElem.Text;
+						fittingText = textElem.Text;
+					}
+					Vector2 textElemSize = this.font.MeasureText(fittingText);
+
+					// Perform word wrap by whole Element
+					if (this.parent.maxWidth > 0 && this.parent.wrapMode == WrapMode.Element)
+					{
+						if (this.offset.X > 0.0f && this.offset.X + textElemSize.X > this.parent.maxWidth)
+							this.PerformNewLine();
+					}
+
+					this.curElemText = fittingText;
+					this.curElemVertTextIndex = this.vertTextIndex[this.fontIndex];
+					this.curElemOffset = this.offset;
+
+					// If it all fits: Stop wrap mode, proceed with next element
+					if (fittingText.Length == textToDisplay.Length)
+					{
+						this.curElemWrapIndex = 0;
+						this.elemIndex++;
+					}
+					// If only some part fits: Move wrap index & return
+					else if (fittingText.Length > 0)
+					{
+						this.curElemWrapIndex += fittingText.Length;
+					}
+					// If nothing fits: Begin a new line & return
+					else
+					{
+						this.PerformNewLine();
+					}
+
+					this.vertTextIndex[this.fontIndex] += fittingText.Length * 4;
 					this.offset.X += textElemSize.X;
 					this.lineHeight = Math.Max(this.lineHeight, this.font.Height);
 				}
 				else if (elem is IconElement)
 				{
 					IconElement iconElem = elem as IconElement;
-					this.iconTextIndex += 4;
 
+					// Word Wrap
+					if (this.parent.maxWidth > 0)
+					{
+						if (this.offset.X > 0.0f && this.offset.X + this.parent.icons[iconElem.IconIndex].size.X > this.parent.maxWidth)
+							this.PerformNewLine();
+					}
+
+					this.curElemVertIconIndex = this.vertIconIndex;
+					this.curElemOffset = this.offset;
+
+					this.vertIconIndex += 4;
 					this.offset.X += this.parent.icons[iconElem.IconIndex].size.X;
 					this.lineHeight = Math.Max(this.lineHeight, this.parent.icons[iconElem.IconIndex].size.Y);
 					this.lineBaseLine = Math.Max(this.lineBaseLine, (int)Math.Round(this.parent.icons[iconElem.IconIndex].size.Y));
+					this.elemIndex++;
 				}
 				else if (elem is FontChangeElement)
 				{
@@ -192,21 +278,69 @@ namespace Duality
 					this.fontIndex = fontChangeElem.FontIndex;
 					this.font = this.parent.fonts[this.fontIndex].Res;
 					this.lineBaseLine = Math.Max(this.lineBaseLine, this.parent.fonts[fontChangeElem.FontIndex].Res.BaseLine);
+					this.elemIndex++;
 				}
 				else if (elem is ColorChangeElement)
 				{
 					ColorChangeElement colorChangeElem = elem as ColorChangeElement;
 					this.color = colorChangeElem.Color;
+					this.elemIndex++;
+				}
+				else if (elem is NewLineElement)
+				{
+					this.elemIndex++;
+					this.PerformNewLine();
 				}
 
-				this.elemIndex++;
-				
-				if (elem is NewLineElement)
+				return elem;
+			}
+
+			private bool NextElementPerformsNewLine()
+			{
+				if (this.elemIndex >= this.parent.elements.Length) return false;
+				Element elem = this.parent.elements[this.elemIndex];
+
+				if (elem is TextElement)
 				{
-					this.offset.X = 0;
-					this.offset.Y += this.lineHeight;
-					this.PeekLineStats();
+					TextElement textElem = elem as TextElement;
+					// Word Wrap
+					if (this.parent.maxWidth > 0)
+					{
+						// Word wrap by glyph / word
+						if (this.parent.wrapMode != WrapMode.Element)
+						{
+							string textToDisplay = textElem.Text.Substring(this.curElemWrapIndex, textElem.Text.Length - this.curElemWrapIndex);
+							string fittingText = this.font.FitText(textToDisplay, this.parent.maxWidth - this.offset.X, this.parent.wrapMode == WrapMode.Word);
+							if (this.offset.X > 0 && fittingText.Length == 0) return true;
+						}
+						// Word wrap by whole Element
+						else
+						{
+							Vector2 textElemSize = this.font.MeasureText(textElem.Text);
+							if (this.offset.X > 0.0f && this.offset.X + textElemSize.X > this.parent.maxWidth)
+								return true;
+						}
+					}
 				}
+				else if (elem is IconElement)
+				{
+					IconElement iconElem = elem as IconElement;
+					// Word Wrap
+					if (this.parent.maxWidth > 0)
+					{
+						if (this.offset.X > 0.0f && this.offset.X + this.parent.icons[iconElem.IconIndex].size.X > this.parent.maxWidth)
+							return true;
+					}
+				}
+				else if (elem is NewLineElement) return true;
+
+				return false;
+			}
+			private void PerformNewLine()
+			{
+				this.offset.X = 0;
+				this.offset.Y += this.lineHeight;
+				this.PeekLineStats();
 			}
 			private void PeekLineStats()
 			{
@@ -214,11 +348,10 @@ namespace Duality
 				this.lineHeight = this.font.Height;
 
 				RenderState peekState = this.Clone();
-				while (peekState.NextElemIndex < this.parent.elements.Length && !(this.parent.elements[peekState.NextElemIndex] is NewLineElement)) 
-					peekState.NextElement();
+				while (!peekState.NextElementPerformsNewLine() && peekState.NextElement() != null);
 
-				this.lineBaseLine = peekState.LineBaseLine;
-				this.lineHeight = peekState.LineHeight;
+				this.lineBaseLine = peekState.lineBaseLine;
+				this.lineHeight = peekState.lineHeight;
 			}
 		}
 
@@ -226,6 +359,10 @@ namespace Duality
 		private	string				sourceText		= null;
 		private	Icon[]				icons			= null;
 		private	ContentRef<Font>[]	fonts			= null;
+		private	int					minWidth		= 0;
+		private	int					maxWidth		= 0;
+		private	int					maxHeight		= 0;
+		private	WrapMode			wrapMode		= WrapMode.Word;
 
 		private	string				displayedText	= null;
 		private	int[]				fontGlyphCount	= null;
@@ -247,6 +384,26 @@ namespace Duality
 		{
 			get { return this.fonts; }
 			set { this.SetFonts(value); }
+		}
+		public int MinWidth
+		{
+			get { return this.minWidth; }
+			set { this.minWidth = value; }
+		}
+		public int MaxWidth
+		{
+			get { return this.maxWidth; }
+			set { this.maxWidth = value; }
+		}
+		public int MaxHeight
+		{
+			get { return this.maxHeight; }
+			set { this.maxHeight = value; }
+		}
+		public WrapMode WordWrap
+		{
+			get { return this.wrapMode; }
+			set { this.wrapMode = value; }
 		}
 
 		public string DisplayedText
@@ -411,26 +568,21 @@ namespace Duality
 					vertText[i] = new VertexC4P3T2[this.fontGlyphCount.Length > i ? this.fontGlyphCount[i] * 4 : 0];
 
 			// Rendering
-			RenderState lastState;
 			RenderState state = new RenderState(this);
 			Element elem;
-			while (state.NextElemIndex < this.elements.Length)
+			while ((elem = state.NextElement()) != null)
 			{
-				elem = this.elements[state.NextElemIndex];
-				lastState = state.Clone();
-				state.NextElement();
-
 				if (elem is TextElement)
 				{
 					TextElement textElem = elem as TextElement;
 					VertexC4P3T2[] textElemVert = null;
-					lastState.Font.EmitTextVertices(
-						textElem.Text, 
+					state.Font.EmitTextVertices(
+						state.CurrentElemText, 
 						ref textElemVert, 
-						lastState.Offset.X, 
-						lastState.Offset.Y + lastState.LineBaseLine - lastState.Font.BaseLine, 
-						lastState.Color);
-					Array.Copy(textElemVert, 0, vertText[lastState.FontIndex], lastState.TextVertexIndex[lastState.FontIndex], textElemVert.Length);
+						state.CurrentElemOffset.X, 
+						state.CurrentElemOffset.Y + state.LineBaseLine - state.Font.BaseLine, 
+						state.Color);
+					Array.Copy(textElemVert, 0, vertText[state.FontIndex], state.CurrentElemTextVertexIndex, textElemVert.Length);
 				}
 				else if (elem is IconElement)
 				{
@@ -438,29 +590,29 @@ namespace Duality
 					Vector2 iconSize = this.icons[iconElem.IconIndex].size;
 					Rect iconUvRect = this.icons[iconElem.IconIndex].uvRect;
 
-					vertIcons[lastState.IconVertexIndex + 0].pos.X = lastState.Offset.X;
-					vertIcons[lastState.IconVertexIndex + 0].pos.Y = lastState.Offset.Y + lastState.LineBaseLine - iconSize.Y;
-					vertIcons[lastState.IconVertexIndex + 0].pos.Z = 0;
-					vertIcons[lastState.IconVertexIndex + 0].clr = lastState.Color;
-					vertIcons[lastState.IconVertexIndex + 0].texCoord = iconUvRect.TopLeft;
+					vertIcons[state.CurrentElemIconVertexIndex + 0].pos.X = state.CurrentElemOffset.X;
+					vertIcons[state.CurrentElemIconVertexIndex + 0].pos.Y = state.CurrentElemOffset.Y + state.LineBaseLine - iconSize.Y;
+					vertIcons[state.CurrentElemIconVertexIndex + 0].pos.Z = 0;
+					vertIcons[state.CurrentElemIconVertexIndex + 0].clr = state.Color;
+					vertIcons[state.CurrentElemIconVertexIndex + 0].texCoord = iconUvRect.TopLeft;
 
-					vertIcons[lastState.IconVertexIndex + 1].pos.X = lastState.Offset.X + iconSize.X;
-					vertIcons[lastState.IconVertexIndex + 1].pos.Y = lastState.Offset.Y + lastState.LineBaseLine - iconSize.Y;
-					vertIcons[lastState.IconVertexIndex + 1].pos.Z = 0;
-					vertIcons[lastState.IconVertexIndex + 1].clr = lastState.Color;
-					vertIcons[lastState.IconVertexIndex + 1].texCoord = iconUvRect.TopRight;
+					vertIcons[state.CurrentElemIconVertexIndex + 1].pos.X = state.CurrentElemOffset.X + iconSize.X;
+					vertIcons[state.CurrentElemIconVertexIndex + 1].pos.Y = state.CurrentElemOffset.Y + state.LineBaseLine - iconSize.Y;
+					vertIcons[state.CurrentElemIconVertexIndex + 1].pos.Z = 0;
+					vertIcons[state.CurrentElemIconVertexIndex + 1].clr = state.Color;
+					vertIcons[state.CurrentElemIconVertexIndex + 1].texCoord = iconUvRect.TopRight;
 
-					vertIcons[lastState.IconVertexIndex + 2].pos.X = lastState.Offset.X + iconSize.X;
-					vertIcons[lastState.IconVertexIndex + 2].pos.Y = lastState.Offset.Y + lastState.LineBaseLine;
-					vertIcons[lastState.IconVertexIndex + 2].pos.Z = 0;
-					vertIcons[lastState.IconVertexIndex + 2].clr = lastState.Color;
-					vertIcons[lastState.IconVertexIndex + 2].texCoord = iconUvRect.BottomRight;
+					vertIcons[state.CurrentElemIconVertexIndex + 2].pos.X = state.CurrentElemOffset.X + iconSize.X;
+					vertIcons[state.CurrentElemIconVertexIndex + 2].pos.Y = state.CurrentElemOffset.Y + state.LineBaseLine;
+					vertIcons[state.CurrentElemIconVertexIndex + 2].pos.Z = 0;
+					vertIcons[state.CurrentElemIconVertexIndex + 2].clr = state.Color;
+					vertIcons[state.CurrentElemIconVertexIndex + 2].texCoord = iconUvRect.BottomRight;
 
-					vertIcons[lastState.IconVertexIndex + 3].pos.X = lastState.Offset.X;
-					vertIcons[lastState.IconVertexIndex + 3].pos.Y = lastState.Offset.Y + lastState.LineBaseLine;
-					vertIcons[lastState.IconVertexIndex + 3].pos.Z = 0;
-					vertIcons[lastState.IconVertexIndex + 3].clr = lastState.Color;
-					vertIcons[lastState.IconVertexIndex + 3].texCoord = iconUvRect.BottomLeft;
+					vertIcons[state.CurrentElemIconVertexIndex + 3].pos.X = state.CurrentElemOffset.X;
+					vertIcons[state.CurrentElemIconVertexIndex + 3].pos.Y = state.CurrentElemOffset.Y + state.LineBaseLine;
+					vertIcons[state.CurrentElemIconVertexIndex + 3].pos.Z = 0;
+					vertIcons[state.CurrentElemIconVertexIndex + 3].clr = state.Color;
+					vertIcons[state.CurrentElemIconVertexIndex + 3].texCoord = iconUvRect.BottomLeft;
 				}
 			}
 		}
@@ -468,29 +620,23 @@ namespace Duality
 		{
 			Vector2 size = Vector2.Zero;
 
-			// Rendering
-			RenderState lastState;
 			RenderState state = new RenderState(this);
 			Element elem;
 			Vector2 elemSize;
 			Vector2 elemOffset;
-			while (state.NextElemIndex < this.elements.Length)
+			while ((elem = state.NextElement()) != null)
 			{
-				elem = this.elements[state.NextElemIndex];
-				lastState = state.Clone();
-				state.NextElement();
-
 				if (elem is TextElement)
 				{
 					TextElement textElem = elem as TextElement;
-					elemSize = lastState.Font.MeasureText(textElem.Text);
-					elemOffset = new Vector2(lastState.Offset.X, lastState.Offset.Y + lastState.LineBaseLine - lastState.Font.Ascent);
+					elemSize = state.Font.MeasureText(state.CurrentElemText);
+					elemOffset = new Vector2(state.CurrentElemOffset.X, state.CurrentElemOffset.Y + state.LineBaseLine - state.Font.Ascent);
 				}
 				else if (elem is IconElement)
 				{
 					IconElement iconElem = elem as IconElement;
 					elemSize = this.icons[iconElem.IconIndex].size;
-					elemOffset = new Vector2(lastState.Offset.X, lastState.Offset.Y + lastState.LineBaseLine - elemSize.Y);
+					elemOffset = new Vector2(state.CurrentElemOffset.X, state.CurrentElemOffset.Y + state.LineBaseLine - elemSize.Y);
 				}
 				else
 				{
@@ -501,6 +647,8 @@ namespace Duality
 				size.X = Math.Max(size.X, elemOffset.X + elemSize.X);
 				size.Y = Math.Max(size.Y, elemOffset.Y + elemSize.Y);
 			}
+
+			size.X = Math.Max(size.X, this.minWidth);
 
 			return size;
 		}

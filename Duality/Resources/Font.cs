@@ -518,7 +518,7 @@ namespace Duality.Resources
 			{
 				this.ProcessTextAdv(text, i, out glyphData, out uvRect, out glyphXAdv, out glyphXOff);
 
-				textSize.X = Math.Max(textSize.X, curOffset + glyphXOff + glyphData.width);
+				textSize.X = Math.Max(textSize.X, curOffset + glyphXAdv);
 				textSize.Y = Math.Max(textSize.Y, glyphData.height);
 
 				curOffset += glyphXAdv;
@@ -526,7 +526,7 @@ namespace Duality.Resources
 
 			return textSize;
 		}
-		public string FitText(string text, float maxWidth)
+		public string FitText(string text, float maxWidth, bool byWord = false)
 		{
 			Vector2 textSize = Vector2.Zero;
 
@@ -535,14 +535,18 @@ namespace Duality.Resources
 			Rect uvRect;
 			float glyphXOff;
 			float glyphXAdv;
+			int lastValidLength = 0;
 			for (int i = 0; i < text.Length; i++)
 			{
 				this.ProcessTextAdv(text, i, out glyphData, out uvRect, out glyphXAdv, out glyphXOff);
 
-				textSize.X = Math.Max(textSize.X, curOffset + glyphXOff + glyphData.width);
+				textSize.X = Math.Max(textSize.X, curOffset + glyphXAdv);
 				textSize.Y = Math.Max(textSize.Y, glyphData.height);
 
-				if (textSize.X > maxWidth) return i > 1 ? text.Substring(0, i - 1) : "";
+				if (textSize.X > maxWidth) return lastValidLength > 0 ? text.Substring(0, lastValidLength) : "";
+
+				if (!byWord || text[i] == ' ')
+					lastValidLength = i + 1;
 
 				curOffset += glyphXAdv;
 			}

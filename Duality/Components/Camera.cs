@@ -416,11 +416,22 @@ namespace Duality.Components
 				foreach (Renderer r in Scene.Current.QueryVisibleRenderers(this.DrawDevice))
 					r.Draw(this);
 
+				//FormattedText text = new FormattedText(
+				//    "/f[0]Franz jagt im komplett verwahrlosten Taxi quer durch Bayern/n" + 
+				//    "/f[1]Franz jagt im komplett verwahrlosten Taxi quer durch Bayern/n" + 
+				//    "/f[2]Franz jagt im komplett verwahrlosten Taxi quer durch Bayern/n" + 
+				//    "/f[2]      jagt      mplett     ahr   te  T xi  ue    r h   yern");
+				//text.SetFonts(Font.GenericSerif12, Font.GenericSansSerif12, Font.GenericMonospace10);
+				//text.SetIcons(
+				//    new FormattedText.Icon(new Rect(0.0f, 0.0f, 0.5f, 0.5f), new Vector2(32, 32)), 
+				//    new FormattedText.Icon(new Rect(0.5f, 0.0f, 0.5f, 0.5f), new Vector2(32, 32)), 
+				//    new FormattedText.Icon(new Rect(0.5f, 0.5f, 0.5f, 0.5f), new Vector2(32, 32)), 
+				//    new FormattedText.Icon(new Rect(0.0f, 0.5f, 0.5f, 0.5f), new Vector2(32, 32)));
 				FormattedText text = new FormattedText(
-					"/f[0]Franz jagt im komplett verwahrlosten Taxi quer durch Bayern/n" + 
-					"/f[1]Franz jagt im komplett verwahrlosten Taxi quer durch Bayern/n" + 
-					"/f[2]Franz jagt im komplett verwahrlosten Taxi quer durch Bayern/n" + 
-					"/f[2]      jagt      mplett     ahr   te  T xi  ue    r h   yern");
+					"/i[0]/i[1]/i[3]/i[2]Das ist ein Test/n/f[1]/cFF0000FFFranz/cFFFFFFFF jagt im komplett verwahrlosten /f[2]Taxi quer durch Bayern");
+				text.MaxWidth = 1 + MathF.RoundToInt((MathF.Sin(Time.GameTimer / 3000.0f) + 1.0f) * 0.5f * 300.0f);
+				text.MinWidth = text.MaxWidth - 1;
+				text.MaxHeight = 250;
 				text.SetFonts(Font.GenericSerif12, Font.GenericSansSerif12, Font.GenericMonospace10);
 				text.SetIcons(
 					new FormattedText.Icon(new Rect(0.0f, 0.0f, 0.5f, 0.5f), new Vector2(32, 32)), 
@@ -442,6 +453,12 @@ namespace Duality.Components
 					new VertexP3(size.X + 0.5f - this.gameobj.Transform.Pos.X, -0.5f - this.gameobj.Transform.Pos.Y, 0),
 					new VertexP3(size.X + 0.5f - this.gameobj.Transform.Pos.X, size.Y + 0.5f - this.gameobj.Transform.Pos.Y, 0),
 					new VertexP3(-0.5f - this.gameobj.Transform.Pos.X, size.Y + 0.5f - this.gameobj.Transform.Pos.Y, 0)});
+				this.DrawDevice.AddVertices(Material.InvertWhite, BeginMode.Lines, new VertexP3[] {
+					new VertexP3(text.MaxWidth + 0.5f - this.gameobj.Transform.Pos.X, -0.5f - this.gameobj.Transform.Pos.Y, 0),
+					new VertexP3(text.MaxWidth + 0.5f - this.gameobj.Transform.Pos.X, size.Y + 0.5f - this.gameobj.Transform.Pos.Y, 0)});
+				this.DrawDevice.AddVertices(Material.InvertWhite, BeginMode.Lines, new VertexP3[] {
+					new VertexP3(-0.5f - this.gameobj.Transform.Pos.X, -0.5f - this.gameobj.Transform.Pos.Y + text.MaxHeight, 0),
+					new VertexP3(size.X + 0.5f - this.gameobj.Transform.Pos.X, -0.5f - this.gameobj.Transform.Pos.Y + text.MaxHeight, 0)});
 			}
 			
 			// Setup picking RT
