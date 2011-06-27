@@ -10,6 +10,8 @@ namespace Duality
 	[Serializable]
 	public struct Rect : IEquatable<Rect>
 	{
+		public static readonly Rect Empty = new Rect(0, 0, 0, 0);
+
 		public	float	x;
 		public	float	y;
 		public	float	w;
@@ -166,6 +168,28 @@ namespace Duality
 			newRect.y *= offset.Y;
 			newRect.w *= offset.X;
 			newRect.h *= offset.Y;
+			return newRect;
+		}
+
+		public Rect ExpandToContain(float x, float y, float w, float h)
+		{
+			return this.ExpandToContain(x, y).ExpandToContain(x + w, y + h);
+		}
+		public Rect ExpandToContain(float x, float y)
+		{
+			Rect newRect = this;
+			if (x < newRect.x)
+			{
+				newRect.w += newRect.x - x;
+				newRect.x = x;
+			}
+			if (y < newRect.y)
+			{
+				newRect.h += newRect.y - y;
+				newRect.y = y;
+			}
+			if (x > newRect.x + newRect.w) newRect.w = x - newRect.x;
+			if (y > newRect.y + newRect.h) newRect.h = y - newRect.y;
 			return newRect;
 		}
 

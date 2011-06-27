@@ -1,18 +1,9 @@
 ﻿
--->	Formatted text
-	-->	FormattedText.Metrics class to return from Measuer() instead of just the size
-		-->	Information about overall text boundary size
-		-->	Information about line offsets & sizes
-		-->	Information about glyph & element offsets & sizes
+--> Font icon in the editor
+-->	FontPropertyEditor
+-->	Font importing & handling of fonts stored locally in .res files
 
--->	Rendering Text? Ingame? How to?
-	-->	Provide a TextRenderer Component?
-	-->	There needs to be a more general way. Figure something out.
-		-->	Text can be a subset of vertices of any renderer
-		-->	Text can also be stand-alone via Component
-		-->	Text can be formatted
-		-->	Provide a general method to emit vertex data based on a formatted text and additional params?
-
+-->	TextRenderer Component
 
 -->	Figure out suitable RenderScreenOverlay-like system
 	-->	Goal: Rendering screen overlay that bypasses 
@@ -21,7 +12,6 @@
 		-->	Pro: Great for debugging
 		-->	Pro: Doesn't really need Renderer stuff (bounding radius, etc.. )
 			because it is always visible, independent from camera transform, etc.
-
 
 -->	Checklist for first Game: Asteroids
 	-->	Any Usability stuff that comes up while editing / creating the game

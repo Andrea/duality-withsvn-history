@@ -16,6 +16,7 @@ namespace Duality
 	public class FormattedText
 	{
 		public	const	string	FormatSlash			= "//";
+		public	const	string	FormatElement		= "/e";
 		public	const	string	FormatColor			= "/c";
 		public	const	string	FormatFont			= "/f";
 		public	const	string	FormatIcon			= "/i";
@@ -117,6 +118,36 @@ namespace Duality
 				this.alignRight = alignRight;
 			}
 		}
+		public class Metrics
+		{
+			private	Vector2		size;
+			private	Rect[]		lineBounds;
+			private	Rect[]		elementBounds;
+
+			public Vector2 Size 
+			{
+				get { return this.size; }
+			}
+			public int LineCount
+			{
+				get { return this.lineBounds.Length; }
+			}
+			public Rect[] LineBounds
+			{
+				get { return this.lineBounds; }
+			}
+			public Rect[] ElementBounds
+			{
+				get { return this.elementBounds; }
+			}
+
+			public Metrics(Vector2 size, IEnumerable<Rect> lineBounds, IEnumerable<Rect> elementBounds)
+			{
+				this.size = size;
+				this.lineBounds = lineBounds.ToArray();
+				this.elementBounds = elementBounds.ToArray();
+			}
+		}
 		public enum WrapMode
 		{
 			Glyph,
@@ -137,6 +168,7 @@ namespace Duality
 			private	int[]			vertTextIndex;
 			private	int				vertIconIndex;
 			private	int				elemIndex;
+			private	int				lineIndex;
 			private	Vector2			offset;
 			// Format state
 			private	int				fontIndex;
@@ -177,6 +209,10 @@ namespace Duality
 			{
 				get { return this.elemIndex - 1; }
 			}
+			public int CurrentLineIndex
+			{
+				get { return this.lineIndex; }
+			}
 			public Vector2 CurrentElemOffset
 			{
 				get { return this.curElemOffset; }
@@ -212,6 +248,7 @@ namespace Duality
 				this.vertIconIndex = other.vertIconIndex;
 				this.offset = other.offset;
 				this.elemIndex = other.elemIndex;
+				this.lineIndex = other.lineIndex;
 
 				this.fontIndex = other.fontIndex;
 				this.font = other.font;
@@ -395,6 +432,7 @@ namespace Duality
 			{
 				// Advance to new line
 				this.offset.Y += this.lineHeight;
+				this.lineIndex++;
 				// Init new line
 				this.PeekLineStats();
 				this.offset.X = this.lineBeginX;
@@ -564,6 +602,10 @@ namespace Duality
 
 							i += 8;
 						}
+						if (this.sourceText[i] == 'e')
+						{
+							// Just separates elements
+						}
 						else if (this.sourceText[i] == 'a')
 						{
 							string alignString = new StringBuilder().Append(this.sourceText, i + 1, 1).ToString();
@@ -645,7 +687,11 @@ namespace Duality
 			this.fonts = fonts;
 		}
 
-		public void EmitVertices(ref VertexC4P3T2[][] vertText, ref VertexC4P3T2[] vertIcons, float x, float y)
+		public void EmitVertices(ref VertexC4P3T2[][] vertText, ref VertexC4P3T2[] vertIcons, float x, float y, float z = 0.0f)
+		{
+			this.EmitVertices(ref vertText, ref vertIcons, x, y, z, ColorRGBA.White);
+		}
+		public void EmitVertices(ref VertexC4P3T2[][] vertText, ref VertexC4P3T2[] vertIcons, float x, float y, ColorRGBA clr)
 		{
 			this.EmitVertices(ref vertText, ref vertIcons);
 			
@@ -658,6 +704,7 @@ namespace Duality
 					Vector3 vertex = vertText[i][j].pos;
 					vertex += offset;
 					vertText[i][j].pos = vertex;
+					vertText[i][j].clr *= clr;
 				}
 			}
 			for (int i = 0; i < vertIcons.Length; i++)
@@ -665,6 +712,39 @@ namespace Duality
 				Vector3 vertex = vertIcons[i].pos;
 				vertex += offset;
 				vertIcons[i].pos = vertex;
+				vertIcons[i].clr *= clr;
+			}
+		}
+		public void EmitVertices(ref VertexC4P3T2[][] vertText, ref VertexC4P3T2[] vertIcons, float x, float y, float z, ColorRGBA clr, float angle = 0.0f, float scale = 1.0f)
+		{
+			this.EmitVertices(ref vertText, ref vertIcons);
+			
+			Vector3 offset = new Vector3(x, y, z);
+			Vector2 xDot, yDot;
+			MathF.GetTransformDotVec(angle, scale, out xDot, out yDot);
+
+			for (int i = 0; i < vertText.Length; i++)
+			{
+				for (int j = 0; j < vertText[i].Length; j++)
+				{
+					Vector3 vertex = vertText[i][j].pos;
+
+					MathF.TransdormDotVec(ref vertex, ref xDot, ref yDot);
+					vertex += offset;
+
+					vertText[i][j].pos = vertex;
+					vertText[i][j].clr *= clr;
+				}
+			}
+			for (int i = 0; i < vertIcons.Length; i++)
+			{
+				Vector3 vertex = vertIcons[i].pos;
+
+				MathF.TransdormDotVec(ref vertex, ref xDot, ref yDot);
+				vertex += offset;
+
+				vertIcons[i].pos = vertex;
+				vertIcons[i].clr *= clr;
 			}
 		}
 		public void EmitVertices(ref VertexC4P3T2[][] vertText, ref VertexC4P3T2[] vertIcons)
@@ -725,14 +805,22 @@ namespace Duality
 				}
 			}
 		}
-		public Vector2 Measure()
+
+		public Metrics Measure()
 		{
 			Vector2 size = Vector2.Zero;
+			List<Rect> lineBounds = new List<Rect>();
+			List<Rect> elementBounds = new List<Rect>();
 
 			RenderState state = new RenderState(this);
 			Element elem;
 			Vector2 elemSize;
 			Vector2 elemOffset;
+			int lastElemIndex = -1;
+			int lastLineIndex = 0;
+			bool elemIndexChanged = true;
+			bool lineChanged = true;
+			bool hasBounds;
 			while ((elem = state.NextElement()) != null)
 			{
 				if (elem is TextElement)
@@ -740,24 +828,44 @@ namespace Duality
 					TextElement textElem = elem as TextElement;
 					elemSize = state.Font.MeasureText(state.CurrentElemText);
 					elemOffset = new Vector2(state.CurrentElemOffset.X, state.CurrentElemOffset.Y + state.LineBaseLine - state.Font.Ascent);
+					hasBounds = elemSize != Vector2.Zero;
 				}
 				else if (elem is IconElement)
 				{
 					IconElement iconElem = elem as IconElement;
 					elemSize = this.icons[iconElem.IconIndex].size;
 					elemOffset = new Vector2(state.CurrentElemOffset.X, state.CurrentElemOffset.Y + state.LineBaseLine - elemSize.Y);
+					hasBounds = true;
 				}
 				else
 				{
 					elemSize = Vector2.Zero;
 					elemOffset = Vector2.Zero;
+					hasBounds = false;
 				}
+
+				if (elemIndexChanged) elementBounds.Add(Rect.Empty);
+				if (hasBounds && elementBounds[elementBounds.Count - 1] == Rect.Empty)
+					elementBounds[elementBounds.Count - 1] = new Rect(elemOffset.X, elemOffset.Y, elemSize.X, elemSize.Y);
+				else if (hasBounds)
+					elementBounds[elementBounds.Count - 1] = elementBounds[elementBounds.Count - 1].ExpandToContain(elemOffset.X, elemOffset.Y, elemSize.X, elemSize.Y);
+				
+				if (lineChanged) lineBounds.Add(Rect.Empty);
+				if (hasBounds && lineBounds[lineBounds.Count - 1] == Rect.Empty)
+					lineBounds[lineBounds.Count - 1] = new Rect(elemOffset.X, elemOffset.Y, elemSize.X, elemSize.Y);
+				else if (hasBounds)
+					lineBounds[lineBounds.Count - 1] = lineBounds[lineBounds.Count - 1].ExpandToContain(elemOffset.X, elemOffset.Y, elemSize.X, elemSize.Y);
 
 				size.X = Math.Max(size.X, elemOffset.X + elemSize.X);
 				size.Y = Math.Max(size.Y, elemOffset.Y + elemSize.Y);
+
+				elemIndexChanged = lastElemIndex != state.CurrentElemIndex;
+				lineChanged = lastLineIndex != state.CurrentLineIndex;
+				lastElemIndex = state.CurrentElemIndex;
+				lastLineIndex = state.CurrentLineIndex;
 			}
 
-			return size;
+			return new Metrics(size, lineBounds, elementBounds);
 		}
 	}
 }

@@ -53,6 +53,23 @@ namespace Duality.ColorFormat
 			this.a = a;
 		}
 		
+		public ColorRGBA WithRed(byte r)
+		{
+			return new ColorRGBA(r, this.g, this.b, this.a);
+		}
+		public ColorRGBA WithGreen(byte g)
+		{
+			return new ColorRGBA(this.r, g, this.b, this.a);
+		}
+		public ColorRGBA WithBlue(byte b)
+		{
+			return new ColorRGBA(this.r, this.g, b, this.a);
+		}
+		public ColorRGBA WithAlpha(byte a)
+		{
+			return new ColorRGBA(this.r, this.g, this.b, a);
+		}
+
 		public float GetLuminance()
 		{
 			return (0.2126f * this.r + 0.7152f * this.g + 0.0722f * this.b) / 255.0f;
