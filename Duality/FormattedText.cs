@@ -15,11 +15,14 @@ namespace Duality
 	[Serializable]
 	public class FormattedText
 	{
-		public	const	string	FormatSlash		= "//";
-		public	const	string	FormatColor		= "/c";
-		public	const	string	FormatFont		= "/f";
-		public	const	string	FormatIcon		= "/i";
-		public	const	string	FormatNewline	= "/n";
+		public	const	string	FormatSlash			= "//";
+		public	const	string	FormatColor			= "/c";
+		public	const	string	FormatFont			= "/f";
+		public	const	string	FormatIcon			= "/i";
+		public	const	string	FormatAlignLeft		= "/al";
+		public	const	string	FormatAlignRight	= "/ar";
+		public	const	string	FormatAlignCenter	= "/ac";
+		public	const	string	FormatNewline		= "/n";
 
 
 		[Serializable] public abstract class Element {}
@@ -75,8 +78,20 @@ namespace Duality
 				this.color = color;
 			}
 		}
+		[Serializable] public class AlignChangeElement : Element
+		{
+			private	Alignment align;
+			public Alignment Align
+			{
+				get { return this.align; }
+			}
+			public AlignChangeElement(Alignment align)
+			{
+				this.align = align;
+			}
+		}
 
-		public struct Icon
+		[Serializable] public struct Icon
 		{
 			public	Rect	uvRect;
 			public	Vector2	size;
@@ -87,11 +102,32 @@ namespace Duality
 				this.size = size;
 			}
 		}
+		[Serializable] public struct FlowArea
+		{
+			public	int		width;
+			public	int		height;
+			public	int		y;
+			public	bool	alignRight;
+
+			public FlowArea(int y, int height, int width, bool alignRight)
+			{
+				this.y = y;
+				this.height = height;
+				this.width = width;
+				this.alignRight = alignRight;
+			}
+		}
 		public enum WrapMode
 		{
 			Glyph,
 			Word,
 			Element
+		}
+		public enum Alignment
+		{
+			Left,
+			Right,
+			Center
 		}
 
 		private class RenderState
@@ -107,8 +143,12 @@ namespace Duality
 			private	Font			font;
 			private	ColorRGBA		color;
 			// Line stats
+			private	float			lineBeginX;
+			private	float			lineAvailWidth;
+			private	float			lineWidth;
 			private	float			lineHeight;
 			private	int				lineBaseLine;
+			private	Alignment		lineAlign;
 			// Current element data. Current == just 'been processed in NextElement()
 			private	Vector2			curElemOffset;
 			private	int				curElemVertTextIndex;
@@ -161,20 +201,28 @@ namespace Duality
 				this.vertTextIndex = new int[this.parent.fonts.Length];
 				this.font = this.parent.fonts[0].Res;
 				this.color = ColorRGBA.White;
+
 				this.PeekLineStats();
+				this.offset.X = this.lineBeginX;
 			}
 			public RenderState(RenderState other)
 			{
 				this.parent = other.parent;
 				this.vertTextIndex = other.vertTextIndex.Clone() as int[];
 				this.vertIconIndex = other.vertIconIndex;
+				this.offset = other.offset;
+				this.elemIndex = other.elemIndex;
+
 				this.fontIndex = other.fontIndex;
 				this.font = other.font;
 				this.color = other.color;
-				this.offset = other.offset;
+
+				this.lineBeginX = other.lineBeginX;
+				this.lineWidth = other.lineWidth;
+				this.lineAvailWidth = other.lineAvailWidth;
 				this.lineHeight = other.lineHeight;
 				this.lineBaseLine = other.lineBaseLine;
-				this.elemIndex = other.elemIndex;
+				this.lineAlign = other.lineAlign;
 
 				this.curElemOffset = other.curElemOffset;
 				this.curElemVertTextIndex = other.curElemVertTextIndex;
@@ -187,10 +235,9 @@ namespace Duality
 				return new RenderState(this);
 			}
 
-			public Element NextElement()
+			public Element NextElement(bool stopAtLineBreak = false)
 			{
 				if (this.elemIndex >= this.parent.elements.Length) return null;
-				if (this.offset.Y + this.lineHeight > this.parent.maxHeight) return null;
 				Element elem = this.parent.elements[this.elemIndex];
 
 				if (elem is TextElement)
@@ -203,14 +250,17 @@ namespace Duality
 					if (this.parent.maxWidth > 0 && this.parent.wrapMode != WrapMode.Element)
 					{
 						textToDisplay = textElem.Text.Substring(this.curElemWrapIndex, textElem.Text.Length - this.curElemWrapIndex);
-						fittingText = this.font.FitText(textToDisplay, this.parent.maxWidth - this.offset.X, this.parent.wrapMode == WrapMode.Word);
+						fittingText = this.font.FitText(textToDisplay, this.lineAvailWidth - (this.offset.X - this.lineBeginX), this.parent.wrapMode == WrapMode.Word);
 
 						// If by-word results in instant line break: Do it by glyph instead
-						if (this.offset.X == 0 && fittingText.Length == 0 && this.parent.wrapMode == WrapMode.Word) 
-							fittingText = this.font.FitText(textToDisplay, this.parent.maxWidth - this.offset.X, false);
+						if (this.offset.X == this.lineBeginX && fittingText.Length == 0 && this.parent.wrapMode == WrapMode.Word) 
+							fittingText = this.font.FitText(textToDisplay, this.lineAvailWidth - (this.offset.X - this.lineBeginX), false);
 
 						// If doing it by glyph results in an instant line break: Use at least one glyph anyway
-						if (this.offset.X == 0 && fittingText.Length == 0) fittingText = textToDisplay.Substring(0, 1);
+						if (this.lineAvailWidth == this.parent.maxWidth && 
+							this.offset.X == this.lineBeginX && 
+							this.parent.maxHeight == 0 &&
+							fittingText.Length == 0) fittingText = textToDisplay.Substring(0, 1);
 					}
 					// No word wrap (or by whole element)
 					else
@@ -223,8 +273,13 @@ namespace Duality
 					// Perform word wrap by whole Element
 					if (this.parent.maxWidth > 0 && this.parent.wrapMode == WrapMode.Element)
 					{
-						if (this.offset.X > 0.0f && this.offset.X + textElemSize.X > this.parent.maxWidth)
-							this.PerformNewLine();
+						if ((this.lineAvailWidth < this.parent.maxWidth || this.offset.X > this.lineBeginX || this.parent.maxHeight > 0) && 
+							this.offset.X + textElemSize.X > this.lineAvailWidth)
+						{
+							if (stopAtLineBreak)	return null;
+							else					this.PerformNewLine();
+							if (this.offset.Y + this.lineHeight > this.parent.maxHeight) return null;
+						}
 					}
 
 					this.curElemText = fittingText;
@@ -245,11 +300,14 @@ namespace Duality
 					// If nothing fits: Begin a new line & return
 					else
 					{
-						this.PerformNewLine();
+						if (stopAtLineBreak)	return null;
+						else					this.PerformNewLine();
+						if (this.offset.Y + this.lineHeight > this.parent.maxHeight) return null;
 					}
 
 					this.vertTextIndex[this.fontIndex] += fittingText.Length * 4;
 					this.offset.X += textElemSize.X;
+					this.lineWidth += textElemSize.X;
 					this.lineHeight = Math.Max(this.lineHeight, this.font.Height);
 				}
 				else if (elem is IconElement)
@@ -259,8 +317,13 @@ namespace Duality
 					// Word Wrap
 					if (this.parent.maxWidth > 0)
 					{
-						if (this.offset.X > 0.0f && this.offset.X + this.parent.icons[iconElem.IconIndex].size.X > this.parent.maxWidth)
-							this.PerformNewLine();
+						while ((this.lineAvailWidth < this.parent.maxWidth || this.offset.X > this.lineBeginX || this.parent.maxHeight > 0) && 
+							this.offset.X - this.lineBeginX + this.parent.icons[iconElem.IconIndex].size.X > this.lineAvailWidth)
+						{
+							if (stopAtLineBreak)	return null;
+							else					this.PerformNewLine();
+							if (this.offset.Y + this.lineHeight > this.parent.maxHeight) return null;
+						}
 					}
 
 					this.curElemVertIconIndex = this.vertIconIndex;
@@ -268,6 +331,7 @@ namespace Duality
 
 					this.vertIconIndex += 4;
 					this.offset.X += this.parent.icons[iconElem.IconIndex].size.X;
+					this.lineWidth += this.parent.icons[iconElem.IconIndex].size.X;
 					this.lineHeight = Math.Max(this.lineHeight, this.parent.icons[iconElem.IconIndex].size.Y);
 					this.lineBaseLine = Math.Max(this.lineBaseLine, (int)Math.Round(this.parent.icons[iconElem.IconIndex].size.Y));
 					this.elemIndex++;
@@ -286,80 +350,110 @@ namespace Duality
 					this.color = colorChangeElem.Color;
 					this.elemIndex++;
 				}
+				else if (elem is AlignChangeElement)
+				{
+					AlignChangeElement alignChangeElem = elem as AlignChangeElement;
+					this.lineAlign = alignChangeElem.Align;
+					this.elemIndex++;
+				}
 				else if (elem is NewLineElement)
 				{
 					this.elemIndex++;
-					this.PerformNewLine();
+					if (stopAtLineBreak)	return null;
+					else					this.PerformNewLine();
+					if (this.offset.Y + this.lineHeight > this.parent.maxHeight) return null;
 				}
 
 				return elem;
 			}
 
-			private bool NextElementPerformsNewLine()
+			private int GetFlowAreaMinXAt(int y, int h)
 			{
-				if (this.elemIndex >= this.parent.elements.Length) return false;
-				Element elem = this.parent.elements[this.elemIndex];
-
-				if (elem is TextElement)
+				if (this.parent.flowAreas == null) return 0;
+				int minX = 0;
+				for (int i = 0; i < this.parent.flowAreas.Length; i++)
 				{
-					TextElement textElem = elem as TextElement;
-					// Word Wrap
-					if (this.parent.maxWidth > 0)
-					{
-						// Word wrap by glyph / word
-						if (this.parent.wrapMode != WrapMode.Element)
-						{
-							string textToDisplay = textElem.Text.Substring(this.curElemWrapIndex, textElem.Text.Length - this.curElemWrapIndex);
-							string fittingText = this.font.FitText(textToDisplay, this.parent.maxWidth - this.offset.X, this.parent.wrapMode == WrapMode.Word);
-							if (this.offset.X > 0 && fittingText.Length == 0) return true;
-						}
-						// Word wrap by whole Element
-						else
-						{
-							Vector2 textElemSize = this.font.MeasureText(textElem.Text);
-							if (this.offset.X > 0.0f && this.offset.X + textElemSize.X > this.parent.maxWidth)
-								return true;
-						}
-					}
+					if (this.parent.flowAreas[i].alignRight) continue;
+					if (y + h < this.parent.flowAreas[i].y || y > this.parent.flowAreas[i].y + this.parent.flowAreas[i].height) continue;
+					minX = Math.Max(minX, this.parent.flowAreas[i].width);
 				}
-				else if (elem is IconElement)
+				return minX;
+			}
+			private int GetFlowAreaMaxXAt(int y, int h)
+			{
+				if (this.parent.flowAreas == null) return this.parent.maxWidth;
+				int maxX = this.parent.maxWidth;
+				for (int i = 0; i < this.parent.flowAreas.Length; i++)
 				{
-					IconElement iconElem = elem as IconElement;
-					// Word Wrap
-					if (this.parent.maxWidth > 0)
-					{
-						if (this.offset.X > 0.0f && this.offset.X + this.parent.icons[iconElem.IconIndex].size.X > this.parent.maxWidth)
-							return true;
-					}
+					if (!this.parent.flowAreas[i].alignRight) continue;
+					if (y + h < this.parent.flowAreas[i].y || y > this.parent.flowAreas[i].y + this.parent.flowAreas[i].height) continue;
+					maxX = Math.Min(maxX, this.parent.maxWidth - this.parent.flowAreas[i].width);
 				}
-				else if (elem is NewLineElement) return true;
-
-				return false;
+				return maxX;
 			}
 			private void PerformNewLine()
 			{
-				this.offset.X = 0;
+				// Advance to new line
 				this.offset.Y += this.lineHeight;
+				// Init new line
 				this.PeekLineStats();
+				this.offset.X = this.lineBeginX;
 			}
 			private void PeekLineStats()
 			{
+				// First pass: Determine line width, height & base line
 				this.lineBaseLine = this.font.BaseLine;
 				this.lineHeight = this.font.Height;
+				this.lineBeginX = 0.0f;
+				this.lineWidth = 0.0f;
+				this.lineAvailWidth = this.parent.maxWidth;
+				this.offset.X = this.lineBeginX;
 
 				RenderState peekState = this.Clone();
-				while (!peekState.NextElementPerformsNewLine() && peekState.NextElement() != null);
+				while (peekState.NextElement(true) != null);
 
 				this.lineBaseLine = peekState.lineBaseLine;
+				this.lineWidth = peekState.lineWidth;
 				this.lineHeight = peekState.lineHeight;
+				this.lineAlign = peekState.lineAlign;
+
+				// Second pass: Obey flow areas
+				if (this.parent.flowAreas != null && this.parent.flowAreas.Length > 0)
+				{
+					this.lineBeginX = this.GetFlowAreaMinXAt((int)this.offset.Y, (int)this.lineHeight);
+					this.lineAvailWidth = this.GetFlowAreaMaxXAt((int)this.offset.Y, (int)this.lineHeight) - this.lineBeginX;
+					this.lineBaseLine = this.font.BaseLine;
+					this.lineHeight = this.font.Height;
+					this.lineWidth = 0.0f;
+					this.offset.X = this.lineBeginX;
+
+					peekState = this.Clone();
+					while (peekState.NextElement(true) != null);
+
+					this.lineBaseLine = peekState.lineBaseLine;
+					this.lineWidth = peekState.lineWidth;
+					this.lineHeight = peekState.lineHeight;
+					this.lineAlign = peekState.lineAlign;
+				}
+
+				// Apply alignment
+				if (this.parent.maxWidth != 0)
+				{
+					if (this.lineAlign == Alignment.Right)
+						this.lineBeginX += this.lineAvailWidth - this.lineWidth;
+					else if (this.lineAlign == Alignment.Center)
+						this.lineBeginX += (this.lineAvailWidth - this.lineWidth) / 2;
+
+					this.lineBeginX = MathF.Round(this.lineBeginX);
+				}
 			}
 		}
 
 
 		private	string				sourceText		= null;
 		private	Icon[]				icons			= null;
+		private	FlowArea[]			flowAreas		= null;
 		private	ContentRef<Font>[]	fonts			= null;
-		private	int					minWidth		= 0;
 		private	int					maxWidth		= 0;
 		private	int					maxHeight		= 0;
 		private	WrapMode			wrapMode		= WrapMode.Word;
@@ -380,15 +474,15 @@ namespace Duality
 			get { return this.icons; }
 			set { this.SetIcons(value); }
 		}
+		public FlowArea[] FlowAreas
+		{
+			get { return this.flowAreas; }
+			set { this.SetFlowAreas(value); }
+		}
 		public ContentRef<Font>[] Fonts
 		{
 			get { return this.fonts; }
 			set { this.SetFonts(value); }
-		}
-		public int MinWidth
-		{
-			get { return this.minWidth; }
-			set { this.minWidth = value; }
 		}
 		public int MaxWidth
 		{
@@ -470,6 +564,17 @@ namespace Duality
 
 							i += 8;
 						}
+						else if (this.sourceText[i] == 'a')
+						{
+							string alignString = new StringBuilder().Append(this.sourceText, i + 1, 1).ToString();
+							if (alignString == "l")
+								elemList.Add(new AlignChangeElement(Alignment.Left));
+							else if (alignString == "r")
+								elemList.Add(new AlignChangeElement(Alignment.Right));
+							else
+								elemList.Add(new AlignChangeElement(Alignment.Center));
+							i += 1;
+						}
 						else if (this.sourceText[i] == 'f')
 						{
 							int indexOfClose = this.sourceText.IndexOf(']', i + 1);
@@ -530,6 +635,10 @@ namespace Duality
 		public void SetIcons(params Icon[] icons)
 		{
 			this.icons = icons;
+		}
+		public void SetFlowAreas(params FlowArea[] flowAreas)
+		{
+			this.flowAreas = flowAreas;
 		}
 		public void SetFonts(params ContentRef<Font>[] fonts)
 		{
@@ -647,8 +756,6 @@ namespace Duality
 				size.X = Math.Max(size.X, elemOffset.X + elemSize.X);
 				size.Y = Math.Max(size.Y, elemOffset.Y + elemSize.Y);
 			}
-
-			size.X = Math.Max(size.X, this.minWidth);
 
 			return size;
 		}

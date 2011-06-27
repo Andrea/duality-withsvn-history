@@ -1,23 +1,9 @@
 ﻿
 -->	Formatted text
-	-->	Provide glyph & icon measurement
-	-->	Provide glyph & icon picking
-	-->	Features yet to support:
-		-->	Horizontal text alignment: Left, Right, Center, Justify(?)
-			-->	Going to need the lines actual width in advance
-			-->	PeekLineStats can do that.
-				It will also determine the full lines alignment (might be overwritten inbetween)
-			-->	Doesn't affect NextElementPerformsNewLine()
-			-->	Implement in RenderState based on peeked line stats
-			-->	Similar to Text flow stuff: When beginning a new line, offset.X "depends".
-				Need to change behaviour according to that (see below)
-		-->	Text flow: Define rectangular areas (left or right, NOT free) the text flow will avoid
-			-->	Will be very handy for ingame encyclopedias, etc.
-			-->	Does affect NextElementPerformsNewLine()
-			-->	Beware of "min 1 glyph per line" rule, need to deactivate that conditionally
-			-->	PerformNewLine() needs to check at which X the line begins, depending on Y
-			-->	Where currently checking offset.X > 0 for word wrap, need to check vs. dynamic line begin X instead
-			-->	maxWidth depends on Y
+	-->	FormattedText.Metrics class to return from Measuer() instead of just the size
+		-->	Information about overall text boundary size
+		-->	Information about line offsets & sizes
+		-->	Information about glyph & element offsets & sizes
 
 -->	Rendering Text? Ingame? How to?
 	-->	Provide a TextRenderer Component?
