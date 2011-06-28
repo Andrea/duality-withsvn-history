@@ -142,6 +142,12 @@
     <Compile Include="Controls\PropertyEditors\IDictionaryPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Controls\PropertyEditors\StringEnumPropertyEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\PropertyEditors\StringEnumPropertyEditor.Designer.cs">
+      <DependentUpon>StringEnumPropertyEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\PropertyEditors\Vector3PropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -249,6 +255,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\PropertyEditors\IColorDataPropertyEditor.resx">
       <DependentUpon>IColorDataPropertyEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\PropertyEditors\StringEnumPropertyEditor.resx">
+      <DependentUpon>StringEnumPropertyEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\PropertyEditors\Vector3PropertyEditor.resx">
       <DependentUpon>Vector3PropertyEditor.cs</DependentUpon>

@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using SysDrawFont = System.Drawing.Font;
 
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -13,6 +14,7 @@ using Duality.Components;
 using Duality.ColorFormat;
 using Duality.VertexFormat;
 using Duality.Resources;
+using Font = Duality.Resources.Font;
 
 using DualityEditor;
 using DualityEditor.Forms;
@@ -1354,7 +1356,12 @@ namespace EditorBase
 		{
 			if (e.HasProperty(ReflectionHelper.Property_GameObject_ActiveSingle) ||
 				e.Objects.Components.Any(c => c is Transform || c is Renderer) ||
-				e.Objects.Resources.Any(r => r is Material || r is ShaderProgram || r is AbstractShader || r is DrawTechnique))
+				e.Objects.Resources.Any(r =>
+					r is Material || 
+					r is ShaderProgram ||
+					r is AbstractShader ||
+					r is DrawTechnique ||
+					r is Font))
 			{
 				this.UpdateSelectionStats();
 				this.glControl.Invalidate();
@@ -1363,7 +1370,11 @@ namespace EditorBase
 		private void EditorForm_ResourceModified(object sender, ResourceEventArgs e)
 		{
 			if (!e.IsResource) return;
-			if (e.Content.Is<Material>() || e.Content.Is<ShaderProgram>() || e.Content.Is<AbstractShader>() || e.Content.Is<DrawTechnique>())
+			if (e.Content.Is<Material>() || 
+				e.Content.Is<ShaderProgram>() || 
+				e.Content.Is<AbstractShader>() || 
+				e.Content.Is<DrawTechnique>() || 
+				e.Content.Is<Font>())
 			{
 				this.glControl.Invalidate();
 			}

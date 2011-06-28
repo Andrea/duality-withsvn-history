@@ -135,7 +135,10 @@ namespace Duality.Resources
 		{
 			get { return this.familyName; }
 			set 
-			{ 
+			{
+				// Do not allow changing the family if a custom family is used
+				if (this.customFamilyData != null) return;
+
 				this.familyName = value;
 				this.needsReload = true;
 			}
@@ -737,6 +740,8 @@ namespace Duality.Resources
 
 		public static FontFamily GetFontFamily(string name)
 		{
+			if (string.IsNullOrEmpty(name)) return null;
+
 			FontFamily result;
 			if (!loadedFontRegistry.TryGetValue(name, out result))
 			{

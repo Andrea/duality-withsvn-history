@@ -62,6 +62,9 @@
     </Compile>
     <Compile Include="EditorBasePlugin.cs" />
     <Compile Include="AudioDataFileImporter.cs" />
+    <Compile Include="FontFileImporter.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="PropertyEditors\Resources\FontPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>

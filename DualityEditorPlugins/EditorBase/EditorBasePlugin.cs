@@ -203,6 +203,7 @@ namespace EditorBase
 			main.RegisterFileImporter(new PixmapFileImporter());
 			main.RegisterFileImporter(new AudioDataFileImporter());
 			main.RegisterFileImporter(new ShaderFileImporter());
+			main.RegisterFileImporter(new FontFileImporter());
 		}
 		
 		public ProjectFolderView RequestProjectView()

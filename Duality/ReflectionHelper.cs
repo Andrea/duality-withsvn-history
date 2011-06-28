@@ -98,6 +98,9 @@ namespace Duality
 
 		public static readonly PropertyInfo	Property_Font_NeedsReload;
 		public static readonly PropertyInfo	Property_Font_Material;
+		public static readonly PropertyInfo	Property_Font_CustomFamilyData;
+		public static readonly PropertyInfo	Property_Font_Family;
+		public static readonly PropertyInfo	Property_Font_Size;
 
 
 		public static readonly FieldInfo Field_GameObject_Name;
@@ -206,6 +209,9 @@ namespace Duality
 			Type font = typeof(Font);
 			Property_Font_NeedsReload		= font.GetProperty("NeedsReload");
 			Property_Font_Material			= font.GetProperty("Material");
+			Property_Font_Family			= font.GetProperty("Family");
+			Property_Font_CustomFamilyData	= font.GetProperty("CustomFamilyData");
+			Property_Font_Size				= font.GetProperty("Size");
 
 			Type soundEmitter = typeof(SoundEmitter);
 			Property_SoundEmitter_Sources	= soundEmitter.GetProperty("Sources");
