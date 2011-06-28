@@ -433,9 +433,13 @@ namespace Duality.Components
 				text.SetFlowAreas(
 				    new FormattedText.FlowArea(0, 150, 100, false),
 				    new FormattedText.FlowArea(200, 150, 100, true));
-				text.MaxWidth = 1 + MathF.RoundToInt((MathF.Sin(Time.GameTimer / 3000.0f) + 1.0f) * 0.5f * 500.0f);
+				text.MaxWidth = 200 + 300;//MathF.RoundToInt((MathF.Sin(Time.GameTimer / 2000.0f) + 1.0f) * 0.5f * 300.0f);
 				text.MaxHeight = 450;
-				text.SetFonts(Font.GenericSerif12, Font.GenericSansSerif12, Font.GenericMonospace10);
+				ContentRef<Font> testFont = ContentProvider.RequestContent<Font>("Data\\TestFont.Font.res");
+				text.SetFonts(
+					testFont.IsAvailable ? testFont : Font.GenericSerif12, 
+					Font.GenericSansSerif12, 
+					Font.GenericMonospace10);
 				text.SetIcons(
 					new FormattedText.Icon(new Rect(0.0f, 0.0f, 0.5f, 0.5f), new Vector2(32, 32)), 
 					new FormattedText.Icon(new Rect(0.5f, 0.0f, 0.5f, 0.5f), new Vector2(32, 32)), 
@@ -445,7 +449,7 @@ namespace Duality.Components
 				VertexFormat.VertexC4P3T2[][] vertText = null;
 				VertexFormat.VertexC4P3T2[] vertIcon = null;
 				text.EmitVertices(ref vertText, ref vertIcon, -this.gameobj.Transform.Pos.X, -this.gameobj.Transform.Pos.Y);
-				this.DrawDevice.AddVertices(Font.GenericSerif12.Res.Material, BeginMode.Quads, vertText[0]);
+				this.DrawDevice.AddVertices(testFont.IsAvailable ? testFont.Res.Material : Font.GenericSerif12.Res.Material, BeginMode.Quads, vertText[0]);
 				this.DrawDevice.AddVertices(Font.GenericSansSerif12.Res.Material, BeginMode.Quads, vertText[1]);
 				this.DrawDevice.AddVertices(Font.GenericMonospace10.Res.Material, BeginMode.Quads, vertText[2]);
 				this.DrawDevice.AddVertices(Material.DualityLogo256, BeginMode.Quads, vertIcon);

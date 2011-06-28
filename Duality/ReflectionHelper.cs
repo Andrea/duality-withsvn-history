@@ -5,7 +5,6 @@ using System.Text;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.IO;
-using System.Drawing;
 
 using Duality.Resources;
 using Duality.Components;
@@ -96,6 +95,9 @@ namespace Duality
 		public static readonly PropertyInfo	Property_Sound_MinDistFactor;
 		public static readonly PropertyInfo	Property_Sound_MaxDist;
 		public static readonly PropertyInfo	Property_Sound_MaxDistFactor;
+
+		public static readonly PropertyInfo	Property_Font_NeedsReload;
+		public static readonly PropertyInfo	Property_Font_Material;
 
 
 		public static readonly FieldInfo Field_GameObject_Name;
@@ -200,6 +202,10 @@ namespace Duality
 			Property_Sound_MinDistFactor	= sound.GetProperty("MinDistFactor");
 			Property_Sound_MaxDist			= sound.GetProperty("MaxDist");
 			Property_Sound_MaxDistFactor	= sound.GetProperty("MaxDistFactor");
+
+			Type font = typeof(Font);
+			Property_Font_NeedsReload		= font.GetProperty("NeedsReload");
+			Property_Font_Material			= font.GetProperty("Material");
 
 			Type soundEmitter = typeof(SoundEmitter);
 			Property_SoundEmitter_Sources	= soundEmitter.GetProperty("Sources");

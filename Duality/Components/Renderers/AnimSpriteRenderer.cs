@@ -30,7 +30,6 @@ namespace Duality.Components.Renderers
 		private	LoopMode	animLoopMode		= LoopMode.Loop;
 		private	float		animTime			= 0.0f;
 		private	int			animCycle			= 0;
-		private	bool		smoothShaderInput	= false;
 
 		private	VertexFormat.VertexC4P3T4A1[]	verticesSmooth	= null;
 
@@ -59,11 +58,6 @@ namespace Duality.Components.Renderers
 		{
 			get { return this.animLoopMode; }
 			set { this.animLoopMode = value; }
-		}
-		public bool EmitSmoothShaderInput
-		{
-			get { return this.smoothShaderInput; }
-			set { this.smoothShaderInput = value; }
 		}
 		public bool IsAnimationRunning
 		{
@@ -208,7 +202,9 @@ namespace Duality.Components.Renderers
 		{
 			Texture mainTex = this.RetrieveMainTex();
 			ColorRGBA mainClr = this.RetrieveMainColor();
+			DrawTechnique tech = this.RetrieveDrawTechnique();
 
+			bool smoothShaderInput = tech.PreferredVertexFormat == VertexFormat.VertexDataFormat.VertexC4P3T4A1;
 			bool isAnimated = this.animFrameCount > 0 && this.animDuration > 0 && mainTex != null && mainTex.Atlas != null;
 			int curAnimFrame = 0;
 			int nextAnimFrame = 0;
@@ -224,7 +220,7 @@ namespace Duality.Components.Renderers
 					curAnimFrame = this.animFirstFrame + MathF.Clamp((int)frameTemp, 0, this.animFrameCount - 1);
 					curAnimFrame = MathF.Clamp(curAnimFrame, 0, mainTex.Atlas.Count - 1);
 
-					if (this.smoothShaderInput)
+					if (smoothShaderInput)
 					{
 						if (this.animLoopMode == LoopMode.Loop)
 						{
@@ -287,7 +283,6 @@ namespace Duality.Components.Renderers
 			t.animFrameCount = this.animFrameCount;
 			t.animLoopMode = this.animLoopMode;
 			t.animTime = this.animTime;
-			t.smoothShaderInput = this.smoothShaderInput;
 		}
 	}
 }

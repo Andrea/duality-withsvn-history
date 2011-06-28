@@ -85,6 +85,14 @@ namespace Duality.Resources
 		{
 			get { return this.varInfo; }
 		}
+		public int AttribCount
+		{
+			get { return this.varInfo != null ? this.varInfo.Count(v => v.scope == ShaderVarScope.Attribute) : 0; }
+		}
+		public int UniformCount
+		{
+			get { return this.varInfo != null ? this.varInfo.Count(v => v.scope == ShaderVarScope.Uniform) : 0; }
+		}
 		public ContentRef<VertexShader> Vertex
 		{
 			get { return this.vert; }

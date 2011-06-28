@@ -25,7 +25,7 @@ namespace Duality.VertexFormat
 		}
 		int IVertexData.VertexTypeIndex
 		{
-			get { return (int)VertexFormat.VertexC4P3T4A1; }
+			get { return (int)VertexDataFormat.VertexC4P3T4A1; }
 		}
 
 		void IVertexData.SetupVBO<T>(T[] vertexData, Duality.Resources.BatchInfo mat)

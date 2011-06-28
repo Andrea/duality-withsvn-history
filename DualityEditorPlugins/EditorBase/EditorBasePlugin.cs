@@ -124,6 +124,7 @@ namespace EditorBase
 			CorePluginHelper.RegisterTypeImage(typeof(Scene), EditorBaseRes.IconResScene, CorePluginHelper.ImageContext_Icon);
 			CorePluginHelper.RegisterTypeImage(typeof(AudioData), EditorBaseRes.IconResAudioData, CorePluginHelper.ImageContext_Icon);
 			CorePluginHelper.RegisterTypeImage(typeof(Sound), EditorBaseRes.IconResSound, CorePluginHelper.ImageContext_Icon);
+			CorePluginHelper.RegisterTypeImage(typeof(Font), EditorBaseRes.IconResFont, CorePluginHelper.ImageContext_Icon);
 
 			CorePluginHelper.RegisterTypeImage(typeof(GameObject), EditorBaseRes.IconGameObj, CorePluginHelper.ImageContext_Icon);
 			CorePluginHelper.RegisterTypeImage(typeof(GameObject), EditorBaseRes.IconGameObjLink, CorePluginHelper.ImageContext_Icon + "_Link");

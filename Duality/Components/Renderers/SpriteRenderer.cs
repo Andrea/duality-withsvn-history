@@ -79,6 +79,15 @@ namespace Duality.Components.Renderers
 			else
 				return this.colorTint;
 		}
+		protected DrawTechnique RetrieveDrawTechnique()
+		{
+			if (this.customMat != null)
+				return this.customMat.Technique.Res;
+			else if (this.sharedMat.IsAvailable)
+				return this.sharedMat.Res.Technique.Res;
+			else
+				return null;
+		}
 		protected void PrepareVertices(ref VertexFormat.VertexC4P3T2[] vertices, IDrawDevice device, ColorRGBA mainClr, Rect uvRect)
 		{
 			Vector3 posTemp = this.gameobj.Transform.Pos;

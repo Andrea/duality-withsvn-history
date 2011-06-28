@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 using Duality;
+using Duality.VertexFormat;
 
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -92,25 +93,25 @@ namespace Duality.Resources
 			tmp.path = ContentPath_Picking;
 			ContentProvider.RegisterContent(tmp.Path, tmp);
 			
-			tmp = new DrawTechnique(BlendMode.Solid, ShaderProgram.SmoothAnim);
+			tmp = new DrawTechnique(BlendMode.Solid, ShaderProgram.SmoothAnim, VertexDataFormat.VertexC4P3T4A1);
 			tmp.path = ContentPath_SmoothAnim_Solid;
 			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new DrawTechnique(BlendMode.Mask, ShaderProgram.SmoothAnim);
+			tmp = new DrawTechnique(BlendMode.Mask, ShaderProgram.SmoothAnim, VertexDataFormat.VertexC4P3T4A1);
 			tmp.path = ContentPath_SmoothAnim_Mask;
 			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new DrawTechnique(BlendMode.Add, ShaderProgram.SmoothAnim);
+			tmp = new DrawTechnique(BlendMode.Add, ShaderProgram.SmoothAnim, VertexDataFormat.VertexC4P3T4A1);
 			tmp.path = ContentPath_SmoothAnim_Add;
 			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new DrawTechnique(BlendMode.Alpha, ShaderProgram.SmoothAnim);
+			tmp = new DrawTechnique(BlendMode.Alpha, ShaderProgram.SmoothAnim, VertexDataFormat.VertexC4P3T4A1);
 			tmp.path = ContentPath_SmoothAnim_Alpha;
 			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new DrawTechnique(BlendMode.Multiply, ShaderProgram.SmoothAnim);
+			tmp = new DrawTechnique(BlendMode.Multiply, ShaderProgram.SmoothAnim, VertexDataFormat.VertexC4P3T4A1);
 			tmp.path = ContentPath_SmoothAnim_Multiply;
 			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new DrawTechnique(BlendMode.Light, ShaderProgram.SmoothAnim);
+			tmp = new DrawTechnique(BlendMode.Light, ShaderProgram.SmoothAnim, VertexDataFormat.VertexC4P3T4A1);
 			tmp.path = ContentPath_SmoothAnim_Light;
 			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new DrawTechnique(BlendMode.Invert, ShaderProgram.SmoothAnim);
+			tmp = new DrawTechnique(BlendMode.Invert, ShaderProgram.SmoothAnim, VertexDataFormat.VertexC4P3T4A1);
 			tmp.path = ContentPath_SmoothAnim_Invert;
 			ContentProvider.RegisterContent(tmp.Path, tmp);
 
@@ -135,6 +136,7 @@ namespace Duality.Resources
 
 		private	BlendMode					blendType	= BlendMode.Solid;
 		private	ContentRef<ShaderProgram>	shader		= ContentRef<ShaderProgram>.Null;
+		private	VertexDataFormat			formatPref	= VertexDataFormat.Unknown;
 
 		public BlendMode Blending
 		{
@@ -145,6 +147,11 @@ namespace Duality.Resources
 		{
 			get { return this.shader; }
 			set { this.shader = value; }
+		}
+		public VertexDataFormat PreferredVertexFormat
+		{
+			get { return this.formatPref; }
+			set { this.formatPref = value; }
 		}
 		public bool NeedsZSort
 		{
@@ -168,10 +175,11 @@ namespace Duality.Resources
 		{
 			this.blendType = blendType;
 		}
-		public DrawTechnique(BlendMode blendType, ContentRef<ShaderProgram> shader) 
+		public DrawTechnique(BlendMode blendType, ContentRef<ShaderProgram> shader, VertexDataFormat formatPref = VertexDataFormat.Unknown) 
 		{
 			this.blendType = blendType;
 			this.shader = shader;
+			this.formatPref = formatPref;
 		}
 		
 		public virtual void PreprocessVertices<T>(ref BatchInfo material, ref BeginMode vertexMode, ref T[] vertices)

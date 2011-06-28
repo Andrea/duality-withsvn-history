@@ -1,7 +1,10 @@
 ﻿
---> Font icon in the editor
--->	FontPropertyEditor
 -->	Font importing & handling of fonts stored locally in .res files
+	-->	Implement a FontImporter
+	-->	Test de/serialization
+-->	FontPropertyEditor
+	-->	If a font contains custom data, make Family property read-only!
+	-->	FontFamily selector (ComboBox)
 
 -->	TextRenderer Component
 

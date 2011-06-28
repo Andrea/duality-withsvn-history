@@ -7,8 +7,10 @@ using OpenTK;
 
 namespace Duality.VertexFormat
 {
-	public enum VertexFormat
+	public enum VertexDataFormat
 	{
+		Unknown	= -1,
+
 		VertexP3,
 		VertexC4P3,
 		VertexC4P3T2,
