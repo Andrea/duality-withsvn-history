@@ -1,6 +1,4 @@
 ﻿
--->	TextRenderer Component
-
 -->	Figure out suitable RenderScreenOverlay-like system
 	-->	Goal: Rendering screen overlay that bypasses 
 		picking, camera rotation and center-aligned screen coordinates

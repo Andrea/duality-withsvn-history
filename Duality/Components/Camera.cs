@@ -415,93 +415,6 @@ namespace Duality.Components
 			{
 				foreach (Renderer r in Scene.Current.QueryVisibleRenderers(this.DrawDevice))
 					r.Draw(this);
-
-				//FormattedText text = new FormattedText(
-				//    "/f[0]Franz jagt im komplett verwahrlosten Taxi quer durch Bayern/n" + 
-				//    "/f[1]Franz jagt im komplett verwahrlosten Taxi quer durch Bayern/n" + 
-				//    "/f[2]Franz jagt im komplett verwahrlosten Taxi quer durch Bayern/n" + 
-				//    "/f[2]      jagt      mplett     ahr   te  T xi  ue    r h   yern");
-				//text.SetFonts(Font.GenericSerif12, Font.GenericSansSerif12, Font.GenericMonospace10);
-				//text.SetIcons(
-				//    new FormattedText.Icon(new Rect(0.0f, 0.0f, 0.5f, 0.5f), new Vector2(32, 32)), 
-				//    new FormattedText.Icon(new Rect(0.5f, 0.0f, 0.5f, 0.5f), new Vector2(32, 32)), 
-				//    new FormattedText.Icon(new Rect(0.5f, 0.5f, 0.5f, 0.5f), new Vector2(32, 32)), 
-				//    new FormattedText.Icon(new Rect(0.0f, 0.5f, 0.5f, 0.5f), new Vector2(32, 32)));
-				//FormattedText text = new FormattedText(
-				//    "/i[0]/i[1]/i[3]/i[2]Das ist ein Test/n/f[1]/cFF0000FFFranz/cFFFFFFFF jagt im komplett verwahrlosten /f[2]Taxi quer durch Bayern");
-				FormattedText text = new FormattedText("/alLorem /eipsum/e dolor /i[0]sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod /i[0]tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et /f[1]justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna /f[2]aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed /f[0]diam nonumy eirmod tempor invidunt ut /f[1]labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet");
-				text.SetFlowAreas(
-				    new FormattedText.FlowArea(0, 150, 100, false),
-				    new FormattedText.FlowArea(200, 150, 100, true));
-				text.MaxWidth = 200 + 300;//MathF.RoundToInt((MathF.Sin(Time.GameTimer / 2000.0f) + 1.0f) * 0.5f * 300.0f);
-				text.MaxHeight = 450;
-				ContentRef<Font> testFont = ContentProvider.RequestContent<Font>("Data\\TestFont.Font.res");
-				text.SetFonts(
-					testFont.IsAvailable ? testFont : Font.GenericSerif12, 
-					Font.GenericSansSerif12, 
-					Font.GenericMonospace10);
-				text.SetIcons(
-					new FormattedText.Icon(new Rect(0.0f, 0.0f, 0.5f, 0.5f), new Vector2(32, 32)), 
-					new FormattedText.Icon(new Rect(0.5f, 0.0f, 0.5f, 0.5f), new Vector2(32, 32)), 
-					new FormattedText.Icon(new Rect(0.5f, 0.5f, 0.5f, 0.5f), new Vector2(32, 32)), 
-					new FormattedText.Icon(new Rect(0.0f, 0.5f, 0.5f, 0.5f), new Vector2(32, 32)));
-
-				VertexFormat.VertexC4P3T2[][] vertText = null;
-				VertexFormat.VertexC4P3T2[] vertIcon = null;
-				text.EmitVertices(ref vertText, ref vertIcon, -this.gameobj.Transform.Pos.X, -this.gameobj.Transform.Pos.Y);
-				this.DrawDevice.AddVertices(testFont.IsAvailable ? testFont.Res.Material : Font.GenericSerif12.Res.Material, BeginMode.Quads, vertText[0]);
-				this.DrawDevice.AddVertices(Font.GenericSansSerif12.Res.Material, BeginMode.Quads, vertText[1]);
-				this.DrawDevice.AddVertices(Font.GenericMonospace10.Res.Material, BeginMode.Quads, vertText[2]);
-				this.DrawDevice.AddVertices(Material.DualityLogo256, BeginMode.Quads, vertIcon);
-
-				FormattedText.Metrics metrics = text.Measure();
-				Vector2 size = metrics.Size;
-				this.DrawDevice.AddVertices(Material.SolidWhite, BeginMode.LineLoop, new VertexP3[] {
-					new VertexP3(-0.5f - this.gameobj.Transform.Pos.X, -0.5f - this.gameobj.Transform.Pos.Y, 0),
-					new VertexP3(size.X + 0.5f - this.gameobj.Transform.Pos.X, -0.5f - this.gameobj.Transform.Pos.Y, 0),
-					new VertexP3(size.X + 0.5f - this.gameobj.Transform.Pos.X, size.Y + 0.5f - this.gameobj.Transform.Pos.Y, 0),
-					new VertexP3(-0.5f - this.gameobj.Transform.Pos.X, size.Y + 0.5f - this.gameobj.Transform.Pos.Y, 0)});
-				this.DrawDevice.AddVertices(Material.SolidWhite, BeginMode.Lines, new VertexP3[] {
-					new VertexP3(text.MaxWidth + 0.5f - this.gameobj.Transform.Pos.X, -0.5f - this.gameobj.Transform.Pos.Y, 0),
-					new VertexP3(text.MaxWidth + 0.5f - this.gameobj.Transform.Pos.X, size.Y + 0.5f - this.gameobj.Transform.Pos.Y, 0)});
-				this.DrawDevice.AddVertices(Material.SolidWhite, BeginMode.Lines, new VertexP3[] {
-					new VertexP3(-0.5f - this.gameobj.Transform.Pos.X, -0.5f - this.gameobj.Transform.Pos.Y + text.MaxHeight, 0),
-					new VertexP3(size.X + 0.5f - this.gameobj.Transform.Pos.X, -0.5f - this.gameobj.Transform.Pos.Y + text.MaxHeight, 0)});
-				
-				for (int i = 0; i < text.FlowAreas.Length; i++)
-				{
-					Rect bounds;
-					bounds = new Rect(text.FlowAreas[i].alignRight ? text.MaxWidth - text.FlowAreas[i].width : 0, text.FlowAreas[i].y, text.FlowAreas[i].width, text.FlowAreas[i].height);
-					this.DrawDevice.AddVertices(new BatchInfo(DrawTechnique.Alpha, ColorRGBA.Blue.WithAlpha(128)), BeginMode.Quads, new VertexP3[] {
-						new VertexP3(bounds.TopLeft.X - 0.5f - this.gameobj.Transform.Pos.X, bounds.TopLeft.Y - 0.5f - this.gameobj.Transform.Pos.Y, 0),
-						new VertexP3(bounds.TopRight.X + 0.5f - this.gameobj.Transform.Pos.X, bounds.TopRight.Y - 0.5f - this.gameobj.Transform.Pos.Y, 0),
-						new VertexP3(bounds.BottomRight.X + 0.5f - this.gameobj.Transform.Pos.X, bounds.BottomRight.Y + 0.5f - this.gameobj.Transform.Pos.Y, 0),
-						new VertexP3(bounds.BottomLeft.X - 0.5f - this.gameobj.Transform.Pos.X, bounds.BottomLeft.Y + 0.5f - this.gameobj.Transform.Pos.Y, 0)});
-				}
-
-				for (int i = 0; i < metrics.ElementBounds.Length; i++)
-				{
-					i = MathF.RoundToInt((Time.GameTimer / 500.0f)) % metrics.ElementBounds.Length;
-					Rect bounds = metrics.ElementBounds[i];
-					this.DrawDevice.AddVertices(new BatchInfo(DrawTechnique.Alpha, ColorRGBA.Green.WithAlpha(128)), BeginMode.LineLoop, new VertexP3[] {
-						new VertexP3(bounds.TopLeft.X - 0.5f - this.gameobj.Transform.Pos.X, bounds.TopLeft.Y - 0.5f - this.gameobj.Transform.Pos.Y, 0),
-						new VertexP3(bounds.TopRight.X + 0.5f - this.gameobj.Transform.Pos.X, bounds.TopRight.Y - 0.5f - this.gameobj.Transform.Pos.Y, 0),
-						new VertexP3(bounds.BottomRight.X + 0.5f - this.gameobj.Transform.Pos.X, bounds.BottomRight.Y + 0.5f - this.gameobj.Transform.Pos.Y, 0),
-						new VertexP3(bounds.BottomLeft.X - 0.5f - this.gameobj.Transform.Pos.X, bounds.BottomLeft.Y + 0.5f - this.gameobj.Transform.Pos.Y, 0)});
-					break;
-				}
-
-				for (int i = 0; i < metrics.LineBounds.Length; i++)
-				{
-					i = MathF.RoundToInt((Time.GameTimer / 500.0f)) % metrics.LineBounds.Length;
-					Rect bounds = metrics.LineBounds[i];
-					this.DrawDevice.AddVertices(new BatchInfo(DrawTechnique.Alpha, (ColorRGBA.Green + ColorRGBA.Red).WithAlpha(128)), BeginMode.LineLoop, new VertexP3[] {
-						new VertexP3(bounds.TopLeft.X - 0.5f - this.gameobj.Transform.Pos.X, bounds.TopLeft.Y - 0.5f - this.gameobj.Transform.Pos.Y, 0),
-						new VertexP3(bounds.TopRight.X + 0.5f - this.gameobj.Transform.Pos.X, bounds.TopRight.Y - 0.5f - this.gameobj.Transform.Pos.Y, 0),
-						new VertexP3(bounds.BottomRight.X + 0.5f - this.gameobj.Transform.Pos.X, bounds.BottomRight.Y + 0.5f - this.gameobj.Transform.Pos.Y, 0),
-						new VertexP3(bounds.BottomLeft.X - 0.5f - this.gameobj.Transform.Pos.X, bounds.BottomLeft.Y + 0.5f - this.gameobj.Transform.Pos.Y, 0)});
-					break;
-				}
 			}
 			
 			// Setup picking RT
@@ -607,7 +520,7 @@ namespace Duality.Components
 				(this.pickingBuffer[4 * (x + y * this.pickingTex.Width) + 0] << 16) |
 				(this.pickingBuffer[4 * (x + y * this.pickingTex.Width) + 1] << 8) |
 				(this.pickingBuffer[4 * (x + y * this.pickingTex.Width) + 2] << 0);
-			return (rendererId <= 0 || rendererId >= this.pickingMap.Count) ? null : this.pickingMap[rendererId - 1];
+			return (rendererId <= 0 || rendererId > this.pickingMap.Count) ? null : this.pickingMap[rendererId - 1];
 		}
 		public HashSet<Renderer> PickRenderersIn(int x, int y, int w, int h)
 		{

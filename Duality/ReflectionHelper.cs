@@ -40,6 +40,9 @@ namespace Duality
 
 		public static readonly PropertyInfo	Property_AnimSpriteRenderer_IsAnimationRunning;
 
+		public static readonly PropertyInfo	Property_TextRenderer_Text;
+		public static readonly PropertyInfo	Property_TextRenderer_Metrics;
+
 		public static readonly PropertyInfo	Property_Camera_OrthoAbs;
 		public static readonly PropertyInfo	Property_Camera_ViewportAbs;
 		public static readonly PropertyInfo	Property_Camera_DrawDevice;
@@ -102,6 +105,12 @@ namespace Duality
 		public static readonly PropertyInfo	Property_Font_Family;
 		public static readonly PropertyInfo	Property_Font_Size;
 
+		public static readonly PropertyInfo	Property_FormattedText_Elements;
+		public static readonly PropertyInfo	Property_FormattedText_DisplayedText;
+		public static readonly PropertyInfo	Property_FormattedText_Icons;
+		public static readonly PropertyInfo	Property_FormattedText_FlowAreas;
+		public static readonly PropertyInfo	Property_FormattedText_Fonts;
+
 
 		public static readonly FieldInfo Field_GameObject_Name;
 		public static readonly FieldInfo Field_GameObject_PrefabLink;
@@ -147,6 +156,10 @@ namespace Duality
 
 			Type rendererAnimSprite = typeof(AnimSpriteRenderer);
 			Property_AnimSpriteRenderer_IsAnimationRunning	= rendererAnimSprite.GetProperty("IsAnimationRunning");
+
+			Type rendererText = typeof(TextRenderer);
+			Property_TextRenderer_Text		= rendererText.GetProperty("Text");
+			Property_TextRenderer_Metrics	= rendererText.GetProperty("Metrics");
 
 			Type camera = typeof(Camera);
 			Property_Camera_OrthoAbs		= camera.GetProperty("OrthoAbs");
@@ -212,6 +225,13 @@ namespace Duality
 			Property_Font_Family			= font.GetProperty("Family");
 			Property_Font_CustomFamilyData	= font.GetProperty("CustomFamilyData");
 			Property_Font_Size				= font.GetProperty("Size");
+
+			Type formattedText = typeof(FormattedText);
+			Property_FormattedText_DisplayedText	= formattedText.GetProperty("DisplayedText");
+			Property_FormattedText_Elements			= formattedText.GetProperty("Elements");
+			Property_FormattedText_Icons			= formattedText.GetProperty("Icons");
+			Property_FormattedText_FlowAreas		= formattedText.GetProperty("FlowAreas");
+			Property_FormattedText_Fonts			= formattedText.GetProperty("Fonts");
 
 			Type soundEmitter = typeof(SoundEmitter);
 			Property_SoundEmitter_Sources	= soundEmitter.GetProperty("Sources");

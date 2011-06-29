@@ -570,7 +570,7 @@ namespace EditorBase
 			this.mouseoverSelect = false;
 			if (shift || ctrl)
 				this.mouseoverAction = MouseAction.RectSelection;
-			else if (anySelection && mouseOverBoundary && mouseAtCenterAxis)
+			else if (anySelection && mouseOverBoundary && mouseAtCenterAxis && this.selectionRadius > 0.0f)
 				this.mouseoverAction = MouseAction.ScaleObj;
 			else if (anySelection && mouseOverBoundary)
 				this.mouseoverAction = MouseAction.RotateObj;
@@ -730,6 +730,8 @@ namespace EditorBase
 		}
 		protected void UpdateObjScale(Point mouseLoc)
 		{
+			if (this.selectionRadius == 0.0f) return;
+
 			Vector3 spaceCoord = this.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, this.selectionCenter.Z));
 			float lastRadius = this.selectionRadius;
 			float curRadius = (this.selectionCenter - spaceCoord).Length;

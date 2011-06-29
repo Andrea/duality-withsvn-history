@@ -204,6 +204,8 @@ namespace EditorBase
 			main.RegisterFileImporter(new AudioDataFileImporter());
 			main.RegisterFileImporter(new ShaderFileImporter());
 			main.RegisterFileImporter(new FontFileImporter());
+
+			main.ResourceModified += this.main_ResourceModified;
 		}
 		
 		public ProjectFolderView RequestProjectView()
@@ -379,6 +381,19 @@ namespace EditorBase
 		private void ActionSceneOpenRes(Scene scene)
 		{
 			Scene.Current = scene;
+		}
+
+		private void main_ResourceModified(object sender, ResourceEventArgs e)
+		{
+			// If a font has been modified, update all TextRenderers
+			if (typeof(Font).IsAssignableFrom(e.ContentType))
+			{
+				foreach (Duality.Components.Renderers.TextRenderer r in Scene.Current.Graph.AllObjects.GetComponents<Duality.Components.Renderers.TextRenderer>())
+				{
+					r.Text.ApplySource();
+					r.UpdateMetrics();
+				}
+			}
 		}
 	}
 }

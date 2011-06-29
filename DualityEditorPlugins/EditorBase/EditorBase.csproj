@@ -65,6 +65,12 @@
     <Compile Include="FontFileImporter.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="PropertyEditors\Components\TextRendererPropertyEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PropertyEditors\FormattedTextPropertyEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="PropertyEditors\Resources\FontPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>

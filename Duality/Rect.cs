@@ -193,6 +193,19 @@ namespace Duality
 			return newRect;
 		}
 
+		public Rect Round()
+		{
+			return new Rect(MathF.Round(x), MathF.Round(y), MathF.Round(w), MathF.Round(h));
+		}
+		public Rect Ceiling()
+		{
+			return new Rect(MathF.Ceiling(x), MathF.Ceiling(y), MathF.Ceiling(w), MathF.Ceiling(h));
+		}
+		public Rect Floor()
+		{
+			return new Rect(MathF.Floor(x), MathF.Floor(y), MathF.Floor(w), MathF.Floor(h));
+		}
+
 		public bool Contains(float x, float y)
 		{
 			return x >= this.MinX && x <= this.MaxX && y >= this.MinY && y <= this.MaxY;
@@ -234,6 +247,29 @@ namespace Duality
 			return string.Format("Rect ({0}, {1}, {2}, {3})", this.x, this.y, this.w, this.h);
 		}
 
+		public static Rect Align(Alignment align, float x, float y, float w, float h)
+		{
+			if (align == Alignment.Bottom)
+				return AlignBottom(x, y, w, h);
+			else if (align == Alignment.BottomLeft)
+				return AlignBottomLeft(x, y, w, h);
+			else if (align == Alignment.BottomRight)
+				return AlignBottomRight(x, y, w, h);
+			else if (align == Alignment.Center)
+				return AlignCenter(x, y, w, h);
+			else if (align == Alignment.Left)
+				return AlignLeft(x, y, w, h);
+			else if (align == Alignment.Right)
+				return AlignRight(x, y, w, h);
+			else if (align == Alignment.Top)
+				return AlignTop(x, y, w, h);
+			else if (align == Alignment.TopLeft)
+				return AlignTopLeft(x, y, w, h);
+			else if (align == Alignment.TopRight)
+				return AlignTopRight(x, y, w, h);
+			else
+				return new Rect(x, y, w, h);
+		}
 		public static Rect AlignCenter(float x, float y, float w, float h)
 		{
 			return new Rect(x - w * 0.5f, y - h * 0.5f, w, h);

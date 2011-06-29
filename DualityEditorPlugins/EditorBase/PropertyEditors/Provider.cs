@@ -28,6 +28,8 @@ namespace EditorBase.PropertyEditors
 			else if (baseType == typeof(Font))			return PropertyGrid.EditorPriority_Specialized;
 			else if (baseType == typeof(DrawTechnique))	return PropertyGrid.EditorPriority_Specialized;
 			else if (baseType == typeof(ShaderProgram))	return PropertyGrid.EditorPriority_Specialized;
+			else if (baseType == typeof(FormattedText))	return PropertyGrid.EditorPriority_Specialized;
+			else if (baseType == typeof(TextRenderer))	return PropertyGrid.EditorPriority_Specialized;
 
 			// -------- Semi-Specialized area --------
 			else if (typeof(SpriteRenderer).IsAssignableFrom(baseType))		return PropertyGrid.EditorPriority_General + 1;
@@ -58,6 +60,8 @@ namespace EditorBase.PropertyEditors
 			else if (baseType == typeof(Font))			e = new FontPropertyEditor(parentEditor, parentGrid);
 			else if (baseType == typeof(DrawTechnique))	e = new DrawTechniquePropertyEditor(parentEditor, parentGrid);
 			else if (baseType == typeof(ShaderProgram))	e = new ShaderProgramPropertyEditor(parentEditor, parentGrid);
+			else if (baseType == typeof(FormattedText))	e = new FormattedTextPropertyEditor(parentEditor, parentGrid);
+			else if (baseType == typeof(TextRenderer))	e = new TextRendererPropertyEditor(parentEditor, parentGrid);
 
 			// -------- Semi-Specialized area --------
 			else if (typeof(SpriteRenderer).IsAssignableFrom(baseType))		e = new SpriteRendererPropertyEditor(parentEditor, parentGrid);

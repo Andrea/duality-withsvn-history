@@ -13,21 +13,6 @@ namespace Duality
 {
 	public static class ExtMethodsBitmap
 	{
-		public enum ResizeOrigin
-		{
-			Center,
-
-			Left,
-			Right,
-			Top,
-			Bottom,
-
-			TopLeft,
-			TopRight,
-			BottomLeft,
-			BottomRight
-		}
-
 		public static Bitmap SubImage(this Bitmap bm, int x, int y, int w, int h)
 		{
 			if (w == 0 || h == 0) return null;
@@ -38,29 +23,29 @@ namespace Duality
 			}
 			return result;
 		}
-		public static Bitmap Resize(this Bitmap bm, int w, int h, ResizeOrigin origin = ResizeOrigin.TopLeft)
+		public static Bitmap Resize(this Bitmap bm, int w, int h, Alignment origin = Alignment.TopLeft)
 		{
 			int x = 0;
 			int y = 0;
 
-			if (origin == ResizeOrigin.Right || 
-				origin == ResizeOrigin.TopRight || 
-				origin == ResizeOrigin.BottomRight)
+			if (origin == Alignment.Right || 
+				origin == Alignment.TopRight || 
+				origin == Alignment.BottomRight)
 				x = w - bm.Width;
 			else if (
-				origin == ResizeOrigin.Center || 
-				origin == ResizeOrigin.Top || 
-				origin == ResizeOrigin.Bottom)
+				origin == Alignment.Center || 
+				origin == Alignment.Top || 
+				origin == Alignment.Bottom)
 				x = (w - bm.Width) / 2;
 
-			if (origin == ResizeOrigin.Bottom || 
-				origin == ResizeOrigin.BottomLeft || 
-				origin == ResizeOrigin.BottomRight)
+			if (origin == Alignment.Bottom || 
+				origin == Alignment.BottomLeft || 
+				origin == Alignment.BottomRight)
 				y = h - bm.Height;
 			else if (
-				origin == ResizeOrigin.Center || 
-				origin == ResizeOrigin.Left || 
-				origin == ResizeOrigin.Right)
+				origin == Alignment.Center || 
+				origin == Alignment.Left || 
+				origin == Alignment.Right)
 				y = (h - bm.Height) / 2;
 
 			return bm.SubImage(-x, -y, w, h);

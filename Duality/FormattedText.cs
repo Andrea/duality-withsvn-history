@@ -154,12 +154,6 @@ namespace Duality
 			Word,
 			Element
 		}
-		public enum Alignment
-		{
-			Left,
-			Right,
-			Center
-		}
 
 		private class RenderState
 		{
@@ -234,9 +228,10 @@ namespace Duality
 			public RenderState(FormattedText parent)
 			{
 				this.parent = parent;
-				this.vertTextIndex = new int[this.parent.fonts.Length];
-				this.font = this.parent.fonts[0].Res;
+				this.vertTextIndex = new int[this.parent.fonts != null ? this.parent.fonts.Length : 0];
+				this.font = (this.parent.fonts != null && this.parent.fonts.Length > 0) ? this.parent.fonts[0].Res : null;
 				this.color = ColorRGBA.White;
+				this.lineAlign = Alignment.Left;
 
 				this.PeekLineStats();
 				this.offset.X = this.lineBeginX;
@@ -277,7 +272,7 @@ namespace Duality
 				if (this.elemIndex >= this.parent.elements.Length) return null;
 				Element elem = this.parent.elements[this.elemIndex];
 
-				if (elem is TextElement)
+				if (elem is TextElement && this.font != null)
 				{
 					TextElement textElem = elem as TextElement;
 
@@ -346,6 +341,10 @@ namespace Duality
 					this.offset.X += textElemSize.X;
 					this.lineWidth += textElemSize.X;
 					this.lineHeight = Math.Max(this.lineHeight, this.font.Height);
+				}
+				else if (elem is TextElement && this.font == null)
+				{
+					this.elemIndex++;
 				}
 				else if (elem is IconElement)
 				{
@@ -440,8 +439,8 @@ namespace Duality
 			private void PeekLineStats()
 			{
 				// First pass: Determine line width, height & base line
-				this.lineBaseLine = this.font.BaseLine;
-				this.lineHeight = this.font.Height;
+				this.lineBaseLine = this.font != null ? this.font.BaseLine : 0;
+				this.lineHeight = this.font != null ? this.font.Height : 0;
 				this.lineBeginX = 0.0f;
 				this.lineWidth = 0.0f;
 				this.lineAvailWidth = this.parent.maxWidth;
@@ -460,8 +459,8 @@ namespace Duality
 				{
 					this.lineBeginX = this.GetFlowAreaMinXAt((int)this.offset.Y, (int)this.lineHeight);
 					this.lineAvailWidth = this.GetFlowAreaMaxXAt((int)this.offset.Y, (int)this.lineHeight) - this.lineBeginX;
-					this.lineBaseLine = this.font.BaseLine;
-					this.lineHeight = this.font.Height;
+					this.lineBaseLine = this.font != null ? this.font.BaseLine : 0;
+					this.lineHeight = this.font != null ? this.font.Height : 0;
 					this.lineWidth = 0.0f;
 					this.offset.X = this.lineBeginX;
 
@@ -553,9 +552,27 @@ namespace Duality
 		{
 			this.ApplySource(text);
 		}
-
-		public void ApplySource(string text)
+		public FormattedText(FormattedText other)
 		{
+			this.sourceText = other.sourceText;
+			this.icons		= other.icons != null ? (Icon[])other.icons.Clone() : null;
+			this.flowAreas	= other.flowAreas != null ? (FlowArea[])other.flowAreas.Clone() : null;
+			this.fonts		= other.fonts != null ? (ContentRef<Font>[])other.fonts.Clone() : null;
+			this.maxWidth	= other.maxWidth;
+			this.maxHeight	= other.maxHeight;
+			this.wrapMode	= other.wrapMode;
+
+			this.ApplySource(this.sourceText);
+		}
+		public FormattedText Clone()
+		{
+			return new FormattedText(this);
+		}
+
+		public void ApplySource(string text = null)
+		{
+			if (text == null) text = this.sourceText;
+
 			this.sourceText = text;
 			this.iconCount = 0;
 
@@ -620,15 +637,18 @@ namespace Duality
 						else if (this.sourceText[i] == 'f')
 						{
 							int indexOfClose = this.sourceText.IndexOf(']', i + 1);
-							string numStr = this.sourceText.Substring(i + 2, indexOfClose - (i + 2));
-							int num;
-							if (int.TryParse(numStr, out num))
-								elemList.Add(new FontChangeElement(num));
-							else
-								elemList.Add(new FontChangeElement(0));
+							if (indexOfClose != -1)
+							{
+								string numStr = this.sourceText.Substring(i + 2, indexOfClose - (i + 2));
+								int num;
+								if (int.TryParse(numStr, out num))
+									elemList.Add(new FontChangeElement(num));
+								else
+									elemList.Add(new FontChangeElement(0));
 
-							curFontIndex = num;
-							i += 2 + numStr.Length;
+								curFontIndex = num;
+								i += 2 + numStr.Length;
+							}
 						}
 						else if (this.sourceText[i] == 'i')
 						{
@@ -717,12 +737,15 @@ namespace Duality
 		}
 		public void EmitVertices(ref VertexC4P3T2[][] vertText, ref VertexC4P3T2[] vertIcons, float x, float y, float z, ColorRGBA clr, float angle = 0.0f, float scale = 1.0f)
 		{
+			Vector2 xDot, yDot;
+			MathF.GetTransformDotVec(angle, scale, out xDot, out yDot);
+			this.EmitVertices(ref vertText, ref vertIcons, x, y, z, clr, xDot, yDot);
+		}
+		public void EmitVertices(ref VertexC4P3T2[][] vertText, ref VertexC4P3T2[] vertIcons, float x, float y, float z, ColorRGBA clr, Vector2 xDot, Vector2 yDot)
+		{
 			this.EmitVertices(ref vertText, ref vertIcons);
 			
 			Vector3 offset = new Vector3(x, y, z);
-			Vector2 xDot, yDot;
-			MathF.GetTransformDotVec(angle, scale, out xDot, out yDot);
-
 			for (int i = 0; i < vertText.Length; i++)
 			{
 				for (int j = 0; j < vertText[i].Length; j++)
@@ -749,9 +772,11 @@ namespace Duality
 		}
 		public void EmitVertices(ref VertexC4P3T2[][] vertText, ref VertexC4P3T2[] vertIcons)
 		{
+			int fontNum = this.fonts != null ? this.fonts.Length : 0;
+
 			// Setting up vertex buffers
 			if (vertIcons == null || vertIcons.Length != this.iconCount * 4) vertIcons = new VertexC4P3T2[this.iconCount * 4];
-			if (vertText == null || vertText.Length != this.fonts.Length) vertText = new VertexC4P3T2[this.fonts.Length][];
+			if (vertText == null || vertText.Length != fontNum) vertText = new VertexC4P3T2[fontNum][];
 			for (int i = 0; i < vertText.Length; i++)
 				if (vertText[i] == null || vertText[i].Length != (this.fontGlyphCount.Length > i ? this.fontGlyphCount[i] * 4 : 0)) 
 					vertText[i] = new VertexC4P3T2[this.fontGlyphCount.Length > i ? this.fontGlyphCount[i] * 4 : 0];
@@ -759,9 +784,11 @@ namespace Duality
 			// Rendering
 			RenderState state = new RenderState(this);
 			Element elem;
+			int[] vertTextLen = new int[fontNum];
+			int vertIconLen = 0;
 			while ((elem = state.NextElement()) != null)
 			{
-				if (elem is TextElement)
+				if (elem is TextElement && state.Font != null)
 				{
 					TextElement textElem = elem as TextElement;
 					VertexC4P3T2[] textElemVert = null;
@@ -772,6 +799,7 @@ namespace Duality
 						state.CurrentElemOffset.Y + state.LineBaseLine - state.Font.BaseLine, 
 						state.Color);
 					Array.Copy(textElemVert, 0, vertText[state.FontIndex], state.CurrentElemTextVertexIndex, textElemVert.Length);
+					vertTextLen[state.FontIndex] = state.CurrentElemTextVertexIndex + textElemVert.Length;
 				}
 				else if (elem is IconElement)
 				{
@@ -802,8 +830,18 @@ namespace Duality
 					vertIcons[state.CurrentElemIconVertexIndex + 3].pos.Z = 0;
 					vertIcons[state.CurrentElemIconVertexIndex + 3].clr = state.Color;
 					vertIcons[state.CurrentElemIconVertexIndex + 3].texCoord = iconUvRect.BottomLeft;
+
+					vertIconLen = state.CurrentElemIconVertexIndex + 4;
 				}
 			}
+
+			for (int i = 0; i < fontNum; i++)
+			{
+				if (vertText[i].Length > vertTextLen[i])
+					Array.Resize(ref vertText[i], vertTextLen[i]);
+			}
+			if (vertIcons.Length > vertIconLen)
+				Array.Resize(ref vertIcons, vertIconLen);
 		}
 
 		public Metrics Measure()
@@ -823,7 +861,7 @@ namespace Duality
 			bool hasBounds;
 			while ((elem = state.NextElement()) != null)
 			{
-				if (elem is TextElement)
+				if (elem is TextElement && state.Font != null)
 				{
 					TextElement textElem = elem as TextElement;
 					elemSize = state.Font.MeasureText(state.CurrentElemText);
