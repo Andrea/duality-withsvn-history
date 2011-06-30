@@ -22,9 +22,9 @@ namespace Duality
 		// Depth-Independent
 		Solid,
 		Mask,
-		Add,
 
 		// Depth-Dependent
+		Add,
 		Alpha,
 		Multiply,
 		Light,
@@ -473,14 +473,51 @@ namespace Duality.Components
 			this.RenderBatches(this.drawBufferZSort, ref vertexCount);
 
 			this.FinishBatchRendering();
-			//if (this.picking == 0)
-			//{
-			//    Log.Core.WriteTimed(1000, this.gameobj.FullName + "_DrawStats", "Draw stats {0}:\n{1}\n{2}", this.gameobj.FullName,
-			//        "\tBatches: " + (this.drawBuffer.Count + this.drawBufferZSort.Count),
-			//        "\tVertices: " + vertexCount);
-			//}
 			this.drawBuffer.Clear();
 			this.drawBufferZSort.Clear();
+
+			// Draw Screen Overlay
+			if (this.picking == 0)
+			{
+				Matrix4 lastModelView = this.matModelView;
+				Matrix4 lastProjection = this.matProjection;
+				Matrix4 lastFinal = this.matFinal;
+
+				this.GenerateModelView(out this.matModelView, true);
+				this.GenerateProjection(this.OrthoAbs, out this.matProjection, true);
+				this.matFinal = this.matModelView * this.matProjection;
+
+				foreach (ICmpScreenOverlayRenderer r in Scene.Current.QueryVisibleOverlayRenderers(this.DrawDevice))
+					r.DrawOverlay(this);
+
+				// Prepare Rendering
+				GL.Enable(EnableCap.ScissorTest);
+				GL.Disable(EnableCap.DepthTest);
+
+				GL.MatrixMode(MatrixMode.Modelview);
+				GL.LoadMatrix(ref this.matModelView);
+				GL.MatrixMode(MatrixMode.Projection);
+				GL.LoadMatrix(ref this.matProjection);
+				if (rtRes != null) GL.Scale(1.0f, -1.0f, 1.0f);
+
+				// Process drawcalls
+				this.OptimizeBatches();
+				this.BeginBatchRendering();
+				vertexCount = 0;
+
+				// Z-Independent: Sorted as needed by batch optimizer
+				this.RenderBatches(this.drawBuffer, ref vertexCount);
+				// Z-Sorted: Back to Front
+				this.RenderBatches(this.drawBufferZSort, ref vertexCount);
+
+				this.FinishBatchRendering();
+				this.drawBuffer.Clear();
+				this.drawBufferZSort.Clear();
+
+				this.matModelView = lastModelView;
+				this.matProjection = lastProjection;
+				this.matFinal = lastFinal;
+			}
 
 			RenderTarget.Bind(RenderTarget.None);
 		}
@@ -611,9 +648,10 @@ namespace Duality.Components
 		{
 			this.zSortAccuracy = 10000000.0f / Math.Max(1.0f, Math.Abs(this.farZ - this.nearZ));
 		}
-		private void GenerateModelView(out Matrix4 mvMat)
+		private void GenerateModelView(out Matrix4 mvMat, bool screenOverlay = false)
 		{
 			mvMat = Matrix4.Identity;
+			if (screenOverlay) return;
 
 			// Translate objects contrary to the camera
 			// Removed: Do this in software now for parallax support
@@ -622,18 +660,34 @@ namespace Duality.Components
 			// Rotate them according to the camera angle
 			mvMat *= Matrix4.CreateRotationZ(-this.GameObj.Transform.Angle);
 		}
-		private void GenerateProjection(Rect orthoAbs, out Matrix4 projMat)
+		private void GenerateProjection(Rect orthoAbs, out Matrix4 projMat, bool screenOverlay = false)
 		{
-			Matrix4.CreateOrthographicOffCenter(
-				orthoAbs.x - orthoAbs.w * 0.5f, 
-				orthoAbs.x + orthoAbs.w * 0.5f, 
-				orthoAbs.y + orthoAbs.h * 0.5f, 
-				orthoAbs.y - orthoAbs.h * 0.5f, 
-				this.nearZ, 
-				this.farZ,
-				out projMat);
-			// Flip Z direction from "out of the screen" to "into the screen".
-			projMat.M33 = -projMat.M33;
+			if (screenOverlay)
+			{
+				Matrix4.CreateOrthographicOffCenter(
+					orthoAbs.x,
+					orthoAbs.x + orthoAbs.w, 
+					orthoAbs.y + orthoAbs.h, 
+					orthoAbs.y, 
+					this.nearZ, 
+					this.farZ,
+					out projMat);
+				// Flip Z direction from "out of the screen" to "into the screen".
+				projMat.M33 = -projMat.M33;
+			}
+			else
+			{
+				Matrix4.CreateOrthographicOffCenter(
+					orthoAbs.x - orthoAbs.w * 0.5f, 
+					orthoAbs.x + orthoAbs.w * 0.5f, 
+					orthoAbs.y + orthoAbs.h * 0.5f, 
+					orthoAbs.y - orthoAbs.h * 0.5f, 
+					this.nearZ, 
+					this.farZ,
+					out projMat);
+				// Flip Z direction from "out of the screen" to "into the screen".
+				projMat.M33 = -projMat.M33;
+			}
 		}
 
 		private int DrawBatchComparer(IDrawBatch first, IDrawBatch second)

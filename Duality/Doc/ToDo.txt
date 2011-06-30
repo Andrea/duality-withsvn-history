@@ -1,11 +1,32 @@
 ﻿
--->	Figure out suitable RenderScreenOverlay-like system
-	-->	Goal: Rendering screen overlay that bypasses 
-		picking, camera rotation and center-aligned screen coordinates
-	-->	Use ICmpScreenOverlayRenderer interface instead of extending Renderer class?
-		-->	Pro: Great for debugging
-		-->	Pro: Doesn't really need Renderer stuff (bounding radius, etc.. )
-			because it is always visible, independent from camera transform, etc.
+-->	Figure out a postprocessing system
+	-->	Directly part of the Camera
+	--> Replaces current RenderTarget field
+		-->	Take care of picking - it needs a single RenderTarget!
+	-->	n RenderTargets, m Stages
+	-->	Each stage has an Input BatchInfo and an Output RenderTarget
+		-->	No Input data defined: Directly use incoming geometry
+		-->	No Output defined: Render to screen
+		-->	Default: Single stage without Input and Output
+
+	-->	For testing, a working RenderTargetPropertyEditor is needed
+		to set up RenderTargets
+
+	-->	Test the followign cases:
+		1.	No Postprocessing (1 Stage: No Input / No Output)
+		2.	Overlay Postprocessing (1 Stage: Billboard Input / No Output)
+		3.	Offscreen Rendering (2 Stages: Render to texture, then render to screen)
+			-->	With and without Multisampling
+			-->	With and without some shader
+		4.	Multiple bounces (3 or more stages)
+			-->	Maybe apply the previously used shader multiple times?
+			-->	Maybe try some simple blur?
+		5.	Split Rendering (2 stages)
+			-->	Render color data to multiple textures at once (Multi-RenderTarget)
+				while splitting up the information
+			-->	Render to screen and put together all information using a shader
+			-->	With and without multisampling
+
 
 -->	Checklist for first Game: Asteroids
 	-->	Any Usability stuff that comes up while editing / creating the game

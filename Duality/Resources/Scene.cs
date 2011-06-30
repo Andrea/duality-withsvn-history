@@ -80,6 +80,7 @@ namespace Duality.Resources
 		private	GameObjectManager		objectManager	= new GameObjectManager();
 		private	ObjectManager<Camera>	cameraManager	= new ObjectManager<Camera>();
 		private	RendererManager			rendererManager	= new RendererManager();
+		private	OverlayRendererManager	overlayManager	= new OverlayRendererManager();
 
 		public GameObjectManager Graph
 		{
@@ -140,6 +141,10 @@ namespace Duality.Resources
 		{
 			return this.rendererManager.QueryVisible(device);
 		}
+		public IEnumerable<ICmpScreenOverlayRenderer> QueryVisibleOverlayRenderers(IDrawDevice device)
+		{
+			return this.overlayManager.QueryVisible(device);
+		}
 
 		private void objectManager_Registered(object sender, ObjectManagerEventArgs<GameObject> e)
 		{
@@ -147,9 +152,9 @@ namespace Duality.Resources
 			if (cam != null) this.cameraManager.RegisterObj(cam);
 
 			foreach (Renderer r in e.Object.GetComponents<Renderer>())
-			{
 				this.rendererManager.RegisterObj(r);
-			}
+			foreach (ICmpScreenOverlayRenderer r in e.Object.GetComponents<ICmpScreenOverlayRenderer>())
+				this.overlayManager.RegisterObj(r as Component);
 
 			OnGameObjectRegistered(e);
 		}
@@ -159,9 +164,9 @@ namespace Duality.Resources
 			if (cam != null) this.cameraManager.UnregisterObj(cam);
 
 			foreach (Renderer r in e.Object.GetComponents<Renderer>())
-			{
 				this.rendererManager.UnregisterObj(r);
-			}
+			foreach (ICmpScreenOverlayRenderer r in e.Object.GetComponents<ICmpScreenOverlayRenderer>())
+				this.overlayManager.UnregisterObj(r as Component);
 
 			OnGameObjectUnregistered(e);
 		}
@@ -170,12 +175,16 @@ namespace Duality.Resources
 			if (e.Component is Camera)			this.cameraManager.RegisterObj(e.Component as Camera);
 			else if (e.Component is Renderer)	this.rendererManager.RegisterObj(e.Component as Renderer);
 
+			if (e.Component is ICmpScreenOverlayRenderer)	this.overlayManager.RegisterObj(e.Component);
+
 			OnRegisteredObjectComponentAdded(e);
 		}
 		private void objectManager_RegisteredObjectComponentRemoved(object sender, ComponentEventArgs e)
 		{
 			if (e.Component is Camera)			this.cameraManager.UnregisterObj(e.Component as Camera);
 			else if (e.Component is Renderer)	this.rendererManager.UnregisterObj(e.Component as Renderer);
+
+			if (e.Component is ICmpScreenOverlayRenderer)	this.overlayManager.UnregisterObj(e.Component);
 
 			OnRegisteredObjectComponentRemoved(e);
 		}

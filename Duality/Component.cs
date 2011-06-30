@@ -30,6 +30,11 @@ namespace Duality
 		void OnInit(Component.InitContext context);
 		void OnShutdown(Component.ShutdownContext context);
 	}
+	public interface ICmpScreenOverlayRenderer
+	{
+		bool IsVisible(IDrawDevice device);
+		void DrawOverlay(IDrawDevice device);
+	}
 
 	[AttributeUsage(AttributeTargets.Class)]
 	public class RequiredComponentAttribute : Attribute

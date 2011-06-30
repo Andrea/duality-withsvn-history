@@ -20,4 +20,17 @@ namespace Duality.ObjectManagers
 			}
 		}
 	}
+
+	[Serializable]
+	public class OverlayRendererManager : ObjectManager<Component>
+	{
+		public IEnumerable<ICmpScreenOverlayRenderer> QueryVisible(IDrawDevice device)
+		{
+			foreach (Component r in this.ActiveObjects)
+			{
+				ICmpScreenOverlayRenderer overlayRenderer = r as ICmpScreenOverlayRenderer;
+				if (overlayRenderer != null && overlayRenderer.IsVisible(device)) yield return overlayRenderer;
+			}
+		}
+	}
 }
