@@ -169,20 +169,6 @@ namespace Duality.Resources
 
 
 		/// <summary>
-		/// [GET] The Textures (original, unadjusted) width
-		/// </summary>
-		public int Width
-		{
-			get { return this.width; }
-		}			//	G
-		/// <summary>
-		/// [GET] The Textures (original, unadjusted) height
-		/// </summary>
-		public int Height
-		{
-			get { return this.height; }
-		}		//	G
-		/// <summary>
 		/// [GET] The Textures diameter
 		/// </summary>
 		public float Diameter
@@ -237,6 +223,36 @@ namespace Duality.Resources
 			get { return this.needsReload; }
 		}  //  G
 		/// <summary>
+		/// [GET / SET] The Textures (original, unadjusted) width
+		/// </summary>
+		public int Width
+		{
+			get { return this.width; }
+			set
+			{
+				if (this.basePixmap.IsExplicitNull && this.width != value)
+				{
+					this.AdjustSize(value, this.height);
+					this.needsReload = true;
+				}
+			}
+		}							//	GS
+		/// <summary>
+		/// [GET / SET] The Textures (original, unadjusted) height
+		/// </summary>
+		public int Height
+		{
+			get { return this.height; }
+			set
+			{
+				if (this.basePixmap.IsExplicitNull && this.height != value)
+				{
+					this.AdjustSize(this.width, value);
+					this.needsReload = true;
+				}
+			}
+		}						//	GS
+		/// <summary>
 		/// [GET / SET] The Textures magnifying filter
 		/// </summary>
 		public TextureMagFilter FilterMag
@@ -282,7 +298,15 @@ namespace Duality.Resources
 		public SizeMode OglSizeMode
 		{
 			get { return this.oglSizeMode; }
-			set { if (this.oglSizeMode != value) { this.oglSizeMode = value; this.needsReload = true; } }
+			set 
+			{ 
+				if (this.oglSizeMode != value) 
+				{ 
+					this.oglSizeMode = value; 
+					this.AdjustSize(this.width, this.height);
+					this.needsReload = true;
+				}
+			}
 		}				//	GS
 		/// <summary>
 		/// [GET / SET] Reference to a Pixmap that contains the pixel data that is or has been uploaded to the Texture
@@ -358,7 +382,7 @@ namespace Duality.Resources
 			this.pixelformat = format;
 			this.oglSizeMode = sizeMode;
 			this.AdjustSize(width, height);
-			this.SetupInfo();
+			this.SetupOpenGLRes();
 		}
 
 		public void GenerateAnimAtlas(int cols, int rows)
@@ -420,7 +444,7 @@ namespace Duality.Resources
 			GL.GetInteger(GetPName.TextureBinding2D, out lastTexId);
 			GL.BindTexture(TextureTarget.Texture2D, this.glTexId);
 
-			this.SetupInfo();
+			this.SetupOpenGLRes();
 
 			Bitmap bm = this.basePixmap.IsAvailable ? this.basePixmap.Res.PixelData : null;
 			if (bm != null)
@@ -484,7 +508,7 @@ namespace Duality.Resources
 					this.curUVRatio = Vector2.One;
 			}
 		}
-		public void SetupInfo()
+		public void SetupOpenGLRes()
 		{
 			if (this.glTexId == 0) this.glTexId = GL.GenTexture();
 

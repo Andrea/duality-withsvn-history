@@ -9,9 +9,6 @@
 		-->	No Output defined: Render to screen
 		-->	Default: Single stage without Input and Output
 
-	-->	For testing, a working RenderTargetPropertyEditor is needed
-		to set up RenderTargets
-
 	-->	Test the followign cases:
 		1.	No Postprocessing (1 Stage: No Input / No Output)
 		2.	Overlay Postprocessing (1 Stage: Billboard Input / No Output)

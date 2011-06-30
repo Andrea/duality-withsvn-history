@@ -74,6 +74,9 @@
     <Compile Include="PropertyEditors\Resources\FontPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="PropertyEditors\Resources\RenderTargetPropertyEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="ShaderFileImporter.cs" />
     <Compile Include="PixmapFileImporter.cs" />
     <Compile Include="PropertyEditors\DualityAppDataPropertyEditor.cs">

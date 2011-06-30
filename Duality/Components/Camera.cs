@@ -68,6 +68,17 @@ namespace Duality.Components
 			Default	= Color | Depth,
 			All		= Color | Depth
 		}
+		public struct RenderStage
+		{
+			public	BatchInfo					input;
+			public	ContentRef<RenderTarget>	output;
+
+			public RenderStage(BatchInfo input, ContentRef<RenderTarget> output)
+			{
+				this.input = input;
+				this.output = output;
+			}
+		}
 
 		private interface IDrawBatch
 		{
@@ -429,7 +440,7 @@ namespace Duality.Components
 					this.pickingTex = new Texture(
 						MathF.RoundToInt(refSize.X), MathF.RoundToInt(refSize.Y), Texture.SizeMode.Default, 
 						TextureMagFilter.Nearest, TextureMinFilter.Nearest);
-					this.pickingRT = new RenderTarget(0, this.pickingTex);
+					this.pickingRT = new RenderTarget(false, this.pickingTex);
 				}
 				rtRes = this.pickingRT;
 			}

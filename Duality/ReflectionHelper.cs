@@ -82,6 +82,8 @@ namespace Duality
 		public static readonly PropertyInfo	Property_Texture_AnimFrames;
 		public static readonly PropertyInfo	Property_Texture_Atlas;
 
+		public static readonly PropertyInfo	Property_RenderTarget_Targets;
+
 		public static readonly PropertyInfo	Property_BatchInfo_Technique;
 		public static readonly PropertyInfo	Property_BatchInfo_MainColor;
 		public static readonly PropertyInfo	Property_BatchInfo_Textures;
@@ -198,6 +200,9 @@ namespace Duality
 			Property_Texture_AnimRows		= texture.GetProperty("AnimRows");
 			Property_Texture_AnimFrames		= texture.GetProperty("AnimFrames");
 			Property_Texture_Atlas			= texture.GetProperty("Atlas");
+
+			Type renderTarget = typeof(RenderTarget);
+			Property_RenderTarget_Targets	= renderTarget.GetProperty("Targets");
 
 			Type batchInfo = typeof(BatchInfo);
 			Property_BatchInfo_Technique	= batchInfo.GetProperty("Technique");

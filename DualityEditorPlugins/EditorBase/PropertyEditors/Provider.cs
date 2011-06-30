@@ -23,6 +23,7 @@ namespace EditorBase.PropertyEditors
 			else if (baseType == typeof(BatchInfo))		return PropertyGrid.EditorPriority_Specialized;
 			else if (baseType == typeof(Material))		return PropertyGrid.EditorPriority_Specialized;
 			else if (baseType == typeof(Texture))		return PropertyGrid.EditorPriority_Specialized;
+			else if (baseType == typeof(RenderTarget))	return PropertyGrid.EditorPriority_Specialized;
 			else if (baseType == typeof(Pixmap))		return PropertyGrid.EditorPriority_Specialized;
 			else if (baseType == typeof(Sound))			return PropertyGrid.EditorPriority_Specialized;
 			else if (baseType == typeof(Font))			return PropertyGrid.EditorPriority_Specialized;
@@ -55,6 +56,7 @@ namespace EditorBase.PropertyEditors
 			else if (baseType == typeof(BatchInfo))		e = new BatchInfoPropertyEditor(parentEditor, parentGrid);
 			else if (baseType == typeof(Material))		e = new MaterialPropertyEditor(parentEditor, parentGrid);
 			else if (baseType == typeof(Texture))		e = new TexturePropertyEditor(parentEditor, parentGrid);
+			else if (baseType == typeof(RenderTarget))	e = new RenderTargetPropertyEditor(parentEditor, parentGrid);
 			else if (baseType == typeof(Pixmap))		e = new PixmapPropertyEditor(parentEditor, parentGrid);
 			else if (baseType == typeof(Sound))			e = new SoundPropertyEditor(parentEditor, parentGrid);
 			else if (baseType == typeof(Font))			e = new FontPropertyEditor(parentEditor, parentGrid);

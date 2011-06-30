@@ -150,16 +150,36 @@ namespace Duality.Resources
 		}
 
 		
-		[NonSerialized]	public	int	glFboId;
-		[NonSerialized]	public	int	glRboIdDepth;
-		[NonSerialized] public	int	glFboIdMSAA;
-		[NonSerialized] private	int	actualSamples	= 0;
 		private	List<TargetInfo>	targetInfo		= new List<TargetInfo>();
-		private	int					samples			= -1;
+		private	bool				multisample		= true;
+		[NonSerialized] private	int	samples	= 0;
+		[NonSerialized]	private	int	glFboId;
+		[NonSerialized] private	int	glRboIdDepth;
+		[NonSerialized] private	int	glFboIdMSAA;
 
-		public int Samples
+		public bool Multisampled
 		{
-			get { return this.actualSamples; }
+			get { return this.multisample; }
+			set
+			{
+				if (this.multisample != value)
+				{
+					this.multisample = value;
+					this.FreeOpenGLRes();
+					this.SetupOpenGLRes();
+				}
+			}
+		}
+		public ContentRef<Texture>[] Targets
+		{
+			get { return this.targetInfo.Select(i => i.target).ToArray(); }
+			set
+			{
+				this.FreeOpenGLRes();
+				this.targetInfo.Clear();
+				if (value != null) foreach (var t in value) this.targetInfo.Add(new TargetInfo(t));
+				this.SetupOpenGLRes();
+			}
 		}
 		public int Width
 		{
@@ -169,23 +189,55 @@ namespace Duality.Resources
 		{
 			get { return this.targetInfo.FirstOrDefault().target.IsAvailable ? this.targetInfo.FirstOrDefault().target.Res.Height : 0; }
 		}
-
-		public RenderTarget() : this(-1, null) {}
-		public RenderTarget(int samples, params ContentRef<Texture>[] targets)
+		public int Samples
 		{
-			this.samples = samples;
-			if (targets != null) foreach (var t in targets) this.targetInfo.Add(new TargetInfo(t));
-			this.SetupInfo();
+			get { return this.samples; }
 		}
-		public void SetupInfo()
+
+		public RenderTarget() : this(true, null) {}
+		public RenderTarget(bool multisample, params ContentRef<Texture>[] targets)
 		{
-			if (this.samples == -1)
-				this.actualSamples = Math.Min(MaxRenderTargetSamples, DualityApp.TargetMode.Samples);
+			this.multisample = multisample;
+			if (targets != null) foreach (var t in targets) this.targetInfo.Add(new TargetInfo(t));
+			this.SetupOpenGLRes();
+		}
+		public void FreeOpenGLRes()
+		{
+			if (this.glFboId != 0)
+			{
+				GL.Ext.DeleteFramebuffers(1, ref this.glFboId);
+				this.glFboId = 0;
+			}
+			if (this.glRboIdDepth != 0)
+			{
+				GL.Ext.DeleteRenderbuffers(1, ref this.glRboIdDepth);
+				this.glRboIdDepth = 0;
+			}
+			if (this.glFboIdMSAA != 0)
+			{
+				GL.Ext.DeleteFramebuffers(1, ref this.glFboIdMSAA);
+				this.glFboIdMSAA = 0;
+			}
+			for (int i = 0; i < this.targetInfo.Count; i++)
+			{
+				TargetInfo infoTemp = this.targetInfo[i];
+				if (this.targetInfo[i].glRboIdColorMSAA != 0)
+				{
+					GL.Ext.DeleteRenderbuffers(1, ref infoTemp.glRboIdColorMSAA);
+					infoTemp.glRboIdColorMSAA = 0;
+				}
+				this.targetInfo[i] = infoTemp;
+			}
+		}
+		public void SetupOpenGLRes()
+		{
+			if (this.multisample)
+				this.samples = Math.Min(MaxRenderTargetSamples, DualityApp.TargetMode.Samples);
 			else
-				this.actualSamples = this.samples;
+				this.samples = 0;
 
 			#region Setup FBO & RBO: Non-multisampled
-			if (this.actualSamples == 0)
+			if (this.samples == 0)
 			{
 				// Generate FBO
 				if (this.glFboId == 0) GL.Ext.GenFramebuffers(1, out this.glFboId);
@@ -196,6 +248,7 @@ namespace Duality.Resources
 				int oglHeight = 0;
 				for (int i = 0; i < this.targetInfo.Count; i++)
 				{
+					if (!this.targetInfo[i].target.IsAvailable) continue;
 					FramebufferAttachment attachment = (FramebufferAttachment)((int)FramebufferAttachment.ColorAttachment0Ext + i);
 					GL.Ext.FramebufferTexture2D(
 						FramebufferTarget.FramebufferExt, 
@@ -226,7 +279,7 @@ namespace Duality.Resources
 			#endregion
 
 			#region Setup FBO & RBO: Multisampled
-			if (this.actualSamples > 0)
+			if (this.samples > 0)
 			{
 				FramebufferErrorCode status;
 
@@ -239,6 +292,7 @@ namespace Duality.Resources
 				int oglHeight = 0;
 				for (int i = 0; i < this.targetInfo.Count; i++)
 				{
+					if (!this.targetInfo[i].target.IsAvailable) continue;
 					FramebufferAttachment attachment = (FramebufferAttachment)((int)FramebufferAttachment.ColorAttachment0Ext + i);
 					GL.Ext.FramebufferTexture2D(
 						FramebufferTarget.FramebufferExt, 
@@ -264,13 +318,14 @@ namespace Duality.Resources
 				// Attach color renderbuffers
 				for (int i = 0; i < this.targetInfo.Count; i++)
 				{
+					if (!this.targetInfo[i].target.IsAvailable) continue;
 					TargetInfo info = this.targetInfo[i];
 					FramebufferAttachment attachment = (FramebufferAttachment)((int)FramebufferAttachment.ColorAttachment0Ext + i);
 					RenderbufferStorage rbColorFormat = TexFormatToRboFormat(info.target.Res.PixelFormat);
 
 					if (info.glRboIdColorMSAA == 0) GL.GenRenderbuffers(1, out info.glRboIdColorMSAA);
 					GL.Ext.BindRenderbuffer(RenderbufferTarget.RenderbufferExt, info.glRboIdColorMSAA);
-					GL.Ext.RenderbufferStorageMultisample((ExtFramebufferMultisample)(int)RenderbufferTarget.RenderbufferExt, this.actualSamples, (ExtFramebufferMultisample)(int)rbColorFormat, oglWidth, oglHeight);
+					GL.Ext.RenderbufferStorageMultisample((ExtFramebufferMultisample)(int)RenderbufferTarget.RenderbufferExt, this.samples, (ExtFramebufferMultisample)(int)rbColorFormat, oglWidth, oglHeight);
 					GL.Ext.FramebufferRenderbuffer(FramebufferTarget.FramebufferExt, attachment, RenderbufferTarget.RenderbufferExt, info.glRboIdColorMSAA);
 					this.targetInfo[i] = info;
 				}
@@ -279,7 +334,7 @@ namespace Duality.Resources
 				// Attach depth renderbuffer
 				if (this.glRboIdDepth == 0) GL.Ext.GenRenderbuffers(1, out this.glRboIdDepth);
 				GL.Ext.BindRenderbuffer(RenderbufferTarget.RenderbufferExt, this.glRboIdDepth);
-				GL.Ext.RenderbufferStorageMultisample((ExtFramebufferMultisample)(int)RenderbufferTarget.RenderbufferExt, this.actualSamples, (ExtFramebufferMultisample)(int)RenderbufferStorage.DepthComponent24, oglWidth, oglHeight);
+				GL.Ext.RenderbufferStorageMultisample((ExtFramebufferMultisample)(int)RenderbufferTarget.RenderbufferExt, this.samples, (ExtFramebufferMultisample)(int)RenderbufferStorage.DepthComponent24, oglWidth, oglHeight);
 				GL.Ext.FramebufferRenderbuffer(FramebufferTarget.FramebufferExt, FramebufferAttachment.DepthAttachmentExt, RenderbufferTarget.RenderbufferExt, this.glRboIdDepth);
 				GL.Ext.BindRenderbuffer(RenderbufferTarget.RenderbufferExt, 0);
 
@@ -298,46 +353,23 @@ namespace Duality.Resources
 		[OnDeserialized]
 		private void OnDeserialized(StreamingContext context)
 		{
-			this.SetupInfo();
+			this.SetupOpenGLRes();
 		}
 		protected override void OnDisposed(bool manually)
 		{
 			base.OnDisposed(manually);
 			if (DualityApp.ExecContext != DualityApp.ExecutionContext.Terminated)
 			{
-				if (this.glFboId != 0)
-				{
-					GL.Ext.DeleteFramebuffers(1, ref this.glFboId);
-					this.glFboId = 0;
-				}
-				if (this.glRboIdDepth != 0)
-				{
-					GL.Ext.DeleteRenderbuffers(1, ref this.glRboIdDepth);
-					this.glRboIdDepth = 0;
-				}
-				if (this.glFboIdMSAA != 0)
-				{
-					GL.Ext.DeleteFramebuffers(1, ref this.glFboIdMSAA);
-					this.glFboIdMSAA = 0;
-				}
-				for (int i = 0; i < this.targetInfo.Count; i++)
-				{
-					TargetInfo infoTemp = this.targetInfo[i];
-					if (this.targetInfo[i].glRboIdColorMSAA != 0)
-					{
-						GL.Ext.DeleteRenderbuffers(1, ref infoTemp.glRboIdColorMSAA);
-						infoTemp.glRboIdColorMSAA = 0;
-					}
-					this.targetInfo[i] = infoTemp;
-				}
+				this.FreeOpenGLRes();
 			}
 		}
 		public override void CopyTo(Resource r)
 		{
 			base.CopyTo(r);
 			RenderTarget c = r as RenderTarget;
-			c.samples		= this.samples;
+			c.multisample	= this.multisample;
 			c.targetInfo	= new List<TargetInfo>(this.targetInfo);
+			c.SetupOpenGLRes();
 		}
 	}
 }

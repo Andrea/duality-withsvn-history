@@ -157,9 +157,14 @@ namespace EditorBase.PropertyEditors
 				Texture first = values.NotNull().FirstOrDefault() as Texture;
 
 				Bitmap baseBitmap = first.BasePixmap.IsAvailable ? first.BasePixmap.Res.PixelData : null;
-				Rect uvRect = first.Atlas[this.scrollAtlas.Value - 1];
-				Rect pxRect = uvRect.Transform(first.OglWidth, first.OglHeight);
-				this.frameCache[this.scrollAtlas.Value] = baseBitmap.SubImage((int)pxRect.x, (int)pxRect.y, (int)pxRect.w, (int)pxRect.h);
+				if (baseBitmap != null && first.Atlas != null && this.scrollAtlas.Value > 0)
+				{
+					Rect uvRect = first.Atlas[this.scrollAtlas.Value - 1];
+					Rect pxRect = uvRect.Transform(first.OglWidth, first.OglHeight);
+					this.frameCache[this.scrollAtlas.Value] = baseBitmap.SubImage((int)pxRect.x, (int)pxRect.y, (int)pxRect.w, (int)pxRect.h);
+				}
+				else
+					this.frameCache[this.scrollAtlas.Value] = baseBitmap;
 			}
 
 			this.previewBox.BackgroundImage = this.frameCache[this.scrollAtlas.Value];

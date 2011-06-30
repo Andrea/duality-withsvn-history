@@ -16,6 +16,13 @@ namespace DualityEditor.Controls.PropertyEditors
 		private	NumericPropertyEditor	sizeEditor		= null;
 		private	NumericPropertyEditor	offsetEditor	= null;
 		private	int						offset			= 0;
+		private	bool					forceWriteBack	= false;
+
+		public bool ForceWriteBack
+		{
+			get { return this.forceWriteBack; }
+			set { this.forceWriteBack = value; }
+		}
 
 		public IListPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid)
 		{
@@ -205,7 +212,7 @@ namespace DualityEditor.Controls.PropertyEditors
 				}
 				if (valuesEnum.MoveNext()) curValue = (uint)valuesEnum.Current;
 			}
-			if (writeBack) this.Setter(targetArray);
+			if (writeBack || this.forceWriteBack) this.Setter(targetArray);
 			this.PerformGetValue();
 		}
 		protected IEnumerable<object> OffsetValueGetter()
@@ -236,6 +243,7 @@ namespace DualityEditor.Controls.PropertyEditors
 					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}
 				this.UpdateModifiedState();
+				if (this.forceWriteBack) this.Setter(targetArray);
 			};
 		}
 

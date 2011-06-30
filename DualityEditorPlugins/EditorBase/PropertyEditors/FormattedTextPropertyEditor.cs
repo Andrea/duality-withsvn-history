@@ -34,7 +34,7 @@ namespace EditorBase.PropertyEditors
 			{
 				PropertyEditor e = this.ParentGrid.PropertyEditorProvider.CreateEditor((info as PropertyInfo).PropertyType, this, this.ParentGrid);
 				IListPropertyEditor listEdit = e as IListPropertyEditor;
-				if (listEdit != null) listEdit.ValueEdited += delegate(object sender, PropertyGridValueEditedEventArgs args) { listEdit.PerformSetValue(); };
+				if (listEdit != null) listEdit.ForceWriteBack = true;
 				return e;
 			}
 			return base.MemberEditor(info);
