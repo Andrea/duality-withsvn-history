@@ -1417,7 +1417,7 @@ namespace EditorBase
 		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
 		{
 			if (e.HasProperty(ReflectionHelper.Property_GameObject_ActiveSingle) ||
-				e.Objects.Components.Any(c => c is Transform || c is Renderer) ||
+				e.Objects.Components.Any(c => c is Transform || c is Renderer || c is Camera) ||
 				e.Objects.Resources.Any())
 			{
 				this.UpdateSelectionStats();
@@ -1432,6 +1432,7 @@ namespace EditorBase
 
 		private void Scene_Changed(object sender, EventArgs e)
 		{
+			this.SetCurrentCamera(null);
 			this.UpdateSelectionStats();
 			this.glControl.Invalidate();
 		}

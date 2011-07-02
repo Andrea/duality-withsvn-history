@@ -158,7 +158,7 @@ namespace Duality.Components.Renderers
 			base.CopyToInternal(target);
 			SpriteRenderer t = target as SpriteRenderer;
 			t.sharedMat	= this.sharedMat;
-			t.customMat	= new BatchInfo(this.customMat);
+			t.customMat	= this.customMat != null ? new BatchInfo(this.customMat) : null;
 			t.rect		= this.rect;
 			t.colorTint	= this.colorTint;
 		}

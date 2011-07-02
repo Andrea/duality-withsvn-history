@@ -359,6 +359,10 @@ namespace Duality.Resources
 		{
 			this.SetupOpenGLRes();
 		}
+		protected override void OnLoaded()
+		{
+			base.OnLoaded();
+		}
 		protected override void OnDisposed(bool manually)
 		{
 			base.OnDisposed(manually);

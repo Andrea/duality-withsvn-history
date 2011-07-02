@@ -296,17 +296,17 @@ namespace Duality.Components
 		private	ClearFlags	clearMask		= ClearFlags.All;
 		private	Pass[]		passes			= new Pass[1];
 
-		private	Matrix4	matModelView		= Matrix4.Identity;
-		private	Matrix4	matProjection		= Matrix4.Identity;
-		private	Matrix4	matFinal			= Matrix4.Identity;
+		[NonSerialized]	private	Matrix4	matModelView		= Matrix4.Identity;
+		[NonSerialized]	private	Matrix4	matProjection		= Matrix4.Identity;
+		[NonSerialized]	private	Matrix4	matFinal			= Matrix4.Identity;
 
-		private	uint				picking			= 0;
-		private	List<Renderer>		pickingMap		= null;
-		private	RenderTarget		pickingRT		= null;
-		private	Texture				pickingTex		= null;
-		private	int					pickingLast		= -1;
+		[NonSerialized]	private	uint				hndlPrimaryVBO	= 0;
+		[NonSerialized]	private	uint				picking			= 0;
+		[NonSerialized]	private	List<Renderer>		pickingMap		= null;
+		[NonSerialized]	private	RenderTarget		pickingRT		= null;
+		[NonSerialized]	private	Texture				pickingTex		= null;
+		[NonSerialized]	private	int					pickingLast		= -1;
 		private	byte[]				pickingBuffer	= new byte[4 * 256 * 256];
-		private	uint				hndlPrimaryVBO	= 0;
 		private	List<IDrawBatch>	drawBuffer		= new List<IDrawBatch>();
 		private	List<IDrawBatch>	drawBufferZSort	= new List<IDrawBatch>();
 
@@ -433,6 +433,11 @@ namespace Duality.Components
 			{
 				this.SetupPickingRT();
 				RenderTarget.Bind(this.pickingRT);
+
+				GL.ClearDepth(1.0d);
+				GL.ClearColor(System.Drawing.Color.Black);
+				GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
 				this.RenderBaseInput();
 				RenderTarget.Bind(RenderTarget.None);
 			}
@@ -578,9 +583,8 @@ namespace Duality.Components
 			GL.Scissor((int)viewportAbs.x, (int)refSize.Y - (int)viewportAbs.h - (int)viewportAbs.y, (int)viewportAbs.w, (int)viewportAbs.h);
 
 			GL.ClearDepth(1.0d);
-			GL.ClearColor(this.picking != 0 ? System.Drawing.Color.Black : (OpenTK.Graphics.Color4)this.clearColor);
-
-			ClearBufferMask glClearMask = (this.picking != 0) ? ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit : 0;
+			GL.ClearColor((OpenTK.Graphics.Color4)this.clearColor);
+			ClearBufferMask glClearMask = 0;
 			if ((this.clearMask & ClearFlags.Color) != ClearFlags.None) glClearMask |= ClearBufferMask.ColorBufferBit;
 			if ((this.clearMask & ClearFlags.Depth) != ClearFlags.None) glClearMask |= ClearBufferMask.DepthBufferBit;
 			GL.Clear(glClearMask);
@@ -708,6 +712,25 @@ namespace Duality.Components
 		{
 			ContentRef<RenderTarget> rt = RenderTarget.BoundRT.Res;
 			Vector2 refSize = rt.IsAvailable ? new Vector2(rt.Res.Width, rt.Res.Height) : DualityApp.TargetResolution;
+
+			// If we're expecting a crunched image, also crunch the picking pass
+			if (this.picking != 0)
+			{
+				for (int i = 0; i < this.passes.Length; i++)
+				{
+					if (this.passes[i].output == null && this.passes[i].fitOutput)
+					{
+						Vector2 targetSize = this.passes[i].input == null || 
+							this.passes[i].input.Textures == null || 
+							this.passes[i].input.Textures.Values.FirstOrDefault() == null || 
+							!this.passes[i].input.Textures.Values.FirstOrDefault().IsAvailable ? 
+							DualityApp.TargetResolution : 
+							new Vector2(this.passes[i].input.Textures.Values.First().Res.PxWidth, this.passes[i].input.Textures.Values.First().Res.PxHeight);
+						refSize = targetSize;
+						break;
+					}
+				}
+			}
 
 			this.GenerateModelView(out this.matModelView, screenOverlay);
 			this.GenerateProjection(rt.IsAvailable ? new Rect(refSize) : new Rect(DualityApp.TargetResolution), out this.matProjection, screenOverlay);
