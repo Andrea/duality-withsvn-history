@@ -49,6 +49,8 @@ namespace Duality
 		public static readonly PropertyInfo	Property_Camera_SceneTargetSize;
 		public static readonly PropertyInfo	Property_Camera_VisibilityMask;
 		public static readonly PropertyInfo	Property_Camera_Passes;
+		public static readonly PropertyInfo	Property_Camera_ClearColor;
+		public static readonly PropertyInfo	Property_Camera_ParallaxRefDist;
 
 		public static readonly PropertyInfo	Property_SoundEmitter_Sources;
 		public static readonly PropertyInfo	Property_SoundEmitter_Source_Disposed;
@@ -70,9 +72,9 @@ namespace Duality
 		public static readonly PropertyInfo	Property_Pixmap_PixelData;
 		public static readonly PropertyInfo	Property_Pixmap_PixelDataBasePath;
 
-		public static readonly PropertyInfo	Property_Texture_Width;
-		public static readonly PropertyInfo	Property_Texture_Height;
-		public static readonly PropertyInfo	Property_Texture_Diameter;
+		public static readonly PropertyInfo	Property_Texture_PxWidth;
+		public static readonly PropertyInfo	Property_Texture_PxHeight;
+		public static readonly PropertyInfo	Property_Texture_PxDiameter;
 		public static readonly PropertyInfo	Property_Texture_OglWidth;
 		public static readonly PropertyInfo	Property_Texture_OglHeight;
 		public static readonly PropertyInfo	Property_Texture_UVRatio;
@@ -171,6 +173,8 @@ namespace Duality
 			Property_Camera_SceneTargetSize		= camera.GetProperty("SceneTargetSize");
 			Property_Camera_VisibilityMask		= camera.GetProperty("VisibilityMask");
 			Property_Camera_Passes				= camera.GetProperty("Passes");
+			Property_Camera_ParallaxRefDist		= camera.GetProperty("ParallaxRefDist");
+			Property_Camera_ClearColor			= camera.GetProperty("ClearColor");
 			
 			Type resource = typeof(Resource);
 			Property_Resource_Disposed	= resource.GetProperty("Disposed");
@@ -190,9 +194,9 @@ namespace Duality
 			Property_Pixmap_PixelDataBasePath	= pixmap.GetProperty("PixelDataBasePath");
 
 			Type texture = typeof(Texture);
-			Property_Texture_Width			= texture.GetProperty("Width");
-			Property_Texture_Height			= texture.GetProperty("Height");
-			Property_Texture_Diameter		= texture.GetProperty("Diameter");
+			Property_Texture_PxWidth		= texture.GetProperty("PxWidth");
+			Property_Texture_PxHeight		= texture.GetProperty("PxHeight");
+			Property_Texture_PxDiameter		= texture.GetProperty("PxDiameter");
 			Property_Texture_OglWidth		= texture.GetProperty("OglWidth");
 			Property_Texture_OglHeight		= texture.GetProperty("OglHeight");
 			Property_Texture_UVRatio		= texture.GetProperty("UVRatio");

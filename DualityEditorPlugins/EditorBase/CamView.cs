@@ -85,6 +85,7 @@ namespace EditorBase
 		private	List<GameObject>	parentFreeSel	= new List<GameObject>();
 		private	ObjectSelection		activeRectSel	= new ObjectSelection();
 		private	ColorPickerDialog	bgColorDialog	= new ColorPickerDialog();
+		private	GameObject			nativeCamObj	= null;
 
 		public ColorRGBA BgColor
 		{
@@ -133,7 +134,9 @@ namespace EditorBase
 		{
 			base.OnClosed(e);
 
-			if (this.camInternal && this.camObj != null) this.camObj.Dispose();
+			if (this.camObj != null && !this.camInternal) EditorBasePlugin.Instance.EditorForm.EditorObjects.UnregisterObjDeep(this.camObj);
+			if (this.nativeCamObj != null) this.nativeCamObj.Dispose();
+
 			EditorBasePlugin.Instance.EditorForm.AfterUpdateDualityApp -= this.EditorForm_AfterUpdateDualityApp;
 			EditorBasePlugin.Instance.EditorForm.SelectionChanged -= this.EditorForm_SelectionChanged;
 			EditorBasePlugin.Instance.EditorForm.ObjectPropertyChanged -= this.EditorForm_ObjectPropertyChanged;
@@ -147,22 +150,9 @@ namespace EditorBase
 		public void Init()
 		{
 			this.InitGLControl();
-
-			// Flag the used Camera as editor-internal
-			this.camInternal = true;
-
-			// Create internal Camera object
-			this.camObj = new GameObject();
-			this.camObj.Name = "CamView Camera " + this.runtimeId;
-			this.camObj.AddComponent<Transform>();
-			this.camObj.AddComponent<SoundListener>().MakeCurrent();
-
-			this.camComp = this.camObj.AddComponent<Camera>();
-			this.camComp.ClearColor = ColorRGBA.DarkGrey;
-			this.camComp.FarZ = 100000.0f;
-
-			this.camObj.Transform.Pos = new Vector3(0.0f, 0.0f, -this.camComp.ParallaxRefDist);
-			EditorBasePlugin.Instance.EditorForm.EditorObjects.RegisterObjDeep(this.camObj);
+			this.InitNativeCamera();
+			this.InitCameraSelector();
+			this.camSelector.SelectedIndex = 0;
 
 			// Register DualityApp updater for camera steering behaviour
 			EditorBasePlugin.Instance.EditorForm.AfterUpdateDualityApp += this.EditorForm_AfterUpdateDualityApp;
@@ -187,11 +177,57 @@ namespace EditorBase
 			this.UpdateStatusTransformInfo();
 		}
 
+		protected void InitCameraSelector()
+		{
+			this.camSelector.Items.Clear();
+			this.camSelector.Items.Add(this.nativeCamObj);
+			foreach (Camera c in Scene.Current.Graph.AllObjects.GetComponents<Camera>())
+			{
+				this.camSelector.Items.Add(c);
+			}
+		}
+		protected void InitNativeCamera()
+		{
+			// Create internal Camera object
+			this.nativeCamObj = new GameObject();
+			this.nativeCamObj.Name = "CamView Camera " + this.runtimeId;
+			this.nativeCamObj.AddComponent<Transform>();
+			this.nativeCamObj.AddComponent<SoundListener>().MakeCurrent();
+
+			Camera c = this.nativeCamObj.AddComponent<Camera>();
+			c.ClearColor = ColorRGBA.DarkGrey;
+			c.FarZ = 100000.0f;
+
+			this.nativeCamObj.Transform.Pos = new Vector3(0.0f, 0.0f, -c.ParallaxRefDist);
+			EditorBasePlugin.Instance.EditorForm.EditorObjects.RegisterObjDeep(this.nativeCamObj);
+		}
+		protected void SetCurrentCamera(Camera c)
+		{
+			if (this.camObj != null && !this.camInternal)
+				EditorBasePlugin.Instance.EditorForm.EditorObjects.UnregisterObjDeep(this.camObj);
+
+			if (c == null)
+			{
+				this.camInternal = true;
+				this.camObj = this.nativeCamObj;
+				this.camComp = this.camObj.Camera;
+			}
+			else
+			{
+				this.camInternal = false;
+				this.camObj = c.GameObj;
+				this.camComp = c;
+				EditorBasePlugin.Instance.EditorForm.EditorObjects.RegisterObjDeep(this.camObj);
+			}
+
+			this.glControl.Invalidate();
+		}
+
 		internal void SaveUserData(System.Xml.XmlElement node)
 		{
 			node.SetAttribute("toggleParallaxity", this.toggleParallaxity.Checked.ToString());
-			node.SetAttribute("parallaxRefDist", this.parallaxRefDist.Value.ToString());
-			node.SetAttribute("bgColorArgb", this.bgColorDialog.SelectedColor.ToArgb().ToString());
+			node.SetAttribute("parallaxRefDist", this.nativeCamObj.Camera.ParallaxRefDist.ToString());
+			node.SetAttribute("bgColorArgb", this.nativeCamObj.Camera.ClearColor.ToIntArgb().ToString());
 			node.SetAttribute("toggleAccMove", this.toggleAccMove.Checked.ToString());
 		}
 		internal void LoadUserData(System.Xml.XmlElement node)
@@ -252,6 +288,16 @@ namespace EditorBase
 
 		protected void UpdateStatusTransformInfo()
 		{
+			if (!this.camInternal)
+			{
+				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
+					this, new ObjectSelection(this.camObj.Transform),
+					ReflectionHelper.Property_Transform_RelativeVel,
+					ReflectionHelper.Property_Transform_RelativeAngleVel,
+					ReflectionHelper.Property_Transform_RelativeAngle,
+					ReflectionHelper.Property_Transform_RelativePos);
+			}
+
 			System.Globalization.CultureInfo formatProvider = System.Threading.Thread.CurrentThread.CurrentUICulture;
 			this.posXStatusLabel.Text = String.Format(formatProvider, PluginRes.EditorBaseRes.CamView_Status_PosX, this.camObj.Transform.Pos.X);
 			this.posYStatusLabel.Text = String.Format(formatProvider, PluginRes.EditorBaseRes.CamView_Status_PosY, this.camObj.Transform.Pos.Y);
@@ -920,13 +966,15 @@ namespace EditorBase
 						0.0f);
 					MathF.TransformCoord(ref movVec.X, ref movVec.Y, this.camObj.Transform.RelativeAngle);
 					this.camObj.Transform.RelativePos = this.camActionBeginLocSpace + movVec;
+					this.glControl.Invalidate();
+					this.UpdateStatusTransformInfo();
 				}
 				else if (this.camAction == CameraAction.TurnCam)
 				{
 					this.camObj.Transform.RelativeAngle = MathF.NormalizeAngle(this.camActionBeginLocSpace.X + 0.01f * (e.X - this.camActionBeginLoc.X));
+					this.glControl.Invalidate();
+					this.UpdateStatusTransformInfo();
 				}
-				this.glControl.Invalidate();
-				this.UpdateStatusTransformInfo();
 			}
 
 			if (this.action == MouseAction.RectSelection)
@@ -1217,6 +1265,12 @@ namespace EditorBase
 			if (this.camComp == null) return;
 
 			this.camComp.ParallaxRefDist = this.toggleParallaxity.Checked ? (float)this.parallaxRefDist.Value : -(float)this.parallaxRefDist.Value;
+			if (!this.camInternal)
+			{
+				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
+					this, new ObjectSelection(this.camComp),
+					ReflectionHelper.Property_Camera_ParallaxRefDist);
+			}
 			this.glControl.Invalidate();
 		}
 		private void parallaxRefDist_ValueChanged(object sender, EventArgs e)
@@ -1272,6 +1326,12 @@ namespace EditorBase
 				this.bgColorDialog.SelectedColor.G,
 				this.bgColorDialog.SelectedColor.B,
 				0);
+			if (!this.camInternal)
+			{
+				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
+					this, new ObjectSelection(this.camComp),
+					ReflectionHelper.Property_Camera_ClearColor);
+			}
 			this.glControl.Invalidate();
 		}
 		
@@ -1358,12 +1418,7 @@ namespace EditorBase
 		{
 			if (e.HasProperty(ReflectionHelper.Property_GameObject_ActiveSingle) ||
 				e.Objects.Components.Any(c => c is Transform || c is Renderer) ||
-				e.Objects.Resources.Any(r =>
-					r is Material || 
-					r is ShaderProgram ||
-					r is AbstractShader ||
-					r is DrawTechnique ||
-					r is Font))
+				e.Objects.Resources.Any())
 			{
 				this.UpdateSelectionStats();
 				this.glControl.Invalidate();
@@ -1372,20 +1427,23 @@ namespace EditorBase
 		private void EditorForm_ResourceModified(object sender, ResourceEventArgs e)
 		{
 			if (!e.IsResource) return;
-			if (e.Content.Is<Material>() || 
-				e.Content.Is<ShaderProgram>() || 
-				e.Content.Is<AbstractShader>() || 
-				e.Content.Is<DrawTechnique>() || 
-				e.Content.Is<Font>())
-			{
-				this.glControl.Invalidate();
-			}
+			this.glControl.Invalidate();
 		}
 
 		private void Scene_Changed(object sender, EventArgs e)
 		{
 			this.UpdateSelectionStats();
 			this.glControl.Invalidate();
+		}
+
+		private void camSelector_DropDown(object sender, EventArgs e)
+		{
+			this.InitCameraSelector();
+		}
+		private void camSelector_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (this.camSelector.SelectedIndex == -1) { this.camSelector.SelectedIndex = 0; return; }
+			this.SetCurrentCamera(this.camSelector.SelectedItem as Camera);
 		}
 	}
 }

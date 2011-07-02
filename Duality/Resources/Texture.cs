@@ -97,6 +97,10 @@ namespace Duality.Resources
 			}
 		}
 
+		static Texture()
+		{
+			DualityApp.GfxSizeChanged += new EventHandler(DualityApp_GfxSizeChanged);
+		}
 		private static void Init()
 		{
 			if (initialized) return;
@@ -146,11 +150,21 @@ namespace Duality.Resources
 				Bind(None, i);
 			}
 		}
+		private static void DualityApp_GfxSizeChanged(object sender, EventArgs e)
+		{
+			// Reload relative textures
+			Texture tex;
+			foreach (ContentRef<Texture> texRef in ContentProvider.GetLoadedContent<Texture>())
+			{
+				if (!texRef.IsAvailable) continue;
+				tex = texRef.Res;
+				if (tex.SizeRelative) tex.ReloadData();
+			}
+		}
 
 		
 		protected	ContentRef<Pixmap>		basePixmap	= ContentRef<Pixmap>.Null;
-		protected	int						width		= 0;
-		protected	int						height		= 0;
+		protected	Vector2					size		= Vector2.Zero;
 		protected	SizeMode				oglSizeMode	= SizeMode.Default;
 		protected	TextureMagFilter		filterMag	= TextureMagFilter.Linear;
 		protected	TextureMinFilter		filterMin	= TextureMinFilter.LinearMipmapLinear;
@@ -160,8 +174,11 @@ namespace Duality.Resources
 		protected	List<Rect>				atlas		= null;
 		protected	int						animCols	= 0;
 		protected	int						animRows	= 0;
+		protected	bool					sizeRelative	= false;
+		[NonSerialized]	protected	int		pxWidth		= 0;
+		[NonSerialized]	protected	int		pxHeight	= 0;
 		[NonSerialized]	protected	int		glTexId		= 0;
-		[NonSerialized]	protected	float	diameter	= 0.0f;
+		[NonSerialized]	protected	float	pxDiameter	= 0.0f;
 		[NonSerialized]	protected	int		oglWidth	= 0;
 		[NonSerialized]	protected	int		oglHeight	= 0;
 		[NonSerialized]	protected	Vector2	curUVRatio	= new Vector2(1.0f, 1.0f);
@@ -171,9 +188,9 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET] The Textures diameter
 		/// </summary>
-		public float Diameter
+		public float PxDiameter
 		{
-			get { return this.diameter; }
+			get { return this.pxDiameter; }
 		}	//	G
 		/// <summary>
 		/// [GET] The Textures internal width as uploaded to video memory
@@ -189,6 +206,20 @@ namespace Duality.Resources
 		{
 			get { return this.oglHeight; }
 		}		//	G
+		/// <summary>
+		/// [GET] The Textures width after taking relative sizes into account
+		/// </summary>
+		public int PxWidth
+		{
+			get { return this.pxWidth; }
+		}	//	G
+		/// <summary>
+		/// [GET] The Textures height after taking relative sizes into account
+		/// </summary>
+		public int PxHeight
+		{
+			get { return this.pxHeight; }
+		}	//	G
 		/// <summary>
 		/// [GET] The Textures internal id value
 		/// </summary>
@@ -223,35 +254,30 @@ namespace Duality.Resources
 			get { return this.needsReload; }
 		}  //  G
 		/// <summary>
-		/// [GET / SET] The Textures (original, unadjusted) width
+		/// [GET / SET] The Textures (original, unadjusted) size
 		/// </summary>
-		public int Width
+		public Vector2 Size
 		{
-			get { return this.width; }
+			get { return this.size; }
 			set
 			{
-				if (this.basePixmap.IsExplicitNull && this.width != value)
+				if (this.basePixmap.IsExplicitNull && this.size != value)
 				{
-					this.AdjustSize(value, this.height);
-					this.needsReload = true;
-				}
-			}
-		}							//	GS
-		/// <summary>
-		/// [GET / SET] The Textures (original, unadjusted) height
-		/// </summary>
-		public int Height
-		{
-			get { return this.height; }
-			set
-			{
-				if (this.basePixmap.IsExplicitNull && this.height != value)
-				{
-					this.AdjustSize(this.width, value);
+					this.AdjustSize(value.X, value.Y);
 					this.needsReload = true;
 				}
 			}
 		}						//	GS
+		public bool SizeRelative
+		{
+			get { return this.sizeRelative; }
+			set
+			{
+				this.sizeRelative = value;
+				this.AdjustSize(this.size.X, this.size.Y);
+				this.needsReload = true;
+			}
+		}
 		/// <summary>
 		/// [GET / SET] The Textures magnifying filter
 		/// </summary>
@@ -303,7 +329,7 @@ namespace Duality.Resources
 				if (this.oglSizeMode != value) 
 				{ 
 					this.oglSizeMode = value; 
-					this.AdjustSize(this.width, this.height);
+					this.AdjustSize(this.size.X, this.size.Y);
 					this.needsReload = true;
 				}
 			}
@@ -450,7 +476,7 @@ namespace Duality.Resources
 				this.AdjustSize(bm.Width, bm.Height);
 				this.SetupOpenGLRes();
 				if (this.oglSizeMode != SizeMode.NonPowerOfTwo &&
-					(this.width != this.oglWidth || this.height != this.oglHeight))
+					(this.pxWidth != this.oglWidth || this.pxHeight != this.oglHeight))
 				{
 					if (this.oglSizeMode == SizeMode.Enlarge)
 						bm = bm.Resize(this.oglWidth, this.oglHeight);
@@ -472,7 +498,7 @@ namespace Duality.Resources
 			}
 			else
 			{
-				this.AdjustSize(this.width, this.height);
+				this.AdjustSize(this.size.X, this.size.Y);
 				this.SetupOpenGLRes();
 			}
 
@@ -482,28 +508,37 @@ namespace Duality.Resources
 			this.GenerateAnimAtlas(this.animCols, this.animRows);
 		}
 
-		protected void AdjustSize(int width, int height)
+		protected void AdjustSize(float width, float height)
 		{
-			this.width = width;
-			this.height = height;
-			this.diameter = MathF.Distance(this.width, this.height);
+			this.size = new Vector2(width, height);
+			if (this.sizeRelative)
+			{
+				this.pxWidth = MathF.RoundToInt(this.size.X * DualityApp.UserData.GfxWidth);
+				this.pxHeight = MathF.RoundToInt(this.size.Y * DualityApp.UserData.GfxHeight);
+			}
+			else
+			{
+				this.pxWidth = MathF.RoundToInt(this.size.X);
+				this.pxHeight = MathF.RoundToInt(this.size.Y);
+			}
+			this.pxDiameter = MathF.Distance(this.pxWidth, this.pxHeight);
 
 			if (this.oglSizeMode == SizeMode.NonPowerOfTwo)
 			{
-				this.oglWidth = this.width;
-				this.oglHeight = this.height;
+				this.oglWidth = this.pxWidth;
+				this.oglHeight = this.pxHeight;
 				this.curUVRatio = Vector2.One;
 			}
 			else
 			{
-				this.oglWidth = OpenTK.MathHelper.NextPowerOfTwo(this.width);
-				this.oglHeight = OpenTK.MathHelper.NextPowerOfTwo(this.height);
-				if (this.width != this.oglWidth || this.height != this.oglHeight)
+				this.oglWidth = OpenTK.MathHelper.NextPowerOfTwo(this.pxWidth);
+				this.oglHeight = OpenTK.MathHelper.NextPowerOfTwo(this.pxHeight);
+				if (this.pxWidth != this.oglWidth || this.pxHeight != this.oglHeight)
 				{
 					if (this.oglSizeMode == SizeMode.Enlarge)
 					{
-						this.curUVRatio.X = (float)this.width / (float)this.oglWidth;
-						this.curUVRatio.Y = (float)this.height / (float)this.oglHeight;
+						this.curUVRatio.X = (float)this.pxWidth / (float)this.oglWidth;
+						this.curUVRatio.Y = (float)this.pxHeight / (float)this.oglHeight;
 					}
 					else
 						this.curUVRatio = Vector2.One;
@@ -557,8 +592,8 @@ namespace Duality.Resources
 		{
 			base.CopyTo(r);
 			Texture c = r as Texture;
-			c.width = this.width;
-			c.height = this.height;
+			c.sizeRelative = this.sizeRelative;
+			c.size = this.size;
 			c.filterMag = this.filterMag;
 			c.filterMin = this.filterMin;
 			c.wrapX = this.wrapX;

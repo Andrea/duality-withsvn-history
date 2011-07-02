@@ -124,21 +124,21 @@
   <data name="showBgColorDialog.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         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
-        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
+        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
 </value>
   </data>
   <data name="showBgColorDialog.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
@@ -188,6 +188,9 @@
   <data name="parallaxRefDist.Text" xml:space="preserve">
     <value>RefDist</value>
   </data>
+  <data name="camSelector.Size" type="System.Drawing.Size, System.Drawing">
+    <value>121, 28</value>
+  </data>
   <data name="toolStrip.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
   </data>
@@ -216,30 +219,6 @@
   <metadata name="statusStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>115, 17</value>
   </metadata>
-  <data name="statusStrip.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 375</value>
-  </data>
-  <data name="statusStrip.Size" type="System.Drawing.Size, System.Drawing">
-    <value>539, 22</value>
-  </data>
-  <data name="statusStrip.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
-  </data>
-  <data name="statusStrip.Text" xml:space="preserve">
-    <value>statusStrip1</value>
-  </data>
-  <data name="&gt;&gt;statusStrip.Name" xml:space="preserve">
-    <value>statusStrip</value>
-  </data>
-  <data name="&gt;&gt;statusStrip.Type" xml:space="preserve">
-    <value>System.Windows.Forms.StatusStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;statusStrip.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;statusStrip.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
   <data name="posXStatusLabel.AutoSize" type="System.Boolean, mscorlib">
     <value>False</value>
   </data>
@@ -333,6 +312,30 @@
   <data name="axisLockZLabel.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleLeft</value>
   </data>
+  <data name="statusStrip.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 375</value>
+  </data>
+  <data name="statusStrip.Size" type="System.Drawing.Size, System.Drawing">
+    <value>539, 22</value>
+  </data>
+  <data name="statusStrip.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="statusStrip.Text" xml:space="preserve">
+    <value>statusStrip1</value>
+  </data>
+  <data name="&gt;&gt;statusStrip.Name" xml:space="preserve">
+    <value>statusStrip</value>
+  </data>
+  <data name="&gt;&gt;statusStrip.Type" xml:space="preserve">
+    <value>System.Windows.Forms.StatusStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;statusStrip.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;statusStrip.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
@@ -369,18 +372,38 @@
         rEH//6xB//+sQQ==
 </value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="$this.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
   <data name="$this.Text" xml:space="preserve">
     <value>CamView</value>
+  </data>
+  <data name="&gt;&gt;showBgColorDialog.Name" xml:space="preserve">
+    <value>showBgColorDialog</value>
+  </data>
+  <data name="&gt;&gt;showBgColorDialog.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toggleAccMove.Name" xml:space="preserve">
+    <value>toggleAccMove</value>
+  </data>
+  <data name="&gt;&gt;toggleAccMove.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toggleParallaxity.Name" xml:space="preserve">
+    <value>toggleParallaxity</value>
+  </data>
+  <data name="&gt;&gt;toggleParallaxity.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;parallaxRefDist.Name" xml:space="preserve">
     <value>parallaxRefDist</value>
   </data>
   <data name="&gt;&gt;parallaxRefDist.Type" xml:space="preserve">
     <value>DualityEditor.Controls.ToolStrip.ToolStripNumericUpDown, DualityEditor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</value>
+  </data>
+  <data name="&gt;&gt;camSelector.Name" xml:space="preserve">
+    <value>camSelector</value>
+  </data>
+  <data name="&gt;&gt;camSelector.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripComboBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;posXStatusLabel.Name" xml:space="preserve">
     <value>posXStatusLabel</value>
@@ -429,24 +452,6 @@
   </data>
   <data name="&gt;&gt;axisLockZLabel.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripStatusLabel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;showBgColorDialog.Name" xml:space="preserve">
-    <value>showBgColorDialog</value>
-  </data>
-  <data name="&gt;&gt;showBgColorDialog.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;toggleAccMove.Name" xml:space="preserve">
-    <value>toggleAccMove</value>
-  </data>
-  <data name="&gt;&gt;toggleAccMove.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;toggleParallaxity.Name" xml:space="preserve">
-    <value>toggleParallaxity</value>
-  </data>
-  <data name="&gt;&gt;toggleParallaxity.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>CamView</value>

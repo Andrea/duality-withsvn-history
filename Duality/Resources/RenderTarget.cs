@@ -183,11 +183,11 @@ namespace Duality.Resources
 		}
 		public int Width
 		{
-			get { return this.targetInfo.FirstOrDefault().target.IsAvailable ? this.targetInfo.FirstOrDefault().target.Res.Width : 0; }
+			get { return this.targetInfo.FirstOrDefault().target.IsAvailable ? this.targetInfo.FirstOrDefault().target.Res.PxWidth : 0; }
 		}
 		public int Height
 		{
-			get { return this.targetInfo.FirstOrDefault().target.IsAvailable ? this.targetInfo.FirstOrDefault().target.Res.Height : 0; }
+			get { return this.targetInfo.FirstOrDefault().target.IsAvailable ? this.targetInfo.FirstOrDefault().target.Res.PxHeight : 0; }
 		}
 		public Vector2 UVRatio
 		{

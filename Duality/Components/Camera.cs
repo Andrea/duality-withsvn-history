@@ -73,11 +73,13 @@ namespace Duality.Components
 		{
 			public	BatchInfo					input;
 			public	ContentRef<RenderTarget>	output;
+			public	bool						fitOutput;
 
-			public Pass(BatchInfo input, ContentRef<RenderTarget> output)
+			public Pass(BatchInfo input, ContentRef<RenderTarget> output, bool fitOutput)
 			{
 				this.input = input;
 				this.output = output;
+				this.fitOutput = fitOutput;
 			}
 		}
 
@@ -368,9 +370,9 @@ namespace Duality.Components
 				for (int i = 0; i < value.Length; i++)
 				{
 					if (i == 0)
-						this.passes[i] = new Pass(null, value[i].output);
+						this.passes[i] = new Pass(null, value[i].output, value[i].fitOutput);
 					else
-						this.passes[i] = new Pass(value[i].input == null ? new BatchInfo() : value[i].input, value[i].output);
+						this.passes[i] = new Pass(value[i].input == null ? new BatchInfo() : value[i].input, value[i].output, value[i].fitOutput);
 				}
 			}
 		}
@@ -455,14 +457,14 @@ namespace Duality.Components
 			this.picking = 0;
 
 			// Move data to local buffer
-			int pxNum = this.pickingTex.Width * this.pickingTex.Height;
+			int pxNum = this.pickingTex.PxWidth * this.pickingTex.PxHeight;
 			int pxByteNum = pxNum * 4;
 			if (pxByteNum > this.pickingBuffer.Length) Array.Resize(ref this.pickingBuffer, Math.Max(this.pickingBuffer.Length * 2, pxByteNum));
 
 			ContentRef<RenderTarget> lastTex = RenderTarget.BoundRT;
 			RenderTarget.Bind(this.pickingRT);
 			GL.ReadBuffer(ReadBufferMode.ColorAttachment0);
-			GL.ReadPixels(0, 0, this.pickingTex.Width, this.pickingTex.Height, PixelFormat.Rgba, PixelType.UnsignedByte, this.pickingBuffer);
+			GL.ReadPixels(0, 0, this.pickingTex.PxWidth, this.pickingTex.PxHeight, PixelFormat.Rgba, PixelType.UnsignedByte, this.pickingBuffer);
 			GL.ReadBuffer(ReadBufferMode.Back);
 			RenderTarget.Bind(lastTex);
 
@@ -472,13 +474,13 @@ namespace Duality.Components
 		{
 			this.RenderPickingMap();
 
-			x = Math.Max(x, 0);
-			y = Math.Max(y, 0);
+			x = MathF.Clamp(x, 0, this.pickingTex.PxWidth - 1);
+			y = MathF.Clamp(y, 0, this.pickingTex.PxHeight - 1);
 
 			int rendererId = 
-				(this.pickingBuffer[4 * (x + y * this.pickingTex.Width) + 0] << 16) |
-				(this.pickingBuffer[4 * (x + y * this.pickingTex.Width) + 1] << 8) |
-				(this.pickingBuffer[4 * (x + y * this.pickingTex.Width) + 2] << 0);
+				(this.pickingBuffer[4 * (x + y * this.pickingTex.PxWidth) + 0] << 16) |
+				(this.pickingBuffer[4 * (x + y * this.pickingTex.PxWidth) + 1] << 8) |
+				(this.pickingBuffer[4 * (x + y * this.pickingTex.PxWidth) + 2] << 0);
 			return (rendererId <= 0 || rendererId > this.pickingMap.Count) ? null : this.pickingMap[rendererId - 1];
 		}
 		public HashSet<Renderer> PickRenderersIn(int x, int y, int w, int h)
@@ -487,8 +489,8 @@ namespace Duality.Components
 
 			x = Math.Max(x, 0);
 			y = Math.Max(y, 0);
-			w = Math.Min(w, this.pickingTex.Width - x);
-			h = Math.Min(h, this.pickingTex.Height - y);
+			w = Math.Min(w, this.pickingTex.PxWidth - x);
+			h = Math.Min(h, this.pickingTex.PxHeight - y);
 			int pxNum = w * h;
 			int pxByteNum = pxNum * 4;
 
@@ -499,7 +501,7 @@ namespace Duality.Components
 				byte* pData;
 				for (int j = 0; j < h; ++j)
 				{
-					pData = pDataBegin + 4 * (x + (y + j) * this.pickingTex.Width);
+					pData = pDataBegin + 4 * (x + (y + j) * this.pickingTex.PxWidth);
 					for (int i = 0; i < w; ++i)
 					{
 						rendererId = 
@@ -575,24 +577,40 @@ namespace Duality.Components
 			GL.Viewport((int)viewportAbs.x, (int)refSize.Y - (int)viewportAbs.h - (int)viewportAbs.y, (int)viewportAbs.w, (int)viewportAbs.h);
 			GL.Scissor((int)viewportAbs.x, (int)refSize.Y - (int)viewportAbs.h - (int)viewportAbs.y, (int)viewportAbs.w, (int)viewportAbs.h);
 
+			GL.ClearDepth(1.0d);
+			GL.ClearColor(this.picking != 0 ? System.Drawing.Color.Black : (OpenTK.Graphics.Color4)this.clearColor);
+
+			ClearBufferMask glClearMask = (this.picking != 0) ? ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit : 0;
+			if ((this.clearMask & ClearFlags.Color) != ClearFlags.None) glClearMask |= ClearBufferMask.ColorBufferBit;
+			if ((this.clearMask & ClearFlags.Depth) != ClearFlags.None) glClearMask |= ClearBufferMask.DepthBufferBit;
+			GL.Clear(glClearMask);
+
 			if (p.input == null)
 				this.RenderBaseInput();
 			else
 			{
 				this.SetupMatrices(true);
 
-				Vector2 uvRatio = 
+				Texture mainTex = 
 					p.input.Textures != null && 
 					p.input.Textures.Values.Any() &&
 					p.input.Textures.Values.First().IsAvailable ?
-					p.input.Textures.Values.First().Res.UVRatio : Vector2.One;
+					p.input.Textures.Values.First().Res : null;
+				Vector2 uvRatio = mainTex != null ? mainTex.UVRatio : Vector2.One;
+				Vector2 inputSize = mainTex != null ? new Vector2(mainTex.PxWidth, mainTex.PxHeight) : Vector2.One;
+				Rect targetRect = new Rect(p.fitOutput ? refSize : inputSize);
+				if (!p.fitOutput)
+				{
+					targetRect.x = MathF.Round(refSize.X * 0.5f - inputSize.X * 0.5f);
+					targetRect.y = MathF.Round(refSize.Y * 0.5f - inputSize.Y * 0.5f);
+				}
 
 				IDrawDevice device = this.DrawDevice;
 				device.AddVertices(p.input, BeginMode.Quads,
-					new VertexP3T2(0.0f,		0.0f,		0.0f,	0.0f,		0.0f),
-					new VertexP3T2(refSize.X,	0.0f,		0.0f,	uvRatio.X,	0.0f),
-					new VertexP3T2(refSize.X,	refSize.Y,	0.0f,	uvRatio.X,	uvRatio.Y),
-					new VertexP3T2(0.0f,		refSize.Y,	0.0f,	0.0f,		uvRatio.Y));
+					new VertexP3T2(targetRect.MinX,	targetRect.MinY,	0.0f,	0.0f,		0.0f),
+					new VertexP3T2(targetRect.MaxX,	targetRect.MinY,	0.0f,	uvRatio.X,	0.0f),
+					new VertexP3T2(targetRect.MaxX,	targetRect.MaxY,	0.0f,	uvRatio.X,	uvRatio.Y),
+					new VertexP3T2(targetRect.MinX,	targetRect.MaxY,	0.0f,	0.0f,		uvRatio.Y));
 
 				this.ProcessDrawcalls(true);
 				this.SetupMatrices();
@@ -644,17 +662,6 @@ namespace Duality.Components
 				GL.Enable(EnableCap.ScissorTest);
 				GL.Enable(EnableCap.DepthTest);
 				GL.DepthFunc(DepthFunction.Lequal);
-
-				GL.ClearDepth(1.0d);
-				if (this.picking != 0)
-					GL.ClearColor(System.Drawing.Color.Black);
-				else
-					GL.ClearColor((OpenTK.Graphics.Color4)this.clearColor);
-
-				ClearBufferMask glClearMask = (this.picking != 0) ? ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit : 0;
-				if ((this.clearMask & ClearFlags.Color) != ClearFlags.None) glClearMask |= ClearBufferMask.ColorBufferBit;
-				if ((this.clearMask & ClearFlags.Depth) != ClearFlags.None) glClearMask |= ClearBufferMask.DepthBufferBit;
-				GL.Clear(glClearMask);
 			}
 
 			GL.MatrixMode(MatrixMode.Modelview);
@@ -679,10 +686,10 @@ namespace Duality.Components
 		}
 		private void SetupPickingRT()
 		{
-			Vector2 refSize = this.SceneTargetSize;
+			Vector2 refSize = DualityApp.TargetResolution;
 			if (this.pickingTex == null || 
-				this.pickingTex.Width != MathF.RoundToInt(refSize.X) || 
-				this.pickingTex.Height != MathF.RoundToInt(refSize.Y))
+				this.pickingTex.PxWidth != MathF.RoundToInt(refSize.X) || 
+				this.pickingTex.PxHeight != MathF.RoundToInt(refSize.Y))
 			{
 				if (this.pickingTex != null) this.pickingTex.Dispose();
 				if (this.pickingRT != null) this.pickingRT.Dispose();

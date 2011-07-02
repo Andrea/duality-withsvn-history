@@ -9,9 +9,6 @@
 		-->	Render to screen and put together all information using a shader
 		-->	With and without multisampling
 
--->	How to test postprocessing in the editor?
-	-->	Need the possibility to select a Camera Prefab for a CamView
-
 
 -->	Checklist for first Game: Asteroids
 	-->	Any Usability stuff that comes up while editing / creating the game

@@ -30,7 +30,11 @@
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CamView));
 			this.toolStrip = new System.Windows.Forms.ToolStrip();
+			this.showBgColorDialog = new System.Windows.Forms.ToolStripButton();
+			this.toggleAccMove = new System.Windows.Forms.ToolStripButton();
+			this.toggleParallaxity = new System.Windows.Forms.ToolStripButton();
 			this.parallaxRefDist = new DualityEditor.Controls.ToolStrip.ToolStripNumericUpDown();
+			this.camSelector = new System.Windows.Forms.ToolStripComboBox();
 			this.statusStrip = new System.Windows.Forms.StatusStrip();
 			this.posXStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.posYStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -40,9 +44,6 @@
 			this.axisLockXLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.axisLockYLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.axisLockZLabel = new System.Windows.Forms.ToolStripStatusLabel();
-			this.showBgColorDialog = new System.Windows.Forms.ToolStripButton();
-			this.toggleAccMove = new System.Windows.Forms.ToolStripButton();
-			this.toggleParallaxity = new System.Windows.Forms.ToolStripButton();
 			this.toolStrip.SuspendLayout();
 			this.statusStrip.SuspendLayout();
 			this.SuspendLayout();
@@ -54,9 +55,39 @@
             this.showBgColorDialog,
             this.toggleAccMove,
             this.toggleParallaxity,
-            this.parallaxRefDist});
+            this.parallaxRefDist,
+            this.camSelector});
 			resources.ApplyResources(this.toolStrip, "toolStrip");
 			this.toolStrip.Name = "toolStrip";
+			// 
+			// showBgColorDialog
+			// 
+			this.showBgColorDialog.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			resources.ApplyResources(this.showBgColorDialog, "showBgColorDialog");
+			this.showBgColorDialog.Name = "showBgColorDialog";
+			this.showBgColorDialog.Click += new System.EventHandler(this.showBgColorDialog_Click);
+			// 
+			// toggleAccMove
+			// 
+			this.toggleAccMove.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.toggleAccMove.Checked = true;
+			this.toggleAccMove.CheckOnClick = true;
+			this.toggleAccMove.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.toggleAccMove.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.toggleAccMove.Image = global::EditorBase.Properties.Resources.arrow_right_accelerate;
+			resources.ApplyResources(this.toggleAccMove, "toggleAccMove");
+			this.toggleAccMove.Name = "toggleAccMove";
+			// 
+			// toggleParallaxity
+			// 
+			this.toggleParallaxity.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.toggleParallaxity.Checked = true;
+			this.toggleParallaxity.CheckOnClick = true;
+			this.toggleParallaxity.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.toggleParallaxity.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			resources.ApplyResources(this.toggleParallaxity, "toggleParallaxity");
+			this.toggleParallaxity.Name = "toggleParallaxity";
+			this.toggleParallaxity.CheckStateChanged += new System.EventHandler(this.toggleParallaxity_CheckStateChanged);
 			// 
 			// parallaxRefDist
 			// 
@@ -77,6 +108,14 @@
             0,
             0});
 			this.parallaxRefDist.ValueChanged += new System.EventHandler(this.parallaxRefDist_ValueChanged);
+			// 
+			// camSelector
+			// 
+			this.camSelector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.camSelector.Name = "camSelector";
+			resources.ApplyResources(this.camSelector, "camSelector");
+			this.camSelector.DropDown += new System.EventHandler(this.camSelector_DropDown);
+			this.camSelector.SelectedIndexChanged += new System.EventHandler(this.camSelector_SelectedIndexChanged);
 			// 
 			// statusStrip
 			// 
@@ -137,35 +176,6 @@
 			this.axisLockZLabel.ForeColor = System.Drawing.Color.Blue;
 			this.axisLockZLabel.Name = "axisLockZLabel";
 			// 
-			// showBgColorDialog
-			// 
-			this.showBgColorDialog.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			resources.ApplyResources(this.showBgColorDialog, "showBgColorDialog");
-			this.showBgColorDialog.Name = "showBgColorDialog";
-			this.showBgColorDialog.Click += new System.EventHandler(this.showBgColorDialog_Click);
-			// 
-			// toggleAccMove
-			// 
-			this.toggleAccMove.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-			this.toggleAccMove.Checked = true;
-			this.toggleAccMove.CheckOnClick = true;
-			this.toggleAccMove.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.toggleAccMove.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.toggleAccMove.Image = global::EditorBase.Properties.Resources.arrow_right_accelerate;
-			resources.ApplyResources(this.toggleAccMove, "toggleAccMove");
-			this.toggleAccMove.Name = "toggleAccMove";
-			// 
-			// toggleParallaxity
-			// 
-			this.toggleParallaxity.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-			this.toggleParallaxity.Checked = true;
-			this.toggleParallaxity.CheckOnClick = true;
-			this.toggleParallaxity.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.toggleParallaxity.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			resources.ApplyResources(this.toggleParallaxity, "toggleParallaxity");
-			this.toggleParallaxity.Name = "toggleParallaxity";
-			this.toggleParallaxity.CheckStateChanged += new System.EventHandler(this.toggleParallaxity_CheckStateChanged);
-			// 
 			// CamView
 			// 
 			resources.ApplyResources(this, "$this");
@@ -201,5 +211,6 @@
 		private System.Windows.Forms.ToolStripStatusLabel axisLockYLabel;
 		private System.Windows.Forms.ToolStripStatusLabel axisLockZLabel;
 		private System.Windows.Forms.ToolStripButton toggleAccMove;
+		private System.Windows.Forms.ToolStripComboBox camSelector;
 	}
 }

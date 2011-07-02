@@ -56,7 +56,9 @@ namespace EditorBase.PropertyEditors
 
 		protected override bool MemberPredicate(MemberInfo info)
 		{
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Texture_Diameter)) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Texture_PxWidth)) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Texture_PxHeight)) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Texture_PxDiameter)) return false;
 			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Texture_OglWidth)) return false;
 			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Texture_OglHeight)) return false;
 			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Texture_UVRatio)) return false;

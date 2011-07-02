@@ -57,7 +57,7 @@ namespace EditorBase.PropertyEditors
 				this.frameCache[0] = first.BasePixmap.IsAvailable ? first.BasePixmap.Res.PixelData : null;
 
 				this.labelPath.Text = first.Path;
-				this.labelSizeValue.Text = string.Format("{0}\n{1}", first.Width, first.Height);
+				this.labelSizeValue.Text = string.Format("{0}\n{1}", first.PxWidth, first.PxHeight);
 				this.labelOglSizeValue.Text = string.Format("{0}\n{1}", first.OglWidth, first.OglHeight);
 				this.scrollAtlas.Enabled = first.Atlas != null;
 				this.scrollAtlas.Maximum = first.Atlas != null ? first.Atlas.Count : 0;

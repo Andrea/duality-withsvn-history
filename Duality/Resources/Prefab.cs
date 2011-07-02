@@ -33,6 +33,7 @@ namespace Duality.Resources
 	public class Prefab : Resource
 	{
 		public new const string FileExt = ".Prefab" + Resource.FileExt;
+		public static readonly int[] IndexPath_Root = new int[0];
 
 		private	GameObject	objTree	= null;
 

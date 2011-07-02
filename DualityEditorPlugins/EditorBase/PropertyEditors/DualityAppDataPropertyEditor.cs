@@ -31,6 +31,7 @@ namespace EditorBase.PropertyEditors
 		}
 		protected override void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)
 		{
+			DualityApp.UserData = targets.Cast<DualityUserData>().NotNull().FirstOrDefault();
 			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(targets), property);
 		}
 	}

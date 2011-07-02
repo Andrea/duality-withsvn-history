@@ -86,6 +86,7 @@ namespace Duality
 		public static event EventHandler Initialized	= null;
 		public static event EventHandler Terminating	= null;
 		public static event EventHandler Updating		= null;
+		public static event EventHandler GfxSizeChanged	= null;
 
 
 		public static Vector2 TargetResolution
@@ -125,7 +126,12 @@ namespace Duality
 		public static DualityUserData UserData
 		{
 			get { return userData; }
-			set { userData = value; if (userData == null) userData = new DualityUserData(); }
+			set 
+			{ 
+				userData = value; 
+				if (userData == null) userData = new DualityUserData();
+				OnGfxSizeChanged(); // Maybe optimize later (only call when really needed)
+			}
 		}
 		public static GraphicsMode DefaultMode
 		{
@@ -282,16 +288,16 @@ namespace Duality
 					using (FileStream str = File.OpenRead(path))
 					{
 						BinaryFormatter formatter = RequestSerializer(null, new StreamingContext(StreamingContextStates.File | StreamingContextStates.Persistence));
-						userData = formatter.Deserialize(str) as DualityUserData;
+						UserData = formatter.Deserialize(str) as DualityUserData;
 					}
 				}
 				catch (Exception)
 				{
-					userData = new DualityUserData();
+					UserData = new DualityUserData();
 				}
 			}
 			else
-				userData = new DualityUserData();
+				UserData = new DualityUserData();
 		}
 		public static void SaveAppData(string path = DefaultAppDataPath)
 		{
@@ -413,6 +419,11 @@ namespace Duality
 		{
 			if (Updating != null)
 				Updating(null, EventArgs.Empty);
+		}
+		private static void OnGfxSizeChanged()
+		{
+			if (GfxSizeChanged != null)
+				GfxSizeChanged(null, EventArgs.Empty);
 		}
 
 		private static void CurrentDomain_ProcessExit(object sender, EventArgs e)
