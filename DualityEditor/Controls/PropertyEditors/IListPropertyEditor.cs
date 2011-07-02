@@ -73,6 +73,7 @@ namespace DualityEditor.Controls.PropertyEditors
 			}
 
 			string valString = null;
+			this.UpdateModifiedState();
 			if (!values.Any() || values.All(o => o == null))
 			{
 				this.ClearContent();

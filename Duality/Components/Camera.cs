@@ -68,12 +68,13 @@ namespace Duality.Components
 			Default	= Color | Depth,
 			All		= Color | Depth
 		}
-		public struct RenderStage
+		[Serializable]
+		public struct Pass
 		{
 			public	BatchInfo					input;
 			public	ContentRef<RenderTarget>	output;
 
-			public RenderStage(BatchInfo input, ContentRef<RenderTarget> output)
+			public Pass(BatchInfo input, ContentRef<RenderTarget> output)
 			{
 				this.input = input;
 				this.output = output;
@@ -291,7 +292,7 @@ namespace Duality.Components
 		private	uint	visibilityMask		= uint.MaxValue;
 		private	ColorRGBA	clearColor		= ColorRGBA.TransparentBlack;
 		private	ClearFlags	clearMask		= ClearFlags.All;
-		private	ContentRef<RenderTarget>	rt	= RenderTarget.None;
+		private	Pass[]		passes			= new Pass[1];
 
 		private	Matrix4	matModelView		= Matrix4.Identity;
 		private	Matrix4	matProjection		= Matrix4.Identity;
@@ -357,27 +358,50 @@ namespace Duality.Components
 			get { return this.clearColor; }
 			set { this.clearColor = value; }
 		}
-		public ContentRef<RenderTarget> Target
+		public Pass[] Passes
 		{
-			get { return this.rt; }
-			set { this.rt = value; }
+			get { return this.passes; }
+			set 
+			{ 
+				if (value == null || value.Length < 1) value = new Pass[1];
+				Array.Resize(ref this.passes, value.Length);
+				for (int i = 0; i < value.Length; i++)
+				{
+					if (i == 0)
+						this.passes[i] = new Pass(null, value[i].output);
+					else
+						this.passes[i] = new Pass(value[i].input == null ? new BatchInfo() : value[i].input, value[i].output);
+				}
+			}
 		}
 
 		public IDrawDevice DrawDevice
 		{
 			get { return this as IDrawDevice; }
 		}
-		public Vector2 TargetSize
+		public Vector2 SceneTargetSize
 		{
-			get { return this.rt.IsExplicitNull ? DualityApp.TargetResolution : new Vector2(this.rt.Res.Width, this.rt.Res.Height); }
+			get
+			{
+				for (int i = 0; i < this.passes.Length; i++)
+				{
+					if (this.passes[i].input == null)
+					{
+						return this.passes[i].output.IsExplicitNull ? 
+							DualityApp.TargetResolution : 
+							new Vector2(this.passes[i].output.Res.Width, this.passes[i].output.Res.Height);
+					}
+				}
+				return DualityApp.TargetResolution;
+			}
 		}
-		public Rect OrthoAbs
+		public Rect SceneOrthoAbs
 		{
-			get { return this.ortho.Transform(this.orthoRelative ? this.TargetSize : Vector2.One); }
+			get { return this.ortho.Transform(this.orthoRelative ? this.SceneTargetSize : Vector2.One); }
 		}
-		public Rect ViewportAbs
+		public Rect SceneViewportAbs
 		{
-			get { return this.viewport.Transform(this.viewportRelative ? this.TargetSize : Vector2.One); }
+			get { return this.viewport.Transform(this.viewportRelative ? this.SceneTargetSize : Vector2.One); }
 		}
 
 		public Camera()
@@ -398,139 +422,26 @@ namespace Duality.Components
 			t.visibilityMask	= this.visibilityMask;
 			t.clearColor		= this.clearColor;
 			t.clearMask			= this.clearMask;
+			t.passes			= this.passes != null ? this.passes.Clone() as Pass[] : null;
 		}
 
 		public void Render()
 		{
-			// Determine rendering target data
-			RenderTarget rtRes = this.rt.IsExplicitNull ? null : this.rt.Res;
-			Vector2 refSize = this.TargetSize;
-			Rect viewportAbs = this.ViewportAbs;
-
-			// Update matrices
-			this.GenerateModelView(out this.matModelView);
-			this.GenerateProjection(this.OrthoAbs, out this.matProjection);
-			this.matFinal = this.matModelView * this.matProjection;
-
-			// Collect drawcalls
 			if (this.picking != 0)
 			{
-				this.pickingMap = new List<Renderer>(Scene.Current.QueryVisibleRenderers(this.DrawDevice));
-				foreach (Renderer r in this.pickingMap)
-				{
-					r.Draw(this);
-					if (this.picking != 0) this.picking++;
-				}
+				this.SetupPickingRT();
+				RenderTarget.Bind(this.pickingRT);
+				this.RenderBaseInput();
+				RenderTarget.Bind(RenderTarget.None);
 			}
 			else
 			{
-				foreach (Renderer r in Scene.Current.QueryVisibleRenderers(this.DrawDevice))
-					r.Draw(this);
+				for (int i = 0; i < this.passes.Length; i++)
+					this.RenderSinglePass(this.passes[i]);
+
+				RenderTarget.Bind(RenderTarget.None);
+				this.RenderScreenOverlay();
 			}
-			
-			// Setup picking RT
-			if (this.picking != 0)
-			{
-				if (this.pickingTex == null || 
-					this.pickingTex.Width != MathF.RoundToInt(refSize.X) || 
-					this.pickingTex.Height != MathF.RoundToInt(refSize.Y))
-				{
-					if (this.pickingTex != null) this.pickingTex.Dispose();
-					if (this.pickingRT != null) this.pickingRT.Dispose();
-					this.pickingTex = new Texture(
-						MathF.RoundToInt(refSize.X), MathF.RoundToInt(refSize.Y), Texture.SizeMode.Default, 
-						TextureMagFilter.Nearest, TextureMinFilter.Nearest);
-					this.pickingRT = new RenderTarget(false, this.pickingTex);
-				}
-				rtRes = this.pickingRT;
-			}
-
-			// Bind rendertarget
-			RenderTarget.Bind(this.picking != 0 ? this.pickingRT : this.rt);
-
-			// Prepare Rendering
-			GL.Enable(EnableCap.ScissorTest);
-			GL.Enable(EnableCap.DepthTest);
-			GL.DepthFunc(DepthFunction.Lequal);
-
-			GL.ClearDepth(1.0d);
-			if (this.picking != 0)
-				GL.ClearColor(System.Drawing.Color.Black);
-			else
-				GL.ClearColor((OpenTK.Graphics.Color4)this.clearColor);
-
-			GL.Viewport((int)viewportAbs.x, (int)refSize.Y - (int)viewportAbs.h - (int)viewportAbs.y, (int)viewportAbs.w, (int)viewportAbs.h);
-			GL.Scissor((int)viewportAbs.x, (int)refSize.Y - (int)viewportAbs.h - (int)viewportAbs.y, (int)viewportAbs.w, (int)viewportAbs.h);
-
-			ClearBufferMask glClearMask = (this.picking != 0) ? ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit : 0;
-			if ((this.clearMask & ClearFlags.Color) != ClearFlags.None) glClearMask |= ClearBufferMask.ColorBufferBit;
-			if ((this.clearMask & ClearFlags.Depth) != ClearFlags.None) glClearMask |= ClearBufferMask.DepthBufferBit;
-			GL.Clear(glClearMask);
-
-			GL.MatrixMode(MatrixMode.Modelview);
-			GL.LoadMatrix(ref this.matModelView);
-			GL.MatrixMode(MatrixMode.Projection);
-			GL.LoadMatrix(ref this.matProjection);
-			if (rtRes != null) GL.Scale(1.0f, -1.0f, 1.0f);
-
-			// Process drawcalls
-			this.OptimizeBatches();
-			this.BeginBatchRendering();
-			int vertexCount = 0;
-
-			// Z-Independent: Sorted as needed by batch optimizer
-			this.RenderBatches(this.drawBuffer, ref vertexCount);
-			// Z-Sorted: Back to Front
-			this.RenderBatches(this.drawBufferZSort, ref vertexCount);
-
-			this.FinishBatchRendering();
-			this.drawBuffer.Clear();
-			this.drawBufferZSort.Clear();
-
-			// Draw Screen Overlay
-			if (this.picking == 0)
-			{
-				Matrix4 lastModelView = this.matModelView;
-				Matrix4 lastProjection = this.matProjection;
-				Matrix4 lastFinal = this.matFinal;
-
-				this.GenerateModelView(out this.matModelView, true);
-				this.GenerateProjection(this.OrthoAbs, out this.matProjection, true);
-				this.matFinal = this.matModelView * this.matProjection;
-
-				foreach (ICmpScreenOverlayRenderer r in Scene.Current.QueryVisibleOverlayRenderers(this.DrawDevice))
-					r.DrawOverlay(this);
-
-				// Prepare Rendering
-				GL.Enable(EnableCap.ScissorTest);
-				GL.Disable(EnableCap.DepthTest);
-
-				GL.MatrixMode(MatrixMode.Modelview);
-				GL.LoadMatrix(ref this.matModelView);
-				GL.MatrixMode(MatrixMode.Projection);
-				GL.LoadMatrix(ref this.matProjection);
-				if (rtRes != null) GL.Scale(1.0f, -1.0f, 1.0f);
-
-				// Process drawcalls
-				this.OptimizeBatches();
-				this.BeginBatchRendering();
-				vertexCount = 0;
-
-				// Z-Independent: Sorted as needed by batch optimizer
-				this.RenderBatches(this.drawBuffer, ref vertexCount);
-				// Z-Sorted: Back to Front
-				this.RenderBatches(this.drawBufferZSort, ref vertexCount);
-
-				this.FinishBatchRendering();
-				this.drawBuffer.Clear();
-				this.drawBufferZSort.Clear();
-
-				this.matModelView = lastModelView;
-				this.matProjection = lastProjection;
-				this.matFinal = lastFinal;
-			}
-
-			RenderTarget.Bind(RenderTarget.None);
 		}
 		public bool RenderPickingMap()
 		{
@@ -621,7 +532,7 @@ namespace Duality.Components
 			float scale = 1.0f;
 			this.DrawDevice.PreprocessCoords(ref dummy, ref scale);
 
-			Vector2 targetSize = this.TargetSize;
+			Vector2 targetSize = this.SceneTargetSize;
 			screenPos = new Vector3(
 				(screenPos.X - targetSize.X / 2) / scale,
 				(screenPos.Y - targetSize.Y / 2) / scale,
@@ -644,7 +555,7 @@ namespace Duality.Components
 			this.DrawDevice.PreprocessCoords(ref spacePos, ref scale);
 			MathF.TransformCoord(ref spacePos.X, ref spacePos.Y, -this.GameObj.Transform.Angle);
 
-			Vector2 targetSize = this.TargetSize;
+			Vector2 targetSize = this.SceneTargetSize;
 			spacePos.X += targetSize.X / 2;
 			spacePos.Y += targetSize.Y / 2;
 
@@ -655,9 +566,145 @@ namespace Duality.Components
 			return this.GetScreenCoord(new Vector3(spacePos));
 		}
 
+		private void RenderSinglePass(Pass p)
+		{
+			RenderTarget.Bind(p.output);
+			
+			Vector2 refSize = p.output.IsAvailable ? new Vector2(p.output.Res.Width, p.output.Res.Height) : DualityApp.TargetResolution;
+			Rect viewportAbs = p.output.IsAvailable ? new Rect(refSize) : new Rect(DualityApp.TargetResolution);
+			GL.Viewport((int)viewportAbs.x, (int)refSize.Y - (int)viewportAbs.h - (int)viewportAbs.y, (int)viewportAbs.w, (int)viewportAbs.h);
+			GL.Scissor((int)viewportAbs.x, (int)refSize.Y - (int)viewportAbs.h - (int)viewportAbs.y, (int)viewportAbs.w, (int)viewportAbs.h);
+
+			if (p.input == null)
+				this.RenderBaseInput();
+			else
+			{
+				this.SetupMatrices(true);
+
+				Vector2 uvRatio = 
+					p.input.Textures != null && 
+					p.input.Textures.Values.Any() &&
+					p.input.Textures.Values.First().IsAvailable ?
+					p.input.Textures.Values.First().Res.UVRatio : Vector2.One;
+
+				IDrawDevice device = this.DrawDevice;
+				device.AddVertices(p.input, BeginMode.Quads,
+					new VertexP3T2(0.0f,		0.0f,		0.0f,	0.0f,		0.0f),
+					new VertexP3T2(refSize.X,	0.0f,		0.0f,	uvRatio.X,	0.0f),
+					new VertexP3T2(refSize.X,	refSize.Y,	0.0f,	uvRatio.X,	uvRatio.Y),
+					new VertexP3T2(0.0f,		refSize.Y,	0.0f,	0.0f,		uvRatio.Y));
+
+				this.ProcessDrawcalls(true);
+				this.SetupMatrices();
+			}
+		}
+		private void RenderBaseInput()
+		{
+			this.SetupMatrices();
+
+			// Collect drawcalls
+			if (this.picking != 0)
+			{
+				this.pickingMap = new List<Renderer>(Scene.Current.QueryVisibleRenderers(this.DrawDevice));
+				foreach (Renderer r in this.pickingMap)
+				{
+					r.Draw(this);
+					if (this.picking != 0) this.picking++;
+				}
+			}
+			else
+			{
+				foreach (Renderer r in Scene.Current.QueryVisibleRenderers(this.DrawDevice))
+					r.Draw(this);
+			}
+
+			this.ProcessDrawcalls();
+		}
+		private void RenderScreenOverlay()
+		{
+			this.SetupMatrices(true);
+
+			foreach (ICmpScreenOverlayRenderer r in Scene.Current.QueryVisibleOverlayRenderers(this.DrawDevice))
+				r.DrawOverlay(this);
+
+			this.ProcessDrawcalls(true);
+			this.SetupMatrices();
+		}
+		private void ProcessDrawcalls(bool screenOverlay = false)
+		{
+			if (screenOverlay)
+			{
+				// Prepare Rendering
+				GL.Enable(EnableCap.ScissorTest);
+				GL.Disable(EnableCap.DepthTest);
+			}
+			else
+			{
+				// Prepare Rendering
+				GL.Enable(EnableCap.ScissorTest);
+				GL.Enable(EnableCap.DepthTest);
+				GL.DepthFunc(DepthFunction.Lequal);
+
+				GL.ClearDepth(1.0d);
+				if (this.picking != 0)
+					GL.ClearColor(System.Drawing.Color.Black);
+				else
+					GL.ClearColor((OpenTK.Graphics.Color4)this.clearColor);
+
+				ClearBufferMask glClearMask = (this.picking != 0) ? ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit : 0;
+				if ((this.clearMask & ClearFlags.Color) != ClearFlags.None) glClearMask |= ClearBufferMask.ColorBufferBit;
+				if ((this.clearMask & ClearFlags.Depth) != ClearFlags.None) glClearMask |= ClearBufferMask.DepthBufferBit;
+				GL.Clear(glClearMask);
+			}
+
+			GL.MatrixMode(MatrixMode.Modelview);
+			GL.LoadMatrix(ref this.matModelView);
+			GL.MatrixMode(MatrixMode.Projection);
+			GL.LoadMatrix(ref this.matProjection);
+			if (RenderTarget.BoundRT.IsAvailable) GL.Scale(1.0f, -1.0f, 1.0f);
+
+			// Process drawcalls
+			this.OptimizeBatches();
+			this.BeginBatchRendering();
+			int vertexCount = 0;
+
+			// Z-Independent: Sorted as needed by batch optimizer
+			this.RenderBatches(this.drawBuffer, ref vertexCount);
+			// Z-Sorted: Back to Front
+			this.RenderBatches(this.drawBufferZSort, ref vertexCount);
+
+			this.FinishBatchRendering();
+			this.drawBuffer.Clear();
+			this.drawBufferZSort.Clear();
+		}
+		private void SetupPickingRT()
+		{
+			Vector2 refSize = this.SceneTargetSize;
+			if (this.pickingTex == null || 
+				this.pickingTex.Width != MathF.RoundToInt(refSize.X) || 
+				this.pickingTex.Height != MathF.RoundToInt(refSize.Y))
+			{
+				if (this.pickingTex != null) this.pickingTex.Dispose();
+				if (this.pickingRT != null) this.pickingRT.Dispose();
+				this.pickingTex = new Texture(
+					MathF.RoundToInt(refSize.X), MathF.RoundToInt(refSize.Y), Texture.SizeMode.Default, 
+					TextureMagFilter.Nearest, TextureMinFilter.Nearest);
+				this.pickingRT = new RenderTarget(false, this.pickingTex);
+			}
+		}
+
 		private void UpdateZSortAccuracy()
 		{
 			this.zSortAccuracy = 10000000.0f / Math.Max(1.0f, Math.Abs(this.farZ - this.nearZ));
+		}
+		private void SetupMatrices(bool screenOverlay = false)
+		{
+			ContentRef<RenderTarget> rt = RenderTarget.BoundRT.Res;
+			Vector2 refSize = rt.IsAvailable ? new Vector2(rt.Res.Width, rt.Res.Height) : DualityApp.TargetResolution;
+
+			this.GenerateModelView(out this.matModelView, screenOverlay);
+			this.GenerateProjection(rt.IsAvailable ? new Rect(refSize) : new Rect(DualityApp.TargetResolution), out this.matProjection, screenOverlay);
+			this.matFinal = this.matModelView * this.matProjection;
 		}
 		private void GenerateModelView(out Matrix4 mvMat, bool screenOverlay = false)
 		{

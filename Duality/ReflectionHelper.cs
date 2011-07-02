@@ -43,11 +43,12 @@ namespace Duality
 		public static readonly PropertyInfo	Property_TextRenderer_Text;
 		public static readonly PropertyInfo	Property_TextRenderer_Metrics;
 
-		public static readonly PropertyInfo	Property_Camera_OrthoAbs;
-		public static readonly PropertyInfo	Property_Camera_ViewportAbs;
+		public static readonly PropertyInfo	Property_Camera_SceneOrthoAbs;
+		public static readonly PropertyInfo	Property_Camera_SceneViewportAbs;
 		public static readonly PropertyInfo	Property_Camera_DrawDevice;
-		public static readonly PropertyInfo	Property_Camera_TargetSize;
+		public static readonly PropertyInfo	Property_Camera_SceneTargetSize;
 		public static readonly PropertyInfo	Property_Camera_VisibilityMask;
+		public static readonly PropertyInfo	Property_Camera_Passes;
 
 		public static readonly PropertyInfo	Property_SoundEmitter_Sources;
 		public static readonly PropertyInfo	Property_SoundEmitter_Source_Disposed;
@@ -164,11 +165,12 @@ namespace Duality
 			Property_TextRenderer_Metrics	= rendererText.GetProperty("Metrics");
 
 			Type camera = typeof(Camera);
-			Property_Camera_OrthoAbs		= camera.GetProperty("OrthoAbs");
-			Property_Camera_ViewportAbs		= camera.GetProperty("ViewportAbs");
-			Property_Camera_DrawDevice		= camera.GetProperty("DrawDevice");
-			Property_Camera_TargetSize		= camera.GetProperty("TargetSize");
-			Property_Camera_VisibilityMask	= camera.GetProperty("VisibilityMask");
+			Property_Camera_SceneOrthoAbs		= camera.GetProperty("SceneOrthoAbs");
+			Property_Camera_SceneViewportAbs	= camera.GetProperty("SceneViewportAbs");
+			Property_Camera_DrawDevice			= camera.GetProperty("DrawDevice");
+			Property_Camera_SceneTargetSize		= camera.GetProperty("SceneTargetSize");
+			Property_Camera_VisibilityMask		= camera.GetProperty("VisibilityMask");
+			Property_Camera_Passes				= camera.GetProperty("Passes");
 			
 			Type resource = typeof(Resource);
 			Property_Resource_Disposed	= resource.GetProperty("Disposed");

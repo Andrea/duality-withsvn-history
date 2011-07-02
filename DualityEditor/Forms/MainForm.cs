@@ -375,7 +375,16 @@ namespace DualityEditor.Forms
 			foreach (Resource r in ContentProvider.GetLoadedContent<Resource>())
 			{
 				if (!importer.IsUsingSrcFile(r, filePath)) continue;
-				importer.ReimportFile(r, filePath);
+				try
+				{
+					// Hacky: Wait a little for the file to be accessable again (Might be used by another process)
+					System.Threading.Thread.Sleep(50);
+					importer.ReimportFile(r, filePath);
+				}
+				catch (Exception) 
+				{
+					Log.Editor.WriteError("Can't re-import file '{0}'", filePath);
+				}
 			}
 		}
 		/// <summary>

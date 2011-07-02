@@ -444,12 +444,11 @@ namespace Duality.Resources
 			GL.GetInteger(GetPName.TextureBinding2D, out lastTexId);
 			GL.BindTexture(TextureTarget.Texture2D, this.glTexId);
 
-			this.SetupOpenGLRes();
-
 			Bitmap bm = this.basePixmap.IsAvailable ? this.basePixmap.Res.PixelData : null;
 			if (bm != null)
 			{
 				this.AdjustSize(bm.Width, bm.Height);
+				this.SetupOpenGLRes();
 				if (this.oglSizeMode != SizeMode.NonPowerOfTwo &&
 					(this.width != this.oglWidth || this.height != this.oglHeight))
 				{
@@ -470,6 +469,11 @@ namespace Duality.Resources
 					GLPixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
 
 				bm.UnlockBits(data);
+			}
+			else
+			{
+				this.AdjustSize(this.width, this.height);
+				this.SetupOpenGLRes();
 			}
 
 			GL.BindTexture(TextureTarget.Texture2D, lastTexId);

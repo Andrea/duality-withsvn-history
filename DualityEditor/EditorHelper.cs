@@ -55,10 +55,15 @@ namespace DualityEditor
 			else
 			{
 				if (String.IsNullOrEmpty(srcFilePath))
-					saveSrcToAction(EditorHelper.GenerateResourceSrcFilePath(r, srcFileExt));
+					srcFilePath = EditorHelper.GenerateResourceSrcFilePath(r, srcFileExt);
 				else if (!File.Exists(srcFilePath))
-					saveSrcToAction(null);
-				System.Diagnostics.Process.Start(srcFilePath);
+					srcFilePath = null;
+
+				if (srcFilePath != null)
+				{
+					saveSrcToAction(srcFilePath);
+					System.Diagnostics.Process.Start(srcFilePath);
+				}
 			}
 		}
 		public static string GenerateResourceSrcFilePath(Resource r, string srcFileExt)

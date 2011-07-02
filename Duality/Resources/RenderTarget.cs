@@ -189,6 +189,10 @@ namespace Duality.Resources
 		{
 			get { return this.targetInfo.FirstOrDefault().target.IsAvailable ? this.targetInfo.FirstOrDefault().target.Res.Height : 0; }
 		}
+		public Vector2 UVRatio
+		{
+			get { return this.targetInfo.FirstOrDefault().target.IsAvailable ? this.targetInfo.FirstOrDefault().target.Res.UVRatio : Vector2.One; }
+		}
 		public int Samples
 		{
 			get { return this.samples; }

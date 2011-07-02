@@ -20,9 +20,9 @@ namespace EditorBase.PropertyEditors
 
 		protected override bool MemberPredicate(System.Reflection.MemberInfo info)
 		{
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Camera_OrthoAbs)) return false;
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Camera_ViewportAbs)) return false;
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Camera_TargetSize)) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Camera_SceneOrthoAbs)) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Camera_SceneViewportAbs)) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Camera_SceneTargetSize)) return false;
 			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Camera_DrawDevice)) return false;
 			return base.MemberPredicate(info);
 		}
@@ -36,6 +36,14 @@ namespace EditorBase.PropertyEditors
 				e.AddFlag("None", 0);
 				for (int i = 0; i < 32; ++i) e.AddFlag("Group " + i, 1UL << i);
 				e.AddFlag("All", (1UL << 32) - 1);
+				return e;
+			}
+			else if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Camera_Passes))
+			{
+				PropertyEditor e = this.ParentGrid.PropertyEditorProvider.CreateEditor(
+					(info as System.Reflection.PropertyInfo).PropertyType,
+					this, this.ParentGrid);
+				if (e is IListPropertyEditor) (e as IListPropertyEditor).ForceWriteBack = true;
 				return e;
 			}
 			return base.MemberEditor(info);

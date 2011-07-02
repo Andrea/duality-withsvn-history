@@ -107,7 +107,14 @@ namespace Duality
 					MathF.Distance(this.MinX, this.MaxY)); 
 			}
 		}
-
+		
+		public Rect(Vector2 size)
+		{
+			this.x = 0;
+			this.y = 0;
+			this.w = size.X;
+			this.h = size.Y;
+		}
 		public Rect(float w, float h)
 		{
 			this.x = 0;
