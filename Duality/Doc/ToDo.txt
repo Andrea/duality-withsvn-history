@@ -5,6 +5,8 @@
 		Take a look at this line:
 		if (RenderTarget.BoundRT.IsAvailable) GL.Scale(1.0f, -1.0f, 1.0f);
 		Sometimes works "better" without it ..?
+		-->	Might break matrix if using screen overlay mode - because it isn't
+			centered and will be flipped around like crazy
 	-->	Fix RT / Tex updating. When changing a textures size that is used in a
 		RenderTarget, it sometimes completely refuses to update. Could hitting
 		unsupported values be a possible cause?
