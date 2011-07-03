@@ -106,7 +106,9 @@ namespace DualityEditor.Controls
 		}
 		protected override bool IsChildValueModified(PropertyEditor childEditor)
 		{
-			return this.modifiedStateCache;
+			return base.IsChildValueModified(childEditor);
+			// Do not propagate the modified state to child editors. It's really nasty.
+			//return this.modifiedStateCache;
 		}
 
 		protected virtual void OnActiveStateChanged()

@@ -686,7 +686,12 @@ namespace Duality.Components
 			GL.LoadMatrix(ref this.matModelView);
 			GL.MatrixMode(MatrixMode.Projection);
 			GL.LoadMatrix(ref this.matProjection);
-			if (RenderTarget.BoundRT.IsAvailable) GL.Scale(1.0f, -1.0f, 1.0f);
+			if (RenderTarget.BoundRT.IsAvailable)
+			{
+				if (screenOverlay) GL.Translate(0.0f, RenderTarget.BoundRT.Res.Height * 0.5f, 0.0f);
+				GL.Scale(1.0f, -1.0f, 1.0f);
+				if (screenOverlay) GL.Translate(0.0f, -RenderTarget.BoundRT.Res.Height * 0.5f, 0.0f);
+			}
 
 			// Process drawcalls
 			this.OptimizeBatches();

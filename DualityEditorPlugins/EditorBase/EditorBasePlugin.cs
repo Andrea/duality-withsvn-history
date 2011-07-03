@@ -396,6 +396,17 @@ namespace EditorBase
 					r.UpdateMetrics();
 				}
 			}
+			// If its a Texture, update all associated RenderTargets
+			else if (typeof(Texture).IsAssignableFrom(e.ContentType))
+			{
+				foreach (ContentRef<RenderTarget> rt in ContentProvider.GetLoadedContent<RenderTarget>())
+				{
+					if (rt.Res.Targets.Any(target => target.Res == e.Content.Res as Texture))
+					{
+						rt.Res.SetupOpenGLRes();
+					}
+				}
+			}
 		}
 	}
 }
