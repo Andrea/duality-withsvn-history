@@ -1,4 +1,16 @@
 ﻿
+-->	Debug:
+	-->	Get Postprocessing RTT right. Something wrong with the coordinates when
+		rendering from RT to another RT (of different size?)
+		Take a look at this line:
+		if (RenderTarget.BoundRT.IsAvailable) GL.Scale(1.0f, -1.0f, 1.0f);
+		Sometimes works "better" without it ..?
+	-->	Fix RT / Tex updating. When changing a textures size that is used in a
+		RenderTarget, it sometimes completely refuses to update. Could hitting
+		unsupported values be a possible cause?
+	-->	Don't propagate a MemberwisePropertyEditor's modified state to its
+		child editors. It really is a mess.
+
 -->	Test the postprocessing system
 	4.	Multiple bounces (3 or more stages)
 		-->	Maybe apply the previously used shader multiple times?
