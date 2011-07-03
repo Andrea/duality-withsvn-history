@@ -74,12 +74,14 @@ namespace Duality.Components
 			public	BatchInfo					input;
 			public	ContentRef<RenderTarget>	output;
 			public	bool						fitOutput;
+			public	bool						keepOutput;
 
-			public Pass(BatchInfo input, ContentRef<RenderTarget> output, bool fitOutput)
+			public Pass(BatchInfo input, ContentRef<RenderTarget> output, bool fitOutput, bool keepOutput)
 			{
 				this.input = input;
 				this.output = output;
 				this.fitOutput = fitOutput;
+				this.keepOutput = keepOutput;
 			}
 		}
 
@@ -294,7 +296,7 @@ namespace Duality.Components
 		private	uint	visibilityMask		= uint.MaxValue;
 		private	ColorRGBA	clearColor		= ColorRGBA.TransparentBlack;
 		private	ClearFlags	clearMask		= ClearFlags.All;
-		private	Pass[]		passes			= new Pass[1];
+		private	Pass[]		passes			= new Pass[] { new Pass(null, ContentRef<RenderTarget>.Null, false, false) } ;
 
 		[NonSerialized]	private	Matrix4	matModelView		= Matrix4.Identity;
 		[NonSerialized]	private	Matrix4	matProjection		= Matrix4.Identity;
@@ -370,9 +372,9 @@ namespace Duality.Components
 				for (int i = 0; i < value.Length; i++)
 				{
 					if (i == 0)
-						this.passes[i] = new Pass(null, value[i].output, value[i].fitOutput);
+						this.passes[i] = new Pass(null, value[i].output, value[i].fitOutput, value[i].keepOutput);
 					else
-						this.passes[i] = new Pass(value[i].input == null ? new BatchInfo() : value[i].input, value[i].output, value[i].fitOutput);
+						this.passes[i] = new Pass(value[i].input == null ? new BatchInfo() : value[i].input, value[i].output, value[i].fitOutput, value[i].keepOutput);
 				}
 			}
 		}
@@ -582,12 +584,24 @@ namespace Duality.Components
 			GL.Viewport((int)viewportAbs.x, (int)refSize.Y - (int)viewportAbs.h - (int)viewportAbs.y, (int)viewportAbs.w, (int)viewportAbs.h);
 			GL.Scissor((int)viewportAbs.x, (int)refSize.Y - (int)viewportAbs.h - (int)viewportAbs.y, (int)viewportAbs.w, (int)viewportAbs.h);
 
-			GL.ClearDepth(1.0d);
-			GL.ClearColor((OpenTK.Graphics.Color4)this.clearColor);
-			ClearBufferMask glClearMask = 0;
-			if ((this.clearMask & ClearFlags.Color) != ClearFlags.None) glClearMask |= ClearBufferMask.ColorBufferBit;
-			if ((this.clearMask & ClearFlags.Depth) != ClearFlags.None) glClearMask |= ClearBufferMask.DepthBufferBit;
-			GL.Clear(glClearMask);
+			if (!p.keepOutput)
+			{
+				if (p.input == null)
+				{
+					GL.ClearDepth(1.0d);
+					GL.ClearColor((OpenTK.Graphics.Color4)this.clearColor);
+					ClearBufferMask glClearMask = 0;
+					if ((this.clearMask & ClearFlags.Color) != ClearFlags.None) glClearMask |= ClearBufferMask.ColorBufferBit;
+					if ((this.clearMask & ClearFlags.Depth) != ClearFlags.None) glClearMask |= ClearBufferMask.DepthBufferBit;
+					GL.Clear(glClearMask);
+				}
+				else
+				{
+					GL.ClearDepth(1.0d);
+					GL.ClearColor((OpenTK.Graphics.Color4)ColorRGBA.TransparentBlack);
+					GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+				}
+			}
 
 			if (p.input == null)
 				this.RenderBaseInput();
