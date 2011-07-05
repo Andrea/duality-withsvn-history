@@ -334,6 +334,7 @@ namespace Duality.Resources
 					glyphTemp = new Bitmap((int)Math.Ceiling(Math.Max(1, charSize.Width)), this.internalFont.Height);
 					using (Graphics glyphGraphics = Graphics.FromImage((Image)glyphTemp))
 					{
+						glyphGraphics.Clear(Color.FromArgb(this.bgColor.a, this.bgColor.r, this.bgColor.g, this.bgColor.b));
 						glyphGraphics.TextRenderingHint = (System.Drawing.Text.TextRenderingHint)this.hint;
 						glyphGraphics.DrawString(str, this.internalFont, fntBrush, new RectangleF(0, 0, glyphTemp.Width, glyphTemp.Height), formatDef);
 					}
@@ -348,6 +349,7 @@ namespace Duality.Resources
 						glyphTempTypo = new Bitmap((int)Math.Ceiling(Math.Max(1, charSize.Width)), this.internalFont.Height);
 						using (Graphics glyphGraphics = Graphics.FromImage((Image)glyphTempTypo))
 						{
+							glyphGraphics.Clear(Color.FromArgb(this.bgColor.a, this.bgColor.r, this.bgColor.g, this.bgColor.b));
 							glyphGraphics.TextRenderingHint = (System.Drawing.Text.TextRenderingHint)this.hint;
 							glyphGraphics.DrawString(str, this.internalFont, fntBrush, new RectangleF(0, 0, glyphTempTypo.Width, glyphTempTypo.Height), formatTypo);
 						}

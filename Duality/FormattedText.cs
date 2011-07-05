@@ -349,12 +349,13 @@ namespace Duality
 				else if (elem is IconElement)
 				{
 					IconElement iconElem = elem as IconElement;
+					Icon icon = iconElem.IconIndex >= 0 && iconElem.IconIndex < this.parent.icons.Length ? this.parent.icons[iconElem.IconIndex] : new Icon();
 
 					// Word Wrap
 					if (this.parent.maxWidth > 0)
 					{
 						while ((this.lineAvailWidth < this.parent.maxWidth || this.offset.X > this.lineBeginX || this.parent.maxHeight > 0) && 
-							this.offset.X - this.lineBeginX + this.parent.icons[iconElem.IconIndex].size.X > this.lineAvailWidth)
+							this.offset.X - this.lineBeginX + icon.size.X > this.lineAvailWidth)
 						{
 							if (stopAtLineBreak)	return null;
 							else					this.PerformNewLine();
@@ -366,18 +367,19 @@ namespace Duality
 					this.curElemOffset = this.offset;
 
 					this.vertIconIndex += 4;
-					this.offset.X += this.parent.icons[iconElem.IconIndex].size.X;
-					this.lineWidth += this.parent.icons[iconElem.IconIndex].size.X;
-					this.lineHeight = Math.Max(this.lineHeight, this.parent.icons[iconElem.IconIndex].size.Y);
-					this.lineBaseLine = Math.Max(this.lineBaseLine, (int)Math.Round(this.parent.icons[iconElem.IconIndex].size.Y));
+					this.offset.X += icon.size.X;
+					this.lineWidth += icon.size.X;
+					this.lineHeight = Math.Max(this.lineHeight, icon.size.Y);
+					this.lineBaseLine = Math.Max(this.lineBaseLine, (int)Math.Round(icon.size.Y));
 					this.elemIndex++;
 				}
 				else if (elem is FontChangeElement)
 				{
 					FontChangeElement fontChangeElem = elem as FontChangeElement;
+					ContentRef<Font> font = this.fontIndex >= 0 && this.fontIndex < this.parent.fonts.Length ? this.parent.fonts[this.fontIndex] : ContentRef<Font>.Null;
 					this.fontIndex = fontChangeElem.FontIndex;
-					this.font = this.parent.fonts[this.fontIndex].Res;
-					this.lineBaseLine = Math.Max(this.lineBaseLine, this.parent.fonts[fontChangeElem.FontIndex].Res.BaseLine);
+					this.font = font.Res;
+					if (font.IsAvailable) this.lineBaseLine = Math.Max(this.lineBaseLine, font.Res.BaseLine);
 					this.elemIndex++;
 				}
 				else if (elem is ColorChangeElement)
@@ -610,14 +612,17 @@ namespace Duality
 
 						if (this.sourceText[i] == 'c')
 						{
-							uint	clr;
-							string	clrString = new StringBuilder().Append(this.sourceText, i + 1, 8).ToString();
-							if (uint.TryParse(clrString, System.Globalization.NumberStyles.HexNumber, System.Globalization.NumberFormatInfo.InvariantInfo, out clr))
-								elemList.Add(new ColorChangeElement(ColorRGBA.FromIntRgba(clr)));
-							else
-								elemList.Add(new ColorChangeElement(ColorRGBA.White));
+							if (this.sourceText.Length > i + 8)
+							{
+								uint	clr;
+								string	clrString = new StringBuilder().Append(this.sourceText, i + 1, 8).ToString();
+								if (uint.TryParse(clrString, System.Globalization.NumberStyles.HexNumber, System.Globalization.NumberFormatInfo.InvariantInfo, out clr))
+									elemList.Add(new ColorChangeElement(ColorRGBA.FromIntRgba(clr)));
+								else
+									elemList.Add(new ColorChangeElement(ColorRGBA.White));
 
-							i += 8;
+								i += 8;
+							}
 						}
 						if (this.sourceText[i] == 'e')
 						{
@@ -625,14 +630,18 @@ namespace Duality
 						}
 						else if (this.sourceText[i] == 'a')
 						{
-							string alignString = new StringBuilder().Append(this.sourceText, i + 1, 1).ToString();
-							if (alignString == "l")
-								elemList.Add(new AlignChangeElement(Alignment.Left));
-							else if (alignString == "r")
-								elemList.Add(new AlignChangeElement(Alignment.Right));
-							else
-								elemList.Add(new AlignChangeElement(Alignment.Center));
-							i += 1;
+							if (this.sourceText.Length > i + 1)
+							{
+								string alignString = new StringBuilder().Append(this.sourceText, i + 1, 1).ToString();
+								if (alignString == "l")
+									elemList.Add(new AlignChangeElement(Alignment.Left));
+								else if (alignString == "r")
+									elemList.Add(new AlignChangeElement(Alignment.Right));
+								else
+									elemList.Add(new AlignChangeElement(Alignment.Center));
+
+								i += 1;
+							}
 						}
 						else if (this.sourceText[i] == 'f')
 						{
@@ -804,8 +813,9 @@ namespace Duality
 				else if (elem is IconElement)
 				{
 					IconElement iconElem = elem as IconElement;
-					Vector2 iconSize = this.icons[iconElem.IconIndex].size;
-					Rect iconUvRect = this.icons[iconElem.IconIndex].uvRect;
+					Icon icon = iconElem.IconIndex > 0 && iconElem.IconIndex < this.icons.Length ? this.icons[iconElem.IconIndex] : new Icon();
+					Vector2 iconSize = icon.size;
+					Rect iconUvRect = icon.uvRect;
 
 					vertIcons[state.CurrentElemIconVertexIndex + 0].pos.X = state.CurrentElemOffset.X;
 					vertIcons[state.CurrentElemIconVertexIndex + 0].pos.Y = state.CurrentElemOffset.Y + state.LineBaseLine - iconSize.Y;
