@@ -1,12 +1,4 @@
 ﻿
--->	Test the postprocessing system
-	5.	Split Rendering (2 stages)
-		-->	Render color data to multiple textures at once (Multi-RenderTarget)
-			while splitting up the information
-		-->	Render to screen and put together all information using a shader
-		-->	With and without multisampling
-
-
 -->	Checklist for first Game: Asteroids
 	-->	Any Usability stuff that comes up while editing / creating the game
 
