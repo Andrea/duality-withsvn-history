@@ -376,8 +376,9 @@ namespace Duality
 				else if (elem is FontChangeElement)
 				{
 					FontChangeElement fontChangeElem = elem as FontChangeElement;
-					ContentRef<Font> font = this.fontIndex >= 0 && this.fontIndex < this.parent.fonts.Length ? this.parent.fonts[this.fontIndex] : ContentRef<Font>.Null;
 					this.fontIndex = fontChangeElem.FontIndex;
+
+					ContentRef<Font> font = this.fontIndex >= 0 && this.fontIndex < this.parent.fonts.Length ? this.parent.fonts[this.fontIndex] : ContentRef<Font>.Null;
 					this.font = font.Res;
 					if (font.IsAvailable) this.lineBaseLine = Math.Max(this.lineBaseLine, font.Res.BaseLine);
 					this.elemIndex++;
