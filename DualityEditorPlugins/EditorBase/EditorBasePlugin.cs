@@ -396,14 +396,42 @@ namespace EditorBase
 					r.UpdateMetrics();
 				}
 			}
+			// If its a Pixmap, reload all associated Textures
+			else if (typeof(Pixmap).IsAssignableFrom(e.ContentType))
+			{
+				foreach (ContentRef<Texture> tex in ContentProvider.GetLoadedContent<Texture>())
+				{
+					if (!tex.IsAvailable) continue;
+					if (tex.Res.BasePixmap.Res == e.Content.Res)
+					{
+						tex.Res.ReloadData();
+					}
+				}
+			}
 			// If its a Texture, update all associated RenderTargets
 			else if (typeof(Texture).IsAssignableFrom(e.ContentType))
 			{
 				foreach (ContentRef<RenderTarget> rt in ContentProvider.GetLoadedContent<RenderTarget>())
 				{
+					if (!rt.IsAvailable) continue;
 					if (rt.Res.Targets.Any(target => target.Res == e.Content.Res as Texture))
 					{
 						rt.Res.SetupOpenGLRes();
+					}
+				}
+			}
+			// If its some kind of shader, update all associated ShaderPrograms
+			else if (typeof(AbstractShader).IsAssignableFrom(e.ContentType))
+			{
+				foreach (ContentRef<ShaderProgram> sp in ContentProvider.GetLoadedContent<ShaderProgram>())
+				{
+					if (!sp.IsAvailable) continue;
+					if (sp.Res.Fragment.Res == e.Content.Res as FragmentShader ||
+						sp.Res.Vertex.Res == e.Content.Res as VertexShader)
+					{
+						bool wasCompiled = sp.Res.Compiled;
+						sp.Res.AttachShaders();
+						if (wasCompiled) sp.Res.Compile();
 					}
 				}
 			}
