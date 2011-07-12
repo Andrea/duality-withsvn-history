@@ -81,11 +81,11 @@ namespace EditorBase.PropertyEditors
 				(float)this.previewBox.BackgroundImage.Height * 
 				(float)this.previewBox.ClientSize.Width / 
 				(float)this.previewBox.BackgroundImage.Width));
-			int targetHeight = MathF.Clamp(preferredHeight + this.labelSize.Height, 100, 250);
+			int targetHeight = MathF.Clamp(preferredHeight + this.labelSize.Height + 2, 70, 250);
 			if (!toggle || this.Height != targetHeight)
 				this.Height = targetHeight;
 			else
-				this.Height = 100;
+				this.Height = 70;
 		}
 
 		private void previewBox_DoubleClick(object sender, EventArgs e)

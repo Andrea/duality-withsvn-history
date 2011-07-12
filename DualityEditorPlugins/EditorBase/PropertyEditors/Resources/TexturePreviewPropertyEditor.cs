@@ -130,11 +130,11 @@ namespace EditorBase.PropertyEditors
 				(float)this.previewBox.BackgroundImage.Height * 
 				(float)this.previewBox.ClientSize.Width / 
 				(float)this.previewBox.BackgroundImage.Width));
-			int targetHeight = MathF.Clamp(preferredHeight + this.labelSize.Height + this.labelFrame.Height, 125, 275);
+			int targetHeight = MathF.Clamp(preferredHeight + this.labelSize.Height + (this.labelFrame.Visible ? this.labelFrame.Height : 0) + 2, 70, 275);
 			if (!toggle || this.Height != targetHeight)
 				this.Height = targetHeight;
 			else
-				this.Height = 125;
+				this.Height = 70;
 		}
 		protected void UpdatePreview()
 		{

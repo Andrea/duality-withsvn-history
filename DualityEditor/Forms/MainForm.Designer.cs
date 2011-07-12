@@ -184,6 +184,7 @@
 			this.sourceDirWatcher.EnableRaisingEvents = true;
 			this.sourceDirWatcher.IncludeSubdirectories = true;
 			this.sourceDirWatcher.SynchronizingObject = this;
+			this.sourceDirWatcher.Created += new System.IO.FileSystemEventHandler(this.sourceDirWatcher_Created);
 			this.sourceDirWatcher.Changed += new System.IO.FileSystemEventHandler(this.sourceDirWatcher_Changed);
 			this.sourceDirWatcher.Deleted += new System.IO.FileSystemEventHandler(this.sourceDirWatcher_Deleted);
 			this.sourceDirWatcher.Renamed += new System.IO.RenamedEventHandler(this.sourceDirWatcher_Renamed);

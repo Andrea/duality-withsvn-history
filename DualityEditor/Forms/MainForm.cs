@@ -32,6 +32,7 @@ namespace DualityEditor.Forms
 		private	const	string	UserDataFile			= "editoruserdata.xml";
 		private	const	string	UserDataDockSeparator	= "<!-- DockPanel Data -->";
 
+		private	HashSet<string>			reimportSchedule	= new HashSet<string>();
 		private	List<IFileImporter>		fileImporters		= new List<IFileImporter>();
 		private	List<EditorPlugin>		plugins				= new List<EditorPlugin>();
 		private	ReloadCorePluginDialog	corePluginReloader	= null;
@@ -377,8 +378,6 @@ namespace DualityEditor.Forms
 				if (!importer.IsUsingSrcFile(r, filePath)) continue;
 				try
 				{
-					// Hacky: Wait a little for the file to be accessable again (Might be used by another process)
-					System.Threading.Thread.Sleep(50);
 					importer.ReimportFile(r, filePath);
 				}
 				catch (Exception) 
@@ -404,6 +403,20 @@ namespace DualityEditor.Forms
 			srcFilePath = PathHelper.GetFreePathName(
 				Path.Combine(EditorHelper.SourceMediaDirectory, Path.GetFileNameWithoutExtension(srcFilePath)), 
 				Path.GetExtension(srcFilePath));
+		}
+		private void PerformScheduledReimport()
+		{
+			if (this.reimportSchedule.Count == 0) return;
+
+			// Hacky: Wait a little for the files to be accessable again (Might be used by another process)
+			System.Threading.Thread.Sleep(50);
+
+			foreach (string file in this.reimportSchedule)
+			{
+				if (!File.Exists(file)) continue;
+				this.ReimportFile(file);
+			}
+			this.reimportSchedule.Clear();
 		}
 
 		protected bool DisplayConfirmImportOverwrite(string importFilePath)
@@ -723,6 +736,8 @@ namespace DualityEditor.Forms
 		protected override void OnActivated(EventArgs e)
 		{
 			base.OnActivated(e);
+
+			// Core plugin reload
 			if (this.needsRecovery)
 			{
 				this.needsRecovery = false;
@@ -730,11 +745,13 @@ namespace DualityEditor.Forms
 				Log.Editor.PushIndent();
 				this.corePluginReloader.State = ReloadCorePluginDialog.ReloaderState.RecoverFromRestart;
 			}
-			else
+			else if (this.corePluginReloader.State == ReloadCorePluginDialog.ReloaderState.WaitForPlugins)
 			{
-				if (this.corePluginReloader.State == ReloadCorePluginDialog.ReloaderState.WaitForPlugins)
-					this.corePluginReloader.State = ReloadCorePluginDialog.ReloaderState.ReloadPlugins;
+				this.corePluginReloader.State = ReloadCorePluginDialog.ReloaderState.ReloadPlugins;
 			}
+
+			// Reimport data
+			this.PerformScheduledReimport();
 		}
 
 		private void corePluginWatcher_Changed(object sender, FileSystemEventArgs e)
@@ -832,10 +849,13 @@ namespace DualityEditor.Forms
 
 			if (this.ResourceRenamed != null) this.ResourceRenamed(this, args);
 		}
-
+		
+		private void sourceDirWatcher_Created(object sender, FileSystemEventArgs e)
+		{
+		}
 		private void sourceDirWatcher_Changed(object sender, FileSystemEventArgs e)
 		{
-			this.ReimportFile(e.FullPath);
+			if (File.Exists(e.FullPath)) this.reimportSchedule.Add(e.FullPath);
 			if (this.SrcFileModified != null) this.SrcFileModified(this, e);
 		}
 		private void sourceDirWatcher_Deleted(object sender, FileSystemEventArgs e)
@@ -844,6 +864,7 @@ namespace DualityEditor.Forms
 		}
 		private void sourceDirWatcher_Renamed(object sender, RenamedEventArgs e)
 		{
+			if (File.Exists(e.FullPath)) this.reimportSchedule.Add(e.FullPath);
 			if (this.SrcFileRenamed != null) this.SrcFileRenamed(this, e);
 		}
 
