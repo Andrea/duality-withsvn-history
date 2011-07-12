@@ -79,7 +79,10 @@ namespace Duality.Resources
 			get { return this.data != null ? this.data.Height : 0; }
 		}
  
-		public Pixmap() {}
+		public Pixmap() 
+		{
+			this.data = new Bitmap(1, 1);
+		}
 		public Pixmap(Bitmap image)
 		{
 			this.data = image;
