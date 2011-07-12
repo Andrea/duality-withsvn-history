@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -888,6 +889,50 @@ namespace Duality
 					for (int i = 0; i < src.Length; ++i)
 						src.SetValue(DeepResolveTypeReferenceObject(((Array)instance).GetValue(i), binder, visited), i);
 				}
+
+				return instance;
+			}
+			// Special case: Dictionary<T,U> with T == type reference type: Need to rebuild due to GetHashCode-Stuff
+			else if (
+				instanceType.IsGenericType && 
+				instanceType.GetGenericTypeDefinition() == typeof(Dictionary<,>) && 
+				typeof(MemberInfo).IsAssignableFrom(instanceType.GetGenericArguments()[0]))
+			{
+				visited.Add(instance);
+
+				IDictionary dict = instance as IDictionary;
+				List<DictionaryEntry> entries = new List<DictionaryEntry>(dict.Count);
+				foreach (DictionaryEntry pair in dict)
+					entries.Add(pair);
+				
+				MethodInfo m_Clear = instanceType.GetMethod("Clear");
+				MethodInfo m_Add = instanceType.GetMethod("Add");
+
+				m_Clear.Invoke(instance, null);
+				foreach (DictionaryEntry pair in entries)
+					m_Add.Invoke(instance, new object[] { DeepResolveTypeReferenceObject(pair.Key, binder, visited), pair.Value });
+
+				return instance;
+			}
+			// Special case: HashSet<T> with T == type reference type: Need to rebuild due to GetHashCode-Stuff
+			else if (
+				instanceType.IsGenericType && 
+				instanceType.GetGenericTypeDefinition() == typeof(HashSet<>) && 
+				typeof(MemberInfo).IsAssignableFrom(instanceType.GetGenericArguments()[0]))
+			{
+				visited.Add(instance);
+
+				IEnumerable set = instance as IEnumerable;
+				List<object> entries = new List<object>();
+				foreach (object obj in set)
+					entries.Add(obj);
+				
+				MethodInfo m_Clear = instanceType.GetMethod("Clear");
+				MethodInfo m_Add = instanceType.GetMethod("Add");
+
+				m_Clear.Invoke(instance, null);
+				foreach (DictionaryEntry pair in entries)
+					m_Add.Invoke(instance, new object[] { DeepResolveTypeReferenceObject(pair.Key, binder, visited) });
 
 				return instance;
 			}
