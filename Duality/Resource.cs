@@ -118,8 +118,8 @@ namespace Duality
 					StreamingContextStates.File | StreamingContextStates.Persistence));
 				newContent = formatter.Deserialize(str) as T;
 
-				if (DualityApp.ExecContext == DualityApp.ExecutionContext.Editor) 
-					SerializationHelper.DeepResolveTypeReferences(newContent, DualityApp.PluginTypeBinder);
+				//if (DualityApp.ExecContext == DualityApp.ExecutionContext.Editor)
+				SerializationHelper.DeepResolveTypeReferences(newContent, DualityApp.PluginTypeBinder);
 
 				if (newContent != null) newContent.path = resPath;
 				newContent.OnLoaded();

@@ -1,20 +1,34 @@
 ﻿
 -->	Checklist for first Game: Asteroids
-	-->	Any Usability stuff that comes up while editing / creating the game
-
+	-->	Space Background:
+		-->	Need to SpriteRenderer UV configuration possibility. Use a (flagged?) enum
+		-->	Stretch = !(WrapHorizontal | WrapVertical) = !(WrapBoth)
 	-->	Title Scene
 	-->	Game Scene (No levels, dynamically creates stages)
 	-->	Highscore Scene
 
 
--->	Usability
-	-->	If a SpriteRenderer is attached a Material, consider auto-updating the Rect
-	-->	Non-Parallax objects shouldn't be pickable in a parallax CamView
-		-->	Selective picking / picking predicate
-	-->	Is it possible to recover from deleting classes in a plugin that are still used?
-	-->	Find some generalized, Plugin-friendly interface for defining such special behaviour:
-		-->	Dragdrop Material to SpriteRenderer: Set SharedMaterial
-		-->	Dragdrop Material to GameObject (both CamView & SceneView): If it has a SpriteRenderer, set SharedMaterial
 
 -->	Editor Skeletton
 	-->	Sandbox (Play | Pause | Reset)
+
+
+-->	Keep in mind: Saving GameObjects with PrefabLinks is currently highly data-redundant.
+	-->	When in ExecutionContext.Editor, consider not saving Components that are part of the Prefab.
+	-->	Can't do the same with GameObjects though, because their index is used to locate them when applying
+		the PrefabLink. Changing the order or removing existing GameObjects requires extra consideration.
+
+-->	Keep in mind: Currently, DeepResolveTypeReferences is invoked on ANY loaded Resource, no matter if its loaded
+	in the editor or not. 
+	-->	This is kind of a "stability hack": In theory, this is only necessary in ExecutionContext.Editor, because Plugins 
+		won't change at run-time. However, in practice the user may run the game from the editor and step into a Resource 
+		the editor hasn't loaded so far and thus didn't resolve its type references. While it normally works, it will 
+		result in undefined behaviour when a core plugin has changed since the Resource has been saved the last time.
+	-->	It would be sufficient to resolve type references of all existing Resources at once when building the game for
+		release mode i.e. "closing the source code".
+	-->	Though, as long as it doesn't become a performance issue, it may stay like this.
+	-->	Solution notes, given the case it DOES become a performance issue:
+		-->	It would be possible to provide a "plugin hash" in the basic Resource class. Resolving type references
+			is only necessary if the current (DualityApp's) plugin hash differs from the one saved in the Resource.
+			It might then be performed automatically and also save the Resource again so it won't be necessary a 
+			second time until rebuilding plugins again.
