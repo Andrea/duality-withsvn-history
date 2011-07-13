@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Duality", "Duality\Duality.csproj", "{D821AFB9-BCC9-4025-9A9C-798E2BC546AB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp", "TestApp\TestApp.csproj", "{49F3E699-98DC-409A-AE2D-BFCD5AD5BD1C}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DualityEditor", "DualityEditor\DualityEditor.csproj", "{9FB9F397-FD39-460C-A9AD-B4780D19945F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorBase", "DualityEditorPlugins\EditorBase\EditorBase.csproj", "{D0C5CAAD-1344-4E8F-BD8B-B26F81672F4B}"
@@ -17,10 +15,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DualityPlugins", "DualityPl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestPlugin", "DualityPlugins\TestPlugin\TestPlugin.csproj", "{1C2327E4-8C56-4848-AC16-178EFA108E82}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestPlugin2", "DualityPlugins\TestPlugin2\TestPlugin2.csproj", "{619B08AD-C73A-45E7-ACFE-CB9B4259FD33}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0CFA90E9-4328-4F1D-ADB6-717A8A340BD4}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -31,10 +25,6 @@ Global
 		{D821AFB9-BCC9-4025-9A9C-798E2BC546AB}.Debug|x86.Build.0 = Debug|x86
 		{D821AFB9-BCC9-4025-9A9C-798E2BC546AB}.Release|x86.ActiveCfg = Release|x86
 		{D821AFB9-BCC9-4025-9A9C-798E2BC546AB}.Release|x86.Build.0 = Release|x86
-		{49F3E699-98DC-409A-AE2D-BFCD5AD5BD1C}.Debug|x86.ActiveCfg = Debug|x86
-		{49F3E699-98DC-409A-AE2D-BFCD5AD5BD1C}.Debug|x86.Build.0 = Debug|x86
-		{49F3E699-98DC-409A-AE2D-BFCD5AD5BD1C}.Release|x86.ActiveCfg = Release|x86
-		{49F3E699-98DC-409A-AE2D-BFCD5AD5BD1C}.Release|x86.Build.0 = Release|x86
 		{9FB9F397-FD39-460C-A9AD-B4780D19945F}.Debug|x86.ActiveCfg = Debug|x86
 		{9FB9F397-FD39-460C-A9AD-B4780D19945F}.Debug|x86.Build.0 = Debug|x86
 		{9FB9F397-FD39-460C-A9AD-B4780D19945F}.Release|x86.ActiveCfg = Release|x86
@@ -51,10 +41,6 @@ Global
 		{1C2327E4-8C56-4848-AC16-178EFA108E82}.Debug|x86.Build.0 = Debug|Any CPU
 		{1C2327E4-8C56-4848-AC16-178EFA108E82}.Release|x86.ActiveCfg = Release|Any CPU
 		{1C2327E4-8C56-4848-AC16-178EFA108E82}.Release|x86.Build.0 = Release|Any CPU
-		{619B08AD-C73A-45E7-ACFE-CB9B4259FD33}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{619B08AD-C73A-45E7-ACFE-CB9B4259FD33}.Debug|x86.Build.0 = Debug|Any CPU
-		{619B08AD-C73A-45E7-ACFE-CB9B4259FD33}.Release|x86.ActiveCfg = Release|Any CPU
-		{619B08AD-C73A-45E7-ACFE-CB9B4259FD33}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -62,6 +48,5 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{D0C5CAAD-1344-4E8F-BD8B-B26F81672F4B} = {F1705E0B-40BC-464C-B5CD-15A78E626F69}
 		{1C2327E4-8C56-4848-AC16-178EFA108E82} = {CBCD26DF-95C4-4A9C-9E6B-EAEE23985833}
-		{619B08AD-C73A-45E7-ACFE-CB9B4259FD33} = {CBCD26DF-95C4-4A9C-9E6B-EAEE23985833}
 	EndGlobalSection
 EndGlobal
