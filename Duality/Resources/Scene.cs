@@ -114,10 +114,8 @@ namespace Duality.Resources
 		}
 		public void Update()
 		{
-			foreach (GameObject obj in this.objectManager.ActiveObjects)
-			{
-			    obj.Update();
-			}
+			GameObject[] activeObj = this.objectManager.ActiveObjects.ToArray();
+			foreach (GameObject obj in activeObj) obj.Update();
 		}
 		public void EditorUpdate()
 		{

@@ -78,6 +78,7 @@ namespace Duality
 		private	static	ExecutionContext		execContext			= ExecutionContext.Terminated;
 		private	static	DualityAppData			appData				= null;
 		private	static	DualityUserData			userData			= null;
+		private	static	List<object>			disposeSchedule		= new List<object>();
 
 		private	static	PluginSerializationBinder	pluginTypeBinder;
 		private	static	Dictionary<string,Assembly>	plugins;
@@ -240,11 +241,32 @@ namespace Duality
 			Scene.Current.Update();
 			sound.Update();
 			OnUpdating();
-			Resource.RunCleanup();
+			RunCleanup();
 		}
 		public static void Draw()
 		{
 			Scene.Current.Render();
+		}
+
+		public static void DisposeLater(object o)
+		{
+			disposeSchedule.Add(o);
+		}
+		private static void RunCleanup()
+		{
+			foreach (object o in disposeSchedule)
+			{
+				GameObject g = o as GameObject;
+				if (g != null) { g.Dispose(); continue; }
+				Component c = o as Component;
+				if (c != null) { c.Dispose(); continue; }
+				Resource r = o as Resource;
+				if (r != null) { r.Dispose(); continue; }
+				IDisposable d = o as IDisposable;
+				if (d != null) { d.Dispose(); continue; }
+			}
+			disposeSchedule.Clear();
+			Resource.RunCleanup();
 		}
 
 		public static void EditorUpdate(GameObjectManager updateObjects)

@@ -127,6 +127,10 @@ namespace Duality
 					this.gameobj.RemoveComponent(this.GetType());
 			}
 		}
+		public void DisposeLater()
+		{
+			DualityApp.DisposeLater(this);
+		}
 
 		public Component Clone()
 		{

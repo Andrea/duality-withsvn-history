@@ -418,6 +418,10 @@ namespace Duality
 				this.OnDisposed();
 			}
 		}
+		public void DisposeLater()
+		{
+			DualityApp.DisposeLater(this);
+		}
 		public GameObject Clone()
 		{
 			GameObject target = new GameObject();
@@ -461,8 +465,10 @@ namespace Duality
 		internal void Update()
 		{
 			// Update Components
-			foreach (Component c in this.compList)
+			for (int i = 0; i < this.compList.Count; i++)
 			{
+				Component c = this.compList[i];
+
 				if (!c.Active) continue;
 				ICmpUpdatable selfUpd = c as ICmpUpdatable;
 			    if (selfUpd != null) selfUpd.OnUpdate();
@@ -471,8 +477,10 @@ namespace Duality
 		internal void EditorUpdate()
 		{
 			// Update Components
-			foreach (Component c in this.compList)
+			for (int i = 0; i < this.compList.Count; i++)
 			{
+				Component c = this.compList[i];
+
 				if (!c.Active) continue;
 				ICmpEditorUpdatable selfUpd = c as ICmpEditorUpdatable;
 			    if (selfUpd != null) selfUpd.OnUpdate();
@@ -482,62 +490,73 @@ namespace Duality
 		internal void OnLoaded(bool deep = false)
 		{
 			// Notify Components
-			foreach (Component c in this.compList)
+			for (int i = 0; i < this.compList.Count; i++)
 			{
+				Component c = this.compList[i];
+
 				if (!c.Active) continue;
 				ICmpInitializable cInit = c as ICmpInitializable;
 				if (cInit != null) cInit.OnInit(Component.InitContext.Loaded);
 			}
 
-			if (deep)
+			if (deep && this.children != null)
 			{
-				foreach (GameObject child in this.ChildrenDeep)
+				for (int i = 0; i < this.children.Count; i++)
 				{
-					child.OnLoaded(false);
+					GameObject c = this.children[i];
+					c.OnLoaded(deep);
 				}
 			}
 		}
 		internal void OnSaving(bool deep = false)
 		{
 			// Notify Components
-			foreach (Component c in this.compList)
+			for (int i = 0; i < this.compList.Count; i++)
 			{
+				Component c = this.compList[i];
+
 				if (!c.Active) continue;
 				ICmpInitializable cInit = c as ICmpInitializable;
 				if (cInit != null) cInit.OnShutdown(Component.ShutdownContext.Saving);
 			}
 
-			if (deep)
+			if (deep && this.children != null)
 			{
-				foreach (GameObject child in this.ChildrenDeep)
+				for (int i = 0; i < this.children.Count; i++)
 				{
-					child.OnSaving(false);
+					GameObject c = this.children[i];
+					c.OnSaving(deep);
 				}
 			}
 		}
 		internal void OnSaved(bool deep = false)
 		{
 			// Notify Components
-			foreach (Component c in this.compList)
+			for (int i = 0; i < this.compList.Count; i++)
 			{
+				Component c = this.compList[i];
+
 				if (!c.Active) continue;
 				ICmpInitializable cInit = c as ICmpInitializable;
 				if (cInit != null) cInit.OnInit(Component.InitContext.Saved);
 			}
 
-			if (deep)
+			if (deep && this.children != null)
 			{
-				foreach (GameObject child in this.ChildrenDeep)
+				for (int i = 0; i < this.children.Count; i++)
 				{
-					child.OnSaved(false);
+					GameObject c = this.children[i];
+					c.OnSaved(deep);
 				}
 			}
 		}
 		private void OnActivate()
 		{
 			// Notify Components
-			foreach (Component c in this.compList)
+			for (int i = 0; i < this.compList.Count; i++)
 			{
+				Component c = this.compList[i];
+
 				if (!c.Active) continue;
 				ICmpInitializable cInit = c as ICmpInitializable;
 				if (cInit != null) cInit.OnInit(Component.InitContext.Activate);
@@ -546,8 +565,10 @@ namespace Duality
 		private void OnDeactivate()
 		{
 			// Notify Components
-			foreach (Component c in this.compList)
+			for (int i = 0; i < this.compList.Count; i++)
 			{
+				Component c = this.compList[i];
+
 				if (!c.Active) continue;
 				ICmpInitializable cInit = c as ICmpInitializable;
 				if (cInit != null) cInit.OnShutdown(Component.ShutdownContext.Deactivate);
@@ -561,8 +582,10 @@ namespace Duality
 		private void OnParentChanged(GameObject oldParent, GameObject newParent)
 		{
 			// Notify Components
-			foreach (Component c in this.compList)
+			for (int i = 0; i < this.compList.Count; i++)
 			{
+				Component c = this.compList[i];
+
 				if (!c.Active) continue;
 				ICmpGameObjectListener cParent = c as ICmpGameObjectListener;
 				if (cParent != null) cParent.OnGameObjectParentChanged(oldParent, this.parent);
@@ -577,8 +600,10 @@ namespace Duality
 			// Notify Components
 			ICmpInitializable cmpInit = cmp as ICmpInitializable;
 			if (cmpInit != null) cmpInit.OnInit(Component.InitContext.AddToGameObject);
-			foreach (Component c in this.compList)
+			for (int i = 0; i < this.compList.Count; i++)
 			{
+				Component c = this.compList[i];
+
 				if (!c.Active) continue;
 				ICmpComponentListener cTemp = c as ICmpComponentListener;
 				if (cTemp != null) cTemp.OnComponentAdded(cmp);
@@ -593,8 +618,10 @@ namespace Duality
 			// Notify Components
 			ICmpInitializable cmpInit = cmp as ICmpInitializable;
 			if (cmpInit != null) cmpInit.OnShutdown(Component.ShutdownContext.RemovingFromGameObject);
-			foreach (Component c in this.compList)
+			for (int i = 0; i < this.compList.Count; i++)
 			{
+				Component c = this.compList[i];
+
 				if (!c.Active) continue;
 				ICmpComponentListener cTemp = c as ICmpComponentListener;
 				if (cTemp != null) cTemp.OnComponentRemoving(cmp);
