@@ -15,10 +15,19 @@ namespace Duality.Components.Renderers
 	[RequiredComponent(typeof(Transform))]
 	public class SpriteRenderer : Renderer
 	{
+		public enum UVMode
+		{
+			Stretch			= 0x0,
+			WrapHorizontal	= 0x1,
+			WrapVertical	= 0x2,
+			WrapBoth		= WrapHorizontal | WrapVertical
+		}
+
 		protected	Rect					rect		= Rect.AlignCenter(0, 0, 128, 128);
 		protected	ContentRef<Material>	sharedMat	= Material.DualityLogo256;
 		protected	BatchInfo				customMat	= null;
 		protected	ColorRGBA				colorTint	= ColorRGBA.White;
+		protected	UVMode					rectMode	= UVMode.Stretch;
 		[NonSerialized]
 		protected	VertexFormat.VertexC4P3T2[]	vertices	= null;
 
@@ -45,6 +54,11 @@ namespace Duality.Components.Renderers
 		{
 			get { return this.colorTint; }
 			set { this.colorTint = value; }
+		}
+		public UVMode RectMode
+		{
+			get { return this.rectMode; }
+			set { this.rectMode = value; }
 		}
 
 
@@ -144,8 +158,20 @@ namespace Duality.Components.Renderers
 			Texture mainTex = this.RetrieveMainTex();
 			ColorRGBA mainClr = this.RetrieveMainColor();
 
-			Rect uvRect = new Rect(1.0f, 1.0f);
-			if (mainTex != null) uvRect = new Rect(mainTex.UVRatio.X, mainTex.UVRatio.Y);
+			Rect uvRect;
+			if (mainTex != null)
+			{
+				if (this.rectMode == UVMode.WrapBoth)
+					uvRect = new Rect(mainTex.UVRatio.X * this.rect.w / mainTex.PxWidth, mainTex.UVRatio.Y * this.rect.h / mainTex.PxHeight);
+				else if (this.rectMode == UVMode.WrapHorizontal)
+					uvRect = new Rect(mainTex.UVRatio.X * this.rect.w / mainTex.PxWidth, mainTex.UVRatio.Y);
+				else if (this.rectMode == UVMode.WrapVertical)
+					uvRect = new Rect(mainTex.UVRatio.X, mainTex.UVRatio.Y * this.rect.h / mainTex.PxHeight);
+				else
+					uvRect = new Rect(mainTex.UVRatio.X, mainTex.UVRatio.Y);
+			}
+			else
+				uvRect = new Rect(1.0f, 1.0f);
 
 			this.PrepareVertices(ref this.vertices, device, mainClr, uvRect);
 			if (this.customMat != null)
@@ -161,6 +187,7 @@ namespace Duality.Components.Renderers
 			t.customMat	= this.customMat != null ? new BatchInfo(this.customMat) : null;
 			t.rect		= this.rect;
 			t.colorTint	= this.colorTint;
+			t.rectMode	= this.rectMode;
 		}
 	}
 }

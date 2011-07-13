@@ -307,7 +307,7 @@ namespace Duality.Resources
 
 		public void PushChange(object target, PropertyInfo prop, object value)
 		{
-			if (ReflectionHelper.MemberInfoEquals(prop, ReflectionHelper.Property_GameObject_Parent)) return; // Reject changing "Parent" as it would destroy the PrefabLink
+			if (ReflectionHelper.MemberInfoEquals(prop, ReflectionInfo.Property_GameObject_Parent)) return; // Reject changing "Parent" as it would destroy the PrefabLink
 			if (this.changes == null) this.changes = new List<VarMod>();
 
 			GameObject targetObj = target as GameObject;

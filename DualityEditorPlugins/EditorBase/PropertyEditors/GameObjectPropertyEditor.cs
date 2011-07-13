@@ -103,7 +103,7 @@ namespace EditorBase.PropertyEditors
 			foreach (GameObject o in values) o.Name = newName;
 
 			// Notify Name changed
-			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionHelper.Property_GameObject_Name);
+			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionInfo.Property_GameObject_Name);
 		}
 		public void PerformSetActive(bool active)
 		{
@@ -113,7 +113,7 @@ namespace EditorBase.PropertyEditors
 			// Notify ActiveSingle changed
 			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, 
 				new ObjectSelection(values), 
-				ReflectionHelper.Property_GameObject_ActiveSingle);
+				ReflectionInfo.Property_GameObject_ActiveSingle);
 		}
 
 		protected override void OnPaint(PaintEventArgs e)
@@ -218,7 +218,7 @@ namespace EditorBase.PropertyEditors
 					o.LinkToPrefab(prefab);
 				}
 			}
-			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionHelper.Property_GameObject_PrefabLink);
+			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionInfo.Property_GameObject_PrefabLink);
 		}
 		private void buttonPrefabLinkDestroy_Click(object sender, EventArgs e)
 		{
@@ -227,7 +227,7 @@ namespace EditorBase.PropertyEditors
 			// Destroy all PrefabLinks
 			foreach (GameObject o in values) o.BreakPrefabLink();
 
-			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionHelper.Property_GameObject_PrefabLink);
+			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionInfo.Property_GameObject_PrefabLink);
 			this.PerformGetValue();
 			this.ParentEditor.UpdateModifiedState();
 		}

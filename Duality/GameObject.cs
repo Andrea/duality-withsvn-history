@@ -198,7 +198,7 @@ namespace Duality
 					{
 						if (child.PrefabLink != null && child.PrefabLink.ParentLink == this.prefabLink)
 						{
-							this.prefabLink.PushChange(child, ReflectionHelper.Property_GameObject_PrefabLink, child.PrefabLink.Clone());
+							this.prefabLink.PushChange(child, ReflectionInfo.Property_GameObject_PrefabLink, child.PrefabLink.Clone());
 						}
 					}
 				}

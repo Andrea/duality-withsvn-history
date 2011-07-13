@@ -19,7 +19,6 @@ namespace DualityEditor.Controls.PropertyEditors
 {
 	public partial class IColorDataPropertyEditor : PropertyEditor
 	{
-		private	bool	updatingFromObj	= false;
 		private	Point	dragBeginPos	= Point.Empty;
 
 		public override string PropertyName
@@ -46,7 +45,6 @@ namespace DualityEditor.Controls.PropertyEditors
 			base.PerformGetValue();
 			object[] values = this.Getter().ToArray();
 
-			this.updatingFromObj = true;
 			// Update modified state
 			this.UpdateModifiedState();
 			// Apply values to editors
@@ -61,7 +59,6 @@ namespace DualityEditor.Controls.PropertyEditors
 
 				// No visual appearance of "multiple values" yet - need one?
 			}
-			this.updatingFromObj = false;
 		}
 		public override void PerformSetValue()
 		{

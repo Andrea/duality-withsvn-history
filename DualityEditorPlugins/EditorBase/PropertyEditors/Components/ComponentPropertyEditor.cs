@@ -31,7 +31,7 @@ namespace EditorBase.PropertyEditors
 			// Notify ActiveSingle changed
 			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, 
 				new ObjectSelection(values), 
-				ReflectionHelper.Property_Component_ActiveSingle);
+				ReflectionInfo.Property_Component_ActiveSingle);
 		}
 
 		protected override bool IsChildValueModified(PropertyEditor childEditor)

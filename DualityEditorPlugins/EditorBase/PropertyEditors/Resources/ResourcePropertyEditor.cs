@@ -21,8 +21,8 @@ namespace EditorBase.PropertyEditors
 		}
 		protected override bool MemberPredicate(MemberInfo info)
 		{
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Resource_Disposed)) return false;
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Resource_Path)) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Resource_Disposed)) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Resource_Path)) return false;
 			return base.MemberPredicate(info);
 		}
 		protected override void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)

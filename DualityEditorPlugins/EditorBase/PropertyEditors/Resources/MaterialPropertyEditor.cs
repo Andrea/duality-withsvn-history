@@ -24,7 +24,7 @@ namespace EditorBase.PropertyEditors
 		protected override void OnAddingEditors()
 		{
 			base.OnAddingEditors();
-			BatchInfoPropertyEditor e = this.AddEditorForField(ReflectionHelper.Field_Material_Info) as BatchInfoPropertyEditor;
+			BatchInfoPropertyEditor e = this.AddEditorForField(ReflectionInfo.Field_Material_Info) as BatchInfoPropertyEditor;
 			e.Header.Visible = false;
 			e.Expanded = true;
 			e.Indent = 0;
@@ -36,7 +36,7 @@ namespace EditorBase.PropertyEditors
 		protected override void OnFieldSet(FieldInfo property, IEnumerable<object> targets)
 		{
 			base.OnFieldSet(property, targets);
-			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(targets), ReflectionHelper.Property_Material_Info);
+			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(targets), ReflectionInfo.Property_Material_Info);
 		}
 	}
 }

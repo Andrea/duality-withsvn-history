@@ -641,7 +641,7 @@ namespace DualityEditor.Forms
 
 				foreach (PrefabLink link in changedLinks)
 				{
-					this.NotifyObjPropChanged(this, new ObjectSelection(link.Obj), ReflectionHelper.Property_GameObject_PrefabLink);
+					this.NotifyObjPropChanged(this, new ObjectSelection(link.Obj), ReflectionInfo.Property_GameObject_PrefabLink);
 				}
 			}
 
@@ -692,7 +692,7 @@ namespace DualityEditor.Forms
 			this.NotifyObjPropChanged(
 				this, 
 				new ObjectSelection(linkList.Select(l => l.Obj)), 
-				ReflectionHelper.Property_GameObject_PrefabLink);
+				ReflectionInfo.Property_GameObject_PrefabLink);
 
 			return true;
 		}
@@ -700,7 +700,7 @@ namespace DualityEditor.Forms
 		{
 			if (link == null) return false;
 
-			if (info == ReflectionHelper.Property_GameObject_PrefabLink)
+			if (info == ReflectionInfo.Property_GameObject_PrefabLink)
 			{
 				GameObject obj = target as GameObject;
 				if (obj == null) return false;

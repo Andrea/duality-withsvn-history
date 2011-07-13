@@ -39,8 +39,8 @@ namespace EditorBase.PropertyEditors
 		protected override void OnAddingEditors()
 		{
 			base.OnAddingEditors();
-			this.AddEditorForProperty(ReflectionHelper.Property_BatchInfo_MainColor);
-			this.AddEditorForProperty(ReflectionHelper.Property_BatchInfo_Technique);
+			this.AddEditorForProperty(ReflectionInfo.Property_BatchInfo_MainColor);
+			this.AddEditorForProperty(ReflectionInfo.Property_BatchInfo_Technique);
 		}
 		protected override void OnUpdateFromObjects(object[] values)
 		{
@@ -252,7 +252,7 @@ namespace EditorBase.PropertyEditors
 					if (info != null) info.Textures[name] = curValue;
 					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}
-				this.OnPropertySet(ReflectionHelper.Property_BatchInfo_Textures, batchInfoArray);
+				this.OnPropertySet(ReflectionInfo.Property_BatchInfo_Textures, batchInfoArray);
 				this.UpdateModifiedState();
 			};
 		}
@@ -270,7 +270,7 @@ namespace EditorBase.PropertyEditors
 					if (info != null) info.Uniforms[name] = curValue;
 					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}
-				this.OnPropertySet(ReflectionHelper.Property_BatchInfo_Uniforms, batchInfoArray);
+				this.OnPropertySet(ReflectionInfo.Property_BatchInfo_Uniforms, batchInfoArray);
 				this.UpdateModifiedState();
 			};
 		}
@@ -288,7 +288,7 @@ namespace EditorBase.PropertyEditors
 					if (info != null) info.Uniforms[name][0] = curValue;
 					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}
-				this.OnPropertySet(ReflectionHelper.Property_BatchInfo_Uniforms, batchInfoArray);
+				this.OnPropertySet(ReflectionInfo.Property_BatchInfo_Uniforms, batchInfoArray);
 				this.UpdateModifiedState();
 			};
 		}
@@ -310,7 +310,7 @@ namespace EditorBase.PropertyEditors
 					}
 					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}
-				this.OnPropertySet(ReflectionHelper.Property_BatchInfo_Uniforms, batchInfoArray);
+				this.OnPropertySet(ReflectionInfo.Property_BatchInfo_Uniforms, batchInfoArray);
 				this.UpdateModifiedState();
 			};
 		}
@@ -333,7 +333,7 @@ namespace EditorBase.PropertyEditors
 					}
 					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}
-				this.OnPropertySet(ReflectionHelper.Property_BatchInfo_Uniforms, batchInfoArray);
+				this.OnPropertySet(ReflectionInfo.Property_BatchInfo_Uniforms, batchInfoArray);
 				this.UpdateModifiedState();
 			};
 		}

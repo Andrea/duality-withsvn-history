@@ -24,14 +24,14 @@ namespace EditorBase.PropertyEditors
 
 		protected override bool MemberPredicate(MemberInfo info)
 		{
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Font_Material)) return false;
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Font_NeedsReload)) return false;
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Font_CustomFamilyData)) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Font_Material)) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Font_NeedsReload)) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Font_CustomFamilyData)) return false;
 			return base.MemberPredicate(info);
 		}
 		protected override PropertyEditor MemberEditor(MemberInfo info)
 		{
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Font_Family))
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Font_Family))
 			{
 				StringEnumPropertyEditor e = new StringEnumPropertyEditor(this, this.ParentGrid);
 				e.EditedType = (info as System.Reflection.PropertyInfo).PropertyType;
@@ -40,7 +40,7 @@ namespace EditorBase.PropertyEditors
 					e.Editor.Items.Add(f.Name);
 				return e;
 			}
-			else if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Font_Size))
+			else if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Font_Size))
 			{
 				PropertyEditor e = this.ParentGrid.PropertyEditorProvider.CreateEditor(
 					(info as System.Reflection.PropertyInfo).PropertyType, this, this.ParentGrid);

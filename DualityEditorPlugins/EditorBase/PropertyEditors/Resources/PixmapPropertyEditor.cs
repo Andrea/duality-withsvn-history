@@ -32,8 +32,8 @@ namespace EditorBase.PropertyEditors
 		}
 		protected override bool MemberPredicate(MemberInfo info)
 		{
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Pixmap_PixelData)) return false;
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Pixmap_PixelDataBasePath)) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Pixmap_PixelData)) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Pixmap_PixelDataBasePath)) return false;
 			return base.MemberPredicate(info);
 		}
 	}

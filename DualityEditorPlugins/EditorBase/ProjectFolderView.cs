@@ -33,7 +33,6 @@ namespace EditorBase
 
 			private	string	nodePath		= null;
 			private	bool	readOnly		= false;
-			private	bool	wasVisibleYet	= false;
 
 			public string NodePath
 			{
@@ -66,7 +65,6 @@ namespace EditorBase
 			public void NotifyVisible()
 			{
 				this.OnFirstVisible();
-				this.wasVisibleYet = true;
 			}
 			public void ApplyPathToName()
 			{
@@ -880,7 +878,7 @@ namespace EditorBase
 						// Establish PrefabLink & clear previously existing changes
 						if (draggedObj.PrefabLink != null) draggedObj.PrefabLink.ClearChanges();
 						draggedObj.LinkToPrefab(prefab);
-						EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(draggedObj), ReflectionHelper.Property_GameObject_PrefabLink);
+						EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(draggedObj), ReflectionInfo.Property_GameObject_PrefabLink);
 					}
 				}
 			}

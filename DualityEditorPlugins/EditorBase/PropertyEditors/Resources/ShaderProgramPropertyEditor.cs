@@ -21,8 +21,8 @@ namespace EditorBase.PropertyEditors
 		protected override void OnPropertySet(System.Reflection.PropertyInfo property, IEnumerable<object> targets)
 		{
 			base.OnPropertySet(property, targets);
-			if (ReflectionHelper.MemberInfoEquals(property, ReflectionHelper.Property_ShaderProgram_Vertex) ||
-				ReflectionHelper.MemberInfoEquals(property, ReflectionHelper.Property_ShaderProgram_Fragment))
+			if (ReflectionHelper.MemberInfoEquals(property, ReflectionInfo.Property_ShaderProgram_Vertex) ||
+				ReflectionHelper.MemberInfoEquals(property, ReflectionInfo.Property_ShaderProgram_Fragment))
 			{
 				this.PerformGetValue();
 			}

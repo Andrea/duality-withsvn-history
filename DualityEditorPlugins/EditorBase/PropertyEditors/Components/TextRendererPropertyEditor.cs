@@ -21,12 +21,12 @@ namespace EditorBase.PropertyEditors
 
 		protected override bool MemberPredicate(System.Reflection.MemberInfo info)
 		{
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_TextRenderer_Metrics)) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_TextRenderer_Metrics)) return false;
 			return base.MemberPredicate(info);
 		}
 		protected override PropertyEditor MemberEditor(System.Reflection.MemberInfo info)
 		{
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Renderer_VisibilityGroup))
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Renderer_VisibilityGroup))
 			{
 				FlagPropertyEditor e = new FlagPropertyEditor(this, this.ParentGrid);
 				e.EditedType = (info as System.Reflection.PropertyInfo).PropertyType;
@@ -40,7 +40,7 @@ namespace EditorBase.PropertyEditors
 		}
 		protected override void OnPropertySet(System.Reflection.PropertyInfo property, IEnumerable<object> targets)
 		{
-			if (ReflectionHelper.MemberInfoEquals(property, ReflectionHelper.Property_TextRenderer_Text))
+			if (ReflectionHelper.MemberInfoEquals(property, ReflectionInfo.Property_TextRenderer_Text))
 			{
 				TextRenderer[] renderers = targets.Cast<TextRenderer>().NotNull().ToArray();
 				foreach (TextRenderer r in renderers)

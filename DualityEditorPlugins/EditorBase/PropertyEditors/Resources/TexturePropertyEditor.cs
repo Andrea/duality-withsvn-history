@@ -39,10 +39,10 @@ namespace EditorBase.PropertyEditors
 		}
 		protected override PropertyEditor MemberEditor(MemberInfo info)
 		{
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Texture_Atlas))
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Texture_Atlas))
 			{
 				PropertyEditor e = this.ParentGrid.PropertyEditorProvider.CreateEditor(
-					ReflectionHelper.Property_Texture_Atlas.PropertyType, this, this.ParentGrid);
+					ReflectionInfo.Property_Texture_Atlas.PropertyType, this, this.ParentGrid);
 				IListPropertyEditor listEdit = e as IListPropertyEditor;
 				if (listEdit != null)
 				{
@@ -56,15 +56,15 @@ namespace EditorBase.PropertyEditors
 
 		protected override bool MemberPredicate(MemberInfo info)
 		{
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Texture_PxWidth)) return false;
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Texture_PxHeight)) return false;
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Texture_PxDiameter)) return false;
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Texture_OglWidth)) return false;
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Texture_OglHeight)) return false;
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Texture_UVRatio)) return false;
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Texture_Mipmaps)) return false;
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Texture_NeedsReload)) return false;
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_Texture_AnimFrames)) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Texture_PxWidth)) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Texture_PxHeight)) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Texture_PxDiameter)) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Texture_OglWidth)) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Texture_OglHeight)) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Texture_UVRatio)) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Texture_Mipmaps)) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Texture_NeedsReload)) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Texture_AnimFrames)) return false;
 			return base.MemberPredicate(info);
 		}
 		protected override void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)
@@ -82,9 +82,9 @@ namespace EditorBase.PropertyEditors
 			}
 
 			if (anyReload ||
-				ReflectionHelper.MemberInfoEquals(property, ReflectionHelper.Property_Texture_AnimCols) ||
-				ReflectionHelper.MemberInfoEquals(property, ReflectionHelper.Property_Texture_AnimRows) ||
-				ReflectionHelper.MemberInfoEquals(property, ReflectionHelper.Property_Texture_Atlas))
+				ReflectionHelper.MemberInfoEquals(property, ReflectionInfo.Property_Texture_AnimCols) ||
+				ReflectionHelper.MemberInfoEquals(property, ReflectionInfo.Property_Texture_AnimRows) ||
+				ReflectionHelper.MemberInfoEquals(property, ReflectionInfo.Property_Texture_Atlas))
 			{
 				this.PerformGetValue();
 			}
@@ -95,7 +95,7 @@ namespace EditorBase.PropertyEditors
 			this.preview.PerformGetValue();
 			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
 				this, new ObjectSelection(this.Getter()),
-				ReflectionHelper.Property_Texture_Atlas);
+				ReflectionInfo.Property_Texture_Atlas);
 		}
 		private void AtlasList_EditorAdded(object sender, PropertyEditorEventArgs e)
 		{

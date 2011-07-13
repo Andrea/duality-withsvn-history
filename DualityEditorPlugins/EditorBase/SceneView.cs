@@ -895,7 +895,7 @@ namespace EditorBase
 			if (objNode != null)
 			{
 				objNode.Obj.Name = objNode.Text;
-				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(objNode.Obj), ReflectionHelper.Property_GameObject_Name);
+				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(objNode.Obj), ReflectionInfo.Property_GameObject_Name);
 			}
 		}
 		private void timerFlashItem_Tick(object sender, EventArgs e)
@@ -1070,7 +1070,7 @@ namespace EditorBase
 					dragObjViewNode.IsSelected = true;
 					this.objectView.EnsureVisible(dragObjViewNode);
 				}
-				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(draggedObj), ReflectionHelper.Property_GameObject_Parent);
+				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(draggedObj), ReflectionInfo.Property_GameObject_Parent);
 			}
 			else if (draggedComp != null)
 			{
@@ -1110,7 +1110,7 @@ namespace EditorBase
 					dragObjViewNode.IsSelected = true;
 					this.objectView.EnsureVisible(dragObjViewNode);
 				}
-				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(cmpList), ReflectionHelper.Property_Component_GameObj);
+				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(cmpList), ReflectionInfo.Property_Component_GameObj);
 			}
 		}
 
@@ -1244,11 +1244,11 @@ namespace EditorBase
 		}
 		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
 		{
-			if (e.PrefabApplied || (e.HasProperty(ReflectionHelper.Property_GameObject_PrefabLink) && 
+			if (e.PrefabApplied || (e.HasProperty(ReflectionInfo.Property_GameObject_PrefabLink) && 
 									e.Objects.GameObjects.Any(o => o.PrefabLink == null)))
 				this.UpdatePrefabLinkStatus();
 
-			if (e.HasProperty(ReflectionHelper.Property_GameObject_Name))
+			if (e.HasProperty(ReflectionInfo.Property_GameObject_Name))
 			{
 				foreach (GameObjectNode node in e.Objects.GameObjects.Select(g => this.FindNode(g)))
 					if (node != null) node.Text = node.Obj.Name;

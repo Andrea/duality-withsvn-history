@@ -17,7 +17,6 @@ namespace EditorBase.PropertyEditors
 {
 	public partial class ContentRefPropertyEditor : PropertyEditor
 	{
-		private	bool	updatingFromObj	= false;
 		private	string	contentPath		= null;
 		private	Point	dragBeginPos	= Point.Empty;
 
@@ -47,7 +46,6 @@ namespace EditorBase.PropertyEditors
 			base.PerformGetValue();
 			object[] values = this.Getter().ToArray();
 
-			this.updatingFromObj = true;
 			// Update modified state
 			this.UpdateModifiedState();
 			// Apply values to editors
@@ -77,7 +75,6 @@ namespace EditorBase.PropertyEditors
 				bool allEqual = this.ReadOnly || (values.All(o => o != null) && values.All(o => ((IContentRef)o).Path == first.Path));
 				this.labelLinkedTo.BackColor = allEqual ? this.BackColorDefault : this.BackColorMultiple;
 			}
-			this.updatingFromObj = false;
 		}
 		public override void PerformSetValue()
 		{

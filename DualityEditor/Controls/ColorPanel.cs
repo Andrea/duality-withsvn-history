@@ -12,7 +12,6 @@ namespace DualityEditor.Controls
     public class ColorPanel : UserControl
     {
         private	Bitmap	srcImage		= null;
-        private	bool	pickerDrag		= false;
         private	int		pickerSize		= 8;
         private	PointF	pickerPos		= new PointF(0.5f, 0.5f);
 		private	Color	clrTopLeft		= Color.Transparent;
@@ -357,13 +356,11 @@ namespace DualityEditor.Controls
 					(float)(e.X - this.ColorAreaRectangle.X) / (float)this.ColorAreaRectangle.Width,
 					1.0f - (float)(e.Y - this.ColorAreaRectangle.Y) / (float)this.ColorAreaRectangle.Height);
 				this.pickerDragTimer.Start();
-                this.pickerDrag = true;
             }
         }
         protected override void OnMouseUp(MouseEventArgs e)
         {
             base.OnMouseUp(e);
-            this.pickerDrag = false;
 			this.pickerDragTimer.Stop();
         }
 		private void pickerDragTimer_Tick(object sender, EventArgs e)
@@ -373,11 +370,6 @@ namespace DualityEditor.Controls
 				(float)(pos.X - this.ColorAreaRectangle.X) / (float)this.ColorAreaRectangle.Width,
 				1.0f - (float)(pos.Y - this.ColorAreaRectangle.Y) / (float)this.ColorAreaRectangle.Height);
 		}
-        protected override void OnMouseLeave(EventArgs e)
-        {
-            base.OnMouseLeave(e);
-            this.pickerDrag = false;
-        }
         protected override void OnLostFocus(EventArgs e)
         {
             base.OnLostFocus(e);

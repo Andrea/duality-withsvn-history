@@ -41,7 +41,7 @@ namespace EditorBase.PropertyEditors
 			if (this.relativeValues.Checked)	foreach (Transform t in values) t.RelativePos	= newPos;
 			else								foreach (Transform t in values) t.Pos			= newPos;
 
-			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionHelper.Property_Transform_RelativePos);
+			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionInfo.Property_Transform_RelativePos);
 		}
 		public void PerformSetScale()
 		{
@@ -51,7 +51,7 @@ namespace EditorBase.PropertyEditors
 			if (this.relativeValues.Checked)	foreach (Transform t in values) t.RelativeScale	= newScale;
 			else								foreach (Transform t in values) t.Scale			= newScale;
 
-			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionHelper.Property_Transform_RelativeScale);
+			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionInfo.Property_Transform_RelativeScale);
 		}
 		public void PerformSetVel()
 		{
@@ -61,7 +61,7 @@ namespace EditorBase.PropertyEditors
 			if (this.relativeValues.Checked)	foreach (Transform t in values) t.RelativeVel	= newVel;
 			else								foreach (Transform t in values) t.Vel			= newVel;
 
-			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionHelper.Property_Transform_RelativeVel);
+			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionInfo.Property_Transform_RelativeVel);
 		}
 		public void PerformSetAngle(bool deg)
 		{
@@ -71,7 +71,7 @@ namespace EditorBase.PropertyEditors
 			if (this.relativeValues.Checked)	foreach (Transform t in values) t.RelativeAngle	= newAngle;
 			else								foreach (Transform t in values) t.Angle			= newAngle;
 
-			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionHelper.Property_Transform_RelativeAngle);
+			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionInfo.Property_Transform_RelativeAngle);
 		}
 		public void PerformSetAngleVel(bool deg)
 		{
@@ -81,7 +81,7 @@ namespace EditorBase.PropertyEditors
 			if (this.relativeValues.Checked)	foreach (Transform t in values) t.RelativeAngleVel	= newAngleVel;
 			else								foreach (Transform t in values) t.AngleVel			= newAngleVel;
 
-			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionHelper.Property_Transform_RelativeAngleVel);
+			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionInfo.Property_Transform_RelativeAngleVel);
 		}
 		public void PerformSetDeriveAngle()
 		{
@@ -89,7 +89,7 @@ namespace EditorBase.PropertyEditors
 
 			foreach (Transform t in values) t.DeriveAngle = this.editorDeriveAngle.Checked;
 
-			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionHelper.Property_Transform_DeriveAngle);
+			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionInfo.Property_Transform_DeriveAngle);
 		}
 
 		public override void PerformGetValue()
@@ -220,11 +220,11 @@ namespace EditorBase.PropertyEditors
 			{
 				Duality.Resources.PrefabLink l = c.GameObj.AffectedByPrefabLink;
 				if (l == null) continue;
-				if (!posModified)		posModified			= l.HasChange(c, ReflectionHelper.Property_Transform_RelativePos);
-				if (!scaleModified)		scaleModified		= l.HasChange(c, ReflectionHelper.Property_Transform_RelativeScale);
-				if (!angleModified)		angleModified		= l.HasChange(c, ReflectionHelper.Property_Transform_RelativeAngle);
-				if (!velModified)		velModified			= l.HasChange(c, ReflectionHelper.Property_Transform_RelativeVel);
-				if (!angleVelModified)	angleVelModified	= l.HasChange(c, ReflectionHelper.Property_Transform_RelativeAngleVel);
+				if (!posModified)		posModified			= l.HasChange(c, ReflectionInfo.Property_Transform_RelativePos);
+				if (!scaleModified)		scaleModified		= l.HasChange(c, ReflectionInfo.Property_Transform_RelativeScale);
+				if (!angleModified)		angleModified		= l.HasChange(c, ReflectionInfo.Property_Transform_RelativeAngle);
+				if (!velModified)		velModified			= l.HasChange(c, ReflectionInfo.Property_Transform_RelativeVel);
+				if (!angleVelModified)	angleVelModified	= l.HasChange(c, ReflectionInfo.Property_Transform_RelativeAngleVel);
 			}
 
 			if (this.labelPos.Font.Bold != posModified) this.labelPos.Font = new Font(this.labelPos.Font, posModified ? FontStyle.Bold : FontStyle.Regular);

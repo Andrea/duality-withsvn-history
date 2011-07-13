@@ -292,10 +292,10 @@ namespace EditorBase
 			{
 				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
 					this, new ObjectSelection(this.camObj.Transform),
-					ReflectionHelper.Property_Transform_RelativeVel,
-					ReflectionHelper.Property_Transform_RelativeAngleVel,
-					ReflectionHelper.Property_Transform_RelativeAngle,
-					ReflectionHelper.Property_Transform_RelativePos);
+					ReflectionInfo.Property_Transform_RelativeVel,
+					ReflectionInfo.Property_Transform_RelativeAngleVel,
+					ReflectionInfo.Property_Transform_RelativeAngle,
+					ReflectionInfo.Property_Transform_RelativePos);
 			}
 
 			System.Globalization.CultureInfo formatProvider = System.Threading.Thread.CurrentThread.CurrentUICulture;
@@ -739,7 +739,7 @@ namespace EditorBase
 				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
 					this,
 					new ObjectSelection(this.parentFreeSel.Transform()),
-					ReflectionHelper.Property_Transform_RelativePos);
+					ReflectionInfo.Property_Transform_RelativePos);
 			}
 			this.UpdateSelectionStats();
 			this.actionBeginLocSpace = spaceCoord;
@@ -767,8 +767,8 @@ namespace EditorBase
 				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
 					this,
 					new ObjectSelection(this.parentFreeSel.Transform()),
-					ReflectionHelper.Property_Transform_RelativePos,
-					ReflectionHelper.Property_Transform_RelativeAngle);
+					ReflectionInfo.Property_Transform_RelativePos,
+					ReflectionInfo.Property_Transform_RelativeAngle);
 			}
 			this.UpdateSelectionStats();
 			this.actionBeginLocSpace = spaceCoord;
@@ -798,8 +798,8 @@ namespace EditorBase
 				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
 					this,
 					new ObjectSelection(this.parentFreeSel.Transform()),
-					ReflectionHelper.Property_Transform_RelativePos,
-					ReflectionHelper.Property_Transform_RelativeScale);
+					ReflectionInfo.Property_Transform_RelativePos,
+					ReflectionInfo.Property_Transform_RelativeScale);
 			}
 			this.UpdateSelectionStats();
 			this.actionBeginLocSpace = spaceCoord;
@@ -1269,7 +1269,7 @@ namespace EditorBase
 			{
 				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
 					this, new ObjectSelection(this.camComp),
-					ReflectionHelper.Property_Camera_ParallaxRefDist);
+					ReflectionInfo.Property_Camera_ParallaxRefDist);
 			}
 			this.glControl.Invalidate();
 		}
@@ -1330,7 +1330,7 @@ namespace EditorBase
 			{
 				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
 					this, new ObjectSelection(this.camComp),
-					ReflectionHelper.Property_Camera_ClearColor);
+					ReflectionInfo.Property_Camera_ClearColor);
 			}
 			this.glControl.Invalidate();
 		}
@@ -1416,7 +1416,7 @@ namespace EditorBase
 		}
 		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
 		{
-			if (e.HasProperty(ReflectionHelper.Property_GameObject_ActiveSingle) ||
+			if (e.HasProperty(ReflectionInfo.Property_GameObject_ActiveSingle) ||
 				e.Objects.Components.Any(c => c is Transform || c is Renderer || c is Camera) ||
 				e.Objects.Resources.Any())
 			{

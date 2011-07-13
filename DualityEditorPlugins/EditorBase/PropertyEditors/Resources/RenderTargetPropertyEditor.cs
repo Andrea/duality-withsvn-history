@@ -24,7 +24,7 @@ namespace EditorBase.PropertyEditors
 		
 		protected override PropertyEditor MemberEditor(MemberInfo info)
 		{
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_RenderTarget_Targets))
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_RenderTarget_Targets))
 			{
 				PropertyEditor e = this.ParentGrid.PropertyEditorProvider.CreateEditor((info as PropertyInfo).PropertyType, this, this.ParentGrid);
 				IListPropertyEditor listEdit = e as IListPropertyEditor;

@@ -12,7 +12,6 @@ namespace DualityEditor.Controls
 	public class ColorSlider : UserControl
 	{
 		private	Bitmap	srcImage	= null;
-		private	bool	pickerDrag	= false;
 		private	int		pickerSize	= 5;
 		private	float	pickerPos	= 0.5f;
 		private	Color	min			= Color.Transparent;
@@ -192,7 +191,6 @@ namespace DualityEditor.Controls
 		protected override void OnEnabledChanged(EventArgs e)
 		{
 			base.OnEnabledChanged(e);
-			this.pickerDrag = false;
 			this.Invalidate();
 		}
 		protected override void OnPaint(PaintEventArgs e)
@@ -256,14 +254,12 @@ namespace DualityEditor.Controls
 			{
 				this.Focus();
 				this.ValuePercentual = 1.0f - (float)(e.Y - this.ColorAreaRectangle.Y) / (float)this.ColorAreaRectangle.Height;
-				this.pickerDrag = true;
 				this.pickerDragTimer.Enabled = true;
 			}
 		}
 		protected override void OnMouseUp(MouseEventArgs e)
 		{
 			base.OnMouseUp(e);
-			this.pickerDrag = false;
 			this.pickerDragTimer.Enabled = false;
 		}
 		
@@ -271,11 +267,6 @@ namespace DualityEditor.Controls
 		{
 			Point pos = this.PointToClient(System.Windows.Forms.Cursor.Position);
 			this.ValuePercentual = 1.0f - (float)(pos.Y - this.ColorAreaRectangle.Y) / (float)this.ColorAreaRectangle.Height;
-		}
-		protected override void OnMouseLeave(EventArgs e)
-		{
-			base.OnMouseLeave(e);
-			this.pickerDrag = false;
 		}
 		protected override void OnLostFocus(EventArgs e)
 		{

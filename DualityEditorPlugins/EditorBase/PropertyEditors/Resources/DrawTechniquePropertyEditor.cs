@@ -21,14 +21,14 @@ namespace EditorBase.PropertyEditors
 		protected override void OnPropertySet(System.Reflection.PropertyInfo property, IEnumerable<object> targets)
 		{
 			base.OnPropertySet(property, targets);
-			if (ReflectionHelper.MemberInfoEquals(property, ReflectionHelper.Property_DrawTechnique_Blending))
+			if (ReflectionHelper.MemberInfoEquals(property, ReflectionInfo.Property_DrawTechnique_Blending))
 			{
 				this.PerformGetValue();
 			}
 		}
 		protected override PropertyEditor MemberEditor(System.Reflection.MemberInfo info)
 		{
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionHelper.Property_DrawTechnique_Blending))
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_DrawTechnique_Blending))
 			{
 				EnumPropertyEditor e = new EnumPropertyEditor(this, this.ParentGrid);
 				e.EditedType = (info as System.Reflection.PropertyInfo).PropertyType;
