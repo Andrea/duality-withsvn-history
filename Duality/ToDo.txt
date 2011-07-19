@@ -32,3 +32,9 @@
 			is only necessary if the current (DualityApp's) plugin hash differs from the one saved in the Resource.
 			It might then be performed automatically and also save the Resource again so it won't be necessary a 
 			second time until rebuilding plugins again.
+
+-->	Keep in mind: While reloading Core plugins at runtime does work fine in most cases, it might result in
+	undefined behaviour when custom Resource types have been modified, as only Prefabs and the current level
+	are reloaded.
+	-->	Possible solution: Scan the reloaded core plugin for classes deriving from Resource, and clear all
+		Resources matching their Type as well.
