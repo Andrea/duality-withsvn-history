@@ -1,8 +1,5 @@
 ﻿
 -->	Checklist for first Game: Asteroids
-	-->	Space Background:
-		-->	Need to SpriteRenderer UV configuration possibility. Use a (flagged?) enum
-		-->	Stretch = !(WrapHorizontal | WrapVertical) = !(WrapBoth)
 	-->	Title Scene
 	-->	Game Scene (No levels, dynamically creates stages)
 	-->	Highscore Scene

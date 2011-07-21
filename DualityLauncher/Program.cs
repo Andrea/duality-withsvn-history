@@ -37,10 +37,18 @@ namespace DualityLauncher
 		}
 		protected override void OnUpdateFrame(FrameEventArgs e)
 		{
+			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Terminated)
+			{
+				this.Close();
+				return;
+			}
+
 			DualityApp.Update();
 		}
 		protected override void OnRenderFrame(FrameEventArgs e)
 		{
+			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Terminated) return;
+
 			DualityApp.Draw();
 			this.SwapBuffers();
 		}

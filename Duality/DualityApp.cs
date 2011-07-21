@@ -64,6 +64,8 @@ namespace Duality
 		}
 
 		private	static	bool					initialized			= false;
+		private	static	bool					isUpdating			= false;
+		private	static	int						terminateScheduled	= 0;
 		private	static	string					logfilePath			= "logfile";
 		private	static	StreamWriter			logfile				= null;
 		private	static	RtfDocument				logfileRtf			= null;
@@ -220,6 +222,11 @@ namespace Duality
 		public static void Terminate(bool unexpected = false)
 		{
 			if (!initialized) return;
+			if (isUpdating)
+			{
+				terminateScheduled = unexpected ? 2 : 1;
+				return;
+			}
 
 			if (!unexpected) OnTerminating();
 
@@ -237,11 +244,15 @@ namespace Duality
 
 		public static void Update()
 		{
+			isUpdating = true;
 			Time.FrameTick();
 			Scene.Current.Update();
 			sound.Update();
 			OnUpdating();
 			RunCleanup();
+			isUpdating = false;
+
+			if (terminateScheduled != 0) Terminate(terminateScheduled == 2);
 		}
 		public static void Draw()
 		{
