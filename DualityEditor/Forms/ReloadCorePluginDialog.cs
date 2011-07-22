@@ -223,14 +223,41 @@ namespace DualityEditor.Forms
 		private static void WorkerThreadProc(object args)
 		{
 			WorkerInterface workInterface = args as WorkerInterface;
+			bool fullRestart = false;
 
-			try
+			try { PerformPluginReload(ref workInterface, ref fullRestart); }
+			catch (Exception e)
 			{
-				Stream strScene;
-				Stream strData;
-				bool fullRestart = false;
+				if (fullRestart)
+				{
+					Log.Editor.WriteError(e.ToString());
+					workInterface.Error = e;
+				}
+				else
+				{
+					Log.Editor.WriteError("Failed reloading plugins on the fly: {0}", e.ToString());
+					Log.Editor.Write("Trying full restart...");
 
-				if (!workInterface.RecoverMode)
+					// If we failed before but it wasn't a full restart, let's try this.
+					fullRestart = true;
+					try { PerformPluginReload(ref workInterface, ref fullRestart); }
+					catch (Exception e2)
+					{
+						Log.Editor.WriteError(e.ToString());
+						workInterface.Error = e2;
+					}
+				}
+			}
+		}
+		private static void PerformPluginReload(ref WorkerInterface workInterface, ref bool fullRestart)
+		{
+			Stream strScene;
+			Stream strData;
+
+			if (!workInterface.RecoverMode)
+			{
+				// No full restart scheduled? Well, check if it should be!
+				if (!fullRestart)
 				{
 					foreach (string asmFile in workInterface.ReloadSched)
 					{
@@ -240,84 +267,79 @@ namespace DualityEditor.Forms
 							break;
 						}
 					}
+				}
 
-					if (fullRestart)
-					{
-						if (!Directory.Exists("Temp")) Directory.CreateDirectory("Temp");
-						strScene = File.Create(@"Temp\_reloadPluginData_Scene.tmp");
-						strData = File.Create(@"Temp\_reloadPluginData_Data.tmp");
-					}
-					else
-					{
-						strScene = new MemoryStream(1024 * 1024 * 10);
-						strData = new MemoryStream(512);
-					}
-
-					// Save current data
-					Log.Editor.Write("Saving data...");
-					StreamWriter strDataWriter = new StreamWriter(strData);
-					strDataWriter.WriteLine(Scene.CurrentPath);
-					strDataWriter.Flush();
-					Scene.Current.Save(strScene);
-					ContentProvider.UnregisterAllContent<Prefab>(); // Force all Prefabs to reload later
-					workInterface.Progress += 0.4f;
-			
-					if (!fullRestart)
-					{
-						// Reload core plugins
-						Log.Editor.Write("Reloading core plugins...");
-						Log.Editor.PushIndent();
-						int count = workInterface.ReloadSched.Count;
-						while (workInterface.ReloadSched.Count > 0)
-						{
-							DualityApp.ReloadPlugin(workInterface.ReloadSched[0]);
-							workInterface.ReloadSched.RemoveAt(0);
-							workInterface.Progress += 0.2f / (float)count;
-						}
-						Log.Editor.PopIndent();
-
-						strScene.Seek(0, SeekOrigin.Begin);
-						strData.Seek(0, SeekOrigin.Begin);
-					}
-					else
-					{
-						strScene.Close();
-						strData.Close();
-						bool debug = System.Diagnostics.Debugger.IsAttached;
-
-						// Close old form and wait for it to be closed
-						workInterface.Shutdown = true;
-						workInterface.MainForm.Invoke(new CloseMainFormDelegate(CloseMainForm), workInterface.MainForm);
-						while (workInterface.MainForm.Visible) { Thread.Sleep(20); }
-						Application.Exit();
-
-						Process newEditor = Process.Start(Application.ExecutablePath, "recover" + (debug ? " debug" : ""));
-						return;
-					}
+				if (fullRestart)
+				{
+					if (!Directory.Exists("Temp")) Directory.CreateDirectory("Temp");
+					strScene = File.Create(@"Temp\_reloadPluginData_Scene.tmp");
+					strData = File.Create(@"Temp\_reloadPluginData_Data.tmp");
 				}
 				else
 				{
-					strScene = File.OpenRead(@"Temp\_reloadPluginData_Scene.tmp");
-					strData = File.OpenRead(@"Temp\_reloadPluginData_Data.tmp");
-					workInterface.Progress = 0.6f;
+					strScene = new MemoryStream(1024 * 1024 * 10);
+					strData = new MemoryStream(512);
 				}
 
-				// Reload data
-				Log.Editor.Write("Restoring data...");
-				StreamReader strDataReader = new StreamReader(strData);
-				string scenePath = strDataReader.ReadLine();
-				workInterface.TempScene = Resource.LoadResource<Scene>(strScene, scenePath);
-				strScene.Close();
-				strData.Close();
+				// Save current data
+				Log.Editor.Write("Saving data...");
+				StreamWriter strDataWriter = new StreamWriter(strData);
+				strDataWriter.WriteLine(Scene.CurrentPath);
+				strDataWriter.Flush();
+				Scene.Current.Save(strScene);
+				ContentProvider.UnregisterAllContent<Prefab>(); // Force all Prefabs to reload later
+				workInterface.Progress += 0.4f;
+			
+				if (!fullRestart)
+				{
+					// Reload core plugins
+					Log.Editor.Write("Reloading core plugins...");
+					Log.Editor.PushIndent();
+					int count = workInterface.ReloadSched.Count;
+					while (workInterface.ReloadSched.Count > 0)
+					{
+						DualityApp.ReloadPlugin(workInterface.ReloadSched[0]);
+						workInterface.ReloadSched.RemoveAt(0);
+						workInterface.Progress += 0.2f / (float)count;
+					}
+					Log.Editor.PopIndent();
 
-				workInterface.Progress = 1.0f;
-				workInterface.Finished = true;
+					strScene.Seek(0, SeekOrigin.Begin);
+					strData.Seek(0, SeekOrigin.Begin);
+				}
+				else
+				{
+					strScene.Close();
+					strData.Close();
+					bool debug = System.Diagnostics.Debugger.IsAttached;
+
+					// Close old form and wait for it to be closed
+					workInterface.Shutdown = true;
+					workInterface.MainForm.Invoke(new CloseMainFormDelegate(CloseMainForm), workInterface.MainForm);
+					while (workInterface.MainForm.Visible) { Thread.Sleep(20); }
+					Application.Exit();
+
+					Process newEditor = Process.Start(Application.ExecutablePath, "recover" + (debug ? " debug" : ""));
+					return;
+				}
 			}
-			catch (Exception e)
+			else
 			{
-				Log.Editor.WriteError(e.ToString());
-				workInterface.Error = e;
+				strScene = File.OpenRead(@"Temp\_reloadPluginData_Scene.tmp");
+				strData = File.OpenRead(@"Temp\_reloadPluginData_Data.tmp");
+				workInterface.Progress = 0.6f;
 			}
+
+			// Reload data
+			Log.Editor.Write("Restoring data...");
+			StreamReader strDataReader = new StreamReader(strData);
+			string scenePath = strDataReader.ReadLine();
+			workInterface.TempScene = Resource.LoadResource<Scene>(strScene, scenePath);
+			strScene.Close();
+			strData.Close();
+
+			workInterface.Progress = 1.0f;
+			workInterface.Finished = true;
 		}
 
 		private delegate void CloseMainFormDelegate(MainForm form);
