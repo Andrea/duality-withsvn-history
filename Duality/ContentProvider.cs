@@ -131,6 +131,14 @@ namespace Duality
 			return new ContentRef<U>(this.contentInstance as U, this.contentPath);
 		}
 
+		/// <summary>
+		/// Loads the associated content as if it was accessed now.
+		/// You don't usually need to call this method. It is invoked implicitly by trying to access the ContentRef/>
+		/// </summary>
+		public void MakeAvailable()
+		{
+			if (this.contentInstance == null || this.contentInstance.Disposed) this.RetrieveInstance();
+		}
 		private void RetrieveInstance()
 		{
 			if (!String.IsNullOrEmpty(this.contentPath))

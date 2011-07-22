@@ -221,6 +221,32 @@ namespace DualityEditor.Forms
 				this.SaveAllProjectData(this, EventArgs.Empty);
 		}
 
+		public void UpdateSourceCode()
+		{
+			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
+			watch.Restart();
+
+			// Initially generate source code
+			if (!File.Exists(EditorHelper.SourceCodeSolutionFile))
+			{
+				using (ZipFile gamePluginZip = ZipFile.Read(ReflectionHelper.GetEmbeddedResourceStream(typeof(MainForm).Assembly,  @"Resources\GamePluginTemplate.zip")))
+				{
+					gamePluginZip.ExtractAll(EditorHelper.SourceCodeDirectory, ExtractExistingFileAction.DoNotOverwrite);
+				}
+				// If Visual Studio is available, don't use the express version
+				if (EditorHelper.IsJITDebuggerAvailable())
+				{
+					string solution = File.ReadAllText(EditorHelper.SourceCodeSolutionFile);
+					File.WriteAllText(EditorHelper.SourceCodeSolutionFile, solution.Replace("# Visual C# Express 2010", "# Visual Studio 2010"));
+				}
+			}
+
+			// Keep auto-generated files up-to-date
+			File.WriteAllText(EditorHelper.SourceCodeGameResFile, EditorHelper.GenerateGameResSrcFile());
+
+			Log.Editor.Write("{0}", watch.ElapsedMilliseconds);
+		}
+
 		public void NotifyObjPrefabApplied(object sender, ObjectSelection obj)
 		{
 			this.OnObjectPropertyChanged(sender, new ObjectPropertyChangedEventArgs(obj, new PropertyInfo[0], true));
@@ -753,6 +779,13 @@ namespace DualityEditor.Forms
 			// Reimport data
 			this.PerformScheduledReimport();
 		}
+		protected override void OnDeactivate(EventArgs e)
+		{
+			base.OnDeactivate(e);
+			// Update source code, in case the user is switching to his IDE without hitting the "open source code" button again
+			if (DualityApp.ExecContext != DualityApp.ExecutionContext.Terminated)
+				this.UpdateSourceCode();
+		}
 
 		private void corePluginWatcher_Changed(object sender, FileSystemEventArgs e)
 		{
@@ -909,15 +942,8 @@ namespace DualityEditor.Forms
 		}
 		private void actionOpenCode_Click(object sender, EventArgs e)
 		{
-			string solutionPath = Path.Combine(EditorHelper.SourceCodeDirectory, "ProjectPlugins.sln");
-			if (!File.Exists(solutionPath))
-			{
-				using (ZipFile gamePluginZip = ZipFile.Read(ReflectionHelper.GetEmbeddedResourceStream(typeof(MainForm).Assembly,  @"Resources\GamePluginTemplate.zip")))
-				{
-					gamePluginZip.ExtractAll(EditorHelper.SourceCodeDirectory, ExtractExistingFileAction.DoNotOverwrite);
-				}
-			}
-			System.Diagnostics.Process.Start(solutionPath);
+			this.UpdateSourceCode();
+			System.Diagnostics.Process.Start(EditorHelper.SourceCodeSolutionFile);
 		}
 	}
 }
