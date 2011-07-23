@@ -149,6 +149,7 @@ namespace Duality
 			{
 				string path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 				path = Path.Combine(path, "Duality");
+				path = Path.Combine(path, PathHelper.GetValidFileName(appData.AppName));
 				path = Path.Combine(path, "userdata.dat");
 				return path;
 			}

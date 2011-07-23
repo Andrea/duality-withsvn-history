@@ -127,5 +127,17 @@ namespace Duality
 
 			return resultDir;
 		}
+
+		public static string GetValidFileName(string fileNameWithoutExt)
+		{
+			char[] pathChars = fileNameWithoutExt.ToCharArray();
+			for (int i = 0; i < pathChars.Length; i++)
+			{
+				if (!char.IsLetterOrDigit(pathChars[i]))
+					pathChars[i] = '_';
+			}
+			fileNameWithoutExt = new string(pathChars);
+			return fileNameWithoutExt;
+		}
 	}
 }
