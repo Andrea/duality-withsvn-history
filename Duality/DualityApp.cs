@@ -21,9 +21,6 @@ namespace Duality
 {
 	public static class DualityApp
 	{
-		public const string DefaultAppDataPath	= "appdata.dat";
-		public const string DefaultUserDataPath	= "userdata.dat";
-
 		public enum ExecutionContext
 		{
 			Terminated,
@@ -65,6 +62,7 @@ namespace Duality
 
 		private	static	bool					initialized			= false;
 		private	static	bool					isUpdating			= false;
+		private	static	bool					runFromEditor		= false;
 		private	static	int						terminateScheduled	= 0;
 		private	static	string					logfilePath			= "logfile";
 		private	static	StreamWriter			logfile				= null;
@@ -80,6 +78,7 @@ namespace Duality
 		private	static	ExecutionContext		execContext			= ExecutionContext.Terminated;
 		private	static	DualityAppData			appData				= null;
 		private	static	DualityUserData			userData			= null;
+		private	static	DualityMetaData			metaData			= null;
 		private	static	List<object>			disposeSchedule		= new List<object>();
 
 		private	static	PluginSerializationBinder	pluginTypeBinder;
@@ -136,6 +135,34 @@ namespace Duality
 				OnGfxSizeChanged(); // Maybe optimize later (only call when really needed)
 			}
 		}
+		public static DualityMetaData MetaData
+		{
+			get { return metaData; }
+		}
+		public static string AppDataPath
+		{
+			get { return "appdata.dat"; }
+		}
+		public static string UserDataPath
+		{
+			get
+			{
+				string path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+				path = Path.Combine(path, "Duality");
+				path = Path.Combine(path, "userdata.dat");
+				return path;
+			}
+		}
+		public static string MetaDataPath
+		{
+			get
+			{
+				string path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+				path = Path.Combine(path, "Duality");
+				path = Path.Combine(path, "metadata.dat");
+				return path;
+			}
+		}
 		public static GraphicsMode DefaultMode
 		{
 			get { return defaultMode; }
@@ -171,6 +198,8 @@ namespace Duality
 
 				// Enter debug mode
 				if (args.Contains("debug")) System.Diagnostics.Debugger.Launch();
+				// Run from editor
+				if (args.Contains("editor")) runFromEditor = true;
 				// Set logfile path
 				if (logArgIndex != -1) logfilePath = args[logArgIndex];
 			}
@@ -292,8 +321,9 @@ namespace Duality
 			Resource.RunCleanup();
 		}
 		
-		public static void LoadAppData(string path = DefaultAppDataPath)
+		public static void LoadAppData()
 		{
+			string path = AppDataPath;
 			if (File.Exists(path))
 			{
 				try
@@ -312,8 +342,10 @@ namespace Duality
 			else
 				appData = new DualityAppData();
 		}
-		public static void LoadUserData(string path = DefaultUserDataPath)
+		public static void LoadUserData()
 		{
+			string path = UserDataPath;
+			if (!File.Exists(path) || execContext == ExecutionContext.Editor || runFromEditor) path = "defaultuserdata.dat";
 			if (File.Exists(path))
 			{
 				try
@@ -332,16 +364,53 @@ namespace Duality
 			else
 				UserData = new DualityUserData();
 		}
-		public static void SaveAppData(string path = DefaultAppDataPath)
+		public static void LoadMetaData()
 		{
+			string path = MetaDataPath;
+			if (File.Exists(path))
+			{
+				try
+				{
+					using (FileStream str = File.OpenRead(path))
+					{
+						BinaryFormatter formatter = RequestSerializer(null, new StreamingContext(StreamingContextStates.File | StreamingContextStates.Persistence));
+						metaData = formatter.Deserialize(str) as DualityMetaData;
+					}
+				}
+				catch (Exception)
+				{
+					metaData = new DualityMetaData();
+				}
+			}
+			else
+				metaData = new DualityMetaData();
+		}
+		public static void SaveAppData()
+		{
+			string path = AppDataPath;
 			using (FileStream str = File.Open(path, FileMode.Create))
 			{
 				BinaryFormatter formatter = RequestSerializer(null, new StreamingContext(StreamingContextStates.File | StreamingContextStates.Persistence));
 				formatter.Serialize(str, appData);
 			}
 		}
-		public static void SaveUserData(string path = DefaultUserDataPath)
+		public static void SaveUserData()
 		{
+			string path = UserDataPath;
+			if (!Directory.Exists(Path.GetDirectoryName(path))) Directory.CreateDirectory(Path.GetDirectoryName(path));
+			if (execContext == ExecutionContext.Editor) path = "defaultuserdata.dat";
+
+			using (FileStream str = File.Open(path, FileMode.Create))
+			{
+				BinaryFormatter formatter = RequestSerializer(null, new StreamingContext(StreamingContextStates.File | StreamingContextStates.Persistence));
+				formatter.Serialize(str, userData);
+			}
+		}
+		public static void SaveMetaData()
+		{
+			string path = MetaDataPath;
+			if (!Directory.Exists(Path.GetDirectoryName(path))) Directory.CreateDirectory(Path.GetDirectoryName(path));
+
 			using (FileStream str = File.Open(path, FileMode.Create))
 			{
 				BinaryFormatter formatter = RequestSerializer(null, new StreamingContext(StreamingContextStates.File | StreamingContextStates.Persistence));
@@ -436,6 +505,7 @@ namespace Duality
 		{
 			LoadAppData();
 			LoadUserData();
+			LoadMetaData();
 			sound.Init();
 
 			if (Initialized != null)
@@ -443,7 +513,11 @@ namespace Duality
 		}
 		private static void OnTerminating()
 		{
-			if (execContext != ExecutionContext.Editor) SaveUserData();
+			if (execContext != ExecutionContext.Editor)
+			{
+				SaveUserData();
+				SaveMetaData();
+			}
 
 			if (Terminating != null)
 				Terminating(null, EventArgs.Empty);
@@ -579,6 +653,125 @@ namespace Duality
 		{
 			get { return this.sfxMasterVol; }
 			set { this.sfxMasterVol = value; }
+		}
+	}
+
+	public class DualityMetaData
+	{
+		public static readonly char[] Separator = "/\\".ToCharArray();
+
+		private class Entry
+		{
+			public Dictionary<string,Entry> children;
+			public string value;
+
+			public Entry()
+			{
+				this.children = null;
+				this.value = null;
+			}
+			public Entry(Entry cc)
+			{
+				this.value = cc.value;
+				this.children = new Dictionary<string,Entry>();
+
+				foreach (var pair in cc.children)
+					this.children[pair.Key] = new Entry(pair.Value);
+			}
+			public Entry(string value)
+			{
+				this.value = value;
+				this.children = null;
+			}
+
+			public Entry ReadValueEntry(string key)
+			{
+				if (String.IsNullOrEmpty(key)) return this;
+				if (this.children == null || this.children.Count == 0) return null;
+
+				int sepIndex = key.IndexOfAny(Separator);
+				string singleKey;
+				if (sepIndex != -1)
+				{
+					singleKey = key.Substring(0, sepIndex);
+					key = key.Substring(sepIndex + 1, key.Length - sepIndex - 1);
+				}
+				else
+				{
+					singleKey = key;
+					key = null;
+				}
+
+				Entry valEntry;
+				if (this.children.TryGetValue(singleKey, out valEntry))
+					return valEntry.ReadValueEntry(key);
+				else
+					return null;
+			}
+			public string ReadValue(string key)
+			{
+				Entry valEntry = this.ReadValueEntry(key);
+				return valEntry != null ? valEntry.value : null;
+			}
+			public void WriteValue(string key, string value)
+			{
+				if (String.IsNullOrEmpty(key))
+				{
+					this.value = value;
+					return;
+				}
+
+				int sepIndex = key.IndexOfAny(Separator);
+				string singleKey;
+				if (sepIndex != -1)
+				{
+					singleKey = key.Substring(0, sepIndex);
+					key = key.Substring(sepIndex + 1, key.Length - sepIndex - 1);
+				}
+				else
+				{
+					singleKey = key;
+					key = null;
+				}
+
+				Entry valEntry;
+				if (this.children != null && this.children.TryGetValue(singleKey, out valEntry))
+				{
+					valEntry.WriteValue(key, value);
+					return;
+				}
+				else
+				{
+					if (this.children == null) this.children = new Dictionary<string,Entry>();
+					this.children[singleKey] = new Entry(value);
+					return;
+				}
+			}
+		}
+
+		private Entry	rootEntry	= new Entry();
+
+		public string this[string key]
+		{
+			get { return this.ReadValue(key); }
+			set { this.WriteValue(key, value); }
+		}
+
+		public string ReadValue(string key)
+		{
+			return this.rootEntry.ReadValue(key);
+		}
+		public IEnumerable<KeyValuePair<string,string>> ReadSubValues(string key)
+		{
+			Entry parentEntry = this.rootEntry.ReadValueEntry(key);
+			if (parentEntry == null) yield break;
+
+			foreach (var pair in parentEntry.children)
+				yield return new KeyValuePair<string,string>(pair.Key, pair.Value.value);
+		}
+		public void WriteValue(string key, string value)
+		{
+			this.rootEntry.WriteValue(key, value);
 		}
 	}
 }

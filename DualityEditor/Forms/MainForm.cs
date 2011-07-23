@@ -223,9 +223,6 @@ namespace DualityEditor.Forms
 
 		public void UpdateSourceCode()
 		{
-			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
-			watch.Restart();
-
 			// Initially generate source code
 			if (!File.Exists(EditorHelper.SourceCodeSolutionFile))
 			{
@@ -243,8 +240,6 @@ namespace DualityEditor.Forms
 
 			// Keep auto-generated files up-to-date
 			File.WriteAllText(EditorHelper.SourceCodeGameResFile, EditorHelper.GenerateGameResSrcFile());
-
-			Log.Editor.Write("{0}", watch.ElapsedMilliseconds);
 		}
 
 		public void NotifyObjPrefabApplied(object sender, ObjectSelection obj)
@@ -924,14 +919,14 @@ namespace DualityEditor.Forms
 		private void actionRunApp_Click(object sender, EventArgs e)
 		{
 			this.RequestSaveAllProjectData();
-			System.Diagnostics.Process appProc = System.Diagnostics.Process.Start("DualityLauncher.exe");
+			System.Diagnostics.Process appProc = System.Diagnostics.Process.Start("DualityLauncher.exe", "editor");
 			AppRunningDialog runningDialog = new AppRunningDialog(appProc);
 			runningDialog.ShowDialog(this);
 		}
 		private void actionDebugApp_Click(object sender, EventArgs e)
 		{
 			this.RequestSaveAllProjectData();
-			System.Diagnostics.Process appProc = System.Diagnostics.Process.Start("DualityLauncher.exe", "debug");
+			System.Diagnostics.Process appProc = System.Diagnostics.Process.Start("DualityLauncher.exe", "editor debug");
 			AppRunningDialog runningDialog = new AppRunningDialog(appProc);
 			runningDialog.ShowDialog(this);
 		}

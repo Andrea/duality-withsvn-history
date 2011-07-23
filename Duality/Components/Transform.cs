@@ -236,7 +236,7 @@ namespace Duality.Components
 			else
 				this.parentTransform = null;
 
-			this.UpdateAbs();
+			this.UpdateRel();
 		}
 		void ICmpInitializable.OnInit(Component.InitContext context)
 		{
@@ -340,6 +340,41 @@ namespace Duality.Components
 				{
 					if (obj.Transform != null) obj.Transform.UpdateAbs();
 				}
+			}
+		}
+		private void UpdateRel()
+		{
+			if (this.parentTransform == null)
+			{
+				this.angle = this.angleAbs;
+				this.angleVel = this.angleVelAbs;
+				this.pos = this.posAbs;
+				this.vel = this.velAbs;
+				this.scale = this.scaleAbs;
+			}
+			else
+			{
+				if (this.deriveAngle)
+				{
+					this.angle = this.angleAbs - this.parentTransform.angleAbs;
+					this.angle = MathF.NormalizeAngle(this.angle);
+					this.angleVel = this.angleVelAbs - this.parentTransform.angleVelAbs;
+				}
+				else
+				{
+					this.angle = this.angleAbs;
+					this.angleVel = this.angleVelAbs;
+				}
+
+				Vector3.Divide(ref this.scaleAbs, ref this.parentTransform.scaleAbs, out this.scale);
+				
+				Vector3.Subtract(ref this.posAbs, ref this.parentTransform.posAbs, out this.pos);
+				MathF.TransformCoord(ref this.pos.X, ref this.pos.Y, -this.parentTransform.angleAbs);
+				Vector3.Divide(ref this.pos, ref this.parentTransform.scaleAbs, out this.pos);
+
+				Vector3.Subtract(ref this.velAbs, ref this.parentTransform.velAbs, out this.vel);
+				MathF.TransformCoord(ref this.vel.X, ref this.vel.Y, -this.parentTransform.angleAbs);
+				Vector3.Divide(ref this.vel, ref this.parentTransform.scaleAbs, out this.vel);
 			}
 		}
 

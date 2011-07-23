@@ -217,6 +217,14 @@ namespace Duality
 			this.prefabLink = null;
 		}
 
+		public GameObject ChildByName(string name)
+		{
+			return this.children.FirstOrDefault(o => o.name == name);
+		}
+		public IEnumerable<GameObject> ChildrenByName(string name)
+		{
+			return this.children.Where(o => o.name == name);
+		}
 		public GameObject ChildAtIndex(int index)
 		{
 			if (this.children == null || index < 0 || index >= this.children.Count) return null;
