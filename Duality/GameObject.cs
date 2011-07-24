@@ -183,6 +183,7 @@ namespace Duality
 		{
 			this.LinkToPrefab(prefab);
 			this.PrefabLink.Apply();
+			this.OnLoaded(true);
 		}
 
 		public void LinkToPrefab(ContentRef<Prefab> prefab)

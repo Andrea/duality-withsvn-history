@@ -99,9 +99,7 @@ namespace Duality.Resources
 		}
 		public GameObject Instantiate()
 		{
-			GameObject instance = new GameObject(new ContentRef<Prefab>(this));
-			instance.OnLoaded(true);
-			return instance;
+			return new GameObject(new ContentRef<Prefab>(this));
 		}
 		public void CopyTo(GameObject obj)
 		{

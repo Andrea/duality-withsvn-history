@@ -109,8 +109,6 @@ namespace Duality.Resources
 			else
 			{
 				this.data = null;
-				byte[] dataBlock = (byte[])info.GetValue("data", typeof(byte[]));
-				this.data = dataBlock != null ? new Bitmap(new MemoryStream(dataBlock)) : null;
 			}
 
 			this.dataBasePath = info.GetString("dataBasePath");
@@ -137,7 +135,7 @@ namespace Duality.Resources
 			{
 				byte[] buffer = File.ReadAllBytes(this.dataBasePath);
 				this.data = new Bitmap(new MemoryStream(buffer));
-				this.data.ColorTransparentPixels();
+				this.data = this.data.ColorTransparentPixels();
 			}
 		}
 

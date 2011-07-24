@@ -5,8 +5,9 @@
 		-->	No need for a custom Type Binder
 	-->	Custom reaction to unavailable types
 		-->	Proper recovery from renamed or removed classes!
-	-->	Custom attribute for Weak references replacing "NonSerializedPrefabAttribute"
+	-->	Proper use of "NonSerializedPrefabAttribute", probably in a general version like "NonSerializedConditional" or something
 	-->	Better to debug
+
 
 -->	Checklist for first Game: Asteroids
 	-->	Title Scene

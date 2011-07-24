@@ -127,7 +127,7 @@ namespace Duality.Components.Renderers
 		}
 		void ICmpInitializable.OnInit(Component.InitContext context)
 		{
-			if (context == InitContext.Loaded || context == InitContext.Activate)
+			if (context == InitContext.Loaded)
 			{
 				if (this.animLoopMode == LoopMode.RandomSingle)
 					this.animTime = MathF.Rnd.NextFloat(this.animDuration);
