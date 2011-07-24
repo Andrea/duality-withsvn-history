@@ -29,6 +29,8 @@ namespace Duality
 		private	static	int			fps			= 0;
 		private	static	int			fps_frames	= 0;
 		private	static	float		fps_last	= 0.0f;
+		internal	static	float	perfUpdate	= 0.0f;
+		internal	static	float	perfRender	= 0.0f;
 
 		/// <summary>
 		/// [GET] Returns the number of milliseconds that have passed in real time.
@@ -50,6 +52,20 @@ namespace Duality
 		public static float LastDelta
 		{
 			get { return lastDelta; }
+		}	//	G
+		/// <summary>
+		/// [GET] Time in milliseconds the last DualityApp.Update() call took
+		/// </summary>
+		public static float UpdatePerformance
+		{
+			get { return perfUpdate; }
+		}	//	G
+		/// <summary>
+		/// [GET] Time in milliseconds the last DualityApp.Render() call took
+		/// </summary>
+		public static float RenderPerformance
+		{
+			get { return perfRender; }
 		}	//	G
 		/// <summary>
 		/// [GET] Frames per Second

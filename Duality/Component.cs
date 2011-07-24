@@ -121,10 +121,10 @@ namespace Duality
 		{
 			if (!this.disposed)
 			{
-				this.disposed = true;
+				// Remove from GameObject
+				if (this.gameobj != null) this.gameobj.RemoveComponent(this.GetType());
 
-				if (this.gameobj != null && !this.gameobj.Disposed) 
-					this.gameobj.RemoveComponent(this.GetType());
+				this.disposed = true;
 			}
 		}
 		public void DisposeLater()

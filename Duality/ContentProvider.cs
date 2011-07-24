@@ -260,7 +260,8 @@ namespace Duality
 		public static bool IsContentRegistered(string path)
 		{
 			if (String.IsNullOrEmpty(path)) return false;
-			return resLibrary.ContainsKey(path);
+			Resource res;
+			return resLibrary.TryGetValue(path, out res) && !res.Disposed;
 		}
 
 		public static bool UnregisterContent(string path, bool dispose = true)
@@ -329,7 +330,7 @@ namespace Duality
 
 			// Return cached content
 			Resource res;
-			if (resLibrary.TryGetValue(path, out res)) return new ContentRef<T>(res as T, path);
+			if (resLibrary.TryGetValue(path, out res) && !res.Disposed) return new ContentRef<T>(res as T, path);
 
 			// Load new content
 			return new ContentRef<T>(LoadContent(path) as T, path);
@@ -339,7 +340,7 @@ namespace Duality
 			List<ContentRef<T>> allContent = new List<ContentRef<T>>();
 			foreach (var v in resLibrary.Values)
 			{
-				if (v is T) allContent.Add((T)v);
+				if (v is T && !v.Disposed) allContent.Add((T)v);
 			}
 			return allContent;
 		}

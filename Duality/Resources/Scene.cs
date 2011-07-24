@@ -30,7 +30,7 @@ namespace Duality.Resources
 			}
 			set 
 			{
-				if (current.Res != value)
+				if (current.ResWeak != value)
 				{
 					OnLeaving();
 					current.Res = (value != null) ? value : new Scene();
@@ -55,26 +55,40 @@ namespace Duality.Resources
 		private static void OnLeaving()
 		{
 			if (Leaving != null) Leaving(current, null);
+			if (current.ResWeak != null) foreach (GameObject o in current.ResWeak.Graph.ActiveObjects) o.OnDeactivate();
 		}
 		private static void OnEntered()
 		{
+			if (current.ResWeak != null) foreach (GameObject o in current.ResWeak.Graph.ActiveObjects) o.OnActivate();
 			if (Entered != null) Entered(current, null);
 		}
 		private static void OnGameObjectRegistered(ObjectManagerEventArgs<GameObject> args)
 		{
+			args.Object.OnActivate();
 			if (GameObjectRegistered != null) GameObjectRegistered(current, args);
 		}
 		private static void OnGameObjectUnregistered(ObjectManagerEventArgs<GameObject> args)
 		{
 			if (GameObjectUnregistered != null) GameObjectUnregistered(current, args);
+			args.Object.OnDeactivate();
 		}
 		private static void OnRegisteredObjectComponentAdded(ComponentEventArgs args)
 		{
+			if (args.Component.Active)
+			{
+				ICmpInitializable cInit = args.Component as ICmpInitializable;
+				if (cInit != null) cInit.OnInit(Component.InitContext.Activate);
+			}
 			if (RegisteredObjectComponentAdded != null) RegisteredObjectComponentAdded(current, args);
 		}
 		private static void OnRegisteredObjectComponentRemoved(ComponentEventArgs args)
 		{
 			if (RegisteredObjectComponentRemoved != null) RegisteredObjectComponentRemoved(current, args);
+			if (args.Component.Active)
+			{
+				ICmpInitializable cInit = args.Component as ICmpInitializable;
+				if (cInit != null) cInit.OnShutdown(Component.ShutdownContext.Deactivate);
+			}
 		}
 
 		private	GameObjectManager		objectManager	= new GameObjectManager();
@@ -214,6 +228,14 @@ namespace Duality.Resources
 			this.ApplyPrefabLinks();
 			foreach (GameObject obj in this.objectManager.AllObjects)
 				obj.OnLoaded();
+		}
+		protected override void OnDisposed(bool manually)
+		{
+			base.OnDisposed(manually);
+
+			GameObject[] obj = this.objectManager.AllObjects.ToArray();
+			this.Graph.Clear();
+			foreach (GameObject g in obj) g.DisposeLater();
 		}
 	}
 }

@@ -172,8 +172,6 @@ namespace Duality
 		}
 		
 
-		public event EventHandler									EventDisposed			= null;
-		public event EventHandler<GameObjectParentChangedEventArgs>	EventParentChanged		= null;
 		public event EventHandler<ComponentEventArgs>				EventComponentAdded		= null;
 		public event EventHandler<ComponentEventArgs>				EventComponentRemoving	= null;
 
@@ -395,12 +393,9 @@ namespace Duality
 		}
 		public void ClearComponents()
 		{
-			ICmpInitializable cInit;
 			foreach (Component c in this.compList)
 			{
-				cInit = c as ICmpInitializable;
-				if (cInit != null) cInit.OnShutdown(Component.ShutdownContext.RemovingFromGameObject);
-
+				this.OnComponentRemoving(c);
 				c.gameobj = null;
 			}
 			this.compList.Clear();
@@ -412,19 +407,14 @@ namespace Duality
 		{
 			if (!this.disposed)
 			{
-				this.disposed = true;
-
-				// Remove from parent
-				if (this.parent != null && !this.parent.disposed) this.Parent = null;
-
-				// Delete child objects
-				if (this.children != null) foreach (GameObject o in this.children) o.Dispose();
 				// Delete Components
-				foreach (Component c in this.compList) c.Dispose();
+				for (int i = this.compList.Count - 1; i >= 0; i--) this.compList[i].Dispose();
+				// Delete child objects
+				if (this.children != null) for (int i = this.children.Count - 1; i >= 0; i--) this.children[i].Dispose();
+				// Remove from parent
+				if (this.parent != null) this.Parent = null;
 
-				// Trigger events & stuff
-				this.ClearComponents();	// Triggers RemovingFromeGameObject
-				this.OnDisposed();
+				this.disposed = true;
 			}
 		}
 		public void DisposeLater()
@@ -559,7 +549,7 @@ namespace Duality
 				}
 			}
 		}
-		private void OnActivate()
+		internal void OnActivate()
 		{
 			// Notify Components
 			for (int i = 0; i < this.compList.Count; i++)
@@ -571,7 +561,7 @@ namespace Duality
 				if (cInit != null) cInit.OnInit(Component.InitContext.Activate);
 			}
 		}
-		private void OnDeactivate()
+		internal void OnDeactivate()
 		{
 			// Notify Components
 			for (int i = 0; i < this.compList.Count; i++)
@@ -582,11 +572,6 @@ namespace Duality
 				ICmpInitializable cInit = c as ICmpInitializable;
 				if (cInit != null) cInit.OnShutdown(Component.ShutdownContext.Deactivate);
 			}
-		}
-		private void OnDisposed()
-		{
-			if (this.EventDisposed != null)
-				this.EventDisposed(this, null);
 		}
 		private void OnParentChanged(GameObject oldParent, GameObject newParent)
 		{
@@ -599,10 +584,6 @@ namespace Duality
 				ICmpGameObjectListener cParent = c as ICmpGameObjectListener;
 				if (cParent != null) cParent.OnGameObjectParentChanged(oldParent, this.parent);
 			}
-
-			// Public event
-			if (this.EventParentChanged != null)
-				this.EventParentChanged(this, new GameObjectParentChangedEventArgs(oldParent, newParent));
 		}
 		private void OnComponentAdded(Component cmp)
 		{

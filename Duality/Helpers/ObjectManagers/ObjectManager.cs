@@ -26,28 +26,16 @@ namespace Duality
 		{
 			get 
 			{
-				List<T> removeSched = null;
-				foreach (T obj in this.allObj)
-				{
-					if (!obj.Disposed) 
-						yield return obj;
-					else
-						(removeSched ?? (removeSched = new List<T>())).Add(obj);
-				}
-				if (removeSched != null)
-				{
-					this.allObj.RemoveAll(removeSched.Contains);
-				}
+				for (int i = this.allObj.Count - 1; i >= 0; i--)
+					if (this.allObj[i].Disposed) this.UnregisterObj(this.allObj[i]);
+				return this.allObj;
 			}
 		}
 		public IEnumerable<T> ActiveObjects
 		{
 			get 
 			{
-				foreach (T obj in this.AllObjects)
-				{
-					if (obj.Active) yield return obj;
-				}
+				return this.AllObjects.Where(o => o.Active);
 			}
 		}
 

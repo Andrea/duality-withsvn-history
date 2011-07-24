@@ -275,18 +275,26 @@ namespace Duality
 		public static void Update()
 		{
 			isUpdating = true;
+			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
+			watch.Restart();
+
 			Time.FrameTick();
 			Scene.Current.Update();
 			sound.Update();
 			OnUpdating();
 			RunCleanup();
+
+			Time.perfUpdate = watch.ElapsedMilliseconds;
 			isUpdating = false;
 
 			if (terminateScheduled != 0) Terminate(terminateScheduled == 2);
 		}
-		public static void Draw()
+		public static void Render()
 		{
+			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
+			watch.Restart();
 			Scene.Current.Render();
+			Time.perfRender = watch.ElapsedMilliseconds;
 		}
 
 		public static void DisposeLater(object o)
@@ -315,11 +323,18 @@ namespace Duality
 			if (execContext != ExecutionContext.Editor)
 				throw new ApplicationException("This method may only be used in Editor execution context.");
 
+			isUpdating = true;
+			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
+			watch.Restart();
+
 			Time.FrameTick();
 			Scene.Current.EditorUpdate();
 			foreach (GameObject obj in updateObjects.ActiveObjects) obj.Update();
 			sound.Update();
 			Resource.RunCleanup();
+
+			Time.perfUpdate = watch.ElapsedMilliseconds;
+			isUpdating = false;
 		}
 		
 		public static void LoadAppData()

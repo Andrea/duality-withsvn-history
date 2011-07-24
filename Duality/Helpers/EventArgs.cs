@@ -36,7 +36,7 @@ namespace Duality
 		private	GameObject	oldParent;
 		private	GameObject	newParent;
 
-		public GameObject OldParend
+		public GameObject OldParent
 		{
 			get { return this.oldParent; }
 		}

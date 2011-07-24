@@ -24,13 +24,6 @@ namespace DualityLauncher
 		{
 		}
 
-		// ------- DEBUG --------
-		private void Keyboard_KeyDown(object sender, KeyboardKeyEventArgs e)
-		{
-			if (DualityApp.Keyboard[Key.Escape]) this.Close();
-		}
-		// -----------------------
-
 		protected override void OnResize(EventArgs e)
 		{
 			DualityApp.TargetResolution = new Vector2(Width, Height);
@@ -49,7 +42,7 @@ namespace DualityLauncher
 		{
 			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Terminated) return;
 
-			DualityApp.Draw();
+			DualityApp.Render();
 			this.SwapBuffers();
 		}
 		protected override void OnMouseEnter(EventArgs e)
@@ -87,9 +80,6 @@ namespace DualityLauncher
 				DualityApp.Mouse = launcherWindow.Mouse;
 				DualityApp.Keyboard = launcherWindow.Keyboard;
 				DualityApp.Joysticks = launcherWindow.Joysticks;
-
-				// Debug: Debug Hotkeys
-				DualityApp.Keyboard.KeyDown += new EventHandler<KeyboardKeyEventArgs>(launcherWindow.Keyboard_KeyDown);
 
 				// Load the starting Scene
 				Scene.Current = DualityApp.AppData.StartScene.Res;

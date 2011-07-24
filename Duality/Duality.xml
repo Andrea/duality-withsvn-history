@@ -42,6 +42,16 @@
             [GET] Time in milliseconds the last frame took
             </summary>
         </member>
+        <member name="P:Duality.Time.UpdatePerformance">
+            <summary>
+            [GET] Time in milliseconds the last DualityApp.Update() call took
+            </summary>
+        </member>
+        <member name="P:Duality.Time.RenderPerformance">
+            <summary>
+            [GET] Time in milliseconds the last DualityApp.Render() call took
+            </summary>
+        </member>
         <member name="P:Duality.Time.Fps">
             <summary>
             [GET] Frames per Second

@@ -35,8 +35,7 @@ namespace Duality.Components
 
 		void ICmpInitializable.OnInit(Component.InitContext context)
 		{
-			if (DualityApp.ExecContext != DualityApp.ExecutionContext.Editor &&
-				(context == InitContext.Activate || context == InitContext.AddToGameObject || context == InitContext.Loaded))
+			if (DualityApp.ExecContext != DualityApp.ExecutionContext.Editor && context == InitContext.Activate)
 				this.MakeCurrent();
 		}
 		void ICmpInitializable.OnShutdown(Component.ShutdownContext context)
