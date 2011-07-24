@@ -1,0 +1,470 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Duality</name>
+    </assembly>
+    <members>
+        <member name="T:Duality.Resources.Pixmap">
+            <summary>
+            A Pixmap stores pixel data in system memory. 
+            </summary>
+        </member>
+        <member name="M:Duality.OggVorbis.OV.StreamChunk(System.IntPtr,System.IO.MemoryStream@,System.Int32@,System.Int32@)">
+            <summary>
+            Streams a pcm chunk from an opened ogg vorbis file to the specified OpenAL buffer.
+            </summary>
+            <param name="alBufferId">OpenAL buffer id to stream to</param>
+            <param name="vFPtr">Ogg Vorbis file handle</param>
+            <returns>Returns false, if EOF is reached.</returns>
+        </member>
+        <member name="F:Duality.Time.MsPFMult">
+            <summary>
+            Milliseconds a frame takes at the desired refresh rate of 60 FPS
+            </summary>
+        </member>
+        <member name="F:Duality.Time.SPFMult">
+            <summary>
+            Seconds a frame takes at the desired refresh rate of 60 FPS
+            </summary>
+        </member>
+        <member name="P:Duality.Time.MainTimer">
+            <summary>
+            [GET] Returns the number of milliseconds that have passed in real time.
+            </summary>
+        </member>
+        <member name="P:Duality.Time.FrameBegin">
+            <summary>
+            [GET] MainTimer value at the beginning of the current frame
+            </summary>
+        </member>
+        <member name="P:Duality.Time.LastDelta">
+            <summary>
+            [GET] Time in milliseconds the last frame took
+            </summary>
+        </member>
+        <member name="P:Duality.Time.Fps">
+            <summary>
+            [GET] Frames per Second
+            </summary>
+        </member>
+        <member name="P:Duality.Time.GameTimer">
+            <summary>
+            [GET] Returns the number of milliseconds that have passed in game time.
+            </summary>
+        </member>
+        <member name="P:Duality.Time.TimeMult">
+            <summary>
+            [GET] Multiply any frame-independend movement or change with this factor.
+            It also applies the time scale you set.
+            </summary>
+        </member>
+        <member name="P:Duality.Time.TimeScale">
+            <summary>
+            [GET / SET] Specifies how fast game time runs compared to real time i.e. how
+            fast the game runs. May be used for slow motion effects.
+            </summary>
+        </member>
+        <member name="P:Duality.Time.FrameCount">
+            <summary>
+            [GET] The number of frames passed since startup
+            </summary>
+        </member>
+        <member name="T:Duality.SoundBudgetPriority">
+            <summary>
+            Defines priorities for the budget-based sound system
+            </summary>
+        </member>
+        <member name="T:Duality.SoundBudgetPad">
+            <summary>
+            Wraps a SoundInstance in order to make it budget-based. Intended
+            only to be used for longer sound pads.
+            </summary>
+        </member>
+        <member name="T:Duality.Resources.Texture">
+            <summary>
+            A Texture refers to pixel data stored in video memory
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.PxDiameter">
+            <summary>
+            [GET] The Textures diameter
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.OglWidth">
+            <summary>
+            [GET] The Textures internal width as uploaded to video memory
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.OglHeight">
+            <summary>
+            [GET] The Textures internal height as uploaded to video memory
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.PxWidth">
+            <summary>
+            [GET] The Textures width after taking relative sizes into account
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.PxHeight">
+            <summary>
+            [GET] The Textures height after taking relative sizes into account
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.OglTexId">
+            <summary>
+            [GET] The Textures internal id value
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.UVRatio">
+            <summary>
+            [GET] UV (Texture) coordinates for the Textures lower right
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.Mipmaps">
+            <summary>
+            Returns whether or not the texture uses mipmaps.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.NeedsReload">
+            <summary>
+            Indicates that the textures parameters have been changed in a way that might make it
+            necessary to reload its data before using it next time.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.Size">
+            <summary>
+            [GET / SET] The Textures (original, unadjusted) size
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.FilterMag">
+            <summary>
+            [GET / SET] The Textures magnifying filter
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.FilterMin">
+            <summary>
+            [GET / SET] The Textures minifying filter
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.WrapX">
+            <summary>
+            [GET / SET] The Textures horizontal wrap mode
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.WrapY">
+            <summary>
+            [GET / SET] The Textures vertical wrap mode
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.PixelFormat">
+            <summary>
+            [GET / SET] The Textures pixel format
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.OglSizeMode">
+            <summary>
+            [GET / SET] Handles how the Textures base Pixmap is adjusted in order to fit GPU texture size requirements (Power of Two dimensions)
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.BasePixmap">
+            <summary>
+            [GET / SET] Reference to a Pixmap that contains the pixel data that is or has been uploaded to the Texture
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.Atlas">
+            <summary>
+            [GET / SET] The Textures atlas array, distinguishing different areas in texture coordinates
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.AnimCols">
+            <summary>
+            [GET / SET] Information about different animation frames contained in this Texture.
+            Setting this will lead to an auto-generated atlas map according to the animation.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.AnimRows">
+            <summary>
+            [GET / SET] Information about different animation frames contained in this Texture.
+            Setting this will lead to an auto-generated atlas map according to the animation.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.AnimFrames">
+            <summary>
+            [GET] Total number of animation frames in this Texture
+            </summary>
+        </member>
+        <member name="M:Duality.ReflectionHelper.GetTypeString(System.Type,Duality.ReflectionHelper.TypeStringAttrib)">
+            <summary>
+            Returns a string describing a certain Type.
+            </summary>
+            <param name="T">The Type to describe</param>
+            <param name="attrib">How to describe the Type</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ReflectionHelper.ConvertTypeCodeToGetType(System.String)">
+            <summary>
+            Converts a full name type string from CS code style to GetType compatible. Warning:
+            As GetType only searches in a specific assembly, type identifiers combined out of types from
+            different Assemblies won't be found.
+            </summary>
+            <param name="csCodeType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ReflectionHelper.FindType(System.String,System.Reflection.Assembly[])">
+            <summary>
+            Searches a specific type (specified as would be valid in C# code) in an array of Assemblies.
+            Generates the type if neccessary (generic). Also supports generic types combined using types 
+            from different Assemblies.
+            </summary>
+            <param name="csCodeType"></param>
+            <param name="asmSearch"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Duality.ReflectionHelper.TypeStringAttrib">
+            <summary>
+            A configuration enum for GetTypeString
+            </summary>
+        </member>
+        <member name="F:Duality.ReflectionHelper.TypeStringAttrib.Keyword">
+            <summary>
+            The method will return a type keyword, its "short" name. Just the types "base", no generic
+            type parameters or array specifications.
+            </summary>
+        </member>
+        <member name="F:Duality.ReflectionHelper.TypeStringAttrib.LongName">
+            <summary>
+            The types full name, but without generic arguments, element types or assembly names
+            </summary>
+        </member>
+        <member name="F:Duality.ReflectionHelper.TypeStringAttrib.CSCodeIdent">
+            <summary>
+            A type name / definition as you would see it in normal C# code. Complete with generic parameters
+            or possible array specifications.
+            </summary>
+        </member>
+        <member name="F:Duality.ReflectionHelper.TypeStringAttrib.CSCodeIdentShort">
+            <summary>
+            As CSCodeIdent, but shortened to Keywords
+            </summary>
+        </member>
+        <member name="T:Duality.Resources.AudioData">
+            <summary>
+            Stores compressed audio data (Ogg Vorbis) in system memory as well as a reference to the
+            OpenAL buffer containing actual PCM data, once set up. The OpenAL buffer is set up lazy
+            i.e. as soon as demanded by accessing the AlBuffer property or calling SetupAlBuffer.
+            </summary>
+        </member>
+        <member name="T:Duality.LogOutputFormat">
+            <summary>
+            Holds log output format data that may be shared among different LogOutputs such as the
+            current log indent in different outputs writing to the same file.
+            </summary>
+        </member>
+        <member name="T:Duality.Resources.NonSerializedPrefabAttribute">
+            <summary>
+            Indicates that a field will be assumed null when serializing it as part of a prefab serialization.
+            </summary>
+        </member>
+        <member name="M:Duality.MathF.InvSqrtFast(System.Single)">
+            <summary>
+            Returns an approximation of a numbers inverse square root.
+            </summary>
+            <param name="x">A number.</param>
+            <returns>An approximation of the inverse square root of the specified number, with an upper error bound of 0.001</returns>
+        </member>
+        <member name="M:Duality.MathF.NormalizeVar(System.Single,System.Single,System.Single)">
+            <summary>
+            Normalizes the given variable to the given circular area.
+            Example: NormalizeVar(480, 0, 360) returns 120.
+            </summary>
+            <returns>The normalized value between min (inclusive) and max (exclusive).</returns>
+        </member>
+        <member name="M:Duality.MathF.Angle(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Calculates the angle between two points in 2D space.
+            </summary>
+            <param name="x1"></param>
+            <param name="y1"></param>
+            <param name="x2"></param>
+            <param name="y2"></param>
+            <returns>The angle between [x1,y1] and [x2,y2] in radian measure</returns>
+        </member>
+        <member name="M:Duality.MathF.TurnDir(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Assuming a circular value area, this method returns the direction to "turn" value 1 to
+            when it comes to take the shortest way to value 2.
+            </summary>
+            <param name="val1"></param>
+            <param name="val2"></param>
+            <param name="minVal"></param>
+            <param name="maxVal"></param>
+            <returns>-1 for "left" / lower, 1 for "right" / higher and 0 for "stay" / equal</returns>
+        </member>
+        <member name="M:Duality.MathF.CircularDist(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Calculates the distance between two values assuming a circular value area.
+            </summary>
+            <param name="v1">Value 1</param>
+            <param name="v2">Value 2</param>
+            <param name="vMin">Value area minimum</param>
+            <param name="vMax">Value area maximum</param>
+            <returns>Value distance</returns>
+        </member>
+        <member name="M:Duality.MathF.TransformCoord(System.Single@,System.Single@,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Turns and scales a specific coordinate around the specified center point
+            </summary>
+            <param name="xCoord"></param>
+            <param name="yCoord"></param>
+            <param name="rot"></param>
+            <param name="scale"></param>
+            <param name="xCenter"></param>
+            <param name="yCenter"></param>
+        </member>
+        <member name="M:Duality.MathF.RectsOverlap(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Returns true, if the two specified rects overlap.
+            </summary>
+            <param name="x1"></param>
+            <param name="y1"></param>
+            <param name="w1"></param>
+            <param name="h1"></param>
+            <param name="x2"></param>
+            <param name="y2"></param>
+            <param name="w2"></param>
+            <param name="h2"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.MathF.GetCommonRect(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single@,System.Single@,System.Single@,System.Single@)">
+            <summary>
+            Returns the common rectangular are of both specified rectangular areas.
+            </summary>
+            <param name="x1"></param>
+            <param name="y1"></param>
+            <param name="w1"></param>
+            <param name="h1"></param>
+            <param name="x2"></param>
+            <param name="y2"></param>
+            <param name="w2"></param>
+            <param name="h2"></param>
+            <param name="x3"></param>
+            <param name="y3"></param>
+            <param name="w3"></param>
+            <param name="h3"></param>
+        </member>
+        <member name="M:Duality.MathF.LinesCross(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single@,System.Single@,System.Boolean)">
+            <summary>
+            Checks, if two line segments (or optionally an infinite lines) cross and determines their mutual point.
+            </summary>
+            <param name="startX1"></param>
+            <param name="startY1"></param>
+            <param name="endX1"></param>
+            <param name="endY1"></param>
+            <param name="startX2"></param>
+            <param name="startY2"></param>
+            <param name="endX2"></param>
+            <param name="endY2"></param>
+            <param name="infinite"></param>
+            <param name="crossX"></param>
+            <param name="crossY"></param>
+            <returns>Are the lines crossing?</returns>
+        </member>
+        <member name="M:Duality.MathF.PointLineNearestPoint(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Boolean)">
+            <summary>
+            Calculates the point on a line segment (or optionally an infinite line) that has the smalles possible
+            distance to a seperate point.
+            </summary>
+            <param name="pX"></param>
+            <param name="pY"></param>
+            <param name="lX1"></param>
+            <param name="lY1"></param>
+            <param name="lX2"></param>
+            <param name="lY2"></param>
+            <param name="infinite"></param>
+            <param name="nX"></param>
+            <param name="nY"></param>
+        </member>
+        <member name="M:Duality.MathF.PointLineDistance(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Boolean)">
+            <summary>
+            Calculates the distance between a point and a line segment (or optionally an infinite line)
+            </summary>
+            <param name="pX"></param>
+            <param name="pY"></param>
+            <param name="lX1"></param>
+            <param name="lY1"></param>
+            <param name="lX2"></param>
+            <param name="lY2"></param>
+            <param name="infinite"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.MathF.GetLinearPrediction(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single@,System.Single@)">
+            <summary>
+            Assuming two objects travelling at a linear course with constant speed and angle, this method
+            calculates at which point they may collide if the angle of object 1 is not defined by a specific
+            (but constant!) value.
+            In other words: If object 1 tries to hit object 2, let object 1 move towards the calculated point.
+            </summary>
+            <param name="obj1X"></param>
+            <param name="obj1Y"></param>
+            <param name="obj1Speed"></param>
+            <param name="obj2X"></param>
+            <param name="obj2Y"></param>
+            <param name="obj2Speed"></param>
+            <param name="obj2Angle"></param>
+            <param name="colX"></param>
+            <param name="colY"></param>
+            <returns>
+            False if it is not possible for object 1 to collide with object 2 at any course of object 1.
+            This is, for example, the case if object 1 and to move to the same direction but object 2 is faster.
+            A "collision point" is calculated either way, though it is not a collision point but only a 
+            "directional idea" if false is returned.
+            </returns>
+        </member>
+        <member name="M:Duality.MathF.GetLinearPrediction2(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Assuming two objects travelling at a linear course with constant speed and angle, this method
+            calculates the time from now at which the distance between the two objects will be minimal. If
+            this has already passed, the returned time is negative.
+            </summary>
+            <param name="obj1X"></param>
+            <param name="obj1Y"></param>
+            <param name="obj1XSpeed"></param>
+            <param name="obj1YSpeed"></param>
+            <param name="obj2X"></param>
+            <param name="obj2Y"></param>
+            <param name="obj2XSpeed"></param>
+            <param name="obj2YSpeed"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.SerializationHelper.IsSafeAssignType(System.Type)">
+            <summary>
+            Returns whether the specified type may just be assigned in a clone operation (even if deep)
+            instead of being investigated further.
+            </summary>
+            <param name="t"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.SerializationHelper.DeepResetReferences(System.Object,System.Type[])">
+            <summary>
+            Resets all references of object types assignable to any of the specified. typeof(Component) will
+            result in all references to any kind of Component to be cleared / set null.
+            </summary>
+            <param name="instance"></param>
+            <param name="resetTypes"></param>
+        </member>
+        <member name="M:Duality.SerializationHelper.DeepResolveTypeReferences(System.Object,System.Runtime.Serialization.SerializationBinder)">
+            <summary>
+            Re-resolves all MemberInfo references using current Type information including Plugin data. When reloading
+            Plugins, calling this method for an object will re-map its previously reflected MemberInfo references to
+            the newly loaded plugin Assemblies equivalent
+            </summary>
+            <param name="instance"></param>
+        </member>
+        <member name="M:Duality.ContentRef`1.MakeAvailable">
+            <summary>
+            Loads the associated content as if it was accessed now.
+            You don't usually need to call this method. It is invoked implicitly by trying to access the ContentRef/>
+            </summary>
+        </member>
+    </members>
+</doc>
