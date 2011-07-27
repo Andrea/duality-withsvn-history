@@ -516,6 +516,9 @@ namespace EditorBase
 		{
 			DualityApp.TargetMode = mainContextControl.Context.GraphicsMode;
 			DualityApp.TargetResolution = new OpenTK.Vector2(this.glControl.Width, this.glControl.Height);
+			DualityApp.Mouse = null;
+			DualityApp.Keyboard = null;
+			DualityApp.Joysticks = null;
 		}
 		protected Renderer PickRendererAt(int x, int y)
 		{
@@ -1135,7 +1138,8 @@ namespace EditorBase
 		}
 		private void glControl_GotFocus(object sender, EventArgs e)
 		{
-			this.camObj.GetComponent<SoundListener>().MakeCurrent();
+			if (this.camObj.GetComponent<SoundListener>() != null)
+				this.camObj.GetComponent<SoundListener>().MakeCurrent();
 		}
 		private void glControl_LostFocus(object sender, EventArgs e)
 		{

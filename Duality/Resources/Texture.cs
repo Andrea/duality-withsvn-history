@@ -134,8 +134,8 @@ namespace Duality.Resources
 			}
 			else
 			{
-				if (texRes.glTexId == 0)	throw new ArgumentException("Specified texture has no valid OpenGL texture Id! Maybe it hasn't been loaded / initialized properly?", "tex");
-				if (texRes.Disposed)		throw new ArgumentException("Specified texture has already been deleted!", "tex");
+				if (texRes.glTexId == 0)	throw new ArgumentException(string.Format("Specified texture '{0}' has no valid OpenGL texture Id! Maybe it hasn't been loaded / initialized properly?", texRes.Path), "tex");
+				if (texRes.Disposed)		throw new ArgumentException(string.Format("Specified texture '{0}' has already been deleted!", texRes.Path), "tex");
 					
 				GL.Enable(EnableCap.Texture2D);
 				GL.BindTexture(TextureTarget.Texture2D, texRes.glTexId);

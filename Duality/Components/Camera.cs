@@ -407,6 +407,14 @@ namespace Duality.Components
 		{
 			get { return this.viewport.Transform(this.viewportRelative ? this.SceneTargetSize : Vector2.One); }
 		}
+		public float ViewBoundingRadius
+		{
+			get 
+			{ 
+				Rect orthoAbs = this.SceneOrthoAbs;
+				return orthoAbs.Size.Length * 0.5f;
+			}
+		}
 
 		public Camera()
 		{
@@ -941,6 +949,8 @@ namespace Duality.Components
 		}
 		bool IDrawDevice.IsRendererInView(Renderer r)
 		{
+			if (r.IsInfiniteXY) return r.GameObj.Transform.Pos.Z >= this.GameObj.Transform.Pos.Z;
+
 			// Retrieve center vertex coord
 			Vector3 posTemp = r.GameObj.Transform.Pos;
 			float scaleTemp = 1.0f;

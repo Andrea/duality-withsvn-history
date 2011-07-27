@@ -73,6 +73,7 @@ namespace DualityLauncher
 
 				// Initialize default content
 				launcherWindow.MakeCurrent();
+				DualityApp.TargetResolution = new Vector2(launcherWindow.Width, launcherWindow.Height);
 				DualityApp.TargetMode = launcherWindow.Context.GraphicsMode;
 				ContentProvider.InitDefaultContent();
 

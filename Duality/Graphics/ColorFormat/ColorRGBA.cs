@@ -52,6 +52,27 @@ namespace Duality.ColorFormat
 			this.b = b;
 			this.a = a;
 		}
+		public ColorRGBA(byte lum, byte a = 255)
+		{
+			this.r = lum;
+			this.g = lum;
+			this.b = lum;
+			this.a = a;
+		}
+		public ColorRGBA(float r, float g, float b, float a = 1.0f)
+		{
+			this.r = (byte)MathF.Clamp((int)(r * 255.0f), 0, 255);
+			this.g = (byte)MathF.Clamp((int)(g * 255.0f), 0, 255);
+			this.b = (byte)MathF.Clamp((int)(b * 255.0f), 0, 255);
+			this.a = (byte)MathF.Clamp((int)(a * 255.0f), 0, 255);
+		}
+		public ColorRGBA(float lum, float a = 1.0f)
+		{
+			this.r = (byte)MathF.Clamp((int)(lum * 255.0f), 0, 255);
+			this.g = this.r;
+			this.b = this.r;
+			this.a = (byte)MathF.Clamp((int)(a * 255.0f), 0, 255);
+		}
 		
 		public ColorRGBA WithRed(byte r)
 		{
@@ -68,6 +89,22 @@ namespace Duality.ColorFormat
 		public ColorRGBA WithAlpha(byte a)
 		{
 			return new ColorRGBA(this.r, this.g, this.b, a);
+		}
+		public ColorRGBA WithRed(float r)
+		{
+			return new ColorRGBA((byte)MathF.Clamp((int)(r * 255.0f), 0, 255), this.g, this.b, this.a);
+		}
+		public ColorRGBA WithGreen(float g)
+		{
+			return new ColorRGBA(this.r, (byte)MathF.Clamp((int)(g * 255.0f), 0, 255), this.b, this.a);
+		}
+		public ColorRGBA WithBlue(float b)
+		{
+			return new ColorRGBA(this.r, this.g, (byte)MathF.Clamp((int)(b * 255.0f), 0, 255), this.a);
+		}
+		public ColorRGBA WithAlpha(float a)
+		{
+			return new ColorRGBA(this.r, this.g, this.b, (byte)MathF.Clamp((int)(a * 255.0f), 0, 255));
 		}
 
 		public float GetLuminance()

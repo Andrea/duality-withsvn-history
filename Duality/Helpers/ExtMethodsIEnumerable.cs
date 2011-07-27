@@ -17,6 +17,14 @@ namespace Duality
 			foreach (GameObject o in objEnum)
 				foreach (GameObject c in o.ChildrenDeep) yield return c;
 		}
+		public static IEnumerable<GameObject> ByName(this IEnumerable<GameObject> objEnum, string name)
+		{
+			return objEnum.Where(o => o.Name == name);
+		}
+		public static GameObject FirstByName(this IEnumerable<GameObject> objEnum, string name)
+		{
+			return objEnum.FirstOrDefault(o => o.Name == name);
+		}
 
 		public static IEnumerable<T> GetComponents<T>(this IEnumerable<GameObject> objEnum, bool activeOnly = false) where T : Component
 		{

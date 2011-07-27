@@ -36,6 +36,7 @@ namespace Duality.Components
 			set { this.visibilityGroup = value; }
 		}
 		public abstract float BoundRadius { get; }
+		public virtual bool IsInfiniteXY { get { return false; } }
 
 		public abstract void Draw(IDrawDevice device);
 
