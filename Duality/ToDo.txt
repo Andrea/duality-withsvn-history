@@ -10,9 +10,19 @@
 
 
 -->	Checklist for first Game: Asteroids
-	-->	Title Scene
-	-->	Game Scene (No levels, dynamically creates stages)
-	-->	Highscore Scene
+	-->	"You are dead" + enter name if on highscore
+	-->	Highscore list in title scene using MetaData
+	-->	Upgrades
+		-->	Blue:	Permanent
+			-->	Front lasers
+			-->	Diagonal lasers
+			-->	Side lasers
+		-->	Green:	Temporary
+			-->	Kill all Asteroids
+			-->	Make walls bounce projectiles for X seconds
+			-->	Double shooting frequency for X seconds
+	-->	Music
+		-->	Menu, Game, You-Are-Dead
 
 
 

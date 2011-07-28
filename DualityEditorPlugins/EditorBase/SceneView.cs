@@ -1292,6 +1292,8 @@ namespace EditorBase
 		private void Scene_RegisteredObjectComponentRemoved(object sender, ComponentEventArgs e)
 		{
 			ComponentNode oldObjNode = this.FindNode(e.Component);
+			if (oldObjNode == null) return;
+
 			Node parentNode = oldObjNode.Parent;
 			parentNode.Nodes.Remove(oldObjNode);
 			this.UnregisterNodeTree(oldObjNode);
@@ -1299,6 +1301,8 @@ namespace EditorBase
 		private void Scene_GameObjectUnregistered(object sender, ObjectManagerEventArgs<GameObject> e)
 		{
 			GameObjectNode oldObjNode = this.FindNode(e.Object);
+			if (oldObjNode == null) return;
+
 			Node parentNode = oldObjNode.Parent;
 			parentNode.Nodes.Remove(oldObjNode);
 			this.UnregisterNodeTree(oldObjNode);

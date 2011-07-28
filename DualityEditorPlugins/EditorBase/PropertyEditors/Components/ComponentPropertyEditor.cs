@@ -36,11 +36,14 @@ namespace EditorBase.PropertyEditors
 
 		protected override bool IsChildValueModified(PropertyEditor childEditor)
 		{
+			MemberInfo info = null;
+			if (!this.memberMap.TryGetValue(childEditor, out info)) return false;
+
 			Component[] values = this.Getter().Cast<Component>().NotNull().ToArray();
 			return values.Any(delegate (Component c)
 			{
 				Duality.Resources.PrefabLink l = c.GameObj.AffectedByPrefabLink;
-				return l != null && l.HasChange(c, this.memberMap[childEditor] as PropertyInfo);
+				return l != null && l.HasChange(c, info as PropertyInfo);
 			});
 		}
 		protected override bool MemberPredicate(MemberInfo info)

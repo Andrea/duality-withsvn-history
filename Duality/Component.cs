@@ -36,7 +36,7 @@ namespace Duality
 		void DrawOverlay(IDrawDevice device);
 	}
 
-	[AttributeUsage(AttributeTargets.Class)]
+	[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
 	public class RequiredComponentAttribute : Attribute
 	{
 		private	Type	cmpType;
