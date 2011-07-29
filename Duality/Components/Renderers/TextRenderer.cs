@@ -73,7 +73,7 @@ namespace Duality.Components.Renderers
 			Vector2 xDot, yDot;
 			MathF.GetTransformDotVec(this.GameObj.Transform.Angle, this.gameobj.Transform.Scale.Xy * scaleTemp, out xDot, out yDot);
 
-			Rect textRect = Rect.Align(this.align, 0.0f, 0.0f, this.metrics.Size.X, this.metrics.Size.Y);
+			Rect textRect = Rect.Align(this.align, 0.0f, 0.0f, MathF.Max(this.text.MaxWidth, this.metrics.Size.X), this.metrics.Size.Y);
 			Vector2 textOffset = textRect.TopLeft;
 			MathF.TransdormDotVec(ref textOffset, ref xDot, ref yDot);
 			posTemp.X += textOffset.X;

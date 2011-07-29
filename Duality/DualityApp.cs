@@ -391,6 +391,7 @@ namespace Duality
 					{
 						BinaryFormatter formatter = RequestSerializer(null, new StreamingContext(StreamingContextStates.File | StreamingContextStates.Persistence));
 						metaData = formatter.Deserialize(str) as DualityMetaData;
+						if (metaData == null) metaData = new DualityMetaData();
 					}
 				}
 				catch (Exception)
@@ -430,7 +431,7 @@ namespace Duality
 			using (FileStream str = File.Open(path, FileMode.Create))
 			{
 				BinaryFormatter formatter = RequestSerializer(null, new StreamingContext(StreamingContextStates.File | StreamingContextStates.Persistence));
-				formatter.Serialize(str, userData);
+				formatter.Serialize(str, metaData);
 			}
 		}
 
@@ -672,10 +673,12 @@ namespace Duality
 		}
 	}
 
+	[Serializable]
 	public class DualityMetaData
 	{
 		public static readonly char[] Separator = "/\\".ToCharArray();
 
+		[Serializable]
 		private class Entry
 		{
 			public Dictionary<string,Entry> children;
@@ -751,17 +754,13 @@ namespace Duality
 				}
 
 				Entry valEntry;
-				if (this.children != null && this.children.TryGetValue(singleKey, out valEntry))
-				{
-					valEntry.WriteValue(key, value);
-					return;
-				}
-				else
+				if (this.children == null || !this.children.TryGetValue(singleKey, out valEntry))
 				{
 					if (this.children == null) this.children = new Dictionary<string,Entry>();
-					this.children[singleKey] = new Entry(value);
-					return;
+					valEntry = new Entry();
+					this.children[singleKey] = valEntry;
 				}
+				valEntry.WriteValue(key, value);
 			}
 		}
 
