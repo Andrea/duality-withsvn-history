@@ -80,6 +80,7 @@
     <Compile Include="Components\Renderers\TextRenderer.cs" />
     <Compile Include="Components\SoundEmitter.cs" />
     <Compile Include="Components\SoundListener.cs" />
+    <Compile Include="Helpers\ExtMethodsIEnumerable.cs" />
     <Compile Include="Log\ConsoleLogOutput.cs" />
     <Compile Include="ContentProvider.cs" />
     <Compile Include="Helpers\EventArgs.cs" />
@@ -88,7 +89,6 @@
     <Compile Include="Helpers\ExtMethodsRandom.cs" />
     <Compile Include="Helpers\ExtMethodsString.cs" />
     <Compile Include="Graphics\GraphicsModeComparer.cs" />
-    <Compile Include="Helpers\ExtMethodsIEnumerable.cs" />
     <Compile Include="Helpers\ReflectionInfo.cs" />
     <Compile Include="Helpers\SerializationHelper.cs" />
     <Compile Include="Audio\OggVorbis\OggVorbis.cs" />

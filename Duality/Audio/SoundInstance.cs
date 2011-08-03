@@ -67,6 +67,7 @@ namespace Duality
 		private	float			curFade			= 1.0f;
 		private	float			fadeTarget		= 1.0f;
 		private	float			fadeTimeSec		= 1.0f;
+		private	float			pauseFade		= 1.0f;
 
 		// Streaming
 		private	bool			strStreamed		= false;
@@ -408,7 +409,7 @@ namespace Duality
 				float optVolFactor = this.GetTypeVolFactor();
 				float minDistTemp = res.MinDist;
 				float maxDistTemp = res.MaxDist;
-				float volTemp = optVolFactor * res.VolumeFactor * this.vol * this.curFade;
+				float volTemp = optVolFactor * res.VolumeFactor * this.vol * this.curFade * this.pauseFade;
 				float pitchTemp = res.PitchFactor * this.pitch;
 				float priorityTemp = 1000.0f;
 				priorityTemp *= volTemp;
@@ -503,6 +504,8 @@ namespace Duality
 
 						if (Math.Abs(this.curFade - this.fadeTarget) < fadeTemp * 2.0f)
 							this.curFade = this.fadeTarget;
+
+						this.dirtyState |= DirtyFlag.Vol;
 					}
 				}
 				if (fadeOut && (this.paused || this.curFade == 0.0f))
@@ -510,6 +513,18 @@ namespace Duality
 					this.Dispose();
 					DualityApp.Sound.UnregisterPlaying(this.snd, this.is3D);
 					return;
+				}
+
+				// Special paused-fading
+				if (this.paused && this.pauseFade > 0.0f)
+				{
+					this.pauseFade = MathF.Max(0.0f, this.pauseFade - Time.TimeMult * Time.SPFMult * 5.0f);
+					this.dirtyState |= DirtyFlag.Paused | DirtyFlag.Vol;
+				}
+				else if (!this.paused && this.pauseFade < 1.0f)
+				{
+					this.pauseFade = MathF.Min(1.0f, this.pauseFade + Time.TimeMult * Time.SPFMult * 5.0f);
+					this.dirtyState |= DirtyFlag.Paused | DirtyFlag.Vol;
 				}
 
 				// SlowMotion
@@ -563,9 +578,9 @@ namespace Duality
 					AL.Source(this.alSource, ALSourcef.Pitch, pitchTemp);
 				if ((this.dirtyState & DirtyFlag.Paused) != DirtyFlag.None)
 				{
-					if (this.paused && stateTemp == ALSourceState.Playing)
+					if (this.paused && this.pauseFade == 0.0f && stateTemp == ALSourceState.Playing)
 						AL.SourcePause(this.alSource);
-					else if (!this.paused && stateTemp == ALSourceState.Paused)
+					else if ((!this.paused || this.pauseFade > 0.0f) && stateTemp == ALSourceState.Paused)
 						AL.SourcePlay(this.alSource);
 				}
 				this.dirtyState = DirtyFlag.None;

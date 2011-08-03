@@ -97,5 +97,42 @@ namespace Duality
 				r.NextFloat(),
 				1.0f);
 		}
+
+		public static T WeightedNext<T>(this Random r, IEnumerable<T> values, IEnumerable<float> weights)
+		{
+			float totalWeight = weights.Sum();
+			float pickedWeight = r.NextFloat(totalWeight);
+			
+			int index = 0;
+			foreach (float w in weights)
+			{
+				pickedWeight -= w;
+				if (pickedWeight < 0.0f) return values.ElementAtOrDefault(index);
+				index++;
+			}
+
+			return default(T);
+		}
+		public static T WeightedNext<T>(this Random r, IEnumerable<T> values, params float[] weights)
+		{
+			return WeightedNext<T>(r, values, weights as IEnumerable<float>);
+		}
+		public static T WeightedNext<T>(this Random r, IEnumerable<KeyValuePair<T,float>> weightesValues)
+		{
+			float totalWeight = weightesValues.Sum(v => v.Value);
+			float pickedWeight = r.NextFloat(totalWeight);
+			
+			foreach (KeyValuePair<T,float> pair in weightesValues)
+			{
+				pickedWeight -= pair.Value;
+				if (pickedWeight < 0.0f) return pair.Key;
+			}
+
+			return default(T);
+		}
+		public static T WeightedNext<T>(this Random r, params KeyValuePair<T,float>[] weightesValues)
+		{
+			return WeightedNext<T>(r, weightesValues as IEnumerable<KeyValuePair<T,float>>);
+		}
 	}
 }

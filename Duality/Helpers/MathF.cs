@@ -28,6 +28,7 @@ namespace Duality
 		public static Random Rnd
 		{
 			get { return rnd; }
+			set { rnd = value ?? new Random(); }
 		}
 
 

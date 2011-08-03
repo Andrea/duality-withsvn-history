@@ -17,6 +17,7 @@ namespace Duality.Components.Renderers
 	{
 		protected	Alignment				align		= Alignment.Center;
 		protected	FormattedText			text		= new FormattedText("Hello World");
+		protected	BatchInfo				customMat	= null;
 		protected	ColorRGBA				colorTint	= ColorRGBA.White;
 		protected	ContentRef<Material>	iconMat		= ContentRef<Material>.Null;
 		[NonSerialized] protected	FormattedText.Metrics			metrics		= new FormattedText.Metrics(Vector2.Zero, new Rect[0], new Rect[0]);
@@ -50,6 +51,11 @@ namespace Duality.Components.Renderers
 		public FormattedText.Metrics Metrics
 		{
 			get { return this.metrics; }
+		}
+		public BatchInfo CustomMaterial
+		{
+			get { return this.customMat; }
+			set { this.customMat = value; }
 		}
 
 
@@ -107,8 +113,19 @@ namespace Duality.Components.Renderers
 			if (this.text.Fonts != null)
 			{
 				for (int i = 0; i < this.text.Fonts.Length; i++)
+				{
 					if (this.text.Fonts[i] != null && this.text.Fonts[i].IsAvailable) 
-						device.AddVertices(this.text.Fonts[i].Res.Material, BeginMode.Quads, this.vertFont[i]);
+					{
+						if (this.customMat == null)
+							device.AddVertices(this.text.Fonts[i].Res.Material, BeginMode.Quads, this.vertFont[i]);
+						else
+						{
+							BatchInfo cm = new BatchInfo(this.customMat);
+							cm.Textures = new Dictionary<string,ContentRef<Texture>>(this.text.Fonts[i].Res.Material.Textures);
+							device.AddVertices(cm, BeginMode.Quads, this.vertFont[i]);
+						}
+					}
+				}
 			}
 			if (this.text.Icons != null && this.iconMat.IsAvailable)
 			{
@@ -135,6 +152,7 @@ namespace Duality.Components.Renderers
 			t.align		= this.align;
 			t.text		= this.text.Clone();
 			t.colorTint	= this.colorTint;
+			t.customMat	= this.customMat != null ? new BatchInfo(this.customMat) : null;
 			t.UpdateMetrics();
 		}
 	}
