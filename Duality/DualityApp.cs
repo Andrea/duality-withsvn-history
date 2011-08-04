@@ -81,9 +81,10 @@ namespace Duality
 		private	static	DualityMetaData			metaData			= null;
 		private	static	List<object>			disposeSchedule		= new List<object>();
 
-		private	static	PluginSerializationBinder	pluginTypeBinder;
-		private	static	Dictionary<string,Assembly>	plugins;
-		private static	Dictionary<Type,List<Type>>	availTypeDict;
+		private	static	PluginSerializationBinder	pluginTypeBinder	= new PluginSerializationBinder();
+		private	static	Dictionary<string,Assembly>	plugins				= new Dictionary<string,Assembly>();
+		private	static	List<Assembly>				disposedPlugins		= new List<Assembly>();
+		private static	Dictionary<Type,List<Type>>	availTypeDict		= new Dictionary<Type,List<Type>>();
 
 		public static event EventHandler Initialized	= null;
 		public static event EventHandler Terminating	= null;
@@ -184,6 +185,10 @@ namespace Duality
 		{
 			get { return plugins.Values; }
 		}
+		public static IEnumerable<Assembly> DisposedPlugins
+		{
+			get { return disposedPlugins; }
+		}
 
 
 		public static void Init(ExecutionContext context = ExecutionContext.Unknown, string[] args = null)
@@ -217,9 +222,6 @@ namespace Duality
 			}
 
 			execContext = context;
-			plugins = new Dictionary<string,Assembly>();
-			availTypeDict = new Dictionary<Type,List<Type>>();
-			pluginTypeBinder = new PluginSerializationBinder();
 
 			// Initialize Logfile
 			logfile = new StreamWriter(logfilePath + ".txt");
@@ -248,6 +250,9 @@ namespace Duality
 
 			initialized = true;
 			OnInitialized();
+
+			Duality.Serialization.BinaryFormatter.__Debug__Test();
+			System.Diagnostics.Debugger.Break();
 		}
 		public static void Terminate(bool unexpected = false)
 		{
@@ -464,8 +469,17 @@ namespace Duality
 			Log.Core.Write("Reloading core plugin '{0}'...", pluginFileName);
 			Log.Core.PushIndent();
 
+			// Load new plugin
 			Assembly pluginAssembly = Assembly.Load(File.ReadAllBytes(pluginFileName));
-			plugins[pluginAssembly.FullName.Split(',')[0]] = pluginAssembly;
+
+			// If we're overwritin an old plugin here, add the old version to the "disposed" blacklist
+			string asmName = pluginAssembly.FullName.Split(',')[0];
+			Assembly oldAssembly = null;
+			if (plugins.TryGetValue(asmName, out oldAssembly))
+				disposedPlugins.Add(oldAssembly);
+
+			// Register newly loaded plugin
+			plugins[asmName] = pluginAssembly;
 			availTypeDict.Clear();
 			
 			Log.Core.PopIndent();

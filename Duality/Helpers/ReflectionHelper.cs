@@ -266,9 +266,8 @@ namespace Duality
 					asmTypes = asmSearch[i].GetTypes();
 					for (int j = 0; j < asmTypes.Length; j++)
 					{
-						nameTemp = asmTypes[j].FullName;
-						if (csCodeType == nameTemp || 
-							csCodeType == nameTemp.Replace('+', '.'))
+						nameTemp = asmTypes[j].FullName.Replace('+', '.');
+						if (csCodeType == nameTemp)
 						{
 							result = asmTypes[j];
 							break;

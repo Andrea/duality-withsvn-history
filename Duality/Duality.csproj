@@ -131,6 +131,7 @@
     <Compile Include="Audio\SoundInstance.cs" />
     <Compile Include="Graphics\FormattedText.cs" />
     <Compile Include="Log\TextWriterLogOutput.cs" />
+    <Compile Include="Serialization\BinaryFormatter.cs" />
     <Compile Include="Time.cs" />
     <Compile Include="Graphics\VertexFormat\IVertexData.cs" />
     <Compile Include="Graphics\VertexFormat\VertexC4P3T4A1.cs" />
@@ -168,6 +169,7 @@
     <EmbeddedResource Include="Resources\Default\Minimal.frag" />
     <EmbeddedResource Include="Resources\Default\Minimal.vert" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>mkdir  "$(SolutionDir)DualityEditor\bin\$(ConfigurationName)"

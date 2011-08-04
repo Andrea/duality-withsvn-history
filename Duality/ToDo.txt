@@ -1,17 +1,22 @@
 ﻿
--->	Write Duality's own binary serialization framework (but relating on .NETs serialization interfaces)
-	-->	Custom type loader relating to always the newest plugin set
-		-->	No need for manual fixups (Get rid of SerializationHelper...)
-		-->	No need for a custom Type Binder
-	-->	Custom reaction to unavailable types
-		-->	Proper recovery from renamed or removed classes!
-	-->	Proper use of "NonSerializedPrefabAttribute", probably in a general version like "NonSerializedConditional" or something
-	-->	Better to debug
+-->	Serialization ToDo
+	-->	Serialize System.Type properly
+	-->	Serialize System.MemberInfo properly
+	-->	See if delegates can be serialized properly
+	--> See what happens when trying to serialize IEnumerable<T> using yielded functions
+	-->	Same for IEnumerator<T>.
 
+	-->	React to [System.Serializable], [System.NonSerialized] and [Duality.Serialization.NonSerializedConditional]
+	-->	Custom object serialization / Duality.Serialization.ISerializable interface, Pixmap needs it and probably others as well
 
--->	Checklist for first Game: Asteroids
+	-->	Test if it can de/serialize Duality stuff properly
 	-->	Port content to new serialization format
+	-->	Stability test when reloading core plugins (Are Types resolved properly using FindType?)
+	-->	Performance optimization
+		-->	FindType.
 
+	--> Get rid of SerializationHelper.
+	
 
 
 -->	Editor Skeletton
