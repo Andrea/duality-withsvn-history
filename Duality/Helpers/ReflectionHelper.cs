@@ -9,6 +9,9 @@ namespace Duality
 {
 	public static class ReflectionHelper
 	{
+		public const BindingFlags BindInstanceAll = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+		public const BindingFlags BindStaticAll = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+
 		public static Stream GetEmbeddedResourceStream(Assembly asm, string fileName)
 		{
 			if (String.IsNullOrEmpty(fileName)) return null;
@@ -24,14 +27,16 @@ namespace Duality
 			return asm.GetManifestResourceStream(resName);
 		}
 
-		public static object CreateInstanceOf(Type instanceType)
+		public static object CreateInstanceOf(Type instanceType, bool noConstructor = false)
 		{
 			try
 			{
 				if (instanceType == typeof(string))
 					return "";
-				else if (typeof(Array).IsAssignableFrom(instanceType))
+				else if (typeof(Array).IsAssignableFrom(instanceType) && instanceType.GetArrayRank() == 1)
 					return Array.CreateInstance(instanceType.GetElementType(), 0);
+				else if (noConstructor)
+					return System.Runtime.Serialization.FormatterServices.GetUninitializedObject(instanceType);
 				else
 					return Activator.CreateInstance(instanceType, true);
 			}

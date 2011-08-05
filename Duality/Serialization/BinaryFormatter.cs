@@ -9,96 +9,10 @@ namespace Duality.Serialization
 {
 	public class BinaryFormatter : IDisposable
 	{
-		protected enum DataType : byte
-		{
-			Unknown,
-
-			Bool,
-			Byte,
-			SByte,
-			Short,
-			UShort,
-			Int,
-			UInt,
-			Long,
-			ULong,
-			Float,
-			Double,
-			Decimal,
-			Char,
-
-			String,
-			Array,
-			Class,
-			Struct,
-
-			ObjectRef
-		}
-		protected class CachedType
-		{
-			public	Type		type;
-			public	FieldInfo[]	fields;
-			public	string		typeString;
-			public	DataType	dataType;
-
-			public CachedType(Type t)
-			{
-				this.type = t;
-				this.fields = this.type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-				this.typeString = ReflectionHelper.GetTypeString(this.type, ReflectionHelper.TypeStringAttrib.CSCodeIdent);
-				this.dataType = BinaryFormatter.GetDataType(this.type);
-			}
-		}
-		protected class TypeDataLayout
-		{
-			public struct FieldDataInfo
-			{
-				public	string	name;
-				public	string	typeString;
-			}
-
-			public	FieldDataInfo[]	fields;
-
-			public TypeDataLayout(BinaryReader r)
-			{
-				int count = r.ReadInt32();
-				this.fields = new FieldDataInfo[count];
-
-				for (int i = 0; i < count; i++)
-				{
-					this.fields[i].name = r.ReadString();
-					this.fields[i].typeString = r.ReadString();
-				}
-			}
-			public TypeDataLayout(CachedType t)
-			{
-				this.fields = new FieldDataInfo[t.fields.Length];
-				for (int i = 0; i < t.fields.Length; i++)
-				{
-					this.fields[i].name = t.fields[i].Name;
-					this.fields[i].typeString = ReflectionHelper.GetTypeString(t.fields[i].FieldType, ReflectionHelper.TypeStringAttrib.CSCodeIdent);
-				}
-			}
-
-			public void Write(BinaryWriter w)
-			{
-				w.Write(this.fields.Length);
-				for (int i = 0; i < this.fields.Length; i++)				
-				{
-					w.Write(this.fields[i].name);
-					w.Write(this.fields[i].typeString);
-				}
-			}
-		}
-
-
 		// General fields
 		protected	BinaryWriter	writer;
 		protected	BinaryReader	reader;
 		protected	bool			disposed;
-		// Reflection data caching
-		protected	Dictionary<Type,CachedType>	typeCache			= new Dictionary<Type,CachedType>();
-		protected	Dictionary<string,Type>		typeResolveCache	= new Dictionary<string,Type>();
 		// Temporary, "stream operation"-specific data
 		protected	bool							lastWritten		= false;
 		protected	Stack<long>						offsetStack		= new Stack<long>();
@@ -200,12 +114,12 @@ namespace Duality.Serialization
 
 			// Retrieve type data
 			Type objType = obj.GetType();
-			CachedType objCachedType = this.GetCachedType(objType);
+			CachedType objCachedType = SerializationHelper.GetCachedType(objType);
 			uint objId = 0;
-			DataType dataType = objCachedType.dataType;
+			DataType dataType = objCachedType.DataType;
 
 			// Check whether it's going to be an ObjectRef or not
-			if (!IsPrimitiveDataType(dataType) && dataType != DataType.String && dataType != DataType.Struct)
+			if (dataType == DataType.Array || dataType == DataType.Class || dataType == DataType.Delegate || SerializationHelper.IsReflectionDataType(dataType))
 			{
 				objId = this.GetIdFromObject(obj);
 
@@ -220,12 +134,14 @@ namespace Duality.Serialization
 			this.WritePushOffset();
 			try
 			{
-				if (IsPrimitiveDataType(dataType))			this.WritePrimitive(obj);
-				else if (dataType == DataType.String)		this.writer.Write(obj as string);
-				else if (dataType == DataType.Struct)		this.WriteStruct(obj, objCachedType);
-				else if	(dataType == DataType.Array)		this.WriteArray(obj, objCachedType, objId);
-				else if (dataType == DataType.Class)		this.WriteStruct(obj, objCachedType, objId);
-				else if (dataType == DataType.ObjectRef)	this.writer.Write(objId);
+				if (SerializationHelper.IsPrimitiveDataType(dataType))			this.WritePrimitive(obj);
+				else if (dataType == DataType.String)							this.writer.Write(obj as string);
+				else if (dataType == DataType.Struct)							this.WriteStruct(obj, objCachedType);
+				else if (dataType == DataType.ObjectRef)						this.writer.Write(objId);
+				else if	(dataType == DataType.Array)							this.WriteArray(obj, objCachedType, objId);
+				else if (dataType == DataType.Class)							this.WriteStruct(obj, objCachedType, objId);
+				else if (dataType == DataType.Delegate)							this.WriteDelegate(obj, objCachedType, objId);
+				else if (SerializationHelper.IsReflectionDataType(dataType))	this.WriteMemberInfo(obj, objId);
 			}
 			finally
 			{
@@ -252,6 +168,94 @@ namespace Duality.Serialization
 			else
 				throw new ArgumentException(string.Format("Type '{0}' is not a primitive.", obj.GetType()));
 		}
+		protected void WriteMemberInfo(object obj, uint id = 0)
+		{
+			this.writer.Write(id);
+			if (obj is Type)
+			{
+				Type type = obj as Type;
+				CachedType cachedType = SerializationHelper.GetCachedType(type);
+
+				this.writer.Write(cachedType.TypeString);
+			}
+			else if (obj is FieldInfo)
+			{
+				FieldInfo field = obj as FieldInfo;
+				CachedType declaringType = SerializationHelper.GetCachedType(field.DeclaringType);
+
+				this.writer.Write(field.IsStatic);
+				this.writer.Write(declaringType.TypeString);
+				this.writer.Write(field.Name);
+			}
+			else if (obj is PropertyInfo)
+			{
+				PropertyInfo property = obj as PropertyInfo;
+				ParameterInfo[] indexParams = property.GetIndexParameters();
+
+				CachedType declaringType = SerializationHelper.GetCachedType(property.DeclaringType);
+				CachedType propertyType = SerializationHelper.GetCachedType(property.PropertyType);
+
+				CachedType[] paramTypes = new CachedType[indexParams.Length];
+				for (int i = 0; i < indexParams.Length; i++)
+					paramTypes[i] = SerializationHelper.GetCachedType(indexParams[i].ParameterType);
+
+				this.writer.Write(property.GetAccessors(true)[0].IsStatic);
+				this.writer.Write(declaringType.TypeString);
+				this.writer.Write(property.Name);
+				this.writer.Write(propertyType.TypeString);
+				this.writer.Write(paramTypes.Length);
+				for (int i = 0; i < paramTypes.Length; i++)
+					this.writer.Write(paramTypes[i].TypeString);
+			}
+			else if (obj is MethodInfo)
+			{
+				MethodInfo method = obj as MethodInfo;
+				ParameterInfo[] parameters = method.GetParameters();
+
+				CachedType declaringType = SerializationHelper.GetCachedType(method.DeclaringType);
+
+				CachedType[] paramTypes = new CachedType[parameters.Length];
+				for (int i = 0; i < parameters.Length; i++)
+					paramTypes[i] = SerializationHelper.GetCachedType(parameters[i].ParameterType);
+
+				this.writer.Write(method.IsStatic);
+				this.writer.Write(declaringType.TypeString);
+				this.writer.Write(method.Name);
+				this.writer.Write(paramTypes.Length);
+				for (int i = 0; i < paramTypes.Length; i++)
+					this.writer.Write(paramTypes[i].TypeString);
+			}
+			else if (obj is ConstructorInfo)
+			{
+				ConstructorInfo method = obj as ConstructorInfo;
+				ParameterInfo[] parameters = method.GetParameters();
+
+				CachedType declaringType = SerializationHelper.GetCachedType(method.DeclaringType);
+
+				CachedType[] paramTypes = new CachedType[parameters.Length];
+				for (int i = 0; i < parameters.Length; i++)
+					paramTypes[i] = SerializationHelper.GetCachedType(parameters[i].ParameterType);
+
+				this.writer.Write(method.IsStatic);
+				this.writer.Write(declaringType.TypeString);
+				this.writer.Write(paramTypes.Length);
+				for (int i = 0; i < paramTypes.Length; i++)
+					this.writer.Write(paramTypes[i].TypeString);
+			}
+			else if (obj is EventInfo)
+			{
+				EventInfo e = obj as EventInfo;
+				CachedType declaringType = SerializationHelper.GetCachedType(e.DeclaringType);
+
+				this.writer.Write(e.GetRaiseMethod().IsStatic);
+				this.writer.Write(declaringType.TypeString);
+				this.writer.Write(e.Name);
+			}
+			else if (obj == null)
+				throw new ArgumentNullException("obj");
+			else
+				throw new ArgumentException(string.Format("Type '{0}' is not a supported MemberInfo.", obj.GetType()));
+		}
 		protected void WriteArray(object obj, CachedType objCachedType, uint id = 0)
 		{
 			Array objAsArray = obj as Array;
@@ -259,7 +263,7 @@ namespace Duality.Serialization
 			if (objAsArray.Rank != 1) throw new ArgumentException("Non single-Rank arrays are not supported");
 			if (objAsArray.GetLowerBound(0) != 0) throw new ArgumentException("Non zero-based arrays are not supported");
 
-			this.writer.Write(objCachedType.typeString);
+			this.writer.Write(objCachedType.TypeString);
 			this.writer.Write(id);
 			this.writer.Write(objAsArray.Rank);
 			this.writer.Write(objAsArray.Length);
@@ -287,24 +291,47 @@ namespace Duality.Serialization
 		protected void WriteStruct(object obj, CachedType objCachedType, uint id = 0)
 		{
 			// Write the structs data type
-			this.writer.Write(objCachedType.typeString);
+			this.writer.Write(objCachedType.TypeString);
 			this.writer.Write(id);
 
 			// Assure the type data layout has bee written (only once per file)
 			this.WriteTypeDataLayout(objCachedType);
 
 			// Write the structs fields
-			foreach (FieldInfo field in objCachedType.fields)
+			foreach (FieldInfo field in objCachedType.Fields)
 			{
 				this.WriteObject(field.GetValue(obj));
 			}
 		}
+		protected void WriteDelegate(object obj, CachedType objCachedType, uint id = 0)
+		{
+			bool multi = obj is MulticastDelegate;
+
+			// Write the delegates type
+			this.writer.Write(objCachedType.TypeString);
+			this.writer.Write(id);
+			this.writer.Write(multi);
+
+			if (!multi)
+			{
+				Delegate objAsDelegate = obj as Delegate;
+				this.WriteObject(objAsDelegate.Method);
+				this.WriteObject(objAsDelegate.Target);
+			}
+			else
+			{
+				MulticastDelegate objAsDelegate = obj as MulticastDelegate;
+				this.WriteObject(objAsDelegate.Method);
+				this.WriteObject(objAsDelegate.Target);
+				this.WriteObject(objAsDelegate.GetInvocationList());
+			}
+		}
 		protected void WriteTypeDataLayout(CachedType objCachedType)
 		{
-			if (this.typeDataLayout.ContainsKey(objCachedType.type)) return;
+			if (this.typeDataLayout.ContainsKey(objCachedType.Type)) return;
 
 			TypeDataLayout layout = new TypeDataLayout(objCachedType);
-			this.typeDataLayout[objCachedType.type] = layout;
+			this.typeDataLayout[objCachedType.Type] = layout;
 
 			layout.Write(this.writer);
 		}
@@ -395,12 +422,14 @@ namespace Duality.Serialization
 			object result = null;
 			try
 			{
-				if (IsPrimitiveDataType(dataType))			result = this.ReadPrimitive(dataType);
-				else if (dataType == DataType.String)		result = this.reader.ReadString();
-				else if (dataType == DataType.Array)		result = this.ReadArray();
-				else if (dataType == DataType.Struct)		result = this.ReadStruct();
-				else if (dataType == DataType.Class)		result = this.ReadStruct();
-				else if (dataType == DataType.ObjectRef)	result = this.ReadObjectRef();
+				if (SerializationHelper.IsPrimitiveDataType(dataType))			result = this.ReadPrimitive(dataType);
+				else if (dataType == DataType.String)							result = this.reader.ReadString();
+				else if (dataType == DataType.Struct)							result = this.ReadStruct();
+				else if (dataType == DataType.ObjectRef)						result = this.ReadObjectRef();
+				else if (dataType == DataType.Array)							result = this.ReadArray();
+				else if (dataType == DataType.Class)							result = this.ReadStruct();
+				else if (dataType == DataType.Delegate)							result = this.ReadDelegate();
+				else if (SerializationHelper.IsReflectionDataType(dataType))	result = this.ReadMemberInfo(dataType);
 
 				// If we read the object properly and aren't where we're supposed to be, something went wrong
 				if (this.reader.BaseStream.Position != lastPos + offset) throw new ApplicationException(string.Format("Wrong dataset offset: '{0}' instead of expected value '{1}'.", offset, this.reader.BaseStream.Position - lastPos));
@@ -442,7 +471,7 @@ namespace Duality.Serialization
 			uint	objId			= this.reader.ReadUInt32();
 			int		arrRang			= this.reader.ReadInt32();
 			long	arrLength		= this.reader.ReadInt32();
-			Type	arrType			= this.ResolveType(arrTypeString);
+			Type	arrType			= SerializationHelper.ResolveType(arrTypeString);
 
 			Array arrObj = Array.CreateInstance(arrType.GetElementType(), arrLength);
 			
@@ -480,10 +509,12 @@ namespace Duality.Serialization
 			// Read struct type
 			string	objTypeString	= this.reader.ReadString();
 			uint	objId			= this.reader.ReadUInt32();
-			Type	objType			= this.ResolveType(objTypeString);
+			Type	objType			= SerializationHelper.ResolveType(objTypeString);
 
 			// Construct object
 			object obj = ReflectionHelper.CreateInstanceOf(objType);
+			// If no appropriate default constructor is available, just force creating it without constructor
+			if (obj == null) obj = ReflectionHelper.CreateInstanceOf(objType, true);
 			
 			// Prepare object reference
 			if (objId != 0)
@@ -496,16 +527,16 @@ namespace Duality.Serialization
 			TypeDataLayout layout	= this.ReadTypeDataLayout(objType);
 
 			// Read fields
-			for (int i = 0; i < layout.fields.Length; i++)
+			for (int i = 0; i < layout.Fields.Length; i++)
 			{
-				FieldInfo field = objType.GetField(layout.fields[i].name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-				Type fieldType = this.ResolveType(layout.fields[i].typeString);
+				FieldInfo field = objType.GetField(layout.Fields[i].name, ReflectionHelper.BindInstanceAll);
+				Type fieldType = SerializationHelper.ResolveType(layout.Fields[i].typeString);
 				object fieldValue = this.ReadObject();
 
 				if (field == null)
-					Log.Core.WriteWarning("Field '{0}' not found. Discarding value '{1}'", layout.fields[i].name, fieldValue);
+					Log.Core.WriteWarning("Field '{0}' not found. Discarding value '{1}'", layout.Fields[i].name, fieldValue);
 				else if (field.FieldType != fieldType)
-					Log.Core.WriteWarning("Data layout Type '{0}' of field '{1}' does not match reflected Type '{2}'. Discarding value '{3}'", layout.fields[i].typeString, layout.fields[i].name, objTypeString, fieldValue);
+					Log.Core.WriteWarning("Data layout Type '{0}' of field '{1}' does not match reflected Type '{2}'. Discarding value '{3}'", layout.Fields[i].typeString, layout.Fields[i].name, objTypeString, fieldValue);
 				else
 					field.SetValue(obj, fieldValue);
 			}
@@ -520,6 +551,142 @@ namespace Duality.Serialization
 			if (!this.idObjRefMap.TryGetValue(objId, out obj)) throw new ApplicationException(string.Format("Cannot resolve object reference '{0}'.", objId));
 
 			return obj;
+		}
+		protected MemberInfo ReadMemberInfo(DataType dataType)
+		{
+			uint objId = this.reader.ReadUInt32();
+			MemberInfo result;
+
+			if (dataType == DataType.Type)
+			{
+				string typeString = this.reader.ReadString();
+				Type type = SerializationHelper.ResolveType(typeString);
+				result = type;
+			}
+			else if (dataType == DataType.FieldInfo)
+			{
+				bool isStatic = this.reader.ReadBoolean();
+				string declaringTypeString = this.reader.ReadString();
+				string fieldName = this.reader.ReadString();
+
+				Type declaringType = SerializationHelper.ResolveType(declaringTypeString);
+				FieldInfo field = declaringType.GetField(fieldName, isStatic ? ReflectionHelper.BindStaticAll : ReflectionHelper.BindInstanceAll);
+				result = field;
+			}
+			else if (dataType == DataType.PropertyInfo)
+			{
+				bool isStatic = this.reader.ReadBoolean();
+				string declaringTypeString = this.reader.ReadString();
+				string propertyName = this.reader.ReadString();
+				string propertyTypeString = this.reader.ReadString();
+
+				int paramCount = this.reader.ReadInt32();
+				string[] paramTypeStrings = new string[paramCount];
+				for (int i = 0; i < paramCount; i++)
+					paramTypeStrings[i] = this.reader.ReadString();
+
+				Type declaringType = SerializationHelper.ResolveType(declaringTypeString);
+				Type propertyType = SerializationHelper.ResolveType(propertyTypeString);
+				Type[] paramTypes = new Type[paramCount];
+				for (int i = 0; i < paramCount; i++)
+					paramTypes[i] = SerializationHelper.ResolveType(paramTypeStrings[i]);
+
+				PropertyInfo property = declaringType.GetProperty(
+					propertyName, 
+					isStatic ? ReflectionHelper.BindStaticAll : ReflectionHelper.BindInstanceAll, 
+					null, 
+					propertyType, 
+					paramTypes, 
+					null);
+
+				result = property;
+			}
+			else if (dataType == DataType.MethodInfo)
+			{
+				bool isStatic = this.reader.ReadBoolean();
+				string declaringTypeString = this.reader.ReadString();
+				string methodName = this.reader.ReadString();
+
+				int paramCount = this.reader.ReadInt32();
+				string[] paramTypeStrings = new string[paramCount];
+				for (int i = 0; i < paramCount; i++)
+					paramTypeStrings[i] = this.reader.ReadString();
+
+				Type declaringType = SerializationHelper.ResolveType(declaringTypeString);
+				Type[] paramTypes = new Type[paramCount];
+				for (int i = 0; i < paramCount; i++)
+					paramTypes[i] = SerializationHelper.ResolveType(paramTypeStrings[i]);
+
+				MethodInfo method = declaringType.GetMethod(methodName, isStatic ? ReflectionHelper.BindStaticAll : ReflectionHelper.BindInstanceAll, null, paramTypes, null);
+				result = method;
+			}
+			else if (dataType == DataType.ConstructorInfo)
+			{
+				bool isStatic = this.reader.ReadBoolean();
+				string declaringTypeString = this.reader.ReadString();
+
+				int paramCount = this.reader.ReadInt32();
+				string[] paramTypeStrings = new string[paramCount];
+				for (int i = 0; i < paramCount; i++)
+					paramTypeStrings[i] = this.reader.ReadString();
+
+				Type declaringType = SerializationHelper.ResolveType(declaringTypeString);
+				Type[] paramTypes = new Type[paramCount];
+				for (int i = 0; i < paramCount; i++)
+					paramTypes[i] = SerializationHelper.ResolveType(paramTypeStrings[i]);
+
+				ConstructorInfo method = declaringType.GetConstructor(isStatic ? ReflectionHelper.BindStaticAll : ReflectionHelper.BindInstanceAll, null, paramTypes, null);
+				result = method;
+			}
+			else if (dataType == DataType.EventInfo)
+			{
+				bool isStatic = this.reader.ReadBoolean();
+				string declaringTypeString = this.reader.ReadString();
+				string eventName = this.reader.ReadString();
+
+				Type declaringType = SerializationHelper.ResolveType(declaringTypeString);
+				EventInfo e = declaringType.GetEvent(eventName, isStatic ? ReflectionHelper.BindStaticAll : ReflectionHelper.BindInstanceAll);
+				result = e;
+			}
+			else
+				throw new ApplicationException(string.Format("Invalid DataType '{0}' in ReadMemberInfo method.", dataType));
+
+			
+			// Prepare object reference
+			if (objId != 0)
+			{
+				this.objRefIdMap[result] = objId;
+				this.idObjRefMap[objId] = result;
+			}
+
+			return result;
+		}
+		protected Delegate ReadDelegate()
+		{
+			string		delegateTypeString	= this.reader.ReadString();
+			uint		objId				= this.reader.ReadUInt32();
+			bool		multi				= this.reader.ReadBoolean();
+			Type		delType				= SerializationHelper.ResolveType(delegateTypeString);
+
+			MethodInfo	method	= this.ReadObject() as MethodInfo;
+			object		target	= this.ReadObject();
+			Delegate	del		= Delegate.CreateDelegate(delType, target, method);
+
+			// Prepare object reference
+			if (objId != 0)
+			{
+				this.objRefIdMap[del] = objId;
+				this.idObjRefMap[objId] = del;
+			}
+
+			// Combine multicast delegates
+			if (multi)
+			{
+				Delegate[] invokeList = this.ReadObject() as Delegate[];
+				del = Delegate.Combine(invokeList);
+			}
+
+			return del;
 		}
 		protected TypeDataLayout ReadTypeDataLayout(Type t)
 		{
@@ -620,12 +787,6 @@ namespace Duality.Serialization
 			this.writer.BaseStream.Seek(curPos, SeekOrigin.Begin);
 		}
 
-		public void ClearCache()
-		{
-			this.typeCache.Clear();
-			this.typeResolveCache.Clear();
-			this.typeDataLayout.Clear();
-		}
 		protected void ClearStreamSpecificData()
 		{
 			this.typeDataLayout.Clear();
@@ -633,27 +794,6 @@ namespace Duality.Serialization
 			this.objRefIdMap.Clear();
 			this.idObjRefMap.Clear();
 			this.idCounter = 0;
-		}
-		protected Type ResolveType(string typeString)
-		{
-			Type result;
-			if (this.typeResolveCache.TryGetValue(typeString, out result)) return result;
-
-			Assembly[] searchAsm = AppDomain.CurrentDomain.GetAssemblies().Except(DualityApp.DisposedPlugins).ToArray();
-			result = ReflectionHelper.FindType(typeString, searchAsm);
-			this.typeResolveCache[typeString] = result;
-
-			if (result == null) throw new ApplicationException(string.Format("Cannot resolve Type '{0}'. Type not found", typeString));
-			return result;
-		}
-		protected CachedType GetCachedType(Type t)
-		{
-			CachedType result;
-			if (this.typeCache.TryGetValue(t, out result)) return result;
-
-			result = new CachedType(t);
-			this.typeCache[t] = result;
-			return result;
 		}
 		protected uint GetIdFromObject(object obj)
 		{
@@ -667,41 +807,6 @@ namespace Duality.Serialization
 			return id;
 		}
 
-		protected static bool IsPrimitiveDataType(DataType dt)
-		{
-			return (byte)dt <= (byte)DataType.Char;
-		}
-		protected static DataType GetDataType(Type t)
-		{
-			if (t.IsPrimitive)
-			{
-				if		(t == typeof(bool))		return DataType.Bool;
-				else if (t == typeof(byte))		return DataType.Byte;
-				else if (t == typeof(char))		return DataType.Char;
-				else if (t == typeof(sbyte))	return DataType.SByte;
-				else if (t == typeof(short))	return DataType.Short;
-				else if (t == typeof(ushort))	return DataType.UShort;
-				else if (t == typeof(int))		return DataType.Int;
-				else if (t == typeof(uint))		return DataType.UInt;
-				else if (t == typeof(long))		return DataType.Long;
-				else if (t == typeof(ulong))	return DataType.ULong;
-				else if (t == typeof(float))	return DataType.Float;
-				else if (t == typeof(double))	return DataType.Double;
-				else if (t == typeof(decimal))	return DataType.Decimal;
-			}
-			else if (t == typeof(string))
-				return DataType.String;
-			else if (t.IsArray)
-				return DataType.Array;
-			else if (t.IsClass)
-				return DataType.Class;
-			else if (t.IsValueType)
-				return DataType.Struct;
-
-			// Should never happen in theory
-			return DataType.Unknown;
-		}
-
 
 
 
@@ -713,20 +818,35 @@ namespace Duality.Serialization
 				BinaryFormatter formatter = new BinaryFormatter(fileStream);
 
 				List<string> tempList = new List<string>{ "One", "Two", "Three" };
+				Action<string> tempAction = new Action<string>(Bing);
+				tempAction("test");
+				TestClass tempClass = new TestClass();
+				TestClass tempClass2 = new TestClass();
+				tempClass.TestEvent += new EventHandler(tempClass_TestEvent);
+				tempClass.TestEvent += new EventHandler(tempClass_TestEvent2);
+				tempClass.TestEvent += new EventHandler(tempClass2.Reciever);
+				tempClass.Go();
+				IEnumerable<int> tempYieldEnumerable = tempClass.Enumerate();
+				foreach (int i in tempYieldEnumerable) Console.WriteLine(i);
+				IEnumerator<int> tempYieldEnumerator = tempClass.Enumerate().GetEnumerator();
+				tempYieldEnumerator.MoveNext();
+				Console.WriteLine(tempYieldEnumerator.Current);
 
 				formatter.WriteObject(new KeyValuePair<string,ColorFormat.ColorRGBA[]>("Test", new ColorFormat.ColorRGBA[] { ColorFormat.ColorRGBA.Green }));
 				formatter.WriteObject(42);
 				formatter.WriteObject(new[] { 1, 2, 3 });
-				formatter.WriteObject("Hello World");
+				formatter.WriteObject(typeof(BinaryFormatter).GetMethod("GetDataType", ReflectionHelper.BindStaticAll));
 				formatter.WriteObject(tempList);
 				formatter.WriteObject(tempList);
-				formatter.WriteObject(new Action(__Debug__Test));
-				formatter.WriteObject(new Action(tempList.Clear));
-				formatter.WriteObject(typeof(int));
+				formatter.WriteObject(tempAction);
+				formatter.WriteObject(tempClass);
+				formatter.WriteObject(tempClass2);
+				formatter.WriteObject(tempYieldEnumerable);
+				formatter.WriteObject(tempYieldEnumerator);
 
 				fileStream.Seek(0, SeekOrigin.Begin);
 
-				object[] readObj = new object[9];
+				object[] readObj = new object[11];
 				readObj[0] = formatter.ReadObject();
 				readObj[1] = formatter.ReadObject();
 				readObj[2] = formatter.ReadObject();
@@ -736,10 +856,68 @@ namespace Duality.Serialization
 				readObj[6] = formatter.ReadObject();
 				readObj[7] = formatter.ReadObject();
 				readObj[8] = formatter.ReadObject();
+				readObj[9] = formatter.ReadObject();
+				readObj[10] = formatter.ReadObject();
 
 				List<string> tempList2 = readObj[5] as List<string>;
 				tempList2.Clear();
+
+				(readObj[6] as Action<string>)("test");
+				(readObj[7] as TestClass).Go();
+				foreach (int i in (readObj[9] as IEnumerable<int>)) Console.WriteLine(i);
+				Console.WriteLine((readObj[10] as IEnumerator<int>).Current);
+				(readObj[10] as IEnumerator<int>).MoveNext();
+				Console.WriteLine((readObj[10] as IEnumerator<int>).Current);
 			}
+			using (FileStream fileStream = File.Open("test.dat", FileMode.Open, FileAccess.ReadWrite))
+			{
+				BinaryMetaFormatter formatter = new BinaryMetaFormatter(fileStream);
+
+				BinaryMetaFormatter.DataNode[] readObj = new BinaryMetaFormatter.DataNode[11];
+				readObj[0] = formatter.ReadObject();
+				readObj[1] = formatter.ReadObject();
+				readObj[2] = formatter.ReadObject();
+				readObj[3] = formatter.ReadObject();
+				readObj[4] = formatter.ReadObject();
+				readObj[5] = formatter.ReadObject();
+				readObj[6] = formatter.ReadObject();
+				readObj[7] = formatter.ReadObject();
+				readObj[8] = formatter.ReadObject();
+				readObj[9] = formatter.ReadObject();
+				readObj[10] = formatter.ReadObject();
+			}
+		}
+
+		static void tempClass_TestEvent(object sender, EventArgs e)
+		{
+			Console.WriteLine("tempClass_TestEvent");
+		}
+		static void tempClass_TestEvent2(object sender, EventArgs e)
+		{
+			Console.WriteLine("tempClass_TestEvent2");
+		}
+		public class TestClass
+		{
+			public event EventHandler TestEvent = null;
+
+			public void Go()
+			{
+				this.TestEvent(this, EventArgs.Empty);
+			}
+			public void Reciever(object sender, EventArgs e)
+			{
+				Console.WriteLine("Recieved");
+			}
+			public IEnumerable<int> Enumerate()
+			{
+				yield return 0;
+				yield return 1;
+				yield return 42;
+			}
+		}
+		public static void Bing(string val)
+		{
+			Console.WriteLine("{0} BING", val);
 		}
 	}
 }

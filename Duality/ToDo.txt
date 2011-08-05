@@ -1,13 +1,23 @@
 ﻿
 -->	Serialization ToDo
-	-->	Serialize System.Type properly
-	-->	Serialize System.MemberInfo properly
-	-->	See if delegates can be serialized properly
-	--> See what happens when trying to serialize IEnumerable<T> using yielded functions
-	-->	Same for IEnumerator<T>.
+	-->	Implement BinaryMetaFormatter writing and assure 100% compatibility with BinaryFormatter
+	-->	Expose TypeDataLayout as special TypeDataLayout node when first read.
+	-->	Goal: Open damaged binary files with MetaFormatter, repair them manually, save them.
+		-->	Provide a Dualitor-Plugin that allows opening, editing and saving .res files based on
+			the MetaFormatters data node tree.
+		-->	First step: Just opening, viewing and saving
+		-->	Second step: Editing
 
-	-->	React to [System.Serializable], [System.NonSerialized] and [Duality.Serialization.NonSerializedConditional]
+	-->	React to [System.Serializable], [System.NonSerialized] and [Duality.Resources.NonSerializedPrefab]
 	-->	Custom object serialization / Duality.Serialization.ISerializable interface, Pixmap needs it and probably others as well
+
+	-->	Not quite sure / optional / even harmful?
+		-->	Consider reacting to 
+			[System.Runtime.Serialization.OnDeserializing], 
+			[System.Runtime.Serialization.OnDeserialized], 
+			[System.Runtime.Serialization.OnSerializing] and 
+			[System.Runtime.Serialization.OnSerialized]
+		-->	Consider reacting to System.Runtime.Serialization.IDeserializationCallback interface
 
 	-->	Test if it can de/serialize Duality stuff properly
 	-->	Port content to new serialization format
@@ -15,7 +25,7 @@
 	-->	Performance optimization
 		-->	FindType.
 
-	--> Get rid of SerializationHelper.
+	--> Get rid of (old) SerializationHelper.
 	
 
 
