@@ -1,23 +1,14 @@
 ﻿
 -->	Serialization ToDo
-	-->	Implement BinaryMetaFormatter writing and assure 100% compatibility with BinaryFormatter
-	-->	Expose TypeDataLayout as special TypeDataLayout node when first read.
-	-->	Goal: Open damaged binary files with MetaFormatter, repair them manually, save them.
-		-->	Provide a Dualitor-Plugin that allows opening, editing and saving .res files based on
-			the MetaFormatters data node tree.
-		-->	First step: Just opening, viewing and saving
-		-->	Second step: Editing
+	-->	ResourceHacker
+		-->	Node Icons
+		-->	Editing DataNodes in PropertyGrid
+			-->	Expose Properties
+		-->	BinaryMetaFormatter writing (assure 100% compatibility)
+		-->	Action: Rename Type
 
 	-->	React to [System.Serializable], [System.NonSerialized] and [Duality.Resources.NonSerializedPrefab]
 	-->	Custom object serialization / Duality.Serialization.ISerializable interface, Pixmap needs it and probably others as well
-
-	-->	Not quite sure / optional / even harmful?
-		-->	Consider reacting to 
-			[System.Runtime.Serialization.OnDeserializing], 
-			[System.Runtime.Serialization.OnDeserialized], 
-			[System.Runtime.Serialization.OnSerializing] and 
-			[System.Runtime.Serialization.OnSerialized]
-		-->	Consider reacting to System.Runtime.Serialization.IDeserializationCallback interface
 
 	-->	Test if it can de/serialize Duality stuff properly
 	-->	Port content to new serialization format

@@ -198,6 +198,19 @@ namespace Duality.Serialization
 				this.method = method;
 				this.target = target;
 				this.invokeList = invokeList;
+
+				if (this.method != null) this.method.Parent = this;
+				if (this.target != null) this.target.Parent = this;
+				if (this.invokeList != null) this.invokeList.Parent = this;
+			}
+		}
+		public class TypeDataLayoutNode : DataNode
+		{
+			protected	TypeDataLayout	layout;
+
+			public TypeDataLayoutNode(TypeDataLayout layout) : base(DataType.Unknown)
+			{
+				this.layout = layout;
 			}
 		}
 
@@ -225,7 +238,7 @@ namespace Duality.Serialization
 				if (this.writer == value) return;
 				this.writer = value;
 
-				if (!this.writer.BaseStream.CanSeek) throw new ArgumentException("Cannot use a WriteTarget without seeking capability.");
+				if (this.writer != null && !this.writer.BaseStream.CanSeek) throw new ArgumentException("Cannot use a WriteTarget without seeking capability.");
 
 				// We're switching the stream, so we should discard all stream-specific temporary / cache data
 				this.ClearStreamSpecificData();
@@ -239,7 +252,7 @@ namespace Duality.Serialization
 				if (this.reader == value) return;
 				this.reader = value;
 
-				if (!this.reader.BaseStream.CanSeek) throw new ArgumentException("Cannot use a ReadTarget without seeking capability.");
+				if (this.reader != null && !this.reader.BaseStream.CanSeek) throw new ArgumentException("Cannot use a ReadTarget without seeking capability.");
 
 				// We're switching the stream, so we should discard all stream-specific temporary / cache data
 				this.ClearStreamSpecificData();
@@ -259,7 +272,11 @@ namespace Duality.Serialization
 		}
 
 
-		public BinaryMetaFormatter() : this(null) {}
+		public BinaryMetaFormatter() 
+		{
+			this.WriteTarget = null;
+			this.ReadTarget = null;
+		}
 		public BinaryMetaFormatter(Stream stream)
 		{
 			this.WriteTarget = new BinaryWriter(stream);
@@ -296,6 +313,7 @@ namespace Duality.Serialization
 		public DataNode ReadObject()
 		{
 			if (!this.CanRead) return null;
+			if (this.reader.BaseStream.Position == this.reader.BaseStream.Length) return null;
 			if (this.lastWritten) this.ClearStreamSpecificData();
 			this.lastWritten = false;
 
@@ -430,6 +448,8 @@ namespace Duality.Serialization
 
 			// Determine data layout
 			TypeDataLayout layout	= this.ReadTypeDataLayout(objTypeString);
+			TypeDataLayoutNode layoutNode = new TypeDataLayoutNode(new TypeDataLayout(layout));
+			layoutNode.Parent = result;
 
 			// Read fields
 			for (int i = 0; i < layout.Fields.Length; i++)

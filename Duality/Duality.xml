@@ -211,24 +211,19 @@
             <param name="attrib">How to describe the Type</param>
             <returns></returns>
         </member>
-        <member name="M:Duality.ReflectionHelper.ConvertTypeCodeToGetType(System.String)">
-            <summary>
-            Converts a full name type string from CS code style to GetType compatible. Warning:
-            As GetType only searches in a specific assembly, type identifiers combined out of types from
-            different Assemblies won't be found.
-            </summary>
-            <param name="csCodeType"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.ReflectionHelper.FindType(System.String,System.Reflection.Assembly[])">
+        <member name="M:Duality.ReflectionHelper.FindTypeByCSCodeIdent(System.String,System.Reflection.Assembly[],System.Type)">
             <summary>
             Searches a specific type (specified as would be valid in C# code) in an array of Assemblies.
             Generates the type if neccessary (generic). Also supports generic types combined using types 
             from different Assemblies.
             </summary>
-            <param name="csCodeType"></param>
-            <param name="asmSearch"></param>
-            <returns></returns>
+        </member>
+        <member name="M:Duality.ReflectionHelper.FindTypeByFullNameWithoutAssembly(System.String,System.Reflection.Assembly[])">
+            <summary>
+            Searches a specific type (specified using FullNameWithoutAssembly) in an array of Assemblies.
+            Generates the type if neccessary (generic). Also supports generic types combined using types 
+            from different Assemblies.
+            </summary>
         </member>
         <member name="T:Duality.ReflectionHelper.TypeStringAttrib">
             <summary>
@@ -241,9 +236,9 @@
             type parameters or array specifications.
             </summary>
         </member>
-        <member name="F:Duality.ReflectionHelper.TypeStringAttrib.LongName">
+        <member name="F:Duality.ReflectionHelper.TypeStringAttrib.FullNameWithoutAssembly">
             <summary>
-            The types full name, but without generic arguments, element types or assembly names
+            Exactly the same as a Types FullName, but without any Assembly names, versions, keys, etc.
             </summary>
         </member>
         <member name="F:Duality.ReflectionHelper.TypeStringAttrib.CSCodeIdent">

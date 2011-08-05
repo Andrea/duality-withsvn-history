@@ -250,9 +250,6 @@ namespace Duality
 
 			initialized = true;
 			OnInitialized();
-
-			Duality.Serialization.BinaryFormatter.__Debug__Test();
-			System.Diagnostics.Debugger.Break();
 		}
 		public static void Terminate(bool unexpected = false)
 		{

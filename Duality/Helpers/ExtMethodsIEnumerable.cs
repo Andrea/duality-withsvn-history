@@ -115,5 +115,10 @@ namespace Duality
 		{
 			return collection.Where(i => i != null);
 		}
+
+		public static IEnumerable<T> Range<T>(this IEnumerable<T> collection, int startIndex, int length)
+		{
+			return collection.Skip(startIndex).Take(length);
+		}
 	}
 }

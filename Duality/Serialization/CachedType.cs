@@ -34,7 +34,7 @@ namespace Duality.Serialization
 		{
 			this.type = t;
 			this.fields = this.type.GetFields(ReflectionHelper.BindInstanceAll);
-			this.typeString = ReflectionHelper.GetTypeString(this.type, ReflectionHelper.TypeStringAttrib.CSCodeIdent);
+			this.typeString = ReflectionHelper.GetTypeString(this.type, ReflectionHelper.TypeStringAttrib.FullNameWithoutAssembly);
 			this.dataType = SerializationHelper.GetDataType(this.type);
 		}
 	}

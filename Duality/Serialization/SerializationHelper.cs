@@ -22,7 +22,7 @@ namespace Duality.Serialization
 			if (typeResolveCache.TryGetValue(typeString, out result)) return result;
 
 			Assembly[] searchAsm = AppDomain.CurrentDomain.GetAssemblies().Except(DualityApp.DisposedPlugins).ToArray();
-			result = ReflectionHelper.FindType(typeString, searchAsm);
+			result = ReflectionHelper.FindTypeByFullNameWithoutAssembly(typeString, searchAsm);
 			typeResolveCache[typeString] = result;
 
 			if (result == null) throw new ApplicationException(string.Format("Cannot resolve Type '{0}'. Type not found", typeString));

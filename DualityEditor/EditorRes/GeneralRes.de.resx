@@ -126,6 +126,9 @@
   <data name="MenuName_Settings" xml:space="preserve">
     <value>Einstellungen</value>
   </data>
+  <data name="MenuName_Tools" xml:space="preserve">
+    <value>Extras</value>
+  </data>
   <data name="MenuName_View" xml:space="preserve">
     <value>Ansicht</value>
   </data>

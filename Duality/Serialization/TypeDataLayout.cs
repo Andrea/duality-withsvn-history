@@ -32,13 +32,17 @@ namespace Duality.Serialization
 				this.fields[i].typeString = r.ReadString();
 			}
 		}
+		public TypeDataLayout(TypeDataLayout t)
+		{
+			this.fields = t.fields != null ? t.fields.Clone() as FieldDataInfo[] : null;
+		}
 		public TypeDataLayout(CachedType t)
 		{
 			this.fields = new FieldDataInfo[t.Fields.Length];
 			for (int i = 0; i < t.Fields.Length; i++)
 			{
 				this.fields[i].name = t.Fields[i].Name;
-				this.fields[i].typeString = ReflectionHelper.GetTypeString(t.Fields[i].FieldType, ReflectionHelper.TypeStringAttrib.CSCodeIdent);
+				this.fields[i].typeString = ReflectionHelper.GetTypeString(t.Fields[i].FieldType, ReflectionHelper.TypeStringAttrib.FullNameWithoutAssembly);
 			}
 		}
 

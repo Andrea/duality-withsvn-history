@@ -471,6 +471,11 @@
               Sucht eine lokalisierte Zeichenfolge, die Settings ähnelt.
             </summary>
         </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.MenuName_Tools">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Tools ähnelt.
+            </summary>
+        </member>
         <member name="P:DualityEditor.EditorRes.GeneralRes.MenuName_View">
             <summary>
               Sucht eine lokalisierte Zeichenfolge, die View ähnelt.
