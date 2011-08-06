@@ -130,6 +130,7 @@ namespace DualityEditor.Controls
 		{
 			editor.Dock = DockStyle.Top;
 			editor.ValueEdited += this.OnValueEdited;
+			editor.EditingFinished += this.OnEditingFinished;
 
 			this.propertyEditors.Add(editor);
 			this.tableLayout.Controls.Add(editor);
@@ -139,6 +140,7 @@ namespace DualityEditor.Controls
 		protected void RemovePropertyEditor(PropertyEditor editor)
 		{
 			editor.ValueEdited -= this.OnValueEdited;
+			editor.EditingFinished -= this.OnEditingFinished;
 			this.OnEditorRemoving(editor);
 
 			this.propertyEditors.Remove(editor);
@@ -150,6 +152,7 @@ namespace DualityEditor.Controls
 			foreach (PropertyEditor e in this.propertyEditors)
 			{
 				e.ValueEdited -= this.OnValueEdited;
+				e.EditingFinished -= this.OnEditingFinished;
 				this.OnEditorRemoving(e);
 			}
 			this.tableLayout.Controls.Clear();

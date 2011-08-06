@@ -29,7 +29,7 @@ namespace ResourceHacker.PropertyEditors
 			base.OnUpdateFromObjects(values);
 
 			BinaryMetaFormatter.ArrayNode arrayNode = values.NotNull().FirstOrDefault() as BinaryMetaFormatter.ArrayNode;
-			Type actualType = Duality.Serialization.SerializationHelper.ResolveType(arrayNode.TypeString);
+			Type actualType = ReflectionHelper.ResolveType(arrayNode.TypeString);
 			bool primitiveDataEditable = actualType != null && actualType.IsArray && (actualType.GetElementType().IsPrimitive || actualType.GetElementType() == typeof(string));
 			
 			if (primitiveDataEditable) this.editorPrimitiveData.EditedType = actualType;
@@ -41,7 +41,7 @@ namespace ResourceHacker.PropertyEditors
 			if (ReflectionHelper.MemberInfoEquals(info, typeof(BinaryMetaFormatter.ArrayNode).GetProperty("PrimitiveData")))
 			{
 				BinaryMetaFormatter.ArrayNode arrayNode = this.Getter().NotNull().FirstOrDefault() as BinaryMetaFormatter.ArrayNode;
-				Type actualType = Duality.Serialization.SerializationHelper.ResolveType(arrayNode.TypeString);
+				Type actualType = ReflectionHelper.ResolveType(arrayNode.TypeString);
 				if (actualType == null || !actualType.IsArray || actualType.GetElementType() == null) actualType = (info as PropertyInfo).PropertyType;
 
 				this.editorPrimitiveData = this.ParentGrid.PropertyEditorProvider.CreateEditor(actualType, this, this.ParentGrid);

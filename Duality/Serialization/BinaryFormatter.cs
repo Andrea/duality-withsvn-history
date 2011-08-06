@@ -7,101 +7,20 @@ using System.Reflection;
 
 namespace Duality.Serialization
 {
-	public class BinaryFormatter : IDisposable
+	public class BinaryFormatter : BinaryFormatterBase
 	{
-		// General fields
-		protected	BinaryWriter	writer;
-		protected	BinaryReader	reader;
-		protected	bool			disposed;
-		// Temporary, "stream operation"-specific data
-		protected	bool							lastWritten		= false;
-		protected	Stack<long>						offsetStack		= new Stack<long>();
-		protected	Dictionary<Type,TypeDataLayout>	typeDataLayout	= new Dictionary<Type,TypeDataLayout>();
-		protected	Dictionary<object,uint>			objRefIdMap		= new Dictionary<object,uint>();
-		protected	Dictionary<uint,object>			idObjRefMap		= new Dictionary<uint,object>();
-		protected	uint							idCounter		= 0;
-
-
-		public BinaryWriter WriteTarget
-		{
-			get { return this.writer; }
-			set
-			{
-				if (this.writer == value) return;
-				this.writer = value;
-
-				if (!this.writer.BaseStream.CanSeek) throw new ArgumentException("Cannot use a WriteTarget without seeking capability.");
-
-				// We're switching the stream, so we should discard all stream-specific temporary / cache data
-				this.ClearStreamSpecificData();
-			}
-		}
-		public BinaryReader ReadTarget
-		{
-			get { return this.reader; }
-			set
-			{
-				if (this.reader == value) return;
-				this.reader = value;
-
-				if (!this.reader.BaseStream.CanSeek) throw new ArgumentException("Cannot use a ReadTarget without seeking capability.");
-
-				// We're switching the stream, so we should discard all stream-specific temporary / cache data
-				this.ClearStreamSpecificData();
-			}
-		}
-		public bool CanWrite
-		{
-			get { return this.writer != null; }
-		}
-		public bool CanRead
-		{
-			get { return this.reader != null; }
-		}
-		public bool Disposed
-		{
-			get { return this.disposed; }
-		}
-
-
-		public BinaryFormatter() : this(null) {}
-		public BinaryFormatter(Stream stream)
-		{
-			this.WriteTarget = new BinaryWriter(stream);
-			this.ReadTarget = new BinaryReader(stream);
-		}
-		~BinaryFormatter()
-		{
-			this.Dispose(false);
-		}
-		public void Dispose()
-		{
-			GC.SuppressFinalize(this);
-			this.Dispose(true);
-		}
-		protected virtual void Dispose(bool manually)
-		{
-			if (this.disposed) return;
-
-			if (this.writer != null)
-			{
-				if (this.writer.BaseStream.CanWrite) this.writer.Flush();
-				this.writer.Dispose();
-				this.writer = null;
-			}
-
-			if (this.reader != null)
-			{
-				this.reader.Dispose();
-				this.reader = null;
-			}
-		}
+		public BinaryFormatter() : base() {}
+		public BinaryFormatter(Stream stream) : base(stream) {}
 
 		public void WriteObject(object obj)
 		{
 			if (!this.CanWrite) return;
-			if (!this.lastWritten) this.ClearStreamSpecificData();
-			this.lastWritten = true;
+			if (this.lastOperation != Operation.Write)
+			{
+				this.ClearStreamSpecificData();
+				this.WriteFormatterHeader();
+			}
+			this.lastOperation = Operation.Write;
 
 			// NotNull flag
 			if (obj == null)
@@ -114,7 +33,7 @@ namespace Duality.Serialization
 
 			// Retrieve type data
 			Type objType = obj.GetType();
-			CachedType objCachedType = SerializationHelper.GetCachedType(objType);
+			CachedType objCachedType = ReflectionHelper.GetCachedType(objType);
 			uint objId = 0;
 			DataType dataType = objCachedType.DataType;
 
@@ -174,14 +93,14 @@ namespace Duality.Serialization
 			if (obj is Type)
 			{
 				Type type = obj as Type;
-				CachedType cachedType = SerializationHelper.GetCachedType(type);
+				CachedType cachedType = ReflectionHelper.GetCachedType(type);
 
 				this.writer.Write(cachedType.TypeString);
 			}
 			else if (obj is FieldInfo)
 			{
 				FieldInfo field = obj as FieldInfo;
-				CachedType declaringType = SerializationHelper.GetCachedType(field.DeclaringType);
+				CachedType declaringType = ReflectionHelper.GetCachedType(field.DeclaringType);
 
 				this.writer.Write(field.IsStatic);
 				this.writer.Write(declaringType.TypeString);
@@ -192,12 +111,12 @@ namespace Duality.Serialization
 				PropertyInfo property = obj as PropertyInfo;
 				ParameterInfo[] indexParams = property.GetIndexParameters();
 
-				CachedType declaringType = SerializationHelper.GetCachedType(property.DeclaringType);
-				CachedType propertyType = SerializationHelper.GetCachedType(property.PropertyType);
+				CachedType declaringType = ReflectionHelper.GetCachedType(property.DeclaringType);
+				CachedType propertyType = ReflectionHelper.GetCachedType(property.PropertyType);
 
 				CachedType[] paramTypes = new CachedType[indexParams.Length];
 				for (int i = 0; i < indexParams.Length; i++)
-					paramTypes[i] = SerializationHelper.GetCachedType(indexParams[i].ParameterType);
+					paramTypes[i] = ReflectionHelper.GetCachedType(indexParams[i].ParameterType);
 
 				this.writer.Write(property.GetAccessors(true)[0].IsStatic);
 				this.writer.Write(declaringType.TypeString);
@@ -212,11 +131,11 @@ namespace Duality.Serialization
 				MethodInfo method = obj as MethodInfo;
 				ParameterInfo[] parameters = method.GetParameters();
 
-				CachedType declaringType = SerializationHelper.GetCachedType(method.DeclaringType);
+				CachedType declaringType = ReflectionHelper.GetCachedType(method.DeclaringType);
 
 				CachedType[] paramTypes = new CachedType[parameters.Length];
 				for (int i = 0; i < parameters.Length; i++)
-					paramTypes[i] = SerializationHelper.GetCachedType(parameters[i].ParameterType);
+					paramTypes[i] = ReflectionHelper.GetCachedType(parameters[i].ParameterType);
 
 				this.writer.Write(method.IsStatic);
 				this.writer.Write(declaringType.TypeString);
@@ -230,11 +149,11 @@ namespace Duality.Serialization
 				ConstructorInfo method = obj as ConstructorInfo;
 				ParameterInfo[] parameters = method.GetParameters();
 
-				CachedType declaringType = SerializationHelper.GetCachedType(method.DeclaringType);
+				CachedType declaringType = ReflectionHelper.GetCachedType(method.DeclaringType);
 
 				CachedType[] paramTypes = new CachedType[parameters.Length];
 				for (int i = 0; i < parameters.Length; i++)
-					paramTypes[i] = SerializationHelper.GetCachedType(parameters[i].ParameterType);
+					paramTypes[i] = ReflectionHelper.GetCachedType(parameters[i].ParameterType);
 
 				this.writer.Write(method.IsStatic);
 				this.writer.Write(declaringType.TypeString);
@@ -245,7 +164,7 @@ namespace Duality.Serialization
 			else if (obj is EventInfo)
 			{
 				EventInfo e = obj as EventInfo;
-				CachedType declaringType = SerializationHelper.GetCachedType(e.DeclaringType);
+				CachedType declaringType = ReflectionHelper.GetCachedType(e.DeclaringType);
 
 				this.writer.Write(e.GetRaiseMethod().IsStatic);
 				this.writer.Write(declaringType.TypeString);
@@ -326,88 +245,17 @@ namespace Duality.Serialization
 				this.WriteObject(objAsDelegate.GetInvocationList());
 			}
 		}
-		protected void WriteTypeDataLayout(CachedType objCachedType)
-		{
-			if (this.typeDataLayout.ContainsKey(objCachedType.Type)) return;
-
-			TypeDataLayout layout = new TypeDataLayout(objCachedType);
-			this.typeDataLayout[objCachedType.Type] = layout;
-
-			layout.Write(this.writer);
-		}
-
-		protected void WriteArrayData(bool[] obj)
-		{
-			for (long l = 0; l < obj.Length; l++) this.writer.Write(obj[l]);
-		}
-		protected void WriteArrayData(byte[] obj)
-		{
-			this.writer.Write(obj);
-		}
-		protected void WriteArrayData(sbyte[] obj)
-		{
-			for (long l = 0; l < obj.Length; l++) this.writer.Write(obj[l]);
-		}
-		protected void WriteArrayData(short[] obj)
-		{
-			for (long l = 0; l < obj.Length; l++) this.writer.Write(obj[l]);
-		}
-		protected void WriteArrayData(ushort[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) this.writer.Write(obj[l]);
-		}
-		protected void WriteArrayData(int[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) this.writer.Write(obj[l]);
-		}
-		protected void WriteArrayData(uint[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) this.writer.Write(obj[l]);
-		}
-		protected void WriteArrayData(long[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) this.writer.Write(obj[l]);
-		}
-		protected void WriteArrayData(ulong[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) this.writer.Write(obj[l]);
-		}
-		protected void WriteArrayData(float[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) this.writer.Write(obj[l]);
-		}
-		protected void WriteArrayData(double[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) this.writer.Write(obj[l]);
-		}
-		protected void WriteArrayData(decimal[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) this.writer.Write(obj[l]);
-		}
-		protected void WriteArrayData(char[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) this.writer.Write(obj[l]);
-		}
-		protected void WriteArrayData(string[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++)
-			{
-				if (obj[l] == null)
-					this.writer.Write(false);
-				else
-				{
-					this.writer.Write(true);
-					this.writer.Write(obj[l]);
-				}
-			}
-		}
-
 
 		public object ReadObject()
 		{
 			if (!this.CanRead) return null;
-			if (this.lastWritten) this.ClearStreamSpecificData();
-			this.lastWritten = false;
+			if (this.reader.BaseStream.Position == this.reader.BaseStream.Length) return null;
+			if (this.lastOperation != Operation.Read)
+			{
+				this.ClearStreamSpecificData();
+				this.ReadFormatterHeader();
+			}
+			this.lastOperation = Operation.Read;
 
 			// Not null flag
 			bool isNotNull = this.reader.ReadBoolean();
@@ -471,7 +319,7 @@ namespace Duality.Serialization
 			uint	objId			= this.reader.ReadUInt32();
 			int		arrRang			= this.reader.ReadInt32();
 			long	arrLength		= this.reader.ReadInt32();
-			Type	arrType			= SerializationHelper.ResolveType(arrTypeString);
+			Type	arrType			= ReflectionHelper.ResolveType(arrTypeString);
 
 			Array arrObj = Array.CreateInstance(arrType.GetElementType(), arrLength);
 			
@@ -509,7 +357,7 @@ namespace Duality.Serialization
 			// Read struct type
 			string	objTypeString	= this.reader.ReadString();
 			uint	objId			= this.reader.ReadUInt32();
-			Type	objType			= SerializationHelper.ResolveType(objTypeString);
+			Type	objType			= ReflectionHelper.ResolveType(objTypeString);
 
 			// Construct object
 			object obj = ReflectionHelper.CreateInstanceOf(objType);
@@ -530,7 +378,7 @@ namespace Duality.Serialization
 			for (int i = 0; i < layout.Fields.Length; i++)
 			{
 				FieldInfo field = objType.GetField(layout.Fields[i].name, ReflectionHelper.BindInstanceAll);
-				Type fieldType = SerializationHelper.ResolveType(layout.Fields[i].typeString);
+				Type fieldType = ReflectionHelper.ResolveType(layout.Fields[i].typeString);
 				object fieldValue = this.ReadObject();
 
 				if (field == null)
@@ -560,7 +408,7 @@ namespace Duality.Serialization
 			if (dataType == DataType.Type)
 			{
 				string typeString = this.reader.ReadString();
-				Type type = SerializationHelper.ResolveType(typeString);
+				Type type = ReflectionHelper.ResolveType(typeString);
 				result = type;
 			}
 			else if (dataType == DataType.FieldInfo)
@@ -569,7 +417,7 @@ namespace Duality.Serialization
 				string declaringTypeString = this.reader.ReadString();
 				string fieldName = this.reader.ReadString();
 
-				Type declaringType = SerializationHelper.ResolveType(declaringTypeString);
+				Type declaringType = ReflectionHelper.ResolveType(declaringTypeString);
 				FieldInfo field = declaringType.GetField(fieldName, isStatic ? ReflectionHelper.BindStaticAll : ReflectionHelper.BindInstanceAll);
 				result = field;
 			}
@@ -585,11 +433,11 @@ namespace Duality.Serialization
 				for (int i = 0; i < paramCount; i++)
 					paramTypeStrings[i] = this.reader.ReadString();
 
-				Type declaringType = SerializationHelper.ResolveType(declaringTypeString);
-				Type propertyType = SerializationHelper.ResolveType(propertyTypeString);
+				Type declaringType = ReflectionHelper.ResolveType(declaringTypeString);
+				Type propertyType = ReflectionHelper.ResolveType(propertyTypeString);
 				Type[] paramTypes = new Type[paramCount];
 				for (int i = 0; i < paramCount; i++)
-					paramTypes[i] = SerializationHelper.ResolveType(paramTypeStrings[i]);
+					paramTypes[i] = ReflectionHelper.ResolveType(paramTypeStrings[i]);
 
 				PropertyInfo property = declaringType.GetProperty(
 					propertyName, 
@@ -612,10 +460,10 @@ namespace Duality.Serialization
 				for (int i = 0; i < paramCount; i++)
 					paramTypeStrings[i] = this.reader.ReadString();
 
-				Type declaringType = SerializationHelper.ResolveType(declaringTypeString);
+				Type declaringType = ReflectionHelper.ResolveType(declaringTypeString);
 				Type[] paramTypes = new Type[paramCount];
 				for (int i = 0; i < paramCount; i++)
-					paramTypes[i] = SerializationHelper.ResolveType(paramTypeStrings[i]);
+					paramTypes[i] = ReflectionHelper.ResolveType(paramTypeStrings[i]);
 
 				MethodInfo method = declaringType.GetMethod(methodName, isStatic ? ReflectionHelper.BindStaticAll : ReflectionHelper.BindInstanceAll, null, paramTypes, null);
 				result = method;
@@ -630,10 +478,10 @@ namespace Duality.Serialization
 				for (int i = 0; i < paramCount; i++)
 					paramTypeStrings[i] = this.reader.ReadString();
 
-				Type declaringType = SerializationHelper.ResolveType(declaringTypeString);
+				Type declaringType = ReflectionHelper.ResolveType(declaringTypeString);
 				Type[] paramTypes = new Type[paramCount];
 				for (int i = 0; i < paramCount; i++)
-					paramTypes[i] = SerializationHelper.ResolveType(paramTypeStrings[i]);
+					paramTypes[i] = ReflectionHelper.ResolveType(paramTypeStrings[i]);
 
 				ConstructorInfo method = declaringType.GetConstructor(isStatic ? ReflectionHelper.BindStaticAll : ReflectionHelper.BindInstanceAll, null, paramTypes, null);
 				result = method;
@@ -644,7 +492,7 @@ namespace Duality.Serialization
 				string declaringTypeString = this.reader.ReadString();
 				string eventName = this.reader.ReadString();
 
-				Type declaringType = SerializationHelper.ResolveType(declaringTypeString);
+				Type declaringType = ReflectionHelper.ResolveType(declaringTypeString);
 				EventInfo e = declaringType.GetEvent(eventName, isStatic ? ReflectionHelper.BindStaticAll : ReflectionHelper.BindInstanceAll);
 				result = e;
 			}
@@ -666,7 +514,7 @@ namespace Duality.Serialization
 			string		delegateTypeString	= this.reader.ReadString();
 			uint		objId				= this.reader.ReadUInt32();
 			bool		multi				= this.reader.ReadBoolean();
-			Type		delType				= SerializationHelper.ResolveType(delegateTypeString);
+			Type		delType				= ReflectionHelper.ResolveType(delegateTypeString);
 
 			MethodInfo	method	= this.ReadObject() as MethodInfo;
 			object		target	= this.ReadObject();
@@ -687,124 +535,6 @@ namespace Duality.Serialization
 			}
 
 			return del;
-		}
-		protected TypeDataLayout ReadTypeDataLayout(Type t)
-		{
-			TypeDataLayout result;
-			if (this.typeDataLayout.TryGetValue(t, out result)) return result;
-
-			result = new TypeDataLayout(this.reader);
-			this.typeDataLayout[t] = result;
-			return result;
-		}
-
-		protected void ReadArrayData(bool[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) obj[l] = this.reader.ReadBoolean();
-		}
-		protected void ReadArrayData(byte[] obj)
-		{
-			this.reader.Read(obj, 0, obj.Length);
-		}
-		protected void ReadArrayData(sbyte[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) obj[l] = this.reader.ReadSByte();
-		}
-		protected void ReadArrayData(short[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) obj[l] = this.reader.ReadInt16();
-		}
-		protected void ReadArrayData(ushort[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) obj[l] = this.reader.ReadUInt16();
-		}
-		protected void ReadArrayData(int[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) obj[l] = this.reader.ReadInt32();
-		}
-		protected void ReadArrayData(uint[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) obj[l] = this.reader.ReadUInt32();
-		}
-		protected void ReadArrayData(long[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) obj[l] = this.reader.ReadInt64();
-		}
-		protected void ReadArrayData(ulong[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) obj[l] = this.reader.ReadUInt64();
-		}
-		protected void ReadArrayData(float[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) obj[l] = this.reader.ReadSingle();
-		}
-		protected void ReadArrayData(double[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) obj[l] = this.reader.ReadDouble();
-		}
-		protected void ReadArrayData(decimal[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) obj[l] = this.reader.ReadDecimal();
-		}
-		protected void ReadArrayData(char[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) obj[l] = this.reader.ReadChar();
-		}
-		protected void ReadArrayData(string[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++)
-			{
-				bool isNotNull = this.reader.ReadBoolean();
-				if (isNotNull)
-					obj[l] = this.reader.ReadString();
-				else
-					obj[l] = null;
-			}
-		}
-
-		
-		protected void WriteDataType(DataType dt)
-		{
-			this.writer.Write((byte)dt);
-		}
-		protected DataType ReadDataType()
-		{
-			return (DataType)this.reader.ReadByte();
-		}
-		protected void WritePushOffset()
-		{
-			this.offsetStack.Push(this.writer.BaseStream.Position);
-			this.writer.Write(0L);
-		}
-		protected void WritePopOffset()
-		{
-			long curPos = this.writer.BaseStream.Position;
-			long lastPos = this.offsetStack.Pop();
-			long offset = curPos - lastPos;
-			
-			this.writer.BaseStream.Seek(lastPos, SeekOrigin.Begin);
-			this.writer.Write(offset);
-			this.writer.BaseStream.Seek(curPos, SeekOrigin.Begin);
-		}
-
-		protected void ClearStreamSpecificData()
-		{
-			this.typeDataLayout.Clear();
-			this.offsetStack.Clear();
-			this.objRefIdMap.Clear();
-			this.idObjRefMap.Clear();
-			this.idCounter = 0;
-		}
-		protected uint GetIdFromObject(object obj)
-		{
-			uint id;
-			if (this.objRefIdMap.TryGetValue(obj, out id)) return id;
-
-			id = ++idCounter;
-			this.objRefIdMap[obj] = id;
-			this.idObjRefMap[id] = obj;
-
-			return id;
 		}
 	}
 }

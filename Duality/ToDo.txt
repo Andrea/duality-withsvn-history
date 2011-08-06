@@ -1,11 +1,9 @@
 ﻿
 -->	Serialization ToDo
 	-->	ResourceHacker
-		-->	Node Icons
-		-->	Editing DataNodes in PropertyGrid
-			-->	Expose Properties
 		-->	BinaryMetaFormatter writing (assure 100% compatibility)
 		-->	Action: Rename Type
+		-->	Action: Rename Field
 
 	-->	React to [System.Serializable], [System.NonSerialized] and [Duality.Resources.NonSerializedPrefab]
 	-->	Custom object serialization / Duality.Serialization.ISerializable interface, Pixmap needs it and probably others as well

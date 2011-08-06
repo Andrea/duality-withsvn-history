@@ -135,7 +135,7 @@
     <Compile Include="Serialization\BinaryMetaFormatter.cs" />
     <Compile Include="Serialization\CachedType.cs" />
     <Compile Include="Serialization\DataType.cs" />
-    <Compile Include="Serialization\SerializationHelper.cs" />
+    <Compile Include="Serialization\BinaryFormatterBase.cs" />
     <Compile Include="Serialization\TypeDataLayout.cs" />
     <Compile Include="Time.cs" />
     <Compile Include="Graphics\VertexFormat\IVertexData.cs" />

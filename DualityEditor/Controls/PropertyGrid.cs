@@ -115,6 +115,9 @@ namespace DualityEditor.Controls
 		private	int					updateTimerChangeMs		= 0;
 		private	bool				updateScheduled			= false;
 
+		public event EventHandler<PropertyGridValueEditedEventArgs> ValueEdited = null;
+		public event EventHandler EditingFinished = null;
+
 		public IPropertyEditorProvider PropertyEditorProvider
 		{
 			get { return this.propertyEditorProvider; }
@@ -126,6 +129,10 @@ namespace DualityEditor.Controls
 		public bool ReadOnlySelection
 		{
 			get { return this.readOnlySelection; }
+		}
+		public PropertyEditor MainEditor
+		{
+			get { return this.propertyEditor; }
 		}
 
 		public PropertyGrid()
@@ -212,12 +219,16 @@ namespace DualityEditor.Controls
 			this.propertyEditor.Getter = this.ValueGetter;
 			this.propertyEditor.Setter = this.ValueSetter;
 			this.propertyEditor.Expanded = true;
+			this.propertyEditor.ValueEdited += this.propertyEditor_ValueEdited;
+			this.propertyEditor.EditingFinished += this.propertyEditor_EditingFinished;
 		}
 		protected void DisposePropertyEditor()
 		{
 			if (this.propertyEditor != null)
 			{
 				this.Controls.Remove(this.propertyEditor);
+				this.propertyEditor.ValueEdited -= this.propertyEditor_ValueEdited;
+				this.propertyEditor.EditingFinished -= this.propertyEditor_EditingFinished;
 				this.propertyEditor.Dispose();
 				this.propertyEditor = null;
 			}
@@ -273,6 +284,17 @@ namespace DualityEditor.Controls
 				this.updateTimerChangeMs -= this.updateTimer.Interval;
 				if (this.updateTimerChangeMs <= 0) this.UpdateFromObjects();
 			}
+		}
+
+		protected void propertyEditor_EditingFinished(object sender, EventArgs e)
+		{
+			if (this.EditingFinished != null)
+				this.EditingFinished(sender, e);
+		}
+		protected void propertyEditor_ValueEdited(object sender, PropertyGridValueEditedEventArgs e)
+		{
+			if (this.ValueEdited != null)
+				this.ValueEdited(sender, e);
 		}
 	}
 }

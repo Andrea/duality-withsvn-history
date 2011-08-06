@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace Duality.Serialization
 {
-	public enum DataType : byte
+	public enum DataType : ushort
 	{
 		Unknown,
 
@@ -45,11 +45,11 @@ namespace Duality.Serialization
 	{
 		public static bool IsPrimitiveType(this DataType dt)
 		{
-			return (byte)dt >= (byte)DataType.Bool && (byte)dt <= (byte)DataType.Char;
+			return (ushort)dt >= (ushort)DataType.Bool && (ushort)dt <= (ushort)DataType.Char;
 		}
 		public static bool IsMemberInfoType(this DataType dt)
 		{
-			return (byte)dt >= (byte)DataType.Type && (byte)dt <= (byte)DataType.EventInfo;
+			return (ushort)dt >= (ushort)DataType.Type && (ushort)dt <= (ushort)DataType.EventInfo;
 		}
 		public static Type ToActualType(this DataType dt)
 		{

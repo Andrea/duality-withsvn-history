@@ -171,10 +171,14 @@ namespace DualityEditor.Controls
 		{
 			this.OnValueEdited(this, new PropertyGridValueEditedEventArgs(this, value));
 		}
-		protected void OnEditingFinished()
+		protected void OnEditingFinished(object sender, EventArgs e)
 		{
 			if (this.EditingFinished != null)
-				this.EditingFinished(this, EventArgs.Empty);
+				this.EditingFinished(sender, e);
+		}
+		protected void OnEditingFinished()
+		{
+			this.OnEditingFinished(this, EventArgs.Empty);
 		}
 	}
 }

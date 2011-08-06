@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace Duality.Serialization
 {
-	public class BinaryMetaFormatter : IDisposable
+	public class BinaryMetaFormatter : BinaryFormatterBase
 	{
 		public abstract class DataNode
 		{
@@ -309,108 +309,20 @@ namespace Duality.Serialization
 			}
 		}
 
-		// General fields
-		protected	BinaryWriter	writer;
-		protected	BinaryReader	reader;
-		protected	bool			disposed;
-		// Reflection data caching
-		protected	Dictionary<Type,CachedType>	typeCache			= new Dictionary<Type,CachedType>();
-		protected	Dictionary<string,Type>		typeResolveCache	= new Dictionary<string,Type>();
-		// Temporary, "stream operation"-specific data
-		protected	bool								lastWritten		= false;
-		protected	Stack<long>							offsetStack		= new Stack<long>();
-		protected	Dictionary<string,TypeDataLayout>	typeDataLayout	= new Dictionary<string,TypeDataLayout>();
-		protected	Dictionary<DataNode,uint>			objRefIdMap		= new Dictionary<DataNode,uint>();
-		protected	Dictionary<uint,DataNode>			idObjRefMap		= new Dictionary<uint,DataNode>();
-		protected	uint								idCounter		= 0;
 
-
-		public BinaryWriter WriteTarget
-		{
-			get { return this.writer; }
-			set
-			{
-				if (this.writer == value) return;
-				this.writer = value;
-
-				if (this.writer != null && !this.writer.BaseStream.CanSeek) throw new ArgumentException("Cannot use a WriteTarget without seeking capability.");
-
-				// We're switching the stream, so we should discard all stream-specific temporary / cache data
-				this.ClearStreamSpecificData();
-			}
-		}
-		public BinaryReader ReadTarget
-		{
-			get { return this.reader; }
-			set
-			{
-				if (this.reader == value) return;
-				this.reader = value;
-
-				if (this.reader != null && !this.reader.BaseStream.CanSeek) throw new ArgumentException("Cannot use a ReadTarget without seeking capability.");
-
-				// We're switching the stream, so we should discard all stream-specific temporary / cache data
-				this.ClearStreamSpecificData();
-			}
-		}
-		public bool CanWrite
-		{
-			get { return this.writer != null; }
-		}
-		public bool CanRead
-		{
-			get { return this.reader != null; }
-		}
-		public bool Disposed
-		{
-			get { return this.disposed; }
-		}
-
-
-		public BinaryMetaFormatter() 
-		{
-			this.WriteTarget = null;
-			this.ReadTarget = null;
-		}
-		public BinaryMetaFormatter(Stream stream)
-		{
-			this.WriteTarget = new BinaryWriter(stream);
-			this.ReadTarget = new BinaryReader(stream);
-		}
-		~BinaryMetaFormatter()
-		{
-			this.Dispose(false);
-		}
-		public void Dispose()
-		{
-			GC.SuppressFinalize(this);
-			this.Dispose(true);
-		}
-		protected virtual void Dispose(bool manually)
-		{
-			if (this.disposed) return;
-
-			if (this.writer != null)
-			{
-				if (this.writer.BaseStream.CanWrite) this.writer.Flush();
-				this.writer.Dispose();
-				this.writer = null;
-			}
-
-			if (this.reader != null)
-			{
-				this.reader.Dispose();
-				this.reader = null;
-			}
-		}
-
+		public BinaryMetaFormatter() : base() {}
+		public BinaryMetaFormatter(Stream stream) : base(stream) {}
 
 		public DataNode ReadObject()
 		{
 			if (!this.CanRead) return null;
 			if (this.reader.BaseStream.Position == this.reader.BaseStream.Length) return null;
-			if (this.lastWritten) this.ClearStreamSpecificData();
-			this.lastWritten = false;
+			if (this.lastOperation != Operation.Read)
+			{
+				this.ClearStreamSpecificData();
+				this.ReadFormatterHeader();
+			}
+			this.lastOperation = Operation.Read;
 
 			// Not null flag
 			bool isNotNull = this.reader.ReadBoolean();
@@ -476,7 +388,7 @@ namespace Duality.Serialization
 			uint	objId			= this.reader.ReadUInt32();
 			int		arrRank			= this.reader.ReadInt32();
 			int		arrLength		= this.reader.ReadInt32();
-			Type	arrType			= SerializationHelper.ResolveType(arrTypeString);
+			Type	arrType			= ReflectionHelper.ResolveType(arrTypeString);
 
 			ArrayNode result = new ArrayNode(arrTypeString, objId, arrRank, arrLength);
 			
@@ -542,9 +454,13 @@ namespace Duality.Serialization
 			}
 
 			// Determine data layout
-			TypeDataLayout layout	= this.ReadTypeDataLayout(objTypeString);
-			TypeDataLayoutNode layoutNode = new TypeDataLayoutNode(new TypeDataLayout(layout));
-			layoutNode.Parent = result;
+			bool wasThereBefore = this.IsTypeDataLayoutCached(objTypeString);
+			TypeDataLayout layout = this.ReadTypeDataLayout(objTypeString);
+			if (!wasThereBefore)
+			{
+				TypeDataLayoutNode layoutNode = new TypeDataLayoutNode(new TypeDataLayout(layout));
+				layoutNode.Parent = result;
+			}
 
 			// Read fields
 			for (int i = 0; i < layout.Fields.Length; i++)
@@ -663,124 +579,6 @@ namespace Duality.Serialization
 			}
 
 			return result;
-		}
-		protected TypeDataLayout ReadTypeDataLayout(string t)
-		{
-			TypeDataLayout result;
-			if (this.typeDataLayout.TryGetValue(t, out result)) return result;
-
-			result = new TypeDataLayout(this.reader);
-			this.typeDataLayout[t] = result;
-			return result;
-		}
-
-		protected void ReadArrayData(bool[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) obj[l] = this.reader.ReadBoolean();
-		}
-		protected void ReadArrayData(byte[] obj)
-		{
-			this.reader.Read(obj, 0, obj.Length);
-		}
-		protected void ReadArrayData(sbyte[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) obj[l] = this.reader.ReadSByte();
-		}
-		protected void ReadArrayData(short[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) obj[l] = this.reader.ReadInt16();
-		}
-		protected void ReadArrayData(ushort[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) obj[l] = this.reader.ReadUInt16();
-		}
-		protected void ReadArrayData(int[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) obj[l] = this.reader.ReadInt32();
-		}
-		protected void ReadArrayData(uint[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) obj[l] = this.reader.ReadUInt32();
-		}
-		protected void ReadArrayData(long[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) obj[l] = this.reader.ReadInt64();
-		}
-		protected void ReadArrayData(ulong[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) obj[l] = this.reader.ReadUInt64();
-		}
-		protected void ReadArrayData(float[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) obj[l] = this.reader.ReadSingle();
-		}
-		protected void ReadArrayData(double[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) obj[l] = this.reader.ReadDouble();
-		}
-		protected void ReadArrayData(decimal[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) obj[l] = this.reader.ReadDecimal();
-		}
-		protected void ReadArrayData(char[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++) obj[l] = this.reader.ReadChar();
-		}
-		protected void ReadArrayData(string[] obj)
-		{
-			for (int l = 0; l < obj.Length; l++)
-			{
-				bool isNotNull = this.reader.ReadBoolean();
-				if (isNotNull)
-					obj[l] = this.reader.ReadString();
-				else
-					obj[l] = null;
-			}
-		}
-
-		
-		protected void WriteDataType(DataType dt)
-		{
-			this.writer.Write((byte)dt);
-		}
-		protected DataType ReadDataType()
-		{
-			return (DataType)this.reader.ReadByte();
-		}
-		protected void WritePushOffset()
-		{
-			this.offsetStack.Push(this.writer.BaseStream.Position);
-			this.writer.Write(0L);
-		}
-		protected void WritePopOffset()
-		{
-			long curPos = this.writer.BaseStream.Position;
-			long lastPos = this.offsetStack.Pop();
-			long offset = curPos - lastPos;
-			
-			this.writer.BaseStream.Seek(lastPos, SeekOrigin.Begin);
-			this.writer.Write(offset);
-			this.writer.BaseStream.Seek(curPos, SeekOrigin.Begin);
-		}
-
-		protected void ClearStreamSpecificData()
-		{
-			this.typeDataLayout.Clear();
-			this.offsetStack.Clear();
-			this.objRefIdMap.Clear();
-			this.idObjRefMap.Clear();
-			this.idCounter = 0;
-		}
-		protected uint GetIdFromObject(DataNode obj)
-		{
-			uint id;
-			if (this.objRefIdMap.TryGetValue(obj, out id)) return id;
-
-			id = ++idCounter;
-			this.objRefIdMap[obj] = id;
-			this.idObjRefMap[id] = obj;
-
-			return id;
 		}
 	}
 }

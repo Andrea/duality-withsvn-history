@@ -33,17 +33,19 @@
 			this.treeView = new Aga.Controls.Tree.TreeViewAdv();
 			this.treeViewColumnName = new Aga.Controls.Tree.TreeColumn();
 			this.treeViewColumnObjId = new Aga.Controls.Tree.TreeColumn();
+			this.treeViewColumnType = new Aga.Controls.Tree.TreeColumn();
 			this.nodeStateIcon = new Aga.Controls.Tree.NodeControls.NodeStateIcon();
 			this.nodeTextBoxName = new Aga.Controls.Tree.NodeControls.NodeTextBox();
 			this.nodeTextBoxObjId = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+			this.nodeTextBoxType = new Aga.Controls.Tree.NodeControls.NodeTextBox();
 			this.mainToolStrip = new System.Windows.Forms.ToolStrip();
 			this.actionOpen = new System.Windows.Forms.ToolStripButton();
 			this.actionSave = new System.Windows.Forms.ToolStripButton();
+			this.propertyGrid = new DualityEditor.Controls.PropertyGrid();
 			this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
 			this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-			this.treeViewColumnType = new Aga.Controls.Tree.TreeColumn();
-			this.nodeTextBoxType = new Aga.Controls.Tree.NodeControls.NodeTextBox();
-			this.propertyGrid = new DualityEditor.Controls.PropertyGrid();
+			this.treeViewColumnValue = new Aga.Controls.Tree.TreeColumn();
+			this.nodeTextBoxValue = new Aga.Controls.Tree.NodeControls.NodeTextBox();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
 			this.splitContainer.Panel1.SuspendLayout();
 			this.splitContainer.Panel2.SuspendLayout();
@@ -76,6 +78,7 @@
 			this.treeView.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.treeView.Columns.Add(this.treeViewColumnName);
 			this.treeView.Columns.Add(this.treeViewColumnObjId);
+			this.treeView.Columns.Add(this.treeViewColumnValue);
 			this.treeView.Columns.Add(this.treeViewColumnType);
 			this.treeView.DefaultToolTipProvider = null;
 			this.treeView.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -89,6 +92,7 @@
 			this.treeView.NodeControls.Add(this.nodeTextBoxName);
 			this.treeView.NodeControls.Add(this.nodeTextBoxObjId);
 			this.treeView.NodeControls.Add(this.nodeTextBoxType);
+			this.treeView.NodeControls.Add(this.nodeTextBoxValue);
 			this.treeView.SelectedNode = null;
 			this.treeView.Size = new System.Drawing.Size(537, 263);
 			this.treeView.TabIndex = 0;
@@ -108,6 +112,14 @@
 			this.treeViewColumnObjId.Header = "ObjId";
 			this.treeViewColumnObjId.SortOrder = System.Windows.Forms.SortOrder.None;
 			this.treeViewColumnObjId.TooltipText = null;
+			this.treeViewColumnObjId.Width = 40;
+			// 
+			// treeViewColumnType
+			// 
+			this.treeViewColumnType.Header = "Type";
+			this.treeViewColumnType.SortOrder = System.Windows.Forms.SortOrder.None;
+			this.treeViewColumnType.TooltipText = null;
+			this.treeViewColumnType.Width = 250;
 			// 
 			// nodeStateIcon
 			// 
@@ -129,6 +141,13 @@
 			this.nodeTextBoxObjId.IncrementalSearchEnabled = true;
 			this.nodeTextBoxObjId.LeftMargin = 3;
 			this.nodeTextBoxObjId.ParentColumn = this.treeViewColumnObjId;
+			// 
+			// nodeTextBoxType
+			// 
+			this.nodeTextBoxType.DataPropertyName = "ResolvedTypeName";
+			this.nodeTextBoxType.IncrementalSearchEnabled = true;
+			this.nodeTextBoxType.LeftMargin = 3;
+			this.nodeTextBoxType.ParentColumn = this.treeViewColumnType;
 			// 
 			// mainToolStrip
 			// 
@@ -161,28 +180,6 @@
 			this.actionSave.Text = "Save Resource File...";
 			this.actionSave.Click += new System.EventHandler(this.actionSave_Click);
 			// 
-			// openFileDialog
-			// 
-			this.openFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog_FileOk);
-			// 
-			// saveFileDialog
-			// 
-			this.saveFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog_FileOk);
-			// 
-			// treeViewColumnType
-			// 
-			this.treeViewColumnType.Header = "Type";
-			this.treeViewColumnType.SortOrder = System.Windows.Forms.SortOrder.None;
-			this.treeViewColumnType.TooltipText = null;
-			this.treeViewColumnType.Width = 250;
-			// 
-			// nodeTextBoxType
-			// 
-			this.nodeTextBoxType.DataPropertyName = "ResolvedTypeName";
-			this.nodeTextBoxType.IncrementalSearchEnabled = true;
-			this.nodeTextBoxType.LeftMargin = 3;
-			this.nodeTextBoxType.ParentColumn = this.treeViewColumnType;
-			// 
 			// propertyGrid
 			// 
 			this.propertyGrid.AutoScroll = true;
@@ -191,6 +188,28 @@
 			this.propertyGrid.Name = "propertyGrid";
 			this.propertyGrid.Size = new System.Drawing.Size(537, 155);
 			this.propertyGrid.TabIndex = 0;
+			// 
+			// openFileDialog
+			// 
+			this.openFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog_FileOk);
+			// 
+			// saveFileDialog
+			// 
+			this.saveFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog_FileOk);
+			// 
+			// treeViewColumnValue
+			// 
+			this.treeViewColumnValue.Header = "Value";
+			this.treeViewColumnValue.SortOrder = System.Windows.Forms.SortOrder.None;
+			this.treeViewColumnValue.TooltipText = null;
+			this.treeViewColumnValue.Width = 75;
+			// 
+			// nodeTextBoxValue
+			// 
+			this.nodeTextBoxValue.DataPropertyName = "DataValue";
+			this.nodeTextBoxValue.IncrementalSearchEnabled = true;
+			this.nodeTextBoxValue.LeftMargin = 3;
+			this.nodeTextBoxValue.ParentColumn = this.treeViewColumnValue;
 			// 
 			// ResourceHacker
 			// 
@@ -233,6 +252,8 @@
 		private Aga.Controls.Tree.NodeControls.NodeTextBox nodeTextBoxObjId;
 		private Aga.Controls.Tree.TreeColumn treeViewColumnType;
 		private Aga.Controls.Tree.NodeControls.NodeTextBox nodeTextBoxType;
+		private Aga.Controls.Tree.TreeColumn treeViewColumnValue;
+		private Aga.Controls.Tree.NodeControls.NodeTextBox nodeTextBoxValue;
 
 
 	}
