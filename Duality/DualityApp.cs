@@ -480,6 +480,7 @@ namespace Duality
 			availTypeDict.Clear();
 			
 			Log.Core.PopIndent();
+			ReflectionHelper.ClearTypeCache();
 		}
 		public static bool IsLeafPlugin(string pluginFileName)
 		{
