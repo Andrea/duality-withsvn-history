@@ -51,6 +51,13 @@ namespace ResourceHacker
 			this.isLoading = false;
 			return result;
 		}
+		public override void LoadPlugin()
+		{
+			base.LoadPlugin();
+			
+			// Register PropertyEditor provider
+			CorePluginHelper.RegisterPropertyEditorProvider(new PropertyEditors.PropertyEditorProvider());
+		}
 		public override void InitPlugin(MainForm main)
 		{
 			base.InitPlugin(main);

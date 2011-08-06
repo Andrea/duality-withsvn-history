@@ -60,6 +60,76 @@ namespace ResourceHacker.PluginRes {
             }
         }
         
+        internal static System.Drawing.Bitmap IconArray {
+            get {
+                object obj = ResourceManager.GetObject("IconArray", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap IconClass {
+            get {
+                object obj = ResourceManager.GetObject("IconClass", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap IconDelegate {
+            get {
+                object obj = ResourceManager.GetObject("IconDelegate", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap IconEvent {
+            get {
+                object obj = ResourceManager.GetObject("IconEvent", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap IconField {
+            get {
+                object obj = ResourceManager.GetObject("IconField", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap IconMethod {
+            get {
+                object obj = ResourceManager.GetObject("IconMethod", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap IconObject {
+            get {
+                object obj = ResourceManager.GetObject("IconObject", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap IconObjectRef {
+            get {
+                object obj = ResourceManager.GetObject("IconObjectRef", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap IconPrimitive {
+            get {
+                object obj = ResourceManager.GetObject("IconPrimitive", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap IconProperty {
+            get {
+                object obj = ResourceManager.GetObject("IconProperty", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap IconResourceHacker {
             get {
                 object obj = ResourceManager.GetObject("IconResourceHacker", resourceCulture);

@@ -118,8 +118,8 @@ namespace DualityEditor.Controls.PropertyEditors
 		protected Type GetElementType()
 		{
 			if (typeof(Array).IsAssignableFrom(this.EditedType))
-				return this.EditedType.GetElementType();
-			else if (this.EditedType.IsGenericType)
+				return this.EditedType.GetElementType() ?? typeof(object);
+			else if (this.EditedType != null && this.EditedType.IsGenericType)
 				return this.EditedType.GetGenericArguments()[0];
 			else
 				return typeof(object);
@@ -251,6 +251,7 @@ namespace DualityEditor.Controls.PropertyEditors
 		protected override void OnEditedTypeChanged()
 		{
 			base.OnEditedTypeChanged();
+			this.Expanded = false;
 			this.ClearContent();
 		}
 

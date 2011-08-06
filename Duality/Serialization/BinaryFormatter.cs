@@ -119,7 +119,7 @@ namespace Duality.Serialization
 			DataType dataType = objCachedType.DataType;
 
 			// Check whether it's going to be an ObjectRef or not
-			if (dataType == DataType.Array || dataType == DataType.Class || dataType == DataType.Delegate || SerializationHelper.IsReflectionDataType(dataType))
+			if (dataType == DataType.Array || dataType == DataType.Class || dataType == DataType.Delegate || dataType.IsMemberInfoType())
 			{
 				objId = this.GetIdFromObject(obj);
 
@@ -134,14 +134,14 @@ namespace Duality.Serialization
 			this.WritePushOffset();
 			try
 			{
-				if (SerializationHelper.IsPrimitiveDataType(dataType))			this.WritePrimitive(obj);
-				else if (dataType == DataType.String)							this.writer.Write(obj as string);
-				else if (dataType == DataType.Struct)							this.WriteStruct(obj, objCachedType);
-				else if (dataType == DataType.ObjectRef)						this.writer.Write(objId);
-				else if	(dataType == DataType.Array)							this.WriteArray(obj, objCachedType, objId);
-				else if (dataType == DataType.Class)							this.WriteStruct(obj, objCachedType, objId);
-				else if (dataType == DataType.Delegate)							this.WriteDelegate(obj, objCachedType, objId);
-				else if (SerializationHelper.IsReflectionDataType(dataType))	this.WriteMemberInfo(obj, objId);
+				if (dataType.IsPrimitiveType())				this.WritePrimitive(obj);
+				else if (dataType == DataType.String)		this.writer.Write(obj as string);
+				else if (dataType == DataType.Struct)		this.WriteStruct(obj, objCachedType);
+				else if (dataType == DataType.ObjectRef)	this.writer.Write(objId);
+				else if	(dataType == DataType.Array)		this.WriteArray(obj, objCachedType, objId);
+				else if (dataType == DataType.Class)		this.WriteStruct(obj, objCachedType, objId);
+				else if (dataType == DataType.Delegate)		this.WriteDelegate(obj, objCachedType, objId);
+				else if (dataType.IsMemberInfoType())		this.WriteMemberInfo(obj, objId);
 			}
 			finally
 			{
@@ -422,14 +422,14 @@ namespace Duality.Serialization
 			object result = null;
 			try
 			{
-				if (SerializationHelper.IsPrimitiveDataType(dataType))			result = this.ReadPrimitive(dataType);
-				else if (dataType == DataType.String)							result = this.reader.ReadString();
-				else if (dataType == DataType.Struct)							result = this.ReadStruct();
-				else if (dataType == DataType.ObjectRef)						result = this.ReadObjectRef();
-				else if (dataType == DataType.Array)							result = this.ReadArray();
-				else if (dataType == DataType.Class)							result = this.ReadStruct();
-				else if (dataType == DataType.Delegate)							result = this.ReadDelegate();
-				else if (SerializationHelper.IsReflectionDataType(dataType))	result = this.ReadMemberInfo(dataType);
+				if (dataType.IsPrimitiveType())				result = this.ReadPrimitive(dataType);
+				else if (dataType == DataType.String)		result = this.reader.ReadString();
+				else if (dataType == DataType.Struct)		result = this.ReadStruct();
+				else if (dataType == DataType.ObjectRef)	result = this.ReadObjectRef();
+				else if (dataType == DataType.Array)		result = this.ReadArray();
+				else if (dataType == DataType.Class)		result = this.ReadStruct();
+				else if (dataType == DataType.Delegate)		result = this.ReadDelegate();
+				else if (dataType.IsMemberInfoType())		result = this.ReadMemberInfo(dataType);
 
 				// If we read the object properly and aren't where we're supposed to be, something went wrong
 				if (this.reader.BaseStream.Position != lastPos + offset) throw new ApplicationException(string.Format("Wrong dataset offset: '{0}' instead of expected value '{1}'.", offset, this.reader.BaseStream.Position - lastPos));

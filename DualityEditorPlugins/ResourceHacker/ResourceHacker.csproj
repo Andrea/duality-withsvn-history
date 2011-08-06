@@ -56,6 +56,16 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="PropertyEditors\ArrayNodePropertyEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PropertyEditors\DataNodePropertyEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PropertyEditors\PrimitiveNodePropertyEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PropertyEditors\Provider.cs" />
     <Compile Include="ResourceHacker.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -93,10 +103,40 @@
     <None Include="PluginRes\iconResourceHacker.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="PluginRes\iconSaveFile.png" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="PluginRes\iconOpenFile.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="PluginRes\iconSaveFile.png" />
+    <None Include="PluginRes\Array.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PluginRes\Class.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PluginRes\Delegate.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PluginRes\Event.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PluginRes\Field.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PluginRes\Method.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PluginRes\Object.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PluginRes\Primitive.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PluginRes\Property.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PluginRes\ObjectRef.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

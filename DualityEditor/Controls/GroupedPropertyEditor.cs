@@ -80,7 +80,7 @@ namespace DualityEditor.Controls
 			this.InitializeComponent();
 			this.Header.AcquireParentColors();
 		}
-		
+
 		public override void ClearContent()
 		{
 			base.ClearContent();

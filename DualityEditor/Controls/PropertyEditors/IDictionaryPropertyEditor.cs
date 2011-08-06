@@ -260,6 +260,7 @@ namespace DualityEditor.Controls.PropertyEditors
 		protected override void OnEditedTypeChanged()
 		{
 			base.OnEditedTypeChanged();
+			this.Expanded = false;
 			this.ClearContent();
 		}
 

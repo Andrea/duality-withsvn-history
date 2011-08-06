@@ -339,6 +339,7 @@ namespace Duality
 			if (arrayRank > 0)
 			{
 				Type elementType = FindTypeByFullNameWithoutAssembly(elementTypeName, asmSearch);
+				if (elementType == null) return null;
 				return arrayRank == 1 ? elementType.MakeArrayType() : elementType.MakeArrayType(arrayRank);
 			}
 
@@ -357,7 +358,9 @@ namespace Duality
 				for (int i = 0; i < genericParamTypes.Length; i++)
 				{
 					genericParamTypes[i] = FindTypeByFullNameWithoutAssembly(genericParams[i], asmSearch);
+					if (genericParamTypes[i] == null) return null;
 				}
+				if (baseType == null) return null;
 				return baseType.MakeGenericType(genericParamTypes);
 			}
 

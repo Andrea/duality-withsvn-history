@@ -31,6 +31,10 @@ namespace Duality.Serialization
 					if (this.parent != null) this.parent.subNodes.Add(this);
 				}
 			}
+			public DataType NodeType
+			{
+				get { return this.dataType; }
+			}
 
 			protected DataNode(DataType dataType)
 			{
@@ -42,6 +46,12 @@ namespace Duality.Serialization
 		{
 			protected	object	value;
 
+			public object PrimitiveValue
+			{
+				get { return this.value; }
+				set { this.value = value; }
+			}
+
 			public PrimitiveNode(DataType dataType, object value) : base(dataType)
 			{
 				this.value = value;
@@ -50,6 +60,12 @@ namespace Duality.Serialization
 		public class StringNode : DataNode
 		{
 			protected	string	value;
+
+			public string StringValue
+			{
+				get { return this.value; }
+				set { this.value = value; }
+			}
 
 			public StringNode(string value) : base(DataType.String)
 			{
@@ -60,6 +76,17 @@ namespace Duality.Serialization
 		{
 			protected	string	typeString;
 			protected	uint	objId;
+			
+			public string TypeString
+			{
+				get { return this.typeString; }
+				set { this.typeString = value; }
+			}
+			public uint ObjId
+			{
+				get { return this.objId; }
+				set { this.objId = value; }
+			}
 
 			public ObjectNode(DataType dataType, string typeString, uint objId) : base(dataType)
 			{
@@ -109,6 +136,12 @@ namespace Duality.Serialization
 		{
 			protected uint objId;
 
+			public uint ObjRefId
+			{
+				get { return this.objId; }
+				set { this.objId = value; }
+			}
+
 			public ObjectRefNode(uint objId) : base(DataType.ObjectRef)
 			{
 				this.objId = objId;
@@ -117,6 +150,12 @@ namespace Duality.Serialization
 		public class MemberInfoNode : ObjectNode
 		{
 			protected	bool	isStatic;
+
+			public bool IsStatic
+			{
+				get { return this.isStatic; }
+				set { this.isStatic = value; }
+			}
 
 			public MemberInfoNode(DataType dataType, string mainTypeString, uint objId, bool isStatic) : base(dataType, mainTypeString, objId)
 			{
@@ -134,6 +173,12 @@ namespace Duality.Serialization
 		{
 			protected string fieldName;
 
+			public string FieldName
+			{
+				get { return this.fieldName; }
+				set { this.fieldName = value; }
+			}
+
 			public FieldInfoNode(string mainTypeString, uint objId, string fieldName, bool isStatic) : base(DataType.FieldInfo, mainTypeString, objId, isStatic)
 			{
 				this.fieldName = fieldName;
@@ -144,6 +189,22 @@ namespace Duality.Serialization
 			protected string propertyName;
 			protected string propertyType;
 			protected string[] parameterTypeStrings;
+
+			public string PropertyName
+			{
+				get { return this.propertyName; }
+				set { this.propertyName = value; }
+			}
+			public string PropertyType
+			{
+				get { return this.propertyType; }
+				set { this.propertyType = value; }
+			}
+			public string[] ParameterTypes
+			{
+				get { return this.parameterTypeStrings; }
+				set { this.parameterTypeStrings = value; }
+			}
 
 			public PropertyInfoNode(string mainTypeString, uint objId, string propertyName, string propertyType, string[] parameterTypeStrings, bool isStatic) : base(DataType.PropertyInfo, mainTypeString, objId, isStatic)
 			{
@@ -156,6 +217,17 @@ namespace Duality.Serialization
 		{
 			protected string methodName;
 			protected string[] parameterTypeStrings;
+			
+			public string MethodName
+			{
+				get { return this.methodName; }
+				set { this.methodName = value; }
+			}
+			public string[] ParameterTypes
+			{
+				get { return this.parameterTypeStrings; }
+				set { this.parameterTypeStrings = value; }
+			}
 
 			public MethodInfoNode(string mainTypeString, uint objId, string methodName, string[] parameterTypeStrings, bool isStatic) : base(DataType.MethodInfo, mainTypeString, objId, isStatic)
 			{
@@ -167,6 +239,12 @@ namespace Duality.Serialization
 		{
 			protected string[] parameterTypeStrings;
 
+			public string[] ParameterTypes
+			{
+				get { return this.parameterTypeStrings; }
+				set { this.parameterTypeStrings = value; }
+			}
+
 			public ConstructorInfoNode(string mainTypeString, uint objId, string[] parameterTypeStrings, bool isStatic) : base(DataType.ConstructorInfo, mainTypeString, objId, isStatic)
 			{
 				this.parameterTypeStrings = parameterTypeStrings;
@@ -175,6 +253,12 @@ namespace Duality.Serialization
 		public class EventInfoNode : MemberInfoNode
 		{
 			protected string eventName;
+			
+			public string EventName
+			{
+				get { return this.eventName; }
+				set { this.eventName = value; }
+			}
 
 			public EventInfoNode(string mainTypeString, uint objId, string fieldName, bool isStatic) : base(DataType.EventInfo, mainTypeString, objId, isStatic)
 			{
@@ -190,7 +274,12 @@ namespace Duality.Serialization
 			public DataNode InvokeList
 			{
 				get { return this.invokeList; }
-				set { this.invokeList = value; }
+				set 
+				{
+					if (this.invokeList != null) this.invokeList.Parent = null;
+					this.invokeList = value;
+					if (this.invokeList != null) this.invokeList.Parent = this;
+				}
 			}
 
 			public DelegateNode(string typeString, uint objId, DataNode method, DataNode target, DataNode invokeList) : base(DataType.Delegate, typeString, objId) 
@@ -207,6 +296,12 @@ namespace Duality.Serialization
 		public class TypeDataLayoutNode : DataNode
 		{
 			protected	TypeDataLayout	layout;
+
+			public TypeDataLayout Layout
+			{
+				get { return this.layout; }
+				set { this.layout = value; }
+			}
 
 			public TypeDataLayoutNode(TypeDataLayout layout) : base(DataType.Unknown)
 			{
@@ -330,14 +425,14 @@ namespace Duality.Serialization
 			DataNode result = null;
 			try
 			{
-				if (SerializationHelper.IsPrimitiveDataType(dataType))			result = this.ReadPrimitive(dataType);
-				else if (dataType == DataType.String)							result = new StringNode(this.reader.ReadString());
-				else if (dataType == DataType.Struct)							result = this.ReadStruct();
-				else if (dataType == DataType.ObjectRef)						result = this.ReadObjectRef();
-				else if (dataType == DataType.Array)							result = this.ReadArray();
-				else if (dataType == DataType.Class)							result = this.ReadStruct();
-				else if (dataType == DataType.Delegate)							result = this.ReadDelegate();
-				else if (SerializationHelper.IsReflectionDataType(dataType))	result = this.ReadMemberInfo(dataType);
+				if (dataType.IsPrimitiveType())				result = this.ReadPrimitive(dataType);
+				else if (dataType == DataType.String)		result = new StringNode(this.reader.ReadString());
+				else if (dataType == DataType.Struct)		result = this.ReadStruct();
+				else if (dataType == DataType.ObjectRef)	result = this.ReadObjectRef();
+				else if (dataType == DataType.Array)		result = this.ReadArray();
+				else if (dataType == DataType.Class)		result = this.ReadStruct();
+				else if (dataType == DataType.Delegate)		result = this.ReadDelegate();
+				else if (dataType.IsMemberInfoType())		result = this.ReadMemberInfo(dataType);
 
 				// If we read the object properly and aren't where we're supposed to be, something went wrong
 				if (this.reader.BaseStream.Position != lastPos + offset) throw new ApplicationException(string.Format("Wrong dataset offset: '{0}' instead of expected value '{1}'.", offset, this.reader.BaseStream.Position - lastPos));

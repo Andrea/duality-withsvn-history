@@ -19,6 +19,7 @@ namespace Duality.Serialization
 		public FieldDataInfo[] Fields
 		{
 			get { return this.fields; }
+			set { this.fields = value; }
 		}
 
 		public TypeDataLayout(BinaryReader r)

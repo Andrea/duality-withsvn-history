@@ -16,7 +16,7 @@ namespace Duality.Serialization
 			typeCache.Clear();
 			typeResolveCache.Clear();
 		}
-		public static Type ResolveType(string typeString)
+		public static Type ResolveType(string typeString, bool throwOnError = true)
 		{
 			Type result;
 			if (typeResolveCache.TryGetValue(typeString, out result)) return result;
@@ -25,7 +25,7 @@ namespace Duality.Serialization
 			result = ReflectionHelper.FindTypeByFullNameWithoutAssembly(typeString, searchAsm);
 			typeResolveCache[typeString] = result;
 
-			if (result == null) throw new ApplicationException(string.Format("Cannot resolve Type '{0}'. Type not found", typeString));
+			if (result == null && throwOnError) throw new ApplicationException(string.Format("Cannot resolve Type '{0}'. Type not found", typeString));
 			return result;
 		}
 		public static CachedType GetCachedType(Type t)
@@ -39,14 +39,6 @@ namespace Duality.Serialization
 			return result;
 		}
 
-		public static bool IsPrimitiveDataType(DataType dt)
-		{
-			return (byte)dt >= (byte)DataType.Bool && (byte)dt <= (byte)DataType.Char;
-		}
-		public static bool IsReflectionDataType(DataType dt)
-		{
-			return (byte)dt >= (byte)DataType.Type && (byte)dt <= (byte)DataType.EventInfo;
-		}
 		public static DataType GetDataType(Type t)
 		{
 			if (t.IsPrimitive)
