@@ -117,17 +117,57 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="iconSaveFile" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\PluginRes\iconSaveFile.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="treeViewColumnValue.Header" xml:space="preserve">
+    <value>Wert</value>
   </data>
-  <data name="iconOpenFile" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\PluginRes\iconOpenFile.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="actionOpen.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAGHSURBVDhPldJZSwJRGAZg/0Q/pf5AV0XhhXUXFBSURXcG
+        rVBhVG5oLkguuZSRkpRSQkkkFelFFKRBO5KKaWKm5jq+OYZCOKP0wXczc85zvvPOMBg0tSQzti9ITJhc
+        1WNZbsYMXzdLt5by+QBHDhZb2Ee+HJ/StCyWsQnuRm8/R4Z/QdXF7Glld8+YEEy2uB5QbB6CquXGAxjt
+        Hj6JsEZFYI5I0DUspQZAUWs6G9o6h2oI7ejk6VQlUltxdOGtIAabW/BvgKfcqWyuNi0gM9gpJyBKJWh2
+        z6G2nFUQWkCs3asDynuRyRUQS3zDenqP1o5BekCwbqkDsvki4skMApEvWJy+xsCKfPsPkC8UkUjlEPpI
+        4uEtBpPjujHAlRhqQIEgkEznEI6l8BSI4+bxHfp9d2NgXqitAARRQjqTRySexmvoE7fPUVx6g1CZXY2B
+        OZ4KpXJqmexvaP5wAncvUXh8QZxc+aHYcjYHyNDItMnAyDvrymOrLC4oTMeQGhzNr0B+pmZN9R/8AFpY
+        wOhW/gRMAAAAAElFTkSuQmCC
+</value>
   </data>
-  <data name="iconRenameClass" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\PluginRes\iconRenameClass.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="actionOpen.Text" xml:space="preserve">
+    <value>Ressource öffnen...</value>
   </data>
-  <data name="iconRenameField" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\PluginRes\iconRenameField.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="actionSave.Text" xml:space="preserve">
+    <value>Ressource speichern...</value>
+  </data>
+  <data name="actionRenameType.Text" xml:space="preserve">
+    <value>Type umbenennen...</value>
+  </data>
+  <data name="actionRenameField.Text" xml:space="preserve">
+    <value>Field umbenennen...</value>
+  </data>
+  <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJmmiWFOL
+        u/ZPibn/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASX6wZWGX
+        ye+RuN7/SIK19ahwUKnCjWf/v4pl/72HY/+6hGD/uIJe/7N9W/+3g2D/yJl4/+bFqv/mxKj/37iZ/7Wi
+        lv+bt9P/YJPD+yprpVjIkWv/5uXl/+Xl5f/l5eb/5eXl/+Xl5f/m5eX/4cy6//Lcyf/4487/9+DH//ji
+        y//z0bL/saKY/4J1dv8AAAAAypNt/+fn5//o5+f/5+fn/+fn5//n5+f/wsLC/+XDp//15db/9NrA//PY
+        vP/z2Lz/+OPM/9m1mf+pclL/AAAAAMyWbv/p6en/0oJX/9KCV//Sglf/6enp/8LCwv/gvJ3/+Orc//Td
+        xf/03MP/89i8//jizf/kwKP/q3RT/wAAAADRm3L/7Ozs/+zs6//s7Ov/7Ozs/+zr7P/CwsL/5sWp//Pk
+        1v/24Mr/9d7F//XexP/45tP/4MGn/695V/8AAAAA1J10/+/u7v/v7+//7+7u/+/u7v/u7+7/7u7u/97P
+        vv/pzbP/9efb//js3//y3cn/69C3/9/Luf+xe1n/AAAAANWfdf/x8fD/8fDx//Dx8f/x8PH/8fHx/8LC
+        wv/+////49TB/9rFq//hvp//5cOm/+PNtf/q7vD/tH1b/wAAAADYoXj/8vLy/9KCV//Sglf/0oJX//Ly
+        8//CwsL/////////////////////////////////8/Pz/7aAXf8AAAAA2aJ4//X19f/19fT/9PX0//T0
+        9P/19fT/wsLC/8LCwv/CwsL/wsLC/8LCwv/CwsL/wsLC//T09f+5hF//AAAAANujef/29vb/9vb2//b2
+        9v/29vb/9vb2//b29v/29vb/9vb2//b29v/29vb/9vb2//b29v/29vb/vIZi/wAAAADcpnr/3KZ6/9ym
+        ev/cpnr/3KZ6/9ymev/cpnr/3KZ6/9ymev/cpnr/3KZ6/9ymev/cpnr/3KZ6/7+KZf8AAAAA3auE/ei4
+        kf/ouJH/6LiR/+i4kf/ouJH/6LiR/+i4kf/ouJH/6LiR/+i4kf/ouJH/6LiR/+i4kf/Aj279AAAAAKhw
+        UGvdsIz03KZ6/9ylef/ao3n/2KF4/9Wfdf/UnXT/0pxy/8+Zcf/OmG//y5Vu/8mTa//DmXn0qHBQawAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAA//isQf/wrEEAAKxBAAGsQQABrEEAAaxBAAGsQQABrEEAAaxBAAGsQQABrEEAAaxBAAGsQQAB
+        rEEAAaxB//+sQQ==
+</value>
   </data>
 </root>

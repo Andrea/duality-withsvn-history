@@ -150,6 +150,13 @@ namespace DualityEditor.Controls
 			this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 		}
 
+		public void SelectObject(object obj, bool readOnly = false, int scheduleMs = 0)
+		{
+			if (obj == null)
+				this.SelectObjects(new object[0], readOnly, scheduleMs);
+			else
+				this.SelectObjects(new[] {obj}, readOnly, scheduleMs);
+		}
 		public void SelectObjects(IEnumerable<object> objEnum, bool readOnly = false, int scheduleMs = 0)
 		{
 			this.selectedObjects.Clear();

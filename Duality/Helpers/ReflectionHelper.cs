@@ -107,7 +107,7 @@ namespace Duality
 
 			Assembly[] searchAsm = AppDomain.CurrentDomain.GetAssemblies().Except(DualityApp.DisposedPlugins).ToArray();
 			result = ReflectionHelper.FindTypeByFullNameWithoutAssembly(typeString, searchAsm);
-			typeResolveCache[typeString] = result;
+			if (result != null) typeResolveCache[typeString] = result;
 
 			if (result == null && throwOnError) throw new ApplicationException(string.Format("Cannot resolve Type '{0}'. Type not found", typeString));
 			return result;

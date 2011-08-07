@@ -154,4 +154,10 @@
   <data name="MenuItemName_ResourceHacker" xml:space="preserve">
     <value>Resource Hacker</value>
   </data>
+  <data name="MessageBox_RenameType_Text" xml:space="preserve">
+    <value>{0} occurrences of {1} have been replaced with {2}.</value>
+  </data>
+  <data name="MessageBox_RenameType_Title" xml:space="preserve">
+    <value>Type strings replaced</value>
+  </data>
 </root>

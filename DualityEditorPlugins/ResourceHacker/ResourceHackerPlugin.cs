@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using System.IO;
 
 using Duality;
+using Duality.Serialization;
 
 using DualityEditor;
 using DualityEditor.Forms;
@@ -55,6 +56,19 @@ namespace ResourceHacker
 		{
 			base.LoadPlugin();
 			
+			CorePluginHelper.RegisterTypeImage(typeof(BinaryMetaFormatter.DataNode), PluginRes.ResourceHackerRes.IconPrimitive, CorePluginHelper.ImageContext_Icon);
+			CorePluginHelper.RegisterTypeImage(typeof(BinaryMetaFormatter.ArrayNode), PluginRes.ResourceHackerRes.IconArray, CorePluginHelper.ImageContext_Icon);
+			CorePluginHelper.RegisterTypeImage(typeof(BinaryMetaFormatter.StructNode), PluginRes.ResourceHackerRes.IconObject, CorePluginHelper.ImageContext_Icon);
+			CorePluginHelper.RegisterTypeImage(typeof(BinaryMetaFormatter.ObjectRefNode), PluginRes.ResourceHackerRes.IconObjectRef, CorePluginHelper.ImageContext_Icon);
+			CorePluginHelper.RegisterTypeImage(typeof(BinaryMetaFormatter.TypeInfoNode), PluginRes.ResourceHackerRes.IconClass, CorePluginHelper.ImageContext_Icon);
+			CorePluginHelper.RegisterTypeImage(typeof(BinaryMetaFormatter.TypeDataLayoutNode), PluginRes.ResourceHackerRes.IconClass, CorePluginHelper.ImageContext_Icon);
+			CorePluginHelper.RegisterTypeImage(typeof(BinaryMetaFormatter.ConstructorInfoNode), PluginRes.ResourceHackerRes.IconMethod, CorePluginHelper.ImageContext_Icon);
+			CorePluginHelper.RegisterTypeImage(typeof(BinaryMetaFormatter.MethodInfoNode), PluginRes.ResourceHackerRes.IconMethod, CorePluginHelper.ImageContext_Icon);
+			CorePluginHelper.RegisterTypeImage(typeof(BinaryMetaFormatter.PropertyInfoNode), PluginRes.ResourceHackerRes.IconProperty, CorePluginHelper.ImageContext_Icon);
+			CorePluginHelper.RegisterTypeImage(typeof(BinaryMetaFormatter.DelegateNode), PluginRes.ResourceHackerRes.IconDelegate, CorePluginHelper.ImageContext_Icon);
+			CorePluginHelper.RegisterTypeImage(typeof(BinaryMetaFormatter.EventInfoNode), PluginRes.ResourceHackerRes.IconEvent, CorePluginHelper.ImageContext_Icon);
+			CorePluginHelper.RegisterTypeImage(typeof(BinaryMetaFormatter.FieldInfoNode), PluginRes.ResourceHackerRes.IconField, CorePluginHelper.ImageContext_Icon);
+
 			// Register PropertyEditor provider
 			CorePluginHelper.RegisterPropertyEditorProvider(new PropertyEditors.PropertyEditorProvider());
 		}

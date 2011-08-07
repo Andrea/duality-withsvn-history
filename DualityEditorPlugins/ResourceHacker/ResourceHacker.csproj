@@ -66,6 +66,12 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="PropertyEditors\Provider.cs" />
+    <Compile Include="RenameTypeDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RenameTypeDialog.Designer.cs">
+      <DependentUpon>RenameTypeDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="ResourceHacker.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -94,6 +100,15 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RenameTypeDialog.de.resx">
+      <DependentUpon>RenameTypeDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RenameTypeDialog.resx">
+      <DependentUpon>RenameTypeDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ResourceHacker.de.resx">
+      <DependentUpon>ResourceHacker.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ResourceHacker.resx">
       <DependentUpon>ResourceHacker.cs</DependentUpon>
@@ -137,6 +152,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="PluginRes\ObjectRef.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PluginRes\iconRenameClass.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PluginRes\iconRenameField.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

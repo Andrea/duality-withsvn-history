@@ -67,6 +67,20 @@ namespace ResourceHacker.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap iconRenameClass {
+            get {
+                object obj = ResourceManager.GetObject("iconRenameClass", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap iconRenameField {
+            get {
+                object obj = ResourceManager.GetObject("iconRenameField", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap iconSaveFile {
             get {
                 object obj = ResourceManager.GetObject("iconSaveFile", resourceCulture);

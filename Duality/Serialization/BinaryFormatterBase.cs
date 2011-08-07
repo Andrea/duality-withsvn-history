@@ -46,7 +46,7 @@ namespace Duality.Serialization
 				if (this.writer != null && !this.writer.BaseStream.CanSeek) throw new ArgumentException("Cannot use a WriteTarget without seeking capability.");
 
 				// We're switching the stream, so we should discard all stream-specific temporary / cache data
-				this.ClearStreamSpecificData();
+				this.lastOperation = Operation.None;
 			}
 		}
 		public BinaryReader ReadTarget
@@ -60,7 +60,7 @@ namespace Duality.Serialization
 				if (this.reader != null && !this.reader.BaseStream.CanSeek) throw new ArgumentException("Cannot use a ReadTarget without seeking capability.");
 
 				// We're switching the stream, so we should discard all stream-specific temporary / cache data
-				this.ClearStreamSpecificData();
+				this.lastOperation = Operation.None;
 			}
 		}
 		public bool CanWrite
@@ -84,8 +84,8 @@ namespace Duality.Serialization
 		}
 		public BinaryFormatterBase(Stream stream)
 		{
-			this.WriteTarget = new BinaryWriter(stream);
-			this.ReadTarget = new BinaryReader(stream);
+			this.WriteTarget = stream.CanWrite ? new BinaryWriter(stream) : null;
+			this.ReadTarget = stream.CanRead ? new BinaryReader(stream) : null;
 		}
 		~BinaryFormatterBase()
 		{
@@ -114,6 +114,48 @@ namespace Duality.Serialization
 		}
 
 		
+		protected object ReadObject()
+		{
+			if (!this.CanRead) return null;
+			if (this.reader.BaseStream.Position == this.reader.BaseStream.Length) throw new EndOfStreamException("No more data to read.");
+			if (this.lastOperation != Operation.Read)
+			{
+				this.ClearStreamSpecificData();
+				this.ReadFormatterHeader();
+			}
+			this.lastOperation = Operation.Read;
+
+			// Not null flag
+			bool isNotNull = this.reader.ReadBoolean();
+			if (!isNotNull) return null;
+
+			// Read data type header
+			DataType dataType = this.ReadDataType();
+			long lastPos = this.reader.BaseStream.Position;
+			long offset = this.reader.ReadInt64();
+
+			// Read object
+			object result = null;
+			try
+			{
+				// Read the objects body
+				result = this.ReadObjectBody(dataType);
+
+				// If we read the object properly and aren't where we're supposed to be, something went wrong
+				if (this.reader.BaseStream.Position != lastPos + offset) throw new ApplicationException(string.Format("Wrong dataset offset: '{0}' instead of expected value '{1}'.", this.reader.BaseStream.Position - lastPos, offset));
+			}
+			catch (Exception e)
+			{
+				// If anything goes wrong, assure the stream position is valid and points to the next data entry
+				this.reader.BaseStream.Seek(lastPos + offset, SeekOrigin.Begin);
+				// Log the error
+				Log.Core.WriteError("Error reading object at '{0:X8}'-'{1:X8}':\n{2}", lastPos, lastPos + offset, e.ToString());
+			}
+
+			return result;
+		}
+		protected abstract object ReadObjectBody(DataType dataType);
+
 		public bool IsTypeDataLayoutCached(string t)
 		{
 			return this.typeDataLayout.ContainsKey(t);
@@ -167,6 +209,27 @@ namespace Duality.Serialization
 			{
 				this.reader.BaseStream.Seek(initialPos, SeekOrigin.Begin);
 				Log.Core.WriteError("Error reading header: {0}", e);
+			}
+		}
+		protected object ReadPrimitive(DataType dataType)
+		{
+			switch (dataType)
+			{
+				case DataType.Bool:			return this.reader.ReadBoolean();
+				case DataType.Byte:			return this.reader.ReadByte();
+				case DataType.SByte:		return this.reader.ReadSByte();
+				case DataType.Short:		return this.reader.ReadInt16();
+				case DataType.UShort:		return this.reader.ReadUInt16();
+				case DataType.Int:			return this.reader.ReadInt32();
+				case DataType.UInt:			return this.reader.ReadUInt32();
+				case DataType.Long:			return this.reader.ReadInt64();
+				case DataType.ULong:		return this.reader.ReadUInt64();
+				case DataType.Float:		return this.reader.ReadSingle();
+				case DataType.Double:		return this.reader.ReadDouble();
+				case DataType.Decimal:		return this.reader.ReadDecimal();
+				case DataType.Char:			return this.reader.ReadChar();
+				default:
+					throw new ArgumentException(string.Format("DataType '{0}' is not a primitive.", dataType));
 			}
 		}
 
@@ -234,6 +297,48 @@ namespace Duality.Serialization
 			}
 		}
 		
+		protected void WriteObject(object obj)
+		{
+			if (!this.CanWrite) return;
+			if (this.lastOperation != Operation.Write)
+			{
+				this.ClearStreamSpecificData();
+				this.WriteFormatterHeader();
+			}
+			this.lastOperation = Operation.Write;
+
+			// NotNull flag
+			if (obj == null)
+			{
+				this.writer.Write(false);
+				return;
+			}
+			else
+				this.writer.Write(true);
+			
+			// Retrieve type data
+			CachedType objCachedType;
+			uint objId;
+			DataType dataType;
+			this.GetWriteObjectData(obj, out objCachedType, out dataType, out objId);
+
+			// Write data type header
+			this.WriteDataType(dataType);
+			this.WritePushOffset();
+			try
+			{
+				// Write object
+				this.WriteObjectBody(dataType, obj, objCachedType, objId);
+			}
+			finally
+			{
+				// Write object footer
+				this.WritePopOffset();
+			}
+		}
+		protected abstract void GetWriteObjectData(object obj, out CachedType objCachedType, out DataType dataType, out uint objId);
+		protected abstract void WriteObjectBody(DataType dataType, object obj, CachedType objCachedType, uint objId);
+
 		protected void WriteFormatterHeader()
 		{
 			this.writer.Write(HeaderId);
@@ -253,12 +358,48 @@ namespace Duality.Serialization
 				return;
 			}
 
-			TypeDataLayout layout = new TypeDataLayout(objCachedType);
-			this.typeDataLayout[objCachedType.TypeString] = layout;
+			this.WriteTypeDataLayout(new TypeDataLayout(objCachedType), objCachedType.TypeString);
+		}
+		protected void WriteTypeDataLayout(string typeString)
+		{
+			if (this.typeDataLayout.ContainsKey(typeString))
+			{
+				long backRef = this.typeDataLayoutMap[typeString];
+				this.writer.Write(backRef);
+				return;
+			}
 
+			Type resolved = ReflectionHelper.ResolveType(typeString, false);
+			CachedType cached = resolved != null ? ReflectionHelper.GetCachedType(resolved) : null;
+			TypeDataLayout layout = cached != null ? new TypeDataLayout(cached) : null;
+			this.WriteTypeDataLayout(layout, typeString);
+		}
+		protected void WriteTypeDataLayout(TypeDataLayout layout, string typeString)
+		{
+			this.typeDataLayout[typeString] = layout;
 			this.writer.Write(-1L);
-			this.typeDataLayoutMap[objCachedType.TypeString] = this.writer.BaseStream.Position;
+			this.typeDataLayoutMap[typeString] = this.writer.BaseStream.Position;
 			layout.Write(this.writer);
+		}
+		protected void WritePrimitive(object obj)
+		{
+			if		(obj is bool)		this.writer.Write((bool)obj);
+			else if (obj is byte)		this.writer.Write((byte)obj);
+			else if (obj is char)		this.writer.Write((char)obj);
+			else if (obj is sbyte)		this.writer.Write((sbyte)obj);
+			else if (obj is short)		this.writer.Write((short)obj);
+			else if (obj is ushort)		this.writer.Write((ushort)obj);
+			else if (obj is int)		this.writer.Write((int)obj);
+			else if (obj is uint)		this.writer.Write((uint)obj);
+			else if (obj is long)		this.writer.Write((long)obj);
+			else if (obj is ulong)		this.writer.Write((ulong)obj);
+			else if (obj is float)		this.writer.Write((float)obj);
+			else if (obj is double)		this.writer.Write((double)obj);
+			else if (obj is decimal)	this.writer.Write((decimal)obj);
+			else if (obj == null)
+				throw new ArgumentNullException("obj");
+			else
+				throw new ArgumentException(string.Format("Type '{0}' is not a primitive.", obj.GetType()));
 		}
 
 		protected void WriteArrayData(bool[] obj)

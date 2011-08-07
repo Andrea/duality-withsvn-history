@@ -145,5 +145,23 @@ namespace ResourceHacker.PluginRes {
                 return ResourceManager.GetString("MenuItemName_ResourceHacker", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die {0} occurrences of {1} have been replaced with {2}. ähnelt.
+        /// </summary>
+        internal static string MessageBox_RenameType_Text {
+            get {
+                return ResourceManager.GetString("MessageBox_RenameType_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Type strings replaced ähnelt.
+        /// </summary>
+        internal static string MessageBox_RenameType_Title {
+            get {
+                return ResourceManager.GetString("MessageBox_RenameType_Title", resourceCulture);
+            }
+        }
     }
 }

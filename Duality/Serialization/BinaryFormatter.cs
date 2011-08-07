@@ -11,32 +11,23 @@ namespace Duality.Serialization
 	{
 		public BinaryFormatter() : base() {}
 		public BinaryFormatter(Stream stream) : base(stream) {}
-
-		public void WriteObject(object obj)
+		
+		public new void WriteObject(object obj)
 		{
-			if (!this.CanWrite) return;
-			if (this.lastOperation != Operation.Write)
-			{
-				this.ClearStreamSpecificData();
-				this.WriteFormatterHeader();
-			}
-			this.lastOperation = Operation.Write;
+			base.WriteObject(obj);
+		}
+		public new object ReadObject()
+		{
+			return base.ReadObject();
+		}
 
-			// NotNull flag
-			if (obj == null)
-			{
-				this.writer.Write(false);
-				return;
-			}
-			else
-				this.writer.Write(true);
-
-			// Retrieve type data
+		protected override void GetWriteObjectData(object obj, out CachedType objCachedType, out DataType dataType, out uint objId)
+		{
 			Type objType = obj.GetType();
-			CachedType objCachedType = ReflectionHelper.GetCachedType(objType);
-			uint objId = 0;
-			DataType dataType = objCachedType.DataType;
-
+			objCachedType = ReflectionHelper.GetCachedType(objType);
+			objId = 0;
+			dataType = objCachedType.DataType;
+			
 			// Check whether it's going to be an ObjectRef or not
 			if (dataType == DataType.Array || dataType == DataType.Class || dataType == DataType.Delegate || dataType.IsMemberInfoType())
 			{
@@ -45,47 +36,17 @@ namespace Duality.Serialization
 				// If its not a new id, write a reference
 				if (objId < idCounter) dataType = DataType.ObjectRef;
 			}
-
-			// Write data type header
-			this.WriteDataType(dataType);
-
-			// Write object
-			this.WritePushOffset();
-			try
-			{
-				if (dataType.IsPrimitiveType())				this.WritePrimitive(obj);
-				else if (dataType == DataType.String)		this.writer.Write(obj as string);
-				else if (dataType == DataType.Struct)		this.WriteStruct(obj, objCachedType);
-				else if (dataType == DataType.ObjectRef)	this.writer.Write(objId);
-				else if	(dataType == DataType.Array)		this.WriteArray(obj, objCachedType, objId);
-				else if (dataType == DataType.Class)		this.WriteStruct(obj, objCachedType, objId);
-				else if (dataType == DataType.Delegate)		this.WriteDelegate(obj, objCachedType, objId);
-				else if (dataType.IsMemberInfoType())		this.WriteMemberInfo(obj, objId);
-			}
-			finally
-			{
-				this.WritePopOffset();
-			}
 		}
-		protected void WritePrimitive(object obj)
+		protected override void WriteObjectBody(DataType dataType, object obj, CachedType objCachedType, uint objId)
 		{
-			if		(obj is bool)		this.writer.Write((bool)obj);
-			else if (obj is byte)		this.writer.Write((byte)obj);
-			else if (obj is char)		this.writer.Write((char)obj);
-			else if (obj is sbyte)		this.writer.Write((sbyte)obj);
-			else if (obj is short)		this.writer.Write((short)obj);
-			else if (obj is ushort)		this.writer.Write((ushort)obj);
-			else if (obj is int)		this.writer.Write((int)obj);
-			else if (obj is uint)		this.writer.Write((uint)obj);
-			else if (obj is long)		this.writer.Write((long)obj);
-			else if (obj is ulong)		this.writer.Write((ulong)obj);
-			else if (obj is float)		this.writer.Write((float)obj);
-			else if (obj is double)		this.writer.Write((double)obj);
-			else if (obj is decimal)	this.writer.Write((decimal)obj);
-			else if (obj == null)
-				throw new ArgumentNullException("obj");
-			else
-				throw new ArgumentException(string.Format("Type '{0}' is not a primitive.", obj.GetType()));
+			if (dataType.IsPrimitiveType())				this.WritePrimitive(obj);
+			else if (dataType == DataType.String)		this.writer.Write(obj as string);
+			else if (dataType == DataType.Struct)		this.WriteStruct(obj, objCachedType);
+			else if (dataType == DataType.ObjectRef)	this.writer.Write(objId);
+			else if	(dataType == DataType.Array)		this.WriteArray(obj, objCachedType, objId);
+			else if (dataType == DataType.Class)		this.WriteStruct(obj, objCachedType, objId);
+			else if (dataType == DataType.Delegate)		this.WriteDelegate(obj, objCachedType, objId);
+			else if (dataType.IsMemberInfoType())		this.WriteMemberInfo(obj, objId);
 		}
 		protected void WriteMemberInfo(object obj, uint id = 0)
 		{
@@ -246,72 +207,20 @@ namespace Duality.Serialization
 			}
 		}
 
-		public object ReadObject()
+		protected override object ReadObjectBody(DataType dataType)
 		{
-			if (!this.CanRead) return null;
-			if (this.reader.BaseStream.Position == this.reader.BaseStream.Length) return null;
-			if (this.lastOperation != Operation.Read)
-			{
-				this.ClearStreamSpecificData();
-				this.ReadFormatterHeader();
-			}
-			this.lastOperation = Operation.Read;
-
-			// Not null flag
-			bool isNotNull = this.reader.ReadBoolean();
-			if (!isNotNull) return null;
-
-			// Read data type header
-			DataType dataType = this.ReadDataType();
-			long lastPos = this.reader.BaseStream.Position;
-			long offset = this.reader.ReadInt64();
-
-			// Read object
 			object result = null;
-			try
-			{
-				if (dataType.IsPrimitiveType())				result = this.ReadPrimitive(dataType);
-				else if (dataType == DataType.String)		result = this.reader.ReadString();
-				else if (dataType == DataType.Struct)		result = this.ReadStruct();
-				else if (dataType == DataType.ObjectRef)	result = this.ReadObjectRef();
-				else if (dataType == DataType.Array)		result = this.ReadArray();
-				else if (dataType == DataType.Class)		result = this.ReadStruct();
-				else if (dataType == DataType.Delegate)		result = this.ReadDelegate();
-				else if (dataType.IsMemberInfoType())		result = this.ReadMemberInfo(dataType);
 
-				// If we read the object properly and aren't where we're supposed to be, something went wrong
-				if (this.reader.BaseStream.Position != lastPos + offset) throw new ApplicationException(string.Format("Wrong dataset offset: '{0}' instead of expected value '{1}'.", offset, this.reader.BaseStream.Position - lastPos));
-			}
-			catch (Exception e)
-			{
-				// If anything goes wrong, assure the stream position is valid and points to the next data entry
-				this.reader.BaseStream.Seek(lastPos + offset, SeekOrigin.Begin);
-				// Log the error
-				Log.Core.WriteError("Error reading object at '{0:X8}'-'{1:X8}':\n{2}", lastPos, lastPos + offset, e.ToString());
-			}
+			if (dataType.IsPrimitiveType())				result = this.ReadPrimitive(dataType);
+			else if (dataType == DataType.String)		result = this.reader.ReadString();
+			else if (dataType == DataType.Struct)		result = this.ReadStruct();
+			else if (dataType == DataType.ObjectRef)	result = this.ReadObjectRef();
+			else if (dataType == DataType.Array)		result = this.ReadArray();
+			else if (dataType == DataType.Class)		result = this.ReadStruct();
+			else if (dataType == DataType.Delegate)		result = this.ReadDelegate();
+			else if (dataType.IsMemberInfoType())		result = this.ReadMemberInfo(dataType);
 
 			return result;
-		}
-		protected object ReadPrimitive(DataType dataType)
-		{
-			switch (dataType)
-			{
-				case DataType.Bool:			return this.reader.ReadBoolean();
-				case DataType.Byte:			return this.reader.ReadByte();
-				case DataType.SByte:		return this.reader.ReadSByte();
-				case DataType.Short:		return this.reader.ReadInt16();
-				case DataType.UShort:		return this.reader.ReadUInt16();
-				case DataType.Int:			return this.reader.ReadInt32();
-				case DataType.UInt:			return this.reader.ReadUInt32();
-				case DataType.Long:			return this.reader.ReadInt64();
-				case DataType.ULong:		return this.reader.ReadUInt64();
-				case DataType.Float:		return this.reader.ReadSingle();
-				case DataType.Double:		return this.reader.ReadDouble();
-				case DataType.Decimal:		return this.reader.ReadDecimal();
-				case DataType.Char:			return this.reader.ReadChar();
-				default:
-					throw new ArgumentException(string.Format("DataType '{0}' is not a primitive.", dataType));
-			}
 		}
 		protected Array ReadArray()
 		{

@@ -68,20 +68,11 @@ namespace ResourceHacker
 			}
 			public static Image GetIcon(BinaryMetaFormatter.DataNode data)
 			{
-				if (data is BinaryMetaFormatter.PrimitiveNode) return PluginRes.ResourceHackerRes.IconPrimitive;
-				else if (data is BinaryMetaFormatter.ArrayNode) return PluginRes.ResourceHackerRes.IconArray;
-				else if (data is BinaryMetaFormatter.ConstructorInfoNode) return PluginRes.ResourceHackerRes.IconMethod;
-				else if (data is BinaryMetaFormatter.DelegateNode) return PluginRes.ResourceHackerRes.IconDelegate;
-				else if (data is BinaryMetaFormatter.EventInfoNode) return PluginRes.ResourceHackerRes.IconEvent;
-				else if (data is BinaryMetaFormatter.FieldInfoNode) return PluginRes.ResourceHackerRes.IconField;
-				else if (data is BinaryMetaFormatter.MethodInfoNode) return PluginRes.ResourceHackerRes.IconMethod;
-				else if (data is BinaryMetaFormatter.PropertyInfoNode) return PluginRes.ResourceHackerRes.IconProperty;
-				else if (data is BinaryMetaFormatter.StructNode) return PluginRes.ResourceHackerRes.IconObject;
-				else if (data is BinaryMetaFormatter.TypeInfoNode) return PluginRes.ResourceHackerRes.IconClass;
-				else if (data is BinaryMetaFormatter.TypeDataLayoutNode) return PluginRes.ResourceHackerRes.IconClass;
-				else if (data is BinaryMetaFormatter.ObjectRefNode) return PluginRes.ResourceHackerRes.IconObjectRef;
-				else
-					return PluginRes.ResourceHackerRes.IconPrimitive;
+				Image result = CorePluginHelper.RequestTypeImage(data.GetType(), CorePluginHelper.ImageContext_Icon);
+				if (result != null) 
+					return result;
+				else 
+					return CorePluginHelper.RequestTypeImage(typeof(BinaryMetaFormatter.DataNode), CorePluginHelper.ImageContext_Icon);
 			}
 		}
 		protected class PrimitiveTreeNode : DataTreeNode
@@ -168,6 +159,7 @@ namespace ResourceHacker
 		private	string				filePath	= null;
 		private	BinaryMetaFormatter	formatter	= new BinaryMetaFormatter();
 		private	TreeModel			dataModel	= new TreeModel();
+		private	List<DataTreeNode>	rootData	= new List<DataTreeNode>();
 
 		private	Dictionary<string,BinaryMetaFormatter.TypeDataLayoutNode>
 			typeDataLayout = new Dictionary<string,BinaryMetaFormatter.TypeDataLayoutNode>();
@@ -177,16 +169,19 @@ namespace ResourceHacker
 		{
 			this.InitializeComponent();
 			this.treeView.Model = this.dataModel;
+			this.ClearData();
 
-			this.nodeTextBoxObjId.DrawText += new EventHandler<Aga.Controls.Tree.NodeControls.DrawEventArgs>(nodeTextBoxObjId_DrawText);
-			this.nodeTextBoxType.DrawText += new EventHandler<Aga.Controls.Tree.NodeControls.DrawEventArgs>(nodeTextBoxType_DrawText);
+			this.nodeTextBoxObjId.DrawText += this.nodeTextBoxObjId_DrawText;
+			this.nodeTextBoxType.DrawText += this.nodeTextBoxType_DrawText;
+			this.propertyGrid.EditingFinished += this.propertyGrid_EditingFinished;
 
 			this.openFileDialog.InitialDirectory = Path.GetFullPath(EditorHelper.DataDirectory);
 			this.openFileDialog.Filter = "Duality Resource|*" + Resource.FileExt;
 			this.saveFileDialog.InitialDirectory = this.openFileDialog.InitialDirectory;
 			this.saveFileDialog.Filter = this.openFileDialog.Filter;
 
-			// Testing Serialization
+			// ---------- Testing Serialization ------------
+			System.Diagnostics.Stopwatch w = new System.Diagnostics.Stopwatch();
 			using (FileStream fileStream = File.Open("test.res", FileMode.Create, FileAccess.ReadWrite))
 			{
 				var tempDict = new Dictionary<string,string>();
@@ -194,22 +189,30 @@ namespace ResourceHacker
 				tempDict["Knock Knock"] = "Who is it?";
 
 				BinaryFormatter testFormatter = new BinaryFormatter(fileStream);
-				testFormatter.WriteObject(42);
-				testFormatter.WriteObject(new[] { true, true, false });
-				testFormatter.WriteObject(tempDict);
+				object[] writeObj = new object[3];
+				//for (int i = 0; i < writeObj.Length; i++)
+				//{
+				//    writeObj[i] = new List<string> { "Blub", "Plop", "Yoink" };
+				//}
+				writeObj[0] = 42;
+				writeObj[1] = new List<string> { "Blub", "Plop", "Yoink" };
+				writeObj[2] = tempDict;
+				w.Restart();
+				for (int i = 0; i < writeObj.Length; i++) testFormatter.WriteObject(writeObj[i]);
+				Log.Editor.Write("writing {0}", w.ElapsedMilliseconds);
 
 				fileStream.Seek(0, SeekOrigin.Begin);
 				ReflectionHelper.ClearTypeCache();
 
-				object[] readObj = new object[3];
-				for (int i = 0; i < readObj.Length; i++)
-					readObj[i] = testFormatter.ReadObject();
+				object[] readObj = new object[writeObj.Length];
+				w.Restart();
+				for (int i = 0; i < readObj.Length; i++) readObj[i] = testFormatter.ReadObject();
+				Log.Editor.Write("reading {0}", w.ElapsedMilliseconds);
 			}
 		}
 		protected override void OnShown(EventArgs e)
 		{
 			this.propertyGrid.RegisterEditorProvider(CorePluginHelper.RequestPropertyEditorProviders());
-			this.propertyGrid.EditingFinished += this.propertyGrid_EditingFinished;
 			base.OnShown(e);
 		}
 
@@ -218,6 +221,9 @@ namespace ResourceHacker
 			if (!File.Exists(filePath)) throw new FileNotFoundException("Can't open Resource file. File not found.", filePath);
 
 			this.ClearData();
+			this.actionRenameField.Enabled = true;
+			this.actionRenameType.Enabled = true;
+			this.actionSave.Enabled = true;
 			this.filePath = filePath;
 			using (FileStream fileStream = File.OpenRead(this.filePath))
 			{
@@ -225,21 +231,45 @@ namespace ResourceHacker
 				this.formatter.WriteTarget = null;
 
 				BinaryMetaFormatter.DataNode dataNode;
-				while ((dataNode = this.formatter.ReadObject()) != null)
+				try
 				{
-					this.dataModel.Nodes.Add(this.AddData(dataNode));
+					this.treeView.BeginUpdate();
+					while ((dataNode = this.formatter.ReadObject()) != null)
+					{
+						DataTreeNode data = this.AddData(dataNode);
+						this.rootData.Add(data);
+					}
+				}
+				catch (EndOfStreamException) {}
+				finally
+				{
+					foreach (DataTreeNode n in this.rootData) this.dataModel.Nodes.Add(n);
+					this.treeView.EndUpdate(); 
 				}
 			}
 		}
 		public void SaveFile(string filePath)
 		{
+			this.filePath = filePath;
+			using (FileStream fileStream = File.Open(this.filePath, FileMode.Create, FileAccess.Write))
+			{
+				this.formatter.ReadTarget = null;
+				this.formatter.WriteTarget = new BinaryWriter(fileStream);
 
+				foreach (DataTreeNode dataNode in this.dataModel.Nodes)
+					this.formatter.WriteObject(dataNode.Data);
+			}
 		}
 
 		protected void ClearData()
 		{
 			this.dataModel.Nodes.Clear();
+			this.rootData.Clear();
 			this.typeDataLayout.Clear();
+
+			this.actionRenameField.Enabled = false;
+			this.actionRenameType.Enabled = false;
+			this.actionSave.Enabled = false;
 		}
 		protected DataTreeNode AddData(BinaryMetaFormatter.DataNode data)
 		{
@@ -288,23 +318,27 @@ namespace ResourceHacker
 		protected bool IsObjectIdExisting(uint objId, BinaryMetaFormatter.DataNode baseNode = null)
 		{
 			if (objId == 0) return false;
-
-			if (baseNode == null)
-			{
-				foreach (DataTreeNode treeNode in this.dataModel.Nodes)
-					if (this.IsObjectIdExisting(objId, treeNode.Data)) return true;
-			}
-			else if (baseNode is BinaryMetaFormatter.ObjectNode && (baseNode as BinaryMetaFormatter.ObjectNode).ObjId == objId)
-			{
-				return true;
-			}
-			else
-			{
-				foreach (BinaryMetaFormatter.DataNode subNode in baseNode.SubNodes)
-					if (this.IsObjectIdExisting(objId, subNode)) return true;
-			}
+			
+			foreach (DataTreeNode dataNode in this.rootData)
+				if (dataNode.Data.IsObjectIdDefined(objId)) return true;
 
 			return false;
+		}
+		protected string[] GetAvailTypes(BinaryMetaFormatter.DataNode baseNode = null)
+		{
+			List<string> availTypes = new List<string>();
+
+			foreach (DataTreeNode dataNode in this.rootData)
+				availTypes.AddRange(dataNode.Data.GetTypeStrings(true));
+
+			return availTypes.Distinct().ToArray();
+		}
+		protected int ReplaceTypeStrings(string oldTypeString, string newTypeString)
+		{
+			int count = 0;
+			foreach (DataTreeNode dataNode in this.rootData)
+				count += dataNode.Data.ReplaceTypeStrings(oldTypeString, newTypeString);
+			return count;
 		}
 
 		private void actionOpen_Click(object sender, EventArgs e)
@@ -327,7 +361,7 @@ namespace ResourceHacker
 		{
 			TreeNodeAdv viewSelNode = this.treeView.SelectedNode;
 			DataTreeNode selNode = viewSelNode != null ? viewSelNode.Tag as DataTreeNode : null;
-			this.propertyGrid.SelectObjects(new[] {selNode.Data});
+			this.propertyGrid.SelectObject(selNode != null ? selNode.Data : null);
 		}
 		private void nodeTextBoxObjId_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawEventArgs e)
 		{
@@ -353,6 +387,24 @@ namespace ResourceHacker
 			{
 				this.UpdateTypeDataLayout();
 			}
+		}
+
+		private void actionRenameType_Click(object sender, EventArgs e)
+		{
+			RenameTypeDialog dialog = new RenameTypeDialog(this.GetAvailTypes());
+			if (dialog.ShowDialog(this) == DialogResult.OK)
+			{
+				int replaced = this.ReplaceTypeStrings(dialog.SearchFor, dialog.ReplaceWith);
+				MessageBox.Show(
+					string.Format(PluginRes.ResourceHackerRes.MessageBox_RenameType_Text, replaced, dialog.SearchFor, dialog.ReplaceWith), 
+					PluginRes.ResourceHackerRes.MessageBox_RenameType_Title, 
+					MessageBoxButtons.OK, 
+					MessageBoxIcon.Information);
+			}
+		}
+		private void actionRenameField_Click(object sender, EventArgs e)
+		{
+
 		}
 	}
 }

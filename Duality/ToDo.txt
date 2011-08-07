@@ -1,20 +1,20 @@
 ﻿
 -->	Serialization ToDo
 	-->	ResourceHacker
-		-->	BinaryMetaFormatter writing (assure 100% compatibility)
-		-->	Action: Rename Type
 		-->	Action: Rename Field
 
 	-->	React to [System.Serializable], [System.NonSerialized] and [Duality.Resources.NonSerializedPrefab]
+		-->	Serializing objects without [System.Serializable] results in a log warning but is done anyway
+			-->	No warning if it implements Duality.Serialization.ISerializable
+		-->	[System.NonSerialized] fields are not written at all (also not included in TypeDataLayout)
+			and simply not applied to the object when reading them. 
 	-->	Custom object serialization / Duality.Serialization.ISerializable interface, Pixmap needs it and probably others as well
 
 	-->	Test if it can de/serialize Duality stuff properly
 	-->	Port content to new serialization format
 	-->	Stability test when reloading core plugins (Are Types resolved properly using FindType?)
-	-->	Performance optimization
-		-->	FindType.
 
-	--> Get rid of (old) SerializationHelper.
+	--> Get rid of old SerializationHelper stuff.
 	
 
 

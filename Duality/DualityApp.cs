@@ -236,10 +236,11 @@ namespace Duality
 			Log.Core.RegisterOutput(new RtfDocWriterLogOutput(logfileRtf, "[Core]   ", new ColorFormat.ColorRGBA(220, 220, 255), logfileRtfSharedFormat));
 			Log.Editor.RegisterOutput(new RtfDocWriterLogOutput(logfileRtf, "[Editor] ", new ColorFormat.ColorRGBA(245, 220, 255), logfileRtfSharedFormat));
 
-			// Assure Duality is propery terminated in any case
+			// Assure Duality is properly terminated in any case and register additional AppDomain events
 			AppDomain.CurrentDomain.ProcessExit			+= CurrentDomain_ProcessExit;
 			AppDomain.CurrentDomain.UnhandledException	+= CurrentDomain_UnhandledException;
 			AppDomain.CurrentDomain.AssemblyResolve		+= CurrentDomain_AssemblyResolve;
+			AppDomain.CurrentDomain.AssemblyLoad		+= CurrentDomain_AssemblyLoad;
 
 			Log.Core.Write("DualityApp initialized");
 			Log.Core.Write("Debug Mode: {0}", System.Diagnostics.Debugger.IsAttached);
@@ -580,6 +581,10 @@ namespace Duality
 				return plugin;
 			else
 				return null;
+		}
+		private static void CurrentDomain_AssemblyLoad(object sender, AssemblyLoadEventArgs args)
+		{
+			Log.Core.Write("Assembly loaded: {0}", args.LoadedAssembly.FullName.Split(',')[0]);
 		}
 	}
 

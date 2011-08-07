@@ -41,6 +41,32 @@ namespace Duality.Serialization
 				this.dataType = dataType;
 				this.subNodes = new List<DataNode>();
 			}
+
+			public List<string> GetTypeStrings(bool deep)
+			{
+				List<string> result = new List<string>();
+				this.GetTypeStrings(ref result, deep);
+				return result;
+			}
+			protected virtual void GetTypeStrings(ref List<string> list, bool deep)
+			{
+				if (!deep) return;
+				foreach (DataNode n in this.subNodes)
+					n.GetTypeStrings(ref list, deep);
+			}
+			public virtual bool IsObjectIdDefined(uint objId)
+			{
+				foreach (DataNode n in this.subNodes)
+					if (n.IsObjectIdDefined(objId)) return true;
+				return false;
+			}
+			public virtual int ReplaceTypeStrings(string oldTypeString, string newTypeString)
+			{
+				int count = 0;
+				foreach (DataNode n in this.subNodes)
+					count += n.ReplaceTypeStrings(oldTypeString, newTypeString);
+				return count;
+			}
 		}
 		public class PrimitiveNode : DataNode
 		{
@@ -93,6 +119,27 @@ namespace Duality.Serialization
 				this.typeString = typeString;
 				this.objId = objId;
 			}
+
+			protected override void GetTypeStrings(ref List<string> list, bool deep)
+			{
+				list.Add(this.typeString);
+				base.GetTypeStrings(ref list, deep);
+			}
+			public override bool IsObjectIdDefined(uint objId)
+			{
+				if (this.objId == objId) return true;
+				return base.IsObjectIdDefined(objId);
+			}
+			public override int ReplaceTypeStrings(string oldTypeString, string newTypeString)
+			{
+				int count = base.ReplaceTypeStrings(oldTypeString, newTypeString);
+				if (this.typeString == oldTypeString)
+				{
+					this.typeString = newTypeString;
+					count++;
+				}
+				return count;
+			}
 		}
 		public class ArrayNode : ObjectNode
 		{
@@ -118,6 +165,14 @@ namespace Duality.Serialization
 					}
 				}
 			}
+			public int Rank
+			{
+				get { return this.rank; }
+			}
+			public int Length
+			{
+				get { return this.length; }
+			}
 
 			public ArrayNode(string typeString, uint objId, int rank, int length) : base(DataType.Array, typeString, objId)
 			{
@@ -127,7 +182,7 @@ namespace Duality.Serialization
 		}
 		public class StructNode : ObjectNode
 		{
-			public StructNode(string typeString, uint objId) : base(DataType.Array, typeString, objId)
+			public StructNode(string typeString, uint objId) : base(DataType.Struct, typeString, objId)
 			{
 
 			}
@@ -212,6 +267,31 @@ namespace Duality.Serialization
 				this.propertyType = propertyType;
 				this.parameterTypeStrings = parameterTypeStrings;
 			}
+
+			protected override void GetTypeStrings(ref List<string> list, bool deep)
+			{
+				list.Add(this.propertyType);
+				list.AddRange(this.parameterTypeStrings);
+				base.GetTypeStrings(ref list, deep);
+			}
+			public override int ReplaceTypeStrings(string oldTypeString, string newTypeString)
+			{
+				int count = base.ReplaceTypeStrings(oldTypeString, newTypeString);
+				if (this.propertyType == oldTypeString)
+				{
+					this.propertyType = newTypeString;
+					count++;
+				}
+				for (int i = 0; i < this.parameterTypeStrings.Length; i++)
+				{
+					if (this.parameterTypeStrings[i] == oldTypeString)
+					{
+						this.parameterTypeStrings[i] = newTypeString;
+						count++;
+					}
+				}
+				return count;
+			}
 		}
 		public class MethodInfoNode : MemberInfoNode
 		{
@@ -234,6 +314,25 @@ namespace Duality.Serialization
 				this.methodName = methodName;
 				this.parameterTypeStrings = parameterTypeStrings;
 			}
+
+			protected override void GetTypeStrings(ref List<string> list, bool deep)
+			{
+				list.AddRange(this.parameterTypeStrings);
+				base.GetTypeStrings(ref list, deep);
+			}
+			public override int ReplaceTypeStrings(string oldTypeString, string newTypeString)
+			{
+				int count = base.ReplaceTypeStrings(oldTypeString, newTypeString);
+				for (int i = 0; i < this.parameterTypeStrings.Length; i++)
+				{
+					if (this.parameterTypeStrings[i] == oldTypeString)
+					{
+						this.parameterTypeStrings[i] = newTypeString;
+						count++;
+					}
+				}
+				return count;
+			}
 		}
 		public class ConstructorInfoNode : MemberInfoNode
 		{
@@ -248,6 +347,25 @@ namespace Duality.Serialization
 			public ConstructorInfoNode(string mainTypeString, uint objId, string[] parameterTypeStrings, bool isStatic) : base(DataType.ConstructorInfo, mainTypeString, objId, isStatic)
 			{
 				this.parameterTypeStrings = parameterTypeStrings;
+			}
+			
+			protected override void GetTypeStrings(ref List<string> list, bool deep)
+			{
+				list.AddRange(this.parameterTypeStrings);
+				base.GetTypeStrings(ref list, deep);
+			}
+			public override int ReplaceTypeStrings(string oldTypeString, string newTypeString)
+			{
+				int count = base.ReplaceTypeStrings(oldTypeString, newTypeString);
+				for (int i = 0; i < this.parameterTypeStrings.Length; i++)
+				{
+					if (this.parameterTypeStrings[i] == oldTypeString)
+					{
+						this.parameterTypeStrings[i] = newTypeString;
+						count++;
+					}
+				}
+				return count;
 			}
 		}
 		public class EventInfoNode : MemberInfoNode
@@ -281,6 +399,14 @@ namespace Duality.Serialization
 					if (this.invokeList != null) this.invokeList.Parent = this;
 				}
 			}
+			public DataNode Method
+			{
+				get { return this.method; }
+			}
+			public DataNode Target
+			{
+				get { return this.target; }
+			}
 
 			public DelegateNode(string typeString, uint objId, DataNode method, DataNode target, DataNode invokeList) : base(DataType.Delegate, typeString, objId) 
 			{
@@ -307,80 +433,215 @@ namespace Duality.Serialization
 			{
 				this.layout = layout;
 			}
+			
+			protected override void GetTypeStrings(ref List<string> list, bool deep)
+			{
+				list.AddRange(this.layout.Fields.Select(f => f.typeString));
+				base.GetTypeStrings(ref list, deep);
+			}
+			public override int ReplaceTypeStrings(string oldTypeString, string newTypeString)
+			{
+				int count = base.ReplaceTypeStrings(oldTypeString, newTypeString);
+				for (int i = 0; i < this.layout.Fields.Length; i++)
+				{
+					if (this.layout.Fields[i].typeString == oldTypeString)
+					{
+						TypeDataLayout.FieldDataInfo field = this.layout.Fields[i];
+						field.typeString = newTypeString;
+						this.layout.Fields[i] = field;
+						count++;
+					}
+				}
+				return count;
+			}
 		}
 
 
 		public BinaryMetaFormatter() : base() {}
 		public BinaryMetaFormatter(Stream stream) : base(stream) {}
 
-		public DataNode ReadObject()
+		public void WriteObject(DataNode data)
 		{
-			if (!this.CanRead) return null;
-			if (this.reader.BaseStream.Position == this.reader.BaseStream.Length) return null;
-			if (this.lastOperation != Operation.Read)
+			base.WriteObject(data);
+		}
+		public new DataNode ReadObject()
+		{
+			object obj = base.ReadObject();
+			return obj != null ? obj as DataNode : new PrimitiveNode(DataType.Unknown, null);
+		}
+		
+		protected override void GetWriteObjectData(object obj, out CachedType objCachedType, out DataType dataType, out uint objId)
+		{
+			DataNode node = obj as DataNode;
+			objCachedType = null;
+			objId = 0;
+			dataType = node.NodeType;
+
+			if		(node is ObjectNode)	objId = (node as ObjectNode).ObjId;
+			else if (node is ObjectRefNode) objId = (node as ObjectRefNode).ObjRefId;
+		}
+		protected override void WriteObjectBody(DataType dataType, object obj, CachedType objCachedType, uint objId)
+		{
+			if (dataType.IsPrimitiveType())				this.WritePrimitive((obj as PrimitiveNode).PrimitiveValue);
+			else if (dataType == DataType.String)		this.writer.Write((obj as StringNode).StringValue);
+			else if (dataType == DataType.Struct)		this.WriteStruct(obj as StructNode);
+			else if (dataType == DataType.ObjectRef)	this.writer.Write((obj as ObjectRefNode).ObjRefId);
+			else if	(dataType == DataType.Array)		this.WriteArray(obj as ArrayNode);
+			else if (dataType == DataType.Class)		this.WriteStruct(obj as StructNode);
+			else if (dataType == DataType.Delegate)		this.WriteDelegate(obj as DelegateNode);
+			else if (dataType.IsMemberInfoType())		this.WriteMemberInfo(obj as MemberInfoNode);
+		}
+		protected void WriteMemberInfo(MemberInfoNode node)
+		{
+			if (node == null) throw new ArgumentNullException("node");
+
+			this.writer.Write(node.ObjId);
+			if (node is TypeInfoNode)
 			{
-				this.ClearStreamSpecificData();
-				this.ReadFormatterHeader();
+				TypeInfoNode type = node as TypeInfoNode;
+
+				this.writer.Write(type.TypeString);
 			}
-			this.lastOperation = Operation.Read;
+			else if (node is FieldInfoNode)
+			{
+				FieldInfoNode field = node as FieldInfoNode;
 
-			// Not null flag
-			bool isNotNull = this.reader.ReadBoolean();
-			if (!isNotNull) return new PrimitiveNode(DataType.Unknown, null);
+				this.writer.Write(field.IsStatic);
+				this.writer.Write(field.TypeString);
+				this.writer.Write(field.FieldName);
+			}
+			else if (node is PropertyInfoNode)
+			{
+				PropertyInfoNode property = node as PropertyInfoNode;
 
-			// Read data type header
-			DataType dataType = this.ReadDataType();
-			long lastPos = this.reader.BaseStream.Position;
-			long offset = this.reader.ReadInt64();
+				this.writer.Write(property.IsStatic);
+				this.writer.Write(property.TypeString);
+				this.writer.Write(property.PropertyName);
+				this.writer.Write(property.PropertyType);
+				this.writer.Write(property.ParameterTypes.Length);
+				for (int i = 0; i < property.ParameterTypes.Length; i++)
+					this.writer.Write(property.ParameterTypes[i]);
+			}
+			else if (node is MethodInfoNode)
+			{
+				MethodInfoNode method = node as MethodInfoNode;
 
-			// Read object
+				this.writer.Write(method.IsStatic);
+				this.writer.Write(method.TypeString);
+				this.writer.Write(method.MethodName);
+				this.writer.Write(method.ParameterTypes.Length);
+				for (int i = 0; i < method.ParameterTypes.Length; i++)
+					this.writer.Write(method.ParameterTypes[i]);
+			}
+			else if (node is ConstructorInfoNode)
+			{
+				ConstructorInfoNode method = node as ConstructorInfoNode;
+
+				this.writer.Write(method.IsStatic);
+				this.writer.Write(method.TypeString);
+				this.writer.Write(method.ParameterTypes.Length);
+				for (int i = 0; i < method.ParameterTypes.Length; i++)
+					this.writer.Write(method.ParameterTypes[i]);
+			}
+			else if (node is EventInfoNode)
+			{
+				EventInfoNode e = node as EventInfoNode;
+
+				this.writer.Write(e.IsStatic);
+				this.writer.Write(e.TypeString);
+				this.writer.Write(e.EventName);
+			}
+		}
+		protected void WriteArray(ArrayNode node)
+		{
+			if (node.Rank != 1) throw new ArgumentException("Non single-Rank arrays are not supported");
+
+			this.writer.Write(node.TypeString);
+			this.writer.Write(node.ObjId);
+			this.writer.Write(node.Rank);
+
+			
+			if (node.PrimitiveData != null)
+			{
+				this.writer.Write(node.PrimitiveData.Length);
+				Array objAsArray = node.PrimitiveData;
+				if		(objAsArray is bool[])		this.WriteArrayData(objAsArray as bool[]);
+				else if (objAsArray is byte[])		this.WriteArrayData(objAsArray as byte[]);
+				else if (objAsArray is sbyte[])		this.WriteArrayData(objAsArray as sbyte[]);
+				else if (objAsArray is short[])		this.WriteArrayData(objAsArray as short[]);
+				else if (objAsArray is ushort[])	this.WriteArrayData(objAsArray as ushort[]);
+				else if (objAsArray is int[])		this.WriteArrayData(objAsArray as int[]);
+				else if (objAsArray is uint[])		this.WriteArrayData(objAsArray as uint[]);
+				else if (objAsArray is long[])		this.WriteArrayData(objAsArray as long[]);
+				else if (objAsArray is ulong[])		this.WriteArrayData(objAsArray as ulong[]);
+				else if (objAsArray is float[])		this.WriteArrayData(objAsArray as float[]);
+				else if (objAsArray is double[])	this.WriteArrayData(objAsArray as double[]);
+				else if (objAsArray is decimal[])	this.WriteArrayData(objAsArray as decimal[]);
+				else if (objAsArray is char[])		this.WriteArrayData(objAsArray as char[]);
+				else if (objAsArray is string[])	this.WriteArrayData(objAsArray as string[]);
+			}
+			else
+			{
+				this.writer.Write(node.SubNodes.Count());
+				foreach (DataNode subNode in node.SubNodes)
+					this.WriteObject(subNode);
+			}
+		}
+		protected void WriteStruct(StructNode node)
+		{
+			// Write the structs data type
+			this.writer.Write(node.TypeString);
+			this.writer.Write(node.ObjId);
+
+			bool skipLayout = false;
+			if (node.SubNodes.FirstOrDefault() is TypeDataLayoutNode)
+			{
+				TypeDataLayoutNode typeDataLayout = node.SubNodes.FirstOrDefault() as TypeDataLayoutNode;
+				this.WriteTypeDataLayout(typeDataLayout.Layout, node.TypeString);
+				skipLayout = true;
+			}
+			else
+			{
+				this.WriteTypeDataLayout(node.TypeString);
+			}
+
+			// Write the structs fields
+			foreach (DataNode subNode in node.SubNodes)
+			{
+				if (skipLayout)
+				{
+					skipLayout = false;
+					continue;
+				}
+				this.WriteObject(subNode);
+			}
+		}
+		protected void WriteDelegate(DelegateNode node)
+		{
+			// Write the delegates type
+			this.writer.Write(node.TypeString);
+			this.writer.Write(node.ObjId);
+			this.writer.Write(node.InvokeList != null);
+
+			this.WriteObject(node.Method);
+			this.WriteObject(node.Target);
+			if (node.InvokeList != null) this.WriteObject(node.InvokeList);
+		}
+
+		protected override object ReadObjectBody(DataType dataType)
+		{
 			DataNode result = null;
-			try
-			{
-				if (dataType.IsPrimitiveType())				result = this.ReadPrimitive(dataType);
-				else if (dataType == DataType.String)		result = new StringNode(this.reader.ReadString());
-				else if (dataType == DataType.Struct)		result = this.ReadStruct();
-				else if (dataType == DataType.ObjectRef)	result = this.ReadObjectRef();
-				else if (dataType == DataType.Array)		result = this.ReadArray();
-				else if (dataType == DataType.Class)		result = this.ReadStruct();
-				else if (dataType == DataType.Delegate)		result = this.ReadDelegate();
-				else if (dataType.IsMemberInfoType())		result = this.ReadMemberInfo(dataType);
 
-				// If we read the object properly and aren't where we're supposed to be, something went wrong
-				if (this.reader.BaseStream.Position != lastPos + offset) throw new ApplicationException(string.Format("Wrong dataset offset: '{0}' instead of expected value '{1}'.", offset, this.reader.BaseStream.Position - lastPos));
-			}
-			catch (Exception e)
-			{
-				// If anything goes wrong, assure the stream position is valid and points to the next data entry
-				this.reader.BaseStream.Seek(lastPos + offset, SeekOrigin.Begin);
-				// Log the error
-				Log.Core.WriteError("Error reading object at '{0:X8}'-'{1:X8}':\n{2}", lastPos, lastPos + offset, e.ToString());
-			}
+			if (dataType.IsPrimitiveType())				result = new PrimitiveNode(dataType, this.ReadPrimitive(dataType));
+			else if (dataType == DataType.String)		result = new StringNode(this.reader.ReadString());
+			else if (dataType == DataType.Struct)		result = this.ReadStruct();
+			else if (dataType == DataType.ObjectRef)	result = this.ReadObjectRef();
+			else if (dataType == DataType.Array)		result = this.ReadArray();
+			else if (dataType == DataType.Class)		result = this.ReadStruct();
+			else if (dataType == DataType.Delegate)		result = this.ReadDelegate();
+			else if (dataType.IsMemberInfoType())		result = this.ReadMemberInfo(dataType);
 
 			return result;
-		}
-		protected PrimitiveNode ReadPrimitive(DataType dataType)
-		{
-			object value = null;
-			switch (dataType)
-			{
-				case DataType.Bool:			value = this.reader.ReadBoolean();	break;
-				case DataType.Byte:			value = this.reader.ReadByte();		break;
-				case DataType.SByte:		value = this.reader.ReadSByte();	break;
-				case DataType.Short:		value = this.reader.ReadInt16();	break;
-				case DataType.UShort:		value = this.reader.ReadUInt16();	break;
-				case DataType.Int:			value = this.reader.ReadInt32();	break;
-				case DataType.UInt:			value = this.reader.ReadUInt32();	break;
-				case DataType.Long:			value = this.reader.ReadInt64();	break;
-				case DataType.ULong:		value = this.reader.ReadUInt64();	break;
-				case DataType.Float:		value = this.reader.ReadSingle();	break;
-				case DataType.Double:		value = this.reader.ReadDouble();	break;
-				case DataType.Decimal:		value = this.reader.ReadDecimal();	break;
-				case DataType.Char:			value = this.reader.ReadChar();		break;
-				default:
-					throw new ArgumentException(string.Format("DataType '{0}' is not a primitive.", dataType));
-			}
-			return new PrimitiveNode(dataType, value);
 		}
 		protected ArrayNode ReadArray()
 		{
@@ -388,7 +649,7 @@ namespace Duality.Serialization
 			uint	objId			= this.reader.ReadUInt32();
 			int		arrRank			= this.reader.ReadInt32();
 			int		arrLength		= this.reader.ReadInt32();
-			Type	arrType			= ReflectionHelper.ResolveType(arrTypeString);
+			Type	arrType			= ReflectionHelper.ResolveType(arrTypeString, false);
 
 			ArrayNode result = new ArrayNode(arrTypeString, objId, arrRank, arrLength);
 			
