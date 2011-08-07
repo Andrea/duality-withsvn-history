@@ -45,7 +45,6 @@
 			this.actionSave = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.actionRenameType = new System.Windows.Forms.ToolStripButton();
-			this.actionRenameField = new System.Windows.Forms.ToolStripButton();
 			this.propertyGrid = new DualityEditor.Controls.PropertyGrid();
 			this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
 			this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
@@ -156,8 +155,7 @@
             this.actionOpen,
             this.actionSave,
             this.toolStripSeparator1,
-            this.actionRenameType,
-            this.actionRenameField});
+            this.actionRenameType});
 			resources.ApplyResources(this.mainToolStrip, "mainToolStrip");
 			this.mainToolStrip.Name = "mainToolStrip";
 			// 
@@ -188,14 +186,6 @@
 			resources.ApplyResources(this.actionRenameType, "actionRenameType");
 			this.actionRenameType.Name = "actionRenameType";
 			this.actionRenameType.Click += new System.EventHandler(this.actionRenameType_Click);
-			// 
-			// actionRenameField
-			// 
-			this.actionRenameField.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.actionRenameField.Image = global::ResourceHacker.Properties.Resources.iconRenameField;
-			resources.ApplyResources(this.actionRenameField, "actionRenameField");
-			this.actionRenameField.Name = "actionRenameField";
-			this.actionRenameField.Click += new System.EventHandler(this.actionRenameField_Click);
 			// 
 			// propertyGrid
 			// 
@@ -251,7 +241,6 @@
 		private Aga.Controls.Tree.NodeControls.NodeTextBox nodeTextBoxValue;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 		private System.Windows.Forms.ToolStripButton actionRenameType;
-		private System.Windows.Forms.ToolStripButton actionRenameField;
 
 
 	}

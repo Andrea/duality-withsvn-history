@@ -9,8 +9,35 @@ namespace Duality.Serialization
 {
 	public class BinaryFormatter : BinaryFormatterBase
 	{
+		protected	List<Predicate<FieldInfo>>	fieldBlockers	= new List<Predicate<FieldInfo>>();
+
+		public IEnumerable<Predicate<FieldInfo>> FieldBlockers
+		{
+			get { return this.fieldBlockers; }
+		}
+
 		public BinaryFormatter() : base() {}
 		public BinaryFormatter(Stream stream) : base(stream) {}
+
+		public void ClearFieldBlockers()
+		{
+			this.fieldBlockers.Clear();
+		}
+		public void AddFieldBlocker(Predicate<FieldInfo> blocker)
+		{
+			if (this.fieldBlockers.Contains(blocker)) return;
+			this.fieldBlockers.Add(blocker);
+		}
+		public void RemoveFieldBlocker(Predicate<FieldInfo> blocker)
+		{
+			this.fieldBlockers.Remove(blocker);
+		}
+		public bool IsFieldBlocked(FieldInfo field)
+		{
+			foreach (var blocker in this.fieldBlockers)
+				if (blocker(field)) return true;
+			return false;
+		}
 		
 		public new void WriteObject(object obj)
 		{
@@ -21,12 +48,12 @@ namespace Duality.Serialization
 			return base.ReadObject();
 		}
 
-		protected override void GetWriteObjectData(object obj, out CachedType objCachedType, out DataType dataType, out uint objId)
+		protected override void GetWriteObjectData(object obj, out SerializeType objSerializeType, out DataType dataType, out uint objId)
 		{
 			Type objType = obj.GetType();
-			objCachedType = ReflectionHelper.GetCachedType(objType);
+			objSerializeType = ReflectionHelper.GetSerializeType(objType);
 			objId = 0;
-			dataType = objCachedType.DataType;
+			dataType = objSerializeType.DataType;
 			
 			// Check whether it's going to be an ObjectRef or not
 			if (dataType == DataType.Array || dataType == DataType.Class || dataType == DataType.Delegate || dataType.IsMemberInfoType())
@@ -37,15 +64,15 @@ namespace Duality.Serialization
 				if (objId < idCounter) dataType = DataType.ObjectRef;
 			}
 		}
-		protected override void WriteObjectBody(DataType dataType, object obj, CachedType objCachedType, uint objId)
+		protected override void WriteObjectBody(DataType dataType, object obj, SerializeType objSerializeType, uint objId)
 		{
 			if (dataType.IsPrimitiveType())				this.WritePrimitive(obj);
-			else if (dataType == DataType.String)		this.writer.Write(obj as string);
-			else if (dataType == DataType.Struct)		this.WriteStruct(obj, objCachedType);
+			else if (dataType == DataType.String)		this.WriteString(obj as string);
+			else if (dataType == DataType.Struct)		this.WriteStruct(obj, objSerializeType);
 			else if (dataType == DataType.ObjectRef)	this.writer.Write(objId);
-			else if	(dataType == DataType.Array)		this.WriteArray(obj, objCachedType, objId);
-			else if (dataType == DataType.Class)		this.WriteStruct(obj, objCachedType, objId);
-			else if (dataType == DataType.Delegate)		this.WriteDelegate(obj, objCachedType, objId);
+			else if	(dataType == DataType.Array)		this.WriteArray(obj, objSerializeType, objId);
+			else if (dataType == DataType.Class)		this.WriteStruct(obj, objSerializeType, objId);
+			else if (dataType == DataType.Delegate)		this.WriteDelegate(obj, objSerializeType, objId);
 			else if (dataType.IsMemberInfoType())		this.WriteMemberInfo(obj, objId);
 		}
 		protected void WriteMemberInfo(object obj, uint id = 0)
@@ -54,14 +81,14 @@ namespace Duality.Serialization
 			if (obj is Type)
 			{
 				Type type = obj as Type;
-				CachedType cachedType = ReflectionHelper.GetCachedType(type);
+				SerializeType cachedType = ReflectionHelper.GetSerializeType(type);
 
 				this.writer.Write(cachedType.TypeString);
 			}
 			else if (obj is FieldInfo)
 			{
 				FieldInfo field = obj as FieldInfo;
-				CachedType declaringType = ReflectionHelper.GetCachedType(field.DeclaringType);
+				SerializeType declaringType = ReflectionHelper.GetSerializeType(field.DeclaringType);
 
 				this.writer.Write(field.IsStatic);
 				this.writer.Write(declaringType.TypeString);
@@ -72,12 +99,12 @@ namespace Duality.Serialization
 				PropertyInfo property = obj as PropertyInfo;
 				ParameterInfo[] indexParams = property.GetIndexParameters();
 
-				CachedType declaringType = ReflectionHelper.GetCachedType(property.DeclaringType);
-				CachedType propertyType = ReflectionHelper.GetCachedType(property.PropertyType);
+				SerializeType declaringType = ReflectionHelper.GetSerializeType(property.DeclaringType);
+				SerializeType propertyType = ReflectionHelper.GetSerializeType(property.PropertyType);
 
-				CachedType[] paramTypes = new CachedType[indexParams.Length];
+				SerializeType[] paramTypes = new SerializeType[indexParams.Length];
 				for (int i = 0; i < indexParams.Length; i++)
-					paramTypes[i] = ReflectionHelper.GetCachedType(indexParams[i].ParameterType);
+					paramTypes[i] = ReflectionHelper.GetSerializeType(indexParams[i].ParameterType);
 
 				this.writer.Write(property.GetAccessors(true)[0].IsStatic);
 				this.writer.Write(declaringType.TypeString);
@@ -92,11 +119,11 @@ namespace Duality.Serialization
 				MethodInfo method = obj as MethodInfo;
 				ParameterInfo[] parameters = method.GetParameters();
 
-				CachedType declaringType = ReflectionHelper.GetCachedType(method.DeclaringType);
+				SerializeType declaringType = ReflectionHelper.GetSerializeType(method.DeclaringType);
 
-				CachedType[] paramTypes = new CachedType[parameters.Length];
+				SerializeType[] paramTypes = new SerializeType[parameters.Length];
 				for (int i = 0; i < parameters.Length; i++)
-					paramTypes[i] = ReflectionHelper.GetCachedType(parameters[i].ParameterType);
+					paramTypes[i] = ReflectionHelper.GetSerializeType(parameters[i].ParameterType);
 
 				this.writer.Write(method.IsStatic);
 				this.writer.Write(declaringType.TypeString);
@@ -110,11 +137,11 @@ namespace Duality.Serialization
 				ConstructorInfo method = obj as ConstructorInfo;
 				ParameterInfo[] parameters = method.GetParameters();
 
-				CachedType declaringType = ReflectionHelper.GetCachedType(method.DeclaringType);
+				SerializeType declaringType = ReflectionHelper.GetSerializeType(method.DeclaringType);
 
-				CachedType[] paramTypes = new CachedType[parameters.Length];
+				SerializeType[] paramTypes = new SerializeType[parameters.Length];
 				for (int i = 0; i < parameters.Length; i++)
-					paramTypes[i] = ReflectionHelper.GetCachedType(parameters[i].ParameterType);
+					paramTypes[i] = ReflectionHelper.GetSerializeType(parameters[i].ParameterType);
 
 				this.writer.Write(method.IsStatic);
 				this.writer.Write(declaringType.TypeString);
@@ -125,7 +152,7 @@ namespace Duality.Serialization
 			else if (obj is EventInfo)
 			{
 				EventInfo e = obj as EventInfo;
-				CachedType declaringType = ReflectionHelper.GetCachedType(e.DeclaringType);
+				SerializeType declaringType = ReflectionHelper.GetSerializeType(e.DeclaringType);
 
 				this.writer.Write(e.GetRaiseMethod().IsStatic);
 				this.writer.Write(declaringType.TypeString);
@@ -136,14 +163,14 @@ namespace Duality.Serialization
 			else
 				throw new ArgumentException(string.Format("Type '{0}' is not a supported MemberInfo.", obj.GetType()));
 		}
-		protected void WriteArray(object obj, CachedType objCachedType, uint id = 0)
+		protected void WriteArray(object obj, SerializeType objSerializeType, uint id = 0)
 		{
 			Array objAsArray = obj as Array;
 
 			if (objAsArray.Rank != 1) throw new ArgumentException("Non single-Rank arrays are not supported");
 			if (objAsArray.GetLowerBound(0) != 0) throw new ArgumentException("Non zero-based arrays are not supported");
 
-			this.writer.Write(objCachedType.TypeString);
+			this.writer.Write(objSerializeType.TypeString);
 			this.writer.Write(id);
 			this.writer.Write(objAsArray.Rank);
 			this.writer.Write(objAsArray.Length);
@@ -168,27 +195,54 @@ namespace Duality.Serialization
 					this.WriteObject(objAsArray.GetValue(l));
 			}
 		}
-		protected void WriteStruct(object obj, CachedType objCachedType, uint id = 0)
+		protected void WriteStruct(object obj, SerializeType objSerializeType, uint id = 0)
 		{
+			ISerializable objAsCustom = obj as ISerializable;
+
 			// Write the structs data type
-			this.writer.Write(objCachedType.TypeString);
+			this.writer.Write(objSerializeType.TypeString);
 			this.writer.Write(id);
+			this.writer.Write(objAsCustom != null);
 
-			// Assure the type data layout has bee written (only once per file)
-			this.WriteTypeDataLayout(objCachedType);
-
-			// Write the structs fields
-			foreach (FieldInfo field in objCachedType.Fields)
+			if (objAsCustom != null)
 			{
-				this.WriteObject(field.GetValue(obj));
+				this.customIO.Clear();
+				try
+				{
+					objAsCustom.WriteData(this.customIO);
+				}
+				catch (Exception e)
+				{
+					this.log.WriteError(
+						"An error occured in custom serialization in '{0}': {1}",
+						ReflectionHelper.GetTypeString(objSerializeType.Type, ReflectionHelper.TypeStringAttrib.CSCodeIdentShort),
+						e);
+				}
+				this.customIO.Serialize(this);
+			}
+			else
+			{
+				// Assure the type data layout has bee written (only once per file)
+				this.WriteTypeDataLayout(objSerializeType);
+
+				// Write the structs fields
+				foreach (FieldInfo field in objSerializeType.Fields)
+				{
+					object val = field.GetValue(obj);
+
+					if (val != null && this.IsFieldBlocked(field))
+						val = ReflectionHelper.GetDefaultOf(field.FieldType);
+
+					this.WriteObject(val);
+				}
 			}
 		}
-		protected void WriteDelegate(object obj, CachedType objCachedType, uint id = 0)
+		protected void WriteDelegate(object obj, SerializeType objSerializeType, uint id = 0)
 		{
 			bool multi = obj is MulticastDelegate;
 
 			// Write the delegates type
-			this.writer.Write(objCachedType.TypeString);
+			this.writer.Write(objSerializeType.TypeString);
 			this.writer.Write(id);
 			this.writer.Write(multi);
 
@@ -212,7 +266,7 @@ namespace Duality.Serialization
 			object result = null;
 
 			if (dataType.IsPrimitiveType())				result = this.ReadPrimitive(dataType);
-			else if (dataType == DataType.String)		result = this.reader.ReadString();
+			else if (dataType == DataType.String)		result = this.ReadString();
 			else if (dataType == DataType.Struct)		result = this.ReadStruct();
 			else if (dataType == DataType.ObjectRef)	result = this.ReadObjectRef();
 			else if (dataType == DataType.Array)		result = this.ReadArray();
@@ -266,6 +320,7 @@ namespace Duality.Serialization
 			// Read struct type
 			string	objTypeString	= this.reader.ReadString();
 			uint	objId			= this.reader.ReadUInt32();
+			bool	custom			= this.reader.ReadBoolean();
 			Type	objType			= ReflectionHelper.ResolveType(objTypeString);
 
 			// Construct object
@@ -280,22 +335,71 @@ namespace Duality.Serialization
 				this.idObjRefMap[objId] = obj;
 			}
 
-			// Determine data layout
-			TypeDataLayout layout	= this.ReadTypeDataLayout(objType);
-
-			// Read fields
-			for (int i = 0; i < layout.Fields.Length; i++)
+			if (custom)
 			{
-				FieldInfo field = objType.GetField(layout.Fields[i].name, ReflectionHelper.BindInstanceAll);
-				Type fieldType = ReflectionHelper.ResolveType(layout.Fields[i].typeString);
-				object fieldValue = this.ReadObject();
-
-				if (field == null)
-					Log.Core.WriteWarning("Field '{0}' not found. Discarding value '{1}'", layout.Fields[i].name, fieldValue);
-				else if (field.FieldType != fieldType)
-					Log.Core.WriteWarning("Data layout Type '{0}' of field '{1}' does not match reflected Type '{2}'. Discarding value '{3}'", layout.Fields[i].typeString, layout.Fields[i].name, objTypeString, fieldValue);
+				ISerializable objAsCustom = obj as ISerializable;
+				this.customIO.Deserialize(this);
+				if (objAsCustom != null)
+				{
+					try { objAsCustom.ReadData(this.customIO); }
+					catch (Exception e)
+					{
+						this.log.WriteError(
+							"An error occured in custom deserialization in '{0}': {1}",
+							ReflectionHelper.GetTypeString(objType, ReflectionHelper.TypeStringAttrib.CSCodeIdentShort),
+							e);
+					}
+				}
 				else
-					field.SetValue(obj, fieldValue);
+				{
+					this.log.WriteWarning(
+						"Object data (Id {0}) is flagged for custom deserialization, yet the objects Type ('{1}') does not support it. Guessing associated fields...",
+						objId,
+						ReflectionHelper.GetTypeString(objType, ReflectionHelper.TypeStringAttrib.CSCodeIdentShort));
+					this.log.PushIndent();
+					foreach (var pair in this.customIO.Values)
+					{
+						FieldInfo field = objType.GetField(pair.Key, ReflectionHelper.BindInstanceAll);
+						if (field == null)
+						{
+							this.log.WriteWarning("No match found: {0}", pair.Key);
+						}
+						else if (field.FieldType.IsAssignableFrom(pair.Value.GetType()))
+						{
+							this.log.WriteWarning("Match '{0}' differs in FieldType: '{1}', but required '{2}", pair.Key, 
+								ReflectionHelper.GetTypeString(field.FieldType, ReflectionHelper.TypeStringAttrib.CSCodeIdentShort), 
+								ReflectionHelper.GetTypeString(pair.Value.GetType(), ReflectionHelper.TypeStringAttrib.CSCodeIdentShort));
+						}
+						else
+						{
+							field.SetValue(obj, pair.Value);
+						}
+					}
+					this.log.PopIndent();
+				}
+				this.customIO.Clear();
+			}
+			else
+			{
+				// Determine data layout
+				TypeDataLayout layout	= this.ReadTypeDataLayout(objType);
+
+				// Read fields
+				for (int i = 0; i < layout.Fields.Length; i++)
+				{
+					FieldInfo field = objType.GetField(layout.Fields[i].name, ReflectionHelper.BindInstanceAll);
+					Type fieldType = ReflectionHelper.ResolveType(layout.Fields[i].typeString, false);
+					object fieldValue = this.ReadObject();
+
+					if (field == null)
+						this.log.WriteWarning("Field '{0}' not found. Discarding value '{1}'", layout.Fields[i].name, fieldValue);
+					else if (field.FieldType != fieldType)
+						this.log.WriteWarning("Data layout Type '{0}' of field '{1}' does not match reflected Type '{2}'. Discarding value '{3}'", layout.Fields[i].typeString, layout.Fields[i].name, objTypeString, fieldValue);
+					else if (field.IsNotSerialized)
+						this.log.WriteWarning("Field '{0}' flagged as [NonSerialized]. Discarding value '{1}'", layout.Fields[i].name, fieldValue);
+					else
+						field.SetValue(obj, fieldValue);
+				}
 			}
 
 			return obj;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Reflection;
 
 namespace Duality.Serialization
 {
@@ -12,6 +13,12 @@ namespace Duality.Serialization
 		{
 			public	string	name;
 			public	string	typeString;
+
+			public FieldDataInfo(string name, string typeString)
+			{
+				this.name = name;
+				this.typeString = typeString;
+			}
 		}
 
 		private	FieldDataInfo[]	fields;
@@ -37,7 +44,7 @@ namespace Duality.Serialization
 		{
 			this.fields = t.fields != null ? t.fields.Clone() as FieldDataInfo[] : null;
 		}
-		public TypeDataLayout(CachedType t)
+		public TypeDataLayout(SerializeType t)
 		{
 			this.fields = new FieldDataInfo[t.Fields.Length];
 			for (int i = 0; i < t.Fields.Length; i++)

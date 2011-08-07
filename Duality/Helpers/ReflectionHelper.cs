@@ -12,8 +12,8 @@ namespace Duality
 {
 	public static class ReflectionHelper
 	{
-		private	static	Dictionary<Type,CachedType>	typeCache			= new Dictionary<Type,CachedType>();
-		private	static	Dictionary<string,Type>		typeResolveCache	= new Dictionary<string,Type>();
+		private	static	Dictionary<Type,SerializeType>	typeCache			= new Dictionary<Type,SerializeType>();
+		private	static	Dictionary<string,Type>			typeResolveCache	= new Dictionary<string,Type>();
 
 		public const BindingFlags BindInstanceAll = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 		public const BindingFlags BindStaticAll = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
@@ -50,6 +50,13 @@ namespace Duality
 			{
 				return null;
 			}
+		}
+		public static object GetDefaultOf(Type instanceType)
+		{
+			if (instanceType.IsValueType)
+				return Activator.CreateInstance(instanceType, true);
+			else
+				return null;
 		}
 
 		public static bool MemberInfoEquals(MemberInfo lhs, MemberInfo rhs)
@@ -112,12 +119,12 @@ namespace Duality
 			if (result == null && throwOnError) throw new ApplicationException(string.Format("Cannot resolve Type '{0}'. Type not found", typeString));
 			return result;
 		}
-		public static CachedType GetCachedType(Type t)
+		public static SerializeType GetSerializeType(Type t)
 		{
-			CachedType result;
+			SerializeType result;
 			if (typeCache.TryGetValue(t, out result)) return result;
 
-			result = new CachedType(t);
+			result = new SerializeType(t);
 			typeCache[t] = result;
 			typeResolveCache[result.TypeString] = result.Type;
 			return result;

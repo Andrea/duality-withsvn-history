@@ -1,21 +1,38 @@
 ﻿
 -->	Serialization ToDo
-	-->	ResourceHacker
-		-->	Action: Rename Field
+	-->	Pixmap implementation of Duality.Serialization.ISerializable
+	-->	Test it isolated.
+	-->	If that runs smoothly, just replace DualityApp.RequestSerializer and pray that it just works.
+		-->	Don't forget the NonSerializedPrefab field blocker when serializing Prefabs
 
-	-->	React to [System.Serializable], [System.NonSerialized] and [Duality.Resources.NonSerializedPrefab]
-		-->	Serializing objects without [System.Serializable] results in a log warning but is done anyway
-			-->	No warning if it implements Duality.Serialization.ISerializable
-		-->	[System.NonSerialized] fields are not written at all (also not included in TypeDataLayout)
-			and simply not applied to the object when reading them. 
-	-->	Custom object serialization / Duality.Serialization.ISerializable interface, Pixmap needs it and probably others as well
-
-	-->	Test if it can de/serialize Duality stuff properly
 	-->	Port content to new serialization format
 	-->	Stability test when reloading core plugins (Are Types resolved properly using FindType?)
 
 	--> Get rid of old SerializationHelper stuff.
 	
+
+-->	While being at Serialization: !!! FINALLY FIX THAT: !!!
+	-->	Keep in mind: While reloading Core plugins at runtime does work fine in most cases, it might result in
+		undefined behaviour when custom Resource types have been modified, as only Prefabs and the current level
+		are reloaded.
+		-->	Possible solution: Scan the reloaded core plugin for classes deriving from Resource, and clear all
+			Resources matching their Type as well.
+
+-->	If everything runs, this one can be considered "resolved":
+	-->	Keep in mind: Currently, DeepResolveTypeReferences is invoked on ANY loaded Resource, no matter if its loaded
+		in the editor or not. 
+		-->	This is kind of a "stability hack": In theory, this is only necessary in ExecutionContext.Editor, because Plugins 
+			won't change at run-time. However, in practice the user may run the game from the editor and step into a Resource 
+			the editor hasn't loaded so far and thus didn't resolve its type references. While it normally works, it will 
+			result in undefined behaviour when a core plugin has changed since the Resource has been saved the last time.
+		-->	It would be sufficient to resolve type references of all existing Resources at once when building the game for
+			release mode i.e. "closing the source code".
+		-->	Though, as long as it doesn't become a performance issue, it may stay like this.
+		-->	Solution notes, given the case it DOES become a performance issue:
+			-->	It would be possible to provide a "plugin hash" in the basic Resource class. Resolving type references
+				is only necessary if the current (DualityApp's) plugin hash differs from the one saved in the Resource.
+				It might then be performed automatically and also save the Resource again so it won't be necessary a 
+				second time until rebuilding plugins again.
 
 
 -->	Editor Skeletton
@@ -26,24 +43,3 @@
 	-->	When in ExecutionContext.Editor, consider not saving Components that are part of the Prefab.
 	-->	Can't do the same with GameObjects though, because their index is used to locate them when applying
 		the PrefabLink. Changing the order or removing existing GameObjects requires extra consideration.
-
--->	Keep in mind: Currently, DeepResolveTypeReferences is invoked on ANY loaded Resource, no matter if its loaded
-	in the editor or not. 
-	-->	This is kind of a "stability hack": In theory, this is only necessary in ExecutionContext.Editor, because Plugins 
-		won't change at run-time. However, in practice the user may run the game from the editor and step into a Resource 
-		the editor hasn't loaded so far and thus didn't resolve its type references. While it normally works, it will 
-		result in undefined behaviour when a core plugin has changed since the Resource has been saved the last time.
-	-->	It would be sufficient to resolve type references of all existing Resources at once when building the game for
-		release mode i.e. "closing the source code".
-	-->	Though, as long as it doesn't become a performance issue, it may stay like this.
-	-->	Solution notes, given the case it DOES become a performance issue:
-		-->	It would be possible to provide a "plugin hash" in the basic Resource class. Resolving type references
-			is only necessary if the current (DualityApp's) plugin hash differs from the one saved in the Resource.
-			It might then be performed automatically and also save the Resource again so it won't be necessary a 
-			second time until rebuilding plugins again.
-
--->	Keep in mind: While reloading Core plugins at runtime does work fine in most cases, it might result in
-	undefined behaviour when custom Resource types have been modified, as only Prefabs and the current level
-	are reloaded.
-	-->	Possible solution: Scan the reloaded core plugin for classes deriving from Resource, and clear all
-		Resources matching their Type as well.

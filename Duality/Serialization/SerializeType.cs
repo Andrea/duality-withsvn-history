@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace Duality.Serialization
 {
-	public sealed class CachedType
+	public sealed class SerializeType
 	{
 		private	Type		type;
 		private	FieldInfo[]	fields;
@@ -30,10 +30,10 @@ namespace Duality.Serialization
 			get { return this.dataType; }
 		}
 
-		public CachedType(Type t)
+		public SerializeType(Type t)
 		{
 			this.type = t;
-			this.fields = this.type.GetFields(ReflectionHelper.BindInstanceAll);
+			this.fields = this.type.GetFields(ReflectionHelper.BindInstanceAll).Where(f => !f.IsNotSerialized).ToArray();
 			this.typeString = ReflectionHelper.GetTypeString(this.type, ReflectionHelper.TypeStringAttrib.FullNameWithoutAssembly);
 			this.dataType = ReflectionHelper.GetDataType(this.type);
 		}

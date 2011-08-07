@@ -182,9 +182,16 @@ namespace Duality.Serialization
 		}
 		public class StructNode : ObjectNode
 		{
-			public StructNode(string typeString, uint objId) : base(DataType.Struct, typeString, objId)
-			{
+			protected	bool	customSerialization;
 
+			public bool CustomSerialization
+			{
+				get { return this.customSerialization; }
+			}
+
+			public StructNode(string typeString, uint objId, bool customSerialization) : base(DataType.Struct, typeString, objId)
+			{
+				this.customSerialization = customSerialization;
 			}
 		}
 		public class ObjectRefNode : DataNode
@@ -470,20 +477,20 @@ namespace Duality.Serialization
 			return obj != null ? obj as DataNode : new PrimitiveNode(DataType.Unknown, null);
 		}
 		
-		protected override void GetWriteObjectData(object obj, out CachedType objCachedType, out DataType dataType, out uint objId)
+		protected override void GetWriteObjectData(object obj, out SerializeType objSerializeType, out DataType dataType, out uint objId)
 		{
 			DataNode node = obj as DataNode;
-			objCachedType = null;
+			objSerializeType = null;
 			objId = 0;
 			dataType = node.NodeType;
 
 			if		(node is ObjectNode)	objId = (node as ObjectNode).ObjId;
 			else if (node is ObjectRefNode) objId = (node as ObjectRefNode).ObjRefId;
 		}
-		protected override void WriteObjectBody(DataType dataType, object obj, CachedType objCachedType, uint objId)
+		protected override void WriteObjectBody(DataType dataType, object obj, SerializeType objSerializeType, uint objId)
 		{
 			if (dataType.IsPrimitiveType())				this.WritePrimitive((obj as PrimitiveNode).PrimitiveValue);
-			else if (dataType == DataType.String)		this.writer.Write((obj as StringNode).StringValue);
+			else if (dataType == DataType.String)		this.WriteString((obj as StringNode).StringValue);
 			else if (dataType == DataType.Struct)		this.WriteStruct(obj as StructNode);
 			else if (dataType == DataType.ObjectRef)	this.writer.Write((obj as ObjectRefNode).ObjRefId);
 			else if	(dataType == DataType.Array)		this.WriteArray(obj as ArrayNode);
@@ -592,28 +599,47 @@ namespace Duality.Serialization
 			// Write the structs data type
 			this.writer.Write(node.TypeString);
 			this.writer.Write(node.ObjId);
+			this.writer.Write(node.CustomSerialization);
 
-			bool skipLayout = false;
-			if (node.SubNodes.FirstOrDefault() is TypeDataLayoutNode)
+			if (node.CustomSerialization)
 			{
-				TypeDataLayoutNode typeDataLayout = node.SubNodes.FirstOrDefault() as TypeDataLayoutNode;
-				this.WriteTypeDataLayout(typeDataLayout.Layout, node.TypeString);
-				skipLayout = true;
+				this.customIO.Clear();
+				var enumerator = node.SubNodes.GetEnumerator();
+				while (enumerator.MoveNext())
+				{
+					StringNode key = enumerator.Current as StringNode;
+					if (enumerator.MoveNext() && key != null)
+					{
+						DataNode value = enumerator.Current;
+						this.customIO.WriteValue(key.StringValue, value);
+					}
+				}
+				this.customIO.Serialize(this);
 			}
 			else
 			{
-				this.WriteTypeDataLayout(node.TypeString);
-			}
-
-			// Write the structs fields
-			foreach (DataNode subNode in node.SubNodes)
-			{
-				if (skipLayout)
+				bool skipLayout = false;
+				if (node.SubNodes.FirstOrDefault() is TypeDataLayoutNode)
 				{
-					skipLayout = false;
-					continue;
+					TypeDataLayoutNode typeDataLayout = node.SubNodes.FirstOrDefault() as TypeDataLayoutNode;
+					this.WriteTypeDataLayout(typeDataLayout.Layout, node.TypeString);
+					skipLayout = true;
 				}
-				this.WriteObject(subNode);
+				else
+				{
+					this.WriteTypeDataLayout(node.TypeString);
+				}
+
+				// Write the structs fields
+				foreach (DataNode subNode in node.SubNodes)
+				{
+					if (skipLayout)
+					{
+						skipLayout = false;
+						continue;
+					}
+					this.WriteObject(subNode);
+				}
 			}
 		}
 		protected void WriteDelegate(DelegateNode node)
@@ -633,7 +659,7 @@ namespace Duality.Serialization
 			DataNode result = null;
 
 			if (dataType.IsPrimitiveType())				result = new PrimitiveNode(dataType, this.ReadPrimitive(dataType));
-			else if (dataType == DataType.String)		result = new StringNode(this.reader.ReadString());
+			else if (dataType == DataType.String)		result = new StringNode(this.ReadString());
 			else if (dataType == DataType.Struct)		result = this.ReadStruct();
 			else if (dataType == DataType.ObjectRef)	result = this.ReadObjectRef();
 			else if (dataType == DataType.Array)		result = this.ReadArray();
@@ -704,8 +730,9 @@ namespace Duality.Serialization
 			// Read struct type
 			string	objTypeString	= this.reader.ReadString();
 			uint	objId			= this.reader.ReadUInt32();
+			bool	custom			= this.reader.ReadBoolean();
 
-			StructNode result = new StructNode(objTypeString, objId);
+			StructNode result = new StructNode(objTypeString, objId, custom);
 			
 			// Prepare object reference
 			if (objId != 0)
@@ -714,20 +741,35 @@ namespace Duality.Serialization
 				this.idObjRefMap[objId] = result;
 			}
 
-			// Determine data layout
-			bool wasThereBefore = this.IsTypeDataLayoutCached(objTypeString);
-			TypeDataLayout layout = this.ReadTypeDataLayout(objTypeString);
-			if (!wasThereBefore)
+			if (custom)
 			{
-				TypeDataLayoutNode layoutNode = new TypeDataLayoutNode(new TypeDataLayout(layout));
-				layoutNode.Parent = result;
+				this.customIO.Deserialize(this);
+				foreach (var pair in this.customIO.Values)
+				{
+					StringNode key = new StringNode(pair.Key);
+					DataNode value = pair.Value as DataNode;
+					key.Parent = result;
+					value.Parent = result;
+				}
+				this.customIO.Clear();
 			}
-
-			// Read fields
-			for (int i = 0; i < layout.Fields.Length; i++)
+			else
 			{
-				DataNode fieldValue = this.ReadObject();
-				fieldValue.Parent = result;
+				// Determine data layout
+				bool wasThereBefore = this.IsTypeDataLayoutCached(objTypeString);
+				TypeDataLayout layout = this.ReadTypeDataLayout(objTypeString);
+				if (!wasThereBefore)
+				{
+					TypeDataLayoutNode layoutNode = new TypeDataLayoutNode(new TypeDataLayout(layout));
+					layoutNode.Parent = result;
+				}
+
+				// Read fields
+				for (int i = 0; i < layout.Fields.Length; i++)
+				{
+					DataNode fieldValue = this.ReadObject();
+					fieldValue.Parent = result;
+				}
 			}
 
 			return result;

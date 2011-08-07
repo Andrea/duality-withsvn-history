@@ -133,7 +133,10 @@
     <Compile Include="Log\TextWriterLogOutput.cs" />
     <Compile Include="Serialization\BinaryFormatter.cs" />
     <Compile Include="Serialization\BinaryMetaFormatter.cs" />
-    <Compile Include="Serialization\CachedType.cs" />
+    <Compile Include="Serialization\ISerializable.cs" />
+    <Compile Include="Serialization\IDataWriter.cs" />
+    <Compile Include="Serialization\IDataReader.cs" />
+    <Compile Include="Serialization\SerializeType.cs" />
     <Compile Include="Serialization\DataType.cs" />
     <Compile Include="Serialization\BinaryFormatterBase.cs" />
     <Compile Include="Serialization\TypeDataLayout.cs" />

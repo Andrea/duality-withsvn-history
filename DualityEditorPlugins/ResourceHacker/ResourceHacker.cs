@@ -165,6 +165,30 @@ namespace ResourceHacker
 			typeDataLayout = new Dictionary<string,BinaryMetaFormatter.TypeDataLayoutNode>();
 
 
+		public class Test : ISerializable
+		{
+			public virtual void WriteData(IDataWriter writer)
+			{
+				writer.WriteValue("World", new List<string>{ "One", "Two", "Seven" });
+			}
+			public virtual void ReadData(Duality.Serialization.IDataReader reader)
+			{
+				List<string> list = reader.ReadValue("World") as List<string>;
+			}
+		}
+		public class Test2 : Test, ISerializable
+		{
+			public override void WriteData(IDataWriter writer)
+			{
+				base.WriteData(writer);
+				writer.WriteValue("Hello", 42);
+			}
+			public override void ReadData(Duality.Serialization.IDataReader reader)
+			{
+				base.ReadData(reader);
+				reader.ReadValue("Hello");
+			}
+		}
 		public ResourceHacker()
 		{
 			this.InitializeComponent();
@@ -187,9 +211,11 @@ namespace ResourceHacker
 				var tempDict = new Dictionary<string,string>();
 				tempDict["Hello"] = "World";
 				tempDict["Knock Knock"] = "Who is it?";
+				var tempTest = new Test();
+				var tempTest2 = new Test2();
 
 				BinaryFormatter testFormatter = new BinaryFormatter(fileStream);
-				object[] writeObj = new object[3];
+				object[] writeObj = new object[5];
 				//for (int i = 0; i < writeObj.Length; i++)
 				//{
 				//    writeObj[i] = new List<string> { "Blub", "Plop", "Yoink" };
@@ -197,6 +223,8 @@ namespace ResourceHacker
 				writeObj[0] = 42;
 				writeObj[1] = new List<string> { "Blub", "Plop", "Yoink" };
 				writeObj[2] = tempDict;
+				writeObj[3] = tempTest;
+				writeObj[4] = tempTest2;
 				w.Restart();
 				for (int i = 0; i < writeObj.Length; i++) testFormatter.WriteObject(writeObj[i]);
 				Log.Editor.Write("writing {0}", w.ElapsedMilliseconds);
@@ -221,7 +249,6 @@ namespace ResourceHacker
 			if (!File.Exists(filePath)) throw new FileNotFoundException("Can't open Resource file. File not found.", filePath);
 
 			this.ClearData();
-			this.actionRenameField.Enabled = true;
 			this.actionRenameType.Enabled = true;
 			this.actionSave.Enabled = true;
 			this.filePath = filePath;
@@ -267,7 +294,6 @@ namespace ResourceHacker
 			this.rootData.Clear();
 			this.typeDataLayout.Clear();
 
-			this.actionRenameField.Enabled = false;
 			this.actionRenameType.Enabled = false;
 			this.actionSave.Enabled = false;
 		}

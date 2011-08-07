@@ -238,15 +238,6 @@
   <data name="actionRenameType.Text" xml:space="preserve">
     <value>Rename Type...</value>
   </data>
-  <data name="actionRenameField.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
-    <value>Magenta</value>
-  </data>
-  <data name="actionRenameField.Size" type="System.Drawing.Size, System.Drawing">
-    <value>23, 22</value>
-  </data>
-  <data name="actionRenameField.Text" xml:space="preserve">
-    <value>Rename Field...</value>
-  </data>
   <data name="mainToolStrip.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
   </data>
@@ -461,12 +452,6 @@
     <value>actionRenameType</value>
   </data>
   <data name="&gt;&gt;actionRenameType.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;actionRenameField.Name" xml:space="preserve">
-    <value>actionRenameField</value>
-  </data>
-  <data name="&gt;&gt;actionRenameField.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;openFileDialog.Name" xml:space="preserve">

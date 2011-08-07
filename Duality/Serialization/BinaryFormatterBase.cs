@@ -9,6 +9,59 @@ namespace Duality.Serialization
 {
 	public abstract class BinaryFormatterBase : IDisposable
 	{
+		protected class CustomSerialIO : IDataReader, IDataWriter
+		{
+			private	Dictionary<string,object>	values;
+
+			public IEnumerable<KeyValuePair<string,object>> Values
+			{
+				get { return this.values; }
+			}
+
+			public CustomSerialIO()
+			{
+				this.values = new Dictionary<string,object>();
+			}
+
+			public void Serialize(BinaryFormatterBase formatter)
+			{
+				formatter.WritePrimitive(this.values.Count);
+				foreach (var pair in this.values)
+				{
+					formatter.WriteString(pair.Key);
+					formatter.WriteObject(pair.Value);
+				}
+				this.Clear();
+			}
+			public void Deserialize(BinaryFormatterBase formatter)
+			{
+				this.Clear();
+				int count = (int)formatter.ReadPrimitive(DataType.Int);
+				for (int i = 0; i < count; i++)
+				{
+					string key = formatter.ReadString();
+					object value = formatter.ReadObject();
+					this.values.Add(key, value);
+				}
+			}
+			public void Clear()
+			{
+				this.values.Clear();
+			}
+
+			public void WriteValue(string name, object value)
+			{
+				this.values[name] = value;
+			}
+			public object ReadValue(string name)
+			{
+				object result;
+				if (this.values.TryGetValue(name, out result))
+					return result;
+				else
+					return null;
+			}
+		}
 		protected enum Operation
 		{
 			None,
@@ -24,6 +77,8 @@ namespace Duality.Serialization
 		protected	BinaryWriter	writer;
 		protected	BinaryReader	reader;
 		protected	bool			disposed;
+		protected	Log				log;
+		protected	CustomSerialIO	customIO;
 		// Temporary, "stream operation"-specific data
 		protected	ushort								dataVersion			= 0;
 		protected	Operation							lastOperation		= Operation.None;
@@ -63,6 +118,11 @@ namespace Duality.Serialization
 				this.lastOperation = Operation.None;
 			}
 		}
+		public Log SerializationLog
+		{
+			get { return this.log; }
+			set { this.log = value ?? new Log(); }
+		}
 		public bool CanWrite
 		{
 			get { return this.writer != null; }
@@ -77,15 +137,13 @@ namespace Duality.Serialization
 		}
 
 
-		public BinaryFormatterBase() 
-		{
-			this.WriteTarget = null;
-			this.ReadTarget = null;
-		}
+		public BinaryFormatterBase() : this(null) {}
 		public BinaryFormatterBase(Stream stream)
 		{
-			this.WriteTarget = stream.CanWrite ? new BinaryWriter(stream) : null;
-			this.ReadTarget = stream.CanRead ? new BinaryReader(stream) : null;
+			this.customIO = new CustomSerialIO();
+			this.log = Log.Core;
+			this.WriteTarget = (stream != null && stream.CanWrite) ? new BinaryWriter(stream) : null;
+			this.ReadTarget = (stream != null && stream.CanRead) ? new BinaryReader(stream) : null;
 		}
 		~BinaryFormatterBase()
 		{
@@ -149,7 +207,7 @@ namespace Duality.Serialization
 				// If anything goes wrong, assure the stream position is valid and points to the next data entry
 				this.reader.BaseStream.Seek(lastPos + offset, SeekOrigin.Begin);
 				// Log the error
-				Log.Core.WriteError("Error reading object at '{0:X8}'-'{1:X8}':\n{2}", lastPos, lastPos + offset, e.ToString());
+				this.log.WriteError("Error reading object at '{0:X8}'-'{1:X8}':\n{2}", lastPos, lastPos + offset, e.ToString());
 			}
 
 			return result;
@@ -162,7 +220,7 @@ namespace Duality.Serialization
 		}
 		protected TypeDataLayout ReadTypeDataLayout(Type t)
 		{
-			return this.ReadTypeDataLayout(ReflectionHelper.GetCachedType(t).TypeString);
+			return this.ReadTypeDataLayout(ReflectionHelper.GetSerializeType(t).TypeString);
 		}
 		protected TypeDataLayout ReadTypeDataLayout(string t)
 		{
@@ -202,13 +260,13 @@ namespace Duality.Serialization
 				{
 					// If anything goes wrong, assure the stream position is valid and points to the next data entry
 					this.reader.BaseStream.Seek(lastPos + offset, SeekOrigin.Begin);
-					Log.Core.WriteError("Error reading header at '{0:X8}'-'{1:X8}':\n{2}", lastPos, lastPos + offset, e.ToString());
+					this.log.WriteError("Error reading header at '{0:X8}'-'{1:X8}':\n{2}", lastPos, lastPos + offset, e.ToString());
 				}
 			}
 			catch (Exception e) 
 			{
 				this.reader.BaseStream.Seek(initialPos, SeekOrigin.Begin);
-				Log.Core.WriteError("Error reading header: {0}", e);
+				this.log.WriteError("Error reading header: {0}", e);
 			}
 		}
 		protected object ReadPrimitive(DataType dataType)
@@ -231,6 +289,10 @@ namespace Duality.Serialization
 				default:
 					throw new ArgumentException(string.Format("DataType '{0}' is not a primitive.", dataType));
 			}
+		}
+		protected string ReadString()
+		{
+			return this.reader.ReadString();
 		}
 
 		protected void ReadArrayData(bool[] obj)
@@ -317,10 +379,14 @@ namespace Duality.Serialization
 				this.writer.Write(true);
 			
 			// Retrieve type data
-			CachedType objCachedType;
+			SerializeType objSerializeType;
 			uint objId;
 			DataType dataType;
-			this.GetWriteObjectData(obj, out objCachedType, out dataType, out objId);
+			this.GetWriteObjectData(obj, out objSerializeType, out dataType, out objId);
+
+			if (objSerializeType != null && !objSerializeType.Type.IsSerializable) this.log.WriteWarning(
+				"Serializing object of Type '{0}' which isn't [Serializable]", 
+				ReflectionHelper.GetTypeString(objSerializeType.Type, ReflectionHelper.TypeStringAttrib.CSCodeIdentShort));
 
 			// Write data type header
 			this.WriteDataType(dataType);
@@ -328,7 +394,7 @@ namespace Duality.Serialization
 			try
 			{
 				// Write object
-				this.WriteObjectBody(dataType, obj, objCachedType, objId);
+				this.WriteObjectBody(dataType, obj, objSerializeType, objId);
 			}
 			finally
 			{
@@ -336,8 +402,8 @@ namespace Duality.Serialization
 				this.WritePopOffset();
 			}
 		}
-		protected abstract void GetWriteObjectData(object obj, out CachedType objCachedType, out DataType dataType, out uint objId);
-		protected abstract void WriteObjectBody(DataType dataType, object obj, CachedType objCachedType, uint objId);
+		protected abstract void GetWriteObjectData(object obj, out SerializeType objSerializeType, out DataType dataType, out uint objId);
+		protected abstract void WriteObjectBody(DataType dataType, object obj, SerializeType objSerializeType, uint objId);
 
 		protected void WriteFormatterHeader()
 		{
@@ -349,16 +415,16 @@ namespace Duality.Serialization
 
 			this.WritePopOffset();
 		}
-		protected void WriteTypeDataLayout(CachedType objCachedType)
+		protected void WriteTypeDataLayout(SerializeType objSerializeType)
 		{
-			if (this.typeDataLayout.ContainsKey(objCachedType.TypeString))
+			if (this.typeDataLayout.ContainsKey(objSerializeType.TypeString))
 			{
-				long backRef = this.typeDataLayoutMap[objCachedType.TypeString];
+				long backRef = this.typeDataLayoutMap[objSerializeType.TypeString];
 				this.writer.Write(backRef);
 				return;
 			}
 
-			this.WriteTypeDataLayout(new TypeDataLayout(objCachedType), objCachedType.TypeString);
+			this.WriteTypeDataLayout(new TypeDataLayout(objSerializeType), objSerializeType.TypeString);
 		}
 		protected void WriteTypeDataLayout(string typeString)
 		{
@@ -370,7 +436,7 @@ namespace Duality.Serialization
 			}
 
 			Type resolved = ReflectionHelper.ResolveType(typeString, false);
-			CachedType cached = resolved != null ? ReflectionHelper.GetCachedType(resolved) : null;
+			SerializeType cached = resolved != null ? ReflectionHelper.GetSerializeType(resolved) : null;
 			TypeDataLayout layout = cached != null ? new TypeDataLayout(cached) : null;
 			this.WriteTypeDataLayout(layout, typeString);
 		}
@@ -400,6 +466,10 @@ namespace Duality.Serialization
 				throw new ArgumentNullException("obj");
 			else
 				throw new ArgumentException(string.Format("Type '{0}' is not a primitive.", obj.GetType()));
+		}
+		protected void WriteString(string obj)
+		{
+			this.writer.Write(obj);
 		}
 
 		protected void WriteArrayData(bool[] obj)
