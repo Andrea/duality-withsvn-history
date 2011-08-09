@@ -8,7 +8,7 @@ namespace Duality.ColorFormat
 {
 	[Serializable]
 	[StructLayout(LayoutKind.Sequential)]
-	public struct ColorHSVA : IColorData, IEquatable<ColorHSVA>
+	public struct ColorHsva : IColorData, IEquatable<ColorHsva>
 	{
 		public const int CompSize	= sizeof(float);
 		public const int OffsetH	= 0;
@@ -17,28 +17,28 @@ namespace Duality.ColorFormat
 		public const int OffsetA	= OffsetV + CompSize;
 		public const int Size		= OffsetA + CompSize;
 
-		public static readonly ColorHSVA White				= ColorRGBA.White.ToHsva();
-		public static readonly ColorHSVA Black				= ColorRGBA.Black.ToHsva();
+		public static readonly ColorHsva White				= ColorRgba.White.ToHsva();
+		public static readonly ColorHsva Black				= ColorRgba.Black.ToHsva();
 
-		public static readonly ColorHSVA Red				= ColorRGBA.Red.ToHsva();
-		public static readonly ColorHSVA Green				= ColorRGBA.Green.ToHsva();
-		public static readonly ColorHSVA Blue				= ColorRGBA.Blue.ToHsva();
+		public static readonly ColorHsva Red				= ColorRgba.Red.ToHsva();
+		public static readonly ColorHsva Green				= ColorRgba.Green.ToHsva();
+		public static readonly ColorHsva Blue				= ColorRgba.Blue.ToHsva();
 
-		public static readonly ColorHSVA VeryLightGrey		= ColorRGBA.VeryLightGrey.ToHsva();
-		public static readonly ColorHSVA LightGrey			= ColorRGBA.LightGrey.ToHsva();
-		public static readonly ColorHSVA Grey				= ColorRGBA.Grey.ToHsva();
-		public static readonly ColorHSVA DarkGrey			= ColorRGBA.DarkGrey.ToHsva();
-		public static readonly ColorHSVA VeryDarkGrey		= ColorRGBA.VeryDarkGrey.ToHsva();
+		public static readonly ColorHsva VeryLightGrey		= ColorRgba.VeryLightGrey.ToHsva();
+		public static readonly ColorHsva LightGrey			= ColorRgba.LightGrey.ToHsva();
+		public static readonly ColorHsva Grey				= ColorRgba.Grey.ToHsva();
+		public static readonly ColorHsva DarkGrey			= ColorRgba.DarkGrey.ToHsva();
+		public static readonly ColorHsva VeryDarkGrey		= ColorRgba.VeryDarkGrey.ToHsva();
 
-		public static readonly ColorHSVA TransparentWhite	= ColorRGBA.TransparentWhite.ToHsva();
-		public static readonly ColorHSVA TransparentBlack	= ColorRGBA.TransparentBlack.ToHsva();
+		public static readonly ColorHsva TransparentWhite	= ColorRgba.TransparentWhite.ToHsva();
+		public static readonly ColorHsva TransparentBlack	= ColorRgba.TransparentBlack.ToHsva();
 
 		public	float	h;
 		public	float	s;
 		public	float	v;
 		public	float	a;
 
-		public ColorHSVA(float h, float s, float v, float a = 1.0f)
+		public ColorHsva(float h, float s, float v, float a = 1.0f)
 		{
 			this.h = h;
 			this.s = s;
@@ -59,7 +59,7 @@ namespace Duality.ColorFormat
 		{
 			return this.ToRgba().ToIntArgb();
 		}
-		public ColorRGBA ToRgba()
+		public ColorRgba ToRgba()
 		{
 			float hTemp = this.h * 360.0f / 60.0f;
 			int hi = (int)MathF.Floor(hTemp) % 6;
@@ -71,23 +71,23 @@ namespace Duality.ColorFormat
 			byte q = (byte)(vTemp * (1 - f * this.s));
 			byte t = (byte)(vTemp * (1 - (1 - f) * this.s));
 
-			if (hi == 0)		return new ColorRGBA(v, t, p, (byte)(int)MathF.Clamp(this.a * 255.0f, 0.0f, 255.0f));
-			else if (hi == 1)	return new ColorRGBA(q, v, p, (byte)(int)MathF.Clamp(this.a * 255.0f, 0.0f, 255.0f));
-			else if (hi == 2)	return new ColorRGBA(p, v, t, (byte)(int)MathF.Clamp(this.a * 255.0f, 0.0f, 255.0f));
-			else if (hi == 3)	return new ColorRGBA(p, q, v, (byte)(int)MathF.Clamp(this.a * 255.0f, 0.0f, 255.0f));
-			else if (hi == 4)	return new ColorRGBA(t, p, v, (byte)(int)MathF.Clamp(this.a * 255.0f, 0.0f, 255.0f));
-			else				return new ColorRGBA(v, p, q, (byte)(int)MathF.Clamp(this.a * 255.0f, 0.0f, 255.0f));
+			if (hi == 0)		return new ColorRgba(v, t, p, (byte)(int)MathF.Clamp(this.a * 255.0f, 0.0f, 255.0f));
+			else if (hi == 1)	return new ColorRgba(q, v, p, (byte)(int)MathF.Clamp(this.a * 255.0f, 0.0f, 255.0f));
+			else if (hi == 2)	return new ColorRgba(p, v, t, (byte)(int)MathF.Clamp(this.a * 255.0f, 0.0f, 255.0f));
+			else if (hi == 3)	return new ColorRgba(p, q, v, (byte)(int)MathF.Clamp(this.a * 255.0f, 0.0f, 255.0f));
+			else if (hi == 4)	return new ColorRgba(t, p, v, (byte)(int)MathF.Clamp(this.a * 255.0f, 0.0f, 255.0f));
+			else				return new ColorRgba(v, p, q, (byte)(int)MathF.Clamp(this.a * 255.0f, 0.0f, 255.0f));
 		}
 
 		public void SetIntRgba(uint rgba)
 		{
-			this.SetRgba(ColorRGBA.FromIntRgba(rgba));
+			this.SetRgba(ColorRgba.FromIntRgba(rgba));
 		}
 		public void SetIntArgb(uint argb)
 		{
-			this.SetRgba(ColorRGBA.FromIntArgb(argb));			
+			this.SetRgba(ColorRgba.FromIntArgb(argb));			
 		}
-		public void SetRgba(ColorRGBA rgba)
+		public void SetRgba(ColorRgba rgba)
 		{
 			float	min		= Math.Min(Math.Min(rgba.r, rgba.g), rgba.b);
 			float	max		= Math.Max(Math.Max(rgba.r, rgba.g), rgba.b);
@@ -132,16 +132,16 @@ namespace Duality.ColorFormat
 			this.a = (float)rgba.a / 255.0f;
 		}
 
-		public bool Equals(ColorHSVA other)
+		public bool Equals(ColorHsva other)
 		{
 			return this.h == other.h && this.s == other.s && this.v == other.v && this.a == other.a;
 		}
 		public override bool Equals(object obj)
 		{
-			if (!(obj is ColorHSVA))
+			if (!(obj is ColorHsva))
 				return false;
 			else
-				return this.Equals((ColorHSVA)obj);
+				return this.Equals((ColorHsva)obj);
 		}
 		public override int GetHashCode()
 		{
@@ -152,61 +152,61 @@ namespace Duality.ColorFormat
 			return string.Format("ColorHSVA ({0:F}, {1:F}, {2:F}, {3:F} / #{4:X8})", this.h, this.s, this.v, this.a, this.ToIntRgba());
 		}
 
-		public static ColorHSVA FromIntRgba(uint rgba)
+		public static ColorHsva FromIntRgba(uint rgba)
 		{
-			ColorHSVA temp = new ColorHSVA();
+			ColorHsva temp = new ColorHsva();
 			temp.SetIntRgba(rgba);
 			return temp;
 		}
-		public static ColorHSVA FromIntArgb(uint argb)
+		public static ColorHsva FromIntArgb(uint argb)
 		{
-			ColorHSVA temp = new ColorHSVA();
+			ColorHsva temp = new ColorHsva();
 			temp.SetIntArgb(argb);
 			return temp;
 		}
-		public static ColorHSVA FromRgba(ColorRGBA rgba)
+		public static ColorHsva FromRgba(ColorRgba rgba)
 		{
-			ColorHSVA temp = new ColorHSVA();
+			ColorHsva temp = new ColorHsva();
 			temp.SetRgba(rgba);
 			return temp;
 		}
 
-		public static bool operator ==(ColorHSVA left, ColorHSVA right)
+		public static bool operator ==(ColorHsva left, ColorHsva right)
         {
             return left.Equals(right);
         }
-		public static bool operator !=(ColorHSVA left, ColorHSVA right)
+		public static bool operator !=(ColorHsva left, ColorHsva right)
         {
             return !left.Equals(right);
         }
 
-		public static explicit operator ColorHSVA(uint c)
+		public static explicit operator ColorHsva(uint c)
 		{
-			return ColorHSVA.FromIntRgba(c);
+			return ColorHsva.FromIntRgba(c);
 		}
-		public static explicit operator ColorHSVA(ColorRGBA c)
+		public static explicit operator ColorHsva(ColorRgba c)
 		{
-			return ColorHSVA.FromRgba(c);
+			return ColorHsva.FromRgba(c);
 		}
-		public static explicit operator ColorHSVA(OpenTK.Graphics.Color4 c)
+		public static explicit operator ColorHsva(OpenTK.Graphics.Color4 c)
 		{
-			return ColorHSVA.FromRgba(new ColorRGBA(
+			return ColorHsva.FromRgba(new ColorRgba(
 				(byte)Math.Max(0, Math.Min(255, 255 * c.R)),
 				(byte)Math.Max(0, Math.Min(255, 255 * c.G)),
 				(byte)Math.Max(0, Math.Min(255, 255 * c.B)),
 				(byte)Math.Max(0, Math.Min(255, 255 * c.A))));
 		}
-		public static explicit operator uint(ColorHSVA c)
+		public static explicit operator uint(ColorHsva c)
 		{
 			return c.ToIntRgba();
 		}
-		public static explicit operator ColorRGBA(ColorHSVA c)
+		public static explicit operator ColorRgba(ColorHsva c)
 		{
 			return c.ToRgba();
 		}
-		public static explicit operator OpenTK.Graphics.Color4(ColorHSVA c)
+		public static explicit operator OpenTK.Graphics.Color4(ColorHsva c)
 		{
-			ColorRGBA temp = c.ToRgba();
+			ColorRgba temp = c.ToRgba();
 			return new OpenTK.Graphics.Color4(
 				temp.r,
 				temp.g,

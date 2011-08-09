@@ -75,7 +75,7 @@ namespace Duality
 		}
 		public static Rectangle OpaqueBounds(this Bitmap bm)
 		{
-			ColorRGBA[] pixels = bm.GetPixelDataRGBA();
+			ColorRgba[] pixels = bm.GetPixelDataRgba();
 			Rectangle bounds = new Rectangle(bm.Width, bm.Height, 0, 0);
 			for (int i = 0; i < pixels.Length; i++)
 			{
@@ -95,7 +95,7 @@ namespace Duality
 		public static Bitmap ColorTransparentPixels(this Bitmap bm)
 		{
 			Bitmap result = bm.Clone() as Bitmap;
-			ColorRGBA[] pixelData = result.GetPixelDataRGBA();
+			ColorRgba[] pixelData = result.GetPixelDataRgba();
 
 			Point	pos		= new Point();
 			int[]	nPos	= new int[8];
@@ -151,13 +151,13 @@ namespace Duality
 				}
 			}
 
-			result.SetPixelDataRGBA(pixelData);
+			result.SetPixelDataRgba(pixelData);
 			return result;
 		}
-		public static Bitmap ColorTransparentPixels(this Bitmap bm, ColorRGBA transparentColor)
+		public static Bitmap ColorTransparentPixels(this Bitmap bm, ColorRgba transparentColor)
 		{
 			Bitmap result = bm.Clone() as Bitmap;
-			ColorRGBA[] pixelData = result.GetPixelDataRGBA();
+			ColorRgba[] pixelData = result.GetPixelDataRgba();
 
 			for (int i = 0; i < pixelData.Length; i++)
 			{
@@ -165,14 +165,14 @@ namespace Duality
 				pixelData[i] = transparentColor;
 			}
 
-			result.SetPixelDataRGBA(pixelData);
+			result.SetPixelDataRgba(pixelData);
 			return result;
 		}
-		public static ColorRGBA GetAverageColor(this Bitmap bm, bool weightTransparent = true)
+		public static ColorRgba GetAverageColor(this Bitmap bm, bool weightTransparent = true)
 		{
 			float[] sum = new float[4];
 			int count = 0;
-			ColorRGBA[] pixelData = bm.GetPixelDataRGBA();
+			ColorRgba[] pixelData = bm.GetPixelDataRgba();
 
 			if (weightTransparent)
 			{
@@ -184,9 +184,9 @@ namespace Duality
 					sum[3] += (float)pixelData[i].a / 255.0f;
 					++count;
 				}
-				if (sum[3] <= 0.001f) return ColorRGBA.TransparentBlack;
+				if (sum[3] <= 0.001f) return ColorRgba.TransparentBlack;
 
-				return new ColorRGBA(
+				return new ColorRgba(
 					(byte)MathF.Clamp((int)(sum[0] / sum[3]), 0, 255),
 					(byte)MathF.Clamp((int)(sum[1] / sum[3]), 0, 255),
 					(byte)MathF.Clamp((int)(sum[2] / sum[3]), 0, 255),
@@ -202,9 +202,9 @@ namespace Duality
 					sum[3] += pixelData[i].a;
 					++count;
 				}
-				if (count == 0) return ColorRGBA.TransparentBlack;
+				if (count == 0) return ColorRgba.TransparentBlack;
 
-				return new ColorRGBA(
+				return new ColorRgba(
 					(byte)MathF.Clamp((int)(sum[0] / (float)count), 0, 255),
 					(byte)MathF.Clamp((int)(sum[1] / (float)count), 0, 255),
 					(byte)MathF.Clamp((int)(sum[2] / (float)count), 0, 255),
@@ -212,7 +212,33 @@ namespace Duality
 			}
 		}
 
-		public static ColorRGBA[] GetPixelDataRGBA(this Bitmap bm)
+		public static ColorRgba[] GetPixelDataRgba(this Bitmap bm)
+		{
+			int[] argbValues;
+			GetPixelDataIntArgb(bm, out argbValues);
+
+			// Convert to ColorRGBA
+			ColorRgba[] result = new ColorRgba[argbValues.Length];
+			unchecked
+			{
+				for (int i = 0; i < argbValues.Length; i++)
+					result[i].SetIntArgb((uint)argbValues[i]);
+			}
+			return result;
+		}
+		public static void GetPixelDataIntArgb(this Bitmap bm, out uint[] argbValues)
+		{
+			int[] argbValuesSigned;
+			GetPixelDataIntArgb(bm, out argbValuesSigned);
+
+			argbValues = new uint[argbValuesSigned.Length];
+			unchecked
+			{
+				for (int i = 0; i < argbValuesSigned.Length; i++)
+					argbValues[i] = (uint)argbValuesSigned[i];
+			}
+		}
+		public static void GetPixelDataIntArgb(this Bitmap bm, out int[] argbValues)
 		{
 			BitmapData data = bm.LockBits(
 				new Rectangle(0, 0, bm.Width, bm.Height),
@@ -220,46 +246,24 @@ namespace Duality
 				PixelFormat.Format32bppArgb);
 			
 			int pixels = data.Width * data.Height;
-			int[] argbValues = new int[pixels];
+			argbValues = new int[pixels];
 			System.Runtime.InteropServices.Marshal.Copy(data.Scan0, argbValues, 0, pixels);
-
 			bm.UnlockBits(data);
-
-			// Convert to ColorRGBA
-			ColorRGBA[] result = new ColorRGBA[pixels];
-			unchecked
-			{
-				for (int i = 0; i < pixels; i++)
-					result[i].SetIntArgb((uint)argbValues[i]);
-			}
-			return result;
 		}
-		public static void SetPixelDataRGBA(this Bitmap bm, ColorRGBA[] pixelData)
+
+		public static void SetPixelDataRgba(this Bitmap bm, ColorRgba[] pixelData)
 		{
-			BitmapData data = bm.LockBits(
-				new Rectangle(0, 0, bm.Width, bm.Height),
-				ImageLockMode.WriteOnly,
-				PixelFormat.Format32bppArgb);
-			
-			int pixels = data.Width * data.Height;
-			int[] argbValues = new int[pixels];
+			int[] argbValues = new int[pixelData.Length];
 			unchecked
 			{
-				for (int i = 0; i < pixels; i++)
+				for (int i = 0; i < pixelData.Length; i++)
 					argbValues[i] = (int)pixelData[i].ToIntArgb();
 			}
-			System.Runtime.InteropServices.Marshal.Copy(argbValues, 0, data.Scan0, pixels);
-
-			bm.UnlockBits(data);
+			SetPixelDataIntArgb(bm, argbValues);
 		}
-		public static void SetPixelDataRGBA(this Bitmap bm, byte[] pixelData)
+		public static void SetPixelDataRgba(this Bitmap bm, byte[] pixelData)
 		{
-			BitmapData data = bm.LockBits(
-				new Rectangle(0, 0, bm.Width, bm.Height),
-				ImageLockMode.WriteOnly,
-				PixelFormat.Format32bppArgb);
-			
-			int pixels = data.Width * data.Height;
+			int pixels = (int)MathF.Ceiling(pixelData.Length / 4.0f);
 			int[] argbValues = new int[pixels];
 			unchecked
 			{
@@ -270,7 +274,27 @@ namespace Duality
 						((int)pixelData[i * 4 + 1] << 8) |
 						((int)pixelData[i * 4 + 2] << 0);
 			}
-			System.Runtime.InteropServices.Marshal.Copy(argbValues, 0, data.Scan0, pixels);
+			SetPixelDataIntArgb(bm, argbValues);
+		}
+		public static void SetPixelDataIntArgb(this Bitmap bm, uint[] pixelData)
+		{
+			int[] argbValues = new int[pixelData.Length];
+			unchecked
+			{
+				for (int i = 0; i < pixelData.Length; i++)
+					argbValues[i] = (int)pixelData[i];
+			}
+			SetPixelDataIntArgb(bm, argbValues);
+		}
+		public static void SetPixelDataIntArgb(this Bitmap bm, int[] pixelData)
+		{
+			BitmapData data = bm.LockBits(
+				new Rectangle(0, 0, bm.Width, bm.Height),
+				ImageLockMode.WriteOnly,
+				PixelFormat.Format32bppArgb);
+			
+			int pixels = data.Width * data.Height;
+			System.Runtime.InteropServices.Marshal.Copy(pixelData, 0, data.Scan0, pixels);
 
 			bm.UnlockBits(data);
 		}

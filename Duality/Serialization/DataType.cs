@@ -33,6 +33,7 @@ namespace Duality.Serialization
 
 		Delegate,
 
+		Enum,
 		String,
 		Array,
 		Class,

@@ -5,19 +5,30 @@ using System.Text;
 using System.IO;
 using System.Reflection;
 
+using Duality.Serialization.Surrogates;
+
 namespace Duality.Serialization
 {
 	public class BinaryFormatter : BinaryFormatterBase
 	{
 		protected	List<Predicate<FieldInfo>>	fieldBlockers	= new List<Predicate<FieldInfo>>();
+		protected	List<ISurrogate>			surrogates		= new List<ISurrogate>();
 
 		public IEnumerable<Predicate<FieldInfo>> FieldBlockers
 		{
 			get { return this.fieldBlockers; }
 		}
+		public IEnumerable<ISurrogate> Surrogates
+		{
+			get { return this.surrogates; }
+		}
 
-		public BinaryFormatter() : base() {}
-		public BinaryFormatter(Stream stream) : base(stream) {}
+		public BinaryFormatter() : this(null) {}
+		public BinaryFormatter(Stream stream) : base(stream)
+		{
+			this.AddSurrogate(new BitmapSurrogate());
+			this.AddSurrogate(new DictionarySurrogate());
+		}
 
 		public void ClearFieldBlockers()
 		{
@@ -37,6 +48,25 @@ namespace Duality.Serialization
 			foreach (var blocker in this.fieldBlockers)
 				if (blocker(field)) return true;
 			return false;
+		}
+
+		public void ClearSurrogates()
+		{
+			this.surrogates.Clear();
+		}
+		public void AddSurrogate(ISurrogate surrogate)
+		{
+			if (this.surrogates.Contains(surrogate)) return;
+			this.surrogates.Add(surrogate);
+			this.surrogates.StableSort((s1, s2) => s1.Priority - s2.Priority);
+		}
+		public void RemoveSurrogate(ISurrogate surrogate)
+		{
+			this.surrogates.Remove(surrogate);
+		}
+		public ISurrogate GetSurrogateFor(Type t)
+		{
+			return this.surrogates.FirstOrDefault(s => s.MatchesType(t));
 		}
 		
 		public new void WriteObject(object obj)
@@ -63,10 +93,15 @@ namespace Duality.Serialization
 				// If its not a new id, write a reference
 				if (objId < idCounter) dataType = DataType.ObjectRef;
 			}
+
+			if (!objSerializeType.Type.IsSerializable && !typeof(ISerializable).IsAssignableFrom(objSerializeType.Type) && this.GetSurrogateFor(objSerializeType.Type) == null) 
+				this.log.WriteWarning("Serializing object of Type '{0}' which isn't [Serializable]", 
+				ReflectionHelper.GetTypeString(objSerializeType.Type, ReflectionHelper.TypeStringAttrib.CSCodeIdentShort));
 		}
 		protected override void WriteObjectBody(DataType dataType, object obj, SerializeType objSerializeType, uint objId)
 		{
 			if (dataType.IsPrimitiveType())				this.WritePrimitive(obj);
+			else if (dataType == DataType.Enum)			this.WriteEnum(obj as Enum, objSerializeType);
 			else if (dataType == DataType.String)		this.WriteString(obj as string);
 			else if (dataType == DataType.Struct)		this.WriteStruct(obj, objSerializeType);
 			else if (dataType == DataType.ObjectRef)	this.writer.Write(objId);
@@ -198,27 +233,31 @@ namespace Duality.Serialization
 		protected void WriteStruct(object obj, SerializeType objSerializeType, uint id = 0)
 		{
 			ISerializable objAsCustom = obj as ISerializable;
+			ISurrogate objSurrogate = this.GetSurrogateFor(objSerializeType.Type);
 
 			// Write the structs data type
 			this.writer.Write(objSerializeType.TypeString);
 			this.writer.Write(id);
 			this.writer.Write(objAsCustom != null);
+			this.writer.Write(objSurrogate != null);
+
+			if (objSurrogate != null)
+			{
+				objSurrogate.RealObject = obj;
+				objAsCustom = objSurrogate.SurrogateObject;
+
+				CustomSerialIO customIO = new CustomSerialIO();
+				try { objSurrogate.WriteConstructorData(customIO); }
+				catch (Exception e) { this.LogCustomSerializationError(objSerializeType.Type, e); }
+				customIO.Serialize(this);
+			}
 
 			if (objAsCustom != null)
 			{
-				this.customIO.Clear();
-				try
-				{
-					objAsCustom.WriteData(this.customIO);
-				}
-				catch (Exception e)
-				{
-					this.log.WriteError(
-						"An error occured in custom serialization in '{0}': {1}",
-						ReflectionHelper.GetTypeString(objSerializeType.Type, ReflectionHelper.TypeStringAttrib.CSCodeIdentShort),
-						e);
-				}
-				this.customIO.Serialize(this);
+				CustomSerialIO customIO = new CustomSerialIO();
+				try { objAsCustom.WriteData(customIO); }
+				catch (Exception e) { this.LogCustomSerializationError(objSerializeType.Type, e); }
+				customIO.Serialize(this);
 			}
 			else
 			{
@@ -255,10 +294,17 @@ namespace Duality.Serialization
 			else
 			{
 				MulticastDelegate objAsDelegate = obj as MulticastDelegate;
+				Delegate[] invokeList = objAsDelegate.GetInvocationList();
 				this.WriteObject(objAsDelegate.Method);
 				this.WriteObject(objAsDelegate.Target);
-				this.WriteObject(objAsDelegate.GetInvocationList());
+				this.WriteObject(invokeList);
 			}
+		}
+		protected void WriteEnum(Enum obj, SerializeType objSerializeType)
+		{
+			this.writer.Write(objSerializeType.TypeString);
+			this.writer.Write(obj.ToString());
+			this.writer.Write(Convert.ToInt64(obj));
 		}
 
 		protected override object ReadObjectBody(DataType dataType)
@@ -267,6 +313,7 @@ namespace Duality.Serialization
 
 			if (dataType.IsPrimitiveType())				result = this.ReadPrimitive(dataType);
 			else if (dataType == DataType.String)		result = this.ReadString();
+			else if (dataType == DataType.Enum)			result = this.ReadEnum();
 			else if (dataType == DataType.Struct)		result = this.ReadStruct();
 			else if (dataType == DataType.ObjectRef)	result = this.ReadObjectRef();
 			else if (dataType == DataType.Array)		result = this.ReadArray();
@@ -321,13 +368,31 @@ namespace Duality.Serialization
 			string	objTypeString	= this.reader.ReadString();
 			uint	objId			= this.reader.ReadUInt32();
 			bool	custom			= this.reader.ReadBoolean();
+			bool	surrogate		= this.reader.ReadBoolean();
 			Type	objType			= ReflectionHelper.ResolveType(objTypeString);
+			SerializeType objSerializeType = ReflectionHelper.GetSerializeType(objType);
+			
+			// Retrieve surrogate if requested
+			ISurrogate objSurrogate = null;
+			if (surrogate) objSurrogate = this.GetSurrogateFor(objType);
 
 			// Construct object
-			object obj = ReflectionHelper.CreateInstanceOf(objType);
-			// If no appropriate default constructor is available, just force creating it without constructor
+			object obj = null;
+			if (objSurrogate != null)
+			{
+				custom = true;
+
+				// Set fake object reference for surrogate constructor: No self-references allowed here.
+				if (objId != 0) this.idObjRefMap[objId] = null;
+
+				CustomSerialIO customIO = new CustomSerialIO();
+				customIO.Deserialize(this);
+				try { obj = objSurrogate.ConstructObject(customIO, objType); }
+				catch (Exception e) { this.LogCustomDeserializationError(objType, e); }
+			}
+			if (obj == null) obj = ReflectionHelper.CreateInstanceOf(objType);
 			if (obj == null) obj = ReflectionHelper.CreateInstanceOf(objType, true);
-			
+
 			// Prepare object reference
 			if (objId != 0)
 			{
@@ -335,20 +400,25 @@ namespace Duality.Serialization
 				this.idObjRefMap[objId] = obj;
 			}
 
+			// Read custom object data
 			if (custom)
 			{
-				ISerializable objAsCustom = obj as ISerializable;
-				this.customIO.Deserialize(this);
+				CustomSerialIO customIO = new CustomSerialIO();
+				customIO.Deserialize(this);
+
+				ISerializable objAsCustom;
+				if (objSurrogate != null)
+				{
+					objSurrogate.RealObject = obj;
+					objAsCustom = objSurrogate.SurrogateObject;
+				}
+				else
+					objAsCustom = obj as ISerializable;
+
 				if (objAsCustom != null)
 				{
-					try { objAsCustom.ReadData(this.customIO); }
-					catch (Exception e)
-					{
-						this.log.WriteError(
-							"An error occured in custom deserialization in '{0}': {1}",
-							ReflectionHelper.GetTypeString(objType, ReflectionHelper.TypeStringAttrib.CSCodeIdentShort),
-							e);
-					}
+					try { objAsCustom.ReadData(customIO); }
+					catch (Exception e) { this.LogCustomDeserializationError(objType, e); }
 				}
 				else
 				{
@@ -357,9 +427,9 @@ namespace Duality.Serialization
 						objId,
 						ReflectionHelper.GetTypeString(objType, ReflectionHelper.TypeStringAttrib.CSCodeIdentShort));
 					this.log.PushIndent();
-					foreach (var pair in this.customIO.Values)
+					foreach (var pair in customIO.Values)
 					{
-						FieldInfo field = objType.GetField(pair.Key, ReflectionHelper.BindInstanceAll);
+						FieldInfo field = objSerializeType.Fields.FirstOrDefault(f => f.Name == pair.Key);
 						if (field == null)
 						{
 							this.log.WriteWarning("No match found: {0}", pair.Key);
@@ -377,8 +447,8 @@ namespace Duality.Serialization
 					}
 					this.log.PopIndent();
 				}
-				this.customIO.Clear();
 			}
+			// Red non-custom object data
 			else
 			{
 				// Determine data layout
@@ -387,7 +457,7 @@ namespace Duality.Serialization
 				// Read fields
 				for (int i = 0; i < layout.Fields.Length; i++)
 				{
-					FieldInfo field = objType.GetField(layout.Fields[i].name, ReflectionHelper.BindInstanceAll);
+					FieldInfo field = objSerializeType.Fields.FirstOrDefault(f => f.Name == layout.Fields[i].name);
 					Type fieldType = ReflectionHelper.ResolveType(layout.Fields[i].typeString, false);
 					object fieldValue = this.ReadObject();
 
@@ -529,8 +599,9 @@ namespace Duality.Serialization
 			bool		multi				= this.reader.ReadBoolean();
 			Type		delType				= ReflectionHelper.ResolveType(delegateTypeString);
 
+			// Create the delegate without target and fix it later, so we can register its object id before loading its target object
 			MethodInfo	method	= this.ReadObject() as MethodInfo;
-			object		target	= this.ReadObject();
+			object		target	= null;
 			Delegate	del		= Delegate.CreateDelegate(delType, target, method);
 
 			// Prepare object reference
@@ -540,6 +611,11 @@ namespace Duality.Serialization
 				this.idObjRefMap[objId] = del;
 			}
 
+			// Read the target object now and replace the dummy
+			target = this.ReadObject();
+			FieldInfo targetField = delType.GetField("_target", ReflectionHelper.BindInstanceAll);
+			targetField.SetValue(del, target);
+
 			// Combine multicast delegates
 			if (multi)
 			{
@@ -548,6 +624,21 @@ namespace Duality.Serialization
 			}
 
 			return del;
+		}
+		protected Enum ReadEnum()
+		{
+			object result;
+
+			string typeName = this.reader.ReadString();
+			string name = this.reader.ReadString();
+			long val = this.reader.ReadInt64();
+			Type enumType = ReflectionHelper.ResolveType(typeName);
+
+			result = Enum.Parse(enumType, name);
+			if (result != null) return (Enum)result;
+
+			this.log.WriteWarning("Can't parse enum value '{0}' of Type '{1}'. Using numerical value '{2}' instead.", name, typeName, val);
+			return (Enum)Enum.ToObject(enumType, val);
 		}
 	}
 }

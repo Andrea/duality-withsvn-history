@@ -8,6 +8,7 @@ using System.Reflection;
 
 using Duality;
 using Duality.Serialization;
+using Duality.Serialization.MetaFormat;
 
 using DualityEditor;
 using DualityEditor.Controls;
@@ -23,9 +24,9 @@ namespace ResourceHacker.PropertyEditors
 		}
 		protected override bool MemberPredicate(MemberInfo info)
 		{
-			if (ReflectionHelper.MemberInfoEquals(info, typeof(BinaryMetaFormatter.DataNode).GetProperty("Parent"))) return false;
-			if (ReflectionHelper.MemberInfoEquals(info, typeof(BinaryMetaFormatter.DataNode).GetProperty("SubNodes"))) return false;
-			if (ReflectionHelper.MemberInfoEquals(info, typeof(BinaryMetaFormatter.DataNode).GetProperty("NodeType"))) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, typeof(DataNode).GetProperty("Parent"))) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, typeof(DataNode).GetProperty("SubNodes"))) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, typeof(DataNode).GetProperty("NodeType"))) return false;
 			return base.MemberPredicate(info);
 		}
 	}

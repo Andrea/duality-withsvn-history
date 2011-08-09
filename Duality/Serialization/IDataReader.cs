@@ -9,5 +9,7 @@ namespace Duality.Serialization
 	public interface IDataReader
 	{
 		object ReadValue(string name);
+		T ReadValue<T>(string name);
+		void ReadValue<T>(string name, out T value);
 	}
 }

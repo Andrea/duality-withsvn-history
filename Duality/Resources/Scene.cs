@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Runtime.Serialization;
 
 using Duality.Components;
 using Duality.ObjectManagers;
+using Duality.Serialization;
 
 namespace Duality.Resources
 {
@@ -224,7 +224,6 @@ namespace Duality.Resources
 		protected override void OnLoaded()
 		{
 			base.OnLoaded();
-			
 			this.ApplyPrefabLinks();
 			foreach (GameObject obj in this.objectManager.AllObjects)
 				obj.OnLoaded();

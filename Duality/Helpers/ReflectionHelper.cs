@@ -101,6 +101,21 @@ namespace Duality
 			return level;
 		}
 
+		/// <summary>
+		/// Returns all fields matching the specified bindingflags, even if private and inherited.
+		/// </summary>
+		/// <param name="flags"></param>
+		/// <returns></returns>
+		public static FieldInfo[] GetAllFields(Type type, BindingFlags flags)
+		{
+			List<FieldInfo> result = new List<FieldInfo>();
+			do
+			{
+				result.AddRange(type.GetFields(flags | BindingFlags.DeclaredOnly));
+			} while ((type = type.BaseType) != null);
+			return result.ToArray();
+		}
+
 		
 		public static void ClearTypeCache()
 		{
@@ -131,7 +146,9 @@ namespace Duality
 		}
 		public static DataType GetDataType(Type t)
 		{
-			if (t.IsPrimitive)
+			if (t.IsEnum)
+				return DataType.Enum;
+			else if (t.IsPrimitive)
 			{
 				if		(t == typeof(bool))		return DataType.Bool;
 				else if (t == typeof(byte))		return DataType.Byte;
@@ -213,7 +230,7 @@ namespace Duality
 			}
 			else if (attrib == TypeStringAttrib.FullNameWithoutAssembly)
 			{
-				return System.Text.RegularExpressions.Regex.Replace(T.FullName, @"(\[[^,]*?)(,[^\]]*?)(\])", "$1$3");
+				return Regex.Replace(T.FullName, @"(, [^\]\[]*)", "");
 			}
 			else if (attrib == TypeStringAttrib.CSCodeIdent || attrib == TypeStringAttrib.CSCodeIdentShort)
 			{

@@ -10,6 +10,7 @@ using System.IO;
 
 using Duality;
 using Duality.Serialization;
+using Duality.Serialization.MetaFormat;
 
 using DualityEditor;
 
@@ -22,10 +23,10 @@ namespace ResourceHacker
 	{
 		protected class DataTreeNode : Node
 		{
-			protected	BinaryMetaFormatter.DataNode	data;
+			protected	DataNode	data;
 			protected	TypeDataLayout.FieldDataInfo	fieldInfo;
 
-			public BinaryMetaFormatter.DataNode Data
+			public DataNode Data
 			{
 				get { return this.data; }
 			}
@@ -46,38 +47,40 @@ namespace ResourceHacker
 				}
 			}
 
-			protected DataTreeNode(BinaryMetaFormatter.DataNode data)
+			protected DataTreeNode(DataNode data)
 			{
 				this.data = data;
 				this.Text = this.NodeTypeName;
 				this.Image = GetIcon(this.data);
 			}
 
-			public static DataTreeNode Create(BinaryMetaFormatter.DataNode data)
+			public static DataTreeNode Create(DataNode data)
 			{
-				if (data is BinaryMetaFormatter.ObjectNode)
-					return new ObjectTreeNode(data as BinaryMetaFormatter.ObjectNode);
-				else if (data is BinaryMetaFormatter.ObjectRefNode)
-					return new ObjectRefTreeNode(data as BinaryMetaFormatter.ObjectRefNode);
-				else if (data is BinaryMetaFormatter.PrimitiveNode)
-					return new PrimitiveTreeNode(data as BinaryMetaFormatter.PrimitiveNode);
-				else if (data is BinaryMetaFormatter.StringNode)
-					return new StringTreeNode(data as BinaryMetaFormatter.StringNode);
+				if (data is ObjectNode)
+					return new ObjectTreeNode(data as ObjectNode);
+				else if (data is ObjectRefNode)
+					return new ObjectRefTreeNode(data as ObjectRefNode);
+				else if (data is PrimitiveNode)
+					return new PrimitiveTreeNode(data as PrimitiveNode);
+				else if (data is EnumNode)
+					return new EnumTreeNode(data as EnumNode);
+				else if (data is StringNode)
+					return new StringTreeNode(data as StringNode);
 				else
 					return new DataTreeNode(data);
 			}
-			public static Image GetIcon(BinaryMetaFormatter.DataNode data)
+			public static Image GetIcon(DataNode data)
 			{
 				Image result = CorePluginHelper.RequestTypeImage(data.GetType(), CorePluginHelper.ImageContext_Icon);
 				if (result != null) 
 					return result;
 				else 
-					return CorePluginHelper.RequestTypeImage(typeof(BinaryMetaFormatter.DataNode), CorePluginHelper.ImageContext_Icon);
+					return CorePluginHelper.RequestTypeImage(typeof(DataNode), CorePluginHelper.ImageContext_Icon);
 			}
 		}
 		protected class PrimitiveTreeNode : DataTreeNode
 		{
-			protected	BinaryMetaFormatter.PrimitiveNode	primitiveData;
+			protected	PrimitiveNode	primitiveData;
 
 			public string ResolvedTypeName
 			{
@@ -92,14 +95,36 @@ namespace ResourceHacker
 				get { return this.primitiveData.PrimitiveValue; }
 			}
 
-			public PrimitiveTreeNode(BinaryMetaFormatter.PrimitiveNode data) : base(data)
+			public PrimitiveTreeNode(PrimitiveNode data) : base(data)
 			{
 				this.primitiveData = data;
 			}
 		}
+		protected class EnumTreeNode : DataTreeNode
+		{
+			protected	EnumNode	enumData;
+
+			public string ResolvedTypeName
+			{
+				get 
+				{ 
+					Type actualType = ReflectionHelper.ResolveType(this.enumData.EnumType, false);
+					return actualType != null ? ReflectionHelper.GetTypeString(actualType, ReflectionHelper.TypeStringAttrib.Keyword) : "Unknown";
+				}
+			}
+			public object DataValue
+			{
+				get { return this.enumData.ValueName; }
+			}
+
+			public EnumTreeNode(EnumNode data) : base(data)
+			{
+				this.enumData = data;
+			}
+		}
 		protected class StringTreeNode : DataTreeNode
 		{
-			protected	BinaryMetaFormatter.StringNode	stringData;
+			protected	StringNode	stringData;
 
 			public string ResolvedTypeName
 			{
@@ -110,14 +135,14 @@ namespace ResourceHacker
 				get { return this.stringData.StringValue; }
 			}
 
-			public StringTreeNode(BinaryMetaFormatter.StringNode data) : base(data)
+			public StringTreeNode(StringNode data) : base(data)
 			{
 				this.stringData = data;
 			}
 		}
 		protected class ObjectTreeNode : DataTreeNode
 		{
-			protected	BinaryMetaFormatter.ObjectNode	objData;
+			protected	ObjectNode	objData;
 
 			public uint ObjId
 			{
@@ -136,21 +161,21 @@ namespace ResourceHacker
 				}
 			}
 
-			public ObjectTreeNode(BinaryMetaFormatter.ObjectNode data) : base(data)
+			public ObjectTreeNode(ObjectNode data) : base(data)
 			{
 				this.objData = data;
 			}
 		}
 		protected class ObjectRefTreeNode : DataTreeNode
 		{
-			protected	BinaryMetaFormatter.ObjectRefNode	objRefData;
+			protected	ObjectRefNode	objRefData;
 
 			public uint ObjId
 			{
 				get { return this.objRefData.ObjRefId; }
 			}
 
-			public ObjectRefTreeNode(BinaryMetaFormatter.ObjectRefNode data) : base(data)
+			public ObjectRefTreeNode(ObjectRefNode data) : base(data)
 			{
 				this.objRefData = data;
 			}
@@ -161,34 +186,9 @@ namespace ResourceHacker
 		private	TreeModel			dataModel	= new TreeModel();
 		private	List<DataTreeNode>	rootData	= new List<DataTreeNode>();
 
-		private	Dictionary<string,BinaryMetaFormatter.TypeDataLayoutNode>
-			typeDataLayout = new Dictionary<string,BinaryMetaFormatter.TypeDataLayoutNode>();
+		private	Dictionary<string,TypeDataLayoutNode>
+			typeDataLayout = new Dictionary<string,TypeDataLayoutNode>();
 
-
-		public class Test : ISerializable
-		{
-			public virtual void WriteData(IDataWriter writer)
-			{
-				writer.WriteValue("World", new List<string>{ "One", "Two", "Seven" });
-			}
-			public virtual void ReadData(Duality.Serialization.IDataReader reader)
-			{
-				List<string> list = reader.ReadValue("World") as List<string>;
-			}
-		}
-		public class Test2 : Test, ISerializable
-		{
-			public override void WriteData(IDataWriter writer)
-			{
-				base.WriteData(writer);
-				writer.WriteValue("Hello", 42);
-			}
-			public override void ReadData(Duality.Serialization.IDataReader reader)
-			{
-				base.ReadData(reader);
-				reader.ReadValue("Hello");
-			}
-		}
 		public ResourceHacker()
 		{
 			this.InitializeComponent();
@@ -203,40 +203,6 @@ namespace ResourceHacker
 			this.openFileDialog.Filter = "Duality Resource|*" + Resource.FileExt;
 			this.saveFileDialog.InitialDirectory = this.openFileDialog.InitialDirectory;
 			this.saveFileDialog.Filter = this.openFileDialog.Filter;
-
-			// ---------- Testing Serialization ------------
-			System.Diagnostics.Stopwatch w = new System.Diagnostics.Stopwatch();
-			using (FileStream fileStream = File.Open("test.res", FileMode.Create, FileAccess.ReadWrite))
-			{
-				var tempDict = new Dictionary<string,string>();
-				tempDict["Hello"] = "World";
-				tempDict["Knock Knock"] = "Who is it?";
-				var tempTest = new Test();
-				var tempTest2 = new Test2();
-
-				BinaryFormatter testFormatter = new BinaryFormatter(fileStream);
-				object[] writeObj = new object[5];
-				//for (int i = 0; i < writeObj.Length; i++)
-				//{
-				//    writeObj[i] = new List<string> { "Blub", "Plop", "Yoink" };
-				//}
-				writeObj[0] = 42;
-				writeObj[1] = new List<string> { "Blub", "Plop", "Yoink" };
-				writeObj[2] = tempDict;
-				writeObj[3] = tempTest;
-				writeObj[4] = tempTest2;
-				w.Restart();
-				for (int i = 0; i < writeObj.Length; i++) testFormatter.WriteObject(writeObj[i]);
-				Log.Editor.Write("writing {0}", w.ElapsedMilliseconds);
-
-				fileStream.Seek(0, SeekOrigin.Begin);
-				ReflectionHelper.ClearTypeCache();
-
-				object[] readObj = new object[writeObj.Length];
-				w.Restart();
-				for (int i = 0; i < readObj.Length; i++) readObj[i] = testFormatter.ReadObject();
-				Log.Editor.Write("reading {0}", w.ElapsedMilliseconds);
-			}
 		}
 		protected override void OnShown(EventArgs e)
 		{
@@ -257,7 +223,7 @@ namespace ResourceHacker
 				this.formatter.ReadTarget = new BinaryReader(fileStream);
 				this.formatter.WriteTarget = null;
 
-				BinaryMetaFormatter.DataNode dataNode;
+				DataNode dataNode;
 				try
 				{
 					this.treeView.BeginUpdate();
@@ -297,14 +263,14 @@ namespace ResourceHacker
 			this.actionRenameType.Enabled = false;
 			this.actionSave.Enabled = false;
 		}
-		protected DataTreeNode AddData(BinaryMetaFormatter.DataNode data)
+		protected DataTreeNode AddData(DataNode data)
 		{
 			// Register type data layout nodes
-			if (data is BinaryMetaFormatter.TypeDataLayoutNode)
-				this.typeDataLayout[(data.Parent as BinaryMetaFormatter.ObjectNode).TypeString] = data as BinaryMetaFormatter.TypeDataLayoutNode;
+			if (data is TypeDataLayoutNode)
+				this.typeDataLayout[(data.Parent as ObjectNode).TypeString] = data as TypeDataLayoutNode;
 
 			DataTreeNode dataNode = DataTreeNode.Create(data);
-			foreach (BinaryMetaFormatter.DataNode child in data.SubNodes)
+			foreach (DataNode child in data.SubNodes)
 			{
 				DataTreeNode childDataNode = this.AddData(child);
 				childDataNode.Parent = dataNode;
@@ -318,10 +284,10 @@ namespace ResourceHacker
 			if (updateNode == null) updateNode = this.dataModel.Root;
 
 			DataTreeNode dataNode = updateNode as DataTreeNode;
-			BinaryMetaFormatter.StructNode structData = null;
-			BinaryMetaFormatter.TypeDataLayoutNode structLayoutData = null;
+			StructNode structData = null;
+			TypeDataLayoutNode structLayoutData = null;
 			TypeDataLayout structLayout = null;
-			if (dataNode != null) structData = dataNode.Data as BinaryMetaFormatter.StructNode;
+			if (dataNode != null) structData = dataNode.Data as StructNode;
 			if (structData != null) this.typeDataLayout.TryGetValue(structData.TypeString, out structLayoutData);
 			if (structLayoutData != null) structLayout = structLayoutData.Layout;
 			if (structLayout != null)
@@ -329,7 +295,7 @@ namespace ResourceHacker
 				int index = 0;
 				foreach (DataTreeNode n in updateNode.Nodes)
 				{
-					if (n.Data is BinaryMetaFormatter.TypeDataLayoutNode) index--;
+					if (n.Data is TypeDataLayoutNode) index--;
 					if (index >= 0) n.FieldInfo = structLayout.Fields[index];
 					index++;
 				}
@@ -341,7 +307,7 @@ namespace ResourceHacker
 					this.UpdateTypeDataLayout(n);
 			}
 		}
-		protected bool IsObjectIdExisting(uint objId, BinaryMetaFormatter.DataNode baseNode = null)
+		protected bool IsObjectIdExisting(uint objId, DataNode baseNode = null)
 		{
 			if (objId == 0) return false;
 			
@@ -350,7 +316,7 @@ namespace ResourceHacker
 
 			return false;
 		}
-		protected string[] GetAvailTypes(BinaryMetaFormatter.DataNode baseNode = null)
+		protected string[] GetAvailTypes(DataNode baseNode = null)
 		{
 			List<string> availTypes = new List<string>();
 
@@ -409,7 +375,7 @@ namespace ResourceHacker
 		private void propertyGrid_EditingFinished(object sender, EventArgs e)
 		{
 			var editor = sender as DualityEditor.Controls.PropertyEditor;
-			if (typeof(BinaryMetaFormatter.TypeDataLayoutNode).IsAssignableFrom(editor.EditedType))
+			if (typeof(TypeDataLayoutNode).IsAssignableFrom(editor.EditedType))
 			{
 				this.UpdateTypeDataLayout();
 			}

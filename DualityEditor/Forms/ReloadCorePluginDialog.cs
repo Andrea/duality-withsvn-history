@@ -152,6 +152,7 @@ namespace DualityEditor.Forms
 				this.OnBeforeBeginReload();
 				this.state = ReloaderState.ReloadPlugins;
 			}
+			this.owner.MainContextControl.Context.MakeCurrent(null);
 
 			this.progressTimer.Start();
 			this.Owner.SetTaskbarOverlayIcon(GeneralRes.Icon_Cog, GeneralRes.TaskBarOverlay_ReloadCorePlugin_Desc);
@@ -178,6 +179,7 @@ namespace DualityEditor.Forms
 			this.Owner.SetTaskbarOverlayIcon(null, null);
 			this.reloadSchedule.Clear();
 
+			this.owner.MainContextControl.MakeCurrent();
 			this.state = ReloaderState.Idle;
 			this.OnAfterEndReload();
 		}
@@ -224,6 +226,7 @@ namespace DualityEditor.Forms
 		{
 			WorkerInterface workInterface = args as WorkerInterface;
 			bool fullRestart = false;
+			workInterface.MainForm.MainContextControl.MakeCurrent();
 
 			try { PerformPluginReload(ref workInterface, ref fullRestart); }
 			catch (Exception e)
@@ -248,6 +251,8 @@ namespace DualityEditor.Forms
 					}
 				}
 			}
+
+			workInterface.MainForm.MainContextControl.Context.MakeCurrent(null);
 		}
 		private static void PerformPluginReload(ref WorkerInterface workInterface, ref bool fullRestart)
 		{
@@ -302,6 +307,7 @@ namespace DualityEditor.Forms
 						workInterface.ReloadSched.RemoveAt(0);
 						workInterface.Progress += 0.2f / (float)count;
 					}
+					CorePluginHelper.ResolveTypes();
 					Log.Editor.PopIndent();
 
 					strScene.Seek(0, SeekOrigin.Begin);

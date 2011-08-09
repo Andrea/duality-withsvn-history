@@ -7,6 +7,8 @@ using System.Windows.Forms;
 using System.IO;
 using System.Reflection;
 
+using OpenTK;
+
 using Duality;
 using Duality.ObjectManagers;
 using Duality.Resources;
@@ -32,6 +34,7 @@ namespace DualityEditor.Forms
 		private	const	string	UserDataFile			= "editoruserdata.xml";
 		private	const	string	UserDataDockSeparator	= "<!-- DockPanel Data -->";
 
+		private	GLControl				mainContextControl	= null;
 		private	HashSet<string>			reimportSchedule	= new HashSet<string>();
 		private	List<IFileImporter>		fileImporters		= new List<IFileImporter>();
 		private	List<EditorPlugin>		plugins				= new List<EditorPlugin>();
@@ -74,6 +77,10 @@ namespace DualityEditor.Forms
 		public ObjectSelection Selection
 		{
 			get { return this.selectionCurrent; }
+		}
+		public GLControl MainContextControl
+		{
+			get { return this.mainContextControl; }
 		}
 		private bool AppStillIdle
 		{
@@ -124,6 +131,8 @@ namespace DualityEditor.Forms
 			this.actionDebugApp.Enabled = EditorHelper.IsJITDebuggerAvailable();
 
 			DualityApp.Init(DualityApp.ExecutionContext.Editor, new string[] {"logfile", "logfile_editor"});
+			this.InitMainGLContext();
+			ContentProvider.InitDefaultContent();
 			this.LoadPlugins();
 			this.LoadUserData();
 			this.InitPlugins();
@@ -143,6 +152,13 @@ namespace DualityEditor.Forms
 
 			this.dualityAppSuspended = false;
 			Application.Idle += this.Application_Idle;
+		}
+		public void InitMainGLContext()
+		{
+			if (this.mainContextControl != null) return;
+			this.mainContextControl = new GLControl(DualityApp.DefaultMode);
+			this.mainContextControl.MakeCurrent();
+			DualityApp.TargetMode = this.mainContextControl.Context.GraphicsMode;
 		}
 
 		public ToolStripMenuItem RequestMenu(string menuPath)
@@ -265,7 +281,7 @@ namespace DualityEditor.Forms
 				{
 					Log.Editor.Write("Loading '{0}'...", pluginDllPaths[i]);
 					Log.Editor.PushIndent();
-					pluginAssembly = Assembly.LoadFile(Path.GetFullPath(pluginDllPaths[i]));
+					pluginAssembly = Assembly.Load(File.ReadAllBytes(pluginDllPaths[i])); //Assembly.LoadFile(Path.GetFullPath(pluginDllPaths[i]));
 					exportedTypes = pluginAssembly.GetExportedTypes();
 					try
 					{

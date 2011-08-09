@@ -4,8 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 
 using OpenTK;
 using OpenTK.Input;
@@ -16,6 +14,7 @@ using DW.RtfWriter;
 
 using Duality.ObjectManagers;
 using Duality.Resources;
+using Duality.Serialization;
 
 namespace Duality
 {
@@ -232,9 +231,9 @@ namespace Duality
 
 			logfileRtf = new RtfDocument(PaperSize.A4, PaperOrientation.Portrait, Lcid.English);
 			LogOutputFormat logfileRtfSharedFormat = new LogOutputFormat();
-			Log.Game.RegisterOutput(new RtfDocWriterLogOutput(logfileRtf, "[Game]   ", new ColorFormat.ColorRGBA(230, 255, 220), logfileRtfSharedFormat));
-			Log.Core.RegisterOutput(new RtfDocWriterLogOutput(logfileRtf, "[Core]   ", new ColorFormat.ColorRGBA(220, 220, 255), logfileRtfSharedFormat));
-			Log.Editor.RegisterOutput(new RtfDocWriterLogOutput(logfileRtf, "[Editor] ", new ColorFormat.ColorRGBA(245, 220, 255), logfileRtfSharedFormat));
+			Log.Game.RegisterOutput(new RtfDocWriterLogOutput(logfileRtf, "[Game]   ", new ColorFormat.ColorRgba(230, 255, 220), logfileRtfSharedFormat));
+			Log.Core.RegisterOutput(new RtfDocWriterLogOutput(logfileRtf, "[Core]   ", new ColorFormat.ColorRgba(220, 220, 255), logfileRtfSharedFormat));
+			Log.Editor.RegisterOutput(new RtfDocWriterLogOutput(logfileRtf, "[Editor] ", new ColorFormat.ColorRgba(245, 220, 255), logfileRtfSharedFormat));
 
 			// Assure Duality is properly terminated in any case and register additional AppDomain events
 			AppDomain.CurrentDomain.ProcessExit			+= CurrentDomain_ProcessExit;
@@ -340,6 +339,26 @@ namespace Duality
 			isUpdating = false;
 		}
 		
+		public static void LoadSaveAll()
+		{
+			DualityApp.LoadAppData();
+			DualityApp.LoadUserData();
+			DualityApp.LoadMetaData();
+
+			ContentProvider.ClearContent();
+			string[] resFiles = Directory.GetFiles("Data", "*" + Resource.FileExt, SearchOption.AllDirectories);
+			foreach (string file in resFiles)
+			{
+				var cr = ContentProvider.RequestContent(file);
+				cr.Res.Save(file);
+			}
+			ContentProvider.ClearContent();
+
+			DualityApp.SaveAppData();
+			DualityApp.SaveUserData();
+			DualityApp.SaveMetaData();
+		}
+
 		public static void LoadAppData()
 		{
 			string path = AppDataPath;
@@ -349,8 +368,8 @@ namespace Duality
 				{
 					using (FileStream str = File.OpenRead(path))
 					{
-						BinaryFormatter formatter = RequestSerializer(null, new StreamingContext(StreamingContextStates.File | StreamingContextStates.Persistence));
-						appData = formatter.Deserialize(str) as DualityAppData;
+						BinaryFormatter formatter = RequestSerializer(str);
+						appData = formatter.ReadObject() as DualityAppData;
 					}
 				}
 				catch (Exception)
@@ -371,8 +390,8 @@ namespace Duality
 				{
 					using (FileStream str = File.OpenRead(path))
 					{
-						BinaryFormatter formatter = RequestSerializer(null, new StreamingContext(StreamingContextStates.File | StreamingContextStates.Persistence));
-						UserData = formatter.Deserialize(str) as DualityUserData;
+						BinaryFormatter formatter = RequestSerializer(str);
+						UserData = formatter.ReadObject() as DualityUserData;
 					}
 				}
 				catch (Exception)
@@ -392,8 +411,8 @@ namespace Duality
 				{
 					using (FileStream str = File.OpenRead(path))
 					{
-						BinaryFormatter formatter = RequestSerializer(null, new StreamingContext(StreamingContextStates.File | StreamingContextStates.Persistence));
-						metaData = formatter.Deserialize(str) as DualityMetaData;
+						BinaryFormatter formatter = RequestSerializer(str);
+						metaData = formatter.ReadObject() as DualityMetaData;
 						if (metaData == null) metaData = new DualityMetaData();
 					}
 				}
@@ -410,8 +429,8 @@ namespace Duality
 			string path = AppDataPath;
 			using (FileStream str = File.Open(path, FileMode.Create))
 			{
-				BinaryFormatter formatter = RequestSerializer(null, new StreamingContext(StreamingContextStates.File | StreamingContextStates.Persistence));
-				formatter.Serialize(str, appData);
+				BinaryFormatter formatter = RequestSerializer(str);
+				formatter.WriteObject(appData);
 			}
 		}
 		public static void SaveUserData()
@@ -422,8 +441,8 @@ namespace Duality
 
 			using (FileStream str = File.Open(path, FileMode.Create))
 			{
-				BinaryFormatter formatter = RequestSerializer(null, new StreamingContext(StreamingContextStates.File | StreamingContextStates.Persistence));
-				formatter.Serialize(str, userData);
+				BinaryFormatter formatter = RequestSerializer(str);
+				formatter.WriteObject(userData);
 			}
 		}
 		public static void SaveMetaData()
@@ -433,8 +452,8 @@ namespace Duality
 
 			using (FileStream str = File.Open(path, FileMode.Create))
 			{
-				BinaryFormatter formatter = RequestSerializer(null, new StreamingContext(StreamingContextStates.File | StreamingContextStates.Persistence));
-				formatter.Serialize(str, metaData);
+				BinaryFormatter formatter = RequestSerializer(str);
+				formatter.WriteObject(metaData);
 			}
 		}
 
@@ -496,11 +515,9 @@ namespace Duality
 			}
 			return true;
 		}
-		public static BinaryFormatter RequestSerializer(ISurrogateSelector surrogateSelector = null, StreamingContext context = new StreamingContext())
+		public static BinaryFormatter RequestSerializer(Stream stream)
 		{
-			BinaryFormatter serializer = new BinaryFormatter(surrogateSelector, context);
-			serializer.Binder = pluginTypeBinder;
-			return serializer;
+			return new BinaryFormatter(stream);
 		}
 
 		public static IEnumerable<Assembly> GetDualityAssemblies()

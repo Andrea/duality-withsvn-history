@@ -90,6 +90,11 @@
             only to be used for longer sound pads.
             </summary>
         </member>
+        <member name="T:Duality.NonSerializedResourceAttribute">
+            <summary>
+            Indicates that a field will be assumed null when serializing it as part of a Resource serialization.
+            </summary>
+        </member>
         <member name="T:Duality.Resources.Texture">
             <summary>
             A Texture refers to pixel data stored in video memory
@@ -203,6 +208,13 @@
             [GET] Total number of animation frames in this Texture
             </summary>
         </member>
+        <member name="M:Duality.ReflectionHelper.GetAllFields(System.Type,System.Reflection.BindingFlags)">
+            <summary>
+            Returns all fields matching the specified bindingflags, even if private and inherited.
+            </summary>
+            <param name="flags"></param>
+            <returns></returns>
+        </member>
         <member name="M:Duality.ReflectionHelper.GetTypeString(System.Type,Duality.ReflectionHelper.TypeStringAttrib)">
             <summary>
             Returns a string describing a certain Type.
@@ -263,11 +275,6 @@
             <summary>
             Holds log output format data that may be shared among different LogOutputs such as the
             current log indent in different outputs writing to the same file.
-            </summary>
-        </member>
-        <member name="T:Duality.Resources.NonSerializedPrefabAttribute">
-            <summary>
-            Indicates that a field will be assumed null when serializing it as part of a prefab serialization.
             </summary>
         </member>
         <member name="M:Duality.MathF.InvSqrtFast(System.Single)">
@@ -441,6 +448,12 @@
             <param name="obj2YSpeed"></param>
             <returns></returns>
         </member>
+        <member name="M:Duality.ContentRef`1.MakeAvailable">
+            <summary>
+            Loads the associated content as if it was accessed now.
+            You don't usually need to call this method. It is invoked implicitly by trying to access the ContentRef/>
+            </summary>
+        </member>
         <member name="M:Duality.SerializationHelper.IsSafeAssignType(System.Type)">
             <summary>
             Returns whether the specified type may just be assigned in a clone operation (even if deep)
@@ -464,12 +477,6 @@
             the newly loaded plugin Assemblies equivalent
             </summary>
             <param name="instance"></param>
-        </member>
-        <member name="M:Duality.ContentRef`1.MakeAvailable">
-            <summary>
-            Loads the associated content as if it was accessed now.
-            You don't usually need to call this method. It is invoked implicitly by trying to access the ContentRef/>
-            </summary>
         </member>
     </members>
 </doc>

@@ -18,10 +18,10 @@ namespace Duality.ColorFormat
 	{
 		public static IColorData FromIntRgba(uint rgba, Type colorDataType)
 		{
-			if (colorDataType == typeof(ColorRGBA))
-				return ColorRGBA.FromIntRgba(rgba);
-			else if (colorDataType == typeof(ColorHSVA))
-				return ColorHSVA.FromIntRgba(rgba);
+			if (colorDataType == typeof(ColorRgba))
+				return ColorRgba.FromIntRgba(rgba);
+			else if (colorDataType == typeof(ColorHsva))
+				return ColorHsva.FromIntRgba(rgba);
 			else
 			{
 				System.Reflection.MethodInfo createMethod = colorDataType.GetMethod("FromIntRgba", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
@@ -38,10 +38,10 @@ namespace Duality.ColorFormat
 
 		public static IColorData FromIntArgb(uint argb, Type colorDataType)
 		{
-			if (colorDataType == typeof(ColorRGBA))
-				return ColorRGBA.FromIntArgb(argb);
-			else if (colorDataType == typeof(ColorHSVA))
-				return ColorHSVA.FromIntArgb(argb);
+			if (colorDataType == typeof(ColorRgba))
+				return ColorRgba.FromIntArgb(argb);
+			else if (colorDataType == typeof(ColorHsva))
+				return ColorHsva.FromIntArgb(argb);
 			else
 			{
 				System.Reflection.MethodInfo createMethod = colorDataType.GetMethod("FromIntArgb", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);

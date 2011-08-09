@@ -7,6 +7,14 @@ namespace Duality
 {
 	public static class ExtMethodsIList
 	{
+		public static void StableSort<T>(this IList<T> list)
+		{
+			StableSort<T>(list, Comparer<T>.Default);
+		}
+		public static void StableSort<T>(this IList<T> list, Comparer<T> comparer)
+		{
+			StableSort<T>(list, comparer.Compare);
+		}
 		public static void StableSort<T>(this IList<T> list, Comparison<T> comparison)
 		{
 			if (comparison == null) throw new ArgumentNullException( "comparison" );

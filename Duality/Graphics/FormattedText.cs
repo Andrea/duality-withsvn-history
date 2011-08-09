@@ -69,12 +69,12 @@ namespace Duality
 		}
 		[Serializable] public class ColorChangeElement : Element
 		{
-			private ColorRGBA color;
-			public ColorRGBA Color
+			private ColorRgba color;
+			public ColorRgba Color
 			{
 				get { return this.color; }
 			}
-			public ColorChangeElement(ColorRGBA color)
+			public ColorChangeElement(ColorRgba color)
 			{
 				this.color = color;
 			}
@@ -167,7 +167,7 @@ namespace Duality
 			// Format state
 			private	int				fontIndex;
 			private	Font			font;
-			private	ColorRGBA		color;
+			private	ColorRgba		color;
 			// Line stats
 			private	float			lineBeginX;
 			private	float			lineAvailWidth;
@@ -191,7 +191,7 @@ namespace Duality
 			{
 				get { return this.font; }
 			}
-			public ColorRGBA Color
+			public ColorRgba Color
 			{
 				get { return this.color; }
 			}
@@ -230,7 +230,7 @@ namespace Duality
 				this.parent = parent;
 				this.vertTextIndex = new int[this.parent.fonts != null ? this.parent.fonts.Length : 0];
 				this.font = (this.parent.fonts != null && this.parent.fonts.Length > 0) ? this.parent.fonts[0].Res : null;
-				this.color = ColorRGBA.White;
+				this.color = ColorRgba.White;
 				this.lineAlign = Alignment.Left;
 
 				this.PeekLineStats();
@@ -618,9 +618,9 @@ namespace Duality
 								uint	clr;
 								string	clrString = new StringBuilder().Append(this.sourceText, i + 1, 8).ToString();
 								if (uint.TryParse(clrString, System.Globalization.NumberStyles.HexNumber, System.Globalization.NumberFormatInfo.InvariantInfo, out clr))
-									elemList.Add(new ColorChangeElement(ColorRGBA.FromIntRgba(clr)));
+									elemList.Add(new ColorChangeElement(ColorRgba.FromIntRgba(clr)));
 								else
-									elemList.Add(new ColorChangeElement(ColorRGBA.White));
+									elemList.Add(new ColorChangeElement(ColorRgba.White));
 
 								i += 8;
 							}
@@ -719,9 +719,9 @@ namespace Duality
 
 		public void EmitVertices(ref VertexC4P3T2[][] vertText, ref VertexC4P3T2[] vertIcons, float x, float y, float z = 0.0f)
 		{
-			this.EmitVertices(ref vertText, ref vertIcons, x, y, z, ColorRGBA.White);
+			this.EmitVertices(ref vertText, ref vertIcons, x, y, z, ColorRgba.White);
 		}
-		public void EmitVertices(ref VertexC4P3T2[][] vertText, ref VertexC4P3T2[] vertIcons, float x, float y, ColorRGBA clr)
+		public void EmitVertices(ref VertexC4P3T2[][] vertText, ref VertexC4P3T2[] vertIcons, float x, float y, ColorRgba clr)
 		{
 			this.EmitVertices(ref vertText, ref vertIcons);
 			
@@ -745,13 +745,13 @@ namespace Duality
 				vertIcons[i].clr *= clr;
 			}
 		}
-		public void EmitVertices(ref VertexC4P3T2[][] vertText, ref VertexC4P3T2[] vertIcons, float x, float y, float z, ColorRGBA clr, float angle = 0.0f, float scale = 1.0f)
+		public void EmitVertices(ref VertexC4P3T2[][] vertText, ref VertexC4P3T2[] vertIcons, float x, float y, float z, ColorRgba clr, float angle = 0.0f, float scale = 1.0f)
 		{
 			Vector2 xDot, yDot;
 			MathF.GetTransformDotVec(angle, scale, out xDot, out yDot);
 			this.EmitVertices(ref vertText, ref vertIcons, x, y, z, clr, xDot, yDot);
 		}
-		public void EmitVertices(ref VertexC4P3T2[][] vertText, ref VertexC4P3T2[] vertIcons, float x, float y, float z, ColorRGBA clr, Vector2 xDot, Vector2 yDot)
+		public void EmitVertices(ref VertexC4P3T2[][] vertText, ref VertexC4P3T2[] vertIcons, float x, float y, float z, ColorRgba clr, Vector2 xDot, Vector2 yDot)
 		{
 			this.EmitVertices(ref vertText, ref vertIcons);
 			

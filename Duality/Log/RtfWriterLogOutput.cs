@@ -22,7 +22,7 @@ namespace Duality
 		private	ColorDescriptor	clrWarning	= null;
 		private	ColorDescriptor	clrError	= null;
 
-		public RtfDocWriterLogOutput(RtfDocument bufferDoc, string prefix, ColorRGBA bgColor, LogOutputFormat formatHolder)
+		public RtfDocWriterLogOutput(RtfDocument bufferDoc, string prefix, ColorRgba bgColor, LogOutputFormat formatHolder)
 		{
 			if (formatHolder == null) formatHolder = new LogOutputFormat();
 
@@ -36,9 +36,9 @@ namespace Duality
 			this.clrError	= this.rtfDoc.createColor(new DW.RtfWriter.Color(220, 0, 0));
 			this.clrBg		= this.rtfDoc.createColor(new DW.RtfWriter.Color(bgColor.r, bgColor.g, bgColor.b));
 		}
-		public RtfDocWriterLogOutput(RtfDocument bufferDoc, string prefix, ColorRGBA bgColor) : this(bufferDoc, prefix, bgColor, null) {}
-		public RtfDocWriterLogOutput(RtfDocument bufferDoc, string prefix) : this(bufferDoc, prefix, ColorRGBA.White, null) {}
-		public RtfDocWriterLogOutput(RtfDocument bufferDoc) : this(bufferDoc, null, ColorRGBA.White, null) {}
+		public RtfDocWriterLogOutput(RtfDocument bufferDoc, string prefix, ColorRgba bgColor) : this(bufferDoc, prefix, bgColor, null) {}
+		public RtfDocWriterLogOutput(RtfDocument bufferDoc, string prefix) : this(bufferDoc, prefix, ColorRgba.White, null) {}
+		public RtfDocWriterLogOutput(RtfDocument bufferDoc) : this(bufferDoc, null, ColorRgba.White, null) {}
 
 		public void PushIndent()
 		{

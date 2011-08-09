@@ -169,11 +169,11 @@ namespace Duality.Resources
 			}
 		}
 
-		[OnDeserialized]
-		private void OnDeserialized(StreamingContext context)
+		protected override void OnLoaded()
 		{
 			this.AttachShaders();
 			this.Compile();
+			base.OnLoaded();
 		}
 		protected override void OnDisposed(bool manually)
 		{

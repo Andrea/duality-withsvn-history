@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Reflection;
+
+using Duality.Serialization;
 
 namespace Duality
 {
@@ -47,6 +48,8 @@ namespace Duality
 				ContentProvider.RegisterContent(this.path, this);
 			}
 
+			string dirName = System.IO.Path.GetDirectoryName(saveAsPath);
+			if (!Directory.Exists(dirName)) Directory.CreateDirectory(dirName);
 			using (FileStream str = File.Open(saveAsPath, FileMode.Create))
 			{
 				this.Save(str);
@@ -55,9 +58,9 @@ namespace Duality
 		public void Save(Stream str)
 		{
 			this.OnSaving();
-			BinaryFormatter formatter = DualityApp.RequestSerializer(null, new StreamingContext(
-				StreamingContextStates.File | StreamingContextStates.Persistence));
-			formatter.Serialize(str, this);
+			BinaryFormatter formatter = DualityApp.RequestSerializer(str);
+			formatter.AddFieldBlocker(NonSerializedResourceBlocker);
+			formatter.WriteObject(this);
 			this.OnSaved();
 		}
 
@@ -114,17 +117,15 @@ namespace Duality
 			T newContent = null;
 			try
 			{
-				BinaryFormatter formatter = DualityApp.RequestSerializer(null, new StreamingContext(
-					StreamingContextStates.File | StreamingContextStates.Persistence));
-				newContent = formatter.Deserialize(str) as T;
+				BinaryFormatter formatter = DualityApp.RequestSerializer(str);
+				Resource res = formatter.ReadObject() as Resource;
+				if (res == null) throw new ApplicationException("Loading Resource failed");
 
-				//if (DualityApp.ExecContext == DualityApp.ExecutionContext.Editor)
-				SerializationHelper.DeepResolveTypeReferences(newContent, DualityApp.PluginTypeBinder);
-
-				if (newContent != null) newContent.path = resPath;
-				newContent.OnLoaded();
+				res.path = resPath;
+				res.OnLoaded();
+				newContent = res as T;
 			}
-			catch (SerializationException)
+			catch (System.Runtime.Serialization.SerializationException)
 			{
 				Log.Core.WriteError("Can't load {0} from Stream '{1}'",
 					ReflectionHelper.GetTypeString(typeof(T), ReflectionHelper.TypeStringAttrib.CSCodeIdentShort),
@@ -146,6 +147,11 @@ namespace Duality
 			return DualityApp.FindDualityRessourceType(token[token.Length - 1]);
 		}
 
+		protected static bool NonSerializedResourceBlocker(FieldInfo field)
+		{
+			return field.GetCustomAttributes(typeof(NonSerializedResourceAttribute), true).Any();
+		}
+
 		internal static void RunCleanup()
 		{
 			while (finalizeSched.Count > 0)
@@ -154,5 +160,14 @@ namespace Duality
 				finalizeSched.RemoveAt(finalizeSched.Count - 1);
 			}
 		}
+	}
+
+	/// <summary>
+	/// Indicates that a field will be assumed null when serializing it as part of a Resource serialization.
+	/// </summary>
+	[AttributeUsage(AttributeTargets.Field)]
+	public class NonSerializedResourceAttribute : Attribute
+	{
+		public NonSerializedResourceAttribute() {}
 	}
 }

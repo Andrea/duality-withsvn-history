@@ -8,6 +8,7 @@ using System.Reflection;
 
 using Duality;
 using Duality.Serialization;
+using Duality.Serialization.MetaFormat;
 
 using DualityEditor;
 using DualityEditor.Controls;
@@ -37,9 +38,9 @@ namespace ResourceHacker.PropertyEditors
 		}
 		protected override PropertyEditor MemberEditor(MemberInfo info)
 		{
-			if (ReflectionHelper.MemberInfoEquals(info, typeof(BinaryMetaFormatter.PrimitiveNode).GetProperty("PrimitiveValue")))
+			if (ReflectionHelper.MemberInfoEquals(info, typeof(PrimitiveNode).GetProperty("PrimitiveValue")))
 			{
-				BinaryMetaFormatter.PrimitiveNode primitiveNode = this.Getter().NotNull().FirstOrDefault() as BinaryMetaFormatter.PrimitiveNode;
+				PrimitiveNode primitiveNode = this.Getter().NotNull().FirstOrDefault() as PrimitiveNode;
 				Type actualType = primitiveNode.NodeType.ToActualType();
 				if (actualType == null) actualType = (info as PropertyInfo).PropertyType;
 

@@ -61,6 +61,18 @@ namespace Duality.Serialization
 				else
 					return null;
 			}
+			public T ReadValue<T>(string name)
+			{
+				object read = this.ReadValue(name);
+				if (read is T)
+					return (T)read;
+				else
+					return (T)Convert.ChangeType(read, typeof(T));
+			}
+			public void ReadValue<T>(string name, out T value)
+			{
+				value = this.ReadValue<T>(name);
+			}
 		}
 		protected enum Operation
 		{
@@ -78,7 +90,6 @@ namespace Duality.Serialization
 		protected	BinaryReader	reader;
 		protected	bool			disposed;
 		protected	Log				log;
-		protected	CustomSerialIO	customIO;
 		// Temporary, "stream operation"-specific data
 		protected	ushort								dataVersion			= 0;
 		protected	Operation							lastOperation		= Operation.None;
@@ -140,7 +151,6 @@ namespace Duality.Serialization
 		public BinaryFormatterBase() : this(null) {}
 		public BinaryFormatterBase(Stream stream)
 		{
-			this.customIO = new CustomSerialIO();
 			this.log = Log.Core;
 			this.WriteTarget = (stream != null && stream.CanWrite) ? new BinaryWriter(stream) : null;
 			this.ReadTarget = (stream != null && stream.CanRead) ? new BinaryReader(stream) : null;
@@ -160,13 +170,13 @@ namespace Duality.Serialization
 
 			if (this.writer != null)
 			{
-				this.writer.Dispose();
+				//this.writer.Dispose();
 				this.writer = null;
 			}
 
 			if (this.reader != null)
 			{
-				this.reader.Dispose();
+				//this.reader.Dispose();
 				this.reader = null;
 			}
 		}
@@ -185,7 +195,7 @@ namespace Duality.Serialization
 
 			// Not null flag
 			bool isNotNull = this.reader.ReadBoolean();
-			if (!isNotNull) return null;
+			if (!isNotNull) return this.GetNullObject();
 
 			// Read data type header
 			DataType dataType = this.ReadDataType();
@@ -210,9 +220,13 @@ namespace Duality.Serialization
 				this.log.WriteError("Error reading object at '{0:X8}'-'{1:X8}':\n{2}", lastPos, lastPos + offset, e.ToString());
 			}
 
-			return result;
+			return result ?? this.GetNullObject();
 		}
 		protected abstract object ReadObjectBody(DataType dataType);
+		protected virtual object GetNullObject() 
+		{
+			return null;
+		}
 
 		public bool IsTypeDataLayoutCached(string t)
 		{
@@ -383,10 +397,6 @@ namespace Duality.Serialization
 			uint objId;
 			DataType dataType;
 			this.GetWriteObjectData(obj, out objSerializeType, out dataType, out objId);
-
-			if (objSerializeType != null && !objSerializeType.Type.IsSerializable) this.log.WriteWarning(
-				"Serializing object of Type '{0}' which isn't [Serializable]", 
-				ReflectionHelper.GetTypeString(objSerializeType.Type, ReflectionHelper.TypeStringAttrib.CSCodeIdentShort));
 
 			// Write data type header
 			this.WriteDataType(dataType);
@@ -582,6 +592,38 @@ namespace Duality.Serialization
 			this.idObjRefMap[id] = obj;
 
 			return id;
+		}
+		protected object RegisterReferenceFixup(Type objType, uint objId)
+		{
+			object fixup = ReflectionHelper.CreateInstanceOf(objType, true);
+
+			this.objRefIdMap[fixup] = objId;
+			this.idObjRefMap[objId] = fixup;
+
+			return fixup;
+		}
+		protected void PerformReferenceFixup(object fixup, object obj)
+		{
+			uint objId = this.objRefIdMap[fixup];
+			this.objRefIdMap.Remove(fixup);
+			this.objRefIdMap[obj] = objId;
+			this.idObjRefMap[objId] = obj;
+		}
+
+
+		protected void LogCustomSerializationError(Type serializeType, Exception e)
+		{
+			this.log.WriteError(
+				"An error occured in custom serialization in '{0}': {1}",
+				ReflectionHelper.GetTypeString(serializeType, ReflectionHelper.TypeStringAttrib.CSCodeIdentShort),
+				e);
+		}
+		protected void LogCustomDeserializationError(Type serializeType, Exception e)
+		{
+			this.log.WriteError(
+				"An error occured in custom deserialization in '{0}': {1}",
+				ReflectionHelper.GetTypeString(serializeType, ReflectionHelper.TypeStringAttrib.CSCodeIdentShort),
+				e);
 		}
 	}
 }

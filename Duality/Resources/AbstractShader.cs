@@ -249,10 +249,10 @@ namespace Duality.Resources
 			GL.DetachShader(glProgId, this.glShaderId);
 		}
 
-		[OnDeserialized]
-		private void OnDeserialized(StreamingContext context)
+		protected override void OnLoaded()
 		{
 			this.Compile();
+			base.OnLoaded();
 		}
 		protected override void OnDisposed(bool manually)
 		{

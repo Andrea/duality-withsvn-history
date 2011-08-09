@@ -111,8 +111,8 @@ namespace Duality.Resources
 		private	string		familyName	= FontFamily.GenericMonospace.Name;
 		private	float		size		= 10.0f;
 		private	FontStyle	style		= FontStyle.Regular;
-		private	ColorRGBA	color		= ColorRGBA.White;
-		private	ColorRGBA	bgColor		= ColorRGBA.TransparentWhite;
+		private	ColorRgba	color		= ColorRgba.White;
+		private	ColorRgba	bgColor		= ColorRgba.TransparentWhite;
 		private	RenderHint	hint		= RenderHint.AntiAlias;
 		private	float		spacing		= 0.0f;
 		private	bool		monospace	= false;
@@ -162,7 +162,7 @@ namespace Duality.Resources
 				this.needsReload = true;
 			}
 		}
-		public ColorRGBA GlyphColor
+		public ColorRgba GlyphColor
 		{
 			get { return this.color; }
 			set
@@ -171,7 +171,7 @@ namespace Duality.Resources
 				this.needsReload = true;
 			}
 		}
-		public ColorRGBA GlyphBgColor
+		public ColorRgba GlyphBgColor
 		{
 			get { return this.bgColor; }
 			set
@@ -390,7 +390,7 @@ namespace Duality.Resources
 				this.hint == RenderHint.Monochrome ? OpenTK.Graphics.OpenGL.TextureMinFilter.Nearest : OpenTK.Graphics.OpenGL.TextureMinFilter.LinearMipmapLinear);
 			this.texture.Atlas = new List<Rect>(atlas.Select(r => r.Transform(this.texture.UVRatio)));
 
-			this.mat = new Material(this.hint == RenderHint.Monochrome ? DrawTechnique.Mask : DrawTechnique.Alpha, ColorRGBA.White, this.texture);
+			this.mat = new Material(this.hint == RenderHint.Monochrome ? DrawTechnique.Mask : DrawTechnique.Alpha, ColorRgba.White, this.texture);
 
 			// Monospace offset adjustments
 			if (this.monospace)
@@ -446,7 +446,7 @@ namespace Duality.Resources
 
 					if (SupportedChars[i] != ' ')
 					{
-						ColorRGBA[] glyphTempPx = glyphTemp.GetPixelDataRGBA();
+						ColorRgba[] glyphTempPx = glyphTemp.GetPixelDataRgba();
 						int pxIndex;
 						// Left side samples
 						for (int sampleIndex = 0; sampleIndex < this.glyphs[i].kerningSamplesLeft.Length; sampleIndex++)
@@ -520,9 +520,9 @@ namespace Duality.Resources
 
 		public void EmitTextVertices(string text, ref VertexC4P3T2[] vertices, float x, float y, float z = 0.0f)
 		{
-			this.EmitTextVertices(text, ref vertices, x, y, z, ColorRGBA.White);
+			this.EmitTextVertices(text, ref vertices, x, y, z, ColorRgba.White);
 		}
-		public void EmitTextVertices(string text, ref VertexC4P3T2[] vertices, float x, float y, float z, ColorRGBA clr, float angle = 0.0f, float scale = 1.0f)
+		public void EmitTextVertices(string text, ref VertexC4P3T2[] vertices, float x, float y, float z, ColorRgba clr, float angle = 0.0f, float scale = 1.0f)
 		{
 			this.EmitTextVertices(text, ref vertices);
 			
@@ -541,7 +541,7 @@ namespace Duality.Resources
 				vertices[i].clr = clr;
 			}
 		}
-		public void EmitTextVertices(string text, ref VertexC4P3T2[] vertices, float x, float y, ColorRGBA clr)
+		public void EmitTextVertices(string text, ref VertexC4P3T2[] vertices, float x, float y, ColorRgba clr)
 		{
 			this.EmitTextVertices(text, ref vertices);
 			
@@ -572,25 +572,25 @@ namespace Duality.Resources
 				vertices[i * 4 + 0].pos.Y = 0.0f;
 				vertices[i * 4 + 0].pos.Z = 0.0f;
 				vertices[i * 4 + 0].texCoord = uvRect.TopLeft;
-				vertices[i * 4 + 0].clr = ColorRGBA.White;
+				vertices[i * 4 + 0].clr = ColorRgba.White;
 
 				vertices[i * 4 + 1].pos.X = curOffset + glyphXOff + glyphData.width;
 				vertices[i * 4 + 1].pos.Y = 0.0f;
 				vertices[i * 4 + 1].pos.Z = 0.0f;
 				vertices[i * 4 + 1].texCoord = uvRect.TopRight;
-				vertices[i * 4 + 1].clr = ColorRGBA.White;
+				vertices[i * 4 + 1].clr = ColorRgba.White;
 
 				vertices[i * 4 + 2].pos.X = curOffset + glyphXOff + glyphData.width;
 				vertices[i * 4 + 2].pos.Y = glyphData.height;
 				vertices[i * 4 + 2].pos.Z = 0.0f;
 				vertices[i * 4 + 2].texCoord = uvRect.BottomRight;
-				vertices[i * 4 + 2].clr = ColorRGBA.White;
+				vertices[i * 4 + 2].clr = ColorRgba.White;
 
 				vertices[i * 4 + 3].pos.X = curOffset + glyphXOff;
 				vertices[i * 4 + 3].pos.Y = glyphData.height;
 				vertices[i * 4 + 3].pos.Z = 0.0f;
 				vertices[i * 4 + 3].texCoord = uvRect.BottomLeft;
-				vertices[i * 4 + 3].clr = ColorRGBA.White;
+				vertices[i * 4 + 3].clr = ColorRgba.White;
 
 				curOffset += glyphXAdv;
 			}
@@ -707,20 +707,20 @@ namespace Duality.Resources
 				glyphXAdv = (this.monospace ? this.maxGlyphWidth : -glyphData.offsetX + glyphData.width) + this.spacing;
 		}
 
-		[OnDeserialized]
-		private void OnDeserialized(StreamingContext context)
+		protected override void OnLoaded()
 		{
 			// Load custom font, if not available yet
 			if (GetFontFamily(this.familyName) == null && this.customFamilyData != null)
 				LoadFontFamilyFromMemory(this.customFamilyData);
 
 			this.ReloadData();
+			base.OnLoaded();
 		}
 		protected override void OnDisposed(bool manually)
 		{
 			base.OnDisposed(manually);
-			this.texture.Dispose();
-			this.pixelData.Dispose();
+			if (this.texture != null) { this.texture.Dispose(); this.texture = null; }
+			if (this.pixelData != null) { this.pixelData.Dispose(); this.pixelData = null; }
 		}
 		public override void CopyTo(Resource r)
 		{

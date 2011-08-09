@@ -14,7 +14,7 @@ namespace Duality.VertexFormat
 	[StructLayout(LayoutKind.Sequential)]
 	public struct VertexC4P3T2 : IVertexData
 	{
-		public ColorRGBA clr;
+		public ColorRgba clr;
 		public Vector3 pos;
 		public Vector2 texCoord;
 
@@ -64,7 +64,7 @@ namespace Duality.VertexFormat
 			this.clr.b = b;
 			this.clr.a = a;
 		}
-		public VertexC4P3T2(float x, float y, float z, float u, float v, ColorRGBA clr)
+		public VertexC4P3T2(float x, float y, float z, float u, float v, ColorRgba clr)
 		{
 			this.pos.X = x;
 			this.pos.Y = y;
@@ -82,7 +82,7 @@ namespace Duality.VertexFormat
 			this.clr.b = b;
 			this.clr.a = a;
 		}
-		public VertexC4P3T2(Vector3 pos, Vector2 uv, ColorRGBA clr)
+		public VertexC4P3T2(Vector3 pos, Vector2 uv, ColorRgba clr)
 		{
 			this.pos = pos;
 			this.texCoord = uv;

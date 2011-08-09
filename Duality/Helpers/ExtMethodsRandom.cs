@@ -81,17 +81,17 @@ namespace Duality
 			return new Vector3(r.NextFloat(x, x + w), r.NextFloat(y, y + h), r.NextFloat(z, z + d));
 		}
 
-		public static ColorRGBA NextColorRGBA(this Random r)
+		public static ColorRgba NextColorRGBA(this Random r)
 		{
-			return new ColorRGBA(
+			return new ColorRgba(
 				r.NextByte(),
 				r.NextByte(),
 				r.NextByte(),
 				255);
 		}
-		public static ColorHSVA NextColorHSVA(this Random r)
+		public static ColorHsva NextColorHSVA(this Random r)
 		{
-			return new ColorHSVA(
+			return new ColorHsva(
 				r.NextFloat(),
 				r.NextFloat(),
 				r.NextFloat(),

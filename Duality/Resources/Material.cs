@@ -30,16 +30,16 @@ namespace Duality.Resources
 		{
 			Material tmp;
 
-			tmp = new Material(DrawTechnique.Solid, ColorFormat.ColorRGBA.White);
+			tmp = new Material(DrawTechnique.Solid, ColorFormat.ColorRgba.White);
 			tmp.path = ContentPath_SolidWhite;
 			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new Material(DrawTechnique.Invert, ColorFormat.ColorRGBA.White);
+			tmp = new Material(DrawTechnique.Invert, ColorFormat.ColorRgba.White);
 			tmp.path = ContentPath_InvertWhite;
 			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new Material(DrawTechnique.Mask, ColorFormat.ColorRGBA.White, Texture.DualityLogo256);
+			tmp = new Material(DrawTechnique.Mask, ColorFormat.ColorRgba.White, Texture.DualityLogo256);
 			tmp.path = ContentPath_DualityLogo256;
 			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new Material(DrawTechnique.Mask, ColorFormat.ColorRGBA.White, Texture.DualityLogoB256);
+			tmp = new Material(DrawTechnique.Mask, ColorFormat.ColorRgba.White, Texture.DualityLogoB256);
 			tmp.path = ContentPath_DualityLogoB256;
 			ContentProvider.RegisterContent(tmp.Path, tmp);
 
@@ -66,7 +66,7 @@ namespace Duality.Resources
 			get { return this.info.Technique; }
 			set { this.info.Technique = value; }
 		}
-		public ColorFormat.ColorRGBA MainColor
+		public ColorFormat.ColorRgba MainColor
 		{
 			get { return this.info.MainColor; }
 			set { this.info.MainColor = value; }
@@ -86,11 +86,11 @@ namespace Duality.Resources
 		{
 			this.info = new BatchInfo();
 		}
-		public Material(ContentRef<DrawTechnique> technique, ColorFormat.ColorRGBA mainColor, ContentRef<Texture> mainTex)
+		public Material(ContentRef<DrawTechnique> technique, ColorFormat.ColorRgba mainColor, ContentRef<Texture> mainTex)
 		{
 			this.info = new BatchInfo(technique, mainColor, mainTex);
 		}
-		public Material(ContentRef<DrawTechnique> technique, ColorFormat.ColorRGBA mainColor, Dictionary<string,ContentRef<Texture>> textures = null, Dictionary<string,float[]> uniforms = null)
+		public Material(ContentRef<DrawTechnique> technique, ColorFormat.ColorRgba mainColor, Dictionary<string,ContentRef<Texture>> textures = null, Dictionary<string,float[]> uniforms = null)
 		{
 			this.info = new BatchInfo(technique, mainColor, textures, uniforms);
 		}
@@ -107,7 +107,7 @@ namespace Duality.Resources
 	public class BatchInfo : IEquatable<BatchInfo>
 	{
 		private	ContentRef<DrawTechnique>	technique	= DrawTechnique.Mask;
-		private	ColorFormat.ColorRGBA		mainColor	= ColorFormat.ColorRGBA.White;
+		private	ColorFormat.ColorRgba		mainColor	= ColorFormat.ColorRgba.White;
 		private	Dictionary<string,ContentRef<Texture>>	textures	= null;
 		private	Dictionary<string,float[]>				uniforms	= null;
 
@@ -116,7 +116,7 @@ namespace Duality.Resources
 			get { return this.technique; }
 			set { this.technique = value; }
 		}
-		public ColorFormat.ColorRGBA MainColor
+		public ColorFormat.ColorRgba MainColor
 		{
 			get { return this.mainColor; }
 			set { this.mainColor = value; }
@@ -138,12 +138,12 @@ namespace Duality.Resources
 		{
 			source.CopyTo(this);
 		}
-		public BatchInfo(ContentRef<DrawTechnique> technique, ColorFormat.ColorRGBA mainColor, ContentRef<Texture> mainTex) : this(technique, mainColor, null, null) 
+		public BatchInfo(ContentRef<DrawTechnique> technique, ColorFormat.ColorRgba mainColor, ContentRef<Texture> mainTex) : this(technique, mainColor, null, null) 
 		{
 			this.textures = new Dictionary<string,ContentRef<Texture>>();
 			this.textures.Add("mainTex", mainTex);
 		}
-		public BatchInfo(ContentRef<DrawTechnique> technique, ColorFormat.ColorRGBA mainColor, Dictionary<string,ContentRef<Texture>> textures = null, Dictionary<string,float[]> uniforms = null)
+		public BatchInfo(ContentRef<DrawTechnique> technique, ColorFormat.ColorRgba mainColor, Dictionary<string,ContentRef<Texture>> textures = null, Dictionary<string,float[]> uniforms = null)
 		{
 			this.technique = technique;
 			this.mainColor = mainColor;

@@ -18,7 +18,7 @@ namespace Duality.Components.Renderers
 		protected	Alignment				align		= Alignment.Center;
 		protected	FormattedText			text		= new FormattedText("Hello World");
 		protected	BatchInfo				customMat	= null;
-		protected	ColorRGBA				colorTint	= ColorRGBA.White;
+		protected	ColorRgba				colorTint	= ColorRgba.White;
 		protected	ContentRef<Material>	iconMat		= ContentRef<Material>.Null;
 		[NonSerialized] protected	FormattedText.Metrics			metrics		= new FormattedText.Metrics(Vector2.Zero, new Rect[0], new Rect[0]);
 		[NonSerialized] protected	VertexFormat.VertexC4P3T2[][]	vertFont	= null;
@@ -38,7 +38,7 @@ namespace Duality.Components.Renderers
 			get { return this.text; }
 			set { this.text = value; }
 		}
-		public ColorRGBA ColorTint
+		public ColorRgba ColorTint
 		{
 			get { return this.colorTint; }
 			set { this.colorTint = value; }
@@ -102,7 +102,7 @@ namespace Duality.Components.Renderers
 					new VertexFormat.VertexP3(posTemp + textWidth),
 					new VertexFormat.VertexP3(posTemp + textWidth + textHeight),
 					new VertexFormat.VertexP3(posTemp + textHeight));
-				device.AddVertices(new BatchInfo(DrawTechnique.Alpha, (ColorRGBA.Red * this.colorTint).WithAlpha(128)), BeginMode.LineLoop,
+				device.AddVertices(new BatchInfo(DrawTechnique.Alpha, (ColorRgba.Red * this.colorTint).WithAlpha(128)), BeginMode.LineLoop,
 					new VertexFormat.VertexP3(posTemp),
 					new VertexFormat.VertexP3(posTemp + textMaxWidth),
 					new VertexFormat.VertexP3(posTemp + textMaxWidth + textMaxHeight),
@@ -140,11 +140,6 @@ namespace Duality.Components.Renderers
 		}
 		void ICmpInitializable.OnShutdown(Component.ShutdownContext context) {}
 
-		[System.Runtime.Serialization.OnDeserialized]
-		private void OnDeserialized(System.Runtime.Serialization.StreamingContext context)
-		{
-			this.UpdateMetrics();
-		}
 		internal override void CopyToInternal(Component target)
 		{
 			base.CopyToInternal(target);

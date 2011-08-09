@@ -154,6 +154,34 @@ namespace DualityEditor
 		}
 
 
+		public static void ResolveTypes()
+		{
+			var typeNames = corePluginRes.Keys.Select(t => ReflectionHelper.GetTypeString(t, ReflectionHelper.TypeStringAttrib.FullNameWithoutAssembly)).ToList();
+			var values = corePluginRes.Values.ToList();
+			List<Type> types = new List<Type>(typeNames.Count);
+
+			for (int i = 0; i < typeNames.Count; i++)
+			{
+				Type t = ReflectionHelper.ResolveType(typeNames[i], false);
+				if (t == null)
+				{
+					typeNames.RemoveAt(i);
+					values.RemoveAt(i);
+					i--;
+				}
+				else
+				{
+					types.Add(t);
+				}
+			}
+
+			corePluginRes.Clear();
+			for (int i = 0; i < types.Count; i++)
+			{
+				corePluginRes[types[i]] = values[i];
+			}
+		}
+
 		public static void RegisterTypeImage(Type type, Image image, string context)
 		{
 			RegisterCorePluginRes(type, new ImageResEntry(image, context));

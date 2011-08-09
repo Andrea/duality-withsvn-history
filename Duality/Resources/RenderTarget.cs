@@ -354,13 +354,9 @@ namespace Duality.Resources
 			#endregion
 		}
 
-		[OnDeserialized]
-		private void OnDeserialized(StreamingContext context)
-		{
-			this.SetupOpenGLRes();
-		}
 		protected override void OnLoaded()
 		{
+			this.SetupOpenGLRes();
 			base.OnLoaded();
 		}
 		protected override void OnDisposed(bool manually)

@@ -54,15 +54,6 @@ namespace EditorBase
 		}
 
 		public const float DefaultDisplayBoundRadius = 25.0f;
-		private static GLControl mainContextControl = null;
-
-		public static void InitMainContext()
-		{
-			if (mainContextControl != null) return;
-			mainContextControl = new GLControl(DualityApp.DefaultMode);
-			mainContextControl.MakeCurrent();
-			DualityApp.TargetMode = mainContextControl.Context.GraphicsMode;
-		}
 
 
 		private	int					runtimeId		= 0;
@@ -87,14 +78,14 @@ namespace EditorBase
 		private	ColorPickerDialog	bgColorDialog	= new ColorPickerDialog();
 		private	GameObject			nativeCamObj	= null;
 
-		public ColorRGBA BgColor
+		public ColorRgba BgColor
 		{
 			get { return this.camComp.ClearColor; }
 			set { this.camComp.ClearColor = value; }
 		}
-		public ColorRGBA FgColor
+		public ColorRgba FgColor
 		{
-			get { return this.BgColor.GetLuminance() < 0.5f ? ColorRGBA.White : ColorRGBA.Black; }
+			get { return this.BgColor.GetLuminance() < 0.5f ? ColorRgba.White : ColorRgba.Black; }
 		}
 		public float NearZ
 		{
@@ -114,6 +105,10 @@ namespace EditorBase
 		public CameraAction Action
 		{
 			get { return this.camAction; }
+		}
+		public GLControl MainContextControl
+		{
+			get { return EditorBasePlugin.Instance.EditorForm.MainContextControl; }
 		}
 
 		public CamView(int runtimeId)
@@ -195,7 +190,7 @@ namespace EditorBase
 			this.nativeCamObj.AddComponent<SoundListener>().MakeCurrent();
 
 			Camera c = this.nativeCamObj.AddComponent<Camera>();
-			c.ClearColor = ColorRGBA.DarkGrey;
+			c.ClearColor = ColorRgba.DarkGrey;
 			c.FarZ = 100000.0f;
 
 			this.nativeCamObj.Transform.Pos = new Vector3(0.0f, 0.0f, -c.ParallaxRefDist);
@@ -261,7 +256,7 @@ namespace EditorBase
 			}
 
 			// Create a new glControl
-			this.glControl = new GLControl(mainContextControl.GraphicsMode);
+			this.glControl = new GLControl(this.MainContextControl.GraphicsMode);
 			this.glControl.BackColor = Color.Black;
 			this.glControl.Dock = DockStyle.Fill;
 			this.glControl.Name = "glControl";
@@ -311,7 +306,7 @@ namespace EditorBase
 			this.axisLockZLabel.Enabled = (this.actionAxisLock & AxisLock.Z) != AxisLock.None;
 		}
 
-		protected void DrawViewSpaceLine(float x, float y, float x2, float y2, ContentRef<DrawTechnique> dt, ColorRGBA clr)
+		protected void DrawViewSpaceLine(float x, float y, float x2, float y2, ContentRef<DrawTechnique> dt, ColorRgba clr)
 		{
 			// Turn with camera: Calculate transform vectors
 			Vector2 catDotX, catDotY;
@@ -336,7 +331,7 @@ namespace EditorBase
 				new VertexP3(lineV1),
 				new VertexP3(lineV2));
 		}
-		protected void DrawWorldSpaceSphere(float x, float y, float z, float r, ContentRef<DrawTechnique> dt, ColorRGBA clr)
+		protected void DrawWorldSpaceSphere(float x, float y, float z, float r, ContentRef<DrawTechnique> dt, ColorRgba clr)
 		{
 			Vector3 pos = new Vector3(x, y, z);
 			if (!this.camComp.DrawDevice.IsCoordInView(pos, r)) return;
@@ -389,7 +384,7 @@ namespace EditorBase
 			}
 			this.camComp.DrawDevice.AddVertices(info, BeginMode.LineLoop, vertices);
 		}
-		protected void DrawWorldSpaceCircle(float x, float y, float z, float r, ContentRef<DrawTechnique> dt, ColorRGBA clr)
+		protected void DrawWorldSpaceCircle(float x, float y, float z, float r, ContentRef<DrawTechnique> dt, ColorRgba clr)
 		{
 			Vector3 pos = new Vector3(x, y, z);
 			if (!this.camComp.DrawDevice.IsCoordInView(pos, r)) return;
@@ -415,7 +410,7 @@ namespace EditorBase
 			}
 			this.camComp.DrawDevice.AddVertices(info, BeginMode.LineLoop, vertices);
 		}
-		protected void DrawWorldSpaceDot(float x, float y, float z, float r, ContentRef<DrawTechnique> dt, ColorRGBA clr)
+		protected void DrawWorldSpaceDot(float x, float y, float z, float r, ContentRef<DrawTechnique> dt, ColorRgba clr)
 		{
 			Vector3 pos = new Vector3(x, y, z);
 			if (!this.camComp.DrawDevice.IsCoordInView(pos, r)) return;
@@ -442,7 +437,7 @@ namespace EditorBase
 			}
 			this.camComp.DrawDevice.AddVertices(info, BeginMode.TriangleFan, vertices);
 		}
-		protected void DrawWorldSpaceLine(float x, float y, float z, float x2, float y2, float z2, ContentRef<DrawTechnique> dt, ColorRGBA clr)
+		protected void DrawWorldSpaceLine(float x, float y, float z, float x2, float y2, float z2, ContentRef<DrawTechnique> dt, ColorRgba clr)
 		{
 			Vector3 pos = new Vector3(x, y, z);
 			Vector3 target = new Vector3(x2, y2, z2);
@@ -458,7 +453,7 @@ namespace EditorBase
 
 			this.camComp.DrawDevice.AddVertices(info, BeginMode.Lines, vertices);
 		}
-		protected void DrawSelectionMarkers(IEnumerable<GameObject> obj, ColorRGBA clr)
+		protected void DrawSelectionMarkers(IEnumerable<GameObject> obj, ColorRgba clr)
 		{
 			// Determine turned Camera axes for angle-independent drawing
 			Vector2 catDotX, catDotY;
@@ -514,7 +509,7 @@ namespace EditorBase
 
 		protected void MakeDualityTarget()
 		{
-			DualityApp.TargetMode = mainContextControl.Context.GraphicsMode;
+			DualityApp.TargetMode = this.MainContextControl.Context.GraphicsMode;
 			DualityApp.TargetResolution = new OpenTK.Vector2(this.glControl.Width, this.glControl.Height);
 			DualityApp.Mouse = null;
 			DualityApp.Keyboard = null;
@@ -525,7 +520,7 @@ namespace EditorBase
 			x = MathF.Clamp(x, 0, this.glControl.Width - 1);
 			y = MathF.Clamp(y, 0, this.glControl.Height - 1);
 
-			mainContextControl.Context.MakeCurrent(this.glControl.WindowInfo);
+			this.MainContextControl.Context.MakeCurrent(this.glControl.WindowInfo);
 			this.MakeDualityTarget();
 			return this.camComp.PickRendererAt(x, y);
 		}
@@ -536,7 +531,7 @@ namespace EditorBase
 			w = MathF.Clamp(w, 1, this.glControl.Width - x);
 			h = MathF.Clamp(h, 1, this.glControl.Height - y);
 
-			mainContextControl.Context.MakeCurrent(this.glControl.WindowInfo);
+			this.MainContextControl.Context.MakeCurrent(this.glControl.WindowInfo);
 			this.MakeDualityTarget();
 			return this.camComp.PickRenderersIn(x, y, w, h);
 		}
@@ -997,7 +992,7 @@ namespace EditorBase
 			Point cursorPos = this.glControl.PointToClient(Cursor.Position);
 
 			// Retrieve OpenGL context 
-			mainContextControl.Context.MakeCurrent(this.glControl.WindowInfo);
+			this.MainContextControl.Context.MakeCurrent(this.glControl.WindowInfo);
 			this.MakeDualityTarget();
 
 			// Determine turned camera axes
@@ -1009,7 +1004,7 @@ namespace EditorBase
 			MathF.TransdormDotVec(ref down, ref catDotX, ref catDotY);
 
 			// Draw indirectly selected object overlay
-			this.DrawSelectionMarkers(this.SelectedGameObjIndirect(), ColorRGBA.Mix(this.FgColor, this.BgColor, 0.75f));
+			this.DrawSelectionMarkers(this.SelectedGameObjIndirect(), ColorRgba.Mix(this.FgColor, this.BgColor, 0.75f));
 
 			// Draw selected object overlay
 			List<GameObject> selObjList = new List<GameObject>(this.SelectedGameObj());
@@ -1028,7 +1023,7 @@ namespace EditorBase
 						this.selectionCenter.Z, 
 						this.selectionRadius,
 						DrawTechnique.Solid,
-						ColorRGBA.Mix(this.FgColor, this.BgColor, 0.5f));
+						ColorRgba.Mix(this.FgColor, this.BgColor, 0.5f));
 				}
 				else
 				{
@@ -1038,7 +1033,7 @@ namespace EditorBase
 						this.selectionCenter.Z, 
 						this.selectionRadius,
 						DrawTechnique.Solid,
-						ColorRGBA.Mix(this.FgColor, this.BgColor, 0.5f));
+						ColorRgba.Mix(this.FgColor, this.BgColor, 0.5f));
 				}
 			}
 
@@ -1089,7 +1084,7 @@ namespace EditorBase
 						this.selectionCenter.Y,
 						this.selectionCenter.Z,
 						DrawTechnique.Solid,
-						ColorRGBA.Mix(this.FgColor, ColorRGBA.Red, 0.5f));
+						ColorRgba.Mix(this.FgColor, ColorRgba.Red, 0.5f));
 				}
 				if ((this.actionAxisLock & AxisLock.Y) != AxisLock.None)
 				{
@@ -1101,7 +1096,7 @@ namespace EditorBase
 						this.selectionCenter.Y + this.selectionRadius * 4,
 						this.selectionCenter.Z,
 						DrawTechnique.Solid,
-						ColorRGBA.Mix(this.FgColor, ColorRGBA.Green, 0.5f));
+						ColorRgba.Mix(this.FgColor, ColorRgba.Green, 0.5f));
 				}
 				if ((this.actionAxisLock & AxisLock.Z) != AxisLock.None)
 				{
@@ -1113,7 +1108,7 @@ namespace EditorBase
 						this.selectionCenter.Y,
 						this.selectionCenter.Z + this.selectionRadius * 4,
 						DrawTechnique.Solid,
-						ColorRGBA.Mix(this.FgColor, ColorRGBA.Blue, 0.5f));
+						ColorRgba.Mix(this.FgColor, ColorRgba.Blue, 0.5f));
 				}
 			}
 
@@ -1134,7 +1129,7 @@ namespace EditorBase
 
 			// Render CamView
 			this.camComp.Render();
-			mainContextControl.SwapBuffers();
+			this.MainContextControl.SwapBuffers();
 		}
 		private void glControl_GotFocus(object sender, EventArgs e)
 		{
@@ -1325,7 +1320,7 @@ namespace EditorBase
 		}
 		private void bgColorDialog_ValueChanged(object sender, EventArgs e)
 		{
-			this.camComp.ClearColor = new ColorRGBA(
+			this.camComp.ClearColor = new ColorRgba(
 				this.bgColorDialog.SelectedColor.R,
 				this.bgColorDialog.SelectedColor.G,
 				this.bgColorDialog.SelectedColor.B,

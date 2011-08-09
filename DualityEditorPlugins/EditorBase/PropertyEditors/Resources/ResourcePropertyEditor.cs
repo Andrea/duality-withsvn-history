@@ -34,7 +34,7 @@ namespace EditorBase.PropertyEditors
 			base.OnEditedTypeChanged();
 
 			System.Drawing.Bitmap iconBitmap = CorePluginHelper.RequestTypeImage(this.EditedType, CorePluginHelper.ImageContext_Icon) as System.Drawing.Bitmap;
-			Duality.ColorFormat.ColorHSVA avgClr = iconBitmap != null ? iconBitmap.GetAverageColor().ToHsva() : Duality.ColorFormat.ColorHSVA.TransparentBlack;
+			Duality.ColorFormat.ColorHsva avgClr = iconBitmap != null ? iconBitmap.GetAverageColor().ToHsva() : Duality.ColorFormat.ColorHsva.TransparentBlack;
 
 			this.Header.Text = null;
 			this.Header.ValueText = ReflectionHelper.GetTypeString(this.EditedType, ReflectionHelper.TypeStringAttrib.CSCodeIdentShort);

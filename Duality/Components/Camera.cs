@@ -37,7 +37,7 @@ namespace Duality
 	public interface IDrawDevice
 	{
 		uint VisibilityMask { get; }
-		ColorRGBA ClearColor { get; }
+		ColorRgba ClearColor { get; }
 		float NearZ { get; }
 		float FarZ { get; }
 
@@ -294,7 +294,7 @@ namespace Duality.Components
 		private	float	zSortAccuracy		= 0.0f;
 		private	float	parallaxRefDist		= DefaultParallaxRefDist;
 		private	uint	visibilityMask		= uint.MaxValue;
-		private	ColorRGBA	clearColor		= ColorRGBA.TransparentBlack;
+		private	ColorRgba	clearColor		= ColorRgba.TransparentBlack;
 		private	ClearFlags	clearMask		= ClearFlags.All;
 		private	Pass[]		passes			= new Pass[] { new Pass(null, ContentRef<RenderTarget>.Null, false, false) } ;
 
@@ -357,7 +357,7 @@ namespace Duality.Components
 			get { return this.clearMask; }
 			set { this.clearMask = value; }
 		}
-		public ColorRGBA ClearColor
+		public ColorRgba ClearColor
 		{
 			get { return this.clearColor; }
 			set { this.clearColor = value; }
@@ -606,7 +606,7 @@ namespace Duality.Components
 				else
 				{
 					GL.ClearDepth(1.0d);
-					GL.ClearColor((OpenTK.Graphics.Color4)ColorRGBA.TransparentBlack);
+					GL.ClearColor((OpenTK.Graphics.Color4)ColorRgba.TransparentBlack);
 					GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 				}
 			}
@@ -981,9 +981,9 @@ namespace Duality.Components
 			if (this.picking != 0)
 			{
 				if (material.Textures == null)
-					material = new BatchInfo(DrawTechnique.Picking, new ColorRGBA((this.picking << 8) | 0xFF), Texture.White);
+					material = new BatchInfo(DrawTechnique.Picking, new ColorRgba((this.picking << 8) | 0xFF), Texture.White);
 				else
-					material = new BatchInfo(DrawTechnique.Picking, new ColorRGBA((this.picking << 8) | 0xFF), material.Textures);
+					material = new BatchInfo(DrawTechnique.Picking, new ColorRgba((this.picking << 8) | 0xFF), material.Textures);
 			}
 			
 			if (material.Technique.Res.NeedsVertexPreprocess)

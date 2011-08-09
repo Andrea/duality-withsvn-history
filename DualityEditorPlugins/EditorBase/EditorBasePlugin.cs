@@ -106,10 +106,6 @@ namespace EditorBase
 		{
 			base.LoadPlugin();
 
-			// Initialize main OpenGL context
-			CamView.InitMainContext();
-			ContentProvider.InitDefaultContent();
-
 			// Register core resource lookups
 			CorePluginHelper.RegisterTypeImage(typeof(DrawTechnique), EditorBaseRes.IconResDrawTechnique, CorePluginHelper.ImageContext_Icon);
 			CorePluginHelper.RegisterTypeImage(typeof(FragmentShader), EditorBaseRes.IconResFragmentShader, CorePluginHelper.ImageContext_Icon);
@@ -348,7 +344,7 @@ namespace EditorBase
 		{
 			string pathExt = Texture.FileExt;
 			string matPath = PathHelper.GetFreePathName(tex.Path.Substring(0, tex.Path.Length - pathExt.Length), Material.FileExt);
-			Material mat = new Material(DrawTechnique.Mask, ColorRGBA.White, tex);
+			Material mat = new Material(DrawTechnique.Mask, ColorRgba.White, tex);
 			mat.Save(matPath);
 		}
 		private void ActionAudioDataCreateSound(AudioData data)

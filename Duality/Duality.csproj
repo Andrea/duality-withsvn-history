@@ -75,12 +75,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\Alignment.cs" />
-    <Compile Include="Graphics\ColorFormat\ColorHSVA.cs" />
+    <Compile Include="Graphics\ColorFormat\ColorHsva.cs" />
     <Compile Include="Components\Renderers\AnimSpriteRenderer.cs" />
     <Compile Include="Components\Renderers\TextRenderer.cs" />
     <Compile Include="Components\SoundEmitter.cs" />
     <Compile Include="Components\SoundListener.cs" />
     <Compile Include="Helpers\ExtMethodsIEnumerable.cs" />
+    <Compile Include="Helpers\SerializationHelper.cs" />
     <Compile Include="Log\ConsoleLogOutput.cs" />
     <Compile Include="ContentProvider.cs" />
     <Compile Include="Helpers\EventArgs.cs" />
@@ -90,11 +91,10 @@
     <Compile Include="Helpers\ExtMethodsString.cs" />
     <Compile Include="Graphics\GraphicsModeComparer.cs" />
     <Compile Include="Helpers\ReflectionInfo.cs" />
-    <Compile Include="Helpers\SerializationHelper.cs" />
     <Compile Include="Audio\OggVorbis\OggVorbis.cs" />
     <Compile Include="Helpers\PathHelper.cs" />
     <Compile Include="Helpers\ReflectionHelper.cs" />
-    <Compile Include="Graphics\ColorFormat\ColorRGBA.cs" />
+    <Compile Include="Graphics\ColorFormat\ColorRgba.cs" />
     <Compile Include="Graphics\ColorFormat\IColorData.cs" />
     <Compile Include="Components\Camera.cs" />
     <Compile Include="Component.cs" />
@@ -136,9 +136,13 @@
     <Compile Include="Serialization\ISerializable.cs" />
     <Compile Include="Serialization\IDataWriter.cs" />
     <Compile Include="Serialization\IDataReader.cs" />
+    <Compile Include="Serialization\ISurrogate.cs" />
+    <Compile Include="Serialization\MetaFormat.cs" />
     <Compile Include="Serialization\SerializeType.cs" />
     <Compile Include="Serialization\DataType.cs" />
     <Compile Include="Serialization\BinaryFormatterBase.cs" />
+    <Compile Include="Serialization\Surrogates\BitmapSurrogate.cs" />
+    <Compile Include="Serialization\Surrogates\DictionarySurrogate.cs" />
     <Compile Include="Serialization\TypeDataLayout.cs" />
     <Compile Include="Time.cs" />
     <Compile Include="Graphics\VertexFormat\IVertexData.cs" />

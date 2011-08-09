@@ -26,7 +26,7 @@ namespace Duality.Components.Renderers
 		protected	Rect					rect		= Rect.AlignCenter(0, 0, 128, 128);
 		protected	ContentRef<Material>	sharedMat	= Material.DualityLogo256;
 		protected	BatchInfo				customMat	= null;
-		protected	ColorRGBA				colorTint	= ColorRGBA.White;
+		protected	ColorRgba				colorTint	= ColorRgba.White;
 		protected	UVMode					rectMode	= UVMode.Stretch;
 		[NonSerialized]
 		protected	VertexFormat.VertexC4P3T2[]	vertices	= null;
@@ -50,7 +50,7 @@ namespace Duality.Components.Renderers
 			get { return this.customMat; }
 			set { this.customMat = value; }
 		}
-		public ColorRGBA ColorTint
+		public ColorRgba ColorTint
 		{
 			get { return this.colorTint; }
 			set { this.colorTint = value; }
@@ -84,7 +84,7 @@ namespace Duality.Components.Renderers
 			else
 				return null;
 		}
-		protected ColorRGBA RetrieveMainColor()
+		protected ColorRgba RetrieveMainColor()
 		{
 			if (this.customMat != null)
 				return this.customMat.MainColor * this.colorTint;
@@ -102,7 +102,7 @@ namespace Duality.Components.Renderers
 			else
 				return null;
 		}
-		protected void PrepareVertices(ref VertexFormat.VertexC4P3T2[] vertices, IDrawDevice device, ColorRGBA mainClr, Rect uvRect)
+		protected void PrepareVertices(ref VertexFormat.VertexC4P3T2[] vertices, IDrawDevice device, ColorRgba mainClr, Rect uvRect)
 		{
 			Vector3 posTemp = this.gameobj.Transform.Pos;
 			float scaleTemp = 1.0f;
@@ -156,7 +156,7 @@ namespace Duality.Components.Renderers
 		public override void Draw(IDrawDevice device)
 		{
 			Texture mainTex = this.RetrieveMainTex();
-			ColorRGBA mainClr = this.RetrieveMainColor();
+			ColorRgba mainClr = this.RetrieveMainColor();
 
 			Rect uvRect;
 			if (mainTex != null)

@@ -135,7 +135,7 @@ namespace Duality.Components.Renderers
 		}
 		void ICmpInitializable.OnShutdown(Component.ShutdownContext context) {}
 		
-		protected void PrepareVerticesSmooth(ref VertexFormat.VertexC4P3T4A1[] vertices, IDrawDevice device, float curAnimFrameFade, ColorRGBA mainClr, Rect uvRect, Rect uvRectNext)
+		protected void PrepareVerticesSmooth(ref VertexFormat.VertexC4P3T4A1[] vertices, IDrawDevice device, float curAnimFrameFade, ColorRgba mainClr, Rect uvRect, Rect uvRectNext)
 		{
 			Vector3 posTemp = this.gameobj.Transform.Pos;
 			float scaleTemp = 1.0f;
@@ -201,7 +201,7 @@ namespace Duality.Components.Renderers
 		public override void Draw(IDrawDevice device)
 		{
 			Texture mainTex = this.RetrieveMainTex();
-			ColorRGBA mainClr = this.RetrieveMainColor();
+			ColorRgba mainClr = this.RetrieveMainColor();
 			DrawTechnique tech = this.RetrieveDrawTechnique();
 
 			bool smoothShaderInput = tech.PreferredVertexFormat == VertexFormat.VertexDataFormat.VertexC4P3T4A1;

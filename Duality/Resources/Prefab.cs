@@ -9,26 +9,6 @@ using System.Reflection;
 
 namespace Duality.Resources
 {
-	/// <summary>
-	/// Indicates that a field will be assumed null when serializing it as part of a prefab serialization.
-	/// </summary>
-	[AttributeUsage(AttributeTargets.Field)]
-	public class NonSerializedPrefabAttribute : Attribute
-	{
-		private	object	defaultVal	= null;
-
-		public object DefaultValue
-		{
-			get { return defaultVal; }
-		}
-
-		public NonSerializedPrefabAttribute() {}
-		public NonSerializedPrefabAttribute(object defaultVal)
-		{
-			this.defaultVal = defaultVal;
-		}
-	}
-
 	[Serializable]
 	public class Prefab : Resource
 	{
@@ -70,31 +50,10 @@ namespace Duality.Resources
 				this.objTree.Parent = null;
 				this.objTree.prefabLink = null;
 
-				// Reset flagged fields
-				ProcessPrefabObjectFields(this.objTree, new HashSet<object>());
-
 				// Prevent recursion
 				foreach (GameObject child in this.objTree.ChildrenDeep)
 					if (child.PrefabLink != null && child.PrefabLink.Prefab == this)
 						child.BreakPrefabLink();
-
-				// Reset any custom component fields referencing GameObjects or Components
-				// Removed: It's the users duty to take care of which fields go intro prefabs and which do not.
-				//foreach (Component c in this.objTree.ComponentsDeep)
-				//{
-				//    Type curType = c.GetType();
-				//    Type lastType = null;
-				//    while (curType.Assembly != Assembly.GetExecutingAssembly())
-				//    {
-				//        lastType = curType;
-
-				//        ReflectionHelper.DeepResetReferenceFields(
-				//            curType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly), 
-				//            c, typeof(GameObject), typeof(Component));
-
-				//        curType = curType.BaseType;
-				//    }
-				//}
 			}
 		}
 		public GameObject Instantiate()
@@ -124,31 +83,6 @@ namespace Duality.Resources
 			base.CopyTo(r);
 			Prefab c = r as Prefab;
 			c.objTree = this.objTree.Clone();
-		}
-
-		private static void ProcessPrefabObjectFields(object obj, HashSet<object> visited)
-		{
-			visited.Add(obj);
-
-			Type fixupRootType = obj.GetType();
-			foreach (FieldInfo f in fixupRootType.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public))
-			{
-				// Reset flagged fields to null / default
-				if (f.IsDefined(typeof(NonSerializedPrefabAttribute), false))
-				{
-					object val = (f.GetCustomAttributes(typeof(NonSerializedPrefabAttribute), false)[0] as NonSerializedPrefabAttribute).DefaultValue;
-					f.SetValue(obj, val ?? (f.FieldType.IsValueType ? Activator.CreateInstance(f.FieldType) : null));
-				}
-				// Traverse other types
-				else if (!SerializationHelper.IsSafeAssignType(f.FieldType))
-				{
-					object val = f.GetValue(obj);
-					if (val != null && !visited.Contains(val))
-					{
-						ProcessPrefabObjectFields(val, visited);
-					}
-				}
-			}
 		}
 	}
 

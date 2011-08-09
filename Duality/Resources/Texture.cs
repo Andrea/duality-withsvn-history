@@ -572,10 +572,10 @@ namespace Duality.Resources
 			if (lastTexId != this.glTexId) GL.BindTexture(TextureTarget.Texture2D, lastTexId);
 		}
 
-		[OnDeserialized]
-		private void OnDeserialized(StreamingContext context)
+		protected override void OnLoaded()
 		{
 			this.LoadData(this.basePixmap, this.oglSizeMode);
+			base.OnLoaded();
 		}
 		protected override void OnDisposed(bool manually)
 		{

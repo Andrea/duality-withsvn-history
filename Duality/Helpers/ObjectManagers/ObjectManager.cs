@@ -17,7 +17,7 @@ namespace Duality
 	[Serializable]
 	public class ObjectManager<T> where T : IManageableObject
 	{
-		protected	List<T>	allObj	= new List<T>();
+		protected	List<T>	allObj		= new List<T>();
 
 		public event EventHandler<ObjectManagerEventArgs<T>> Registered;
 		public event EventHandler<ObjectManagerEventArgs<T>> Unregistered;

@@ -5,10 +5,10 @@ using System.Text;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Runtime.Serialization;
 
 using Duality;
 using Duality.ColorFormat;
+using Duality.Serialization;
 
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -19,7 +19,7 @@ namespace Duality.Resources
 	/// A Pixmap stores pixel data in system memory. 
 	/// </summary>
 	[Serializable]
-	public class Pixmap : Resource, ISerializable
+	public class Pixmap : Resource, System.Runtime.Serialization.ISerializable, ISerializable
 	{
 		public new const string FileExt = ".Pixmap" + Resource.FileExt;
 
@@ -42,10 +42,10 @@ namespace Duality.Resources
 			Pixmap tmp;
 
 			bm = new Bitmap(ReflectionHelper.GetEmbeddedResourceStream(System.Reflection.Assembly.GetExecutingAssembly(), @"Resources\Default\DualityLogo256.png"));
-			tmp = new Pixmap(bm.ColorTransparentPixels(ColorRGBA.TransparentBlack)); tmp.path = ContentPath_DualityLogo256;
+			tmp = new Pixmap(bm.ColorTransparentPixels(ColorRgba.TransparentBlack)); tmp.path = ContentPath_DualityLogo256;
 			ContentProvider.RegisterContent(tmp.Path, tmp);
 			bm = new Bitmap(ReflectionHelper.GetEmbeddedResourceStream(System.Reflection.Assembly.GetExecutingAssembly(), @"Resources\Default\DualityLogoB256.png"));
-			tmp = new Pixmap(bm.ColorTransparentPixels(ColorRGBA.TransparentBlack)); tmp.path = ContentPath_DualityLogoB256;
+			tmp = new Pixmap(bm.ColorTransparentPixels(ColorRgba.TransparentBlack)); tmp.path = ContentPath_DualityLogoB256;
 			ContentProvider.RegisterContent(tmp.Path, tmp);
 			bm = new Bitmap(1, 1); bm.SetPixel(0, 0, Color.FromArgb(255, 255, 255, 255));
 			tmp = new Pixmap(bm); tmp.path = ContentPath_White;
@@ -91,11 +91,11 @@ namespace Duality.Resources
 		{
 			this.LoadPixelData(imagePath);
 		}
-		protected Pixmap(SerializationInfo info, StreamingContext context)
+		protected Pixmap(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
         {
 			int version;
 			try { version = info.GetInt32("version"); }
-			catch (SerializationException) { version = ResFormat_Version_Unknown; }
+			catch (System.Runtime.Serialization.SerializationException) { version = ResFormat_Version_Unknown; }
 
 			if (version == ResFormat_Version_Bitmap)
 			{
@@ -147,7 +147,7 @@ namespace Duality.Resources
 			c.dataBasePath	= this.dataBasePath;
 		}
 
-		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+		void System.Runtime.Serialization.ISerializable.GetObjectData(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
 		{
 			info.AddValue("version", ResFormat_Version_Png);
 
@@ -161,6 +161,46 @@ namespace Duality.Resources
 				info.AddValue("data", null);
 
 			info.AddValue("dataBasePath", this.dataBasePath);
+		}
+
+		void ISerializable.WriteData(IDataWriter writer)
+		{
+			writer.WriteValue("version", ResFormat_Version_Png);
+
+			if (this.data != null)
+			{
+				MemoryStream str = new MemoryStream(1024 * 64);
+				this.data.Save(str, System.Drawing.Imaging.ImageFormat.Png);
+				writer.WriteValue("data", str.ToArray());
+			}
+			else
+				writer.WriteValue("data", null);
+
+			writer.WriteValue("dataBasePath", this.dataBasePath);
+
+		}
+		void ISerializable.ReadData(IDataReader reader)
+		{
+			int version;
+			try { reader.ReadValue("version", out version); }
+			catch (Exception) { version = ResFormat_Version_Unknown; }
+
+			if (version == ResFormat_Version_Bitmap)
+			{
+				reader.ReadValue("data", out this.data);
+			}
+			else if (version == ResFormat_Version_Png)
+			{
+				byte[] dataBlock;
+				reader.ReadValue("data", out dataBlock);
+				this.data = dataBlock != null ? new Bitmap(new MemoryStream(dataBlock)) : null;
+			}
+			else
+			{
+				this.data = null;
+			}
+
+			reader.ReadValue("dataBasePath", out this.dataBasePath);
 		}
 	}
 }

@@ -28,7 +28,7 @@ namespace Duality.Components
 			private	float				volume		= 1.0f;
 			private	float				pitch		= 1.0f;
 			private	Vector3				offset		= Vector3.Zero;
-			[NonSerializedPrefab]	private	bool			hasBeenPlayed	= false;
+			[NonSerializedResource]	private	bool			hasBeenPlayed	= false;
 			[NonSerialized]			private	SoundInstance	instance		= null;
 
 			public bool Disposed
