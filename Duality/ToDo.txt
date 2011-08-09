@@ -1,5 +1,8 @@
 ﻿
 -->	Serialization ToDo
+	-->	Enums!
+	-->	Move BinaryMetaFormatter.DataNode, etc. to Duality.Serialization.MetaFormat namespace, instead of nesting.
+	
 	-->	Pixmap implementation of Duality.Serialization.ISerializable
 	-->	Test it isolated.
 	-->	If that runs smoothly, just replace DualityApp.RequestSerializer and pray that it just works.
