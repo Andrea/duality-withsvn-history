@@ -614,19 +614,25 @@ namespace Duality.Serialization
 		}
 
 
-		protected void LogCustomSerializationError(Type serializeType, Exception e)
+		protected void LogCustomSerializationError(uint objId, Type serializeType, Exception e)
 		{
 			this.log.WriteError(
-				"An error occured in custom serialization in '{0}': {1}",
+				"An error occured in custom serialization in object Id {0} of type '{1}': {2}",
+				objId,
 				ReflectionHelper.GetTypeName(serializeType, TypeNameFormat.CSCodeIdentShort),
 				Log.Exception(e));
 		}
-		protected void LogCustomDeserializationError(Type serializeType, Exception e)
+		protected void LogCustomDeserializationError(uint objId, Type serializeType, Exception e)
 		{
 			this.log.WriteError(
-				"An error occured in custom deserialization in '{0}': {1}",
+				"An error occured in custom deserialization in object Id {0} of type '{1}': {2}",
+				objId,
 				ReflectionHelper.GetTypeName(serializeType, TypeNameFormat.CSCodeIdentShort),
 				Log.Exception(e));
+		}
+		protected void LogCantResolveTypeError(uint objId, string typeString)
+		{
+			this.log.WriteError("Can't resolve Type '{0}' in object Id {1}. Type not found.", typeString, objId);
 		}
 	}
 }

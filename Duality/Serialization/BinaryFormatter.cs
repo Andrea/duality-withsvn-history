@@ -248,7 +248,7 @@ namespace Duality.Serialization
 
 				CustomSerialIO customIO = new CustomSerialIO();
 				try { objSurrogate.WriteConstructorData(customIO); }
-				catch (Exception e) { this.LogCustomSerializationError(objSerializeType.Type, e); }
+				catch (Exception e) { this.LogCustomSerializationError(id, objSerializeType.Type, e); }
 				customIO.Serialize(this);
 			}
 
@@ -256,7 +256,7 @@ namespace Duality.Serialization
 			{
 				CustomSerialIO customIO = new CustomSerialIO();
 				try { objAsCustom.WriteData(customIO); }
-				catch (Exception e) { this.LogCustomSerializationError(objSerializeType.Type, e); }
+				catch (Exception e) { this.LogCustomSerializationError(id, objSerializeType.Type, e); }
 				customIO.Serialize(this);
 			}
 			else
@@ -328,15 +328,16 @@ namespace Duality.Serialization
 			string	arrTypeString	= this.reader.ReadString();
 			uint	objId			= this.reader.ReadUInt32();
 			int		arrRang			= this.reader.ReadInt32();
-			long	arrLength		= this.reader.ReadInt32();
-			Type	arrType			= ReflectionHelper.ResolveType(arrTypeString);
+			int		arrLength		= this.reader.ReadInt32();
+			Type	arrType			= ReflectionHelper.ResolveType(arrTypeString, false);
+			if (arrType == null) this.LogCantResolveTypeError(objId, arrTypeString);
 
-			Array arrObj = Array.CreateInstance(arrType.GetElementType(), arrLength);
+			Array arrObj = arrType != null ? Array.CreateInstance(arrType.GetElementType(), arrLength) : null;
 			
 			// Prepare object reference
 			if (objId != 0)
 			{
-				this.objRefIdMap[arrObj] = objId;
+				if (arrObj != null) this.objRefIdMap[arrObj] = objId;
 				this.idObjRefMap[objId] = arrObj;
 			}
 
@@ -356,8 +357,11 @@ namespace Duality.Serialization
 			else if (arrObj is string[])	this.ReadArrayData(arrObj as string[]);
 			else
 			{
-				for (long l = 0; l < arrObj.Length; l++)
-					arrObj.SetValue(this.ReadObject(), l);
+				for (int l = 0; l < arrLength; l++)
+				{
+					object elem = this.ReadObject();
+					if (arrObj != null) arrObj.SetValue(elem, l);
+				}
 			}
 
 			return arrObj;
@@ -369,34 +373,40 @@ namespace Duality.Serialization
 			uint	objId			= this.reader.ReadUInt32();
 			bool	custom			= this.reader.ReadBoolean();
 			bool	surrogate		= this.reader.ReadBoolean();
-			Type	objType			= ReflectionHelper.ResolveType(objTypeString);
-			SerializeType objSerializeType = ReflectionHelper.GetSerializeType(objType);
+			Type	objType			= ReflectionHelper.ResolveType(objTypeString, false);
+			if (objType == null) this.LogCantResolveTypeError(objId, objTypeString);
+
+			SerializeType objSerializeType = null;
+			if (objType != null) objSerializeType = ReflectionHelper.GetSerializeType(objType);
 			
 			// Retrieve surrogate if requested
 			ISurrogate objSurrogate = null;
-			if (surrogate) objSurrogate = this.GetSurrogateFor(objType);
+			if (surrogate && objType != null) objSurrogate = this.GetSurrogateFor(objType);
 
 			// Construct object
 			object obj = null;
-			if (objSurrogate != null)
+			if (objType != null)
 			{
-				custom = true;
+				if (objSurrogate != null)
+				{
+					custom = true;
 
-				// Set fake object reference for surrogate constructor: No self-references allowed here.
-				if (objId != 0) this.idObjRefMap[objId] = null;
+					// Set fake object reference for surrogate constructor: No self-references allowed here.
+					if (objId != 0) this.idObjRefMap[objId] = null;
 
-				CustomSerialIO customIO = new CustomSerialIO();
-				customIO.Deserialize(this);
-				try { obj = objSurrogate.ConstructObject(customIO, objType); }
-				catch (Exception e) { this.LogCustomDeserializationError(objType, e); }
+					CustomSerialIO customIO = new CustomSerialIO();
+					customIO.Deserialize(this);
+					try { obj = objSurrogate.ConstructObject(customIO, objType); }
+					catch (Exception e) { this.LogCustomDeserializationError(objId, objType, e); }
+				}
+				if (obj == null) obj = ReflectionHelper.CreateInstanceOf(objType);
+				if (obj == null) obj = ReflectionHelper.CreateInstanceOf(objType, true);
 			}
-			if (obj == null) obj = ReflectionHelper.CreateInstanceOf(objType);
-			if (obj == null) obj = ReflectionHelper.CreateInstanceOf(objType, true);
 
 			// Prepare object reference
 			if (objId != 0)
 			{
-				this.objRefIdMap[obj] = objId;
+				if (obj != null) this.objRefIdMap[obj] = objId;
 				this.idObjRefMap[objId] = obj;
 			}
 
@@ -418,9 +428,9 @@ namespace Duality.Serialization
 				if (objAsCustom != null)
 				{
 					try { objAsCustom.ReadData(customIO); }
-					catch (Exception e) { this.LogCustomDeserializationError(objType, e); }
+					catch (Exception e) { this.LogCustomDeserializationError(objId, objType, e); }
 				}
-				else
+				else if (obj != null && objType != null)
 				{
 					this.log.WriteWarning(
 						"Object data (Id {0}) is flagged for custom deserialization, yet the objects Type ('{1}') does not support it. Guessing associated fields...",
@@ -452,23 +462,26 @@ namespace Duality.Serialization
 			else
 			{
 				// Determine data layout
-				TypeDataLayout layout	= this.ReadTypeDataLayout(objType);
+				TypeDataLayout layout	= this.ReadTypeDataLayout(objTypeString);
 
 				// Read fields
 				for (int i = 0; i < layout.Fields.Length; i++)
 				{
-					FieldInfo field = objSerializeType.Fields.FirstOrDefault(f => f.Name == layout.Fields[i].name);
+					FieldInfo field = objSerializeType != null ? objSerializeType.Fields.FirstOrDefault(f => f.Name == layout.Fields[i].name) : null;
 					Type fieldType = ReflectionHelper.ResolveType(layout.Fields[i].typeString, false);
 					object fieldValue = this.ReadObject();
 
-					if (field == null)
-						this.log.WriteWarning("Field '{0}' not found. Discarding value '{1}'", layout.Fields[i].name, fieldValue);
-					else if (field.FieldType != fieldType)
-						this.log.WriteWarning("Data layout Type '{0}' of field '{1}' does not match reflected Type '{2}'. Discarding value '{3}'", layout.Fields[i].typeString, layout.Fields[i].name, objTypeString, fieldValue);
-					else if (field.IsNotSerialized)
-						this.log.WriteWarning("Field '{0}' flagged as [NonSerialized]. Discarding value '{1}'", layout.Fields[i].name, fieldValue);
-					else
-						field.SetValue(obj, fieldValue);
+					if (obj != null)
+					{
+						if (field == null)
+							this.log.WriteWarning("Field '{0}' not found. Discarding value '{1}'", layout.Fields[i].name, fieldValue);
+						else if (field.FieldType != fieldType)
+							this.log.WriteWarning("Data layout Type '{0}' of field '{1}' does not match reflected Type '{2}'. Discarding value '{3}'", layout.Fields[i].typeString, layout.Fields[i].name, objTypeString, fieldValue);
+						else if (field.IsNotSerialized)
+							this.log.WriteWarning("Field '{0}' flagged as [NonSerialized]. Discarding value '{1}'", layout.Fields[i].name, fieldValue);
+						else
+							field.SetValue(obj, fieldValue);
+					}
 				}
 			}
 
@@ -486,107 +499,118 @@ namespace Duality.Serialization
 		protected MemberInfo ReadMemberInfo(DataType dataType)
 		{
 			uint objId = this.reader.ReadUInt32();
-			MemberInfo result;
+			MemberInfo result = null;
 
-			if (dataType == DataType.Type)
+			try
 			{
-				string typeString = this.reader.ReadString();
-				Type type = ReflectionHelper.ResolveType(typeString);
-				result = type;
+				if (dataType == DataType.Type)
+				{
+					string typeString = this.reader.ReadString();
+					Type type = ReflectionHelper.ResolveType(typeString);
+					result = type;
+				}
+				else if (dataType == DataType.FieldInfo)
+				{
+					bool isStatic = this.reader.ReadBoolean();
+					string declaringTypeString = this.reader.ReadString();
+					string fieldName = this.reader.ReadString();
+
+					Type declaringType = ReflectionHelper.ResolveType(declaringTypeString);
+					FieldInfo field = declaringType.GetField(fieldName, isStatic ? ReflectionHelper.BindStaticAll : ReflectionHelper.BindInstanceAll);
+					result = field;
+				}
+				else if (dataType == DataType.PropertyInfo)
+				{
+					bool isStatic = this.reader.ReadBoolean();
+					string declaringTypeString = this.reader.ReadString();
+					string propertyName = this.reader.ReadString();
+					string propertyTypeString = this.reader.ReadString();
+
+					int paramCount = this.reader.ReadInt32();
+					string[] paramTypeStrings = new string[paramCount];
+					for (int i = 0; i < paramCount; i++)
+						paramTypeStrings[i] = this.reader.ReadString();
+
+					Type declaringType = ReflectionHelper.ResolveType(declaringTypeString);
+					Type propertyType = ReflectionHelper.ResolveType(propertyTypeString);
+					Type[] paramTypes = new Type[paramCount];
+					for (int i = 0; i < paramCount; i++)
+						paramTypes[i] = ReflectionHelper.ResolveType(paramTypeStrings[i]);
+
+					PropertyInfo property = declaringType.GetProperty(
+						propertyName, 
+						isStatic ? ReflectionHelper.BindStaticAll : ReflectionHelper.BindInstanceAll, 
+						null, 
+						propertyType, 
+						paramTypes, 
+						null);
+
+					result = property;
+				}
+				else if (dataType == DataType.MethodInfo)
+				{
+					bool isStatic = this.reader.ReadBoolean();
+					string declaringTypeString = this.reader.ReadString();
+					string methodName = this.reader.ReadString();
+
+					int paramCount = this.reader.ReadInt32();
+					string[] paramTypeStrings = new string[paramCount];
+					for (int i = 0; i < paramCount; i++)
+						paramTypeStrings[i] = this.reader.ReadString();
+
+					Type declaringType = ReflectionHelper.ResolveType(declaringTypeString);
+					Type[] paramTypes = new Type[paramCount];
+					for (int i = 0; i < paramCount; i++)
+						paramTypes[i] = ReflectionHelper.ResolveType(paramTypeStrings[i]);
+
+					MethodInfo method = declaringType.GetMethod(methodName, isStatic ? ReflectionHelper.BindStaticAll : ReflectionHelper.BindInstanceAll, null, paramTypes, null);
+					result = method;
+				}
+				else if (dataType == DataType.ConstructorInfo)
+				{
+					bool isStatic = this.reader.ReadBoolean();
+					string declaringTypeString = this.reader.ReadString();
+
+					int paramCount = this.reader.ReadInt32();
+					string[] paramTypeStrings = new string[paramCount];
+					for (int i = 0; i < paramCount; i++)
+						paramTypeStrings[i] = this.reader.ReadString();
+
+					Type declaringType = ReflectionHelper.ResolveType(declaringTypeString);
+					Type[] paramTypes = new Type[paramCount];
+					for (int i = 0; i < paramCount; i++)
+						paramTypes[i] = ReflectionHelper.ResolveType(paramTypeStrings[i]);
+
+					ConstructorInfo method = declaringType.GetConstructor(isStatic ? ReflectionHelper.BindStaticAll : ReflectionHelper.BindInstanceAll, null, paramTypes, null);
+					result = method;
+				}
+				else if (dataType == DataType.EventInfo)
+				{
+					bool isStatic = this.reader.ReadBoolean();
+					string declaringTypeString = this.reader.ReadString();
+					string eventName = this.reader.ReadString();
+
+					Type declaringType = ReflectionHelper.ResolveType(declaringTypeString);
+					EventInfo e = declaringType.GetEvent(eventName, isStatic ? ReflectionHelper.BindStaticAll : ReflectionHelper.BindInstanceAll);
+					result = e;
+				}
+				else
+					throw new ApplicationException(string.Format("Invalid DataType '{0}' in ReadMemberInfo method.", dataType));
 			}
-			else if (dataType == DataType.FieldInfo)
+			catch (Exception e)
 			{
-				bool isStatic = this.reader.ReadBoolean();
-				string declaringTypeString = this.reader.ReadString();
-				string fieldName = this.reader.ReadString();
-
-				Type declaringType = ReflectionHelper.ResolveType(declaringTypeString);
-				FieldInfo field = declaringType.GetField(fieldName, isStatic ? ReflectionHelper.BindStaticAll : ReflectionHelper.BindInstanceAll);
-				result = field;
+				result = null;
+				this.log.WriteError(
+					"An error occured in deserializing MemberInfo object Id {0} of type '{1}': {2}",
+					objId,
+					Log.Type(dataType.ToActualType()),
+					Log.Exception(e));
 			}
-			else if (dataType == DataType.PropertyInfo)
-			{
-				bool isStatic = this.reader.ReadBoolean();
-				string declaringTypeString = this.reader.ReadString();
-				string propertyName = this.reader.ReadString();
-				string propertyTypeString = this.reader.ReadString();
-
-				int paramCount = this.reader.ReadInt32();
-				string[] paramTypeStrings = new string[paramCount];
-				for (int i = 0; i < paramCount; i++)
-					paramTypeStrings[i] = this.reader.ReadString();
-
-				Type declaringType = ReflectionHelper.ResolveType(declaringTypeString);
-				Type propertyType = ReflectionHelper.ResolveType(propertyTypeString);
-				Type[] paramTypes = new Type[paramCount];
-				for (int i = 0; i < paramCount; i++)
-					paramTypes[i] = ReflectionHelper.ResolveType(paramTypeStrings[i]);
-
-				PropertyInfo property = declaringType.GetProperty(
-					propertyName, 
-					isStatic ? ReflectionHelper.BindStaticAll : ReflectionHelper.BindInstanceAll, 
-					null, 
-					propertyType, 
-					paramTypes, 
-					null);
-
-				result = property;
-			}
-			else if (dataType == DataType.MethodInfo)
-			{
-				bool isStatic = this.reader.ReadBoolean();
-				string declaringTypeString = this.reader.ReadString();
-				string methodName = this.reader.ReadString();
-
-				int paramCount = this.reader.ReadInt32();
-				string[] paramTypeStrings = new string[paramCount];
-				for (int i = 0; i < paramCount; i++)
-					paramTypeStrings[i] = this.reader.ReadString();
-
-				Type declaringType = ReflectionHelper.ResolveType(declaringTypeString);
-				Type[] paramTypes = new Type[paramCount];
-				for (int i = 0; i < paramCount; i++)
-					paramTypes[i] = ReflectionHelper.ResolveType(paramTypeStrings[i]);
-
-				MethodInfo method = declaringType.GetMethod(methodName, isStatic ? ReflectionHelper.BindStaticAll : ReflectionHelper.BindInstanceAll, null, paramTypes, null);
-				result = method;
-			}
-			else if (dataType == DataType.ConstructorInfo)
-			{
-				bool isStatic = this.reader.ReadBoolean();
-				string declaringTypeString = this.reader.ReadString();
-
-				int paramCount = this.reader.ReadInt32();
-				string[] paramTypeStrings = new string[paramCount];
-				for (int i = 0; i < paramCount; i++)
-					paramTypeStrings[i] = this.reader.ReadString();
-
-				Type declaringType = ReflectionHelper.ResolveType(declaringTypeString);
-				Type[] paramTypes = new Type[paramCount];
-				for (int i = 0; i < paramCount; i++)
-					paramTypes[i] = ReflectionHelper.ResolveType(paramTypeStrings[i]);
-
-				ConstructorInfo method = declaringType.GetConstructor(isStatic ? ReflectionHelper.BindStaticAll : ReflectionHelper.BindInstanceAll, null, paramTypes, null);
-				result = method;
-			}
-			else if (dataType == DataType.EventInfo)
-			{
-				bool isStatic = this.reader.ReadBoolean();
-				string declaringTypeString = this.reader.ReadString();
-				string eventName = this.reader.ReadString();
-
-				Type declaringType = ReflectionHelper.ResolveType(declaringTypeString);
-				EventInfo e = declaringType.GetEvent(eventName, isStatic ? ReflectionHelper.BindStaticAll : ReflectionHelper.BindInstanceAll);
-				result = e;
-			}
-			else
-				throw new ApplicationException(string.Format("Invalid DataType '{0}' in ReadMemberInfo method.", dataType));
-
 			
 			// Prepare object reference
 			if (objId != 0)
 			{
-				this.objRefIdMap[result] = objId;
+				if (result != null) this.objRefIdMap[result] = objId;
 				this.idObjRefMap[objId] = result;
 			}
 
@@ -597,30 +621,34 @@ namespace Duality.Serialization
 			string		delegateTypeString	= this.reader.ReadString();
 			uint		objId				= this.reader.ReadUInt32();
 			bool		multi				= this.reader.ReadBoolean();
-			Type		delType				= ReflectionHelper.ResolveType(delegateTypeString);
+			Type		delType				= ReflectionHelper.ResolveType(delegateTypeString, false);
+			if (delType == null) this.LogCantResolveTypeError(objId, delegateTypeString);
 
 			// Create the delegate without target and fix it later, so we can register its object id before loading its target object
 			MethodInfo	method	= this.ReadObject() as MethodInfo;
 			object		target	= null;
-			Delegate	del		= Delegate.CreateDelegate(delType, target, method);
+			Delegate	del		= delType != null ? Delegate.CreateDelegate(delType, target, method) : null;
 
 			// Prepare object reference
 			if (objId != 0)
 			{
-				this.objRefIdMap[del] = objId;
+				if (del != null) this.objRefIdMap[del] = objId;
 				this.idObjRefMap[objId] = del;
 			}
 
 			// Read the target object now and replace the dummy
 			target = this.ReadObject();
-			FieldInfo targetField = delType.GetField("_target", ReflectionHelper.BindInstanceAll);
-			targetField.SetValue(del, target);
+			if (del != null)
+			{
+				FieldInfo targetField = delType.GetField("_target", ReflectionHelper.BindInstanceAll);
+				targetField.SetValue(del, target);
+			}
 
 			// Combine multicast delegates
 			if (multi)
 			{
-				Delegate[] invokeList = this.ReadObject() as Delegate[];
-				del = Delegate.Combine(invokeList);
+				Delegate[] invokeList = (this.ReadObject() as Delegate[]).NotNull().ToArray();
+				del = invokeList.Length > 0 ? Delegate.Combine(invokeList) : null;
 			}
 
 			return del;
