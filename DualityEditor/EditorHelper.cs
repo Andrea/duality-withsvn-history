@@ -58,8 +58,6 @@ namespace DualityEditor
 			{
 				if (String.IsNullOrEmpty(srcFilePath))
 					srcFilePath = EditorHelper.GenerateResourceSrcFilePath(r, srcFileExt);
-				else if (!File.Exists(srcFilePath))
-					srcFilePath = null;
 
 				if (srcFilePath != null)
 				{
