@@ -307,7 +307,6 @@ namespace DualityEditor.Forms
 						workInterface.ReloadSched.RemoveAt(0);
 						workInterface.Progress += 0.2f / (float)count;
 					}
-					CorePluginHelper.ResolveTypes();
 					Log.Editor.PopIndent();
 
 					strScene.Seek(0, SeekOrigin.Begin);

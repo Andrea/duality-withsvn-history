@@ -291,6 +291,11 @@ namespace Duality
 			foreach (ContentRef<T> content in GetLoadedContent<T>())
 				UnregisterContent(content.Path, dispose);
 		}
+		public static void UnregisterAllContent(Type t, bool dispose = true)
+		{
+			foreach (IContentRef content in GetLoadedContent(t))
+				UnregisterContent(content.Path, dispose);
+		}
 
 		public static bool RenameContent(string path, string newPath)
 		{
@@ -341,6 +346,15 @@ namespace Duality
 			foreach (var v in resLibrary.Values)
 			{
 				if (v is T && !v.Disposed) allContent.Add((T)v);
+			}
+			return allContent;
+		}
+		public static List<IContentRef> GetLoadedContent(Type t)
+		{
+			List<IContentRef> allContent = new List<IContentRef>();
+			foreach (var v in resLibrary.Values)
+			{
+				if (t.IsAssignableFrom(v.GetType()) && !v.Disposed) allContent.Add(v.GetContentRef());
 			}
 			return allContent;
 		}

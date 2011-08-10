@@ -101,6 +101,12 @@ namespace Duality
 
 		}
 
+		public IContentRef GetContentRef()
+		{
+			Type refType = typeof(ContentRef<>).MakeGenericType(this.GetType());
+			return Activator.CreateInstance(refType, this) as IContentRef;
+		}
+
 		public static T LoadResource<T>(string path) where T : Resource
 		{
 			if (!File.Exists(path)) return null;

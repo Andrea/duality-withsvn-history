@@ -1,12 +1,4 @@
 ﻿
--->	While being at Serialization: !!! FINALLY FIX THAT: !!!
-	-->	Keep in mind: While reloading Core plugins at runtime does work fine in most cases, it might result in
-		undefined behaviour when custom Resource types have been modified, as only Prefabs and the current level
-		are reloaded.
-		-->	Possible solution: Scan the reloaded core plugin for classes deriving from Resource, and clear all
-			Resources matching their Type as well.
-
--->	Tweak the game
 -->	Videoblog / Game Demo release
 
 -->	Editor Skeletton

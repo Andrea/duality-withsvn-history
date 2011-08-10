@@ -105,27 +105,29 @@ namespace DualityEditor
 		public const string ActionContext_ContextMenu	= "ContextMenu";
 		public const string ActionContext_OpenRes		= "OpenRes";
 
-		private	static	Dictionary<Type,List<IResEntry>>	corePluginRes	= new Dictionary<Type,List<IResEntry>>();
+		private	static	Dictionary<string,List<IResEntry>>	corePluginRes	= new Dictionary<string,List<IResEntry>>();
 
 
 		private static void RegisterCorePluginRes(Type type, IResEntry res)
 		{
 			if (type == null) throw new ArgumentNullException("type");
+			string typeString = ReflectionHelper.GetTypeString(type, ReflectionHelper.TypeStringAttrib.FullNameWithoutAssembly);
 
 			List<IResEntry> resList = null;
-			if (!corePluginRes.TryGetValue(type, out resList))
+			if (!corePluginRes.TryGetValue(typeString, out resList))
 			{
 				resList = new List<IResEntry>();
-				corePluginRes[type] = resList;
+				corePluginRes[typeString] = resList;
 			}
 			if (!resList.Contains(res)) resList.Add(res);
 		}
 		private static T RequestCorePluginRes<T>(Type type, Predicate<T> predicate) where T : IResEntry
 		{
 			if (type == null) return default(T);
+			string typeString = ReflectionHelper.GetTypeString(type, ReflectionHelper.TypeStringAttrib.FullNameWithoutAssembly);
 
 			List<IResEntry> resList = null;
-			if (!corePluginRes.TryGetValue(type, out resList)) return default(T);
+			if (!corePluginRes.TryGetValue(typeString, out resList)) return default(T);
 			foreach (IResEntry res in resList)
 			{
 				if (typeof(T).IsAssignableFrom(res.GetType()))
@@ -139,9 +141,10 @@ namespace DualityEditor
 		private static IEnumerable<T> RequestCorePluginRes<T>(Type type) where T : IResEntry
 		{
 			if (type == null) yield break;
+			string typeString = ReflectionHelper.GetTypeString(type, ReflectionHelper.TypeStringAttrib.FullNameWithoutAssembly);
 
 			List<IResEntry> resList = null;
-			if (!corePluginRes.TryGetValue(type, out resList)) yield break;
+			if (!corePluginRes.TryGetValue(typeString, out resList)) yield break;
 			foreach (IResEntry res in resList)
 			{
 				if (typeof(T).IsAssignableFrom(res.GetType()))
@@ -153,34 +156,6 @@ namespace DualityEditor
 			yield break;
 		}
 
-
-		public static void ResolveTypes()
-		{
-			var typeNames = corePluginRes.Keys.Select(t => ReflectionHelper.GetTypeString(t, ReflectionHelper.TypeStringAttrib.FullNameWithoutAssembly)).ToList();
-			var values = corePluginRes.Values.ToList();
-			List<Type> types = new List<Type>(typeNames.Count);
-
-			for (int i = 0; i < typeNames.Count; i++)
-			{
-				Type t = ReflectionHelper.ResolveType(typeNames[i], false);
-				if (t == null)
-				{
-					typeNames.RemoveAt(i);
-					values.RemoveAt(i);
-					i--;
-				}
-				else
-				{
-					types.Add(t);
-				}
-			}
-
-			corePluginRes.Clear();
-			for (int i = 0; i < types.Count; i++)
-			{
-				corePluginRes[types[i]] = values[i];
-			}
-		}
 
 		public static void RegisterTypeImage(Type type, Image image, string context)
 		{

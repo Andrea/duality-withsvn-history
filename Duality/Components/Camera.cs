@@ -308,9 +308,9 @@ namespace Duality.Components
 		[NonSerialized]	private	RenderTarget		pickingRT		= null;
 		[NonSerialized]	private	Texture				pickingTex		= null;
 		[NonSerialized]	private	int					pickingLast		= -1;
-		private	byte[]				pickingBuffer	= new byte[4 * 256 * 256];
-		private	List<IDrawBatch>	drawBuffer		= new List<IDrawBatch>();
-		private	List<IDrawBatch>	drawBufferZSort	= new List<IDrawBatch>();
+		[NonSerialized]	private	byte[]				pickingBuffer	= new byte[4 * 256 * 256];
+		[NonSerialized]	private	List<IDrawBatch>	drawBuffer		= new List<IDrawBatch>();
+		[NonSerialized]	private	List<IDrawBatch>	drawBufferZSort	= new List<IDrawBatch>();
 
 		public Rect Viewport
 		{

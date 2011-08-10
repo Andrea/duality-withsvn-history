@@ -28,37 +28,6 @@ namespace Duality
 			Editor
 		}
 
-		public class PluginSerializationBinder : System.Runtime.Serialization.SerializationBinder
-		{
-			public override Type BindToType(string assemblyName, string typeName)
-			{
-				Type result = null;
-
-				// Is it a plugin assembly? Use a Type from there
-				int colonIndex = assemblyName.IndexOfAny(new char[] {','});
-				string assemblyNameStub = (colonIndex >= 0 ? assemblyName.Substring(0, colonIndex) : assemblyName);
-				Assembly plugin;
-				if (DualityApp.plugins.TryGetValue(assemblyNameStub, out plugin))
-				{
-					result = plugin.GetType(typeName);
-				}
-
-				// No result yet? Use global search
-				if (result == null)
-				{
-					result = Type.GetType(typeName + ", " + assemblyName);					
-				}
-
-				// Still no type? Log as error
-				if (result == null)
-				{
-					Log.Core.WriteError("Can't bind type name '{0}' to Type. Assembly: '{1}'", typeName, assemblyName);
-				}
-
-				return result;
-			}
-		}
-
 		private	static	bool					initialized			= false;
 		private	static	bool					isUpdating			= false;
 		private	static	bool					runFromEditor		= false;
@@ -80,7 +49,6 @@ namespace Duality
 		private	static	DualityMetaData			metaData			= null;
 		private	static	List<object>			disposeSchedule		= new List<object>();
 
-		private	static	PluginSerializationBinder	pluginTypeBinder	= new PluginSerializationBinder();
 		private	static	Dictionary<string,Assembly>	plugins				= new Dictionary<string,Assembly>();
 		private	static	List<Assembly>				disposedPlugins		= new List<Assembly>();
 		private static	Dictionary<Type,List<Type>>	availTypeDict		= new Dictionary<Type,List<Type>>();
@@ -175,10 +143,6 @@ namespace Duality
 		public static ExecutionContext ExecContext
 		{
 			get { return execContext; }
-		}
-		public static PluginSerializationBinder PluginTypeBinder
-		{
-			get { return pluginTypeBinder; }
 		}
 		public static IEnumerable<Assembly> LoadedPlugins
 		{
@@ -492,8 +456,15 @@ namespace Duality
 			// If we're overwritin an old plugin here, add the old version to the "disposed" blacklist
 			string asmName = pluginAssembly.FullName.Split(',')[0];
 			Assembly oldAssembly = null;
+			Type[] oldResTypes = new Type[0];
 			if (plugins.TryGetValue(asmName, out oldAssembly))
+			{
+				oldResTypes = (
+					from t in oldAssembly.GetExportedTypes()
+					where typeof(Resource).IsAssignableFrom(t)
+					select t).ToArray();
 				disposedPlugins.Add(oldAssembly);
+			}
 
 			// Register newly loaded plugin
 			plugins[asmName] = pluginAssembly;
@@ -501,6 +472,7 @@ namespace Duality
 			
 			Log.Core.PopIndent();
 			ReflectionHelper.ClearTypeCache();
+			foreach (Type oldResType in oldResTypes) ContentProvider.UnregisterAllContent(oldResType);
 		}
 		public static bool IsLeafPlugin(string pluginFileName)
 		{
