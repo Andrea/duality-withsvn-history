@@ -30,7 +30,7 @@ namespace ResourceHacker
 		}
 		public RenameTypeDialog(IEnumerable<string> availTypes) : this()
 		{
-			this.availTypes = availTypes.OrderBy(s => s.Length).ToArray();
+			this.availTypes = availTypes.OrderBy(s => s).ToArray();
 			this.UpdateSearchBox();
 		}
 

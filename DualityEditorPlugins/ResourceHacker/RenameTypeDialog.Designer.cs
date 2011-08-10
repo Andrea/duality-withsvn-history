@@ -71,7 +71,8 @@
 			// comboBoxSearchFor
 			// 
 			resources.ApplyResources(this.comboBoxSearchFor, "comboBoxSearchFor");
-			this.comboBoxSearchFor.FormattingEnabled = true;
+			this.comboBoxSearchFor.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+			this.comboBoxSearchFor.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
 			this.comboBoxSearchFor.Name = "comboBoxSearchFor";
 			this.comboBoxSearchFor.TextChanged += new System.EventHandler(this.comboBoxSearchFor_TextChanged);
 			// 
