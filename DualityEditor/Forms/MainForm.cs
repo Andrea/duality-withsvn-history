@@ -299,7 +299,7 @@ namespace DualityEditor.Forms
 					}
 					catch (Exception e)
 					{
-						Log.Editor.WriteError("Error loading plugin '{0}'. Exception: {1}", pluginDllPaths[i], e);
+						Log.Editor.WriteError("Error loading plugin '{0}'. Exception: {1}", pluginDllPaths[i], Log.Exception(e));
 					}
 					Log.Editor.PopIndent();
 				}
@@ -531,7 +531,7 @@ namespace DualityEditor.Forms
 				}
 				catch (System.Xml.XmlException e)
 				{
-					Log.Editor.WriteError("Cannot load DockPanel data due to malformed or non-existent Xml: {0}", e);
+					Log.Editor.WriteError("Cannot load DockPanel data due to malformed or non-existent Xml: {0}", Log.Exception(e));
 				}
 				Log.Editor.PopIndent();
 
@@ -560,7 +560,7 @@ namespace DualityEditor.Forms
 				}
 				catch (System.Xml.XmlException e)
 				{
-					Log.Editor.WriteError("Cannot load plugin user data due to malformed or non-existent Xml: {0}", e);
+					Log.Editor.WriteError("Cannot load plugin user data due to malformed or non-existent Xml: {0}", Log.Exception(e));
 				}
 				Log.Editor.PopIndent();
 				// -----------------------------------------------------

@@ -155,7 +155,7 @@ namespace DualityEditor.Forms
 			this.owner.MainContextControl.Context.MakeCurrent(null);
 
 			this.progressTimer.Start();
-			this.Owner.SetTaskbarOverlayIcon(GeneralRes.Icon_Cog, GeneralRes.TaskBarOverlay_ReloadCorePlugin_Desc);
+			this.owner.SetTaskbarOverlayIcon(GeneralRes.Icon_Cog, GeneralRes.TaskBarOverlay_ReloadCorePlugin_Desc);
 
 			this.workerInterface = new WorkerInterface();
 			this.workerInterface.MainForm = this.owner;
@@ -174,9 +174,9 @@ namespace DualityEditor.Forms
 			base.OnClosed(e);
 			if (this.workerInterface.Shutdown) return;
 
-			this.Owner.SetTaskbarProgress(0.0f);
-			this.Owner.SetTaskbarProgressState(Windows7Taskbar.ThumbnailProgressState.NoProgress);
-			this.Owner.SetTaskbarOverlayIcon(null, null);
+			this.owner.SetTaskbarProgress(0.0f);
+			this.owner.SetTaskbarProgressState(Windows7Taskbar.ThumbnailProgressState.NoProgress);
+			this.owner.SetTaskbarOverlayIcon(null, null);
 			this.reloadSchedule.Clear();
 
 			this.owner.MainContextControl.MakeCurrent();
@@ -197,16 +197,16 @@ namespace DualityEditor.Forms
 			else if (this.state == ReloaderState.ReloadPlugins)
 			{
 				this.progressBar.Value = (int)Math.Round(this.workerInterface.Progress * 100.0f);
-				this.Owner.SetTaskbarProgressState(Windows7Taskbar.ThumbnailProgressState.Normal);
-				this.Owner.SetTaskbarProgress(this.progressBar.Value);
+				this.owner.SetTaskbarProgressState(Windows7Taskbar.ThumbnailProgressState.Normal);
+				this.owner.SetTaskbarProgress(this.progressBar.Value);
 
 				if (this.workerInterface.Error != null)
 				{
 					this.progressTimer.Stop();
 
-					this.Owner.SetTaskbarProgressState(Windows7Taskbar.ThumbnailProgressState.Error);
+					this.owner.SetTaskbarProgressState(Windows7Taskbar.ThumbnailProgressState.Error);
 					MessageBox.Show(this, 
-						String.Format(GeneralRes.Msg_ErrorReloadCorePlugin_Desc, "\n", this.workerInterface.Error.ToString()), 
+						String.Format(GeneralRes.Msg_ErrorReloadCorePlugin_Desc, "\n", Log.Exception(this.workerInterface.Error)), 
 						GeneralRes.Msg_ErrorReloadCorePlugin_Caption, 
 						MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -233,12 +233,12 @@ namespace DualityEditor.Forms
 			{
 				if (fullRestart)
 				{
-					Log.Editor.WriteError(e.ToString());
+					Log.Editor.WriteError(Log.Exception(e));
 					workInterface.Error = e;
 				}
 				else
 				{
-					Log.Editor.WriteError("Failed reloading plugins on the fly: {0}", e.ToString());
+					Log.Editor.WriteError("Failed reloading plugins on the fly: {0}", Log.Exception(e));
 					Log.Editor.Write("Trying full restart...");
 
 					// If we failed before but it wasn't a full restart, let's try this.
@@ -246,7 +246,7 @@ namespace DualityEditor.Forms
 					try { PerformPluginReload(ref workInterface, ref fullRestart); }
 					catch (Exception e2)
 					{
-						Log.Editor.WriteError(e.ToString());
+						Log.Editor.WriteError(Log.Exception(e2));
 						workInterface.Error = e2;
 					}
 				}

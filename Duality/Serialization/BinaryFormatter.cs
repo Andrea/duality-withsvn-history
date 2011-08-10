@@ -96,7 +96,7 @@ namespace Duality.Serialization
 
 			if (!objSerializeType.Type.IsSerializable && !typeof(ISerializable).IsAssignableFrom(objSerializeType.Type) && this.GetSurrogateFor(objSerializeType.Type) == null) 
 				this.log.WriteWarning("Serializing object of Type '{0}' which isn't [Serializable]", 
-				ReflectionHelper.GetTypeString(objSerializeType.Type, ReflectionHelper.TypeStringAttrib.CSCodeIdentShort));
+				ReflectionHelper.GetTypeName(objSerializeType.Type, TypeNameFormat.CSCodeIdentShort));
 		}
 		protected override void WriteObjectBody(DataType dataType, object obj, SerializeType objSerializeType, uint objId)
 		{
@@ -270,7 +270,7 @@ namespace Duality.Serialization
 					object val = field.GetValue(obj);
 
 					if (val != null && this.IsFieldBlocked(field))
-						val = ReflectionHelper.GetDefaultOf(field.FieldType);
+						val = ReflectionHelper.GetDefaultInstanceOf(field.FieldType);
 
 					this.WriteObject(val);
 				}
@@ -425,7 +425,7 @@ namespace Duality.Serialization
 					this.log.WriteWarning(
 						"Object data (Id {0}) is flagged for custom deserialization, yet the objects Type ('{1}') does not support it. Guessing associated fields...",
 						objId,
-						ReflectionHelper.GetTypeString(objType, ReflectionHelper.TypeStringAttrib.CSCodeIdentShort));
+						ReflectionHelper.GetTypeName(objType, TypeNameFormat.CSCodeIdentShort));
 					this.log.PushIndent();
 					foreach (var pair in customIO.Values)
 					{
@@ -437,8 +437,8 @@ namespace Duality.Serialization
 						else if (field.FieldType.IsAssignableFrom(pair.Value.GetType()))
 						{
 							this.log.WriteWarning("Match '{0}' differs in FieldType: '{1}', but required '{2}", pair.Key, 
-								ReflectionHelper.GetTypeString(field.FieldType, ReflectionHelper.TypeStringAttrib.CSCodeIdentShort), 
-								ReflectionHelper.GetTypeString(pair.Value.GetType(), ReflectionHelper.TypeStringAttrib.CSCodeIdentShort));
+								ReflectionHelper.GetTypeName(field.FieldType, TypeNameFormat.CSCodeIdentShort), 
+								ReflectionHelper.GetTypeName(pair.Value.GetType(), TypeNameFormat.CSCodeIdentShort));
 						}
 						else
 						{
@@ -479,7 +479,7 @@ namespace Duality.Serialization
 			object obj;
 			uint objId = this.reader.ReadUInt32();
 
-			if (!this.idObjRefMap.TryGetValue(objId, out obj)) throw new ApplicationException(string.Format("Cannot resolve object reference '{0}'.", objId));
+			if (!this.idObjRefMap.TryGetValue(objId, out obj)) throw new ApplicationException(string.Format("Can't resolve object reference '{0}'.", objId));
 
 			return obj;
 		}

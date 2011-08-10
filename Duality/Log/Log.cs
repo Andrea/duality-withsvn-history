@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Reflection;
 
 namespace Duality
 {
@@ -150,22 +151,88 @@ namespace Duality
 			}
 		}
 
-		public static System.Diagnostics.StackFrame StackFrame(int skipFrames = 0)
+		public static System.Diagnostics.StackFrame CurrentStackFrame(int skipFrames = 0)
 		{
 			return new System.Diagnostics.StackTrace(skipFrames + 1).GetFrame(0);
 		}
-		public static string MethodName(int skipFrames = 0)
+		public static string CurrentMethod(int skipFrames = 0, bool includeDeclaringType = true)
 		{
-			return StackFrame(skipFrames + 1).GetMethod().Name;
+			return MethodInfo(CurrentStackFrame(skipFrames + 1).GetMethod(), includeDeclaringType);
 		}
-		public static string MethodAndTypeName(int skipFrames = 0)
+		public static string CurrentType(int skipFrames = 0)
 		{
-			System.Reflection.MethodBase m = StackFrame(skipFrames + 1).GetMethod();
-			return m.Name + " from type " + m.DeclaringType.Name;
+			return Type(CurrentStackFrame(skipFrames + 1).GetMethod().DeclaringType);
 		}
-		public static string TypeName(int skipFrames = 0)
+
+		public static string Type(Type type)
 		{
-			return StackFrame(skipFrames + 1).GetMethod().DeclaringType.Name;
+			return type.GetTypeName(TypeNameFormat.CSCodeIdentShort);
+		}
+		public static string MethodInfo(MethodBase info, bool includeDeclaringType = true)
+		{
+			string declTypeName = Type(info.DeclaringType);
+			string[] paramNames = info.GetParameters().Select(p => Type(p.ParameterType)).ToArray();
+			return string.Format("{0}{1}({2})",
+				includeDeclaringType ? declTypeName + "." : "",
+				info.Name,
+				paramNames.ToString(", "));
+		}
+		public static string PropertyInfo(PropertyInfo info, bool includeDeclaringType = true)
+		{
+			string declTypeName = Type(info.DeclaringType);
+			string propTypeName = Type(info.PropertyType);
+			string[] paramNames = info.GetIndexParameters().Select(p => Type(p.ParameterType)).ToArray();
+			return string.Format("{0} {1}{2}{3}",
+				propTypeName,
+				includeDeclaringType ? declTypeName + "." : "",
+				info.Name,
+				paramNames.Any() ? "[" + paramNames.ToString(", ") + "]" : "");
+		}
+		public static string FieldInfo(FieldInfo info, bool includeDeclaringType = true)
+		{
+			string declTypeName = Type(info.DeclaringType);
+			string fieldTypeName = Type(info.FieldType);
+			return string.Format("{0} {1}{2}",
+				fieldTypeName,
+				includeDeclaringType ? declTypeName + "." : "",
+				info.Name);
+		}
+		public static string EventInfo(EventInfo info, bool includeDeclaringType = true)
+		{
+			string declTypeName = Type(info.DeclaringType);
+			string fieldTypeName = Type(info.EventHandlerType);
+			return string.Format("{0} {1}{2}",
+				fieldTypeName,
+				includeDeclaringType ? declTypeName + "." : "",
+				info.Name);
+		}
+		public static string MemberInfo(MemberInfo info, bool includeDeclaringType = true)
+		{
+			if (info is MethodBase)
+				return MethodInfo(info as MethodBase, includeDeclaringType);
+			else if (info is PropertyInfo)
+				return PropertyInfo(info as PropertyInfo, includeDeclaringType);
+			else if (info is FieldInfo)
+				return FieldInfo(info as FieldInfo, includeDeclaringType);
+			else if (info is EventInfo)
+				return EventInfo(info as EventInfo, includeDeclaringType);
+			else if (info is Type)
+				return Type(info as Type);
+			else
+				return info.ToString();
+		}
+		
+		public static string Exception(Exception e)
+		{
+			if (e == null) return null;
+
+			string eName = Type(e.GetType());
+			string eSite = e.TargetSite != null ? MemberInfo(e.TargetSite) : null;
+
+			return string.Format("{0}{1}: {2}",
+				eName,
+				eSite != null ? " at " + eSite : "",
+				e.Message);
 		}
 	}
 

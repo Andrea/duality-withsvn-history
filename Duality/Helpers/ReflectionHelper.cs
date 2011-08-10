@@ -33,7 +33,7 @@ namespace Duality
 			return asm.GetManifestResourceStream(resName);
 		}
 
-		public static object CreateInstanceOf(Type instanceType, bool noConstructor = false)
+		public static object CreateInstanceOf(this Type instanceType, bool noConstructor = false)
 		{
 			try
 			{
@@ -51,7 +51,7 @@ namespace Duality
 				return null;
 			}
 		}
-		public static object GetDefaultOf(Type instanceType)
+		public static object GetDefaultInstanceOf(this Type instanceType)
 		{
 			if (instanceType.IsValueType)
 				return Activator.CreateInstance(instanceType, true);
@@ -94,7 +94,7 @@ namespace Duality
 			}
 			return true;
 		}
-		public static int GetTypeHierarchyLevel(Type t)
+		public static int GetTypeHierarchyLevel(this Type t)
 		{
 			int level = 0;
 			while (t.BaseType != null) { t = t.BaseType; level++; }
@@ -106,7 +106,7 @@ namespace Duality
 		/// </summary>
 		/// <param name="flags"></param>
 		/// <returns></returns>
-		public static FieldInfo[] GetAllFields(Type type, BindingFlags flags)
+		public static FieldInfo[] GetAllFields(this Type type, BindingFlags flags)
 		{
 			List<FieldInfo> result = new List<FieldInfo>();
 			do
@@ -131,10 +131,10 @@ namespace Duality
 			result = ReflectionHelper.FindTypeByFullNameWithoutAssembly(typeString, searchAsm);
 			if (result != null) typeResolveCache[typeString] = result;
 
-			if (result == null && throwOnError) throw new ApplicationException(string.Format("Cannot resolve Type '{0}'. Type not found", typeString));
+			if (result == null && throwOnError) throw new ApplicationException(string.Format("Can't resolve Type '{0}'. Type not found", typeString));
 			return result;
 		}
-		public static SerializeType GetSerializeType(Type t)
+		public static SerializeType GetSerializeType(this Type t)
 		{
 			SerializeType result;
 			if (typeCache.TryGetValue(t, out result)) return result;
@@ -144,7 +144,7 @@ namespace Duality
 			typeResolveCache[result.TypeString] = result.Type;
 			return result;
 		}
-		public static DataType GetDataType(Type t)
+		public static DataType GetDataType(this Type t)
 		{
 			if (t.IsEnum)
 				return DataType.Enum;
@@ -193,52 +193,28 @@ namespace Duality
 		}
 
 		/// <summary>
-		/// A configuration enum for GetTypeString
-		/// </summary>
-		public enum TypeStringAttrib
-		{
-			/// <summary>
-			/// The method will return a type keyword, its "short" name. Just the types "base", no generic
-			/// type parameters or array specifications.
-			/// </summary>
-			Keyword,
-			/// <summary>
-			/// Exactly the same as a Types FullName, but without any Assembly names, versions, keys, etc.
-			/// </summary>
-			FullNameWithoutAssembly,
-			/// <summary>
-			/// A type name / definition as you would see it in normal C# code. Complete with generic parameters
-			/// or possible array specifications.
-			/// </summary>
-			CSCodeIdent,
-			/// <summary>
-			/// As CSCodeIdent, but shortened to Keywords
-			/// </summary>
-			CSCodeIdentShort
-		}
-		/// <summary>
 		/// Returns a string describing a certain Type.
 		/// </summary>
 		/// <param name="T">The Type to describe</param>
 		/// <param name="attrib">How to describe the Type</param>
 		/// <returns></returns>
-		public static string GetTypeString(Type T, TypeStringAttrib attrib)
+		public static string GetTypeName(this Type T, TypeNameFormat attrib)
 		{
-			if (attrib == TypeStringAttrib.Keyword)
+			if (attrib == TypeNameFormat.Keyword)
 			{
 				return T.Name.Split(new char[] {'`'}, StringSplitOptions.RemoveEmptyEntries)[0].Replace('+', '.');
 			}
-			else if (attrib == TypeStringAttrib.FullNameWithoutAssembly)
+			else if (attrib == TypeNameFormat.FullNameWithoutAssembly)
 			{
 				return Regex.Replace(T.FullName, @"(, [^\]\[]*)", "");
 			}
-			else if (attrib == TypeStringAttrib.CSCodeIdent || attrib == TypeStringAttrib.CSCodeIdentShort)
+			else if (attrib == TypeNameFormat.CSCodeIdent || attrib == TypeNameFormat.CSCodeIdentShort)
 			{
 				StringBuilder typeStr = new StringBuilder();
 
 				if (T.IsArray)
 				{
-					typeStr.Append(GetTypeString(T.GetElementType(), attrib));
+					typeStr.Append(GetTypeName(T.GetElementType(), attrib));
 					typeStr.Append('[');
 					typeStr.Append(',', T.GetArrayRank() - 1);
 					typeStr.Append(']');
@@ -256,9 +232,9 @@ namespace Duality
 							declType = declType.MakeGenericType(genArgs);
 							genArgs = T.GetGenericArguments().Skip(genArgs.Length).ToArray();
 						}
-						string parentName = GetTypeString(declType, attrib);
+						string parentName = GetTypeName(declType, attrib);
 
-						string[] nestedNameToken = attrib == TypeStringAttrib.CSCodeIdentShort ? T.Name.Split('+') : T.FullName.Split('+');
+						string[] nestedNameToken = attrib == TypeNameFormat.CSCodeIdentShort ? T.Name.Split('+') : T.FullName.Split('+');
 						string nestedName = nestedNameToken[nestedNameToken.Length - 1];
 						
 						int genTypeSepIndex = nestedName.IndexOf("[[");
@@ -272,7 +248,7 @@ namespace Duality
 					}
 					else
 					{
-						if (attrib == TypeStringAttrib.CSCodeIdentShort)
+						if (attrib == TypeNameFormat.CSCodeIdentShort)
 							typeStr.Append(T.Name.Split(new char[] {'`'}, StringSplitOptions.RemoveEmptyEntries)[0].Replace('+', '.'));
 						else
 							typeStr.Append(T.FullName.Split(new char[] {'`'}, StringSplitOptions.RemoveEmptyEntries)[0].Replace('+', '.'));
@@ -291,7 +267,7 @@ namespace Duality
 							typeStr.Append('<');
 							for (int i = 0; i < genArgs.Length; i++)
 							{
-								typeStr.Append(GetTypeString(genArgs[i], attrib));
+								typeStr.Append(GetTypeName(genArgs[i], attrib));
 								if (i < genArgs.Length - 1)
 									typeStr.Append(',');
 							}
@@ -305,11 +281,22 @@ namespace Duality
 			return null;
 		}
 		/// <summary>
-		/// Searches a specific type (specified as would be valid in C# code) in an array of Assemblies.
-		/// Generates the type if neccessary (generic). Also supports generic types combined using types 
-		/// from different Assemblies.
+		/// Retrieves a Type based on the specified TypeNameFormat
 		/// </summary>
-		public static Type FindTypeByCSCodeIdent(string csCodeType, Assembly[] asmSearch, Type declaringType = null)
+		/// <param name="typeName"></param>
+		/// <param name="asmSearch"></param>
+		/// <param name="format"></param>
+		/// <returns></returns>
+		public static Type FindType(string typeName, Assembly[] asmSearch, TypeNameFormat format = TypeNameFormat.FullNameWithoutAssembly)
+		{
+			if (format == TypeNameFormat.CSCodeIdent)
+				return FindTypeByCSCodeIdent(typeName, asmSearch);
+			else if (format == TypeNameFormat.FullNameWithoutAssembly)
+				return FindTypeByFullNameWithoutAssembly(typeName, asmSearch);
+			else
+				throw new NotImplementedException("TypeNameFormat " + format.ToString() + " is not supported.");
+		}
+		private static Type FindTypeByCSCodeIdent(string csCodeType, Assembly[] asmSearch, Type declaringType = null)
 		{
 			csCodeType = csCodeType.Trim();
 			
@@ -405,12 +392,7 @@ namespace Duality
 
 			return null;
 		}
-		/// <summary>
-		/// Searches a specific type (specified using FullNameWithoutAssembly) in an array of Assemblies.
-		/// Generates the type if neccessary (generic). Also supports generic types combined using types 
-		/// from different Assemblies.
-		/// </summary>
-		public static Type FindTypeByFullNameWithoutAssembly(string typeName, Assembly[] asmSearch)
+		private static Type FindTypeByFullNameWithoutAssembly(string typeName, Assembly[] asmSearch)
 		{
 			typeName = typeName.Trim();
 
@@ -469,5 +451,30 @@ namespace Duality
 
 			return baseType;
 		}
+	}
+
+	/// <summary>
+	/// An enumeration of possible formats in which Type data can be displayed in a string.
+	/// </summary>
+	public enum TypeNameFormat
+	{
+		/// <summary>
+		/// The method will return a type keyword, its "short" name. Just the types "base", no generic
+		/// type parameters or array specifications.
+		/// </summary>
+		Keyword,
+		/// <summary>
+		/// Exactly the same as a Types FullName, but without any Assembly names, versions, keys, etc.
+		/// </summary>
+		FullNameWithoutAssembly,
+		/// <summary>
+		/// A type name / definition as you would see it in normal C# code. Complete with generic parameters
+		/// or possible array specifications.
+		/// </summary>
+		CSCodeIdent,
+		/// <summary>
+		/// As CSCodeIdent, but shortened to Keywords
+		/// </summary>
+		CSCodeIdentShort
 	}
 }

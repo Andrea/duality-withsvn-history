@@ -134,7 +134,7 @@ namespace Duality
 			catch (System.Runtime.Serialization.SerializationException)
 			{
 				Log.Core.WriteError("Can't load {0} from Stream '{1}'",
-					ReflectionHelper.GetTypeString(typeof(T), ReflectionHelper.TypeStringAttrib.CSCodeIdentShort),
+					ReflectionHelper.GetTypeName(typeof(T), TypeNameFormat.CSCodeIdentShort),
 					(str is FileStream) ? (str as FileStream).Name : str.ToString());
 			}
 			return newContent;

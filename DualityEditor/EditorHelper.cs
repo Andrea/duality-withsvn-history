@@ -94,7 +94,7 @@ namespace DualityEditor
 
 			StringBuilder fileContent = new StringBuilder();
 			Type resType = Resource.GetTypeByFileName(filePath);
-			string typeStr = ReflectionHelper.GetTypeString(resType, ReflectionHelper.TypeStringAttrib.CSCodeIdent);
+			string typeStr = ReflectionHelper.GetTypeName(resType, TypeNameFormat.CSCodeIdent);
 			string indentStr = new string('\t', indent);
 			propName = GenerateGameResSrcFile_ClassName(filePath);
 

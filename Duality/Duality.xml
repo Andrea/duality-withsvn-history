@@ -215,7 +215,7 @@
             <param name="flags"></param>
             <returns></returns>
         </member>
-        <member name="M:Duality.ReflectionHelper.GetTypeString(System.Type,Duality.ReflectionHelper.TypeStringAttrib)">
+        <member name="M:Duality.ReflectionHelper.GetTypeName(System.Type,Duality.TypeNameFormat)">
             <summary>
             Returns a string describing a certain Type.
             </summary>
@@ -223,43 +223,38 @@
             <param name="attrib">How to describe the Type</param>
             <returns></returns>
         </member>
-        <member name="M:Duality.ReflectionHelper.FindTypeByCSCodeIdent(System.String,System.Reflection.Assembly[],System.Type)">
+        <member name="M:Duality.ReflectionHelper.FindType(System.String,System.Reflection.Assembly[],Duality.TypeNameFormat)">
             <summary>
-            Searches a specific type (specified as would be valid in C# code) in an array of Assemblies.
-            Generates the type if neccessary (generic). Also supports generic types combined using types 
-            from different Assemblies.
+            Retrieves a Type based on the specified TypeNameFormat
+            </summary>
+            <param name="typeName"></param>
+            <param name="asmSearch"></param>
+            <param name="format"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Duality.TypeNameFormat">
+            <summary>
+            An enumeration of possible formats in which Type data can be displayed in a string.
             </summary>
         </member>
-        <member name="M:Duality.ReflectionHelper.FindTypeByFullNameWithoutAssembly(System.String,System.Reflection.Assembly[])">
-            <summary>
-            Searches a specific type (specified using FullNameWithoutAssembly) in an array of Assemblies.
-            Generates the type if neccessary (generic). Also supports generic types combined using types 
-            from different Assemblies.
-            </summary>
-        </member>
-        <member name="T:Duality.ReflectionHelper.TypeStringAttrib">
-            <summary>
-            A configuration enum for GetTypeString
-            </summary>
-        </member>
-        <member name="F:Duality.ReflectionHelper.TypeStringAttrib.Keyword">
+        <member name="F:Duality.TypeNameFormat.Keyword">
             <summary>
             The method will return a type keyword, its "short" name. Just the types "base", no generic
             type parameters or array specifications.
             </summary>
         </member>
-        <member name="F:Duality.ReflectionHelper.TypeStringAttrib.FullNameWithoutAssembly">
+        <member name="F:Duality.TypeNameFormat.FullNameWithoutAssembly">
             <summary>
             Exactly the same as a Types FullName, but without any Assembly names, versions, keys, etc.
             </summary>
         </member>
-        <member name="F:Duality.ReflectionHelper.TypeStringAttrib.CSCodeIdent">
+        <member name="F:Duality.TypeNameFormat.CSCodeIdent">
             <summary>
             A type name / definition as you would see it in normal C# code. Complete with generic parameters
             or possible array specifications.
             </summary>
         </member>
-        <member name="F:Duality.ReflectionHelper.TypeStringAttrib.CSCodeIdentShort">
+        <member name="F:Duality.TypeNameFormat.CSCodeIdentShort">
             <summary>
             As CSCodeIdent, but shortened to Keywords
             </summary>

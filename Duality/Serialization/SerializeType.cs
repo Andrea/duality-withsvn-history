@@ -34,7 +34,7 @@ namespace Duality.Serialization
 		{
 			this.type = t;
 			this.fields = ReflectionHelper.GetAllFields(this.type, ReflectionHelper.BindInstanceAll).Where(f => !f.IsNotSerialized).ToArray();
-			this.typeString = ReflectionHelper.GetTypeString(this.type, ReflectionHelper.TypeStringAttrib.FullNameWithoutAssembly);
+			this.typeString = ReflectionHelper.GetTypeName(this.type, TypeNameFormat.FullNameWithoutAssembly);
 			this.dataType = ReflectionHelper.GetDataType(this.type);
 		}
 	}

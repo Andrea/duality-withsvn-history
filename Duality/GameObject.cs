@@ -480,6 +480,12 @@ namespace Duality
 		
 		internal void OnLoaded(bool deep = false)
 		{
+			// Sanitary check in case something failed deserializing
+			for (int i = this.compList.Count - 1;  i >= 0; i--)
+				if (this.compList[i] == null) this.compList.RemoveAt(i);
+			foreach (Type key in this.compMap.Keys.ToArray())
+				if (this.compMap[key] == null) this.compMap.Remove(key);
+
 			// Notify Components
 			for (int i = 0; i < this.compList.Count; i++)
 			{

@@ -263,7 +263,7 @@ namespace Duality
 					Log.Core.WriteError(
 						"Internal OpenAL error, code {0} at {1}", 
 						error,
-						Log.MethodAndTypeName(1));
+						Log.CurrentMethod(1));
 				}
 				found = true;
 			}

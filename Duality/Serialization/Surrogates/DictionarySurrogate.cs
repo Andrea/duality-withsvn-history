@@ -48,7 +48,11 @@ namespace Duality.Serialization.Surrogates
 			reader.ReadValue("values", out values);
 
 			dict.Clear();
-			for (int i = 0; i < keys.Length; i++) dict.Add(keys[i], values[i]);
+			for (int i = 0; i < keys.Length; i++)
+			{
+				if (keys[i] == null) continue;
+				dict.Add(keys[i], values[i]);
+			}
 		}
 	}
 }

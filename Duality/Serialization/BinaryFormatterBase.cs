@@ -217,7 +217,10 @@ namespace Duality.Serialization
 				// If anything goes wrong, assure the stream position is valid and points to the next data entry
 				this.reader.BaseStream.Seek(lastPos + offset, SeekOrigin.Begin);
 				// Log the error
-				this.log.WriteError("Error reading object at '{0:X8}'-'{1:X8}':\n{2}", lastPos, lastPos + offset, e.ToString());
+				this.log.WriteError("Error reading object at '{0:X8}'-'{1:X8}': {2}", 
+					lastPos,
+					lastPos + offset, 
+					e is ApplicationException ? e.Message : Log.Exception(e));
 			}
 
 			return result ?? this.GetNullObject();
@@ -274,13 +277,13 @@ namespace Duality.Serialization
 				{
 					// If anything goes wrong, assure the stream position is valid and points to the next data entry
 					this.reader.BaseStream.Seek(lastPos + offset, SeekOrigin.Begin);
-					this.log.WriteError("Error reading header at '{0:X8}'-'{1:X8}':\n{2}", lastPos, lastPos + offset, e.ToString());
+					this.log.WriteError("Error reading header at '{0:X8}'-'{1:X8}': {2}", lastPos, lastPos + offset, Log.Exception(e));
 				}
 			}
 			catch (Exception e) 
 			{
 				this.reader.BaseStream.Seek(initialPos, SeekOrigin.Begin);
-				this.log.WriteError("Error reading header: {0}", e);
+				this.log.WriteError("Error reading header: {0}", Log.Exception(e));
 			}
 		}
 		protected object ReadPrimitive(DataType dataType)
@@ -615,15 +618,15 @@ namespace Duality.Serialization
 		{
 			this.log.WriteError(
 				"An error occured in custom serialization in '{0}': {1}",
-				ReflectionHelper.GetTypeString(serializeType, ReflectionHelper.TypeStringAttrib.CSCodeIdentShort),
-				e);
+				ReflectionHelper.GetTypeName(serializeType, TypeNameFormat.CSCodeIdentShort),
+				Log.Exception(e));
 		}
 		protected void LogCustomDeserializationError(Type serializeType, Exception e)
 		{
 			this.log.WriteError(
 				"An error occured in custom deserialization in '{0}': {1}",
-				ReflectionHelper.GetTypeString(serializeType, ReflectionHelper.TypeStringAttrib.CSCodeIdentShort),
-				e);
+				ReflectionHelper.GetTypeName(serializeType, TypeNameFormat.CSCodeIdentShort),
+				Log.Exception(e));
 		}
 	}
 }
