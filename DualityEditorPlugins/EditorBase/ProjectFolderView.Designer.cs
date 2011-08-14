@@ -35,6 +35,7 @@
 			this.toolStripLabelProjectName = new System.Windows.Forms.ToolStripLabel();
 			this.folderView = new Aga.Controls.Tree.TreeViewAdv();
 			this.contextMenuNode = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.toolStripSeparatorCustomActions = new System.Windows.Forms.ToolStripSeparator();
 			this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.folderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
@@ -46,7 +47,6 @@
 			this.renameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparatorShowInExplorer = new System.Windows.Forms.ToolStripSeparator();
 			this.showInExplorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparatorCustomActions = new System.Windows.Forms.ToolStripSeparator();
 			this.nodeStateIcon = new Aga.Controls.Tree.NodeControls.NodeStateIcon();
 			this.nodeTextBoxName = new Aga.Controls.Tree.NodeControls.NodeTextBox();
 			this.timerFlashItem = new System.Windows.Forms.Timer(this.components);
@@ -70,22 +70,27 @@
 			this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButtonWorkDir,
             this.toolStripLabelProjectName});
-			resources.ApplyResources(this.toolStrip, "toolStrip");
+			this.toolStrip.Location = new System.Drawing.Point(0, 0);
 			this.toolStrip.Name = "toolStrip";
+			this.toolStrip.Size = new System.Drawing.Size(206, 25);
+			this.toolStrip.TabIndex = 0;
 			// 
 			// toolStripButtonWorkDir
 			// 
 			this.toolStripButtonWorkDir.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.toolStripButtonWorkDir.Image = global::EditorBase.Properties.Resources.WorkingFolderIcon16;
-			resources.ApplyResources(this.toolStripButtonWorkDir, "toolStripButtonWorkDir");
+			this.toolStripButtonWorkDir.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.toolStripButtonWorkDir.Name = "toolStripButtonWorkDir";
+			this.toolStripButtonWorkDir.Size = new System.Drawing.Size(23, 22);
+			this.toolStripButtonWorkDir.Text = "Open working directory";
 			this.toolStripButtonWorkDir.Click += new System.EventHandler(this.toolStripButtonWorkDir_Click);
 			// 
 			// toolStripLabelProjectName
 			// 
 			this.toolStripLabelProjectName.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
 			this.toolStripLabelProjectName.Name = "toolStripLabelProjectName";
-			resources.ApplyResources(this.toolStripLabelProjectName, "toolStripLabelProjectName");
+			this.toolStripLabelProjectName.Size = new System.Drawing.Size(115, 22);
+			this.toolStripLabelProjectName.Text = "Project: Some Name";
 			// 
 			// folderView
 			// 
@@ -95,15 +100,18 @@
 			this.folderView.ContextMenuStrip = this.contextMenuNode;
 			this.folderView.DefaultToolTipProvider = null;
 			this.folderView.DisplayDraggingNodes = true;
-			resources.ApplyResources(this.folderView, "folderView");
+			this.folderView.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.folderView.DragDropMarkColor = System.Drawing.Color.Black;
 			this.folderView.LineColor = System.Drawing.SystemColors.ControlDark;
+			this.folderView.Location = new System.Drawing.Point(0, 25);
 			this.folderView.Model = null;
 			this.folderView.Name = "folderView";
 			this.folderView.NodeControls.Add(this.nodeStateIcon);
 			this.folderView.NodeControls.Add(this.nodeTextBoxName);
 			this.folderView.SelectedNode = null;
 			this.folderView.SelectionMode = Aga.Controls.Tree.TreeSelectionMode.Multi;
+			this.folderView.Size = new System.Drawing.Size(206, 496);
+			this.folderView.TabIndex = 1;
 			this.folderView.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.folderView_ItemDrag);
 			this.folderView.NodeMouseDoubleClick += new System.EventHandler<Aga.Controls.Tree.TreeNodeAdvMouseEventArgs>(this.folderView_NodeMouseDoubleClick);
 			this.folderView.SelectionChanged += new System.EventHandler(this.folderView_SelectionChanged);
@@ -126,8 +134,13 @@
             this.toolStripSeparatorShowInExplorer,
             this.showInExplorerToolStripMenuItem});
 			this.contextMenuNode.Name = "contextMenuNode";
-			resources.ApplyResources(this.contextMenuNode, "contextMenuNode");
+			this.contextMenuNode.Size = new System.Drawing.Size(162, 198);
 			this.contextMenuNode.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuNode_Opening);
+			// 
+			// toolStripSeparatorCustomActions
+			// 
+			this.toolStripSeparatorCustomActions.Name = "toolStripSeparatorCustomActions";
+			this.toolStripSeparatorCustomActions.Size = new System.Drawing.Size(158, 6);
 			// 
 			// newToolStripMenuItem
 			// 
@@ -135,75 +148,82 @@
             this.folderToolStripMenuItem,
             this.toolStripSeparator4});
 			this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-			resources.ApplyResources(this.newToolStripMenuItem, "newToolStripMenuItem");
+			this.newToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+			this.newToolStripMenuItem.Text = "New";
 			this.newToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.newToolStripMenuItem_DropDownItemClicked);
 			// 
 			// folderToolStripMenuItem
 			// 
 			this.folderToolStripMenuItem.Image = global::EditorBase.Properties.Resources.folder;
 			this.folderToolStripMenuItem.Name = "folderToolStripMenuItem";
-			resources.ApplyResources(this.folderToolStripMenuItem, "folderToolStripMenuItem");
+			this.folderToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+			this.folderToolStripMenuItem.Text = "Folder";
 			this.folderToolStripMenuItem.Click += new System.EventHandler(this.folderToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator4
 			// 
 			this.toolStripSeparator4.Name = "toolStripSeparator4";
-			resources.ApplyResources(this.toolStripSeparator4, "toolStripSeparator4");
+			this.toolStripSeparator4.Size = new System.Drawing.Size(104, 6);
 			// 
 			// toolStripSeparatorNew
 			// 
 			this.toolStripSeparatorNew.Name = "toolStripSeparatorNew";
-			resources.ApplyResources(this.toolStripSeparatorNew, "toolStripSeparatorNew");
+			this.toolStripSeparatorNew.Size = new System.Drawing.Size(158, 6);
 			// 
 			// cutToolStripMenuItem
 			// 
 			this.cutToolStripMenuItem.Image = global::EditorBase.Properties.Resources.cut;
 			this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
-			resources.ApplyResources(this.cutToolStripMenuItem, "cutToolStripMenuItem");
+			this.cutToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
+			this.cutToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+			this.cutToolStripMenuItem.Text = "Cut";
 			this.cutToolStripMenuItem.Click += new System.EventHandler(this.cutToolStripMenuItem_Click);
 			// 
 			// copyToolStripMenuItem
 			// 
 			this.copyToolStripMenuItem.Image = global::EditorBase.Properties.Resources.page_copy;
 			this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-			resources.ApplyResources(this.copyToolStripMenuItem, "copyToolStripMenuItem");
+			this.copyToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+			this.copyToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+			this.copyToolStripMenuItem.Text = "Copy";
 			this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
 			// 
 			// pasteToolStripMenuItem
 			// 
 			this.pasteToolStripMenuItem.Image = global::EditorBase.Properties.Resources.page_paste;
 			this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
-			resources.ApplyResources(this.pasteToolStripMenuItem, "pasteToolStripMenuItem");
+			this.pasteToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
+			this.pasteToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+			this.pasteToolStripMenuItem.Text = "Paste";
 			this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
 			// 
 			// deleteToolStripMenuItem
 			// 
 			this.deleteToolStripMenuItem.Image = global::EditorBase.Properties.Resources.cross;
 			this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-			resources.ApplyResources(this.deleteToolStripMenuItem, "deleteToolStripMenuItem");
+			this.deleteToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Delete;
+			this.deleteToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+			this.deleteToolStripMenuItem.Text = "Delete";
 			this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
 			// 
 			// renameToolStripMenuItem
 			// 
 			this.renameToolStripMenuItem.Name = "renameToolStripMenuItem";
-			resources.ApplyResources(this.renameToolStripMenuItem, "renameToolStripMenuItem");
+			this.renameToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+			this.renameToolStripMenuItem.Text = "Rename";
 			this.renameToolStripMenuItem.Click += new System.EventHandler(this.renameToolStripMenuItem_Click);
 			// 
 			// toolStripSeparatorShowInExplorer
 			// 
 			this.toolStripSeparatorShowInExplorer.Name = "toolStripSeparatorShowInExplorer";
-			resources.ApplyResources(this.toolStripSeparatorShowInExplorer, "toolStripSeparatorShowInExplorer");
+			this.toolStripSeparatorShowInExplorer.Size = new System.Drawing.Size(158, 6);
 			// 
 			// showInExplorerToolStripMenuItem
 			// 
 			this.showInExplorerToolStripMenuItem.Name = "showInExplorerToolStripMenuItem";
-			resources.ApplyResources(this.showInExplorerToolStripMenuItem, "showInExplorerToolStripMenuItem");
+			this.showInExplorerToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+			this.showInExplorerToolStripMenuItem.Text = "Show in Explorer";
 			this.showInExplorerToolStripMenuItem.Click += new System.EventHandler(this.showInExplorerToolStripMenuItem_Click);
-			// 
-			// toolStripSeparatorCustomActions
-			// 
-			this.toolStripSeparatorCustomActions.Name = "toolStripSeparatorCustomActions";
-			resources.ApplyResources(this.toolStripSeparatorCustomActions, "toolStripSeparatorCustomActions");
 			// 
 			// nodeStateIcon
 			// 
@@ -233,52 +253,70 @@
             this.toolStripSeparator1,
             this.cancelToolStripMenuItem});
 			this.contextMenuDragMoveCopy.Name = "contextMenuDragMoveCopy";
-			resources.ApplyResources(this.contextMenuDragMoveCopy, "contextMenuDragMoveCopy");
+			this.contextMenuDragMoveCopy.Size = new System.Drawing.Size(131, 76);
 			// 
 			// copyHereToolStripMenuItem
 			// 
 			this.copyHereToolStripMenuItem.Name = "copyHereToolStripMenuItem";
-			resources.ApplyResources(this.copyHereToolStripMenuItem, "copyHereToolStripMenuItem");
+			this.copyHereToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+			this.copyHereToolStripMenuItem.Text = "Copy here";
 			this.copyHereToolStripMenuItem.Click += new System.EventHandler(this.copyHereToolStripMenuItem_Click);
 			// 
 			// moveHereToolStripMenuItem
 			// 
 			this.moveHereToolStripMenuItem.Name = "moveHereToolStripMenuItem";
-			resources.ApplyResources(this.moveHereToolStripMenuItem, "moveHereToolStripMenuItem");
+			this.moveHereToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+			this.moveHereToolStripMenuItem.Text = "Move here";
 			this.moveHereToolStripMenuItem.Click += new System.EventHandler(this.moveHereToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			resources.ApplyResources(this.toolStripSeparator1, "toolStripSeparator1");
+			this.toolStripSeparator1.Size = new System.Drawing.Size(127, 6);
 			// 
 			// cancelToolStripMenuItem
 			// 
 			this.cancelToolStripMenuItem.Name = "cancelToolStripMenuItem";
-			resources.ApplyResources(this.cancelToolStripMenuItem, "cancelToolStripMenuItem");
+			this.cancelToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+			this.cancelToolStripMenuItem.Text = "Cancel";
 			// 
 			// panelBottom
 			// 
 			this.panelBottom.Controls.Add(this.textBoxFilter);
 			this.panelBottom.Controls.Add(this.labelFilter);
-			resources.ApplyResources(this.panelBottom, "panelBottom");
+			this.panelBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.panelBottom.Location = new System.Drawing.Point(0, 521);
 			this.panelBottom.Name = "panelBottom";
+			this.panelBottom.Padding = new System.Windows.Forms.Padding(3);
+			this.panelBottom.Size = new System.Drawing.Size(206, 26);
+			this.panelBottom.TabIndex = 2;
 			// 
 			// textBoxFilter
 			// 
-			resources.ApplyResources(this.textBoxFilter, "textBoxFilter");
+			this.textBoxFilter.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.textBoxFilter.Location = new System.Drawing.Point(41, 3);
 			this.textBoxFilter.Name = "textBoxFilter";
+			this.textBoxFilter.Size = new System.Drawing.Size(162, 20);
+			this.textBoxFilter.TabIndex = 0;
 			this.textBoxFilter.TextChanged += new System.EventHandler(this.textBoxFilter_TextChanged);
 			// 
 			// labelFilter
 			// 
-			resources.ApplyResources(this.labelFilter, "labelFilter");
+			this.labelFilter.AutoSize = true;
+			this.labelFilter.Dock = System.Windows.Forms.DockStyle.Left;
+			this.labelFilter.Location = new System.Drawing.Point(3, 3);
 			this.labelFilter.Name = "labelFilter";
+			this.labelFilter.Padding = new System.Windows.Forms.Padding(3);
+			this.labelFilter.Size = new System.Drawing.Size(38, 19);
+			this.labelFilter.TabIndex = 1;
+			this.labelFilter.Text = "Filter:";
+			this.labelFilter.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			// 
 			// ProjectFolderView
 			// 
-			resources.ApplyResources(this, "$this");
+			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.ClientSize = new System.Drawing.Size(206, 547);
 			this.Controls.Add(this.folderView);
 			this.Controls.Add(this.panelBottom);
 			this.Controls.Add(this.toolStrip);
@@ -286,9 +324,12 @@
 						| WeifenLuo.WinFormsUI.Docking.DockAreas.DockRight)
 						| WeifenLuo.WinFormsUI.Docking.DockAreas.DockTop)
 						| WeifenLuo.WinFormsUI.Docking.DockAreas.DockBottom)));
+			this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "ProjectFolderView";
 			this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.DockLeft;
+			this.Text = "Project View";
 			this.toolStrip.ResumeLayout(false);
 			this.toolStrip.PerformLayout();
 			this.contextMenuNode.ResumeLayout(false);

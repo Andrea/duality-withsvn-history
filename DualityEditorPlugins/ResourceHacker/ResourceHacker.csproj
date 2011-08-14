@@ -92,7 +92,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="PluginRes\ResourceHackerRes.de.resx" />
     <EmbeddedResource Include="PluginRes\ResourceHackerRes.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ResourceHackerRes.Designer.cs</LastGenOutput>
@@ -101,14 +100,8 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="RenameTypeDialog.de.resx">
-      <DependentUpon>RenameTypeDialog.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="RenameTypeDialog.resx">
       <DependentUpon>RenameTypeDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ResourceHacker.de.resx">
-      <DependentUpon>ResourceHacker.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ResourceHacker.resx">
       <DependentUpon>ResourceHacker.cs</DependentUpon>

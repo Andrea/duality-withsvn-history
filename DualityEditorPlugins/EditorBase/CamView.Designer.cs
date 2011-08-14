@@ -57,14 +57,20 @@
             this.toggleParallaxity,
             this.parallaxRefDist,
             this.camSelector});
-			resources.ApplyResources(this.toolStrip, "toolStrip");
+			this.toolStrip.Location = new System.Drawing.Point(0, 0);
 			this.toolStrip.Name = "toolStrip";
+			this.toolStrip.Size = new System.Drawing.Size(539, 28);
+			this.toolStrip.TabIndex = 1;
+			this.toolStrip.Text = "toolStrip";
 			// 
 			// showBgColorDialog
 			// 
 			this.showBgColorDialog.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			resources.ApplyResources(this.showBgColorDialog, "showBgColorDialog");
+			this.showBgColorDialog.Image = ((System.Drawing.Image)(resources.GetObject("showBgColorDialog.Image")));
+			this.showBgColorDialog.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.showBgColorDialog.Name = "showBgColorDialog";
+			this.showBgColorDialog.Size = new System.Drawing.Size(23, 25);
+			this.showBgColorDialog.Text = "Change Background Color";
 			this.showBgColorDialog.Click += new System.EventHandler(this.showBgColorDialog_Click);
 			// 
 			// toggleAccMove
@@ -75,8 +81,10 @@
 			this.toggleAccMove.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.toggleAccMove.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.toggleAccMove.Image = global::EditorBase.Properties.Resources.arrow_right_accelerate;
-			resources.ApplyResources(this.toggleAccMove, "toggleAccMove");
+			this.toggleAccMove.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.toggleAccMove.Name = "toggleAccMove";
+			this.toggleAccMove.Size = new System.Drawing.Size(23, 25);
+			this.toggleAccMove.Text = "Accelerated Movement (A)";
 			// 
 			// toggleParallaxity
 			// 
@@ -85,8 +93,11 @@
 			this.toggleParallaxity.CheckOnClick = true;
 			this.toggleParallaxity.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.toggleParallaxity.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			resources.ApplyResources(this.toggleParallaxity, "toggleParallaxity");
+			this.toggleParallaxity.Image = ((System.Drawing.Image)(resources.GetObject("toggleParallaxity.Image")));
+			this.toggleParallaxity.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.toggleParallaxity.Name = "toggleParallaxity";
+			this.toggleParallaxity.Size = new System.Drawing.Size(23, 25);
+			this.toggleParallaxity.Text = "Toggle Perspective";
 			this.toggleParallaxity.CheckStateChanged += new System.EventHandler(this.toggleParallaxity_CheckStateChanged);
 			// 
 			// parallaxRefDist
@@ -101,7 +112,8 @@
             0});
 			this.parallaxRefDist.Name = "parallaxRefDist";
 			this.parallaxRefDist.NumericWidth = 75;
-			resources.ApplyResources(this.parallaxRefDist, "parallaxRefDist");
+			this.parallaxRefDist.Size = new System.Drawing.Size(128, 25);
+			this.parallaxRefDist.Text = "RefDist";
 			this.parallaxRefDist.Value = new decimal(new int[] {
             500,
             0,
@@ -113,7 +125,7 @@
 			// 
 			this.camSelector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.camSelector.Name = "camSelector";
-			resources.ApplyResources(this.camSelector, "camSelector");
+			this.camSelector.Size = new System.Drawing.Size(121, 28);
 			this.camSelector.DropDown += new System.EventHandler(this.camSelector_DropDown);
 			this.camSelector.SelectedIndexChanged += new System.EventHandler(this.camSelector_SelectedIndexChanged);
 			// 
@@ -128,64 +140,94 @@
             this.axisLockXLabel,
             this.axisLockYLabel,
             this.axisLockZLabel});
-			resources.ApplyResources(this.statusStrip, "statusStrip");
+			this.statusStrip.Location = new System.Drawing.Point(0, 375);
 			this.statusStrip.Name = "statusStrip";
+			this.statusStrip.Size = new System.Drawing.Size(539, 22);
 			this.statusStrip.SizingGrip = false;
+			this.statusStrip.TabIndex = 2;
+			this.statusStrip.Text = "statusStrip1";
 			// 
 			// posXStatusLabel
 			// 
-			resources.ApplyResources(this.posXStatusLabel, "posXStatusLabel");
+			this.posXStatusLabel.AutoSize = false;
 			this.posXStatusLabel.Name = "posXStatusLabel";
+			this.posXStatusLabel.Size = new System.Drawing.Size(100, 17);
+			this.posXStatusLabel.Text = "X: x";
+			this.posXStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// posYStatusLabel
 			// 
-			resources.ApplyResources(this.posYStatusLabel, "posYStatusLabel");
+			this.posYStatusLabel.AutoSize = false;
 			this.posYStatusLabel.Name = "posYStatusLabel";
+			this.posYStatusLabel.Size = new System.Drawing.Size(100, 17);
+			this.posYStatusLabel.Text = "Y: y";
+			this.posYStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// posZStatusLabel
 			// 
-			resources.ApplyResources(this.posZStatusLabel, "posZStatusLabel");
+			this.posZStatusLabel.AutoSize = false;
 			this.posZStatusLabel.Name = "posZStatusLabel";
+			this.posZStatusLabel.Size = new System.Drawing.Size(100, 17);
+			this.posZStatusLabel.Text = "Z: z";
+			this.posZStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// angleStatusLabel
 			// 
-			resources.ApplyResources(this.angleStatusLabel, "angleStatusLabel");
+			this.angleStatusLabel.AutoSize = false;
 			this.angleStatusLabel.Name = "angleStatusLabel";
+			this.angleStatusLabel.Size = new System.Drawing.Size(75, 17);
+			this.angleStatusLabel.Text = "Angle: a";
+			this.angleStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// springLabel
 			// 
 			this.springLabel.Name = "springLabel";
-			resources.ApplyResources(this.springLabel, "springLabel");
+			this.springLabel.Size = new System.Drawing.Size(106, 17);
 			this.springLabel.Spring = true;
 			// 
 			// axisLockXLabel
 			// 
-			resources.ApplyResources(this.axisLockXLabel, "axisLockXLabel");
+			this.axisLockXLabel.Enabled = false;
+			this.axisLockXLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
 			this.axisLockXLabel.ForeColor = System.Drawing.Color.Red;
 			this.axisLockXLabel.Name = "axisLockXLabel";
+			this.axisLockXLabel.Size = new System.Drawing.Size(15, 17);
+			this.axisLockXLabel.Text = "X";
+			this.axisLockXLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// axisLockYLabel
 			// 
-			resources.ApplyResources(this.axisLockYLabel, "axisLockYLabel");
+			this.axisLockYLabel.Enabled = false;
+			this.axisLockYLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
 			this.axisLockYLabel.ForeColor = System.Drawing.Color.Green;
 			this.axisLockYLabel.Name = "axisLockYLabel";
+			this.axisLockYLabel.Size = new System.Drawing.Size(14, 17);
+			this.axisLockYLabel.Text = "Y";
 			// 
 			// axisLockZLabel
 			// 
-			resources.ApplyResources(this.axisLockZLabel, "axisLockZLabel");
+			this.axisLockZLabel.Enabled = false;
+			this.axisLockZLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
 			this.axisLockZLabel.ForeColor = System.Drawing.Color.Blue;
 			this.axisLockZLabel.Name = "axisLockZLabel";
+			this.axisLockZLabel.Size = new System.Drawing.Size(14, 17);
+			this.axisLockZLabel.Text = "Z";
+			this.axisLockZLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// CamView
 			// 
-			resources.ApplyResources(this, "$this");
+			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.ClientSize = new System.Drawing.Size(539, 397);
 			this.Controls.Add(this.statusStrip);
 			this.Controls.Add(this.toolStrip);
 			this.DockAreas = ((WeifenLuo.WinFormsUI.Docking.DockAreas)((WeifenLuo.WinFormsUI.Docking.DockAreas.Float | WeifenLuo.WinFormsUI.Docking.DockAreas.Document)));
+			this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "CamView";
 			this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.Document;
+			this.Text = "CamView";
 			this.toolStrip.ResumeLayout(false);
 			this.toolStrip.PerformLayout();
 			this.statusStrip.ResumeLayout(false);

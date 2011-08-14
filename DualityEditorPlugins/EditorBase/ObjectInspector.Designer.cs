@@ -53,8 +53,12 @@
 			// 
 			// propertyGrid
 			// 
-			resources.ApplyResources(this.propertyGrid, "propertyGrid");
+			this.propertyGrid.AutoScroll = true;
+			this.propertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.propertyGrid.Location = new System.Drawing.Point(0, 0);
 			this.propertyGrid.Name = "propertyGrid";
+			this.propertyGrid.Size = new System.Drawing.Size(206, 547);
+			this.propertyGrid.TabIndex = 0;
 			// 
 			// timerSelectSched
 			// 
@@ -63,16 +67,20 @@
 			// 
 			// ObjectInspector
 			// 
-			resources.ApplyResources(this, "$this");
+			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.ClientSize = new System.Drawing.Size(206, 547);
 			this.Controls.Add(this.propertyGrid);
 			this.DockAreas = ((WeifenLuo.WinFormsUI.Docking.DockAreas)(((((WeifenLuo.WinFormsUI.Docking.DockAreas.Float | WeifenLuo.WinFormsUI.Docking.DockAreas.DockLeft)
 						| WeifenLuo.WinFormsUI.Docking.DockAreas.DockRight)
 						| WeifenLuo.WinFormsUI.Docking.DockAreas.DockTop)
 						| WeifenLuo.WinFormsUI.Docking.DockAreas.DockBottom)));
+			this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "ObjectInspector";
 			this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.DockRight;
+			this.Text = "Object Inspector";
 			this.ResumeLayout(false);
 
 		}

@@ -198,68 +198,37 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="CamView.de.resx">
-      <DependentUpon>CamView.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="CamView.resx">
       <DependentUpon>CamView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="PropertyEditors\Resources\TexturePreviewPropertyEditor.de.resx">
-      <DependentUpon>TexturePreviewPropertyEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PropertyEditors\Resources\TexturePreviewPropertyEditor.resx">
       <DependentUpon>TexturePreviewPropertyEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PropertyEditors\Resources\PixmapPreviewPropertyEditor.de.resx">
-      <DependentUpon>PixmapPreviewPropertyEditor.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="PropertyEditors\Resources\PixmapPreviewPropertyEditor.resx">
       <DependentUpon>PixmapPreviewPropertyEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ResourceInspector.de.resx">
-      <DependentUpon>ResourceInspector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ResourceInspector.resx">
       <DependentUpon>ResourceInspector.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ObjectInspector.de.resx">
-      <DependentUpon>ObjectInspector.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="ObjectInspector.resx">
       <DependentUpon>ObjectInspector.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="PropertyEditors\ContentRefPropertyEditor.de.resx">
-      <DependentUpon>ContentRefPropertyEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PropertyEditors\ContentRefPropertyEditor.resx">
       <DependentUpon>ContentRefPropertyEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PropertyEditors\GameObjectPropertyEditor.de.resx">
-      <DependentUpon>GameObjectPropertyEditor.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="PropertyEditors\GameObjectPropertyEditor.resx">
       <DependentUpon>GameObjectPropertyEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="PropertyEditors\Components\TransformPropertyEditor.de.resx">
-      <DependentUpon>TransformPropertyEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PropertyEditors\Components\TransformPropertyEditor.resx">
       <DependentUpon>TransformPropertyEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SceneView.de.resx">
-      <DependentUpon>SceneView.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="SceneView.resx">
       <DependentUpon>SceneView.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PluginRes\EditorBaseRes.de.resx" />
     <EmbeddedResource Include="PluginRes\EditorBaseRes.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>EditorBaseRes.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ProjectFolderView.de.resx">
-      <DependentUpon>ProjectFolderView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ProjectFolderView.resx">
       <DependentUpon>ProjectFolderView.cs</DependentUpon>
