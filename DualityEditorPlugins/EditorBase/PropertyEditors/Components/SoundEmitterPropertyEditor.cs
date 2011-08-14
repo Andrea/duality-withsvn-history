@@ -150,7 +150,7 @@ namespace EditorBase.PropertyEditors
 		public SoundEmitterSourcePropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid, MemberFlags.Default)
 		{
 			this.EditedType = typeof(SoundEmitter.Source);
-			this.Header.AcquireParentColors(true);
+			this.Header.Style = GroupedPropertyEditorHeader.HeaderStyle.Big;
 			this.Header.Height = GroupedPropertyEditorHeader.DefaultBigHeight;
 			this.Indent = DefaultIndent;
 		}

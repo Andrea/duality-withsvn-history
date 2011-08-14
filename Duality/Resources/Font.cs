@@ -716,9 +716,9 @@ namespace Duality.Resources
 			this.ReloadData();
 			base.OnLoaded();
 		}
-		protected override void OnDisposed(bool manually)
+		protected override void OnDisposing(bool manually)
 		{
-			base.OnDisposed(manually);
+			base.OnDisposing(manually);
 			if (this.texture != null) { this.texture.Dispose(); this.texture = null; }
 			if (this.pixelData != null) { this.pixelData.Dispose(); this.pixelData = null; }
 		}

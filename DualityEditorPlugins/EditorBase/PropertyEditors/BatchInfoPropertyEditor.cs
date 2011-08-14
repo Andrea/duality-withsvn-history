@@ -21,7 +21,7 @@ namespace EditorBase.PropertyEditors
 
 		public BatchInfoPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid, MemberFlags.Default)
 		{
-			this.Header.AcquireParentColors(true);
+			this.Header.Style = GroupedPropertyEditorHeader.HeaderStyle.Big;
 			this.Header.Height = GroupedPropertyEditorHeader.DefaultBigHeight;
 		}
 

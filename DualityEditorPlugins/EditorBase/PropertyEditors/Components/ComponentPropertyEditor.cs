@@ -82,14 +82,8 @@ namespace EditorBase.PropertyEditors
 			this.Header.Text = null;
 			this.Header.ValueText = ReflectionHelper.GetTypeName(this.EditedType, TypeNameFormat.CSCodeIdentShort);
 			this.Header.Icon = iconBitmap;
-			this.Header.ForeColor = ExtMethodsSystemDrawingColor.ColorFromHSV(
-				avgClr.h, 
-				0.15f + avgClr.s * 0.3f, 
-				this.Header.ForeColor.GetHSVBrightness());
-			this.Header.BackColor = ExtMethodsSystemDrawingColor.ColorFromHSV(
-				avgClr.h, 
-				0.15f + avgClr.s * 0.3f, 
-				this.Header.BackColor.GetHSVBrightness());
+			this.Header.Style = GroupedPropertyEditorHeader.HeaderStyle.Normal;
+			this.Header.BaseColor = ExtMethodsSystemDrawingColor.ColorFromHSV(avgClr.h, 0.15f + avgClr.s * 0.3f, 1.0f);
 			
 			// Nice at first glance, but far too many colors overall
 			//this.BackColor = ExtMethodsSystemDrawingColor.ColorFromHSV(

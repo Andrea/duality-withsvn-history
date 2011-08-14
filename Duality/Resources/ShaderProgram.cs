@@ -175,9 +175,9 @@ namespace Duality.Resources
 			this.Compile();
 			base.OnLoaded();
 		}
-		protected override void OnDisposed(bool manually)
+		protected override void OnDisposing(bool manually)
 		{
-			base.OnDisposed(manually);
+			base.OnDisposing(manually);
 			if (DualityApp.ExecContext != DualityApp.ExecutionContext.Terminated &&
 				this.glProgramId != 0)
 			{

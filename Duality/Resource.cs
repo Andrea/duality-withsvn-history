@@ -92,11 +92,11 @@ namespace Duality
 		{
 			if (!this.disposed)
 			{
+				this.OnDisposing(manually);
 				this.disposed = true;
-				this.OnDisposed(manually);
 			}
 		}
-		protected virtual void OnDisposed(bool manually)
+		protected virtual void OnDisposing(bool manually)
 		{
 
 		}

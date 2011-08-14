@@ -44,6 +44,7 @@ namespace Duality
 
 		public static readonly PropertyInfo	Property_TextRenderer_Text;
 		public static readonly PropertyInfo	Property_TextRenderer_Metrics;
+		public static readonly PropertyInfo	Property_TextRenderer_CustomMaterial;
 
 		public static readonly PropertyInfo	Property_Camera_SceneOrthoAbs;
 		public static readonly PropertyInfo	Property_Camera_SceneViewportAbs;
@@ -166,8 +167,9 @@ namespace Duality
 			Property_AnimSpriteRenderer_IsAnimationRunning	= rendererAnimSprite.GetProperty("IsAnimationRunning");
 
 			Type rendererText = typeof(TextRenderer);
-			Property_TextRenderer_Text		= rendererText.GetProperty("Text");
-			Property_TextRenderer_Metrics	= rendererText.GetProperty("Metrics");
+			Property_TextRenderer_Text				= rendererText.GetProperty("Text");
+			Property_TextRenderer_Metrics			= rendererText.GetProperty("Metrics");
+			Property_TextRenderer_CustomMaterial	= rendererText.GetProperty("CustomMaterial");
 
 			Type camera = typeof(Camera);
 			Property_Camera_SceneOrthoAbs		= camera.GetProperty("SceneOrthoAbs");

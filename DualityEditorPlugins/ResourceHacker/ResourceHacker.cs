@@ -199,7 +199,7 @@ namespace ResourceHacker
 			this.nodeTextBoxType.DrawText += this.nodeTextBoxType_DrawText;
 			this.propertyGrid.EditingFinished += this.propertyGrid_EditingFinished;
 
-			this.openFileDialog.InitialDirectory = Path.GetFullPath(EditorHelper.DataDirectory);
+			this.openFileDialog.InitialDirectory = EditorHelper.DataDirectory;
 			this.openFileDialog.Filter = "Duality Resource|*" + Resource.FileExt;
 			this.saveFileDialog.InitialDirectory = this.openFileDialog.InitialDirectory;
 			this.saveFileDialog.Filter = this.openFileDialog.Filter;
@@ -244,6 +244,7 @@ namespace ResourceHacker
 		public void SaveFile(string filePath)
 		{
 			this.filePath = filePath;
+
 			using (FileStream fileStream = File.Open(this.filePath, FileMode.Create, FileAccess.Write))
 			{
 				this.formatter.ReadTarget = null;
@@ -252,6 +253,10 @@ namespace ResourceHacker
 				foreach (DataTreeNode dataNode in this.dataModel.Nodes)
 					this.formatter.WriteObject(dataNode.Data);
 			}
+
+			// Assure reloading the modified resource
+			string dataPath = PathHelper.MakePathRelative(this.filePath, ".");
+			ContentProvider.UnregisterContent(dataPath, true);
 		}
 
 		protected void ClearData()
@@ -344,10 +349,12 @@ namespace ResourceHacker
 		private void openFileDialog_FileOk(object sender, CancelEventArgs e)
 		{
 			this.LoadFile(this.openFileDialog.FileName);
+			this.openFileDialog.FileName = "";
 		}
 		private void saveFileDialog_FileOk(object sender, CancelEventArgs e)
 		{
 			this.SaveFile(this.saveFileDialog.FileName);
+			this.saveFileDialog.FileName = "";
 		}
 		private void treeView_SelectionChanged(object sender, EventArgs e)
 		{

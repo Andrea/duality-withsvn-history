@@ -228,9 +228,11 @@ namespace Duality.Resources
 			foreach (GameObject obj in this.objectManager.AllObjects)
 				obj.OnLoaded();
 		}
-		protected override void OnDisposed(bool manually)
+		protected override void OnDisposing(bool manually)
 		{
-			base.OnDisposed(manually);
+			base.OnDisposing(manually);
+
+			if (current.ResWeak == this) current = ContentRef<Scene>.Null;
 
 			GameObject[] obj = this.objectManager.AllObjects.ToArray();
 			this.Graph.Clear();

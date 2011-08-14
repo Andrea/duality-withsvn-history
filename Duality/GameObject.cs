@@ -172,8 +172,8 @@ namespace Duality
 		}
 		
 
-		public event EventHandler<ComponentEventArgs>				EventComponentAdded		= null;
-		public event EventHandler<ComponentEventArgs>				EventComponentRemoving	= null;
+		public event EventHandler<ComponentEventArgs>	EventComponentAdded		= null;
+		public event EventHandler<ComponentEventArgs>	EventComponentRemoving	= null;
 
 
 		public GameObject() {}

@@ -577,9 +577,9 @@ namespace Duality.Resources
 			this.LoadData(this.basePixmap, this.oglSizeMode);
 			base.OnLoaded();
 		}
-		protected override void OnDisposed(bool manually)
+		protected override void OnDisposing(bool manually)
 		{
-			base.OnDisposed(manually);
+			base.OnDisposing(manually);
 			if (DualityApp.ExecContext != DualityApp.ExecutionContext.Terminated &&
 				this.glTexId != 0)
 			{

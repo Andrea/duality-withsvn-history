@@ -822,9 +822,6 @@ namespace DualityEditor.Forms
 		{
 			ResourceEventArgs args = new ResourceEventArgs(e.FullPath);
 
-			// If it's a Resource, assure reloading it
-			if (args.IsResource) ContentProvider.UnregisterContent(args.Content.Path);
-
 			// When modifying prefabs, apply changes to all linked objects
 			if (args.IsResource && args.Content.Is<Prefab>())
 			{

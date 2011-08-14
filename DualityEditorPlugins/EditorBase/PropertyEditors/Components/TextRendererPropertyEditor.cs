@@ -19,8 +19,14 @@ namespace EditorBase.PropertyEditors
 
 		}
 
+		protected override void OnAddingEditors()
+		{
+			base.OnAddingEditors();
+			this.AddEditorForProperty(ReflectionInfo.Property_TextRenderer_CustomMaterial);
+		}
 		protected override bool MemberPredicate(System.Reflection.MemberInfo info)
 		{
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_TextRenderer_CustomMaterial)) return false;
 			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_TextRenderer_Metrics)) return false;
 			return base.MemberPredicate(info);
 		}
