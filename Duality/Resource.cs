@@ -9,9 +9,16 @@ using Duality.Serialization;
 
 namespace Duality
 {
+	/// <summary>
+	/// The abstract Resource class is inherited by any kind of Duality content. Instances of it or one of its subclasses
+	/// are usually handled wrapped inside a <see cref="ContentRef{T}"/> and requested from the <see cref="ContentProvider"/>.
+	/// </summary>
 	[Serializable]
 	public abstract class Resource : IManageableObject, IDisposable
 	{
+		/// <summary>
+		/// A Resource file's extension.
+		/// </summary>
 		public const string FileExt = ".res";
 
 		private	static	List<Resource>	finalizeSched	= new List<Resource>();
@@ -19,10 +26,18 @@ namespace Duality
 		[NonSerialized]	protected	string	path		= null;
 		[NonSerialized]	private		bool	disposed	= false;
 
+		/// <summary>
+		/// [GET] Returns whether the Resource has been disposed. 
+		/// Disposed Resources are not to be used and are treated the same as a null value by most methods.
+		/// </summary>
 		public bool Disposed
 		{
 			get { return this.disposed; }
 		}
+		/// <summary>
+		/// [GET] The path where this Resource has been originally loaded from or was first saved to.
+		/// It is also the path under which this Resource is registered at the ContentProvider.
+		/// </summary>
 		public string Path
 		{
 			get { return this.path; }
@@ -36,6 +51,11 @@ namespace Duality
 		{
 			this.path = newPath;
 		}
+		/// <summary>
+		/// Saves the Resource to the specified path. If it has been generated at runtime, i.e. has
+		/// not been loaded from file before, this will set the Resources <see cref="Path"/> Property.
+		/// </summary>
+		/// <param name="saveAsPath">The path to which this Resource is saved to. If null, the Resources <see cref="Path"/> is used as destination.</param>
 		public void Save(string saveAsPath = null)
 		{
 			if (this.disposed) throw new ApplicationException("Can't save Ressource that already has been disposed.");
@@ -55,6 +75,10 @@ namespace Duality
 				this.Save(str);
 			}
 		}
+		/// <summary>
+		/// Saves the Resource to the specified stream.
+		/// </summary>
+		/// <param name="str"></param>
 		public void Save(Stream str)
 		{
 			this.OnSaving();
@@ -64,25 +88,46 @@ namespace Duality
 			this.OnSaved();
 		}
 
+		/// <summary>
+		/// Creates a deep copy of this Resource.
+		/// </summary>
+		/// <returns></returns>
 		public Resource Clone()
 		{
 			Resource r = ReflectionHelper.CreateInstanceOf(this.GetType()) as Resource;
 			this.CopyTo(r);
 			return r;
 		}
+		/// <summary>
+		/// Deep-copies this Resource to the specified target Resource. The target Resource's Type must
+		/// match this Resource's Type.
+		/// </summary>
+		/// <param name="r">The target Resource to copy this Resource's data to</param>
 		public virtual void CopyTo(Resource r)
 		{
 			r.path	= this.path;
 		}
 
+		/// <summary>
+		/// Called when this Resource is now beginning to be saved.
+		/// </summary>
 		protected virtual void OnSaving() {}
+		/// <summary>
+		/// Called when this Resource has just been saved.
+		/// </summary>
 		protected virtual void OnSaved() {}
+		/// <summary>
+		/// Called when this Resource has just been loaded.
+		/// </summary>
 		protected virtual void OnLoaded() {}
 
 		~Resource()
 		{
 			finalizeSched.Add(this);
 		}
+		/// <summary>
+		/// Disposes the Resource.
+		/// </summary>
 		public void Dispose()
 		{
 			this.Dispose(true);
@@ -96,17 +141,35 @@ namespace Duality
 				this.disposed = true;
 			}
 		}
+		/// <summary>
+		/// Called when beginning to dispose the Resource.
+		/// </summary>
+		/// <param name="manually"></param>
 		protected virtual void OnDisposing(bool manually)
 		{
 
 		}
 
+		/// <summary>
+		/// Creates a <see cref="ContentRef{T}"/> referring to this Resource.
+		/// </summary>
+		/// <returns>A <see cref="ContentRef{T}"/> referring to this Resource.</returns>
 		public IContentRef GetContentRef()
 		{
 			Type refType = typeof(ContentRef<>).MakeGenericType(this.GetType());
 			return Activator.CreateInstance(refType, this) as IContentRef;
 		}
 
+		/// <summary>
+		/// Loads the Resource that is located at the specified path. You usually don't need this method. 
+		/// Consider requesting the Resource from the <see cref="ContentProvider"/> instead.
+		/// </summary>
+		/// <typeparam name="T">
+		/// Desired Type of the returned reference. Does not affect the loaded Resource in any way - it is simply returned as T.
+		/// Results in returning null if the loaded Resource's Type isn't assignable to T.
+		/// </typeparam>
+		/// <param name="path">The path to load the Resource from.</param>
+		/// <returns>The Resource that has been loaded.</returns>
 		public static T LoadResource<T>(string path) where T : Resource
 		{
 			if (!File.Exists(path)) return null;
@@ -118,6 +181,17 @@ namespace Duality
 			}
 			return newContent;
 		}
+		/// <summary>
+		/// Loads the Resource from the specified <see cref="Stream"/>. You usually don't need this method. 
+		/// Consider requesting the Resource from the <see cref="ContentProvider"/> instead.
+		/// </summary>
+		/// <typeparam name="T">
+		/// Desired Type of the returned reference. Does not affect the loaded Resource in any way - it is simply returned as T.
+		/// Results in returning null if the loaded Resource's Type isn't assignable to T.
+		/// </typeparam>
+		/// <param name="str">The stream to load the Resource from.</param>
+		/// <param name="resPath">The path that is assumed as the loaded Resource's origin.</param>
+		/// <returns>The Resource that has been loaded.</returns>
 		public static T LoadResource<T>(Stream str, string resPath = null) where T : Resource
 		{
 			T newContent = null;
@@ -140,10 +214,20 @@ namespace Duality
 			return newContent;
 		}
 
+		/// <summary>
+		/// Returns the Resource file extension for a specific Resource Type.
+		/// </summary>
+		/// <param name="resType">The Resource Type to return the file extension from.</param>
+		/// <returns>The specified Resource Type's file extension.</returns>
 		public static string GetFileExtByType(Type resType)
 		{
-			return resType.Name;
+			return "." + resType.Name + Resource.FileExt;
 		}
+		/// <summary>
+		/// Returns the Resource Type that is associated with the specified file, based on its extension.
+		/// </summary>
+		/// <param name="filePath">Path to the file of whichs Resource Type will be returned</param>
+		/// <returns>The Resource Type of the specified file</returns>
 		public static Type GetTypeByFileName(string filePath)
 		{
 			if (filePath == null || filePath.Contains(':')) return null;

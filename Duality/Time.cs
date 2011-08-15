@@ -6,6 +6,11 @@ using System.Diagnostics;
 
 namespace Duality
 {
+	/// <summary>
+	/// The Time class provides a global interface for time measurement and control. It affects all time-dependent computations. 
+	/// Use the <see cref="TimeMult"/> Property to make your own computations time-dependent instead of frame-dependent. Otherwise, your
+	/// game logic will depend on how many FPS the player's machine achieves and mit behave differently on very slow or fast machines.
+	/// </summary>
 	public static class Time
 	{
 		/// <summary>
@@ -106,10 +111,16 @@ namespace Duality
 			get { return frameCount; }
 		}		//	G
 
+		/// <summary>
+		/// Freezes game time. This will cause the GameTimer to stop and TimeMult to equal zero.
+		/// </summary>
 		public static void Freeze()
 		{
 			timeFreeze = true;
 		}
+		/// <summary>
+		/// Unfreezes game time. TimeMult resumes to its normal value and GameTimer starts running again.
+		/// </summary>
 		public static void Resume()
 		{
 			timeFreeze = false;

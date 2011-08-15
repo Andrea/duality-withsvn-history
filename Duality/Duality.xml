@@ -9,6 +9,126 @@
             A Pixmap stores pixel data in system memory. 
             </summary>
         </member>
+        <member name="T:Duality.Resource">
+            <summary>
+            The abstract Resource class is inherited by any kind of Duality content. Instances of it or one of its subclasses
+            are usually handled wrapped inside a <see cref="T:Duality.ContentRef`1"/> and requested from the <see cref="T:Duality.ContentProvider"/>.
+            </summary>
+        </member>
+        <member name="F:Duality.Resource.FileExt">
+            <summary>
+            A Resource file's extension.
+            </summary>
+        </member>
+        <member name="M:Duality.Resource.Save(System.String)">
+            <summary>
+            Saves the Resource to the specified path. If it has been generated at runtime, i.e. has
+            not been loaded from file before, this will set the Resources <see cref="P:Duality.Resource.Path"/> Property.
+            </summary>
+            <param name="saveAsPath">The path to which this Resource is saved to. If null, the Resources <see cref="P:Duality.Resource.Path"/> is used as destination.</param>
+        </member>
+        <member name="M:Duality.Resource.Save(System.IO.Stream)">
+            <summary>
+            Saves the Resource to the specified stream.
+            </summary>
+            <param name="str"></param>
+        </member>
+        <member name="M:Duality.Resource.Clone">
+            <summary>
+            Creates a deep copy of this Resource.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Resource.CopyTo(Duality.Resource)">
+            <summary>
+            Deep-copies this Resource to the specified target Resource. The target Resource's Type must
+            match this Resource's Type.
+            </summary>
+            <param name="r">The target Resource to copy this Resource's data to</param>
+        </member>
+        <member name="M:Duality.Resource.OnSaving">
+            <summary>
+            Called when this Resource is now beginning to be saved.
+            </summary>
+        </member>
+        <member name="M:Duality.Resource.OnSaved">
+            <summary>
+            Called when this Resource has just been saved.
+            </summary>
+        </member>
+        <member name="M:Duality.Resource.OnLoaded">
+            <summary>
+            Called when this Resource has just been loaded.
+            </summary>
+        </member>
+        <member name="M:Duality.Resource.Dispose">
+            <summary>
+            Disposes the Resource.
+            </summary>
+        </member>
+        <member name="M:Duality.Resource.OnDisposing(System.Boolean)">
+            <summary>
+            Called when beginning to dispose the Resource.
+            </summary>
+            <param name="manually"></param>
+        </member>
+        <member name="M:Duality.Resource.GetContentRef">
+            <summary>
+            Creates a <see cref="T:Duality.ContentRef`1"/> referring to this Resource.
+            </summary>
+            <returns>A <see cref="T:Duality.ContentRef`1"/> referring to this Resource.</returns>
+        </member>
+        <member name="M:Duality.Resource.LoadResource``1(System.String)">
+            <summary>
+            Loads the Resource that is located at the specified path. You usually don't need this method. 
+            Consider requesting the Resource from the <see cref="T:Duality.ContentProvider"/> instead.
+            </summary>
+            <typeparam name="T">
+            Desired Type of the returned reference. Does not affect the loaded Resource in any way - it is simply returned as T.
+            Results in returning null if the loaded Resource's Type isn't assignable to T.
+            </typeparam>
+            <param name="path">The path to load the Resource from.</param>
+            <returns>The Resource that has been loaded.</returns>
+        </member>
+        <member name="M:Duality.Resource.LoadResource``1(System.IO.Stream,System.String)">
+            <summary>
+            Loads the Resource from the specified <see cref="T:System.IO.Stream"/>. You usually don't need this method. 
+            Consider requesting the Resource from the <see cref="T:Duality.ContentProvider"/> instead.
+            </summary>
+            <typeparam name="T">
+            Desired Type of the returned reference. Does not affect the loaded Resource in any way - it is simply returned as T.
+            Results in returning null if the loaded Resource's Type isn't assignable to T.
+            </typeparam>
+            <param name="str">The stream to load the Resource from.</param>
+            <param name="resPath">The path that is assumed as the loaded Resource's origin.</param>
+            <returns>The Resource that has been loaded.</returns>
+        </member>
+        <member name="M:Duality.Resource.GetFileExtByType(System.Type)">
+            <summary>
+            Returns the Resource file extension for a specific Resource Type.
+            </summary>
+            <param name="resType">The Resource Type to return the file extension from.</param>
+            <returns>The specified Resource Type's file extension.</returns>
+        </member>
+        <member name="M:Duality.Resource.GetTypeByFileName(System.String)">
+            <summary>
+            Returns the Resource Type that is associated with the specified file, based on its extension.
+            </summary>
+            <param name="filePath">Path to the file of whichs Resource Type will be returned</param>
+            <returns>The Resource Type of the specified file</returns>
+        </member>
+        <member name="P:Duality.Resource.Disposed">
+            <summary>
+            [GET] Returns whether the Resource has been disposed. 
+            Disposed Resources are not to be used and are treated the same as a null value by most methods.
+            </summary>
+        </member>
+        <member name="P:Duality.Resource.Path">
+            <summary>
+            [GET] The path where this Resource has been originally loaded from or was first saved to.
+            It is also the path under which this Resource is registered at the ContentProvider.
+            </summary>
+        </member>
         <member name="M:Duality.OggVorbis.OV.StreamChunk(System.IntPtr,System.IO.MemoryStream@,System.Int32@,System.Int32@)">
             <summary>
             Streams a pcm chunk from an opened ogg vorbis file to the specified OpenAL buffer.
@@ -16,6 +136,13 @@
             <param name="alBufferId">OpenAL buffer id to stream to</param>
             <param name="vFPtr">Ogg Vorbis file handle</param>
             <returns>Returns false, if EOF is reached.</returns>
+        </member>
+        <member name="T:Duality.Time">
+            <summary>
+            The Time class provides a global interface for time measurement and control. It affects all time-dependent computations. 
+            Use the <see cref="P:Duality.Time.TimeMult"/> Property to make your own computations time-dependent instead of frame-dependent. Otherwise, your
+            game logic will depend on how many FPS the player's machine achieves and mit behave differently on very slow or fast machines.
+            </summary>
         </member>
         <member name="F:Duality.Time.MsPFMult">
             <summary>
@@ -25,6 +152,16 @@
         <member name="F:Duality.Time.SPFMult">
             <summary>
             Seconds a frame takes at the desired refresh rate of 60 FPS
+            </summary>
+        </member>
+        <member name="M:Duality.Time.Freeze">
+            <summary>
+            Freezes game time. This will cause the GameTimer to stop and TimeMult to equal zero.
+            </summary>
+        </member>
+        <member name="M:Duality.Time.Resume">
+            <summary>
+            Unfreezes game time. TimeMult resumes to its normal value and GameTimer starts running again.
             </summary>
         </member>
         <member name="P:Duality.Time.MainTimer">

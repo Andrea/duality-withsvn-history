@@ -181,7 +181,7 @@ namespace EditorBase
 				string oldPath = this.NodePath;
 				string oldFileName = Path.GetFileName(oldPath);
 				string newPathBase = oldPath.Remove(oldPath.Length - oldFileName.Length, oldFileName.Length);
-				string newPath = newPathBase + this.Text + "." + Resource.GetFileExtByType(this.resType) + Resource.FileExt;
+				string newPath = newPathBase + this.Text + Resource.GetFileExtByType(this.resType);
 
 				if (File.Exists(newPath))
 				{
@@ -603,7 +603,7 @@ namespace EditorBase
 		protected void CreateResource(Type type, TreeNodeAdv baseNode)
 		{
 			string basePath = this.GetInsertActionTargetBasePath(baseNode != null ? baseNode.Tag as NodeBase : null);
-			string nameExt = "." + Resource.GetFileExtByType(type) + Resource.FileExt;
+			string nameExt = Resource.GetFileExtByType(type);
 			string resPath = PathHelper.GetFreePathName(Path.Combine(basePath, type.Name), nameExt);
 
 			Resource resInstance = ReflectionHelper.CreateInstanceOf(type) as Resource;
