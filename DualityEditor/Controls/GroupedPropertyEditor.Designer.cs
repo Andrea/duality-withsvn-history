@@ -28,6 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.header = new GroupedPropertyEditorHeader();
 			this.tableLayout = new System.Windows.Forms.TableLayoutPanel();
 			this.SuspendLayout();
 			// 

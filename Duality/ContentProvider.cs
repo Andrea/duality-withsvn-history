@@ -243,11 +243,12 @@ namespace Duality
 		{
 			return new List<ContentRef<Resource>>(defaultContent);
 		}
-		public static void ClearContent()
+		public static void ClearContent(bool dispose = true)
 		{
-			foreach (var pair in resLibrary)
+			if (dispose)
 			{
-				pair.Value.Dispose();
+				foreach (var pair in resLibrary)
+					pair.Value.Dispose();
 			}
 			resLibrary.Clear();
 		}

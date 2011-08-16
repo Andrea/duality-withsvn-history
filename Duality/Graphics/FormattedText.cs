@@ -34,6 +34,7 @@ namespace Duality
 			{
 				get { return this.text; }
 			}
+			public TextElement() : this("") {}
 			public TextElement(string text)
 			{
 				this.text = text;
@@ -46,6 +47,7 @@ namespace Duality
 			{
 				get { return this.iconIndex; }
 			}
+			public IconElement() : this(0) {}
 			public IconElement(int icon)
 			{
 				this.iconIndex = icon;
@@ -62,6 +64,7 @@ namespace Duality
 			{
 				get { return this.fontIndex; }
 			}
+			public FontChangeElement() : this(0) {}
 			public FontChangeElement(int font)
 			{
 				this.fontIndex = font;
@@ -74,6 +77,7 @@ namespace Duality
 			{
 				get { return this.color; }
 			}
+			public ColorChangeElement() : this(ColorRgba.White) {}
 			public ColorChangeElement(ColorRgba color)
 			{
 				this.color = color;
@@ -86,6 +90,7 @@ namespace Duality
 			{
 				get { return this.align; }
 			}
+			public AlignChangeElement() : this(Alignment.Left) {}
 			public AlignChangeElement(Alignment align)
 			{
 				this.align = align;
@@ -551,6 +556,7 @@ namespace Duality
 
 
 
+		public FormattedText() : this((string)null) {}
 		public FormattedText(string text)
 		{
 			this.ApplySource(text);
@@ -586,7 +592,8 @@ namespace Duality
 			int curTextElemBegin = 0;
 			int curTextElemLen = 0;
 			int curFontIndex = 0;
-			for (int i = 0; i < this.sourceText.Length; i++)
+			int srcTextLen = this.sourceText != null ? this.sourceText.Length : 0;
+			for (int i = 0; i < srcTextLen; i++)
 			{
 				if (this.sourceText[i] == '/' && i + 1 < this.sourceText.Length)
 				{

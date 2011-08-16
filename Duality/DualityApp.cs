@@ -172,10 +172,16 @@ namespace Duality
 		{
 			get { return metaData; }
 		}
+		/// <summary>
+		/// [GET] Returns the path where this DualityApp's <see cref="DualityAppData">application data</see> is located at.
+		/// </summary>
 		public static string AppDataPath
 		{
 			get { return "appdata.dat"; }
 		}
+		/// <summary>
+		/// [GET] Returns the path where this DualityApp's <see cref="DualityUserData">user data</see> is located at.
+		/// </summary>
 		public static string UserDataPath
 		{
 			get
@@ -187,6 +193,9 @@ namespace Duality
 				return path;
 			}
 		}
+		/// <summary>
+		/// [GET] Returns the path where this DualityApp's <see cref="DualityMetaData">meta data</see> is located at.
+		/// </summary>
 		public static string MetaDataPath
 		{
 			get
@@ -197,28 +206,53 @@ namespace Duality
 				return path;
 			}
 		}
+		/// <summary>
+		/// [GET] Returns the <see cref="GraphicsMode"/> that Duality intends to use by default.
+		/// </summary>
 		public static GraphicsMode DefaultMode
 		{
 			get { return defaultMode; }
 		}
+		/// <summary>
+		/// [GET] Enumerates all available <see cref="GraphicsMode">GraphicsModes</see>.
+		/// </summary>
 		public static IEnumerable<GraphicsMode> AvailableModes
 		{
 			get { return availModes; }
 		}
+		/// <summary>
+		/// [GET] Returns the <see cref="ExecutionContext"/> in which this DualityApp is currently running.
+		/// </summary>
 		public static ExecutionContext ExecContext
 		{
 			get { return execContext; }
 		}
+		/// <summary>
+		/// [GET] Enumerates all currently loaded plugins.
+		/// </summary>
 		public static IEnumerable<Assembly> LoadedPlugins
 		{
 			get { return plugins.Values; }
 		}
+		/// <summary>
+		/// [GET] Enumerates all plugins that have been loaded before, but have been discarded due to a runtime plugin reload operation.
+		/// This is usually only the case when being executed from withing the editor or manually triggering a plugin reload. However,
+		/// this is normally unnecessary.
+		/// </summary>
 		public static IEnumerable<Assembly> DisposedPlugins
 		{
 			get { return disposedPlugins; }
 		}
 
 
+		/// <summary>
+		/// Initializes this DualityApp. Should be called before performing any operations withing Duality.
+		/// </summary>
+		/// <param name="context">The <see cref="ExecutionContext"/> in which Duality runs.</param>
+		/// <param name="args">
+		/// Command line arguments to run this DualityApp with. 
+		/// Usually these are just the ones from the host application, passed on.
+		/// </param>
 		public static void Init(ExecutionContext context = ExecutionContext.Unknown, string[] args = null)
 		{
 			if (initialized) return;
@@ -280,6 +314,14 @@ namespace Duality
 			initialized = true;
 			OnInitialized();
 		}
+		/// <summary>
+		/// Terminates this DualityApp. This does not end the current Process, but it isn't recommended to
+		/// attemp performing any Duality operations after it has been terminated.
+		/// </summary>
+		/// <param name="unexpected">
+		/// If true, this is handled as an unexpected termination, such as because of an exception that
+		/// from which the application can't recover.
+		/// </param>
 		public static void Terminate(bool unexpected = false)
 		{
 			if (!initialized) return;
@@ -303,6 +345,9 @@ namespace Duality
 			execContext = ExecutionContext.Terminated;
 		}
 
+		/// <summary>
+		/// Performs a single update cycle.
+		/// </summary>
 		public static void Update()
 		{
 			isUpdating = true;
@@ -320,6 +365,9 @@ namespace Duality
 
 			if (terminateScheduled != 0) Terminate(terminateScheduled == 2);
 		}
+		/// <summary>
+		/// Performs a single render cycle.
+		/// </summary>
 		public static void Render()
 		{
 			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
@@ -328,6 +376,10 @@ namespace Duality
 			Time.perfRender = watch.ElapsedMilliseconds;
 		}
 
+		/// <summary>
+		/// Schedules the specified object for disposal. It is guaranteed to be disposed by the end of the current update cycle.
+		/// </summary>
+		/// <param name="o">The object to schedule for disposal.</param>
 		public static void DisposeLater(object o)
 		{
 			disposeSchedule.Add(o);
@@ -349,6 +401,10 @@ namespace Duality
 			Resource.RunCleanup();
 		}
 
+		/// <summary>
+		/// Performs a single editor update cycle.
+		/// </summary>
+		/// <param name="updateObjects"></param>
 		public static void EditorUpdate(GameObjectManager updateObjects)
 		{
 			if (execContext != ExecutionContext.Editor)
@@ -368,6 +424,11 @@ namespace Duality
 			isUpdating = false;
 		}
 		
+		/// <summary>
+		/// Loads all <see cref="Resource">Resources</see> that are located in this DualityApp's data directory and
+		/// saves them again. All loaded content is discarded both before and after this operation. You usually don't
+		/// need this.
+		/// </summary>
 		public static void LoadSaveAll()
 		{
 			DualityApp.LoadAppData();
@@ -388,6 +449,9 @@ namespace Duality
 			DualityApp.SaveMetaData();
 		}
 
+		/// <summary>
+		/// Triggers Duality to (re)load its <see cref="DualityAppData"/>.
+		/// </summary>
 		public static void LoadAppData()
 		{
 			string path = AppDataPath;
@@ -409,6 +473,9 @@ namespace Duality
 			else
 				appData = new DualityAppData();
 		}
+		/// <summary>
+		/// Triggers Duality to (re)load its <see cref="DualityUserData"/>.
+		/// </summary>
 		public static void LoadUserData()
 		{
 			string path = UserDataPath;
@@ -431,6 +498,9 @@ namespace Duality
 			else
 				UserData = new DualityUserData();
 		}
+		/// <summary>
+		/// Triggers Duality to (re)load its <see cref="DualityMetaData"/>.
+		/// </summary>
 		public static void LoadMetaData()
 		{
 			string path = MetaDataPath;
@@ -453,6 +523,9 @@ namespace Duality
 			else
 				metaData = new DualityMetaData();
 		}
+		/// <summary>
+		/// Triggers Duality to save its <see cref="DualityAppData"/>.
+		/// </summary>
 		public static void SaveAppData()
 		{
 			string path = AppDataPath;
@@ -462,6 +535,9 @@ namespace Duality
 				formatter.WriteObject(appData);
 			}
 		}
+		/// <summary>
+		/// Triggers Duality to save its <see cref="DualityUserData"/>.
+		/// </summary>
 		public static void SaveUserData()
 		{
 			string path = UserDataPath;
@@ -474,6 +550,9 @@ namespace Duality
 				formatter.WriteObject(userData);
 			}
 		}
+		/// <summary>
+		/// Triggers Duality to save its <see cref="DualityMetaData"/>.
+		/// </summary>
 		public static void SaveMetaData()
 		{
 			string path = MetaDataPath;
@@ -486,8 +565,12 @@ namespace Duality
 			}
 		}
 
+		/// <summary>
+		/// (Re)Loads all plugins. This results in discarding ALL Resources that might have been loaded before.
+		/// </summary>
 		public static void LoadPlugins()
 		{
+			foreach (Assembly asm in plugins.Values) disposedPlugins.Add(asm);
 			plugins.Clear();
 			availTypeDict.Clear();
 
@@ -509,7 +592,15 @@ namespace Duality
 			}
 
 			Log.Core.PopIndent();
+			ReflectionHelper.ClearTypeCache();
+			ContentProvider.ClearContent();
 		}
+		/// <summary>
+		/// Reloads the specified plugin. This results in discarding all <see cref="Resource"/> types related to this
+		/// plugin, as well as the current <see cref="Scene"/>. However, you might still need to take care of your
+		/// own custom data, i.e. dispose and properly reload it, if it relies on the reloaded plugin in any way.
+		/// </summary>
+		/// <param name="pluginFileName">The file path of the plugin to reload</param>
 		public static void ReloadPlugin(string pluginFileName)
 		{
 			Log.Core.Write("Reloading core plugin '{0}'...", pluginFileName);
@@ -537,8 +628,14 @@ namespace Duality
 			
 			Log.Core.PopIndent();
 			ReflectionHelper.ClearTypeCache();
+			Scene.Current.Dispose();
 			foreach (Type oldResType in oldResTypes) ContentProvider.UnregisterAllContent(oldResType);
 		}
+		/// <summary>
+		/// Returns whether the specified plugin is a leaf plugin i.e. isn't referenced by any other already loaded plugin.
+		/// </summary>
+		/// <param name="pluginFileName">The file path of the plugin to reload</param>
+		/// <returns></returns>
 		public static bool IsLeafPlugin(string pluginFileName)
 		{
 			string asmName = Path.GetFileNameWithoutExtension(pluginFileName);
@@ -552,16 +649,41 @@ namespace Duality
 			}
 			return true;
 		}
+		/// <summary>
+		/// Requests a <see cref="Duality.Serialization.BinaryFormatter">binary serializer</see> for the specified stream.
+		/// </summary>
+		/// <param name="stream">The stream which is used for de/serialization</param>
+		/// <returns>A binary serializer to use for serialization</returns>
 		public static BinaryFormatter RequestSerializer(Stream stream)
 		{
 			return new BinaryFormatter(stream);
 		}
 
+		/// <summary>
+		/// Enumerates all currently loaded assemblies that are part of Duality, i.e. Duality itsself and all loaded plugins.
+		/// </summary>
+		/// <returns></returns>
 		public static IEnumerable<Assembly> GetDualityAssemblies()
 		{
 			yield return typeof(Duality.DualityApp).Assembly;
 			foreach (Assembly a in LoadedPlugins) yield return a;
 		}
+		/// <summary>
+		/// Enumerates all available Duality <see cref="System.Type">Types</see> that are assignable
+		/// to the specified Type. 
+		/// </summary>
+		/// <param name="baseType">The base type to use for matching the result types.</param>
+		/// <returns>An enumeration of all Duality types deriving from the specified type.</returns>
+		/// <example>
+		/// The following code logs all available kinds of <see cref="Duality.Components.Renderer">Renderers</see>:
+		/// <code>
+		/// var rendererTypes = DualityApp.GetAvailDualityTypes(typeof(Duality.Components.Renderer));
+		/// foreach (Type rt in rendererTypes)
+		/// {
+		/// 	Log.Core.Write("Renderer Type '{0}' from Assembly '{1}'", Log.Type(rt), rt.Assembly.FullName);
+		/// }
+		/// </code>
+		/// </example>
 		public static IEnumerable<Type> GetAvailDualityTypes(Type baseType)
 		{
 			List<Type> availTypes;
@@ -579,10 +701,6 @@ namespace Duality
 			availTypeDict[baseType] = availTypes;
 
 			return availTypes;
-		}
-		public static Type FindDualityRessourceType(string typeName)
-		{
-			return GetAvailDualityTypes(typeof(Duality.Resource)).FirstOrDefault(t => t.Name == typeName);
 		}
 
 		private static void OnInitialized()

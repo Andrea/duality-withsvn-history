@@ -236,7 +236,7 @@ namespace Duality
 			filePath = System.IO.Path.GetFileNameWithoutExtension(filePath);
 			string[] token = filePath.Split('.');
 			if (token.Length < 2) return null;
-			return DualityApp.FindDualityRessourceType(token[token.Length - 1]);
+			return DualityApp.GetAvailDualityTypes(typeof(Duality.Resource)).FirstOrDefault(t => t.Name == token[token.Length - 1]);
 		}
 
 		protected static bool NonSerializedResourceBlocker(FieldInfo field)

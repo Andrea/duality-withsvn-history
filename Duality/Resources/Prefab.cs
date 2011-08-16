@@ -125,6 +125,7 @@ namespace Duality.Resources
 			}
 		}
 
+		private PrefabLink() : this(null, ContentRef<Prefab>.Null) {}
 		public PrefabLink(GameObject obj, ContentRef<Prefab> prefab)
 		{
 			this.obj = obj;

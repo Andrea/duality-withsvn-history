@@ -22,6 +22,136 @@
             and handles logfiles internally.
             </summary>
         </member>
+        <member name="M:Duality.DualityApp.Init(Duality.DualityApp.ExecutionContext,System.String[])">
+            <summary>
+            Initializes this DualityApp. Should be called before performing any operations withing Duality.
+            </summary>
+            <param name="context">The <see cref="T:Duality.DualityApp.ExecutionContext"/> in which Duality runs.</param>
+            <param name="args">
+            Command line arguments to run this DualityApp with. 
+            Usually these are just the ones from the host application, passed on.
+            </param>
+        </member>
+        <member name="M:Duality.DualityApp.Terminate(System.Boolean)">
+            <summary>
+            Terminates this DualityApp. This does not end the current Process, but it isn't recommended to
+            attemp performing any Duality operations after it has been terminated.
+            </summary>
+            <param name="unexpected">
+            If true, this is handled as an unexpected termination, such as because of an exception that
+            from which the application can't recover.
+            </param>
+        </member>
+        <member name="M:Duality.DualityApp.Update">
+            <summary>
+            Performs a single update cycle.
+            </summary>
+        </member>
+        <member name="M:Duality.DualityApp.Render">
+            <summary>
+            Performs a single render cycle.
+            </summary>
+        </member>
+        <member name="M:Duality.DualityApp.DisposeLater(System.Object)">
+            <summary>
+            Schedules the specified object for disposal. It is guaranteed to be disposed by the end of the current update cycle.
+            </summary>
+            <param name="o">The object to schedule for disposal.</param>
+        </member>
+        <member name="M:Duality.DualityApp.EditorUpdate(Duality.ObjectManagers.GameObjectManager)">
+            <summary>
+            Performs a single editor update cycle.
+            </summary>
+            <param name="updateObjects"></param>
+        </member>
+        <member name="M:Duality.DualityApp.LoadSaveAll">
+            <summary>
+            Loads all <see cref="T:Duality.Resource">Resources</see> that are located in this DualityApp's data directory and
+            saves them again. All loaded content is discarded both before and after this operation. You usually don't
+            need this.
+            </summary>
+        </member>
+        <member name="M:Duality.DualityApp.LoadAppData">
+            <summary>
+            Triggers Duality to (re)load its <see cref="T:Duality.DualityAppData"/>.
+            </summary>
+        </member>
+        <member name="M:Duality.DualityApp.LoadUserData">
+            <summary>
+            Triggers Duality to (re)load its <see cref="T:Duality.DualityUserData"/>.
+            </summary>
+        </member>
+        <member name="M:Duality.DualityApp.LoadMetaData">
+            <summary>
+            Triggers Duality to (re)load its <see cref="T:Duality.DualityMetaData"/>.
+            </summary>
+        </member>
+        <member name="M:Duality.DualityApp.SaveAppData">
+            <summary>
+            Triggers Duality to save its <see cref="T:Duality.DualityAppData"/>.
+            </summary>
+        </member>
+        <member name="M:Duality.DualityApp.SaveUserData">
+            <summary>
+            Triggers Duality to save its <see cref="T:Duality.DualityUserData"/>.
+            </summary>
+        </member>
+        <member name="M:Duality.DualityApp.SaveMetaData">
+            <summary>
+            Triggers Duality to save its <see cref="T:Duality.DualityMetaData"/>.
+            </summary>
+        </member>
+        <member name="M:Duality.DualityApp.LoadPlugins">
+            <summary>
+            (Re)Loads all plugins. This results in discarding ALL Resources that might have been loaded before.
+            </summary>
+        </member>
+        <member name="M:Duality.DualityApp.ReloadPlugin(System.String)">
+            <summary>
+            Reloads the specified plugin. This results in discarding all <see cref="T:Duality.Resource"/> types related to this
+            plugin, as well as the current <see cref="T:Duality.Resources.Scene"/>. However, you might still need to take care of your
+            own custom data, i.e. dispose and properly reload it, if it relies on the reloaded plugin in any way.
+            </summary>
+            <param name="pluginFileName">The file path of the plugin to reload</param>
+        </member>
+        <member name="M:Duality.DualityApp.IsLeafPlugin(System.String)">
+            <summary>
+            Returns whether the specified plugin is a leaf plugin i.e. isn't referenced by any other already loaded plugin.
+            </summary>
+            <param name="pluginFileName">The file path of the plugin to reload</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.DualityApp.RequestSerializer(System.IO.Stream)">
+            <summary>
+            Requests a <see cref="T:Duality.Serialization.BinaryFormatter">binary serializer</see> for the specified stream.
+            </summary>
+            <param name="stream">The stream which is used for de/serialization</param>
+            <returns>A binary serializer to use for serialization</returns>
+        </member>
+        <member name="M:Duality.DualityApp.GetDualityAssemblies">
+            <summary>
+            Enumerates all currently loaded assemblies that are part of Duality, i.e. Duality itsself and all loaded plugins.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.DualityApp.GetAvailDualityTypes(System.Type)">
+            <summary>
+            Enumerates all available Duality <see cref="T:System.Type">Types</see> that are assignable
+            to the specified Type. 
+            </summary>
+            <param name="baseType">The base type to use for matching the result types.</param>
+            <returns>An enumeration of all Duality types deriving from the specified type.</returns>
+            <example>
+            The following code logs all available kinds of <see cref="T:Duality.Components.Renderer">Renderers</see>:
+            <code>
+            var rendererTypes = DualityApp.GetAvailDualityTypes(typeof(Duality.Components.Renderer));
+            foreach (Type rt in rendererTypes)
+            {
+            	Log.Core.Write("Renderer Type '{0}' from Assembly '{1}'", Log.Type(rt), rt.Assembly.FullName);
+            }
+            </code>
+            </example>
+        </member>
         <member name="E:Duality.DualityApp.Initialized">
             <summary>
             Fired as soon as Duality has been initialized. However, this usually happens before creating any kind of graphics context,
@@ -90,6 +220,48 @@
         <member name="P:Duality.DualityApp.MetaData">
             <summary>
             [GET] Provides access to Duality's current <see cref="T:Duality.DualityMetaData">meta data</see>. This is never null.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityApp.AppDataPath">
+            <summary>
+            [GET] Returns the path where this DualityApp's <see cref="T:Duality.DualityAppData">application data</see> is located at.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityApp.UserDataPath">
+            <summary>
+            [GET] Returns the path where this DualityApp's <see cref="T:Duality.DualityUserData">user data</see> is located at.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityApp.MetaDataPath">
+            <summary>
+            [GET] Returns the path where this DualityApp's <see cref="T:Duality.DualityMetaData">meta data</see> is located at.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityApp.DefaultMode">
+            <summary>
+            [GET] Returns the <see cref="T:OpenTK.Graphics.GraphicsMode"/> that Duality intends to use by default.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityApp.AvailableModes">
+            <summary>
+            [GET] Enumerates all available <see cref="T:OpenTK.Graphics.GraphicsMode">GraphicsModes</see>.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityApp.ExecContext">
+            <summary>
+            [GET] Returns the <see cref="T:Duality.DualityApp.ExecutionContext"/> in which this DualityApp is currently running.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityApp.LoadedPlugins">
+            <summary>
+            [GET] Enumerates all currently loaded plugins.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityApp.DisposedPlugins">
+            <summary>
+            [GET] Enumerates all plugins that have been loaded before, but have been discarded due to a runtime plugin reload operation.
+            This is usually only the case when being executed from withing the editor or manually triggering a plugin reload. However,
+            this is normally unnecessary.
             </summary>
         </member>
         <member name="T:Duality.DualityApp.ExecutionContext">

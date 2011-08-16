@@ -991,8 +991,8 @@ namespace EditorBase
 			if (this.DesignMode) return;
 			Point cursorPos = this.glControl.PointToClient(Cursor.Position);
 
-			// Retrieve OpenGL context 
-			this.MainContextControl.Context.MakeCurrent(this.glControl.WindowInfo);
+			// Retrieve OpenGL context
+ 			try { this.MainContextControl.Context.MakeCurrent(this.glControl.WindowInfo); } catch (Exception) { return; }
 			this.MakeDualityTarget();
 
 			// Determine turned camera axes
