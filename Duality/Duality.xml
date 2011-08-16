@@ -4,16 +4,48 @@
         <name>Duality</name>
     </assembly>
     <members>
-        <member name="T:Duality.Resources.Pixmap">
+        <member name="T:Duality.SoundBudgetPriority">
             <summary>
-            A Pixmap stores pixel data in system memory. 
+            Defines priorities for the budget-based sound system
             </summary>
+        </member>
+        <member name="T:Duality.SoundBudgetPad">
+            <summary>
+            Wraps a SoundInstance in order to make it budget-based. Intended
+            only to be used for longer sound pads.
+            </summary>
+        </member>
+        <member name="M:Duality.SerializationHelper.IsSafeAssignType(System.Type)">
+            <summary>
+            Returns whether the specified type may just be assigned in a clone operation (even if deep)
+            instead of being investigated further.
+            </summary>
+            <param name="t"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.SerializationHelper.DeepResetReferences(System.Object,System.Type[])">
+            <summary>
+            Resets all references of object types assignable to any of the specified. typeof(Component) will
+            result in all references to any kind of Component to be cleared / set null.
+            </summary>
+            <param name="instance"></param>
+            <param name="resetTypes"></param>
+        </member>
+        <member name="M:Duality.SerializationHelper.DeepResolveTypeReferences(System.Object,System.Runtime.Serialization.SerializationBinder)">
+            <summary>
+            Re-resolves all MemberInfo references using current Type information including Plugin data. When reloading
+            Plugins, calling this method for an object will re-map its previously reflected MemberInfo references to
+            the newly loaded plugin Assemblies equivalent
+            </summary>
+            <param name="instance"></param>
         </member>
         <member name="T:Duality.Resource">
             <summary>
             The abstract Resource class is inherited by any kind of Duality content. Instances of it or one of its subclasses
             are usually handled wrapped inside a <see cref="T:Duality.ContentRef`1"/> and requested from the <see cref="T:Duality.ContentProvider"/>.
             </summary>
+            <seealso cref="T:Duality.ContentRef`1"/>
+            <seealso cref="T:Duality.ContentProvider"/>
         </member>
         <member name="F:Duality.Resource.FileExt">
             <summary>
@@ -129,14 +161,6 @@
             It is also the path under which this Resource is registered at the ContentProvider.
             </summary>
         </member>
-        <member name="M:Duality.OggVorbis.OV.StreamChunk(System.IntPtr,System.IO.MemoryStream@,System.Int32@,System.Int32@)">
-            <summary>
-            Streams a pcm chunk from an opened ogg vorbis file to the specified OpenAL buffer.
-            </summary>
-            <param name="alBufferId">OpenAL buffer id to stream to</param>
-            <param name="vFPtr">Ogg Vorbis file handle</param>
-            <returns>Returns false, if EOF is reached.</returns>
-        </member>
         <member name="T:Duality.Time">
             <summary>
             The Time class provides a global interface for time measurement and control. It affects all time-dependent computations. 
@@ -216,20 +240,69 @@
             [GET] The number of frames passed since startup
             </summary>
         </member>
-        <member name="T:Duality.SoundBudgetPriority">
+        <member name="T:Duality.LogOutputFormat">
             <summary>
-            Defines priorities for the budget-based sound system
+            Holds log output format data that may be shared among different LogOutputs such as the
+            current log indent in different outputs writing to the same file.
             </summary>
         </member>
-        <member name="T:Duality.SoundBudgetPad">
+        <member name="M:Duality.OggVorbis.OV.StreamChunk(System.IntPtr,System.IO.MemoryStream@,System.Int32@,System.Int32@)">
             <summary>
-            Wraps a SoundInstance in order to make it budget-based. Intended
-            only to be used for longer sound pads.
+            Streams a pcm chunk from an opened ogg vorbis file to the specified OpenAL buffer.
+            </summary>
+            <param name="alBufferId">OpenAL buffer id to stream to</param>
+            <param name="vFPtr">Ogg Vorbis file handle</param>
+            <returns>Returns false, if EOF is reached.</returns>
+        </member>
+        <member name="M:Duality.ReflectionHelper.GetAllFields(System.Type,System.Reflection.BindingFlags)">
+            <summary>
+            Returns all fields matching the specified bindingflags, even if private and inherited.
+            </summary>
+            <param name="flags"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ReflectionHelper.GetTypeName(System.Type,Duality.TypeNameFormat)">
+            <summary>
+            Returns a string describing a certain Type.
+            </summary>
+            <param name="T">The Type to describe</param>
+            <param name="attrib">How to describe the Type</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ReflectionHelper.FindType(System.String,System.Reflection.Assembly[],Duality.TypeNameFormat)">
+            <summary>
+            Retrieves a Type based on the specified TypeNameFormat
+            </summary>
+            <param name="typeName"></param>
+            <param name="asmSearch"></param>
+            <param name="format"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Duality.TypeNameFormat">
+            <summary>
+            An enumeration of possible formats in which Type data can be displayed in a string.
             </summary>
         </member>
-        <member name="T:Duality.NonSerializedResourceAttribute">
+        <member name="F:Duality.TypeNameFormat.Keyword">
             <summary>
-            Indicates that a field will be assumed null when serializing it as part of a Resource serialization.
+            The method will return a type keyword, its "short" name. Just the types "base", no generic
+            type parameters or array specifications.
+            </summary>
+        </member>
+        <member name="F:Duality.TypeNameFormat.FullNameWithoutAssembly">
+            <summary>
+            Exactly the same as a Types FullName, but without any Assembly names, versions, keys, etc.
+            </summary>
+        </member>
+        <member name="F:Duality.TypeNameFormat.CSCodeIdent">
+            <summary>
+            A type name / definition as you would see it in normal C# code. Complete with generic parameters
+            or possible array specifications.
+            </summary>
+        </member>
+        <member name="F:Duality.TypeNameFormat.CSCodeIdentShort">
+            <summary>
+            As CSCodeIdent, but shortened to Keywords
             </summary>
         </member>
         <member name="T:Duality.Resources.Texture">
@@ -345,68 +418,11 @@
             [GET] Total number of animation frames in this Texture
             </summary>
         </member>
-        <member name="M:Duality.ReflectionHelper.GetAllFields(System.Type,System.Reflection.BindingFlags)">
-            <summary>
-            Returns all fields matching the specified bindingflags, even if private and inherited.
-            </summary>
-            <param name="flags"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.ReflectionHelper.GetTypeName(System.Type,Duality.TypeNameFormat)">
-            <summary>
-            Returns a string describing a certain Type.
-            </summary>
-            <param name="T">The Type to describe</param>
-            <param name="attrib">How to describe the Type</param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.ReflectionHelper.FindType(System.String,System.Reflection.Assembly[],Duality.TypeNameFormat)">
-            <summary>
-            Retrieves a Type based on the specified TypeNameFormat
-            </summary>
-            <param name="typeName"></param>
-            <param name="asmSearch"></param>
-            <param name="format"></param>
-            <returns></returns>
-        </member>
-        <member name="T:Duality.TypeNameFormat">
-            <summary>
-            An enumeration of possible formats in which Type data can be displayed in a string.
-            </summary>
-        </member>
-        <member name="F:Duality.TypeNameFormat.Keyword">
-            <summary>
-            The method will return a type keyword, its "short" name. Just the types "base", no generic
-            type parameters or array specifications.
-            </summary>
-        </member>
-        <member name="F:Duality.TypeNameFormat.FullNameWithoutAssembly">
-            <summary>
-            Exactly the same as a Types FullName, but without any Assembly names, versions, keys, etc.
-            </summary>
-        </member>
-        <member name="F:Duality.TypeNameFormat.CSCodeIdent">
-            <summary>
-            A type name / definition as you would see it in normal C# code. Complete with generic parameters
-            or possible array specifications.
-            </summary>
-        </member>
-        <member name="F:Duality.TypeNameFormat.CSCodeIdentShort">
-            <summary>
-            As CSCodeIdent, but shortened to Keywords
-            </summary>
-        </member>
         <member name="T:Duality.Resources.AudioData">
             <summary>
             Stores compressed audio data (Ogg Vorbis) in system memory as well as a reference to the
             OpenAL buffer containing actual PCM data, once set up. The OpenAL buffer is set up lazy
             i.e. as soon as demanded by accessing the AlBuffer property or calling SetupAlBuffer.
-            </summary>
-        </member>
-        <member name="T:Duality.LogOutputFormat">
-            <summary>
-            Holds log output format data that may be shared among different LogOutputs such as the
-            current log indent in different outputs writing to the same file.
             </summary>
         </member>
         <member name="M:Duality.MathF.InvSqrtFast(System.Single)">
@@ -580,35 +596,352 @@
             <param name="obj2YSpeed"></param>
             <returns></returns>
         </member>
+        <member name="T:Duality.Resources.Pixmap">
+            <summary>
+            A Pixmap stores pixel data in system memory. 
+            </summary>
+        </member>
+        <member name="T:Duality.NonSerializedResourceAttribute">
+            <summary>
+            Indicates that a field will be assumed null when serializing it as part of a Resource serialization.
+            </summary>
+        </member>
+        <member name="T:Duality.GameObject">
+            <summary>
+            GameObjects are what every <see cref="T:Duality.Resources.Scene"/> consists of. They represent nodes in the hierarchial scene graph and
+            can maintain a <see cref="T:Duality.Resources.PrefabLink"/> connection. A GameObject's main duty is to group several <see cref="T:Duality.Component"/>s
+            to form one logical instance of an actual object as part of the game, such as "Car" or "PlayerCharacter". However,
+            the GameObjects itsself does not contain any game-related logic and, by default, doesn't even occupy a position in space.
+            This is the job of its Components.
+            </summary>
+            <seealso cref="T:Duality.Component"/>
+            <seealso cref="T:Duality.Resources.Scene"/>
+            <seealso cref="T:Duality.Resources.PrefabLink"/>
+        </member>
+        <member name="M:Duality.GameObject.#ctor(Duality.ContentRef{Duality.Resources.Prefab})">
+            <summary>
+            Creates a GameObject based on a specific <see cref="T:Duality.Resources.Prefab"/>.
+            </summary>
+            <param name="prefab">The Prefab that will be applied to this GameObject.</param>
+            <seealso cref="T:Duality.Resources.Prefab"/>
+        </member>
+        <member name="M:Duality.GameObject.LinkToPrefab(Duality.ContentRef{Duality.Resources.Prefab})">
+            <summary>
+            Sets or alters this GameObject's <see cref="T:Duality.Resources.PrefabLink"/> to reference the specified <see cref="T:Duality.Resources.Prefab"/>.
+            </summary>
+            <param name="prefab">The Prefab that will be linked to.</param>
+            <seealso cref="T:Duality.Resources.PrefabLink"/>
+            <seealso cref="T:Duality.Resources.Prefab"/>
+        </member>
+        <member name="M:Duality.GameObject.BreakPrefabLink">
+            <summary>
+            Breaks this GameObject's <see cref="T:Duality.Resources.PrefabLink"/>
+            </summary>
+        </member>
+        <member name="M:Duality.GameObject.ChildAtIndex(System.Int32)">
+            <summary>
+            Returns the child GameObject that is internally stored at the specified index.
+            </summary>
+            <param name="index">The index at which the desired GameObject is located.</param>
+            <returns>The child GameObject at the specified index. Null, if the index is not valid.</returns>
+        </member>
+        <member name="M:Duality.GameObject.ChildAtIndexPath(System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Executes a series of <see cref="M:Duality.GameObject.ChildAtIndex(System.Int32)"/> calls, beginning at this GameObject and 
+            each on the last retrieved child object.
+            </summary>
+            <param name="indexPath">An enumeration of child indices.</param>
+            <returns>The last retrieved GameObject after executing all indexing steps.</returns>
+            <example>
+            Calling <c>ChildAtIndexPath(new[] { 0, 0 })</c> will return the first child of the first child.
+            </example>
+        </member>
+        <member name="M:Duality.GameObject.IndexOfChild(Duality.GameObject)">
+            <summary>
+            Determines the index of a specific child GameObject.
+            </summary>
+            <param name="child">The child GameObject of which the index is to be determined.</param>
+            <returns>The index of the specified child GameObject</returns>
+            <seealso cref="M:Duality.GameObject.ChildAtIndex(System.Int32)"/>
+        </member>
+        <member name="M:Duality.GameObject.IndexPathOfChild(Duality.GameObject)">
+            <summary>
+            Determines the index path from this GameObject to the specified child (or grandchild, etc.) of it.
+            </summary>
+            <param name="child">The child GameObject to lead to.</param>
+            <returns>A <see cref="T:System.Collections.Generic.List`1"/> of indices that lead from this GameObject to the specified child GameObject.</returns>
+            <seealso cref="M:Duality.GameObject.ChildAtIndexPath(System.Collections.Generic.IEnumerable{System.Int32})"/>
+        </member>
+        <member name="M:Duality.GameObject.IsChildOf(Duality.GameObject)">
+            <summary>
+            Returns whether this GameObject is a child, grandchild or similar of the specified GameObject.
+            </summary>
+            <param name="parent">The GameObject to check whether or not it is a parent of this one.</param>
+            <returns>True, if it is, false if not.</returns>
+        </member>
+        <member name="M:Duality.GameObject.GetComponents``1(System.Boolean)">
+            <summary>
+            Enumerates all <see cref="T:Duality.Component"/>s of this GameObject that match the specified <see cref="T:System.Type"/> or subclass it.
+            </summary>
+            <typeparam name="T">The base Type to match when iterating through the Components.</typeparam>
+            <param name="activeOnly">If true, only <see cref="P:Duality.Component.Active">active</see> Components are enumerated.</param>
+            <returns>An enumeration of all Components that match the specified conditions.</returns>
+            <seealso cref="M:Duality.GameObject.GetComponents(System.Type,System.Boolean)"/>
+        </member>
+        <member name="M:Duality.GameObject.GetComponentsInChildren``1(System.Boolean)">
+            <summary>
+            Enumerates all <see cref="T:Duality.Component"/>s of this object's child GameObjects that match the specified <see cref="T:System.Type"/> or subclass it.
+            </summary>
+            <typeparam name="T">The base Type to match when iterating through the Components.</typeparam>
+            <param name="activeOnly">If true, only <see cref="P:Duality.Component.Active">active</see> Components are enumerated.</param>
+            <returns>An enumeration of all Components that match the specified conditions.</returns>
+            <seealso cref="M:Duality.GameObject.GetComponentsInChildren(System.Type,System.Boolean)"/>
+        </member>
+        <member name="M:Duality.GameObject.GetComponentsDeep``1(System.Boolean)">
+            <summary>
+            Enumerates all <see cref="T:Duality.Component"/>s of this GameObject or any child GameObject that match the specified <see cref="T:System.Type"/> or subclass it.
+            </summary>
+            <typeparam name="T">The base Type to match when iterating through the Components.</typeparam>
+            <param name="activeOnly">If true, only <see cref="P:Duality.Component.Active">active</see> Components are enumerated.</param>
+            <returns>An enumeration of all Components that match the specified conditions.</returns>
+            <seealso cref="M:Duality.GameObject.GetComponentsDeep(System.Type,System.Boolean)"/>
+        </member>
+        <member name="M:Duality.GameObject.GetComponents(System.Type,System.Boolean)">
+            <summary>
+            Enumerates all <see cref="T:Duality.Component"/>s of this GameObject that match the specified <see cref="T:System.Type"/> or subclass it.
+            </summary>
+            <param name="t">The base Type to match when iterating through the Components.</param>
+            <param name="activeOnly">If true, only <see cref="P:Duality.Component.Active">active</see> Components are enumerated.</param>
+            <returns>An enumeration of all Components that match the specified conditions.</returns>
+            <seealso cref="M:Duality.GameObject.GetComponents``1(System.Boolean)"/>
+        </member>
+        <member name="M:Duality.GameObject.GetComponentsInChildren(System.Type,System.Boolean)">
+            <summary>
+            Enumerates all <see cref="T:Duality.Component"/>s of this object's child GameObjects that match the specified <see cref="T:System.Type"/> or subclass it.
+            </summary>
+            <param name="t">The base Type to match when iterating through the Components.</param>
+            <param name="activeOnly">If true, only <see cref="P:Duality.Component.Active">active</see> Components are enumerated.</param>
+            <returns>An enumeration of all Components that match the specified conditions.</returns>
+            <seealso cref="M:Duality.GameObject.GetComponentsInChildren``1(System.Boolean)"/>
+        </member>
+        <member name="M:Duality.GameObject.GetComponentsDeep(System.Type,System.Boolean)">
+            <summary>
+            Enumerates all <see cref="T:Duality.Component"/>s of this GameObject or any child GameObject that match the specified <see cref="T:System.Type"/> or subclass it.
+            </summary>
+            <param name="t">The base Type to match when iterating through the Components.</param>
+            <param name="activeOnly">If true, only <see cref="P:Duality.Component.Active">active</see> Components are enumerated.</param>
+            <returns>An enumeration of all Components that match the specified conditions.</returns>
+            <seealso cref="M:Duality.GameObject.GetComponentsDeep``1(System.Boolean)"/>
+        </member>
+        <member name="M:Duality.GameObject.GetComponent``1(System.Boolean)">
+            <summary>
+            Returns a single <see cref="T:Duality.Component"/> that matches the specified <see cref="T:System.Type"/>.
+            </summary>
+            <typeparam name="T">The Type to match the Components with.</typeparam>
+            <param name="exactType">If true, the Component must match the specified Type exactly. If false, subclasses of it are also valid.</param>
+            <returns>A single Component that matches the specified Type. Null, if none was found.</returns>
+        </member>
+        <member name="M:Duality.GameObject.GetComponent(System.Type,System.Boolean)">
+            <summary>
+            Returns a single <see cref="T:Duality.Component"/> that matches the specified <see cref="T:System.Type"/>.
+            </summary>
+            <param name="t">The Type to match the Components with.</param>
+            <param name="exactType">If true, the Component must match the specified Type exactly. If false, subclasses of it are also valid.</param>
+            <returns>A single Component that matches the specified Type. Null, if none was found.</returns>
+        </member>
+        <member name="M:Duality.GameObject.AddComponent``1">
+            <summary>
+            Adds a <see cref="T:Duality.Component"/> of the specified <see cref="T:System.Type"/> to this GameObject, if not existing yet.
+            Simply uses the existing Component otherwise.
+            </summary>
+            <typeparam name="T">The Type of which to request a Component instance.</typeparam>
+            <returns>A reference to a Component of the specified Type.</returns>
+            <seealso cref="M:Duality.GameObject.AddComponent(System.Type)"/>
+        </member>
+        <member name="M:Duality.GameObject.AddComponent``1(``0)">
+            <summary>
+            Adds the specified <see cref="T:Duality.Component"/> to this GameObject, if no Component of that Type is already part of this GameObject.
+            Simply uses the already added Component otherwise.
+            </summary>
+            <typeparam name="T">The Components Type.</typeparam>
+            <param name="newComp">The Component instance to add to this GameObject.</param>
+            <returns>A reference to a Component of the specified Type</returns>
+            <exception cref="T:System.ArgumentException">Thrown if the specified Component is already attached to a GameObject</exception>
+        </member>
+        <member name="M:Duality.GameObject.RemoveComponent``1">
+            <summary>
+            Removes a <see cref="T:Duality.Component"/> of the specified <see cref="T:System.Type"/> from this GameObject, if existing.
+            </summary>
+            <typeparam name="T">The Type of which to remove a Component instance.</typeparam>
+            <returns>A reference to the removed Component. Null otherwise.</returns>
+        </member>
+        <member name="M:Duality.GameObject.AddComponent(System.Type)">
+            <summary>
+            Adds a <see cref="T:Duality.Component"/> of the specified <see cref="T:System.Type"/> to this GameObject, if not existing yet.
+            Simply uses the existing Component otherwise.
+            </summary>
+            <param name="t">The Type of which to request a Component instance.</param>
+            <returns>A reference to a Component of the specified Type.</returns>
+            <seealso cref="M:Duality.GameObject.AddComponent``1"/>
+        </member>
+        <member name="M:Duality.GameObject.RemoveComponent(System.Type)">
+            <summary>
+            Removes a <see cref="T:Duality.Component"/> of the specified <see cref="T:System.Type"/> from this GameObject, if existing.
+            </summary>
+            <param name="t">The Type of which to remove a Component instance.</param>
+            <returns>A reference to the removed Component. Null otherwise.</returns>
+        </member>
+        <member name="M:Duality.GameObject.ClearComponents">
+            <summary>
+            Removes all <see cref="T:Duality.Component">Components</see> from this GameObject.
+            </summary>
+        </member>
+        <member name="M:Duality.GameObject.Dispose">
+            <summary>
+            Disposes this GameObject as well as all of its child GameObjects and <see cref="T:Duality.Component">Components</see>.
+            You usually don't need this - use <see cref="M:Duality.GameObject.DisposeLater"/> instead.
+            </summary>
+            <seealso cref="M:Duality.GameObject.DisposeLater"/>
+        </member>
+        <member name="M:Duality.GameObject.DisposeLater">
+            <summary>
+            Schedules this GameObject for disposal. It is guaranteed to be executed until the next update cycle starts.
+            </summary>
+            <seealso cref="M:Duality.GameObject.Dispose"/>
+        </member>
+        <member name="M:Duality.GameObject.Clone">
+            <summary>
+            Creates a deep copy of this GameObject.
+            </summary>
+            <returns>A reference to a newly created deep copy of this GameObject.</returns>
+        </member>
+        <member name="M:Duality.GameObject.CopyTo(Duality.GameObject)">
+            <summary>
+            Deep-copies this GameObject's data to the specified target GameObject.
+            </summary>
+            <param name="target">The target GameObject to copy to.</param>
+        </member>
+        <member name="P:Duality.GameObject.Parent">
+            <summary>
+            [GET / SET] This GameObject's parent object in the scene graph.
+            A GameObject usually depends on its parent in some way, such as being
+            positioned relative to it when occupying a position in space.
+            </summary>
+        </member>
+        <member name="P:Duality.GameObject.Active">
+            <summary>
+            [GET / SET] Whether or not the GameObject is currently active. To return true,
+            both the GameObject itsself and all of its parent GameObjects need to be active.
+            </summary>
+            <seealso cref="P:Duality.GameObject.ActiveSingle"/>
+        </member>
+        <member name="P:Duality.GameObject.ActiveSingle">
+            <summary>
+            [GET / SET] Whether or not the GameObject is currently active. Unlike <see cref="P:Duality.GameObject.Active"/>,
+            this property ignores parent activation states and depends only on this single GameObject.
+            The scene graph and other Duality instances usually check <see cref="P:Duality.GameObject.Active"/>, not ActiveSingle.
+            </summary>
+            <seealso cref="P:Duality.GameObject.Active"/>
+        </member>
+        <member name="P:Duality.GameObject.Name">
+            <summary>
+            [GET / SET] The name of this GameObject.
+            </summary>
+        </member>
+        <member name="P:Duality.GameObject.FullName">
+            <summary>
+            [GET] The path-like hierarchial name of this GameObject.
+            </summary>
+            <example>For an object called <c>Wheel</c> inside an object called <c>Car</c>, this would return <c>Car/Wheel</c>.</example>
+        </member>
+        <member name="P:Duality.GameObject.HierarchyLevel">
+            <summary>
+            [GET] Returns the number of parents this object has when travelling upwards the scene graph hierarchy.
+            </summary>
+            <example>
+            This will be zero for a root object (one that has no parent object), one for a root object's child,
+            two for a root object's child's child, and so on.
+            </example>
+        </member>
+        <member name="P:Duality.GameObject.ChildCount">
+            <summary>
+            [GET] The number of child GameObjects this object has.
+            </summary>
+        </member>
+        <member name="P:Duality.GameObject.ComponentCount">
+            <summary>
+            [GET] The number of <see cref="T:Duality.Component"/>s this object consists of.
+            </summary>
+        </member>
+        <member name="P:Duality.GameObject.Children">
+            <summary>
+            [GET] Enumerates this objects child GameObjects.
+            </summary>
+        </member>
+        <member name="P:Duality.GameObject.ChildrenDeep">
+            <summary>
+            [GET] Enumerates all GameObjects that are directly or indirectly parented to this object, i.e. its
+            children, grandchildren, etc.
+            </summary>
+        </member>
+        <member name="P:Duality.GameObject.PrefabLink">
+            <summary>
+            [GET] The <see cref="T:Duality.Resources.PrefabLink"/> that connects this object to a <see cref="T:Duality.Resources.Prefab"/>.
+            </summary>
+            <seealso cref="T:Duality.Resources.PrefabLink"/>
+            <seealso cref="T:Duality.Resources.Prefab"/>
+        </member>
+        <member name="P:Duality.GameObject.AffectedByPrefabLink">
+            <summary>
+            [GET] The <see cref="T:Duality.Resources.PrefabLink"/> that connects this object or one or its parent GameObjects to a <see cref="T:Duality.Resources.Prefab"/>.
+            </summary>
+            <remarks>
+            This does not necessarily mean that this GameObject will be affected by the PrefabLink, since it might not be part of
+            the linked Prefab. It simply indicates the returned PrefabLink's potential to adjust this GameObject when being applied.
+            </remarks>
+            <seealso cref="T:Duality.Resources.PrefabLink"/>
+            <seealso cref="T:Duality.Resources.Prefab"/>
+        </member>
+        <member name="P:Duality.GameObject.Disposed">
+            <summary>
+            [GET] Returns whether this GameObject has been disposed. Disposed GameObjects are not to be used and should
+            be treated specifically or as null references by your code.
+            </summary>
+        </member>
+        <member name="P:Duality.GameObject.Transform">
+            <summary>
+            [GET] The GameObject's <see cref="T:Duality.Components.Transform"/> Component, if existing.
+            </summary>
+            <seealso cref="T:Duality.Components.Transform"/>
+        </member>
+        <member name="P:Duality.GameObject.Camera">
+            <summary>
+            [GET] The GameObject's <see cref="T:Duality.Components.Camera"/> Component, if existing.
+            </summary>
+            <seealso cref="T:Duality.Components.Camera"/>
+        </member>
+        <member name="P:Duality.GameObject.Renderer">
+            <summary>
+            [GET] The GameObject's <see cref="T:Duality.Components.Renderer"/> Component, if existing. 
+            </summary>
+            <remarks>Note that a GameObject may contain multiple Renderers in which case the return value of this property may be any of them.</remarks>
+            <seealso cref="T:Duality.Components.Renderer"/>
+        </member>
+        <member name="E:Duality.GameObject.EventComponentAdded">
+            <summary>
+            Fired when a Component has been added to the GameObject
+            </summary>
+        </member>
+        <member name="E:Duality.GameObject.EventComponentRemoving">
+            <summary>
+            Fired when a Component is about to be removed from the GameObject
+            </summary>
+        </member>
         <member name="M:Duality.ContentRef`1.MakeAvailable">
             <summary>
             Loads the associated content as if it was accessed now.
             You don't usually need to call this method. It is invoked implicitly by trying to access the ContentRef/>
             </summary>
-        </member>
-        <member name="M:Duality.SerializationHelper.IsSafeAssignType(System.Type)">
-            <summary>
-            Returns whether the specified type may just be assigned in a clone operation (even if deep)
-            instead of being investigated further.
-            </summary>
-            <param name="t"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.SerializationHelper.DeepResetReferences(System.Object,System.Type[])">
-            <summary>
-            Resets all references of object types assignable to any of the specified. typeof(Component) will
-            result in all references to any kind of Component to be cleared / set null.
-            </summary>
-            <param name="instance"></param>
-            <param name="resetTypes"></param>
-        </member>
-        <member name="M:Duality.SerializationHelper.DeepResolveTypeReferences(System.Object,System.Runtime.Serialization.SerializationBinder)">
-            <summary>
-            Re-resolves all MemberInfo references using current Type information including Plugin data. When reloading
-            Plugins, calling this method for an object will re-map its previously reflected MemberInfo references to
-            the newly loaded plugin Assemblies equivalent
-            </summary>
-            <param name="instance"></param>
         </member>
     </members>
 </doc>

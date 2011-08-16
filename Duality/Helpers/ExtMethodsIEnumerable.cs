@@ -94,23 +94,6 @@ namespace Duality
 			return sb.ToString(0, Math.Max(0, sb.Length - separator.Length));  // Remove at the end is faster
 		}
 
-		public static IEnumerable<T> ForEach<T>(this IEnumerable<T> collection, Action<T> action)
-        {
-            foreach (var item in collection)
-                action(item);
-            return collection;
-        }
-        public static IEnumerable<T> ForEach<T>(this IEnumerable<T> collection, Action<T,int> action)
-        {
-            int i = 0;
-            foreach (var item in collection)
-            {
-                action(item, i);
-                i++;
-            }
-            return collection;
-        }
-
 		public static IEnumerable<T> NotNull<T>(this IEnumerable<T> collection) where T : class
 		{
 			return collection.Where(i => i != null);

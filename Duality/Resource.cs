@@ -13,6 +13,8 @@ namespace Duality
 	/// The abstract Resource class is inherited by any kind of Duality content. Instances of it or one of its subclasses
 	/// are usually handled wrapped inside a <see cref="ContentRef{T}"/> and requested from the <see cref="ContentProvider"/>.
 	/// </summary>
+	/// <seealso cref="ContentRef{T}"/>
+	/// <seealso cref="ContentProvider"/>
 	[Serializable]
 	public abstract class Resource : IManageableObject, IDisposable
 	{
