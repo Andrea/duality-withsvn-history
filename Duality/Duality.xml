@@ -289,6 +289,206 @@
             Duality runs inside the editor.
             </summary>
         </member>
+        <member name="T:Duality.DualityAppData">
+            <summary>
+            Provides general information about this Duality application / game.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityAppData.AppName">
+            <summary>
+            [GET / SET] The name of your application / game. It will also be used as a window title by the launcher app.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityAppData.AuthorName">
+            <summary>
+            [GET / SET] The author name of your application. Might be your or your team's name or -nickname.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityAppData.WebsiteUrl">
+            <summary>
+            [GET / SET] The address of this game's official website or similar.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityAppData.Version">
+            <summary>
+            [GET / SET] The current application / game version.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityAppData.StartScene">
+            <summary>
+            [GET / SET] A reference to the start <see cref="T:Duality.Resources.Scene"/>. It is used by the launcher app to
+            determine which Scene to load initially.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityAppData.SpeedOfSound">
+            <summary>
+            [GET / SET] The speed of sound. While this is technically a unitless value, you might assume something like "meters per second".
+            It is used to calculate the doppler effect of <see cref="T:Duality.SoundInstance">SoundInstances</see> that are moving relative to the
+            <see cref="T:Duality.Components.SoundListener"/>.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityAppData.SoundDopplerFactor">
+            <summary>
+            [GET / SET] A factor by which the strength of the doppler effect is multiplied.
+            </summary>
+        </member>
+        <member name="T:Duality.DualityUserData">
+            <summary>
+            Provides information about user settings for this Duality application / game.
+            It is persistent beyond installing or deleting this Duality game.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityUserData.UserName">
+            <summary>
+            [GET / SET] The player's name. This may be his main character's name or simply remain unused.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityUserData.GfxWidth">
+            <summary>
+            [GET / SET] Width of the game's display area.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityUserData.GfxHeight">
+            <summary>
+            [GET / SET] Height of the game's display area.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityUserData.GfxFullScreen">
+            <summary>
+            [GET / SET] Whether or not the game is launched in fullscreen mode. Not all display area sizes are available in fullscreen
+            and some of them might look distorted when applied to a display they do not fit on. To be sure, you should let the user decide
+            which screen resolution to use when in fullscreen.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityUserData.SfxEffectVol">
+            <summary>
+            [GET / SET] Volume factor of sound effects. This is applied automatically by the <see cref="T:Duality.SoundDevice"/> based on the <see cref="T:Duality.SoundType"/>.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityUserData.SfxSpeechVol">
+            <summary>
+            [GET / SET] Volume factor of speech / vocals. This is applied automatically by the <see cref="T:Duality.SoundDevice"/> based on the <see cref="T:Duality.SoundType"/>.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityUserData.SfxMusicVol">
+            <summary>
+            [GET / SET] Volume factor of music. This is applied automatically by the <see cref="T:Duality.SoundDevice"/> based on the <see cref="T:Duality.SoundType"/>.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityUserData.SfxMasterVol">
+            <summary>
+            [GET / SET] Volume master factor for sound in general. This is applied automatically by the <see cref="T:Duality.SoundDevice"/>.
+            </summary>
+        </member>
+        <member name="T:Duality.DualityMetaData">
+            <summary>
+            Provides custom information about the Duality environment in which this application / game runs.
+            It is persistent beyond installing or deleting a specific Duality game and is shared among all Duality
+            games. Developers can use the DualityMetaData API to share player-related game information, such as
+            stats, player descisions, tasks, progress, etc.
+            </summary>
+        </member>
+        <member name="F:Duality.DualityMetaData.Separator">
+            <summary>
+            An array of valid path separators for meta data.
+            </summary>
+        </member>
+        <member name="M:Duality.DualityMetaData.ReadValue(System.String)">
+            <summary>
+            Reads the specified key's string value. Keys are organized hierarchially and behave
+            like file paths. Use the normal path separator chars to address keys in keys.
+            </summary>
+            <param name="key">The key that defines where to look for the value.</param>
+            <returns>The string value associated with the specified key.</returns>
+            <example>
+            The following code reads the value of <c>MainNode / SubNode / SomeKey</c>:
+            <code>
+            string value = DualityApp.MetaData.ReadValue("MainNode/SubNode/SomeKey");
+            </code>
+            </example>
+            <seealso cref="M:Duality.DualityMetaData.ReadValueAs``1(System.String,``0@)"/>
+        </member>
+        <member name="M:Duality.DualityMetaData.ReadValueAs``1(System.String,``0@)">
+            <summary>
+            Reads the specified key's string value and tries to parse it.
+            </summary>
+            <typeparam name="T">The desired value type</typeparam>
+            <param name="key">The key that defines where to look for the value.</param>
+            <param name="value">The parsed value based on the string that is associated with the specified key.</param>
+            <returns>True, if successful, false if not.</returns>
+            <seealso cref="M:Duality.DualityMetaData.ReadValue(System.String)"/>
+            <example>
+            The following code writes and reads an int value:
+            <code>
+            DualityApp.MetaData.WriteValue("SomeKey", 42);
+            int value =  DualityApp.MetaData.ReadValueAs{int}("SomeKey");
+            </code>
+            </example>
+        </member>
+        <member name="M:Duality.DualityMetaData.ReadSubValues(System.String)">
+            <summary>
+            Reads all the <see cref="!:KeyValuePair&lt;T&gt;"/>s that are children of the specified key.
+            </summary>
+            <param name="key">The key of which to return child values.</param>
+            <returns>An enumeration of <see cref="!:KeyValuePair&lt;T&gt;"/>s.</returns>
+            <example>
+            The following code creates a small hierarchy and reads a part of it out again:
+            <code>
+            DualityApp.MetaData["MainNode/SubNode/SomeKey"] = "42";
+            DualityApp.MetaData["MainNode/SubNode/SomeOtherKey"] = "43";
+            DualityApp.MetaData["MainNode/SubNode/SomeOtherKey2"] = "44";
+            DualityApp.MetaData["MainNode/SubNode2"] = "Something";
+            
+            var pairs = DualityApp.MetaData.ReadSubValues("MainNode/SubNode");
+            foreach (var pair in pairs)
+            {
+            	Log.Core.Write("{0}: {1}", pair.Key, pair.Value);
+            }
+            </code>
+            The expected output is:
+            <code>
+            SomeKey: 42
+            SomeOtherKey: 43
+            SomeOtherKey2: 44
+            </code>
+            </example>
+        </member>
+        <member name="M:Duality.DualityMetaData.WriteValue(System.String,System.String)">
+            <summary>
+            Writes the specified string value to the specified key. Keys are organized hierarchially and behave
+            like file paths. Use the normal path separator chars to address keys in keys.
+            </summary>
+            <param name="key">The key that defines to write the value to.</param>
+            <param name="value">The value to write</param>
+            <seealso cref="M:Duality.DualityMetaData.WriteValue``1(System.String,``0)"/>
+        </member>
+        <member name="M:Duality.DualityMetaData.WriteValue``1(System.String,``0)">
+            <summary>
+            Writes the specified value to the specified key. Keys are organized hierarchially and behave
+            like file paths. Use the normal path separator chars to address keys in keys.
+            </summary>
+            <typeparam name="T">The value's Type.</typeparam>
+            <param name="key">The key that defines to write the value to.</param>
+            <param name="value">The value to write</param>
+            <seealso cref="M:Duality.DualityMetaData.WriteValue(System.String,System.String)"/>
+        </member>
+        <member name="P:Duality.DualityMetaData.Item(System.String)">
+            <summary>
+            [GET / SET] The string value that is located at the specified key (path). Keys are organized hierarchially and behave
+            like file paths. Use the normal path separator chars to address keys in keys.
+            </summary>
+            <param name="key">The key that defines where to look for the value.</param>
+            <returns>The string value associated with the specified key.</returns>
+            <example>
+            The following code reads and writes the value of <c>MainNode / SubNode / SomeKey</c>:
+            <code>
+            string value = DualityApp.MetaData["MainNode/SubNode/SomeKey"];
+            DualityApp.MetaData["MainNode/SubNode/SomeKey"] = "Some other value";
+            </code>
+            </example>
+            <seealso cref="M:Duality.DualityMetaData.ReadValue(System.String)"/>
+            <seealso cref="M:Duality.DualityMetaData.ReadValueAs``1(System.String,``0@)"/>
+        </member>
         <member name="M:Duality.SerializationHelper.IsSafeAssignType(System.Type)">
             <summary>
             Returns whether the specified type may just be assigned in a clone operation (even if deep)

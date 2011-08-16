@@ -760,6 +760,9 @@ namespace Duality
 		}
 	}
 
+	/// <summary>
+	/// Provides general information about this Duality application / game.
+	/// </summary>
 	[Serializable]
 	public class DualityAppData
 	{
@@ -771,36 +774,60 @@ namespace Duality
 		private	float				speedOfSound		= 360.0f;
 		private	float				soundDopplerFactor	= 1.0f;
 
+		/// <summary>
+		/// [GET / SET] The name of your application / game. It will also be used as a window title by the launcher app.
+		/// </summary>
 		public string AppName
 		{
 			get { return this.appName; }
 			set { this.appName = value; }
 		}
+		/// <summary>
+		/// [GET / SET] The author name of your application. Might be your or your team's name or -nickname.
+		/// </summary>
 		public string AuthorName
 		{
 			get { return this.authorName; }
 			set { this.authorName = value; }
 		}
+		/// <summary>
+		/// [GET / SET] The address of this game's official website or similar.
+		/// </summary>
 		public string WebsiteUrl
 		{
 			get { return this.websiteUrl; }
 			set { this.websiteUrl = value; }
 		}
+		/// <summary>
+		/// [GET / SET] The current application / game version.
+		/// </summary>
 		public uint Version
 		{
 			get { return this.version; }
 			set { this.version = value; }
 		}
+		/// <summary>
+		/// [GET / SET] A reference to the start <see cref="Duality.Resources.Scene"/>. It is used by the launcher app to
+		/// determine which Scene to load initially.
+		/// </summary>
 		public ContentRef<Scene> StartScene
 		{
 			get { return this.startScene; }
 			set { this.startScene = value; }
 		}
+		/// <summary>
+		/// [GET / SET] The speed of sound. While this is technically a unitless value, you might assume something like "meters per second".
+		/// It is used to calculate the doppler effect of <see cref="SoundInstance">SoundInstances</see> that are moving relative to the
+		/// <see cref="Duality.Components.SoundListener"/>.
+		/// </summary>
 		public float SpeedOfSound
 		{
 			get { return this.speedOfSound; }
 			set { this.speedOfSound = value; }
 		}
+		/// <summary>
+		/// [GET / SET] A factor by which the strength of the doppler effect is multiplied.
+		/// </summary>
 		public float SoundDopplerFactor
 		{
 			get { return this.soundDopplerFactor; }
@@ -808,6 +835,10 @@ namespace Duality
 		}
 	}
 
+	/// <summary>
+	/// Provides information about user settings for this Duality application / game.
+	/// It is persistent beyond installing or deleting this Duality game.
+	/// </summary>
 	[Serializable]
 	public class DualityUserData
 	{
@@ -820,41 +851,67 @@ namespace Duality
 		private	float	sfxMusicVol		= 1.0f;
 		private	float	sfxMasterVol	= 1.0f;
 
+		/// <summary>
+		/// [GET / SET] The player's name. This may be his main character's name or simply remain unused.
+		/// </summary>
 		public string UserName
 		{
 			get { return this.userName; }
 			set { this.userName = value; }
 		}
+		/// <summary>
+		/// [GET / SET] Width of the game's display area.
+		/// </summary>
 		public int GfxWidth
 		{
 			get { return this.gfxWidth; }
 			set { this.gfxWidth = value; }
 		}
+		/// <summary>
+		/// [GET / SET] Height of the game's display area.
+		/// </summary>
 		public int GfxHeight
 		{
 			get { return this.gfxHeight; }
 			set { this.gfxHeight = value; }
 		}
+		/// <summary>
+		/// [GET / SET] Whether or not the game is launched in fullscreen mode. Not all display area sizes are available in fullscreen
+		/// and some of them might look distorted when applied to a display they do not fit on. To be sure, you should let the user decide
+		/// which screen resolution to use when in fullscreen.
+		/// </summary>
 		public bool GfxFullScreen
 		{
 			get { return this.gfxFullScreen; }
 			set { this.gfxFullScreen = value; }
 		}
+		/// <summary>
+		/// [GET / SET] Volume factor of sound effects. This is applied automatically by the <see cref="SoundDevice"/> based on the <see cref="SoundType"/>.
+		/// </summary>
 		public float SfxEffectVol
 		{
 			get { return this.sfxEffectVol; }
 			set { this.sfxEffectVol = value; }
 		}
+		/// <summary>
+		/// [GET / SET] Volume factor of speech / vocals. This is applied automatically by the <see cref="SoundDevice"/> based on the <see cref="SoundType"/>.
+		/// </summary>
 		public float SfxSpeechVol
 		{
 			get { return this.sfxSpeechVol; }
 			set { this.sfxSpeechVol = value; }
 		}
+		/// <summary>
+		/// [GET / SET] Volume factor of music. This is applied automatically by the <see cref="SoundDevice"/> based on the <see cref="SoundType"/>.
+		/// </summary>
 		public float SfxMusicVol
 		{
 			get { return this.sfxMusicVol; }
 			set { this.sfxMusicVol = value; }
 		}
+		/// <summary>
+		/// [GET / SET] Volume master factor for sound in general. This is applied automatically by the <see cref="SoundDevice"/>.
+		/// </summary>
 		public float SfxMasterVol
 		{
 			get { return this.sfxMasterVol; }
@@ -862,9 +919,18 @@ namespace Duality
 		}
 	}
 
+	/// <summary>
+	/// Provides custom information about the Duality environment in which this application / game runs.
+	/// It is persistent beyond installing or deleting a specific Duality game and is shared among all Duality
+	/// games. Developers can use the DualityMetaData API to share player-related game information, such as
+	/// stats, player descisions, tasks, progress, etc.
+	/// </summary>
 	[Serializable]
 	public class DualityMetaData
 	{
+		/// <summary>
+		/// An array of valid path separators for meta data.
+		/// </summary>
 		public static readonly char[] Separator = "/\\".ToCharArray();
 
 		[Serializable]
@@ -955,16 +1021,59 @@ namespace Duality
 
 		private Entry	rootEntry	= new Entry();
 
+		/// <summary>
+		/// [GET / SET] The string value that is located at the specified key (path). Keys are organized hierarchially and behave
+		/// like file paths. Use the normal path separator chars to address keys in keys.
+		/// </summary>
+		/// <param name="key">The key that defines where to look for the value.</param>
+		/// <returns>The string value associated with the specified key.</returns>
+		/// <example>
+		/// The following code reads and writes the value of <c>MainNode / SubNode / SomeKey</c>:
+		/// <code>
+		/// string value = DualityApp.MetaData["MainNode/SubNode/SomeKey"];
+		/// DualityApp.MetaData["MainNode/SubNode/SomeKey"] = "Some other value";
+		/// </code>
+		/// </example>
+		/// <seealso cref="ReadValue(string)"/>
+		/// <seealso cref="ReadValueAs{T}(string, out T)"/>
 		public string this[string key]
 		{
 			get { return this.ReadValue(key); }
 			set { this.WriteValue(key, value); }
 		}
 
+		/// <summary>
+		/// Reads the specified key's string value. Keys are organized hierarchially and behave
+		/// like file paths. Use the normal path separator chars to address keys in keys.
+		/// </summary>
+		/// <param name="key">The key that defines where to look for the value.</param>
+		/// <returns>The string value associated with the specified key.</returns>
+		/// <example>
+		/// The following code reads the value of <c>MainNode / SubNode / SomeKey</c>:
+		/// <code>
+		/// string value = DualityApp.MetaData.ReadValue("MainNode/SubNode/SomeKey");
+		/// </code>
+		/// </example>
+		/// <seealso cref="ReadValueAs{T}(string, out T)"/>
 		public string ReadValue(string key)
 		{
 			return this.rootEntry.ReadValue(key);
 		}
+		/// <summary>
+		/// Reads the specified key's string value and tries to parse it.
+		/// </summary>
+		/// <typeparam name="T">The desired value type</typeparam>
+		/// <param name="key">The key that defines where to look for the value.</param>
+		/// <param name="value">The parsed value based on the string that is associated with the specified key.</param>
+		/// <returns>True, if successful, false if not.</returns>
+		/// <seealso cref="ReadValue(string)"/>
+		/// <example>
+		/// The following code writes and reads an int value:
+		/// <code>
+		/// DualityApp.MetaData.WriteValue("SomeKey", 42);
+		/// int value =  DualityApp.MetaData.ReadValueAs{int}("SomeKey");
+		/// </code>
+		/// </example>
 		public bool ReadValueAs<T>(string key, out T value)
 		{
 			string valStr = this.ReadValue(key);
@@ -979,6 +1088,32 @@ namespace Duality
 				return false;
 			}
 		}
+		/// <summary>
+		/// Reads all the <see cref="KeyValuePair{T}"/>s that are children of the specified key.
+		/// </summary>
+		/// <param name="key">The key of which to return child values.</param>
+		/// <returns>An enumeration of <see cref="KeyValuePair{T}"/>s.</returns>
+		/// <example>
+		/// The following code creates a small hierarchy and reads a part of it out again:
+		/// <code>
+		/// DualityApp.MetaData["MainNode/SubNode/SomeKey"] = "42";
+		/// DualityApp.MetaData["MainNode/SubNode/SomeOtherKey"] = "43";
+		/// DualityApp.MetaData["MainNode/SubNode/SomeOtherKey2"] = "44";
+		/// DualityApp.MetaData["MainNode/SubNode2"] = "Something";
+		/// 
+		/// var pairs = DualityApp.MetaData.ReadSubValues("MainNode/SubNode");
+		/// foreach (var pair in pairs)
+		/// {
+		/// 	Log.Core.Write("{0}: {1}", pair.Key, pair.Value);
+		/// }
+		/// </code>
+		/// The expected output is:
+		/// <code>
+		/// SomeKey: 42
+		/// SomeOtherKey: 43
+		/// SomeOtherKey2: 44
+		/// </code>
+		/// </example>
 		public IEnumerable<KeyValuePair<string,string>> ReadSubValues(string key)
 		{
 			Entry parentEntry = this.rootEntry.ReadValueEntry(key);
@@ -987,10 +1122,25 @@ namespace Duality
 			foreach (var pair in parentEntry.children)
 				yield return new KeyValuePair<string,string>(pair.Key, pair.Value.value);
 		}
+		/// <summary>
+		/// Writes the specified string value to the specified key. Keys are organized hierarchially and behave
+		/// like file paths. Use the normal path separator chars to address keys in keys.
+		/// </summary>
+		/// <param name="key">The key that defines to write the value to.</param>
+		/// <param name="value">The value to write</param>
+		/// <seealso cref="WriteValue{T}(string, T)"/>
 		public void WriteValue(string key, string value)
 		{
 			this.rootEntry.WriteValue(key, value);
 		}
+		/// <summary>
+		/// Writes the specified value to the specified key. Keys are organized hierarchially and behave
+		/// like file paths. Use the normal path separator chars to address keys in keys.
+		/// </summary>
+		/// <typeparam name="T">The value's Type.</typeparam>
+		/// <param name="key">The key that defines to write the value to.</param>
+		/// <param name="value">The value to write</param>
+		/// <seealso cref="WriteValue(string, string)"/>
 		public void WriteValue<T>(string key, T value)
 		{
 			string valStr = value as string;
