@@ -143,6 +143,7 @@ namespace Duality
 		}
 		/// <summary>
 		/// [GET / SET] Provides access to Duality's current <see cref="DualityAppData">application data</see>. This is never null.
+		/// Any kind of data change event is fired as soon as you re-assign this property. Be sure to do that after changing its data.
 		/// </summary>
 		public static DualityAppData AppData
 		{
@@ -151,6 +152,7 @@ namespace Duality
 		}
 		/// <summary>
 		/// [GET / SET] Provides access to Duality's current <see cref="DualityUserData">user data</see>. This is never null.
+		/// Any kind of data change event is fired as soon as you re-assign this property. Be sure to do that after changing its data.
 		/// </summary>
 		public static DualityUserData UserData
 		{
