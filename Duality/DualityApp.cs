@@ -18,13 +18,33 @@ using Duality.Serialization;
 
 namespace Duality
 {
+	/// <summary>
+	/// This class controls Duality's main program flow control and general maintenance functionality.
+	/// It initializes the engine, loads plugins, provides access to user input, houses global data structures
+	/// and handles logfiles internally.
+	/// </summary>
 	public static class DualityApp
 	{
+		/// <summary>
+		/// Describes the context in which the current DualityApp runs.
+		/// </summary>
 		public enum ExecutionContext
 		{
+			/// <summary>
+			/// Duality has been terminated. There is no guarantee that any object is still valid or usable.
+			/// </summary>
 			Terminated,
+			/// <summary>
+			/// The context in which Duality is executed is unknown.
+			/// </summary>
 			Unknown,
+			/// <summary>
+			/// Duality is being run by the launcher app or similar.
+			/// </summary>
 			Launcher,
+			/// <summary>
+			/// Duality runs inside the editor.
+			/// </summary>
 			Editor
 		}
 
@@ -53,46 +73,85 @@ namespace Duality
 		private	static	List<Assembly>				disposedPlugins		= new List<Assembly>();
 		private static	Dictionary<Type,List<Type>>	availTypeDict		= new Dictionary<Type,List<Type>>();
 
+		/// <summary>
+		/// Fired as soon as Duality has been initialized. However, this usually happens before creating any kind of graphics context,
+		/// so no content is available yet and any attemp to load or request Resources is not recommended.
+		/// </summary>
 		public static event EventHandler Initialized	= null;
+		/// <summary>
+		/// Fired when shutting down Duality.
+		/// </summary>
 		public static event EventHandler Terminating	= null;
+		/// <summary>
+		/// Fired once each update cycle - but not in the editor.
+		/// </summary>
 		public static event EventHandler Updating		= null;
+		/// <summary>
+		/// Fired whenever the <see cref="DualityUserData">gfx size / display resolution has changed</see>.
+		/// </summary>
 		public static event EventHandler GfxSizeChanged	= null;
 
 
+		/// <summary>
+		/// [GET / SET] The size of the current rendering surface (full screen, a single window, etc.) in pixels. Setting this will not actually change
+		/// Duality's state - this is a pure "for your information" property.
+		/// </summary>
 		public static Vector2 TargetResolution
 		{
 			get { return targetResolution; }
 			set { targetResolution = value; }
 		}
+		/// <summary>
+		/// [GET / SET] The <see cref="GraphicsMode"/> in which rendering takes place. Setting this will not actually change
+		/// Duality's state - this is a pure "for your information" property.
+		/// </summary>
 		public static GraphicsMode TargetMode
 		{
 			get { return targetMode; }
 			set { targetMode = value; }
 		}
+		/// <summary>
+		/// [GET / SET] Provides access to mouse user input.
+		/// </summary>
 		public static MouseDevice Mouse
 		{
 			get { return mouse; }
 			set { mouse = value; }
 		}
+		/// <summary>
+		/// [GET / SET] Provides access to keyboard user input
+		/// </summary>
 		public static KeyboardDevice Keyboard
 		{
 			get { return keyboard; }
 			set { keyboard = value; }
 		}
+		/// <summary>
+		/// [GET] Provides access to the main <see cref="SoundDevice"/>.
+		/// </summary>
 		public static SoundDevice Sound
 		{
 			get { return sound; }
 		}
+		/// <summary>
+		/// [GET / SET] Provides access to joystick user input
+		/// </summary>
 		public static IList<JoystickDevice> Joysticks
 		{
 			get { return joysticks; }
 			set { joysticks = value; }
 		}
+		/// <summary>
+		/// [GET / SET] Provides access to Duality's current <see cref="DualityAppData">application data</see>. This is never null.
+		/// </summary>
 		public static DualityAppData AppData
 		{
 			get { return appData; }
 			set { appData = value; if (appData == null) appData = new DualityAppData(); }
 		}
+		/// <summary>
+		/// [GET / SET] Provides access to Duality's current <see cref="DualityUserData">user data</see>. This is never null.
+		/// </summary>
 		public static DualityUserData UserData
 		{
 			get { return userData; }
@@ -100,9 +159,13 @@ namespace Duality
 			{ 
 				userData = value; 
 				if (userData == null) userData = new DualityUserData();
-				OnGfxSizeChanged(); // Maybe optimize later (only call when really needed)
+				// Optimize this later: Only call when really needed - and we're currently missing direct changes without invoking this setter
+				OnGfxSizeChanged();
 			}
 		}
+		/// <summary>
+		/// [GET] Provides access to Duality's current <see cref="DualityMetaData">meta data</see>. This is never null.
+		/// </summary>
 		public static DualityMetaData MetaData
 		{
 			get { return metaData; }
@@ -782,6 +845,20 @@ namespace Duality
 		{
 			return this.rootEntry.ReadValue(key);
 		}
+		public bool ReadValueAs<T>(string key, out T value)
+		{
+			string valStr = this.ReadValue(key);
+			try
+			{
+				value = (T)Convert.ChangeType(valStr, typeof(T), System.Globalization.CultureInfo.InvariantCulture);
+				return true;
+			}
+			catch (Exception)
+			{
+				value = default(T);
+				return false;
+			}
+		}
 		public IEnumerable<KeyValuePair<string,string>> ReadSubValues(string key)
 		{
 			Entry parentEntry = this.rootEntry.ReadValueEntry(key);
@@ -793,6 +870,25 @@ namespace Duality
 		public void WriteValue(string key, string value)
 		{
 			this.rootEntry.WriteValue(key, value);
+		}
+		public void WriteValue<T>(string key, T value)
+		{
+			string valStr = value as string;
+			if (valStr != null)
+			{
+				this.WriteValue(key, valStr);
+				return;
+			}
+
+			IFormattable valFormattable = value as IFormattable;
+			if (valFormattable != null)
+			{
+				this.WriteValue(key, valFormattable.ToString(null, System.Globalization.CultureInfo.InvariantCulture));
+				return;
+			}
+
+			this.WriteValue(key, value.ToString());
+			return;
 		}
 	}
 }

@@ -15,6 +15,106 @@
             only to be used for longer sound pads.
             </summary>
         </member>
+        <member name="T:Duality.DualityApp">
+            <summary>
+            This class controls Duality's main program flow control and general maintenance functionality.
+            It initializes the engine, loads plugins, provides access to user input, houses global data structures
+            and handles logfiles internally.
+            </summary>
+        </member>
+        <member name="E:Duality.DualityApp.Initialized">
+            <summary>
+            Fired as soon as Duality has been initialized. However, this usually happens before creating any kind of graphics context,
+            so no content is available yet and any attemp to load or request Resources is not recommended.
+            </summary>
+        </member>
+        <member name="E:Duality.DualityApp.Terminating">
+            <summary>
+            Fired when shutting down Duality.
+            </summary>
+        </member>
+        <member name="E:Duality.DualityApp.Updating">
+            <summary>
+            Fired once each update cycle - but not in the editor.
+            </summary>
+        </member>
+        <member name="E:Duality.DualityApp.GfxSizeChanged">
+            <summary>
+            Fired whenever the <see cref="T:Duality.DualityUserData">gfx size / display resolution has changed</see>.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityApp.TargetResolution">
+            <summary>
+            [GET / SET] The size of the current rendering surface (full screen, a single window, etc.) in pixels. Setting this will not actually change
+            Duality's state - this is a pure "for your information" property.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityApp.TargetMode">
+            <summary>
+            [GET / SET] The <see cref="T:OpenTK.Graphics.GraphicsMode"/> in which rendering takes place. Setting this will not actually change
+            Duality's state - this is a pure "for your information" property.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityApp.Mouse">
+            <summary>
+            [GET / SET] Provides access to mouse user input.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityApp.Keyboard">
+            <summary>
+            [GET / SET] Provides access to keyboard user input
+            </summary>
+        </member>
+        <member name="P:Duality.DualityApp.Sound">
+            <summary>
+            [GET] Provides access to the main <see cref="T:Duality.SoundDevice"/>.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityApp.Joysticks">
+            <summary>
+            [GET / SET] Provides access to joystick user input
+            </summary>
+        </member>
+        <member name="P:Duality.DualityApp.AppData">
+            <summary>
+            [GET / SET] Provides access to Duality's current <see cref="T:Duality.DualityAppData">application data</see>. This is never null.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityApp.UserData">
+            <summary>
+            [GET / SET] Provides access to Duality's current <see cref="T:Duality.DualityUserData">user data</see>. This is never null.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityApp.MetaData">
+            <summary>
+            [GET] Provides access to Duality's current <see cref="T:Duality.DualityMetaData">meta data</see>. This is never null.
+            </summary>
+        </member>
+        <member name="T:Duality.DualityApp.ExecutionContext">
+            <summary>
+            Describes the context in which the current DualityApp runs.
+            </summary>
+        </member>
+        <member name="F:Duality.DualityApp.ExecutionContext.Terminated">
+            <summary>
+            Duality has been terminated. There is no guarantee that any object is still valid or usable.
+            </summary>
+        </member>
+        <member name="F:Duality.DualityApp.ExecutionContext.Unknown">
+            <summary>
+            The context in which Duality is executed is unknown.
+            </summary>
+        </member>
+        <member name="F:Duality.DualityApp.ExecutionContext.Launcher">
+            <summary>
+            Duality is being run by the launcher app or similar.
+            </summary>
+        </member>
+        <member name="F:Duality.DualityApp.ExecutionContext.Editor">
+            <summary>
+            Duality runs inside the editor.
+            </summary>
+        </member>
         <member name="M:Duality.SerializationHelper.IsSafeAssignType(System.Type)">
             <summary>
             Returns whether the specified type may just be assigned in a clone operation (even if deep)
