@@ -9,15 +9,39 @@ using Duality.Serialization.Surrogates;
 
 namespace Duality.Serialization
 {
+	/// <summary>
+	/// De/Serializes object data.
+	/// </summary>
+	/// <seealso cref="Duality.Serialization.BinaryMetaFormatter"/>
 	public class BinaryFormatter : BinaryFormatterBase
 	{
+		/// <summary>
+		/// A list of <see cref="System.Reflection.FieldInfo">field</see> blockers. If any registered field blocker
+		/// returns true upon serializing a specific field, a default value is assumed instead.
+		/// </summary>
 		protected	List<Predicate<FieldInfo>>	fieldBlockers	= new List<Predicate<FieldInfo>>();
+		/// <summary>
+		/// A list of <see cref="Duality.Serialization.ISurrogate">Serialization Surrogates</see>. If any of them
+		/// matches the <see cref="System.Type"/> of an object that is to be serialized, instead of letting it
+		/// serialize itsself, the <see cref="Duality.Serialization.ISurrogate"/> with the highest <see cref="Duality.Serialization.ISurrogate.Priority"/>
+		/// is used instead.
+		/// </summary>
 		protected	List<ISurrogate>			surrogates		= new List<ISurrogate>();
-
+		
+		/// <summary>
+		/// [GET] Enumerates registered <see cref="System.Reflection.FieldInfo">field</see> blockers. If any registered field blocker
+		/// returns true upon serializing a specific field, a default value is assumed instead.
+		/// </summary>
 		public IEnumerable<Predicate<FieldInfo>> FieldBlockers
 		{
 			get { return this.fieldBlockers; }
 		}
+		/// <summary>
+		/// [GET] Enumerates registered <see cref="Duality.Serialization.ISurrogate">Serialization Surrogates</see>. If any of them
+		/// matches the <see cref="System.Type"/> of an object that is to be serialized, instead of letting it
+		/// serialize itsself, the <see cref="Duality.Serialization.ISurrogate"/> with the highest <see cref="Duality.Serialization.ISurrogate.Priority"/>
+		/// is used instead.
+		/// </summary>
 		public IEnumerable<ISurrogate> Surrogates
 		{
 			get { return this.surrogates; }
@@ -30,19 +54,37 @@ namespace Duality.Serialization
 			this.AddSurrogate(new DictionarySurrogate());
 		}
 
+		/// <summary>
+		/// Unregisters all <see cref="FieldBlockers"/>.
+		/// </summary>
 		public void ClearFieldBlockers()
 		{
 			this.fieldBlockers.Clear();
 		}
+		/// <summary>
+		/// Registers a new <see cref="FieldBlockers">FieldBlocker</see>.
+		/// </summary>
+		/// <param name="blocker"></param>
 		public void AddFieldBlocker(Predicate<FieldInfo> blocker)
 		{
 			if (this.fieldBlockers.Contains(blocker)) return;
 			this.fieldBlockers.Add(blocker);
 		}
+		/// <summary>
+		/// Unregisters an existing <see cref="FieldBlockers">FieldBlocker</see>.
+		/// </summary>
+		/// <param name="blocker"></param>
 		public void RemoveFieldBlocker(Predicate<FieldInfo> blocker)
 		{
 			this.fieldBlockers.Remove(blocker);
 		}
+		/// <summary>
+		/// Determines whether a specific <see cref="System.Reflection.FieldInfo">field</see> is blocked.
+		/// Instead of writing the value of a blocked field, the matching <see cref="System.Type">Types</see>
+		/// defautl value is assumed.
+		/// </summary>
+		/// <param name="field">The <see cref="System.Reflection.FieldInfo">field</see> in question</param>
+		/// <returns>True, if the <see cref="System.Reflection.FieldInfo">field</see> is blocked, false if not.</returns>
 		public bool IsFieldBlocked(FieldInfo field)
 		{
 			foreach (var blocker in this.fieldBlockers)
@@ -50,29 +92,53 @@ namespace Duality.Serialization
 			return false;
 		}
 
+		/// <summary>
+		/// Unregisters all <see cref="Duality.Serialization.ISurrogate">Surrogates</see>.
+		/// </summary>
 		public void ClearSurrogates()
 		{
 			this.surrogates.Clear();
 		}
+		/// <summary>
+		/// Registers a new <see cref="Duality.Serialization.ISurrogate">Surrogate</see>.
+		/// </summary>
+		/// <param name="surrogate"></param>
 		public void AddSurrogate(ISurrogate surrogate)
 		{
 			if (this.surrogates.Contains(surrogate)) return;
 			this.surrogates.Add(surrogate);
 			this.surrogates.StableSort((s1, s2) => s1.Priority - s2.Priority);
 		}
+		/// <summary>
+		/// Unregisters an existing <see cref="Duality.Serialization.ISurrogate">Surrogate</see>.
+		/// </summary>
+		/// <param name="surrogate"></param>
 		public void RemoveSurrogate(ISurrogate surrogate)
 		{
 			this.surrogates.Remove(surrogate);
 		}
+		/// <summary>
+		/// Retrieves a matching <see cref="Duality.Serialization.ISurrogate"/> for the specified <see cref="System.Type"/>.
+		/// </summary>
+		/// <param name="t">The <see cref="System.Type"/> to retrieve a <see cref="Duality.Serialization.ISurrogate"/> for.</param>
+		/// <returns></returns>
 		public ISurrogate GetSurrogateFor(Type t)
 		{
 			return this.surrogates.FirstOrDefault(s => s.MatchesType(t));
 		}
 		
+		/// <summary>
+		/// Writes the specified object including all referenced objects using the <see cref="WriteTarget"/>.
+		/// </summary>
+		/// <param name="obj">The object to write.</param>
 		public new void WriteObject(object obj)
 		{
 			base.WriteObject(obj);
 		}
+		/// <summary>
+		/// Reads an object including all referenced objects using the <see cref="ReadTarget"/>.
+		/// </summary>
+		/// <returns>The object that has been read.</returns>
 		public new object ReadObject()
 		{
 			return base.ReadObject();
@@ -110,6 +176,11 @@ namespace Duality.Serialization
 			else if (dataType == DataType.Delegate)		this.WriteDelegate(obj, objSerializeType, objId);
 			else if (dataType.IsMemberInfoType())		this.WriteMemberInfo(obj, objId);
 		}
+		/// <summary>
+		/// Writes the specified <see cref="System.Reflection.MemberInfo"/>, including references objects.
+		/// </summary>
+		/// <param name="obj">The object to write.</param>
+		/// <param name="id">The objects id.</param>
 		protected void WriteMemberInfo(object obj, uint id = 0)
 		{
 			this.writer.Write(id);
@@ -198,6 +269,12 @@ namespace Duality.Serialization
 			else
 				throw new ArgumentException(string.Format("Type '{0}' is not a supported MemberInfo.", obj.GetType()));
 		}
+		/// <summary>
+		/// Writes the specified <see cref="System.Array"/>, including references objects.
+		/// </summary>
+		/// <param name="obj">The object to write.</param>
+		/// <param name="objSerializeType">The <see cref="Duality.Serialization.SerializeType"/> describing the object.</param>
+		/// <param name="id">The objects id.</param>
 		protected void WriteArray(object obj, SerializeType objSerializeType, uint id = 0)
 		{
 			Array objAsArray = obj as Array;
@@ -230,6 +307,12 @@ namespace Duality.Serialization
 					this.WriteObject(objAsArray.GetValue(l));
 			}
 		}
+		/// <summary>
+		/// Writes the specified structural object, including references objects.
+		/// </summary>
+		/// <param name="obj">The object to write.</param>
+		/// <param name="objSerializeType">The <see cref="Duality.Serialization.SerializeType"/> describing the object.</param>
+		/// <param name="id">The objects id.</param>
 		protected void WriteStruct(object obj, SerializeType objSerializeType, uint id = 0)
 		{
 			ISerializable objAsCustom = obj as ISerializable;
@@ -276,6 +359,12 @@ namespace Duality.Serialization
 				}
 			}
 		}
+		/// <summary>
+		/// Writes the specified <see cref="System.Delegate"/>, including references objects.
+		/// </summary>
+		/// <param name="obj">The object to write.</param>
+		/// <param name="objSerializeType">The <see cref="Duality.Serialization.SerializeType"/> describing the object.</param>
+		/// <param name="id">The objects id.</param>
 		protected void WriteDelegate(object obj, SerializeType objSerializeType, uint id = 0)
 		{
 			bool multi = obj is MulticastDelegate;
@@ -300,6 +389,11 @@ namespace Duality.Serialization
 				this.WriteObject(invokeList);
 			}
 		}
+		/// <summary>
+		/// Writes the specified <see cref="System.Enum"/>.
+		/// </summary>
+		/// <param name="obj">The object to write.</param>
+		/// <param name="objSerializeType">The <see cref="Duality.Serialization.SerializeType"/> describing the object.</param>
 		protected void WriteEnum(Enum obj, SerializeType objSerializeType)
 		{
 			this.writer.Write(objSerializeType.TypeString);
@@ -323,6 +417,10 @@ namespace Duality.Serialization
 
 			return result;
 		}
+		/// <summary>
+		/// Reads an <see cref="System.Array"/>, including referenced objects.
+		/// </summary>
+		/// <returns>The object that has been read.</returns>
 		protected Array ReadArray()
 		{
 			string	arrTypeString	= this.reader.ReadString();
@@ -366,6 +464,10 @@ namespace Duality.Serialization
 
 			return arrObj;
 		}
+		/// <summary>
+		/// Reads a structural object, including referenced objects.
+		/// </summary>
+		/// <returns>The object that has been read.</returns>
 		protected object ReadStruct()
 		{
 			// Read struct type
@@ -487,6 +589,10 @@ namespace Duality.Serialization
 
 			return obj;
 		}
+		/// <summary>
+		/// Reads an object reference.
+		/// </summary>
+		/// <returns>The object that has been read.</returns>
 		protected object ReadObjectRef()
 		{
 			object obj;
@@ -496,6 +602,11 @@ namespace Duality.Serialization
 
 			return obj;
 		}
+		/// <summary>
+		/// Reads a <see cref="System.Reflection.MemberInfo"/>, including referenced objects.
+		/// </summary>
+		/// <param name="dataType">The <see cref="Duality.Serialization.DataType"/> of the object to read.</param>
+		/// <returns>The object that has been read.</returns>
 		protected MemberInfo ReadMemberInfo(DataType dataType)
 		{
 			uint objId = this.reader.ReadUInt32();
@@ -616,6 +727,10 @@ namespace Duality.Serialization
 
 			return result;
 		}
+		/// <summary>
+		/// Reads a <see cref="System.Delegate"/>, including referenced objects.
+		/// </summary>
+		/// <returns>The object that has been read.</returns>
 		protected Delegate ReadDelegate()
 		{
 			string		delegateTypeString	= this.reader.ReadString();
@@ -653,6 +768,10 @@ namespace Duality.Serialization
 
 			return del;
 		}
+		/// <summary>
+		/// Reads an <see cref="System.Enum"/>.
+		/// </summary>
+		/// <returns>The object that has been read.</returns>
 		protected Enum ReadEnum()
 		{
 			object result;

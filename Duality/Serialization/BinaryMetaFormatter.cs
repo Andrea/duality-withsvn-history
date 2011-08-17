@@ -9,15 +9,27 @@ using Duality.Serialization.MetaFormat;
 
 namespace Duality.Serialization
 {
+	/// <summary>
+	/// De/Serializes abstract object data using <see cref="Duality.Serialization.MetaFormat.DataNode">DataNodes</see>.
+	/// </summary>
+	/// <seealso cref="Duality.Serialization.BinaryFormatter"/>
 	public class BinaryMetaFormatter : BinaryFormatterBase
 	{
 		public BinaryMetaFormatter() : base() {}
 		public BinaryMetaFormatter(Stream stream) : base(stream) {}
 
+		/// <summary>
+		/// Serializes the specified data node tree to the underlying <see cref="System.IO.Stream"/>.
+		/// </summary>
+		/// <param name="data">The data node tree to serialize.</param>
 		public void WriteObject(DataNode data)
 		{
 			base.WriteObject(data);
 		}
+		/// <summary>
+		/// Deserializes a data node tree from the underlying <see cref="System.IO.Stream"/>.
+		/// </summary>
+		/// <returns>A data node tree that has been deserialized.</returns>
 		public new DataNode ReadObject()
 		{
 			return base.ReadObject() as DataNode;
@@ -45,6 +57,10 @@ namespace Duality.Serialization
 			else if (dataType == DataType.Delegate)		this.WriteDelegate(obj as DelegateNode);
 			else if (dataType.IsMemberInfoType())		this.WriteMemberInfo(obj as MemberInfoNode);
 		}
+		/// <summary>
+		/// Writes the specified <see cref="Duality.Serialization.MetaFormat.MemberInfoNode"/>, including possible child nodes.
+		/// </summary>
+		/// <param name="node"></param>
 		protected void WriteMemberInfo(MemberInfoNode node)
 		{
 			if (node == null) throw new ArgumentNullException("node");
@@ -106,6 +122,10 @@ namespace Duality.Serialization
 				this.writer.Write(e.EventName);
 			}
 		}
+		/// <summary>
+		/// Writes the specified <see cref="Duality.Serialization.MetaFormat.ArrayNode"/>, including possible child nodes.
+		/// </summary>
+		/// <param name="node"></param>
 		protected void WriteArray(ArrayNode node)
 		{
 			if (node.Rank != 1) throw new ArgumentException("Non single-Rank arrays are not supported");
@@ -141,6 +161,10 @@ namespace Duality.Serialization
 					this.WriteObject(subNode);
 			}
 		}
+		/// <summary>
+		/// Writes the specified <see cref="Duality.Serialization.MetaFormat.StructNode"/>, including possible child nodes.
+		/// </summary>
+		/// <param name="node"></param>
 		protected void WriteStruct(StructNode node)
 		{
 			// Write the structs data type
@@ -211,6 +235,10 @@ namespace Duality.Serialization
 				}
 			}
 		}
+		/// <summary>
+		/// Writes the specified <see cref="Duality.Serialization.MetaFormat.DelegateNode"/>, including possible child nodes.
+		/// </summary>
+		/// <param name="node"></param>
 		protected void WriteDelegate(DelegateNode node)
 		{
 			// Write the delegates type
@@ -222,6 +250,10 @@ namespace Duality.Serialization
 			this.WriteObject(node.Target);
 			if (node.InvokeList != null) this.WriteObject(node.InvokeList);
 		}
+		/// <summary>
+		/// Writes the specified <see cref="Duality.Serialization.MetaFormat.EnumNode"/>.
+		/// </summary>
+		/// <param name="node"></param>
 		protected void WriteEnum(EnumNode node)
 		{
 			this.writer.Write(node.EnumType);
@@ -249,142 +281,10 @@ namespace Duality.Serialization
 
 			return result;
 		}
-		protected ArrayNode ReadArray()
-		{
-			string	arrTypeString	= this.reader.ReadString();
-			uint	objId			= this.reader.ReadUInt32();
-			int		arrRank			= this.reader.ReadInt32();
-			int		arrLength		= this.reader.ReadInt32();
-			Type	arrType			= ReflectionHelper.ResolveType(arrTypeString, false);
-
-			ArrayNode result = new ArrayNode(arrTypeString, objId, arrRank, arrLength);
-			
-			// Prepare object reference
-			if (objId != 0)
-			{
-				this.objRefIdMap[result] = objId;
-				this.idObjRefMap[objId] = result;
-			}
-
-			// Store primitive data block
-			bool nonPrimitive = false;
-			if (arrType != null)
-			{
-				Array arrObj = Array.CreateInstance(arrType.GetElementType(), arrLength);
-				if		(arrObj is bool[])		this.ReadArrayData(arrObj as bool[]);
-				else if (arrObj is byte[])		this.ReadArrayData(arrObj as byte[]);
-				else if (arrObj is sbyte[])		this.ReadArrayData(arrObj as sbyte[]);
-				else if (arrObj is short[])		this.ReadArrayData(arrObj as short[]);
-				else if (arrObj is ushort[])	this.ReadArrayData(arrObj as ushort[]);
-				else if (arrObj is int[])		this.ReadArrayData(arrObj as int[]);
-				else if (arrObj is uint[])		this.ReadArrayData(arrObj as uint[]);
-				else if (arrObj is long[])		this.ReadArrayData(arrObj as long[]);
-				else if (arrObj is ulong[])		this.ReadArrayData(arrObj as ulong[]);
-				else if (arrObj is float[])		this.ReadArrayData(arrObj as float[]);
-				else if (arrObj is double[])	this.ReadArrayData(arrObj as double[]);
-				else if (arrObj is decimal[])	this.ReadArrayData(arrObj as decimal[]);
-				else if (arrObj is char[])		this.ReadArrayData(arrObj as char[]);
-				else if (arrObj is string[])	this.ReadArrayData(arrObj as string[]);
-				else
-					nonPrimitive = true;
-
-				if (!nonPrimitive) result.PrimitiveData = arrObj;
-			}
-			else
-				nonPrimitive = true;
-
-			// Store other data as sub-nodes
-			if (nonPrimitive)
-			{
-				for (int i = 0; i < arrLength; i++)
-				{
-					DataNode child = this.ReadObject();
-					child.Parent = result;
-				}
-			}
-
-			return result;
-		}
-		protected StructNode ReadStruct()
-		{
-			// Read struct type
-			string	objTypeString	= this.reader.ReadString();
-			uint	objId			= this.reader.ReadUInt32();
-			bool	custom			= this.reader.ReadBoolean();
-			bool	surrogate		= this.reader.ReadBoolean();
-
-			StructNode result = new StructNode(objTypeString, objId, custom, surrogate);
-			
-			// Read surrogate constructor data
-			if (surrogate)
-			{
-				custom = true;
-
-				// Set fake object reference for surrogate constructor: No self-references allowed here.
-				if (objId != 0) this.idObjRefMap[objId] = null;
-
-				CustomSerialIO customIO = new CustomSerialIO();
-				customIO.Deserialize(this);
-				if (customIO.Values.Any())
-				{
-					DummyNode surrogateConstructor = new DummyNode();
-					surrogateConstructor.Parent = result;
-					foreach (var pair in customIO.Values)
-					{
-						StringNode key = new StringNode(pair.Key);
-						DataNode value = pair.Value as DataNode;
-						key.Parent = surrogateConstructor;
-						value.Parent = surrogateConstructor;
-					}
-				}
-			}
-
-			// Prepare object reference
-			if (objId != 0)
-			{
-				this.objRefIdMap[result] = objId;
-				this.idObjRefMap[objId] = result;
-			}
-
-			if (custom)
-			{
-				CustomSerialIO customIO = new CustomSerialIO();
-				customIO.Deserialize(this);
-				foreach (var pair in customIO.Values)
-				{
-					StringNode key = new StringNode(pair.Key);
-					DataNode value = pair.Value as DataNode;
-					key.Parent = result;
-					value.Parent = result;
-				}
-			}
-			else
-			{
-				// Determine data layout
-				bool wasThereBefore = this.IsTypeDataLayoutCached(objTypeString);
-				TypeDataLayout layout = this.ReadTypeDataLayout(objTypeString);
-				if (!wasThereBefore)
-				{
-					TypeDataLayoutNode layoutNode = new TypeDataLayoutNode(new TypeDataLayout(layout));
-					layoutNode.Parent = result;
-				}
-
-				// Read fields
-				for (int i = 0; i < layout.Fields.Length; i++)
-				{
-					DataNode fieldValue = this.ReadObject();
-					fieldValue.Parent = result;
-				}
-			}
-
-			return result;
-		}
-		protected ObjectRefNode ReadObjectRef()
-		{
-			uint objId = this.reader.ReadUInt32();
-			ObjectRefNode result = new ObjectRefNode(objId);
-			return result;
-		}
+		/// <summary>
+		/// Reads a <see cref="Duality.Serialization.MetaFormat.MemberInfoNode"/>, including possible child nodes.
+		/// </summary>
+		/// <param name="node"></param>
 		protected MemberInfoNode ReadMemberInfo(DataType dataType)
 		{
 			uint objId = this.reader.ReadUInt32();
@@ -461,6 +361,148 @@ namespace Duality.Serialization
 
 			return result;
 		}
+		/// <summary>
+		/// Reads an <see cref="Duality.Serialization.MetaFormat.ArrayNode"/>, including possible child nodes.
+		/// </summary>
+		/// <param name="node"></param>
+		protected ArrayNode ReadArray()
+		{
+			string	arrTypeString	= this.reader.ReadString();
+			uint	objId			= this.reader.ReadUInt32();
+			int		arrRank			= this.reader.ReadInt32();
+			int		arrLength		= this.reader.ReadInt32();
+			Type	arrType			= ReflectionHelper.ResolveType(arrTypeString, false);
+
+			ArrayNode result = new ArrayNode(arrTypeString, objId, arrRank, arrLength);
+			
+			// Prepare object reference
+			if (objId != 0)
+			{
+				this.objRefIdMap[result] = objId;
+				this.idObjRefMap[objId] = result;
+			}
+
+			// Store primitive data block
+			bool nonPrimitive = false;
+			if (arrType != null)
+			{
+				Array arrObj = Array.CreateInstance(arrType.GetElementType(), arrLength);
+				if		(arrObj is bool[])		this.ReadArrayData(arrObj as bool[]);
+				else if (arrObj is byte[])		this.ReadArrayData(arrObj as byte[]);
+				else if (arrObj is sbyte[])		this.ReadArrayData(arrObj as sbyte[]);
+				else if (arrObj is short[])		this.ReadArrayData(arrObj as short[]);
+				else if (arrObj is ushort[])	this.ReadArrayData(arrObj as ushort[]);
+				else if (arrObj is int[])		this.ReadArrayData(arrObj as int[]);
+				else if (arrObj is uint[])		this.ReadArrayData(arrObj as uint[]);
+				else if (arrObj is long[])		this.ReadArrayData(arrObj as long[]);
+				else if (arrObj is ulong[])		this.ReadArrayData(arrObj as ulong[]);
+				else if (arrObj is float[])		this.ReadArrayData(arrObj as float[]);
+				else if (arrObj is double[])	this.ReadArrayData(arrObj as double[]);
+				else if (arrObj is decimal[])	this.ReadArrayData(arrObj as decimal[]);
+				else if (arrObj is char[])		this.ReadArrayData(arrObj as char[]);
+				else if (arrObj is string[])	this.ReadArrayData(arrObj as string[]);
+				else
+					nonPrimitive = true;
+
+				if (!nonPrimitive) result.PrimitiveData = arrObj;
+			}
+			else
+				nonPrimitive = true;
+
+			// Store other data as sub-nodes
+			if (nonPrimitive)
+			{
+				for (int i = 0; i < arrLength; i++)
+				{
+					DataNode child = this.ReadObject();
+					child.Parent = result;
+				}
+			}
+
+			return result;
+		}
+		/// <summary>
+		/// Reads a <see cref="Duality.Serialization.MetaFormat.StructNode"/>, including possible child nodes.
+		/// </summary>
+		/// <param name="node"></param>
+		protected StructNode ReadStruct()
+		{
+			// Read struct type
+			string	objTypeString	= this.reader.ReadString();
+			uint	objId			= this.reader.ReadUInt32();
+			bool	custom			= this.reader.ReadBoolean();
+			bool	surrogate		= this.reader.ReadBoolean();
+
+			StructNode result = new StructNode(objTypeString, objId, custom, surrogate);
+			
+			// Read surrogate constructor data
+			if (surrogate)
+			{
+				custom = true;
+
+				// Set fake object reference for surrogate constructor: No self-references allowed here.
+				if (objId != 0) this.idObjRefMap[objId] = null;
+
+				CustomSerialIO customIO = new CustomSerialIO();
+				customIO.Deserialize(this);
+				if (customIO.Values.Any())
+				{
+					DummyNode surrogateConstructor = new DummyNode();
+					surrogateConstructor.Parent = result;
+					foreach (var pair in customIO.Values)
+					{
+						StringNode key = new StringNode(pair.Key);
+						DataNode value = pair.Value as DataNode;
+						key.Parent = surrogateConstructor;
+						value.Parent = surrogateConstructor;
+					}
+				}
+			}
+
+			// Prepare object reference
+			if (objId != 0)
+			{
+				this.objRefIdMap[result] = objId;
+				this.idObjRefMap[objId] = result;
+			}
+
+			if (custom)
+			{
+				CustomSerialIO customIO = new CustomSerialIO();
+				customIO.Deserialize(this);
+				foreach (var pair in customIO.Values)
+				{
+					StringNode key = new StringNode(pair.Key);
+					DataNode value = pair.Value as DataNode;
+					key.Parent = result;
+					value.Parent = result;
+				}
+			}
+			else
+			{
+				// Determine data layout
+				bool wasThereBefore = this.IsTypeDataLayoutCached(objTypeString);
+				TypeDataLayout layout = this.ReadTypeDataLayout(objTypeString);
+				if (!wasThereBefore)
+				{
+					TypeDataLayoutNode layoutNode = new TypeDataLayoutNode(new TypeDataLayout(layout));
+					layoutNode.Parent = result;
+				}
+
+				// Read fields
+				for (int i = 0; i < layout.Fields.Length; i++)
+				{
+					DataNode fieldValue = this.ReadObject();
+					fieldValue.Parent = result;
+				}
+			}
+
+			return result;
+		}
+		/// <summary>
+		/// Reads a <see cref="Duality.Serialization.MetaFormat.DelegateNode"/>, including possible child nodes.
+		/// </summary>
+		/// <param name="node"></param>
 		protected DelegateNode ReadDelegate()
 		{
 			string		delegateTypeString	= this.reader.ReadString();
@@ -494,12 +536,26 @@ namespace Duality.Serialization
 
 			return result;
 		}
+		/// <summary>
+		/// Reads an <see cref="Duality.Serialization.MetaFormat.EnumNode"/>.
+		/// </summary>
+		/// <param name="node"></param>
 		protected EnumNode ReadEnum()
 		{
 			string typeName = this.reader.ReadString();
 			string name = this.reader.ReadString();
 			long val = this.reader.ReadInt64();
 			return new EnumNode(typeName, name, val);
+		}
+		/// <summary>
+		/// Reads an <see cref="Duality.Serialization.MetaFormat.ObjectRefNode"/>.
+		/// </summary>
+		/// <param name="node"></param>
+		protected ObjectRefNode ReadObjectRef()
+		{
+			uint objId = this.reader.ReadUInt32();
+			ObjectRefNode result = new ObjectRefNode(objId);
+			return result;
 		}
 	}
 }

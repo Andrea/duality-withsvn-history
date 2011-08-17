@@ -6,6 +6,9 @@ using System.Reflection;
 
 namespace Duality.Serialization.Surrogates
 {
+	/// <summary>
+	/// De/Serializes a <see cref="System.Collections.Generic.Dictionar{T,U}"/>.
+	/// </summary>
 	public class DictionarySurrogate : Surrogate<IDictionary>
 	{
 		public override bool MatchesType(Type t)

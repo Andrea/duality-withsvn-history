@@ -785,6 +785,597 @@
             </summary>
             <param name="instance"></param>
         </member>
+        <member name="T:Duality.Serialization.BinaryFormatterBase">
+            <summary>
+            Base class for Dualitys binary serializers.
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.BinaryFormatterBase.HeaderId">
+            <summary>
+            Binary serialization header id. 
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.BinaryFormatterBase.Version">
+            <summary>
+            Binary serialization version number.
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.BinaryFormatterBase.writer">
+            <summary>
+            The <see cref="T:System.IO.BinaryWriter"/> that is used for serialization.
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.BinaryFormatterBase.reader">
+            <summary>
+            The <see cref="T:System.IO.BinaryReader"/> that is used for deserialization.
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.BinaryFormatterBase.log">
+            <summary>
+            The de/serialization <see cref="T:Duality.Log"/>.
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.BinaryFormatterBase.idCounter">
+            <summary>
+            A counter for the number of ids that have been used during the current <see cref="T:Duality.Serialization.BinaryFormatterBase.Operation"/>.
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.BinaryFormatterBase.objRefIdMap">
+            <summary>
+            A dictionary that maps objects to their object ids.
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.BinaryFormatterBase.idObjRefMap">
+            <summary>
+            A dictionary that maps object ids to their objects.
+            </summary>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.ReadObject">
+            <summary>
+            Reads an object including all referenced objects using the <see cref="P:Duality.Serialization.BinaryFormatterBase.ReadTarget"/>.
+            </summary>
+            <returns>The object that has been read.</returns>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.ReadObjectBody(Duality.Serialization.DataType)">
+            <summary>
+            Reads the body of an object.
+            </summary>
+            <param name="dataType">The <see cref="T:Duality.Serialization.DataType"/> that is assumed.</param>
+            <returns>The object that has been read.</returns>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.GetNullObject">
+            <summary>
+            Returns an object indicating a "null" value.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.IsTypeDataLayoutCached(System.String)">
+            <summary>
+            Returns whether the <see cref="T:Duality.Serialization.TypeDataLayout"/> for the specified <see cref="T:System.Type"/> is
+            already present in the binary serializers internal cache.
+            </summary>
+            <param name="t">A string referring to the <see cref="T:System.Type"/> that is described by the 
+            <see cref="T:Duality.Serialization.TypeDataLayout"/> in question.</param>
+            <returns>True, if the <see cref="T:Duality.Serialization.TypeDataLayout"/> is already cached, false if not.</returns>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.ReadTypeDataLayout(System.Type)">
+            <summary>
+            Reads the <see cref="T:Duality.Serialization.TypeDataLayout"/> describing the specified <see cref="T:System.Type"/>.
+            </summary>
+            <param name="t">The <see cref="!:Systen.Type"/> of which to read the <see cref="T:Duality.Serialization.TypeDataLayout"/>.</param>
+            <returns>A <see cref="T:Duality.Serialization.TypeDataLayout"/> describing the specified <see cref="T:System.Type"/></returns>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.ReadTypeDataLayout(System.String)">
+            <summary>
+            Reads the <see cref="T:Duality.Serialization.TypeDataLayout"/> describing the specified <see cref="T:System.Type"/>.
+            </summary>
+            <param name="t">A string referring to the <see cref="!:Systen.Type"/> of which to read the <see cref="T:Duality.Serialization.TypeDataLayout"/>.</param>
+            <returns>A <see cref="T:Duality.Serialization.TypeDataLayout"/> describing the specified <see cref="T:System.Type"/></returns>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.ReadFormatterHeader">
+            <summary>
+            Reads the binary serialization header.
+            </summary>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.ReadPrimitive(Duality.Serialization.DataType)">
+            <summary>
+            Reads a single primitive value, assuming the specified <see cref="T:Duality.Serialization.DataType"/>.
+            </summary>
+            <param name="dataType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.ReadString">
+            <summary>
+            Reads a single string value.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.ReadArrayData(System.Boolean[])">
+            <summary>
+            Reads a primitive array.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.ReadArrayData(System.Byte[])">
+            <summary>
+            Reads a primitive array.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.ReadArrayData(System.SByte[])">
+            <summary>
+            Reads a primitive array.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.ReadArrayData(System.Int16[])">
+            <summary>
+            Reads a primitive array.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.ReadArrayData(System.UInt16[])">
+            <summary>
+            Reads a primitive array.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.ReadArrayData(System.Int32[])">
+            <summary>
+            Reads a primitive array.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.ReadArrayData(System.UInt32[])">
+            <summary>
+            Reads a primitive array.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.ReadArrayData(System.Int64[])">
+            <summary>
+            Reads a primitive array.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.ReadArrayData(System.UInt64[])">
+            <summary>
+            Reads a primitive array.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.ReadArrayData(System.Single[])">
+            <summary>
+            Reads a primitive array.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.ReadArrayData(System.Double[])">
+            <summary>
+            Reads a primitive array.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.ReadArrayData(System.Decimal[])">
+            <summary>
+            Reads a primitive array.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.ReadArrayData(System.Char[])">
+            <summary>
+            Reads a primitive array.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.ReadArrayData(System.String[])">
+            <summary>
+            Reads a string array.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.WriteObject(System.Object)">
+            <summary>
+            Writes the specified object including all referenced objects using the <see cref="P:Duality.Serialization.BinaryFormatterBase.WriteTarget"/>.
+            </summary>
+            <param name="obj">The object to write.</param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.GetWriteObjectData(System.Object,Duality.Serialization.SerializeType@,Duality.Serialization.DataType@,System.UInt32@)">
+            <summary>
+            Determines internal data for writing a given object.
+            </summary>
+            <param name="obj">The object to write</param>
+            <param name="objSerializeType">The <see cref="T:Duality.Serialization.SerializeType"/> that describes the specified object.</param>
+            <param name="dataType">The <see cref="T:Duality.Serialization.DataType"/> that is used for writing the specified object.</param>
+            <param name="objId">An object id that is assigned to the specified object.</param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.WriteObjectBody(Duality.Serialization.DataType,System.Object,Duality.Serialization.SerializeType,System.UInt32)">
+            <summary>
+            Writes the body of a given object.
+            </summary>
+            <param name="dataType">The <see cref="T:Duality.Serialization.DataType"/> as which the object will be written.</param>
+            <param name="obj">The object to be written.</param>
+            <param name="objSerializeType">The <see cref="T:Duality.Serialization.SerializeType"/> that describes the specified object.</param>
+            <param name="objId">An object id that is assigned to the specified object.</param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.WriteFormatterHeader">
+            <summary>
+            Writes the binary serialization header.
+            </summary>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.WriteTypeDataLayout(Duality.Serialization.SerializeType)">
+            <summary>
+            Writes the <see cref="T:Duality.Serialization.TypeDataLayout"/> describing the specified <see cref="T:Duality.Serialization.SerializeType"/>.
+            Note that this method does not write redundant layout data - if the specified TypeDataLayout has already been written withing the same
+            operation, a back-reference is written instead.
+            </summary>
+            <param name="objSerializeType">
+            The <see cref="T:Duality.Serialization.SerializeType"/> of which to write the <see cref="T:Duality.Serialization.TypeDataLayout"/>
+            </param>
+            <seealso cref="M:Duality.Serialization.BinaryFormatterBase.WriteTypeDataLayout(System.String)"/>
+            <seealso cref="M:Duality.Serialization.BinaryFormatterBase.WriteTypeDataLayout(Duality.Serialization.TypeDataLayout,System.String)"/>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.WriteTypeDataLayout(System.String)">
+            <summary>
+            Writes the <see cref="T:Duality.Serialization.TypeDataLayout"/> describing the specified <see cref="T:Duality.Serialization.SerializeType"/>.
+            Note that this method does not write redundant layout data - if the specified TypeDataLayout has already been written withing the same
+            operation, a back-reference is written instead.
+            </summary>
+            <param name="typeString">
+            A string referring to the <see cref="T:System.Type"/> of which to write the <see cref="T:Duality.Serialization.TypeDataLayout"/>.
+            </param>
+            <seealso cref="M:Duality.Serialization.BinaryFormatterBase.WriteTypeDataLayout(Duality.Serialization.SerializeType)"/>
+            <seealso cref="M:Duality.Serialization.BinaryFormatterBase.WriteTypeDataLayout(Duality.Serialization.TypeDataLayout,System.String)"/>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.WriteTypeDataLayout(Duality.Serialization.TypeDataLayout,System.String)">
+            <summary>
+            Writes the specified <see cref="T:Duality.Serialization.TypeDataLayout"/> describing the <see cref="T:System.Type"/> referred to by
+            the given <see cref="M:Duality.ReflectionHelper.GetTypeName(System.Type,Duality.TypeNameFormat)">type string</see>. Doesn't care about redundant data, writes always.
+            </summary>
+            <param name="layout">The <see cref="T:Duality.Serialization.TypeDataLayout"/> to write.</param>
+            <param name="typeString">
+            The <see cref="M:Duality.ReflectionHelper.GetTypeName(System.Type,Duality.TypeNameFormat)">type string</see> that refers to the <see cref="T:System.Type"/> that
+            is described by the specified <see cref="T:Duality.Serialization.TypeDataLayout"/>.
+            </param>
+            <seealso cref="M:Duality.Serialization.BinaryFormatterBase.WriteTypeDataLayout(System.String)"/>
+            <seealso cref="M:Duality.Serialization.BinaryFormatterBase.WriteTypeDataLayout(Duality.Serialization.SerializeType)"/>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.WritePrimitive(System.Object)">
+            <summary>
+            Writes a single primitive value.
+            </summary>
+            <param name="obj">The primitive value to write.</param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.WriteString(System.String)">
+            <summary>
+            Writes a single string value.
+            </summary>
+            <param name="obj">The string value to write.</param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.WriteArrayData(System.Boolean[])">
+            <summary>
+            Writes a primitive array.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.WriteArrayData(System.Byte[])">
+            <summary>
+            Writes a primitive array.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.WriteArrayData(System.SByte[])">
+            <summary>
+            Writes a primitive array.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.WriteArrayData(System.Int16[])">
+            <summary>
+            Writes a primitive array.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.WriteArrayData(System.UInt16[])">
+            <summary>
+            Writes a primitive array.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.WriteArrayData(System.Int32[])">
+            <summary>
+            Writes a primitive array.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.WriteArrayData(System.UInt32[])">
+            <summary>
+            Writes a primitive array.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.WriteArrayData(System.Int64[])">
+            <summary>
+            Writes a primitive array.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.WriteArrayData(System.UInt64[])">
+            <summary>
+            Writes a primitive array.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.WriteArrayData(System.Single[])">
+            <summary>
+            Writes a primitive array.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.WriteArrayData(System.Double[])">
+            <summary>
+            Writes a primitive array.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.WriteArrayData(System.Decimal[])">
+            <summary>
+            Writes a primitive array.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.WriteArrayData(System.Char[])">
+            <summary>
+            Writes a primitive array.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.WriteArrayData(System.String[])">
+            <summary>
+            Writes a string array.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.WriteDataType(Duality.Serialization.DataType)">
+            <summary>
+            Writes a <see cref="T:Duality.Serialization.DataType"/>.
+            </summary>
+            <param name="dt"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.ReadDataType">
+            <summary>
+            Reads a <see cref="T:Duality.Serialization.DataType"/>.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.WritePushOffset">
+            <summary>
+            Writes the begin of a new "safe zone", usually encapsulating a data set.
+            If any error occurs within a safe zone, it is guaranteed to not affect any other
+            safe zone, although the damaged safe zone itsself might be unusable. In general,
+            a safe zone prevents an error from affecting any of the zones surroundings.
+            Safe zones may also be nested.
+            </summary>
+            <seealso cref="M:Duality.Serialization.BinaryFormatterBase.WritePopOffset"/>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.WritePopOffset">
+            <summary>
+            Writes the end of the most recent "safe zone", usually encapsulating a data set.
+            If any error occurs within a safe zone, it is guaranteed to not affect any other
+            safe zone, although the damaged safe zone itsself might be unusable. In general,
+            a safe zone prevents an error from affecting any of the zones surroundings.
+            Safe zones may also be nested.
+            </summary>
+            <seealso cref="M:Duality.Serialization.BinaryFormatterBase.WritePushOffset"/>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.ClearStreamSpecificData">
+            <summary>
+            Clears all <see cref="T:System.IO.Stream"/>- or <see cref="T:Duality.Serialization.BinaryFormatterBase.Operation"/>-specific cache data.
+            </summary>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.GetIdFromObject(System.Object)">
+            <summary>
+            Returns the id that is assigned to the specified object. Assigns one, if
+            there is none yet.
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.LogCustomSerializationError(System.UInt32,System.Type,System.Exception)">
+            <summary>
+            Logs an error that occured during <see cref="T:Duality.Serialization.ISerializable">custom serialization</see>.
+            </summary>
+            <param name="objId">The object id of the affected object.</param>
+            <param name="serializeType">The <see cref="T:System.Type"/> of the affected object.</param>
+            <param name="e">The <see cref="T:System.Exception"/> that occured.</param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.LogCustomDeserializationError(System.UInt32,System.Type,System.Exception)">
+            <summary>
+            Logs an error that occured during <see cref="T:Duality.Serialization.ISerializable">custom deserialization</see>.
+            </summary>
+            <param name="objId">The object id of the affected object.</param>
+            <param name="serializeType">The <see cref="T:System.Type"/> of the affected object.</param>
+            <param name="e">The <see cref="T:System.Exception"/> that occured.</param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.LogCantResolveTypeError(System.UInt32,System.String)">
+            <summary>
+            Logs an error that occured trying to resolve a <see cref="T:System.Type"/> by its <see cref="M:Duality.ReflectionHelper.GetTypeName(System.Type,Duality.TypeNameFormat)">type string</see>.
+            </summary>
+            <param name="objId">The object id of the affected object.</param>
+            <param name="typeString">The <see cref="M:Duality.ReflectionHelper.GetTypeName(System.Type,Duality.TypeNameFormat)">type string</see> that couldn't be resolved.</param>
+        </member>
+        <member name="P:Duality.Serialization.BinaryFormatterBase.WriteTarget">
+            <summary>
+            [GET / SET] The <see cref="T:System.IO.BinaryWriter"/> that is used for serialization.
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.BinaryFormatterBase.ReadTarget">
+            <summary>
+            [GET / SET] The <see cref="T:System.IO.BinaryReader"/> that is used for deserialization.
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.BinaryFormatterBase.SerializationLog">
+            <summary>
+            [GET / SET] The de/serialization <see cref="T:Duality.Log"/>.
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.BinaryFormatterBase.CanWrite">
+            <summary>
+            [GET] Can this binary serializer write data?
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.BinaryFormatterBase.CanRead">
+            <summary>
+            [GET] Can this binary serializer read data?
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.BinaryFormatterBase.Disposed">
+            <summary>
+            [GET] Whether this binary serializer has been disposed. A disposed object cannot be used anymore.
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.BinaryFormatterBase.CustomSerialIO">
+            <summary>
+            Buffer object for <see cref="T:Duality.Serialization.ISerializable">custom de/serialization</see>, 
+            providing read and write functionality.
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.IDataReader">
+            <summary>
+            Provides reading capabilities for serialization purposes
+            </summary>
+        </member>
+        <member name="M:Duality.Serialization.IDataReader.ReadValue(System.String)">
+            <summary>
+            Reads the value that is associated with the specified name.
+            </summary>
+            <param name="name">The name that is used for retrieving the value.</param>
+            <returns>The value that has been read using the given name.</returns>
+            <seealso cref="M:Duality.Serialization.IDataReader.ReadValue``1(System.String)"/>
+            <seealso cref="M:Duality.Serialization.IDataReader.ReadValue``1(System.String,``0@)"/>
+        </member>
+        <member name="M:Duality.Serialization.IDataReader.ReadValue``1(System.String)">
+            <summary>
+            Reads the value that is associated with the specified name.
+            </summary>
+            <typeparam name="T">The expected value type.</typeparam>
+            <param name="name">The name that is used for retrieving the value.</param>
+            <returns>The value that has been read and cast using the given name and type.</returns>
+            <seealso cref="M:Duality.Serialization.IDataReader.ReadValue(System.String)"/>
+            <seealso cref="M:Duality.Serialization.IDataReader.ReadValue``1(System.String,``0@)"/>
+        </member>
+        <member name="M:Duality.Serialization.IDataReader.ReadValue``1(System.String,``0@)">
+            <summary>
+            Reads the value that is associated with the specified name.
+            </summary>
+            <typeparam name="T">The expected value type.</typeparam>
+            <param name="name">The name that is used for retrieving the value.</param>
+            <param name="value">The value that has been read and cast using the given name and type.</param>
+            <seealso cref="M:Duality.Serialization.IDataReader.ReadValue(System.String)"/>
+            <seealso cref="M:Duality.Serialization.IDataReader.ReadValue``1(System.String)"/>
+        </member>
+        <member name="T:Duality.Serialization.IDataWriter">
+            <summary>
+            Provides writing capabilities for serialization purposes
+            </summary>
+        </member>
+        <member name="M:Duality.Serialization.IDataWriter.WriteValue(System.String,System.Object)">
+            <summary>
+            Writes the specified name and value.
+            </summary>
+            <param name="name">
+            The name to which the written value is mapped. 
+            May, for example, be the name of a <see cref="T:System.Reflection.FieldInfo">Field</see>
+            to which the written value belongs, but there are no naming restrictions, except that one name can't be used twice.
+            </param>
+            <param name="value">The value to write.</param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.CustomSerialIO.Serialize(Duality.Serialization.BinaryFormatterBase)">
+            <summary>
+            Writes the contained data to the specified serializer.
+            </summary>
+            <param name="formatter">The serializer to write data to.</param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.CustomSerialIO.Deserialize(Duality.Serialization.BinaryFormatterBase)">
+            <summary>
+            Reads data from the specified serializer
+            </summary>
+            <param name="formatter">The serializer to read data from.</param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.CustomSerialIO.Clear">
+            <summary>
+            Clears all contained data.
+            </summary>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.CustomSerialIO.WriteValue(System.String,System.Object)">
+            <summary>
+            Writes the specified name and value.
+            </summary>
+            <param name="name">
+            The name to which the written value is mapped. 
+            May, for example, be the name of a <see cref="T:System.Reflection.FieldInfo">Field</see>
+            to which the written value belongs, but there are no naming restrictions, except that one name can't be used twice.
+            </param>
+            <param name="value">The value to write.</param>
+            <seealso cref="T:Duality.Serialization.IDataWriter"/>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.CustomSerialIO.ReadValue(System.String)">
+            <summary>
+            Reads the value that is associated with the specified name.
+            </summary>
+            <param name="name">The name that is used for retrieving the value.</param>
+            <returns>The value that has been read using the given name.</returns>
+            <seealso cref="T:Duality.Serialization.IDataReader"/>
+            <seealso cref="M:Duality.Serialization.BinaryFormatterBase.CustomSerialIO.ReadValue``1(System.String)"/>
+            <seealso cref="M:Duality.Serialization.BinaryFormatterBase.CustomSerialIO.ReadValue``1(System.String,``0@)"/>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.CustomSerialIO.ReadValue``1(System.String)">
+            <summary>
+            Reads the value that is associated with the specified name.
+            </summary>
+            <typeparam name="T">The expected value type.</typeparam>
+            <param name="name">The name that is used for retrieving the value.</param>
+            <returns>The value that has been read and cast using the given name and type.</returns>
+            <seealso cref="T:Duality.Serialization.IDataReader"/>
+            <seealso cref="M:Duality.Serialization.BinaryFormatterBase.CustomSerialIO.ReadValue(System.String)"/>
+            <seealso cref="M:Duality.Serialization.BinaryFormatterBase.CustomSerialIO.ReadValue``1(System.String,``0@)"/>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatterBase.CustomSerialIO.ReadValue``1(System.String,``0@)">
+            <summary>
+            Reads the value that is associated with the specified name.
+            </summary>
+            <typeparam name="T">The expected value type.</typeparam>
+            <param name="name">The name that is used for retrieving the value.</param>
+            <param name="value">The value that has been read and cast using the given name and type.</param>
+            <seealso cref="T:Duality.Serialization.IDataReader"/>
+            <seealso cref="M:Duality.Serialization.BinaryFormatterBase.CustomSerialIO.ReadValue(System.String)"/>
+            <seealso cref="M:Duality.Serialization.BinaryFormatterBase.CustomSerialIO.ReadValue``1(System.String)"/>
+        </member>
+        <member name="P:Duality.Serialization.BinaryFormatterBase.CustomSerialIO.Values">
+            <summary>
+            [GET] Enumerates all currently stored <see cref="T:System.Collections.Generic.KeyValuePair`2">KeyValuePairs</see>.
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.BinaryFormatterBase.Operation">
+            <summary>
+            Operations, the binary serializer is able to perform.
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.BinaryFormatterBase.Operation.None">
+            <summary>
+            No operation.
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.BinaryFormatterBase.Operation.Read">
+            <summary>
+            Read a dataset / object
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.BinaryFormatterBase.Operation.Write">
+            <summary>
+            Write a dataset / object
+            </summary>
+        </member>
         <member name="T:Duality.Resource">
             <summary>
             The abstract Resource class is inherited by any kind of Duality content. Instances of it or one of its subclasses
@@ -907,6 +1498,122 @@
             It is also the path under which this Resource is registered at the ContentProvider.
             </summary>
         </member>
+        <member name="T:Duality.Serialization.Surrogates.DictionarySurrogate">
+            <summary>
+            De/Serializes a <see cref="!:System.Collections.Generic.Dictionar&lt;T,U&gt;"/>.
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.Surrogate`1">
+            <summary>
+            Default base class for <see cref="T:Duality.Serialization.ISurrogate">Serialization Surrogates</see>. It implements both
+            <see cref="T:Duality.Serialization.ISurrogate"/> and <see cref="T:Duality.Serialization.ISerializable"/>, thus being able to fully perform de/serialization
+            of a designated object type.
+            </summary>
+            <typeparam name="T">
+            The base <see cref="T:System.Type"/> of objects this surrogate can replace.
+            </typeparam>
+        </member>
+        <member name="T:Duality.Serialization.ISurrogate">
+            <summary>
+            De/Serializes an object instead of letting it de/serialize itsself or using a Reflection-driven approach.
+            </summary>
+        </member>
+        <member name="M:Duality.Serialization.ISurrogate.MatchesType(System.Type)">
+            <summary>
+            Checks whether this surrogate is able to de/serialize the specified object type.
+            </summary>
+            <param name="t">The <see cref="T:System.Type"/> of the object in question.</param>
+            <returns>True, if this surrogate is able to de/serialize such object, false if not.</returns>
+        </member>
+        <member name="M:Duality.Serialization.ISurrogate.WriteConstructorData(Duality.Serialization.IDataWriter)">
+            <summary>
+            Writes constructor data for the replaced object. This will be used in a deserialization pre-pass 
+            for constructing the object. Note that constructor data may not contain any object references to
+            itsself, since it the object doesn't exist yet at this deserialization stage.
+            </summary>
+            <param name="writer">The <see cref="T:Duality.Serialization.IDataWriter"/> to serialize constructor data to.</param>
+        </member>
+        <member name="M:Duality.Serialization.ISurrogate.ConstructObject(Duality.Serialization.IDataReader,System.Type)">
+            <summary>
+            Constructs an object in deserialization based on the constructor data that has been written in
+            serialization using <see cref="M:Duality.Serialization.ISurrogate.WriteConstructorData(Duality.Serialization.IDataWriter)"/>.
+            </summary>
+            <param name="reader">The <see cref="T:Duality.Serialization.IDataReader"/> to deserialize constructor data from.</param>
+            <param name="objType">The <see cref="T:System.Type"/> of the object to create.</param>
+            <returns>An instance of the specified <see cref="T:System.Type"/> that has been constructed using the provided data.</returns>
+        </member>
+        <member name="P:Duality.Serialization.ISurrogate.RealObject">
+            <summary>
+            [GET / SET] The object that is de/serialized
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.ISurrogate.SurrogateObject">
+            <summary>
+            [GET] Returns a serializable object that represents the <see cref="P:Duality.Serialization.ISurrogate.RealObject"/>.
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.ISurrogate.Priority">
+            <summary>
+            [GET] If more than one registered ISurrogate is capable of de/serializing a given object type, the one
+            with the highest priority is picked.
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.ISerializable">
+            <summary>
+            Provides a general interface for an object type with custom serialization.
+            </summary>
+        </member>
+        <member name="M:Duality.Serialization.ISerializable.WriteData(Duality.Serialization.IDataWriter)">
+            <summary>
+            Writes the object data to the specified <see cref="T:Duality.Serialization.IDataWriter"/>.
+            </summary>
+            <param name="writer"></param>
+        </member>
+        <member name="M:Duality.Serialization.ISerializable.ReadData(Duality.Serialization.IDataReader)">
+            <summary>
+            Reads and applies the object data to the specified <see cref="T:Duality.Serialization.IDataReader"/>.
+            </summary>
+            <param name="reader"></param>
+        </member>
+        <member name="P:Duality.Serialization.Surrogate`1.RealObject">
+            <summary>
+            [GET] The object that is de/serialized
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.SerializeType">
+            <summary>
+            The SerializeType class is essentially caching serialization-relevant information
+            that has been generated basing on a <see cref="T:System.Type"/>. It is cached in the
+            <see cref="T:Duality.ReflectionHelper"/> to avoid redundant information gathering.
+            </summary>
+        </member>
+        <member name="M:Duality.Serialization.SerializeType.#ctor(System.Type)">
+            <summary>
+            Creates a new SerializeType based on a <see cref="T:System.Type"/>, gathering all the information that is necessary for serialization.
+            </summary>
+            <param name="t"></param>
+        </member>
+        <member name="P:Duality.Serialization.SerializeType.Type">
+            <summary>
+            [GET] The <see cref="T:System.Type"/> that is described.
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.SerializeType.Fields">
+            <summary>
+            [GET] An array of <see cref="T:System.Reflection.FieldInfo">fields</see> which are serialized.
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.SerializeType.TypeString">
+            <summary>
+            [GET] A string referring to the <see cref="T:System.Type"/> that is described.
+            </summary>
+            <seealso cref="M:Duality.ReflectionHelper.GetTypeName(System.Type,Duality.TypeNameFormat)"/>
+        </member>
+        <member name="P:Duality.Serialization.SerializeType.DataType">
+            <summary>
+            [GET] The <see cref="T:Duality.Serialization.DataType"/> associated with the described <see cref="T:System.Type"/>.
+            </summary>
+        </member>
         <member name="T:Duality.Time">
             <summary>
             The Time class provides a global interface for time measurement and control. It affects all time-dependent computations. 
@@ -999,6 +1706,172 @@
             <param name="alBufferId">OpenAL buffer id to stream to</param>
             <param name="vFPtr">Ogg Vorbis file handle</param>
             <returns>Returns false, if EOF is reached.</returns>
+        </member>
+        <member name="T:Duality.Serialization.DataType">
+            <summary>
+            This enum is used by Dualitys serializers to distinguish between certain kinds of data.
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.DataType.Unknown">
+            <summary>
+            Unknown data type
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.DataType.Bool">
+            <summary>
+            A <see cref="T:System.Boolean"/> value
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.DataType.Byte">
+            <summary>
+            A <see cref="T:System.Byte"/> value
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.DataType.SByte">
+            <summary>
+            A <see cref="T:System.SByte"/> value
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.DataType.Short">
+            <summary>
+            A <see cref="T:System.Int16"/> value
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.DataType.UShort">
+            <summary>
+            A <see cref="T:System.UInt16"/> value
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.DataType.Int">
+            <summary>
+            A <see cref="T:System.Int32"/> value
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.DataType.UInt">
+            <summary>
+            A <see cref="T:System.UInt32"/> value
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.DataType.Long">
+            <summary>
+            A <see cref="T:System.Int64"/> value
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.DataType.ULong">
+            <summary>
+            A <see cref="T:System.UInt64"/> value
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.DataType.Float">
+            <summary>
+            A <see cref="T:System.Single"/> value
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.DataType.Double">
+            <summary>
+            A <see cref="T:System.Double"/> value
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.DataType.Decimal">
+            <summary>
+            A <see cref="T:System.Decimal"/> value
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.DataType.Char">
+            <summary>
+            A <see cref="T:System.Char"/> value
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.DataType.Type">
+            <summary>
+            A <see cref="T:System.Type"/> value
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.DataType.FieldInfo">
+            <summary>
+            A <see cref="T:System.Reflection.FieldInfo"/> value
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.DataType.PropertyInfo">
+            <summary>
+            A <see cref="T:System.Reflection.PropertyInfo"/> value
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.DataType.MethodInfo">
+            <summary>
+            A <see cref="T:System.Reflection.MethodInfo"/> value
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.DataType.ConstructorInfo">
+            <summary>
+            A <see cref="T:System.Reflection.ConstructorInfo"/> value
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.DataType.EventInfo">
+            <summary>
+            A <see cref="T:System.Reflection.EventInfo"/> value
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.DataType.Delegate">
+            <summary>
+            A <see cref="T:System.Delegate"/> value
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.DataType.Enum">
+            <summary>
+            A <see cref="T:System.Enum"/> value
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.DataType.String">
+            <summary>
+            A <see cref="T:System.String"/> value
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.DataType.Array">
+            <summary>
+            A <see cref="T:System.Array"/> value
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.DataType.Class">
+            <summary>
+            A class object
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.DataType.Struct">
+            <summary>
+            A struct object
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.DataType.ObjectRef">
+            <summary>
+            The reference to an object
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.ExtMethodsDataType">
+            <summary>
+            Extension methods for <see cref="T:Duality.Serialization.DataType"/>
+            </summary>
+        </member>
+        <member name="M:Duality.Serialization.ExtMethodsDataType.IsPrimitiveType(Duality.Serialization.DataType)">
+            <summary>
+            Returns whether the <see cref="T:Duality.Serialization.DataType"/> represents a primitive data type.
+            </summary>
+            <param name="dt"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Serialization.ExtMethodsDataType.IsMemberInfoType(Duality.Serialization.DataType)">
+            <summary>
+            Returns whether the <see cref="T:Duality.Serialization.DataType"/> represents a <see cref="T:System.Reflection.MemberInfo"/> type.
+            </summary>
+            <param name="dt"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Serialization.ExtMethodsDataType.ToActualType(Duality.Serialization.DataType)">
+            <summary>
+            Returns the actual <see cref="T:System.Type"/> that is associated with the <see cref="T:Duality.Serialization.DataType"/>.
+            </summary>
+            <param name="dt"></param>
+            <returns></returns>
         </member>
         <member name="M:Duality.ReflectionHelper.GetAllFields(System.Type,System.Reflection.BindingFlags)">
             <summary>
@@ -1171,6 +2044,144 @@
             i.e. as soon as demanded by accessing the AlBuffer property or calling SetupAlBuffer.
             </summary>
         </member>
+        <member name="T:Duality.Serialization.TypeDataLayout">
+            <summary>
+            This class provides information about the data layout when de/serializing an object.
+            </summary>
+            <seealso cref="T:Duality.Serialization.BinaryFormatterBase"/>
+            <seealso cref="T:Duality.Serialization.BinaryFormatter"/>
+            <seealso cref="T:Duality.Serialization.BinaryMetaFormatter"/>
+        </member>
+        <member name="M:Duality.Serialization.TypeDataLayout.#ctor(System.IO.BinaryReader)">
+            <summary>
+            Initializes a TypeDataLayout from the specified <see cref="T:System.IO.BinaryReader"/>.
+            </summary>
+            <param name="r">The BinaryReader from which the type information is read.</param>
+        </member>
+        <member name="M:Duality.Serialization.TypeDataLayout.#ctor(Duality.Serialization.TypeDataLayout)">
+            <summary>
+            Initializes a TypeDataLayout by cloning an existing TypeDataLayout.
+            </summary>
+            <param name="t">The source layout</param>
+        </member>
+        <member name="M:Duality.Serialization.TypeDataLayout.#ctor(Duality.Serialization.SerializeType)">
+            <summary>
+            Initializes a TypeDataLayout by extracting necessary information from the specified <see cref="T:Duality.Serialization.SerializeType"/>.
+            </summary>
+            <param name="t">The source SerializeType.</param>
+        </member>
+        <member name="M:Duality.Serialization.TypeDataLayout.Write(System.IO.BinaryWriter)">
+            <summary>
+            Writes the TypeDataLayout to the specified <see cref="T:System.IO.BinaryWriter"/>.
+            </summary>
+            <param name="w">The BinaryWriter to store the type information.</param>
+        </member>
+        <member name="P:Duality.Serialization.TypeDataLayout.Fields">
+            <summary>
+            [GET / SET] An array of all the necessary field information, typically one <see cref="T:Duality.Serialization.TypeDataLayout.FieldDataInfo"/> 
+            entry per <see cref="T:System.Reflection.FieldInfo">field</see>.
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.TypeDataLayout.FieldDataInfo">
+            <summary>
+            Holds information about a single field.
+            </summary>
+            <see cref="T:System.Reflection.FieldInfo"/>
+        </member>
+        <member name="F:Duality.Serialization.TypeDataLayout.FieldDataInfo.name">
+            <summary>
+            The fields name
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.TypeDataLayout.FieldDataInfo.typeString">
+            <summary>
+            A string referring to the fields type.
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.BinaryMetaFormatter">
+            <summary>
+            De/Serializes abstract object data using <see cref="T:Duality.Serialization.MetaFormat.DataNode">DataNodes</see>.
+            </summary>
+            <seealso cref="T:Duality.Serialization.BinaryFormatter"/>
+        </member>
+        <member name="M:Duality.Serialization.BinaryMetaFormatter.WriteObject(Duality.Serialization.MetaFormat.DataNode)">
+            <summary>
+            Serializes the specified data node tree to the underlying <see cref="T:System.IO.Stream"/>.
+            </summary>
+            <param name="data">The data node tree to serialize.</param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryMetaFormatter.ReadObject">
+            <summary>
+            Deserializes a data node tree from the underlying <see cref="T:System.IO.Stream"/>.
+            </summary>
+            <returns>A data node tree that has been deserialized.</returns>
+        </member>
+        <member name="M:Duality.Serialization.BinaryMetaFormatter.WriteMemberInfo(Duality.Serialization.MetaFormat.MemberInfoNode)">
+            <summary>
+            Writes the specified <see cref="T:Duality.Serialization.MetaFormat.MemberInfoNode"/>, including possible child nodes.
+            </summary>
+            <param name="node"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryMetaFormatter.WriteArray(Duality.Serialization.MetaFormat.ArrayNode)">
+            <summary>
+            Writes the specified <see cref="T:Duality.Serialization.MetaFormat.ArrayNode"/>, including possible child nodes.
+            </summary>
+            <param name="node"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryMetaFormatter.WriteStruct(Duality.Serialization.MetaFormat.StructNode)">
+            <summary>
+            Writes the specified <see cref="T:Duality.Serialization.MetaFormat.StructNode"/>, including possible child nodes.
+            </summary>
+            <param name="node"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryMetaFormatter.WriteDelegate(Duality.Serialization.MetaFormat.DelegateNode)">
+            <summary>
+            Writes the specified <see cref="T:Duality.Serialization.MetaFormat.DelegateNode"/>, including possible child nodes.
+            </summary>
+            <param name="node"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryMetaFormatter.WriteEnum(Duality.Serialization.MetaFormat.EnumNode)">
+            <summary>
+            Writes the specified <see cref="T:Duality.Serialization.MetaFormat.EnumNode"/>.
+            </summary>
+            <param name="node"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryMetaFormatter.ReadMemberInfo(Duality.Serialization.DataType)">
+            <summary>
+            Reads a <see cref="T:Duality.Serialization.MetaFormat.MemberInfoNode"/>, including possible child nodes.
+            </summary>
+            <param name="node"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryMetaFormatter.ReadArray">
+            <summary>
+            Reads an <see cref="T:Duality.Serialization.MetaFormat.ArrayNode"/>, including possible child nodes.
+            </summary>
+            <param name="node"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryMetaFormatter.ReadStruct">
+            <summary>
+            Reads a <see cref="T:Duality.Serialization.MetaFormat.StructNode"/>, including possible child nodes.
+            </summary>
+            <param name="node"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryMetaFormatter.ReadDelegate">
+            <summary>
+            Reads a <see cref="T:Duality.Serialization.MetaFormat.DelegateNode"/>, including possible child nodes.
+            </summary>
+            <param name="node"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryMetaFormatter.ReadEnum">
+            <summary>
+            Reads an <see cref="T:Duality.Serialization.MetaFormat.EnumNode"/>.
+            </summary>
+            <param name="node"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryMetaFormatter.ReadObjectRef">
+            <summary>
+            Reads an <see cref="T:Duality.Serialization.MetaFormat.ObjectRefNode"/>.
+            </summary>
+            <param name="node"></param>
+        </member>
         <member name="M:Duality.MathF.InvSqrtFast(System.Single)">
             <summary>
             Returns an approximation of a numbers inverse square root.
@@ -1341,6 +2352,300 @@
             <param name="obj2XSpeed"></param>
             <param name="obj2YSpeed"></param>
             <returns></returns>
+        </member>
+        <member name="T:Duality.Serialization.Surrogates.BitmapSurrogate">
+            <summary>
+            De/Serializes a <see cref="T:System.Drawing.Bitmap"/>.
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.MetaFormat.DataNode">
+            <summary>
+            Describes a single serialization data node.
+            </summary>
+            <seealso cref="T:Duality.Serialization.BinaryMetaFormatter"/>
+        </member>
+        <member name="M:Duality.Serialization.MetaFormat.DataNode.GetTypeStrings(System.Boolean)">
+            <summary>
+            Returns a list of all <see cref="M:Duality.ReflectionHelper.GetTypeName(System.Type,Duality.TypeNameFormat)">type strings</see> in this data node.
+            </summary>
+            <param name="deep">If true, both this node and all of its children are searched.</param>
+            <returns>A list of <see cref="M:Duality.ReflectionHelper.GetTypeName(System.Type,Duality.TypeNameFormat)">type strings</see>.</returns>
+        </member>
+        <member name="M:Duality.Serialization.MetaFormat.DataNode.GetTypeStrings(System.Collections.Generic.List{System.String}@,System.Boolean)">
+            <summary>
+            DataNodes may override this method to append their <see cref="M:Duality.ReflectionHelper.GetTypeName(System.Type,Duality.TypeNameFormat)">type strings</see> to the
+            specified list. The base version iterates over its children, if a deep search is performed.
+            </summary>
+            <param name="list">The <see cref="T:System.Collections.Generic.List`1"/> to append type strings to.</param>
+            <param name="deep">If true, both this node and all of its children are searched.</param>
+        </member>
+        <member name="M:Duality.Serialization.MetaFormat.DataNode.IsObjectIdDefined(System.UInt32)">
+            <summary>
+            Determines whether this data node contains an <see cref="T:Duality.Serialization.MetaFormat.ObjectNode">object</see> with the specified
+            object id. DataNodes may override this method to check for their own object id. The base version iterates
+            over its children.
+            </summary>
+            <param name="objId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Serialization.MetaFormat.DataNode.ReplaceTypeStrings(System.String,System.String)">
+            <summary>
+            Searches for one <see cref="M:Duality.ReflectionHelper.GetTypeName(System.Type,Duality.TypeNameFormat)">type string</see> and replaces it with another.
+            DataNodes may override this method to rename their own type strings. The base version iterates
+            over its children.
+            </summary>
+            <param name="oldTypeString">The old type string that is to be replaced.</param>
+            <param name="newTypeString">The new type string that is to be used instead of the other.</param>
+            <returns>The number of occurences that have been replaced.</returns>
+        </member>
+        <member name="P:Duality.Serialization.MetaFormat.DataNode.SubNodes">
+            <summary>
+            [GET] Enumerates this nodes child nodes.
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.MetaFormat.DataNode.Parent">
+            <summary>
+            [GET / SET] This nodes parent node.
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.MetaFormat.DataNode.NodeType">
+            <summary>
+            The <see cref="T:Duality.Serialization.DataType"/> that is associated with this data node.
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.MetaFormat.PrimitiveNode">
+            <summary>
+            Describes a serialization primitive data node.
+            </summary>
+            <seealso cref="T:Duality.Serialization.BinaryMetaFormatter"/>
+        </member>
+        <member name="P:Duality.Serialization.MetaFormat.PrimitiveNode.PrimitiveValue">
+            <summary>
+            [GET / SET] This nodes primitive data value.
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.MetaFormat.StringNode">
+            <summary>
+            Describes a serialization <see cref="T:System.String"/> data node.
+            </summary>
+            <seealso cref="T:Duality.Serialization.BinaryMetaFormatter"/>
+        </member>
+        <member name="P:Duality.Serialization.MetaFormat.StringNode.StringValue">
+            <summary>
+            [GET / SET] This nodes <see cref="T:System.String"/> value.
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.MetaFormat.EnumNode">
+            <summary>
+            Describes a serialization <see cref="T:System.Enum"/> data node.
+            </summary>
+            <seealso cref="T:Duality.Serialization.BinaryMetaFormatter"/>
+        </member>
+        <member name="P:Duality.Serialization.MetaFormat.EnumNode.EnumType">
+            <summary>
+            [GET / SET] A string referring to the <see cref="T:System.Enum">Enums</see> Tyoe.
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.MetaFormat.EnumNode.ValueName">
+            <summary>
+            [GET / SET] The values name in the <see cref="T:System.Enum"/>.
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.MetaFormat.EnumNode.Value">
+            <summary>
+            [GET / SET] The numeric enum value
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.MetaFormat.ObjectNode">
+            <summary>
+            Describes a serialization object data node.
+            </summary>
+            <seealso cref="T:Duality.Serialization.BinaryMetaFormatter"/>
+        </member>
+        <member name="P:Duality.Serialization.MetaFormat.ObjectNode.TypeString">
+            <summary>
+            [GET / SET] A string referring to the objects <see cref="T:System.Type"/>.
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.MetaFormat.ObjectNode.ObjId">
+            <summary>
+            [GET / SET] The objects id.
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.MetaFormat.ArrayNode">
+            <summary>
+            Describes a serialization array data node.
+            </summary>
+            <seealso cref="T:Duality.Serialization.BinaryMetaFormatter"/>
+        </member>
+        <member name="P:Duality.Serialization.MetaFormat.ArrayNode.PrimitiveData">
+            <summary>
+            [GET / SET] An <see cref="T:System.Array"/> storing this nodes primitive data. Null, if
+            the data stored in this ArrayNode is not primitive.
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.MetaFormat.ArrayNode.Rank">
+            <summary>
+            [GET / SET] The rank of the array.
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.MetaFormat.ArrayNode.Length">
+            <summary>
+            [GET / SET] The arrays length.
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.MetaFormat.StructNode">
+            <summary>
+            Describes a serialization structural object data node.
+            </summary>
+            <seealso cref="T:Duality.Serialization.BinaryMetaFormatter"/>
+        </member>
+        <member name="P:Duality.Serialization.MetaFormat.StructNode.CustomSerialization">
+            <summary>
+            [GET / SET] Whether this structural object uses <see cref="T:Duality.Serialization.ISerializable">custom serialization</see>.
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.MetaFormat.StructNode.SurrogateSerialization">
+            <summary>
+            [GET / SET] Whether this structural object uses an <see cref="T:Duality.Serialization.ISurrogate"/>.
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.MetaFormat.ObjectRefNode">
+            <summary>
+            Describes a serialization object reference data node.
+            </summary>
+            <seealso cref="T:Duality.Serialization.BinaryMetaFormatter"/>
+        </member>
+        <member name="P:Duality.Serialization.MetaFormat.ObjectRefNode.ObjRefId">
+            <summary>
+            [GET / SET] The id of the referenced object.
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.MetaFormat.MemberInfoNode">
+            <summary>
+            Describes a serialization <see cref="T:System.Reflection.MemberInfo"/> data node.
+            </summary>
+            <seealso cref="T:Duality.Serialization.BinaryMetaFormatter"/>
+        </member>
+        <member name="P:Duality.Serialization.MetaFormat.MemberInfoNode.IsStatic">
+            <summary>
+            [GET / SET] Whether the referenced <see cref="T:System.Reflection.MemberInfo"/> is static.
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.MetaFormat.TypeInfoNode">
+            <summary>
+            Describes a serialization <see cref="T:System.Type"/> data node.
+            </summary>
+            <seealso cref="T:Duality.Serialization.BinaryMetaFormatter"/>
+        </member>
+        <member name="T:Duality.Serialization.MetaFormat.FieldInfoNode">
+            <summary>
+            Describes a serialization <see cref="T:System.Reflection.FieldInfo"/> data node.
+            </summary>
+            <seealso cref="T:Duality.Serialization.BinaryMetaFormatter"/>
+        </member>
+        <member name="P:Duality.Serialization.MetaFormat.FieldInfoNode.FieldName">
+            <summary>
+            [GET / SET] The name of the <see cref="T:System.Reflection.FieldInfo">field</see>.
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.MetaFormat.PropertyInfoNode">
+            <summary>
+            Describes a serialization <see cref="T:System.Reflection.PropertyInfo"/> data node.
+            </summary>
+            <seealso cref="T:Duality.Serialization.BinaryMetaFormatter"/>
+        </member>
+        <member name="P:Duality.Serialization.MetaFormat.PropertyInfoNode.PropertyName">
+            <summary>
+            [GET / SET] The name of the <see cref="T:System.Reflection.PropertyInfo">property</see>.
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.MetaFormat.PropertyInfoNode.PropertyType">
+            <summary>
+            [GET / SET] A string referring to the properties <see cref="T:System.Type"/>.
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.MetaFormat.PropertyInfoNode.ParameterTypes">
+            <summary>
+            [GET / SET] An array of strings referring to the properties index parameter types.
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.MetaFormat.MethodInfoNode">
+            <summary>
+            Describes a serialization <see cref="T:System.Reflection.MethodInfo"/> data node.
+            </summary>
+            <seealso cref="T:Duality.Serialization.BinaryMetaFormatter"/>
+        </member>
+        <member name="P:Duality.Serialization.MetaFormat.MethodInfoNode.MethodName">
+            <summary>
+            [GET / SET] The name of the <see cref="T:System.Reflection.MethodInfo">method</see>.
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.MetaFormat.MethodInfoNode.ParameterTypes">
+            <summary>
+            [GET / SET] An array of strings referring to the methods parameter types.
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.MetaFormat.ConstructorInfoNode">
+            <summary>
+            Describes a serialization <see cref="T:System.Reflection.ConstructorInfo"/> data node.
+            </summary>
+            <seealso cref="T:Duality.Serialization.BinaryMetaFormatter"/>
+        </member>
+        <member name="P:Duality.Serialization.MetaFormat.ConstructorInfoNode.ParameterTypes">
+            <summary>
+            [GET / SET] An array of strings referring to the constructors parameter types.
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.MetaFormat.EventInfoNode">
+            <summary>
+            Describes a serialization <see cref="T:System.Reflection.EventInfo"/> data node.
+            </summary>
+            <seealso cref="T:Duality.Serialization.BinaryMetaFormatter"/>
+        </member>
+        <member name="P:Duality.Serialization.MetaFormat.EventInfoNode.EventName">
+            <summary>
+            [GET / SET] The name of the <see cref="T:System.Reflection.EventInfo">event</see>.
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.MetaFormat.DelegateNode">
+            <summary>
+            Describes a serialization <see cref="T:System.Delegate"/> data node.
+            </summary>
+            <seealso cref="T:Duality.Serialization.BinaryMetaFormatter"/>
+        </member>
+        <member name="P:Duality.Serialization.MetaFormat.DelegateNode.InvokeList">
+            <summary>
+            [GET / SET] A reference to the DataNode containing the <see cref="T:System.Delegate">Delegates</see> invokation list.
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.MetaFormat.DelegateNode.Method">
+            <summary>
+            [GET / SET] A reference to the DataNode containing the <see cref="T:System.Delegate">Delegates</see> method.
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.MetaFormat.DelegateNode.Target">
+            <summary>
+            [GET / SET] A reference to the DataNode containing the <see cref="T:System.Delegate">Delegates</see> target object.
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.MetaFormat.TypeDataLayoutNode">
+            <summary>
+            Describes a serialization <see cref="T:Duality.Serialization.TypeDataLayout"/> data node.
+            </summary>
+            <seealso cref="T:Duality.Serialization.BinaryMetaFormatter"/>
+        </member>
+        <member name="P:Duality.Serialization.MetaFormat.TypeDataLayoutNode.Layout">
+            <summary>
+            [GET / SET] The TypeDataLayout that is stored in this node.
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.MetaFormat.DummyNode">
+            <summary>
+            Describes a serialization dummy data node. It does not contain any information but might be used by meta-formatters
+            to group and organize other nodes that have actually been read.
+            </summary>
+            <seealso cref="T:Duality.Serialization.BinaryMetaFormatter"/>
         </member>
         <member name="T:Duality.Resources.Pixmap">
             <summary>
@@ -1695,6 +3000,177 @@
         <member name="E:Duality.GameObject.EventComponentRemoving">
             <summary>
             Fired when a Component is about to be removed from the GameObject
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.BinaryFormatter">
+            <summary>
+            De/Serializes object data.
+            </summary>
+            <seealso cref="T:Duality.Serialization.BinaryMetaFormatter"/>
+        </member>
+        <member name="F:Duality.Serialization.BinaryFormatter.fieldBlockers">
+            <summary>
+            A list of <see cref="T:System.Reflection.FieldInfo">field</see> blockers. If any registered field blocker
+            returns true upon serializing a specific field, a default value is assumed instead.
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.BinaryFormatter.surrogates">
+            <summary>
+            A list of <see cref="T:Duality.Serialization.ISurrogate">Serialization Surrogates</see>. If any of them
+            matches the <see cref="T:System.Type"/> of an object that is to be serialized, instead of letting it
+            serialize itsself, the <see cref="T:Duality.Serialization.ISurrogate"/> with the highest <see cref="P:Duality.Serialization.ISurrogate.Priority"/>
+            is used instead.
+            </summary>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatter.ClearFieldBlockers">
+            <summary>
+            Unregisters all <see cref="P:Duality.Serialization.BinaryFormatter.FieldBlockers"/>.
+            </summary>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatter.AddFieldBlocker(System.Predicate{System.Reflection.FieldInfo})">
+            <summary>
+            Registers a new <see cref="P:Duality.Serialization.BinaryFormatter.FieldBlockers">FieldBlocker</see>.
+            </summary>
+            <param name="blocker"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatter.RemoveFieldBlocker(System.Predicate{System.Reflection.FieldInfo})">
+            <summary>
+            Unregisters an existing <see cref="P:Duality.Serialization.BinaryFormatter.FieldBlockers">FieldBlocker</see>.
+            </summary>
+            <param name="blocker"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatter.IsFieldBlocked(System.Reflection.FieldInfo)">
+            <summary>
+            Determines whether a specific <see cref="T:System.Reflection.FieldInfo">field</see> is blocked.
+            Instead of writing the value of a blocked field, the matching <see cref="T:System.Type">Types</see>
+            defautl value is assumed.
+            </summary>
+            <param name="field">The <see cref="T:System.Reflection.FieldInfo">field</see> in question</param>
+            <returns>True, if the <see cref="T:System.Reflection.FieldInfo">field</see> is blocked, false if not.</returns>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatter.ClearSurrogates">
+            <summary>
+            Unregisters all <see cref="T:Duality.Serialization.ISurrogate">Surrogates</see>.
+            </summary>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatter.AddSurrogate(Duality.Serialization.ISurrogate)">
+            <summary>
+            Registers a new <see cref="T:Duality.Serialization.ISurrogate">Surrogate</see>.
+            </summary>
+            <param name="surrogate"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatter.RemoveSurrogate(Duality.Serialization.ISurrogate)">
+            <summary>
+            Unregisters an existing <see cref="T:Duality.Serialization.ISurrogate">Surrogate</see>.
+            </summary>
+            <param name="surrogate"></param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatter.GetSurrogateFor(System.Type)">
+            <summary>
+            Retrieves a matching <see cref="T:Duality.Serialization.ISurrogate"/> for the specified <see cref="T:System.Type"/>.
+            </summary>
+            <param name="t">The <see cref="T:System.Type"/> to retrieve a <see cref="T:Duality.Serialization.ISurrogate"/> for.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatter.WriteObject(System.Object)">
+            <summary>
+            Writes the specified object including all referenced objects using the <see cref="!:WriteTarget"/>.
+            </summary>
+            <param name="obj">The object to write.</param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatter.ReadObject">
+            <summary>
+            Reads an object including all referenced objects using the <see cref="!:ReadTarget"/>.
+            </summary>
+            <returns>The object that has been read.</returns>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatter.WriteMemberInfo(System.Object,System.UInt32)">
+            <summary>
+            Writes the specified <see cref="T:System.Reflection.MemberInfo"/>, including references objects.
+            </summary>
+            <param name="obj">The object to write.</param>
+            <param name="id">The objects id.</param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatter.WriteArray(System.Object,Duality.Serialization.SerializeType,System.UInt32)">
+            <summary>
+            Writes the specified <see cref="T:System.Array"/>, including references objects.
+            </summary>
+            <param name="obj">The object to write.</param>
+            <param name="objSerializeType">The <see cref="T:Duality.Serialization.SerializeType"/> describing the object.</param>
+            <param name="id">The objects id.</param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatter.WriteStruct(System.Object,Duality.Serialization.SerializeType,System.UInt32)">
+            <summary>
+            Writes the specified structural object, including references objects.
+            </summary>
+            <param name="obj">The object to write.</param>
+            <param name="objSerializeType">The <see cref="T:Duality.Serialization.SerializeType"/> describing the object.</param>
+            <param name="id">The objects id.</param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatter.WriteDelegate(System.Object,Duality.Serialization.SerializeType,System.UInt32)">
+            <summary>
+            Writes the specified <see cref="T:System.Delegate"/>, including references objects.
+            </summary>
+            <param name="obj">The object to write.</param>
+            <param name="objSerializeType">The <see cref="T:Duality.Serialization.SerializeType"/> describing the object.</param>
+            <param name="id">The objects id.</param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatter.WriteEnum(System.Enum,Duality.Serialization.SerializeType)">
+            <summary>
+            Writes the specified <see cref="T:System.Enum"/>.
+            </summary>
+            <param name="obj">The object to write.</param>
+            <param name="objSerializeType">The <see cref="T:Duality.Serialization.SerializeType"/> describing the object.</param>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatter.ReadArray">
+            <summary>
+            Reads an <see cref="T:System.Array"/>, including referenced objects.
+            </summary>
+            <returns>The object that has been read.</returns>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatter.ReadStruct">
+            <summary>
+            Reads a structural object, including referenced objects.
+            </summary>
+            <returns>The object that has been read.</returns>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatter.ReadObjectRef">
+            <summary>
+            Reads an object reference.
+            </summary>
+            <returns>The object that has been read.</returns>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatter.ReadMemberInfo(Duality.Serialization.DataType)">
+            <summary>
+            Reads a <see cref="T:System.Reflection.MemberInfo"/>, including referenced objects.
+            </summary>
+            <param name="dataType">The <see cref="T:Duality.Serialization.DataType"/> of the object to read.</param>
+            <returns>The object that has been read.</returns>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatter.ReadDelegate">
+            <summary>
+            Reads a <see cref="T:System.Delegate"/>, including referenced objects.
+            </summary>
+            <returns>The object that has been read.</returns>
+        </member>
+        <member name="M:Duality.Serialization.BinaryFormatter.ReadEnum">
+            <summary>
+            Reads an <see cref="T:System.Enum"/>.
+            </summary>
+            <returns>The object that has been read.</returns>
+        </member>
+        <member name="P:Duality.Serialization.BinaryFormatter.FieldBlockers">
+            <summary>
+            [GET] Enumerates registered <see cref="T:System.Reflection.FieldInfo">field</see> blockers. If any registered field blocker
+            returns true upon serializing a specific field, a default value is assumed instead.
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.BinaryFormatter.Surrogates">
+            <summary>
+            [GET] Enumerates registered <see cref="T:Duality.Serialization.ISurrogate">Serialization Surrogates</see>. If any of them
+            matches the <see cref="T:System.Type"/> of an object that is to be serialized, instead of letting it
+            serialize itsself, the <see cref="T:Duality.Serialization.ISurrogate"/> with the highest <see cref="P:Duality.Serialization.ISurrogate.Priority"/>
+            is used instead.
             </summary>
         </member>
         <member name="T:Duality.IContentRef">

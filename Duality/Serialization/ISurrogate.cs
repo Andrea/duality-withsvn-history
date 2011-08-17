@@ -6,16 +6,55 @@ using System.IO;
 
 namespace Duality.Serialization
 {
+	/// <summary>
+	/// De/Serializes an object instead of letting it de/serialize itsself or using a Reflection-driven approach.
+	/// </summary>
 	public interface ISurrogate
 	{
+		/// <summary>
+		/// [GET / SET] The object that is de/serialized
+		/// </summary>
 		object RealObject { get; set; }
+		/// <summary>
+		/// [GET] Returns a serializable object that represents the <see cref="RealObject"/>.
+		/// </summary>
 		ISerializable SurrogateObject { get; }
+		/// <summary>
+		/// [GET] If more than one registered ISurrogate is capable of de/serializing a given object type, the one
+		/// with the highest priority is picked.
+		/// </summary>
 		int Priority { get; }
 
+		/// <summary>
+		/// Checks whether this surrogate is able to de/serialize the specified object type.
+		/// </summary>
+		/// <param name="t">The <see cref="System.Type"/> of the object in question.</param>
+		/// <returns>True, if this surrogate is able to de/serialize such object, false if not.</returns>
 		bool MatchesType(Type t);
+		/// <summary>
+		/// Writes constructor data for the replaced object. This will be used in a deserialization pre-pass 
+		/// for constructing the object. Note that constructor data may not contain any object references to
+		/// itsself, since it the object doesn't exist yet at this deserialization stage.
+		/// </summary>
+		/// <param name="writer">The <see cref="IDataWriter"/> to serialize constructor data to.</param>
 		void WriteConstructorData(IDataWriter writer);
+		/// <summary>
+		/// Constructs an object in deserialization based on the constructor data that has been written in
+		/// serialization using <see cref="WriteConstructorData"/>.
+		/// </summary>
+		/// <param name="reader">The <see cref="IDataReader"/> to deserialize constructor data from.</param>
+		/// <param name="objType">The <see cref="System.Type"/> of the object to create.</param>
+		/// <returns>An instance of the specified <see cref="System.Type"/> that has been constructed using the provided data.</returns>
 		object ConstructObject(IDataReader reader, Type objType);
 	}
+	/// <summary>
+	/// Default base class for <see cref="ISurrogate">Serialization Surrogates</see>. It implements both
+	/// <see cref="ISurrogate"/> and <see cref="ISerializable"/>, thus being able to fully perform de/serialization
+	/// of a designated object type.
+	/// </summary>
+	/// <typeparam name="T">
+	/// The base <see cref="System.Type"/> of objects this surrogate can replace.
+	/// </typeparam>
 	public abstract class Surrogate<T> : ISurrogate, ISerializable where T : class
 	{
 		private T realObj;
@@ -29,7 +68,10 @@ namespace Duality.Serialization
 		{
 			get { return this; }
 		}
-
+		
+		/// <summary>
+		/// [GET] The object that is de/serialized
+		/// </summary>
 		protected T RealObject
 		{
 			get { return this.realObj; }
