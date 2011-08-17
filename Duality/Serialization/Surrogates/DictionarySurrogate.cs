@@ -7,7 +7,7 @@ using System.Reflection;
 namespace Duality.Serialization.Surrogates
 {
 	/// <summary>
-	/// De/Serializes a <see cref="System.Collections.Generic.Dictionar{T,U}"/>.
+	/// De/Serializes a <see cref="System.Collections.Generic.Dictionary{T,U}"/>.
 	/// </summary>
 	public class DictionarySurrogate : Surrogate<IDictionary>
 	{
