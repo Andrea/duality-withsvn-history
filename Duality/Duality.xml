@@ -1500,7 +1500,7 @@
         </member>
         <member name="T:Duality.Serialization.Surrogates.DictionarySurrogate">
             <summary>
-            De/Serializes a <see cref="!:System.Collections.Generic.Dictionar&lt;T,U&gt;"/>.
+            De/Serializes a <see cref="T:System.Collections.Generic.Dictionary`2"/>.
             </summary>
         </member>
         <member name="T:Duality.Serialization.Surrogate`1">
@@ -1517,6 +1517,7 @@
             <summary>
             De/Serializes an object instead of letting it de/serialize itsself or using a Reflection-driven approach.
             </summary>
+            <seealso cref="T:Duality.Serialization.Surrogate`1"/>
         </member>
         <member name="M:Duality.Serialization.ISurrogate.MatchesType(System.Type)">
             <summary>
@@ -1575,9 +1576,51 @@
             </summary>
             <param name="reader"></param>
         </member>
+        <member name="M:Duality.Serialization.Surrogate`1.MatchesType(System.Type)">
+            <summary>
+            Checks whether this surrogate is able to de/serialize the specified object type.
+            </summary>
+            <param name="t">The <see cref="T:System.Type"/> of the object in question.</param>
+            <returns>True, if this surrogate is able to de/serialize such object, false if not.</returns>
+        </member>
+        <member name="M:Duality.Serialization.Surrogate`1.WriteConstructorData(Duality.Serialization.IDataWriter)">
+            <summary>
+            Writes constructor data for the replaced object. This will be used in a deserialization pre-pass 
+            for constructing the object. Note that constructor data may not contain any object references to
+            itsself, since it the object doesn't exist yet at this deserialization stage.
+            </summary>
+            <param name="writer">The <see cref="T:Duality.Serialization.IDataWriter"/> to serialize constructor data to.</param>
+        </member>
+        <member name="M:Duality.Serialization.Surrogate`1.WriteData(Duality.Serialization.IDataWriter)">
+            <summary>
+            Writes the object data to the specified <see cref="T:Duality.Serialization.IDataWriter"/>.
+            </summary>
+            <param name="writer"></param>
+        </member>
+        <member name="M:Duality.Serialization.Surrogate`1.ConstructObject(Duality.Serialization.IDataReader,System.Type)">
+            <summary>
+            Constructs an object in deserialization based on the constructor data that has been written in
+            serialization using <see cref="M:Duality.Serialization.Surrogate`1.WriteConstructorData(Duality.Serialization.IDataWriter)"/>.
+            </summary>
+            <param name="reader">The <see cref="T:Duality.Serialization.IDataReader"/> to deserialize constructor data from.</param>
+            <param name="objType">The <see cref="T:System.Type"/> of the object to create.</param>
+            <returns>An instance of the specified <see cref="T:System.Type"/> that has been constructed using the provided data.</returns>
+        </member>
+        <member name="M:Duality.Serialization.Surrogate`1.ReadData(Duality.Serialization.IDataReader)">
+            <summary>
+            Reads and applies the object data to the specified <see cref="T:Duality.Serialization.IDataReader"/>.
+            </summary>
+            <param name="reader"></param>
+        </member>
         <member name="P:Duality.Serialization.Surrogate`1.RealObject">
             <summary>
             [GET] The object that is de/serialized
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.Surrogate`1.Priority">
+            <summary>
+            [GET] If more than one registered surrogate is capable of de/serializing a given object type, the one
+            with the highest priority is picked.
             </summary>
         </member>
         <member name="T:Duality.Serialization.SerializeType">
@@ -3074,13 +3117,13 @@
         </member>
         <member name="M:Duality.Serialization.BinaryFormatter.WriteObject(System.Object)">
             <summary>
-            Writes the specified object including all referenced objects using the <see cref="!:WriteTarget"/>.
+            Writes the specified object including all referenced objects using the <see cref="P:Duality.Serialization.BinaryFormatterBase.WriteTarget"/>.
             </summary>
             <param name="obj">The object to write.</param>
         </member>
         <member name="M:Duality.Serialization.BinaryFormatter.ReadObject">
             <summary>
-            Reads an object including all referenced objects using the <see cref="!:ReadTarget"/>.
+            Reads an object including all referenced objects using the <see cref="P:Duality.Serialization.BinaryFormatterBase.ReadTarget"/>.
             </summary>
             <returns>The object that has been read.</returns>
         </member>
