@@ -124,7 +124,7 @@ namespace EditorBase
 				get { return this.cmp; }
 			}
 
-			public ComponentNode(Component cmp) : base(cmp.TypeName)
+			public ComponentNode(Component cmp) : base(cmp.GetType().Name)
 			{
 				this.cmp = cmp;
 				this.UpdateIcon();

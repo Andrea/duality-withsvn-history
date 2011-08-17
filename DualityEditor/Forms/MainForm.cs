@@ -410,7 +410,7 @@ namespace DualityEditor.Forms
 			IFileImporter importer = this.fileImporters.FirstOrDefault(i => i.CanImportFile(filePath));
 			if (importer == null) return;
 
-			foreach (Resource r in ContentProvider.GetLoadedContent<Resource>())
+			foreach (Resource r in ContentProvider.GetAvailContent<Resource>())
 			{
 				if (!importer.IsUsingSrcFile(r, filePath)) continue;
 				try

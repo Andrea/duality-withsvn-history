@@ -154,7 +154,7 @@ namespace Duality.Resources
 		{
 			// Reload relative textures
 			Texture tex;
-			foreach (ContentRef<Texture> texRef in ContentProvider.GetLoadedContent<Texture>())
+			foreach (ContentRef<Texture> texRef in ContentProvider.GetAvailContent<Texture>())
 			{
 				if (!texRef.IsAvailable) continue;
 				tex = texRef.Res;

@@ -62,7 +62,7 @@ namespace EditorBase
 			s.Save();
 
 			// Recompile ShaderPrograms depending on this
-			foreach (ShaderProgram p in ContentProvider.GetLoadedContent<ShaderProgram>())
+			foreach (ShaderProgram p in ContentProvider.GetAvailContent<ShaderProgram>())
 			{
 				if (p.Vertex.Res != s && p.Fragment.Res != s) continue;
 				p.AttachShaders();

@@ -395,7 +395,7 @@ namespace EditorBase
 			// If its a Pixmap, reload all associated Textures
 			else if (typeof(Pixmap).IsAssignableFrom(e.ContentType))
 			{
-				foreach (ContentRef<Texture> tex in ContentProvider.GetLoadedContent<Texture>())
+				foreach (ContentRef<Texture> tex in ContentProvider.GetAvailContent<Texture>())
 				{
 					if (!tex.IsAvailable) continue;
 					if (tex.Res.BasePixmap.Res == e.Content.Res)
@@ -407,7 +407,7 @@ namespace EditorBase
 			// If its a Texture, update all associated RenderTargets
 			else if (typeof(Texture).IsAssignableFrom(e.ContentType))
 			{
-				foreach (ContentRef<RenderTarget> rt in ContentProvider.GetLoadedContent<RenderTarget>())
+				foreach (ContentRef<RenderTarget> rt in ContentProvider.GetAvailContent<RenderTarget>())
 				{
 					if (!rt.IsAvailable) continue;
 					if (rt.Res.Targets.Any(target => target.Res == e.Content.Res as Texture))
@@ -419,7 +419,7 @@ namespace EditorBase
 			// If its some kind of shader, update all associated ShaderPrograms
 			else if (typeof(AbstractShader).IsAssignableFrom(e.ContentType))
 			{
-				foreach (ContentRef<ShaderProgram> sp in ContentProvider.GetLoadedContent<ShaderProgram>())
+				foreach (ContentRef<ShaderProgram> sp in ContentProvider.GetAvailContent<ShaderProgram>())
 				{
 					if (!sp.IsAvailable) continue;
 					if (sp.Res.Fragment.Res == e.Content.Res as FragmentShader ||

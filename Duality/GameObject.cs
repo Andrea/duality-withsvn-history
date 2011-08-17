@@ -534,6 +534,19 @@ namespace Duality
 			return this.AddComponent<T>(newComp);
 		}
 		/// <summary>
+		/// Adds a <see cref="Component"/> of the specified <see cref="System.Type"/> to this GameObject, if not existing yet.
+		/// Simply uses the existing Component otherwise.
+		/// </summary>
+		/// <param name="t">The Type of which to request a Component instance.</param>
+		/// <returns>A reference to a Component of the specified Type.</returns>
+		/// <seealso cref="AddComponent{T}()"/>
+		public Component AddComponent(Type t)
+		{
+			if (this.compMap.ContainsKey(t)) return this.compMap[t];
+			Component newComp = ReflectionHelper.CreateInstanceOf(t) as Component;
+			return this.AddComponent<Component>(newComp);
+		}
+		/// <summary>
 		/// Adds the specified <see cref="Component"/> to this GameObject, if no Component of that Type is already part of this GameObject.
 		/// Simply uses the already added Component otherwise.
 		/// </summary>
@@ -565,43 +578,46 @@ namespace Duality
 		/// </summary>
 		/// <typeparam name="T">The Type of which to remove a Component instance.</typeparam>
 		/// <returns>A reference to the removed Component. Null otherwise.</returns>
+		/// <seealso cref="RemoveComponent(Type)"/>
+		/// <seealso cref="RemoveComponent(Component)"/>
 		public T RemoveComponent<T>() where T : Component
 		{
 			return this.RemoveComponent(typeof(T)) as T;
-		}
-		/// <summary>
-		/// Adds a <see cref="Component"/> of the specified <see cref="System.Type"/> to this GameObject, if not existing yet.
-		/// Simply uses the existing Component otherwise.
-		/// </summary>
-		/// <param name="t">The Type of which to request a Component instance.</param>
-		/// <returns>A reference to a Component of the specified Type.</returns>
-		/// <seealso cref="AddComponent{T}()"/>
-		public Component AddComponent(Type t)
-		{
-			if (this.compMap.ContainsKey(t)) return this.compMap[t];
-			Component newComp = ReflectionHelper.CreateInstanceOf(t) as Component;
-			return this.AddComponent<Component>(newComp);
 		}
 		/// <summary>
 		/// Removes a <see cref="Component"/> of the specified <see cref="System.Type"/> from this GameObject, if existing.
 		/// </summary>
 		/// <param name="t">The Type of which to remove a Component instance.</param>
 		/// <returns>A reference to the removed Component. Null otherwise.</returns>
+		/// <seealso cref="RemoveComponent{T}()"/>
+		/// <seealso cref="RemoveComponent(Component)"/>
 		public Component RemoveComponent(Type t)
 		{
 			Component cmp = this.GetComponent(t);
-			if (cmp != null)
-			{
-				this.OnComponentRemoving(cmp);
-
-				this.compMap.Remove(t);
-				this.compList.Remove(cmp);
-
-				if (cmp is Components.Transform) this.compTransform = null;
-
-				cmp.gameobj = null;
-			}
+			if (cmp != null) this.RemoveComponent(cmp);
 			return cmp;
+		}
+		/// <summary>
+		/// Removes a specific <see cref="Component"/> from this GameObject.
+		/// </summary>
+		/// <param name="cmp">The Component to remove from this GameObject</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the specified Component is a null reference.</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the specified Component does not belong to this GameObject</exception>
+		/// <seealso cref="RemoveComponent(Type)"/>
+		/// <seealso cref="RemoveComponent{T}()"/>
+		public void RemoveComponent(Component cmp)
+		{
+			if (cmp == null) throw new ArgumentNullException("cmp", "Can't remove a null reference Component");
+			if (cmp.gameobj != this) throw new ArgumentException("cmp", "The specified Component does not belong to this GameObject");
+
+			this.OnComponentRemoving(cmp);
+
+			this.compMap.Remove(cmp.GetType());
+			this.compList.Remove(cmp);
+
+			if (cmp is Components.Transform) this.compTransform = null;
+
+			cmp.gameobj = null;
 		}
 		/// <summary>
 		/// Removes all <see cref="Component">Components</see> from this GameObject.

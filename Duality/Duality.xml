@@ -489,6 +489,278 @@
             <seealso cref="M:Duality.DualityMetaData.ReadValue(System.String)"/>
             <seealso cref="M:Duality.DualityMetaData.ReadValueAs``1(System.String,``0@)"/>
         </member>
+        <member name="T:Duality.Component">
+            <summary>
+            Components are isolated logic units that can independently be added to and removed from <see cref="T:Duality.GameObject">GameObjects</see>.
+            Each Component has a distinct purpose, thus it is not possible to add multiple Components of the same Type to one GameObject.
+            Also, a Component may not belong to multiple GameObjects at once.
+            </summary>
+        </member>
+        <member name="M:Duality.Component.Dispose">
+            <summary>
+            Disposes this Component. You usually don't need this - use <see cref="M:Duality.Component.DisposeLater"/> instead.
+            </summary>
+            <seealso cref="M:Duality.Component.DisposeLater"/>
+        </member>
+        <member name="M:Duality.Component.DisposeLater">
+            <summary>
+            Schedules this Component for disposal. It is guaranteed to be executed until the next update cycle starts.
+            </summary>
+            <seealso cref="M:Duality.Component.Dispose"/>
+        </member>
+        <member name="M:Duality.Component.Clone">
+            <summary>
+            Creates a deep copy of this Component.
+            </summary>
+            <returns>A reference to a newly created deep copy of this Component.</returns>
+        </member>
+        <member name="M:Duality.Component.CopyTo(Duality.Component)">
+            <summary>
+            Deep-copies this Components data to the specified target Component. If source and 
+            target Component Type do not match, the operation will fail.
+            </summary>
+            <param name="target">The target Component to copy to.</param>
+        </member>
+        <member name="M:Duality.Component.OnCopyTo(Duality.Component)">
+            <summary>
+            This method Performs the <see cref="M:Duality.Component.CopyTo(Duality.Component)"/> operation for custom Component Types.
+            It uses reflection to copy each field that is declared inside a Duality plugin automatically.
+            However, you may override this method to specify your own behaviour or simply speed things
+            up a bit by not using Reflection.
+            </summary>
+            <param name="target">The target Component where this Components data is copied to.</param>
+        </member>
+        <member name="M:Duality.Component.RequiresComponent(System.Type)">
+            <summary>
+            Returns whether this Component requires a Component of the specified Type.
+            </summary>
+            <param name="requiredType">The Component Type that might be required.</param>
+            <returns>True, if there is a requirement, false if not</returns>
+        </member>
+        <member name="M:Duality.Component.IsComponentRequirementMet(Duality.Component)">
+            <summary>
+            Returns whether this objects Component requirement is met.
+            </summary>
+            <param name="evenWhenRemovingThis">If not null, the specified Component is assumed to be missing.</param>
+            <returns>True, if the Component requirement is met, false if not.</returns>
+        </member>
+        <member name="M:Duality.Component.IsComponentRequirementMet(Duality.GameObject,System.Collections.Generic.IEnumerable{Duality.Component})">
+            <summary>
+            Returns whether this objects Component requirement is met assuming a different <see cref="P:Duality.Component.GameObj">parent GameObject</see>
+            </summary>
+            <param name="isMetInObj">The specified object is assumed as parent object.</param>
+            <param name="whenAddingThose">If not null, the specified Components are assumed to be present in the specified parent object.</param>
+            <returns>True, if the Component requirement is met, false if not.</returns>
+        </member>
+        <member name="M:Duality.Component.GetRequiredComponents">
+            <summary>
+            Returns all Component Types this Component requires.
+            </summary>
+            <returns>An array of required Component Types.</returns>
+        </member>
+        <member name="M:Duality.Component.RequiresComponent(System.Type,System.Type)">
+            <summary>
+            Returns whether a Component Type requires another Component Type to work properly.
+            </summary>
+            <param name="cmpType">The Component Type that might require another Component Type.</param>
+            <param name="requiredType">The Component Type that might be required.</param>
+            <returns>True, if there is a requirement, false if not</returns>
+        </member>
+        <member name="M:Duality.Component.GetRequiredComponents(System.Type)">
+            <summary>
+            Returns all required Component Types of a specified Component Type.
+            </summary>
+            <param name="cmpType">The Component Type that might require other Component Types.</param>
+            <returns>An array of Component Types to require.</returns>
+        </member>
+        <member name="P:Duality.Component.Active">
+            <summary>
+            [GET / SET] Whether or not the Component is currently active. To return true,
+            both the Component itsself and its parent GameObject need to be active.
+            </summary>
+            <seealso cref="P:Duality.Component.ActiveSingle"/>
+        </member>
+        <member name="P:Duality.Component.ActiveSingle">
+            <summary>
+            [GET / SET] Whether or not the Component is currently active. Unlike <see cref="P:Duality.Component.Active"/>,
+            this property ignores parent activation states and depends only on this single Component.
+            The scene graph and other Duality instances usually check <see cref="P:Duality.Component.Active"/>, not ActiveSingle.
+            </summary>
+            <seealso cref="P:Duality.Component.Active"/>
+        </member>
+        <member name="P:Duality.Component.Disposed">
+            <summary>
+            [GET] Returns whether this Component has been disposed. Disposed Components are not to be used and should
+            be treated specifically or as null references by your code.
+            </summary>
+        </member>
+        <member name="P:Duality.Component.GameObj">
+            <summary>
+            [GET / SET] The <see cref="T:Duality.GameObject"/> to which this Component belongs.
+            </summary>
+        </member>
+        <member name="T:Duality.Component.InitContext">
+            <summary>
+            Describes the kind of initialization that can be performed on a Component
+            </summary>
+        </member>
+        <member name="F:Duality.Component.InitContext.Saved">
+            <summary>
+            A saving process has just finished.
+            </summary>
+        </member>
+        <member name="F:Duality.Component.InitContext.Loaded">
+            <summary>
+            The Component has been fully loaded.
+            </summary>
+        </member>
+        <member name="F:Duality.Component.InitContext.Activate">
+            <summary>
+            The Component is being activated. This can be the result of <see cref="P:Duality.Component.Active">activating</see> it,
+            <see cref="P:Duality.GameObject.Active">activating</see> its GameObject, adding itsself or its GameObject
+            to the <see cref="P:Duality.Resources.Scene.Current">current Scene</see> or entering a <see cref="T:Duality.Resources.Scene"/>
+            in which this Component is registered.
+            </summary>
+        </member>
+        <member name="F:Duality.Component.InitContext.AddToGameObject">
+            <summary>
+            The Component has just been added to a GameObject
+            </summary>
+        </member>
+        <member name="T:Duality.Component.ShutdownContext">
+            <summary>
+            Describes the kind of shutdown that can be performed on a Component
+            </summary>
+        </member>
+        <member name="F:Duality.Component.ShutdownContext.Saving">
+            <summary>
+            A saving process is about to start
+            </summary>
+        </member>
+        <member name="F:Duality.Component.ShutdownContext.Deactivate">
+            <summary>
+            The Component has been deactivated. This can be the result of <see cref="P:Duality.Component.Active">deactivating</see> it,
+            <see cref="P:Duality.GameObject.Active">deactivating</see> its GameObject, removing itsself or its GameObject
+            from the <see cref="P:Duality.Resources.Scene.Current">current Scene</see> or leaving a <see cref="T:Duality.Resources.Scene"/>
+            in which this Component is registered.
+            </summary>
+        </member>
+        <member name="F:Duality.Component.ShutdownContext.RemovingFromGameObject">
+            <summary>
+            The Component is being removed from its GameObject.
+            </summary>
+        </member>
+        <member name="T:Duality.ICmpUpdatable">
+            <summary>
+            Implement this interface in <see cref="T:Duality.Component">Components</see> that require per-frame updates.
+            </summary>
+        </member>
+        <member name="M:Duality.ICmpUpdatable.OnUpdate">
+            <summary>
+            Called once per frame in order to update the Component.
+            </summary>
+        </member>
+        <member name="T:Duality.ICmpEditorUpdatable">
+            <summary>
+            Implement this interface in C<see cref="T:Duality.Component">Components</see> that require per-frame updates in the editor.
+            </summary>
+        </member>
+        <member name="M:Duality.ICmpEditorUpdatable.OnUpdate">
+            <summary>
+            Called once per frame in order to update the Component in the editor.
+            </summary>
+        </member>
+        <member name="T:Duality.ICmpGameObjectListener">
+            <summary>
+            Implement this interface in <see cref="T:Duality.Component">Components</see> that require notification if the location of 
+            their GameObject inside the scene graph changes.
+            </summary>
+        </member>
+        <member name="M:Duality.ICmpGameObjectListener.OnGameObjectParentChanged(Duality.GameObject,Duality.GameObject)">
+            <summary>
+            Called whenever this Components GameObjects <see cref="P:Duality.GameObject.Parent"/> has changed.
+            </summary>
+            <param name="oldParent">The old parent object.</param>
+            <param name="newParent">The new parent object.</param>
+        </member>
+        <member name="T:Duality.ICmpInitializable">
+            <summary>
+            Implement this interface in <see cref="T:Duality.Component">Components</see> that require specific init and shutdown logic.
+            </summary>
+        </member>
+        <member name="M:Duality.ICmpInitializable.OnInit(Duality.Component.InitContext)">
+            <summary>
+            Called in order to initialize the Component in a specific way.
+            </summary>
+            <param name="context">The kind of initialization that is intended.</param>
+        </member>
+        <member name="M:Duality.ICmpInitializable.OnShutdown(Duality.Component.ShutdownContext)">
+            <summary>
+            Called in order to shutdown the Component in a specific way.
+            </summary>
+            <param name="context">The kind of shutdown that is intended.</param>
+        </member>
+        <member name="T:Duality.ICmpComponentListener">
+            <summary>
+            Implement this interface in <see cref="T:Duality.Component">Components</see> that require notifications for other Components 
+            being added or removed at the same GameObject.
+            </summary>
+        </member>
+        <member name="M:Duality.ICmpComponentListener.OnComponentAdded(Duality.Component)">
+            <summary>
+            Called whenever another Component has been added to this Components GameObject.
+            </summary>
+            <param name="comp">The Component that has been added</param>
+        </member>
+        <member name="M:Duality.ICmpComponentListener.OnComponentRemoving(Duality.Component)">
+            <summary>
+            Called whenever another Component is being removed from this Components GameObject.
+            </summary>
+            <param name="comp">The Component that is being removed</param>
+        </member>
+        <member name="T:Duality.ICmpScreenOverlayRenderer">
+            <summary>
+            Implement this interface in <see cref="T:Duality.Component">Components</see> that are able to render a screen overlay. 
+            This is useful for HUD, GUI or debug rendering. Screen overlays are rendered after both regular rendering and 
+            postprocessing. Unlike regular <see cref="T:Duality.Components.Renderer">Renderers</see> they do not operate in 
+            <see cref="T:Duality.Components.Camera"/>-local space but screen space.
+            </summary>
+        </member>
+        <member name="M:Duality.ICmpScreenOverlayRenderer.IsVisible(Duality.IDrawDevice)">
+            <summary>
+            Determines whether or not this screen overlay is visible to the specified <see cref="T:Duality.IDrawDevice"/>.
+            </summary>
+            <param name="device">The <see cref="T:Duality.IDrawDevice"/> to which visibility is determined.</param>
+            <returns>True, if this screen overlay is visible to the <see cref="T:Duality.IDrawDevice"/>. False, if not.</returns>
+        </member>
+        <member name="M:Duality.ICmpScreenOverlayRenderer.DrawOverlay(Duality.IDrawDevice)">
+            <summary>
+            Draws the screen overlay.
+            </summary>
+            <param name="device">The <see cref="T:Duality.IDrawDevice"/> to which the screen overlay is drawn.</param>
+        </member>
+        <member name="T:Duality.RequiredComponentAttribute">
+            <summary>
+            This attribute indicates a <see cref="T:Duality.Component">Components</see> requirement for another Component
+            of a specific Type, that is attached to the same <see cref="T:Duality.GameObject"/>.
+            </summary>
+            <example>
+            The following code uses a RequiredComponentAttribute to indicate that a <see cref="T:Duality.Components.SoundEmitter"/>
+            always needs a <see cref="T:Duality.Components.Transform"/> available as well.
+            <code>
+            [RequiredComponent(typeof(Transform))]
+            public sealed class SoundEmitter : Component, ICmpUpdatable, ICmpInitializable
+            {
+            	// ...
+            }
+            </code>
+            </example>
+        </member>
+        <member name="P:Duality.RequiredComponentAttribute.RequiredComponentType">
+            <summary>
+            The Component Type that is required by this Component.
+            </summary>
+        </member>
         <member name="M:Duality.SerializationHelper.IsSafeAssignType(System.Type)">
             <summary>
             Returns whether the specified type may just be assigned in a clone operation (even if deep)
@@ -1232,6 +1504,15 @@
             <returns>A reference to a Component of the specified Type.</returns>
             <seealso cref="M:Duality.GameObject.AddComponent(System.Type)"/>
         </member>
+        <member name="M:Duality.GameObject.AddComponent(System.Type)">
+            <summary>
+            Adds a <see cref="T:Duality.Component"/> of the specified <see cref="T:System.Type"/> to this GameObject, if not existing yet.
+            Simply uses the existing Component otherwise.
+            </summary>
+            <param name="t">The Type of which to request a Component instance.</param>
+            <returns>A reference to a Component of the specified Type.</returns>
+            <seealso cref="M:Duality.GameObject.AddComponent``1"/>
+        </member>
         <member name="M:Duality.GameObject.AddComponent``1(``0)">
             <summary>
             Adds the specified <see cref="T:Duality.Component"/> to this GameObject, if no Component of that Type is already part of this GameObject.
@@ -1248,15 +1529,8 @@
             </summary>
             <typeparam name="T">The Type of which to remove a Component instance.</typeparam>
             <returns>A reference to the removed Component. Null otherwise.</returns>
-        </member>
-        <member name="M:Duality.GameObject.AddComponent(System.Type)">
-            <summary>
-            Adds a <see cref="T:Duality.Component"/> of the specified <see cref="T:System.Type"/> to this GameObject, if not existing yet.
-            Simply uses the existing Component otherwise.
-            </summary>
-            <param name="t">The Type of which to request a Component instance.</param>
-            <returns>A reference to a Component of the specified Type.</returns>
-            <seealso cref="M:Duality.GameObject.AddComponent``1"/>
+            <seealso cref="M:Duality.GameObject.RemoveComponent(System.Type)"/>
+            <seealso cref="M:Duality.GameObject.RemoveComponent(Duality.Component)"/>
         </member>
         <member name="M:Duality.GameObject.RemoveComponent(System.Type)">
             <summary>
@@ -1264,6 +1538,18 @@
             </summary>
             <param name="t">The Type of which to remove a Component instance.</param>
             <returns>A reference to the removed Component. Null otherwise.</returns>
+            <seealso cref="M:Duality.GameObject.RemoveComponent``1"/>
+            <seealso cref="M:Duality.GameObject.RemoveComponent(Duality.Component)"/>
+        </member>
+        <member name="M:Duality.GameObject.RemoveComponent(Duality.Component)">
+            <summary>
+            Removes a specific <see cref="T:Duality.Component"/> from this GameObject.
+            </summary>
+            <param name="cmp">The Component to remove from this GameObject</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when the specified Component is a null reference.</exception>
+            <exception cref="T:System.ArgumentException">Thrown when the specified Component does not belong to this GameObject</exception>
+            <seealso cref="M:Duality.GameObject.RemoveComponent(System.Type)"/>
+            <seealso cref="M:Duality.GameObject.RemoveComponent``1"/>
         </member>
         <member name="M:Duality.GameObject.ClearComponents">
             <summary>
@@ -1411,11 +1697,334 @@
             Fired when a Component is about to be removed from the GameObject
             </summary>
         </member>
+        <member name="T:Duality.IContentRef">
+            <summary>
+            IContentRef is a general interface for <see cref="T:Duality.ContentRef`1">content references</see> of any <see cref="T:Duality.Resource"/> type.
+            </summary>
+            <seealso cref="T:Duality.Resource"/>
+            <seealso cref="T:Duality.ContentProvider"/>
+            <seealso cref="T:Duality.ContentRef`1"/>
+        </member>
+        <member name="M:Duality.IContentRef.Is(System.Type)">
+            <summary>
+            Determines if the references Resource's Type is assignable to the specified Type.
+            </summary>
+            <param name="resType">The Resource Type in question.</param>
+            <returns>True, if the referenced Resource is of the specified Type or subclassing it.</returns>
+        </member>
+        <member name="M:Duality.IContentRef.Is``1">
+            <summary>
+            Determines if the references Resource's Type is assignable to the specified Type.
+            </summary>
+            <typeparam name="U">The Resource Type in question.</typeparam>
+            <returns>True, if the referenced Resource is of the specified Type or subclassing it.</returns>
+        </member>
+        <member name="M:Duality.IContentRef.As``1">
+            <summary>
+            Creates a <see cref="T:Duality.ContentRef`1"/> of the specified Type, referencing the same Resource.
+            </summary>
+            <typeparam name="U">The Resource Type to create a reference of.</typeparam>
+            <returns>
+            A <see cref="T:Duality.ContentRef`1"/> of the specified Type, referencing the same Resource.
+            Returns a <see cref="F:Duality.ContentRef`1.Null">null reference</see> if the Resource is not assignable
+            to the specified Type.
+            </returns>
+        </member>
+        <member name="P:Duality.IContentRef.Res">
+            <summary>
+            [GET] Returns the actual <see cref="T:Duality.Resource"/>. If currently unavailable, it is loaded and then returned.
+            Because of that, this Property is only null if the references Resource is missing, invalid, or
+            this content reference has been explicitly set to null. Never returns disposed Resources.
+            </summary>
+        </member>
+        <member name="P:Duality.IContentRef.ResWeak">
+            <summary>
+            [GET] Returns the current reference to the Resource that is stored locally. No attemp is made to load or reload
+            the Resource if currently unavailable.
+            </summary>
+        </member>
+        <member name="P:Duality.IContentRef.ResType">
+            <summary>
+            [GET] The <see cref="T:System.Type"/> of the referenced Resource. If currently unavailable, this is determined by
+            the Resource file path.
+            </summary>
+        </member>
+        <member name="P:Duality.IContentRef.Path">
+            <summary>
+            [GET / SET] The path where to look for the Resource, if it is currently unavailable.
+            </summary>
+        </member>
+        <member name="P:Duality.IContentRef.IsExplicitNull">
+            <summary>
+            [GET] Returns whether this content reference has been explicitly set to null.
+            </summary>
+        </member>
+        <member name="P:Duality.IContentRef.IsAvailable">
+            <summary>
+            [GET] Returns whether this content reference is available in general. This may trigger loading it, if currently unavailable.
+            </summary>
+        </member>
+        <member name="P:Duality.IContentRef.IsLoaded">
+            <summary>
+            [GET] Returns whether the referenced Resource is currently loaded.
+            </summary>
+        </member>
+        <member name="P:Duality.IContentRef.IsDefaultContent">
+            <summary>
+            [GET] Returns whether the referenced Resource is part of Duality's embedded default content.
+            </summary>
+        </member>
+        <!-- Ungültiger XML-Kommentar wurde für den Member "T:Duality.ContentRef`1" ignoriert -->
+        <member name="F:Duality.ContentRef`1.Null">
+            <summary>
+            An explicit null reference.
+            </summary>
+        </member>
+        <member name="M:Duality.ContentRef`1.#ctor(`0,System.String)">
+            <summary>
+            Creates a ContentRef pointing to the specified <see cref="T:Duality.Resource"/>, assuming the
+            specified path as its origin, if the Resource itsself is either null or doesn't
+            provide a valid <see cref="P:Duality.Resource.Path"/>.
+            </summary>
+            <param name="res">The Resource to reference.</param>
+            <param name="altPath">The referenced Resource's file path.</param>
+        </member>
+        <member name="M:Duality.ContentRef`1.#ctor(`0)">
+            <summary>
+            Creates a ContentRef pointing to the specified <see cref="T:Duality.Resource"/>.
+            </summary>
+            <param name="res">The Resource to reference.</param>
+        </member>
+        <member name="M:Duality.ContentRef`1.Is(System.Type)">
+            <summary>
+            Determines if the references Resource's Type is assignable to the specified Type.
+            </summary>
+            <param name="resType">The Resource Type in question.</param>
+            <returns>True, if the referenced Resource is of the specified Type or subclassing it.</returns>
+        </member>
+        <member name="M:Duality.ContentRef`1.Is``1">
+            <summary>
+            Determines if the references Resource's Type is assignable to the specified Type.
+            </summary>
+            <typeparam name="U">The Resource Type in question.</typeparam>
+            <returns>True, if the referenced Resource is of the specified Type or subclassing it.</returns>
+        </member>
+        <member name="M:Duality.ContentRef`1.As``1">
+            <summary>
+            Creates a <see cref="T:Duality.ContentRef`1"/> of the specified Type, referencing the same Resource.
+            </summary>
+            <typeparam name="U">The Resource Type to create a reference of.</typeparam>
+            <returns>
+            A <see cref="T:Duality.ContentRef`1"/> of the specified Type, referencing the same Resource.
+            Returns a <see cref="F:Duality.ContentRef`1.Null">null reference</see> if the Resource is not assignable
+            to the specified Type.
+            </returns>
+        </member>
         <member name="M:Duality.ContentRef`1.MakeAvailable">
             <summary>
             Loads the associated content as if it was accessed now.
             You don't usually need to call this method. It is invoked implicitly by trying to access the ContentRef/>
             </summary>
+        </member>
+        <member name="M:Duality.ContentRef`1.op_Equality(Duality.ContentRef{`0},Duality.ContentRef{`0})">
+            <summary>
+            Compares two ContentRefs for equality.
+            </summary>
+            <param name="first"></param>
+            <param name="second"></param>
+            <returns></returns>
+            <remarks>
+            This is a two-step comparison. First, their actual Resources references are compared.
+            If they're both not null and equal, true is returned. Otherwise, their Resource paths
+            are compared for equality
+            </remarks>
+        </member>
+        <member name="M:Duality.ContentRef`1.op_Inequality(Duality.ContentRef{`0},Duality.ContentRef{`0})">
+            <summary>
+            Compares two ContentRefs for inequality.
+            </summary>
+            <param name="first"></param>
+            <param name="second"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Duality.ContentRef`1.Res">
+            <summary>
+            [GET / SET] The actual <see cref="T:Duality.Resource"/>. If currently unavailable, it is loaded and then returned.
+            Because of that, this Property is only null if the references Resource is missing, invalid, or
+            this content reference has been explicitly set to null. Never returns disposed Resources.
+            </summary>
+        </member>
+        <member name="P:Duality.ContentRef`1.ResWeak">
+            <summary>
+            [GET] Returns the current reference to the Resource that is stored locally. No attemp is made to load or reload
+            the Resource if currently unavailable.
+            </summary>
+        </member>
+        <member name="P:Duality.ContentRef`1.ResType">
+            <summary>
+            [GET] The <see cref="T:System.Type"/> of the referenced Resource. If currently unavailable, this is determined by
+            the Resource file path.
+            </summary>
+        </member>
+        <member name="P:Duality.ContentRef`1.Path">
+            <summary>
+            [GET / SET] The path where to look for the Resource, if it is currently unavailable.
+            </summary>
+        </member>
+        <member name="P:Duality.ContentRef`1.IsExplicitNull">
+            <summary>
+            [GET] Returns whether this content reference has been explicitly set to null.
+            </summary>
+        </member>
+        <member name="P:Duality.ContentRef`1.IsAvailable">
+            <summary>
+            [GET] Returns whether this content reference is available in general. This may trigger loading it, if currently unavailable.
+            </summary>
+        </member>
+        <member name="P:Duality.ContentRef`1.IsLoaded">
+            <summary>
+            [GET] Returns whether the referenced Resource is currently loaded.
+            </summary>
+        </member>
+        <member name="P:Duality.ContentRef`1.IsDefaultContent">
+            <summary>
+            [GET] Returns whether the referenced Resource is part of Duality's embedded default content.
+            </summary>
+        </member>
+        <member name="T:Duality.ContentProvider">
+            <summary>
+            <para>
+            The ContentProvider is Duality's main instance for content management. If you need any kind of <see cref="T:Duality.Resource"/>,
+            simply request it from the ContentProvider. It keeps track of which Resources are loaded and valid and prevents
+            Resources from being loaded more than once at a time, thus reducing loading times and redundancy.
+            </para>
+            <para>
+            You can also manually <see cref="M:Duality.ContentProvider.RegisterContent(System.String,Duality.Resource)">register Resources</see> that have been created at runtime 
+            using a string alias of your choice.
+            </para>
+            </summary>
+            <seealso cref="T:Duality.Resource"/>
+            <seealso cref="T:Duality.ContentRef`1"/>
+            <seealso cref="T:Duality.IContentRef"/>
+        </member>
+        <member name="F:Duality.ContentProvider.VirtualContentPath">
+            <summary>
+            (Virtual) base path for Duality's embedded default content.
+            </summary>
+        </member>
+        <member name="M:Duality.ContentProvider.InitDefaultContent">
+            <summary>
+            Initializes Dualitys embedded default content.
+            </summary>
+        </member>
+        <member name="M:Duality.ContentProvider.GetAllDefaultContent">
+            <summary>
+            Returns a list of all available embedded default content.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ContentProvider.GetAvailContent``1">
+            <summary>
+            Returns a list of all available content matching the specified Type
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ContentProvider.GetAvailContent(System.Type)">
+            <summary>
+            Returns a list of all available content matching the specified Type
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ContentProvider.ClearContent(System.Boolean)">
+            <summary>
+            Clears all non-default content.
+            </summary>
+            <param name="dispose">If true, unregistered content is also disposed.</param>
+        </member>
+        <member name="M:Duality.ContentProvider.RegisterContent(System.String,Duality.Resource)">
+            <summary>
+            Registers a <see cref="T:Duality.Resource"/> and maps it to the specified path key.
+            </summary>
+            <param name="path">The path key to map the Resource to</param>
+            <param name="content">The Resource to register.</param>
+        </member>
+        <member name="M:Duality.ContentProvider.IsContentRegistered(System.String)">
+            <summary>
+            Returns whether or not there is any content currently registered under the specified path key.
+            </summary>
+            <param name="path">The path key to look for content</param>
+            <returns>True, if there is content available for that path key, false if not.</returns>
+        </member>
+        <member name="M:Duality.ContentProvider.UnregisterContent(System.String,System.Boolean)">
+            <summary>
+            Unregisters content that has been registered using the specified path key.
+            </summary>
+            <param name="path">The path key to unregister.</param>
+            <param name="dispose">If true, unregistered content is also disposed.</param>
+            <returns>True, if the content has been found and successfully removed. False, if no</returns>
+        </member>
+        <member name="M:Duality.ContentProvider.UnregisterContentTree(System.String,System.Boolean)">
+            <summary>
+            Unregisters all content that has been registered using paths contained within
+            the specified directory.
+            </summary>
+            <param name="dir">The directory to unregister</param>
+            <param name="dispose">If true, unregistered content is also disposed.</param>
+        </member>
+        <member name="M:Duality.ContentProvider.UnregisterAllContent``1(System.Boolean)">
+            <summary>
+            Unregisters all content of the specified Type or subclassed Types.
+            </summary>
+            <typeparam name="T">The content Type to look for.</typeparam>
+            <param name="dispose">If true, unregistered content is also disposed.</param>
+        </member>
+        <member name="M:Duality.ContentProvider.UnregisterAllContent(System.Type,System.Boolean)">
+            <summary>
+            Unregisters all content of the specified Type or subclassed Types.
+            </summary>
+            <param name="t">The content Type to look for.</param>
+            <param name="dispose">If true, unregistered content is also disposed.</param>
+        </member>
+        <member name="M:Duality.ContentProvider.RenameContent(System.String,System.String)">
+            <summary>
+            Changes the path key under which a specific Resource can be found.
+            </summary>
+            <param name="path">The Resources current path key.</param>
+            <param name="newPath">The Resources new path key.</param>
+            <returns>True, if the renaming operation was successful. False, if not.</returns>
+        </member>
+        <member name="M:Duality.ContentProvider.RenameContentTree(System.String,System.String)">
+            <summary>
+            Changes the path key under which a set of Resource can be found, i.e.
+            renames all path keys located inside the specified directory.
+            </summary>
+            <param name="dir">The Resources current directory</param>
+            <param name="newDir">The Resources new directory</param>
+        </member>
+        <member name="M:Duality.ContentProvider.RequestContent``1(System.String)">
+            <summary>
+            Requests a <see cref="T:Duality.Resource"/>.
+            </summary>
+            <typeparam name="T">
+            The requested Resource type. Does not affect actual data, only the kind of <see cref="T:Duality.ContentRef`1"/> that is obtained.
+            </typeparam>
+            <param name="path">
+            The path key to identify the Resource. If there is no matching Resource available yet, the ContentProvider attemps
+            to load a Resource from that path.
+            </param>
+            <returns>A <see cref="T:Duality.ContentRef`1"/> to the requested Resource.</returns>
+        </member>
+        <member name="M:Duality.ContentProvider.RequestContent(System.String)">
+            <summary>
+            Requests a <see cref="T:Duality.Resource"/>.
+            </summary>
+            <param name="path">
+            The path key to identify the Resource. If there is no matching Resource available yet, the ContentProvider attemps
+            to load a Resource from that path.
+            </param>
+            <returns>A <see cref="T:Duality.IContentRef"/> to the requested Resource.</returns>
         </member>
     </members>
 </doc>
