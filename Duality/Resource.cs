@@ -19,12 +19,15 @@ namespace Duality
 	public abstract class Resource : IManageableObject, IDisposable
 	{
 		/// <summary>
-		/// A Resource file's extension.
+		/// A Resource files extension.
 		/// </summary>
 		public const string FileExt = ".res";
 
 		private	static	List<Resource>	finalizeSched	= new List<Resource>();
-
+		
+		/// <summary>
+		/// The path of this Resource.
+		/// </summary>
 		[NonSerialized]	protected	string	path		= null;
 		[NonSerialized]	private		bool	disposed	= false;
 
@@ -239,6 +242,12 @@ namespace Duality
 			return DualityApp.GetAvailDualityTypes(typeof(Duality.Resource)).FirstOrDefault(t => t.Name == token[token.Length - 1]);
 		}
 
+		/// <summary>
+		/// A <see cref="Duality.Serialization.BinaryFormatter.FieldBlockers">FieldBlocker</see> to prevent
+		/// fields flagged with a <see cref="NonSerializedResourceAttribute"/> from being serialized.
+		/// </summary>
+		/// <param name="field"></param>
+		/// <returns></returns>
 		protected static bool NonSerializedResourceBlocker(FieldInfo field)
 		{
 			return field.GetCustomAttributes(typeof(NonSerializedResourceAttribute), true).Any();

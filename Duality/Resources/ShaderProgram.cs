@@ -11,18 +11,54 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Duality.Resources
 {
+	/// <summary>
+	/// Represents an OpenGL ShaderProgram which consists of a Vertex- and a FragmentShader
+	/// </summary>
+	/// <seealso cref="Duality.Resources.AbstractShader"/>
+	/// <seealso cref="Duality.Resources.VertexShader"/>
+	/// <seealso cref="Duality.Resources.FragmentShader"/>
 	[Serializable]
 	public class ShaderProgram : Resource
 	{
+		/// <summary>
+		/// A ShaderProgram resources file extension.
+		/// </summary>
 		public new const string FileExt = ".ShaderProgram" + Resource.FileExt;
-
+		
+		/// <summary>
+		/// (Virtual) base path for Duality's embedded default ShaderPrograms.
+		/// </summary>
 		public const string VirtualContentPath = ContentProvider.VirtualContentPath + "ShaderProgram:";
+		/// <summary>
+		/// (Virtual) path of the <see cref="Minimal"/> ShaderProgram.
+		/// </summary>
 		public const string ContentPath_Minimal		= VirtualContentPath + "Minimal";
+		/// <summary>
+		/// (Virtual) path of the <see cref="Picking"/> ShaderProgram.
+		/// </summary>
 		public const string ContentPath_Picking		= VirtualContentPath + "Picking";
+		/// <summary>
+		/// (Virtual) path of the <see cref="SmoothAnim"/> ShaderProgram.
+		/// </summary>
 		public const string ContentPath_SmoothAnim	= VirtualContentPath + "SmoothAnim";
 
+		/// <summary>
+		/// Provides access to a minimal ShaderProgram, using a <see cref="Duality.Resources.VertexShader.Minimal"/> VertexShader and
+		/// a <see cref="Duality.Resources.FragmentShader.Minimal"/> FragmentShader.
+		/// </summary>
 		public static ContentRef<ShaderProgram> Minimal		{ get; private set; }
+		/// <summary>
+		/// Provides access to a ShaderProgram designed for picking operations. It uses a 
+		/// <see cref="Duality.Resources.VertexShader.Minimal"/> VertexShader and a 
+		/// <see cref="Duality.Resources.FragmentShader.Picking"/> FragmentShader.
+		/// </summary>
 		public static ContentRef<ShaderProgram> Picking		{ get; private set; }
+		/// <summary>
+		/// Provides access to the SmoothAnim ShaderProgram, using a <see cref="Duality.Resources.VertexShader.SmoothAnim"/> VertexShader and
+		/// a <see cref="Duality.Resources.FragmentShader.SmoothAnim"/> FragmentShader. Some <see cref="Duality.Components.Renderer">Renderers</see>
+		/// might react automatically to <see cref="Duality.Resources.Material">Materials</see> using this ShaderProgram and provide a suitable
+		/// vertex format.
+		/// </summary>
 		public static ContentRef<ShaderProgram> SmoothAnim	{ get; private set; }
 
 		internal static void InitDefaultContent()
@@ -40,14 +76,25 @@ namespace Duality.Resources
 			Picking	= ContentProvider.RequestContent<ShaderProgram>(ContentPath_Picking);
 			SmoothAnim	= ContentProvider.RequestContent<ShaderProgram>(ContentPath_SmoothAnim);
 		}
-
+		
+		/// <summary>
+		/// Refers to a null reference ShaderProgram.
+		/// </summary>
+		/// <seealso cref="ContentRef{T}.Null"/>
 		public static readonly ContentRef<ShaderProgram> None	= ContentRef<ShaderProgram>.Null;
 		private	static	ShaderProgram	curBound	= null;
+		/// <summary>
+		/// [GET] Returns the currently bound ShaderProgram.
+		/// </summary>
 		public static ContentRef<ShaderProgram> BoundProgram
 		{
 			get { return new ContentRef<ShaderProgram>(curBound); }
 		}
 
+		/// <summary>
+		/// Binds a ShaderProgram in order to use it.
+		/// </summary>
+		/// <param name="prog">The ShaderProgram to be bound.</param>
 		public static void Bind(ContentRef<ShaderProgram> prog)
 		{
 			ShaderProgram progRes = prog.IsExplicitNull ? null : prog.Res;
@@ -77,44 +124,78 @@ namespace Duality.Resources
 		[NonSerialized] private bool			compiled	= false;
 		[NonSerialized] private	ShaderVarInfo[]	varInfo		= null;
 
+		/// <summary>
+		/// [GET] Returns whether this ShaderProgram has been compiled.
+		/// </summary>
 		public bool Compiled
 		{
 			get { return this.compiled; }
 		}
+		/// <summary>
+		/// [GET] Returns an array containing information about the variables that have been declared in shader source code.
+		/// </summary>
 		public ShaderVarInfo[] VarInfo
 		{
 			get { return this.varInfo; }
 		}
+		/// <summary>
+		/// [GET] Returns the number of vertex attributes that have been declared.
+		/// </summary>
 		public int AttribCount
 		{
 			get { return this.varInfo != null ? this.varInfo.Count(v => v.scope == ShaderVarScope.Attribute) : 0; }
 		}
+		/// <summary>
+		/// [GET] Returns the number of uniform variables that have been declared.
+		/// </summary>
 		public int UniformCount
 		{
 			get { return this.varInfo != null ? this.varInfo.Count(v => v.scope == ShaderVarScope.Uniform) : 0; }
 		}
+		/// <summary>
+		/// [GET / SET] The <see cref="VertexShader"/> that is used by this ShaderProgram.
+		/// </summary>
 		public ContentRef<VertexShader> Vertex
 		{
 			get { return this.vert; }
 			set { this.AttachShaders(value, this.frag); this.Compile(); }
 		}
+		/// <summary>
+		/// [GET / SET] The <see cref="FragmentShader"/> that is used by this ShaderProgram.
+		/// </summary>
 		public ContentRef<FragmentShader> Fragment
 		{
 			get { return this.frag; }
 			set { this.AttachShaders(this.vert, value); this.Compile(); }
 		}
 
+		/// <summary>
+		/// Creates a new, empty ShaderProgram.
+		/// </summary>
 		public ShaderProgram() {}
+		/// <summary>
+		/// Creates a new ShaderProgram based on a <see cref="VertexShader">Vertex-</see> and a <see cref="FragementShader"/>.
+		/// </summary>
+		/// <param name="v"></param>
+		/// <param name="f"></param>
 		public ShaderProgram(ContentRef<VertexShader> v, ContentRef<FragmentShader> f)
 		{
 			this.AttachShaders(v, f);
 			this.Compile();
 		}
 
+		/// <summary>
+		/// Re-Attaches the currently used <see cref="VertexShader">Vertex-</see> and <see cref="FragementShader"/>.
+		/// </summary>
 		public void AttachShaders()
 		{
 			this.AttachShaders(this.vert, this.frag);
 		}
+		/// <summary>
+		/// Attaches the specified <see cref="VertexShader">Vertex-</see> and <see cref="FragementShader"/> to this ShaderProgram.
+		/// </summary>
+		/// <param name="v"></param>
+		/// <param name="f"></param>
 		public void AttachShaders(ContentRef<VertexShader> v, ContentRef<FragmentShader> f)
 		{
 			if (this.glProgramId == 0)	this.glProgramId = GL.CreateProgram();
@@ -127,6 +208,9 @@ namespace Duality.Resources
 			if (this.vert.IsAvailable) this.vert.Res.AttachTo(this.glProgramId);
 			if (this.frag.IsAvailable) this.frag.Res.AttachTo(this.glProgramId);
 		}
+		/// <summary>
+		/// Detaches <see cref="VertexShader">Vertex-</see> and <see cref="FragementShader"/> from the ShaderProgram.
+		/// </summary>
 		public void DetachShaders()
 		{
 			if (this.glProgramId == 0) return;
@@ -135,6 +219,10 @@ namespace Duality.Resources
 			if (this.vert.IsAvailable) this.vert.Res.DetachFrom(this.glProgramId);
 		}
 
+		/// <summary>
+		/// Compiles the ShaderProgram. This is done automatically when loading the ShaderProgram
+		/// or when binding it.
+		/// </summary>
 		public void Compile()
 		{
 			if (this.glProgramId == 0) return;

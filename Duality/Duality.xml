@@ -1376,6 +1376,18 @@
             Write a dataset / object
             </summary>
         </member>
+        <member name="T:Duality.Resources.Sound">
+            <summary>
+            A Sound is parameterized <see cref="T:Duality.Resources.AudioData"/>. Note that a Sound
+            Resource does not contain any kind of audio data by itsself.
+            </summary>
+            <example>
+            While there may be one AudioData Resource sounding like an Explosion effect, there could 
+            be many Sounds referring to it, like a very loud or very quiet Explosion or one that is 
+            noticable on higher distance than others.
+            </example>
+            <seealso cref="T:Duality.Resources.AudioData"/>
+        </member>
         <member name="T:Duality.Resource">
             <summary>
             The abstract Resource class is inherited by any kind of Duality content. Instances of it or one of its subclasses
@@ -1386,7 +1398,12 @@
         </member>
         <member name="F:Duality.Resource.FileExt">
             <summary>
-            A Resource file's extension.
+            A Resource files extension.
+            </summary>
+        </member>
+        <member name="F:Duality.Resource.path">
+            <summary>
+            The path of this Resource.
             </summary>
         </member>
         <member name="M:Duality.Resource.Save(System.String)">
@@ -1486,6 +1503,14 @@
             <param name="filePath">Path to the file of whichs Resource Type will be returned</param>
             <returns>The Resource Type of the specified file</returns>
         </member>
+        <member name="M:Duality.Resource.NonSerializedResourceBlocker(System.Reflection.FieldInfo)">
+            <summary>
+            A <see cref="P:Duality.Serialization.BinaryFormatter.FieldBlockers">FieldBlocker</see> to prevent
+            fields flagged with a <see cref="T:Duality.NonSerializedResourceAttribute"/> from being serialized.
+            </summary>
+            <param name="field"></param>
+            <returns></returns>
+        </member>
         <member name="P:Duality.Resource.Disposed">
             <summary>
             [GET] Returns whether the Resource has been disposed. 
@@ -1496,6 +1521,137 @@
             <summary>
             [GET] The path where this Resource has been originally loaded from or was first saved to.
             It is also the path under which this Resource is registered at the ContentProvider.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Sound.FileExt">
+            <summary>
+            A Sound resources file extension.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Sound.VirtualContentPath">
+            <summary>
+            (Virtual) base path for Duality's embedded default Sounds.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Sound.ContentPath_Beep">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.Sound.Beep"/> Sound.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Sound.ContentPath_DroneLoop">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.Sound.DroneLoop"/> Sound.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Sound.ContentPath_LogoJingle">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.Sound.LogoJingle"/> Sound.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.Sound.#ctor">
+            <summary>
+            Creates a new, empty sound. Since it does not refer to any <see cref="T:Duality.Resources.AudioData"/> yet,
+            it can't be played.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.Sound.#ctor(Duality.ContentRef{Duality.Resources.AudioData})">
+            <summary>
+            Creates a new Sound referring to an existing <see cref="T:Duality.Resources.AudioData"/>.
+            </summary>
+            <param name="baseData"></param>
+        </member>
+        <member name="M:Duality.Resources.Sound.LoadData(Duality.ContentRef{Duality.Resources.AudioData})">
+            <summary>
+            Assigns new <see cref="T:Duality.Resources.AudioData"/> to this Sound.
+            </summary>
+            <param name="data"></param>
+        </member>
+        <member name="P:Duality.Resources.Sound.Beep">
+            <summary>
+            [GET] Provides access to a simple beep Sound.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Sound.DroneLoop">
+            <summary>
+            [GET] Provides access to a drone loop Sound. Since this is a stereo Sound, it will always be played 2D.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Sound.LogoJingle">
+            <summary>
+            [GET] Provides access to a logo jingle Sound. Since this is a stereo Sound, it will always be played 2D.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Sound.Data">
+            <summary>
+            [GET / SET] The <see cref="!:Duality.Resource.AudioData"/> that is parameterized by this Sound.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Sound.Type">
+            <summary>
+            [GET / SET] The category to which this Sound belongs.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Sound.MaxInstances">
+            <summary>
+            [GET / SET] Maximum number of <see cref="T:Duality.SoundInstance">SoundInstances</see> of this Sound that can
+            play simultaneously. If exceeded, any new instances of it are discarded.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Sound.VolumeFactor">
+            <summary>
+            [GET / SET] A volume factor that is applied when playing this sound.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Sound.PitchFactor">
+            <summary>
+            [GET / SET] A pitch factor that is applied when playing this sound.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Sound.FadeOutAt">
+            <summary>
+            [GET / SET] Play time in seconds at which <see cref="T:Duality.SoundInstance">SoundInstances</see> of this Sound
+            automatically fade out.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Sound.FadeOutTime">
+            <summary>
+            [GET / SET] If <see cref="P:Duality.Resources.Sound.FadeOutAt"/> has been triggered, this is the fade out time in seconds that is used.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Sound.MinDistFactor">
+            <summary>
+            [GET / SET] The distance at which the sound is played at full volume. Getting nearer to the source won't increase the volume anymore.
+            Note that the value is a factor to <see cref="!:DualityApp.Sound.DefaultMinDist"/>.
+            </summary>
+            <seealso cref="P:Duality.Resources.Sound.MinDist"/>
+        </member>
+        <member name="P:Duality.Resources.Sound.MaxDistFactor">
+            <summary>
+            [GET / SET] The distance at which the sound is played at zero volume.
+            Note that the value is a factor to <see cref="!:DualityApp.Sound.DefaultMaxDist"/>.
+            </summary>
+            <seealso cref="P:Duality.Resources.Sound.MaxDist"/>
+        </member>
+        <member name="P:Duality.Resources.Sound.MinDist">
+            <summary>
+            [GET / SET] The distance at which the sound is played at full volume. Getting nearer to the source won't increase the volume anymore.
+            </summary>
+            <seealso cref="P:Duality.Resources.Sound.MinDistFactor"/>
+        </member>
+        <member name="P:Duality.Resources.Sound.MaxDist">
+            <summary>
+            [GET / SET] The distance at which the sound is played at zero volume.
+            </summary>
+            <seealso cref="P:Duality.Resources.Sound.MaxDistFactor"/>
+        </member>
+        <member name="P:Duality.Resources.Sound.IsStreamed">
+            <summary>
+            [GET] Returns whether the Sound will be streamed when playing.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Sound.AlBuffer">
+            <summary>
+            The OpenAL buffer handle to the audio data that is used by this Sound.
             </summary>
         </member>
         <member name="T:Duality.Serialization.Surrogates.DictionarySurrogate">
@@ -1621,6 +1777,103 @@
             <summary>
             [GET] If more than one registered surrogate is capable of de/serializing a given object type, the one
             with the highest priority is picked.
+            </summary>
+        </member>
+        <member name="T:Duality.Resources.VertexShader">
+            <summary>
+            Represents an OpenGL VertexShader.
+            </summary>
+        </member>
+        <member name="T:Duality.Resources.AbstractShader">
+            <summary>
+            Represents an OpenGL Shader in an abstract form.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.AbstractShader.SetSource(System.String)">
+            <summary>
+            Applies the specified source code to the shader.
+            </summary>
+            <param name="source">The new shader source code.</param>
+        </member>
+        <member name="M:Duality.Resources.AbstractShader.LoadSource(System.IO.Stream)">
+            <summary>
+            Loads new shader source code from the specified <see cref="T:System.IO.Stream"/>.
+            </summary>
+            <param name="stream">The <see cref="T:System.IO.Stream"/> to read the source code from.</param>
+        </member>
+        <member name="M:Duality.Resources.AbstractShader.LoadSource(System.String)">
+            <summary>
+            Loads new shader source code from the specified file.
+            </summary>
+            <param name="filePath">The path of the file to read the source code from.</param>
+        </member>
+        <member name="M:Duality.Resources.AbstractShader.SaveSource(System.String)">
+            <summary>
+            Saves the current shader source code to the specified file.
+            </summary>
+            <param name="filePath">The path of the file to write the source code to.</param>
+        </member>
+        <member name="M:Duality.Resources.AbstractShader.Compile">
+            <summary>
+            Compiles the shader. This is done automatically when loading the shader
+            or attaching it to a <see cref="T:Duality.Resources.ShaderProgram"/>.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.AbstractShader.OglShaderType">
+            <summary>
+            The type of OpenGL shader that is represented.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.AbstractShader.Compiled">
+            <summary>
+            [GET] Whether this shader has been compiled yet or not.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.AbstractShader.VarInfo">
+            <summary>
+            [GET] Information about the <see cref="T:Duality.Resources.ShaderVarInfo">variables</see> declared in the shader.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.AbstractShader.SourcePath">
+            <summary>
+            [GET] The path of the file from which the source code has been loaded.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.AbstractShader.Source">
+            <summary>
+            [GET] The shaders source code.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.VertexShader.FileExt">
+            <summary>
+            A VertexShader resources file extension.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.VertexShader.VirtualContentPath">
+            <summary>
+            (Virtual) base path for Duality's embedded default VertexShaders.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.VertexShader.ContentPath_Minimal">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.VertexShader.Minimal"/> VertexShader.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.VertexShader.ContentPath_SmoothAnim">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.VertexShader.SmoothAnim"/> VertexShader.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.VertexShader.Minimal">
+            <summary>
+            [GET] Provides access to a minimal VertexShader. It performs OpenGLs default transformation
+            and forwards a single texture coordinate and color to the fragment stage.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.VertexShader.SmoothAnim">
+            <summary>
+            [GET] Provides access to the SmoothAnim VertexShader. In addition to the <see cref="P:Duality.Resources.VertexShader.Minimal"/>
+            setup, it forwards the custom animBlend vertex attribute to the fragment stage.
             </summary>
         </member>
         <member name="T:Duality.Serialization.SerializeType">
@@ -1916,6 +2169,126 @@
             <param name="dt"></param>
             <returns></returns>
         </member>
+        <member name="T:Duality.Resources.ShaderVarType">
+            <summary>
+            The type of a <see cref="T:Duality.Resources.AbstractShader">shader</see> variable.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.ShaderVarType.Unknown">
+            <summary>
+            Unknown type.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.ShaderVarType.Int">
+            <summary>
+            A <see cref="T:System.Int32"/> variable.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.ShaderVarType.Float">
+            <summary>
+            A <see cref="T:System.Single"/> variable.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.ShaderVarType.Vec2">
+            <summary>
+            A two-dimensional vector with <see cref="T:System.Single"/> precision.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.ShaderVarType.Vec3">
+            <summary>
+            A three-dimensional vector with <see cref="T:System.Single"/> precision.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.ShaderVarType.Vec4">
+            <summary>
+            A four-dimensional vector with <see cref="T:System.Single"/> precision.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.ShaderVarType.Mat2">
+            <summary>
+            A 2x2 matrix with <see cref="T:System.Single"/> precision.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.ShaderVarType.Mat3">
+            <summary>
+            A 3x3 matrix with <see cref="T:System.Single"/> precision.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.ShaderVarType.Mat4">
+            <summary>
+            A 4x4 matrix with <see cref="T:System.Single"/> precision.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.ShaderVarType.Sampler2D">
+            <summary>
+            Represents a texture binding and provides lookups.
+            </summary>
+        </member>
+        <member name="T:Duality.Resources.ShaderVarScope">
+            <summary>
+            The scope of a <see cref="T:Duality.Resources.AbstractShader">shader</see> variable
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.ShaderVarScope.Unknown">
+            <summary>
+            Unknown scope
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.ShaderVarScope.Uniform">
+            <summary>
+            It is a uniform variable, i.e. constant during all rendering stages
+            and set once per <see cref="T:Duality.Resources.BatchInfo">draw batch</see>.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.ShaderVarScope.Attribute">
+            <summary>
+            It is a vertex attribute, i.e. defined for each vertex separately.
+            </summary>
+        </member>
+        <member name="T:Duality.Resources.ShaderVarInfo">
+            <summary>
+            Provides information about a <see cref="T:Duality.Resources.AbstractShader">shader</see> variable.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.ShaderVarInfo.scope">
+            <summary>
+            The <see cref="T:Duality.Resources.ShaderVarScope">scope</see> of the variable
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.ShaderVarInfo.type">
+            <summary>
+            The <see cref="T:Duality.Resources.ShaderVarType">type</see> of the variable
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.ShaderVarInfo.arraySize">
+            <summary>
+            If the variable is an array, this is its length. Arrays
+            are only supported for <see cref="F:Duality.Resources.ShaderVarType.Int"/> and
+            <see cref="F:Duality.Resources.ShaderVarType.Float"/>.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.ShaderVarInfo.name">
+            <summary>
+            The name of the variable, as declared in the shader.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.ShaderVarInfo.glVarLoc">
+            <summary>
+            OpenGL handle of the variables memory location.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.ShaderVarInfo.SetupUniform(System.Single[])">
+            <summary>
+            Assigns the specified data to the OpenGL uniform represented by this <see cref="T:Duality.Resources.ShaderVarInfo"/>.
+            </summary>
+            <param name="data">Incoming uniform data.</param>
+        </member>
+        <member name="M:Duality.Resources.ShaderVarInfo.InitUniformData">
+            <summary>
+            Initializes a uniform dataset based on the type of the represented variable.
+            </summary>
+            <returns>A new uniform dataset</returns>
+        </member>
         <member name="M:Duality.ReflectionHelper.GetAllFields(System.Type,System.Reflection.BindingFlags)">
             <summary>
             Returns all fields matching the specified bindingflags, even if private and inherited.
@@ -1970,6 +2343,157 @@
         <member name="T:Duality.Resources.Texture">
             <summary>
             A Texture refers to pixel data stored in video memory
+            </summary>
+            <seealso cref="T:Duality.Resources.Pixmap"/>
+            <seealso cref="T:Duality.Resources.RenderTarget"/>
+        </member>
+        <member name="F:Duality.Resources.Texture.FileExt">
+            <summary>
+            A Texture resources file extension.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Texture.VirtualContentPath">
+            <summary>
+            (Virtual) base path for Duality's embedded default Textures.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Texture.ContentPath_DualityLogo256">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.Texture.DualityLogo256"/> Texture.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Texture.ContentPath_DualityLogoB256">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.Texture.DualityLogoB256"/> Texture.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Texture.ContentPath_White">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.Texture.White"/> Texture.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Texture.None">
+            <summary>
+            Refers to a null reference Texture.
+            </summary>
+            <seealso cref="F:Duality.ContentRef`1.Null"/>
+        </member>
+        <member name="M:Duality.Resources.Texture.Bind(Duality.ContentRef{Duality.Resources.Texture},System.Int32)">
+            <summary>
+            Binds the given Texture to a texture unit in order to use it for rendering.
+            </summary>
+            <param name="tex">The Texture to bind.</param>
+            <param name="texUnit">The texture unit where the Texture will be bound to.</param>
+        </member>
+        <member name="M:Duality.Resources.Texture.ResetBinding(System.Int32)">
+            <summary>
+            Resets all Texture bindings to texture units beginning at a certain index.
+            </summary>
+            <param name="beginAtIndex">The first texture unit index from which on all bindings will be cleared.</param>
+        </member>
+        <member name="M:Duality.Resources.Texture.#ctor(Duality.ContentRef{Duality.Resources.Pixmap},Duality.Resources.Texture.SizeMode,OpenTK.Graphics.OpenGL.TextureMagFilter,OpenTK.Graphics.OpenGL.TextureMinFilter,OpenTK.Graphics.OpenGL.TextureWrapMode,OpenTK.Graphics.OpenGL.TextureWrapMode,OpenTK.Graphics.OpenGL.PixelInternalFormat)">
+            <summary>
+            Creates a new Texture based on a <see cref="T:Duality.Resources.Pixmap"/>.
+            </summary>
+            <param name="basePixmap">The <see cref="T:Duality.Resources.Pixmap"/> to use as source for pixel data.</param>
+            <param name="sizeMode">Specifies behaviour in case the source data has non-power-of-two dimensions.</param>
+            <param name="filterMag">The OpenGL filter mode for drawing the Texture bigger than it is.</param>
+            <param name="filterMin">The OpenGL fitler mode for drawing the Texture smaller than it is.</param>
+            <param name="wrapX">The OpenGL wrap mode on the texel x axis.</param>
+            <param name="wrapY">The OpenGL wrap mode on the texel y axis.</param>
+            <param name="format">The format in which OpenGL stores the pixel data.</param>
+        </member>
+        <member name="M:Duality.Resources.Texture.#ctor(System.Int32,System.Int32,Duality.Resources.Texture.SizeMode,OpenTK.Graphics.OpenGL.TextureMagFilter,OpenTK.Graphics.OpenGL.TextureMinFilter,OpenTK.Graphics.OpenGL.TextureWrapMode,OpenTK.Graphics.OpenGL.TextureWrapMode,OpenTK.Graphics.OpenGL.PixelInternalFormat)">
+            <summary>
+            Creates a new empty Texture with the specified size.
+            </summary>
+            <param name="width">The Textures width.</param>
+            <param name="height">The Textures height</param>
+            <param name="sizeMode">Specifies behaviour in case the specified size has non-power-of-two dimensions.</param>
+            <param name="filterMag">The OpenGL filter mode for drawing the Texture bigger than it is.</param>
+            <param name="filterMin">The OpenGL fitler mode for drawing the Texture smaller than it is.</param>
+            <param name="wrapX">The OpenGL wrap mode on the texel x axis.</param>
+            <param name="wrapY">The OpenGL wrap mode on the texel y axis.</param>
+            <param name="format">The format in which OpenGL stores the pixel data.</param>
+        </member>
+        <member name="M:Duality.Resources.Texture.GenerateAnimAtlas(System.Int32,System.Int32)">
+            <summary>
+            Generates a <see cref="P:Duality.Resources.Texture.Atlas">texture atlas</see> for sprite animations but leaves
+            previously existing atlas entries as they are, if possible. An automatically generated
+            texture atlas will always occupy the first indices, followed by custom atlas entries.
+            </summary>
+            <param name="cols">The number of columns in an animated sprite Texture</param>
+            <param name="rows">The number of rows in an animated sprite Texture</param>
+        </member>
+        <member name="M:Duality.Resources.Texture.ReloadData">
+            <summary>
+            Reloads this Textures pixel data. If the referred <see cref="T:Duality.Resources.Pixmap"/> has been modified,
+            changes will now be visible.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.Texture.LoadData(Duality.ContentRef{Duality.Resources.Pixmap})">
+            <summary>
+            Loads the specified <see cref="T:Duality.Resources.Pixmap">Pixmaps</see> pixel data.
+            </summary>
+            <param name="basePixmap">The <see cref="T:Duality.Resources.Pixmap"/> that is used as pixel data source.</param>
+        </member>
+        <member name="M:Duality.Resources.Texture.LoadData(Duality.ContentRef{Duality.Resources.Pixmap},Duality.Resources.Texture.SizeMode)">
+            <summary>
+            Loads the specified <see cref="T:Duality.Resources.Pixmap">Pixmaps</see> pixel data.
+            </summary>
+            <param name="basePixmap">The <see cref="T:Duality.Resources.Pixmap"/> that is used as pixel data source.</param>
+            <param name="sizeMode">Specifies behaviour in case the source data has non-power-of-two dimensions.</param>
+        </member>
+        <member name="M:Duality.Resources.Texture.AdjustSize(System.Single,System.Single)">
+            <summary>
+            Processes the specified size based on the Textures <see cref="T:Duality.Resources.Texture.SizeMode"/>.
+            </summary>
+            <param name="width"></param>
+            <param name="height"></param>
+        </member>
+        <member name="M:Duality.Resources.Texture.SetupOpenGLRes">
+            <summary>
+            Sets up the Textures OpenGL resources, clearing previously uploaded pixel data.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.DualityLogo256">
+            <summary>
+            [GET] Provides access to a Texture showing the Duality logo.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.DualityLogoB256">
+            <summary>
+            [GET] Provides access to a Texture showing the Duality logo without the text on it.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.White">
+            <summary>
+            [GET] Provides access to a plain white 1x1 Texture. Can be used as a dummy.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.BoundTexPrimary">
+            <summary>
+            [GET] The currently bound primary Texture.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.BoundTexSecondary">
+            <summary>
+            [GET] The currently bound secondary Texture
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.BoundTexTertiary">
+            <summary>
+            [GET] The currently bound tertiary Texture
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.BoundTexQuartary">
+            <summary>
+            [GET] The currently bound quartary Texture
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.BoundTex">
+            <summary>
+            [GET] All Textures that are currently bound
             </summary>
         </member>
         <member name="P:Duality.Resources.Texture.PxDiameter">
@@ -2080,11 +2604,307 @@
             [GET] Total number of animation frames in this Texture
             </summary>
         </member>
+        <member name="T:Duality.Resources.Texture.SizeMode">
+            <summary>
+            Defines how to handle pixel data without power-of-two dimensions.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Texture.SizeMode.Enlarge">
+            <summary>
+            Enlarges the images dimensions without scaling the image, leaving
+            the new space empty. Texture coordinates are automatically adjusted in
+            order to display the image correctly. This preserves the images full
+            quality but prevents tiling, if not power-of-two anyway.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Texture.SizeMode.Stretch">
+            <summary>
+            Stretches the image to fit power-of-two dimensions and downscales it
+            again when displaying. This might blur the image slightly but allows
+            tiling it.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Texture.SizeMode.NonPowerOfTwo">
+            <summary>
+            The images dimensions are not affected, as OpenGL uses an actual 
+            non-power-of-two texture. However, this might be unsupported on older hardware.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Texture.SizeMode.Default">
+            <summary>
+            The default behaviour. Equals <see cref="F:Duality.Resources.Texture.SizeMode.Enlarge"/>.
+            </summary>
+        </member>
+        <member name="T:Duality.Resources.ShaderProgram">
+            <summary>
+            Represents an OpenGL ShaderProgram which consists of a Vertex- and a FragmentShader
+            </summary>
+            <seealso cref="T:Duality.Resources.AbstractShader"/>
+            <seealso cref="T:Duality.Resources.VertexShader"/>
+            <seealso cref="T:Duality.Resources.FragmentShader"/>
+        </member>
+        <member name="F:Duality.Resources.ShaderProgram.FileExt">
+            <summary>
+            A ShaderProgram resources file extension.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.ShaderProgram.VirtualContentPath">
+            <summary>
+            (Virtual) base path for Duality's embedded default ShaderPrograms.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.ShaderProgram.ContentPath_Minimal">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.ShaderProgram.Minimal"/> ShaderProgram.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.ShaderProgram.ContentPath_Picking">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.ShaderProgram.Picking"/> ShaderProgram.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.ShaderProgram.ContentPath_SmoothAnim">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.ShaderProgram.SmoothAnim"/> ShaderProgram.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.ShaderProgram.None">
+            <summary>
+            Refers to a null reference ShaderProgram.
+            </summary>
+            <seealso cref="F:Duality.ContentRef`1.Null"/>
+        </member>
+        <member name="M:Duality.Resources.ShaderProgram.Bind(Duality.ContentRef{Duality.Resources.ShaderProgram})">
+            <summary>
+            Binds a ShaderProgram in order to use it.
+            </summary>
+            <param name="prog">The ShaderProgram to be bound.</param>
+        </member>
+        <member name="M:Duality.Resources.ShaderProgram.#ctor">
+            <summary>
+            Creates a new, empty ShaderProgram.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.ShaderProgram.#ctor(Duality.ContentRef{Duality.Resources.VertexShader},Duality.ContentRef{Duality.Resources.FragmentShader})">
+            <summary>
+            Creates a new ShaderProgram based on a <see cref="T:Duality.Resources.VertexShader">Vertex-</see> and a <see cref="!:FragementShader"/>.
+            </summary>
+            <param name="v"></param>
+            <param name="f"></param>
+        </member>
+        <member name="M:Duality.Resources.ShaderProgram.AttachShaders">
+            <summary>
+            Re-Attaches the currently used <see cref="T:Duality.Resources.VertexShader">Vertex-</see> and <see cref="!:FragementShader"/>.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.ShaderProgram.AttachShaders(Duality.ContentRef{Duality.Resources.VertexShader},Duality.ContentRef{Duality.Resources.FragmentShader})">
+            <summary>
+            Attaches the specified <see cref="T:Duality.Resources.VertexShader">Vertex-</see> and <see cref="!:FragementShader"/> to this ShaderProgram.
+            </summary>
+            <param name="v"></param>
+            <param name="f"></param>
+        </member>
+        <member name="M:Duality.Resources.ShaderProgram.DetachShaders">
+            <summary>
+            Detaches <see cref="T:Duality.Resources.VertexShader">Vertex-</see> and <see cref="!:FragementShader"/> from the ShaderProgram.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.ShaderProgram.Compile">
+            <summary>
+            Compiles the ShaderProgram. This is done automatically when loading the ShaderProgram
+            or when binding it.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.ShaderProgram.Minimal">
+            <summary>
+            Provides access to a minimal ShaderProgram, using a <see cref="P:Duality.Resources.VertexShader.Minimal"/> VertexShader and
+            a <see cref="P:Duality.Resources.FragmentShader.Minimal"/> FragmentShader.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.ShaderProgram.Picking">
+            <summary>
+            Provides access to a ShaderProgram designed for picking operations. It uses a 
+            <see cref="P:Duality.Resources.VertexShader.Minimal"/> VertexShader and a 
+            <see cref="P:Duality.Resources.FragmentShader.Picking"/> FragmentShader.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.ShaderProgram.SmoothAnim">
+            <summary>
+            Provides access to the SmoothAnim ShaderProgram, using a <see cref="P:Duality.Resources.VertexShader.SmoothAnim"/> VertexShader and
+            a <see cref="P:Duality.Resources.FragmentShader.SmoothAnim"/> FragmentShader. Some <see cref="T:Duality.Components.Renderer">Renderers</see>
+            might react automatically to <see cref="T:Duality.Resources.Material">Materials</see> using this ShaderProgram and provide a suitable
+            vertex format.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.ShaderProgram.BoundProgram">
+            <summary>
+            [GET] Returns the currently bound ShaderProgram.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.ShaderProgram.Compiled">
+            <summary>
+            [GET] Returns whether this ShaderProgram has been compiled.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.ShaderProgram.VarInfo">
+            <summary>
+            [GET] Returns an array containing information about the variables that have been declared in shader source code.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.ShaderProgram.AttribCount">
+            <summary>
+            [GET] Returns the number of vertex attributes that have been declared.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.ShaderProgram.UniformCount">
+            <summary>
+            [GET] Returns the number of uniform variables that have been declared.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.ShaderProgram.Vertex">
+            <summary>
+            [GET / SET] The <see cref="T:Duality.Resources.VertexShader"/> that is used by this ShaderProgram.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.ShaderProgram.Fragment">
+            <summary>
+            [GET / SET] The <see cref="T:Duality.Resources.FragmentShader"/> that is used by this ShaderProgram.
+            </summary>
+        </member>
         <member name="T:Duality.Resources.AudioData">
             <summary>
             Stores compressed audio data (Ogg Vorbis) in system memory as well as a reference to the
             OpenAL buffer containing actual PCM data, once set up. The OpenAL buffer is set up lazy
             i.e. as soon as demanded by accessing the AlBuffer property or calling SetupAlBuffer.
+            </summary>
+            <seealso cref="T:Duality.Resources.Sound"/>
+        </member>
+        <member name="F:Duality.Resources.AudioData.FileExt">
+            <summary>
+            An AudioData resources file extension.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.AudioData.VirtualContentPath">
+            <summary>
+            (Virtual) base path for Duality's embedded default AudioData.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.AudioData.ContentPath_Beep">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.AudioData.Beep"/> AudioData.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.AudioData.ContentPath_DroneLoop">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.AudioData.DroneLoop"/> AudioData.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.AudioData.ContentPath_LogoJingle">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.AudioData.LogoJingle"/> AudioData.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.AudioData.AlBuffer_NotAvailable">
+            <summary>
+            A dummy OpenAL buffer handle, indicating that the buffer in question is not available.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.AudioData.AlBuffer_StreamMe">
+            <summary>
+            A dummy OpenAL buffer handle, indicating that the buffer in question is inactive due to streaming.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.AudioData.#ctor">
+            <summary>
+            Creates a new, empty AudioData without any data.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.AudioData.#ctor(System.Byte[])">
+            <summary>
+            Creates a new AudioData based on an <see cref="T:Duality.OggVorbis.OV">Ogg Vorbis</see> memory chunk.
+            </summary>
+            <param name="oggVorbisData">An <see cref="T:Duality.OggVorbis.OV">Ogg Vorbis</see> memory chunk</param>
+        </member>
+        <member name="M:Duality.Resources.AudioData.#ctor(System.IO.Stream)">
+            <summary>
+            Creates a new AudioData based on a <see cref="T:System.IO.Stream"/> containing <see cref="T:Duality.OggVorbis.OV">Ogg Vorbis</see> data.
+            </summary>
+            <param name="oggVorbisDataStream">A <see cref="T:System.IO.Stream"/> containing <see cref="T:Duality.OggVorbis.OV">Ogg Vorbis</see> data</param>
+        </member>
+        <member name="M:Duality.Resources.AudioData.#ctor(System.String)">
+            <summary>
+            Creates a new AudioData base on an <see cref="T:Duality.OggVorbis.OV">Ogg Vorbis</see> file.
+            </summary>
+            <param name="filepath">Path to the <see cref="T:Duality.OggVorbis.OV">Ogg Vorbis</see> file.</param>
+        </member>
+        <member name="M:Duality.Resources.AudioData.SaveOggVorbisData(System.String)">
+            <summary>
+            Saves the audio data as <see cref="T:Duality.OggVorbis.OV">Ogg Vorbis</see> file.
+            </summary>
+            <param name="oggVorbisPath">The path of the file to which the audio data is written.</param>
+        </member>
+        <member name="M:Duality.Resources.AudioData.LoadOggVorbisData(System.String)">
+            <summary>
+            Loads new audio data from an <see cref="T:Duality.OggVorbis.OV">Ogg Vorbis</see> file.
+            </summary>
+            <param name="oggVorbisPath">The path of the file from which the audio data is read.</param>
+        </member>
+        <member name="M:Duality.Resources.AudioData.DisposeAlBuffer">
+            <summary>
+            Disposes the AudioDatas OpenAL buffer.
+            </summary>
+            <seealso cref="M:Duality.Resources.AudioData.SetupAlBuffer"/>
+        </member>
+        <member name="M:Duality.Resources.AudioData.SetupAlBuffer">
+            <summary>
+            Sets up a new OpenAL buffer for this AudioData. This will result in decompressing
+            the <see cref="T:Duality.OggVorbis.OV">Ogg Vorbis</see> data and uploading it to OpenAL,
+            unless the AudioData is streamed.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.AudioData.Beep">
+            <summary>
+            [GET] Provides access to a simple beep AudioData.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.AudioData.DroneLoop">
+            <summary>
+            [GET] Provides access to a drone loop AudioData. This is stereo data.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.AudioData.LogoJingle">
+            <summary>
+            [GET] Provides access to a logo jingle AudioData. This is stereo data.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.AudioData.OggVorbisData">
+            <summary>
+            [GET / SET] A data chunk representing <see cref="T:Duality.OggVorbis.OV">Ogg Vorbis</see> compressed
+            audio data.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.AudioData.OggVorbisDataBasePath">
+            <summary>
+            [GET / SET] The path from which the audio data has been originally imported in Duality.
+            This is only relevant when creating new AudioData at runtime or importing them in the editor
+            environment.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.AudioData.ForceStream">
+            <summary>
+            [GET / SET] If set to true, when playing a <see cref="T:Duality.Resources.Sound"/> that refers to this
+            AudioData, it is forced to be played streamed. Normally, streaming kicks in automatically when playing
+            very large sound files, such as music or large environmental ambience.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.AudioData.IsStreamed">
+            <summary>
+            [GET] Returns whether this AudioData will be played streamed.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.AudioData.AlBuffer">
+            <summary>
+            [GET] The OpenAL buffer handle of this AudioData.
             </summary>
         </member>
         <member name="T:Duality.Serialization.TypeDataLayout">
@@ -2694,6 +3514,113 @@
             <summary>
             A Pixmap stores pixel data in system memory. 
             </summary>
+            <seealso cref="T:Duality.Resources.Texture"/>
+        </member>
+        <member name="F:Duality.Resources.Pixmap.FileExt">
+            <summary>
+            A Pixmap resources file extension.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Pixmap.ResFormat_Version_Unknown">
+            <summary>
+            Represents an unknown Pixmap version.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Pixmap.ResFormat_Version_Bitmap">
+            <summary>
+            Represents the old, uncompressed Pixmap version using a <see cref="T:System.Drawing.Bitmap"/>.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Pixmap.ResFormat_Version_Png">
+            <summary>
+            Represents the PNG-compressed Pixmap version.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Pixmap.VirtualContentPath">
+            <summary>
+            (Virtual) base path for Duality's embedded default Pixmaps.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Pixmap.ContentPath_DualityLogo256">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.Pixmap.DualityLogo256"/> Pixmap.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Pixmap.ContentPath_DualityLogoB256">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.Pixmap.DualityLogoB256"/> Pixmap.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Pixmap.ContentPath_White">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.Pixmap.White"/> Pixmap.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.Pixmap.#ctor">
+            <summary>
+            Creates a new, empty Pixmap.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.Pixmap.#ctor(System.Drawing.Bitmap)">
+            <summary>
+            Creates a new Pixmap from the specified <see cref="T:System.Drawing.Bitmap"/>.
+            </summary>
+            <param name="image">The <see cref="T:System.Drawing.Bitmap"/> that will be used by the Pixmap.</param>
+        </member>
+        <member name="M:Duality.Resources.Pixmap.#ctor(System.String)">
+            <summary>
+            Creates a new Pixmap from the specified image file.
+            </summary>
+            <param name="imagePath">A path to the image file that will be used as pixel data source.</param>
+        </member>
+        <member name="M:Duality.Resources.Pixmap.SavePixelData(System.String)">
+            <summary>
+            Saves the Pixmaps pixel data as image file. Its image format is determined by the file extension.
+            </summary>
+            <param name="imagePath">The path of the file to which the pixel data is written.</param>
+        </member>
+        <member name="M:Duality.Resources.Pixmap.LoadPixelData(System.String)">
+            <summary>
+            Replaces the Pixmaps pixel data with a new dataset that has been retrieved from file.
+            </summary>
+            <param name="imagePath">The path of the file from which to retrieve the new pixel data.</param>
+        </member>
+        <member name="P:Duality.Resources.Pixmap.DualityLogo256">
+            <summary>
+            [GET] Provides access to a Pixmap showing the Duality logo.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Pixmap.DualityLogoB256">
+            <summary>
+            [GET] Provides access to a Pixmap showing the Duality logo without the text on it.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Pixmap.White">
+            <summary>
+            [GET] Provides access to a plain white 1x1 Pixmap. Can be used as a dummy.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Pixmap.PixelData">
+            <summary>
+            [GET / SET] A <see cref="T:System.Drawing.Bitmap"/> representing the actual pixel data.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Pixmap.PixelDataBasePath">
+            <summary>
+            [GET / SET] The path from which the pixel data has been originally imported in Duality.
+            This is only relevant when creating new Pixmaps at runtime or importing them in the editor
+            environment.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Pixmap.Width">
+            <summary>
+            [GET] The Width of the actual pixel data.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Pixmap.Height">
+            <summary>
+            [GET] The Height of the actual pixel data.
+            </summary>
         </member>
         <member name="T:Duality.NonSerializedResourceAttribute">
             <summary>
@@ -3214,6 +4141,54 @@
             matches the <see cref="T:System.Type"/> of an object that is to be serialized, instead of letting it
             serialize itsself, the <see cref="T:Duality.Serialization.ISurrogate"/> with the highest <see cref="P:Duality.Serialization.ISurrogate.Priority"/>
             is used instead.
+            </summary>
+        </member>
+        <member name="T:Duality.Resources.FragmentShader">
+            <summary>
+            Represents an OpenGL FragmentShader.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.FragmentShader.FileExt">
+            <summary>
+            A FragmentShader resources file extension.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.FragmentShader.VirtualContentPath">
+            <summary>
+            (Virtual) base path for Duality's embedded default FragmentShaders.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.FragmentShader.ContentPath_Minimal">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.FragmentShader.Minimal"/> FragmentShader.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.FragmentShader.ContentPath_Picking">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.FragmentShader.Picking"/> FragmentShader.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.FragmentShader.ContentPath_SmoothAnim">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.FragmentShader.SmoothAnim"/> FragmentShader.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.FragmentShader.Minimal">
+            <summary>
+            [GET] Provides access to a minimal FragmentShader. It performs a texture lookup
+            and applies vertex-coloring.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.FragmentShader.Picking">
+            <summary>
+            [GET] Provides access to a FragmentShader designed for picking operations. It uses
+            the provided texture for alpha output and forwards the incoming RGB color value.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.FragmentShader.SmoothAnim">
+            <summary>
+            [GET] Provides access to the SmoothAnim FragmentShader. It performs two lookups
+            on the same texture and blends the results using an incoming float value.
             </summary>
         </member>
         <member name="T:Duality.IContentRef">

@@ -9,6 +9,15 @@
 -->	Maybe find some testers?
 
 
+-->	Make the Create Resource menu hierarchial like the Create Component menu
+
+-->	Just a thought: Use the XML documentation on classes to display tooltips
+	in the editor?
+	-->	Info about Components in the Create-Menu and when hovering them
+	-->	Info about GameObject when hovering them
+	-->	Info about Resources in the Create-Menu and when hovering them
+
+
 -->	Possible schedule:
 	1.	Implement sandbox mode for editor
 	2.	Implement physics & use sandbox for testing

@@ -26,7 +26,7 @@ namespace Duality.Components.Renderers
 
 		private	int			animFirstFrame		= 0;
 		private	int			animFrameCount		= 0;
-		private	int			animDuration		= 0;
+		private	float		animDuration		= 0.0f;
 		private	LoopMode	animLoopMode		= LoopMode.Loop;
 		private	float		animTime			= 0.0f;
 		private	int			animCycle			= 0;
@@ -44,7 +44,7 @@ namespace Duality.Components.Renderers
 			get { return this.animFrameCount; }
 			set { this.animFrameCount = value; }
 		}
-		public int AnimDuration
+		public float AnimDuration
 		{
 			get { return this.animDuration; }
 			set { this.animDuration = value; }
@@ -87,26 +87,26 @@ namespace Duality.Components.Renderers
 		{
 			if (this.animLoopMode == LoopMode.Loop)
 			{
-				this.animTime += Time.TimeMult * Time.MsPFMult;
+				this.animTime += Time.TimeMult * Time.SPFMult;
 				if (this.animTime > this.animDuration)
 				{
-					int n = (int)this.animTime / this.animDuration;
+					int n = (int)(this.animTime / this.animDuration);
 					this.animTime -= this.animDuration * n;
 					this.animCycle += n;
 				}
 			}
 			else if (this.animLoopMode == LoopMode.Once)
 			{
-				this.animTime = MathF.Min(this.animTime + Time.TimeMult * Time.MsPFMult, this.animDuration);
+				this.animTime = MathF.Min(this.animTime + Time.TimeMult * Time.SPFMult, this.animDuration);
 			}
 			else if (this.animLoopMode == LoopMode.PingPong)
 			{
 				if (this.animCycle % 2 == 0)
 				{
-					this.animTime += Time.TimeMult * Time.MsPFMult;
+					this.animTime += Time.TimeMult * Time.SPFMult;
 					if (this.animTime > this.animDuration)
 					{
-						int n = (int)this.animTime / this.animDuration;
+						int n = (int)(this.animTime / this.animDuration);
 						if (n % 2 == 1) this.animTime = this.animDuration;
 						else this.animTime = 0.0f;
 						this.animCycle += n;
@@ -114,10 +114,10 @@ namespace Duality.Components.Renderers
 				}
 				else
 				{
-					this.animTime -= Time.TimeMult * Time.MsPFMult;
+					this.animTime -= Time.TimeMult * Time.SPFMult;
 					if (this.animTime < 0.0f)
 					{
-						int n = (int)(this.animDuration - this.animTime) / this.animDuration;
+						int n = (int)((this.animDuration - this.animTime) / this.animDuration);
 						if (n % 2 == 1) this.animTime = 0.0f;
 						else this.animTime = this.animDuration;
 						this.animCycle += n;

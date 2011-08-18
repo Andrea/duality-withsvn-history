@@ -578,7 +578,22 @@ namespace Duality.Serialization
 						if (field == null)
 							this.log.WriteWarning("Field '{0}' not found. Discarding value '{1}'", layout.Fields[i].name, fieldValue);
 						else if (field.FieldType != fieldType)
-							this.log.WriteWarning("Data layout Type '{0}' of field '{1}' does not match reflected Type '{2}'. Discarding value '{3}'", layout.Fields[i].typeString, layout.Fields[i].name, objTypeString, fieldValue);
+						{
+							this.log.WriteWarning("Data layout Type '{0}' of field '{1}' does not match reflected Type '{2}'. Trying to convert...'", layout.Fields[i].typeString, layout.Fields[i].name, objTypeString);
+							this.log.PushIndent();
+							object castVal;
+							try
+							{
+								castVal = Convert.ChangeType(fieldValue, fieldType, System.Globalization.CultureInfo.InvariantCulture);
+								this.log.Write("...succeeded! Assigning value '{0}'", castVal);
+								field.SetValue(obj, castVal);
+							}
+							catch (Exception)
+							{
+								this.log.WriteWarning("...failed! Discarding value '{0}'", fieldValue);
+							}
+							this.log.PopIndent();
+						}
 						else if (field.IsNotSerialized)
 							this.log.WriteWarning("Field '{0}' flagged as [NonSerialized]. Discarding value '{1}'", layout.Fields[i].name, fieldValue);
 						else

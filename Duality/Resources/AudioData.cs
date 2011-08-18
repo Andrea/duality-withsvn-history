@@ -15,18 +15,43 @@ namespace Duality.Resources
 	/// OpenAL buffer containing actual PCM data, once set up. The OpenAL buffer is set up lazy
 	/// i.e. as soon as demanded by accessing the AlBuffer property or calling SetupAlBuffer.
 	/// </summary>
+	/// <seealso cref="Duality.Resources.Sound"/>
 	[Serializable]
 	public class AudioData : Resource
 	{
+		/// <summary>
+		/// An AudioData resources file extension.
+		/// </summary>
 		public new const string FileExt = ".AudioData" + Resource.FileExt;
-
+		
+		/// <summary>
+		/// (Virtual) base path for Duality's embedded default AudioData.
+		/// </summary>
 		public const string VirtualContentPath = ContentProvider.VirtualContentPath + "AudioData:";
+		/// <summary>
+		/// (Virtual) path of the <see cref="Beep"/> AudioData.
+		/// </summary>
 		public const string ContentPath_Beep		= VirtualContentPath + "Beep";
+		/// <summary>
+		/// (Virtual) path of the <see cref="DroneLoop"/> AudioData.
+		/// </summary>
 		public const string ContentPath_DroneLoop	= VirtualContentPath + "DroneLoop";
+		/// <summary>
+		/// (Virtual) path of the <see cref="LogoJingle"/> AudioData.
+		/// </summary>
 		public const string ContentPath_LogoJingle	= VirtualContentPath + "LogoJingle";
-
+		
+		/// <summary>
+		/// [GET] Provides access to a simple beep AudioData.
+		/// </summary>
 		public static ContentRef<AudioData> Beep		{ get; private set; }
+		/// <summary>
+		/// [GET] Provides access to a drone loop AudioData. This is stereo data.
+		/// </summary>
 		public static ContentRef<AudioData> DroneLoop	{ get; private set; }
+		/// <summary>
+		/// [GET] Provides access to a logo jingle AudioData. This is stereo data.
+		/// </summary>
 		public static ContentRef<AudioData> LogoJingle	{ get; private set; }
 
 		internal static void InitDefaultContent()
@@ -48,8 +73,14 @@ namespace Duality.Resources
 			LogoJingle	= ContentProvider.RequestContent<AudioData>(ContentPath_LogoJingle);
 		}
 		
-
+		
+		/// <summary>
+		/// A dummy OpenAL buffer handle, indicating that the buffer in question is not available.
+		/// </summary>
 		public const int AlBuffer_NotAvailable = 0;
+		/// <summary>
+		/// A dummy OpenAL buffer handle, indicating that the buffer in question is inactive due to streaming.
+		/// </summary>
 		public const int AlBuffer_StreamMe = -1;
 
 
@@ -58,25 +89,45 @@ namespace Duality.Resources
 		private	bool	forceStream		= false;
 		[NonSerialized]	private	int	alBuffer	= AlBuffer_NotAvailable;
 
+		/// <summary>
+		/// [GET / SET] A data chunk representing <see cref="Duality.OggVorbis.OV">Ogg Vorbis</see> compressed
+		/// audio data.
+		/// </summary>
 		public byte[] OggVorbisData
 		{
 			get { return this.data; }
 			set { this.data = value; this.DisposeAlBuffer(); }
 		}
+		/// <summary>
+		/// [GET / SET] The path from which the audio data has been originally imported in Duality.
+		/// This is only relevant when creating new AudioData at runtime or importing them in the editor
+		/// environment.
+		/// </summary>
 		public string OggVorbisDataBasePath
 		{
 			get { return this.dataBasePath; }
 			set { this.LoadOggVorbisData(value); }
 		}
+		/// <summary>
+		/// [GET / SET] If set to true, when playing a <see cref="Duality.Resources.Sound"/> that refers to this
+		/// AudioData, it is forced to be played streamed. Normally, streaming kicks in automatically when playing
+		/// very large sound files, such as music or large environmental ambience.
+		/// </summary>
 		public bool ForceStream
 		{
 			get { return this.forceStream; }
 			set { this.forceStream = value; this.DisposeAlBuffer(); }
 		}
+		/// <summary>
+		/// [GET] Returns whether this AudioData will be played streamed.
+		/// </summary>
 		public bool IsStreamed
 		{
 			get { return this.forceStream || (this.data != null && this.data.Length > 1024 * 100); }
 		}
+		/// <summary>
+		/// [GET] The OpenAL buffer handle of this AudioData.
+		/// </summary>
 		public int AlBuffer
 		{
 			get 
@@ -86,21 +137,40 @@ namespace Duality.Resources
 			}
 		}
 
+		/// <summary>
+		/// Creates a new, empty AudioData without any data.
+		/// </summary>
 		public AudioData() {}
+		/// <summary>
+		/// Creates a new AudioData based on an <see cref="Duality.OggVorbis.OV">Ogg Vorbis</see> memory chunk.
+		/// </summary>
+		/// <param name="oggVorbisData">An <see cref="Duality.OggVorbis.OV">Ogg Vorbis</see> memory chunk</param>
 		public AudioData(byte[] oggVorbisData)
 		{
 			this.data = oggVorbisData;
 		}
+		/// <summary>
+		/// Creates a new AudioData based on a <see cref="System.IO.Stream"/> containing <see cref="Duality.OggVorbis.OV">Ogg Vorbis</see> data.
+		/// </summary>
+		/// <param name="oggVorbisDataStream">A <see cref="System.IO.Stream"/> containing <see cref="Duality.OggVorbis.OV">Ogg Vorbis</see> data</param>
 		public AudioData(Stream oggVorbisDataStream)
 		{
 			this.data = new byte[oggVorbisDataStream.Length];
 			oggVorbisDataStream.Read(this.data, 0, (int)oggVorbisDataStream.Length);
 		}
+		/// <summary>
+		/// Creates a new AudioData base on an <see cref="Duality.OggVorbis.OV">Ogg Vorbis</see> file.
+		/// </summary>
+		/// <param name="filepath">Path to the <see cref="Duality.OggVorbis.OV">Ogg Vorbis</see> file.</param>
 		public AudioData(string filepath)
 		{
 			this.LoadOggVorbisData(filepath);
 		}
 
+		/// <summary>
+		/// Saves the audio data as <see cref="Duality.OggVorbis.OV">Ogg Vorbis</see> file.
+		/// </summary>
+		/// <param name="oggVorbisPath">The path of the file to which the audio data is written.</param>
 		public void SaveOggVorbisData(string oggVorbisPath = null)
 		{
 			if (oggVorbisPath == null) oggVorbisPath = this.dataBasePath;
@@ -110,6 +180,10 @@ namespace Duality.Resources
 
 			File.WriteAllBytes(oggVorbisPath, this.data);
 		}
+		/// <summary>
+		/// Loads new audio data from an <see cref="Duality.OggVorbis.OV">Ogg Vorbis</see> file.
+		/// </summary>
+		/// <param name="oggVorbisPath">The path of the file from which the audio data is read.</param>
 		public void LoadOggVorbisData(string oggVorbisPath = null)
 		{
 			if (oggVorbisPath == null) oggVorbisPath = this.dataBasePath;
@@ -124,12 +198,21 @@ namespace Duality.Resources
 			this.DisposeAlBuffer();
 		}
 		
+		/// <summary>
+		/// Disposes the AudioDatas OpenAL buffer.
+		/// </summary>
+		/// <seealso cref="SetupAlBuffer"/>
 		public void DisposeAlBuffer()
 		{
 			if (this.alBuffer > AlBuffer_NotAvailable) AL.DeleteBuffer(this.alBuffer);
 			this.alBuffer = AlBuffer_NotAvailable;
 			return;
 		}
+		/// <summary>
+		/// Sets up a new OpenAL buffer for this AudioData. This will result in decompressing
+		/// the <see cref="Duality.OggVorbis.OV">Ogg Vorbis</see> data and uploading it to OpenAL,
+		/// unless the AudioData is streamed.
+		/// </summary>
 		public void SetupAlBuffer()
 		{
 			// No AudioData available

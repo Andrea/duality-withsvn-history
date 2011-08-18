@@ -88,7 +88,7 @@ namespace EditorBase.PropertyEditors
 						// Set other uniform variables
 						else
 						{
-							float[] uniformVal = varInfo.InitDataByType();
+							float[] uniformVal = varInfo.InitUniformData();
 							if (uniformVal != null)
 							{
 								foreach (BatchInfo info in batchInfos)
