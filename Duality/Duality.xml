@@ -2961,6 +2961,134 @@
             A string referring to the fields type.
             </summary>
         </member>
+        <member name="T:Duality.Resources.Scene">
+            <summary>
+            A Scene encapsulates an organized set of <see cref="T:Duality.GameObject">GameObjects</see> and provides
+            update-, rendering- and maintenance functionality. In Duality, there is always exactly one Scene
+            <see cref="P:Duality.Resources.Scene.Current"/> which represents a level, gamestate or a combination of both, depending
+            on you own design.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Scene.FileExt">
+            <summary>
+            A Scene resources file extension.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.Scene.#ctor">
+            <summary>
+            Creates a new, empty scene which does not contain any <see cref="T:Duality.GameObject">GameObjects</see>.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.Scene.Render">
+            <summary>
+            Renders the Scene
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.Scene.Update">
+            <summary>
+            Updates the Scene
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.Scene.EditorUpdate">
+            <summary>
+            Updates the Scene in the editor.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.Scene.ApplyPrefabLinks">
+            <summary>
+            Applies all <see cref="T:Duality.Resources.PrefabLink">PrefabLinks</see> contained withing this
+            Scenes <see cref="T:Duality.GameObject">GameObjects</see>.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.Scene.BreakPrefabLinks">
+            <summary>
+            Breaks all <see cref="T:Duality.Resources.PrefabLink">PrefabLinks</see> contained withing this
+            Scenes <see cref="T:Duality.GameObject">GameObjects</see>.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.Scene.Clear">
+            <summary>
+            Clears the Scene, unregistering all GameObjects. This does not <see cref="M:Duality.GameObject.Dispose">dispose</see> them.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.Scene.Append(Duality.ContentRef{Duality.Resources.Scene})">
+            <summary>
+            Appends a cloned version of the specified Scenes contents to this Scene.
+            </summary>
+            <param name="scene">The source Scene.</param>
+        </member>
+        <member name="M:Duality.Resources.Scene.QueryVisibleRenderers(Duality.IDrawDevice)">
+            <summary>
+            Enumerates all <see cref="!:Duality.Resources.Renderer">Renderers</see> that are visible to
+            the specified <see cref="T:Duality.IDrawDevice"/>.
+            </summary>
+            <param name="device"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Resources.Scene.QueryVisibleOverlayRenderers(Duality.IDrawDevice)">
+            <summary>
+            Enumerates all <see cref="T:Duality.ICmpScreenOverlayRenderer">Screen Overlays</see> that are visible to
+            the specified <see cref="T:Duality.IDrawDevice"/>.
+            </summary>
+            <param name="device"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Duality.Resources.Scene.Current">
+            <summary>
+            [GET / SET] The Scene that is currently active i.e. updated and rendered. This is never null.
+            You may assign null in order to leave the current Scene and enter en empty dummy Scene.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Scene.CurrentPath">
+            <summary>
+            [GET] The Resource file path of the current Scene.
+            </summary>
+        </member>
+        <member name="E:Duality.Resources.Scene.Leaving">
+            <summary>
+            Fired just before leaving the current Scene.
+            </summary>
+        </member>
+        <member name="E:Duality.Resources.Scene.Entered">
+            <summary>
+            Fired right after entering the (now) current Scene.
+            </summary>
+        </member>
+        <member name="E:Duality.Resources.Scene.GameObjectRegistered">
+            <summary>
+            Fired when a <see cref="T:Duality.GameObject"/> has been registered in the current Scenes <see cref="P:Duality.Resources.Scene.Graph"/>.
+            </summary>
+        </member>
+        <member name="E:Duality.Resources.Scene.GameObjectUnregistered">
+            <summary>
+            Fired when a <see cref="T:Duality.GameObject"/> has been unregistered from the current Scenes <see cref="P:Duality.Resources.Scene.Graph"/>.
+            </summary>
+        </member>
+        <member name="E:Duality.Resources.Scene.RegisteredObjectComponentAdded">
+            <summary>
+            Fired when a <see cref="T:Duality.Component"/> has been added to a <see cref="T:Duality.GameObject"/> that is registered in the current Scenes <see cref="P:Duality.Resources.Scene.Graph"/>.
+            </summary>
+        </member>
+        <member name="E:Duality.Resources.Scene.RegisteredObjectComponentRemoved">
+            <summary>
+            Fired when a <see cref="T:Duality.Component"/> has been removed from a <see cref="T:Duality.GameObject"/> that is registered in the current Scenes <see cref="P:Duality.Resources.Scene.Graph"/>.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Scene.Graph">
+            <summary>
+            [GET] The Scenes main <see cref="T:Duality.GameObject"/> manager.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Scene.Name">
+            <summary>
+            [GET] The name of the Scene.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Scene.IsCurrent">
+            <summary>
+            [GET] Returns whether this Scene is <see cref="P:Duality.Resources.Scene.Current"/>.
+            </summary>
+        </member>
         <member name="T:Duality.Serialization.BinaryMetaFormatter">
             <summary>
             De/Serializes abstract object data using <see cref="T:Duality.Serialization.MetaFormat.DataNode">DataNodes</see>.

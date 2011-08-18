@@ -34,6 +34,10 @@ namespace Duality.ObjectManagers
 				this.RegisterObjDeep(child);
 			}
 		}
+		public void RegisterObjDeep(IEnumerable<GameObject> obj)
+		{
+			foreach (GameObject o in obj.ToArray()) this.RegisterObjDeep(o);
+		}
 		public void UnregisterObjDeep(GameObject obj)
 		{
 			foreach (GameObject child in obj.Children)
@@ -41,6 +45,10 @@ namespace Duality.ObjectManagers
 				this.UnregisterObjDeep(child);
 			}
 			this.UnregisterObj(obj);
+		}
+		public void UnregisterObjDeep(IEnumerable<GameObject> obj)
+		{
+			foreach (GameObject o in obj.ToArray()) this.UnregisterObjDeep(o);
 		}
 
 		protected override void OnRegistered(GameObject obj)

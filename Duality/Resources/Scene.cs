@@ -9,13 +9,26 @@ using Duality.Serialization;
 
 namespace Duality.Resources
 {
+	/// <summary>
+	/// A Scene encapsulates an organized set of <see cref="GameObject">GameObjects</see> and provides
+	/// update-, rendering- and maintenance functionality. In Duality, there is always exactly one Scene
+	/// <see cref="Scene.Current"/> which represents a level, gamestate or a combination of both, depending
+	/// on you own design.
+	/// </summary>
 	[Serializable]
 	public sealed class Scene : Resource
 	{
+		/// <summary>
+		/// A Scene resources file extension.
+		/// </summary>
 		public new const string FileExt = ".Scene" + Resource.FileExt;
 
 		private	static	ContentRef<Scene>	current		= ContentRef<Scene>.Null;
 		private	static	bool				curAutoGen	= false;
+		/// <summary>
+		/// [GET / SET] The Scene that is currently active i.e. updated and rendered. This is never null.
+		/// You may assign null in order to leave the current Scene and enter en empty dummy Scene.
+		/// </summary>
 		public static Scene Current
 		{
 			get
@@ -40,16 +53,37 @@ namespace Duality.Resources
 					current.Res = (value != null) ? value : new Scene();
 			}
 		}
+		/// <summary>
+		/// [GET] The Resource file path of the current Scene.
+		/// </summary>
 		public static string CurrentPath
 		{
 			get { return current.Res != null ? current.Res.Path : current.Path; }
 		}
 
+		/// <summary>
+		/// Fired just before leaving the current Scene.
+		/// </summary>
 		public static event EventHandler Leaving;
+		/// <summary>
+		/// Fired right after entering the (now) current Scene.
+		/// </summary>
 		public static event EventHandler Entered;
+		/// <summary>
+		/// Fired when a <see cref="GameObject"/> has been registered in the current Scenes <see cref="Scene.Graph"/>.
+		/// </summary>
 		public static event EventHandler<ObjectManagerEventArgs<GameObject>> GameObjectRegistered;
+		/// <summary>
+		/// Fired when a <see cref="GameObject"/> has been unregistered from the current Scenes <see cref="Scene.Graph"/>.
+		/// </summary>
 		public static event EventHandler<ObjectManagerEventArgs<GameObject>> GameObjectUnregistered;
+		/// <summary>
+		/// Fired when a <see cref="Component"/> has been added to a <see cref="GameObject"/> that is registered in the current Scenes <see cref="Scene.Graph"/>.
+		/// </summary>
 		public static event EventHandler<ComponentEventArgs> RegisteredObjectComponentAdded;
+		/// <summary>
+		/// Fired when a <see cref="Component"/> has been removed from a <see cref="GameObject"/> that is registered in the current Scenes <see cref="Scene.Graph"/>.
+		/// </summary>
 		public static event EventHandler<ComponentEventArgs> RegisteredObjectComponentRemoved;
 
 		private static void OnLeaving()
@@ -96,22 +130,36 @@ namespace Duality.Resources
 		private	RendererManager			rendererManager	= new RendererManager();
 		private	OverlayRendererManager	overlayManager	= new OverlayRendererManager();
 
+		/// <summary>
+		/// [GET] The Scenes main <see cref="GameObject"/> manager.
+		/// </summary>
 		public GameObjectManager Graph
 		{
 			get { return this.objectManager; }
 		}
+		/// <summary>
+		/// [GET] The name of the Scene.
+		/// </summary>
 		public string Name
 		{
 			get 
 			{ 
 				if (this.path == null) return null;
-				if (this.path.Length < 6) return "";
-
-				string fileName = System.IO.Path.GetFileNameWithoutExtension(this.path);
-				return fileName == null ? null : fileName.Substring(0, fileName.Length - 6); 
+				if (this.path.Length < FileExt.Length) return "";
+				return this.path.Substring(0, this.path.Length - FileExt.Length); 
 			}
 		}
+		/// <summary>
+		/// [GET] Returns whether this Scene is <see cref="Scene.Current"/>.
+		/// </summary>
+		public bool IsCurrent
+		{
+			get { return current.ResWeak == this; }
+		}
 
+		/// <summary>
+		/// Creates a new, empty scene which does not contain any <see cref="GameObject">GameObjects</see>.
+		/// </summary>
 		public Scene()
 		{
 			this.objectManager.Registered += this.objectManager_Registered;
@@ -120,39 +168,89 @@ namespace Duality.Resources
 			this.objectManager.RegisteredObjectComponentRemoved += this.objectManager_RegisteredObjectComponentRemoved;
 		}
 
+		/// <summary>
+		/// Renders the Scene
+		/// </summary>
 		public void Render()
 		{
-			List<Camera> camList = new List<Camera>(this.cameraManager.ActiveObjects);
+			Camera[] cams = this.cameraManager.ActiveObjects.ToArray();
 			// Maybe sort / process list first later on.
-			foreach (Camera c in camList) c.Render();
+			foreach (Camera c in cams)
+				c.Render();
 		}
+		/// <summary>
+		/// Updates the Scene
+		/// </summary>
 		public void Update()
 		{
 			GameObject[] activeObj = this.objectManager.ActiveObjects.ToArray();
-			foreach (GameObject obj in activeObj) obj.Update();
+			foreach (GameObject obj in activeObj)
+				obj.Update();
 		}
+		/// <summary>
+		/// Updates the Scene in the editor.
+		/// </summary>
 		public void EditorUpdate()
 		{
-			foreach (GameObject obj in this.objectManager.ActiveObjects)
-			{
-			    obj.EditorUpdate();
-			}
+			if (DualityApp.ExecContext != DualityApp.ExecutionContext.Editor)
+				throw new ApplicationException("This method may only be used in Editor execution context.");
+
+			GameObject[] activeObj = this.objectManager.ActiveObjects.ToArray();
+			foreach (GameObject obj in activeObj)
+				obj.EditorUpdate();
 		}
 
+		/// <summary>
+		/// Applies all <see cref="Duality.Resources.PrefabLink">PrefabLinks</see> contained withing this
+		/// Scenes <see cref="GameObject">GameObjects</see>.
+		/// </summary>
 		public void ApplyPrefabLinks()
 		{
 			PrefabLink.ApplyAllLinks(this.objectManager.AllObjects);
 		}
-		public void AbandonPrefabLinks()
+		/// <summary>
+		/// Breaks all <see cref="Duality.Resources.PrefabLink">PrefabLinks</see> contained withing this
+		/// Scenes <see cref="GameObject">GameObjects</see>.
+		/// </summary>
+		public void BreakPrefabLinks()
 		{
 			foreach (GameObject obj in this.objectManager.AllObjects)
-				obj.prefabLink = null;
+				obj.BreakPrefabLink();
 		}
 
+		/// <summary>
+		/// Clears the Scene, unregistering all GameObjects. This does not <see cref="GameObject.Dispose">dispose</see> them.
+		/// </summary>
+		public void Clear()
+		{
+			this.objectManager.Clear();
+		}
+		/// <summary>
+		/// Appends a cloned version of the specified Scenes contents to this Scene.
+		/// </summary>
+		/// <param name="scene">The source Scene.</param>
+		public void Append(ContentRef<Scene> scene)
+		{
+			if (!scene.IsAvailable) return;
+			this.objectManager.RegisterObjDeep(scene.Res.Graph.RootObjects.Select(o => o.Clone()));
+		}
+
+		/// <summary>
+		/// Enumerates all <see cref="Duality.Resources.Renderer">Renderers</see> that are visible to
+		/// the specified <see cref="IDrawDevice"/>.
+		/// </summary>
+		/// <param name="device"></param>
+		/// <returns></returns>
 		public IEnumerable<Renderer> QueryVisibleRenderers(IDrawDevice device)
 		{
 			return this.rendererManager.QueryVisible(device);
 		}
+		/// <summary>
+		/// Enumerates all <see cref="Duality.ICmpScreenOverlayRenderer">Screen Overlays</see> that are visible to
+		/// the specified <see cref="IDrawDevice"/>.
+		/// </summary>
+		/// <param name="device"></param>
+		/// <returns></returns>
 		public IEnumerable<ICmpScreenOverlayRenderer> QueryVisibleOverlayRenderers(IDrawDevice device)
 		{
 			return this.overlayManager.QueryVisible(device);
@@ -168,7 +266,7 @@ namespace Duality.Resources
 			foreach (ICmpScreenOverlayRenderer r in e.Object.GetComponents<ICmpScreenOverlayRenderer>())
 				this.overlayManager.RegisterObj(r as Component);
 
-			OnGameObjectRegistered(e);
+			if (this.IsCurrent) OnGameObjectRegistered(e);
 		}
 		private void objectManager_Unregistered(object sender, ObjectManagerEventArgs<GameObject> e)
 		{
@@ -180,7 +278,7 @@ namespace Duality.Resources
 			foreach (ICmpScreenOverlayRenderer r in e.Object.GetComponents<ICmpScreenOverlayRenderer>())
 				this.overlayManager.UnregisterObj(r as Component);
 
-			OnGameObjectUnregistered(e);
+			if (this.IsCurrent) OnGameObjectUnregistered(e);
 		}
 		private void objectManager_RegisteredObjectComponentAdded(object sender, ComponentEventArgs e)
 		{
@@ -189,7 +287,7 @@ namespace Duality.Resources
 
 			if (e.Component is ICmpScreenOverlayRenderer)	this.overlayManager.RegisterObj(e.Component);
 
-			OnRegisteredObjectComponentAdded(e);
+			if (this.IsCurrent) OnRegisteredObjectComponentAdded(e);
 		}
 		private void objectManager_RegisteredObjectComponentRemoved(object sender, ComponentEventArgs e)
 		{
@@ -198,16 +296,15 @@ namespace Duality.Resources
 
 			if (e.Component is ICmpScreenOverlayRenderer)	this.overlayManager.UnregisterObj(e.Component);
 
-			OnRegisteredObjectComponentRemoved(e);
+			if (this.IsCurrent) OnRegisteredObjectComponentRemoved(e);
 		}
 
 		public override void CopyTo(Resource r)
 		{
 			base.CopyTo(r);
 			Scene s = r as Scene;
-
-			foreach (GameObject o in this.objectManager.RootObjects)
-				s.objectManager.RegisterObjDeep(o.Clone());
+			s.Clear();
+			s.Append(this);
 		}
 		protected override void OnSaving()
 		{
