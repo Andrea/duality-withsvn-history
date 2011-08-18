@@ -1089,10 +1089,10 @@ namespace Duality
 			}
 		}
 		/// <summary>
-		/// Reads all the <see cref="KeyValuePair{T}"/>s that are children of the specified key.
+		/// Reads all the <see cref="KeyValuePair{T,U}"/>s that are children of the specified key.
 		/// </summary>
 		/// <param name="key">The key of which to return child values.</param>
-		/// <returns>An enumeration of <see cref="KeyValuePair{T}"/>s.</returns>
+		/// <returns>An enumeration of <see cref="KeyValuePair{T,U}"/>s.</returns>
 		/// <example>
 		/// The following code creates a small hierarchy and reads a part of it out again:
 		/// <code>
