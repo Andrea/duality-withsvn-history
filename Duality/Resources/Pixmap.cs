@@ -58,15 +58,15 @@ namespace Duality.Resources
 		public const string ContentPath_White			= VirtualContentPath + "White";
 		
 		/// <summary>
-		/// [GET] Provides access to a Pixmap showing the Duality logo.
+		/// [GET] A Pixmap showing the Duality logo.
 		/// </summary>
 		public static ContentRef<Pixmap> DualityLogo256		{ get; private set; }
 		/// <summary>
-		/// [GET] Provides access to a Pixmap showing the Duality logo without the text on it.
+		/// [GET] A Pixmap showing the Duality logo without the text on it.
 		/// </summary>
 		public static ContentRef<Pixmap> DualityLogoB256	{ get; private set; }
 		/// <summary>
-		/// [GET] Provides access to a plain white 1x1 Pixmap. Can be used as a dummy.
+		/// [GET] A plain white 1x1 Pixmap. Can be used as a dummy.
 		/// </summary>
 		public static ContentRef<Pixmap> White				{ get; private set; }
 

@@ -43,18 +43,18 @@ namespace Duality.Resources
 		public const string ContentPath_SmoothAnim	= VirtualContentPath + "SmoothAnim";
 
 		/// <summary>
-		/// Provides access to a minimal ShaderProgram, using a <see cref="Duality.Resources.VertexShader.Minimal"/> VertexShader and
+		/// A minimal ShaderProgram, using a <see cref="Duality.Resources.VertexShader.Minimal"/> VertexShader and
 		/// a <see cref="Duality.Resources.FragmentShader.Minimal"/> FragmentShader.
 		/// </summary>
 		public static ContentRef<ShaderProgram> Minimal		{ get; private set; }
 		/// <summary>
-		/// Provides access to a ShaderProgram designed for picking operations. It uses a 
+		/// A ShaderProgram designed for picking operations. It uses a 
 		/// <see cref="Duality.Resources.VertexShader.Minimal"/> VertexShader and a 
 		/// <see cref="Duality.Resources.FragmentShader.Picking"/> FragmentShader.
 		/// </summary>
 		public static ContentRef<ShaderProgram> Picking		{ get; private set; }
 		/// <summary>
-		/// Provides access to the SmoothAnim ShaderProgram, using a <see cref="Duality.Resources.VertexShader.SmoothAnim"/> VertexShader and
+		/// The SmoothAnim ShaderProgram, using a <see cref="Duality.Resources.VertexShader.SmoothAnim"/> VertexShader and
 		/// a <see cref="Duality.Resources.FragmentShader.SmoothAnim"/> FragmentShader. Some <see cref="Duality.Components.Renderer">Renderers</see>
 		/// might react automatically to <see cref="Duality.Resources.Material">Materials</see> using this ShaderProgram and provide a suitable
 		/// vertex format.

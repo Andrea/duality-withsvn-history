@@ -48,15 +48,15 @@ namespace Duality.Resources
 		public const string ContentPath_White			= VirtualContentPath + "White";
 		
 		/// <summary>
-		/// [GET] Provides access to a Texture showing the Duality logo.
+		/// [GET] A Texture showing the Duality logo.
 		/// </summary>
 		public static ContentRef<Texture> DualityLogo256	{ get; private set; }
 		/// <summary>
-		/// [GET] Provides access to a Texture showing the Duality logo without the text on it.
+		/// [GET] A Texture showing the Duality logo without the text on it.
 		/// </summary>
 		public static ContentRef<Texture> DualityLogoB256	{ get; private set; }
 		/// <summary>
-		/// [GET] Provides access to a plain white 1x1 Texture. Can be used as a dummy.
+		/// [GET] A plain white 1x1 Texture. Can be used as a dummy.
 		/// </summary>
 		public static ContentRef<Texture> White				{ get; private set; }
 

@@ -10,20 +10,58 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Duality.Resources
 {
+	/// <summary>
+	/// Materials are standardized <see cref="BatchInfo">BatchInfos</see>, stored as a Resource. 
+	/// Just like BatchInfo objects, they describe how an object, represented by a set of vertices, 
+	/// looks like. Using Materials is generally more performant than using BatchInfos but not always
+	/// reasonable, for example when there is a single, unique GameObject with a special appearance:
+	/// This is a typical <see cref="BatchInfo"/> case.
+	/// </summary>
+	/// <seealso cref="BatchInfo"/>
 	[Serializable]
 	public class Material : Resource
 	{
+		/// <summary>
+		/// A Material resources file extension.
+		/// </summary>
 		public new const string FileExt = ".Material" + Resource.FileExt;
-
+		
+		/// <summary>
+		/// (Virtual) base path for Duality's embedded default Materials.
+		/// </summary>
 		public const string VirtualContentPath = ContentProvider.VirtualContentPath + "Material:";
+		/// <summary>
+		/// (Virtual) path of the <see cref="SolidWhite"/> Material.
+		/// </summary>
 		public const string ContentPath_SolidWhite		= VirtualContentPath + "SolidWhite";
+		/// <summary>
+		/// (Virtual) path of the <see cref="InvertWhite"/> Material.
+		/// </summary>
 		public const string ContentPath_InvertWhite		= VirtualContentPath + "InvertWhite";
+		/// <summary>
+		/// (Virtual) path of the <see cref="DualityLogo256"/> Material.
+		/// </summary>
 		public const string ContentPath_DualityLogo256	= VirtualContentPath + "DualityLogo256";
+		/// <summary>
+		/// (Virtual) path of the <see cref="DualityLogoB256"/> Material.
+		/// </summary>
 		public const string ContentPath_DualityLogoB256	= VirtualContentPath + "DualityLogoB256";
 
+		/// <summary>
+		/// A solid, white Material.
+		/// </summary>
 		public static ContentRef<Material> SolidWhite		{ get; private set; }
+		/// <summary>
+		/// A Material that inverts its background.
+		/// </summary>
 		public static ContentRef<Material> InvertWhite		{ get; private set; }
+		/// <summary>
+		/// A Material showing the Duality logo.
+		/// </summary>
 		public static ContentRef<Material> DualityLogo256	{ get; private set; }
+		/// <summary>
+		/// A Material showing the Duality logo, but without the text on it.
+		/// </summary>
 		public static ContentRef<Material> DualityLogoB256	{ get; private set; }
 
 		internal static void InitDefaultContent()
@@ -52,6 +90,9 @@ namespace Duality.Resources
 
 		private	BatchInfo	info	= new BatchInfo();
 
+		/// <summary>
+		/// [GET] Returns a newly created <see cref="BatchInfo"/> that visually equals this Material.
+		/// </summary>
 		public BatchInfo Info
 		{
 			get { return new BatchInfo(this.info); }
@@ -61,35 +102,63 @@ namespace Duality.Resources
 			get { return this.info; }
 		}
 
+		/// <summary>
+		/// [GET / SET] The <see cref="Duality.Resources.DrawTechnique"/> that is used.
+		/// </summary>
 		public ContentRef<DrawTechnique> Technique
 		{
 			get { return this.info.Technique; }
 			set { this.info.Technique = value; }
 		}
+		/// <summary>
+		/// [GET / SET] The main color, typically used for coloring displayed vertices.
+		/// </summary>
 		public ColorFormat.ColorRgba MainColor
 		{
 			get { return this.info.MainColor; }
 			set { this.info.MainColor = value; }
 		}
+		/// <summary>
+		/// [GET / SET] A set of <see cref="Duality.Resources.Texture">Textures</see> to use.
+		/// </summary>
 		public Dictionary<string,ContentRef<Texture>> Textures
 		{
 			get { return this.info.Textures; }
 			set { this.info.Textures = value; }
 		}
+		/// <summary>
+		/// [GET / SET] A set of <see cref="Duality.Resources.ShaderVarInfo">uniform values</see> to use.
+		/// </summary>
 		public Dictionary<string,float[]> Uniforms
 		{
 			get { return this.info.Uniforms; }
 			set { this.info.Uniforms = value; }
 		}
 
+		/// <summary>
+		/// Creates a new Material
+		/// </summary>
 		public Material()
 		{
 			this.info = new BatchInfo();
 		}
+		/// <summary>
+		/// Creates a new single-texture Material.
+		/// </summary>
+		/// <param name="technique">The <see cref="Duality.Resources.DrawTechnique"/> to use.</param>
+		/// <param name="mainColor">The <see cref="MainColor"/> to use.</param>
+		/// <param name="mainTex">The main <see cref="Duality.Resources.Texture"/> to use.</param>
 		public Material(ContentRef<DrawTechnique> technique, ColorFormat.ColorRgba mainColor, ContentRef<Texture> mainTex)
 		{
 			this.info = new BatchInfo(technique, mainColor, mainTex);
 		}
+		/// <summary>
+		/// Creates a new complex Material.
+		/// </summary>
+		/// <param name="technique">The <see cref="Duality.Resources.DrawTechnique"/> to use.</param>
+		/// <param name="mainColor">The <see cref="MainColor"/> to use.</param>
+		/// <param name="textures">A set of <see cref="Duality.Resources.Texture">Textures</see> to use.</param>
+		/// <param name="uniforms">A set of <see cref="Duality.Resources.ShaderVarInfo">uniform values</see> to use.</param>
 		public Material(ContentRef<DrawTechnique> technique, ColorFormat.ColorRgba mainColor, Dictionary<string,ContentRef<Texture>> textures = null, Dictionary<string,float[]> uniforms = null)
 		{
 			this.info = new BatchInfo(technique, mainColor, textures, uniforms);
@@ -103,6 +172,10 @@ namespace Duality.Resources
 		}
 	}
 
+	/// <summary>
+	/// BatchInfos describe how an object, represented by a set of vertices, looks like.
+	/// </summary>
+	/// <seealso cref="Material"/>
 	[Serializable]
 	public class BatchInfo : IEquatable<BatchInfo>
 	{
@@ -110,39 +183,75 @@ namespace Duality.Resources
 		private	ColorFormat.ColorRgba		mainColor	= ColorFormat.ColorRgba.White;
 		private	Dictionary<string,ContentRef<Texture>>	textures	= null;
 		private	Dictionary<string,float[]>				uniforms	= null;
-
+		
+		/// <summary>
+		/// [GET / SET] The <see cref="Duality.Resources.DrawTechnique"/> that is used.
+		/// </summary>
 		public ContentRef<DrawTechnique> Technique
 		{
 			get { return this.technique; }
 			set { this.technique = value; }
 		}
+		/// <summary>
+		/// [GET / SET] The main color, typically used for coloring displayed vertices.
+		/// </summary>
 		public ColorFormat.ColorRgba MainColor
 		{
 			get { return this.mainColor; }
 			set { this.mainColor = value; }
 		}
+		/// <summary>
+		/// [GET / SET] A set of <see cref="Duality.Resources.Texture">Textures</see> to use.
+		/// </summary>
 		public Dictionary<string,ContentRef<Texture>> Textures
 		{
 			get { return this.textures; }
 			set { this.textures = value; }
 		}
+		/// <summary>
+		/// [GET / SET] A set of <see cref="Duality.Resources.ShaderVarInfo">uniform values</see> to use.
+		/// </summary>
 		public Dictionary<string,float[]> Uniforms
 		{
 			get { return this.uniforms; }
 			set { this.uniforms = value; }
 		}
 
+		/// <summary>
+		/// Creates a new, empty BatchInfo.
+		/// </summary>
 		public BatchInfo() {}
+		/// <summary>
+		/// Creates a new BatchInfo based on an existing <see cref="Material"/>.
+		/// </summary>
+		/// <param name="source"></param>
 		public BatchInfo(Material source) : this(source.InfoDirect) {}
+		/// <summary>
+		/// Creates a new BatchInfo based on an existing BatchInfo. This is essentially a copy constructor.
+		/// </summary>
+		/// <param name="source"></param>
 		public BatchInfo(BatchInfo source)
 		{
 			source.CopyTo(this);
 		}
+		/// <summary>
+		/// Creates a new single-texture BatchInfo.
+		/// </summary>
+		/// <param name="technique">The <see cref="Duality.Resources.DrawTechnique"/> to use.</param>
+		/// <param name="mainColor">The <see cref="MainColor"/> to use.</param>
+		/// <param name="mainTex">The main <see cref="Duality.Resources.Texture"/> to use.</param>
 		public BatchInfo(ContentRef<DrawTechnique> technique, ColorFormat.ColorRgba mainColor, ContentRef<Texture> mainTex) : this(technique, mainColor, null, null) 
 		{
 			this.textures = new Dictionary<string,ContentRef<Texture>>();
 			this.textures.Add("mainTex", mainTex);
 		}
+		/// <summary>
+		/// Creates a new complex BatchInfo.
+		/// </summary>
+		/// <param name="technique">The <see cref="Duality.Resources.DrawTechnique"/> to use.</param>
+		/// <param name="mainColor">The <see cref="MainColor"/> to use.</param>
+		/// <param name="textures">A set of <see cref="Duality.Resources.Texture">Textures</see> to use.</param>
+		/// <param name="uniforms">A set of <see cref="Duality.Resources.ShaderVarInfo">uniform values</see> to use.</param>
 		public BatchInfo(ContentRef<DrawTechnique> technique, ColorFormat.ColorRgba mainColor, Dictionary<string,ContentRef<Texture>> textures = null, Dictionary<string,float[]> uniforms = null)
 		{
 			this.technique = technique;
@@ -151,6 +260,10 @@ namespace Duality.Resources
 			this.uniforms = uniforms;
 		}
 		
+		/// <summary>
+		/// Copies this BatchInfo's data to a different one.
+		/// </summary>
+		/// <param name="info">The target BatchInfo to copy data to.</param>
 		public void CopyTo(BatchInfo info)
 		{
 			info.technique = this.technique;
@@ -159,6 +272,14 @@ namespace Duality.Resources
 			info.uniforms = this.uniforms == null ? null : new Dictionary<string,float[]>(this.uniforms);
 		}
 
+		/// <summary>
+		/// Sets up the appropriate OpenGL rendering state to render vertices using this BatchInfo.
+		/// </summary>
+		/// <param name="lastInfo">
+		/// The BatchInfo that has been used to set up the current OpenGL state. This parameter is
+		/// optional but supplying it will improve rendering performance by reducing redundant
+		/// state changes.
+		/// </param>
 		public void SetupForRendering(BatchInfo lastInfo)
 		{
 			if (object.ReferenceEquals(this, lastInfo)) return;
@@ -172,12 +293,24 @@ namespace Duality.Resources
 				this.textures,
 				this.uniforms);
 		}
+		/// <summary>
+		/// Resets the OpenGL rendering state. This should only be called if there are no more
+		/// BatchInfos to be set up directy after this one, i.e. if this is the last BatchInfo
+		/// that has been rendered so far.
+		/// </summary>
 		public void FinishRendering()
 		{
 			Texture.ResetBinding();
 			this.technique.Res.FinishRendering();
 		}
 
+		/// <summary>
+		/// Compares two BatchInfos for equality. If a <see cref="System.Object.ReferenceEquals"/> test
+		/// fails, their actual data is compared.
+		/// </summary>
+		/// <param name="first"></param>
+		/// <param name="second"></param>
+		/// <returns>True, if both BatchInfos can be considered equal, false if not.</returns>
 		public static bool operator ==(BatchInfo first, BatchInfo second)
 		{
 			if (object.ReferenceEquals(first, second)) return true;
@@ -211,6 +344,13 @@ namespace Duality.Resources
 
 			return true;
 		}
+		/// <summary>
+		/// Compares two BatchInfos for inequality. If a <see cref="System.Object.ReferenceEquals"/> test
+		/// fails, their actual data is compared.
+		/// </summary>
+		/// <param name="first"></param>
+		/// <param name="second"></param>
+		/// <returns>True, if both BatchInfos can be considered unequal, false if not.</returns>
 		public static bool operator !=(BatchInfo first, BatchInfo second)
 		{
 			return !(first == second);

@@ -9,28 +9,52 @@ using System.Reflection;
 
 namespace Duality.Resources
 {
+	/// <summary>
+	/// Prefab is short for "prefabricated object" and encapsulates a single <see cref="GameObject"/> that can serve as a template.
+	/// When creating a GameObject out of a Prefab, it maintains a connection to it using a <see cref="PrefabLink"/> object. This
+	/// ensures that changes made to the Prefab propagate to all of its instances as well. It also keeps track of Properties that
+	/// have been deliberately modified in the editor and restores them after re-applying the original Prefabs data.
+	/// </summary>
 	[Serializable]
 	public class Prefab : Resource
 	{
+		/// <summary>
+		/// A Prefab resources file extension.
+		/// </summary>
 		public new const string FileExt = ".Prefab" + Resource.FileExt;
-		public static readonly int[] IndexPath_Root = new int[0];
 
 		private	GameObject	objTree	= null;
 
+		/// <summary>
+		/// [GET] Returns whether this Prefab contains any data.
+		/// </summary>
 		public bool ContainsData
 		{
 			get { return this.objTree != null; }
 		}
 
+		/// <summary>
+		/// Creates a new, empty Prefab.
+		/// </summary>
 		public Prefab() : this(null) 
 		{
 
 		}
+		/// <summary>
+		/// Creates a new Prefab out of a GameObject.
+		/// </summary>
+		/// <param name="obj"></param>
 		public Prefab(GameObject obj)
 		{
 			this.Inject(obj);
 		}
 
+		/// <summary>
+		/// Discards previous data and injects the specified <see cref="GameObject"/> into the Prefab.
+		/// The GameObject itsself will not be affected, instead a <see cref="GameObject.Clone"/> of it
+		/// will be used for the Prefab.
+		/// </summary>
+		/// <param name="obj">The object to inject as Prefab root object.</param>
 		public void Inject(GameObject obj)
 		{
 			if (obj == null)
@@ -56,19 +80,40 @@ namespace Duality.Resources
 						child.BreakPrefabLink();
 			}
 		}
+		/// <summary>
+		/// Instantiates the Prefab.
+		/// </summary>
+		/// <returns>A new GameObject instance of this Prefab. It is connected to the Prefab by its <see cref="GameObject.PrefabLink"/>.</returns>
 		public GameObject Instantiate()
 		{
 			return new GameObject(new ContentRef<Prefab>(this));
 		}
+		/// <summary>
+		/// Copies this Prefabs data to a GameObject without linking itsself to it.
+		/// </summary>
+		/// <param name="obj">The GameObject to which the Prefabs data is copied.</param>
 		public void CopyTo(GameObject obj)
 		{
 			this.objTree.CopyTo(obj);
 		}
 
+		/// <summary>
+		/// Returns whether this Prefab contains a <see cref="GameObject"/> with the specified <see cref="GameObject.IndexPathOfChild">index path</see>.
+		/// It is based on this Prefabs root GameObject.
+		/// </summary>
+		/// <param name="indexPath">The <see cref="GameObject.IndexPathOfChild">index path</see> at which to search for a GameObject.</param>
+		/// <returns>True, if such child GameObjects exists, false if not.</returns>
 		public bool HasGameObject(IEnumerable<int> indexPath)
 		{
 			return this.objTree != null && this.objTree.ChildAtIndexPath(indexPath) != null;
 		}
+		/// <summary>
+		/// Returns whether this Prefab contains a <see cref="Component"/> inside a GameObject with the specified <see cref="GameObject.IndexPathOfChild">index path</see>.
+		/// It is based on this Prefabs root GameObject.
+		/// </summary>
+		/// <param name="gameObjIndexPath">The <see cref="GameObject.IndexPathOfChild">index path</see> at which to search for a GameObject.</param>
+		/// <param name="cmpType">The Component type to search for inside the found GameObject.</param>
+		/// <returns></returns>
 		public bool HasComponent(IEnumerable<int> gameObjIndexPath, Type cmpType)
 		{
 			if (this.objTree == null) return false;
@@ -86,6 +131,11 @@ namespace Duality.Resources
 		}
 	}
 
+	/// <summary>
+	/// Represents a <see cref="GameObject">GameObjects</see> connection to the <see cref="Prefab"/> it has been instanciated from.
+	/// </summary>
+	/// <seealso cref="Prefab"/>
+	/// <seealso cref="GameObject"/>
 	[Serializable]
 	public sealed class PrefabLink
 	{
@@ -109,14 +159,26 @@ namespace Duality.Resources
 		private	GameObject			obj;
 		private	List<VarMod>		changes;
 
+		/// <summary>
+		/// [GET] The GameObject this PrefabLink belongs to.
+		/// </summary>
 		public GameObject Obj
 		{
 			get { return this.obj; }
 		}
+		/// <summary>
+		/// [GET] The Prefab to which the GameObject is connected to.
+		/// </summary>
 		public ContentRef<Prefab> Prefab
 		{
 			get { return this.prefab; }
 		}
+		/// <summary>
+		/// [GET] If the connected GameObject is itsself contained within a hierarchy
+		/// of GameObjects which is affected by a higher PrefabLink, this link will be
+		/// returned.
+		/// </summary>
+		/// <seealso cref="GameObject.AffectedByPrefabLink"/>
 		public PrefabLink ParentLink
 		{
 			get
@@ -126,12 +188,39 @@ namespace Duality.Resources
 		}
 
 		private PrefabLink() : this(null, ContentRef<Prefab>.Null) {}
+		/// <summary>
+		/// Creates a new PrefabLink, connecting a GameObject to a Prefab.
+		/// </summary>
+		/// <param name="obj">The GameObject to link.</param>
+		/// <param name="prefab">The Prefab to connect the GameObject with.</param>
 		public PrefabLink(GameObject obj, ContentRef<Prefab> prefab)
 		{
 			this.obj = obj;
 			this.prefab = prefab;
 		}
 
+		/// <summary>
+		/// Relocates the internal change list from this PrefabLink to a different, hierarchially lower PrefabLink.
+		/// </summary>
+		/// <param name="other">
+		/// The PrefabLink to which to relocate changes. It needs to be hierarchially lower than
+		/// this one for the relocation to succeed.
+		/// </param>
+		/// <remarks>
+		/// <para>
+		/// In general, each PrefabLink is responsible for all hierarchially lower GameObjects. If one of them has
+		/// a PrefabLink on its own, then the higher PrefabLinks responsibility ends there.
+		/// </para>
+		/// <para>
+		/// Change relocation is done when linking an existing GameObject to a Prefab although it is already affected by a
+		/// hierarchially higher PrefabLink. In order to prevent both PrefabLinks to interfere with each other, 
+		/// all higher PrefabLink change list entries referring to that GameObject are relocated to the new, lower 
+		/// PrefabLink that is specifically targetting it.
+		/// </para>
+		/// <para>
+		/// This way, the above responsibility guideline remains applicable.
+		/// </para>
+		/// </remarks>
 		public void RelocateChanges(PrefabLink other)
 		{
 			if (this.changes == null || this.changes.Count == 0) return;
@@ -157,6 +246,12 @@ namespace Duality.Resources
 			}
 		}
 
+		/// <summary>
+		/// Clones the PrefabLink, but targets a different GameObject and Prefab.
+		/// </summary>
+		/// <param name="newObj">The GameObject which the clone is connected to.</param>
+		/// <param name="newPrefab">The Prefab which the clone will connect its GameObject to.</param>
+		/// <returns>A cloned version of this PrefabLink</returns>
 		public PrefabLink Clone(GameObject newObj, ContentRef<Prefab> newPrefab)
 		{
 			PrefabLink newLink = new PrefabLink(newObj, newPrefab);
@@ -168,15 +263,27 @@ namespace Duality.Resources
 			}
 			return newLink;
 		}
+		/// <summary>
+		/// Clones the PrefabLink, but targets a different GameObject.
+		/// </summary>
+		/// <param name="newObj">The GameObject which the clone is connected to.</param>
+		/// <returns>A cloned version of this PrefabLink</returns>
 		public PrefabLink Clone(GameObject newObj)
 		{
 			return this.Clone(newObj, this.prefab);
 		}
+		/// <summary>
+		/// Clones the PrefabLink.
+		/// </summary>
+		/// <returns>A cloned version of this PrefabLink</returns>
 		public PrefabLink Clone()
 		{
 			return this.Clone(this.obj, this.prefab);
 		}
-
+		
+		/// <summary>
+		/// Applies both Prefab and change list to this PrefabLinks GameObject.
+		/// </summary>
 		public void Apply()
 		{
 			this.Apply(true);
@@ -195,12 +302,21 @@ namespace Duality.Resources
 				}
 			}
 		}
+		/// <summary>
+		/// Applies the Prefab to this PrefabLinks GameObject. This will overwrite
+		/// all of its existing data and establish the state as defined in the Prefab.
+		/// </summary>
 		public void ApplyPrefab()
 		{
 			if (!this.prefab.IsAvailable) return;
 			if (!this.prefab.Res.ContainsData) return;
 			this.prefab.Res.CopyTo(this.obj);
 		}
+		/// <summary>
+		/// Applies this PrefabLinks change list to its GameObject. This will restore
+		/// all deliberate modifications (made in the editor) of the GameObjects Properties 
+		/// after linking it to the Prefab.
+		/// </summary>
 		public void ApplyChanges()
 		{
 			if (this.changes == null || this.changes.Count == 0) return;
@@ -218,6 +334,9 @@ namespace Duality.Resources
 				this.changes[i].prop.SetValue(target, this.changes[i].val, null);
 			}
 		}
+		/// <summary>
+		/// Updates all existing change list entries by the GameObjects current Property values.
+		/// </summary>
 		public void UpdateChanges()
 		{
 			if (this.changes == null || this.changes.Count == 0) return;
@@ -238,6 +357,12 @@ namespace Duality.Resources
 			}
 		}
 
+		/// <summary>
+		/// Creates a new change list entry.
+		/// </summary>
+		/// <param name="target">The target object in which the change has been made. Must be a GameObject or Component.</param>
+		/// <param name="prop">The target objects <see cref="System.Reflection.PropertyInfo">Property</see> that has been changed.</param>
+		/// <param name="value">The value to which the specified Property has been changed to.</param>
 		public void PushChange(object target, PropertyInfo prop, object value)
 		{
 			if (ReflectionHelper.MemberInfoEquals(prop, ReflectionInfo.Property_GameObject_Parent)) return; // Reject changing "Parent" as it would destroy the PrefabLink
@@ -257,20 +382,28 @@ namespace Duality.Resources
 			VarMod change;
 			change.childIndex		= this.obj.IndexPathOfChild(targetObj);
 			change.componentType	= (targetComp != null) ? targetComp.GetType() : null;
-			change.prop			= prop;
+			change.prop				= prop;
 			change.val				= value;
 
-			this.PopChange(target, prop);
+			this.PopChange(change.childIndex, prop);
 			this.changes.Add(change);
 		}
+		/// <summary>
+		/// Creates a new change list entry.
+		/// </summary>
+		/// <param name="target">The target object in which the change has been made. Must be a GameObject or Component.</param>
+		/// <param name="prop">The target objects <see cref="System.Reflection.PropertyInfo">Property</see> that has been changed.</param>
 		public void PushChange(object target, PropertyInfo prop)
 		{
 			this.PushChange(target, prop, prop.GetValue(target, null));
 		}
+		/// <summary>
+		/// Removes an existing change list entry.
+		/// </summary>
+		/// <param name="target">The target object in which the change has been made. Must be a GameObject or Component.</param>
+		/// <param name="prop">The target objects <see cref="System.Reflection.PropertyInfo">Property</see> that has been changed.</param>
 		public void PopChange(object target, PropertyInfo prop)
 		{
-			if (this.changes == null || this.changes.Count == 0) return;
-
 			GameObject targetObj = target as GameObject;
 			Component targetComp = target as Component;
 			if (targetObj == null && targetComp != null) targetObj = targetComp.gameobj;
@@ -278,16 +411,26 @@ namespace Duality.Resources
 			if (targetObj == null) 
 				throw new ArgumentException("Target object is not a valid child of this PrefabLinks GameObject", "target");
 
-			List<int> indexPath = this.obj.IndexPathOfChild(targetObj);
+			this.PopChange(this.obj.IndexPathOfChild(targetObj), prop);
+		}
+		private void PopChange(IEnumerable<int> indexPath, PropertyInfo prop)
+		{
+			if (this.changes == null || this.changes.Count == 0) return;
 			for (int i = 0; i < this.changes.Count; i++)
 			{
-				if (this.changes[i].childIndex.SequenceEqual(indexPath) && this.changes[i].prop == prop)
+				if (this.changes[i].prop == prop && this.changes[i].childIndex.SequenceEqual(indexPath))
 				{
 					this.changes.RemoveAt(i);
 					break;
 				}
 			}
 		}
+		/// <summary>
+		/// Returns whether there is a specific change list entry.
+		/// </summary>
+		/// <param name="target">The target object in which the change has been made. Must be a GameObject or Component.</param>
+		/// <param name="prop">The target objects <see cref="System.Reflection.PropertyInfo">Property</see> that has been changed.</param>
+		/// <returns>True, if such change list entry exists, false if not.</returns>
 		public bool HasChange(object target, PropertyInfo prop)
 		{
 			if (this.changes == null || this.changes.Count == 0) return false;
@@ -308,20 +451,39 @@ namespace Duality.Resources
 
 			return false;
 		}
+		/// <summary>
+		/// Clears the change list.
+		/// </summary>
 		public void ClearChanges()
 		{
 			if (this.changes != null) this.changes.Clear();
 		}
 
+		/// <summary>
+		/// Returns whether a specific object is affected by this PrefabLink.
+		/// </summary>
+		/// <param name="cmp"></param>
+		/// <returns></returns>
 		public bool AffectsObject(Component cmp)
 		{
 			return this.prefab.IsAvailable && this.prefab.Res.HasComponent(this.obj.IndexPathOfChild(cmp.GameObj), cmp.GetType());
 		}
+		/// <summary>
+		/// Returns whether a specific object is affected by this PrefabLink.
+		/// </summary>
+		/// <param name="cmp"></param>
+		/// <returns></returns>
 		public bool AffectsObject(GameObject obj)
 		{
 			return this.prefab.IsAvailable && this.prefab.Res.HasGameObject(this.obj.IndexPathOfChild(obj));
 		}
 
+		/// <summary>
+		/// Applies all PrefabLinks in a set of GameObjects. 
+		/// </summary>
+		/// <param name="objEnum">An enumeration of all GameObjects containing PrefabLinks that are to <see cref="Apply">apply</see>.</param>
+		/// <param name="predicate">An optional predicate. If set, only PrefabLinks meeting its requirements are applied.</param>
+		/// <returns>A List of all PrefabLinks that have been applied.</returns>
 		public static List<PrefabLink> ApplyAllLinks(IEnumerable<GameObject> objEnum, Predicate<PrefabLink> predicate = null)
 		{
 			if (predicate == null) predicate = p => true;

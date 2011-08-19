@@ -35,12 +35,12 @@ namespace Duality.Resources
 		public const string ContentPath_SmoothAnim	= VirtualContentPath + "SmoothAnim";
 
 		/// <summary>
-		/// [GET] Provides access to a minimal VertexShader. It performs OpenGLs default transformation
+		/// [GET] A minimal VertexShader. It performs OpenGLs default transformation
 		/// and forwards a single texture coordinate and color to the fragment stage.
 		/// </summary>
 		public static ContentRef<VertexShader> Minimal		{ get; private set; }
 		/// <summary>
-		/// [GET] Provides access to the SmoothAnim VertexShader. In addition to the <see cref="Minimal"/>
+		/// [GET] The SmoothAnim VertexShader. In addition to the <see cref="Minimal"/>
 		/// setup, it forwards the custom animBlend vertex attribute to the fragment stage.
 		/// </summary>
 		public static ContentRef<VertexShader> SmoothAnim	{ get; private set; }

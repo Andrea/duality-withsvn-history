@@ -42,15 +42,15 @@ namespace Duality.Resources
 		public const string ContentPath_LogoJingle	= VirtualContentPath + "LogoJingle";
 		
 		/// <summary>
-		/// [GET] Provides access to a simple beep AudioData.
+		/// [GET] A simple beep AudioData.
 		/// </summary>
 		public static ContentRef<AudioData> Beep		{ get; private set; }
 		/// <summary>
-		/// [GET] Provides access to a drone loop AudioData. This is stereo data.
+		/// [GET] A drone loop AudioData. This is stereo data.
 		/// </summary>
 		public static ContentRef<AudioData> DroneLoop	{ get; private set; }
 		/// <summary>
-		/// [GET] Provides access to a logo jingle AudioData. This is stereo data.
+		/// [GET] A logo jingle AudioData. This is stereo data.
 		/// </summary>
 		public static ContentRef<AudioData> LogoJingle	{ get; private set; }
 

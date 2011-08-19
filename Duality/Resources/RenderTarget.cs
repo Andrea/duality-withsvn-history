@@ -13,20 +13,40 @@ using GLPixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 
 namespace Duality.Resources
 {
+	/// <summary>
+	/// Instead of rendering to screen, RenderTargets can serve as an alternative drawing surface for a <see cref="Duality.Components.Camera"/>.
+	/// The image is applied to one or several <see cref="Duality.Resources.Texture">Textures</see>. By default, only the first attached Texture
+	/// is actually used, but you can use a custom <see cref="Duality.Resources.FragmentShader"/> to use all available Textures for storing
+	/// information.
+	/// </summary>
+	/// <seealso cref="Duality.Resources.Texture"/>
 	[Serializable]
 	public class RenderTarget : Resource
 	{
+		/// <summary>
+		/// A RenderTarget resources file extension.
+		/// </summary>
 		public new const string FileExt = ".RenderTarget" + Resource.FileExt;
-
+		
+		/// <summary>
+		/// Refers to a null reference RenderTarget.
+		/// </summary>
+		/// <seealso cref="ContentRef{T}.Null"/>
 		public static readonly ContentRef<RenderTarget> None = ContentRef<RenderTarget>.Null;
 
 		private static int			maxFboSamples	= -1;
 		private	static RenderTarget curBound		= null;
 
+		/// <summary>
+		/// [GET] The currently bound RenderTarget
+		/// </summary>
 		public static ContentRef<RenderTarget> BoundRT
 		{
 			get { return new ContentRef<RenderTarget>(curBound); }
 		}
+		/// <summary>
+		/// [GET] The maximum number of available <see cref="Multisampled">Antialiazing</see> samples.
+		/// </summary>
 		public static int MaxRenderTargetSamples
 		{
 			get 
@@ -36,6 +56,10 @@ namespace Duality.Resources
 			}
 		}
 
+		/// <summary>
+		/// Binds a RenderTarget in order to use it.
+		/// </summary>
+		/// <param name="target">The RenderTarget to be bound.</param>
 		public static void Bind(ContentRef<RenderTarget> target)
 		{
 			RenderTarget nextBound = target.IsExplicitNull ? null : target.Res;
@@ -157,6 +181,9 @@ namespace Duality.Resources
 		[NonSerialized] private	int	glRboIdDepth;
 		[NonSerialized] private	int	glFboIdMSAA;
 
+		/// <summary>
+		/// [GET / SET] Whether this RenderTarget is multisampled.
+		/// </summary>
 		public bool Multisampled
 		{
 			get { return this.multisample; }
@@ -170,6 +197,10 @@ namespace Duality.Resources
 				}
 			}
 		}
+		/// <summary>
+		/// [GET / SET] An array of <see cref="Duality.Resources.Texture">Textures</see> used as data
+		/// destination by this RenderTarget.
+		/// </summary>
 		public ContentRef<Texture>[] Targets
 		{
 			get { return this.targetInfo.Select(i => i.target).ToArray(); }
@@ -181,30 +212,54 @@ namespace Duality.Resources
 				this.SetupOpenGLRes();
 			}
 		}
+		/// <summary>
+		/// [GET] Width of this RenderTarget. This values is derived by its <see cref="Targets"/>.
+		/// </summary>
 		public int Width
 		{
 			get { return this.targetInfo.FirstOrDefault().target.IsAvailable ? this.targetInfo.FirstOrDefault().target.Res.PxWidth : 0; }
 		}
+		/// <summary>
+		/// [GET] Height of this RenderTarget. This values is derived by its <see cref="Targets"/>.
+		/// </summary>
 		public int Height
 		{
 			get { return this.targetInfo.FirstOrDefault().target.IsAvailable ? this.targetInfo.FirstOrDefault().target.Res.PxHeight : 0; }
 		}
+		/// <summary>
+		/// [GET] UVRatio of this RenderTarget. This values is derived by its <see cref="Targets"/>.
+		/// </summary>
 		public Vector2 UVRatio
 		{
 			get { return this.targetInfo.FirstOrDefault().target.IsAvailable ? this.targetInfo.FirstOrDefault().target.Res.UVRatio : Vector2.One; }
 		}
+		/// <summary>
+		/// [GET] The number of <see cref="Multisampled">Antialiazing</see> samples this RenderTarget uses.
+		/// </summary>
 		public int Samples
 		{
 			get { return this.samples; }
 		}
 
+		/// <summary>
+		/// Creates a new, empty RenderTarget
+		/// </summary>
 		public RenderTarget() : this(true, null) {}
+		/// <summary>
+		/// Creates a new RenderTarget based on a set of <see cref="Duality.Resources.Texture">Textures</see>
+		/// </summary>
+		/// <param name="multisample">Indicates whether <see cref="Multisampled">Multisampling</see> in reqested.</param>
+		/// <param name="targets">An array of <see cref="Duality.Resources.Texture">Textures</see> used as data destination.</param>
 		public RenderTarget(bool multisample, params ContentRef<Texture>[] targets)
 		{
 			this.multisample = multisample;
 			if (targets != null) foreach (var t in targets) this.targetInfo.Add(new TargetInfo(t));
 			this.SetupOpenGLRes();
 		}
+
+		/// <summary>
+		/// Frees up any OpenGL resources that this RenderTarget might have occupied.
+		/// </summary>
 		public void FreeOpenGLRes()
 		{
 			if (this.glFboId != 0)
@@ -233,6 +288,9 @@ namespace Duality.Resources
 				this.targetInfo[i] = infoTemp;
 			}
 		}
+		/// <summary>
+		/// Sets up all necessary OpenGL resources for this RenderTarget.
+		/// </summary>
 		public void SetupOpenGLRes()
 		{
 			if (this.multisample)

@@ -1568,17 +1568,17 @@
         </member>
         <member name="P:Duality.Resources.Sound.Beep">
             <summary>
-            [GET] Provides access to a simple beep Sound.
+            [GET] A simple beep Sound.
             </summary>
         </member>
         <member name="P:Duality.Resources.Sound.DroneLoop">
             <summary>
-            [GET] Provides access to a drone loop Sound. Since this is a stereo Sound, it will always be played 2D.
+            [GET] A drone loop Sound. Since this is a stereo Sound, it will always be played 2D.
             </summary>
         </member>
         <member name="P:Duality.Resources.Sound.LogoJingle">
             <summary>
-            [GET] Provides access to a logo jingle Sound. Since this is a stereo Sound, it will always be played 2D.
+            [GET] A logo jingle Sound. Since this is a stereo Sound, it will always be played 2D.
             </summary>
         </member>
         <member name="P:Duality.Resources.Sound.Data">
@@ -1779,6 +1779,214 @@
             with the highest priority is picked.
             </summary>
         </member>
+        <member name="T:Duality.Resources.Material">
+            <summary>
+            Materials are standardized <see cref="T:Duality.Resources.BatchInfo">BatchInfos</see>, stored as a Resource. 
+            Just like BatchInfo objects, they describe how an object, represented by a set of vertices, 
+            looks like. Using Materials is generally more performant than using BatchInfos but not always
+            reasonable, for example when there is a single, unique GameObject with a special appearance:
+            This is a typical <see cref="T:Duality.Resources.BatchInfo"/> case.
+            </summary>
+            <seealso cref="T:Duality.Resources.BatchInfo"/>
+        </member>
+        <member name="F:Duality.Resources.Material.FileExt">
+            <summary>
+            A Material resources file extension.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Material.VirtualContentPath">
+            <summary>
+            (Virtual) base path for Duality's embedded default Materials.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Material.ContentPath_SolidWhite">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.Material.SolidWhite"/> Material.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Material.ContentPath_InvertWhite">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.Material.InvertWhite"/> Material.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Material.ContentPath_DualityLogo256">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.Material.DualityLogo256"/> Material.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Material.ContentPath_DualityLogoB256">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.Material.DualityLogoB256"/> Material.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.Material.#ctor">
+            <summary>
+            Creates a new Material
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.Material.#ctor(Duality.ContentRef{Duality.Resources.DrawTechnique},Duality.ColorFormat.ColorRgba,Duality.ContentRef{Duality.Resources.Texture})">
+            <summary>
+            Creates a new single-texture Material.
+            </summary>
+            <param name="technique">The <see cref="T:Duality.Resources.DrawTechnique"/> to use.</param>
+            <param name="mainColor">The <see cref="P:Duality.Resources.Material.MainColor"/> to use.</param>
+            <param name="mainTex">The main <see cref="T:Duality.Resources.Texture"/> to use.</param>
+        </member>
+        <member name="M:Duality.Resources.Material.#ctor(Duality.ContentRef{Duality.Resources.DrawTechnique},Duality.ColorFormat.ColorRgba,System.Collections.Generic.Dictionary{System.String,Duality.ContentRef{Duality.Resources.Texture}},System.Collections.Generic.Dictionary{System.String,System.Single[]})">
+            <summary>
+            Creates a new complex Material.
+            </summary>
+            <param name="technique">The <see cref="T:Duality.Resources.DrawTechnique"/> to use.</param>
+            <param name="mainColor">The <see cref="P:Duality.Resources.Material.MainColor"/> to use.</param>
+            <param name="textures">A set of <see cref="T:Duality.Resources.Texture">Textures</see> to use.</param>
+            <param name="uniforms">A set of <see cref="T:Duality.Resources.ShaderVarInfo">uniform values</see> to use.</param>
+        </member>
+        <member name="P:Duality.Resources.Material.SolidWhite">
+            <summary>
+            A solid, white Material.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Material.InvertWhite">
+            <summary>
+            A Material that inverts its background.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Material.DualityLogo256">
+            <summary>
+            A Material showing the Duality logo.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Material.DualityLogoB256">
+            <summary>
+            A Material showing the Duality logo, but without the text on it.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Material.Info">
+            <summary>
+            [GET] Returns a newly created <see cref="T:Duality.Resources.BatchInfo"/> that visually equals this Material.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Material.Technique">
+            <summary>
+            [GET / SET] The <see cref="T:Duality.Resources.DrawTechnique"/> that is used.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Material.MainColor">
+            <summary>
+            [GET / SET] The main color, typically used for coloring displayed vertices.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Material.Textures">
+            <summary>
+            [GET / SET] A set of <see cref="T:Duality.Resources.Texture">Textures</see> to use.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Material.Uniforms">
+            <summary>
+            [GET / SET] A set of <see cref="T:Duality.Resources.ShaderVarInfo">uniform values</see> to use.
+            </summary>
+        </member>
+        <member name="T:Duality.Resources.BatchInfo">
+            <summary>
+            BatchInfos describe how an object, represented by a set of vertices, looks like.
+            </summary>
+            <seealso cref="T:Duality.Resources.Material"/>
+        </member>
+        <member name="M:Duality.Resources.BatchInfo.#ctor">
+            <summary>
+            Creates a new, empty BatchInfo.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.BatchInfo.#ctor(Duality.Resources.Material)">
+            <summary>
+            Creates a new BatchInfo based on an existing <see cref="T:Duality.Resources.Material"/>.
+            </summary>
+            <param name="source"></param>
+        </member>
+        <member name="M:Duality.Resources.BatchInfo.#ctor(Duality.Resources.BatchInfo)">
+            <summary>
+            Creates a new BatchInfo based on an existing BatchInfo. This is essentially a copy constructor.
+            </summary>
+            <param name="source"></param>
+        </member>
+        <member name="M:Duality.Resources.BatchInfo.#ctor(Duality.ContentRef{Duality.Resources.DrawTechnique},Duality.ColorFormat.ColorRgba,Duality.ContentRef{Duality.Resources.Texture})">
+            <summary>
+            Creates a new single-texture BatchInfo.
+            </summary>
+            <param name="technique">The <see cref="T:Duality.Resources.DrawTechnique"/> to use.</param>
+            <param name="mainColor">The <see cref="P:Duality.Resources.BatchInfo.MainColor"/> to use.</param>
+            <param name="mainTex">The main <see cref="T:Duality.Resources.Texture"/> to use.</param>
+        </member>
+        <member name="M:Duality.Resources.BatchInfo.#ctor(Duality.ContentRef{Duality.Resources.DrawTechnique},Duality.ColorFormat.ColorRgba,System.Collections.Generic.Dictionary{System.String,Duality.ContentRef{Duality.Resources.Texture}},System.Collections.Generic.Dictionary{System.String,System.Single[]})">
+            <summary>
+            Creates a new complex BatchInfo.
+            </summary>
+            <param name="technique">The <see cref="T:Duality.Resources.DrawTechnique"/> to use.</param>
+            <param name="mainColor">The <see cref="P:Duality.Resources.BatchInfo.MainColor"/> to use.</param>
+            <param name="textures">A set of <see cref="T:Duality.Resources.Texture">Textures</see> to use.</param>
+            <param name="uniforms">A set of <see cref="T:Duality.Resources.ShaderVarInfo">uniform values</see> to use.</param>
+        </member>
+        <member name="M:Duality.Resources.BatchInfo.CopyTo(Duality.Resources.BatchInfo)">
+            <summary>
+            Copies this BatchInfo's data to a different one.
+            </summary>
+            <param name="info">The target BatchInfo to copy data to.</param>
+        </member>
+        <member name="M:Duality.Resources.BatchInfo.SetupForRendering(Duality.Resources.BatchInfo)">
+            <summary>
+            Sets up the appropriate OpenGL rendering state to render vertices using this BatchInfo.
+            </summary>
+            <param name="lastInfo">
+            The BatchInfo that has been used to set up the current OpenGL state. This parameter is
+            optional but supplying it will improve rendering performance by reducing redundant
+            state changes.
+            </param>
+        </member>
+        <member name="M:Duality.Resources.BatchInfo.FinishRendering">
+            <summary>
+            Resets the OpenGL rendering state. This should only be called if there are no more
+            BatchInfos to be set up directy after this one, i.e. if this is the last BatchInfo
+            that has been rendered so far.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.BatchInfo.op_Equality(Duality.Resources.BatchInfo,Duality.Resources.BatchInfo)">
+            <summary>
+            Compares two BatchInfos for equality. If a <see cref="M:System.Object.ReferenceEquals(System.Object,System.Object)"/> test
+            fails, their actual data is compared.
+            </summary>
+            <param name="first"></param>
+            <param name="second"></param>
+            <returns>True, if both BatchInfos can be considered equal, false if not.</returns>
+        </member>
+        <member name="M:Duality.Resources.BatchInfo.op_Inequality(Duality.Resources.BatchInfo,Duality.Resources.BatchInfo)">
+            <summary>
+            Compares two BatchInfos for inequality. If a <see cref="M:System.Object.ReferenceEquals(System.Object,System.Object)"/> test
+            fails, their actual data is compared.
+            </summary>
+            <param name="first"></param>
+            <param name="second"></param>
+            <returns>True, if both BatchInfos can be considered unequal, false if not.</returns>
+        </member>
+        <member name="P:Duality.Resources.BatchInfo.Technique">
+            <summary>
+            [GET / SET] The <see cref="T:Duality.Resources.DrawTechnique"/> that is used.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.BatchInfo.MainColor">
+            <summary>
+            [GET / SET] The main color, typically used for coloring displayed vertices.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.BatchInfo.Textures">
+            <summary>
+            [GET / SET] A set of <see cref="T:Duality.Resources.Texture">Textures</see> to use.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.BatchInfo.Uniforms">
+            <summary>
+            [GET / SET] A set of <see cref="T:Duality.Resources.ShaderVarInfo">uniform values</see> to use.
+            </summary>
+        </member>
         <member name="T:Duality.Resources.VertexShader">
             <summary>
             Represents an OpenGL VertexShader.
@@ -1866,13 +2074,13 @@
         </member>
         <member name="P:Duality.Resources.VertexShader.Minimal">
             <summary>
-            [GET] Provides access to a minimal VertexShader. It performs OpenGLs default transformation
+            [GET] A minimal VertexShader. It performs OpenGLs default transformation
             and forwards a single texture coordinate and color to the fragment stage.
             </summary>
         </member>
         <member name="P:Duality.Resources.VertexShader.SmoothAnim">
             <summary>
-            [GET] Provides access to the SmoothAnim VertexShader. In addition to the <see cref="P:Duality.Resources.VertexShader.Minimal"/>
+            [GET] The SmoothAnim VertexShader. In addition to the <see cref="P:Duality.Resources.VertexShader.Minimal"/>
             setup, it forwards the custom animBlend vertex attribute to the fragment stage.
             </summary>
         </member>
@@ -1987,6 +2195,95 @@
         <member name="P:Duality.Time.FrameCount">
             <summary>
             [GET] The number of frames passed since startup
+            </summary>
+        </member>
+        <member name="T:Duality.Resources.RenderTarget">
+            <summary>
+            Instead of rendering to screen, RenderTargets can serve as an alternative drawing surface for a <see cref="T:Duality.Components.Camera"/>.
+            The image is applied to one or several <see cref="T:Duality.Resources.Texture">Textures</see>. By default, only the first attached Texture
+            is actually used, but you can use a custom <see cref="T:Duality.Resources.FragmentShader"/> to use all available Textures for storing
+            information.
+            </summary>
+            <seealso cref="T:Duality.Resources.Texture"/>
+        </member>
+        <member name="F:Duality.Resources.RenderTarget.FileExt">
+            <summary>
+            A RenderTarget resources file extension.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.RenderTarget.None">
+            <summary>
+            Refers to a null reference RenderTarget.
+            </summary>
+            <seealso cref="F:Duality.ContentRef`1.Null"/>
+        </member>
+        <member name="M:Duality.Resources.RenderTarget.Bind(Duality.ContentRef{Duality.Resources.RenderTarget})">
+            <summary>
+            Binds a RenderTarget in order to use it.
+            </summary>
+            <param name="target">The RenderTarget to be bound.</param>
+        </member>
+        <member name="M:Duality.Resources.RenderTarget.#ctor">
+            <summary>
+            Creates a new, empty RenderTarget
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.RenderTarget.#ctor(System.Boolean,Duality.ContentRef{Duality.Resources.Texture}[])">
+            <summary>
+            Creates a new RenderTarget based on a set of <see cref="T:Duality.Resources.Texture">Textures</see>
+            </summary>
+            <param name="multisample">Indicates whether <see cref="P:Duality.Resources.RenderTarget.Multisampled">Multisampling</see> in reqested.</param>
+            <param name="targets">An array of <see cref="T:Duality.Resources.Texture">Textures</see> used as data destination.</param>
+        </member>
+        <member name="M:Duality.Resources.RenderTarget.FreeOpenGLRes">
+            <summary>
+            Frees up any OpenGL resources that this RenderTarget might have occupied.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.RenderTarget.SetupOpenGLRes">
+            <summary>
+            Sets up all necessary OpenGL resources for this RenderTarget.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.RenderTarget.BoundRT">
+            <summary>
+            [GET] The currently bound RenderTarget
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.RenderTarget.MaxRenderTargetSamples">
+            <summary>
+            [GET] The maximum number of available <see cref="P:Duality.Resources.RenderTarget.Multisampled">Antialiazing</see> samples.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.RenderTarget.Multisampled">
+            <summary>
+            [GET / SET] Whether this RenderTarget is multisampled.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.RenderTarget.Targets">
+            <summary>
+            [GET / SET] An array of <see cref="T:Duality.Resources.Texture">Textures</see> used as data
+            destination by this RenderTarget.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.RenderTarget.Width">
+            <summary>
+            [GET] Width of this RenderTarget. This values is derived by its <see cref="P:Duality.Resources.RenderTarget.Targets"/>.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.RenderTarget.Height">
+            <summary>
+            [GET] Height of this RenderTarget. This values is derived by its <see cref="P:Duality.Resources.RenderTarget.Targets"/>.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.RenderTarget.UVRatio">
+            <summary>
+            [GET] UVRatio of this RenderTarget. This values is derived by its <see cref="P:Duality.Resources.RenderTarget.Targets"/>.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.RenderTarget.Samples">
+            <summary>
+            [GET] The number of <see cref="P:Duality.Resources.RenderTarget.Multisampled">Antialiazing</see> samples this RenderTarget uses.
             </summary>
         </member>
         <member name="T:Duality.LogOutputFormat">
@@ -2340,6 +2637,229 @@
             As CSCodeIdent, but shortened to Keywords
             </summary>
         </member>
+        <member name="T:Duality.Resources.Prefab">
+            <summary>
+            Prefab is short for "prefabricated object" and encapsulates a single <see cref="T:Duality.GameObject"/> that can serve as a template.
+            When creating a GameObject out of a Prefab, it maintains a connection to it using a <see cref="T:Duality.Resources.PrefabLink"/> object. This
+            ensures that changes made to the Prefab propagate to all of its instances as well. It also keeps track of Properties that
+            have been deliberately modified in the editor and restores them after re-applying the original Prefabs data.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Prefab.FileExt">
+            <summary>
+            A Prefab resources file extension.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.Prefab.#ctor">
+            <summary>
+            Creates a new, empty Prefab.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.Prefab.#ctor(Duality.GameObject)">
+            <summary>
+            Creates a new Prefab out of a GameObject.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Resources.Prefab.Inject(Duality.GameObject)">
+            <summary>
+            Discards previous data and injects the specified <see cref="T:Duality.GameObject"/> into the Prefab.
+            The GameObject itsself will not be affected, instead a <see cref="M:Duality.GameObject.Clone"/> of it
+            will be used for the Prefab.
+            </summary>
+            <param name="obj">The object to inject as Prefab root object.</param>
+        </member>
+        <member name="M:Duality.Resources.Prefab.Instantiate">
+            <summary>
+            Instantiates the Prefab.
+            </summary>
+            <returns>A new GameObject instance of this Prefab. It is connected to the Prefab by its <see cref="P:Duality.GameObject.PrefabLink"/>.</returns>
+        </member>
+        <member name="M:Duality.Resources.Prefab.CopyTo(Duality.GameObject)">
+            <summary>
+            Copies this Prefabs data to a GameObject without linking itsself to it.
+            </summary>
+            <param name="obj">The GameObject to which the Prefabs data is copied.</param>
+        </member>
+        <member name="M:Duality.Resources.Prefab.HasGameObject(System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Returns whether this Prefab contains a <see cref="T:Duality.GameObject"/> with the specified <see cref="M:Duality.GameObject.IndexPathOfChild(Duality.GameObject)">index path</see>.
+            It is based on this Prefabs root GameObject.
+            </summary>
+            <param name="indexPath">The <see cref="M:Duality.GameObject.IndexPathOfChild(Duality.GameObject)">index path</see> at which to search for a GameObject.</param>
+            <returns>True, if such child GameObjects exists, false if not.</returns>
+        </member>
+        <member name="M:Duality.Resources.Prefab.HasComponent(System.Collections.Generic.IEnumerable{System.Int32},System.Type)">
+            <summary>
+            Returns whether this Prefab contains a <see cref="T:Duality.Component"/> inside a GameObject with the specified <see cref="M:Duality.GameObject.IndexPathOfChild(Duality.GameObject)">index path</see>.
+            It is based on this Prefabs root GameObject.
+            </summary>
+            <param name="gameObjIndexPath">The <see cref="M:Duality.GameObject.IndexPathOfChild(Duality.GameObject)">index path</see> at which to search for a GameObject.</param>
+            <param name="cmpType">The Component type to search for inside the found GameObject.</param>
+            <returns></returns>
+        </member>
+        <member name="P:Duality.Resources.Prefab.ContainsData">
+            <summary>
+            [GET] Returns whether this Prefab contains any data.
+            </summary>
+        </member>
+        <member name="T:Duality.Resources.PrefabLink">
+            <summary>
+            Represents a <see cref="T:Duality.GameObject">GameObjects</see> connection to the <see cref="P:Duality.Resources.PrefabLink.Prefab"/> it has been instanciated from.
+            </summary>
+            <seealso cref="P:Duality.Resources.PrefabLink.Prefab"/>
+            <seealso cref="T:Duality.GameObject"/>
+        </member>
+        <member name="M:Duality.Resources.PrefabLink.#ctor(Duality.GameObject,Duality.ContentRef{Duality.Resources.Prefab})">
+            <summary>
+            Creates a new PrefabLink, connecting a GameObject to a Prefab.
+            </summary>
+            <param name="obj">The GameObject to link.</param>
+            <param name="prefab">The Prefab to connect the GameObject with.</param>
+        </member>
+        <member name="M:Duality.Resources.PrefabLink.RelocateChanges(Duality.Resources.PrefabLink)">
+            <summary>
+            Relocates the internal change list from this PrefabLink to a different, hierarchially lower PrefabLink.
+            </summary>
+            <param name="other">
+            The PrefabLink to which to relocate changes. It needs to be hierarchially lower than
+            this one for the relocation to succeed.
+            </param>
+            <remarks>
+            <para>
+            In general, each PrefabLink is responsible for all hierarchially lower GameObjects. If one of them has
+            a PrefabLink on its own, then the higher PrefabLinks responsibility ends there.
+            </para>
+            <para>
+            Change relocation is done when linking an existing GameObject to a Prefab although it is already affected by a
+            hierarchially higher PrefabLink. In order to prevent both PrefabLinks to interfere with each other, 
+            all higher PrefabLink change list entries referring to that GameObject are relocated to the new, lower 
+            PrefabLink that is specifically targetting it.
+            </para>
+            <para>
+            This way, the above responsibility guideline remains applicable.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Duality.Resources.PrefabLink.Clone(Duality.GameObject,Duality.ContentRef{Duality.Resources.Prefab})">
+            <summary>
+            Clones the PrefabLink, but targets a different GameObject and Prefab.
+            </summary>
+            <param name="newObj">The GameObject which the clone is connected to.</param>
+            <param name="newPrefab">The Prefab which the clone will connect its GameObject to.</param>
+            <returns>A cloned version of this PrefabLink</returns>
+        </member>
+        <member name="M:Duality.Resources.PrefabLink.Clone(Duality.GameObject)">
+            <summary>
+            Clones the PrefabLink, but targets a different GameObject.
+            </summary>
+            <param name="newObj">The GameObject which the clone is connected to.</param>
+            <returns>A cloned version of this PrefabLink</returns>
+        </member>
+        <member name="M:Duality.Resources.PrefabLink.Clone">
+            <summary>
+            Clones the PrefabLink.
+            </summary>
+            <returns>A cloned version of this PrefabLink</returns>
+        </member>
+        <member name="M:Duality.Resources.PrefabLink.Apply">
+            <summary>
+            Applies both Prefab and change list to this PrefabLinks GameObject.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.PrefabLink.ApplyPrefab">
+            <summary>
+            Applies the Prefab to this PrefabLinks GameObject. This will overwrite
+            all of its existing data and establish the state as defined in the Prefab.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.PrefabLink.ApplyChanges">
+            <summary>
+            Applies this PrefabLinks change list to its GameObject. This will restore
+            all deliberate modifications (made in the editor) of the GameObjects Properties 
+            after linking it to the Prefab.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.PrefabLink.UpdateChanges">
+            <summary>
+            Updates all existing change list entries by the GameObjects current Property values.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.PrefabLink.PushChange(System.Object,System.Reflection.PropertyInfo,System.Object)">
+            <summary>
+            Creates a new change list entry.
+            </summary>
+            <param name="target">The target object in which the change has been made. Must be a GameObject or Component.</param>
+            <param name="prop">The target objects <see cref="T:System.Reflection.PropertyInfo">Property</see> that has been changed.</param>
+            <param name="value">The value to which the specified Property has been changed to.</param>
+        </member>
+        <member name="M:Duality.Resources.PrefabLink.PushChange(System.Object,System.Reflection.PropertyInfo)">
+            <summary>
+            Creates a new change list entry.
+            </summary>
+            <param name="target">The target object in which the change has been made. Must be a GameObject or Component.</param>
+            <param name="prop">The target objects <see cref="T:System.Reflection.PropertyInfo">Property</see> that has been changed.</param>
+        </member>
+        <member name="M:Duality.Resources.PrefabLink.PopChange(System.Object,System.Reflection.PropertyInfo)">
+            <summary>
+            Removes an existing change list entry.
+            </summary>
+            <param name="target">The target object in which the change has been made. Must be a GameObject or Component.</param>
+            <param name="prop">The target objects <see cref="T:System.Reflection.PropertyInfo">Property</see> that has been changed.</param>
+        </member>
+        <member name="M:Duality.Resources.PrefabLink.HasChange(System.Object,System.Reflection.PropertyInfo)">
+            <summary>
+            Returns whether there is a specific change list entry.
+            </summary>
+            <param name="target">The target object in which the change has been made. Must be a GameObject or Component.</param>
+            <param name="prop">The target objects <see cref="T:System.Reflection.PropertyInfo">Property</see> that has been changed.</param>
+            <returns>True, if such change list entry exists, false if not.</returns>
+        </member>
+        <member name="M:Duality.Resources.PrefabLink.ClearChanges">
+            <summary>
+            Clears the change list.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.PrefabLink.AffectsObject(Duality.Component)">
+            <summary>
+            Returns whether a specific object is affected by this PrefabLink.
+            </summary>
+            <param name="cmp"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Resources.PrefabLink.AffectsObject(Duality.GameObject)">
+            <summary>
+            Returns whether a specific object is affected by this PrefabLink.
+            </summary>
+            <param name="cmp"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Resources.PrefabLink.ApplyAllLinks(System.Collections.Generic.IEnumerable{Duality.GameObject},System.Predicate{Duality.Resources.PrefabLink})">
+            <summary>
+            Applies all PrefabLinks in a set of GameObjects. 
+            </summary>
+            <param name="objEnum">An enumeration of all GameObjects containing PrefabLinks that are to <see cref="M:Duality.Resources.PrefabLink.Apply">apply</see>.</param>
+            <param name="predicate">An optional predicate. If set, only PrefabLinks meeting its requirements are applied.</param>
+            <returns>A List of all PrefabLinks that have been applied.</returns>
+        </member>
+        <member name="P:Duality.Resources.PrefabLink.Obj">
+            <summary>
+            [GET] The GameObject this PrefabLink belongs to.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.PrefabLink.Prefab">
+            <summary>
+            [GET] The Prefab to which the GameObject is connected to.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.PrefabLink.ParentLink">
+            <summary>
+            [GET] If the connected GameObject is itsself contained within a hierarchy
+            of GameObjects which is affected by a higher PrefabLink, this link will be
+            returned.
+            </summary>
+            <seealso cref="P:Duality.GameObject.AffectedByPrefabLink"/>
+        </member>
         <member name="T:Duality.Resources.Texture">
             <summary>
             A Texture refers to pixel data stored in video memory
@@ -2458,17 +2978,17 @@
         </member>
         <member name="P:Duality.Resources.Texture.DualityLogo256">
             <summary>
-            [GET] Provides access to a Texture showing the Duality logo.
+            [GET] A Texture showing the Duality logo.
             </summary>
         </member>
         <member name="P:Duality.Resources.Texture.DualityLogoB256">
             <summary>
-            [GET] Provides access to a Texture showing the Duality logo without the text on it.
+            [GET] A Texture showing the Duality logo without the text on it.
             </summary>
         </member>
         <member name="P:Duality.Resources.Texture.White">
             <summary>
-            [GET] Provides access to a plain white 1x1 Texture. Can be used as a dummy.
+            [GET] A plain white 1x1 Texture. Can be used as a dummy.
             </summary>
         </member>
         <member name="P:Duality.Resources.Texture.BoundTexPrimary">
@@ -2717,20 +3237,20 @@
         </member>
         <member name="P:Duality.Resources.ShaderProgram.Minimal">
             <summary>
-            Provides access to a minimal ShaderProgram, using a <see cref="P:Duality.Resources.VertexShader.Minimal"/> VertexShader and
+            A minimal ShaderProgram, using a <see cref="P:Duality.Resources.VertexShader.Minimal"/> VertexShader and
             a <see cref="P:Duality.Resources.FragmentShader.Minimal"/> FragmentShader.
             </summary>
         </member>
         <member name="P:Duality.Resources.ShaderProgram.Picking">
             <summary>
-            Provides access to a ShaderProgram designed for picking operations. It uses a 
+            A ShaderProgram designed for picking operations. It uses a 
             <see cref="P:Duality.Resources.VertexShader.Minimal"/> VertexShader and a 
             <see cref="P:Duality.Resources.FragmentShader.Picking"/> FragmentShader.
             </summary>
         </member>
         <member name="P:Duality.Resources.ShaderProgram.SmoothAnim">
             <summary>
-            Provides access to the SmoothAnim ShaderProgram, using a <see cref="P:Duality.Resources.VertexShader.SmoothAnim"/> VertexShader and
+            The SmoothAnim ShaderProgram, using a <see cref="P:Duality.Resources.VertexShader.SmoothAnim"/> VertexShader and
             a <see cref="P:Duality.Resources.FragmentShader.SmoothAnim"/> FragmentShader. Some <see cref="T:Duality.Components.Renderer">Renderers</see>
             might react automatically to <see cref="T:Duality.Resources.Material">Materials</see> using this ShaderProgram and provide a suitable
             vertex format.
@@ -2864,17 +3384,17 @@
         </member>
         <member name="P:Duality.Resources.AudioData.Beep">
             <summary>
-            [GET] Provides access to a simple beep AudioData.
+            [GET] A simple beep AudioData.
             </summary>
         </member>
         <member name="P:Duality.Resources.AudioData.DroneLoop">
             <summary>
-            [GET] Provides access to a drone loop AudioData. This is stereo data.
+            [GET] A drone loop AudioData. This is stereo data.
             </summary>
         </member>
         <member name="P:Duality.Resources.AudioData.LogoJingle">
             <summary>
-            [GET] Provides access to a logo jingle AudioData. This is stereo data.
+            [GET] A logo jingle AudioData. This is stereo data.
             </summary>
         </member>
         <member name="P:Duality.Resources.AudioData.OggVorbisData">
@@ -3715,17 +4235,17 @@
         </member>
         <member name="P:Duality.Resources.Pixmap.DualityLogo256">
             <summary>
-            [GET] Provides access to a Pixmap showing the Duality logo.
+            [GET] A Pixmap showing the Duality logo.
             </summary>
         </member>
         <member name="P:Duality.Resources.Pixmap.DualityLogoB256">
             <summary>
-            [GET] Provides access to a Pixmap showing the Duality logo without the text on it.
+            [GET] A Pixmap showing the Duality logo without the text on it.
             </summary>
         </member>
         <member name="P:Duality.Resources.Pixmap.White">
             <summary>
-            [GET] Provides access to a plain white 1x1 Pixmap. Can be used as a dummy.
+            [GET] A plain white 1x1 Pixmap. Can be used as a dummy.
             </summary>
         </member>
         <member name="P:Duality.Resources.Pixmap.PixelData">
@@ -3748,6 +4268,317 @@
         <member name="P:Duality.Resources.Pixmap.Height">
             <summary>
             [GET] The Height of the actual pixel data.
+            </summary>
+        </member>
+        <member name="T:Duality.Resources.Font">
+            <summary>
+            Represents a font. While any system font or imported TrueType font can be used, they are internally
+            pre-rasterized and stored in a <see cref="T:Duality.Resources.Texture"/> with an <see cref="P:Duality.Resources.Texture.Atlas"/>.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Font.FileExt">
+            <summary>
+            A Font resources file extension.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Font.VirtualContentPath">
+            <summary>
+            (Virtual) base path for Duality's embedded default Fonts.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Font.ContentPath_GenericMonospace10">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.Font.GenericMonospace10"/> Font.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Font.ContentPath_GenericSerif12">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.Font.GenericSerif12"/> Font.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Font.ContentPath_GenericSansSerif12">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.Font.GenericSansSerif12"/> Font.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Font.None">
+            <summary>
+            Refers to a null reference Font.
+            </summary>
+            <seealso cref="F:Duality.ContentRef`1.Null"/>
+        </member>
+        <member name="F:Duality.Resources.Font.SupportedChars">
+            <summary>
+            A string containing all characters that are supported by Duality.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.Font.#ctor(System.String,System.Single,System.Drawing.FontStyle)">
+            <summary>
+            Creates a new Font based on a system font.
+            </summary>
+            <param name="familyName">The font family to use.</param>
+            <param name="emSize">The Fonts <see cref="P:Duality.Resources.Font.Size"/>.</param>
+            <param name="style">The Fonts style.</param>
+        </member>
+        <member name="M:Duality.Resources.Font.#ctor">
+            <summary>
+            Creates a new, empty Font.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.Font.LoadCustomFamilyData(System.String)">
+            <summary>
+            Replaces the Fonts custom font family with a new dataset that has been retrieved from file.
+            </summary>
+            <param name="path">The path of the file from which to retrieve the new font family data.</param>
+        </member>
+        <member name="M:Duality.Resources.Font.SaveCustomFamilyData(System.String)">
+            <summary>
+            Saves the Fonts custom font family to file.
+            </summary>
+            <param name="path">The path of the file to which to save the font family data.</param>
+        </member>
+        <member name="M:Duality.Resources.Font.ReloadData">
+            <summary>
+            Reloads this Fonts internal data and rasterizes its glyphs.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.Font.UpdateKerningData">
+            <summary>
+            Updates this Fonts kerning sample data.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.Font.GetGlyphData(System.Char,Duality.Resources.Font.GlyphData@)">
+            <summary>
+            Retrieves information about a single glyph.
+            </summary>
+            <param name="glyph">The glyph to retrieve information about.</param>
+            <param name="data">A struct holding the retrieved information.</param>
+            <returns>True, if successful, false if not. This is the case if the specified glyph is not supported.</returns>
+        </member>
+        <member name="M:Duality.Resources.Font.GetGlyphBitmap(System.Char)">
+            <summary>
+            Retrieves the rasterized <see cref="T:System.Drawing.Bitmap"/> for a single glyph.
+            </summary>
+            <param name="glyph">The glyph of which to retrieve the Bitmap.</param>
+            <returns>The Bitmap that has been retrieved, or null if the glyph is not supported.</returns>
+        </member>
+        <member name="M:Duality.Resources.Font.EmitTextVertices(System.String,Duality.VertexFormat.VertexC4P3T2[]@,System.Single,System.Single,System.Single)">
+            <summary>
+            Emits a set of vertices based on a text. To render this text, simply use that set of vertices combined with
+            the Fonts <see cref="P:Duality.Resources.Font.Material"/>.
+            </summary>
+            <param name="text">The text to render.</param>
+            <param name="vertices">The set of vertices that is emitted. You can re-use the same array each frame.</param>
+            <param name="x">An X-Offset applied to the position of each emitted vertex.</param>
+            <param name="y">An Y-Offset applied to the position of each emitted vertex.</param>
+            <param name="z">An Z-Offset applied to the position of each emitted vertex.</param>
+        </member>
+        <member name="M:Duality.Resources.Font.EmitTextVertices(System.String,Duality.VertexFormat.VertexC4P3T2[]@,System.Single,System.Single,System.Single,Duality.ColorFormat.ColorRgba,System.Single,System.Single)">
+            <summary>
+            Emits a set of vertices based on a text. To render this text, simply use that set of vertices combined with
+            the Fonts <see cref="P:Duality.Resources.Font.Material"/>.
+            </summary>
+            <param name="text">The text to render.</param>
+            <param name="vertices">The set of vertices that is emitted. You can re-use the same array each frame.</param>
+            <param name="x">An X-Offset applied to the position of each emitted vertex.</param>
+            <param name="y">An Y-Offset applied to the position of each emitted vertex.</param>
+            <param name="z">An Z-Offset applied to the position of each emitted vertex.</param>
+            <param name="clr">The color value that is applied to each emitted vertex.</param>
+            <param name="angle">An angle by which the text is rotated (before applying the offset).</param>
+            <param name="scale">A factor by which the text is scaled (before applying the offset).</param>
+        </member>
+        <member name="M:Duality.Resources.Font.EmitTextVertices(System.String,Duality.VertexFormat.VertexC4P3T2[]@,System.Single,System.Single,Duality.ColorFormat.ColorRgba)">
+            <summary>
+            Emits a set of vertices based on a text. To render this text, simply use that set of vertices combined with
+            the Fonts <see cref="P:Duality.Resources.Font.Material"/>.
+            </summary>
+            <param name="text">The text to render.</param>
+            <param name="vertices">The set of vertices that is emitted. You can re-use the same array each frame.</param>
+            <param name="x">An X-Offset applied to the position of each emitted vertex.</param>
+            <param name="y">An Y-Offset applied to the position of each emitted vertex.</param>
+            <param name="clr">The color value that is applied to each emitted vertex.</param>
+        </member>
+        <member name="M:Duality.Resources.Font.EmitTextVertices(System.String,Duality.VertexFormat.VertexC4P3T2[]@)">
+            <summary>
+            Emits a set of vertices based on a text. To render this text, simply use that set of vertices combined with
+            the Fonts <see cref="P:Duality.Resources.Font.Material"/>.
+            </summary>
+            <param name="text">The text to render.</param>
+            <param name="vertices">The set of vertices that is emitted. You can re-use the same array each frame.</param>
+        </member>
+        <member name="M:Duality.Resources.Font.MeasureText(System.String)">
+            <summary>
+            Measures the size of a text rendered using this Font.
+            </summary>
+            <param name="text">The text tu measure.</param>
+            <returns>The size of the measured text.</returns>
+        </member>
+        <member name="M:Duality.Resources.Font.FitText(System.String,System.Single,System.Boolean)">
+            <summary>
+            Returns a text that is cropped to fit a maximum width using this Font.
+            </summary>
+            <param name="text">The original text.</param>
+            <param name="maxWidth">The maximum width it may occupy.</param>
+            <param name="byWord">If true, only whole words may be cropped.</param>
+            <returns></returns>
+        </member>
+        <member name="P:Duality.Resources.Font.GenericMonospace10">
+            <summary>
+            A generic <see cref="P:Duality.Resources.Font.MonoSpace">monospace</see> Font (Size 10) that has been loaded from your systems font library.
+            This is usually "Courier New".
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Font.GenericSerif12">
+            <summary>
+            A generic serif Font (Size 12) that has been loaded from your systems font library.
+            This is usually "Times New Roman".
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Font.GenericSansSerif12">
+            <summary>
+            A generic sans-serif Font (Size 12) that has been loaded from your systems font library.
+            This is usually "Arial".
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Font.Family">
+            <summary>
+            [GET / SET] The name of the font family that is used.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Font.Size">
+            <summary>
+            [GET / SET] The size of the Font.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Font.Style">
+            <summary>
+            [GET / SET] The style of the font.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Font.GlyphColor">
+            <summary>
+            [GET / SET] When pre-rasterizing the necessary glyphs, they are rendered in this color.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Font.GlyphBgColor">
+            <summary>
+            [GET / SET] When pre-rasterizing the necessary glyphs, their background has this color.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Font.GlyphRenderHint">
+            <summary>
+            [GET / SET] Configures the internal glyph rasterizer.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Font.Material">
+            <summary>
+            [GET] The <see cref="T:Duality.Resources.Material"/> to use when rendering text of this Font.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Font.CharSpacing">
+            <summary>
+            [GET / SET] Additional spacing between each character. This is usually one tenth of the Fonts <see cref="P:Duality.Resources.Font.Size"/>.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Font.MonoSpace">
+            <summary>
+            [GET / SET] Whether this is considered a monospace Font. If true, each character occupies exactly the same space.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Font.Kerning">
+            <summary>
+            [GET / SET] Whether this Font uses kerning, a technique where characters are moved closer together based on their actual shape,
+            which usually looks much nicer. It has no visual effect when active at the same time with <see cref="P:Duality.Resources.Font.MonoSpace"/>, however
+            kerning sample data will be available on glyphs.
+            </summary>
+            <seealso cref="T:Duality.Resources.Font.GlyphData"/>
+        </member>
+        <member name="P:Duality.Resources.Font.NeedsReload">
+            <summary>
+            [GET] Returns whether this Font needs a <see cref="M:Duality.Resources.Font.ReloadData">reload</see> in order to apply
+            changes that have been made to its Properties.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Font.CustomFamilyData">
+            <summary>
+            [GET] Returns a chunk of memory that contains this Fonts custom family data.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Font.CustomFamilyBasePath">
+            <summary>
+            [GET] If a custom font file has been imported in order to create this Font, this is
+            the path from of the original file. This is only relevant when creating new Fonts 
+            at runtime or importing them in the editor environment.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Font.Height">
+            <summary>
+            [GET] The Fonts height.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Font.Ascent">
+            <summary>
+            [GET] The Fonts ascent value.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Font.BodyAscent">
+            <summary>
+            [GET] The Fonts body ascent value.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Font.Descent">
+            <summary>
+            [GET] The Fonts descent value.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Font.BaseLine">
+            <summary>
+            [GET] The Fonts base line height.
+            </summary>
+        </member>
+        <member name="T:Duality.Resources.Font.RenderHint">
+            <summary>
+            Configures a Fonts internal glyph rasterizer.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Font.RenderHint.Monochrome">
+            <summary>
+            Each glyph is rasterized monochrome
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Font.RenderHint.AntiAlias">
+            <summary>
+            Each glyph is rasterized in grayscale, allowing smooth, antialiazed edges.
+            </summary>
+        </member>
+        <member name="T:Duality.Resources.Font.GlyphData">
+            <summary>
+            Contains data about a single glyph.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Font.GlyphData.width">
+            <summary>
+            Thw width of the glyph
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Font.GlyphData.height">
+            <summary>
+            The height of the glyph
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Font.GlyphData.offsetX">
+            <summary>
+            The glyphs X offset when rendering it.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Font.GlyphData.kerningSamplesLeft">
+            <summary>
+            The glyphs kerning samples to the left.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Font.GlyphData.kerningSamplesRight">
+            <summary>
+            The glyphs kerning samples to the right.
             </summary>
         </member>
         <member name="T:Duality.NonSerializedResourceAttribute">
@@ -4303,19 +5134,19 @@
         </member>
         <member name="P:Duality.Resources.FragmentShader.Minimal">
             <summary>
-            [GET] Provides access to a minimal FragmentShader. It performs a texture lookup
+            [GET] A minimal FragmentShader. It performs a texture lookup
             and applies vertex-coloring.
             </summary>
         </member>
         <member name="P:Duality.Resources.FragmentShader.Picking">
             <summary>
-            [GET] Provides access to a FragmentShader designed for picking operations. It uses
+            [GET] A FragmentShader designed for picking operations. It uses
             the provided texture for alpha output and forwards the incoming RGB color value.
             </summary>
         </member>
         <member name="P:Duality.Resources.FragmentShader.SmoothAnim">
             <summary>
-            [GET] Provides access to the SmoothAnim FragmentShader. It performs two lookups
+            [GET] The SmoothAnim FragmentShader. It performs two lookups
             on the same texture and blends the results using an incoming float value.
             </summary>
         </member>

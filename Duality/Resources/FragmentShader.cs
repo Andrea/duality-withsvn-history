@@ -39,17 +39,17 @@ namespace Duality.Resources
 		public const string ContentPath_SmoothAnim	= VirtualContentPath + "SmoothAnim";
 		
 		/// <summary>
-		/// [GET] Provides access to a minimal FragmentShader. It performs a texture lookup
+		/// [GET] A minimal FragmentShader. It performs a texture lookup
 		/// and applies vertex-coloring.
 		/// </summary>
 		public static ContentRef<FragmentShader> Minimal	{ get; private set; }
 		/// <summary>
-		/// [GET] Provides access to a FragmentShader designed for picking operations. It uses
+		/// [GET] A FragmentShader designed for picking operations. It uses
 		/// the provided texture for alpha output and forwards the incoming RGB color value.
 		/// </summary>
 		public static ContentRef<FragmentShader> Picking	{ get; private set; }
 		/// <summary>
-		/// [GET] Provides access to the SmoothAnim FragmentShader. It performs two lookups
+		/// [GET] The SmoothAnim FragmentShader. It performs two lookups
 		/// on the same texture and blends the results using an incoming float value.
 		/// </summary>
 		public static ContentRef<FragmentShader> SmoothAnim	{ get; private set; }
