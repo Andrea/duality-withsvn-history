@@ -11,8 +11,20 @@ using Duality.ColorFormat;
 
 namespace Duality
 {
+	/// <summary>
+	/// Provides extension methods for <see cref="System.Drawing.Bitmap">Bitmaps</see>.
+	/// </summary>
 	public static class ExtMethodsBitmap
 	{
+		/// <summary>
+		/// Extracts a rectangular portion of the original image.
+		/// </summary>
+		/// <param name="bm">The original Bitmap.</param>
+		/// <param name="x">The rectangular portion to extract.</param>
+		/// <param name="y">The rectangular portion to extract.</param>
+		/// <param name="w">The rectangular portion to extract.</param>
+		/// <param name="h">The rectangular portion to extract.</param>
+		/// <returns>A new Bitmap containing the selected area.</returns>
 		public static Bitmap SubImage(this Bitmap bm, int x, int y, int w, int h)
 		{
 			if (w == 0 || h == 0) return null;
@@ -23,6 +35,38 @@ namespace Duality
 			}
 			return result;
 		}
+		/// <summary>
+		/// Extracts a rectangular portion of the original image.
+		/// </summary>
+		/// <param name="bm">The original Bitmap.</param>
+		/// <param name="rect">The rectangular portion to extract.</param>
+		/// <returns>A new Bitmap containing the selected area.</returns>
+		public static Bitmap SubImage(this Bitmap bm, Rect rect)
+		{
+			return SubImage(bm,
+				MathF.RoundToInt(rect.x),
+				MathF.RoundToInt(rect.y),
+				MathF.RoundToInt(rect.w),
+				MathF.RoundToInt(rect.h));
+		}
+		/// <summary>
+		/// Extracts a rectangular portion of the original image.
+		/// </summary>
+		/// <param name="bm">The original Bitmap.</param>
+		/// <param name="rect">The rectangular portion to extract.</param>
+		/// <returns>A new Bitmap containing the selected area.</returns>
+		public static Bitmap SubImage(this Bitmap bm, Rectangle rect)
+		{
+			return SubImage(bm, rect.X, rect.Y, rect.Width, rect.Height);
+		}
+		/// <summary>
+		/// Creates a resized version of a Bitmap. Gained space will be empty, lost space will crop the image.
+		/// </summary>
+		/// <param name="bm">The original Bitmap.</param>
+		/// <param name="w">The desired width.</param>
+		/// <param name="h">The desired height.</param>
+		/// <param name="origin">The desired resize origin in the original image.</param>
+		/// <returns>A new Bitmap that has the specified size.</returns>
 		public static Bitmap Resize(this Bitmap bm, int w, int h, Alignment origin = Alignment.TopLeft)
 		{
 			int x = 0;
@@ -50,6 +94,14 @@ namespace Duality
 
 			return bm.SubImage(-x, -y, w, h);
 		}
+		/// <summary>
+		/// Creates a rescaled version of a Bitmap.
+		/// </summary>
+		/// <param name="bm">The original Bitmap.</param>
+		/// <param name="w">The desired width.</param>
+		/// <param name="h">The desired height.</param>
+		/// <param name="mode">Specified how to interpolate the original image in order to calculate the result image.</param>
+		/// <returns>A new Bitmap that has been scaled to the specified size.</returns>
 		public static Bitmap Rescale(this Bitmap bm, int w, int h, InterpolationMode mode = InterpolationMode.Bilinear)
 		{
 			Bitmap result = new Bitmap(w, h);
@@ -67,12 +119,24 @@ namespace Duality
 			}
 			return result;
 		}
+		/// <summary>
+		/// Creates a cropped version of the specified Bitmap, removing transparent / empty border areas.
+		/// </summary>
+		/// <param name="bm">The original Bitmap.</param>
+		/// <param name="cropX">Whether the image should be cropped in X-direction</param>
+		/// <param name="cropY">Whether the image should be cropped in Y-direction</param>
+		/// <returns>A cropped version of the original Bitmap.</returns>
 		public static Bitmap Crop(this Bitmap bm, bool cropX = true, bool cropY = true)
 		{
 			if (!cropX && !cropY) return bm.Clone() as Bitmap;
 			Rectangle bounds = bm.OpaqueBounds();
 			return bm.SubImage(cropX ? bounds.X : 0, cropY ? bounds.Y : 0, cropX ? bounds.Width : bm.Width, cropY ? bounds.Height : bm.Height);
 		}
+		/// <summary>
+		/// Measures the bounding rectangle of the opaque pixels in a Bitmap.
+		/// </summary>
+		/// <param name="bm"></param>
+		/// <returns></returns>
 		public static Rectangle OpaqueBounds(this Bitmap bm)
 		{
 			ColorRgba[] pixels = bm.GetPixelDataRgba();
@@ -92,6 +156,22 @@ namespace Duality
 
 			return bounds;
 		}
+		/// <summary>
+		/// Measures the bounding rectangle of the opaque pixels in a Bitmap. Returns a float value result
+		/// </summary>
+		/// <param name="bm"></param>
+		/// <returns></returns>
+		public static Rect OpaqueBoundsF(this Bitmap bm)
+		{
+			Rectangle bounds = OpaqueBounds(bm);
+			return new Rect(bounds.X, bounds.Y, bounds.Width, bounds.Height);
+		}
+		/// <summary>
+		/// Creates a new version of a Bitmap, where transparent pixels have been colored based on the non-transparent color values next to them.
+		/// This does not affect any alpha values but prepares the Bitmap for correct filtering of edges.
+		/// </summary>
+		/// <param name="bm">The original Bitmap.</param>
+		/// <returns></returns>
 		public static Bitmap ColorTransparentPixels(this Bitmap bm)
 		{
 			Bitmap result = bm.Clone() as Bitmap;
@@ -154,6 +234,13 @@ namespace Duality
 			result.SetPixelDataRgba(pixelData);
 			return result;
 		}
+		/// <summary>
+		/// Creates a new version of a Bitmap, where transparent pixels have been colored based on the specified transparent color.
+		/// This does not affect any alpha values but prepares the Bitmap for correct filtering of edges.
+		/// </summary>
+		/// <param name="bm">The original Bitmap.</param>
+		/// <param name="transparentColor"></param>
+		/// <returns></returns>
 		public static Bitmap ColorTransparentPixels(this Bitmap bm, ColorRgba transparentColor)
 		{
 			Bitmap result = bm.Clone() as Bitmap;
@@ -168,6 +255,12 @@ namespace Duality
 			result.SetPixelDataRgba(pixelData);
 			return result;
 		}
+		/// <summary>
+		/// Determines the average color of a Bitmap.
+		/// </summary>
+		/// <param name="bm"></param>
+		/// <param name="weightTransparent">If true, the alpha value weights a pixels color value. </param>
+		/// <returns></returns>
 		public static ColorRgba GetAverageColor(this Bitmap bm, bool weightTransparent = true)
 		{
 			float[] sum = new float[4];
@@ -212,6 +305,11 @@ namespace Duality
 			}
 		}
 
+		/// <summary>
+		/// Extracts a Bitmaps pixel data.
+		/// </summary>
+		/// <param name="bm"></param>
+		/// <returns></returns>
 		public static ColorRgba[] GetPixelDataRgba(this Bitmap bm)
 		{
 			int[] argbValues;
@@ -226,6 +324,11 @@ namespace Duality
 			}
 			return result;
 		}
+		/// <summary>
+		/// Extracts a Bitmaps pixel data as IntArgb values.
+		/// </summary>
+		/// <param name="bm"></param>
+		/// <param name="argbValues"></param>
 		public static void GetPixelDataIntArgb(this Bitmap bm, out uint[] argbValues)
 		{
 			int[] argbValuesSigned;
@@ -238,6 +341,11 @@ namespace Duality
 					argbValues[i] = (uint)argbValuesSigned[i];
 			}
 		}
+		/// <summary>
+		/// Extracts a Bitmaps pixel data as (signed) IntArgb values.
+		/// </summary>
+		/// <param name="bm"></param>
+		/// <param name="argbValues"></param>
 		public static void GetPixelDataIntArgb(this Bitmap bm, out int[] argbValues)
 		{
 			BitmapData data = bm.LockBits(
@@ -251,6 +359,11 @@ namespace Duality
 			bm.UnlockBits(data);
 		}
 
+		/// <summary>
+		/// Replaces a Bitmaps pixel data.
+		/// </summary>
+		/// <param name="bm"></param>
+		/// <param name="pixelData"></param>
 		public static void SetPixelDataRgba(this Bitmap bm, ColorRgba[] pixelData)
 		{
 			int[] argbValues = new int[pixelData.Length];
@@ -261,6 +374,11 @@ namespace Duality
 			}
 			SetPixelDataIntArgb(bm, argbValues);
 		}
+		/// <summary>
+		/// Replaces a Bitmaps pixel data.
+		/// </summary>
+		/// <param name="bm"></param>
+		/// <param name="pixelData"></param>
 		public static void SetPixelDataRgba(this Bitmap bm, byte[] pixelData)
 		{
 			int pixels = (int)MathF.Ceiling(pixelData.Length / 4.0f);
@@ -276,6 +394,11 @@ namespace Duality
 			}
 			SetPixelDataIntArgb(bm, argbValues);
 		}
+		/// <summary>
+		/// Replaces a Bitmaps pixel data.
+		/// </summary>
+		/// <param name="bm"></param>
+		/// <param name="pixelData"></param>
 		public static void SetPixelDataIntArgb(this Bitmap bm, uint[] pixelData)
 		{
 			int[] argbValues = new int[pixelData.Length];
@@ -286,6 +409,11 @@ namespace Duality
 			}
 			SetPixelDataIntArgb(bm, argbValues);
 		}
+		/// <summary>
+		/// Replaces a Bitmaps pixel data.
+		/// </summary>
+		/// <param name="bm"></param>
+		/// <param name="pixelData"></param>
 		public static void SetPixelDataIntArgb(this Bitmap bm, int[] pixelData)
 		{
 			BitmapData data = bm.LockBits(

@@ -6,6 +6,9 @@ using System.IO;
 
 namespace Duality
 {
+	/// <summary>
+	/// A <see cref="ILogOutput">Log output</see> that uses a <see cref="System.IO.TextWriter"/> as message destination.
+	/// </summary>
 	public class TextWriterLogOutput : ILogOutput
 	{
 		private	string			prefix	= null;
@@ -21,15 +24,26 @@ namespace Duality
 			this.format = formatHolder;
 		}
 		
+		/// <summary>
+		/// Increases the LogOutputs indent value.
+		/// </summary>
 		public void PushIndent()
 		{
 			this.format.Indent++;
 		}
+		/// <summary>
+		/// Decreases the LogOutputs indent value.
+		/// </summary>
 		public void PopIndent()
 		{
 			this.format.Indent--;
 		}
-
+		
+		/// <summary>
+		/// Writes a single message to the output.
+		/// </summary>
+		/// <param name="type">The type of the log message.</param>
+		/// <param name="msg">The message to write.</param>
 		public virtual void Write(LogMessageType type, string msg)
 		{
 			string[] lines = msg.Split(new char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);

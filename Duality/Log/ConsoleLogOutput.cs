@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Duality
 {
+	/// <summary>
+	/// A <see cref="ILogOutput">Log output</see> that uses the <see cref="System.Console"/> as message destination.
+	/// </summary>
 	public class ConsoleLogOutput : TextWriterLogOutput, ILogOutput
 	{
 		private	ConsoleColor	bgColor;
@@ -14,7 +17,12 @@ namespace Duality
 		{
 			this.bgColor = bgColor;
 		}
-
+		
+		/// <summary>
+		/// Writes a single message to the output.
+		/// </summary>
+		/// <param name="type">The type of the log message.</param>
+		/// <param name="msg">The message to write.</param>
 		public override void Write(LogMessageType type, string msg)
 		{
 			ConsoleColor clrBg = Console.BackgroundColor;

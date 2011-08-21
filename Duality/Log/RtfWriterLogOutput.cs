@@ -10,6 +10,9 @@ using Duality.ColorFormat;
 
 namespace Duality
 {
+	/// <summary>
+	/// A <see cref="ILogOutput">Log output</see> that uses a RTF document as message destination.
+	/// </summary>
 	public class RtfDocWriterLogOutput : ILogOutput
 	{
 		private	string			prefix	= null;
@@ -39,16 +42,27 @@ namespace Duality
 		public RtfDocWriterLogOutput(RtfDocument bufferDoc, string prefix, ColorRgba bgColor) : this(bufferDoc, prefix, bgColor, null) {}
 		public RtfDocWriterLogOutput(RtfDocument bufferDoc, string prefix) : this(bufferDoc, prefix, ColorRgba.White, null) {}
 		public RtfDocWriterLogOutput(RtfDocument bufferDoc) : this(bufferDoc, null, ColorRgba.White, null) {}
-
+		
+		/// <summary>
+		/// Increases the LogOutputs indent value.
+		/// </summary>
 		public void PushIndent()
 		{
 			this.format.Indent++;
 		}
+		/// <summary>
+		/// Decreases the LogOutputs indent value.
+		/// </summary>
 		public void PopIndent()
 		{
 			this.format.Indent--;
 		}
-
+		
+		/// <summary>
+		/// Writes a single message to the output.
+		/// </summary>
+		/// <param name="type">The type of the log message.</param>
+		/// <param name="msg">The message to write.</param>
 		public void Write(LogMessageType type, string msg)
 		{
 			string parText = "";

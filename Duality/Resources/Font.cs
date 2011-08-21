@@ -847,6 +847,12 @@ namespace Duality.Resources
 
 			return text;
 		}
+		/// <summary>
+		/// Measures position and size of a specific glyph inside a text.
+		/// </summary>
+		/// <param name="text">The text that contains the glyph to measure.</param>
+		/// <param name="index">The index of the glyph to measure.</param>
+		/// <returns>A rectangle that describes the specified glyphs position and size.</returns>
 		public Rect MeasureTextGlyph(string text, int index)
 		{
 			float curOffset = 0.0f;
@@ -865,6 +871,13 @@ namespace Duality.Resources
 
 			return new Rect();
 		}
+		/// <summary>
+		/// Returns the index of the glyph that is located at a certain location within a text.
+		/// </summary>
+		/// <param name="text">The text from which to pick a glyph.</param>
+		/// <param name="x">X-Coordinate of the position where to look for a glyph.</param>
+		/// <param name="y">Y-Coordinate of the position where to look for a glyph.</param>
+		/// <returns>The index of the glyph that is located at the specified position.</returns>
 		public int PickTextGlyph(string text, float x, float y)
 		{
 			float curOffset = 0.0f;
@@ -943,6 +956,11 @@ namespace Duality.Resources
 			c.ReloadData();
 		}
 
+		/// <summary>
+		/// Retrieves a <see cref="System.Drawing.FontFamily"/> by its name.
+		/// </summary>
+		/// <param name="name">The name of the FontFamily.</param>
+		/// <returns>The FontFamily that has been retrieved, or null if no matching family was found.</returns>
 		public static FontFamily GetFontFamily(string name)
 		{
 			if (string.IsNullOrEmpty(name)) return null;
@@ -957,6 +975,11 @@ namespace Duality.Resources
 			}
 			return result;
 		}
+		/// <summary>
+		/// Loads a <see cref="System.Drawing.FontFamily"/> from file.
+		/// </summary>
+		/// <param name="file">The file to load the FontFamily from.</param>
+		/// <returns>The FontFamily that has been loaded.</returns>
 		public static FontFamily LoadFontFamilyFromFile(string file)
 		{
 			fontManager.AddFontFile(file);
@@ -964,6 +987,11 @@ namespace Duality.Resources
 			loadedFontRegistry[result.Name] = result;
 			return result;
 		}
+		/// <summary>
+		/// Loads a <see cref="System.Drawing.FontFamily"/> from memory.
+		/// </summary>
+		/// <param name="memory">The memory chunk to load the FontFamily from.</param>
+		/// <returns>The FontFamily that has been loaded.</returns>
 		public static FontFamily LoadFontFamilyFromMemory(byte[] memory)
 		{
 			FontFamily result = null;
@@ -983,6 +1011,11 @@ namespace Duality.Resources
 			loadedFontRegistry[result.Name] = result;
 			return result;
 		}
+		/// <summary>
+		/// Loads a <see cref="System.Drawing.FontFamily"/> from stream.
+		/// </summary>
+		/// <param name="stream">The stream to load the FontFamily from.</param>
+		/// <returns>The FontFamily that has been loaded.</returns>
 		public static FontFamily LoadFontFamilyFromStream(Stream stream)
 		{
 			byte[] buffer = new byte[stream.Length];
