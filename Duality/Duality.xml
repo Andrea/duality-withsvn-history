@@ -4849,6 +4849,172 @@
             <param name="weightesValues">A weighted value pool.</param>
             <returns></returns>
         </member>
+        <member name="T:Duality.MathF">
+            <summary>
+            Provides math utility methods and float versions of <see cref="T:System.Math"/> to fit
+            Duality <see cref="T:System.Single"/> arithmetics. 
+            </summary>
+        </member>
+        <member name="F:Duality.MathF.E">
+            <summary>
+            Euler's number, base of the natural logarithm. Approximately 2.7182818284.
+            </summary>
+        </member>
+        <member name="F:Duality.MathF.Pi">
+            <summary>
+            Mmmhh... pie!
+            </summary>
+        </member>
+        <member name="F:Duality.MathF.PiOver2">
+            <summary>
+            Equals <see cref="F:Duality.MathF.Pi"/> / 2.
+            </summary>
+        </member>
+        <member name="F:Duality.MathF.PiOver3">
+            <summary>
+            Equals <see cref="F:Duality.MathF.Pi"/> / 3.
+            </summary>
+        </member>
+        <member name="F:Duality.MathF.PiOver4">
+            <summary>
+            Equals <see cref="F:Duality.MathF.Pi"/> / 4.
+            </summary>
+        </member>
+        <member name="F:Duality.MathF.PiOver6">
+            <summary>
+            Equals <see cref="F:Duality.MathF.Pi"/> / 6.
+            </summary>
+        </member>
+        <member name="F:Duality.MathF.TwoPi">
+            <summary>
+            Equals 2 * <see cref="F:Duality.MathF.Pi"/>.
+            </summary>
+        </member>
+        <member name="F:Duality.MathF.RadAngle30">
+            <summary>
+            A 30 degree angle in radians. Equals <see cref="F:Duality.MathF.PiOver6"/>.
+            </summary>
+        </member>
+        <member name="F:Duality.MathF.RadAngle45">
+            <summary>
+            A 45 degree angle in radians. Equals <see cref="F:Duality.MathF.PiOver4"/>.
+            </summary>
+        </member>
+        <member name="F:Duality.MathF.RadAngle90">
+            <summary>
+            A 90 degree angle in radians. Equals <see cref="F:Duality.MathF.PiOver2"/>.
+            </summary>
+        </member>
+        <member name="F:Duality.MathF.RadAngle180">
+            <summary>
+            A 180 degree angle in radians. Equals <see cref="F:Duality.MathF.Pi"/>.
+            </summary>
+        </member>
+        <member name="F:Duality.MathF.RadAngle360">
+            <summary>
+            A 360 degree angle in radians. Equals <see cref="F:Duality.MathF.TwoPi"/>.
+            </summary>
+        </member>
+        <member name="M:Duality.MathF.Abs(System.Single)">
+            <summary>
+            Returns the absolute value of a <see cref="T:System.Single"/>.
+            </summary>
+            <param name="v">A number.</param>
+            <returns>The absolute value of the number.</returns>
+        </member>
+        <member name="M:Duality.MathF.Abs(System.Int32)">
+            <summary>
+            Returns the absolute value of a <see cref="T:System.Int32"/>.
+            </summary>
+            <param name="v">A number.</param>
+            <returns>The absolute value of the number.</returns>
+        </member>
+        <member name="M:Duality.MathF.Ceiling(System.Single)">
+            <summary>
+            Returns the lowest whole-number bigger than the specified one. (Rounds up)
+            </summary>
+            <param name="v">A number.</param>
+            <returns>The rounded number.</returns>
+            <seealso cref="M:Duality.MathF.Floor(System.Single)"/>
+        </member>
+        <member name="M:Duality.MathF.Floor(System.Single)">
+            <summary>
+            Returns the highest whole-number smaller than the specified one. (Rounds down)
+            </summary>
+            <param name="v">A number.</param>
+            <returns>The rounded number.</returns>
+            <seealso cref="M:Duality.MathF.Ceiling(System.Single)"/>
+        </member>
+        <member name="M:Duality.MathF.Round(System.Single)">
+            <summary>
+            Rounds the specified value.
+            </summary>
+            <param name="v">A number.</param>
+            <returns>The rounded number.</returns>
+        </member>
+        <member name="M:Duality.MathF.Round(System.Single,System.Int32)">
+            <summary>
+            Rounds the specified value to a certain number of fraction digits.
+            </summary>
+            <param name="v">A number.</param>
+            <param name="digits">The number of fraction digits to round to.</param>
+            <returns>The rounded number.</returns>
+        </member>
+        <member name="M:Duality.MathF.Round(System.Single,System.MidpointRounding)">
+            <summary>
+            Rounds the specified value.
+            </summary>
+            <param name="v">A number.</param>
+            <param name="mode">Specifies what happens if the value is exactly inbetween two numbers.</param>
+            <returns>The rounded number.</returns>
+        </member>
+        <member name="M:Duality.MathF.Round(System.Single,System.Int32,System.MidpointRounding)">
+            <summary>
+            Rounds the specified value to a certain number of fraction digits.
+            </summary>
+            <param name="v">A number.</param>
+            <param name="digits">The number of fraction digits to round to.</param>
+            <param name="mode">Specifies what happens if the value is exactly inbetween two numbers.</param>
+            <returns>The rounded number.</returns>
+        </member>
+        <member name="M:Duality.MathF.RoundToInt(System.Single)">
+            <summary>
+            Rounds the specified value to an integer value.
+            </summary>
+            <param name="v">A number.</param>
+            <returns>The rounded number as <see cref="T:System.Int32"/>.</returns>
+            <seealso cref="M:Duality.MathF.Round(System.Single)"/>
+        </member>
+        <member name="M:Duality.MathF.RoundToInt(System.Single,System.MidpointRounding)">
+            <summary>
+            Rounds the specified value to an integer value.
+            </summary>
+            <param name="v">A number.</param>
+            <param name="mode">Specifies what happens if the value is exactly inbetween two numbers.</param>
+            <returns>The rounded number as <see cref="T:System.Int32"/>.</returns>
+            <seealso cref="M:Duality.MathF.Round(System.Single,System.MidpointRounding)"/>
+        </member>
+        <member name="M:Duality.MathF.Sign(System.Single)">
+            <summary>
+            Returns the sign of a value.
+            </summary>
+            <param name="v">A number.</param>
+            <returns>-1 if negative, 1 if positive and 0 if zero.</returns>
+        </member>
+        <member name="M:Duality.MathF.Sign(System.Int32)">
+            <summary>
+            Returns the sign of a value.
+            </summary>
+            <param name="v">A number.</param>
+            <returns>-1 if negative, 1 if positive and 0 if zero.</returns>
+        </member>
+        <member name="M:Duality.MathF.Sqrt(System.Single)">
+            <summary>
+            Returns a numbers square root.
+            </summary>
+            <param name="v">A number.</param>
+            <returns>The numbers square root.</returns>
+        </member>
         <member name="M:Duality.MathF.InvSqrtFast(System.Single)">
             <summary>
             Returns an approximation of a numbers inverse square root.
@@ -4856,32 +5022,379 @@
             <param name="x">A number.</param>
             <returns>An approximation of the inverse square root of the specified number, with an upper error bound of 0.001</returns>
         </member>
+        <member name="M:Duality.MathF.Factorial(System.Int32)">
+            <summary>
+            Returns the factorial of an integer value.
+            </summary>
+            <param name="n">A number.</param>
+            <returns>The factorial of the number.</returns>
+        </member>
+        <member name="M:Duality.MathF.Min(System.Single,System.Single)">
+            <summary>
+            Returns the lower of two values.
+            </summary>
+            <param name="v1"></param>
+            <param name="v2"></param>
+            <returns>The lowest value.</returns>
+        </member>
+        <member name="M:Duality.MathF.Min(System.Single,System.Single,System.Single)">
+            <summary>
+            Returns the lowest of three values.
+            </summary>
+            <param name="v1"></param>
+            <param name="v2"></param>
+            <param name="v3"></param>
+            <returns>The lowest value.</returns>
+        </member>
+        <member name="M:Duality.MathF.Min(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Returns the lowest of four values.
+            </summary>
+            <param name="v1"></param>
+            <param name="v2"></param>
+            <param name="v3"></param>
+            <param name="v4"></param>
+            <returns>The lowest value.</returns>
+        </member>
+        <member name="M:Duality.MathF.Min(System.Single[])">
+            <summary>
+            Returns the lowest of any number of values.
+            </summary>
+            <param name="v"></param>
+            <returns>The lowest value.</returns>
+        </member>
+        <member name="M:Duality.MathF.Min(System.Int32,System.Int32)">
+            <summary>
+            Returns the lower of two values.
+            </summary>
+            <param name="v1"></param>
+            <param name="v2"></param>
+            <returns>The lowest value.</returns>
+        </member>
+        <member name="M:Duality.MathF.Min(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Returns the lowest of three values.
+            </summary>
+            <param name="v1"></param>
+            <param name="v2"></param>
+            <param name="v3"></param>
+            <returns>The lowest value.</returns>
+        </member>
+        <member name="M:Duality.MathF.Min(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Returns the lowest of four values.
+            </summary>
+            <param name="v1"></param>
+            <param name="v2"></param>
+            <param name="v3"></param>
+            <param name="v4"></param>
+            <returns>The lowest value.</returns>
+        </member>
+        <member name="M:Duality.MathF.Min(System.Int32[])">
+            <summary>
+            Returns the lowest of any number of values.
+            </summary>
+            <param name="v"></param>
+            <returns>The lowest value.</returns>
+        </member>
+        <member name="M:Duality.MathF.Max(System.Single,System.Single)">
+            <summary>
+            Returns the higher of two values.
+            </summary>
+            <param name="v1"></param>
+            <param name="v2"></param>
+            <returns>The highest value.</returns>
+        </member>
+        <member name="M:Duality.MathF.Max(System.Single,System.Single,System.Single)">
+            <summary>
+            Returns the highest of three values.
+            </summary>
+            <param name="v1"></param>
+            <param name="v2"></param>
+            <param name="v3"></param>
+            <returns>The highest value.</returns>
+        </member>
+        <member name="M:Duality.MathF.Max(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Returns the highest of four values.
+            </summary>
+            <param name="v1"></param>
+            <param name="v2"></param>
+            <param name="v3"></param>
+            <param name="v4"></param>
+            <returns>The highest value.</returns>
+        </member>
+        <member name="M:Duality.MathF.Max(System.Single[])">
+            <summary>
+            Returns the highest of any number of values.
+            </summary>
+            <param name="v"></param>
+            <returns>The highest value.</returns>
+        </member>
+        <member name="M:Duality.MathF.Max(System.Int32,System.Int32)">
+            <summary>
+            Returns the higher of two values.
+            </summary>
+            <param name="v1"></param>
+            <param name="v2"></param>
+            <returns>The highest value.</returns>
+        </member>
+        <member name="M:Duality.MathF.Max(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Returns the highest of three values.
+            </summary>
+            <param name="v1"></param>
+            <param name="v2"></param>
+            <param name="v3"></param>
+            <returns>The highest value.</returns>
+        </member>
+        <member name="M:Duality.MathF.Max(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Returns the highest of four values.
+            </summary>
+            <param name="v1"></param>
+            <param name="v2"></param>
+            <param name="v3"></param>
+            <param name="v4"></param>
+            <returns>The highest value.</returns>
+        </member>
+        <member name="M:Duality.MathF.Max(System.Int32[])">
+            <summary>
+            Returns the highest of any number of values.
+            </summary>
+            <param name="v"></param>
+            <returns>The highest value.</returns>
+        </member>
+        <member name="M:Duality.MathF.Clamp(System.Single,System.Single,System.Single)">
+            <summary>
+            Clamps a value between minimum and maximum.
+            </summary>
+            <param name="v">The value to clamp.</param>
+            <param name="min">The minimum value that can't be deceeded.</param>
+            <param name="max">The maximum value that can't be exceeded.</param>
+            <returns>The clamped value.</returns>
+        </member>
+        <member name="M:Duality.MathF.Clamp(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Clamps a value between minimum and maximum.
+            </summary>
+            <param name="v">The value to clamp.</param>
+            <param name="min">The minimum value that can't be deceeded.</param>
+            <param name="max">The maximum value that can't be exceeded.</param>
+            <returns>The clamped value.</returns>
+        </member>
+        <member name="M:Duality.MathF.Exp(System.Single)">
+            <summary>
+            Returns the specified power of <see cref="F:Duality.MathF.E"/>.
+            </summary>
+            <param name="v"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.MathF.Log(System.Single)">
+            <summary>
+            Returns the natural logarithm of a value.
+            </summary>
+            <param name="v"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.MathF.Pow(System.Single,System.Single)">
+            <summary>
+            Returns the specified power of a value.
+            </summary>
+            <param name="v">The base value.</param>
+            <param name="e">Specifies the power to return.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.MathF.Log(System.Single,System.Single)">
+            <summary>
+            Returns the logarithm of a value.
+            </summary>
+            <param name="v">The value whichs logarithm is to be calculated.</param>
+            <param name="newBase">The base of the logarithm.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.MathF.Sin(System.Single)">
+            <summary>
+            Returns the sine value of the specified (radian) angle.
+            </summary>
+            <param name="angle">A radian angle.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.MathF.Cos(System.Single)">
+            <summary>
+            Returns the cosine value of the specified (radian) angle.
+            </summary>
+            <param name="angle">A radian angle.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.MathF.Tan(System.Single)">
+            <summary>
+            Returns the tangent value of the specified (radian) angle.
+            </summary>
+            <param name="angle">A radian angle.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.MathF.Asin(System.Single)">
+            <summary>
+            Returns the inverse sine value of the specified (radian) angle.
+            </summary>
+            <param name="angle">A radian angle.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.MathF.Acos(System.Single)">
+            <summary>
+            Returns the inverse cosine value of the specified (radian) angle.
+            </summary>
+            <param name="angle">A radian angle.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.MathF.Atan(System.Single)">
+            <summary>
+            Returns the inverse tangent value of the specified (radian) angle.
+            </summary>
+            <param name="angle">A radian angle.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.MathF.Atan2(System.Single,System.Single)">
+            <summary>
+            Returns the (radian) angle whose tangent is the quotient of two specified numbers.
+            </summary>
+            <param name="y">The y coordinate of a point. </param>
+            <param name="x">The x coordinate of a point. </param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.MathF.DegToRad(System.Single)">
+            <summary>
+            Converts degrees  to radians.
+            </summary>
+            <param name="deg"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.MathF.RadToDeg(System.Single)">
+            <summary>
+            Converts radians to degrees.
+            </summary>
+            <param name="rad"></param>
+            <returns></returns>
+        </member>
         <member name="M:Duality.MathF.NormalizeVar(System.Single,System.Single,System.Single)">
             <summary>
-            Normalizes the given variable to the given circular area.
-            Example: NormalizeVar(480, 0, 360) returns 120.
+            Normalizes a value to the given circular area.
             </summary>
             <returns>The normalized value between min (inclusive) and max (exclusive).</returns>
+            <example>
+            <c>NormalizeVar(480, 0, 360)</c> will return 120.
+            </example>
+        </member>
+        <member name="M:Duality.MathF.NormalizeVar(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Normalizes a value to the given circular area.
+            </summary>
+            <returns>The normalized value between min (inclusive) and max (exclusive).</returns>
+            <example>
+            <c>NormalizeVar(480, 0, 360)</c> will return 120.
+            </example>
+        </member>
+        <member name="M:Duality.MathF.NormalizeAngle(System.Single)">
+            <summary>
+            Normalizes a radian angle to values between zero and <see cref="F:Duality.MathF.TwoPi"/>.
+            </summary>
+            <returns>The normalized value between zero and <see cref="F:Duality.MathF.TwoPi"/>.</returns>
+            <example>
+            <c>NormalizeAngle(<see cref="F:Duality.MathF.TwoPi"/> + <see cref="F:Duality.MathF.Pi"/>)</c> will return <see cref="F:Duality.MathF.Pi"/>.
+            </example>
+        </member>
+        <member name="M:Duality.MathF.Distance(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Returns the distance between two points in 2d space.
+            </summary>
+            <param name="x1">The x-Coordinate of the first point.</param>
+            <param name="y1">The y-Coordinate of the first point.</param>
+            <param name="x2">The x-Coordinate of the second point.</param>
+            <param name="y2">The y-Coordinate of the second point.</param>
+            <returns>The distance between both points.</returns>
+        </member>
+        <member name="M:Duality.MathF.Distance(System.Single,System.Single)">
+            <summary>
+            Returns the distance between a point and [0,0] in 2d space.
+            </summary>
+            <param name="x">The x-Coordinate of the point.</param>
+            <param name="y">The y-Coordinate of the point.</param>
+            <returns>The distance between the point and [0,0].</returns>
+        </member>
+        <member name="M:Duality.MathF.DistanceQuad(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Returns the squared distance between two points in 2d space.
+            </summary>
+            <param name="x1">The x-Coordinate of the first point.</param>
+            <param name="y1">The y-Coordinate of the first point.</param>
+            <param name="x2">The x-Coordinate of the second point.</param>
+            <param name="y2">The y-Coordinate of the second point.</param>
+            <returns>The distance between both points.</returns>
+            <remarks>
+            This method is faster than <see cref="M:Duality.MathF.Distance(System.Single,System.Single,System.Single,System.Single)"/>. 
+            If sufficient, such as for distance comparison, consider using this method instead.
+            </remarks>
+        </member>
+        <member name="M:Duality.MathF.DistanceQuad(System.Single,System.Single)">
+            <summary>
+            Returns the squared distance between a point and [0,0] in 2d space.
+            </summary>
+            <param name="x">The x-Coordinate of the point.</param>
+            <param name="y">The y-Coordinate of the point.</param>
+            <returns>The distance between the point and [0,0].</returns>
+            <remarks>
+            This method is faster than <see cref="M:Duality.MathF.Distance(System.Single,System.Single,System.Single,System.Single)"/>. 
+            If sufficient, such as for distance comparison, consider using this method instead.
+            </remarks>
         </member>
         <member name="M:Duality.MathF.Angle(System.Single,System.Single,System.Single,System.Single)">
             <summary>
             Calculates the angle between two points in 2D space.
             </summary>
-            <param name="x1"></param>
-            <param name="y1"></param>
-            <param name="x2"></param>
-            <param name="y2"></param>
-            <returns>The angle between [x1,y1] and [x2,y2] in radian measure</returns>
+            <param name="x1">The x-Coordinate of the first point.</param>
+            <param name="y1">The y-Coordinate of the first point.</param>
+            <param name="x2">The x-Coordinate of the second point.</param>
+            <param name="y2">The y-Coordinate of the second point.</param>
+            <returns>The angle between [x1,y1] and [x2,y2] in radians.</returns>
+        </member>
+        <member name="M:Duality.MathF.Angle(System.Single,System.Single)">
+            <summary>
+            Calculates the angle from [0,0] to a specified point in 2D space.
+            </summary>
+            <param name="x">The x-Coordinate of the point.</param>
+            <param name="y">The y-Coordinate of the point.</param>
+            <returns>The angle between [0,0] and [x,y] in radians.</returns>
         </member>
         <member name="M:Duality.MathF.TurnDir(System.Single,System.Single,System.Single,System.Single)">
             <summary>
             Assuming a circular value area, this method returns the direction to "turn" value 1 to
             when it comes to take the shortest way to value 2.
             </summary>
-            <param name="val1"></param>
-            <param name="val2"></param>
-            <param name="minVal"></param>
-            <param name="maxVal"></param>
+            <param name="val1">The first (source) value.</param>
+            <param name="val2">The second (destination) value.</param>
+            <param name="minVal">Minimum value.</param>
+            <param name="maxVal">Maximum value.</param>
+            <returns>-1 for "left" / lower, 1 for "right" / higher and 0 for "stay" / equal</returns>
+        </member>
+        <member name="M:Duality.MathF.TurnDir(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Assuming a circular value area, this method returns the direction to "turn" value 1 to
+            when it comes to take the shortest way to value 2.
+            </summary>
+            <param name="val1">The first (source) value.</param>
+            <param name="val2">The second (destination) value.</param>
+            <param name="minVal">Minimum value.</param>
+            <param name="maxVal">Maximum value.</param>
+            <returns>-1 for "left" / lower, 1 for "right" / higher and 0 for "stay" / equal</returns>
+        </member>
+        <member name="M:Duality.MathF.TurnDir(System.Single,System.Single)">
+            <summary>
+            Assuming an angular (radian) value area, this method returns the direction to "turn" value 1 to
+            when it comes to take the shortest way to value 2.
+            </summary>
+            <param name="val1">The first (source) value.</param>
+            <param name="val2">The second (destination) value.</param>
             <returns>-1 for "left" / lower, 1 for "right" / higher and 0 for "stay" / equal</returns>
         </member>
         <member name="M:Duality.MathF.CircularDist(System.Single,System.Single,System.Single,System.Single)">
@@ -4894,92 +5407,177 @@
             <param name="vMax">Value area maximum</param>
             <returns>Value distance</returns>
         </member>
+        <member name="M:Duality.MathF.CircularDist(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Calculates the distance between two values assuming a circular value area.
+            </summary>
+            <param name="v1">Value 1</param>
+            <param name="v2">Value 2</param>
+            <param name="vMin">Value area minimum</param>
+            <param name="vMax">Value area maximum</param>
+            <returns>Value distance</returns>
+        </member>
+        <member name="M:Duality.MathF.CircularDist(System.Single,System.Single)">
+            <summary>
+            Calculates the distance between two angular (radian) values.
+            </summary>
+            <param name="v1">The first (radian) angle.</param>
+            <param name="v2">The second (radian) angle.</param>
+            <returns>The angular distance in radians between both angles.</returns>
+        </member>
         <member name="M:Duality.MathF.TransformCoord(System.Single@,System.Single@,System.Single,System.Single,System.Single,System.Single)">
             <summary>
-            Turns and scales a specific coordinate around the specified center point
+            Turns and scales a specific coordinate around the specified center point.
             </summary>
-            <param name="xCoord"></param>
-            <param name="yCoord"></param>
-            <param name="rot"></param>
-            <param name="scale"></param>
-            <param name="xCenter"></param>
-            <param name="yCenter"></param>
+            <param name="xCoord">The x-Coordinate to transform.</param>
+            <param name="yCoord">The y-Coordinate to transform.</param>
+            <param name="rot">The rotation to apply in radians.</param>
+            <param name="scale">The scale factor to apply.</param>
+            <param name="xCenter">The x-Coordinate of the transformations origin.</param>
+            <param name="yCenter">The y-Coordinate of the transformations origin.</param>
         </member>
-        <member name="M:Duality.MathF.RectsOverlap(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+        <member name="M:Duality.MathF.TransformCoord(System.Single@,System.Single@,System.Single,System.Single)">
             <summary>
-            Returns true, if the two specified rects overlap.
+            Turns and scales a specific coordinate around [0,0].
             </summary>
-            <param name="x1"></param>
-            <param name="y1"></param>
-            <param name="w1"></param>
-            <param name="h1"></param>
-            <param name="x2"></param>
-            <param name="y2"></param>
-            <param name="w2"></param>
-            <param name="h2"></param>
-            <returns></returns>
+            <param name="xCoord">The x-Coordinate to transform.</param>
+            <param name="yCoord">The y-Coordinate to transform.</param>
+            <param name="rot">The rotation to apply in radians.</param>
+            <param name="scale">The scale factor to apply.</param>
         </member>
-        <member name="M:Duality.MathF.GetCommonRect(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single@,System.Single@,System.Single@,System.Single@)">
+        <member name="M:Duality.MathF.TransformCoord(System.Single@,System.Single@,System.Single)">
             <summary>
-            Returns the common rectangular are of both specified rectangular areas.
+            Turns a specific coordinate around [0,0].
             </summary>
-            <param name="x1"></param>
-            <param name="y1"></param>
-            <param name="w1"></param>
-            <param name="h1"></param>
-            <param name="x2"></param>
-            <param name="y2"></param>
-            <param name="w2"></param>
-            <param name="h2"></param>
-            <param name="x3"></param>
-            <param name="y3"></param>
-            <param name="w3"></param>
-            <param name="h3"></param>
+            <param name="xCoord">The x-Coordinate to transform.</param>
+            <param name="yCoord">The y-Coordinate to transform.</param>
+            <param name="rot">The rotation to apply in radians.</param>
+        </member>
+        <!-- Ungültiger XML-Kommentar wurde für den Member "M:Duality.MathF.GetTransformDotVec(System.Single,OpenTK.Vector2,OpenTK.Vector2@,OpenTK.Vector2@)" ignoriert -->
+        <!-- Ungültiger XML-Kommentar wurde für den Member "M:Duality.MathF.GetTransformDotVec(System.Single,System.Single,OpenTK.Vector2@,OpenTK.Vector2@)" ignoriert -->
+        <member name="M:Duality.MathF.GetTransformDotVec(System.Single,OpenTK.Vector2@,OpenTK.Vector2@)">
+            <summary>
+            Prepares a 2d transformation (rotation).
+            </summary>
+            <param name="rot">The rotation to apply in radians.</param>
+            <param name="xDot">Dot product base for the transformed x value.</param>
+            <param name="yDot">Dot product base for the transformed y value.</param>
+            <seealso cref="!:TransformDotVec"/>
+        </member>
+        <member name="M:Duality.MathF.TransdormDotVec(OpenTK.Vector2@,OpenTK.Vector2@,OpenTK.Vector2@)">
+            <summary>
+            Performs a 2d transformation
+            </summary>
+            <param name="vec">The vector to transform.</param>
+            <param name="xDot">Dot product base for the transformed x value.</param>
+            <param name="yDot">Dot product base for the transformed y value.</param>
+            <seealso cref="M:Duality.MathF.GetTransformDotVec(System.Single,OpenTK.Vector2,OpenTK.Vector2@,OpenTK.Vector2@)"/>
+        </member>
+        <member name="M:Duality.MathF.TransdormDotVec(OpenTK.Vector2@,OpenTK.Vector2,OpenTK.Vector2)">
+            <summary>
+            Performs a 2d transformation
+            </summary>
+            <param name="vec">The vector to transform.</param>
+            <param name="xDot">Dot product base for the transformed x value.</param>
+            <param name="yDot">Dot product base for the transformed y value.</param>
+            <seealso cref="M:Duality.MathF.GetTransformDotVec(System.Single,OpenTK.Vector2,OpenTK.Vector2@,OpenTK.Vector2@)"/>
+        </member>
+        <member name="M:Duality.MathF.TransdormDotVec(OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector2)">
+            <summary>
+            Performs a 2d transformation
+            </summary>
+            <param name="vec">The vector to transform.</param>
+            <param name="xDot">Dot product base for the transformed x value.</param>
+            <param name="yDot">Dot product base for the transformed y value.</param>
+            <returns>The transformed vector.</returns>
+            <seealso cref="M:Duality.MathF.GetTransformDotVec(System.Single,OpenTK.Vector2,OpenTK.Vector2@,OpenTK.Vector2@)"/>
+        </member>
+        <member name="M:Duality.MathF.TransdormDotVec(OpenTK.Vector3@,OpenTK.Vector2@,OpenTK.Vector2@)">
+            <summary>
+            Performs a 2d transformation
+            </summary>
+            <param name="vec">The vector to transform.</param>
+            <param name="xDot">Dot product base for the transformed x value.</param>
+            <param name="yDot">Dot product base for the transformed y value.</param>
+            <seealso cref="M:Duality.MathF.GetTransformDotVec(System.Single,OpenTK.Vector2,OpenTK.Vector2@,OpenTK.Vector2@)"/>
+        </member>
+        <member name="M:Duality.MathF.TransdormDotVec(OpenTK.Vector3@,OpenTK.Vector2,OpenTK.Vector2)">
+            <summary>
+            Performs a 2d transformation
+            </summary>
+            <param name="vec">The vector to transform.</param>
+            <param name="xDot">Dot product base for the transformed x value.</param>
+            <param name="yDot">Dot product base for the transformed y value.</param>
+            <seealso cref="M:Duality.MathF.GetTransformDotVec(System.Single,OpenTK.Vector2,OpenTK.Vector2@,OpenTK.Vector2@)"/>
+        </member>
+        <member name="M:Duality.MathF.TransdormDotVec(OpenTK.Vector3,OpenTK.Vector2,OpenTK.Vector2)">
+            <summary>
+            Performs a 2d transformation
+            </summary>
+            <param name="vec">The vector to transform.</param>
+            <param name="xDot">Dot product base for the transformed x value.</param>
+            <param name="yDot">Dot product base for the transformed y value.</param>
+            <returns>The transformed vector.</returns>
+            <seealso cref="M:Duality.MathF.GetTransformDotVec(System.Single,OpenTK.Vector2,OpenTK.Vector2@,OpenTK.Vector2@)"/>
         </member>
         <member name="M:Duality.MathF.LinesCross(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single@,System.Single@,System.Boolean)">
             <summary>
-            Checks, if two line segments (or optionally an infinite lines) cross and determines their mutual point.
+            Checks, if two line segments (or infinite lines) cross and determines their mutual point.
             </summary>
-            <param name="startX1"></param>
-            <param name="startY1"></param>
-            <param name="endX1"></param>
-            <param name="endY1"></param>
-            <param name="startX2"></param>
-            <param name="startY2"></param>
-            <param name="endX2"></param>
-            <param name="endY2"></param>
-            <param name="infinite"></param>
-            <param name="crossX"></param>
-            <param name="crossY"></param>
-            <returns>Are the lines crossing?</returns>
+            <param name="startX1">x-Coordinate of the first lines start.</param>
+            <param name="startY1">y-Coordinate of the first lines start.</param>
+            <param name="endX1">x-Coordinate of the first lines end.</param>
+            <param name="endY1">y-Coordinate of the first lines end.</param>
+            <param name="startX2">x-Coordinate of the second lines start.</param>
+            <param name="startY2">y-Coordinate of the second lines start.</param>
+            <param name="endX2">x-Coordinate of the second lines end.</param>
+            <param name="endY2">y-Coordinate of the second lines end.</param>
+            <param name="infinite">Whether the lines are considered infinite.</param>
+            <param name="crossX">x-Coordiante at which both lines cross.</param>
+            <param name="crossY">y-Coordinate at which both lines cross.</param>
+            <returns>True, if the lines cross, false if not.</returns>
+        </member>
+        <member name="M:Duality.MathF.LinesCross(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Boolean)">
+            <summary>
+            Checks, if two line segments (or infinite lines) cross and determines their mutual point.
+            </summary>
+            <param name="startX1">x-Coordinate of the first lines start.</param>
+            <param name="startY1">y-Coordinate of the first lines start.</param>
+            <param name="endX1">x-Coordinate of the first lines end.</param>
+            <param name="endY1">y-Coordinate of the first lines end.</param>
+            <param name="startX2">x-Coordinate of the second lines start.</param>
+            <param name="startY2">y-Coordinate of the second lines start.</param>
+            <param name="endX2">x-Coordinate of the second lines end.</param>
+            <param name="endY2">y-Coordinate of the second lines end.</param>
+            <param name="infinite">Whether the lines are considered infinite.</param>
+            <returns>True, if the lines cross, false if not.</returns>
         </member>
         <member name="M:Duality.MathF.PointLineNearestPoint(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Boolean)">
             <summary>
-            Calculates the point on a line segment (or optionally an infinite line) that has the smalles possible
-            distance to a seperate point.
+            Calculates the point on a line segment (or infinite line) that has the lowest possible
+            distance to a point.
             </summary>
-            <param name="pX"></param>
-            <param name="pY"></param>
-            <param name="lX1"></param>
-            <param name="lY1"></param>
-            <param name="lX2"></param>
-            <param name="lY2"></param>
-            <param name="infinite"></param>
-            <param name="nX"></param>
-            <param name="nY"></param>
+            <param name="pX">x-Coordinate of the point.</param>
+            <param name="pY">y-Coordinate of the point.</param>
+            <param name="lX1">x-Coordinate of the lines start.</param>
+            <param name="lY1">y-Coordinate of the lines start.</param>
+            <param name="lX2">x-Coordinate of the lines end.</param>
+            <param name="lY2">y-Coordinate of the lines end.</param>
+            <param name="infinite">Whether the line is considered infinite.</param>
+            <returns>A point located on the specified line that is as close as possible to the specified point.</returns>
         </member>
         <member name="M:Duality.MathF.PointLineDistance(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Boolean)">
             <summary>
-            Calculates the distance between a point and a line segment (or optionally an infinite line)
+            Calculates the distance between a point and a line segment (or infinite line).
             </summary>
-            <param name="pX"></param>
-            <param name="pY"></param>
-            <param name="lX1"></param>
-            <param name="lY1"></param>
-            <param name="lX2"></param>
-            <param name="lY2"></param>
-            <param name="infinite"></param>
-            <returns></returns>
+            <param name="pX">x-Coordinate of the point.</param>
+            <param name="pY">y-Coordinate of the point.</param>
+            <param name="lX1">x-Coordinate of the lines start.</param>
+            <param name="lY1">y-Coordinate of the lines start.</param>
+            <param name="lX2">x-Coordinate of the lines end.</param>
+            <param name="lY2">y-Coordinate of the lines end.</param>
+            <param name="infinite">Whether the line is considered infinite.</param>
+            <returns>The distance between point and line.</returns>
         </member>
         <member name="M:Duality.MathF.GetLinearPrediction(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single@,System.Single@)">
             <summary>
@@ -4988,15 +5586,15 @@
             (but constant!) value.
             In other words: If object 1 tries to hit object 2, let object 1 move towards the calculated point.
             </summary>
-            <param name="obj1X"></param>
-            <param name="obj1Y"></param>
-            <param name="obj1Speed"></param>
-            <param name="obj2X"></param>
-            <param name="obj2Y"></param>
-            <param name="obj2Speed"></param>
-            <param name="obj2Angle"></param>
-            <param name="colX"></param>
-            <param name="colY"></param>
+            <param name="obj1X">x-Coordinate of the first object.</param>
+            <param name="obj1Y">y-Coordinate of the first object.</param>
+            <param name="obj1Speed">Speed of the first object.</param>
+            <param name="obj2X">x-Coordinate of the second object.</param>
+            <param name="obj2Y">y-Coordinate of the second object.</param>
+            <param name="obj2Speed">Speed of the second object.</param>
+            <param name="obj2Angle">Angle (in radians) of the second object.</param>
+            <param name="colX">x-Coordinate of the predicted impact.</param>
+            <param name="colY">y-Coordinate of the predicted impact.</param>
             <returns>
             False if it is not possible for object 1 to collide with object 2 at any course of object 1.
             This is, for example, the case if object 1 and to move to the same direction but object 2 is faster.
@@ -5010,15 +5608,20 @@
             calculates the time from now at which the distance between the two objects will be minimal. If
             this has already passed, the returned time is negative.
             </summary>
-            <param name="obj1X"></param>
-            <param name="obj1Y"></param>
-            <param name="obj1XSpeed"></param>
-            <param name="obj1YSpeed"></param>
-            <param name="obj2X"></param>
-            <param name="obj2Y"></param>
-            <param name="obj2XSpeed"></param>
-            <param name="obj2YSpeed"></param>
-            <returns></returns>
+            <param name="obj1X">x-Coordinate of the first object.</param>
+            <param name="obj1Y">y-Coordinate of the first object.</param>
+            <param name="obj1XSpeed">x-Speed of the first object.</param>
+            <param name="obj1YSpeed">y-Speed of the first object.</param>
+            <param name="obj2X">x-Coordinate of the second object.</param>
+            <param name="obj2Y">y-Coordinate of the second object.</param>
+            <param name="obj2XSpeed">x-Speed of the second object.</param>
+            <param name="obj2YSpeed">y-Speed of the second object.</param>
+            <returns>Time of minimum distance.</returns>
+        </member>
+        <member name="P:Duality.MathF.Rnd">
+            <summary>
+            [GET / SET] Global random number generator. Is never null.
+            </summary>
         </member>
         <member name="T:Duality.Serialization.Surrogates.BitmapSurrogate">
             <summary>

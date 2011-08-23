@@ -7,24 +7,67 @@ using OpenTK;
 
 namespace Duality
 {
+	/// <summary>
+	/// Provides math utility methods and float versions of <see cref="System.Math"/> to fit
+	/// Duality <see cref="System.Single"/> arithmetics. 
+	/// </summary>
 	public static class MathF
 	{
+		/// <summary>
+		/// Euler's number, base of the natural logarithm. Approximately 2.7182818284.
+		/// </summary>
 		public const float E = (float)System.Math.E;
+		/// <summary>
+		/// Mmmhh... pie!
+		/// </summary>
 		public const float Pi = (float)System.Math.PI;
 
+		/// <summary>
+		/// Equals <see cref="Pi"/> / 2.
+		/// </summary>
 		public const float PiOver2 = Pi / 2.0f;
+		/// <summary>
+		/// Equals <see cref="Pi"/> / 3.
+		/// </summary>
 		public const float PiOver3 = Pi / 3.0f;
+		/// <summary>
+		/// Equals <see cref="Pi"/> / 4.
+		/// </summary>
 		public const float PiOver4 = Pi / 4.0f;
+		/// <summary>
+		/// Equals <see cref="Pi"/> / 6.
+		/// </summary>
 		public const float PiOver6 = Pi / 6.0f;
+		/// <summary>
+		/// Equals 2 * <see cref="Pi"/>.
+		/// </summary>
 		public const float TwoPi = Pi * 2.0f;
 
+		/// <summary>
+		/// A 30 degree angle in radians. Equals <see cref="PiOver6"/>.
+		/// </summary>
 		public const float RadAngle30 = PiOver6;
+		/// <summary>
+		/// A 45 degree angle in radians. Equals <see cref="PiOver4"/>.
+		/// </summary>
 		public const float RadAngle45 = PiOver4;
+		/// <summary>
+		/// A 90 degree angle in radians. Equals <see cref="PiOver2"/>.
+		/// </summary>
 		public const float RadAngle90 = PiOver2;
+		/// <summary>
+		/// A 180 degree angle in radians. Equals <see cref="Pi"/>.
+		/// </summary>
 		public const float RadAngle180 = Pi;
+		/// <summary>
+		/// A 360 degree angle in radians. Equals <see cref="TwoPi"/>.
+		/// </summary>
 		public const float RadAngle360 = TwoPi;
 
 		private static Random rnd = new Random((int)(DateTime.Now.Ticks % (long)int.MaxValue));
+		/// <summary>
+		/// [GET / SET] Global random number generator. Is never null.
+		/// </summary>
 		public static Random Rnd
 		{
 			get { return rnd; }
@@ -32,59 +75,133 @@ namespace Duality
 		}
 
 
+		/// <summary>
+		/// Returns the absolute value of a <see cref="System.Single"/>.
+		/// </summary>
+		/// <param name="v">A number.</param>
+		/// <returns>The absolute value of the number.</returns>
 		public static float Abs(float v)
 		{
 			return System.Math.Abs(v);
 		}
+		/// <summary>
+		/// Returns the absolute value of a <see cref="System.Int32"/>.
+		/// </summary>
+		/// <param name="v">A number.</param>
+		/// <returns>The absolute value of the number.</returns>
 		public static int Abs(int v)
 		{
 			return System.Math.Abs(v);
 		}
 
+		/// <summary>
+		/// Returns the lowest whole-number bigger than the specified one. (Rounds up)
+		/// </summary>
+		/// <param name="v">A number.</param>
+		/// <returns>The rounded number.</returns>
+		/// <seealso cref="Floor"/>
 		public static float Ceiling(float v)
 		{
 			return (float)System.Math.Ceiling(v);
 		}
+		/// <summary>
+		/// Returns the highest whole-number smaller than the specified one. (Rounds down)
+		/// </summary>
+		/// <param name="v">A number.</param>
+		/// <returns>The rounded number.</returns>
+		/// <seealso cref="Ceiling"/>
 		public static float Floor(float v)
 		{
 			return (float)System.Math.Floor(v);
 		}
 
+		/// <summary>
+		/// Rounds the specified value.
+		/// </summary>
+		/// <param name="v">A number.</param>
+		/// <returns>The rounded number.</returns>
 		public static float Round(float v)
 		{
 			return (float)System.Math.Round(v);
 		}
+		/// <summary>
+		/// Rounds the specified value to a certain number of fraction digits.
+		/// </summary>
+		/// <param name="v">A number.</param>
+		/// <param name="digits">The number of fraction digits to round to.</param>
+		/// <returns>The rounded number.</returns>
 		public static float Round(float v, int digits)
 		{
 			return (float)System.Math.Round(v, digits);
 		}
+		/// <summary>
+		/// Rounds the specified value.
+		/// </summary>
+		/// <param name="v">A number.</param>
+		/// <param name="mode">Specifies what happens if the value is exactly inbetween two numbers.</param>
+		/// <returns>The rounded number.</returns>
 		public static float Round(float v, MidpointRounding mode)
 		{
 			return (float)System.Math.Round(v, mode);
 		}
+		/// <summary>
+		/// Rounds the specified value to a certain number of fraction digits.
+		/// </summary>
+		/// <param name="v">A number.</param>
+		/// <param name="digits">The number of fraction digits to round to.</param>
+		/// <param name="mode">Specifies what happens if the value is exactly inbetween two numbers.</param>
+		/// <returns>The rounded number.</returns>
 		public static float Round(float v, int digits, MidpointRounding mode)
 		{
 			return (float)System.Math.Round(v, digits, mode);
 		}
 
+		/// <summary>
+		/// Rounds the specified value to an integer value.
+		/// </summary>
+		/// <param name="v">A number.</param>
+		/// <returns>The rounded number as <see cref="System.Int32"/>.</returns>
+		/// <seealso cref="Round(float)"/>
 		public static int RoundToInt(float v)
 		{
 			return (int)System.Math.Round(v);
 		}
+		/// <summary>
+		/// Rounds the specified value to an integer value.
+		/// </summary>
+		/// <param name="v">A number.</param>
+		/// <param name="mode">Specifies what happens if the value is exactly inbetween two numbers.</param>
+		/// <returns>The rounded number as <see cref="System.Int32"/>.</returns>
+		/// <seealso cref="Round(float, MidpointRounding)"/>
 		public static int RoundToInt(float v, MidpointRounding mode)
 		{
 			return (int)System.Math.Round(v, mode);
 		}
 
+		/// <summary>
+		/// Returns the sign of a value.
+		/// </summary>
+		/// <param name="v">A number.</param>
+		/// <returns>-1 if negative, 1 if positive and 0 if zero.</returns>
 		public static float Sign(float v)
 		{
 			return System.Math.Sign(v);
 		}
+		/// <summary>
+		/// Returns the sign of a value.
+		/// </summary>
+		/// <param name="v">A number.</param>
+		/// <returns>-1 if negative, 1 if positive and 0 if zero.</returns>
 		public static int Sign(int v)
 		{
 			return System.Math.Sign(v);
 		}
 
+		/// <summary>
+		/// Returns a numbers square root.
+		/// </summary>
+		/// <param name="v">A number.</param>
+		/// <returns>The numbers square root.</returns>
 		public static float Sqrt(float v)
 		{
 			return (float)System.Math.Sqrt(v);
@@ -107,80 +224,189 @@ namespace Duality
 			}
 		}
 
+		/// <summary>
+		/// Returns the factorial of an integer value.
+		/// </summary>
+		/// <param name="n">A number.</param>
+		/// <returns>The factorial of the number.</returns>
 		public static int Factorial(int n)
 		{
 			int r = 1;
 			for (; n > 1; n--) r *= n;
-			return r;
+			return Math.Abs(r);
 		}
 
+		/// <summary>
+		/// Returns the lower of two values.
+		/// </summary>
+		/// <param name="v1"></param>
+		/// <param name="v2"></param>
+		/// <returns>The lowest value.</returns>
 		public static float Min(float v1, float v2)
 		{
 			return System.Math.Min(v1, v2);
 		}
+		/// <summary>
+		/// Returns the lowest of three values.
+		/// </summary>
+		/// <param name="v1"></param>
+		/// <param name="v2"></param>
+		/// <param name="v3"></param>
+		/// <returns>The lowest value.</returns>
 		public static float Min(float v1, float v2, float v3)
 		{
 			return System.Math.Min(System.Math.Min(v1, v2), v3);
 		}
+		/// <summary>
+		/// Returns the lowest of four values.
+		/// </summary>
+		/// <param name="v1"></param>
+		/// <param name="v2"></param>
+		/// <param name="v3"></param>
+		/// <param name="v4"></param>
+		/// <returns>The lowest value.</returns>
 		public static float Min(float v1, float v2, float v3, float v4)
 		{
 			return System.Math.Min(System.Math.Min(System.Math.Min(v1, v2), v3), v4);
 		}
+		/// <summary>
+		/// Returns the lowest of any number of values.
+		/// </summary>
+		/// <param name="v"></param>
+		/// <returns>The lowest value.</returns>
 		public static float Min(params float[] v)
 		{
 			float m = float.MaxValue;
 			foreach (float val in v) m = System.Math.Min(m, val);
 			return m;
 		}
+		/// <summary>
+		/// Returns the lower of two values.
+		/// </summary>
+		/// <param name="v1"></param>
+		/// <param name="v2"></param>
+		/// <returns>The lowest value.</returns>
 		public static int Min(int v1, int v2)
 		{
 			return System.Math.Min(v1, v2);
 		}
+		/// <summary>
+		/// Returns the lowest of three values.
+		/// </summary>
+		/// <param name="v1"></param>
+		/// <param name="v2"></param>
+		/// <param name="v3"></param>
+		/// <returns>The lowest value.</returns>
 		public static int Min(int v1, int v2, int v3)
 		{
 			return System.Math.Min(System.Math.Min(v1, v2), v3);
 		}
+		/// <summary>
+		/// Returns the lowest of four values.
+		/// </summary>
+		/// <param name="v1"></param>
+		/// <param name="v2"></param>
+		/// <param name="v3"></param>
+		/// <param name="v4"></param>
+		/// <returns>The lowest value.</returns>
 		public static int Min(int v1, int v2, int v3, int v4)
 		{
 			return System.Math.Min(System.Math.Min(System.Math.Min(v1, v2), v3), v4);
 		}
+		/// <summary>
+		/// Returns the lowest of any number of values.
+		/// </summary>
+		/// <param name="v"></param>
+		/// <returns>The lowest value.</returns>
 		public static int Min(params int[] v)
 		{
 			int m = int.MaxValue;
 			foreach (int val in v) m = System.Math.Min(m, val);
 			return m;
 		}
-
+		
+		/// <summary>
+		/// Returns the higher of two values.
+		/// </summary>
+		/// <param name="v1"></param>
+		/// <param name="v2"></param>
+		/// <returns>The highest value.</returns>
 		public static float Max(float v1, float v2)
 		{
 			return System.Math.Max(v1, v2);
 		}
+		/// <summary>
+		/// Returns the highest of three values.
+		/// </summary>
+		/// <param name="v1"></param>
+		/// <param name="v2"></param>
+		/// <param name="v3"></param>
+		/// <returns>The highest value.</returns>
 		public static float Max(float v1, float v2, float v3)
 		{
 			return System.Math.Max(System.Math.Max(v1, v2), v3);
 		}
+		/// <summary>
+		/// Returns the highest of four values.
+		/// </summary>
+		/// <param name="v1"></param>
+		/// <param name="v2"></param>
+		/// <param name="v3"></param>
+		/// <param name="v4"></param>
+		/// <returns>The highest value.</returns>
 		public static float Max(float v1, float v2, float v3, float v4)
 		{
 			return System.Math.Max(System.Math.Max(System.Math.Max(v1, v2), v3), v4);
 		}
+		/// <summary>
+		/// Returns the highest of any number of values.
+		/// </summary>
+		/// <param name="v"></param>
+		/// <returns>The highest value.</returns>
 		public static float Max(params float[] v)
 		{
 			float m = float.MinValue;
 			foreach (float val in v) m = System.Math.Max(m, val);
 			return m;
 		}
+		/// <summary>
+		/// Returns the higher of two values.
+		/// </summary>
+		/// <param name="v1"></param>
+		/// <param name="v2"></param>
+		/// <returns>The highest value.</returns>
 		public static int Max(int v1, int v2)
 		{
 			return System.Math.Max(v1, v2);
 		}
+		/// <summary>
+		/// Returns the highest of three values.
+		/// </summary>
+		/// <param name="v1"></param>
+		/// <param name="v2"></param>
+		/// <param name="v3"></param>
+		/// <returns>The highest value.</returns>
 		public static int Max(int v1, int v2, int v3)
 		{
 			return System.Math.Max(System.Math.Max(v1, v2), v3);
 		}
+		/// <summary>
+		/// Returns the highest of four values.
+		/// </summary>
+		/// <param name="v1"></param>
+		/// <param name="v2"></param>
+		/// <param name="v3"></param>
+		/// <param name="v4"></param>
+		/// <returns>The highest value.</returns>
 		public static int Max(int v1, int v2, int v3, int v4)
 		{
 			return System.Math.Max(System.Math.Max(System.Math.Max(v1, v2), v3), v4);
 		}
+		/// <summary>
+		/// Returns the highest of any number of values.
+		/// </summary>
+		/// <param name="v"></param>
+		/// <returns>The highest value.</returns>
 		public static int Max(params int[] v)
 		{
 			int m = int.MinValue;
@@ -188,66 +414,148 @@ namespace Duality
 			return m;
 		}
 
+		/// <summary>
+		/// Clamps a value between minimum and maximum.
+		/// </summary>
+		/// <param name="v">The value to clamp.</param>
+		/// <param name="min">The minimum value that can't be deceeded.</param>
+		/// <param name="max">The maximum value that can't be exceeded.</param>
+		/// <returns>The clamped value.</returns>
 		public static float Clamp(float v, float min, float max)
 		{
 			return System.Math.Max(min, System.Math.Min(v, max));
 		}
+		/// <summary>
+		/// Clamps a value between minimum and maximum.
+		/// </summary>
+		/// <param name="v">The value to clamp.</param>
+		/// <param name="min">The minimum value that can't be deceeded.</param>
+		/// <param name="max">The maximum value that can't be exceeded.</param>
+		/// <returns>The clamped value.</returns>
 		public static int Clamp(int v, int min, int max)
 		{
 			return System.Math.Max(min, System.Math.Min(v, max));
 		}
 
+		/// <summary>
+		/// Returns the specified power of <see cref="E"/>.
+		/// </summary>
+		/// <param name="v"></param>
+		/// <returns></returns>
 		public static float Exp(float v)
 		{
 			return (float)System.Math.Exp(v);
 		}
+		/// <summary>
+		/// Returns the natural logarithm of a value.
+		/// </summary>
+		/// <param name="v"></param>
+		/// <returns></returns>
 		public static float Log(float v)
 		{
 			return (float)System.Math.Log(v);
 		}
+		/// <summary>
+		/// Returns the specified power of a value.
+		/// </summary>
+		/// <param name="v">The base value.</param>
+		/// <param name="e">Specifies the power to return.</param>
+		/// <returns></returns>
 		public static float Pow(float v, float e)
 		{
 			return (float)System.Math.Pow(v, e);
 		}
+		/// <summary>
+		/// Returns the logarithm of a value.
+		/// </summary>
+		/// <param name="v">The value whichs logarithm is to be calculated.</param>
+		/// <param name="newBase">The base of the logarithm.</param>
+		/// <returns></returns>
 		public static float Log(float v, float newBase)
 		{
 			return (float)System.Math.Log(v, newBase);
 		}
 
+		/// <summary>
+		/// Returns the sine value of the specified (radian) angle.
+		/// </summary>
+		/// <param name="angle">A radian angle.</param>
+		/// <returns></returns>
 		public static float Sin(float angle)
 		{
 			return (float)System.Math.Sin(angle);
 		}
+		/// <summary>
+		/// Returns the cosine value of the specified (radian) angle.
+		/// </summary>
+		/// <param name="angle">A radian angle.</param>
+		/// <returns></returns>
 		public static float Cos(float angle)
 		{
 			return (float)System.Math.Cos(angle);
 		}
+		/// <summary>
+		/// Returns the tangent value of the specified (radian) angle.
+		/// </summary>
+		/// <param name="angle">A radian angle.</param>
+		/// <returns></returns>
 		public static float Tan(float angle)
 		{
 			return (float)System.Math.Tan(angle);
 		}
+		/// <summary>
+		/// Returns the inverse sine value of the specified (radian) angle.
+		/// </summary>
+		/// <param name="angle">A radian angle.</param>
+		/// <returns></returns>
 		public static float Asin(float sin)
 		{
 			return (float)System.Math.Asin(sin);
 		}
+		/// <summary>
+		/// Returns the inverse cosine value of the specified (radian) angle.
+		/// </summary>
+		/// <param name="angle">A radian angle.</param>
+		/// <returns></returns>
 		public static float Acos(float cos)
 		{
 			return (float)System.Math.Acos(cos);
 		}
+		/// <summary>
+		/// Returns the inverse tangent value of the specified (radian) angle.
+		/// </summary>
+		/// <param name="angle">A radian angle.</param>
+		/// <returns></returns>
 		public static float Atan(float tan)
 		{
 			return (float)System.Math.Atan(tan);
 		}
+		/// <summary>
+		/// Returns the (radian) angle whose tangent is the quotient of two specified numbers.
+		/// </summary>
+		/// <param name="y">The y coordinate of a point. </param>
+		/// <param name="x">The x coordinate of a point. </param>
+		/// <returns></returns>
 		public static float Atan2(float y, float x)
 		{
 			return (float)System.Math.Atan2(y, x);
 		}
 
+		/// <summary>
+		/// Converts degrees  to radians.
+		/// </summary>
+		/// <param name="deg"></param>
+		/// <returns></returns>
 		public static float DegToRad(float deg)
 		{
 			const float factor = (float)System.Math.PI / 180.0f;
 			return deg * factor;
 		}
+		/// <summary>
+		/// Converts radians to degrees.
+		/// </summary>
+		/// <param name="rad"></param>
+		/// <returns></returns>
 		public static float RadToDeg(float rad)
 		{
 			const float factor = 180.0f / (float)System.Math.PI;
@@ -255,10 +563,12 @@ namespace Duality
 		}
 
 		/// <summary>
-		/// Normalizes the given variable to the given circular area.
-		/// Example: NormalizeVar(480, 0, 360) returns 120.
+		/// Normalizes a value to the given circular area.
 		/// </summary>
 		/// <returns>The normalized value between min (inclusive) and max (exclusive).</returns>
+		/// <example>
+		/// <c>NormalizeVar(480, 0, 360)</c> will return 120.
+		/// </example>
 		public static float NormalizeVar(float var, float min, float max)
 		{
 			if (var >= min && var < max) return var;
@@ -270,6 +580,13 @@ namespace Duality
 
 			return var;
 		}
+		/// <summary>
+		/// Normalizes a value to the given circular area.
+		/// </summary>
+		/// <returns>The normalized value between min (inclusive) and max (exclusive).</returns>
+		/// <example>
+		/// <c>NormalizeVar(480, 0, 360)</c> will return 120.
+		/// </example>
 		public static int NormalizeVar(int var, int min, int max)
 		{
 			if (var >= min && var < max) return var;
@@ -281,6 +598,13 @@ namespace Duality
 
 			return var;
 		}
+		/// <summary>
+		/// Normalizes a radian angle to values between zero and <see cref="TwoPi"/>.
+		/// </summary>
+		/// <returns>The normalized value between zero and <see cref="TwoPi"/>.</returns>
+		/// <example>
+		/// <c>NormalizeAngle(<see cref="TwoPi"/> + <see cref="Pi"/>)</c> will return <see cref="Pi"/>.
+		/// </example>
 		public static float NormalizeAngle(float var)
 		{
 			if (var >= 0.0f && var < RadAngle360) return var;
@@ -293,18 +617,54 @@ namespace Duality
 			return var;
 		}
 
+		/// <summary>
+		/// Returns the distance between two points in 2d space.
+		/// </summary>
+		/// <param name="x1">The x-Coordinate of the first point.</param>
+		/// <param name="y1">The y-Coordinate of the first point.</param>
+		/// <param name="x2">The x-Coordinate of the second point.</param>
+		/// <param name="y2">The y-Coordinate of the second point.</param>
+		/// <returns>The distance between both points.</returns>
 		public static float Distance(float x1, float y1, float x2, float y2)
 		{
 			return ((float)System.Math.Sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)));
 		}
+		/// <summary>
+		/// Returns the distance between a point and [0,0] in 2d space.
+		/// </summary>
+		/// <param name="x">The x-Coordinate of the point.</param>
+		/// <param name="y">The y-Coordinate of the point.</param>
+		/// <returns>The distance between the point and [0,0].</returns>
 		public static float Distance(float x, float y)
 		{
 			return ((float)System.Math.Sqrt(x * x + y * y));
 		}
+		/// <summary>
+		/// Returns the squared distance between two points in 2d space.
+		/// </summary>
+		/// <param name="x1">The x-Coordinate of the first point.</param>
+		/// <param name="y1">The y-Coordinate of the first point.</param>
+		/// <param name="x2">The x-Coordinate of the second point.</param>
+		/// <param name="y2">The y-Coordinate of the second point.</param>
+		/// <returns>The distance between both points.</returns>
+		/// <remarks>
+		/// This method is faster than <see cref="Distance"/>. 
+		/// If sufficient, such as for distance comparison, consider using this method instead.
+		/// </remarks>
 		public static float DistanceQuad(float x1, float y1, float x2, float y2)
 		{
 			return (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1);
 		}
+		/// <summary>
+		/// Returns the squared distance between a point and [0,0] in 2d space.
+		/// </summary>
+		/// <param name="x">The x-Coordinate of the point.</param>
+		/// <param name="y">The y-Coordinate of the point.</param>
+		/// <returns>The distance between the point and [0,0].</returns>
+		/// <remarks>
+		/// This method is faster than <see cref="Distance"/>. 
+		/// If sufficient, such as for distance comparison, consider using this method instead.
+		/// </remarks>
 		public static float DistanceQuad(float x, float y)
 		{
 			return x * x + y * y;
@@ -313,15 +673,21 @@ namespace Duality
 		/// <summary>
 		/// Calculates the angle between two points in 2D space.
 		/// </summary>
-		/// <param name="x1"></param>
-		/// <param name="y1"></param>
-		/// <param name="x2"></param>
-		/// <param name="y2"></param>
-		/// <returns>The angle between [x1,y1] and [x2,y2] in radian measure</returns>
+		/// <param name="x1">The x-Coordinate of the first point.</param>
+		/// <param name="y1">The y-Coordinate of the first point.</param>
+		/// <param name="x2">The x-Coordinate of the second point.</param>
+		/// <param name="y2">The y-Coordinate of the second point.</param>
+		/// <returns>The angle between [x1,y1] and [x2,y2] in radians.</returns>
 		public static float Angle(float x1, float y1, float x2, float y2)
 		{
 			return (float)((System.Math.Atan2((y2 - y1), (x2 - x1)) + PiOver2 + TwoPi) % TwoPi);
 		}
+		/// <summary>
+		/// Calculates the angle from [0,0] to a specified point in 2D space.
+		/// </summary>
+		/// <param name="x">The x-Coordinate of the point.</param>
+		/// <param name="y">The y-Coordinate of the point.</param>
+		/// <returns>The angle between [0,0] and [x,y] in radians.</returns>
 		public static float Angle(float x, float y)
 		{
 			return (float)((System.Math.Atan2(y, x) + PiOver2 + TwoPi) % TwoPi);
@@ -331,10 +697,10 @@ namespace Duality
 		/// Assuming a circular value area, this method returns the direction to "turn" value 1 to
 		/// when it comes to take the shortest way to value 2.
 		/// </summary>
-		/// <param name="val1"></param>
-		/// <param name="val2"></param>
-		/// <param name="minVal"></param>
-		/// <param name="maxVal"></param>
+		/// <param name="val1">The first (source) value.</param>
+		/// <param name="val2">The second (destination) value.</param>
+		/// <param name="minVal">Minimum value.</param>
+		/// <param name="maxVal">Maximum value.</param>
 		/// <returns>-1 for "left" / lower, 1 for "right" / higher and 0 for "stay" / equal</returns>
 		public static float TurnDir(float val1, float val2, float minVal, float maxVal)
 		{
@@ -351,6 +717,15 @@ namespace Duality
 				else return 1.0f;
 			}
 		}
+		/// <summary>
+		/// Assuming a circular value area, this method returns the direction to "turn" value 1 to
+		/// when it comes to take the shortest way to value 2.
+		/// </summary>
+		/// <param name="val1">The first (source) value.</param>
+		/// <param name="val2">The second (destination) value.</param>
+		/// <param name="minVal">Minimum value.</param>
+		/// <param name="maxVal">Maximum value.</param>
+		/// <returns>-1 for "left" / lower, 1 for "right" / higher and 0 for "stay" / equal</returns>
 		public static int TurnDir(int val1, int val2, int minVal, int maxVal)
 		{
 			if (val1 == val2) return 0;
@@ -366,6 +741,13 @@ namespace Duality
 				else return 1;
 			}
 		}
+		/// <summary>
+		/// Assuming an angular (radian) value area, this method returns the direction to "turn" value 1 to
+		/// when it comes to take the shortest way to value 2.
+		/// </summary>
+		/// <param name="val1">The first (source) value.</param>
+		/// <param name="val2">The second (destination) value.</param>
+		/// <returns>-1 for "left" / lower, 1 for "right" / higher and 0 for "stay" / equal</returns>
 		public static float TurnDir(float val1, float val2)
 		{
 			if (val1 == val2) return 0.0f;
@@ -398,6 +780,14 @@ namespace Duality
 			else
 				return (vMax - vMin) - vTemp;
 		}
+		/// <summary>
+		/// Calculates the distance between two values assuming a circular value area.
+		/// </summary>
+		/// <param name="v1">Value 1</param>
+		/// <param name="v2">Value 2</param>
+		/// <param name="vMin">Value area minimum</param>
+		/// <param name="vMax">Value area maximum</param>
+		/// <returns>Value distance</returns>
 		public static int CircularDist(int v1, int v2, int vMin, int vMax)
 		{
 			int vTemp = System.Math.Abs(NormalizeVar(v1, vMin, vMax) - NormalizeVar(v2, vMin, vMax));
@@ -406,6 +796,12 @@ namespace Duality
 			else
 				return (vMax - vMin) - vTemp;
 		}
+		/// <summary>
+		/// Calculates the distance between two angular (radian) values.
+		/// </summary>
+		/// <param name="v1">The first (radian) angle.</param>
+		/// <param name="v2">The second (radian) angle.</param>
+		/// <returns>The angular distance in radians between both angles.</returns>
 		public static float CircularDist(float v1, float v2)
 		{
 			float vTemp = System.Math.Abs(NormalizeAngle(v1) - NormalizeAngle(v2));
@@ -416,14 +812,14 @@ namespace Duality
 		}
 
 		/// <summary>
-		/// Turns and scales a specific coordinate around the specified center point
+		/// Turns and scales a specific coordinate around the specified center point.
 		/// </summary>
-		/// <param name="xCoord"></param>
-		/// <param name="yCoord"></param>
-		/// <param name="rot"></param>
-		/// <param name="scale"></param>
-		/// <param name="xCenter"></param>
-		/// <param name="yCenter"></param>
+		/// <param name="xCoord">The x-Coordinate to transform.</param>
+		/// <param name="yCoord">The y-Coordinate to transform.</param>
+		/// <param name="rot">The rotation to apply in radians.</param>
+		/// <param name="scale">The scale factor to apply.</param>
+		/// <param name="xCenter">The x-Coordinate of the transformations origin.</param>
+		/// <param name="yCenter">The y-Coordinate of the transformations origin.</param>
 		public static void TransformCoord(ref float xCoord, ref float yCoord, float rot, float scale, float xCenter, float yCenter)
 		{
 			float sin = (float)System.Math.Sin(rot);
@@ -432,6 +828,13 @@ namespace Duality
 			xCoord = xCenter + ((xCoord - xCenter) * cos - (yCoord - yCenter) * sin) * scale;
 			yCoord = yCenter + ((lastX - xCenter) * sin + (yCoord - yCenter) * cos) * scale;
 		}
+		/// <summary>
+		/// Turns and scales a specific coordinate around [0,0].
+		/// </summary>
+		/// <param name="xCoord">The x-Coordinate to transform.</param>
+		/// <param name="yCoord">The y-Coordinate to transform.</param>
+		/// <param name="rot">The rotation to apply in radians.</param>
+		/// <param name="scale">The scale factor to apply.</param>
 		public static void TransformCoord(ref float xCoord, ref float yCoord, float rot, float scale)
 		{
 			float sin = (float)System.Math.Sin(rot);
@@ -440,6 +843,12 @@ namespace Duality
 			xCoord = (xCoord * cos - yCoord * sin) * scale;
 			yCoord = (lastX * sin + yCoord * cos) * scale;
 		}
+		/// <summary>
+		/// Turns a specific coordinate around [0,0].
+		/// </summary>
+		/// <param name="xCoord">The x-Coordinate to transform.</param>
+		/// <param name="yCoord">The y-Coordinate to transform.</param>
+		/// <param name="rot">The rotation to apply in radians.</param>
 		public static void TransformCoord(ref float xCoord, ref float yCoord, float rot)
 		{
 			float sin = (float)System.Math.Sin(rot);
@@ -449,6 +858,14 @@ namespace Duality
 			yCoord = lastX * sin + yCoord * cos;
 		}
 
+		/// <summary>
+		/// Prepares a 2d transformation (rotation & scale).
+		/// </summary>
+		/// <param name="rot">The rotation to apply in radians.</param>
+		/// <param name="scale">The scale factor to apply.</param>
+		/// <param name="xDot">Dot product base for the transformed x value.</param>
+		/// <param name="yDot">Dot product base for the transformed y value.</param>
+		/// <seealso cref="TransformDotVec"/>
 		public static void GetTransformDotVec(float rot, Vector2 scale, out Vector2 xDot, out Vector2 yDot)
 		{
 			float sin = (float)System.Math.Sin(rot);
@@ -456,6 +873,14 @@ namespace Duality
 			xDot = new Vector2(cos * scale.X, -sin * scale.X);
 			yDot = new Vector2(sin * scale.Y, cos * scale.Y);
 		}
+		/// <summary>
+		/// Prepares a 2d transformation (rotation & scale).
+		/// </summary>
+		/// <param name="rot">The rotation to apply in radians.</param>
+		/// <param name="scale">The scale factor to apply.</param>
+		/// <param name="xDot">Dot product base for the transformed x value.</param>
+		/// <param name="yDot">Dot product base for the transformed y value.</param>
+		/// <seealso cref="TransformDotVec"/>
 		public static void GetTransformDotVec(float rot, float scale, out Vector2 xDot, out Vector2 yDot)
 		{
 			float sin = (float)System.Math.Sin(rot);
@@ -463,6 +888,13 @@ namespace Duality
 			xDot = new Vector2(cos * scale, -sin * scale);
 			yDot = new Vector2(sin * scale, cos * scale);
 		}
+		/// <summary>
+		/// Prepares a 2d transformation (rotation).
+		/// </summary>
+		/// <param name="rot">The rotation to apply in radians.</param>
+		/// <param name="xDot">Dot product base for the transformed x value.</param>
+		/// <param name="yDot">Dot product base for the transformed y value.</param>
+		/// <seealso cref="TransformDotVec"/>
 		public static void GetTransformDotVec(float rot, out Vector2 xDot, out Vector2 yDot)
 		{
 			float sin = (float)System.Math.Sin(rot);
@@ -471,36 +903,80 @@ namespace Duality
 			yDot = new Vector2(sin, cos);
 		}
 
+		/// <summary>
+		/// Performs a 2d transformation
+		/// </summary>
+		/// <param name="vec">The vector to transform.</param>
+		/// <param name="xDot">Dot product base for the transformed x value.</param>
+		/// <param name="yDot">Dot product base for the transformed y value.</param>
+		/// <seealso cref="GetTransformDotVec"/>
 		public static void TransdormDotVec(ref Vector2 vec, ref Vector2 xDot, ref Vector2 yDot)
 		{
 			float oldX = vec.X;
 			vec.X = vec.X * xDot.X + vec.Y * xDot.Y;
 			vec.Y = oldX * yDot.X + vec.Y * yDot.Y;
 		}
+		/// <summary>
+		/// Performs a 2d transformation
+		/// </summary>
+		/// <param name="vec">The vector to transform.</param>
+		/// <param name="xDot">Dot product base for the transformed x value.</param>
+		/// <param name="yDot">Dot product base for the transformed y value.</param>
+		/// <seealso cref="GetTransformDotVec"/>
 		public static void TransdormDotVec(ref Vector2 vec, Vector2 xDot, Vector2 yDot)
 		{
 			float oldX = vec.X;
 			vec.X = vec.X * xDot.X + vec.Y * xDot.Y;
 			vec.Y = oldX * yDot.X + vec.Y * yDot.Y;
 		}
+		/// <summary>
+		/// Performs a 2d transformation
+		/// </summary>
+		/// <param name="vec">The vector to transform.</param>
+		/// <param name="xDot">Dot product base for the transformed x value.</param>
+		/// <param name="yDot">Dot product base for the transformed y value.</param>
+		/// <returns>The transformed vector.</returns>
+		/// <seealso cref="GetTransformDotVec"/>
 		public static Vector2 TransdormDotVec(Vector2 vec, Vector2 xDot, Vector2 yDot)
 		{
 			return new Vector2(
 				vec.X * xDot.X + vec.Y * xDot.Y,
 				vec.X * yDot.X + vec.Y * yDot.Y);
 		}
+		/// <summary>
+		/// Performs a 2d transformation
+		/// </summary>
+		/// <param name="vec">The vector to transform.</param>
+		/// <param name="xDot">Dot product base for the transformed x value.</param>
+		/// <param name="yDot">Dot product base for the transformed y value.</param>
+		/// <seealso cref="GetTransformDotVec"/>
 		public static void TransdormDotVec(ref Vector3 vec, ref Vector2 xDot, ref Vector2 yDot)
 		{
 			float oldX = vec.X;
 			vec.X = vec.X * xDot.X + vec.Y * xDot.Y;
 			vec.Y = oldX * yDot.X + vec.Y * yDot.Y;
 		}
+		/// <summary>
+		/// Performs a 2d transformation
+		/// </summary>
+		/// <param name="vec">The vector to transform.</param>
+		/// <param name="xDot">Dot product base for the transformed x value.</param>
+		/// <param name="yDot">Dot product base for the transformed y value.</param>
+		/// <seealso cref="GetTransformDotVec"/>
 		public static void TransdormDotVec(ref Vector3 vec, Vector2 xDot, Vector2 yDot)
 		{
 			float oldX = vec.X;
 			vec.X = vec.X * xDot.X + vec.Y * xDot.Y;
 			vec.Y = oldX * yDot.X + vec.Y * yDot.Y;
 		}
+		/// <summary>
+		/// Performs a 2d transformation
+		/// </summary>
+		/// <param name="vec">The vector to transform.</param>
+		/// <param name="xDot">Dot product base for the transformed x value.</param>
+		/// <param name="yDot">Dot product base for the transformed y value.</param>
+		/// <returns>The transformed vector.</returns>
+		/// <seealso cref="GetTransformDotVec"/>
 		public static Vector3 TransdormDotVec(Vector3 vec,Vector2 xDot, Vector2 yDot)
 		{
 			return new Vector3(
@@ -510,93 +986,20 @@ namespace Duality
 		}
 
 		/// <summary>
-		/// Returns true, if the two specified rects overlap.
+		/// Checks, if two line segments (or infinite lines) cross and determines their mutual point.
 		/// </summary>
-		/// <param name="x1"></param>
-		/// <param name="y1"></param>
-		/// <param name="w1"></param>
-		/// <param name="h1"></param>
-		/// <param name="x2"></param>
-		/// <param name="y2"></param>
-		/// <param name="w2"></param>
-		/// <param name="h2"></param>
-		/// <returns></returns>
-		public static bool RectsOverlap(float x1, float y1, float w1, float h1, float x2, float y2, float w2, float h2)
-		{
-			if (x1 > (x2 + w2) || (x1 + w1) < x2) return false;
-			if (y1 > (y2 + h2) || (y1 + h1) < y2) return false;
-			return true;
-		}
-		public static bool RectsOverlap(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2)
-		{
-			if (x1 > (x2 + w2) || (x1 + w1) < x2) return false;
-			if (y1 > (y2 + h2) || (y1 + h1) < y2) return false;
-			return true;
-		}
-
-		/// <summary>
-		/// Returns the common rectangular are of both specified rectangular areas.
-		/// </summary>
-		/// <param name="x1"></param>
-		/// <param name="y1"></param>
-		/// <param name="w1"></param>
-		/// <param name="h1"></param>
-		/// <param name="x2"></param>
-		/// <param name="y2"></param>
-		/// <param name="w2"></param>
-		/// <param name="h2"></param>
-		/// <param name="x3"></param>
-		/// <param name="y3"></param>
-		/// <param name="w3"></param>
-		/// <param name="h3"></param>
-		public static void GetCommonRect(
-			float x1, float y1, float w1, float h1, 
-			float x2, float y2, float w2, float h2, 
-			out float x3, out float y3, out float w3, out float h3)
-		{
-			float tempWidth = Math.Min(w2, w1 - (x2 - x1));
-			float tempHeight = Math.Min(h2, h1 - (y2 - y1));
-			if ((x1 - x2) > 0.0f) tempWidth -= (x1 - x2);
-			if ((y1 - y2) > 0.0f) tempHeight -= (y1 - y2);
-
-			x3 = Math.Max(x1, x2);
-			y3 = Math.Max(y1, y2);
-			w3 = Math.Min(w1, tempWidth);
-			h3 = Math.Min(h1, tempHeight);
-			return;
-		}
-		public static void GetCommonRect(
-			int x1, int y1, int w1, int h1, 
-			int x2, int y2, int w2, int h2, 
-			out int x3, out int y3, out int w3, out int h3)
-		{
-			int tempWidth = Math.Min(w2, w1 - (x2 - x1));
-			int tempHeight = Math.Min(h2, h1 - (y2 - y1));
-			if ((x1 - x2) > 0) tempWidth -= (x1 - x2);
-			if ((y1 - y2) > 0) tempHeight -= (y1 - y2);
-
-			x3 = Math.Max(x1, x2);
-			y3 = Math.Max(y1, y2);
-			w3 = Math.Min(w1, tempWidth);
-			h3 = Math.Min(h1, tempHeight);
-			return;
-		}
-
-		/// <summary>
-		/// Checks, if two line segments (or optionally an infinite lines) cross and determines their mutual point.
-		/// </summary>
-		/// <param name="startX1"></param>
-		/// <param name="startY1"></param>
-		/// <param name="endX1"></param>
-		/// <param name="endY1"></param>
-		/// <param name="startX2"></param>
-		/// <param name="startY2"></param>
-		/// <param name="endX2"></param>
-		/// <param name="endY2"></param>
-		/// <param name="infinite"></param>
-		/// <param name="crossX"></param>
-		/// <param name="crossY"></param>
-		/// <returns>Are the lines crossing?</returns>
+		/// <param name="startX1">x-Coordinate of the first lines start.</param>
+		/// <param name="startY1">y-Coordinate of the first lines start.</param>
+		/// <param name="endX1">x-Coordinate of the first lines end.</param>
+		/// <param name="endY1">y-Coordinate of the first lines end.</param>
+		/// <param name="startX2">x-Coordinate of the second lines start.</param>
+		/// <param name="startY2">y-Coordinate of the second lines start.</param>
+		/// <param name="endX2">x-Coordinate of the second lines end.</param>
+		/// <param name="endY2">y-Coordinate of the second lines end.</param>
+		/// <param name="infinite">Whether the lines are considered infinite.</param>
+		/// <param name="crossX">x-Coordiante at which both lines cross.</param>
+		/// <param name="crossY">y-Coordinate at which both lines cross.</param>
+		/// <returns>True, if the lines cross, false if not.</returns>
 		public static bool LinesCross(
 			float startX1, float startY1, float endX1, float endY1,
 			float startX2, float startY2, float endX2, float endY2,
@@ -635,6 +1038,19 @@ namespace Duality
 
 			return false;
 		}
+		/// <summary>
+		/// Checks, if two line segments (or infinite lines) cross and determines their mutual point.
+		/// </summary>
+		/// <param name="startX1">x-Coordinate of the first lines start.</param>
+		/// <param name="startY1">y-Coordinate of the first lines start.</param>
+		/// <param name="endX1">x-Coordinate of the first lines end.</param>
+		/// <param name="endY1">y-Coordinate of the first lines end.</param>
+		/// <param name="startX2">x-Coordinate of the second lines start.</param>
+		/// <param name="startY2">y-Coordinate of the second lines start.</param>
+		/// <param name="endX2">x-Coordinate of the second lines end.</param>
+		/// <param name="endY2">y-Coordinate of the second lines end.</param>
+		/// <param name="infinite">Whether the lines are considered infinite.</param>
+		/// <returns>True, if the lines cross, false if not.</returns>
 		public static bool LinesCross(
 			float startX1, float startY1, float endX1, float endY1,
 			float startX2, float startY2, float endX2, float endY2,
@@ -650,18 +1066,17 @@ namespace Duality
 		}
 
 		/// <summary>
-		/// Calculates the point on a line segment (or optionally an infinite line) that has the smalles possible
-		/// distance to a seperate point.
+		/// Calculates the point on a line segment (or infinite line) that has the lowest possible
+		/// distance to a point.
 		/// </summary>
-		/// <param name="pX"></param>
-		/// <param name="pY"></param>
-		/// <param name="lX1"></param>
-		/// <param name="lY1"></param>
-		/// <param name="lX2"></param>
-		/// <param name="lY2"></param>
-		/// <param name="infinite"></param>
-		/// <param name="nX"></param>
-		/// <param name="nY"></param>
+		/// <param name="pX">x-Coordinate of the point.</param>
+		/// <param name="pY">y-Coordinate of the point.</param>
+		/// <param name="lX1">x-Coordinate of the lines start.</param>
+		/// <param name="lY1">y-Coordinate of the lines start.</param>
+		/// <param name="lX2">x-Coordinate of the lines end.</param>
+		/// <param name="lY2">y-Coordinate of the lines end.</param>
+		/// <param name="infinite">Whether the line is considered infinite.</param>
+		/// <returns>A point located on the specified line that is as close as possible to the specified point.</returns>
 		public static Vector2 PointLineNearestPoint(
 			float pX, float pY,
 			float lX1, float lY1, float lX2, float lY2,
@@ -682,16 +1097,16 @@ namespace Duality
 		}
 
 		/// <summary>
-		/// Calculates the distance between a point and a line segment (or optionally an infinite line)
+		/// Calculates the distance between a point and a line segment (or infinite line).
 		/// </summary>
-		/// <param name="pX"></param>
-		/// <param name="pY"></param>
-		/// <param name="lX1"></param>
-		/// <param name="lY1"></param>
-		/// <param name="lX2"></param>
-		/// <param name="lY2"></param>
-		/// <param name="infinite"></param>
-		/// <returns></returns>
+		/// <param name="pX">x-Coordinate of the point.</param>
+		/// <param name="pY">y-Coordinate of the point.</param>
+		/// <param name="lX1">x-Coordinate of the lines start.</param>
+		/// <param name="lY1">y-Coordinate of the lines start.</param>
+		/// <param name="lX2">x-Coordinate of the lines end.</param>
+		/// <param name="lY2">y-Coordinate of the lines end.</param>
+		/// <param name="infinite">Whether the line is considered infinite.</param>
+		/// <returns>The distance between point and line.</returns>
 		public static float PointLineDistance(
 			float pX, float pY,
 			float lX1, float lY1, float lX2, float lY2,
@@ -707,15 +1122,15 @@ namespace Duality
 		/// (but constant!) value.
 		/// In other words: If object 1 tries to hit object 2, let object 1 move towards the calculated point.
 		/// </summary>
-		/// <param name="obj1X"></param>
-		/// <param name="obj1Y"></param>
-		/// <param name="obj1Speed"></param>
-		/// <param name="obj2X"></param>
-		/// <param name="obj2Y"></param>
-		/// <param name="obj2Speed"></param>
-		/// <param name="obj2Angle"></param>
-		/// <param name="colX"></param>
-		/// <param name="colY"></param>
+		/// <param name="obj1X">x-Coordinate of the first object.</param>
+		/// <param name="obj1Y">y-Coordinate of the first object.</param>
+		/// <param name="obj1Speed">Speed of the first object.</param>
+		/// <param name="obj2X">x-Coordinate of the second object.</param>
+		/// <param name="obj2Y">y-Coordinate of the second object.</param>
+		/// <param name="obj2Speed">Speed of the second object.</param>
+		/// <param name="obj2Angle">Angle (in radians) of the second object.</param>
+		/// <param name="colX">x-Coordinate of the predicted impact.</param>
+		/// <param name="colY">y-Coordinate of the predicted impact.</param>
 		/// <returns>
 		/// False if it is not possible for object 1 to collide with object 2 at any course of object 1.
 		/// This is, for example, the case if object 1 and to move to the same direction but object 2 is faster.
@@ -773,15 +1188,15 @@ namespace Duality
 		/// calculates the time from now at which the distance between the two objects will be minimal. If
 		/// this has already passed, the returned time is negative.
 		/// </summary>
-		/// <param name="obj1X"></param>
-		/// <param name="obj1Y"></param>
-		/// <param name="obj1XSpeed"></param>
-		/// <param name="obj1YSpeed"></param>
-		/// <param name="obj2X"></param>
-		/// <param name="obj2Y"></param>
-		/// <param name="obj2XSpeed"></param>
-		/// <param name="obj2YSpeed"></param>
-		/// <returns></returns>
+		/// <param name="obj1X">x-Coordinate of the first object.</param>
+		/// <param name="obj1Y">y-Coordinate of the first object.</param>
+		/// <param name="obj1XSpeed">x-Speed of the first object.</param>
+		/// <param name="obj1YSpeed">y-Speed of the first object.</param>
+		/// <param name="obj2X">x-Coordinate of the second object.</param>
+		/// <param name="obj2Y">y-Coordinate of the second object.</param>
+		/// <param name="obj2XSpeed">x-Speed of the second object.</param>
+		/// <param name="obj2YSpeed">y-Speed of the second object.</param>
+		/// <returns>Time of minimum distance.</returns>
 		public static float GetLinearPrediction2(
 			float obj1X, float obj1Y, float obj1XSpeed, float obj1YSpeed,
 			float obj2X, float obj2Y, float obj2XSpeed, float obj2YSpeed)

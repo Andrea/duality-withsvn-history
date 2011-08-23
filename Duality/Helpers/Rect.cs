@@ -230,6 +230,26 @@ namespace Duality
 			return this.Contains(rect.x, rect.y) && this.Contains(rect.x + rect.w, rect.y + rect.h);
 		}
 
+		public bool Intersects(Rect rect)
+		{
+			if (this.x > (rect.x + rect.w) || (this.x + this.w) < rect.x) return false;
+			if (this.y > (rect.y + rect.h) || (this.y + this.h) < rect.y) return false;
+			return true;
+		}
+		public Rect Intersection(Rect rect)
+		{
+			float tempWidth = Math.Min(rect.w, this.w - (rect.x - this.x));
+			float tempHeight = Math.Min(rect.h, this.h - (rect.y - this.y));
+			if ((this.x - rect.x) > 0.0f) tempWidth -= (this.x - rect.x);
+			if ((this.y - rect.y) > 0.0f) tempHeight -= (this.y - rect.y);
+
+			return new Rect(
+				Math.Max(this.x, rect.x),
+				Math.Max(this.y, rect.y),
+				Math.Min(this.w, tempWidth),
+				Math.Min(this.h, tempHeight));
+		}
+
 		public bool Equals(Rect other)
 		{
 			return 
