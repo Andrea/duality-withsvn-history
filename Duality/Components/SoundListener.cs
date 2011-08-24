@@ -14,6 +14,9 @@ using Duality.Resources;
 
 namespace Duality.Components
 {
+	/// <summary>
+	/// Makes this <see cref="GameObject"/> the 3d sound listener.
+	/// </summary>
 	[Serializable]
 	[RequiredComponent(typeof(Transform))]
 	public sealed class SoundListener : Component, ICmpInitializable

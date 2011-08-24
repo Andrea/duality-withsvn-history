@@ -372,7 +372,7 @@ namespace Duality
 
 		/// <summary>
 		/// Returns a new version of this Rect with integer coordinates and size.
-		/// They have been <see cref="MathF.Round">rounded</see>.
+		/// They have been <see cref="MathF.Round(float)">rounded</see>.
 		/// </summary>
 		/// <returns>A new Rect with the specified adjustments.</returns>
 		public Rect Round()

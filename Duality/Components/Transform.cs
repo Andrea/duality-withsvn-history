@@ -7,6 +7,9 @@ using OpenTK;
 
 namespace Duality.Components
 {
+	/// <summary>
+	/// Represents a <see cref="GameObject">GameObjects</see> physical location in the world, relative to its <see cref="GameObject.Parent"/>.
+	/// </summary>
 	[Serializable]
 	public sealed class Transform : Component, ICmpUpdatable, ICmpEditorUpdatable, ICmpGameObjectListener, ICmpInitializable
 	{
@@ -25,37 +28,59 @@ namespace Duality.Components
 		private		float		angleVelAbs		= 0.0f;
 		private		Vector3		scaleAbs		= Vector3.One;
 
+		/// <summary>
+		/// [GET / SET] The objects position relative to its parent object.
+		/// </summary>
 		public Vector3 RelativePos
 		{
 			get { return this.pos; }
 			set { this.pos = value; this.UpdateAbs(); }
 		}
+		/// <summary>
+		/// [GET / SET] The objects velocity relative to its parent object.
+		/// </summary>
 		public Vector3 RelativeVel
 		{
 			get { return this.vel; }
 			set { this.vel = value; this.UpdateAbs(); }
 		}
+		/// <summary>
+		/// [GET / SET] The objects angle / rotation relative to its parent object, in radians.
+		/// </summary>
 		public float RelativeAngle
 		{
 			get { return this.angle; }
 			set { this.angle = value; this.UpdateAbs(); }
 		}
+		/// <summary>
+		/// [GET / SET] The objects angle / rotation velocity relative to its parent object, in radians.
+		/// </summary>
 		public float RelativeAngleVel
 		{
 			get { return this.angleVel; }
 			set { this.angleVel = value; this.UpdateAbs(); }
 		}
+		/// <summary>
+		/// [GET / SET] The objects scale relative to its parent object.
+		/// </summary>
 		public Vector3 RelativeScale
 		{
 			get { return this.scale; }
 			set { this.scale = value; this.UpdateAbs(); }
 		}
+		/// <summary>
+		/// [GET / SET] If false, this objects rotation values aren't relative to its parent.
+		/// However, its position, velocity, etc. still depend on parent rotation.
+		/// </summary>
 		public bool DeriveAngle
 		{
 			get { return this.deriveAngle; }
 			set { this.deriveAngle = value; this.UpdateAbs(); }
 		}
 
+		/// <summary>
+		/// [GET] The objects forward vector, relative to its parent object.
+		/// </summary>
 		public Vector3 RelativeForward
 		{
 			get 
@@ -66,6 +91,9 @@ namespace Duality.Components
 					0.0f);
 			}
 		}
+		/// <summary>
+		/// [GET] The objects right (directional) vector, relative to its parent object.
+		/// </summary>
 		public Vector3 RelativeRight
 		{
 			get 
@@ -76,7 +104,10 @@ namespace Duality.Components
 					0.0f);
 			}
 		}
-
+		
+		/// <summary>
+		/// [GET / SET] The objects position.
+		/// </summary>
 		public Vector3 Pos
 		{
 			get { return this.posAbs; }
@@ -102,6 +133,9 @@ namespace Duality.Components
 				this.UpdateAbs(true);
 			}
 		}
+		/// <summary>
+		/// [GET / SET] The objects velocity.
+		/// </summary>
 		public Vector3 Vel
 		{
 			get { return this.velAbs; }
@@ -127,6 +161,9 @@ namespace Duality.Components
 				this.UpdateAbs(true);
 			}
 		}
+		/// <summary>
+		/// [GET / SET] The objects angle / rotation, in radians.
+		/// </summary>
 		public float Angle
 		{
 			get { return this.angleAbs; }
@@ -142,6 +179,9 @@ namespace Duality.Components
 				this.UpdateAbs(true);
 			}
 		}
+		/// <summary>
+		/// [GET / SET] The objects angle / rotation velocity, in radians.
+		/// </summary>
 		public float AngleVel
 		{
 			get { return this.angleVelAbs; }
@@ -157,6 +197,9 @@ namespace Duality.Components
 				this.UpdateAbs(true);
 			}
 		}
+		/// <summary>
+		/// [GET / SET] The objects scale.
+		/// </summary>
 		public Vector3 Scale
 		{
 			get { return this.scaleAbs; }
@@ -178,7 +221,10 @@ namespace Duality.Components
 				this.UpdateAbs(true);
 			}
 		}
-
+		
+		/// <summary>
+		/// [GET] The objects forward vector.
+		/// </summary>
 		public Vector3 Forward
 		{
 			get 
@@ -189,6 +235,9 @@ namespace Duality.Components
 					0.0f);
 			}
 		}
+		/// <summary>
+		/// [GET] The objects right (directional) vector.
+		/// </summary>
 		public Vector3 Right
 		{
 			get 

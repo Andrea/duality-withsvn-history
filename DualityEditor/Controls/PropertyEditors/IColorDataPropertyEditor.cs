@@ -30,7 +30,9 @@ namespace DualityEditor.Controls.PropertyEditors
 		{
 			get 
 			{ 
-				return IColorDataCreator.FromIntArgb((uint)this.colorShowBox.Color.ToArgb(), this.EditedType);
+				IColorData clr = this.EditedType.CreateInstanceOf(true) as IColorData;
+				clr.SetIntArgb(this.colorShowBox.Color.ToArgb());
+				return clr;
 			}
 		}
 

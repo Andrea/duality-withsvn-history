@@ -293,6 +293,8 @@ namespace Duality.Resources
 		/// </summary>
 		public void SetupOpenGLRes()
 		{
+			if (this.targetInfo == null || this.targetInfo.Count == 0) return;
+
 			if (this.multisample)
 				this.samples = Math.Min(MaxRenderTargetSamples, DualityApp.TargetMode.Samples);
 			else

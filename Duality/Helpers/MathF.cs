@@ -648,7 +648,7 @@ namespace Duality
 		/// <param name="y2">The y-Coordinate of the second point.</param>
 		/// <returns>The distance between both points.</returns>
 		/// <remarks>
-		/// This method is faster than <see cref="Distance"/>. 
+		/// This method is faster than <see cref="Distance(float,float,float,float)"/>. 
 		/// If sufficient, such as for distance comparison, consider using this method instead.
 		/// </remarks>
 		public static float DistanceQuad(float x1, float y1, float x2, float y2)
@@ -662,7 +662,7 @@ namespace Duality
 		/// <param name="y">The y-Coordinate of the point.</param>
 		/// <returns>The distance between the point and [0,0].</returns>
 		/// <remarks>
-		/// This method is faster than <see cref="Distance"/>. 
+		/// This method is faster than <see cref="Distance(float,float)"/>. 
 		/// If sufficient, such as for distance comparison, consider using this method instead.
 		/// </remarks>
 		public static float DistanceQuad(float x, float y)
@@ -894,7 +894,7 @@ namespace Duality
 		/// <param name="rot">The rotation to apply in radians.</param>
 		/// <param name="xDot">Dot product base for the transformed x value.</param>
 		/// <param name="yDot">Dot product base for the transformed y value.</param>
-		/// <seealso cref="TransformDotVec"/>
+		/// <seealso cref="TransformDotVec(ref Vector2, ref Vector2, ref Vector2)"/>
 		public static void GetTransformDotVec(float rot, out Vector2 xDot, out Vector2 yDot)
 		{
 			float sin = (float)System.Math.Sin(rot);
@@ -909,8 +909,8 @@ namespace Duality
 		/// <param name="vec">The vector to transform.</param>
 		/// <param name="xDot">Dot product base for the transformed x value.</param>
 		/// <param name="yDot">Dot product base for the transformed y value.</param>
-		/// <seealso cref="GetTransformDotVec"/>
-		public static void TransdormDotVec(ref Vector2 vec, ref Vector2 xDot, ref Vector2 yDot)
+		/// <seealso cref="GetTransformDotVec(float, out Vector2, out Vector2)"/>
+		public static void TransformDotVec(ref Vector2 vec, ref Vector2 xDot, ref Vector2 yDot)
 		{
 			float oldX = vec.X;
 			vec.X = vec.X * xDot.X + vec.Y * xDot.Y;
@@ -922,8 +922,8 @@ namespace Duality
 		/// <param name="vec">The vector to transform.</param>
 		/// <param name="xDot">Dot product base for the transformed x value.</param>
 		/// <param name="yDot">Dot product base for the transformed y value.</param>
-		/// <seealso cref="GetTransformDotVec"/>
-		public static void TransdormDotVec(ref Vector2 vec, Vector2 xDot, Vector2 yDot)
+		/// <seealso cref="GetTransformDotVec(float, out Vector2, out Vector2)"/>
+		public static void TransformDotVec(ref Vector2 vec, Vector2 xDot, Vector2 yDot)
 		{
 			float oldX = vec.X;
 			vec.X = vec.X * xDot.X + vec.Y * xDot.Y;
@@ -936,8 +936,8 @@ namespace Duality
 		/// <param name="xDot">Dot product base for the transformed x value.</param>
 		/// <param name="yDot">Dot product base for the transformed y value.</param>
 		/// <returns>The transformed vector.</returns>
-		/// <seealso cref="GetTransformDotVec"/>
-		public static Vector2 TransdormDotVec(Vector2 vec, Vector2 xDot, Vector2 yDot)
+		/// <seealso cref="GetTransformDotVec(float, out Vector2, out Vector2)"/>
+		public static Vector2 TransformDotVec(Vector2 vec, Vector2 xDot, Vector2 yDot)
 		{
 			return new Vector2(
 				vec.X * xDot.X + vec.Y * xDot.Y,
@@ -949,8 +949,8 @@ namespace Duality
 		/// <param name="vec">The vector to transform.</param>
 		/// <param name="xDot">Dot product base for the transformed x value.</param>
 		/// <param name="yDot">Dot product base for the transformed y value.</param>
-		/// <seealso cref="GetTransformDotVec"/>
-		public static void TransdormDotVec(ref Vector3 vec, ref Vector2 xDot, ref Vector2 yDot)
+		/// <seealso cref="GetTransformDotVec(float, out Vector2, out Vector2)"/>
+		public static void TransformDotVec(ref Vector3 vec, ref Vector2 xDot, ref Vector2 yDot)
 		{
 			float oldX = vec.X;
 			vec.X = vec.X * xDot.X + vec.Y * xDot.Y;
@@ -962,8 +962,8 @@ namespace Duality
 		/// <param name="vec">The vector to transform.</param>
 		/// <param name="xDot">Dot product base for the transformed x value.</param>
 		/// <param name="yDot">Dot product base for the transformed y value.</param>
-		/// <seealso cref="GetTransformDotVec"/>
-		public static void TransdormDotVec(ref Vector3 vec, Vector2 xDot, Vector2 yDot)
+		/// <seealso cref="GetTransformDotVec(float, out Vector2, out Vector2)"/>
+		public static void TransformDotVec(ref Vector3 vec, Vector2 xDot, Vector2 yDot)
 		{
 			float oldX = vec.X;
 			vec.X = vec.X * xDot.X + vec.Y * xDot.Y;
@@ -976,8 +976,8 @@ namespace Duality
 		/// <param name="xDot">Dot product base for the transformed x value.</param>
 		/// <param name="yDot">Dot product base for the transformed y value.</param>
 		/// <returns>The transformed vector.</returns>
-		/// <seealso cref="GetTransformDotVec"/>
-		public static Vector3 TransdormDotVec(Vector3 vec,Vector2 xDot, Vector2 yDot)
+		/// <seealso cref="GetTransformDotVec(float, out Vector2, out Vector2)"/>
+		public static Vector3 TransformDotVec(Vector3 vec,Vector2 xDot, Vector2 yDot)
 		{
 			return new Vector3(
 				vec.X * xDot.X + vec.Y * xDot.Y,

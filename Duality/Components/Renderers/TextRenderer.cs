@@ -21,8 +21,8 @@ namespace Duality.Components.Renderers
 		protected	ColorRgba				colorTint	= ColorRgba.White;
 		protected	ContentRef<Material>	iconMat		= ContentRef<Material>.Null;
 		[NonSerialized] protected	FormattedText.Metrics			metrics		= new FormattedText.Metrics(Vector2.Zero, new Rect[0], new Rect[0]);
-		[NonSerialized] protected	VertexFormat.VertexC4P3T2[][]	vertFont	= null;
-		[NonSerialized] protected	VertexFormat.VertexC4P3T2[]		vertIcon	= null;
+		[NonSerialized] protected	VertexFormat.VertexC1P3T2[][]	vertFont	= null;
+		[NonSerialized] protected	VertexFormat.VertexC1P3T2[]		vertIcon	= null;
 
 		public override float BoundRadius
 		{
@@ -81,7 +81,7 @@ namespace Duality.Components.Renderers
 
 			Rect textRect = Rect.Align(this.align, 0.0f, 0.0f, MathF.Max(this.text.MaxWidth, this.metrics.Size.X), this.metrics.Size.Y);
 			Vector2 textOffset = textRect.TopLeft;
-			MathF.TransdormDotVec(ref textOffset, ref xDot, ref yDot);
+			MathF.TransformDotVec(ref textOffset, ref xDot, ref yDot);
 			posTemp.X += textOffset.X;
 			posTemp.Y += textOffset.Y;
 
@@ -92,10 +92,10 @@ namespace Duality.Components.Renderers
 				Vector3 textMaxWidth = Vector3.UnitX * this.text.MaxWidth;
 				Vector3 textHeight = Vector3.UnitY * textRect.h;
 				Vector3 textMaxHeight = Vector3.UnitY * MathF.Max(this.text.MaxHeight, textRect.h);
-				MathF.TransdormDotVec(ref textWidth, ref xDot, ref yDot);
-				MathF.TransdormDotVec(ref textMaxWidth, ref xDot, ref yDot);
-				MathF.TransdormDotVec(ref textHeight, ref xDot, ref yDot);
-				MathF.TransdormDotVec(ref textMaxHeight, ref xDot, ref yDot);
+				MathF.TransformDotVec(ref textWidth, ref xDot, ref yDot);
+				MathF.TransformDotVec(ref textMaxWidth, ref xDot, ref yDot);
+				MathF.TransformDotVec(ref textHeight, ref xDot, ref yDot);
+				MathF.TransformDotVec(ref textMaxHeight, ref xDot, ref yDot);
 
 				device.AddVertices(new BatchInfo(DrawTechnique.Alpha, this.colorTint.WithAlpha(128)), BeginMode.LineLoop,
 					new VertexFormat.VertexP3(posTemp),

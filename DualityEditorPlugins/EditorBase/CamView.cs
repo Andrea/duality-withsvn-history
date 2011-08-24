@@ -322,8 +322,8 @@ namespace EditorBase
 				0);
 
 			// Apply transform vectors
-			MathF.TransdormDotVec(ref lineV1, ref catDotX, ref catDotY);
-			MathF.TransdormDotVec(ref lineV2, ref catDotX, ref catDotY);
+			MathF.TransformDotVec(ref lineV1, ref catDotX, ref catDotY);
+			MathF.TransformDotVec(ref lineV2, ref catDotX, ref catDotY);
 
 			this.camComp.DrawDevice.AddVertices(
 				new BatchInfo(dt, clr), 
@@ -460,8 +460,8 @@ namespace EditorBase
 			MathF.GetTransformDotVec(this.camObj.Transform.Angle, out catDotX, out catDotY);
 			Vector3 right = new Vector3(1.0f, 0.0f, 0.0f);
 			Vector3 down = new Vector3(0.0f, 1.0f, 0.0f);
-			MathF.TransdormDotVec(ref right, ref catDotX, ref catDotY);
-			MathF.TransdormDotVec(ref down, ref catDotX, ref catDotY);
+			MathF.TransformDotVec(ref right, ref catDotX, ref catDotY);
+			MathF.TransformDotVec(ref down, ref catDotX, ref catDotY);
 
 			foreach (GameObject selObj in obj)
 			{
@@ -1000,8 +1000,8 @@ namespace EditorBase
 			MathF.GetTransformDotVec(this.camObj.Transform.Angle, out catDotX, out catDotY);
 			Vector3 right = new Vector3(1.0f, 0.0f, 0.0f);
 			Vector3 down = new Vector3(0.0f, 1.0f, 0.0f);
-			MathF.TransdormDotVec(ref right, ref catDotX, ref catDotY);
-			MathF.TransdormDotVec(ref down, ref catDotX, ref catDotY);
+			MathF.TransformDotVec(ref right, ref catDotX, ref catDotY);
+			MathF.TransformDotVec(ref down, ref catDotX, ref catDotY);
 
 			// Draw indirectly selected object overlay
 			this.DrawSelectionMarkers(this.SelectedGameObjIndirect(), ColorRgba.Mix(this.FgColor, this.BgColor, 0.75f));

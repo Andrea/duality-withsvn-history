@@ -63,7 +63,7 @@ namespace Duality
 		/// </summary>
 		/// <param name="path">The path to make relative.</param>
 		/// <param name="relativeTo">The path to make it relative to.</param>
-		/// <returns>A path that, if <see cref="System.IO.Path.Combine">combined</see> with <c>relativeTo</c>, equals the original path.</returns>
+		/// <returns>A path that, if <see cref="System.IO.Path.Combine(string,string)">combined</see> with <c>relativeTo</c>, equals the original path.</returns>
 		/// <example>
 		/// <c>PathHelper.MakePathRelative(@"C:\SomeDir\SubDir\File.txt", @"C:\SomeDir")</c> will return <c>SubDir\File.txt</c>.
 		/// </example>

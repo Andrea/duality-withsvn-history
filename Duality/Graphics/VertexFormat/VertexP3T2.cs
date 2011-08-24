@@ -9,11 +9,20 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Duality.VertexFormat
 {
+	/// <summary>
+	/// Vertex data providing each vertex a position (3x4 byte) and texture coordinate (2x4 byte)
+	/// </summary>
 	[Serializable]
 	[StructLayout(LayoutKind.Sequential)]
 	public struct VertexP3T2 : IVertexData
 	{
+		/// <summary>
+		/// The vertices position.
+		/// </summary>
 		public Vector3 pos;
+		/// <summary>
+		/// The vertices texture coordinate.
+		/// </summary>
 		public Vector2 texCoord;
 
 		Vector3 IVertexData.Pos
@@ -24,7 +33,7 @@ namespace Duality.VertexFormat
 		{
 			get { return (int)VertexDataFormat.VertexP3T2; }
 		}
-
+		
 		void IVertexData.SetupVBO<T>(T[] vertexData, Duality.Resources.BatchInfo mat)
 		{
 			GL.EnableClientState(ArrayCap.VertexArray);
@@ -41,9 +50,18 @@ namespace Duality.VertexFormat
 			GL.DisableClientState(ArrayCap.VertexArray);
 			GL.DisableClientState(ArrayCap.TextureCoordArray);
 		}
-
+		
+		/// <summary>
+		/// Byte offset for the position.
+		/// </summary>
 		public const int OffsetPos		= 0;
+		/// <summary>
+		/// Byte offset for the texture coordinate.
+		/// </summary>
 		public const int OffsetTex0		= OffsetPos + 3 * sizeof(float);
+		/// <summary>
+		/// Total size in bytes.
+		/// </summary>
 		public const int Size			= OffsetTex0 + 2 * sizeof(float);
 
 		public VertexP3T2(float x, float y, float z, float u, float v)

@@ -6,9 +6,6 @@
 	-->	Tutorials & Examples in google code wiki pages
 	-->	Don't forget to link the online reference (Fetzenet) from google code
 
--->	Maybe find some testers?
-
-
 -->	Make the Create Resource menu hierarchial like the Create Component menu
 
 -->	Just a thought: Use the XML documentation on classes to display tooltips
@@ -16,6 +13,7 @@
 	-->	Info about Components in the Create-Menu and when hovering them
 	-->	Info about GameObject when hovering them
 	-->	Info about Resources in the Create-Menu and when hovering them
+	-->	...
 
 
 -->	Possible schedule:

@@ -174,7 +174,7 @@ namespace Duality.Resources
 		/// </summary>
 		public ShaderProgram() {}
 		/// <summary>
-		/// Creates a new ShaderProgram based on a <see cref="VertexShader">Vertex-</see> and a <see cref="FragementShader"/>.
+		/// Creates a new ShaderProgram based on a <see cref="VertexShader">Vertex-</see> and a <see cref="FragmentShader"/>.
 		/// </summary>
 		/// <param name="v"></param>
 		/// <param name="f"></param>
@@ -185,14 +185,14 @@ namespace Duality.Resources
 		}
 
 		/// <summary>
-		/// Re-Attaches the currently used <see cref="VertexShader">Vertex-</see> and <see cref="FragementShader"/>.
+		/// Re-Attaches the currently used <see cref="VertexShader">Vertex-</see> and <see cref="FragmentShader"/>.
 		/// </summary>
 		public void AttachShaders()
 		{
 			this.AttachShaders(this.vert, this.frag);
 		}
 		/// <summary>
-		/// Attaches the specified <see cref="VertexShader">Vertex-</see> and <see cref="FragementShader"/> to this ShaderProgram.
+		/// Attaches the specified <see cref="VertexShader">Vertex-</see> and <see cref="FragmentShader"/> to this ShaderProgram.
 		/// </summary>
 		/// <param name="v"></param>
 		/// <param name="f"></param>
@@ -209,7 +209,7 @@ namespace Duality.Resources
 			if (this.frag.IsAvailable) this.frag.Res.AttachTo(this.glProgramId);
 		}
 		/// <summary>
-		/// Detaches <see cref="VertexShader">Vertex-</see> and <see cref="FragementShader"/> from the ShaderProgram.
+		/// Detaches <see cref="VertexShader">Vertex-</see> and <see cref="FragmentShader"/> from the ShaderProgram.
 		/// </summary>
 		public void DetachShaders()
 		{

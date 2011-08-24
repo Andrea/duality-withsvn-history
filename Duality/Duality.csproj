@@ -146,11 +146,11 @@
     <Compile Include="Serialization\TypeDataLayout.cs" />
     <Compile Include="Time.cs" />
     <Compile Include="Graphics\VertexFormat\IVertexData.cs" />
-    <Compile Include="Graphics\VertexFormat\VertexC4P3T4A1.cs" />
-    <Compile Include="Graphics\VertexFormat\VertexC4P3T2.cs" />
+    <Compile Include="Graphics\VertexFormat\VertexC1P3T4A1.cs" />
+    <Compile Include="Graphics\VertexFormat\VertexC1P3T2.cs" />
     <Compile Include="Graphics\VertexFormat\VertexP3.cs" />
     <Compile Include="Graphics\VertexFormat\VertexP3T2.cs" />
-    <Compile Include="Graphics\VertexFormat\VertexC4P3.cs" />
+    <Compile Include="Graphics\VertexFormat\VertexC1P3.cs" />
     <Compile Include="Audio\OggVorbis\NativeMethods.cs" />
   </ItemGroup>
   <ItemGroup>

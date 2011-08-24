@@ -14,66 +14,186 @@ using Duality.Resources;
 
 namespace Duality
 {
+	/// <summary>
+	/// Enumerates different behviours on how to blend color data onto existing background color.
+	/// </summary>
+	/// <seealso cref="Duality.Resources.DrawTechnique"/>
 	public enum BlendMode
 	{
-		// Restore default settings
+		/// <summary>
+		/// When passing this to a method, this value can be used to indicate "Restore to default settings".
+		/// </summary>
 		Reset = -1,
 
-		// Depth-Independent
+		/// <summary>
+		/// Incoming color overwrites background color completely. Doesn't need Z-Sorting.
+		/// </summary>
 		Solid,
+		/// <summary>
+		/// Incoming color overwrites background color but leaves out areas with low alpha. Doesn't need Z-Sorting.
+		/// </summary>
 		Mask,
 
-		// Depth-Dependent
+		/// <summary>
+		/// Incoming color is multiplied by its alpha value and then added to background color. Needs Z-Sorting.
+		/// </summary>
 		Add,
+		/// <summary>
+		/// Incoming color overwrites background color weighted by its alpha value. Needs Z-Sorting.
+		/// </summary>
 		Alpha,
+		/// <summary>
+		/// Incoming color scales background color. Needs Z-Sorting.
+		/// </summary>
 		Multiply,
+		/// <summary>
+		/// Incoming color is multiplied and then added to background color. Needs Z-Sorting.
+		/// </summary>
 		Light,
+		/// <summary>
+		/// Incoming color inverts background color. Needs Z-Sorting.
+		/// </summary>
 		Invert,
 
-		// Number of BlendModes
+		/// <summary>
+		/// The total number of available BlendModes.
+		/// </summary>
 		Count
 	}
 
+	/// <summary>
+	/// Defines a general interface for drawing devices. Its main duty is to accept and collect parameterized vertex data.
+	/// </summary>
 	public interface IDrawDevice
 	{
+		/// <summary>
+		/// [GET] A bitmask flagging all visibility groups that are considered visible to this drawing device.
+		/// </summary>
 		uint VisibilityMask { get; }
+		/// <summary>
+		/// [GET] The devices general background color.
+		/// </summary>
 		ColorRgba ClearColor { get; }
+		/// <summary>
+		/// [GET] The lowest Z value that can be displayed by the device.
+		/// </summary>
 		float NearZ { get; }
+		/// <summary>
+		/// [GET] The highest Z value that can be displayed by the device.
+		/// </summary>
 		float FarZ { get; }
 
+		/// <summary>
+		/// Processes the specified world space position and scale values and transforms them to the IDrawDevices view space.
+		/// This usually also applies a parallax effect, if applicable.
+		/// </summary>
+		/// <param name="pos">The position to process.</param>
+		/// <param name="scale">The scale factor to process.</param>
 		void PreprocessCoords(ref Vector3 pos, ref float scale);
+		/// <summary>
+		/// Processes the specified world space position and scale values and transforms them to the IDrawDevices view space.
+		/// This usually also applies a parallax effect, if applicable.
+		/// </summary>
+		/// <param name="r">The <see cref="Duality.Components.Renderer"/> to which the data belongs.</param>
+		/// <param name="pos">The position to process.</param>
+		/// <param name="scale">The scale factor to process.</param>
 		void PreprocessCoords(Renderer r, ref Vector3 pos, ref float scale);
+		/// <summary>
+		/// Returns whether the specified world-space position is visible in the drawing devices view space.
+		/// </summary>
+		/// <param name="c">The position to test.</param>
+		/// <param name="boundRad">The visual bounding radius to assume for the specified position.</param>
+		/// <returns>True, if the position or a portion of its bounding circle is visible, false if not.</returns>
 		bool IsCoordInView(Vector3 c, float boundRad = 1.0f);
+		/// <summary>
+		/// Returns whether the specified Renderer is visible in the drawing devices view space. This doesn't yet mean, it's
+		/// visible - the Renderer or IDrawDevice can still decide, not to display.
+		/// </summary>
+		/// <param name="r">The Renderer to test.</param>
+		/// <returns>True, if the Renderer or a portion of its bounding circle is inside the view space, false if not.</returns>
 		bool IsRendererInView(Renderer r);
 
-		void AddVertices<T>(ContentRef<Material> material, BeginMode vertexType, params T[] vertices) where T : struct, IVertexData;
-		void AddVertices<T>(BatchInfo material, BeginMode vertexType, params T[] vertices) where T : struct, IVertexData;
+		/// <summary>
+		/// Adds a parameterized set of vertices to the drawing devices rendering schedule.
+		/// </summary>
+		/// <typeparam name="T">The type of vertex data to add.</typeparam>
+		/// <param name="material">The <see cref="Duality.Resources.Material"/> to use for rendering the vertices.</param>
+		/// <param name="vertexMode">The vertices drawing mode.</param>
+		/// <param name="vertices">The vertex data to add.</param>
+		void AddVertices<T>(ContentRef<Material> material, BeginMode vertexMode, params T[] vertices) where T : struct, IVertexData;
+		/// <summary>
+		/// Adds a parameterized set of vertices to the drawing devices rendering schedule.
+		/// </summary>
+		/// <typeparam name="T">The type of vertex data to add.</typeparam>
+		/// <param name="material">The <see cref="Duality.Resources.BatchInfo"/> to use for rendering the vertices.</param>
+		/// <param name="vertexMode">The vertices drawing mode.</param>
+		/// <param name="vertices">The vertex data to add.</param>
+		void AddVertices<T>(BatchInfo material, BeginMode vertexMode, params T[] vertices) where T : struct, IVertexData;
 	}
 }
 
 namespace Duality.Components
 {
+	/// <summary>
+	/// A Camera is responsible for rendering the current <see cref="Duality.Resources.Scene"/>.
+	/// </summary>
 	[Serializable]
 	[RequiredComponent(typeof(Transform))]
 	public sealed class Camera : Component, IDrawDevice
 	{
+		/// <summary>
+		/// A Bitmask describing which components of the current (or back-)buffer to clear before rendering.
+		/// </summary>
 		[Flags]
 		public enum ClearFlags
 		{
+			/// <summary>
+			/// Nothing.
+			/// </summary>
 			None	= 0x0,
 
+			/// <summary>
+			/// The buffers color components.
+			/// </summary>
 			Color	= 0x1,
+			/// <summary>
+			/// The buffers depth component.
+			/// </summary>
 			Depth	= 0x2,
 
+			/// <summary>
+			/// The default set of flags.
+			/// </summary>
 			Default	= Color | Depth,
+			/// <summary>
+			/// All flags set.
+			/// </summary>
 			All		= Color | Depth
 		}
+		/// <summary>
+		/// Describes a single pass in the overall rendering process.
+		/// </summary>
 		[Serializable]
 		public struct Pass
 		{
+			/// <summary>
+			/// The input to use for rendering. This can for example be a <see cref="Duality.Resources.Texture"/> that
+			/// has been rendered to before and is now bound to perform a postprocessing step. If this is null, the current
+			/// <see cref="Duality.Resources.Scene"/> is used as input - which is usually the case in the first rendering pass.
+			/// </summary>
 			public	BatchInfo					input;
+			/// <summary>
+			/// The output to render to in this pass. If this is null, the screen is used as rendering target.
+			/// </summary>
 			public	ContentRef<RenderTarget>	output;
+			/// <summary>
+			/// Specifies whether this passes output shall be scaled in order to fit the specified outputs dimensions.
+			/// </summary>
 			public	bool						fitOutput;
+			/// <summary>
+			/// Specifies whether previous image data on this passes rendering target should be kept, i.e. whether clearing
+			/// it before beginning to render can be skipped.
+			/// </summary>
 			public	bool						keepOutput;
 
 			public Pass(BatchInfo input, ContentRef<RenderTarget> output, bool fitOutput, bool keepOutput)
@@ -283,12 +403,11 @@ namespace Duality.Components
 			}
 		}
 
+		/// <summary>
+		/// The default reference distance for parallax rendering.
+		/// </summary>
 		public const float DefaultParallaxRefDist	= 500.0f;
 
-		private	bool	viewportRelative	= true;
-		private	Rect	viewport			= new Rect(0, 0, 1, 1);
-		private	bool	orthoRelative		= true;
-		private	Rect	ortho				= new Rect(0, 0, 1, 1);
 		private	float	nearZ				= 0.0f;
 		private	float	farZ				= 10000.0f;
 		private	float	zSortAccuracy		= 0.0f;
@@ -303,7 +422,7 @@ namespace Duality.Components
 		[NonSerialized]	private	Matrix4	matFinal			= Matrix4.Identity;
 
 		[NonSerialized]	private	uint				hndlPrimaryVBO	= 0;
-		[NonSerialized]	private	uint				picking			= 0;
+		[NonSerialized]	private	int					picking			= 0;
 		[NonSerialized]	private	List<Renderer>		pickingMap		= null;
 		[NonSerialized]	private	RenderTarget		pickingRT		= null;
 		[NonSerialized]	private	Texture				pickingTex		= null;
@@ -311,57 +430,59 @@ namespace Duality.Components
 		[NonSerialized]	private	byte[]				pickingBuffer	= new byte[4 * 256 * 256];
 		[NonSerialized]	private	List<IDrawBatch>	drawBuffer		= new List<IDrawBatch>();
 		[NonSerialized]	private	List<IDrawBatch>	drawBufferZSort	= new List<IDrawBatch>();
-
-		public Rect Viewport
-		{
-			get { return this.viewport; }
-			set { this.viewport = value; }
-		}
-		public bool ViewportRelative
-		{
-			get { return this.viewportRelative; }
-			set { this.viewportRelative = value; }
-		}
-		public Rect Ortho
-		{
-			get { return this.ortho; }
-			set { this.ortho = value; }
-		}
-		public bool OrthoRelative
-		{
-			get { return this.orthoRelative; }
-			set { this.orthoRelative = value; }
-		}
+		
+		/// <summary>
+		/// [GET / SET] The lowest Z value that can be displayed by the device.
+		/// </summary>
 		public float NearZ
 		{
 			get { return this.nearZ; }
 			set { this.nearZ = value; this.UpdateZSortAccuracy(); }
 		}
+		/// <summary>
+		/// [GET / SET] The highest Z value that can be displayed by the device.
+		/// </summary>
 		public float FarZ
 		{
 			get { return this.farZ; }
 			set { this.farZ = value; this.UpdateZSortAccuracy(); }
 		}
+		/// <summary>
+		/// [GET / SET] Reference distance for calculating the parallax effect. An object this far away from
+		/// the Camera will appear in its original size.
+		/// </summary>
 		public float ParallaxRefDist
 		{
 			get { return this.parallaxRefDist; }
 			set { this.parallaxRefDist = value; }
 		}
+		/// <summary>
+		/// [GET / SET] A bitmask flagging all visibility groups that are considered visible to this drawing device.
+		/// </summary>
 		public uint VisibilityMask
 		{
 			get { return this.visibilityMask; }
 			set { this.visibilityMask = value; }
 		}
+		/// <summary>
+		/// [GET / SET] A Bitmask describing which components of the current (or back-)buffer to clear before rendering.
+		/// </summary>
 		public ClearFlags ClearMask
 		{
 			get { return this.clearMask; }
 			set { this.clearMask = value; }
 		}
+		/// <summary>
+		/// [GET / SET] The background color of the rendered image.
+		/// </summary>
 		public ColorRgba ClearColor
 		{
 			get { return this.clearColor; }
 			set { this.clearColor = value; }
 		}
+		/// <summary>
+		/// [GET / SET] A set of passes that describes the Cameras rendering process. Is never null nor empty.
+		/// </summary>
 		public Pass[] Passes
 		{
 			get { return this.passes; }
@@ -379,10 +500,16 @@ namespace Duality.Components
 			}
 		}
 
+		/// <summary>
+		/// [GET] The drawing device which this Camera uses for rendering.
+		/// </summary>
 		public IDrawDevice DrawDevice
 		{
 			get { return this as IDrawDevice; }
 		}
+		/// <summary>
+		/// [GET] The drawing devices target size for rendering the Scene.
+		/// </summary>
 		public Vector2 SceneTargetSize
 		{
 			get
@@ -391,7 +518,7 @@ namespace Duality.Components
 				{
 					if (this.passes[i].input == null)
 					{
-						return this.passes[i].output.IsExplicitNull ? 
+						return !this.passes[i].output.IsAvailable ? 
 							DualityApp.TargetResolution : 
 							new Vector2(this.passes[i].output.Res.Width, this.passes[i].output.Res.Height);
 					}
@@ -399,14 +526,23 @@ namespace Duality.Components
 				return DualityApp.TargetResolution;
 			}
 		}
+		/// <summary>
+		/// [GET] A Rect describing the Cameras absolute ortho value.
+		/// </summary>
 		public Rect SceneOrthoAbs
 		{
-			get { return this.ortho.Transform(this.orthoRelative ? this.SceneTargetSize : Vector2.One); }
+			get { return new Rect(this.SceneTargetSize); }
 		}
+		/// <summary>
+		/// [GET] A Rect describing the Cameras absolute viewport.
+		/// </summary>
 		public Rect SceneViewportAbs
 		{
-			get { return this.viewport.Transform(this.viewportRelative ? this.SceneTargetSize : Vector2.One); }
+			get { return new Rect(this.SceneTargetSize); }
 		}
+		/// <summary>
+		/// [GET] The Cameras view space bounding circle radius.
+		/// </summary>
 		public float ViewBoundingRadius
 		{
 			get 
@@ -424,10 +560,6 @@ namespace Duality.Components
 		{
 			base.CopyToInternal(target);
 			Camera t = target as Camera;
-			t.viewportRelative	= this.viewportRelative;
-			t.viewport			= this.viewport;
-			t.orthoRelative		= this.orthoRelative;
-			t.ortho				= this.ortho;
 			t.nearZ				= this.nearZ;
 			t.farZ				= this.farZ;
 			t.parallaxRefDist	= this.parallaxRefDist;
@@ -437,6 +569,9 @@ namespace Duality.Components
 			t.passes			= this.passes != null ? this.passes.Clone() as Pass[] : null;
 		}
 
+		/// <summary>
+		/// Renders the current <see cref="Duality.Resources.Scene"/>.
+		/// </summary>
 		public void Render()
 		{
 			if (this.picking != 0)
@@ -460,6 +595,12 @@ namespace Duality.Components
 				this.RenderScreenOverlay();
 			}
 		}
+		/// <summary>
+		/// Renders a picking map of the current <see cref="Duality.Resources.Scene"/>.
+		/// If picking is required, this will be (automatically) done each frame a picking operation needs to
+		/// be performed. 
+		/// </summary>
+		/// <returns>True, if the picking map has been rendered. False, if this frames cached version is used.</returns>
 		public bool RenderPickingMap()
 		{
 			if (this.pickingLast == Time.FrameCount) return false;
@@ -485,6 +626,12 @@ namespace Duality.Components
 
 			return true;
 		}
+		/// <summary>
+		/// Picks the <see cref="Duality.Components.Renderer"/> that owns the pixel at the specified position.
+		/// </summary>
+		/// <param name="x">x-Coordinate of the pixel to check.</param>
+		/// <param name="y">y-Coordinate of the pixel to check.</param>
+		/// <returns>The <see cref="Duality.Components.Renderer"/> that owns the pixel.</returns>
 		public Renderer PickRendererAt(int x, int y)
 		{
 			this.RenderPickingMap();
@@ -496,8 +643,25 @@ namespace Duality.Components
 				(this.pickingBuffer[4 * (x + y * this.pickingTex.PxWidth) + 0] << 16) |
 				(this.pickingBuffer[4 * (x + y * this.pickingTex.PxWidth) + 1] << 8) |
 				(this.pickingBuffer[4 * (x + y * this.pickingTex.PxWidth) + 2] << 0);
-			return (rendererId <= 0 || rendererId > this.pickingMap.Count) ? null : this.pickingMap[rendererId - 1];
+			if (rendererId - 1 > this.pickingMap.Count)
+			{
+				Log.Core.WriteWarning("Unexpected picking result: {0}", ColorRgba.FromIntArgb(rendererId));
+				return null;
+			}
+			else if (rendererId != 0)
+				return this.pickingMap[rendererId - 1];
+			else
+				return null;
 		}
+		/// <summary>
+		/// Picks all <see cref="Duality.Components.Renderer">Renderers</see> contained within the specified
+		/// rectangular area.
+		/// </summary>
+		/// <param name="x">x-Coordinate of the Rect.</param>
+		/// <param name="y">y-Coordinate of the Rect.</param>
+		/// <param name="w">Width of the Rect.</param>
+		/// <param name="h">Height of the Rect.</param>
+		/// <returns>A set of all <see cref="Duality.Components.Renderer">Renderers</see> that have been picked.</returns>
 		public HashSet<Renderer> PickRenderersIn(int x, int y, int w, int h)
 		{
 			this.RenderPickingMap();
@@ -525,7 +689,10 @@ namespace Duality.Components
 							(*(pData + 2) << 0);
 						if (rendererId != rendererIdLast)
 						{
-							if (rendererId != 0) result.Add(this.pickingMap[rendererId - 1]);
+							if (rendererId - 1 > this.pickingMap.Count)
+								Log.Core.WriteWarning("Unexpected picking result: {0}", ColorRgba.FromIntArgb(rendererId));
+							else if (rendererId != 0)
+								result.Add(this.pickingMap[rendererId - 1]);
 							rendererIdLast = rendererId;
 						}
 						pData += 4;
@@ -536,6 +703,11 @@ namespace Duality.Components
 			return result;
 		}
 
+		/// <summary>
+		/// Returns the scale factor of objects that are located at the specified (world space) z-Coordinate.
+		/// </summary>
+		/// <param name="z"></param>
+		/// <returns></returns>
 		public float GetScaleAtZ(float z)
 		{
 			Vector3 dummy = new Vector3(0, 0, z);
@@ -543,6 +715,11 @@ namespace Duality.Components
 			this.DrawDevice.PreprocessCoords(ref dummy, ref scale);
 			return scale;
 		}
+		/// <summary>
+		/// Transforms screen space coordinates to world space coordinates.
+		/// </summary>
+		/// <param name="screenPos"></param>
+		/// <returns></returns>
 		public Vector3 GetSpaceCoord(Vector3 screenPos)
 		{
 			Vector3 dummy = screenPos;
@@ -562,10 +739,20 @@ namespace Duality.Components
 				screenPos.Y + this.GameObj.Transform.Pos.Y,
 				screenPos.Z);
 		}
+		/// <summary>
+		/// Transforms screen space coordinates to world space coordinates.
+		/// </summary>
+		/// <param name="screenPos"></param>
+		/// <returns></returns>
 		public Vector3 GetSpaceCoord(Vector2 screenPos)
 		{
 			return this.GetSpaceCoord(new Vector3(screenPos));
 		}
+		/// <summary>
+		/// Transforms world space coordinates to screen space coordinates.
+		/// </summary>
+		/// <param name="spacePos"></param>
+		/// <returns></returns>
 		public Vector3 GetScreenCoord(Vector3 spacePos)
 		{
 			float scale = 1.0f;
@@ -578,6 +765,11 @@ namespace Duality.Components
 
 			return spacePos;
 		}
+		/// <summary>
+		/// Transforms world space coordinates to screen space coordinates.
+		/// </summary>
+		/// <param name="spacePos"></param>
+		/// <returns></returns>
 		public Vector3 GetScreenCoord(Vector2 spacePos)
 		{
 			return this.GetScreenCoord(new Vector3(spacePos));
@@ -588,7 +780,7 @@ namespace Duality.Components
 			RenderTarget.Bind(p.output);
 			
 			Vector2 refSize = p.output.IsAvailable ? new Vector2(p.output.Res.Width, p.output.Res.Height) : DualityApp.TargetResolution;
-			Rect viewportAbs = p.output.IsAvailable ? new Rect(refSize) : new Rect(DualityApp.TargetResolution);
+			Rect viewportAbs = new Rect(refSize);
 			GL.Viewport((int)viewportAbs.x, (int)refSize.Y - (int)viewportAbs.h - (int)viewportAbs.y, (int)viewportAbs.w, (int)viewportAbs.h);
 			GL.Scissor((int)viewportAbs.x, (int)refSize.Y - (int)viewportAbs.h - (int)viewportAbs.y, (int)viewportAbs.w, (int)viewportAbs.h);
 
@@ -653,7 +845,7 @@ namespace Duality.Components
 				foreach (Renderer r in this.pickingMap)
 				{
 					r.Draw(this);
-					if (this.picking != 0) this.picking++;
+					this.picking++;
 				}
 			}
 			else

@@ -18,8 +18,7 @@ namespace Duality.Serialization.Surrogates
 		}
 		public override void WriteData(IDataWriter writer)
 		{
-			uint[] data;
-			this.RealObject.GetPixelDataIntArgb(out data);
+			int[] data = this.RealObject.GetPixelDataIntArgb();
 
 			writer.WriteValue("data", data);
 		}
@@ -33,7 +32,7 @@ namespace Duality.Serialization.Surrogates
 		}
 		public override void ReadData(IDataReader reader)
 		{
-			uint[] data = reader.ReadValue<uint[]>("data");
+			int[] data = reader.ReadValue<int[]>("data");
 
 			this.RealObject.SetPixelDataIntArgb(data);
 		}

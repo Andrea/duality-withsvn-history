@@ -312,41 +312,22 @@ namespace Duality
 		/// <returns></returns>
 		public static ColorRgba[] GetPixelDataRgba(this Bitmap bm)
 		{
-			int[] argbValues;
-			GetPixelDataIntArgb(bm, out argbValues);
+			int[] argbValues = GetPixelDataIntArgb(bm);
 
 			// Convert to ColorRGBA
 			ColorRgba[] result = new ColorRgba[argbValues.Length];
 			unchecked
 			{
 				for (int i = 0; i < argbValues.Length; i++)
-					result[i].SetIntArgb((uint)argbValues[i]);
+					result[i].SetIntArgb(argbValues[i]);
 			}
 			return result;
-		}
-		/// <summary>
-		/// Extracts a Bitmaps pixel data as IntArgb values.
-		/// </summary>
-		/// <param name="bm"></param>
-		/// <param name="argbValues"></param>
-		public static void GetPixelDataIntArgb(this Bitmap bm, out uint[] argbValues)
-		{
-			int[] argbValuesSigned;
-			GetPixelDataIntArgb(bm, out argbValuesSigned);
-
-			argbValues = new uint[argbValuesSigned.Length];
-			unchecked
-			{
-				for (int i = 0; i < argbValuesSigned.Length; i++)
-					argbValues[i] = (uint)argbValuesSigned[i];
-			}
 		}
 		/// <summary>
 		/// Extracts a Bitmaps pixel data as (signed) IntArgb values.
 		/// </summary>
 		/// <param name="bm"></param>
-		/// <param name="argbValues"></param>
-		public static void GetPixelDataIntArgb(this Bitmap bm, out int[] argbValues)
+		public static int[] GetPixelDataIntArgb(this Bitmap bm)
 		{
 			BitmapData data = bm.LockBits(
 				new Rectangle(0, 0, bm.Width, bm.Height),
@@ -354,9 +335,11 @@ namespace Duality
 				PixelFormat.Format32bppArgb);
 			
 			int pixels = data.Width * data.Height;
-			argbValues = new int[pixels];
+			int[] argbValues = new int[pixels];
 			System.Runtime.InteropServices.Marshal.Copy(data.Scan0, argbValues, 0, pixels);
 			bm.UnlockBits(data);
+
+			return argbValues;
 		}
 
 		/// <summary>
@@ -370,7 +353,7 @@ namespace Duality
 			unchecked
 			{
 				for (int i = 0; i < pixelData.Length; i++)
-					argbValues[i] = (int)pixelData[i].ToIntArgb();
+					argbValues[i] = pixelData[i].ToIntArgb();
 			}
 			SetPixelDataIntArgb(bm, argbValues);
 		}
@@ -391,21 +374,6 @@ namespace Duality
 						((int)pixelData[i * 4 + 0] << 16) |
 						((int)pixelData[i * 4 + 1] << 8) |
 						((int)pixelData[i * 4 + 2] << 0);
-			}
-			SetPixelDataIntArgb(bm, argbValues);
-		}
-		/// <summary>
-		/// Replaces a Bitmaps pixel data.
-		/// </summary>
-		/// <param name="bm"></param>
-		/// <param name="pixelData"></param>
-		public static void SetPixelDataIntArgb(this Bitmap bm, uint[] pixelData)
-		{
-			int[] argbValues = new int[pixelData.Length];
-			unchecked
-			{
-				for (int i = 0; i < pixelData.Length; i++)
-					argbValues[i] = (int)pixelData[i];
 			}
 			SetPixelDataIntArgb(bm, argbValues);
 		}

@@ -29,7 +29,7 @@ namespace Duality.Components.Renderers
 		protected	ColorRgba				colorTint	= ColorRgba.White;
 		protected	UVMode					rectMode	= UVMode.Stretch;
 		[NonSerialized]
-		protected	VertexFormat.VertexC4P3T2[]	vertices	= null;
+		protected	VertexFormat.VertexC1P3T2[]	vertices	= null;
 
 		public override float BoundRadius
 		{
@@ -102,7 +102,7 @@ namespace Duality.Components.Renderers
 			else
 				return null;
 		}
-		protected void PrepareVertices(ref VertexFormat.VertexC4P3T2[] vertices, IDrawDevice device, ColorRgba mainClr, Rect uvRect)
+		protected void PrepareVertices(ref VertexFormat.VertexC1P3T2[] vertices, IDrawDevice device, ColorRgba mainClr, Rect uvRect)
 		{
 			Vector3 posTemp = this.gameobj.Transform.Pos;
 			float scaleTemp = 1.0f;
@@ -117,12 +117,12 @@ namespace Duality.Components.Renderers
 			Vector2 edge3 = rectTemp.BottomRight;
 			Vector2 edge4 = rectTemp.TopRight;
 
-			MathF.TransdormDotVec(ref edge1, ref xDot, ref yDot);
-			MathF.TransdormDotVec(ref edge2, ref xDot, ref yDot);
-			MathF.TransdormDotVec(ref edge3, ref xDot, ref yDot);
-			MathF.TransdormDotVec(ref edge4, ref xDot, ref yDot);
+			MathF.TransformDotVec(ref edge1, ref xDot, ref yDot);
+			MathF.TransformDotVec(ref edge2, ref xDot, ref yDot);
+			MathF.TransformDotVec(ref edge3, ref xDot, ref yDot);
+			MathF.TransformDotVec(ref edge4, ref xDot, ref yDot);
 
-			if (vertices == null || vertices.Length != 4) vertices = new VertexFormat.VertexC4P3T2[4];
+			if (vertices == null || vertices.Length != 4) vertices = new VertexFormat.VertexC1P3T2[4];
 
 			vertices[0].pos.X = posTemp.X + edge1.X;
 			vertices[0].pos.Y = posTemp.Y + edge1.Y;

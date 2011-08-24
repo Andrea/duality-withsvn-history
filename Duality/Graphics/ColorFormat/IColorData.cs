@@ -5,55 +5,38 @@ using System.Text;
 
 namespace Duality.ColorFormat
 {
+	/// <summary>
+	/// A general interface for different types of color data.
+	/// </summary>
 	public interface IColorData
 	{
-		uint ToIntRgba();
-		void SetIntRgba(uint rgba);
+		/// <summary>
+		/// Converts the color to a <see cref="System.UInt32"/>-Rgba value.
+		/// </summary>
+		/// <returns></returns>
+		int ToIntRgba();
+		/// <summary>
+		/// Sets the color base ond a <see cref="System.UInt32"/>-Rgba value.
+		/// </summary>
+		/// <param name="rgba"></param>
+		void SetIntRgba(int rgba);
+		
+		/// <summary>
+		/// Converts the color to a <see cref="System.UInt32"/>-Argb value.
+		/// </summary>
+		/// <returns></returns>
+		int ToIntArgb();
+		/// <summary>
+		/// Sets the color base ond a <see cref="System.UInt32"/>-Argb value.
+		/// </summary>
+		/// <param name="rgba"></param>
+		void SetIntArgb(int argb);
 
-		uint ToIntArgb();
-		void SetIntArgb(uint argb);
-	}
-
-	public static class IColorDataCreator
-	{
-		public static IColorData FromIntRgba(uint rgba, Type colorDataType)
-		{
-			if (colorDataType == typeof(ColorRgba))
-				return ColorRgba.FromIntRgba(rgba);
-			else if (colorDataType == typeof(ColorHsva))
-				return ColorHsva.FromIntRgba(rgba);
-			else
-			{
-				System.Reflection.MethodInfo createMethod = colorDataType.GetMethod("FromIntRgba", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
-				if (createMethod != null)
-					return createMethod.Invoke(null, new object[] { rgba }) as IColorData;
-				else
-					return null;
-			}
-		}
-		public static T FromIntRgba<T>(uint rgba) where T : IColorData
-		{
-			return (T)IColorDataCreator.FromIntRgba(rgba, typeof(T));
-		}
-
-		public static IColorData FromIntArgb(uint argb, Type colorDataType)
-		{
-			if (colorDataType == typeof(ColorRgba))
-				return ColorRgba.FromIntArgb(argb);
-			else if (colorDataType == typeof(ColorHsva))
-				return ColorHsva.FromIntArgb(argb);
-			else
-			{
-				System.Reflection.MethodInfo createMethod = colorDataType.GetMethod("FromIntArgb", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
-				if (createMethod != null)
-					return createMethod.Invoke(null, new object[] { argb }) as IColorData;
-				else
-					return null;
-			}
-		}
-		public static T FromIntArgb<T>(uint argb) where T : IColorData
-		{
-			return (T)IColorDataCreator.FromIntArgb(argb, typeof(T));
-		}
+		/// <summary>
+		/// Converts the color to the specified format.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		T ConvertTo<T>() where T : IColorData;
 	}
 }

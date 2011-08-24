@@ -31,7 +31,7 @@ namespace Duality.Components.Renderers
 		private	float		animTime			= 0.0f;
 		private	int			animCycle			= 0;
 
-		private	VertexFormat.VertexC4P3T4A1[]	verticesSmooth	= null;
+		private	VertexFormat.VertexC1P3T4A1[]	verticesSmooth	= null;
 
 
 		public int AnimFirstFrame
@@ -135,7 +135,7 @@ namespace Duality.Components.Renderers
 		}
 		void ICmpInitializable.OnShutdown(Component.ShutdownContext context) {}
 		
-		protected void PrepareVerticesSmooth(ref VertexFormat.VertexC4P3T4A1[] vertices, IDrawDevice device, float curAnimFrameFade, ColorRgba mainClr, Rect uvRect, Rect uvRectNext)
+		protected void PrepareVerticesSmooth(ref VertexFormat.VertexC1P3T4A1[] vertices, IDrawDevice device, float curAnimFrameFade, ColorRgba mainClr, Rect uvRect, Rect uvRectNext)
 		{
 			Vector3 posTemp = this.gameobj.Transform.Pos;
 			float scaleTemp = 1.0f;
@@ -150,12 +150,12 @@ namespace Duality.Components.Renderers
 			Vector2 edge3 = rectTemp.BottomRight;
 			Vector2 edge4 = rectTemp.TopRight;
 
-			MathF.TransdormDotVec(ref edge1, ref xDot, ref yDot);
-			MathF.TransdormDotVec(ref edge2, ref xDot, ref yDot);
-			MathF.TransdormDotVec(ref edge3, ref xDot, ref yDot);
-			MathF.TransdormDotVec(ref edge4, ref xDot, ref yDot);
+			MathF.TransformDotVec(ref edge1, ref xDot, ref yDot);
+			MathF.TransformDotVec(ref edge2, ref xDot, ref yDot);
+			MathF.TransformDotVec(ref edge3, ref xDot, ref yDot);
+			MathF.TransformDotVec(ref edge4, ref xDot, ref yDot);
 
-			if (vertices == null || vertices.Length != 4) vertices = new VertexFormat.VertexC4P3T4A1[4];
+			if (vertices == null || vertices.Length != 4) vertices = new VertexFormat.VertexC1P3T4A1[4];
 
 			vertices[0].pos.X = posTemp.X + edge1.X;
 			vertices[0].pos.Y = posTemp.Y + edge1.Y;
@@ -204,7 +204,7 @@ namespace Duality.Components.Renderers
 			ColorRgba mainClr = this.RetrieveMainColor();
 			DrawTechnique tech = this.RetrieveDrawTechnique();
 
-			bool smoothShaderInput = tech.PreferredVertexFormat == VertexFormat.VertexDataFormat.VertexC4P3T4A1;
+			bool smoothShaderInput = tech.PreferredVertexFormat == VertexFormat.VertexDataFormat.VertexC1P3T4A1;
 			bool isAnimated = this.animFrameCount > 0 && this.animDuration > 0 && mainTex != null && mainTex.Atlas != null;
 			int curAnimFrame = 0;
 			int nextAnimFrame = 0;

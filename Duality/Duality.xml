@@ -489,6 +489,11 @@
             <seealso cref="M:Duality.DualityMetaData.ReadValue(System.String)"/>
             <seealso cref="M:Duality.DualityMetaData.ReadValueAs``1(System.String,``0@)"/>
         </member>
+        <member name="T:Duality.Components.Transform">
+            <summary>
+            Represents a <see cref="T:Duality.GameObject">GameObjects</see> physical location in the world, relative to its <see cref="P:Duality.GameObject.Parent"/>.
+            </summary>
+        </member>
         <member name="T:Duality.Component">
             <summary>
             Components are isolated logic units that can independently be added to and removed from <see cref="T:Duality.GameObject">GameObjects</see>.
@@ -720,6 +725,82 @@
             </summary>
             <param name="context">The kind of shutdown that is intended.</param>
         </member>
+        <member name="P:Duality.Components.Transform.RelativePos">
+            <summary>
+            [GET / SET] The objects position relative to its parent object.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Transform.RelativeVel">
+            <summary>
+            [GET / SET] The objects velocity relative to its parent object.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Transform.RelativeAngle">
+            <summary>
+            [GET / SET] The objects angle / rotation relative to its parent object, in radians.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Transform.RelativeAngleVel">
+            <summary>
+            [GET / SET] The objects angle / rotation velocity relative to its parent object, in radians.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Transform.RelativeScale">
+            <summary>
+            [GET / SET] The objects scale relative to its parent object.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Transform.DeriveAngle">
+            <summary>
+            [GET / SET] If false, this objects rotation values aren't relative to its parent.
+            However, its position, velocity, etc. still depend on parent rotation.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Transform.RelativeForward">
+            <summary>
+            [GET] The objects forward vector, relative to its parent object.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Transform.RelativeRight">
+            <summary>
+            [GET] The objects right (directional) vector, relative to its parent object.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Transform.Pos">
+            <summary>
+            [GET / SET] The objects position.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Transform.Vel">
+            <summary>
+            [GET / SET] The objects velocity.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Transform.Angle">
+            <summary>
+            [GET / SET] The objects angle / rotation, in radians.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Transform.AngleVel">
+            <summary>
+            [GET / SET] The objects angle / rotation velocity, in radians.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Transform.Scale">
+            <summary>
+            [GET / SET] The objects scale.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Transform.Forward">
+            <summary>
+            [GET] The objects forward vector.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Transform.Right">
+            <summary>
+            [GET] The objects right (directional) vector.
+            </summary>
+        </member>
         <member name="T:Duality.ICmpComponentListener">
             <summary>
             Implement this interface in <see cref="T:Duality.Component">Components</see> that require notifications for other Components 
@@ -825,6 +906,410 @@
             <param name="type">The type of the log message.</param>
             <param name="msg">The message to write.</param>
         </member>
+        <member name="T:Duality.ColorFormat.ColorRgba">
+            <summary>
+            Represents a 4-byte Rgba color value.
+            </summary>
+        </member>
+        <member name="T:Duality.ColorFormat.IColorData">
+            <summary>
+            A general interface for different types of color data.
+            </summary>
+        </member>
+        <member name="M:Duality.ColorFormat.IColorData.ToIntRgba">
+            <summary>
+            Converts the color to a <see cref="T:System.UInt32"/>-Rgba value.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ColorFormat.IColorData.SetIntRgba(System.Int32)">
+            <summary>
+            Sets the color base ond a <see cref="T:System.UInt32"/>-Rgba value.
+            </summary>
+            <param name="rgba"></param>
+        </member>
+        <member name="M:Duality.ColorFormat.IColorData.ToIntArgb">
+            <summary>
+            Converts the color to a <see cref="T:System.UInt32"/>-Argb value.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ColorFormat.IColorData.SetIntArgb(System.Int32)">
+            <summary>
+            Sets the color base ond a <see cref="T:System.UInt32"/>-Argb value.
+            </summary>
+            <param name="rgba"></param>
+        </member>
+        <member name="M:Duality.ColorFormat.IColorData.ConvertTo``1">
+            <summary>
+            Converts the color to the specified format.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorRgba.CompSize">
+            <summary>
+            Size of a single color component in bytes.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorRgba.OffsetR">
+            <summary>
+            Byte offset of the red value.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorRgba.OffsetG">
+            <summary>
+            Byte offset of the green value.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorRgba.OffsetB">
+            <summary>
+            Byte offset of the blue value.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorRgba.OffsetA">
+            <summary>
+            Byte offset of the alpha value.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorRgba.Size">
+            <summary>
+            Total size of the struct in bytes.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorRgba.White">
+            <summary>
+            White.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorRgba.Black">
+            <summary>
+            Black.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorRgba.Red">
+            <summary>
+            Fully saturated and max-brightness red. Also known as [255,0,0].
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorRgba.Green">
+            <summary>
+            Fully saturated and max-brightness green. Also known as [0,255,0].
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorRgba.Blue">
+            <summary>
+            Fully saturated and max-brightness blue. Also known as [0,0,255].
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorRgba.VeryLightGrey">
+            <summary>
+            A very light grey. Value: 224.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorRgba.LightGrey">
+            <summary>
+            A light grey. Value: 192.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorRgba.Grey">
+            <summary>
+            Medium grey. Value: 128.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorRgba.DarkGrey">
+            <summary>
+            A dark grey. Value: 64.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorRgba.VeryDarkGrey">
+            <summary>
+            A very dark grey. Value: 32.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorRgba.TransparentWhite">
+            <summary>
+            Transparent white. Completely invisible, when drawn, but might make a difference as
+            a background color.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorRgba.TransparentBlack">
+            <summary>
+            Transparent black. Completely invisible, when drawn, but might make a difference as
+            a background color.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorRgba.r">
+            <summary>
+            Red color component.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorRgba.g">
+            <summary>
+            Green color component.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorRgba.b">
+            <summary>
+            Blue color component.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorRgba.a">
+            <summary>
+            Alpha color component. Usually treated as opacity.
+            </summary>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.#ctor(Duality.ColorFormat.ColorRgba)">
+            <summary>
+            Creates a new color based on an existing one. This is basically a copy-constructor.
+            </summary>
+            <param name="clr"></param>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.#ctor(System.Int32)">
+            <summary>
+            Creates a new color based on an int-Rgba value.
+            </summary>
+            <param name="rgba"></param>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.#ctor(System.Byte,System.Byte,System.Byte,System.Byte)">
+            <summary>
+            Creates a new color.
+            </summary>
+            <param name="r">The red component.</param>
+            <param name="g">The green component.</param>
+            <param name="b">The blue component.</param>
+            <param name="a">The alpha component.</param>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.#ctor(System.Byte,System.Byte)">
+            <summary>
+            Creates a new color based on value (brightness) and alpha.
+            </summary>
+            <param name="value">The value / brightness of the color.</param>
+            <param name="a">The colors alpha value.</param>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.#ctor(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Creates a new color.
+            </summary>
+            <param name="r">The red component as float [0.0f - 1.0f].</param>
+            <param name="g">The green component as float [0.0f - 1.0f].</param>
+            <param name="b">The blue component as float [0.0f - 1.0f].</param>
+            <param name="a">The alpha component as float [0.0f - 1.0f].</param>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.#ctor(System.Single,System.Single)">
+            <summary>
+            Creates a new color based on value (brightness) and alpha.
+            </summary>
+            <param name="value">The value / brightness of the color as float [0.0f - 1.0f].</param>
+            <param name="a">The colors alpha value as float [0.0f - 1.0f].</param>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.WithRed(System.Byte)">
+            <summary>
+            Returns a new version of the color with an adjusted red component.
+            </summary>
+            <param name="r">The new red component.</param>
+            <returns>A new color with the specified adjustments.</returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.WithGreen(System.Byte)">
+            <summary>
+            Returns a new version of the color with an adjusted green component.
+            </summary>
+            <param name="g">The new green component.</param>
+            <returns>A new color with the specified adjustments.</returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.WithBlue(System.Byte)">
+            <summary>
+            Returns a new version of the color with an adjusted blue component.
+            </summary>
+            <param name="b">The new blue component.</param>
+            <returns>A new color with the specified adjustments.</returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.WithAlpha(System.Byte)">
+            <summary>
+            Returns a new version of the color with an adjusted alpha component.
+            </summary>
+            <param name="a">The new alpha component.</param>
+            <returns>A new color with the specified adjustments.</returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.WithRed(System.Single)">
+            <summary>
+            Returns a new version of the color with an adjusted red component.
+            </summary>
+            <param name="r">The new red component as float [0.0f - 1.0f].</param>
+            <returns>A new color with the specified adjustments.</returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.WithGreen(System.Single)">
+            <summary>
+            Returns a new version of the color with an adjusted green component.
+            </summary>
+            <param name="g">The new green component as float [0.0f - 1.0f].</param>
+            <returns>A new color with the specified adjustments.</returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.WithBlue(System.Single)">
+            <summary>
+            Returns a new version of the color with an adjusted blue component.
+            </summary>
+            <param name="b">The new blue component as float [0.0f - 1.0f].</param>
+            <returns>A new color with the specified adjustments.</returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.WithAlpha(System.Single)">
+            <summary>
+            Returns a new version of the color with an adjusted alpha component.
+            </summary>
+            <param name="a">The new alpha component as float [0.0f - 1.0f].</param>
+            <returns>A new color with the specified adjustments.</returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.GetLuminance">
+            <summary>
+            Calculates the colors luminance. It is an approximation on how bright the color actually looks to
+            the human eye, weighting each color component differently.
+            </summary>
+            <returns>The colors luminance as float [0.0f - 1.0f].</returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.ToIntRgba">
+            <summary>
+            Converts the color to int-Rgba.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.ToIntArgb">
+            <summary>
+            Converts the color to int-Argb.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.ToHsva">
+            <summary>
+            Converts the color to Hsva.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.ConvertTo``1">
+            <summary>
+            Converts the color to a different color data format. If there is also a
+            specific method doing the desired conversion, use that instead - it might be faster.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.SetIntArgb(System.Int32)">
+            <summary>
+            Adjusts the color to match the specified int-Argb color.
+            </summary>
+            <param name="argb"></param>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.SetIntRgba(System.Int32)">
+            <summary>
+            Adjusts the color to match the specified int-Rgba color.
+            </summary>
+            <param name="rgba"></param>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.SetHsva(Duality.ColorFormat.ColorHsva)">
+            <summary>
+            Adjusts the color to match the specified Hsva color.
+            </summary>
+            <param name="hsva"></param>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.Equals(Duality.ColorFormat.ColorRgba)">
+            <summary>
+            Returns whether this color equals the specified one.
+            </summary>
+            <param name="other"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.FromIntRgba(System.Int32)">
+            <summary>
+            Creates a new color based on an int-Rgba value.
+            </summary>
+            <param name="rgba"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.FromIntArgb(System.Int32)">
+            <summary>
+            Creates a new color based on an int-Argb value.
+            </summary>
+            <param name="argb"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.FromHsva(Duality.ColorFormat.ColorHsva)">
+            <summary>
+            Creates a new color based on a Hsva value.
+            </summary>
+            <param name="hsva"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.Mix(Duality.ColorFormat.ColorRgba,Duality.ColorFormat.ColorRgba,System.Single)">
+            <summary>
+            Mixes two colors by performing a linear interpolation between both.
+            </summary>
+            <param name="first">The first color.</param>
+            <param name="second">The second color.</param>
+            <param name="factor">The linear interpolation value. Zero equals the first color, one equals the second color.</param>
+            <returns>The interpolated / mixed color.</returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.op_Equality(Duality.ColorFormat.ColorRgba,Duality.ColorFormat.ColorRgba)">
+            <summary>
+            Returns whether two colors are equal.
+            </summary>
+            <param name="left">The first color.</param>
+            <param name="right">The second color.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.op_Inequality(Duality.ColorFormat.ColorRgba,Duality.ColorFormat.ColorRgba)">
+            <summary>
+            Returns whether two colors are unequal.
+            </summary>
+            <param name="left">The first color.</param>
+            <param name="right">The second color.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.op_BitwiseAnd(Duality.ColorFormat.ColorRgba,Duality.ColorFormat.ColorRgba)">
+            <summary>
+            Performs a logical AND operation on the int-Rgba values of two colors.
+            </summary>
+            <param name="left">The first color.</param>
+            <param name="right">The second color.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.op_BitwiseOr(Duality.ColorFormat.ColorRgba,Duality.ColorFormat.ColorRgba)">
+            <summary>
+            Performs a logical OR operation on the int-Rgba values of two colors.
+            </summary>
+            <param name="left">The first color.</param>
+            <param name="right">The second color.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.op_Addition(Duality.ColorFormat.ColorRgba,Duality.ColorFormat.ColorRgba)">
+            <summary>
+            Adds two colors.
+            </summary>
+            <param name="left">The first color.</param>
+            <param name="right">The second color.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.op_Subtraction(Duality.ColorFormat.ColorRgba,Duality.ColorFormat.ColorRgba)">
+            <summary>
+            Subtracts the second color from the first.
+            </summary>
+            <param name="left">The first color.</param>
+            <param name="right">The second color.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.op_Multiply(Duality.ColorFormat.ColorRgba,Duality.ColorFormat.ColorRgba)">
+            <summary>
+            Multiplies two colors.
+            </summary>
+            <param name="left">The first color.</param>
+            <param name="right">The second color.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorRgba.op_UnaryNegation(Duality.ColorFormat.ColorRgba)">
+            <summary>
+            Returns the inverse of a color.
+            </summary>
+            <param name="c">The color to invert.</param>
+            <returns></returns>
+        </member>
         <member name="T:Duality.ConsoleLogOutput">
             <summary>
             A <see cref="T:Duality.ILogOutput">Log output</see> that uses the <see cref="T:System.Console"/> as message destination.
@@ -921,6 +1406,233 @@
             <param name="target"></param>
             <param name="unwrapTypes"></param>
         </member>
+        <member name="T:Duality.ColorFormat.ColorHsva">
+            <summary>
+            Represents a 16-byte Hsva color value.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorHsva.CompSize">
+            <summary>
+            Size of a single color component in bytes.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorHsva.OffsetH">
+            <summary>
+            Byte offset of the hue value.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorHsva.OffsetS">
+            <summary>
+            Byte offset of the saturation value.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorHsva.OffsetV">
+            <summary>
+            Byte offset of the value / brightness value.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorHsva.OffsetA">
+            <summary>
+            Byte offset of the alpha value.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorHsva.Size">
+            <summary>
+            Total size of the struct in bytes.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorHsva.White">
+            <summary>
+            White.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorHsva.Black">
+            <summary>
+            Black.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorHsva.Red">
+            <summary>
+            Fully saturated and max-brightness red.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorHsva.Green">
+            <summary>
+            Fully saturated and max-brightness green.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorHsva.Blue">
+            <summary>
+            Fully saturated and max-brightness blue.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorHsva.VeryLightGrey">
+            <summary>
+            A very light grey.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorHsva.LightGrey">
+            <summary>
+            A light grey.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorHsva.Grey">
+            <summary>
+            Medium grey.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorHsva.DarkGrey">
+            <summary>
+            A dark grey.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorHsva.VeryDarkGrey">
+            <summary>
+            A very dark grey.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorHsva.TransparentWhite">
+            <summary>
+            Transparent white. Completely invisible, when drawn, but might make a difference as
+            a background color.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorHsva.TransparentBlack">
+            <summary>
+            Transparent black. Completely invisible, when drawn, but might make a difference as
+            a background color.
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorHsva.h">
+            <summary>
+            Hue component as float [0.0f - 1.0f].
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorHsva.s">
+            <summary>
+            Saturation component as float [0.0f - 1.0f].
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorHsva.v">
+            <summary>
+            Value component as float [0.0f - 1.0f].
+            </summary>
+        </member>
+        <member name="F:Duality.ColorFormat.ColorHsva.a">
+            <summary>
+            Alpha component as float [0.0f - 1.0f].
+            </summary>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorHsva.#ctor(Duality.ColorFormat.ColorHsva)">
+            <summary>
+            Creates a new color based on an existing one. This is basically a copy-constructor.
+            </summary>
+            <param name="clr"></param>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorHsva.#ctor(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Creates a new color.
+            </summary>
+            <param name="h">Hue as float [0.0f - 1.0f].</param>
+            <param name="s">Saturation as float [0.0f - 1.0f].</param>
+            <param name="v">Value as float [0.0f - 1.0f].</param>
+            <param name="a">Alpha as float [0.0f - 1.0f].</param>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorHsva.GetLuminance">
+            <summary>
+            Calculates the colors luminance. It is an approximation on how bright the color actually looks to
+            the human eye, weighting each (Rgba) color component differently.
+            </summary>
+            <returns>The colors luminance as float [0.0f - 1.0f].</returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorHsva.ToIntRgba">
+            <summary>
+            Converts the color to int-Rgba.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorHsva.ToIntArgb">
+            <summary>
+            Converts the color to int-Argb.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorHsva.ToRgba">
+            <summary>
+            Converts the color to Rgba.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorHsva.ConvertTo``1">
+            <summary>
+            Converts the color to a different color data format. If there is also a
+            specific method doing the desired conversion, use that instead - it might be faster.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorHsva.SetIntRgba(System.Int32)">
+            <summary>
+            Adjusts the color to match the specified int-Rgba color.
+            </summary>
+            <param name="rgba"></param>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorHsva.SetIntArgb(System.Int32)">
+            <summary>
+            Adjusts the color to match the specified int-Argb color.
+            </summary>
+            <param name="argb"></param>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorHsva.SetRgba(Duality.ColorFormat.ColorRgba)">
+            <summary>
+            Adjusts the color to match the specified Rgba color.
+            </summary>
+            <param name="rgba"></param>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorHsva.Equals(Duality.ColorFormat.ColorHsva)">
+            <summary>
+            Returns whether this color equals the specified one.
+            </summary>
+            <param name="other"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorHsva.FromIntRgba(System.Int32)">
+            <summary>
+            Creates a new color based on an int-Rgba value.
+            </summary>
+            <param name="rgba"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorHsva.FromIntArgb(System.Int32)">
+            <summary>
+            Creates a new color based on an int-Argb value.
+            </summary>
+            <param name="argb"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorHsva.FromRgba(Duality.ColorFormat.ColorRgba)">
+            <summary>
+            Creates a new color based on a Rgba value.
+            </summary>
+            <param name="hsva"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorHsva.op_Equality(Duality.ColorFormat.ColorHsva,Duality.ColorFormat.ColorHsva)">
+            <summary>
+            Returns whether two colors are equal.
+            </summary>
+            <param name="left">The first color.</param>
+            <param name="right">The second color.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ColorHsva.op_Inequality(Duality.ColorFormat.ColorHsva,Duality.ColorFormat.ColorHsva)">
+            <summary>
+            Returns whether two colors are unequal.
+            </summary>
+            <param name="left">The first color.</param>
+            <param name="right">The second color.</param>
+            <returns></returns>
+        </member>
         <member name="T:Duality.Serialization.BinaryFormatterBase">
             <summary>
             Base class for Dualitys binary serializers.
@@ -998,14 +1710,14 @@
             <summary>
             Reads the <see cref="T:Duality.Serialization.TypeDataLayout"/> describing the specified <see cref="T:System.Type"/>.
             </summary>
-            <param name="t">The <see cref="!:Systen.Type"/> of which to read the <see cref="T:Duality.Serialization.TypeDataLayout"/>.</param>
+            <param name="t">The <see cref="T:System.Type"/> of which to read the <see cref="T:Duality.Serialization.TypeDataLayout"/>.</param>
             <returns>A <see cref="T:Duality.Serialization.TypeDataLayout"/> describing the specified <see cref="T:System.Type"/></returns>
         </member>
         <member name="M:Duality.Serialization.BinaryFormatterBase.ReadTypeDataLayout(System.String)">
             <summary>
             Reads the <see cref="T:Duality.Serialization.TypeDataLayout"/> describing the specified <see cref="T:System.Type"/>.
             </summary>
-            <param name="t">A string referring to the <see cref="!:Systen.Type"/> of which to read the <see cref="T:Duality.Serialization.TypeDataLayout"/>.</param>
+            <param name="t">A string referring to the <see cref="T:System.Type"/> of which to read the <see cref="T:Duality.Serialization.TypeDataLayout"/>.</param>
             <returns>A <see cref="T:Duality.Serialization.TypeDataLayout"/> describing the specified <see cref="T:System.Type"/></returns>
         </member>
         <member name="M:Duality.Serialization.BinaryFormatterBase.ReadFormatterHeader">
@@ -1719,7 +2431,7 @@
         </member>
         <member name="P:Duality.Resources.Sound.Data">
             <summary>
-            [GET / SET] The <see cref="!:Duality.Resource.AudioData"/> that is parameterized by this Sound.
+            [GET / SET] The <see cref="T:Duality.Resources.AudioData"/> that is parameterized by this Sound.
             </summary>
         </member>
         <member name="P:Duality.Resources.Sound.Type">
@@ -1757,14 +2469,14 @@
         <member name="P:Duality.Resources.Sound.MinDistFactor">
             <summary>
             [GET / SET] The distance at which the sound is played at full volume. Getting nearer to the source won't increase the volume anymore.
-            Note that the value is a factor to <see cref="!:DualityApp.Sound.DefaultMinDist"/>.
+            Note that the value is a factor to <see cref="P:Duality.SoundDevice.DefaultMinDist"/>.
             </summary>
             <seealso cref="P:Duality.Resources.Sound.MinDist"/>
         </member>
         <member name="P:Duality.Resources.Sound.MaxDistFactor">
             <summary>
             [GET / SET] The distance at which the sound is played at zero volume.
-            Note that the value is a factor to <see cref="!:DualityApp.Sound.DefaultMaxDist"/>.
+            Note that the value is a factor to <see cref="P:Duality.SoundDevice.DefaultMaxDist"/>.
             </summary>
             <seealso cref="P:Duality.Resources.Sound.MaxDist"/>
         </member>
@@ -2157,6 +2869,79 @@
         <member name="P:Duality.GameObjectParentChangedEventArgs.NewParent">
             <summary>
             [GET] The GameObjects new parent.
+            </summary>
+        </member>
+        <member name="T:Duality.VertexFormat.VertexDataFormat">
+            <summary>
+            Enumerates Dualitys default vertex data formats.
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexDataFormat.Unknown">
+            <summary>
+            Unknown format.
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexDataFormat.VertexP3">
+            <summary>
+            <see cref="T:Duality.VertexFormat.VertexP3"/> format.
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexDataFormat.VertexC1P3">
+            <summary>
+            <see cref="T:Duality.VertexFormat.VertexC1P3"/> format.
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexDataFormat.VertexC1P3T2">
+            <summary>
+            <see cref="T:Duality.VertexFormat.VertexC1P3T2"/> format.
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexDataFormat.VertexC1P3T4A1">
+            <summary>
+            <see cref="T:Duality.VertexFormat.VertexC1P3T4A1"/> format.
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexDataFormat.VertexP3T2">
+            <summary>
+            <see cref="T:Duality.VertexFormat.VertexP3T2"/> format.
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexDataFormat.Count">
+            <summary>
+            Total number of default vertex data formats.
+            </summary>
+        </member>
+        <member name="T:Duality.VertexFormat.IVertexData">
+            <summary>
+            A general interface for different types of vertex data.
+            </summary>
+        </member>
+        <member name="M:Duality.VertexFormat.IVertexData.SetupVBO``1(``0[],Duality.Resources.BatchInfo)">
+            <summary>
+            Sets up the currently bound OpenGL VertexBufferObject and injects actual vertex data.
+            </summary>
+            <typeparam name="T">The type of input vertex data to use.</typeparam>
+            <param name="vertexData">The vertex data to be uploaded into the VBO.</param>
+            <param name="mat">
+            The <see cref="T:Duality.Resources.Material"/> that is currently active. Usually only needed
+            for custom vertex attributes in order to access <see cref="T:Duality.Resources.ShaderVarInfo">shader variables</see>.
+            </param>
+        </member>
+        <member name="M:Duality.VertexFormat.IVertexData.FinishVBO(Duality.Resources.BatchInfo)">
+            <summary>
+            Resets the VBO configuration.
+            </summary>
+            <param name="mat">The <see cref="T:Duality.Resources.Material"/> that was active when setting it up.</param>
+        </member>
+        <member name="P:Duality.VertexFormat.IVertexData.VertexTypeIndex">
+            <summary>
+            [GET] An integer id representing this kind of vertex data. Usually equals the respective <see cref="T:Duality.VertexFormat.VertexDataFormat"/>.
+            This member is static by design.
+            </summary>
+        </member>
+        <member name="P:Duality.VertexFormat.IVertexData.Pos">
+            <summary>
+            [GET] The vertices position.
             </summary>
         </member>
         <member name="T:Duality.Resources.VertexShader">
@@ -3296,6 +4081,48 @@
             Provides Reflection data on Properties and Fields.
             </summary>
         </member>
+        <member name="T:Duality.Components.Renderer">
+            <summary>
+            A Renderer usually gives its <see cref="T:Duality.GameObject"/> a visual appearance in space.
+            However, in general it may render anything and isn't bound by any conceptual restrictions.
+            </summary>
+        </member>
+        <member name="M:Duality.Components.Renderer.Draw(Duality.IDrawDevice)">
+            <summary>
+            Performs the Renderers drawing operation.
+            </summary>
+            <param name="device"></param>
+        </member>
+        <member name="M:Duality.Components.Renderer.IsVisible(Duality.IDrawDevice)">
+            <summary>
+            Determines if the Renderer is visible to the specified <see cref="T:Duality.IDrawDevice"/>.
+            This is usually the case if they share at least one mutual <see cref="P:Duality.Components.Renderer.VisibilityGroup">visibility group</see>.
+            </summary>
+            <param name="device"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Duality.Components.Renderer.RenderFlags">
+            <summary>
+            [GET / SET] The <see cref="T:Duality.Components.RendererFlags">appearance flags</see> of this Renderer.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Renderer.VisibilityGroup">
+            <summary>
+            [GET / SET] A bitmask that informs about the set of visibility groups to which this Renderer
+            belongs. Usually, a Renderer is considered visible to a <see cref="T:Duality.Components.Camera"/> if they
+            share at least one mutual visibility group.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Renderer.BoundRadius">
+            <summary>
+            [GET] The Renderers bounding radius, originating from the <see cref="T:Duality.GameObject">GameObjects</see> position.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Renderer.IsInfiniteXY">
+            <summary>
+            [GET] Returns whether this Renderer visually stretches infinitely on the XY-plane.
+            </summary>
+        </member>
         <member name="T:Duality.Alignment">
             <summary>
             Represents a 2D spatial alignment.
@@ -3344,6 +4171,36 @@
         <member name="F:Duality.Alignment.BottomRight">
             <summary>
             Align to its bottom right.
+            </summary>
+        </member>
+        <member name="T:Duality.VertexFormat.VertexP3T2">
+            <summary>
+            Vertex data providing each vertex a position (3x4 byte) and texture coordinate (2x4 byte)
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexP3T2.OffsetPos">
+            <summary>
+            Byte offset for the position.
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexP3T2.OffsetTex0">
+            <summary>
+            Byte offset for the texture coordinate.
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexP3T2.Size">
+            <summary>
+            Total size in bytes.
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexP3T2.pos">
+            <summary>
+            The vertices position.
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexP3T2.texCoord">
+            <summary>
+            The vertices texture coordinate.
             </summary>
         </member>
         <member name="T:Duality.Serialization.DataType">
@@ -3899,6 +4756,329 @@
             Initializes a uniform dataset based on the type of the represented variable.
             </summary>
             <returns>A new uniform dataset</returns>
+        </member>
+        <member name="T:Duality.BlendMode">
+            <summary>
+            Enumerates different behviours on how to blend color data onto existing background color.
+            </summary>
+            <seealso cref="T:Duality.Resources.DrawTechnique"/>
+        </member>
+        <member name="F:Duality.BlendMode.Reset">
+            <summary>
+            When passing this to a method, this value can be used to indicate "Restore to default settings".
+            </summary>
+        </member>
+        <member name="F:Duality.BlendMode.Solid">
+            <summary>
+            Incoming color overwrites background color completely. Doesn't need Z-Sorting.
+            </summary>
+        </member>
+        <member name="F:Duality.BlendMode.Mask">
+            <summary>
+            Incoming color overwrites background color but leaves out areas with low alpha. Doesn't need Z-Sorting.
+            </summary>
+        </member>
+        <member name="F:Duality.BlendMode.Add">
+            <summary>
+            Incoming color is multiplied by its alpha value and then added to background color. Needs Z-Sorting.
+            </summary>
+        </member>
+        <member name="F:Duality.BlendMode.Alpha">
+            <summary>
+            Incoming color overwrites background color weighted by its alpha value. Needs Z-Sorting.
+            </summary>
+        </member>
+        <member name="F:Duality.BlendMode.Multiply">
+            <summary>
+            Incoming color scales background color. Needs Z-Sorting.
+            </summary>
+        </member>
+        <member name="F:Duality.BlendMode.Light">
+            <summary>
+            Incoming color is multiplied and then added to background color. Needs Z-Sorting.
+            </summary>
+        </member>
+        <member name="F:Duality.BlendMode.Invert">
+            <summary>
+            Incoming color inverts background color. Needs Z-Sorting.
+            </summary>
+        </member>
+        <member name="F:Duality.BlendMode.Count">
+            <summary>
+            The total number of available BlendModes.
+            </summary>
+        </member>
+        <member name="T:Duality.IDrawDevice">
+            <summary>
+            Defines a general interface for drawing devices. Its main duty is to accept and collect parameterized vertex data.
+            </summary>
+        </member>
+        <member name="M:Duality.IDrawDevice.PreprocessCoords(OpenTK.Vector3@,System.Single@)">
+            <summary>
+            Processes the specified world space position and scale values and transforms them to the IDrawDevices view space.
+            This usually also applies a parallax effect, if applicable.
+            </summary>
+            <param name="pos">The position to process.</param>
+            <param name="scale">The scale factor to process.</param>
+        </member>
+        <member name="M:Duality.IDrawDevice.PreprocessCoords(Duality.Components.Renderer,OpenTK.Vector3@,System.Single@)">
+            <summary>
+            Processes the specified world space position and scale values and transforms them to the IDrawDevices view space.
+            This usually also applies a parallax effect, if applicable.
+            </summary>
+            <param name="r">The <see cref="T:Duality.Components.Renderer"/> to which the data belongs.</param>
+            <param name="pos">The position to process.</param>
+            <param name="scale">The scale factor to process.</param>
+        </member>
+        <member name="M:Duality.IDrawDevice.IsCoordInView(OpenTK.Vector3,System.Single)">
+            <summary>
+            Returns whether the specified world-space position is visible in the drawing devices view space.
+            </summary>
+            <param name="c">The position to test.</param>
+            <param name="boundRad">The visual bounding radius to assume for the specified position.</param>
+            <returns>True, if the position or a portion of its bounding circle is visible, false if not.</returns>
+        </member>
+        <member name="M:Duality.IDrawDevice.IsRendererInView(Duality.Components.Renderer)">
+            <summary>
+            Returns whether the specified Renderer is visible in the drawing devices view space. This doesn't yet mean, it's
+            visible - the Renderer or IDrawDevice can still decide, not to display.
+            </summary>
+            <param name="r">The Renderer to test.</param>
+            <returns>True, if the Renderer or a portion of its bounding circle is inside the view space, false if not.</returns>
+        </member>
+        <member name="M:Duality.IDrawDevice.AddVertices``1(Duality.ContentRef{Duality.Resources.Material},OpenTK.Graphics.OpenGL.BeginMode,``0[])">
+            <summary>
+            Adds a parameterized set of vertices to the drawing devices rendering schedule.
+            </summary>
+            <typeparam name="T">The type of vertex data to add.</typeparam>
+            <param name="material">The <see cref="T:Duality.Resources.Material"/> to use for rendering the vertices.</param>
+            <param name="vertexMode">The vertices drawing mode.</param>
+            <param name="vertices">The vertex data to add.</param>
+        </member>
+        <member name="M:Duality.IDrawDevice.AddVertices``1(Duality.Resources.BatchInfo,OpenTK.Graphics.OpenGL.BeginMode,``0[])">
+            <summary>
+            Adds a parameterized set of vertices to the drawing devices rendering schedule.
+            </summary>
+            <typeparam name="T">The type of vertex data to add.</typeparam>
+            <param name="material">The <see cref="T:Duality.Resources.BatchInfo"/> to use for rendering the vertices.</param>
+            <param name="vertexMode">The vertices drawing mode.</param>
+            <param name="vertices">The vertex data to add.</param>
+        </member>
+        <member name="P:Duality.IDrawDevice.VisibilityMask">
+            <summary>
+            [GET] A bitmask flagging all visibility groups that are considered visible to this drawing device.
+            </summary>
+        </member>
+        <member name="P:Duality.IDrawDevice.ClearColor">
+            <summary>
+            [GET] The devices general background color.
+            </summary>
+        </member>
+        <member name="P:Duality.IDrawDevice.NearZ">
+            <summary>
+            [GET] The lowest Z value that can be displayed by the device.
+            </summary>
+        </member>
+        <member name="P:Duality.IDrawDevice.FarZ">
+            <summary>
+            [GET] The highest Z value that can be displayed by the device.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Camera">
+            <summary>
+            A Camera is responsible for rendering the current <see cref="T:Duality.Resources.Scene"/>.
+            </summary>
+        </member>
+        <member name="F:Duality.Components.Camera.DefaultParallaxRefDist">
+            <summary>
+            The default reference distance for parallax rendering.
+            </summary>
+        </member>
+        <member name="M:Duality.Components.Camera.Render">
+            <summary>
+            Renders the current <see cref="T:Duality.Resources.Scene"/>.
+            </summary>
+        </member>
+        <member name="M:Duality.Components.Camera.RenderPickingMap">
+            <summary>
+            Renders a picking map of the current <see cref="T:Duality.Resources.Scene"/>.
+            If picking is required, this will be (automatically) done each frame a picking operation needs to
+            be performed. 
+            </summary>
+            <returns>True, if the picking map has been rendered. False, if this frames cached version is used.</returns>
+        </member>
+        <member name="M:Duality.Components.Camera.PickRendererAt(System.Int32,System.Int32)">
+            <summary>
+            Picks the <see cref="T:Duality.Components.Renderer"/> that owns the pixel at the specified position.
+            </summary>
+            <param name="x">x-Coordinate of the pixel to check.</param>
+            <param name="y">y-Coordinate of the pixel to check.</param>
+            <returns>The <see cref="T:Duality.Components.Renderer"/> that owns the pixel.</returns>
+        </member>
+        <member name="M:Duality.Components.Camera.PickRenderersIn(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Picks all <see cref="T:Duality.Components.Renderer">Renderers</see> contained within the specified
+            rectangular area.
+            </summary>
+            <param name="x">x-Coordinate of the Rect.</param>
+            <param name="y">y-Coordinate of the Rect.</param>
+            <param name="w">Width of the Rect.</param>
+            <param name="h">Height of the Rect.</param>
+            <returns>A set of all <see cref="T:Duality.Components.Renderer">Renderers</see> that have been picked.</returns>
+        </member>
+        <member name="M:Duality.Components.Camera.GetScaleAtZ(System.Single)">
+            <summary>
+            Returns the scale factor of objects that are located at the specified (world space) z-Coordinate.
+            </summary>
+            <param name="z"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Components.Camera.GetSpaceCoord(OpenTK.Vector3)">
+            <summary>
+            Transforms screen space coordinates to world space coordinates.
+            </summary>
+            <param name="screenPos"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Components.Camera.GetSpaceCoord(OpenTK.Vector2)">
+            <summary>
+            Transforms screen space coordinates to world space coordinates.
+            </summary>
+            <param name="screenPos"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Components.Camera.GetScreenCoord(OpenTK.Vector3)">
+            <summary>
+            Transforms world space coordinates to screen space coordinates.
+            </summary>
+            <param name="spacePos"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Components.Camera.GetScreenCoord(OpenTK.Vector2)">
+            <summary>
+            Transforms world space coordinates to screen space coordinates.
+            </summary>
+            <param name="spacePos"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Duality.Components.Camera.NearZ">
+            <summary>
+            [GET / SET] The lowest Z value that can be displayed by the device.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Camera.FarZ">
+            <summary>
+            [GET / SET] The highest Z value that can be displayed by the device.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Camera.ParallaxRefDist">
+            <summary>
+            [GET / SET] Reference distance for calculating the parallax effect. An object this far away from
+            the Camera will appear in its original size.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Camera.VisibilityMask">
+            <summary>
+            [GET / SET] A bitmask flagging all visibility groups that are considered visible to this drawing device.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Camera.ClearMask">
+            <summary>
+            [GET / SET] A Bitmask describing which components of the current (or back-)buffer to clear before rendering.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Camera.ClearColor">
+            <summary>
+            [GET / SET] The background color of the rendered image.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Camera.Passes">
+            <summary>
+            [GET / SET] A set of passes that describes the Cameras rendering process. Is never null nor empty.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Camera.DrawDevice">
+            <summary>
+            [GET] The drawing device which this Camera uses for rendering.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Camera.SceneTargetSize">
+            <summary>
+            [GET] The drawing devices target size for rendering the Scene.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Camera.SceneOrthoAbs">
+            <summary>
+            [GET] A Rect describing the Cameras absolute ortho value.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Camera.SceneViewportAbs">
+            <summary>
+            [GET] A Rect describing the Cameras absolute viewport.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Camera.ViewBoundingRadius">
+            <summary>
+            [GET] The Cameras view space bounding circle radius.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Camera.ClearFlags">
+            <summary>
+            A Bitmask describing which components of the current (or back-)buffer to clear before rendering.
+            </summary>
+        </member>
+        <member name="F:Duality.Components.Camera.ClearFlags.None">
+            <summary>
+            Nothing.
+            </summary>
+        </member>
+        <member name="F:Duality.Components.Camera.ClearFlags.Color">
+            <summary>
+            The buffers color components.
+            </summary>
+        </member>
+        <member name="F:Duality.Components.Camera.ClearFlags.Depth">
+            <summary>
+            The buffers depth component.
+            </summary>
+        </member>
+        <member name="F:Duality.Components.Camera.ClearFlags.Default">
+            <summary>
+            The default set of flags.
+            </summary>
+        </member>
+        <member name="F:Duality.Components.Camera.ClearFlags.All">
+            <summary>
+            All flags set.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Camera.Pass">
+            <summary>
+            Describes a single pass in the overall rendering process.
+            </summary>
+        </member>
+        <member name="F:Duality.Components.Camera.Pass.input">
+            <summary>
+            The input to use for rendering. This can for example be a <see cref="T:Duality.Resources.Texture"/> that
+            has been rendered to before and is now bound to perform a postprocessing step. If this is null, the current
+            <see cref="T:Duality.Resources.Scene"/> is used as input - which is usually the case in the first rendering pass.
+            </summary>
+        </member>
+        <member name="F:Duality.Components.Camera.Pass.output">
+            <summary>
+            The output to render to in this pass. If this is null, the screen is used as rendering target.
+            </summary>
+        </member>
+        <member name="F:Duality.Components.Camera.Pass.fitOutput">
+            <summary>
+            Specifies whether this passes output shall be scaled in order to fit the specified outputs dimensions.
+            </summary>
+        </member>
+        <member name="F:Duality.Components.Camera.Pass.keepOutput">
+            <summary>
+            Specifies whether previous image data on this passes rendering target should be kept, i.e. whether clearing
+            it before beginning to render can be skipped.
+            </summary>
         </member>
         <member name="T:Duality.ReflectionHelper">
             <summary>
@@ -4619,26 +5799,26 @@
         </member>
         <member name="M:Duality.Resources.ShaderProgram.#ctor(Duality.ContentRef{Duality.Resources.VertexShader},Duality.ContentRef{Duality.Resources.FragmentShader})">
             <summary>
-            Creates a new ShaderProgram based on a <see cref="T:Duality.Resources.VertexShader">Vertex-</see> and a <see cref="!:FragementShader"/>.
+            Creates a new ShaderProgram based on a <see cref="T:Duality.Resources.VertexShader">Vertex-</see> and a <see cref="T:Duality.Resources.FragmentShader"/>.
             </summary>
             <param name="v"></param>
             <param name="f"></param>
         </member>
         <member name="M:Duality.Resources.ShaderProgram.AttachShaders">
             <summary>
-            Re-Attaches the currently used <see cref="T:Duality.Resources.VertexShader">Vertex-</see> and <see cref="!:FragementShader"/>.
+            Re-Attaches the currently used <see cref="T:Duality.Resources.VertexShader">Vertex-</see> and <see cref="T:Duality.Resources.FragmentShader"/>.
             </summary>
         </member>
         <member name="M:Duality.Resources.ShaderProgram.AttachShaders(Duality.ContentRef{Duality.Resources.VertexShader},Duality.ContentRef{Duality.Resources.FragmentShader})">
             <summary>
-            Attaches the specified <see cref="T:Duality.Resources.VertexShader">Vertex-</see> and <see cref="!:FragementShader"/> to this ShaderProgram.
+            Attaches the specified <see cref="T:Duality.Resources.VertexShader">Vertex-</see> and <see cref="T:Duality.Resources.FragmentShader"/> to this ShaderProgram.
             </summary>
             <param name="v"></param>
             <param name="f"></param>
         </member>
         <member name="M:Duality.Resources.ShaderProgram.DetachShaders">
             <summary>
-            Detaches <see cref="T:Duality.Resources.VertexShader">Vertex-</see> and <see cref="!:FragementShader"/> from the ShaderProgram.
+            Detaches <see cref="T:Duality.Resources.VertexShader">Vertex-</see> and <see cref="T:Duality.Resources.FragmentShader"/> from the ShaderProgram.
             </summary>
         </member>
         <member name="M:Duality.Resources.ShaderProgram.Compile">
@@ -4964,7 +6144,7 @@
         </member>
         <member name="M:Duality.Resources.Scene.QueryVisibleRenderers(Duality.IDrawDevice)">
             <summary>
-            Enumerates all <see cref="!:Duality.Resources.Renderer">Renderers</see> that are visible to
+            Enumerates all <see cref="T:Duality.Components.Renderer">Renderers</see> that are visible to
             the specified <see cref="T:Duality.IDrawDevice"/>.
             </summary>
             <param name="device"></param>
@@ -5141,19 +6321,11 @@
             <param name="bm"></param>
             <returns></returns>
         </member>
-        <member name="M:Duality.ExtMethodsBitmap.GetPixelDataIntArgb(System.Drawing.Bitmap,System.UInt32[]@)">
-            <summary>
-            Extracts a Bitmaps pixel data as IntArgb values.
-            </summary>
-            <param name="bm"></param>
-            <param name="argbValues"></param>
-        </member>
-        <member name="M:Duality.ExtMethodsBitmap.GetPixelDataIntArgb(System.Drawing.Bitmap,System.Int32[]@)">
+        <member name="M:Duality.ExtMethodsBitmap.GetPixelDataIntArgb(System.Drawing.Bitmap)">
             <summary>
             Extracts a Bitmaps pixel data as (signed) IntArgb values.
             </summary>
             <param name="bm"></param>
-            <param name="argbValues"></param>
         </member>
         <member name="M:Duality.ExtMethodsBitmap.SetPixelDataRgba(System.Drawing.Bitmap,Duality.ColorFormat.ColorRgba[])">
             <summary>
@@ -5169,19 +6341,117 @@
             <param name="bm"></param>
             <param name="pixelData"></param>
         </member>
-        <member name="M:Duality.ExtMethodsBitmap.SetPixelDataIntArgb(System.Drawing.Bitmap,System.UInt32[])">
-            <summary>
-            Replaces a Bitmaps pixel data.
-            </summary>
-            <param name="bm"></param>
-            <param name="pixelData"></param>
-        </member>
         <member name="M:Duality.ExtMethodsBitmap.SetPixelDataIntArgb(System.Drawing.Bitmap,System.Int32[])">
             <summary>
             Replaces a Bitmaps pixel data.
             </summary>
             <param name="bm"></param>
             <param name="pixelData"></param>
+        </member>
+        <member name="T:Duality.Components.RendererFlags">
+            <summary>
+            Bitmask for special <see cref="T:Duality.Components.Renderer"/> traits.
+            </summary>
+        </member>
+        <member name="F:Duality.Components.RendererFlags.None">
+            <summary>
+            No flags set.
+            </summary>
+        </member>
+        <member name="F:Duality.Components.RendererFlags.ParallaxPos">
+            <summary>
+            The Renderers position is processed based on its depth to achieve a parallax effect.
+            </summary>
+        </member>
+        <member name="F:Duality.Components.RendererFlags.ParallaxScale">
+            <summary>
+            The Renderers scale is processed based on its depth to achieve a parallax effect.
+            </summary>
+        </member>
+        <member name="F:Duality.Components.RendererFlags.Parallax">
+            <summary>
+            The Renderers position and scale are processed based on its depth to achieve a parallax effect.
+            </summary>
+        </member>
+        <member name="F:Duality.Components.RendererFlags.All">
+            <summary>
+            All flags set.
+            </summary>
+        </member>
+        <member name="F:Duality.Components.RendererFlags.Default">
+            <summary>
+            The default flag combination.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.SoundEmitter">
+            <summary>
+            Provides functionality to emit sound.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.SoundEmitter.Sources">
+            <summary>
+            [GET / SET] A list of sound sources this SoundEmitter maintains. Is never null.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.SoundEmitter.Source">
+            <summary>
+            A single sound source.
+            </summary>
+        </member>
+        <member name="M:Duality.Components.SoundEmitter.Source.Update(Duality.Components.SoundEmitter)">
+            <summary>
+            Updates the sound source.
+            </summary>
+            <param name="emitter">The sources parent <see cref="T:Duality.Components.SoundEmitter"/>.</param>
+            <returns>True, if the source is still active. False, if it requests to be removed.</returns>
+        </member>
+        <member name="M:Duality.Components.SoundEmitter.Source.Clone">
+            <summary>
+            Creates a deep copy of the sound source.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Duality.Components.SoundEmitter.Source.Disposed">
+            <summary>
+            [GET] Returns whether this sound source has been disposed. Disposed objects are not to be used again.
+            Treat them as null or similar.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.SoundEmitter.Source.Instance">
+            <summary>
+            [GET] The <see cref="T:Duality.SoundInstance"/> that is currently allocated to emit
+            this sources sound.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.SoundEmitter.Source.Sound">
+            <summary>
+            [GET / SET] The <see cref="T:Duality.Resources.Sound"/> that is to be played by this source.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.SoundEmitter.Source.Looped">
+            <summary>
+            [GET / SET] Whether this source is looped.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.SoundEmitter.Source.Paused">
+            <summary>
+            [GET / SET] Whether this source is paused.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.SoundEmitter.Source.Volume">
+            <summary>
+            [GET / SET] The volume of this source.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.SoundEmitter.Source.Pitch">
+            <summary>
+            [GET / SET] The sources pitch factor.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.SoundEmitter.Source.Offset">
+            <summary>
+            [GET / SET] The 3d offset of the emitted sound relative to the GameObject.
+            </summary>
         </member>
         <member name="T:Duality.Serialization.BinaryMetaFormatter">
             <summary>
@@ -5560,7 +6830,7 @@
             </summary>
             <param name="text">The new source text to apply. If null, the current source text is re-applied.</param>
         </member>
-        <member name="M:Duality.FormattedText.EmitVertices(Duality.VertexFormat.VertexC4P3T2[][]@,Duality.VertexFormat.VertexC4P3T2[]@,System.Single,System.Single,System.Single)">
+        <member name="M:Duality.FormattedText.EmitVertices(Duality.VertexFormat.VertexC1P3T2[][]@,Duality.VertexFormat.VertexC1P3T2[]@,System.Single,System.Single,System.Single)">
             <summary>
             Emits sets of vertices for glyphs and icons based on this formatted text. To render it, use each set of vertices combined with
             the corresponding Fonts <see cref="T:Duality.Resources.Material"/>.
@@ -5571,7 +6841,7 @@
             <param name="y">An Y-Offset applied to the position of each emitted vertex.</param>
             <param name="z">An Z-Offset applied to the position of each emitted vertex.</param>
         </member>
-        <member name="M:Duality.FormattedText.EmitVertices(Duality.VertexFormat.VertexC4P3T2[][]@,Duality.VertexFormat.VertexC4P3T2[]@,System.Single,System.Single,Duality.ColorFormat.ColorRgba)">
+        <member name="M:Duality.FormattedText.EmitVertices(Duality.VertexFormat.VertexC1P3T2[][]@,Duality.VertexFormat.VertexC1P3T2[]@,System.Single,System.Single,Duality.ColorFormat.ColorRgba)">
             <summary>
             Emits sets of vertices for glyphs and icons based on this formatted text. To render it, use each set of vertices combined with
             the corresponding Fonts <see cref="T:Duality.Resources.Material"/>.
@@ -5582,7 +6852,7 @@
             <param name="y">An Y-Offset applied to the position of each emitted vertex.</param>
             <param name="clr">The color value that is applied to each emitted vertex.</param>
         </member>
-        <member name="M:Duality.FormattedText.EmitVertices(Duality.VertexFormat.VertexC4P3T2[][]@,Duality.VertexFormat.VertexC4P3T2[]@,System.Single,System.Single,System.Single,Duality.ColorFormat.ColorRgba,System.Single,System.Single)">
+        <member name="M:Duality.FormattedText.EmitVertices(Duality.VertexFormat.VertexC1P3T2[][]@,Duality.VertexFormat.VertexC1P3T2[]@,System.Single,System.Single,System.Single,Duality.ColorFormat.ColorRgba,System.Single,System.Single)">
             <summary>
             Emits sets of vertices for glyphs and icons based on this formatted text. To render it, use each set of vertices combined with
             the corresponding Fonts <see cref="T:Duality.Resources.Material"/>.
@@ -5596,7 +6866,7 @@
             <param name="angle">An angle by which the text is rotated (before applying the offset).</param>
             <param name="scale">A factor by which the text is scaled (before applying the offset).</param>
         </member>
-        <member name="M:Duality.FormattedText.EmitVertices(Duality.VertexFormat.VertexC4P3T2[][]@,Duality.VertexFormat.VertexC4P3T2[]@,System.Single,System.Single,System.Single,Duality.ColorFormat.ColorRgba,OpenTK.Vector2,OpenTK.Vector2)">
+        <member name="M:Duality.FormattedText.EmitVertices(Duality.VertexFormat.VertexC1P3T2[][]@,Duality.VertexFormat.VertexC1P3T2[]@,System.Single,System.Single,System.Single,Duality.ColorFormat.ColorRgba,OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
             Emits sets of vertices for glyphs and icons based on this formatted text. To render it, use each set of vertices combined with
             the corresponding Fonts <see cref="T:Duality.Resources.Material"/>.
@@ -5610,7 +6880,7 @@
             <param name="xDot">Dot product base for the transformed vertices.</param>
             <param name="yDot">Dot product base for the transformed vertices.</param>
         </member>
-        <member name="M:Duality.FormattedText.EmitVertices(Duality.VertexFormat.VertexC4P3T2[][]@,Duality.VertexFormat.VertexC4P3T2[]@)">
+        <member name="M:Duality.FormattedText.EmitVertices(Duality.VertexFormat.VertexC1P3T2[][]@,Duality.VertexFormat.VertexC1P3T2[]@)">
             <summary>
             Emits sets of vertices for glyphs and icons based on this formatted text. To render it, use each set of vertices combined with
             the corresponding Fonts <see cref="T:Duality.Resources.Material"/>.
@@ -5641,7 +6911,7 @@
         </member>
         <member name="P:Duality.FormattedText.Fonts">
             <summary>
-            [GET / SET] A set of <see cref="!:Duality.Resource.Font">Fonts</see> that is available in the text.
+            [GET / SET] A set of <see cref="T:Duality.Resources.Font">Fonts</see> that is available in the text.
             </summary>
         </member>
         <member name="P:Duality.FormattedText.MaxWidth">
@@ -6309,7 +7579,7 @@
             <param name="y">The y-Coordinate of the point.</param>
             <returns>The distance between the point and [0,0].</returns>
             <remarks>
-            This method is faster than <see cref="M:Duality.MathF.Distance(System.Single,System.Single,System.Single,System.Single)"/>. 
+            This method is faster than <see cref="M:Duality.MathF.Distance(System.Single,System.Single)"/>. 
             If sufficient, such as for distance comparison, consider using this method instead.
             </remarks>
         </member>
@@ -6427,55 +7697,27 @@
             <param name="rot">The rotation to apply in radians.</param>
             <param name="xDot">Dot product base for the transformed x value.</param>
             <param name="yDot">Dot product base for the transformed y value.</param>
-            <seealso cref="!:TransformDotVec"/>
+            <seealso cref="M:Duality.MathF.TransformDotVec(OpenTK.Vector2@,OpenTK.Vector2@,OpenTK.Vector2@)"/>
         </member>
-        <member name="M:Duality.MathF.TransdormDotVec(OpenTK.Vector2@,OpenTK.Vector2@,OpenTK.Vector2@)">
+        <member name="M:Duality.MathF.TransformDotVec(OpenTK.Vector2@,OpenTK.Vector2@,OpenTK.Vector2@)">
             <summary>
             Performs a 2d transformation
             </summary>
             <param name="vec">The vector to transform.</param>
             <param name="xDot">Dot product base for the transformed x value.</param>
             <param name="yDot">Dot product base for the transformed y value.</param>
-            <seealso cref="M:Duality.MathF.GetTransformDotVec(System.Single,OpenTK.Vector2,OpenTK.Vector2@,OpenTK.Vector2@)"/>
+            <seealso cref="M:Duality.MathF.GetTransformDotVec(System.Single,OpenTK.Vector2@,OpenTK.Vector2@)"/>
         </member>
-        <member name="M:Duality.MathF.TransdormDotVec(OpenTK.Vector2@,OpenTK.Vector2,OpenTK.Vector2)">
+        <member name="M:Duality.MathF.TransformDotVec(OpenTK.Vector2@,OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
             Performs a 2d transformation
             </summary>
             <param name="vec">The vector to transform.</param>
             <param name="xDot">Dot product base for the transformed x value.</param>
             <param name="yDot">Dot product base for the transformed y value.</param>
-            <seealso cref="M:Duality.MathF.GetTransformDotVec(System.Single,OpenTK.Vector2,OpenTK.Vector2@,OpenTK.Vector2@)"/>
+            <seealso cref="M:Duality.MathF.GetTransformDotVec(System.Single,OpenTK.Vector2@,OpenTK.Vector2@)"/>
         </member>
-        <member name="M:Duality.MathF.TransdormDotVec(OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector2)">
-            <summary>
-            Performs a 2d transformation
-            </summary>
-            <param name="vec">The vector to transform.</param>
-            <param name="xDot">Dot product base for the transformed x value.</param>
-            <param name="yDot">Dot product base for the transformed y value.</param>
-            <returns>The transformed vector.</returns>
-            <seealso cref="M:Duality.MathF.GetTransformDotVec(System.Single,OpenTK.Vector2,OpenTK.Vector2@,OpenTK.Vector2@)"/>
-        </member>
-        <member name="M:Duality.MathF.TransdormDotVec(OpenTK.Vector3@,OpenTK.Vector2@,OpenTK.Vector2@)">
-            <summary>
-            Performs a 2d transformation
-            </summary>
-            <param name="vec">The vector to transform.</param>
-            <param name="xDot">Dot product base for the transformed x value.</param>
-            <param name="yDot">Dot product base for the transformed y value.</param>
-            <seealso cref="M:Duality.MathF.GetTransformDotVec(System.Single,OpenTK.Vector2,OpenTK.Vector2@,OpenTK.Vector2@)"/>
-        </member>
-        <member name="M:Duality.MathF.TransdormDotVec(OpenTK.Vector3@,OpenTK.Vector2,OpenTK.Vector2)">
-            <summary>
-            Performs a 2d transformation
-            </summary>
-            <param name="vec">The vector to transform.</param>
-            <param name="xDot">Dot product base for the transformed x value.</param>
-            <param name="yDot">Dot product base for the transformed y value.</param>
-            <seealso cref="M:Duality.MathF.GetTransformDotVec(System.Single,OpenTK.Vector2,OpenTK.Vector2@,OpenTK.Vector2@)"/>
-        </member>
-        <member name="M:Duality.MathF.TransdormDotVec(OpenTK.Vector3,OpenTK.Vector2,OpenTK.Vector2)">
+        <member name="M:Duality.MathF.TransformDotVec(OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
             Performs a 2d transformation
             </summary>
@@ -6483,7 +7725,35 @@
             <param name="xDot">Dot product base for the transformed x value.</param>
             <param name="yDot">Dot product base for the transformed y value.</param>
             <returns>The transformed vector.</returns>
-            <seealso cref="M:Duality.MathF.GetTransformDotVec(System.Single,OpenTK.Vector2,OpenTK.Vector2@,OpenTK.Vector2@)"/>
+            <seealso cref="M:Duality.MathF.GetTransformDotVec(System.Single,OpenTK.Vector2@,OpenTK.Vector2@)"/>
+        </member>
+        <member name="M:Duality.MathF.TransformDotVec(OpenTK.Vector3@,OpenTK.Vector2@,OpenTK.Vector2@)">
+            <summary>
+            Performs a 2d transformation
+            </summary>
+            <param name="vec">The vector to transform.</param>
+            <param name="xDot">Dot product base for the transformed x value.</param>
+            <param name="yDot">Dot product base for the transformed y value.</param>
+            <seealso cref="M:Duality.MathF.GetTransformDotVec(System.Single,OpenTK.Vector2@,OpenTK.Vector2@)"/>
+        </member>
+        <member name="M:Duality.MathF.TransformDotVec(OpenTK.Vector3@,OpenTK.Vector2,OpenTK.Vector2)">
+            <summary>
+            Performs a 2d transformation
+            </summary>
+            <param name="vec">The vector to transform.</param>
+            <param name="xDot">Dot product base for the transformed x value.</param>
+            <param name="yDot">Dot product base for the transformed y value.</param>
+            <seealso cref="M:Duality.MathF.GetTransformDotVec(System.Single,OpenTK.Vector2@,OpenTK.Vector2@)"/>
+        </member>
+        <member name="M:Duality.MathF.TransformDotVec(OpenTK.Vector3,OpenTK.Vector2,OpenTK.Vector2)">
+            <summary>
+            Performs a 2d transformation
+            </summary>
+            <param name="vec">The vector to transform.</param>
+            <param name="xDot">Dot product base for the transformed x value.</param>
+            <param name="yDot">Dot product base for the transformed y value.</param>
+            <returns>The transformed vector.</returns>
+            <seealso cref="M:Duality.MathF.GetTransformDotVec(System.Single,OpenTK.Vector2@,OpenTK.Vector2@)"/>
         </member>
         <member name="M:Duality.MathF.LinesCross(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single@,System.Single@,System.Boolean)">
             <summary>
@@ -6607,6 +7877,26 @@
             </summary>
             <param name="obj"></param>
             <returns></returns>
+        </member>
+        <member name="T:Duality.VertexFormat.VertexP3">
+            <summary>
+            Vertex data providing each vertex a position (3x4 byte).
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexP3.OffsetPos">
+            <summary>
+            Byte offset for the position.
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexP3.Size">
+            <summary>
+            Total size in bytes.
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexP3.pos">
+            <summary>
+            The vertices position.
+            </summary>
         </member>
         <member name="T:Duality.Serialization.Surrogates.BitmapSurrogate">
             <summary>
@@ -7106,7 +8396,7 @@
             <param name="glyph">The glyph of which to retrieve the Bitmap.</param>
             <returns>The Bitmap that has been retrieved, or null if the glyph is not supported.</returns>
         </member>
-        <member name="M:Duality.Resources.Font.EmitTextVertices(System.String,Duality.VertexFormat.VertexC4P3T2[]@,System.Single,System.Single,System.Single)">
+        <member name="M:Duality.Resources.Font.EmitTextVertices(System.String,Duality.VertexFormat.VertexC1P3T2[]@,System.Single,System.Single,System.Single)">
             <summary>
             Emits a set of vertices based on a text. To render this text, simply use that set of vertices combined with
             the Fonts <see cref="P:Duality.Resources.Font.Material"/>.
@@ -7117,7 +8407,7 @@
             <param name="y">An Y-Offset applied to the position of each emitted vertex.</param>
             <param name="z">An Z-Offset applied to the position of each emitted vertex.</param>
         </member>
-        <member name="M:Duality.Resources.Font.EmitTextVertices(System.String,Duality.VertexFormat.VertexC4P3T2[]@,System.Single,System.Single,System.Single,Duality.ColorFormat.ColorRgba,System.Single,System.Single)">
+        <member name="M:Duality.Resources.Font.EmitTextVertices(System.String,Duality.VertexFormat.VertexC1P3T2[]@,System.Single,System.Single,System.Single,Duality.ColorFormat.ColorRgba,System.Single,System.Single)">
             <summary>
             Emits a set of vertices based on a text. To render this text, simply use that set of vertices combined with
             the Fonts <see cref="P:Duality.Resources.Font.Material"/>.
@@ -7131,7 +8421,7 @@
             <param name="angle">An angle by which the text is rotated (before applying the offset).</param>
             <param name="scale">A factor by which the text is scaled (before applying the offset).</param>
         </member>
-        <member name="M:Duality.Resources.Font.EmitTextVertices(System.String,Duality.VertexFormat.VertexC4P3T2[]@,System.Single,System.Single,Duality.ColorFormat.ColorRgba)">
+        <member name="M:Duality.Resources.Font.EmitTextVertices(System.String,Duality.VertexFormat.VertexC1P3T2[]@,System.Single,System.Single,Duality.ColorFormat.ColorRgba)">
             <summary>
             Emits a set of vertices based on a text. To render this text, simply use that set of vertices combined with
             the Fonts <see cref="P:Duality.Resources.Font.Material"/>.
@@ -7142,7 +8432,7 @@
             <param name="y">An Y-Offset applied to the position of each emitted vertex.</param>
             <param name="clr">The color value that is applied to each emitted vertex.</param>
         </member>
-        <member name="M:Duality.Resources.Font.EmitTextVertices(System.String,Duality.VertexFormat.VertexC4P3T2[]@)">
+        <member name="M:Duality.Resources.Font.EmitTextVertices(System.String,Duality.VertexFormat.VertexC1P3T2[]@)">
             <summary>
             Emits a set of vertices based on a text. To render this text, simply use that set of vertices combined with
             the Fonts <see cref="P:Duality.Resources.Font.Material"/>.
@@ -8222,7 +9512,7 @@
             <summary>
             Returns a list of all available content matching the specified Type
             </summary>
-            <typeparam name="T"></typeparam>
+            <param name="t"></param>
             <returns></returns>
         </member>
         <member name="M:Duality.ContentProvider.ClearContent(System.Boolean)">
@@ -8444,6 +9734,132 @@
             <param name="startIndex">Index of the first object to be enumerated.</param>
             <param name="length">Number of objects to be enumerated.</param>
             <returns></returns>
+        </member>
+        <member name="T:Duality.Components.SoundListener">
+            <summary>
+            Makes this <see cref="T:Duality.GameObject"/> the 3d sound listener.
+            </summary>
+        </member>
+        <member name="T:Duality.VertexFormat.VertexC1P3">
+            <summary>
+            Vertex data providing each vertex a position (3x4 byte) and color (1x4 byte).
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexC1P3.OffsetColor">
+            <summary>
+            Byte offset for the color.
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexC1P3.OffsetPos">
+            <summary>
+            Byte offset for the position.
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexC1P3.Size">
+            <summary>
+            Total size in bytes.
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexC1P3.clr">
+            <summary>
+            The vertices color.
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexC1P3.pos">
+            <summary>
+            The vertices position.
+            </summary>
+        </member>
+        <member name="T:Duality.VertexFormat.VertexC1P3T2">
+            <summary>
+            Vertex data providing each vertex a position (3x4 byte), color (1x4 byte) and texture coordinate (2x4 byte)
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexC1P3T2.OffsetColor">
+            <summary>
+            Byte offset for the color.
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexC1P3T2.OffsetPos">
+            <summary>
+            Byte offset for the position.
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexC1P3T2.OffsetTex0">
+            <summary>
+            Byte offset for the texture coordinate.
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexC1P3T2.Size">
+            <summary>
+            Total size in bytes.
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexC1P3T2.clr">
+            <summary>
+            The vertices color.
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexC1P3T2.pos">
+            <summary>
+            The vertices position.
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexC1P3T2.texCoord">
+            <summary>
+            The vertices texture coordinate.
+            </summary>
+        </member>
+        <member name="T:Duality.VertexFormat.VertexC1P3T4A1">
+            <summary>
+            Vertex data providing each vertex a position (3x4 byte), color (1x4 byte), two texture coordinates (4x4 byte)
+            and a custom float vertex attribute (1x4 byte).
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexC1P3T4A1.OffsetColor">
+            <summary>
+            Byte offset for the color.
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexC1P3T4A1.OffsetPos">
+            <summary>
+            Byte offset for the position.
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexC1P3T4A1.OffsetTex0">
+            <summary>
+            Byte offset for the (double) texture coordinate.
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexC1P3T4A1.OffsetAttrib">
+            <summary>
+            Byte offset for the custom attribute.
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexC1P3T4A1.Size">
+            <summary>
+            Total size in bytes.
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexC1P3T4A1.clr">
+            <summary>
+            The vertices color.
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexC1P3T4A1.pos">
+            <summary>
+            The vertices position.
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexC1P3T4A1.texCoord">
+            <summary>
+            The vertices texture coordinates (two of them).
+            </summary>
+        </member>
+        <member name="F:Duality.VertexFormat.VertexC1P3T4A1.attrib">
+            <summary>
+            The vertices custom attribute.
+            </summary>
         </member>
     </members>
 </doc>

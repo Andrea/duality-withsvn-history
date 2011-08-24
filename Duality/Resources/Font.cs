@@ -682,7 +682,7 @@ namespace Duality.Resources
 		/// <param name="x">An X-Offset applied to the position of each emitted vertex.</param>
 		/// <param name="y">An Y-Offset applied to the position of each emitted vertex.</param>
 		/// <param name="z">An Z-Offset applied to the position of each emitted vertex.</param>
-		public void EmitTextVertices(string text, ref VertexC4P3T2[] vertices, float x, float y, float z = 0.0f)
+		public void EmitTextVertices(string text, ref VertexC1P3T2[] vertices, float x, float y, float z = 0.0f)
 		{
 			this.EmitTextVertices(text, ref vertices, x, y, z, ColorRgba.White);
 		}
@@ -698,7 +698,7 @@ namespace Duality.Resources
 		/// <param name="clr">The color value that is applied to each emitted vertex.</param>
 		/// <param name="angle">An angle by which the text is rotated (before applying the offset).</param>
 		/// <param name="scale">A factor by which the text is scaled (before applying the offset).</param>
-		public void EmitTextVertices(string text, ref VertexC4P3T2[] vertices, float x, float y, float z, ColorRgba clr, float angle = 0.0f, float scale = 1.0f)
+		public void EmitTextVertices(string text, ref VertexC1P3T2[] vertices, float x, float y, float z, ColorRgba clr, float angle = 0.0f, float scale = 1.0f)
 		{
 			this.EmitTextVertices(text, ref vertices);
 			
@@ -710,7 +710,7 @@ namespace Duality.Resources
 			{
 				Vector3 vertex = vertices[i].pos;
 
-				MathF.TransdormDotVec(ref vertex, ref xDot, ref yDot);
+				MathF.TransformDotVec(ref vertex, ref xDot, ref yDot);
 				vertex += offset;
 
 				vertices[i].pos = vertex;
@@ -726,7 +726,7 @@ namespace Duality.Resources
 		/// <param name="x">An X-Offset applied to the position of each emitted vertex.</param>
 		/// <param name="y">An Y-Offset applied to the position of each emitted vertex.</param>
 		/// <param name="clr">The color value that is applied to each emitted vertex.</param>
-		public void EmitTextVertices(string text, ref VertexC4P3T2[] vertices, float x, float y, ColorRgba clr)
+		public void EmitTextVertices(string text, ref VertexC1P3T2[] vertices, float x, float y, ColorRgba clr)
 		{
 			this.EmitTextVertices(text, ref vertices);
 			
@@ -746,9 +746,9 @@ namespace Duality.Resources
 		/// </summary>
 		/// <param name="text">The text to render.</param>
 		/// <param name="vertices">The set of vertices that is emitted. You can re-use the same array each frame.</param>
-		public void EmitTextVertices(string text, ref VertexC4P3T2[] vertices)
+		public void EmitTextVertices(string text, ref VertexC1P3T2[] vertices)
 		{
-			if (vertices == null || vertices.Length != text.Length * 4) vertices = new VertexC4P3T2[text.Length * 4];
+			if (vertices == null || vertices.Length != text.Length * 4) vertices = new VertexC1P3T2[text.Length * 4];
 			
 			float curOffset = 0.0f;
 			GlyphData glyphData;

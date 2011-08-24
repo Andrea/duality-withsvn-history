@@ -651,7 +651,7 @@ namespace Duality
 			set { this.flowAreas = value; }
 		}
 		/// <summary>
-		/// [GET / SET] A set of <see cref="Duality.Resource.Font">Fonts</see> that is available in the text.
+		/// [GET / SET] A set of <see cref="Duality.Resources.Font">Fonts</see> that is available in the text.
 		/// </summary>
 		public ContentRef<Font>[] Fonts
 		{
@@ -774,9 +774,9 @@ namespace Duality
 						{
 							if (this.sourceText.Length > i + 8)
 							{
-								uint	clr;
+								int	clr;
 								string	clrString = new StringBuilder().Append(this.sourceText, i + 1, 8).ToString();
-								if (uint.TryParse(clrString, System.Globalization.NumberStyles.HexNumber, System.Globalization.NumberFormatInfo.InvariantInfo, out clr))
+								if (int.TryParse(clrString, System.Globalization.NumberStyles.HexNumber, System.Globalization.NumberFormatInfo.InvariantInfo, out clr))
 									elemList.Add(new ColorChangeElement(ColorRgba.FromIntRgba(clr)));
 								else
 									elemList.Add(new ColorChangeElement(ColorRgba.White));
@@ -873,7 +873,7 @@ namespace Duality
 		/// <param name="x">An X-Offset applied to the position of each emitted vertex.</param>
 		/// <param name="y">An Y-Offset applied to the position of each emitted vertex.</param>
 		/// <param name="z">An Z-Offset applied to the position of each emitted vertex.</param>
-		public void EmitVertices(ref VertexC4P3T2[][] vertText, ref VertexC4P3T2[] vertIcons, float x, float y, float z = 0.0f)
+		public void EmitVertices(ref VertexC1P3T2[][] vertText, ref VertexC1P3T2[] vertIcons, float x, float y, float z = 0.0f)
 		{
 			this.EmitVertices(ref vertText, ref vertIcons, x, y, z, ColorRgba.White);
 		}
@@ -886,7 +886,7 @@ namespace Duality
 		/// <param name="x">An X-Offset applied to the position of each emitted vertex.</param>
 		/// <param name="y">An Y-Offset applied to the position of each emitted vertex.</param>
 		/// <param name="clr">The color value that is applied to each emitted vertex.</param>
-		public void EmitVertices(ref VertexC4P3T2[][] vertText, ref VertexC4P3T2[] vertIcons, float x, float y, ColorRgba clr)
+		public void EmitVertices(ref VertexC1P3T2[][] vertText, ref VertexC1P3T2[] vertIcons, float x, float y, ColorRgba clr)
 		{
 			this.EmitVertices(ref vertText, ref vertIcons);
 			
@@ -922,7 +922,7 @@ namespace Duality
 		/// <param name="clr">The color value that is applied to each emitted vertex.</param>
 		/// <param name="angle">An angle by which the text is rotated (before applying the offset).</param>
 		/// <param name="scale">A factor by which the text is scaled (before applying the offset).</param>
-		public void EmitVertices(ref VertexC4P3T2[][] vertText, ref VertexC4P3T2[] vertIcons, float x, float y, float z, ColorRgba clr, float angle = 0.0f, float scale = 1.0f)
+		public void EmitVertices(ref VertexC1P3T2[][] vertText, ref VertexC1P3T2[] vertIcons, float x, float y, float z, ColorRgba clr, float angle = 0.0f, float scale = 1.0f)
 		{
 			Vector2 xDot, yDot;
 			MathF.GetTransformDotVec(angle, scale, out xDot, out yDot);
@@ -940,7 +940,7 @@ namespace Duality
 		/// <param name="clr">The color value that is applied to each emitted vertex.</param>
 		/// <param name="xDot">Dot product base for the transformed vertices.</param>
 		/// <param name="yDot">Dot product base for the transformed vertices.</param>
-		public void EmitVertices(ref VertexC4P3T2[][] vertText, ref VertexC4P3T2[] vertIcons, float x, float y, float z, ColorRgba clr, Vector2 xDot, Vector2 yDot)
+		public void EmitVertices(ref VertexC1P3T2[][] vertText, ref VertexC1P3T2[] vertIcons, float x, float y, float z, ColorRgba clr, Vector2 xDot, Vector2 yDot)
 		{
 			this.EmitVertices(ref vertText, ref vertIcons);
 			
@@ -951,7 +951,7 @@ namespace Duality
 				{
 					Vector3 vertex = vertText[i][j].pos;
 
-					MathF.TransdormDotVec(ref vertex, ref xDot, ref yDot);
+					MathF.TransformDotVec(ref vertex, ref xDot, ref yDot);
 					vertex += offset;
 
 					vertText[i][j].pos = vertex;
@@ -962,7 +962,7 @@ namespace Duality
 			{
 				Vector3 vertex = vertIcons[i].pos;
 
-				MathF.TransdormDotVec(ref vertex, ref xDot, ref yDot);
+				MathF.TransformDotVec(ref vertex, ref xDot, ref yDot);
 				vertex += offset;
 
 				vertIcons[i].pos = vertex;
@@ -975,16 +975,16 @@ namespace Duality
 		/// </summary>
 		/// <param name="vertText">One set of vertices for each Font that is available to this ForattedText.</param>
 		/// <param name="vertIcons">A set of icon vertices.</param>
-		public void EmitVertices(ref VertexC4P3T2[][] vertText, ref VertexC4P3T2[] vertIcons)
+		public void EmitVertices(ref VertexC1P3T2[][] vertText, ref VertexC1P3T2[] vertIcons)
 		{
 			int fontNum = this.fonts != null ? this.fonts.Length : 0;
 
 			// Setting up vertex buffers
-			if (vertIcons == null || vertIcons.Length != this.iconCount * 4) vertIcons = new VertexC4P3T2[this.iconCount * 4];
-			if (vertText == null || vertText.Length != fontNum) vertText = new VertexC4P3T2[fontNum][];
+			if (vertIcons == null || vertIcons.Length != this.iconCount * 4) vertIcons = new VertexC1P3T2[this.iconCount * 4];
+			if (vertText == null || vertText.Length != fontNum) vertText = new VertexC1P3T2[fontNum][];
 			for (int i = 0; i < vertText.Length; i++)
 				if (vertText[i] == null || vertText[i].Length != (this.fontGlyphCount.Length > i ? this.fontGlyphCount[i] * 4 : 0)) 
-					vertText[i] = new VertexC4P3T2[this.fontGlyphCount.Length > i ? this.fontGlyphCount[i] * 4 : 0];
+					vertText[i] = new VertexC1P3T2[this.fontGlyphCount.Length > i ? this.fontGlyphCount[i] * 4 : 0];
 
 			// Rendering
 			RenderState state = new RenderState(this);
@@ -996,7 +996,7 @@ namespace Duality
 				if (elem is TextElement && state.Font != null)
 				{
 					TextElement textElem = elem as TextElement;
-					VertexC4P3T2[] textElemVert = null;
+					VertexC1P3T2[] textElemVert = null;
 					state.Font.EmitTextVertices(
 						state.CurrentElemText, 
 						ref textElemVert, 

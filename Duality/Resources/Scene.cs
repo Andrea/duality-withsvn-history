@@ -236,7 +236,7 @@ namespace Duality.Resources
 		}
 
 		/// <summary>
-		/// Enumerates all <see cref="Duality.Resources.Renderer">Renderers</see> that are visible to
+		/// Enumerates all <see cref="Duality.Components.Renderer">Renderers</see> that are visible to
 		/// the specified <see cref="IDrawDevice"/>.
 		/// </summary>
 		/// <param name="device"></param>

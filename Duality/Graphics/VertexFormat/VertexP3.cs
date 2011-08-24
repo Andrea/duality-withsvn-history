@@ -9,10 +9,16 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Duality.VertexFormat
 {
+	/// <summary>
+	/// Vertex data providing each vertex a position (3x4 byte).
+	/// </summary>
 	[Serializable]
 	[StructLayout(LayoutKind.Sequential)]
 	public struct VertexP3 : IVertexData
 	{
+		/// <summary>
+		/// The vertices position.
+		/// </summary>
 		public Vector3 pos;
 
 		Vector3 IVertexData.Pos
@@ -37,8 +43,14 @@ namespace Duality.VertexFormat
 		{
 			GL.DisableClientState(ArrayCap.VertexArray);
 		}
-
+		
+		/// <summary>
+		/// Byte offset for the position.
+		/// </summary>
 		public const int OffsetPos		= 0;
+		/// <summary>
+		/// Total size in bytes.
+		/// </summary>
 		public const int Size			= OffsetPos + 3 * sizeof(float);
 
 		public VertexP3(float x, float y, float z)

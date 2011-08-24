@@ -82,7 +82,7 @@ namespace Duality.Resources
 		private	ContentRef<AudioData>	audioData	= ContentRef<AudioData>.Null;
 
 		/// <summary>
-		/// [GET / SET] The <see cref="Duality.Resource.AudioData"/> that is parameterized by this Sound.
+		/// [GET / SET] The <see cref="Duality.Resources.AudioData"/> that is parameterized by this Sound.
 		/// </summary>
 		public ContentRef<AudioData> Data
 		{
@@ -141,7 +141,7 @@ namespace Duality.Resources
 		}
 		/// <summary>
 		/// [GET / SET] The distance at which the sound is played at full volume. Getting nearer to the source won't increase the volume anymore.
-		/// Note that the value is a factor to <see cref="DualityApp.Sound.DefaultMinDist"/>.
+		/// Note that the value is a factor to <see cref="SoundDevice.DefaultMinDist"/>.
 		/// </summary>
 		/// <seealso cref="MinDist"/>
 		public float MinDistFactor
@@ -151,7 +151,7 @@ namespace Duality.Resources
 		}
 		/// <summary>
 		/// [GET / SET] The distance at which the sound is played at zero volume.
-		/// Note that the value is a factor to <see cref="DualityApp.Sound.DefaultMaxDist"/>.
+		/// Note that the value is a factor to <see cref="SoundDevice.DefaultMaxDist"/>.
 		/// </summary>
 		/// <seealso cref="MaxDist"/>
 		public float MaxDistFactor

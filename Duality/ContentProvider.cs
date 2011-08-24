@@ -438,7 +438,7 @@ namespace Duality
 		/// <summary>
 		/// Returns a list of all available content matching the specified Type
 		/// </summary>
-		/// <typeparam name="T"></typeparam>
+		/// <param name="t"></param>
 		/// <returns></returns>
 		public static List<IContentRef> GetAvailContent(Type t)
 		{

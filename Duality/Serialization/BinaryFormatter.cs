@@ -579,7 +579,7 @@ namespace Duality.Serialization
 							this.log.WriteWarning("Field '{0}' not found. Discarding value '{1}'", layout.Fields[i].name, fieldValue);
 						else if (field.FieldType != fieldType)
 						{
-							this.log.WriteWarning("Data layout Type '{0}' of field '{1}' does not match reflected Type '{2}'. Trying to convert...'", layout.Fields[i].typeString, layout.Fields[i].name, objTypeString);
+							this.log.WriteWarning("Data layout Type '{0}' of field '{1}' does not match reflected Type '{2}'. Trying to convert...'", layout.Fields[i].typeString, layout.Fields[i].name, Log.Type(field.FieldType));
 							this.log.PushIndent();
 							object castVal;
 							try

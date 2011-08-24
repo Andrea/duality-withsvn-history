@@ -99,7 +99,7 @@ namespace DualityEditor
 			if (typeof(T) == typeof(IColorData)) return (T[])(object)clrArray;
 
 			// Convert to specific format
-			return clrArray.Select<IColorData,T>(ic => ic is T ? (T)ic : IColorDataCreator.FromIntRgba<T>(ic.ToIntRgba())).ToArray();
+			return clrArray.Select<IColorData,T>(ic => ic is T ? (T)ic : ic.ConvertTo<T>()).ToArray();
 		}
 
 		public static void AppendFiles(this DataObject data, IEnumerable<string> files)

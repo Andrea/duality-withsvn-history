@@ -481,7 +481,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// Applies all PrefabLinks in a set of GameObjects. 
 		/// </summary>
-		/// <param name="objEnum">An enumeration of all GameObjects containing PrefabLinks that are to <see cref="Apply">apply</see>.</param>
+		/// <param name="objEnum">An enumeration of all GameObjects containing PrefabLinks that are to <see cref="Apply()">apply</see>.</param>
 		/// <param name="predicate">An optional predicate. If set, only PrefabLinks meeting its requirements are applied.</param>
 		/// <returns>A List of all PrefabLinks that have been applied.</returns>
 		public static List<PrefabLink> ApplyAllLinks(IEnumerable<GameObject> objEnum, Predicate<PrefabLink> predicate = null)

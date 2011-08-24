@@ -368,7 +368,7 @@ namespace Duality.Serialization
 		/// <summary>
 		/// Reads the <see cref="Duality.Serialization.TypeDataLayout"/> describing the specified <see cref="System.Type"/>.
 		/// </summary>
-		/// <param name="t">The <see cref="Systen.Type"/> of which to read the <see cref="Duality.Serialization.TypeDataLayout"/>.</param>
+		/// <param name="t">The <see cref="System.Type"/> of which to read the <see cref="Duality.Serialization.TypeDataLayout"/>.</param>
 		/// <returns>A <see cref="Duality.Serialization.TypeDataLayout"/> describing the specified <see cref="System.Type"/></returns>
 		protected TypeDataLayout ReadTypeDataLayout(Type t)
 		{
@@ -377,7 +377,7 @@ namespace Duality.Serialization
 		/// <summary>
 		/// Reads the <see cref="Duality.Serialization.TypeDataLayout"/> describing the specified <see cref="System.Type"/>.
 		/// </summary>
-		/// <param name="t">A string referring to the <see cref="Systen.Type"/> of which to read the <see cref="Duality.Serialization.TypeDataLayout"/>.</param>
+		/// <param name="t">A string referring to the <see cref="System.Type"/> of which to read the <see cref="Duality.Serialization.TypeDataLayout"/>.</param>
 		/// <returns>A <see cref="Duality.Serialization.TypeDataLayout"/> describing the specified <see cref="System.Type"/></returns>
 		protected TypeDataLayout ReadTypeDataLayout(string t)
 		{
