@@ -6,9 +6,23 @@ using System.IO;
 
 namespace Duality
 {
+	/// <summary>
+	/// Provides helper methods for handling <see cref="System.IO.Path">Paths</see>.
+	/// </summary>
 	public static class PathHelper
 	{
-		public static string GetFreePathName(string pathBase, string pathExt)
+		/// <summary>
+		/// Returns a path that isn't taken yet.
+		/// </summary>
+		/// <param name="pathBase">The path to use as base for finding a available path.</param>
+		/// <param name="pathExt">The (file) extension to add to the new path.</param>
+		/// <returns>A path that doesn't relate to any existing file or directory.</returns>
+		/// <example>
+		/// Assuming the directory <c>C:\SomeDir\</c> contains the file <c>File.txt</c>,
+		/// the code <c>PathHelper.GetFreePath(@"C:\SomeDir\File", ".txt");</c>
+		/// will return <c>C:\SomeDir\File (2).txt</c>.
+		/// </example>
+		public static string GetFreePath(string pathBase, string pathExt)
 		{
 			int nameNum = 1;
 			string path = pathBase + pathExt;
@@ -20,6 +34,15 @@ namespace Duality
 			return path;
 		}
 
+		/// <summary>
+		/// Returns whether one path is a sub-path of another.
+		/// </summary>
+		/// <param name="path">The supposed sub-path.</param>
+		/// <param name="baseDir">The (directory) path in which the supposed sub-path might be located in.</param>
+		/// <returns>True, if <c>path</c> is a sub-path of <c>baseDir</c>.</returns>
+		/// <example>
+		/// <c>PathHelper.IsPathLocatedIn(@"C:\SomeDir\SubDir", @"C:\SomeDir")</c> will return true.
+		/// </example>
 		public static bool IsPathLocatedIn(string path, string baseDir)
 		{
 			bool baseDirIsFile = File.Exists(baseDir);
@@ -35,6 +58,15 @@ namespace Duality
 			} while (!String.IsNullOrEmpty(path));
 			return false;
 		}
+		/// <summary>
+		/// Returns the relative path from one path to another.
+		/// </summary>
+		/// <param name="path">The path to make relative.</param>
+		/// <param name="relativeTo">The path to make it relative to.</param>
+		/// <returns>A path that, if <see cref="System.IO.Path.Combine">combined</see> with <c>relativeTo</c>, equals the original path.</returns>
+		/// <example>
+		/// <c>PathHelper.MakePathRelative(@"C:\SomeDir\SubDir\File.txt", @"C:\SomeDir")</c> will return <c>SubDir\File.txt</c>.
+		/// </example>
 		public static string MakePathRelative(string path, string relativeTo)
 		{
 			string dir		= Path.GetFullPath(path);
@@ -84,6 +116,15 @@ namespace Duality
 
 			return Path.Combine(resultDir, fileName);
 		}
+		/// <summary>
+		/// Returns a mutual base path of two different paths.
+		/// </summary>
+		/// <param name="path">The first path.</param>
+		/// <param name="path2">The second path.</param>
+		/// <returns>The mutual base path of both.</returns>
+		/// <example>
+		/// <c>PathHelper.GetMutualDirectory(@"C:\SomeDir\SubDir\File.txt", @"C:\SomeDir\SubDir2\File.txt")</c> will return <c>C:\SomeDir</c>.
+		/// </example>
 		public static string GetMutualDirectory(string path, string path2)
 		{
 			string dir		= Path.GetFullPath(path);
@@ -128,6 +169,12 @@ namespace Duality
 			return resultDir;
 		}
 
+		/// <summary>
+		/// Takes a string that is supposed to be a file name and converts it into an
+		/// actually valid file name, replacing special characters and so on.
+		/// </summary>
+		/// <param name="fileNameWithoutExt">A string that is supposed to be a file name.</param>
+		/// <returns>A valid file name.</returns>
 		public static string GetValidFileName(string fileNameWithoutExt)
 		{
 			char[] pathChars = fileNameWithoutExt.ToCharArray();

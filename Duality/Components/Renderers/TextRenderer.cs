@@ -61,7 +61,7 @@ namespace Duality.Components.Renderers
 
 		public TextRenderer() 
 		{
-			this.text.SetFonts(Font.GenericMonospace10);
+			this.text.Fonts = new[] { Font.GenericMonospace10 };
 			this.UpdateMetrics();
 		}
 

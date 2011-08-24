@@ -26,7 +26,7 @@ namespace EditorBase
 		}
 		public string[] GetOutputFiles(string srcFile, string targetName, string targetDir)
 		{
-			string targetResPath = PathHelper.GetFreePathName(Path.Combine(targetDir, targetName), AudioData.FileExt);
+			string targetResPath = PathHelper.GetFreePath(Path.Combine(targetDir, targetName), AudioData.FileExt);
 			return new string[] { targetResPath };
 		}
 

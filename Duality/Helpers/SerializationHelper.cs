@@ -9,6 +9,9 @@ using System.IO;
 
 namespace Duality
 {
+	/// <summary>
+	/// Provides helper methods for Reflection-driven object cloning & serialization.
+	/// </summary>
 	public static class SerializationHelper
 	{
 		/// <summary>
@@ -22,64 +25,71 @@ namespace Duality
 			return t.IsPrimitive || t.IsEnum || t == typeof(string) || typeof(MemberInfo).IsAssignableFrom(t) || typeof(IContentRef).IsAssignableFrom(t);
 		}
 
+		/// <summary>
+		/// Creates a deep clone of an object.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="instance"></param>
+		/// <returns></returns>
 		public static T DeepCloneObject<T>(T instance)
 		{
 			return (T)DeepCloneObject(instance, new VisitedGraph());
 		}
+		/// <summary>
+		/// Creates a deep clone of an object.
+		/// </summary>
+		/// <param name="instance"></param>
+		/// <returns></returns>
 		public static object DeepCloneObject(object instance)
 		{
 			return DeepCloneObject(instance, new VisitedGraph());
 		}
+		/// <summary>
+		/// Creates a deep clone of an object but considering only specific Types for "unwrapping".
+		/// References regarding other Types are treated as references, and therefor aren't cloned.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="instance"></param>
+		/// <param name="unwrapTypes"></param>
+		/// <returns></returns>
 		public static T DeepCloneObjectExplicit<T>(T instance, params Type[] unwrapTypes)
 		{
 			return (T)DeepCloneObjectExplicit(instance, new VisitedGraph(), unwrapTypes);
 		}
+		/// <summary>
+		/// Creates a deep clone of an object but considering only specific Types for "unwrapping".
+		/// References regarding other Types are treated as references, and therefor aren't cloned.
+		/// </summary>
+		/// <param name="instance"></param>
+		/// <param name="unwrapTypes"></param>
+		/// <returns></returns>
 		public static object DeepCloneObjectExplicit(object instance, params Type[] unwrapTypes)
 		{
 			return DeepCloneObjectExplicit(instance, new VisitedGraph(), unwrapTypes);
 		}
 
+		/// <summary>
+		/// Copies the specified fields from one object to another, deep-cloning all referenced objects.
+		/// </summary>
+		/// <param name="fields"></param>
+		/// <param name="source"></param>
+		/// <param name="target"></param>
 		public static void DeepCopyFields(FieldInfo[] fields, object source, object target)
 		{
 			DeepCopyFields(fields, source, target, new VisitedGraph());
 		}
+		/// <summary>
+		/// Copies the specified fields from one object to another, but considering only specific 
+		/// Types for "unwrapping". References regarding other Types are treated as references, 
+		/// and therefor aren't cloned.
+		/// </summary>
+		/// <param name="fields"></param>
+		/// <param name="source"></param>
+		/// <param name="target"></param>
+		/// <param name="unwrapTypes"></param>
 		public static void DeepCopyFieldsExplicit(FieldInfo[] fields, object source, object target, params Type[] unwrapTypes)
 		{
 			DeepCopyFieldsExplicit(fields, source, target, new VisitedGraph(), unwrapTypes);
-		}
-
-		/// <summary>
-		/// Resets all references of object types assignable to any of the specified. typeof(Component) will
-		/// result in all references to any kind of Component to be cleared / set null.
-		/// </summary>
-		/// <param name="instance"></param>
-		/// <param name="resetTypes"></param>
-		public static void DeepResetReferences(object instance, params Type[] resetTypes)
-		{
-			DeepResetReferenceFields(
-				instance.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance), 
-				instance, new HashSet<object>(), resetTypes);
-		}
-		public static void DeepResetReferenceFields(FieldInfo[] fields, object source, params Type[] resetTypes)
-		{
-			DeepResetReferenceFields(fields, source, new HashSet<object>(), resetTypes);
-		}
-
-		/// <summary>
-		/// Re-resolves all MemberInfo references using current Type information including Plugin data. When reloading
-		/// Plugins, calling this method for an object will re-map its previously reflected MemberInfo references to
-		/// the newly loaded plugin Assemblies equivalent
-		/// </summary>
-		/// <param name="instance"></param>
-		public static void DeepResolveTypeReferences(object instance, SerializationBinder binder)
-		{
-			DeepResolveTypeReferenceFields(
-				instance.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance), 
-				instance, binder, new HashSet<object>());
-		}
-		public static void DeepResolveTypeReferenceFields(FieldInfo[] fields, object source, SerializationBinder binder)
-		{
-			DeepResolveTypeReferenceFields(fields, source, binder, new HashSet<object>());
 		}
 
 

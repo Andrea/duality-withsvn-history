@@ -72,7 +72,7 @@ namespace DualityEditor
 			if (filePath.Contains("..")) filePath = Path.GetFileName(filePath);
 
 			string fileName = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(r.Path));
-			return PathHelper.GetFreePathName(Path.Combine(EditorHelper.SourceMediaDirectory, fileName), srcFileExt);
+			return PathHelper.GetFreePath(Path.Combine(EditorHelper.SourceMediaDirectory, fileName), srcFileExt);
 		}
 
 		public static string GenerateGameResSrcFile()

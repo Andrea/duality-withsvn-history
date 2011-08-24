@@ -859,6 +859,7 @@
             <param name="type">The type of the log message.</param>
             <param name="msg">The message to write.</param>
         </member>
+        <!-- Ungültiger XML-Kommentar wurde für den Member "T:Duality.SerializationHelper" ignoriert -->
         <member name="M:Duality.SerializationHelper.IsSafeAssignType(System.Type)">
             <summary>
             Returns whether the specified type may just be assigned in a clone operation (even if deep)
@@ -867,21 +868,58 @@
             <param name="t"></param>
             <returns></returns>
         </member>
-        <member name="M:Duality.SerializationHelper.DeepResetReferences(System.Object,System.Type[])">
+        <member name="M:Duality.SerializationHelper.DeepCloneObject``1(``0)">
             <summary>
-            Resets all references of object types assignable to any of the specified. typeof(Component) will
-            result in all references to any kind of Component to be cleared / set null.
+            Creates a deep clone of an object.
             </summary>
+            <typeparam name="T"></typeparam>
             <param name="instance"></param>
-            <param name="resetTypes"></param>
+            <returns></returns>
         </member>
-        <member name="M:Duality.SerializationHelper.DeepResolveTypeReferences(System.Object,System.Runtime.Serialization.SerializationBinder)">
+        <member name="M:Duality.SerializationHelper.DeepCloneObject(System.Object)">
             <summary>
-            Re-resolves all MemberInfo references using current Type information including Plugin data. When reloading
-            Plugins, calling this method for an object will re-map its previously reflected MemberInfo references to
-            the newly loaded plugin Assemblies equivalent
+            Creates a deep clone of an object.
             </summary>
             <param name="instance"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.SerializationHelper.DeepCloneObjectExplicit``1(``0,System.Type[])">
+            <summary>
+            Creates a deep clone of an object but considering only specific Types for "unwrapping".
+            References regarding other Types are treated as references, and therefor aren't cloned.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="instance"></param>
+            <param name="unwrapTypes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.SerializationHelper.DeepCloneObjectExplicit(System.Object,System.Type[])">
+            <summary>
+            Creates a deep clone of an object but considering only specific Types for "unwrapping".
+            References regarding other Types are treated as references, and therefor aren't cloned.
+            </summary>
+            <param name="instance"></param>
+            <param name="unwrapTypes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.SerializationHelper.DeepCopyFields(System.Reflection.FieldInfo[],System.Object,System.Object)">
+            <summary>
+            Copies the specified fields from one object to another, deep-cloning all referenced objects.
+            </summary>
+            <param name="fields"></param>
+            <param name="source"></param>
+            <param name="target"></param>
+        </member>
+        <member name="M:Duality.SerializationHelper.DeepCopyFieldsExplicit(System.Reflection.FieldInfo[],System.Object,System.Object,System.Type[])">
+            <summary>
+            Copies the specified fields from one object to another, but considering only specific 
+            Types for "unwrapping". References regarding other Types are treated as references, 
+            and therefor aren't cloned.
+            </summary>
+            <param name="fields"></param>
+            <param name="source"></param>
+            <param name="target"></param>
+            <param name="unwrapTypes"></param>
         </member>
         <member name="T:Duality.Serialization.BinaryFormatterBase">
             <summary>
@@ -2218,6 +2256,455 @@
             setup, it forwards the custom animBlend vertex attribute to the fragment stage.
             </summary>
         </member>
+        <member name="T:Duality.Rect">
+            <summary>
+            Describes a rectangular area.
+            </summary>
+        </member>
+        <member name="F:Duality.Rect.Empty">
+            <summary>
+            An empty Rect.
+            </summary>
+        </member>
+        <member name="F:Duality.Rect.x">
+            <summary>
+            The Rects x-Coordinate.
+            </summary>
+        </member>
+        <member name="F:Duality.Rect.y">
+            <summary>
+            The Rects y-Coordinate.
+            </summary>
+        </member>
+        <member name="F:Duality.Rect.w">
+            <summary>
+            The Rects width.
+            </summary>
+        </member>
+        <member name="F:Duality.Rect.h">
+            <summary>
+            The Rects height.
+            </summary>
+        </member>
+        <member name="M:Duality.Rect.#ctor(OpenTK.Vector2)">
+            <summary>
+            Creates a Rect of the given size.
+            </summary>
+            <param name="size"></param>
+        </member>
+        <member name="M:Duality.Rect.#ctor(System.Single,System.Single)">
+            <summary>
+            Creates a Rect of the given size.
+            </summary>
+            <param name="w"></param>
+            <param name="h"></param>
+        </member>
+        <member name="M:Duality.Rect.#ctor(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Creates a Rect of the given size and position.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+        </member>
+        <member name="M:Duality.Rect.Offset(System.Single,System.Single)">
+            <summary>
+            Returns a new version of this Rect that has been moved by the specified offset.
+            </summary>
+            <param name="x">Movement in x-Direction.</param>
+            <param name="y">Movement in y-Direction.</param>
+            <returns>A new Rect with the specified adjustments.</returns>
+        </member>
+        <member name="M:Duality.Rect.Offset(OpenTK.Vector2)">
+            <summary>
+            Returns a new version of this Rect that has been moved by the specified offset.
+            </summary>
+            <param name="offset">Movement vector.</param>
+            <returns>A new Rect with the specified adjustments.</returns>
+        </member>
+        <member name="M:Duality.Rect.Scale(System.Single,System.Single)">
+            <summary>
+            Returns a new version of this Rect that has been scaled by the specified factor.
+            Scaling only affects a Rects size, not its position.
+            </summary>
+            <param name="x">x-Scale factor.</param>
+            <param name="y">y-Scale factor.</param>
+            <returns>A new Rect with the specified adjustments.</returns>
+        </member>
+        <member name="M:Duality.Rect.Scale(OpenTK.Vector2)">
+            <summary>
+            Returns a new version of this Rect that has been scaled by the specified factor.
+            Scaling only affects a Rects size, not its position.
+            </summary>
+            <param name="factor">Scale factor.</param>
+            <returns>A new Rect with the specified adjustments.</returns>
+        </member>
+        <member name="M:Duality.Rect.Transform(System.Single,System.Single)">
+            <summary>
+            Returns a new version of this Rect that has been transformed by the specified scale factor.
+            Transforming both affects a Rects size and position.
+            </summary>
+            <param name="x">x-Scale factor.</param>
+            <param name="y">y-Scale factor.</param>
+            <returns>A new Rect with the specified adjustments.</returns>
+        </member>
+        <member name="M:Duality.Rect.Transform(OpenTK.Vector2)">
+            <summary>
+            Returns a new version of this Rect that has been transformed by the specified scale factor.
+            Transforming both affects a Rects size and position.
+            </summary>
+            <param name="scale">Scale factor.</param>
+            <returns>A new Rect with the specified adjustments.</returns>
+        </member>
+        <member name="M:Duality.Rect.ExpandToContain(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Returns a new version of this Rect that has been expanded to contain
+            the specified rectangular area.
+            </summary>
+            <param name="x">x-Coordinate of the Rect to contain.</param>
+            <param name="y">y-Coordinate of the Rect to contain.</param>
+            <param name="w">Width of the Rect to contain.</param>
+            <param name="h">Height of the Rect to contain.</param>
+            <returns>A new Rect with the specified adjustments.</returns>
+        </member>
+        <member name="M:Duality.Rect.ExpandToContain(Duality.Rect)">
+            <summary>
+            Returns a new version of this Rect that has been expanded to contain
+            the specified Rect.
+            </summary>
+            <param name="other">The Rect to contain.</param>
+            <returns>A new Rect with the specified adjustments.</returns>
+        </member>
+        <member name="M:Duality.Rect.ExpandToContain(System.Single,System.Single)">
+            <summary>
+            Returns a new version of this Rect that has been expanded to contain
+            the specified point.
+            </summary>
+            <param name="x">x-Coordinate of the point to contain.</param>
+            <param name="y">y-Coordinate of the point to contain.</param>
+            <returns>A new Rect with the specified adjustments.</returns>
+        </member>
+        <member name="M:Duality.Rect.ExpandToContain(OpenTK.Vector2)">
+            <summary>
+            Returns a new version of this Rect that has been expanded to contain
+            the specified point.
+            </summary>
+            <param name="p">The point to contain.</param>
+            <returns>A new Rect with the specified adjustments.</returns>
+        </member>
+        <member name="M:Duality.Rect.Round">
+            <summary>
+            Returns a new version of this Rect with integer coordinates and size.
+            They have been <see cref="M:Duality.MathF.Round(System.Single)">rounded</see>.
+            </summary>
+            <returns>A new Rect with the specified adjustments.</returns>
+        </member>
+        <member name="M:Duality.Rect.Ceiling">
+            <summary>
+            Returns a new version of this Rect with integer coordinates and size.
+            They have been <see cref="M:Duality.MathF.Ceiling(System.Single)">ceiled</see>.
+            </summary>
+            <returns>A new Rect with the specified adjustments.</returns>
+        </member>
+        <member name="M:Duality.Rect.Floor">
+            <summary>
+            Returns a new version of this Rect with integer coordinates and size.
+            They have been <see cref="M:Duality.MathF.Floor(System.Single)">floored</see>.
+            </summary>
+            <returns>A new Rect with the specified adjustments.</returns>
+        </member>
+        <member name="M:Duality.Rect.Contains(System.Single,System.Single)">
+            <summary>
+            Returns whether this Rect contains a given point.
+            </summary>
+            <param name="x">x-Coordinate of the point to test.</param>
+            <param name="y">y-Coordinate of the point to test.</param>
+            <returns>True, if the Rect contains the point, false if not.</returns>
+        </member>
+        <member name="M:Duality.Rect.Contains(OpenTK.Vector2)">
+            <summary>
+            Returns whether this Rect contains a given point.
+            </summary>
+            <param name="pos">The point to test.</param>
+            <returns>True, if the Rect contains the point, false if not.</returns>
+        </member>
+        <member name="M:Duality.Rect.Contains(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Returns whether this Rect contains a given rectangular area.
+            </summary>
+            <param name="x">x-Coordinate of the Rect to test.</param>
+            <param name="y">y-Coordinate of the Rect to test.</param>
+            <param name="w">Width of the Rect to test.</param>
+            <param name="h">Height of the Rect to test.</param>
+            <returns>True, if the Rect contains the other Rect, false if not.</returns>
+        </member>
+        <member name="M:Duality.Rect.Contains(Duality.Rect)">
+            <summary>
+            Returns whether this Rect contains a given rectangular area.
+            </summary>
+            <param name="rect">The Rect to test.</param>
+            <returns>True, if the Rect contains the other Rect, false if not.</returns>
+        </member>
+        <member name="M:Duality.Rect.Intersects(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Returns whether this Rect intersects a given rectangular area.
+            </summary>
+            <param name="x">x-Coordinate of the Rect to test.</param>
+            <param name="y">y-Coordinate of the Rect to test.</param>
+            <param name="w">Width of the Rect to test.</param>
+            <param name="h">Height of the Rect to test.</param>
+            <returns>True, if the Rect intersects the other Rect, false if not.</returns>
+        </member>
+        <member name="M:Duality.Rect.Intersects(Duality.Rect)">
+            <summary>
+            Returns whether this Rect intersects a given rectangular area.
+            </summary>
+            <param name="rect">The Rect to test.</param>
+            <returns>True, if the Rect intersects the other Rect, false if not.</returns>
+        </member>
+        <member name="M:Duality.Rect.Intersection(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Returns a Rect that equals this Rects intersection with another Rect.
+            </summary>
+            <param name="x">x-Coordinate of the Rect to intersect with.</param>
+            <param name="y">y-Coordinate of the Rect to intersect with.</param>
+            <param name="w">Width of the Rect to intersect with.</param>
+            <param name="h">Height of the Rect to intersect with.</param>
+            <returns>A new Rect that describes both Rects intersection area.</returns>
+        </member>
+        <member name="M:Duality.Rect.Intersection(Duality.Rect)">
+            <summary>
+            Returns a Rect that equals this Rects intersection with another Rect.
+            </summary>
+            <param name="rect">The other Rect to intersect with.</param>
+            <returns>A new Rect that describes both Rects intersection area.</returns>
+        </member>
+        <member name="M:Duality.Rect.Equals(Duality.Rect)">
+            <summary>
+            Tests if two Rects are equal.
+            </summary>
+            <param name="other"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Rect.Align(Duality.Alignment,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Creates a Rect using x and y Coordinates that are assumed to be aligned as specified.
+            </summary>
+            <param name="align">The alignment of the Rects x and y Coordinates.</param>
+            <param name="x">The Rects x-Coordinate.</param>
+            <param name="y">The Rects y-Coordinate.</param>
+            <param name="w">The Rects width.</param>
+            <param name="h">The Rects height.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Rect.AlignCenter(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Creates a Rect using x and y Coordinates that are assumed to be aligned centered.
+            </summary>
+            <param name="x">The Rects x-Coordinate.</param>
+            <param name="y">The Rects y-Coordinate.</param>
+            <param name="w">The Rects width.</param>
+            <param name="h">The Rects height.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Rect.AlignTop(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Creates a Rect using x and y Coordinates that are assumed to be aligned at the top.
+            </summary>
+            <param name="x">The Rects x-Coordinate.</param>
+            <param name="y">The Rects y-Coordinate.</param>
+            <param name="w">The Rects width.</param>
+            <param name="h">The Rects height.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Rect.AlignBottom(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Creates a Rect using x and y Coordinates that are assumed to be aligned at the bottom.
+            </summary>
+            <param name="x">The Rects x-Coordinate.</param>
+            <param name="y">The Rects y-Coordinate.</param>
+            <param name="w">The Rects width.</param>
+            <param name="h">The Rects height.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Rect.AlignLeft(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Creates a Rect using x and y Coordinates that are assumed to be aligned left
+            </summary>
+            <param name="x">The Rects x-Coordinate.</param>
+            <param name="y">The Rects y-Coordinate.</param>
+            <param name="w">The Rects width.</param>
+            <param name="h">The Rects height.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Rect.AlignRight(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Creates a Rect using x and y Coordinates that are assumed to be aligned right
+            </summary>
+            <param name="x">The Rects x-Coordinate.</param>
+            <param name="y">The Rects y-Coordinate.</param>
+            <param name="w">The Rects width.</param>
+            <param name="h">The Rects height.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Rect.AlignTopLeft(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Creates a Rect using x and y Coordinates that are assumed to be aligned top left.
+            </summary>
+            <param name="x">The Rects x-Coordinate.</param>
+            <param name="y">The Rects y-Coordinate.</param>
+            <param name="w">The Rects width.</param>
+            <param name="h">The Rects height.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Rect.AlignTopRight(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Creates a Rect using x and y Coordinates that are assumed to be aligned top right.
+            </summary>
+            <param name="x">The Rects x-Coordinate.</param>
+            <param name="y">The Rects y-Coordinate.</param>
+            <param name="w">The Rects width.</param>
+            <param name="h">The Rects height.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Rect.AlignBottomLeft(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Creates a Rect using x and y Coordinates that are assumed to be aligned bottom left.
+            </summary>
+            <param name="x">The Rects x-Coordinate.</param>
+            <param name="y">The Rects y-Coordinate.</param>
+            <param name="w">The Rects width.</param>
+            <param name="h">The Rects height.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Rect.AlignBottomRight(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Creates a Rect using x and y Coordinates that are assumed to be aligned bottom right.
+            </summary>
+            <param name="x">The Rects x-Coordinate.</param>
+            <param name="y">The Rects y-Coordinate.</param>
+            <param name="w">The Rects width.</param>
+            <param name="h">The Rects height.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Rect.op_Equality(Duality.Rect,Duality.Rect)">
+            <summary>
+            Returns whether two Rects are equal.
+            </summary>
+            <param name="left">The first Rect.</param>
+            <param name="right">The second Rect.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Rect.op_Inequality(Duality.Rect,Duality.Rect)">
+            <summary>
+            Returns whether two Rects are unequal.
+            </summary>
+            <param name="left">The first Rect.</param>
+            <param name="right">The second Rect.</param>
+            <returns></returns>
+        </member>
+        <member name="P:Duality.Rect.Pos">
+            <summary>
+            [GET / SET] The Rects position
+            </summary>
+        </member>
+        <member name="P:Duality.Rect.Size">
+            <summary>
+            [GET / SET] The Rects size.
+            </summary>
+        </member>
+        <member name="P:Duality.Rect.MinX">
+            <summary>
+            [GET] The minimum x-Coordinate occupied by the Rect. Accounts for negative sizes.
+            </summary>
+        </member>
+        <member name="P:Duality.Rect.MinY">
+            <summary>
+            [GET] The minimum y-Coordinate occupied by the Rect. Accounts for negative sizes.
+            </summary>
+        </member>
+        <member name="P:Duality.Rect.MaxY">
+            <summary>
+            [GET] The maximum x-Coordinate occupied by the Rect. Accounts for negative sizes.
+            </summary>
+        </member>
+        <member name="P:Duality.Rect.MaxX">
+            <summary>
+            [GET] The maximum y-Coordinate occupied by the Rect. Accounts for negative sizes.
+            </summary>
+        </member>
+        <member name="P:Duality.Rect.CenterX">
+            <summary>
+            [GET] The center x-Coordinate occupied by the Rect.
+            </summary>
+        </member>
+        <member name="P:Duality.Rect.CenterY">
+            <summary>
+            [GET] The center y-Coordinate occupied by the Rect.
+            </summary>
+        </member>
+        <member name="P:Duality.Rect.TopLeft">
+            <summary>
+            [GET] The Rects top left coordinates
+            </summary>
+        </member>
+        <member name="P:Duality.Rect.TopRight">
+            <summary>
+            [GET] The Rects top right coordinates
+            </summary>
+        </member>
+        <member name="P:Duality.Rect.Top">
+            <summary>
+            [GET] The Rects top coordinates
+            </summary>
+        </member>
+        <member name="P:Duality.Rect.BottomLeft">
+            <summary>
+            [GET] The Rects bottom left coordinates
+            </summary>
+        </member>
+        <member name="P:Duality.Rect.BottomRight">
+            <summary>
+            [GET] The Rects bottom right coordinates
+            </summary>
+        </member>
+        <member name="P:Duality.Rect.Bottom">
+            <summary>
+            [GET] The Rects bottom coordinates
+            </summary>
+        </member>
+        <member name="P:Duality.Rect.Left">
+            <summary>
+            [GET] The Rects left coordinates
+            </summary>
+        </member>
+        <member name="P:Duality.Rect.Right">
+            <summary>
+            [GET] The Rects right coordinates
+            </summary>
+        </member>
+        <member name="P:Duality.Rect.Center">
+            <summary>
+            [GET] The Rects center coordinates
+            </summary>
+        </member>
+        <member name="P:Duality.Rect.Area">
+            <summary>
+            [GET] The area that is occupied by the Rect.
+            </summary>
+        </member>
+        <member name="P:Duality.Rect.Perimeter">
+            <summary>
+            [GET] The Rects perimeter i.e. sum of all edge lengths.
+            </summary>
+        </member>
+        <member name="P:Duality.Rect.BoundingRadius">
+            <summary>
+            [GET] If this Rect was to fit inside a bounding circle originating from [0,0],
+            this would be its radius.
+            </summary>
+        </member>
         <member name="T:Duality.ObjectManagers.GameObjectManager">
             <summary>
             Manages a set of <see cref="T:Duality.GameObject">GameObject</see> and exposes suitable object enumerations as well as un/registeration events.
@@ -2803,6 +3290,11 @@
             <param name="alBufferId">OpenAL buffer id to stream to</param>
             <param name="vFPtr">Ogg Vorbis file handle</param>
             <returns>Returns false, if EOF is reached.</returns>
+        </member>
+        <member name="T:Duality.ReflectionInfo">
+            <summary>
+            Provides Reflection data on Properties and Fields.
+            </summary>
         </member>
         <member name="T:Duality.Alignment">
             <summary>
@@ -3408,11 +3900,92 @@
             </summary>
             <returns>A new uniform dataset</returns>
         </member>
+        <member name="T:Duality.ReflectionHelper">
+            <summary>
+            Provides reflection-related helper methods.
+            </summary>
+        </member>
+        <member name="F:Duality.ReflectionHelper.BindInstanceAll">
+            <summary>
+            Equals <c>BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic</c>.
+            </summary>
+        </member>
+        <member name="F:Duality.ReflectionHelper.BindStaticAll">
+            <summary>
+            Equals <c>BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic</c>.
+            </summary>
+        </member>
+        <member name="M:Duality.ReflectionHelper.GetEmbeddedResourceStream(System.Reflection.Assembly,System.String)">
+            <summary>
+            Returns a Stream to an Assemblies embedded resource.
+            </summary>
+            <param name="asm">The Assembly that embeds the desired resource.</param>
+            <param name="fileName">The name of the desired file.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ReflectionHelper.CreateInstanceOf(System.Type,System.Boolean)">
+            <summary>
+            Creates an instance of a Type.
+            </summary>
+            <param name="instanceType">The Type to create an instance of.</param>
+            <param name="noConstructor">If true, the instance will be generated without invoking any constructor.</param>
+            <returns>An instance of the Type. Null, if instanciation wasn't possible.</returns>
+        </member>
+        <member name="M:Duality.ReflectionHelper.GetDefaultInstanceOf(System.Type)">
+            <summary>
+            Returns the default instance of a Type. Equals <c>default(T)</c>, but works for Reflection.
+            </summary>
+            <param name="instanceType">The Type to create a default instance of.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ReflectionHelper.MemberInfoEquals(System.Reflection.MemberInfo,System.Reflection.MemberInfo)">
+            <summary>
+            Returns whether two MemberInfo objects are equal.
+            </summary>
+            <param name="lhs">The first MemberInfo.</param>
+            <param name="rhs">The second MemberInfo.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ReflectionHelper.GetTypeHierarchyLevel(System.Type)">
+            <summary>
+            Returns a Types inheritance level. The <c>object</c>-Type has an inheritance level of
+            zero, each subsequent inheritance increases it by one.
+            </summary>
+            <param name="t"></param>
+            <returns></returns>
+        </member>
         <member name="M:Duality.ReflectionHelper.GetAllFields(System.Type,System.Reflection.BindingFlags)">
             <summary>
             Returns all fields matching the specified bindingflags, even if private and inherited.
             </summary>
             <param name="flags"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ReflectionHelper.ClearTypeCache">
+            <summary>
+            Clears the ReflectionHelpers Type cache.
+            </summary>
+        </member>
+        <member name="M:Duality.ReflectionHelper.ResolveType(System.String,System.Boolean)">
+            <summary>
+            Resolves a Type based on its <see cref="M:Duality.ReflectionHelper.GetTypeName(System.Type,Duality.TypeNameFormat)">type string</see>.
+            </summary>
+            <param name="typeString">The type string to resolve. Needs to be in <see cref="F:Duality.TypeNameFormat.FullNameWithoutAssembly"/> format.</param>
+            <param name="throwOnError">If true, an Exception is thrown on failure.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ReflectionHelper.GetSerializeType(System.Type)">
+            <summary>
+            Returns the <see cref="T:Duality.Serialization.SerializeType"/> of a Type.
+            </summary>
+            <param name="t"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ReflectionHelper.GetDataType(System.Type)">
+            <summary>
+            Returns the <see cref="T:Duality.Serialization.DataType"/> of a Type.
+            </summary>
+            <param name="t"></param>
             <returns></returns>
         </member>
         <member name="M:Duality.ReflectionHelper.GetTypeName(System.Type,Duality.TypeNameFormat)">
@@ -3423,13 +3996,30 @@
             <param name="attrib">How to describe the Type</param>
             <returns></returns>
         </member>
-        <member name="M:Duality.ReflectionHelper.FindType(System.String,System.Reflection.Assembly[],Duality.TypeNameFormat)">
+        <member name="M:Duality.ReflectionHelper.FindType(System.String,System.Collections.Generic.IEnumerable{System.Reflection.Assembly},Duality.TypeNameFormat)">
             <summary>
-            Retrieves a Type based on the specified TypeNameFormat
+            Retrieves a Type based on a string in the specified TypeNameFormat.
             </summary>
-            <param name="typeName"></param>
-            <param name="asmSearch"></param>
-            <param name="format"></param>
+            <param name="typeName">The type string to use for the search.</param>
+            <param name="asmSearch">An enumeration of all Assemblies the searched Type could be located in.</param>
+            <param name="format">The format of the provided type string.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ReflectionHelper.FindTypeByCSCodeIdent(System.String,System.Collections.Generic.IEnumerable{System.Reflection.Assembly},System.Type)">
+            <summary>
+            Retrieves a Type based on a string in the <see cref="F:Duality.TypeNameFormat.CSCodeIdent"/> format.
+            </summary>
+            <param name="csCodeType">The type string to use for the search, in <see cref="F:Duality.TypeNameFormat.CSCodeIdent"/> format.</param>
+            <param name="asmSearch">An enumeration of all Assemblies the searched Type could be located in.</param>
+            <param name="declaringType">The searched Type's declaring Type.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ReflectionHelper.FindTypeByFullNameWithoutAssembly(System.String,System.Collections.Generic.IEnumerable{System.Reflection.Assembly})">
+            <summary>
+            Retrieves a Type based on a string in the <see cref="F:Duality.TypeNameFormat.FullNameWithoutAssembly"/> format.
+            </summary>
+            <param name="typeName">The type string to use for the search, in <see cref="F:Duality.TypeNameFormat.FullNameWithoutAssembly"/> format.</param>
+            <param name="asmSearch">An enumeration of all Assemblies the searched Type could be located in.</param>
             <returns></returns>
         </member>
         <member name="T:Duality.TypeNameFormat">
@@ -3439,7 +4029,7 @@
         </member>
         <member name="F:Duality.TypeNameFormat.Keyword">
             <summary>
-            The method will return a type keyword, its "short" name. Just the types "base", no generic
+            A type keyword, its "short" name. Just the types "base", no generic
             type parameters or array specifications.
             </summary>
         </member>
@@ -4677,6 +5267,65 @@
             </summary>
             <param name="node"></param>
         </member>
+        <member name="T:Duality.PathHelper">
+            <summary>
+            Provides helper methods for handling <see cref="T:System.IO.Path">Paths</see>.
+            </summary>
+        </member>
+        <member name="M:Duality.PathHelper.GetFreePath(System.String,System.String)">
+            <summary>
+            Returns a path that isn't taken yet.
+            </summary>
+            <param name="pathBase">The path to use as base for finding a available path.</param>
+            <param name="pathExt">The (file) extension to add to the new path.</param>
+            <returns>A path that doesn't relate to any existing file or directory.</returns>
+            <example>
+            Assuming the directory <c>C:\SomeDir\</c> contains the file <c>File.txt</c>,
+            the code <c>PathHelper.GetFreePath(@"C:\SomeDir\File", ".txt");</c>
+            will return <c>C:\SomeDir\File (2).txt</c>.
+            </example>
+        </member>
+        <member name="M:Duality.PathHelper.IsPathLocatedIn(System.String,System.String)">
+            <summary>
+            Returns whether one path is a sub-path of another.
+            </summary>
+            <param name="path">The supposed sub-path.</param>
+            <param name="baseDir">The (directory) path in which the supposed sub-path might be located in.</param>
+            <returns>True, if <c>path</c> is a sub-path of <c>baseDir</c>.</returns>
+            <example>
+            <c>PathHelper.IsPathLocatedIn(@"C:\SomeDir\SubDir", @"C:\SomeDir")</c> will return true.
+            </example>
+        </member>
+        <member name="M:Duality.PathHelper.MakePathRelative(System.String,System.String)">
+            <summary>
+            Returns the relative path from one path to another.
+            </summary>
+            <param name="path">The path to make relative.</param>
+            <param name="relativeTo">The path to make it relative to.</param>
+            <returns>A path that, if <see cref="M:System.IO.Path.Combine(System.String,System.String)">combined</see> with <c>relativeTo</c>, equals the original path.</returns>
+            <example>
+            <c>PathHelper.MakePathRelative(@"C:\SomeDir\SubDir\File.txt", @"C:\SomeDir")</c> will return <c>SubDir\File.txt</c>.
+            </example>
+        </member>
+        <member name="M:Duality.PathHelper.GetMutualDirectory(System.String,System.String)">
+            <summary>
+            Returns a mutual base path of two different paths.
+            </summary>
+            <param name="path">The first path.</param>
+            <param name="path2">The second path.</param>
+            <returns>The mutual base path of both.</returns>
+            <example>
+            <c>PathHelper.GetMutualDirectory(@"C:\SomeDir\SubDir\File.txt", @"C:\SomeDir\SubDir2\File.txt")</c> will return <c>C:\SomeDir</c>.
+            </example>
+        </member>
+        <member name="M:Duality.PathHelper.GetValidFileName(System.String)">
+            <summary>
+            Takes a string that is supposed to be a file name and converts it into an
+            actually valid file name, replacing special characters and so on.
+            </summary>
+            <param name="fileNameWithoutExt">A string that is supposed to be a file name.</param>
+            <returns>A valid file name.</returns>
+        </member>
         <member name="T:Duality.ExtMethodsRandom">
             <summary>
             Provides extension methods for <see cref="T:System.Random">random number generators</see>.
@@ -4848,6 +5497,322 @@
             <param name="r">A random number generator.</param>
             <param name="weightesValues">A weighted value pool.</param>
             <returns></returns>
+        </member>
+        <member name="T:Duality.FormattedText">
+            <summary>
+            Provides functionality for analyzing, handling and displaying formatted text.
+            </summary>
+        </member>
+        <member name="F:Duality.FormattedText.FormatSlash">
+            <summary>
+            Format string for displaying a slash (/) character.
+            </summary>
+        </member>
+        <member name="F:Duality.FormattedText.FormatElement">
+            <summary>
+            Format string for beginning a new text element.
+            </summary>
+        </member>
+        <member name="F:Duality.FormattedText.FormatColor">
+            <summary>
+            Format string for changing the curren text color.
+            </summary>
+        </member>
+        <member name="F:Duality.FormattedText.FormatFont">
+            <summary>
+            Format string for changing the current <see cref="T:Duality.Resources.Font"/>.
+            </summary>
+        </member>
+        <member name="F:Duality.FormattedText.FormatIcon">
+            <summary>
+            Format string for inserting an icon.
+            </summary>
+        </member>
+        <member name="F:Duality.FormattedText.FormatAlignLeft">
+            <summary>
+            Format string for changing the current text alignment to "Left".
+            </summary>
+        </member>
+        <member name="F:Duality.FormattedText.FormatAlignRight">
+            <summary>
+            Format string for changing the current text alignment to "Right".
+            </summary>
+        </member>
+        <member name="F:Duality.FormattedText.FormatAlignCenter">
+            <summary>
+            Format string for changing the current text alignment to "Center".
+            </summary>
+        </member>
+        <member name="F:Duality.FormattedText.FormatNewline">
+            <summary>
+            Format string for inserting a line break.
+            </summary>
+        </member>
+        <member name="M:Duality.FormattedText.Clone">
+            <summary>
+            Creates a deep copy of the FormattedText and returns it.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.FormattedText.ApplySource(System.String)">
+            <summary>
+            Applies a new source text.
+            </summary>
+            <param name="text">The new source text to apply. If null, the current source text is re-applied.</param>
+        </member>
+        <member name="M:Duality.FormattedText.EmitVertices(Duality.VertexFormat.VertexC4P3T2[][]@,Duality.VertexFormat.VertexC4P3T2[]@,System.Single,System.Single,System.Single)">
+            <summary>
+            Emits sets of vertices for glyphs and icons based on this formatted text. To render it, use each set of vertices combined with
+            the corresponding Fonts <see cref="T:Duality.Resources.Material"/>.
+            </summary>
+            <param name="vertText">One set of vertices for each Font that is available to this ForattedText.</param>
+            <param name="vertIcons">A set of icon vertices.</param>
+            <param name="x">An X-Offset applied to the position of each emitted vertex.</param>
+            <param name="y">An Y-Offset applied to the position of each emitted vertex.</param>
+            <param name="z">An Z-Offset applied to the position of each emitted vertex.</param>
+        </member>
+        <member name="M:Duality.FormattedText.EmitVertices(Duality.VertexFormat.VertexC4P3T2[][]@,Duality.VertexFormat.VertexC4P3T2[]@,System.Single,System.Single,Duality.ColorFormat.ColorRgba)">
+            <summary>
+            Emits sets of vertices for glyphs and icons based on this formatted text. To render it, use each set of vertices combined with
+            the corresponding Fonts <see cref="T:Duality.Resources.Material"/>.
+            </summary>
+            <param name="vertText">One set of vertices for each Font that is available to this ForattedText.</param>
+            <param name="vertIcons">A set of icon vertices.</param>
+            <param name="x">An X-Offset applied to the position of each emitted vertex.</param>
+            <param name="y">An Y-Offset applied to the position of each emitted vertex.</param>
+            <param name="clr">The color value that is applied to each emitted vertex.</param>
+        </member>
+        <member name="M:Duality.FormattedText.EmitVertices(Duality.VertexFormat.VertexC4P3T2[][]@,Duality.VertexFormat.VertexC4P3T2[]@,System.Single,System.Single,System.Single,Duality.ColorFormat.ColorRgba,System.Single,System.Single)">
+            <summary>
+            Emits sets of vertices for glyphs and icons based on this formatted text. To render it, use each set of vertices combined with
+            the corresponding Fonts <see cref="T:Duality.Resources.Material"/>.
+            </summary>
+            <param name="vertText">One set of vertices for each Font that is available to this ForattedText.</param>
+            <param name="vertIcons">A set of icon vertices.</param>
+            <param name="x">An X-Offset applied to the position of each emitted vertex.</param>
+            <param name="y">An Y-Offset applied to the position of each emitted vertex.</param>
+            <param name="z">An Z-Offset applied to the position of each emitted vertex.</param>
+            <param name="clr">The color value that is applied to each emitted vertex.</param>
+            <param name="angle">An angle by which the text is rotated (before applying the offset).</param>
+            <param name="scale">A factor by which the text is scaled (before applying the offset).</param>
+        </member>
+        <member name="M:Duality.FormattedText.EmitVertices(Duality.VertexFormat.VertexC4P3T2[][]@,Duality.VertexFormat.VertexC4P3T2[]@,System.Single,System.Single,System.Single,Duality.ColorFormat.ColorRgba,OpenTK.Vector2,OpenTK.Vector2)">
+            <summary>
+            Emits sets of vertices for glyphs and icons based on this formatted text. To render it, use each set of vertices combined with
+            the corresponding Fonts <see cref="T:Duality.Resources.Material"/>.
+            </summary>
+            <param name="vertText">One set of vertices for each Font that is available to this ForattedText.</param>
+            <param name="vertIcons">A set of icon vertices.</param>
+            <param name="x">An X-Offset applied to the position of each emitted vertex.</param>
+            <param name="y">An Y-Offset applied to the position of each emitted vertex.</param>
+            <param name="z">An Z-Offset applied to the position of each emitted vertex.</param>
+            <param name="clr">The color value that is applied to each emitted vertex.</param>
+            <param name="xDot">Dot product base for the transformed vertices.</param>
+            <param name="yDot">Dot product base for the transformed vertices.</param>
+        </member>
+        <member name="M:Duality.FormattedText.EmitVertices(Duality.VertexFormat.VertexC4P3T2[][]@,Duality.VertexFormat.VertexC4P3T2[]@)">
+            <summary>
+            Emits sets of vertices for glyphs and icons based on this formatted text. To render it, use each set of vertices combined with
+            the corresponding Fonts <see cref="T:Duality.Resources.Material"/>.
+            </summary>
+            <param name="vertText">One set of vertices for each Font that is available to this ForattedText.</param>
+            <param name="vertIcons">A set of icon vertices.</param>
+        </member>
+        <member name="M:Duality.FormattedText.Measure">
+            <summary>
+            Measures the formatted text block.
+            </summary>
+            <returns>A <see cref="T:Duality.FormattedText.Metrics"/> object that describes this FormattedText.</returns>
+        </member>
+        <member name="P:Duality.FormattedText.SourceText">
+            <summary>
+            [GET / SET] The source text that is used, containing all format strings as well as the displayed text.
+            </summary>
+        </member>
+        <member name="P:Duality.FormattedText.Icons">
+            <summary>
+            [GET / SET] A set of icons that is available in the text.
+            </summary>
+        </member>
+        <member name="P:Duality.FormattedText.FlowAreas">
+            <summary>
+            [GET / SET] A set of flow areas to be considered in word wrap.
+            </summary>
+        </member>
+        <member name="P:Duality.FormattedText.Fonts">
+            <summary>
+            [GET / SET] A set of <see cref="!:Duality.Resource.Font">Fonts</see> that is available in the text.
+            </summary>
+        </member>
+        <member name="P:Duality.FormattedText.MaxWidth">
+            <summary>
+            [GET / SET] The maximum width of the displayed text block. Zero deactivates maximum width.
+            </summary>
+        </member>
+        <member name="P:Duality.FormattedText.MaxHeight">
+            <summary>
+            [GET / SET] The maximum height of the displayed text block. Zero deactivates maximum height.
+            </summary>
+        </member>
+        <member name="P:Duality.FormattedText.WordWrap">
+            <summary>
+            [GET / SET] The word wrapping behaviour to use.
+            </summary>
+        </member>
+        <member name="P:Duality.FormattedText.DisplayedText">
+            <summary>
+            [GET] The text that is actually displayed.
+            </summary>
+        </member>
+        <member name="P:Duality.FormattedText.Elements">
+            <summary>
+            [GET] The formatted text elements that have been generated analyzing the incoming source text.
+            </summary>
+        </member>
+        <member name="T:Duality.FormattedText.Element">
+            <summary>
+            Represents an element of a formatted text.
+            </summary>
+        </member>
+        <member name="T:Duality.FormattedText.TextElement">
+            <summary>
+            Contains a text string.
+            </summary>
+        </member>
+        <member name="P:Duality.FormattedText.TextElement.Text">
+            <summary>
+            [GET] text string this element contains.
+            </summary>
+        </member>
+        <member name="T:Duality.FormattedText.IconElement">
+            <summary>
+            Contains an icon.
+            </summary>
+        </member>
+        <member name="P:Duality.FormattedText.IconElement.IconIndex">
+            <summary>
+            [GET] The index of the icon to display at this elements position.
+            </summary>
+        </member>
+        <member name="T:Duality.FormattedText.NewLineElement">
+            <summary>
+            Forces a line break at this position.
+            </summary>
+        </member>
+        <member name="T:Duality.FormattedText.FontChangeElement">
+            <summary>
+            Changes the currently used <see cref="T:Duality.Resources.Font"/>.
+            </summary>
+        </member>
+        <member name="P:Duality.FormattedText.FontChangeElement.FontIndex">
+            <summary>
+            [GET] The index of the Font to switch to.
+            </summary>
+        </member>
+        <member name="T:Duality.FormattedText.ColorChangeElement">
+            <summary>
+            Changes the currently used <see cref="T:Duality.ColorFormat.ColorRgba"/>.
+            </summary>
+        </member>
+        <member name="P:Duality.FormattedText.ColorChangeElement.Color">
+            <summary>
+            [GET] The new color to use.
+            </summary>
+        </member>
+        <member name="T:Duality.FormattedText.AlignChangeElement">
+            <summary>
+            Changes the current lines' alignment. May be <see cref="F:Duality.Alignment.Left"/>, <see cref="F:Duality.Alignment.Right"/> or <see cref="F:Duality.Alignment.Center"/>.
+            </summary>
+        </member>
+        <member name="P:Duality.FormattedText.AlignChangeElement.Align">
+            <summary>
+            [GET] The alignment to use for the current line.
+            </summary>
+        </member>
+        <member name="T:Duality.FormattedText.Icon">
+            <summary>
+            An icon that can be displayed inside the formatted text.
+            </summary>
+        </member>
+        <member name="F:Duality.FormattedText.Icon.uvRect">
+            <summary>
+            The icons UV-Coordinates on the icon texture that will be used for rendering icons.
+            </summary>
+        </member>
+        <member name="F:Duality.FormattedText.Icon.size">
+            <summary>
+            The icons display size.
+            </summary>
+        </member>
+        <member name="T:Duality.FormattedText.FlowArea">
+            <summary>
+            An rectangular area that will be avoided by the text flow.
+            </summary>
+        </member>
+        <member name="F:Duality.FormattedText.FlowArea.width">
+            <summary>
+            The areas width.
+            </summary>
+        </member>
+        <member name="F:Duality.FormattedText.FlowArea.height">
+            <summary>
+            The areas height.
+            </summary>
+        </member>
+        <member name="F:Duality.FormattedText.FlowArea.y">
+            <summary>
+            The areas y-Coordinate.
+            </summary>
+        </member>
+        <member name="F:Duality.FormattedText.FlowArea.alignRight">
+            <summary>
+            Whether the area is located at the right edge of the text area, instead of the left edge.
+            </summary>
+        </member>
+        <member name="T:Duality.FormattedText.Metrics">
+            <summary>
+            Provides information about a formatted texts metrics.
+            </summary>
+        </member>
+        <member name="P:Duality.FormattedText.Metrics.Size">
+            <summary>
+            [GET] The size of the formatted text block as whole.
+            </summary>
+        </member>
+        <member name="P:Duality.FormattedText.Metrics.LineCount">
+            <summary>
+            [GET] The number of lines.
+            </summary>
+        </member>
+        <member name="P:Duality.FormattedText.Metrics.LineBounds">
+            <summary>
+            [GET] Each lines boundary.
+            </summary>
+        </member>
+        <member name="P:Duality.FormattedText.Metrics.ElementBounds">
+            <summary>
+            [GET] Each formatted text elements individual boundary.
+            </summary>
+        </member>
+        <member name="T:Duality.FormattedText.WrapMode">
+            <summary>
+            Describes word wrap behaviour.
+            </summary>
+        </member>
+        <member name="F:Duality.FormattedText.WrapMode.Glyph">
+            <summary>
+            Word wrap is allowed at each glyph.
+            </summary>
+        </member>
+        <member name="F:Duality.FormattedText.WrapMode.Word">
+            <summary>
+            Word wrap is allowed after / before each word, but not in the middle of one.
+            </summary>
+        </member>
+        <member name="F:Duality.FormattedText.WrapMode.Element">
+            <summary>
+            Word wrap is only allowed between two separate formatted text elements.
+            </summary>
         </member>
         <member name="T:Duality.MathF">
             <summary>
@@ -5622,6 +6587,26 @@
             <summary>
             [GET / SET] Global random number generator. Is never null.
             </summary>
+        </member>
+        <member name="T:Duality.GraphicsModeComparer">
+            <summary>
+            Compares two <see cref="T:OpenTK.Graphics.GraphicsMode">GraphicsModes</see>.
+            </summary>
+        </member>
+        <member name="M:Duality.GraphicsModeComparer.Equals(OpenTK.Graphics.GraphicsMode,OpenTK.Graphics.GraphicsMode)">
+            <summary>
+            Returns whether two GraphicsModes are equal.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.GraphicsModeComparer.GetHashCode(OpenTK.Graphics.GraphicsMode)">
+            <summary>
+            Returns the hash code of a GraphicsMode.
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
         </member>
         <member name="T:Duality.Serialization.Surrogates.BitmapSurrogate">
             <summary>

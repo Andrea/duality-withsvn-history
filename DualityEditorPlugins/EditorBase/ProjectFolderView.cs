@@ -593,7 +593,7 @@ namespace EditorBase
 		protected void CreateFolder(TreeNodeAdv baseNode)
 		{
 			string basePath = this.GetInsertActionTargetBasePath(baseNode != null ? baseNode.Tag as NodeBase : null);
-			string dirPath = PathHelper.GetFreePathName(Path.Combine(basePath, PluginRes.EditorBaseRes.NewFolderName), "");
+			string dirPath = PathHelper.GetFreePath(Path.Combine(basePath, PluginRes.EditorBaseRes.NewFolderName), "");
 
 			Directory.CreateDirectory(dirPath);
 
@@ -604,7 +604,7 @@ namespace EditorBase
 		{
 			string basePath = this.GetInsertActionTargetBasePath(baseNode != null ? baseNode.Tag as NodeBase : null);
 			string nameExt = Resource.GetFileExtByType(type);
-			string resPath = PathHelper.GetFreePathName(Path.Combine(basePath, type.Name), nameExt);
+			string resPath = PathHelper.GetFreePath(Path.Combine(basePath, type.Name), nameExt);
 
 			Resource resInstance = ReflectionHelper.CreateInstanceOf(type) as Resource;
 			resInstance.Save(resPath);
@@ -1005,7 +1005,7 @@ namespace EditorBase
 					dstPathBase = Path.GetFileNameWithoutExtension(dstPathBase);
 					dstPathBase = Path.Combine(this.tempDropBasePath, dstPathBase);
 					string dstPathExt = p.Remove(0, dstPathBase.Length);
-					dstPath = PathHelper.GetFreePathName(dstPathBase, dstPathExt);
+					dstPath = PathHelper.GetFreePath(dstPathBase, dstPathExt);
 				}
 				// Skip if target is located inside source
 				if (PathHelper.IsPathLocatedIn(dstPath, srcPath)) continue;

@@ -7,8 +7,17 @@ using OpenTK.Graphics;
 
 namespace Duality
 {
+	/// <summary>
+	/// Compares two <see cref="GraphicsMode">GraphicsModes</see>.
+	/// </summary>
 	public class GraphicsModeComparer : IEqualityComparer<GraphicsMode>
 	{
+		/// <summary>
+		/// Returns whether two GraphicsModes are equal.
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <returns></returns>
 		public bool Equals(GraphicsMode x, GraphicsMode y)
 		{
 			return 
@@ -20,6 +29,11 @@ namespace Duality
 				x.Stencil == y.Stencil &&
 				x.Stereo == y.Stereo;
 		}
+		/// <summary>
+		/// Returns the hash code of a GraphicsMode.
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns></returns>
 		public int GetHashCode(GraphicsMode obj)
 		{
 			return 

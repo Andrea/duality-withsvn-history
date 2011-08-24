@@ -13,6 +13,9 @@ using Duality.Components.Renderers;
 
 namespace Duality
 {
+	/// <summary>
+	/// Provides Reflection data on Properties and Fields.
+	/// </summary>
 	public static class ReflectionInfo
 	{
 		public static readonly PropertyInfo Property_GameObject_Name;

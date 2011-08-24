@@ -336,21 +336,21 @@ namespace EditorBase
 		private void ActionPixmapCreateTexture(Pixmap pixmap)
 		{
 			string pathExt = Pixmap.FileExt;
-			string texPath = PathHelper.GetFreePathName(pixmap.Path.Substring(0, pixmap.Path.Length - pathExt.Length), Texture.FileExt);
+			string texPath = PathHelper.GetFreePath(pixmap.Path.Substring(0, pixmap.Path.Length - pathExt.Length), Texture.FileExt);
 			Texture tex = new Texture(pixmap);
 			tex.Save(texPath);
 		}
 		private void ActionTextureCreateMaterial(Texture tex)
 		{
 			string pathExt = Texture.FileExt;
-			string matPath = PathHelper.GetFreePathName(tex.Path.Substring(0, tex.Path.Length - pathExt.Length), Material.FileExt);
+			string matPath = PathHelper.GetFreePath(tex.Path.Substring(0, tex.Path.Length - pathExt.Length), Material.FileExt);
 			Material mat = new Material(DrawTechnique.Mask, ColorRgba.White, tex);
 			mat.Save(matPath);
 		}
 		private void ActionAudioDataCreateSound(AudioData data)
 		{
 			string pathExt = AudioData.FileExt;
-			string sndPath = PathHelper.GetFreePathName(data.Path.Substring(0, data.Path.Length - pathExt.Length), Sound.FileExt);
+			string sndPath = PathHelper.GetFreePath(data.Path.Substring(0, data.Path.Length - pathExt.Length), Sound.FileExt);
 			Sound snd = new Sound(data);
 			snd.Save(sndPath);
 		}

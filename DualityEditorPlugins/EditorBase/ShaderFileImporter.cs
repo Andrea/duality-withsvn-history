@@ -42,9 +42,9 @@ namespace EditorBase
 			string ext = Path.GetExtension(srcFile).ToLower();
 			string targetResPath;
 			if (ext == ".vert")
-				targetResPath = PathHelper.GetFreePathName(Path.Combine(targetDir, targetName), VertexShader.FileExt);
+				targetResPath = PathHelper.GetFreePath(Path.Combine(targetDir, targetName), VertexShader.FileExt);
 			else
-				targetResPath = PathHelper.GetFreePathName(Path.Combine(targetDir, targetName), FragmentShader.FileExt);
+				targetResPath = PathHelper.GetFreePath(Path.Combine(targetDir, targetName), FragmentShader.FileExt);
 			return new string[] { targetResPath };
 		}
 

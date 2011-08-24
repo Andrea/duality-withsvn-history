@@ -225,7 +225,7 @@ namespace DualityEditor.Forms
 			else if (!skipYetUnsaved)
 			{
 				string basePath = Path.Combine(EditorHelper.DataDirectory, "Scene");
-				string path = PathHelper.GetFreePathName(basePath, Scene.FileExt);
+				string path = PathHelper.GetFreePath(basePath, Scene.FileExt);
 				Scene.Current.Save(path);
 			}
 		}
@@ -437,7 +437,7 @@ namespace DualityEditor.Forms
 			targetDir = Path.GetDirectoryName(Path.Combine(EditorHelper.DataDirectory, srcFilePath));
 			targetName = Path.GetFileNameWithoutExtension(filePath);
 
-			srcFilePath = PathHelper.GetFreePathName(
+			srcFilePath = PathHelper.GetFreePath(
 				Path.Combine(EditorHelper.SourceMediaDirectory, Path.GetFileNameWithoutExtension(srcFilePath)), 
 				Path.GetExtension(srcFilePath));
 		}

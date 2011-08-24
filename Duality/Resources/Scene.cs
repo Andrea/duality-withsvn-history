@@ -329,7 +329,7 @@ namespace Duality.Resources
 		{
 			base.OnDisposing(manually);
 
-			if (current.ResWeak == this) current = ContentRef<Scene>.Null;
+			if (current.ResWeak == this) Current = null;
 
 			GameObject[] obj = this.objectManager.AllObjects.ToArray();
 			this.Graph.Clear();

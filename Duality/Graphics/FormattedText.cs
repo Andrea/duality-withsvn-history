@@ -12,24 +12,63 @@ using OpenTK;
 
 namespace Duality
 {
+	/// <summary>
+	/// Provides functionality for analyzing, handling and displaying formatted text.
+	/// </summary>
 	[Serializable]
 	public class FormattedText
 	{
+		/// <summary>
+		/// Format string for displaying a slash (/) character.
+		/// </summary>
 		public	const	string	FormatSlash			= "//";
+		/// <summary>
+		/// Format string for beginning a new text element.
+		/// </summary>
 		public	const	string	FormatElement		= "/e";
+		/// <summary>
+		/// Format string for changing the curren text color.
+		/// </summary>
 		public	const	string	FormatColor			= "/c";
+		/// <summary>
+		/// Format string for changing the current <see cref="Duality.Resources.Font"/>.
+		/// </summary>
 		public	const	string	FormatFont			= "/f";
+		/// <summary>
+		/// Format string for inserting an icon.
+		/// </summary>
 		public	const	string	FormatIcon			= "/i";
+		/// <summary>
+		/// Format string for changing the current text alignment to "Left".
+		/// </summary>
 		public	const	string	FormatAlignLeft		= "/al";
+		/// <summary>
+		/// Format string for changing the current text alignment to "Right".
+		/// </summary>
 		public	const	string	FormatAlignRight	= "/ar";
+		/// <summary>
+		/// Format string for changing the current text alignment to "Center".
+		/// </summary>
 		public	const	string	FormatAlignCenter	= "/ac";
+		/// <summary>
+		/// Format string for inserting a line break.
+		/// </summary>
 		public	const	string	FormatNewline		= "/n";
 
 
+		/// <summary>
+		/// Represents an element of a formatted text.
+		/// </summary>
 		[Serializable] public abstract class Element {}
+		/// <summary>
+		/// Contains a text string.
+		/// </summary>
 		[Serializable] public class TextElement : Element
 		{
 			private	string	text;
+			/// <summary>
+			/// [GET] text string this element contains.
+			/// </summary>
 			public string Text
 			{
 				get { return this.text; }
@@ -40,9 +79,15 @@ namespace Duality
 				this.text = text;
 			}
 		}
+		/// <summary>
+		/// Contains an icon.
+		/// </summary>
 		[Serializable] public class IconElement : Element
 		{
 			private	int	iconIndex;
+			/// <summary>
+			/// [GET] The index of the icon to display at this elements position.
+			/// </summary>
 			public int IconIndex
 			{
 				get { return this.iconIndex; }
@@ -53,13 +98,22 @@ namespace Duality
 				this.iconIndex = icon;
 			}
 		}
+		/// <summary>
+		/// Forces a line break at this position.
+		/// </summary>
 		[Serializable] public class NewLineElement : Element
 		{
 			public NewLineElement() {}
 		}
+		/// <summary>
+		/// Changes the currently used <see cref="Duality.Resources.Font"/>.
+		/// </summary>
 		[Serializable] public class FontChangeElement : Element
 		{
 			private	int	fontIndex;
+			/// <summary>
+			/// [GET] The index of the Font to switch to.
+			/// </summary>
 			public int FontIndex
 			{
 				get { return this.fontIndex; }
@@ -70,9 +124,15 @@ namespace Duality
 				this.fontIndex = font;
 			}
 		}
+		/// <summary>
+		/// Changes the currently used <see cref="Duality.ColorFormat.ColorRgba"/>.
+		/// </summary>
 		[Serializable] public class ColorChangeElement : Element
 		{
 			private ColorRgba color;
+			/// <summary>
+			/// [GET] The new color to use.
+			/// </summary>
 			public ColorRgba Color
 			{
 				get { return this.color; }
@@ -83,9 +143,15 @@ namespace Duality
 				this.color = color;
 			}
 		}
+		/// <summary>
+		/// Changes the current lines' alignment. May be <see cref="Alignment.Left"/>, <see cref="Alignment.Right"/> or <see cref="Alignment.Center"/>.
+		/// </summary>
 		[Serializable] public class AlignChangeElement : Element
 		{
 			private	Alignment align;
+			/// <summary>
+			/// [GET] The alignment to use for the current line.
+			/// </summary>
 			public Alignment Align
 			{
 				get { return this.align; }
@@ -97,9 +163,18 @@ namespace Duality
 			}
 		}
 
+		/// <summary>
+		/// An icon that can be displayed inside the formatted text.
+		/// </summary>
 		[Serializable] public struct Icon
 		{
+			/// <summary>
+			/// The icons UV-Coordinates on the icon texture that will be used for rendering icons.
+			/// </summary>
 			public	Rect	uvRect;
+			/// <summary>
+			/// The icons display size.
+			/// </summary>
 			public	Vector2	size;
 
 			public Icon(Rect uvRect, Vector2 size)
@@ -108,11 +183,26 @@ namespace Duality
 				this.size = size;
 			}
 		}
+		/// <summary>
+		/// An rectangular area that will be avoided by the text flow.
+		/// </summary>
 		[Serializable] public struct FlowArea
 		{
+			/// <summary>
+			/// The areas width.
+			/// </summary>
 			public	int		width;
+			/// <summary>
+			/// The areas height.
+			/// </summary>
 			public	int		height;
+			/// <summary>
+			/// The areas y-Coordinate.
+			/// </summary>
 			public	int		y;
+			/// <summary>
+			/// Whether the area is located at the right edge of the text area, instead of the left edge.
+			/// </summary>
 			public	bool	alignRight;
 
 			public FlowArea(int y, int height, int width, bool alignRight)
@@ -123,24 +213,39 @@ namespace Duality
 				this.alignRight = alignRight;
 			}
 		}
+		/// <summary>
+		/// Provides information about a formatted texts metrics.
+		/// </summary>
 		public class Metrics
 		{
 			private	Vector2		size;
 			private	Rect[]		lineBounds;
 			private	Rect[]		elementBounds;
 
+			/// <summary>
+			/// [GET] The size of the formatted text block as whole.
+			/// </summary>
 			public Vector2 Size 
 			{
 				get { return this.size; }
 			}
+			/// <summary>
+			/// [GET] The number of lines.
+			/// </summary>
 			public int LineCount
 			{
 				get { return this.lineBounds.Length; }
 			}
+			/// <summary>
+			/// [GET] Each lines boundary.
+			/// </summary>
 			public Rect[] LineBounds
 			{
 				get { return this.lineBounds; }
 			}
+			/// <summary>
+			/// [GET] Each formatted text elements individual boundary.
+			/// </summary>
 			public Rect[] ElementBounds
 			{
 				get { return this.elementBounds; }
@@ -153,10 +258,22 @@ namespace Duality
 				this.elementBounds = elementBounds.ToArray();
 			}
 		}
+		/// <summary>
+		/// Describes word wrap behaviour.
+		/// </summary>
 		public enum WrapMode
 		{
+			/// <summary>
+			/// Word wrap is allowed at each glyph.
+			/// </summary>
 			Glyph,
+			/// <summary>
+			/// Word wrap is allowed after / before each word, but not in the middle of one.
+			/// </summary>
 			Word,
+			/// <summary>
+			/// Word wrap is only allowed between two separate formatted text elements.
+			/// </summary>
 			Element
 		}
 
@@ -509,46 +626,73 @@ namespace Duality
 		private	Element[]			elements		= null;
 
 
+		/// <summary>
+		/// [GET / SET] The source text that is used, containing all format strings as well as the displayed text.
+		/// </summary>
 		public string SourceText
 		{
 			get { return this.sourceText; }
 			set { this.ApplySource(value); }
 		}
+		/// <summary>
+		/// [GET / SET] A set of icons that is available in the text.
+		/// </summary>
 		public Icon[] Icons
 		{
 			get { return this.icons; }
-			set { this.SetIcons(value); }
+			set { this.icons = value; }
 		}
+		/// <summary>
+		/// [GET / SET] A set of flow areas to be considered in word wrap.
+		/// </summary>
 		public FlowArea[] FlowAreas
 		{
 			get { return this.flowAreas; }
-			set { this.SetFlowAreas(value); }
+			set { this.flowAreas = value; }
 		}
+		/// <summary>
+		/// [GET / SET] A set of <see cref="Duality.Resource.Font">Fonts</see> that is available in the text.
+		/// </summary>
 		public ContentRef<Font>[] Fonts
 		{
 			get { return this.fonts; }
-			set { this.SetFonts(value); }
+			set { this.fonts = value; }
 		}
+		/// <summary>
+		/// [GET / SET] The maximum width of the displayed text block. Zero deactivates maximum width.
+		/// </summary>
 		public int MaxWidth
 		{
 			get { return this.maxWidth; }
 			set { this.maxWidth = value; }
 		}
+		/// <summary>
+		/// [GET / SET] The maximum height of the displayed text block. Zero deactivates maximum height.
+		/// </summary>
 		public int MaxHeight
 		{
 			get { return this.maxHeight; }
 			set { this.maxHeight = value; }
 		}
+		/// <summary>
+		/// [GET / SET] The word wrapping behaviour to use.
+		/// </summary>
 		public WrapMode WordWrap
 		{
 			get { return this.wrapMode; }
 			set { this.wrapMode = value; }
 		}
 
+		/// <summary>
+		/// [GET] The text that is actually displayed.
+		/// </summary>
 		public string DisplayedText
 		{
 			get { return this.displayedText; }
 		}
+		/// <summary>
+		/// [GET] The formatted text elements that have been generated analyzing the incoming source text.
+		/// </summary>
 		public Element[] Elements
 		{
 			get { return this.elements; }
@@ -573,11 +717,19 @@ namespace Duality
 
 			this.ApplySource(this.sourceText);
 		}
+		/// <summary>
+		/// Creates a deep copy of the FormattedText and returns it.
+		/// </summary>
+		/// <returns></returns>
 		public FormattedText Clone()
 		{
 			return new FormattedText(this);
 		}
 
+		/// <summary>
+		/// Applies a new source text.
+		/// </summary>
+		/// <param name="text">The new source text to apply. If null, the current source text is re-applied.</param>
 		public void ApplySource(string text = null)
 		{
 			if (text == null) text = this.sourceText;
@@ -711,23 +863,29 @@ namespace Duality
 			this.displayedText = displayedTextBuilder.ToString();
 			this.elements = elemList.ToArray();
 		}
-		public void SetIcons(params Icon[] icons)
-		{
-			this.icons = icons;
-		}
-		public void SetFlowAreas(params FlowArea[] flowAreas)
-		{
-			this.flowAreas = flowAreas;
-		}
-		public void SetFonts(params ContentRef<Font>[] fonts)
-		{
-			this.fonts = fonts;
-		}
-
+		
+		/// <summary>
+		/// Emits sets of vertices for glyphs and icons based on this formatted text. To render it, use each set of vertices combined with
+		/// the corresponding Fonts <see cref="Material"/>.
+		/// </summary>
+		/// <param name="vertText">One set of vertices for each Font that is available to this ForattedText.</param>
+		/// <param name="vertIcons">A set of icon vertices.</param>
+		/// <param name="x">An X-Offset applied to the position of each emitted vertex.</param>
+		/// <param name="y">An Y-Offset applied to the position of each emitted vertex.</param>
+		/// <param name="z">An Z-Offset applied to the position of each emitted vertex.</param>
 		public void EmitVertices(ref VertexC4P3T2[][] vertText, ref VertexC4P3T2[] vertIcons, float x, float y, float z = 0.0f)
 		{
 			this.EmitVertices(ref vertText, ref vertIcons, x, y, z, ColorRgba.White);
 		}
+		/// <summary>
+		/// Emits sets of vertices for glyphs and icons based on this formatted text. To render it, use each set of vertices combined with
+		/// the corresponding Fonts <see cref="Material"/>.
+		/// </summary>
+		/// <param name="vertText">One set of vertices for each Font that is available to this ForattedText.</param>
+		/// <param name="vertIcons">A set of icon vertices.</param>
+		/// <param name="x">An X-Offset applied to the position of each emitted vertex.</param>
+		/// <param name="y">An Y-Offset applied to the position of each emitted vertex.</param>
+		/// <param name="clr">The color value that is applied to each emitted vertex.</param>
 		public void EmitVertices(ref VertexC4P3T2[][] vertText, ref VertexC4P3T2[] vertIcons, float x, float y, ColorRgba clr)
 		{
 			this.EmitVertices(ref vertText, ref vertIcons);
@@ -752,12 +910,36 @@ namespace Duality
 				vertIcons[i].clr *= clr;
 			}
 		}
+		/// <summary>
+		/// Emits sets of vertices for glyphs and icons based on this formatted text. To render it, use each set of vertices combined with
+		/// the corresponding Fonts <see cref="Material"/>.
+		/// </summary>
+		/// <param name="vertText">One set of vertices for each Font that is available to this ForattedText.</param>
+		/// <param name="vertIcons">A set of icon vertices.</param>
+		/// <param name="x">An X-Offset applied to the position of each emitted vertex.</param>
+		/// <param name="y">An Y-Offset applied to the position of each emitted vertex.</param>
+		/// <param name="z">An Z-Offset applied to the position of each emitted vertex.</param>
+		/// <param name="clr">The color value that is applied to each emitted vertex.</param>
+		/// <param name="angle">An angle by which the text is rotated (before applying the offset).</param>
+		/// <param name="scale">A factor by which the text is scaled (before applying the offset).</param>
 		public void EmitVertices(ref VertexC4P3T2[][] vertText, ref VertexC4P3T2[] vertIcons, float x, float y, float z, ColorRgba clr, float angle = 0.0f, float scale = 1.0f)
 		{
 			Vector2 xDot, yDot;
 			MathF.GetTransformDotVec(angle, scale, out xDot, out yDot);
 			this.EmitVertices(ref vertText, ref vertIcons, x, y, z, clr, xDot, yDot);
 		}
+		/// <summary>
+		/// Emits sets of vertices for glyphs and icons based on this formatted text. To render it, use each set of vertices combined with
+		/// the corresponding Fonts <see cref="Material"/>.
+		/// </summary>
+		/// <param name="vertText">One set of vertices for each Font that is available to this ForattedText.</param>
+		/// <param name="vertIcons">A set of icon vertices.</param>
+		/// <param name="x">An X-Offset applied to the position of each emitted vertex.</param>
+		/// <param name="y">An Y-Offset applied to the position of each emitted vertex.</param>
+		/// <param name="z">An Z-Offset applied to the position of each emitted vertex.</param>
+		/// <param name="clr">The color value that is applied to each emitted vertex.</param>
+		/// <param name="xDot">Dot product base for the transformed vertices.</param>
+		/// <param name="yDot">Dot product base for the transformed vertices.</param>
 		public void EmitVertices(ref VertexC4P3T2[][] vertText, ref VertexC4P3T2[] vertIcons, float x, float y, float z, ColorRgba clr, Vector2 xDot, Vector2 yDot)
 		{
 			this.EmitVertices(ref vertText, ref vertIcons);
@@ -787,6 +969,12 @@ namespace Duality
 				vertIcons[i].clr *= clr;
 			}
 		}
+		/// <summary>
+		/// Emits sets of vertices for glyphs and icons based on this formatted text. To render it, use each set of vertices combined with
+		/// the corresponding Fonts <see cref="Material"/>.
+		/// </summary>
+		/// <param name="vertText">One set of vertices for each Font that is available to this ForattedText.</param>
+		/// <param name="vertIcons">A set of icon vertices.</param>
 		public void EmitVertices(ref VertexC4P3T2[][] vertText, ref VertexC4P3T2[] vertIcons)
 		{
 			int fontNum = this.fonts != null ? this.fonts.Length : 0;
@@ -862,6 +1050,10 @@ namespace Duality
 				Array.Resize(ref vertIcons, vertIconLen);
 		}
 
+		/// <summary>
+		/// Measures the formatted text block.
+		/// </summary>
+		/// <returns>A <see cref="Metrics"/> object that describes this FormattedText.</returns>
 		public Metrics Measure()
 		{
 			Vector2 size = Vector2.Zero;

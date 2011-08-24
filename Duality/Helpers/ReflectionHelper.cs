@@ -10,14 +10,29 @@ using Duality.Serialization;
 
 namespace Duality
 {
+	/// <summary>
+	/// Provides reflection-related helper methods.
+	/// </summary>
 	public static class ReflectionHelper
 	{
 		private	static	Dictionary<Type,SerializeType>	typeCache			= new Dictionary<Type,SerializeType>();
 		private	static	Dictionary<string,Type>			typeResolveCache	= new Dictionary<string,Type>();
 
+		/// <summary>
+		/// Equals <c>BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic</c>.
+		/// </summary>
 		public const BindingFlags BindInstanceAll = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+		/// <summary>
+		/// Equals <c>BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic</c>.
+		/// </summary>
 		public const BindingFlags BindStaticAll = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 
+		/// <summary>
+		/// Returns a Stream to an Assemblies embedded resource.
+		/// </summary>
+		/// <param name="asm">The Assembly that embeds the desired resource.</param>
+		/// <param name="fileName">The name of the desired file.</param>
+		/// <returns></returns>
 		public static Stream GetEmbeddedResourceStream(Assembly asm, string fileName)
 		{
 			if (String.IsNullOrEmpty(fileName)) return null;
@@ -33,6 +48,12 @@ namespace Duality
 			return asm.GetManifestResourceStream(resName);
 		}
 
+		/// <summary>
+		/// Creates an instance of a Type.
+		/// </summary>
+		/// <param name="instanceType">The Type to create an instance of.</param>
+		/// <param name="noConstructor">If true, the instance will be generated without invoking any constructor.</param>
+		/// <returns>An instance of the Type. Null, if instanciation wasn't possible.</returns>
 		public static object CreateInstanceOf(this Type instanceType, bool noConstructor = false)
 		{
 			try
@@ -51,6 +72,11 @@ namespace Duality
 				return null;
 			}
 		}
+		/// <summary>
+		/// Returns the default instance of a Type. Equals <c>default(T)</c>, but works for Reflection.
+		/// </summary>
+		/// <param name="instanceType">The Type to create a default instance of.</param>
+		/// <returns></returns>
 		public static object GetDefaultInstanceOf(this Type instanceType)
 		{
 			if (instanceType.IsValueType)
@@ -59,6 +85,12 @@ namespace Duality
 				return null;
 		}
 
+		/// <summary>
+		/// Returns whether two MemberInfo objects are equal.
+		/// </summary>
+		/// <param name="lhs">The first MemberInfo.</param>
+		/// <param name="rhs">The second MemberInfo.</param>
+		/// <returns></returns>
 		public static bool MemberInfoEquals(MemberInfo lhs, MemberInfo rhs)
 		{
 			if (lhs == rhs)
@@ -94,6 +126,12 @@ namespace Duality
 			}
 			return true;
 		}
+		/// <summary>
+		/// Returns a Types inheritance level. The <c>object</c>-Type has an inheritance level of
+		/// zero, each subsequent inheritance increases it by one.
+		/// </summary>
+		/// <param name="t"></param>
+		/// <returns></returns>
 		public static int GetTypeHierarchyLevel(this Type t)
 		{
 			int level = 0;
@@ -109,19 +147,28 @@ namespace Duality
 		public static FieldInfo[] GetAllFields(this Type type, BindingFlags flags)
 		{
 			List<FieldInfo> result = new List<FieldInfo>();
-			do
-			{
-				result.AddRange(type.GetFields(flags | BindingFlags.DeclaredOnly));
-			} while ((type = type.BaseType) != null);
+
+			do { result.AddRange(type.GetFields(flags | BindingFlags.DeclaredOnly)); }
+			while ((type = type.BaseType) != null);
+
 			return result.ToArray();
 		}
 
 		
+		/// <summary>
+		/// Clears the ReflectionHelpers Type cache.
+		/// </summary>
 		public static void ClearTypeCache()
 		{
 			typeCache.Clear();
 			typeResolveCache.Clear();
 		}
+		/// <summary>
+		/// Resolves a Type based on its <see cref="GetTypeName">type string</see>.
+		/// </summary>
+		/// <param name="typeString">The type string to resolve. Needs to be in <see cref="TypeNameFormat.FullNameWithoutAssembly"/> format.</param>
+		/// <param name="throwOnError">If true, an Exception is thrown on failure.</param>
+		/// <returns></returns>
 		public static Type ResolveType(string typeString, bool throwOnError = true)
 		{
 			Type result;
@@ -134,6 +181,11 @@ namespace Duality
 			if (result == null && throwOnError) throw new ApplicationException(string.Format("Can't resolve Type '{0}'. Type not found", typeString));
 			return result;
 		}
+		/// <summary>
+		/// Returns the <see cref="SerializeType"/> of a Type.
+		/// </summary>
+		/// <param name="t"></param>
+		/// <returns></returns>
 		public static SerializeType GetSerializeType(this Type t)
 		{
 			SerializeType result;
@@ -144,6 +196,11 @@ namespace Duality
 			typeResolveCache[result.TypeString] = result.Type;
 			return result;
 		}
+		/// <summary>
+		/// Returns the <see cref="DataType"/> of a Type.
+		/// </summary>
+		/// <param name="t"></param>
+		/// <returns></returns>
 		public static DataType GetDataType(this Type t)
 		{
 			if (t.IsEnum)
@@ -281,13 +338,13 @@ namespace Duality
 			return null;
 		}
 		/// <summary>
-		/// Retrieves a Type based on the specified TypeNameFormat
+		/// Retrieves a Type based on a string in the specified TypeNameFormat.
 		/// </summary>
-		/// <param name="typeName"></param>
-		/// <param name="asmSearch"></param>
-		/// <param name="format"></param>
+		/// <param name="typeName">The type string to use for the search.</param>
+		/// <param name="asmSearch">An enumeration of all Assemblies the searched Type could be located in.</param>
+		/// <param name="format">The format of the provided type string.</param>
 		/// <returns></returns>
-		public static Type FindType(string typeName, Assembly[] asmSearch, TypeNameFormat format = TypeNameFormat.FullNameWithoutAssembly)
+		public static Type FindType(string typeName, IEnumerable<Assembly> asmSearch, TypeNameFormat format = TypeNameFormat.FullNameWithoutAssembly)
 		{
 			if (format == TypeNameFormat.CSCodeIdent)
 				return FindTypeByCSCodeIdent(typeName, asmSearch);
@@ -296,7 +353,14 @@ namespace Duality
 			else
 				throw new NotImplementedException("TypeNameFormat " + format.ToString() + " is not supported.");
 		}
-		private static Type FindTypeByCSCodeIdent(string csCodeType, Assembly[] asmSearch, Type declaringType = null)
+		/// <summary>
+		/// Retrieves a Type based on a string in the <see cref="TypeNameFormat.CSCodeIdent"/> format.
+		/// </summary>
+		/// <param name="csCodeType">The type string to use for the search, in <see cref="TypeNameFormat.CSCodeIdent"/> format.</param>
+		/// <param name="asmSearch">An enumeration of all Assemblies the searched Type could be located in.</param>
+		/// <param name="declaringType">The searched Type's declaring Type.</param>
+		/// <returns></returns>
+		private static Type FindTypeByCSCodeIdent(string csCodeType, IEnumerable<Assembly> asmSearch, Type declaringType = null)
 		{
 			csCodeType = csCodeType.Trim();
 			
@@ -366,9 +430,9 @@ namespace Duality
 				{
 					Type[]	asmTypes;
 					string	nameTemp;
-					for (int i = 0; i < asmSearch.Length; i++)
+					foreach (Assembly asm in asmSearch)
 					{
-						asmTypes = asmSearch[i].GetTypes();
+						asmTypes = asm.GetTypes();
 						for (int j = 0; j < asmTypes.Length; j++)
 						{
 							nameTemp = asmTypes[j].FullName.Replace('+', '.');
@@ -392,7 +456,13 @@ namespace Duality
 
 			return null;
 		}
-		private static Type FindTypeByFullNameWithoutAssembly(string typeName, Assembly[] asmSearch)
+		/// <summary>
+		/// Retrieves a Type based on a string in the <see cref="TypeNameFormat.FullNameWithoutAssembly"/> format.
+		/// </summary>
+		/// <param name="typeName">The type string to use for the search, in <see cref="TypeNameFormat.FullNameWithoutAssembly"/> format.</param>
+		/// <param name="asmSearch">An enumeration of all Assemblies the searched Type could be located in.</param>
+		/// <returns></returns>
+		private static Type FindTypeByFullNameWithoutAssembly(string typeName, IEnumerable<Assembly> asmSearch)
 		{
 			typeName = typeName.Trim();
 
@@ -459,7 +529,7 @@ namespace Duality
 	public enum TypeNameFormat
 	{
 		/// <summary>
-		/// The method will return a type keyword, its "short" name. Just the types "base", no generic
+		/// A type keyword, its "short" name. Just the types "base", no generic
 		/// type parameters or array specifications.
 		/// </summary>
 		Keyword,
