@@ -11,15 +11,36 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Duality.Components.Renderers
 {
+	/// <summary>
+	/// Renders a sprite to represent the <see cref="GameObject"/>.
+	/// </summary>
 	[Serializable]
 	[RequiredComponent(typeof(Transform))]
 	public class SpriteRenderer : Renderer
 	{
+		/// <summary>
+		/// SPecifies, how the sprites uv-Coordinates are calculated.
+		/// </summary>
 		public enum UVMode
 		{
+			/// <summary>
+			/// The uv-Coordinates are constant, stretching the supplied texture to fit the SpriteRenderers dimensions.
+			/// </summary>
 			Stretch			= 0x0,
+			/// <summary>
+			/// The u-Coordinate is calculated based on the available horizontal space, allowing the supplied texture to be
+			/// tiled across the SpriteRenderers width.
+			/// </summary>
 			WrapHorizontal	= 0x1,
+			/// <summary>
+			/// The v-Coordinate is calculated based on the available vertical space, allowing the supplied texture to be
+			/// tiled across the SpriteRenderers height.
+			/// </summary>
 			WrapVertical	= 0x2,
+			/// <summary>
+			/// The uv-Coordinates are calculated based on the available space, allowing the supplied texture to be
+			/// tiled across the SpriteRenderers size.
+			/// </summary>
 			WrapBoth		= WrapHorizontal | WrapVertical
 		}
 
@@ -35,26 +56,43 @@ namespace Duality.Components.Renderers
 		{
 			get { return this.rect.Transform(this.gameobj.Transform.Scale.Xy).BoundingRadius; }
 		}
+		/// <summary>
+		/// [GET / SET] The rectangular area the sprite occupies. Relative to the <see cref="GameObject"/>.
+		/// </summary>
 		public Rect Rect
 		{
 			get { return this.rect; }
 			set { this.rect = value; }
 		}
+		/// <summary>
+		/// [GET / SET] The <see cref="Duality.Resources.Material"/> that is used for rendering the sprite.
+		/// </summary>
 		public ContentRef<Material> SharedMaterial
 		{
 			get { return this.sharedMat; }
 			set { this.sharedMat = value; }
 		}
+		/// <summary>
+		/// [GET / SET] A custom, local <see cref="Duality.Resources.BatchInfo"/> overriding the <see cref="SharedMaterial"/>,
+		/// allowing this sprite to look unique without having to create its own <see cref="Duality.Resources.Material"/> Resource.
+		/// However, this feature should be used with caution: Performance is better using <see cref="SharedMaterial">shared Materials</see>.
+		/// </summary>
 		public BatchInfo CustomMaterial
 		{
 			get { return this.customMat; }
 			set { this.customMat = value; }
 		}
+		/// <summary>
+		/// [GET / SET] A color by which the sprite is tinted.
+		/// </summary>
 		public ColorRgba ColorTint
 		{
 			get { return this.colorTint; }
 			set { this.colorTint = value; }
 		}
+		/// <summary>
+		/// [GET / SET] Specifies how the sprites uv-Coordinates are calculated.
+		/// </summary>
 		public UVMode RectMode
 		{
 			get { return this.rectMode; }

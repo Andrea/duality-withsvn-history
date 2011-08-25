@@ -12,6 +12,9 @@ using Duality.Components;
 
 namespace Duality
 {
+	/// <summary>
+	/// Provides functionality to play and manage sound in Duality.
+	/// </summary>
 	public class SoundDevice : IDisposable
 	{
 		private	bool					disposed		= false;
@@ -28,66 +31,112 @@ namespace Duality
 		private	bool					mute			= false;
 
 
+		/// <summary>
+		/// [GET] The underlying OpenTK AudioContext.
+		/// </summary>
 		public AudioContext Context
 		{
 			get { return this.context; }
 		}
+		/// <summary>
+		/// [GET] A queue of currently playing ambient pads.
+		/// </summary>
 		public SoundBudgetQueue Ambient
 		{
 			get { return this.budgetAmbient; }
 		}
+		/// <summary>
+		/// [GET] A queue of currently playing music pads.
+		/// </summary>
 		public SoundBudgetQueue Music
 		{
 			get { return this.budgetMusic; }
 		}
 
+		/// <summary>
+		/// [GET / SET] The current listener object. This is automatically set to an available
+		/// <see cref="Duality.Components.SoundListener"/>.
+		/// </summary>
 		public GameObject Listener
 		{
 			get { return this.soundListener; }
 			set { this.soundListener = value; }
 		}
+		/// <summary>
+		/// [GET] The current listeners position.
+		/// </summary>
 		public Vector3 ListenerPos
 		{
 			get { return (this.soundListener != null && this.soundListener.Transform != null) ? this.soundListener.Transform.Pos : Vector3.Zero; }
 		}
+		/// <summary>
+		/// [GET] The current listeners velocity.
+		/// </summary>
 		public Vector3 ListenerVel
 		{
 			get { return (this.soundListener != null && this.soundListener.Transform != null) ? this.soundListener.Transform.Vel : Vector3.Zero; }
 		}
+		/// <summary>
+		/// [GET] The current listeners rotation / angle in radians.
+		/// </summary>
 		public float ListenerAngle
 		{
 			get { return (this.soundListener != null && this.soundListener.Transform != null) ? this.soundListener.Transform.Angle : 0.0f; }
 		}
 		
+		/// <summary>
+		/// [GET / SET] Whether all Duality audio is currently muted completely.
+		/// </summary>
 		public bool Mute
 		{
 			get { return this.mute; }
 			set { this.mute = value; }
 		}
+		/// <summary>
+		/// [GET] Returns a <see cref="Duality.Resources.Sound">Sounds</see> default minimum distance.
+		/// </summary>
 		public float DefaultMinDist
 		{
 			get { return 350.0f; }
 		}
+		/// <summary>
+		/// [GET] Returns a <see cref="Duality.Resources.Sound">Sounds</see> default maximum distance.
+		/// </summary>
 		public float DefaultMaxDist
 		{
 			get { return 3500.0f; }
 		}
+		/// <summary>
+		/// [GET] Returns the maximum number of available OpenAL sound sources.
+		/// </summary>
 		public int MaxOpenALSources
 		{
 			get { return this.maxAlSources; }
 		}
+		/// <summary>
+		/// [GET] Returns the number of currently playing 2d sounds.
+		/// </summary>
 		public int NumPlaying2D
 		{
 			get { return this.numPlaying2D; }
 		}
+		/// <summary>
+		/// [GET] Returns the number of currently playing 3d sounds.
+		/// </summary>
 		public int NumPlaying3D
 		{
 			get { return this.numPlaying3D; }
 		}
+		/// <summary>
+		/// [GET] Returns the number of currently available OpenAL sound sources.
+		/// </summary>
 		public int NumAvailable
 		{
 			get { return this.alSourcePool.Count; }
 		}
+		/// <summary>
+		/// [GET] Enumerates all currently playing SoundInstances.
+		/// </summary>
 		public IEnumerable<SoundInstance> Playing
 		{
 			get { return this.sounds; }
@@ -114,6 +163,9 @@ namespace Duality
 				"OpenAL initialized. {0} sound sources available",
 				this.alSourcePool.Count);
 		}
+		/// <summary>
+		/// Initializes the SoundDevice based on application and user settings.
+		/// </summary>
 		public void Init()
 		{
 			AL.DistanceModel(ALDistanceModel.LinearDistanceClamped);
@@ -121,17 +173,31 @@ namespace Duality
 			AL.SpeedOfSound(DualityApp.AppData.SpeedOfSound);
 		}
 
+		/// <summary>
+		/// Determines the number of playing instances of a specific <see cref="Duality.Resources.Sound"/>.
+		/// </summary>
+		/// <param name="snd">The Sound of which to determine the number of playing instances.</param>
+		/// <returns>The number of the specified Sounds playing instances.</returns>
 		public int GetNumPlaying(ContentRef<Sound> snd)
 		{
 			int curNumSoundRes;
 			if (!snd.IsAvailable || !this.resPlaying.TryGetValue(snd.Res, out curNumSoundRes)) curNumSoundRes = 0;
 			return curNumSoundRes;
 		}
+		/// <summary>
+		/// Requests an OpenAL source handle.
+		/// </summary>
+		/// <returns>An OpenAL source handle. <see cref="SoundInstance.AlSource_NotAvailable"/> if no source is currently available.</returns>
 		public int RequestAlSource()
 		{
 			if (this.alSourcePool.Count == 0) return SoundInstance.AlSource_NotAvailable;
 			return this.alSourcePool.Pop();
 		}
+		/// <summary>
+		/// Registers a <see cref="Duality.Resources.Sound">Sounds</see> playing instance.
+		/// </summary>
+		/// <param name="snd">The Sound that is playing.</param>
+		/// <param name="is3D">Whether the instance is 3d or not.</param>
 		public void RegisterPlaying(ContentRef<Sound> snd, bool is3D)
 		{
 			if (is3D)	this.numPlaying3D++;
@@ -145,10 +211,19 @@ namespace Duality
 					this.resPlaying[snd.Res]++;
 			}
 		}
+		/// <summary>
+		/// Frees a previously requested OpenAL source.
+		/// </summary>
+		/// <param name="alSource">The OpenAL handle of the source to free.</param>
 		public void FreeAlSource(int alSource)
 		{
 			this.alSourcePool.Push(alSource);
 		}
+		/// <summary>
+		/// Unregisters a <see cref="Duality.Resources.Sound">Sounds</see> playing instance.
+		/// </summary>
+		/// <param name="snd">The Sound that was playing.</param>
+		/// <param name="is3D">Whether the instance is 3d or not.</param>
 		public void UnregisterPlaying(ContentRef<Sound> snd, bool is3D)
 		{
 			if (is3D)				this.numPlaying3D--;
@@ -156,6 +231,9 @@ namespace Duality
 			if (snd.IsAvailable)	this.resPlaying[snd.Res]--;
 		}
 		
+		/// <summary>
+		/// Updates the SoundDevice.
+		/// </summary>
 		public void Update()
 		{
 			this.budgetAmbient.Update();
@@ -198,24 +276,48 @@ namespace Duality
 			AL.Listener(ALListenerf.Gain, this.mute ? 0.0f : 1.0f);
 		}
 		
+		/// <summary>
+		/// Plays a sound.
+		/// </summary>
+		/// <param name="snd">The Sound to play.</param>
+		/// <returns>A new SoundInstance representing the currentply playing sound.</returns>
 		public SoundInstance PlaySound(ContentRef<Sound> snd)
 		{
 			SoundInstance inst = new SoundInstance(snd);
 			this.sounds.Add(inst);
 			return inst;
 		}
+		/// <summary>
+		/// Plays a sound 3d "in space".
+		/// </summary>
+		/// <param name="snd">The Sound to play.</param>
+		/// <param name="pos">The position of the sound in space.</param>
+		/// <returns>A new SoundInstance representing the currentply playing sound.</returns>
 		public SoundInstance PlaySound3D(ContentRef<Sound> snd, Vector3 pos)
 		{
 			SoundInstance inst = new SoundInstance(snd, pos);
 			this.sounds.Add(inst);
 			return inst;
 		}
+		/// <summary>
+		/// Plays a sound 3d "in space".
+		/// </summary>
+		/// <param name="snd">The Sound to play.</param>
+		/// <param name="attachTo">The GameObject to which the sound will be attached.</param>
+		/// <returns>A new SoundInstance representing the currentply playing sound.</returns>
 		public SoundInstance PlaySound3D(ContentRef<Sound> snd, GameObject attachTo)
 		{
 			SoundInstance inst = new SoundInstance(snd, attachTo);
 			this.sounds.Add(inst);
 			return inst;
 		}
+		/// <summary>
+		/// Plays a sound 3d "in space".
+		/// </summary>
+		/// <param name="snd">The Sound to play.</param>
+		/// <param name="attachTo">The GameObject to which the sound will be attached.</param>
+		/// <param name="relativePos">The position of the sound relative to the GameObject.</param>
+		/// <returns>A new SoundInstance representing the currentply playing sound.</returns>
 		public SoundInstance PlaySound3D(ContentRef<Sound> snd, GameObject attachTo, Vector3 relativePos)
 		{
 			SoundInstance inst = new SoundInstance(snd, attachTo);
@@ -252,6 +354,11 @@ namespace Duality
 			this.context = null;
 		}
 
+		/// <summary>
+		/// Checks for errors that might have occured during audio processing.
+		/// </summary>
+		/// <param name="silent">If true, errors aren't logged.</param>
+		/// <returns>True, if an error occured, false if not.</returns>
 		public bool CheckErrors(bool silent = false)
 		{
 			ALError error;

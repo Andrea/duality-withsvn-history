@@ -12,14 +12,33 @@ using Duality.OggVorbis;
 
 namespace Duality
 {
+	/// <summary>
+	/// Describes the type of a sound. This is used for determining which specific
+	/// volume settings affect each sound.
+	/// </summary>
 	public enum SoundType
 	{
+		/// <summary>
+		/// A sound effect taking place in the game world.
+		/// </summary>
 		EffectWorld,
+		/// <summary>
+		/// A User Interface sound effect.
+		/// </summary>
 		EffectUI,
+		/// <summary>
+		/// A sound that is considered being game music.
+		/// </summary>
 		Music,
+		/// <summary>
+		/// A sound that is considered being spoken language.
+		/// </summary>
 		Speech
 	}
 
+	/// <summary>
+	/// An instance of a <see cref="Duality.Resources.Sound"/>.
+	/// </summary>
 	public class SoundInstance : IDisposable
 	{
 		[FlagsAttribute]
@@ -78,68 +97,118 @@ namespace Duality
 		private	object			strLock			= new object();
 		
 
+		/// <summary>
+		/// [GET] Whether the SoundInstance has been disposed. Disposed objects are not to be
+		/// used anymore and should be treated as null or similar.
+		/// </summary>
 		public bool Disposed
 		{
 			get { return this.disposed; }
 		}					//	G
+		/// <summary>
+		/// [GET] A referene to the <see cref="Duality.Resources.Sound"/> that is being played by
+		/// this SoundInstance.
+		/// </summary>
 		public ContentRef<Sound> SoundRef
 		{
 			get { return this.snd; }
 		}	//	G
+		/// <summary>
+		/// [GET] Internal handle of the SoundInstances OpenAL source.
+		/// </summary>
 		public int AlSource
 		{
 			get { return this.alSource; }
 		}					//	G
+		/// <summary>
+		/// [GET] The <see cref="GameObject"/> that this SoundInstance is attached to.
+		/// </summary>
 		public GameObject AttachedTo
 		{
 			get { return this.attachedTo; }
 		}			//	G
+		/// <summary>
+		/// [GET] Whether the sound is played 3d, "in space" or not.
+		/// </summary>
 		public bool Is3D
 		{
 			get { return this.is3D; }
 		}						//	G
+		/// <summary>
+		/// [GET] The SoundInstances priority.
+		/// </summary>
 		public int Priority
 		{
 			get { return this.curPriority; }
 		}					//	G
+		/// <summary>
+		/// [GET] When fading in or out, this value represents the current fading state.
+		/// </summary>
 		public float CurrentFade
 		{
 			get { return this.curFade; }
 		}				//	G
+		/// <summary>
+		/// [GET] The target value for the current fade. Usually 0.0f or 1.0f for fadint out / in.
+		/// </summary>
 		public float FadeTarget
 		{
 			get { return this.fadeTarget; }
 		}				//	G
-		public double PlayTime
+		/// <summary>
+		/// [GET] The time in seconds that this SoundInstance has been playing its sound.
+		/// This value is affected by the sounds <see cref="Pitch"/>.
+		/// </summary>
+		public float PlayTime
 		{
 			get { return this.playTime; }
 		}				//	G
 
+		/// <summary>
+		/// [GET / SET] The sounds local volume factor.
+		/// </summary>
 		public float Volume
 		{
 			get { return this.vol; }
 			set { this.vol = value; this.dirtyState |= DirtyFlag.Vol; }
 		}			//	GS
+		/// <summary>
+		/// [GET / SET] The sounds local pitch factor.
+		/// </summary>
 		public float Pitch
 		{
 			get { return this.pitch; }
 			set { this.pitch = value; this.dirtyState |= DirtyFlag.Pitch; }
 		}			//	GS
+		/// <summary>
+		/// [GET / SET] Whether the sound is played in a loop.
+		/// </summary>
 		public bool Looped
 		{
 			get { return this.looped; }
 			set { this.looped = value; this.dirtyState |= DirtyFlag.Loop; }
 		}			//	GS
+		/// <summary>
+		/// [GET / SET] Whether the sound is currently paused.
+		/// </summary>
 		public bool Paused
 		{
 			get { return this.paused; }
 			set { this.paused = value; this.dirtyState |= DirtyFlag.Paused; }
 		}			//	GS
+		/// <summary>
+		/// [GET / SET] The sounds position in space. If it is <see cref="AttachedTo">attached</see> to a GameObject,
+		/// this value is considered relative to it.
+		/// </summary>
 		public Vector3 Pos
 		{
 			get { return this.pos; }
 			set { this.pos = value; }
 		}			//	GS
+		/// <summary>
+		/// [GET / SET] The sounds velocity. If it is <see cref="AttachedTo">attached</see> to a GameObject,
+		/// this value is considered relative to it.
+		/// </summary>
 		public Vector3 Vel
 		{
 			get { return this.vel; }
@@ -220,30 +289,55 @@ namespace Duality
 			this.is3D = false;
 		}
 
+		/// <summary>
+		/// Stops the sound immediately.
+		/// </summary>
 		public void Stop()
 		{
 			if (this.alSource > AlSource_NotAvailable) AL.SourceStop(this.alSource);
 			this.strStopReq = true;
 			// The next update will handle everything else
 		}
+		/// <summary>
+		/// Fades the sound to a specific target value.
+		/// </summary>
+		/// <param name="target">The target value to fade to.</param>
+		/// <param name="timeSeconds">The time in seconds the fading will take.</param>
 		public void FadeTo(float target, float timeSeconds)
 		{
 			this.fadeTarget = target;
 			this.fadeTimeSec = timeSeconds;
 		}
+		/// <summary>
+		/// Resets the sounds current fade value to zero and starts to fade it in.
+		/// </summary>
+		/// <param name="timeSeconds">The time in seconds the fading will take.</param>
 		public void BeginFadeIn(float timeSeconds)
 		{
 			this.curFade = 0.0f;
 			this.FadeTo(1.0f, timeSeconds);
 		}
+		/// <summary>
+		/// Fades the sound in from its current fade value. Note that SoundInstances are
+		/// initialized with a fade value of 1.0f because they aren't faded in generally. 
+		/// To achieve a regular "fade in" effect, you should use <see cref="BeginFadeIn(float)"/>.
+		/// </summary>
+		/// <param name="timeSeconds">The time in seconds the fading will take.</param>
 		public void FadeIn(float timeSeconds)
 		{
 			this.FadeTo(1.0f, timeSeconds);
 		}
+		/// <summary>
+		/// Fades out the sound.
+		/// </summary>
+		/// <param name="timeSeconds">The time in seconds the fading will take.</param>
 		public void FadeOut(float timeSeconds)
 		{
 			this.FadeTo(0.0f, timeSeconds);
 		}
+		/// <summary>
+		/// Halts the current fading, keepinf the current fade value as fade target.
+		/// </summary>
 		public void StopFade()
 		{
 			this.fadeTarget = this.curFade;
@@ -317,7 +411,7 @@ namespace Duality
 						if (searchSimilar && this.snd.Res != inst.snd.Res) continue;
 						
 						ownPrioMult = 1.0f;
-						if (searchSimilar && !inst.Looped) ownPrioMult *= (float)Math.Sqrt(inst.playTime + 1.0d);
+						if (searchSimilar && !inst.Looped) ownPrioMult *= MathF.Sqrt(inst.playTime + 1.0f);
 							
 						if (this.curPriority * ownPrioMult > inst.curPriority + 
 							(inst.Looped ? PriorityStealLoopedThreshold : PriorityStealThreshold))
@@ -391,6 +485,9 @@ namespace Duality
 			return optVolFactor * DualityApp.UserData.SfxMasterVol * 0.5f;
 		}
 
+		/// <summary>
+		/// Updates the SoundInstance
+		/// </summary>
 		public void Update()
 		{
 			lock (this.strLock)

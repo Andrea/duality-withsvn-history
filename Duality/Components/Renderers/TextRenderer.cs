@@ -11,6 +11,9 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Duality.Components.Renderers
 {
+	/// <summary>
+	/// Renders a text to represent the <see cref="GameObject"/>.
+	/// </summary>
 	[Serializable]
 	[RequiredComponent(typeof(Transform))]
 	public class TextRenderer : Renderer, ICmpInitializable
@@ -28,30 +31,50 @@ namespace Duality.Components.Renderers
 		{
 			get { return Rect.Align(this.align, 0.0f, 0.0f, this.metrics.Size.X, this.metrics.Size.Y).Transform(this.gameobj.Transform.Scale.Xy).BoundingRadius; }
 		}
+		/// <summary>
+		/// [GET / SET] The text blocks alignment relative to the <see cref="GameObject"/>.
+		/// </summary>
 		public Alignment Align
 		{
 			get { return this.align; }
 			set { this.align = value; }
 		}
+		/// <summary>
+		/// [GET / SET] The text to display.
+		/// </summary>
 		public FormattedText Text
 		{
 			get { return this.text; }
 			set { this.text = value; }
 		}
+		/// <summary>
+		/// [GET / SET] A color by which the displayed text is tinted.
+		/// </summary>
 		public ColorRgba ColorTint
 		{
 			get { return this.colorTint; }
 			set { this.colorTint = value; }
 		}
+		/// <summary>
+		/// [GET / SET] The <see cref="Duality.Resources.Material"/> to use for displaying icons ithin the text.
+		/// </summary>
 		public ContentRef<Material> IconMat
 		{
 			get { return this.iconMat; }
 			set { this.iconMat = value; }
 		}
+		/// <summary>
+		/// [GET] The current texts metrics.
+		/// </summary>
 		public FormattedText.Metrics Metrics
 		{
 			get { return this.metrics; }
 		}
+		/// <summary>
+		/// [GET / SET] A custom, local <see cref="Duality.Resources.BatchInfo"/> overriding the texts own <see cref="Duality.Resources.Font.Material">
+		/// Materials</see>. Note that it does not override each <see cref="Duality.Resources.Font">Fonts</see> Texture, but their DrawTechniques and
+		/// main colors.
+		/// </summary>
 		public BatchInfo CustomMaterial
 		{
 			get { return this.customMat; }
@@ -65,6 +88,9 @@ namespace Duality.Components.Renderers
 			this.UpdateMetrics();
 		}
 
+		/// <summary>
+		/// Updates the texts <see cref="Metrics"/>. Should be called anytime the text changes.
+		/// </summary>
 		public void UpdateMetrics()
 		{
 			this.metrics = this.text.Measure();

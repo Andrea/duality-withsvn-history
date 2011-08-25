@@ -11,16 +11,40 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Duality.Components.Renderers
 {
+	/// <summary>
+	/// Renders an animated sprite to represent the <see cref="GameObject"/>.
+	/// </summary>
 	[Serializable]
 	[RequiredComponent(typeof(Transform))]
 	public class AnimSpriteRenderer : SpriteRenderer, ICmpUpdatable, ICmpInitializable
 	{
+		/// <summary>
+		/// Describes the sprite animations loop behaviour.
+		/// </summary>
 		public enum LoopMode
 		{
+			/// <summary>
+			/// The animation is played once an then remains in its last frame.
+			/// </summary>
 			Once,
+			/// <summary>
+			/// The animation is looped: When reaching the last frame, it begins again at the first one.
+			/// </summary>
 			Loop,
+			/// <summary>
+			/// The animation plays forward until reaching the end, then reverses and plays backward until 
+			/// reaching the start again. This "pingpong" behaviour is looped.
+			/// </summary>
 			PingPong,
+			/// <summary>
+			/// A single frame is selected randomly each time the object is initialized and remains static
+			/// for its whole lifetime.
+			/// </summary>
 			RandomSingle,
+			/// <summary>
+			/// A fixed, single frame is displayed. Which one depends on the one you set in the editor or
+			/// in source code.
+			/// </summary>
 			FixedSingle
 		}
 
@@ -34,31 +58,57 @@ namespace Duality.Components.Renderers
 		private	VertexFormat.VertexC1P3T4A1[]	verticesSmooth	= null;
 
 
+		/// <summary>
+		/// [GET / SET] The index of the first frame to display. 
+		/// </summary>
+		/// <remarks>
+		/// Animation indices are looked up in the <see cref="Duality.Resources.Texture.Atlas"/> map
+		/// of the <see cref="Duality.Resources.Texture"/> that is used.
+		/// </remarks>
 		public int AnimFirstFrame
 		{
 			get { return this.animFirstFrame; }
 			set { this.animFirstFrame = value; }
 		}
+		/// <summary>
+		/// [GET / SET] The number of continous frames to use for the animation.
+		/// </summary>
+		/// <remarks>
+		/// Animation indices are looked up in the <see cref="Duality.Resources.Texture.Atlas"/> map
+		/// of the <see cref="Duality.Resources.Texture"/> that is used.
+		/// </remarks>
 		public int AnimFrameCount
 		{
 			get { return this.animFrameCount; }
 			set { this.animFrameCount = value; }
 		}
+		/// <summary>
+		/// [GET / SET] The time a single animation cycle needs to complete, in seconds.
+		/// </summary>
 		public float AnimDuration
 		{
 			get { return this.animDuration; }
 			set { this.animDuration = value; }
 		}
+		/// <summary>
+		/// [GET / SET] The animations current play time, i.e. the current state of the animation.
+		/// </summary>
 		public float AnimTime
 		{
 			get { return this.animTime; }
 			set { this.animTime = value; }
 		}
+		/// <summary>
+		/// [GET / SET] The animations loop behaviour.
+		/// </summary>
 		public LoopMode AnimLoopMode
 		{
 			get { return this.animLoopMode; }
 			set { this.animLoopMode = value; }
 		}
+		/// <summary>
+		/// [GET] Whether the animation is currently running, i.e. if there is anything animated right now.
+		/// </summary>
 		public bool IsAnimationRunning
 		{
 			get

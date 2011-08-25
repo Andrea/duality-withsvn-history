@@ -1,11 +1,4 @@
 ﻿
--->	Documentation, Online Help, Tutorials, Project pages, etc.
-	-->	Website reference as Fetzenet-Subdomain, like "http://ddoc.fetzenet.de"
-		-->	Probably combined with a fetzenet-local google search?
-		-->	Download version (.chm) as google code download
-	-->	Tutorials & Examples in google code wiki pages
-	-->	Don't forget to link the online reference (Fetzenet) from google code
-
 -->	Make the Create Resource menu hierarchial like the Create Component menu
 
 -->	Just a thought: Use the XML documentation on classes to display tooltips
