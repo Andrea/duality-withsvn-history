@@ -31,7 +31,7 @@
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SceneView));
 			this.toolStrip = new System.Windows.Forms.ToolStrip();
-			this.toolStripButtonSelectSceneRes = new System.Windows.Forms.ToolStripButton();
+			this.toolStripButtonCreateScene = new System.Windows.Forms.ToolStripButton();
 			this.toolStripLabelSceneName = new System.Windows.Forms.ToolStripLabel();
 			this.toolStripButtonSaveScene = new System.Windows.Forms.ToolStripButton();
 			this.objectView = new Aga.Controls.Tree.TreeViewAdv();
@@ -64,30 +64,33 @@
 			// 
 			this.toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripButtonSelectSceneRes,
-            this.toolStripLabelSceneName,
-            this.toolStripButtonSaveScene});
+            this.toolStripButtonCreateScene,
+            this.toolStripButtonSaveScene,
+            this.toolStripLabelSceneName});
 			this.toolStrip.Location = new System.Drawing.Point(0, 0);
 			this.toolStrip.Name = "toolStrip";
 			this.toolStrip.Size = new System.Drawing.Size(206, 25);
 			this.toolStrip.TabIndex = 0;
 			// 
-			// toolStripButtonSelectSceneRes
+			// toolStripButtonCreateScene
 			// 
-			this.toolStripButtonSelectSceneRes.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.toolStripButtonSelectSceneRes.Image = global::EditorBase.Properties.Resources.GotoScene;
-			this.toolStripButtonSelectSceneRes.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.toolStripButtonSelectSceneRes.Name = "toolStripButtonSelectSceneRes";
-			this.toolStripButtonSelectSceneRes.Size = new System.Drawing.Size(23, 22);
-			this.toolStripButtonSelectSceneRes.Text = "Select Scene Resource";
-			this.toolStripButtonSelectSceneRes.Click += new System.EventHandler(this.toolStripButtonSelectSceneRes_Click);
+			this.toolStripButtonCreateScene.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.toolStripButtonCreateScene.Image = global::EditorBase.Properties.Resources.AddScene;
+			this.toolStripButtonCreateScene.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.toolStripButtonCreateScene.Name = "toolStripButtonCreateScene";
+			this.toolStripButtonCreateScene.Size = new System.Drawing.Size(23, 22);
+			this.toolStripButtonCreateScene.Text = "Create new Scene";
+			this.toolStripButtonCreateScene.Click += new System.EventHandler(this.toolStripButtonCreateScene_Click);
 			// 
 			// toolStripLabelSceneName
 			// 
 			this.toolStripLabelSceneName.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.toolStripLabelSceneName.AutoToolTip = true;
+			this.toolStripLabelSceneName.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.toolStripLabelSceneName.Name = "toolStripLabelSceneName";
-			this.toolStripLabelSceneName.Size = new System.Drawing.Size(109, 22);
+			this.toolStripLabelSceneName.Size = new System.Drawing.Size(103, 22);
 			this.toolStripLabelSceneName.Text = "Scene: Some Name";
+			this.toolStripLabelSceneName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// toolStripButtonSaveScene
 			// 
@@ -325,7 +328,7 @@
 		private System.Windows.Forms.ToolStripMenuItem cloneToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem renameToolStripMenuItem;
-		private System.Windows.Forms.ToolStripButton toolStripButtonSelectSceneRes;
+		private System.Windows.Forms.ToolStripButton toolStripButtonCreateScene;
 		private System.Windows.Forms.ToolStripLabel toolStripLabelSceneName;
 		private System.Windows.Forms.Panel panelBottom;
 		private System.Windows.Forms.TextBox textBoxFilter;

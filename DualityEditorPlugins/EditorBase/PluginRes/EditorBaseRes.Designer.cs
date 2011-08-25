@@ -124,6 +124,15 @@ namespace EditorBase.PluginRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Advanced ähnelt.
+        /// </summary>
+        public static string Category_Advanced {
+            get {
+                return ResourceManager.GetString("Category_Advanced", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die General ähnelt.
         /// </summary>
         public static string Category_General {

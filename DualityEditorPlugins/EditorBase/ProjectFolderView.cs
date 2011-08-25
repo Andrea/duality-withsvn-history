@@ -238,6 +238,12 @@ namespace EditorBase
 			{
 				return GetTypeImage(type, ContentRef<Resource>.Null);
 			}
+			public static string[] GetTypeCategory(Type type)
+			{
+				string[] result = CorePluginHelper.RequestTypeCategory(type, CorePluginHelper.CategoryContext_General);
+				if (result == null) result = new string[] { type.Assembly.FullName.Split(',')[0].Replace(".core", "") };
+				return result;
+			}
 		}
 
 
@@ -337,7 +343,7 @@ namespace EditorBase
 			this.folderModel.Refresh();
 		}
 
-		protected IEnumerable<Type> QueryRessourceTypes()
+		protected IEnumerable<Type> QueryResourceTypes()
 		{
 			return 
 				from t in DualityApp.GetAvailDualityTypes(typeof(Resource))
@@ -1143,14 +1149,50 @@ namespace EditorBase
 			else
 				this.toolStripSeparatorCustomActions.Visible = false;
 
-			// Populate the "New" menu
-			while (this.newToolStripMenuItem.DropDownItems.Count > 2) this.newToolStripMenuItem.DropDownItems.RemoveAt(2);
-			foreach (Type resType in this.QueryRessourceTypes())
+			// Reset "New" menu to original state
+			List<ToolStripItem> oldItems = new List<ToolStripItem>(this.newToolStripMenuItem.DropDownItems.OfType<ToolStripItem>());
+			this.newToolStripMenuItem.DropDownItems.Clear();
+			foreach (ToolStripItem item in oldItems.Skip(2)) item.Dispose();
+			this.newToolStripMenuItem.DropDownItems.AddRange(oldItems.Take(2).ToArray());
+			
+			// Create dynamic entries
+			List<ToolStripItem> newItems = new List<ToolStripItem>();
+			foreach (Type resType in this.QueryResourceTypes())
 			{
+				// Generate category item
+				string[] category = ResourceNode.GetTypeCategory(resType);
+				ToolStripMenuItem categoryItem = this.newToolStripMenuItem;
+				for (int i = 0; i < category.Length; i++)
+				{
+					ToolStripMenuItem subCatItem;
+					if (categoryItem == this.newToolStripMenuItem)
+						subCatItem = newItems.FirstOrDefault(item => item.Name == category[i]) as ToolStripMenuItem;
+					else
+						subCatItem = categoryItem.DropDownItems.Find(category[i], false).FirstOrDefault() as ToolStripMenuItem;
+
+					if (subCatItem == null)
+					{
+						subCatItem = new ToolStripMenuItem(category[i]);
+						subCatItem.Name = category[i];
+						subCatItem.Tag = resType.Assembly;
+						subCatItem.DropDownItemClicked += this.newToolStripMenuItem_DropDownItemClicked;
+						if (categoryItem == this.newToolStripMenuItem)
+							newItems.Add(subCatItem);
+						else
+							categoryItem.DropDownItems.Add(subCatItem);
+					}
+					categoryItem = subCatItem;
+				}
+
 				ToolStripMenuItem resTypeItem = new ToolStripMenuItem(resType.Name, ResourceNode.GetTypeImage(resType));
 				resTypeItem.Tag = resType;
-				this.newToolStripMenuItem.DropDownItems.Add(resTypeItem);
+				if (categoryItem == this.newToolStripMenuItem)
+					newItems.Add(resTypeItem);
+				else
+					categoryItem.DropDownItems.Add(resTypeItem);
 			}
+			EditorBasePlugin.SortToolStripTypeItems(newItems);
+			this.newToolStripMenuItem.DropDownItems.AddRange(newItems.ToArray());
 		}
 
 		private void cutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1187,7 +1229,9 @@ namespace EditorBase
 		private void newToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
 		{
 			if (e.ClickedItem == this.folderToolStripMenuItem) return;
-			this.CreateResource(e.ClickedItem.Tag as Type, this.folderView.SelectedNode);
+			if (e.ClickedItem.Tag as Type == null) return;
+			Type clickedType = e.ClickedItem.Tag as Type;
+			this.CreateResource(clickedType, this.folderView.SelectedNode);
 		}
 		private void customResourceActionItem_Click(object sender, EventArgs e)
 		{

@@ -142,6 +142,20 @@ namespace EditorBase
 			CorePluginHelper.RegisterTypeCategory(typeof(SoundEmitter), EditorBaseRes.Category_Sound, CorePluginHelper.CategoryContext_General);
 			CorePluginHelper.RegisterTypeCategory(typeof(SoundListener), EditorBaseRes.Category_Sound, CorePluginHelper.CategoryContext_General);
 
+			CorePluginHelper.RegisterTypeCategory(typeof(Scene), "", CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(Prefab), "", CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(Pixmap), EditorBaseRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(Texture), EditorBaseRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(Material), EditorBaseRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(Font), EditorBaseRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(RenderTarget), EditorBaseRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(DrawTechnique), EditorBaseRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(ShaderProgram), EditorBaseRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(VertexShader), EditorBaseRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(FragmentShader), EditorBaseRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(AudioData), EditorBaseRes.Category_Sound, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(Sound), EditorBaseRes.Category_Sound, CorePluginHelper.CategoryContext_General);
+
 			// Register conversion actions
 			CorePluginHelper.RegisterEditorAction<Pixmap>(
 				EditorBaseRes.ActionName_CreateTexture, 
@@ -430,6 +444,44 @@ namespace EditorBase
 						if (wasCompiled) sp.Res.Compile();
 					}
 				}
+			}
+		}
+
+		public static void SortToolStripTypeItems(ToolStripItemCollection items)
+		{
+			var menuSubItems = items.Cast<ToolStripItem>().ToArray();
+			SortToolStripTypeItems(menuSubItems);
+			items.Clear();
+			items.AddRange(menuSubItems);
+		}
+		public static void SortToolStripTypeItems(IList<ToolStripItem> items)
+		{
+			items.StableSort(delegate(ToolStripItem item1, ToolStripItem item2)
+			{
+				int result;
+				ToolStripMenuItem menuItem1 = item1 as ToolStripMenuItem;
+				ToolStripMenuItem menuItem2 = item2 as ToolStripMenuItem;
+
+				System.Reflection.Assembly assembly1 = item1.Tag is Type ? (item1.Tag as Type).Assembly : item1.Tag as System.Reflection.Assembly;
+				System.Reflection.Assembly assembly2 = item2.Tag is Type ? (item2.Tag as Type).Assembly : item2.Tag as System.Reflection.Assembly;
+				int score1 = assembly1 == typeof(DualityApp).Assembly ? 1 : 0;
+				int score2 = assembly2 == typeof(DualityApp).Assembly ? 1 : 0;
+				result = score2 - score1;
+				if (result != 0) return result;
+
+				result = 
+					(menuItem1 != null ? Math.Sign(menuItem1.DropDownItems.Count) : 0) - 
+					(menuItem2 != null ? Math.Sign(menuItem2.DropDownItems.Count) : 0);
+				if (result != 0) return result;
+
+				result = item1.Text.CompareTo(item2.Text);
+				return result;
+			});
+
+			foreach (ToolStripItem item in items)
+			{
+				ToolStripMenuItem menuItem = item as ToolStripMenuItem;
+				if (menuItem != null && menuItem.HasDropDownItems) SortToolStripTypeItems(menuItem.DropDownItems);
 			}
 		}
 	}

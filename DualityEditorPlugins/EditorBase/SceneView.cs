@@ -611,11 +611,9 @@ namespace EditorBase
 		protected void UpdateSceneLabel()
 		{
 			bool sceneAvail = Scene.Current != null;
-
-			this.toolStripButtonSelectSceneRes.Enabled = sceneAvail && !String.IsNullOrEmpty(Scene.Current.Path);
-			this.toolStripLabelSceneName.Text = String.Format("{0}: {1}",
-				PluginRes.EditorBaseRes.SceneNameLabel,
-				(!sceneAvail || String.IsNullOrEmpty(Scene.Current.Name)) ? PluginRes.EditorBaseRes.SceneNameNotYetSaved : Scene.Current.Name);
+			this.toolStripLabelSceneName.Text = (!sceneAvail || String.IsNullOrEmpty(Scene.Current.Name)) ? 
+				PluginRes.EditorBaseRes.SceneNameNotYetSaved : 
+				Scene.Current.Name;
 		}
 		
 		private void textBoxFilter_TextChanged(object sender, EventArgs e)
@@ -1134,14 +1132,20 @@ namespace EditorBase
 
 			this.renameToolStripMenuItem.Enabled = singleSelect;
 
-			// Populate the "New" menu
+			// Reset "New" menu to original state
 			this.gameObjectToolStripMenuItem.Image = CorePluginHelper.RequestTypeImage(typeof(GameObject), CorePluginHelper.ImageContext_Icon);
 			this.newGameObjectSeparator.Visible = gameObjSelect;
 
-			while (this.newToolStripMenuItem.DropDownItems.Count > 2) this.newToolStripMenuItem.DropDownItems.RemoveAt(2);
+			List<ToolStripItem> oldItems = new List<ToolStripItem>(this.newToolStripMenuItem.DropDownItems.OfType<ToolStripItem>());
+			this.newToolStripMenuItem.DropDownItems.Clear();
+			foreach (ToolStripItem item in oldItems.Skip(2)) item.Dispose();
+			this.newToolStripMenuItem.DropDownItems.AddRange(oldItems.Take(2).ToArray());
+
+			// Populate the "New" menu
 			if (gameObjSelect)
 			{
 				GameObject targetObj = (selNodeData[0] as GameObjectNode).Obj;
+				List<ToolStripItem> newItems = new List<ToolStripItem>();
 				foreach (Type cmpType in this.QueryComponentTypes())
 				{
 					bool hasRequirements = Component.GetRequiredComponents(cmpType).All(t => targetObj.GetComponent(t) != null);
@@ -1151,14 +1155,22 @@ namespace EditorBase
 					ToolStripMenuItem categoryItem = this.newToolStripMenuItem;
 					for (int i = 0; i < category.Length; i++)
 					{
-						ToolStripMenuItem subCatItem = categoryItem.DropDownItems.Find(category[i], false).FirstOrDefault() as ToolStripMenuItem;
+						ToolStripMenuItem subCatItem;
+						if (categoryItem == this.newToolStripMenuItem)
+							subCatItem = newItems.FirstOrDefault(item => item.Name == category[i]) as ToolStripMenuItem;
+						else
+							subCatItem = categoryItem.DropDownItems.Find(category[i], false).FirstOrDefault() as ToolStripMenuItem;
+
 						if (subCatItem == null)
 						{
 							subCatItem = new ToolStripMenuItem(category[i]);
 							subCatItem.Name = category[i];
 							subCatItem.Tag = cmpType.Assembly;
 							subCatItem.DropDownItemClicked += this.newToolStripMenuItem_DropDownItemClicked;
-							categoryItem.DropDownItems.Add(subCatItem);
+							if (categoryItem == this.newToolStripMenuItem)
+								newItems.Add(subCatItem);
+							else
+								categoryItem.DropDownItems.Add(subCatItem);
 						}
 						categoryItem = subCatItem;
 					}
@@ -1166,30 +1178,12 @@ namespace EditorBase
 					ToolStripMenuItem cmpTypeItem = new ToolStripMenuItem(cmpType.Name, ComponentNode.GetTypeImage(cmpType));
 					cmpTypeItem.Tag = cmpType;
 					cmpTypeItem.Enabled = hasRequirements;
-					categoryItem.DropDownItems.Add(cmpTypeItem);
+					if (categoryItem == this.newToolStripMenuItem)
+						newItems.Add(cmpTypeItem);
+					else
+						categoryItem.DropDownItems.Add(cmpTypeItem);
 				}
-
-				// Sort components and categories
-				List<ToolStripMenuItem> newItems = new List<ToolStripMenuItem>(this.newToolStripMenuItem.DropDownItems.OfType<ToolStripMenuItem>());
-				newItems.RemoveAt(0);
-				while (this.newToolStripMenuItem.DropDownItems.Count > 2) this.newToolStripMenuItem.DropDownItems.RemoveAt(2);
-				newItems.Sort(delegate(ToolStripMenuItem item1, ToolStripMenuItem item2)
-				{
-					int result;
-
-					System.Reflection.Assembly assembly1 = item1.Tag is Type ? (item1.Tag as Type).Assembly : item1.Tag as System.Reflection.Assembly;
-					System.Reflection.Assembly assembly2 = item2.Tag is Type ? (item2.Tag as Type).Assembly : item2.Tag as System.Reflection.Assembly;
-					int score1 = assembly1 == typeof(DualityApp).Assembly ? 1 : 0;
-					int score2 = assembly2 == typeof(DualityApp).Assembly ? 1 : 0;
-					result = score2 - score1;
-					if (result != 0) return result;
-
-					result = Math.Sign(item1.DropDownItems.Count) - Math.Sign(item2.DropDownItems.Count);
-					if (result != 0) return result;
-
-					result = item1.Text.CompareTo(item2.Text);
-					return result;
-				});
+				EditorBasePlugin.SortToolStripTypeItems(newItems);
 				this.newToolStripMenuItem.DropDownItems.AddRange(newItems.ToArray());
 			}
 		}
@@ -1219,16 +1213,16 @@ namespace EditorBase
 			this.CreateComponent(this.objectView.SelectedNode, clickedType);
 		}
 
-		private void toolStripButtonSelectSceneRes_Click(object sender, EventArgs e)
+		private void toolStripButtonCreateScene_Click(object sender, EventArgs e)
 		{
-			if (!String.IsNullOrEmpty(Scene.Current.Path))
-				EditorBasePlugin.Instance.EditorForm.Select(this, new ObjectSelection(Scene.Current));
+			EditorBasePlugin.Instance.EditorForm.SaveCurrentScene(true);
+			Scene.Current = null;
 		}
 		private void toolStripButtonSaveScene_Click(object sender, EventArgs e)
 		{
 			EditorBasePlugin.Instance.EditorForm.SaveCurrentScene(false);
 			this.UpdateSceneLabel();
-			this.toolStripButtonSelectSceneRes_Click(sender, e);
+			this.toolStripButtonCreateScene_Click(sender, e);
 		}
 
 		private void EditorForm_SelectionChanged(object sender, SelectionChangedEventArgs e)

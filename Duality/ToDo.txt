@@ -1,6 +1,4 @@
 ﻿
--->	Make the Create Resource menu hierarchial like the Create Component menu
-
 -->	Just a thought: Use the XML documentation on classes to display tooltips
 	in the editor?
 	-->	Info about Components in the Create-Menu and when hovering them

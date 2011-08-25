@@ -138,6 +138,9 @@
   <data name="CamView_Status_PosZ" xml:space="preserve">
     <value>Z: {0:F}</value>
   </data>
+  <data name="Category_Advanced" xml:space="preserve">
+    <value>Advanced</value>
+  </data>
   <data name="Category_General" xml:space="preserve">
     <value>General</value>
   </data>
