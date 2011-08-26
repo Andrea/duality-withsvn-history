@@ -133,7 +133,7 @@ namespace DualityEditor
 				}
 
 				// Determine the members (declaring) type
-				Type memberType = ResolveType(memberTypeName);
+				Type memberType = ResolveDocStyleType(memberTypeName);
 
 				// Determine the member info
 				MemberInfo member = null;
@@ -150,7 +150,7 @@ namespace DualityEditor
 					{
 						methodName = memberName.Substring(0, paramIndex);
 						string[] paramTypeNames = memberName.Substring(paramIndex + 1, memberName.Length - paramIndex - 2).Split(',');
-						paramTypes = paramTypeNames.Select(ResolveType).ToArray();
+						paramTypes = paramTypeNames.Select(ResolveDocStyleType).ToArray();
 					}
 					else
 					{
@@ -175,7 +175,7 @@ namespace DualityEditor
 
 		}
 
-		private static Type ResolveType(string typeString)
+		private static Type ResolveDocStyleType(string typeString)
 		{
 			Type result = null;
 			StringBuilder memberTypeNameBuilder = null;
