@@ -133,6 +133,7 @@ namespace DualityEditor.Forms
 			DualityApp.Init(DualityApp.ExecutionContext.Editor, new string[] {"logfile", "logfile_editor"});
 			this.InitMainGLContext();
 			ContentProvider.InitDefaultContent();
+			this.LoadXmlCodeDoc();
 			this.LoadPlugins();
 			this.LoadUserData();
 			this.InitPlugins();
@@ -250,7 +251,7 @@ namespace DualityEditor.Forms
 				if (EditorHelper.IsJITDebuggerAvailable())
 				{
 					string solution = File.ReadAllText(EditorHelper.SourceCodeSolutionFile);
-					File.WriteAllText(EditorHelper.SourceCodeSolutionFile, solution.Replace("# Visual C# Express 2010", "# Visual Studio 2010"));
+					File.WriteAllText(EditorHelper.SourceCodeSolutionFile, solution.Replace("# Visual C# Express 2010", "# Visual Studio 2010"), Encoding.UTF8);
 				}
 			}
 
@@ -325,6 +326,18 @@ namespace DualityEditor.Forms
 				if (p is T) return p as T;
 			}
 			return null;
+		}
+
+		public void LoadXmlCodeDoc()
+		{
+			this.LoadXmlCodeDoc("Duality.xml");
+			foreach (string xmlDocFile in Directory.EnumerateFiles("Plugins", "*.core.xml", SearchOption.AllDirectories))
+				this.LoadXmlCodeDoc(xmlDocFile);
+		}
+		public void LoadXmlCodeDoc(string file)
+		{
+			XmlCodeDoc xmlDoc = new XmlCodeDoc(file);
+			CorePluginHelper.RegisterXmlCodeDoc(xmlDoc);
 		}
 
 		public void RegisterFileImporter(IFileImporter importer)

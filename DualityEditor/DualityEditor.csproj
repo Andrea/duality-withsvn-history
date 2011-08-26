@@ -247,6 +247,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RecycleBin.cs" />
+    <Compile Include="XmlCodeDoc.cs" />
     <EmbeddedResource Include="Controls\GroupedPropertyEditor.resx">
       <DependentUpon>GroupedPropertyEditor.cs</DependentUpon>
     </EmbeddedResource>

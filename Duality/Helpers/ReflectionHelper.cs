@@ -26,6 +26,10 @@ namespace Duality
 		/// Equals <c>BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic</c>.
 		/// </summary>
 		public const BindingFlags BindStaticAll = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+		/// <summary>
+		/// Equals <c>BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic</c>.
+		/// </summary>
+		public const BindingFlags BindAll = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
 		/// <summary>
 		/// Returns a Stream to an Assemblies embedded resource.
@@ -269,6 +273,10 @@ namespace Duality
 			{
 				StringBuilder typeStr = new StringBuilder();
 
+				if (T.IsGenericParameter)
+				{
+					return T.Name;
+				}
 				if (T.IsArray)
 				{
 					typeStr.Append(GetTypeName(T.GetElementType(), attrib));

@@ -106,6 +106,7 @@ namespace DualityEditor
 		public const string ActionContext_OpenRes		= "OpenRes";
 
 		private	static	Dictionary<string,List<IResEntry>>	corePluginRes	= new Dictionary<string,List<IResEntry>>();
+		private	static	XmlCodeDoc							corePluginDoc	= new XmlCodeDoc();
 
 
 		private static void RegisterCorePluginRes(Type type, IResEntry res)
@@ -200,6 +201,11 @@ namespace DualityEditor
 			return from entry in RequestCorePluginRes<EditorActionEntry>(type)
 				   where entry.context == context
 				   select entry.action;
+		}
+
+		public static void RegisterXmlCodeDoc(XmlCodeDoc doc)
+		{
+			corePluginDoc.Append(doc);
 		}
 	}
 }

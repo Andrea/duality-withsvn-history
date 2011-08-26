@@ -304,8 +304,12 @@ namespace DualityEditor.Forms
 					while (workInterface.ReloadSched.Count > 0)
 					{
 						DualityApp.ReloadPlugin(workInterface.ReloadSched[0]);
+						workInterface.Progress += 0.15f / (float)count;
+
+						string xmlDocFile = workInterface.ReloadSched[0].Replace(".dll", ".xml");
+						if (File.Exists(xmlDocFile)) workInterface.MainForm.LoadXmlCodeDoc(xmlDocFile);
 						workInterface.ReloadSched.RemoveAt(0);
-						workInterface.Progress += 0.2f / (float)count;
+						workInterface.Progress += 0.05f / (float)count;
 					}
 					Log.Editor.PopIndent();
 

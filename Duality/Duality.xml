@@ -5706,6 +5706,11 @@
             Equals <c>BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic</c>.
             </summary>
         </member>
+        <member name="F:Duality.ReflectionHelper.BindAll">
+            <summary>
+            Equals <c>BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic</c>.
+            </summary>
+        </member>
         <member name="M:Duality.ReflectionHelper.GetEmbeddedResourceStream(System.Reflection.Assembly,System.String)">
             <summary>
             Returns a Stream to an Assemblies embedded resource.
