@@ -279,13 +279,47 @@ namespace Duality
 		/// <param name="info"></param>
 		/// <param name="includeDeclaringType">If true, the methods declaring type is included in the returned name.</param>
 		/// <returns></returns>
+		public static string MethodInfo(MethodInfo info, bool includeDeclaringType = true)
+		{
+			string declTypeName = Type(info.DeclaringType);
+			string[] paramNames = info.GetParameters().Select(p => Type(p.ParameterType)).ToArray();
+			string[] genArgNames = info.GetGenericArguments().Select(t => Type(t)).ToArray();
+			return string.Format("{0}{1}{3}({2})",
+				includeDeclaringType ? declTypeName + "." : "",
+				info.Name,
+				paramNames.ToString(", "),
+				genArgNames.Length > 0 ? "<" + genArgNames.ToString(", ") + ">" : "");
+		}
+		/// <summary>
+		/// Returns a string that can be used for representing a method or constructor in log entries.
+		/// </summary>
+		/// <param name="info"></param>
+		/// <param name="includeDeclaringType">If true, the methods or constructors declaring type is included in the returned name.</param>
+		/// <returns></returns>
 		public static string MethodInfo(MethodBase info, bool includeDeclaringType = true)
+		{
+			if (info is MethodInfo)
+				return MethodInfo(info as MethodInfo);
+			else if (info is ConstructorInfo)
+				return ConstructorInfo(info as ConstructorInfo);
+			else if (info != null)
+				return info.ToString();
+			else
+				return "null";
+		}
+		/// <summary>
+		/// Returns a string that can be used for representing a constructor in log entries.
+		/// </summary>
+		/// <param name="info"></param>
+		/// <param name="includeDeclaringType">If true, the constructors declaring type is included in the returned name.</param>
+		/// <returns></returns>
+		public static string ConstructorInfo(ConstructorInfo info, bool includeDeclaringType = true)
 		{
 			string declTypeName = Type(info.DeclaringType);
 			string[] paramNames = info.GetParameters().Select(p => Type(p.ParameterType)).ToArray();
 			return string.Format("{0}{1}({2})",
 				includeDeclaringType ? declTypeName + "." : "",
-				info.Name,
+				info.DeclaringType.Name,
 				paramNames.ToString(", "));
 		}
 		/// <summary>
@@ -343,8 +377,10 @@ namespace Duality
 		/// <returns></returns>
 		public static string MemberInfo(MemberInfo info, bool includeDeclaringType = true)
 		{
-			if (info is MethodBase)
-				return MethodInfo(info as MethodBase, includeDeclaringType);
+			if (info is MethodInfo)
+				return MethodInfo(info as MethodInfo, includeDeclaringType);
+			else if (info is ConstructorInfo)
+				return ConstructorInfo(info as ConstructorInfo, includeDeclaringType);
 			else if (info is PropertyInfo)
 				return PropertyInfo(info as PropertyInfo, includeDeclaringType);
 			else if (info is FieldInfo)
@@ -353,8 +389,10 @@ namespace Duality
 				return EventInfo(info as EventInfo, includeDeclaringType);
 			else if (info is Type)
 				return Type(info as Type);
-			else
+			else if (info != null)
 				return info.ToString();
+			else
+				return "null";
 		}
 		
 		/// <summary>

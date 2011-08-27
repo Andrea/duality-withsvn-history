@@ -17,6 +17,7 @@ namespace Duality
 	{
 		private	static	Dictionary<Type,SerializeType>	typeCache			= new Dictionary<Type,SerializeType>();
 		private	static	Dictionary<string,Type>			typeResolveCache	= new Dictionary<string,Type>();
+		private	static	Dictionary<string,MemberInfo>	memberResolveCache	= new Dictionary<string,MemberInfo>();
 
 		/// <summary>
 		/// Equals <c>BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic</c>.
@@ -166,21 +167,23 @@ namespace Duality
 		{
 			typeCache.Clear();
 			typeResolveCache.Clear();
+			memberResolveCache.Clear();
 		}
 		/// <summary>
 		/// Resolves a Type based on its <see cref="GetTypeName">type string</see>.
 		/// </summary>
 		/// <param name="typeString">The type string to resolve. Needs to be in <see cref="TypeNameFormat.FullNameWithoutAssembly"/> format.</param>
 		/// <param name="throwOnError">If true, an Exception is thrown on failure.</param>
+		/// <param name="declaringMethod">The generic method that is declaring the Type. Only necessary when resolving a generic methods parameter Type.</param>
 		/// <returns></returns>
-		public static Type ResolveType(string typeString, bool throwOnError = true)
+		public static Type ResolveType(string typeString, bool throwOnError = true, MethodInfo declaringMethod = null)
 		{
 			Type result;
 			if (typeResolveCache.TryGetValue(typeString, out result)) return result;
 
 			Assembly[] searchAsm = AppDomain.CurrentDomain.GetAssemblies().Except(DualityApp.DisposedPlugins).ToArray();
-			result = ReflectionHelper.FindTypeByFullNameWithoutAssembly(typeString, searchAsm);
-			if (result != null) typeResolveCache[typeString] = result;
+			result = ReflectionHelper.FindType(typeString, searchAsm, declaringMethod);
+			if (result != null && declaringMethod == null) typeResolveCache[typeString] = result;
 
 			if (result == null && throwOnError) throw new ApplicationException(string.Format("Can't resolve Type '{0}'. Type not found", typeString));
 			return result;
@@ -193,7 +196,15 @@ namespace Duality
 		/// <returns></returns>
 		public static MemberInfo ResolveMember(string memberString, bool throwOnError = true)
 		{
-			throw new NotImplementedException();
+			MemberInfo result;
+			if (memberResolveCache.TryGetValue(memberString, out result)) return result;
+
+			Assembly[] searchAsm = AppDomain.CurrentDomain.GetAssemblies().Except(DualityApp.DisposedPlugins).ToArray();
+			result = ReflectionHelper.FindMember(memberString, searchAsm);
+			if (result != null) memberResolveCache[memberString] = result;
+
+			if (result == null && throwOnError) throw new ApplicationException(string.Format("Can't resolve MemberInfo '{0}'. Member not found", memberString));
+			return result;
 		}
 		/// <summary>
 		/// Returns the <see cref="SerializeType"/> of a Type.
@@ -269,7 +280,7 @@ namespace Duality
 		/// <param name="T">The Type to describe</param>
 		/// <param name="attrib">How to describe the Type</param>
 		/// <returns></returns>
-		public static string GetTypeName(this Type T, TypeNameFormat attrib)
+		public static string GetTypeName(this Type T, TypeNameFormat attrib = TypeNameFormat.FullNameWithoutAssembly)
 		{
 			if (attrib == TypeNameFormat.Keyword)
 			{
@@ -277,7 +288,7 @@ namespace Duality
 			}
 			else if (attrib == TypeNameFormat.FullNameWithoutAssembly)
 			{
-				return Regex.Replace(T.FullName, @"(, [^\]\[]*)", "");
+				return T.FullName != null ? Regex.Replace(T.FullName, @"(, [^\]\[]*)", "") : T.Name;
 			}
 			else if (attrib == TypeNameFormat.CSCodeIdent || attrib == TypeNameFormat.CSCodeIdentShort)
 			{
@@ -362,23 +373,60 @@ namespace Duality
 		/// <returns></returns>
 		public static string GetMemberName(this MemberInfo member)
 		{
-			throw new NotImplementedException();
-		}
-		/// <summary>
-		/// Retrieves a Type based on a string in the specified TypeNameFormat.
-		/// </summary>
-		/// <param name="typeName">The type string to use for the search.</param>
-		/// <param name="asmSearch">An enumeration of all Assemblies the searched Type could be located in.</param>
-		/// <param name="format">The format of the provided type string.</param>
-		/// <returns></returns>
-		public static Type FindType(string typeName, IEnumerable<Assembly> asmSearch, TypeNameFormat format = TypeNameFormat.FullNameWithoutAssembly)
-		{
-			if (format == TypeNameFormat.CSCodeIdent)
-				return FindTypeByCSCodeIdent(typeName, asmSearch);
-			else if (format == TypeNameFormat.FullNameWithoutAssembly)
-				return FindTypeByFullNameWithoutAssembly(typeName, asmSearch);
-			else
-				throw new NotImplementedException("TypeNameFormat " + format.ToString() + " is not supported.");
+			if (member is Type) return "T:" + GetTypeName(member as Type);
+			string declType = member.DeclaringType.GetTypeName();
+
+			FieldInfo field = member as FieldInfo;
+			if (field != null) return "F:" + declType + ':' + field.Name;
+
+			EventInfo ev = member as EventInfo;
+			if (ev != null) return "E:" + declType + ':' + ev.Name;
+
+			PropertyInfo property = member as PropertyInfo;
+			if (property != null)
+			{
+				ParameterInfo[] parameters = property.GetIndexParameters();
+				if (parameters.Length == 0)
+					return "P:" + declType + ':' + property.Name;
+				else
+					return "P:" + declType + ':' + property.Name + '(' + parameters.ToString(p => p.ParameterType.GetTypeName(), ", ") + ')';
+			}
+
+			MethodInfo method = member as MethodInfo;
+			if (method != null)
+			{
+				ParameterInfo[] parameters = method.GetParameters();
+				Type[] genArgs = method.GetGenericArguments();
+
+				string result = "M:" + declType + ':' + method.Name;
+				
+				if (genArgs.Length != 0)
+				{
+					if (method.IsGenericMethodDefinition)
+						result += "``" + genArgs.Length.ToString();
+					else
+						result += "``" + genArgs.Length.ToString() + '[' + genArgs.ToString(t => "[" + t.GetTypeName() + "]", ",") + ']';
+				}
+				if (parameters.Length != 0)
+					result += '(' + parameters.ToString(p => p.ParameterType.GetTypeName(), ", ") + ')';
+
+				return result;
+			}
+
+			ConstructorInfo ctor = member as ConstructorInfo;
+			if (ctor != null)
+			{
+				ParameterInfo[] parameters = ctor.GetParameters();
+
+				string result = "C:" + declType + ':' + ctor.Name;
+
+				if (parameters.Length != 0)
+					result += '(' + parameters.ToString(p => p.ParameterType.GetTypeName(), ", ") + ')';
+
+				return result;
+			}
+
+			throw new NotSupportedException(string.Format("Member Type '{0} not supported", Log.Type(member.GetType())));
 		}
 		/// <summary>
 		/// Retrieves a Type based on a string in the <see cref="TypeNameFormat.CSCodeIdent"/> format.
@@ -488,8 +536,9 @@ namespace Duality
 		/// </summary>
 		/// <param name="typeName">The type string to use for the search, in <see cref="TypeNameFormat.FullNameWithoutAssembly"/> format.</param>
 		/// <param name="asmSearch">An enumeration of all Assemblies the searched Type could be located in.</param>
+		/// <param name="declaringMethod">The generic method that is declaring the Type. Only necessary when resolving a generic methods parameter Type.</param>
 		/// <returns></returns>
-		private static Type FindTypeByFullNameWithoutAssembly(string typeName, IEnumerable<Assembly> asmSearch)
+		private static Type FindType(string typeName, IEnumerable<Assembly> asmSearch, MethodInfo declaringMethod = null)
 		{
 			typeName = typeName.Trim();
 
@@ -497,7 +546,12 @@ namespace Duality
 			Match genericParamsMatch = Regex.Match(typeName, @"(\[)(\[.+\])(\])");
 			string[] genericParams = null;
 			if (genericParamsMatch.Groups.Count > 3)
-				genericParams = genericParamsMatch.Groups[2].Value.Split(',').Select(s => s.Substring(1, s.Length - 2)).ToArray();
+			{
+				string genericParamList = genericParamsMatch.Groups[2].Value;
+				genericParams = SplitArgs(genericParamList, '[', ']', ',', 0);
+				for (int i = 0; i < genericParams.Length; i++)
+					genericParams[i] = genericParams[i].Substring(1, genericParams[i].Length - 2);
+			}
 
 			// Process type name
 			string[] token = Regex.Split(typeName, @"\[\[.+\]\]");
@@ -506,47 +560,143 @@ namespace Duality
 
 			// Retrieve array ranks
 			int arrayRank = 0;
-			if (token.Length > 1)
+			MatchCollection arrayMatches = Regex.Matches(token[token.Length - 1], @"\[,*\]");
+			if (arrayMatches.Count > 0)
 			{
-				MatchCollection arrayMatches = Regex.Matches(token[1], @"\[,*\]");
-				if (arrayMatches.Count > 0)
-				{
-					string rankStr = arrayMatches[arrayMatches.Count - 1].Value;
-					arrayRank = 1 + rankStr.Count(c => c == ',');
-					elementTypeName = elementTypeName.Substring(0, elementTypeName.Length - rankStr.Length);
-				}
+				string rankStr = arrayMatches[arrayMatches.Count - 1].Value;
+				arrayRank = 1 + rankStr.Count(c => c == ',');
+				elementTypeName = elementTypeName.Substring(0, elementTypeName.Length - rankStr.Length);
 			}
 			
 			// Handle Arrays
 			if (arrayRank > 0)
 			{
-				Type elementType = FindTypeByFullNameWithoutAssembly(elementTypeName, asmSearch);
+				Type elementType = FindType(elementTypeName, asmSearch, declaringMethod);
 				if (elementType == null) return null;
 				return arrayRank == 1 ? elementType.MakeArrayType() : elementType.MakeArrayType(arrayRank);
 			}
 
-			// Retrieve base type
 			Type baseType = null;
-			foreach (Assembly a in asmSearch)
+			// Generic method parameter Types
+			if (typeNameBase.StartsWith("``"))
 			{
-				baseType = a.GetType(typeNameBase);
-				if (baseType != null) break;
+				if (declaringMethod != null)
+				{
+					int methodGenArgIndex = int.Parse(typeNameBase.Substring(2, typeNameBase.Length - 2));
+					baseType = declaringMethod.GetGenericArguments()[methodGenArgIndex];
+				}
+			}
+			else
+			{
+				// Retrieve base type
+				foreach (Assembly a in asmSearch)
+				{
+					baseType = a.GetType(typeNameBase);
+					if (baseType != null) break;
+				}
+				// Failed to retrieve base type? Try manually and ignore plus / dot difference.
+				if (baseType == null)
+				{
+					foreach (Assembly a in asmSearch)
+					{
+						foreach (Type t in a.GetTypes())
+						{
+							string nameTemp = t.FullName.Replace('+', '.');
+							if (typeNameBase == nameTemp)
+							{
+								baseType = t;
+								break;
+							}
+						}
+						if (baseType != null) break;
+					}
+				}
 			}
 			
 			// Retrieve generic type params
 			if (genericParams != null)
 			{
 				Type[] genericParamTypes = new Type[genericParams.Length];
+
 				for (int i = 0; i < genericParamTypes.Length; i++)
 				{
-					genericParamTypes[i] = FindTypeByFullNameWithoutAssembly(genericParams[i], asmSearch);
+					// Explicitly referring to generic type definition params: Don't attemp to make it generic.
+					if ((genericParams[i].Length > 0 && genericParams[i][0] == '`') && 
+						(genericParams[i].Length < 2 || genericParams[i][1] != '`')) return baseType;
+
+					genericParamTypes[i] = FindType(genericParams[i], asmSearch, declaringMethod);
+
+					// Can't find the generic type argument: Fail.
 					if (genericParamTypes[i] == null) return null;
 				}
-				if (baseType == null) return null;
-				return baseType.MakeGenericType(genericParamTypes);
+
+				if (baseType == null)
+					return null;
+				else
+					return baseType.MakeGenericType(genericParamTypes);
 			}
 
 			return baseType;
+		}
+		/// <summary>
+		/// Retrieves a MemberInfo based on a string.
+		/// </summary>
+		/// <param name="typeName">The member string to use for the search.</param>
+		/// <param name="asmSearch">An enumeration of all Assemblies the searched Type could be located in.</param>
+		/// <returns></returns>
+		/// <seealso cref="GetMemberName(MemberInfo)"/>
+		private static MemberInfo FindMember(string memberString, IEnumerable<Assembly> asmSearch)
+		{
+			string[] token = memberString.Split(':');
+
+			MemberTypes memberType;
+			switch (token[0][0])
+			{
+				case 'T':	memberType = MemberTypes.TypeInfo;		break;
+				case 'M':	memberType = MemberTypes.Method;		break;
+				case 'F':	memberType = MemberTypes.Field;			break;
+				case 'E':	memberType = MemberTypes.Event;			break;
+				case 'C':	memberType = MemberTypes.Constructor;	break;
+				case 'P':	memberType = MemberTypes.Property;		break;
+				default:	throw new NotSupportedException(string.Format("Member Type '{0}' unknown or not supported", token[0][0]));
+			}
+
+			Type declaringType = FindType(token[1], asmSearch);
+			if (memberType == MemberTypes.TypeInfo) return declaringType;
+			if (declaringType == null) return null;
+
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Performs a selective split operation on the specified string. Intended to be used on hierarchial argument lists.
+		/// </summary>
+		/// <param name="argList">The argument list to split.</param>
+		/// <param name="pushLevel">The char that increases the current hierarchy level.</param>
+		/// <param name="popLevel">The char that decreases the current hierarchy level.</param>
+		/// <param name="separator">The char that separates two arguments.</param>
+		/// <param name="splitLevel">The hierarchy level at which to perform the split operation.</param>
+		/// <returns></returns>
+		public static string[] SplitArgs(string argList, char pushLevel, char popLevel, char separator, int splitLevel)
+		{
+			// Splitting the parameter list without destroying generic arguments
+			int lastSplitIndex = -1;
+			int genArgLevel = 0;
+			List<string> ptm = new List<string>();
+			for (int i = 0; i < argList.Length; i++)
+			{
+				if (argList[i] == separator && genArgLevel == splitLevel)
+				{
+					ptm.Add(argList.Substring(lastSplitIndex + 1, i - lastSplitIndex - 1));
+					lastSplitIndex = i;
+				}
+				else if (argList[i] == pushLevel)
+					genArgLevel++;
+				else if (argList[i] == popLevel)
+					genArgLevel--;
+			}
+			ptm.Add(argList.Substring(lastSplitIndex + 1, argList.Length - lastSplitIndex - 1));
+			return ptm.ToArray();
 		}
 	}
 

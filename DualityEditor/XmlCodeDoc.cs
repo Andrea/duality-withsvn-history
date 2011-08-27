@@ -22,7 +22,8 @@ namespace DualityEditor
 			Field,
 			Property,
 			Event,
-			Method
+			Method,
+			Constructor
 		}
 		public class Entry
 		{
@@ -31,7 +32,7 @@ namespace DualityEditor
 			private	string		memberName;
 			private	string		summary;
 
-			public EntryType Type
+			public EntryType EntryType
 			{
 				get { return this.type; }
 			}
@@ -42,6 +43,14 @@ namespace DualityEditor
 			public string MemberName
 			{
 				get { return this.memberName; }
+			}
+			public Type Type
+			{
+				get { return ReflectionHelper.ResolveType(this.typeName); }
+			}
+			public MemberInfo Member
+			{
+				get { return this.memberName == null ? this.Type : ReflectionHelper.ResolveMember(this.memberName); }
 			}
 
 			private Entry(EntryType type, string typeName, string memberName)
@@ -57,20 +66,21 @@ namespace DualityEditor
 				if (member is Type) entryType = EntryType.Type;
 				else if (member is FieldInfo) entryType = EntryType.Field;
 				else if (member is PropertyInfo) entryType = EntryType.Property;
-				else if (member is MethodBase) entryType = EntryType.Method;
+				else if (member is MethodInfo) entryType = EntryType.Method;
+				else if (member is ConstructorInfo) entryType = EntryType.Constructor;
 				else if (member is EventInfo) entryType = EntryType.Event;
 				else entryType = EntryType.Unknown;
 
-				Type type = entryType == EntryType.Type ? member as Type : member.DeclaringType;
-
 				if (entryType == EntryType.Type)
-					return new Entry(entryType, type.GetTypeName(TypeNameFormat.FullNameWithoutAssembly), null);
+					return new Entry(entryType, (member as Type).GetTypeName(), null);
 				else if (member != null)
-					return new Entry(entryType, type.GetTypeName(TypeNameFormat.FullNameWithoutAssembly), member.GetMemberName());
+					return new Entry(entryType, member.DeclaringType.GetTypeName(), member.GetMemberName());
 				else
 					return null;
 			}
 		}
+
+		private	List<Entry>	entries	= new List<Entry>();
 
 		public XmlCodeDoc()
 		{
@@ -99,6 +109,8 @@ namespace DualityEditor
 		}
 		public void LoadFromXml(string xml)
 		{
+			this.Clear();
+
 			XmlDocument xmlDoc = new XmlDocument();
 			xmlDoc.LoadXml(xml);
 			
@@ -115,14 +127,30 @@ namespace DualityEditor
 
 				// Create a member entry based on the determined data.
 				MemberInfo member = ResolveDocStyleMember(memberNameAttrib.Value);
-				Entry memberEntry = Entry.Create(member);
-				if (memberEntry != null) Console.WriteLine("{0},\t{1},\t{2}", memberEntry.Type, memberEntry.TypeName, memberEntry.MemberName);
+				if (member != null)
+				{
+					Entry memberEntry = Entry.Create(member);
+
+					// ToDo: Read actual documentation stuff.
+					Type test = memberEntry.Type;
+					MemberInfo test2 = memberEntry.Member;
+
+					if (memberEntry != null) this.AddEntry(memberEntry);
+				}
 			}
 		}
 
-		public void Append(XmlCodeDoc other)
+		public void Clear()
 		{
-
+			this.entries.Clear();
+		}
+		public void AddEntry(Entry entry)
+		{
+			this.entries.Add(entry);
+		}
+		public void AppendDoc(XmlCodeDoc other)
+		{
+			this.entries.AddRange(other.entries);
 		}
 
 		private static MemberInfo ResolveDocStyleMember(string docId)
@@ -175,8 +203,23 @@ namespace DualityEditor
 				if (paramIndex != -1)
 				{
 					methodName = memberName.Substring(0, paramIndex);
-					string[] paramTypeNames = memberName.Substring(paramIndex + 1, memberName.Length - paramIndex - 2).Split(',');
-					paramTypes = paramTypeNames.Select(ResolveDocStyleType).ToArray();
+					string paramList = memberName.Substring(paramIndex + 1, memberName.Length - paramIndex - 2);
+					string[] paramTypeNames = paramList.Split(',');
+					paramTypes = new Type[paramTypeNames.Length];
+					for (int i = 0; i < paramTypeNames.Length; i++)
+					{
+						bool isByRef = false;
+						if (paramTypeNames[i].EndsWith("@"))
+						{
+							// ref / out parameter
+							paramTypeNames[i] = paramTypeNames[i].Remove(paramTypeNames[i].Length - 1);
+							isByRef = true;
+						}
+
+						paramTypes[i] = ResolveDocStyleType(paramTypeNames[i]);
+
+						if (isByRef && paramTypes[i] != null) paramTypes[i] = paramTypes[i].MakeByRefType();
+					}
 				}
 				else
 				{
@@ -187,29 +230,129 @@ namespace DualityEditor
 			}
 			else if (memberEntryType == EntryType.Method)
 			{
-				// ToDo: Basically same as for Property, but supporting generic methods.
-				throw new NotSupportedException();
+				string methodName;
+				string[] paramTypeNames;
+				int paramIndex = memberName.IndexOf('(');
+				if (paramIndex != -1)
+				{
+					methodName = memberName.Substring(0, paramIndex);
+					string paramList = memberName.Substring(paramIndex + 1, memberName.Length - paramIndex - 2);
+					paramTypeNames = SplitGenArgs(paramList);
+				}
+				else
+				{
+					methodName = memberName;
+					paramTypeNames = new string[0];
+				}
+				
+				// Determine parameter types
+				Type[] paramTypes = new Type[paramTypeNames.Length];
+				bool[] paramTypeByRef = new bool[paramTypeNames.Length];
+				for (int i = 0; i < paramTypeNames.Length; i++)
+				{
+					paramTypeByRef[i] = false;
+					if (paramTypeNames[i].EndsWith("@"))
+					{
+						// ref / out parameter
+						paramTypeNames[i] = paramTypeNames[i].Remove(paramTypeNames[i].Length - 1);
+						paramTypeByRef[i] = true;
+					}
+
+					if (paramTypeNames[i][0] == '`' && paramTypeNames[i][1] != '`')
+					{
+						int typeGenArgIndex = int.Parse(paramTypeNames[i].Substring(1, paramTypeNames[i].Length - 1));
+						paramTypes[i] = memberType.GetGenericArguments()[typeGenArgIndex];
+					}
+					else if (paramTypeNames[i].StartsWith("``"))
+						paramTypes[i] = null;
+					else
+						paramTypes[i] = ResolveDocStyleType(paramTypeNames[i]);
+
+					if (paramTypeByRef[i] && paramTypes[i] != null) paramTypes[i] = paramTypes[i].MakeByRefType();
+				}
+
+				if (methodName == "#ctor") memberEntryType = EntryType.Constructor;
+				if (memberEntryType == EntryType.Constructor)
+				{
+					member = memberType.GetConstructor(paramTypes);
+				}
+				else
+				{
+					int genMethodArgDeclIndex = methodName.IndexOf("``");
+					int genMethodArgs = 0;
+					if (genMethodArgDeclIndex != -1)
+					{
+						genMethodArgs = int.Parse(methodName.Substring(genMethodArgDeclIndex + 2, methodName.Length - genMethodArgDeclIndex - 2));
+						methodName = methodName.Remove(genMethodArgDeclIndex);
+					}
+
+					MethodInfo[] availMethods = memberType.GetMethods(ReflectionHelper.BindAll).Where(
+						m => m.Name == methodName && 
+						m.GetGenericArguments().Length == genMethodArgs &&
+						m.GetParameters().Length == paramTypes.Length).ToArray();
+
+					// Select the method that fits
+					foreach (MethodInfo method in availMethods)
+					{
+						bool possibleMatch = true;
+						ParameterInfo[] methodParams = method.GetParameters();
+						for (int i = 0; i < methodParams.Length; i++)
+						{
+							// Generic method param
+							if (paramTypes[i] == null)
+							{
+								Type genMethodParam = ResolveDocStyleType(paramTypeNames[i], method);
+								if (paramTypeByRef[i] && genMethodParam != null) genMethodParam = genMethodParam.MakeByRefType();
+
+								if (genMethodParam != methodParams[i].ParameterType)
+								{
+									possibleMatch = false;
+									break;
+								}
+							}
+							// Some other param
+							else if (methodParams[i].ParameterType != paramTypes[i])
+							{
+								possibleMatch = false;
+								break;
+							}
+						}
+						if (possibleMatch)
+						{
+							member = method;
+							break;
+						}
+					}
+				}
 			}
 
 			return member;
 		}
-		private static Type ResolveDocStyleType(string typeString)
+		private static Type ResolveDocStyleType(string typeString, MethodInfo declaringMethod = null)
 		{
-			Type result = null;
-			StringBuilder memberTypeNameBuilder = null;
-			do
+			return ReflectionHelper.ResolveType(ConvertFromDocStyleType(typeString), false, declaringMethod);
+		}
+		private static string ConvertFromDocStyleType(string typeString)
+		{
+			string genArgList = null;
+			string[] genArgStrings = null;
+			int genArgStartIndex = typeString.IndexOf('{');
+			int genArgEndIndex = typeString.LastIndexOf('}');
+			if (genArgStartIndex != -1)
 			{
-				result = ReflectionHelper.ResolveType(typeString, false);
-				if (result != null) break;
+				genArgList = typeString.Substring(genArgStartIndex + 1, genArgEndIndex - genArgStartIndex - 1);
+				genArgStrings = SplitGenArgs(genArgList);
+				typeString = 
+					typeString.Substring(0, genArgStartIndex) + "`" + genArgStrings.Length + "[" + 
+					genArgStrings.ToString(s => "[" + ConvertFromDocStyleType(s) + "]", ",") + 
+					"]" + typeString.Substring(genArgEndIndex + 1, typeString.Length - genArgEndIndex - 1);
+			}
 
-				if (memberTypeNameBuilder == null) memberTypeNameBuilder = new StringBuilder(typeString);
-				int lastDotIndex = typeString.LastIndexOf('.');
-				if (lastDotIndex == -1) break;
-
-				memberTypeNameBuilder[lastDotIndex] = '+';
-				typeString = memberTypeNameBuilder.ToString();
-			} while (true);
-			return result;
+			return typeString;
+		}
+		private static string[] SplitGenArgs(string paramList)
+		{
+			return ReflectionHelper.SplitArgs(paramList, '{', '}', ',', 0);
 		}
 	}
 }

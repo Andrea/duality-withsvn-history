@@ -10,6 +10,9 @@
 			(use in Entry.Create!)
 	-->	...
 
+-->	As soon as ResolveMember-Stuff works: Introduce new BinaryFormatter version that uses it.
+	It will be more reliable than the current version (e.g. properly support generic methods, etc.)
+
 -->	Just a thought: Use the XML documentation on classes to display tooltips
 	in the editor?
 	-->	Info about Components in the Create-Menu and when hovering them

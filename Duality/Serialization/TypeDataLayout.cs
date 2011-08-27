@@ -82,7 +82,7 @@ namespace Duality.Serialization
 			for (int i = 0; i < t.Fields.Length; i++)
 			{
 				this.fields[i].name = t.Fields[i].Name;
-				this.fields[i].typeString = ReflectionHelper.GetTypeName(t.Fields[i].FieldType, TypeNameFormat.FullNameWithoutAssembly);
+				this.fields[i].typeString = ReflectionHelper.GetTypeName(t.Fields[i].FieldType);
 			}
 		}
 
