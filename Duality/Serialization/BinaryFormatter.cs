@@ -191,78 +191,11 @@ namespace Duality.Serialization
 
 				this.writer.Write(cachedType.TypeString);
 			}
-			else if (obj is FieldInfo)
+			else if (obj is MemberInfo)
 			{
-				FieldInfo field = obj as FieldInfo;
-				SerializeType declaringType = ReflectionHelper.GetSerializeType(field.DeclaringType);
+				MemberInfo member = obj as MemberInfo;
 
-				this.writer.Write(field.IsStatic);
-				this.writer.Write(declaringType.TypeString);
-				this.writer.Write(field.Name);
-			}
-			else if (obj is PropertyInfo)
-			{
-				PropertyInfo property = obj as PropertyInfo;
-				ParameterInfo[] indexParams = property.GetIndexParameters();
-
-				SerializeType declaringType = ReflectionHelper.GetSerializeType(property.DeclaringType);
-				SerializeType propertyType = ReflectionHelper.GetSerializeType(property.PropertyType);
-
-				SerializeType[] paramTypes = new SerializeType[indexParams.Length];
-				for (int i = 0; i < indexParams.Length; i++)
-					paramTypes[i] = ReflectionHelper.GetSerializeType(indexParams[i].ParameterType);
-
-				this.writer.Write(property.GetAccessors(true)[0].IsStatic);
-				this.writer.Write(declaringType.TypeString);
-				this.writer.Write(property.Name);
-				this.writer.Write(propertyType.TypeString);
-				this.writer.Write(paramTypes.Length);
-				for (int i = 0; i < paramTypes.Length; i++)
-					this.writer.Write(paramTypes[i].TypeString);
-			}
-			else if (obj is MethodInfo)
-			{
-				MethodInfo method = obj as MethodInfo;
-				ParameterInfo[] parameters = method.GetParameters();
-
-				SerializeType declaringType = ReflectionHelper.GetSerializeType(method.DeclaringType);
-
-				SerializeType[] paramTypes = new SerializeType[parameters.Length];
-				for (int i = 0; i < parameters.Length; i++)
-					paramTypes[i] = ReflectionHelper.GetSerializeType(parameters[i].ParameterType);
-
-				this.writer.Write(method.IsStatic);
-				this.writer.Write(declaringType.TypeString);
-				this.writer.Write(method.Name);
-				this.writer.Write(paramTypes.Length);
-				for (int i = 0; i < paramTypes.Length; i++)
-					this.writer.Write(paramTypes[i].TypeString);
-			}
-			else if (obj is ConstructorInfo)
-			{
-				ConstructorInfo method = obj as ConstructorInfo;
-				ParameterInfo[] parameters = method.GetParameters();
-
-				SerializeType declaringType = ReflectionHelper.GetSerializeType(method.DeclaringType);
-
-				SerializeType[] paramTypes = new SerializeType[parameters.Length];
-				for (int i = 0; i < parameters.Length; i++)
-					paramTypes[i] = ReflectionHelper.GetSerializeType(parameters[i].ParameterType);
-
-				this.writer.Write(method.IsStatic);
-				this.writer.Write(declaringType.TypeString);
-				this.writer.Write(paramTypes.Length);
-				for (int i = 0; i < paramTypes.Length; i++)
-					this.writer.Write(paramTypes[i].TypeString);
-			}
-			else if (obj is EventInfo)
-			{
-				EventInfo e = obj as EventInfo;
-				SerializeType declaringType = ReflectionHelper.GetSerializeType(e.DeclaringType);
-
-				this.writer.Write(e.GetRaiseMethod().IsStatic);
-				this.writer.Write(declaringType.TypeString);
-				this.writer.Write(e.Name);
+				this.writer.Write(member.GetMemberName());
 			}
 			else if (obj == null)
 				throw new ArgumentNullException("obj");
@@ -629,99 +562,118 @@ namespace Duality.Serialization
 
 			try
 			{
-				if (dataType == DataType.Type)
+				#region Version 1
+				if (this.dataVersion == 1)
 				{
-					string typeString = this.reader.ReadString();
-					Type type = ReflectionHelper.ResolveType(typeString);
-					result = type;
+					if (dataType == DataType.Type)
+					{
+						string typeString = this.reader.ReadString();
+						Type type = ReflectionHelper.ResolveType(typeString);
+						result = type;
+					}
+					else if (dataType == DataType.FieldInfo)
+					{
+						bool isStatic = this.reader.ReadBoolean();
+						string declaringTypeString = this.reader.ReadString();
+						string fieldName = this.reader.ReadString();
+
+						Type declaringType = ReflectionHelper.ResolveType(declaringTypeString);
+						FieldInfo field = declaringType.GetField(fieldName, isStatic ? ReflectionHelper.BindStaticAll : ReflectionHelper.BindInstanceAll);
+						result = field;
+					}
+					else if (dataType == DataType.PropertyInfo)
+					{
+						bool isStatic = this.reader.ReadBoolean();
+						string declaringTypeString = this.reader.ReadString();
+						string propertyName = this.reader.ReadString();
+						string propertyTypeString = this.reader.ReadString();
+
+						int paramCount = this.reader.ReadInt32();
+						string[] paramTypeStrings = new string[paramCount];
+						for (int i = 0; i < paramCount; i++)
+							paramTypeStrings[i] = this.reader.ReadString();
+
+						Type declaringType = ReflectionHelper.ResolveType(declaringTypeString);
+						Type propertyType = ReflectionHelper.ResolveType(propertyTypeString);
+						Type[] paramTypes = new Type[paramCount];
+						for (int i = 0; i < paramCount; i++)
+							paramTypes[i] = ReflectionHelper.ResolveType(paramTypeStrings[i]);
+
+						PropertyInfo property = declaringType.GetProperty(
+							propertyName, 
+							isStatic ? ReflectionHelper.BindStaticAll : ReflectionHelper.BindInstanceAll, 
+							null, 
+							propertyType, 
+							paramTypes, 
+							null);
+
+						result = property;
+					}
+					else if (dataType == DataType.MethodInfo)
+					{
+						bool isStatic = this.reader.ReadBoolean();
+						string declaringTypeString = this.reader.ReadString();
+						string methodName = this.reader.ReadString();
+
+						int paramCount = this.reader.ReadInt32();
+						string[] paramTypeStrings = new string[paramCount];
+						for (int i = 0; i < paramCount; i++)
+							paramTypeStrings[i] = this.reader.ReadString();
+
+						Type declaringType = ReflectionHelper.ResolveType(declaringTypeString);
+						Type[] paramTypes = new Type[paramCount];
+						for (int i = 0; i < paramCount; i++)
+							paramTypes[i] = ReflectionHelper.ResolveType(paramTypeStrings[i]);
+
+						MethodInfo method = declaringType.GetMethod(methodName, isStatic ? ReflectionHelper.BindStaticAll : ReflectionHelper.BindInstanceAll, null, paramTypes, null);
+						result = method;
+					}
+					else if (dataType == DataType.ConstructorInfo)
+					{
+						bool isStatic = this.reader.ReadBoolean();
+						string declaringTypeString = this.reader.ReadString();
+
+						int paramCount = this.reader.ReadInt32();
+						string[] paramTypeStrings = new string[paramCount];
+						for (int i = 0; i < paramCount; i++)
+							paramTypeStrings[i] = this.reader.ReadString();
+
+						Type declaringType = ReflectionHelper.ResolveType(declaringTypeString);
+						Type[] paramTypes = new Type[paramCount];
+						for (int i = 0; i < paramCount; i++)
+							paramTypes[i] = ReflectionHelper.ResolveType(paramTypeStrings[i]);
+
+						ConstructorInfo method = declaringType.GetConstructor(isStatic ? ReflectionHelper.BindStaticAll : ReflectionHelper.BindInstanceAll, null, paramTypes, null);
+						result = method;
+					}
+					else if (dataType == DataType.EventInfo)
+					{
+						bool isStatic = this.reader.ReadBoolean();
+						string declaringTypeString = this.reader.ReadString();
+						string eventName = this.reader.ReadString();
+
+						Type declaringType = ReflectionHelper.ResolveType(declaringTypeString);
+						EventInfo e = declaringType.GetEvent(eventName, isStatic ? ReflectionHelper.BindStaticAll : ReflectionHelper.BindInstanceAll);
+						result = e;
+					}
+					else
+						throw new ApplicationException(string.Format("Invalid DataType '{0}' in ReadMemberInfo method.", dataType));
 				}
-				else if (dataType == DataType.FieldInfo)
+				#endregion
+				else if (dataVersion == 2)
 				{
-					bool isStatic = this.reader.ReadBoolean();
-					string declaringTypeString = this.reader.ReadString();
-					string fieldName = this.reader.ReadString();
-
-					Type declaringType = ReflectionHelper.ResolveType(declaringTypeString);
-					FieldInfo field = declaringType.GetField(fieldName, isStatic ? ReflectionHelper.BindStaticAll : ReflectionHelper.BindInstanceAll);
-					result = field;
+					if (dataType == DataType.Type)
+					{
+						string typeString = this.reader.ReadString();
+						Type type = ReflectionHelper.ResolveType(typeString);
+						result = type;
+					}
+					else
+					{
+						string memberString = this.reader.ReadString();
+						result = ReflectionHelper.ResolveMember(memberString);
+					}
 				}
-				else if (dataType == DataType.PropertyInfo)
-				{
-					bool isStatic = this.reader.ReadBoolean();
-					string declaringTypeString = this.reader.ReadString();
-					string propertyName = this.reader.ReadString();
-					string propertyTypeString = this.reader.ReadString();
-
-					int paramCount = this.reader.ReadInt32();
-					string[] paramTypeStrings = new string[paramCount];
-					for (int i = 0; i < paramCount; i++)
-						paramTypeStrings[i] = this.reader.ReadString();
-
-					Type declaringType = ReflectionHelper.ResolveType(declaringTypeString);
-					Type propertyType = ReflectionHelper.ResolveType(propertyTypeString);
-					Type[] paramTypes = new Type[paramCount];
-					for (int i = 0; i < paramCount; i++)
-						paramTypes[i] = ReflectionHelper.ResolveType(paramTypeStrings[i]);
-
-					PropertyInfo property = declaringType.GetProperty(
-						propertyName, 
-						isStatic ? ReflectionHelper.BindStaticAll : ReflectionHelper.BindInstanceAll, 
-						null, 
-						propertyType, 
-						paramTypes, 
-						null);
-
-					result = property;
-				}
-				else if (dataType == DataType.MethodInfo)
-				{
-					bool isStatic = this.reader.ReadBoolean();
-					string declaringTypeString = this.reader.ReadString();
-					string methodName = this.reader.ReadString();
-
-					int paramCount = this.reader.ReadInt32();
-					string[] paramTypeStrings = new string[paramCount];
-					for (int i = 0; i < paramCount; i++)
-						paramTypeStrings[i] = this.reader.ReadString();
-
-					Type declaringType = ReflectionHelper.ResolveType(declaringTypeString);
-					Type[] paramTypes = new Type[paramCount];
-					for (int i = 0; i < paramCount; i++)
-						paramTypes[i] = ReflectionHelper.ResolveType(paramTypeStrings[i]);
-
-					MethodInfo method = declaringType.GetMethod(methodName, isStatic ? ReflectionHelper.BindStaticAll : ReflectionHelper.BindInstanceAll, null, paramTypes, null);
-					result = method;
-				}
-				else if (dataType == DataType.ConstructorInfo)
-				{
-					bool isStatic = this.reader.ReadBoolean();
-					string declaringTypeString = this.reader.ReadString();
-
-					int paramCount = this.reader.ReadInt32();
-					string[] paramTypeStrings = new string[paramCount];
-					for (int i = 0; i < paramCount; i++)
-						paramTypeStrings[i] = this.reader.ReadString();
-
-					Type declaringType = ReflectionHelper.ResolveType(declaringTypeString);
-					Type[] paramTypes = new Type[paramCount];
-					for (int i = 0; i < paramCount; i++)
-						paramTypes[i] = ReflectionHelper.ResolveType(paramTypeStrings[i]);
-
-					ConstructorInfo method = declaringType.GetConstructor(isStatic ? ReflectionHelper.BindStaticAll : ReflectionHelper.BindInstanceAll, null, paramTypes, null);
-					result = method;
-				}
-				else if (dataType == DataType.EventInfo)
-				{
-					bool isStatic = this.reader.ReadBoolean();
-					string declaringTypeString = this.reader.ReadString();
-					string eventName = this.reader.ReadString();
-
-					Type declaringType = ReflectionHelper.ResolveType(declaringTypeString);
-					EventInfo e = declaringType.GetEvent(eventName, isStatic ? ReflectionHelper.BindStaticAll : ReflectionHelper.BindInstanceAll);
-					result = e;
-				}
-				else
-					throw new ApplicationException(string.Format("Invalid DataType '{0}' in ReadMemberInfo method.", dataType));
 			}
 			catch (Exception e)
 			{

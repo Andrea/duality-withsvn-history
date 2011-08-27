@@ -66,61 +66,7 @@ namespace Duality.Serialization
 			if (node == null) throw new ArgumentNullException("node");
 
 			this.writer.Write(node.ObjId);
-			if (node is TypeInfoNode)
-			{
-				TypeInfoNode type = node as TypeInfoNode;
-
-				this.writer.Write(type.TypeString);
-			}
-			else if (node is FieldInfoNode)
-			{
-				FieldInfoNode field = node as FieldInfoNode;
-
-				this.writer.Write(field.IsStatic);
-				this.writer.Write(field.TypeString);
-				this.writer.Write(field.FieldName);
-			}
-			else if (node is PropertyInfoNode)
-			{
-				PropertyInfoNode property = node as PropertyInfoNode;
-
-				this.writer.Write(property.IsStatic);
-				this.writer.Write(property.TypeString);
-				this.writer.Write(property.PropertyName);
-				this.writer.Write(property.PropertyType);
-				this.writer.Write(property.ParameterTypes.Length);
-				for (int i = 0; i < property.ParameterTypes.Length; i++)
-					this.writer.Write(property.ParameterTypes[i]);
-			}
-			else if (node is MethodInfoNode)
-			{
-				MethodInfoNode method = node as MethodInfoNode;
-
-				this.writer.Write(method.IsStatic);
-				this.writer.Write(method.TypeString);
-				this.writer.Write(method.MethodName);
-				this.writer.Write(method.ParameterTypes.Length);
-				for (int i = 0; i < method.ParameterTypes.Length; i++)
-					this.writer.Write(method.ParameterTypes[i]);
-			}
-			else if (node is ConstructorInfoNode)
-			{
-				ConstructorInfoNode method = node as ConstructorInfoNode;
-
-				this.writer.Write(method.IsStatic);
-				this.writer.Write(method.TypeString);
-				this.writer.Write(method.ParameterTypes.Length);
-				for (int i = 0; i < method.ParameterTypes.Length; i++)
-					this.writer.Write(method.ParameterTypes[i]);
-			}
-			else if (node is EventInfoNode)
-			{
-				EventInfoNode e = node as EventInfoNode;
-
-				this.writer.Write(e.IsStatic);
-				this.writer.Write(e.TypeString);
-				this.writer.Write(e.EventName);
-			}
+			this.writer.Write(node.TypeString);
 		}
 		/// <summary>
 		/// Writes the specified <see cref="Duality.Serialization.MetaFormat.ArrayNode"/>, including possible child nodes.
@@ -289,68 +235,9 @@ namespace Duality.Serialization
 		{
 			uint objId = this.reader.ReadUInt32();
 			MemberInfoNode result;
-
-			if (dataType == DataType.Type)
-			{
-				string typeString = this.reader.ReadString();
-				result = new TypeInfoNode(typeString, objId);
-			}
-			else if (dataType == DataType.FieldInfo)
-			{
-				bool isStatic = this.reader.ReadBoolean();
-				string declaringTypeString = this.reader.ReadString();
-				string fieldName = this.reader.ReadString();
-				result = new FieldInfoNode(declaringTypeString, objId, fieldName, isStatic);
-			}
-			else if (dataType == DataType.PropertyInfo)
-			{
-				bool isStatic = this.reader.ReadBoolean();
-				string declaringTypeString = this.reader.ReadString();
-				string propertyName = this.reader.ReadString();
-				string propertyTypeString = this.reader.ReadString();
-
-				int paramCount = this.reader.ReadInt32();
-				string[] paramTypeStrings = new string[paramCount];
-				for (int i = 0; i < paramCount; i++)
-					paramTypeStrings[i] = this.reader.ReadString();
-
-				result = new PropertyInfoNode(declaringTypeString, objId, propertyName, propertyTypeString, paramTypeStrings, isStatic);
-			}
-			else if (dataType == DataType.MethodInfo)
-			{
-				bool isStatic = this.reader.ReadBoolean();
-				string declaringTypeString = this.reader.ReadString();
-				string methodName = this.reader.ReadString();
-
-				int paramCount = this.reader.ReadInt32();
-				string[] paramTypeStrings = new string[paramCount];
-				for (int i = 0; i < paramCount; i++)
-					paramTypeStrings[i] = this.reader.ReadString();
-
-				result = new MethodInfoNode(declaringTypeString, objId, methodName, paramTypeStrings, isStatic);
-			}
-			else if (dataType == DataType.ConstructorInfo)
-			{
-				bool isStatic = this.reader.ReadBoolean();
-				string declaringTypeString = this.reader.ReadString();
-
-				int paramCount = this.reader.ReadInt32();
-				string[] paramTypeStrings = new string[paramCount];
-				for (int i = 0; i < paramCount; i++)
-					paramTypeStrings[i] = this.reader.ReadString();
-
-				result = new ConstructorInfoNode(declaringTypeString, objId, paramTypeStrings, isStatic);
-			}
-			else if (dataType == DataType.EventInfo)
-			{
-				bool isStatic = this.reader.ReadBoolean();
-				string declaringTypeString = this.reader.ReadString();
-				string eventName = this.reader.ReadString();
-
-				result = new EventInfoNode(declaringTypeString, objId, eventName, isStatic);
-			}
-			else
-				throw new ApplicationException(string.Format("Invalid DataType '{0}' in ReadMemberInfo method.", dataType));
+			
+			string typeString = this.reader.ReadString();
+			result = new MemberInfoNode(dataType, typeString, objId);
 			
 			// Prepare object reference
 			if (objId != 0)

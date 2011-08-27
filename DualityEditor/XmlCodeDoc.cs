@@ -132,8 +132,6 @@ namespace DualityEditor
 					Entry memberEntry = Entry.Create(member);
 
 					// ToDo: Read actual documentation stuff.
-					Type test = memberEntry.Type;
-					MemberInfo test2 = memberEntry.Member;
 
 					if (memberEntry != null) this.AddEntry(memberEntry);
 				}

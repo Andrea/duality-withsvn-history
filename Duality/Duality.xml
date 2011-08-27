@@ -1903,6 +1903,11 @@
             A counter for the number of ids that have been used during the current <see cref="T:Duality.Serialization.BinaryFormatterBase.Operation"/>.
             </summary>
         </member>
+        <member name="F:Duality.Serialization.BinaryFormatterBase.dataVersion">
+            <summary>
+            The binary format version in which the currently incoming data is available.
+            </summary>
+        </member>
         <member name="F:Duality.Serialization.BinaryFormatterBase.objRefIdMap">
             <summary>
             A dictionary that maps objects to their object ids.
@@ -8821,87 +8826,6 @@
             Describes a serialization <see cref="T:System.Reflection.MemberInfo"/> data node.
             </summary>
             <seealso cref="T:Duality.Serialization.BinaryMetaFormatter"/>
-        </member>
-        <member name="P:Duality.Serialization.MetaFormat.MemberInfoNode.IsStatic">
-            <summary>
-            [GET / SET] Whether the referenced <see cref="T:System.Reflection.MemberInfo"/> is static.
-            </summary>
-        </member>
-        <member name="T:Duality.Serialization.MetaFormat.TypeInfoNode">
-            <summary>
-            Describes a serialization <see cref="T:System.Type"/> data node.
-            </summary>
-            <seealso cref="T:Duality.Serialization.BinaryMetaFormatter"/>
-        </member>
-        <member name="T:Duality.Serialization.MetaFormat.FieldInfoNode">
-            <summary>
-            Describes a serialization <see cref="T:System.Reflection.FieldInfo"/> data node.
-            </summary>
-            <seealso cref="T:Duality.Serialization.BinaryMetaFormatter"/>
-        </member>
-        <member name="P:Duality.Serialization.MetaFormat.FieldInfoNode.FieldName">
-            <summary>
-            [GET / SET] The name of the <see cref="T:System.Reflection.FieldInfo">field</see>.
-            </summary>
-        </member>
-        <member name="T:Duality.Serialization.MetaFormat.PropertyInfoNode">
-            <summary>
-            Describes a serialization <see cref="T:System.Reflection.PropertyInfo"/> data node.
-            </summary>
-            <seealso cref="T:Duality.Serialization.BinaryMetaFormatter"/>
-        </member>
-        <member name="P:Duality.Serialization.MetaFormat.PropertyInfoNode.PropertyName">
-            <summary>
-            [GET / SET] The name of the <see cref="T:System.Reflection.PropertyInfo">property</see>.
-            </summary>
-        </member>
-        <member name="P:Duality.Serialization.MetaFormat.PropertyInfoNode.PropertyType">
-            <summary>
-            [GET / SET] A string referring to the properties <see cref="T:System.Type"/>.
-            </summary>
-        </member>
-        <member name="P:Duality.Serialization.MetaFormat.PropertyInfoNode.ParameterTypes">
-            <summary>
-            [GET / SET] An array of strings referring to the properties index parameter types.
-            </summary>
-        </member>
-        <member name="T:Duality.Serialization.MetaFormat.MethodInfoNode">
-            <summary>
-            Describes a serialization <see cref="T:System.Reflection.MethodInfo"/> data node.
-            </summary>
-            <seealso cref="T:Duality.Serialization.BinaryMetaFormatter"/>
-        </member>
-        <member name="P:Duality.Serialization.MetaFormat.MethodInfoNode.MethodName">
-            <summary>
-            [GET / SET] The name of the <see cref="T:System.Reflection.MethodInfo">method</see>.
-            </summary>
-        </member>
-        <member name="P:Duality.Serialization.MetaFormat.MethodInfoNode.ParameterTypes">
-            <summary>
-            [GET / SET] An array of strings referring to the methods parameter types.
-            </summary>
-        </member>
-        <member name="T:Duality.Serialization.MetaFormat.ConstructorInfoNode">
-            <summary>
-            Describes a serialization <see cref="T:System.Reflection.ConstructorInfo"/> data node.
-            </summary>
-            <seealso cref="T:Duality.Serialization.BinaryMetaFormatter"/>
-        </member>
-        <member name="P:Duality.Serialization.MetaFormat.ConstructorInfoNode.ParameterTypes">
-            <summary>
-            [GET / SET] An array of strings referring to the constructors parameter types.
-            </summary>
-        </member>
-        <member name="T:Duality.Serialization.MetaFormat.EventInfoNode">
-            <summary>
-            Describes a serialization <see cref="T:System.Reflection.EventInfo"/> data node.
-            </summary>
-            <seealso cref="T:Duality.Serialization.BinaryMetaFormatter"/>
-        </member>
-        <member name="P:Duality.Serialization.MetaFormat.EventInfoNode.EventName">
-            <summary>
-            [GET / SET] The name of the <see cref="T:System.Reflection.EventInfo">event</see>.
-            </summary>
         </member>
         <member name="T:Duality.Serialization.MetaFormat.DelegateNode">
             <summary>

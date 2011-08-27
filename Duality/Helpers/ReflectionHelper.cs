@@ -389,7 +389,7 @@ namespace Duality
 				if (parameters.Length == 0)
 					return "P:" + declType + ':' + property.Name;
 				else
-					return "P:" + declType + ':' + property.Name + '(' + parameters.ToString(p => p.ParameterType.GetTypeName(), ", ") + ')';
+					return "P:" + declType + ':' + property.Name + '(' + parameters.ToString(p => p.ParameterType.GetTypeName(), ",") + ')';
 			}
 
 			MethodInfo method = member as MethodInfo;
@@ -408,7 +408,7 @@ namespace Duality
 						result += "``" + genArgs.Length.ToString() + '[' + genArgs.ToString(t => "[" + t.GetTypeName() + "]", ",") + ']';
 				}
 				if (parameters.Length != 0)
-					result += '(' + parameters.ToString(p => p.ParameterType.GetTypeName(), ", ") + ')';
+					result += '(' + parameters.ToString(p => p.ParameterType.GetTypeName(), ",") + ')';
 
 				return result;
 			}
@@ -418,7 +418,7 @@ namespace Duality
 			{
 				ParameterInfo[] parameters = ctor.GetParameters();
 
-				string result = "C:" + declType + ':' + ctor.Name;
+				string result = "C:" + declType + ':' + (ctor.IsStatic ? "s" : "i");
 
 				if (parameters.Length != 0)
 					result += '(' + parameters.ToString(p => p.ParameterType.GetTypeName(), ", ") + ')';
@@ -558,6 +558,14 @@ namespace Duality
 			string typeNameBase = token[0];
 			string elementTypeName = typeName;
 
+			// Handle Reference
+			if (token[token.Length - 1].LastOrDefault() == '&')
+			{
+				Type elementType = FindType(typeName.Substring(0, typeName.Length - 1), asmSearch, declaringMethod);
+				if (elementType == null) return null;
+				return elementType.MakeByRefType();
+			}
+
 			// Retrieve array ranks
 			int arrayRank = 0;
 			MatchCollection arrayMatches = Regex.Matches(token[token.Length - 1], @"\[,*\]");
@@ -665,7 +673,95 @@ namespace Duality
 			if (memberType == MemberTypes.TypeInfo) return declaringType;
 			if (declaringType == null) return null;
 
-			throw new NotImplementedException();
+			if (memberType == MemberTypes.Field)
+				return declaringType.GetField(token[2], BindAll);
+			else if (memberType == MemberTypes.Event)
+				return declaringType.GetEvent(token[2], BindAll);
+
+			int memberParamListStartIndex = token[2].IndexOf('(');
+			int memberParamListEndIndex = token[2].IndexOf(')');
+			string memberParamList = memberParamListStartIndex != -1 ? token[2].Substring(memberParamListStartIndex + 1, memberParamListEndIndex - memberParamListStartIndex - 1) : null;
+			string[] memberParams = SplitArgs(memberParamList, '[', ']', ',', 0);
+			string memberName = memberParamListStartIndex != -1 ? token[2].Substring(0, memberParamListStartIndex) : token[2];
+			Type[] memberParamTypes = memberParams.Select(p => FindType(p, asmSearch)).ToArray();
+
+			if (memberType == MemberTypes.Constructor)
+			{
+				ConstructorInfo[] availCtors = declaringType.GetConstructors(memberName == "s" ? BindStaticAll : BindInstanceAll).Where(
+					m => m.GetParameters().Length == memberParams.Length).ToArray();
+				foreach (ConstructorInfo ctor in availCtors)
+				{
+					bool possibleMatch = true;
+					ParameterInfo[] methodParams = ctor.GetParameters();
+					for (int i = 0; i < methodParams.Length; i++)
+					{
+						string methodParamTypeName = methodParams[i].ParameterType.Name;
+						if (methodParams[i].ParameterType != memberParamTypes[i] && methodParamTypeName != memberParams[i])
+						{
+							possibleMatch = false;
+							break;
+						}
+					}
+					if (possibleMatch) return ctor;
+				}
+			}
+			else if (memberType == MemberTypes.Property)
+			{
+				PropertyInfo[] availProps = declaringType.GetProperties(BindAll).Where(
+					m => m.Name == memberName && 
+					m.GetIndexParameters().Length == memberParams.Length).ToArray();
+				foreach (PropertyInfo prop in availProps)
+				{
+					bool possibleMatch = true;
+					ParameterInfo[] methodParams = prop.GetIndexParameters();
+					for (int i = 0; i < methodParams.Length; i++)
+					{
+						string methodParamTypeName = methodParams[i].ParameterType.Name;
+						if (methodParams[i].ParameterType != memberParamTypes[i] && methodParamTypeName != memberParams[i])
+						{
+							possibleMatch = false;
+							break;
+						}
+					}
+					if (possibleMatch) return prop;
+				}
+			}
+
+			int genArgTokenStartIndex = token[2].IndexOf("``");
+			int genArgTokenEndIndex = memberParamListStartIndex != -1 ? memberParamListStartIndex : token[2].Length;
+			string genArgToken = genArgTokenStartIndex != -1 ? token[2].Substring(genArgTokenStartIndex + 2, genArgTokenEndIndex - genArgTokenStartIndex - 2) : "";
+			if (genArgTokenStartIndex != -1) memberName = token[2].Substring(0, genArgTokenStartIndex);			
+
+			int genArgListStartIndex = genArgToken.IndexOf('[');
+			int genArgListEndIndex = genArgToken.LastIndexOf(']');
+			string genArgList = genArgListStartIndex != -1 ? genArgToken.Substring(genArgListStartIndex + 1, genArgListEndIndex - genArgListStartIndex - 1) : null;
+			string[] genArgs = SplitArgs(genArgList, '[', ']', ',', 0);
+			for (int i = 0; i < genArgs.Length; i++) genArgs[i] = genArgs[i].Substring(1, genArgs[i].Length - 2);
+
+			int genArgCount = genArgToken.Length > 0 ? int.Parse(genArgToken.Substring(0, genArgListStartIndex != -1 ? genArgListStartIndex : genArgToken.Length)) : 0;
+
+			// Select the method that fits
+			MethodInfo[] availMethods = declaringType.GetMethods(ReflectionHelper.BindAll).Where(
+				m => m.Name == memberName && 
+				m.GetGenericArguments().Length == genArgCount &&
+				m.GetParameters().Length == memberParams.Length).ToArray();
+			foreach (MethodInfo method in availMethods)
+			{
+				bool possibleMatch = true;
+				ParameterInfo[] methodParams = method.GetParameters();
+				for (int i = 0; i < methodParams.Length; i++)
+				{
+					string methodParamTypeName = methodParams[i].ParameterType.Name;
+					if (methodParams[i].ParameterType != memberParamTypes[i] && methodParamTypeName != memberParams[i])
+					{
+						possibleMatch = false;
+						break;
+					}
+				}
+				if (possibleMatch) return method;
+			}
+
+			return null;
 		}
 
 		/// <summary>
@@ -679,6 +775,8 @@ namespace Duality
 		/// <returns></returns>
 		public static string[] SplitArgs(string argList, char pushLevel, char popLevel, char separator, int splitLevel)
 		{
+			if (argList == null) return new string[0];
+
 			// Splitting the parameter list without destroying generic arguments
 			int lastSplitIndex = -1;
 			int genArgLevel = 0;

@@ -61,14 +61,9 @@ namespace ResourceHacker
 			CorePluginHelper.RegisterTypeImage(typeof(ArrayNode), PluginRes.ResourceHackerRes.IconArray, CorePluginHelper.ImageContext_Icon);
 			CorePluginHelper.RegisterTypeImage(typeof(StructNode), PluginRes.ResourceHackerRes.IconObject, CorePluginHelper.ImageContext_Icon);
 			CorePluginHelper.RegisterTypeImage(typeof(ObjectRefNode), PluginRes.ResourceHackerRes.IconObjectRef, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(TypeInfoNode), PluginRes.ResourceHackerRes.IconClass, CorePluginHelper.ImageContext_Icon);
 			CorePluginHelper.RegisterTypeImage(typeof(TypeDataLayoutNode), PluginRes.ResourceHackerRes.IconClass, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(ConstructorInfoNode), PluginRes.ResourceHackerRes.IconMethod, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(MethodInfoNode), PluginRes.ResourceHackerRes.IconMethod, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(PropertyInfoNode), PluginRes.ResourceHackerRes.IconProperty, CorePluginHelper.ImageContext_Icon);
+			CorePluginHelper.RegisterTypeImage(typeof(MemberInfoNode), PluginRes.ResourceHackerRes.IconMethod, CorePluginHelper.ImageContext_Icon);
 			CorePluginHelper.RegisterTypeImage(typeof(DelegateNode), PluginRes.ResourceHackerRes.IconDelegate, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(EventInfoNode), PluginRes.ResourceHackerRes.IconEvent, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(FieldInfoNode), PluginRes.ResourceHackerRes.IconField, CorePluginHelper.ImageContext_Icon);
 
 			// Register PropertyEditor provider
 			CorePluginHelper.RegisterPropertyEditorProvider(new PropertyEditors.PropertyEditorProvider());

@@ -158,7 +158,7 @@ namespace Duality.Serialization
 		/// <summary>
 		/// Binary serialization version number.
 		/// </summary>
-		protected	const	ushort	Version		= 1;
+		protected	const	ushort	Version		= 2;
 
 
 		/// <summary>
@@ -178,6 +178,10 @@ namespace Duality.Serialization
 		/// </summary>
 		protected	uint			idCounter	= 0;
 		/// <summary>
+		/// The binary format version in which the currently incoming data is available.
+		/// </summary>
+		protected	ushort			dataVersion	= 0;
+		/// <summary>
 		/// A dictionary that maps objects to their object ids.
 		/// </summary>
 		protected	Dictionary<object,uint>	objRefIdMap	= new Dictionary<object,uint>();
@@ -187,7 +191,6 @@ namespace Duality.Serialization
 		protected	Dictionary<uint,object>	idObjRefMap	= new Dictionary<uint,object>();
 
 		private		bool								disposed			= false;
-		private		ushort								dataVersion			= 0;
 		private		Operation							lastOperation		= Operation.None;
 		private		Stack<long>							offsetStack			= new Stack<long>();
 		private		Dictionary<string,TypeDataLayout>	typeDataLayout		= new Dictionary<string,TypeDataLayout>();
