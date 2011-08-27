@@ -12,7 +12,7 @@ namespace DualityEditor
 {
 	public class XmlCodeDoc
 	{
-		private readonly char[] MemberNameSep = "{[(".ToCharArray();
+		private static readonly char[] MemberNameSep = "{[(".ToCharArray();
 
 		public enum EntryType
 		{
@@ -51,12 +51,22 @@ namespace DualityEditor
 				this.memberName = memberName;
 			}
 
-			public static Entry Create(EntryType entryType, Type type, MemberInfo member)
+			public static Entry Create(MemberInfo member)
 			{
+				EntryType entryType;
+				if (member is Type) entryType = EntryType.Type;
+				else if (member is FieldInfo) entryType = EntryType.Field;
+				else if (member is PropertyInfo) entryType = EntryType.Property;
+				else if (member is MethodBase) entryType = EntryType.Method;
+				else if (member is EventInfo) entryType = EntryType.Event;
+				else entryType = EntryType.Unknown;
+
+				Type type = entryType == EntryType.Type ? member as Type : member.DeclaringType;
+
 				if (entryType == EntryType.Type)
 					return new Entry(entryType, type.GetTypeName(TypeNameFormat.FullNameWithoutAssembly), null);
 				else if (member != null)
-					return new Entry(entryType, type.GetTypeName(TypeNameFormat.FullNameWithoutAssembly), member.Name);
+					return new Entry(entryType, type.GetTypeName(TypeNameFormat.FullNameWithoutAssembly), member.GetMemberName());
 				else
 					return null;
 			}
@@ -103,70 +113,10 @@ namespace DualityEditor
 				XmlAttribute memberNameAttrib = child.Attributes["name"];
 				if (memberNameAttrib == null) continue;
 
-				// Determine entry type
-				EntryType memberEntryType;
-				switch (memberNameAttrib.Value[0])
-				{
-					case 'M':	memberEntryType = EntryType.Method;		break;
-					case 'T':	memberEntryType = EntryType.Type;		break;
-					case 'F':	memberEntryType = EntryType.Field;		break;
-					case 'P':	memberEntryType = EntryType.Property;	break;
-					case 'E':	memberEntryType = EntryType.Event;		break;
-					default:	memberEntryType = EntryType.Unknown;	break;
-				}
-
-				// Determine member name and its (Declaring) type name
-				string memberName;
-				string memberTypeName;
-				if (memberEntryType == EntryType.Type)
-				{
-					memberName = memberTypeName = memberNameAttrib.Value.Remove(0, 2);
-				}
-				else
-				{
-					int memberNameSepIndex = memberNameAttrib.Value.IndexOfAny(MemberNameSep);
-					int lastDotIndex = memberNameSepIndex != -1 ? 
-						memberNameAttrib.Value.LastIndexOf('.', memberNameSepIndex) :
-						memberNameAttrib.Value.LastIndexOf('.');
-					memberTypeName = memberNameAttrib.Value.Substring(2, lastDotIndex - 2);
-					memberName = memberNameAttrib.Value.Substring(lastDotIndex + 1, memberNameAttrib.Value.Length - lastDotIndex - 1);
-				}
-
-				// Determine the members (declaring) type
-				Type memberType = ResolveDocStyleType(memberTypeName);
-
-				// Determine the member info
-				MemberInfo member = null;
-				if (memberEntryType == EntryType.Field)
-					member = memberType.GetField(memberName, ReflectionHelper.BindAll);
-				else if (memberEntryType == EntryType.Event)
-					member = memberType.GetEvent(memberName, ReflectionHelper.BindAll);
-				else if (memberEntryType == EntryType.Property)
-				{
-					string methodName;
-					Type[] paramTypes;
-					int paramIndex = memberName.IndexOf('(');
-					if (paramIndex != -1)
-					{
-						methodName = memberName.Substring(0, paramIndex);
-						string[] paramTypeNames = memberName.Substring(paramIndex + 1, memberName.Length - paramIndex - 2).Split(',');
-						paramTypes = paramTypeNames.Select(ResolveDocStyleType).ToArray();
-					}
-					else
-					{
-						methodName = memberName;
-						paramTypes = Type.EmptyTypes;
-					}
-					member = memberType.GetProperty(methodName, ReflectionHelper.BindAll, null, null, paramTypes, null);
-				}
-				else if (memberEntryType == EntryType.Method)
-				{
-					// ToDo: Basically same as for Property, but supporting generic methods.
-				}
-
 				// Create a member entry based on the determined data.
-				Entry memberEntry = Entry.Create(memberEntryType, memberType, member);
-				//if (memberEntry != null) Console.WriteLine("{0},\t{1},\t{2}", memberEntry.Type, memberEntry.TypeName, memberEntry.MemberName);
+				MemberInfo member = ResolveDocStyleMember(memberNameAttrib.Value);
+				Entry memberEntry = Entry.Create(member);
+				if (memberEntry != null) Console.WriteLine("{0},\t{1},\t{2}", memberEntry.Type, memberEntry.TypeName, memberEntry.MemberName);
 			}
 		}
 
@@ -175,6 +125,74 @@ namespace DualityEditor
 
 		}
 
+		private static MemberInfo ResolveDocStyleMember(string docId)
+		{
+			// Determine entry type
+			EntryType memberEntryType;
+			switch (docId[0])
+			{
+				case 'M':	memberEntryType = EntryType.Method;		break;
+				case 'T':	memberEntryType = EntryType.Type;		break;
+				case 'F':	memberEntryType = EntryType.Field;		break;
+				case 'P':	memberEntryType = EntryType.Property;	break;
+				case 'E':	memberEntryType = EntryType.Event;		break;
+				default:	memberEntryType = EntryType.Unknown;	break;
+			}
+
+			// Determine member name and its (Declaring) type name
+			string memberName;
+			string memberTypeName;
+			if (memberEntryType == EntryType.Type)
+			{
+				memberName = memberTypeName = docId.Remove(0, 2);
+			}
+			else
+			{
+				int memberNameSepIndex = docId.IndexOfAny(MemberNameSep);
+				int lastDotIndex = memberNameSepIndex != -1 ? 
+					docId.LastIndexOf('.', memberNameSepIndex) :
+					docId.LastIndexOf('.');
+				memberTypeName = docId.Substring(2, lastDotIndex - 2);
+				memberName = docId.Substring(lastDotIndex + 1, docId.Length - lastDotIndex - 1);
+			}
+
+			// Determine the members (declaring) type
+			Type memberType = ResolveDocStyleType(memberTypeName);
+
+			// Determine the member info
+			MemberInfo member = null;
+			if (memberEntryType == EntryType.Type)
+				member = memberType;
+			else if (memberEntryType == EntryType.Field)
+				member = memberType.GetField(memberName, ReflectionHelper.BindAll);
+			else if (memberEntryType == EntryType.Event)
+				member = memberType.GetEvent(memberName, ReflectionHelper.BindAll);
+			else if (memberEntryType == EntryType.Property)
+			{
+				string methodName;
+				Type[] paramTypes;
+				int paramIndex = memberName.IndexOf('(');
+				if (paramIndex != -1)
+				{
+					methodName = memberName.Substring(0, paramIndex);
+					string[] paramTypeNames = memberName.Substring(paramIndex + 1, memberName.Length - paramIndex - 2).Split(',');
+					paramTypes = paramTypeNames.Select(ResolveDocStyleType).ToArray();
+				}
+				else
+				{
+					methodName = memberName;
+					paramTypes = Type.EmptyTypes;
+				}
+				member = memberType.GetProperty(methodName, ReflectionHelper.BindAll, null, null, paramTypes, null);
+			}
+			else if (memberEntryType == EntryType.Method)
+			{
+				// ToDo: Basically same as for Property, but supporting generic methods.
+				throw new NotSupportedException();
+			}
+
+			return member;
+		}
 		private static Type ResolveDocStyleType(string typeString)
 		{
 			Type result = null;

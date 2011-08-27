@@ -966,7 +966,7 @@ namespace Duality.Serialization
 			this.log.WriteError(
 				"An error occured in custom serialization in object Id {0} of type '{1}': {2}",
 				objId,
-				ReflectionHelper.GetTypeName(serializeType, TypeNameFormat.CSCodeIdentShort),
+				Log.Type(serializeType),
 				Log.Exception(e));
 		}
 		/// <summary>
@@ -980,7 +980,7 @@ namespace Duality.Serialization
 			this.log.WriteError(
 				"An error occured in custom deserialization in object Id {0} of type '{1}': {2}",
 				objId,
-				ReflectionHelper.GetTypeName(serializeType, TypeNameFormat.CSCodeIdentShort),
+				Log.Type(serializeType),
 				Log.Exception(e));
 		}
 		/// <summary>

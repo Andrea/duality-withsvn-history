@@ -186,6 +186,16 @@ namespace Duality
 			return result;
 		}
 		/// <summary>
+		/// Resolves a Member based on its <see cref="GetMemberName">member string</see>.
+		/// </summary>
+		/// <param name="memberString">The <see cref="GetMemberName">member string</see> of the member.</param>
+		/// <param name="throwOnError">If true, an Exception is thrown on failure.</param>
+		/// <returns></returns>
+		public static MemberInfo ResolveMember(string memberString, bool throwOnError = true)
+		{
+			throw new NotImplementedException();
+		}
+		/// <summary>
 		/// Returns the <see cref="SerializeType"/> of a Type.
 		/// </summary>
 		/// <param name="t"></param>
@@ -344,6 +354,15 @@ namespace Duality
 				return typeStr.Replace('+', '.').ToString();
 			}
 			return null;
+		}
+		/// <summary>
+		/// Returns a string describing a certain Member of a Type.
+		/// </summary>
+		/// <param name="member">The Member to describe.</param>
+		/// <returns></returns>
+		public static string GetMemberName(this MemberInfo member)
+		{
+			throw new NotImplementedException();
 		}
 		/// <summary>
 		/// Retrieves a Type based on a string in the specified TypeNameFormat.
