@@ -70,7 +70,7 @@
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "HelpAdvisor";
 			this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.DockBottom;
-			this.Text = "HelpAdvisor";
+			this.Text = "Advisor";
 			this.ResumeLayout(false);
 
 		}
