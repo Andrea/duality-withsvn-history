@@ -1,24 +1,11 @@
 ﻿
--->	XmlCodeDoc
-	-->	Parse members
-	-->	Parse documentation of them
-	-->	Store only strings in Entries
-		-->	Lookup "fast enough", consistent with the concept not to store
-			any Type information in CorePluginHelper to avoid issues reloading plugins
-		-->	Might need ReflectionHelper.ResolveXY(..) for fast member lookup
-		-->	.. and ReflectionHelper.GetXYName(..) for creating suitable standardized lookup names.
-			(use in Entry.Create!)
-	-->	...
+-->	Dualitor Advisor
+	-->	Implement help system in DualityEditor
+	-->	Implement Advisor accessing it in EditorBasePlugin - there might as well be other accessors!
+	-->	Help system should be very flexible.
+	-->	PushHelpTopic(object src, string topic, string text) / PopHelpTopic(object src)
 
--->	As soon as ResolveMember-Stuff works: Introduce new BinaryFormatter version that uses it.
-	It will be more reliable than the current version (e.g. properly support generic methods, etc.)
-
--->	Just a thought: Use the XML documentation on classes to display tooltips
-	in the editor?
-	-->	Info about Components in the Create-Menu and when hovering them
-	-->	Info about GameObject when hovering them
-	-->	Info about Resources in the Create-Menu and when hovering them
-	-->	...
+-->	Dualitor "loading..." Splash screen
 
 
 -->	Possible schedule:

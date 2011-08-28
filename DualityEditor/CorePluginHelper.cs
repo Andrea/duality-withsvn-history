@@ -207,5 +207,9 @@ namespace DualityEditor
 		{
 			corePluginDoc.AppendDoc(doc);
 		}
+		public static XmlCodeDoc.Entry RequestXmlCodeDoc(MemberInfo info)
+		{
+			return corePluginDoc.GetMemberDoc(info);
+		}
 	}
 }

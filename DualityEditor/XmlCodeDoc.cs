@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
 using System.IO;
 using System.Reflection;
@@ -31,6 +32,7 @@ namespace DualityEditor
 			private	string		typeName;
 			private	string		memberName;
 			private	string		summary;
+			private	string		remarks;
 
 			public EntryType EntryType
 			{
@@ -50,7 +52,18 @@ namespace DualityEditor
 			}
 			public MemberInfo Member
 			{
-				get { return this.memberName == null ? this.Type : ReflectionHelper.ResolveMember(this.memberName); }
+				get { return ReflectionHelper.ResolveMember(this.memberName); }
+			}
+
+			public string Summary
+			{
+				get { return this.summary; }
+				set { this.summary = value; }
+			}
+			public string Remarks
+			{
+				get { return this.remarks; }
+				set { this.remarks = value; }
 			}
 
 			private Entry(EntryType type, string typeName, string memberName)
@@ -58,6 +71,14 @@ namespace DualityEditor
 				this.type = type;
 				this.typeName = typeName;
 				this.memberName = memberName;
+			}
+			public Entry(Entry other)
+			{
+				this.type = other.type;
+				this.typeName = other.typeName;
+				this.memberName = other.memberName;
+				this.summary = other.summary;
+				this.remarks = other.remarks;
 			}
 
 			public static Entry Create(MemberInfo member)
@@ -71,8 +92,8 @@ namespace DualityEditor
 				else if (member is EventInfo) entryType = EntryType.Event;
 				else entryType = EntryType.Unknown;
 
-				if (entryType == EntryType.Type)
-					return new Entry(entryType, (member as Type).GetTypeName(), null);
+				if (member is Type)
+					return new Entry(entryType, (member as Type).GetTypeName(), member.GetMemberName());
 				else if (member != null)
 					return new Entry(entryType, member.DeclaringType.GetTypeName(), member.GetMemberName());
 				else
@@ -80,7 +101,7 @@ namespace DualityEditor
 			}
 		}
 
-		private	List<Entry>	entries	= new List<Entry>();
+		private	Dictionary<string,Entry>	entries	= new Dictionary<string,Entry>();
 
 		public XmlCodeDoc()
 		{
@@ -131,9 +152,31 @@ namespace DualityEditor
 				{
 					Entry memberEntry = Entry.Create(member);
 
-					// ToDo: Read actual documentation stuff.
+					XmlNode summaryNode = child["summary"];
+					XmlNode remarksNode = child["remarks"];
+					
+					if (summaryNode != null)
+					{
+						string summary = summaryNode.InnerXml;
+						summary = Regex.Replace(summary, "<c>(.*?)<\\/c>", m => m.Groups[1].Value.Trim('"'));
+						summary = Regex.Replace(summary, "<code>(.*?)<\\/code>", m => m.Groups[1].Value.Trim('"'));
+						summary = Regex.Replace(summary, "<see cref=(\"[^\"]*\")>(.*?)<\\/see>", m => m.Groups[1].Value.Trim('"'));
+						summary = Regex.Replace(summary, "<see cref=(\"[^\"]*\")\\s/>", m => ResolveDocStyleMember(m.Groups[1].Value.Trim('"')).Name);
+						summary = Regex.Replace(summary, "[\n\r\t\\s]+", " ", RegexOptions.Multiline);
+						memberEntry.Summary = summary.Trim();
+					}
+					if (remarksNode != null)
+					{
+						string remarks = summaryNode.InnerXml;
+						remarks = Regex.Replace(remarks, "<c>(.*?)<\\/c>", m => m.Groups[1].Value.Trim('"'));
+						remarks = Regex.Replace(remarks, "<code>(.*?)<\\/code>", m => m.Groups[1].Value.Trim('"'));
+						remarks = Regex.Replace(remarks, "<see cref=(\"[^\"]*\")>(.*?)<\\/see>", m => m.Groups[1].Value.Trim('"'));
+						remarks = Regex.Replace(remarks, "<see cref=(\"[^\"]*\")\\s/>", m => ResolveDocStyleMember(m.Groups[1].Value.Trim('"')).Name);
+						remarks = Regex.Replace(remarks, "[\n\r\t\\s]+", " ", RegexOptions.Multiline);
+						memberEntry.Remarks = remarks.Trim();
+					}
 
-					if (memberEntry != null) this.AddEntry(memberEntry);
+					this.AddEntry(memberEntry);
 				}
 			}
 		}
@@ -144,11 +187,19 @@ namespace DualityEditor
 		}
 		public void AddEntry(Entry entry)
 		{
-			this.entries.Add(entry);
+			this.entries.Add(entry.MemberName, entry);
 		}
 		public void AppendDoc(XmlCodeDoc other)
 		{
-			this.entries.AddRange(other.entries);
+			foreach (var pair in other.entries)
+				this.AddEntry(new Entry(pair.Value));
+		}
+
+		public Entry GetMemberDoc(MemberInfo info)
+		{
+			Entry result;
+			if (!this.entries.TryGetValue(info.GetMemberName(), out result)) return null;
+			return result;
 		}
 
 		private static MemberInfo ResolveDocStyleMember(string docId)
