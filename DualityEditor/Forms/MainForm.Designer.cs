@@ -276,7 +276,7 @@
 			this.IsMdiContainer = true;
 			this.MainMenuStrip = this.mainMenuStrip;
 			this.Name = "MainForm";
-			this.Text = "Duality Editor";
+			this.Text = "Dualitor";
 			((System.ComponentModel.ISupportInitialize)(this.pluginWatcher)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.dataDirWatcher)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.sourceDirWatcher)).EndInit();

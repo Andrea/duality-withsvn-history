@@ -114,7 +114,7 @@ namespace EditorBase.PropertyEditors
 					e.EditedType = t;
 					e.Getter = this.CreateComponentValueGetter(t);
 					e.Setter = this.CreateComponentValueSetter(t);
-					e.PropertyName = ReflectionHelper.GetTypeName(t, TypeNameFormat.CSCodeIdentShort);
+					e.PropertyName = t.GetTypeCSCodeName(true);
 					this.AddPropertyEditor(e);
 					e.UpdateReadOnlyState();
 					this.componentEditors[t] = e;

@@ -112,7 +112,7 @@ namespace DualityEditor
 		private static void RegisterCorePluginRes(Type type, IResEntry res)
 		{
 			if (type == null) throw new ArgumentNullException("type");
-			string typeString = ReflectionHelper.GetTypeName(type);
+			string typeString = ReflectionHelper.GetTypeId(type);
 
 			List<IResEntry> resList = null;
 			if (!corePluginRes.TryGetValue(typeString, out resList))
@@ -125,7 +125,7 @@ namespace DualityEditor
 		private static T RequestCorePluginRes<T>(Type type, Predicate<T> predicate) where T : IResEntry
 		{
 			if (type == null) return default(T);
-			string typeString = ReflectionHelper.GetTypeName(type);
+			string typeString = ReflectionHelper.GetTypeId(type);
 
 			List<IResEntry> resList = null;
 			if (!corePluginRes.TryGetValue(typeString, out resList)) return default(T);
@@ -142,7 +142,7 @@ namespace DualityEditor
 		private static IEnumerable<T> RequestCorePluginRes<T>(Type type) where T : IResEntry
 		{
 			if (type == null) yield break;
-			string typeString = ReflectionHelper.GetTypeName(type);
+			string typeString = ReflectionHelper.GetTypeId(type);
 
 			List<IResEntry> resList = null;
 			if (!corePluginRes.TryGetValue(typeString, out resList)) yield break;

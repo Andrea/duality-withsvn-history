@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Reflection;
 
 using Duality;
+using DualityEditor.Forms;
 
 namespace DualityEditor.Controls
 {
@@ -33,9 +34,10 @@ namespace DualityEditor.Controls
 		}
 	}
 
-	public class PropertyEditor : UserControl
+	public class PropertyEditor : UserControl, IHelpProvider
 	{
 		private	Type			editedType			= null;
+		private	MemberInfo		editedMember		= null;
 		private	Func<IEnumerable<object>>	getter	= null;
 		private	Action<IEnumerable<object>>	setter	= null;
 		private	PropertyGrid	parentGrid			= null;
@@ -88,6 +90,11 @@ namespace DualityEditor.Controls
 		{
 			get { return null; }
 			set {}
+		}
+		public virtual MemberInfo EditedMember
+		{
+			get { return this.editedMember; }
+			set { this.editedMember = value; }
 		}
 
 		public PropertyGrid ParentGrid
@@ -179,6 +186,16 @@ namespace DualityEditor.Controls
 		protected void OnEditingFinished()
 		{
 			this.OnEditingFinished(this, EventArgs.Empty);
+		}
+
+		public virtual HelpInfo ProvideHoverHelp(Point localPos)
+		{
+			if (this.EditedMember != null)
+				return new HelpInfo(this.EditedMember);
+			else if (this.EditedType != null)
+				return new HelpInfo(this.EditedType);
+			else
+				return null;
 		}
 	}
 }

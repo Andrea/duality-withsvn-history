@@ -100,7 +100,7 @@ namespace DualityEditor.Controls.PropertyEditors
 				this.Header.ResetIsInit = false;
 
 				valString = values.Count() == 1 ? 
-					string.Format("{0}, Count = {1}", ReflectionHelper.GetTypeName(this.EditedType, TypeNameFormat.CSCodeIdentShort), values.First().Count) :
+					string.Format("{0}, Count = {1}", this.EditedType.GetTypeCSCodeName(true), values.First().Count) :
 					string.Format(DualityEditor.EditorRes.GeneralRes.PropertyGrid_N_Objects, values.Count());
 			}
 

@@ -2118,11 +2118,11 @@
         <member name="M:Duality.Serialization.BinaryFormatterBase.WriteTypeDataLayout(Duality.Serialization.TypeDataLayout,System.String)">
             <summary>
             Writes the specified <see cref="T:Duality.Serialization.TypeDataLayout"/> describing the <see cref="T:System.Type"/> referred to by
-            the given <see cref="M:Duality.ReflectionHelper.GetTypeName(System.Type,Duality.TypeNameFormat)">type string</see>. Doesn't care about redundant data, writes always.
+            the given <see cref="M:Duality.ReflectionHelper.GetTypeId(System.Type)">type string</see>. Doesn't care about redundant data, writes always.
             </summary>
             <param name="layout">The <see cref="T:Duality.Serialization.TypeDataLayout"/> to write.</param>
             <param name="typeString">
-            The <see cref="M:Duality.ReflectionHelper.GetTypeName(System.Type,Duality.TypeNameFormat)">type string</see> that refers to the <see cref="T:System.Type"/> that
+            The <see cref="M:Duality.ReflectionHelper.GetTypeId(System.Type)">type string</see> that refers to the <see cref="T:System.Type"/> that
             is described by the specified <see cref="T:Duality.Serialization.TypeDataLayout"/>.
             </param>
             <seealso cref="M:Duality.Serialization.BinaryFormatterBase.WriteTypeDataLayout(System.String)"/>
@@ -2287,10 +2287,10 @@
         </member>
         <member name="M:Duality.Serialization.BinaryFormatterBase.LogCantResolveTypeError(System.UInt32,System.String)">
             <summary>
-            Logs an error that occured trying to resolve a <see cref="T:System.Type"/> by its <see cref="M:Duality.ReflectionHelper.GetTypeName(System.Type,Duality.TypeNameFormat)">type string</see>.
+            Logs an error that occured trying to resolve a <see cref="T:System.Type"/> by its <see cref="M:Duality.ReflectionHelper.GetTypeId(System.Type)">type string</see>.
             </summary>
             <param name="objId">The object id of the affected object.</param>
-            <param name="typeString">The <see cref="M:Duality.ReflectionHelper.GetTypeName(System.Type,Duality.TypeNameFormat)">type string</see> that couldn't be resolved.</param>
+            <param name="typeString">The <see cref="M:Duality.ReflectionHelper.GetTypeId(System.Type)">type string</see> that couldn't be resolved.</param>
         </member>
         <member name="P:Duality.Serialization.BinaryFormatterBase.WriteTarget">
             <summary>
@@ -4044,7 +4044,7 @@
             <summary>
             [GET] A string referring to the <see cref="T:System.Type"/> that is described.
             </summary>
-            <seealso cref="M:Duality.ReflectionHelper.GetTypeName(System.Type,Duality.TypeNameFormat)"/>
+            <seealso cref="M:Duality.ReflectionHelper.GetTypeId(System.Type)"/>
         </member>
         <member name="P:Duality.Serialization.SerializeType.DataType">
             <summary>
@@ -5785,18 +5785,18 @@
         </member>
         <member name="M:Duality.ReflectionHelper.ResolveType(System.String,System.Boolean,System.Reflection.MethodInfo)">
             <summary>
-            Resolves a Type based on its <see cref="M:Duality.ReflectionHelper.GetTypeName(System.Type,Duality.TypeNameFormat)">type string</see>.
+            Resolves a Type based on its <see cref="M:Duality.ReflectionHelper.GetTypeId(System.Type)">type id</see>.
             </summary>
-            <param name="typeString">The type string to resolve. Needs to be in <see cref="F:Duality.TypeNameFormat.FullNameWithoutAssembly"/> format.</param>
+            <param name="typeString">The type string to resolve.</param>
             <param name="throwOnError">If true, an Exception is thrown on failure.</param>
             <param name="declaringMethod">The generic method that is declaring the Type. Only necessary when resolving a generic methods parameter Type.</param>
             <returns></returns>
         </member>
         <member name="M:Duality.ReflectionHelper.ResolveMember(System.String,System.Boolean)">
             <summary>
-            Resolves a Member based on its <see cref="M:Duality.ReflectionHelper.GetMemberName(System.Reflection.MemberInfo)">member string</see>.
+            Resolves a Member based on its <see cref="M:Duality.ReflectionHelper.GetMemberId(System.Reflection.MemberInfo)">member id</see>.
             </summary>
-            <param name="memberString">The <see cref="M:Duality.ReflectionHelper.GetMemberName(System.Reflection.MemberInfo)">member string</see> of the member.</param>
+            <param name="memberString">The <see cref="M:Duality.ReflectionHelper.GetMemberId(System.Reflection.MemberInfo)">member id</see> of the member.</param>
             <param name="throwOnError">If true, an Exception is thrown on failure.</param>
             <returns></returns>
         </member>
@@ -5814,47 +5814,61 @@
             <param name="t"></param>
             <returns></returns>
         </member>
-        <member name="M:Duality.ReflectionHelper.GetTypeName(System.Type,Duality.TypeNameFormat)">
+        <member name="M:Duality.ReflectionHelper.GetTypeKeyword(System.Type)">
+            <summary>
+            Returns a Types keyword, its "short" name. Just the types "base", no generic
+            type parameters or array specifications.
+            </summary>
+            <param name="T">The Type to describe</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ReflectionHelper.GetTypeCSCodeName(System.Type,System.Boolean)">
             <summary>
             Returns a string describing a certain Type.
             </summary>
             <param name="T">The Type to describe</param>
-            <param name="attrib">How to describe the Type</param>
             <returns></returns>
         </member>
-        <member name="M:Duality.ReflectionHelper.GetMemberName(System.Reflection.MemberInfo)">
+        <member name="M:Duality.ReflectionHelper.GetTypeId(System.Type)">
+            <summary>
+            Returns a string describing a certain Type.
+            </summary>
+            <param name="T">The Type to describe</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ReflectionHelper.GetMemberId(System.Reflection.MemberInfo)">
             <summary>
             Returns a string describing a certain Member of a Type.
             </summary>
             <param name="member">The Member to describe.</param>
             <returns></returns>
         </member>
-        <member name="M:Duality.ReflectionHelper.FindTypeByCSCodeIdent(System.String,System.Collections.Generic.IEnumerable{System.Reflection.Assembly},System.Type)">
+        <member name="M:Duality.ReflectionHelper.FindTypeByCSCode(System.String,System.Collections.Generic.IEnumerable{System.Reflection.Assembly},System.Type)">
             <summary>
-            Retrieves a Type based on a string in the <see cref="F:Duality.TypeNameFormat.CSCodeIdent"/> format.
+            Retrieves a Type based on a C# code type string.
             </summary>
-            <param name="csCodeType">The type string to use for the search, in <see cref="F:Duality.TypeNameFormat.CSCodeIdent"/> format.</param>
+            <param name="csCodeType">The type string to use for the search.</param>
             <param name="asmSearch">An enumeration of all Assemblies the searched Type could be located in.</param>
             <param name="declaringType">The searched Type's declaring Type.</param>
             <returns></returns>
         </member>
         <member name="M:Duality.ReflectionHelper.FindType(System.String,System.Collections.Generic.IEnumerable{System.Reflection.Assembly},System.Reflection.MethodInfo)">
             <summary>
-            Retrieves a Type based on a string in the <see cref="F:Duality.TypeNameFormat.FullNameWithoutAssembly"/> format.
+            Retrieves a Type based on a <see cref="M:Duality.ReflectionHelper.GetTypeId(System.Type)">type id</see> string.
             </summary>
-            <param name="typeName">The type string to use for the search, in <see cref="F:Duality.TypeNameFormat.FullNameWithoutAssembly"/> format.</param>
+            <param name="typeName">The type id to use for the search.</param>
             <param name="asmSearch">An enumeration of all Assemblies the searched Type could be located in.</param>
             <param name="declaringMethod">The generic method that is declaring the Type. Only necessary when resolving a generic methods parameter Type.</param>
             <returns></returns>
         </member>
         <member name="M:Duality.ReflectionHelper.FindMember(System.String,System.Collections.Generic.IEnumerable{System.Reflection.Assembly})">
             <summary>
-            Retrieves a MemberInfo based on a string.
+            Retrieves a MemberInfo based on a <see cref="M:Duality.ReflectionHelper.GetMemberId(System.Reflection.MemberInfo)">member id</see>.
             </summary>
             <param name="typeName">The member string to use for the search.</param>
             <param name="asmSearch">An enumeration of all Assemblies the searched Type could be located in.</param>
             <returns></returns>
-            <seealso cref="M:Duality.ReflectionHelper.GetMemberName(System.Reflection.MemberInfo)"/>
+            <seealso cref="M:Duality.ReflectionHelper.GetMemberId(System.Reflection.MemberInfo)"/>
         </member>
         <member name="M:Duality.ReflectionHelper.SplitArgs(System.String,System.Char,System.Char,System.Char,System.Int32)">
             <summary>
@@ -5866,33 +5880,6 @@
             <param name="separator">The char that separates two arguments.</param>
             <param name="splitLevel">The hierarchy level at which to perform the split operation.</param>
             <returns></returns>
-        </member>
-        <member name="T:Duality.TypeNameFormat">
-            <summary>
-            An enumeration of possible formats in which Type data can be displayed in a string.
-            </summary>
-        </member>
-        <member name="F:Duality.TypeNameFormat.Keyword">
-            <summary>
-            A type keyword, its "short" name. Just the types "base", no generic
-            type parameters or array specifications.
-            </summary>
-        </member>
-        <member name="F:Duality.TypeNameFormat.FullNameWithoutAssembly">
-            <summary>
-            Exactly the same as a Types FullName, but without any Assembly names, versions, keys, etc.
-            </summary>
-        </member>
-        <member name="F:Duality.TypeNameFormat.CSCodeIdent">
-            <summary>
-            A type name / definition as you would see it in normal C# code. Complete with generic parameters
-            or possible array specifications.
-            </summary>
-        </member>
-        <member name="F:Duality.TypeNameFormat.CSCodeIdentShort">
-            <summary>
-            As CSCodeIdent, but shortened to Keywords
-            </summary>
         </member>
         <member name="T:Duality.Resources.Prefab">
             <summary>
@@ -8666,14 +8653,14 @@
         </member>
         <member name="M:Duality.Serialization.MetaFormat.DataNode.GetTypeStrings(System.Boolean)">
             <summary>
-            Returns a list of all <see cref="M:Duality.ReflectionHelper.GetTypeName(System.Type,Duality.TypeNameFormat)">type strings</see> in this data node.
+            Returns a list of all <see cref="M:Duality.ReflectionHelper.GetTypeId(System.Type)">type strings</see> in this data node.
             </summary>
             <param name="deep">If true, both this node and all of its children are searched.</param>
-            <returns>A list of <see cref="M:Duality.ReflectionHelper.GetTypeName(System.Type,Duality.TypeNameFormat)">type strings</see>.</returns>
+            <returns>A list of <see cref="M:Duality.ReflectionHelper.GetTypeId(System.Type)">type strings</see>.</returns>
         </member>
         <member name="M:Duality.Serialization.MetaFormat.DataNode.GetTypeStrings(System.Collections.Generic.List{System.String}@,System.Boolean)">
             <summary>
-            DataNodes may override this method to append their <see cref="M:Duality.ReflectionHelper.GetTypeName(System.Type,Duality.TypeNameFormat)">type strings</see> to the
+            DataNodes may override this method to append their <see cref="M:Duality.ReflectionHelper.GetTypeId(System.Type)">type strings</see> to the
             specified list. The base version iterates over its children, if a deep search is performed.
             </summary>
             <param name="list">The <see cref="T:System.Collections.Generic.List`1"/> to append type strings to.</param>
@@ -8690,7 +8677,7 @@
         </member>
         <member name="M:Duality.Serialization.MetaFormat.DataNode.ReplaceTypeStrings(System.String,System.String)">
             <summary>
-            Searches for one <see cref="M:Duality.ReflectionHelper.GetTypeName(System.Type,Duality.TypeNameFormat)">type string</see> and replaces it with another.
+            Searches for one <see cref="M:Duality.ReflectionHelper.GetTypeId(System.Type)">type string</see> and replaces it with another.
             DataNodes may override this method to rename their own type strings. The base version iterates
             over its children.
             </summary>

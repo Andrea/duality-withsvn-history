@@ -271,7 +271,7 @@ namespace Duality
 		/// <returns></returns>
 		public static string Type(Type type)
 		{
-			return type.GetTypeName(TypeNameFormat.CSCodeIdentShort);
+			return type.GetTypeCSCodeName(true);
 		}
 		/// <summary>
 		/// Returns a string that can be used for representing a method in log entries.

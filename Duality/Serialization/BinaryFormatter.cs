@@ -195,7 +195,7 @@ namespace Duality.Serialization
 			{
 				MemberInfo member = obj as MemberInfo;
 
-				this.writer.Write(member.GetMemberName());
+				this.writer.Write(member.GetMemberId());
 			}
 			else if (obj == null)
 				throw new ArgumentNullException("obj");

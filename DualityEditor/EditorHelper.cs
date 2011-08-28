@@ -7,6 +7,8 @@ using System.Reflection;
 using System.Drawing;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Windows.Forms;
+using System.Runtime.InteropServices;
 using Microsoft.Win32;
 
 using Duality;
@@ -92,7 +94,7 @@ namespace DualityEditor
 
 			StringBuilder fileContent = new StringBuilder();
 			Type resType = Resource.GetTypeByFileName(filePath);
-			string typeStr = ReflectionHelper.GetTypeName(resType, TypeNameFormat.CSCodeIdent);
+			string typeStr = resType.GetTypeCSCodeName();
 			string indentStr = new string('\t', indent);
 			propName = GenerateGameResSrcFile_ClassName(filePath);
 
@@ -216,6 +218,45 @@ namespace DualityEditor
 			else if (path == "OpenTK")	path = "OpenTK_";
 
 			return path;
+		}
+
+
+
+		private const int GW_HWNDNEXT = 2; // The next window is below the specified window
+		private const int GW_HWNDPREV = 3; // The previous window is above
+
+		[DllImport("user32.dll")]
+		private static extern IntPtr GetTopWindow(IntPtr hWnd);
+		[DllImport("user32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		private static extern bool IsWindowVisible(IntPtr hWnd);
+		[DllImport("user32.dll", CharSet = CharSet.Auto, EntryPoint = "GetWindow", SetLastError = true)]
+		private static extern IntPtr GetNextWindow(IntPtr hwnd, [MarshalAs(UnmanagedType.U4)] int wFlag);
+
+		public static List<Form> GetZSortedAppWindows()
+		{
+			List<Form> result = new List<Form>();
+
+			IntPtr hwnd = GetTopWindow((IntPtr)null);
+			while (hwnd != IntPtr.Zero)
+			{
+				// Get next window under the current handler
+				hwnd = GetNextWindow(hwnd, GW_HWNDNEXT);
+
+				try
+				{
+					Form frm = (Form)Form.FromHandle(hwnd);
+					if (frm != null && Application.OpenForms.OfType<Form>().Contains(frm))
+						result.Add(frm);
+				}
+				catch
+				{
+					// Weird behaviour: In some cases, trying to cast to a Form a handle of an object 
+					// that isn't a form will just return null. In other cases, will throw an exception.
+				}
+			}
+
+			return result;
 		}
 	}
 }

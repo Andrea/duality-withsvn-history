@@ -1,9 +1,15 @@
 ﻿
 -->	Dualitor Advisor
-	-->	Implement help system in DualityEditor
-	-->	Implement Advisor accessing it in EditorBasePlugin - there might as well be other accessors!
-	-->	Help system should be very flexible.
-	-->	PushHelpTopic(object src, string topic, string text) / PopHelpTopic(object src)
+	-->	Wrong picking on DropDownMenus - Is there a workaround for propert Item-Hover help topics?
+		-->	"Capture" help focus on opening the menu?
+		-->	Would need capturing functionality in IHelpProvider
+
+	-->	Help Topic: Hovering an Enum- or FlagEnumPropertyEditor's enum field (?)
+	-->	Help Topic: Hovering ProjectFolderView item
+	-->	Help Topic: Hovering ProjectFolderView "Create Resource" item
+	-->	Help Topic: Hovering SceneView item
+	-->	Help Topic: Hovering SceneView "Create Object" item
+	-->	Help Topic: Hovering CamView object
 
 
 -->	Possible schedule:

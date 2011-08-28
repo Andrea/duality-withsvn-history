@@ -56,7 +56,7 @@ namespace EditorBase.PropertyEditors
 			base.OnUpdateFromObjects(values);
 
 			this.Header.Text = null;
-			this.Header.ValueText = ReflectionHelper.GetTypeName(this.EditedType, TypeNameFormat.CSCodeIdentShort);
+			this.Header.ValueText = this.EditedType.GetTypeCSCodeName(true);
 			if (!values.Any() || values.All(o => o == null))
 				this.ActiveState = false;
 			else
@@ -80,7 +80,7 @@ namespace EditorBase.PropertyEditors
 			Duality.ColorFormat.ColorHsva avgClr = iconBitmap != null ? iconBitmap.GetAverageColor().ToHsva() : Duality.ColorFormat.ColorHsva.TransparentBlack;
 
 			this.Header.Text = null;
-			this.Header.ValueText = ReflectionHelper.GetTypeName(this.EditedType, TypeNameFormat.CSCodeIdentShort);
+			this.Header.ValueText = this.EditedType.GetTypeCSCodeName(true);
 			this.Header.Icon = iconBitmap;
 			this.Header.Style = GroupedPropertyEditorHeader.HeaderStyle.Normal;
 			this.Header.BaseColor = ExtMethodsSystemDrawingColor.ColorFromHSV(avgClr.h, 0.15f + avgClr.s * 0.3f, 1.0f);

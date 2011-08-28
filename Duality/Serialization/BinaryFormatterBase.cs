@@ -707,11 +707,11 @@ namespace Duality.Serialization
 		}
 		/// <summary>
 		/// Writes the specified <see cref="Duality.Serialization.TypeDataLayout"/> describing the <see cref="System.Type"/> referred to by
-		/// the given <see cref="ReflectionHelper.GetTypeName">type string</see>. Doesn't care about redundant data, writes always.
+		/// the given <see cref="ReflectionHelper.GetTypeId">type string</see>. Doesn't care about redundant data, writes always.
 		/// </summary>
 		/// <param name="layout">The <see cref="Duality.Serialization.TypeDataLayout"/> to write.</param>
 		/// <param name="typeString">
-		/// The <see cref="ReflectionHelper.GetTypeName">type string</see> that refers to the <see cref="System.Type"/> that
+		/// The <see cref="ReflectionHelper.GetTypeId">type string</see> that refers to the <see cref="System.Type"/> that
 		/// is described by the specified <see cref="Duality.Serialization.TypeDataLayout"/>.
 		/// </param>
 		/// <seealso cref="WriteTypeDataLayout(string)"/>
@@ -987,10 +987,10 @@ namespace Duality.Serialization
 				Log.Exception(e));
 		}
 		/// <summary>
-		/// Logs an error that occured trying to resolve a <see cref="System.Type"/> by its <see cref="ReflectionHelper.GetTypeName">type string</see>.
+		/// Logs an error that occured trying to resolve a <see cref="System.Type"/> by its <see cref="ReflectionHelper.GetTypeId">type string</see>.
 		/// </summary>
 		/// <param name="objId">The object id of the affected object.</param>
-		/// <param name="typeString">The <see cref="ReflectionHelper.GetTypeName">type string</see> that couldn't be resolved.</param>
+		/// <param name="typeString">The <see cref="ReflectionHelper.GetTypeId">type string</see> that couldn't be resolved.</param>
 		protected void LogCantResolveTypeError(uint objId, string typeString)
 		{
 			this.log.WriteError("Can't resolve Type '{0}' in object Id {1}. Type not found.", typeString, objId);

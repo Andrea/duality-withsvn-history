@@ -35,7 +35,7 @@ namespace Duality.Serialization
 		/// <summary>
 		/// [GET] A string referring to the <see cref="System.Type"/> that is described.
 		/// </summary>
-		/// <seealso cref="ReflectionHelper.GetTypeName"/>
+		/// <seealso cref="ReflectionHelper.GetTypeId"/>
 		public string TypeString
 		{
 			get { return this.typeString; }
@@ -56,7 +56,7 @@ namespace Duality.Serialization
 		{
 			this.type = t;
 			this.fields = ReflectionHelper.GetAllFields(this.type, ReflectionHelper.BindInstanceAll).Where(f => !f.IsNotSerialized).ToArray();
-			this.typeString = ReflectionHelper.GetTypeName(this.type);
+			this.typeString = ReflectionHelper.GetTypeId(this.type);
 			this.dataType = ReflectionHelper.GetDataType(this.type);
 		}
 	}

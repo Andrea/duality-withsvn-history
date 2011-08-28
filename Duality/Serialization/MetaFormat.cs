@@ -54,10 +54,10 @@ namespace Duality.Serialization.MetaFormat
 		}
 
 		/// <summary>
-		/// Returns a list of all <see cref="ReflectionHelper.GetTypeName">type strings</see> in this data node.
+		/// Returns a list of all <see cref="ReflectionHelper.GetTypeId">type strings</see> in this data node.
 		/// </summary>
 		/// <param name="deep">If true, both this node and all of its children are searched.</param>
-		/// <returns>A list of <see cref="ReflectionHelper.GetTypeName">type strings</see>.</returns>
+		/// <returns>A list of <see cref="ReflectionHelper.GetTypeId">type strings</see>.</returns>
 		public List<string> GetTypeStrings(bool deep)
 		{
 			List<string> result = new List<string>();
@@ -65,7 +65,7 @@ namespace Duality.Serialization.MetaFormat
 			return result;
 		}
 		/// <summary>
-		/// DataNodes may override this method to append their <see cref="ReflectionHelper.GetTypeName">type strings</see> to the
+		/// DataNodes may override this method to append their <see cref="ReflectionHelper.GetTypeId">type strings</see> to the
 		/// specified list. The base version iterates over its children, if a deep search is performed.
 		/// </summary>
 		/// <param name="list">The <see cref="System.Collections.Generic.List{T}"/> to append type strings to.</param>
@@ -90,7 +90,7 @@ namespace Duality.Serialization.MetaFormat
 			return false;
 		}
 		/// <summary>
-		/// Searches for one <see cref="ReflectionHelper.GetTypeName">type string</see> and replaces it with another.
+		/// Searches for one <see cref="ReflectionHelper.GetTypeId">type string</see> and replaces it with another.
 		/// DataNodes may override this method to rename their own type strings. The base version iterates
 		/// over its children.
 		/// </summary>

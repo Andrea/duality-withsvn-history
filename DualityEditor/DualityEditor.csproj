@@ -213,6 +213,7 @@
       <DependentUpon>GeneralRes.resx</DependentUpon>
     </Compile>
     <Compile Include="EventArgs.cs" />
+    <Compile Include="ExtMethodsControl.cs" />
     <Compile Include="ExtMethodsDataObject.cs" />
     <Compile Include="ExtMethodsSystemDrawingColor.cs" />
     <Compile Include="FileImporter.cs" />
@@ -254,6 +255,8 @@
     <Compile Include="Forms\SplashScreen.Designer.cs">
       <DependentUpon>SplashScreen.cs</DependentUpon>
     </Compile>
+    <Compile Include="HelpInfo.cs" />
+    <Compile Include="InputEventMessageFilter.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="ObjectSelection.cs" />
     <Compile Include="Program.cs" />

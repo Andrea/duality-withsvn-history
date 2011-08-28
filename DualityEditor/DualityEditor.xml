@@ -179,6 +179,22 @@
             the contents of this method with the code editor.
             </summary>
         </member>
+        <member name="F:DualityEditor.Forms.AboutBox.components">
+            <summary>
+            Erforderliche Designervariable.
+            </summary>
+        </member>
+        <member name="M:DualityEditor.Forms.AboutBox.Dispose(System.Boolean)">
+            <summary>
+            Verwendete Ressourcen bereinigen.
+            </summary>
+        </member>
+        <member name="M:DualityEditor.Forms.AboutBox.InitializeComponent">
+            <summary>
+            Erforderliche Methode für die Designerunterstützung.
+            Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
+            </summary>
+        </member>
         <member name="F:DualityEditor.Forms.ColorPickerDialog.components">
             <summary>
             Required designer variable.
@@ -307,12 +323,12 @@
             <summary>
             This method is called as soon as the plugins assembly is loaded. Initializes the plugins internal data.
             </summary>
-            <param name="main"></param>
         </member>
         <member name="M:DualityEditor.EditorPlugin.InitPlugin(DualityEditor.Forms.MainForm)">
             <summary>
             This method is called when all plugins and the editors user data and layout are loaded. May initialize GUI.
             </summary>
+            <param name="main"></param>
         </member>
         <member name="M:DualityEditor.EditorPlugin.SaveUserData(System.Xml.XmlDocument,System.Xml.XmlElement)">
             <summary>
@@ -372,6 +388,23 @@
             <summary> 
             Erforderliche Methode für die Designerunterstützung. 
             Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
+            </summary>
+        </member>
+        <member name="F:DualityEditor.Forms.SplashScreen.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:DualityEditor.Forms.SplashScreen.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:DualityEditor.Forms.SplashScreen.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
             </summary>
         </member>
         <member name="M:DualityEditor.Program.Main(System.String[])">
@@ -561,39 +594,6 @@
         <member name="T:DualityEditor.Controls.FlagCheckedListBoxItem">
             <summary>
             Represents an item in the checklistbox
-            </summary>
-        </member>
-        <member name="F:DualityEditor.Forms.SplashScreen.components">
-            <summary>
-            Required designer variable.
-            </summary>
-        </member>
-        <member name="M:DualityEditor.Forms.SplashScreen.Dispose(System.Boolean)">
-            <summary>
-            Clean up any resources being used.
-            </summary>
-            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        </member>
-        <member name="M:DualityEditor.Forms.SplashScreen.InitializeComponent">
-            <summary>
-            Required method for Designer support - do not modify
-            the contents of this method with the code editor.
-            </summary>
-        </member>
-        <member name="F:DualityEditor.Forms.AboutBox.components">
-            <summary>
-            Erforderliche Designervariable.
-            </summary>
-        </member>
-        <member name="M:DualityEditor.Forms.AboutBox.Dispose(System.Boolean)">
-            <summary>
-            Verwendete Ressourcen bereinigen.
-            </summary>
-        </member>
-        <member name="M:DualityEditor.Forms.AboutBox.InitializeComponent">
-            <summary>
-            Erforderliche Methode für die Designerunterstützung.
-            Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
             </summary>
         </member>
     </members>

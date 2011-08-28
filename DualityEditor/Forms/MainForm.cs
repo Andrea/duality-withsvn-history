@@ -15,6 +15,7 @@ using Duality.Resources;
 using Duality.Components;
 
 using DualityEditor;
+using DualityEditor.Controls;
 
 using WeifenLuo.WinFormsUI.Docking;
 using Ionic.Zip;
@@ -31,6 +32,12 @@ namespace DualityEditor.Forms
 		}
 
 
+		private static MainForm instance;
+		internal static MainForm Instance
+		{
+			get { return instance; }
+		}
+
 		private	const	string	UserDataFile			= "editoruserdata.xml";
 		private	const	string	UserDataDockSeparator	= "<!-- DockPanel Data -->";
 
@@ -40,9 +47,13 @@ namespace DualityEditor.Forms
 		private	List<EditorPlugin>		plugins				= new List<EditorPlugin>();
 		private	ReloadCorePluginDialog	corePluginReloader	= null;
 		private	bool					needsRecovery		= false;
+		private	Control					hoveredControl		= null;
+		private	IHelpProvider			hoveredHelpProvider	= null;
 
 		private	GameObjectManager		editorObjects		= new GameObjectManager();
 		private	bool					dualityAppSuspended	= true;
+
+		private	HelpStack	helpStack	= new HelpStack();
 
 		private	ObjectSelection	selectionCurrent	= ObjectSelection.Null;
 		private	ObjectSelection	selectionPrevious	= ObjectSelection.Null;
@@ -78,6 +89,10 @@ namespace DualityEditor.Forms
 		{
 			get { return this.selectionCurrent; }
 		}
+		public HelpStack Help
+		{
+			get { return this.helpStack; }
+		}
 		public GLControl MainContextControl
 		{
 			get { return this.mainContextControl; }
@@ -92,8 +107,10 @@ namespace DualityEditor.Forms
 		}
 
 
-		public MainForm(bool recover)
+		internal MainForm(bool recover)
 		{
+			if (instance != null && !instance.IsDisposed && !instance.Disposing) throw new InvalidOperationException("There can be only one MainForm at a time");
+			instance = this;
 			this.InitializeComponent();
 
 			this.needsRecovery = recover;
@@ -154,6 +171,11 @@ namespace DualityEditor.Forms
 
 			this.dualityAppSuspended = false;
 			Application.Idle += this.Application_Idle;
+
+			// Hook message filter
+			MouseEventMessageFilter mouseFilter = new MouseEventMessageFilter();
+			mouseFilter.MouseMove += this.mouseFilter_MouseMove;
+			Application.AddMessageFilter(mouseFilter);
 		}
 		public void InitMainGLContext()
 		{
@@ -791,6 +813,7 @@ namespace DualityEditor.Forms
 		{
 			base.OnFormClosed(e);
 			DualityApp.Terminate();
+			if (instance == this) instance = null;
 		}
 		protected override void OnActivated(EventArgs e)
 		{
@@ -983,6 +1006,42 @@ namespace DualityEditor.Forms
 		{
 			AboutBox about = new AboutBox();
 			about.ShowDialog(this);
+		}
+
+		private void mouseFilter_MouseMove(object sender, EventArgs e)
+		{
+			Control lastHoveredControl = this.hoveredControl;
+			foreach (Form f in EditorHelper.GetZSortedAppWindows())
+			{
+				if (!f.Visible) continue;
+				if (!new Rectangle(f.Location, f.Size).Contains(Cursor.Position)) continue;
+
+				Point localPos = f.PointToClient(Cursor.Position);
+				this.hoveredControl = f.GetChildAtPointDeep(localPos, GetChildAtPointSkip.Invisible | GetChildAtPointSkip.Transparent);
+				break;
+			}
+
+			if (lastHoveredControl != this.hoveredControl)
+			{
+				IHelpProvider lastHelpProvider = this.hoveredHelpProvider;
+				HelpInfo help = null;
+				foreach (IHelpProvider hp in this.hoveredControl.GetControlAncestors<IHelpProvider>())
+				{
+					Control c = hp as Control;
+					help = hp.ProvideHoverHelp(c.PointToClient(Cursor.Position));
+					if (help != null)
+					{
+						this.hoveredHelpProvider = hp;
+						break;
+					}
+				}
+
+				if (lastHelpProvider != null)
+					this.Help.Pop(lastHelpProvider);
+
+				if (help != null)
+					this.Help.Push(this.hoveredHelpProvider, help);
+			}
 		}
 	}
 }

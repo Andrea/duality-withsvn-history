@@ -170,9 +170,9 @@ namespace Duality
 			memberResolveCache.Clear();
 		}
 		/// <summary>
-		/// Resolves a Type based on its <see cref="GetTypeName">type string</see>.
+		/// Resolves a Type based on its <see cref="GetTypeId">type id</see>.
 		/// </summary>
-		/// <param name="typeString">The type string to resolve. Needs to be in <see cref="TypeNameFormat.FullNameWithoutAssembly"/> format.</param>
+		/// <param name="typeString">The type string to resolve.</param>
 		/// <param name="throwOnError">If true, an Exception is thrown on failure.</param>
 		/// <param name="declaringMethod">The generic method that is declaring the Type. Only necessary when resolving a generic methods parameter Type.</param>
 		/// <returns></returns>
@@ -189,9 +189,9 @@ namespace Duality
 			return result;
 		}
 		/// <summary>
-		/// Resolves a Member based on its <see cref="GetMemberName">member string</see>.
+		/// Resolves a Member based on its <see cref="GetMemberId">member id</see>.
 		/// </summary>
-		/// <param name="memberString">The <see cref="GetMemberName">member string</see> of the member.</param>
+		/// <param name="memberString">The <see cref="GetMemberId">member id</see> of the member.</param>
 		/// <param name="throwOnError">If true, an Exception is thrown on failure.</param>
 		/// <returns></returns>
 		public static MemberInfo ResolveMember(string memberString, bool throwOnError = true)
@@ -273,108 +273,114 @@ namespace Duality
 			// Should never happen in theory
 			return DataType.Unknown;
 		}
-
+		
+		/// <summary>
+		/// Returns a Types keyword, its "short" name. Just the types "base", no generic
+		/// type parameters or array specifications.
+		/// </summary>
+		/// <param name="T">The Type to describe</param>
+		/// <returns></returns>
+		public static string GetTypeKeyword(this Type T)
+		{
+			return T.Name.Split(new char[] {'`'}, StringSplitOptions.RemoveEmptyEntries)[0].Replace('+', '.');
+		}
 		/// <summary>
 		/// Returns a string describing a certain Type.
 		/// </summary>
 		/// <param name="T">The Type to describe</param>
-		/// <param name="attrib">How to describe the Type</param>
 		/// <returns></returns>
-		public static string GetTypeName(this Type T, TypeNameFormat attrib = TypeNameFormat.FullNameWithoutAssembly)
+		public static string GetTypeCSCodeName(this Type T, bool shortName = false)
 		{
-			if (attrib == TypeNameFormat.Keyword)
-			{
-				return T.Name.Split(new char[] {'`'}, StringSplitOptions.RemoveEmptyEntries)[0].Replace('+', '.');
-			}
-			else if (attrib == TypeNameFormat.FullNameWithoutAssembly)
-			{
-				return T.FullName != null ? Regex.Replace(T.FullName, @"(, [^\]\[]*)", "") : T.Name;
-			}
-			else if (attrib == TypeNameFormat.CSCodeIdent || attrib == TypeNameFormat.CSCodeIdentShort)
-			{
-				StringBuilder typeStr = new StringBuilder();
+			StringBuilder typeStr = new StringBuilder();
 
-				if (T.IsGenericParameter)
+			if (T.IsGenericParameter)
+			{
+				return T.Name;
+			}
+			if (T.IsArray)
+			{
+				typeStr.Append(GetTypeCSCodeName(T.GetElementType(), shortName));
+				typeStr.Append('[');
+				typeStr.Append(',', T.GetArrayRank() - 1);
+				typeStr.Append(']');
+			}
+			else
+			{
+				Type[] genArgs = T.IsGenericType ? T.GetGenericArguments() : null;
+
+				if (T.IsNested)
 				{
-					return T.Name;
-				}
-				if (T.IsArray)
-				{
-					typeStr.Append(GetTypeName(T.GetElementType(), attrib));
-					typeStr.Append('[');
-					typeStr.Append(',', T.GetArrayRank() - 1);
-					typeStr.Append(']');
+					Type declType = T.DeclaringType;
+					if (declType.IsGenericTypeDefinition)
+					{
+						Array.Resize(ref genArgs, declType.GetGenericArguments().Length);
+						declType = declType.MakeGenericType(genArgs);
+						genArgs = T.GetGenericArguments().Skip(genArgs.Length).ToArray();
+					}
+					string parentName = GetTypeCSCodeName(declType, shortName);
+
+					string[] nestedNameToken = shortName ? T.Name.Split('+') : T.FullName.Split('+');
+					string nestedName = nestedNameToken[nestedNameToken.Length - 1];
+						
+					int genTypeSepIndex = nestedName.IndexOf("[[");
+					if (genTypeSepIndex != -1) nestedName = nestedName.Substring(0, genTypeSepIndex);
+					genTypeSepIndex = nestedName.IndexOf('`');
+					if (genTypeSepIndex != -1) nestedName = nestedName.Substring(0, genTypeSepIndex);
+
+					typeStr.Append(parentName);
+					typeStr.Append('.');
+					typeStr.Append(nestedName);
 				}
 				else
 				{
-					Type[] genArgs = T.IsGenericType ? T.GetGenericArguments() : null;
-
-					if (T.IsNested)
-					{
-						Type declType = T.DeclaringType;
-						if (declType.IsGenericTypeDefinition)
-						{
-							Array.Resize(ref genArgs, declType.GetGenericArguments().Length);
-							declType = declType.MakeGenericType(genArgs);
-							genArgs = T.GetGenericArguments().Skip(genArgs.Length).ToArray();
-						}
-						string parentName = GetTypeName(declType, attrib);
-
-						string[] nestedNameToken = attrib == TypeNameFormat.CSCodeIdentShort ? T.Name.Split('+') : T.FullName.Split('+');
-						string nestedName = nestedNameToken[nestedNameToken.Length - 1];
-						
-						int genTypeSepIndex = nestedName.IndexOf("[[");
-						if (genTypeSepIndex != -1) nestedName = nestedName.Substring(0, genTypeSepIndex);
-						genTypeSepIndex = nestedName.IndexOf('`');
-						if (genTypeSepIndex != -1) nestedName = nestedName.Substring(0, genTypeSepIndex);
-
-						typeStr.Append(parentName);
-						typeStr.Append('.');
-						typeStr.Append(nestedName);
-					}
+					if (shortName)
+						typeStr.Append(T.Name.Split(new char[] {'`'}, StringSplitOptions.RemoveEmptyEntries)[0].Replace('+', '.'));
 					else
-					{
-						if (attrib == TypeNameFormat.CSCodeIdentShort)
-							typeStr.Append(T.Name.Split(new char[] {'`'}, StringSplitOptions.RemoveEmptyEntries)[0].Replace('+', '.'));
-						else
-							typeStr.Append(T.FullName.Split(new char[] {'`'}, StringSplitOptions.RemoveEmptyEntries)[0].Replace('+', '.'));
-					}
-
-					if (genArgs != null && genArgs.Length > 0)
-					{
-						if (T.IsGenericTypeDefinition)
-						{
-							typeStr.Append('<');
-							typeStr.Append(',', genArgs.Length - 1);
-							typeStr.Append('>');
-						}
-						else if (T.IsGenericType)
-						{
-							typeStr.Append('<');
-							for (int i = 0; i < genArgs.Length; i++)
-							{
-								typeStr.Append(GetTypeName(genArgs[i], attrib));
-								if (i < genArgs.Length - 1)
-									typeStr.Append(',');
-							}
-							typeStr.Append('>');
-						}
-					}
+						typeStr.Append(T.FullName.Split(new char[] {'`'}, StringSplitOptions.RemoveEmptyEntries)[0].Replace('+', '.'));
 				}
 
-				return typeStr.Replace('+', '.').ToString();
+				if (genArgs != null && genArgs.Length > 0)
+				{
+					if (T.IsGenericTypeDefinition)
+					{
+						typeStr.Append('<');
+						typeStr.Append(',', genArgs.Length - 1);
+						typeStr.Append('>');
+					}
+					else if (T.IsGenericType)
+					{
+						typeStr.Append('<');
+						for (int i = 0; i < genArgs.Length; i++)
+						{
+							typeStr.Append(GetTypeCSCodeName(genArgs[i], shortName));
+							if (i < genArgs.Length - 1)
+								typeStr.Append(',');
+						}
+						typeStr.Append('>');
+					}
+				}
 			}
-			return null;
+
+			return typeStr.Replace('+', '.').ToString();
+		}
+		/// <summary>
+		/// Returns a string describing a certain Type.
+		/// </summary>
+		/// <param name="T">The Type to describe</param>
+		/// <returns></returns>
+		public static string GetTypeId(this Type T)
+		{
+			return T.FullName != null ? Regex.Replace(T.FullName, @"(, [^\]\[]*)", "") : T.Name;
 		}
 		/// <summary>
 		/// Returns a string describing a certain Member of a Type.
 		/// </summary>
 		/// <param name="member">The Member to describe.</param>
 		/// <returns></returns>
-		public static string GetMemberName(this MemberInfo member)
+		public static string GetMemberId(this MemberInfo member)
 		{
-			if (member is Type) return "T:" + GetTypeName(member as Type);
-			string declType = member.DeclaringType.GetTypeName();
+			if (member is Type) return "T:" + GetTypeId(member as Type);
+			string declType = member.DeclaringType.GetTypeId();
 
 			FieldInfo field = member as FieldInfo;
 			if (field != null) return "F:" + declType + ':' + field.Name;
@@ -389,7 +395,7 @@ namespace Duality
 				if (parameters.Length == 0)
 					return "P:" + declType + ':' + property.Name;
 				else
-					return "P:" + declType + ':' + property.Name + '(' + parameters.ToString(p => p.ParameterType.GetTypeName(), ",") + ')';
+					return "P:" + declType + ':' + property.Name + '(' + parameters.ToString(p => p.ParameterType.GetTypeId(), ",") + ')';
 			}
 
 			MethodInfo method = member as MethodInfo;
@@ -405,10 +411,10 @@ namespace Duality
 					if (method.IsGenericMethodDefinition)
 						result += "``" + genArgs.Length.ToString();
 					else
-						result += "``" + genArgs.Length.ToString() + '[' + genArgs.ToString(t => "[" + t.GetTypeName() + "]", ",") + ']';
+						result += "``" + genArgs.Length.ToString() + '[' + genArgs.ToString(t => "[" + t.GetTypeId() + "]", ",") + ']';
 				}
 				if (parameters.Length != 0)
-					result += '(' + parameters.ToString(p => p.ParameterType.GetTypeName(), ",") + ')';
+					result += '(' + parameters.ToString(p => p.ParameterType.GetTypeId(), ",") + ')';
 
 				return result;
 			}
@@ -421,7 +427,7 @@ namespace Duality
 				string result = "C:" + declType + ':' + (ctor.IsStatic ? "s" : "i");
 
 				if (parameters.Length != 0)
-					result += '(' + parameters.ToString(p => p.ParameterType.GetTypeName(), ", ") + ')';
+					result += '(' + parameters.ToString(p => p.ParameterType.GetTypeId(), ", ") + ')';
 
 				return result;
 			}
@@ -429,13 +435,13 @@ namespace Duality
 			throw new NotSupportedException(string.Format("Member Type '{0} not supported", Log.Type(member.GetType())));
 		}
 		/// <summary>
-		/// Retrieves a Type based on a string in the <see cref="TypeNameFormat.CSCodeIdent"/> format.
+		/// Retrieves a Type based on a C# code type string.
 		/// </summary>
-		/// <param name="csCodeType">The type string to use for the search, in <see cref="TypeNameFormat.CSCodeIdent"/> format.</param>
+		/// <param name="csCodeType">The type string to use for the search.</param>
 		/// <param name="asmSearch">An enumeration of all Assemblies the searched Type could be located in.</param>
 		/// <param name="declaringType">The searched Type's declaring Type.</param>
 		/// <returns></returns>
-		private static Type FindTypeByCSCodeIdent(string csCodeType, IEnumerable<Assembly> asmSearch, Type declaringType = null)
+		private static Type FindTypeByCSCode(string csCodeType, IEnumerable<Assembly> asmSearch, Type declaringType = null)
 		{
 			csCodeType = csCodeType.Trim();
 			
@@ -457,7 +463,7 @@ namespace Duality
 			// Handle Arrays
 			if (arrayRank > 0)
 			{
-				Type elementType = FindTypeByCSCodeIdent(elementTypeName, asmSearch, declaringType);
+				Type elementType = FindTypeByCSCode(elementTypeName, asmSearch, declaringType);
 				return arrayRank == 1 ? elementType.MakeArrayType() : elementType.MakeArrayType(arrayRank);
 			}
 
@@ -479,15 +485,15 @@ namespace Duality
 				string[] tokenTemp2 = tokenTemp[1].Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries);
 				
 				Type[]	types		= new Type[tokenTemp2.Length];
-				Type	mainType	= FindTypeByCSCodeIdent(tokenTemp[0] + '`' + tokenTemp2.Length, asmSearch, declaringType);
+				Type	mainType	= FindTypeByCSCode(tokenTemp[0] + '`' + tokenTemp2.Length, asmSearch, declaringType);
 				for (int i = 0; i < tokenTemp2.Length; i++)
 				{
-					types[i] = FindTypeByCSCodeIdent(tokenTemp2[i], asmSearch);
+					types[i] = FindTypeByCSCode(tokenTemp2[i], asmSearch);
 				}
 				
 				// Nested type support
 				if (tokenTemp[2].Length > 1 && tokenTemp[2][0] == '.')
-					mainType = FindTypeByCSCodeIdent(tokenTemp[2].Substring(1, tokenTemp[2].Length - 1), asmSearch, mainType.MakeGenericType(types));
+					mainType = FindTypeByCSCode(tokenTemp[2].Substring(1, tokenTemp[2].Length - 1), asmSearch, mainType.MakeGenericType(types));
 
 				if (mainType.IsGenericTypeDefinition)
 				{
@@ -532,9 +538,9 @@ namespace Duality
 			return null;
 		}
 		/// <summary>
-		/// Retrieves a Type based on a string in the <see cref="TypeNameFormat.FullNameWithoutAssembly"/> format.
+		/// Retrieves a Type based on a <see cref="GetTypeId">type id</see> string.
 		/// </summary>
-		/// <param name="typeName">The type string to use for the search, in <see cref="TypeNameFormat.FullNameWithoutAssembly"/> format.</param>
+		/// <param name="typeName">The type id to use for the search.</param>
 		/// <param name="asmSearch">An enumeration of all Assemblies the searched Type could be located in.</param>
 		/// <param name="declaringMethod">The generic method that is declaring the Type. Only necessary when resolving a generic methods parameter Type.</param>
 		/// <returns></returns>
@@ -647,12 +653,12 @@ namespace Duality
 			return baseType;
 		}
 		/// <summary>
-		/// Retrieves a MemberInfo based on a string.
+		/// Retrieves a MemberInfo based on a <see cref="GetMemberId">member id</see>.
 		/// </summary>
 		/// <param name="typeName">The member string to use for the search.</param>
 		/// <param name="asmSearch">An enumeration of all Assemblies the searched Type could be located in.</param>
 		/// <returns></returns>
-		/// <seealso cref="GetMemberName(MemberInfo)"/>
+		/// <seealso cref="GetMemberId(MemberInfo)"/>
 		private static MemberInfo FindMember(string memberString, IEnumerable<Assembly> asmSearch)
 		{
 			string[] token = memberString.Split(':');
@@ -796,30 +802,5 @@ namespace Duality
 			ptm.Add(argList.Substring(lastSplitIndex + 1, argList.Length - lastSplitIndex - 1));
 			return ptm.ToArray();
 		}
-	}
-
-	/// <summary>
-	/// An enumeration of possible formats in which Type data can be displayed in a string.
-	/// </summary>
-	public enum TypeNameFormat
-	{
-		/// <summary>
-		/// A type keyword, its "short" name. Just the types "base", no generic
-		/// type parameters or array specifications.
-		/// </summary>
-		Keyword,
-		/// <summary>
-		/// Exactly the same as a Types FullName, but without any Assembly names, versions, keys, etc.
-		/// </summary>
-		FullNameWithoutAssembly,
-		/// <summary>
-		/// A type name / definition as you would see it in normal C# code. Complete with generic parameters
-		/// or possible array specifications.
-		/// </summary>
-		CSCodeIdent,
-		/// <summary>
-		/// As CSCodeIdent, but shortened to Keywords
-		/// </summary>
-		CSCodeIdentShort
 	}
 }

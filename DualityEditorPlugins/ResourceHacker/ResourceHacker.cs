@@ -32,7 +32,7 @@ namespace ResourceHacker
 			}
 			public string NodeTypeName
 			{
-				get { return ReflectionHelper.GetTypeName(this.data.GetType(), TypeNameFormat.Keyword); }
+				get { return this.data.GetType().GetTypeKeyword(); }
 			}
 			public TypeDataLayout.FieldDataInfo FieldInfo
 			{
@@ -87,7 +87,7 @@ namespace ResourceHacker
 				get 
 				{ 
 					Type actualType = this.primitiveData.NodeType.ToActualType();
-					return actualType != null ? ReflectionHelper.GetTypeName(actualType, TypeNameFormat.Keyword) : "Unknown";
+					return actualType != null ? actualType.GetTypeKeyword() : "Unknown";
 				}
 			}
 			public object DataValue
@@ -109,7 +109,7 @@ namespace ResourceHacker
 				get 
 				{ 
 					Type actualType = ReflectionHelper.ResolveType(this.enumData.EnumType, false);
-					return actualType != null ? ReflectionHelper.GetTypeName(actualType, TypeNameFormat.Keyword) : "Unknown";
+					return actualType != null ? actualType.GetTypeKeyword() : "Unknown";
 				}
 			}
 			public object DataValue
@@ -128,7 +128,7 @@ namespace ResourceHacker
 
 			public string ResolvedTypeName
 			{
-				get { return ReflectionHelper.GetTypeName(typeof(string), TypeNameFormat.Keyword); }
+				get { return typeof(string).GetTypeKeyword(); }
 			}
 			public object DataValue
 			{
@@ -157,7 +157,7 @@ namespace ResourceHacker
 				get 
 				{ 
 					Type resType = this.ResolvedType;
-					return resType != null ? ReflectionHelper.GetTypeName(resType, TypeNameFormat.CSCodeIdentShort) : objData.TypeString;
+					return resType != null ? resType.GetTypeCSCodeName(true) : objData.TypeString;
 				}
 			}
 
