@@ -216,6 +216,12 @@
     <Compile Include="ExtMethodsDataObject.cs" />
     <Compile Include="ExtMethodsSystemDrawingColor.cs" />
     <Compile Include="FileImporter.cs" />
+    <Compile Include="Forms\AboutBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AboutBox.Designer.cs">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\ColorPickerDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -242,6 +248,12 @@
       <DependentUpon>ReloadCorePluginDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="ExtMethodsTreeViewAdv.cs" />
+    <Compile Include="Forms\SplashScreen.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SplashScreen.Designer.cs">
+      <DependentUpon>SplashScreen.cs</DependentUpon>
+    </Compile>
     <Compile Include="NativeMethods.cs" />
     <Compile Include="ObjectSelection.cs" />
     <Compile Include="Program.cs" />
@@ -288,6 +300,9 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>GeneralRes.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AboutBox.resx">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ColorPickerDialog.resx">
       <DependentUpon>ColorPickerDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -299,6 +314,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ReloadCorePluginDialog.resx">
       <DependentUpon>ReloadCorePluginDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SplashScreen.resx">
+      <DependentUpon>SplashScreen.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -341,6 +359,7 @@
     <Content Include="OpenTK.GLControl.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\DualitorLogoHalfSize.png" />
     <EmbeddedResource Include="Resources\GameResTemplate.txt" />
     <None Include="Resources\page_white_csharp.png" />
     <None Include="Resources\disk_multiple.png" />

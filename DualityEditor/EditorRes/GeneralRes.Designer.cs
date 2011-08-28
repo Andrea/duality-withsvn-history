@@ -119,11 +119,29 @@ namespace DualityEditor.EditorRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die About ähnelt.
+        /// </summary>
+        public static string MenuItemName_About {
+            get {
+                return ResourceManager.GetString("MenuItemName_About", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die File ähnelt.
         /// </summary>
         public static string MenuName_File {
             get {
                 return ResourceManager.GetString("MenuName_File", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Help ähnelt.
+        /// </summary>
+        public static string MenuName_Help {
+            get {
+                return ResourceManager.GetString("MenuName_Help", resourceCulture);
             }
         }
         

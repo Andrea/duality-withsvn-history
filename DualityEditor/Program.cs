@@ -32,7 +32,7 @@ namespace DualityEditor
 			Application.CurrentCulture = Thread.CurrentThread.CurrentCulture;
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new MainForm(recover));
+			Application.Run(new SplashScreen(recover));
 		}
 	}
 }

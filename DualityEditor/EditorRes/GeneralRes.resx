@@ -142,8 +142,14 @@
   <data name="Language" xml:space="preserve">
     <value>English</value>
   </data>
+  <data name="MenuItemName_About" xml:space="preserve">
+    <value>About</value>
+  </data>
   <data name="MenuName_File" xml:space="preserve">
     <value>File</value>
+  </data>
+  <data name="MenuName_Help" xml:space="preserve">
+    <value>Help</value>
   </data>
   <data name="MenuName_Settings" xml:space="preserve">
     <value>Settings</value>

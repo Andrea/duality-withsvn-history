@@ -5,8 +5,6 @@
 	-->	Help system should be very flexible.
 	-->	PushHelpTopic(object src, string topic, string text) / PopHelpTopic(object src)
 
--->	Dualitor "loading..." Splash screen
-
 
 -->	Possible schedule:
 	1.	Implement sandbox mode for editor

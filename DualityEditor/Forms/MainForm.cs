@@ -131,6 +131,7 @@ namespace DualityEditor.Forms
 			this.actionDebugApp.Enabled = EditorHelper.IsJITDebuggerAvailable();
 
 			DualityApp.Init(DualityApp.ExecutionContext.Editor, new string[] {"logfile", "logfile_editor"});
+			this.InitMenus();
 			this.InitMainGLContext();
 			ContentProvider.InitDefaultContent();
 			this.LoadXmlCodeDoc();
@@ -162,6 +163,14 @@ namespace DualityEditor.Forms
 			DualityApp.TargetMode = this.mainContextControl.Context.GraphicsMode;
 		}
 
+		public void InitMenus()
+		{
+			ToolStripMenuItem helpItem = this.RequestMenu(EditorRes.GeneralRes.MenuName_Help);
+			ToolStripMenuItem aboutItem = this.RequestMenu(Path.Combine(EditorRes.GeneralRes.MenuName_Help, EditorRes.GeneralRes.MenuItemName_About));
+
+			helpItem.Alignment = ToolStripItemAlignment.Right;
+			aboutItem.Click += this.aboutItem_Click;
+		}
 		public ToolStripMenuItem RequestMenu(string menuPath)
 		{
 			menuPath = menuPath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
@@ -968,6 +977,12 @@ namespace DualityEditor.Forms
 		{
 			this.UpdateSourceCode();
 			System.Diagnostics.Process.Start(EditorHelper.SourceCodeSolutionFile);
+		}
+
+		private void aboutItem_Click(object sender, EventArgs e)
+		{
+			AboutBox about = new AboutBox();
+			about.ShowDialog(this);
 		}
 	}
 }

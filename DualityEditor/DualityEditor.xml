@@ -416,9 +416,19 @@
               Sucht eine lokalisierte Zeichenfolge, die English ähnelt.
             </summary>
         </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.MenuItemName_About">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die About ähnelt.
+            </summary>
+        </member>
         <member name="P:DualityEditor.EditorRes.GeneralRes.MenuName_File">
             <summary>
               Sucht eine lokalisierte Zeichenfolge, die File ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.MenuName_Help">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Help ähnelt.
             </summary>
         </member>
         <member name="P:DualityEditor.EditorRes.GeneralRes.MenuName_Settings">
@@ -551,6 +561,39 @@
         <member name="T:DualityEditor.Controls.FlagCheckedListBoxItem">
             <summary>
             Represents an item in the checklistbox
+            </summary>
+        </member>
+        <member name="F:DualityEditor.Forms.SplashScreen.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:DualityEditor.Forms.SplashScreen.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:DualityEditor.Forms.SplashScreen.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:DualityEditor.Forms.AboutBox.components">
+            <summary>
+            Erforderliche Designervariable.
+            </summary>
+        </member>
+        <member name="M:DualityEditor.Forms.AboutBox.Dispose(System.Boolean)">
+            <summary>
+            Verwendete Ressourcen bereinigen.
+            </summary>
+        </member>
+        <member name="M:DualityEditor.Forms.AboutBox.InitializeComponent">
+            <summary>
+            Erforderliche Methode für die Designerunterstützung.
+            Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
             </summary>
         </member>
     </members>
