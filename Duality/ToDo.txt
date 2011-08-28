@@ -3,6 +3,9 @@
 	-->	Wrong picking on DropDownMenus - Is there a workaround for propert Item-Hover help topics?
 		-->	"Capture" help focus on opening the menu?
 		-->	Would need capturing functionality in IHelpProvider
+		
+	-->	When F1 is pressed, the current help topic is opened up in the Duality doc ".chm" file, if applicable.
+	-->	Decide what to do in IHelpProvider, provide extension method for default behaviour.
 
 	-->	Help Topic: Hovering an Enum- or FlagEnumPropertyEditor's enum field (?)
 	-->	Help Topic: Hovering ProjectFolderView item
