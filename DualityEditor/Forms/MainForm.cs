@@ -48,8 +48,8 @@ namespace DualityEditor.Forms
 		private	ReloadCorePluginDialog	corePluginReloader	= null;
 		private	bool					needsRecovery		= false;
 		private	Control					hoveredControl		= null;
-		private	IHelpProvider			currentHelpProvider	= null;
-		private	bool					currentHelpCaptured	= false;
+		private	IHelpProvider			hoveredHelpProvider	= null;
+		private	bool					hoveredHelpCaptured	= false;
 
 		private	GameObjectManager		editorObjects		= new GameObjectManager();
 		private	bool					dualityAppSuspended	= true;
@@ -1024,31 +1024,31 @@ namespace DualityEditor.Forms
 			}
 
 			// An IHelpProvider has captured the mouse: Ask what to do with it.
-			if (this.currentHelpCaptured)
+			if (this.hoveredHelpCaptured)
 			{
-				Control c = this.currentHelpProvider as Control;
-				HelpInfo help = this.currentHelpProvider.ProvideHoverHelp(c.PointToClient(Cursor.Position), ref this.currentHelpCaptured);
+				Control c = this.hoveredHelpProvider as Control;
+				HelpInfo help = this.hoveredHelpProvider.ProvideHoverHelp(c.PointToClient(Cursor.Position), ref this.hoveredHelpCaptured);
 				lastHoveredControl = c;
 
 				// Update provider's help info
-				if (this.Help.ActiveHelpProvider == this.currentHelpProvider)
+				if (this.Help.ActiveHelpProvider == this.hoveredHelpProvider)
 				{
 					if (help != null)
-						this.Help.Switch(this.currentHelpProvider, help);
+						this.Help.Switch(this.hoveredHelpProvider, help);
 					else
-						this.Help.Pop(this.currentHelpProvider);
+						this.Help.Pop(this.hoveredHelpProvider);
 				}
 				else if (help != null)
-					this.Help.Push(this.currentHelpProvider, help);
+					this.Help.Push(this.hoveredHelpProvider, help);
 
 				// If still in charge: Return early.
-				if (this.currentHelpCaptured) return;
+				if (this.hoveredHelpCaptured) return;
 			}
 
 			// No IHelpProvider in charge: Regular mouseover checks when hovered Control changes-
 			if (lastHoveredControl != this.hoveredControl)
 			{
-				IHelpProvider lastHelpProvider = this.currentHelpProvider;
+				IHelpProvider lastHelpProvider = this.hoveredHelpProvider;
 				HelpInfo help = null;
 				foreach (IHelpProvider hp in this.hoveredControl.GetControlAncestors<IHelpProvider>())
 				{
@@ -1057,8 +1057,8 @@ namespace DualityEditor.Forms
 					help = hp.ProvideHoverHelp(c.PointToClient(Cursor.Position), ref helpCaptured);
 					if (help != null || helpCaptured)
 					{
-						this.currentHelpProvider = hp;
-						this.currentHelpCaptured = helpCaptured;
+						this.hoveredHelpProvider = hp;
+						this.hoveredHelpCaptured = helpCaptured;
 						break;
 					}
 				}
@@ -1067,7 +1067,7 @@ namespace DualityEditor.Forms
 					this.Help.Pop(lastHelpProvider);
 
 				if (help != null)
-					this.Help.Push(this.currentHelpProvider, help);
+					this.Help.Push(this.hoveredHelpProvider, help);
 			}
 		}
 		private void inputFilter_KeyDown(object sender, KeyEventArgs e)
@@ -1075,9 +1075,9 @@ namespace DualityEditor.Forms
 			if (e.KeyCode == Keys.F1)
 			{
 				// Ask Help Provider for help
-				if (this.currentHelpProvider != null)
+				if (this.Help.ActiveHelpProvider != null)
 				{
-					e.Handled = e.Handled | this.currentHelpProvider.PerformHelpAction(this.Help.ActiveHelp);
+					e.Handled = e.Handled | this.Help.ActiveHelpProvider.PerformHelpAction(this.Help.ActiveHelp);
 				}
 
 				// No reaction? Just open the reference then.
