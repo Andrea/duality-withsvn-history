@@ -95,6 +95,15 @@ namespace DualityEditor.EditorRes {
             }
         }
         
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die No information available. ähnelt.
+        /// </summary>
+        public static string HelpInfo_NotAvailable_Desc {
+            get {
+                return ResourceManager.GetString("HelpInfo_NotAvailable_Desc", resourceCulture);
+            }
+        }
+        
         public static System.Drawing.Icon Icon_Cog {
             get {
                 object obj = ResourceManager.GetObject("Icon_Cog", resourceCulture);

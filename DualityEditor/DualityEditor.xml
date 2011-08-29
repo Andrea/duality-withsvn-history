@@ -444,6 +444,11 @@
               Ressourcenzuordnungen, die diese stark typisierte Ressourcenklasse verwenden.
             </summary>
         </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.HelpInfo_NotAvailable_Desc">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die No information available. ähnelt.
+            </summary>
+        </member>
         <member name="P:DualityEditor.EditorRes.GeneralRes.Language">
             <summary>
               Sucht eine lokalisierte Zeichenfolge, die English ähnelt.
