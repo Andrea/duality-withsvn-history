@@ -195,7 +195,7 @@ namespace DualityEditor
 		}
 		public void AddEntry(Entry entry)
 		{
-			this.entries.Add(entry.MemberName, entry);
+			this.entries[entry.MemberName] = entry;
 		}
 		public void AppendDoc(XmlCodeDoc other)
 		{

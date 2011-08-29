@@ -25,7 +25,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace EditorBase
 {
-	public partial class CamView : DockContent
+	public partial class CamView : DockContent, IHelpProvider
 	{
 		[Flags]
 		public enum AxisLock
@@ -1444,6 +1444,32 @@ namespace EditorBase
 		{
 			if (this.camSelector.SelectedIndex == -1) { this.camSelector.SelectedIndex = 0; return; }
 			this.SetCurrentCamera(this.camSelector.SelectedItem as Camera);
+		}
+
+		HelpInfo IHelpProvider.ProvideHoverHelp(Point localPos, ref bool captured)
+		{
+			HelpInfo result = null;
+			Point globalPos = this.PointToScreen(localPos);
+
+			Point glLocalPos = this.glControl.PointToClient(globalPos);
+			if (this.glControl.ClientRectangle.Contains(glLocalPos))
+			{
+				GameObject[] selObj = this.SelectedGameObj().ToArray();
+
+				if (this.mouseoverObject != null && this.mouseoverSelect)
+					result = HelpInfo.FromGameObject(this.mouseoverObject);
+				else if (this.mouseoverAction != MouseAction.None && this.mouseoverAction != MouseAction.RectSelection && selObj.Contains(this.mouseoverObject))
+					result = HelpInfo.FromGameObject(this.mouseoverObject);
+				else if (this.mouseoverAction != MouseAction.None && this.mouseoverAction != MouseAction.RectSelection && selObj.Length == 1)
+					result = HelpInfo.FromSelection(new ObjectSelection(selObj));
+			}
+			captured = this.DisplayRectangle.Contains(localPos);
+
+			return result;
+		}
+		bool IHelpProvider.PerformHelpAction(HelpInfo info)
+		{
+			return this.DefaultPerformHelpAction(info);
 		}
 	}
 }

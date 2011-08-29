@@ -60,6 +60,24 @@ namespace HelpAdvisor.PluginRes {
             }
         }
         
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die The Advisor will support you with context-based information about Duality. Press F1 at any time to access more information about the current topic. ähnelt.
+        /// </summary>
+        public static string HelpInfo_Advisor_Desc {
+            get {
+                return ResourceManager.GetString("HelpInfo_Advisor_Desc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Advisor Window ähnelt.
+        /// </summary>
+        public static string HelpInfo_Advisor_Topic {
+            get {
+                return ResourceManager.GetString("HelpInfo_Advisor_Topic", resourceCulture);
+            }
+        }
+        
         public static System.Drawing.Bitmap IconHelp {
             get {
                 object obj = ResourceManager.GetObject("IconHelp", resourceCulture);

@@ -19,7 +19,7 @@ using DualityEditor;
 
 namespace EditorBase
 {
-	public partial class ProjectFolderView : DockContent
+	public partial class ProjectFolderView : DockContent, IHelpProvider
 	{
 		public abstract class NodeBase : Node
 		{
@@ -1367,6 +1367,45 @@ namespace EditorBase
 
 			// Perform previously scheduled selection
 			this.PerformScheduleSelect(Path.GetFullPath(e.Path));
+		}
+
+		HelpInfo IHelpProvider.ProvideHoverHelp(Point localPos, ref bool captured)
+		{
+			HelpInfo result = null;
+			Point globalPos = this.PointToScreen(localPos);
+
+			// Hovering "Create Resource" menu
+			if (this.newToolStripMenuItem.DropDown.Visible)
+			{
+				ToolStripItem item = this.newToolStripMenuItem.DropDown.GetItemAtDeep(globalPos);
+				Type itemType = item != null ? item.Tag as Type : null;
+				if (itemType != null)
+				{
+					result = HelpInfo.FromMember(itemType);
+				}
+				captured = true;
+			}
+			// Hovering Resource nodes
+			else
+			{
+				Point treeLocalPos = this.folderView.PointToClient(globalPos);
+				if (this.folderView.ClientRectangle.Contains(treeLocalPos))
+				{
+					TreeNodeAdv viewNode = this.folderView.GetNodeAt(treeLocalPos);
+					ResourceNode resNode = viewNode != null ? viewNode.Tag as ResourceNode : null;
+					if (resNode != null)
+					{
+						result = HelpInfo.FromResource(resNode.ResLink);
+					}
+				}
+				captured = this.DisplayRectangle.Contains(localPos);
+			}
+
+			return result;
+		}
+		bool IHelpProvider.PerformHelpAction(HelpInfo info)
+		{
+			return this.DefaultPerformHelpAction(info);
 		}
 	}
 }

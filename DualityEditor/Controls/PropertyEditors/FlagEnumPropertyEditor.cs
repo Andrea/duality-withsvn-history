@@ -95,5 +95,29 @@ namespace DualityEditor.Controls.PropertyEditors
 			this.OnValueEdited(this.DisplayedValue);
 			this.PerformGetValue();
 		}
+
+		public override HelpInfo ProvideHoverHelp(Point localPos, ref bool captured)
+		{
+			HelpInfo result = base.ProvideHoverHelp(localPos, ref captured);
+
+			Point globalPos = this.PointToScreen(localPos);
+			Point editorLocalPos = this.valueEditor.PointToClient(globalPos);
+			if (this.valueEditor.ClientRectangle.Contains(editorLocalPos))
+			{
+				for (int i = 0; i < this.valueEditor.Items.Count; i++)
+				{
+					Rectangle itemRect = this.valueEditor.GetItemRectangle(i);
+					if (itemRect.Contains(editorLocalPos))
+					{
+						FlagCheckedListBoxItem item = this.valueEditor.Items[i] as FlagCheckedListBoxItem;
+						if (item != null) result = HelpInfo.FromMember(this.EditedType.GetField(item.Caption, ReflectionHelper.BindAll));
+						break;
+					}
+				}
+			}
+
+			captured = this.DisplayRectangle.Contains(localPos);
+			return result;
+		}
 	}
 }

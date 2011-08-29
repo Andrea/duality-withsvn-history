@@ -21,7 +21,7 @@ using DualityEditor;
 
 namespace EditorBase
 {
-	public partial class SceneView : DockContent
+	public partial class SceneView : DockContent, IHelpProvider
 	{
 		private class ToolTipProvider : IToolTipProvider
 		{
@@ -1306,6 +1306,47 @@ namespace EditorBase
 			Node parentNode = e.Object.Parent != null ? this.FindNode(e.Object.Parent) : this.objectModel.Root;
 			this.InsertNodeSorted(newObjNode, parentNode);
 			this.RegisterNodeTree(newObjNode);
+		}
+
+		HelpInfo IHelpProvider.ProvideHoverHelp(Point localPos, ref bool captured)
+		{
+			HelpInfo result = null;
+			Point globalPos = this.PointToScreen(localPos);
+
+			// Hovering "Create Resource" menu
+			if (this.newToolStripMenuItem.DropDown.Visible)
+			{
+				ToolStripItem item = this.newToolStripMenuItem.DropDown.GetItemAtDeep(globalPos);
+				Type itemType = item != null ? item.Tag as Type : null;
+				if (item == this.gameObjectToolStripMenuItem) itemType = typeof(GameObject);
+				if (itemType != null)
+				{
+					result = HelpInfo.FromMember(itemType);
+				}
+				captured = true;
+			}
+			// Hovering Resource nodes
+			else
+			{
+				Point treeLocalPos = this.objectView.PointToClient(globalPos);
+				if (this.objectView.ClientRectangle.Contains(treeLocalPos))
+				{
+					TreeNodeAdv viewNode = this.objectView.GetNodeAt(treeLocalPos);
+					ComponentNode cmpNode = viewNode != null ? viewNode.Tag as ComponentNode : null;
+					GameObjectNode objNode = viewNode != null ? viewNode.Tag as GameObjectNode : null;
+					if (cmpNode != null)
+						result = HelpInfo.FromComponent(cmpNode.Component);
+					else if (objNode != null)
+						result = HelpInfo.FromGameObject(objNode.Obj);
+				}
+				captured = this.DisplayRectangle.Contains(localPos);
+			}
+
+			return result;
+		}
+		bool IHelpProvider.PerformHelpAction(HelpInfo info)
+		{
+			return this.DefaultPerformHelpAction(info);
 		}
 	}
 }

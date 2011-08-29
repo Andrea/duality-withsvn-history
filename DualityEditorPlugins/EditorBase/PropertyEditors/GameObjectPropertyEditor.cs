@@ -231,5 +231,18 @@ namespace EditorBase.PropertyEditors
 			this.PerformGetValue();
 			this.ParentEditor.UpdateModifiedState();
 		}
+
+		public override HelpInfo ProvideHoverHelp(Point localPos, ref bool captured)
+		{
+			HelpInfo result = base.ProvideHoverHelp(localPos, ref captured);
+
+			if (localPos.Y > this.nameEditor.Bounds.Bottom)
+			{
+				result = HelpInfo.FromMember(typeof(Duality.Resources.PrefabLink));
+			}
+
+			captured = this.DisplayRectangle.Contains(localPos);
+			return result;
+		}
 	}
 }

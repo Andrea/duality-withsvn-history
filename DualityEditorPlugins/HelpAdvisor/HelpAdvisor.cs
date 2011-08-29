@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 
 using DualityEditor;
+using HelpAdvisor.PluginRes;
 
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -15,7 +16,7 @@ namespace HelpAdvisor
 {
 	public partial class HelpAdvisor : DockContent
 	{
-		private HelpInfo advisorHelp = new HelpInfo("Advisor Window", "The Advisor will support you with context-based information about Duality.");
+		private HelpInfo advisorHelp = HelpInfo.FromText(HelpAdvisorRes.HelpInfo_Advisor_Topic, HelpAdvisorRes.HelpInfo_Advisor_Desc);
 
 		public HelpAdvisor()
 		{
@@ -36,8 +37,12 @@ namespace HelpAdvisor
 		public void UpdateHelp()
 		{
 			HelpInfo help = HelpAdvisorPlugin.Instance.EditorForm.Help.ActiveHelp ?? advisorHelp;
+
 			this.labelTopic.Text = help.Topic;
 			this.labelDescription.Text = help.Description;
+
+			this.labelTopic.Enabled = help != advisorHelp;
+			this.labelDescription.Enabled = help != advisorHelp;
 		}
 
 		private void Help_ActiveHelpChanged(object sender, HelpStackChangedEventArgs e)

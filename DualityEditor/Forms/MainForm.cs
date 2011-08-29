@@ -48,7 +48,8 @@ namespace DualityEditor.Forms
 		private	ReloadCorePluginDialog	corePluginReloader	= null;
 		private	bool					needsRecovery		= false;
 		private	Control					hoveredControl		= null;
-		private	IHelpProvider			hoveredHelpProvider	= null;
+		private	IHelpProvider			currentHelpProvider	= null;
+		private	bool					currentHelpCaptured	= false;
 
 		private	GameObjectManager		editorObjects		= new GameObjectManager();
 		private	bool					dualityAppSuspended	= true;
@@ -173,9 +174,10 @@ namespace DualityEditor.Forms
 			Application.Idle += this.Application_Idle;
 
 			// Hook message filter
-			MouseEventMessageFilter mouseFilter = new MouseEventMessageFilter();
-			mouseFilter.MouseMove += this.mouseFilter_MouseMove;
-			Application.AddMessageFilter(mouseFilter);
+			InputEventMessageFilter inputFilter = new InputEventMessageFilter();
+			inputFilter.MouseMove += this.inputFilter_MouseMove;
+			inputFilter.KeyDown += this.inputFilter_KeyDown;
+			Application.AddMessageFilter(inputFilter);
 		}
 		public void InitMainGLContext()
 		{
@@ -1008,7 +1010,7 @@ namespace DualityEditor.Forms
 			about.ShowDialog(this);
 		}
 
-		private void mouseFilter_MouseMove(object sender, EventArgs e)
+		private void inputFilter_MouseMove(object sender, EventArgs e)
 		{
 			Control lastHoveredControl = this.hoveredControl;
 			foreach (Form f in EditorHelper.GetZSortedAppWindows())
@@ -1021,17 +1023,42 @@ namespace DualityEditor.Forms
 				break;
 			}
 
+			// An IHelpProvider has captured the mouse: Ask what to do with it.
+			if (this.currentHelpCaptured)
+			{
+				Control c = this.currentHelpProvider as Control;
+				HelpInfo help = this.currentHelpProvider.ProvideHoverHelp(c.PointToClient(Cursor.Position), ref this.currentHelpCaptured);
+				lastHoveredControl = c;
+
+				// Update provider's help info
+				if (this.Help.ActiveHelpProvider == this.currentHelpProvider)
+				{
+					if (help != null)
+						this.Help.Switch(this.currentHelpProvider, help);
+					else
+						this.Help.Pop(this.currentHelpProvider);
+				}
+				else if (help != null)
+					this.Help.Push(this.currentHelpProvider, help);
+
+				// If still in charge: Return early.
+				if (this.currentHelpCaptured) return;
+			}
+
+			// No IHelpProvider in charge: Regular mouseover checks when hovered Control changes-
 			if (lastHoveredControl != this.hoveredControl)
 			{
-				IHelpProvider lastHelpProvider = this.hoveredHelpProvider;
+				IHelpProvider lastHelpProvider = this.currentHelpProvider;
 				HelpInfo help = null;
 				foreach (IHelpProvider hp in this.hoveredControl.GetControlAncestors<IHelpProvider>())
 				{
 					Control c = hp as Control;
-					help = hp.ProvideHoverHelp(c.PointToClient(Cursor.Position));
-					if (help != null)
+					bool helpCaptured = false;
+					help = hp.ProvideHoverHelp(c.PointToClient(Cursor.Position), ref helpCaptured);
+					if (help != null || helpCaptured)
 					{
-						this.hoveredHelpProvider = hp;
+						this.currentHelpProvider = hp;
+						this.currentHelpCaptured = helpCaptured;
 						break;
 					}
 				}
@@ -1040,7 +1067,25 @@ namespace DualityEditor.Forms
 					this.Help.Pop(lastHelpProvider);
 
 				if (help != null)
-					this.Help.Push(this.hoveredHelpProvider, help);
+					this.Help.Push(this.currentHelpProvider, help);
+			}
+		}
+		private void inputFilter_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.F1)
+			{
+				// Ask Help Provider for help
+				if (this.currentHelpProvider != null)
+				{
+					e.Handled = e.Handled | this.currentHelpProvider.PerformHelpAction(this.Help.ActiveHelp);
+				}
+
+				// No reaction? Just open the reference then.
+				if (!e.Handled && File.Exists("DDoc.chm") && !System.Diagnostics.Process.GetProcessesByName("hh").Any())
+				{
+					System.Diagnostics.Process.Start("HH.exe", Path.GetFullPath("DDoc.chm"));
+					e.Handled = true;
+				}
 			}
 		}
 	}

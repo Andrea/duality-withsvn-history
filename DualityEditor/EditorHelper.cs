@@ -245,7 +245,7 @@ namespace DualityEditor
 
 				try
 				{
-					Form frm = (Form)Form.FromHandle(hwnd);
+					Form frm = Form.FromHandle(hwnd) as Form;
 					if (frm != null && Application.OpenForms.OfType<Form>().Contains(frm))
 						result.Add(frm);
 				}

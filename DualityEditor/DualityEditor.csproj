@@ -257,6 +257,7 @@
     </Compile>
     <Compile Include="HelpInfo.cs" />
     <Compile Include="InputEventMessageFilter.cs" />
+    <Compile Include="ExtMethodsToolStrip.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="ObjectSelection.cs" />
     <Compile Include="Program.cs" />

@@ -188,14 +188,18 @@ namespace DualityEditor.Controls
 			this.OnEditingFinished(this, EventArgs.Empty);
 		}
 
-		public virtual HelpInfo ProvideHoverHelp(Point localPos)
+		public virtual HelpInfo ProvideHoverHelp(Point localPos, ref bool captured)
 		{
 			if (this.EditedMember != null)
-				return new HelpInfo(this.EditedMember);
+				return HelpInfo.FromMember(this.EditedMember);
 			else if (this.EditedType != null)
-				return new HelpInfo(this.EditedType);
+				return HelpInfo.FromMember(this.EditedType);
 			else
 				return null;
+		}
+		public virtual bool PerformHelpAction(HelpInfo info)
+		{
+			return this.DefaultPerformHelpAction(info);
 		}
 	}
 }
