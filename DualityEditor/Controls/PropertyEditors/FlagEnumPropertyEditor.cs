@@ -116,7 +116,6 @@ namespace DualityEditor.Controls.PropertyEditors
 				}
 			}
 
-			captured = this.DisplayRectangle.Contains(localPos);
 			return result;
 		}
 	}

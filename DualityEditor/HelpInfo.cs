@@ -20,7 +20,7 @@ namespace DualityEditor
 	{
 		public static bool DefaultPerformHelpAction(this IHelpProvider provider, HelpInfo info)
 		{
-			MemberInfo member = ReflectionHelper.ResolveMember(info.Id, false);
+			MemberInfo member = !string.IsNullOrEmpty(info.Id) ? ReflectionHelper.ResolveMember(info.Id, false) : null;
 			if (member != null)
 			{
 				string memberHtmlName;
@@ -190,6 +190,23 @@ namespace DualityEditor
 
 			if (lastActiveHelp != this.ActiveHelp)
 				this.OnActiveHelpChanged(lastActiveHelp, this.ActiveHelp);
+		}
+		public void UpdateFromProvider(IHelpProvider oldProvider, IHelpProvider newProvider, HelpInfo info)
+		{
+			if (oldProvider != null) this.Pop(oldProvider);
+			if (info != null) this.Push(newProvider, info);
+		}
+		public void UpdateFromProvider(IHelpProvider provider, HelpInfo info)
+		{
+			if (this.ActiveHelpProvider == provider)
+			{
+				if (info != null)
+					this.Switch(provider, info);
+				else
+					this.Pop(provider);
+			}
+			else if (info != null)
+				this.Push(provider, info);
 		}
 
 		private void OnActiveHelpChanged(HelpInfo last, HelpInfo current)

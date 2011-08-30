@@ -241,7 +241,6 @@ namespace EditorBase.PropertyEditors
 				result = HelpInfo.FromMember(typeof(Duality.Resources.PrefabLink));
 			}
 
-			captured = this.DisplayRectangle.Contains(localPos);
 			return result;
 		}
 	}

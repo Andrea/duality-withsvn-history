@@ -1463,7 +1463,6 @@ namespace EditorBase
 				else if (this.mouseoverAction != MouseAction.None && this.mouseoverAction != MouseAction.RectSelection && selObj.Length == 1)
 					result = HelpInfo.FromSelection(new ObjectSelection(selObj));
 			}
-			captured = this.DisplayRectangle.Contains(localPos);
 
 			return result;
 		}

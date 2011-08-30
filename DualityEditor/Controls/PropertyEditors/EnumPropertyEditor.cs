@@ -12,7 +12,7 @@ using Duality;
 
 namespace DualityEditor.Controls.PropertyEditors
 {
-	public partial class EnumPropertyEditor : PropertyEditor, IHelpProvider
+	public partial class EnumPropertyEditor : PropertyEditor
 	{
 		private	bool	updatingFromObj	= false;
 
@@ -106,12 +106,12 @@ namespace DualityEditor.Controls.PropertyEditors
 			HelpInfo result = base.ProvideHoverHelp(localPos, ref captured);
 			if (this.valueEditor.DroppedDown)
 			{
-				captured = true;
 				Enum selEnum = this.valueEditor.EnumValue;
 				if (selEnum != null) result = HelpInfo.FromMember(this.EditedType.GetField(selEnum.ToString(), ReflectionHelper.BindAll));
+				captured = true;
 			}
 			else
-				captured = this.DisplayRectangle.Contains(localPos);
+				captured = false;
 			return result;
 		}
 	}

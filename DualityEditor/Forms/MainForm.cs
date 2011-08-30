@@ -1023,52 +1023,39 @@ namespace DualityEditor.Forms
 				break;
 			}
 
+			Control c;
+			HelpInfo help;
+
 			// An IHelpProvider has captured the mouse: Ask what to do with it.
 			if (this.hoveredHelpCaptured)
 			{
-				Control c = this.hoveredHelpProvider as Control;
-				HelpInfo help = this.hoveredHelpProvider.ProvideHoverHelp(c.PointToClient(Cursor.Position), ref this.hoveredHelpCaptured);
+				c = this.hoveredHelpProvider as Control;
+				help = this.hoveredHelpProvider.ProvideHoverHelp(c.PointToClient(Cursor.Position), ref this.hoveredHelpCaptured);
 				lastHoveredControl = c;
 
 				// Update provider's help info
-				if (this.Help.ActiveHelpProvider == this.hoveredHelpProvider)
-				{
-					if (help != null)
-						this.Help.Switch(this.hoveredHelpProvider, help);
-					else
-						this.Help.Pop(this.hoveredHelpProvider);
-				}
-				else if (help != null)
-					this.Help.Push(this.hoveredHelpProvider, help);
+				this.Help.UpdateFromProvider(this.hoveredHelpProvider, help);
 
 				// If still in charge: Return early.
 				if (this.hoveredHelpCaptured) return;
 			}
 
-			// No IHelpProvider in charge: Regular mouseover checks when hovered Control changes-
-			if (lastHoveredControl != this.hoveredControl)
+			// No IHelpProvider in charge: Find one that provides help
+			help = null;
+			IHelpProvider lastHelpProvider = this.hoveredHelpProvider;
+			foreach (IHelpProvider hp in this.hoveredControl.GetControlAncestors<IHelpProvider>())
 			{
-				IHelpProvider lastHelpProvider = this.hoveredHelpProvider;
-				HelpInfo help = null;
-				foreach (IHelpProvider hp in this.hoveredControl.GetControlAncestors<IHelpProvider>())
-				{
-					Control c = hp as Control;
-					bool helpCaptured = false;
-					help = hp.ProvideHoverHelp(c.PointToClient(Cursor.Position), ref helpCaptured);
-					if (help != null || helpCaptured)
-					{
-						this.hoveredHelpProvider = hp;
-						this.hoveredHelpCaptured = helpCaptured;
-						break;
-					}
-				}
-
-				if (lastHelpProvider != null)
-					this.Help.Pop(lastHelpProvider);
-
-				if (help != null)
-					this.Help.Push(this.hoveredHelpProvider, help);
+				c = hp as Control;
+				help = hp.ProvideHoverHelp(c.PointToClient(Cursor.Position), ref this.hoveredHelpCaptured);
+				this.hoveredHelpProvider = hp;
+				if (help != null || this.hoveredHelpCaptured) break;
 			}
+
+			// Update help system based on the result.
+			if (lastHelpProvider != this.hoveredHelpProvider)
+				this.Help.UpdateFromProvider(lastHelpProvider, this.hoveredHelpProvider, help);
+			else if (this.hoveredHelpProvider != null)
+				this.Help.UpdateFromProvider(this.hoveredHelpProvider, help);
 		}
 		private void inputFilter_KeyDown(object sender, KeyEventArgs e)
 		{

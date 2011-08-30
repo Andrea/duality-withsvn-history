@@ -1314,7 +1314,7 @@ namespace EditorBase
 			Point globalPos = this.PointToScreen(localPos);
 
 			// Hovering "Create Resource" menu
-			if (this.newToolStripMenuItem.DropDown.Visible)
+			if (this.contextMenuNode.Visible)
 			{
 				ToolStripItem item = this.newToolStripMenuItem.DropDown.GetItemAtDeep(globalPos);
 				Type itemType = item != null ? item.Tag as Type : null;
@@ -1339,7 +1339,7 @@ namespace EditorBase
 					else if (objNode != null)
 						result = HelpInfo.FromGameObject(objNode.Obj);
 				}
-				captured = this.DisplayRectangle.Contains(localPos);
+				captured = false;
 			}
 
 			return result;
