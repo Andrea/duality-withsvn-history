@@ -1,12 +1,12 @@
 ﻿
--->	Videoblog + Release
-	-->	Documentation! Yay!
-	-->	Help System / Advisor
-	-->	Implementation Details?
-		-->	Overall design choices
-		-->	Control picking & Input hook
-		-->	Xml file parsing
-		-->	DDoc.chm command line (F1)
+-->	Editor Sandbox:
+	-->	What about the object inspector? Should it update itsself periodically?
+		-->	No, makes editing impossible
+		-->	No, costs too much performance when selecting a lot of objects
+		-->	But what then?
+		-->	Manual update button?
+		-->	...?
+	-->	Testing & Usability Stuff
 
 -->	Possible schedule:
 	1.	Implement sandbox mode for editor
@@ -18,18 +18,6 @@
 	-->	Particle Systems & Particle Editor
 	-->	Ingame GUI & GUI Editor
 	-->	(Property) Animations & Animation Editor
-
--->	Editor Sandbox:
-	-->	Play:	Switch Duality's execution context and caus the editor to mimic the
-				launchers behaviour, i.e. perform actual updates, etc.
-				Right before doing that, make a temporary backup of the current Scene.
-	-->	Pause:	Switches back to editor context & behaviour (only EditorUpdate, not Update, etc.)
-	-->	Reset:	Switch back to editor behaviour and load Scene backup.
-
-	-->	When in sandbox mode, disable the save scene button. The current Scene is temporary.
-	-->	Also be sure to adjust the ObjectInspector to update itsself periodically when in sandbox mode.
-	-->	The same applies for any visible CamView. Render yourself periodically!
-	-->	The SceneView should keep itsself up-to-date already, because it's hooked in Scene events.
 
 
 

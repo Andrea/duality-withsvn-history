@@ -134,7 +134,7 @@ namespace Duality
 			frameCount++;
 
 			mainTimer = watch.ElapsedMilliseconds;
-			lastDelta = mainTimer - frameBegin;
+			lastDelta = MathF.Min(mainTimer - frameBegin, MsPFMult * 10); // Don't skip more than 10 frames.
 			frameBegin = mainTimer;
 
 			gameTimer += timeFreeze ? 0.0f : lastDelta * timeScale;

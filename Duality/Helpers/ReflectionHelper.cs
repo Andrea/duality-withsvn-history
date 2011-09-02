@@ -5,6 +5,7 @@ using System.Reflection;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Linq.Expressions;
 
 using Duality.Serialization;
 
@@ -160,6 +161,71 @@ namespace Duality
 		}
 
 		
+		public delegate void Setter<T,U>(T instance, U value);
+		public delegate void ByRefSetter<T,U>(ref T instance, U value);
+		public static ByRefSetter<T,U> BuildFieldRefSetter<T,U>(this FieldInfo field)
+		{
+			ParameterExpression instance = Expression.Parameter(typeof(T).MakeByRefType(), "instance");
+			ParameterExpression value = Expression.Parameter(typeof(U), "value");
+
+			Expression<ByRefSetter<T,U>> expr =
+				Expression.Lambda<ByRefSetter<T,U>>(
+					Expression.Assign(
+						Expression.Field(instance, field),
+						Expression.Convert(value, field.FieldType)),
+					instance,
+					value);
+
+			return expr.Compile();
+		}
+		public static Setter<T,U> BuildFieldSetter<T,U>(this FieldInfo field)
+		{
+			ParameterExpression instance = Expression.Parameter(typeof(T), "instance");
+			ParameterExpression value = Expression.Parameter(typeof(U), "value");
+
+			Expression<Setter<T,U>> expr =
+				Expression.Lambda<Setter<T,U>>(
+					Expression.Assign(
+						Expression.Field(instance, field),
+						Expression.Convert(value, field.FieldType)),
+					instance,
+					value);
+
+			return expr.Compile();
+		}
+		public static ByRefSetter<T,U> BuildPropertyRefSetter<T,U>(this PropertyInfo prop)
+		{
+			ParameterExpression instance = Expression.Parameter(typeof(T).MakeByRefType(), "instance");
+			ParameterExpression value = Expression.Parameter(typeof(U), "value");
+
+			Expression<ByRefSetter<T,U>> expr =
+				Expression.Lambda<ByRefSetter<T,U>>(
+					Expression.Assign(
+						Expression.Property(instance, prop),
+						Expression.Convert(value, prop.PropertyType)),
+					instance,
+					value);
+
+			return expr.Compile();
+		}
+		public static Setter<T,U> BuildPropertySetter<T,U>(this PropertyInfo prop)
+		{
+			ParameterExpression instance = Expression.Parameter(typeof(T), "instance");
+			ParameterExpression value = Expression.Parameter(typeof(U), "value");
+
+			Expression<Setter<T,U>> expr =
+				Expression.Lambda<Setter<T,U>>(
+					Expression.Assign(
+						Expression.Property(instance, prop),
+						Expression.Convert(value, prop.PropertyType)),
+					instance,
+					value);
+
+			return expr.Compile();
+		}
+
+
+
 		/// <summary>
 		/// Clears the ReflectionHelpers Type cache.
 		/// </summary>

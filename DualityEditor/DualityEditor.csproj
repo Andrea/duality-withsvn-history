@@ -258,6 +258,8 @@
     <Compile Include="HelpInfo.cs" />
     <Compile Include="InputEventMessageFilter.cs" />
     <Compile Include="ExtMethodsToolStrip.cs" />
+    <Compile Include="ExtMethodsMouseButtons.cs" />
+    <Compile Include="ExtMethodsKeys.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="ObjectSelection.cs" />
     <Compile Include="Program.cs" />
@@ -363,6 +365,9 @@
     <Content Include="OpenTK.GLControl.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\control_stop_blue.png" />
+    <None Include="Resources\control_play_blue.png" />
+    <None Include="Resources\control_pause_blue.png" />
     <None Include="Resources\DualitorLogoHalfSize.png" />
     <EmbeddedResource Include="Resources\GameResTemplate.txt" />
     <None Include="Resources\page_white_csharp.png" />

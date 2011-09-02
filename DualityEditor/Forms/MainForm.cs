@@ -30,6 +30,12 @@ namespace DualityEditor.Forms
 			Append,
 			Toggle
 		}
+		public enum SandboxState
+		{
+			Inactive,
+			Playing,
+			Paused
+		}
 
 
 		private static MainForm instance;
@@ -50,12 +56,11 @@ namespace DualityEditor.Forms
 		private	Control					hoveredControl		= null;
 		private	IHelpProvider			hoveredHelpProvider	= null;
 		private	bool					hoveredHelpCaptured	= false;
-
 		private	GameObjectManager		editorObjects		= new GameObjectManager();
 		private	bool					dualityAppSuspended	= true;
 
-		private	HelpStack	helpStack	= new HelpStack();
-
+		private	HelpStack		helpStack			= new HelpStack();
+		private	SandboxState	sandboxState		= SandboxState.Inactive;
 		private	ObjectSelection	selectionCurrent	= ObjectSelection.Null;
 		private	ObjectSelection	selectionPrevious	= ObjectSelection.Null;
 		private	bool			selectionChanging	= false;
@@ -68,6 +73,8 @@ namespace DualityEditor.Forms
 		public	event	EventHandler	BeforeUpdateDualityApp	= null;
 		public	event	EventHandler	AfterUpdateDualityApp	= null;
 		public	event	EventHandler	SaveAllProjectData		= null;
+		public	event	EventHandler	EnteringSandbox			= null;
+		public	event	EventHandler	LeaveSandbox			= null;
 		public	event	EventHandler<SelectionChangedEventArgs>			SelectionChanged		= null;
 		public	event	EventHandler<ObjectPropertyChangedEventArgs>	ObjectPropertyChanged	= null;
 		public	event	EventHandler<ResourceEventArgs>					ResourceCreated			= null;
@@ -97,6 +104,10 @@ namespace DualityEditor.Forms
 		public GLControl MainContextControl
 		{
 			get { return this.mainContextControl; }
+		}
+		public SandboxState CurrentSandboxState
+		{
+			get { return this.sandboxState; }
 		}
 		private bool AppStillIdle
 		{
@@ -156,6 +167,7 @@ namespace DualityEditor.Forms
 			this.LoadPlugins();
 			this.LoadUserData();
 			this.InitPlugins();
+			this.UpdateToolbar();
 
 			this.corePluginReloader = new ReloadCorePluginDialog(this);
 			this.corePluginReloader.BeforeBeginReload	+= this.corePluginReloader_BeforeBeginReload;
@@ -220,6 +232,47 @@ namespace DualityEditor.Forms
 				this.menuRegistry[menuId] = item;
 			}
 			return item;
+		}
+
+		public void SandboxPlay()
+		{
+			this.OnEnteringSandbox();
+
+			// Save the current scene
+			this.SaveCurrentScene();
+
+			this.sandboxState = SandboxState.Playing;
+			DualityApp.ExecContext = DualityApp.ExecutionContext.Launcher;
+			this.UpdateToolbar();
+
+			// Force Scene reload
+			string curPath = Scene.CurrentPath;
+			Scene.Current.Dispose();
+			Scene.Current = ContentProvider.RequestContent<Scene>(curPath).Res;
+		}
+		public void SandboxPause()
+		{
+			this.sandboxState = SandboxState.Paused;
+			DualityApp.ExecContext = DualityApp.ExecutionContext.Editor;
+			this.UpdateToolbar();
+		}
+		public void SandboxStop()
+		{
+			this.sandboxState = SandboxState.Inactive;
+			DualityApp.ExecContext = DualityApp.ExecutionContext.Editor;
+			this.UpdateToolbar();
+
+			// Force current Scene reload
+			string curPath = Scene.CurrentPath;
+			Scene.Current.Dispose();
+			Scene.Current = ContentProvider.RequestContent<Scene>(curPath).Res;
+
+			this.OnLeaveSandbox();
+		}
+		public void SetCurrentDualityAppInput(IMouseInput mouse, IKeyboardInput keyboard)
+		{
+			DualityApp.Mouse = mouse;
+			DualityApp.Keyboard = keyboard;
 		}
 
 		public void Select(object sender, ObjectSelection sel, SelectMode mode = SelectMode.Set)
@@ -301,6 +354,161 @@ namespace DualityEditor.Forms
 			this.OnObjectPropertyChanged(sender, new ObjectPropertyChangedEventArgs(obj, info, false));
 		}
 
+		public T GetPlugin<T>() where T : EditorPlugin
+		{
+			foreach (EditorPlugin p in this.plugins)
+			{
+				if (p is T) return p as T;
+			}
+			return null;
+		}
+
+		public void LoadXmlCodeDoc()
+		{
+			this.LoadXmlCodeDoc("Duality.xml");
+			foreach (string xmlDocFile in Directory.EnumerateFiles("Plugins", "*.core.xml", SearchOption.AllDirectories))
+				this.LoadXmlCodeDoc(xmlDocFile);
+		}
+		public void LoadXmlCodeDoc(string file)
+		{
+			XmlCodeDoc xmlDoc = new XmlCodeDoc(file);
+			CorePluginHelper.RegisterXmlCodeDoc(xmlDoc);
+		}
+
+		public void RegisterFileImporter(IFileImporter importer)
+		{
+			this.fileImporters.Add(importer);
+		}
+		public void UnregisterFileImporter(IFileImporter importer)
+		{
+			this.fileImporters.Remove(importer);
+		}
+		public bool IsImportFileExisting(string filePath)
+		{
+			string srcFilePath, targetName, targetDir;
+			this.PrepareImportFilePaths(filePath, out srcFilePath, out targetName, out targetDir);
+
+			// Does the source file already exist?
+			if (File.Exists(srcFilePath)) return true;
+
+			// Find an importer and check if one of its output files already exist
+			foreach (IFileImporter i in this.fileImporters)
+			{
+				if (i.CanImportFile(srcFilePath))
+				{
+					foreach (string file in i.GetOutputFiles(srcFilePath, targetName, targetDir))
+					{
+						if (File.Exists(file)) return true;
+					}
+					// If we've got a hit, don't search further - ImportFile won't either.
+					break;
+				}
+			}
+
+			return false;
+		}
+		public bool ImportFile(string filePath)
+		{
+			// Determine & check paths
+			string srcFilePath, targetName, targetDir;
+			this.PrepareImportFilePaths(filePath, out srcFilePath, out targetName, out targetDir);
+
+			// Assure the directory exists
+			Directory.CreateDirectory(Path.GetDirectoryName(srcFilePath));
+
+			// Move file from data directory to source directory
+			if (File.Exists(srcFilePath))
+			{
+				File.Copy(filePath, srcFilePath, true);
+				File.Delete(filePath);
+			}
+			else
+				File.Move(filePath, srcFilePath);
+
+			// Find an importer to handle the file import
+			IFileImporter importer = this.fileImporters.FirstOrDefault(i => i.CanImportFile(srcFilePath));
+			if (importer != null)
+			{
+				// Import it
+				importer.ImportFile(srcFilePath, targetName, targetDir);
+				GC.Collect();
+				GC.WaitForPendingFinalizers();
+				return true;
+			}
+			else
+				return false;
+		}
+
+		private void ReimportFile(string filePath)
+		{
+			// Find an importer to handle the file import
+			IFileImporter importer = this.fileImporters.FirstOrDefault(i => i.CanImportFile(filePath));
+			if (importer == null) return;
+
+			foreach (Resource r in ContentProvider.GetAvailContent<Resource>())
+			{
+				if (!importer.IsUsingSrcFile(r, filePath)) continue;
+				try
+				{
+					importer.ReimportFile(r, filePath);
+				}
+				catch (Exception) 
+				{
+					Log.Editor.WriteError("Can't re-import file '{0}'", filePath);
+				}
+			}
+		}
+		private void PrepareImportFilePaths(string filePath, out string srcFilePath, out string targetName, out string targetDir)
+		{
+			srcFilePath = PathHelper.MakePathRelative(filePath, EditorHelper.DataDirectory);
+			if (srcFilePath.Contains("..")) srcFilePath = Path.GetFileName(srcFilePath);
+
+			targetDir = Path.GetDirectoryName(Path.Combine(EditorHelper.DataDirectory, srcFilePath));
+			targetName = Path.GetFileNameWithoutExtension(filePath);
+
+			srcFilePath = PathHelper.GetFreePath(
+				Path.Combine(EditorHelper.SourceMediaDirectory, Path.GetFileNameWithoutExtension(srcFilePath)), 
+				Path.GetExtension(srcFilePath));
+		}
+		private void PerformScheduledReimport()
+		{
+			if (this.reimportSchedule.Count == 0) return;
+
+			// Hacky: Wait a little for the files to be accessable again (Might be used by another process)
+			System.Threading.Thread.Sleep(50);
+
+			foreach (string file in this.reimportSchedule)
+			{
+				if (!File.Exists(file)) continue;
+				this.ReimportFile(file);
+			}
+			this.reimportSchedule.Clear();
+		}
+
+		private bool DisplayConfirmImportOverwrite(string importFilePath)
+		{
+			DialogResult result = MessageBox.Show(
+				String.Format(EditorRes.GeneralRes.Msg_ImportConfirmOverwrite_Text, importFilePath), 
+				EditorRes.GeneralRes.Msg_ImportConfirmOverwrite_Caption, 
+				MessageBoxButtons.YesNo, 
+				MessageBoxIcon.Warning);
+			return result == DialogResult.Yes;
+		}
+		private void DisplayErrorImportFile(string importFilePath)
+		{
+			MessageBox.Show(
+				String.Format(EditorRes.GeneralRes.Msg_CantImport_Text, importFilePath), 
+				EditorRes.GeneralRes.Msg_CantImport_Caption, 
+				MessageBoxButtons.OK, 
+				MessageBoxIcon.Error);
+		}
+
+		private void UpdateToolbar()
+		{
+			this.actionStopSandbox.Enabled	= this.sandboxState != SandboxState.Inactive;
+			this.actionPauseSandbox.Enabled	= this.sandboxState == SandboxState.Playing;
+		}
+		
 		private void LoadPlugins()
 		{
 			Log.Editor.Write("Scanning for editor plugins...");
@@ -351,173 +559,6 @@ namespace DualityEditor.Forms
 				plugin.InitPlugin(this);
 			}
 			Log.Editor.PopIndent();
-		}
-		public T GetPlugin<T>() where T : EditorPlugin
-		{
-			foreach (EditorPlugin p in this.plugins)
-			{
-				if (p is T) return p as T;
-			}
-			return null;
-		}
-
-		public void LoadXmlCodeDoc()
-		{
-			this.LoadXmlCodeDoc("Duality.xml");
-			foreach (string xmlDocFile in Directory.EnumerateFiles("Plugins", "*.core.xml", SearchOption.AllDirectories))
-				this.LoadXmlCodeDoc(xmlDocFile);
-		}
-		public void LoadXmlCodeDoc(string file)
-		{
-			XmlCodeDoc xmlDoc = new XmlCodeDoc(file);
-			CorePluginHelper.RegisterXmlCodeDoc(xmlDoc);
-		}
-
-		public void RegisterFileImporter(IFileImporter importer)
-		{
-			this.fileImporters.Add(importer);
-		}
-		public void UnregisterFileImporter(IFileImporter importer)
-		{
-			this.fileImporters.Remove(importer);
-		}
-		/// <summary>
-		/// Checks whether or not importing the specified file would overwrite an existing, already imported file
-		/// </summary>
-		/// <param name="filePath"></param>
-		/// <returns></returns>
-		public bool IsImportFileExisting(string filePath)
-		{
-			string srcFilePath, targetName, targetDir;
-			this.PrepareImportFilePaths(filePath, out srcFilePath, out targetName, out targetDir);
-
-			// Does the source file already exist?
-			if (File.Exists(srcFilePath)) return true;
-
-			// Find an importer and check if one of its output files already exist
-			foreach (IFileImporter i in this.fileImporters)
-			{
-				if (i.CanImportFile(srcFilePath))
-				{
-					foreach (string file in i.GetOutputFiles(srcFilePath, targetName, targetDir))
-					{
-						if (File.Exists(file)) return true;
-					}
-					// If we've got a hit, don't search further - ImportFile won't either.
-					break;
-				}
-			}
-
-			return false;
-		}
-		/// <summary>
-		/// Imports the specified file.
-		/// </summary>
-		/// <param name="filePath"></param>
-		/// <returns></returns>
-		public bool ImportFile(string filePath)
-		{
-			// Determine & check paths
-			string srcFilePath, targetName, targetDir;
-			this.PrepareImportFilePaths(filePath, out srcFilePath, out targetName, out targetDir);
-
-			// Assure the directory exists
-			Directory.CreateDirectory(Path.GetDirectoryName(srcFilePath));
-
-			// Move file from data directory to source directory
-			if (File.Exists(srcFilePath))
-			{
-				File.Copy(filePath, srcFilePath, true);
-				File.Delete(filePath);
-			}
-			else
-				File.Move(filePath, srcFilePath);
-
-			// Find an importer to handle the file import
-			IFileImporter importer = this.fileImporters.FirstOrDefault(i => i.CanImportFile(srcFilePath));
-			if (importer != null)
-			{
-				// Import it
-				importer.ImportFile(srcFilePath, targetName, targetDir);
-				GC.Collect();
-				GC.WaitForPendingFinalizers();
-				return true;
-			}
-			else
-				return false;
-		}
-		/// <summary>
-		/// Re-imports the specified file, if it is referenced by a currently existing resource
-		/// </summary>
-		/// <param name="filePath"></param>
-		private void ReimportFile(string filePath)
-		{
-			// Find an importer to handle the file import
-			IFileImporter importer = this.fileImporters.FirstOrDefault(i => i.CanImportFile(filePath));
-			if (importer == null) return;
-
-			foreach (Resource r in ContentProvider.GetAvailContent<Resource>())
-			{
-				if (!importer.IsUsingSrcFile(r, filePath)) continue;
-				try
-				{
-					importer.ReimportFile(r, filePath);
-				}
-				catch (Exception) 
-				{
-					Log.Editor.WriteError("Can't re-import file '{0}'", filePath);
-				}
-			}
-		}
-		/// <summary>
-		/// Prepares file import by determining import directories from the specified file path
-		/// </summary>
-		/// <param name="filePath"></param>
-		/// <param name="srcFilePath"></param>
-		/// <param name="targetDir"></param>
-		private void PrepareImportFilePaths(string filePath, out string srcFilePath, out string targetName, out string targetDir)
-		{
-			srcFilePath = PathHelper.MakePathRelative(filePath, EditorHelper.DataDirectory);
-			if (srcFilePath.Contains("..")) srcFilePath = Path.GetFileName(srcFilePath);
-
-			targetDir = Path.GetDirectoryName(Path.Combine(EditorHelper.DataDirectory, srcFilePath));
-			targetName = Path.GetFileNameWithoutExtension(filePath);
-
-			srcFilePath = PathHelper.GetFreePath(
-				Path.Combine(EditorHelper.SourceMediaDirectory, Path.GetFileNameWithoutExtension(srcFilePath)), 
-				Path.GetExtension(srcFilePath));
-		}
-		private void PerformScheduledReimport()
-		{
-			if (this.reimportSchedule.Count == 0) return;
-
-			// Hacky: Wait a little for the files to be accessable again (Might be used by another process)
-			System.Threading.Thread.Sleep(50);
-
-			foreach (string file in this.reimportSchedule)
-			{
-				if (!File.Exists(file)) continue;
-				this.ReimportFile(file);
-			}
-			this.reimportSchedule.Clear();
-		}
-
-		protected bool DisplayConfirmImportOverwrite(string importFilePath)
-		{
-			DialogResult result = MessageBox.Show(
-				String.Format(EditorRes.GeneralRes.Msg_ImportConfirmOverwrite_Text, importFilePath), 
-				EditorRes.GeneralRes.Msg_ImportConfirmOverwrite_Caption, 
-				MessageBoxButtons.YesNo, 
-				MessageBoxIcon.Warning);
-			return result == DialogResult.Yes;
-		}
-		protected void DisplayErrorImportFile(string importFilePath)
-		{
-			MessageBox.Show(
-				String.Format(EditorRes.GeneralRes.Msg_CantImport_Text, importFilePath), 
-				EditorRes.GeneralRes.Msg_CantImport_Caption, 
-				MessageBoxButtons.OK, 
-				MessageBoxIcon.Error);
 		}
 
 		private void SaveUserData()
@@ -683,6 +724,16 @@ namespace DualityEditor.Forms
 			if (this.AfterUpdateDualityApp != null)
 				this.AfterUpdateDualityApp(this, null);
 		}
+		private void OnEnteringSandbox()
+		{
+			if (this.EnteringSandbox != null)
+				this.EnteringSandbox(this, null);
+		}
+		private void OnLeaveSandbox()
+		{
+			if (this.LeaveSandbox != null)
+				this.LeaveSandbox(this, null);
+		}
 		private void OnSelectionChanged(object sender)
 		{
 			if (this.selectionCurrent == this.selectionPrevious) return;
@@ -806,10 +857,7 @@ namespace DualityEditor.Forms
 		protected override void OnFormClosing(FormClosingEventArgs e)
 		{
 			base.OnFormClosing(e);
-			if (!e.Cancel)
-			{
-				this.SaveUserData();
-			}
+			if (!e.Cancel) this.SaveUserData();
 		}
 		protected override void OnFormClosed(FormClosedEventArgs e)
 		{
@@ -968,7 +1016,14 @@ namespace DualityEditor.Forms
 				if (!this.dualityAppSuspended)
 				{
 					this.OnBeforeUpdateDualityApp();
-					DualityApp.EditorUpdate(this.editorObjects);
+					try
+					{
+						DualityApp.EditorUpdate(this.editorObjects);
+					}
+					catch (Exception exception)
+					{
+						Log.Editor.Write("An exception occured during a core update: {0}", Log.Exception(exception));
+					}
 					this.OnAfterUpdateDualityApp();
 				}
 				System.Threading.Thread.Sleep(Math.Max(1, 17 - (int)watch.ElapsedMilliseconds));
@@ -1002,6 +1057,18 @@ namespace DualityEditor.Forms
 		{
 			this.UpdateSourceCode();
 			System.Diagnostics.Process.Start(EditorHelper.SourceCodeSolutionFile);
+		}
+		private void actionRunSandbox_Click(object sender, EventArgs e)
+		{
+			this.SandboxPlay();
+		}
+		private void actionPauseSandbox_Click(object sender, EventArgs e)
+		{
+			this.SandboxPause();
+		}
+		private void actionStopSandbox_Click(object sender, EventArgs e)
+		{
+			this.SandboxStop();
 		}
 
 		private void aboutItem_Click(object sender, EventArgs e)

@@ -551,34 +551,6 @@
             Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
             </summary>
         </member>
-        <member name="M:DualityEditor.Forms.MainForm.IsImportFileExisting(System.String)">
-            <summary>
-            Checks whether or not importing the specified file would overwrite an existing, already imported file
-            </summary>
-            <param name="filePath"></param>
-            <returns></returns>
-        </member>
-        <member name="M:DualityEditor.Forms.MainForm.ImportFile(System.String)">
-            <summary>
-            Imports the specified file.
-            </summary>
-            <param name="filePath"></param>
-            <returns></returns>
-        </member>
-        <member name="M:DualityEditor.Forms.MainForm.ReimportFile(System.String)">
-            <summary>
-            Re-imports the specified file, if it is referenced by a currently existing resource
-            </summary>
-            <param name="filePath"></param>
-        </member>
-        <member name="M:DualityEditor.Forms.MainForm.PrepareImportFilePaths(System.String,System.String@,System.String@,System.String@)">
-            <summary>
-            Prepares file import by determining import directories from the specified file path
-            </summary>
-            <param name="filePath"></param>
-            <param name="srcFilePath"></param>
-            <param name="targetDir"></param>
-        </member>
         <member name="F:DualityEditor.Controls.PropertyEditors.EnumPropertyEditor.components">
             <summary> 
             Erforderliche Designervariable.

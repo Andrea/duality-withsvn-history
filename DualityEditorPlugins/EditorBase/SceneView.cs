@@ -18,6 +18,7 @@ using Aga.Controls.Tree;
 using Duality;
 using Duality.Resources;
 using DualityEditor;
+using DualityEditor.Forms;
 
 namespace EditorBase
 {
@@ -584,6 +585,7 @@ namespace EditorBase
 
 		protected bool DisplayConfirmDeleteSelectedObjects()
 		{
+			if (EditorBasePlugin.Instance.EditorForm.CurrentSandboxState == MainForm.SandboxState.Playing) return true;
 			DialogResult result = MessageBox.Show(
 				PluginRes.EditorBaseRes.SceneView_MsgBox_ConfirmDeleteSelectedObjects_Text, 
 				PluginRes.EditorBaseRes.SceneView_MsgBox_ConfirmDeleteSelectedObjects_Caption, 
@@ -614,6 +616,7 @@ namespace EditorBase
 			this.toolStripLabelSceneName.Text = (!sceneAvail || String.IsNullOrEmpty(Scene.Current.Name)) ? 
 				PluginRes.EditorBaseRes.SceneNameNotYetSaved : 
 				Scene.Current.Name;
+			this.toolStripButtonSaveScene.Enabled = EditorBasePlugin.Instance.EditorForm.CurrentSandboxState == MainForm.SandboxState.Inactive;
 		}
 		
 		private void textBoxFilter_TextChanged(object sender, EventArgs e)

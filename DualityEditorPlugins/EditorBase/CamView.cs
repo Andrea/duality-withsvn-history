@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using SysDrawFont = System.Drawing.Font;
+using BitArray = System.Collections.BitArray;
 
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -23,9 +24,16 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
+using Key = OpenTK.Input.Key;
+using MouseButton = OpenTK.Input.MouseButton;
+using MouseButtonEventArgs = OpenTK.Input.MouseButtonEventArgs;
+using KeyboardKeyEventArgs = OpenTK.Input.KeyboardKeyEventArgs;
+using MouseMoveEventArgs = OpenTK.Input.MouseMoveEventArgs;
+using MouseWheelEventArgs = OpenTK.Input.MouseWheelEventArgs;
+
 namespace EditorBase
 {
-	public partial class CamView : DockContent, IHelpProvider
+	public partial class CamView : DockContent, IHelpProvider, IMouseInput, IKeyboardInput
 	{
 		[Flags]
 		public enum AxisLock
@@ -77,6 +85,20 @@ namespace EditorBase
 		private	ObjectSelection		activeRectSel	= new ObjectSelection();
 		private	ColorPickerDialog	bgColorDialog	= new ColorPickerDialog();
 		private	GameObject			nativeCamObj	= null;
+
+		private	int		inputMouseX			= 0;
+		private	int		inputMouseY			= 0;
+		private	int		inputMouseWheel		= 0;
+		private	int		inputMouseButtons	= 0;
+		private	event	EventHandler<MouseButtonEventArgs>	inputMouseDown			= null;
+		private	event	EventHandler<MouseButtonEventArgs>	inputMouseUp			= null;
+		private	event	EventHandler<MouseMoveEventArgs>	inputMouseMove			= null;
+		private	event	EventHandler<MouseWheelEventArgs>	inputMouseWheelChanged	= null;
+
+		private	bool		inputKeyRepeat	= false;
+		private	BitArray	inputKeyPressed	= new BitArray((int)Key.LastKey + 1, false);
+		private	event		EventHandler<KeyboardKeyEventArgs>	inputKeyDown	= null;
+		private	event		EventHandler<KeyboardKeyEventArgs>	inputKeyUp		= null;
 
 		public ColorRgba BgColor
 		{
@@ -154,12 +176,12 @@ namespace EditorBase
 			EditorBasePlugin.Instance.EditorForm.SelectionChanged += this.EditorForm_SelectionChanged;
 			EditorBasePlugin.Instance.EditorForm.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
 			EditorBasePlugin.Instance.EditorForm.ResourceModified += this.EditorForm_ResourceModified;
-			Scene.Leaving += this.Scene_Changed;
+			Scene.Leaving += this.Scene_Leaving;
 			Scene.Entered += this.Scene_Changed;
 			Scene.GameObjectRegistered += this.Scene_Changed;
-			Scene.GameObjectUnregistered += this.Scene_Changed;
+			Scene.GameObjectUnregistered += this.Scene_GameObjectUnregistered;
 			Scene.RegisteredObjectComponentAdded += this.Scene_Changed;
-			Scene.RegisteredObjectComponentRemoved += this.Scene_Changed;
+			Scene.RegisteredObjectComponentRemoved += this.Scene_RegisteredObjectComponentRemoved;
 
 			if (Scene.Current != null) this.Scene_Changed(this, null);
 
@@ -206,6 +228,7 @@ namespace EditorBase
 				this.camInternal = true;
 				this.camObj = this.nativeCamObj;
 				this.camComp = this.camObj.Camera;
+				this.camSelector.SelectedIndex = 0;
 			}
 			else
 			{
@@ -213,6 +236,7 @@ namespace EditorBase
 				this.camObj = c.GameObj;
 				this.camComp = c;
 				EditorBasePlugin.Instance.EditorForm.EditorObjects.RegisterObjDeep(this.camObj);
+				this.camSelector.SelectedIndex = this.camSelector.Items.IndexOf(c);
 			}
 
 			this.glControl.Invalidate();
@@ -269,7 +293,9 @@ namespace EditorBase
 			this.glControl.MouseMove += new MouseEventHandler(this.glControl_MouseMove);
 			this.glControl.LostFocus += new EventHandler(this.glControl_LostFocus);
 			this.glControl.GotFocus += new EventHandler(this.glControl_GotFocus);
+			this.glControl.PreviewKeyDown += new PreviewKeyDownEventHandler(glControl_PreviewKeyDown);
 			this.glControl.KeyDown += new KeyEventHandler(this.glControl_KeyDown);
+			this.glControl.KeyUp += new KeyEventHandler(this.glControl_KeyUp);
 			this.glControl.Resize += new EventHandler(this.glControl_Resize);
 			this.glControl.DragEnter += new DragEventHandler(this.glControl_DragEnter);
 			this.glControl.DragLeave += new EventHandler(this.glControl_DragLeave);
@@ -511,9 +537,7 @@ namespace EditorBase
 		{
 			DualityApp.TargetMode = this.MainContextControl.Context.GraphicsMode;
 			DualityApp.TargetResolution = new OpenTK.Vector2(this.glControl.Width, this.glControl.Height);
-			DualityApp.Mouse = null;
-			DualityApp.Keyboard = null;
-			DualityApp.Joysticks = null;
+			EditorBasePlugin.Instance.EditorForm.SetCurrentDualityAppInput(this, this);
 		}
 		protected Renderer PickRendererAt(int x, int y)
 		{
@@ -854,6 +878,7 @@ namespace EditorBase
 		}
 		protected bool DisplayConfirmDeleteSelectedObjects()
 		{
+			if (EditorBasePlugin.Instance.EditorForm.CurrentSandboxState == MainForm.SandboxState.Playing) return true;
 			DialogResult result = MessageBox.Show(
 				PluginRes.EditorBaseRes.SceneView_MsgBox_ConfirmDeleteSelectedObjects_Text, 
 				PluginRes.EditorBaseRes.SceneView_MsgBox_ConfirmDeleteSelectedObjects_Caption, 
@@ -864,6 +889,10 @@ namespace EditorBase
 
 		private void glControl_MouseDown(object sender, MouseEventArgs e)
 		{
+			MouseButton inputButton = e.Button.ToOpenTKSingle();
+			this.inputMouseButtons |= e.Button.ToOpenTK();
+			if (this.inputMouseDown != null) this.inputMouseDown(this, new MouseButtonEventArgs(e.X, e.Y, inputButton, true));
+
 			if (this.camAction == CameraAction.None)
 			{
 				this.camActionBeginLoc = e.Location;
@@ -895,6 +924,10 @@ namespace EditorBase
 		}
 		private void glControl_MouseUp(object sender, MouseEventArgs e)
 		{
+			MouseButton inputButton = e.Button.ToOpenTKSingle();
+			this.inputMouseButtons &= ~e.Button.ToOpenTK();
+			if (this.inputMouseUp != null) this.inputMouseUp(this, new MouseButtonEventArgs(e.X, e.Y, inputButton, false));
+
 			if (this.action == MouseAction.RectSelection && this.actionBeginLoc == e.Location)
 				this.UpdateRectSelection(e.Location);
 
@@ -913,6 +946,9 @@ namespace EditorBase
 		}
 		private void glControl_MouseWheel(object sender, MouseEventArgs e)
 		{
+			this.inputMouseWheel += e.Delta;
+			if (this.inputMouseWheelChanged != null) this.inputMouseWheelChanged(this, new MouseWheelEventArgs(e.X, e.Y, this.inputMouseWheel, e.Delta));
+
 			if (e.Delta != 0)
 			{
 				if (this.toggleParallaxity.Checked)
@@ -954,6 +990,12 @@ namespace EditorBase
 		}
 		private void glControl_MouseMove(object sender, MouseEventArgs e)
 		{
+			int lastX = this.inputMouseX;
+			int lastY = this.inputMouseY;
+			this.inputMouseX = e.X;
+			this.inputMouseY = e.Y;
+			if (this.inputMouseMove != null) this.inputMouseMove(this, new MouseMoveEventArgs(e.X, e.Y, e.X - lastX, e.Y - lastY));
+
 			if (!this.toggleAccMove.Checked)
 			{
 				if (this.camAction == CameraAction.MoveCam)
@@ -1128,7 +1170,14 @@ namespace EditorBase
 			}
 
 			// Render CamView
-			this.camComp.Render();
+			try
+			{
+				this.camComp.Render();
+			}
+			catch (Exception exception)
+			{
+				Log.Editor.Write("An exception occured during CamView {1} rendering: {0}", Log.Exception(exception), this.camComp.ToString());
+			}
 			this.MainContextControl.SwapBuffers();
 		}
 		private void glControl_GotFocus(object sender, EventArgs e)
@@ -1142,8 +1191,24 @@ namespace EditorBase
 			this.EndAction(this.PointToClient(Cursor.Position));
 			this.glControl.Invalidate();
 		}
+		private void glControl_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+		{
+			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Launcher) 
+				e.IsInputKey = true;
+		}
 		private void glControl_KeyDown(object sender, KeyEventArgs e)
 		{
+			Key inputKey = e.KeyCode.ToOpenTKSingle();
+			bool wasPressed = this.inputKeyPressed[(int)inputKey];
+			this.inputKeyPressed = this.inputKeyPressed.Or(e.KeyCode.ToOpenTK());
+			if (this.inputKeyDown != null)
+			{
+				if (this.inputKeyRepeat || !wasPressed)
+					this.inputKeyDown(this, inputKey.ToEventArgs());
+			}
+			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Launcher) return;
+
+
 			if (e.KeyCode == Keys.Delete)
 			{
 				this.DeleteObjects(this.SelectedGameObj());
@@ -1185,6 +1250,12 @@ namespace EditorBase
 					this.glControl.Invalidate();
 				}
 			}
+		}
+		private void glControl_KeyUp(object sender, KeyEventArgs e)
+		{
+			Key inputKey = e.KeyCode.ToOpenTKSingle();
+			this.inputKeyPressed = this.inputKeyPressed.And(e.KeyCode.ToOpenTK().Not());
+			if (this.inputKeyUp != null) this.inputKeyUp(this, inputKey.ToEventArgs());
 		}
 		private void glControl_Resize(object sender, EventArgs e)
 		{
@@ -1336,6 +1407,12 @@ namespace EditorBase
 		
 		private void EditorForm_AfterUpdateDualityApp(object sender, EventArgs e)
 		{
+			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Launcher)
+			{
+				this.glControl.Invalidate();
+				this.UpdateSelectionStats();
+			}
+
 			bool transformChanged = false;
 			Point cursorPos = this.glControl.PointToClient(Cursor.Position);
 
@@ -1431,9 +1508,23 @@ namespace EditorBase
 
 		private void Scene_Changed(object sender, EventArgs e)
 		{
-			this.SetCurrentCamera(null);
 			this.UpdateSelectionStats();
 			this.glControl.Invalidate();
+		}
+		private void Scene_Leaving(object sender, EventArgs e)
+		{
+			this.Scene_Changed(sender, e);
+			if (!this.camInternal) this.SetCurrentCamera(null);
+		}
+		private void Scene_RegisteredObjectComponentRemoved(object sender, ComponentEventArgs e)
+		{
+			this.Scene_Changed(sender, e);
+			if (this.camComp == e.Component) this.SetCurrentCamera(null);
+		}
+		private void Scene_GameObjectUnregistered(object sender, ObjectManagerEventArgs<GameObject> e)
+		{
+			this.Scene_Changed(sender, e);
+			if (this.camObj == e.Object) this.SetCurrentCamera(null);
 		}
 
 		private void camSelector_DropDown(object sender, EventArgs e)
@@ -1469,6 +1560,63 @@ namespace EditorBase
 		bool IHelpProvider.PerformHelpAction(HelpInfo info)
 		{
 			return this.DefaultPerformHelpAction(info);
+		}
+
+		int IMouseInput.X
+		{
+			get { return this.inputMouseX; }
+		}
+		int IMouseInput.Y
+		{
+			get { return this.inputMouseY; }
+		}
+		int IMouseInput.Wheel
+		{
+			get { return this.inputMouseWheel; }
+		}
+		bool IMouseInput.this[MouseButton btn]
+		{
+			get { return (this.inputMouseButtons & (1 << (int)btn)) != 0; }
+		}
+		event EventHandler<MouseButtonEventArgs> IMouseInput.ButtonUp
+		{
+			add { this.inputMouseUp += value; }
+			remove { this.inputMouseUp -= value; }
+		}
+		event EventHandler<MouseButtonEventArgs> IMouseInput.ButtonDown
+		{
+			add { this.inputMouseDown += value; }
+			remove { this.inputMouseDown -= value; }
+		}
+		event EventHandler<MouseMoveEventArgs> IMouseInput.Move
+		{
+			add { this.inputMouseMove += value; }
+			remove { this.inputMouseMove -= value; }
+		}
+		event EventHandler<MouseWheelEventArgs> IMouseInput.WheelChanged
+		{
+			add { this.inputMouseWheelChanged += value; }
+			remove { this.inputMouseWheelChanged -= value; }
+		}
+
+		bool IKeyboardInput.KeyRepeat
+		{
+			get { return this.inputKeyRepeat; }
+			set { this.inputKeyRepeat = value; }
+		}
+		bool IKeyboardInput.this[Key key]
+		{
+			get { return this.inputKeyPressed[(int)key]; }
+		}
+		event EventHandler<KeyboardKeyEventArgs> IKeyboardInput.KeyUp
+		{
+			add { this.inputKeyUp += value; }
+			remove { this.inputKeyUp -= value; }
+		}
+		event EventHandler<KeyboardKeyEventArgs> IKeyboardInput.KeyDown
+		{
+			add { this.inputKeyDown += value; }
+			remove { this.inputKeyDown -= value; }
 		}
 	}
 }

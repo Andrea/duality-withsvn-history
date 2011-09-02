@@ -55,12 +55,16 @@
 			this.dataDirWatcher = new System.IO.FileSystemWatcher();
 			this.sourceDirWatcher = new System.IO.FileSystemWatcher();
 			this.mainToolStrip = new System.Windows.Forms.ToolStrip();
-			this.actionSaveAll = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-			this.actionOpenCode = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+			this.actionSaveAll = new System.Windows.Forms.ToolStripButton();
+			this.actionOpenCode = new System.Windows.Forms.ToolStripButton();
 			this.actionRunApp = new System.Windows.Forms.ToolStripButton();
 			this.actionDebugApp = new System.Windows.Forms.ToolStripButton();
+			this.actionRunSandbox = new System.Windows.Forms.ToolStripButton();
+			this.actionPauseSandbox = new System.Windows.Forms.ToolStripButton();
+			this.actionStopSandbox = new System.Windows.Forms.ToolStripButton();
 			((System.ComponentModel.ISupportInitialize)(this.pluginWatcher)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.dataDirWatcher)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.sourceDirWatcher)).BeginInit();
@@ -208,11 +212,30 @@
             this.actionOpenCode,
             this.toolStripSeparator2,
             this.actionRunApp,
-            this.actionDebugApp});
+            this.actionDebugApp,
+            this.toolStripSeparator3,
+            this.actionRunSandbox,
+            this.actionPauseSandbox,
+            this.actionStopSandbox});
 			this.mainToolStrip.Location = new System.Drawing.Point(0, 24);
 			this.mainToolStrip.Name = "mainToolStrip";
 			this.mainToolStrip.Size = new System.Drawing.Size(916, 25);
 			this.mainToolStrip.TabIndex = 4;
+			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+			// 
+			// toolStripSeparator2
+			// 
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+			// 
+			// toolStripSeparator3
+			// 
+			this.toolStripSeparator3.Name = "toolStripSeparator3";
+			this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
 			// 
 			// actionSaveAll
 			// 
@@ -224,11 +247,6 @@
 			this.actionSaveAll.Text = "Save All Project Data";
 			this.actionSaveAll.Click += new System.EventHandler(this.actionSaveAll_Click);
 			// 
-			// toolStripSeparator1
-			// 
-			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-			// 
 			// actionOpenCode
 			// 
 			this.actionOpenCode.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -238,11 +256,6 @@
 			this.actionOpenCode.Size = new System.Drawing.Size(23, 22);
 			this.actionOpenCode.Text = "Open Project Sourcecode";
 			this.actionOpenCode.Click += new System.EventHandler(this.actionOpenCode_Click);
-			// 
-			// toolStripSeparator2
-			// 
-			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
 			// 
 			// actionRunApp
 			// 
@@ -263,6 +276,36 @@
 			this.actionDebugApp.Size = new System.Drawing.Size(23, 22);
 			this.actionDebugApp.Text = "Debug Application";
 			this.actionDebugApp.Click += new System.EventHandler(this.actionDebugApp_Click);
+			// 
+			// actionRunSandbox
+			// 
+			this.actionRunSandbox.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.actionRunSandbox.Image = global::DualityEditor.Properties.Resources.control_play_blue;
+			this.actionRunSandbox.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.actionRunSandbox.Name = "actionRunSandbox";
+			this.actionRunSandbox.Size = new System.Drawing.Size(23, 22);
+			this.actionRunSandbox.Text = "Enter Sandbox";
+			this.actionRunSandbox.Click += new System.EventHandler(this.actionRunSandbox_Click);
+			// 
+			// actionPauseSandbox
+			// 
+			this.actionPauseSandbox.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.actionPauseSandbox.Image = global::DualityEditor.Properties.Resources.control_pause_blue;
+			this.actionPauseSandbox.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.actionPauseSandbox.Name = "actionPauseSandbox";
+			this.actionPauseSandbox.Size = new System.Drawing.Size(23, 22);
+			this.actionPauseSandbox.Text = "Pause Sandbox";
+			this.actionPauseSandbox.Click += new System.EventHandler(this.actionPauseSandbox_Click);
+			// 
+			// actionStopSandbox
+			// 
+			this.actionStopSandbox.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.actionStopSandbox.Image = global::DualityEditor.Properties.Resources.control_stop_blue;
+			this.actionStopSandbox.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.actionStopSandbox.Name = "actionStopSandbox";
+			this.actionStopSandbox.Size = new System.Drawing.Size(23, 22);
+			this.actionStopSandbox.Text = "Leave Sandbox";
+			this.actionStopSandbox.Click += new System.EventHandler(this.actionStopSandbox_Click);
 			// 
 			// MainForm
 			// 
@@ -306,6 +349,10 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 		private System.Windows.Forms.ToolStripButton actionOpenCode;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+		private System.Windows.Forms.ToolStripButton actionRunSandbox;
+		private System.Windows.Forms.ToolStripButton actionPauseSandbox;
+		private System.Windows.Forms.ToolStripButton actionStopSandbox;
 	}
 }
 

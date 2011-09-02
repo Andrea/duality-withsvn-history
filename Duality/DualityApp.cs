@@ -59,10 +59,9 @@ namespace Duality
 		private	static	GraphicsMode			targetMode			= null;
 		private	static	HashSet<GraphicsMode>	availModes			= new HashSet<GraphicsMode>(new GraphicsModeComparer());
 		private	static	GraphicsMode			defaultMode			= null;
-		private	static	MouseDevice				mouse				= null;
-		private	static	KeyboardDevice			keyboard			= null;
+		private	static	IMouseInput				mouse				= null;
+		private	static	IKeyboardInput			keyboard			= null;
 		private	static	SoundDevice				sound				= null;
-		private	static	IList<JoystickDevice>	joysticks			= null;
 		private	static	ExecutionContext		execContext			= ExecutionContext.Terminated;
 		private	static	DualityAppData			appData				= null;
 		private	static	DualityUserData			userData			= null;
@@ -111,20 +110,20 @@ namespace Duality
 			set { targetMode = value; }
 		}
 		/// <summary>
-		/// [GET / SET] Provides access to mouse user input.
+		/// [GET] Provides access to mouse user input.
 		/// </summary>
-		public static MouseDevice Mouse
+		public static IMouseInput Mouse
 		{
 			get { return mouse; }
-			set { mouse = value; }
+			internal set { mouse = value; }
 		}
 		/// <summary>
-		/// [GET / SET] Provides access to keyboard user input
+		/// [GET] Provides access to keyboard user input
 		/// </summary>
-		public static KeyboardDevice Keyboard
+		public static IKeyboardInput Keyboard
 		{
 			get { return keyboard; }
-			set { keyboard = value; }
+			internal set { keyboard = value; }
 		}
 		/// <summary>
 		/// [GET] Provides access to the main <see cref="SoundDevice"/>.
@@ -132,14 +131,6 @@ namespace Duality
 		public static SoundDevice Sound
 		{
 			get { return sound; }
-		}
-		/// <summary>
-		/// [GET / SET] Provides access to joystick user input
-		/// </summary>
-		public static IList<JoystickDevice> Joysticks
-		{
-			get { return joysticks; }
-			set { joysticks = value; }
 		}
 		/// <summary>
 		/// [GET / SET] Provides access to Duality's current <see cref="DualityAppData">application data</see>. This is never null.
@@ -226,6 +217,7 @@ namespace Duality
 		public static ExecutionContext ExecContext
 		{
 			get { return execContext; }
+			internal set { execContext = value; }
 		}
 		/// <summary>
 		/// [GET] Enumerates all currently loaded plugins.
@@ -401,24 +393,29 @@ namespace Duality
 			Resource.RunCleanup();
 		}
 
-		/// <summary>
-		/// Performs a single editor update cycle.
-		/// </summary>
-		/// <param name="updateObjects"></param>
-		public static void EditorUpdate(GameObjectManager updateObjects)
+		internal static void EditorUpdate(GameObjectManager updateObjects)
 		{
-			if (execContext != ExecutionContext.Editor)
-				throw new ApplicationException("This method may only be used in Editor execution context.");
-
 			isUpdating = true;
 			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
 			watch.Restart();
 
-			Time.FrameTick();
-			Scene.Current.EditorUpdate();
-			foreach (GameObject obj in updateObjects.ActiveObjects) obj.Update();
-			sound.Update();
-			Resource.RunCleanup();
+			if (execContext == ExecutionContext.Editor)
+			{
+				Time.FrameTick();
+				Scene.Current.EditorUpdate();
+				foreach (GameObject obj in updateObjects.ActiveObjects) obj.Update();
+				sound.Update();
+				Resource.RunCleanup();
+			}
+			else if (execContext == ExecutionContext.Launcher)
+			{
+				Time.FrameTick();
+				Scene.Current.Update();
+				foreach (GameObject obj in updateObjects.ActiveObjects) obj.Update();
+				sound.Update();
+				OnUpdating();
+				RunCleanup();
+			}
 
 			Time.perfUpdate = watch.ElapsedMilliseconds;
 			isUpdating = false;

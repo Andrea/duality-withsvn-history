@@ -220,12 +220,6 @@
             </summary>
             <param name="o">The object to schedule for disposal.</param>
         </member>
-        <member name="M:Duality.DualityApp.EditorUpdate(Duality.ObjectManagers.GameObjectManager)">
-            <summary>
-            Performs a single editor update cycle.
-            </summary>
-            <param name="updateObjects"></param>
-        </member>
         <member name="M:Duality.DualityApp.LoadSaveAll">
             <summary>
             Loads all <see cref="T:Duality.Resource">Resources</see> that are located in this DualityApp's data directory and
@@ -349,22 +343,17 @@
         </member>
         <member name="P:Duality.DualityApp.Mouse">
             <summary>
-            [GET / SET] Provides access to mouse user input.
+            [GET] Provides access to mouse user input.
             </summary>
         </member>
         <member name="P:Duality.DualityApp.Keyboard">
             <summary>
-            [GET / SET] Provides access to keyboard user input
+            [GET] Provides access to keyboard user input
             </summary>
         </member>
         <member name="P:Duality.DualityApp.Sound">
             <summary>
             [GET] Provides access to the main <see cref="T:Duality.SoundDevice"/>.
-            </summary>
-        </member>
-        <member name="P:Duality.DualityApp.Joysticks">
-            <summary>
-            [GET / SET] Provides access to joystick user input
             </summary>
         </member>
         <member name="P:Duality.DualityApp.AppData">
@@ -1022,6 +1011,51 @@
         <member name="P:Duality.RequiredComponentAttribute.RequiredComponentType">
             <summary>
             The Component Type that is required by this Component.
+            </summary>
+        </member>
+        <member name="T:Duality.IMouseInput">
+            <summary>
+            Provides access to user mouse input
+            </summary>
+        </member>
+        <member name="P:Duality.IMouseInput.X">
+            <summary>
+            [GET] The current viewport-local cursor X position.
+            </summary>
+        </member>
+        <member name="P:Duality.IMouseInput.Y">
+            <summary>
+            [GET] The current viewport-local cursor Y position.
+            </summary>
+        </member>
+        <member name="P:Duality.IMouseInput.Wheel">
+            <summary>
+            [GET] The current mouse wheel value
+            </summary>
+        </member>
+        <member name="P:Duality.IMouseInput.Item(OpenTK.Input.MouseButton)">
+            <summary>
+            [GET] Returns whether a specific <see cref="T:OpenTK.Input.MouseButton"/> is currently pressed.
+            </summary>
+        </member>
+        <member name="E:Duality.IMouseInput.ButtonUp">
+            <summary>
+            Fired when a <see cref="T:OpenTK.Input.MouseButton"/> is no longer pressed.
+            </summary>
+        </member>
+        <member name="E:Duality.IMouseInput.ButtonDown">
+            <summary>
+            Fired once when a <see cref="T:OpenTK.Input.MouseButton"/> is pressed.
+            </summary>
+        </member>
+        <member name="E:Duality.IMouseInput.Move">
+            <summary>
+            Fired when the cursor moves.
+            </summary>
+        </member>
+        <member name="E:Duality.IMouseInput.WheelChanged">
+            <summary>
+            Fired when the mouse wheel value changes.
             </summary>
         </member>
         <member name="T:Duality.VertexFormat.VertexC1P3T2">
@@ -6999,6 +7033,33 @@
             </summary>
             <param name="bm"></param>
             <param name="pixelData"></param>
+        </member>
+        <member name="T:Duality.IKeyboardInput">
+            <summary>
+            Provides access to user keyboard input
+            </summary>
+        </member>
+        <member name="P:Duality.IKeyboardInput.KeyRepeat">
+            <summary>
+            [GET / SET] Whether a key that is pressed and hold down should fire the <see cref="E:Duality.IKeyboardInput.KeyDown"/> event repeatedly.
+            </summary>
+        </member>
+        <member name="P:Duality.IKeyboardInput.Item(OpenTK.Input.Key)">
+            <summary>
+            [GET] Returns whether a specific key is currently pressed.
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="E:Duality.IKeyboardInput.KeyUp">
+            <summary>
+            Fired when a key is no longer pressed.
+            </summary>
+        </member>
+        <member name="E:Duality.IKeyboardInput.KeyDown">
+            <summary>
+            Fired once when a key is pressed. May be fired repeatedly, if <see cref="P:Duality.IKeyboardInput.KeyRepeat"/> is true.
+            </summary>
         </member>
         <member name="T:Duality.Components.RendererFlags">
             <summary>
