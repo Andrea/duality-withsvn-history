@@ -1225,7 +1225,6 @@ namespace EditorBase
 		{
 			EditorBasePlugin.Instance.EditorForm.SaveCurrentScene(false);
 			this.UpdateSceneLabel();
-			this.toolStripButtonCreateScene_Click(sender, e);
 		}
 
 		private void EditorForm_SelectionChanged(object sender, SelectionChangedEventArgs e)

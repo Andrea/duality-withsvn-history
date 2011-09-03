@@ -236,19 +236,28 @@ namespace DualityEditor.Forms
 
 		public void SandboxPlay()
 		{
-			this.OnEnteringSandbox();
+			if (this.sandboxState == SandboxState.Paused)
+			{
+				this.sandboxState = SandboxState.Playing;
+				DualityApp.ExecContext = DualityApp.ExecutionContext.Launcher;
+				this.UpdateToolbar();
+			}
+			else
+			{
+				this.OnEnteringSandbox();
 
-			// Save the current scene
-			this.SaveCurrentScene();
+				// Save the current scene
+				this.SaveCurrentScene();
 
-			this.sandboxState = SandboxState.Playing;
-			DualityApp.ExecContext = DualityApp.ExecutionContext.Launcher;
-			this.UpdateToolbar();
+				this.sandboxState = SandboxState.Playing;
+				DualityApp.ExecContext = DualityApp.ExecutionContext.Launcher;
+				this.UpdateToolbar();
 
-			// Force Scene reload
-			string curPath = Scene.CurrentPath;
-			Scene.Current.Dispose();
-			Scene.Current = ContentProvider.RequestContent<Scene>(curPath).Res;
+				// Force Scene reload
+				string curPath = Scene.CurrentPath;
+				Scene.Current.Dispose();
+				Scene.Current = ContentProvider.RequestContent<Scene>(curPath).Res;
+			}
 		}
 		public void SandboxPause()
 		{
