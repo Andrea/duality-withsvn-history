@@ -254,9 +254,12 @@ namespace DualityEditor.Forms
 				this.UpdateToolbar();
 
 				// Force Scene reload
-				string curPath = Scene.CurrentPath;
-				Scene.Current.Dispose();
-				Scene.Current = ContentProvider.RequestContent<Scene>(curPath).Res;
+				if (!String.IsNullOrEmpty(Scene.Current.Path))
+				{
+					string curPath = Scene.CurrentPath;
+					Scene.Current.Dispose();
+					Scene.Current = ContentProvider.RequestContent<Scene>(curPath).Res;
+				}
 			}
 		}
 		public void SandboxPause()
@@ -272,9 +275,12 @@ namespace DualityEditor.Forms
 			this.UpdateToolbar();
 
 			// Force current Scene reload
-			string curPath = Scene.CurrentPath;
-			Scene.Current.Dispose();
-			Scene.Current = ContentProvider.RequestContent<Scene>(curPath).Res;
+			if (!String.IsNullOrEmpty(Scene.Current.Path))
+			{
+				string curPath = Scene.CurrentPath;
+				Scene.Current.Dispose();
+				Scene.Current = ContentProvider.RequestContent<Scene>(curPath).Res;
+			}
 
 			this.OnLeaveSandbox();
 		}
@@ -514,6 +520,7 @@ namespace DualityEditor.Forms
 
 		private void UpdateToolbar()
 		{
+			this.actionRunSandbox.Enabled	= this.sandboxState != SandboxState.Playing;
 			this.actionStopSandbox.Enabled	= this.sandboxState != SandboxState.Inactive;
 			this.actionPauseSandbox.Enabled	= this.sandboxState == SandboxState.Playing;
 		}
@@ -792,7 +799,11 @@ namespace DualityEditor.Forms
 			if (args.Objects.ResourceCount > 0)
 			{
 				// This is probably not the best idea for generalized behaviour, but sufficient for now
-				foreach (Resource res in args.Objects.Resources) res.Save();
+				foreach (Resource res in args.Objects.Resources)
+				{
+					if (this.sandboxState != SandboxState.Inactive && res is Scene && (res as Scene).IsCurrent) continue;
+					res.Save();
+				}
 			}
 
 			// If DualityAppData or DualityUserData is modified, save it

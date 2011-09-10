@@ -671,6 +671,10 @@ namespace EditorBase
 		{
 			this.actionBeginLoc = mouseLoc;
 			this.action = action;
+
+			if (EditorBasePlugin.Instance.EditorForm.CurrentSandboxState == MainForm.SandboxState.Playing)
+				Time.Freeze();
+
 			// Begin movement
 			if (this.action == MouseAction.MoveObj)
 			{
@@ -699,6 +703,10 @@ namespace EditorBase
 			{
 				this.activeRectSel = new ObjectSelection();
 			}
+
+			if (EditorBasePlugin.Instance.EditorForm.CurrentSandboxState == MainForm.SandboxState.Playing)
+				Time.Resume();
+
 			this.action = MouseAction.None;
 		}
 		protected Vector3 LockAxis(Vector3 vec, AxisLock lockAxes, float lockedVal = 0.0f)
@@ -754,14 +762,29 @@ namespace EditorBase
 			movement = this.LockAxis(movement, this.actionAxisLock);
 			if (movement != Vector3.Zero)
 			{
-				foreach (Transform t in this.parentFreeSel.Transform())
+				if (EditorBasePlugin.Instance.EditorForm.CurrentSandboxState == MainForm.SandboxState.Playing)
 				{
-					t.Pos += movement;
+					foreach (Transform t in this.parentFreeSel.Transform())
+					{
+						t.Pos += movement;
+						t.Vel = Vector3.Zero;
+						t.AngleVel = 0.0f;
+					}
+					EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
+						this,
+						new ObjectSelection(this.parentFreeSel.Transform()),
+						ReflectionInfo.Property_Transform_RelativePos,
+						ReflectionInfo.Property_Transform_RelativeVel);
 				}
-				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
-					this,
-					new ObjectSelection(this.parentFreeSel.Transform()),
-					ReflectionInfo.Property_Transform_RelativePos);
+				else
+				{
+					foreach (Transform t in this.parentFreeSel.Transform())
+						t.Pos += movement;
+					EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
+						this,
+						new ObjectSelection(this.parentFreeSel.Transform()),
+						ReflectionInfo.Property_Transform_RelativePos);
+				}
 			}
 			this.UpdateSelectionStats();
 			this.actionBeginLocSpace = spaceCoord;
@@ -776,21 +799,46 @@ namespace EditorBase
 			float rotation = curAngle - lastAngle;
 			if (rotation != 0.0f)
 			{
-				foreach (Transform t in this.parentFreeSel.Transform())
+				if (EditorBasePlugin.Instance.EditorForm.CurrentSandboxState == MainForm.SandboxState.Playing)
 				{
-					Vector3 posRelCenter = t.Pos - this.selectionCenter;
-					Vector3 posRelCenterTarget = posRelCenter;
-					MathF.TransformCoord(ref posRelCenterTarget.X, ref posRelCenterTarget.Y, rotation);
-					//posRelCenterTarget = this.LockAxis(posRelCenterTarget, this.actionAxisLock, 1.0f);
+					foreach (Transform t in this.parentFreeSel.Transform())
+					{
+						Vector3 posRelCenter = t.Pos - this.selectionCenter;
+						Vector3 posRelCenterTarget = posRelCenter;
+						MathF.TransformCoord(ref posRelCenterTarget.X, ref posRelCenterTarget.Y, rotation);
+						//posRelCenterTarget = this.LockAxis(posRelCenterTarget, this.actionAxisLock, 1.0f);
 
-					t.Pos = this.selectionCenter + posRelCenterTarget;
-					t.Angle += rotation;
+						t.Pos = this.selectionCenter + posRelCenterTarget;
+						t.Angle += rotation;
+						t.Vel = Vector3.Zero;
+						t.AngleVel = 0.0f;
+					}
+					EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
+						this,
+						new ObjectSelection(this.parentFreeSel.Transform()),
+						ReflectionInfo.Property_Transform_RelativePos,
+						ReflectionInfo.Property_Transform_RelativeVel,
+						ReflectionInfo.Property_Transform_RelativeAngle,
+						ReflectionInfo.Property_Transform_RelativeAngleVel);
 				}
-				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
-					this,
-					new ObjectSelection(this.parentFreeSel.Transform()),
-					ReflectionInfo.Property_Transform_RelativePos,
-					ReflectionInfo.Property_Transform_RelativeAngle);
+				else
+				{
+					foreach (Transform t in this.parentFreeSel.Transform())
+					{
+						Vector3 posRelCenter = t.Pos - this.selectionCenter;
+						Vector3 posRelCenterTarget = posRelCenter;
+						MathF.TransformCoord(ref posRelCenterTarget.X, ref posRelCenterTarget.Y, rotation);
+						//posRelCenterTarget = this.LockAxis(posRelCenterTarget, this.actionAxisLock, 1.0f);
+
+						t.Pos = this.selectionCenter + posRelCenterTarget;
+						t.Angle += rotation;
+					}
+					EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
+						this,
+						new ObjectSelection(this.parentFreeSel.Transform()),
+						ReflectionInfo.Property_Transform_RelativePos,
+						ReflectionInfo.Property_Transform_RelativeAngle);
+				}
 			}
 			this.UpdateSelectionStats();
 			this.actionBeginLocSpace = spaceCoord;
@@ -806,22 +854,48 @@ namespace EditorBase
 			float scale = MathF.Clamp(curRadius / lastRadius, 0.0001f, 10000.0f);
 			if (scale != 1.0f)
 			{
-				foreach (Transform t in this.parentFreeSel.Transform())
+				if (EditorBasePlugin.Instance.EditorForm.CurrentSandboxState == MainForm.SandboxState.Playing)
 				{
-					Vector3 scaleVec = new Vector3(scale, scale, scale);
-					//scaleVec = this.LockAxis(scaleVec, this.actionAxisLock, 1.0f);
-					Vector3 posRelCenter = t.Pos - this.selectionCenter;
-					Vector3 posRelCenterTarget;
-					Vector3.Multiply(ref posRelCenter, ref scaleVec, out posRelCenterTarget);
+					foreach (Transform t in this.parentFreeSel.Transform())
+					{
+						Vector3 scaleVec = new Vector3(scale, scale, scale);
+						//scaleVec = this.LockAxis(scaleVec, this.actionAxisLock, 1.0f);
+						Vector3 posRelCenter = t.Pos - this.selectionCenter;
+						Vector3 posRelCenterTarget;
+						Vector3.Multiply(ref posRelCenter, ref scaleVec, out posRelCenterTarget);
 
-					t.Pos = this.selectionCenter + posRelCenterTarget;
-					t.Scale = Vector3.Multiply(t.Scale, scaleVec);
+						t.Pos = this.selectionCenter + posRelCenterTarget;
+						t.Scale = Vector3.Multiply(t.Scale, scaleVec);
+						t.Vel = Vector3.Zero;
+						t.AngleVel = 0.0f;
+					}
+					EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
+						this,
+						new ObjectSelection(this.parentFreeSel.Transform()),
+						ReflectionInfo.Property_Transform_RelativePos,
+						ReflectionInfo.Property_Transform_RelativeVel,
+						ReflectionInfo.Property_Transform_RelativeScale,
+						ReflectionInfo.Property_Transform_RelativeAngleVel);
 				}
-				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
-					this,
-					new ObjectSelection(this.parentFreeSel.Transform()),
-					ReflectionInfo.Property_Transform_RelativePos,
-					ReflectionInfo.Property_Transform_RelativeScale);
+				else
+				{
+					foreach (Transform t in this.parentFreeSel.Transform())
+					{
+						Vector3 scaleVec = new Vector3(scale, scale, scale);
+						//scaleVec = this.LockAxis(scaleVec, this.actionAxisLock, 1.0f);
+						Vector3 posRelCenter = t.Pos - this.selectionCenter;
+						Vector3 posRelCenterTarget;
+						Vector3.Multiply(ref posRelCenter, ref scaleVec, out posRelCenterTarget);
+
+						t.Pos = this.selectionCenter + posRelCenterTarget;
+						t.Scale = Vector3.Multiply(t.Scale, scaleVec);
+					}
+					EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
+						this,
+						new ObjectSelection(this.parentFreeSel.Transform()),
+						ReflectionInfo.Property_Transform_RelativePos,
+						ReflectionInfo.Property_Transform_RelativeScale);
+				}
 			}
 			this.UpdateSelectionStats();
 			this.actionBeginLocSpace = spaceCoord;

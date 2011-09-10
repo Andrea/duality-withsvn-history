@@ -640,6 +640,26 @@
             <seealso cref="M:Duality.DualityMetaData.ReadValue(System.String)"/>
             <seealso cref="M:Duality.DualityMetaData.ReadValueAs``1(System.String,``0@)"/>
         </member>
+        <member name="T:Duality.Components.ITransformUpdater">
+            <summary>
+            Represents an object that takes care of <see cref="T:Duality.Components.Transform"/> updates instead of
+            the Components default behaviour. This is, for example, used by the <see cref="T:Duality.Components.Collider"/>
+            Component in order to apply physics.
+            </summary>
+        </member>
+        <member name="M:Duality.Components.ITransformUpdater.UpdateTransform(Duality.Components.Transform)">
+            <summary>
+            Called when the <see cref="T:Duality.Components.Transform"/> Component is being updated.
+            </summary>
+            <param name="t"></param>
+        </member>
+        <member name="M:Duality.Components.ITransformUpdater.OnTransformChanged(Duality.Components.Transform,Duality.Components.Transform.DirtyFlags)">
+            <summary>
+            Called when the <see cref="T:Duality.Components.Transform"/> Component has been changed externally
+            </summary>
+            <param name="t"></param>
+            <param name="changes"></param>
+        </member>
         <member name="T:Duality.Components.Transform">
             <summary>
             Represents a <see cref="T:Duality.GameObject">GameObjects</see> physical location in the world, relative to its <see cref="P:Duality.GameObject.Parent"/>.
@@ -876,6 +896,32 @@
             </summary>
             <param name="context">The kind of shutdown that is intended.</param>
         </member>
+        <member name="M:Duality.Components.Transform.RegisterExternalUpdater(Duality.Components.ITransformUpdater)">
+            <summary>
+            Registers an external transform updater. As long as at least one is registered, the
+            Transform component won't attempt to update by itsself in any way, as external updates
+            are assumed to occur on a per-frame basis.
+            </summary>
+            <param name="updater"></param>
+        </member>
+        <member name="M:Duality.Components.Transform.UnregisterExternalUpdater(Duality.Components.ITransformUpdater)">
+            <summary>
+            Unregisters an external transform updater. As long as at least one is registered, the
+            Transform component won't attempt to update by itsself in any way, as external updates
+            are assumed to occur on a per-frame basis.
+            </summary>
+            <param name="updater"></param>
+        </member>
+        <member name="M:Duality.Components.Transform.SetTransform(OpenTK.Vector3,OpenTK.Vector3,OpenTK.Vector3,System.Single,System.Single)">
+            <summary>
+            Updates the Transforms data all at once.
+            </summary>
+            <param name="pos"></param>
+            <param name="vel"></param>
+            <param name="scale"></param>
+            <param name="angle"></param>
+            <param name="angleVel"></param>
+        </member>
         <member name="P:Duality.Components.Transform.RelativePos">
             <summary>
             [GET / SET] The objects position relative to its parent object.
@@ -950,6 +996,11 @@
         <member name="P:Duality.Components.Transform.Right">
             <summary>
             [GET] The objects right (directional) vector.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Transform.DirtyFlags">
+            <summary>
+            Flags that are used to specify, whether certain Properties have been changed.
             </summary>
         </member>
         <member name="T:Duality.ICmpComponentListener">
@@ -2295,12 +2346,13 @@
             Clears all <see cref="T:System.IO.Stream"/>- or <see cref="T:Duality.Serialization.BinaryFormatterBase.Operation"/>-specific cache data.
             </summary>
         </member>
-        <member name="M:Duality.Serialization.BinaryFormatterBase.GetIdFromObject(System.Object)">
+        <member name="M:Duality.Serialization.BinaryFormatterBase.GetIdFromObject(System.Object,System.Boolean@)">
             <summary>
             Returns the id that is assigned to the specified object. Assigns one, if
             there is none yet.
             </summary>
             <param name="obj"></param>
+            <param name="isNewId"></param>
             <returns></returns>
         </member>
         <member name="M:Duality.Serialization.BinaryFormatterBase.LogCustomSerializationError(System.UInt32,System.Type,System.Exception)">
@@ -6844,6 +6896,11 @@
             <param name="device"></param>
             <returns></returns>
         </member>
+        <member name="P:Duality.Resources.Scene.CurrentPhysics">
+            <summary>
+            [GET] Returns the current physics world.
+            </summary>
+        </member>
         <member name="P:Duality.Resources.Scene.Current">
             <summary>
             [GET / SET] The Scene that is currently active i.e. updated and rendered. This is never null.
@@ -6893,6 +6950,11 @@
         <member name="P:Duality.Resources.Scene.Name">
             <summary>
             [GET] The name of the Scene.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Scene.GlobalGravity">
+            <summary>
+            [GET / SET] Global gravity force that is applied to all objects that obey the laws of physics.
             </summary>
         </member>
         <member name="P:Duality.Resources.Scene.IsCurrent">
@@ -10536,6 +10598,86 @@
         <member name="T:Duality.Components.SoundListener">
             <summary>
             Makes this <see cref="T:Duality.GameObject"/> the 3d sound listener.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Collider">
+            <summary>
+            Represents a body instance for physical simulation, collision detection and response.
+            </summary>
+        </member>
+        <member name="M:Duality.Components.Collider.CreateBody(FarseerPhysics.Dynamics.World)">
+            <summary>
+            Creates the Colliders actual body as part of the specified World.
+            </summary>
+            <param name="world"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Components.Collider.UpdateBodyShape">
+            <summary>
+            Updates the Colliders body shape according to the GameObjects characteristics. It is called once initially
+            after creating the body and may be called whenever the GameObjects state changes in a way that alters the
+            Colliders body shape, for example when modifying its Transforms scale value.
+            </summary>
+        </member>
+        <member name="M:Duality.Components.Collider.InitBody">
+            <summary>
+            Initializes the Colliders physical body object.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.PhysicsBodyType">
+            <summary>
+            [GET / SET] The type of the physical body.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.LinearDamping">
+            <summary>
+            [GET / SET] The damping that is applied to the bodies velocity.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.AngularDamping">
+            <summary>
+            [GET / SET] The damping that is applied to the bodies angular velocity.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.Mass">
+            <summary>
+            [GET / SET] The bodies mass. Can't be zero. To achieve zer-mass behaviour, use
+            the kinematic body type.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.FixedAngle">
+            <summary>
+            [GET / SET] Whether the bodies rotation is fixed.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.IgnoreGravity">
+            <summary>
+            [GET / SET] Whether the body ignores gravity.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.Friction">
+            <summary>
+            [GET / SET] The bodies (average) friction value.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.Restitution">
+            <summary>
+            [GET / SET] The bodies (average) restitution value.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Colliders.CircleCollider">
+            <summary>
+            Represents a <see cref="T:Duality.Components.Collider"/> based on a single circle shape.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Colliders.CircleCollider.Radius">
+            <summary>
+            [GET / SET] The collision / body radius.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Colliders.CircleCollider.Density">
+            <summary>
+            [GET / SET] The bodies density.
             </summary>
         </member>
     </members>

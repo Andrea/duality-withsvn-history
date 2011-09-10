@@ -154,10 +154,11 @@ namespace Duality.Serialization
 			// Check whether it's going to be an ObjectRef or not
 			if (dataType == DataType.Array || dataType == DataType.Class || dataType == DataType.Delegate || dataType.IsMemberInfoType())
 			{
-				objId = this.GetIdFromObject(obj);
+				bool newId;
+				objId = this.GetIdFromObject(obj, out newId);
 
 				// If its not a new id, write a reference
-				if (objId < idCounter) dataType = DataType.ObjectRef;
+				if (!newId) dataType = DataType.ObjectRef;
 			}
 
 			if (!objSerializeType.Type.IsSerializable && !typeof(ISerializable).IsAssignableFrom(objSerializeType.Type) && this.GetSurrogateFor(objSerializeType.Type) == null) 

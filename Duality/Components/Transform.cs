@@ -8,25 +8,64 @@ using OpenTK;
 namespace Duality.Components
 {
 	/// <summary>
+	/// Represents an object that takes care of <see cref="Transform"/> updates instead of
+	/// the Components default behaviour. This is, for example, used by the <see cref="Collider"/>
+	/// Component in order to apply physics.
+	/// </summary>
+	public interface ITransformUpdater
+	{
+		/// <summary>
+		/// Called when the <see cref="Transform"/> Component is being updated.
+		/// </summary>
+		/// <param name="t"></param>
+		void UpdateTransform(Transform t);
+		/// <summary>
+		/// Called when the <see cref="Transform"/> Component has been changed externally
+		/// </summary>
+		/// <param name="t"></param>
+		/// <param name="changes"></param>
+		void OnTransformChanged(Transform t, Transform.DirtyFlags changes);
+	}
+
+	/// <summary>
 	/// Represents a <see cref="GameObject">GameObjects</see> physical location in the world, relative to its <see cref="GameObject.Parent"/>.
 	/// </summary>
 	[Serializable]
 	public sealed class Transform : Component, ICmpUpdatable, ICmpEditorUpdatable, ICmpGameObjectListener, ICmpInitializable
 	{
-		private		Vector3		pos				= Vector3.Zero;
-		private		Vector3		vel				= Vector3.Zero;
-		private		float		angle			= 0.0f;
-		private		float		angleVel		= 0.0f;
-		private		Vector3		scale			= Vector3.One;
-		private		bool		deriveAngle		= true;
+		/// <summary>
+		/// Flags that are used to specify, whether certain Properties have been changed.
+		/// </summary>
+		[Flags]
+		public enum DirtyFlags
+		{
+			None		= 0x00,
+
+			Pos			= 0x01,
+			Vel			= 0x02,
+			Angle		= 0x04,
+			AngleVel	= 0x08,
+			Scale		= 0x10,
+
+			All			= Pos | Vel | Angle | AngleVel | Scale
+		}
+
+		private	Vector3	pos			= Vector3.Zero;
+		private	Vector3	vel			= Vector3.Zero;
+		private	float	angle		= 0.0f;
+		private	float	angleVel	= 0.0f;
+		private	Vector3	scale		= Vector3.One;
+		private	bool	deriveAngle	= true;
+		private	List<ITransformUpdater>	extUpdaters = null;
+		private	DirtyFlags	changes	= DirtyFlags.None;
 
 		// Cached values, recalc on change
-		private		Transform	parentTransform	= null;
-		private		Vector3		posAbs			= Vector3.Zero;
-		private		Vector3		velAbs			= Vector3.Zero;
-		private		float		angleAbs		= 0.0f;
-		private		float		angleVelAbs		= 0.0f;
-		private		Vector3		scaleAbs		= Vector3.One;
+		private	Transform	parentTransform	= null;
+		private	Vector3		posAbs			= Vector3.Zero;
+		private	Vector3		velAbs			= Vector3.Zero;
+		private	float		angleAbs		= 0.0f;
+		private	float		angleVelAbs		= 0.0f;
+		private	Vector3		scaleAbs		= Vector3.One;
 
 		/// <summary>
 		/// [GET / SET] The objects position relative to its parent object.
@@ -34,7 +73,7 @@ namespace Duality.Components
 		public Vector3 RelativePos
 		{
 			get { return this.pos; }
-			set { this.pos = value; this.UpdateAbs(); }
+			set { this.pos = value; this.changes |= DirtyFlags.Pos; this.UpdateAbs(); }
 		}
 		/// <summary>
 		/// [GET / SET] The objects velocity relative to its parent object.
@@ -42,7 +81,7 @@ namespace Duality.Components
 		public Vector3 RelativeVel
 		{
 			get { return this.vel; }
-			set { this.vel = value; this.UpdateAbs(); }
+			set { this.vel = value; this.changes |= DirtyFlags.Vel; this.UpdateAbs(); }
 		}
 		/// <summary>
 		/// [GET / SET] The objects angle / rotation relative to its parent object, in radians.
@@ -50,7 +89,7 @@ namespace Duality.Components
 		public float RelativeAngle
 		{
 			get { return this.angle; }
-			set { this.angle = value; this.UpdateAbs(); }
+			set { this.angle = value; this.changes |= DirtyFlags.Angle; this.UpdateAbs(); }
 		}
 		/// <summary>
 		/// [GET / SET] The objects angle / rotation velocity relative to its parent object, in radians.
@@ -58,7 +97,7 @@ namespace Duality.Components
 		public float RelativeAngleVel
 		{
 			get { return this.angleVel; }
-			set { this.angleVel = value; this.UpdateAbs(); }
+			set { this.angleVel = value; this.changes |= DirtyFlags.AngleVel; this.UpdateAbs(); }
 		}
 		/// <summary>
 		/// [GET / SET] The objects scale relative to its parent object.
@@ -66,7 +105,7 @@ namespace Duality.Components
 		public Vector3 RelativeScale
 		{
 			get { return this.scale; }
-			set { this.scale = value; this.UpdateAbs(); }
+			set { this.scale = value; this.changes |= DirtyFlags.Scale; this.UpdateAbs(); }
 		}
 		/// <summary>
 		/// [GET / SET] If false, this objects rotation values aren't relative to its parent.
@@ -75,7 +114,7 @@ namespace Duality.Components
 		public bool DeriveAngle
 		{
 			get { return this.deriveAngle; }
-			set { this.deriveAngle = value; this.UpdateAbs(); }
+			set { this.deriveAngle = value; this.changes |= DirtyFlags.Angle; this.UpdateAbs(); }
 		}
 
 		/// <summary>
@@ -130,6 +169,7 @@ namespace Duality.Components
 					this.pos = value;
 				}
 
+				this.changes |= DirtyFlags.Pos;
 				this.UpdateAbs(true);
 			}
 		}
@@ -158,6 +198,7 @@ namespace Duality.Components
 					this.vel = value;
 				}
 
+				this.changes |= DirtyFlags.Vel;
 				this.UpdateAbs(true);
 			}
 		}
@@ -176,6 +217,7 @@ namespace Duality.Components
 				else
 					this.angle = value;
 
+				this.changes |= DirtyFlags.Angle;
 				this.UpdateAbs(true);
 			}
 		}
@@ -194,6 +236,7 @@ namespace Duality.Components
 				else
 					this.angleVel = value;
 
+				this.changes |= DirtyFlags.AngleVel;
 				this.UpdateAbs(true);
 			}
 		}
@@ -218,6 +261,7 @@ namespace Duality.Components
 					this.scale = value;
 				}
 
+				this.changes |= DirtyFlags.Scale;
 				this.UpdateAbs(true);
 			}
 		}
@@ -249,9 +293,64 @@ namespace Duality.Components
 			}
 		}
 
+		/// <summary>
+		/// Registers an external transform updater. As long as at least one is registered, the
+		/// Transform component won't attempt to update by itsself in any way, as external updates
+		/// are assumed to occur on a per-frame basis.
+		/// </summary>
+		/// <param name="updater"></param>
+		public void RegisterExternalUpdater(ITransformUpdater updater)
+		{
+			if (this.extUpdaters == null) this.extUpdaters = new List<ITransformUpdater>();
+			else if (this.extUpdaters.Contains(updater)) return;
+			this.extUpdaters.Add(updater);
+		}
+		/// <summary>
+		/// Unregisters an external transform updater. As long as at least one is registered, the
+		/// Transform component won't attempt to update by itsself in any way, as external updates
+		/// are assumed to occur on a per-frame basis.
+		/// </summary>
+		/// <param name="updater"></param>
+		public void UnregisterExternalUpdater(ITransformUpdater updater)
+		{
+			if (this.extUpdaters == null) return;
+			this.extUpdaters.Remove(updater);
+			if (this.extUpdaters.Count == 0) this.extUpdaters = null;
+		}
+		/// <summary>
+		/// Updates the Transforms data all at once.
+		/// </summary>
+		/// <param name="pos"></param>
+		/// <param name="vel"></param>
+		/// <param name="scale"></param>
+		/// <param name="angle"></param>
+		/// <param name="angleVel"></param>
+		public void SetTransform(Vector3 pos, Vector3 vel, Vector3 scale, float angle, float angleVel)
+		{
+			this.posAbs = pos;
+			this.velAbs = vel;
+			this.angleAbs = angle;
+			this.angleVelAbs = angleVel;
+			this.scaleAbs = scale;
+
+			this.changes |= DirtyFlags.All;
+			this.UpdateRel();
+			this.UpdateAbs(true);
+		}
+
 		void ICmpUpdatable.OnUpdate()
 		{
-			if (this.angleVel != 0.0f || this.vel != Vector3.Zero)
+			if (this.extUpdaters != null)
+			{
+				if (this.changes != DirtyFlags.None)
+				{
+					foreach (ITransformUpdater upd in this.extUpdaters)
+						upd.OnTransformChanged(this, this.changes);
+				}
+				foreach (ITransformUpdater upd in this.extUpdaters)
+					upd.UpdateTransform(this);
+			}
+			else if (this.angleVel != 0.0f || this.vel != Vector3.Zero)
 			{
 				this.angle	+= this.angleVel	* Time.TimeMult;
 				this.pos	+= this.vel			* Time.TimeMult;
@@ -259,6 +358,7 @@ namespace Duality.Components
 				this.angle = MathF.NormalizeAngle(this.angle);
 				this.UpdateAbs();
 			}
+			this.changes = DirtyFlags.None;
 		}
 		void ICmpEditorUpdatable.OnUpdate()
 		{

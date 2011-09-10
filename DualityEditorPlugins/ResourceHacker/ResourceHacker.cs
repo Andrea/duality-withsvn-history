@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using System.Reflection;
 
 using Duality;
 using Duality.Serialization;
@@ -148,16 +149,28 @@ namespace ResourceHacker
 			{
 				get { return this.objData.ObjId; }
 			}
-			public Type ResolvedType
+			public MemberInfo ResolvedMember
 			{
-				get { return ReflectionHelper.ResolveType(this.objData.TypeString, false); }
+				get
+				{
+					if (this.data.NodeType.IsMemberInfoType() && this.data.NodeType != DataType.Type)
+						return ReflectionHelper.ResolveMember(this.objData.TypeString, false);
+					else
+						return ReflectionHelper.ResolveType(this.objData.TypeString, false);
+				}
 			}
 			public string ResolvedTypeName
 			{
 				get 
 				{ 
-					Type resType = this.ResolvedType;
-					return resType != null ? resType.GetTypeCSCodeName(true) : objData.TypeString;
+					MemberInfo resMember = this.ResolvedMember;
+					Type resType = resMember as Type;
+					if (resType != null)
+						return resType.GetTypeCSCodeName(true);
+					else if (resMember != null)
+						return resMember.GetMemberId();
+					else
+						return objData.TypeString;
 				}
 			}
 
@@ -377,7 +390,7 @@ namespace ResourceHacker
 		{
 			DataTreeNode node = e.Node.Tag as DataTreeNode;
 			ObjectTreeNode objNode = node as ObjectTreeNode;
-			if (objNode != null && objNode.ResolvedType == null) e.TextColor = Color.Red;
+			if (objNode != null && objNode.ResolvedMember == null) e.TextColor = Color.Red;
 		}
 		private void propertyGrid_EditingFinished(object sender, EventArgs e)
 		{

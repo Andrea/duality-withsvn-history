@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using OpenTK;
+using FarseerPhysics.Dynamics;
+using FarseerPhysics.Collision;
+
 using Duality.Components;
 using Duality.ObjectManagers;
 using Duality.Serialization;
@@ -23,8 +27,16 @@ namespace Duality.Resources
 		/// </summary>
 		public new const string FileExt = ".Scene" + Resource.FileExt;
 
-		private	static	ContentRef<Scene>	current		= ContentRef<Scene>.Null;
-		private	static	bool				curAutoGen	= false;
+		private	static	World				physicsWorld	= new World(Vector2.Zero);
+		private	static	ContentRef<Scene>	current			= ContentRef<Scene>.Null;
+		private	static	bool				curAutoGen		= false;
+		/// <summary>
+		/// [GET] Returns the current physics world.
+		/// </summary>
+		public static World CurrentPhysics
+		{
+			get { return physicsWorld; }
+		}
 		/// <summary>
 		/// [GET / SET] The Scene that is currently active i.e. updated and rendered. This is never null.
 		/// You may assign null in order to leave the current Scene and enter en empty dummy Scene.
@@ -89,11 +101,19 @@ namespace Duality.Resources
 		private static void OnLeaving()
 		{
 			if (Leaving != null) Leaving(current, null);
-			if (current.ResWeak != null) foreach (GameObject o in current.ResWeak.Graph.ActiveObjects) o.OnDeactivate();
+			if (current.ResWeak != null)
+			{
+				foreach (GameObject o in current.ResWeak.Graph.ActiveObjects) o.OnDeactivate();
+				physicsWorld.Clear();
+			}
 		}
 		private static void OnEntered()
 		{
-			if (current.ResWeak != null) foreach (GameObject o in current.ResWeak.Graph.ActiveObjects) o.OnActivate();
+			if (current.ResWeak != null)
+			{
+				physicsWorld.Gravity = current.ResWeak.GlobalGravity;
+				foreach (GameObject o in current.ResWeak.Graph.ActiveObjects) o.OnActivate();
+			}
 			if (Entered != null) Entered(current, null);
 		}
 		private static void OnGameObjectRegistered(ObjectManagerEventArgs<GameObject> args)
@@ -129,6 +149,7 @@ namespace Duality.Resources
 		private	ObjectManager<Camera>	cameraManager	= new ObjectManager<Camera>();
 		private	RendererManager			rendererManager	= new RendererManager();
 		private	OverlayRendererManager	overlayManager	= new OverlayRendererManager();
+		private	Vector2					globalGravity	= Vector2.UnitY * 20.0f;
 
 		/// <summary>
 		/// [GET] The Scenes main <see cref="GameObject"/> manager.
@@ -147,6 +168,18 @@ namespace Duality.Resources
 				if (this.path == null) return null;
 				if (this.path.Length < FileExt.Length) return "";
 				return this.path.Substring(0, this.path.Length - FileExt.Length); 
+			}
+		}
+		/// <summary>
+		/// [GET / SET] Global gravity force that is applied to all objects that obey the laws of physics.
+		/// </summary>
+		public Vector2 GlobalGravity
+		{
+			get { return this.globalGravity; }
+			set
+			{
+				this.globalGravity = value;
+				if (this.IsCurrent) physicsWorld.Gravity = value;
 			}
 		}
 		/// <summary>
@@ -183,6 +216,8 @@ namespace Duality.Resources
 		/// </summary>
 		public void Update()
 		{
+			if (this.IsCurrent) physicsWorld.Step(Time.TimeMult * Time.SPFMult);
+
 			GameObject[] activeObj = this.objectManager.ActiveObjects.ToArray();
 			foreach (GameObject obj in activeObj)
 				obj.Update();
@@ -321,6 +356,7 @@ namespace Duality.Resources
 		protected override void OnLoaded()
 		{
 			base.OnLoaded();
+
 			this.ApplyPrefabLinks();
 			foreach (GameObject obj in this.objectManager.AllObjects)
 				obj.OnLoaded();

@@ -944,16 +944,22 @@ namespace Duality.Serialization
 		/// there is none yet.
 		/// </summary>
 		/// <param name="obj"></param>
+		/// <param name="isNewId"></param>
 		/// <returns></returns>
-		protected uint GetIdFromObject(object obj)
+		protected uint GetIdFromObject(object obj, out bool isNewId)
 		{
 			uint id;
-			if (this.objRefIdMap.TryGetValue(obj, out id)) return id;
+			if (this.objRefIdMap.TryGetValue(obj, out id))
+			{
+				isNewId = false;
+				return id;
+			}
 
 			id = ++idCounter;
 			this.objRefIdMap[obj] = id;
 			this.idObjRefMap[id] = obj;
 
+			isNewId = true;
 			return id;
 		}
 

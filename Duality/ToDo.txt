@@ -1,16 +1,13 @@
 ﻿
--->	Editor Sandbox:
-	-->	What about the object inspector? Should it update itsself periodically?
-		-->	No, makes editing impossible
-		-->	No, costs too much performance when selecting a lot of objects
-		-->	But what then?
-		-->	Manual update button?
-		-->	...?
-	-->	Testing & Usability Stuff
+-->	Implement some other colliders (Rect, Ellipse, Capsule)
+-->	ColliderPropertyEditor that awakes the collider when changing something
+-->	Implement collision detection logic & sensor colliders
+-->	Implement raycasting & stuff (Rebuild some Farseer Example with object click&drag)
+-->	Port Asteroids demo to a physics-driven version, without any manual collision detection
+-->	Don't forget collision groups
 
--->	Possible schedule:
-	1.	Implement sandbox mode for editor
-	2.	Implement physics & use sandbox for testing
+
+
 
 -->	Duality Tasks (overall)
 	-->	Editor Sandbox (Play | Pause | Reset)
