@@ -20,7 +20,6 @@ namespace Duality.Components.Colliders
 	public class CapsuleCollider : Collider
 	{
 		private	Vector2	size	= new Vector2(128.0f, 256.0f);
-		private	float	density	= 1.0f;
 
 		/// <summary>
 		/// [GET / SET] The collision / body size
@@ -29,14 +28,6 @@ namespace Duality.Components.Colliders
 		{
 			get { return this.size; }
 			set { this.size = value; this.UpdateBodyShape(); }
-		}
-		/// <summary>
-		/// [GET / SET] The bodies density.
-		/// </summary>
-		public float Density
-		{
-			get { return this.density; }
-			set { this.density = value; this.UpdateBodyShape(); }
 		}
 
 		protected override Body CreateBody(World world)
@@ -52,17 +43,22 @@ namespace Duality.Components.Colliders
 			rect.Vertices = FarseerPhysics.Common.PolygonTools.CreateRectangle(
 				width * 0.5f, 
 				(height - width) * 0.5f);
-			rect.Density = this.density;
 
 			CircleShape topCircle = ((CircleShape)this.body.FixtureList[1].Shape);
 			topCircle.Radius = width * 0.5f;
 			topCircle.Position = new Vector2(0, (height - width) * 0.5f);
-			topCircle.Density = this.density;
 
 			CircleShape bottomCircle = ((CircleShape)this.body.FixtureList[2].Shape);
 			bottomCircle.Radius = width * 0.5f;
 			bottomCircle.Position = new Vector2(0, (height - width) * -0.5f);
-			bottomCircle.Density = this.density;
+		}
+
+		internal override void CopyToInternal(Component target)
+		{
+			base.CopyToInternal(target);
+			CapsuleCollider c = target as CapsuleCollider;
+			c.size = this.size;
+			c.UpdateBodyShape();
 		}
 	}
 }

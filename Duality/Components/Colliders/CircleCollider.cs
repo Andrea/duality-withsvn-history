@@ -20,7 +20,6 @@ namespace Duality.Components.Colliders
 	public class CircleCollider : Collider
 	{
 		private	float	radius	= 64.0f;
-		private	float	density	= 1.0f;
 
 		/// <summary>
 		/// [GET / SET] The collision / body radius.
@@ -29,14 +28,6 @@ namespace Duality.Components.Colliders
 		{
 			get { return this.radius; }
 			set { this.radius = value; this.UpdateBodyShape(); }
-		}
-		/// <summary>
-		/// [GET / SET] The bodies density.
-		/// </summary>
-		public float Density
-		{
-			get { return this.density; }
-			set { this.density = value; this.UpdateBodyShape(); }
 		}
 
 		protected override Body CreateBody(World world)
@@ -48,7 +39,14 @@ namespace Duality.Components.Colliders
 			float scale = this.GameObj.Transform.Scale.Xy.Length / MathF.Sqrt(2.0f);
 			CircleShape circle = ((CircleShape)this.body.FixtureList[0].Shape);
 			circle.Radius = this.radius * scale * 0.01f;
-			circle.Density = this.density;
+		}
+
+		internal override void CopyToInternal(Component target)
+		{
+			base.CopyToInternal(target);
+			CircleCollider c = target as CircleCollider;
+			c.radius = this.radius;
+			c.UpdateBodyShape();
 		}
 	}
 }

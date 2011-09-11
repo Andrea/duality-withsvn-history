@@ -94,6 +94,14 @@ namespace Duality
 		/// <param name="device">The <see cref="IDrawDevice"/> to which the screen overlay is drawn.</param>
 		void DrawOverlay(IDrawDevice device);
 	}
+	/// <summary>
+	/// Implement this interface in <see cref="Component">Components</see> that require notification of
+	/// collision events that occur to the <see cref="GameObject"/> they belong to.
+	/// </summary>
+	public interface ICmpCollisionListener
+	{
+
+	}
 
 	/// <summary>
 	/// This attribute indicates a <see cref="Component">Components</see> requirement for another Component

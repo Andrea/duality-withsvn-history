@@ -1,8 +1,23 @@
 ﻿
 -->	Implement collision detection logic & sensor colliders
+	-->	Colliders will notify their GameObject about OnCollision, OnSeparation and AfterCollision..
+	-->	..which will then notify its ICmpCollisionListener Components.
+	-->	It may only cache / defer this until it is updated, since all those events aren't meant
+		to directly execute user code. It might lead to unexpected behaviour.
+
+	ICmpCollisionListener API:
+	-->	OnCollisionBegin(CollisionData objA, CollisionData objB);
+	-->	OnCollisionSolve(CollisionData objA, CollisionData objB, ContactData contact);
+	-->	OnCollisionEnd(CollisionData objA, CollisionData objB);
+	-->	This is not final. Reconsider it based on actual use cases.
+
+	Issues:
+	-->	Collision impact force?
+	-->	Collision point relative to object?
+	-->	How to interpret Farseer Data?
+
 -->	Implement raycasting & stuff (Rebuild some Farseer Example with object click&drag)
 -->	Port Asteroids demo to a physics-driven version, without any manual collision detection
--->	Don't forget collision groups
 
 
 

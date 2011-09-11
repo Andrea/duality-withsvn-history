@@ -5,6 +5,7 @@ using System.Text;
 
 using OpenTK;
 using FarseerPhysics.Dynamics;
+using FarseerPhysics.Dynamics.Contacts;
 
 using Duality;
 using Duality.Resources;
@@ -27,6 +28,7 @@ namespace Duality.Components
 		private	bool		ignoreGravity	= false;
 		private	float		friction		= 0.0f;
 		private	float		restitution		= 0.0f;
+		private	Category	colCat			= Category.All;
 
 		/// <summary>
 		/// [GET / SET] The type of the physical body.
@@ -125,6 +127,19 @@ namespace Duality.Components
 				this.restitution = value;
 			}
 		}
+		/// <summary>
+		/// [GET / SET] A bitmask that specifies the collision categories to which this Collider belongs.
+		/// It will interact with all Colliders with which it shares at least one common category.
+		/// </summary>
+		public Category CollisionCategory
+		{
+			get { return this.colCat; }
+			set
+			{
+				this.colCat = value;
+				if (this.body != null) this.body.CollisionCategories = value;
+			}
+		}
 
 		/// <summary>
 		/// Creates the Colliders actual body as part of the specified World.
@@ -152,15 +167,21 @@ namespace Duality.Components
 			this.body.BodyType = this.bodyType;
 			this.body.LinearDamping = this.linearDamp;
 			this.body.AngularDamping = this.angularDamp;
-			this.body.Mass = this.mass;
 			this.body.FixedRotation = this.fixedAngle;
 			this.body.IgnoreGravity = this.ignoreGravity;
 			this.body.Friction = this.friction;
 			this.body.Restitution = this.restitution;
+			this.body.CollisionCategories = this.colCat;
+			this.body.Mass = this.mass;
+			this.body.UserData = this;
 
 			this.body.SetTransform(t.Pos.Xy * 0.01f, t.Angle);
 			this.body.LinearVelocity = t.Vel.Xy * 0.01f / Time.SPFMult;
 			this.body.AngularVelocity = t.AngleVel / Time.SPFMult;
+
+			this.body.OnCollision += this.body_OnCollision;
+			this.body.OnSeparation += this.body_OnSeparation;
+			this.body.AfterCollision += this.body_AfterCollision;
 		}
 
 		/// <summary>
@@ -170,6 +191,43 @@ namespace Duality.Components
 		public void AwakeBody()
 		{
 			if (this.body != null) this.body.Awake = true;
+		}
+		
+		private bool body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
+		{
+			return true;
+			Log.Core.Write("OnCollision: {0},\t{1}",
+				fixtureA.Body.UserData as Collider,
+				fixtureB.Body.UserData as Collider);
+			int count = contact.Manifold.PointCount;
+			for (int i = 0; i < count; i++)
+			{
+				Log.Core.Write("\t{0:F}\t{1:F}",
+					contact.Manifold.Points[i].NormalImpulse * 100.0f,
+					contact.Manifold.Points[i].TangentImpulse * 100.0f);
+			}
+			return true;
+		}
+		private void body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
+		{
+			return;
+			Log.Core.Write("OnSeparation: {0},\t{1}",
+				fixtureA.Body.UserData as Collider,
+				fixtureB.Body.UserData as Collider);
+		}
+		private void body_AfterCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
+		{
+			return;
+			Log.Core.Write("AfterCollision: {0},\t{1}",
+				fixtureA.Body.UserData as Collider,
+				fixtureB.Body.UserData as Collider);
+			int count = contact.Manifold.PointCount;
+			for (int i = 0; i < count; i++)
+			{
+				Log.Core.Write("\t{0:F}\t{1:F}",
+					contact.Manifold.Points[i].NormalImpulse * 100.0f,
+					contact.Manifold.Points[i].TangentImpulse * 100.0f);
+			}
 		}
 
 		void ITransformUpdater.UpdateTransform(Transform t)
@@ -229,6 +287,7 @@ namespace Duality.Components
 			c.ignoreGravity = this.ignoreGravity;
 			c.friction = this.friction;
 			c.restitution = this.restitution;
+			c.colCat = this.colCat;
 			c.InitBody();
 		}
 	}
