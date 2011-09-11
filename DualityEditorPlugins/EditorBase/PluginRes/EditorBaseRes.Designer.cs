@@ -151,6 +151,15 @@ namespace EditorBase.PluginRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Physics ähnelt.
+        /// </summary>
+        public static string Category_Physics {
+            get {
+                return ResourceManager.GetString("Category_Physics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Sound ähnelt.
         /// </summary>
         public static string Category_Sound {
@@ -162,6 +171,27 @@ namespace EditorBase.PluginRes {
         public static System.Drawing.Bitmap IconCmpCamera {
             get {
                 object obj = ResourceManager.GetObject("IconCmpCamera", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap IconCmpCapsuleCollider {
+            get {
+                object obj = ResourceManager.GetObject("IconCmpCapsuleCollider", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap IconCmpCircleCollider {
+            get {
+                object obj = ResourceManager.GetObject("IconCmpCircleCollider", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap IconCmpRectCollider {
+            get {
+                object obj = ResourceManager.GetObject("IconCmpRectCollider", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

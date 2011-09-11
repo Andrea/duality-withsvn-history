@@ -34,6 +34,7 @@ namespace EditorBase.PropertyEditors
 
 			// -------- Semi-Specialized area --------
 			else if (typeof(SpriteRenderer).IsAssignableFrom(baseType))		return PropertyGrid.EditorPriority_General + 1;
+			else if (typeof(Collider).IsAssignableFrom(baseType))			return PropertyGrid.EditorPriority_General + 1;
 
 			// -------- General area --------
 			else if (typeof(Component).IsAssignableFrom(baseType))			return PropertyGrid.EditorPriority_General;
@@ -67,6 +68,7 @@ namespace EditorBase.PropertyEditors
 
 			// -------- Semi-Specialized area --------
 			else if (typeof(SpriteRenderer).IsAssignableFrom(baseType))		e = new SpriteRendererPropertyEditor(parentEditor, parentGrid);
+			else if (typeof(Collider).IsAssignableFrom(baseType))			e = new ColliderPropertyEditor(parentEditor, parentGrid);
 
 			// -------- General area --------
 			else if (typeof(Component).IsAssignableFrom(baseType))			e = new ComponentPropertyEditor(parentEditor, parentGrid);

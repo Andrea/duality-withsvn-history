@@ -1,6 +1,4 @@
 ﻿
--->	Implement some other colliders (Rect, Ellipse, Capsule)
--->	ColliderPropertyEditor that awakes the collider when changing something
 -->	Implement collision detection logic & sensor colliders
 -->	Implement raycasting & stuff (Rebuild some Farseer Example with object click&drag)
 -->	Port Asteroids demo to a physics-driven version, without any manual collision detection

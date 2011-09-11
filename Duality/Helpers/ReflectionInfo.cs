@@ -65,6 +65,12 @@ namespace Duality
 		public static readonly PropertyInfo	Property_SoundEmitter_Source_Volume;
 		public static readonly PropertyInfo	Property_SoundEmitter_Source_Pitch;
 		
+		public static readonly PropertyInfo	Property_Collider_Friction;
+		public static readonly PropertyInfo	Property_Collider_Restitution;
+		public static readonly PropertyInfo	Property_Collider_Mass;
+		public static readonly PropertyInfo	Property_Collider_LinearDamping;
+		public static readonly PropertyInfo	Property_Collider_AngularDamping;
+
 		public static readonly PropertyInfo	Property_Resource_Disposed;
 		public static readonly PropertyInfo	Property_Resource_Path;
 
@@ -184,6 +190,13 @@ namespace Duality
 			Property_Camera_ParallaxRefDist		= camera.GetProperty("ParallaxRefDist");
 			Property_Camera_ClearColor			= camera.GetProperty("ClearColor");
 			
+			Type collider = typeof(Collider);
+			Property_Collider_Friction			= collider.GetProperty("Friction");
+			Property_Collider_Restitution		= collider.GetProperty("Restitution");
+			Property_Collider_Mass				= collider.GetProperty("Mass");
+			Property_Collider_LinearDamping		= collider.GetProperty("LinearDamping");
+			Property_Collider_AngularDamping	= collider.GetProperty("AngularDamping");
+
 			Type resource = typeof(Resource);
 			Property_Resource_Disposed	= resource.GetProperty("Disposed");
 			Property_Resource_Path		= resource.GetProperty("Path");

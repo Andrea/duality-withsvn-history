@@ -64,6 +64,9 @@
     <Compile Include="FontFileImporter.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="PropertyEditors\Components\ColliderPropertyEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="PropertyEditors\Components\TextRendererPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -278,6 +281,9 @@
     <None Include="PluginRes\iconResSound.png" />
     <None Include="PluginRes\iconCmpSoundListener.png" />
     <None Include="PluginRes\iconResFont.png" />
+    <None Include="PluginRes\iconCmpCapsuleCollider.png" />
+    <None Include="PluginRes\iconCmpCircleCollider.png" />
+    <None Include="PluginRes\iconCmpRectCollider.png" />
     <Content Include="PluginRes\projectview.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

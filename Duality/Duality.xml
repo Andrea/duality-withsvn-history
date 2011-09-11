@@ -7228,6 +7228,92 @@
             [GET / SET] The 3d offset of the emitted sound relative to the GameObject.
             </summary>
         </member>
+        <member name="T:Duality.Components.Colliders.CircleCollider">
+            <summary>
+            Represents a <see cref="T:Duality.Components.Collider"/> based on a single circle shape.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Collider">
+            <summary>
+            Represents a body instance for physical simulation, collision detection and response.
+            </summary>
+        </member>
+        <member name="M:Duality.Components.Collider.CreateBody(FarseerPhysics.Dynamics.World)">
+            <summary>
+            Creates the Colliders actual body as part of the specified World.
+            </summary>
+            <param name="world"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Components.Collider.UpdateBodyShape">
+            <summary>
+            Updates the Colliders body shape according to the GameObjects characteristics. It is called once initially
+            after creating the body and may be called whenever the GameObjects state changes in a way that alters the
+            Colliders body shape, for example when modifying its Transforms scale value.
+            </summary>
+        </member>
+        <member name="M:Duality.Components.Collider.InitBody">
+            <summary>
+            Initializes the Colliders physical body object.
+            </summary>
+        </member>
+        <member name="M:Duality.Components.Collider.AwakeBody">
+            <summary>
+            Awakes the body if it has been in a resting state that is now being left, such as
+            when changing physical properties at runtime. You usually don't need to call this.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.PhysicsBodyType">
+            <summary>
+            [GET / SET] The type of the physical body.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.LinearDamping">
+            <summary>
+            [GET / SET] The damping that is applied to the bodies velocity.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.AngularDamping">
+            <summary>
+            [GET / SET] The damping that is applied to the bodies angular velocity.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.Mass">
+            <summary>
+            [GET / SET] The bodies mass. Can't be zero. To achieve zer-mass behaviour, use
+            the kinematic body type.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.FixedAngle">
+            <summary>
+            [GET / SET] Whether the bodies rotation is fixed.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.IgnoreGravity">
+            <summary>
+            [GET / SET] Whether the body ignores gravity.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.Friction">
+            <summary>
+            [GET / SET] The bodies (average) friction value.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.Restitution">
+            <summary>
+            [GET / SET] The bodies (average) restitution value.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Colliders.CircleCollider.Radius">
+            <summary>
+            [GET / SET] The collision / body radius.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Colliders.CircleCollider.Density">
+            <summary>
+            [GET / SET] The bodies density.
+            </summary>
+        </member>
         <member name="T:Duality.VertexFormat.VertexC1P3">
             <summary>
             Vertex data providing each vertex a position (3x4 byte) and color (1x4 byte).
@@ -10600,82 +10686,32 @@
             Makes this <see cref="T:Duality.GameObject"/> the 3d sound listener.
             </summary>
         </member>
-        <member name="T:Duality.Components.Collider">
+        <member name="T:Duality.Components.Colliders.RectCollider">
             <summary>
-            Represents a body instance for physical simulation, collision detection and response.
+            Represents a <see cref="T:Duality.Components.Collider"/> based on a single rectangular shape.
             </summary>
         </member>
-        <member name="M:Duality.Components.Collider.CreateBody(FarseerPhysics.Dynamics.World)">
+        <member name="P:Duality.Components.Colliders.RectCollider.Size">
             <summary>
-            Creates the Colliders actual body as part of the specified World.
-            </summary>
-            <param name="world"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.Components.Collider.UpdateBodyShape">
-            <summary>
-            Updates the Colliders body shape according to the GameObjects characteristics. It is called once initially
-            after creating the body and may be called whenever the GameObjects state changes in a way that alters the
-            Colliders body shape, for example when modifying its Transforms scale value.
+            [GET / SET] The collision / body size
             </summary>
         </member>
-        <member name="M:Duality.Components.Collider.InitBody">
+        <member name="P:Duality.Components.Colliders.RectCollider.Density">
             <summary>
-            Initializes the Colliders physical body object.
+            [GET / SET] The bodies density.
             </summary>
         </member>
-        <member name="P:Duality.Components.Collider.PhysicsBodyType">
+        <member name="T:Duality.Components.Colliders.CapsuleCollider">
             <summary>
-            [GET / SET] The type of the physical body.
+            Represents a <see cref="T:Duality.Components.Collider"/> based on a compound capsule shape.
             </summary>
         </member>
-        <member name="P:Duality.Components.Collider.LinearDamping">
+        <member name="P:Duality.Components.Colliders.CapsuleCollider.Size">
             <summary>
-            [GET / SET] The damping that is applied to the bodies velocity.
+            [GET / SET] The collision / body size
             </summary>
         </member>
-        <member name="P:Duality.Components.Collider.AngularDamping">
-            <summary>
-            [GET / SET] The damping that is applied to the bodies angular velocity.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Collider.Mass">
-            <summary>
-            [GET / SET] The bodies mass. Can't be zero. To achieve zer-mass behaviour, use
-            the kinematic body type.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Collider.FixedAngle">
-            <summary>
-            [GET / SET] Whether the bodies rotation is fixed.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Collider.IgnoreGravity">
-            <summary>
-            [GET / SET] Whether the body ignores gravity.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Collider.Friction">
-            <summary>
-            [GET / SET] The bodies (average) friction value.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Collider.Restitution">
-            <summary>
-            [GET / SET] The bodies (average) restitution value.
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Colliders.CircleCollider">
-            <summary>
-            Represents a <see cref="T:Duality.Components.Collider"/> based on a single circle shape.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Colliders.CircleCollider.Radius">
-            <summary>
-            [GET / SET] The collision / body radius.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Colliders.CircleCollider.Density">
+        <member name="P:Duality.Components.Colliders.CapsuleCollider.Density">
             <summary>
             [GET / SET] The bodies density.
             </summary>

@@ -6,13 +6,17 @@ using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
 
+using OpenTK;
+using WeifenLuo.WinFormsUI.Docking;
+
 using Duality;
 using Duality.ObjectManagers;
 using Duality.Components;
 using Duality.Components.Renderers;
+using Duality.Components.Colliders;
 using Duality.ColorFormat;
 using Duality.Resources;
-using OpenTK;
+using TextRenderer = Duality.Components.Renderers.TextRenderer;
 
 using DualityEditor;
 using DualityEditor.Forms;
@@ -20,7 +24,6 @@ using DualityEditor.EditorRes;
 
 using EditorBase.PluginRes;
 
-using WeifenLuo.WinFormsUI.Docking;
 
 namespace EditorBase
 {
@@ -128,19 +131,25 @@ namespace EditorBase
 			CorePluginHelper.RegisterTypeImage(typeof(Component), EditorBaseRes.IconCmpUnknown, CorePluginHelper.ImageContext_Icon);
 			CorePluginHelper.RegisterTypeImage(typeof(SpriteRenderer), EditorBaseRes.IconCmpSpriteRenderer, CorePluginHelper.ImageContext_Icon);
 			CorePluginHelper.RegisterTypeImage(typeof(AnimSpriteRenderer), EditorBaseRes.IconCmpSpriteRenderer, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(Duality.Components.Renderers.TextRenderer), EditorBaseRes.IconResFont, CorePluginHelper.ImageContext_Icon);
+			CorePluginHelper.RegisterTypeImage(typeof(TextRenderer), EditorBaseRes.IconResFont, CorePluginHelper.ImageContext_Icon);
 			CorePluginHelper.RegisterTypeImage(typeof(Transform), EditorBaseRes.IconCmpTransform, CorePluginHelper.ImageContext_Icon);
 			CorePluginHelper.RegisterTypeImage(typeof(Camera), EditorBaseRes.IconCmpCamera, CorePluginHelper.ImageContext_Icon);
 			CorePluginHelper.RegisterTypeImage(typeof(SoundEmitter), EditorBaseRes.IconResSound, CorePluginHelper.ImageContext_Icon);
 			CorePluginHelper.RegisterTypeImage(typeof(SoundListener), EditorBaseRes.IconCmpSoundListener, CorePluginHelper.ImageContext_Icon);
+			CorePluginHelper.RegisterTypeImage(typeof(CircleCollider), EditorBaseRes.IconCmpCircleCollider, CorePluginHelper.ImageContext_Icon);
+			CorePluginHelper.RegisterTypeImage(typeof(RectCollider), EditorBaseRes.IconCmpRectCollider, CorePluginHelper.ImageContext_Icon);
+			CorePluginHelper.RegisterTypeImage(typeof(CapsuleCollider), EditorBaseRes.IconCmpCapsuleCollider, CorePluginHelper.ImageContext_Icon);
 
 			CorePluginHelper.RegisterTypeCategory(typeof(Transform), "", CorePluginHelper.CategoryContext_General);
 			CorePluginHelper.RegisterTypeCategory(typeof(SpriteRenderer), EditorBaseRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
 			CorePluginHelper.RegisterTypeCategory(typeof(AnimSpriteRenderer), EditorBaseRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(Duality.Components.Renderers.TextRenderer), EditorBaseRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(TextRenderer), EditorBaseRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
 			CorePluginHelper.RegisterTypeCategory(typeof(Camera), EditorBaseRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
 			CorePluginHelper.RegisterTypeCategory(typeof(SoundEmitter), EditorBaseRes.Category_Sound, CorePluginHelper.CategoryContext_General);
 			CorePluginHelper.RegisterTypeCategory(typeof(SoundListener), EditorBaseRes.Category_Sound, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(CircleCollider), EditorBaseRes.Category_Physics, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(RectCollider), EditorBaseRes.Category_Physics, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(CapsuleCollider), EditorBaseRes.Category_Physics, CorePluginHelper.CategoryContext_General);
 
 			CorePluginHelper.RegisterTypeCategory(typeof(Scene), "", CorePluginHelper.CategoryContext_General);
 			CorePluginHelper.RegisterTypeCategory(typeof(Prefab), "", CorePluginHelper.CategoryContext_General);

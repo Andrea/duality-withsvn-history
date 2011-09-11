@@ -163,6 +163,15 @@ namespace Duality.Components
 			this.body.AngularVelocity = t.AngleVel / Time.SPFMult;
 		}
 
+		/// <summary>
+		/// Awakes the body if it has been in a resting state that is now being left, such as
+		/// when changing physical properties at runtime. You usually don't need to call this.
+		/// </summary>
+		public void AwakeBody()
+		{
+			if (this.body != null) this.body.Awake = true;
+		}
+
 		void ITransformUpdater.UpdateTransform(Transform t)
 		{
 			t.SetTransform(
