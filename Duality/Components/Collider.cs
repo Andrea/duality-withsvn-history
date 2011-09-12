@@ -87,7 +87,11 @@ namespace Duality.Components
 			get { return this.fixedAngle; }
 			set 
 			{
-				if (this.body != null) this.body.FixedRotation = value;
+				if (this.body != null)
+				{
+					this.body.FixedRotation = value;
+					this.body.Mass = this.mass;
+				}
 				this.fixedAngle = value;
 			}
 		}

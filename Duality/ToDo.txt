@@ -15,6 +15,31 @@
 	-->	Collision impact force?
 	-->	Collision point relative to object?
 	-->	How to interpret Farseer Data?
+	-->	Screw Collider specialization! Just provide one non-abstract Collider-class that supports any shape
+		and is WYSIWYG-editable in the editor.
+		-->	Needs special CamView-editing plugin features.
+		-->	Preview shape in view
+		-->	Edit shape in view
+			-->	Circles
+			-->	Rects
+			-->	Polygons
+	-->	What about scene graph hierarchy / parenting?
+		-->	Need to disable default transform behaviour if the child is aphysical object (Collider)
+			-->	Use ITransformUpdater to possibly prevent updating by parent?
+			-->	A parent Transform shouldn't affect a child Transform which has an ITransformUpdater
+				that doesn't want it.
+			-->	Easy way to achieve this: Overwrite cached parentTransform to be null.
+			-->	Probably don't want this in the editor for editing comfort.
+				(Move parent object in order to move all children)
+				-->	Need to switch behaviour at runtime in the editor because of the sandbox mode.
+		-->	Use some kind of fixed joint between parented bodies?
+			-->	Specify joint type and properties in child Collider object?
+			-->	Maybe use special Joint-Component to specify them and fall back to disabled Transform 
+				behaviour if none is attached?
+			-->	WYSIWYG-Editor for those joints as well when CamView in Collider edit mode.
+		-->	Complex physical objects can be composed out of several parented GameObjects.
+			They can also be done using custom Components, but likely won't.
+			-->	Is that wanted behaviour? How is Unity doing that..?
 
 -->	Implement raycasting & stuff (Rebuild some Farseer Example with object click&drag)
 -->	Port Asteroids demo to a physics-driven version, without any manual collision detection
