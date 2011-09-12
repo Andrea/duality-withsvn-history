@@ -29,6 +29,9 @@
 			-->	A parent Transform shouldn't affect a child Transform which has an ITransformUpdater
 				that doesn't want it.
 			-->	Easy way to achieve this: Overwrite cached parentTransform to be null.
+				-->	Might be unstable: Registering / Unregistering ITransformUpdaters, parentTransform
+					field might also be used otherwise now or in the future, etc.
+					Think about it before implementing.
 			-->	Probably don't want this in the editor for editing comfort.
 				(Move parent object in order to move all children)
 				-->	Need to switch behaviour at runtime in the editor because of the sandbox mode.
@@ -39,7 +42,8 @@
 			-->	WYSIWYG-Editor for those joints as well when CamView in Collider edit mode.
 		-->	Complex physical objects can be composed out of several parented GameObjects.
 			They can also be done using custom Components, but likely won't.
-			-->	Is that wanted behaviour? How is Unity doing that..?
+	
+	-->	Is that wanted behaviour? How is Unity doing all that..?
 
 -->	Implement raycasting & stuff (Rebuild some Farseer Example with object click&drag)
 -->	Port Asteroids demo to a physics-driven version, without any manual collision detection
