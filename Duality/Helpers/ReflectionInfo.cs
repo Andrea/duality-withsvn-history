@@ -67,7 +67,6 @@ namespace Duality
 		
 		public static readonly PropertyInfo	Property_Collider_Friction;
 		public static readonly PropertyInfo	Property_Collider_Restitution;
-		public static readonly PropertyInfo	Property_Collider_Mass;
 		public static readonly PropertyInfo	Property_Collider_LinearDamping;
 		public static readonly PropertyInfo	Property_Collider_AngularDamping;
 
@@ -193,7 +192,6 @@ namespace Duality
 			Type collider = typeof(Collider);
 			Property_Collider_Friction			= collider.GetProperty("Friction");
 			Property_Collider_Restitution		= collider.GetProperty("Restitution");
-			Property_Collider_Mass				= collider.GetProperty("Mass");
 			Property_Collider_LinearDamping		= collider.GetProperty("LinearDamping");
 			Property_Collider_AngularDamping	= collider.GetProperty("AngularDamping");
 

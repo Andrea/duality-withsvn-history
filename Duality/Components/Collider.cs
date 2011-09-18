@@ -6,6 +6,8 @@ using System.Text;
 using OpenTK;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Dynamics.Contacts;
+using FarseerPhysics.Factories;
+using FarseerPhysics.Collision.Shapes;
 
 using Duality;
 using Duality.Resources;
@@ -17,18 +19,174 @@ namespace Duality.Components
 	/// </summary>
 	[Serializable]
 	[RequiredComponent(typeof(Transform))]
-	public abstract class Collider : Component, ICmpInitializable, ITransformUpdater
+	public class Collider : Component, ICmpInitializable, ITransformUpdater
 	{
-		[NonSerialized]	protected	Body	body	= null;
+		/// <summary>
+		/// Describes a <see cref="Collider">Colliders</see> primitive shape. A Colliders overall shape may be combined of any number of primitive shapes.
+		/// </summary>
+		[Serializable]
+		public abstract class ShapeInfo
+		{
+			private	float	density	= 1.0f;
+			
+			/// <summary>
+			/// [GEt / SET] The shapes density.
+			/// </summary>
+			public float Density
+			{
+				get { return this.density; }
+				set { this.density = value; }
+			}
+
+			protected ShapeInfo() {}
+			protected ShapeInfo(float density)
+			{
+				this.density = density;
+			}
+
+			/// <summary>
+			/// Creates an actual physics shape.
+			/// </summary>
+			/// <returns></returns>
+			public abstract Shape CreateShape();
+			/// <summary>
+			/// Updates the specified physics shape to fit this ShapeInfo
+			/// </summary>
+			/// <param name="shape"></param>
+			/// <param name="scale"></param>
+			public abstract void UpdateShape(Shape shape, Vector2 scale);
+
+			/// <summary>
+			/// Copies this ShapeInfos data to another one. It is assumed that both are of the same type.
+			/// </summary>
+			/// <param name="target"></param>
+			protected virtual void CopyTo(ShapeInfo target)
+			{
+				target.density = this.density;
+			}
+			/// <summary>
+			/// Clones the ShapeInfo.
+			/// </summary>
+			/// <returns></returns>
+			public ShapeInfo Clone()
+			{
+				ShapeInfo newObj = ReflectionHelper.CreateInstanceOf(this.GetType()) as ShapeInfo;
+				this.CopyTo(newObj);
+				return newObj;
+			}
+		}
+		/// <summary>
+		/// Describes a <see cref="Collider">Colliders</see> circle shape.
+		/// </summary>
+		[Serializable]
+		public sealed class CircleShapeInfo : ShapeInfo
+		{
+			private	float	radius;
+			private	Vector2	position;
+
+			/// <summary>
+			/// [GET / SET] The circles radius.
+			/// </summary>
+			public float Radius
+			{
+				get { return this.radius; }
+				set { this.radius = value; }
+			}
+			/// <summary>
+			/// [GET / SET] The circles position.
+			/// </summary>
+			public Vector2 Position
+			{
+				get { return this.position; }
+				set { this.position = value; }
+			}
+
+			public CircleShapeInfo() {}
+			public CircleShapeInfo(float radius, Vector2 position, float density) : base(density)
+			{
+				this.radius = radius;
+				this.position = position;
+			}
+
+			public override Shape CreateShape()
+			{
+				return new CircleShape(1.0f, 1.0f);
+			}
+			public override void UpdateShape(Shape shape, Vector2 scale)
+			{
+				float uniformScale = scale.Length / MathF.Sqrt(2.0f);
+				CircleShape circle = shape as CircleShape;
+				circle.Radius = this.radius * uniformScale * 0.01f;
+				circle.Position = this.position;
+				circle.Density = this.Density;
+			}
+
+			protected override void CopyTo(ShapeInfo target)
+			{
+				base.CopyTo(target);
+				CircleShapeInfo c = target as CircleShapeInfo;
+				c.radius = this.radius;
+				c.position = this.position;
+			}
+		}
+		/// <summary>
+		/// Describes a <see cref="Collider">Colliders</see> polygon shape.
+		/// </summary>
+		[Serializable]
+		public sealed class PolyShapeInfo : ShapeInfo
+		{
+			private	Vector2[]	vertices;
+
+			/// <summary>
+			/// [GET / SET] The polygons vertices.
+			/// </summary>
+			public Vector2[] Vertices
+			{
+				get { return this.vertices; }
+				set { this.vertices = value; }
+			}
+			
+			public PolyShapeInfo() {}
+			public PolyShapeInfo(IEnumerable<Vector2> vertices, float density) : base(density)
+			{
+				this.vertices = vertices.ToArray();
+			}
+
+			public override Shape CreateShape()
+			{
+				return new PolygonShape(1.0f);
+			}
+			public override void UpdateShape(Shape shape, Vector2 scale)
+			{
+				PolygonShape poly = shape as PolygonShape;
+				poly.Density = this.Density;
+				poly.Vertices = new FarseerPhysics.Common.Vertices(this.vertices.Length);
+				for (int i = 0; i < poly.Vertices.Count; i++)
+				{
+					poly.Vertices[i] = new Vector2(
+						this.vertices[i].X * scale.X * 0.01f, 
+						this.vertices[i].Y * scale.Y * 0.01f);
+				}
+			}
+
+			protected override void CopyTo(ShapeInfo target)
+			{
+				base.CopyTo(target);
+				PolyShapeInfo c = target as PolyShapeInfo;
+				c.vertices = this.vertices != null ? (Vector2[])this.vertices.Clone() : null;
+			}
+		}
+
+		[NonSerialized]	private	Body	body	= null;
 		private	BodyType	bodyType		= BodyType.Dynamic;
 		private	float		linearDamp		= 0.0f;
 		private	float		angularDamp		= 0.0f;
-		private	float		mass			= 0.0f;
 		private	bool		fixedAngle		= false;
 		private	bool		ignoreGravity	= false;
 		private	float		friction		= 0.0f;
 		private	float		restitution		= 0.0f;
 		private	Category	colCat			= Category.All;
+		private	List<ShapeInfo>	shapes		= new List<ShapeInfo>{ new CircleShapeInfo(64.0f, Vector2.Zero, 1.0f) };
 
 		/// <summary>
 		/// [GET / SET] The type of the physical body.
@@ -67,19 +225,6 @@ namespace Duality.Components
 			}
 		}
 		/// <summary>
-		/// [GET / SET] The bodies mass. Can't be zero. To achieve zer-mass behaviour, use
-		/// the kinematic body type.
-		/// </summary>
-		public float Mass
-		{
-			get { return this.mass; }
-			set 
-			{
-				if (this.body != null) this.body.Mass = value;
-				this.mass = value;
-			}
-		}
-		/// <summary>
 		/// [GET / SET] Whether the bodies rotation is fixed.
 		/// </summary>
 		public bool FixedAngle
@@ -87,11 +232,7 @@ namespace Duality.Components
 			get { return this.fixedAngle; }
 			set 
 			{
-				if (this.body != null)
-				{
-					this.body.FixedRotation = value;
-					this.body.Mass = this.mass;
-				}
+				if (this.body != null) this.body.FixedRotation = value;
 				this.fixedAngle = value;
 			}
 		}
@@ -144,28 +285,35 @@ namespace Duality.Components
 				if (this.body != null) this.body.CollisionCategories = value;
 			}
 		}
+		/// <summary>
+		/// [GET] Enumerates the <see cref="ShapeInfo">primitive shapes</see> this Body consists of.
+		/// </summary>
+		public IEnumerable<ShapeInfo> Shapes
+		{
+			get { return this.shapes; }
+		}
 
-		/// <summary>
-		/// Creates the Colliders actual body as part of the specified World.
-		/// </summary>
-		/// <param name="world"></param>
-		/// <returns></returns>
-		protected abstract Body CreateBody(World world);
-		/// <summary>
-		/// Updates the Colliders body shape according to the GameObjects characteristics. It is called once initially
-		/// after creating the body and may be called whenever the GameObjects state changes in a way that alters the
-		/// Colliders body shape, for example when modifying its Transforms scale value.
-		/// </summary>
-		protected abstract void UpdateBodyShape();
-		/// <summary>
-		/// Initializes the Colliders physical body object.
-		/// </summary>
-		protected void InitBody()
+		private Body CreateBody()
+		{
+			Body b = new Body(Scene.CurrentPhysics);
+			foreach (ShapeInfo s in this.shapes) b.CreateFixture(s.CreateShape(), s);
+			return b;
+		}
+		private void UpdateBodyShape()
+		{
+			Vector2 scale = this.GameObj.Transform.Scale.Xy;
+			foreach (Fixture f in this.body.FixtureList)
+			{
+				ShapeInfo info = f.UserData as ShapeInfo;
+				info.UpdateShape(f.Shape, scale);
+			}
+		}
+		private void InitBody()
 		{
 			if (this.body != null) this.body.Dispose();
 			Transform t = this.GameObj.Transform;
 
-			this.body = this.CreateBody(Scene.CurrentPhysics);
+			this.body = this.CreateBody();
 			this.UpdateBodyShape();
 
 			this.body.BodyType = this.bodyType;
@@ -176,7 +324,6 @@ namespace Duality.Components
 			this.body.Friction = this.friction;
 			this.body.Restitution = this.restitution;
 			this.body.CollisionCategories = this.colCat;
-			this.body.Mass = this.mass;
 			this.body.UserData = this;
 
 			this.body.SetTransform(t.Pos.Xy * 0.01f, t.Angle);
@@ -286,12 +433,12 @@ namespace Duality.Components
 			c.bodyType = this.bodyType;
 			c.linearDamp = this.linearDamp;
 			c.angularDamp = this.angularDamp;
-			c.mass = this.mass;
 			c.fixedAngle = this.fixedAngle;
 			c.ignoreGravity = this.ignoreGravity;
 			c.friction = this.friction;
 			c.restitution = this.restitution;
 			c.colCat = this.colCat;
+			c.shapes = this.shapes == null ? null : new List<ShapeInfo>(this.shapes.Select(s => s.Clone()));
 			c.InitBody();
 		}
 	}

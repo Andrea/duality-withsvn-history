@@ -56,7 +56,7 @@ namespace Duality.Components
 		private	float	angleVel	= 0.0f;
 		private	Vector3	scale		= Vector3.One;
 		private	bool	deriveAngle	= true;
-		private	List<ITransformUpdater>	extUpdaters = null;
+		private	ITransformUpdater	extUpdater = null;
 		private	DirtyFlags	changes	= DirtyFlags.None;
 
 		// Cached values, recalc on change
@@ -294,28 +294,29 @@ namespace Duality.Components
 		}
 
 		/// <summary>
-		/// Registers an external transform updater. As long as at least one is registered, the
-		/// Transform component won't attempt to update by itsself in any way, as external updates
-		/// are assumed to occur on a per-frame basis.
+		/// Registers an external Transform updater. As long as one is registered, the Transform component 
+		/// won't attempt to update by itsself in any way and query the registered instead.
+		/// There can only be one Transform updater registered at a time.
 		/// </summary>
 		/// <param name="updater"></param>
 		public void RegisterExternalUpdater(ITransformUpdater updater)
 		{
-			if (this.extUpdaters == null) this.extUpdaters = new List<ITransformUpdater>();
-			else if (this.extUpdaters.Contains(updater)) return;
-			this.extUpdaters.Add(updater);
+			if (this.extUpdater == updater) return;
+			if (this.extUpdater != null) Log.Core.WriteWarning(
+				"Registering ITransformUpdater '{0}' at Transform '{1}', although '{2}' hasn't been unregistered.", 
+				updater, this, this.extUpdater);
+			this.extUpdater = updater;
 		}
 		/// <summary>
-		/// Unregisters an external transform updater. As long as at least one is registered, the
-		/// Transform component won't attempt to update by itsself in any way, as external updates
-		/// are assumed to occur on a per-frame basis.
+		/// Unregisters an external Transform updater. As long as one is registered, the Transform component 
+		/// won't attempt to update by itsself in any way and query the registered instead.
+		/// There can only be one Transform updater registered at a time.
 		/// </summary>
 		/// <param name="updater"></param>
 		public void UnregisterExternalUpdater(ITransformUpdater updater)
 		{
-			if (this.extUpdaters == null) return;
-			this.extUpdaters.Remove(updater);
-			if (this.extUpdaters.Count == 0) this.extUpdaters = null;
+			if (this.extUpdater != updater) return;
+			this.extUpdater = null;
 		}
 		/// <summary>
 		/// Updates the Transforms data all at once.
@@ -340,15 +341,10 @@ namespace Duality.Components
 
 		void ICmpUpdatable.OnUpdate()
 		{
-			if (this.extUpdaters != null)
+			if (this.extUpdater != null)
 			{
-				if (this.changes != DirtyFlags.None)
-				{
-					foreach (ITransformUpdater upd in this.extUpdaters)
-						upd.OnTransformChanged(this, this.changes);
-				}
-				foreach (ITransformUpdater upd in this.extUpdaters)
-					upd.UpdateTransform(this);
+				if (this.changes != DirtyFlags.None) this.extUpdater.OnTransformChanged(this, this.changes);
+				this.extUpdater.UpdateTransform(this);
 			}
 			else if (this.angleVel != 0.0f || this.vel != Vector3.Zero)
 			{
@@ -458,6 +454,11 @@ namespace Duality.Components
 					this.velAbs = this.vel;
 					this.scaleAbs = this.scale;
 				}
+				else if (this.extUpdater != null && DualityApp.ExecContext != DualityApp.ExecutionContext.Editor)
+				{
+					// If there is an external updater, ignore scene graph relations and just keep relative data updated.
+					this.UpdateRel();
+				}
 				else
 				{
 					if (this.deriveAngle)
@@ -537,6 +538,7 @@ namespace Duality.Components
 			t.angleVel	= this.angleVel;
 			t.scale		= this.scale;
 			t.deriveAngle = this.deriveAngle;
+			// Don't copy external updaters. They're usually other Components and thus, object-local.
 			t.UpdateAbs();
 		}
 	}

@@ -78,9 +78,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Components\Collider.cs" />
-    <Compile Include="Components\Colliders\CircleCollider.cs" />
-    <Compile Include="Components\Colliders\CapsuleCollider.cs" />
-    <Compile Include="Components\Colliders\RectCollider.cs" />
     <Compile Include="Helpers\Alignment.cs" />
     <Compile Include="Graphics\ColorFormat\ColorHsva.cs" />
     <Compile Include="Components\Renderers\AnimSpriteRenderer.cs" />

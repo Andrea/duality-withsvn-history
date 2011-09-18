@@ -35,17 +35,6 @@ namespace EditorBase.PropertyEditors
 				}
 				return e;
 			}
-			else if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Collider_Mass))
-			{
-				PropertyEditor e = this.ParentGrid.PropertyEditorProvider.CreateEditor((info as PropertyInfo).PropertyType, this, this.ParentGrid);
-				NumericPropertyEditor numEdit = e as NumericPropertyEditor;
-				if (numEdit != null)
-				{
-					numEdit.Editor.Minimum = 0.0m;
-					numEdit.Editor.Increment = 5.0m;
-				}
-				return e;
-			}
 			else if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Collider_LinearDamping) ||
 				ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Collider_AngularDamping))
 			{

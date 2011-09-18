@@ -10,36 +10,44 @@
 	-->	OnCollisionSolve(CollisionData objA, CollisionData objB, ContactData contact);
 	-->	OnCollisionEnd(CollisionData objA, CollisionData objB);
 	-->	This is not final. Reconsider it based on actual use cases.
+	-->	"CollisionData" is not figured out yet.
+		-->	It might contain only Duality-related data and act as if there was no Farseer
+		-->	This is preferrable since replacing Farseer with a different physics engine
+			won't affect any user code. Encapsulation rulez.
 
 	Issues:
+	-->	Provide a WYSIWYG-Editor for Collider Shapes in the editor
+		-->	Needs special CamView-editing plugin features.
+			-->	Introduce CamViewState class that essentially handles CamView editing
+			-->	CamView movement is done in CamView, everything else will be handled by the CamViewState.
+			-->	The default CamViewState does object selection and transform changes (just like now)
+			-->	There will be a different CamViewState that only does Collider editing
+			-->	Switching between states can be done using a ComboBox or something.
+				-->	Don't show states that aren't available right now
+				-->	Grey out the ComboBox, if no other state is available
+			-->	CamViewStates are registered in the CorePluginHelper and cloned to instantiate them
+				in the respective CamView.
+			-->	Each CamView needs to save its current state to editor user data
+		-->	Actual editor:
+			-->	Preview shape in view
+				-->	Display a shapes density numeric (absolute value) and visually as fill transparency (relative to other shapes)
+			-->	Edit shape in view
+				-->	Circles
+				-->	Polygons
+					-->	May be any kind of shape and vertex number.
+					-->	Use some kind of decomposition (internally!) to create a set of valid Farseers polygons.
+			-->	View rotation is considered
+
 	-->	Collision impact force?
 	-->	Collision point relative to object?
 	-->	How to interpret Farseer Data?
-	-->	Screw Collider specialization! Just provide one non-abstract Collider-class that supports any shape
-		and is WYSIWYG-editable in the editor.
-		-->	Needs special CamView-editing plugin features.
-		-->	Preview shape in view
-		-->	Edit shape in view
-			-->	Circles
-			-->	Rects
-			-->	Polygons
-	-->	What about scene graph hierarchy / parenting?
-		-->	Need to disable default transform behaviour if the child is aphysical object (Collider)
-			-->	Use ITransformUpdater to possibly prevent updating by parent?
-			-->	A parent Transform shouldn't affect a child Transform which has an ITransformUpdater
-				that doesn't want it.
-			-->	Easy way to achieve this: Overwrite cached parentTransform to be null.
-				-->	Might be unstable: Registering / Unregistering ITransformUpdaters, parentTransform
-					field might also be used otherwise now or in the future, etc.
-					Think about it before implementing.
-			-->	Probably don't want this in the editor for editing comfort.
-				(Move parent object in order to move all children)
-				-->	Need to switch behaviour at runtime in the editor because of the sandbox mode.
-		-->	Use some kind of fixed joint between parented bodies?
-			-->	Specify joint type and properties in child Collider object?
-			-->	Maybe use special Joint-Component to specify them and fall back to disabled Transform 
-				behaviour if none is attached?
-			-->	WYSIWYG-Editor for those joints as well when CamView in Collider edit mode.
+
+	-->	What about Joints?
+		-->	Any Collider can be attached to the world or any other Collider using Joints.
+			This is NOT a scene-hierarchial thing.
+		-->	Handle joints as some kind of property of a Collider, since any Joint will be
+			attached to at least one Collider.
+		-->	WYSIWYG-Editor for those joints as well when CamView in Collider edit mode.
 		-->	Complex physical objects can be composed out of several parented GameObjects.
 			They can also be done using custom Components, but likely won't.
 	
