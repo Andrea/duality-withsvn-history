@@ -1,4 +1,6 @@
 ﻿
+-->	Implement GameCamera mode für CamView.
+
 -->	Implement collision detection logic & sensor colliders
 	-->	Colliders will notify their GameObject about OnCollision, OnSeparation and AfterCollision..
 	-->	..which will then notify its ICmpCollisionListener Components.
