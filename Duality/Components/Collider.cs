@@ -118,7 +118,7 @@ namespace Duality.Components
 				CircleShape circle = shape as CircleShape;
 				circle.Radius = this.radius * uniformScale * 0.01f;
 				circle.Position = this.position;
-				circle.Density = this.Density;
+				circle.Density = this.Density * 100.0f;
 			}
 
 			protected override void CopyTo(ShapeInfo target)
@@ -159,7 +159,7 @@ namespace Duality.Components
 			public override void UpdateShape(Shape shape, Vector2 scale)
 			{
 				PolygonShape poly = shape as PolygonShape;
-				poly.Density = this.Density;
+				poly.Density = this.Density * 100.0f;
 				poly.Vertices = new FarseerPhysics.Common.Vertices(this.vertices.Length);
 				for (int i = 0; i < poly.Vertices.Count; i++)
 				{
