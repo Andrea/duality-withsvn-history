@@ -69,6 +69,7 @@ namespace EditorBase
 		private	GameObject			camObj			= null;
 		private	Camera				camComp			= null;
 		private	bool				camInternal		= false;
+		private	bool				camGameMode		= false;
 		private	Point				camActionBeginLoc		= Point.Empty;
 		private Vector3				camActionBeginLocSpace	= Vector3.Zero;
 		private	CameraAction		camAction			= CameraAction.None;
@@ -198,6 +199,7 @@ namespace EditorBase
 		{
 			this.camSelector.Items.Clear();
 			this.camSelector.Items.Add(this.nativeCamObj);
+			this.camSelector.Items.Add("[IngameView]");
 			foreach (Camera c in Scene.Current.Graph.AllObjects.GetComponents<Camera>())
 			{
 				this.camSelector.Items.Add(c);
@@ -218,17 +220,19 @@ namespace EditorBase
 			this.nativeCamObj.Transform.Pos = new Vector3(0.0f, 0.0f, -c.ParallaxRefDist);
 			EditorBasePlugin.Instance.EditorForm.EditorObjects.RegisterObjDeep(this.nativeCamObj);
 		}
-		protected void SetCurrentCamera(Camera c)
+		protected void SetCurrentCamera(Camera c, bool gameMode = false)
 		{
+			if (gameMode) c = null;
 			if (this.camObj != null && !this.camInternal)
 				EditorBasePlugin.Instance.EditorForm.EditorObjects.UnregisterObjDeep(this.camObj);
 
+			this.camGameMode = gameMode;
 			if (c == null)
 			{
 				this.camInternal = true;
 				this.camObj = this.nativeCamObj;
 				this.camComp = this.camObj.Camera;
-				this.camSelector.SelectedIndex = 0;
+				this.camSelector.SelectedIndex = this.camGameMode ? 1 : 0;
 			}
 			else
 			{
@@ -537,7 +541,7 @@ namespace EditorBase
 		{
 			DualityApp.TargetMode = this.MainContextControl.Context.GraphicsMode;
 			DualityApp.TargetResolution = new OpenTK.Vector2(this.glControl.Width, this.glControl.Height);
-			EditorBasePlugin.Instance.EditorForm.SetCurrentDualityAppInput(this, this);
+			if (this.ContainsFocus) EditorBasePlugin.Instance.EditorForm.SetCurrentDualityAppInput(this, this);
 		}
 		protected Renderer PickRendererAt(int x, int y)
 		{
@@ -1111,147 +1115,163 @@ namespace EditorBase
  			try { this.MainContextControl.Context.MakeCurrent(this.glControl.WindowInfo); } catch (Exception) { return; }
 			this.MakeDualityTarget();
 
-			// Determine turned camera axes
-			Vector2 catDotX, catDotY;
-			MathF.GetTransformDotVec(this.camObj.Transform.Angle, out catDotX, out catDotY);
-			Vector3 right = new Vector3(1.0f, 0.0f, 0.0f);
-			Vector3 down = new Vector3(0.0f, 1.0f, 0.0f);
-			MathF.TransformDotVec(ref right, ref catDotX, ref catDotY);
-			MathF.TransformDotVec(ref down, ref catDotX, ref catDotY);
-
-			// Draw indirectly selected object overlay
-			this.DrawSelectionMarkers(this.SelectedGameObjIndirect(), ColorRgba.Mix(this.FgColor, this.BgColor, 0.75f));
-
-			// Draw selected object overlay
-			List<GameObject> selObjList = new List<GameObject>(this.SelectedGameObj());
-			this.DrawSelectionMarkers(selObjList, this.FgColor);
-
-			// Draw overall selection boundary
-			if (selObjList.Count > 1 && selObjList.Transform().Any())
+			if (!this.camGameMode)
 			{
-				float midZ = selObjList.Transform().Average(t => t.Pos.Z);
-				float maxZDiff = selObjList.Transform().Max(t => MathF.Abs(t.Pos.Z - midZ));
-				if (maxZDiff > 0.001f)
+				// Determine turned camera axes
+				Vector2 catDotX, catDotY;
+				MathF.GetTransformDotVec(this.camObj.Transform.Angle, out catDotX, out catDotY);
+				Vector3 right = new Vector3(1.0f, 0.0f, 0.0f);
+				Vector3 down = new Vector3(0.0f, 1.0f, 0.0f);
+				MathF.TransformDotVec(ref right, ref catDotX, ref catDotY);
+				MathF.TransformDotVec(ref down, ref catDotX, ref catDotY);
+
+				// Draw indirectly selected object overlay
+				this.DrawSelectionMarkers(this.SelectedGameObjIndirect(), ColorRgba.Mix(this.FgColor, this.BgColor, 0.75f));
+
+				// Draw selected object overlay
+				List<GameObject> selObjList = new List<GameObject>(this.SelectedGameObj());
+				this.DrawSelectionMarkers(selObjList, this.FgColor);
+
+				// Draw overall selection boundary
+				if (selObjList.Count > 1 && selObjList.Transform().Any())
 				{
-					this.DrawWorldSpaceSphere(
-						this.selectionCenter.X, 
+					float midZ = selObjList.Transform().Average(t => t.Pos.Z);
+					float maxZDiff = selObjList.Transform().Max(t => MathF.Abs(t.Pos.Z - midZ));
+					if (maxZDiff > 0.001f)
+					{
+						this.DrawWorldSpaceSphere(
+							this.selectionCenter.X, 
+							this.selectionCenter.Y, 
+							this.selectionCenter.Z, 
+							this.selectionRadius,
+							DrawTechnique.Solid,
+							ColorRgba.Mix(this.FgColor, this.BgColor, 0.5f));
+					}
+					else
+					{
+						this.DrawWorldSpaceCircle(
+							this.selectionCenter.X, 
+							this.selectionCenter.Y, 
+							this.selectionCenter.Z, 
+							this.selectionRadius,
+							DrawTechnique.Solid,
+							ColorRgba.Mix(this.FgColor, this.BgColor, 0.5f));
+					}
+				}
+
+				// Draw scale action dots
+				if (selObjList.Count > 0)
+				{
+					float dotR = 3.0f / this.GetScaleAtZ(this.selectionCenter.Z);
+					this.DrawWorldSpaceDot(
+						this.selectionCenter.X + this.selectionRadius, 
 						this.selectionCenter.Y, 
-						this.selectionCenter.Z, 
-						this.selectionRadius,
+						this.selectionCenter.Z,
+						dotR,
 						DrawTechnique.Solid,
-						ColorRgba.Mix(this.FgColor, this.BgColor, 0.5f));
-				}
-				else
-				{
-					this.DrawWorldSpaceCircle(
-						this.selectionCenter.X, 
+						this.FgColor);
+					this.DrawWorldSpaceDot(
+						this.selectionCenter.X - this.selectionRadius, 
 						this.selectionCenter.Y, 
-						this.selectionCenter.Z, 
-						this.selectionRadius,
+						this.selectionCenter.Z,
+						dotR,
 						DrawTechnique.Solid,
-						ColorRgba.Mix(this.FgColor, this.BgColor, 0.5f));
+						this.FgColor);
+					this.DrawWorldSpaceDot(
+						this.selectionCenter.X, 
+						this.selectionCenter.Y + this.selectionRadius, 
+						this.selectionCenter.Z,
+						dotR,
+						DrawTechnique.Solid,
+						this.FgColor);
+					this.DrawWorldSpaceDot(
+						this.selectionCenter.X, 
+						this.selectionCenter.Y - this.selectionRadius, 
+						this.selectionCenter.Z,
+						dotR,
+						DrawTechnique.Solid,
+						this.FgColor);
 				}
-			}
 
-			// Draw scale action dots
-			if (selObjList.Count > 0)
-			{
-				float dotR = 3.0f / this.GetScaleAtZ(this.selectionCenter.Z);
-				this.DrawWorldSpaceDot(
-					this.selectionCenter.X + this.selectionRadius, 
-					this.selectionCenter.Y, 
-					this.selectionCenter.Z,
-					dotR,
-					DrawTechnique.Solid,
-					this.FgColor);
-				this.DrawWorldSpaceDot(
-					this.selectionCenter.X - this.selectionRadius, 
-					this.selectionCenter.Y, 
-					this.selectionCenter.Z,
-					dotR,
-					DrawTechnique.Solid,
-					this.FgColor);
-				this.DrawWorldSpaceDot(
-					this.selectionCenter.X, 
-					this.selectionCenter.Y + this.selectionRadius, 
-					this.selectionCenter.Z,
-					dotR,
-					DrawTechnique.Solid,
-					this.FgColor);
-				this.DrawWorldSpaceDot(
-					this.selectionCenter.X, 
-					this.selectionCenter.Y - this.selectionRadius, 
-					this.selectionCenter.Z,
-					dotR,
-					DrawTechnique.Solid,
-					this.FgColor);
-			}
-
-			// Draw action lock axes
-			if (this.action == MouseAction.MoveObj)
-			{
-				if ((this.actionAxisLock & AxisLock.X) != AxisLock.None)
+				// Draw action lock axes
+				if (this.action == MouseAction.MoveObj)
 				{
-					this.DrawWorldSpaceLine(
-						this.selectionCenter.X - this.selectionRadius * 4,
-						this.selectionCenter.Y,
-						this.selectionCenter.Z,
-						this.selectionCenter.X + this.selectionRadius * 4,
-						this.selectionCenter.Y,
-						this.selectionCenter.Z,
-						DrawTechnique.Solid,
-						ColorRgba.Mix(this.FgColor, ColorRgba.Red, 0.5f));
+					if ((this.actionAxisLock & AxisLock.X) != AxisLock.None)
+					{
+						this.DrawWorldSpaceLine(
+							this.selectionCenter.X - this.selectionRadius * 4,
+							this.selectionCenter.Y,
+							this.selectionCenter.Z,
+							this.selectionCenter.X + this.selectionRadius * 4,
+							this.selectionCenter.Y,
+							this.selectionCenter.Z,
+							DrawTechnique.Solid,
+							ColorRgba.Mix(this.FgColor, ColorRgba.Red, 0.5f));
+					}
+					if ((this.actionAxisLock & AxisLock.Y) != AxisLock.None)
+					{
+						this.DrawWorldSpaceLine(
+							this.selectionCenter.X,
+							this.selectionCenter.Y - this.selectionRadius * 4,
+							this.selectionCenter.Z,
+							this.selectionCenter.X,
+							this.selectionCenter.Y + this.selectionRadius * 4,
+							this.selectionCenter.Z,
+							DrawTechnique.Solid,
+							ColorRgba.Mix(this.FgColor, ColorRgba.Green, 0.5f));
+					}
+					if ((this.actionAxisLock & AxisLock.Z) != AxisLock.None)
+					{
+						this.DrawWorldSpaceLine(
+							this.selectionCenter.X,
+							this.selectionCenter.Y,
+							this.selectionCenter.Z - this.selectionRadius * 4,
+							this.selectionCenter.X,
+							this.selectionCenter.Y,
+							this.selectionCenter.Z + this.selectionRadius * 4,
+							DrawTechnique.Solid,
+							ColorRgba.Mix(this.FgColor, ColorRgba.Blue, 0.5f));
+					}
 				}
-				if ((this.actionAxisLock & AxisLock.Y) != AxisLock.None)
+
+				// Draw camera movement indicators
+				if (this.camAction == CameraAction.MoveCam)
+					this.DrawViewSpaceLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, cursorPos.Y, DrawTechnique.Solid, this.FgColor);
+				else if (this.camAction == CameraAction.TurnCam)
+					this.DrawViewSpaceLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, this.camActionBeginLoc.Y, DrawTechnique.Solid, this.FgColor);
+
+				// Draw rect selection
+				if (this.action == MouseAction.RectSelection)
 				{
-					this.DrawWorldSpaceLine(
-						this.selectionCenter.X,
-						this.selectionCenter.Y - this.selectionRadius * 4,
-						this.selectionCenter.Z,
-						this.selectionCenter.X,
-						this.selectionCenter.Y + this.selectionRadius * 4,
-						this.selectionCenter.Z,
-						DrawTechnique.Solid,
-						ColorRgba.Mix(this.FgColor, ColorRgba.Green, 0.5f));
+					this.DrawViewSpaceLine(this.actionBeginLoc.X, this.actionBeginLoc.Y, cursorPos.X, this.actionBeginLoc.Y, DrawTechnique.Solid, this.FgColor);
+					this.DrawViewSpaceLine(cursorPos.X, this.actionBeginLoc.Y, cursorPos.X, cursorPos.Y, DrawTechnique.Solid, this.FgColor);
+					this.DrawViewSpaceLine(cursorPos.X, cursorPos.Y, this.actionBeginLoc.X, cursorPos.Y, DrawTechnique.Solid, this.FgColor);
+					this.DrawViewSpaceLine(this.actionBeginLoc.X, cursorPos.Y, this.actionBeginLoc.X, this.actionBeginLoc.Y, DrawTechnique.Solid, this.FgColor);
 				}
-				if ((this.actionAxisLock & AxisLock.Z) != AxisLock.None)
+
+				// Render CamView
+				try
 				{
-					this.DrawWorldSpaceLine(
-						this.selectionCenter.X,
-						this.selectionCenter.Y,
-						this.selectionCenter.Z - this.selectionRadius * 4,
-						this.selectionCenter.X,
-						this.selectionCenter.Y,
-						this.selectionCenter.Z + this.selectionRadius * 4,
-						DrawTechnique.Solid,
-						ColorRgba.Mix(this.FgColor, ColorRgba.Blue, 0.5f));
+					this.camComp.Render();
+				}
+				catch (Exception exception)
+				{
+					Log.Editor.Write("An exception occured during CamView {1} rendering: {0}", Log.Exception(exception), this.camComp.ToString());
+				}
+			}
+			else
+			{
+				// Render game pov
+				try
+				{
+					Scene.Current.Render();
+				}
+				catch (Exception exception)
+				{
+					Log.Editor.Write("An exception occured during CamView {1} rendering: {0}", Log.Exception(exception), this.camComp.ToString());
 				}
 			}
 
-			// Draw camera movement indicators
-			if (this.camAction == CameraAction.MoveCam)
-				this.DrawViewSpaceLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, cursorPos.Y, DrawTechnique.Solid, this.FgColor);
-			else if (this.camAction == CameraAction.TurnCam)
-				this.DrawViewSpaceLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, this.camActionBeginLoc.Y, DrawTechnique.Solid, this.FgColor);
-
-			// Draw rect selection
-			if (this.action == MouseAction.RectSelection)
-			{
-				this.DrawViewSpaceLine(this.actionBeginLoc.X, this.actionBeginLoc.Y, cursorPos.X, this.actionBeginLoc.Y, DrawTechnique.Solid, this.FgColor);
-				this.DrawViewSpaceLine(cursorPos.X, this.actionBeginLoc.Y, cursorPos.X, cursorPos.Y, DrawTechnique.Solid, this.FgColor);
-				this.DrawViewSpaceLine(cursorPos.X, cursorPos.Y, this.actionBeginLoc.X, cursorPos.Y, DrawTechnique.Solid, this.FgColor);
-				this.DrawViewSpaceLine(this.actionBeginLoc.X, cursorPos.Y, this.actionBeginLoc.X, this.actionBeginLoc.Y, DrawTechnique.Solid, this.FgColor);
-			}
-
-			// Render CamView
-			try
-			{
-				this.camComp.Render();
-			}
-			catch (Exception exception)
-			{
-				Log.Editor.Write("An exception occured during CamView {1} rendering: {0}", Log.Exception(exception), this.camComp.ToString());
-			}
 			this.MainContextControl.SwapBuffers();
 		}
 		private void glControl_GotFocus(object sender, EventArgs e)
@@ -1608,7 +1628,7 @@ namespace EditorBase
 		private void camSelector_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			if (this.camSelector.SelectedIndex == -1) { this.camSelector.SelectedIndex = 0; return; }
-			this.SetCurrentCamera(this.camSelector.SelectedItem as Camera);
+			this.SetCurrentCamera(this.camSelector.SelectedItem as Camera, this.camSelector.SelectedIndex == 1);
 		}
 
 		HelpInfo IHelpProvider.ProvideHoverHelp(Point localPos, ref bool captured)

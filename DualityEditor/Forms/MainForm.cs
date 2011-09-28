@@ -236,6 +236,7 @@ namespace DualityEditor.Forms
 
 		public void SandboxPlay()
 		{
+			if (this.sandboxState == SandboxState.Playing) return;
 			if (this.sandboxState == SandboxState.Paused)
 			{
 				this.sandboxState = SandboxState.Playing;
@@ -248,39 +249,51 @@ namespace DualityEditor.Forms
 
 				// Save the current scene
 				this.SaveCurrentScene();
+				
+				// Force later Scene reload by disposing it
+				string curPath = null;
+				if (!String.IsNullOrEmpty(Scene.Current.Path))
+				{
+					curPath = Scene.CurrentPath;
+					Scene.Current.Dispose();
+				}
 
 				this.sandboxState = SandboxState.Playing;
 				DualityApp.ExecContext = DualityApp.ExecutionContext.Launcher;
 				this.UpdateToolbar();
 
-				// Force Scene reload
-				if (!String.IsNullOrEmpty(Scene.Current.Path))
-				{
-					string curPath = Scene.CurrentPath;
-					Scene.Current.Dispose();
+				// (Re)Load Scene
+				if (curPath != null)
 					Scene.Current = ContentProvider.RequestContent<Scene>(curPath).Res;
-				}
 			}
 		}
 		public void SandboxPause()
 		{
+			if (this.sandboxState == SandboxState.Paused) return;
+
 			this.sandboxState = SandboxState.Paused;
 			DualityApp.ExecContext = DualityApp.ExecutionContext.Editor;
 			this.UpdateToolbar();
 		}
 		public void SandboxStop()
 		{
+			if (this.sandboxState == SandboxState.Inactive) return;
+
+			// Force later Scene reload by disposing it
+			string curPath = null;
+			if (!String.IsNullOrEmpty(Scene.Current.Path))
+			{
+				curPath = Scene.CurrentPath;
+				Scene.Current.Dispose();
+			}
+
 			this.sandboxState = SandboxState.Inactive;
 			DualityApp.ExecContext = DualityApp.ExecutionContext.Editor;
 			this.UpdateToolbar();
-
-			// Force current Scene reload
-			if (!String.IsNullOrEmpty(Scene.Current.Path))
-			{
-				string curPath = Scene.CurrentPath;
-				Scene.Current.Dispose();
+			
+			// (Re)Load Scene
+			if (curPath != null)
 				Scene.Current = ContentProvider.RequestContent<Scene>(curPath).Res;
-			}
 
 			this.OnLeaveSandbox();
 		}
