@@ -159,6 +159,27 @@ namespace Duality.Resources
 			get { return this.objectManager; }
 		}
 		/// <summary>
+		/// [GET] Enumerates the Scenes <see cref="Camera"/> objects.
+		/// </summary>
+		public IEnumerable<Camera> Cameras
+		{
+			get { return this.cameraManager.AllObjects; }
+		}
+		/// <summary>
+		/// [GET] Enumerates the Scenes <see cref="Renderer"/> objects.
+		/// </summary>
+		public IEnumerable<Renderer> Renderers
+		{
+			get { return this.rendererManager.AllObjects; }
+		}
+		/// <summary>
+		/// [GET] Enumerates the Scenes <see cref="ICmpScreenOverlayRenderer"/> objects.
+		/// </summary>
+		public IEnumerable<ICmpScreenOverlayRenderer> OverlayRenderers
+		{
+			get { return this.overlayManager.AllObjects.OfType<ICmpScreenOverlayRenderer>(); }
+		}
+		/// <summary>
 		/// [GET] The name of the Scene.
 		/// </summary>
 		public string Name

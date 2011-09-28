@@ -810,7 +810,7 @@ namespace Duality
 			{
 				Component c = this.compList[i];
 
-				if (!c.Active) continue;
+				if (!c.ActiveSingle) continue;
 				ICmpInitializable cInit = c as ICmpInitializable;
 				if (cInit != null) cInit.OnInit(Component.InitContext.Activate);
 			}
@@ -822,7 +822,7 @@ namespace Duality
 			{
 				Component c = this.compList[i];
 
-				if (!c.Active) continue;
+				if (!c.ActiveSingle) continue;
 				ICmpInitializable cInit = c as ICmpInitializable;
 				if (cInit != null) cInit.OnShutdown(Component.ShutdownContext.Deactivate);
 			}

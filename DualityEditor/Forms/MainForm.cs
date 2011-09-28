@@ -58,6 +58,7 @@ namespace DualityEditor.Forms
 		private	bool					hoveredHelpCaptured	= false;
 		private	GameObjectManager		editorObjects		= new GameObjectManager();
 		private	bool					dualityAppSuspended	= true;
+		private	bool					sandboxStateChange	= false;
 
 		private	HelpStack		helpStack			= new HelpStack();
 		private	SandboxState	sandboxState		= SandboxState.Inactive;
@@ -237,6 +238,7 @@ namespace DualityEditor.Forms
 		public void SandboxPlay()
 		{
 			if (this.sandboxState == SandboxState.Playing) return;
+			this.sandboxStateChange = true;
 			if (this.sandboxState == SandboxState.Paused)
 			{
 				this.sandboxState = SandboxState.Playing;
@@ -266,18 +268,24 @@ namespace DualityEditor.Forms
 				if (curPath != null)
 					Scene.Current = ContentProvider.RequestContent<Scene>(curPath).Res;
 			}
+
+			this.sandboxStateChange = false;
 		}
 		public void SandboxPause()
 		{
 			if (this.sandboxState == SandboxState.Paused) return;
+			this.sandboxStateChange = true;
 
 			this.sandboxState = SandboxState.Paused;
 			DualityApp.ExecContext = DualityApp.ExecutionContext.Editor;
 			this.UpdateToolbar();
+
+			this.sandboxStateChange = false;
 		}
 		public void SandboxStop()
 		{
 			if (this.sandboxState == SandboxState.Inactive) return;
+			this.sandboxStateChange = true;
 
 			// Force later Scene reload by disposing it
 			string curPath = null;
@@ -296,6 +304,7 @@ namespace DualityEditor.Forms
 				Scene.Current = ContentProvider.RequestContent<Scene>(curPath).Res;
 
 			this.OnLeaveSandbox();
+			this.sandboxStateChange = false;
 		}
 		public void SetCurrentDualityAppInput(IMouseInput mouse, IKeyboardInput keyboard)
 		{
@@ -1065,6 +1074,7 @@ namespace DualityEditor.Forms
 		private void Scene_Leaving(object sender, EventArgs e)
 		{
 			this.Deselect(this, ObjectSelection.Category.All);
+			if (!this.sandboxStateChange) this.SandboxStop();
 		}
 
 		private void actionRunApp_Click(object sender, EventArgs e)

@@ -4,6 +4,12 @@
 	-->	..which will then notify its ICmpCollisionListener Components.
 	-->	It may only cache / defer this until it is updated, since all those events aren't meant
 		to directly execute user code. It might lead to unexpected behaviour.
+	-->	Deferred execution should take place in Collider code, OnXY notifier should directly execute.
+		Reason: There might be different kinds of collider components later.
+		-->	Collider (default)
+		-->	TilemapCollider
+			-->	Well, this could actually be just a bool flag for a Tilemap, auto-adjusting a separate collider.
+		-->	...
 
 	ICmpCollisionListener API:
 	-->	OnCollisionBegin(CollisionData objA, CollisionData objB);
@@ -19,6 +25,7 @@
 	-->	Provide a WYSIWYG-Editor for Collider Shapes in the editor
 		-->	Needs special CamView-editing plugin features.
 			-->	Introduce CamViewState class that essentially handles CamView editing
+				-->	!!! Re-implement IngameView as CamViewState !!!
 			-->	CamView movement is done in CamView, everything else will be handled by the CamViewState.
 			-->	The default CamViewState does object selection and transform changes (just like now)
 			-->	There will be a different CamViewState that only does Collider editing

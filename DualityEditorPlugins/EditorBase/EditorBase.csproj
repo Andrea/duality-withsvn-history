@@ -59,6 +59,7 @@
     <Compile Include="CamView.Designer.cs">
       <DependentUpon>CamView.cs</DependentUpon>
     </Compile>
+    <Compile Include="CamViewState.cs" />
     <Compile Include="EditorBasePlugin.cs" />
     <Compile Include="AudioDataFileImporter.cs" />
     <Compile Include="FontFileImporter.cs">

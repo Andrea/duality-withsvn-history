@@ -6953,6 +6953,21 @@
             [GET] The Scenes main <see cref="T:Duality.GameObject"/> manager.
             </summary>
         </member>
+        <member name="P:Duality.Resources.Scene.Cameras">
+            <summary>
+            [GET] Enumerates the Scenes <see cref="T:Duality.Components.Camera"/> objects.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Scene.Renderers">
+            <summary>
+            [GET] Enumerates the Scenes <see cref="T:Duality.Components.Renderer"/> objects.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Scene.OverlayRenderers">
+            <summary>
+            [GET] Enumerates the Scenes <see cref="T:Duality.ICmpScreenOverlayRenderer"/> objects.
+            </summary>
+        </member>
         <member name="P:Duality.Resources.Scene.Name">
             <summary>
             [GET] The name of the Scene.

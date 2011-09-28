@@ -170,7 +170,7 @@ namespace EditorBase
 			this.InitGLControl();
 			this.InitNativeCamera();
 			this.InitCameraSelector();
-			this.camSelector.SelectedIndex = 0;
+			this.SetCurrentCamera(null);
 
 			// Register DualityApp updater for camera steering behaviour
 			EditorBasePlugin.Instance.EditorForm.AfterUpdateDualityApp += this.EditorForm_AfterUpdateDualityApp;
@@ -1264,7 +1264,8 @@ namespace EditorBase
 				// Render game pov
 				try
 				{
-					Scene.Current.Render();
+					if (!Scene.Current.Cameras.Any())	Camera.RenderVoid();
+					else								Scene.Current.Render();
 				}
 				catch (Exception exception)
 				{
@@ -1625,7 +1626,7 @@ namespace EditorBase
 		{
 			this.InitCameraSelector();
 		}
-		private void camSelector_SelectedIndexChanged(object sender, EventArgs e)
+		private void camSelector_DropDownClosed(object sender, EventArgs e)
 		{
 			if (this.camSelector.SelectedIndex == -1) { this.camSelector.SelectedIndex = 0; return; }
 			this.SetCurrentCamera(this.camSelector.SelectedItem as Camera, this.camSelector.SelectedIndex == 1);

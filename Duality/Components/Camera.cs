@@ -1207,5 +1207,19 @@ namespace Duality.Components
 			if (!material.IsAvailable) return;
 			(this as IDrawDevice).AddVertices<T>(material.Res.InfoDirect, vertexMode, vertices);
 		}
+
+		public static void RenderVoid()
+		{
+			RenderTarget.Bind(ContentRef<RenderTarget>.Null);
+			
+			Vector2 refSize = DualityApp.TargetResolution;
+			Rect viewportAbs = new Rect(refSize);
+			GL.Viewport((int)viewportAbs.x, (int)refSize.Y - (int)viewportAbs.h - (int)viewportAbs.y, (int)viewportAbs.w, (int)viewportAbs.h);
+			GL.Scissor((int)viewportAbs.x, (int)refSize.Y - (int)viewportAbs.h - (int)viewportAbs.y, (int)viewportAbs.w, (int)viewportAbs.h);
+
+			GL.ClearDepth(1.0d);
+			GL.ClearColor((OpenTK.Graphics.Color4)ColorRgba.TransparentBlack);
+			GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+		}
 	}
 }

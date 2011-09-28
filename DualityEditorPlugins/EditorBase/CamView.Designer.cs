@@ -44,6 +44,9 @@
 			this.axisLockXLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.axisLockYLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.axisLockZLabel = new System.Windows.Forms.ToolStripStatusLabel();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.stateSelector = new System.Windows.Forms.ToolStripComboBox();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.toolStrip.SuspendLayout();
 			this.statusStrip.SuspendLayout();
 			this.SuspendLayout();
@@ -52,24 +55,28 @@
 			// 
 			this.toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.showBgColorDialog,
+            this.stateSelector,
+            this.toolStripSeparator1,
             this.toggleAccMove,
             this.toggleParallaxity,
             this.parallaxRefDist,
+            this.toolStripSeparator2,
+            this.showBgColorDialog,
             this.camSelector});
 			this.toolStrip.Location = new System.Drawing.Point(0, 0);
 			this.toolStrip.Name = "toolStrip";
-			this.toolStrip.Size = new System.Drawing.Size(539, 28);
+			this.toolStrip.Size = new System.Drawing.Size(539, 25);
 			this.toolStrip.TabIndex = 1;
 			this.toolStrip.Text = "toolStrip";
 			// 
 			// showBgColorDialog
 			// 
+			this.showBgColorDialog.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
 			this.showBgColorDialog.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.showBgColorDialog.Image = ((System.Drawing.Image)(resources.GetObject("showBgColorDialog.Image")));
 			this.showBgColorDialog.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.showBgColorDialog.Name = "showBgColorDialog";
-			this.showBgColorDialog.Size = new System.Drawing.Size(23, 25);
+			this.showBgColorDialog.Size = new System.Drawing.Size(23, 22);
 			this.showBgColorDialog.Text = "Change Background Color";
 			this.showBgColorDialog.Click += new System.EventHandler(this.showBgColorDialog_Click);
 			// 
@@ -83,7 +90,7 @@
 			this.toggleAccMove.Image = global::EditorBase.Properties.Resources.arrow_right_accelerate;
 			this.toggleAccMove.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.toggleAccMove.Name = "toggleAccMove";
-			this.toggleAccMove.Size = new System.Drawing.Size(23, 25);
+			this.toggleAccMove.Size = new System.Drawing.Size(23, 22);
 			this.toggleAccMove.Text = "Accelerated Movement (A)";
 			// 
 			// toggleParallaxity
@@ -96,7 +103,7 @@
 			this.toggleParallaxity.Image = ((System.Drawing.Image)(resources.GetObject("toggleParallaxity.Image")));
 			this.toggleParallaxity.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.toggleParallaxity.Name = "toggleParallaxity";
-			this.toggleParallaxity.Size = new System.Drawing.Size(23, 25);
+			this.toggleParallaxity.Size = new System.Drawing.Size(23, 22);
 			this.toggleParallaxity.Text = "Toggle Perspective";
 			this.toggleParallaxity.CheckStateChanged += new System.EventHandler(this.toggleParallaxity_CheckStateChanged);
 			// 
@@ -112,7 +119,7 @@
             0});
 			this.parallaxRefDist.Name = "parallaxRefDist";
 			this.parallaxRefDist.NumericWidth = 75;
-			this.parallaxRefDist.Size = new System.Drawing.Size(128, 25);
+			this.parallaxRefDist.Size = new System.Drawing.Size(128, 22);
 			this.parallaxRefDist.Text = "RefDist";
 			this.parallaxRefDist.Value = new decimal(new int[] {
             500,
@@ -123,11 +130,12 @@
 			// 
 			// camSelector
 			// 
+			this.camSelector.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
 			this.camSelector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.camSelector.Name = "camSelector";
-			this.camSelector.Size = new System.Drawing.Size(121, 28);
+			this.camSelector.Size = new System.Drawing.Size(121, 25);
 			this.camSelector.DropDown += new System.EventHandler(this.camSelector_DropDown);
-			this.camSelector.SelectedIndexChanged += new System.EventHandler(this.camSelector_SelectedIndexChanged);
+			this.camSelector.DropDownClosed += new System.EventHandler(this.camSelector_DropDownClosed);
 			// 
 			// statusStrip
 			// 
@@ -214,6 +222,23 @@
 			this.axisLockZLabel.Text = "Z";
 			this.axisLockZLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+			// 
+			// stateSelector
+			// 
+			this.stateSelector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.stateSelector.Name = "stateSelector";
+			this.stateSelector.Size = new System.Drawing.Size(121, 25);
+			// 
+			// toolStripSeparator2
+			// 
+			this.toolStripSeparator2.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+			// 
 			// CamView
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -254,5 +279,8 @@
 		private System.Windows.Forms.ToolStripStatusLabel axisLockZLabel;
 		private System.Windows.Forms.ToolStripButton toggleAccMove;
 		private System.Windows.Forms.ToolStripComboBox camSelector;
+		private System.Windows.Forms.ToolStripComboBox stateSelector;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 	}
 }
