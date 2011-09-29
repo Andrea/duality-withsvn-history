@@ -1,5 +1,24 @@
 ﻿
--->	Implement collision detection logic & sensor colliders
+-->	CamViewState API
+	-->	Save its current State to editor user data
+	-->	Disable camera controls when in "Game View"
+	-->	Bugfix: Acc Movement not working when in SandboxMode.Playing and dragging an object. Prevents Z-Movement!
+	-->	Switching between states can be done using a ComboBox.
+		-->	Don't show states that aren't available right now
+		-->	Grey out the ComboBox, if no other state is available
+
+-->	WYSIWYG-Editor for Collider Shapes
+	-->	Preview shape in view
+		-->	Display a shapes density numeric (absolute value) and visually as fill transparency (relative to other shapes)
+	-->	Edit shape in view
+		-->	Circles
+		-->	Polygons
+			-->	May be any kind of shape and vertex number.
+			-->	Use some kind of decomposition (internally!) to create a set of valid Farseers polygons.
+	-->	View rotation is considered
+
+
+-->	Implement Core collision detection logic & sensor colliders
 	-->	Colliders will notify their GameObject about OnCollision, OnSeparation and AfterCollision..
 	-->	..which will then notify its ICmpCollisionListener Components.
 	-->	It may only cache / defer this until it is updated, since all those events aren't meant
@@ -20,30 +39,6 @@
 		-->	It might contain only Duality-related data and act as if there was no Farseer
 		-->	This is preferrable since replacing Farseer with a different physics engine
 			won't affect any user code. Encapsulation rulez.
-
-	Issues:
-	-->	Provide a WYSIWYG-Editor for Collider Shapes in the editor
-		-->	Needs special CamView-editing plugin features.
-			-->	Introduce CamViewState class that essentially handles CamView editing
-				-->	!!! Re-implement IngameView as CamViewState !!!
-			-->	CamView movement is done in CamView, everything else will be handled by the CamViewState.
-			-->	The default CamViewState does object selection and transform changes (just like now)
-			-->	There will be a different CamViewState that only does Collider editing
-			-->	Switching between states can be done using a ComboBox or something.
-				-->	Don't show states that aren't available right now
-				-->	Grey out the ComboBox, if no other state is available
-			-->	CamViewStates are registered in the CorePluginHelper and cloned to instantiate them
-				in the respective CamView.
-			-->	Each CamView needs to save its current state to editor user data
-		-->	Actual editor:
-			-->	Preview shape in view
-				-->	Display a shapes density numeric (absolute value) and visually as fill transparency (relative to other shapes)
-			-->	Edit shape in view
-				-->	Circles
-				-->	Polygons
-					-->	May be any kind of shape and vertex number.
-					-->	Use some kind of decomposition (internally!) to create a set of valid Farseers polygons.
-			-->	View rotation is considered
 
 	-->	Collision impact force?
 	-->	Collision point relative to object?

@@ -51,6 +51,7 @@ namespace DualityEditor.Forms
 		private	HashSet<string>			reimportSchedule	= new HashSet<string>();
 		private	List<IFileImporter>		fileImporters		= new List<IFileImporter>();
 		private	List<EditorPlugin>		plugins				= new List<EditorPlugin>();
+		private	Dictionary<Type,List<Type>>	availTypeDict	= new Dictionary<Type,List<Type>>();
 		private	ReloadCorePluginDialog	corePluginReloader	= null;
 		private	bool					needsRecovery		= false;
 		private	Control					hoveredControl		= null;
@@ -598,6 +599,30 @@ namespace DualityEditor.Forms
 			}
 			Log.Editor.PopIndent();
 		}
+		
+		public IEnumerable<Assembly> GetDualityEditorAssemblies()
+		{
+			yield return typeof(MainForm).Assembly;
+			foreach (Assembly a in this.plugins.Select(ep => ep.GetType().Assembly)) yield return a;
+		}
+		public IEnumerable<Type> GetAvailDualityEditorTypes(Type baseType)
+		{
+			List<Type> availTypes;
+			if (this.availTypeDict.TryGetValue(baseType, out availTypes)) return availTypes;
+
+			availTypes = new List<Type>();
+			IEnumerable<Assembly> asmQuery = this.GetDualityEditorAssemblies();
+			foreach (Assembly asm in asmQuery)
+			{
+				availTypes.AddRange(
+					from t in asm.GetExportedTypes()
+					where baseType.IsAssignableFrom(t)
+					select t);
+			}
+			this.availTypeDict[baseType] = availTypes;
+
+			return availTypes;
+		}
 
 		private void SaveUserData()
 		{
@@ -1064,7 +1089,7 @@ namespace DualityEditor.Forms
 					}
 					catch (Exception exception)
 					{
-						Log.Editor.Write("An exception occured during a core update: {0}", Log.Exception(exception));
+						Log.Editor.Write("An error occured during a core update: {0}", Log.Exception(exception));
 					}
 					this.OnAfterUpdateDualityApp();
 				}

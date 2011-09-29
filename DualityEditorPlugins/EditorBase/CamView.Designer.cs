@@ -30,10 +30,13 @@
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CamView));
 			this.toolStrip = new System.Windows.Forms.ToolStrip();
-			this.showBgColorDialog = new System.Windows.Forms.ToolStripButton();
+			this.stateSelector = new System.Windows.Forms.ToolStripComboBox();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.toggleAccMove = new System.Windows.Forms.ToolStripButton();
 			this.toggleParallaxity = new System.Windows.Forms.ToolStripButton();
 			this.parallaxRefDist = new DualityEditor.Controls.ToolStrip.ToolStripNumericUpDown();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+			this.showBgColorDialog = new System.Windows.Forms.ToolStripButton();
 			this.camSelector = new System.Windows.Forms.ToolStripComboBox();
 			this.statusStrip = new System.Windows.Forms.StatusStrip();
 			this.posXStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -44,9 +47,6 @@
 			this.axisLockXLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.axisLockYLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.axisLockZLabel = new System.Windows.Forms.ToolStripStatusLabel();
-			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-			this.stateSelector = new System.Windows.Forms.ToolStripComboBox();
-			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.toolStrip.SuspendLayout();
 			this.statusStrip.SuspendLayout();
 			this.SuspendLayout();
@@ -69,16 +69,18 @@
 			this.toolStrip.TabIndex = 1;
 			this.toolStrip.Text = "toolStrip";
 			// 
-			// showBgColorDialog
+			// stateSelector
 			// 
-			this.showBgColorDialog.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-			this.showBgColorDialog.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.showBgColorDialog.Image = ((System.Drawing.Image)(resources.GetObject("showBgColorDialog.Image")));
-			this.showBgColorDialog.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.showBgColorDialog.Name = "showBgColorDialog";
-			this.showBgColorDialog.Size = new System.Drawing.Size(23, 22);
-			this.showBgColorDialog.Text = "Change Background Color";
-			this.showBgColorDialog.Click += new System.EventHandler(this.showBgColorDialog_Click);
+			this.stateSelector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.stateSelector.Name = "stateSelector";
+			this.stateSelector.Size = new System.Drawing.Size(121, 25);
+			this.stateSelector.DropDown += new System.EventHandler(this.stateSelector_DropDown);
+			this.stateSelector.DropDownClosed += new System.EventHandler(this.stateSelector_DropDownClosed);
+			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
 			// 
 			// toggleAccMove
 			// 
@@ -92,6 +94,7 @@
 			this.toggleAccMove.Name = "toggleAccMove";
 			this.toggleAccMove.Size = new System.Drawing.Size(23, 22);
 			this.toggleAccMove.Text = "Accelerated Movement (A)";
+			this.toggleAccMove.CheckedChanged += new System.EventHandler(this.toggleAccMove_CheckedChanged);
 			// 
 			// toggleParallaxity
 			// 
@@ -127,6 +130,23 @@
             0,
             0});
 			this.parallaxRefDist.ValueChanged += new System.EventHandler(this.parallaxRefDist_ValueChanged);
+			// 
+			// toolStripSeparator2
+			// 
+			this.toolStripSeparator2.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+			// 
+			// showBgColorDialog
+			// 
+			this.showBgColorDialog.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.showBgColorDialog.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.showBgColorDialog.Image = ((System.Drawing.Image)(resources.GetObject("showBgColorDialog.Image")));
+			this.showBgColorDialog.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.showBgColorDialog.Name = "showBgColorDialog";
+			this.showBgColorDialog.Size = new System.Drawing.Size(23, 22);
+			this.showBgColorDialog.Text = "Change Background Color";
+			this.showBgColorDialog.Click += new System.EventHandler(this.showBgColorDialog_Click);
 			// 
 			// camSelector
 			// 
@@ -221,23 +241,6 @@
 			this.axisLockZLabel.Size = new System.Drawing.Size(14, 17);
 			this.axisLockZLabel.Text = "Z";
 			this.axisLockZLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			// 
-			// toolStripSeparator1
-			// 
-			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-			// 
-			// stateSelector
-			// 
-			this.stateSelector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.stateSelector.Name = "stateSelector";
-			this.stateSelector.Size = new System.Drawing.Size(121, 25);
-			// 
-			// toolStripSeparator2
-			// 
-			this.toolStripSeparator2.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
 			// 
 			// CamView
 			// 

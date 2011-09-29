@@ -390,13 +390,33 @@ namespace EditorBase
 		}
 		private void ActionPrefabOpenRes(Prefab prefab)
 		{
-			GameObject newObj = prefab.Instantiate();
-			Duality.Resources.Scene.Current.Graph.RegisterObjDeep(newObj);
-			EditorBasePlugin.Instance.EditorForm.Select(this, new ObjectSelection(newObj));
+			try
+			{
+				GameObject newObj = prefab.Instantiate();
+				Duality.Resources.Scene.Current.Graph.RegisterObjDeep(newObj);
+				EditorBasePlugin.Instance.EditorForm.Select(this, new ObjectSelection(newObj));
+			}
+			catch (Exception exception)
+			{
+				Log.Editor.Write("An error occured instanciating Prefab {1}: {0}", 
+					Log.Exception(exception),
+					prefab != null ? prefab.Path : "null");
+			}
 		}
 		private void ActionSceneOpenRes(Scene scene)
 		{
-			Scene.Current = scene;
+			string lastPath = Scene.CurrentPath;
+			try
+			{
+				Scene.Current = scene;
+			}
+			catch (Exception exception)
+			{
+				Log.Editor.Write("An error occured while switching from Scene {1} to Scene {2}: {0}", 
+					Log.Exception(exception),
+					lastPath,
+					scene != null ? scene.Path : "null");
+			}
 		}
 
 		private void main_ResourceModified(object sender, ResourceEventArgs e)
