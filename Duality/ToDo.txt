@@ -12,7 +12,16 @@
 		-->	Polygons
 			-->	May be any kind of shape and vertex number.
 			-->	Use some kind of decomposition (internally!) to create a set of valid Farseers polygons.
+		-->	Introduce Shapes-Property (For Prefabs) & properly react to setting it
+			-->	Keep in mind: Unregister all old pseudo-body (fixture, really) events, re-register them afterwards
 	-->	View rotation is considered
+
+-->	How would you do.. (All those should be possible in some way!)
+	-->	.. a platformer with moving platforms?
+	-->	.. an Rpg using Tilemaps?
+	-->	.. a complex character / ragdoll?
+	-->	.. a complex vehicle (tank, walker, etc.)
+	-->	.. a hanging bridge, rope, etc?
 
 
 -->	Implement Core collision detection logic & sensor colliders
