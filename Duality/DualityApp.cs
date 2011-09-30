@@ -393,7 +393,7 @@ namespace Duality
 			Resource.RunCleanup();
 		}
 
-		internal static void EditorUpdate(GameObjectManager updateObjects)
+		internal static void EditorUpdate(GameObjectManager updateObjects, bool freezeScene)
 		{
 			isUpdating = true;
 			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
@@ -410,7 +410,8 @@ namespace Duality
 			else if (execContext == ExecutionContext.Launcher)
 			{
 				Time.FrameTick();
-				Scene.Current.Update();
+				if (!freezeScene)	Scene.Current.Update();
+				else				Scene.Current.EditorUpdate();
 				foreach (GameObject obj in updateObjects.ActiveObjects) obj.Update();
 				sound.Update();
 				OnUpdating();

@@ -578,6 +578,11 @@ namespace Duality.Components
 			{
 				this.SetupPickingRT();
 				RenderTarget.Bind(this.pickingRT);
+				
+				Vector2 refSize = new Vector2(this.pickingRT.Width, this.pickingRT.Height);
+				Rect viewportAbs = new Rect(refSize);
+				GL.Viewport((int)viewportAbs.x, (int)refSize.Y - (int)viewportAbs.h - (int)viewportAbs.y, (int)viewportAbs.w, (int)viewportAbs.h);
+				GL.Scissor((int)viewportAbs.x, (int)refSize.Y - (int)viewportAbs.h - (int)viewportAbs.y, (int)viewportAbs.w, (int)viewportAbs.h);
 
 				GL.ClearDepth(1.0d);
 				GL.ClearColor(System.Drawing.Color.Black);
@@ -643,7 +648,7 @@ namespace Duality.Components
 				(this.pickingBuffer[4 * (x + y * this.pickingTex.PxWidth) + 0] << 16) |
 				(this.pickingBuffer[4 * (x + y * this.pickingTex.PxWidth) + 1] << 8) |
 				(this.pickingBuffer[4 * (x + y * this.pickingTex.PxWidth) + 2] << 0);
-			if (rendererId - 1 > this.pickingMap.Count)
+			if (rendererId > this.pickingMap.Count)
 			{
 				Log.Core.WriteWarning("Unexpected picking result: {0}", ColorRgba.FromIntArgb(rendererId));
 				return null;

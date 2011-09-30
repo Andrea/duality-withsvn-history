@@ -244,6 +244,8 @@ namespace Duality
 		/// <returns></returns>
 		public static Type ResolveType(string typeString, bool throwOnError = true, MethodInfo declaringMethod = null)
 		{
+			if (typeString == null) return null;
+
 			Type result;
 			if (typeResolveCache.TryGetValue(typeString, out result)) return result;
 

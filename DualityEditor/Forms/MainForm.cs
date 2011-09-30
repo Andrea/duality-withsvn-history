@@ -60,6 +60,7 @@ namespace DualityEditor.Forms
 		private	GameObjectManager		editorObjects		= new GameObjectManager();
 		private	bool					dualityAppSuspended	= true;
 		private	bool					sandboxStateChange	= false;
+		private	bool					sandboxSceneFreeze	= false;
 
 		private	HelpStack		helpStack			= new HelpStack();
 		private	SandboxState	sandboxState		= SandboxState.Inactive;
@@ -306,6 +307,14 @@ namespace DualityEditor.Forms
 
 			this.OnLeaveSandbox();
 			this.sandboxStateChange = false;
+		}
+		public void SandboxSceneStartFreeze()
+		{
+			this.sandboxSceneFreeze = true;
+		}
+		public void SandboxSceneStopFreeze()
+		{
+			this.sandboxSceneFreeze = false;
 		}
 		public void SetCurrentDualityAppInput(IMouseInput mouse, IKeyboardInput keyboard)
 		{
@@ -1085,7 +1094,7 @@ namespace DualityEditor.Forms
 					this.OnBeforeUpdateDualityApp();
 					try
 					{
-						DualityApp.EditorUpdate(this.editorObjects);
+						DualityApp.EditorUpdate(this.editorObjects, this.sandboxSceneFreeze);
 					}
 					catch (Exception exception)
 					{

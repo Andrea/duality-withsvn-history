@@ -29,7 +29,7 @@
 		private void InitializeComponent()
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CamView));
-			this.toolStrip = new System.Windows.Forms.ToolStrip();
+			this.toolbarCamera = new System.Windows.Forms.ToolStrip();
 			this.stateSelector = new System.Windows.Forms.ToolStripComboBox();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.toggleAccMove = new System.Windows.Forms.ToolStripButton();
@@ -38,7 +38,7 @@
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.showBgColorDialog = new System.Windows.Forms.ToolStripButton();
 			this.camSelector = new System.Windows.Forms.ToolStripComboBox();
-			this.statusStrip = new System.Windows.Forms.StatusStrip();
+			this.statusbarCamera = new System.Windows.Forms.StatusStrip();
 			this.posXStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.posYStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.posZStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -47,14 +47,14 @@
 			this.axisLockXLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.axisLockYLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this.axisLockZLabel = new System.Windows.Forms.ToolStripStatusLabel();
-			this.toolStrip.SuspendLayout();
-			this.statusStrip.SuspendLayout();
+			this.toolbarCamera.SuspendLayout();
+			this.statusbarCamera.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// toolStrip
 			// 
-			this.toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-			this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+			this.toolbarCamera.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+			this.toolbarCamera.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.stateSelector,
             this.toolStripSeparator1,
             this.toggleAccMove,
@@ -63,11 +63,11 @@
             this.toolStripSeparator2,
             this.showBgColorDialog,
             this.camSelector});
-			this.toolStrip.Location = new System.Drawing.Point(0, 0);
-			this.toolStrip.Name = "toolStrip";
-			this.toolStrip.Size = new System.Drawing.Size(539, 25);
-			this.toolStrip.TabIndex = 1;
-			this.toolStrip.Text = "toolStrip";
+			this.toolbarCamera.Location = new System.Drawing.Point(0, 0);
+			this.toolbarCamera.Name = "toolStrip";
+			this.toolbarCamera.Size = new System.Drawing.Size(539, 25);
+			this.toolbarCamera.TabIndex = 1;
+			this.toolbarCamera.Text = "toolStrip";
 			// 
 			// stateSelector
 			// 
@@ -159,7 +159,7 @@
 			// 
 			// statusStrip
 			// 
-			this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+			this.statusbarCamera.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.posXStatusLabel,
             this.posYStatusLabel,
             this.posZStatusLabel,
@@ -168,12 +168,12 @@
             this.axisLockXLabel,
             this.axisLockYLabel,
             this.axisLockZLabel});
-			this.statusStrip.Location = new System.Drawing.Point(0, 375);
-			this.statusStrip.Name = "statusStrip";
-			this.statusStrip.Size = new System.Drawing.Size(539, 22);
-			this.statusStrip.SizingGrip = false;
-			this.statusStrip.TabIndex = 2;
-			this.statusStrip.Text = "statusStrip1";
+			this.statusbarCamera.Location = new System.Drawing.Point(0, 375);
+			this.statusbarCamera.Name = "statusStrip";
+			this.statusbarCamera.Size = new System.Drawing.Size(539, 22);
+			this.statusbarCamera.SizingGrip = false;
+			this.statusbarCamera.TabIndex = 2;
+			this.statusbarCamera.Text = "statusStrip1";
 			// 
 			// posXStatusLabel
 			// 
@@ -247,8 +247,8 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(539, 397);
-			this.Controls.Add(this.statusStrip);
-			this.Controls.Add(this.toolStrip);
+			this.Controls.Add(this.statusbarCamera);
+			this.Controls.Add(this.toolbarCamera);
 			this.DockAreas = ((WeifenLuo.WinFormsUI.Docking.DockAreas)((WeifenLuo.WinFormsUI.Docking.DockAreas.Float | WeifenLuo.WinFormsUI.Docking.DockAreas.Document)));
 			this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
@@ -256,10 +256,10 @@
 			this.Name = "CamView";
 			this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.Document;
 			this.Text = "CamView";
-			this.toolStrip.ResumeLayout(false);
-			this.toolStrip.PerformLayout();
-			this.statusStrip.ResumeLayout(false);
-			this.statusStrip.PerformLayout();
+			this.toolbarCamera.ResumeLayout(false);
+			this.toolbarCamera.PerformLayout();
+			this.statusbarCamera.ResumeLayout(false);
+			this.statusbarCamera.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -267,8 +267,8 @@
 
 		#endregion
 
-		private System.Windows.Forms.ToolStrip toolStrip;
-		private System.Windows.Forms.StatusStrip statusStrip;
+		private System.Windows.Forms.ToolStrip toolbarCamera;
+		private System.Windows.Forms.StatusStrip statusbarCamera;
 		private System.Windows.Forms.ToolStripStatusLabel posXStatusLabel;
 		private System.Windows.Forms.ToolStripStatusLabel posYStatusLabel;
 		private System.Windows.Forms.ToolStripStatusLabel posZStatusLabel;

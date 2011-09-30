@@ -59,12 +59,15 @@
     <Compile Include="CamView.Designer.cs">
       <DependentUpon>CamView.cs</DependentUpon>
     </Compile>
-    <Compile Include="CamViewState.cs" />
+    <Compile Include="CamViewStates\CamViewState.cs" />
     <Compile Include="EditorBasePlugin.cs" />
     <Compile Include="AudioDataFileImporter.cs" />
     <Compile Include="FontFileImporter.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="CamViewStates\GameViewCamViewState.cs" />
+    <Compile Include="CamViewStates\ColliderEditorCamViewState.cs" />
+    <Compile Include="CamViewStates\SceneEditorCamViewState.cs" />
     <Compile Include="PropertyEditors\Components\ColliderPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>

@@ -248,9 +248,6 @@ namespace Duality.Resources
 		/// </summary>
 		public void EditorUpdate()
 		{
-			if (DualityApp.ExecContext != DualityApp.ExecutionContext.Editor)
-				throw new ApplicationException("This method may only be used in Editor execution context.");
-
 			GameObject[] activeObj = this.objectManager.ActiveObjects.ToArray();
 			foreach (GameObject obj in activeObj)
 				obj.EditorUpdate();

@@ -196,6 +196,7 @@ namespace Duality.Components
 			get { return this.bodyType; }
 			set 
 			{
+				if (value == BodyType.Kinematic) value = BodyType.Dynamic;
 				if (this.body != null) this.body.BodyType = value;
 				this.bodyType = value;
 			}
@@ -307,6 +308,7 @@ namespace Duality.Components
 				ShapeInfo info = f.UserData as ShapeInfo;
 				info.UpdateShape(f.Shape, scale);
 			}
+			this.body.ResetMassData();
 		}
 		private void InitBody()
 		{

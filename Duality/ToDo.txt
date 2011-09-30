@@ -1,8 +1,5 @@
 ﻿
 -->	CamViewState API
-	-->	Save its current State to editor user data
-	-->	Disable camera controls when in "Game View"
-	-->	Bugfix: Acc Movement not working when in SandboxMode.Playing and dragging an object. Prevents Z-Movement!
 	-->	Switching between states can be done using a ComboBox.
 		-->	Don't show states that aren't available right now
 		-->	Grey out the ComboBox, if no other state is available

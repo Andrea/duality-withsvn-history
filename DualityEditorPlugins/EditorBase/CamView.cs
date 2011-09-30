@@ -67,6 +67,7 @@ namespace EditorBase
 		private	CamViewState		state			= null;
 		private	ColorPickerDialog	bgColorDialog	= new ColorPickerDialog();
 		private	GameObject			nativeCamObj	= null;
+		private	string				loadTempState	= null;
 
 		private	int		inputMouseX			= 0;
 		private	int		inputMouseY			= 0;
@@ -106,8 +107,17 @@ namespace EditorBase
 		}
 		public float ParallaxRefDist
 		{
-			get { return this.camComp.ParallaxRefDist; }
-			set { this.camComp.ParallaxRefDist = value; }
+			get { return (float)this.parallaxRefDist.Value; }
+			set { this.parallaxRefDist.Value = Math.Min(Math.Max((decimal)value, this.parallaxRefDist.Minimum), this.parallaxRefDist.Maximum); }
+		}
+		public float ParallaxRefDistIncrement
+		{
+			get { return (float)this.parallaxRefDist.Increment; }
+		}
+		public bool ParallaxActive
+		{
+			get { return this.toggleParallaxity.Checked; }
+			set { this.toggleParallaxity.Checked = value; }
 		}
 		public bool AccMovement
 		{
@@ -129,17 +139,25 @@ namespace EditorBase
 		{
 			get { return EditorBasePlugin.Instance.EditorForm.MainContextControl; }
 		}
-		public ToolStripStatusLabel ToolLabelCoordX
+		public ToolStripStatusLabel ToolLabelAxisX
 		{
 			get { return this.axisLockXLabel; }
 		}
-		public ToolStripStatusLabel ToolLabelCoordY
+		public ToolStripStatusLabel ToolLabelAxisY
 		{
 			get { return this.axisLockYLabel; }
 		}
-		public ToolStripStatusLabel ToolLabelCoordZ
+		public ToolStripStatusLabel ToolLabelAxisZ
 		{
 			get { return this.axisLockZLabel; }
+		}
+		public ToolStrip ToolbarCamera
+		{
+			get { return this.toolbarCamera; }
+		}
+		public StatusStrip StatusbarCamera
+		{
+			get { return this.statusbarCamera; }
 		}
 
 		public CamView(int runtimeId)
@@ -168,6 +186,8 @@ namespace EditorBase
 			Scene.Leaving -= this.Scene_Leaving;
 			Scene.GameObjectUnregistered -= this.Scene_GameObjectUnregistered;
 			Scene.RegisteredObjectComponentRemoved -= this.Scene_RegisteredObjectComponentRemoved;
+
+			this.SetCurrentState((CamViewState)null);
 		}
 		public void Init()
 		{
@@ -176,7 +196,11 @@ namespace EditorBase
 			this.InitCameraSelector();
 			this.InitStateSelector();
 			this.SetCurrentCamera(null);
-			this.SetCurrentState(typeof(EditingCamViewState));
+
+			// Initialize state
+			Type stateType = ReflectionHelper.ResolveType(this.loadTempState, false);
+			if (stateType == null) stateType = typeof(SceneEditorCamViewState);
+			this.SetCurrentState(stateType);
 
 			// Register DualityApp updater for camera steering behaviour
 			EditorBasePlugin.Instance.EditorForm.ResourceModified += this.EditorForm_ResourceModified;
@@ -267,12 +291,12 @@ namespace EditorBase
 		public void SetCurrentState(CamViewState state)
 		{
 			if (this.state == state) return;
-
 			if (this.state != null) this.state.OnLeaveState();
+
 			this.state = state;
 			this.stateSelector.SelectedIndex = this.state != null ? this.stateSelector.Items.IndexOf(this.stateSelector.Items.Cast<StateComboboxEntry>().FirstOrDefault(e => e.StateType == this.state.GetType())) : -1;
-			if (this.state != null) this.state.OnEnterState();
 
+			if (this.state != null) this.state.OnEnterState();
 			this.glControl.Invalidate();
 		}
 
@@ -282,6 +306,9 @@ namespace EditorBase
 			node.SetAttribute("parallaxRefDist", this.nativeCamObj.Camera.ParallaxRefDist.ToString());
 			node.SetAttribute("bgColorArgb", this.nativeCamObj.Camera.ClearColor.ToIntArgb().ToString());
 			node.SetAttribute("toggleAccMove", this.toggleAccMove.Checked.ToString());
+
+			if (this.state != null) 
+				node.SetAttribute("state", this.state.GetType().GetTypeId());
 		}
 		internal void LoadUserData(System.Xml.XmlElement node)
 		{
@@ -300,6 +327,8 @@ namespace EditorBase
 			}
 			if (bool.TryParse(node.GetAttribute("toggleAccMove"), out tryParseBool))
 				this.toggleAccMove.Checked = tryParseBool;
+
+			this.loadTempState = node.GetAttribute("state");
 		}
 
 		protected void InitGLControl()
@@ -351,6 +380,14 @@ namespace EditorBase
 			this.posYStatusLabel.Text = String.Format(formatProvider, PluginRes.EditorBaseRes.CamView_Status_PosY, this.camObj.Transform.Pos.Y);
 			this.posZStatusLabel.Text = String.Format(formatProvider, PluginRes.EditorBaseRes.CamView_Status_PosZ, this.camObj.Transform.Pos.Z);
 			this.angleStatusLabel.Text = String.Format(formatProvider, PluginRes.EditorBaseRes.CamView_Status_Angle, MathF.RadToDeg(this.camObj.Transform.Angle));
+		}
+		public void SetToolbarCamSettingsEnabled(bool value)
+		{
+			this.toggleAccMove.Enabled = value;
+			this.toggleParallaxity.Enabled = value;
+			this.parallaxRefDist.Enabled = value;
+			this.camSelector.Enabled = value;
+			this.showBgColorDialog.Enabled = value;
 		}
 
 		public void MakeDualityTarget()
@@ -435,45 +472,6 @@ namespace EditorBase
 		{
 			this.inputMouseWheel += e.Delta;
 			if (this.inputMouseWheelChanged != null) this.inputMouseWheelChanged(this, new MouseWheelEventArgs(e.X, e.Y, this.inputMouseWheel, e.Delta));
-
-			if (e.Delta != 0)
-			{
-				if (this.toggleParallaxity.Checked)
-				{
-					if (this.toggleAccMove.Checked)
-					{
-						float curVel = this.camObj.Transform.RelativeVel.Length * MathF.Sign(this.camObj.Transform.RelativeVel.Z);
-						Vector2 curTemp = new Vector2(
-							(e.X * 2.0f / this.glControl.Width) - 1.0f,
-							(e.Y * 2.0f / this.glControl.Height) - 1.0f);
-						MathF.TransformCoord(ref curTemp.X, ref curTemp.Y, this.camObj.Transform.RelativeAngle);
-
-						if (MathF.Sign(e.Delta) == MathF.Sign(curVel))
-							curVel *= 0.0125f * MathF.Abs(e.Delta);
-						curVel += 0.075f * e.Delta;
-						curVel = MathF.Sign(curVel) * MathF.Min(MathF.Abs(curVel), 500.0f);
-
-						Vector3 movVec = new Vector3(
-							MathF.Sign(e.Delta) * MathF.Sign(curTemp.X) * MathF.Pow(curTemp.X, 2.0f), 
-							MathF.Sign(e.Delta) * MathF.Sign(curTemp.Y) * MathF.Pow(curTemp.Y, 2.0f), 
-							1.0f);
-						movVec.Normalize();
-						this.camObj.Transform.RelativeVel = movVec * curVel;
-					}
-					else
-					{
-						this.camObj.Transform.Pos += new Vector3(0.0f, 0.0f, e.Delta * 5 / 12);
-						this.glControl.Invalidate();
-						this.UpdateStatusTransformInfo();
-					}
-				}
-				else
-				{
-					this.parallaxRefDist.Value = 
-						Math.Max(this.parallaxRefDist.Minimum, Math.Min(this.parallaxRefDist.Maximum,
-						this.parallaxRefDist.Value + this.parallaxRefDist.Increment * e.Delta / 40));
-				}
-			}
 		}
 		private void glControl_MouseMove(object sender, MouseEventArgs e)
 		{
