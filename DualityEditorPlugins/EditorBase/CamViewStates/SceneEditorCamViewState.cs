@@ -97,6 +97,11 @@ namespace EditorBase
 
 			this.View.LocalGLControl.Cursor = CursorHelper.Arrow;
 		}
+		protected override void OnSceneChanged()
+		{
+			base.OnSceneChanged();
+			this.UpdateSelectionStats();
+		}
 
 		public override CamViewState.SelObj PickSelObjAt(int x, int y)
 		{
@@ -220,15 +225,13 @@ namespace EditorBase
 		{
 			if (this.SelObjAction == MouseAction.None) return;
 
-			Point mouseLoc = this.View.LocalGLControl.PointToClient(new Point(e.X, e.Y));
-			this.UpdateAction(mouseLoc);
+			this.UpdateAction();
 		}
 		private void LocalGLControl_DragLeave(object sender, EventArgs e)
 		{
 			if (this.SelObjAction == MouseAction.None) return;
 			
-			Point mouseLoc = this.View.LocalGLControl.PointToClient(Cursor.Position);
-			this.EndAction(mouseLoc);
+			this.EndAction();
 
 			// Destroy temporarily instantiated objects
 			foreach (SelObj obj in this.allObjSel)
@@ -241,9 +244,6 @@ namespace EditorBase
 		}
 		private void LocalGLControl_DragEnter(object sender, DragEventArgs e)
 		{
-			Point mouseLoc = this.View.LocalGLControl.PointToClient(new Point(e.X, e.Y));
-			Vector3 spaceCoord = this.View.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, this.View.CameraObj.Transform.Pos.Z + this.View.CameraComponent.ParallaxRefDist));
-
 			e.Effect = DragDropEffects.None;
 
 			DataObject data = e.Data as DataObject;
@@ -252,6 +252,9 @@ namespace EditorBase
 				if (data.ContainsContentRefs<Prefab>())
 				{
 					ContentRef<Prefab>[] dropdata = data.GetContentRefs<Prefab>();
+
+					Point mouseLoc = this.View.LocalGLControl.PointToClient(new Point(e.X, e.Y));
+					Vector3 spaceCoord = this.View.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, this.View.CameraObj.Transform.Pos.Z + this.View.CameraComponent.ParallaxRefDist));
 
 					// Instantiate Prefabs
 					List<GameObject> dragObj = new List<GameObject>();
@@ -269,7 +272,7 @@ namespace EditorBase
 
 					// Select them & begin action
 					this.SelectObjects(dragObj.Select(g => new SelGameObj(g) as SelObj));
-					this.BeginAction(MouseAction.MoveObj, mouseLoc);
+					this.BeginAction(MouseAction.MoveObj);
 
 					// Get focused
 					this.View.LocalGLControl.Focus();
@@ -282,8 +285,7 @@ namespace EditorBase
 		{
 			if (this.SelObjAction == MouseAction.None) return;
 
-			Point mouseLoc = this.View.LocalGLControl.PointToClient(new Point(e.X, e.Y));
-			this.EndAction(mouseLoc);
+			this.EndAction();
 		}
 
 		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)

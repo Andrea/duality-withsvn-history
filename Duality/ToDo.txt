@@ -1,15 +1,23 @@
 ﻿
 -->	WYSIWYG-Editor for Collider Shapes
+	-->	Apply SelObj behaviour to both Shapes and Colliders. However, don't actually include the Collider in the selObj-List.
+		Just use it so set the editor-wide selection state and use it to define the "current" Collider.
+	-->	There is always just one current Collider on which editing takes place. Multi-Collider editing just doesn't make any sense.
+
 	-->	Preview shape in view
 		-->	Display a shapes density numeric (absolute value) and visually as fill transparency (relative to other shapes)
+
 	-->	Edit shape in view
+		-->	Introduce Shapes-Property (For Prefabs) & properly react to setting it
+			-->	Keep in mind: Unregister all old pseudo-body (fixture, really) events, re-register them afterwards
 		-->	Circles
 		-->	Polygons
 			-->	May be any kind of shape and vertex number.
 			-->	Use some kind of decomposition (internally!) to create a set of valid Farseers polygons.
-		-->	Introduce Shapes-Property (For Prefabs) & properly react to setting it
-			-->	Keep in mind: Unregister all old pseudo-body (fixture, really) events, re-register them afterwards
-	-->	View rotation is considered
+
+	-->	Edit Joints in view
+		-->	Click (set point A), Click (set point B)
+		-->	Highlight hovered Collider (to which the Joint is attached, defaults to "world" --> fixed joint)
 
 -->	How would you do.. (All those should be possible in some way!)
 	-->	.. a platformer with moving platforms?

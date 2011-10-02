@@ -350,13 +350,11 @@ namespace EditorBase
 		}
 		protected virtual void OnSceneChanged()
 		{
-			this.UpdateSelectionStats();
 			this.View.LocalGLControl.Invalidate();
 		}
 		protected virtual void OnCursorSpacePosChanged()
 		{
-			Point cursorPos = this.View.LocalGLControl.PointToClient(Cursor.Position);
-			this.UpdateAction(cursorPos);
+			this.UpdateAction();
 		}
 
 		public virtual SelObj PickSelObjAt(int x, int y)
@@ -645,8 +643,10 @@ namespace EditorBase
 			this.View.ToolLabelAxisZ.Enabled = (this.lockedAxes & AxisLock.Z) != AxisLock.None;
 		}
 		
-		protected void BeginAction(MouseAction action, Point mouseLoc)
+		protected void BeginAction(MouseAction action)
 		{
+			Point mouseLoc = this.View.LocalGLControl.PointToClient(Cursor.Position);
+
 			this.actionBeginLoc = mouseLoc;
 			this.action = action;
 
@@ -677,8 +677,10 @@ namespace EditorBase
 				this.actionBeginLocSpace = this.View.GetSpaceCoord(new Vector2(mouseLoc.X, mouseLoc.Y));
 			}
 		}
-		protected void EndAction(Point mouseLoc)
+		protected void EndAction()
 		{
+			Point mouseLoc = this.View.LocalGLControl.PointToClient(Cursor.Position);
+
 			if (this.action == MouseAction.RectSelection)
 			{
 				this.activeRectSel = new ObjectSelection();
@@ -689,8 +691,10 @@ namespace EditorBase
 
 			this.action = MouseAction.None;
 		}
-		protected void UpdateAction(Point mouseLoc)
+		protected void UpdateAction()
 		{
+			Point mouseLoc = this.View.LocalGLControl.PointToClient(Cursor.Position);
+
 			if (this.action == MouseAction.RectSelection)
 				this.UpdateRectSelection(mouseLoc);
 			else if (this.action == MouseAction.MoveObj)
@@ -923,7 +927,7 @@ namespace EditorBase
 				this.UpdateRectSelection(e.Location);
 
 			if (e.Button == MouseButtons.Left)
-				this.EndAction(e.Location);
+				this.EndAction();
 
 			if (this.camAction == CameraAction.MoveCam && e.Button == MouseButtons.Middle)
 				this.camAction = CameraAction.None;
@@ -944,7 +948,7 @@ namespace EditorBase
 						if (!this.allObjSel.Contains(this.mouseoverObject))
 							this.SelectObjects(new [] { this.mouseoverObject });
 					}
-					this.BeginAction(this.mouseoverAction, e.Location);
+					this.BeginAction(this.mouseoverAction);
 				}
 			}
 
@@ -1033,7 +1037,7 @@ namespace EditorBase
 		private void LocalGLControl_LostFocus(object sender, EventArgs e)
 		{
 			this.camAction = CameraAction.None;
-			this.EndAction(this.View.LocalGLControl.PointToClient(Cursor.Position));
+			this.EndAction();
 			this.View.LocalGLControl.Invalidate();
 		}
 		private void View_AccMovementChanged(object sender, EventArgs e)
