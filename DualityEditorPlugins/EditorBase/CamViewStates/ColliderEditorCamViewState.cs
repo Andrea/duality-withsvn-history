@@ -49,20 +49,6 @@ namespace EditorBase
 			EditorBasePlugin.Instance.EditorForm.SelectionChanged		-= this.EditorForm_SelectionChanged;
 			EditorBasePlugin.Instance.EditorForm.ObjectPropertyChanged	-= this.EditorForm_ObjectPropertyChanged;
 		}
-		protected override void OnPrepareDrawState()
-		{
-			base.OnPrepareDrawState();
-
-			if (this.selectedCollider != null)
-				this.DrawSelectionMarkers(new[] { this.selectedCollider.GameObj }, ColorRgba.Mix(this.View.FgColor, this.View.BgColor, 0.75f));
-		}
-		protected override void OnCursorSpacePosChanged()
-		{
-			base.OnCursorSpacePosChanged();
-			Point cursorPos = this.View.LocalGLControl.PointToClient(Cursor.Position);
-
-			this.UpdateMouseover(cursorPos);
-		}
 
 		protected Collider QuerySelectedCollider()
 		{
@@ -82,10 +68,6 @@ namespace EditorBase
 			return r.GameObj.GetComponent<Collider>() != null;
 		}
 		
-		protected void UpdateMouseover(Point mouseLoc)
-		{
-		}
-
 		private void View_CurrentCameraChanged(object sender, CamView.CameraChangedEventArgs e)
 		{
 			if (e.PreviousCamera != null) e.PreviousCamera.RemoveEditorRendererFilter(this.RendererFilter);
