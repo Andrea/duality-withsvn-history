@@ -421,15 +421,16 @@ namespace Duality.Components
 		[NonSerialized]	private	Matrix4	matProjection		= Matrix4.Identity;
 		[NonSerialized]	private	Matrix4	matFinal			= Matrix4.Identity;
 
-		[NonSerialized]	private	uint				hndlPrimaryVBO	= 0;
-		[NonSerialized]	private	int					picking			= 0;
-		[NonSerialized]	private	List<Renderer>		pickingMap		= null;
-		[NonSerialized]	private	RenderTarget		pickingRT		= null;
-		[NonSerialized]	private	Texture				pickingTex		= null;
-		[NonSerialized]	private	int					pickingLast		= -1;
-		[NonSerialized]	private	byte[]				pickingBuffer	= new byte[4 * 256 * 256];
-		[NonSerialized]	private	List<IDrawBatch>	drawBuffer		= new List<IDrawBatch>();
-		[NonSerialized]	private	List<IDrawBatch>	drawBufferZSort	= new List<IDrawBatch>();
+		[NonSerialized]	private	uint				hndlPrimaryVBO		= 0;
+		[NonSerialized]	private	int					picking				= 0;
+		[NonSerialized]	private	List<Renderer>		pickingMap			= null;
+		[NonSerialized]	private	RenderTarget		pickingRT			= null;
+		[NonSerialized]	private	Texture				pickingTex			= null;
+		[NonSerialized]	private	int					pickingLast			= -1;
+		[NonSerialized]	private	byte[]				pickingBuffer		= new byte[4 * 256 * 256];
+		[NonSerialized]	private	List<IDrawBatch>	drawBuffer			= new List<IDrawBatch>();
+		[NonSerialized]	private	List<IDrawBatch>	drawBufferZSort		= new List<IDrawBatch>();
+		[NonSerialized]	private	List<Predicate<Renderer>>	editorRenderFilter	= new List<Predicate<Renderer>>();
 		
 		/// <summary>
 		/// [GET / SET] The lowest Z value that can be displayed by the device.
@@ -843,10 +844,14 @@ namespace Duality.Components
 		{
 			this.SetupMatrices();
 
+			// Query renderers
+			IEnumerable<Renderer> rendererQuery = Scene.Current.QueryVisibleRenderers(this.DrawDevice);
+			foreach (Predicate<Renderer> p in this.editorRenderFilter) rendererQuery = rendererQuery.Where(r => p(r));
+
 			// Collect drawcalls
 			if (this.picking != 0)
 			{
-				this.pickingMap = new List<Renderer>(Scene.Current.QueryVisibleRenderers(this.DrawDevice));
+				this.pickingMap = new List<Renderer>(rendererQuery);
 				foreach (Renderer r in this.pickingMap)
 				{
 					r.Draw(this);
@@ -855,7 +860,7 @@ namespace Duality.Components
 			}
 			else
 			{
-				foreach (Renderer r in Scene.Current.QueryVisibleRenderers(this.DrawDevice))
+				foreach (Renderer r in rendererQuery)
 					r.Draw(this);
 			}
 
@@ -1096,6 +1101,16 @@ namespace Duality.Components
 		private void FinishBatchRendering()
 		{
 			GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+		}
+
+		internal void AddEditorRendererFilter(Predicate<Renderer> filter)
+		{
+			if (this.editorRenderFilter.Contains(filter)) return;
+			this.editorRenderFilter.Add(filter);
+		}
+		internal void RemoveEditorRendererFilter(Predicate<Renderer> filter)
+		{
+			this.editorRenderFilter.Remove(filter);
 		}
 
 		void IDrawDevice.PreprocessCoords(ref Vector3 pos, ref float scale)

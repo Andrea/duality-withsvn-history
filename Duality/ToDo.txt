@@ -1,9 +1,4 @@
 ﻿
--->	CamViewState API
-	-->	Switching between states can be done using a ComboBox.
-		-->	Don't show states that aren't available right now
-		-->	Grey out the ComboBox, if no other state is available
-
 -->	WYSIWYG-Editor for Collider Shapes
 	-->	Preview shape in view
 		-->	Display a shapes density numeric (absolute value) and visually as fill transparency (relative to other shapes)

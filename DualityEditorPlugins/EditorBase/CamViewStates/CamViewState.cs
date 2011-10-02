@@ -22,6 +22,17 @@ namespace EditorBase
 {
 	public abstract class CamViewState
 	{
+		[Flags]
+		public enum AxisLock
+		{
+			None	= 0x0,
+
+			X		= 0x1,
+			Y		= 0x2,
+			Z		= 0x4,
+
+			All		= X | Y | Z
+		}
 		public enum CameraAction
 		{
 			None,
@@ -31,6 +42,7 @@ namespace EditorBase
 
 
 		private	CamView			view					= null;
+		private	AxisLock		lockedAxes				= AxisLock.None;
 		private	Point			camActionBeginLoc		= Point.Empty;
 		private Vector3			camActionBeginLocSpace	= Vector3.Zero;
 		private	CameraAction	camAction				= CameraAction.None;
@@ -41,6 +53,10 @@ namespace EditorBase
 		{
 			get { return this.view; }
 			internal set { this.view = value; }
+		}
+		public AxisLock LockedAxes
+		{
+			get { return this.lockedAxes; }
 		}
 		public abstract string StateName { get; }
 		protected bool CameraActionAllowed
@@ -64,6 +80,7 @@ namespace EditorBase
 			this.View.LocalGLControl.MouseUp	+= this.LocalGLControl_MouseUp;
 			this.View.LocalGLControl.MouseMove	+= this.LocalGLControl_MouseMove;
 			this.View.LocalGLControl.MouseWheel += this.LocalGLControl_MouseWheel;
+			this.View.LocalGLControl.KeyDown	+= this.LocalGLControl_KeyDown;
 			this.View.LocalGLControl.LostFocus	+= this.LocalGLControl_LostFocus;
 			this.View.AccMovementChanged		+= this.View_AccMovementChanged;
 			EditorBasePlugin.Instance.EditorForm.AfterUpdateDualityApp += this.EditorForm_AfterUpdateDualityApp;
@@ -84,6 +101,7 @@ namespace EditorBase
 			this.View.LocalGLControl.MouseUp	-= this.LocalGLControl_MouseUp;
 			this.View.LocalGLControl.MouseMove	-= this.LocalGLControl_MouseMove;
 			this.View.LocalGLControl.MouseWheel -= this.LocalGLControl_MouseWheel;
+			this.View.LocalGLControl.KeyDown	-= this.LocalGLControl_KeyDown;
 			this.View.LocalGLControl.LostFocus	-= this.LocalGLControl_LostFocus;
 			this.View.AccMovementChanged		-= this.View_AccMovementChanged;
 			EditorBasePlugin.Instance.EditorForm.AfterUpdateDualityApp -= this.EditorForm_AfterUpdateDualityApp;
@@ -159,6 +177,8 @@ namespace EditorBase
 
 			if (this.camTransformChanged)
 			{
+				this.OnCursorSpacePosChanged();
+
 				this.View.UpdateStatusTransformInfo();
 				this.View.LocalGLControl.Invalidate();
 			}
@@ -170,6 +190,7 @@ namespace EditorBase
 		{
 			this.View.LocalGLControl.Invalidate();
 		}
+		protected virtual void OnCursorSpacePosChanged() {}
 
 		protected void DrawViewSpaceLine(float x, float y, float x2, float y2, ContentRef<DrawTechnique> dt, ColorRgba clr)
 		{
@@ -310,8 +331,8 @@ namespace EditorBase
 		protected void DrawWorldSpaceLine(float x, float y, float z, float x2, float y2, float z2, ContentRef<DrawTechnique> dt, ColorRgba clr)
 		{
 			Camera cam = this.View.CameraComponent;
-			Vector3 pos = new Vector3(x, y, z);
-			Vector3 target = new Vector3(x2, y2, z2);
+			Vector3 pos = new Vector3(x, y, MathF.Max(z, cam.GameObj.Transform.Pos.Z + cam.NearZ));
+			Vector3 target = new Vector3(x2, y2, MathF.Max(z2, cam.GameObj.Transform.Pos.Z + cam.NearZ));
 			float scale = 1.0f;
 
 			BatchInfo info = new BatchInfo(dt, clr);
@@ -389,6 +410,54 @@ namespace EditorBase
 			else if (this.camAction == CameraAction.TurnCam)
 				this.DrawViewSpaceLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, this.camActionBeginLoc.Y, DrawTechnique.Solid, this.View.FgColor);
 		}
+		protected void DrawLockedAxes(float x, float y, float z, float r)
+		{
+			if ((this.LockedAxes & AxisLock.X) != AxisLock.None)
+			{
+				this.DrawWorldSpaceLine(
+					x - r, y, z,
+					x + r, y, z,
+					DrawTechnique.Solid,
+					ColorRgba.Mix(this.View.FgColor, ColorRgba.Red, 0.5f));
+			}
+			if ((this.LockedAxes & AxisLock.Y) != AxisLock.None)
+			{
+				this.DrawWorldSpaceLine(
+					x, y - r, z,
+					x, y + r, z,
+					DrawTechnique.Solid,
+					ColorRgba.Mix(this.View.FgColor, ColorRgba.Green, 0.5f));
+			}
+			if ((this.LockedAxes & AxisLock.Z) != AxisLock.None)
+			{
+				this.DrawWorldSpaceLine(
+					x, y, z - r,
+					x, y, z,
+					DrawTechnique.Solid,
+					ColorRgba.Mix(this.View.FgColor, ColorRgba.Blue, 0.5f));
+				this.DrawWorldSpaceLine(
+					x, y, z,
+					x, y, z + r,
+					DrawTechnique.Solid,
+					ColorRgba.Mix(this.View.FgColor, ColorRgba.Blue, 0.5f));
+			}
+		}
+		
+		protected Vector3 ApplyAxisLock(Vector3 vec, float lockedVal = 0.0f)
+		{
+			AxisLock lockAxes = this.lockedAxes;
+			if (lockAxes == AxisLock.None) return vec;
+			if ((lockAxes & AxisLock.X) == AxisLock.None) vec.X = lockedVal;
+			if ((lockAxes & AxisLock.Y) == AxisLock.None) vec.Y = lockedVal;
+			if ((lockAxes & AxisLock.Z) == AxisLock.None) vec.Z = lockedVal;
+			return vec;
+		}
+		private void UpdateAxisLockInfo()
+		{
+			this.View.ToolLabelAxisX.Enabled = (this.lockedAxes & AxisLock.X) != AxisLock.None;
+			this.View.ToolLabelAxisY.Enabled = (this.lockedAxes & AxisLock.Y) != AxisLock.None;
+			this.View.ToolLabelAxisZ.Enabled = (this.lockedAxes & AxisLock.Z) != AxisLock.None;
+		}
 		
 		private void LocalGLControl_Paint(object sender, PaintEventArgs e)
 		{
@@ -430,6 +499,8 @@ namespace EditorBase
 					this.View.UpdateStatusTransformInfo();
 				}
 			}
+
+			this.OnCursorSpacePosChanged();
 		}
 		private void LocalGLControl_MouseUp(object sender, MouseEventArgs e)
 		{
@@ -495,6 +566,21 @@ namespace EditorBase
 				{
 					this.View.ParallaxRefDist = this.View.ParallaxRefDist + this.View.ParallaxRefDistIncrement * e.Delta / 40;
 				}
+
+				this.OnCursorSpacePosChanged();
+			}
+		}
+		private void LocalGLControl_KeyDown(object sender, KeyEventArgs e)
+		{
+			bool axisLockChanged = false;
+			if (e.KeyCode == Keys.X) { this.lockedAxes ^= AxisLock.X; axisLockChanged = true; }
+			if (e.KeyCode == Keys.Y) { this.lockedAxes ^= AxisLock.Y; axisLockChanged = true; }
+			if (e.KeyCode == Keys.Z) { this.lockedAxes ^= AxisLock.Z; axisLockChanged = true; }
+
+			if (axisLockChanged)
+			{
+				this.UpdateAxisLockInfo();
+				this.View.LocalGLControl.Invalidate();
 			}
 		}
 		private void LocalGLControl_LostFocus(object sender, EventArgs e)

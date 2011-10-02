@@ -260,6 +260,7 @@
     <Compile Include="ExtMethodsToolStrip.cs" />
     <Compile Include="ExtMethodsMouseButtons.cs" />
     <Compile Include="ExtMethodsKeys.cs" />
+    <Compile Include="ExtMethodsCamera.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="ObjectSelection.cs" />
     <Compile Include="Program.cs" />

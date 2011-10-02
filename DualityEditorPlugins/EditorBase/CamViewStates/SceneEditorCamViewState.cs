@@ -22,17 +22,6 @@ namespace EditorBase
 {
 	public class SceneEditorCamViewState : CamViewState, IHelpProvider
 	{
-		[Flags]
-		public enum AxisLock
-		{
-			None	= 0x0,
-
-			X		= 0x1,
-			Y		= 0x2,
-			Z		= 0x4,
-
-			All		= X | Y | Z
-		}
 		public enum MouseAction
 		{
 			None,
@@ -44,7 +33,6 @@ namespace EditorBase
 		
 		private	Point				actionBeginLoc		= Point.Empty;
 		private Vector3				actionBeginLocSpace	= Vector3.Zero;
-		private	AxisLock			actionAxisLock		= AxisLock.None;
 		private MouseAction			action				= MouseAction.None;
 		private	MouseAction			mouseoverAction		= MouseAction.None;
 		private	GameObject			mouseoverObject		= null;
@@ -64,8 +52,6 @@ namespace EditorBase
 			base.OnEnterState();
 			this.View.LocalGLControl.MouseDown	+= this.LocalGLControl_MouseDown;
 			this.View.LocalGLControl.MouseUp	+= this.LocalGLControl_MouseUp;
-			this.View.LocalGLControl.MouseMove	+= this.LocalGLControl_MouseMove;
-			this.View.LocalGLControl.MouseWheel	+= this.LocalGLControl_MouseWheel;
 			this.View.LocalGLControl.LostFocus	+= this.LocalGLControl_LostFocus;
 			this.View.LocalGLControl.KeyDown	+= this.LocalGLControl_KeyDown;
 			this.View.LocalGLControl.DragDrop	+= this.LocalGLControl_DragDrop;
@@ -82,8 +68,6 @@ namespace EditorBase
 			base.OnLeaveState();
 			this.View.LocalGLControl.MouseDown	-= this.LocalGLControl_MouseDown;
 			this.View.LocalGLControl.MouseUp	-= this.LocalGLControl_MouseUp;
-			this.View.LocalGLControl.MouseMove	-= this.LocalGLControl_MouseMove;
-			this.View.LocalGLControl.MouseWheel	-= this.LocalGLControl_MouseWheel;
 			this.View.LocalGLControl.LostFocus	-= this.LocalGLControl_LostFocus;
 			this.View.LocalGLControl.KeyDown	-= this.LocalGLControl_KeyDown;
 			this.View.LocalGLControl.DragDrop	-= this.LocalGLControl_DragDrop;
@@ -181,47 +165,7 @@ namespace EditorBase
 
 			// Draw action lock axes
 			if (this.action == MouseAction.MoveObj)
-			{
-				if ((this.actionAxisLock & AxisLock.X) != AxisLock.None)
-				{
-					this.DrawWorldSpaceLine(
-						this.selectionCenter.X - this.selectionRadius * 4,
-						this.selectionCenter.Y,
-						this.selectionCenter.Z,
-						this.selectionCenter.X + this.selectionRadius * 4,
-						this.selectionCenter.Y,
-						this.selectionCenter.Z,
-						DrawTechnique.Solid,
-						ColorRgba.Mix(this.View.FgColor, ColorRgba.Red, 0.5f));
-				}
-				if ((this.actionAxisLock & AxisLock.Y) != AxisLock.None)
-				{
-					this.DrawWorldSpaceLine(
-						this.selectionCenter.X,
-						this.selectionCenter.Y - this.selectionRadius * 4,
-						this.selectionCenter.Z,
-						this.selectionCenter.X,
-						this.selectionCenter.Y + this.selectionRadius * 4,
-						this.selectionCenter.Z,
-						DrawTechnique.Solid,
-						ColorRgba.Mix(this.View.FgColor, ColorRgba.Green, 0.5f));
-				}
-				if ((this.actionAxisLock & AxisLock.Z) != AxisLock.None)
-				{
-					this.DrawWorldSpaceLine(
-						this.selectionCenter.X,
-						this.selectionCenter.Y,
-						this.selectionCenter.Z - this.selectionRadius * 4,
-						this.selectionCenter.X,
-						this.selectionCenter.Y,
-						this.selectionCenter.Z + this.selectionRadius * 4,
-						DrawTechnique.Solid,
-						ColorRgba.Mix(this.View.FgColor, ColorRgba.Blue, 0.5f));
-				}
-			}
-
-			// Draw camera movement
-			this.DrawCamMoveIndicators();
+				this.DrawLockedAxes(this.selectionCenter.X, this.selectionCenter.Y, this.selectionCenter.Z, this.selectionRadius * 4);
 
 			// Draw rect selection
 			if (this.action == MouseAction.RectSelection)
@@ -236,26 +180,32 @@ namespace EditorBase
 		{
 			base.OnUpdateState();
 
-			Point cursorPos = this.View.LocalGLControl.PointToClient(Cursor.Position);
-			if (this.CameraTransformChanged)
-			{
-				if (this.action == MouseAction.RectSelection) this.UpdateRectSelection(cursorPos);
-				else if (this.action == MouseAction.MoveObj) this.UpdateObjMove(cursorPos);
-				else if (this.action == MouseAction.RotateObj) this.UpdateObjRotate(cursorPos);
-				else if (this.action == MouseAction.ScaleObj) this.UpdateObjScale(cursorPos);
-				else
-				{
-					this.UpdateMouseover(cursorPos);
-					this.UpdateSelectionStats();
-				}
-			}
-			else if (DualityApp.ExecContext == DualityApp.ExecutionContext.Launcher)
+			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Launcher)
 				this.UpdateSelectionStats();
 		}
 		protected override void OnSceneChanged()
 		{
 			base.OnSceneChanged();
 			this.UpdateSelectionStats();
+		}
+		protected override void OnCursorSpacePosChanged()
+		{
+			base.OnCursorSpacePosChanged();
+			Point cursorPos = this.View.LocalGLControl.PointToClient(Cursor.Position);
+
+			if (this.action == MouseAction.RectSelection)
+				this.UpdateRectSelection(cursorPos);
+			else if (this.action == MouseAction.MoveObj)
+				this.UpdateObjMove(cursorPos);
+			else if (this.action == MouseAction.RotateObj)
+				this.UpdateObjRotate(cursorPos);
+			else if (this.action == MouseAction.ScaleObj)
+				this.UpdateObjScale(cursorPos);
+			else
+				this.UpdateMouseover(cursorPos);
+
+			if (this.action != MouseAction.None)
+				this.UpdateSelectionStats();
 		}
 		
 		protected void SelectGameObj(ObjectSelection sel, MainForm.SelectMode mode = MainForm.SelectMode.Set)
@@ -350,6 +300,8 @@ namespace EditorBase
 			this.actionBeginLoc = mouseLoc;
 			this.action = action;
 
+			this.View.CameraObj.Transform.Vel = Vector3.Zero;
+
 			if (EditorBasePlugin.Instance.EditorForm.CurrentSandboxState == MainForm.SandboxState.Playing)
 				EditorBasePlugin.Instance.EditorForm.SandboxSceneStartFreeze();
 
@@ -386,20 +338,6 @@ namespace EditorBase
 				EditorBasePlugin.Instance.EditorForm.SandboxSceneStopFreeze();
 
 			this.action = MouseAction.None;
-		}
-		protected Vector3 LockAxis(Vector3 vec, AxisLock lockAxes, float lockedVal = 0.0f)
-		{
-			if (lockAxes == AxisLock.None) return vec;
-			if ((lockAxes & AxisLock.X) == AxisLock.None) vec.X = lockedVal;
-			if ((lockAxes & AxisLock.Y) == AxisLock.None) vec.Y = lockedVal;
-			if ((lockAxes & AxisLock.Z) == AxisLock.None) vec.Z = lockedVal;
-			return vec;
-		}
-		protected void UpdateAxisLockInfo()
-		{
-			this.View.ToolLabelAxisX.Enabled = (this.actionAxisLock & AxisLock.X) != AxisLock.None;
-			this.View.ToolLabelAxisY.Enabled = (this.actionAxisLock & AxisLock.Y) != AxisLock.None;
-			this.View.ToolLabelAxisZ.Enabled = (this.actionAxisLock & AxisLock.Z) != AxisLock.None;
 		}
 		protected void UpdateRectSelection(Point mouseLoc)
 		{
@@ -443,7 +381,7 @@ namespace EditorBase
 			Vector3 spaceCoord = this.View.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, this.selectionCenter.Z + zMovement));
 			Vector3 movement = spaceCoord - this.actionBeginLocSpace;
 			movement.Z = zMovement;
-			movement = this.LockAxis(movement, this.actionAxisLock);
+			movement = this.ApplyAxisLock(movement);
 			if (movement != Vector3.Zero)
 			{
 				if (EditorBasePlugin.Instance.EditorForm.CurrentSandboxState == MainForm.SandboxState.Playing)
@@ -645,32 +583,6 @@ namespace EditorBase
 			return result == DialogResult.Yes;
 		}
 
-		private void LocalGLControl_MouseMove(object sender, MouseEventArgs e)
-		{
-			if (this.action == MouseAction.RectSelection)
-				this.UpdateRectSelection(e.Location);
-			else if (this.action == MouseAction.MoveObj)
-				this.UpdateObjMove(e.Location);
-			else if (this.action == MouseAction.RotateObj)
-				this.UpdateObjRotate(e.Location);
-			else if (this.action == MouseAction.ScaleObj)
-				this.UpdateObjScale(e.Location);
-			else
-				this.UpdateMouseover(e.Location);
-		}
-		private void LocalGLControl_MouseWheel(object sender, MouseEventArgs e)
-		{
-			if (this.action == MouseAction.RectSelection)
-				this.UpdateRectSelection(e.Location);
-			else if (this.action == MouseAction.MoveObj)
-				this.UpdateObjMove(e.Location);
-			else if (this.action == MouseAction.RotateObj)
-				this.UpdateObjRotate(e.Location);
-			else if (this.action == MouseAction.ScaleObj)
-				this.UpdateObjScale(e.Location);
-			else
-				this.UpdateMouseover(e.Location);
-		}
 		private void LocalGLControl_MouseUp(object sender, MouseEventArgs e)
 		{
 			if (this.action == MouseAction.RectSelection && this.actionBeginLoc == e.Location)
@@ -712,19 +624,6 @@ namespace EditorBase
 			{
 				List<GameObject> cloneList = this.CloneObjects(this.SelectedGameObj());
 				EditorBasePlugin.Instance.EditorForm.Select(this, new ObjectSelection(cloneList));
-			}
-			else
-			{
-				bool axisLockChanged = false;
-				if (e.KeyCode == Keys.X) { this.actionAxisLock ^= AxisLock.X; axisLockChanged = true; }
-				if (e.KeyCode == Keys.Y) { this.actionAxisLock ^= AxisLock.Y; axisLockChanged = true; }
-				if (e.KeyCode == Keys.Z) { this.actionAxisLock ^= AxisLock.Z; axisLockChanged = true; }
-
-				if (axisLockChanged)
-				{
-					this.UpdateAxisLockInfo();
-					this.View.LocalGLControl.Invalidate();
-				}
 			}
 		}
 		private void LocalGLControl_DragOver(object sender, DragEventArgs e)

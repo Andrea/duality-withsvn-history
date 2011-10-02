@@ -35,6 +35,26 @@ namespace EditorBase
 {
 	public partial class CamView : DockContent, IHelpProvider, IMouseInput, IKeyboardInput
 	{
+		public class CameraChangedEventArgs : EventArgs
+		{
+			private	Camera	prevCam	= null;
+			private	Camera	nextCam	= null;
+
+			public Camera PreviousCamera
+			{
+				get { return this.prevCam; }
+			}
+			public Camera NextCamera
+			{
+				get { return this.nextCam; }
+			}
+
+			public CameraChangedEventArgs(Camera prev, Camera next)
+			{
+				this.prevCam = prev;
+				this.nextCam = next;
+			}
+		}
 		public class StateComboboxEntry
 		{
 			private Type stateType;
@@ -85,6 +105,7 @@ namespace EditorBase
 
 		public event EventHandler ParallaxRefDistChanged	= null;
 		public event EventHandler AccMovementChanged		= null;
+		public event EventHandler<CameraChangedEventArgs> CurrentCameraChanged	= null;
 
 		public ColorRgba BgColor
 		{
@@ -258,6 +279,7 @@ namespace EditorBase
 			if (c == null) c = this.nativeCamObj.Camera;
 			if (c == this.camComp) return;
 
+			Camera prev = this.camComp;
 			if (this.camObj != null && !this.camInternal)
 				EditorBasePlugin.Instance.EditorForm.EditorObjects.UnregisterObjDeep(this.camObj);
 
@@ -277,6 +299,7 @@ namespace EditorBase
 				this.camSelector.SelectedIndex = this.camSelector.Items.IndexOf(c);
 			}
 
+			this.OnCurrentCameraChanged(prev, this.camComp);
 			this.glControl.Invalidate();
 		}
 		public void SetCurrentState(Type stateType)
@@ -454,6 +477,11 @@ namespace EditorBase
 		{
 			if (this.AccMovementChanged != null)
 				this.AccMovementChanged(this, EventArgs.Empty);
+		}
+		private void OnCurrentCameraChanged(Camera prev, Camera next)
+		{
+			if (this.CurrentCameraChanged != null)
+				this.CurrentCameraChanged(this, new CameraChangedEventArgs(prev, next));
 		}
 
 		private void glControl_MouseDown(object sender, MouseEventArgs e)
