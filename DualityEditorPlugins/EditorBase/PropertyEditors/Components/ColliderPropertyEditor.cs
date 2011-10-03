@@ -20,6 +20,12 @@ namespace EditorBase.PropertyEditors
 
 		}
 
+		protected override bool MemberPredicate(MemberInfo info)
+		{
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Collider_Shapes)) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Collider_BoundRadius)) return false;
+			return base.MemberPredicate(info);
+		}
 		protected override PropertyEditor MemberEditor(MemberInfo info)
 		{
 			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Collider_Friction) ||

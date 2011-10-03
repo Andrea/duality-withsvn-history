@@ -37,6 +37,10 @@ namespace Duality.Components
 				get { return this.density; }
 				set { this.density = value; }
 			}
+			/// <summary>
+			/// [GET] Returns the Shapes axis-aligned bounding box
+			/// </summary>
+			public abstract Rect AABB { get; }
 
 			protected ShapeInfo() {}
 			protected ShapeInfo(float density)
@@ -100,6 +104,10 @@ namespace Duality.Components
 				get { return this.position; }
 				set { this.position = value; }
 			}
+			public override Rect AABB
+			{
+				get { return Rect.AlignCenter(position.X, position.Y, radius * 2, radius * 2); }
+			}
 
 			public CircleShapeInfo() {}
 			public CircleShapeInfo(float radius, Vector2 position, float density) : base(density)
@@ -144,6 +152,24 @@ namespace Duality.Components
 			{
 				get { return this.vertices; }
 				set { this.vertices = value; }
+			}
+			public override Rect AABB
+			{
+				get 
+				{
+					float minX = float.MaxValue;
+					float minY = float.MaxValue;
+					float maxX = float.MinValue;
+					float maxY = float.MinValue;
+					for (int i = 0; i < this.vertices.Length; i++)
+					{
+						minX = MathF.Min(minX, this.vertices[i].X);
+						minY = MathF.Min(minY, this.vertices[i].Y);
+						maxX = MathF.Max(maxX, this.vertices[i].X);
+						maxY = MathF.Max(maxY, this.vertices[i].Y);
+					}
+					return new Rect(minX, minY, maxX - minX, maxY - minY);
+				}
 			}
 			
 			public PolyShapeInfo() {}
@@ -287,11 +313,34 @@ namespace Duality.Components
 			}
 		}
 		/// <summary>
-		/// [GET] Enumerates the <see cref="ShapeInfo">primitive shapes</see> this Body consists of.
+		/// [GET / SET] A list of <see cref="ShapeInfo">primitive shapes</see> which this body consists of.
 		/// </summary>
-		public IEnumerable<ShapeInfo> Shapes
+		public List<ShapeInfo> Shapes
 		{
 			get { return this.shapes; }
+			set
+			{
+				this.CleanupBody();
+				this.shapes = value;
+				this.InitBody();
+			}
+		}
+		/// <summary>
+		/// [GET] The physical bodys bounding radius.
+		/// </summary>
+		public float BoundRadius
+		{
+			get
+			{
+				if (this.shapes == null || this.shapes.Count == 0) return 0.0f;
+
+				Rect boundRect = this.shapes[0].AABB;
+				foreach (ShapeInfo info in this.shapes.Skip(1))
+					boundRect = boundRect.ExpandToContain(info.AABB);
+
+				Vector2 scale = this.GameObj.Transform.Scale.Xy;
+				return boundRect.Transform(scale).BoundingRadius;
+			}
 		}
 
 		private Body CreateBody()
@@ -310,9 +359,20 @@ namespace Duality.Components
 			}
 			this.body.ResetMassData();
 		}
+		private void CleanupBody()
+		{
+			if (this.body == null) return;
+
+			this.body.OnCollision -= this.body_OnCollision;
+			this.body.OnSeparation -= this.body_OnSeparation;
+			this.body.AfterCollision -= this.body_AfterCollision;
+
+			this.body.Dispose();
+			this.body = null;
+		}
 		private void InitBody()
 		{
-			if (this.body != null) this.body.Dispose();
+			if (this.body != null) this.CleanupBody();
 			Transform t = this.GameObj.Transform;
 
 			this.body = this.CreateBody();
@@ -419,11 +479,7 @@ namespace Duality.Components
 		{
 			if (context == ShutdownContext.Deactivate)
 			{
-				if (this.body != null)
-				{
-					this.body.Dispose();
-					this.body = null;
-				}
+				this.CleanupBody();
 				this.GameObj.Transform.UnregisterExternalUpdater(this);
 			}
 		}

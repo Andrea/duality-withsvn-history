@@ -7303,7 +7303,12 @@
         </member>
         <member name="P:Duality.Components.Collider.Shapes">
             <summary>
-            [GET] Enumerates the <see cref="T:Duality.Components.Collider.ShapeInfo">primitive shapes</see> this Body consists of.
+            [GET / SET] A list of <see cref="T:Duality.Components.Collider.ShapeInfo">primitive shapes</see> which this body consists of.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.BoundRadius">
+            <summary>
+            [GET] The physical bodys bounding radius.
             </summary>
         </member>
         <member name="T:Duality.Components.Collider.ShapeInfo">
@@ -7339,6 +7344,11 @@
         <member name="P:Duality.Components.Collider.ShapeInfo.Density">
             <summary>
             [GEt / SET] The shapes density.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.ShapeInfo.AABB">
+            <summary>
+            [GET] Returns the Shapes axis-aligned bounding box
             </summary>
         </member>
         <member name="T:Duality.Components.Collider.CircleShapeInfo">

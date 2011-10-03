@@ -60,6 +60,14 @@ namespace EditorBase
 				this.gameObj = obj;
 			}
 
+			public override bool IsActionAvailable(MouseAction action)
+			{
+				if (action == MouseAction.MoveObj) return true;
+				if (action == MouseAction.RotateObj) return true;
+				if (action == MouseAction.ScaleObj) return true;
+				return false;
+			}
+
 			protected void OnTransformChanged()
 			{
 				if (EditorBasePlugin.Instance.EditorForm.CurrentSandboxState != MainForm.SandboxState.Playing) return;

@@ -6,6 +6,7 @@
 
 	-->	Preview shape in view
 		-->	Display a shapes density numeric (absolute value) and visually as fill transparency (relative to other shapes)
+		-->	Display the shapes index in the shape list!
 
 	-->	Edit shape in view
 		-->	Introduce Shapes-Property (For Prefabs) & properly react to setting it
@@ -79,6 +80,10 @@
 
 
 
+
+-->	Isometric perspective: How to implement for a game?
+	-->	Should actually use the Z Component, but apply it other than currently
+	-->	Maybe just utilize PreprocessCoords to add Z to Y?
 
 -->	Keep in mind: Saving GameObjects with PrefabLinks is currently highly data-redundant.
 	-->	When in ExecutionContext.Editor, consider not saving Components that are part of the Prefab.

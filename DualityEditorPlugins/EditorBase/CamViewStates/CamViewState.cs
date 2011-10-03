@@ -62,6 +62,12 @@ namespace EditorBase
 				get { return 0.0f; }
 				set {}
 			}
+
+			public virtual bool IsActionAvailable(MouseAction action)
+			{
+				if (action == MouseAction.MoveObj) return true;
+				return false;
+			}
 			
 			public override bool Equals(object obj)
 			{
@@ -490,6 +496,35 @@ namespace EditorBase
 			}
 			cam.DrawDevice.AddVertices(info, BeginMode.LineLoop, vertices);
 		}
+		protected void FillWorldSpaceCircle(float x, float y, float z, float r, ContentRef<DrawTechnique> dt, ColorRgba clr)
+		{
+			Camera cam = this.View.CameraComponent;
+			Vector3 pos = new Vector3(x, y, z);
+			if (!cam.DrawDevice.IsCoordInView(pos, r)) return;
+
+			float scale = 1.0f;
+			cam.DrawDevice.PreprocessCoords(ref pos, ref scale);
+			r *= scale;
+
+			BatchInfo info = new BatchInfo(dt, clr);
+			int segmentNum = MathF.Clamp(MathF.RoundToInt(MathF.Pow(r, 0.65f) * 2.5f), 4, 128);
+			VertexP3[] vertices;
+			float angle;
+
+			// XY circle
+			vertices = new VertexP3[segmentNum + 2];
+			angle = 0.0f;
+			vertices[0].pos = pos;
+			for (int i = 1; i < vertices.Length - 1; i++)
+			{
+				vertices[i].pos.X = pos.X + (float)Math.Sin(angle) * r;
+				vertices[i].pos.Y = pos.Y - (float)Math.Cos(angle) * r;
+				vertices[i].pos.Z = pos.Z;
+				angle += (MathF.TwoPi / (float)segmentNum);
+			}
+			vertices[vertices.Length - 1].pos = vertices[1].pos;
+			cam.DrawDevice.AddVertices(info, BeginMode.TriangleFan, vertices);
+		}
 		protected void DrawWorldSpaceDot(float x, float y, float z, float r, ContentRef<DrawTechnique> dt, ColorRgba clr)
 		{
 			Camera cam = this.View.CameraComponent;
@@ -738,19 +773,19 @@ namespace EditorBase
 			bool mouseAtCenterAxis = MathF.Abs(mouseSpaceCoord.X - this.selectionCenter.X) < boundaryThickness || MathF.Abs(mouseSpaceCoord.Y - this.selectionCenter.Y) < boundaryThickness;
 			bool shift = (Control.ModifierKeys & Keys.Shift) != Keys.None;
 			bool ctrl = (Control.ModifierKeys & Keys.Control) != Keys.None;
-			bool anySelection = this.allObjSel.Count > 0;
+			bool anySelection = this.actionObjSel.Count > 0;
 
 			// Select which action to propose
 			this.mouseoverSelect = false;
 			if (shift || ctrl)
 				this.mouseoverAction = MouseAction.RectSelection;
-			else if (anySelection && mouseOverBoundary && mouseAtCenterAxis && this.selectionRadius > 0.0f)
+			else if (anySelection && mouseOverBoundary && mouseAtCenterAxis && this.selectionRadius > 0.0f && this.actionObjSel.All(s => s.IsActionAvailable(MouseAction.ScaleObj)))
 				this.mouseoverAction = MouseAction.ScaleObj;
-			else if (anySelection && mouseOverBoundary)
+			else if (anySelection && mouseOverBoundary && this.actionObjSel.All(s => s.IsActionAvailable(MouseAction.RotateObj)))
 				this.mouseoverAction = MouseAction.RotateObj;
-			else if (anySelection && mouseInsideBoundary)
+			else if (anySelection && mouseInsideBoundary && this.actionObjSel.All(s => s.IsActionAvailable(MouseAction.MoveObj)))
 				this.mouseoverAction = MouseAction.MoveObj;
-			else if (this.mouseoverObject != null)
+			else if (this.mouseoverObject != null && this.mouseoverObject.IsActionAvailable(MouseAction.MoveObj))
 			{
 				this.mouseoverAction = MouseAction.MoveObj; 
 				this.mouseoverSelect = true;
