@@ -896,6 +896,20 @@
             </summary>
             <param name="context">The kind of shutdown that is intended.</param>
         </member>
+        <member name="M:Duality.Components.Transform.GetWorldFromLocal(OpenTK.Vector3)">
+            <summary>
+            Calculates a world coordinate from a Transform-local coordinate.
+            </summary>
+            <param name="local"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Components.Transform.GetLocalFromWorld(OpenTK.Vector3)">
+            <summary>
+            Calculates a Transform-local coordinate from a world coordinate.
+            </summary>
+            <param name="world"></param>
+            <returns></returns>
+        </member>
         <member name="M:Duality.Components.Transform.RegisterExternalUpdater(Duality.Components.ITransformUpdater)">
             <summary>
             Registers an external Transform updater. As long as one is registered, the Transform component 
@@ -5685,6 +5699,18 @@
             <param name="spacePos"></param>
             <returns></returns>
         </member>
+        <member name="E:Duality.Components.Camera.CollectRendererDrawcalls">
+            <summary>
+            Fired as soon as <see cref="T:Duality.Components.Renderer"/> drawcalls have been collected, but
+            right before processing them.
+            </summary>
+        </member>
+        <member name="E:Duality.Components.Camera.CollectOverlayDrawcalls">
+            <summary>
+            Fired as soon as <see cref="T:Duality.ICmpScreenOverlayRenderer"/> drawcalls have been collected, but
+            right before processing them.
+            </summary>
+        </member>
         <member name="P:Duality.Components.Camera.NearZ">
             <summary>
             [GET / SET] The lowest Z value that can be displayed by the device.
@@ -7260,6 +7286,23 @@
             when changing physical properties at runtime. You usually don't need to call this.
             </summary>
         </member>
+        <member name="M:Duality.Components.Collider.PickShape(OpenTK.Vector2)">
+            <summary>
+            Performs a physical picking operation and returns the <see cref="T:Duality.Components.Collider.ShapeInfo">shape</see> in which
+            the specified world coordinate is located in.
+            </summary>
+            <param name="worldCoord"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Components.Collider.PickShapes(OpenTK.Vector2,OpenTK.Vector2)">
+            <summary>
+            Performs a physical picking operation and returns the <see cref="T:Duality.Components.Collider.ShapeInfo">shapes</see> that
+            intersect the specified world coordinate area.
+            </summary>
+            <param name="worldCoord"></param>
+            <param name="size"></param>
+            <returns></returns>
+        </member>
         <member name="P:Duality.Components.Collider.PhysicsBodyType">
             <summary>
             [GET / SET] The type of the physical body.
@@ -7309,6 +7352,21 @@
         <member name="P:Duality.Components.Collider.BoundRadius">
             <summary>
             [GET] The physical bodys bounding radius.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Collider.BodyType">
+            <summary>
+            The type of a <see cref="T:Duality.Components.Collider">Colliders</see> physical body.
+            </summary>
+        </member>
+        <member name="F:Duality.Components.Collider.BodyType.Static">
+            <summary>
+            A static body. It will never move due to physical forces.
+            </summary>
+        </member>
+        <member name="F:Duality.Components.Collider.BodyType.Dynamic">
+            <summary>
+            A dynamic body. Its movement is determined by physical effects.
             </summary>
         </member>
         <member name="T:Duality.Components.Collider.ShapeInfo">
@@ -10746,6 +10804,149 @@
         <member name="T:Duality.Components.SoundListener">
             <summary>
             Makes this <see cref="T:Duality.GameObject"/> the 3d sound listener.
+            </summary>
+        </member>
+        <member name="T:Duality.Canvas">
+            <summary>
+            Provides high level drawing operations on top of an existing <see cref="T:Duality.IDrawDevice"/>. However, this class is not designed
+            for drawing large batches of primitives / vertices at once. For large amounts of primitives you should consider directly 
+            using the underlying IDrawDevice instead to achieve best performance.
+            </summary>
+        </member>
+        <member name="M:Duality.Canvas.PushState">
+            <summary>
+            Adds a clone of the <see cref="P:Duality.Canvas.CurrentState">current state</see> on top of the internal
+            <see cref="T:Duality.Canvas.State"/> stack.
+            </summary>
+        </member>
+        <member name="M:Duality.Canvas.PopState">
+            <summary>
+            Removes the topmost <see cref="T:Duality.Canvas.State"/> from the internal State stack.
+            </summary>
+        </member>
+        <member name="M:Duality.Canvas.DrawSphere(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a three-dimensional sphere.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="r"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawCircle(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a circle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="r"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawCircle(System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a circle
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="r"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawLine(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a three-dimensional line.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="x2"></param>
+            <param name="y2"></param>
+            <param name="z2"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawLine(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a flat line.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="x2"></param>
+            <param name="y2"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawRect(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a rectangle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawRect(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a rectangle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+        </member>
+        <member name="M:Duality.Canvas.FillCircle(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Fills a circle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="r"></param>
+        </member>
+        <member name="M:Duality.Canvas.FillCircle(System.Single,System.Single,System.Single)">
+            <summary>
+            Fills a circle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="r"></param>
+        </member>
+        <member name="P:Duality.Canvas.DrawDevice">
+            <summary>
+            [GET] The underlying <see cref="T:Duality.IDrawDevice"/> that is used for drawing.
+            </summary>
+        </member>
+        <member name="P:Duality.Canvas.CurrentState">
+            <summary>
+            [GET / SET] The Canvas' current <see cref="T:Duality.Canvas.State"/>.
+            </summary>
+        </member>
+        <member name="T:Duality.Canvas.State">
+            <summary>
+            Describes the state of a <see cref="T:Duality.Canvas"/>.
+            </summary>
+        </member>
+        <member name="M:Duality.Canvas.State.Clone">
+            <summary>
+            Creates a clone of this State.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Canvas.State.Reset">
+            <summary>
+            Resets this State to its initial settings.
+            </summary>
+        </member>
+        <member name="M:Duality.Canvas.State.SetMaterial(Duality.Resources.BatchInfo)">
+            <summary>
+            Sets the States drawing material.
+            </summary>
+            <param name="material"></param>
+        </member>
+        <member name="M:Duality.Canvas.State.SetMaterial(Duality.ContentRef{Duality.Resources.Material})">
+            <summary>
+            Sets the States drawing material.
+            </summary>
+            <param name="material"></param>
+        </member>
+        <member name="P:Duality.Canvas.State.Material">
+            <summary>
+            [GET] The material that is used for drawing.
             </summary>
         </member>
     </members>

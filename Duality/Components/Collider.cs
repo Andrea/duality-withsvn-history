@@ -22,6 +22,21 @@ namespace Duality.Components
 	public class Collider : Component, ICmpInitializable, ITransformUpdater
 	{
 		/// <summary>
+		/// The type of a <see cref="Collider">Colliders</see> physical body.
+		/// </summary>
+		public enum BodyType
+		{
+			/// <summary>
+			/// A static body. It will never move due to physical forces.
+			/// </summary>
+			Static,
+			/// <summary>
+			/// A dynamic body. Its movement is determined by physical effects.
+			/// </summary>
+			Dynamic
+		}
+
+		/// <summary>
 		/// Describes a <see cref="Collider">Colliders</see> primitive shape. A Colliders overall shape may be combined of any number of primitive shapes.
 		/// </summary>
 		[Serializable]
@@ -125,7 +140,7 @@ namespace Duality.Components
 				float uniformScale = scale.Length / MathF.Sqrt(2.0f);
 				CircleShape circle = shape as CircleShape;
 				circle.Radius = this.radius * uniformScale * 0.01f;
-				circle.Position = this.position;
+				circle.Position = new Vector2(this.position.X * scale.X, this.position.Y * scale.Y) * 0.01f;
 				circle.Density = this.Density * 100.0f;
 			}
 
@@ -222,8 +237,7 @@ namespace Duality.Components
 			get { return this.bodyType; }
 			set 
 			{
-				if (value == BodyType.Kinematic) value = BodyType.Dynamic;
-				if (this.body != null) this.body.BodyType = value;
+				if (this.body != null) this.body.BodyType = (value == BodyType.Static ? FarseerPhysics.Dynamics.BodyType.Static : FarseerPhysics.Dynamics.BodyType.Dynamic);
 				this.bodyType = value;
 			}
 		}
@@ -378,7 +392,7 @@ namespace Duality.Components
 			this.body = this.CreateBody();
 			this.UpdateBodyShape();
 
-			this.body.BodyType = this.bodyType;
+			this.body.BodyType = (this.bodyType == BodyType.Static ? FarseerPhysics.Dynamics.BodyType.Static : FarseerPhysics.Dynamics.BodyType.Dynamic);
 			this.body.LinearDamping = this.linearDamp;
 			this.body.AngularDamping = this.angularDamp;
 			this.body.FixedRotation = this.fixedAngle;
@@ -404,6 +418,65 @@ namespace Duality.Components
 		public void AwakeBody()
 		{
 			if (this.body != null) this.body.Awake = true;
+		}
+
+		/// <summary>
+		/// Performs a physical picking operation and returns the <see cref="ShapeInfo">shape</see> in which
+		/// the specified world coordinate is located in.
+		/// </summary>
+		/// <param name="worldCoord"></param>
+		/// <returns></returns>
+		public ShapeInfo PickShape(Vector2 worldCoord)
+		{
+			if (this.body == null) return null;
+			FarseerPhysics.Wrapper.Vector2 fsWorldCoord = worldCoord * 0.01f;
+
+			for (int i = 0; i < this.shapes.Count; i++)
+			{
+				Fixture f = this.body.FixtureList[i];
+				if (f.TestPoint(ref fsWorldCoord)) return this.shapes[i];
+			}
+			return null;
+		}
+		/// <summary>
+		/// Performs a physical picking operation and returns the <see cref="ShapeInfo">shapes</see> that
+		/// intersect the specified world coordinate area.
+		/// </summary>
+		/// <param name="worldCoord"></param>
+		/// <param name="size"></param>
+		/// <returns></returns>
+		public HashSet<ShapeInfo> PickShapes(Vector2 worldCoord, Vector2 size)
+		{
+			if (this.body == null) return new HashSet<ShapeInfo>();
+			FarseerPhysics.Wrapper.Vector2 fsTemp;
+			FarseerPhysics.Wrapper.Vector2 fsWorldCoordStep;
+			FarseerPhysics.Wrapper.Vector2 fsWorldCoord = worldCoord * 0.01f;
+
+			HashSet<ShapeInfo> picked = new HashSet<ShapeInfo>();
+			for (int i = 0; i < this.shapes.Count; i++)
+			{
+				Fixture f = this.body.FixtureList[i];
+				fsWorldCoordStep = new Vector2(this.shapes[i].AABB.w, this.shapes[i].AABB.h) * 0.5f * 0.01f;
+				fsTemp = fsWorldCoord;
+				do
+				{
+					if (f.TestPoint(ref fsTemp))
+					{
+						picked.Add(this.shapes[i]);
+						break;
+					}
+
+					fsTemp.X += fsWorldCoordStep.X;
+					if (fsTemp.X > fsWorldCoord.X + size.X)
+					{
+						fsTemp.X = fsWorldCoord.X;
+						fsTemp.Y += fsWorldCoordStep.Y;
+					}
+					if (fsTemp.Y > fsWorldCoord.Y + size.Y) break;
+				} while (true);
+			}
+
+			return picked;
 		}
 		
 		private bool body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)

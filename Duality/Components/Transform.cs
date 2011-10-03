@@ -294,6 +294,37 @@ namespace Duality.Components
 		}
 
 		/// <summary>
+		/// Calculates a world coordinate from a Transform-local coordinate.
+		/// </summary>
+		/// <param name="local"></param>
+		/// <returns></returns>
+		public Vector3 GetWorldFromLocal(Vector3 local)
+		{
+			Vector3 world;
+
+			Vector3.Multiply(ref local, ref this.scaleAbs, out world);
+			MathF.TransformCoord(ref world.X, ref world.Y, this.angleAbs);
+			Vector3.Add(ref world, ref this.posAbs, out world);
+
+			return world;
+		}
+		/// <summary>
+		/// Calculates a Transform-local coordinate from a world coordinate.
+		/// </summary>
+		/// <param name="world"></param>
+		/// <returns></returns>
+		public Vector3 GetLocalFromWorld(Vector3 world)
+		{
+			Vector3 local;
+			
+			Vector3.Subtract(ref world, ref this.posAbs, out local);
+			MathF.TransformCoord(ref local.X, ref local.Y, -this.angleAbs);
+			Vector3.Divide(ref local, ref this.scaleAbs, out local);
+
+			return local;
+		}
+
+		/// <summary>
 		/// Registers an external Transform updater. As long as one is registered, the Transform component 
 		/// won't attempt to update by itsself in any way and query the registered instead.
 		/// There can only be one Transform updater registered at a time.

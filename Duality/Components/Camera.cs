@@ -420,6 +420,7 @@ namespace Duality.Components
 		[NonSerialized]	private	Matrix4	matModelView		= Matrix4.Identity;
 		[NonSerialized]	private	Matrix4	matProjection		= Matrix4.Identity;
 		[NonSerialized]	private	Matrix4	matFinal			= Matrix4.Identity;
+		[NonSerialized]	private	bool	overlayMatrices		= false;
 
 		[NonSerialized]	private	uint				hndlPrimaryVBO		= 0;
 		[NonSerialized]	private	int					picking				= 0;
@@ -431,6 +432,17 @@ namespace Duality.Components
 		[NonSerialized]	private	List<IDrawBatch>	drawBuffer			= new List<IDrawBatch>();
 		[NonSerialized]	private	List<IDrawBatch>	drawBufferZSort		= new List<IDrawBatch>();
 		[NonSerialized]	private	List<Predicate<Renderer>>	editorRenderFilter	= new List<Predicate<Renderer>>();
+
+		/// <summary>
+		/// Fired as soon as <see cref="Duality.Components.Renderer"/> drawcalls have been collected, but
+		/// right before processing them.
+		/// </summary>
+		public event EventHandler CollectRendererDrawcalls	= null;
+		/// <summary>
+		/// Fired as soon as <see cref="Duality.ICmpScreenOverlayRenderer"/> drawcalls have been collected, but
+		/// right before processing them.
+		/// </summary>
+		public event EventHandler CollectOverlayDrawcalls	= null;
 		
 		/// <summary>
 		/// [GET / SET] The lowest Z value that can be displayed by the device.
@@ -862,6 +874,9 @@ namespace Duality.Components
 			{
 				foreach (Renderer r in rendererQuery)
 					r.Draw(this);
+
+				if (this.CollectRendererDrawcalls != null)
+					this.CollectRendererDrawcalls(this, EventArgs.Empty);
 			}
 
 			this.ProcessDrawcalls();
@@ -872,6 +887,9 @@ namespace Duality.Components
 
 			foreach (ICmpScreenOverlayRenderer r in Scene.Current.QueryVisibleOverlayRenderers(this.DrawDevice))
 				r.DrawOverlay(this);
+			
+			if (this.CollectOverlayDrawcalls != null)
+				this.CollectOverlayDrawcalls(this, EventArgs.Empty);
 
 			this.ProcessDrawcalls(true);
 			this.SetupMatrices();
@@ -964,6 +982,7 @@ namespace Duality.Components
 			this.GenerateModelView(out this.matModelView, screenOverlay);
 			this.GenerateProjection(rt.IsAvailable ? new Rect(refSize) : new Rect(DualityApp.TargetResolution), out this.matProjection, screenOverlay);
 			this.matFinal = this.matModelView * this.matProjection;
+			this.overlayMatrices = screenOverlay;
 		}
 		private void GenerateModelView(out Matrix4 mvMat, bool screenOverlay = false)
 		{
@@ -1115,18 +1134,20 @@ namespace Duality.Components
 
 		void IDrawDevice.PreprocessCoords(ref Vector3 pos, ref float scale)
 		{
+			if (this.overlayMatrices) return;
 			pos -= this.GameObj.Transform.Pos;
-			float scaleTemp = this.parallaxRefDist / (this.parallaxRefDist >= 0.0f ? Math.Max(pos.Z, 0.000001f) : -DefaultParallaxRefDist);
+			float scaleTemp = this.parallaxRefDist / (this.parallaxRefDist >= 0.0f ? Math.Max(pos.Z, this.nearZ) : -DefaultParallaxRefDist);
 			pos.X *= scaleTemp;
 			pos.Y *= scaleTemp;
 			scale *= scaleTemp;
 		}
 		void IDrawDevice.PreprocessCoords(Renderer r, ref Vector3 pos, ref float scale)
 		{
+			if (this.overlayMatrices) return;
 			pos -= this.GameObj.Transform.Pos;
 			if ((r.RenderFlags & (RendererFlags.ParallaxPos | RendererFlags.ParallaxScale)) != RendererFlags.None)
 			{
-				float scaleTemp = this.parallaxRefDist / (this.parallaxRefDist >= 0.0f ? Math.Max(pos.Z, 0.000001f) : -DefaultParallaxRefDist);
+				float scaleTemp = this.parallaxRefDist / (this.parallaxRefDist >= 0.0f ? Math.Max(pos.Z, this.nearZ) : -DefaultParallaxRefDist);
 				if ((r.RenderFlags & RendererFlags.ParallaxPos) != RendererFlags.None)
 				{
 					pos.X *= scaleTemp;

@@ -44,7 +44,7 @@ namespace EditorBase
 			this.View.SetToolbarCamSettingsEnabled(true);
 			this.View.StatusbarCamera.Visible = true;
 		}
-		protected override void OnDrawState()
+		protected override void OnRenderState()
 		{
 			// Render game pov
 			if (!Scene.Current.Cameras.Any())	Camera.RenderVoid();

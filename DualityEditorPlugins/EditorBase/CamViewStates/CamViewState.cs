@@ -62,6 +62,18 @@ namespace EditorBase
 				get { return 0.0f; }
 				set {}
 			}
+			public virtual bool ShowBoundRadius
+			{
+				get { return true; }
+			}
+			public virtual bool ShowPos
+			{
+				get { return true; }
+			}
+			public virtual bool ShowAngle
+			{
+				get { return false; }
+			}
 
 			public virtual bool IsActionAvailable(MouseAction action)
 			{
@@ -163,6 +175,7 @@ namespace EditorBase
 			this.View.LocalGLControl.LostFocus	+= this.LocalGLControl_LostFocus;
 			this.View.AccMovementChanged		+= this.View_AccMovementChanged;
 			this.View.ParallaxRefDistChanged	+= this.View_ParallaxRefDistChanged;
+			this.View.CurrentCameraChanged		+= this.View_CurrentCameraChanged;
 			EditorBasePlugin.Instance.EditorForm.AfterUpdateDualityApp += this.EditorForm_AfterUpdateDualityApp;
 
 			Scene.Leaving += this.Scene_Changed;
@@ -172,7 +185,8 @@ namespace EditorBase
 			Scene.RegisteredObjectComponentAdded += this.Scene_Changed;
 			Scene.RegisteredObjectComponentRemoved += this.Scene_Changed;
 
-			if (Scene.Current != null) this.Scene_Changed(this, null);
+			if (Scene.Current != null) this.Scene_Changed(this, EventArgs.Empty);
+			this.View_CurrentCameraChanged(this, new CamView.CameraChangedEventArgs(null, this.view.CameraComponent));
 		}
 		internal protected virtual void OnLeaveState() 
 		{
@@ -185,6 +199,7 @@ namespace EditorBase
 			this.View.LocalGLControl.LostFocus	-= this.LocalGLControl_LostFocus;
 			this.View.AccMovementChanged		-= this.View_AccMovementChanged;
 			this.View.ParallaxRefDistChanged	-= this.View_ParallaxRefDistChanged;
+			this.View.CurrentCameraChanged		-= this.View_CurrentCameraChanged;
 			EditorBasePlugin.Instance.EditorForm.AfterUpdateDualityApp -= this.EditorForm_AfterUpdateDualityApp;
 			
 			Scene.Leaving -= this.Scene_Changed;
@@ -193,20 +208,23 @@ namespace EditorBase
 			Scene.GameObjectUnregistered -= this.Scene_Changed;
 			Scene.RegisteredObjectComponentAdded -= this.Scene_Changed;
 			Scene.RegisteredObjectComponentRemoved -= this.Scene_Changed;
+
+			this.View_CurrentCameraChanged(this, new CamView.CameraChangedEventArgs(this.view.CameraComponent, null));
 		}
-		protected virtual void OnPrepareDrawState()
+		protected virtual void OnCollectStateDrawcalls(Canvas canvas)
 		{
 			Point cursorPos = this.View.LocalGLControl.PointToClient(Cursor.Position);
-
-			this.DrawCamMoveIndicators();
+			canvas.PushState();
 			
 			// Draw indirectly selected object overlay
-			this.DrawSelectionMarkers(this.indirectObjSel, ColorRgba.Mix(this.View.FgColor, this.View.BgColor, 0.75f));
+			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Solid, ColorRgba.Mix(this.View.FgColor, this.View.BgColor, 0.75f)));
+			this.DrawSelectionMarkers(canvas, this.indirectObjSel);
 			if (this.mouseoverObject != null && (this.mouseoverAction == MouseAction.RectSelection || this.mouseoverSelect) && !this.allObjSel.Contains(this.mouseoverObject)) 
-				this.DrawSelectionMarkers(new [] { this.mouseoverObject }, ColorRgba.Mix(this.View.FgColor, this.View.BgColor, 0.75f));
+				this.DrawSelectionMarkers(canvas, new [] { this.mouseoverObject });
 
 			// Draw selected object overlay
-			this.DrawSelectionMarkers(this.allObjSel, this.View.FgColor);
+			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Solid, this.View.FgColor));
+			this.DrawSelectionMarkers(canvas, this.allObjSel);
 
 			// Draw overall selection boundary
 			if (this.allObjSel.Count > 1)
@@ -215,74 +233,78 @@ namespace EditorBase
 				float maxZDiff = this.allObjSel.Max(t => MathF.Abs(t.Pos.Z - midZ));
 				if (maxZDiff > 0.001f)
 				{
-					this.DrawWorldSpaceSphere(
+					canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Solid, ColorRgba.Mix(this.View.FgColor, this.View.BgColor, 0.5f)));
+					canvas.DrawSphere(
 						this.selectionCenter.X, 
 						this.selectionCenter.Y, 
 						this.selectionCenter.Z, 
-						this.selectionRadius,
-						DrawTechnique.Solid,
-						ColorRgba.Mix(this.View.FgColor, this.View.BgColor, 0.5f));
+						this.selectionRadius);
 				}
 				else
 				{
-					this.DrawWorldSpaceCircle(
+					canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Solid, ColorRgba.Mix(this.View.FgColor, this.View.BgColor, 0.5f)));
+					canvas.DrawCircle(
 						this.selectionCenter.X, 
 						this.selectionCenter.Y, 
 						this.selectionCenter.Z, 
-						this.selectionRadius,
-						DrawTechnique.Solid,
-						ColorRgba.Mix(this.View.FgColor, this.View.BgColor, 0.5f));
+						this.selectionRadius);
 				}
 			}
 
 			// Draw scale action dots
-			if (this.allObjSel.Count > 0)
+			bool canMove = this.actionObjSel.Any(s => s.IsActionAvailable(MouseAction.MoveObj));
+			bool canScale = (canMove && this.actionObjSel.Count > 1) || this.actionObjSel.Any(s => s.IsActionAvailable(MouseAction.ScaleObj));
+			if (canScale)
 			{
 				float dotR = 3.0f / this.View.GetScaleAtZ(this.selectionCenter.Z);
-				this.DrawWorldSpaceDot(
+				canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Solid, this.View.FgColor));
+				canvas.FillCircle(
 					this.selectionCenter.X + this.selectionRadius, 
 					this.selectionCenter.Y, 
-					this.selectionCenter.Z,
-					dotR,
-					DrawTechnique.Solid,
-					this.View.FgColor);
-				this.DrawWorldSpaceDot(
+					this.selectionCenter.Z - 0.01f,
+					dotR);
+				canvas.FillCircle(
 					this.selectionCenter.X - this.selectionRadius, 
 					this.selectionCenter.Y, 
-					this.selectionCenter.Z,
-					dotR,
-					DrawTechnique.Solid,
-					this.View.FgColor);
-				this.DrawWorldSpaceDot(
+					this.selectionCenter.Z - 0.01f,
+					dotR);
+				canvas.FillCircle(
 					this.selectionCenter.X, 
 					this.selectionCenter.Y + this.selectionRadius, 
-					this.selectionCenter.Z,
-					dotR,
-					DrawTechnique.Solid,
-					this.View.FgColor);
-				this.DrawWorldSpaceDot(
+					this.selectionCenter.Z - 0.01f,
+					dotR);
+				canvas.FillCircle(
 					this.selectionCenter.X, 
 					this.selectionCenter.Y - this.selectionRadius, 
-					this.selectionCenter.Z,
-					dotR,
-					DrawTechnique.Solid,
-					this.View.FgColor);
+					this.selectionCenter.Z - 0.01f,
+					dotR);
 			}
 
 			// Draw action lock axes
 			if (this.action == MouseAction.MoveObj)
-				this.DrawLockedAxes(this.selectionCenter.X, this.selectionCenter.Y, this.selectionCenter.Z, this.selectionRadius * 4);
+				this.DrawLockedAxes(canvas, this.selectionCenter.X, this.selectionCenter.Y, this.selectionCenter.Z, this.selectionRadius * 4);
+
+			canvas.PopState();
+		}
+		protected virtual void OnCollectStateOverlayDrawcalls(Canvas canvas)
+		{
+			Point cursorPos = this.View.LocalGLControl.PointToClient(Cursor.Position);
+			canvas.PushState();
+			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Solid, this.View.FgColor));
+
+			// Draw camera movement indicators
+			if (this.camAction == CameraAction.MoveCam)
+				canvas.DrawLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, cursorPos.Y);
+			else if (this.camAction == CameraAction.TurnCam)
+				canvas.DrawLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, this.camActionBeginLoc.Y);
 
 			// Draw rect selection
 			if (this.action == MouseAction.RectSelection)
-			{
-				this.DrawViewSpaceLine(this.actionBeginLoc.X, this.actionBeginLoc.Y, cursorPos.X, this.actionBeginLoc.Y, DrawTechnique.Solid, this.View.FgColor);
-				this.DrawViewSpaceLine(cursorPos.X, this.actionBeginLoc.Y, cursorPos.X, cursorPos.Y, DrawTechnique.Solid, this.View.FgColor);
-				this.DrawViewSpaceLine(cursorPos.X, cursorPos.Y, this.actionBeginLoc.X, cursorPos.Y, DrawTechnique.Solid, this.View.FgColor);
-				this.DrawViewSpaceLine(this.actionBeginLoc.X, cursorPos.Y, this.actionBeginLoc.X, this.actionBeginLoc.Y, DrawTechnique.Solid, this.View.FgColor);
-			}
+				canvas.DrawRect(this.actionBeginLoc.X, this.actionBeginLoc.Y, cursorPos.X - this.actionBeginLoc.X, cursorPos.Y - this.actionBeginLoc.Y);
+
+			canvas.PopState();
 		}
-		protected virtual void OnDrawState()
+		protected virtual void OnRenderState()
 		{
 			// Render CamView
 			this.View.CameraComponent.Render();
@@ -388,195 +410,12 @@ namespace EditorBase
 			return result == DialogResult.Yes;
 		}
 
-		protected void DrawViewSpaceLine(float x, float y, float x2, float y2, ContentRef<DrawTechnique> dt, ColorRgba clr)
+		protected void DrawSelectionMarkers(Canvas canvas, IEnumerable<SelObj> obj)
 		{
-			Camera cam = this.View.CameraComponent;
-
-			// Turn with camera: Calculate transform vectors
-			Vector2 catDotX, catDotY;
-			MathF.GetTransformDotVec(cam.GameObj.Transform.Angle, out catDotX, out catDotY);
-
-			Vector3 lineV1 = new Vector3(
-				x - this.View.LocalGLControl.Width / 2, 
-				y - this.View.LocalGLControl.Height / 2, 
-				0);
-			Vector3 lineV2 = new Vector3(
-				x2 - this.View.LocalGLControl.Width / 2, 
-				y2 - this.View.LocalGLControl.Height / 2, 
-				0);
-
-			// Apply transform vectors
-			MathF.TransformDotVec(ref lineV1, ref catDotX, ref catDotY);
-			MathF.TransformDotVec(ref lineV2, ref catDotX, ref catDotY);
-
-			cam.DrawDevice.AddVertices(
-				new BatchInfo(dt, clr), 
-				BeginMode.Lines,
-				new VertexP3(lineV1),
-				new VertexP3(lineV2));
-		}
-		protected void DrawWorldSpaceSphere(float x, float y, float z, float r, ContentRef<DrawTechnique> dt, ColorRgba clr)
-		{
-			Camera cam = this.View.CameraComponent;
-			Vector3 pos = new Vector3(x, y, z);
-			if (!cam.DrawDevice.IsCoordInView(pos, r)) return;
-
-			float scale = 1.0f;
-			Vector3 posTemp = pos;
-			cam.DrawDevice.PreprocessCoords(ref posTemp, ref scale);
-
-			BatchInfo info = new BatchInfo(dt, clr);
-			int segmentNum = MathF.Clamp(MathF.RoundToInt(MathF.Pow(r * scale, 0.65f) * 2.5f), 4, 128);
-			VertexP3[] vertices;
-			float angle;
-
-			// XY circle
-			vertices = new VertexP3[segmentNum];
-			angle = 0.0f;
-			for (int i = 0; i < vertices.Length; i++)
-			{
-				vertices[i].pos.X = pos.X + (float)Math.Sin(angle) * r;
-				vertices[i].pos.Y = pos.Y - (float)Math.Cos(angle) * r;
-				vertices[i].pos.Z = pos.Z;
-				cam.DrawDevice.PreprocessCoords(ref vertices[i].pos, ref scale);
-				angle += (MathF.TwoPi / (float)segmentNum);
-			}
-			cam.DrawDevice.AddVertices(info, BeginMode.LineLoop, vertices);
-
-			// XZ circle
-			vertices = new VertexP3[segmentNum];
-			angle = 0.0f;
-			for (int i = 0; i < vertices.Length; i++)
-			{
-				vertices[i].pos.X = pos.X + (float)Math.Sin(angle) * r;
-				vertices[i].pos.Y = pos.Y;
-				vertices[i].pos.Z = pos.Z - (float)Math.Cos(angle) * r;
-				cam.DrawDevice.PreprocessCoords(ref vertices[i].pos, ref scale);
-				angle += (MathF.TwoPi / (float)segmentNum);
-			}
-			cam.DrawDevice.AddVertices(info, BeginMode.LineLoop, vertices);
-
-			// YZ circle
-			vertices = new VertexP3[segmentNum];
-			angle = 0.0f;
-			for (int i = 0; i < vertices.Length; i++)
-			{
-				vertices[i].pos.X = pos.X;
-				vertices[i].pos.Y = pos.Y + (float)Math.Sin(angle) * r;
-				vertices[i].pos.Z = pos.Z - (float)Math.Cos(angle) * r;
-				cam.DrawDevice.PreprocessCoords(ref vertices[i].pos, ref scale);
-				angle += (MathF.TwoPi / (float)segmentNum);
-			}
-			cam.DrawDevice.AddVertices(info, BeginMode.LineLoop, vertices);
-		}
-		protected void DrawWorldSpaceCircle(float x, float y, float z, float r, ContentRef<DrawTechnique> dt, ColorRgba clr)
-		{
-			Camera cam = this.View.CameraComponent;
-			Vector3 pos = new Vector3(x, y, z);
-			if (!cam.DrawDevice.IsCoordInView(pos, r)) return;
-
-			float scale = 1.0f;
-			cam.DrawDevice.PreprocessCoords(ref pos, ref scale);
-			r *= scale;
-
-			BatchInfo info = new BatchInfo(dt, clr);
-			int segmentNum = MathF.Clamp(MathF.RoundToInt(MathF.Pow(r, 0.65f) * 2.5f), 4, 128);
-			VertexP3[] vertices;
-			float angle;
-
-			// XY circle
-			vertices = new VertexP3[segmentNum];
-			angle = 0.0f;
-			for (int i = 0; i < vertices.Length; i++)
-			{
-				vertices[i].pos.X = pos.X + (float)Math.Sin(angle) * r;
-				vertices[i].pos.Y = pos.Y - (float)Math.Cos(angle) * r;
-				vertices[i].pos.Z = pos.Z;
-				angle += (MathF.TwoPi / (float)segmentNum);
-			}
-			cam.DrawDevice.AddVertices(info, BeginMode.LineLoop, vertices);
-		}
-		protected void FillWorldSpaceCircle(float x, float y, float z, float r, ContentRef<DrawTechnique> dt, ColorRgba clr)
-		{
-			Camera cam = this.View.CameraComponent;
-			Vector3 pos = new Vector3(x, y, z);
-			if (!cam.DrawDevice.IsCoordInView(pos, r)) return;
-
-			float scale = 1.0f;
-			cam.DrawDevice.PreprocessCoords(ref pos, ref scale);
-			r *= scale;
-
-			BatchInfo info = new BatchInfo(dt, clr);
-			int segmentNum = MathF.Clamp(MathF.RoundToInt(MathF.Pow(r, 0.65f) * 2.5f), 4, 128);
-			VertexP3[] vertices;
-			float angle;
-
-			// XY circle
-			vertices = new VertexP3[segmentNum + 2];
-			angle = 0.0f;
-			vertices[0].pos = pos;
-			for (int i = 1; i < vertices.Length - 1; i++)
-			{
-				vertices[i].pos.X = pos.X + (float)Math.Sin(angle) * r;
-				vertices[i].pos.Y = pos.Y - (float)Math.Cos(angle) * r;
-				vertices[i].pos.Z = pos.Z;
-				angle += (MathF.TwoPi / (float)segmentNum);
-			}
-			vertices[vertices.Length - 1].pos = vertices[1].pos;
-			cam.DrawDevice.AddVertices(info, BeginMode.TriangleFan, vertices);
-		}
-		protected void DrawWorldSpaceDot(float x, float y, float z, float r, ContentRef<DrawTechnique> dt, ColorRgba clr)
-		{
-			Camera cam = this.View.CameraComponent;
-			Vector3 pos = new Vector3(x, y, z);
-			if (!cam.DrawDevice.IsCoordInView(pos, r)) return;
-
-			float scale = 1.0f;
-			cam.DrawDevice.PreprocessCoords(ref pos, ref scale);
-			r *= scale;
-
-			BatchInfo info = new BatchInfo(dt, clr);
-			int segmentNum = MathF.Clamp(MathF.RoundToInt(MathF.Pow(r, 0.65f) * 2.5f), 4, 128);
-			VertexP3[] vertices;
-			float angle;
-
-			// XY circle (filled)
-			vertices = new VertexP3[segmentNum + 2];
-			angle = 0.0f;
-			vertices[0].pos = pos;
-			for (int i = 1; i < vertices.Length; i++)
-			{
-				vertices[i].pos.X = pos.X + (float)Math.Sin(angle) * r;
-				vertices[i].pos.Y = pos.Y - (float)Math.Cos(angle) * r;
-				vertices[i].pos.Z = pos.Z;
-				angle += (MathF.TwoPi / (float)segmentNum);
-			}
-			cam.DrawDevice.AddVertices(info, BeginMode.TriangleFan, vertices);
-		}
-		protected void DrawWorldSpaceLine(float x, float y, float z, float x2, float y2, float z2, ContentRef<DrawTechnique> dt, ColorRgba clr)
-		{
-			Camera cam = this.View.CameraComponent;
-			Vector3 pos = new Vector3(x, y, MathF.Max(z, cam.GameObj.Transform.Pos.Z + cam.NearZ));
-			Vector3 target = new Vector3(x2, y2, MathF.Max(z2, cam.GameObj.Transform.Pos.Z + cam.NearZ));
-			float scale = 1.0f;
-
-			BatchInfo info = new BatchInfo(dt, clr);
-			VertexP3[] vertices = new VertexP3[2];
-
-			vertices[0].pos = pos;
-			vertices[1].pos = target;
-			cam.DrawDevice.PreprocessCoords(ref vertices[0].pos, ref scale);
-			cam.DrawDevice.PreprocessCoords(ref vertices[1].pos, ref scale);
-
-			cam.DrawDevice.AddVertices(info, BeginMode.Lines, vertices);
-		}
-		protected void DrawSelectionMarkers(IEnumerable<SelObj> obj, ColorRgba clr)
-		{
-			Camera cam = this.View.CameraComponent;
-
 			// Determine turned Camera axes for angle-independent drawing
 			Vector2 catDotX, catDotY;
-			MathF.GetTransformDotVec(cam.GameObj.Transform.Angle, out catDotX, out catDotY);
+			float camAngle = this.View.CameraObj.Transform.Angle;
+			MathF.GetTransformDotVec(camAngle, out catDotX, out catDotY);
 			Vector3 right = new Vector3(1.0f, 0.0f, 0.0f);
 			Vector3 down = new Vector3(0.0f, 1.0f, 0.0f);
 			MathF.TransformDotVec(ref right, ref catDotX, ref catDotY);
@@ -588,78 +427,54 @@ namespace EditorBase
 				float scaleTemp = 1.0f;
 				float radTemp = selObj.BoundRadius;
 
-				if (!cam.DrawDevice.IsCoordInView(posTemp, radTemp)) continue;
-				cam.DrawDevice.PreprocessCoords(ref posTemp, ref scaleTemp);
-				posTemp.Z = 0.0f;
+				if (!canvas.DrawDevice.IsCoordInView(posTemp, radTemp)) continue;
 
 				// Draw selection marker
-				cam.DrawDevice.AddVertices(new BatchInfo(DrawTechnique.Solid, clr), BeginMode.Lines,
-					new VertexP3(posTemp - right * 10.0f),
-					new VertexP3(posTemp + right * 10.0f),
-					new VertexP3(posTemp - down * 10.0f),
-					new VertexP3(posTemp + down * 10.0f));
+				if (selObj.ShowPos)
+				{
+					canvas.DrawDevice.PreprocessCoords(ref posTemp, ref scaleTemp);
+					posTemp.Z = 0.0f;
+					canvas.DrawDevice.AddVertices(canvas.CurrentState.Material, BeginMode.Lines,
+						new VertexP3(posTemp - right * 10.0f),
+						new VertexP3(posTemp + right * 10.0f),
+						new VertexP3(posTemp - down * 10.0f),
+						new VertexP3(posTemp + down * 10.0f));
+				}
 
 				// Draw angle marker
-				cam.DrawDevice.AddVertices(new BatchInfo(DrawTechnique.Solid, clr), BeginMode.Lines,
-					new VertexP3(posTemp),
-					new VertexP3(posTemp + 
-						radTemp * scaleTemp * right * MathF.Sin(selObj.Angle - cam.GameObj.Transform.Angle) - 
-						radTemp * scaleTemp * down * MathF.Cos(selObj.Angle - cam.GameObj.Transform.Angle)));
+				if (selObj.ShowAngle)
+				{
+					posTemp = selObj.Pos + 
+						radTemp * right * MathF.Sin(selObj.Angle - camAngle) - 
+						radTemp * down * MathF.Cos(selObj.Angle - camAngle);
+					canvas.DrawLine(selObj.Pos.X, selObj.Pos.Y, selObj.Pos.Z - 0.01f, posTemp.X, posTemp.Y, posTemp.Z - 0.01f);
+				}
 
 				// Draw boundary
-				if (radTemp > 0.0f)
-				{
-					this.DrawWorldSpaceCircle(
-						selObj.Pos.X,
-						selObj.Pos.Y,
-						selObj.Pos.Z,
-						radTemp,
-						DrawTechnique.Solid,
-						clr);
-				}
+				if (selObj.ShowBoundRadius && radTemp > 0.0f)
+					canvas.DrawCircle(selObj.Pos.X, selObj.Pos.Y, selObj.Pos.Z - 0.01f, radTemp);
 			}
 		}
-		protected void DrawCamMoveIndicators()
+		protected void DrawLockedAxes(Canvas canvas, float x, float y, float z, float r)
 		{
-			Point cursorPos = this.View.LocalGLControl.PointToClient(Cursor.Position);
-
-			// Draw camera movement indicators
-			if (this.camAction == CameraAction.MoveCam)
-				this.DrawViewSpaceLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, cursorPos.Y, DrawTechnique.Solid, this.View.FgColor);
-			else if (this.camAction == CameraAction.TurnCam)
-				this.DrawViewSpaceLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, this.camActionBeginLoc.Y, DrawTechnique.Solid, this.View.FgColor);
-		}
-		protected void DrawLockedAxes(float x, float y, float z, float r)
-		{
+			canvas.PushState();
 			if ((this.LockedAxes & AxisLock.X) != AxisLock.None)
 			{
-				this.DrawWorldSpaceLine(
-					x - r, y, z,
-					x + r, y, z,
-					DrawTechnique.Solid,
-					ColorRgba.Mix(this.View.FgColor, ColorRgba.Red, 0.5f));
+				canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Solid, ColorRgba.Mix(this.View.FgColor, ColorRgba.Red, 0.5f)));
+				canvas.DrawLine(x - r, y, z, x + r, y, z);
 			}
 			if ((this.LockedAxes & AxisLock.Y) != AxisLock.None)
 			{
-				this.DrawWorldSpaceLine(
-					x, y - r, z,
-					x, y + r, z,
-					DrawTechnique.Solid,
-					ColorRgba.Mix(this.View.FgColor, ColorRgba.Green, 0.5f));
+				canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Solid, ColorRgba.Mix(this.View.FgColor, ColorRgba.Green, 0.5f)));
+				canvas.DrawLine(x, y - r, z, x, y + r, z);
 			}
 			if ((this.LockedAxes & AxisLock.Z) != AxisLock.None)
 			{
-				this.DrawWorldSpaceLine(
-					x, y, z - r,
-					x, y, z,
-					DrawTechnique.Solid,
-					ColorRgba.Mix(this.View.FgColor, ColorRgba.Blue, 0.5f));
-				this.DrawWorldSpaceLine(
-					x, y, z,
-					x, y, z + r,
-					DrawTechnique.Solid,
-					ColorRgba.Mix(this.View.FgColor, ColorRgba.Blue, 0.5f));
+				canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Solid, ColorRgba.Mix(this.View.FgColor, ColorRgba.Blue, 0.5f)));
+				canvas.DrawLine(x, y, z - r, x, y, z);
+				canvas.DrawLine(x, y, z, x, y, z + r);
 			}
+			canvas.PopState();
 		}
 		
 		protected Vector3 ApplyAxisLock(Vector3 vec, float lockedVal = 0.0f)
@@ -751,7 +566,7 @@ namespace EditorBase
 
 			foreach (SelObj s in this.allObjSel)
 				this.selectionCenter += s.Pos;
-			this.selectionCenter /= this.allObjSel.Count;
+			if (this.allObjSel.Count > 0) this.selectionCenter /= this.allObjSel.Count;
 
 			foreach (SelObj s in this.allObjSel)
 				this.selectionRadius = MathF.Max(this.selectionRadius, s.BoundRadius + (s.Pos - this.selectionCenter).Length);
@@ -773,17 +588,21 @@ namespace EditorBase
 			bool mouseAtCenterAxis = MathF.Abs(mouseSpaceCoord.X - this.selectionCenter.X) < boundaryThickness || MathF.Abs(mouseSpaceCoord.Y - this.selectionCenter.Y) < boundaryThickness;
 			bool shift = (Control.ModifierKeys & Keys.Shift) != Keys.None;
 			bool ctrl = (Control.ModifierKeys & Keys.Control) != Keys.None;
+
 			bool anySelection = this.actionObjSel.Count > 0;
+			bool canMove = this.actionObjSel.Any(s => s.IsActionAvailable(MouseAction.MoveObj));
+			bool canRotate = (canMove && this.actionObjSel.Count > 1) || this.actionObjSel.Any(s => s.IsActionAvailable(MouseAction.RotateObj));
+			bool canScale = (canMove && this.actionObjSel.Count > 1) || this.actionObjSel.Any(s => s.IsActionAvailable(MouseAction.ScaleObj));
 
 			// Select which action to propose
 			this.mouseoverSelect = false;
 			if (shift || ctrl)
 				this.mouseoverAction = MouseAction.RectSelection;
-			else if (anySelection && mouseOverBoundary && mouseAtCenterAxis && this.selectionRadius > 0.0f && this.actionObjSel.All(s => s.IsActionAvailable(MouseAction.ScaleObj)))
+			else if (anySelection && mouseOverBoundary && mouseAtCenterAxis && this.selectionRadius > 0.0f && canScale)
 				this.mouseoverAction = MouseAction.ScaleObj;
-			else if (anySelection && mouseOverBoundary && this.actionObjSel.All(s => s.IsActionAvailable(MouseAction.RotateObj)))
+			else if (anySelection && mouseOverBoundary && canRotate)
 				this.mouseoverAction = MouseAction.RotateObj;
-			else if (anySelection && mouseInsideBoundary && this.actionObjSel.All(s => s.IsActionAvailable(MouseAction.MoveObj)))
+			else if (anySelection && mouseInsideBoundary && canMove)
 				this.mouseoverAction = MouseAction.MoveObj;
 			else if (this.mouseoverObject != null && this.mouseoverObject.IsActionAvailable(MouseAction.MoveObj))
 			{
@@ -921,8 +740,7 @@ namespace EditorBase
 
 			try
 			{
-				this.OnPrepareDrawState();
-				this.OnDrawState();
+				this.OnRenderState();
 			}
 			catch (Exception exception)
 			{
@@ -1075,6 +893,20 @@ namespace EditorBase
 			this.EndAction();
 			this.View.LocalGLControl.Invalidate();
 		}
+		private void View_CurrentCameraChanged(object sender, CamView.CameraChangedEventArgs e)
+		{
+			if (e.PreviousCamera != null)
+			{
+				e.PreviousCamera.CollectRendererDrawcalls	-= this.CameraComponent_CollectRendererDrawcalls;
+				e.PreviousCamera.CollectOverlayDrawcalls	-= this.CameraComponent_CollectOverlayDrawcalls;
+			}
+
+			if (e.NextCamera != null)
+			{
+				e.NextCamera.CollectRendererDrawcalls		+= this.CameraComponent_CollectRendererDrawcalls;
+				e.NextCamera.CollectOverlayDrawcalls		+= this.CameraComponent_CollectOverlayDrawcalls;
+			}
+		}
 		private void View_AccMovementChanged(object sender, EventArgs e)
 		{
 			Point curPos = this.View.LocalGLControl.PointToClient(Cursor.Position);
@@ -1103,6 +935,14 @@ namespace EditorBase
 		private void Scene_Changed(object sender, EventArgs e)
 		{
 			this.OnSceneChanged();
+		}
+		private void CameraComponent_CollectOverlayDrawcalls(object sender, EventArgs e)
+		{
+			this.OnCollectStateOverlayDrawcalls(new Canvas(this.View.CameraComponent.DrawDevice));
+		}
+		private void CameraComponent_CollectRendererDrawcalls(object sender, EventArgs e)
+		{
+			this.OnCollectStateDrawcalls(new Canvas(this.View.CameraComponent.DrawDevice));
 		}
 	}
 }

@@ -54,6 +54,10 @@ namespace EditorBase
 					else return r.BoundRadius;
 				}
 			}
+			public override bool ShowAngle
+			{
+				get { return true; }
+			}
 
 			public SelGameObj(GameObject obj)
 			{
@@ -91,6 +95,21 @@ namespace EditorBase
 
 			EditorBasePlugin.Instance.EditorForm.SelectionChanged		+= this.EditorForm_SelectionChanged;
 			EditorBasePlugin.Instance.EditorForm.ObjectPropertyChanged	+= this.EditorForm_ObjectPropertyChanged;
+
+			// Initial selection update
+			ObjectSelection current = EditorBasePlugin.Instance.EditorForm.Selection;
+			this.allObjSel = current.GameObjects.Select(g => new SelGameObj(g) as SelObj).ToList();
+			{
+				var selectedGameObj = current.GameObjects;
+				var indirectViaCmpQuery = current.Components.GameObject();
+				var indirectViaChildQuery = selectedGameObj.ChildrenDeep();
+				var indirectQuery = indirectViaCmpQuery.Concat(indirectViaChildQuery).Except(selectedGameObj).Distinct();
+				this.indirectObjSel = indirectQuery.Select(g => new SelGameObj(g) as SelObj).ToList();
+			}
+			{
+				var parentlessGameObj = current.GameObjects.Where(g => !current.GameObjects.Any(g2 => g.IsChildOf(g2))).ToList();
+				this.actionObjSel = parentlessGameObj.Select(g => new SelGameObj(g) as SelObj).ToList();
+			}
 		}
 		internal protected override void OnLeaveState()
 		{

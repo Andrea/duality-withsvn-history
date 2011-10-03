@@ -31,7 +31,7 @@ namespace DualityEditor.Controls
 					this.enumType = valEnumType; // Store enum type
 					this.FillEnumMembers(); // Add items for enum members
 				}
-				this.SelectedItem = Enum.GetName(enumType, value);
+				this.SelectedItem = Enum.GetName(enumType, value) ?? ((long)Convert.ChangeType(value, typeof(long))).ToString();
 				this.OnEnumValueChanged();
 			}
 		}
