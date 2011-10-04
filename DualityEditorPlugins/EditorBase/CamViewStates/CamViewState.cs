@@ -175,7 +175,6 @@ namespace EditorBase
 			this.View.LocalGLControl.LostFocus	+= this.LocalGLControl_LostFocus;
 			this.View.AccMovementChanged		+= this.View_AccMovementChanged;
 			this.View.ParallaxRefDistChanged	+= this.View_ParallaxRefDistChanged;
-			this.View.CurrentCameraChanged		+= this.View_CurrentCameraChanged;
 			EditorBasePlugin.Instance.EditorForm.AfterUpdateDualityApp += this.EditorForm_AfterUpdateDualityApp;
 
 			Scene.Leaving += this.Scene_Changed;
@@ -186,7 +185,6 @@ namespace EditorBase
 			Scene.RegisteredObjectComponentRemoved += this.Scene_Changed;
 
 			if (Scene.Current != null) this.Scene_Changed(this, EventArgs.Empty);
-			this.View_CurrentCameraChanged(this, new CamView.CameraChangedEventArgs(null, this.view.CameraComponent));
 		}
 		internal protected virtual void OnLeaveState() 
 		{
@@ -199,7 +197,6 @@ namespace EditorBase
 			this.View.LocalGLControl.LostFocus	-= this.LocalGLControl_LostFocus;
 			this.View.AccMovementChanged		-= this.View_AccMovementChanged;
 			this.View.ParallaxRefDistChanged	-= this.View_ParallaxRefDistChanged;
-			this.View.CurrentCameraChanged		-= this.View_CurrentCameraChanged;
 			EditorBasePlugin.Instance.EditorForm.AfterUpdateDualityApp -= this.EditorForm_AfterUpdateDualityApp;
 			
 			Scene.Leaving -= this.Scene_Changed;
@@ -208,8 +205,6 @@ namespace EditorBase
 			Scene.GameObjectUnregistered -= this.Scene_Changed;
 			Scene.RegisteredObjectComponentAdded -= this.Scene_Changed;
 			Scene.RegisteredObjectComponentRemoved -= this.Scene_Changed;
-
-			this.View_CurrentCameraChanged(this, new CamView.CameraChangedEventArgs(this.view.CameraComponent, null));
 		}
 		protected virtual void OnCollectStateDrawcalls(Canvas canvas)
 		{
@@ -740,7 +735,13 @@ namespace EditorBase
 
 			try
 			{
+				this.View.CameraComponent.CollectRendererDrawcalls	+= this.CameraComponent_CollectRendererDrawcalls;
+				this.View.CameraComponent.CollectOverlayDrawcalls	+= this.CameraComponent_CollectOverlayDrawcalls;
+
 				this.OnRenderState();
+
+				this.View.CameraComponent.CollectRendererDrawcalls	-= this.CameraComponent_CollectRendererDrawcalls;
+				this.View.CameraComponent.CollectOverlayDrawcalls	-= this.CameraComponent_CollectOverlayDrawcalls;
 			}
 			catch (Exception exception)
 			{
@@ -892,20 +893,6 @@ namespace EditorBase
 			this.camAction = CameraAction.None;
 			this.EndAction();
 			this.View.LocalGLControl.Invalidate();
-		}
-		private void View_CurrentCameraChanged(object sender, CamView.CameraChangedEventArgs e)
-		{
-			if (e.PreviousCamera != null)
-			{
-				e.PreviousCamera.CollectRendererDrawcalls	-= this.CameraComponent_CollectRendererDrawcalls;
-				e.PreviousCamera.CollectOverlayDrawcalls	-= this.CameraComponent_CollectOverlayDrawcalls;
-			}
-
-			if (e.NextCamera != null)
-			{
-				e.NextCamera.CollectRendererDrawcalls		+= this.CameraComponent_CollectRendererDrawcalls;
-				e.NextCamera.CollectOverlayDrawcalls		+= this.CameraComponent_CollectOverlayDrawcalls;
-			}
 		}
 		private void View_AccMovementChanged(object sender, EventArgs e)
 		{
