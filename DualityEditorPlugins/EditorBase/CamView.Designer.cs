@@ -51,7 +51,7 @@
 			this.statusbarCamera.SuspendLayout();
 			this.SuspendLayout();
 			// 
-			// toolStrip
+			// toolbarCamera
 			// 
 			this.toolbarCamera.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.toolbarCamera.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -64,7 +64,7 @@
             this.showBgColorDialog,
             this.camSelector});
 			this.toolbarCamera.Location = new System.Drawing.Point(0, 0);
-			this.toolbarCamera.Name = "toolStrip";
+			this.toolbarCamera.Name = "toolbarCamera";
 			this.toolbarCamera.Size = new System.Drawing.Size(539, 25);
 			this.toolbarCamera.TabIndex = 1;
 			this.toolbarCamera.Text = "toolStrip";
@@ -157,7 +157,7 @@
 			this.camSelector.DropDown += new System.EventHandler(this.camSelector_DropDown);
 			this.camSelector.DropDownClosed += new System.EventHandler(this.camSelector_DropDownClosed);
 			// 
-			// statusStrip
+			// statusbarCamera
 			// 
 			this.statusbarCamera.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.posXStatusLabel,
@@ -169,7 +169,7 @@
             this.axisLockYLabel,
             this.axisLockZLabel});
 			this.statusbarCamera.Location = new System.Drawing.Point(0, 375);
-			this.statusbarCamera.Name = "statusStrip";
+			this.statusbarCamera.Name = "statusbarCamera";
 			this.statusbarCamera.Size = new System.Drawing.Size(539, 22);
 			this.statusbarCamera.SizingGrip = false;
 			this.statusbarCamera.TabIndex = 2;

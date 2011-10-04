@@ -467,12 +467,12 @@ namespace Duality.Components
 					}
 
 					fsTemp.X += fsWorldCoordStep.X;
-					if (fsTemp.X > fsWorldCoord.X + size.X)
+					if (fsTemp.X > fsWorldCoord.X + size.X * 0.01f)
 					{
 						fsTemp.X = fsWorldCoord.X;
 						fsTemp.Y += fsWorldCoordStep.Y;
 					}
-					if (fsTemp.Y > fsWorldCoord.Y + size.Y) break;
+					if (fsTemp.Y > fsWorldCoord.Y + size.Y * 0.01f) break;
 				} while (true);
 			}
 
