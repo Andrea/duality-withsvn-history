@@ -407,6 +407,9 @@ namespace EditorBase
 
 			// Collider selection changed
 			this.selectedCollider = this.QuerySelectedCollider();
+			this.allObjSel.Clear();
+			this.indirectObjSel.Clear();
+			this.actionObjSel.Clear();
 			
 			this.UpdateSelectionStats();
 			this.View.LocalGLControl.Invalidate();

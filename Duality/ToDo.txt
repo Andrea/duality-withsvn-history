@@ -1,5 +1,9 @@
 ﻿
 -->	WYSIWYG-Editor for Collider Shapes
+	-->	Probably make ShapeInfo-selection editor-global, so it can be edited in the Resource Inspector
+	-->	Each ShapeInfo has Density and IsSensor, at least. How would you edit them otherwise?
+	-->	Well, there probably is a way for these two. Figure something out.
+
 	-->	Preview shape in view
 		-->	Display a shapes density numeric (absolute value) and visually as fill transparency (relative to other shapes)
 		-->	Display the shapes index in the shape list!
