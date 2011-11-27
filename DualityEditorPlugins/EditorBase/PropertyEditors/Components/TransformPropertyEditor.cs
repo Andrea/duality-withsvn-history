@@ -35,7 +35,7 @@ namespace EditorBase.PropertyEditors
 
 		public void PerformSetPos()
 		{
-			Transform[] values = this.Getter().Cast<Transform>().ToArray();
+			Transform[] values = this.Getter().OfType<Transform>().ToArray();
 			Vector3 newPos = new Vector3((float)this.editorPosX.Value, (float)this.editorPosY.Value, (float)this.editorPosZ.Value);
 
 			if (this.relativeValues.Checked)	foreach (Transform t in values) t.RelativePos	= newPos;
@@ -45,7 +45,7 @@ namespace EditorBase.PropertyEditors
 		}
 		public void PerformSetScale()
 		{
-			Transform[] values = this.Getter().Cast<Transform>().ToArray();
+			Transform[] values = this.Getter().OfType<Transform>().ToArray();
 			Vector3 newScale = new Vector3((float)this.editorScaleX.Value, (float)this.editorScaleY.Value, (float)this.editorScaleZ.Value);
 
 			if (this.relativeValues.Checked)	foreach (Transform t in values) t.RelativeScale	= newScale;
@@ -55,7 +55,7 @@ namespace EditorBase.PropertyEditors
 		}
 		public void PerformSetVel()
 		{
-			Transform[] values = this.Getter().Cast<Transform>().ToArray();
+			Transform[] values = this.Getter().OfType<Transform>().ToArray();
 			Vector3 newVel = new Vector3((float)this.editorVelX.Value, (float)this.editorVelY.Value, (float)this.editorVelZ.Value);
 
 			if (this.relativeValues.Checked)	foreach (Transform t in values) t.RelativeVel	= newVel;
@@ -65,7 +65,7 @@ namespace EditorBase.PropertyEditors
 		}
 		public void PerformSetAngle(bool deg)
 		{
-			Transform[] values = this.Getter().Cast<Transform>().ToArray();
+			Transform[] values = this.Getter().OfType<Transform>().ToArray();
 			float newAngle = deg ? MathF.DegToRad((float)this.editorAngleDeg.Value) : (float)this.editorAngleRad.Value;
 
 			if (this.relativeValues.Checked)	foreach (Transform t in values) t.RelativeAngle	= newAngle;
@@ -75,7 +75,7 @@ namespace EditorBase.PropertyEditors
 		}
 		public void PerformSetAngleVel(bool deg)
 		{
-			Transform[] values = this.Getter().Cast<Transform>().ToArray();
+			Transform[] values = this.Getter().OfType<Transform>().ToArray();
 			float newAngleVel = deg ? MathF.DegToRad((float)this.editorAngleVelDeg.Value) : (float)this.editorAngleVelRad.Value;
 
 			if (this.relativeValues.Checked)	foreach (Transform t in values) t.RelativeAngleVel	= newAngleVel;
@@ -85,7 +85,7 @@ namespace EditorBase.PropertyEditors
 		}
 		public void PerformSetDeriveAngle()
 		{
-			Transform[] values = this.Getter().Cast<Transform>().ToArray();
+			Transform[] values = this.Getter().OfType<Transform>().ToArray();
 
 			foreach (Transform t in values) t.DeriveAngle = this.editorDeriveAngle.Checked;
 
@@ -95,7 +95,7 @@ namespace EditorBase.PropertyEditors
 		public override void PerformGetValue()
 		{
 			base.PerformGetValue();
-			Transform[] values = this.Getter().Cast<Transform>().ToArray();
+			Transform[] values = this.Getter().OfType<Transform>().ToArray();
 
 			this.updatingFromObj = true;
 			this.UpdateModifiedState();
@@ -208,7 +208,7 @@ namespace EditorBase.PropertyEditors
 		public override void UpdateModifiedState()
 		{
 			base.UpdateModifiedState();
-			Transform[] values = this.Getter().Cast<Transform>().ToArray();
+			Transform[] values = this.Getter().OfType<Transform>().ToArray();
 			
 			// Set font boldness according to modified value
 			bool posModified		= false;
@@ -218,7 +218,7 @@ namespace EditorBase.PropertyEditors
 			bool angleVelModified	= false;
 			foreach (Transform c in values)
 			{
-				Duality.Resources.PrefabLink l = c.GameObj.AffectedByPrefabLink;
+				Duality.Resources.PrefabLink l = (c != null && c.GameObj != null) ? c.GameObj.AffectedByPrefabLink : null;
 				if (l == null) continue;
 				if (!posModified)		posModified			= l.HasChange(c, ReflectionInfo.Property_Transform_RelativePos);
 				if (!scaleModified)		scaleModified		= l.HasChange(c, ReflectionInfo.Property_Transform_RelativeScale);

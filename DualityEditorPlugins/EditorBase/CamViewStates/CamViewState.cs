@@ -50,6 +50,7 @@ namespace EditorBase
 		public abstract class SelObj : IEquatable<SelObj>
 		{
 			public abstract object ActualObject { get; }
+			public abstract bool HasTransform { get; }
 			public abstract float BoundRadius { get; }
 			public abstract Vector3 Pos { get; set; }
 			public virtual Vector3 Scale
@@ -208,24 +209,25 @@ namespace EditorBase
 		}
 		protected virtual void OnCollectStateDrawcalls(Canvas canvas)
 		{
+			List<SelObj> transformObjSel = this.allObjSel.Where(s => s.HasTransform).ToList();
 			Point cursorPos = this.View.LocalGLControl.PointToClient(Cursor.Position);
 			canvas.PushState();
 			
 			// Draw indirectly selected object overlay
 			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Solid, ColorRgba.Mix(this.View.FgColor, this.View.BgColor, 0.75f)));
 			this.DrawSelectionMarkers(canvas, this.indirectObjSel);
-			if (this.mouseoverObject != null && (this.mouseoverAction == MouseAction.RectSelection || this.mouseoverSelect) && !this.allObjSel.Contains(this.mouseoverObject)) 
+			if (this.mouseoverObject != null && (this.mouseoverAction == MouseAction.RectSelection || this.mouseoverSelect) && !transformObjSel.Contains(this.mouseoverObject)) 
 				this.DrawSelectionMarkers(canvas, new [] { this.mouseoverObject });
 
 			// Draw selected object overlay
 			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Solid, this.View.FgColor));
-			this.DrawSelectionMarkers(canvas, this.allObjSel);
+			this.DrawSelectionMarkers(canvas, transformObjSel);
 
 			// Draw overall selection boundary
-			if (this.allObjSel.Count > 1)
+			if (transformObjSel.Count > 1)
 			{
-				float midZ = this.allObjSel.Average(t => t.Pos.Z);
-				float maxZDiff = this.allObjSel.Max(t => MathF.Abs(t.Pos.Z - midZ));
+				float midZ = transformObjSel.Average(t => t.Pos.Z);
+				float maxZDiff = transformObjSel.Max(t => MathF.Abs(t.Pos.Z - midZ));
 				if (maxZDiff > 0.001f)
 				{
 					canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Solid, ColorRgba.Mix(this.View.FgColor, this.View.BgColor, 0.5f)));
@@ -556,14 +558,16 @@ namespace EditorBase
 		}
 		protected void UpdateSelectionStats()
 		{
+			List<SelObj> transformObjSel = this.allObjSel.Where(s => s.HasTransform).ToList();
+
 			this.selectionCenter = Vector3.Zero;
 			this.selectionRadius = 0.0f;
 
-			foreach (SelObj s in this.allObjSel)
+			foreach (SelObj s in transformObjSel)
 				this.selectionCenter += s.Pos;
-			if (this.allObjSel.Count > 0) this.selectionCenter /= this.allObjSel.Count;
+			if (transformObjSel.Count > 0) this.selectionCenter /= transformObjSel.Count;
 
-			foreach (SelObj s in this.allObjSel)
+			foreach (SelObj s in transformObjSel)
 				this.selectionRadius = MathF.Max(this.selectionRadius, s.BoundRadius + (s.Pos - this.selectionCenter).Length);
 		}
 		private void UpdateMouseover(Point mouseLoc)

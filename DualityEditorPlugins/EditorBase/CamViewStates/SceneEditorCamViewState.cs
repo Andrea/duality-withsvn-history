@@ -30,6 +30,10 @@ namespace EditorBase
 			{
 				get { return this.gameObj; }
 			}
+			public override bool HasTransform
+			{
+				get { return this.gameObj.Transform != null; }
+			}
 			public override Vector3 Pos
 			{
 				get { return this.gameObj.Transform.Pos; }
@@ -50,8 +54,15 @@ namespace EditorBase
 				get
 				{
 					Renderer r = this.gameObj.Renderer;
-					if (r == null) return CamView.DefaultDisplayBoundRadius;
-					else return r.BoundRadius;
+					if (r == null)
+					{
+						if (this.gameObj.Transform != null)
+							return CamView.DefaultDisplayBoundRadius * this.gameObj.Transform.Scale.Xy.Length;
+						else
+							return CamView.DefaultDisplayBoundRadius;
+					}
+					else
+						return r.BoundRadius;
 				}
 			}
 			public override bool ShowAngle
@@ -108,7 +119,7 @@ namespace EditorBase
 			}
 			{
 				var parentlessGameObj = current.GameObjects.Where(g => !current.GameObjects.Any(g2 => g.IsChildOf(g2))).ToList();
-				this.actionObjSel = parentlessGameObj.Select(g => new SelGameObj(g) as SelObj).ToList();
+				this.actionObjSel = parentlessGameObj.Select(g => new SelGameObj(g) as SelObj).Where(s => s.HasTransform).ToList();
 			}
 		}
 		internal protected override void OnLeaveState()
@@ -344,7 +355,7 @@ namespace EditorBase
 				this.actionObjSel.RemoveAll(s => e.Added.GameObjects.Any(o => (s.ActualObject as GameObject).IsChildOf(o)));
 				// Add objects whichs parents are not located in the current selection
 				var addedParentFreeGameObj = e.Added.GameObjects.Where(o => !this.allObjSel.Any(s => o.IsChildOf(s.ActualObject as GameObject)));
-				this.actionObjSel.AddRange(addedParentFreeGameObj.Select(g => new SelGameObj(g) as SelObj));
+				this.actionObjSel.AddRange(addedParentFreeGameObj.Select(g => new SelGameObj(g) as SelObj).Where(s => s.HasTransform));
 			}
 
 			this.UpdateSelectionStats();

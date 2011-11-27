@@ -30,6 +30,10 @@ namespace EditorBase
 			{
 				get { return this.collider; }
 			}
+			public override bool HasTransform
+			{
+				get { return this.collider.GameObj.Transform != null; }
+			}
 			public override Vector3 Pos
 			{
 				get { return this.collider.GameObj.Transform.Pos; }
@@ -108,7 +112,11 @@ namespace EditorBase
 		public class SelCircleShape : SelShape
 		{
 			private	Collider.CircleShapeInfo	circle;
-
+			
+			public override bool HasTransform
+			{
+				get { return this.collider.GameObj.Transform != null; }
+			}
 			public override Vector3 Pos
 			{
 				get
