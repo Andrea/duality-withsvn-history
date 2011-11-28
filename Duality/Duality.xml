@@ -324,6 +324,11 @@
             Fired once each update cycle - but not in the editor.
             </summary>
         </member>
+        <member name="E:Duality.DualityApp.ExecContextChanged">
+            <summary>
+            Fired when the execution context has changed at runtime. This normally happens in DualityEditor's sandbox mode.
+            </summary>
+        </member>
         <member name="E:Duality.DualityApp.GfxSizeChanged">
             <summary>
             Fired whenever the <see cref="T:Duality.DualityUserData">gfx size / display resolution has changed</see>.

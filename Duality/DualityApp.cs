@@ -76,19 +76,23 @@ namespace Duality
 		/// Fired as soon as Duality has been initialized. However, this usually happens before creating any kind of graphics context,
 		/// so no content is available yet and any attemp to load or request Resources is not recommended.
 		/// </summary>
-		public static event EventHandler Initialized	= null;
+		public static event EventHandler Initialized		= null;
 		/// <summary>
 		/// Fired when shutting down Duality.
 		/// </summary>
-		public static event EventHandler Terminating	= null;
+		public static event EventHandler Terminating		= null;
 		/// <summary>
 		/// Fired once each update cycle - but not in the editor.
 		/// </summary>
-		public static event EventHandler Updating		= null;
+		public static event EventHandler Updating			= null;
+		/// <summary>
+		/// Fired when the execution context has changed at runtime. This normally happens in DualityEditor's sandbox mode.
+		/// </summary>
+		public static event EventHandler ExecContextChanged	= null;
 		/// <summary>
 		/// Fired whenever the <see cref="DualityUserData">gfx size / display resolution has changed</see>.
 		/// </summary>
-		public static event EventHandler GfxSizeChanged	= null;
+		public static event EventHandler GfxSizeChanged		= null;
 
 
 		/// <summary>
@@ -217,7 +221,14 @@ namespace Duality
 		public static ExecutionContext ExecContext
 		{
 			get { return execContext; }
-			internal set { execContext = value; }
+			internal set 
+			{
+				if (execContext != value)
+				{
+					execContext = value;
+					OnExecContextChanged();
+				}
+			}
 		}
 		/// <summary>
 		/// [GET] Enumerates all currently loaded plugins.
@@ -726,6 +737,11 @@ namespace Duality
 		{
 			if (Updating != null)
 				Updating(null, EventArgs.Empty);
+		}
+		private static void OnExecContextChanged()
+		{
+			if (ExecContextChanged != null)
+				ExecContextChanged(null, EventArgs.Empty);
 		}
 		private static void OnGfxSizeChanged()
 		{
