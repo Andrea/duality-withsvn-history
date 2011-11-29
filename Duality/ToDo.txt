@@ -1,4 +1,11 @@
 ﻿
+Next Steps:
+1.	Bugfixing
+2.	Collider Editor
+3.	Collider Logic (Core)
+4.	Re-Implement Asteroids using Colliders
+5.	"Optional": Collider Joints (Editor & Logic)
+
 -->	Bug: Changing the Component type (adding new interface, etc.) doesn't update a Scene's managers.
 	-->	Keep in mind: Scenes that aren't loaded need to be updated as well.
 	-->	Don't save managers / change Scene serialization? Needs to be more robust!
@@ -76,7 +83,6 @@
 
 
 -->	Duality Tasks (overall)
-	-->	Editor Sandbox (Play | Pause | Reset)
 	-->	Physics & Collision Detection
 	-->	Particle Systems & Particle Editor
 	-->	Ingame GUI & GUI Editor

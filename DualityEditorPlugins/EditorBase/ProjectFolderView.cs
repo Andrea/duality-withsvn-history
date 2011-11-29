@@ -414,6 +414,8 @@ namespace EditorBase
 
 		protected NodeBase ScanFile(string filePath)
 		{
+			if (!PathHelper.IsPathVisible(filePath)) return null;
+
 			string ext = Path.GetExtension(filePath);
 			if (ext.ToLower() == Resource.FileExt)
 				return new ResourceNode(filePath);
@@ -422,6 +424,7 @@ namespace EditorBase
 		}
 		protected DirectoryNode ScanDirectory(string dirPath)
 		{
+			if (!PathHelper.IsPathVisible(dirPath)) return null;
 			DirectoryNode thisNode = new DirectoryNode(dirPath);
 
 			string[] subDirs = Directory.GetDirectories(dirPath);

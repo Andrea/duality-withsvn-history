@@ -186,5 +186,25 @@ namespace Duality
 			fileNameWithoutExt = new string(pathChars);
 			return fileNameWithoutExt;
 		}
+
+		/// <summary>
+		/// Returns whether the specified file or directory is visible, i.e. not hidden.
+		/// </summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
+		public static bool IsPathVisible(string path)
+		{
+			if (Directory.Exists(path))
+			{
+				DirectoryInfo dirInfo = new DirectoryInfo(path);
+				return (dirInfo.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden;
+			}
+			else if (File.Exists(path))
+			{
+				FileInfo fileInfo = new FileInfo(path);
+				return (fileInfo.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden;
+			}
+			else return false;
+		}
 	}
 }

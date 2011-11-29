@@ -7672,6 +7672,13 @@
             <param name="fileNameWithoutExt">A string that is supposed to be a file name.</param>
             <returns>A valid file name.</returns>
         </member>
+        <member name="M:Duality.PathHelper.IsPathVisible(System.String)">
+            <summary>
+            Returns whether the specified file or directory is visible, i.e. not hidden.
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
         <member name="T:Duality.ExtMethodsRandom">
             <summary>
             Provides extension methods for <see cref="T:System.Random">random number generators</see>.

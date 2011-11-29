@@ -89,6 +89,8 @@ namespace DualityEditor
 		}
 		private static string GenerateGameResSrcFile_ScanFile(string filePath, int indent, out string propName)
 		{
+			if (!PathHelper.IsPathVisible(filePath)) { propName = null; return ""; }
+
 			string ext = Path.GetExtension(filePath);
 			if (ext.ToLower() != Resource.FileExt) { propName = null; return ""; }
 
@@ -128,6 +130,8 @@ namespace DualityEditor
 		}
 		private static string GenerateGameResSrcFile_ScanDir(string dirPath, int indent, out string className)
 		{
+			if (!PathHelper.IsPathVisible(dirPath)) { className = null; return ""; }
+
 			StringBuilder dirContent = new StringBuilder();
 			string indentStr = new string('\t', indent);
 			className = GenerateGameResSrcFile_ClassName(dirPath);
