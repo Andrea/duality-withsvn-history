@@ -115,14 +115,23 @@ namespace EditorBase
 				string oldDirName = Path.GetFileName(oldPath);
 				string newPathBase = oldPath.Remove(oldPath.Length - oldDirName.Length, oldDirName.Length);
 				string newPath = newPathBase + this.Text;
+				bool equalsCaseInsensitive = newPath.ToUpper() == oldPath.ToUpper();
 
-				if (Directory.Exists(newPath))
+				if (Directory.Exists(newPath) && !equalsCaseInsensitive)
 				{
 					conflictingPath = newPath;
 					return false;
 				}
 
-				Directory.Move(oldPath, newPath);
+				if (equalsCaseInsensitive)
+				{
+					string tempPath = newPath + "_sSJencn83rhfSHhfn3ns456omvmvs28fndDN84ns";
+					Directory.Move(oldPath, tempPath);
+					Directory.Move(tempPath, newPath);
+				}
+				else
+					Directory.Move(oldPath, newPath);
+
 				this.NodePath = newPath;
 				foreach (NodeBase node in this.Nodes)
 				{
@@ -183,7 +192,7 @@ namespace EditorBase
 				string newPathBase = oldPath.Remove(oldPath.Length - oldFileName.Length, oldFileName.Length);
 				string newPath = newPathBase + this.Text + Resource.GetFileExtByType(this.resType);
 
-				if (File.Exists(newPath))
+				if (File.Exists(newPath) && newPath.ToUpper() != oldPath.ToUpper())
 				{
 					conflictingPath = newPath;
 					return false;
@@ -1366,6 +1375,7 @@ namespace EditorBase
 
 				this.InsertNodeSorted(node, parentNode);
 				this.RegisterNodeTree(node);
+				node.NotifyVisible();
 			}
 
 			// Perform previously scheduled selection

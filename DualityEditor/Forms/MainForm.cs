@@ -991,7 +991,6 @@ namespace DualityEditor.Forms
 		
 		private void dataDirWatcher_Changed(object sender, FileSystemEventArgs e)
 		{
-			if (!PathHelper.IsPathVisible(e.FullPath)) return;
 			ResourceEventArgs args = new ResourceEventArgs(e.FullPath);
 
 			// When modifying prefabs, apply changes to all linked objects
@@ -1007,7 +1006,6 @@ namespace DualityEditor.Forms
 		}
 		private void dataDirWatcher_Created(object sender, FileSystemEventArgs e)
 		{
-			if (!PathHelper.IsPathVisible(e.FullPath)) return;
 			if (File.Exists(e.FullPath))
 			{
 				// Register newly detected ressource file
@@ -1043,7 +1041,6 @@ namespace DualityEditor.Forms
 		}
 		private void dataDirWatcher_Deleted(object sender, FileSystemEventArgs e)
 		{
-			if (!PathHelper.IsPathVisible(e.FullPath)) return;
 			ResourceEventArgs args = new ResourceEventArgs(e.FullPath);
 
 			// Unregister no-more existing resources
@@ -1055,7 +1052,6 @@ namespace DualityEditor.Forms
 		}
 		private void dataDirWatcher_Renamed(object sender, RenamedEventArgs e)
 		{
-			if (!PathHelper.IsPathVisible(e.FullPath)) return;
 			ResourceRenamedEventArgs args = new ResourceRenamedEventArgs(e.FullPath, e.OldFullPath);
 
 			// Rename content registerations
@@ -1074,18 +1070,15 @@ namespace DualityEditor.Forms
 		}
 		private void sourceDirWatcher_Changed(object sender, FileSystemEventArgs e)
 		{
-			if (!PathHelper.IsPathVisible(e.FullPath)) return;
 			if (File.Exists(e.FullPath)) this.reimportSchedule.Add(e.FullPath);
 			if (this.SrcFileModified != null) this.SrcFileModified(this, e);
 		}
 		private void sourceDirWatcher_Deleted(object sender, FileSystemEventArgs e)
 		{
-			if (!PathHelper.IsPathVisible(e.FullPath)) return;
 			if (this.SrcFileDeleted != null) this.SrcFileDeleted(this, e);
 		}
 		private void sourceDirWatcher_Renamed(object sender, RenamedEventArgs e)
 		{
-			if (!PathHelper.IsPathVisible(e.FullPath)) return;
 			if (File.Exists(e.FullPath)) this.reimportSchedule.Add(e.FullPath);
 			if (this.SrcFileRenamed != null) this.SrcFileRenamed(this, e);
 		}
