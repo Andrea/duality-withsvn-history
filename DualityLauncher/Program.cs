@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 
 using Duality;
 using Duality.Resources;
@@ -17,7 +18,8 @@ namespace DualityLauncher
 {
 	public class DualityLauncher : GameWindow
 	{
-		private static Random rnd = new Random();
+		private Stopwatch	frameLimiterWatch	= new Stopwatch();
+		private	double		frameLimiterLast	= 0.0d;
 
 		public DualityLauncher(int w, int h, GraphicsMode mode, string title, GameWindowFlags flags)
 			: base(w, h, mode, title, flags)
@@ -35,7 +37,19 @@ namespace DualityLauncher
 				this.Close();
 				return;
 			}
-
+			
+			// Assure we'll at least wait 16 ms until updating again.
+			if (this.frameLimiterWatch.IsRunning)
+			{
+				while (this.frameLimiterWatch.Elapsed.TotalSeconds - this.frameLimiterLast < 0.016666d) 
+				{
+					// Go to sleep if we'd have to wait too long
+					if (this.frameLimiterWatch.Elapsed.TotalSeconds - this.frameLimiterLast < 0.012d)
+						System.Threading.Thread.Sleep(1);
+				}
+			}
+			this.frameLimiterWatch.Restart();
+			this.frameLimiterLast = this.frameLimiterWatch.Elapsed.TotalSeconds;
 			DualityApp.Update();
 		}
 		protected override void OnRenderFrame(FrameEventArgs e)
@@ -85,7 +99,8 @@ namespace DualityLauncher
 				Scene.Current = DualityApp.AppData.StartScene.Res;
 
 				// Run the DualityApp
-				launcherWindow.Run(60.0d, 60.0d);
+				launcherWindow.VSync = VSyncMode.On;
+				launcherWindow.Run();
 			}
 			DualityApp.Terminate();
 		}
