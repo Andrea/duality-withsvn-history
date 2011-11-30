@@ -202,8 +202,9 @@ namespace DualityEditor
 		private static string GenerateGameResSrcFile_ClassName(string path)
 		{
 			// Strip path and resource extension
+			string ext = Path.GetExtension(path);
 			if (path.EndsWith(Resource.FileExt, StringComparison.InvariantCultureIgnoreCase))
-				path = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(path));
+				path = Path.GetFileNameWithoutExtension(path);
 			else
 				path = Path.GetFileName(path);
 
