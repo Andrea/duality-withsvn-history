@@ -319,9 +319,14 @@
             Fired when shutting down Duality.
             </summary>
         </member>
-        <member name="E:Duality.DualityApp.Updating">
+        <member name="E:Duality.DualityApp.AfterUpdate">
             <summary>
-            Fired once each update cycle - but not in the editor.
+            Fired once after each update cycle - even in the editor.
+            </summary>
+        </member>
+        <member name="E:Duality.DualityApp.BeforeUpdate">
+            <summary>
+            Fired once before each update cycle - even in the editor.
             </summary>
         </member>
         <member name="E:Duality.DualityApp.ExecContextChanged">

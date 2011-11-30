@@ -82,9 +82,13 @@ namespace Duality
 		/// </summary>
 		public static event EventHandler Terminating		= null;
 		/// <summary>
-		/// Fired once each update cycle - but not in the editor.
+		/// Fired once after each update cycle - even in the editor.
 		/// </summary>
-		public static event EventHandler Updating			= null;
+		public static event EventHandler AfterUpdate		= null;
+		/// <summary>
+		/// Fired once before each update cycle - even in the editor.
+		/// </summary>
+		public static event EventHandler BeforeUpdate		= null;
 		/// <summary>
 		/// Fired when the execution context has changed at runtime. This normally happens in DualityEditor's sandbox mode.
 		/// </summary>
@@ -358,9 +362,10 @@ namespace Duality
 			watch.Restart();
 
 			Time.FrameTick();
+			OnBeforeUpdate();
 			Scene.Current.Update();
 			sound.Update();
-			OnUpdating();
+			OnAfterUpdate();
 			RunCleanup();
 
 			Time.perfUpdate = watch.ElapsedMilliseconds;
@@ -409,25 +414,23 @@ namespace Duality
 			isUpdating = true;
 			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
 			watch.Restart();
-
+			
+			Time.FrameTick();
+			OnBeforeUpdate();
 			if (execContext == ExecutionContext.Editor)
 			{
-				Time.FrameTick();
 				Scene.Current.EditorUpdate();
 				foreach (GameObject obj in updateObjects.ActiveObjects) obj.Update();
-				sound.Update();
-				Resource.RunCleanup();
 			}
 			else if (execContext == ExecutionContext.Launcher)
 			{
-				Time.FrameTick();
 				if (!freezeScene)	Scene.Current.Update();
 				else				Scene.Current.EditorUpdate();
 				foreach (GameObject obj in updateObjects.ActiveObjects) obj.Update();
-				sound.Update();
-				OnUpdating();
-				RunCleanup();
 			}
+			sound.Update();
+			OnAfterUpdate();
+			RunCleanup();
 
 			Time.perfUpdate = watch.ElapsedMilliseconds;
 			isUpdating = false;
@@ -733,10 +736,15 @@ namespace Duality
 			if (Terminating != null)
 				Terminating(null, EventArgs.Empty);
 		}
-		private static void OnUpdating()
+		private static void OnBeforeUpdate()
 		{
-			if (Updating != null)
-				Updating(null, EventArgs.Empty);
+			if (BeforeUpdate != null)
+				BeforeUpdate(null, EventArgs.Empty);
+		}
+		private static void OnAfterUpdate()
+		{
+			if (AfterUpdate != null)
+				AfterUpdate(null, EventArgs.Empty);
 		}
 		private static void OnExecContextChanged()
 		{
