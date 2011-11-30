@@ -325,7 +325,6 @@ namespace DualityEditor.Forms
 					// Close old form and wait for it to be closed
 					workInterface.Shutdown = true;
 					workInterface.MainForm.Invoke(new CloseMainFormDelegate(CloseMainForm), workInterface.MainForm);
-					while (workInterface.MainForm.Visible) { Thread.Sleep(20); }
 					Application.Exit();
 
 					Process newEditor = Process.Start(Application.ExecutablePath, "recover" + (debug ? " debug" : ""));
