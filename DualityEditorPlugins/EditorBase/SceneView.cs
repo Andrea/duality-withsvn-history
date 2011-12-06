@@ -311,6 +311,7 @@ namespace EditorBase
 		protected void ClearObjects()
 		{
 			this.objectModel.Nodes.Clear();
+			this.objToNode.Clear();
 		}
 		protected void RegisterNodeTree(Node node)
 		{
