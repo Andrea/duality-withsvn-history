@@ -75,6 +75,10 @@ namespace EditorBase
 			{
 				get { return false; }
 			}
+			public bool IsInvalid
+			{
+				get { return this.ActualObject == null; }
+			}
 
 			public virtual bool IsActionAvailable(MouseAction action)
 			{
@@ -375,6 +379,8 @@ namespace EditorBase
 		}
 		protected virtual void OnSceneChanged()
 		{
+			if (this.mouseoverObject != null && this.mouseoverObject.IsInvalid) this.mouseoverObject = null;
+
 			this.View.LocalGLControl.Invalidate();
 		}
 		protected virtual void OnCursorSpacePosChanged()
@@ -420,6 +426,7 @@ namespace EditorBase
 
 			foreach (SelObj selObj in obj)
 			{
+				if (!selObj.HasTransform) continue;
 				Vector3 posTemp = selObj.Pos;
 				float scaleTemp = 1.0f;
 				float radTemp = selObj.BoundRadius;

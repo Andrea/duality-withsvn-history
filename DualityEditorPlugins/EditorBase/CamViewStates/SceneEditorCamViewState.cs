@@ -28,7 +28,7 @@ namespace EditorBase
 
 			public override object ActualObject
 			{
-				get { return this.gameObj; }
+				get { return this.gameObj == null || this.gameObj.Disposed ? null : this.gameObj; }
 			}
 			public override bool HasTransform
 			{

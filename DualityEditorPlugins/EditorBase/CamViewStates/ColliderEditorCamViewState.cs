@@ -28,7 +28,7 @@ namespace EditorBase
 
 			public override object ActualObject
 			{
-				get { return this.collider; }
+				get { return this.collider == null || this.collider.Disposed ? null : this.collider; }
 			}
 			public override bool HasTransform
 			{
