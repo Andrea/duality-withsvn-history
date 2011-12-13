@@ -1,4 +1,8 @@
 ﻿
+-->	Introduce CorePlugin class
+	-->	LoadPlugin() // right after loading
+	-->	DisposePlugin() // blacklist
+
 Next Steps:
 1.	Bugfixing
 2.	Collider Editor
