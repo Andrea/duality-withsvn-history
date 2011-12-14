@@ -42,7 +42,7 @@ namespace ResourceHacker
 		{
 			instance = this;
 		}
-		public override IDockContent DeserializeDockContent(Type dockContentType)
+		protected override IDockContent DeserializeDockContent(Type dockContentType)
 		{
 			this.isLoading = true;
 			IDockContent result;
@@ -53,7 +53,7 @@ namespace ResourceHacker
 			this.isLoading = false;
 			return result;
 		}
-		public override void LoadPlugin()
+		protected override void LoadPlugin()
 		{
 			base.LoadPlugin();
 			
@@ -68,7 +68,7 @@ namespace ResourceHacker
 			// Register PropertyEditor provider
 			CorePluginHelper.RegisterPropertyEditorProvider(new PropertyEditors.PropertyEditorProvider());
 		}
-		public override void InitPlugin(MainForm main)
+		protected override void InitPlugin(MainForm main)
 		{
 			base.InitPlugin(main);
 

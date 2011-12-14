@@ -190,6 +190,16 @@ namespace Duality.Serialization.MetaFormat
 			this.name = name;
 			this.value = value;
 		}
+		public override int ReplaceTypeStrings(string oldTypeString, string newTypeString)
+		{
+			int count = base.ReplaceTypeStrings(oldTypeString, newTypeString);
+			if (this.enumType == oldTypeString)
+			{
+				this.enumType = newTypeString;
+				count++;
+			}
+			return count;
+		}
 	}
 	/// <summary>
 	/// Describes a serialization object data node.

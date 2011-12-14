@@ -17,12 +17,19 @@ namespace DualityEditor
 {
 	public static class EditorHelper
 	{
-		public const string DataDirectory			= @"Data";
-		public const string SourceDirectory			= @"Source";
-		public const string SourceMediaDirectory	= @"Source\Media";
-		public const string SourceCodeDirectory		= @"Source\Code";
-		public const string SourceCodeSolutionFile	= @"Source\Code\ProjectPlugins.sln";
-		public const string SourceCodeGameResFile	= @"Source\Code\CorePlugin\Properties\GameRes.cs";
+		public const string DataDirectory				= @"Data";
+		public const string SourceDirectory				= @"Source";
+		public const string SourceMediaDirectory		= @"Source\Media";
+		public const string SourceCodeDirectory			= @"Source\Code";
+		public const string SourceCodeSolutionFile			= @"Source\Code\ProjectPlugins.sln";
+		public const string SourceCodeGameResFile			= @"Source\Code\CorePlugin\Properties\GameRes.cs";
+		public const string SourceCodeCorePluginFile		= @"Source\Code\CorePlugin\CorePlugin.cs";
+		public const string SourceCodeComponentExampleFile	= @"Source\Code\CorePlugin\YourCustomComponentType.cs";
+		public const string SourceCodeEditorPluginFile		= @"Source\Code\EditorPlugin\EditorPlugin.cs";
+		public static string CurrentProjectName
+		{
+			get { return Path.GetFileName(Path.GetDirectoryName(Path.GetFullPath(EditorHelper.DataDirectory))); }
+		}
 
 		public static bool CopyDirectory(string sourcePath, string targetPath)
 		{
@@ -208,6 +215,11 @@ namespace DualityEditor
 			else
 				path = Path.GetFileName(path);
 
+			return GenerateClassNameFromPath(path);
+		}
+		
+		public static string GenerateClassNameFromPath(string path)
+		{
 			// Replace chars that aren't allowed as class name
 			char[] pathChars = path.ToCharArray();
 			for (int i = 0; i < pathChars.Length; i++)

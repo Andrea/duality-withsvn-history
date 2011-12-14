@@ -61,7 +61,7 @@ namespace EditorBase
 		{
 			instance = this;
 		}
-		public override IDockContent DeserializeDockContent(Type dockContentType)
+		protected override IDockContent DeserializeDockContent(Type dockContentType)
 		{
 			this.isLoading = true;
 			IDockContent result;
@@ -81,7 +81,7 @@ namespace EditorBase
 			return result;
 		}
 
-		public override void SaveUserData(System.Xml.XmlDocument doc, System.Xml.XmlElement node)
+		protected override void SaveUserData(System.Xml.XmlDocument doc, System.Xml.XmlElement node)
 		{
 			for (int i = 0; i < this.camViews.Count; i++)
 			{
@@ -90,7 +90,7 @@ namespace EditorBase
 				this.camViews[i].SaveUserData(camViewElem);
 			}
 		}
-		public override void LoadUserData(System.Xml.XmlElement node)
+		protected override void LoadUserData(System.Xml.XmlElement node)
 		{
 			this.isLoading = true;
 			for (int i = 0; i < this.camViews.Count; i++)
@@ -104,7 +104,7 @@ namespace EditorBase
 			this.isLoading = false;
 		}
 
-		public override void LoadPlugin()
+		protected override void LoadPlugin()
 		{
 			base.LoadPlugin();
 
@@ -187,7 +187,7 @@ namespace EditorBase
 			// Register PropertyEditor provider
 			CorePluginHelper.RegisterPropertyEditorProvider(new PropertyEditors.PropertyEditorProvider());
 		}
-		public override void InitPlugin(MainForm main)
+		protected override void InitPlugin(MainForm main)
 		{
 			base.InitPlugin(main);
 

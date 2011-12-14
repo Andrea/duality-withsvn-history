@@ -331,7 +331,21 @@ namespace Duality.Resources
 				else
 					target = targetObj;
 
-				this.changes[i].prop.SetValue(target, this.changes[i].val, null);
+				if (this.changes[i].prop != null) 
+				{
+					try
+					{
+						this.changes[i].prop.SetValue(target, this.changes[i].val, null);
+					}
+					catch (Exception e)
+					{
+						Log.Core.WriteError(
+							"Error applying PrefabLink changes in {0}, property {1}. Exception:\n{2}", 
+							this.obj.FullName,
+							this.changes[i].prop.Name,
+							e.ToString());
+					}
+				}
 			}
 		}
 		/// <summary>

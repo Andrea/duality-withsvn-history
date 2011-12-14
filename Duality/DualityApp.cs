@@ -68,31 +68,10 @@ namespace Duality
 		private	static	DualityMetaData			metaData			= null;
 		private	static	List<object>			disposeSchedule		= new List<object>();
 
-		private	static	Dictionary<string,Assembly>	plugins				= new Dictionary<string,Assembly>();
-		private	static	List<Assembly>				disposedPlugins		= new List<Assembly>();
-		private static	Dictionary<Type,List<Type>>	availTypeDict		= new Dictionary<Type,List<Type>>();
+		private	static	Dictionary<string,CorePlugin>	plugins			= new Dictionary<string,CorePlugin>();
+		private	static	List<Assembly>					disposedPlugins	= new List<Assembly>();
+		private static	Dictionary<Type,List<Type>>		availTypeDict	= new Dictionary<Type,List<Type>>();
 
-		/// <summary>
-		/// Fired as soon as Duality has been initialized. However, this usually happens before creating any kind of graphics context,
-		/// so no content is available yet and any attemp to load or request Resources is not recommended.
-		/// </summary>
-		public static event EventHandler Initialized		= null;
-		/// <summary>
-		/// Fired when shutting down Duality.
-		/// </summary>
-		public static event EventHandler Terminating		= null;
-		/// <summary>
-		/// Fired once after each update cycle - even in the editor.
-		/// </summary>
-		public static event EventHandler AfterUpdate		= null;
-		/// <summary>
-		/// Fired once before each update cycle - even in the editor.
-		/// </summary>
-		public static event EventHandler BeforeUpdate		= null;
-		/// <summary>
-		/// Fired when the execution context has changed at runtime. This normally happens in DualityEditor's sandbox mode.
-		/// </summary>
-		public static event EventHandler ExecContextChanged	= null;
 		/// <summary>
 		/// Fired whenever the <see cref="DualityUserData">gfx size / display resolution has changed</see>.
 		/// </summary>
@@ -229,20 +208,21 @@ namespace Duality
 			{
 				if (execContext != value)
 				{
+					ExecutionContext previous = execContext;
 					execContext = value;
-					OnExecContextChanged();
+					OnExecContextChanged(previous);
 				}
 			}
 		}
 		/// <summary>
 		/// [GET] Enumerates all currently loaded plugins.
 		/// </summary>
-		public static IEnumerable<Assembly> LoadedPlugins
+		public static IEnumerable<CorePlugin> LoadedPlugins
 		{
 			get { return plugins.Values; }
 		}
 		/// <summary>
-		/// [GET] Enumerates all plugins that have been loaded before, but have been discarded due to a runtime plugin reload operation.
+		/// [GET] Enumerates all plugin assemblies that have been loaded before, but have been discarded due to a runtime plugin reload operation.
 		/// This is usually only the case when being executed from withing the editor or manually triggering a plugin reload. However,
 		/// this is normally unnecessary.
 		/// </summary>
@@ -323,6 +303,7 @@ namespace Duality
 			Log.Core.Write("Command line arguments: {0}", args != null ? args.ToString(", ") : "null");
 
 			initialized = true;
+			InitPlugins();
 		}
 		/// <summary>
 		/// Terminates this DualityApp. This does not end the current Process, but it isn't recommended to
@@ -353,6 +334,7 @@ namespace Duality
 					SaveMetaData();
 				}
 				sound.Dispose();
+				UnloadPlugins();
 				Log.Core.Write("DualityApp terminated");
 			}
 
@@ -588,14 +570,9 @@ namespace Duality
 			}
 		}
 
-		/// <summary>
-		/// (Re)Loads all plugins. This results in discarding ALL Resources that might have been loaded before.
-		/// </summary>
-		public static void LoadPlugins()
+		private static void LoadPlugins()
 		{
-			foreach (Assembly asm in plugins.Values) disposedPlugins.Add(asm);
-			plugins.Clear();
-			availTypeDict.Clear();
+			UnloadPlugins();
 
 			Log.Core.Write("Scanning for core plugins...");
 			Log.Core.PushIndent();
@@ -604,67 +581,80 @@ namespace Duality
 			{
 				string[] pluginDllPaths = Directory.GetFiles("Plugins", "*.core.dll", SearchOption.AllDirectories);
 				Assembly pluginAssembly;
+				Type pluginType;
+				CorePlugin plugin;
 				for (int i = 0; i < pluginDllPaths.Length; i++)
 				{
 					Log.Core.Write("Loading '{0}'...", pluginDllPaths[i]);
 					Log.Core.PushIndent();
 					pluginAssembly = Assembly.Load(File.ReadAllBytes(pluginDllPaths[i]));
-					plugins.Add(pluginAssembly.FullName.Split(',')[0], pluginAssembly);
+					pluginType = pluginAssembly.GetExportedTypes().FirstOrDefault(t => typeof(CorePlugin).IsAssignableFrom(t));
+					if (pluginType == null)
+					{
+						Log.Core.WriteError("Can't find CorePlugin class. Discarding plugin...");
+						disposedPlugins.Add(pluginAssembly);
+						continue;
+					}
+					plugin = (CorePlugin)ReflectionHelper.CreateInstanceOf(pluginType);
+					plugins.Add(plugin.AssemblyName, plugin);
 					Log.Core.PopIndent();
 				}
 			}
 
 			Log.Core.PopIndent();
+		}
+		private static void InitPlugins()
+		{
+			foreach (CorePlugin plugin in plugins.Values) plugin.InitPlugin();
+		}
+		private static void UnloadPlugins()
+		{
+			foreach (CorePlugin plugin in plugins.Values)
+			{
+				disposedPlugins.Add(plugin.PluginAssembly);
+				plugin.Dispose();
+			}
+			plugins.Clear();
+			availTypeDict.Clear();
 			ReflectionHelper.ClearTypeCache();
 			ContentProvider.ClearContent();
 		}
-		/// <summary>
-		/// Reloads the specified plugin. This results in discarding all <see cref="Resource"/> types related to this
-		/// plugin, as well as the current <see cref="Scene"/>. However, you might still need to take care of your
-		/// own custom data, i.e. dispose and properly reload it, if it relies on the reloaded plugin in any way.
-		/// </summary>
-		/// <param name="pluginFileName">The file path of the plugin to reload</param>
-		public static void ReloadPlugin(string pluginFileName)
+		internal static void ReloadPlugin(string pluginFileName)
 		{
 			Log.Core.Write("Reloading core plugin '{0}'...", pluginFileName);
 			Log.Core.PushIndent();
 
 			// Load new plugin
 			Assembly pluginAssembly = Assembly.Load(File.ReadAllBytes(pluginFileName));
+			Type pluginType = pluginAssembly.GetExportedTypes().FirstOrDefault(t => typeof(CorePlugin).IsAssignableFrom(t));
+			CorePlugin plugin = (CorePlugin)ReflectionHelper.CreateInstanceOf(pluginType);
 
 			// If we're overwritin an old plugin here, add the old version to the "disposed" blacklist
-			string asmName = pluginAssembly.FullName.Split(',')[0];
-			Assembly oldAssembly = null;
+			CorePlugin oldPlugin = null;
 			Type[] oldResTypes = new Type[0];
-			if (plugins.TryGetValue(asmName, out oldAssembly))
+			if (plugins.TryGetValue(plugin.AssemblyName, out oldPlugin))
 			{
-				oldResTypes = (
-					from t in oldAssembly.GetExportedTypes()
-					where typeof(Resource).IsAssignableFrom(t)
-					select t).ToArray();
-				disposedPlugins.Add(oldAssembly);
+				disposedPlugins.Add(oldPlugin.PluginAssembly);
+				oldPlugin.Dispose();
 			}
 
 			// Register newly loaded plugin
-			plugins[asmName] = pluginAssembly;
-			availTypeDict.Clear();
+			plugins[plugin.AssemblyName] = plugin;
 			
 			Log.Core.PopIndent();
+			availTypeDict.Clear();
 			ReflectionHelper.ClearTypeCache();
 			Scene.Current.Dispose();
-			foreach (Type oldResType in oldResTypes) ContentProvider.UnregisterAllContent(oldResType);
+
+			// Init plugin
+			if (initialized) plugin.InitPlugin();
 		}
-		/// <summary>
-		/// Returns whether the specified plugin is a leaf plugin i.e. isn't referenced by any other already loaded plugin.
-		/// </summary>
-		/// <param name="pluginFileName">The file path of the plugin to reload</param>
-		/// <returns></returns>
-		public static bool IsLeafPlugin(string pluginFileName)
+		internal static bool IsLeafPlugin(string pluginFileName)
 		{
 			string asmName = Path.GetFileNameWithoutExtension(pluginFileName);
-			foreach (Assembly asm in plugins.Values)
+			foreach (CorePlugin plugin in plugins.Values)
 			{
-				AssemblyName[] refNames = asm.GetReferencedAssemblies();
+				AssemblyName[] refNames = plugin.PluginAssembly.GetReferencedAssemblies();
 				foreach (AssemblyName rn in refNames)
 				{
 					if (rn.Name == asmName) return false;
@@ -672,6 +662,7 @@ namespace Duality
 			}
 			return true;
 		}
+
 		/// <summary>
 		/// Requests a <see cref="Duality.Serialization.BinaryFormatter">binary serializer</see> for the specified stream.
 		/// </summary>
@@ -689,7 +680,7 @@ namespace Duality
 		public static IEnumerable<Assembly> GetDualityAssemblies()
 		{
 			yield return typeof(Duality.DualityApp).Assembly;
-			foreach (Assembly a in LoadedPlugins) yield return a;
+			foreach (CorePlugin p in LoadedPlugins) yield return p.PluginAssembly;
 		}
 		/// <summary>
 		/// Enumerates all available Duality <see cref="System.Type">Types</see> that are assignable
@@ -726,30 +717,17 @@ namespace Duality
 			return availTypes;
 		}
 
-		private static void OnInitialized()
-		{
-			if (Initialized != null)
-				Initialized(null, EventArgs.Empty);
-		}
-		private static void OnTerminating()
-		{
-			if (Terminating != null)
-				Terminating(null, EventArgs.Empty);
-		}
 		private static void OnBeforeUpdate()
 		{
-			if (BeforeUpdate != null)
-				BeforeUpdate(null, EventArgs.Empty);
+			foreach (CorePlugin plugin in plugins.Values) plugin.OnBeforeUpdate();
 		}
 		private static void OnAfterUpdate()
 		{
-			if (AfterUpdate != null)
-				AfterUpdate(null, EventArgs.Empty);
+			foreach (CorePlugin plugin in plugins.Values) plugin.OnAfterUpdate();
 		}
-		private static void OnExecContextChanged()
+		private static void OnExecContextChanged(ExecutionContext previousContext)
 		{
-			if (ExecContextChanged != null)
-				ExecContextChanged(null, EventArgs.Empty);
+			foreach (CorePlugin plugin in plugins.Values) plugin.OnExecContextChanged(previousContext);
 		}
 		private static void OnGfxSizeChanged()
 		{
@@ -770,9 +748,9 @@ namespace Duality
 		{
 			// If this method gets called, assume we are searching for a dynamically loaded plugin assembly
 			string assemblyNameStub = args.Name.Split(',')[0];
-			Assembly plugin;
+			CorePlugin plugin;
 			if (DualityApp.plugins.TryGetValue(assemblyNameStub, out plugin))
-				return plugin;
+				return plugin.PluginAssembly;
 			else
 				return null;
 		}

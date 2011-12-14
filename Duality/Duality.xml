@@ -257,26 +257,6 @@
             Triggers Duality to save its <see cref="T:Duality.DualityMetaData"/>.
             </summary>
         </member>
-        <member name="M:Duality.DualityApp.LoadPlugins">
-            <summary>
-            (Re)Loads all plugins. This results in discarding ALL Resources that might have been loaded before.
-            </summary>
-        </member>
-        <member name="M:Duality.DualityApp.ReloadPlugin(System.String)">
-            <summary>
-            Reloads the specified plugin. This results in discarding all <see cref="T:Duality.Resource"/> types related to this
-            plugin, as well as the current <see cref="T:Duality.Resources.Scene"/>. However, you might still need to take care of your
-            own custom data, i.e. dispose and properly reload it, if it relies on the reloaded plugin in any way.
-            </summary>
-            <param name="pluginFileName">The file path of the plugin to reload</param>
-        </member>
-        <member name="M:Duality.DualityApp.IsLeafPlugin(System.String)">
-            <summary>
-            Returns whether the specified plugin is a leaf plugin i.e. isn't referenced by any other already loaded plugin.
-            </summary>
-            <param name="pluginFileName">The file path of the plugin to reload</param>
-            <returns></returns>
-        </member>
         <member name="M:Duality.DualityApp.RequestSerializer(System.IO.Stream)">
             <summary>
             Requests a <see cref="T:Duality.Serialization.BinaryFormatter">binary serializer</see> for the specified stream.
@@ -307,32 +287,6 @@
             }
             </code>
             </example>
-        </member>
-        <member name="E:Duality.DualityApp.Initialized">
-            <summary>
-            Fired as soon as Duality has been initialized. However, this usually happens before creating any kind of graphics context,
-            so no content is available yet and any attemp to load or request Resources is not recommended.
-            </summary>
-        </member>
-        <member name="E:Duality.DualityApp.Terminating">
-            <summary>
-            Fired when shutting down Duality.
-            </summary>
-        </member>
-        <member name="E:Duality.DualityApp.AfterUpdate">
-            <summary>
-            Fired once after each update cycle - even in the editor.
-            </summary>
-        </member>
-        <member name="E:Duality.DualityApp.BeforeUpdate">
-            <summary>
-            Fired once before each update cycle - even in the editor.
-            </summary>
-        </member>
-        <member name="E:Duality.DualityApp.ExecContextChanged">
-            <summary>
-            Fired when the execution context has changed at runtime. This normally happens in DualityEditor's sandbox mode.
-            </summary>
         </member>
         <member name="E:Duality.DualityApp.GfxSizeChanged">
             <summary>
@@ -420,7 +374,7 @@
         </member>
         <member name="P:Duality.DualityApp.DisposedPlugins">
             <summary>
-            [GET] Enumerates all plugins that have been loaded before, but have been discarded due to a runtime plugin reload operation.
+            [GET] Enumerates all plugin assemblies that have been loaded before, but have been discarded due to a runtime plugin reload operation.
             This is usually only the case when being executed from withing the editor or manually triggering a plugin reload. However,
             this is normally unnecessary.
             </summary>
@@ -10964,6 +10918,31 @@
         <member name="T:Duality.Components.SoundListener">
             <summary>
             Makes this <see cref="T:Duality.GameObject"/> the 3d sound listener.
+            </summary>
+        </member>
+        <member name="M:Duality.CorePlugin.InitPlugin">
+            <summary>
+            Called when initializing the plugin.
+            </summary>
+        </member>
+        <member name="M:Duality.CorePlugin.OnDisposePlugin">
+            <summary>
+            Called when unloading / disposing the plugin.
+            </summary>
+        </member>
+        <member name="M:Duality.CorePlugin.OnBeforeUpdate">
+            <summary>
+            Called before Duality updates the game scene
+            </summary>
+        </member>
+        <member name="M:Duality.CorePlugin.OnAfterUpdate">
+            <summary>
+            Called after Duality updates the game scene
+            </summary>
+        </member>
+        <member name="M:Duality.CorePlugin.OnExecContextChanged(Duality.DualityApp.ExecutionContext)">
+            <summary>
+            Called when Dualitys <see cref="T:Duality.DualityApp.ExecutionContext"/> changes.
             </summary>
         </member>
     </members>

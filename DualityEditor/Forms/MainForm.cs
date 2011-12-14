@@ -386,6 +386,26 @@ namespace DualityEditor.Forms
 					string solution = File.ReadAllText(EditorHelper.SourceCodeSolutionFile);
 					File.WriteAllText(EditorHelper.SourceCodeSolutionFile, solution.Replace("# Visual C# Express 2010", "# Visual Studio 2010"), Encoding.UTF8);
 				}
+
+				// Replace class names
+				string namespaceName = EditorHelper.GenerateClassNameFromPath(EditorHelper.CurrentProjectName);
+				string pluginNameCore = namespaceName + "CorePlugin";
+				string pluginNameEditor = namespaceName + "EditorPlugin";
+
+				string file_CorePlugin_cs = File.ReadAllText(EditorHelper.SourceCodeCorePluginFile);
+				string file_ComponentExample_cs = File.ReadAllText(EditorHelper.SourceCodeComponentExampleFile);
+				string file_EditorPlugin_cs = File.ReadAllText(EditorHelper.SourceCodeEditorPluginFile);
+
+				file_ComponentExample_cs = file_ComponentExample_cs.Replace("<Namespace>", namespaceName);
+				file_CorePlugin_cs = file_CorePlugin_cs.Replace("<Namespace>", namespaceName);
+				file_EditorPlugin_cs = file_EditorPlugin_cs.Replace("<Namespace>", namespaceName);
+
+				file_CorePlugin_cs = file_CorePlugin_cs.Replace("<PluginClassName>", pluginNameCore);
+				file_EditorPlugin_cs = file_EditorPlugin_cs.Replace("<PluginClassName>", pluginNameEditor);
+
+				File.WriteAllText(EditorHelper.SourceCodeComponentExampleFile, file_ComponentExample_cs, Encoding.UTF8);
+				File.WriteAllText(EditorHelper.SourceCodeCorePluginFile, file_CorePlugin_cs, Encoding.UTF8);
+				File.WriteAllText(EditorHelper.SourceCodeEditorPluginFile, file_EditorPlugin_cs, Encoding.UTF8);
 			}
 
 			// Keep auto-generated files up-to-date

@@ -364,7 +364,7 @@ namespace EditorBase
 		{
 			this.toolStripLabelProjectName.Text = String.Format("{0}: {1}",
 				PluginRes.EditorBaseRes.ProjectNameLabel,
-				Path.GetFileName(Path.GetDirectoryName(Path.GetFullPath(EditorHelper.DataDirectory))));
+				EditorHelper.CurrentProjectName);
 
 			Node nodeTree = this.ScanDirectory(EditorHelper.DataDirectory);
 			nodeTree.Nodes.Insert(0, this.ScanDefaultContent());

@@ -15,9 +15,8 @@ namespace DualityEditor
 	{
 		private	MainForm	editor	= null;
 
-
 		/// <summary>
-		/// The Plugins ID. Try to make this unique, it is used for serializing user data.
+		/// The Plugins ID. This should be unique.
 		/// </summary>
 		public abstract string Id { get; }
 		public MainForm EditorForm
@@ -28,12 +27,12 @@ namespace DualityEditor
 		/// <summary>
 		/// This method is called as soon as the plugins assembly is loaded. Initializes the plugins internal data.
 		/// </summary>
-		public virtual void LoadPlugin() {}
+		internal protected virtual void LoadPlugin() {}
 		/// <summary>
 		/// This method is called when all plugins and the editors user data and layout are loaded. May initialize GUI.
 		/// </summary>
 		/// <param name="main"></param>
-		public virtual void InitPlugin(MainForm main)
+		internal protected virtual void InitPlugin(MainForm main)
 		{
 			this.editor = main;
 		}
@@ -41,12 +40,12 @@ namespace DualityEditor
 		/// Saves the plugins user data to the provided Xml Node.
 		/// </summary>
 		/// <param name="node"></param>
-		public virtual void SaveUserData(System.Xml.XmlDocument doc, System.Xml.XmlElement node) {}
+		internal protected virtual void SaveUserData(System.Xml.XmlDocument doc, System.Xml.XmlElement node) {}
 		/// <summary>
 		/// Loads the plugins user data from the provided Xml Node.
 		/// </summary>
 		/// <param name="node"></param>
-		public virtual void LoadUserData(System.Xml.XmlElement node) {}
+		internal protected virtual void LoadUserData(System.Xml.XmlElement node) {}
 		/// <summary>
 		/// Called when initializing the editors layout and trying to set up one of this plugins DockContent.
 		/// Returns an IDockContent instance of the specified dockContentType. May return already existing
@@ -54,6 +53,6 @@ namespace DualityEditor
 		/// </summary>
 		/// <param name="dockContentType"></param>
 		/// <returns></returns>
-		public virtual IDockContent DeserializeDockContent(Type dockContentType) { return null; }
+		internal protected virtual IDockContent DeserializeDockContent(Type dockContentType) { return null; }
 	}
 }

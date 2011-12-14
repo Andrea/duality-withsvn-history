@@ -353,7 +353,7 @@
         </member>
         <member name="P:DualityEditor.EditorPlugin.Id">
             <summary>
-            The Plugins ID. Try to make this unique, it is used for serializing user data.
+            The Plugins ID. This should be unique.
             </summary>
         </member>
         <member name="F:DualityEditor.Forms.ReloadCorePluginDialog.components">
