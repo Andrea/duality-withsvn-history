@@ -14,7 +14,6 @@ namespace DualityEditor
 	public abstract class EditorPlugin
 	{
 		private	MainForm	editor	= null;
-		public event EventHandler Init = null;
 
 
 		/// <summary>
@@ -36,7 +35,6 @@ namespace DualityEditor
 		/// <param name="main"></param>
 		public virtual void InitPlugin(MainForm main)
 		{
-			this.OnInit();
 			this.editor = main;
 		}
 		/// <summary>
@@ -57,11 +55,5 @@ namespace DualityEditor
 		/// <param name="dockContentType"></param>
 		/// <returns></returns>
 		public virtual IDockContent DeserializeDockContent(Type dockContentType) { return null; }
-
-		private void OnInit()
-		{
-			if (this.Init != null)
-				this.Init(this, null);
-		}
 	}
 }

@@ -51,7 +51,7 @@ namespace Duality
 		private	static	bool					initialized			= false;
 		private	static	bool					isUpdating			= false;
 		private	static	bool					runFromEditor		= false;
-		private	static	int						terminateScheduled	= 0;
+		private	static	bool					terminateScheduled	= false;
 		private	static	string					logfilePath			= "logfile";
 		private	static	StreamWriter			logfile				= null;
 		private	static	RtfDocument				logfileRtf			= null;
@@ -96,7 +96,7 @@ namespace Duality
 		/// <summary>
 		/// Fired whenever the <see cref="DualityUserData">gfx size / display resolution has changed</see>.
 		/// </summary>
-		public static event EventHandler GfxSizeChanged		= null;
+		internal static event EventHandler GfxSizeChanged	= null;
 
 
 		/// <summary>
@@ -311,15 +311,18 @@ namespace Duality
 			AppDomain.CurrentDomain.AssemblyResolve		+= CurrentDomain_AssemblyResolve;
 			AppDomain.CurrentDomain.AssemblyLoad		+= CurrentDomain_AssemblyLoad;
 
+			sound = new SoundDevice();
+			LoadPlugins();
+			LoadAppData();
+			LoadUserData();
+			LoadMetaData();
+			sound.Init();
+			
 			Log.Core.Write("DualityApp initialized");
 			Log.Core.Write("Debug Mode: {0}", System.Diagnostics.Debugger.IsAttached);
 			Log.Core.Write("Command line arguments: {0}", args != null ? args.ToString(", ") : "null");
 
-			sound = new SoundDevice();
-			LoadPlugins();
-
 			initialized = true;
-			OnInitialized();
 		}
 		/// <summary>
 		/// Terminates this DualityApp. This does not end the current Process, but it isn't recommended to
@@ -332,18 +335,26 @@ namespace Duality
 		public static void Terminate(bool unexpected = false)
 		{
 			if (!initialized) return;
-			if (isUpdating)
+
+			if (unexpected)
 			{
-				terminateScheduled = unexpected ? 2 : 1;
-				return;
+				Log.Core.WriteError("DualityApp terminated unexpectedly");
 			}
-
-			if (!unexpected) OnTerminating();
-
-			if (unexpected)	Log.Core.WriteError("DualityApp terminated unexpectedly");
-			else			Log.Core.Write("DualityApp terminated");
-
-			sound.Dispose();
+			else
+			{
+				if (isUpdating)
+				{
+					terminateScheduled = true;
+					return;
+				}
+				if (execContext != ExecutionContext.Editor)
+				{
+					SaveUserData();
+					SaveMetaData();
+				}
+				sound.Dispose();
+				Log.Core.Write("DualityApp terminated");
+			}
 
 			logfile.Close();
 			logfileRtf.save(logfilePath + ".rtf");
@@ -371,7 +382,7 @@ namespace Duality
 			Time.perfUpdate = watch.ElapsedMilliseconds;
 			isUpdating = false;
 
-			if (terminateScheduled != 0) Terminate(terminateScheduled == 2);
+			if (terminateScheduled) Terminate();
 		}
 		/// <summary>
 		/// Performs a single render cycle.
@@ -717,22 +728,11 @@ namespace Duality
 
 		private static void OnInitialized()
 		{
-			LoadAppData();
-			LoadUserData();
-			LoadMetaData();
-			sound.Init();
-
 			if (Initialized != null)
 				Initialized(null, EventArgs.Empty);
 		}
 		private static void OnTerminating()
 		{
-			if (execContext != ExecutionContext.Editor)
-			{
-				SaveUserData();
-				SaveMetaData();
-			}
-
 			if (Terminating != null)
 				Terminating(null, EventArgs.Empty);
 		}
