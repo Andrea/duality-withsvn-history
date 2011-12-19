@@ -257,7 +257,8 @@ namespace EditorBase
 
 
 		private	Dictionary<string,NodeBase>	pathIdToNode	= new Dictionary<string,NodeBase>();
-		private	FilteredTreeModel			folderModel		= null;
+		private	FilteredTreeModel			filteredModel	= null;
+		private	TreeModel					folderModel		= null;
 		private	NodeBase					editingNode		= null;
 
 		private	NodeBase	flashNode		= null;
@@ -276,8 +277,9 @@ namespace EditorBase
 		{
 			this.InitializeComponent();
 
-			this.folderModel = new FilteredTreeModel(this.folderModel_IsNodeVisible);
-			this.folderView.Model = this.folderModel;
+			this.folderModel = new TreeModel();
+			this.filteredModel = new FilteredTreeModel(this.folderModel_IsNodeVisible, this.folderModel);
+			this.folderView.Model = this.filteredModel;
 
 			this.nodeTextBoxName.DrawText += new EventHandler<Aga.Controls.Tree.NodeControls.DrawEventArgs>(nodeTextBoxName_DrawText);
 			this.nodeTextBoxName.EditorShowing += new CancelEventHandler(nodeTextBoxName_EditorShowing);
@@ -349,7 +351,7 @@ namespace EditorBase
 		{
 			this.tempUpperFilter = String.IsNullOrEmpty(this.textBoxFilter.Text) ? null : this.textBoxFilter.Text.ToUpper();
 			this.tempNodeVisibilityCache.Clear();
-			this.folderModel.Refresh();
+			this.filteredModel.Refresh();
 		}
 
 		protected IEnumerable<Type> QueryResourceTypes()
@@ -728,9 +730,10 @@ namespace EditorBase
 		{
 			this.ApplyNodeFilter();
 		}
-		private bool folderModel_IsNodeVisible(Node n)
+		private bool folderModel_IsNodeVisible(object obj)
 		{
 			if (this.tempUpperFilter == null) return true;
+			Node n = obj as Node;
 			bool isVisible;
 			if (!this.tempNodeVisibilityCache.TryGetValue(n, out isVisible))
 			{
