@@ -7,7 +7,7 @@ Next Steps:
 5.	"Optional": Collider Joints (Editor & Logic)
 
 -->	Bug: TreeViewAdvs FilteredTreeModel doesn't properly map InnerModel events to external events.
-	This results in de-selection any time the model changes (add / remove / change)
+	This results in "random" crashes if the model changes while being filtered.
 	-->	Properly implement this
 	-->	Alternatively, workaround this
 

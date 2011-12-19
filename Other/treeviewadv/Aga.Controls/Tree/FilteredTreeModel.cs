@@ -74,48 +74,21 @@ namespace Aga.Controls.Tree
 		}
 		private void _innerModel_NodesRemoved(object sender, TreeModelEventArgs e)
 		{
-			bool allFiltered = true;
-			foreach (object o in e.Children)
-			{
-				if (this.Filter(o))
-				{
-					allFiltered = false;
-					break;
-				}
-			}
-			if (allFiltered) return;
 			// Properly implement this. Need to map incoming data indices and children to filtered view
-			OnStructureChanged(new TreePathEventArgs(e.Path));
+			//OnStructureChanged(new TreePathEventArgs(e.Path));
+			OnNodesRemoved(e);
 		}
 		private void _innerModel_NodesInserted(object sender, TreeModelEventArgs e)
 		{
-			bool allFiltered = true;
-			foreach (object o in e.Children)
-			{
-				if (this.Filter(o))
-				{
-					allFiltered = false;
-					break;
-				}
-			}
-			if (allFiltered) return;
 			// Properly implement this. Need to map incoming data indices and children to filtered view
-			OnStructureChanged(new TreePathEventArgs(e.Path));
+			//OnStructureChanged(new TreePathEventArgs(e.Path));
+			OnNodesInserted(e);
 		}
 		private void _innerModel_NodesChanged(object sender, TreeModelEventArgs e)
 		{
-			bool allFiltered = true;
-			foreach (object o in e.Children)
-			{
-				if (this.Filter(o))
-				{
-					allFiltered = false;
-					break;
-				}
-			}
-			if (allFiltered) return;
 			// Properly implement this. Need to map incoming data indices and children to filtered view
-			OnStructureChanged(new TreePathEventArgs(e.Path));
+			//OnStructureChanged(new TreePathEventArgs(e.Path));
+			OnNodesChanged(e);
 		}
 	}
 }
