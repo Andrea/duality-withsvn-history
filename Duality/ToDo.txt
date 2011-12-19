@@ -1,14 +1,4 @@
 ﻿
--->	Introduce CorePlugin class
-	--> InitPlugin()	// called in DualityApp.OnInitialized or directly after loading the plugin if DualityApp already was inizialized (plugin reloaded)
-	-->	DisposePlugin()	// plugin enters blacklist
-	-->	OnTerminate()
-	-->	OnBeforeUpdate()
-	-->	OnAfterUpdate()
-	--> OnExecContextChanged()
-	-->	Remove all public event handlers from DualityApp.
-
-
 Next Steps:
 1.	Bugfixing
 2.	Collider Editor
