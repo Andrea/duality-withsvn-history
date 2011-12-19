@@ -6,6 +6,11 @@ Next Steps:
 4.	Re-Implement Asteroids using Colliders
 5.	"Optional": Collider Joints (Editor & Logic)
 
+-->	Bug: TreeViewAdvs FilteredTreeModel doesn't properly map InnerModel events to external events.
+	This results in de-selection any time the model changes (add / remove / change)
+	-->	Properly implement this
+	-->	Alternatively, workaround this
+
 -->	Bug: Changing the Component type (adding new interface, etc.) doesn't update a Scene's managers.
 	-->	Keep in mind: Scenes that aren't loaded need to be updated as well.
 	-->	Don't save managers / change Scene serialization? Needs to be more robust!
