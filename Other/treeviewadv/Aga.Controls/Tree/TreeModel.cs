@@ -13,11 +13,16 @@ namespace Aga.Controls.Tree
 	public class TreeModel : ITreeModel
 	{
 		private Node _root;
+
+		public event EventHandler<TreePathEventArgs> StructureChanged;
+		public event EventHandler<TreeModelEventArgs> NodesInserted;
+		public event EventHandler<TreeModelEventArgs> NodesRemoved;
+		public event EventHandler<TreeModelEventArgs> NodesChanged;
+
 		public Node Root
 		{
 			get { return _root; }
 		}
-
 		public Collection<Node> Nodes
 		{
 			get { return _root.Nodes; }
@@ -44,7 +49,6 @@ namespace Aga.Controls.Tree
 				return new TreePath(stack.ToArray());
 			}
 		}
-
 		public Node FindNode(TreePath path)
 		{
 			if (path.IsEmpty())
@@ -52,10 +56,10 @@ namespace Aga.Controls.Tree
 			else
 				return FindNode(_root, path, 0);
 		}
-
 		private Node FindNode(Node root, TreePath path, int level)
 		{
 			foreach (Node node in root.Nodes)
+			{
 				if (node == path.FullPath[level])
 				{
 					if (level == path.FullPath.Length - 1)
@@ -63,10 +67,9 @@ namespace Aga.Controls.Tree
 					else
 						return FindNode(node, path, level + 1);
 				}
+			}
 			return null;
 		}
-
-		#region ITreeModel Members
 
 		public virtual System.Collections.IEnumerable GetChildren(TreePath treePath)
 		{
@@ -77,7 +80,6 @@ namespace Aga.Controls.Tree
 			else
 				yield break;
 		}
-
 		public virtual bool IsLeaf(TreePath treePath)
 		{
 			Node node = FindNode(treePath);
@@ -87,22 +89,22 @@ namespace Aga.Controls.Tree
 				throw new ArgumentException("treePath");
 		}
 
-		public event EventHandler<TreeModelEventArgs> NodesChanged;
-		internal void OnNodesChanged(TreeModelEventArgs args)
-		{
-			if (NodesChanged != null)
-				NodesChanged(this, args);
-		}
-
-		public event EventHandler<TreePathEventArgs> StructureChanged;
-		public void OnStructureChanged(TreePathEventArgs args)
+		public virtual void OnStructureChanged(TreePathEventArgs args)
 		{
 			if (StructureChanged != null)
 				StructureChanged(this, args);
 		}
-
-		public event EventHandler<TreeModelEventArgs> NodesInserted;
-		internal void OnNodeInserted(Node parent, int index, Node node)
+		internal protected virtual void OnNodesChanged(Node parent, int index, Node node)
+		{
+			if (NodesChanged != null)
+			{
+				TreePath path = GetPath(parent);
+				if (path == null) return;
+				TreeModelEventArgs args = new TreeModelEventArgs(path, new int[] { index }, new object[] { node });
+				NodesChanged(this, args);
+			}
+		}
+		internal protected virtual void OnNodeInserted(Node parent, int index, Node node)
 		{
 			if (NodesInserted != null)
 			{
@@ -111,9 +113,7 @@ namespace Aga.Controls.Tree
 			}
 
 		}
-
-		public event EventHandler<TreeModelEventArgs> NodesRemoved;
-		internal void OnNodeRemoved(Node parent, int index, Node node)
+		internal protected virtual void OnNodeRemoved(Node parent, int index, Node node)
 		{
 			if (NodesRemoved != null)
 			{
@@ -121,7 +121,5 @@ namespace Aga.Controls.Tree
 				NodesRemoved(this, args);
 			}
 		}
-
-		#endregion
 	}
 }

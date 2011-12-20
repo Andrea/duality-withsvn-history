@@ -151,8 +151,7 @@ namespace EditorBase
 
 
 		private	Dictionary<object,NodeBase>	objToNode		= new Dictionary<object,NodeBase>();
-		private	FilteredTreeModel			filteredModel	= null;
-		private	TreeModel					objectModel		= null;
+		private	FilteredTreeModel			objectModel		= null;
 		private	NodeBase					editingNode		= null;
 
 		private	NodeBase	flashNode		= null;
@@ -200,9 +199,8 @@ namespace EditorBase
 		{
 			this.InitializeComponent();
 
-			this.objectModel = new TreeModel();
-			this.filteredModel = new FilteredTreeModel(this.objectModel_IsNodeVisible, this.objectModel);
-			this.objectView.Model = this.filteredModel;
+			this.objectModel = new FilteredTreeModel(this.objectModel_IsNodeVisible);
+			this.objectView.Model = this.objectModel;
 
 			this.nodeTextBoxName.ToolTipProvider = this.nodeStateIcon.ToolTipProvider = new ToolTipProvider();
 			this.nodeTextBoxName.DrawText += new EventHandler<Aga.Controls.Tree.NodeControls.DrawEventArgs>(nodeTextBoxName_DrawText);
@@ -287,7 +285,7 @@ namespace EditorBase
 		{
 			this.tempUpperFilter = String.IsNullOrEmpty(this.textBoxFilter.Text) ? null : this.textBoxFilter.Text.ToUpper();
 			this.tempNodeVisibilityCache.Clear();
-			this.filteredModel.Refresh();
+			this.objectModel.Refresh();
 		}
 
 		protected IEnumerable<Type> QueryComponentTypes()

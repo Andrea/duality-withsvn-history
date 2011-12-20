@@ -243,15 +243,7 @@ namespace Aga.Controls.Tree
 		protected void NotifyModel()
 		{
 			TreeModel model = FindModel();
-			if (model != null && Parent != null)
-			{
-				TreePath path = model.GetPath(Parent);
-				if (path != null)
-				{
-					TreeModelEventArgs args = new TreeModelEventArgs(path, new int[] { Index }, new object[] { this });
-					model.OnNodesChanged(args);
-				}
-			}
+			if (model != null && Parent != null) model.OnNodesChanged(Parent, Index, this);
 		}
 	}
 }

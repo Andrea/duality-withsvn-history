@@ -5,90 +5,90 @@ using System.Collections.ObjectModel;
 
 namespace Aga.Controls.Tree
 {
-	public class FilteredTreeModel : TreeModelBase
+	public class FilteredTreeModel : TreeModel
 	{
-		private ITreeModel _innerModel;
-		public ITreeModel InnerModel
-		{
-			get { return _innerModel; }
-		}
+		private Predicate<Node> filter = null;
 
-		private Predicate<object> _filter = null;
-		public Predicate<object> Filter
+		public Predicate<Node> Filter
 		{
-			get { return _filter; }
+			get { return filter; }
 			set 
 			{ 
 				if (value == null) throw new ArgumentNullException("value");
-				if (this._filter != value)
+				if (this.filter != value)
 				{
-					this._filter = value;
+					this.filter = value;
 					this.Refresh();
 				}
 			}
 		}
 		
 
-		public FilteredTreeModel(Predicate<object> filter, ITreeModel innerModel)
+		public FilteredTreeModel(Predicate<Node> filter)
 		{
 			if (filter == null) throw new ArgumentNullException("filter");
-			this._filter = filter;
+			this.filter = filter;
+		}
 
-			if (innerModel == null) throw new ArgumentNullException("innerModel");
-			this._innerModel = innerModel;
-			this._innerModel.NodesChanged += this._innerModel_NodesChanged;
-			this._innerModel.NodesInserted += this._innerModel_NodesInserted;
-			this._innerModel.NodesRemoved += this._innerModel_NodesRemoved;
-			this._innerModel.StructureChanged += this._innerModel_StructureChanged;
+		public void Refresh()
+		{
+			this.OnStructureChanged(new TreePathEventArgs(TreePath.Empty));
+		}
+		
+		private bool IsPathVisible(Node node)
+		{
+			if (node.Parent != null)
+				return this.Filter(node) && this.IsPathVisible(node.Parent);
+			else
+				return true;
+		}
+		private int MapToFilteredIndex(Node parent, int index, Node node)
+		{
+			for (int i = index - 1; i >= 0; i--)
+			{
+				if (!this.Filter(parent.Nodes[i])) index--;
+			}
+			return index;
 		}
 
 		public override System.Collections.IEnumerable GetChildren(TreePath treePath)
 		{
-			if (this.Filter != null)
+			Node node = FindNode(treePath);
+			if (node != null)
 			{
-				System.Collections.ArrayList list = new System.Collections.ArrayList();
-				System.Collections.IEnumerable res = InnerModel.GetChildren(treePath);
-				if (res != null)
+				if (this.Filter != null)
 				{
-					foreach (object obj in res)
+					foreach (Node n in node.Nodes)
 					{
-						if (!this.Filter(obj)) continue;
-						list.Add(obj);
+						if (!this.Filter(n)) continue;
+						yield return n;
 					}
-					return list;
 				}
 				else
-					return null;
+				{
+					foreach (Node n in node.Nodes)
+						yield return n;
+				}
 			}
-			else
-				return InnerModel.GetChildren(treePath);
+			else yield break;
 		}
-		public override bool IsLeaf(TreePath treePath)
+		protected internal override void OnNodeRemoved(Node parent, int index, Node node)
 		{
-			return InnerModel.IsLeaf(treePath);
+			//if (!this.IsPathVisible(node)) return;
+			//index = this.MapToFilteredIndex(parent, index, node);
+			base.OnNodeRemoved(parent, index, node);
 		}
-
-		private void _innerModel_StructureChanged(object sender, TreePathEventArgs e)
+		protected internal override void OnNodeInserted(Node parent, int index, Node node)
 		{
-			OnStructureChanged(e);
+			//if (!this.IsPathVisible(node)) return;
+			//index = this.MapToFilteredIndex(parent, index, node);
+			base.OnNodeInserted(parent, index, node);
 		}
-		private void _innerModel_NodesRemoved(object sender, TreeModelEventArgs e)
+		protected internal override void OnNodesChanged(Node parent, int index, Node node)
 		{
-			// Properly implement this. Need to map incoming data indices and children to filtered view
-			//OnStructureChanged(new TreePathEventArgs(e.Path));
-			OnNodesRemoved(e);
-		}
-		private void _innerModel_NodesInserted(object sender, TreeModelEventArgs e)
-		{
-			// Properly implement this. Need to map incoming data indices and children to filtered view
-			//OnStructureChanged(new TreePathEventArgs(e.Path));
-			OnNodesInserted(e);
-		}
-		private void _innerModel_NodesChanged(object sender, TreeModelEventArgs e)
-		{
-			// Properly implement this. Need to map incoming data indices and children to filtered view
-			//OnStructureChanged(new TreePathEventArgs(e.Path));
-			OnNodesChanged(e);
+			//if (!this.IsPathVisible(node)) return;
+			//index = this.MapToFilteredIndex(parent, index, node);
+			base.OnNodesChanged(parent, index, node);
 		}
 	}
 }
