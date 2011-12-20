@@ -27,13 +27,14 @@ namespace TestApp
 			this.model.Nodes[1].Nodes.Add(new Node("Child1"));
 			this.model.Nodes[1].Nodes.Add(new Node("Child2"));
 
-			this.filteredModel = new FilteredTreeModel(this.filter);
-			this.filteredModel.Nodes.Add(new Node("Root0"));
-			this.filteredModel.Nodes.Add(new Node("Root1"));
-			this.filteredModel.Nodes.Add(new Node("Root2"));
-			this.filteredModel.Nodes[1].Nodes.Add(new Node("Child0"));
-			this.filteredModel.Nodes[1].Nodes.Add(new Node("Child1"));
-			this.filteredModel.Nodes[1].Nodes.Add(new Node("Child2"));
+			this.filteredModel = new FilteredTreeModel(this.filter, this.model);
+			//this.filteredModel = new FilteredTreeModel(this.filter);
+			//this.filteredModel.Nodes.Add(new Node("Root0"));
+			//this.filteredModel.Nodes.Add(new Node("Root1"));
+			//this.filteredModel.Nodes.Add(new Node("Root2"));
+			//this.filteredModel.Nodes[1].Nodes.Add(new Node("Child0"));
+			//this.filteredModel.Nodes[1].Nodes.Add(new Node("Child1"));
+			//this.filteredModel.Nodes[1].Nodes.Add(new Node("Child2"));
 			this.treeViewAdv1.Model = this.filteredModel;
 		}
 

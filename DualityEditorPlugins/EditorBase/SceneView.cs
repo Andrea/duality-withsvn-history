@@ -151,8 +151,9 @@ namespace EditorBase
 
 
 		private	Dictionary<object,NodeBase>	objToNode		= new Dictionary<object,NodeBase>();
-		private	FilteredTreeModel			objectModel		= null;
-		private	NodeBase					editingNode		= null;
+		private	TreeModel					objectModel		= null;
+		private	FilteredTreeModel			filteredModel	= null;
+		private	NodeBase					lastEditedNode	= null;
 
 		private	NodeBase	flashNode		= null;
 		private	float		flashDuration	= 0.0f;
@@ -199,8 +200,9 @@ namespace EditorBase
 		{
 			this.InitializeComponent();
 
-			this.objectModel = new FilteredTreeModel(this.objectModel_IsNodeVisible);
-			this.objectView.Model = this.objectModel;
+			this.objectModel = new TreeModel();
+			this.filteredModel = new FilteredTreeModel(null, this.objectModel);
+			this.objectView.Model = this.filteredModel;
 
 			this.nodeTextBoxName.ToolTipProvider = this.nodeStateIcon.ToolTipProvider = new ToolTipProvider();
 			this.nodeTextBoxName.DrawText += new EventHandler<Aga.Controls.Tree.NodeControls.DrawEventArgs>(nodeTextBoxName_DrawText);
@@ -285,7 +287,8 @@ namespace EditorBase
 		{
 			this.tempUpperFilter = String.IsNullOrEmpty(this.textBoxFilter.Text) ? null : this.textBoxFilter.Text.ToUpper();
 			this.tempNodeVisibilityCache.Clear();
-			this.objectModel.Refresh();
+			this.filteredModel.Filter = this.tempUpperFilter != null ? this.objectModel_IsNodeVisible : (Predicate<object>)null;
+			this.filteredModel.Refresh();
 		}
 
 		protected IEnumerable<Type> QueryComponentTypes()
@@ -881,18 +884,17 @@ namespace EditorBase
 
 			if (!e.Cancel)
 			{
-				this.editingNode = node;
+				this.lastEditedNode = node;
 				this.objectView.ContextMenuStrip = null;
 			}
 		}
 		private void nodeTextBoxName_EditorHided(object sender, EventArgs e)
 		{
-			this.editingNode = null;
 			this.objectView.ContextMenuStrip = this.contextMenuNode;
 		}
 		private void nodeTextBoxName_ChangesApplied(object sender, EventArgs e)
 		{
-			NodeBase node = this.objectView.SelectedNode.Tag as NodeBase;
+			NodeBase node = this.lastEditedNode;
 			GameObjectNode objNode = node as GameObjectNode;
 			if (objNode != null)
 			{

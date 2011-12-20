@@ -231,7 +231,7 @@ namespace EditorBase
 
 		public override void DeleteObjects(IEnumerable<SelObj> objEnum)
 		{
-			var objList = new List<GameObject>(objEnum.Select(s => s.ActualObject as GameObject));
+			var objList = objEnum.Select(s => s.ActualObject as GameObject).ToList();
 			if (objList.Count == 0) return;
 
 			// Ask user if he really wants to delete stuff
@@ -248,8 +248,10 @@ namespace EditorBase
 		}
 		public override List<SelObj> CloneObjects(IEnumerable<SelObj> objEnum)
 		{
+			var objList = objEnum.Select(s => s.ActualObject as GameObject).ToList();
+
 			List<SelObj> clones = new List<SelObj>();
-			foreach (GameObject o in objEnum.Select(s => s.ActualObject as GameObject))
+			foreach (GameObject o in objList)
 			{ 
 				if (o.Disposed) continue;
 				GameObject clone = o.Clone();

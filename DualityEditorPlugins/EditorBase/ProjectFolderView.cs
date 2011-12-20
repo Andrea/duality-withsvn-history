@@ -257,8 +257,9 @@ namespace EditorBase
 
 
 		private	Dictionary<string,NodeBase>	pathIdToNode	= new Dictionary<string,NodeBase>();
-		private	FilteredTreeModel			folderModel		= null;
-		private	NodeBase					editingNode		= null;
+		private	TreeModel					folderModel		= null;
+		private	FilteredTreeModel			filteredModel	= null;
+		private	NodeBase					lastEditedNode	= null;
 
 		private	NodeBase	flashNode		= null;
 		private	float		flashDuration	= 0.0f;
@@ -276,8 +277,9 @@ namespace EditorBase
 		{
 			this.InitializeComponent();
 
-			this.folderModel = new FilteredTreeModel(this.folderModel_IsNodeVisible);
-			this.folderView.Model = this.folderModel;
+			this.folderModel = new TreeModel();
+			this.filteredModel = new FilteredTreeModel(null, this.folderModel);
+			this.folderView.Model = this.filteredModel;
 
 			this.nodeTextBoxName.DrawText += new EventHandler<Aga.Controls.Tree.NodeControls.DrawEventArgs>(nodeTextBoxName_DrawText);
 			this.nodeTextBoxName.EditorShowing += new CancelEventHandler(nodeTextBoxName_EditorShowing);
@@ -349,7 +351,8 @@ namespace EditorBase
 		{
 			this.tempUpperFilter = String.IsNullOrEmpty(this.textBoxFilter.Text) ? null : this.textBoxFilter.Text.ToUpper();
 			this.tempNodeVisibilityCache.Clear();
-			this.folderModel.Refresh();
+			this.filteredModel.Filter = this.tempUpperFilter != null ? this.folderModel_IsNodeVisible : (Predicate<object>)null;
+			this.filteredModel.Refresh();
 		}
 
 		protected IEnumerable<Type> QueryResourceTypes()
@@ -505,7 +508,7 @@ namespace EditorBase
 		protected void ClipboardCopyNodes(IEnumerable<TreeNodeAdv> nodes)
 		{
 			DataObject data = new DataObject();
-			this.AppendNodesToData(data, this.folderView.SelectedNodes);
+			this.AppendNodesToData(data, nodes);
 
 			Clipboard.Clear();
 			Clipboard.SetDataObject(data);
@@ -513,7 +516,7 @@ namespace EditorBase
 		protected void ClipboardCutNodes(IEnumerable<TreeNodeAdv> nodes)
 		{
 			DataObject data = new DataObject();
-			this.AppendNodesToData(data, this.folderView.SelectedNodes);
+			this.AppendNodesToData(data, nodes);
 			Clipboard.SetDataObject(data, true);
 
 			byte[] moveEffect = new byte[] {2, 0, 0, 0};
@@ -594,12 +597,13 @@ namespace EditorBase
 		}
 		protected void DeleteNodes(IEnumerable<TreeNodeAdv> nodes)
 		{
-			bool allReadOnly = this.folderView.SelectedNodes.All(viewNode => (viewNode.Tag as NodeBase).ReadOnly);
+			nodes = nodes.ToList();
+			bool allReadOnly = nodes.All(viewNode => (viewNode.Tag as NodeBase).ReadOnly);
 			
 			if (allReadOnly || !this.DisplayConfirmDeleteSelectedFiles()) return;
 
 			var nodeQuery = 
-				from viewNode in this.folderView.SelectedNodes
+				from viewNode in nodes
 				select this.folderModel.FindNode(this.folderView.GetPath(viewNode)) as NodeBase;
 
 			foreach (NodeBase nodeBase in nodeQuery)
@@ -968,18 +972,17 @@ namespace EditorBase
 			if (node.ReadOnly) e.Cancel = true;
 			if (!e.Cancel)
 			{
-				this.editingNode = node;
+				this.lastEditedNode = node;
 				this.folderView.ContextMenuStrip = null;
 			}
 		}
 		private void nodeTextBoxName_EditorHided(object sender, EventArgs e)
 		{
-			this.editingNode = null;
 			this.folderView.ContextMenuStrip = this.contextMenuNode;
 		}
 		private void nodeTextBoxName_ChangesApplied(object sender, EventArgs e)
 		{
-			NodeBase node = this.folderView.SelectedNode.Tag as NodeBase;
+			NodeBase node = this.lastEditedNode;
 			Node parentNode = node.Parent;
 			this.UnregisterNodeTree(node);
 			node.Parent.Nodes.Remove(node);
