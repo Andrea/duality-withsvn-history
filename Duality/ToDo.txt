@@ -6,10 +6,6 @@ Next Steps:
 4.	Re-Implement Asteroids using Colliders
 5.	"Optional": Collider Joints (Editor & Logic)
 
--->	Bug: Copy Collider Component to different GameObject
-
--->	Bug: Leave editor with Ortho-Refdist. Restart --> Crash
-
 -->	Bug: Changing the Component type (adding new interface, etc.) doesn't update a Scene's managers.
 	-->	Keep in mind: Scenes that aren't loaded need to be updated as well.
 	-->	Don't save managers / change Scene serialization? Needs to be more robust!

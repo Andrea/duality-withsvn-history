@@ -4121,6 +4121,31 @@
             [GET] The <see cref="T:Duality.Serialization.DataType"/> associated with the described <see cref="T:System.Type"/>.
             </summary>
         </member>
+        <member name="M:Duality.CorePlugin.InitPlugin">
+            <summary>
+            Called when initializing the plugin.
+            </summary>
+        </member>
+        <member name="M:Duality.CorePlugin.OnDisposePlugin">
+            <summary>
+            Called when unloading / disposing the plugin.
+            </summary>
+        </member>
+        <member name="M:Duality.CorePlugin.OnBeforeUpdate">
+            <summary>
+            Called before Duality updates the game scene
+            </summary>
+        </member>
+        <member name="M:Duality.CorePlugin.OnAfterUpdate">
+            <summary>
+            Called after Duality updates the game scene
+            </summary>
+        </member>
+        <member name="M:Duality.CorePlugin.OnExecContextChanged(Duality.DualityApp.ExecutionContext)">
+            <summary>
+            Called when Dualitys <see cref="T:Duality.DualityApp.ExecutionContext"/> changes.
+            </summary>
+        </member>
         <member name="T:Duality.Time">
             <summary>
             The Time class provides a global interface for time measurement and control. It affects all time-dependent computations. 
@@ -10918,31 +10943,6 @@
         <member name="T:Duality.Components.SoundListener">
             <summary>
             Makes this <see cref="T:Duality.GameObject"/> the 3d sound listener.
-            </summary>
-        </member>
-        <member name="M:Duality.CorePlugin.InitPlugin">
-            <summary>
-            Called when initializing the plugin.
-            </summary>
-        </member>
-        <member name="M:Duality.CorePlugin.OnDisposePlugin">
-            <summary>
-            Called when unloading / disposing the plugin.
-            </summary>
-        </member>
-        <member name="M:Duality.CorePlugin.OnBeforeUpdate">
-            <summary>
-            Called before Duality updates the game scene
-            </summary>
-        </member>
-        <member name="M:Duality.CorePlugin.OnAfterUpdate">
-            <summary>
-            Called after Duality updates the game scene
-            </summary>
-        </member>
-        <member name="M:Duality.CorePlugin.OnExecContextChanged(Duality.DualityApp.ExecutionContext)">
-            <summary>
-            Called when Dualitys <see cref="T:Duality.DualityApp.ExecutionContext"/> changes.
             </summary>
         </member>
     </members>

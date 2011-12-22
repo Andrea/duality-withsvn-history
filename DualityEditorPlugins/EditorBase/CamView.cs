@@ -342,7 +342,7 @@ namespace EditorBase
 			if (bool.TryParse(node.GetAttribute("toggleParallaxity"), out tryParseBool))
 				this.toggleParallaxity.Checked = tryParseBool;
 			if (decimal.TryParse(node.GetAttribute("parallaxRefDist"), out tryParseDecimal))
-				this.parallaxRefDist.Value = tryParseDecimal;
+				this.parallaxRefDist.Value = Math.Abs(tryParseDecimal);
 			if (int.TryParse(node.GetAttribute("bgColorArgb"), out tryParseInt))
 			{
 				this.bgColorDialog.OldColor = Color.FromArgb(tryParseInt);

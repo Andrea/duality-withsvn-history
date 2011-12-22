@@ -365,7 +365,7 @@ namespace Duality.Components
 		}
 		private void UpdateBodyShape()
 		{
-			Vector2 scale = this.GameObj.Transform.Scale.Xy;
+			Vector2 scale = this.GameObj != null && this.GameObj.Transform != null ? this.GameObj.Transform.Scale.Xy : Vector2.One;
 			foreach (Fixture f in this.body.FixtureList)
 			{
 				ShapeInfo info = f.UserData as ShapeInfo;
@@ -387,7 +387,7 @@ namespace Duality.Components
 		private void InitBody()
 		{
 			if (this.body != null) this.CleanupBody();
-			Transform t = this.GameObj.Transform;
+			Transform t = this.GameObj != null ? this.GameObj.Transform : null;
 
 			this.body = this.CreateBody();
 			this.UpdateBodyShape();
@@ -402,9 +402,12 @@ namespace Duality.Components
 			this.body.CollisionCategories = this.colCat;
 			this.body.UserData = this;
 
-			this.body.SetTransform(t.Pos.Xy * 0.01f, t.Angle);
-			this.body.LinearVelocity = t.Vel.Xy * 0.01f / Time.SPFMult;
-			this.body.AngularVelocity = t.AngleVel / Time.SPFMult;
+			if (t != null)
+			{
+				this.body.SetTransform(t.Pos.Xy * 0.01f, t.Angle);
+				this.body.LinearVelocity = t.Vel.Xy * 0.01f / Time.SPFMult;
+				this.body.AngularVelocity = t.AngleVel / Time.SPFMult;
+			}
 
 			this.body.OnCollision += this.body_OnCollision;
 			this.body.OnSeparation += this.body_OnSeparation;
@@ -570,7 +573,6 @@ namespace Duality.Components
 			c.restitution = this.restitution;
 			c.colCat = this.colCat;
 			c.shapes = this.shapes == null ? null : new List<ShapeInfo>(this.shapes.Select(s => s.Clone()));
-			c.InitBody();
 		}
 	}
 }
