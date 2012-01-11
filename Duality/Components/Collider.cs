@@ -522,7 +522,7 @@ namespace Duality.Components
 		void ITransformUpdater.UpdateTransform(Transform t)
 		{
 			t.SetTransform(
-				new Vector3(this.body.Position.X * 100.0f, this.body.Position.Y * 100.0f, t.Pos.Z),
+				new Vector3(this.body.Position.X * 100.0f, this.body.Position.Y * 100.0f, t.Pos.Z + t.Vel.Z * Time.TimeMult),
 				new Vector3(this.body.LinearVelocity.X * 100.0f * Time.SPFMult, this.body.LinearVelocity.Y * 100.0f * Time.SPFMult, t.Vel.Z),
 				t.Scale,
 				this.body.Rotation,
