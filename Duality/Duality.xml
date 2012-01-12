@@ -7735,7 +7735,16 @@
             Returns a random <see cref="T:OpenTK.Vector2"/>.
             </summary>
             <param name="r">A random number generator.</param>
-            <param name="radius">Maximum length of the vector.</param>
+            <param name="radius">Length of the vector.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ExtMethodsRandom.NextVector2(System.Random,System.Single,System.Single)">
+            <summary>
+            Returns a random <see cref="T:OpenTK.Vector2"/>.
+            </summary>
+            <param name="r">A random number generator.</param>
+            <param name="minRadius">Minimum length of the vector</param>
+            <param name="maxRadius">Maximum length of the vector</param>
             <returns></returns>
         </member>
         <member name="M:Duality.ExtMethodsRandom.NextVector2(System.Random,System.Single,System.Single,System.Single,System.Single)">
@@ -7770,6 +7779,15 @@
             </summary>
             <param name="r">A random number generator.</param>
             <param name="radius">Maximum length of the vector.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ExtMethodsRandom.NextVector3(System.Random,System.Single,System.Single)">
+            <summary>
+            Returns a random <see cref="T:OpenTK.Vector3"/>.
+            </summary>
+            <param name="r">A random number generator.</param>
+            <param name="minRadius">Minimum length of the vector</param>
+            <param name="maxRadius">Maximum length of the vector</param>
             <returns></returns>
         </member>
         <member name="M:Duality.ExtMethodsRandom.NextVector3(System.Random,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">

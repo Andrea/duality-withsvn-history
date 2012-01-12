@@ -99,12 +99,23 @@ namespace Duality
 		/// Returns a random <see cref="Vector2"/>.
 		/// </summary>
 		/// <param name="r">A random number generator.</param>
-		/// <param name="radius">Maximum length of the vector.</param>
+		/// <param name="radius">Length of the vector.</param>
 		/// <returns></returns>
 		public static Vector2 NextVector2(this Random r, float radius)
 		{
 			float angle = r.NextFloat(0.0f, MathF.RadAngle360);
-			return new Vector2(MathF.Sin(angle), -MathF.Cos(angle)) * r.NextFloat(0.0f, radius);
+			return new Vector2(MathF.Sin(angle), -MathF.Cos(angle)) * radius;
+		}
+		/// <summary>
+		/// Returns a random <see cref="Vector2"/>.
+		/// </summary>
+		/// <param name="r">A random number generator.</param>
+		/// <param name="minRadius">Minimum length of the vector</param>
+		/// <param name="maxRadius">Maximum length of the vector</param>
+		/// <returns></returns>
+		public static Vector2 NextVector2(this Random r, float minRadius, float maxRadius)
+		{
+			return r.NextVector2(r.NextFloat(minRadius, maxRadius));
 		}
 		/// <summary>
 		/// Returns a random <see cref="Vector2"/> pointing to a position inside the specified rect.
@@ -155,7 +166,18 @@ namespace Duality
 			rot *= Quaternion.FromAxisAngle(Vector3.UnitZ, r.NextFloat(MathF.RadAngle360));
 			rot *= Quaternion.FromAxisAngle(Vector3.UnitX, r.NextFloat(MathF.RadAngle360));
 			rot *= Quaternion.FromAxisAngle(Vector3.UnitY, r.NextFloat(MathF.RadAngle360));
-			return Vector3.Transform(new Vector3(r.NextFloat(radius), 0, 0), rot);
+			return Vector3.Transform(new Vector3(radius, 0, 0), rot);
+		}
+		/// <summary>
+		/// Returns a random <see cref="Vector3"/>.
+		/// </summary>
+		/// <param name="r">A random number generator.</param>
+		/// <param name="minRadius">Minimum length of the vector</param>
+		/// <param name="maxRadius">Maximum length of the vector</param>
+		/// <returns></returns>
+		public static Vector3 NextVector3(this Random r, float minRadius, float maxRadius)
+		{
+			return r.NextVector3(r.NextFloat(minRadius, maxRadius));
 		}
 		/// <summary>
 		/// Returns a random <see cref="Vector3"/> pointing to a position inside the specified cube.
