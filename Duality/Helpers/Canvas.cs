@@ -21,38 +21,21 @@ namespace Duality
 	public class Canvas
 	{
 		/// <summary>
-		/// Determines whether and how drawn shapes are textured.
-		/// </summary>
-		public enum TextureMode
-		{
-			/// <summary>
-			/// Textures are ignored. No UV coordinates are generated.
-			/// </summary>
-			Plain,
-			/// <summary>
-			/// Shapes are textured. UV coordinates are generated based on <see cref="Canvas.State.TexUVTarget"/>.
-			/// </summary>
-			Textured
-		}
-
-		/// <summary>
 		/// Describes the state of a <see cref="Canvas"/>.
 		/// </summary>
 		public class State
 		{
-			private VertexDataFactory	vertexDataFactory;
 			private	BatchInfo			batchInfo;
-			private TextureMode			texMode;
-			private	Rect				texUVTarget;
-			private	float				transformAngle;
-			private	Vector2				transformScale;
-			private	Vector2				transformHandle;
+			private	ColorRgba			color;
+			private	ContentRef<Font>	font;
+			private	float		transformAngle;
+			private	Vector2		transformScale;
+			private	Vector2		transformHandle;
+
+			private	Vector2		curTX;
+			private	Vector2		curTY;
 
 
-			internal VertexDataFactory VertexFactory
-			{
-				get { return this.vertexDataFactory; }
-			}
 			internal BatchInfo MaterialDirect
 			{
 				get { return this.batchInfo; }
@@ -65,24 +48,20 @@ namespace Duality
 				get { return new BatchInfo(this.batchInfo); }
 			}
 			/// <summary>
-			/// [GET / SET] The texturing mode that is used when drawing shapes.
+			/// [GET / SET] The <see cref="Duality.Resources.Font"/> to use for text rendering.
 			/// </summary>
-			public TextureMode TexMode
+			public ContentRef<Font> TextFont
 			{
-				get { return this.texMode; }
-				set 
-				{ 
-					this.texMode = value;
-					this.UpdateVertexDataFactory();
-				}
+				get { return this.font; }
+				set { this.font = value; }
 			}
 			/// <summary>
-			/// [GET / SET] The target UV rect when texturing a shape.
+			/// [GET / SET] The color tint to use for drawing.
 			/// </summary>
-			public Rect TexUVTarget
+			public ColorRgba ColorTint
 			{
-				get { return this.texUVTarget; }
-				set { this.texUVTarget = value; }
+				get { return this.color; }
+				set { this.color = value; }
 			}
 			/// <summary>
 			/// [GET / SET] The angle by which all shapes are transformed.
@@ -90,7 +69,7 @@ namespace Duality
 			public float TransformAngle
 			{
 				get { return this.transformAngle; }
-				set { this.transformAngle = value; }
+				set { this.transformAngle = value; this.UpdateTransform(); }
 			}
 			/// <summary>
 			/// [GET / SET] The scale by which all shapes are transformed.
@@ -98,7 +77,7 @@ namespace Duality
 			public Vector2 TransformScale
 			{
 				get { return this.transformScale; }
-				set { this.transformScale = value; }
+				set { this.transformScale = value; this.UpdateTransform(); }
 			}
 			/// <summary>
 			/// [GET / SET] The handle used for transforming all shapes.
@@ -106,7 +85,7 @@ namespace Duality
 			public Vector2 TransformHandle
 			{
 				get { return this.transformHandle; }
-				set { this.transformHandle = value; }
+				set { this.transformHandle = value; this.UpdateTransform(); }
 			}
 
 
@@ -117,12 +96,12 @@ namespace Duality
 			public State(State other)
 			{
 				this.batchInfo = other.batchInfo;
-				this.texMode = other.texMode;
-				this.texUVTarget = other.texUVTarget;
+				this.font = other.font;
+				this.color = other.color;
 				this.transformAngle = other.transformAngle;
 				this.transformHandle = other.transformHandle;
 				this.transformScale = other.transformScale;
-				this.UpdateVertexDataFactory();
+				this.UpdateTransform();
 			}
 
 			/// <summary>
@@ -139,12 +118,12 @@ namespace Duality
 			public void Reset()
 			{
 				this.batchInfo = new BatchInfo(DrawTechnique.Solid, ColorRgba.White);
-				this.texMode = TextureMode.Plain;
-				this.texUVTarget = new Rect(1.0f, 1.0f);
+				this.font = Font.GenericMonospace10;
+				this.color = ColorRgba.White;
 				this.transformAngle = 0.0f;
 				this.transformHandle = Vector2.Zero;
 				this.transformScale = Vector2.One;
-				this.UpdateVertexDataFactory();
+				this.UpdateTransform();
 			}
 
 			/// <summary>
@@ -164,139 +143,30 @@ namespace Duality
 				this.batchInfo = material.Res.InfoDirect;
 			}
 
-			private void UpdateVertexDataFactory()
-			{
-				if (this.texMode == TextureMode.Plain)
-					this.vertexDataFactory = new PlainVertexFactory(this);
-				else if (this.texMode == TextureMode.Textured)
-					this.vertexDataFactory = new TexturedVertexFactory(this);
-				else
-					this.vertexDataFactory = new PlainVertexFactory(this);
-			}
-		}
-
-		internal abstract class VertexDataFactory
-		{
-			protected	State	parentState;
-			protected	Vector2	shapeHandle;
-			protected	Vector2	curTX;
-			protected	Vector2	curTY;
-
-			protected VertexDataFactory(State state)
-			{
-				this.parentState = state;
-			}
-
-			public virtual void BeginShape(int vertexCount, float xHandle, float yHandle)
-			{
-				this.shapeHandle.X = xHandle;
-				this.shapeHandle.Y = yHandle;
-			}
-			public abstract void PlotVertex(int index, float x, float y, float z);
-			public abstract void SubmitShape(IDrawDevice device, BatchInfo batchInfo, BeginMode vertexMode);
-			
-			protected void UpdateTransform()
+			private void UpdateTransform()
 			{
 				MathF.GetTransformDotVec(
-					this.parentState.TransformAngle, 
+					this.transformAngle, 
 					out this.curTX, 
 					out this.curTY);
 			}
-			protected Rect CalcBoundingRect<T>(T[] vertexData) where T : IVertexData
-			{
-				Rect refRect = new Rect(10000000.0f, 10000000.0f, -10000000.0f, -10000000.0f);
-				for (int i = 0; i < vertexData.Length; i++)
-				{
-					Vector3 pos = vertexData[i].Pos;
-					refRect.x = MathF.Min(refRect.x, pos.X);
-					refRect.y = MathF.Min(refRect.y, pos.Y);
-					refRect.w = MathF.Max(refRect.w, pos.X);
-					refRect.h = MathF.Max(refRect.h, pos.Y);
-				}
-				refRect.w -= refRect.x;
-				refRect.h -= refRect.y;
-				return refRect;
-			}
-			protected void TransformVertices<T>(T[] vertexData) where T : IVertexData
+			internal void TransformVertices<T>(T[] vertexData, Vector2 shapeHandle) where T : struct, IVertexData
 			{
 				this.UpdateTransform();
-				Vector2 transformHandle = this.parentState.TransformHandle;
-				Vector2 transformScale = this.parentState.TransformScale;
+				Vector2 transformHandle = this.transformHandle;
+				Vector2 transformScale = this.transformScale;
 				for (int i = 0; i < vertexData.Length; i++)
 				{
 					Vector3 pos = vertexData[i].Pos;
-					pos.X -= transformHandle.X + this.shapeHandle.X;
-					pos.Y -= transformHandle.Y + this.shapeHandle.Y;
+					pos.X -= transformHandle.X + shapeHandle.X;
+					pos.Y -= transformHandle.Y + shapeHandle.Y;
 					pos.X *= transformScale.X;
 					pos.Y *= transformScale.Y;
 					MathF.TransformDotVec(ref pos, ref this.curTX, ref this.curTY);
-					pos.X += this.shapeHandle.X;
-					pos.Y += this.shapeHandle.Y;
+					pos.X += shapeHandle.X;
+					pos.Y += shapeHandle.Y;
 					vertexData[i].Pos = pos;
 				}
-			}
-		}
-		private class PlainVertexFactory : VertexDataFactory
-		{
-			private	VertexP3[] vertexData;
-
-			public PlainVertexFactory(State state) : base(state) {}
-			
-			public override void BeginShape(int vertexCount, float xHandle, float yHandle)
-			{
-				base.BeginShape(vertexCount, xHandle, yHandle);
-				this.vertexData = new VertexP3[vertexCount];
-			}
-			public override void PlotVertex(int index, float x, float y, float z)
-			{
-				this.vertexData[index].pos.X = x;
-				this.vertexData[index].pos.Y = y;
-				this.vertexData[index].pos.Z = z;
-			}
-			public override void SubmitShape(IDrawDevice device, BatchInfo batchInfo, BeginMode vertexMode)
-			{
-				// Transform vertices
-				this.TransformVertices(this.vertexData);
-
-				device.AddVertices(batchInfo, vertexMode, this.vertexData);
-			}
-		}
-		private class TexturedVertexFactory : VertexDataFactory
-		{
-			private	VertexP3T2[]	vertexData;
-
-			public TexturedVertexFactory(State state) : base(state) {}
-			
-			public override void BeginShape(int vertexCount, float xHandle, float yHandle)
-			{
-				base.BeginShape(vertexCount, xHandle, yHandle);
-				this.vertexData = new VertexP3T2[vertexCount];
-			}
-			public override void PlotVertex(int index, float x, float y, float z)
-			{
-				this.vertexData[index].pos.X = x;
-				this.vertexData[index].pos.Y = y;
-				this.vertexData[index].pos.Z = z;
-			}
-			public override void SubmitShape(IDrawDevice device, BatchInfo batchInfo, BeginMode vertexMode)
-			{
-				// Calculate reference bounding rect
-				Rect refRect = this.CalcBoundingRect(this.vertexData);
-
-				// Calculate UV coordinates
-				Rect targetUV = this.parentState.TexUVTarget;
-				Texture mainTex = batchInfo.Textures.Count > 0 ? batchInfo.Textures.First().Value.Res : null;
-				Vector2 matUVRatio = mainTex != null ? mainTex.UVRatio : Vector2.One;
-				for (int i = 0; i < this.vertexData.Length; i++)
-				{
-					this.vertexData[i].texCoord.X = matUVRatio.X * (targetUV.x + ((this.vertexData[i].pos.X - refRect.x) / refRect.w) * targetUV.w);
-					this.vertexData[i].texCoord.Y = matUVRatio.Y * (targetUV.y + ((this.vertexData[i].pos.Y - refRect.y) / refRect.h) * targetUV.h);
-				}
-
-				// Transform vertices
-				this.TransformVertices(this.vertexData);
-
-				device.AddVertices(batchInfo, vertexMode, this.vertexData);
 			}
 		}
 
@@ -347,6 +217,18 @@ namespace Duality
 
 		
 		/// <summary>
+		/// Draws a predefined set of vertices using the Canvas transformation.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="vertices"></param>
+		/// <param name="mode"></param>
+		public void DrawVertices<T>(T[] vertices, BeginMode mode) where T : struct, IVertexData
+		{
+			this.CurrentState.TransformVertices(vertices, Vector2.Zero);
+			this.device.AddVertices<T>(this.CurrentState.MaterialDirect, mode, vertices);
+		}
+
+		/// <summary>
 		/// Draws a three-dimensional sphere.
 		/// </summary>
 		/// <param name="x"></param>
@@ -365,50 +247,55 @@ namespace Duality
 			Vector3 handle = posTemp - new Vector3(r, r, 0);
 
 			int segmentNum = MathF.Clamp(MathF.RoundToInt(MathF.Pow(r * scale, 0.65f) * 2.5f), 4, 128);
+			Vector2 shapeHandle = pos.Xy;
+			ColorRgba shapeColor = this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor;
+			VertexC1P3[] vertices;
 			float angle;
-			VertexDataFactory vertices = this.CurrentState.VertexFactory;
 
 			// XY circle
-			vertices.BeginShape(segmentNum, handle.X, handle.Y);
+			vertices = new VertexC1P3[segmentNum];
 			angle = 0.0f;
-			for (int i = 0; i < segmentNum; i++)
+			for (int i = 0; i < vertices.Length; i++)
 			{
-				posTemp.X = pos.X + (float)Math.Sin(angle) * r;
-				posTemp.Y = pos.Y - (float)Math.Cos(angle) * r;
-				posTemp.Z = pos.Z;
-				this.device.PreprocessCoords(ref posTemp, ref scale);
-				vertices.PlotVertex(i, posTemp.X, posTemp.Y, posTemp.Z);
+				vertices[i].pos.X = pos.X + (float)Math.Sin(angle) * r;
+				vertices[i].pos.Y = pos.Y - (float)Math.Cos(angle) * r;
+				vertices[i].pos.Z = pos.Z;
+				vertices[i].clr = shapeColor;
+				this.device.PreprocessCoords(ref vertices[i].pos, ref scale);
 				angle += (MathF.TwoPi / (float)segmentNum);
 			}
-			vertices.SubmitShape(device, this.CurrentState.MaterialDirect, BeginMode.LineLoop);
+			this.CurrentState.TransformVertices(vertices, shapeHandle);
+			this.device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.LineLoop, vertices);
 
 			// XZ circle
-			vertices.BeginShape(segmentNum, handle.X, handle.Y);
+			vertices = new VertexC1P3[segmentNum];
 			angle = 0.0f;
-			for (int i = 0; i < segmentNum; i++)
+			for (int i = 0; i < vertices.Length; i++)
 			{
-				posTemp.X = pos.X + (float)Math.Sin(angle) * r;
-				posTemp.Y = pos.Y;
-				posTemp.Z = pos.Z - (float)Math.Cos(angle) * r;
-				this.device.PreprocessCoords(ref posTemp, ref scale);
-				vertices.PlotVertex(i, posTemp.X, posTemp.Y, posTemp.Z);
+				vertices[i].pos.X = pos.X + (float)Math.Sin(angle) * r;
+				vertices[i].pos.Y = pos.Y;
+				vertices[i].pos.Z = pos.Z - (float)Math.Cos(angle) * r;
+				vertices[i].clr = shapeColor;
+				this.device.PreprocessCoords(ref vertices[i].pos, ref scale);
 				angle += (MathF.TwoPi / (float)segmentNum);
 			}
-			vertices.SubmitShape(device, this.CurrentState.MaterialDirect, BeginMode.LineLoop);
+			this.CurrentState.TransformVertices(vertices, shapeHandle);
+			this.device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.LineLoop, vertices);
 
 			// YZ circle
-			vertices.BeginShape(segmentNum, handle.X, handle.Y);
+			vertices = new VertexC1P3[segmentNum];
 			angle = 0.0f;
-			for (int i = 0; i < segmentNum; i++)
+			for (int i = 0; i < vertices.Length; i++)
 			{
-				posTemp.X = pos.X;
-				posTemp.Y = pos.Y + (float)Math.Sin(angle) * r;
-				posTemp.Z = pos.Z - (float)Math.Cos(angle) * r;
-				this.device.PreprocessCoords(ref posTemp, ref scale);
-				vertices.PlotVertex(i, posTemp.X, posTemp.Y, posTemp.Z);
+				vertices[i].pos.X = pos.X;
+				vertices[i].pos.Y = pos.Y + (float)Math.Sin(angle) * r;
+				vertices[i].pos.Z = pos.Z - (float)Math.Cos(angle) * r;
+				vertices[i].clr = shapeColor;
+				this.device.PreprocessCoords(ref vertices[i].pos, ref scale);
 				angle += (MathF.TwoPi / (float)segmentNum);
 			}
-			vertices.SubmitShape(device, this.CurrentState.MaterialDirect, BeginMode.LineLoop);
+			this.CurrentState.TransformVertices(vertices, shapeHandle);
+			this.device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.LineLoop, vertices);
 		}
 
 		/// <summary>
@@ -429,12 +316,15 @@ namespace Duality
 			device.PreprocessCoords(ref pos, ref scale);
 			device.PreprocessCoords(ref target, ref scale);
 
-			VertexDataFactory vertices = this.CurrentState.VertexFactory;
-
-			vertices.BeginShape(2, pos.X, pos.Y);
-			vertices.PlotVertex(0, pos.X, pos.Y, pos.Z);
-			vertices.PlotVertex(1, target.X, target.Y, target.Z);
-			vertices.SubmitShape(device, this.CurrentState.MaterialDirect, BeginMode.Lines);
+			Vector2 shapeHandle = pos.Xy;
+			ColorRgba shapeColor = this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor;
+			VertexC1P3[] vertices = new VertexC1P3[2];
+			vertices[0].pos = pos;
+			vertices[1].pos = target;
+			vertices[0].clr = shapeColor;
+			vertices[1].clr = shapeColor;
+			this.CurrentState.TransformVertices(vertices, shapeHandle);
+			device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.Lines, vertices);
 		}
 		/// <summary>
 		/// Draws a flat line.
@@ -458,21 +348,28 @@ namespace Duality
 		/// <param name="h"></param>
 		public void DrawRect(float x, float y, float z, float w, float h)
 		{
-			if (w < 0.0f) { x -= w; w = -w; }
-			if (h < 0.0f) { y -= h; h = -h; }
+			if (w < 0.0f) { x += w; w = -w; }
+			if (h < 0.0f) { y += h; h = -h; }
 
 			Vector3 pos = new Vector3(x + 0.5f, y + 0.5f, z);
 			float scale = 1.0f;
 			device.PreprocessCoords(ref pos, ref scale);
-			
-			VertexDataFactory vertices = this.CurrentState.VertexFactory;
 
-			vertices.BeginShape(4, pos.X, pos.Y);
-			vertices.PlotVertex(0, pos.X, pos.Y, pos.Z);
-			vertices.PlotVertex(1, pos.X + w * scale, pos.Y, pos.Z);
-			vertices.PlotVertex(2, pos.X + w * scale, pos.Y + h * scale, pos.Z);
-			vertices.PlotVertex(3, pos.X, pos.Y + h * scale, pos.Z);
-			vertices.SubmitShape(device, this.CurrentState.MaterialDirect, BeginMode.LineLoop);
+			Vector2 shapeHandle = pos.Xy;
+			ColorRgba shapeColor = this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor;
+			VertexC1P3[] vertices = new VertexC1P3[4];
+			vertices[0].pos = new Vector3(pos.X, pos.Y, pos.Z);
+			vertices[1].pos = new Vector3(pos.X + w * scale, pos.Y, pos.Z);
+			vertices[2].pos = new Vector3(pos.X + w * scale, pos.Y + h * scale, pos.Z);
+			vertices[3].pos = new Vector3(pos.X, pos.Y + h * scale, pos.Z);
+
+			vertices[0].clr = shapeColor;
+			vertices[1].clr = shapeColor;
+			vertices[2].clr = shapeColor;
+			vertices[3].clr = shapeColor;
+
+			this.CurrentState.TransformVertices(vertices, shapeHandle);
+			device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.LineLoop, vertices);
 		}
 		/// <summary>
 		/// Draws a rectangle.
@@ -496,8 +393,8 @@ namespace Duality
 		/// <param name="h"></param>
 		public void DrawOval(float x, float y, float z, float w, float h)
 		{
-			if (w < 0.0f) { x -= w; w = -w; }
-			if (h < 0.0f) { y -= h; h = -h; }
+			if (w < 0.0f) { x += w; w = -w; }
+			if (h < 0.0f) { y += h; h = -h; }
 			w *= 0.5f; x += w;
 			h *= 0.5f; y += h;
 
@@ -509,21 +406,23 @@ namespace Duality
 			w *= scale;
 			h *= scale;
 
-			int segmentNum = MathF.Clamp(MathF.RoundToInt(MathF.Pow(MathF.Max(w, h), 0.65f) * 2.5f), 4, 128);
-			float angle;
+			int segmentNum = MathF.Clamp(MathF.RoundToInt(MathF.Pow(MathF.Max(w, h), 0.65f) * 3.5f), 4, 128);
+			Vector2 shapeHandle = pos.Xy - new Vector2(w, h);
+			ColorRgba shapeColor = this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor;
+			VertexC1P3[] vertices = new VertexC1P3[segmentNum];
+			float angle = 0.0f;
 
-			VertexDataFactory vertices = this.CurrentState.VertexFactory;
-			vertices.BeginShape(segmentNum, pos.X - w, pos.Y - h);
-			angle = 0.0f;
-			for (int i = 0; i < segmentNum; i++)
+			// XY circle
+			for (int i = 0; i < vertices.Length; i++)
 			{
-				vertices.PlotVertex(i, 
-					pos.X + (float)Math.Sin(angle) * w,
-					pos.Y - (float)Math.Cos(angle) * h,
-					pos.Z);
+				vertices[i].pos.X = pos.X + (float)Math.Sin(angle) * w;
+				vertices[i].pos.Y = pos.Y - (float)Math.Cos(angle) * h;
+				vertices[i].pos.Z = pos.Z;
+				vertices[i].clr = shapeColor;
 				angle += (MathF.TwoPi / (float)segmentNum);
 			}
-			vertices.SubmitShape(device, this.CurrentState.MaterialDirect, BeginMode.LineLoop);
+			this.CurrentState.TransformVertices(vertices, shapeHandle);
+			this.device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.LineLoop, vertices);
 		}
 		/// <summary>
 		/// Draws an oval.
@@ -545,7 +444,9 @@ namespace Duality
 		/// <param name="r"></param>
 		public void DrawCircle(float x, float y, float z, float r)
 		{
-			this.DrawOval(x - r, y - r, z, r * 2, r * 2);
+			this.CurrentState.TransformHandle += new Vector2(r, r);
+			this.DrawOval(x, y, z, r * 2, r * 2);
+			this.CurrentState.TransformHandle -= new Vector2(r, r);
 		}
 		/// <summary>
 		/// Draws a circle
@@ -555,7 +456,9 @@ namespace Duality
 		/// <param name="r"></param>
 		public void DrawCircle(float x, float y, float r)
 		{
-			this.DrawOval(x - r, y - r, 0, r * 2, r * 2);
+			this.CurrentState.TransformHandle += new Vector2(r, r);
+			this.DrawOval(x, y, 0, r * 2, r * 2);
+			this.CurrentState.TransformHandle -= new Vector2(r, r);
 		}
 
 		/// <summary>
@@ -568,8 +471,8 @@ namespace Duality
 		/// <param name="h"></param>
 		public void FillOval(float x, float y, float z, float w, float h)
 		{
-			if (w < 0.0f) { x -= w; w = -w; }
-			if (h < 0.0f) { y -= h; h = -h; }
+			if (w < 0.0f) { x += w; w = -w; }
+			if (h < 0.0f) { y += h; h = -h; }
 			w *= 0.5f; x += w;
 			h *= 0.5f; y += h;
 
@@ -581,22 +484,24 @@ namespace Duality
 			w *= scale;
 			h *= scale;
 
-			int segmentNum = MathF.Clamp(MathF.RoundToInt(MathF.Pow(MathF.Max(w, h), 0.65f) * 2.5f), 4, 128);
+			int segmentNum = MathF.Clamp(MathF.RoundToInt(MathF.Pow(MathF.Max(w, h), 0.65f) * 3.5f), 4, 128);
 			float angle = 0.0f;
+			Vector2 shapeHandle = pos.Xy - new Vector2(w, h);
+			ColorRgba shapeColor = this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor;
+			VertexC1P3[] vertices = new VertexC1P3[segmentNum + 2];
 
-			VertexDataFactory vertices = this.CurrentState.VertexFactory;
-
-			vertices.BeginShape(segmentNum + 2, pos.X - w, pos.Y - h);
-			vertices.PlotVertex(0, pos.X, pos.Y, pos.Z);
-			for (int i = 1; i < segmentNum + 2; i++)
+			vertices[0].pos = pos;
+			vertices[0].clr = shapeColor;
+			for (int i = 1; i < vertices.Length; i++)
 			{
-				vertices.PlotVertex(i, 
-					pos.X + (float)Math.Sin(angle) * w,
-					pos.Y - (float)Math.Cos(angle) * h,
-					pos.Z);
+				vertices[i].pos.X = pos.X + (float)Math.Sin(angle) * w;
+				vertices[i].pos.Y = pos.Y - (float)Math.Cos(angle) * h;
+				vertices[i].pos.Z = pos.Z;
+				vertices[i].clr = shapeColor;
 				angle += (MathF.TwoPi / (float)segmentNum);
 			}
-			vertices.SubmitShape(device, this.CurrentState.MaterialDirect, BeginMode.TriangleFan);
+			this.CurrentState.TransformVertices(vertices, shapeHandle);
+			device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.TriangleFan, vertices);
 		}
 		/// <summary>
 		/// Fills an oval
@@ -618,7 +523,9 @@ namespace Duality
 		/// <param name="r"></param>
 		public void FillCircle(float x, float y, float z, float r)
 		{
-			this.FillOval(x - r, y - r, z, r * 2, r * 2);
+			this.CurrentState.TransformHandle += new Vector2(r, r);
+			this.FillOval(x, y, z, r * 2, r * 2);
+			this.CurrentState.TransformHandle -= new Vector2(r, r);
 		}
 		/// <summary>
 		/// Fills a circle.
@@ -628,7 +535,9 @@ namespace Duality
 		/// <param name="r"></param>
 		public void FillCircle(float x, float y, float r)
 		{
-			this.FillOval(x - r, y - r, 0, r * 2, r * 2);
+			this.CurrentState.TransformHandle += new Vector2(r, r);
+			this.FillOval(x, y, 0, r * 2, r * 2);
+			this.CurrentState.TransformHandle -= new Vector2(r, r);
 		}
 
 		/// <summary>
@@ -641,21 +550,28 @@ namespace Duality
 		/// <param name="h"></param>
 		public void FillRect(float x, float y, float z, float w, float h)
 		{
-			if (w < 0.0f) { x -= w; w = -w; }
-			if (h < 0.0f) { y -= h; h = -h; }
+			if (w < 0.0f) { x += w; w = -w; }
+			if (h < 0.0f) { y += h; h = -h; }
 
 			Vector3 pos = new Vector3(x, y, z);
 			float scale = 1.0f;
 			device.PreprocessCoords(ref pos, ref scale);
-			
-			VertexDataFactory vertices = this.CurrentState.VertexFactory;
 
-			vertices.BeginShape(4, pos.X, pos.Y);
-			vertices.PlotVertex(0, pos.X, pos.Y, pos.Z);
-			vertices.PlotVertex(1, pos.X + w * scale, pos.Y, pos.Z);
-			vertices.PlotVertex(2, pos.X + w * scale, pos.Y + h * scale, pos.Z);
-			vertices.PlotVertex(3, pos.X, pos.Y + h * scale, pos.Z);
-			vertices.SubmitShape(device, this.CurrentState.MaterialDirect, BeginMode.Quads);
+			Vector2 shapeHandle = pos.Xy;
+			ColorRgba shapeColor = this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor;
+			VertexC1P3[] vertices = new VertexC1P3[4];
+			vertices[0].pos = new Vector3(pos.X, pos.Y, pos.Z);
+			vertices[1].pos = new Vector3(pos.X + w * scale, pos.Y, pos.Z);
+			vertices[2].pos = new Vector3(pos.X + w * scale, pos.Y + h * scale, pos.Z);
+			vertices[3].pos = new Vector3(pos.X, pos.Y + h * scale, pos.Z);
+
+			vertices[0].clr = shapeColor;
+			vertices[1].clr = shapeColor;
+			vertices[2].clr = shapeColor;
+			vertices[3].clr = shapeColor;
+
+			this.CurrentState.TransformVertices(vertices, shapeHandle);
+			device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.Quads, vertices);
 		}
 		/// <summary>
 		/// Fills a rectangle.
@@ -667,6 +583,178 @@ namespace Duality
 		public void FillRect(float x, float y, float w, float h)
 		{
 			this.FillRect(x, y, 0, w, h);
+		}
+
+		/// <summary>
+		/// Draws a textured rectangle.
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="z"></param>
+		/// <param name="w"></param>
+		/// <param name="h"></param>
+		/// <param name="uvX">UV x coordinate</param>
+		/// <param name="uvY">UV y coordinate</param>
+		/// <param name="uvW">UV coordinate width</param>
+		/// <param name="uvH">UV coordinate height</param>
+		public void DrawTexturedRect(float x, float y, float z, float w, float h, float uvX, float uvY, float uvW, float uvH)
+		{
+			if (w < 0.0f) { x += w; w = -w; }
+			if (h < 0.0f) { y += h; h = -h; }
+
+			Vector3 pos = new Vector3(x, y, z);
+			float scale = 1.0f;
+			device.PreprocessCoords(ref pos, ref scale);
+
+			Texture mainTex = this.CurrentState.MaterialDirect.Textures.Count > 0 ? this.CurrentState.MaterialDirect.Textures.First().Value.Res : null;
+			Vector2 mainTexUVRatio = mainTex != null ? mainTex.UVRatio : Vector2.One;
+
+			Vector2 shapeHandle = pos.Xy;
+			ColorRgba shapeColor = this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor;
+			VertexC1P3T2[] vertices = new VertexC1P3T2[4];
+
+			vertices[0].pos = new Vector3(pos.X, pos.Y, pos.Z);
+			vertices[1].pos = new Vector3(pos.X + w * scale, pos.Y, pos.Z);
+			vertices[2].pos = new Vector3(pos.X + w * scale, pos.Y + h * scale, pos.Z);
+			vertices[3].pos = new Vector3(pos.X, pos.Y + h * scale, pos.Z);
+
+			vertices[0].texCoord = new Vector2(uvX * mainTexUVRatio.X, uvY * mainTexUVRatio.Y);
+			vertices[1].texCoord = new Vector2((uvX + uvW) * mainTexUVRatio.X, uvY * mainTexUVRatio.Y);
+			vertices[2].texCoord = new Vector2((uvX + uvW) * mainTexUVRatio.X, (uvY + uvH) * mainTexUVRatio.Y);
+			vertices[3].texCoord = new Vector2(uvX * mainTexUVRatio.X, (uvY + uvH) * mainTexUVRatio.Y);
+
+			vertices[0].clr = shapeColor;
+			vertices[1].clr = shapeColor;
+			vertices[2].clr = shapeColor;
+			vertices[3].clr = shapeColor;
+
+			this.CurrentState.TransformVertices(vertices, shapeHandle);
+			device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.Quads, vertices);
+		}
+		/// <summary>
+		/// Draws a textured rectangle.
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="z"></param>
+		/// <param name="uvX">UV x coordinate</param>
+		/// <param name="uvY">UV y coordinate</param>
+		/// <param name="uvW">UV coordinate width</param>
+		/// <param name="uvH">UV coordinate height</param>
+		public void DrawTexturedRect(float x, float y, float z, float uvX, float uvY, float uvW, float uvH)
+		{
+			Texture mainTex = this.CurrentState.MaterialDirect.Textures.Count > 0 ? this.CurrentState.MaterialDirect.Textures.First().Value.Res : null;
+			Vector2 mainTexSize = mainTex != null ? mainTex.Size : Vector2.One * 10.0f;
+			this.DrawTexturedRect(x, y, z, mainTexSize.X, mainTexSize.Y, uvX, uvY, uvW, uvH);
+		}
+		/// <summary>
+		/// Draws a textured rectangle.
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="z"></param>
+		/// <param name="w"></param>
+		/// <param name="h"></param>
+		public void DrawTexturedRect(float x, float y, float z, float w, float h)
+		{
+			this.DrawTexturedRect(x, y, z, w, h, 0.0f, 0.0f, 1.0f, 1.0f);
+		}
+		/// <summary>
+		/// Draws a textured rectangle.
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="z"></param>
+		public void DrawTexturedRect(float x, float y, float z)
+		{
+			Texture mainTex = this.CurrentState.MaterialDirect.Textures.Count > 0 ? this.CurrentState.MaterialDirect.Textures.First().Value.Res : null;
+			Vector2 mainTexSize = mainTex != null ? mainTex.Size : Vector2.One * 10.0f;
+			this.DrawTexturedRect(x, y, z, mainTexSize.X, mainTexSize.Y, 0.0f, 0.0f, 1.0f, 1.0f);
+		}
+		/// <summary>
+		/// Draws a textured rectangle.
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="w"></param>
+		/// <param name="h"></param>
+		/// <param name="uvX">UV x coordinate</param>
+		/// <param name="uvY">UV y coordinate</param>
+		/// <param name="uvW">UV coordinate width</param>
+		/// <param name="uvH">UV coordinate height</param>
+		public void DrawTexturedRect(float x, float y, float w, float h, float uvX, float uvY, float uvW, float uvH)
+		{
+			this.DrawTexturedRect(x, y, 0, w, h, uvX, uvY, uvW, uvH);
+		}
+		/// <summary>
+		/// Draws a textured rectangle.
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="uvX">UV x coordinate</param>
+		/// <param name="uvY">UV y coordinate</param>
+		/// <param name="uvW">UV coordinate width</param>
+		/// <param name="uvH">UV coordinate height</param>
+		public void DrawTexturedRect(float x, float y, float uvX, float uvY, float uvW, float uvH)
+		{
+			Texture mainTex = this.CurrentState.MaterialDirect.Textures.Count > 0 ? this.CurrentState.MaterialDirect.Textures.First().Value.Res : null;
+			Vector2 mainTexSize = mainTex != null ? mainTex.Size : Vector2.One * 10.0f;
+			this.DrawTexturedRect(x, y, 0, mainTexSize.X, mainTexSize.Y, uvX, uvY, uvW, uvH);
+		}
+		/// <summary>
+		/// Draws a textured rectangle.
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="w"></param>
+		/// <param name="h"></param>
+		public void DrawTexturedRect(float x, float y, float w, float h)
+		{
+			this.DrawTexturedRect(x, y, 0, w, h, 0.0f, 0.0f, 1.0f, 1.0f);
+		}
+		/// <summary>
+		/// Draws a textured rectangle.
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		public void DrawTexturedRect(float x, float y)
+		{
+			Texture mainTex = this.CurrentState.MaterialDirect.Textures.Count > 0 ? this.CurrentState.MaterialDirect.Textures.First().Value.Res : null;
+			Vector2 mainTexSize = mainTex != null ? mainTex.Size : Vector2.One * 10.0f;
+			this.DrawTexturedRect(x, y, 0, mainTexSize.X, mainTexSize.Y, 0.0f, 0.0f, 1.0f, 1.0f);
+		}
+
+		/// <summary>
+		/// Draws the specified text string.
+		/// </summary>
+		/// <param name="text"></param>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="z"></param>
+		public void DrawText(string text, float x, float y, float z)
+		{
+			Vector3 pos = new Vector3(x, y, z);
+			float scale = 1.0f;
+			device.PreprocessCoords(ref pos, ref scale);
+
+			Vector2 shapeHandle = pos.Xy;
+			VertexC1P3T2[] vertices = null;
+			Font font = this.CurrentState.TextFont.Res;
+
+			font.EmitTextVertices(text, ref vertices, pos.X, pos.Y, pos.Z, this.CurrentState.ColorTint);
+
+			this.CurrentState.TransformVertices(vertices, shapeHandle);
+			device.AddVertices(font.Material, BeginMode.Quads, vertices);
+		}
+		/// <summary>
+		/// Draws the specified text string.
+		/// </summary>
+		/// <param name="text"></param>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		public void DrawText(string text, float x, float y)
+		{
+			this.DrawText(text, x, y, 0);
 		}
 	}
 }

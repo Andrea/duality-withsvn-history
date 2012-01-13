@@ -8981,6 +8981,14 @@
             Removes the topmost <see cref="T:Duality.Canvas.State"/> from the internal State stack.
             </summary>
         </member>
+        <member name="M:Duality.Canvas.DrawVertices``1(``0[],OpenTK.Graphics.OpenGL.BeginMode)">
+            <summary>
+            Draws a predefined set of vertices using the Canvas transformation.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="vertices"></param>
+            <param name="mode"></param>
+        </member>
         <member name="M:Duality.Canvas.DrawSphere(System.Single,System.Single,System.Single,System.Single)">
             <summary>
             Draws a three-dimensional sphere.
@@ -9120,6 +9128,107 @@
             <param name="w"></param>
             <param name="h"></param>
         </member>
+        <member name="M:Duality.Canvas.DrawTexturedRect(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a textured rectangle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+            <param name="uvX">UV x coordinate</param>
+            <param name="uvY">UV y coordinate</param>
+            <param name="uvW">UV coordinate width</param>
+            <param name="uvH">UV coordinate height</param>
+        </member>
+        <member name="M:Duality.Canvas.DrawTexturedRect(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a textured rectangle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="uvX">UV x coordinate</param>
+            <param name="uvY">UV y coordinate</param>
+            <param name="uvW">UV coordinate width</param>
+            <param name="uvH">UV coordinate height</param>
+        </member>
+        <member name="M:Duality.Canvas.DrawTexturedRect(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a textured rectangle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawTexturedRect(System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a textured rectangle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawTexturedRect(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a textured rectangle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+            <param name="uvX">UV x coordinate</param>
+            <param name="uvY">UV y coordinate</param>
+            <param name="uvW">UV coordinate width</param>
+            <param name="uvH">UV coordinate height</param>
+        </member>
+        <member name="M:Duality.Canvas.DrawTexturedRect(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a textured rectangle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="uvX">UV x coordinate</param>
+            <param name="uvY">UV y coordinate</param>
+            <param name="uvW">UV coordinate width</param>
+            <param name="uvH">UV coordinate height</param>
+        </member>
+        <member name="M:Duality.Canvas.DrawTexturedRect(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a textured rectangle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawTexturedRect(System.Single,System.Single)">
+            <summary>
+            Draws a textured rectangle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawText(System.String,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws the specified text string.
+            </summary>
+            <param name="text"></param>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawText(System.String,System.Single,System.Single)">
+            <summary>
+            Draws the specified text string.
+            </summary>
+            <param name="text"></param>
+            <param name="x"></param>
+            <param name="y"></param>
+        </member>
         <member name="P:Duality.Canvas.DrawDevice">
             <summary>
             [GET] The underlying <see cref="T:Duality.IDrawDevice"/> that is used for drawing.
@@ -9128,21 +9237,6 @@
         <member name="P:Duality.Canvas.CurrentState">
             <summary>
             [GET / SET] The Canvas' current <see cref="T:Duality.Canvas.State"/>.
-            </summary>
-        </member>
-        <member name="T:Duality.Canvas.TextureMode">
-            <summary>
-            Determines whether and how drawn shapes are textured.
-            </summary>
-        </member>
-        <member name="F:Duality.Canvas.TextureMode.Plain">
-            <summary>
-            Textures are ignored. No UV coordinates are generated.
-            </summary>
-        </member>
-        <member name="F:Duality.Canvas.TextureMode.Textured">
-            <summary>
-            Shapes are textured. UV coordinates are generated based on <see cref="P:Duality.Canvas.State.TexUVTarget"/>.
             </summary>
         </member>
         <member name="T:Duality.Canvas.State">
@@ -9178,14 +9272,14 @@
             [GET] The material that is used for drawing.
             </summary>
         </member>
-        <member name="P:Duality.Canvas.State.TexMode">
+        <member name="P:Duality.Canvas.State.TextFont">
             <summary>
-            [GET / SET] The texturing mode that is used when drawing shapes.
+            [GET / SET] The <see cref="T:Duality.Resources.Font"/> to use for text rendering.
             </summary>
         </member>
-        <member name="P:Duality.Canvas.State.TexUVTarget">
+        <member name="P:Duality.Canvas.State.ColorTint">
             <summary>
-            [GET / SET] The target UV rect when texturing a shape.
+            [GET / SET] The color tint to use for drawing.
             </summary>
         </member>
         <member name="P:Duality.Canvas.State.TransformAngle">

@@ -922,7 +922,7 @@ namespace Duality.Components
 			}
 
 			// Process drawcalls
-			this.OptimizeBatches();
+			this.OptimizeBatches(screenOverlay);
 			this.BeginBatchRendering();
 			int vertexCount = 0;
 
@@ -1034,12 +1034,18 @@ namespace Duality.Components
 		{
 			return MathF.RoundToInt((second.ZSortIndex - first.ZSortIndex) * this.zSortAccuracy);
 		}
-		private void OptimizeBatches()
+		private void OptimizeBatches(bool screenOverlay)
 		{
 			// Non-ZSorted
 			if (this.drawBuffer.Count > 1)
 			{
-				this.drawBuffer.Sort(this.DrawBatchComparer);
+				if (screenOverlay)
+				{
+					// When rendering the screen overlay, use z sorting everywhere - there's no depth buffering!
+					this.drawBuffer.StableSort(this.DrawBatchComparerZSort);
+				}
+				else
+					this.drawBuffer.Sort(this.DrawBatchComparer);
 				this.drawBuffer = this.OptimizeBatches(this.drawBuffer);
 			}
 
