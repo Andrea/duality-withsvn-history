@@ -150,7 +150,7 @@ namespace Duality
 					out this.curTX, 
 					out this.curTY);
 			}
-			internal void TransformVertices<T>(T[] vertexData, Vector2 shapeHandle) where T : struct, IVertexData
+			internal void TransformVertices<T>(T[] vertexData, Vector2 shapeHandle, float shapeHandleScale) where T : struct, IVertexData
 			{
 				this.UpdateTransform();
 				Vector2 transformHandle = this.transformHandle;
@@ -158,8 +158,8 @@ namespace Duality
 				for (int i = 0; i < vertexData.Length; i++)
 				{
 					Vector3 pos = vertexData[i].Pos;
-					pos.X -= transformHandle.X + shapeHandle.X;
-					pos.Y -= transformHandle.Y + shapeHandle.Y;
+					pos.X -= transformHandle.X * shapeHandleScale + shapeHandle.X;
+					pos.Y -= transformHandle.Y * shapeHandleScale + shapeHandle.Y;
 					pos.X *= transformScale.X;
 					pos.Y *= transformScale.Y;
 					MathF.TransformDotVec(ref pos, ref this.curTX, ref this.curTY);
@@ -224,7 +224,11 @@ namespace Duality
 		/// <param name="mode"></param>
 		public void DrawVertices<T>(T[] vertices, BeginMode mode) where T : struct, IVertexData
 		{
-			this.CurrentState.TransformVertices(vertices, Vector2.Zero);
+			Vector3 pos = vertices[0].Pos;
+			float scale = 1.0f;
+			device.PreprocessCoords(ref pos, ref scale);
+
+			this.CurrentState.TransformVertices(vertices, pos.Xy, scale);
 			this.device.AddVertices<T>(this.CurrentState.MaterialDirect, mode, vertices);
 		}
 
@@ -244,10 +248,10 @@ namespace Duality
 			float scale = 1.0f;
 			Vector3 posTemp = pos;
 			this.device.PreprocessCoords(ref posTemp, ref scale);
-			Vector3 handle = posTemp - new Vector3(r, r, 0);
 
 			int segmentNum = MathF.Clamp(MathF.RoundToInt(MathF.Pow(r * scale, 0.65f) * 2.5f), 4, 128);
 			Vector2 shapeHandle = pos.Xy;
+			float shapeHandleScale = scale;
 			ColorRgba shapeColor = this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor;
 			VertexC1P3[] vertices;
 			float angle;
@@ -264,7 +268,7 @@ namespace Duality
 				this.device.PreprocessCoords(ref vertices[i].pos, ref scale);
 				angle += (MathF.TwoPi / (float)segmentNum);
 			}
-			this.CurrentState.TransformVertices(vertices, shapeHandle);
+			this.CurrentState.TransformVertices(vertices, shapeHandle, shapeHandleScale);
 			this.device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.LineLoop, vertices);
 
 			// XZ circle
@@ -279,7 +283,7 @@ namespace Duality
 				this.device.PreprocessCoords(ref vertices[i].pos, ref scale);
 				angle += (MathF.TwoPi / (float)segmentNum);
 			}
-			this.CurrentState.TransformVertices(vertices, shapeHandle);
+			this.CurrentState.TransformVertices(vertices, shapeHandle, shapeHandleScale);
 			this.device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.LineLoop, vertices);
 
 			// YZ circle
@@ -294,7 +298,7 @@ namespace Duality
 				this.device.PreprocessCoords(ref vertices[i].pos, ref scale);
 				angle += (MathF.TwoPi / (float)segmentNum);
 			}
-			this.CurrentState.TransformVertices(vertices, shapeHandle);
+			this.CurrentState.TransformVertices(vertices, shapeHandle, shapeHandleScale);
 			this.device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.LineLoop, vertices);
 		}
 
@@ -323,7 +327,7 @@ namespace Duality
 			vertices[1].pos = target;
 			vertices[0].clr = shapeColor;
 			vertices[1].clr = shapeColor;
-			this.CurrentState.TransformVertices(vertices, shapeHandle);
+			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
 			device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.Lines, vertices);
 		}
 		/// <summary>
@@ -368,7 +372,7 @@ namespace Duality
 			vertices[2].clr = shapeColor;
 			vertices[3].clr = shapeColor;
 
-			this.CurrentState.TransformVertices(vertices, shapeHandle);
+			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
 			device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.LineLoop, vertices);
 		}
 		/// <summary>
@@ -399,7 +403,7 @@ namespace Duality
 			h *= 0.5f; y += h;
 
 			Vector3 pos = new Vector3(x + 0.5f, y + 0.5f, z);
-			if (!this.device.IsCoordInView(pos, MathF.Max(w, h))) return;
+			if (!this.device.IsCoordInView(pos, MathF.Max(w, h) + this.CurrentState.TransformHandle.Length)) return;
 
 			float scale = 1.0f;
 			this.device.PreprocessCoords(ref pos, ref scale);
@@ -421,7 +425,7 @@ namespace Duality
 				vertices[i].clr = shapeColor;
 				angle += (MathF.TwoPi / (float)segmentNum);
 			}
-			this.CurrentState.TransformVertices(vertices, shapeHandle);
+			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
 			this.device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.LineLoop, vertices);
 		}
 		/// <summary>
@@ -477,7 +481,7 @@ namespace Duality
 			h *= 0.5f; y += h;
 
 			Vector3 pos = new Vector3(x, y, z);
-			if (!this.device.IsCoordInView(pos, MathF.Max(w, h))) return;
+			if (!this.device.IsCoordInView(pos, MathF.Max(w, h) + this.CurrentState.TransformHandle.Length)) return;
 
 			float scale = 1.0f;
 			this.device.PreprocessCoords(ref pos, ref scale);
@@ -500,7 +504,7 @@ namespace Duality
 				vertices[i].clr = shapeColor;
 				angle += (MathF.TwoPi / (float)segmentNum);
 			}
-			this.CurrentState.TransformVertices(vertices, shapeHandle);
+			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
 			device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.TriangleFan, vertices);
 		}
 		/// <summary>
@@ -570,7 +574,7 @@ namespace Duality
 			vertices[2].clr = shapeColor;
 			vertices[3].clr = shapeColor;
 
-			this.CurrentState.TransformVertices(vertices, shapeHandle);
+			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
 			device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.Quads, vertices);
 		}
 		/// <summary>
@@ -628,7 +632,7 @@ namespace Duality
 			vertices[2].clr = shapeColor;
 			vertices[3].clr = shapeColor;
 
-			this.CurrentState.TransformVertices(vertices, shapeHandle);
+			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
 			device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.Quads, vertices);
 		}
 		/// <summary>
@@ -743,7 +747,7 @@ namespace Duality
 
 			font.EmitTextVertices(text, ref vertices, pos.X, pos.Y, pos.Z, this.CurrentState.ColorTint);
 
-			this.CurrentState.TransformVertices(vertices, shapeHandle);
+			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
 			device.AddVertices(font.Material, BeginMode.Quads, vertices);
 		}
 		/// <summary>
