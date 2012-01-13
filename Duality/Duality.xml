@@ -8990,23 +8990,6 @@
             <param name="z"></param>
             <param name="r"></param>
         </member>
-        <member name="M:Duality.Canvas.DrawCircle(System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Draws a circle.
-            </summary>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="z"></param>
-            <param name="r"></param>
-        </member>
-        <member name="M:Duality.Canvas.DrawCircle(System.Single,System.Single,System.Single)">
-            <summary>
-            Draws a circle
-            </summary>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="r"></param>
-        </member>
         <member name="M:Duality.Canvas.DrawLine(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
             <summary>
             Draws a three-dimensional line.
@@ -9046,6 +9029,61 @@
             <param name="w"></param>
             <param name="h"></param>
         </member>
+        <member name="M:Duality.Canvas.DrawOval(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws an oval.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawOval(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws an oval.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawCircle(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a circle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="r"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawCircle(System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a circle
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="r"></param>
+        </member>
+        <member name="M:Duality.Canvas.FillOval(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Fills an oval.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+        </member>
+        <member name="M:Duality.Canvas.FillOval(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Fills an oval
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+        </member>
         <member name="M:Duality.Canvas.FillCircle(System.Single,System.Single,System.Single,System.Single)">
             <summary>
             Fills a circle.
@@ -9063,6 +9101,25 @@
             <param name="y"></param>
             <param name="r"></param>
         </member>
+        <member name="M:Duality.Canvas.FillRect(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Fills a rectangle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+        </member>
+        <member name="M:Duality.Canvas.FillRect(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Fills a rectangle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+        </member>
         <member name="P:Duality.Canvas.DrawDevice">
             <summary>
             [GET] The underlying <see cref="T:Duality.IDrawDevice"/> that is used for drawing.
@@ -9071,6 +9128,21 @@
         <member name="P:Duality.Canvas.CurrentState">
             <summary>
             [GET / SET] The Canvas' current <see cref="T:Duality.Canvas.State"/>.
+            </summary>
+        </member>
+        <member name="T:Duality.Canvas.TextureMode">
+            <summary>
+            Determines whether and how drawn shapes are textured.
+            </summary>
+        </member>
+        <member name="F:Duality.Canvas.TextureMode.Plain">
+            <summary>
+            Textures are ignored. No UV coordinates are generated.
+            </summary>
+        </member>
+        <member name="F:Duality.Canvas.TextureMode.Textured">
+            <summary>
+            Shapes are textured. UV coordinates are generated based on <see cref="P:Duality.Canvas.State.TexUVTarget"/>.
             </summary>
         </member>
         <member name="T:Duality.Canvas.State">
@@ -9104,6 +9176,31 @@
         <member name="P:Duality.Canvas.State.Material">
             <summary>
             [GET] The material that is used for drawing.
+            </summary>
+        </member>
+        <member name="P:Duality.Canvas.State.TexMode">
+            <summary>
+            [GET / SET] The texturing mode that is used when drawing shapes.
+            </summary>
+        </member>
+        <member name="P:Duality.Canvas.State.TexUVTarget">
+            <summary>
+            [GET / SET] The target UV rect when texturing a shape.
+            </summary>
+        </member>
+        <member name="P:Duality.Canvas.State.TransformAngle">
+            <summary>
+            [GET / SET] The angle by which all shapes are transformed.
+            </summary>
+        </member>
+        <member name="P:Duality.Canvas.State.TransformScale">
+            <summary>
+            [GET / SET] The scale by which all shapes are transformed.
+            </summary>
+        </member>
+        <member name="P:Duality.Canvas.State.TransformHandle">
+            <summary>
+            [GET / SET] The handle used for transforming all shapes.
             </summary>
         </member>
         <member name="T:Duality.VertexFormat.VertexP3">

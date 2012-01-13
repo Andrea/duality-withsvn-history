@@ -28,6 +28,7 @@ namespace Duality.VertexFormat
 		Vector3 IVertexData.Pos
 		{
 			get { return this.pos; }
+			set { this.pos = value; }
 		}
 		int IVertexData.VertexTypeIndex
 		{

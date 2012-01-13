@@ -76,6 +76,6 @@ namespace Duality.VertexFormat
 		/// <summary>
 		/// [GET] The vertices position.
 		/// </summary>
-		Vector3 Pos { get; }
+		Vector3 Pos { get; set; }
 	}
 }
