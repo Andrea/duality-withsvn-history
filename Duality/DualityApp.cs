@@ -28,7 +28,7 @@ namespace Duality
 		/// <summary>
 		/// Describes the context in which the current DualityApp runs.
 		/// </summary>
-		public enum ExecutionContext
+		public enum ExecutionContext : int
 		{
 			/// <summary>
 			/// Duality has been terminated. There is no guarantee that any object is still valid or usable.
@@ -39,11 +39,29 @@ namespace Duality
 			/// </summary>
 			Unknown,
 			/// <summary>
-			/// Duality is being run by the launcher app or similar.
+			/// Duality runs in a game environment.
+			/// </summary>
+			Game,
+			/// <summary>
+			/// Duality runs in an editing environment.
+			/// </summary>
+			Editor
+		}
+		/// <summary>
+		/// Describes the environment in which the current DualityApp runs.
+		/// </summary>
+		public enum ExecutionEnvironment : int
+		{
+			/// <summary>
+			/// The environment in which Duality is executed is unknown.
+			/// </summary>
+			Unknown,
+			/// <summary>
+			/// Duality runs in the DualityLauncher
 			/// </summary>
 			Launcher,
 			/// <summary>
-			/// Duality runs inside the editor.
+			/// Duality runs in the DualityEditor
 			/// </summary>
 			Editor
 		}
@@ -62,6 +80,7 @@ namespace Duality
 		private	static	IMouseInput				mouse				= null;
 		private	static	IKeyboardInput			keyboard			= null;
 		private	static	SoundDevice				sound				= null;
+		private	static	ExecutionEnvironment	environment			= ExecutionEnvironment.Unknown;
 		private	static	ExecutionContext		execContext			= ExecutionContext.Terminated;
 		private	static	DualityAppData			appData				= null;
 		private	static	DualityUserData			userData			= null;
@@ -215,6 +234,13 @@ namespace Duality
 			}
 		}
 		/// <summary>
+		/// [GET] Returns the <see cref="ExecutionEnvironment"/> in which this DualityApp is currently running.
+		/// </summary>
+		public static ExecutionEnvironment ExecEnvironment
+		{
+			get { return environment; }
+		}
+		/// <summary>
 		/// [GET] Enumerates all currently loaded plugins.
 		/// </summary>
 		public static IEnumerable<CorePlugin> LoadedPlugins
@@ -240,7 +266,7 @@ namespace Duality
 		/// Command line arguments to run this DualityApp with. 
 		/// Usually these are just the ones from the host application, passed on.
 		/// </param>
-		public static void Init(ExecutionContext context = ExecutionContext.Unknown, string[] args = null)
+		public static void Init(ExecutionEnvironment env = ExecutionEnvironment.Unknown, ExecutionContext context = ExecutionContext.Unknown, string[] args = null)
 		{
 			if (initialized) return;
 
@@ -270,6 +296,7 @@ namespace Duality
 				}
 			}
 
+			environment = env;
 			execContext = context;
 
 			// Initialize Logfile
@@ -415,7 +442,7 @@ namespace Duality
 				Scene.Current.EditorUpdate();
 				foreach (GameObject obj in updateObjects.ActiveObjects) obj.Update();
 			}
-			else if (execContext == ExecutionContext.Launcher)
+			else if (execContext == ExecutionContext.Game)
 			{
 				if (!freezeScene)	Scene.Current.Update();
 				else				Scene.Current.EditorUpdate();
@@ -587,7 +614,10 @@ namespace Duality
 				{
 					Log.Core.Write("Loading '{0}'...", pluginDllPaths[i]);
 					Log.Core.PushIndent();
-					pluginAssembly = Assembly.Load(File.ReadAllBytes(pluginDllPaths[i]));
+					if (environment == ExecutionEnvironment.Launcher)
+						pluginAssembly = Assembly.LoadFrom(pluginDllPaths[i]);
+					else
+						pluginAssembly = Assembly.Load(File.ReadAllBytes(pluginDllPaths[i]));
 					pluginType = pluginAssembly.GetExportedTypes().FirstOrDefault(t => typeof(CorePlugin).IsAssignableFrom(t));
 					if (pluginType == null)
 					{

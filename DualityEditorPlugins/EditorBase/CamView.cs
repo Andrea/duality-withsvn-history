@@ -516,7 +516,7 @@ namespace EditorBase
 		}
 		private void glControl_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
 		{
-			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Launcher) 
+			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game) 
 				e.IsInputKey = true;
 		}
 		private void glControl_KeyDown(object sender, KeyEventArgs e)
@@ -529,7 +529,7 @@ namespace EditorBase
 				if (this.inputKeyRepeat || !wasPressed)
 					this.inputKeyDown(this, inputKey.ToEventArgs());
 			}
-			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Launcher) return;
+			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game) return;
 
 
 			if (e.KeyCode == Keys.A) this.toggleAccMove.Checked = !this.toggleAccMove.Checked;

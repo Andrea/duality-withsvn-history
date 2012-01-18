@@ -162,7 +162,7 @@ namespace DualityEditor.Forms
 
 			this.actionDebugApp.Enabled = EditorHelper.IsJITDebuggerAvailable();
 
-			DualityApp.Init(DualityApp.ExecutionContext.Editor, new string[] {"logfile", "logfile_editor"});
+			DualityApp.Init(DualityApp.ExecutionEnvironment.Editor, DualityApp.ExecutionContext.Editor, new string[] {"logfile", "logfile_editor"});
 			this.InitMenus();
 			this.InitMainGLContext();
 			ContentProvider.InitDefaultContent();
@@ -244,7 +244,7 @@ namespace DualityEditor.Forms
 			if (this.sandboxState == SandboxState.Paused)
 			{
 				this.sandboxState = SandboxState.Playing;
-				DualityApp.ExecContext = DualityApp.ExecutionContext.Launcher;
+				DualityApp.ExecContext = DualityApp.ExecutionContext.Game;
 				this.UpdateToolbar();
 			}
 			else
@@ -263,7 +263,7 @@ namespace DualityEditor.Forms
 				}
 
 				this.sandboxState = SandboxState.Playing;
-				DualityApp.ExecContext = DualityApp.ExecutionContext.Launcher;
+				DualityApp.ExecContext = DualityApp.ExecutionContext.Game;
 				this.UpdateToolbar();
 
 				// (Re)Load Scene

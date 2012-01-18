@@ -73,7 +73,7 @@ namespace DualityLauncher
 		[STAThread]
 		public static void Main(string[] args)
 		{
-			DualityApp.Init(DualityApp.ExecutionContext.Launcher, args);
+			DualityApp.Init(DualityApp.ExecutionEnvironment.Launcher, DualityApp.ExecutionContext.Game, args);
 			using (DualityLauncher launcherWindow = new DualityLauncher(
 				DualityApp.UserData.GfxWidth, 
 				DualityApp.UserData.GfxHeight, 

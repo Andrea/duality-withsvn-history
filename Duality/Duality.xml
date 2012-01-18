@@ -184,7 +184,7 @@
             and handles logfiles internally.
             </summary>
         </member>
-        <member name="M:Duality.DualityApp.Init(Duality.DualityApp.ExecutionContext,System.String[])">
+        <member name="M:Duality.DualityApp.Init(Duality.DualityApp.ExecutionEnvironment,Duality.DualityApp.ExecutionContext,System.String[])">
             <summary>
             Initializes this DualityApp. Should be called before performing any operations withing Duality.
             </summary>
@@ -367,6 +367,11 @@
             [GET] Returns the <see cref="T:Duality.DualityApp.ExecutionContext"/> in which this DualityApp is currently running.
             </summary>
         </member>
+        <member name="P:Duality.DualityApp.ExecEnvironment">
+            <summary>
+            [GET] Returns the <see cref="T:Duality.DualityApp.ExecutionEnvironment"/> in which this DualityApp is currently running.
+            </summary>
+        </member>
         <member name="P:Duality.DualityApp.LoadedPlugins">
             <summary>
             [GET] Enumerates all currently loaded plugins.
@@ -394,14 +399,34 @@
             The context in which Duality is executed is unknown.
             </summary>
         </member>
-        <member name="F:Duality.DualityApp.ExecutionContext.Launcher">
+        <member name="F:Duality.DualityApp.ExecutionContext.Game">
             <summary>
-            Duality is being run by the launcher app or similar.
+            Duality runs in a game environment.
             </summary>
         </member>
         <member name="F:Duality.DualityApp.ExecutionContext.Editor">
             <summary>
-            Duality runs inside the editor.
+            Duality runs in an editing environment.
+            </summary>
+        </member>
+        <member name="T:Duality.DualityApp.ExecutionEnvironment">
+            <summary>
+            Describes the environment in which the current DualityApp runs.
+            </summary>
+        </member>
+        <member name="F:Duality.DualityApp.ExecutionEnvironment.Unknown">
+            <summary>
+            The environment in which Duality is executed is unknown.
+            </summary>
+        </member>
+        <member name="F:Duality.DualityApp.ExecutionEnvironment.Launcher">
+            <summary>
+            Duality runs in the DualityLauncher
+            </summary>
+        </member>
+        <member name="F:Duality.DualityApp.ExecutionEnvironment.Editor">
+            <summary>
+            Duality runs in the DualityEditor
             </summary>
         </member>
         <member name="T:Duality.DualityAppData">

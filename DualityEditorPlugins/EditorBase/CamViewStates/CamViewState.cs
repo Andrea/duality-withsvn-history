@@ -371,7 +371,7 @@ namespace EditorBase
 				this.View.LocalGLControl.Invalidate();
 			}
 			
-			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Launcher)
+			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
 			{
 				this.UpdateSelectionStats();
 				this.View.LocalGLControl.Invalidate();
