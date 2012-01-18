@@ -561,15 +561,20 @@ namespace Duality.Components
 					this.angleVel = this.angleVelAbs;
 				}
 
-				Vector3.Divide(ref this.scaleAbs, ref this.parentTransform.scaleAbs, out this.scale);
+				if (this.parentTransform.scaleAbs.X == 0.0f ||
+					this.parentTransform.scaleAbs.Y == 0.0f ||
+					this.parentTransform.scaleAbs.Z == 0.0f)
+				{
+					Vector3.Divide(ref this.scaleAbs, ref this.parentTransform.scaleAbs, out this.scale);
 				
-				Vector3.Subtract(ref this.posAbs, ref this.parentTransform.posAbs, out this.pos);
-				MathF.TransformCoord(ref this.pos.X, ref this.pos.Y, -this.parentTransform.angleAbs);
-				Vector3.Divide(ref this.pos, ref this.parentTransform.scaleAbs, out this.pos);
+					Vector3.Subtract(ref this.posAbs, ref this.parentTransform.posAbs, out this.pos);
+					MathF.TransformCoord(ref this.pos.X, ref this.pos.Y, -this.parentTransform.angleAbs);
+					Vector3.Divide(ref this.pos, ref this.parentTransform.scaleAbs, out this.pos);
 
-				Vector3.Subtract(ref this.velAbs, ref this.parentTransform.velAbs, out this.vel);
-				MathF.TransformCoord(ref this.vel.X, ref this.vel.Y, -this.parentTransform.angleAbs);
-				Vector3.Divide(ref this.vel, ref this.parentTransform.scaleAbs, out this.vel);
+					Vector3.Subtract(ref this.velAbs, ref this.parentTransform.velAbs, out this.vel);
+					MathF.TransformCoord(ref this.vel.X, ref this.vel.Y, -this.parentTransform.angleAbs);
+					Vector3.Divide(ref this.vel, ref this.parentTransform.scaleAbs, out this.vel);
+				}
 			}
 
 			this.CheckValidTransform();
