@@ -372,6 +372,8 @@ namespace Duality.Components
 
 		void ICmpUpdatable.OnUpdate()
 		{
+			this.CheckValidTransform();
+
 			if (this.extUpdater != null)
 			{
 				if (this.changes != DirtyFlags.None) this.extUpdater.OnTransformChanged(this, this.changes);
@@ -386,10 +388,16 @@ namespace Duality.Components
 				this.UpdateAbs();
 			}
 			this.changes = DirtyFlags.None;
+
+			this.CheckValidTransform();
 		}
 		void ICmpEditorUpdatable.OnUpdate()
 		{
+			this.CheckValidTransform();
+
 			this.UpdateAbs();
+
+			this.CheckValidTransform();
 		}
 		void ICmpGameObjectListener.OnGameObjectParentChanged(GameObject oldParent, GameObject newParent)
 		{
@@ -475,6 +483,8 @@ namespace Duality.Components
 
 		private void UpdateAbs(bool childOnly = false)
 		{
+			this.CheckValidTransform();
+
 			if (!childOnly)
 			{
 				if (this.parentTransform == null)
@@ -522,9 +532,13 @@ namespace Duality.Components
 					if (obj.Transform != null) obj.Transform.UpdateAbs();
 				}
 			}
+
+			this.CheckValidTransform();
 		}
 		private void UpdateRel()
 		{
+			this.CheckValidTransform();
+
 			if (this.parentTransform == null)
 			{
 				this.angle = this.angleAbs;
@@ -557,6 +571,8 @@ namespace Duality.Components
 				MathF.TransformCoord(ref this.vel.X, ref this.vel.Y, -this.parentTransform.angleAbs);
 				Vector3.Divide(ref this.vel, ref this.parentTransform.scaleAbs, out this.vel);
 			}
+
+			this.CheckValidTransform();
 		}
 
 		internal override void CopyToInternal(Component target)
@@ -571,6 +587,37 @@ namespace Duality.Components
 			t.deriveAngle = this.deriveAngle;
 			// Don't copy external updaters. They're usually other Components and thus, object-local.
 			t.UpdateAbs();
+		}
+
+		[System.Diagnostics.Conditional("DEBUG")]
+		private void CheckValidTransform()
+		{
+			CheckValidValue(this.pos.X);
+			CheckValidValue(this.pos.Y);
+			CheckValidValue(this.pos.Z);
+			CheckValidValue(this.vel.X);
+			CheckValidValue(this.vel.Y);
+			CheckValidValue(this.vel.Z);
+			CheckValidValue(this.scale.X);
+			CheckValidValue(this.scale.Y);
+			CheckValidValue(this.scale.Z);
+			CheckValidValue(this.angle);
+			
+			CheckValidValue(this.posAbs.X);
+			CheckValidValue(this.posAbs.Y);
+			CheckValidValue(this.posAbs.Z);
+			CheckValidValue(this.velAbs.X);
+			CheckValidValue(this.velAbs.Y);
+			CheckValidValue(this.velAbs.Z);
+			CheckValidValue(this.scaleAbs.X);
+			CheckValidValue(this.scaleAbs.Y);
+			CheckValidValue(this.scaleAbs.Z);
+			CheckValidValue(this.angleAbs);
+		}
+		private static void CheckValidValue(float value)
+		{
+			if (float.IsNaN(value))			throw new ApplicationException("Invalid transform value (NaN)");
+			if (float.IsInfinity(value))	throw new ApplicationException("Invalid transform value (Infinity)");
 		}
 	}
 }
