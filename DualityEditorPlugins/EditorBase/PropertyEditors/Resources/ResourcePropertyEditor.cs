@@ -23,6 +23,8 @@ namespace EditorBase.PropertyEditors
 		{
 			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Resource_Disposed)) return false;
 			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Resource_Path)) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Resource_Name)) return false;
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Resource_IsDefaultContent)) return false;
 			return base.MemberPredicate(info);
 		}
 		protected override void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)

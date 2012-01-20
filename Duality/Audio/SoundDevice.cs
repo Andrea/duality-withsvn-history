@@ -257,7 +257,7 @@ namespace Duality
 			// If no listener is defined, search one
 			if (this.soundListener == null)
 			{
-				this.soundListener = Scene.Current.Graph.AllObjects.GetComponents<SoundListener>(true).GameObject().FirstOrDefault();
+				this.soundListener = Scene.Current.ActiveObjects.GetComponents<SoundListener>(true).GameObject().FirstOrDefault();
 			}
 
 			float[] orientation = new float[6];

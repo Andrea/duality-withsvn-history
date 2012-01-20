@@ -47,6 +47,25 @@ namespace Duality
 		{
 			get { return this.path; }
 		}
+		/// <summary>
+		/// [GET] The name of the Resource.
+		/// </summary>
+		public string Name
+		{
+			get
+			{
+				string nameTemp = this.path ?? "";
+				if (this.IsDefaultContent) nameTemp = nameTemp.Replace(':', '/');
+				return System.IO.Path.GetFileNameWithoutExtension(System.IO.Path.GetFileNameWithoutExtension(nameTemp));
+			}
+		}
+		/// <summary>
+		/// [GET] Returns whether the Resource is part of Duality's embedded default content.
+		/// </summary>
+		public bool IsDefaultContent
+		{
+			get { return this.path != null && this.path.Contains(':'); }
+		}
 		bool IManageableObject.Active
 		{
 			get { return !this.Disposed; }
@@ -91,6 +110,7 @@ namespace Duality
 			formatter.AddFieldBlocker(NonSerializedResourceBlocker);
 			formatter.WriteObject(this);
 			this.OnSaved();
+			Log.Core.Write("Resource saved: {0}", (str is FileStream) ? (str as FileStream).Name : str.ToString());
 		}
 
 		/// <summary>
@@ -163,6 +183,11 @@ namespace Duality
 		{
 			Type refType = typeof(ContentRef<>).MakeGenericType(this.GetType());
 			return Activator.CreateInstance(refType, this) as IContentRef;
+		}
+		
+		public override string ToString()
+		{
+			return this.Name;
 		}
 
 		/// <summary>

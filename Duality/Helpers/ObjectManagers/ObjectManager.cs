@@ -85,20 +85,36 @@ namespace Duality
 		/// Registers a single object
 		/// </summary>
 		/// <param name="obj"></param>
-		public void RegisterObj(T obj)
+		public virtual void RegisterObj(T obj)
 		{
 			if (this.allObj.Contains(obj)) return;
 			this.allObj.Add(obj);
 			this.OnRegistered(obj);
 		}
 		/// <summary>
+		/// Registers a set of objects
+		/// </summary>
+		/// <param name="objEnum"></param>
+		public void RegisterObj(IEnumerable<T> objEnum)
+		{
+			foreach (T obj in objEnum.ToArray()) this.RegisterObj(obj);
+		}
+		/// <summary>
 		/// Unregisters a single object
 		/// </summary>
 		/// <param name="obj"></param>
-		public void UnregisterObj(T obj)
+		public virtual void UnregisterObj(T obj)
 		{
 			this.allObj.Remove(obj);
 			this.OnUnregistered(obj);
+		}
+		/// <summary>
+		/// Unregisters a set of objects
+		/// </summary>
+		/// <param name="objEnum"></param>
+		public void UnregisterObj(IEnumerable<T> objEnum)
+		{
+			foreach (T obj in objEnum.ToArray()) this.UnregisterObj(obj);
 		}
 
 		/// <summary>

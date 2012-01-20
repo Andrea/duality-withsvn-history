@@ -379,7 +379,7 @@ namespace EditorBase
 		protected IEnumerable<Collider> QueryVisibleColliders()
 		{
 			this.View.MakeDualityTarget();
-			IEnumerable<Collider> allColliders = Scene.Current.Graph.AllObjects.GetComponents<Collider>();
+			IEnumerable<Collider> allColliders = Scene.Current.AllObjects.GetComponents<Collider>();
 			IDrawDevice device = this.View.CameraComponent.DrawDevice;
 			return allColliders.Where(c => device.IsCoordInView(c.GameObj.Transform.Pos, c.BoundRadius));
 		}

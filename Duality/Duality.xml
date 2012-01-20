@@ -2869,6 +2869,16 @@
             It is also the path under which this Resource is registered at the ContentProvider.
             </summary>
         </member>
+        <member name="P:Duality.Resource.Name">
+            <summary>
+            [GET] The name of the Resource.
+            </summary>
+        </member>
+        <member name="P:Duality.Resource.IsDefaultContent">
+            <summary>
+            [GET] Returns whether the Resource is part of Duality's embedded default content.
+            </summary>
+        </member>
         <member name="F:Duality.Resources.Sound.FileExt">
             <summary>
             A Sound resources file extension.
@@ -3227,6 +3237,11 @@
             [GET / SET] A set of <see cref="T:Duality.Resources.Texture">Textures</see> to use.
             </summary>
         </member>
+        <member name="P:Duality.Resources.Material.MainTexture">
+            <summary>
+            [GET] Returns the main texture.
+            </summary>
+        </member>
         <member name="P:Duality.Resources.Material.Uniforms">
             <summary>
             [GET / SET] A set of <see cref="T:Duality.Resources.ShaderVarInfo">uniform values</see> to use.
@@ -3326,6 +3341,11 @@
         <member name="P:Duality.Resources.BatchInfo.Textures">
             <summary>
             [GET / SET] A set of <see cref="T:Duality.Resources.Texture">Textures</see> to use.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.BatchInfo.MainTexture">
+            <summary>
+            [GET] Returns the main texture.
             </summary>
         </member>
         <member name="P:Duality.Resources.BatchInfo.Uniforms">
@@ -4030,11 +4050,23 @@
             </summary>
             <param name="obj"></param>
         </member>
+        <member name="M:Duality.ObjectManager`1.RegisterObj(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Registers a set of objects
+            </summary>
+            <param name="objEnum"></param>
+        </member>
         <member name="M:Duality.ObjectManager`1.UnregisterObj(`0)">
             <summary>
             Unregisters a single object
             </summary>
             <param name="obj"></param>
+        </member>
+        <member name="M:Duality.ObjectManager`1.UnregisterObj(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Unregisters a set of objects
+            </summary>
+            <param name="objEnum"></param>
         </member>
         <member name="M:Duality.ObjectManager`1.OnRegistered(`0)">
             <summary>
@@ -4068,27 +4100,15 @@
             [GET] Enumerates all registered objects that are currently active.
             </summary>
         </member>
-        <member name="M:Duality.ObjectManagers.GameObjectManager.RegisterObjDeep(Duality.GameObject)">
+        <member name="M:Duality.ObjectManagers.GameObjectManager.RegisterObj(Duality.GameObject)">
             <summary>
             Registers a GameObject and all of its children.
             </summary>
             <param name="obj"></param>
         </member>
-        <member name="M:Duality.ObjectManagers.GameObjectManager.RegisterObjDeep(System.Collections.Generic.IEnumerable{Duality.GameObject})">
-            <summary>
-            Registers a set of GameObjects and all of their children
-            </summary>
-            <param name="obj"></param>
-        </member>
-        <member name="M:Duality.ObjectManagers.GameObjectManager.UnregisterObjDeep(Duality.GameObject)">
+        <member name="M:Duality.ObjectManagers.GameObjectManager.UnregisterObj(Duality.GameObject)">
             <summary>
             Unregisters a GameObject and all of its children
-            </summary>
-            <param name="obj"></param>
-        </member>
-        <member name="M:Duality.ObjectManagers.GameObjectManager.UnregisterObjDeep(System.Collections.Generic.IEnumerable{Duality.GameObject})">
-            <summary>
-            Unregisters a set of GameObjects and all of their children
             </summary>
             <param name="obj"></param>
         </member>
@@ -5470,6 +5490,11 @@
             Provides information about a <see cref="T:Duality.Resources.AbstractShader">shader</see> variable.
             </summary>
         </member>
+        <member name="F:Duality.Resources.ShaderVarInfo.VarName_MainTex">
+            <summary>
+            The default variable name for a materials main texture.
+            </summary>
+        </member>
         <member name="F:Duality.Resources.ShaderVarInfo.scope">
             <summary>
             The <see cref="T:Duality.Resources.ShaderVarScope">scope</see> of the variable
@@ -5821,27 +5846,32 @@
             Describes a single pass in the overall rendering process.
             </summary>
         </member>
-        <member name="F:Duality.Components.Camera.Pass.input">
+        <member name="P:Duality.Components.Camera.Pass.Input">
             <summary>
             The input to use for rendering. This can for example be a <see cref="T:Duality.Resources.Texture"/> that
             has been rendered to before and is now bound to perform a postprocessing step. If this is null, the current
             <see cref="T:Duality.Resources.Scene"/> is used as input - which is usually the case in the first rendering pass.
             </summary>
         </member>
-        <member name="F:Duality.Components.Camera.Pass.output">
+        <member name="P:Duality.Components.Camera.Pass.Output">
             <summary>
             The output to render to in this pass. If this is null, the screen is used as rendering target.
             </summary>
         </member>
-        <member name="F:Duality.Components.Camera.Pass.fitOutput">
+        <member name="P:Duality.Components.Camera.Pass.FitOutput">
             <summary>
             Specifies whether this passes output shall be scaled in order to fit the specified outputs dimensions.
             </summary>
         </member>
-        <member name="F:Duality.Components.Camera.Pass.keepOutput">
+        <member name="P:Duality.Components.Camera.Pass.KeepOutput">
             <summary>
             Specifies whether previous image data on this passes rendering target should be kept, i.e. whether clearing
             it before beginning to render can be skipped.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Camera.Pass.VisibilityMask">
+            <summary>
+            [GET / SET] A Pass-local bitmask flagging all visibility groups that are considered visible to this drawing device.
             </summary>
         </member>
         <member name="T:Duality.ReflectionHelper">
@@ -6926,6 +6956,30 @@
             </summary>
             <param name="scene">The source Scene.</param>
         </member>
+        <member name="M:Duality.Resources.Scene.RegisterObj(Duality.GameObject)">
+            <summary>
+            Registers a GameObject and all of its children.
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Resources.Scene.RegisterObj(System.Collections.Generic.IEnumerable{Duality.GameObject})">
+            <summary>
+            Registers a set of GameObjects ad all of their children.
+            </summary>
+            <param name="objEnum"></param>
+        </member>
+        <member name="M:Duality.Resources.Scene.UnregisterObj(Duality.GameObject)">
+            <summary>
+            Unregisters a GameObject and all of its children
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Duality.Resources.Scene.UnregisterObj(System.Collections.Generic.IEnumerable{Duality.GameObject})">
+            <summary>
+            Unregisters a set of GameObjects ad all of their children.
+            </summary>
+            <param name="objEnum"></param>
+        </member>
         <member name="M:Duality.Resources.Scene.QueryVisibleRenderers(Duality.IDrawDevice)">
             <summary>
             Enumerates all <see cref="T:Duality.Components.Renderer">Renderers</see> that are visible to
@@ -6970,27 +7024,42 @@
         </member>
         <member name="E:Duality.Resources.Scene.GameObjectRegistered">
             <summary>
-            Fired when a <see cref="T:Duality.GameObject"/> has been registered in the current Scenes <see cref="P:Duality.Resources.Scene.Graph"/>.
+            Fired when a <see cref="T:Duality.GameObject"/> has been registered in the current Scene.
             </summary>
         </member>
         <member name="E:Duality.Resources.Scene.GameObjectUnregistered">
             <summary>
-            Fired when a <see cref="T:Duality.GameObject"/> has been unregistered from the current Scenes <see cref="P:Duality.Resources.Scene.Graph"/>.
+            Fired when a <see cref="T:Duality.GameObject"/> has been unregistered from the current Scene.
             </summary>
         </member>
         <member name="E:Duality.Resources.Scene.RegisteredObjectComponentAdded">
             <summary>
-            Fired when a <see cref="T:Duality.Component"/> has been added to a <see cref="T:Duality.GameObject"/> that is registered in the current Scenes <see cref="P:Duality.Resources.Scene.Graph"/>.
+            Fired when a <see cref="T:Duality.Component"/> has been added to a <see cref="T:Duality.GameObject"/> that is registered in the current Scene.
             </summary>
         </member>
         <member name="E:Duality.Resources.Scene.RegisteredObjectComponentRemoved">
             <summary>
-            Fired when a <see cref="T:Duality.Component"/> has been removed from a <see cref="T:Duality.GameObject"/> that is registered in the current Scenes <see cref="P:Duality.Resources.Scene.Graph"/>.
+            Fired when a <see cref="T:Duality.Component"/> has been removed from a <see cref="T:Duality.GameObject"/> that is registered in the current Scene.
             </summary>
         </member>
-        <member name="P:Duality.Resources.Scene.Graph">
+        <member name="P:Duality.Resources.Scene.AllObjects">
             <summary>
-            [GET] The Scenes main <see cref="T:Duality.GameObject"/> manager.
+            [GET] Enumerates all registered objects.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Scene.ActiveObjects">
+            <summary>
+            [GET] Enumerates all registered objects that are currently active.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Scene.RootObjects">
+            <summary>
+            [GET] Enumerates all root GameObjects, i.e. all GameObjects without a parent object.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Scene.ActiveRootObjects">
+            <summary>
+            [GET] Enumerates all <see cref="P:Duality.Resources.Scene.RootObjects"/> that are currently active.
             </summary>
         </member>
         <member name="P:Duality.Resources.Scene.Cameras">
@@ -7006,11 +7075,6 @@
         <member name="P:Duality.Resources.Scene.OverlayRenderers">
             <summary>
             [GET] Enumerates the Scenes <see cref="T:Duality.ICmpScreenOverlayRenderer"/> objects.
-            </summary>
-        </member>
-        <member name="P:Duality.Resources.Scene.Name">
-            <summary>
-            [GET] The name of the Scene.
             </summary>
         </member>
         <member name="P:Duality.Resources.Scene.GlobalGravity">
@@ -10791,6 +10855,11 @@
             [GET] Returns whether the referenced Resource is part of Duality's embedded default content.
             </summary>
         </member>
+        <member name="P:Duality.IContentRef.Name">
+            <summary>
+            [GET] The name of the referenced Resource.
+            </summary>
+        </member>
         <!-- Ungültiger XML-Kommentar wurde für den Member "T:Duality.ContentRef`1" ignoriert -->
         <member name="F:Duality.ContentRef`1.Null">
             <summary>
@@ -10906,6 +10975,11 @@
         <member name="P:Duality.ContentRef`1.IsDefaultContent">
             <summary>
             [GET] Returns whether the referenced Resource is part of Duality's embedded default content.
+            </summary>
+        </member>
+        <member name="P:Duality.ContentRef`1.Name">
+            <summary>
+            [GET] The name of the referenced Resource.
             </summary>
         </member>
         <member name="T:Duality.ContentProvider">

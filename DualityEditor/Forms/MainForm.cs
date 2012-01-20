@@ -1017,7 +1017,7 @@ namespace DualityEditor.Forms
 			if (args.IsResource && args.Content.Is<Prefab>())
 			{
 				ContentRef<Prefab> prefabRef = args.Content.As<Prefab>();
-				List<PrefabLink> appliedLinks = PrefabLink.ApplyAllLinks(Scene.Current.Graph.AllObjects, p => p.Prefab == prefabRef);
+				List<PrefabLink> appliedLinks = PrefabLink.ApplyAllLinks(Scene.Current.AllObjects, p => p.Prefab == prefabRef);
 				List<GameObject> changedObjects = new List<GameObject>(appliedLinks.Select(p => p.Obj));
 				this.NotifyObjPrefabApplied(this, new ObjectSelection(changedObjects));
 			}

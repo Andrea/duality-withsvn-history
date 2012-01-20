@@ -241,12 +241,14 @@ namespace Duality.Resources
 			this.compiled = true;
 
 			// Collect variable infos from sub programs
-			if (this.frag.IsAvailable && this.vert.IsAvailable)
-				this.varInfo = new List<ShaderVarInfo>(this.vert.Res.VarInfo.Union(this.frag.Res.VarInfo)).ToArray();
-			else if (this.vert.IsAvailable)
-				this.varInfo = new List<ShaderVarInfo>(this.vert.Res.VarInfo).ToArray();
+			ShaderVarInfo[] fragVarArray = this.frag.IsAvailable ? this.frag.Res.VarInfo : null;
+			ShaderVarInfo[] vertVarArray = this.vert.IsAvailable ? this.vert.Res.VarInfo : null;
+			if (fragVarArray != null && vertVarArray != null)
+				this.varInfo = vertVarArray.Union(fragVarArray).ToArray();
+			else if (vertVarArray != null)
+				this.varInfo = vertVarArray.ToArray();
 			else
-				this.varInfo = new List<ShaderVarInfo>(this.frag.Res.VarInfo).ToArray();
+				this.varInfo = fragVarArray.ToArray();
 			// Determine actual variable locations
 			for (int i = 0; i < this.varInfo.Length; i++)
 			{

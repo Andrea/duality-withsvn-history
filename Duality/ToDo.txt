@@ -6,10 +6,6 @@ Next Steps:
 4.	Re-Implement Asteroids using Colliders
 5.	"Optional": Collider Joints (Editor & Logic)
 
--->	Bug: Changing the Component type (adding new interface, etc.) doesn't update a Scene's managers.
-	-->	Keep in mind: Scenes that aren't loaded need to be updated as well.
-	-->	Don't save managers / change Scene serialization? Needs to be more robust!
-
 -->	WYSIWYG-Editor for Collider Shapes
 	-->	Probably make ShapeInfo-selection editor-global, so it can be edited in the Resource Inspector
 	-->	Each ShapeInfo has Density and IsSensor, at least. How would you edit them otherwise?
@@ -94,6 +90,7 @@ Next Steps:
 -->	Isometric perspective: How to implement for a game?
 	-->	Should actually use the Z Component, but apply it other than currently
 	-->	Maybe just utilize PreprocessCoords to add Z to Y?
+		-->	Will that work in all cases? Editor? Canvas? Any Renderer?
 
 -->	Keep in mind: Saving GameObjects with PrefabLinks is currently highly data-redundant.
 	-->	When in ExecutionContext.Editor, consider not saving Components that are part of the Prefab.

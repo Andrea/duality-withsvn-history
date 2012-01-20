@@ -199,7 +199,7 @@ namespace EditorBase
 		{
 			base.OnClosed(e);
 
-			if (this.camObj != null && !this.camInternal) EditorBasePlugin.Instance.EditorForm.EditorObjects.UnregisterObjDeep(this.camObj);
+			if (this.camObj != null && !this.camInternal) EditorBasePlugin.Instance.EditorForm.EditorObjects.UnregisterObj(this.camObj);
 			if (this.nativeCamObj != null) this.nativeCamObj.Dispose();
 
 			EditorBasePlugin.Instance.EditorForm.ResourceModified -= this.EditorForm_ResourceModified;
@@ -256,7 +256,7 @@ namespace EditorBase
 			this.camSelector.Items.Clear();
 			this.camSelector.Items.Add(this.nativeCamObj.Camera);
 
-			foreach (Camera c in Scene.Current.Graph.AllObjects.GetComponents<Camera>())
+			foreach (Camera c in Scene.Current.AllObjects.GetComponents<Camera>())
 				this.camSelector.Items.Add(c);
 		}
 		protected void InitNativeCamera()
@@ -272,7 +272,7 @@ namespace EditorBase
 			c.FarZ = 100000.0f;
 
 			this.nativeCamObj.Transform.Pos = new Vector3(0.0f, 0.0f, -c.ParallaxRefDist);
-			EditorBasePlugin.Instance.EditorForm.EditorObjects.RegisterObjDeep(this.nativeCamObj);
+			EditorBasePlugin.Instance.EditorForm.EditorObjects.RegisterObj(this.nativeCamObj);
 		}
 		public void SetCurrentCamera(Camera c)
 		{
@@ -281,7 +281,7 @@ namespace EditorBase
 
 			Camera prev = this.camComp;
 			if (this.camObj != null && !this.camInternal)
-				EditorBasePlugin.Instance.EditorForm.EditorObjects.UnregisterObjDeep(this.camObj);
+				EditorBasePlugin.Instance.EditorForm.EditorObjects.UnregisterObj(this.camObj);
 
 			if (c.GameObj == this.nativeCamObj)
 			{
@@ -295,7 +295,7 @@ namespace EditorBase
 				this.camInternal = false;
 				this.camObj = c.GameObj;
 				this.camComp = c;
-				EditorBasePlugin.Instance.EditorForm.EditorObjects.RegisterObjDeep(this.camObj);
+				EditorBasePlugin.Instance.EditorForm.EditorObjects.RegisterObj(this.camObj);
 				this.camSelector.SelectedIndex = this.camSelector.Items.IndexOf(c);
 			}
 

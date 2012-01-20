@@ -63,7 +63,7 @@ namespace EditorBase.PropertyEditors
 					varInfoArray = new ShaderVarInfo[] { new ShaderVarInfo() };
 					varInfoArray[0].arraySize = 1;
 					varInfoArray[0].glVarLoc = -1;
-					varInfoArray[0].name = "mainTex";
+					varInfoArray[0].name = ShaderVarInfo.VarName_MainTex;
 					varInfoArray[0].scope = ShaderVarScope.Uniform;
 					varInfoArray[0].type = ShaderVarType.Sampler2D;
 				}

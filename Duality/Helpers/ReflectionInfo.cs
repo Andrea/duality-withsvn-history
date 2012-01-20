@@ -58,6 +58,10 @@ namespace Duality
 		public static readonly PropertyInfo	Property_Camera_ClearColor;
 		public static readonly PropertyInfo	Property_Camera_ParallaxRefDist;
 
+		public static readonly PropertyInfo	Property_Camera_RenderPass_Input;
+		public static readonly PropertyInfo	Property_Camera_RenderPass_Output;
+		public static readonly PropertyInfo	Property_Camera_RenderPass_VisibilityMask;
+
 		public static readonly PropertyInfo	Property_SoundEmitter_Sources;
 		public static readonly PropertyInfo	Property_SoundEmitter_Source_Disposed;
 		public static readonly PropertyInfo	Property_SoundEmitter_Source_Instance;
@@ -74,6 +78,10 @@ namespace Duality
 
 		public static readonly PropertyInfo	Property_Resource_Disposed;
 		public static readonly PropertyInfo	Property_Resource_Path;
+		public static readonly PropertyInfo	Property_Resource_Name;
+		public static readonly PropertyInfo	Property_Resource_IsDefaultContent;
+
+		public static readonly PropertyInfo	Property_Scene_GlobalGravity;
 
 		public static readonly PropertyInfo	Property_DrawTechnique_Blending;
 
@@ -190,7 +198,12 @@ namespace Duality
 			Property_Camera_Passes				= camera.GetProperty("Passes");
 			Property_Camera_ParallaxRefDist		= camera.GetProperty("ParallaxRefDist");
 			Property_Camera_ClearColor			= camera.GetProperty("ClearColor");
-			
+
+			Type cameraRenderPass = typeof(Camera.Pass);
+			Property_Camera_RenderPass_Input			= cameraRenderPass.GetProperty("Input");
+			Property_Camera_RenderPass_Output			= cameraRenderPass.GetProperty("Output");
+			Property_Camera_RenderPass_VisibilityMask	= cameraRenderPass.GetProperty("VisibilityMask");
+
 			Type collider = typeof(Collider);
 			Property_Collider_Friction			= collider.GetProperty("Friction");
 			Property_Collider_Restitution		= collider.GetProperty("Restitution");
@@ -200,9 +213,14 @@ namespace Duality
 			Property_Collider_BoundRadius		= collider.GetProperty("BoundRadius");
 
 			Type resource = typeof(Resource);
-			Property_Resource_Disposed	= resource.GetProperty("Disposed");
-			Property_Resource_Path		= resource.GetProperty("Path");
+			Property_Resource_Disposed			= resource.GetProperty("Disposed");
+			Property_Resource_Path				= resource.GetProperty("Path");
+			Property_Resource_Name				= resource.GetProperty("Name");
+			Property_Resource_IsDefaultContent	= resource.GetProperty("IsDefaultContent");
 			
+			Type scene = typeof(Scene);
+			Property_Scene_GlobalGravity		= scene.GetProperty("GlobalGravity");
+
 			Type drawTech = typeof(DrawTechnique);
 			Property_DrawTechnique_Blending		= drawTech.GetProperty("Blending");
 			

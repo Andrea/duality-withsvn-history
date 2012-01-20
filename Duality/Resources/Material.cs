@@ -127,6 +127,13 @@ namespace Duality.Resources
 			set { this.info.Textures = value; }
 		}
 		/// <summary>
+		/// [GET] Returns the main texture.
+		/// </summary>
+		public ContentRef<Texture> MainTexture
+		{
+			get { return this.info.MainTexture; }
+		}
+		/// <summary>
 		/// [GET / SET] A set of <see cref="Duality.Resources.ShaderVarInfo">uniform values</see> to use.
 		/// </summary>
 		public Dictionary<string,float[]> Uniforms
@@ -209,6 +216,19 @@ namespace Duality.Resources
 			set { this.textures = value; }
 		}
 		/// <summary>
+		/// [GET] Returns the main texture.
+		/// </summary>
+		public ContentRef<Texture> MainTexture
+		{
+			get
+			{
+				if (this.textures == null || this.textures.Count == 0) return ContentRef<Texture>.Null;
+				ContentRef<Texture> mainTexRef;
+				if (!this.textures.TryGetValue(ShaderVarInfo.VarName_MainTex, out mainTexRef)) return ContentRef<Texture>.Null;
+				return mainTexRef;
+			}
+		}
+		/// <summary>
 		/// [GET / SET] A set of <see cref="Duality.Resources.ShaderVarInfo">uniform values</see> to use.
 		/// </summary>
 		public Dictionary<string,float[]> Uniforms
@@ -243,7 +263,7 @@ namespace Duality.Resources
 		public BatchInfo(ContentRef<DrawTechnique> technique, ColorFormat.ColorRgba mainColor, ContentRef<Texture> mainTex) : this(technique, mainColor, null, null) 
 		{
 			this.textures = new Dictionary<string,ContentRef<Texture>>();
-			this.textures.Add("mainTex", mainTex);
+			this.textures.Add(ShaderVarInfo.VarName_MainTex, mainTex);
 		}
 		/// <summary>
 		/// Creates a new complex BatchInfo.
@@ -355,7 +375,14 @@ namespace Duality.Resources
 		{
 			return !(first == second);
 		}
-
+		
+		public override string ToString()
+		{
+			ContentRef<Texture> inputTex = this.MainTexture;
+			return string.Format("{0}, {1}", 
+				inputTex.IsExplicitNull ? "[/]" : inputTex.Name,
+				this.technique.IsExplicitNull ? "?" : this.technique.Name);
+		}
 		public override int GetHashCode()
 		{
 			// This method is used by the DrawBatch Optimizer for generating

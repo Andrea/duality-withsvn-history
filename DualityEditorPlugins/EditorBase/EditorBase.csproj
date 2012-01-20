@@ -71,6 +71,9 @@
     <Compile Include="PropertyEditors\Components\ColliderPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="PropertyEditors\Components\CameraRenderPassPropertyEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="PropertyEditors\Components\TextRendererPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -78,6 +81,9 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="PropertyEditors\Resources\FontPropertyEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PropertyEditors\Resources\ScenePropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="PropertyEditors\Resources\RenderTargetPropertyEditor.cs">

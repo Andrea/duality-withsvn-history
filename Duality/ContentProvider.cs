@@ -54,6 +54,10 @@ namespace Duality
 		/// [GET] Returns whether the referenced Resource is part of Duality's embedded default content.
 		/// </summary>
 		bool IsDefaultContent { get; }
+		/// <summary>
+		/// [GET] The name of the referenced Resource.
+		/// </summary>
+		string Name { get; }
 
 		/// <summary>
 		/// Determines if the references Resource's Type is assignable to the specified Type.
@@ -203,6 +207,19 @@ namespace Duality
 		public bool IsDefaultContent
 		{
 			get { return this.contentPath != null && this.contentPath.Contains(':'); }
+		}
+		/// <summary>
+		/// [GET] The name of the referenced Resource.
+		/// </summary>
+		public string Name
+		{
+			get
+			{
+				if (this.IsExplicitNull) return "null";
+				string nameTemp = this.contentPath;
+				if (this.IsDefaultContent) nameTemp = nameTemp.Replace(':', '/');
+				return System.IO.Path.GetFileNameWithoutExtension(System.IO.Path.GetFileNameWithoutExtension(nameTemp));
+			}
 		}
 
 		/// <summary>

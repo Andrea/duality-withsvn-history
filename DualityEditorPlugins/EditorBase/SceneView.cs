@@ -380,7 +380,7 @@ namespace EditorBase
 		{
 			Node thisNode = new Node("Scene");
 
-			foreach (GameObject obj in scene.Graph.RootObjects)
+			foreach (GameObject obj in scene.RootObjects)
 			{
 				NodeBase objNode = this.ScanGameObject(obj, true);
 				this.InsertNodeSorted(objNode, thisNode);
@@ -406,7 +406,7 @@ namespace EditorBase
 			foreach (GameObject o in objArray)
 			{ 
 				GameObject clonedObj = o.Clone();
-				Scene.Current.Graph.RegisterObjDeep(clonedObj);
+				Scene.Current.RegisterObj(clonedObj);
 
 				// Deselect original node
 				TreeNodeAdv dragObjViewNode;
@@ -454,7 +454,7 @@ namespace EditorBase
 			{ 
 				if (o.Disposed) continue;
 				o.Dispose(); 
-				Scene.Current.Graph.UnregisterObjDeep(o); 
+				Scene.Current.UnregisterObj(o); 
 			}
 			foreach (Component c in cmpList)
 			{
@@ -496,7 +496,7 @@ namespace EditorBase
 			GameObject newObj = new GameObject();
 			newObj.Name = "GameObject";
 			newObj.Parent = baseObj;
-			Scene.Current.Graph.RegisterObjDeep(newObj);
+			Scene.Current.RegisterObj(newObj);
 
 			// Deselect previous
 			this.objectView.ClearSelection();
@@ -797,7 +797,7 @@ namespace EditorBase
 					{
 						GameObject newObj = pRef.Res.Instantiate();
 						newObj.Parent = dropObj;
-						Scene.Current.Graph.RegisterObjDeep(newObj);
+						Scene.Current.RegisterObj(newObj);
 
 						this.objectView.ClearSelection();
 						TreeNodeAdv dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(this.FindNode(newObj)));
@@ -944,7 +944,7 @@ namespace EditorBase
 					// Clone, register and set parent
 					GameObject dragObjClone = dragObj.Clone();
 					dragObjClone.Parent = dropObj;
-					Scene.Current.Graph.RegisterObjDeep(dragObjClone);
+					Scene.Current.RegisterObj(dragObjClone);
 
 					// Restore transform data
 					if (dragObj.Transform != null)

@@ -174,34 +174,74 @@ namespace Duality.Components
 		/// Describes a single pass in the overall rendering process.
 		/// </summary>
 		[Serializable]
-		public struct Pass
+		public class Pass
 		{
+			private	BatchInfo					input			= null;
+			private	ContentRef<RenderTarget>	output			= ContentRef<RenderTarget>.Null;
+			private	bool						fitOutput		= false;
+			private	bool						keepOutput		= false;
+			private	uint						visibilityMask	= uint.MaxValue;
+			
 			/// <summary>
 			/// The input to use for rendering. This can for example be a <see cref="Duality.Resources.Texture"/> that
 			/// has been rendered to before and is now bound to perform a postprocessing step. If this is null, the current
 			/// <see cref="Duality.Resources.Scene"/> is used as input - which is usually the case in the first rendering pass.
 			/// </summary>
-			public	BatchInfo					input;
+			public BatchInfo Input
+			{
+				get { return this.input; }
+				set { this.input = value; }
+			}
 			/// <summary>
 			/// The output to render to in this pass. If this is null, the screen is used as rendering target.
 			/// </summary>
-			public	ContentRef<RenderTarget>	output;
+			public ContentRef<RenderTarget> Output
+			{
+				get { return this.output; }
+				set { this.output = value; }
+			}
 			/// <summary>
 			/// Specifies whether this passes output shall be scaled in order to fit the specified outputs dimensions.
 			/// </summary>
-			public	bool						fitOutput;
+			public bool FitOutput
+			{
+				get { return this.fitOutput; }
+				set { this.fitOutput = value; }
+			}
 			/// <summary>
 			/// Specifies whether previous image data on this passes rendering target should be kept, i.e. whether clearing
 			/// it before beginning to render can be skipped.
 			/// </summary>
-			public	bool						keepOutput;
-
-			public Pass(BatchInfo input, ContentRef<RenderTarget> output, bool fitOutput, bool keepOutput)
+			public bool KeepOutput
 			{
-				this.input = input;
-				this.output = output;
-				this.fitOutput = fitOutput;
-				this.keepOutput = keepOutput;
+				get { return this.keepOutput; }
+				set { this.keepOutput = value; }
+			}
+			/// <summary>
+			/// [GET / SET] A Pass-local bitmask flagging all visibility groups that are considered visible to this drawing device.
+			/// </summary>
+			public uint VisibilityMask
+			{
+				get { return this.visibilityMask; }
+				set { this.visibilityMask = value; }
+			}
+
+			public Pass() {}
+			public Pass(Pass copyFrom, BatchInfo inputOverride)
+			{
+				this.input = inputOverride;
+				this.output = copyFrom.output;
+				this.fitOutput = copyFrom.fitOutput;
+				this.keepOutput = copyFrom.keepOutput;
+				this.visibilityMask = copyFrom.visibilityMask;
+			}
+
+			public override string ToString()
+			{
+				ContentRef<Texture> inputTex = input == null ? ContentRef<Texture>.Null : input.MainTexture;
+				return string.Format("{0} => {1}",
+					inputTex.IsExplicitNull ? (input == null ? "Camera" : "Undefined") : inputTex.Name,
+					output.IsExplicitNull ? "Screen" : output.Name);
 			}
 		}
 
@@ -415,7 +455,7 @@ namespace Duality.Components
 		private	uint	visibilityMask		= uint.MaxValue;
 		private	ColorRgba	clearColor		= ColorRgba.TransparentBlack;
 		private	ClearFlags	clearMask		= ClearFlags.All;
-		private	Pass[]		passes			= new Pass[] { new Pass(null, ContentRef<RenderTarget>.Null, false, false) } ;
+		private	Pass[]		passes			= new Pass[] { new Pass() };
 
 		[NonSerialized]	private	Matrix4	matModelView		= Matrix4.Identity;
 		[NonSerialized]	private	Matrix4	matProjection		= Matrix4.Identity;
@@ -423,6 +463,7 @@ namespace Duality.Components
 		[NonSerialized]	private	bool	overlayMatrices		= false;
 
 		[NonSerialized]	private	uint				hndlPrimaryVBO		= 0;
+		[NonSerialized]	private	uint				deviceVisibility	= uint.MaxValue;
 		[NonSerialized]	private	int					picking				= 0;
 		[NonSerialized]	private	List<Renderer>		pickingMap			= null;
 		[NonSerialized]	private	RenderTarget		pickingRT			= null;
@@ -477,6 +518,10 @@ namespace Duality.Components
 			get { return this.visibilityMask; }
 			set { this.visibilityMask = value; }
 		}
+		uint IDrawDevice.VisibilityMask
+		{
+			get { return this.deviceVisibility; }
+		}
 		/// <summary>
 		/// [GET / SET] A Bitmask describing which components of the current (or back-)buffer to clear before rendering.
 		/// </summary>
@@ -505,10 +550,11 @@ namespace Duality.Components
 				Array.Resize(ref this.passes, value.Length);
 				for (int i = 0; i < value.Length; i++)
 				{
+					if (value[i] == null) value[i] = new Pass();
 					if (i == 0)
-						this.passes[i] = new Pass(null, value[i].output, value[i].fitOutput, value[i].keepOutput);
+						this.passes[i] = new Pass(value[i], null);
 					else
-						this.passes[i] = new Pass(value[i].input == null ? new BatchInfo() : value[i].input, value[i].output, value[i].fitOutput, value[i].keepOutput);
+						this.passes[i] = new Pass(value[i], value[i].Input == null ? new BatchInfo() : value[i].Input);
 				}
 			}
 		}
@@ -529,11 +575,11 @@ namespace Duality.Components
 			{
 				for (int i = 0; i < this.passes.Length; i++)
 				{
-					if (this.passes[i].input == null)
+					if (this.passes[i].Input == null)
 					{
-						return !this.passes[i].output.IsAvailable ? 
+						return !this.passes[i].Output.IsAvailable ? 
 							DualityApp.TargetResolution : 
-							new Vector2(this.passes[i].output.Res.Width, this.passes[i].output.Res.Height);
+							new Vector2(this.passes[i].Output.Res.Width, this.passes[i].Output.Res.Height);
 					}
 				}
 				return DualityApp.TargetResolution;
@@ -601,13 +647,18 @@ namespace Duality.Components
 				GL.ClearColor(System.Drawing.Color.Black);
 				GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
+				this.deviceVisibility = this.visibilityMask;
 				this.RenderBaseInput();
 				RenderTarget.Bind(RenderTarget.None);
 			}
 			else
 			{
 				for (int i = 0; i < this.passes.Length; i++)
+				{
+					this.deviceVisibility = this.visibilityMask & this.passes[i].VisibilityMask;
 					this.RenderSinglePass(this.passes[i]);
+				}
+				this.deviceVisibility = this.visibilityMask;
 
 				RenderTarget.Bind(RenderTarget.None);
 				this.RenderScreenOverlay();
@@ -795,16 +846,16 @@ namespace Duality.Components
 
 		private void RenderSinglePass(Pass p)
 		{
-			RenderTarget.Bind(p.output);
+			RenderTarget.Bind(p.Output);
 			
-			Vector2 refSize = p.output.IsAvailable ? new Vector2(p.output.Res.Width, p.output.Res.Height) : DualityApp.TargetResolution;
+			Vector2 refSize = p.Output.IsAvailable ? new Vector2(p.Output.Res.Width, p.Output.Res.Height) : DualityApp.TargetResolution;
 			Rect viewportAbs = new Rect(refSize);
 			GL.Viewport((int)viewportAbs.x, (int)refSize.Y - (int)viewportAbs.h - (int)viewportAbs.y, (int)viewportAbs.w, (int)viewportAbs.h);
 			GL.Scissor((int)viewportAbs.x, (int)refSize.Y - (int)viewportAbs.h - (int)viewportAbs.y, (int)viewportAbs.w, (int)viewportAbs.h);
 
-			if (!p.keepOutput)
+			if (!p.KeepOutput)
 			{
-				if (p.input == null)
+				if (p.Input == null)
 				{
 					GL.ClearDepth(1.0d);
 					GL.ClearColor((OpenTK.Graphics.Color4)this.clearColor);
@@ -821,28 +872,28 @@ namespace Duality.Components
 				}
 			}
 
-			if (p.input == null)
+			if (p.Input == null)
 				this.RenderBaseInput();
 			else
 			{
 				this.SetupMatrices(true);
 
 				Texture mainTex = 
-					p.input.Textures != null && 
-					p.input.Textures.Values.Any() &&
-					p.input.Textures.Values.First().IsAvailable ?
-					p.input.Textures.Values.First().Res : null;
+					p.Input.Textures != null && 
+					p.Input.Textures.Values.Any() &&
+					p.Input.Textures.Values.First().IsAvailable ?
+					p.Input.Textures.Values.First().Res : null;
 				Vector2 uvRatio = mainTex != null ? mainTex.UVRatio : Vector2.One;
 				Vector2 inputSize = mainTex != null ? new Vector2(mainTex.PxWidth, mainTex.PxHeight) : Vector2.One;
-				Rect targetRect = new Rect(p.fitOutput ? refSize : inputSize);
-				if (!p.fitOutput)
+				Rect targetRect = new Rect(p.FitOutput ? refSize : inputSize);
+				if (!p.FitOutput)
 				{
 					targetRect.x = MathF.Round(refSize.X * 0.5f - inputSize.X * 0.5f);
 					targetRect.y = MathF.Round(refSize.Y * 0.5f - inputSize.Y * 0.5f);
 				}
 
 				IDrawDevice device = this.DrawDevice;
-				device.AddVertices(p.input, BeginMode.Quads,
+				device.AddVertices(p.Input, BeginMode.Quads,
 					new VertexP3T2(targetRect.MinX,	targetRect.MinY,	0.0f,	0.0f,		0.0f),
 					new VertexP3T2(targetRect.MaxX,	targetRect.MinY,	0.0f,	uvRatio.X,	0.0f),
 					new VertexP3T2(targetRect.MaxX,	targetRect.MaxY,	0.0f,	uvRatio.X,	uvRatio.Y),
@@ -965,14 +1016,14 @@ namespace Duality.Components
 			{
 				for (int i = 0; i < this.passes.Length; i++)
 				{
-					if (this.passes[i].output == null && this.passes[i].fitOutput)
+					if (this.passes[i].Output == null && this.passes[i].FitOutput)
 					{
-						Vector2 targetSize = this.passes[i].input == null || 
-							this.passes[i].input.Textures == null || 
-							this.passes[i].input.Textures.Values.FirstOrDefault() == null || 
-							!this.passes[i].input.Textures.Values.FirstOrDefault().IsAvailable ? 
+						Vector2 targetSize = this.passes[i].Input == null || 
+							this.passes[i].Input.Textures == null || 
+							this.passes[i].Input.Textures.Values.FirstOrDefault() == null || 
+							!this.passes[i].Input.Textures.Values.FirstOrDefault().IsAvailable ? 
 							DualityApp.TargetResolution : 
-							new Vector2(this.passes[i].input.Textures.Values.First().Res.PxWidth, this.passes[i].input.Textures.Values.First().Res.PxHeight);
+							new Vector2(this.passes[i].Input.Textures.Values.First().Res.PxWidth, this.passes[i].Input.Textures.Values.First().Res.PxHeight);
 						refSize = targetSize;
 						break;
 					}

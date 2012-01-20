@@ -19,6 +19,7 @@ namespace EditorBase.PropertyEditors
 			if (baseType == typeof(GameObject))			return PropertyGrid.EditorPriority_Specialized;
 			else if (baseType == typeof(Transform))		return PropertyGrid.EditorPriority_Specialized;
 			else if (baseType == typeof(Camera))		return PropertyGrid.EditorPriority_Specialized;
+			else if (baseType == typeof(Camera.Pass))	return PropertyGrid.EditorPriority_Specialized;
 			else if (baseType == typeof(SoundEmitter))	return PropertyGrid.EditorPriority_Specialized;
 			else if (baseType == typeof(BatchInfo))		return PropertyGrid.EditorPriority_Specialized;
 			else if (baseType == typeof(Material))		return PropertyGrid.EditorPriority_Specialized;
@@ -27,6 +28,7 @@ namespace EditorBase.PropertyEditors
 			else if (baseType == typeof(Pixmap))		return PropertyGrid.EditorPriority_Specialized;
 			else if (baseType == typeof(Sound))			return PropertyGrid.EditorPriority_Specialized;
 			else if (baseType == typeof(Font))			return PropertyGrid.EditorPriority_Specialized;
+			else if (baseType == typeof(Scene))			return PropertyGrid.EditorPriority_Specialized;
 			else if (baseType == typeof(DrawTechnique))	return PropertyGrid.EditorPriority_Specialized;
 			else if (baseType == typeof(ShaderProgram))	return PropertyGrid.EditorPriority_Specialized;
 			else if (baseType == typeof(FormattedText))	return PropertyGrid.EditorPriority_Specialized;
@@ -53,6 +55,7 @@ namespace EditorBase.PropertyEditors
 			if (baseType == typeof(GameObject))			e = new GameObjectOverviewPropertyEditor(parentEditor, parentGrid);
 			else if (baseType == typeof(Transform))		e = new TransformPropertyEditorContainer(parentEditor, parentGrid);
 			else if (baseType == typeof(Camera))		e = new CameraPropertyEditor(parentEditor, parentGrid);
+			else if (baseType == typeof(Camera.Pass))	e = new CameraRenderPassPropertyEditor(parentEditor, parentGrid);
 			else if (baseType == typeof(SoundEmitter))	e = new SoundEmitterPropertyEditor(parentEditor, parentGrid);
 			else if (baseType == typeof(BatchInfo))		e = new BatchInfoPropertyEditor(parentEditor, parentGrid);
 			else if (baseType == typeof(Material))		e = new MaterialPropertyEditor(parentEditor, parentGrid);
@@ -61,6 +64,7 @@ namespace EditorBase.PropertyEditors
 			else if (baseType == typeof(Pixmap))		e = new PixmapPropertyEditor(parentEditor, parentGrid);
 			else if (baseType == typeof(Sound))			e = new SoundPropertyEditor(parentEditor, parentGrid);
 			else if (baseType == typeof(Font))			e = new FontPropertyEditor(parentEditor, parentGrid);
+			else if (baseType == typeof(Scene))			e = new ScenePropertyEditor(parentEditor, parentGrid);
 			else if (baseType == typeof(DrawTechnique))	e = new DrawTechniquePropertyEditor(parentEditor, parentGrid);
 			else if (baseType == typeof(ShaderProgram))	e = new ShaderProgramPropertyEditor(parentEditor, parentGrid);
 			else if (baseType == typeof(FormattedText))	e = new FormattedTextPropertyEditor(parentEditor, parentGrid);

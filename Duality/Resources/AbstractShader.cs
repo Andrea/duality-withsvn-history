@@ -92,6 +92,11 @@ namespace Duality.Resources
 	public struct ShaderVarInfo
 	{
 		/// <summary>
+		/// The default variable name for a materials main texture.
+		/// </summary>
+		public const string VarName_MainTex = "mainTex";
+
+		/// <summary>
 		/// The <see cref="ShaderVarScope">scope</see> of the variable
 		/// </summary>
 		public	ShaderVarScope	scope;

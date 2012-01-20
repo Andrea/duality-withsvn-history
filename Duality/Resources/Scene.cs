@@ -82,19 +82,19 @@ namespace Duality.Resources
 		/// </summary>
 		public static event EventHandler Entered;
 		/// <summary>
-		/// Fired when a <see cref="GameObject"/> has been registered in the current Scenes <see cref="Scene.Graph"/>.
+		/// Fired when a <see cref="GameObject"/> has been registered in the current Scene.
 		/// </summary>
 		public static event EventHandler<ObjectManagerEventArgs<GameObject>> GameObjectRegistered;
 		/// <summary>
-		/// Fired when a <see cref="GameObject"/> has been unregistered from the current Scenes <see cref="Scene.Graph"/>.
+		/// Fired when a <see cref="GameObject"/> has been unregistered from the current Scene.
 		/// </summary>
 		public static event EventHandler<ObjectManagerEventArgs<GameObject>> GameObjectUnregistered;
 		/// <summary>
-		/// Fired when a <see cref="Component"/> has been added to a <see cref="GameObject"/> that is registered in the current Scenes <see cref="Scene.Graph"/>.
+		/// Fired when a <see cref="Component"/> has been added to a <see cref="GameObject"/> that is registered in the current Scene.
 		/// </summary>
 		public static event EventHandler<ComponentEventArgs> RegisteredObjectComponentAdded;
 		/// <summary>
-		/// Fired when a <see cref="Component"/> has been removed from a <see cref="GameObject"/> that is registered in the current Scenes <see cref="Scene.Graph"/>.
+		/// Fired when a <see cref="Component"/> has been removed from a <see cref="GameObject"/> that is registered in the current Scene.
 		/// </summary>
 		public static event EventHandler<ComponentEventArgs> RegisteredObjectComponentRemoved;
 
@@ -103,7 +103,7 @@ namespace Duality.Resources
 			if (Leaving != null) Leaving(current, null);
 			if (current.ResWeak != null)
 			{
-				foreach (GameObject o in current.ResWeak.Graph.ActiveObjects) o.OnDeactivate();
+				foreach (GameObject o in current.ResWeak.ActiveObjects) o.OnDeactivate();
 				physicsWorld.Clear();
 			}
 		}
@@ -112,7 +112,7 @@ namespace Duality.Resources
 			if (current.ResWeak != null)
 			{
 				physicsWorld.Gravity = current.ResWeak.GlobalGravity;
-				foreach (GameObject o in current.ResWeak.Graph.ActiveObjects) o.OnActivate();
+				foreach (GameObject o in current.ResWeak.ActiveObjects) o.OnActivate();
 			}
 			if (Entered != null) Entered(current, null);
 		}
@@ -145,18 +145,39 @@ namespace Duality.Resources
 			}
 		}
 
-		private	GameObjectManager		objectManager	= new GameObjectManager();
-		private	ObjectManager<Camera>	cameraManager	= new ObjectManager<Camera>();
-		private	RendererManager			rendererManager	= new RendererManager();
-		private	OverlayRendererManager	overlayManager	= new OverlayRendererManager();
-		private	Vector2					globalGravity	= Vector2.UnitY * 20.0f;
+		private	Vector2				globalGravity	= Vector2.UnitY * 20.0f;
+		private	GameObjectManager	objectManager	= new GameObjectManager();
+		[NonSerialized]	private	ObjectManager<Camera>	cameraManager	= new ObjectManager<Camera>();
+		[NonSerialized]	private	RendererManager			rendererManager	= new RendererManager();
+		[NonSerialized]	private	OverlayRendererManager	overlayManager	= new OverlayRendererManager();
 
 		/// <summary>
-		/// [GET] The Scenes main <see cref="GameObject"/> manager.
+		/// [GET] Enumerates all registered objects.
 		/// </summary>
-		public GameObjectManager Graph
+		public IEnumerable<GameObject> AllObjects
 		{
-			get { return this.objectManager; }
+			get { return this.objectManager.AllObjects; }
+		}
+		/// <summary>
+		/// [GET] Enumerates all registered objects that are currently active.
+		/// </summary>
+		public IEnumerable<GameObject> ActiveObjects
+		{
+			get { return this.objectManager.ActiveObjects; }
+		}
+		/// <summary>
+		/// [GET] Enumerates all root GameObjects, i.e. all GameObjects without a parent object.
+		/// </summary>
+		public IEnumerable<GameObject> RootObjects
+		{
+			get { return this.objectManager.RootObjects; }
+		}
+		/// <summary>
+		/// [GET] Enumerates all <see cref="RootObjects"/> that are currently active.
+		/// </summary>
+		public IEnumerable<GameObject> ActiveRootObjects
+		{
+			get { return this.objectManager.ActiveRootObjects; }
 		}
 		/// <summary>
 		/// [GET] Enumerates the Scenes <see cref="Camera"/> objects.
@@ -178,18 +199,6 @@ namespace Duality.Resources
 		public IEnumerable<ICmpScreenOverlayRenderer> OverlayRenderers
 		{
 			get { return this.overlayManager.AllObjects.OfType<ICmpScreenOverlayRenderer>(); }
-		}
-		/// <summary>
-		/// [GET] The name of the Scene.
-		/// </summary>
-		public string Name
-		{
-			get 
-			{ 
-				if (this.path == null) return null;
-				if (this.path.Length < FileExt.Length) return "";
-				return this.path.Substring(0, this.path.Length - FileExt.Length); 
-			}
 		}
 		/// <summary>
 		/// [GET / SET] Global gravity force that is applied to all objects that obey the laws of physics.
@@ -285,7 +294,40 @@ namespace Duality.Resources
 		public void Append(ContentRef<Scene> scene)
 		{
 			if (!scene.IsAvailable) return;
-			this.objectManager.RegisterObjDeep(scene.Res.Graph.RootObjects.Select(o => o.Clone()));
+			this.objectManager.RegisterObj(scene.Res.RootObjects.Select(o => o.Clone()));
+		}
+
+		/// <summary>
+		/// Registers a GameObject and all of its children.
+		/// </summary>
+		/// <param name="obj"></param>
+		public void RegisterObj(GameObject obj)
+		{
+			this.objectManager.RegisterObj(obj);
+		}
+		/// <summary>
+		/// Registers a set of GameObjects ad all of their children.
+		/// </summary>
+		/// <param name="objEnum"></param>
+		public void RegisterObj(IEnumerable<GameObject> objEnum)
+		{
+			foreach (GameObject obj in objEnum.ToArray()) this.RegisterObj(obj);
+		}
+		/// <summary>
+		/// Unregisters a GameObject and all of its children
+		/// </summary>
+		/// <param name="obj"></param>
+		public void UnregisterObj(GameObject obj)
+		{
+			this.objectManager.UnregisterObj(obj);
+		}
+		/// <summary>
+		/// Unregisters a set of GameObjects ad all of their children.
+		/// </summary>
+		/// <param name="objEnum"></param>
+		public void UnregisterObj(IEnumerable<GameObject> objEnum)
+		{
+			foreach (GameObject obj in objEnum.ToArray()) this.UnregisterObj(obj);
 		}
 
 		/// <summary>
@@ -309,46 +351,66 @@ namespace Duality.Resources
 			return this.overlayManager.QueryVisible(device);
 		}
 
-		private void objectManager_Registered(object sender, ObjectManagerEventArgs<GameObject> e)
+		private void AddToManagers(GameObject obj)
 		{
-			Camera cam = e.Object.Camera;
+			Camera cam = obj.Camera;
 			if (cam != null) this.cameraManager.RegisterObj(cam);
 
-			foreach (Renderer r in e.Object.GetComponents<Renderer>())
+			foreach (Renderer r in obj.GetComponents<Renderer>())
 				this.rendererManager.RegisterObj(r);
-			foreach (ICmpScreenOverlayRenderer r in e.Object.GetComponents<ICmpScreenOverlayRenderer>())
+			foreach (ICmpScreenOverlayRenderer r in obj.GetComponents<ICmpScreenOverlayRenderer>())
 				this.overlayManager.RegisterObj(r as Component);
+		}
+		private void AddToManagers(Component cmp)
+		{
+			if (cmp is Camera)						this.cameraManager.RegisterObj(cmp as Camera);
+			if (cmp is Renderer)					this.rendererManager.RegisterObj(cmp as Renderer);
+			if (cmp is ICmpScreenOverlayRenderer)	this.overlayManager.RegisterObj(cmp);
+		}
+		private void RemoveFromManagers(GameObject obj)
+		{
+			Camera cam = obj.Camera;
+			if (cam != null) this.cameraManager.UnregisterObj(cam);
 
+			foreach (Renderer r in obj.GetComponents<Renderer>())
+				this.rendererManager.UnregisterObj(r);
+			foreach (ICmpScreenOverlayRenderer r in obj.GetComponents<ICmpScreenOverlayRenderer>())
+				this.overlayManager.UnregisterObj(r as Component);
+		}
+		private void RemoveFromManagers(Component cmp)
+		{
+			if (cmp is Camera)						this.cameraManager.UnregisterObj(cmp as Camera);
+			if (cmp is Renderer)					this.rendererManager.UnregisterObj(cmp as Renderer);
+			if (cmp is ICmpScreenOverlayRenderer)	this.overlayManager.UnregisterObj(cmp);
+		}
+		private void RebuildManagers()
+		{
+			this.cameraManager.Clear();
+			this.rendererManager.Clear();
+			this.overlayManager.Clear();
+
+			foreach (GameObject obj in this.objectManager.AllObjects)
+				this.AddToManagers(obj);
+		}
+
+		private void objectManager_Registered(object sender, ObjectManagerEventArgs<GameObject> e)
+		{
+			this.AddToManagers(e.Object);
 			if (this.IsCurrent) OnGameObjectRegistered(e);
 		}
 		private void objectManager_Unregistered(object sender, ObjectManagerEventArgs<GameObject> e)
 		{
-			Camera cam = e.Object.Camera;
-			if (cam != null) this.cameraManager.UnregisterObj(cam);
-
-			foreach (Renderer r in e.Object.GetComponents<Renderer>())
-				this.rendererManager.UnregisterObj(r);
-			foreach (ICmpScreenOverlayRenderer r in e.Object.GetComponents<ICmpScreenOverlayRenderer>())
-				this.overlayManager.UnregisterObj(r as Component);
-
+			this.RemoveFromManagers(e.Object);
 			if (this.IsCurrent) OnGameObjectUnregistered(e);
 		}
 		private void objectManager_RegisteredObjectComponentAdded(object sender, ComponentEventArgs e)
 		{
-			if (e.Component is Camera)			this.cameraManager.RegisterObj(e.Component as Camera);
-			else if (e.Component is Renderer)	this.rendererManager.RegisterObj(e.Component as Renderer);
-
-			if (e.Component is ICmpScreenOverlayRenderer)	this.overlayManager.RegisterObj(e.Component);
-
+			this.AddToManagers(e.Component);
 			if (this.IsCurrent) OnRegisteredObjectComponentAdded(e);
 		}
 		private void objectManager_RegisteredObjectComponentRemoved(object sender, ComponentEventArgs e)
 		{
-			if (e.Component is Camera)			this.cameraManager.UnregisterObj(e.Component as Camera);
-			else if (e.Component is Renderer)	this.rendererManager.UnregisterObj(e.Component as Renderer);
-
-			if (e.Component is ICmpScreenOverlayRenderer)	this.overlayManager.UnregisterObj(e.Component);
-
+			this.RemoveFromManagers(e.Component);
 			if (this.IsCurrent) OnRegisteredObjectComponentRemoved(e);
 		}
 
@@ -373,6 +435,8 @@ namespace Duality.Resources
 		}
 		protected override void OnLoaded()
 		{
+			this.RebuildManagers();
+
 			base.OnLoaded();
 
 			this.ApplyPrefabLinks();
@@ -386,7 +450,7 @@ namespace Duality.Resources
 			if (current.ResWeak == this) Current = null;
 
 			GameObject[] obj = this.objectManager.AllObjects.ToArray();
-			this.Graph.Clear();
+			this.objectManager.Clear();
 			foreach (GameObject g in obj) g.DisposeLater();
 		}
 	}

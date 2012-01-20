@@ -46,41 +46,25 @@ namespace Duality.ObjectManagers
 		/// Registers a GameObject and all of its children.
 		/// </summary>
 		/// <param name="obj"></param>
-		public void RegisterObjDeep(GameObject obj)
+		public override void RegisterObj(GameObject obj)
 		{
-			this.RegisterObj(obj);
+			base.RegisterObj(obj);
 			foreach (GameObject child in obj.Children)
 			{
-				this.RegisterObjDeep(child);
+				this.RegisterObj(child);
 			}
-		}
-		/// <summary>
-		/// Registers a set of GameObjects and all of their children
-		/// </summary>
-		/// <param name="obj"></param>
-		public void RegisterObjDeep(IEnumerable<GameObject> obj)
-		{
-			foreach (GameObject o in obj.ToArray()) this.RegisterObjDeep(o);
 		}
 		/// <summary>
 		/// Unregisters a GameObject and all of its children
 		/// </summary>
 		/// <param name="obj"></param>
-		public void UnregisterObjDeep(GameObject obj)
+		public override void UnregisterObj(GameObject obj)
 		{
 			foreach (GameObject child in obj.Children)
 			{
-				this.UnregisterObjDeep(child);
+				this.UnregisterObj(child);
 			}
-			this.UnregisterObj(obj);
-		}
-		/// <summary>
-		/// Unregisters a set of GameObjects and all of their children
-		/// </summary>
-		/// <param name="obj"></param>
-		public void UnregisterObjDeep(IEnumerable<GameObject> obj)
-		{
-			foreach (GameObject o in obj.ToArray()) this.UnregisterObjDeep(o);
+			base.UnregisterObj(obj);
 		}
 
 		protected override void OnRegistered(GameObject obj)

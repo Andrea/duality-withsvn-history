@@ -243,7 +243,7 @@ namespace EditorBase
 			{ 
 			    if (o.Disposed) continue;
 			    o.Dispose(); 
-			    Scene.Current.Graph.UnregisterObjDeep(o); 
+			    Scene.Current.UnregisterObj(o); 
 			}
 		}
 		public override List<SelObj> CloneObjects(IEnumerable<SelObj> objEnum)
@@ -255,7 +255,7 @@ namespace EditorBase
 			{ 
 				if (o.Disposed) continue;
 				GameObject clone = o.Clone();
-				Scene.Current.Graph.RegisterObjDeep(clone); 
+				Scene.Current.RegisterObj(clone); 
 				clones.Add(new SelGameObj(clone));
 			}
 			return clones;
@@ -278,7 +278,7 @@ namespace EditorBase
 			{
 				GameObject gameObj = obj.ActualObject as GameObject;
 				gameObj.Dispose();
-				Scene.Current.Graph.UnregisterObjDeep(gameObj);
+				Scene.Current.UnregisterObj(gameObj);
 			}
 			this.ClearSelection();
 		}
@@ -306,7 +306,7 @@ namespace EditorBase
 							newObj.Transform.Pos = spaceCoord;
 							newObj.Transform.Angle += this.View.CameraObj.Transform.Angle;
 						}
-						Scene.Current.Graph.RegisterObjDeep(newObj);
+						Scene.Current.RegisterObj(newObj);
 						dragObj.Add(newObj);
 					}
 

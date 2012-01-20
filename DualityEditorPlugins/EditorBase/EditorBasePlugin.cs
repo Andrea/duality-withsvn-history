@@ -393,7 +393,7 @@ namespace EditorBase
 			try
 			{
 				GameObject newObj = prefab.Instantiate();
-				Duality.Resources.Scene.Current.Graph.RegisterObjDeep(newObj);
+				Duality.Resources.Scene.Current.RegisterObj(newObj);
 				EditorBasePlugin.Instance.EditorForm.Select(this, new ObjectSelection(newObj));
 			}
 			catch (Exception exception)
@@ -424,7 +424,7 @@ namespace EditorBase
 			// If a font has been modified, update all TextRenderers
 			if (typeof(Font).IsAssignableFrom(e.ContentType))
 			{
-				foreach (Duality.Components.Renderers.TextRenderer r in Scene.Current.Graph.AllObjects.GetComponents<Duality.Components.Renderers.TextRenderer>())
+				foreach (Duality.Components.Renderers.TextRenderer r in Scene.Current.AllObjects.GetComponents<Duality.Components.Renderers.TextRenderer>())
 				{
 					r.Text.ApplySource();
 					r.UpdateMetrics();
