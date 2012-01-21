@@ -621,6 +621,17 @@ namespace Aga.Controls.Tree
 			}
 		}
 
+		[Browsable(false)]
+		public Predicate<TreeNodeAdv> NodeFilter
+		{
+			get { return this._viewNodeFilter; }
+			set
+			{
+				this._viewNodeFilter = value;
+				this.UpdateNodeFilter();
+			}
+		}
+
 		private DropPosition _dropPosition;
 		[Browsable(false)]
 		public DropPosition DropPosition

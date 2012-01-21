@@ -41,6 +41,7 @@ namespace Aga.Controls.Tree
 		private IncrementalSearch _search;
 		private List<TreeNodeAdv> _expandingNodes = new List<TreeNodeAdv>();
 		private AbortableThreadPool _threadPool = new AbortableThreadPool();
+		private Predicate<TreeNodeAdv> _viewNodeFilter = null;
 
 		#region Public Events
 
@@ -654,6 +655,20 @@ namespace Aga.Controls.Tree
 			FullUpdate();
 		}
 
+		public void UpdateNodeFilter()
+		{
+			bool wasUpdating = _suspendUpdate;
+			if (!wasUpdating) BeginUpdate();
+			UpdateNodeFilter(_root);
+			if (!wasUpdating) EndUpdate();
+		}
+		private void UpdateNodeFilter(TreeNodeAdv node)
+		{
+			node.IsHidden = _viewNodeFilter != null ? !_viewNodeFilter(node) : false;
+			foreach (TreeNodeAdv child in node.Children)
+				this.UpdateNodeFilter(child);
+		}
+
 		private void CreateNodes()
 		{
 			Selection.Clear();
@@ -699,6 +714,13 @@ namespace Aga.Controls.Tree
 		{
 			TreeNodeAdv node = new TreeNodeAdv(this, tag);
 			AddNode(parent, index, node);
+			if (_viewNodeFilter != null)
+			{
+				bool wasUpdating = _suspendUpdate;
+				if (!wasUpdating) BeginUpdate();
+				UpdateNodeFilter(node);
+				if (!wasUpdating) EndUpdate();
+			}
 		}
 
 		private void AddNode(TreeNodeAdv parent, int index, TreeNodeAdv node)
@@ -1017,7 +1039,7 @@ namespace Aga.Controls.Tree
 					if (CurrentNode != null)
 					{
 						foreach (TreeNodeAdv n in CurrentNode.Parent.Nodes)
-							n.IsSelected = true;
+							n.IsSelected = !n.IsHidden;
 					}
 				}
 				else if (SelectionMode == TreeSelectionMode.Multi)
@@ -1035,6 +1057,7 @@ namespace Aga.Controls.Tree
 		{
 			foreach (TreeNodeAdv n in nodes)
 			{
+				if (n.IsHidden) continue;
 				n.IsSelected = true;
 				if (n.IsExpanded)
 					SelectNodes(n.Nodes);
@@ -1147,7 +1170,7 @@ namespace Aga.Controls.Tree
 		private void _model_NodesChanged(object sender, TreeModelEventArgs e)
 		{
 			TreeNodeAdv parent = FindNode(e.Path);
-			if (parent != null && parent.IsVisible && parent.IsExpanded)
+			if (parent != null && parent.IsUnwrapped && parent.IsExpanded)
 			{
 				if (InvokeRequired)
 					BeginInvoke(new UpdateContentWidthDelegate(ClearNodesSize), e, parent);

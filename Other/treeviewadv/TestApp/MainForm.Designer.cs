@@ -37,9 +37,10 @@
 			// 
 			// treeViewAdv1
 			// 
-			this.treeViewAdv1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-						| System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.treeViewAdv1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.treeViewAdv1.AutoRowHeight = true;
 			this.treeViewAdv1.BackColor = System.Drawing.SystemColors.Window;
 			this.treeViewAdv1.DefaultToolTipProvider = null;
 			this.treeViewAdv1.DragDropMarkColor = System.Drawing.Color.Black;
@@ -50,9 +51,11 @@
 			this.treeViewAdv1.NodeControls.Add(this.nodeStateIcon1);
 			this.treeViewAdv1.NodeControls.Add(this.nodeTextBox1);
 			this.treeViewAdv1.SelectedNode = null;
+			this.treeViewAdv1.SelectionMode = Aga.Controls.Tree.TreeSelectionMode.Multi;
 			this.treeViewAdv1.Size = new System.Drawing.Size(301, 205);
 			this.treeViewAdv1.TabIndex = 0;
 			this.treeViewAdv1.Text = "treeViewAdv1";
+			this.treeViewAdv1.SelectionChanged += new System.EventHandler(this.treeViewAdv1_SelectionChanged);
 			// 
 			// nodeStateIcon1
 			// 
@@ -70,8 +73,8 @@
 			// 
 			// textBox1
 			// 
-			this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.textBox1.Location = new System.Drawing.Point(12, 223);
 			this.textBox1.Name = "textBox1";
 			this.textBox1.Size = new System.Drawing.Size(220, 20);

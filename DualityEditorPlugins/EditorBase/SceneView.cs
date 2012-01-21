@@ -152,7 +152,6 @@ namespace EditorBase
 
 		private	Dictionary<object,NodeBase>	objToNode		= new Dictionary<object,NodeBase>();
 		private	TreeModel					objectModel		= null;
-		private	FilteredTreeModel			filteredModel	= null;
 		private	NodeBase					lastEditedNode	= null;
 
 		private	NodeBase	flashNode		= null;
@@ -201,8 +200,7 @@ namespace EditorBase
 			this.InitializeComponent();
 
 			this.objectModel = new TreeModel();
-			this.filteredModel = new FilteredTreeModel(null, this.objectModel);
-			this.objectView.Model = this.filteredModel;
+			this.objectView.Model = this.objectModel;
 
 			this.nodeTextBoxName.ToolTipProvider = this.nodeStateIcon.ToolTipProvider = new ToolTipProvider();
 			this.nodeTextBoxName.DrawText += new EventHandler<Aga.Controls.Tree.NodeControls.DrawEventArgs>(nodeTextBoxName_DrawText);
@@ -287,8 +285,7 @@ namespace EditorBase
 		{
 			this.tempUpperFilter = String.IsNullOrEmpty(this.textBoxFilter.Text) ? null : this.textBoxFilter.Text.ToUpper();
 			this.tempNodeVisibilityCache.Clear();
-			this.filteredModel.Filter = this.tempUpperFilter != null ? this.objectModel_IsNodeVisible : (Predicate<object>)null;
-			this.filteredModel.Refresh();
+			this.objectView.NodeFilter = this.tempUpperFilter != null ? this.objectModel_IsNodeVisible : (Predicate<object>)null;
 		}
 
 		protected IEnumerable<Type> QueryComponentTypes()
@@ -630,7 +627,9 @@ namespace EditorBase
 		private bool objectModel_IsNodeVisible(object obj)
 		{
 			if (this.tempUpperFilter == null) return true;
-			Node n = obj as Node;
+			TreeNodeAdv vn = obj as TreeNodeAdv;
+			Node n = vn != null ? vn.Tag as Node : obj as Node;
+			if (n == null) return true;
 			bool isVisible;
 			if (!this.tempNodeVisibilityCache.TryGetValue(n, out isVisible))
 			{

@@ -89,7 +89,6 @@
     <Compile Include="Threading\WorkItem.cs" />
     <Compile Include="TimeCounter.cs" />
     <Compile Include="Tree\Input\ReorderColumnState.cs" />
-    <Compile Include="Tree\FilteredTreeModel.cs" />
     <Compile Include="Tree\ListModel.cs" />
     <Compile Include="Tree\NodeControls\EditEventArgs.cs" />
     <Compile Include="Tree\NodeControls\LabelEventArgs.cs" />

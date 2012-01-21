@@ -152,6 +152,20 @@ namespace Aga.Controls.Tree
 			}
 		}
 
+		private bool _hidden;
+		public bool IsHidden
+		{
+			get { return _hidden; }
+			set 
+			{
+				if (_hidden != value)
+				{
+					_hidden = value;
+					NotifyModel();
+				}
+			}
+		}
+
 		private CheckState _checkState;
 		public virtual CheckState CheckState
 		{

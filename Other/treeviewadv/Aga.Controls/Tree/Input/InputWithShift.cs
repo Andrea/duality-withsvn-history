@@ -62,7 +62,7 @@ namespace Aga.Controls.Tree
 			for (int i = Math.Min(a, b); i <= Math.Max(a, b); i++)
 			{
 				if (Tree.SelectionMode == TreeSelectionMode.Multi || Tree.RowMap[i].Parent == node.Parent)
-					Tree.RowMap[i].IsSelected = true;
+					Tree.RowMap[i].IsSelected = !Tree.RowMap[i].IsHidden;
 			}
 		}
 	}

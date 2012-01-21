@@ -117,6 +117,7 @@ namespace Aga.Controls.Tree
 		private void DrawRow(PaintEventArgs e, ref DrawContext context, int row, Rectangle rowRect)
 		{
 			TreeNodeAdv node = RowMap[row];
+			if (node.IsHidden) return;
 			context.DrawSelection = DrawSelectionMode.None;
 			context.CurrentEditorOwner = CurrentEditorOwner;
 			if (DragMode)
@@ -248,6 +249,7 @@ namespace Aga.Controls.Tree
 
 		private void DrawLines(Graphics gr, TreeNodeAdv node, Rectangle rowRect)
 		{
+			if (node.IsHidden) return;
 			if (UseColumns && Columns.Count > 0)
 				gr.SetClip(new Rectangle(0, rowRect.Y, Columns[0].Width, rowRect.Bottom));
 

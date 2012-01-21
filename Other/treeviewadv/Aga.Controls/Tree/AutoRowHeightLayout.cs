@@ -97,6 +97,7 @@ namespace Aga.Controls.Tree
 			if (rowNo < _treeView.RowMap.Count)
 			{
 				TreeNodeAdv node = _treeView.RowMap[rowNo];
+				if (node.IsHidden) return 0;
 				if (node.Height == null)
 				{
 					int res = 0;
