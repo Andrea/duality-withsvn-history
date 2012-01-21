@@ -1201,39 +1201,22 @@
             Represents a single <see cref="T:Duality.Log"/> output and provides actual writing functionality for 
             </summary>
         </member>
-        <member name="M:Duality.ILogOutput.Write(Duality.LogMessageType,System.String)">
+        <member name="M:Duality.ILogOutput.Write(Duality.Log,Duality.LogMessageType,System.String)">
             <summary>
             Writes a single message to the output.
             </summary>
+            <param name="source">The <see cref="T:Duality.Log"/> from which the message originates.</param>
             <param name="type">The type of the log message.</param>
             <param name="msg">The message to write.</param>
         </member>
-        <member name="M:Duality.ILogOutput.PushIndent">
-            <summary>
-            Increases the LogOutputs indent value.
-            </summary>
-        </member>
-        <member name="M:Duality.ILogOutput.PopIndent">
-            <summary>
-            Decreases the LogOutputs indent value.
-            </summary>
-        </member>
-        <member name="M:Duality.RtfDocWriterLogOutput.PushIndent">
-            <summary>
-            Increases the LogOutputs indent value.
-            </summary>
-        </member>
-        <member name="M:Duality.RtfDocWriterLogOutput.PopIndent">
-            <summary>
-            Decreases the LogOutputs indent value.
-            </summary>
-        </member>
-        <member name="M:Duality.RtfDocWriterLogOutput.Write(Duality.LogMessageType,System.String)">
+        <member name="M:Duality.RtfDocWriterLogOutput.Write(Duality.Log,Duality.LogMessageType,System.String)">
             <summary>
             Writes a single message to the output.
             </summary>
+            <param name="source">The <see cref="T:Duality.Log"/> from which the message originates.</param>
             <param name="type">The type of the log message.</param>
             <param name="msg">The message to write.</param>
+            <param name="indent">The messages indent value.</param>
         </member>
         <member name="T:Duality.ColorFormat.ColorRgba">
             <summary>
@@ -1649,27 +1632,19 @@
             A <see cref="T:Duality.ILogOutput">Log output</see> that uses a <see cref="T:System.IO.TextWriter"/> as message destination.
             </summary>
         </member>
-        <member name="M:Duality.TextWriterLogOutput.PushIndent">
-            <summary>
-            Increases the LogOutputs indent value.
-            </summary>
-        </member>
-        <member name="M:Duality.TextWriterLogOutput.PopIndent">
-            <summary>
-            Decreases the LogOutputs indent value.
-            </summary>
-        </member>
-        <member name="M:Duality.TextWriterLogOutput.Write(Duality.LogMessageType,System.String)">
+        <member name="M:Duality.TextWriterLogOutput.Write(Duality.Log,Duality.LogMessageType,System.String)">
             <summary>
             Writes a single message to the output.
             </summary>
+            <param name="source">The <see cref="T:Duality.Log"/> from which the message originates.</param>
             <param name="type">The type of the log message.</param>
             <param name="msg">The message to write.</param>
         </member>
-        <member name="M:Duality.ConsoleLogOutput.Write(Duality.LogMessageType,System.String)">
+        <member name="M:Duality.ConsoleLogOutput.Write(Duality.Log,Duality.LogMessageType,System.String)">
             <summary>
             Writes a single message to the output.
             </summary>
+            <param name="source">The <see cref="T:Duality.Log"/> from which the message originates.</param>
             <param name="type">The type of the log message.</param>
             <param name="msg">The message to write.</param>
         </member>
@@ -4390,10 +4365,11 @@
             Listens for log entries and writes them to registered <see cref="T:Duality.ILogOutput">ILogOutputs</see>.
             </summary>
         </member>
-        <member name="M:Duality.Log.#ctor(Duality.ILogOutput[])">
+        <member name="M:Duality.Log.#ctor(System.String,Duality.ILogOutput[])">
             <summary>
             Creates a new Log.
             </summary>
+            <param name="name">The Logs name</param>
             <param name="output">It will be initially connected to the specified outputs.</param>
         </member>
         <member name="M:Duality.Log.RegisterOutput(Duality.ILogOutput)">
@@ -4601,6 +4577,26 @@
             [GET] A log for editor-related entries. This is used by the Duality editor and its plugins.
             </summary>
         </member>
+        <member name="P:Duality.Log.LogData">
+            <summary>
+            [GET] Returns an object storing all log entries that have been made since startup
+            </summary>
+        </member>
+        <member name="P:Duality.Log.Name">
+            <summary>
+            [GET] The Log's name
+            </summary>
+        </member>
+        <member name="P:Duality.Log.Prefix">
+            <summary>
+            [GET] The Log's prefix, which is automatically determined by its name.
+            </summary>
+        </member>
+        <member name="P:Duality.Log.Indent">
+            <summary>
+            [GET] The Log's current indent level.
+            </summary>
+        </member>
         <member name="T:Duality.LogMessageType">
             <summary>
             The type of a log message / entry.
@@ -4620,29 +4616,6 @@
         <member name="F:Duality.LogMessageType.Error">
             <summary>
             An error message. It informs about an unexpected and/or critical error that has occured.
-            </summary>
-        </member>
-        <member name="T:Duality.LogOutputFormat">
-            <summary>
-            Holds log output format data that may be shared among different <see cref="T:Duality.ILogOutput">ILogOutputs</see> such as the
-            current log indent in different outputs writing to the same file.
-            </summary>
-            <example>
-            The internal console log output is initialized like this:
-            <code>
-            	LogOutputFormat consoleSharedFormat = new LogOutputFormat();
-            	logOutGame		= new ConsoleLogOutput("[Game]   ", ConsoleColor.DarkGray, consoleSharedFormat);
-            	logOutCore		= new ConsoleLogOutput("[Core]   ", ConsoleColor.DarkBlue, consoleSharedFormat);
-            	logOutEditor	= new ConsoleLogOutput("[Editor] ", ConsoleColor.DarkMagenta, consoleSharedFormat);
-            </code>
-            Since we want all three LogOutputs to share the same <see cref="P:Duality.LogOutputFormat.Indent"/> value even though they
-            are attached to different <see cref="T:Duality.Log">Logs</see>, a single LogOutputFormat is shared among all three outputs.
-            A similar setup is used for the logfile outputs.
-            </example>
-        </member>
-        <member name="P:Duality.LogOutputFormat.Indent">
-            <summary>
-            [GET / SET] The current indent value of log message entries.
             </summary>
         </member>
         <member name="M:Duality.OggVorbis.OV.StreamChunk(System.IntPtr,System.IO.MemoryStream@,System.Int32@,System.Int32@)">
@@ -11251,6 +11224,59 @@
         <member name="T:Duality.Components.SoundListener">
             <summary>
             Makes this <see cref="T:Duality.GameObject"/> the 3d sound listener.
+            </summary>
+        </member>
+        <member name="T:Duality.DataLogOutput">
+            <summary>
+            A <see cref="T:Duality.ILogOutput">Log output</see> that stores all log entries in memory.
+            </summary>
+        </member>
+        <member name="M:Duality.DataLogOutput.Write(Duality.Log,Duality.LogMessageType,System.String)">
+            <summary>
+            Writes a single message to the output.
+            </summary>
+            <param name="source">The <see cref="T:Duality.Log"/> from which the message originates.</param>
+            <param name="type">The type of the log message.</param>
+            <param name="msg">The message to write.</param>
+        </member>
+        <member name="P:Duality.DataLogOutput.Data">
+            <summary>
+            [GET] Enumerates all log entries that have been made.
+            </summary>
+        </member>
+        <member name="T:Duality.DataLogOutput.LogEntryEventArgs">
+            <summary>
+            EventArgs for <see cref="T:Duality.DataLogOutput.LogEntry">LogEntries</see>.
+            </summary>
+        </member>
+        <member name="T:Duality.DataLogOutput.LogEntry">
+            <summary>
+            A log entry.
+            </summary>
+        </member>
+        <member name="P:Duality.DataLogOutput.LogEntry.Source">
+            <summary>
+            The <see cref="T:Duality.Log"/> from which this entry originates.
+            </summary>
+        </member>
+        <member name="P:Duality.DataLogOutput.LogEntry.Type">
+            <summary>
+            The message's type.
+            </summary>
+        </member>
+        <member name="P:Duality.DataLogOutput.LogEntry.Message">
+            <summary>
+            The log entry's message.
+            </summary>
+        </member>
+        <member name="P:Duality.DataLogOutput.LogEntry.Indent">
+            <summary>
+            [GET] The message's indent value.
+            </summary>
+        </member>
+        <member name="P:Duality.DataLogOutput.LogEntry.Timestamp">
+            <summary>
+            [GET] The messages timestamp.
             </summary>
         </member>
     </members>

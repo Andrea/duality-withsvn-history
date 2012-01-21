@@ -301,16 +301,15 @@ namespace Duality
 
 			// Initialize Logfile
 			logfile = new StreamWriter(logfilePath + ".txt");
-			LogOutputFormat logfileSharedFormat = new LogOutputFormat();
-			Log.Game.RegisterOutput(new TextWriterLogOutput(logfile, "[Game]   ", logfileSharedFormat));
-			Log.Core.RegisterOutput(new TextWriterLogOutput(logfile, "[Core]   ", logfileSharedFormat));
-			Log.Editor.RegisterOutput(new TextWriterLogOutput(logfile, "[Editor] ", logfileSharedFormat));
+			TextWriterLogOutput logfileOutput = new TextWriterLogOutput(logfile);
+			Log.Game.RegisterOutput(logfileOutput);
+			Log.Core.RegisterOutput(logfileOutput);
+			Log.Editor.RegisterOutput(logfileOutput);
 
 			logfileRtf = new RtfDocument(PaperSize.A4, PaperOrientation.Portrait, Lcid.English);
-			LogOutputFormat logfileRtfSharedFormat = new LogOutputFormat();
-			Log.Game.RegisterOutput(new RtfDocWriterLogOutput(logfileRtf, "[Game]   ", new ColorFormat.ColorRgba(230, 255, 220), logfileRtfSharedFormat));
-			Log.Core.RegisterOutput(new RtfDocWriterLogOutput(logfileRtf, "[Core]   ", new ColorFormat.ColorRgba(220, 220, 255), logfileRtfSharedFormat));
-			Log.Editor.RegisterOutput(new RtfDocWriterLogOutput(logfileRtf, "[Editor] ", new ColorFormat.ColorRgba(245, 220, 255), logfileRtfSharedFormat));
+			Log.Game.RegisterOutput(new RtfDocWriterLogOutput(logfileRtf, new ColorFormat.ColorRgba(230, 255, 220)));
+			Log.Core.RegisterOutput(new RtfDocWriterLogOutput(logfileRtf, new ColorFormat.ColorRgba(220, 220, 255)));
+			Log.Editor.RegisterOutput(new RtfDocWriterLogOutput(logfileRtf, new ColorFormat.ColorRgba(245, 220, 255)));
 
 			// Assure Duality is properly terminated in any case and register additional AppDomain events
 			AppDomain.CurrentDomain.ProcessExit			+= CurrentDomain_ProcessExit;

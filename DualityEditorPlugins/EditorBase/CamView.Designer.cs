@@ -210,7 +210,7 @@
 			// springLabel
 			// 
 			this.springLabel.Name = "springLabel";
-			this.springLabel.Size = new System.Drawing.Size(106, 17);
+			this.springLabel.Size = new System.Drawing.Size(75, 17);
 			this.springLabel.Spring = true;
 			// 
 			// axisLockXLabel

@@ -66,6 +66,7 @@
 			// 
 			// toolStrip
 			// 
+			this.toolStrip.BackColor = System.Drawing.SystemColors.InactiveCaption;
 			this.toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButtonWorkDir,
@@ -108,6 +109,7 @@
 			this.folderView.Name = "folderView";
 			this.folderView.NodeControls.Add(this.nodeStateIcon);
 			this.folderView.NodeControls.Add(this.nodeTextBoxName);
+			this.folderView.NodeFilter = null;
 			this.folderView.SelectedNode = null;
 			this.folderView.SelectionMode = Aga.Controls.Tree.TreeSelectionMode.Multi;
 			this.folderView.Size = new System.Drawing.Size(206, 496);
@@ -320,10 +322,10 @@
 			this.Controls.Add(this.folderView);
 			this.Controls.Add(this.panelBottom);
 			this.Controls.Add(this.toolStrip);
-			this.DockAreas = ((WeifenLuo.WinFormsUI.Docking.DockAreas)(((((WeifenLuo.WinFormsUI.Docking.DockAreas.Float | WeifenLuo.WinFormsUI.Docking.DockAreas.DockLeft)
-						| WeifenLuo.WinFormsUI.Docking.DockAreas.DockRight)
-						| WeifenLuo.WinFormsUI.Docking.DockAreas.DockTop)
-						| WeifenLuo.WinFormsUI.Docking.DockAreas.DockBottom)));
+			this.DockAreas = ((WeifenLuo.WinFormsUI.Docking.DockAreas)(((((WeifenLuo.WinFormsUI.Docking.DockAreas.Float | WeifenLuo.WinFormsUI.Docking.DockAreas.DockLeft) 
+            | WeifenLuo.WinFormsUI.Docking.DockAreas.DockRight) 
+            | WeifenLuo.WinFormsUI.Docking.DockAreas.DockTop) 
+            | WeifenLuo.WinFormsUI.Docking.DockAreas.DockBottom)));
 			this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

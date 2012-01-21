@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Reflection;
+using System.Drawing;
 
 using Duality;
 using Duality.Resources;
@@ -17,12 +18,17 @@ namespace EditorBase.PropertyEditors
 {
 	public class BatchInfoPropertyEditor : MemberwisePropertyEditor
 	{
-		protected	Dictionary<string,PropertyEditor>	shaderVarEditors = new Dictionary<string,PropertyEditor>();
+		private	Point	dragBeginPos	= Point.Empty;
+		private	Dictionary<string,PropertyEditor>	shaderVarEditors = new Dictionary<string,PropertyEditor>();
 
 		public BatchInfoPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid, MemberFlags.Default)
 		{
 			this.Header.Style = GroupedPropertyEditorHeader.HeaderStyle.Big;
 			this.Header.Height = GroupedPropertyEditorHeader.DefaultBigHeight;
+			this.Header.MouseDown += this.Header_MouseDown;
+			this.Header.MouseLeave += this.Header_MouseLeave;
+			this.Header.MouseMove += this.Header_MouseMove;
+			this.Header.MouseUp += this.Header_MouseUp;
 		}
 
 		public override void  ClearContent()
@@ -347,35 +353,51 @@ namespace EditorBase.PropertyEditors
 		{
 			base.OnDragEnter(e);
 			DataObject dragDropData = e.Data as DataObject;
-			if (dragDropData != null && dragDropData.ContainsContentRefs<Material>())
+			if (dragDropData != null)
 			{
-				// Accept drop
-				e.Effect = e.AllowedEffect;
+				if (dragDropData.ContainsContentRefs<Material>() || dragDropData.ContainsBatchInfos())
+				{
+					// Accept drop
+					e.Effect = e.AllowedEffect;
+				}
 			}
 		}
 		protected override void OnDragDrop(DragEventArgs e)
 		{
 			base.OnDragDrop(e);
 			DataObject dragDropData = e.Data as DataObject;
-			if (dragDropData != null && dragDropData.ContainsContentRefs<Material>())
+			if (dragDropData != null)
 			{
-				// Accept drop
-				e.Effect = e.AllowedEffect;
+				BatchInfo[] newBatchInfoArray = null;
+				if (dragDropData.ContainsContentRefs<Material>())
+				{
+					ContentRef<Material>[] ctRefs = dragDropData.GetContentRefs<Material>();
+					newBatchInfoArray = ctRefs.Select(r => r.Res.Info).ToArray();
+				}
+				else if (dragDropData.ContainsBatchInfos())
+				{
+					newBatchInfoArray = dragDropData.GetBatchInfos();
+				}
 
-				ContentRef<Material>[] ctRefs = dragDropData.GetContentRefs<Material>();
-				IEnumerable<object> values = this.Getter();
-				IEnumerable<BatchInfo> batchInfos = values.Cast<BatchInfo>().NotNull();
-				if (batchInfos.Any())
+				if (newBatchInfoArray != null)
 				{
-					foreach (BatchInfo info in batchInfos) ctRefs[0].Res.Info.CopyTo(info);
-					// BatchInfos aren't usually referenced, they're nested. Make sure the change notification is passed on.
-					this.Setter(batchInfos);
+					// Accept drop
+					e.Effect = e.AllowedEffect;
+
+					IEnumerable<object> values = this.Getter();
+					IEnumerable<BatchInfo> batchInfoValues = values.Cast<BatchInfo>().NotNull();
+					if (batchInfoValues.Any())
+					{
+						foreach (BatchInfo info in batchInfoValues) newBatchInfoArray[0].CopyTo(info);
+						// BatchInfos aren't usually referenced, they're nested. Make sure the change notification is passed on.
+						this.Setter(batchInfoValues);
+					}
+					else
+					{
+						this.SetterSingle(newBatchInfoArray[0]);
+					}
+					this.PerformGetValue();
 				}
-				else
-				{
-					this.SetterSingle(ctRefs[0].Res.Info);
-				}
-				this.PerformGetValue();
 			}
 		}
 
@@ -390,6 +412,31 @@ namespace EditorBase.PropertyEditors
 		{
 			NumericPropertyEditor numEdit = e.Editor as NumericPropertyEditor;
 			if (numEdit != null) numEdit.Editor.Increment = 0.1m;
+		}
+		
+		private void Header_MouseUp(object sender, MouseEventArgs e)
+		{
+			this.dragBeginPos = Point.Empty;
+		}
+		private void Header_MouseMove(object sender, MouseEventArgs e)
+		{
+			if (this.dragBeginPos != Point.Empty)
+			{
+				if (Math.Abs(this.dragBeginPos.X - e.X) > 5 || Math.Abs(this.dragBeginPos.Y - e.Y) > 5)
+				{
+					DataObject dragDropData = new DataObject();
+					dragDropData.AppendBatchInfos(this.Getter().OfType<BatchInfo>().ToArray());
+					this.DoDragDrop(dragDropData, DragDropEffects.All);
+				}
+			}
+		}
+		private void Header_MouseLeave(object sender, EventArgs e)
+		{
+			this.dragBeginPos = Point.Empty;
+		}
+		private void Header_MouseDown(object sender, MouseEventArgs e)
+		{
+			this.dragBeginPos = e.Location;
 		}
 	}
 }

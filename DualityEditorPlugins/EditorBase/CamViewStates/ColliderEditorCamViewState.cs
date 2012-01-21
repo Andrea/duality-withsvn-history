@@ -32,7 +32,7 @@ namespace EditorBase
 			}
 			public override bool HasTransform
 			{
-				get { return this.collider.GameObj.Transform != null; }
+				get { return this.collider != null && !this.collider.Disposed && this.collider.GameObj.Transform != null; }
 			}
 			public override Vector3 Pos
 			{
@@ -411,7 +411,7 @@ namespace EditorBase
 		}
 		private void EditorForm_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			if ((e.AffectedCategories & ObjectSelection.Category.Component) == ObjectSelection.Category.None) return;
+			if ((e.AffectedCategories & ObjectSelection.Category.GameObjCmp) == ObjectSelection.Category.None) return;
 
 			// Collider selection changed
 			this.selectedCollider = this.QuerySelectedCollider();

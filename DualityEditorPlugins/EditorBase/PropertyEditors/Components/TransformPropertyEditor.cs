@@ -211,20 +211,22 @@ namespace EditorBase.PropertyEditors
 			Transform[] values = this.Getter().OfType<Transform>().ToArray();
 			
 			// Set font boldness according to modified value
-			bool posModified		= false;
-			bool scaleModified		= false;
-			bool angleModified		= false;
-			bool velModified		= false;
-			bool angleVelModified	= false;
+			bool posModified			= false;
+			bool scaleModified			= false;
+			bool angleModified			= false;
+			bool velModified			= false;
+			bool angleVelModified		= false;
+			bool deriveAngleModified	= false;
 			foreach (Transform c in values)
 			{
 				Duality.Resources.PrefabLink l = (c != null && c.GameObj != null) ? c.GameObj.AffectedByPrefabLink : null;
 				if (l == null) continue;
-				if (!posModified)		posModified			= l.HasChange(c, ReflectionInfo.Property_Transform_RelativePos);
-				if (!scaleModified)		scaleModified		= l.HasChange(c, ReflectionInfo.Property_Transform_RelativeScale);
-				if (!angleModified)		angleModified		= l.HasChange(c, ReflectionInfo.Property_Transform_RelativeAngle);
-				if (!velModified)		velModified			= l.HasChange(c, ReflectionInfo.Property_Transform_RelativeVel);
-				if (!angleVelModified)	angleVelModified	= l.HasChange(c, ReflectionInfo.Property_Transform_RelativeAngleVel);
+				if (!posModified)			posModified			= l.HasChange(c, ReflectionInfo.Property_Transform_RelativePos);
+				if (!scaleModified)			scaleModified		= l.HasChange(c, ReflectionInfo.Property_Transform_RelativeScale);
+				if (!angleModified)			angleModified		= l.HasChange(c, ReflectionInfo.Property_Transform_RelativeAngle);
+				if (!velModified)			velModified			= l.HasChange(c, ReflectionInfo.Property_Transform_RelativeVel);
+				if (!angleVelModified)		angleVelModified	= l.HasChange(c, ReflectionInfo.Property_Transform_RelativeAngleVel);
+				if (!deriveAngleModified)	deriveAngleModified	= l.HasChange(c, ReflectionInfo.Property_Transform_DeriveAngle);
 			}
 
 			if (this.labelPos.Font.Bold != posModified) this.labelPos.Font = new Font(this.labelPos.Font, posModified ? FontStyle.Bold : FontStyle.Regular);
@@ -232,6 +234,7 @@ namespace EditorBase.PropertyEditors
 			if (this.labelAngle.Font.Bold != angleModified) this.labelAngle.Font = new Font(this.labelAngle.Font, angleModified ? FontStyle.Bold : FontStyle.Regular);
 			if (this.labelVel.Font.Bold != velModified) this.labelVel.Font = new Font(this.labelVel.Font, velModified ? FontStyle.Bold : FontStyle.Regular);
 			if (this.labelAngleVel.Font.Bold != angleVelModified) this.labelAngleVel.Font = new Font(this.labelAngleVel.Font, angleVelModified ? FontStyle.Bold : FontStyle.Regular);
+			if (this.editorDeriveAngle.Font.Bold != deriveAngleModified) this.editorDeriveAngle.Font = new Font(this.editorDeriveAngle.Font, deriveAngleModified ? FontStyle.Bold : FontStyle.Regular);
 		}
 
 		protected override void OnPaint(PaintEventArgs e)

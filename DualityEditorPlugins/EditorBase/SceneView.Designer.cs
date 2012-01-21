@@ -32,8 +32,8 @@
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SceneView));
 			this.toolStrip = new System.Windows.Forms.ToolStrip();
 			this.toolStripButtonCreateScene = new System.Windows.Forms.ToolStripButton();
-			this.toolStripLabelSceneName = new System.Windows.Forms.ToolStripLabel();
 			this.toolStripButtonSaveScene = new System.Windows.Forms.ToolStripButton();
+			this.toolStripLabelSceneName = new System.Windows.Forms.ToolStripLabel();
 			this.objectView = new Aga.Controls.Tree.TreeViewAdv();
 			this.contextMenuNode = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -62,6 +62,7 @@
 			// 
 			// toolStrip
 			// 
+			this.toolStrip.BackColor = System.Drawing.SystemColors.InactiveCaption;
 			this.toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButtonCreateScene,
@@ -82,16 +83,6 @@
 			this.toolStripButtonCreateScene.Text = "Create new Scene";
 			this.toolStripButtonCreateScene.Click += new System.EventHandler(this.toolStripButtonCreateScene_Click);
 			// 
-			// toolStripLabelSceneName
-			// 
-			this.toolStripLabelSceneName.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-			this.toolStripLabelSceneName.AutoToolTip = true;
-			this.toolStripLabelSceneName.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.toolStripLabelSceneName.Name = "toolStripLabelSceneName";
-			this.toolStripLabelSceneName.Size = new System.Drawing.Size(103, 22);
-			this.toolStripLabelSceneName.Text = "Scene: Some Name";
-			this.toolStripLabelSceneName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			// 
 			// toolStripButtonSaveScene
 			// 
 			this.toolStripButtonSaveScene.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -101,6 +92,16 @@
 			this.toolStripButtonSaveScene.Size = new System.Drawing.Size(23, 22);
 			this.toolStripButtonSaveScene.Text = "Save Scene";
 			this.toolStripButtonSaveScene.Click += new System.EventHandler(this.toolStripButtonSaveScene_Click);
+			// 
+			// toolStripLabelSceneName
+			// 
+			this.toolStripLabelSceneName.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.toolStripLabelSceneName.AutoToolTip = true;
+			this.toolStripLabelSceneName.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.toolStripLabelSceneName.Name = "toolStripLabelSceneName";
+			this.toolStripLabelSceneName.Size = new System.Drawing.Size(103, 22);
+			this.toolStripLabelSceneName.Text = "Scene: Some Name";
+			this.toolStripLabelSceneName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// objectView
 			// 
@@ -118,6 +119,7 @@
 			this.objectView.Name = "objectView";
 			this.objectView.NodeControls.Add(this.nodeStateIcon);
 			this.objectView.NodeControls.Add(this.nodeTextBoxName);
+			this.objectView.NodeFilter = null;
 			this.objectView.SelectedNode = null;
 			this.objectView.SelectionMode = Aga.Controls.Tree.TreeSelectionMode.Multi;
 			this.objectView.ShowNodeToolTips = true;
@@ -289,10 +291,10 @@
 			this.Controls.Add(this.objectView);
 			this.Controls.Add(this.panelBottom);
 			this.Controls.Add(this.toolStrip);
-			this.DockAreas = ((WeifenLuo.WinFormsUI.Docking.DockAreas)(((((WeifenLuo.WinFormsUI.Docking.DockAreas.Float | WeifenLuo.WinFormsUI.Docking.DockAreas.DockLeft)
-						| WeifenLuo.WinFormsUI.Docking.DockAreas.DockRight)
-						| WeifenLuo.WinFormsUI.Docking.DockAreas.DockTop)
-						| WeifenLuo.WinFormsUI.Docking.DockAreas.DockBottom)));
+			this.DockAreas = ((WeifenLuo.WinFormsUI.Docking.DockAreas)(((((WeifenLuo.WinFormsUI.Docking.DockAreas.Float | WeifenLuo.WinFormsUI.Docking.DockAreas.DockLeft) 
+            | WeifenLuo.WinFormsUI.Docking.DockAreas.DockRight) 
+            | WeifenLuo.WinFormsUI.Docking.DockAreas.DockTop) 
+            | WeifenLuo.WinFormsUI.Docking.DockAreas.DockBottom)));
 			this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

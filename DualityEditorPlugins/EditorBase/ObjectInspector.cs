@@ -96,10 +96,8 @@ namespace EditorBase
 			lastSelChange = lastSelChange & this.acceptedCats;
 			if (lastSelChange == ObjectSelection.Category.None) return;
 
-			if ((lastSelChange & ObjectSelection.Category.GameObject) != ObjectSelection.Category.None)
-				this.propertyGrid.SelectObjects(sel.GameObjects, scheduleMs: 300);
-			else if ((lastSelChange & ObjectSelection.Category.Component) != ObjectSelection.Category.None)
-				this.propertyGrid.SelectObjects(sel.Components.GameObject(), scheduleMs: 300);
+			if ((lastSelChange & ObjectSelection.Category.GameObjCmp) != ObjectSelection.Category.None)
+				this.propertyGrid.SelectObjects(sel.GameObjects.Union(sel.Components.GameObject()), scheduleMs: 300);
 			else if ((lastSelChange & ObjectSelection.Category.Resource) != ObjectSelection.Category.None)
 				this.propertyGrid.SelectObjects(sel.Resources, sel.Resources.Any(r => r.Path.Contains(':')), 300);
 			else if ((lastSelChange & ObjectSelection.Category.Other) != ObjectSelection.Category.None)
@@ -112,7 +110,7 @@ namespace EditorBase
 		{
 			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game && 
 				this.buttonAutoRefresh.Checked && 
-				Time.MainTimer - this.lastAutoRefresh > 100.0f)
+				Time.MainTimer - this.lastAutoRefresh > 1000.0f)
 			{
 				this.lastAutoRefresh = Time.MainTimer;
 				this.propertyGrid.UpdateFromObjects(100);
@@ -180,6 +178,14 @@ namespace EditorBase
 			objView.Text = string.Format("Inspecting: {0}", this.propertyGrid.Selection.First().ToString());
 			objView.AcceptedCategories = ObjectSelection.Category.None;
 			objView.propertyGrid.SelectObjects(this.propertyGrid.Selection);
+		}
+		private void buttonAutoRefresh_CheckedChanged(object sender, EventArgs e)
+		{
+			if (this.buttonAutoRefresh.Checked)
+			{
+				this.lastAutoRefresh = Time.MainTimer;
+				this.propertyGrid.UpdateFromObjects(100);
+			}
 		}
 	}
 }

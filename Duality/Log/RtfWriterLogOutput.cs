@@ -15,9 +15,7 @@ namespace Duality
 	/// </summary>
 	public class RtfDocWriterLogOutput : ILogOutput
 	{
-		private	string			prefix	= null;
 		private	RtfDocument		rtfDoc	= null;
-		private	LogOutputFormat	format	= null;
 		
 		private	FontDescriptor	font		= null;
 		private	ColorDescriptor	clrBg		= null;
@@ -25,13 +23,9 @@ namespace Duality
 		private	ColorDescriptor	clrWarning	= null;
 		private	ColorDescriptor	clrError	= null;
 
-		public RtfDocWriterLogOutput(RtfDocument bufferDoc, string prefix, ColorRgba bgColor, LogOutputFormat formatHolder)
+		public RtfDocWriterLogOutput(RtfDocument bufferDoc, ColorRgba bgColor)
 		{
-			if (formatHolder == null) formatHolder = new LogOutputFormat();
-
-			this.prefix		= prefix;
 			this.rtfDoc		= bufferDoc;
-			this.format		= formatHolder;
 
 			this.font		= this.rtfDoc.createFont("Courier New");
 			this.clrNormal	= this.rtfDoc.createColor(new DW.RtfWriter.Color(0, 0, 0));
@@ -39,32 +33,18 @@ namespace Duality
 			this.clrError	= this.rtfDoc.createColor(new DW.RtfWriter.Color(220, 0, 0));
 			this.clrBg		= this.rtfDoc.createColor(new DW.RtfWriter.Color(bgColor.r, bgColor.g, bgColor.b));
 		}
-		public RtfDocWriterLogOutput(RtfDocument bufferDoc, string prefix, ColorRgba bgColor) : this(bufferDoc, prefix, bgColor, null) {}
-		public RtfDocWriterLogOutput(RtfDocument bufferDoc, string prefix) : this(bufferDoc, prefix, ColorRgba.White, null) {}
-		public RtfDocWriterLogOutput(RtfDocument bufferDoc) : this(bufferDoc, null, ColorRgba.White, null) {}
-		
-		/// <summary>
-		/// Increases the LogOutputs indent value.
-		/// </summary>
-		public void PushIndent()
-		{
-			this.format.Indent++;
-		}
-		/// <summary>
-		/// Decreases the LogOutputs indent value.
-		/// </summary>
-		public void PopIndent()
-		{
-			this.format.Indent--;
-		}
+		public RtfDocWriterLogOutput(RtfDocument bufferDoc) : this(bufferDoc, ColorRgba.White) {}
 		
 		/// <summary>
 		/// Writes a single message to the output.
 		/// </summary>
+		/// <param name="source">The <see cref="Log"/> from which the message originates.</param>
 		/// <param name="type">The type of the log message.</param>
 		/// <param name="msg">The message to write.</param>
-		public void Write(LogMessageType type, string msg)
+		/// <param name="indent">The messages indent value.</param>
+		public void Write(Log source, LogMessageType type, string msg)
 		{
+			int indent = source.Indent;
 			string parText = "";
 			string[] lines = msg.Split(new char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 			for (int i = 0; i < lines.Length; i++)
@@ -74,19 +54,19 @@ namespace Duality
 					switch (type)
 					{
 						case LogMessageType.Message:
-							lines[i] = this.prefix + "Info:    " + new string(' ', this.format.Indent * 4) + lines[i];
+							lines[i] = source.Prefix + "Info:    " + new string(' ', indent * 4) + lines[i];
 							break;
 						case LogMessageType.Warning:
-							lines[i] = this.prefix + "Warning: " + new string(' ', this.format.Indent * 4) + lines[i];
+							lines[i] = source.Prefix + "Warning: " + new string(' ', indent * 4) + lines[i];
 							break;
 						case LogMessageType.Error:
-							lines[i] = this.prefix + "ERROR:   " + new string(' ', this.format.Indent * 4) + lines[i];
+							lines[i] = source.Prefix + "ERROR:   " + new string(' ', indent * 4) + lines[i];
 							break;
 					}
 				}
 				else
 				{
-					lines[i] = this.prefix + "         " + new string(' ', this.format.Indent * 4) + lines[i];
+					lines[i] = source.Prefix + "         " + new string(' ', indent * 4) + lines[i];
 				}
 				if (parText.Length > 0) parText += '\n';
 				parText += lines[i];

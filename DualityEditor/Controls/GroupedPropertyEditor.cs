@@ -314,7 +314,7 @@ namespace DualityEditor.Controls
 
 		protected override void OnMouseDown(MouseEventArgs e)
 		{
-			base.OnMouseClick(e);
+			base.OnMouseDown(e);
 			if (this.expandHovered && this.expandEnabled && this.expandVisible) this.Editor.Expanded = !this.Editor.Expanded;
 			if (this.activeHovered && this.activeEnabled && this.activeVisible) this.Editor.ActiveState = !this.Editor.ActiveState;
 			if (this.resetHovered && this.resetEnabled && this.resetVisible) this.OnResetClicked();

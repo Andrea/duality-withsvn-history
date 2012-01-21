@@ -68,6 +68,12 @@
     <Compile Include="CamViewStates\GameViewCamViewState.cs" />
     <Compile Include="CamViewStates\ColliderEditorCamViewState.cs" />
     <Compile Include="CamViewStates\SceneEditorCamViewState.cs" />
+    <Compile Include="LogView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LogView.Designer.cs">
+      <DependentUpon>LogView.cs</DependentUpon>
+    </Compile>
     <Compile Include="PropertyEditors\Components\ColliderPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -208,6 +214,9 @@
     <EmbeddedResource Include="CamView.resx">
       <DependentUpon>CamView.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="LogView.resx">
+      <DependentUpon>LogView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="PropertyEditors\Resources\TexturePreviewPropertyEditor.resx">
       <DependentUpon>TexturePreviewPropertyEditor.cs</DependentUpon>
     </EmbeddedResource>
@@ -285,6 +294,13 @@
     <None Include="PluginRes\iconCmpCapsuleCollider.png" />
     <None Include="PluginRes\iconCmpCircleCollider.png" />
     <None Include="PluginRes\iconCmpRectCollider.png" />
+    <None Include="PluginRes\log_core.png" />
+    <None Include="PluginRes\log_editor.png" />
+    <None Include="PluginRes\log_game.png" />
+    <None Include="PluginRes\log_error.png" />
+    <None Include="PluginRes\log_message.png" />
+    <None Include="PluginRes\log_warning.png" />
+    <None Include="PluginRes\logview.ico" />
     <Content Include="PluginRes\projectview.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -62,14 +62,14 @@
 			// 
 			// toolStrip
 			// 
-			this.toolStrip.Dock = System.Windows.Forms.DockStyle.Right;
+			this.toolStrip.BackColor = System.Drawing.SystemColors.InactiveCaption;
 			this.toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.buttonAutoRefresh,
             this.buttonClone});
-			this.toolStrip.Location = new System.Drawing.Point(207, 0);
+			this.toolStrip.Location = new System.Drawing.Point(0, 0);
 			this.toolStrip.Name = "toolStrip";
-			this.toolStrip.Size = new System.Drawing.Size(24, 432);
+			this.toolStrip.Size = new System.Drawing.Size(231, 25);
 			this.toolStrip.TabIndex = 1;
 			this.toolStrip.Text = "toolStrip";
 			// 
@@ -80,8 +80,9 @@
 			this.buttonAutoRefresh.Image = global::EditorBase.Properties.Resources.arrow_refresh;
 			this.buttonAutoRefresh.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonAutoRefresh.Name = "buttonAutoRefresh";
-			this.buttonAutoRefresh.Size = new System.Drawing.Size(21, 20);
+			this.buttonAutoRefresh.Size = new System.Drawing.Size(23, 22);
 			this.buttonAutoRefresh.Text = "Auto-Refresh in Sandbox";
+			this.buttonAutoRefresh.CheckedChanged += new System.EventHandler(this.buttonAutoRefresh_CheckedChanged);
 			// 
 			// buttonClone
 			// 
@@ -90,7 +91,7 @@
 			this.buttonClone.Image = global::EditorBase.Properties.Resources.page_copy;
 			this.buttonClone.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonClone.Name = "buttonClone";
-			this.buttonClone.Size = new System.Drawing.Size(21, 20);
+			this.buttonClone.Size = new System.Drawing.Size(23, 22);
 			this.buttonClone.Text = "Clone View";
 			this.buttonClone.Click += new System.EventHandler(this.buttonClone_Click);
 			// 
@@ -98,9 +99,9 @@
 			// 
 			this.propertyGrid.AutoScroll = true;
 			this.propertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.propertyGrid.Location = new System.Drawing.Point(0, 0);
+			this.propertyGrid.Location = new System.Drawing.Point(0, 25);
 			this.propertyGrid.Name = "propertyGrid";
-			this.propertyGrid.Size = new System.Drawing.Size(207, 432);
+			this.propertyGrid.Size = new System.Drawing.Size(231, 407);
 			this.propertyGrid.TabIndex = 0;
 			// 
 			// ObjectInspector

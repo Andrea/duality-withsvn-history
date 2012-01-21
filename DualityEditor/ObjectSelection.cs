@@ -15,16 +15,15 @@ namespace DualityEditor
 			None		= 0x0,
 
 			Other		= 0x1,
-			GameObject	= 0x2,
-			Component	= 0x4,
-			Resource	= 0x8,
+			GameObjCmp	= 0x2,
+			Resource	= 0x4,
 
-			All			= Other | GameObject | Component | Resource
+			All			= Other | GameObjCmp | Resource
 		}
 		public static Category GetObjCategory(object obj)
 		{
-			if (obj is GameObject) return Category.GameObject;
-			else if (obj is Component) return Category.Component;
+			if (obj is GameObject) return Category.GameObjCmp;
+			else if (obj is Component) return Category.GameObjCmp;
 			else if (obj is Resource) return Category.Resource;
 			else return Category.Other;
 		}

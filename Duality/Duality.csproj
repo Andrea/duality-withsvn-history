@@ -117,6 +117,7 @@
     <Compile Include="DualityApp.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="Helpers\ObjectManagers\GameObjectManager.cs" />
+    <Compile Include="Log\DataLogOutput.cs" />
     <Compile Include="Log\Log.cs" />
     <Compile Include="Helpers\ObjectManagers\ObjectManager.cs" />
     <Compile Include="Helpers\MathF.cs" />

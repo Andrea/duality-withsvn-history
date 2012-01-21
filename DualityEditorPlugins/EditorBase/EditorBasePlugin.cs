@@ -37,6 +37,7 @@ namespace EditorBase
 
 		private	ProjectFolderView		projectView		= null;
 		private	SceneView				sceneView		= null;
+		private	LogView					logView			= null;
 		private	List<ObjectInspector>	objViews		= new List<ObjectInspector>();
 		private	List<CamView>			camViews		= new List<CamView>();
 		private	bool					isLoading		= false;
@@ -46,6 +47,7 @@ namespace EditorBase
 		private	ToolStripMenuItem	menuItemObjView		= null;
 		private	ToolStripMenuItem	menuItemResView		= null;
 		private	ToolStripMenuItem	menuItemCamView		= null;
+		private	ToolStripMenuItem	menuItemLogView		= null;
 		private	ToolStripMenuItem	menuItemAppData		= null;
 		private	ToolStripMenuItem	menuItemUserData	= null;
 
@@ -72,6 +74,8 @@ namespace EditorBase
 				result = this.RequestSceneView();
 			else if (dockContentType == typeof(ObjectInspector))
 				result = this.RequestObjView();
+			else if (dockContentType == typeof(LogView))
+				result = this.RequestLogView();
 			else
 				result = base.DeserializeDockContent(dockContentType);
 			this.isLoading = false;
@@ -92,6 +96,12 @@ namespace EditorBase
 				node.AppendChild(objViewElem);
 				this.objViews[i].SaveUserData(objViewElem);
 			}
+			if (this.logView != null)
+			{
+				System.Xml.XmlElement logViewElem = doc.CreateElement("LogView_0");
+				node.AppendChild(logViewElem);
+				this.logView.SaveUserData(logViewElem);
+			}
 		}
 		protected override void LoadUserData(System.Xml.XmlElement node)
 		{
@@ -111,6 +121,15 @@ namespace EditorBase
 
 				System.Xml.XmlElement objViewElem = objViewElemQuery[0] as System.Xml.XmlElement;
 				this.objViews[i].LoadUserData(objViewElem);
+			}
+			if (this.logView != null)
+			{
+				System.Xml.XmlNodeList logViewElemQuery = node.GetElementsByTagName("LogView_0");
+				if (logViewElemQuery.Count > 0)
+				{
+					System.Xml.XmlElement logViewElem = logViewElemQuery[0] as System.Xml.XmlElement;
+					this.logView.LoadUserData(logViewElem);
+				}
 			}
 			this.isLoading = false;
 		}
@@ -208,6 +227,7 @@ namespace EditorBase
 			this.menuItemObjView = main.RequestMenu(Path.Combine(GeneralRes.MenuName_View, EditorBaseRes.MenuItemName_ObjView));
 			this.menuItemResView = main.RequestMenu(Path.Combine(GeneralRes.MenuName_View, EditorBaseRes.MenuItemName_ResView));
 			this.menuItemCamView = main.RequestMenu(Path.Combine(GeneralRes.MenuName_View, EditorBaseRes.MenuItemName_CamView));
+			this.menuItemLogView = main.RequestMenu(Path.Combine(GeneralRes.MenuName_View, EditorBaseRes.MenuItemName_LogView));
 			this.menuItemAppData = main.RequestMenu(Path.Combine(GeneralRes.MenuName_Settings, EditorBaseRes.MenuItemName_AppData));
 			this.menuItemUserData = main.RequestMenu(Path.Combine(GeneralRes.MenuName_Settings, EditorBaseRes.MenuItemName_UserData));
 
@@ -217,12 +237,14 @@ namespace EditorBase
 			this.menuItemObjView.Image = EditorBaseRes.IconObjView.ToBitmap();
 			this.menuItemResView.Image = EditorBaseRes.IconResView.ToBitmap();
 			this.menuItemCamView.Image = EditorBaseRes.IconEye.ToBitmap();
+			this.menuItemLogView.Image = EditorBaseRes.IconLogView.ToBitmap();
 
 			this.menuItemProjectView.Click += new EventHandler(this.menuItemProjectView_Click);
 			this.menuItemSceneView.Click += new EventHandler(this.menuItemSceneView_Click);
 			this.menuItemObjView.Click += new EventHandler(this.menuItemObjView_Click);
 			this.menuItemResView.Click += new EventHandler(this.menuItemResView_Click);
 			this.menuItemCamView.Click += new EventHandler(this.menuItemCamView_Click);
+			this.menuItemLogView.Click += new EventHandler(this.menuItemLogView_Click);
 			this.menuItemAppData.Click += new EventHandler(this.menuItemAppData_Click);
 			this.menuItemUserData.Click += new EventHandler(this.menuItemUserData_Click);
 
@@ -275,6 +297,26 @@ namespace EditorBase
 
 			return this.sceneView;
 		}
+		public LogView RequestLogView()
+		{
+			if (this.logView == null || this.logView.IsDisposed)
+			{
+				this.logView = new LogView();
+				this.logView.FormClosed += delegate(object sender, FormClosedEventArgs e) { this.logView = null; };
+			}
+
+			if (!this.isLoading)
+			{
+				this.logView.Show(this.EditorForm.MainDockPanel);
+				if (this.logView.Pane != null)
+				{
+					this.logView.Pane.Activate();
+					this.logView.Focus();
+				}
+			}
+
+			return this.logView;
+		}
 		public ObjectInspector RequestObjView()
 		{
 			ObjectInspector objView = new ObjectInspector(this.objViews.Count);
@@ -321,7 +363,7 @@ namespace EditorBase
 		private void menuItemObjView_Click(object sender, EventArgs e)
 		{
 			ObjectInspector objView = this.RequestObjView();
-			objView.AcceptedCategories = ObjectSelection.Category.GameObject | ObjectSelection.Category.Component;
+			objView.AcceptedCategories = ObjectSelection.Category.GameObjCmp;
 		}
 		private void menuItemResView_Click(object sender, EventArgs e)
 		{
@@ -332,6 +374,10 @@ namespace EditorBase
 		private void menuItemCamView_Click(object sender, EventArgs e)
 		{
 			this.RequestCamView();
+		}
+		private void menuItemLogView_Click(object sender, EventArgs e)
+		{
+			this.RequestLogView();
 		}
 		private void menuItemAppData_Click(object sender, EventArgs e)
 		{

@@ -237,7 +237,7 @@ namespace Duality.Serialization
 		public Log SerializationLog
 		{
 			get { return this.log; }
-			set { this.log = value ?? new Log(); }
+			set { this.log = value ?? new Log("Serialize"); }
 		}
 		/// <summary>
 		/// [GET] Can this binary serializer write data?

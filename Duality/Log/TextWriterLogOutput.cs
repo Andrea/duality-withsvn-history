@@ -11,41 +11,22 @@ namespace Duality
 	/// </summary>
 	public class TextWriterLogOutput : ILogOutput
 	{
-		private	string			prefix	= null;
 		private	TextWriter		writer	= null;
-		private	LogOutputFormat	format	= null;
 
-		public TextWriterLogOutput(TextWriter writer, string prefix = null, LogOutputFormat formatHolder = null)
+		public TextWriterLogOutput(TextWriter writer)
 		{
-			if (formatHolder == null) formatHolder = new LogOutputFormat();
-
 			this.writer = writer;
-			this.prefix = prefix;
-			this.format = formatHolder;
-		}
-		
-		/// <summary>
-		/// Increases the LogOutputs indent value.
-		/// </summary>
-		public void PushIndent()
-		{
-			this.format.Indent++;
-		}
-		/// <summary>
-		/// Decreases the LogOutputs indent value.
-		/// </summary>
-		public void PopIndent()
-		{
-			this.format.Indent--;
 		}
 		
 		/// <summary>
 		/// Writes a single message to the output.
 		/// </summary>
+		/// <param name="source">The <see cref="Log"/> from which the message originates.</param>
 		/// <param name="type">The type of the log message.</param>
 		/// <param name="msg">The message to write.</param>
-		public virtual void Write(LogMessageType type, string msg)
+		public virtual void Write(Log source, LogMessageType type, string msg)
 		{
+			int indent = source.Indent;
 			string[] lines = msg.Split(new char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 			for (int i = 0; i < lines.Length; i++)
 			{
@@ -54,19 +35,19 @@ namespace Duality
 					switch (type)
 					{
 						case LogMessageType.Message:
-							lines[i] = this.prefix + "Info:    " + new string(' ', this.format.Indent * 4) + lines[i];
+							lines[i] = source.Prefix + "Info:    " + new string(' ', indent * 4) + lines[i];
 							break;
 						case LogMessageType.Warning:
-							lines[i] = this.prefix + "Warning: " + new string(' ', this.format.Indent * 4) + lines[i];
+							lines[i] = source.Prefix + "Warning: " + new string(' ', indent * 4) + lines[i];
 							break;
 						case LogMessageType.Error:
-							lines[i] = this.prefix + "ERROR:   " + new string(' ', this.format.Indent * 4) + lines[i];
+							lines[i] = source.Prefix + "ERROR:   " + new string(' ', indent * 4) + lines[i];
 							break;
 					}
 				}
 				else
 				{
-					lines[i] = this.prefix + "         " + new string(' ', this.format.Indent * 4) + lines[i];
+					lines[i] = source.Prefix + "         " + new string(' ', indent * 4) + lines[i];
 				}
 				this.writer.WriteLine(lines[i]);
 			}

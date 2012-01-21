@@ -616,18 +616,9 @@ namespace EditorBase
 		}
 		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
 		{
-			if (e.Objects.Components.Contains(this.camComp) || 
-				e.Objects.GameObjects.Contains(this.camObj))
-			{
+			if (e.Objects.Components.Contains(this.camComp) || e.Objects.GameObjects.Contains(this.camObj))
 				this.UpdateStatusTransformInfo();
-				this.glControl.Invalidate();
-			}
-			else if (e.HasProperty(ReflectionInfo.Property_GameObject_ActiveSingle) ||
-				e.Objects.Components.Any(c => c is Transform || c is Renderer || c is Camera) ||
-				e.Objects.Resources.Any())
-			{
-				this.glControl.Invalidate();
-			}
+			this.glControl.Invalidate();
 		}
 
 		private void Scene_Leaving(object sender, EventArgs e)

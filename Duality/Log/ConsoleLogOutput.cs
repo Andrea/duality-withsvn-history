@@ -12,8 +12,7 @@ namespace Duality
 	{
 		private	ConsoleColor	bgColor;
 
-		public ConsoleLogOutput(string prefix = null, ConsoleColor bgColor = ConsoleColor.Black, LogOutputFormat formatHolder = null)
-			: base(Console.Out, prefix, formatHolder)
+		public ConsoleLogOutput(ConsoleColor bgColor = ConsoleColor.Black) : base(Console.Out)
 		{
 			this.bgColor = bgColor;
 		}
@@ -21,10 +20,12 @@ namespace Duality
 		/// <summary>
 		/// Writes a single message to the output.
 		/// </summary>
+		/// <param name="source">The <see cref="Log"/> from which the message originates.</param>
 		/// <param name="type">The type of the log message.</param>
 		/// <param name="msg">The message to write.</param>
-		public override void Write(LogMessageType type, string msg)
+		public override void Write(Log source, LogMessageType type, string msg)
 		{
+			int indent = source.Indent;
 			ConsoleColor clrBg = Console.BackgroundColor;
 			ConsoleColor clrFg = Console.ForegroundColor;
 
@@ -33,7 +34,7 @@ namespace Duality
 			else if (type == LogMessageType.Error)	Console.ForegroundColor = ConsoleColor.Red;
 			else									Console.ForegroundColor = ConsoleColor.Gray;
 
-			base.Write(type, msg);
+			base.Write(source, type, msg);
 
 			Console.ForegroundColor = clrFg;
 			Console.BackgroundColor = clrBg;

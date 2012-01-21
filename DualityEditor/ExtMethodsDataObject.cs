@@ -7,6 +7,7 @@ using System.IO;
 
 using Duality;
 using Duality.ColorFormat;
+using Duality.Resources;
 
 namespace DualityEditor
 {
@@ -81,6 +82,20 @@ namespace DualityEditor
 				).ToArray();
 		}
 		
+		public static void AppendBatchInfos(this DataObject data, IEnumerable<BatchInfo> obj)
+		{
+			BatchInfo[] objArray = obj.ToArray();
+			if (objArray.Length > 0) data.SetData(objArray);
+		}
+		public static bool ContainsBatchInfos(this DataObject data)
+		{
+			return data.GetDataPresent(typeof(BatchInfo[]));
+		}
+		public static BatchInfo[] GetBatchInfos(this DataObject data)
+		{
+			return (data.GetData(typeof(BatchInfo[])) as BatchInfo[]).Select(b => new BatchInfo(b)).ToArray();
+		}
+
 		public static void AppendIColorData(this DataObject data, IEnumerable<IColorData> color)
 		{
 			if (!color.Any()) return;

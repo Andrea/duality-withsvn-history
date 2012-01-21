@@ -653,12 +653,11 @@ namespace EditorBase
 			var selObj = selGameObj.Union<object>(selComponent);
 			if (selObj.Any())
 			{
-				if (!selComponent.Any()) EditorBasePlugin.Instance.EditorForm.Deselect(this, ObjectSelection.Category.Component);
-				if (!selGameObj.Any()) EditorBasePlugin.Instance.EditorForm.Deselect(this, ObjectSelection.Category.GameObject);
+				if (!selGameObj.Any() || !selComponent.Any()) EditorBasePlugin.Instance.EditorForm.Deselect(this, ObjectSelection.Category.GameObjCmp);
 				EditorBasePlugin.Instance.EditorForm.Select(this, new ObjectSelection(selObj));
 			}
 			else
-				EditorBasePlugin.Instance.EditorForm.Deselect(this, ObjectSelection.Category.GameObject | ObjectSelection.Category.Component);
+				EditorBasePlugin.Instance.EditorForm.Deselect(this, ObjectSelection.Category.GameObjCmp);
 		}
 		private void objectView_KeyDown(object sender, KeyEventArgs e)
 		{
@@ -1233,7 +1232,7 @@ namespace EditorBase
 		private void EditorForm_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if (sender == this) return;
-			if ((e.AffectedCategories & (ObjectSelection.Category.GameObject | ObjectSelection.Category.Component)) == ObjectSelection.Category.None) return;
+			if ((e.AffectedCategories & ObjectSelection.Category.GameObjCmp) == ObjectSelection.Category.None) return;
 
 			foreach (GameObject o in e.Removed.GameObjects)	this.SelectNode(this.FindNode(o), false);
 			foreach (GameObject o in e.Added.GameObjects)	this.SelectNode(this.FindNode(o));

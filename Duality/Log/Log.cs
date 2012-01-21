@@ -12,9 +12,10 @@ namespace Duality
 	/// </summary>
 	public class Log
 	{
-		private	static	Log	logGame		= null;
-		private	static	Log	logCore		= null;
-		private	static	Log	logEditor	= null;
+		private	static	Log				logGame		= null;
+		private	static	Log				logCore		= null;
+		private	static	Log				logEditor	= null;
+		private	static	DataLogOutput	data		= null;
 
 		/// <summary>
 		/// [GET] A log for game-related entries. Use this for logging data from game plugins.
@@ -37,26 +38,61 @@ namespace Duality
 		{
 			get { return logEditor; }
 		}
+		/// <summary>
+		/// [GET] Returns an object storing all log entries that have been made since startup
+		/// </summary>
+		public static DataLogOutput LogData
+		{
+			get { return data; }
+		}
 
 		static Log()
 		{
-			LogOutputFormat consoleSharedFormat = new LogOutputFormat();
-			logGame		= new Log(new ConsoleLogOutput("[Game]   ", ConsoleColor.DarkGray, consoleSharedFormat));
-			logCore		= new Log(new ConsoleLogOutput("[Core]   ", ConsoleColor.DarkBlue, consoleSharedFormat));
-			logEditor	= new Log(new ConsoleLogOutput("[Editor] ", ConsoleColor.DarkMagenta, consoleSharedFormat));
+			data = new DataLogOutput();
+			logGame		= new Log("Game", new ConsoleLogOutput(ConsoleColor.DarkGray), data);
+			logCore		= new Log("Core", new ConsoleLogOutput(ConsoleColor.DarkBlue), data);
+			logEditor	= new Log("Edit", new ConsoleLogOutput(ConsoleColor.DarkMagenta), data);
 		}
 
 
 		private HashSet<string>				onceWritten = new HashSet<string>();
 		private	Dictionary<string,float>	timedLast	= new Dictionary<string,float>();
 		private	List<ILogOutput>			strOut		= null;
+		private	int							indent		= 0;
+		private	string						name		= "Log";
+		private string						prefix		= "[Log] ";
+
+		/// <summary>
+		/// [GET] The Log's name
+		/// </summary>
+		public string Name
+		{
+			get { return this.name; }
+		}
+		/// <summary>
+		/// [GET] The Log's prefix, which is automatically determined by its name.
+		/// </summary>
+		public string Prefix
+		{
+			get { return this.prefix; }
+		}
+		/// <summary>
+		/// [GET] The Log's current indent level.
+		/// </summary>
+		public int Indent
+		{
+			get { return this.indent; }
+		}
 
 		/// <summary>
 		/// Creates a new Log.
 		/// </summary>
+		/// <param name="name">The Logs name</param>
 		/// <param name="output">It will be initially connected to the specified outputs.</param>
-		public Log(params ILogOutput[] output)
+		public Log(string name, params ILogOutput[] output)
 		{
+			this.name = name;
+			this.prefix = "[" + name + "] ";
 			this.strOut = new List<ILogOutput>(output);
 		}
 
@@ -91,28 +127,20 @@ namespace Duality
 		/// </summary>
 		public void PushIndent()
 		{
-			foreach (ILogOutput log in this.strOut)
-			{
-				log.PushIndent();
-			}
+			this.indent++;
 		}
 		/// <summary>
 		/// Decreases the current log entry indent.
 		/// </summary>
 		public void PopIndent()
 		{
-			foreach (ILogOutput log in this.strOut)
-			{
-				log.PopIndent();
-			}
+			this.indent--;
 		}
 
 		private void Write(LogMessageType type, string msg)
 		{
 			foreach (ILogOutput log in this.strOut)
-			{
-				log.Write(type, msg);
-			}
+				log.Write(this, type, msg);
 		}
 
 		/// <summary>
@@ -444,51 +472,9 @@ namespace Duality
 		/// <summary>
 		/// Writes a single message to the output.
 		/// </summary>
+		/// <param name="source">The <see cref="Log"/> from which the message originates.</param>
 		/// <param name="type">The type of the log message.</param>
 		/// <param name="msg">The message to write.</param>
-		void Write(LogMessageType type, string msg);
-		/// <summary>
-		/// Increases the LogOutputs indent value.
-		/// </summary>
-		void PushIndent();
-		/// <summary>
-		/// Decreases the LogOutputs indent value.
-		/// </summary>
-		void PopIndent();
-	}
-
-	/// <summary>
-	/// Holds log output format data that may be shared among different <see cref="ILogOutput">ILogOutputs</see> such as the
-	/// current log indent in different outputs writing to the same file.
-	/// </summary>
-	/// <example>
-	/// The internal console log output is initialized like this:
-	/// <code>
-	/// 	LogOutputFormat consoleSharedFormat = new LogOutputFormat();
-	/// 	logOutGame		= new ConsoleLogOutput("[Game]   ", ConsoleColor.DarkGray, consoleSharedFormat);
-	/// 	logOutCore		= new ConsoleLogOutput("[Core]   ", ConsoleColor.DarkBlue, consoleSharedFormat);
-	/// 	logOutEditor	= new ConsoleLogOutput("[Editor] ", ConsoleColor.DarkMagenta, consoleSharedFormat);
-	/// </code>
-	/// Since we want all three LogOutputs to share the same <see cref="LogOutputFormat.Indent"/> value even though they
-	/// are attached to different <see cref="Log">Logs</see>, a single LogOutputFormat is shared among all three outputs.
-	/// A similar setup is used for the logfile outputs.
-	/// </example>
-	public class LogOutputFormat
-	{
-		private	int	indent	= 0;
-
-		/// <summary>
-		/// [GET / SET] The current indent value of log message entries.
-		/// </summary>
-		public int Indent
-		{
-			get { return this.indent; }
-			set { this.indent = value; }
-		}
-
-		public LogOutputFormat()
-		{
-
-		}
+		void Write(Log source, LogMessageType type, string msg);
 	}
 }
