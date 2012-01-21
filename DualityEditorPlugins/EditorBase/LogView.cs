@@ -28,8 +28,6 @@ namespace EditorBase
 		public LogView()
 		{
 			this.InitializeComponent();
-			Log.Editor.WriteWarning("Test");
-			Log.Editor.WriteError("Test");
 		}
 		protected override void OnShown(EventArgs e)
 		{
