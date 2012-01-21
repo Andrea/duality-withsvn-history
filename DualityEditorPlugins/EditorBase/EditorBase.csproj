@@ -130,12 +130,6 @@
     <Compile Include="PropertyEditors\Resources\ResourcePropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ResourceInspector.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ResourceInspector.Designer.cs">
-      <DependentUpon>ResourceInspector.cs</DependentUpon>
-    </Compile>
     <Compile Include="ObjectInspector.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -219,9 +213,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="PropertyEditors\Resources\PixmapPreviewPropertyEditor.resx">
       <DependentUpon>PixmapPreviewPropertyEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ResourceInspector.resx">
-      <DependentUpon>ResourceInspector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ObjectInspector.resx">
       <DependentUpon>ObjectInspector.cs</DependentUpon>

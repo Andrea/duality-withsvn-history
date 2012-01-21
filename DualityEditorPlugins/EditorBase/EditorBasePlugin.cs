@@ -35,12 +35,11 @@ namespace EditorBase
 		}
 
 
-		private	ProjectFolderView	projectView		= null;
-		private	SceneView			sceneView		= null;
-		private	ObjectInspector		objView			= null;
-		private	ResourceInspector	resView			= null;
-		private	List<CamView>		camViews		= new List<CamView>();
-		private	bool				isLoading		= false;
+		private	ProjectFolderView		projectView		= null;
+		private	SceneView				sceneView		= null;
+		private	List<ObjectInspector>	objViews		= new List<ObjectInspector>();
+		private	List<CamView>			camViews		= new List<CamView>();
+		private	bool					isLoading		= false;
 
 		private	ToolStripMenuItem	menuItemProjectView	= null;
 		private	ToolStripMenuItem	menuItemSceneView	= null;
@@ -73,8 +72,6 @@ namespace EditorBase
 				result = this.RequestSceneView();
 			else if (dockContentType == typeof(ObjectInspector))
 				result = this.RequestObjView();
-			else if (dockContentType == typeof(ResourceInspector))
-				result = this.RequestResView();
 			else
 				result = base.DeserializeDockContent(dockContentType);
 			this.isLoading = false;
@@ -89,6 +86,12 @@ namespace EditorBase
 				node.AppendChild(camViewElem);
 				this.camViews[i].SaveUserData(camViewElem);
 			}
+			for (int i = 0; i < this.objViews.Count; i++)
+			{
+				System.Xml.XmlElement objViewElem = doc.CreateElement("ObjInspector_" + i);
+				node.AppendChild(objViewElem);
+				this.objViews[i].SaveUserData(objViewElem);
+			}
 		}
 		protected override void LoadUserData(System.Xml.XmlElement node)
 		{
@@ -100,6 +103,14 @@ namespace EditorBase
 
 				System.Xml.XmlElement camViewElem = camViewElemQuery[0] as System.Xml.XmlElement;
 				this.camViews[i].LoadUserData(camViewElem);
+			}
+			for (int i = 0; i < this.objViews.Count; i++)
+			{
+				System.Xml.XmlNodeList objViewElemQuery = node.GetElementsByTagName("ObjInspector_" + i);
+				if (objViewElemQuery.Count == 0) continue;
+
+				System.Xml.XmlElement objViewElem = objViewElemQuery[0] as System.Xml.XmlElement;
+				this.objViews[i].LoadUserData(objViewElem);
 			}
 			this.isLoading = false;
 		}
@@ -266,43 +277,20 @@ namespace EditorBase
 		}
 		public ObjectInspector RequestObjView()
 		{
-			if (this.objView == null || this.objView.IsDisposed)
-			{
-				this.objView = new ObjectInspector();
-				this.objView.FormClosed += delegate(object sender, FormClosedEventArgs e) { this.objView = null; };
-			}
+			ObjectInspector objView = new ObjectInspector(this.objViews.Count);
+			this.objViews.Add(objView);
+			objView.FormClosed += delegate(object sender, FormClosedEventArgs e) { this.objViews.Remove(sender as ObjectInspector); };
 
 			if (!this.isLoading)
 			{
-				this.objView.Show(this.EditorForm.MainDockPanel);
-				if (this.objView.Pane != null)
+				objView.Show(this.EditorForm.MainDockPanel);
+				if (objView.Pane != null)
 				{
-					this.objView.Pane.Activate();
-					this.objView.Focus();
+					objView.Pane.Activate();
+					objView.Focus();
 				}
 			}
-
-			return this.objView;
-		}
-		public ResourceInspector RequestResView()
-		{
-			if (this.resView == null || this.resView.IsDisposed)
-			{
-				this.resView = new ResourceInspector();
-				this.resView.FormClosed += delegate(object sender, FormClosedEventArgs e) { this.objView = null; };
-			}
-
-			if (!this.isLoading)
-			{
-				this.resView.Show(this.EditorForm.MainDockPanel);
-				if (this.resView.Pane != null)
-				{
-					this.resView.Pane.Activate();
-					this.resView.Focus();
-				}
-			}
-
-			return this.resView;
+			return objView;
 		}
 		public CamView RequestCamView()
 		{
@@ -332,11 +320,14 @@ namespace EditorBase
 		}
 		private void menuItemObjView_Click(object sender, EventArgs e)
 		{
-			this.RequestObjView();
+			ObjectInspector objView = this.RequestObjView();
+			objView.AcceptedCategories = ObjectSelection.Category.GameObject | ObjectSelection.Category.Component;
 		}
 		private void menuItemResView_Click(object sender, EventArgs e)
 		{
-			this.RequestResView();
+			ObjectInspector objView = this.RequestObjView();
+			objView.AcceptedCategories = ObjectSelection.Category.Resource | ObjectSelection.Category.Other;
+			objView.Text = "Resource Inspector";
 		}
 		private void menuItemCamView_Click(object sender, EventArgs e)
 		{

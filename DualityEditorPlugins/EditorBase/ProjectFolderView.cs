@@ -15,6 +15,7 @@ using WeifenLuo.WinFormsUI.Docking;
 using Aga.Controls.Tree;
 
 using Duality;
+using Duality.Resources;
 using DualityEditor;
 
 namespace EditorBase
@@ -622,17 +623,25 @@ namespace EditorBase
 			this.folderView.ClearSelection();
 			this.ScheduleSelect(dirPath);
 		}
-		protected void CreateResource(Type type, TreeNodeAdv baseNode)
+		protected IContentRef CreateResource(Type type, TreeNodeAdv baseNode, string desiredName = null)
 		{
-			string basePath = this.GetInsertActionTargetBasePath(baseNode != null ? baseNode.Tag as NodeBase : null);
+			return this.CreateResource(type, baseNode != null ? baseNode.Tag as NodeBase : null, desiredName);
+		}
+		protected IContentRef CreateResource(Type type, NodeBase baseNode, string desiredName = null)
+		{
+			if (desiredName == null) desiredName = type.Name;
+
+			string basePath = this.GetInsertActionTargetBasePath(baseNode);
 			string nameExt = Resource.GetFileExtByType(type);
-			string resPath = PathHelper.GetFreePath(Path.Combine(basePath, type.Name), nameExt);
+			string resPath = PathHelper.GetFreePath(Path.Combine(basePath, desiredName), nameExt);
 
 			Resource resInstance = ReflectionHelper.CreateInstanceOf(type) as Resource;
 			resInstance.Save(resPath);
 
 			this.folderView.ClearSelection();
 			this.ScheduleSelect(resPath);
+
+			return resInstance.GetContentRef();
 		}
 		protected void OpenResource(TreeNodeAdv node)
 		{
@@ -851,7 +860,11 @@ namespace EditorBase
 				else if (data.ContainsGameObjectRefs())
 				{
 					ResourceNode targetResNode = baseTarget as ResourceNode;
+					DirectoryNode targetDirNode = baseTarget as DirectoryNode;
+					
 					if (targetResNode != null && targetResNode.ResLink.Is<Duality.Resources.Prefab>() && data.GetGameObjectRefs().Length == 1)
+						e.Effect = DragDropEffects.Link & e.AllowedEffect;
+					else if (targetResNode == null && (targetDirNode == null || !targetDirNode.NodePath.Contains(':')))
 						e.Effect = DragDropEffects.Link & e.AllowedEffect;
 					else
 						e.Effect = DragDropEffects.None;
@@ -883,25 +896,57 @@ namespace EditorBase
 				// Dropping GameObjects
 				else if (data.ContainsGameObjectRefs())
 				{
-					ResourceNode targetResNode = baseTarget as ResourceNode;
-					Duality.Resources.Prefab prefab = targetResNode.ResLink.Res as Duality.Resources.Prefab;
-					if (prefab != null)
+					if (baseTarget is ResourceNode)
 					{
-						GameObject draggedObj = data.GetGameObjectRefs()[0];
+						ResourceNode targetResNode = baseTarget as ResourceNode;
+						Prefab prefab = targetResNode.ResLink.Res as Prefab;
+						if (prefab != null)
+						{
+							GameObject draggedObj = data.GetGameObjectRefs()[0];
 
-						// Prevent recursion
-						foreach (GameObject child in draggedObj.ChildrenDeep)
-							if (child.PrefabLink != null && child.PrefabLink.Prefab == prefab)
-								child.BreakPrefabLink();
+							// Prevent recursion
+							foreach (GameObject child in draggedObj.ChildrenDeep)
+								if (child.PrefabLink != null && child.PrefabLink.Prefab == prefab)
+									child.BreakPrefabLink();
 
-						// Inject GameObject to Prefab
-						prefab.Inject(draggedObj);
-						EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(prefab), new System.Reflection.PropertyInfo[0]);
+							// Inject GameObject to Prefab
+							prefab.Inject(draggedObj);
+							EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(prefab));
 
-						// Establish PrefabLink & clear previously existing changes
-						if (draggedObj.PrefabLink != null) draggedObj.PrefabLink.ClearChanges();
-						draggedObj.LinkToPrefab(prefab);
-						EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(draggedObj), ReflectionInfo.Property_GameObject_PrefabLink);
+							// Establish PrefabLink & clear previously existing changes
+							if (draggedObj.PrefabLink != null) draggedObj.PrefabLink.ClearChanges();
+							draggedObj.LinkToPrefab(prefab);
+							EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(draggedObj), ReflectionInfo.Property_GameObject_PrefabLink);
+						}
+					}
+					else
+					{
+						DirectoryNode targetDirNode = baseTarget as DirectoryNode;
+						GameObject[] draggedObjArray = data.GetGameObjectRefs();
+
+						// Filter out GameObjects that are children of others
+						draggedObjArray = draggedObjArray.Where(o => !draggedObjArray.Any(o2 => o.IsChildOf(o2))).ToArray();
+
+						// Generate Prefabs
+						List<Prefab> createdPrefabs = new List<Prefab>();
+						foreach (GameObject draggedObj in draggedObjArray)
+						{
+							// Create Prefab
+							ContentRef<Prefab> prefabRef = this.CreateResource(typeof(Prefab), targetDirNode, draggedObj.Name).As<Prefab>();
+							Prefab prefab = prefabRef.Res;
+							createdPrefabs.Add(prefab);
+
+							// Inject GameObject to Prefab
+							prefab.Inject(draggedObj);
+
+							// Establish PrefabLink & clear previously existing changes
+							if (draggedObj.PrefabLink != null) draggedObj.PrefabLink.ClearChanges();
+							draggedObj.LinkToPrefab(prefabRef);
+						}
+
+						// Fire PropertyChanged events
+						EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(createdPrefabs));
+						EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(draggedObjArray), ReflectionInfo.Property_GameObject_PrefabLink);
 					}
 				}
 			}
