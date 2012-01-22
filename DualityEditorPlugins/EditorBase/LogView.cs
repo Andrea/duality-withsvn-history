@@ -28,6 +28,9 @@ namespace EditorBase
 		public LogView()
 		{
 			this.InitializeComponent();
+
+			this.SetStyle(ControlStyles.Opaque, true);
+			this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 		}
 		protected override void OnShown(EventArgs e)
 		{
@@ -76,7 +79,6 @@ namespace EditorBase
 
 		public void UpdateView()
 		{
-			if (!this.Visible) return;
 			bool updateCaret = this.textLog.SelectionStart == this.textLog.Text.Length;
 			int lastSelectionStart = this.textLog.SelectionStart;
 			int lastSelectionLength = this.textLog.SelectionLength;
@@ -177,26 +179,32 @@ namespace EditorBase
 
 		private void buttonCore_CheckedChanged(object sender, EventArgs e)
 		{
+			if (!this.Visible) return;
 			this.UpdateView();
 		}
 		private void buttonEditor_CheckedChanged(object sender, EventArgs e)
 		{
+			if (!this.Visible) return;
 			this.UpdateView();
 		}
 		private void buttonGame_CheckedChanged(object sender, EventArgs e)
 		{
+			if (!this.Visible) return;
 			this.UpdateView();
 		}
 		private void buttonMessages_CheckedChanged(object sender, EventArgs e)
 		{
+			if (!this.Visible) return;
 			this.UpdateView();
 		}
 		private void buttonWarnings_CheckedChanged(object sender, EventArgs e)
 		{
+			if (!this.Visible) return;
 			this.UpdateView();
 		}
 		private void buttonErrors_CheckedChanged(object sender, EventArgs e)
 		{
+			if (!this.Visible) return;
 			this.UpdateView();
 		}
 		private void LogData_NewEntry(object sender, DataLogOutput.LogEntryEventArgs e)
