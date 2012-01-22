@@ -36,13 +36,11 @@ namespace EditorBase
 		{
 			base.OnEnterState();
 			this.View.SetToolbarCamSettingsEnabled(false);
-			this.View.StatusbarCamera.Visible = false;
 		}
 		protected internal override void OnLeaveState()
 		{
 			base.OnLeaveState();
 			this.View.SetToolbarCamSettingsEnabled(true);
-			this.View.StatusbarCamera.Visible = true;
 		}
 		protected override void OnRenderState()
 		{

@@ -160,31 +160,15 @@ namespace EditorBase
 		{
 			get { return EditorBasePlugin.Instance.EditorForm.MainContextControl; }
 		}
-		public ToolStripStatusLabel ToolLabelAxisX
-		{
-			get { return this.axisLockXLabel; }
-		}
-		public ToolStripStatusLabel ToolLabelAxisY
-		{
-			get { return this.axisLockYLabel; }
-		}
-		public ToolStripStatusLabel ToolLabelAxisZ
-		{
-			get { return this.axisLockZLabel; }
-		}
 		public ToolStrip ToolbarCamera
 		{
 			get { return this.toolbarCamera; }
-		}
-		public StatusStrip StatusbarCamera
-		{
-			get { return this.statusbarCamera; }
 		}
 
 		public CamView(int runtimeId)
 		{
 			this.InitializeComponent();
-			this.bgColorDialog.OldColor = Color.Gray;
+			this.bgColorDialog.OldColor = Color.FromArgb(64, 64, 64);
 			this.bgColorDialog.SelectedColor = this.bgColorDialog.OldColor;
 			this.bgColorDialog.AlphaEnabled = false;
 			this.Text = PluginRes.EditorBaseRes.MenuItemName_CamView + " #" + runtimeId;
@@ -236,7 +220,7 @@ namespace EditorBase
 			this.bgColorDialog_ValueChanged(this.bgColorDialog, null);
 
 			// Update camera transform properties & GUI
-			this.UpdateStatusTransformInfo();
+			this.OnCamTransformChanged();
 		}
 
 		protected void InitStateSelector()
@@ -386,23 +370,15 @@ namespace EditorBase
 
 			this.ResumeLayout(true);
 		}
-		public void UpdateStatusTransformInfo()
+		public void OnCamTransformChanged()
 		{
-			if (!this.camInternal)
-			{
-				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
-					this, new ObjectSelection(this.camObj.Transform),
-					ReflectionInfo.Property_Transform_RelativeVel,
-					ReflectionInfo.Property_Transform_RelativeAngleVel,
-					ReflectionInfo.Property_Transform_RelativeAngle,
-					ReflectionInfo.Property_Transform_RelativePos);
-			}
-
-			System.Globalization.CultureInfo formatProvider = System.Threading.Thread.CurrentThread.CurrentUICulture;
-			this.posXStatusLabel.Text = String.Format(formatProvider, PluginRes.EditorBaseRes.CamView_Status_PosX, this.camObj.Transform.Pos.X);
-			this.posYStatusLabel.Text = String.Format(formatProvider, PluginRes.EditorBaseRes.CamView_Status_PosY, this.camObj.Transform.Pos.Y);
-			this.posZStatusLabel.Text = String.Format(formatProvider, PluginRes.EditorBaseRes.CamView_Status_PosZ, this.camObj.Transform.Pos.Z);
-			this.angleStatusLabel.Text = String.Format(formatProvider, PluginRes.EditorBaseRes.CamView_Status_Angle, MathF.RadToDeg(this.camObj.Transform.Angle));
+			if (this.camInternal) return;
+			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
+				this, new ObjectSelection(this.camObj.Transform),
+				ReflectionInfo.Property_Transform_RelativeVel,
+				ReflectionInfo.Property_Transform_RelativeAngleVel,
+				ReflectionInfo.Property_Transform_RelativeAngle,
+				ReflectionInfo.Property_Transform_RelativePos);
 		}
 		public void SetToolbarCamSettingsEnabled(bool value)
 		{
@@ -617,7 +593,7 @@ namespace EditorBase
 		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
 		{
 			if (e.Objects.Components.Contains(this.camComp) || e.Objects.GameObjects.Contains(this.camObj))
-				this.UpdateStatusTransformInfo();
+				this.OnCamTransformChanged();
 			this.glControl.Invalidate();
 		}
 

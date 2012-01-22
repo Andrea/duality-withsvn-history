@@ -130,6 +130,7 @@
 			// 
 			// mainMenuStrip
 			// 
+			this.mainMenuStrip.BackColor = System.Drawing.SystemColors.Control;
 			this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
 			this.mainMenuStrip.Name = "mainMenuStrip";
 			this.mainMenuStrip.Size = new System.Drawing.Size(916, 24);
@@ -205,6 +206,7 @@
 			// 
 			// mainToolStrip
 			// 
+			this.mainToolStrip.BackColor = System.Drawing.SystemColors.Control;
 			this.mainToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.mainToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.actionSaveAll,
@@ -320,7 +322,6 @@
 			this.MainMenuStrip = this.mainMenuStrip;
 			this.Name = "MainForm";
 			this.Text = "Dualitor";
-			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
 			((System.ComponentModel.ISupportInitialize)(this.pluginWatcher)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.dataDirWatcher)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.sourceDirWatcher)).EndInit();

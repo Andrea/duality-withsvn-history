@@ -127,6 +127,7 @@ namespace DualityEditor.Forms
 			if (instance != null && !instance.IsDisposed && !instance.Disposing) throw new InvalidOperationException("There can be only one MainForm at a time");
 			instance = this;
 			this.InitializeComponent();
+			this.ApplyDockPanelSkin();
 
 			this.needsRecovery = recover;
 
@@ -193,6 +194,11 @@ namespace DualityEditor.Forms
 			inputFilter.MouseMove += this.inputFilter_MouseMove;
 			inputFilter.KeyDown += this.inputFilter_KeyDown;
 			Application.AddMessageFilter(inputFilter);
+		}
+		private void ApplyDockPanelSkin()
+		{
+		//    this.dockPanel.Skin.DockPaneStripSkin.DocumentGradient.DockStripGradient.StartColor = SystemColors.ControlDark;
+		//    this.dockPanel.Skin.DockPaneStripSkin.DocumentGradient.DockStripGradient.EndColor = SystemColors.ControlDark;
 		}
 		public void InitMainGLContext()
 		{
@@ -950,6 +956,11 @@ namespace DualityEditor.Forms
 			}
 		}
 
+		protected override void OnShown(EventArgs e)
+		{
+			base.OnShown(e);
+			this.WindowState = FormWindowState.Maximized;
+		}
 		protected override void OnFormClosing(FormClosingEventArgs e)
 		{
 			base.OnFormClosing(e);

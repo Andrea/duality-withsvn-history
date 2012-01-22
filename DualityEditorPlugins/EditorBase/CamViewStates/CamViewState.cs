@@ -177,6 +177,7 @@ namespace EditorBase
 			this.View.LocalGLControl.MouseMove	+= this.LocalGLControl_MouseMove;
 			this.View.LocalGLControl.MouseWheel += this.LocalGLControl_MouseWheel;
 			this.View.LocalGLControl.KeyDown	+= this.LocalGLControl_KeyDown;
+			this.View.LocalGLControl.KeyUp		+= this.LocalGLControl_KeyUp;
 			this.View.LocalGLControl.LostFocus	+= this.LocalGLControl_LostFocus;
 			this.View.AccMovementChanged		+= this.View_AccMovementChanged;
 			this.View.ParallaxRefDistChanged	+= this.View_ParallaxRefDistChanged;
@@ -199,6 +200,7 @@ namespace EditorBase
 			this.View.LocalGLControl.MouseMove	-= this.LocalGLControl_MouseMove;
 			this.View.LocalGLControl.MouseWheel -= this.LocalGLControl_MouseWheel;
 			this.View.LocalGLControl.KeyDown	-= this.LocalGLControl_KeyDown;
+			this.View.LocalGLControl.KeyUp		-= this.LocalGLControl_KeyUp;
 			this.View.LocalGLControl.LostFocus	-= this.LocalGLControl_LostFocus;
 			this.View.AccMovementChanged		-= this.View_AccMovementChanged;
 			this.View.ParallaxRefDistChanged	-= this.View_ParallaxRefDistChanged;
@@ -282,8 +284,7 @@ namespace EditorBase
 			}
 
 			// Draw action lock axes
-			if (this.action == MouseAction.MoveObj)
-				this.DrawLockedAxes(canvas, this.selectionCenter.X, this.selectionCenter.Y, this.selectionCenter.Z, this.selectionRadius * 4);
+			this.DrawLockedAxes(canvas, this.selectionCenter.X, this.selectionCenter.Y, this.selectionCenter.Z, this.selectionRadius * 4);
 
 			canvas.PopState();
 		}
@@ -367,7 +368,7 @@ namespace EditorBase
 			{
 				this.OnCursorSpacePosChanged();
 
-				this.View.UpdateStatusTransformInfo();
+				this.View.OnCamTransformChanged();
 				this.View.LocalGLControl.Invalidate();
 			}
 			
@@ -489,12 +490,6 @@ namespace EditorBase
 			if ((lockAxes & AxisLock.Y) == AxisLock.None) vec.Y = lockedVal;
 			if ((lockAxes & AxisLock.Z) == AxisLock.None) vec.Z = lockedVal;
 			return vec;
-		}
-		private void UpdateAxisLockInfo()
-		{
-			this.View.ToolLabelAxisX.Enabled = (this.lockedAxes & AxisLock.X) != AxisLock.None;
-			this.View.ToolLabelAxisY.Enabled = (this.lockedAxes & AxisLock.Y) != AxisLock.None;
-			this.View.ToolLabelAxisZ.Enabled = (this.lockedAxes & AxisLock.Z) != AxisLock.None;
 		}
 		
 		protected void BeginAction(MouseAction action)
@@ -774,13 +769,13 @@ namespace EditorBase
 					MathF.TransformCoord(ref movVec.X, ref movVec.Y, this.View.CameraObj.Transform.RelativeAngle);
 					this.View.CameraObj.Transform.RelativePos = this.camActionBeginLocSpace + movVec;
 					this.View.LocalGLControl.Invalidate();
-					this.View.UpdateStatusTransformInfo();
+					this.View.OnCamTransformChanged();
 				}
 				else if (this.camAction == CameraAction.TurnCam)
 				{
 					this.View.CameraObj.Transform.RelativeAngle = MathF.NormalizeAngle(this.camActionBeginLocSpace.X + 0.01f * (e.X - this.camActionBeginLoc.X));
 					this.View.LocalGLControl.Invalidate();
-					this.View.UpdateStatusTransformInfo();
+					this.View.OnCamTransformChanged();
 				}
 			}
 
@@ -863,7 +858,7 @@ namespace EditorBase
 					{
 						camObj.Transform.Pos += new Vector3(0.0f, 0.0f, e.Delta * 5 / 12);
 						this.View.LocalGLControl.Invalidate();
-						this.View.UpdateStatusTransformInfo();
+						this.View.OnCamTransformChanged();
 					}
 				}
 				else
@@ -888,21 +883,27 @@ namespace EditorBase
 			else
 			{
 				bool axisLockChanged = false;
-				if (e.KeyCode == Keys.X) { this.lockedAxes ^= AxisLock.X; axisLockChanged = true; }
-				if (e.KeyCode == Keys.Y) { this.lockedAxes ^= AxisLock.Y; axisLockChanged = true; }
-				if (e.KeyCode == Keys.Z) { this.lockedAxes ^= AxisLock.Z; axisLockChanged = true; }
+				if (e.KeyCode == Keys.X) { this.lockedAxes |= AxisLock.X; axisLockChanged = true; }
+				if (e.KeyCode == Keys.Y) { this.lockedAxes |= AxisLock.Y; axisLockChanged = true; }
+				if (e.KeyCode == Keys.Z) { this.lockedAxes |= AxisLock.Z; axisLockChanged = true; }
 
-				if (axisLockChanged)
-				{
-					this.UpdateAxisLockInfo();
-					this.View.LocalGLControl.Invalidate();
-				}
+				if (axisLockChanged) this.View.LocalGLControl.Invalidate();
 			}
+		}
+		private void LocalGLControl_KeyUp(object sender, KeyEventArgs e)
+		{
+			bool axisLockChanged = false;
+			if (e.KeyCode == Keys.X) { this.lockedAxes &= ~AxisLock.X; axisLockChanged = true; }
+			if (e.KeyCode == Keys.Y) { this.lockedAxes &= ~AxisLock.Y; axisLockChanged = true; }
+			if (e.KeyCode == Keys.Z) { this.lockedAxes &= ~AxisLock.Z; axisLockChanged = true; }
+
+			if (axisLockChanged) this.View.LocalGLControl.Invalidate();
 		}
 		private void LocalGLControl_LostFocus(object sender, EventArgs e)
 		{
 			this.camAction = CameraAction.None;
 			this.EndAction();
+			this.lockedAxes = AxisLock.None;
 			this.View.LocalGLControl.Invalidate();
 		}
 		private void View_AccMovementChanged(object sender, EventArgs e)
