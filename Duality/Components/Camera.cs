@@ -464,6 +464,8 @@ namespace Duality.Components
 
 		[NonSerialized]	private	uint				hndlPrimaryVBO		= 0;
 		[NonSerialized]	private	uint				deviceVisibility	= uint.MaxValue;
+		[NonSerialized]	private	bool				deviceCacheValid	= false;
+		[NonSerialized]	private	Vector3				deviceCachePos		= Vector3.Zero;
 		[NonSerialized]	private	int					picking				= 0;
 		[NonSerialized]	private	List<Renderer>		pickingMap			= null;
 		[NonSerialized]	private	RenderTarget		pickingRT			= null;
@@ -633,6 +635,9 @@ namespace Duality.Components
 		/// </summary>
 		public void Render()
 		{
+			this.deviceCacheValid = true;
+			this.deviceCachePos = this.GameObj.Transform.Pos;
+
 			if (this.picking != 0)
 			{
 				this.SetupPickingRT();
@@ -663,6 +668,8 @@ namespace Duality.Components
 				RenderTarget.Bind(RenderTarget.None);
 				this.RenderScreenOverlay();
 			}
+
+			this.deviceCacheValid = false;
 		}
 		/// <summary>
 		/// Renders a picking map of the current <see cref="Duality.Resources.Scene"/>.
@@ -975,12 +982,11 @@ namespace Duality.Components
 			// Process drawcalls
 			this.OptimizeBatches(screenOverlay);
 			this.BeginBatchRendering();
-			int vertexCount = 0;
 
 			// Z-Independent: Sorted as needed by batch optimizer
-			this.RenderBatches(this.drawBuffer, ref vertexCount);
+			this.RenderBatches(this.drawBuffer);
 			// Z-Sorted: Back to Front
-			this.RenderBatches(this.drawBufferZSort, ref vertexCount);
+			this.RenderBatches(this.drawBufferZSort);
 
 			this.FinishBatchRendering();
 			this.drawBuffer.Clear();
@@ -1137,7 +1143,7 @@ namespace Duality.Components
 			if (this.hndlPrimaryVBO == 0) GL.GenBuffers(1, out this.hndlPrimaryVBO);
 			GL.BindBuffer(BufferTarget.ArrayBuffer, this.hndlPrimaryVBO);
 		}
-		private void RenderBatches(List<IDrawBatch> buffer, ref int vertexCount)
+		private void RenderBatches(List<IDrawBatch> buffer)
 		{
 			int vertexOffset;
 			List<IDrawBatch> batchesSharingVBO = new List<IDrawBatch>();
@@ -1158,11 +1164,10 @@ namespace Duality.Components
 				{
 					vertexOffset = 0;
 					batchesSharingVBO[0].SetupVBO(batchesSharingVBO);
+
 					foreach (IDrawBatch renderBatch in batchesSharingVBO)
-					{
 						renderBatch.Render(ref vertexOffset, ref lastBatchRendered);
-						vertexCount += renderBatch.VertexCount;
-					}
+
 					batchesSharingVBO[0].FinishVBO();
 					batchesSharingVBO.Clear();
 					lastBatch = null;
@@ -1192,7 +1197,15 @@ namespace Duality.Components
 		void IDrawDevice.PreprocessCoords(ref Vector3 pos, ref float scale)
 		{
 			if (this.overlayMatrices) return;
-			pos -= this.GameObj.Transform.Pos;
+			if (this.deviceCacheValid)
+			{
+				Vector3.Subtract(ref pos, ref this.deviceCachePos, out pos);
+			}
+			else
+			{
+				Vector3 gameObjPos = this.GameObj.Transform.Pos;
+				Vector3.Subtract(ref pos, ref gameObjPos, out pos);
+			}
 			float scaleTemp = this.parallaxRefDist / (this.parallaxRefDist >= 0.0f ? Math.Max(pos.Z, this.nearZ) : -DefaultParallaxRefDist);
 			pos.X *= scaleTemp;
 			pos.Y *= scaleTemp;
@@ -1201,7 +1214,15 @@ namespace Duality.Components
 		void IDrawDevice.PreprocessCoords(Renderer r, ref Vector3 pos, ref float scale)
 		{
 			if (this.overlayMatrices) return;
-			pos -= this.GameObj.Transform.Pos;
+			if (this.deviceCacheValid)
+			{
+				Vector3.Subtract(ref pos, ref this.deviceCachePos, out pos);
+			}
+			else
+			{
+				Vector3 gameObjPos = this.GameObj.Transform.Pos;
+				Vector3.Subtract(ref pos, ref gameObjPos, out pos);
+			}
 			if ((r.RenderFlags & (RendererFlags.ParallaxPos | RendererFlags.ParallaxScale)) != RendererFlags.None)
 			{
 				float scaleTemp = this.parallaxRefDist / (this.parallaxRefDist >= 0.0f ? Math.Max(pos.Z, this.nearZ) : -DefaultParallaxRefDist);

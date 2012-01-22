@@ -360,12 +360,6 @@
     <Content Include="DualityIconB.ico" />
     <Content Include="DualityIconC.ico" />
     <Content Include="EditorRes\WorkingFolderIcon.ico" />
-    <Content Include="OpenTK.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="OpenTK.GLControl.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Include="Resources\control_stop_blue.png" />
     <None Include="Resources\control_play_blue.png" />
     <None Include="Resources\control_pause_blue.png" />
