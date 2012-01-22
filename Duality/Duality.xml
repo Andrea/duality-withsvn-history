@@ -4365,6 +4365,14 @@
             Listens for log entries and writes them to registered <see cref="T:Duality.ILogOutput">ILogOutputs</see>.
             </summary>
         </member>
+        <member name="M:Duality.Log.#ctor(System.String,Duality.Log.SharedState,Duality.ILogOutput[])">
+            <summary>
+            Creates a new Log.
+            </summary>
+            <param name="name">The Logs name.</param>
+            <param name="stateHolder">The Logs state value holder that may be shared with other Logs.</param>
+            <param name="output">It will be initially connected to the specified outputs.</param>
+        </member>
         <member name="M:Duality.Log.#ctor(System.String,Duality.ILogOutput[])">
             <summary>
             Creates a new Log.
@@ -4595,6 +4603,16 @@
         <member name="P:Duality.Log.Indent">
             <summary>
             [GET] The Log's current indent level.
+            </summary>
+        </member>
+        <member name="T:Duality.Log.SharedState">
+            <summary>
+            Holds a Logs state values.
+            </summary>
+        </member>
+        <member name="P:Duality.Log.SharedState.Indent">
+            <summary>
+            [GET / SET] The Logs indent value.
             </summary>
         </member>
         <member name="T:Duality.LogMessageType">
@@ -10060,6 +10078,59 @@
             The glyphs kerning samples to the right.
             </summary>
         </member>
+        <member name="T:Duality.DataLogOutput">
+            <summary>
+            A <see cref="T:Duality.ILogOutput">Log output</see> that stores all log entries in memory.
+            </summary>
+        </member>
+        <member name="M:Duality.DataLogOutput.Write(Duality.Log,Duality.LogMessageType,System.String)">
+            <summary>
+            Writes a single message to the output.
+            </summary>
+            <param name="source">The <see cref="T:Duality.Log"/> from which the message originates.</param>
+            <param name="type">The type of the log message.</param>
+            <param name="msg">The message to write.</param>
+        </member>
+        <member name="P:Duality.DataLogOutput.Data">
+            <summary>
+            [GET] Enumerates all log entries that have been made.
+            </summary>
+        </member>
+        <member name="T:Duality.DataLogOutput.LogEntryEventArgs">
+            <summary>
+            EventArgs for <see cref="T:Duality.DataLogOutput.LogEntry">LogEntries</see>.
+            </summary>
+        </member>
+        <member name="T:Duality.DataLogOutput.LogEntry">
+            <summary>
+            A log entry.
+            </summary>
+        </member>
+        <member name="P:Duality.DataLogOutput.LogEntry.Source">
+            <summary>
+            The <see cref="T:Duality.Log"/> from which this entry originates.
+            </summary>
+        </member>
+        <member name="P:Duality.DataLogOutput.LogEntry.Type">
+            <summary>
+            The message's type.
+            </summary>
+        </member>
+        <member name="P:Duality.DataLogOutput.LogEntry.Message">
+            <summary>
+            The log entry's message.
+            </summary>
+        </member>
+        <member name="P:Duality.DataLogOutput.LogEntry.Indent">
+            <summary>
+            [GET] The message's indent value.
+            </summary>
+        </member>
+        <member name="P:Duality.DataLogOutput.LogEntry.Timestamp">
+            <summary>
+            [GET] The messages timestamp.
+            </summary>
+        </member>
         <member name="T:Duality.Components.Renderers.AnimSpriteRenderer">
             <summary>
             Renders an animated sprite to represent the <see cref="T:Duality.GameObject"/>.
@@ -11224,59 +11295,6 @@
         <member name="T:Duality.Components.SoundListener">
             <summary>
             Makes this <see cref="T:Duality.GameObject"/> the 3d sound listener.
-            </summary>
-        </member>
-        <member name="T:Duality.DataLogOutput">
-            <summary>
-            A <see cref="T:Duality.ILogOutput">Log output</see> that stores all log entries in memory.
-            </summary>
-        </member>
-        <member name="M:Duality.DataLogOutput.Write(Duality.Log,Duality.LogMessageType,System.String)">
-            <summary>
-            Writes a single message to the output.
-            </summary>
-            <param name="source">The <see cref="T:Duality.Log"/> from which the message originates.</param>
-            <param name="type">The type of the log message.</param>
-            <param name="msg">The message to write.</param>
-        </member>
-        <member name="P:Duality.DataLogOutput.Data">
-            <summary>
-            [GET] Enumerates all log entries that have been made.
-            </summary>
-        </member>
-        <member name="T:Duality.DataLogOutput.LogEntryEventArgs">
-            <summary>
-            EventArgs for <see cref="T:Duality.DataLogOutput.LogEntry">LogEntries</see>.
-            </summary>
-        </member>
-        <member name="T:Duality.DataLogOutput.LogEntry">
-            <summary>
-            A log entry.
-            </summary>
-        </member>
-        <member name="P:Duality.DataLogOutput.LogEntry.Source">
-            <summary>
-            The <see cref="T:Duality.Log"/> from which this entry originates.
-            </summary>
-        </member>
-        <member name="P:Duality.DataLogOutput.LogEntry.Type">
-            <summary>
-            The message's type.
-            </summary>
-        </member>
-        <member name="P:Duality.DataLogOutput.LogEntry.Message">
-            <summary>
-            The log entry's message.
-            </summary>
-        </member>
-        <member name="P:Duality.DataLogOutput.LogEntry.Indent">
-            <summary>
-            [GET] The message's indent value.
-            </summary>
-        </member>
-        <member name="P:Duality.DataLogOutput.LogEntry.Timestamp">
-            <summary>
-            [GET] The messages timestamp.
             </summary>
         </member>
     </members>

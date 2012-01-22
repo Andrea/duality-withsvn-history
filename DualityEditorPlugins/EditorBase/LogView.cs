@@ -32,12 +32,18 @@ namespace EditorBase
 		protected override void OnShown(EventArgs e)
 		{
 			base.OnShown(e);
+
+			this.DockPanel.ActiveAutoHideContentChanged += this.DockPanel_ActiveAutoHideContentChanged;
+
 			this.UpdateView();
 			Log.LogData.NewEntry += this.LogData_NewEntry;
 		}
 		protected override void OnClosed(EventArgs e)
 		{
 			base.OnClosed(e);
+
+			this.DockPanel.ActiveAutoHideContentChanged -= this.DockPanel_ActiveAutoHideContentChanged;
+
 			Log.LogData.NewEntry -= this.LogData_NewEntry;
 		}
 		
@@ -70,44 +76,23 @@ namespace EditorBase
 
 		public void UpdateView()
 		{
+			if (!this.Visible) return;
 			bool updateCaret = this.textLog.SelectionStart == this.textLog.Text.Length;
 			int lastSelectionStart = this.textLog.SelectionStart;
 			int lastSelectionLength = this.textLog.SelectionLength;
 
 			this.textLog.Clear();
 			StringBuilder builder = new StringBuilder();
-			LogMessageType lastType = LogMessageType.Message;
-			foreach (DataLogOutput.LogEntry entry in Log.LogData.Data)
+			DataLogOutput.LogEntry[] acceptedData = Log.LogData.Data.Where(d => this.AcceptsEntry(d)).ToArray();
+			for (int i = 0; i < acceptedData.Length; i++)
 			{
-				if (!this.AcceptsEntry(entry)) continue;
-				if (entry.Type != lastType)
-				{
-					this.textLog.AppendText(builder.ToString());
-					builder.Clear();
-				}
+				DataLogOutput.LogEntry entry = acceptedData[i];
+				DataLogOutput.LogEntry prevEntry = acceptedData[MathF.Max(i - 1, 0)];
+				DataLogOutput.LogEntry nextEntry = acceptedData[MathF.Min(i + 1, acceptedData.Length - 1)];
 
-				builder.Append(string.Format("{0:00}:{1:00}:{2:00} ", 
-					entry.Timestamp.Hour, 
-					entry.Timestamp.Minute, 
-					entry.Timestamp.Second));
-				builder.Append(entry.Source.Prefix);
-				switch (entry.Type)
-				{
-					case LogMessageType.Error:
-						builder.Append("ERROR:   ");
-						break;
-					case LogMessageType.Warning:
-						builder.Append("Warning: ");
-						break;
-					default:
-					case LogMessageType.Message:
-						builder.Append("Info:    ");
-						break;
-				}
-				builder.Append(' ', entry.Indent * 4);
-				builder.AppendLine(entry.Message);
+				this.GenerateEntryText(entry, builder);
 
-				if (entry.Type != lastType)
+				if (entry.Type != prevEntry.Type || i == acceptedData.Length - 1 || entry.Type != nextEntry.Type)
 				{
 					int beginIndex = this.textLog.Text.Length;
 					this.textLog.AppendText(builder.ToString());
@@ -115,26 +100,68 @@ namespace EditorBase
 					this.textLog.SelectionLength = this.textLog.Text.Length - beginIndex;
 
 					if (entry.Type == LogMessageType.Error)
-					{
 						this.textLog.SelectionColor = Color.FromArgb(215, 64, 64);
-					}
 					else if (entry.Type == LogMessageType.Warning)
-					{
 						this.textLog.SelectionColor = Color.FromArgb(215, 135, 0);
-					}
 
 					builder.Clear();
-					lastType = entry.Type;
 				}
 			}
-			this.textLog.AppendText(builder.ToString());
-			builder.Clear();
 
 			this.textLog.SelectionStart = lastSelectionStart;
 			this.textLog.SelectionLength = lastSelectionLength;
 
 			if (updateCaret) this.textLog.SelectionStart = this.textLog.Text.Length;
 			this.textLog.ScrollToCaret();
+		}
+		private void AddSingleEntry(DataLogOutput.LogEntry entry)
+		{
+			if (!this.AcceptsEntry(entry)) return;
+			bool updateCaret = this.textLog.SelectionStart == this.textLog.Text.Length;
+			int lastSelectionStart = this.textLog.SelectionStart;
+			int lastSelectionLength = this.textLog.SelectionLength;
+
+			StringBuilder builder = new StringBuilder();
+			this.GenerateEntryText(entry, builder);
+
+			int beginIndex = this.textLog.Text.Length;
+			this.textLog.AppendText(builder.ToString());
+			this.textLog.SelectionStart = beginIndex;
+			this.textLog.SelectionLength = this.textLog.Text.Length - beginIndex;
+
+			if (entry.Type == LogMessageType.Error)
+				this.textLog.SelectionColor = Color.FromArgb(215, 64, 64);
+			else if (entry.Type == LogMessageType.Warning)
+				this.textLog.SelectionColor = Color.FromArgb(215, 135, 0);
+
+			this.textLog.SelectionStart = lastSelectionStart;
+			this.textLog.SelectionLength = lastSelectionLength;
+
+			if (updateCaret) this.textLog.SelectionStart = this.textLog.Text.Length;
+			this.textLog.ScrollToCaret();
+		}
+		private void GenerateEntryText(DataLogOutput.LogEntry entry, StringBuilder builder)
+		{
+			builder.Append(string.Format("{0:00}:{1:00}:{2:00} ", 
+				entry.Timestamp.Hour, 
+				entry.Timestamp.Minute, 
+				entry.Timestamp.Second));
+			builder.Append(entry.Source.Prefix);
+			switch (entry.Type)
+			{
+				case LogMessageType.Error:
+					builder.Append("ERROR:   ");
+					break;
+				case LogMessageType.Warning:
+					builder.Append("Warning: ");
+					break;
+				default:
+				case LogMessageType.Message:
+					builder.Append("Info:    ");
+					break;
+			}
+			builder.Append(' ', entry.Indent * 4);
+			builder.AppendLine(entry.Message);
 		}
 
 		private bool AcceptsEntry(DataLogOutput.LogEntry entry)
@@ -174,6 +201,12 @@ namespace EditorBase
 		}
 		private void LogData_NewEntry(object sender, DataLogOutput.LogEntryEventArgs e)
 		{
+			if (this.DockState.IsAutoHide() && this.DockPanel.ActiveAutoHideContent != this) return;
+			this.AddSingleEntry(e.Entry);
+		}
+		private void DockPanel_ActiveAutoHideContentChanged(object sender, EventArgs e)
+		{
+			if (!this.DockState.IsAutoHide() || this.DockPanel.ActiveAutoHideContent != this) return;
 			this.UpdateView();
 		}
 	}

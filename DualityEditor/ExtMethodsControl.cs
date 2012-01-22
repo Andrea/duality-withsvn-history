@@ -40,4 +40,14 @@ namespace DualityEditor
 			yield break;
 		}
 	}
+	public static class ExtMethodsDockState
+	{
+		public static bool IsAutoHide(this WeifenLuo.WinFormsUI.Docking.DockState state)
+		{
+			return state == WeifenLuo.WinFormsUI.Docking.DockState.DockBottomAutoHide ||
+				state == WeifenLuo.WinFormsUI.Docking.DockState.DockLeftAutoHide ||
+				state == WeifenLuo.WinFormsUI.Docking.DockState.DockRightAutoHide ||
+				state == WeifenLuo.WinFormsUI.Docking.DockState.DockTopAutoHide;
+		}
+	}
 }

@@ -55,13 +55,13 @@
 			this.dataDirWatcher = new System.IO.FileSystemWatcher();
 			this.sourceDirWatcher = new System.IO.FileSystemWatcher();
 			this.mainToolStrip = new System.Windows.Forms.ToolStrip();
-			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.actionSaveAll = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.actionOpenCode = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.actionRunApp = new System.Windows.Forms.ToolStripButton();
 			this.actionDebugApp = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.actionRunSandbox = new System.Windows.Forms.ToolStripButton();
 			this.actionPauseSandbox = new System.Windows.Forms.ToolStripButton();
 			this.actionStopSandbox = new System.Windows.Forms.ToolStripButton();
@@ -222,21 +222,6 @@
 			this.mainToolStrip.Size = new System.Drawing.Size(916, 25);
 			this.mainToolStrip.TabIndex = 4;
 			// 
-			// toolStripSeparator1
-			// 
-			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-			// 
-			// toolStripSeparator2
-			// 
-			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
-			// 
-			// toolStripSeparator3
-			// 
-			this.toolStripSeparator3.Name = "toolStripSeparator3";
-			this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
-			// 
 			// actionSaveAll
 			// 
 			this.actionSaveAll.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -247,6 +232,11 @@
 			this.actionSaveAll.Text = "Save All Project Data";
 			this.actionSaveAll.Click += new System.EventHandler(this.actionSaveAll_Click);
 			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+			// 
 			// actionOpenCode
 			// 
 			this.actionOpenCode.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -256,6 +246,11 @@
 			this.actionOpenCode.Size = new System.Drawing.Size(23, 22);
 			this.actionOpenCode.Text = "Open Project Sourcecode";
 			this.actionOpenCode.Click += new System.EventHandler(this.actionOpenCode_Click);
+			// 
+			// toolStripSeparator2
+			// 
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
 			// 
 			// actionRunApp
 			// 
@@ -276,6 +271,11 @@
 			this.actionDebugApp.Size = new System.Drawing.Size(23, 22);
 			this.actionDebugApp.Text = "Debug Application";
 			this.actionDebugApp.Click += new System.EventHandler(this.actionDebugApp_Click);
+			// 
+			// toolStripSeparator3
+			// 
+			this.toolStripSeparator3.Name = "toolStripSeparator3";
+			this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
 			// 
 			// actionRunSandbox
 			// 
@@ -320,6 +320,7 @@
 			this.MainMenuStrip = this.mainMenuStrip;
 			this.Name = "MainForm";
 			this.Text = "Dualitor";
+			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
 			((System.ComponentModel.ISupportInitialize)(this.pluginWatcher)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.dataDirWatcher)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.sourceDirWatcher)).EndInit();

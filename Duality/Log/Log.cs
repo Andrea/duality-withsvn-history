@@ -12,6 +12,23 @@ namespace Duality
 	/// </summary>
 	public class Log
 	{
+		/// <summary>
+		/// Holds a Logs state values.
+		/// </summary>
+		public class SharedState
+		{
+			private	int	indent	= 0;
+
+			/// <summary>
+			/// [GET / SET] The Logs indent value.
+			/// </summary>
+			public int Indent
+			{
+				get { return this.indent; }
+				internal set { this.indent = value; }
+			}
+		}
+
 		private	static	Log				logGame		= null;
 		private	static	Log				logCore		= null;
 		private	static	Log				logEditor	= null;
@@ -48,17 +65,18 @@ namespace Duality
 
 		static Log()
 		{
+			SharedState state = new SharedState();
 			data = new DataLogOutput();
-			logGame		= new Log("Game", new ConsoleLogOutput(ConsoleColor.DarkGray), data);
-			logCore		= new Log("Core", new ConsoleLogOutput(ConsoleColor.DarkBlue), data);
-			logEditor	= new Log("Edit", new ConsoleLogOutput(ConsoleColor.DarkMagenta), data);
+			logGame		= new Log("Game", state, new ConsoleLogOutput(ConsoleColor.DarkGray), data);
+			logCore		= new Log("Core", state, new ConsoleLogOutput(ConsoleColor.DarkBlue), data);
+			logEditor	= new Log("Edit", state, new ConsoleLogOutput(ConsoleColor.DarkMagenta), data);
 		}
 
 
 		private HashSet<string>				onceWritten = new HashSet<string>();
 		private	Dictionary<string,float>	timedLast	= new Dictionary<string,float>();
 		private	List<ILogOutput>			strOut		= null;
-		private	int							indent		= 0;
+		private	SharedState					state		= null;
 		private	string						name		= "Log";
 		private string						prefix		= "[Log] ";
 
@@ -81,20 +99,28 @@ namespace Duality
 		/// </summary>
 		public int Indent
 		{
-			get { return this.indent; }
+			get { return this.state.Indent; }
 		}
 
 		/// <summary>
 		/// Creates a new Log.
 		/// </summary>
-		/// <param name="name">The Logs name</param>
+		/// <param name="name">The Logs name.</param>
+		/// <param name="stateHolder">The Logs state value holder that may be shared with other Logs.</param>
 		/// <param name="output">It will be initially connected to the specified outputs.</param>
-		public Log(string name, params ILogOutput[] output)
+		public Log(string name, SharedState stateHolder, params ILogOutput[] output)
 		{
+			this.state = stateHolder;
 			this.name = name;
 			this.prefix = "[" + name + "] ";
 			this.strOut = new List<ILogOutput>(output);
 		}
+		/// <summary>
+		/// Creates a new Log.
+		/// </summary>
+		/// <param name="name">The Logs name</param>
+		/// <param name="output">It will be initially connected to the specified outputs.</param>
+		public Log(string name, params ILogOutput[] output) : this(name, new SharedState(), output) {}
 
 		/// <summary>
 		/// Registers an output to write log entries to.
@@ -127,14 +153,14 @@ namespace Duality
 		/// </summary>
 		public void PushIndent()
 		{
-			this.indent++;
+			this.state.Indent++;
 		}
 		/// <summary>
 		/// Decreases the current log entry indent.
 		/// </summary>
 		public void PopIndent()
 		{
-			this.indent--;
+			this.state.Indent--;
 		}
 
 		private void Write(LogMessageType type, string msg)

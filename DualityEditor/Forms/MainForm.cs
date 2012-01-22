@@ -991,14 +991,10 @@ namespace DualityEditor.Forms
 
 		private void corePluginWatcher_Changed(object sender, FileSystemEventArgs e)
 		{
-			this.OnBeforeReloadCorePlugins();
-
 			string pluginStr = Path.Combine("Plugins", e.Name);
 			if (!this.corePluginReloader.ReloadSchedule.Contains(pluginStr))
 				this.corePluginReloader.ReloadSchedule.Add(pluginStr);
 			this.corePluginReloader.State = ReloadCorePluginDialog.ReloaderState.WaitForPlugins;
-
-			this.OnAfterReloadCorePlugins();
 		}
 		private void corePluginReloader_AfterEndReload(object sender, EventArgs e)
 		{
