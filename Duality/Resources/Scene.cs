@@ -236,6 +236,8 @@ namespace Duality.Resources
 		/// </summary>
 		public void Render()
 		{
+			if (!this.IsCurrent) throw new InvalidOperationException("Can't render non-current Scene!");
+
 			Camera[] cams = this.cameraManager.ActiveObjects.ToArray();
 			// Maybe sort / process list first later on.
 			foreach (Camera c in cams)
@@ -246,20 +248,30 @@ namespace Duality.Resources
 		/// </summary>
 		public void Update()
 		{
-			if (this.IsCurrent) physicsWorld.Step(Time.TimeMult * Time.SPFMult);
+			if (!this.IsCurrent) throw new InvalidOperationException("Can't update non-current Scene!");
 
+			Performance.timeUpdatePhysics.BeginMeasure();
+			physicsWorld.Step(Time.TimeMult * Time.SPFMult);
+			Performance.timeUpdatePhysics.EndMeasure();
+
+			Performance.timeUpdateScene.BeginMeasure();
 			GameObject[] activeObj = this.objectManager.ActiveObjects.ToArray();
 			foreach (GameObject obj in activeObj)
 				obj.Update();
+			Performance.timeUpdateScene.EndMeasure();
 		}
 		/// <summary>
 		/// Updates the Scene in the editor.
 		/// </summary>
 		public void EditorUpdate()
 		{
+			if (!this.IsCurrent) throw new InvalidOperationException("Can't update non-current Scene!");
+
+			Performance.timeUpdateScene.BeginMeasure();
 			GameObject[] activeObj = this.objectManager.ActiveObjects.ToArray();
 			foreach (GameObject obj in activeObj)
 				obj.EditorUpdate();
+			Performance.timeUpdateScene.EndMeasure();
 		}
 
 		/// <summary>

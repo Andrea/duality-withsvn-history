@@ -658,6 +658,9 @@ namespace Duality.Components
 			}
 			else
 			{
+				Performance.BeginMeasure("Camera_" + this.gameobj.Name + "_Render");
+				Performance.timeRender.BeginMeasure();
+
 				for (int i = 0; i < this.passes.Length; i++)
 				{
 					this.deviceVisibility = this.visibilityMask & this.passes[i].VisibilityMask;
@@ -667,6 +670,9 @@ namespace Duality.Components
 
 				RenderTarget.Bind(RenderTarget.None);
 				this.RenderScreenOverlay();
+
+				Performance.timeRender.EndMeasure();
+				Performance.EndMeasure("Camera_" + this.gameobj.Name + "_Render");
 			}
 
 			this.deviceCacheValid = false;
@@ -906,7 +912,9 @@ namespace Duality.Components
 					new VertexP3T2(targetRect.MaxX,	targetRect.MaxY,	0.0f,	uvRatio.X,	uvRatio.Y),
 					new VertexP3T2(targetRect.MinX,	targetRect.MaxY,	0.0f,	0.0f,		uvRatio.Y));
 
+				Performance.timePostProcessing.BeginMeasure();
 				this.ProcessDrawcalls(true);
+				Performance.timePostProcessing.EndMeasure();
 				this.SetupMatrices();
 			}
 		}
@@ -930,11 +938,15 @@ namespace Duality.Components
 			}
 			else
 			{
+				Performance.timeCollectDrawcalls.BeginMeasure();
+
 				foreach (Renderer r in rendererQuery)
 					r.Draw(this);
 
 				if (this.CollectRendererDrawcalls != null)
 					this.CollectRendererDrawcalls(this, EventArgs.Empty);
+
+				Performance.timeCollectDrawcalls.EndMeasure();
 			}
 
 			this.ProcessDrawcalls();
@@ -1093,6 +1105,8 @@ namespace Duality.Components
 		}
 		private void OptimizeBatches(bool screenOverlay)
 		{
+			if (this.picking == 0) Performance.timeOptimizeDrawcalls.BeginMeasure();
+
 			// Non-ZSorted
 			if (this.drawBuffer.Count > 1)
 			{
@@ -1114,6 +1128,7 @@ namespace Duality.Components
 				this.drawBufferZSort = this.OptimizeBatches(this.drawBufferZSort);
 			}
 
+			if (this.picking == 0) Performance.timeOptimizeDrawcalls.EndMeasure();
 		}
 		private List<IDrawBatch> OptimizeBatches(List<IDrawBatch> sortedBuffer)
 		{
@@ -1145,6 +1160,8 @@ namespace Duality.Components
 		}
 		private void RenderBatches(List<IDrawBatch> buffer)
 		{
+			if (this.picking == 0) Performance.timeProcessDrawcalls.BeginMeasure();
+
 			int vertexOffset;
 			List<IDrawBatch> batchesSharingVBO = new List<IDrawBatch>();
 			IDrawBatch lastBatchRendered = null;
@@ -1178,6 +1195,8 @@ namespace Duality.Components
 
 			if (lastBatchRendered != null)
 				lastBatchRendered.FinishRendering();
+
+			if (this.picking == 0) Performance.timeProcessDrawcalls.EndMeasure();
 		}
 		private void FinishBatchRendering()
 		{
@@ -1237,6 +1256,8 @@ namespace Duality.Components
 		}
 		bool IDrawDevice.IsCoordInView(Vector3 c, float boundRad)
 		{
+			if (c.Z <= this.GameObj.Transform.Pos.Z) return false;
+
 			// Retrieve center vertex coord
 			float scaleTemp = 1.0f;
 			this.DrawDevice.PreprocessCoords(ref c, ref scaleTemp);
@@ -1261,6 +1282,7 @@ namespace Duality.Components
 		bool IDrawDevice.IsRendererInView(Renderer r)
 		{
 			if (r.IsInfiniteXY) return r.GameObj.Transform.Pos.Z >= this.GameObj.Transform.Pos.Z;
+			if (r.GameObj.Transform.Pos.Z <= this.GameObj.Transform.Pos.Z) return false;
 
 			// Retrieve center vertex coord
 			Vector3 posTemp = r.GameObj.Transform.Pos;

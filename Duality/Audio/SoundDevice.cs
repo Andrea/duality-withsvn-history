@@ -236,6 +236,8 @@ namespace Duality
 		/// </summary>
 		public void Update()
 		{
+			Performance.timeUpdateAudio.BeginMeasure();
+
 			this.budgetAmbient.Update();
 			this.budgetMusic.Update();
 
@@ -249,6 +251,8 @@ namespace Duality
 			this.CheckErrors();
 
 			this.sounds.Sort(delegate(SoundInstance obj1, SoundInstance obj2) { return obj2.Priority - obj1.Priority; });
+
+			Performance.timeUpdateAudio.EndMeasure();
 		}
 		private void UpdateListener()
 		{

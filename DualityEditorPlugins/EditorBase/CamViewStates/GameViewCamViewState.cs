@@ -46,7 +46,7 @@ namespace EditorBase
 		{
 			// Render game pov
 			if (!Scene.Current.Cameras.Any())	Camera.RenderVoid();
-			else								Scene.Current.Render();
+			else								DualityApp.Render();
 		}
 	}
 }

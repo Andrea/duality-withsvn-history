@@ -317,6 +317,7 @@ namespace Duality
 			AppDomain.CurrentDomain.AssemblyResolve		+= CurrentDomain_AssemblyResolve;
 			AppDomain.CurrentDomain.AssemblyLoad		+= CurrentDomain_AssemblyLoad;
 
+			Performance.InitDualityCounters();
 			sound = new SoundDevice();
 			LoadPlugins();
 			LoadAppData();
@@ -377,17 +378,17 @@ namespace Duality
 		public static void Update()
 		{
 			isUpdating = true;
-			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
-			watch.Restart();
+			Performance.timeUpdate.BeginMeasure();
 
 			Time.FrameTick();
+			Performance.ResetCounters();
 			OnBeforeUpdate();
 			Scene.Current.Update();
 			sound.Update();
 			OnAfterUpdate();
 			RunCleanup();
 
-			Time.perfUpdate = watch.ElapsedMilliseconds;
+			Performance.timeUpdate.EndMeasure();
 			isUpdating = false;
 
 			if (terminateScheduled) Terminate();
@@ -397,10 +398,7 @@ namespace Duality
 		/// </summary>
 		public static void Render()
 		{
-			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
-			watch.Restart();
 			Scene.Current.Render();
-			Time.perfRender = watch.ElapsedMilliseconds;
 		}
 
 		/// <summary>
@@ -431,10 +429,10 @@ namespace Duality
 		internal static void EditorUpdate(GameObjectManager updateObjects, bool freezeScene)
 		{
 			isUpdating = true;
-			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
-			watch.Restart();
+			Performance.timeUpdate.BeginMeasure();
 			
 			Time.FrameTick();
+			Performance.ResetCounters();
 			OnBeforeUpdate();
 			if (execContext == ExecutionContext.Editor)
 			{
@@ -451,7 +449,7 @@ namespace Duality
 			OnAfterUpdate();
 			RunCleanup();
 
-			Time.perfUpdate = watch.ElapsedMilliseconds;
+			Performance.timeUpdate.EndMeasure();
 			isUpdating = false;
 		}
 		
