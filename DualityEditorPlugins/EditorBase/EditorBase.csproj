@@ -301,6 +301,7 @@
     <None Include="PluginRes\log_message.png" />
     <None Include="PluginRes\log_warning.png" />
     <None Include="PluginRes\logview.ico" />
+    <None Include="PluginRes\picture_empty.png" />
     <Content Include="PluginRes\projectview.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

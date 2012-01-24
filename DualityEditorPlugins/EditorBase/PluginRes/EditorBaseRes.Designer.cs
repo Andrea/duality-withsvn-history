@@ -378,13 +378,6 @@ namespace EditorBase.PluginRes {
             }
         }
         
-        public static System.Drawing.Icon IconResView {
-            get {
-                object obj = ResourceManager.GetObject("IconResView", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
         public static System.Drawing.Icon IconSceneView {
             get {
                 object obj = ResourceManager.GetObject("IconSceneView", resourceCulture);

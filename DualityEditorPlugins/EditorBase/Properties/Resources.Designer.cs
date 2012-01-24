@@ -123,6 +123,13 @@ namespace EditorBase.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap iconResUnknown {
+            get {
+                object obj = ResourceManager.GetObject("iconResUnknown", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap log_core {
             get {
                 object obj = ResourceManager.GetObject("log_core", resourceCulture);
@@ -175,6 +182,13 @@ namespace EditorBase.Properties {
         internal static System.Drawing.Bitmap page_paste {
             get {
                 object obj = ResourceManager.GetObject("page_paste", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap picture_empty {
+            get {
+                object obj = ResourceManager.GetObject("picture_empty", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

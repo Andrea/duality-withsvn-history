@@ -263,10 +263,22 @@ namespace EditorBase
 			if (viewNode != null)
 			{
 				viewNode.IsSelected = select;
-				this.objectView.EnsureVisible(viewNode);
+				if (select) this.objectView.EnsureVisible(viewNode);
 				return true;
 			}
 			return false;
+		}
+		public void SelectNodes(IEnumerable<NodeBase> nodes, bool select = true)
+		{
+			this.objectView.BeginUpdate();
+			TreeNodeAdv viewNode = null;
+			foreach (NodeBase node in nodes)
+			{
+				viewNode = this.objectView.FindNode(this.objectModel.GetPath(node));
+				if (viewNode != null) viewNode.IsSelected = select;
+			}
+			this.objectView.EndUpdate();
+			if (select && viewNode != null) this.objectView.EnsureVisible(viewNode);
 		}
 		public GameObjectNode FindNode(GameObject obj)
 		{
@@ -1234,10 +1246,16 @@ namespace EditorBase
 			if (sender == this) return;
 			if ((e.AffectedCategories & ObjectSelection.Category.GameObjCmp) == ObjectSelection.Category.None) return;
 
-			foreach (GameObject o in e.Removed.GameObjects)	this.SelectNode(this.FindNode(o), false);
-			foreach (GameObject o in e.Added.GameObjects)	this.SelectNode(this.FindNode(o));
-			foreach (Component o in e.Removed.Components)	this.SelectNode(this.FindNode(o), false);
-			foreach (Component o in e.Added.Components)		this.SelectNode(this.FindNode(o));
+			IEnumerable<NodeBase> removedObjQuery;
+			removedObjQuery = e.Removed.GameObjects.Select(o => this.FindNode(o));
+			removedObjQuery.Concat(e.Removed.Components.Select(o => this.FindNode(o)));
+
+			IEnumerable<NodeBase> addedObjQuery;
+			addedObjQuery = e.Added.GameObjects.Select(o => this.FindNode(o));
+			addedObjQuery.Concat(e.Added.Components.Select(o => this.FindNode(o)));
+
+			this.SelectNodes(removedObjQuery, false);
+			this.SelectNodes(addedObjQuery, true);
 		}
 		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
 		{

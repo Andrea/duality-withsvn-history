@@ -34,9 +34,9 @@
 			this.nodeTextBoxName = new Aga.Controls.Tree.NodeControls.NodeTextBox();
 			this.timerSelectSched = new System.Windows.Forms.Timer(this.components);
 			this.toolStrip = new System.Windows.Forms.ToolStrip();
+			this.propertyGrid = new DualityEditor.Controls.PropertyGrid();
 			this.buttonAutoRefresh = new System.Windows.Forms.ToolStripButton();
 			this.buttonClone = new System.Windows.Forms.ToolStripButton();
-			this.propertyGrid = new DualityEditor.Controls.PropertyGrid();
 			this.toolStrip.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -73,6 +73,15 @@
 			this.toolStrip.TabIndex = 1;
 			this.toolStrip.Text = "toolStrip";
 			// 
+			// propertyGrid
+			// 
+			this.propertyGrid.AutoScroll = true;
+			this.propertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.propertyGrid.Location = new System.Drawing.Point(0, 25);
+			this.propertyGrid.Name = "propertyGrid";
+			this.propertyGrid.Size = new System.Drawing.Size(231, 407);
+			this.propertyGrid.TabIndex = 0;
+			// 
 			// buttonAutoRefresh
 			// 
 			this.buttonAutoRefresh.CheckOnClick = true;
@@ -94,15 +103,6 @@
 			this.buttonClone.Size = new System.Drawing.Size(23, 22);
 			this.buttonClone.Text = "Clone View";
 			this.buttonClone.Click += new System.EventHandler(this.buttonClone_Click);
-			// 
-			// propertyGrid
-			// 
-			this.propertyGrid.AutoScroll = true;
-			this.propertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.propertyGrid.Location = new System.Drawing.Point(0, 25);
-			this.propertyGrid.Name = "propertyGrid";
-			this.propertyGrid.Size = new System.Drawing.Size(231, 407);
-			this.propertyGrid.TabIndex = 0;
 			// 
 			// ObjectInspector
 			// 

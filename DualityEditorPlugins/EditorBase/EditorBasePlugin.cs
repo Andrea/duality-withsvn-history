@@ -235,7 +235,7 @@ namespace EditorBase
 			this.menuItemProjectView.Image = EditorBaseRes.IconProjectView.ToBitmap();
 			this.menuItemSceneView.Image = EditorBaseRes.IconSceneView.ToBitmap();
 			this.menuItemObjView.Image = EditorBaseRes.IconObjView.ToBitmap();
-			this.menuItemResView.Image = EditorBaseRes.IconResView.ToBitmap();
+			this.menuItemResView.Image = EditorBaseRes.IconObjView.ToBitmap();
 			this.menuItemCamView.Image = EditorBaseRes.IconEye.ToBitmap();
 			this.menuItemLogView.Image = EditorBaseRes.IconLogView.ToBitmap();
 
