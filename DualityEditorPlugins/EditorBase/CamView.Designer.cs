@@ -106,6 +106,7 @@
 			// toolStripSeparator2
 			// 
 			this.toolStripSeparator2.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.toolStripSeparator2.ForeColor = System.Drawing.SystemColors.ControlText;
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
 			this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
 			// 

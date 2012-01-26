@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Runtime.Serialization;
+using System.Reflection;
 
 using Duality.OggVorbis;
 using OpenTK.Audio.OpenAL;
@@ -58,15 +59,12 @@ namespace Duality.Resources
 		{
 			AudioData tmp;
 
-			tmp = new AudioData(ReflectionHelper.GetEmbeddedResourceStream(System.Reflection.Assembly.GetExecutingAssembly(), @"Resources\Default\Beep.ogg"));
-			tmp.path = ContentPath_Beep;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new AudioData(ReflectionHelper.GetEmbeddedResourceStream(System.Reflection.Assembly.GetExecutingAssembly(), @"Resources\Default\DroneLoop.ogg"));
-			tmp.path = ContentPath_DroneLoop;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new AudioData(ReflectionHelper.GetEmbeddedResourceStream(System.Reflection.Assembly.GetExecutingAssembly(), @"Resources\Default\LogoJingle.ogg"));
-			tmp.path = ContentPath_LogoJingle;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
+			tmp = new AudioData(ReflectionHelper.GetEmbeddedResourceStream(Assembly.GetExecutingAssembly(), @"Resources\Default\Beep.ogg"));
+			ContentProvider.RegisterContent(ContentPath_Beep, tmp);
+			tmp = new AudioData(ReflectionHelper.GetEmbeddedResourceStream(Assembly.GetExecutingAssembly(), @"Resources\Default\DroneLoop.ogg"));
+			ContentProvider.RegisterContent(ContentPath_DroneLoop, tmp);
+			tmp = new AudioData(ReflectionHelper.GetEmbeddedResourceStream(Assembly.GetExecutingAssembly(), @"Resources\Default\LogoJingle.ogg"));
+			ContentProvider.RegisterContent(ContentPath_LogoJingle, tmp);
 
 			Beep		= ContentProvider.RequestContent<AudioData>(ContentPath_Beep);
 			DroneLoop	= ContentProvider.RequestContent<AudioData>(ContentPath_DroneLoop);

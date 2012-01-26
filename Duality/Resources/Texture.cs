@@ -62,14 +62,9 @@ namespace Duality.Resources
 
 		internal static void InitDefaultContent()
 		{
-			Texture tmp;
-
-			tmp = new Texture(Pixmap.DualityLogo256); tmp.path = ContentPath_DualityLogo256;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new Texture(Pixmap.DualityLogoB256); tmp.path = ContentPath_DualityLogoB256;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new Texture(Pixmap.White); tmp.path = ContentPath_White;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
+			ContentProvider.RegisterContent(ContentPath_DualityLogo256, new Texture(Pixmap.DualityLogo256));
+			ContentProvider.RegisterContent(ContentPath_DualityLogoB256, new Texture(Pixmap.DualityLogoB256));
+			ContentProvider.RegisterContent(ContentPath_White, new Texture(Pixmap.White));
 
 			DualityLogo256	= ContentProvider.RequestContent<Texture>(ContentPath_DualityLogo256);
 			DualityLogoB256	= ContentProvider.RequestContent<Texture>(ContentPath_DualityLogoB256);

@@ -5,6 +5,7 @@ using System.Text;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Reflection;
 
 using Duality;
 using Duality.ColorFormat;
@@ -75,15 +76,15 @@ namespace Duality.Resources
 			Bitmap bm;
 			Pixmap tmp;
 
-			bm = new Bitmap(ReflectionHelper.GetEmbeddedResourceStream(System.Reflection.Assembly.GetExecutingAssembly(), @"Resources\Default\DualityLogo256.png"));
-			tmp = new Pixmap(bm.ColorTransparentPixels(ColorRgba.TransparentBlack)); tmp.path = ContentPath_DualityLogo256;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
-			bm = new Bitmap(ReflectionHelper.GetEmbeddedResourceStream(System.Reflection.Assembly.GetExecutingAssembly(), @"Resources\Default\DualityLogoB256.png"));
-			tmp = new Pixmap(bm.ColorTransparentPixels(ColorRgba.TransparentBlack)); tmp.path = ContentPath_DualityLogoB256;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
+			bm = new Bitmap(ReflectionHelper.GetEmbeddedResourceStream(Assembly.GetExecutingAssembly(), @"Resources\Default\DualityLogo256.png"));
+			tmp = new Pixmap(bm.ColorTransparentPixels(ColorRgba.TransparentBlack));
+			ContentProvider.RegisterContent(ContentPath_DualityLogo256, tmp);
+			bm = new Bitmap(ReflectionHelper.GetEmbeddedResourceStream(Assembly.GetExecutingAssembly(), @"Resources\Default\DualityLogoB256.png"));
+			tmp = new Pixmap(bm.ColorTransparentPixels(ColorRgba.TransparentBlack));
+			ContentProvider.RegisterContent(ContentPath_DualityLogoB256, tmp);
 			bm = new Bitmap(1, 1); bm.SetPixel(0, 0, Color.FromArgb(255, 255, 255, 255));
-			tmp = new Pixmap(bm); tmp.path = ContentPath_White;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
+			tmp = new Pixmap(bm);
+			ContentProvider.RegisterContent(ContentPath_White, tmp);
 
 			DualityLogo256	= ContentProvider.RequestContent<Pixmap>(ContentPath_DualityLogo256);
 			DualityLogoB256	= ContentProvider.RequestContent<Pixmap>(ContentPath_DualityLogoB256);

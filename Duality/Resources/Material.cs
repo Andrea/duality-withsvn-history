@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 using Duality;
+using Duality.ColorFormat;
 
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -66,20 +67,10 @@ namespace Duality.Resources
 
 		internal static void InitDefaultContent()
 		{
-			Material tmp;
-
-			tmp = new Material(DrawTechnique.Solid, ColorFormat.ColorRgba.White);
-			tmp.path = ContentPath_SolidWhite;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new Material(DrawTechnique.Invert, ColorFormat.ColorRgba.White);
-			tmp.path = ContentPath_InvertWhite;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new Material(DrawTechnique.Mask, ColorFormat.ColorRgba.White, Texture.DualityLogo256);
-			tmp.path = ContentPath_DualityLogo256;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new Material(DrawTechnique.Mask, ColorFormat.ColorRgba.White, Texture.DualityLogoB256);
-			tmp.path = ContentPath_DualityLogoB256;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
+			ContentProvider.RegisterContent(ContentPath_SolidWhite, new Material(DrawTechnique.Solid, ColorRgba.White));
+			ContentProvider.RegisterContent(ContentPath_InvertWhite, new Material(DrawTechnique.Invert, ColorRgba.White));
+			ContentProvider.RegisterContent(ContentPath_DualityLogo256, new Material(DrawTechnique.Mask, ColorRgba.White, Texture.DualityLogo256));
+			ContentProvider.RegisterContent(ContentPath_DualityLogoB256, new Material(DrawTechnique.Mask, ColorRgba.White, Texture.DualityLogoB256));
 
 			SolidWhite		= ContentProvider.RequestContent<Material>(ContentPath_SolidWhite);
 			InvertWhite		= ContentProvider.RequestContent<Material>(ContentPath_InvertWhite);

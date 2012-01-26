@@ -13,6 +13,7 @@ using Duality;
 using Duality.ObjectManagers;
 using Duality.Resources;
 using Duality.Components;
+using Duality.ColorFormat;
 
 using DualityEditor;
 using DualityEditor.Controls;
@@ -197,8 +198,26 @@ namespace DualityEditor.Forms
 		}
 		private void ApplyDockPanelSkin()
 		{
-		//    this.dockPanel.Skin.DockPaneStripSkin.DocumentGradient.DockStripGradient.StartColor = SystemColors.ControlDark;
-		//    this.dockPanel.Skin.DockPaneStripSkin.DocumentGradient.DockStripGradient.EndColor = SystemColors.ControlDark;
+			Color bgColor = Color.FromArgb(255, 128, 128, 128);
+			Color inactiveTab = Color.FromArgb(255, 230, 235, 240);
+			Color inactiveTab2 = Color.FromArgb(255, 255, 255, 255);
+			Color activeTab = Color.FromArgb(255, 255, 225, 155);
+			Color activeTab2 = Color.FromArgb(255, 255, 235, 205);
+
+			//this.dockPanel.Skin.DockPaneStripSkin.DocumentGradient.DockStripGradient.StartColor = bgColor;
+			//this.dockPanel.Skin.DockPaneStripSkin.DocumentGradient.DockStripGradient.EndColor = bgColor;
+			//this.dockPanel.Skin.AutoHideStripSkin.DockStripGradient.StartColor = bgColor;
+			//this.dockPanel.Skin.AutoHideStripSkin.DockStripGradient.EndColor = bgColor;
+
+			this.dockPanel.Skin.DockPaneStripSkin.DocumentGradient.InactiveTabGradient.StartColor = inactiveTab2;
+			this.dockPanel.Skin.DockPaneStripSkin.DocumentGradient.InactiveTabGradient.EndColor = inactiveTab;
+			this.dockPanel.Skin.DockPaneStripSkin.DocumentGradient.InactiveTabGradient.LinearGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
+			this.dockPanel.Skin.DockPaneStripSkin.DocumentGradient.InactiveTabGradient.TextColor = Color.Black;
+
+			this.dockPanel.Skin.DockPaneStripSkin.DocumentGradient.ActiveTabGradient.StartColor = activeTab2;
+			this.dockPanel.Skin.DockPaneStripSkin.DocumentGradient.ActiveTabGradient.EndColor = activeTab;
+			this.dockPanel.Skin.DockPaneStripSkin.DocumentGradient.ActiveTabGradient.LinearGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
+			this.dockPanel.Skin.DockPaneStripSkin.DocumentGradient.ActiveTabGradient.TextColor = Color.Black;
 		}
 		public void InitMainGLContext()
 		{

@@ -58,17 +58,17 @@ namespace Duality.Resources
 		{
 			FragmentShader tmp;
 
-			tmp = new FragmentShader(); tmp.path = ContentPath_Minimal;
+			tmp = new FragmentShader();
 			tmp.LoadSource(ReflectionHelper.GetEmbeddedResourceStream(typeof(FragmentShader).Assembly, @"Resources\Default\Minimal.frag"));
-			ContentProvider.RegisterContent(tmp.Path, tmp);
+			ContentProvider.RegisterContent(ContentPath_Minimal, tmp);
 
-			tmp = new FragmentShader(); tmp.path = ContentPath_Picking;
+			tmp = new FragmentShader();
 			tmp.LoadSource(ReflectionHelper.GetEmbeddedResourceStream(typeof(FragmentShader).Assembly, @"Resources\Default\Picking.frag"));
-			ContentProvider.RegisterContent(tmp.Path, tmp);
+			ContentProvider.RegisterContent(ContentPath_Picking, tmp);
 
-			tmp = new FragmentShader(); tmp.path = ContentPath_SmoothAnim;
+			tmp = new FragmentShader();
 			tmp.LoadSource(ReflectionHelper.GetEmbeddedResourceStream(typeof(FragmentShader).Assembly, @"Resources\Default\SmoothAnim.frag"));
-			ContentProvider.RegisterContent(tmp.Path, tmp);
+			ContentProvider.RegisterContent(ContentPath_SmoothAnim, tmp);
 
 			Minimal		= ContentProvider.RequestContent<FragmentShader>(ContentPath_Minimal);
 			Picking		= ContentProvider.RequestContent<FragmentShader>(ContentPath_Picking);

@@ -49,13 +49,13 @@ namespace Duality.Resources
 		{
 			VertexShader tmp;
 
-			tmp = new VertexShader(); tmp.path = ContentPath_Minimal;
+			tmp = new VertexShader();
 			tmp.LoadSource(ReflectionHelper.GetEmbeddedResourceStream(typeof(FragmentShader).Assembly, @"Resources\Default\Minimal.vert"));
-			ContentProvider.RegisterContent(tmp.Path, tmp);
+			ContentProvider.RegisterContent(ContentPath_Minimal, tmp);
 
-			tmp = new VertexShader(); tmp.path = ContentPath_SmoothAnim;
+			tmp = new VertexShader();
 			tmp.LoadSource(ReflectionHelper.GetEmbeddedResourceStream(typeof(FragmentShader).Assembly, @"Resources\Default\SmoothAnim.vert"));
-			ContentProvider.RegisterContent(tmp.Path, tmp);
+			ContentProvider.RegisterContent(ContentPath_SmoothAnim, tmp);
 
 			Minimal		= ContentProvider.RequestContent<VertexShader>(ContentPath_Minimal);
 			SmoothAnim	= ContentProvider.RequestContent<VertexShader>(ContentPath_SmoothAnim);

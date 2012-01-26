@@ -63,14 +63,9 @@ namespace Duality.Resources
 
 		internal static void InitDefaultContent()
 		{
-			ShaderProgram tmp;
-
-			tmp = new ShaderProgram(VertexShader.Minimal, FragmentShader.Minimal); tmp.path = ContentPath_Minimal;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new ShaderProgram(VertexShader.Minimal, FragmentShader.Picking); tmp.path = ContentPath_Picking;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new ShaderProgram(VertexShader.SmoothAnim, FragmentShader.SmoothAnim); tmp.path = ContentPath_SmoothAnim;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
+			ContentProvider.RegisterContent(ContentPath_Minimal, new ShaderProgram(VertexShader.Minimal, FragmentShader.Minimal));
+			ContentProvider.RegisterContent(ContentPath_Picking, new ShaderProgram(VertexShader.Minimal, FragmentShader.Picking));
+			ContentProvider.RegisterContent(ContentPath_SmoothAnim, new ShaderProgram(VertexShader.SmoothAnim, FragmentShader.SmoothAnim));
 
 			Minimal	= ContentProvider.RequestContent<ShaderProgram>(ContentPath_Minimal);
 			Picking	= ContentProvider.RequestContent<ShaderProgram>(ContentPath_Picking);

@@ -419,6 +419,10 @@ namespace Duality
 			AudioData.InitDefaultContent();
 			Sound.InitDefaultContent();
 
+			// Invoke plugins
+			foreach (CorePlugin plugin in DualityApp.LoadedPlugins)
+				plugin.OnInitDefaultContent();
+
 			// Make a list of all default content available
 			foreach (KeyValuePair<string,Resource> pair in resLibrary)
 			{
@@ -485,6 +489,7 @@ namespace Duality
 		public static void RegisterContent(string path, Resource content)
 		{
 			if (String.IsNullOrEmpty(path)) return;
+			if (String.IsNullOrEmpty(content.Path)) content.Path = path;
 			resLibrary[path] = content;
 		}
 		/// <summary>
@@ -568,7 +573,7 @@ namespace Duality
 			Resource res;
 			if (resLibrary.TryGetValue(path, out res))
 			{
-				res.ChangePath(newPath);
+				res.Path = newPath;
 				resLibrary[newPath] = res;
 				resLibrary.Remove(path);
 				return true;

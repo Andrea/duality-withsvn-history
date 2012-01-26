@@ -46,6 +46,7 @@ namespace Duality
 		public string Path
 		{
 			get { return this.path; }
+			internal set { this.path = value; }
 		}
 		/// <summary>
 		/// [GET] The name of the Resource.
@@ -71,10 +72,6 @@ namespace Duality
 			get { return !this.Disposed; }
 		}
 
-		internal void ChangePath(string newPath)
-		{
-			this.path = newPath;
-		}
 		/// <summary>
 		/// Saves the Resource to the specified path. If it has been generated at runtime, i.e. has
 		/// not been loaded from file before, this will set the Resources <see cref="Path"/> Property.

@@ -56,14 +56,9 @@ namespace Duality.Resources
 
 		internal static void InitDefaultContent()
 		{
-			Sound tmp;
-
-			tmp = new Sound(AudioData.Beep); tmp.path = ContentPath_Beep;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new Sound(AudioData.DroneLoop); tmp.path = ContentPath_DroneLoop;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new Sound(AudioData.LogoJingle); tmp.path = ContentPath_LogoJingle;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
+			ContentProvider.RegisterContent(ContentPath_Beep, new Sound(AudioData.Beep));
+			ContentProvider.RegisterContent(ContentPath_DroneLoop, new Sound(AudioData.DroneLoop));
+			ContentProvider.RegisterContent(ContentPath_LogoJingle, new Sound(AudioData.LogoJingle));
 
 			Beep		= ContentProvider.RequestContent<Sound>(ContentPath_Beep);
 			DroneLoop	= ContentProvider.RequestContent<Sound>(ContentPath_DroneLoop);

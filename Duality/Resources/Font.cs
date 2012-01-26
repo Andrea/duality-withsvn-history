@@ -67,31 +67,28 @@ namespace Duality.Resources
 			Font tmp;
 
 			tmp = new Font();
-			tmp.path = ContentPath_GenericMonospace10;
 			tmp.Family = FontFamily.GenericMonospace.Name;
 			tmp.Size = 10;
 			tmp.GlyphRenderHint = RenderHint.Monochrome;
 			tmp.MonoSpace = true;
 			tmp.ReloadData();
-			ContentProvider.RegisterContent(tmp.Path, tmp);
+			ContentProvider.RegisterContent(ContentPath_GenericMonospace10, tmp);
 
 			tmp = new Font();
-			tmp.path = ContentPath_GenericSerif12;
 			tmp.Family = FontFamily.GenericSerif.Name;
 			tmp.Size = 12;
 			tmp.Kerning = true;
 			tmp.GlyphRenderHint = RenderHint.Monochrome;
 			tmp.ReloadData();
-			ContentProvider.RegisterContent(tmp.Path, tmp);
+			ContentProvider.RegisterContent(ContentPath_GenericSerif12, tmp);
 
 			tmp = new Font();
-			tmp.path = ContentPath_GenericSansSerif12;
 			tmp.Family = FontFamily.GenericSansSerif.Name;
 			tmp.Size = 12;
 			tmp.Kerning = true;
 			tmp.GlyphRenderHint = RenderHint.Monochrome;
 			tmp.ReloadData();
-			ContentProvider.RegisterContent(tmp.Path, tmp);
+			ContentProvider.RegisterContent(ContentPath_GenericSansSerif12, tmp);
 
 			GenericMonospace10	= ContentProvider.RequestContent<Font>(ContentPath_GenericMonospace10);
 			GenericSerif12		= ContentProvider.RequestContent<Font>(ContentPath_GenericSerif12);

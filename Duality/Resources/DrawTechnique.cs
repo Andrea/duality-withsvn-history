@@ -180,54 +180,23 @@ namespace Duality.Resources
 
 		internal static void InitDefaultContent()
 		{
-			DrawTechnique tmp;
+			ContentProvider.RegisterContent(ContentPath_Solid,		new DrawTechnique(BlendMode.Solid));
+			ContentProvider.RegisterContent(ContentPath_Mask,		new DrawTechnique(BlendMode.Mask));
+			ContentProvider.RegisterContent(ContentPath_Add,		new DrawTechnique(BlendMode.Add));
+			ContentProvider.RegisterContent(ContentPath_Alpha,		new DrawTechnique(BlendMode.Alpha));
+			ContentProvider.RegisterContent(ContentPath_Multiply,	new DrawTechnique(BlendMode.Multiply));
+			ContentProvider.RegisterContent(ContentPath_Light,		new DrawTechnique(BlendMode.Light));
+			ContentProvider.RegisterContent(ContentPath_Invert,		new DrawTechnique(BlendMode.Invert));
 
-			tmp = new DrawTechnique(BlendMode.Solid);
-			tmp.path = ContentPath_Solid;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new DrawTechnique(BlendMode.Mask);
-			tmp.path = ContentPath_Mask;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new DrawTechnique(BlendMode.Add);
-			tmp.path = ContentPath_Add;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new DrawTechnique(BlendMode.Alpha);
-			tmp.path = ContentPath_Alpha;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new DrawTechnique(BlendMode.Multiply);
-			tmp.path = ContentPath_Multiply;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new DrawTechnique(BlendMode.Light);
-			tmp.path = ContentPath_Light;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new DrawTechnique(BlendMode.Invert);
-			tmp.path = ContentPath_Invert;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new DrawTechnique(BlendMode.Mask, ShaderProgram.Picking);
-			tmp.path = ContentPath_Picking;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
+			ContentProvider.RegisterContent(ContentPath_Picking,	new DrawTechnique(BlendMode.Mask, ShaderProgram.Picking));
 			
-			tmp = new DrawTechnique(BlendMode.Solid, ShaderProgram.SmoothAnim, VertexDataFormat.VertexC1P3T4A1);
-			tmp.path = ContentPath_SmoothAnim_Solid;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new DrawTechnique(BlendMode.Mask, ShaderProgram.SmoothAnim, VertexDataFormat.VertexC1P3T4A1);
-			tmp.path = ContentPath_SmoothAnim_Mask;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new DrawTechnique(BlendMode.Add, ShaderProgram.SmoothAnim, VertexDataFormat.VertexC1P3T4A1);
-			tmp.path = ContentPath_SmoothAnim_Add;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new DrawTechnique(BlendMode.Alpha, ShaderProgram.SmoothAnim, VertexDataFormat.VertexC1P3T4A1);
-			tmp.path = ContentPath_SmoothAnim_Alpha;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new DrawTechnique(BlendMode.Multiply, ShaderProgram.SmoothAnim, VertexDataFormat.VertexC1P3T4A1);
-			tmp.path = ContentPath_SmoothAnim_Multiply;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new DrawTechnique(BlendMode.Light, ShaderProgram.SmoothAnim, VertexDataFormat.VertexC1P3T4A1);
-			tmp.path = ContentPath_SmoothAnim_Light;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
-			tmp = new DrawTechnique(BlendMode.Invert, ShaderProgram.SmoothAnim, VertexDataFormat.VertexC1P3T4A1);
-			tmp.path = ContentPath_SmoothAnim_Invert;
-			ContentProvider.RegisterContent(tmp.Path, tmp);
+			ContentProvider.RegisterContent(ContentPath_SmoothAnim_Solid,		new DrawTechnique(BlendMode.Solid,		ShaderProgram.SmoothAnim, VertexDataFormat.VertexC1P3T4A1));
+			ContentProvider.RegisterContent(ContentPath_SmoothAnim_Mask,		new DrawTechnique(BlendMode.Mask,		ShaderProgram.SmoothAnim, VertexDataFormat.VertexC1P3T4A1));
+			ContentProvider.RegisterContent(ContentPath_SmoothAnim_Add,			new DrawTechnique(BlendMode.Add,		ShaderProgram.SmoothAnim, VertexDataFormat.VertexC1P3T4A1));
+			ContentProvider.RegisterContent(ContentPath_SmoothAnim_Alpha,		new DrawTechnique(BlendMode.Alpha,		ShaderProgram.SmoothAnim, VertexDataFormat.VertexC1P3T4A1));
+			ContentProvider.RegisterContent(ContentPath_SmoothAnim_Multiply,	new DrawTechnique(BlendMode.Multiply,	ShaderProgram.SmoothAnim, VertexDataFormat.VertexC1P3T4A1));
+			ContentProvider.RegisterContent(ContentPath_SmoothAnim_Light,		new DrawTechnique(BlendMode.Light,		ShaderProgram.SmoothAnim, VertexDataFormat.VertexC1P3T4A1));
+			ContentProvider.RegisterContent(ContentPath_SmoothAnim_Invert,		new DrawTechnique(BlendMode.Invert,		ShaderProgram.SmoothAnim, VertexDataFormat.VertexC1P3T4A1));
 
 			Solid		= ContentProvider.RequestContent<DrawTechnique>(ContentPath_Solid);
 			Mask		= ContentProvider.RequestContent<DrawTechnique>(ContentPath_Mask);

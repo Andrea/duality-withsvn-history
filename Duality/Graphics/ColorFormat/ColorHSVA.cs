@@ -167,15 +167,16 @@ namespace Duality.ColorFormat
 		/// <returns></returns>
 		public ColorRgba ToRgba()
 		{
-			float hTemp = this.h * 360.0f / 60.0f;
+			float hTemp = MathF.NormalizeVar(this.h * 360.0f, 0.0f, 360.0f) / 60.0f;
 			int hi = (int)MathF.Floor(hTemp) % 6;
 			float f = hTemp - MathF.Floor(hTemp);
 
-			float vTemp = this.v * 255.0f;
+			float vTemp = MathF.Clamp(this.v, 0.0f, 1.0f) * 255.0f;
+			float sTemp = MathF.Clamp(this.s, 0.0f, 1.0f);
 			byte v = (byte)vTemp;
-			byte p = (byte)(vTemp * (1 - this.s));
-			byte q = (byte)(vTemp * (1 - f * this.s));
-			byte t = (byte)(vTemp * (1 - (1 - f) * this.s));
+			byte p = (byte)(vTemp * (1.0f - sTemp));
+			byte q = (byte)(vTemp * (1.0f - f * sTemp));
+			byte t = (byte)(vTemp * (1.0f - (1.0f - f) * sTemp));
 
 			if (hi == 0)		return new ColorRgba(v, t, p, (byte)(int)MathF.Clamp(this.a * 255.0f, 0.0f, 255.0f));
 			else if (hi == 1)	return new ColorRgba(q, v, p, (byte)(int)MathF.Clamp(this.a * 255.0f, 0.0f, 255.0f));
