@@ -132,6 +132,10 @@ namespace DualityEditor
 		{
 			this.obj.RemoveAll(o => (GetObjCategory(o) & clearCat) != Category.None);	
 		}
+		protected void LocalClear(Predicate<object> clearPred)
+		{
+			this.obj.RemoveAll(clearPred);	
+		}
 		protected void LocalTransform(ObjectSelection target)
 		{
 			// Group source objects by their selection category
@@ -178,6 +182,12 @@ namespace DualityEditor
 		{
 			ObjectSelection result = new ObjectSelection(this);
 			result.LocalClear(clearCat);
+			return result;
+		}
+		public ObjectSelection Clear(Predicate<object> clearPred)
+		{
+			ObjectSelection result = new ObjectSelection(this);
+			result.LocalClear(clearPred);
 			return result;
 		}
 		public ObjectSelection Transform(ObjectSelection target)

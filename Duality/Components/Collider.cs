@@ -42,8 +42,16 @@ namespace Duality.Components
 		[Serializable]
 		public abstract class ShapeInfo
 		{
-			private	float	density	= 1.0f;
+			private	Collider	parent	= null;
+			private	float		density	= 1.0f;
 			
+			/// <summary>
+			/// [GET] The shape's parent <see cref="Collider"/>.
+			/// </summary>
+			public Collider Parent
+			{
+				get { return this.parent; }
+			}
 			/// <summary>
 			/// [GEt / SET] The shapes density.
 			/// </summary>
@@ -57,7 +65,9 @@ namespace Duality.Components
 			/// </summary>
 			public abstract Rect AABB { get; }
 
-			protected ShapeInfo() {}
+			protected ShapeInfo()
+			{
+			}
 			protected ShapeInfo(float density)
 			{
 				this.density = density;
@@ -81,6 +91,7 @@ namespace Duality.Components
 			/// <param name="target"></param>
 			protected virtual void CopyTo(ShapeInfo target)
 			{
+				// Don't copy the parent!
 				target.density = this.density;
 			}
 			/// <summary>
@@ -91,6 +102,12 @@ namespace Duality.Components
 			{
 				ShapeInfo newObj = ReflectionHelper.CreateInstanceOf(this.GetType()) as ShapeInfo;
 				this.CopyTo(newObj);
+				return newObj;
+			}
+			internal ShapeInfo Clone(Collider newParent)
+			{
+				ShapeInfo newObj = this.Clone();
+				newObj.parent = newParent;
 				return newObj;
 			}
 		}
@@ -227,7 +244,7 @@ namespace Duality.Components
 		private	float		friction		= 0.0f;
 		private	float		restitution		= 0.0f;
 		private	Category	colCat			= Category.All;
-		private	List<ShapeInfo>	shapes		= new List<ShapeInfo>{ new CircleShapeInfo(64.0f, Vector2.Zero, 1.0f) };
+		private	List<ShapeInfo>	shapes		= new List<ShapeInfo>();
 
 		/// <summary>
 		/// [GET / SET] The type of the physical body.
@@ -327,16 +344,18 @@ namespace Duality.Components
 			}
 		}
 		/// <summary>
-		/// [GET / SET] A list of <see cref="ShapeInfo">primitive shapes</see> which this body consists of.
+		/// [GET / SET] Enumerates all <see cref="ShapeInfo">primitive shapes</see> which this body consists of.
+		/// If you modify any of the returned ShapeInfos, be sure to call <see cref="UpdateBodyShape"/> afterwards.
 		/// </summary>
-		public List<ShapeInfo> Shapes
+		public IEnumerable<ShapeInfo> Shapes
 		{
 			get { return this.shapes; }
 			set
 			{
-				this.CleanupBody();
-				this.shapes = value;
-				this.InitBody();
+				bool wasInitialized = this.body != null;
+				if (wasInitialized) this.CleanupBody();
+				this.shapes = value.Select(s => s.Clone(this)).ToList();
+				if (wasInitialized) this.InitBody();
 			}
 		}
 		/// <summary>
@@ -357,13 +376,16 @@ namespace Duality.Components
 			}
 		}
 
-		private Body CreateBody()
+		public Collider()
 		{
-			Body b = new Body(Scene.CurrentPhysics);
-			foreach (ShapeInfo s in this.shapes) b.CreateFixture(s.CreateShape(), s);
-			return b;
+			// Default shape
+			this.Shapes = new ShapeInfo[] { new CircleShapeInfo(64.0f, Vector2.Zero, 1.0f) };
 		}
-		private void UpdateBodyShape()
+
+		/// <summary>
+		/// Updates the Colliders internal body shape based on its set of <see cref="ShapeInfo"/> objects.
+		/// </summary>
+		public void UpdateBodyShape()
 		{
 			Vector2 scale = this.GameObj != null && this.GameObj.Transform != null ? this.GameObj.Transform.Scale.Xy : Vector2.One;
 			foreach (Fixture f in this.body.FixtureList)
@@ -372,6 +394,7 @@ namespace Duality.Components
 				info.UpdateShape(f.Shape, scale);
 			}
 			this.body.ResetMassData();
+			this.AwakeBody();
 		}
 		private void CleanupBody()
 		{
@@ -383,6 +406,12 @@ namespace Duality.Components
 
 			this.body.Dispose();
 			this.body = null;
+		}
+		private Body CreateBody()
+		{
+			Body b = new Body(Scene.CurrentPhysics);
+			foreach (ShapeInfo s in this.shapes) b.CreateFixture(s.CreateShape(), s);
+			return b;
 		}
 		private void InitBody()
 		{
@@ -564,6 +593,10 @@ namespace Duality.Components
 		{
 			base.CopyToInternal(target);
 			Collider c = target as Collider;
+
+			bool wasInitialized = c.body != null;
+			if (wasInitialized) c.CleanupBody();
+
 			c.bodyType = this.bodyType;
 			c.linearDamp = this.linearDamp;
 			c.angularDamp = this.angularDamp;
@@ -572,7 +605,9 @@ namespace Duality.Components
 			c.friction = this.friction;
 			c.restitution = this.restitution;
 			c.colCat = this.colCat;
-			c.shapes = this.shapes == null ? null : new List<ShapeInfo>(this.shapes.Select(s => s.Clone()));
+			c.shapes = this.shapes == null ? null : this.shapes.Select(s => s.Clone(c)).ToList();
+
+			if (wasInitialized) c.InitBody();
 		}
 	}
 }

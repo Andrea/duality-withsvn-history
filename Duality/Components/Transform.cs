@@ -394,8 +394,17 @@ namespace Duality.Components
 		void ICmpEditorUpdatable.OnUpdate()
 		{
 			this.CheckValidTransform();
-
-			this.UpdateAbs();
+			
+			if (this.extUpdater != null)
+			{
+				if (this.changes != DirtyFlags.None) this.extUpdater.OnTransformChanged(this, this.changes);
+				this.extUpdater.UpdateTransform(this);
+			}
+			else
+			{
+				this.UpdateAbs();
+			}
+			this.changes = DirtyFlags.None;
 
 			this.CheckValidTransform();
 		}

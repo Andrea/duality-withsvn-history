@@ -662,14 +662,17 @@ namespace EditorBase
 					where (vn.Tag is GameObjectNode) && (vn.Tag as GameObjectNode).Obj != null
 					select (vn.Tag as GameObjectNode).Obj;
 
-			var selObj = selGameObj.Union<object>(selComponent);
-			if (selObj.Any())
+			if (!EditorBasePlugin.Instance.EditorForm.IsSelectionChanging)
 			{
-				if (!selGameObj.Any() || !selComponent.Any()) EditorBasePlugin.Instance.EditorForm.Deselect(this, ObjectSelection.Category.GameObjCmp);
-				EditorBasePlugin.Instance.EditorForm.Select(this, new ObjectSelection(selObj));
+				var selObj = selGameObj.Union<object>(selComponent);
+				if (selObj.Any())
+				{
+					if (!selGameObj.Any() || !selComponent.Any()) EditorBasePlugin.Instance.EditorForm.Deselect(this, ObjectSelection.Category.GameObjCmp);
+					EditorBasePlugin.Instance.EditorForm.Select(this, new ObjectSelection(selObj));
+				}
+				else
+					EditorBasePlugin.Instance.EditorForm.Deselect(this, ObjectSelection.Category.GameObjCmp);
 			}
-			else
-				EditorBasePlugin.Instance.EditorForm.Deselect(this, ObjectSelection.Category.GameObjCmp);
 		}
 		private void objectView_KeyDown(object sender, KeyEventArgs e)
 		{
@@ -1248,11 +1251,11 @@ namespace EditorBase
 
 			IEnumerable<NodeBase> removedObjQuery;
 			removedObjQuery = e.Removed.GameObjects.Select(o => this.FindNode(o));
-			removedObjQuery.Concat(e.Removed.Components.Select(o => this.FindNode(o)));
+			removedObjQuery = removedObjQuery.Concat(e.Removed.Components.Select(o => this.FindNode(o)));
 
 			IEnumerable<NodeBase> addedObjQuery;
 			addedObjQuery = e.Added.GameObjects.Select(o => this.FindNode(o));
-			addedObjQuery.Concat(e.Added.Components.Select(o => this.FindNode(o)));
+			addedObjQuery = addedObjQuery.Concat(e.Added.Components.Select(o => this.FindNode(o)));
 
 			this.SelectNodes(removedObjQuery, false);
 			this.SelectNodes(addedObjQuery, true);

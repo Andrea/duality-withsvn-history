@@ -6115,7 +6115,7 @@
             <summary>
             Instantiates the Prefab.
             </summary>
-            <returns>A new GameObject instance of this Prefab. It is connected to the Prefab by its <see cref="P:Duality.GameObject.PrefabLink"/>.</returns>
+            <returns>A new GameObject instance of this Prefab.</returns>
         </member>
         <member name="M:Duality.Resources.Prefab.CopyTo(Duality.GameObject)">
             <summary>
@@ -7394,6 +7394,11 @@
             Represents a body instance for physical simulation, collision detection and response.
             </summary>
         </member>
+        <member name="M:Duality.Components.Collider.UpdateBodyShape">
+            <summary>
+            Updates the Colliders internal body shape based on its set of <see cref="T:Duality.Components.Collider.ShapeInfo"/> objects.
+            </summary>
+        </member>
         <member name="M:Duality.Components.Collider.AwakeBody">
             <summary>
             Awakes the body if it has been in a resting state that is now being left, such as
@@ -7460,7 +7465,8 @@
         </member>
         <member name="P:Duality.Components.Collider.Shapes">
             <summary>
-            [GET / SET] A list of <see cref="T:Duality.Components.Collider.ShapeInfo">primitive shapes</see> which this body consists of.
+            [GET / SET] Enumerates all <see cref="T:Duality.Components.Collider.ShapeInfo">primitive shapes</see> which this body consists of.
+            If you modify any of the returned ShapeInfos, be sure to call <see cref="M:Duality.Components.Collider.UpdateBodyShape"/> afterwards.
             </summary>
         </member>
         <member name="P:Duality.Components.Collider.BoundRadius">
@@ -7512,6 +7518,11 @@
             Clones the ShapeInfo.
             </summary>
             <returns></returns>
+        </member>
+        <member name="P:Duality.Components.Collider.ShapeInfo.Parent">
+            <summary>
+            [GET] The shape's parent <see cref="T:Duality.Components.Collider"/>.
+            </summary>
         </member>
         <member name="P:Duality.Components.Collider.ShapeInfo.Density">
             <summary>

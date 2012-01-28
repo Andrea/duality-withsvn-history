@@ -452,6 +452,8 @@ namespace Duality.Resources
 			base.OnLoaded();
 
 			this.ApplyPrefabLinks();
+			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game) this.BreakPrefabLinks();
+
 			foreach (GameObject obj in this.objectManager.AllObjects)
 				obj.OnLoaded();
 		}

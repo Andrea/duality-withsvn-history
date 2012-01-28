@@ -785,10 +785,13 @@ namespace EditorBase
 			// Note: Removed this. They'll now just grab their resource if available as soon as they need their data.
 
 			// Adjust editor-wide selection
-			if (selRes.Length > 0)
-				EditorBasePlugin.Instance.EditorForm.Select(this, new ObjectSelection(selRes));
-			else
-				EditorBasePlugin.Instance.EditorForm.Deselect(this, ObjectSelection.Category.Resource);
+			if (!EditorBasePlugin.Instance.EditorForm.IsSelectionChanging)
+			{
+				if (selRes.Length > 0)
+					EditorBasePlugin.Instance.EditorForm.Select(this, new ObjectSelection(selRes));
+				else
+					EditorBasePlugin.Instance.EditorForm.Deselect(this, ObjectSelection.Category.Resource);
+			}
 		}
 		private void folderView_KeyDown(object sender, KeyEventArgs e)
 		{

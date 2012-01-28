@@ -80,6 +80,9 @@
     <Compile Include="PropertyEditors\Components\CameraRenderPassPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="PropertyEditors\Components\ColliderShapePropertyEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="PropertyEditors\Components\TextRendererPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>

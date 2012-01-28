@@ -600,6 +600,7 @@ namespace EditorBase
 		private void Scene_Leaving(object sender, EventArgs e)
 		{
 			if (!this.camInternal) this.SetCurrentCamera(null);
+			this.glControl.Invalidate();
 		}
 		private void Scene_RegisteredObjectComponentRemoved(object sender, ComponentEventArgs e)
 		{

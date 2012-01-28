@@ -101,6 +101,10 @@ namespace DualityEditor.Forms
 		{
 			get { return this.selectionCurrent; }
 		}
+		public bool IsSelectionChanging
+		{
+			get { return this.selectionChanging; }
+		}
 		public HelpStack Help
 		{
 			get { return this.helpStack; }
@@ -349,8 +353,6 @@ namespace DualityEditor.Forms
 
 		public void Select(object sender, ObjectSelection sel, SelectMode mode = SelectMode.Set)
 		{
-			if (this.selectionChanging) return;
-
 			this.selectionPrevious = this.selectionCurrent;
 			if (mode == SelectMode.Set)
 				this.selectionCurrent = this.selectionCurrent.Transform(sel);
@@ -362,18 +364,20 @@ namespace DualityEditor.Forms
 		}
 		public void Deselect(object sender, ObjectSelection sel)
 		{
-			if (this.selectionChanging) return;
-
 			this.selectionPrevious = this.selectionCurrent;
 			this.selectionCurrent = this.selectionCurrent.Remove(sel);
 			this.OnSelectionChanged(sender);
 		}
 		public void Deselect(object sender, ObjectSelection.Category category)
 		{
-			if (this.selectionChanging) return;
-
 			this.selectionPrevious = this.selectionCurrent;
 			this.selectionCurrent = this.selectionCurrent.Clear(category);
+			this.OnSelectionChanged(sender);
+		}
+		public void Deselect(object sender, Predicate<object> predicate)
+		{
+			this.selectionPrevious = this.selectionCurrent;
+			this.selectionCurrent = this.selectionCurrent.Clear(predicate);
 			this.OnSelectionChanged(sender);
 		}
 

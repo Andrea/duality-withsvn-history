@@ -121,6 +121,7 @@ namespace EditorBase
 				var parentlessGameObj = current.GameObjects.Where(g => !current.GameObjects.Any(g2 => g.IsChildOf(g2))).ToList();
 				this.actionObjSel = parentlessGameObj.Select(g => new SelGameObj(g) as SelObj).Where(s => s.HasTransform).ToList();
 			}
+			this.UpdateSelectionStats();
 		}
 		internal protected override void OnLeaveState()
 		{
@@ -361,6 +362,7 @@ namespace EditorBase
 			}
 
 			this.UpdateSelectionStats();
+			this.OnCursorSpacePosChanged();
 			this.View.LocalGLControl.Invalidate();
 		}
 

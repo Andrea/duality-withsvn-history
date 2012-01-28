@@ -572,7 +572,7 @@ namespace EditorBase
 			foreach (SelObj s in transformObjSel)
 				this.selectionRadius = MathF.Max(this.selectionRadius, s.BoundRadius + (s.Pos - this.selectionCenter).Length);
 		}
-		private void UpdateMouseover(Point mouseLoc)
+		protected void UpdateMouseover(Point mouseLoc)
 		{
 			bool lastMouseoverSelect = this.mouseoverSelect;
 			SelObj lastMouseoverObject = this.mouseoverObject;
@@ -630,6 +630,8 @@ namespace EditorBase
 		}
 		private void UpdateRectSelection(Point mouseLoc)
 		{
+			if (EditorBasePlugin.Instance.EditorForm.IsSelectionChanging) return; // Prevent Recursion in case SelectObjects triggers UpdateAction.
+
 			bool shift = (Control.ModifierKeys & Keys.Shift) != Keys.None;
 			bool ctrl = (Control.ModifierKeys & Keys.Control) != Keys.None;
 

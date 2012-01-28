@@ -93,7 +93,6 @@ namespace EditorBase
 			this.selSchedMouse = null;
 			this.selSchedMouseCat = ObjectSelection.Category.None;
 
-			lastSelChange = lastSelChange & this.acceptedCats;
 			if (lastSelChange == ObjectSelection.Category.None) return;
 
 			if ((lastSelChange & ObjectSelection.Category.GameObjCmp) != ObjectSelection.Category.None)
@@ -118,16 +117,18 @@ namespace EditorBase
 		}
 		private void EditorForm_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
+			if ((e.AffectedCategories & this.acceptedCats) == ObjectSelection.Category.None) return;
+
 			// If a mouse button is pressed, reschedule the selection for later - there might be a drag in progress
 			if (Control.MouseButtons != System.Windows.Forms.MouseButtons.None)
 			{
 				this.selSchedMouse = e.Current;
-				this.selSchedMouseCat = e.AffectedCategories;
+				this.selSchedMouseCat = e.AffectedCategories & this.acceptedCats;
 				this.timerSelectSched.Enabled = true;
 			}
 			else
 			{
-				this.UpdateSelection(e.Current, e.AffectedCategories);
+				this.UpdateSelection(e.Current, e.AffectedCategories & this.acceptedCats);
 			}
 		}
 		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)

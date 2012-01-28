@@ -83,10 +83,19 @@ namespace Duality.Resources
 		/// <summary>
 		/// Instantiates the Prefab.
 		/// </summary>
-		/// <returns>A new GameObject instance of this Prefab. It is connected to the Prefab by its <see cref="GameObject.PrefabLink"/>.</returns>
+		/// <returns>A new GameObject instance of this Prefab.</returns>
 		public GameObject Instantiate()
 		{
-			return new GameObject(new ContentRef<Prefab>(this));
+			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
+			{
+				GameObject newObj = new GameObject();
+				this.CopyTo(newObj);
+				return newObj;
+			}
+			else
+			{
+				return new GameObject(new ContentRef<Prefab>(this));
+			}
 		}
 		/// <summary>
 		/// Copies this Prefabs data to a GameObject without linking itsself to it.
