@@ -176,7 +176,7 @@ namespace Duality
 		/// <param name="obj"></param>
 		public void Write(string format, params object[] obj)
 		{
-			this.Write(LogMessageType.Message, String.Format(format, obj));
+			this.Write(LogMessageType.Message, String.Format(System.Globalization.CultureInfo.InvariantCulture, format, obj));
 		}
 		/// <summary>
 		/// Writes a new warning log entry.
@@ -185,7 +185,7 @@ namespace Duality
 		/// <param name="obj"></param>
 		public void WriteWarning(string format, params object[] obj)
 		{
-			this.Write(LogMessageType.Warning, String.Format(format, obj));
+			this.Write(LogMessageType.Warning, String.Format(System.Globalization.CultureInfo.InvariantCulture, format, obj));
 		}
 		/// <summary>
 		/// Writes a new error log entry.
@@ -194,7 +194,7 @@ namespace Duality
 		/// <param name="obj"></param>
 		public void WriteError(string format, params object[] obj)
 		{
-			this.Write(LogMessageType.Error, String.Format(format, obj));
+			this.Write(LogMessageType.Error, String.Format(System.Globalization.CultureInfo.InvariantCulture, format, obj));
 		}
 
 		/// <summary>
@@ -204,7 +204,7 @@ namespace Duality
 		/// <param name="obj"></param>
 		public void WriteOnce(string format, params object[] obj)
 		{
-			string t = String.Format(format, obj);
+			string t = String.Format(System.Globalization.CultureInfo.InvariantCulture, format, obj);
 			if (!this.onceWritten.Contains(t))
 			{
 				this.onceWritten.Add(t);
@@ -218,7 +218,7 @@ namespace Duality
 		/// <param name="obj"></param>
 		public void WriteWarningOnce(string format, params object[] obj)
 		{
-			string t = String.Format(format, obj);
+			string t = String.Format(System.Globalization.CultureInfo.InvariantCulture, format, obj);
 			if (!this.onceWritten.Contains(t))
 			{
 				this.onceWritten.Add(t);
@@ -232,7 +232,7 @@ namespace Duality
 		/// <param name="obj"></param>
 		public void WriteErrorOnce(string format, params object[] obj)
 		{
-			string t = String.Format(format, obj);
+			string t = String.Format(System.Globalization.CultureInfo.InvariantCulture, format, obj);
 			if (!this.onceWritten.Contains(t))
 			{
 				this.onceWritten.Add(t);
@@ -253,7 +253,7 @@ namespace Duality
 			if (!this.timedLast.TryGetValue(timerId, out last) || Time.MainTimer - last > delayMs)
 			{
 				this.timedLast[timerId] = Time.MainTimer;
-				this.Write(LogMessageType.Message, String.Format(format, obj));
+				this.Write(LogMessageType.Message, String.Format(System.Globalization.CultureInfo.InvariantCulture, format, obj));
 			}
 		}
 		/// <summary>
@@ -269,7 +269,7 @@ namespace Duality
 			if (!this.timedLast.TryGetValue(timerId, out last) || Time.MainTimer - last > delayMs)
 			{
 				this.timedLast[timerId] = Time.MainTimer;
-				this.Write(LogMessageType.Warning, String.Format(format, obj));
+				this.Write(LogMessageType.Warning, String.Format(System.Globalization.CultureInfo.InvariantCulture, format, obj));
 			}
 		}
 		/// <summary>
@@ -285,7 +285,7 @@ namespace Duality
 			if (!this.timedLast.TryGetValue(timerId, out last) || Time.MainTimer - last > delayMs)
 			{
 				this.timedLast[timerId] = Time.MainTimer;
-				this.Write(LogMessageType.Error, String.Format(format, obj));
+				this.Write(LogMessageType.Error, String.Format(System.Globalization.CultureInfo.InvariantCulture, format, obj));
 			}
 		}
 
@@ -338,7 +338,8 @@ namespace Duality
 			string declTypeName = Type(info.DeclaringType);
 			string[] paramNames = info.GetParameters().Select(p => Type(p.ParameterType)).ToArray();
 			string[] genArgNames = info.GetGenericArguments().Select(t => Type(t)).ToArray();
-			return string.Format("{0}{1}{3}({2})",
+			return string.Format(System.Globalization.CultureInfo.InvariantCulture, 
+				"{0}{1}{3}({2})",
 				includeDeclaringType ? declTypeName + "." : "",
 				info.Name,
 				paramNames.ToString(", "),
@@ -371,7 +372,8 @@ namespace Duality
 		{
 			string declTypeName = Type(info.DeclaringType);
 			string[] paramNames = info.GetParameters().Select(p => Type(p.ParameterType)).ToArray();
-			return string.Format("{0}{1}({2})",
+			return string.Format(System.Globalization.CultureInfo.InvariantCulture, 
+				"{0}{1}({2})",
 				includeDeclaringType ? declTypeName + "." : "",
 				info.DeclaringType.Name,
 				paramNames.ToString(", "));
@@ -387,7 +389,8 @@ namespace Duality
 			string declTypeName = Type(info.DeclaringType);
 			string propTypeName = Type(info.PropertyType);
 			string[] paramNames = info.GetIndexParameters().Select(p => Type(p.ParameterType)).ToArray();
-			return string.Format("{0} {1}{2}{3}",
+			return string.Format(System.Globalization.CultureInfo.InvariantCulture, 
+				"{0} {1}{2}{3}",
 				propTypeName,
 				includeDeclaringType ? declTypeName + "." : "",
 				info.Name,
@@ -403,7 +406,8 @@ namespace Duality
 		{
 			string declTypeName = Type(info.DeclaringType);
 			string fieldTypeName = Type(info.FieldType);
-			return string.Format("{0} {1}{2}",
+			return string.Format(System.Globalization.CultureInfo.InvariantCulture, 
+				"{0} {1}{2}",
 				fieldTypeName,
 				includeDeclaringType ? declTypeName + "." : "",
 				info.Name);
@@ -418,7 +422,8 @@ namespace Duality
 		{
 			string declTypeName = Type(info.DeclaringType);
 			string fieldTypeName = Type(info.EventHandlerType);
-			return string.Format("{0} {1}{2}",
+			return string.Format(System.Globalization.CultureInfo.InvariantCulture, 
+				"{0} {1}{2}",
 				fieldTypeName,
 				includeDeclaringType ? declTypeName + "." : "",
 				info.Name);
@@ -463,7 +468,8 @@ namespace Duality
 			string eName = Type(e.GetType());
 			string eSite = e.TargetSite != null ? MemberInfo(e.TargetSite) : null;
 
-			return string.Format("{0}{1}: {2}",
+			return string.Format(System.Globalization.CultureInfo.InvariantCulture, 
+				"{0}{1}: {2}",
 				eName,
 				eSite != null ? " at " + eSite : "",
 				e.Message);

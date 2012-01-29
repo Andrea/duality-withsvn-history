@@ -402,7 +402,7 @@ namespace Duality.Components
 
 			this.body.OnCollision -= this.body_OnCollision;
 			this.body.OnSeparation -= this.body_OnSeparation;
-			this.body.AfterCollision -= this.body_AfterCollision;
+			Scene.CurrentPhysics.ContactManager.PostSolve -= this.world_PostSolve;
 
 			this.body.Dispose();
 			this.body = null;
@@ -440,7 +440,7 @@ namespace Duality.Components
 
 			this.body.OnCollision += this.body_OnCollision;
 			this.body.OnSeparation += this.body_OnSeparation;
-			this.body.AfterCollision += this.body_AfterCollision;
+			Scene.CurrentPhysics.ContactManager.PostSolve += this.world_PostSolve;
 		}
 
 		/// <summary>
@@ -533,20 +533,30 @@ namespace Duality.Components
 				fixtureA.Body.UserData as Collider,
 				fixtureB.Body.UserData as Collider);
 		}
-		private void body_AfterCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
-		{
+        private void world_PostSolve(Contact contact, ContactConstraint impulse)
+        {
 			return;
-			Log.Core.Write("AfterCollision: {0},\t{1}",
-				fixtureA.Body.UserData as Collider,
-				fixtureB.Body.UserData as Collider);
-			int count = contact.Manifold.PointCount;
-			for (int i = 0; i < count; i++)
-			{
-				Log.Core.Write("\t{0:F}\t{1:F}",
-					contact.Manifold.Points[i].NormalImpulse * 100.0f,
-					contact.Manifold.Points[i].TangentImpulse * 100.0f);
-			}
-		}
+            if (impulse.BodyA == this.body || impulse.BodyB == this.body)
+            {
+                float maxImpulse = 0.0f;
+                int count = contact.Manifold.PointCount;
+
+                for (int i = 0; i < count; ++i)
+                {
+                    maxImpulse = Math.Max(maxImpulse, impulse.Points[i].NormalImpulse);
+                }
+
+                if (maxImpulse > 200)
+                {
+					Log.Game.Write("BAM: {0}, {1}, \t{2}", MathF.RoundToInt(maxImpulse), 
+						(impulse.BodyA.UserData as Collider).GameObj.Name,
+						(impulse.BodyB.UserData as Collider).GameObj.Name);
+					Log.Game.Write("    {0:F},\t{1:F}", impulse.Normal.X, impulse.Normal.Y);
+					Log.Game.Write("    {0:F},\t{1:F}", impulse.Points[0].rA.X * 100.0f, impulse.Points[0].rA.Y * 100.0f);
+					Log.Game.Write("    {0:F},\t{1:F}", impulse.Points[0].rB.X * 100.0f, impulse.Points[0].rB.Y * 100.0f);
+                }
+            }
+        }
 
 		void ITransformUpdater.UpdateTransform(Transform t)
 		{
