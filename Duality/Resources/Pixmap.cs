@@ -190,7 +190,7 @@ namespace Duality.Resources
 			base.CopyTo(r);
 			Pixmap c = r as Pixmap;
 			c.data			= this.data.Clone() as Bitmap;
-			c.dataBasePath	= this.dataBasePath;
+			c.dataBasePath	= null;
 		}
 
 		void ISerializable.WriteData(IDataWriter writer)

@@ -939,7 +939,7 @@ namespace Duality.Resources
 		{
 			base.CopyTo(r);
 			Font c = r as Font;
-			c.customFamilyBasePath = this.customFamilyBasePath;
+			c.customFamilyBasePath = null;
 			c.customFamilyData = this.customFamilyData != null ? (byte[])this.customFamilyData.Clone() : null;
 			c.familyName = this.familyName;
 			c.size = this.size;

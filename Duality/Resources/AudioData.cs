@@ -252,7 +252,7 @@ namespace Duality.Resources
 			base.CopyTo(r);
 			AudioData c = r as AudioData;
 			c.data			= (byte[])this.data.Clone();
-			c.dataBasePath	= this.dataBasePath;
+			c.dataBasePath	= null;
 		}
 	}
 }

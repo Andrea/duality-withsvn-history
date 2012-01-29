@@ -391,8 +391,8 @@ namespace Duality.Resources
 		{
 			base.CopyTo(r);
 			AbstractShader c = r as AbstractShader;
-			c.source = this.source;
-			c.sourcePath = this.sourcePath;
+			c.source		= this.source;
+			c.sourcePath	= null;
 			if (this.compiled) c.Compile();
 		}
 	}
