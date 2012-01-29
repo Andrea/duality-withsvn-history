@@ -15,7 +15,6 @@ namespace Duality.Components.Renderers
 	/// Renders a sprite to represent the <see cref="GameObject"/>.
 	/// </summary>
 	[Serializable]
-	[RequiredComponent(typeof(Transform))]
 	public class SpriteRenderer : Renderer
 	{
 		/// <summary>

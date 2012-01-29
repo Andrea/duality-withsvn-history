@@ -681,49 +681,6 @@
             [GET] Returns whether the object is currently active.
             </summary>
         </member>
-        <member name="T:Duality.IComponent">
-            <summary>
-            Defines the base interface for all <see cref="T:Duality.Component">Components</see>.
-            </summary>
-        </member>
-        <member name="M:Duality.IComponent.Dispose">
-            <summary>
-            Disposes this Component. You usually don't need this - use <see cref="M:Duality.IComponent.DisposeLater"/> instead.
-            </summary>
-            <seealso cref="M:Duality.IComponent.DisposeLater"/>
-        </member>
-        <member name="M:Duality.IComponent.DisposeLater">
-            <summary>
-            Schedules this Component for disposal. It is guaranteed to be executed until the next update cycle starts.
-            </summary>
-            <seealso cref="M:Duality.IComponent.Dispose"/>
-        </member>
-        <member name="P:Duality.IComponent.Active">
-            <summary>
-            [GET / SET] Whether or not the Component is currently active. To return true,
-            both the Component itsself and its parent GameObject need to be active.
-            </summary>
-            <seealso cref="P:Duality.IComponent.ActiveSingle"/>
-        </member>
-        <member name="P:Duality.IComponent.ActiveSingle">
-            <summary>
-            [GET / SET] Whether or not the Component is currently active. Unlike <see cref="P:Duality.IComponent.Active"/>,
-            this property ignores parent activation states and depends only on this single Component.
-            The scene graph and other Duality instances usually check <see cref="P:Duality.IComponent.Active"/>, not ActiveSingle.
-            </summary>
-            <seealso cref="P:Duality.IComponent.Active"/>
-        </member>
-        <member name="P:Duality.IComponent.Disposed">
-            <summary>
-            [GET] Returns whether this Component has been disposed. Disposed Components are not to be used and should
-            be treated specifically or as null references by your code.
-            </summary>
-        </member>
-        <member name="P:Duality.IComponent.GameObj">
-            <summary>
-            [GET / SET] The <see cref="T:Duality.GameObject"/> to which this Component belongs.
-            </summary>
-        </member>
         <member name="M:Duality.Component.Dispose">
             <summary>
             Disposes this Component. You usually don't need this - use <see cref="M:Duality.Component.DisposeLater"/> instead.
@@ -11305,21 +11262,21 @@
         </member>
         <member name="M:Duality.ExtMethodsIEnumerable.Children(System.Collections.Generic.IEnumerable{Duality.GameObject})">
             <summary>
-            Enumerates the <see cref="M:Duality.ExtMethodsIEnumerable.GameObject(System.Collections.Generic.IEnumerable{Duality.Component},System.Boolean)">GameObjects</see> children.
+            Enumerates the <see cref="T:Duality.GameObject">GameObjects</see> children.
             </summary>
             <param name="objEnum"></param>
             <returns></returns>
         </member>
         <member name="M:Duality.ExtMethodsIEnumerable.ChildrenDeep(System.Collections.Generic.IEnumerable{Duality.GameObject})">
             <summary>
-            Enumerates the <see cref="M:Duality.ExtMethodsIEnumerable.GameObject(System.Collections.Generic.IEnumerable{Duality.Component},System.Boolean)">GameObjects</see> children, grandchildren, etc.
+            Enumerates the <see cref="T:Duality.GameObject">GameObjects</see> children, grandchildren, etc.
             </summary>
             <param name="objEnum"></param>
             <returns></returns>
         </member>
         <member name="M:Duality.ExtMethodsIEnumerable.ByName(System.Collections.Generic.IEnumerable{Duality.GameObject},System.String)">
             <summary>
-            Enumerates all <see cref="M:Duality.ExtMethodsIEnumerable.GameObject(System.Collections.Generic.IEnumerable{Duality.Component},System.Boolean)">GameObjects</see> that match the specified name.
+            Enumerates all <see cref="T:Duality.GameObject">GameObjects</see> that match the specified name.
             </summary>
             <param name="objEnum"></param>
             <param name="name"></param>
@@ -11327,7 +11284,7 @@
         </member>
         <member name="M:Duality.ExtMethodsIEnumerable.FirstByName(System.Collections.Generic.IEnumerable{Duality.GameObject},System.String)">
             <summary>
-            Returns the first <see cref="M:Duality.ExtMethodsIEnumerable.GameObject(System.Collections.Generic.IEnumerable{Duality.Component},System.Boolean)"/> that matches the specified name.
+            Returns the first <see cref="T:Duality.GameObject"/> that matches the specified name.
             </summary>
             <param name="objEnum"></param>
             <param name="name"></param>
@@ -11335,7 +11292,7 @@
         </member>
         <member name="M:Duality.ExtMethodsIEnumerable.GetComponents``1(System.Collections.Generic.IEnumerable{Duality.GameObject},System.Boolean)">
             <summary>
-            Enumerates all <see cref="M:Duality.ExtMethodsIEnumerable.GameObject(System.Collections.Generic.IEnumerable{Duality.Component},System.Boolean)">GameObjects</see> <see cref="T:Duality.Component">Components</see> of the specified type.
+            Enumerates all <see cref="T:Duality.GameObject">GameObjects</see> <see cref="T:Duality.Component">Components</see> of the specified type.
             </summary>
             <typeparam name="T"></typeparam>
             <param name="objEnum"></param>
@@ -11344,7 +11301,7 @@
         </member>
         <member name="M:Duality.ExtMethodsIEnumerable.GetComponentsInChildren``1(System.Collections.Generic.IEnumerable{Duality.GameObject},System.Boolean)">
             <summary>
-            Enumerates all <see cref="M:Duality.ExtMethodsIEnumerable.GameObject(System.Collections.Generic.IEnumerable{Duality.Component},System.Boolean)">GameObjects</see> childrens <see cref="T:Duality.Component">Components</see> of the specified type.
+            Enumerates all <see cref="T:Duality.GameObject">GameObjects</see> childrens <see cref="T:Duality.Component">Components</see> of the specified type.
             </summary>
             <typeparam name="T"></typeparam>
             <param name="objEnum"></param>
@@ -11353,7 +11310,7 @@
         </member>
         <member name="M:Duality.ExtMethodsIEnumerable.GetComponentsDeep``1(System.Collections.Generic.IEnumerable{Duality.GameObject},System.Boolean)">
             <summary>
-            Enumerates all <see cref="M:Duality.ExtMethodsIEnumerable.GameObject(System.Collections.Generic.IEnumerable{Duality.Component},System.Boolean)">GameObjects</see> (and their childrens) <see cref="T:Duality.Component">Components</see> of the specified type.
+            Enumerates all <see cref="T:Duality.GameObject">GameObjects</see> (and their childrens) <see cref="T:Duality.Component">Components</see> of the specified type.
             </summary>
             <typeparam name="T"></typeparam>
             <param name="objEnum"></param>
@@ -11362,7 +11319,7 @@
         </member>
         <member name="M:Duality.ExtMethodsIEnumerable.Transform(System.Collections.Generic.IEnumerable{Duality.GameObject},System.Boolean)">
             <summary>
-            Enumerates all <see cref="M:Duality.ExtMethodsIEnumerable.GameObject(System.Collections.Generic.IEnumerable{Duality.Component},System.Boolean)">GameObjects</see> <see cref="T:Duality.Components.Transform"/> Components.
+            Enumerates all <see cref="T:Duality.GameObject">GameObjects</see> <see cref="T:Duality.Components.Transform"/> Components.
             </summary>
             <param name="objEnum"></param>
             <param name="activeOnly"></param>
@@ -11370,7 +11327,7 @@
         </member>
         <member name="M:Duality.ExtMethodsIEnumerable.Camera(System.Collections.Generic.IEnumerable{Duality.GameObject},System.Boolean)">
             <summary>
-            Enumerates all <see cref="M:Duality.ExtMethodsIEnumerable.GameObject(System.Collections.Generic.IEnumerable{Duality.Component},System.Boolean)">GameObjects</see> <see cref="T:Duality.Components.Camera"/> Components.
+            Enumerates all <see cref="T:Duality.GameObject">GameObjects</see> <see cref="T:Duality.Components.Camera"/> Components.
             </summary>
             <param name="objEnum"></param>
             <param name="activeOnly"></param>
@@ -11378,7 +11335,7 @@
         </member>
         <member name="M:Duality.ExtMethodsIEnumerable.Renderer(System.Collections.Generic.IEnumerable{Duality.GameObject},System.Boolean)">
             <summary>
-            Enumerates all <see cref="M:Duality.ExtMethodsIEnumerable.GameObject(System.Collections.Generic.IEnumerable{Duality.Component},System.Boolean)">GameObjects</see> <see cref="T:Duality.Components.Renderer"/> Components.
+            Enumerates all <see cref="T:Duality.GameObject">GameObjects</see> <see cref="T:Duality.Components.Renderer"/> Components.
             </summary>
             <param name="objEnum"></param>
             <param name="activeOnly"></param>
@@ -11386,7 +11343,7 @@
         </member>
         <member name="M:Duality.ExtMethodsIEnumerable.GameObject(System.Collections.Generic.IEnumerable{Duality.Component},System.Boolean)">
             <summary>
-            Enumerates all <see cref="T:Duality.Component">Components</see> parent <see cref="M:Duality.ExtMethodsIEnumerable.GameObject(System.Collections.Generic.IEnumerable{Duality.Component},System.Boolean)">GameObjects</see>.
+            Enumerates all <see cref="T:Duality.Component">Components</see> parent <see cref="T:Duality.GameObject">GameObjects</see>.
             </summary>
             <param name="compEnum"></param>
             <param name="activeOnly"></param>

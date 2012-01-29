@@ -52,7 +52,7 @@ namespace EditorBase
 			{
 				get
 				{
-					Renderer r = this.gameObj.Renderer;
+					ICmpRenderer r = this.gameObj.Renderer;
 					if (r == null)
 					{
 						if (this.gameObj.Transform != null)

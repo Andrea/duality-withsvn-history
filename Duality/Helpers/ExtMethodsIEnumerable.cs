@@ -11,7 +11,7 @@ namespace Duality
 	public static class ExtMethodsIEnumerable
 	{
 		/// <summary>
-		/// Enumerates the <see cref="GameObject">GameObjects</see> children.
+		/// Enumerates the <see cref="Duality.GameObject">GameObjects</see> children.
 		/// </summary>
 		/// <param name="objEnum"></param>
 		/// <returns></returns>
@@ -21,7 +21,7 @@ namespace Duality
 				foreach (GameObject c in o.Children) yield return c;
 		}
 		/// <summary>
-		/// Enumerates the <see cref="GameObject">GameObjects</see> children, grandchildren, etc.
+		/// Enumerates the <see cref="Duality.GameObject">GameObjects</see> children, grandchildren, etc.
 		/// </summary>
 		/// <param name="objEnum"></param>
 		/// <returns></returns>
@@ -31,7 +31,7 @@ namespace Duality
 				foreach (GameObject c in o.ChildrenDeep) yield return c;
 		}
 		/// <summary>
-		/// Enumerates all <see cref="GameObject">GameObjects</see> that match the specified name.
+		/// Enumerates all <see cref="Duality.GameObject">GameObjects</see> that match the specified name.
 		/// </summary>
 		/// <param name="objEnum"></param>
 		/// <param name="name"></param>
@@ -41,7 +41,7 @@ namespace Duality
 			return objEnum.Where(o => o.Name == name);
 		}
 		/// <summary>
-		/// Returns the first <see cref="GameObject"/> that matches the specified name.
+		/// Returns the first <see cref="Duality.GameObject"/> that matches the specified name.
 		/// </summary>
 		/// <param name="objEnum"></param>
 		/// <param name="name"></param>
@@ -52,44 +52,44 @@ namespace Duality
 		}
 
 		/// <summary>
-		/// Enumerates all <see cref="GameObject">GameObjects</see> <see cref="Component">Components</see> of the specified type.
+		/// Enumerates all <see cref="Duality.GameObject">GameObjects</see> <see cref="Component">Components</see> of the specified type.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="objEnum"></param>
 		/// <param name="activeOnly"></param>
 		/// <returns></returns>
-		public static IEnumerable<T> GetComponents<T>(this IEnumerable<GameObject> objEnum, bool activeOnly = false) where T : Component
+		public static IEnumerable<T> GetComponents<T>(this IEnumerable<GameObject> objEnum, bool activeOnly = false) where T : class
 		{
 			foreach (GameObject o in objEnum)
 				foreach (T c in o.GetComponents<T>(activeOnly)) yield return c;
 		}
 		/// <summary>
-		/// Enumerates all <see cref="GameObject">GameObjects</see> childrens <see cref="Component">Components</see> of the specified type.
+		/// Enumerates all <see cref="Duality.GameObject">GameObjects</see> childrens <see cref="Component">Components</see> of the specified type.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="objEnum"></param>
 		/// <param name="activeOnly"></param>
 		/// <returns></returns>
-		public static IEnumerable<T> GetComponentsInChildren<T>(this IEnumerable<GameObject> objEnum, bool activeOnly = false) where T : Component
+		public static IEnumerable<T> GetComponentsInChildren<T>(this IEnumerable<GameObject> objEnum, bool activeOnly = false) where T : class
 		{
 			foreach (GameObject o in objEnum)
 				foreach (T c in o.GetComponentsInChildren<T>(activeOnly)) yield return c;
 		}
 		/// <summary>
-		/// Enumerates all <see cref="GameObject">GameObjects</see> (and their childrens) <see cref="Component">Components</see> of the specified type.
+		/// Enumerates all <see cref="Duality.GameObject">GameObjects</see> (and their childrens) <see cref="Component">Components</see> of the specified type.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="objEnum"></param>
 		/// <param name="activeOnly"></param>
 		/// <returns></returns>
-		public static IEnumerable<T> GetComponentsDeep<T>(this IEnumerable<GameObject> objEnum, bool activeOnly = false) where T : Component
+		public static IEnumerable<T> GetComponentsDeep<T>(this IEnumerable<GameObject> objEnum, bool activeOnly = false) where T : class
 		{
 			foreach (GameObject o in objEnum)
 				foreach (T c in o.GetComponentsDeep<T>(activeOnly)) yield return c;
 		}
 
 		/// <summary>
-		/// Enumerates all <see cref="GameObject">GameObjects</see> <see cref="Duality.Components.Transform"/> Components.
+		/// Enumerates all <see cref="Duality.GameObject">GameObjects</see> <see cref="Duality.Components.Transform"/> Components.
 		/// </summary>
 		/// <param name="objEnum"></param>
 		/// <param name="activeOnly"></param>
@@ -103,7 +103,7 @@ namespace Duality
 			}
 		}
 		/// <summary>
-		/// Enumerates all <see cref="GameObject">GameObjects</see> <see cref="Duality.Components.Camera"/> Components.
+		/// Enumerates all <see cref="Duality.GameObject">GameObjects</see> <see cref="Duality.Components.Camera"/> Components.
 		/// </summary>
 		/// <param name="objEnum"></param>
 		/// <param name="activeOnly"></param>
@@ -117,22 +117,22 @@ namespace Duality
 			}
 		}
 		/// <summary>
-		/// Enumerates all <see cref="GameObject">GameObjects</see> <see cref="Duality.Components.Renderer"/> Components.
+		/// Enumerates all <see cref="Duality.GameObject">GameObjects</see> <see cref="Duality.Components.Renderer"/> Components.
 		/// </summary>
 		/// <param name="objEnum"></param>
 		/// <param name="activeOnly"></param>
 		/// <returns></returns>
-		public static IEnumerable<Components.Renderer> Renderer(this IEnumerable<GameObject> objEnum, bool activeOnly = false)
+		public static IEnumerable<ICmpRenderer> Renderer(this IEnumerable<GameObject> objEnum, bool activeOnly = false)
 		{
 			foreach (GameObject o in objEnum)
 			{
-				Components.Renderer c = o.Renderer;
-				if (c != null && (!activeOnly || c.Active)) yield return c;
+				ICmpRenderer c = o.Renderer;
+				if (c != null && (!activeOnly || (c as Component).Active)) yield return c;
 			}
 		}
 		
 		/// <summary>
-		/// Enumerates all <see cref="Component">Components</see> parent <see cref="GameObject">GameObjects</see>.
+		/// Enumerates all <see cref="Component">Components</see> parent <see cref="Duality.GameObject">GameObjects</see>.
 		/// </summary>
 		/// <param name="compEnum"></param>
 		/// <param name="activeOnly"></param>

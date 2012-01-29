@@ -249,9 +249,9 @@ namespace Duality
 		/// </summary>
 		/// <remarks>Note that a GameObject may contain multiple Renderers in which case the return value of this property may be any of them.</remarks>
 		/// <seealso cref="Duality.Components.Renderer"/>
-		public Components.Renderer Renderer
+		public ICmpRenderer Renderer
 		{
-			get { return this.GetComponent<Components.Renderer>(); }
+			get { return this.GetComponent<ICmpRenderer>(); }
 		}
 		
 

@@ -15,7 +15,6 @@ namespace Duality.Components.Renderers
 	/// Renders a text to represent the <see cref="GameObject"/>.
 	/// </summary>
 	[Serializable]
-	[RequiredComponent(typeof(Transform))]
 	public class TextRenderer : Renderer, ICmpInitializable
 	{
 		protected	Alignment				align		= Alignment.Center;

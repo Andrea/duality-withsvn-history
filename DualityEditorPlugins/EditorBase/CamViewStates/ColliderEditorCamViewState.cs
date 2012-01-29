@@ -52,7 +52,7 @@ namespace EditorBase
 			{
 				get
 				{
-					Renderer r = this.collider.GameObj.Renderer;
+					ICmpRenderer r = this.collider.GameObj.Renderer;
 					if (r == null) return CamView.DefaultDisplayBoundRadius;
 					else return r.BoundRadius;
 				}
@@ -383,7 +383,7 @@ namespace EditorBase
 		}
 		protected bool RendererFilter(ICmpRenderer r)
 		{
-			return r.GameObj.GetComponent<Collider>() != null;
+			return (r as Component).GameObj.GetComponent<Collider>() != null;
 		}
 		
 		private void View_CurrentCameraChanged(object sender, CamView.CameraChangedEventArgs e)
