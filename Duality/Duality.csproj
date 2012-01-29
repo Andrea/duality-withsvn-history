@@ -95,6 +95,7 @@
     <Compile Include="Input\IMouseInput.cs" />
     <Compile Include="Input\WindowMouseInput.cs" />
     <Compile Include="Input\WindowKeyboardInput.cs" />
+    <Compile Include="Performance.cs" />
     <Compile Include="Log\ConsoleLogOutput.cs" />
     <Compile Include="ContentProvider.cs" />
     <Compile Include="Helpers\EventArgs.cs" />

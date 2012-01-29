@@ -4240,56 +4240,6 @@
             [GET] The number of frames passed since startup
             </summary>
         </member>
-        <member name="T:Duality.Performance">
-            <summary>
-            This class houses several performance counters and performance measurement utility
-            </summary>
-        </member>
-        <member name="P:Duality.Performance.UpdateTime">
-            <summary>
-            [GET] Time in milliseconds the last DualityApp.Update() call took
-            </summary>
-        </member>
-        <member name="P:Duality.Performance.UpdatePhysicsTime">
-            <summary>
-            [GET] Time in milliseconds the last frame used for physics calculation
-            </summary>
-        </member>
-        <member name="P:Duality.Performance.UpdateSceneTime">
-            <summary>
-            [GET] Time in milliseconds the last frame used for scene updates
-            </summary>
-        </member>
-        <member name="P:Duality.Performance.UpdateAudioTime">
-            <summary>
-            [GET] Time in milliseconds the last frame used for audio updates (without streaming)
-            </summary>
-        </member>
-        <member name="P:Duality.Performance.RenderTime">
-            <summary>
-            [GET] Time in milliseconds the last DualityApp.Render() call took
-            </summary>
-        </member>
-        <member name="P:Duality.Performance.CollectDrawcallsTime">
-            <summary>
-            [GET] Time in milliseconds the last frame used for collecting drawcalls
-            </summary>
-        </member>
-        <member name="P:Duality.Performance.OptimizeDrawcallsTime">
-            <summary>
-            [GET] Time in milliseconds the last frame used for optimizing drawcalls / batching
-            </summary>
-        </member>
-        <member name="P:Duality.Performance.ProcessDrawcallsTime">
-            <summary>
-            [GET] Time in milliseconds the last frame used for processing drawcalls
-            </summary>
-        </member>
-        <member name="P:Duality.Performance.PostProcessingTime">
-            <summary>
-            [GET] Time in milliseconds the last frame used for postprocessing.
-            </summary>
-        </member>
         <member name="T:Duality.Resources.RenderTarget">
             <summary>
             Instead of rendering to screen, RenderTargets can serve as an alternative drawing surface for a <see cref="T:Duality.Components.Camera"/>.
@@ -11351,6 +11301,56 @@
         <member name="T:Duality.Components.SoundListener">
             <summary>
             Makes this <see cref="T:Duality.GameObject"/> the 3d sound listener.
+            </summary>
+        </member>
+        <member name="T:Duality.Performance">
+            <summary>
+            This class houses several performance counters and performance measurement utility
+            </summary>
+        </member>
+        <member name="P:Duality.Performance.UpdateTime">
+            <summary>
+            [GET] Time in milliseconds the last DualityApp.Update() call took
+            </summary>
+        </member>
+        <member name="P:Duality.Performance.UpdatePhysicsTime">
+            <summary>
+            [GET] Time in milliseconds the last frame used for physics calculation
+            </summary>
+        </member>
+        <member name="P:Duality.Performance.UpdateSceneTime">
+            <summary>
+            [GET] Time in milliseconds the last frame used for scene updates
+            </summary>
+        </member>
+        <member name="P:Duality.Performance.UpdateAudioTime">
+            <summary>
+            [GET] Time in milliseconds the last frame used for audio updates (without streaming)
+            </summary>
+        </member>
+        <member name="P:Duality.Performance.RenderTime">
+            <summary>
+            [GET] Time in milliseconds the last DualityApp.Render() call took
+            </summary>
+        </member>
+        <member name="P:Duality.Performance.CollectDrawcallsTime">
+            <summary>
+            [GET] Time in milliseconds the last frame used for collecting drawcalls
+            </summary>
+        </member>
+        <member name="P:Duality.Performance.OptimizeDrawcallsTime">
+            <summary>
+            [GET] Time in milliseconds the last frame used for optimizing drawcalls / batching
+            </summary>
+        </member>
+        <member name="P:Duality.Performance.ProcessDrawcallsTime">
+            <summary>
+            [GET] Time in milliseconds the last frame used for processing drawcalls
+            </summary>
+        </member>
+        <member name="P:Duality.Performance.PostProcessingTime">
+            <summary>
+            [GET] Time in milliseconds the last frame used for postprocessing.
             </summary>
         </member>
     </members>
