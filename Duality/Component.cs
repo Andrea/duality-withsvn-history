@@ -9,9 +9,48 @@ using Duality.Resources;
 namespace Duality
 {
 	/// <summary>
+	/// Defines the base interface for all <see cref="Component">Components</see>.
+	/// </summary>
+	public interface IComponent
+	{
+		/// <summary>
+		/// [GET / SET] Whether or not the Component is currently active. To return true,
+		/// both the Component itsself and its parent GameObject need to be active.
+		/// </summary>
+		/// <seealso cref="ActiveSingle"/>
+		bool Active { get; set; }
+		/// <summary>
+		/// [GET / SET] Whether or not the Component is currently active. Unlike <see cref="Active"/>,
+		/// this property ignores parent activation states and depends only on this single Component.
+		/// The scene graph and other Duality instances usually check <see cref="Active"/>, not ActiveSingle.
+		/// </summary>
+		/// <seealso cref="Active"/>
+		bool ActiveSingle { get; set; }
+		/// <summary>
+		/// [GET] Returns whether this Component has been disposed. Disposed Components are not to be used and should
+		/// be treated specifically or as null references by your code.
+		/// </summary>
+		bool Disposed { get; }
+		/// <summary>
+		/// [GET / SET] The <see cref="GameObject"/> to which this Component belongs.
+		/// </summary>
+		GameObject GameObj { get; set; }
+
+		/// <summary>
+		/// Disposes this Component. You usually don't need this - use <see cref="DisposeLater"/> instead.
+		/// </summary>
+		/// <seealso cref="DisposeLater"/>
+		void Dispose();
+		/// <summary>
+		/// Schedules this Component for disposal. It is guaranteed to be executed until the next update cycle starts.
+		/// </summary>
+		/// <seealso cref="Dispose"/>
+		void DisposeLater();
+	}
+	/// <summary>
 	/// Implement this interface in <see cref="Component">Components</see> that require per-frame updates.
 	/// </summary>
-	public interface ICmpUpdatable
+	public interface ICmpUpdatable : IComponent
 	{
 		/// <summary>
 		/// Called once per frame in order to update the Component.
@@ -21,7 +60,7 @@ namespace Duality
 	/// <summary>
 	/// Implement this interface in C<see cref="Component">Components</see> that require per-frame updates in the editor.
 	/// </summary>
-	public interface ICmpEditorUpdatable
+	public interface ICmpEditorUpdatable : IComponent
 	{
 		/// <summary>
 		/// Called once per frame in order to update the Component in the editor.
@@ -32,7 +71,7 @@ namespace Duality
 	/// Implement this interface in <see cref="Component">Components</see> that require notifications for other Components 
 	/// being added or removed at the same GameObject.
 	/// </summary>
-	public interface ICmpComponentListener
+	public interface ICmpComponentListener : IComponent
 	{
 		/// <summary>
 		/// Called whenever another Component has been added to this Components GameObject.
@@ -49,7 +88,7 @@ namespace Duality
 	/// Implement this interface in <see cref="Component">Components</see> that require notification if the location of 
 	/// their GameObject inside the scene graph changes.
 	/// </summary>
-	public interface ICmpGameObjectListener
+	public interface ICmpGameObjectListener : IComponent
 	{
 		/// <summary>
 		/// Called whenever this Components GameObjects <see cref="GameObject.Parent"/> has changed.
@@ -61,7 +100,7 @@ namespace Duality
 	/// <summary>
 	/// Implement this interface in <see cref="Component">Components</see> that require specific init and shutdown logic.
 	/// </summary>
-	public interface ICmpInitializable
+	public interface ICmpInitializable : IComponent
 	{
 		/// <summary>
 		/// Called in order to initialize the Component in a specific way.
@@ -75,12 +114,46 @@ namespace Duality
 		void OnShutdown(Component.ShutdownContext context);
 	}
 	/// <summary>
+	/// Implement this interface in <see cref="Component">Components</see> that are considered renderable. 
+	/// </summary>
+	public interface ICmpRenderer : IComponent
+	{
+		/// <summary>
+		/// [GET] The <see cref="RendererFlags">appearance flags</see> of this Renderer.
+		/// </summary>
+		RendererFlags RenderFlags { get; }
+		/// <summary>
+		/// [GET] Returns whether this Renderer visually stretches infinitely on the XY-plane.
+		/// </summary>
+		bool IsInfiniteXY { get; }
+		/// <summary>
+		/// [GET] The Renderers bounding radius, originating from its <see cref="SpaceCoord"/>.
+		/// </summary>
+		float BoundRadius { get; }
+		/// <summary>
+		/// [GET] The Renderers center location in space.
+		/// </summary>
+		OpenTK.Vector3 SpaceCoord { get; }
+
+		/// <summary>
+		/// Determines whether or not this renderer is visible to the specified <see cref="IDrawDevice"/>.
+		/// </summary>
+		/// <param name="device">The <see cref="IDrawDevice"/> to which visibility is determined.</param>
+		/// <returns>True, if this renderer is visible to the <see cref="IDrawDevice"/>. False, if not.</returns>
+		bool IsVisible(IDrawDevice device);
+		/// <summary>
+		/// Draws the object.
+		/// </summary>
+		/// <param name="device">The <see cref="IDrawDevice"/> to which the object is drawn.</param>
+		void Draw(IDrawDevice device);
+	}
+	/// <summary>
 	/// Implement this interface in <see cref="Component">Components</see> that are able to render a screen overlay. 
 	/// This is useful for HUD, GUI or debug rendering. Screen overlays are rendered after both regular rendering and 
-	/// postprocessing. Unlike regular <see cref="Duality.Components.Renderer">Renderers</see> they do not operate in 
+	/// postprocessing. Unlike regular <see cref="ICmpRenderer">Renderers</see> they do not operate in 
 	/// <see cref="Duality.Components.Camera"/>-local space but screen space.
 	/// </summary>
-	public interface ICmpScreenOverlayRenderer
+	public interface ICmpScreenOverlayRenderer : IComponent
 	{
 		/// <summary>
 		/// Determines whether or not this screen overlay is visible to the specified <see cref="IDrawDevice"/>.
@@ -98,9 +171,44 @@ namespace Duality
 	/// Implement this interface in <see cref="Component">Components</see> that require notification of
 	/// collision events that occur to the <see cref="GameObject"/> they belong to.
 	/// </summary>
-	public interface ICmpCollisionListener
+	public interface ICmpCollisionListener : IComponent
 	{
 
+	}
+
+	
+	/// <summary>
+	/// Bitmask for special <see cref="ICmpRenderer"/> traits.
+	/// </summary>
+	[Flags]
+	public enum RendererFlags : uint
+	{
+		/// <summary>
+		/// No flags set.
+		/// </summary>
+		None				= 0x00000000,
+
+		/// <summary>
+		/// The Renderers position is processed based on its depth to achieve a parallax effect.
+		/// </summary>
+		ParallaxPos			= 0x00000001,
+		/// <summary>
+		/// The Renderers scale is processed based on its depth to achieve a parallax effect.
+		/// </summary>
+		ParallaxScale		= 0x00000002,
+		/// <summary>
+		/// The Renderers position and scale are processed based on its depth to achieve a parallax effect.
+		/// </summary>
+		Parallax			= ParallaxPos | ParallaxScale,
+
+		/// <summary>
+		/// All flags set.
+		/// </summary>
+		All					= Parallax,
+		/// <summary>
+		/// The default flag combination.
+		/// </summary>
+		Default				= Parallax
 	}
 
 	/// <summary>
@@ -144,7 +252,7 @@ namespace Duality
 	/// </summary>
 	[Serializable]
 	[System.Diagnostics.DebuggerDisplay("{ToString()}")]
-	public abstract class Component : IManageableObject
+	public abstract class Component : IManageableObject, IComponent
 	{
 		/// <summary>
 		/// Describes the kind of initialization that can be performed on a Component

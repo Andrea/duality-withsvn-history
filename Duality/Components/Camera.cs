@@ -94,10 +94,10 @@ namespace Duality
 		/// Processes the specified world space position and scale values and transforms them to the IDrawDevices view space.
 		/// This usually also applies a parallax effect, if applicable.
 		/// </summary>
-		/// <param name="r">The <see cref="Duality.Components.Renderer"/> to which the data belongs.</param>
+		/// <param name="r">The <see cref="Duality.Components.ICmpRenderer"/> to which the data belongs.</param>
 		/// <param name="pos">The position to process.</param>
 		/// <param name="scale">The scale factor to process.</param>
-		void PreprocessCoords(Renderer r, ref Vector3 pos, ref float scale);
+		void PreprocessCoords(ICmpRenderer r, ref Vector3 pos, ref float scale);
 		/// <summary>
 		/// Returns whether the specified world-space position is visible in the drawing devices view space.
 		/// </summary>
@@ -106,12 +106,12 @@ namespace Duality
 		/// <returns>True, if the position or a portion of its bounding circle is visible, false if not.</returns>
 		bool IsCoordInView(Vector3 c, float boundRad = 1.0f);
 		/// <summary>
-		/// Returns whether the specified Renderer is visible in the drawing devices view space. This doesn't yet mean, it's
-		/// visible - the Renderer or IDrawDevice can still decide, not to display.
+		/// Returns whether the specified ICmpRenderer is visible in the drawing devices view space. This doesn't yet mean, it's
+		/// visible - the ICmpRenderer or IDrawDevice can still decide, not to display.
 		/// </summary>
-		/// <param name="r">The Renderer to test.</param>
-		/// <returns>True, if the Renderer or a portion of its bounding circle is inside the view space, false if not.</returns>
-		bool IsRendererInView(Renderer r);
+		/// <param name="r">The ICmpRenderer to test.</param>
+		/// <returns>True, if the ICmpRenderer or a portion of its bounding circle is inside the view space, false if not.</returns>
+		bool IsRendererInView(ICmpRenderer r);
 
 		/// <summary>
 		/// Adds a parameterized set of vertices to the drawing devices rendering schedule.
@@ -467,22 +467,22 @@ namespace Duality.Components
 		[NonSerialized]	private	bool				deviceCacheValid	= false;
 		[NonSerialized]	private	Vector3				deviceCachePos		= Vector3.Zero;
 		[NonSerialized]	private	int					picking				= 0;
-		[NonSerialized]	private	List<Renderer>		pickingMap			= null;
+		[NonSerialized]	private	List<ICmpRenderer>		pickingMap			= null;
 		[NonSerialized]	private	RenderTarget		pickingRT			= null;
 		[NonSerialized]	private	Texture				pickingTex			= null;
 		[NonSerialized]	private	int					pickingLast			= -1;
 		[NonSerialized]	private	byte[]				pickingBuffer		= new byte[4 * 256 * 256];
 		[NonSerialized]	private	List<IDrawBatch>	drawBuffer			= new List<IDrawBatch>();
 		[NonSerialized]	private	List<IDrawBatch>	drawBufferZSort		= new List<IDrawBatch>();
-		[NonSerialized]	private	List<Predicate<Renderer>>	editorRenderFilter	= new List<Predicate<Renderer>>();
+		[NonSerialized]	private	List<Predicate<ICmpRenderer>>	editorRenderFilter	= new List<Predicate<ICmpRenderer>>();
 
 		/// <summary>
-		/// Fired as soon as <see cref="Duality.Components.Renderer"/> drawcalls have been collected, but
+		/// Fired as soon as <see cref="Duality.Components.ICmpRenderer"/> drawcalls have been collected, but
 		/// right before processing them.
 		/// </summary>
 		public event EventHandler CollectRendererDrawcalls	= null;
 		/// <summary>
-		/// Fired as soon as <see cref="Duality.ICmpScreenOverlayRenderer"/> drawcalls have been collected, but
+		/// Fired as soon as <see cref="Duality.ICmpScreenOverlayICmpRenderer"/> drawcalls have been collected, but
 		/// right before processing them.
 		/// </summary>
 		public event EventHandler CollectOverlayDrawcalls	= null;
@@ -709,12 +709,12 @@ namespace Duality.Components
 			return true;
 		}
 		/// <summary>
-		/// Picks the <see cref="Duality.Components.Renderer"/> that owns the pixel at the specified position.
+		/// Picks the <see cref="Duality.Components.ICmpRenderer"/> that owns the pixel at the specified position.
 		/// </summary>
 		/// <param name="x">x-Coordinate of the pixel to check.</param>
 		/// <param name="y">y-Coordinate of the pixel to check.</param>
-		/// <returns>The <see cref="Duality.Components.Renderer"/> that owns the pixel.</returns>
-		public Renderer PickRendererAt(int x, int y)
+		/// <returns>The <see cref="Duality.Components.ICmpRenderer"/> that owns the pixel.</returns>
+		public ICmpRenderer PickRendererAt(int x, int y)
 		{
 			this.RenderPickingMap();
 
@@ -736,15 +736,15 @@ namespace Duality.Components
 				return null;
 		}
 		/// <summary>
-		/// Picks all <see cref="Duality.Components.Renderer">Renderers</see> contained within the specified
+		/// Picks all <see cref="Duality.Components.ICmpRenderer">ICmpRenderers</see> contained within the specified
 		/// rectangular area.
 		/// </summary>
 		/// <param name="x">x-Coordinate of the Rect.</param>
 		/// <param name="y">y-Coordinate of the Rect.</param>
 		/// <param name="w">Width of the Rect.</param>
 		/// <param name="h">Height of the Rect.</param>
-		/// <returns>A set of all <see cref="Duality.Components.Renderer">Renderers</see> that have been picked.</returns>
-		public HashSet<Renderer> PickRenderersIn(int x, int y, int w, int h)
+		/// <returns>A set of all <see cref="Duality.Components.ICmpRenderer">ICmpRenderers</see> that have been picked.</returns>
+		public HashSet<ICmpRenderer> PickRenderersIn(int x, int y, int w, int h)
 		{
 			this.RenderPickingMap();
 
@@ -755,7 +755,7 @@ namespace Duality.Components
 			int pxNum = w * h;
 			int pxByteNum = pxNum * 4;
 
-			HashSet<Renderer> result = new HashSet<Renderer>();
+			HashSet<ICmpRenderer> result = new HashSet<ICmpRenderer>();
 			int rendererId;
 			int rendererIdLast = 0;
 			unsafe { fixed (byte* pDataBegin = this.pickingBuffer) {
@@ -923,14 +923,14 @@ namespace Duality.Components
 			this.SetupMatrices();
 
 			// Query renderers
-			IEnumerable<Renderer> rendererQuery = Scene.Current.QueryVisibleRenderers(this.DrawDevice);
-			foreach (Predicate<Renderer> p in this.editorRenderFilter) rendererQuery = rendererQuery.Where(r => p(r));
+			IEnumerable<ICmpRenderer> rendererQuery = Scene.Current.QueryVisibleRenderers(this.DrawDevice);
+			foreach (Predicate<ICmpRenderer> p in this.editorRenderFilter) rendererQuery = rendererQuery.Where(r => p(r));
 
 			// Collect drawcalls
 			if (this.picking != 0)
 			{
-				this.pickingMap = new List<Renderer>(rendererQuery);
-				foreach (Renderer r in this.pickingMap)
+				this.pickingMap = new List<ICmpRenderer>(rendererQuery);
+				foreach (ICmpRenderer r in this.pickingMap)
 				{
 					r.Draw(this);
 					this.picking++;
@@ -940,7 +940,7 @@ namespace Duality.Components
 			{
 				Performance.timeCollectDrawcalls.BeginMeasure();
 
-				foreach (Renderer r in rendererQuery)
+				foreach (ICmpRenderer r in rendererQuery)
 					r.Draw(this);
 
 				if (this.CollectRendererDrawcalls != null)
@@ -1203,12 +1203,12 @@ namespace Duality.Components
 			GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
 		}
 
-		internal void AddEditorRendererFilter(Predicate<Renderer> filter)
+		internal void AddEditorRendererFilter(Predicate<ICmpRenderer> filter)
 		{
 			if (this.editorRenderFilter.Contains(filter)) return;
 			this.editorRenderFilter.Add(filter);
 		}
-		internal void RemoveEditorRendererFilter(Predicate<Renderer> filter)
+		internal void RemoveEditorRendererFilter(Predicate<ICmpRenderer> filter)
 		{
 			this.editorRenderFilter.Remove(filter);
 		}
@@ -1230,7 +1230,7 @@ namespace Duality.Components
 			pos.Y *= scaleTemp;
 			scale *= scaleTemp;
 		}
-		void IDrawDevice.PreprocessCoords(Renderer r, ref Vector3 pos, ref float scale)
+		void IDrawDevice.PreprocessCoords(ICmpRenderer r, ref Vector3 pos, ref float scale)
 		{
 			if (this.overlayMatrices) return;
 			if (this.deviceCacheValid)
@@ -1279,13 +1279,15 @@ namespace Duality.Components
 				c.X <= 1.0f + boundRadVec.X &&
 				c.Y <= 1.0f + boundRadVec.Y;
 		}
-		bool IDrawDevice.IsRendererInView(Renderer r)
+		bool IDrawDevice.IsRendererInView(ICmpRenderer r)
 		{
-			if (r.IsInfiniteXY) return r.GameObj.Transform.Pos.Z >= this.GameObj.Transform.Pos.Z;
-			if (r.GameObj.Transform.Pos.Z <= this.GameObj.Transform.Pos.Z) return false;
-
 			// Retrieve center vertex coord
-			Vector3 posTemp = r.GameObj.Transform.Pos;
+			Vector3 posTemp = r.SpaceCoord;
+
+			if (r.IsInfiniteXY) return posTemp.Z >= this.GameObj.Transform.Pos.Z;
+			if (posTemp.Z <= this.GameObj.Transform.Pos.Z) return false;
+
+			// Process center vertex coord
 			float scaleTemp = 1.0f;
 			this.DrawDevice.PreprocessCoords(r, ref posTemp, ref scaleTemp);
 

@@ -7,45 +7,12 @@ using OpenTK;
 namespace Duality.Components
 {
 	/// <summary>
-	/// Bitmask for special <see cref="Duality.Components.Renderer"/> traits.
-	/// </summary>
-	[Flags]
-	public enum RendererFlags : uint
-	{
-		/// <summary>
-		/// No flags set.
-		/// </summary>
-		None				= 0x00000000,
-
-		/// <summary>
-		/// The Renderers position is processed based on its depth to achieve a parallax effect.
-		/// </summary>
-		ParallaxPos			= 0x00000001,
-		/// <summary>
-		/// The Renderers scale is processed based on its depth to achieve a parallax effect.
-		/// </summary>
-		ParallaxScale		= 0x00000002,
-		/// <summary>
-		/// The Renderers position and scale are processed based on its depth to achieve a parallax effect.
-		/// </summary>
-		Parallax			= ParallaxPos | ParallaxScale,
-
-		/// <summary>
-		/// All flags set.
-		/// </summary>
-		All					= Parallax,
-		/// <summary>
-		/// The default flag combination.
-		/// </summary>
-		Default				= Parallax
-	}
-
-	/// <summary>
 	/// A Renderer usually gives its <see cref="GameObject"/> a visual appearance in space.
 	/// However, in general it may render anything and isn't bound by any conceptual restrictions.
 	/// </summary>
 	[Serializable]
-	public abstract class Renderer : Component
+	[RequiredComponent(typeof(Transform))]
+	public abstract class Renderer : Component, ICmpRenderer
 	{
 		private	RendererFlags	renderFlags		= RendererFlags.Default;
 		private	uint			visibilityGroup	= 1;
@@ -101,6 +68,11 @@ namespace Duality.Components
 			Renderer t = target as Renderer;
 			t.renderFlags		= this.renderFlags;
 			t.visibilityGroup	= this.visibilityGroup;
+		}
+
+		Vector3 ICmpRenderer.SpaceCoord
+		{
+			get { return this.gameobj.Transform.Pos; }
 		}
 	}
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -293,11 +292,11 @@ namespace EditorBase
 
 		public override CamViewState.SelObj PickSelObjAt(int x, int y)
 		{
-			Renderer pickedRenderer = null;
+			Component pickedRenderer = null;
 			Collider pickedCollider = null;
 			Collider.ShapeInfo pickedShape = null;
 			
-			pickedRenderer = this.View.PickRendererAt(x, y);
+			pickedRenderer = this.View.PickRendererAt(x, y) as Component;
 			if (pickedRenderer != null) pickedCollider = pickedRenderer.GameObj.GetComponent<Collider>();
 
 			if (this.selectedCollider != null)
@@ -321,9 +320,9 @@ namespace EditorBase
 			List<CamViewState.SelObj> result = new List<SelObj>();
 
 			// Pick a collider
-			HashSet<Renderer> pickedRenderer = this.View.PickRenderersIn(x, y, w, h);
+			HashSet<ICmpRenderer> pickedRenderer = this.View.PickRenderersIn(x, y, w, h);
 			Collider pickedCollider = null;
-			foreach (Renderer r in pickedRenderer)
+			foreach (Component r in pickedRenderer.OfType<Component>())
 			{
 				Collider c = r.GameObj.GetComponent<Collider>();
 				if (c != null) pickedCollider = c;
@@ -382,7 +381,7 @@ namespace EditorBase
 		{
 			return EditorBasePlugin.Instance.EditorForm.Selection.Components.OfType<Collider>().FirstOrDefault();
 		}
-		protected bool RendererFilter(Renderer r)
+		protected bool RendererFilter(ICmpRenderer r)
 		{
 			return r.GameObj.GetComponent<Collider>() != null;
 		}

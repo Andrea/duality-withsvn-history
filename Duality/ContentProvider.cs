@@ -642,9 +642,12 @@ namespace Duality
 		private static Resource LoadContent(string path)
 		{
 			Log.Core.Write("Loading Ressource '{0}'...", path);
+			Log.Core.PushIndent();
 
 			Resource res = Resource.LoadResource<Resource>(path);
 			if (res != null) RegisterContent(path, res);
+
+			Log.Core.PopIndent();
 			return res;
 		}
 	}

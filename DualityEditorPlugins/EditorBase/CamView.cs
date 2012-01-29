@@ -395,7 +395,7 @@ namespace EditorBase
 			DualityApp.TargetResolution = new OpenTK.Vector2(this.glControl.Width, this.glControl.Height);
 			if (this.ContainsFocus) EditorBasePlugin.Instance.EditorForm.SetCurrentDualityAppInput(this, this);
 		}
-		public Renderer PickRendererAt(int x, int y)
+		public ICmpRenderer PickRendererAt(int x, int y)
 		{
 			x = MathF.Clamp(x, 0, this.glControl.Width - 1);
 			y = MathF.Clamp(y, 0, this.glControl.Height - 1);
@@ -404,7 +404,7 @@ namespace EditorBase
 			this.MakeDualityTarget();
 			return this.camComp.PickRendererAt(x, y);
 		}
-		public HashSet<Renderer> PickRenderersIn(int x, int y, int w, int h)
+		public HashSet<ICmpRenderer> PickRenderersIn(int x, int y, int w, int h)
 		{
 			x = MathF.Clamp(x, 0, this.glControl.Width - 1);
 			y = MathF.Clamp(y, 0, this.glControl.Height - 1);

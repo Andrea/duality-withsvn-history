@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -144,14 +143,14 @@ namespace EditorBase
 
 		public override CamViewState.SelObj PickSelObjAt(int x, int y)
 		{
-			Renderer picked = this.View.PickRendererAt(x, y);
+			Component picked = this.View.PickRendererAt(x, y) as Component;
 			if (picked != null) return new SelGameObj(picked.GameObj);
 			return null;
 		}
 		public override List<CamViewState.SelObj> PickSelObjIn(int x, int y, int w, int h)
 		{
-			HashSet<Renderer> picked = this.View.PickRenderersIn(x, y, w, h);
-			return picked.Select(r => new SelGameObj(r.GameObj) as SelObj).ToList();
+			HashSet<ICmpRenderer> picked = this.View.PickRenderersIn(x, y, w, h);
+			return picked.OfType<Component>().Select(r => new SelGameObj(r.GameObj) as SelObj).ToList();
 		}
 
 		public override void ClearSelection()

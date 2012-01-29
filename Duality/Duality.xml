@@ -681,6 +681,49 @@
             [GET] Returns whether the object is currently active.
             </summary>
         </member>
+        <member name="T:Duality.IComponent">
+            <summary>
+            Defines the base interface for all <see cref="T:Duality.Component">Components</see>.
+            </summary>
+        </member>
+        <member name="M:Duality.IComponent.Dispose">
+            <summary>
+            Disposes this Component. You usually don't need this - use <see cref="M:Duality.IComponent.DisposeLater"/> instead.
+            </summary>
+            <seealso cref="M:Duality.IComponent.DisposeLater"/>
+        </member>
+        <member name="M:Duality.IComponent.DisposeLater">
+            <summary>
+            Schedules this Component for disposal. It is guaranteed to be executed until the next update cycle starts.
+            </summary>
+            <seealso cref="M:Duality.IComponent.Dispose"/>
+        </member>
+        <member name="P:Duality.IComponent.Active">
+            <summary>
+            [GET / SET] Whether or not the Component is currently active. To return true,
+            both the Component itsself and its parent GameObject need to be active.
+            </summary>
+            <seealso cref="P:Duality.IComponent.ActiveSingle"/>
+        </member>
+        <member name="P:Duality.IComponent.ActiveSingle">
+            <summary>
+            [GET / SET] Whether or not the Component is currently active. Unlike <see cref="P:Duality.IComponent.Active"/>,
+            this property ignores parent activation states and depends only on this single Component.
+            The scene graph and other Duality instances usually check <see cref="P:Duality.IComponent.Active"/>, not ActiveSingle.
+            </summary>
+            <seealso cref="P:Duality.IComponent.Active"/>
+        </member>
+        <member name="P:Duality.IComponent.Disposed">
+            <summary>
+            [GET] Returns whether this Component has been disposed. Disposed Components are not to be used and should
+            be treated specifically or as null references by your code.
+            </summary>
+        </member>
+        <member name="P:Duality.IComponent.GameObj">
+            <summary>
+            [GET / SET] The <see cref="T:Duality.GameObject"/> to which this Component belongs.
+            </summary>
+        </member>
         <member name="M:Duality.Component.Dispose">
             <summary>
             Disposes this Component. You usually don't need this - use <see cref="M:Duality.Component.DisposeLater"/> instead.
@@ -1024,11 +1067,49 @@
             </summary>
             <param name="comp">The Component that is being removed</param>
         </member>
+        <member name="T:Duality.ICmpRenderer">
+            <summary>
+            Implement this interface in <see cref="T:Duality.Component">Components</see> that are considered renderable. 
+            </summary>
+        </member>
+        <member name="M:Duality.ICmpRenderer.IsVisible(Duality.IDrawDevice)">
+            <summary>
+            Determines whether or not this renderer is visible to the specified <see cref="T:Duality.IDrawDevice"/>.
+            </summary>
+            <param name="device">The <see cref="T:Duality.IDrawDevice"/> to which visibility is determined.</param>
+            <returns>True, if this renderer is visible to the <see cref="T:Duality.IDrawDevice"/>. False, if not.</returns>
+        </member>
+        <member name="M:Duality.ICmpRenderer.Draw(Duality.IDrawDevice)">
+            <summary>
+            Draws the object.
+            </summary>
+            <param name="device">The <see cref="T:Duality.IDrawDevice"/> to which the object is drawn.</param>
+        </member>
+        <member name="P:Duality.ICmpRenderer.RenderFlags">
+            <summary>
+            [GET] The <see cref="T:Duality.RendererFlags">appearance flags</see> of this Renderer.
+            </summary>
+        </member>
+        <member name="P:Duality.ICmpRenderer.IsInfiniteXY">
+            <summary>
+            [GET] Returns whether this Renderer visually stretches infinitely on the XY-plane.
+            </summary>
+        </member>
+        <member name="P:Duality.ICmpRenderer.BoundRadius">
+            <summary>
+            [GET] The Renderers bounding radius, originating from its <see cref="P:Duality.ICmpRenderer.SpaceCoord"/>.
+            </summary>
+        </member>
+        <member name="P:Duality.ICmpRenderer.SpaceCoord">
+            <summary>
+            [GET] The Renderers center location in space.
+            </summary>
+        </member>
         <member name="T:Duality.ICmpScreenOverlayRenderer">
             <summary>
             Implement this interface in <see cref="T:Duality.Component">Components</see> that are able to render a screen overlay. 
             This is useful for HUD, GUI or debug rendering. Screen overlays are rendered after both regular rendering and 
-            postprocessing. Unlike regular <see cref="T:Duality.Components.Renderer">Renderers</see> they do not operate in 
+            postprocessing. Unlike regular <see cref="T:Duality.ICmpRenderer">Renderers</see> they do not operate in 
             <see cref="T:Duality.Components.Camera"/>-local space but screen space.
             </summary>
         </member>
@@ -1049,6 +1130,41 @@
             <summary>
             Implement this interface in <see cref="T:Duality.Component">Components</see> that require notification of
             collision events that occur to the <see cref="T:Duality.GameObject"/> they belong to.
+            </summary>
+        </member>
+        <member name="T:Duality.RendererFlags">
+            <summary>
+            Bitmask for special <see cref="T:Duality.ICmpRenderer"/> traits.
+            </summary>
+        </member>
+        <member name="F:Duality.RendererFlags.None">
+            <summary>
+            No flags set.
+            </summary>
+        </member>
+        <member name="F:Duality.RendererFlags.ParallaxPos">
+            <summary>
+            The Renderers position is processed based on its depth to achieve a parallax effect.
+            </summary>
+        </member>
+        <member name="F:Duality.RendererFlags.ParallaxScale">
+            <summary>
+            The Renderers scale is processed based on its depth to achieve a parallax effect.
+            </summary>
+        </member>
+        <member name="F:Duality.RendererFlags.Parallax">
+            <summary>
+            The Renderers position and scale are processed based on its depth to achieve a parallax effect.
+            </summary>
+        </member>
+        <member name="F:Duality.RendererFlags.All">
+            <summary>
+            All flags set.
+            </summary>
+        </member>
+        <member name="F:Duality.RendererFlags.Default">
+            <summary>
+            The default flag combination.
             </summary>
         </member>
         <member name="T:Duality.RequiredComponentAttribute">
@@ -4721,7 +4837,7 @@
         </member>
         <member name="P:Duality.Components.Renderer.RenderFlags">
             <summary>
-            [GET / SET] The <see cref="T:Duality.Components.RendererFlags">appearance flags</see> of this Renderer.
+            [GET / SET] The <see cref="T:Duality.RendererFlags">appearance flags</see> of this Renderer.
             </summary>
         </member>
         <member name="P:Duality.Components.Renderer.VisibilityGroup">
@@ -5634,12 +5750,12 @@
             <param name="pos">The position to process.</param>
             <param name="scale">The scale factor to process.</param>
         </member>
-        <member name="M:Duality.IDrawDevice.PreprocessCoords(Duality.Components.Renderer,OpenTK.Vector3@,System.Single@)">
+        <member name="M:Duality.IDrawDevice.PreprocessCoords(Duality.ICmpRenderer,OpenTK.Vector3@,System.Single@)">
             <summary>
             Processes the specified world space position and scale values and transforms them to the IDrawDevices view space.
             This usually also applies a parallax effect, if applicable.
             </summary>
-            <param name="r">The <see cref="T:Duality.Components.Renderer"/> to which the data belongs.</param>
+            <param name="r">The <see cref="!:Duality.Components.ICmpRenderer"/> to which the data belongs.</param>
             <param name="pos">The position to process.</param>
             <param name="scale">The scale factor to process.</param>
         </member>
@@ -5651,13 +5767,13 @@
             <param name="boundRad">The visual bounding radius to assume for the specified position.</param>
             <returns>True, if the position or a portion of its bounding circle is visible, false if not.</returns>
         </member>
-        <member name="M:Duality.IDrawDevice.IsRendererInView(Duality.Components.Renderer)">
+        <member name="M:Duality.IDrawDevice.IsRendererInView(Duality.ICmpRenderer)">
             <summary>
-            Returns whether the specified Renderer is visible in the drawing devices view space. This doesn't yet mean, it's
-            visible - the Renderer or IDrawDevice can still decide, not to display.
+            Returns whether the specified ICmpRenderer is visible in the drawing devices view space. This doesn't yet mean, it's
+            visible - the ICmpRenderer or IDrawDevice can still decide, not to display.
             </summary>
-            <param name="r">The Renderer to test.</param>
-            <returns>True, if the Renderer or a portion of its bounding circle is inside the view space, false if not.</returns>
+            <param name="r">The ICmpRenderer to test.</param>
+            <returns>True, if the ICmpRenderer or a portion of its bounding circle is inside the view space, false if not.</returns>
         </member>
         <member name="M:Duality.IDrawDevice.AddVertices``1(Duality.ContentRef{Duality.Resources.Material},OpenTK.Graphics.OpenGL.BeginMode,``0[])">
             <summary>
@@ -5722,22 +5838,22 @@
         </member>
         <member name="M:Duality.Components.Camera.PickRendererAt(System.Int32,System.Int32)">
             <summary>
-            Picks the <see cref="T:Duality.Components.Renderer"/> that owns the pixel at the specified position.
+            Picks the <see cref="!:Duality.Components.ICmpRenderer"/> that owns the pixel at the specified position.
             </summary>
             <param name="x">x-Coordinate of the pixel to check.</param>
             <param name="y">y-Coordinate of the pixel to check.</param>
-            <returns>The <see cref="T:Duality.Components.Renderer"/> that owns the pixel.</returns>
+            <returns>The <see cref="!:Duality.Components.ICmpRenderer"/> that owns the pixel.</returns>
         </member>
         <member name="M:Duality.Components.Camera.PickRenderersIn(System.Int32,System.Int32,System.Int32,System.Int32)">
             <summary>
-            Picks all <see cref="T:Duality.Components.Renderer">Renderers</see> contained within the specified
+            Picks all <see cref="!:Duality.Components.ICmpRenderer">ICmpRenderers</see> contained within the specified
             rectangular area.
             </summary>
             <param name="x">x-Coordinate of the Rect.</param>
             <param name="y">y-Coordinate of the Rect.</param>
             <param name="w">Width of the Rect.</param>
             <param name="h">Height of the Rect.</param>
-            <returns>A set of all <see cref="T:Duality.Components.Renderer">Renderers</see> that have been picked.</returns>
+            <returns>A set of all <see cref="!:Duality.Components.ICmpRenderer">ICmpRenderers</see> that have been picked.</returns>
         </member>
         <member name="M:Duality.Components.Camera.GetScaleAtZ(System.Single)">
             <summary>
@@ -5776,13 +5892,13 @@
         </member>
         <member name="E:Duality.Components.Camera.CollectRendererDrawcalls">
             <summary>
-            Fired as soon as <see cref="T:Duality.Components.Renderer"/> drawcalls have been collected, but
+            Fired as soon as <see cref="!:Duality.Components.ICmpRenderer"/> drawcalls have been collected, but
             right before processing them.
             </summary>
         </member>
         <member name="E:Duality.Components.Camera.CollectOverlayDrawcalls">
             <summary>
-            Fired as soon as <see cref="T:Duality.ICmpScreenOverlayRenderer"/> drawcalls have been collected, but
+            Fired as soon as <see cref="!:Duality.ICmpScreenOverlayICmpRenderer"/> drawcalls have been collected, but
             right before processing them.
             </summary>
         </member>
@@ -7282,41 +7398,6 @@
         <member name="E:Duality.IKeyboardInput.KeyDown">
             <summary>
             Fired once when a key is pressed. May be fired repeatedly, if <see cref="P:Duality.IKeyboardInput.KeyRepeat"/> is true.
-            </summary>
-        </member>
-        <member name="T:Duality.Components.RendererFlags">
-            <summary>
-            Bitmask for special <see cref="T:Duality.Components.Renderer"/> traits.
-            </summary>
-        </member>
-        <member name="F:Duality.Components.RendererFlags.None">
-            <summary>
-            No flags set.
-            </summary>
-        </member>
-        <member name="F:Duality.Components.RendererFlags.ParallaxPos">
-            <summary>
-            The Renderers position is processed based on its depth to achieve a parallax effect.
-            </summary>
-        </member>
-        <member name="F:Duality.Components.RendererFlags.ParallaxScale">
-            <summary>
-            The Renderers scale is processed based on its depth to achieve a parallax effect.
-            </summary>
-        </member>
-        <member name="F:Duality.Components.RendererFlags.Parallax">
-            <summary>
-            The Renderers position and scale are processed based on its depth to achieve a parallax effect.
-            </summary>
-        </member>
-        <member name="F:Duality.Components.RendererFlags.All">
-            <summary>
-            All flags set.
-            </summary>
-        </member>
-        <member name="F:Duality.Components.RendererFlags.Default">
-            <summary>
-            The default flag combination.
             </summary>
         </member>
         <member name="T:Duality.Components.SoundEmitter">
