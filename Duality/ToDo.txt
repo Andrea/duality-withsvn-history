@@ -6,6 +6,12 @@ Next Steps:
 4.	Re-Implement Asteroids using Colliders
 5.	"Optional": Collider Joints (Editor & Logic)
 
+-->	How to implement "Create Circle" / "Create Poly" actions?
+	-->	Introduce new CamViewState.CursorHandler class
+	-->	The basic one handles all standard MouseActions and CameraActions
+	-->	"Create Circle" and "Create Polygon" both create and inject their own CursorHandler
+	-->	...which handles shape creation
+
 -->	WYSIWYG-Editor for Collider Shapes
 	-->	Preview shape in view
 		-->	Display a shapes density numeric (absolute value) and visually as fill transparency (relative to other shapes)
