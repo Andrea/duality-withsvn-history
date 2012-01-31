@@ -18,7 +18,7 @@ using DualityEditor.Forms;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
-namespace EditorBase
+namespace EditorBase.CamViewStates
 {
 	public abstract class CamViewState
 	{
@@ -179,7 +179,6 @@ namespace EditorBase
 			this.View.LocalGLControl.KeyDown	+= this.LocalGLControl_KeyDown;
 			this.View.LocalGLControl.KeyUp		+= this.LocalGLControl_KeyUp;
 			this.View.LocalGLControl.LostFocus	+= this.LocalGLControl_LostFocus;
-			this.View.AccMovementChanged		+= this.View_AccMovementChanged;
 			this.View.ParallaxRefDistChanged	+= this.View_ParallaxRefDistChanged;
 			EditorBasePlugin.Instance.EditorForm.AfterUpdateDualityApp += this.EditorForm_AfterUpdateDualityApp;
 
@@ -202,7 +201,6 @@ namespace EditorBase
 			this.View.LocalGLControl.KeyDown	-= this.LocalGLControl_KeyDown;
 			this.View.LocalGLControl.KeyUp		-= this.LocalGLControl_KeyUp;
 			this.View.LocalGLControl.LostFocus	-= this.LocalGLControl_LostFocus;
-			this.View.AccMovementChanged		-= this.View_AccMovementChanged;
 			this.View.ParallaxRefDistChanged	-= this.View_ParallaxRefDistChanged;
 			EditorBasePlugin.Instance.EditorForm.AfterUpdateDualityApp -= this.EditorForm_AfterUpdateDualityApp;
 			
@@ -292,13 +290,38 @@ namespace EditorBase
 		{
 			Point cursorPos = this.View.LocalGLControl.PointToClient(Cursor.Position);
 			canvas.PushState();
-			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Solid, this.View.FgColor));
+			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Mask, this.View.FgColor));
+			canvas.CurrentState.TextFont = Duality.Resources.Font.GenericMonospace8;
 
 			// Draw camera movement indicators
-			if (this.camAction == CameraAction.MoveCam)
-				canvas.DrawLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, cursorPos.Y);
-			else if (this.camAction == CameraAction.TurnCam)
+			if (this.camAction != CameraAction.None)
+			{
+				canvas.PushState();
+				canvas.CurrentState.ColorTint = ColorRgba.White.WithAlpha(0.5f);
+				canvas.FillCircle(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, 3);
+				canvas.PopState();
+			}
+			if (this.camAction == CameraAction.TurnCam)
+			{
 				canvas.DrawLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, this.camActionBeginLoc.Y);
+
+				if (MathF.Abs(this.view.CameraObj.Transform.AngleVel) > 0.0f)
+					canvas.DrawText(string.Format("Angle: {0,3:0}°", MathF.RadToDeg(this.view.CameraObj.Transform.Angle)), this.camActionBeginLoc.X + 30, this.camActionBeginLoc.Y + 10);
+			}
+			else if (this.camAction == CameraAction.MoveCam || this.view.CameraObj.Transform.Vel.Z != 0.0f)
+			{
+				if (this.camAction == CameraAction.MoveCam)
+				{
+					canvas.DrawLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, cursorPos.Y);
+					canvas.DrawText(string.Format("X:{0,7:0}", this.view.CameraObj.Transform.Pos.X), this.camActionBeginLoc.X + 30, this.camActionBeginLoc.Y + 10);
+					canvas.DrawText(string.Format("Y:{0,7:0}", this.view.CameraObj.Transform.Pos.Y), this.camActionBeginLoc.X + 30, this.camActionBeginLoc.Y + 18);
+					canvas.DrawText(string.Format("Z:{0,7:0}", this.view.CameraObj.Transform.Pos.Z), this.camActionBeginLoc.X + 30, this.camActionBeginLoc.Y + 26);
+				}
+				else if (this.view.CameraObj.Transform.Vel.Z != 0.0f)
+				{
+					canvas.DrawText(string.Format("Z:{0,7:0}", this.view.CameraObj.Transform.Pos.Z), cursorPos.X + 30, cursorPos.Y + 10);
+				}
+			}
 
 			// Draw rect selection
 			if (this.action == MouseAction.RectSelection)
@@ -317,49 +340,48 @@ namespace EditorBase
 			Point cursorPos = this.View.LocalGLControl.PointToClient(Cursor.Position);
 
 			this.camTransformChanged = false;
-			if (this.View.AccMovement)
+
+			if (this.camAction == CameraAction.MoveCam)
 			{
-				if (this.camAction == CameraAction.MoveCam)
-				{
-					Vector3 moveVec = new Vector3(
-						0.125f * MathF.Sign(cursorPos.X - this.camActionBeginLoc.X) * MathF.Pow(MathF.Abs(cursorPos.X - this.camActionBeginLoc.X), 1.25f),
-						0.125f * MathF.Sign(cursorPos.Y - this.camActionBeginLoc.Y) * MathF.Pow(MathF.Abs(cursorPos.Y - this.camActionBeginLoc.Y), 1.25f),
-						camObj.Transform.RelativeVel.Z);
+				Vector3 moveVec = new Vector3(
+					0.125f * MathF.Sign(cursorPos.X - this.camActionBeginLoc.X) * MathF.Pow(MathF.Abs(cursorPos.X - this.camActionBeginLoc.X), 1.25f),
+					0.125f * MathF.Sign(cursorPos.Y - this.camActionBeginLoc.Y) * MathF.Pow(MathF.Abs(cursorPos.Y - this.camActionBeginLoc.Y), 1.25f),
+					camObj.Transform.RelativeVel.Z);
 
-					MathF.TransformCoord(ref moveVec.X, ref moveVec.Y, camObj.Transform.Angle);
-					camObj.Transform.RelativeVel = moveVec;
+				MathF.TransformCoord(ref moveVec.X, ref moveVec.Y, camObj.Transform.Angle);
+				camObj.Transform.RelativeVel = moveVec;
 
-					this.camTransformChanged = true;
-				}
-				else if (camObj.Transform.RelativeVel.Length > 0.01f)
-				{
-					camObj.Transform.RelativeVel *= MathF.Pow(0.9f, Time.TimeMult);
-					this.camTransformChanged = true;
-				}
-				else
-					camObj.Transform.RelativeVel = Vector3.Zero;
-			
-
-				if (this.camAction == CameraAction.TurnCam)
-				{
-					float turnDir = 
-						0.000125f * MathF.Sign(cursorPos.X - this.camActionBeginLoc.X) * 
-						MathF.Pow(MathF.Abs(cursorPos.X - this.camActionBeginLoc.X), 1.25f);
-					camObj.Transform.RelativeAngleVel = turnDir;
-
-					this.camTransformChanged = true;
-				}
-				else if (Math.Abs(camObj.Transform.RelativeAngleVel) > 0.001f)
-				{
-					camObj.Transform.RelativeAngleVel *= MathF.Pow(0.9f, Time.TimeMult);
-					this.camTransformChanged = true;
-				}
-				else
-					camObj.Transform.RelativeAngleVel = 0.0f;
+				this.camTransformChanged = true;
+			}
+			else if (camObj.Transform.RelativeVel.Length > 0.01f)
+			{
+				camObj.Transform.RelativeVel *= MathF.Pow(0.9f, Time.TimeMult);
+				this.camTransformChanged = true;
 			}
 			else
 			{
+				this.camTransformChanged = this.camTransformChanged || (camObj.Transform.RelativeVel != Vector3.Zero);
 				camObj.Transform.RelativeVel = Vector3.Zero;
+			}
+			
+
+			if (this.camAction == CameraAction.TurnCam)
+			{
+				float turnDir = 
+					0.000125f * MathF.Sign(cursorPos.X - this.camActionBeginLoc.X) * 
+					MathF.Pow(MathF.Abs(cursorPos.X - this.camActionBeginLoc.X), 1.25f);
+				camObj.Transform.RelativeAngleVel = turnDir;
+
+				this.camTransformChanged = true;
+			}
+			else if (Math.Abs(camObj.Transform.RelativeAngleVel) > 0.001f)
+			{
+				camObj.Transform.RelativeAngleVel *= MathF.Pow(0.9f, Time.TimeMult);
+				this.camTransformChanged = true;
+			}
+			else
+			{
+				this.camTransformChanged = this.camTransformChanged || (camObj.Transform.RelativeAngleVel != 0.0f);
 				camObj.Transform.RelativeAngleVel = 0.0f;
 			}
 
@@ -760,27 +782,6 @@ namespace EditorBase
 		}
 		private void LocalGLControl_MouseMove(object sender, MouseEventArgs e)
 		{
-			if (!this.View.AccMovement)
-			{
-				if (this.camAction == CameraAction.MoveCam)
-				{
-					Vector3 movVec = new Vector3(
-						5.0f * (e.X - this.camActionBeginLoc.X),
-						5.0f * (e.Y - this.camActionBeginLoc.Y),
-						0.0f);
-					MathF.TransformCoord(ref movVec.X, ref movVec.Y, this.View.CameraObj.Transform.RelativeAngle);
-					this.View.CameraObj.Transform.RelativePos = this.camActionBeginLocSpace + movVec;
-					this.View.LocalGLControl.Invalidate();
-					this.View.OnCamTransformChanged();
-				}
-				else if (this.camAction == CameraAction.TurnCam)
-				{
-					this.View.CameraObj.Transform.RelativeAngle = MathF.NormalizeAngle(this.camActionBeginLocSpace.X + 0.01f * (e.X - this.camActionBeginLoc.X));
-					this.View.LocalGLControl.Invalidate();
-					this.View.OnCamTransformChanged();
-				}
-			}
-
 			this.OnCursorSpacePosChanged();
 		}
 		private void LocalGLControl_MouseUp(object sender, MouseEventArgs e)
@@ -836,32 +837,23 @@ namespace EditorBase
 				if (this.View.ParallaxActive)
 				{
 					GameObject camObj = this.View.CameraObj;
-					if (this.View.AccMovement)
-					{
-						float curVel = camObj.Transform.RelativeVel.Length * MathF.Sign(camObj.Transform.RelativeVel.Z);
-						Vector2 curTemp = new Vector2(
-							(e.X * 2.0f / this.View.LocalGLControl.Width) - 1.0f,
-							(e.Y * 2.0f / this.View.LocalGLControl.Height) - 1.0f);
-						MathF.TransformCoord(ref curTemp.X, ref curTemp.Y, camObj.Transform.RelativeAngle);
+					float curVel = camObj.Transform.RelativeVel.Length * MathF.Sign(camObj.Transform.RelativeVel.Z);
+					Vector2 curTemp = new Vector2(
+						(e.X * 2.0f / this.View.LocalGLControl.Width) - 1.0f,
+						(e.Y * 2.0f / this.View.LocalGLControl.Height) - 1.0f);
+					MathF.TransformCoord(ref curTemp.X, ref curTemp.Y, camObj.Transform.RelativeAngle);
 
-						if (MathF.Sign(e.Delta) == MathF.Sign(curVel))
-							curVel *= 0.0125f * MathF.Abs(e.Delta);
-						curVel += 0.075f * e.Delta;
-						curVel = MathF.Sign(curVel) * MathF.Min(MathF.Abs(curVel), 500.0f);
+					if (MathF.Sign(e.Delta) == MathF.Sign(curVel))
+						curVel *= 0.0125f * MathF.Abs(e.Delta);
+					curVel += 0.075f * e.Delta;
+					curVel = MathF.Sign(curVel) * MathF.Min(MathF.Abs(curVel), 500.0f);
 
-						Vector3 movVec = new Vector3(
-							MathF.Sign(e.Delta) * MathF.Sign(curTemp.X) * MathF.Pow(curTemp.X, 2.0f), 
-							MathF.Sign(e.Delta) * MathF.Sign(curTemp.Y) * MathF.Pow(curTemp.Y, 2.0f), 
-							1.0f);
-						movVec.Normalize();
-						camObj.Transform.RelativeVel = movVec * curVel;
-					}
-					else
-					{
-						camObj.Transform.Pos += new Vector3(0.0f, 0.0f, e.Delta * 5 / 12);
-						this.View.LocalGLControl.Invalidate();
-						this.View.OnCamTransformChanged();
-					}
+					Vector3 movVec = new Vector3(
+						MathF.Sign(e.Delta) * MathF.Sign(curTemp.X) * MathF.Pow(curTemp.X, 2.0f), 
+						MathF.Sign(e.Delta) * MathF.Sign(curTemp.Y) * MathF.Pow(curTemp.Y, 2.0f), 
+						1.0f);
+					movVec.Normalize();
+					camObj.Transform.RelativeVel = movVec * curVel;
 				}
 				else
 				{
@@ -907,23 +899,6 @@ namespace EditorBase
 			this.EndAction();
 			this.lockedAxes = AxisLock.None;
 			this.View.LocalGLControl.Invalidate();
-		}
-		private void View_AccMovementChanged(object sender, EventArgs e)
-		{
-			Point curPos = this.View.LocalGLControl.PointToClient(Cursor.Position);
-			if (this.camAction == CameraAction.MoveCam)
-			{
-				Vector3 movVec = new Vector3(
-					5.0f * (curPos.X - this.camActionBeginLoc.X),
-					5.0f * (curPos.Y - this.camActionBeginLoc.Y),
-					0.0f);
-				MathF.TransformCoord(ref movVec.X, ref movVec.Y, this.View.CameraObj.Transform.RelativeAngle);
-				this.camActionBeginLocSpace = this.View.CameraObj.Transform.RelativePos - movVec;
-			}
-			else if (this.camAction == CameraAction.TurnCam)
-			{
-				this.camActionBeginLocSpace = new Vector3(this.View.CameraObj.Transform.RelativeAngle - 0.01f * (curPos.X - this.camActionBeginLoc.X), 0.0f, 0.0f);
-			}
 		}
 		private void View_ParallaxRefDistChanged(object sender, EventArgs e)
 		{

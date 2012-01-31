@@ -745,10 +745,12 @@ namespace Duality
 			VertexC1P3T2[] vertices = null;
 			Font font = this.CurrentState.TextFont.Res;
 
-			font.EmitTextVertices(text, ref vertices, pos.X, pos.Y, pos.Z, this.CurrentState.ColorTint);
+			font.EmitTextVertices(text, ref vertices, pos.X, pos.Y, pos.Z, this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor);
 
 			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
-			device.AddVertices(font.Material, BeginMode.Quads, vertices);
+			BatchInfo customMat = new BatchInfo(this.CurrentState.MaterialDirect);
+			customMat.MainTexture = font.Material.MainTexture;
+			device.AddVertices(customMat, BeginMode.Quads, vertices);
 		}
 		/// <summary>
 		/// Draws the specified text string.

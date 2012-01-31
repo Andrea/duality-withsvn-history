@@ -3393,7 +3393,7 @@
         </member>
         <member name="P:Duality.Resources.BatchInfo.MainTexture">
             <summary>
-            [GET] Returns the main texture.
+            [GET / SET] The main texture.
             </summary>
         </member>
         <member name="P:Duality.Resources.BatchInfo.Uniforms">
@@ -9837,6 +9837,11 @@
             (Virtual) path of the <see cref="P:Duality.Resources.Font.GenericMonospace10"/> Font.
             </summary>
         </member>
+        <member name="F:Duality.Resources.Font.ContentPath_GenericMonospace8">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.Font.GenericMonospace8"/> Font.
+            </summary>
+        </member>
         <member name="F:Duality.Resources.Font.ContentPath_GenericSerif12">
             <summary>
             (Virtual) path of the <see cref="P:Duality.Resources.Font.GenericSerif12"/> Font.
@@ -10012,6 +10017,12 @@
             </summary>
             <param name="stream">The stream to load the FontFamily from.</param>
             <returns>The FontFamily that has been loaded.</returns>
+        </member>
+        <member name="P:Duality.Resources.Font.GenericMonospace8">
+            <summary>
+            A generic <see cref="P:Duality.Resources.Font.MonoSpace">monospace</see> Font (Size 8) that has been loaded from your systems font library.
+            This is usually "Courier New".
+            </summary>
         </member>
         <member name="P:Duality.Resources.Font.GenericMonospace10">
             <summary>

@@ -17,7 +17,7 @@ using DualityEditor.Forms;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
-namespace EditorBase
+namespace EditorBase.CamViewStates
 {
 	public class SceneEditorCamViewState : CamViewState, IHelpProvider
 	{

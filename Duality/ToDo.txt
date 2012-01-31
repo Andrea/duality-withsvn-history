@@ -6,11 +6,10 @@ Next Steps:
 4.	Re-Implement Asteroids using Colliders
 5.	"Optional": Collider Joints (Editor & Logic)
 
+-->	Double-Click on GameObject or Component ==> Focus in CamView (active? all?)
+
 -->	How to implement "Create Circle" / "Create Poly" actions?
-	-->	Introduce new CamViewState.CursorHandler class
-	-->	The basic one handles all standard MouseActions and CameraActions
-	-->	"Create Circle" and "Create Polygon" both create and inject their own CursorHandler
-	-->	...which handles shape creation
+	-->	Override some methods in ColliderEditorCamViewState
 
 -->	WYSIWYG-Editor for Collider Shapes
 	-->	Preview shape in view
@@ -99,3 +98,15 @@ Next Steps:
 	-->	When in ExecutionContext.Editor, consider not saving Components that are part of the Prefab.
 	-->	Can't do the same with GameObjects though, because their index is used to locate them when applying
 		the PrefabLink. Changing the order or removing existing GameObjects requires extra consideration.
+
+
+############### HOWTO: Obtain the Z-Pos of a rendered pixel relative to the Camera ###############
+
+//Vector3 screenPos = new Vector3(0.5f, 0.5f, 0.0f);
+//GL.ReadPixels(this.pickingTex.PxWidth / 2, this.pickingTex.PxHeight / 2, 1, 1, PixelFormat.DepthComponent, PixelType.Float, ref screenPos.Z);
+//screenPos -= Vector3.One * 0.5f;
+//screenPos *= 2.0f;
+//Matrix4 matTemp = this.matFinal;
+//matTemp.Invert();
+//Vector3.Transform(ref screenPos, ref matTemp, out screenPos);
+//Log.Editor.Write("{0:F},\t{1:F},\t{2:F}", screenPos.X, screenPos.Y, screenPos.Z);

@@ -17,7 +17,7 @@ using DualityEditor.Forms;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
-namespace EditorBase
+namespace EditorBase.CamViewStates
 {
 	public class ColliderEditorCamViewState : CamViewState
 	{
@@ -288,6 +288,11 @@ namespace EditorBase
 				new ObjectSelection(this.selectedCollider),
 				ReflectionInfo.Property_Collider_Shapes);
 			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(selShapeArray.Select(s => s.ActualObject)));
+		}
+		protected override void OnCursorSpacePosChanged()
+		{
+			base.OnCursorSpacePosChanged();
+			// Implement "Create Shape" stuff here
 		}
 
 		public override CamViewState.SelObj PickSelObjAt(int x, int y)

@@ -207,7 +207,7 @@ namespace Duality.Resources
 			set { this.textures = value; }
 		}
 		/// <summary>
-		/// [GET] Returns the main texture.
+		/// [GET / SET] The main texture.
 		/// </summary>
 		public ContentRef<Texture> MainTexture
 		{
@@ -217,6 +217,11 @@ namespace Duality.Resources
 				ContentRef<Texture> mainTexRef;
 				if (!this.textures.TryGetValue(ShaderVarInfo.VarName_MainTex, out mainTexRef)) return ContentRef<Texture>.Null;
 				return mainTexRef;
+			}
+			set
+			{
+				if (this.textures == null) this.textures = new Dictionary<string,ContentRef<Texture>>();
+				this.textures[ShaderVarInfo.VarName_MainTex] = value;
 			}
 		}
 		/// <summary>

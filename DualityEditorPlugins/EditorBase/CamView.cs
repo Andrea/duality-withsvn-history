@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using SysDrawFont = System.Drawing.Font;
 using BitArray = System.Collections.BitArray;
 
 using WeifenLuo.WinFormsUI.Docking;
@@ -19,6 +16,8 @@ using Font = Duality.Resources.Font;
 
 using DualityEditor;
 using DualityEditor.Forms;
+
+using EditorBase.CamViewStates;
 
 using OpenTK;
 using OpenTK.Graphics;
@@ -104,7 +103,6 @@ namespace EditorBase
 		private	event		EventHandler<KeyboardKeyEventArgs>	inputKeyUp		= null;
 
 		public event EventHandler ParallaxRefDistChanged	= null;
-		public event EventHandler AccMovementChanged		= null;
 		public event EventHandler<CameraChangedEventArgs> CurrentCameraChanged	= null;
 
 		public ColorRgba BgColor
@@ -139,10 +137,6 @@ namespace EditorBase
 		{
 			get { return this.toggleParallaxity.Checked; }
 			set { this.toggleParallaxity.Checked = value; }
-		}
-		public bool AccMovement
-		{
-			get { return this.toggleAccMove.Checked; }
 		}
 		public Camera CameraComponent
 		{
@@ -312,7 +306,6 @@ namespace EditorBase
 			node.SetAttribute("toggleParallaxity", this.toggleParallaxity.Checked.ToString());
 			node.SetAttribute("parallaxRefDist", this.nativeCamObj.Camera.ParallaxRefDist.ToString());
 			node.SetAttribute("bgColorArgb", this.nativeCamObj.Camera.ClearColor.ToIntArgb().ToString());
-			node.SetAttribute("toggleAccMove", this.toggleAccMove.Checked.ToString());
 
 			if (this.state != null) 
 				node.SetAttribute("state", this.state.GetType().GetTypeId());
@@ -332,8 +325,6 @@ namespace EditorBase
 				this.bgColorDialog.OldColor = Color.FromArgb(tryParseInt);
 				this.bgColorDialog.SelectedColor = this.bgColorDialog.OldColor;
 			}
-			if (bool.TryParse(node.GetAttribute("toggleAccMove"), out tryParseBool))
-				this.toggleAccMove.Checked = tryParseBool;
 
 			this.loadTempState = node.GetAttribute("state");
 		}
@@ -382,7 +373,6 @@ namespace EditorBase
 		}
 		public void SetToolbarCamSettingsEnabled(bool value)
 		{
-			this.toggleAccMove.Enabled = value;
 			this.toggleParallaxity.Enabled = value;
 			this.parallaxRefDist.Enabled = value;
 			this.camSelector.Enabled = value;
@@ -449,11 +439,6 @@ namespace EditorBase
 			if (this.ParallaxRefDistChanged != null)
 				this.ParallaxRefDistChanged(this, EventArgs.Empty);
 		}
-		private void OnAccMovementChanged()
-		{
-			if (this.AccMovementChanged != null)
-				this.AccMovementChanged(this, EventArgs.Empty);
-		}
 		private void OnCurrentCameraChanged(Camera prev, Camera next)
 		{
 			if (this.CurrentCameraChanged != null)
@@ -506,9 +491,6 @@ namespace EditorBase
 					this.inputKeyDown(this, inputKey.ToEventArgs());
 			}
 			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game) return;
-
-
-			if (e.KeyCode == Keys.A) this.toggleAccMove.Checked = !this.toggleAccMove.Checked;
 		}
 		private void glControl_KeyUp(object sender, KeyEventArgs e)
 		{
@@ -553,10 +535,6 @@ namespace EditorBase
 
 			this.camComp.ParallaxRefDist = this.toggleParallaxity.Checked ? (float)this.parallaxRefDist.Value : -(float)this.parallaxRefDist.Value;
 			this.OnParallaxRefDistChanged();
-		}
-		private void toggleAccMove_CheckedChanged(object sender, EventArgs e)
-		{
-			this.OnAccMovementChanged();
 		}
 		private void showBgColorDialog_Click(object sender, EventArgs e)
 		{

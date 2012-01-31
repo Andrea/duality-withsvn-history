@@ -31,7 +31,6 @@
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CamView));
 			this.stateSelector = new System.Windows.Forms.ToolStripComboBox();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-			this.toggleAccMove = new System.Windows.Forms.ToolStripButton();
 			this.toggleParallaxity = new System.Windows.Forms.ToolStripButton();
 			this.parallaxRefDist = new DualityEditor.Controls.ToolStrip.ToolStripNumericUpDown();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -53,20 +52,6 @@
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
 			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-			// 
-			// toggleAccMove
-			// 
-			this.toggleAccMove.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-			this.toggleAccMove.Checked = true;
-			this.toggleAccMove.CheckOnClick = true;
-			this.toggleAccMove.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.toggleAccMove.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.toggleAccMove.Image = global::EditorBase.Properties.Resources.arrow_right_accelerate;
-			this.toggleAccMove.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.toggleAccMove.Name = "toggleAccMove";
-			this.toggleAccMove.Size = new System.Drawing.Size(23, 22);
-			this.toggleAccMove.Text = "Accelerated Movement (A)";
-			this.toggleAccMove.CheckedChanged += new System.EventHandler(this.toggleAccMove_CheckedChanged);
 			// 
 			// toggleParallaxity
 			// 
@@ -136,7 +121,6 @@
 			this.toolbarCamera.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.stateSelector,
             this.toolStripSeparator1,
-            this.toggleAccMove,
             this.toggleParallaxity,
             this.parallaxRefDist,
             this.toolStripSeparator2,
@@ -172,7 +156,6 @@
 
 		private System.Windows.Forms.ToolStripComboBox stateSelector;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-		private System.Windows.Forms.ToolStripButton toggleAccMove;
 		private System.Windows.Forms.ToolStripButton toggleParallaxity;
 		private DualityEditor.Controls.ToolStrip.ToolStripNumericUpDown parallaxRefDist;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
