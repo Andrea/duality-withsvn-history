@@ -85,6 +85,7 @@ namespace EditorBase.CamViewStates
 				if (action == MouseAction.MoveObj) return true;
 				return false;
 			}
+			public virtual void DrawActionGizmo(Canvas canvas, MouseAction action, Point beginLoc, Point curLoc) {}
 			
 			public override bool Equals(object obj)
 			{
@@ -134,9 +135,9 @@ namespace EditorBase.CamViewStates
 		private	Vector3			selectionCenter		= Vector3.Zero;
 		private	float			selectionRadius		= 0.0f;
 		private	ObjectSelection	activeRectSel		= new ObjectSelection();
-		protected	MouseAction		mouseoverAction	= MouseAction.None;
-		protected	SelObj			mouseoverObject	= null;
-		protected	bool			mouseoverSelect	= false;
+		private	MouseAction		mouseoverAction	= MouseAction.None;
+		private	SelObj			mouseoverObject	= null;
+		private	bool			mouseoverSelect	= false;
 		protected	List<SelObj>	actionObjSel	= new List<SelObj>();
 		protected	List<SelObj>	allObjSel		= new List<SelObj>();
 		protected	List<SelObj>	indirectObjSel	= new List<SelObj>();
@@ -155,6 +156,7 @@ namespace EditorBase.CamViewStates
 			get { return this.action; }
 		}
 		public abstract string StateName { get; }
+
 		protected bool CameraActionAllowed
 		{
 			get { return this.camActionAllowed; }
@@ -167,6 +169,22 @@ namespace EditorBase.CamViewStates
 		protected bool CameraTransformChanged
 		{
 			get { return this.camTransformChanged; }
+		}
+		protected bool MouseoverSelect
+		{
+			get { return this.mouseoverSelect; }
+		}
+		protected SelObj MouseoverObject
+		{
+			get { return this.mouseoverObject; }
+		}
+		protected MouseAction MouseoverAction
+		{
+			get { return this.mouseoverAction; }
+		}
+		protected MouseAction Action
+		{
+			get { return this.action; }
 		}
 
 		internal protected virtual void OnEnterState()
@@ -290,8 +308,6 @@ namespace EditorBase.CamViewStates
 		{
 			Point cursorPos = this.View.LocalGLControl.PointToClient(Cursor.Position);
 			canvas.PushState();
-			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Mask, this.View.FgColor));
-			canvas.CurrentState.TextFont = Duality.Resources.Font.GenericMonospace8;
 
 			// Draw camera movement indicators
 			if (this.camAction != CameraAction.None)
@@ -306,21 +322,30 @@ namespace EditorBase.CamViewStates
 				canvas.DrawLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, this.camActionBeginLoc.Y);
 
 				if (MathF.Abs(this.view.CameraObj.Transform.AngleVel) > 0.0f)
-					canvas.DrawText(string.Format("Angle: {0,3:0}°", MathF.RadToDeg(this.view.CameraObj.Transform.Angle)), this.camActionBeginLoc.X + 30, this.camActionBeginLoc.Y + 10);
+					canvas.DrawText(string.Format("Cam Angle: {0,3:0}°", MathF.RadToDeg(this.view.CameraObj.Transform.Angle)), this.camActionBeginLoc.X + 30, this.camActionBeginLoc.Y + 10);
 			}
 			else if (this.camAction == CameraAction.MoveCam || this.view.CameraObj.Transform.Vel.Z != 0.0f)
 			{
 				if (this.camAction == CameraAction.MoveCam)
 				{
 					canvas.DrawLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, cursorPos.Y);
-					canvas.DrawText(string.Format("X:{0,7:0}", this.view.CameraObj.Transform.Pos.X), this.camActionBeginLoc.X + 30, this.camActionBeginLoc.Y + 10);
-					canvas.DrawText(string.Format("Y:{0,7:0}", this.view.CameraObj.Transform.Pos.Y), this.camActionBeginLoc.X + 30, this.camActionBeginLoc.Y + 18);
-					canvas.DrawText(string.Format("Z:{0,7:0}", this.view.CameraObj.Transform.Pos.Z), this.camActionBeginLoc.X + 30, this.camActionBeginLoc.Y + 26);
+					canvas.DrawText(string.Format("Cam X:{0,7:0}", this.view.CameraObj.Transform.Pos.X), this.camActionBeginLoc.X + 30, this.camActionBeginLoc.Y + 10);
+					canvas.DrawText(string.Format("Cam Y:{0,7:0}", this.view.CameraObj.Transform.Pos.Y), this.camActionBeginLoc.X + 30, this.camActionBeginLoc.Y + 18);
+					canvas.DrawText(string.Format("Cam Z:{0,7:0}", this.view.CameraObj.Transform.Pos.Z), this.camActionBeginLoc.X + 30, this.camActionBeginLoc.Y + 26);
 				}
 				else if (this.view.CameraObj.Transform.Vel.Z != 0.0f)
 				{
-					canvas.DrawText(string.Format("Z:{0,7:0}", this.view.CameraObj.Transform.Pos.Z), cursorPos.X + 30, cursorPos.Y + 10);
+					canvas.DrawText(string.Format("Cam Z:{0,7:0}", this.view.CameraObj.Transform.Pos.Z), cursorPos.X + 30, cursorPos.Y + 10);
 				}
+			}
+			
+			// Draw selected object's action gizmo
+			if (this.Action != MouseAction.None)
+			{
+				canvas.PushState();
+				foreach (SelObj selShape in this.actionObjSel)
+					selShape.DrawActionGizmo(canvas, this.Action, this.camActionBeginLoc, cursorPos);
+				canvas.PopState();
 			}
 
 			// Draw rect selection
@@ -914,11 +939,19 @@ namespace EditorBase.CamViewStates
 		}
 		private void CameraComponent_CollectOverlayDrawcalls(object sender, EventArgs e)
 		{
-			this.OnCollectStateOverlayDrawcalls(new Canvas(this.View.CameraComponent.DrawDevice));
+			Canvas canvas = new Canvas(this.View.CameraComponent.DrawDevice);
+			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Mask, this.View.FgColor));
+			canvas.CurrentState.TextFont = Duality.Resources.Font.GenericMonospace8;
+
+			this.OnCollectStateOverlayDrawcalls(canvas);
 		}
 		private void CameraComponent_CollectRendererDrawcalls(object sender, EventArgs e)
 		{
-			this.OnCollectStateDrawcalls(new Canvas(this.View.CameraComponent.DrawDevice));
+			Canvas canvas = new Canvas(this.View.CameraComponent.DrawDevice);
+			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Mask, this.View.FgColor));
+			canvas.CurrentState.TextFont = Duality.Resources.Font.GenericMonospace8;
+
+			this.OnCollectStateDrawcalls(canvas);
 		}
 	}
 }

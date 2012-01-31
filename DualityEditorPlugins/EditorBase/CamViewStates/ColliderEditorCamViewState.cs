@@ -156,6 +156,19 @@ namespace EditorBase.CamViewStates
 				if (action == MouseAction.RotateObj) return false;
 				return base.IsActionAvailable(action);
 			}
+			public override void DrawActionGizmo(Canvas canvas, MouseAction action, Point beginLoc, Point curLoc)
+			{
+				base.DrawActionGizmo(canvas, action, beginLoc, curLoc);
+				if (action == MouseAction.MoveObj)
+				{
+					canvas.DrawText(string.Format("Center X:{0,7:0.00}", this.circle.Position.X), curLoc.X + 30, curLoc.Y + 10);
+					canvas.DrawText(string.Format("Center Y:{0,7:0.00}", this.circle.Position.Y), curLoc.X + 30, curLoc.Y + 18);
+				}
+				else if (action == MouseAction.ScaleObj)
+				{
+					canvas.DrawText(string.Format("Radius:{0,7:0.00}", this.circle.Radius), curLoc.X + 30, curLoc.Y + 10);
+				}
+			}
 		}
 
 		private	Collider		selectedCollider	= null;
@@ -274,6 +287,11 @@ namespace EditorBase.CamViewStates
 					}
 				}
 			}
+		}
+		protected override void OnCollectStateOverlayDrawcalls(Canvas canvas)
+		{
+			base.OnCollectStateOverlayDrawcalls(canvas);
+
 		}
 		protected override void PostPerformAction(IEnumerable<CamViewState.SelObj> selObjEnum, CamViewState.MouseAction action)
 		{

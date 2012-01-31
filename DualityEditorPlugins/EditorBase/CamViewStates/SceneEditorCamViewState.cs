@@ -81,6 +81,34 @@ namespace EditorBase.CamViewStates
 				if (action == MouseAction.ScaleObj) return true;
 				return false;
 			}
+			public override void DrawActionGizmo(Canvas canvas, MouseAction action, Point beginLoc, Point curLoc)
+			{
+				base.DrawActionGizmo(canvas, action, beginLoc, curLoc);
+				if (action == MouseAction.MoveObj)
+				{
+					canvas.DrawText(string.Format("X:{0,7:0}", this.gameObj.Transform.RelativePos.X), curLoc.X + 30, curLoc.Y + 10);
+					canvas.DrawText(string.Format("Y:{0,7:0}", this.gameObj.Transform.RelativePos.Y), curLoc.X + 30, curLoc.Y + 18);
+					canvas.DrawText(string.Format("Z:{0,7:0}", this.gameObj.Transform.RelativePos.Z), curLoc.X + 30, curLoc.Y + 26);
+				}
+				else if (action == MouseAction.ScaleObj)
+				{
+					if (this.gameObj.Transform.RelativeScale.X == this.gameObj.Transform.RelativeScale.Y &&
+						this.gameObj.Transform.RelativeScale.X == this.gameObj.Transform.RelativeScale.Z)
+					{
+						canvas.DrawText(string.Format("Scale:{0,5:0.00}", this.gameObj.Transform.RelativeScale.X), curLoc.X + 30, curLoc.Y + 10);
+					}
+					else
+					{
+						canvas.DrawText(string.Format("Scale X:{0,5:0.00}", this.gameObj.Transform.RelativeScale.X), curLoc.X + 30, curLoc.Y + 10);
+						canvas.DrawText(string.Format("Scale Y:{0,5:0.00}", this.gameObj.Transform.RelativeScale.Y), curLoc.X + 30, curLoc.Y + 18);
+						canvas.DrawText(string.Format("Scale Z:{0,5:0.00}", this.gameObj.Transform.RelativeScale.Z), curLoc.X + 30, curLoc.Y + 26);
+					}
+				}
+				else if (action == MouseAction.RotateObj)
+				{
+					canvas.DrawText(string.Format("Angle:{0,5:0}", MathF.RadToDeg(this.gameObj.Transform.RelativeAngle)), curLoc.X + 30, curLoc.Y + 10);
+				}
+			}
 
 			protected void OnTransformChanged()
 			{
@@ -369,13 +397,13 @@ namespace EditorBase.CamViewStates
 		{
 			HelpInfo result = null;
 			GameObject[] selObj = this.allObjSel.Select(s => s.ActualObject as GameObject).ToArray();
-			GameObject mouseoverGameObj = this.mouseoverObject != null ? this.mouseoverObject.ActualObject as GameObject : null;
+			GameObject mouseoverGameObj = this.MouseoverObject != null ? this.MouseoverObject.ActualObject as GameObject : null;
 
-			if (this.mouseoverObject != null && this.mouseoverSelect)
+			if (this.MouseoverObject != null && this.MouseoverSelect)
 				result = HelpInfo.FromGameObject(mouseoverGameObj);
-			else if (this.mouseoverAction != MouseAction.None && this.mouseoverAction != MouseAction.RectSelection && selObj.Contains(mouseoverGameObj))
+			else if (this.MouseoverAction != MouseAction.None && this.MouseoverAction != MouseAction.RectSelection && selObj.Contains(mouseoverGameObj))
 				result = HelpInfo.FromGameObject(mouseoverGameObj);
-			else if (this.mouseoverAction != MouseAction.None && this.mouseoverAction != MouseAction.RectSelection && selObj.Length == 1)
+			else if (this.MouseoverAction != MouseAction.None && this.MouseoverAction != MouseAction.RectSelection && selObj.Length == 1)
 				result = HelpInfo.FromSelection(new ObjectSelection(selObj));
 
 			return result;
