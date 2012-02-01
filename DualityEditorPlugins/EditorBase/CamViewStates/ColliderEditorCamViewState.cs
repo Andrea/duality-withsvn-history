@@ -198,6 +198,17 @@ namespace EditorBase.CamViewStates
 					return ColorRgba.Mix(ColorRgba.Blue, ColorRgba.VeryDarkGrey, 0.5f);
 			}
 		}
+		public ColorRgba ShapeSensorColor
+		{
+			get
+			{
+				float fgLum = this.View.FgColor.GetLuminance();
+				if (fgLum > 0.5f)
+					return ColorRgba.Mix(new ColorRgba(255, 128, 0), ColorRgba.VeryLightGrey, 0.5f);
+				else
+					return ColorRgba.Mix(new ColorRgba(255, 128, 0), ColorRgba.VeryDarkGrey, 0.5f);
+			}
+		}
 
 		protected internal override void OnEnterState()
 		{
@@ -262,6 +273,7 @@ namespace EditorBase.CamViewStates
 				float colliderAlpha = c == this.selectedCollider ? 1.0f : 0.25f;
 				float maxDensity = c.Shapes.Max(s => s.Density);
 				float minDensity = c.Shapes.Min(s => s.Density);
+				float avgDensity = (maxDensity + minDensity) * 0.5f;
 				Vector3 colliderPos = c.GameObj.Transform.Pos;
 				Vector2 colliderScale = c.GameObj.Transform.Scale.Xy;
 				foreach (Collider.ShapeInfo s in c.Shapes)
@@ -269,21 +281,22 @@ namespace EditorBase.CamViewStates
 					Collider.CircleShapeInfo circle = s as Collider.CircleShapeInfo;
 					Collider.PolyShapeInfo poly = s as Collider.PolyShapeInfo;
 					float shapeAlpha = colliderAlpha * (this.allObjSel.Any(sel => sel.ActualObject == s) ? 1.0f : 0.5f);
-					float densityRelative = MathF.Abs(maxDensity - minDensity) < 0.01f ? 0.5f : (s.Density - minDensity) / (maxDensity - minDensity);
+					float densityRelative = MathF.Abs(maxDensity - minDensity) < 0.01f ? 1.0f : s.Density / avgDensity;
 					if (circle != null)
 					{
+						ColorRgba clr = s.IsSensor ? this.ShapeSensorColor : this.ShapeColor;
 						float uniformScale = colliderScale.Length / MathF.Sqrt(2.0f);
 						Vector2 circlePos = circle.Position;
 						MathF.TransformCoord(ref circlePos.X, ref circlePos.Y, c.GameObj.Transform.Angle);
 						circlePos.X *= colliderScale.X;
 						circlePos.Y *= colliderScale.Y;
-						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, this.ShapeColor.WithAlpha((0.25f + densityRelative * 0.5f) * colliderAlpha)));
+						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha((0.25f + densityRelative * 0.25f) * colliderAlpha)));
 						canvas.FillCircle(
 							colliderPos.X + circlePos.X, 
 							colliderPos.Y + circlePos.Y, 
 							colliderPos.Z - 0.01f, 
 							circle.Radius * uniformScale);
-						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, this.ShapeColor.WithAlpha(shapeAlpha)));
+						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha(shapeAlpha)));
 						canvas.DrawCircle(
 							colliderPos.X + circlePos.X, 
 							colliderPos.Y + circlePos.Y, 

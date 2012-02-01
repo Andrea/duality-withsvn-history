@@ -9,7 +9,11 @@ Next Steps:
 -->	Implement "Create Circle" / "Create Poly" actions
 	-->	Proper Cursors & "Abort action"
 	-->	Delete Shape
+	-->	Clone Shape
 	-->	Create Polygon
+
+--> Core infrastructure
+	-->	Collision event handling
 
 -->	WYSIWYG-Editor for Collider Shapes
 	-->	Preview shape in view

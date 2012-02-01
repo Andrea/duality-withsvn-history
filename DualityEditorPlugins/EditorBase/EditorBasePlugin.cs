@@ -462,7 +462,11 @@ namespace EditorBase
 			if (obj.Transform == null) return;
 			foreach (CamView view in this.camViews)
 			{
-				view.CameraObj.Transform.Pos = obj.Transform.Pos - Vector3.UnitZ * view.CameraComponent.ParallaxRefDist;
+				if (!view.ViewState.CameraActionAllowed) continue;
+				Vector3 targetPos = obj.Transform.Pos - Vector3.UnitZ * view.CameraComponent.ParallaxRefDist;
+				targetPos.Z = MathF.Min(view.CameraObj.Transform.Pos.Z, targetPos.Z);
+				view.CameraObj.Transform.Pos = targetPos;
+				view.OnCamTransformChanged();
 				view.LocalGLControl.Invalidate();
 			}
 		}

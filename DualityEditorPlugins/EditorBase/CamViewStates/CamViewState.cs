@@ -158,10 +158,10 @@ namespace EditorBase.CamViewStates
 		}
 		public abstract string StateName { get; }
 
-		protected bool MouseActionAllowed
+		public bool MouseActionAllowed
 		{
 			get { return this.actionAllowed; }
-			set
+			protected set
 			{
 				this.actionAllowed = value;
 				if (!this.actionAllowed && this.action != MouseAction.None)
@@ -171,10 +171,10 @@ namespace EditorBase.CamViewStates
 				}
 			}
 		}
-		protected bool CameraActionAllowed
+		public bool CameraActionAllowed
 		{
 			get { return this.camActionAllowed; }
-			set
+			protected set
 			{ 
 				this.camActionAllowed = value;
 				if (!this.camActionAllowed && this.camAction != CameraAction.None)
@@ -218,6 +218,7 @@ namespace EditorBase.CamViewStates
 			this.View.LocalGLControl.LostFocus	+= this.LocalGLControl_LostFocus;
 			this.View.ParallaxRefDistChanged	+= this.View_ParallaxRefDistChanged;
 			EditorBasePlugin.Instance.EditorForm.AfterUpdateDualityApp += this.EditorForm_AfterUpdateDualityApp;
+			EditorBasePlugin.Instance.EditorForm.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
 
 			Scene.Leaving += this.Scene_Changed;
 			Scene.Entered += this.Scene_Changed;
@@ -339,12 +340,18 @@ namespace EditorBase.CamViewStates
 				canvas.FillCircle(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, 3);
 				canvas.PopState();
 			}
+
+			// Draw camera action hints
+			bool camActionHint = false;
 			if (this.camAction == CameraAction.TurnCam)
 			{
 				canvas.DrawLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, this.camActionBeginLoc.Y);
 
 				if (MathF.Abs(this.view.CameraObj.Transform.AngleVel) > 0.0f)
+				{
 					canvas.DrawText(string.Format("Cam Angle: {0,3:0}°", MathF.RadToDeg(this.view.CameraObj.Transform.Angle)), 10, viewSize.Height - 20);
+					camActionHint = true;
+				}
 			}
 			else if (this.camAction == CameraAction.MoveCam || this.view.CameraObj.Transform.Vel.Z != 0.0f)
 			{
@@ -354,15 +361,27 @@ namespace EditorBase.CamViewStates
 					canvas.DrawText(string.Format("Cam X:{0,7:0}", this.view.CameraObj.Transform.Pos.X), 10, viewSize.Height - 36);
 					canvas.DrawText(string.Format("Cam Y:{0,7:0}", this.view.CameraObj.Transform.Pos.Y), 10, viewSize.Height - 28);
 					canvas.DrawText(string.Format("Cam Z:{0,7:0}", this.view.CameraObj.Transform.Pos.Z), 10, viewSize.Height - 20);
+					camActionHint = true;
 				}
 				else if (this.view.CameraObj.Transform.Vel.Z != 0.0f)
 				{
 					canvas.DrawText(string.Format("Cam Z:{0,7:0}", this.view.CameraObj.Transform.Pos.Z), 10, viewSize.Height - 20);
+					camActionHint = true;
 				}
+			}
+
+			// Draw action hints
+			if (!camActionHint)
+			{
+				MouseAction actionHint = this.action != MouseAction.None ? this.action : this.mouseoverAction;
+				if (actionHint == MouseAction.MoveObj)				canvas.DrawText("Move", 10, viewSize.Height - 20);
+				else if (actionHint == MouseAction.RotateObj)		canvas.DrawText("Rotate", 10, viewSize.Height - 20);
+				else if (actionHint == MouseAction.ScaleObj)		canvas.DrawText("Scale", 10, viewSize.Height - 20);
+				else if (this.action == MouseAction.RectSelection)	canvas.DrawText("Selecting...", 10, viewSize.Height - 20);
 			}
 			
 			// Draw selected object's action gizmo
-			if (this.Action != MouseAction.None)
+			if (this.action != MouseAction.None)
 			{
 				canvas.PushState();
 				foreach (SelObj selShape in this.actionObjSel)
@@ -435,8 +454,6 @@ namespace EditorBase.CamViewStates
 
 			if (this.camTransformChanged)
 			{
-				this.OnCursorSpacePosChanged();
-
 				this.View.OnCamTransformChanged();
 				this.View.LocalGLControl.Invalidate();
 			}
@@ -646,6 +663,7 @@ namespace EditorBase.CamViewStates
 		{
 			bool lastMouseoverSelect = this.mouseoverSelect;
 			SelObj lastMouseoverObject = this.mouseoverObject;
+			MouseAction lastMouseoverAction = this.mouseoverAction;
 
 			if (this.actionAllowed)
 			{
@@ -704,7 +722,8 @@ namespace EditorBase.CamViewStates
 
 			// Redraw if mouseover changed
 			if (this.mouseoverObject != lastMouseoverObject || 
-				this.mouseoverSelect != lastMouseoverSelect)
+				this.mouseoverSelect != lastMouseoverSelect ||
+				this.mouseoverAction != lastMouseoverAction)
 				this.View.LocalGLControl.Invalidate();
 		}
 		private void UpdateRectSelection(Point mouseLoc)
@@ -916,8 +935,6 @@ namespace EditorBase.CamViewStates
 				{
 					this.View.ParallaxRefDist = this.View.ParallaxRefDist + this.View.ParallaxRefDistIncrement * e.Delta / 40;
 				}
-
-				this.OnCursorSpacePosChanged();
 			}
 		}
 		private void LocalGLControl_MouseLeave(object sender, EventArgs e)
@@ -974,6 +991,14 @@ namespace EditorBase.CamViewStates
 		private void EditorForm_AfterUpdateDualityApp(object sender, EventArgs e)
 		{
 			this.OnUpdateState();
+		}
+		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
+		{
+			if (e.HasAnyProperty(ReflectionInfo.Property_Transform_RelativePos, ReflectionInfo.Property_Transform_RelativeAngle) &&
+				e.Objects.Components.Any(c => c.GameObj == this.view.CameraObj))
+			{
+				this.OnCursorSpacePosChanged();
+			}
 		}
 		private void Scene_Changed(object sender, EventArgs e)
 		{

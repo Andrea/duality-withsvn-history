@@ -7535,16 +7535,6 @@
             [GET / SET] Whether the body ignores gravity.
             </summary>
         </member>
-        <member name="P:Duality.Components.Collider.Friction">
-            <summary>
-            [GET / SET] The bodies (average) friction value.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Collider.Restitution">
-            <summary>
-            [GET / SET] The bodies (average) restitution value.
-            </summary>
-        </member>
         <member name="P:Duality.Components.Collider.CollisionCategory">
             <summary>
             [GET / SET] A bitmask that specifies the collision categories to which this Collider belongs.

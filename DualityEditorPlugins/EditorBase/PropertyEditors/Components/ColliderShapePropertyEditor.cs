@@ -34,8 +34,7 @@ namespace EditorBase.PropertyEditors
 		protected override PropertyEditor MemberEditor(MemberInfo info)
 		{
 			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Collider_ShapeInfo_Friction) ||
-				ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Collider_ShapeInfo_Restitution) ||
-				ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Collider_ShapeInfo_Density))
+				ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Collider_ShapeInfo_Restitution))
 			{
 				PropertyEditor e = this.ParentGrid.PropertyEditorProvider.CreateEditor((info as PropertyInfo).PropertyType, this, this.ParentGrid);
 				NumericPropertyEditor numEdit = e as NumericPropertyEditor;
@@ -43,6 +42,18 @@ namespace EditorBase.PropertyEditors
 				{
 					numEdit.Editor.Minimum = 0.0m;
 					numEdit.Editor.Maximum = 1.0m;
+					numEdit.Editor.Increment = 0.05m;
+				}
+				return e;
+			}
+			else if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Collider_ShapeInfo_Density))
+			{
+				PropertyEditor e = this.ParentGrid.PropertyEditorProvider.CreateEditor((info as PropertyInfo).PropertyType, this, this.ParentGrid);
+				NumericPropertyEditor numEdit = e as NumericPropertyEditor;
+				if (numEdit != null)
+				{
+					numEdit.Editor.Minimum = 0.0m;
+					numEdit.Editor.Maximum = 100.0m;
 					numEdit.Editor.Increment = 0.05m;
 				}
 				return e;

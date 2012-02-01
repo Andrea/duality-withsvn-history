@@ -69,8 +69,6 @@ namespace Duality
 		public static readonly PropertyInfo	Property_SoundEmitter_Source_Volume;
 		public static readonly PropertyInfo	Property_SoundEmitter_Source_Pitch;
 		
-		public static readonly PropertyInfo	Property_Collider_Friction;
-		public static readonly PropertyInfo	Property_Collider_Restitution;
 		public static readonly PropertyInfo	Property_Collider_LinearDamping;
 		public static readonly PropertyInfo	Property_Collider_AngularDamping;
 		public static readonly PropertyInfo	Property_Collider_Shapes;
@@ -210,8 +208,6 @@ namespace Duality
 			Property_Camera_RenderPass_VisibilityMask	= cameraRenderPass.GetProperty("VisibilityMask");
 
 			Type collider = typeof(Collider);
-			Property_Collider_Friction			= collider.GetProperty("Friction");
-			Property_Collider_Restitution		= collider.GetProperty("Restitution");
 			Property_Collider_LinearDamping		= collider.GetProperty("LinearDamping");
 			Property_Collider_AngularDamping	= collider.GetProperty("AngularDamping");
 			Property_Collider_Shapes			= collider.GetProperty("Shapes");

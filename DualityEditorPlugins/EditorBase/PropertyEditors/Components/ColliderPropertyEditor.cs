@@ -28,20 +28,7 @@ namespace EditorBase.PropertyEditors
 		}
 		protected override PropertyEditor MemberEditor(MemberInfo info)
 		{
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Collider_Friction) ||
-				ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Collider_Restitution))
-			{
-				PropertyEditor e = this.ParentGrid.PropertyEditorProvider.CreateEditor((info as PropertyInfo).PropertyType, this, this.ParentGrid);
-				NumericPropertyEditor numEdit = e as NumericPropertyEditor;
-				if (numEdit != null)
-				{
-					numEdit.Editor.Minimum = 0.0m;
-					numEdit.Editor.Maximum = 1.0m;
-					numEdit.Editor.Increment = 0.05m;
-				}
-				return e;
-			}
-			else if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Collider_LinearDamping) ||
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Collider_LinearDamping) ||
 				ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Collider_AngularDamping))
 			{
 				PropertyEditor e = this.ParentGrid.PropertyEditorProvider.CreateEditor((info as PropertyInfo).PropertyType, this, this.ParentGrid);
@@ -49,7 +36,7 @@ namespace EditorBase.PropertyEditors
 				if (numEdit != null)
 				{
 					numEdit.Editor.Minimum = 0.0m;
-					numEdit.Editor.Maximum = 10.0m;
+					numEdit.Editor.Maximum = 100.0m;
 					numEdit.Editor.Increment = 0.1m;
 				}
 				return e;

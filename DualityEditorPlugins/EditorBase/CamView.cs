@@ -158,6 +158,10 @@ namespace EditorBase
 		{
 			get { return this.toolbarCamera; }
 		}
+		public CamViewState ViewState
+		{
+			get { return this.state; }
+		}
 
 		public CamView(int runtimeId)
 		{
@@ -570,8 +574,6 @@ namespace EditorBase
 		}
 		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
 		{
-			if (e.Objects.Components.Contains(this.camComp) || e.Objects.GameObjects.Contains(this.camObj))
-				this.OnCamTransformChanged();
 			this.glControl.Invalidate();
 		}
 

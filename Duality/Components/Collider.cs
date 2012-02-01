@@ -124,6 +124,7 @@ namespace Duality.Components
 			internal abstract void CreateFixture(Body body);
 			internal virtual void UpdateFixture(Vector2 scale)
 			{
+				this.fixture.Shape.Density = this.density;
 				this.fixture.IsSensor = this.sensor;
 				this.fixture.Restitution = this.restitution;
 				this.fixture.Friction = this.friction;
@@ -197,7 +198,6 @@ namespace Duality.Components
 				CircleShape circle = this.Fixture.Shape as CircleShape;
 				circle.Radius = this.radius * uniformScale * 0.01f;
 				circle.Position = new Vector2(this.position.X * scale.X, this.position.Y * scale.Y) * 0.01f;
-				circle.Density = this.Density * 100.0f;
 			}
 
 			protected override void CopyTo(ShapeInfo target)
@@ -257,7 +257,6 @@ namespace Duality.Components
 			{
 				base.UpdateFixture(scale);
 				PolygonShape poly = this.Fixture.Shape as PolygonShape;
-				poly.Density = this.Density * 100.0f;
 				poly.Vertices = new FarseerPhysics.Common.Vertices(this.vertices.Length);
 				for (int i = 0; i < poly.Vertices.Count; i++)
 				{
@@ -281,8 +280,6 @@ namespace Duality.Components
 		private	float		angularDamp		= 0.0f;
 		private	bool		fixedAngle		= false;
 		private	bool		ignoreGravity	= false;
-		private	float		friction		= 0.3f;
-		private	float		restitution		= 0.3f;
 		private	Category	colCat			= Category.Cat1;
 		private	Category	colWith			= Category.All;
 		private	List<ShapeInfo>	shapes		= new List<ShapeInfo>();
@@ -345,30 +342,6 @@ namespace Duality.Components
 			{
 				if (this.body != null) this.body.IgnoreGravity = value;
 				this.ignoreGravity = value;
-			}
-		}
-		/// <summary>
-		/// [GET / SET] The bodies (average) friction value.
-		/// </summary>
-		public float Friction
-		{
-			get { return this.friction; }
-			set 
-			{
-				if (this.body != null) this.body.Friction = value;
-				this.friction = value;
-			}
-		}
-		/// <summary>
-		/// [GET / SET] The bodies (average) restitution value.
-		/// </summary>
-		public float Restitution
-		{
-			get { return this.restitution; }
-			set 
-			{
-				if (this.body != null) this.body.Restitution = value;
-				this.restitution = value;
 			}
 		}
 		/// <summary>
@@ -525,8 +498,6 @@ namespace Duality.Components
 			this.body.AngularDamping = this.angularDamp;
 			this.body.FixedRotation = this.fixedAngle;
 			this.body.IgnoreGravity = this.ignoreGravity;
-			this.body.Friction = this.friction;
-			this.body.Restitution = this.restitution;
 			this.body.CollisionCategories = this.colCat;
 			this.body.CollidesWith = this.colWith;
 			this.body.UserData = this;
@@ -739,17 +710,12 @@ namespace Duality.Components
 			c.angularDamp = this.angularDamp;
 			c.fixedAngle = this.fixedAngle;
 			c.ignoreGravity = this.ignoreGravity;
-			c.friction = this.friction;
-			c.restitution = this.restitution;
 			c.colCat = this.colCat;
 
 			if (this.shapes != null)
 			{
 				foreach (ShapeInfo shape in this.shapes)
-				{
-					ShapeInfo newShape = shape.Clone();
-					newShape.Parent = c;
-				}
+					c.AddShape(shape.Clone());
 			}
 			else c.shapes = null;
 
