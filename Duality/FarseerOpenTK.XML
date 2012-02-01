@@ -1983,29 +1983,6 @@
             Warning: You cannot reuse fixtures.
             </summary>
         </member>
-        <member name="F:FarseerPhysics.Dynamics.Fixture.AfterCollision">
-            <summary>
-            Fires after two shapes has collided and are solved. This gives you a chance to get the impact force.
-            </summary>
-        </member>
-        <member name="F:FarseerPhysics.Dynamics.Fixture.BeforeCollision">
-            <summary>
-            Fires when two fixtures are close to each other.
-            Due to how the broadphase works, this can be quite inaccurate as shapes are approximated using AABBs.
-            </summary>
-        </member>
-        <member name="F:FarseerPhysics.Dynamics.Fixture.OnCollision">
-            <summary>
-            Fires when two shapes collide and a contact is created between them.
-            Note that the first fixture argument is always the fixture that the delegate is subscribed to.
-            </summary>
-        </member>
-        <member name="F:FarseerPhysics.Dynamics.Fixture.OnSeparation">
-            <summary>
-            Fires when two shapes separate and a contact is removed between them.
-            Note that the first fixture argument is always the fixture that the delegate is subscribed to.
-            </summary>
-        </member>
         <member name="M:FarseerPhysics.Dynamics.Fixture.RestoreCollisionWith(FarseerPhysics.Dynamics.Fixture)">
             <summary>
             Restores collisions between this fixture and the provided fixture.

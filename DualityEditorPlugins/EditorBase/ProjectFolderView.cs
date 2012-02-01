@@ -646,23 +646,11 @@ namespace EditorBase
 			if (resNode == null) return;
 
 			// Determine applying open actions
-			Type resType = resNode.ResType;
-			IEnumerable<CorePluginHelper.IEditorAction> actions;
-			do
-			{
-				actions = CorePluginHelper.RequestEditorActions(resType, CorePluginHelper.ActionContext_OpenRes);
-				if (!actions.Any() && resType.BaseType != null)
-					resType = resType.BaseType;
-				else
-					break;
-			} while (true);
+			var actions = CorePluginHelper.RequestEditorActions(resNode.ResType, CorePluginHelper.ActionContext_OpenRes);
 
 			// Perform first open action
-			CorePluginHelper.IEditorAction action = actions.FirstOrDefault();
-			if (action != null)
-			{
-				action.Perform(resNode.ResLink.Res);
-			}
+			var action = actions.FirstOrDefault();
+			if (action != null) action.Perform(resNode.ResLink.Res);
 		}
 
 		protected void AppendNodesToData(DataObject data, IEnumerable<TreeNodeAdv> nodes)

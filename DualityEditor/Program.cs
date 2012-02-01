@@ -29,6 +29,8 @@ namespace DualityEditor
 			//Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en-US"); // en-US, de-DE
 			//Thread.CurrentThread.CurrentUICulture = Thread.CurrentThread.CurrentCulture;
 
+			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+			Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 			Application.CurrentCulture = Thread.CurrentThread.CurrentCulture;
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);

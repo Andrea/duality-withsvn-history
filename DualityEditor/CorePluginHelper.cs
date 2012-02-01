@@ -122,39 +122,56 @@ namespace DualityEditor
 			}
 			if (!resList.Contains(res)) resList.Add(res);
 		}
-		private static T RequestCorePluginRes<T>(Type type, Predicate<T> predicate) where T : IResEntry
+		private static T RequestCorePluginRes<T>(Type type, Predicate<T> predicate = null) where T : IResEntry
 		{
 			if (type == null) return default(T);
 			string typeString = ReflectionHelper.GetTypeId(type);
 
 			List<IResEntry> resList = null;
-			if (!corePluginRes.TryGetValue(typeString, out resList)) return default(T);
-			foreach (IResEntry res in resList)
+			if (corePluginRes.TryGetValue(typeString, out resList))
 			{
-				if (typeof(T).IsAssignableFrom(res.GetType()))
+				foreach (IResEntry res in resList)
 				{
-					T casted = (T)res;
-					if (predicate(casted)) return casted;
+					if (typeof(T).IsAssignableFrom(res.GetType()))
+					{
+						T casted = (T)res;
+						if (predicate == null || predicate(casted)) return casted;
+					}
 				}
 			}
-			return default(T);
+
+			if (type != typeof(object))
+				return RequestCorePluginRes<T>(type.BaseType, predicate);
+			else
+				return default(T);
 		}
-		private static IEnumerable<T> RequestCorePluginRes<T>(Type type) where T : IResEntry
+		private static List<T> RequestAllCorePluginRes<T>(Type type, Predicate<T> predicate = null) where T : IResEntry
 		{
-			if (type == null) yield break;
+			if (type == null) return new List<T>();
 			string typeString = ReflectionHelper.GetTypeId(type);
 
+			List<T> result = null;
 			List<IResEntry> resList = null;
-			if (!corePluginRes.TryGetValue(typeString, out resList)) yield break;
-			foreach (IResEntry res in resList)
+			if (corePluginRes.TryGetValue(typeString, out resList))
 			{
-				if (typeof(T).IsAssignableFrom(res.GetType()))
+				foreach (IResEntry res in resList)
 				{
-					T casted = (T)res;
-					yield return casted;
+					if (typeof(T).IsAssignableFrom(res.GetType()))
+					{
+						T casted = (T)res;
+						if (predicate == null || predicate(casted))
+						{
+							if (result == null) result = new List<T>();
+							result.Add(casted);
+						}
+					}
 				}
 			}
-			yield break;
+
+			if (result == null && type != typeof(object)) return RequestAllCorePluginRes<T>(type.BaseType, predicate);
+
+			if (result == null) result = new List<T>();
+			return result;
 		}
 
 
@@ -180,10 +197,9 @@ namespace DualityEditor
 		{
 			RegisterCorePluginRes(typeof(object), new PropertyEditorProviderResEntry(provider));
 		}
-		public static List<PropertyGrid.IPropertyEditorProvider> RequestPropertyEditorProviders()
+		public static IEnumerable<PropertyGrid.IPropertyEditorProvider> RequestPropertyEditorProviders()
 		{
-			return new List<PropertyGrid.IPropertyEditorProvider>(
-				RequestCorePluginRes<PropertyEditorProviderResEntry>(typeof(object)).Select(e => e.provider));
+			return RequestAllCorePluginRes<PropertyEditorProviderResEntry>(typeof(object)).Select(e => e.provider);
 		}
 
 		public static void RegisterEditorAction<T>(string name, Image icon, Action<T> action, string context)
@@ -192,15 +208,11 @@ namespace DualityEditor
 		}
 		public static IEnumerable<EditorAction<T>> RequestEditorActions<T>(string context)
 		{
-			return from entry in RequestCorePluginRes<EditorActionEntry>(typeof(T))
-				   where entry.context == context
-				   select entry.action as EditorAction<T>;
+			return RequestAllCorePluginRes<EditorActionEntry>(typeof(T), e => e.context == context).Select(e => e.action as EditorAction<T>);
 		}
 		public static IEnumerable<IEditorAction> RequestEditorActions(Type type, string context)
 		{
-			return from entry in RequestCorePluginRes<EditorActionEntry>(type)
-				   where entry.context == context
-				   select entry.action;
+			return RequestAllCorePluginRes<EditorActionEntry>(type, e => e.context == context).Select(e => e.action);
 		}
 
 		public static void RegisterXmlCodeDoc(XmlCodeDoc doc)

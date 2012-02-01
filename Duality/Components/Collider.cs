@@ -42,23 +42,66 @@ namespace Duality.Components
 		[Serializable]
 		public abstract class ShapeInfo
 		{
-			private	Collider	parent	= null;
-			private	float		density	= 1.0f;
+			[NonSerialized]	
+			private	Fixture		fixture		= null;
+			private	Collider	parent		= null;
+			private	float		density		= 1.0f;
+			private	float		friction	= 0.3f;
+			private	float		restitution	= 0.3f;
+			private	bool		sensor		= false;
 			
+			internal Fixture Fixture
+			{
+				get { return this.fixture; }
+				set { this.fixture = value; }
+			}
 			/// <summary>
 			/// [GET] The shape's parent <see cref="Collider"/>.
 			/// </summary>
 			public Collider Parent
 			{
 				get { return this.parent; }
+				set 
+				{ 
+					if (this.parent != value)
+					{
+						if (this.parent != null) this.parent.RemoveShape(this);
+						this.parent = value;
+						if (this.parent != null) this.parent.AddShape(this);
+					}
+				}
 			}
 			/// <summary>
-			/// [GEt / SET] The shapes density.
+			/// [GET / SET] The shapes density.
 			/// </summary>
 			public float Density
 			{
 				get { return this.density; }
-				set { this.density = value; }
+				set { this.density = value; this.parent.UpdateBodyShape(); }
+			}
+			/// <summary>
+			/// [GET / SET] Whether or not the shape acts as sensor i.e. is not part of a rigid body.
+			/// </summary>
+			public bool IsSensor
+			{
+				get { return this.sensor; }
+				set { this.sensor = value; this.parent.UpdateBodyShape(); }
+			}
+			/// <summary>
+			/// [GET / SET] The shapes friction value.
+			/// </summary>
+			public float Friction
+			{
+				get { return this.friction; }
+				set { this.friction = value; this.parent.UpdateBodyShape(); }
+			}
+			/// <summary>
+			/// [GET / SET] The shapes restitution value.
+			/// </summary>
+			public float Restitution
+			{
+				get { return this.restitution; }
+				set { this.restitution = value; this.parent.UpdateBodyShape(); }
 			}
 			/// <summary>
 			/// [GET] Returns the Shapes axis-aligned bounding box
@@ -73,17 +116,18 @@ namespace Duality.Components
 				this.density = density;
 			}
 
-			/// <summary>
-			/// Creates an actual physics shape.
-			/// </summary>
-			/// <returns></returns>
-			public abstract Shape CreateShape();
-			/// <summary>
-			/// Updates the specified physics shape to fit this ShapeInfo
-			/// </summary>
-			/// <param name="shape"></param>
-			/// <param name="scale"></param>
-			public abstract void UpdateShape(Shape shape, Vector2 scale);
+			internal void DestroyFixture(Body body)
+			{
+				if (this.fixture == null) return;
+				body.DestroyFixture(this.fixture);
+			}
+			internal abstract void CreateFixture(Body body);
+			internal virtual void UpdateFixture(Vector2 scale)
+			{
+				this.fixture.IsSensor = this.sensor;
+				this.fixture.Restitution = this.restitution;
+				this.fixture.Friction = this.friction;
+			}
 
 			/// <summary>
 			/// Copies this ShapeInfos data to another one. It is assumed that both are of the same type.
@@ -104,12 +148,6 @@ namespace Duality.Components
 				this.CopyTo(newObj);
 				return newObj;
 			}
-			internal ShapeInfo Clone(Collider newParent)
-			{
-				ShapeInfo newObj = this.Clone();
-				newObj.parent = newParent;
-				return newObj;
-			}
 		}
 		/// <summary>
 		/// Describes a <see cref="Collider">Colliders</see> circle shape.
@@ -126,7 +164,7 @@ namespace Duality.Components
 			public float Radius
 			{
 				get { return this.radius; }
-				set { this.radius = value; }
+				set { this.radius = value; this.Parent.UpdateBodyShape(); }
 			}
 			/// <summary>
 			/// [GET / SET] The circles position.
@@ -134,7 +172,7 @@ namespace Duality.Components
 			public Vector2 Position
 			{
 				get { return this.position; }
-				set { this.position = value; }
+				set { this.position = value; this.Parent.UpdateBodyShape(); }
 			}
 			public override Rect AABB
 			{
@@ -148,14 +186,15 @@ namespace Duality.Components
 				this.position = position;
 			}
 
-			public override Shape CreateShape()
+			internal override void CreateFixture(Body body)
 			{
-				return new CircleShape(1.0f, 1.0f);
+				this.Fixture = body.CreateFixture(new CircleShape(1.0f, 1.0f), this);
 			}
-			public override void UpdateShape(Shape shape, Vector2 scale)
+			internal override void UpdateFixture(Vector2 scale)
 			{
+				base.UpdateFixture(scale);
 				float uniformScale = scale.Length / MathF.Sqrt(2.0f);
-				CircleShape circle = shape as CircleShape;
+				CircleShape circle = this.Fixture.Shape as CircleShape;
 				circle.Radius = this.radius * uniformScale * 0.01f;
 				circle.Position = new Vector2(this.position.X * scale.X, this.position.Y * scale.Y) * 0.01f;
 				circle.Density = this.Density * 100.0f;
@@ -183,7 +222,7 @@ namespace Duality.Components
 			public Vector2[] Vertices
 			{
 				get { return this.vertices; }
-				set { this.vertices = value; }
+				set { this.vertices = value; this.Parent.UpdateBodyShape(); }
 			}
 			public override Rect AABB
 			{
@@ -210,13 +249,14 @@ namespace Duality.Components
 				this.vertices = vertices.ToArray();
 			}
 
-			public override Shape CreateShape()
+			internal override void CreateFixture(Body body)
 			{
-				return new PolygonShape(1.0f);
+				this.Fixture = body.CreateFixture(new PolygonShape(1.0f), this);
 			}
-			public override void UpdateShape(Shape shape, Vector2 scale)
+			internal override void UpdateFixture(Vector2 scale)
 			{
-				PolygonShape poly = shape as PolygonShape;
+				base.UpdateFixture(scale);
+				PolygonShape poly = this.Fixture.Shape as PolygonShape;
 				poly.Density = this.Density * 100.0f;
 				poly.Vertices = new FarseerPhysics.Common.Vertices(this.vertices.Length);
 				for (int i = 0; i < poly.Vertices.Count; i++)
@@ -241,9 +281,10 @@ namespace Duality.Components
 		private	float		angularDamp		= 0.0f;
 		private	bool		fixedAngle		= false;
 		private	bool		ignoreGravity	= false;
-		private	float		friction		= 0.0f;
-		private	float		restitution		= 0.0f;
-		private	Category	colCat			= Category.All;
+		private	float		friction		= 0.3f;
+		private	float		restitution		= 0.3f;
+		private	Category	colCat			= Category.Cat1;
+		private	Category	colWith			= Category.All;
 		private	List<ShapeInfo>	shapes		= new List<ShapeInfo>();
 
 		/// <summary>
@@ -332,7 +373,6 @@ namespace Duality.Components
 		}
 		/// <summary>
 		/// [GET / SET] A bitmask that specifies the collision categories to which this Collider belongs.
-		/// It will interact with all Colliders with which it shares at least one common category.
 		/// </summary>
 		public Category CollisionCategory
 		{
@@ -344,19 +384,24 @@ namespace Duality.Components
 			}
 		}
 		/// <summary>
+		/// [GET / SET] A bitmask that specifies which collision categories this Collider interacts with.
+		/// </summary>
+		public Category CollidesWith
+		{
+			get { return this.colWith; }
+			set
+			{
+				this.colWith = value;
+				if (this.body != null) this.body.CollidesWith = value;
+			}
+		}
+		/// <summary>
 		/// [GET / SET] Enumerates all <see cref="ShapeInfo">primitive shapes</see> which this body consists of.
 		/// If you modify any of the returned ShapeInfos, be sure to call <see cref="UpdateBodyShape"/> afterwards.
 		/// </summary>
 		public IEnumerable<ShapeInfo> Shapes
 		{
 			get { return this.shapes; }
-			set
-			{
-				bool wasInitialized = this.body != null;
-				if (wasInitialized) this.CleanupBody();
-				this.shapes = value.Select(s => s.Clone(this)).ToList();
-				if (wasInitialized) this.InitBody();
-			}
 		}
 		/// <summary>
 		/// [GET] The physical bodys bounding radius.
@@ -379,7 +424,59 @@ namespace Duality.Components
 		public Collider()
 		{
 			// Default shape
-			this.Shapes = new ShapeInfo[] { new CircleShapeInfo(64.0f, Vector2.Zero, 1.0f) };
+			this.AddShape(new CircleShapeInfo(64.0f, Vector2.Zero, 1.0f));
+		}
+
+		/// <summary>
+		/// Adds a new shape to the Collider
+		/// </summary>
+		/// <param name="shape"></param>
+		public void AddShape(ShapeInfo shape)
+		{
+			if (this.shapes != null && this.shapes.Contains(shape)) return;
+
+			if (this.shapes == null) this.shapes = new List<ShapeInfo>();
+			this.shapes.Add(shape);
+			shape.Parent = this;
+
+			if (this.body != null)
+			{
+				shape.CreateFixture(this.body);
+				this.UpdateBodyShape();
+			}
+		}
+		/// <summary>
+		/// Removes an existing shape from the Collider.
+		/// </summary>
+		/// <param name="shape"></param>
+		public void RemoveShape(ShapeInfo shape)
+		{
+			if (this.shapes == null || !this.shapes.Contains(shape)) return;
+
+			if (this.body != null)
+			{
+				shape.DestroyFixture(this.body);
+				this.UpdateBodyShape();
+			}
+
+			this.shapes.Remove(shape);
+			shape.Parent = null;
+		}
+		/// <summary>
+		/// Removes all existing shapes from the Collider.
+		/// </summary>
+		public void ClearShapes()
+		{
+			if (this.shapes == null) return;
+
+			var oldShapes = this.shapes.ToArray();
+			this.shapes.Clear();
+			foreach (ShapeInfo shape in oldShapes)
+			{
+				if (this.body != null) shape.DestroyFixture(this.body);
+				shape.Parent = null;
+			}
+			this.UpdateBodyShape();
 		}
 
 		/// <summary>
@@ -387,21 +484,23 @@ namespace Duality.Components
 		/// </summary>
 		public void UpdateBodyShape()
 		{
+			if (this.body == null) return;
+
 			Vector2 scale = this.GameObj != null && this.GameObj.Transform != null ? this.GameObj.Transform.Scale.Xy : Vector2.One;
-			foreach (Fixture f in this.body.FixtureList)
-			{
-				ShapeInfo info = f.UserData as ShapeInfo;
-				info.UpdateShape(f.Shape, scale);
-			}
+
+			foreach (ShapeInfo info in this.shapes) info.UpdateFixture(scale);
+			this.body.CollisionCategories = this.colCat;
+			this.body.CollidesWith = this.colWith;
 			this.body.ResetMassData();
+
 			this.AwakeBody();
 		}
 		private void CleanupBody()
 		{
 			if (this.body == null) return;
 
-			this.body.OnCollision -= this.body_OnCollision;
-			this.body.OnSeparation -= this.body_OnSeparation;
+			this.body.Collision -= this.body_OnCollision;
+			this.body.Separation -= this.body_OnSeparation;
 			Scene.CurrentPhysics.ContactManager.PostSolve -= this.world_PostSolve;
 
 			this.body.Dispose();
@@ -410,7 +509,7 @@ namespace Duality.Components
 		private Body CreateBody()
 		{
 			Body b = new Body(Scene.CurrentPhysics);
-			foreach (ShapeInfo s in this.shapes) b.CreateFixture(s.CreateShape(), s);
+			foreach (ShapeInfo s in this.shapes) s.CreateFixture(b);
 			return b;
 		}
 		private void InitBody()
@@ -429,6 +528,7 @@ namespace Duality.Components
 			this.body.Friction = this.friction;
 			this.body.Restitution = this.restitution;
 			this.body.CollisionCategories = this.colCat;
+			this.body.CollidesWith = this.colWith;
 			this.body.UserData = this;
 
 			if (t != null)
@@ -438,8 +538,8 @@ namespace Duality.Components
 				this.body.AngularVelocity = t.AngleVel / Time.SPFMult;
 			}
 
-			this.body.OnCollision += this.body_OnCollision;
-			this.body.OnSeparation += this.body_OnSeparation;
+			this.body.Collision += this.body_OnCollision;
+			this.body.Separation += this.body_OnSeparation;
 			Scene.CurrentPhysics.ContactManager.PostSolve += this.world_PostSolve;
 		}
 
@@ -472,24 +572,64 @@ namespace Duality.Components
 		}
 		/// <summary>
 		/// Performs a physical picking operation and returns the <see cref="ShapeInfo">shapes</see> that
+		/// intersect the specified world coordinate.
+		/// </summary>
+		/// <param name="worldCoord"></param>
+		/// <returns></returns>
+		public List<ShapeInfo> PickShapes(Vector2 worldCoord)
+		{
+			if (this.body == null) return new List<ShapeInfo>();
+
+			List<ShapeInfo> picked = new List<ShapeInfo>();
+			FarseerPhysics.Wrapper.Vector2 fsWorldCoord = worldCoord * 0.01f;
+
+			for (int i = 0; i < this.shapes.Count; i++)
+			{
+				Fixture f = this.body.FixtureList[i];
+				if (f.TestPoint(ref fsWorldCoord)) picked.Add(this.shapes[i]);
+			}
+
+			return picked;
+		}
+		/// <summary>
+		/// Performs a physical picking operation and returns the <see cref="ShapeInfo">shapes</see> that
 		/// intersect the specified world coordinate area.
 		/// </summary>
 		/// <param name="worldCoord"></param>
 		/// <param name="size"></param>
 		/// <returns></returns>
-		public HashSet<ShapeInfo> PickShapes(Vector2 worldCoord, Vector2 size)
+		public List<ShapeInfo> PickShapes(Vector2 worldCoord, Vector2 size)
 		{
-			if (this.body == null) return new HashSet<ShapeInfo>();
+			if (this.body == null) return new List<ShapeInfo>();
 			FarseerPhysics.Wrapper.Vector2 fsTemp;
 			FarseerPhysics.Wrapper.Vector2 fsWorldCoordStep;
 			FarseerPhysics.Wrapper.Vector2 fsWorldCoord = worldCoord * 0.01f;
+			FarseerPhysics.Collision.AABB fsWorldAABB = new FarseerPhysics.Collision.AABB(fsWorldCoord, (worldCoord + size) * 0.01f);
 
-			HashSet<ShapeInfo> picked = new HashSet<ShapeInfo>();
+			List<ShapeInfo> picked = new List<ShapeInfo>();
 			for (int i = 0; i < this.shapes.Count; i++)
 			{
 				Fixture f = this.body.FixtureList[i];
-				fsWorldCoordStep = new Vector2(this.shapes[i].AABB.w, this.shapes[i].AABB.h) * 0.5f * 0.01f;
-				fsTemp = fsWorldCoord;
+
+				FarseerPhysics.Collision.AABB fAABB;
+				FarseerPhysics.Common.Transform transform;
+				this.body.GetTransform(out transform);
+				f.Shape.ComputeAABB(out fAABB, ref transform, 0);
+				
+				if (fsWorldAABB.Contains(ref fAABB))
+				{
+					picked.Add(this.shapes[i]);
+					continue;
+				}
+				else if (!FarseerPhysics.Collision.AABB.TestOverlap(ref fsWorldAABB, ref fAABB))
+					continue;
+
+				FarseerPhysics.Collision.AABB fAABBIntersect;
+				fAABBIntersect.LowerBound = FarseerPhysics.Wrapper.Vector2.Max(fAABB.LowerBound, fsWorldAABB.LowerBound);
+				fAABBIntersect.UpperBound = FarseerPhysics.Wrapper.Vector2.Min(fAABB.UpperBound, fsWorldAABB.UpperBound);
+
+				fsWorldCoordStep = new Vector2(MathF.Max(this.shapes[i].AABB.w, 1.0f), MathF.Max(this.shapes[i].AABB.h, 1.0f)) * 0.05f * 0.01f;
+				fsTemp = fAABBIntersect.LowerBound;
 				do
 				{
 					if (f.TestPoint(ref fsTemp))
@@ -499,12 +639,12 @@ namespace Duality.Components
 					}
 
 					fsTemp.X += fsWorldCoordStep.X;
-					if (fsTemp.X > fsWorldCoord.X + size.X * 0.01f)
+					if (fsTemp.X > fAABBIntersect.UpperBound.X)
 					{
-						fsTemp.X = fsWorldCoord.X;
+						fsTemp.X = fAABBIntersect.LowerBound.X;
 						fsTemp.Y += fsWorldCoordStep.Y;
 					}
-					if (fsTemp.Y > fsWorldCoord.Y + size.Y * 0.01f) break;
+					if (fsTemp.Y > fAABBIntersect.UpperBound.Y) break;
 				} while (true);
 			}
 
@@ -513,25 +653,12 @@ namespace Duality.Components
 		
 		private bool body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
 		{
-			return true;
-			Log.Core.Write("OnCollision: {0},\t{1}",
-				fixtureA.Body.UserData as Collider,
-				fixtureB.Body.UserData as Collider);
-			int count = contact.Manifold.PointCount;
-			for (int i = 0; i < count; i++)
-			{
-				Log.Core.Write("\t{0:F}\t{1:F}",
-					contact.Manifold.Points[i].NormalImpulse * 100.0f,
-					contact.Manifold.Points[i].TangentImpulse * 100.0f);
-			}
+			//Log.Core.Write("OnCollision: {0},\t{1}", fixtureA.Body.UserData as Collider, fixtureB.Body.UserData as Collider);
 			return true;
 		}
 		private void body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
 		{
-			return;
-			Log.Core.Write("OnSeparation: {0},\t{1}",
-				fixtureA.Body.UserData as Collider,
-				fixtureB.Body.UserData as Collider);
+			//Log.Core.Write("OnSeparation: {0},\t{1}", fixtureA.Body.UserData as Collider, fixtureB.Body.UserData as Collider);
 		}
         private void world_PostSolve(Contact contact, ContactConstraint impulse)
         {
@@ -615,9 +742,61 @@ namespace Duality.Components
 			c.friction = this.friction;
 			c.restitution = this.restitution;
 			c.colCat = this.colCat;
-			c.shapes = this.shapes == null ? null : this.shapes.Select(s => s.Clone(c)).ToList();
+
+			if (this.shapes != null)
+			{
+				foreach (ShapeInfo shape in this.shapes)
+				{
+					ShapeInfo newShape = shape.Clone();
+					newShape.Parent = c;
+				}
+			}
+			else c.shapes = null;
 
 			if (wasInitialized) c.InitBody();
+		}
+		
+		/// <summary>
+		/// Performs a global physical picking operation and returns the <see cref="ShapeInfo">shape</see> in which
+		/// the specified world coordinate is located in.
+		/// </summary>
+		/// <param name="worldCoord"></param>
+		/// <returns></returns>
+		public static ShapeInfo PickShapeGlobal(Vector2 worldCoord)
+		{
+			FarseerPhysics.Wrapper.Vector2 fsWorldCoord = worldCoord * 0.01f;
+			Fixture f = Scene.CurrentPhysics.TestPoint(fsWorldCoord);
+
+			return f != null && f.UserData is ShapeInfo ? (f.UserData as ShapeInfo) : null;
+		}
+		/// <summary>
+		/// Performs a global physical picking operation and returns the <see cref="ShapeInfo">shapes</see> that
+		/// intersect the specified world coordinate.
+		/// </summary>
+		/// <param name="worldCoord"></param>
+		/// <returns></returns>
+		public static List<ShapeInfo> PickShapesGlobal(Vector2 worldCoord)
+		{
+			FarseerPhysics.Wrapper.Vector2 fsWorldCoord = worldCoord * 0.01f;
+			List<Fixture> fixtureList = Scene.CurrentPhysics.TestPointAll(fsWorldCoord);
+			return new List<ShapeInfo>(fixtureList.Where(f => f != null && f.UserData is ShapeInfo).Select(f => f.UserData as ShapeInfo));
+		}
+		/// <summary>
+		/// Performs a global physical picking operation and returns the <see cref="ShapeInfo">shapes</see> that
+		/// intersect the specified world coordinate area.
+		/// </summary>
+		/// <param name="worldCoord"></param>
+		/// <param name="size"></param>
+		/// <returns></returns>
+		public static List<ShapeInfo> PickShapesGlobal(Vector2 worldCoord, Vector2 size)
+		{
+			List<ShapeInfo> picked = new List<ShapeInfo>();
+
+			Collider[] colliderArray = Scene.Current.ActiveObjects.GetComponents<Collider>().ToArray();
+			foreach (Collider c in colliderArray)
+				picked.AddRange(c.PickShapes(worldCoord, size));
+
+			return picked;
 		}
 	}
 }

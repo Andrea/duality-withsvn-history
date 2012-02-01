@@ -7432,6 +7432,23 @@
             Represents a body instance for physical simulation, collision detection and response.
             </summary>
         </member>
+        <member name="M:Duality.Components.Collider.AddShape(Duality.Components.Collider.ShapeInfo)">
+            <summary>
+            Adds a new shape to the Collider
+            </summary>
+            <param name="shape"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.RemoveShape(Duality.Components.Collider.ShapeInfo)">
+            <summary>
+            Removes an existing shape from the Collider.
+            </summary>
+            <param name="shape"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.ClearShapes">
+            <summary>
+            Removes all existing shapes from the Collider.
+            </summary>
+        </member>
         <member name="M:Duality.Components.Collider.UpdateBodyShape">
             <summary>
             Updates the Colliders internal body shape based on its set of <see cref="T:Duality.Components.Collider.ShapeInfo"/> objects.
@@ -7451,9 +7468,42 @@
             <param name="worldCoord"></param>
             <returns></returns>
         </member>
+        <member name="M:Duality.Components.Collider.PickShapes(OpenTK.Vector2)">
+            <summary>
+            Performs a physical picking operation and returns the <see cref="T:Duality.Components.Collider.ShapeInfo">shapes</see> that
+            intersect the specified world coordinate.
+            </summary>
+            <param name="worldCoord"></param>
+            <returns></returns>
+        </member>
         <member name="M:Duality.Components.Collider.PickShapes(OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
             Performs a physical picking operation and returns the <see cref="T:Duality.Components.Collider.ShapeInfo">shapes</see> that
+            intersect the specified world coordinate area.
+            </summary>
+            <param name="worldCoord"></param>
+            <param name="size"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Components.Collider.PickShapeGlobal(OpenTK.Vector2)">
+            <summary>
+            Performs a global physical picking operation and returns the <see cref="T:Duality.Components.Collider.ShapeInfo">shape</see> in which
+            the specified world coordinate is located in.
+            </summary>
+            <param name="worldCoord"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Components.Collider.PickShapesGlobal(OpenTK.Vector2)">
+            <summary>
+            Performs a global physical picking operation and returns the <see cref="T:Duality.Components.Collider.ShapeInfo">shapes</see> that
+            intersect the specified world coordinate.
+            </summary>
+            <param name="worldCoord"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Components.Collider.PickShapesGlobal(OpenTK.Vector2,OpenTK.Vector2)">
+            <summary>
+            Performs a global physical picking operation and returns the <see cref="T:Duality.Components.Collider.ShapeInfo">shapes</see> that
             intersect the specified world coordinate area.
             </summary>
             <param name="worldCoord"></param>
@@ -7498,7 +7548,11 @@
         <member name="P:Duality.Components.Collider.CollisionCategory">
             <summary>
             [GET / SET] A bitmask that specifies the collision categories to which this Collider belongs.
-            It will interact with all Colliders with which it shares at least one common category.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.CollidesWith">
+            <summary>
+            [GET / SET] A bitmask that specifies which collision categories this Collider interacts with.
             </summary>
         </member>
         <member name="P:Duality.Components.Collider.Shapes">
@@ -7532,19 +7586,6 @@
             Describes a <see cref="T:Duality.Components.Collider">Colliders</see> primitive shape. A Colliders overall shape may be combined of any number of primitive shapes.
             </summary>
         </member>
-        <member name="M:Duality.Components.Collider.ShapeInfo.CreateShape">
-            <summary>
-            Creates an actual physics shape.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.Components.Collider.ShapeInfo.UpdateShape(FarseerPhysics.Collision.Shapes.Shape,OpenTK.Vector2)">
-            <summary>
-            Updates the specified physics shape to fit this ShapeInfo
-            </summary>
-            <param name="shape"></param>
-            <param name="scale"></param>
-        </member>
         <member name="M:Duality.Components.Collider.ShapeInfo.CopyTo(Duality.Components.Collider.ShapeInfo)">
             <summary>
             Copies this ShapeInfos data to another one. It is assumed that both are of the same type.
@@ -7564,7 +7605,22 @@
         </member>
         <member name="P:Duality.Components.Collider.ShapeInfo.Density">
             <summary>
-            [GEt / SET] The shapes density.
+            [GET / SET] The shapes density.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.ShapeInfo.IsSensor">
+            <summary>
+            [GET / SET] Whether or not the shape acts as sensor i.e. is not part of a rigid body.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.ShapeInfo.Friction">
+            <summary>
+            [GET / SET] The shapes friction value.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.ShapeInfo.Restitution">
+            <summary>
+            [GET / SET] The shapes restitution value.
             </summary>
         </member>
         <member name="P:Duality.Components.Collider.ShapeInfo.AABB">

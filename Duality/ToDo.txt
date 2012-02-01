@@ -6,10 +6,10 @@ Next Steps:
 4.	Re-Implement Asteroids using Colliders
 5.	"Optional": Collider Joints (Editor & Logic)
 
--->	Double-Click on GameObject or Component ==> Focus in CamView (active? all?)
-
--->	How to implement "Create Circle" / "Create Poly" actions?
-	-->	Override some methods in ColliderEditorCamViewState
+-->	Implement "Create Circle" / "Create Poly" actions
+	-->	Proper Cursors & "Abort action"
+	-->	Delete Shape
+	-->	Create Polygon
 
 -->	WYSIWYG-Editor for Collider Shapes
 	-->	Preview shape in view

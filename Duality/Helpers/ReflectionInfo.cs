@@ -77,6 +77,9 @@ namespace Duality
 		public static readonly PropertyInfo	Property_Collider_BoundRadius;
 
 		public static readonly PropertyInfo	Property_Collider_ShapeInfo_Parent;
+		public static readonly PropertyInfo	Property_Collider_ShapeInfo_Friction;
+		public static readonly PropertyInfo	Property_Collider_ShapeInfo_Restitution;
+		public static readonly PropertyInfo	Property_Collider_ShapeInfo_Density;
 
 		public static readonly PropertyInfo	Property_Resource_Disposed;
 		public static readonly PropertyInfo	Property_Resource_Path;
@@ -215,7 +218,10 @@ namespace Duality
 			Property_Collider_BoundRadius		= collider.GetProperty("BoundRadius");
 
 			Type colliderShapeInfo = typeof(Collider.ShapeInfo);
-			Property_Collider_ShapeInfo_Parent	= colliderShapeInfo.GetProperty("Parent");
+			Property_Collider_ShapeInfo_Parent		= colliderShapeInfo.GetProperty("Parent");
+			Property_Collider_ShapeInfo_Friction	= colliderShapeInfo.GetProperty("Friction");
+			Property_Collider_ShapeInfo_Restitution	= colliderShapeInfo.GetProperty("Restitution");
+			Property_Collider_ShapeInfo_Density		= colliderShapeInfo.GetProperty("Density");
 
 			Type resource = typeof(Resource);
 			Property_Resource_Disposed			= resource.GetProperty("Disposed");

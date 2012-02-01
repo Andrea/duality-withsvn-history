@@ -73,6 +73,9 @@ namespace DualityLauncher
 		[STAThread]
 		public static void Main(string[] args)
 		{
+			System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
+			System.Threading.Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.InvariantCulture;
+
 			DualityApp.Init(DualityApp.ExecutionEnvironment.Launcher, DualityApp.ExecutionContext.Game, args);
 			using (DualityLauncher launcherWindow = new DualityLauncher(
 				DualityApp.UserData.GfxWidth, 

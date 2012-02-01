@@ -21,6 +21,13 @@ namespace EditorBase.CamViewStates
 {
 	public class ColliderEditorCamViewState : CamViewState
 	{
+		private enum CursorState
+		{
+			Normal,
+			CreateCircle,
+			CreatePolygon
+		}
+
 		public class SelCollider : SelObj
 		{
 			private	Collider	collider;
@@ -116,7 +123,7 @@ namespace EditorBase.CamViewStates
 			
 			public override bool HasTransform
 			{
-				get { return this.Collider.GameObj.Transform != null; }
+				get { return this.Collider != null && !this.Collider.Disposed && this.Collider.GameObj.Transform != null; }
 			}
 			public override Vector3 Pos
 			{
@@ -171,6 +178,7 @@ namespace EditorBase.CamViewStates
 			}
 		}
 
+		private	CursorState		mouseState			= CursorState.Normal;
 		private	Collider		selectedCollider	= null;
 		private	ToolStrip		toolstrip			= null;
 		private	ToolStripButton	toolCreateCircle	= null;
@@ -223,6 +231,7 @@ namespace EditorBase.CamViewStates
 			this.View_CurrentCameraChanged(this, new CamView.CameraChangedEventArgs(null, this.View.CameraComponent));
 			this.selectedCollider = this.QuerySelectedCollider();
 			this.UpdateSelectionStats();
+			this.UpdateToolbar();
 		}
 		protected internal override void OnLeaveState()
 		{
@@ -288,11 +297,6 @@ namespace EditorBase.CamViewStates
 				}
 			}
 		}
-		protected override void OnCollectStateOverlayDrawcalls(Canvas canvas)
-		{
-			base.OnCollectStateOverlayDrawcalls(canvas);
-
-		}
 		protected override void PostPerformAction(IEnumerable<CamViewState.SelObj> selObjEnum, CamViewState.MouseAction action)
 		{
 			base.PostPerformAction(selObjEnum, action);
@@ -307,30 +311,33 @@ namespace EditorBase.CamViewStates
 				ReflectionInfo.Property_Collider_Shapes);
 			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(selShapeArray.Select(s => s.ActualObject)));
 		}
-		protected override void OnCursorSpacePosChanged()
+
+		protected void UpdateToolbar()
 		{
-			base.OnCursorSpacePosChanged();
-			// Implement "Create Shape" stuff here
+			this.toolCreateCircle.Enabled = this.selectedCollider != null;
 		}
 
 		public override CamViewState.SelObj PickSelObjAt(int x, int y)
 		{
-			Component pickedRenderer = null;
 			Collider pickedCollider = null;
 			Collider.ShapeInfo pickedShape = null;
-			
-			pickedRenderer = this.View.PickRendererAt(x, y) as Component;
-			if (pickedRenderer != null) pickedCollider = pickedRenderer.GameObj.GetComponent<Collider>();
 
-			if (this.selectedCollider != null)
-			{
-				pickedShape = this.selectedCollider.PickShape(this.View.GetSpaceCoord(new Vector3(x, y, this.selectedCollider.GameObj.Transform.Pos.Z)).Xy);
-			}
+			Collider[] visibleColliders = this.QueryVisibleColliders().ToArray();
+			visibleColliders.StableSort(delegate(Collider c1, Collider c2) 
+			{ 
+				return MathF.RoundToInt(1000.0f * (c1.GameObj.Transform.Pos.Z - c2.GameObj.Transform.Pos.Z));
+			});
 
-			if (pickedShape == null)
+			foreach (Collider c in visibleColliders)
 			{
-				if (pickedCollider != null && pickedCollider != this.selectedCollider)
-					pickedShape = pickedCollider.PickShape(this.View.GetSpaceCoord(new Vector3(x, y, pickedCollider.GameObj.Transform.Pos.Z)).Xy);
+				Vector3 worldCoord = this.View.GetSpaceCoord(new Vector3(x, y, c.GameObj.Transform.Pos.Z));
+				pickedShape = c.PickShape(worldCoord.Xy);
+				if (pickedShape != null)
+				{
+					pickedCollider = c;
+					break;
+				}
+				else pickedShape = null;
 			}
 
 			if (pickedShape != null) return SelShape.Create(pickedShape);
@@ -341,21 +348,37 @@ namespace EditorBase.CamViewStates
 		public override List<CamViewState.SelObj> PickSelObjIn(int x, int y, int w, int h)
 		{
 			List<CamViewState.SelObj> result = new List<SelObj>();
+			
+			Collider pickedCollider = null;
+			Collider.ShapeInfo pickedShape = null;
+
+			Collider[] visibleColliders = this.QueryVisibleColliders().ToArray();
+			visibleColliders.StableSort(delegate(Collider c1, Collider c2) 
+			{ 
+				return MathF.RoundToInt(1000.0f * (c1.GameObj.Transform.Pos.Z - c2.GameObj.Transform.Pos.Z));
+			});
 
 			// Pick a collider
-			HashSet<ICmpRenderer> pickedRenderer = this.View.PickRenderersIn(x, y, w, h);
-			Collider pickedCollider = null;
-			foreach (Component r in pickedRenderer.OfType<Component>())
+			foreach (Collider c in visibleColliders)
 			{
-				Collider c = r.GameObj.GetComponent<Collider>();
-				if (c != null) pickedCollider = c;
+				Vector3 worldCoord = this.View.GetSpaceCoord(new Vector3(x, y, c.GameObj.Transform.Pos.Z));
+				float scale = this.View.GetScaleAtZ(c.GameObj.Transform.Pos.Z);
+				pickedShape = c.PickShapes(worldCoord.Xy, new Vector2(w / scale, h / scale)).FirstOrDefault();
+				if (pickedShape != null)
+				{
+					pickedCollider = c;
+					result.Add(new SelCollider(pickedCollider));
+					break;
+				}
+				else pickedShape = null;
 			}
-			if (pickedCollider != null) result.Add(new SelCollider(pickedCollider));
 
 			// Pick shapes
 			if (pickedCollider != null)
 			{
-				HashSet<Collider.ShapeInfo> picked = pickedCollider.PickShapes(this.View.GetSpaceCoord(new Vector3(x, y, pickedCollider.GameObj.Transform.Pos.Z)).Xy, new Vector2(w, h));
+				Vector3 worldCoord = this.View.GetSpaceCoord(new Vector3(x, y, pickedCollider.GameObj.Transform.Pos.Z));
+				float scale = this.View.GetScaleAtZ(pickedCollider.GameObj.Transform.Pos.Z);
+				List<Collider.ShapeInfo> picked = pickedCollider.PickShapes(worldCoord.Xy, new Vector2(w / scale, h / scale));
 				if (picked.Count > 0) result.AddRange(picked.Select(s => SelShape.Create(s) as SelObj));
 			}
 
@@ -396,7 +419,7 @@ namespace EditorBase.CamViewStates
 		protected IEnumerable<Collider> QueryVisibleColliders()
 		{
 			this.View.MakeDualityTarget();
-			IEnumerable<Collider> allColliders = Scene.Current.AllObjects.GetComponents<Collider>();
+			IEnumerable<Collider> allColliders = Scene.Current.AllObjects.GetComponents<Collider>(true);
 			IDrawDevice device = this.View.CameraComponent.DrawDevice;
 			return allColliders.Where(c => device.IsCoordInView(c.GameObj.Transform.Pos, c.BoundRadius));
 		}
@@ -406,7 +429,7 @@ namespace EditorBase.CamViewStates
 		}
 		protected bool RendererFilter(ICmpRenderer r)
 		{
-			return (r as Component).GameObj.GetComponent<Collider>() != null;
+			return (r as Component).GameObj.GetComponent<Collider>() != null && (r as Component).Active;
 		}
 		
 		private void View_CurrentCameraChanged(object sender, CamView.CameraChangedEventArgs e)
@@ -448,13 +471,40 @@ namespace EditorBase.CamViewStates
 			}
 
 			this.UpdateSelectionStats();
+			this.UpdateToolbar();
 			this.OnCursorSpacePosChanged();
 			this.View.LocalGLControl.Invalidate();
 		}
 
 		private void toolCreateCircle_Clicked(object sender, EventArgs e)
 		{
+			if (this.selectedCollider == null) return;
 
+			this.mouseState = CursorState.CreateCircle;
+			this.MouseActionAllowed = false;
+			this.View.LocalGLControl.MouseDown	+= this.LocalGLControl_MouseDown;
+		}
+
+		private void LocalGLControl_MouseDown(object sender, MouseEventArgs e)
+		{
+			if (this.mouseState == CursorState.CreateCircle)
+			{
+				Transform selTransform = this.selectedCollider.GameObj.Transform;
+				Vector3 spaceCoord = this.View.GetSpaceCoord(new Vector3(e.X, e.Y, selTransform.Pos.Z));
+				Vector2 localPos = selTransform.GetLocalFromWorld(spaceCoord).Xy;
+
+				Collider.CircleShapeInfo newShape = new Collider.CircleShapeInfo(16.0f, localPos, 1.0f);
+				this.selectedCollider.AddShape(newShape);
+
+				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
+					new ObjectSelection(this.selectedCollider),
+					ReflectionInfo.Property_Collider_Shapes);
+
+				this.MouseActionAllowed = true;
+				this.SelectObjects(new[] { SelShape.Create(newShape) });
+				this.BeginAction(MouseAction.ScaleObj);
+				this.View.LocalGLControl.MouseDown	-= this.LocalGLControl_MouseDown;
+			}
 		}
 	}
 }

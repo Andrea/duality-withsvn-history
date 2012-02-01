@@ -213,6 +213,8 @@ namespace EditorBase
 			CorePluginHelper.RegisterEditorAction<AbstractShader>(null, null, this.ActionAbstractShaderOpenRes, CorePluginHelper.ActionContext_OpenRes);
 			CorePluginHelper.RegisterEditorAction<Prefab>(null, null, this.ActionPrefabOpenRes, CorePluginHelper.ActionContext_OpenRes);
 			CorePluginHelper.RegisterEditorAction<Scene>(null, null, this.ActionSceneOpenRes, CorePluginHelper.ActionContext_OpenRes);
+			CorePluginHelper.RegisterEditorAction<GameObject>(null, null, this.ActionGameObjectOpenRes, CorePluginHelper.ActionContext_OpenRes);
+			CorePluginHelper.RegisterEditorAction<Component>(null, null, this.ActionComponentOpenRes, CorePluginHelper.ActionContext_OpenRes);
 
 			// Register PropertyEditor provider
 			CorePluginHelper.RegisterPropertyEditorProvider(new PropertyEditors.PropertyEditorProvider());
@@ -454,6 +456,21 @@ namespace EditorBase
 					lastPath,
 					scene != null ? scene.Path : "null");
 			}
+		}
+		private void ActionGameObjectOpenRes(GameObject obj)
+		{
+			if (obj.Transform == null) return;
+			foreach (CamView view in this.camViews)
+			{
+				view.CameraObj.Transform.Pos = obj.Transform.Pos - Vector3.UnitZ * view.CameraComponent.ParallaxRefDist;
+				view.LocalGLControl.Invalidate();
+			}
+		}
+		private void ActionComponentOpenRes(Component cmp)
+		{
+			GameObject obj = cmp.GameObj;
+			if (obj == null) return;
+			this.ActionGameObjectOpenRes(obj);
 		}
 
 		private void main_ResourceModified(object sender, ResourceEventArgs e)

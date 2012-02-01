@@ -531,6 +531,44 @@ namespace EditorBase
 			dragObjViewNode.IsSelected = true;
 			this.objectView.EnsureVisible(dragObjViewNode);
 		}
+		protected bool OpenResource(TreeNodeAdv node)
+		{
+			GameObjectNode objNode = node.Tag as GameObjectNode;
+			ComponentNode cmpNode = node.Tag as ComponentNode;
+			if (objNode != null) return this.OpenResource(objNode.Obj);
+			if (cmpNode != null) return this.OpenResource(cmpNode.Component);			
+			return false;
+		}
+		protected bool OpenResource(GameObject obj)
+		{
+			// Determine applying open actions
+			var actions = CorePluginHelper.RequestEditorActions<GameObject>(CorePluginHelper.ActionContext_OpenRes);
+
+			// Perform first open action
+			var action = actions.FirstOrDefault();
+			if (action != null)
+			{
+				action.Perform(obj);
+				return true;
+			}
+
+			return false;
+		}
+		protected bool OpenResource(Component cmp)
+		{
+			// Determine applying open actions
+			var actions = CorePluginHelper.RequestEditorActions(cmp.GetType(), CorePluginHelper.ActionContext_OpenRes);
+
+			// Perform first open action
+			var action = actions.FirstOrDefault();
+			if (action != null)
+			{
+				action.Perform(cmp);
+				return true;
+			}
+
+			return false;
+		}
 
 		protected void AssureMonoSelection()
 		{
@@ -695,6 +733,11 @@ namespace EditorBase
 					if (!this.objectView.SelectedNode.IsExpanded)
 						this.objectView.SelectedNode.Expand();
 				}
+				// Fobus object
+				else if (e.KeyCode == Keys.F)
+				{
+					this.OpenResource(this.objectView.SelectedNode);
+				}
 			}
 		}
 		private void objectView_ItemDrag(object sender, ItemDragEventArgs e)
@@ -821,6 +864,10 @@ namespace EditorBase
 			}
 
 			this.objectView.EndUpdate();
+		}
+		private void objectView_NodeMouseDoubleClick(object sender, TreeNodeAdvMouseEventArgs e)
+		{
+			e.Handled = this.OpenResource(e.Node);
 		}
 		private NodeBase DragDropGetTargetNode()
 		{

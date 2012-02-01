@@ -126,6 +126,7 @@
 			this.objectView.Size = new System.Drawing.Size(206, 496);
 			this.objectView.TabIndex = 1;
 			this.objectView.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.objectView_ItemDrag);
+			this.objectView.NodeMouseDoubleClick += new System.EventHandler<Aga.Controls.Tree.TreeNodeAdvMouseEventArgs>(this.objectView_NodeMouseDoubleClick);
 			this.objectView.SelectionChanged += new System.EventHandler(this.objectView_SelectionChanged);
 			this.objectView.DragDrop += new System.Windows.Forms.DragEventHandler(this.objectView_DragDrop);
 			this.objectView.DragOver += new System.Windows.Forms.DragEventHandler(this.objectView_DragOver);
