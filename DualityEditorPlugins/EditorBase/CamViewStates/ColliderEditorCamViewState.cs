@@ -456,6 +456,7 @@ namespace EditorBase.CamViewStates
 
 			if (selShapes.Length > 0)
 			{
+				EditorBasePlugin.Instance.EditorForm.Deselect(this, ObjectSelection.Category.Other);
 				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
 					new ObjectSelection(this.selectedCollider),
 					ReflectionInfo.Property_Collider_Shapes);
@@ -482,6 +483,7 @@ namespace EditorBase.CamViewStates
 			this.View.LocalGLControl.Cursor = state == CursorState.CreateCircle ? ArrowCreateCircle : ArrowCreatePolygon;
 			this.View.LocalGLControl.MouseDown += this.LocalGLControl_MouseDown;
 			this.UpdateToolbar();
+			this.View.LocalGLControl.Invalidate();
 		}
 		private void LeaveCursorState()
 		{
@@ -490,6 +492,7 @@ namespace EditorBase.CamViewStates
 			this.View.LocalGLControl.Cursor = CursorHelper.Arrow;
 			this.View.LocalGLControl.MouseDown -= this.LocalGLControl_MouseDown;
 			this.UpdateToolbar();
+			this.View.LocalGLControl.Invalidate();
 		}
 
 		protected IEnumerable<Collider> QueryVisibleColliders()
