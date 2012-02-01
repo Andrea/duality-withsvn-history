@@ -168,6 +168,20 @@ namespace EditorBase.PluginRes {
             }
         }
         
+        public static System.Drawing.Bitmap CursorArrowCreateCircle {
+            get {
+                object obj = ResourceManager.GetObject("CursorArrowCreateCircle", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap CursorArrowCreatePolygon {
+            get {
+                object obj = ResourceManager.GetObject("CursorArrowCreatePolygon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         public static System.Drawing.Bitmap IconCmpCamera {
             get {
                 object obj = ResourceManager.GetObject("IconCmpCamera", resourceCulture);

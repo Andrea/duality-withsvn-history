@@ -266,6 +266,8 @@
     <None Include="PluginRes\cross.png" />
     <None Include="PluginRes\disk.png" />
     <None Include="PluginRes\AddScene.png" />
+    <None Include="PluginRes\curArrowCreateCircle.png" />
+    <None Include="PluginRes\curArrowCreatePolygon.png" />
     <Content Include="PluginRes\eye.ico" />
     <None Include="PluginRes\iconResDrawTechnique.png" />
     <None Include="PluginRes\iconResFragmentShader.png" />

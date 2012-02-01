@@ -138,6 +138,9 @@ namespace Duality.Components
 			{
 				// Don't copy the parent!
 				target.density = this.density;
+				target.sensor = this.sensor;
+				target.friction = this.friction;
+				target.restitution = this.restitution;
 			}
 			/// <summary>
 			/// Clones the ShapeInfo.
@@ -414,8 +417,13 @@ namespace Duality.Components
 
 			if (this.body != null)
 			{
+				bool wasEnabled = this.body.Enabled;
+				if (wasEnabled) this.body.Enabled = false;
+
 				shape.CreateFixture(this.body);
 				this.UpdateBodyShape();
+
+				if (wasEnabled) this.body.Enabled = true;
 			}
 		}
 		/// <summary>
@@ -426,14 +434,14 @@ namespace Duality.Components
 		{
 			if (this.shapes == null || !this.shapes.Contains(shape)) return;
 
+			this.shapes.Remove(shape);
+			shape.Parent = null;
+
 			if (this.body != null)
 			{
 				shape.DestroyFixture(this.body);
 				this.UpdateBodyShape();
 			}
-
-			this.shapes.Remove(shape);
-			shape.Parent = null;
 		}
 		/// <summary>
 		/// Removes all existing shapes from the Collider.
@@ -481,7 +489,7 @@ namespace Duality.Components
 		}
 		private Body CreateBody()
 		{
-			Body b = new Body(Scene.CurrentPhysics);
+			Body b = new Body(Scene.CurrentPhysics, this);
 			foreach (ShapeInfo s in this.shapes) s.CreateFixture(b);
 			return b;
 		}
@@ -500,7 +508,6 @@ namespace Duality.Components
 			this.body.IgnoreGravity = this.ignoreGravity;
 			this.body.CollisionCategories = this.colCat;
 			this.body.CollidesWith = this.colWith;
-			this.body.UserData = this;
 
 			if (t != null)
 			{

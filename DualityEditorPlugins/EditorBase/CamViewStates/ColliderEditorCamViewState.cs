@@ -21,6 +21,9 @@ namespace EditorBase.CamViewStates
 {
 	public class ColliderEditorCamViewState : CamViewState
 	{
+		public static readonly Cursor ArrowCreateCircle		= CursorHelper.CreateCursor(PluginRes.EditorBaseRes.CursorArrowCreateCircle, 0, 0);
+		public static readonly Cursor ArrowCreatePolygon	= CursorHelper.CreateCursor(PluginRes.EditorBaseRes.CursorArrowCreatePolygon, 0, 0);
+
 		private enum CursorState
 		{
 			Normal,
@@ -223,7 +226,7 @@ namespace EditorBase.CamViewStates
 			this.toolstrip.Name = "toolstrip";
 			this.toolstrip.Text = "Collider Editor Tools";
 
-			this.toolCreateCircle = new ToolStripButton("Create Circle Shape", EditorBase.PluginRes.EditorBaseRes.IconCmpCircleCollider, this.toolCreateCircle_Clicked);
+			this.toolCreateCircle = new ToolStripButton("Create Circle Shape (C)", EditorBase.PluginRes.EditorBaseRes.IconCmpCircleCollider, this.toolCreateCircle_Clicked);
 			this.toolCreateCircle.DisplayStyle = ToolStripItemDisplayStyle.Image;
 			this.toolCreateCircle.AutoToolTip = true;
 			this.toolstrip.Items.Add(this.toolCreateCircle);
@@ -234,6 +237,7 @@ namespace EditorBase.CamViewStates
 			this.View.ResumeLayout(true);
 
 			// Register events
+			this.View.LocalGLControl.KeyDown += this.LocalGLControl_KeyDown;
 			this.View.CurrentCameraChanged += this.View_CurrentCameraChanged;
 			EditorBasePlugin.Instance.EditorForm.SelectionChanged		+= this.EditorForm_SelectionChanged;
 			EditorBasePlugin.Instance.EditorForm.ObjectPropertyChanged	+= this.EditorForm_ObjectPropertyChanged;
@@ -253,6 +257,7 @@ namespace EditorBase.CamViewStates
 
 			// Unregister events
 			this.View.CurrentCameraChanged -= this.View_CurrentCameraChanged;
+			this.View.LocalGLControl.KeyDown -= this.LocalGLControl_KeyDown;
 			EditorBasePlugin.Instance.EditorForm.SelectionChanged		-= this.EditorForm_SelectionChanged;
 			EditorBasePlugin.Instance.EditorForm.ObjectPropertyChanged	-= this.EditorForm_ObjectPropertyChanged;
 
@@ -310,6 +315,18 @@ namespace EditorBase.CamViewStates
 				}
 			}
 		}
+		protected override void DrawStatusText(Canvas canvas, ref bool handled)
+		{
+			base.DrawStatusText(canvas, ref handled);
+
+			if (!handled && this.mouseState != CursorState.Normal)
+			{
+				Size viewSize = this.View.LocalGLControl.ClientSize;
+				if (this.mouseState == CursorState.CreateCircle)		canvas.DrawText("Create Circle...", 10, viewSize.Height - 20);
+				else if (this.mouseState == CursorState.CreatePolygon)	canvas.DrawText("Create Polygon...", 10, viewSize.Height - 20);
+				handled = true;
+			}
+		}
 		protected override void PostPerformAction(IEnumerable<CamViewState.SelObj> selObjEnum, CamViewState.MouseAction action)
 		{
 			base.PostPerformAction(selObjEnum, action);
@@ -327,7 +344,7 @@ namespace EditorBase.CamViewStates
 
 		protected void UpdateToolbar()
 		{
-			this.toolCreateCircle.Enabled = this.selectedCollider != null;
+			this.toolCreateCircle.Enabled = this.selectedCollider != null && this.mouseState != CursorState.CreateCircle;
 		}
 
 		public override CamViewState.SelObj PickSelObjAt(int x, int y)
@@ -428,6 +445,52 @@ namespace EditorBase.CamViewStates
 			base.ClearSelection();
 			EditorBasePlugin.Instance.EditorForm.Deselect(this, ObjectSelection.Category.GameObjCmp | ObjectSelection.Category.Other);
 		}
+		public override void DeleteObjects(IEnumerable<CamViewState.SelObj> objEnum)
+		{
+			SelShape[] selShapes = objEnum.OfType<SelShape>().ToArray();
+			foreach (SelShape selShape in selShapes)
+			{
+				Collider.ShapeInfo shape = selShape.ActualObject as Collider.ShapeInfo;
+				this.selectedCollider.RemoveShape(shape);
+			}
+
+			if (selShapes.Length > 0)
+			{
+				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
+					new ObjectSelection(this.selectedCollider),
+					ReflectionInfo.Property_Collider_Shapes);
+			}
+		}
+		public override List<CamViewState.SelObj> CloneObjects(IEnumerable<CamViewState.SelObj> objEnum)
+		{
+			SelShape[] selShapes = objEnum.OfType<SelShape>().ToArray();
+			List<SelObj> clonedSelShapes = new List<SelObj>();
+			foreach (SelShape selShape in selShapes)
+			{
+				Collider.ShapeInfo shape = selShape.ActualObject as Collider.ShapeInfo;
+				shape = shape.Clone();
+				this.selectedCollider.AddShape(shape);
+				clonedSelShapes.Add(SelShape.Create(shape));
+			}
+			return clonedSelShapes;
+		}
+
+		private void EnterCursorState(CursorState state)
+		{
+			this.mouseState = state;
+			this.MouseActionAllowed = false;
+			this.View.LocalGLControl.Cursor = state == CursorState.CreateCircle ? ArrowCreateCircle : ArrowCreatePolygon;
+			this.View.LocalGLControl.MouseDown += this.LocalGLControl_MouseDown;
+			this.UpdateToolbar();
+		}
+		private void LeaveCursorState()
+		{
+			this.mouseState = CursorState.Normal;
+			this.MouseActionAllowed = true;
+			this.View.LocalGLControl.Cursor = CursorHelper.Arrow;
+			this.View.LocalGLControl.MouseDown -= this.LocalGLControl_MouseDown;
+			this.UpdateToolbar();
+		}
 
 		protected IEnumerable<Collider> QueryVisibleColliders()
 		{
@@ -492,31 +555,39 @@ namespace EditorBase.CamViewStates
 		private void toolCreateCircle_Clicked(object sender, EventArgs e)
 		{
 			if (this.selectedCollider == null) return;
-
-			this.mouseState = CursorState.CreateCircle;
-			this.MouseActionAllowed = false;
-			this.View.LocalGLControl.MouseDown	+= this.LocalGLControl_MouseDown;
+			this.EnterCursorState(CursorState.CreateCircle);
 		}
-
+		
+		private void LocalGLControl_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.C && (Control.ModifierKeys & Keys.Control) == Keys.None)
+				this.toolCreateCircle_Clicked(this, EventArgs.Empty);
+		}
 		private void LocalGLControl_MouseDown(object sender, MouseEventArgs e)
 		{
 			if (this.mouseState == CursorState.CreateCircle)
 			{
-				Transform selTransform = this.selectedCollider.GameObj.Transform;
-				Vector3 spaceCoord = this.View.GetSpaceCoord(new Vector3(e.X, e.Y, selTransform.Pos.Z));
-				Vector2 localPos = selTransform.GetLocalFromWorld(spaceCoord).Xy;
+				if (e.Button == MouseButtons.Left)
+				{
+					Transform selTransform = this.selectedCollider.GameObj.Transform;
+					Vector3 spaceCoord = this.View.GetSpaceCoord(new Vector3(e.X, e.Y, selTransform.Pos.Z));
+					Vector2 localPos = selTransform.GetLocalFromWorld(spaceCoord).Xy;
 
-				Collider.CircleShapeInfo newShape = new Collider.CircleShapeInfo(16.0f, localPos, 1.0f);
-				this.selectedCollider.AddShape(newShape);
+					Collider.CircleShapeInfo newShape = new Collider.CircleShapeInfo(16.0f, localPos, 1.0f);
+					this.selectedCollider.AddShape(newShape);
 
-				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
-					new ObjectSelection(this.selectedCollider),
-					ReflectionInfo.Property_Collider_Shapes);
+					EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
+						new ObjectSelection(this.selectedCollider),
+						ReflectionInfo.Property_Collider_Shapes);
 
-				this.MouseActionAllowed = true;
-				this.SelectObjects(new[] { SelShape.Create(newShape) });
-				this.BeginAction(MouseAction.ScaleObj);
-				this.View.LocalGLControl.MouseDown	-= this.LocalGLControl_MouseDown;
+					this.LeaveCursorState();
+					this.SelectObjects(new[] { SelShape.Create(newShape) });
+					this.BeginAction(MouseAction.ScaleObj);
+				}
+				else if (e.Button == MouseButtons.Right)
+				{
+					this.LeaveCursorState();
+				}
 			}
 		}
 	}

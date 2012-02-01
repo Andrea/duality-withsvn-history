@@ -383,6 +383,17 @@ namespace EditorBase
 			this.showBgColorDialog.Enabled = value;
 		}
 
+		public void FocusOnObject(GameObject obj)
+		{
+			if (obj.Transform == null) return;
+			if (!this.state.CameraActionAllowed) return;
+			Vector3 targetPos = obj.Transform.Pos - Vector3.UnitZ * this.camComp.ParallaxRefDist;
+			targetPos.Z = MathF.Min(this.camObj.Transform.Pos.Z, targetPos.Z);
+			this.camObj.Transform.Pos = targetPos;
+			this.OnCamTransformChanged();
+			this.LocalGLControl.Invalidate();
+		}
+
 		public void MakeDualityTarget()
 		{
 			DualityApp.TargetMode = this.MainContextControl.Context.GraphicsMode;

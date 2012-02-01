@@ -7,9 +7,6 @@ Next Steps:
 5.	"Optional": Collider Joints (Editor & Logic)
 
 -->	Implement "Create Circle" / "Create Poly" actions
-	-->	Proper Cursors & "Abort action"
-	-->	Delete Shape
-	-->	Clone Shape
 	-->	Create Polygon
 
 --> Core infrastructure
