@@ -15,116 +15,11 @@ namespace Duality.Serialization
 	/// <seealso cref="Duality.Serialization.BinaryMetaFormatter"/>
 	public class BinaryFormatter : BinaryFormatterBase
 	{
-		/// <summary>
-		/// A list of <see cref="System.Reflection.FieldInfo">field</see> blockers. If any registered field blocker
-		/// returns true upon serializing a specific field, a default value is assumed instead.
-		/// </summary>
-		protected	List<Predicate<FieldInfo>>	fieldBlockers	= new List<Predicate<FieldInfo>>();
-		/// <summary>
-		/// A list of <see cref="Duality.Serialization.ISurrogate">Serialization Surrogates</see>. If any of them
-		/// matches the <see cref="System.Type"/> of an object that is to be serialized, instead of letting it
-		/// serialize itsself, the <see cref="Duality.Serialization.ISurrogate"/> with the highest <see cref="Duality.Serialization.ISurrogate.Priority"/>
-		/// is used instead.
-		/// </summary>
-		protected	List<ISurrogate>			surrogates		= new List<ISurrogate>();
-		
-		/// <summary>
-		/// [GET] Enumerates registered <see cref="System.Reflection.FieldInfo">field</see> blockers. If any registered field blocker
-		/// returns true upon serializing a specific field, a default value is assumed instead.
-		/// </summary>
-		public IEnumerable<Predicate<FieldInfo>> FieldBlockers
-		{
-			get { return this.fieldBlockers; }
-		}
-		/// <summary>
-		/// [GET] Enumerates registered <see cref="Duality.Serialization.ISurrogate">Serialization Surrogates</see>. If any of them
-		/// matches the <see cref="System.Type"/> of an object that is to be serialized, instead of letting it
-		/// serialize itsself, the <see cref="Duality.Serialization.ISurrogate"/> with the highest <see cref="Duality.Serialization.ISurrogate.Priority"/>
-		/// is used instead.
-		/// </summary>
-		public IEnumerable<ISurrogate> Surrogates
-		{
-			get { return this.surrogates; }
-		}
-
 		public BinaryFormatter() : this(null) {}
 		public BinaryFormatter(Stream stream) : base(stream)
 		{
 			this.AddSurrogate(new BitmapSurrogate());
 			this.AddSurrogate(new DictionarySurrogate());
-		}
-
-		/// <summary>
-		/// Unregisters all <see cref="FieldBlockers"/>.
-		/// </summary>
-		public void ClearFieldBlockers()
-		{
-			this.fieldBlockers.Clear();
-		}
-		/// <summary>
-		/// Registers a new <see cref="FieldBlockers">FieldBlocker</see>.
-		/// </summary>
-		/// <param name="blocker"></param>
-		public void AddFieldBlocker(Predicate<FieldInfo> blocker)
-		{
-			if (this.fieldBlockers.Contains(blocker)) return;
-			this.fieldBlockers.Add(blocker);
-		}
-		/// <summary>
-		/// Unregisters an existing <see cref="FieldBlockers">FieldBlocker</see>.
-		/// </summary>
-		/// <param name="blocker"></param>
-		public void RemoveFieldBlocker(Predicate<FieldInfo> blocker)
-		{
-			this.fieldBlockers.Remove(blocker);
-		}
-		/// <summary>
-		/// Determines whether a specific <see cref="System.Reflection.FieldInfo">field</see> is blocked.
-		/// Instead of writing the value of a blocked field, the matching <see cref="System.Type">Types</see>
-		/// defautl value is assumed.
-		/// </summary>
-		/// <param name="field">The <see cref="System.Reflection.FieldInfo">field</see> in question</param>
-		/// <returns>True, if the <see cref="System.Reflection.FieldInfo">field</see> is blocked, false if not.</returns>
-		public bool IsFieldBlocked(FieldInfo field)
-		{
-			foreach (var blocker in this.fieldBlockers)
-				if (blocker(field)) return true;
-			return false;
-		}
-
-		/// <summary>
-		/// Unregisters all <see cref="Duality.Serialization.ISurrogate">Surrogates</see>.
-		/// </summary>
-		public void ClearSurrogates()
-		{
-			this.surrogates.Clear();
-		}
-		/// <summary>
-		/// Registers a new <see cref="Duality.Serialization.ISurrogate">Surrogate</see>.
-		/// </summary>
-		/// <param name="surrogate"></param>
-		public void AddSurrogate(ISurrogate surrogate)
-		{
-			if (this.surrogates.Contains(surrogate)) return;
-			this.surrogates.Add(surrogate);
-			this.surrogates.StableSort((s1, s2) => s1.Priority - s2.Priority);
-		}
-		/// <summary>
-		/// Unregisters an existing <see cref="Duality.Serialization.ISurrogate">Surrogate</see>.
-		/// </summary>
-		/// <param name="surrogate"></param>
-		public void RemoveSurrogate(ISurrogate surrogate)
-		{
-			this.surrogates.Remove(surrogate);
-		}
-		/// <summary>
-		/// Retrieves a matching <see cref="Duality.Serialization.ISurrogate"/> for the specified <see cref="System.Type"/>.
-		/// </summary>
-		/// <param name="t">The <see cref="System.Type"/> to retrieve a <see cref="Duality.Serialization.ISurrogate"/> for.</param>
-		/// <returns></returns>
-		public ISurrogate GetSurrogateFor(Type t)
-		{
-			return this.surrogates.FirstOrDefault(s => s.MatchesType(t));
 		}
 		
 		/// <summary>
@@ -155,14 +50,14 @@ namespace Duality.Serialization
 			if (dataType == DataType.Array || dataType == DataType.Class || dataType == DataType.Delegate || dataType.IsMemberInfoType())
 			{
 				bool newId;
-				objId = this.GetIdFromObject(obj, out newId);
+				objId = this.RequestObjectId(obj, out newId);
 
 				// If its not a new id, write a reference
 				if (!newId) dataType = DataType.ObjectRef;
 			}
 
 			if (!objSerializeType.Type.IsSerializable && !typeof(ISerializable).IsAssignableFrom(objSerializeType.Type) && this.GetSurrogateFor(objSerializeType.Type) == null) 
-				this.log.WriteWarning("Serializing object of Type '{0}' which isn't [Serializable]", 
+				this.SerializationLog.WriteWarning("Serializing object of Type '{0}' which isn't [Serializable]", 
 				Log.Type(objSerializeType.Type));
 		}
 		protected override void WriteObjectBody(DataType dataType, object obj, SerializeType objSerializeType, uint objId)
@@ -367,11 +262,7 @@ namespace Duality.Serialization
 			Array arrObj = arrType != null ? Array.CreateInstance(arrType.GetElementType(), arrLength) : null;
 			
 			// Prepare object reference
-			if (objId != 0)
-			{
-				if (arrObj != null) this.objRefIdMap[arrObj] = objId;
-				this.idObjRefMap[objId] = arrObj;
-			}
+			this.InjectObjectId(arrObj, objId);
 
 			if		(arrObj is bool[])		this.ReadArrayData(arrObj as bool[]);
 			else if (arrObj is byte[])		this.ReadArrayData(arrObj as byte[]);
@@ -428,7 +319,7 @@ namespace Duality.Serialization
 					custom = true;
 
 					// Set fake object reference for surrogate constructor: No self-references allowed here.
-					if (objId != 0) this.idObjRefMap[objId] = null;
+					this.InjectObjectId(null, objId);
 
 					CustomSerialIO customIO = new CustomSerialIO();
 					customIO.Deserialize(this);
@@ -440,11 +331,7 @@ namespace Duality.Serialization
 			}
 
 			// Prepare object reference
-			if (objId != 0)
-			{
-				if (obj != null) this.objRefIdMap[obj] = objId;
-				this.idObjRefMap[objId] = obj;
-			}
+			this.InjectObjectId(obj, objId);
 
 			// Read custom object data
 			if (custom)
@@ -468,21 +355,21 @@ namespace Duality.Serialization
 				}
 				else if (obj != null && objType != null)
 				{
-					this.log.WriteWarning(
+					this.SerializationLog.WriteWarning(
 						"Object data (Id {0}) is flagged for custom deserialization, yet the objects Type ('{1}') does not support it. Guessing associated fields...",
 						objId,
 						Log.Type(objType));
-					this.log.PushIndent();
+					this.SerializationLog.PushIndent();
 					foreach (var pair in customIO.Values)
 					{
 						FieldInfo field = objSerializeType.Fields.FirstOrDefault(f => f.Name == pair.Key);
 						if (field == null)
 						{
-							this.log.WriteWarning("No match found: {0}", pair.Key);
+							this.SerializationLog.WriteWarning("No match found: {0}", pair.Key);
 						}
 						else if (field.FieldType.IsAssignableFrom(pair.Value.GetType()))
 						{
-							this.log.WriteWarning("Match '{0}' differs in FieldType: '{1}', but required '{2}", pair.Key, 
+							this.SerializationLog.WriteWarning("Match '{0}' differs in FieldType: '{1}', but required '{2}", pair.Key, 
 								Log.Type(field.FieldType), 
 								Log.Type(pair.Value.GetType()));
 						}
@@ -491,7 +378,7 @@ namespace Duality.Serialization
 							field.SetValue(obj, pair.Value);
 						}
 					}
-					this.log.PopIndent();
+					this.SerializationLog.PopIndent();
 				}
 			}
 			// Red non-custom object data
@@ -510,26 +397,26 @@ namespace Duality.Serialization
 					if (obj != null)
 					{
 						if (field == null)
-							this.log.WriteWarning("Field '{0}' not found. Discarding value '{1}'", layout.Fields[i].name, fieldValue);
+							this.SerializationLog.WriteWarning("Field '{0}' not found. Discarding value '{1}'", layout.Fields[i].name, fieldValue);
 						else if (field.FieldType != fieldType)
 						{
-							this.log.WriteWarning("Data layout Type '{0}' of field '{1}' does not match reflected Type '{2}'. Trying to convert...'", layout.Fields[i].typeString, layout.Fields[i].name, Log.Type(field.FieldType));
-							this.log.PushIndent();
+							this.SerializationLog.WriteWarning("Data layout Type '{0}' of field '{1}' does not match reflected Type '{2}'. Trying to convert...'", layout.Fields[i].typeString, layout.Fields[i].name, Log.Type(field.FieldType));
+							this.SerializationLog.PushIndent();
 							object castVal;
 							try
 							{
 								castVal = Convert.ChangeType(fieldValue, fieldType, System.Globalization.CultureInfo.InvariantCulture);
-								this.log.Write("...succeeded! Assigning value '{0}'", castVal);
+								this.SerializationLog.Write("...succeeded! Assigning value '{0}'", castVal);
 								field.SetValue(obj, castVal);
 							}
 							catch (Exception)
 							{
-								this.log.WriteWarning("...failed! Discarding value '{0}'", fieldValue);
+								this.SerializationLog.WriteWarning("...failed! Discarding value '{0}'", fieldValue);
 							}
-							this.log.PopIndent();
+							this.SerializationLog.PopIndent();
 						}
 						else if (field.IsNotSerialized)
-							this.log.WriteWarning("Field '{0}' flagged as [NonSerialized]. Discarding value '{1}'", layout.Fields[i].name, fieldValue);
+							this.SerializationLog.WriteWarning("Field '{0}' flagged as [NonSerialized]. Discarding value '{1}'", layout.Fields[i].name, fieldValue);
 						else
 							field.SetValue(obj, fieldValue);
 					}
@@ -547,7 +434,7 @@ namespace Duality.Serialization
 			object obj;
 			uint objId = this.reader.ReadUInt32();
 
-			if (!this.idObjRefMap.TryGetValue(objId, out obj)) throw new ApplicationException(string.Format("Can't resolve object reference '{0}'.", objId));
+			if (!this.LookupObjectId(objId, out obj)) throw new ApplicationException(string.Format("Can't resolve object reference '{0}'.", objId));
 
 			return obj;
 		}
@@ -679,7 +566,7 @@ namespace Duality.Serialization
 			catch (Exception e)
 			{
 				result = null;
-				this.log.WriteError(
+				this.SerializationLog.WriteError(
 					"An error occured in deserializing MemberInfo object Id {0} of type '{1}': {2}",
 					objId,
 					Log.Type(dataType.ToActualType()),
@@ -687,11 +574,7 @@ namespace Duality.Serialization
 			}
 			
 			// Prepare object reference
-			if (objId != 0)
-			{
-				if (result != null) this.objRefIdMap[result] = objId;
-				this.idObjRefMap[objId] = result;
-			}
+			this.InjectObjectId(result, objId);
 
 			return result;
 		}
@@ -713,11 +596,7 @@ namespace Duality.Serialization
 			Delegate	del		= delType != null ? Delegate.CreateDelegate(delType, target, method) : null;
 
 			// Prepare object reference
-			if (objId != 0)
-			{
-				if (del != null) this.objRefIdMap[del] = objId;
-				this.idObjRefMap[objId] = del;
-			}
+			this.InjectObjectId(del, objId);
 
 			// Read the target object now and replace the dummy
 			target = this.ReadObject();
@@ -752,7 +631,7 @@ namespace Duality.Serialization
 			result = Enum.Parse(enumType, name);
 			if (result != null) return (Enum)result;
 
-			this.log.WriteWarning("Can't parse enum value '{0}' of Type '{1}'. Using numerical value '{2}' instead.", name, typeName, val);
+			this.SerializationLog.WriteWarning("Can't parse enum value '{0}' of Type '{1}'. Using numerical value '{2}' instead.", name, typeName, val);
 			return (Enum)Enum.ToObject(enumType, val);
 		}
 	}

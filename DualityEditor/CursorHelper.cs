@@ -10,15 +10,6 @@ namespace DualityEditor
 {
 	public static class CursorHelper
 	{
-		public struct IconInfo
-		{
-		  public bool fIcon;
-		  public int xHotspot;
-		  public int yHotspot;
-		  public IntPtr hbmMask;
-		  public IntPtr hbmColor;
-		}
-
 		public static readonly Cursor Arrow;
 		public static readonly Cursor ArrowAction;
 		public static readonly Cursor ArrowActionMove;
@@ -36,20 +27,14 @@ namespace DualityEditor
 
 		public static Cursor CreateCursor(Bitmap bmp, int xHotSpot, int yHotSpot)
 		{
-		  IntPtr ptr = bmp.GetHicon();
-		  IconInfo tmp = new IconInfo();
-		  GetIconInfo(ptr, ref tmp);
-		  tmp.xHotspot = xHotSpot;
-		  tmp.yHotspot = yHotSpot;
-		  tmp.fIcon = false;
-		  ptr = CreateIconIndirect(ref tmp);
-		  return new Cursor(ptr);
+			IntPtr ptr = bmp.GetHicon();
+			NativeMethods.IconInfo tmp = new NativeMethods.IconInfo();
+			NativeMethods.GetIconInfo(ptr, ref tmp);
+			tmp.xHotspot = xHotSpot;
+			tmp.yHotspot = yHotSpot;
+			tmp.fIcon = false;
+			ptr = NativeMethods.CreateIconIndirect(ref tmp);
+			return new Cursor(ptr);
 		}
-
-		[DllImport("user32.dll")]
-		[return: MarshalAs(UnmanagedType.Bool)]
-		private static extern bool GetIconInfo(IntPtr hIcon, ref IconInfo pIconInfo);
-		[DllImport("user32.dll")]
-		private static extern IntPtr CreateIconIndirect(ref IconInfo icon);
 	}
 }

@@ -10,8 +10,28 @@ namespace Duality.Serialization
 	/// <summary>
 	/// Base class for Dualitys binary serializers.
 	/// </summary>
-	public abstract class BinaryFormatterBase : IDisposable
+	public abstract class BinaryFormatterBase : FormatterBase
 	{
+		/// <summary>
+		/// Operations, the binary serializer is able to perform.
+		/// </summary>
+		protected enum Operation
+		{
+			/// <summary>
+			/// No operation.
+			/// </summary>
+			None,
+
+			/// <summary>
+			/// Read a dataset / object
+			/// </summary>
+			Read,
+			/// <summary>
+			/// Write a dataset / object
+			/// </summary>
+			Write
+		}
+
 		/// <summary>
 		/// Buffer object for <see cref="Duality.Serialization.ISerializable">custom de/serialization</see>, 
 		/// providing read and write functionality.
@@ -131,25 +151,6 @@ namespace Duality.Serialization
 				value = this.ReadValue<T>(name);
 			}
 		}
-		/// <summary>
-		/// Operations, the binary serializer is able to perform.
-		/// </summary>
-		protected enum Operation
-		{
-			/// <summary>
-			/// No operation.
-			/// </summary>
-			None,
-
-			/// <summary>
-			/// Read a dataset / object
-			/// </summary>
-			Read,
-			/// <summary>
-			/// Write a dataset / object
-			/// </summary>
-			Write
-		}
 
 		/// <summary>
 		/// Binary serialization header id. 
@@ -170,27 +171,10 @@ namespace Duality.Serialization
 		/// </summary>
 		protected	BinaryReader	reader		= null;
 		/// <summary>
-		/// The de/serialization <see cref="Duality.Log"/>.
-		/// </summary>
-		protected	Log				log			= Log.Core;
-		/// <summary>
-		/// A counter for the number of ids that have been used during the current <see cref="Operation"/>.
-		/// </summary>
-		protected	uint			idCounter	= 0;
-		/// <summary>
 		/// The binary format version in which the currently incoming data is available.
 		/// </summary>
 		protected	ushort			dataVersion	= 0;
-		/// <summary>
-		/// A dictionary that maps objects to their object ids.
-		/// </summary>
-		protected	Dictionary<object,uint>	objRefIdMap	= new Dictionary<object,uint>();
-		/// <summary>
-		/// A dictionary that maps object ids to their objects.
-		/// </summary>
-		protected	Dictionary<uint,object>	idObjRefMap	= new Dictionary<uint,object>();
 
-		private		bool								disposed			= false;
 		private		Operation							lastOperation		= Operation.None;
 		private		Stack<long>							offsetStack			= new Stack<long>();
 		private		Dictionary<string,TypeDataLayout>	typeDataLayout		= new Dictionary<string,TypeDataLayout>();
@@ -211,7 +195,7 @@ namespace Duality.Serialization
 				if (this.writer != null && !this.writer.BaseStream.CanSeek) throw new ArgumentException("Cannot use a WriteTarget without seeking capability.");
 
 				// We're switching the stream, so we should discard all stream-specific temporary / cache data
-				this.lastOperation = Operation.None;
+				this.EndOperation();
 			}
 		}
 		/// <summary>
@@ -228,16 +212,8 @@ namespace Duality.Serialization
 				if (this.reader != null && !this.reader.BaseStream.CanSeek) throw new ArgumentException("Cannot use a ReadTarget without seeking capability.");
 
 				// We're switching the stream, so we should discard all stream-specific temporary / cache data
-				this.lastOperation = Operation.None;
+				this.EndOperation();
 			}
-		}
-		/// <summary>
-		/// [GET / SET] The de/serialization <see cref="Duality.Log"/>.
-		/// </summary>
-		public Log SerializationLog
-		{
-			get { return this.log; }
-			set { this.log = value ?? new Log("Serialize"); }
 		}
 		/// <summary>
 		/// [GET] Can this binary serializer write data?
@@ -253,13 +229,6 @@ namespace Duality.Serialization
 		{
 			get { return this.reader != null; }
 		}
-		/// <summary>
-		/// [GET] Whether this binary serializer has been disposed. A disposed object cannot be used anymore.
-		/// </summary>
-		public bool Disposed
-		{
-			get { return this.disposed; }
-		}
 
 
 		public BinaryFormatterBase() : this(null) {}
@@ -268,18 +237,9 @@ namespace Duality.Serialization
 			this.WriteTarget = (stream != null && stream.CanWrite) ? new BinaryWriter(stream) : null;
 			this.ReadTarget = (stream != null && stream.CanRead) ? new BinaryReader(stream) : null;
 		}
-		~BinaryFormatterBase()
+		protected override void Dispose(bool manually)
 		{
-			this.Dispose(false);
-		}
-		public void Dispose()
-		{
-			GC.SuppressFinalize(this);
-			this.Dispose(true);
-		}
-		protected virtual void Dispose(bool manually)
-		{
-			if (this.disposed) return;
+			if (this.Disposed) return;
 
 			if (this.writer != null)
 			{
@@ -294,7 +254,6 @@ namespace Duality.Serialization
 			}
 		}
 
-		
 		/// <summary>
 		/// Reads an object including all referenced objects using the <see cref="ReadTarget"/>.
 		/// </summary>
@@ -303,12 +262,8 @@ namespace Duality.Serialization
 		{
 			if (!this.CanRead) return null;
 			if (this.reader.BaseStream.Position == this.reader.BaseStream.Length) throw new EndOfStreamException("No more data to read.");
-			if (this.lastOperation != Operation.Read)
-			{
-				this.ClearStreamSpecificData();
+			if (this.BeginOperation(Operation.Read))
 				this.ReadFormatterHeader();
-			}
-			this.lastOperation = Operation.Read;
 
 			// Not null flag
 			bool isNotNull = this.reader.ReadBoolean();
@@ -334,7 +289,7 @@ namespace Duality.Serialization
 				// If anything goes wrong, assure the stream position is valid and points to the next data entry
 				this.reader.BaseStream.Seek(lastPos + offset, SeekOrigin.Begin);
 				// Log the error
-				this.log.WriteError("Error reading object at '{0:X8}'-'{1:X8}': {2}", 
+				this.SerializationLog.WriteError("Error reading object at '{0:X8}'-'{1:X8}': {2}", 
 					lastPos,
 					lastPos + offset, 
 					e is ApplicationException ? e.Message : Log.Exception(e));
@@ -423,13 +378,13 @@ namespace Duality.Serialization
 				{
 					// If anything goes wrong, assure the stream position is valid and points to the next data entry
 					this.reader.BaseStream.Seek(lastPos + offset, SeekOrigin.Begin);
-					this.log.WriteError("Error reading header at '{0:X8}'-'{1:X8}': {2}", lastPos, lastPos + offset, Log.Exception(e));
+					this.SerializationLog.WriteError("Error reading header at '{0:X8}'-'{1:X8}': {2}", lastPos, lastPos + offset, Log.Exception(e));
 				}
 			}
 			catch (Exception e) 
 			{
 				this.reader.BaseStream.Seek(initialPos, SeekOrigin.Begin);
-				this.log.WriteError("Error reading header: {0}", Log.Exception(e));
+				this.SerializationLog.WriteError("Error reading header: {0}", Log.Exception(e));
 			}
 		}
 		/// <summary>
@@ -594,12 +549,8 @@ namespace Duality.Serialization
 		protected void WriteObject(object obj)
 		{
 			if (!this.CanWrite) return;
-			if (this.lastOperation != Operation.Write)
-			{
-				this.ClearStreamSpecificData();
+			if (this.BeginOperation(Operation.Write))
 				this.WriteFormatterHeader();
-			}
-			this.lastOperation = Operation.Write;
 
 			// NotNull flag
 			if (obj == null)
@@ -878,7 +829,6 @@ namespace Duality.Serialization
 			}
 		}
 
-		
 		/// <summary>
 		/// Writes a <see cref="Duality.Serialization.DataType"/>.
 		/// </summary>
@@ -927,79 +877,32 @@ namespace Duality.Serialization
 			this.writer.BaseStream.Seek(curPos, SeekOrigin.Begin);
 		}
 
+		private bool BeginOperation(Operation operation)
+		{
+			bool switched = false;
+			if (this.lastOperation != operation)
+			{
+				this.ClearStreamSpecificData();
+				switched = true;
+			}
+
+			this.lastOperation = operation;
+			return switched;
+		}
+		private void EndOperation()
+		{
+			this.lastOperation = Operation.None;
+		}
+
 		/// <summary>
 		/// Clears all <see cref="System.IO.Stream"/>- or <see cref="Operation"/>-specific cache data.
 		/// </summary>
 		protected void ClearStreamSpecificData()
 		{
+			this.ClearObjectIds();
 			this.typeDataLayout.Clear();
 			this.typeDataLayoutMap.Clear();
 			this.offsetStack.Clear();
-			this.objRefIdMap.Clear();
-			this.idObjRefMap.Clear();
-			this.idCounter = 0;
-		}
-		/// <summary>
-		/// Returns the id that is assigned to the specified object. Assigns one, if
-		/// there is none yet.
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <param name="isNewId"></param>
-		/// <returns></returns>
-		protected uint GetIdFromObject(object obj, out bool isNewId)
-		{
-			uint id;
-			if (this.objRefIdMap.TryGetValue(obj, out id))
-			{
-				isNewId = false;
-				return id;
-			}
-
-			id = ++idCounter;
-			this.objRefIdMap[obj] = id;
-			this.idObjRefMap[id] = obj;
-
-			isNewId = true;
-			return id;
-		}
-
-
-		/// <summary>
-		/// Logs an error that occured during <see cref="Duality.Serialization.ISerializable">custom serialization</see>.
-		/// </summary>
-		/// <param name="objId">The object id of the affected object.</param>
-		/// <param name="serializeType">The <see cref="System.Type"/> of the affected object.</param>
-		/// <param name="e">The <see cref="System.Exception"/> that occured.</param>
-		protected void LogCustomSerializationError(uint objId, Type serializeType, Exception e)
-		{
-			this.log.WriteError(
-				"An error occured in custom serialization in object Id {0} of type '{1}': {2}",
-				objId,
-				Log.Type(serializeType),
-				Log.Exception(e));
-		}
-		/// <summary>
-		/// Logs an error that occured during <see cref="Duality.Serialization.ISerializable">custom deserialization</see>.
-		/// </summary>
-		/// <param name="objId">The object id of the affected object.</param>
-		/// <param name="serializeType">The <see cref="System.Type"/> of the affected object.</param>
-		/// <param name="e">The <see cref="System.Exception"/> that occured.</param>
-		protected void LogCustomDeserializationError(uint objId, Type serializeType, Exception e)
-		{
-			this.log.WriteError(
-				"An error occured in custom deserialization in object Id {0} of type '{1}': {2}",
-				objId,
-				Log.Type(serializeType),
-				Log.Exception(e));
-		}
-		/// <summary>
-		/// Logs an error that occured trying to resolve a <see cref="System.Type"/> by its <see cref="ReflectionHelper.GetTypeId">type string</see>.
-		/// </summary>
-		/// <param name="objId">The object id of the affected object.</param>
-		/// <param name="typeString">The <see cref="ReflectionHelper.GetTypeId">type string</see> that couldn't be resolved.</param>
-		protected void LogCantResolveTypeError(uint objId, string typeString)
-		{
-			this.log.WriteError("Can't resolve Type '{0}' in object Id {1}. Type not found.", typeString, objId);
 		}
 	}
 }

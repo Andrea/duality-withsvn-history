@@ -509,22 +509,25 @@ namespace DualityEditor.Forms
 			string srcFilePath, targetName, targetDir;
 			this.PrepareImportFilePaths(filePath, out srcFilePath, out targetName, out targetDir);
 
-			// Assure the directory exists
-			Directory.CreateDirectory(Path.GetDirectoryName(srcFilePath));
-
-			// Move file from data directory to source directory
-			if (File.Exists(srcFilePath))
-			{
-				File.Copy(filePath, srcFilePath, true);
-				File.Delete(filePath);
-			}
-			else
-				File.Move(filePath, srcFilePath);
-
 			// Find an importer to handle the file import
-			IFileImporter importer = this.fileImporters.FirstOrDefault(i => i.CanImportFile(srcFilePath));
+			IFileImporter importer = this.fileImporters.FirstOrDefault(i => i.CanImportFile(filePath));
 			if (importer != null)
 			{
+				try
+				{
+					// Assure the directory exists
+					Directory.CreateDirectory(Path.GetDirectoryName(srcFilePath));
+
+					// Move file from data directory to source directory
+					if (File.Exists(srcFilePath))
+					{
+						File.Copy(filePath, srcFilePath, true);
+						File.Delete(filePath);
+					}
+					else
+						File.Move(filePath, srcFilePath);
+				} catch (Exception) { return false; }
+
 				// Import it
 				importer.ImportFile(srcFilePath, targetName, targetDir);
 				GC.Collect();
@@ -533,6 +536,21 @@ namespace DualityEditor.Forms
 			}
 			else
 				return false;
+		}
+
+		private bool IsResPathIgnored(string filePath)
+		{
+			return this.IsPathIgnored(filePath);
+		}
+		private bool IsSourcePathIgnored(string filePath)
+		{
+			return this.IsPathIgnored(filePath);
+		}
+		private bool IsPathIgnored(string filePath)
+		{
+			if (!PathHelper.IsPathVisible(filePath)) return true;
+			if (filePath.Contains(@"/.svn/") || filePath.Contains(@"\.svn\")) return true;
+			return false;
 		}
 
 		private void ReimportFile(string filePath)
@@ -1041,6 +1059,7 @@ namespace DualityEditor.Forms
 		
 		private void dataDirWatcher_Changed(object sender, FileSystemEventArgs e)
 		{
+			if (this.IsResPathIgnored(e.FullPath)) return;
 			ResourceEventArgs args = new ResourceEventArgs(e.FullPath);
 
 			// When modifying prefabs, apply changes to all linked objects
@@ -1056,6 +1075,7 @@ namespace DualityEditor.Forms
 		}
 		private void dataDirWatcher_Created(object sender, FileSystemEventArgs e)
 		{
+			if (this.IsResPathIgnored(e.FullPath)) return;
 			if (File.Exists(e.FullPath))
 			{
 				// Register newly detected ressource file
@@ -1078,8 +1098,6 @@ namespace DualityEditor.Forms
 						if (!importedSuccessfully) this.DisplayErrorImportFile(e.FullPath);
 						abort = !importedSuccessfully;
 					}
-
-					if (abort && File.Exists(e.FullPath)) File.Delete(e.FullPath);
 				}
 			}
 			else if (Directory.Exists(e.FullPath))
@@ -1091,6 +1109,7 @@ namespace DualityEditor.Forms
 		}
 		private void dataDirWatcher_Deleted(object sender, FileSystemEventArgs e)
 		{
+			if (this.IsResPathIgnored(e.FullPath)) return;
 			ResourceEventArgs args = new ResourceEventArgs(e.FullPath);
 
 			// Unregister no-more existing resources
@@ -1102,6 +1121,7 @@ namespace DualityEditor.Forms
 		}
 		private void dataDirWatcher_Renamed(object sender, RenamedEventArgs e)
 		{
+			if (this.IsResPathIgnored(e.FullPath)) return;
 			ResourceRenamedEventArgs args = new ResourceRenamedEventArgs(e.FullPath, e.OldFullPath);
 
 			// Rename content registerations
@@ -1117,18 +1137,22 @@ namespace DualityEditor.Forms
 		
 		private void sourceDirWatcher_Created(object sender, FileSystemEventArgs e)
 		{
+			if (this.IsSourcePathIgnored(e.FullPath)) return;
 		}
 		private void sourceDirWatcher_Changed(object sender, FileSystemEventArgs e)
 		{
+			if (this.IsSourcePathIgnored(e.FullPath)) return;
 			if (File.Exists(e.FullPath)) this.reimportSchedule.Add(e.FullPath);
 			if (this.SrcFileModified != null) this.SrcFileModified(this, e);
 		}
 		private void sourceDirWatcher_Deleted(object sender, FileSystemEventArgs e)
 		{
+			if (this.IsSourcePathIgnored(e.FullPath)) return;
 			if (this.SrcFileDeleted != null) this.SrcFileDeleted(this, e);
 		}
 		private void sourceDirWatcher_Renamed(object sender, RenamedEventArgs e)
 		{
+			if (this.IsSourcePathIgnored(e.FullPath)) return;
 			if (File.Exists(e.FullPath)) this.reimportSchedule.Add(e.FullPath);
 			if (this.SrcFileRenamed != null) this.SrcFileRenamed(this, e);
 		}

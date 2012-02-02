@@ -2015,6 +2015,154 @@
             Base class for Dualitys binary serializers.
             </summary>
         </member>
+        <member name="T:Duality.Serialization.FormatterBase">
+            <summary>
+            Base class for Dualitys serializers.
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.FormatterBase.fieldBlockers">
+            <summary>
+            The de/serialization <see cref="T:Duality.Log"/>.
+            </summary>
+            <summary>
+            A list of <see cref="T:System.Reflection.FieldInfo">field</see> blockers. If any registered field blocker
+            returns true upon serializing a specific field, a default value is assumed instead.
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.FormatterBase.surrogates">
+            <summary>
+            A list of <see cref="T:Duality.Serialization.ISurrogate">Serialization Surrogates</see>. If any of them
+            matches the <see cref="T:System.Type"/> of an object that is to be serialized, instead of letting it
+            serialize itsself, the <see cref="T:Duality.Serialization.ISurrogate"/> with the highest <see cref="P:Duality.Serialization.ISurrogate.Priority"/>
+            is used instead.
+            </summary>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.ClearFieldBlockers">
+            <summary>
+            Unregisters all <see cref="P:Duality.Serialization.FormatterBase.FieldBlockers"/>.
+            </summary>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.AddFieldBlocker(System.Predicate{System.Reflection.FieldInfo})">
+            <summary>
+            Registers a new <see cref="P:Duality.Serialization.FormatterBase.FieldBlockers">FieldBlocker</see>.
+            </summary>
+            <param name="blocker"></param>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.RemoveFieldBlocker(System.Predicate{System.Reflection.FieldInfo})">
+            <summary>
+            Unregisters an existing <see cref="P:Duality.Serialization.FormatterBase.FieldBlockers">FieldBlocker</see>.
+            </summary>
+            <param name="blocker"></param>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.IsFieldBlocked(System.Reflection.FieldInfo)">
+            <summary>
+            Determines whether a specific <see cref="T:System.Reflection.FieldInfo">field</see> is blocked.
+            Instead of writing the value of a blocked field, the matching <see cref="T:System.Type">Types</see>
+            defautl value is assumed.
+            </summary>
+            <param name="field">The <see cref="T:System.Reflection.FieldInfo">field</see> in question</param>
+            <returns>True, if the <see cref="T:System.Reflection.FieldInfo">field</see> is blocked, false if not.</returns>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.ClearSurrogates">
+            <summary>
+            Unregisters all <see cref="T:Duality.Serialization.ISurrogate">Surrogates</see>.
+            </summary>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.AddSurrogate(Duality.Serialization.ISurrogate)">
+            <summary>
+            Registers a new <see cref="T:Duality.Serialization.ISurrogate">Surrogate</see>.
+            </summary>
+            <param name="surrogate"></param>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.RemoveSurrogate(Duality.Serialization.ISurrogate)">
+            <summary>
+            Unregisters an existing <see cref="T:Duality.Serialization.ISurrogate">Surrogate</see>.
+            </summary>
+            <param name="surrogate"></param>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.GetSurrogateFor(System.Type)">
+            <summary>
+            Retrieves a matching <see cref="T:Duality.Serialization.ISurrogate"/> for the specified <see cref="T:System.Type"/>.
+            </summary>
+            <param name="t">The <see cref="T:System.Type"/> to retrieve a <see cref="T:Duality.Serialization.ISurrogate"/> for.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.ClearObjectIds">
+            <summary>
+            Clears all object id mappings.
+            </summary>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.RequestObjectId(System.Object,System.Boolean@)">
+            <summary>
+            Returns the id that is assigned to the specified object. Assigns one, if
+            there is none yet.
+            </summary>
+            <param name="obj"></param>
+            <param name="isNewId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.InjectObjectId(System.Object,System.UInt32)">
+            <summary>
+            Assigns an id to a specific object.
+            </summary>
+            <param name="obj"></param>
+            <param name="id">The id to assign. Zero ids are rejected.</param>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.LookupObjectId(System.UInt32,System.Object@)">
+            <summary>
+            Tries to lookup an object based on its id.
+            </summary>
+            <param name="id"></param>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.LogCustomSerializationError(System.UInt32,System.Type,System.Exception)">
+            <summary>
+            Logs an error that occured during <see cref="T:Duality.Serialization.ISerializable">custom serialization</see>.
+            </summary>
+            <param name="objId">The object id of the affected object.</param>
+            <param name="serializeType">The <see cref="T:System.Type"/> of the affected object.</param>
+            <param name="e">The <see cref="T:System.Exception"/> that occured.</param>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.LogCustomDeserializationError(System.UInt32,System.Type,System.Exception)">
+            <summary>
+            Logs an error that occured during <see cref="T:Duality.Serialization.ISerializable">custom deserialization</see>.
+            </summary>
+            <param name="objId">The object id of the affected object.</param>
+            <param name="serializeType">The <see cref="T:System.Type"/> of the affected object.</param>
+            <param name="e">The <see cref="T:System.Exception"/> that occured.</param>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.LogCantResolveTypeError(System.UInt32,System.String)">
+            <summary>
+            Logs an error that occured trying to resolve a <see cref="T:System.Type"/> by its <see cref="M:Duality.ReflectionHelper.GetTypeId(System.Type)">type string</see>.
+            </summary>
+            <param name="objId">The object id of the affected object.</param>
+            <param name="typeString">The <see cref="M:Duality.ReflectionHelper.GetTypeId(System.Type)">type string</see> that couldn't be resolved.</param>
+        </member>
+        <member name="P:Duality.Serialization.FormatterBase.SerializationLog">
+            <summary>
+            [GET / SET] The de/serialization <see cref="T:Duality.Log"/>.
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.FormatterBase.FieldBlockers">
+            <summary>
+            [GET] Enumerates registered <see cref="T:System.Reflection.FieldInfo">field</see> blockers. If any registered field blocker
+            returns true upon serializing a specific field, a default value is assumed instead.
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.FormatterBase.Surrogates">
+            <summary>
+            [GET] Enumerates registered <see cref="T:Duality.Serialization.ISurrogate">Serialization Surrogates</see>. If any of them
+            matches the <see cref="T:System.Type"/> of an object that is to be serialized, instead of letting it
+            serialize itsself, the <see cref="T:Duality.Serialization.ISurrogate"/> with the highest <see cref="P:Duality.Serialization.ISurrogate.Priority"/>
+            is used instead.
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.FormatterBase.Disposed">
+            <summary>
+            [GET] Whether this binary serializer has been disposed. A disposed object cannot be used anymore.
+            </summary>
+        </member>
         <member name="F:Duality.Serialization.BinaryFormatterBase.HeaderId">
             <summary>
             Binary serialization header id. 
@@ -2035,29 +2183,9 @@
             The <see cref="T:System.IO.BinaryReader"/> that is used for deserialization.
             </summary>
         </member>
-        <member name="F:Duality.Serialization.BinaryFormatterBase.log">
-            <summary>
-            The de/serialization <see cref="T:Duality.Log"/>.
-            </summary>
-        </member>
-        <member name="F:Duality.Serialization.BinaryFormatterBase.idCounter">
-            <summary>
-            A counter for the number of ids that have been used during the current <see cref="T:Duality.Serialization.BinaryFormatterBase.Operation"/>.
-            </summary>
-        </member>
         <member name="F:Duality.Serialization.BinaryFormatterBase.dataVersion">
             <summary>
             The binary format version in which the currently incoming data is available.
-            </summary>
-        </member>
-        <member name="F:Duality.Serialization.BinaryFormatterBase.objRefIdMap">
-            <summary>
-            A dictionary that maps objects to their object ids.
-            </summary>
-        </member>
-        <member name="F:Duality.Serialization.BinaryFormatterBase.idObjRefMap">
-            <summary>
-            A dictionary that maps object ids to their objects.
             </summary>
         </member>
         <member name="M:Duality.Serialization.BinaryFormatterBase.ReadObject">
@@ -2403,38 +2531,6 @@
             Clears all <see cref="T:System.IO.Stream"/>- or <see cref="T:Duality.Serialization.BinaryFormatterBase.Operation"/>-specific cache data.
             </summary>
         </member>
-        <member name="M:Duality.Serialization.BinaryFormatterBase.GetIdFromObject(System.Object,System.Boolean@)">
-            <summary>
-            Returns the id that is assigned to the specified object. Assigns one, if
-            there is none yet.
-            </summary>
-            <param name="obj"></param>
-            <param name="isNewId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.Serialization.BinaryFormatterBase.LogCustomSerializationError(System.UInt32,System.Type,System.Exception)">
-            <summary>
-            Logs an error that occured during <see cref="T:Duality.Serialization.ISerializable">custom serialization</see>.
-            </summary>
-            <param name="objId">The object id of the affected object.</param>
-            <param name="serializeType">The <see cref="T:System.Type"/> of the affected object.</param>
-            <param name="e">The <see cref="T:System.Exception"/> that occured.</param>
-        </member>
-        <member name="M:Duality.Serialization.BinaryFormatterBase.LogCustomDeserializationError(System.UInt32,System.Type,System.Exception)">
-            <summary>
-            Logs an error that occured during <see cref="T:Duality.Serialization.ISerializable">custom deserialization</see>.
-            </summary>
-            <param name="objId">The object id of the affected object.</param>
-            <param name="serializeType">The <see cref="T:System.Type"/> of the affected object.</param>
-            <param name="e">The <see cref="T:System.Exception"/> that occured.</param>
-        </member>
-        <member name="M:Duality.Serialization.BinaryFormatterBase.LogCantResolveTypeError(System.UInt32,System.String)">
-            <summary>
-            Logs an error that occured trying to resolve a <see cref="T:System.Type"/> by its <see cref="M:Duality.ReflectionHelper.GetTypeId(System.Type)">type string</see>.
-            </summary>
-            <param name="objId">The object id of the affected object.</param>
-            <param name="typeString">The <see cref="M:Duality.ReflectionHelper.GetTypeId(System.Type)">type string</see> that couldn't be resolved.</param>
-        </member>
         <member name="P:Duality.Serialization.BinaryFormatterBase.WriteTarget">
             <summary>
             [GET / SET] The <see cref="T:System.IO.BinaryWriter"/> that is used for serialization.
@@ -2443,11 +2539,6 @@
         <member name="P:Duality.Serialization.BinaryFormatterBase.ReadTarget">
             <summary>
             [GET / SET] The <see cref="T:System.IO.BinaryReader"/> that is used for deserialization.
-            </summary>
-        </member>
-        <member name="P:Duality.Serialization.BinaryFormatterBase.SerializationLog">
-            <summary>
-            [GET / SET] The de/serialization <see cref="T:Duality.Log"/>.
             </summary>
         </member>
         <member name="P:Duality.Serialization.BinaryFormatterBase.CanWrite">
@@ -2460,9 +2551,24 @@
             [GET] Can this binary serializer read data?
             </summary>
         </member>
-        <member name="P:Duality.Serialization.BinaryFormatterBase.Disposed">
+        <member name="T:Duality.Serialization.BinaryFormatterBase.Operation">
             <summary>
-            [GET] Whether this binary serializer has been disposed. A disposed object cannot be used anymore.
+            Operations, the binary serializer is able to perform.
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.BinaryFormatterBase.Operation.None">
+            <summary>
+            No operation.
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.BinaryFormatterBase.Operation.Read">
+            <summary>
+            Read a dataset / object
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.BinaryFormatterBase.Operation.Write">
+            <summary>
+            Write a dataset / object
             </summary>
         </member>
         <member name="T:Duality.Serialization.BinaryFormatterBase.CustomSerialIO">
@@ -2585,26 +2691,6 @@
         <member name="P:Duality.Serialization.BinaryFormatterBase.CustomSerialIO.Values">
             <summary>
             [GET] Enumerates all currently stored <see cref="T:System.Collections.Generic.KeyValuePair`2">KeyValuePairs</see>.
-            </summary>
-        </member>
-        <member name="T:Duality.Serialization.BinaryFormatterBase.Operation">
-            <summary>
-            Operations, the binary serializer is able to perform.
-            </summary>
-        </member>
-        <member name="F:Duality.Serialization.BinaryFormatterBase.Operation.None">
-            <summary>
-            No operation.
-            </summary>
-        </member>
-        <member name="F:Duality.Serialization.BinaryFormatterBase.Operation.Read">
-            <summary>
-            Read a dataset / object
-            </summary>
-        </member>
-        <member name="F:Duality.Serialization.BinaryFormatterBase.Operation.Write">
-            <summary>
-            Write a dataset / object
             </summary>
         </member>
         <member name="T:Duality.SoundDevice">
@@ -2899,7 +2985,7 @@
         </member>
         <member name="M:Duality.Resource.NonSerializedResourceBlocker(System.Reflection.FieldInfo)">
             <summary>
-            A <see cref="P:Duality.Serialization.BinaryFormatter.FieldBlockers">FieldBlocker</see> to prevent
+            A <see cref="!:Duality.Serialization.BinaryFormatter.FieldBlockers">FieldBlocker</see> to prevent
             fields flagged with a <see cref="T:Duality.NonSerializedResourceAttribute"/> from being serialized.
             </summary>
             <param name="field"></param>
@@ -10760,70 +10846,6 @@
             </summary>
             <seealso cref="T:Duality.Serialization.BinaryMetaFormatter"/>
         </member>
-        <member name="F:Duality.Serialization.BinaryFormatter.fieldBlockers">
-            <summary>
-            A list of <see cref="T:System.Reflection.FieldInfo">field</see> blockers. If any registered field blocker
-            returns true upon serializing a specific field, a default value is assumed instead.
-            </summary>
-        </member>
-        <member name="F:Duality.Serialization.BinaryFormatter.surrogates">
-            <summary>
-            A list of <see cref="T:Duality.Serialization.ISurrogate">Serialization Surrogates</see>. If any of them
-            matches the <see cref="T:System.Type"/> of an object that is to be serialized, instead of letting it
-            serialize itsself, the <see cref="T:Duality.Serialization.ISurrogate"/> with the highest <see cref="P:Duality.Serialization.ISurrogate.Priority"/>
-            is used instead.
-            </summary>
-        </member>
-        <member name="M:Duality.Serialization.BinaryFormatter.ClearFieldBlockers">
-            <summary>
-            Unregisters all <see cref="P:Duality.Serialization.BinaryFormatter.FieldBlockers"/>.
-            </summary>
-        </member>
-        <member name="M:Duality.Serialization.BinaryFormatter.AddFieldBlocker(System.Predicate{System.Reflection.FieldInfo})">
-            <summary>
-            Registers a new <see cref="P:Duality.Serialization.BinaryFormatter.FieldBlockers">FieldBlocker</see>.
-            </summary>
-            <param name="blocker"></param>
-        </member>
-        <member name="M:Duality.Serialization.BinaryFormatter.RemoveFieldBlocker(System.Predicate{System.Reflection.FieldInfo})">
-            <summary>
-            Unregisters an existing <see cref="P:Duality.Serialization.BinaryFormatter.FieldBlockers">FieldBlocker</see>.
-            </summary>
-            <param name="blocker"></param>
-        </member>
-        <member name="M:Duality.Serialization.BinaryFormatter.IsFieldBlocked(System.Reflection.FieldInfo)">
-            <summary>
-            Determines whether a specific <see cref="T:System.Reflection.FieldInfo">field</see> is blocked.
-            Instead of writing the value of a blocked field, the matching <see cref="T:System.Type">Types</see>
-            defautl value is assumed.
-            </summary>
-            <param name="field">The <see cref="T:System.Reflection.FieldInfo">field</see> in question</param>
-            <returns>True, if the <see cref="T:System.Reflection.FieldInfo">field</see> is blocked, false if not.</returns>
-        </member>
-        <member name="M:Duality.Serialization.BinaryFormatter.ClearSurrogates">
-            <summary>
-            Unregisters all <see cref="T:Duality.Serialization.ISurrogate">Surrogates</see>.
-            </summary>
-        </member>
-        <member name="M:Duality.Serialization.BinaryFormatter.AddSurrogate(Duality.Serialization.ISurrogate)">
-            <summary>
-            Registers a new <see cref="T:Duality.Serialization.ISurrogate">Surrogate</see>.
-            </summary>
-            <param name="surrogate"></param>
-        </member>
-        <member name="M:Duality.Serialization.BinaryFormatter.RemoveSurrogate(Duality.Serialization.ISurrogate)">
-            <summary>
-            Unregisters an existing <see cref="T:Duality.Serialization.ISurrogate">Surrogate</see>.
-            </summary>
-            <param name="surrogate"></param>
-        </member>
-        <member name="M:Duality.Serialization.BinaryFormatter.GetSurrogateFor(System.Type)">
-            <summary>
-            Retrieves a matching <see cref="T:Duality.Serialization.ISurrogate"/> for the specified <see cref="T:System.Type"/>.
-            </summary>
-            <param name="t">The <see cref="T:System.Type"/> to retrieve a <see cref="T:Duality.Serialization.ISurrogate"/> for.</param>
-            <returns></returns>
-        </member>
         <member name="M:Duality.Serialization.BinaryFormatter.WriteObject(System.Object)">
             <summary>
             Writes the specified object including all referenced objects using the <see cref="P:Duality.Serialization.BinaryFormatterBase.WriteTarget"/>.
@@ -10910,20 +10932,6 @@
             Reads an <see cref="T:System.Enum"/>.
             </summary>
             <returns>The object that has been read.</returns>
-        </member>
-        <member name="P:Duality.Serialization.BinaryFormatter.FieldBlockers">
-            <summary>
-            [GET] Enumerates registered <see cref="T:System.Reflection.FieldInfo">field</see> blockers. If any registered field blocker
-            returns true upon serializing a specific field, a default value is assumed instead.
-            </summary>
-        </member>
-        <member name="P:Duality.Serialization.BinaryFormatter.Surrogates">
-            <summary>
-            [GET] Enumerates registered <see cref="T:Duality.Serialization.ISurrogate">Serialization Surrogates</see>. If any of them
-            matches the <see cref="T:System.Type"/> of an object that is to be serialized, instead of letting it
-            serialize itsself, the <see cref="T:Duality.Serialization.ISurrogate"/> with the highest <see cref="P:Duality.Serialization.ISurrogate.Priority"/>
-            is used instead.
-            </summary>
         </member>
         <member name="T:Duality.Resources.FragmentShader">
             <summary>

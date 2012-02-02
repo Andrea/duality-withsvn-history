@@ -240,11 +240,7 @@ namespace Duality.Serialization
 			result = new MemberInfoNode(dataType, typeString, objId);
 			
 			// Prepare object reference
-			if (objId != 0)
-			{
-				this.objRefIdMap[result] = objId;
-				this.idObjRefMap[objId] = result;
-			}
+			this.InjectObjectId(result, objId);
 
 			return result;
 		}
@@ -263,11 +259,7 @@ namespace Duality.Serialization
 			ArrayNode result = new ArrayNode(arrTypeString, objId, arrRank, arrLength);
 			
 			// Prepare object reference
-			if (objId != 0)
-			{
-				this.objRefIdMap[result] = objId;
-				this.idObjRefMap[objId] = result;
-			}
+			this.InjectObjectId(result, objId);
 
 			// Store primitive data block
 			bool nonPrimitive = false;
@@ -328,7 +320,7 @@ namespace Duality.Serialization
 				custom = true;
 
 				// Set fake object reference for surrogate constructor: No self-references allowed here.
-				if (objId != 0) this.idObjRefMap[objId] = null;
+				this.InjectObjectId(null, objId);
 
 				CustomSerialIO customIO = new CustomSerialIO();
 				customIO.Deserialize(this);
@@ -347,11 +339,7 @@ namespace Duality.Serialization
 			}
 
 			// Prepare object reference
-			if (objId != 0)
-			{
-				this.objRefIdMap[result] = objId;
-				this.idObjRefMap[objId] = result;
-			}
+			this.InjectObjectId(result, objId);
 
 			if (custom)
 			{
@@ -403,11 +391,7 @@ namespace Duality.Serialization
 			DelegateNode result = new DelegateNode(delegateTypeString, objId, method, target, null);
 
 			// Prepare object reference
-			if (objId != 0)
-			{
-				this.objRefIdMap[result] = objId;
-				this.idObjRefMap[objId] = result;
-			}
+			this.InjectObjectId(result, objId);
 
 			// Load & fix the target object
 			target = this.ReadObject();
