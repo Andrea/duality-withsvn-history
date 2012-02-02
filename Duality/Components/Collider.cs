@@ -43,18 +43,13 @@ namespace Duality.Components
 		public abstract class ShapeInfo
 		{
 			[NonSerialized]	
-			private	Fixture		fixture		= null;
-			private	Collider	parent		= null;
-			private	float		density		= 1.0f;
-			private	float		friction	= 0.3f;
-			private	float		restitution	= 0.3f;
-			private	bool		sensor		= false;
+			protected	Fixture		fixture		= null;
+			private		Collider	parent		= null;
+			private		float		density		= 1.0f;
+			private		float		friction	= 0.3f;
+			private		float		restitution	= 0.3f;
+			private		bool		sensor		= false;
 			
-			internal Fixture Fixture
-			{
-				get { return this.fixture; }
-				set { this.fixture = value; }
-			}
 			/// <summary>
 			/// [GET] The shape's parent <see cref="Collider"/>.
 			/// </summary>
@@ -77,7 +72,14 @@ namespace Duality.Components
 			public float Density
 			{
 				get { return this.density; }
-				set { this.density = value; this.parent.UpdateBodyShape(); }
+				set 
+				{
+					this.density = value;
+					if (this.parent != null) // Full update to recalculate mass
+						this.parent.UpdateBodyShape();
+					else
+						this.UpdateFixture();
+				}
 			}
 			/// <summary>
 			/// [GET / SET] Whether or not the shape acts as sensor i.e. is not part of a rigid body.
@@ -85,7 +87,7 @@ namespace Duality.Components
 			public bool IsSensor
 			{
 				get { return this.sensor; }
-				set { this.sensor = value; this.parent.UpdateBodyShape(); }
+				set { this.sensor = value; this.UpdateFixture(); }
 			}
 			/// <summary>
 			/// [GET / SET] The shapes friction value.
@@ -93,7 +95,7 @@ namespace Duality.Components
 			public float Friction
 			{
 				get { return this.friction; }
-				set { this.friction = value; this.parent.UpdateBodyShape(); }
+				set { this.friction = value; this.UpdateFixture(); }
 			}
 			/// <summary>
 			/// [GET / SET] The shapes restitution value.
@@ -101,7 +103,7 @@ namespace Duality.Components
 			public float Restitution
 			{
 				get { return this.restitution; }
-				set { this.restitution = value; this.parent.UpdateBodyShape(); }
+				set { this.restitution = value; this.UpdateFixture(); }
 			}
 			/// <summary>
 			/// [GET] Returns the Shapes axis-aligned bounding box
@@ -122,7 +124,7 @@ namespace Duality.Components
 				body.DestroyFixture(this.fixture);
 			}
 			internal abstract void CreateFixture(Body body);
-			internal virtual void UpdateFixture(Vector2 scale)
+			internal virtual void UpdateFixture()
 			{
 				this.fixture.Shape.Density = this.density;
 				this.fixture.IsSensor = this.sensor;
@@ -168,7 +170,7 @@ namespace Duality.Components
 			public float Radius
 			{
 				get { return this.radius; }
-				set { this.radius = value; this.Parent.UpdateBodyShape(); }
+				set { this.radius = value; this.UpdateFixture(); }
 			}
 			/// <summary>
 			/// [GET / SET] The circles position.
@@ -176,7 +178,7 @@ namespace Duality.Components
 			public Vector2 Position
 			{
 				get { return this.position; }
-				set { this.position = value; this.Parent.UpdateBodyShape(); }
+				set { this.position = value; this.UpdateFixture(); }
 			}
 			public override Rect AABB
 			{
@@ -192,13 +194,19 @@ namespace Duality.Components
 
 			internal override void CreateFixture(Body body)
 			{
-				this.Fixture = body.CreateFixture(new CircleShape(1.0f, 1.0f), this);
+				this.fixture = body.CreateFixture(new CircleShape(1.0f, 1.0f), this);
 			}
-			internal override void UpdateFixture(Vector2 scale)
+			internal override void UpdateFixture()
 			{
-				base.UpdateFixture(scale);
+				base.UpdateFixture();
+
+				if (this.Parent == null) return;
+				Vector2 scale = Vector2.One;
+				if (this.Parent != null && this.Parent.GameObj != null && this.Parent.GameObj.Transform != null)
+					scale = this.Parent.GameObj.Transform.Scale.Xy;
 				float uniformScale = scale.Length / MathF.Sqrt(2.0f);
-				CircleShape circle = this.Fixture.Shape as CircleShape;
+
+				CircleShape circle = this.fixture.Shape as CircleShape;
 				circle.Radius = this.radius * uniformScale * 0.01f;
 				circle.Position = new Vector2(this.position.X * scale.X, this.position.Y * scale.Y) * 0.01f;
 			}
@@ -225,7 +233,7 @@ namespace Duality.Components
 			public Vector2[] Vertices
 			{
 				get { return this.vertices; }
-				set { this.vertices = value; this.Parent.UpdateBodyShape(); }
+				set { this.vertices = value; this.UpdateFixture(); }
 			}
 			public override Rect AABB
 			{
@@ -254,19 +262,25 @@ namespace Duality.Components
 
 			internal override void CreateFixture(Body body)
 			{
-				this.Fixture = body.CreateFixture(new PolygonShape(1.0f), this);
+				this.fixture = body.CreateFixture(new PolygonShape(1.0f), this);
 			}
-			internal override void UpdateFixture(Vector2 scale)
+			internal override void UpdateFixture()
 			{
-				base.UpdateFixture(scale);
-				PolygonShape poly = this.Fixture.Shape as PolygonShape;
-				poly.Vertices = new FarseerPhysics.Common.Vertices(this.vertices.Length);
-				for (int i = 0; i < poly.Vertices.Count; i++)
+				base.UpdateFixture();
+				
+				Vector2 scale = Vector2.One;
+				if (this.Parent != null && this.Parent.GameObj != null && this.Parent.GameObj.Transform != null)
+					scale = this.Parent.GameObj.Transform.Scale.Xy;
+
+				PolygonShape poly = this.fixture.Shape as PolygonShape;
+				FarseerPhysics.Common.Vertices v = new FarseerPhysics.Common.Vertices(this.vertices.Length);
+				for (int i = 0; i < v.Count; i++)
 				{
-					poly.Vertices[i] = new Vector2(
+					v[i] = new Vector2(
 						this.vertices[i].X * scale.X * 0.01f, 
 						this.vertices[i].Y * scale.Y * 0.01f);
 				}
+				poly.Vertices = v;
 			}
 
 			protected override void CopyTo(ShapeInfo target)
@@ -467,9 +481,7 @@ namespace Duality.Components
 		{
 			if (this.body == null) return;
 
-			Vector2 scale = this.GameObj != null && this.GameObj.Transform != null ? this.GameObj.Transform.Scale.Xy : Vector2.One;
-
-			foreach (ShapeInfo info in this.shapes) info.UpdateFixture(scale);
+			foreach (ShapeInfo info in this.shapes) info.UpdateFixture();
 			this.body.CollisionCategories = this.colCat;
 			this.body.CollidesWith = this.colWith;
 			this.body.ResetMassData();
