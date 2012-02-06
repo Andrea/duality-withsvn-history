@@ -259,7 +259,7 @@
         </member>
         <member name="M:Duality.DualityApp.RequestSerializer(System.IO.Stream)">
             <summary>
-            Requests a <see cref="T:Duality.Serialization.BinaryFormatter">binary serializer</see> for the specified stream.
+            Requests a <see cref="T:Duality.Serialization.FormatterBase">serializer</see> for the specified stream.
             </summary>
             <param name="stream">The stream which is used for de/serialization</param>
             <returns>A binary serializer to use for serialization</returns>
@@ -2036,6 +2036,18 @@
             serialize itsself, the <see cref="T:Duality.Serialization.ISurrogate"/> with the highest <see cref="P:Duality.Serialization.ISurrogate.Priority"/>
             is used instead.
             </summary>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.ReadObject">
+            <summary>
+            Writes the specified object including all referenced objects.
+            </summary>
+            <param name="obj">The object to write.</param>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.WriteObject(System.Object)">
+            <summary>
+            Reads an object including all referenced objects.
+            </summary>
+            <returns>The object that has been read.</returns>
         </member>
         <member name="M:Duality.Serialization.FormatterBase.ClearFieldBlockers">
             <summary>
@@ -7761,21 +7773,9 @@
         </member>
         <member name="T:Duality.Serialization.BinaryMetaFormatter">
             <summary>
-            De/Serializes abstract object data using <see cref="T:Duality.Serialization.MetaFormat.DataNode">DataNodes</see>.
+            De/Serializes abstract object data using <see cref="T:Duality.Serialization.MetaFormat.DataNode">DataNodes</see> instead of the object itsself.
             </summary>
             <seealso cref="T:Duality.Serialization.BinaryFormatter"/>
-        </member>
-        <member name="M:Duality.Serialization.BinaryMetaFormatter.WriteObject(Duality.Serialization.MetaFormat.DataNode)">
-            <summary>
-            Serializes the specified data node tree to the underlying <see cref="T:System.IO.Stream"/>.
-            </summary>
-            <param name="data">The data node tree to serialize.</param>
-        </member>
-        <member name="M:Duality.Serialization.BinaryMetaFormatter.ReadObject">
-            <summary>
-            Deserializes a data node tree from the underlying <see cref="T:System.IO.Stream"/>.
-            </summary>
-            <returns>A data node tree that has been deserialized.</returns>
         </member>
         <member name="M:Duality.Serialization.BinaryMetaFormatter.WriteMemberInfo(Duality.Serialization.MetaFormat.MemberInfoNode)">
             <summary>
@@ -10845,18 +10845,6 @@
             De/Serializes object data.
             </summary>
             <seealso cref="T:Duality.Serialization.BinaryMetaFormatter"/>
-        </member>
-        <member name="M:Duality.Serialization.BinaryFormatter.WriteObject(System.Object)">
-            <summary>
-            Writes the specified object including all referenced objects using the <see cref="P:Duality.Serialization.BinaryFormatterBase.WriteTarget"/>.
-            </summary>
-            <param name="obj">The object to write.</param>
-        </member>
-        <member name="M:Duality.Serialization.BinaryFormatter.ReadObject">
-            <summary>
-            Reads an object including all referenced objects using the <see cref="P:Duality.Serialization.BinaryFormatterBase.ReadTarget"/>.
-            </summary>
-            <returns>The object that has been read.</returns>
         </member>
         <member name="M:Duality.Serialization.BinaryFormatter.WriteMemberInfo(System.Object,System.UInt32)">
             <summary>

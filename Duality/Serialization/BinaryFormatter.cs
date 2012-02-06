@@ -21,23 +21,6 @@ namespace Duality.Serialization
 			this.AddSurrogate(new BitmapSurrogate());
 			this.AddSurrogate(new DictionarySurrogate());
 		}
-		
-		/// <summary>
-		/// Writes the specified object including all referenced objects using the <see cref="BinaryFormatterBase.WriteTarget"/>.
-		/// </summary>
-		/// <param name="obj">The object to write.</param>
-		public new void WriteObject(object obj)
-		{
-			base.WriteObject(obj);
-		}
-		/// <summary>
-		/// Reads an object including all referenced objects using the <see cref="BinaryFormatterBase.ReadTarget"/>.
-		/// </summary>
-		/// <returns>The object that has been read.</returns>
-		public new object ReadObject()
-		{
-			return base.ReadObject();
-		}
 
 		protected override void GetWriteObjectData(object obj, out SerializeType objSerializeType, out DataType dataType, out uint objId)
 		{

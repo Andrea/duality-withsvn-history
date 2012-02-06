@@ -135,7 +135,10 @@ namespace Duality.Serialization
 				if (read is T)
 					return (T)read;
 				else
-					return (T)Convert.ChangeType(read, typeof(T));
+				{
+					try { return (T)Convert.ChangeType(read, typeof(T), System.Globalization.CultureInfo.InvariantCulture); }
+					catch (Exception) { return default(T); }
+				}
 			}
 			/// <summary>
 			/// Reads the value that is associated with the specified name.
@@ -258,7 +261,7 @@ namespace Duality.Serialization
 		/// Reads an object including all referenced objects using the <see cref="ReadTarget"/>.
 		/// </summary>
 		/// <returns>The object that has been read.</returns>
-		protected object ReadObject()
+		public override object ReadObject()
 		{
 			if (!this.CanRead) return null;
 			if (this.reader.BaseStream.Position == this.reader.BaseStream.Length) throw new EndOfStreamException("No more data to read.");
@@ -546,7 +549,7 @@ namespace Duality.Serialization
 		/// Writes the specified object including all referenced objects using the <see cref="WriteTarget"/>.
 		/// </summary>
 		/// <param name="obj">The object to write.</param>
-		protected void WriteObject(object obj)
+		public override void WriteObject(object obj)
 		{
 			if (!this.CanWrite) return;
 			if (this.BeginOperation(Operation.Write))

@@ -10,34 +10,19 @@ using Duality.Serialization.MetaFormat;
 namespace Duality.Serialization
 {
 	/// <summary>
-	/// De/Serializes abstract object data using <see cref="Duality.Serialization.MetaFormat.DataNode">DataNodes</see>.
+	/// De/Serializes abstract object data using <see cref="Duality.Serialization.MetaFormat.DataNode">DataNodes</see> instead of the object itsself.
 	/// </summary>
 	/// <seealso cref="Duality.Serialization.BinaryFormatter"/>
 	public class BinaryMetaFormatter : BinaryFormatterBase
 	{
 		public BinaryMetaFormatter() : base() {}
 		public BinaryMetaFormatter(Stream stream) : base(stream) {}
-
-		/// <summary>
-		/// Serializes the specified data node tree to the underlying <see cref="System.IO.Stream"/>.
-		/// </summary>
-		/// <param name="data">The data node tree to serialize.</param>
-		public void WriteObject(DataNode data)
-		{
-			base.WriteObject(data);
-		}
-		/// <summary>
-		/// Deserializes a data node tree from the underlying <see cref="System.IO.Stream"/>.
-		/// </summary>
-		/// <returns>A data node tree that has been deserialized.</returns>
-		public new DataNode ReadObject()
-		{
-			return base.ReadObject() as DataNode;
-		}
 		
 		protected override void GetWriteObjectData(object obj, out SerializeType objSerializeType, out DataType dataType, out uint objId)
 		{
 			DataNode node = obj as DataNode;
+			if (node == null) throw new InvalidOperationException("The BinaryMetaFormatter can't serialize objects that do not derive from DataNode");
+
 			objSerializeType = null;
 			objId = 0;
 			dataType = node.NodeType;
@@ -293,7 +278,7 @@ namespace Duality.Serialization
 			{
 				for (int i = 0; i < arrLength; i++)
 				{
-					DataNode child = this.ReadObject();
+					DataNode child = this.ReadObject() as DataNode;
 					child.Parent = result;
 				}
 			}
@@ -367,7 +352,7 @@ namespace Duality.Serialization
 				// Read fields
 				for (int i = 0; i < layout.Fields.Length; i++)
 				{
-					DataNode fieldValue = this.ReadObject();
+					DataNode fieldValue = this.ReadObject() as DataNode;
 					fieldValue.Parent = result;
 				}
 			}
@@ -384,7 +369,7 @@ namespace Duality.Serialization
 			uint		objId				= this.reader.ReadUInt32();
 			bool		multi				= this.reader.ReadBoolean();
 
-			DataNode method	= this.ReadObject();
+			DataNode method	= this.ReadObject() as DataNode;
 			DataNode target	= null;
 
 			// Create the delegate without target and fix it later, so we don't load its target object before setting this object id
@@ -394,14 +379,14 @@ namespace Duality.Serialization
 			this.InjectObjectId(result, objId);
 
 			// Load & fix the target object
-			target = this.ReadObject();
+			target = this.ReadObject() as DataNode;
 			target.Parent = result;
 			result.Target = target;
 
 			// Combine multicast delegates
 			if (multi)
 			{
-				DataNode invokeList = this.ReadObject();
+				DataNode invokeList = this.ReadObject() as DataNode;
 				result.InvokeList = invokeList;
 			}
 

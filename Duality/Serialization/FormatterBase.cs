@@ -81,6 +81,19 @@ namespace Duality.Serialization
 		}
 		protected virtual void Dispose(bool manually) {}
 
+		
+		/// <summary>
+		/// Writes the specified object including all referenced objects.
+		/// </summary>
+		/// <param name="obj">The object to write.</param>
+		public abstract object ReadObject();
+		/// <summary>
+		/// Reads an object including all referenced objects.
+		/// </summary>
+		/// <returns>The object that has been read.</returns>
+		public abstract void WriteObject(object obj);
+
+
 		/// <summary>
 		/// Unregisters all <see cref="FieldBlockers"/>.
 		/// </summary>

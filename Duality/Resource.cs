@@ -103,7 +103,7 @@ namespace Duality
 		public void Save(Stream str)
 		{
 			this.OnSaving();
-			BinaryFormatter formatter = DualityApp.RequestSerializer(str);
+			FormatterBase formatter = DualityApp.RequestSerializer(str);
 			formatter.AddFieldBlocker(NonSerializedResourceBlocker);
 			formatter.WriteObject(this);
 			this.OnSaved();
@@ -224,7 +224,7 @@ namespace Duality
 			T newContent = null;
 			try
 			{
-				BinaryFormatter formatter = DualityApp.RequestSerializer(str);
+				FormatterBase formatter = DualityApp.RequestSerializer(str);
 				Resource res = formatter.ReadObject() as Resource;
 				if (res == null) throw new ApplicationException("Loading Resource failed");
 
