@@ -213,6 +213,7 @@ namespace DualityEditor.Forms
 			xmlFormatter.WriteObject(null);
 			xmlFormatter.WriteObject(42);
 			xmlFormatter.WriteObject("hello");
+			xmlFormatter.WriteObject(DualityApp.ExecutionContext.Game);
 			xmlFormatter.WriteObject(new byte[] { 0, 1, 2, 4, 8, 16, 32, 64, 128, 255 });
 			xmlFormatter.WriteObject(new int[] { 0, 1, 2, 4, 8, 16, 32, 64, 128, 255 });
 			xmlFormatter.WriteObject(new bool[] { true, false, true, false });
