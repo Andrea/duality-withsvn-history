@@ -309,11 +309,11 @@ namespace Duality.Serialization
 
 				CustomSerialIO customIO = new CustomSerialIO();
 				customIO.Deserialize(this);
-				if (customIO.Values.Any())
+				if (customIO.Data.Any())
 				{
 					DummyNode surrogateConstructor = new DummyNode();
 					surrogateConstructor.Parent = result;
-					foreach (var pair in customIO.Values)
+					foreach (var pair in customIO.Data)
 					{
 						StringNode key = new StringNode(pair.Key);
 						DataNode value = pair.Value as DataNode;
@@ -330,7 +330,7 @@ namespace Duality.Serialization
 			{
 				CustomSerialIO customIO = new CustomSerialIO();
 				customIO.Deserialize(this);
-				foreach (var pair in customIO.Values)
+				foreach (var pair in customIO.Data)
 				{
 					StringNode key = new StringNode(pair.Key);
 					DataNode value = pair.Value as DataNode;

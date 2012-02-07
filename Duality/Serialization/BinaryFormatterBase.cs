@@ -24,8 +24,8 @@ namespace Duality.Serialization
 			/// <param name="formatter">The serializer to write data to.</param>
 			public override void Serialize(BinaryFormatterBase formatter)
 			{
-				formatter.WritePrimitive(this.values.Count);
-				foreach (var pair in this.values)
+				formatter.WritePrimitive(this.data.Count);
+				foreach (var pair in this.data)
 				{
 					formatter.WriteString(pair.Key);
 					formatter.WriteObject(pair.Value);
@@ -44,7 +44,7 @@ namespace Duality.Serialization
 				{
 					string key = formatter.ReadString();
 					object value = formatter.ReadObject();
-					this.values.Add(key, value);
+					this.data.Add(key, value);
 				}
 			}
 		}

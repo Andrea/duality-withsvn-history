@@ -17,7 +17,7 @@ namespace Duality.Serialization
 		{
 			if (dataType.IsPrimitiveType())				this.WritePrimitive(obj);
 			else if (dataType == DataType.Enum)			this.WriteEnum(obj as Enum, objSerializeType);
-			else if (dataType == DataType.String)		this.WriteString(obj as string);
+			else if (dataType == DataType.String)		this.writer.WriteString(obj as string);
 			else if (dataType == DataType.Struct)		this.WriteStruct(obj, objSerializeType);
 			else if (dataType == DataType.ObjectRef)	this.writer.WriteValue(objId);
 			else if	(dataType == DataType.Array)		this.WriteArray(obj, objSerializeType, objId);
@@ -55,22 +55,12 @@ namespace Duality.Serialization
 			this.writer.WriteAttributeString("type", objSerializeType.TypeString);
 			if (id != 0) this.writer.WriteAttributeString("id", id.ToString(CultureInfo.InvariantCulture));
 			if (objAsArray.Rank != 1) this.writer.WriteAttributeString("rank", objAsArray.Rank.ToString(CultureInfo.InvariantCulture));
-			this.writer.WriteAttributeString("length", objAsArray.Length.ToString(CultureInfo.InvariantCulture));
 
-			if		(objAsArray is bool[])		this.WriteArrayData(objAsArray as bool[]);
-			else if (objAsArray is byte[])		this.WriteArrayData(objAsArray as byte[]);
-			else if (objAsArray is sbyte[])		this.WriteArrayData(objAsArray as sbyte[]);
-			else if (objAsArray is short[])		this.WriteArrayData(objAsArray as short[]);
-			else if (objAsArray is ushort[])	this.WriteArrayData(objAsArray as ushort[]);
-			else if (objAsArray is int[])		this.WriteArrayData(objAsArray as int[]);
-			else if (objAsArray is uint[])		this.WriteArrayData(objAsArray as uint[]);
-			else if (objAsArray is long[])		this.WriteArrayData(objAsArray as long[]);
-			else if (objAsArray is ulong[])		this.WriteArrayData(objAsArray as ulong[]);
-			else if (objAsArray is float[])		this.WriteArrayData(objAsArray as float[]);
-			else if (objAsArray is double[])	this.WriteArrayData(objAsArray as double[]);
-			else if (objAsArray is decimal[])	this.WriteArrayData(objAsArray as decimal[]);
-			else if (objAsArray is char[])		this.WriteArrayData(objAsArray as char[]);
-			else if (objAsArray is string[])	this.WriteArrayData(objAsArray as string[]);
+			if (objAsArray is byte[])
+			{
+				this.writer.WriteAttributeString("length", objAsArray.Length.ToString(CultureInfo.InvariantCulture));
+				this.writer.WriteBinHex(objAsArray as byte[], 0, objAsArray.Length);
+			}
 			else
 			{
 				for (long l = 0; l < objAsArray.Length; l++)

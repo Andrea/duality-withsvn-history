@@ -18,19 +18,26 @@ namespace Duality.Serialization
 		/// </summary>
 		protected abstract class CustomSerialIOBase<T> : IDataReader, IDataWriter where T : FormatterBase
 		{
-			protected	Dictionary<string,object>	values;
-
+			protected	Dictionary<string,object>	data;
+			
+			/// <summary>
+			/// [GET] Enumerates all available keys.
+			/// </summary>
+			public IEnumerable<string> Keys
+			{
+				get { return this.data.Keys; }
+			}
 			/// <summary>
 			/// [GET] Enumerates all currently stored <see cref="System.Collections.Generic.KeyValuePair{T,U}">KeyValuePairs</see>.
 			/// </summary>
-			public IEnumerable<KeyValuePair<string,object>> Values
+			public IEnumerable<KeyValuePair<string,object>> Data
 			{
-				get { return this.values; }
+				get { return this.data; }
 			}
 
 			public CustomSerialIOBase()
 			{
-				this.values = new Dictionary<string,object>();
+				this.data = new Dictionary<string,object>();
 			}
 
 			/// <summary>
@@ -48,7 +55,7 @@ namespace Duality.Serialization
 			/// </summary>
 			public void Clear()
 			{
-				this.values.Clear();
+				this.data.Clear();
 			}
 			
 			/// <summary>
@@ -63,7 +70,7 @@ namespace Duality.Serialization
 			/// <seealso cref="IDataWriter"/>
 			public void WriteValue(string name, object value)
 			{
-				this.values[name] = value;
+				this.data[name] = value;
 			}
 			/// <summary>
 			/// Reads the value that is associated with the specified name.
@@ -76,7 +83,7 @@ namespace Duality.Serialization
 			public object ReadValue(string name)
 			{
 				object result;
-				if (this.values.TryGetValue(name, out result))
+				if (this.data.TryGetValue(name, out result))
 					return result;
 				else
 					return null;

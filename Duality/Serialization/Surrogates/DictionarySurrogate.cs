@@ -35,26 +35,39 @@ namespace Duality.Serialization.Surrogates
 		{
 			Dictionary<T,U> dict = this.RealObject as Dictionary<T,U>;
 			
-			writer.WriteValue("count", dict.Count);
-			writer.WriteValue("keys", dict.Keys.ToArray());
-			writer.WriteValue("values", dict.Values.ToArray());
+			if (typeof(T) == typeof(string))
+			{
+				foreach (var pair in dict)
+					writer.WriteValue(pair.Key as string, pair.Value);
+			}
+			else
+			{
+				writer.WriteValue("keys", dict.Keys.ToArray());
+				writer.WriteValue("values", dict.Values.ToArray());
+			}
 		}
 		protected void ReadDataSpecific<T,U>(IDataReader reader)
 		{
 			Dictionary<T,U> dict = this.RealObject as Dictionary<T,U>;
-
-			int count;
-			T[] keys;
-			U[] values;
-			reader.ReadValue("count", out count);
-			reader.ReadValue("keys", out keys);
-			reader.ReadValue("values", out values);
-
+			
 			dict.Clear();
-			for (int i = 0; i < keys.Length; i++)
+			if (typeof(T) == typeof(string))
 			{
-				if (keys[i] == null) continue;
-				dict.Add(keys[i], values[i]);
+				foreach (var key in reader.Keys)
+					dict.Add((T)(object)key, reader.ReadValue<U>(key));
+			}
+			else
+			{
+				T[] keys;
+				U[] values;
+				reader.ReadValue("keys", out keys);
+				reader.ReadValue("values", out values);
+
+				for (int i = 0; i < keys.Length; i++)
+				{
+					if (keys[i] == null) continue;
+					dict.Add(keys[i], values[i]);
+				}
 			}
 		}
 	}

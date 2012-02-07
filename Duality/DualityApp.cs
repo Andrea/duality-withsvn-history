@@ -763,7 +763,7 @@ namespace Duality
 
 		private static void CurrentDomain_ProcessExit(object sender, EventArgs e)
 		{
-			Terminate();
+			Terminate(true);
 		}
 		private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
 		{

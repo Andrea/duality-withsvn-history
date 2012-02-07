@@ -213,8 +213,8 @@ namespace Duality.Resources
 		{
 			if (this.glProgramId == 0) return;
 			this.compiled = false;
-			if (this.frag.IsAvailable) this.frag.Res.DetachFrom(this.glProgramId);
-			if (this.vert.IsAvailable) this.vert.Res.DetachFrom(this.glProgramId);
+			if (this.frag.IsLoaded) this.frag.Res.DetachFrom(this.glProgramId);
+			if (this.vert.IsLoaded) this.vert.Res.DetachFrom(this.glProgramId);
 		}
 
 		/// <summary>

@@ -12,6 +12,11 @@ namespace Duality.Serialization
 	public interface IDataReader
 	{
 		/// <summary>
+		/// [GET] Enumerates all available keys.
+		/// </summary>
+		IEnumerable<string> Keys { get; }
+
+		/// <summary>
 		/// Reads the value that is associated with the specified name.
 		/// </summary>
 		/// <param name="name">The name that is used for retrieving the value.</param>

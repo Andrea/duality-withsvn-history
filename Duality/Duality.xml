@@ -1264,6 +1264,333 @@
             The vertices texture coordinate.
             </summary>
         </member>
+        <member name="T:Duality.Serialization.FormatterBase">
+            <summary>
+            Base class for Dualitys serializers.
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.FormatterBase.fieldBlockers">
+            <summary>
+            The de/serialization <see cref="T:Duality.Log"/>.
+            </summary>
+            <summary>
+            A list of <see cref="T:System.Reflection.FieldInfo">field</see> blockers. If any registered field blocker
+            returns true upon serializing a specific field, a default value is assumed instead.
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.FormatterBase.surrogates">
+            <summary>
+            A list of <see cref="T:Duality.Serialization.ISurrogate">Serialization Surrogates</see>. If any of them
+            matches the <see cref="T:System.Type"/> of an object that is to be serialized, instead of letting it
+            serialize itsself, the <see cref="T:Duality.Serialization.ISurrogate"/> with the highest <see cref="P:Duality.Serialization.ISurrogate.Priority"/>
+            is used instead.
+            </summary>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.ReadObject">
+            <summary>
+            Writes the specified object including all referenced objects.
+            </summary>
+            <param name="obj">The object to write.</param>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.WriteObject(System.Object)">
+            <summary>
+            Reads an object including all referenced objects.
+            </summary>
+            <returns>The object that has been read.</returns>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.GetNullObject">
+            <summary>
+            Returns an object indicating a "null" value.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.GetWriteObjectData(System.Object,Duality.Serialization.SerializeType@,Duality.Serialization.DataType@,System.UInt32@)">
+            <summary>
+            Determines internal data for writing a given object.
+            </summary>
+            <param name="obj">The object to write</param>
+            <param name="objSerializeType">The <see cref="T:Duality.Serialization.SerializeType"/> that describes the specified object.</param>
+            <param name="dataType">The <see cref="T:Duality.Serialization.DataType"/> that is used for writing the specified object.</param>
+            <param name="objId">An object id that is assigned to the specified object.</param>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.ClearFieldBlockers">
+            <summary>
+            Unregisters all <see cref="P:Duality.Serialization.FormatterBase.FieldBlockers"/>.
+            </summary>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.AddFieldBlocker(System.Predicate{System.Reflection.FieldInfo})">
+            <summary>
+            Registers a new <see cref="P:Duality.Serialization.FormatterBase.FieldBlockers">FieldBlocker</see>.
+            </summary>
+            <param name="blocker"></param>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.RemoveFieldBlocker(System.Predicate{System.Reflection.FieldInfo})">
+            <summary>
+            Unregisters an existing <see cref="P:Duality.Serialization.FormatterBase.FieldBlockers">FieldBlocker</see>.
+            </summary>
+            <param name="blocker"></param>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.IsFieldBlocked(System.Reflection.FieldInfo)">
+            <summary>
+            Determines whether a specific <see cref="T:System.Reflection.FieldInfo">field</see> is blocked.
+            Instead of writing the value of a blocked field, the matching <see cref="T:System.Type">Types</see>
+            defautl value is assumed.
+            </summary>
+            <param name="field">The <see cref="T:System.Reflection.FieldInfo">field</see> in question</param>
+            <returns>True, if the <see cref="T:System.Reflection.FieldInfo">field</see> is blocked, false if not.</returns>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.ClearSurrogates">
+            <summary>
+            Unregisters all <see cref="T:Duality.Serialization.ISurrogate">Surrogates</see>.
+            </summary>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.AddSurrogate(Duality.Serialization.ISurrogate)">
+            <summary>
+            Registers a new <see cref="T:Duality.Serialization.ISurrogate">Surrogate</see>.
+            </summary>
+            <param name="surrogate"></param>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.RemoveSurrogate(Duality.Serialization.ISurrogate)">
+            <summary>
+            Unregisters an existing <see cref="T:Duality.Serialization.ISurrogate">Surrogate</see>.
+            </summary>
+            <param name="surrogate"></param>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.GetSurrogateFor(System.Type)">
+            <summary>
+            Retrieves a matching <see cref="T:Duality.Serialization.ISurrogate"/> for the specified <see cref="T:System.Type"/>.
+            </summary>
+            <param name="t">The <see cref="T:System.Type"/> to retrieve a <see cref="T:Duality.Serialization.ISurrogate"/> for.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.ClearObjectIds">
+            <summary>
+            Clears all object id mappings.
+            </summary>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.RequestObjectId(System.Object,System.Boolean@)">
+            <summary>
+            Returns the id that is assigned to the specified object. Assigns one, if
+            there is none yet.
+            </summary>
+            <param name="obj"></param>
+            <param name="isNewId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.InjectObjectId(System.Object,System.UInt32)">
+            <summary>
+            Assigns an id to a specific object.
+            </summary>
+            <param name="obj"></param>
+            <param name="id">The id to assign. Zero ids are rejected.</param>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.LookupObjectId(System.UInt32,System.Object@)">
+            <summary>
+            Tries to lookup an object based on its id.
+            </summary>
+            <param name="id"></param>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.LogCustomSerializationError(System.UInt32,System.Type,System.Exception)">
+            <summary>
+            Logs an error that occured during <see cref="T:Duality.Serialization.ISerializable">custom serialization</see>.
+            </summary>
+            <param name="objId">The object id of the affected object.</param>
+            <param name="serializeType">The <see cref="T:System.Type"/> of the affected object.</param>
+            <param name="e">The <see cref="T:System.Exception"/> that occured.</param>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.LogCustomDeserializationError(System.UInt32,System.Type,System.Exception)">
+            <summary>
+            Logs an error that occured during <see cref="T:Duality.Serialization.ISerializable">custom deserialization</see>.
+            </summary>
+            <param name="objId">The object id of the affected object.</param>
+            <param name="serializeType">The <see cref="T:System.Type"/> of the affected object.</param>
+            <param name="e">The <see cref="T:System.Exception"/> that occured.</param>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.LogCantResolveTypeError(System.UInt32,System.String)">
+            <summary>
+            Logs an error that occured trying to resolve a <see cref="T:System.Type"/> by its <see cref="M:Duality.ReflectionHelper.GetTypeId(System.Type)">type string</see>.
+            </summary>
+            <param name="objId">The object id of the affected object.</param>
+            <param name="typeString">The <see cref="M:Duality.ReflectionHelper.GetTypeId(System.Type)">type string</see> that couldn't be resolved.</param>
+        </member>
+        <member name="P:Duality.Serialization.FormatterBase.SerializationLog">
+            <summary>
+            [GET / SET] The de/serialization <see cref="T:Duality.Log"/>.
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.FormatterBase.FieldBlockers">
+            <summary>
+            [GET] Enumerates registered <see cref="T:System.Reflection.FieldInfo">field</see> blockers. If any registered field blocker
+            returns true upon serializing a specific field, a default value is assumed instead.
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.FormatterBase.Surrogates">
+            <summary>
+            [GET] Enumerates registered <see cref="T:Duality.Serialization.ISurrogate">Serialization Surrogates</see>. If any of them
+            matches the <see cref="T:System.Type"/> of an object that is to be serialized, instead of letting it
+            serialize itsself, the <see cref="T:Duality.Serialization.ISurrogate"/> with the highest <see cref="P:Duality.Serialization.ISurrogate.Priority"/>
+            is used instead.
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.FormatterBase.Disposed">
+            <summary>
+            [GET] Whether this binary serializer has been disposed. A disposed object cannot be used anymore.
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.FormatterBase.CustomSerialIOBase`1">
+            <summary>
+            Buffer object for <see cref="T:Duality.Serialization.ISerializable">custom de/serialization</see>, 
+            providing read and write functionality.
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.IDataReader">
+            <summary>
+            Provides reading capabilities for serialization purposes
+            </summary>
+        </member>
+        <member name="M:Duality.Serialization.IDataReader.ReadValue(System.String)">
+            <summary>
+            Reads the value that is associated with the specified name.
+            </summary>
+            <param name="name">The name that is used for retrieving the value.</param>
+            <returns>The value that has been read using the given name.</returns>
+            <seealso cref="M:Duality.Serialization.IDataReader.ReadValue``1(System.String)"/>
+            <seealso cref="M:Duality.Serialization.IDataReader.ReadValue``1(System.String,``0@)"/>
+        </member>
+        <member name="M:Duality.Serialization.IDataReader.ReadValue``1(System.String)">
+            <summary>
+            Reads the value that is associated with the specified name.
+            </summary>
+            <typeparam name="T">The expected value type.</typeparam>
+            <param name="name">The name that is used for retrieving the value.</param>
+            <returns>The value that has been read and cast using the given name and type.</returns>
+            <seealso cref="M:Duality.Serialization.IDataReader.ReadValue(System.String)"/>
+            <seealso cref="M:Duality.Serialization.IDataReader.ReadValue``1(System.String,``0@)"/>
+        </member>
+        <member name="M:Duality.Serialization.IDataReader.ReadValue``1(System.String,``0@)">
+            <summary>
+            Reads the value that is associated with the specified name.
+            </summary>
+            <typeparam name="T">The expected value type.</typeparam>
+            <param name="name">The name that is used for retrieving the value.</param>
+            <param name="value">The value that has been read and cast using the given name and type.</param>
+            <seealso cref="M:Duality.Serialization.IDataReader.ReadValue(System.String)"/>
+            <seealso cref="M:Duality.Serialization.IDataReader.ReadValue``1(System.String)"/>
+        </member>
+        <member name="P:Duality.Serialization.IDataReader.Keys">
+            <summary>
+            [GET] Enumerates all available keys.
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.IDataWriter">
+            <summary>
+            Provides writing capabilities for serialization purposes
+            </summary>
+        </member>
+        <member name="M:Duality.Serialization.IDataWriter.WriteValue(System.String,System.Object)">
+            <summary>
+            Writes the specified name and value.
+            </summary>
+            <param name="name">
+            The name to which the written value is mapped. 
+            May, for example, be the name of a <see cref="T:System.Reflection.FieldInfo">Field</see>
+            to which the written value belongs, but there are no naming restrictions, except that one name can't be used twice.
+            </param>
+            <param name="value">The value to write.</param>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.Serialize(`0)">
+            <summary>
+            Writes the contained data to the specified serializer.
+            </summary>
+            <param name="formatter">The serializer to write data to.</param>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.Deserialize(`0)">
+            <summary>
+            Reads data from the specified serializer
+            </summary>
+            <param name="formatter">The serializer to read data from.</param>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.Clear">
+            <summary>
+            Clears all contained data.
+            </summary>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.WriteValue(System.String,System.Object)">
+            <summary>
+            Writes the specified name and value.
+            </summary>
+            <param name="name">
+            The name to which the written value is mapped. 
+            May, for example, be the name of a <see cref="T:System.Reflection.FieldInfo">Field</see>
+            to which the written value belongs, but there are no naming restrictions, except that one name can't be used twice.
+            </param>
+            <param name="value">The value to write.</param>
+            <seealso cref="T:Duality.Serialization.IDataWriter"/>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.ReadValue(System.String)">
+            <summary>
+            Reads the value that is associated with the specified name.
+            </summary>
+            <param name="name">The name that is used for retrieving the value.</param>
+            <returns>The value that has been read using the given name.</returns>
+            <seealso cref="T:Duality.Serialization.IDataReader"/>
+            <seealso cref="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.ReadValue``1(System.String)"/>
+            <seealso cref="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.ReadValue``1(System.String,``0@)"/>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.ReadValue``1(System.String)">
+            <summary>
+            Reads the value that is associated with the specified name.
+            </summary>
+            <typeparam name="U">The expected value type.</typeparam>
+            <param name="name">The name that is used for retrieving the value.</param>
+            <returns>The value that has been read and cast using the given name and type.</returns>
+            <seealso cref="T:Duality.Serialization.IDataReader"/>
+            <seealso cref="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.ReadValue(System.String)"/>
+            <seealso cref="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.ReadValue``1(System.String,``0@)"/>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.ReadValue``1(System.String,``0@)">
+            <summary>
+            Reads the value that is associated with the specified name.
+            </summary>
+            <typeparam name="U">The expected value type.</typeparam>
+            <param name="name">The name that is used for retrieving the value.</param>
+            <param name="value">The value that has been read and cast using the given name and type.</param>
+            <seealso cref="T:Duality.Serialization.IDataReader"/>
+            <seealso cref="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.ReadValue(System.String)"/>
+            <seealso cref="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.ReadValue``1(System.String)"/>
+        </member>
+        <member name="P:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.Keys">
+            <summary>
+            [GET] Enumerates all available keys.
+            </summary>
+        </member>
+        <member name="P:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.Data">
+            <summary>
+            [GET] Enumerates all currently stored <see cref="T:System.Collections.Generic.KeyValuePair`2">KeyValuePairs</see>.
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.FormatterBase.Operation">
+            <summary>
+            Operations, the serializer is able to perform.
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.FormatterBase.Operation.None">
+            <summary>
+            No operation.
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.FormatterBase.Operation.Read">
+            <summary>
+            Read a dataset / object
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.FormatterBase.Operation.Write">
+            <summary>
+            Write a dataset / object
+            </summary>
+        </member>
         <member name="T:Duality.RtfDocWriterLogOutput">
             <summary>
             A <see cref="T:Duality.ILogOutput">Log output</see> that uses a RTF document as message destination.
@@ -2013,323 +2340,6 @@
         <member name="T:Duality.Serialization.BinaryFormatterBase">
             <summary>
             Base class for Dualitys binary serializers.
-            </summary>
-        </member>
-        <member name="T:Duality.Serialization.FormatterBase">
-            <summary>
-            Base class for Dualitys serializers.
-            </summary>
-        </member>
-        <member name="F:Duality.Serialization.FormatterBase.fieldBlockers">
-            <summary>
-            The de/serialization <see cref="T:Duality.Log"/>.
-            </summary>
-            <summary>
-            A list of <see cref="T:System.Reflection.FieldInfo">field</see> blockers. If any registered field blocker
-            returns true upon serializing a specific field, a default value is assumed instead.
-            </summary>
-        </member>
-        <member name="F:Duality.Serialization.FormatterBase.surrogates">
-            <summary>
-            A list of <see cref="T:Duality.Serialization.ISurrogate">Serialization Surrogates</see>. If any of them
-            matches the <see cref="T:System.Type"/> of an object that is to be serialized, instead of letting it
-            serialize itsself, the <see cref="T:Duality.Serialization.ISurrogate"/> with the highest <see cref="P:Duality.Serialization.ISurrogate.Priority"/>
-            is used instead.
-            </summary>
-        </member>
-        <member name="M:Duality.Serialization.FormatterBase.ReadObject">
-            <summary>
-            Writes the specified object including all referenced objects.
-            </summary>
-            <param name="obj">The object to write.</param>
-        </member>
-        <member name="M:Duality.Serialization.FormatterBase.WriteObject(System.Object)">
-            <summary>
-            Reads an object including all referenced objects.
-            </summary>
-            <returns>The object that has been read.</returns>
-        </member>
-        <member name="M:Duality.Serialization.FormatterBase.GetNullObject">
-            <summary>
-            Returns an object indicating a "null" value.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.Serialization.FormatterBase.GetWriteObjectData(System.Object,Duality.Serialization.SerializeType@,Duality.Serialization.DataType@,System.UInt32@)">
-            <summary>
-            Determines internal data for writing a given object.
-            </summary>
-            <param name="obj">The object to write</param>
-            <param name="objSerializeType">The <see cref="T:Duality.Serialization.SerializeType"/> that describes the specified object.</param>
-            <param name="dataType">The <see cref="T:Duality.Serialization.DataType"/> that is used for writing the specified object.</param>
-            <param name="objId">An object id that is assigned to the specified object.</param>
-        </member>
-        <member name="M:Duality.Serialization.FormatterBase.ClearFieldBlockers">
-            <summary>
-            Unregisters all <see cref="P:Duality.Serialization.FormatterBase.FieldBlockers"/>.
-            </summary>
-        </member>
-        <member name="M:Duality.Serialization.FormatterBase.AddFieldBlocker(System.Predicate{System.Reflection.FieldInfo})">
-            <summary>
-            Registers a new <see cref="P:Duality.Serialization.FormatterBase.FieldBlockers">FieldBlocker</see>.
-            </summary>
-            <param name="blocker"></param>
-        </member>
-        <member name="M:Duality.Serialization.FormatterBase.RemoveFieldBlocker(System.Predicate{System.Reflection.FieldInfo})">
-            <summary>
-            Unregisters an existing <see cref="P:Duality.Serialization.FormatterBase.FieldBlockers">FieldBlocker</see>.
-            </summary>
-            <param name="blocker"></param>
-        </member>
-        <member name="M:Duality.Serialization.FormatterBase.IsFieldBlocked(System.Reflection.FieldInfo)">
-            <summary>
-            Determines whether a specific <see cref="T:System.Reflection.FieldInfo">field</see> is blocked.
-            Instead of writing the value of a blocked field, the matching <see cref="T:System.Type">Types</see>
-            defautl value is assumed.
-            </summary>
-            <param name="field">The <see cref="T:System.Reflection.FieldInfo">field</see> in question</param>
-            <returns>True, if the <see cref="T:System.Reflection.FieldInfo">field</see> is blocked, false if not.</returns>
-        </member>
-        <member name="M:Duality.Serialization.FormatterBase.ClearSurrogates">
-            <summary>
-            Unregisters all <see cref="T:Duality.Serialization.ISurrogate">Surrogates</see>.
-            </summary>
-        </member>
-        <member name="M:Duality.Serialization.FormatterBase.AddSurrogate(Duality.Serialization.ISurrogate)">
-            <summary>
-            Registers a new <see cref="T:Duality.Serialization.ISurrogate">Surrogate</see>.
-            </summary>
-            <param name="surrogate"></param>
-        </member>
-        <member name="M:Duality.Serialization.FormatterBase.RemoveSurrogate(Duality.Serialization.ISurrogate)">
-            <summary>
-            Unregisters an existing <see cref="T:Duality.Serialization.ISurrogate">Surrogate</see>.
-            </summary>
-            <param name="surrogate"></param>
-        </member>
-        <member name="M:Duality.Serialization.FormatterBase.GetSurrogateFor(System.Type)">
-            <summary>
-            Retrieves a matching <see cref="T:Duality.Serialization.ISurrogate"/> for the specified <see cref="T:System.Type"/>.
-            </summary>
-            <param name="t">The <see cref="T:System.Type"/> to retrieve a <see cref="T:Duality.Serialization.ISurrogate"/> for.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.Serialization.FormatterBase.ClearObjectIds">
-            <summary>
-            Clears all object id mappings.
-            </summary>
-        </member>
-        <member name="M:Duality.Serialization.FormatterBase.RequestObjectId(System.Object,System.Boolean@)">
-            <summary>
-            Returns the id that is assigned to the specified object. Assigns one, if
-            there is none yet.
-            </summary>
-            <param name="obj"></param>
-            <param name="isNewId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.Serialization.FormatterBase.InjectObjectId(System.Object,System.UInt32)">
-            <summary>
-            Assigns an id to a specific object.
-            </summary>
-            <param name="obj"></param>
-            <param name="id">The id to assign. Zero ids are rejected.</param>
-        </member>
-        <member name="M:Duality.Serialization.FormatterBase.LookupObjectId(System.UInt32,System.Object@)">
-            <summary>
-            Tries to lookup an object based on its id.
-            </summary>
-            <param name="id"></param>
-            <param name="obj"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.Serialization.FormatterBase.LogCustomSerializationError(System.UInt32,System.Type,System.Exception)">
-            <summary>
-            Logs an error that occured during <see cref="T:Duality.Serialization.ISerializable">custom serialization</see>.
-            </summary>
-            <param name="objId">The object id of the affected object.</param>
-            <param name="serializeType">The <see cref="T:System.Type"/> of the affected object.</param>
-            <param name="e">The <see cref="T:System.Exception"/> that occured.</param>
-        </member>
-        <member name="M:Duality.Serialization.FormatterBase.LogCustomDeserializationError(System.UInt32,System.Type,System.Exception)">
-            <summary>
-            Logs an error that occured during <see cref="T:Duality.Serialization.ISerializable">custom deserialization</see>.
-            </summary>
-            <param name="objId">The object id of the affected object.</param>
-            <param name="serializeType">The <see cref="T:System.Type"/> of the affected object.</param>
-            <param name="e">The <see cref="T:System.Exception"/> that occured.</param>
-        </member>
-        <member name="M:Duality.Serialization.FormatterBase.LogCantResolveTypeError(System.UInt32,System.String)">
-            <summary>
-            Logs an error that occured trying to resolve a <see cref="T:System.Type"/> by its <see cref="M:Duality.ReflectionHelper.GetTypeId(System.Type)">type string</see>.
-            </summary>
-            <param name="objId">The object id of the affected object.</param>
-            <param name="typeString">The <see cref="M:Duality.ReflectionHelper.GetTypeId(System.Type)">type string</see> that couldn't be resolved.</param>
-        </member>
-        <member name="P:Duality.Serialization.FormatterBase.SerializationLog">
-            <summary>
-            [GET / SET] The de/serialization <see cref="T:Duality.Log"/>.
-            </summary>
-        </member>
-        <member name="P:Duality.Serialization.FormatterBase.FieldBlockers">
-            <summary>
-            [GET] Enumerates registered <see cref="T:System.Reflection.FieldInfo">field</see> blockers. If any registered field blocker
-            returns true upon serializing a specific field, a default value is assumed instead.
-            </summary>
-        </member>
-        <member name="P:Duality.Serialization.FormatterBase.Surrogates">
-            <summary>
-            [GET] Enumerates registered <see cref="T:Duality.Serialization.ISurrogate">Serialization Surrogates</see>. If any of them
-            matches the <see cref="T:System.Type"/> of an object that is to be serialized, instead of letting it
-            serialize itsself, the <see cref="T:Duality.Serialization.ISurrogate"/> with the highest <see cref="P:Duality.Serialization.ISurrogate.Priority"/>
-            is used instead.
-            </summary>
-        </member>
-        <member name="P:Duality.Serialization.FormatterBase.Disposed">
-            <summary>
-            [GET] Whether this binary serializer has been disposed. A disposed object cannot be used anymore.
-            </summary>
-        </member>
-        <member name="T:Duality.Serialization.FormatterBase.CustomSerialIOBase`1">
-            <summary>
-            Buffer object for <see cref="T:Duality.Serialization.ISerializable">custom de/serialization</see>, 
-            providing read and write functionality.
-            </summary>
-        </member>
-        <member name="T:Duality.Serialization.IDataReader">
-            <summary>
-            Provides reading capabilities for serialization purposes
-            </summary>
-        </member>
-        <member name="M:Duality.Serialization.IDataReader.ReadValue(System.String)">
-            <summary>
-            Reads the value that is associated with the specified name.
-            </summary>
-            <param name="name">The name that is used for retrieving the value.</param>
-            <returns>The value that has been read using the given name.</returns>
-            <seealso cref="M:Duality.Serialization.IDataReader.ReadValue``1(System.String)"/>
-            <seealso cref="M:Duality.Serialization.IDataReader.ReadValue``1(System.String,``0@)"/>
-        </member>
-        <member name="M:Duality.Serialization.IDataReader.ReadValue``1(System.String)">
-            <summary>
-            Reads the value that is associated with the specified name.
-            </summary>
-            <typeparam name="T">The expected value type.</typeparam>
-            <param name="name">The name that is used for retrieving the value.</param>
-            <returns>The value that has been read and cast using the given name and type.</returns>
-            <seealso cref="M:Duality.Serialization.IDataReader.ReadValue(System.String)"/>
-            <seealso cref="M:Duality.Serialization.IDataReader.ReadValue``1(System.String,``0@)"/>
-        </member>
-        <member name="M:Duality.Serialization.IDataReader.ReadValue``1(System.String,``0@)">
-            <summary>
-            Reads the value that is associated with the specified name.
-            </summary>
-            <typeparam name="T">The expected value type.</typeparam>
-            <param name="name">The name that is used for retrieving the value.</param>
-            <param name="value">The value that has been read and cast using the given name and type.</param>
-            <seealso cref="M:Duality.Serialization.IDataReader.ReadValue(System.String)"/>
-            <seealso cref="M:Duality.Serialization.IDataReader.ReadValue``1(System.String)"/>
-        </member>
-        <member name="T:Duality.Serialization.IDataWriter">
-            <summary>
-            Provides writing capabilities for serialization purposes
-            </summary>
-        </member>
-        <member name="M:Duality.Serialization.IDataWriter.WriteValue(System.String,System.Object)">
-            <summary>
-            Writes the specified name and value.
-            </summary>
-            <param name="name">
-            The name to which the written value is mapped. 
-            May, for example, be the name of a <see cref="T:System.Reflection.FieldInfo">Field</see>
-            to which the written value belongs, but there are no naming restrictions, except that one name can't be used twice.
-            </param>
-            <param name="value">The value to write.</param>
-        </member>
-        <member name="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.Serialize(`0)">
-            <summary>
-            Writes the contained data to the specified serializer.
-            </summary>
-            <param name="formatter">The serializer to write data to.</param>
-        </member>
-        <member name="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.Deserialize(`0)">
-            <summary>
-            Reads data from the specified serializer
-            </summary>
-            <param name="formatter">The serializer to read data from.</param>
-        </member>
-        <member name="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.Clear">
-            <summary>
-            Clears all contained data.
-            </summary>
-        </member>
-        <member name="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.WriteValue(System.String,System.Object)">
-            <summary>
-            Writes the specified name and value.
-            </summary>
-            <param name="name">
-            The name to which the written value is mapped. 
-            May, for example, be the name of a <see cref="T:System.Reflection.FieldInfo">Field</see>
-            to which the written value belongs, but there are no naming restrictions, except that one name can't be used twice.
-            </param>
-            <param name="value">The value to write.</param>
-            <seealso cref="T:Duality.Serialization.IDataWriter"/>
-        </member>
-        <member name="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.ReadValue(System.String)">
-            <summary>
-            Reads the value that is associated with the specified name.
-            </summary>
-            <param name="name">The name that is used for retrieving the value.</param>
-            <returns>The value that has been read using the given name.</returns>
-            <seealso cref="T:Duality.Serialization.IDataReader"/>
-            <seealso cref="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.ReadValue``1(System.String)"/>
-            <seealso cref="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.ReadValue``1(System.String,``0@)"/>
-        </member>
-        <member name="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.ReadValue``1(System.String)">
-            <summary>
-            Reads the value that is associated with the specified name.
-            </summary>
-            <typeparam name="U">The expected value type.</typeparam>
-            <param name="name">The name that is used for retrieving the value.</param>
-            <returns>The value that has been read and cast using the given name and type.</returns>
-            <seealso cref="T:Duality.Serialization.IDataReader"/>
-            <seealso cref="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.ReadValue(System.String)"/>
-            <seealso cref="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.ReadValue``1(System.String,``0@)"/>
-        </member>
-        <member name="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.ReadValue``1(System.String,``0@)">
-            <summary>
-            Reads the value that is associated with the specified name.
-            </summary>
-            <typeparam name="U">The expected value type.</typeparam>
-            <param name="name">The name that is used for retrieving the value.</param>
-            <param name="value">The value that has been read and cast using the given name and type.</param>
-            <seealso cref="T:Duality.Serialization.IDataReader"/>
-            <seealso cref="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.ReadValue(System.String)"/>
-            <seealso cref="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.ReadValue``1(System.String)"/>
-        </member>
-        <member name="P:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.Values">
-            <summary>
-            [GET] Enumerates all currently stored <see cref="T:System.Collections.Generic.KeyValuePair`2">KeyValuePairs</see>.
-            </summary>
-        </member>
-        <member name="T:Duality.Serialization.FormatterBase.Operation">
-            <summary>
-            Operations, the serializer is able to perform.
-            </summary>
-        </member>
-        <member name="F:Duality.Serialization.FormatterBase.Operation.None">
-            <summary>
-            No operation.
-            </summary>
-        </member>
-        <member name="F:Duality.Serialization.FormatterBase.Operation.Read">
-            <summary>
-            Read a dataset / object
-            </summary>
-        </member>
-        <member name="F:Duality.Serialization.FormatterBase.Operation.Write">
-            <summary>
-            Write a dataset / object
             </summary>
         </member>
         <member name="F:Duality.Serialization.BinaryFormatterBase.HeaderId">

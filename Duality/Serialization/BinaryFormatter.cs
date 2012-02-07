@@ -322,7 +322,7 @@ namespace Duality.Serialization
 						objId,
 						Log.Type(objType));
 					this.SerializationLog.PushIndent();
-					foreach (var pair in customIO.Values)
+					foreach (var pair in customIO.Data)
 					{
 						FieldInfo field = objSerializeType.Fields.FirstOrDefault(f => f.Name == pair.Key);
 						if (field == null)
