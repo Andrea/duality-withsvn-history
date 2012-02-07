@@ -221,7 +221,7 @@ namespace DualityEditor
 				case 'F':	memberEntryType = EntryType.Field;		break;
 				case 'P':	memberEntryType = EntryType.Property;	break;
 				case 'E':	memberEntryType = EntryType.Event;		break;
-				default:	memberEntryType = EntryType.Unknown;	break;
+				default:	memberEntryType = EntryType.Unknown;	return null;
 			}
 
 			// Determine member name and its (Declaring) type name

@@ -13,6 +13,131 @@ namespace Duality.Serialization
 	public abstract class FormatterBase : IDisposable
 	{
 		/// <summary>
+		/// Buffer object for <see cref="Duality.Serialization.ISerializable">custom de/serialization</see>, 
+		/// providing read and write functionality.
+		/// </summary>
+		protected abstract class CustomSerialIOBase<T> : IDataReader, IDataWriter where T : FormatterBase
+		{
+			protected	Dictionary<string,object>	values;
+
+			/// <summary>
+			/// [GET] Enumerates all currently stored <see cref="System.Collections.Generic.KeyValuePair{T,U}">KeyValuePairs</see>.
+			/// </summary>
+			public IEnumerable<KeyValuePair<string,object>> Values
+			{
+				get { return this.values; }
+			}
+
+			public CustomSerialIOBase()
+			{
+				this.values = new Dictionary<string,object>();
+			}
+
+			/// <summary>
+			/// Writes the contained data to the specified serializer.
+			/// </summary>
+			/// <param name="formatter">The serializer to write data to.</param>
+			public abstract void Serialize(T formatter);
+			/// <summary>
+			/// Reads data from the specified serializer
+			/// </summary>
+			/// <param name="formatter">The serializer to read data from.</param>
+			public abstract void Deserialize(T formatter);
+			/// <summary>
+			/// Clears all contained data.
+			/// </summary>
+			public void Clear()
+			{
+				this.values.Clear();
+			}
+			
+			/// <summary>
+			/// Writes the specified name and value.
+			/// </summary>
+			/// <param name="name">
+			/// The name to which the written value is mapped. 
+			/// May, for example, be the name of a <see cref="System.Reflection.FieldInfo">Field</see>
+			/// to which the written value belongs, but there are no naming restrictions, except that one name can't be used twice.
+			/// </param>
+			/// <param name="value">The value to write.</param>
+			/// <seealso cref="IDataWriter"/>
+			public void WriteValue(string name, object value)
+			{
+				this.values[name] = value;
+			}
+			/// <summary>
+			/// Reads the value that is associated with the specified name.
+			/// </summary>
+			/// <param name="name">The name that is used for retrieving the value.</param>
+			/// <returns>The value that has been read using the given name.</returns>
+			/// <seealso cref="IDataReader"/>
+			/// <seealso cref="ReadValue{T}(string)"/>
+			/// <seealso cref="ReadValue{T}(string, out T)"/>
+			public object ReadValue(string name)
+			{
+				object result;
+				if (this.values.TryGetValue(name, out result))
+					return result;
+				else
+					return null;
+			}
+			/// <summary>
+			/// Reads the value that is associated with the specified name.
+			/// </summary>
+			/// <typeparam name="U">The expected value type.</typeparam>
+			/// <param name="name">The name that is used for retrieving the value.</param>
+			/// <returns>The value that has been read and cast using the given name and type.</returns>
+			/// <seealso cref="IDataReader"/>
+			/// <seealso cref="ReadValue(string)"/>
+			/// <seealso cref="ReadValue{U}(string, out U)"/>
+			public U ReadValue<U>(string name)
+			{
+				object read = this.ReadValue(name);
+				if (read is U)
+					return (U)read;
+				else
+				{
+					try { return (U)Convert.ChangeType(read, typeof(U), System.Globalization.CultureInfo.InvariantCulture); }
+					catch (Exception) { return default(U); }
+				}
+			}
+			/// <summary>
+			/// Reads the value that is associated with the specified name.
+			/// </summary>
+			/// <typeparam name="U">The expected value type.</typeparam>
+			/// <param name="name">The name that is used for retrieving the value.</param>
+			/// <param name="value">The value that has been read and cast using the given name and type.</param>
+			/// <seealso cref="IDataReader"/>
+			/// <seealso cref="ReadValue(string)"/>
+			/// <seealso cref="ReadValue{U}(string)"/>
+			public void ReadValue<U>(string name, out U value)
+			{
+				value = this.ReadValue<U>(name);
+			}
+		}
+
+
+		/// <summary>
+		/// Operations, the serializer is able to perform.
+		/// </summary>
+		protected enum Operation
+		{
+			/// <summary>
+			/// No operation.
+			/// </summary>
+			None,
+
+			/// <summary>
+			/// Read a dataset / object
+			/// </summary>
+			Read,
+			/// <summary>
+			/// Write a dataset / object
+			/// </summary>
+			Write
+		}
+
+		/// <summary>
 		/// The de/serialization <see cref="Duality.Log"/>.
 		/// </summary>
 		/// <summary>
@@ -92,6 +217,46 @@ namespace Duality.Serialization
 		/// </summary>
 		/// <returns>The object that has been read.</returns>
 		public abstract void WriteObject(object obj);
+		
+		/// <summary>
+		/// Returns an object indicating a "null" value.
+		/// </summary>
+		/// <returns></returns>
+		protected virtual object GetNullObject() 
+		{
+			return null;
+		}
+		/// <summary>
+		/// Determines internal data for writing a given object.
+		/// </summary>
+		/// <param name="obj">The object to write</param>
+		/// <param name="objSerializeType">The <see cref="Duality.Serialization.SerializeType"/> that describes the specified object.</param>
+		/// <param name="dataType">The <see cref="Duality.Serialization.DataType"/> that is used for writing the specified object.</param>
+		/// <param name="objId">An object id that is assigned to the specified object.</param>
+		protected virtual void GetWriteObjectData(object obj, out SerializeType objSerializeType, out DataType dataType, out uint objId)
+		{
+			Type objType = obj.GetType();
+			objSerializeType = ReflectionHelper.GetSerializeType(objType);
+			objId = 0;
+			dataType = objSerializeType.DataType;
+			
+			// Check whether it's going to be an ObjectRef or not
+			if (dataType == DataType.Array || dataType == DataType.Class || dataType == DataType.Delegate || dataType.IsMemberInfoType())
+			{
+				bool newId;
+				objId = this.RequestObjectId(obj, out newId);
+
+				// If its not a new id, write a reference
+				if (!newId) dataType = DataType.ObjectRef;
+			}
+
+			if (!objSerializeType.Type.IsSerializable && 
+				!typeof(ISerializable).IsAssignableFrom(objSerializeType.Type) &&
+				this.GetSurrogateFor(objSerializeType.Type) == null) 
+			{
+				this.SerializationLog.WriteWarning("Serializing object of Type '{0}' which isn't [Serializable]", Log.Type(objSerializeType.Type));
+			}
+		}
 
 
 		/// <summary>

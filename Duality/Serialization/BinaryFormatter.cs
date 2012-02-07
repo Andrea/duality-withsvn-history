@@ -22,27 +22,6 @@ namespace Duality.Serialization
 			this.AddSurrogate(new DictionarySurrogate());
 		}
 
-		protected override void GetWriteObjectData(object obj, out SerializeType objSerializeType, out DataType dataType, out uint objId)
-		{
-			Type objType = obj.GetType();
-			objSerializeType = ReflectionHelper.GetSerializeType(objType);
-			objId = 0;
-			dataType = objSerializeType.DataType;
-			
-			// Check whether it's going to be an ObjectRef or not
-			if (dataType == DataType.Array || dataType == DataType.Class || dataType == DataType.Delegate || dataType.IsMemberInfoType())
-			{
-				bool newId;
-				objId = this.RequestObjectId(obj, out newId);
-
-				// If its not a new id, write a reference
-				if (!newId) dataType = DataType.ObjectRef;
-			}
-
-			if (!objSerializeType.Type.IsSerializable && !typeof(ISerializable).IsAssignableFrom(objSerializeType.Type) && this.GetSurrogateFor(objSerializeType.Type) == null) 
-				this.SerializationLog.WriteWarning("Serializing object of Type '{0}' which isn't [Serializable]", 
-				Log.Type(objSerializeType.Type));
-		}
 		protected override void WriteObjectBody(DataType dataType, object obj, SerializeType objSerializeType, uint objId)
 		{
 			if (dataType.IsPrimitiveType())				this.WritePrimitive(obj);

@@ -19,7 +19,10 @@ namespace Duality.Resources
 		/// <summary>
 		/// A VertexShader resources file extension.
 		/// </summary>
-		public new const string FileExt = ".VertexShader" + Resource.FileExt;
+		public new static string FileExt
+		{ 
+			get { return ".VertexShader" + Resource.FileExt; }
+		}
 		
 		/// <summary>
 		/// (Virtual) base path for Duality's embedded default VertexShaders.

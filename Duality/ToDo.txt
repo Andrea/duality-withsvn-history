@@ -1,34 +1,35 @@
 ﻿
-Next Steps:
-1.	Bugfixing
-2.	Collider Editor
-3.	Collider Logic (Core)
-4.	Re-Implement Asteroids using Colliders
-5.	"Optional": Collider Joints (Editor & Logic)
+-->	Duality Tasks (overall)
+	-->	Physics & Collision Detection
+	-->	Particle Systems & Particle Editor
+	-->	(Property) Animations & Animation Editor
+	-->	??? Ingame GUI & GUI Editor
+	-->	??? Editor: Xml Serialization and "export game (binary)" functionality
 
--->	Implement "Create Circle" / "Create Poly" actions
-	-->	Create Polygon
 
---> Core infrastructure
-	-->	Collision event handling
+-->	Experiment with XML serialization!
+	-->	Might be great for development / editor stage
+	-->	Maybe not for game stage
+	-->	Should be possible to switch between binary and xml in the editor (followed by automatic conversion operation)
+		-->	Defaults to XML
+		-->	Export functionality: Export binary package to [folder]
 
--->	WYSIWYG-Editor for Collider Shapes
-	-->	Preview shape in view
-		-->	Display a shapes density numeric (absolute value) and visually as fill transparency (relative to other shapes)
-		-->	Display the shapes index in the shape list!
+-->	Implement "Create Poly" action
+	-->	Prevent non-convex polys
+	-->	Testing
+--> Collision event handling (Core)
+	-->	Interpret data
+	-->	Wrap up data, cache it until Update() and then notify GameObject
+-->	Physics utility
+	-->	Collider.ApplyForce()		linear / angular	local / world
+	-->	Collider.ApplyImpulse()		linear / angular	local / world
+	-->	Collider.GetVelocityAt()						local / world
+-->	Re-Implement Asteroids with physics.
 
-	-->	Edit shape in view
-		-->	Introduce Shapes-Property (For Prefabs) & properly react to setting it
-			-->	Keep in mind: Unregister all old pseudo-body (fixture, really) events, re-register them afterwards
-		-->	Circles
-		-->	Polygons
-			-->	Only allow only convex polygons!
 
-	-->	Implement IsSensor and make it editable
 
-	-->	Edit Joints in view
-		-->	Click (set point A), Click (set point B)
-		-->	Highlight hovered Collider (to which the Joint is attached, defaults to "world" --> fixed joint)
+
+
 
 -->	How would you do.. (All those should be possible in some way!)
 	-->	.. a platformer with moving platforms?
@@ -36,7 +37,6 @@ Next Steps:
 	-->	.. a complex character / ragdoll?
 	-->	.. a complex vehicle (tank, walker, etc.)
 	-->	.. a hanging bridge, rope, etc?
-
 
 -->	Implement Core collision detection logic & sensor colliders
 	-->	Colliders will notify their GameObject about OnCollision, OnSeparation and AfterCollision..
@@ -64,28 +64,16 @@ Next Steps:
 	-->	Collision point relative to object?
 	-->	How to interpret Farseer Data?
 
-	-->	What about Joints?
-		-->	Any Collider can be attached to the world or any other Collider using Joints.
-			This is NOT a scene-hierarchial thing.
-		-->	Handle joints as some kind of property of a Collider, since any Joint will be
-			attached to at least one Collider.
-		-->	WYSIWYG-Editor for those joints as well when CamView in Collider edit mode.
-		-->	Complex physical objects can be composed out of several parented GameObjects.
-			They can also be done using custom Components, but likely won't.
-	
-	-->	Is that wanted behaviour? How is Unity doing all that..?
-
--->	Implement raycasting & stuff (Rebuild some Farseer Example with object click&drag)
--->	Port Asteroids demo to a physics-driven version, without any manual collision detection
+-->	What about Joints?
+	-->	Any Collider can be attached to the world or any other Collider using Joints.
+		This is NOT a scene-hierarchial thing.
+	-->	Handle joints as some kind of property of a Collider, since any Joint will be
+		attached to at least one Collider.
+	-->	WYSIWYG-Editor for those joints as well when CamView in Collider edit mode.
+	-->	Complex physical objects can be composed out of several parented GameObjects.
+		They can also be done using custom Components, but likely won't.
 
 
-
-
--->	Duality Tasks (overall)
-	-->	Physics & Collision Detection
-	-->	Particle Systems & Particle Editor
-	-->	Ingame GUI & GUI Editor
-	-->	(Property) Animations & Animation Editor
 
 
 

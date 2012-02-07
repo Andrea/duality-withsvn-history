@@ -21,7 +21,10 @@ namespace Duality.Resources
 		/// <summary>
 		/// A Prefab resources file extension.
 		/// </summary>
-		public new const string FileExt = ".Prefab" + Resource.FileExt;
+		public new static string FileExt
+		{ 
+			get { return ".Prefab" + Resource.FileExt; }
+		}
 
 		private	GameObject	objTree	= null;
 

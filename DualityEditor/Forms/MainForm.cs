@@ -199,6 +199,31 @@ namespace DualityEditor.Forms
 			inputFilter.MouseMove += this.inputFilter_MouseMove;
 			inputFilter.KeyDown += this.inputFilter_KeyDown;
 			Application.AddMessageFilter(inputFilter);
+			
+			//  Debug
+			var dictTemp = new Dictionary<string,int>();
+			dictTemp["abc"] = 1337;
+			dictTemp["def"] = 555;
+			var xmlWriterSettings = new System.Xml.XmlWriterSettings();
+			xmlWriterSettings.Indent = true;
+			var xmlWriter = System.Xml.XmlWriter.Create(Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "test.xml"), xmlWriterSettings);
+			var xmlFormatter = new Duality.Serialization.XmlFormatter(xmlWriter);
+			xmlFormatter.AddSurrogate(new Duality.Serialization.Surrogates.BitmapSurrogate());
+			xmlFormatter.AddSurrogate(new Duality.Serialization.Surrogates.DictionarySurrogate());
+			xmlFormatter.WriteObject(null);
+			xmlFormatter.WriteObject(42);
+			xmlFormatter.WriteObject("hello");
+			xmlFormatter.WriteObject(new byte[] { 0, 1, 2, 4, 8, 16, 32, 64, 128, 255 });
+			xmlFormatter.WriteObject(new int[] { 0, 1, 2, 4, 8, 16, 32, 64, 128, 255 });
+			xmlFormatter.WriteObject(new bool[] { true, false, true, false });
+			xmlFormatter.WriteObject(new object[] { true, 100, "blub" });
+			xmlFormatter.WriteObject(DualityApp.UserData);
+			xmlFormatter.WriteObject(DualityApp.UserData);
+			xmlFormatter.WriteObject(DualityApp.AppData);
+			xmlFormatter.WriteObject(Pixmap.DualityLogo256.Res);
+			xmlFormatter.WriteObject(dictTemp);
+			xmlWriter.Close();
+			Application.Exit();
 		}
 		private void ApplyDockPanelSkin()
 		{
@@ -1079,7 +1104,7 @@ namespace DualityEditor.Forms
 			if (File.Exists(e.FullPath))
 			{
 				// Register newly detected ressource file
-				if (Path.GetExtension(e.FullPath) == Resource.FileExt)
+				if (Resource.IsResourceFile(e.FullPath))
 				{
 					if (this.ResourceCreated != null)
 						this.ResourceCreated(this, new ResourceEventArgs(e.FullPath));

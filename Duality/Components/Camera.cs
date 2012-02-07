@@ -94,7 +94,7 @@ namespace Duality
 		/// Processes the specified world space position and scale values and transforms them to the IDrawDevices view space.
 		/// This usually also applies a parallax effect, if applicable.
 		/// </summary>
-		/// <param name="r">The <see cref="Duality.Components.ICmpRenderer"/> to which the data belongs.</param>
+		/// <param name="r">The <see cref="Duality.ICmpRenderer"/> to which the data belongs.</param>
 		/// <param name="pos">The position to process.</param>
 		/// <param name="scale">The scale factor to process.</param>
 		void PreprocessCoords(ICmpRenderer r, ref Vector3 pos, ref float scale);
@@ -477,12 +477,12 @@ namespace Duality.Components
 		[NonSerialized]	private	List<Predicate<ICmpRenderer>>	editorRenderFilter	= new List<Predicate<ICmpRenderer>>();
 
 		/// <summary>
-		/// Fired as soon as <see cref="Duality.Components.ICmpRenderer"/> drawcalls have been collected, but
+		/// Fired as soon as <see cref="Duality.ICmpRenderer"/> drawcalls have been collected, but
 		/// right before processing them.
 		/// </summary>
 		public event EventHandler CollectRendererDrawcalls	= null;
 		/// <summary>
-		/// Fired as soon as <see cref="Duality.ICmpScreenOverlayICmpRenderer"/> drawcalls have been collected, but
+		/// Fired as soon as <see cref="Duality.ICmpScreenOverlayRenderer"/> drawcalls have been collected, but
 		/// right before processing them.
 		/// </summary>
 		public event EventHandler CollectOverlayDrawcalls	= null;
@@ -709,11 +709,11 @@ namespace Duality.Components
 			return true;
 		}
 		/// <summary>
-		/// Picks the <see cref="Duality.Components.ICmpRenderer"/> that owns the pixel at the specified position.
+		/// Picks the <see cref="Duality.ICmpRenderer"/> that owns the pixel at the specified position.
 		/// </summary>
 		/// <param name="x">x-Coordinate of the pixel to check.</param>
 		/// <param name="y">y-Coordinate of the pixel to check.</param>
-		/// <returns>The <see cref="Duality.Components.ICmpRenderer"/> that owns the pixel.</returns>
+		/// <returns>The <see cref="Duality.ICmpRenderer"/> that owns the pixel.</returns>
 		public ICmpRenderer PickRendererAt(int x, int y)
 		{
 			this.RenderPickingMap();
@@ -736,14 +736,14 @@ namespace Duality.Components
 				return null;
 		}
 		/// <summary>
-		/// Picks all <see cref="Duality.Components.ICmpRenderer">ICmpRenderers</see> contained within the specified
+		/// Picks all <see cref="Duality.ICmpRenderer">ICmpRenderers</see> contained within the specified
 		/// rectangular area.
 		/// </summary>
 		/// <param name="x">x-Coordinate of the Rect.</param>
 		/// <param name="y">y-Coordinate of the Rect.</param>
 		/// <param name="w">Width of the Rect.</param>
 		/// <param name="h">Height of the Rect.</param>
-		/// <returns>A set of all <see cref="Duality.Components.ICmpRenderer">ICmpRenderers</see> that have been picked.</returns>
+		/// <returns>A set of all <see cref="Duality.ICmpRenderer">ICmpRenderers</see> that have been picked.</returns>
 		public HashSet<ICmpRenderer> PickRenderersIn(int x, int y, int w, int h)
 		{
 			this.RenderPickingMap();

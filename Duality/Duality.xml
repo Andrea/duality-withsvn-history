@@ -2049,6 +2049,21 @@
             </summary>
             <returns>The object that has been read.</returns>
         </member>
+        <member name="M:Duality.Serialization.FormatterBase.GetNullObject">
+            <summary>
+            Returns an object indicating a "null" value.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.GetWriteObjectData(System.Object,Duality.Serialization.SerializeType@,Duality.Serialization.DataType@,System.UInt32@)">
+            <summary>
+            Determines internal data for writing a given object.
+            </summary>
+            <param name="obj">The object to write</param>
+            <param name="objSerializeType">The <see cref="T:Duality.Serialization.SerializeType"/> that describes the specified object.</param>
+            <param name="dataType">The <see cref="T:Duality.Serialization.DataType"/> that is used for writing the specified object.</param>
+            <param name="objId">An object id that is assigned to the specified object.</param>
+        </member>
         <member name="M:Duality.Serialization.FormatterBase.ClearFieldBlockers">
             <summary>
             Unregisters all <see cref="P:Duality.Serialization.FormatterBase.FieldBlockers"/>.
@@ -2175,6 +2190,148 @@
             [GET] Whether this binary serializer has been disposed. A disposed object cannot be used anymore.
             </summary>
         </member>
+        <member name="T:Duality.Serialization.FormatterBase.CustomSerialIOBase`1">
+            <summary>
+            Buffer object for <see cref="T:Duality.Serialization.ISerializable">custom de/serialization</see>, 
+            providing read and write functionality.
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.IDataReader">
+            <summary>
+            Provides reading capabilities for serialization purposes
+            </summary>
+        </member>
+        <member name="M:Duality.Serialization.IDataReader.ReadValue(System.String)">
+            <summary>
+            Reads the value that is associated with the specified name.
+            </summary>
+            <param name="name">The name that is used for retrieving the value.</param>
+            <returns>The value that has been read using the given name.</returns>
+            <seealso cref="M:Duality.Serialization.IDataReader.ReadValue``1(System.String)"/>
+            <seealso cref="M:Duality.Serialization.IDataReader.ReadValue``1(System.String,``0@)"/>
+        </member>
+        <member name="M:Duality.Serialization.IDataReader.ReadValue``1(System.String)">
+            <summary>
+            Reads the value that is associated with the specified name.
+            </summary>
+            <typeparam name="T">The expected value type.</typeparam>
+            <param name="name">The name that is used for retrieving the value.</param>
+            <returns>The value that has been read and cast using the given name and type.</returns>
+            <seealso cref="M:Duality.Serialization.IDataReader.ReadValue(System.String)"/>
+            <seealso cref="M:Duality.Serialization.IDataReader.ReadValue``1(System.String,``0@)"/>
+        </member>
+        <member name="M:Duality.Serialization.IDataReader.ReadValue``1(System.String,``0@)">
+            <summary>
+            Reads the value that is associated with the specified name.
+            </summary>
+            <typeparam name="T">The expected value type.</typeparam>
+            <param name="name">The name that is used for retrieving the value.</param>
+            <param name="value">The value that has been read and cast using the given name and type.</param>
+            <seealso cref="M:Duality.Serialization.IDataReader.ReadValue(System.String)"/>
+            <seealso cref="M:Duality.Serialization.IDataReader.ReadValue``1(System.String)"/>
+        </member>
+        <member name="T:Duality.Serialization.IDataWriter">
+            <summary>
+            Provides writing capabilities for serialization purposes
+            </summary>
+        </member>
+        <member name="M:Duality.Serialization.IDataWriter.WriteValue(System.String,System.Object)">
+            <summary>
+            Writes the specified name and value.
+            </summary>
+            <param name="name">
+            The name to which the written value is mapped. 
+            May, for example, be the name of a <see cref="T:System.Reflection.FieldInfo">Field</see>
+            to which the written value belongs, but there are no naming restrictions, except that one name can't be used twice.
+            </param>
+            <param name="value">The value to write.</param>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.Serialize(`0)">
+            <summary>
+            Writes the contained data to the specified serializer.
+            </summary>
+            <param name="formatter">The serializer to write data to.</param>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.Deserialize(`0)">
+            <summary>
+            Reads data from the specified serializer
+            </summary>
+            <param name="formatter">The serializer to read data from.</param>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.Clear">
+            <summary>
+            Clears all contained data.
+            </summary>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.WriteValue(System.String,System.Object)">
+            <summary>
+            Writes the specified name and value.
+            </summary>
+            <param name="name">
+            The name to which the written value is mapped. 
+            May, for example, be the name of a <see cref="T:System.Reflection.FieldInfo">Field</see>
+            to which the written value belongs, but there are no naming restrictions, except that one name can't be used twice.
+            </param>
+            <param name="value">The value to write.</param>
+            <seealso cref="T:Duality.Serialization.IDataWriter"/>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.ReadValue(System.String)">
+            <summary>
+            Reads the value that is associated with the specified name.
+            </summary>
+            <param name="name">The name that is used for retrieving the value.</param>
+            <returns>The value that has been read using the given name.</returns>
+            <seealso cref="T:Duality.Serialization.IDataReader"/>
+            <seealso cref="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.ReadValue``1(System.String)"/>
+            <seealso cref="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.ReadValue``1(System.String,``0@)"/>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.ReadValue``1(System.String)">
+            <summary>
+            Reads the value that is associated with the specified name.
+            </summary>
+            <typeparam name="U">The expected value type.</typeparam>
+            <param name="name">The name that is used for retrieving the value.</param>
+            <returns>The value that has been read and cast using the given name and type.</returns>
+            <seealso cref="T:Duality.Serialization.IDataReader"/>
+            <seealso cref="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.ReadValue(System.String)"/>
+            <seealso cref="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.ReadValue``1(System.String,``0@)"/>
+        </member>
+        <member name="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.ReadValue``1(System.String,``0@)">
+            <summary>
+            Reads the value that is associated with the specified name.
+            </summary>
+            <typeparam name="U">The expected value type.</typeparam>
+            <param name="name">The name that is used for retrieving the value.</param>
+            <param name="value">The value that has been read and cast using the given name and type.</param>
+            <seealso cref="T:Duality.Serialization.IDataReader"/>
+            <seealso cref="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.ReadValue(System.String)"/>
+            <seealso cref="M:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.ReadValue``1(System.String)"/>
+        </member>
+        <member name="P:Duality.Serialization.FormatterBase.CustomSerialIOBase`1.Values">
+            <summary>
+            [GET] Enumerates all currently stored <see cref="T:System.Collections.Generic.KeyValuePair`2">KeyValuePairs</see>.
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.FormatterBase.Operation">
+            <summary>
+            Operations, the serializer is able to perform.
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.FormatterBase.Operation.None">
+            <summary>
+            No operation.
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.FormatterBase.Operation.Read">
+            <summary>
+            Read a dataset / object
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.FormatterBase.Operation.Write">
+            <summary>
+            Write a dataset / object
+            </summary>
+        </member>
         <member name="F:Duality.Serialization.BinaryFormatterBase.HeaderId">
             <summary>
             Binary serialization header id. 
@@ -2212,12 +2369,6 @@
             </summary>
             <param name="dataType">The <see cref="T:Duality.Serialization.DataType"/> that is assumed.</param>
             <returns>The object that has been read.</returns>
-        </member>
-        <member name="M:Duality.Serialization.BinaryFormatterBase.GetNullObject">
-            <summary>
-            Returns an object indicating a "null" value.
-            </summary>
-            <returns></returns>
         </member>
         <member name="M:Duality.Serialization.BinaryFormatterBase.IsTypeDataLayoutCached(System.String)">
             <summary>
@@ -2349,15 +2500,6 @@
             Writes the specified object including all referenced objects using the <see cref="P:Duality.Serialization.BinaryFormatterBase.WriteTarget"/>.
             </summary>
             <param name="obj">The object to write.</param>
-        </member>
-        <member name="M:Duality.Serialization.BinaryFormatterBase.GetWriteObjectData(System.Object,Duality.Serialization.SerializeType@,Duality.Serialization.DataType@,System.UInt32@)">
-            <summary>
-            Determines internal data for writing a given object.
-            </summary>
-            <param name="obj">The object to write</param>
-            <param name="objSerializeType">The <see cref="T:Duality.Serialization.SerializeType"/> that describes the specified object.</param>
-            <param name="dataType">The <see cref="T:Duality.Serialization.DataType"/> that is used for writing the specified object.</param>
-            <param name="objId">An object id that is assigned to the specified object.</param>
         </member>
         <member name="M:Duality.Serialization.BinaryFormatterBase.WriteObjectBody(Duality.Serialization.DataType,System.Object,Duality.Serialization.SerializeType,System.UInt32)">
             <summary>
@@ -2540,7 +2682,7 @@
         </member>
         <member name="M:Duality.Serialization.BinaryFormatterBase.ClearStreamSpecificData">
             <summary>
-            Clears all <see cref="T:System.IO.Stream"/>- or <see cref="T:Duality.Serialization.BinaryFormatterBase.Operation"/>-specific cache data.
+            Clears all <see cref="T:System.IO.Stream"/>- or Operation-specific cache data.
             </summary>
         </member>
         <member name="P:Duality.Serialization.BinaryFormatterBase.WriteTarget">
@@ -2563,81 +2705,11 @@
             [GET] Can this binary serializer read data?
             </summary>
         </member>
-        <member name="T:Duality.Serialization.BinaryFormatterBase.Operation">
-            <summary>
-            Operations, the binary serializer is able to perform.
-            </summary>
-        </member>
-        <member name="F:Duality.Serialization.BinaryFormatterBase.Operation.None">
-            <summary>
-            No operation.
-            </summary>
-        </member>
-        <member name="F:Duality.Serialization.BinaryFormatterBase.Operation.Read">
-            <summary>
-            Read a dataset / object
-            </summary>
-        </member>
-        <member name="F:Duality.Serialization.BinaryFormatterBase.Operation.Write">
-            <summary>
-            Write a dataset / object
-            </summary>
-        </member>
         <member name="T:Duality.Serialization.BinaryFormatterBase.CustomSerialIO">
             <summary>
             Buffer object for <see cref="T:Duality.Serialization.ISerializable">custom de/serialization</see>, 
             providing read and write functionality.
             </summary>
-        </member>
-        <member name="T:Duality.Serialization.IDataReader">
-            <summary>
-            Provides reading capabilities for serialization purposes
-            </summary>
-        </member>
-        <member name="M:Duality.Serialization.IDataReader.ReadValue(System.String)">
-            <summary>
-            Reads the value that is associated with the specified name.
-            </summary>
-            <param name="name">The name that is used for retrieving the value.</param>
-            <returns>The value that has been read using the given name.</returns>
-            <seealso cref="M:Duality.Serialization.IDataReader.ReadValue``1(System.String)"/>
-            <seealso cref="M:Duality.Serialization.IDataReader.ReadValue``1(System.String,``0@)"/>
-        </member>
-        <member name="M:Duality.Serialization.IDataReader.ReadValue``1(System.String)">
-            <summary>
-            Reads the value that is associated with the specified name.
-            </summary>
-            <typeparam name="T">The expected value type.</typeparam>
-            <param name="name">The name that is used for retrieving the value.</param>
-            <returns>The value that has been read and cast using the given name and type.</returns>
-            <seealso cref="M:Duality.Serialization.IDataReader.ReadValue(System.String)"/>
-            <seealso cref="M:Duality.Serialization.IDataReader.ReadValue``1(System.String,``0@)"/>
-        </member>
-        <member name="M:Duality.Serialization.IDataReader.ReadValue``1(System.String,``0@)">
-            <summary>
-            Reads the value that is associated with the specified name.
-            </summary>
-            <typeparam name="T">The expected value type.</typeparam>
-            <param name="name">The name that is used for retrieving the value.</param>
-            <param name="value">The value that has been read and cast using the given name and type.</param>
-            <seealso cref="M:Duality.Serialization.IDataReader.ReadValue(System.String)"/>
-            <seealso cref="M:Duality.Serialization.IDataReader.ReadValue``1(System.String)"/>
-        </member>
-        <member name="T:Duality.Serialization.IDataWriter">
-            <summary>
-            Provides writing capabilities for serialization purposes
-            </summary>
-        </member>
-        <member name="M:Duality.Serialization.IDataWriter.WriteValue(System.String,System.Object)">
-            <summary>
-            Writes the specified name and value.
-            </summary>
-            <param name="name">
-            The name to which the written value is mapped. 
-            May, for example, be the name of a <see cref="T:System.Reflection.FieldInfo">Field</see>
-            to which the written value belongs, but there are no naming restrictions, except that one name can't be used twice.
-            </param>
-            <param name="value">The value to write.</param>
         </member>
         <member name="M:Duality.Serialization.BinaryFormatterBase.CustomSerialIO.Serialize(Duality.Serialization.BinaryFormatterBase)">
             <summary>
@@ -2650,60 +2722,6 @@
             Reads data from the specified serializer
             </summary>
             <param name="formatter">The serializer to read data from.</param>
-        </member>
-        <member name="M:Duality.Serialization.BinaryFormatterBase.CustomSerialIO.Clear">
-            <summary>
-            Clears all contained data.
-            </summary>
-        </member>
-        <member name="M:Duality.Serialization.BinaryFormatterBase.CustomSerialIO.WriteValue(System.String,System.Object)">
-            <summary>
-            Writes the specified name and value.
-            </summary>
-            <param name="name">
-            The name to which the written value is mapped. 
-            May, for example, be the name of a <see cref="T:System.Reflection.FieldInfo">Field</see>
-            to which the written value belongs, but there are no naming restrictions, except that one name can't be used twice.
-            </param>
-            <param name="value">The value to write.</param>
-            <seealso cref="T:Duality.Serialization.IDataWriter"/>
-        </member>
-        <member name="M:Duality.Serialization.BinaryFormatterBase.CustomSerialIO.ReadValue(System.String)">
-            <summary>
-            Reads the value that is associated with the specified name.
-            </summary>
-            <param name="name">The name that is used for retrieving the value.</param>
-            <returns>The value that has been read using the given name.</returns>
-            <seealso cref="T:Duality.Serialization.IDataReader"/>
-            <seealso cref="M:Duality.Serialization.BinaryFormatterBase.CustomSerialIO.ReadValue``1(System.String)"/>
-            <seealso cref="M:Duality.Serialization.BinaryFormatterBase.CustomSerialIO.ReadValue``1(System.String,``0@)"/>
-        </member>
-        <member name="M:Duality.Serialization.BinaryFormatterBase.CustomSerialIO.ReadValue``1(System.String)">
-            <summary>
-            Reads the value that is associated with the specified name.
-            </summary>
-            <typeparam name="T">The expected value type.</typeparam>
-            <param name="name">The name that is used for retrieving the value.</param>
-            <returns>The value that has been read and cast using the given name and type.</returns>
-            <seealso cref="T:Duality.Serialization.IDataReader"/>
-            <seealso cref="M:Duality.Serialization.BinaryFormatterBase.CustomSerialIO.ReadValue(System.String)"/>
-            <seealso cref="M:Duality.Serialization.BinaryFormatterBase.CustomSerialIO.ReadValue``1(System.String,``0@)"/>
-        </member>
-        <member name="M:Duality.Serialization.BinaryFormatterBase.CustomSerialIO.ReadValue``1(System.String,``0@)">
-            <summary>
-            Reads the value that is associated with the specified name.
-            </summary>
-            <typeparam name="T">The expected value type.</typeparam>
-            <param name="name">The name that is used for retrieving the value.</param>
-            <param name="value">The value that has been read and cast using the given name and type.</param>
-            <seealso cref="T:Duality.Serialization.IDataReader"/>
-            <seealso cref="M:Duality.Serialization.BinaryFormatterBase.CustomSerialIO.ReadValue(System.String)"/>
-            <seealso cref="M:Duality.Serialization.BinaryFormatterBase.CustomSerialIO.ReadValue``1(System.String)"/>
-        </member>
-        <member name="P:Duality.Serialization.BinaryFormatterBase.CustomSerialIO.Values">
-            <summary>
-            [GET] Enumerates all currently stored <see cref="T:System.Collections.Generic.KeyValuePair`2">KeyValuePairs</see>.
-            </summary>
         </member>
         <member name="T:Duality.SoundDevice">
             <summary>
@@ -2888,11 +2906,6 @@
             <seealso cref="T:Duality.ContentRef`1"/>
             <seealso cref="T:Duality.ContentProvider"/>
         </member>
-        <member name="F:Duality.Resource.FileExt">
-            <summary>
-            A Resource files extension.
-            </summary>
-        </member>
         <member name="F:Duality.Resource.path">
             <summary>
             The path of this Resource.
@@ -2981,6 +2994,13 @@
             <param name="resPath">The path that is assumed as the loaded Resource's origin.</param>
             <returns>The Resource that has been loaded.</returns>
         </member>
+        <member name="M:Duality.Resource.IsResourceFile(System.String)">
+            <summary>
+            Determines whether or not the specified path points to a Duality Resource file.
+            </summary>
+            <param name="filePath"></param>
+            <returns></returns>
+        </member>
         <member name="M:Duality.Resource.GetFileExtByType(System.Type)">
             <summary>
             Returns the Resource file extension for a specific Resource Type.
@@ -3003,6 +3023,11 @@
             <param name="field"></param>
             <returns></returns>
         </member>
+        <member name="P:Duality.Resource.FileExt">
+            <summary>
+            A Resource files extension.
+            </summary>
+        </member>
         <member name="P:Duality.Resource.Disposed">
             <summary>
             [GET] Returns whether the Resource has been disposed. 
@@ -3023,11 +3048,6 @@
         <member name="P:Duality.Resource.IsDefaultContent">
             <summary>
             [GET] Returns whether the Resource is part of Duality's embedded default content.
-            </summary>
-        </member>
-        <member name="F:Duality.Resources.Sound.FileExt">
-            <summary>
-            A Sound resources file extension.
             </summary>
         </member>
         <member name="F:Duality.Resources.Sound.VirtualContentPath">
@@ -3067,6 +3087,11 @@
             Assigns new <see cref="T:Duality.Resources.AudioData"/> to this Sound.
             </summary>
             <param name="data"></param>
+        </member>
+        <member name="P:Duality.Resources.Sound.FileExt">
+            <summary>
+            A Sound resources file extension.
+            </summary>
         </member>
         <member name="P:Duality.Resources.Sound.Beep">
             <summary>
@@ -3291,11 +3316,6 @@
             </summary>
             <seealso cref="T:Duality.Resources.BatchInfo"/>
         </member>
-        <member name="F:Duality.Resources.Material.FileExt">
-            <summary>
-            A Material resources file extension.
-            </summary>
-        </member>
         <member name="F:Duality.Resources.Material.VirtualContentPath">
             <summary>
             (Virtual) base path for Duality's embedded default Materials.
@@ -3342,6 +3362,11 @@
             <param name="mainColor">The <see cref="P:Duality.Resources.Material.MainColor"/> to use.</param>
             <param name="textures">A set of <see cref="T:Duality.Resources.Texture">Textures</see> to use.</param>
             <param name="uniforms">A set of <see cref="T:Duality.Resources.ShaderVarInfo">uniform values</see> to use.</param>
+        </member>
+        <member name="P:Duality.Resources.Material.FileExt">
+            <summary>
+            A Material resources file extension.
+            </summary>
         </member>
         <member name="P:Duality.Resources.Material.SolidWhite">
             <summary>
@@ -3741,11 +3766,6 @@
             [GET] The shaders source code.
             </summary>
         </member>
-        <member name="F:Duality.Resources.VertexShader.FileExt">
-            <summary>
-            A VertexShader resources file extension.
-            </summary>
-        </member>
         <member name="F:Duality.Resources.VertexShader.VirtualContentPath">
             <summary>
             (Virtual) base path for Duality's embedded default VertexShaders.
@@ -3759,6 +3779,11 @@
         <member name="F:Duality.Resources.VertexShader.ContentPath_SmoothAnim">
             <summary>
             (Virtual) path of the <see cref="P:Duality.Resources.VertexShader.SmoothAnim"/> VertexShader.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.VertexShader.FileExt">
+            <summary>
+            A VertexShader resources file extension.
             </summary>
         </member>
         <member name="P:Duality.Resources.VertexShader.Minimal">
@@ -4470,11 +4495,6 @@
             </summary>
             <seealso cref="T:Duality.Resources.Texture"/>
         </member>
-        <member name="F:Duality.Resources.RenderTarget.FileExt">
-            <summary>
-            A RenderTarget resources file extension.
-            </summary>
-        </member>
         <member name="F:Duality.Resources.RenderTarget.None">
             <summary>
             Refers to a null reference RenderTarget.
@@ -4507,6 +4527,11 @@
         <member name="M:Duality.Resources.RenderTarget.SetupOpenGLRes">
             <summary>
             Sets up all necessary OpenGL resources for this RenderTarget.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.RenderTarget.FileExt">
+            <summary>
+            A RenderTarget resources file extension.
             </summary>
         </member>
         <member name="P:Duality.Resources.RenderTarget.BoundRT">
@@ -5357,11 +5382,6 @@
             <seealso cref="T:Duality.Resources.ShaderProgram"/>
             <seealso cref="T:Duality.BlendMode"/>
         </member>
-        <member name="F:Duality.Resources.DrawTechnique.FileExt">
-            <summary>
-            A DrawTechnique resources file extension.
-            </summary>
-        </member>
         <member name="F:Duality.Resources.DrawTechnique.VirtualContentPath">
             <summary>
             (Virtual) base path for Duality's embedded default DrawTechniques.
@@ -5503,6 +5523,11 @@
             <param name="textures">The current set of textures.</param>
             <param name="uniforms">The current set of uniforms.</param>
             <returns>The selected <see cref="T:Duality.Resources.ShaderProgram"/>.</returns>
+        </member>
+        <member name="P:Duality.Resources.DrawTechnique.FileExt">
+            <summary>
+            A DrawTechnique resources file extension.
+            </summary>
         </member>
         <member name="P:Duality.Resources.DrawTechnique.Solid">
             <summary>
@@ -5810,7 +5835,7 @@
             Processes the specified world space position and scale values and transforms them to the IDrawDevices view space.
             This usually also applies a parallax effect, if applicable.
             </summary>
-            <param name="r">The <see cref="!:Duality.Components.ICmpRenderer"/> to which the data belongs.</param>
+            <param name="r">The <see cref="T:Duality.ICmpRenderer"/> to which the data belongs.</param>
             <param name="pos">The position to process.</param>
             <param name="scale">The scale factor to process.</param>
         </member>
@@ -5893,22 +5918,22 @@
         </member>
         <member name="M:Duality.Components.Camera.PickRendererAt(System.Int32,System.Int32)">
             <summary>
-            Picks the <see cref="!:Duality.Components.ICmpRenderer"/> that owns the pixel at the specified position.
+            Picks the <see cref="T:Duality.ICmpRenderer"/> that owns the pixel at the specified position.
             </summary>
             <param name="x">x-Coordinate of the pixel to check.</param>
             <param name="y">y-Coordinate of the pixel to check.</param>
-            <returns>The <see cref="!:Duality.Components.ICmpRenderer"/> that owns the pixel.</returns>
+            <returns>The <see cref="T:Duality.ICmpRenderer"/> that owns the pixel.</returns>
         </member>
         <member name="M:Duality.Components.Camera.PickRenderersIn(System.Int32,System.Int32,System.Int32,System.Int32)">
             <summary>
-            Picks all <see cref="!:Duality.Components.ICmpRenderer">ICmpRenderers</see> contained within the specified
+            Picks all <see cref="T:Duality.ICmpRenderer">ICmpRenderers</see> contained within the specified
             rectangular area.
             </summary>
             <param name="x">x-Coordinate of the Rect.</param>
             <param name="y">y-Coordinate of the Rect.</param>
             <param name="w">Width of the Rect.</param>
             <param name="h">Height of the Rect.</param>
-            <returns>A set of all <see cref="!:Duality.Components.ICmpRenderer">ICmpRenderers</see> that have been picked.</returns>
+            <returns>A set of all <see cref="T:Duality.ICmpRenderer">ICmpRenderers</see> that have been picked.</returns>
         </member>
         <member name="M:Duality.Components.Camera.GetScaleAtZ(System.Single)">
             <summary>
@@ -5947,13 +5972,13 @@
         </member>
         <member name="E:Duality.Components.Camera.CollectRendererDrawcalls">
             <summary>
-            Fired as soon as <see cref="!:Duality.Components.ICmpRenderer"/> drawcalls have been collected, but
+            Fired as soon as <see cref="T:Duality.ICmpRenderer"/> drawcalls have been collected, but
             right before processing them.
             </summary>
         </member>
         <member name="E:Duality.Components.Camera.CollectOverlayDrawcalls">
             <summary>
-            Fired as soon as <see cref="!:Duality.ICmpScreenOverlayICmpRenderer"/> drawcalls have been collected, but
+            Fired as soon as <see cref="T:Duality.ICmpScreenOverlayRenderer"/> drawcalls have been collected, but
             right before processing them.
             </summary>
         </member>
@@ -6258,11 +6283,6 @@
             have been deliberately modified in the editor and restores them after re-applying the original Prefabs data.
             </summary>
         </member>
-        <member name="F:Duality.Resources.Prefab.FileExt">
-            <summary>
-            A Prefab resources file extension.
-            </summary>
-        </member>
         <member name="M:Duality.Resources.Prefab.#ctor">
             <summary>
             Creates a new, empty Prefab.
@@ -6310,6 +6330,11 @@
             <param name="gameObjIndexPath">The <see cref="M:Duality.GameObject.IndexPathOfChild(Duality.GameObject)">index path</see> at which to search for a GameObject.</param>
             <param name="cmpType">The Component type to search for inside the found GameObject.</param>
             <returns></returns>
+        </member>
+        <member name="P:Duality.Resources.Prefab.FileExt">
+            <summary>
+            A Prefab resources file extension.
+            </summary>
         </member>
         <member name="P:Duality.Resources.Prefab.ContainsData">
             <summary>
@@ -6480,11 +6505,6 @@
             <seealso cref="T:Duality.Resources.Pixmap"/>
             <seealso cref="T:Duality.Resources.RenderTarget"/>
         </member>
-        <member name="F:Duality.Resources.Texture.FileExt">
-            <summary>
-            A Texture resources file extension.
-            </summary>
-        </member>
         <member name="F:Duality.Resources.Texture.VirtualContentPath">
             <summary>
             (Virtual) base path for Duality's embedded default Textures.
@@ -6587,6 +6607,11 @@
         <member name="M:Duality.Resources.Texture.SetupOpenGLRes">
             <summary>
             Sets up the Textures OpenGL resources, clearing previously uploaded pixel data.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.FileExt">
+            <summary>
+            A Texture resources file extension.
             </summary>
         </member>
         <member name="P:Duality.Resources.Texture.DualityLogo256">
@@ -6776,11 +6801,6 @@
             <seealso cref="T:Duality.Resources.VertexShader"/>
             <seealso cref="T:Duality.Resources.FragmentShader"/>
         </member>
-        <member name="F:Duality.Resources.ShaderProgram.FileExt">
-            <summary>
-            A ShaderProgram resources file extension.
-            </summary>
-        </member>
         <member name="F:Duality.Resources.ShaderProgram.VirtualContentPath">
             <summary>
             (Virtual) base path for Duality's embedded default ShaderPrograms.
@@ -6848,6 +6868,11 @@
             or when binding it.
             </summary>
         </member>
+        <member name="P:Duality.Resources.ShaderProgram.FileExt">
+            <summary>
+            A ShaderProgram resources file extension.
+            </summary>
+        </member>
         <member name="P:Duality.Resources.ShaderProgram.Minimal">
             <summary>
             A minimal ShaderProgram, using a <see cref="P:Duality.Resources.VertexShader.Minimal"/> VertexShader and
@@ -6911,11 +6936,6 @@
             i.e. as soon as demanded by accessing the AlBuffer property or calling SetupAlBuffer.
             </summary>
             <seealso cref="T:Duality.Resources.Sound"/>
-        </member>
-        <member name="F:Duality.Resources.AudioData.FileExt">
-            <summary>
-            An AudioData resources file extension.
-            </summary>
         </member>
         <member name="F:Duality.Resources.AudioData.VirtualContentPath">
             <summary>
@@ -6993,6 +7013,11 @@
             Sets up a new OpenAL buffer for this AudioData. This will result in decompressing
             the <see cref="T:Duality.OggVorbis.OV">Ogg Vorbis</see> data and uploading it to OpenAL,
             unless the AudioData is streamed.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.AudioData.FileExt">
+            <summary>
+            An AudioData resources file extension.
             </summary>
         </member>
         <member name="P:Duality.Resources.AudioData.Beep">
@@ -7115,11 +7140,6 @@
             on you own design.
             </summary>
         </member>
-        <member name="F:Duality.Resources.Scene.FileExt">
-            <summary>
-            A Scene resources file extension.
-            </summary>
-        </member>
         <member name="M:Duality.Resources.Scene.#ctor">
             <summary>
             Creates a new, empty scene which does not contain any <see cref="T:Duality.GameObject">GameObjects</see>.
@@ -7202,6 +7222,11 @@
             </summary>
             <param name="device"></param>
             <returns></returns>
+        </member>
+        <member name="P:Duality.Resources.Scene.FileExt">
+            <summary>
+            A Scene resources file extension.
+            </summary>
         </member>
         <member name="P:Duality.Resources.Scene.CurrentPhysics">
             <summary>
@@ -9842,11 +9867,6 @@
             </summary>
             <seealso cref="T:Duality.Resources.Texture"/>
         </member>
-        <member name="F:Duality.Resources.Pixmap.FileExt">
-            <summary>
-            A Pixmap resources file extension.
-            </summary>
-        </member>
         <member name="F:Duality.Resources.Pixmap.ResFormat_Version_Unknown">
             <summary>
             Represents an unknown Pixmap version.
@@ -9911,6 +9931,11 @@
             </summary>
             <param name="imagePath">The path of the file from which to retrieve the new pixel data.</param>
         </member>
+        <member name="P:Duality.Resources.Pixmap.FileExt">
+            <summary>
+            A Pixmap resources file extension.
+            </summary>
+        </member>
         <member name="P:Duality.Resources.Pixmap.DualityLogo256">
             <summary>
             [GET] A Pixmap showing the Duality logo.
@@ -9952,11 +9977,6 @@
             <summary>
             Represents a font. While any system font or imported TrueType font can be used, they are internally
             pre-rasterized and stored in a <see cref="T:Duality.Resources.Texture"/> with an <see cref="P:Duality.Resources.Texture.Atlas"/>.
-            </summary>
-        </member>
-        <member name="F:Duality.Resources.Font.FileExt">
-            <summary>
-            A Font resources file extension.
             </summary>
         </member>
         <member name="F:Duality.Resources.Font.VirtualContentPath">
@@ -10149,6 +10169,11 @@
             </summary>
             <param name="stream">The stream to load the FontFamily from.</param>
             <returns>The FontFamily that has been loaded.</returns>
+        </member>
+        <member name="P:Duality.Resources.Font.FileExt">
+            <summary>
+            A Font resources file extension.
+            </summary>
         </member>
         <member name="P:Duality.Resources.Font.GenericMonospace8">
             <summary>
@@ -10926,11 +10951,6 @@
             Represents an OpenGL FragmentShader.
             </summary>
         </member>
-        <member name="F:Duality.Resources.FragmentShader.FileExt">
-            <summary>
-            A FragmentShader resources file extension.
-            </summary>
-        </member>
         <member name="F:Duality.Resources.FragmentShader.VirtualContentPath">
             <summary>
             (Virtual) base path for Duality's embedded default FragmentShaders.
@@ -10949,6 +10969,11 @@
         <member name="F:Duality.Resources.FragmentShader.ContentPath_SmoothAnim">
             <summary>
             (Virtual) path of the <see cref="P:Duality.Resources.FragmentShader.SmoothAnim"/> FragmentShader.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.FragmentShader.FileExt">
+            <summary>
+            A FragmentShader resources file extension.
             </summary>
         </member>
         <member name="P:Duality.Resources.FragmentShader.Minimal">

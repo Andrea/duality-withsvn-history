@@ -21,7 +21,10 @@ namespace Duality
 		/// <summary>
 		/// A Resource files extension.
 		/// </summary>
-		public const string FileExt = ".res";
+		public static string FileExt
+		{ 
+			get { return ".res"; }
+		}
 
 		private	static	List<Resource>	finalizeSched	= new List<Resource>();
 		
@@ -241,6 +244,16 @@ namespace Duality
 			return newContent;
 		}
 
+		/// <summary>
+		/// Determines whether or not the specified path points to a Duality Resource file.
+		/// </summary>
+		/// <param name="filePath"></param>
+		/// <returns></returns>
+		public static bool IsResourceFile(string filePath)
+		{
+			string lowerExt = System.IO.Path.GetExtension(filePath).ToLower();
+			return lowerExt == Resource.FileExt;
+		}
 		/// <summary>
 		/// Returns the Resource file extension for a specific Resource Type.
 		/// </summary>

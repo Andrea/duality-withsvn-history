@@ -27,7 +27,10 @@ namespace Duality.Resources
 		/// <summary>
 		/// A Font resources file extension.
 		/// </summary>
-		public new const string FileExt = ".Font" + Resource.FileExt;
+		public new static string FileExt
+		{ 
+			get { return ".Font" + Resource.FileExt; }
+		}
 		
 		/// <summary>
 		/// (Virtual) base path for Duality's embedded default Fonts.

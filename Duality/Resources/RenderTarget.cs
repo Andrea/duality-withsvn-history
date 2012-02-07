@@ -26,7 +26,10 @@ namespace Duality.Resources
 		/// <summary>
 		/// A RenderTarget resources file extension.
 		/// </summary>
-		public new const string FileExt = ".RenderTarget" + Resource.FileExt;
+		public new static string FileExt
+		{ 
+			get { return ".RenderTarget" + Resource.FileExt; }
+		}
 		
 		/// <summary>
 		/// Refers to a null reference RenderTarget.

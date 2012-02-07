@@ -426,8 +426,7 @@ namespace EditorBase
 		{
 			if (!PathHelper.IsPathVisible(filePath)) return null;
 
-			string ext = Path.GetExtension(filePath);
-			if (ext.ToLower() == Resource.FileExt)
+			if (Resource.IsResourceFile(filePath))
 				return new ResourceNode(filePath);
 			else
 				return null;
@@ -1325,7 +1324,7 @@ namespace EditorBase
 		private void EditorForm_ResourceCreated(object sender, ResourceEventArgs e)
 		{
 			// Register newly detected ressource file
-			if (File.Exists(e.Path) && Path.GetExtension(e.Path) == Resource.FileExt)
+			if (File.Exists(e.Path) && Resource.IsResourceFile(e.Path))
 			{
 				NodeBase newNode = this.ScanFile(e.Path);
 
@@ -1405,7 +1404,7 @@ namespace EditorBase
 			}
 
 			// If neccessary, check if the file is a ressource file and add it, if yes
-			if (registerRes && Path.GetExtension(e.Path).ToLower() == Resource.FileExt)
+			if (registerRes && Resource.IsResourceFile(e.Path))
 			{
 				node = this.ScanFile(e.Path);
 

@@ -97,9 +97,7 @@ namespace DualityEditor
 		private static string GenerateGameResSrcFile_ScanFile(string filePath, int indent, out string propName)
 		{
 			if (!PathHelper.IsPathVisible(filePath)) { propName = null; return ""; }
-
-			string ext = Path.GetExtension(filePath);
-			if (ext.ToLower() != Resource.FileExt) { propName = null; return ""; }
+			if (!Resource.IsResourceFile(filePath)) { propName = null; return ""; }
 
 			StringBuilder fileContent = new StringBuilder();
 			Type resType = Resource.GetTypeByFileName(filePath);
@@ -209,8 +207,7 @@ namespace DualityEditor
 		private static string GenerateGameResSrcFile_ClassName(string path)
 		{
 			// Strip path and resource extension
-			string ext = Path.GetExtension(path);
-			if (path.EndsWith(Resource.FileExt, StringComparison.InvariantCultureIgnoreCase))
+			if (Resource.IsResourceFile(path))
 				path = Path.GetFileNameWithoutExtension(path);
 			else
 				path = Path.GetFileName(path);
