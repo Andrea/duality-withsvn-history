@@ -490,8 +490,10 @@ namespace Duality
 				{
 					using (FileStream str = File.OpenRead(path))
 					{
-						FormatterBase formatter = RequestSerializer(str);
-						appData = formatter.ReadObject() as DualityAppData ?? new DualityAppData();
+						using (FormatterBase formatter = RequestSerializer(str))
+						{
+							appData = formatter.ReadObject() as DualityAppData ?? new DualityAppData();
+						}
 					}
 				}
 				catch (Exception)
@@ -515,8 +517,10 @@ namespace Duality
 				{
 					using (FileStream str = File.OpenRead(path))
 					{
-						FormatterBase formatter = RequestSerializer(str);
-						UserData = formatter.ReadObject() as DualityUserData ?? new DualityUserData();
+						using (FormatterBase formatter = RequestSerializer(str))
+						{
+							UserData = formatter.ReadObject() as DualityUserData ?? new DualityUserData();
+						}
 					}
 				}
 				catch (Exception)
@@ -539,8 +543,10 @@ namespace Duality
 				{
 					using (FileStream str = File.OpenRead(path))
 					{
-						FormatterBase formatter = RequestSerializer(str);
-						metaData = formatter.ReadObject() as DualityMetaData ?? new DualityMetaData();
+						using (FormatterBase formatter = RequestSerializer(str))
+						{
+							metaData = formatter.ReadObject() as DualityMetaData ?? new DualityMetaData();
+						}
 					}
 				}
 				catch (Exception)
@@ -559,8 +565,10 @@ namespace Duality
 			string path = AppDataPath;
 			using (FileStream str = File.Open(path, FileMode.Create))
 			{
-				FormatterBase formatter = RequestSerializer(str);
-				formatter.WriteObject(appData);
+				using (FormatterBase formatter = RequestSerializer(str))
+				{
+					formatter.WriteObject(appData);
+				}
 			}
 		}
 		/// <summary>
@@ -574,8 +582,10 @@ namespace Duality
 
 			using (FileStream str = File.Open(path, FileMode.Create))
 			{
-				FormatterBase formatter = RequestSerializer(str);
-				formatter.WriteObject(userData);
+				using (FormatterBase formatter = RequestSerializer(str))
+				{
+					formatter.WriteObject(userData);
+				}
 			}
 		}
 		/// <summary>
@@ -588,8 +598,10 @@ namespace Duality
 
 			using (FileStream str = File.Open(path, FileMode.Create))
 			{
-				FormatterBase formatter = RequestSerializer(str);
-				formatter.WriteObject(metaData);
+				using (FormatterBase formatter = RequestSerializer(str))
+				{
+					formatter.WriteObject(metaData);
+				}
 			}
 		}
 

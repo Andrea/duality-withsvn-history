@@ -106,9 +106,11 @@ namespace Duality
 		public void Save(Stream str)
 		{
 			this.OnSaving();
-			FormatterBase formatter = DualityApp.RequestSerializer(str);
-			formatter.AddFieldBlocker(NonSerializedResourceBlocker);
-			formatter.WriteObject(this);
+			using (FormatterBase formatter = DualityApp.RequestSerializer(str))
+			{
+				formatter.AddFieldBlocker(NonSerializedResourceBlocker);
+				formatter.WriteObject(this);
+			}
 			this.OnSaved();
 			Log.Core.Write("Resource saved: {0}", (str is FileStream) ? (str as FileStream).Name : str.ToString());
 		}
@@ -227,8 +229,11 @@ namespace Duality
 			T newContent = null;
 			try
 			{
-				FormatterBase formatter = DualityApp.RequestSerializer(str);
-				Resource res = formatter.ReadObject() as Resource;
+				Resource res;
+				using (FormatterBase formatter = DualityApp.RequestSerializer(str))
+				{
+					res = formatter.ReadObject() as Resource;
+				}
 				if (res == null) throw new ApplicationException("Loading Resource failed");
 
 				res.path = resPath;

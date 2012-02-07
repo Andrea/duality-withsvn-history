@@ -11,7 +11,8 @@ namespace Duality.Serialization
 {
 	public class XmlFormatter : XmlFormatterBase
 	{
-		public XmlFormatter(XmlWriter writer) : base(writer) {}
+		public XmlFormatter() {}
+		public XmlFormatter(Stream stream) : base(stream) {}
 
 		protected override void WriteObjectBody(DataType dataType, object obj, SerializeType objSerializeType, uint objId)
 		{
@@ -144,7 +145,7 @@ namespace Duality.Serialization
 		protected override object ReadObjectBody(DataType dataType)
 		{
 			throw new NotImplementedException();
-			return null;
+			return this.GetNullObject();
 		}
 	}
 }

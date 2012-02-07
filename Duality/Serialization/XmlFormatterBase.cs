@@ -69,32 +69,147 @@ namespace Duality.Serialization
 			get { return this.reader != null; }
 		}
 
-		public XmlFormatterBase(XmlWriter writer)
+		public XmlFormatterBase() : this(null) {}
+		public XmlFormatterBase(Stream stream)
 		{
-			this.WriteTarget = writer;
-		}
+			XmlWriterSettings writerSettings = new XmlWriterSettings();
+			writerSettings.Indent = true;
+			XmlReaderSettings readerSettings = new XmlReaderSettings();
+			readerSettings.IgnoreWhitespace = true;
+			readerSettings.IgnoreComments = true;
+			readerSettings.IgnoreProcessingInstructions = true;
 
+			this.WriteTarget = (stream != null && stream.CanWrite) ? XmlTextWriter.Create(stream, writerSettings) : null;
+			this.ReadTarget = (stream != null && stream.CanRead) ? XmlTextReader.Create(stream, readerSettings) : null;
+		}
+		protected override void Dispose(bool manually)
+		{
+			if (this.Disposed) return;
+
+			if (this.writer != null)
+			{
+				if (this.writer.WriteState != WriteState.Start) this.writer.WriteEndDocument();
+				this.writer.Flush();
+				this.writer = null;
+			}
+
+			if (this.reader != null)
+			{
+				this.reader = null;
+			}
+		}
+		
 		public override object ReadObject()
 		{
-			if (!this.CanRead) return this.GetNullObject();
-			throw new NotImplementedException();
-			return this.GetNullObject();
+			string objName;
+			return this.ReadObject(out objName);
+		}
+		protected object ReadObject(out string objName)
+		{
+			// DEBUG: How to use XmlReader
+			{
+				while (reader.Read())
+				{
+					if (reader.NodeType == XmlNodeType.Element)
+					{
+						string[] attributes;
+						if (reader.HasAttributes)
+						{
+							attributes = new string[reader.AttributeCount];
+							for (int i = 0; i < reader.AttributeCount; i++)
+							{
+								reader.MoveToAttribute(i);
+								attributes[i] = string.Format("{0}=\"{1}\"", reader.Name, reader.Value);
+							}
+							reader.MoveToElement();
+						}
+						else attributes = new string[0];
+
+						if (reader.IsEmptyElement)
+						{
+							Log.Core.Write("<{0} {1} />", reader.Name, attributes.ToString(", "));
+						}
+						else
+						{
+							Log.Core.Write("<{0} {1}>", reader.Name, attributes.ToString(", "));
+							Log.Core.PushIndent();
+						}
+					}
+					else if (reader.NodeType == XmlNodeType.EndElement)
+					{
+						Log.Core.PopIndent();
+						Log.Core.Write("</{0}>", reader.Name);
+					}
+					else
+					{
+						Log.Core.Write("({2}) {0} => {1}", reader.Name, reader.Value, reader.NodeType);
+					}
+				}
+				throw new NotImplementedException("This is debug code");
+			}
+			// ALL THAT FOLLOWS IS OLD, EXPERIMENTAL AND DOESNT WORK. REWRITE USING ABOVE CODE
+
+			if (!this.CanRead) throw new InvalidOperationException("Can't read object from a write-only serializer");
+			if (this.reader.ReadState == ReadState.EndOfFile) throw new EndOfStreamException("No more data to read.");
+			if (this.reader.ReadState == ReadState.Initial)
+			{
+				this.reader.Read();
+				this.reader.MoveToContent();
+			}
+
+
+			this.reader.ReadStartElement();
+			objName = this.reader.Name;
+
+			// Empty element? Return null
+			if (this.reader.IsEmptyElement)
+			{
+				this.reader.ReadEndElement();
+				return this.GetNullObject();
+			}
+
+			// Read data type header
+			string dataTypeStr = this.reader.GetAttribute("dataType");
+			DataType dataType;
+			if (!Enum.TryParse<DataType>(dataTypeStr, out dataType))
+			{
+				dataType = DataType.Unknown;
+				this.SerializationLog.WriteError("Can't resolve DataType: {0}. Returning null reference.", dataTypeStr);
+				this.reader.Skip();
+				return this.GetNullObject();
+			}
+
+			// Read object
+			object result = null;
+			try
+			{
+				// Read the objects body
+				result = this.ReadObjectBody(dataType);
+			}
+			catch (Exception e)
+			{
+				this.SerializationLog.WriteError("Error reading object: {0}", e is ApplicationException ? e.Message : Log.Exception(e));
+				this.reader.Skip();
+			}
+
+			return result ?? this.GetNullObject();
 		}
 		protected abstract object ReadObjectBody(DataType dataType);
 
 		public override void WriteObject(object obj)
 		{
-			if (!this.CanWrite) return;
 			this.WriteObject(obj, "object");
 		}
 		protected void WriteObject(object obj, string elementName)
 		{
-			this.PushObjectElement(elementName);
+			if (!this.CanWrite) throw new InvalidOperationException("Can't write object to a read-only serializer");
+			if (this.writer.WriteState == WriteState.Start) this.writer.WriteStartElement("root");
+			this.writer.WriteStartElement(elementName);
 
 			// Null? Empty Element.
 			if (obj == null)
 			{
-				this.PopObjectElement();
+				this.writer.WriteEndElement();
 				return;
 			}
 			
@@ -112,9 +227,14 @@ namespace Duality.Serialization
 			{
 				this.WriteObjectBody(dataType, obj, objSerializeType, objId);
 			}
+			catch (Exception e)
+			{
+				// Log the error
+				this.SerializationLog.WriteError("Error writing object: {0}", e is ApplicationException ? e.Message : Log.Exception(e));
+			}
 			finally
 			{
-				this.PopObjectElement();
+				this.writer.WriteEndElement();
 			}
 		}
 		protected abstract void WriteObjectBody(DataType dataType, object obj, SerializeType objSerializeType, uint objId);
@@ -138,21 +258,6 @@ namespace Duality.Serialization
 				throw new ArgumentNullException("obj");
 			else
 				throw new ArgumentException(string.Format("Type '{0}' is not a primitive.", obj.GetType()));
-		}
-
-		private void InitRoot()
-		{
-			if (this.writer.WriteState == WriteState.Start)
-				this.writer.WriteStartElement("root");
-		}
-		private void PushObjectElement(string elementName)
-		{
-			this.InitRoot();
-			this.writer.WriteStartElement(elementName);
-		}
-		private void PopObjectElement()
-		{
-			this.writer.WriteEndElement();
 		}
 	}
 }

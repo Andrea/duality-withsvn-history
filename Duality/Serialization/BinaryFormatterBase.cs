@@ -140,13 +140,12 @@ namespace Duality.Serialization
 
 			if (this.writer != null)
 			{
-				//this.writer.Dispose();
+				this.writer.Flush();
 				this.writer = null;
 			}
 
 			if (this.reader != null)
 			{
-				//this.reader.Dispose();
 				this.reader = null;
 			}
 		}
@@ -157,7 +156,7 @@ namespace Duality.Serialization
 		/// <returns>The object that has been read.</returns>
 		public override object ReadObject()
 		{
-			if (!this.CanRead) return this.GetNullObject();
+			if (!this.CanRead) throw new InvalidOperationException("Can't read object from a write-only serializer");
 			if (this.reader.BaseStream.Position == this.reader.BaseStream.Length) throw new EndOfStreamException("No more data to read.");
 			if (this.BeginOperation(Operation.Read))
 				this.ReadFormatterHeader();
@@ -437,7 +436,7 @@ namespace Duality.Serialization
 		/// <param name="obj">The object to write.</param>
 		public override void WriteObject(object obj)
 		{
-			if (!this.CanWrite) return;
+			if (!this.CanWrite) throw new InvalidOperationException("Can't write object to a read-only serializer");
 			if (this.BeginOperation(Operation.Write))
 				this.WriteFormatterHeader();
 
