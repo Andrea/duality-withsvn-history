@@ -489,7 +489,7 @@ namespace Duality
 				{
 					using (FileStream str = File.OpenRead(path))
 					{
-						using (var formatter = FormatterBase.Create(str))
+						using (var formatter = Formatter.Create(str))
 						{
 							appData = formatter.ReadObject() as DualityAppData ?? new DualityAppData();
 						}
@@ -516,7 +516,7 @@ namespace Duality
 				{
 					using (FileStream str = File.OpenRead(path))
 					{
-						using (var formatter = FormatterBase.Create(str))
+						using (var formatter = Formatter.Create(str))
 						{
 							UserData = formatter.ReadObject() as DualityUserData ?? new DualityUserData();
 						}
@@ -542,7 +542,7 @@ namespace Duality
 				{
 					using (FileStream str = File.OpenRead(path))
 					{
-						using (var formatter = FormatterBase.Create(str))
+						using (var formatter = Formatter.Create(str))
 						{
 							metaData = formatter.ReadObject() as DualityMetaData ?? new DualityMetaData();
 						}
@@ -564,7 +564,7 @@ namespace Duality
 			string path = AppDataPath;
 			using (FileStream str = File.Open(path, FileMode.Create))
 			{
-				using (var formatter = FormatterBase.Create(str, FormattingMethod.Binary))
+				using (var formatter = Formatter.Create(str, FormattingMethod.Binary))
 				{
 					formatter.WriteObject(appData);
 				}
@@ -581,7 +581,7 @@ namespace Duality
 
 			using (FileStream str = File.Open(path, FileMode.Create))
 			{
-				using (var formatter = FormatterBase.Create(str, FormattingMethod.Binary))
+				using (var formatter = Formatter.Create(str, FormattingMethod.Binary))
 				{
 					formatter.WriteObject(userData);
 				}
@@ -597,7 +597,7 @@ namespace Duality
 
 			using (FileStream str = File.Open(path, FileMode.Create))
 			{
-				using (var formatter = FormatterBase.Create(str, FormattingMethod.Binary))
+				using (var formatter = Formatter.Create(str, FormattingMethod.Binary))
 				{
 					formatter.WriteObject(metaData);
 				}

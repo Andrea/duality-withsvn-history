@@ -13,7 +13,7 @@ namespace Duality.Serialization
 	/// <summary>
 	/// Base class for Dualitys xml serializers.
 	/// </summary>
-	public abstract class XmlFormatterBase : FormatterBase
+	public abstract class XmlFormatterBase : Formatter
 	{
 		/// <summary>
 		/// Buffer object for <see cref="Duality.Serialization.ISerializable">custom de/serialization</see>, 

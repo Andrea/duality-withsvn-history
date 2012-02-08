@@ -232,7 +232,7 @@ namespace ResourceHacker
 			this.filePath = filePath;
 			using (FileStream fileStream = File.OpenRead(this.filePath))
 			{
-				using (var formatter = FormatterBase.CreateMeta(fileStream))
+				using (var formatter = Formatter.CreateMeta(fileStream))
 				{
 					DataNode dataNode;
 					try
@@ -259,7 +259,7 @@ namespace ResourceHacker
 
 			using (FileStream fileStream = File.Open(this.filePath, FileMode.Create, FileAccess.Write))
 			{
-				using (var formatter = FormatterBase.CreateMeta(fileStream))
+				using (var formatter = Formatter.CreateMeta(fileStream))
 				{
 					foreach (DataTreeNode dataNode in this.dataModel.Nodes)
 						formatter.WriteObject(dataNode.Data);

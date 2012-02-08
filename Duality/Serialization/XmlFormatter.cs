@@ -9,6 +9,10 @@ using CultureInfo = System.Globalization.CultureInfo;
 
 namespace Duality.Serialization
 {
+	/// <summary>
+	/// De/Serializes object data.
+	/// </summary>
+	/// <seealso cref="Duality.Serialization.XmlMetaFormatter"/>
 	public class XmlFormatter : XmlFormatterBase
 	{
 		public XmlFormatter() {}

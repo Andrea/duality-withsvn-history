@@ -10,7 +10,7 @@ namespace Duality.Serialization
 	/// <summary>
 	/// Base class for Dualitys binary serializers.
 	/// </summary>
-	public abstract class BinaryFormatterBase : FormatterBase
+	public abstract class BinaryFormatterBase : Formatter
 	{
 		/// <summary>
 		/// Buffer object for <see cref="Duality.Serialization.ISerializable">custom de/serialization</see>, 

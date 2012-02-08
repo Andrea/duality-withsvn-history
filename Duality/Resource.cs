@@ -103,7 +103,7 @@ namespace Duality
 		public void Save(Stream str)
 		{
 			this.OnSaving();
-			using (var formatter = FormatterBase.Create(str))
+			using (var formatter = Formatter.Create(str))
 			{
 				formatter.AddFieldBlocker(NonSerializedResourceBlocker);
 				formatter.WriteObject(this);
@@ -227,7 +227,7 @@ namespace Duality
 			try
 			{
 				Resource res;
-				using (var formatter = FormatterBase.Create(str))
+				using (var formatter = Formatter.Create(str))
 				{
 					res = formatter.ReadObject() as Resource;
 				}

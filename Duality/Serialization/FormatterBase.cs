@@ -30,13 +30,13 @@ namespace Duality.Serialization
 	/// <summary>
 	/// Base class for Dualitys serializers.
 	/// </summary>
-	public abstract class FormatterBase : IDisposable
+	public abstract class Formatter : IDisposable
 	{
 		/// <summary>
 		/// Buffer object for <see cref="Duality.Serialization.ISerializable">custom de/serialization</see>, 
 		/// providing read and write functionality.
 		/// </summary>
-		protected abstract class CustomSerialIOBase<T> : IDataReader, IDataWriter where T : FormatterBase
+		protected abstract class CustomSerialIOBase<T> : IDataReader, IDataWriter where T : Formatter
 		{
 			protected	Dictionary<string,object>	data;
 			
@@ -203,12 +203,12 @@ namespace Duality.Serialization
 		}
 
 
-		protected FormatterBase()
+		protected Formatter()
 		{
 			this.AddSurrogate(new Surrogates.BitmapSurrogate());
 			this.AddSurrogate(new Surrogates.DictionarySurrogate());
 		}
-		~FormatterBase()
+		~Formatter()
 		{
 			this.Dispose(false);
 		}
@@ -404,7 +404,7 @@ namespace Duality.Serialization
 		/// is read- and seekable, auto-detection is used. Otherwise, the <see cref="DefaultMethod">default formatting method</see> is used.
 		/// </param>
 		/// <returns>A newly created Formatter meeting the specified criteria.</returns>
-		public static FormatterBase Create(Stream stream, FormattingMethod method = FormattingMethod.Unknown)
+		public static Formatter Create(Stream stream, FormattingMethod method = FormattingMethod.Unknown)
 		{
 			if (method == FormattingMethod.Unknown)
 			{
@@ -433,7 +433,7 @@ namespace Duality.Serialization
 		/// is read- and seekable, auto-detection is used. Otherwise, the <see cref="DefaultMethod">default formatting method</see> is used.
 		/// </param>
 		/// <returns>A newly created MetaFormat Formatter meeting the specified criteria.</returns>
-		public static FormatterBase CreateMeta(Stream stream, FormattingMethod method = FormattingMethod.Unknown)
+		public static Formatter CreateMeta(Stream stream, FormattingMethod method = FormattingMethod.Unknown)
 		{
 			if (method == FormattingMethod.Unknown)
 			{
