@@ -21,10 +21,7 @@ namespace Duality
 		/// <summary>
 		/// A Resource files extension.
 		/// </summary>
-		public static string FileExt
-		{ 
-			get { return ".res"; }
-		}
+		public const string FileExt = ".res";
 
 		private	static	List<Resource>	finalizeSched	= new List<Resource>();
 		
@@ -106,7 +103,7 @@ namespace Duality
 		public void Save(Stream str)
 		{
 			this.OnSaving();
-			using (FormatterBase formatter = DualityApp.RequestSerializer(str))
+			using (var formatter = FormatterBase.Create(str))
 			{
 				formatter.AddFieldBlocker(NonSerializedResourceBlocker);
 				formatter.WriteObject(this);
@@ -230,7 +227,7 @@ namespace Duality
 			try
 			{
 				Resource res;
-				using (FormatterBase formatter = DualityApp.RequestSerializer(str))
+				using (var formatter = FormatterBase.Create(str))
 				{
 					res = formatter.ReadObject() as Resource;
 				}

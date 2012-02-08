@@ -23,10 +23,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// An AudioData resources file extension.
 		/// </summary>
-		public new static string FileExt
-		{ 
-			get { return ".AudioData" + Resource.FileExt; }
-		}
+		public new const string FileExt = ".AudioData" + Resource.FileExt;
 		
 		/// <summary>
 		/// (Virtual) base path for Duality's embedded default AudioData.

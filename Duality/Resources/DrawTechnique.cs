@@ -24,10 +24,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// A DrawTechnique resources file extension.
 		/// </summary>
-		public new static string FileExt
-		{ 
-			get { return ".DrawTechnique" + Resource.FileExt; }
-		}
+		public new const string FileExt = ".DrawTechnique" + Resource.FileExt;
 		
 		/// <summary>
 		/// (Virtual) base path for Duality's embedded default DrawTechniques.

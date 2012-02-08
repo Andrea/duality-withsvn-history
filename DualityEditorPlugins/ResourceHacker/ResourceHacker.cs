@@ -195,7 +195,6 @@ namespace ResourceHacker
 		}
 
 		private	string				filePath	= null;
-		private	BinaryMetaFormatter	formatter	= new BinaryMetaFormatter();
 		private	TreeModel			dataModel	= new TreeModel();
 		private	List<DataTreeNode>	rootData	= new List<DataTreeNode>();
 
@@ -233,24 +232,24 @@ namespace ResourceHacker
 			this.filePath = filePath;
 			using (FileStream fileStream = File.OpenRead(this.filePath))
 			{
-				this.formatter.ReadTarget = new BinaryReader(fileStream);
-				this.formatter.WriteTarget = null;
-
-				DataNode dataNode;
-				try
+				using (var formatter = FormatterBase.CreateMeta(fileStream))
 				{
-					this.treeView.BeginUpdate();
-					while ((dataNode = this.formatter.ReadObject() as DataNode) != null)
+					DataNode dataNode;
+					try
 					{
-						DataTreeNode data = this.AddData(dataNode);
-						this.rootData.Add(data);
+						this.treeView.BeginUpdate();
+						while ((dataNode = formatter.ReadObject() as DataNode) != null)
+						{
+							DataTreeNode data = this.AddData(dataNode);
+							this.rootData.Add(data);
+						}
 					}
-				}
-				catch (EndOfStreamException) {}
-				finally
-				{
-					foreach (DataTreeNode n in this.rootData) this.dataModel.Nodes.Add(n);
-					this.treeView.EndUpdate(); 
+					catch (EndOfStreamException) {}
+					finally
+					{
+						foreach (DataTreeNode n in this.rootData) this.dataModel.Nodes.Add(n);
+						this.treeView.EndUpdate(); 
+					}
 				}
 			}
 		}
@@ -260,11 +259,11 @@ namespace ResourceHacker
 
 			using (FileStream fileStream = File.Open(this.filePath, FileMode.Create, FileAccess.Write))
 			{
-				this.formatter.ReadTarget = null;
-				this.formatter.WriteTarget = new BinaryWriter(fileStream);
-
-				foreach (DataTreeNode dataNode in this.dataModel.Nodes)
-					this.formatter.WriteObject(dataNode.Data);
+				using (var formatter = FormatterBase.CreateMeta(fileStream))
+				{
+					foreach (DataTreeNode dataNode in this.dataModel.Nodes)
+						formatter.WriteObject(dataNode.Data);
+				}
 			}
 
 			// Assure reloading the modified resource
@@ -316,6 +315,14 @@ namespace ResourceHacker
 					if (n.Data is TypeDataLayoutNode) index--;
 					if (index >= 0) n.FieldInfo = structLayout.Fields[index];
 					index++;
+				}
+			}
+			else
+			{
+				foreach (DataTreeNode n in updateNode.Nodes)
+				{
+					if (!string.IsNullOrEmpty(n.Data.Name))
+						n.Text = n.Data.Name;
 				}
 			}
 

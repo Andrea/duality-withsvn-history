@@ -7,7 +7,6 @@ using System.IO;
 
 using OpenTK;
 using OpenTK.Input;
-using OpenTK.Graphics.OpenGL;
 using OpenTK.Graphics;
 
 using DW.RtfWriter;
@@ -490,7 +489,7 @@ namespace Duality
 				{
 					using (FileStream str = File.OpenRead(path))
 					{
-						using (FormatterBase formatter = RequestSerializer(str))
+						using (var formatter = FormatterBase.Create(str))
 						{
 							appData = formatter.ReadObject() as DualityAppData ?? new DualityAppData();
 						}
@@ -517,7 +516,7 @@ namespace Duality
 				{
 					using (FileStream str = File.OpenRead(path))
 					{
-						using (FormatterBase formatter = RequestSerializer(str))
+						using (var formatter = FormatterBase.Create(str))
 						{
 							UserData = formatter.ReadObject() as DualityUserData ?? new DualityUserData();
 						}
@@ -543,7 +542,7 @@ namespace Duality
 				{
 					using (FileStream str = File.OpenRead(path))
 					{
-						using (FormatterBase formatter = RequestSerializer(str))
+						using (var formatter = FormatterBase.Create(str))
 						{
 							metaData = formatter.ReadObject() as DualityMetaData ?? new DualityMetaData();
 						}
@@ -565,7 +564,7 @@ namespace Duality
 			string path = AppDataPath;
 			using (FileStream str = File.Open(path, FileMode.Create))
 			{
-				using (FormatterBase formatter = RequestSerializer(str))
+				using (var formatter = FormatterBase.Create(str, FormattingMethod.Binary))
 				{
 					formatter.WriteObject(appData);
 				}
@@ -582,7 +581,7 @@ namespace Duality
 
 			using (FileStream str = File.Open(path, FileMode.Create))
 			{
-				using (FormatterBase formatter = RequestSerializer(str))
+				using (var formatter = FormatterBase.Create(str, FormattingMethod.Binary))
 				{
 					formatter.WriteObject(userData);
 				}
@@ -598,7 +597,7 @@ namespace Duality
 
 			using (FileStream str = File.Open(path, FileMode.Create))
 			{
-				using (FormatterBase formatter = RequestSerializer(str))
+				using (var formatter = FormatterBase.Create(str, FormattingMethod.Binary))
 				{
 					formatter.WriteObject(metaData);
 				}
@@ -699,16 +698,6 @@ namespace Duality
 				}
 			}
 			return true;
-		}
-
-		/// <summary>
-		/// Requests a <see cref="Duality.Serialization.FormatterBase">serializer</see> for the specified stream.
-		/// </summary>
-		/// <param name="stream">The stream which is used for de/serialization</param>
-		/// <returns>A binary serializer to use for serialization</returns>
-		public static FormatterBase RequestSerializer(Stream stream)
-		{
-			return new BinaryFormatter(stream);
 		}
 
 		/// <summary>

@@ -50,6 +50,26 @@ namespace Duality.Serialization
 		}
 
 		/// <summary>
+		/// Operations, the serializer is able to perform.
+		/// </summary>
+		protected enum Operation
+		{
+			/// <summary>
+			/// No operation.
+			/// </summary>
+			None,
+
+			/// <summary>
+			/// Read a dataset / object
+			/// </summary>
+			Read,
+			/// <summary>
+			/// Write a dataset / object
+			/// </summary>
+			Write
+		}
+
+		/// <summary>
 		/// Binary serialization header id. 
 		/// </summary>
 		protected	const	string	HeaderId	= "BinaryFormatterHeader";
@@ -779,7 +799,7 @@ namespace Duality.Serialization
 		/// </summary>
 		protected void ClearStreamSpecificData()
 		{
-			this.ClearObjectIds();
+			this.idManager.Clear();
 			this.typeDataLayout.Clear();
 			this.typeDataLayoutMap.Clear();
 			this.offsetStack.Clear();

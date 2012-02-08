@@ -26,10 +26,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// A Pixmap resources file extension.
 		/// </summary>
-		public new static string FileExt
-		{ 
-			get { return ".Pixmap" + Resource.FileExt; }
-		}
+		public new const string FileExt = ".Pixmap" + Resource.FileExt;
 
 		/// <summary>
 		/// Represents an unknown Pixmap version.

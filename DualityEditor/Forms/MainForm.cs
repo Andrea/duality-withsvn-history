@@ -199,56 +199,6 @@ namespace DualityEditor.Forms
 			inputFilter.MouseMove += this.inputFilter_MouseMove;
 			inputFilter.KeyDown += this.inputFilter_KeyDown;
 			Application.AddMessageFilter(inputFilter);
-			
-			//  Debug
-			using (var fileStream = File.Open(Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "test.xml"), FileMode.Create))
-			{
-				using (var xmlFormatter = new Duality.Serialization.XmlFormatter(fileStream))
-				{
-					xmlFormatter.AddSurrogate(new Duality.Serialization.Surrogates.BitmapSurrogate());
-					xmlFormatter.AddSurrogate(new Duality.Serialization.Surrogates.DictionarySurrogate());
-
-					xmlFormatter.WriteObject(null);
-					xmlFormatter.WriteObject(null);
-					xmlFormatter.WriteObject(new object[] { true, 100, "blub" });
-					xmlFormatter.WriteObject(42);
-					xmlFormatter.WriteObject("hello");
-					xmlFormatter.WriteObject("blub <tag> test </tag> 123");
-					xmlFormatter.WriteObject(DualityApp.ExecutionContext.Game);
-					xmlFormatter.WriteObject(null);
-					xmlFormatter.WriteObject(new byte[] { 0, 1, 2, 4, 8, 16, 32, 64, 128, 255 });
-					xmlFormatter.WriteObject(new int[] { 0, 1, 2, 4, 8, 16, 32, 64, 128, 255 });
-					xmlFormatter.WriteObject(new bool[] { true, false, true, false });
-					xmlFormatter.WriteObject(DualityApp.UserData);
-					xmlFormatter.WriteObject(DualityApp.UserData);
-					xmlFormatter.WriteObject(DualityApp.AppData);
-					//xmlFormatter.WriteObject(Pixmap.DualityLogo256.Res);
-
-					var dictTemp = new Dictionary<string,int>();
-					dictTemp["abc"] = 1337;
-					dictTemp["def"] = 555;
-					dictTemp["hij"] = -1;
-					xmlFormatter.WriteObject(dictTemp);
-				}
-				//fileStream.Flush();
-				//fileStream.Seek(0, SeekOrigin.Begin);
-			}
-			using (var fileStream = File.OpenRead(Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "test.xml")))
-			{
-				using (var xmlFormatter = new Duality.Serialization.XmlFormatter(fileStream))
-				{
-					xmlFormatter.AddSurrogate(new Duality.Serialization.Surrogates.BitmapSurrogate());
-					xmlFormatter.AddSurrogate(new Duality.Serialization.Surrogates.DictionarySurrogate());
-
-					List<object> objRead = new List<object>();
-					try
-					{
-						while (true) objRead.Add(xmlFormatter.ReadObject());
-					}
-					catch (EndOfStreamException) {}
-				}
-			}
-			Application.Exit();
 		}
 		private void ApplyDockPanelSkin()
 		{

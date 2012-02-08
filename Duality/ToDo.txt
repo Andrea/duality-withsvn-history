@@ -7,12 +7,12 @@
 	-->	??? Editor: Xml Serialization and "export game (binary)" functionality
 
 
--->	Experiment with XML serialization!
-	-->	Might be great for development / editor stage
-	-->	Maybe not for game stage
-	-->	Should be possible to switch between binary and xml in the editor (followed by automatic conversion operation)
-		-->	Defaults to XML
-		-->	Export functionality: Export binary package to [folder]
+-->	Implement XML serialization for active editor usage.
+	-->	Create some toolbar button or checkbox that switches between binary and xml.
+	-->	When pressed: Convert whole project.
+	-->	Do some SVN merge experiments:
+		-->	Different properties of a single Resource, Prefab or Scene changed
+		-->	Different objects added to / removed from Scene.
 
 -->	Implement "Create Poly" action
 	-->	Prevent non-convex polys

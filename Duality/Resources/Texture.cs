@@ -28,10 +28,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// A Texture resources file extension.
 		/// </summary>
-		public new static string FileExt
-		{ 
-			get { return ".Texture" + Resource.FileExt; }
-		}
+		public new const string FileExt = ".Texture" + Resource.FileExt;
 		
 		/// <summary>
 		/// (Virtual) base path for Duality's embedded default Textures.

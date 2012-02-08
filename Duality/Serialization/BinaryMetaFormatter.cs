@@ -203,10 +203,10 @@ namespace Duality.Serialization
 			if (dataType.IsPrimitiveType())				result = new PrimitiveNode(dataType, this.ReadPrimitive(dataType));
 			else if (dataType == DataType.String)		result = new StringNode(this.ReadString());
 			else if (dataType == DataType.Enum)			result = this.ReadEnum();
-			else if (dataType == DataType.Struct)		result = this.ReadStruct();
+			else if (dataType == DataType.Struct)		result = this.ReadStruct(false);
 			else if (dataType == DataType.ObjectRef)	result = this.ReadObjectRef();
 			else if (dataType == DataType.Array)		result = this.ReadArray();
-			else if (dataType == DataType.Class)		result = this.ReadStruct();
+			else if (dataType == DataType.Class)		result = this.ReadStruct(true);
 			else if (dataType == DataType.Delegate)		result = this.ReadDelegate();
 			else if (dataType.IsMemberInfoType())		result = this.ReadMemberInfo(dataType);
 
@@ -225,7 +225,7 @@ namespace Duality.Serialization
 			result = new MemberInfoNode(dataType, typeString, objId);
 			
 			// Prepare object reference
-			this.InjectObjectId(result, objId);
+			this.idManager.Inject(result, objId);
 
 			return result;
 		}
@@ -244,7 +244,7 @@ namespace Duality.Serialization
 			ArrayNode result = new ArrayNode(arrTypeString, objId, arrRank, arrLength);
 			
 			// Prepare object reference
-			this.InjectObjectId(result, objId);
+			this.idManager.Inject(result, objId);
 
 			// Store primitive data block
 			bool nonPrimitive = false;
@@ -289,7 +289,7 @@ namespace Duality.Serialization
 		/// Reads a <see cref="Duality.Serialization.MetaFormat.StructNode"/>, including possible child nodes.
 		/// </summary>
 		/// <param name="node"></param>
-		protected StructNode ReadStruct()
+		protected StructNode ReadStruct(bool classType)
 		{
 			// Read struct type
 			string	objTypeString	= this.reader.ReadString();
@@ -297,7 +297,7 @@ namespace Duality.Serialization
 			bool	custom			= this.reader.ReadBoolean();
 			bool	surrogate		= this.reader.ReadBoolean();
 
-			StructNode result = new StructNode(objTypeString, objId, custom, surrogate);
+			StructNode result = new StructNode(classType, objTypeString, objId, custom, surrogate);
 			
 			// Read surrogate constructor data
 			if (surrogate)
@@ -305,7 +305,7 @@ namespace Duality.Serialization
 				custom = true;
 
 				// Set fake object reference for surrogate constructor: No self-references allowed here.
-				this.InjectObjectId(null, objId);
+				this.idManager.Inject(null, objId);
 
 				CustomSerialIO customIO = new CustomSerialIO();
 				customIO.Deserialize(this);
@@ -324,7 +324,7 @@ namespace Duality.Serialization
 			}
 
 			// Prepare object reference
-			this.InjectObjectId(result, objId);
+			this.idManager.Inject(result, objId);
 
 			if (custom)
 			{
@@ -376,7 +376,7 @@ namespace Duality.Serialization
 			DelegateNode result = new DelegateNode(delegateTypeString, objId, method, target, null);
 
 			// Prepare object reference
-			this.InjectObjectId(result, objId);
+			this.idManager.Inject(result, objId);
 
 			// Load & fix the target object
 			target = this.ReadObject() as DataNode;

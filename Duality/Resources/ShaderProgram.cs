@@ -23,10 +23,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// A ShaderProgram resources file extension.
 		/// </summary>
-		public new static string FileExt
-		{ 
-			get { return ".ShaderProgram" + Resource.FileExt; }
-		}
+		public new const string FileExt = ".ShaderProgram" + Resource.FileExt;
 		
 		/// <summary>
 		/// (Virtual) base path for Duality's embedded default ShaderPrograms.

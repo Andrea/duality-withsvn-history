@@ -16,11 +16,7 @@ namespace Duality.Serialization
 	public class BinaryFormatter : BinaryFormatterBase
 	{
 		public BinaryFormatter() : this(null) {}
-		public BinaryFormatter(Stream stream) : base(stream)
-		{
-			this.AddSurrogate(new BitmapSurrogate());
-			this.AddSurrogate(new DictionarySurrogate());
-		}
+		public BinaryFormatter(Stream stream) : base(stream) {}
 
 		protected override void WriteObjectBody(DataType dataType, object obj, SerializeType objSerializeType, uint objId)
 		{
@@ -224,7 +220,7 @@ namespace Duality.Serialization
 			Array arrObj = arrType != null ? Array.CreateInstance(arrType.GetElementType(), arrLength) : null;
 			
 			// Prepare object reference
-			this.InjectObjectId(arrObj, objId);
+			this.idManager.Inject(arrObj, objId);
 
 			if		(arrObj is bool[])		this.ReadArrayData(arrObj as bool[]);
 			else if (arrObj is byte[])		this.ReadArrayData(arrObj as byte[]);
@@ -281,7 +277,7 @@ namespace Duality.Serialization
 					custom = true;
 
 					// Set fake object reference for surrogate constructor: No self-references allowed here.
-					this.InjectObjectId(null, objId);
+					this.idManager.Inject(null, objId);
 
 					CustomSerialIO customIO = new CustomSerialIO();
 					customIO.Deserialize(this);
@@ -293,7 +289,7 @@ namespace Duality.Serialization
 			}
 
 			// Prepare object reference
-			this.InjectObjectId(obj, objId);
+			this.idManager.Inject(obj, objId);
 
 			// Read custom object data
 			if (custom)
@@ -396,7 +392,7 @@ namespace Duality.Serialization
 			object obj;
 			uint objId = this.reader.ReadUInt32();
 
-			if (!this.LookupObjectId(objId, out obj)) throw new ApplicationException(string.Format("Can't resolve object reference '{0}'.", objId));
+			if (!this.idManager.Lookup(objId, out obj)) throw new ApplicationException(string.Format("Can't resolve object reference '{0}'.", objId));
 
 			return obj;
 		}
@@ -536,7 +532,7 @@ namespace Duality.Serialization
 			}
 			
 			// Prepare object reference
-			this.InjectObjectId(result, objId);
+			this.idManager.Inject(result, objId);
 
 			return result;
 		}
@@ -558,7 +554,7 @@ namespace Duality.Serialization
 			Delegate	del		= delType != null ? Delegate.CreateDelegate(delType, target, method) : null;
 
 			// Prepare object reference
-			this.InjectObjectId(del, objId);
+			this.idManager.Inject(del, objId);
 
 			// Read the target object now and replace the dummy
 			target = this.ReadObject();

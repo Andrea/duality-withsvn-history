@@ -16,6 +16,7 @@ namespace Duality.Serialization.MetaFormat
 		protected	DataType		dataType;
 		protected	DataNode		parent;
 		protected	List<DataNode>	subNodes;
+		protected	string			name;
 
 		/// <summary>
 		/// [GET] Enumerates this nodes child nodes.
@@ -40,11 +41,19 @@ namespace Duality.Serialization.MetaFormat
 			}
 		}
 		/// <summary>
-		/// The <see cref="Duality.Serialization.DataType"/> that is associated with this data node.
+		/// [GET] The <see cref="Duality.Serialization.DataType"/> that is associated with this data node.
 		/// </summary>
 		public DataType NodeType
 		{
 			get { return this.dataType; }
+		}
+		/// <summary>
+		/// [GET] The node's name.
+		/// </summary>
+		public string Name
+		{
+			get { return this.name; }
+			internal set { this.name = value; }
 		}
 
 		protected DataNode(DataType dataType)
@@ -331,7 +340,7 @@ namespace Duality.Serialization.MetaFormat
 			get { return this.surrogateSerialization; }
 		}
 
-		public StructNode(string typeString, uint objId, bool customSerialization, bool surrogateSerialization) : base(DataType.Struct, typeString, objId)
+		public StructNode(bool isClass, string typeString, uint objId, bool customSerialization, bool surrogateSerialization) : base(isClass ? DataType.Class : DataType.Struct, typeString, objId)
 		{
 			this.customSerialization = customSerialization;
 			this.surrogateSerialization = surrogateSerialization;

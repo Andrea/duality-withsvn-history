@@ -25,10 +25,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// A Material resources file extension.
 		/// </summary>
-		public new static string FileExt
-		{ 
-			get { return ".Material" + Resource.FileExt; }
-		}
+		public new const string FileExt = ".Material" + Resource.FileExt;
 		
 		/// <summary>
 		/// (Virtual) base path for Duality's embedded default Materials.

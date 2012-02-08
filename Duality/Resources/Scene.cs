@@ -25,10 +25,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// A Scene resources file extension.
 		/// </summary>
-		public new static string FileExt
-		{ 
-			get { return ".Scene" + Resource.FileExt; }
-		}
+		public new const string FileExt = ".Scene" + Resource.FileExt;
 
 		private	static	World				physicsWorld	= new World(Vector2.Zero);
 		private	static	ContentRef<Scene>	current			= ContentRef<Scene>.Null;

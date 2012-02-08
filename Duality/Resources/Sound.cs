@@ -22,10 +22,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// A Sound resources file extension.
 		/// </summary>
-		public new static string FileExt
-		{ 
-			get { return ".Sound" + Resource.FileExt; }
-		}
+		public new const string FileExt = ".Sound" + Resource.FileExt;
 		
 		/// <summary>
 		/// (Virtual) base path for Duality's embedded default Sounds.

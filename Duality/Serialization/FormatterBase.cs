@@ -8,6 +8,26 @@ using System.Reflection;
 namespace Duality.Serialization
 {
 	/// <summary>
+	/// Represents a set of data formatting methods.
+	/// </summary>
+	public enum FormattingMethod
+	{
+		/// <summary>
+		/// An unknown formatting method
+		/// </summary>
+		Unknown,
+
+		/// <summary>
+		/// Text-based XML formatting
+		/// </summary>
+		Xml,
+		/// <summary>
+		/// Binary formatting
+		/// </summary>
+		Binary
+	}
+
+	/// <summary>
 	/// Base class for Dualitys serializers.
 	/// </summary>
 	public abstract class FormatterBase : IDisposable
@@ -125,26 +145,6 @@ namespace Duality.Serialization
 
 
 		/// <summary>
-		/// Operations, the serializer is able to perform.
-		/// </summary>
-		protected enum Operation
-		{
-			/// <summary>
-			/// No operation.
-			/// </summary>
-			None,
-
-			/// <summary>
-			/// Read a dataset / object
-			/// </summary>
-			Read,
-			/// <summary>
-			/// Write a dataset / object
-			/// </summary>
-			Write
-		}
-
-		/// <summary>
 		/// The de/serialization <see cref="Duality.Log"/>.
 		/// </summary>
 		/// <summary>
@@ -159,12 +159,13 @@ namespace Duality.Serialization
 		/// is used instead.
 		/// </summary>
 		protected	List<ISurrogate>			surrogates		= new List<ISurrogate>();
+		/// <summary>
+		/// Manages object IDs during de/serialization.
+		/// </summary>
+		protected	ObjectIdManager				idManager		= new ObjectIdManager();
 
-		private	bool		disposed		= false;
-		private	Log			log				= Log.Core;
-		private	uint		idCounter		= 0;
-		private	Dictionary<object,uint>	objRefIdMap	= new Dictionary<object,uint>();
-		private	Dictionary<uint,object>	idObjRefMap	= new Dictionary<uint,object>();
+		private	bool	disposed	= false;
+		private	Log		log			= Log.Core;
 
 
 		/// <summary>
@@ -202,6 +203,11 @@ namespace Duality.Serialization
 		}
 
 
+		protected FormatterBase()
+		{
+			this.AddSurrogate(new Surrogates.BitmapSurrogate());
+			this.AddSurrogate(new Surrogates.DictionarySurrogate());
+		}
 		~FormatterBase()
 		{
 			this.Dispose(false);
@@ -251,7 +257,7 @@ namespace Duality.Serialization
 			if (dataType == DataType.Array || dataType == DataType.Class || dataType == DataType.Delegate || dataType.IsMemberInfoType())
 			{
 				bool newId;
-				objId = this.RequestObjectId(obj, out newId);
+				objId = this.idManager.Request(obj, out newId);
 
 				// If its not a new id, write a reference
 				if (!newId) dataType = DataType.ObjectRef;
@@ -339,61 +345,6 @@ namespace Duality.Serialization
 			return this.surrogates.FirstOrDefault(s => s.MatchesType(t));
 		}
 
-		/// <summary>
-		/// Clears all object id mappings.
-		/// </summary>
-		protected void ClearObjectIds()
-		{
-			this.objRefIdMap.Clear();
-			this.idObjRefMap.Clear();
-			this.idCounter = 0;
-		}
-		/// <summary>
-		/// Returns the id that is assigned to the specified object. Assigns one, if
-		/// there is none yet.
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <param name="isNewId"></param>
-		/// <returns></returns>
-		protected uint RequestObjectId(object obj, out bool isNewId)
-		{
-			uint id;
-			if (this.objRefIdMap.TryGetValue(obj, out id))
-			{
-				isNewId = false;
-				return id;
-			}
-
-			id = ++idCounter;
-			this.objRefIdMap[obj] = id;
-			this.idObjRefMap[id] = obj;
-
-			isNewId = true;
-			return id;
-		}
-		/// <summary>
-		/// Assigns an id to a specific object.
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <param name="id">The id to assign. Zero ids are rejected.</param>
-		protected void InjectObjectId(object obj, uint id)
-		{
-			if (id == 0) return;
-
-			if (obj != null) this.objRefIdMap[obj] = id;
-			this.idObjRefMap[id] = obj;
-		}
-		/// <summary>
-		/// Tries to lookup an object based on its id.
-		/// </summary>
-		/// <param name="id"></param>
-		/// <param name="obj"></param>
-		/// <returns></returns>
-		protected bool LookupObjectId(uint id, out object obj)
-		{
-			return this.idObjRefMap.TryGetValue(id, out obj);
-		}
-
 
 		/// <summary>
 		/// Logs an error that occured during <see cref="Duality.Serialization.ISerializable">custom serialization</see>.
@@ -431,6 +382,76 @@ namespace Duality.Serialization
 		protected void LogCantResolveTypeError(uint objId, string typeString)
 		{
 			this.log.WriteError("Can't resolve Type '{0}' in object Id {1}. Type not found.", typeString, objId);
+		}
+
+
+		private static FormattingMethod defaultMethod = FormattingMethod.Binary;
+		/// <summary>
+		/// [GET / SET] The default formatting method to use, if no other is specified.
+		/// </summary>
+		public static FormattingMethod DefaultMethod
+		{
+			get { return defaultMethod; }
+			set { defaultMethod = value; }
+		}
+
+		/// <summary>
+		/// Creates a new Formatter using the specified stream for I/O.
+		/// </summary>
+		/// <param name="stream">The stream to use.</param>
+		/// <param name="method">
+		/// The formatting method to prefer. If <see cref="FormattingMethod.Unknown"/> is specified, if the stream
+		/// is read- and seekable, auto-detection is used. Otherwise, the <see cref="DefaultMethod">default formatting method</see> is used.
+		/// </param>
+		/// <returns>A newly created Formatter meeting the specified criteria.</returns>
+		public static FormatterBase Create(Stream stream, FormattingMethod method = FormattingMethod.Unknown)
+		{
+			if (method == FormattingMethod.Unknown)
+			{
+				if (stream.CanRead && stream.CanSeek)
+				{
+					if (XmlFormatterBase.IsXmlStream(stream))
+						method = FormattingMethod.Xml;
+					else
+						method = FormattingMethod.Binary;
+				}
+				else
+					method = defaultMethod;
+			}
+
+			if (method == FormattingMethod.Xml)
+				return new XmlFormatter(stream);
+			else
+				return new BinaryFormatter(stream);
+		}
+		/// <summary>
+		/// Creates a new MetaFormat Formatter using the specified stream for I/O.
+		/// </summary>
+		/// <param name="stream">The stream to use.</param>
+		/// <param name="method">
+		/// The formatting method to prefer. If <see cref="FormattingMethod.Unknown"/> is specified, if the stream
+		/// is read- and seekable, auto-detection is used. Otherwise, the <see cref="DefaultMethod">default formatting method</see> is used.
+		/// </param>
+		/// <returns>A newly created MetaFormat Formatter meeting the specified criteria.</returns>
+		public static FormatterBase CreateMeta(Stream stream, FormattingMethod method = FormattingMethod.Unknown)
+		{
+			if (method == FormattingMethod.Unknown)
+			{
+				if (stream.CanRead && stream.CanSeek)
+				{
+					if (XmlFormatterBase.IsXmlStream(stream))
+						method = FormattingMethod.Xml;
+					else
+						method = FormattingMethod.Binary;
+				}
+				else
+					method = defaultMethod;
+			}
+
+			if (method == FormattingMethod.Xml)
+				return new XmlMetaFormatter(stream);
+			else
+				return new BinaryMetaFormatter(stream);
 		}
 	}
 }
