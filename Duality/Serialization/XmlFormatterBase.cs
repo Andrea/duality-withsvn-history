@@ -280,7 +280,7 @@ namespace Duality.Serialization
 		protected void ReadUntilElementEnd(int depth)
 		{
 			if (depth == -1) return;
-			if (this.reader.IsEmptyElement) return;
+			if (this.reader.IsEmptyElement && this.reader.Depth == depth) return;
 			do
 			{
 				if (this.reader.NodeType == XmlNodeType.EndElement && this.reader.Depth == depth) return;
@@ -379,11 +379,11 @@ namespace Duality.Serialization
 		/// </summary>
 		/// <param name="stream"></param>
 		/// <returns></returns>
-		[System.Diagnostics.DebuggerStepThrough()]
 		public static bool IsXmlStream(Stream stream)
 		{
 			if (!stream.CanRead) throw new InvalidOperationException("The specified stream is not readable.");
 			if (!stream.CanSeek) throw new InvalidOperationException("The specified stream is not seekable. XML check aborted to maintain stream state.");
+			if (stream.Length == 0) throw new InvalidOperationException("The specified stream is not empty.");
 			long oldPos = stream.Position;
 
 			bool isXml = true;

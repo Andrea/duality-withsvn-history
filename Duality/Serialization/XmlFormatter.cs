@@ -347,9 +347,9 @@ namespace Duality.Serialization
 						{
 							if (field == null)
 								this.SerializationLog.WriteWarning("Field '{0}' not found. Discarding value '{1}'", fieldName, fieldValue);
-							else if (field.FieldType != fieldType)
+							else if (!field.FieldType.IsAssignableFrom(fieldType))
 							{
-								this.SerializationLog.WriteWarning("Data layout Type '{0}' of field '{1}' does not match reflected Type '{2}'. Trying to convert...'", fieldType.GetTypeId(), fieldName, Log.Type(field.FieldType));
+								this.SerializationLog.WriteWarning("Actual Type '{0}' of object value in field '{1}' does not match reflected FieldType '{2}'. Trying to convert...'", fieldType.GetTypeId(), fieldName, Log.Type(field.FieldType));
 								this.SerializationLog.PushIndent();
 								object castVal;
 								try

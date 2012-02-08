@@ -385,7 +385,7 @@ namespace Duality.Serialization
 		}
 
 
-		private static FormattingMethod defaultMethod = FormattingMethod.Binary;
+		private static FormattingMethod defaultMethod = FormattingMethod.Xml;
 		/// <summary>
 		/// [GET / SET] The default formatting method to use, if no other is specified.
 		/// </summary>
@@ -408,7 +408,7 @@ namespace Duality.Serialization
 		{
 			if (method == FormattingMethod.Unknown)
 			{
-				if (stream.CanRead && stream.CanSeek)
+				if (stream.CanRead && stream.CanSeek && stream.Length > 0)
 				{
 					if (XmlFormatterBase.IsXmlStream(stream))
 						method = FormattingMethod.Xml;
@@ -437,7 +437,7 @@ namespace Duality.Serialization
 		{
 			if (method == FormattingMethod.Unknown)
 			{
-				if (stream.CanRead && stream.CanSeek)
+				if (stream.CanRead && stream.CanSeek && stream.Length > 0)
 				{
 					if (XmlFormatterBase.IsXmlStream(stream))
 						method = FormattingMethod.Xml;

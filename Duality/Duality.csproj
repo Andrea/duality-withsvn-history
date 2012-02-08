@@ -153,7 +153,7 @@
     <Compile Include="Serialization\IDataWriter.cs" />
     <Compile Include="Serialization\IDataReader.cs" />
     <Compile Include="Serialization\ISurrogate.cs" />
-    <Compile Include="Serialization\FormatterBase.cs" />
+    <Compile Include="Serialization\Formatter.cs" />
     <Compile Include="Serialization\ObjectIdManager.cs" />
     <Compile Include="Serialization\XmlMetaFormatter.cs" />
     <Compile Include="Serialization\XmlFormatter.cs" />
