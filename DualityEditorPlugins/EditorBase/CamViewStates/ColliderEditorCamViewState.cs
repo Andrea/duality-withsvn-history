@@ -222,7 +222,7 @@ namespace EditorBase.CamViewStates
 			}
 			public override float BoundRadius
 			{
-				get { return this.boundRad; }
+				get { return this.boundRad * this.Collider.GameObj.Transform.Scale.Xy.Length / MathF.Sqrt(2.0f); }
 			}
 
 			public SelPolyShape(Collider.PolyShapeInfo shape) : base(shape)
@@ -257,7 +257,7 @@ namespace EditorBase.CamViewStates
 				}
 			}
 
-			private void UpdatePolyStats()
+			public void UpdatePolyStats()
 			{
 				this.center = Vector2.Zero;
 				for (int i = 0; i < this.poly.Vertices.Length; i++)
@@ -294,7 +294,10 @@ namespace EditorBase.CamViewStates
 
 				Vector2[] scaledVertices = this.poly.Vertices.ToArray();
 				for (int i = 0; i < scaledVertices.Length; i++)
-					Vector2.Multiply(ref scaledVertices[i], ref scaleRatio, out scaledVertices[i]);
+				{
+					scaledVertices[i].X = (scaledVertices[i].X - this.center.X) * scaleRatio.X + this.center.X;
+					scaledVertices[i].Y = (scaledVertices[i].Y - this.center.Y) * scaleRatio.Y + this.center.Y;
+				}
 
 				this.poly.Vertices = scaledVertices;
 				this.UpdatePolyStats();
@@ -313,6 +316,7 @@ namespace EditorBase.CamViewStates
 		}
 
 		private	CursorState		mouseState			= CursorState.Normal;
+		private	int				createPolyIndex		= 0;
 		private	Collider		selectedCollider	= null;
 		private	ToolStrip		toolstrip			= null;
 		private	ToolStripButton	toolCreateCircle	= null;
@@ -463,7 +467,10 @@ namespace EditorBase.CamViewStates
 						Vector2 textSize = font.MeasureText(index.ToString());
 						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, fontClr.WithAlpha(shapeAlpha)));
 						canvas.CurrentState.TransformHandle = textSize * 0.5f;
-						canvas.DrawText(index.ToString(), circlePos.X, circlePos.Y);
+						canvas.DrawText(index.ToString(), 
+							colliderPos.X + circlePos.X, 
+							colliderPos.Y + circlePos.Y,
+							colliderPos.Z - 0.01f);
 						canvas.CurrentState.TransformHandle = Vector2.Zero;
 					}
 					else if (poly != null)
@@ -475,6 +482,7 @@ namespace EditorBase.CamViewStates
 							center += polyVert[i];
 							Vector2.Multiply(ref polyVert[i], ref colliderScale, out polyVert[i]);
 							MathF.TransformCoord(ref polyVert[i].X, ref polyVert[i].Y, c.GameObj.Transform.Angle);
+							polyVert[i] += colliderPos.Xy;
 						}
 						center /= polyVert.Length;
 						Vector2.Multiply(ref center, ref colliderScale, out center);
@@ -488,7 +496,10 @@ namespace EditorBase.CamViewStates
 						Vector2 textSize = font.MeasureText(index.ToString());
 						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, fontClr.WithAlpha(shapeAlpha)));
 						canvas.CurrentState.TransformHandle = textSize * 0.5f;
-						canvas.DrawText(index.ToString(), center.X, center.Y);
+						canvas.DrawText(index.ToString(), 
+							colliderPos.X + center.X, 
+							colliderPos.Y + center.Y,
+							colliderPos.Z - 0.01f);
 						canvas.CurrentState.TransformHandle = Vector2.Zero;
 					}
 					index++;
@@ -520,6 +531,30 @@ namespace EditorBase.CamViewStates
 				new ObjectSelection(this.selectedCollider),
 				ReflectionInfo.Property_Collider_Shapes);
 			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(selShapeArray.Select(s => s.ActualObject)));
+		}
+		protected override void OnCursorSpacePosChanged()
+		{
+			base.OnCursorSpacePosChanged();
+			if (this.mouseState == CursorState.CreatePolygon && this.allObjSel.Any(sel => sel is SelPolyShape))
+			{
+				Point mouseLoc = this.View.LocalGLControl.PointToClient(Cursor.Position);
+				Transform selTransform = this.selectedCollider.GameObj.Transform;
+				Vector3 spaceCoord = this.View.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, selTransform.Pos.Z));
+				Vector2 localPos = selTransform.GetLocalFromWorld(spaceCoord).Xy;
+
+				SelPolyShape selPolyShape = this.allObjSel.OfType<SelPolyShape>().First();
+				Collider.PolyShapeInfo polyShape = selPolyShape.ActualObject as Collider.PolyShapeInfo;
+				List<Vector2> vertices = polyShape.Vertices.ToList();
+
+				vertices[this.createPolyIndex] = localPos;
+
+				polyShape.Vertices = vertices.ToArray();
+				selPolyShape.UpdatePolyStats();
+
+				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
+					new ObjectSelection(this.selectedCollider),
+					ReflectionInfo.Property_Collider_Shapes);
+			}
 		}
 
 		protected void UpdateToolbar()
@@ -660,11 +695,14 @@ namespace EditorBase.CamViewStates
 		private void EnterCursorState(CursorState state)
 		{
 			this.mouseState = state;
+			this.createPolyIndex = 0;
 			this.MouseActionAllowed = false;
 			this.View.LocalGLControl.Cursor = state == CursorState.CreateCircle ? ArrowCreateCircle : ArrowCreatePolygon;
 			this.View.LocalGLControl.MouseDown += this.LocalGLControl_MouseDown;
 			this.UpdateToolbar();
 			this.View.LocalGLControl.Invalidate();
+
+			EditorBasePlugin.Instance.EditorForm.Deselect(this, ObjectSelection.Category.Other);
 		}
 		private void LeaveCursorState()
 		{
@@ -706,7 +744,11 @@ namespace EditorBase.CamViewStates
 				if (e.PrefabApplied)
 					EditorBasePlugin.Instance.EditorForm.Deselect(this, ObjectSelection.Category.Other);
 				else
+				{
+					foreach (SelPolyShape sps in this.allObjSel.OfType<SelPolyShape>())
+						sps.UpdatePolyStats();
 					this.UpdateSelectionStats();
+				}
 			}
 		}
 		private void EditorForm_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -787,10 +829,59 @@ namespace EditorBase.CamViewStates
 			{
 				if (e.Button == MouseButtons.Left)
 				{
-					throw new NotImplementedException();
+					Transform selTransform = this.selectedCollider.GameObj.Transform;
+					Vector3 spaceCoord = this.View.GetSpaceCoord(new Vector3(e.X, e.Y, selTransform.Pos.Z));
+					Vector2 localPos = selTransform.GetLocalFromWorld(spaceCoord).Xy;
+
+					if (!this.allObjSel.Any(sel => sel is SelPolyShape))
+					{
+						Collider.PolyShapeInfo newShape = new Collider.PolyShapeInfo(new Vector2[] { localPos, localPos + Vector2.UnitX, localPos + Vector2.One }, 1.0f);
+						this.selectedCollider.AddShape(newShape);
+						this.SelectObjects(new[] { SelShape.Create(newShape) });
+					}
+					else
+					{
+						SelPolyShape selPolyShape = this.allObjSel.OfType<SelPolyShape>().First();
+						Collider.PolyShapeInfo polyShape = selPolyShape.ActualObject as Collider.PolyShapeInfo;
+						List<Vector2> vertices = polyShape.Vertices.ToList();
+
+						vertices[this.createPolyIndex] = localPos;
+						if (this.createPolyIndex >= vertices.Count - 1)
+							vertices.Add(localPos);
+
+						polyShape.Vertices = vertices.ToArray();
+						selPolyShape.UpdatePolyStats();
+					}
+
+					this.createPolyIndex++;
+					EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
+						new ObjectSelection(this.selectedCollider),
+						ReflectionInfo.Property_Collider_Shapes);
 				}
 				else if (e.Button == MouseButtons.Right)
 				{
+					if (this.allObjSel.Any(sel => sel is SelPolyShape))
+					{
+						SelPolyShape selPolyShape = this.allObjSel.OfType<SelPolyShape>().First();
+						Collider.PolyShapeInfo polyShape = selPolyShape.ActualObject as Collider.PolyShapeInfo;
+						List<Vector2> vertices = polyShape.Vertices.ToList();
+
+						vertices.RemoveAt(this.createPolyIndex);
+						if (vertices.Count < 3 || this.createPolyIndex < 2)
+						{
+							this.DeleteObjects(new SelPolyShape[] { selPolyShape });
+						}
+						else
+						{
+							polyShape.Vertices = vertices.ToArray();
+							selPolyShape.UpdatePolyStats();
+						}
+
+						EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
+							new ObjectSelection(this.selectedCollider),
+							ReflectionInfo.Property_Collider_Shapes);
+					}
+
 					this.LeaveCursorState();
 				}
 			}

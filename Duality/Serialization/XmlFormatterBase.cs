@@ -379,6 +379,7 @@ namespace Duality.Serialization
 		/// </summary>
 		/// <param name="stream"></param>
 		/// <returns></returns>
+		[System.Diagnostics.DebuggerStepThrough()]
 		public static bool IsXmlStream(Stream stream)
 		{
 			if (!stream.CanRead) throw new InvalidOperationException("The specified stream is not readable.");

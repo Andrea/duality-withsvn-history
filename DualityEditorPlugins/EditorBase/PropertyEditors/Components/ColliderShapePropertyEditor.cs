@@ -60,7 +60,9 @@ namespace EditorBase.PropertyEditors
 			}
 			else
 			{
-				PropertyEditor e = base.MemberEditor(info);
+				PropertyEditor e = this.ParentGrid.PropertyEditorProvider.CreateEditor(
+					(info as System.Reflection.PropertyInfo).PropertyType,
+					this, this.ParentGrid);
 				// Force write-back of any array type that might be defined in a shape. The shape might need a write-back (set) to update itsself.
 				if (e is IListPropertyEditor) (e as IListPropertyEditor).ForceWriteBack = true;
 				return e;
