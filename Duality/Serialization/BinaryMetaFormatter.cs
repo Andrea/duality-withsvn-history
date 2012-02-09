@@ -354,6 +354,7 @@ namespace Duality.Serialization
 				{
 					DataNode fieldValue = this.ReadObject() as DataNode;
 					fieldValue.Parent = result;
+					fieldValue.Name = layout.Fields[i].name;
 				}
 			}
 

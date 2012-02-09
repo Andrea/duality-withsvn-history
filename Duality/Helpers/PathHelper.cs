@@ -86,7 +86,7 @@ namespace Duality
 
 			int numBackDir = dirRelToken.Length - dirToken.Length;
 			int sameDirIndex = int.MaxValue;
-			for (int i = 1; i < Math.Min(dirToken.Length, dirRelToken.Length); i++)
+			for (int i = 0; i < Math.Min(dirToken.Length, dirRelToken.Length); i++)
 			{
 				if (dirToken[i] != dirRelToken[i])
 				{

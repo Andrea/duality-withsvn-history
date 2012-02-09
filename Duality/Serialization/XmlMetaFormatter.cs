@@ -144,6 +144,7 @@ namespace Duality.Serialization
 				foreach (DataNode subNode in node.SubNodes)
 				{
 					if (subNode is DummyNode) continue;
+					if (subNode is TypeDataLayoutNode) continue;
 					this.WriteObject(subNode, subNode.Name);
 				}
 			}

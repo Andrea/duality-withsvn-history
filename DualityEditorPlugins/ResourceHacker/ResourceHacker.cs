@@ -25,7 +25,6 @@ namespace ResourceHacker
 		protected class DataTreeNode : Node
 		{
 			protected	DataNode	data;
-			protected	TypeDataLayout.FieldDataInfo	fieldInfo;
 
 			public DataNode Data
 			{
@@ -34,18 +33,6 @@ namespace ResourceHacker
 			public string NodeTypeName
 			{
 				get { return this.data.GetType().GetTypeKeyword(); }
-			}
-			public TypeDataLayout.FieldDataInfo FieldInfo
-			{
-				get { return this.fieldInfo; }
-				set
-				{
-					this.fieldInfo = value;
-					if (!String.IsNullOrEmpty(this.fieldInfo.name))
-						this.Text = this.fieldInfo.name;
-					else
-						this.Text = this.NodeTypeName;
-				}
 			}
 
 			protected DataTreeNode(DataNode data)
@@ -245,6 +232,13 @@ namespace ResourceHacker
 						}
 					}
 					catch (EndOfStreamException) {}
+					catch (Exception e)
+					{
+						Log.Editor.WriteError("Can't load file {0} because an error occured in the process: \n{1}",
+							this.filePath,
+							Log.Exception(e));
+						return;
+					}
 					finally
 					{
 						foreach (DataTreeNode n in this.rootData) this.dataModel.Nodes.Add(n);
@@ -267,8 +261,11 @@ namespace ResourceHacker
 			}
 
 			// Assure reloading the modified resource
-			string dataPath = PathHelper.MakePathRelative(this.filePath, ".");
-			ContentProvider.UnregisterContent(dataPath, true);
+			if (PathHelper.IsPathLocatedIn(this.filePath, "."))
+			{
+				string dataPath = PathHelper.MakePathRelative(this.filePath, ".");
+				ContentProvider.UnregisterContent(dataPath, true);
+			}
 		}
 
 		protected void ClearData()
@@ -299,31 +296,12 @@ namespace ResourceHacker
 		protected void UpdateTypeDataLayout(Node updateNode = null, bool recursive = true)
 		{
 			if (updateNode == null) updateNode = this.dataModel.Root;
-
-			DataTreeNode dataNode = updateNode as DataTreeNode;
-			StructNode structData = null;
-			TypeDataLayoutNode structLayoutData = null;
-			TypeDataLayout structLayout = null;
-			if (dataNode != null) structData = dataNode.Data as StructNode;
-			if (structData != null) this.typeDataLayout.TryGetValue(structData.TypeString, out structLayoutData);
-			if (structLayoutData != null) structLayout = structLayoutData.Layout;
-			if (structLayout != null)
+			foreach (DataTreeNode n in updateNode.Nodes)
 			{
-				int index = 0;
-				foreach (DataTreeNode n in updateNode.Nodes)
-				{
-					if (n.Data is TypeDataLayoutNode) index--;
-					if (index >= 0) n.FieldInfo = structLayout.Fields[index];
-					index++;
-				}
-			}
-			else
-			{
-				foreach (DataTreeNode n in updateNode.Nodes)
-				{
-					if (!string.IsNullOrEmpty(n.Data.Name))
-						n.Text = n.Data.Name;
-				}
+				if (!String.IsNullOrEmpty(n.Data.Name))
+					n.Text = n.Data.Name;
+				else
+					n.Text = n.NodeTypeName;
 			}
 
 			if (recursive)
@@ -350,12 +328,78 @@ namespace ResourceHacker
 
 			return availTypes.Distinct().ToArray();
 		}
-		protected int ReplaceTypeStrings(string oldTypeString, string newTypeString)
+
+		protected void CurrentPerformAction(Action<DataNode> action)
 		{
-			int count = 0;
 			foreach (DataTreeNode dataNode in this.rootData)
-				count += dataNode.Data.ReplaceTypeStrings(oldTypeString, newTypeString);
-			return count;
+				action(dataNode.Data);
+		}
+		protected void FilePerformAction(string filePath, Action<DataNode> action, bool updateContent = true)
+		{
+			List<DataNode> data = new List<DataNode>();
+
+			// Load data
+			using (FileStream fileStream = File.OpenRead(filePath))
+			{
+				using (var formatter = Formatter.CreateMeta(fileStream))
+				{
+					DataNode dataNode;
+					try
+					{
+						while ((dataNode = formatter.ReadObject() as DataNode) != null)
+							data.Add(dataNode);
+					}
+					catch (EndOfStreamException) {}
+					catch (Exception e)
+					{
+						Log.Editor.WriteError("Can't perform batch action on {0} because an error occured in the process: \n{1}",
+							filePath,
+							Log.Exception(e));
+						return;
+					}
+				}
+			}
+
+			// Process data
+			foreach (DataNode dataNode in data)
+				action(dataNode);
+
+			// Save data
+			using (FileStream fileStream = File.Open(filePath, FileMode.Create))
+			{
+				using (var formatter = Formatter.CreateMeta(fileStream))
+				{
+					foreach (DataNode dataNode in data)
+						formatter.WriteObject(dataNode);
+				}
+			}
+
+			// Assure reloading the modified resource
+			if (PathHelper.IsPathLocatedIn(filePath, "."))
+			{
+				string dataPath = PathHelper.MakePathRelative(filePath, ".");
+				ContentProvider.UnregisterContent(dataPath, true);
+			}
+		}
+		protected void BatchPerformAction(string folderPath, Action<DataNode> action, bool updateContent = true)
+		{
+			string[] files = Directory.GetFiles(folderPath);
+			foreach (string file in files)
+			{
+				if (!Resource.IsResourceFile(file)) continue;
+				this.FilePerformAction(file, action, false);
+			}
+
+			string[] dirs = Directory.GetDirectories(folderPath);
+			foreach (string dir in dirs)
+				this.BatchPerformAction(dir, action, false);
+
+			// Assure reloading the modified resources
+			if (updateContent && PathHelper.IsPathLocatedIn(folderPath, "."))
+			{
+				string dataPath = PathHelper.MakePathRelative(folderPath, ".");
+				ContentProvider.UnregisterContentTree(dataPath, true);
+			}
 		}
 
 		private void actionOpen_Click(object sender, EventArgs e)
@@ -413,7 +457,8 @@ namespace ResourceHacker
 			RenameTypeDialog dialog = new RenameTypeDialog(this.GetAvailTypes());
 			if (dialog.ShowDialog(this) == DialogResult.OK)
 			{
-				int replaced = this.ReplaceTypeStrings(dialog.SearchFor, dialog.ReplaceWith);
+				int replaced = 0;
+				this.CurrentPerformAction(n => replaced += n.ReplaceTypeStrings(dialog.SearchFor, dialog.ReplaceWith));
 				MessageBox.Show(
 					string.Format(PluginRes.ResourceHackerRes.MessageBox_RenameType_Text, replaced, dialog.SearchFor, dialog.ReplaceWith), 
 					PluginRes.ResourceHackerRes.MessageBox_RenameType_Title, 
@@ -421,9 +466,26 @@ namespace ResourceHacker
 					MessageBoxIcon.Information);
 			}
 		}
-		private void actionRenameField_Click(object sender, EventArgs e)
+		private void batchActionRenameType_Click(object sender, EventArgs e)
 		{
-
+			FolderBrowserDialog folderDialog = new FolderBrowserDialog();
+			folderDialog.ShowNewFolderButton = false;
+			folderDialog.SelectedPath = Path.GetFullPath(EditorHelper.DataDirectory);
+			folderDialog.Description = "Select a folder to process..";
+			if (folderDialog.ShowDialog(this) == DialogResult.OK)
+			{
+				RenameTypeDialog dialog = new RenameTypeDialog(this.GetAvailTypes());
+				if (dialog.ShowDialog(this) == DialogResult.OK)
+				{
+					int replaced = 0;
+					this.BatchPerformAction(folderDialog.SelectedPath, n => replaced += n.ReplaceTypeStrings(dialog.SearchFor, dialog.ReplaceWith));
+					MessageBox.Show(
+						string.Format(PluginRes.ResourceHackerRes.MessageBox_RenameType_Text, replaced, dialog.SearchFor, dialog.ReplaceWith), 
+						PluginRes.ResourceHackerRes.MessageBox_RenameType_Title, 
+						MessageBoxButtons.OK, 
+						MessageBoxIcon.Information);
+				}
+			}
 		}
 	}
 }

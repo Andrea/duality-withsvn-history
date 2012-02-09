@@ -622,6 +622,21 @@ namespace DualityEditor.Forms
 			this.actionRunSandbox.Enabled	= this.sandboxState != SandboxState.Playing;
 			this.actionStopSandbox.Enabled	= this.sandboxState != SandboxState.Inactive;
 			this.actionPauseSandbox.Enabled	= this.sandboxState == SandboxState.Playing;
+
+			if (Duality.Serialization.Formatter.DefaultMethod == Duality.Serialization.FormattingMethod.Xml)
+			{
+				this.selectFormattingMethod.Image = this.formatXml.Image;
+				this.selectFormattingMethod.ToolTipText = this.formatXml.Text;
+				this.formatXml.Checked = true;
+				this.formatBinary.Checked = false;
+			}
+			else
+			{
+				this.selectFormattingMethod.Image = this.formatBinary.Image;
+				this.selectFormattingMethod.ToolTipText = this.formatBinary.Text;
+				this.formatXml.Checked = false;
+				this.formatBinary.Checked = true;
+			}
 		}
 		
 		private void LoadPlugins()
@@ -1292,6 +1307,25 @@ namespace DualityEditor.Forms
 					e.Handled = true;
 				}
 			}
+		}
+
+		private void formatBinary_Click(object sender, EventArgs e)
+		{
+			if (Duality.Serialization.Formatter.DefaultMethod == Duality.Serialization.FormattingMethod.Binary) return;
+			Duality.Serialization.Formatter.DefaultMethod = Duality.Serialization.FormattingMethod.Binary;
+			this.UpdateToolbar();
+			DualityApp.LoadSaveAll();
+		}
+		private void formatXml_Click(object sender, EventArgs e)
+		{
+			if (Duality.Serialization.Formatter.DefaultMethod == Duality.Serialization.FormattingMethod.Xml) return;
+			Duality.Serialization.Formatter.DefaultMethod = Duality.Serialization.FormattingMethod.Xml;
+			this.UpdateToolbar();
+			DualityApp.LoadSaveAll();
+		}
+		private void selectFormattingMethod_Click(object sender, EventArgs e)
+		{
+			this.selectFormattingMethod.ShowDropDown();
 		}
 	}
 }

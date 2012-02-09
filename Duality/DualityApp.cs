@@ -323,6 +323,8 @@ namespace Duality
 			LoadUserData();
 			LoadMetaData();
 			sound.Init();
+
+			Formatter.InitDefaultMethod();
 			
 			Log.Core.Write("DualityApp initialized");
 			Log.Core.Write("Debug Mode: {0}", System.Diagnostics.Debugger.IsAttached);

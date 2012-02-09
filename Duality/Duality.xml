@@ -3566,6 +3566,26 @@
             </summary>
             <returns>The object that has been read.</returns>
         </member>
+        <member name="T:Duality.Serialization.FormattingMethod">
+            <summary>
+            Represents a set of data formatting methods.
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.FormattingMethod.Unknown">
+            <summary>
+            An unknown formatting method
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.FormattingMethod.Xml">
+            <summary>
+            Text-based XML formatting
+            </summary>
+        </member>
+        <member name="F:Duality.Serialization.FormattingMethod.Binary">
+            <summary>
+            Binary formatting
+            </summary>
+        </member>
         <member name="T:Duality.Resources.Material">
             <summary>
             Materials are standardized <see cref="T:Duality.Resources.BatchInfo">BatchInfos</see>, stored as a Resource. 
@@ -11766,26 +11786,6 @@
         <member name="T:Duality.Components.SoundListener">
             <summary>
             Makes this <see cref="T:Duality.GameObject"/> the 3d sound listener.
-            </summary>
-        </member>
-        <member name="T:Duality.Serialization.FormattingMethod">
-            <summary>
-            Represents a set of data formatting methods.
-            </summary>
-        </member>
-        <member name="F:Duality.Serialization.FormattingMethod.Unknown">
-            <summary>
-            An unknown formatting method
-            </summary>
-        </member>
-        <member name="F:Duality.Serialization.FormattingMethod.Xml">
-            <summary>
-            Text-based XML formatting
-            </summary>
-        </member>
-        <member name="F:Duality.Serialization.FormattingMethod.Binary">
-            <summary>
-            Binary formatting
             </summary>
         </member>
     </members>

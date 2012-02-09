@@ -65,6 +65,9 @@
 			this.actionRunSandbox = new System.Windows.Forms.ToolStripButton();
 			this.actionPauseSandbox = new System.Windows.Forms.ToolStripButton();
 			this.actionStopSandbox = new System.Windows.Forms.ToolStripButton();
+			this.selectFormattingMethod = new System.Windows.Forms.ToolStripSplitButton();
+			this.formatBinary = new System.Windows.Forms.ToolStripMenuItem();
+			this.formatXml = new System.Windows.Forms.ToolStripMenuItem();
 			((System.ComponentModel.ISupportInitialize)(this.pluginWatcher)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.dataDirWatcher)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.sourceDirWatcher)).BeginInit();
@@ -218,7 +221,8 @@
             this.toolStripSeparator3,
             this.actionRunSandbox,
             this.actionPauseSandbox,
-            this.actionStopSandbox});
+            this.actionStopSandbox,
+            this.selectFormattingMethod});
 			this.mainToolStrip.Location = new System.Drawing.Point(0, 24);
 			this.mainToolStrip.Name = "mainToolStrip";
 			this.mainToolStrip.Size = new System.Drawing.Size(916, 25);
@@ -309,6 +313,36 @@
 			this.actionStopSandbox.Text = "Leave Sandbox";
 			this.actionStopSandbox.Click += new System.EventHandler(this.actionStopSandbox_Click);
 			// 
+			// selectFormattingMethod
+			// 
+			this.selectFormattingMethod.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.selectFormattingMethod.AutoToolTip = false;
+			this.selectFormattingMethod.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.formatBinary,
+            this.formatXml});
+			this.selectFormattingMethod.Image = ((System.Drawing.Image)(resources.GetObject("selectFormattingMethod.Image")));
+			this.selectFormattingMethod.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.selectFormattingMethod.Name = "selectFormattingMethod";
+			this.selectFormattingMethod.Size = new System.Drawing.Size(144, 22);
+			this.selectFormattingMethod.Text = "Project Data Format";
+			this.selectFormattingMethod.Click += new System.EventHandler(this.selectFormattingMethod_Click);
+			// 
+			// formatBinary
+			// 
+			this.formatBinary.Image = global::DualityEditor.Properties.Resources.page_gear;
+			this.formatBinary.Name = "formatBinary";
+			this.formatBinary.Size = new System.Drawing.Size(152, 22);
+			this.formatBinary.Text = "Binary";
+			this.formatBinary.Click += new System.EventHandler(this.formatBinary_Click);
+			// 
+			// formatXml
+			// 
+			this.formatXml.Image = global::DualityEditor.Properties.Resources.page_code;
+			this.formatXml.Name = "formatXml";
+			this.formatXml.Size = new System.Drawing.Size(152, 22);
+			this.formatXml.Text = "Xml";
+			this.formatXml.Click += new System.EventHandler(this.formatXml_Click);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -355,6 +389,9 @@
 		private System.Windows.Forms.ToolStripButton actionRunSandbox;
 		private System.Windows.Forms.ToolStripButton actionPauseSandbox;
 		private System.Windows.Forms.ToolStripButton actionStopSandbox;
+		private System.Windows.Forms.ToolStripSplitButton selectFormattingMethod;
+		private System.Windows.Forms.ToolStripMenuItem formatBinary;
+		private System.Windows.Forms.ToolStripMenuItem formatXml;
 	}
 }
 
