@@ -85,7 +85,11 @@ namespace EditorBase.CamViewStates
 		public abstract class SelShape : SelObj
 		{
 			private		Collider.ShapeInfo	shape;
-
+			
+			public override bool HasTransform
+			{
+				get { return this.Collider != null && !this.Collider.Disposed && this.Collider.GameObj.Transform != null; }
+			}
 			public override object ActualObject
 			{
 				get { return this.shape; }
@@ -111,23 +115,17 @@ namespace EditorBase.CamViewStates
 			public static SelShape Create(Collider.ShapeInfo shape)
 			{
 				if (shape is Collider.CircleShapeInfo)
-				{
 					return new SelCircleShape(shape as Collider.CircleShapeInfo);
-				}
+				else if (shape is Collider.PolyShapeInfo)
+					return new SelPolyShape(shape as Collider.PolyShapeInfo);
 				else
-				{
-					throw new NotImplementedException();
-				}
+					return null;
 			}
 		}
 		public class SelCircleShape : SelShape
 		{
 			private	Collider.CircleShapeInfo	circle;
 			
-			public override bool HasTransform
-			{
-				get { return this.Collider != null && !this.Collider.Disposed && this.Collider.GameObj.Transform != null; }
-			}
 			public override Vector3 Pos
 			{
 				get
@@ -180,11 +178,146 @@ namespace EditorBase.CamViewStates
 				}
 			}
 		}
+		public class SelPolyShape : SelShape
+		{
+			private	Collider.PolyShapeInfo	poly;
+			private	Vector2	center;
+			private	float	boundRad;
+			private	float	angle;
+			private	Vector2	scale;
+
+			public override Vector3 Pos
+			{
+				get
+				{
+					return this.Collider.GameObj.Transform.GetWorldFromLocal(new Vector3(this.center));
+				}
+				set
+				{
+					value.Z = this.Collider.GameObj.Transform.Pos.Z;
+					this.MoveCenterTo(this.Collider.GameObj.Transform.GetLocalFromWorld(value).Xy);
+				}
+			}
+			public override Vector3 Scale
+			{
+				get
+				{
+					return new Vector3(this.scale);
+				}
+				set
+				{
+					this.ScaleTo(value.Xy);
+				}
+			}
+			public override float Angle
+			{
+				get
+				{
+					return this.angle;
+				}
+				set
+				{
+					this.RotateTo(value);
+				}
+			}
+			public override float BoundRadius
+			{
+				get { return this.boundRad; }
+			}
+
+			public SelPolyShape(Collider.PolyShapeInfo shape) : base(shape)
+			{
+				this.poly = shape;
+				this.UpdatePolyStats();
+			}
+
+			public override void DrawActionGizmo(Canvas canvas, MouseAction action, Point beginLoc, Point curLoc)
+			{
+				base.DrawActionGizmo(canvas, action, beginLoc, curLoc);
+				if (action == MouseAction.MoveObj)
+				{
+				    canvas.DrawText(string.Format("Center X:{0,7:0.00}", this.center.X), curLoc.X + 30, curLoc.Y + 10);
+				    canvas.DrawText(string.Format("Center Y:{0,7:0.00}", this.center.Y), curLoc.X + 30, curLoc.Y + 18);
+				}
+				else if (action == MouseAction.ScaleObj)
+				{
+					if (MathF.Abs(this.scale.X - this.scale.Y) >= 0.01f)
+					{
+						canvas.DrawText(string.Format("Scale X:{0,7:0.00}", this.scale.X), curLoc.X + 30, curLoc.Y + 10);
+						canvas.DrawText(string.Format("Scale Y:{0,7:0.00}", this.scale.Y), curLoc.X + 30, curLoc.Y + 18);
+					}
+					else
+					{
+						canvas.DrawText(string.Format("Scale:{0,7:0.00}", this.scale.X), curLoc.X + 30, curLoc.Y + 10);
+					}
+				}
+				else if (action == MouseAction.RotateObj)
+				{
+					canvas.DrawText(string.Format("Angle:{0,6:0.0}", MathF.RadToDeg(this.angle)), curLoc.X + 30, curLoc.Y + 10);
+				}
+			}
+
+			private void UpdatePolyStats()
+			{
+				this.center = Vector2.Zero;
+				for (int i = 0; i < this.poly.Vertices.Length; i++)
+					this.center += this.poly.Vertices[i];
+				this.center /= this.poly.Vertices.Length;
+
+				this.scale = Vector2.Zero;
+				for (int i = 0; i < this.poly.Vertices.Length; i++)
+				{
+					this.scale.X = MathF.Max(this.scale.X, MathF.Abs(this.poly.Vertices[i].X - this.center.X));
+					this.scale.Y = MathF.Max(this.scale.Y, MathF.Abs(this.poly.Vertices[i].Y - this.center.Y));
+				}
+
+				this.boundRad = 0.0f;
+				for (int i = 0; i < this.poly.Vertices.Length; i++)
+					this.boundRad = MathF.Max(this.boundRad, (this.poly.Vertices[i] - this.center).Length);
+
+				this.angle = MathF.Angle(this.center.X, this.center.Y, this.poly.Vertices[0].X, this.poly.Vertices[0].Y);
+			}
+			private void MoveCenterTo(Vector2 newPos)
+			{
+				Vector2 mov = newPos - this.center;
+
+				Vector2[] movedVertices = this.poly.Vertices.ToArray();
+				for (int i = 0; i < movedVertices.Length; i++)
+					movedVertices[i] += mov;
+
+				this.poly.Vertices = movedVertices;
+				this.UpdatePolyStats();
+			}
+			private void ScaleTo(Vector2 newScale)
+			{
+				Vector2 scaleRatio = Vector2.Divide(newScale, this.scale);
+
+				Vector2[] scaledVertices = this.poly.Vertices.ToArray();
+				for (int i = 0; i < scaledVertices.Length; i++)
+					Vector2.Multiply(ref scaledVertices[i], ref scaleRatio, out scaledVertices[i]);
+
+				this.poly.Vertices = scaledVertices;
+				this.UpdatePolyStats();
+			}
+			private void RotateTo(float newAngle)
+			{
+				float rot = newAngle - this.angle;
+
+				Vector2[] rotatedVertices = this.poly.Vertices.ToArray();
+				for (int i = 0; i < rotatedVertices.Length; i++)
+					MathF.TransformCoord(ref rotatedVertices[i].X, ref rotatedVertices[i].Y, rot, 1.0f, this.center.X, this.center.Y);
+
+				this.poly.Vertices = rotatedVertices;
+				this.UpdatePolyStats();
+			}
+		}
 
 		private	CursorState		mouseState			= CursorState.Normal;
 		private	Collider		selectedCollider	= null;
 		private	ToolStrip		toolstrip			= null;
 		private	ToolStripButton	toolCreateCircle	= null;
+		private	ToolStripButton	toolCreatePoly		= null;
+		private	Duality.Resources.Font	bigFont		= null;
 
 		public override string StateName
 		{
@@ -217,6 +350,17 @@ namespace EditorBase.CamViewStates
 		{
 			base.OnEnterState();
 
+			// Init Resources
+			if (this.bigFont == null)
+			{
+				this.bigFont = new Duality.Resources.Font();
+				this.bigFont.Family = FontFamily.GenericSansSerif.Name;
+				this.bigFont.Size = 32;
+				this.bigFont.Kerning = true;
+				this.bigFont.GlyphRenderHint = Duality.Resources.Font.RenderHint.AntiAlias;
+				this.bigFont.ReloadData();
+			}
+
 			// Init GUI
 			this.View.SuspendLayout();
 			this.toolstrip = new ToolStrip();
@@ -230,6 +374,11 @@ namespace EditorBase.CamViewStates
 			this.toolCreateCircle.DisplayStyle = ToolStripItemDisplayStyle.Image;
 			this.toolCreateCircle.AutoToolTip = true;
 			this.toolstrip.Items.Add(this.toolCreateCircle);
+
+			this.toolCreatePoly = new ToolStripButton("Create Polygon Shape (P)", EditorBase.PluginRes.EditorBaseRes.IconCmpRectCollider, this.toolCreatePoly_Clicked);
+			this.toolCreatePoly.DisplayStyle = ToolStripItemDisplayStyle.Image;
+			this.toolCreatePoly.AutoToolTip = true;
+			this.toolstrip.Items.Add(this.toolCreatePoly);
 
 			this.View.Controls.Add(this.toolstrip);
 			this.View.Controls.SetChildIndex(this.toolstrip, 0);
@@ -272,6 +421,8 @@ namespace EditorBase.CamViewStates
 		{
 			base.OnCollectStateDrawcalls(canvas);
 			List<Collider> visibleColliders = this.QueryVisibleColliders().ToList();
+			canvas.CurrentState.TextFont = this.bigFont;
+			Duality.Resources.Font font = canvas.CurrentState.TextFont.Res;
 
 			foreach (Collider c in visibleColliders)
 			{
@@ -281,37 +432,66 @@ namespace EditorBase.CamViewStates
 				float avgDensity = (maxDensity + minDensity) * 0.5f;
 				Vector3 colliderPos = c.GameObj.Transform.Pos;
 				Vector2 colliderScale = c.GameObj.Transform.Scale.Xy;
+				int index = 0;
 				foreach (Collider.ShapeInfo s in c.Shapes)
 				{
 					Collider.CircleShapeInfo circle = s as Collider.CircleShapeInfo;
 					Collider.PolyShapeInfo poly = s as Collider.PolyShapeInfo;
 					float shapeAlpha = colliderAlpha * (this.allObjSel.Any(sel => sel.ActualObject == s) ? 1.0f : 0.5f);
 					float densityRelative = MathF.Abs(maxDensity - minDensity) < 0.01f ? 1.0f : s.Density / avgDensity;
+					ColorRgba clr = s.IsSensor ? this.ShapeSensorColor : this.ShapeColor;
+					ColorRgba fontClr = ColorRgba.Mix(clr, this.View.FgColor, 0.5f);
 					if (circle != null)
 					{
-						ColorRgba clr = s.IsSensor ? this.ShapeSensorColor : this.ShapeColor;
 						float uniformScale = colliderScale.Length / MathF.Sqrt(2.0f);
-						Vector2 circlePos = circle.Position;
+						Vector2 circlePos = Vector2.Multiply(circle.Position, colliderScale);
 						MathF.TransformCoord(ref circlePos.X, ref circlePos.Y, c.GameObj.Transform.Angle);
-						circlePos.X *= colliderScale.X;
-						circlePos.Y *= colliderScale.Y;
+
 						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha((0.25f + densityRelative * 0.25f) * colliderAlpha)));
 						canvas.FillCircle(
-							colliderPos.X + circlePos.X, 
-							colliderPos.Y + circlePos.Y, 
+							colliderPos.X + circlePos.X,
+							colliderPos.Y + circlePos.Y,
 							colliderPos.Z - 0.01f, 
 							circle.Radius * uniformScale);
 						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha(shapeAlpha)));
 						canvas.DrawCircle(
-							colliderPos.X + circlePos.X, 
-							colliderPos.Y + circlePos.Y, 
+							colliderPos.X + circlePos.X,
+							colliderPos.Y + circlePos.Y,
 							colliderPos.Z - 0.01f, 
 							circle.Radius * uniformScale);
+
+						Vector2 textSize = font.MeasureText(index.ToString());
+						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, fontClr.WithAlpha(shapeAlpha)));
+						canvas.CurrentState.TransformHandle = textSize * 0.5f;
+						canvas.DrawText(index.ToString(), circlePos.X, circlePos.Y);
+						canvas.CurrentState.TransformHandle = Vector2.Zero;
 					}
 					else if (poly != null)
 					{
-						throw new NotImplementedException();
+						Vector2[] polyVert = poly.Vertices.ToArray();
+						Vector2 center = Vector2.Zero;
+						for (int i = 0; i < polyVert.Length; i++)
+						{
+							center += polyVert[i];
+							Vector2.Multiply(ref polyVert[i], ref colliderScale, out polyVert[i]);
+							MathF.TransformCoord(ref polyVert[i].X, ref polyVert[i].Y, c.GameObj.Transform.Angle);
+						}
+						center /= polyVert.Length;
+						Vector2.Multiply(ref center, ref colliderScale, out center);
+						MathF.TransformCoord(ref center.X, ref center.Y, c.GameObj.Transform.Angle);
+
+						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha((0.25f + densityRelative * 0.25f) * colliderAlpha)));
+						canvas.FillConvexPolygon(polyVert, colliderPos.Z - 0.01f);
+						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha(shapeAlpha)));
+						canvas.DrawConvexPolygon(polyVert, colliderPos.Z - 0.01f);
+
+						Vector2 textSize = font.MeasureText(index.ToString());
+						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, fontClr.WithAlpha(shapeAlpha)));
+						canvas.CurrentState.TransformHandle = textSize * 0.5f;
+						canvas.DrawText(index.ToString(), center.X, center.Y);
+						canvas.CurrentState.TransformHandle = Vector2.Zero;
 					}
+					index++;
 				}
 			}
 		}
@@ -344,7 +524,8 @@ namespace EditorBase.CamViewStates
 
 		protected void UpdateToolbar()
 		{
-			this.toolCreateCircle.Enabled = this.selectedCollider != null && this.mouseState != CursorState.CreateCircle;
+			this.toolCreateCircle.Enabled = this.selectedCollider != null && this.mouseState == CursorState.Normal;
+			this.toolCreatePoly.Enabled = this.toolCreateCircle.Enabled;
 		}
 
 		public override CamViewState.SelObj PickSelObjAt(int x, int y)
@@ -560,11 +741,21 @@ namespace EditorBase.CamViewStates
 			if (this.selectedCollider == null) return;
 			this.EnterCursorState(CursorState.CreateCircle);
 		}
+		private void toolCreatePoly_Clicked(object sender, EventArgs e)
+		{
+			if (this.selectedCollider == null) return;
+			this.EnterCursorState(CursorState.CreatePolygon);
+		}
 		
 		private void LocalGLControl_KeyDown(object sender, KeyEventArgs e)
 		{
-			if (e.KeyCode == Keys.C && (Control.ModifierKeys & Keys.Control) == Keys.None)
-				this.toolCreateCircle_Clicked(this, EventArgs.Empty);
+			if (Control.ModifierKeys == Keys.None)
+			{
+				if (e.KeyCode == Keys.C)
+					this.toolCreateCircle_Clicked(this, EventArgs.Empty);
+				else if (e.KeyCode == Keys.P)
+					this.toolCreatePoly_Clicked(this, EventArgs.Empty);
+			}
 		}
 		private void LocalGLControl_MouseDown(object sender, MouseEventArgs e)
 		{
@@ -586,6 +777,17 @@ namespace EditorBase.CamViewStates
 					this.LeaveCursorState();
 					this.SelectObjects(new[] { SelShape.Create(newShape) });
 					this.BeginAction(MouseAction.ScaleObj);
+				}
+				else if (e.Button == MouseButtons.Right)
+				{
+					this.LeaveCursorState();
+				}
+			}
+			else if (this.mouseState == CursorState.CreatePolygon)
+			{
+				if (e.Button == MouseButtons.Left)
+				{
+					throw new NotImplementedException();
 				}
 				else if (e.Button == MouseButtons.Right)
 				{

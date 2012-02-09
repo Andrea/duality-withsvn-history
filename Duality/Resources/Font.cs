@@ -820,7 +820,7 @@ namespace Duality.Resources
 			{
 				this.ProcessTextAdv(text, i, out glyphData, out uvRect, out glyphXAdv, out glyphXOff);
 
-				textSize.X = Math.Max(textSize.X, curOffset + glyphXAdv);
+				textSize.X = Math.Max(textSize.X, curOffset + glyphXAdv - this.spacing);
 				textSize.Y = Math.Max(textSize.Y, glyphData.height);
 
 				curOffset += glyphXAdv;

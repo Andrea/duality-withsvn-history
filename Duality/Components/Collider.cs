@@ -262,7 +262,8 @@ namespace Duality.Components
 
 			internal override void CreateFixture(Body body)
 			{
-				this.fixture = body.CreateFixture(new PolygonShape(1.0f), this);
+				var dummyVert = new FarseerPhysics.Common.Vertices(new FarseerPhysics.Wrapper.Vector2[] { Vector2.Zero });
+				this.fixture = body.CreateFixture(new PolygonShape(dummyVert, 1.0f), this);
 			}
 			internal override void UpdateFixture()
 			{
@@ -274,13 +275,13 @@ namespace Duality.Components
 
 				PolygonShape poly = this.fixture.Shape as PolygonShape;
 				FarseerPhysics.Common.Vertices v = new FarseerPhysics.Common.Vertices(this.vertices.Length);
-				for (int i = 0; i < v.Count; i++)
+				for (int i = 0; i < this.vertices.Length; i++)
 				{
-					v[i] = new Vector2(
+					v.Add(new Vector2(
 						this.vertices[i].X * scale.X * 0.01f, 
-						this.vertices[i].Y * scale.Y * 0.01f);
+						this.vertices[i].Y * scale.Y * 0.01f));
 				}
-				poly.Vertices = v;
+				poly.Set(v);
 			}
 
 			protected override void CopyTo(ShapeInfo target)
@@ -414,7 +415,12 @@ namespace Duality.Components
 		public Collider()
 		{
 			// Default shape
-			this.AddShape(new CircleShapeInfo(64.0f, Vector2.Zero, 1.0f));
+			//this.AddShape(new CircleShapeInfo(64.0f, Vector2.Zero, 1.0f));
+			this.AddShape(new PolyShapeInfo(new Vector2[] {
+				new Vector2(-64.0f, -64.0f),
+				new Vector2(64.0f, -64.0f),
+				new Vector2(64.0f, 64.0f),
+				new Vector2(-64.0f, 64.0f)}, 1.0f));
 		}
 
 		/// <summary>
@@ -733,6 +739,7 @@ namespace Duality.Components
 
 			if (this.shapes != null)
 			{
+				c.ClearShapes();
 				foreach (ShapeInfo shape in this.shapes)
 					c.AddShape(shape.Clone());
 			}

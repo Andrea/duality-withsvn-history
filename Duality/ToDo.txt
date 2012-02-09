@@ -7,10 +7,6 @@
 	-->	??? Editor: Xml Serialization and "export game (binary)" functionality
 
 
--->	Do some XML SVN merge experiments:
-	-->	Different properties of a single Resource, Prefab or Scene changed
-	-->	Different objects added to / removed from Scene.
-
 -->	Implement "Create Poly" action
 	-->	Prevent non-convex polys
 	-->	Testing

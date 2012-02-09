@@ -9634,6 +9634,13 @@
             <param name="vertices"></param>
             <param name="mode"></param>
         </member>
+        <member name="M:Duality.Canvas.DrawConvexPolygon(OpenTK.Vector2[],System.Single)">
+            <summary>
+            Draws a convex polygon. All vertices share the same Z value.
+            </summary>
+            <param name="points"></param>
+            <param name="z"></param>
+        </member>
         <member name="M:Duality.Canvas.DrawSphere(System.Single,System.Single,System.Single,System.Single)">
             <summary>
             Draws a three-dimensional sphere.
@@ -9717,6 +9724,13 @@
             <param name="x"></param>
             <param name="y"></param>
             <param name="r"></param>
+        </member>
+        <member name="M:Duality.Canvas.FillConvexPolygon(OpenTK.Vector2[],System.Single)">
+            <summary>
+            Fills a convex polygon. All vertices share the same Z value.
+            </summary>
+            <param name="points"></param>
+            <param name="z"></param>
         </member>
         <member name="M:Duality.Canvas.FillOval(System.Single,System.Single,System.Single,System.Single,System.Single)">
             <summary>

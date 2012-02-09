@@ -233,6 +233,33 @@ namespace Duality
 		}
 
 		/// <summary>
+		/// Draws a convex polygon. All vertices share the same Z value.
+		/// </summary>
+		/// <param name="points"></param>
+		/// <param name="z"></param>
+		public void DrawConvexPolygon(Vector2[] points, float z = 0.0f)
+		{
+			Vector3 pos = new Vector3(points[0].X, points[0].Y, z);
+
+			float scale = 1.0f;
+			Vector3 posTemp = pos;
+			this.device.PreprocessCoords(ref posTemp, ref scale);
+
+			ColorRgba shapeColor = this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor;
+			VertexC1P3[] vertices = new VertexC1P3[points.Length];
+			for (int i = 0; i < points.Length; i++)
+			{
+				vertices[i].pos.X = (points[i].X - pos.X) * scale + posTemp.X + 0.5f;
+				vertices[i].pos.Y = (points[i].Y - pos.Y) * scale + posTemp.Y + 0.5f;
+				vertices[i].pos.Z = (z - pos.Z) * scale + posTemp.Z;
+				vertices[i].clr = shapeColor;
+			}
+
+			this.CurrentState.TransformVertices(vertices, pos.Xy, scale);
+			this.device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.LineLoop, vertices);
+		}
+
+		/// <summary>
 		/// Draws a three-dimensional sphere.
 		/// </summary>
 		/// <param name="x"></param>
@@ -313,8 +340,8 @@ namespace Duality
 		/// <param name="z2"></param>
 		public void DrawLine(float x, float y, float z, float x2, float y2, float z2)
 		{
-			Vector3 pos = new Vector3(x + 0.5f, y + 0.5f, z);
-			Vector3 target = new Vector3(x2 + 0.5f, y2 + 0.5f, z2);
+			Vector3 pos = new Vector3(x, y, z);
+			Vector3 target = new Vector3(x2, y2, z2);
 			float scale = 1.0f;
 			
 			device.PreprocessCoords(ref pos, ref scale);
@@ -323,8 +350,8 @@ namespace Duality
 			Vector2 shapeHandle = pos.Xy;
 			ColorRgba shapeColor = this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor;
 			VertexC1P3[] vertices = new VertexC1P3[2];
-			vertices[0].pos = pos;
-			vertices[1].pos = target;
+			vertices[0].pos = pos + new Vector3(0.5f, 0.5f, 0.0f);
+			vertices[1].pos = target + new Vector3(0.5f, 0.5f, 0.0f);
 			vertices[0].clr = shapeColor;
 			vertices[1].clr = shapeColor;
 			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
@@ -355,17 +382,17 @@ namespace Duality
 			if (w < 0.0f) { x += w; w = -w; }
 			if (h < 0.0f) { y += h; h = -h; }
 
-			Vector3 pos = new Vector3(x + 0.5f, y + 0.5f, z);
+			Vector3 pos = new Vector3(x, y, z);
 			float scale = 1.0f;
 			device.PreprocessCoords(ref pos, ref scale);
 
 			Vector2 shapeHandle = pos.Xy;
 			ColorRgba shapeColor = this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor;
 			VertexC1P3[] vertices = new VertexC1P3[4];
-			vertices[0].pos = new Vector3(pos.X, pos.Y, pos.Z);
-			vertices[1].pos = new Vector3(pos.X + w * scale, pos.Y, pos.Z);
-			vertices[2].pos = new Vector3(pos.X + w * scale, pos.Y + h * scale, pos.Z);
-			vertices[3].pos = new Vector3(pos.X, pos.Y + h * scale, pos.Z);
+			vertices[0].pos = new Vector3(pos.X + 0.5f, pos.Y + 0.5f, pos.Z);
+			vertices[1].pos = new Vector3(pos.X + w * scale + 0.5f, pos.Y + 0.5f, pos.Z);
+			vertices[2].pos = new Vector3(pos.X + w * scale + 0.5f, pos.Y + h * scale + 0.5f, pos.Z);
+			vertices[3].pos = new Vector3(pos.X + 0.5f, pos.Y + h * scale + 0.5f, pos.Z);
 
 			vertices[0].clr = shapeColor;
 			vertices[1].clr = shapeColor;
@@ -402,7 +429,7 @@ namespace Duality
 			w *= 0.5f; x += w;
 			h *= 0.5f; y += h;
 
-			Vector3 pos = new Vector3(x + 0.5f, y + 0.5f, z);
+			Vector3 pos = new Vector3(x, y, z);
 			if (!this.device.IsCoordInView(pos, MathF.Max(w, h) + this.CurrentState.TransformHandle.Length)) return;
 
 			float scale = 1.0f;
@@ -419,8 +446,8 @@ namespace Duality
 			// XY circle
 			for (int i = 0; i < vertices.Length; i++)
 			{
-				vertices[i].pos.X = pos.X + (float)Math.Sin(angle) * w;
-				vertices[i].pos.Y = pos.Y - (float)Math.Cos(angle) * h;
+				vertices[i].pos.X = pos.X + (float)Math.Sin(angle) * w + 0.5f;
+				vertices[i].pos.Y = pos.Y - (float)Math.Cos(angle) * h + 0.5f;
 				vertices[i].pos.Z = pos.Z;
 				vertices[i].clr = shapeColor;
 				angle += (MathF.TwoPi / (float)segmentNum);
@@ -463,6 +490,33 @@ namespace Duality
 			this.CurrentState.TransformHandle += new Vector2(r, r);
 			this.DrawOval(x, y, 0, r * 2, r * 2);
 			this.CurrentState.TransformHandle -= new Vector2(r, r);
+		}
+		
+		/// <summary>
+		/// Fills a convex polygon. All vertices share the same Z value.
+		/// </summary>
+		/// <param name="points"></param>
+		/// <param name="z"></param>
+		public void FillConvexPolygon(Vector2[] points, float z = 0.0f)
+		{
+			Vector3 pos = new Vector3(points[0].X, points[0].Y, z);
+
+			float scale = 1.0f;
+			Vector3 posTemp = pos;
+			this.device.PreprocessCoords(ref posTemp, ref scale);
+
+			ColorRgba shapeColor = this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor;
+			VertexC1P3[] vertices = new VertexC1P3[points.Length];
+			for (int i = 0; i < points.Length; i++)
+			{
+				vertices[i].pos.X = (points[i].X - pos.X) * scale + posTemp.X;
+				vertices[i].pos.Y = (points[i].Y - pos.Y) * scale + posTemp.Y;
+				vertices[i].pos.Z = (z - pos.Z) * scale + posTemp.Z;
+				vertices[i].clr = shapeColor;
+			}
+
+			this.CurrentState.TransformVertices(vertices, pos.Xy, scale);
+			this.device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.Polygon, vertices);
 		}
 
 		/// <summary>
@@ -745,7 +799,7 @@ namespace Duality
 			VertexC1P3T2[] vertices = null;
 			Font font = this.CurrentState.TextFont.Res;
 
-			font.EmitTextVertices(text, ref vertices, pos.X, pos.Y, pos.Z, this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor);
+			font.EmitTextVertices(text, ref vertices, pos.X, pos.Y, pos.Z, this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor, 0.0f, scale);
 
 			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
 			BatchInfo customMat = new BatchInfo(this.CurrentState.MaterialDirect);
