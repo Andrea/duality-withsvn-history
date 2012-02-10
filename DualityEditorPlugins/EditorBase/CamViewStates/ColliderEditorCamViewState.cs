@@ -10,6 +10,7 @@ using Duality.Components;
 using Duality.Resources;
 using Duality.ColorFormat;
 using Duality.VertexFormat;
+using Font = Duality.Resources.Font;
 
 using DualityEditor;
 using DualityEditor.Forms;
@@ -315,13 +316,13 @@ namespace EditorBase.CamViewStates
 			}
 		}
 
-		private	CursorState		mouseState			= CursorState.Normal;
-		private	int				createPolyIndex		= 0;
-		private	Collider		selectedCollider	= null;
-		private	ToolStrip		toolstrip			= null;
-		private	ToolStripButton	toolCreateCircle	= null;
-		private	ToolStripButton	toolCreatePoly		= null;
-		private	Duality.Resources.Font	bigFont		= null;
+		private	CursorState			mouseState			= CursorState.Normal;
+		private	int					createPolyIndex		= 0;
+		private	Collider			selectedCollider	= null;
+		private	ToolStrip			toolstrip			= null;
+		private	ToolStripButton		toolCreateCircle	= null;
+		private	ToolStripButton		toolCreatePoly		= null;
+		private	ContentRef<Font>	bigFont				= null;
 
 		public override string StateName
 		{
@@ -355,14 +356,21 @@ namespace EditorBase.CamViewStates
 			base.OnEnterState();
 
 			// Init Resources
-			if (this.bigFont == null)
+			if (!ContentProvider.IsContentRegistered("__editor__bigfont__"))
 			{
-				this.bigFont = new Duality.Resources.Font();
-				this.bigFont.Family = FontFamily.GenericSansSerif.Name;
-				this.bigFont.Size = 32;
-				this.bigFont.Kerning = true;
-				this.bigFont.GlyphRenderHint = Duality.Resources.Font.RenderHint.AntiAlias;
-				this.bigFont.ReloadData();
+				Font bigFontRes = new Font();
+				bigFontRes.Family = FontFamily.GenericSansSerif.Name;
+				bigFontRes.Size = 32;
+				bigFontRes.Kerning = true;
+				bigFontRes.GlyphRenderHint = Duality.Resources.Font.RenderHint.AntiAlias;
+				bigFontRes.ReloadData();
+
+				ContentProvider.RegisterContent("__editor__bigfont__", bigFontRes);
+				this.bigFont = bigFontRes;
+			}
+			else
+			{
+				this.bigFont = ContentProvider.RequestContent<Font>("__editor__bigfont__");
 			}
 
 			// Init GUI
