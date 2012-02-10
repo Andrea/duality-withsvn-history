@@ -43,6 +43,10 @@
 		-->	...
 
 	ICmpCollisionListener API:
+	-->	Introduce additional public events in GameObject?
+		-->	Might want to react to different object's collision
+		-->	Fire events AFTER internal collision handling
+		-->	What other internal events might need public events in GameObject?
 	-->	OnCollisionBegin(CollisionData objA, CollisionData objB);
 	-->	OnCollisionSolve(CollisionData objA, CollisionData objB, ContactData contact);
 	-->	OnCollisionEnd(CollisionData objA, CollisionData objB);
