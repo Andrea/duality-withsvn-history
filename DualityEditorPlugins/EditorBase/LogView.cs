@@ -209,13 +209,19 @@ namespace EditorBase
 		}
 		private void LogData_NewEntry(object sender, DataLogOutput.LogEntryEventArgs e)
 		{
-			if (this.DockState.IsAutoHide() && this.DockPanel.ActiveAutoHideContent != this) return;
-			this.AddSingleEntry(e.Entry);
+			// Make it Thread-Safe:
+			this.Invoke((EventHandler<DataLogOutput.LogEntryEventArgs>)this.LogData_NewEntry_Handler, sender, e);
 		}
 		private void DockPanel_ActiveAutoHideContentChanged(object sender, EventArgs e)
 		{
 			if (!this.DockState.IsAutoHide() || this.DockPanel.ActiveAutoHideContent != this) return;
 			this.UpdateView();
+		}
+
+		private void LogData_NewEntry_Handler(object sender, DataLogOutput.LogEntryEventArgs e)
+		{
+			if (this.DockState.IsAutoHide() && this.DockPanel.ActiveAutoHideContent != this) return;
+			this.AddSingleEntry(e.Entry);
 		}
 	}
 }

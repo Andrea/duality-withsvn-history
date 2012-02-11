@@ -264,7 +264,7 @@ namespace EditorBase.CamViewStates
 
 			// Ask user if he really wants to delete stuff
 			if (!this.DisplayConfirmDeleteSelectedObjects()) return;
-			if (!EditorBasePlugin.Instance.EditorForm.ConfirmBreakPrefabLink(new ObjectSelection(objList))) return;
+			if (!EditorBasePlugin.Instance.EditorForm.DisplayConfirmBreakPrefabLink(new ObjectSelection(objList))) return;
 
 			// Delete objects
 			foreach (GameObject o in objList)

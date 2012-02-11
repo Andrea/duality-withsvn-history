@@ -6,7 +6,6 @@
 	-->	??? Ingame GUI & GUI Editor
 	-->	??? Editor: Xml Serialization and "export game (binary)" functionality
 
-
 --> Collision event handling (Core)
 	-->	Interpret data
 	-->	Wrap up data, cache it until Update() and then notify GameObject

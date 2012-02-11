@@ -126,6 +126,18 @@
   <data name="ActionName_CreateTexture" xml:space="preserve">
     <value>Create Texture</value>
   </data>
+  <data name="CamView_Action_Move" xml:space="preserve">
+    <value>Move</value>
+  </data>
+  <data name="CamView_Action_Rotate" xml:space="preserve">
+    <value>Rotate</value>
+  </data>
+  <data name="CamView_Action_Scale" xml:space="preserve">
+    <value>Scale</value>
+  </data>
+  <data name="CamView_Action_Select_Active" xml:space="preserve">
+    <value>Selecting...</value>
+  </data>
   <data name="CamView_Status_Angle" xml:space="preserve">
     <value>Angle: {0:F}°</value>
   </data>
@@ -152,6 +164,12 @@
   </data>
   <data name="Category_Sound" xml:space="preserve">
     <value>Sound</value>
+  </data>
+  <data name="ColliderEditor_CreateCircle" xml:space="preserve">
+    <value>Create Circle...</value>
+  </data>
+  <data name="ColliderEditor_CreatePolygon" xml:space="preserve">
+    <value>Create Polygon...</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="CursorArrowCreateCircle" type="System.Resources.ResXFileRef, System.Windows.Forms">

@@ -523,8 +523,8 @@ namespace EditorBase.CamViewStates
 			if (!handled && this.mouseState != CursorState.Normal)
 			{
 				Size viewSize = this.View.LocalGLControl.ClientSize;
-				if (this.mouseState == CursorState.CreateCircle)		canvas.DrawText("Create Circle...", 10, viewSize.Height - 20);
-				else if (this.mouseState == CursorState.CreatePolygon)	canvas.DrawText("Create Polygon...", 10, viewSize.Height - 20);
+				if (this.mouseState == CursorState.CreateCircle)		canvas.DrawText(PluginRes.EditorBaseRes.ColliderEditor_CreateCircle, 10, viewSize.Height - 20);
+				else if (this.mouseState == CursorState.CreatePolygon)	canvas.DrawText(PluginRes.EditorBaseRes.ColliderEditor_CreatePolygon, 10, viewSize.Height - 20);
 				handled = true;
 			}
 		}

@@ -57,8 +57,8 @@
 			// 
 			// textBoxReplaceWith
 			// 
-			this.textBoxReplaceWith.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.textBoxReplaceWith.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.textBoxReplaceWith.Location = new System.Drawing.Point(15, 65);
 			this.textBoxReplaceWith.Name = "textBoxReplaceWith";
 			this.textBoxReplaceWith.Size = new System.Drawing.Size(317, 20);
@@ -89,8 +89,8 @@
 			// 
 			// comboBoxSearchFor
 			// 
-			this.comboBoxSearchFor.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.comboBoxSearchFor.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.comboBoxSearchFor.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
 			this.comboBoxSearchFor.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
 			this.comboBoxSearchFor.Location = new System.Drawing.Point(15, 25);
@@ -101,8 +101,8 @@
 			// 
 			// label1
 			// 
-			this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.label1.ForeColor = System.Drawing.SystemColors.GrayText;
 			this.label1.Location = new System.Drawing.Point(12, 94);
 			this.label1.Name = "label1";
@@ -128,6 +128,7 @@
 			this.MinimumSize = new System.Drawing.Size(360, 170);
 			this.Name = "RenameTypeDialog";
 			this.ShowIcon = false;
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Rename Type...";
 			this.ResumeLayout(false);
 			this.PerformLayout();

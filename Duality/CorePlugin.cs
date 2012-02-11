@@ -64,9 +64,5 @@ namespace Duality
 		/// Called when Dualitys <see cref="DualityApp.ExecutionContext"/> changes.
 		/// </summary>
 		internal protected virtual void OnExecContextChanged(DualityApp.ExecutionContext previousContext) {}
-		/// <summary>
-		/// Called when initializing Dualitys default content. This gives your plugin the chance of registering its own.
-		/// </summary>
-		internal protected virtual void OnInitDefaultContent() {}
 	}
 }

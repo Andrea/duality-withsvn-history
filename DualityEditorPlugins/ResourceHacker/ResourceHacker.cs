@@ -14,6 +14,7 @@ using Duality.Serialization;
 using Duality.Serialization.MetaFormat;
 
 using DualityEditor;
+using DualityEditor.Forms;
 
 using Aga.Controls.Tree;
 using WeifenLuo.WinFormsUI.Docking;
@@ -22,6 +23,27 @@ namespace ResourceHacker
 {
 	public partial class ResourceHacker : DockContent
 	{
+		private class BatchActionTaskData
+		{
+			private string folderPath;
+			private Action<DataNode> action;
+
+			public string FolderPath
+			{
+				get { return this.folderPath; }
+			}
+			public Action<DataNode> Action
+			{
+				get { return this.action; }
+			}
+
+			public BatchActionTaskData(string folderPath, Action<DataNode> action)
+			{
+				this.folderPath = folderPath;
+				this.action = action;
+			}
+		}
+
 		protected class DataTreeNode : Node
 		{
 			protected	DataNode	data;
@@ -378,27 +400,23 @@ namespace ResourceHacker
 			if (PathHelper.IsPathLocatedIn(filePath, "."))
 			{
 				string dataPath = PathHelper.MakeFilePathRelative(filePath, ".");
-				ContentProvider.UnregisterContent(dataPath, true);
+				ContentProvider.UnregisterContent(dataPath);
 			}
 		}
-		protected void BatchPerformAction(string folderPath, Action<DataNode> action, bool updateContent = true)
+		protected IEnumerable<string> EnumerateBatchActionFiles(string folderPath)
 		{
 			string[] files = Directory.GetFiles(folderPath);
 			foreach (string file in files)
 			{
 				if (!Resource.IsResourceFile(file)) continue;
-				this.FilePerformAction(file, action, false);
+				yield return file;
 			}
 
 			string[] dirs = Directory.GetDirectories(folderPath);
 			foreach (string dir in dirs)
-				this.BatchPerformAction(dir, action, false);
-
-			// Assure reloading the modified resources
-			if (updateContent && PathHelper.IsPathLocatedIn(folderPath, "."))
 			{
-				string dataPath = PathHelper.MakeFilePathRelative(folderPath, ".");
-				ContentProvider.UnregisterContentTree(dataPath, true);
+				foreach (string s in this.EnumerateBatchActionFiles(dir))
+					yield return s;
 			}
 		}
 
@@ -466,6 +484,10 @@ namespace ResourceHacker
 					MessageBoxIcon.Information);
 			}
 		}
+		private void batchActionButton_Click(object sender, EventArgs e)
+		{
+			this.batchActionButton.ShowDropDown();
+		}
 		private void batchActionRenameType_Click(object sender, EventArgs e)
 		{
 			FolderBrowserDialog folderDialog = new FolderBrowserDialog();
@@ -478,7 +500,13 @@ namespace ResourceHacker
 				if (dialog.ShowDialog(this) == DialogResult.OK)
 				{
 					int replaced = 0;
-					this.BatchPerformAction(folderDialog.SelectedPath, n => replaced += n.ReplaceTypeStrings(dialog.SearchFor, dialog.ReplaceWith));
+					ProcessingBigTaskDialog taskDialog = new ProcessingBigTaskDialog(ResourceHackerPlugin.Instance.EditorForm, 
+						PluginRes.ResourceHackerRes.TaskBatchRenameType_Caption,
+						string.Format(PluginRes.ResourceHackerRes.TaskBatchRenameType_Desc, dialog.SearchFor, dialog.ReplaceWith), 
+						this.async_PerformBatchAction,
+						new BatchActionTaskData(folderDialog.SelectedPath, n => replaced += n.ReplaceTypeStrings(dialog.SearchFor, dialog.ReplaceWith)));
+					taskDialog.ShowDialog();
+
 					MessageBox.Show(
 						string.Format(PluginRes.ResourceHackerRes.MessageBox_RenameType_Text, replaced, dialog.SearchFor, dialog.ReplaceWith), 
 						PluginRes.ResourceHackerRes.MessageBox_RenameType_Title, 
@@ -486,6 +514,33 @@ namespace ResourceHacker
 						MessageBoxIcon.Information);
 				}
 			}
+		}
+
+		private System.Collections.IEnumerable async_PerformBatchAction(ProcessingBigTaskDialog.WorkerInterface state)
+		{
+			BatchActionTaskData data = state.Data as BatchActionTaskData;
+
+			// Retrieve files to perform action on
+			string[] files = this.EnumerateBatchActionFiles(data.FolderPath).ToArray();
+			state.Progress += 0.05f; yield return null;
+
+			// Perform action on files
+			foreach (string file in files)
+			{
+				state.StateDesc = file; yield return null;
+
+				this.FilePerformAction(file, data.Action, false);
+
+				state.Progress += 0.9f / files.Length; yield return null;
+			}
+
+			// Assure reloading the modified resources
+			if (PathHelper.IsPathLocatedIn(data.FolderPath, "."))
+			{
+				string dataPath = PathHelper.MakeFilePathRelative(data.FolderPath, ".");
+				ContentProvider.UnregisterContentTree(dataPath);
+			}
+			state.Progress += 0.05f; yield return null;
 		}
 	}
 }

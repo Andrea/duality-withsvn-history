@@ -88,6 +88,42 @@ namespace EditorBase.PluginRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Move ähnelt.
+        /// </summary>
+        public static string CamView_Action_Move {
+            get {
+                return ResourceManager.GetString("CamView_Action_Move", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Rotate ähnelt.
+        /// </summary>
+        public static string CamView_Action_Rotate {
+            get {
+                return ResourceManager.GetString("CamView_Action_Rotate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Scale ähnelt.
+        /// </summary>
+        public static string CamView_Action_Scale {
+            get {
+                return ResourceManager.GetString("CamView_Action_Scale", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Selecting... ähnelt.
+        /// </summary>
+        public static string CamView_Action_Select_Active {
+            get {
+                return ResourceManager.GetString("CamView_Action_Select_Active", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Angle: {0:F}° ähnelt.
         /// </summary>
         public static string CamView_Status_Angle {
@@ -165,6 +201,24 @@ namespace EditorBase.PluginRes {
         public static string Category_Sound {
             get {
                 return ResourceManager.GetString("Category_Sound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Create Circle... ähnelt.
+        /// </summary>
+        public static string ColliderEditor_CreateCircle {
+            get {
+                return ResourceManager.GetString("ColliderEditor_CreateCircle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Create Polygon... ähnelt.
+        /// </summary>
+        public static string ColliderEditor_CreatePolygon {
+            get {
+                return ResourceManager.GetString("ColliderEditor_CreatePolygon", resourceCulture);
             }
         }
         

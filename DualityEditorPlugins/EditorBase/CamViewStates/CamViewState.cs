@@ -405,10 +405,10 @@ namespace EditorBase.CamViewStates
 			if (!handled)
 			{
 				MouseAction actionHint = this.action != MouseAction.None ? this.action : this.mouseoverAction;
-				if (actionHint == MouseAction.MoveObj)				canvas.DrawText("Move", 10, viewSize.Height - 20);
-				else if (actionHint == MouseAction.RotateObj)		canvas.DrawText("Rotate", 10, viewSize.Height - 20);
-				else if (actionHint == MouseAction.ScaleObj)		canvas.DrawText("Scale", 10, viewSize.Height - 20);
-				else if (this.action == MouseAction.RectSelection)	canvas.DrawText("Selecting...", 10, viewSize.Height - 20);
+				if (actionHint == MouseAction.MoveObj)				canvas.DrawText(PluginRes.EditorBaseRes.CamView_Action_Move, 10, viewSize.Height - 20);
+				else if (actionHint == MouseAction.RotateObj)		canvas.DrawText(PluginRes.EditorBaseRes.CamView_Action_Rotate, 10, viewSize.Height - 20);
+				else if (actionHint == MouseAction.ScaleObj)		canvas.DrawText(PluginRes.EditorBaseRes.CamView_Action_Scale, 10, viewSize.Height - 20);
+				else if (this.action == MouseAction.RectSelection)	canvas.DrawText(PluginRes.EditorBaseRes.CamView_Action_Select_Active, 10, viewSize.Height - 20);
 
 				if (actionHint != MouseAction.None) handled = true;
 			}

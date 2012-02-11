@@ -395,7 +395,7 @@ namespace Duality
 
 		private	static	bool	defaultContentInitialized	= false;
 		private	static	Dictionary<string,Resource>	resLibrary		= new Dictionary<string,Resource>();
-		private	static	List<ContentRef<Resource>>	defaultContent	= new List<ContentRef<Resource>>();
+		private	static	List<Resource>				defaultContent	= new List<Resource>();
 
 		/// <summary>
 		/// Initializes Dualitys embedded default content.
@@ -419,15 +419,11 @@ namespace Duality
 			AudioData.InitDefaultContent();
 			Sound.InitDefaultContent();
 
-			// Invoke plugins
-			foreach (CorePlugin plugin in DualityApp.LoadedPlugins)
-				plugin.OnInitDefaultContent();
-
 			// Make a list of all default content available
 			foreach (KeyValuePair<string,Resource> pair in resLibrary)
 			{
 				if (oldResLib.Contains(pair.Value)) continue;
-				defaultContent.Add(new ContentRef<Resource>(pair.Value, pair.Key));
+				defaultContent.Add(pair.Value);
 			}
 
 			defaultContentInitialized = true;
@@ -440,7 +436,7 @@ namespace Duality
 		/// <returns></returns>
 		public static List<ContentRef<Resource>> GetAllDefaultContent()
 		{
-			return new List<ContentRef<Resource>>(defaultContent);
+			return defaultContent.Select(r => new ContentRef<Resource>(r)).ToList();
 		}
 		/// <summary>
 		/// Returns a list of all available content matching the specified Type
@@ -449,12 +445,7 @@ namespace Duality
 		/// <returns></returns>
 		public static List<ContentRef<T>> GetAvailContent<T>() where T : Resource
 		{
-			List<ContentRef<T>> allContent = new List<ContentRef<T>>();
-			foreach (var v in resLibrary.Values)
-			{
-				if (v is T && !v.Disposed) allContent.Add((T)v);
-			}
-			return allContent;
+			return resLibrary.Values.OfType<T>().Where(r => !r.Disposed).Select(r => new ContentRef<T>(r)).ToList();
 		}
 		/// <summary>
 		/// Returns a list of all available content matching the specified Type
@@ -463,12 +454,7 @@ namespace Duality
 		/// <returns></returns>
 		public static List<IContentRef> GetAvailContent(Type t)
 		{
-			List<IContentRef> allContent = new List<IContentRef>();
-			foreach (var v in resLibrary.Values)
-			{
-				if (t.IsAssignableFrom(v.GetType()) && !v.Disposed) allContent.Add(v.GetContentRef());
-			}
-			return allContent;
+			return resLibrary.Values.Where(r => t.IsAssignableFrom(r.GetType()) && !r.Disposed).Select(r => r.GetContentRef()).ToList();
 		}
 		/// <summary>
 		/// Clears all non-default content.
@@ -546,7 +532,8 @@ namespace Duality
 		/// <param name="dispose">If true, unregistered content is also disposed.</param>
 		public static void UnregisterAllContent<T>(bool dispose = true) where T : Resource
 		{
-			foreach (ContentRef<T> content in GetAvailContent<T>().Where(c => !c.IsDefaultContent))
+			var affectedContent = GetAvailContent<T>().Where(c => !c.IsDefaultContent);
+			foreach (ContentRef<T> content in affectedContent)
 				UnregisterContent(content.Path, dispose);
 		}
 		/// <summary>
@@ -556,8 +543,17 @@ namespace Duality
 		/// <param name="dispose">If true, unregistered content is also disposed.</param>
 		public static void UnregisterAllContent(Type t, bool dispose = true)
 		{
-			foreach (IContentRef content in GetAvailContent(t).Where(c => !c.IsDefaultContent))
+			var affectedContent = GetAvailContent(t).Where(c => !c.IsDefaultContent).ToArray();
+			foreach (IContentRef content in affectedContent)
 				UnregisterContent(content.Path, dispose);
+		}
+		internal static void UnregisterPluginContent(bool dispose = true)
+		{
+			foreach (Resource res in resLibrary.Values.ToArray())
+			{
+				if (res is Prefab || res.GetType().Assembly != typeof(ContentProvider).Assembly)
+					UnregisterContent(res.Path, dispose);
+			}
 		}
 
 		/// <summary>
@@ -641,13 +637,8 @@ namespace Duality
 
 		private static Resource LoadContent(string path)
 		{
-			Log.Core.Write("Loading Ressource '{0}'...", path);
-			Log.Core.PushIndent();
-
 			Resource res = Resource.LoadResource<Resource>(path);
 			if (res != null) RegisterContent(path, res);
-
-			Log.Core.PopIndent();
 			return res;
 		}
 	}

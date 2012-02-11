@@ -113,7 +113,19 @@ namespace Duality
 				formatter.WriteObject(this);
 			}
 			this.OnSaved();
-			Log.Core.Write("Resource saved: {0}", (str is FileStream) ? (str as FileStream).Name : str.ToString());
+
+			string streamName = null;
+			if (str is FileStream)
+			{
+				FileStream fileStream = str as FileStream;
+				if (PathHelper.IsPathLocatedIn(fileStream.Name, "."))
+					streamName = PathHelper.MakeFilePathRelative(fileStream.Name, ".");
+				else
+					streamName = fileStream.Name;
+			}
+			else
+				streamName = str.ToString();
+			Log.Core.Write("Resource saved: {0}", streamName);
 		}
 
 		/// <summary>
@@ -236,6 +248,9 @@ namespace Duality
 		/// <returns>The Resource that has been loaded.</returns>
 		public static T LoadResource<T>(Stream str, string resPath = null) where T : Resource
 		{
+			Log.Core.Write("Loading Ressource '{0}'...", resPath);
+			Log.Core.PushIndent();
+
 			T newContent = null;
 			try
 			{
@@ -257,6 +272,8 @@ namespace Duality
 					(str is FileStream) ? (str as FileStream).Name : str.ToString(),
 					Log.Exception(e));
 			}
+
+			Log.Core.PopIndent();
 			return newContent;
 		}
 

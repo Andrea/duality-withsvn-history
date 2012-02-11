@@ -4734,11 +4734,6 @@
             Called when Dualitys <see cref="T:Duality.DualityApp.ExecutionContext"/> changes.
             </summary>
         </member>
-        <member name="M:Duality.CorePlugin.OnInitDefaultContent">
-            <summary>
-            Called when initializing Dualitys default content. This gives your plugin the chance of registering its own.
-            </summary>
-        </member>
         <member name="T:Duality.Time">
             <summary>
             The Time class provides a global interface for time measurement and control. It affects all time-dependent computations. 

@@ -469,7 +469,7 @@ namespace EditorBase
 		{
 			DirectoryNode thisNode = new DirectoryNode(ContentProvider.VirtualContentPath, true);
 
-			List<ContentRef<Resource>> defaultContent = ContentProvider.GetAllDefaultContent();
+			List<ContentRef<Resource>> defaultContent = ContentProvider.GetAllDefaultContent().ToList();
 			foreach (ContentRef<Resource> resRef in defaultContent)
 			{
 				string[] pathSplit = resRef.Path.Split(':');

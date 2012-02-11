@@ -292,7 +292,7 @@ namespace DualityEditor.Forms
 				strDataWriter.WriteLine(Scene.CurrentPath);
 				strDataWriter.Flush();
 				Scene.Current.Save(strScene);
-				ContentProvider.UnregisterAllContent<Prefab>(); // Force all Prefabs to reload later
+				ContentProvider.UnregisterPluginContent();
 				workInterface.Progress += 0.4f;
 			
 				if (!fullRestart)

@@ -62,7 +62,10 @@ namespace DualityEditor.Forms
 		private	bool					dualityAppSuspended	= true;
 		private	bool					sandboxStateChange	= false;
 		private	bool					sandboxSceneFreeze	= false;
-		private	List<string>			editorJustSavedRes	= new List<string>();
+
+		private	List<string>				editorJustSavedRes		= new List<string>();
+		private	List<FileSystemEventArgs>	dataDirEventBuffer		= new List<FileSystemEventArgs>();
+		private	List<FileSystemEventArgs>	sourceDirEventBuffer	= new List<FileSystemEventArgs>();
 
 		private	HelpStack		helpStack			= new HelpStack();
 		private	SandboxState	sandboxState		= SandboxState.Inactive;
@@ -188,9 +191,18 @@ namespace DualityEditor.Forms
 			Scene.Current = new Scene();
 
 			this.dataDirWatcher.Path = EditorHelper.DataDirectory;
-			this.sourceDirWatcher.Path = EditorHelper.SourceDirectory;
-			this.sourceDirWatcher.EnableRaisingEvents = true;
+			this.dataDirWatcher.Created += delegate(object sender, FileSystemEventArgs e) { this.PushDataDirEvent(e); };
+			this.dataDirWatcher.Changed += delegate(object sender, FileSystemEventArgs e) { this.PushDataDirEvent(e); };
+			this.dataDirWatcher.Deleted += delegate(object sender, FileSystemEventArgs e) { this.PushDataDirEvent(e); };
+			this.dataDirWatcher.Renamed += delegate(object sender, RenamedEventArgs e) { this.PushDataDirEvent(e); };
 			this.dataDirWatcher.EnableRaisingEvents = true;
+
+			this.sourceDirWatcher.Path = EditorHelper.SourceDirectory;
+			this.sourceDirWatcher.Created += delegate(object sender, FileSystemEventArgs e) { this.PushSourceDirEvent(e); };
+			this.sourceDirWatcher.Changed += delegate(object sender, FileSystemEventArgs e) { this.PushSourceDirEvent(e); };
+			this.sourceDirWatcher.Deleted += delegate(object sender, FileSystemEventArgs e) { this.PushSourceDirEvent(e); };
+			this.sourceDirWatcher.Renamed += delegate(object sender, RenamedEventArgs e) { this.PushSourceDirEvent(e); };
+			this.sourceDirWatcher.EnableRaisingEvents = true;
 
 			this.dualityAppSuspended = false;
 			Application.Idle += this.Application_Idle;
@@ -619,6 +631,15 @@ namespace DualityEditor.Forms
 				MessageBoxButtons.OK, 
 				MessageBoxIcon.Error);
 		}
+		private bool DisplayConfirmReloadResource(string resFilePath)
+		{
+			DialogResult result = MessageBox.Show(
+				String.Format(EditorRes.GeneralRes.Msg_ConfirmReloadResource_Text, resFilePath), 
+				EditorRes.GeneralRes.Msg_ConfirmReloadResource_Caption, 
+				MessageBoxButtons.YesNo,
+				MessageBoxIcon.Question);
+			return result == DialogResult.Yes;
+		}
 
 		private void UpdateToolbar()
 		{
@@ -962,7 +983,7 @@ namespace DualityEditor.Forms
 				this.ObjectPropertyChanged(sender, args);
 		}
 
-		public bool ConfirmBreakPrefabLink(ObjectSelection obj = null)
+		public bool DisplayConfirmBreakPrefabLink(ObjectSelection obj = null)
 		{
 			if (obj == null) obj = this.Selection;
 
@@ -1059,6 +1080,136 @@ namespace DualityEditor.Forms
 				this.UpdateSourceCode();
 		}
 
+		private void PushDataDirEvent(FileSystemEventArgs e)
+		{
+			if (this.IsResPathIgnored(e.FullPath)) return;
+			this.dataDirEventBuffer.RemoveAll(f => f.FullPath == e.FullPath && f.ChangeType == e.ChangeType);
+			this.dataDirEventBuffer.Add(e);
+		}
+		private void ProcessDataDirEvents()
+		{
+			foreach (FileSystemEventArgs e in this.dataDirEventBuffer)
+			{
+				if (e.ChangeType == WatcherChangeTypes.Changed)
+				{
+					ResourceEventArgs args = new ResourceEventArgs(e.FullPath);
+
+					// Unregister outdated resources, if modified outside the editor
+					if (!this.editorJustSavedRes.Contains(Path.GetFullPath(e.FullPath)) && ContentProvider.IsContentRegistered(args.Path))
+					{
+						if (args.Content.Is<Scene>() && Scene.Current == args.Content.Res)
+						{
+							if (this.DisplayConfirmReloadResource(e.FullPath))
+								ContentProvider.UnregisterContent(args.Path);
+						}
+						else
+							ContentProvider.UnregisterContent(args.Path);
+					}
+
+					// When modifying prefabs, apply changes to all linked objects
+					if (args.IsResource && args.Content.Is<Prefab>())
+					{
+						ContentRef<Prefab> prefabRef = args.Content.As<Prefab>();
+						List<PrefabLink> appliedLinks = PrefabLink.ApplyAllLinks(Scene.Current.AllObjects, p => p.Prefab == prefabRef);
+						List<GameObject> changedObjects = new List<GameObject>(appliedLinks.Select(p => p.Obj));
+						this.NotifyObjPrefabApplied(this, new ObjectSelection(changedObjects));
+					}
+
+					if (this.ResourceModified != null) this.ResourceModified(this, args);
+				}
+				else if (e.ChangeType == WatcherChangeTypes.Created)
+				{
+					if (File.Exists(e.FullPath))
+					{
+						// Register newly detected ressource file
+						if (Resource.IsResourceFile(e.FullPath))
+						{
+							if (this.ResourceCreated != null)
+								this.ResourceCreated(this, new ResourceEventArgs(e.FullPath));
+						}
+						// Import non-ressource file
+						else
+						{
+							bool abort = false;
+
+							if (this.IsImportFileExisting(e.FullPath)) 
+								abort = !this.DisplayConfirmImportOverwrite(e.FullPath);
+
+							if (!abort)
+							{
+								bool importedSuccessfully = this.ImportFile(e.FullPath);
+								if (!importedSuccessfully) this.DisplayErrorImportFile(e.FullPath);
+								abort = !importedSuccessfully;
+							}
+						}
+					}
+					else if (Directory.Exists(e.FullPath))
+					{
+						// Register newly detected ressource directory
+						if (this.ResourceCreated != null)
+							this.ResourceCreated(this, new ResourceEventArgs(e.FullPath));
+					}
+				}
+				else if (e.ChangeType == WatcherChangeTypes.Deleted)
+				{
+					ResourceEventArgs args = new ResourceEventArgs(e.FullPath);
+
+					// Unregister no-more existing resources
+					if (args.IsDirectory)	ContentProvider.UnregisterContentTree(args.Path);
+					else					ContentProvider.UnregisterContent(args.Path);
+
+					if (this.ResourceDeleted != null)
+						this.ResourceDeleted(this, args);
+				}
+				else if (e.ChangeType == WatcherChangeTypes.Renamed)
+				{
+					RenamedEventArgs re = e as RenamedEventArgs;
+					ResourceRenamedEventArgs args = new ResourceRenamedEventArgs(re.FullPath, re.OldFullPath);
+
+					// Rename content registerations
+					if (args.IsDirectory)	ContentProvider.RenameContentTree(args.OldPath, args.Path);
+					else					ContentProvider.RenameContent(args.OldPath, args.Path);
+
+					// If we just renamed the currently loaded scene, relocate it.
+					// Doesn't trigger if done properly from inside the editor.
+					if (Scene.CurrentPath == re.OldFullPath) Scene.Current = Resource.LoadResource<Scene>(re.FullPath);
+
+					if (this.ResourceRenamed != null) this.ResourceRenamed(this, args);
+				}
+			}
+			this.dataDirEventBuffer.Clear();
+		}
+		private void PushSourceDirEvent(FileSystemEventArgs e)
+		{
+			if (this.IsSourcePathIgnored(e.FullPath)) return;
+			this.sourceDirEventBuffer.RemoveAll(f => f.FullPath == e.FullPath && e.ChangeType == e.ChangeType);
+			this.sourceDirEventBuffer.Add(e);
+		}
+		private void ProcessSourceDirEvents()
+		{
+			foreach (FileSystemEventArgs e in this.sourceDirEventBuffer)
+			{
+				if (e.ChangeType == WatcherChangeTypes.Changed)
+				{
+					if (File.Exists(e.FullPath)) this.reimportSchedule.Add(e.FullPath);
+					if (this.SrcFileModified != null) this.SrcFileModified(this, e);
+				}
+				else if (e.ChangeType == WatcherChangeTypes.Created)
+				{
+				}
+				else if (e.ChangeType == WatcherChangeTypes.Deleted)
+				{
+					if (this.SrcFileDeleted != null) this.SrcFileDeleted(this, e);
+				}
+				else if (e.ChangeType == WatcherChangeTypes.Renamed)
+				{
+					if (File.Exists(e.FullPath)) this.reimportSchedule.Add(e.FullPath);
+					if (this.SrcFileRenamed != null) this.SrcFileRenamed(this, e);
+				}
+			}
+			this.sourceDirEventBuffer.Clear();
+		}
+
 		private void corePluginWatcher_Changed(object sender, FileSystemEventArgs e)
 		{
 			string pluginStr = Path.Combine("Plugins", e.Name);
@@ -1074,114 +1225,11 @@ namespace DualityEditor.Forms
 		{
 			this.OnBeforeReloadCorePlugins();
 		}
-		
-		private void dataDirWatcher_Changed(object sender, FileSystemEventArgs e)
-		{
-			if (this.IsResPathIgnored(e.FullPath)) return;
-			string fullPath = Path.GetFullPath(e.FullPath);
-			ResourceEventArgs args = new ResourceEventArgs(e.FullPath);
-			
-			// Unregister outdated resources, if modified outside the editor
-			if (!this.editorJustSavedRes.Contains(fullPath))
-				ContentProvider.UnregisterContent(args.Path);
-
-			// When modifying prefabs, apply changes to all linked objects
-			if (args.IsResource && args.Content.Is<Prefab>())
-			{
-				ContentRef<Prefab> prefabRef = args.Content.As<Prefab>();
-				List<PrefabLink> appliedLinks = PrefabLink.ApplyAllLinks(Scene.Current.AllObjects, p => p.Prefab == prefabRef);
-				List<GameObject> changedObjects = new List<GameObject>(appliedLinks.Select(p => p.Obj));
-				this.NotifyObjPrefabApplied(this, new ObjectSelection(changedObjects));
-			}
-
-			if (this.ResourceModified != null) this.ResourceModified(this, args);
-		}
-		private void dataDirWatcher_Created(object sender, FileSystemEventArgs e)
-		{
-			if (this.IsResPathIgnored(e.FullPath)) return;
-			if (File.Exists(e.FullPath))
-			{
-				// Register newly detected ressource file
-				if (Resource.IsResourceFile(e.FullPath))
-				{
-					if (this.ResourceCreated != null)
-						this.ResourceCreated(this, new ResourceEventArgs(e.FullPath));
-				}
-				// Import non-ressource file
-				else
-				{
-					bool abort = false;
-
-					if (this.IsImportFileExisting(e.FullPath)) 
-						abort = !this.DisplayConfirmImportOverwrite(e.FullPath);
-
-					if (!abort)
-					{
-						bool importedSuccessfully = this.ImportFile(e.FullPath);
-						if (!importedSuccessfully) this.DisplayErrorImportFile(e.FullPath);
-						abort = !importedSuccessfully;
-					}
-				}
-			}
-			else if (Directory.Exists(e.FullPath))
-			{
-				// Register newly detected ressource directory
-				if (this.ResourceCreated != null)
-					this.ResourceCreated(this, new ResourceEventArgs(e.FullPath));
-			}
-		}
-		private void dataDirWatcher_Deleted(object sender, FileSystemEventArgs e)
-		{
-			if (this.IsResPathIgnored(e.FullPath)) return;
-			ResourceEventArgs args = new ResourceEventArgs(e.FullPath);
-
-			// Unregister no-more existing resources
-			if (args.IsDirectory)	ContentProvider.UnregisterContentTree(args.Path);
-			else					ContentProvider.UnregisterContent(args.Path);
-
-			if (this.ResourceDeleted != null)
-				this.ResourceDeleted(this, args);
-		}
-		private void dataDirWatcher_Renamed(object sender, RenamedEventArgs e)
-		{
-			if (this.IsResPathIgnored(e.FullPath)) return;
-			ResourceRenamedEventArgs args = new ResourceRenamedEventArgs(e.FullPath, e.OldFullPath);
-
-			// Rename content registerations
-			if (args.IsDirectory)	ContentProvider.RenameContentTree(args.OldPath, args.Path);
-			else					ContentProvider.RenameContent(args.OldPath, args.Path);
-
-			// If we just renamed the currently loaded scene, relocate it.
-			// Doesn't trigger if done properly from inside the editor.
-			if (Scene.CurrentPath == e.OldFullPath) Scene.Current = Resource.LoadResource<Scene>(e.FullPath);
-
-			if (this.ResourceRenamed != null) this.ResourceRenamed(this, args);
-		}
-		
-		private void sourceDirWatcher_Created(object sender, FileSystemEventArgs e)
-		{
-			if (this.IsSourcePathIgnored(e.FullPath)) return;
-		}
-		private void sourceDirWatcher_Changed(object sender, FileSystemEventArgs e)
-		{
-			if (this.IsSourcePathIgnored(e.FullPath)) return;
-			if (File.Exists(e.FullPath)) this.reimportSchedule.Add(e.FullPath);
-			if (this.SrcFileModified != null) this.SrcFileModified(this, e);
-		}
-		private void sourceDirWatcher_Deleted(object sender, FileSystemEventArgs e)
-		{
-			if (this.IsSourcePathIgnored(e.FullPath)) return;
-			if (this.SrcFileDeleted != null) this.SrcFileDeleted(this, e);
-		}
-		private void sourceDirWatcher_Renamed(object sender, RenamedEventArgs e)
-		{
-			if (this.IsSourcePathIgnored(e.FullPath)) return;
-			if (File.Exists(e.FullPath)) this.reimportSchedule.Add(e.FullPath);
-			if (this.SrcFileRenamed != null) this.SrcFileRenamed(this, e);
-		}
 
 		private void Application_Idle(object sender, EventArgs e)
 		{
+			this.ProcessSourceDirEvents();
+			this.ProcessDataDirEvents();
 			this.editorJustSavedRes.Clear();
 
 			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
@@ -1324,14 +1372,24 @@ namespace DualityEditor.Forms
 			if (Duality.Serialization.Formatter.DefaultMethod == Duality.Serialization.FormattingMethod.Binary) return;
 			Duality.Serialization.Formatter.DefaultMethod = Duality.Serialization.FormattingMethod.Binary;
 			this.UpdateToolbar();
-			DualityApp.LoadSaveAll();
+
+			ProcessingBigTaskDialog taskDialog = new ProcessingBigTaskDialog(this, 
+				EditorRes.GeneralRes.TaskChangeDataFormat_Caption, 
+				string.Format(EditorRes.GeneralRes.TaskChangeDataFormat_Desc, Duality.Serialization.Formatter.DefaultMethod.ToString()), 
+				this.async_ChangeDataFormat, null);
+			taskDialog.ShowDialog();
 		}
 		private void formatXml_Click(object sender, EventArgs e)
 		{
 			if (Duality.Serialization.Formatter.DefaultMethod == Duality.Serialization.FormattingMethod.Xml) return;
 			Duality.Serialization.Formatter.DefaultMethod = Duality.Serialization.FormattingMethod.Xml;
 			this.UpdateToolbar();
-			DualityApp.LoadSaveAll();
+
+			ProcessingBigTaskDialog taskDialog = new ProcessingBigTaskDialog(this, 
+				EditorRes.GeneralRes.TaskChangeDataFormat_Caption, 
+				string.Format(EditorRes.GeneralRes.TaskChangeDataFormat_Desc, Duality.Serialization.Formatter.DefaultMethod.ToString()), 
+				this.async_ChangeDataFormat, null);
+			taskDialog.ShowDialog();
 		}
 		private void selectFormattingMethod_Click(object sender, EventArgs e)
 		{
@@ -1341,6 +1399,33 @@ namespace DualityEditor.Forms
 		private void Resource_ResourceSaved(object sender, Duality.ResourceEventArgs e)
 		{
 			this.editorJustSavedRes.Add(Path.GetFullPath(e.Path));
+		}
+
+		private System.Collections.IEnumerable async_ChangeDataFormat(ProcessingBigTaskDialog.WorkerInterface state)
+		{
+			DualityApp.LoadAppData();
+			DualityApp.LoadUserData();
+			DualityApp.LoadMetaData();
+			state.Progress += 0.05f; yield return null;
+
+			ContentProvider.ClearContent();
+			string[] resFiles = Directory.GetFiles("Data", "*" + Resource.FileExt, SearchOption.AllDirectories);
+			foreach (string file in resFiles)
+			{
+				state.StateDesc = file; yield return null;
+
+				var cr = ContentProvider.RequestContent(file);
+				state.Progress += 0.45f / resFiles.Length; yield return null;
+
+				cr.Res.Save(file);
+				state.Progress += 0.45f / resFiles.Length; yield return null;
+			}
+			ContentProvider.ClearContent();
+					
+			DualityApp.SaveAppData();
+			DualityApp.SaveUserData();
+			DualityApp.SaveMetaData();
+			state.Progress += 0.05f; yield return null;
 		}
 	}
 }

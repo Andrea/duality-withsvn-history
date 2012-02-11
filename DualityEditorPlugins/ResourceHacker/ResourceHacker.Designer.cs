@@ -41,15 +41,15 @@
 			this.nodeTextBoxType = new Aga.Controls.Tree.NodeControls.NodeTextBox();
 			this.nodeTextBoxValue = new Aga.Controls.Tree.NodeControls.NodeTextBox();
 			this.mainToolStrip = new System.Windows.Forms.ToolStrip();
-			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-			this.propertyGrid = new DualityEditor.Controls.PropertyGrid();
-			this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-			this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
 			this.actionOpen = new System.Windows.Forms.ToolStripButton();
 			this.actionSave = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.actionRenameType = new System.Windows.Forms.ToolStripButton();
 			this.batchActionButton = new System.Windows.Forms.ToolStripSplitButton();
 			this.batchActionRenameType = new System.Windows.Forms.ToolStripMenuItem();
+			this.propertyGrid = new DualityEditor.Controls.PropertyGrid();
+			this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+			this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
 			this.splitContainer.Panel1.SuspendLayout();
 			this.splitContainer.Panel2.SuspendLayout();
@@ -182,28 +182,6 @@
 			this.mainToolStrip.Size = new System.Drawing.Size(537, 25);
 			this.mainToolStrip.TabIndex = 1;
 			// 
-			// toolStripSeparator1
-			// 
-			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-			// 
-			// propertyGrid
-			// 
-			this.propertyGrid.AutoScroll = true;
-			this.propertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.propertyGrid.Location = new System.Drawing.Point(0, 0);
-			this.propertyGrid.Name = "propertyGrid";
-			this.propertyGrid.Size = new System.Drawing.Size(537, 155);
-			this.propertyGrid.TabIndex = 0;
-			// 
-			// openFileDialog
-			// 
-			this.openFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog_FileOk);
-			// 
-			// saveFileDialog
-			// 
-			this.saveFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog_FileOk);
-			// 
 			// actionOpen
 			// 
 			this.actionOpen.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -224,6 +202,11 @@
 			this.actionSave.Text = "Save Resource File...";
 			this.actionSave.Click += new System.EventHandler(this.actionSave_Click);
 			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+			// 
 			// actionRenameType
 			// 
 			this.actionRenameType.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -237,14 +220,14 @@
 			// batchActionButton
 			// 
 			this.batchActionButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-			this.batchActionButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.batchActionButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.batchActionRenameType});
 			this.batchActionButton.Image = global::ResourceHacker.Properties.Resources.iconBatchAction;
 			this.batchActionButton.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.batchActionButton.Name = "batchActionButton";
-			this.batchActionButton.Size = new System.Drawing.Size(32, 22);
-			this.batchActionButton.Text = "Batch Actions..";
+			this.batchActionButton.Size = new System.Drawing.Size(121, 22);
+			this.batchActionButton.Text = "Batch Actions...";
+			this.batchActionButton.Click += new System.EventHandler(this.batchActionButton_Click);
 			// 
 			// batchActionRenameType
 			// 
@@ -253,6 +236,23 @@
 			this.batchActionRenameType.Size = new System.Drawing.Size(155, 22);
 			this.batchActionRenameType.Text = "Rename Type...";
 			this.batchActionRenameType.Click += new System.EventHandler(this.batchActionRenameType_Click);
+			// 
+			// propertyGrid
+			// 
+			this.propertyGrid.AutoScroll = true;
+			this.propertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.propertyGrid.Location = new System.Drawing.Point(0, 0);
+			this.propertyGrid.Name = "propertyGrid";
+			this.propertyGrid.Size = new System.Drawing.Size(537, 155);
+			this.propertyGrid.TabIndex = 0;
+			// 
+			// openFileDialog
+			// 
+			this.openFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog_FileOk);
+			// 
+			// saveFileDialog
+			// 
+			this.saveFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog_FileOk);
 			// 
 			// ResourceHacker
 			// 

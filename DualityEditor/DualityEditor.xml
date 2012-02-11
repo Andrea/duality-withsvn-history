@@ -499,6 +499,26 @@
               Sucht eine lokalisierte Zeichenfolge, die This action will break the objects Prefab Link. Proceed? ähnelt.
             </summary>
         </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.Msg_ConfirmReloadResource_Caption">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Reload Resource? ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.Msg_ConfirmReloadResource_Text">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die The currently active Resource &apos;{0}&apos; has been modified externally. Do you want to reload it from file? Any unsaved changes might be lost. ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.Msg_ErrorPerformBigTask_Caption">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Failed to perform task ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.Msg_ErrorPerformBigTask_Desc">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die An error occured while performing task &apos;{0}&apos;: {1}{2} ähnelt.
+            </summary>
+        </member>
         <member name="P:DualityEditor.EditorRes.GeneralRes.Msg_ErrorReloadCorePlugin_Caption">
             <summary>
               Sucht eine lokalisierte Zeichenfolge, die Can&apos;t reload core plugin ähnelt.
@@ -527,6 +547,16 @@
         <member name="P:DualityEditor.EditorRes.GeneralRes.TaskBarOverlay_ReloadCorePlugin_Desc">
             <summary>
               Sucht eine lokalisierte Zeichenfolge, die Reloading core plugins... ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.TaskChangeDataFormat_Caption">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Changing project data format... ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.TaskChangeDataFormat_Desc">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die The project data format has been changed to {0}. Existing Resource files will be converted shortly. ähnelt.
             </summary>
         </member>
         <member name="F:DualityEditor.Forms.MainForm.components">
@@ -566,6 +596,23 @@
         <member name="T:DualityEditor.Controls.FlagCheckedListBoxItem">
             <summary>
             Represents an item in the checklistbox
+            </summary>
+        </member>
+        <member name="F:DualityEditor.Forms.ProcessingBigTaskDialog.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:DualityEditor.Forms.ProcessingBigTaskDialog.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:DualityEditor.Forms.ProcessingBigTaskDialog.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
             </summary>
         </member>
     </members>
