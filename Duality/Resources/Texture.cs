@@ -647,8 +647,8 @@ namespace Duality.Resources
 			}
 			else
 			{
-				this.oglWidth = OpenTK.MathHelper.NextPowerOfTwo(this.pxWidth);
-				this.oglHeight = OpenTK.MathHelper.NextPowerOfTwo(this.pxHeight);
+				this.oglWidth = MathF.NextPowerOfTwo(this.pxWidth);
+				this.oglHeight = MathF.NextPowerOfTwo(this.pxHeight);
 				if (this.pxWidth != this.oglWidth || this.pxHeight != this.oglHeight)
 				{
 					if (this.oglSizeMode == SizeMode.Enlarge)

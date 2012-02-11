@@ -124,44 +124,6 @@ namespace DualityEditor
 		}
 	}
 
-	public class ResourceEventArgs : EventArgs
-	{
-		private string		path;
-		private	bool		isDirectory;
-
-		public string Path
-		{
-			get { return this.path; }
-		}
-		public bool IsDirectory
-		{
-			get { return this.isDirectory; }
-		}
-		public bool IsResource
-		{
-			get { return !this.isDirectory; }
-		}
-		public Type ContentType
-		{
-			get 
-			{
-				if (isDirectory) return null;
-				else return Resource.GetTypeByFileName(this.path);
-			}
-		}
-		public ContentRef<Resource> Content
-		{
-			get { return this.isDirectory ? ContentRef<Resource>.Null : new ContentRef<Resource>(null, this.path); }
-		}
-
-		public ResourceEventArgs(string path)
-		{
-			this.path = path;
-
-			this.isDirectory = System.IO.Directory.Exists(this.path);
-		}
-	}
-
 	public class ResourceRenamedEventArgs : ResourceEventArgs
 	{
 		private	string	oldPath;

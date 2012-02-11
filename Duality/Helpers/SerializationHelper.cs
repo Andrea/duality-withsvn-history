@@ -98,8 +98,7 @@ namespace Duality
 		{
 			public new bool ContainsKey(object key)
 			{
-				if (key == null)
-					return true;
+				if (key == null) return true;
 				return base.ContainsKey(key);
 			}
 			public new object this[object key]

@@ -845,7 +845,7 @@ namespace EditorBase.CamViewStates
 					Vector3.Multiply(ref posRelCenter, ref scaleVec, out posRelCenterTarget);
 
 					s.Pos = this.selectionCenter + posRelCenterTarget;
-					s.Scale = Vector3.Multiply(s.Scale, scaleVec);
+					s.Scale *= scaleVec;
 				}
 				this.PostPerformAction(this.actionObjSel, this.action);
 			}

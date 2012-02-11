@@ -62,6 +62,7 @@ namespace DualityEditor.Forms
 		private	bool					dualityAppSuspended	= true;
 		private	bool					sandboxStateChange	= false;
 		private	bool					sandboxSceneFreeze	= false;
+		private	List<string>			editorJustSavedRes	= new List<string>();
 
 		private	HelpStack		helpStack			= new HelpStack();
 		private	SandboxState	sandboxState		= SandboxState.Inactive;
@@ -193,6 +194,7 @@ namespace DualityEditor.Forms
 
 			this.dualityAppSuspended = false;
 			Application.Idle += this.Application_Idle;
+			Resource.ResourceSaved += this.Resource_ResourceSaved;
 
 			// Hook message filter
 			InputEventMessageFilter inputFilter = new InputEventMessageFilter();
@@ -548,6 +550,7 @@ namespace DualityEditor.Forms
 		}
 		private bool IsPathIgnored(string filePath)
 		{
+			if (!File.Exists(filePath) || !Directory.Exists(filePath)) return false;
 			if (!PathHelper.IsPathVisible(filePath)) return true;
 			if (filePath.Contains(@"/.svn/") || filePath.Contains(@"\.svn\")) return true;
 			return false;
@@ -574,7 +577,7 @@ namespace DualityEditor.Forms
 		}
 		private void PrepareImportFilePaths(string filePath, out string srcFilePath, out string targetName, out string targetDir)
 		{
-			srcFilePath = PathHelper.MakePathRelative(filePath, EditorHelper.DataDirectory);
+			srcFilePath = PathHelper.MakeFilePathRelative(filePath, EditorHelper.DataDirectory);
 			if (srcFilePath.Contains("..")) srcFilePath = Path.GetFileName(srcFilePath);
 
 			targetDir = Path.GetDirectoryName(Path.Combine(EditorHelper.DataDirectory, srcFilePath));
@@ -1075,7 +1078,12 @@ namespace DualityEditor.Forms
 		private void dataDirWatcher_Changed(object sender, FileSystemEventArgs e)
 		{
 			if (this.IsResPathIgnored(e.FullPath)) return;
+			string fullPath = Path.GetFullPath(e.FullPath);
 			ResourceEventArgs args = new ResourceEventArgs(e.FullPath);
+			
+			// Unregister outdated resources, if modified outside the editor
+			if (!this.editorJustSavedRes.Contains(fullPath))
+				ContentProvider.UnregisterContent(args.Path);
 
 			// When modifying prefabs, apply changes to all linked objects
 			if (args.IsResource && args.Content.Is<Prefab>())
@@ -1174,6 +1182,8 @@ namespace DualityEditor.Forms
 
 		private void Application_Idle(object sender, EventArgs e)
 		{
+			this.editorJustSavedRes.Clear();
+
 			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
 			while (this.AppStillIdle)
 			{
@@ -1326,6 +1336,11 @@ namespace DualityEditor.Forms
 		private void selectFormattingMethod_Click(object sender, EventArgs e)
 		{
 			this.selectFormattingMethod.ShowDropDown();
+		}
+
+		private void Resource_ResourceSaved(object sender, Duality.ResourceEventArgs e)
+		{
+			this.editorJustSavedRes.Add(Path.GetFullPath(e.Path));
 		}
 	}
 }

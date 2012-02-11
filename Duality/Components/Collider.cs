@@ -397,6 +397,10 @@ namespace Duality.Components
 		public IEnumerable<ShapeInfo> Shapes
 		{
 			get { return this.shapes; }
+			set
+			{
+				this.SetShapes(value);
+			}
 		}
 		/// <summary>
 		/// [GET] The physical bodys bounding radius.
@@ -428,6 +432,7 @@ namespace Duality.Components
 		/// <param name="shape"></param>
 		public void AddShape(ShapeInfo shape)
 		{
+			if (shape == null) throw new ArgumentNullException("shapes");
 			if (this.shapes != null && this.shapes.Contains(shape)) return;
 
 			if (this.shapes == null) this.shapes = new List<ShapeInfo>();
@@ -451,6 +456,7 @@ namespace Duality.Components
 		/// <param name="shape"></param>
 		public void RemoveShape(ShapeInfo shape)
 		{
+			if (shape == null) throw new ArgumentNullException("shapes");
 			if (this.shapes == null || !this.shapes.Contains(shape)) return;
 
 			this.shapes.Remove(shape);
@@ -477,6 +483,48 @@ namespace Duality.Components
 				shape.Parent = null;
 			}
 			this.UpdateBodyShape();
+		}
+		/// <summary>
+		/// Sets the Colliders shape.
+		/// </summary>
+		/// <param name="shapes"></param>
+		public void SetShapes(IEnumerable<ShapeInfo> shapes)
+		{
+			if (shapes == null) throw new ArgumentNullException("shapes");
+
+			// Clone shape collection
+			ShapeInfo[] cloned = shapes.ToArray();
+			for (int i = 0; i < cloned.Length; i++)
+				cloned[i] = cloned[i].Clone();
+			shapes = cloned;
+
+			if (this.shapes != null)
+			{
+				var oldShapes = this.shapes.ToArray();
+				this.shapes.Clear();
+				foreach (ShapeInfo shape in oldShapes)
+				{
+					if (this.body != null) shape.DestroyFixture(this.body);
+					shape.Parent = null;
+				}
+			}
+
+			bool wasEnabled = this.body != null && this.body.Enabled;
+			if (wasEnabled) this.body.Enabled = false;
+
+			if (this.shapes == null) this.shapes = new List<ShapeInfo>();
+			foreach (ShapeInfo shape in shapes)
+			{
+				if (shape == null) continue;
+
+				this.shapes.Add(shape);
+				shape.Parent = this;
+
+				if (this.body != null) shape.CreateFixture(this.body);
+			}
+
+			this.UpdateBodyShape();
+			if (wasEnabled) this.body.Enabled = true;
 		}
 
 		/// <summary>
@@ -736,13 +784,9 @@ namespace Duality.Components
 			c.ignoreGravity = this.ignoreGravity;
 			c.colCat = this.colCat;
 
-			if (this.shapes != null)
-			{
-				c.ClearShapes();
-				foreach (ShapeInfo shape in this.shapes)
-					c.AddShape(shape.Clone());
-			}
-			else c.shapes = null;
+			// Discard old shape list.
+			c.shapes = null;
+			if (this.shapes != null) c.SetShapes(this.shapes);
 
 			if (wasInitialized) c.InitBody();
 		}

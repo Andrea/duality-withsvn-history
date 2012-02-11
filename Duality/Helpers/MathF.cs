@@ -206,23 +206,6 @@ namespace Duality
 		{
 			return (float)System.Math.Sqrt(v);
 		}
-		/// <summary>
-		/// Returns an approximation of a numbers inverse square root.
-		/// </summary>
-		/// <param name="x">A number.</param>
-		/// <returns>An approximation of the inverse square root of the specified number, with an upper error bound of 0.001</returns>
-		public static float InvSqrtFast(float x)
-		{
-			unsafe
-			{
-				float xhalf = 0.5f * x;
-				int i = *(int*)&x;              // Read bits as integer.
-				i = 0x5f375a86 - (i >> 1);      // Make an initial guess for Newton-Raphson approximation
-				x = *(float*)&i;                // Convert bits back to float
-				x = x * (1.5f - xhalf * x * x); // Perform left single Newton-Raphson step.
-				return x;
-			}
-		}
 
 		/// <summary>
 		/// Returns the factorial of an integer value.
@@ -276,9 +259,7 @@ namespace Duality
 		/// <returns>The lowest value.</returns>
 		public static float Min(params float[] v)
 		{
-			float m = float.MaxValue;
-			foreach (float val in v) m = System.Math.Min(m, val);
-			return m;
+			return v.Min();
 		}
 		/// <summary>
 		/// Returns the lower of two values.
@@ -320,9 +301,7 @@ namespace Duality
 		/// <returns>The lowest value.</returns>
 		public static int Min(params int[] v)
 		{
-			int m = int.MaxValue;
-			foreach (int val in v) m = System.Math.Min(m, val);
-			return m;
+			return v.Min();
 		}
 		
 		/// <summary>
@@ -365,9 +344,7 @@ namespace Duality
 		/// <returns>The highest value.</returns>
 		public static float Max(params float[] v)
 		{
-			float m = float.MinValue;
-			foreach (float val in v) m = System.Math.Max(m, val);
-			return m;
+			return v.Max();
 		}
 		/// <summary>
 		/// Returns the higher of two values.
@@ -409,9 +386,7 @@ namespace Duality
 		/// <returns>The highest value.</returns>
 		public static int Max(params int[] v)
 		{
-			int m = int.MinValue;
-			foreach (int val in v) m = System.Math.Max(m, val);
-			return m;
+			return v.Max();
 		}
 
 		/// <summary>
@@ -1206,5 +1181,44 @@ namespace Duality
 			timeTemp /= (((obj1XSpeed - obj2XSpeed) * (obj1XSpeed - obj2XSpeed)) + ((obj1YSpeed - obj2YSpeed) * (obj1YSpeed - obj2YSpeed)));
 			return timeTemp;
 		}
+
+		/// <summary>
+		/// Returns whether or not the specified polygon is convex.
+		/// </summary>
+		/// <param name="vertices"></param>
+		/// <returns></returns>
+		public static bool IsPolygonConvex(params Vector2[] vertices)
+		{
+			bool neg = false;
+			bool pos = false;
+
+			int b, c;
+			for (int a = 0; a < vertices.Length; a++)
+			{
+				b = (a + 1) % vertices.Length;
+				c = (b + 1) % vertices.Length;
+				Vector2 ab = vertices[b] - vertices[a];
+				Vector2 bc = vertices[c] - vertices[b];
+
+				float dot_product = Vector2.Dot(ab.PerpendicularLeft, bc);
+				if (dot_product > 0.0f) pos = true;
+				else if (dot_product < 0.0f) neg = true;
+
+				if (neg && pos) return false;
+			}
+
+			return true;
+		}
+		
+        /// <summary>
+        /// Returns the next power of two that is larger than the specified number.
+        /// </summary>
+        /// <param name="n">The specified number.</param>
+        /// <returns>The next power of two.</returns>
+        public static int NextPowerOfTwo(int n)
+        {
+            if (n < 0) throw new ArgumentOutOfRangeException("n", "Must be positive.");
+            return (int)System.Math.Pow(2, System.Math.Ceiling(System.Math.Log((double)n, 2)));
+        }
 	}
 }

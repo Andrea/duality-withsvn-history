@@ -373,6 +373,12 @@ namespace Duality
 			// CopyTo for custom Components - defaults to reflection
 			this.OnCopyTo(target);
 		}
+		/// <summary>
+		/// Note: Since PrefabLinks may contain references to object-local values,
+		/// all objects fields should either be overwritten or left untouched.
+		/// DO NOT modify any referenced objects. Instead, discard them and create new.
+		/// </summary>
+		/// <param name="target"></param>
 		internal virtual void CopyToInternal(Component target)
 		{
 			// Copy "pure" data

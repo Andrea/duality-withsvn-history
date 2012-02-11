@@ -630,6 +630,7 @@ namespace EditorBase
 			string basePath = this.GetInsertActionTargetBasePath(baseNode);
 			string nameExt = Resource.GetFileExtByType(type);
 			string resPath = PathHelper.GetFreePath(Path.Combine(basePath, desiredName), nameExt);
+			resPath = PathHelper.MakeFilePathRelative(resPath, ".");
 
 			Resource resInstance = ReflectionHelper.CreateInstanceOf(type) as Resource;
 			resInstance.Save(resPath);

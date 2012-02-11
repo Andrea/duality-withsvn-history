@@ -165,7 +165,7 @@ namespace Duality.Serialization.MetaFormat
 	public class EnumNode : DataNode
 	{
 		protected	string	enumType;
-		protected	string	name;
+		protected	string	valueName;
 		protected	long	value;
 
 		/// <summary>
@@ -181,8 +181,8 @@ namespace Duality.Serialization.MetaFormat
 		/// </summary>
 		public string ValueName
 		{
-			get { return this.name; }
-			set { this.name = value; }
+			get { return this.valueName; }
+			set { this.valueName = value; }
 		}
 		/// <summary>
 		/// [GET / SET] The numeric enum value
@@ -196,7 +196,7 @@ namespace Duality.Serialization.MetaFormat
 		public EnumNode(string enumType, string name, long value) : base(DataType.Enum)
 		{
 			this.enumType = enumType;
-			this.name = name;
+			this.valueName = name;
 			this.value = value;
 		}
 		public override int ReplaceTypeStrings(string oldTypeString, string newTypeString)

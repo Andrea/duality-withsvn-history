@@ -24,6 +24,10 @@ namespace Duality
 		public const string FileExt = ".res";
 
 		private	static	List<Resource>	finalizeSched	= new List<Resource>();
+
+		public static event EventHandler<ResourceEventArgs>	ResourceDisposed = null;
+		public static event EventHandler<ResourceEventArgs>	ResourceLoaded = null;
+		public static event EventHandler<ResourceEventArgs>	ResourceSaved = null;
 		
 		/// <summary>
 		/// The path of this Resource.
@@ -139,11 +143,19 @@ namespace Duality
 		/// <summary>
 		/// Called when this Resource has just been saved.
 		/// </summary>
-		protected virtual void OnSaved() {}
+		protected virtual void OnSaved()
+		{
+			if (ResourceSaved != null)
+				ResourceSaved(this, new ResourceEventArgs(this));
+		}
 		/// <summary>
 		/// Called when this Resource has just been loaded.
 		/// </summary>
-		protected virtual void OnLoaded() {}
+		protected virtual void OnLoaded()
+		{
+			if (ResourceLoaded != null)
+				ResourceLoaded(this, new ResourceEventArgs(this));
+		}
 
 		~Resource()
 		{
@@ -171,7 +183,8 @@ namespace Duality
 		/// <param name="manually"></param>
 		protected virtual void OnDisposing(bool manually)
 		{
-
+			if (ResourceDisposed != null)
+				ResourceDisposed(this, new ResourceEventArgs(this));
 		}
 
 		/// <summary>
@@ -281,7 +294,7 @@ namespace Duality
 		}
 
 		/// <summary>
-		/// A <see cref="Duality.Serialization.BinaryFormatter.FieldBlockers">FieldBlocker</see> to prevent
+		/// A <see cref="Duality.Serialization.Formatter.FieldBlockers">FieldBlocker</see> to prevent
 		/// fields flagged with a <see cref="NonSerializedResourceAttribute"/> from being serialized.
 		/// </summary>
 		/// <param name="field"></param>

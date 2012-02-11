@@ -61,21 +61,20 @@ namespace Duality
 		/// <summary>
 		/// Returns the relative path from one path to another.
 		/// </summary>
-		/// <param name="path">The path to make relative.</param>
-		/// <param name="relativeTo">The path to make it relative to.</param>
+		/// <param name="filePath">The path to make relative.</param>
+		/// <param name="relativeToDir">The path to make it relative to.</param>
 		/// <returns>A path that, if <see cref="System.IO.Path.Combine(string,string)">combined</see> with <c>relativeTo</c>, equals the original path.</returns>
 		/// <example>
 		/// <c>PathHelper.MakePathRelative(@"C:\SomeDir\SubDir\File.txt", @"C:\SomeDir")</c> will return <c>SubDir\File.txt</c>.
 		/// </example>
-		public static string MakePathRelative(string path, string relativeTo)
+		public static string MakeFilePathRelative(string filePath, string relativeToDir)
 		{
-			string dir		= Path.GetFullPath(path);
-			string dirRel	= Path.GetFullPath(relativeTo);
+			string dir		= Path.GetFullPath(filePath);
+			string dirRel	= Path.GetFullPath(relativeToDir);
 			string fileName	= "";
 
-			if (File.Exists(dir))			fileName	= Path.GetFileName(dir);
-			if (!Directory.Exists(dir))		dir			= Path.GetDirectoryName(dir);
-			if (!Directory.Exists(dirRel))	dirRel		= Path.GetDirectoryName(dirRel);
+			fileName = Path.GetFileName(dir);
+			dir = Path.GetDirectoryName(dir);
 
 			// Different disk drive: Cannot generate relative path.
 			if (Directory.GetDirectoryRoot(dir) != Directory.GetDirectoryRoot(dirRel))	return null;
@@ -129,11 +128,6 @@ namespace Duality
 		{
 			string dir		= Path.GetFullPath(path);
 			string dirRel	= Path.GetFullPath(path2);
-			string fileName	= "";
-
-			if (File.Exists(dir))			fileName	= Path.GetFileName(dir);
-			if (!Directory.Exists(dir))		dir			= Path.GetDirectoryName(dir);
-			if (!Directory.Exists(dirRel))	dirRel		= Path.GetDirectoryName(dirRel);
 
 			// Different disk drive: No mutual directory
 			if (Directory.GetDirectoryRoot(dir) != Directory.GetDirectoryRoot(dirRel))	return null;

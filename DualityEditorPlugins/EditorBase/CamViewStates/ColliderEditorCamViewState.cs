@@ -291,7 +291,7 @@ namespace EditorBase.CamViewStates
 			}
 			private void ScaleTo(Vector2 newScale)
 			{
-				Vector2 scaleRatio = Vector2.Divide(newScale, this.scale);
+				Vector2 scaleRatio = newScale / this.scale;
 
 				Vector2[] scaledVertices = this.poly.Vertices.ToArray();
 				for (int i = 0; i < scaledVertices.Length; i++)
@@ -322,7 +322,7 @@ namespace EditorBase.CamViewStates
 		private	ToolStrip			toolstrip			= null;
 		private	ToolStripButton		toolCreateCircle	= null;
 		private	ToolStripButton		toolCreatePoly		= null;
-		private	ContentRef<Font>	bigFont				= null;
+		private	ContentRef<Font>	bigFont				= new ContentRef<Font>(null, "__editor__bigfont__");
 
 		public override string StateName
 		{
@@ -350,28 +350,24 @@ namespace EditorBase.CamViewStates
 					return ColorRgba.Mix(new ColorRgba(255, 128, 0), ColorRgba.VeryDarkGrey, 0.5f);
 			}
 		}
+		public ColorRgba ShapeErrorColor
+		{
+			get
+			{
+				float fgLum = this.View.FgColor.GetLuminance();
+				if (fgLum > 0.5f)
+					return ColorRgba.Mix(new ColorRgba(255, 0, 0), ColorRgba.VeryLightGrey, 0.5f);
+				else
+					return ColorRgba.Mix(new ColorRgba(255, 0, 0), ColorRgba.VeryDarkGrey, 0.5f);
+			}
+		}
 
 		protected internal override void OnEnterState()
 		{
 			base.OnEnterState();
 
 			// Init Resources
-			if (!ContentProvider.IsContentRegistered("__editor__bigfont__"))
-			{
-				Font bigFontRes = new Font();
-				bigFontRes.Family = FontFamily.GenericSansSerif.Name;
-				bigFontRes.Size = 32;
-				bigFontRes.Kerning = true;
-				bigFontRes.GlyphRenderHint = Duality.Resources.Font.RenderHint.AntiAlias;
-				bigFontRes.ReloadData();
-
-				ContentProvider.RegisterContent("__editor__bigfont__", bigFontRes);
-				this.bigFont = bigFontRes;
-			}
-			else
-			{
-				this.bigFont = ContentProvider.RequestContent<Font>("__editor__bigfont__");
-			}
+			this.RetrieveResources();
 
 			// Init GUI
 			this.View.SuspendLayout();
@@ -433,11 +429,14 @@ namespace EditorBase.CamViewStates
 		{
 			base.OnCollectStateDrawcalls(canvas);
 			List<Collider> visibleColliders = this.QueryVisibleColliders().ToList();
+
+			this.RetrieveResources();
 			canvas.CurrentState.TextFont = this.bigFont;
-			Duality.Resources.Font font = canvas.CurrentState.TextFont.Res;
+			Font textFont = canvas.CurrentState.TextFont.Res;
 
 			foreach (Collider c in visibleColliders)
 			{
+				if (!c.Shapes.Any()) continue;
 				float colliderAlpha = c == this.selectedCollider ? 1.0f : 0.25f;
 				float maxDensity = c.Shapes.Max(s => s.Density);
 				float minDensity = c.Shapes.Min(s => s.Density);
@@ -456,7 +455,7 @@ namespace EditorBase.CamViewStates
 					if (circle != null)
 					{
 						float uniformScale = colliderScale.Length / MathF.Sqrt(2.0f);
-						Vector2 circlePos = Vector2.Multiply(circle.Position, colliderScale);
+						Vector2 circlePos = circle.Position * colliderScale;
 						MathF.TransformCoord(ref circlePos.X, ref circlePos.Y, c.GameObj.Transform.Angle);
 
 						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha((0.25f + densityRelative * 0.25f) * colliderAlpha)));
@@ -472,7 +471,7 @@ namespace EditorBase.CamViewStates
 							colliderPos.Z - 0.01f, 
 							circle.Radius * uniformScale);
 
-						Vector2 textSize = font.MeasureText(index.ToString());
+						Vector2 textSize = textFont.MeasureText(index.ToString());
 						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, fontClr.WithAlpha(shapeAlpha)));
 						canvas.CurrentState.TransformHandle = textSize * 0.5f;
 						canvas.DrawText(index.ToString(), 
@@ -483,6 +482,9 @@ namespace EditorBase.CamViewStates
 					}
 					else if (poly != null)
 					{
+						if (!MathF.IsPolygonConvex(poly.Vertices) && (this.mouseState != CursorState.CreatePolygon || this.createPolyIndex > 2))
+							clr = this.ShapeErrorColor;
+
 						Vector2[] polyVert = poly.Vertices.ToArray();
 						Vector2 center = Vector2.Zero;
 						for (int i = 0; i < polyVert.Length; i++)
@@ -501,7 +503,7 @@ namespace EditorBase.CamViewStates
 						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha(shapeAlpha)));
 						canvas.DrawConvexPolygon(polyVert, colliderPos.Z - 0.01f);
 
-						Vector2 textSize = font.MeasureText(index.ToString());
+						Vector2 textSize = textFont.MeasureText(index.ToString());
 						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, fontClr.WithAlpha(shapeAlpha)));
 						canvas.CurrentState.TransformHandle = textSize * 0.5f;
 						canvas.DrawText(index.ToString(), 
@@ -737,6 +739,20 @@ namespace EditorBase.CamViewStates
 		{
 			return (r as Component).GameObj.GetComponent<Collider>() != null && (r as Component).Active;
 		}
+
+		private void RetrieveResources()
+		{
+			if (!this.bigFont.IsAvailable)
+			{
+				Font bigFontRes = new Font();
+				bigFontRes.Family = FontFamily.GenericSansSerif.Name;
+				bigFontRes.Size = 32;
+				bigFontRes.Kerning = true;
+				bigFontRes.GlyphRenderHint = Duality.Resources.Font.RenderHint.AntiAlias;
+				bigFontRes.ReloadData();
+				ContentProvider.RegisterContent("__editor__bigfont__", bigFontRes);
+			}
+		}
 		
 		private void View_CurrentCameraChanged(object sender, CamView.CameraChangedEventArgs e)
 		{
@@ -841,30 +857,39 @@ namespace EditorBase.CamViewStates
 					Vector3 spaceCoord = this.View.GetSpaceCoord(new Vector3(e.X, e.Y, selTransform.Pos.Z));
 					Vector2 localPos = selTransform.GetLocalFromWorld(spaceCoord).Xy;
 
+					bool success = false;
 					if (!this.allObjSel.Any(sel => sel is SelPolyShape))
 					{
 						Collider.PolyShapeInfo newShape = new Collider.PolyShapeInfo(new Vector2[] { localPos, localPos + Vector2.UnitX, localPos + Vector2.One }, 1.0f);
 						this.selectedCollider.AddShape(newShape);
 						this.SelectObjects(new[] { SelShape.Create(newShape) });
+						success = true;
 					}
 					else
 					{
 						SelPolyShape selPolyShape = this.allObjSel.OfType<SelPolyShape>().First();
 						Collider.PolyShapeInfo polyShape = selPolyShape.ActualObject as Collider.PolyShapeInfo;
-						List<Vector2> vertices = polyShape.Vertices.ToList();
+						if (this.createPolyIndex <= 2 || MathF.IsPolygonConvex(polyShape.Vertices))
+						{
+							List<Vector2> vertices = polyShape.Vertices.ToList();
 
-						vertices[this.createPolyIndex] = localPos;
-						if (this.createPolyIndex >= vertices.Count - 1)
-							vertices.Add(localPos);
+							vertices[this.createPolyIndex] = localPos;
+							if (this.createPolyIndex >= vertices.Count - 1)
+								vertices.Add(localPos);
 
-						polyShape.Vertices = vertices.ToArray();
-						selPolyShape.UpdatePolyStats();
+							polyShape.Vertices = vertices.ToArray();
+							selPolyShape.UpdatePolyStats();
+							success = true;
+						}
 					}
 
-					this.createPolyIndex++;
-					EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
-						new ObjectSelection(this.selectedCollider),
-						ReflectionInfo.Property_Collider_Shapes);
+					if (success)
+					{
+						this.createPolyIndex++;
+						EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
+							new ObjectSelection(this.selectedCollider),
+							ReflectionInfo.Property_Collider_Shapes);
+					}
 				}
 				else if (e.Button == MouseButtons.Right)
 				{

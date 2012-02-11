@@ -260,14 +260,14 @@ namespace Duality
 		/// </summary>
 		/// <typeparam name="T">Type of the random values.</typeparam>
 		/// <param name="r">A random number generator.</param>
-		/// <param name="weightesValues">A weighted value pool.</param>
+		/// <param name="weightedValues">A weighted value pool.</param>
 		/// <returns></returns>
-		public static T WeightedNext<T>(this Random r, IEnumerable<KeyValuePair<T,float>> weightesValues)
+		public static T WeightedNext<T>(this Random r, IEnumerable<KeyValuePair<T,float>> weightedValues)
 		{
-			float totalWeight = weightesValues.Sum(v => v.Value);
+			float totalWeight = weightedValues.Sum(v => v.Value);
 			float pickedWeight = r.NextFloat(totalWeight);
 			
-			foreach (KeyValuePair<T,float> pair in weightesValues)
+			foreach (KeyValuePair<T,float> pair in weightedValues)
 			{
 				pickedWeight -= pair.Value;
 				if (pickedWeight < 0.0f) return pair.Key;
@@ -280,11 +280,11 @@ namespace Duality
 		/// </summary>
 		/// <typeparam name="T">Type of the random values.</typeparam>
 		/// <param name="r">A random number generator.</param>
-		/// <param name="weightesValues">A weighted value pool.</param>
+		/// <param name="weightedValues">A weighted value pool.</param>
 		/// <returns></returns>
-		public static T WeightedNext<T>(this Random r, params KeyValuePair<T,float>[] weightesValues)
+		public static T WeightedNext<T>(this Random r, params KeyValuePair<T,float>[] weightedValues)
 		{
-			return WeightedNext<T>(r, weightesValues as IEnumerable<KeyValuePair<T,float>>);
+			return WeightedNext<T>(r, weightedValues as IEnumerable<KeyValuePair<T,float>>);
 		}
 	}
 }

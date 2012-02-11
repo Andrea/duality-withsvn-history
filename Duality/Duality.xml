@@ -699,6 +699,14 @@
             </summary>
             <param name="target">The target Component to copy to.</param>
         </member>
+        <member name="M:Duality.Component.CopyToInternal(Duality.Component)">
+            <summary>
+            Note: Since PrefabLinks may contain references to object-local values,
+            all objects fields should either be overwritten or left untouched.
+            DO NOT modify any referenced objects. Instead, discard them and create new.
+            </summary>
+            <param name="target"></param>
+        </member>
         <member name="M:Duality.Component.OnCopyTo(Duality.Component)">
             <summary>
             This method Performs the <see cref="M:Duality.Component.CopyTo(Duality.Component)"/> operation for custom Component Types.
@@ -3201,7 +3209,7 @@
         </member>
         <member name="M:Duality.Resource.NonSerializedResourceBlocker(System.Reflection.FieldInfo)">
             <summary>
-            A <see cref="!:Duality.Serialization.BinaryFormatter.FieldBlockers">FieldBlocker</see> to prevent
+            A <see cref="P:Duality.Serialization.Formatter.FieldBlockers">FieldBlocker</see> to prevent
             fields flagged with a <see cref="T:Duality.NonSerializedResourceAttribute"/> from being serialized.
             </summary>
             <param name="field"></param>
@@ -7886,6 +7894,12 @@
             Removes all existing shapes from the Collider.
             </summary>
         </member>
+        <member name="M:Duality.Components.Collider.SetShapes(System.Collections.Generic.IEnumerable{Duality.Components.Collider.ShapeInfo})">
+            <summary>
+            Sets the Colliders shape.
+            </summary>
+            <param name="shapes"></param>
+        </member>
         <member name="M:Duality.Components.Collider.UpdateBodyShape">
             <summary>
             Updates the Colliders internal body shape based on its set of <see cref="T:Duality.Components.Collider.ShapeInfo"/> objects.
@@ -8271,12 +8285,12 @@
             <c>PathHelper.IsPathLocatedIn(@"C:\SomeDir\SubDir", @"C:\SomeDir")</c> will return true.
             </example>
         </member>
-        <member name="M:Duality.PathHelper.MakePathRelative(System.String,System.String)">
+        <member name="M:Duality.PathHelper.MakeFilePathRelative(System.String,System.String)">
             <summary>
             Returns the relative path from one path to another.
             </summary>
-            <param name="path">The path to make relative.</param>
-            <param name="relativeTo">The path to make it relative to.</param>
+            <param name="filePath">The path to make relative.</param>
+            <param name="relativeToDir">The path to make it relative to.</param>
             <returns>A path that, if <see cref="M:System.IO.Path.Combine(System.String,System.String)">combined</see> with <c>relativeTo</c>, equals the original path.</returns>
             <example>
             <c>PathHelper.MakePathRelative(@"C:\SomeDir\SubDir\File.txt", @"C:\SomeDir")</c> will return <c>SubDir\File.txt</c>.
@@ -8486,7 +8500,7 @@
             </summary>
             <typeparam name="T">Type of the random values.</typeparam>
             <param name="r">A random number generator.</param>
-            <param name="weightesValues">A weighted value pool.</param>
+            <param name="weightedValues">A weighted value pool.</param>
             <returns></returns>
         </member>
         <member name="M:Duality.ExtMethodsRandom.WeightedNext``1(System.Random,System.Collections.Generic.KeyValuePair{``0,System.Single}[])">
@@ -8495,7 +8509,7 @@
             </summary>
             <typeparam name="T">Type of the random values.</typeparam>
             <param name="r">A random number generator.</param>
-            <param name="weightesValues">A weighted value pool.</param>
+            <param name="weightedValues">A weighted value pool.</param>
             <returns></returns>
         </member>
         <member name="T:Duality.FormattedText">
@@ -8979,13 +8993,6 @@
             </summary>
             <param name="v">A number.</param>
             <returns>The numbers square root.</returns>
-        </member>
-        <member name="M:Duality.MathF.InvSqrtFast(System.Single)">
-            <summary>
-            Returns an approximation of a numbers inverse square root.
-            </summary>
-            <param name="x">A number.</param>
-            <returns>An approximation of the inverse square root of the specified number, with an upper error bound of 0.001</returns>
         </member>
         <member name="M:Duality.MathF.Factorial(System.Int32)">
             <summary>
@@ -9582,6 +9589,20 @@
             <param name="obj2XSpeed">x-Speed of the second object.</param>
             <param name="obj2YSpeed">y-Speed of the second object.</param>
             <returns>Time of minimum distance.</returns>
+        </member>
+        <member name="M:Duality.MathF.IsPolygonConvex(OpenTK.Vector2[])">
+            <summary>
+            Returns whether or not the specified polygon is convex.
+            </summary>
+            <param name="vertices"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.MathF.NextPowerOfTwo(System.Int32)">
+            <summary>
+            Returns the next power of two that is larger than the specified number.
+            </summary>
+            <param name="n">The specified number.</param>
+            <returns>The next power of two.</returns>
         </member>
         <member name="P:Duality.MathF.Rnd">
             <summary>

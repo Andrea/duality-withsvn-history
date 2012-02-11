@@ -263,7 +263,7 @@ namespace ResourceHacker
 			// Assure reloading the modified resource
 			if (PathHelper.IsPathLocatedIn(this.filePath, "."))
 			{
-				string dataPath = PathHelper.MakePathRelative(this.filePath, ".");
+				string dataPath = PathHelper.MakeFilePathRelative(this.filePath, ".");
 				ContentProvider.UnregisterContent(dataPath, true);
 			}
 		}
@@ -377,7 +377,7 @@ namespace ResourceHacker
 			// Assure reloading the modified resource
 			if (PathHelper.IsPathLocatedIn(filePath, "."))
 			{
-				string dataPath = PathHelper.MakePathRelative(filePath, ".");
+				string dataPath = PathHelper.MakeFilePathRelative(filePath, ".");
 				ContentProvider.UnregisterContent(dataPath, true);
 			}
 		}
@@ -397,7 +397,7 @@ namespace ResourceHacker
 			// Assure reloading the modified resources
 			if (updateContent && PathHelper.IsPathLocatedIn(folderPath, "."))
 			{
-				string dataPath = PathHelper.MakePathRelative(folderPath, ".");
+				string dataPath = PathHelper.MakeFilePathRelative(folderPath, ".");
 				ContentProvider.UnregisterContentTree(dataPath, true);
 			}
 		}

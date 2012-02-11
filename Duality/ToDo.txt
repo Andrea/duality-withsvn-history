@@ -7,8 +7,6 @@
 	-->	??? Editor: Xml Serialization and "export game (binary)" functionality
 
 
--->	Implement "Create Poly" action
-	-->	Prevent non-convex polys
 --> Collision event handling (Core)
 	-->	Interpret data
 	-->	Wrap up data, cache it until Update() and then notify GameObject

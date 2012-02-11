@@ -77,7 +77,7 @@ namespace DualityEditor
 		}
 		public static string GenerateResourceSrcFilePath(Resource r, string srcFileExt)
 		{
-			string filePath = PathHelper.MakePathRelative(r.Path, EditorHelper.DataDirectory);
+			string filePath = PathHelper.MakeFilePathRelative(r.Path, EditorHelper.DataDirectory);
 			if (filePath.Contains("..")) filePath = Path.GetFileName(filePath);
 
 			string fileName = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(r.Path));

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 
 using OpenTK;
-using OpenTK.Audio;
+using OpenTK.Audio.OpenAL;
 
 using Duality.Resources;
 using Duality.OggVorbis;

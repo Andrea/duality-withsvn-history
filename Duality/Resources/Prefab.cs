@@ -418,7 +418,8 @@ namespace Duality.Resources
 		/// <param name="prop">The target objects <see cref="System.Reflection.PropertyInfo">Property</see> that has been changed.</param>
 		public void PushChange(object target, PropertyInfo prop)
 		{
-			this.PushChange(target, prop, prop.GetValue(target, null));
+			object changeVal = prop.GetValue(target, null);
+			this.PushChange(target, prop, changeVal);
 		}
 		/// <summary>
 		/// Removes an existing change list entry.
