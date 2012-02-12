@@ -7,6 +7,8 @@ using System.Windows.Forms;
 using System.Drawing.Design;
 using System.Windows.Forms.Design;
 
+using Duality;
+
 namespace DualityEditor.Controls
 {
 	public class EnumComboBox : ComboBox
@@ -20,7 +22,7 @@ namespace DualityEditor.Controls
 		{
 			get
 			{
-				return (Enum)Enum.Parse(this.enumType, (string)this.SelectedItem);
+				return this.SelectedItem != null ? (Enum)Enum.Parse(this.enumType, (string)this.SelectedItem) : (Enum)this.enumType.GetDefaultInstanceOf();
 			}
 			set
 			{

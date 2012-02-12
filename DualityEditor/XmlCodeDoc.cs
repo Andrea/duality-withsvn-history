@@ -205,6 +205,7 @@ namespace DualityEditor
 
 		public Entry GetMemberDoc(MemberInfo info)
 		{
+			if (info == null) return null;
 			Entry result;
 			if (!this.entries.TryGetValue(info.GetMemberId(), out result)) return null;
 			return result;

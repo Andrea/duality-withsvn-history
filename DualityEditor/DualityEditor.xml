@@ -4,6 +4,23 @@
         <name>DualityEditor</name>
     </assembly>
     <members>
+        <member name="F:DualityEditor.Forms.ProcessingBigTaskDialog.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:DualityEditor.Forms.ProcessingBigTaskDialog.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:DualityEditor.Forms.ProcessingBigTaskDialog.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
         <member name="F:DualityEditor.Controls.PropertyEditors.FlagEnumPropertyEditor.components">
             <summary> 
             Erforderliche Designervariable.
@@ -596,23 +613,6 @@
         <member name="T:DualityEditor.Controls.FlagCheckedListBoxItem">
             <summary>
             Represents an item in the checklistbox
-            </summary>
-        </member>
-        <member name="F:DualityEditor.Forms.ProcessingBigTaskDialog.components">
-            <summary>
-            Required designer variable.
-            </summary>
-        </member>
-        <member name="M:DualityEditor.Forms.ProcessingBigTaskDialog.Dispose(System.Boolean)">
-            <summary>
-            Clean up any resources being used.
-            </summary>
-            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        </member>
-        <member name="M:DualityEditor.Forms.ProcessingBigTaskDialog.InitializeComponent">
-            <summary>
-            Required method for Designer support - do not modify
-            the contents of this method with the code editor.
             </summary>
         </member>
     </members>
