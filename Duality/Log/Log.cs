@@ -165,8 +165,10 @@ namespace Duality
 
 		private void Write(LogMessageType type, string msg)
 		{
+			Performance.timeLog.BeginMeasure();
 			foreach (ILogOutput log in this.strOut)
 				log.Write(this, type, msg);
+			Performance.timeLog.EndMeasure();
 		}
 
 		/// <summary>

@@ -53,6 +53,11 @@ namespace Duality
 				this.value += this.watch.ElapsedTicks * 1000.0f / Stopwatch.Frequency;
 				this.used = true;
 			}
+			public void SetMeasure(float value)
+			{
+				this.value = value;
+				this.used = true;
+			}
 			public void Reset()
 			{
 				this.lastUsed = this.used;
@@ -64,15 +69,23 @@ namespace Duality
 		}
 
 		internal	static	Counter	timeUpdate				= new Counter("Duality_Update");
-		internal	static	Counter	timeUpdatePhysics		= new Counter("Duality_UpdatePhysics");
-		internal	static	Counter	timeUpdateScene			= new Counter("Duality_UpdateScene");
-		internal	static	Counter	timeUpdateAudio			= new Counter("Duality_UpdateAudio");
+		internal	static	Counter	timeUpdateScene				= new Counter("Duality_Update_Scene");
+		internal	static	Counter	timeUpdateAudio				= new Counter("Duality_Update_Audio");
+
+		internal	static	Counter	timeUpdatePhysics			= new Counter("Duality_Update_Physics");
+		internal	static	Counter	timeUpdatePhysicsAddRemove		= new Counter("Duality_Update_Physics_AddRemove");
+		internal	static	Counter	timeUpdatePhysicsContacts		= new Counter("Duality_Update_Physics_Contacts");
+		internal	static	Counter	timeUpdatePhysicsContinous		= new Counter("Duality_Update_Physics_Continous");
+		internal	static	Counter	timeUpdatePhysicsController		= new Counter("Duality_Update_Physics_Controller");
+		internal	static	Counter	timeUpdatePhysicsSolve			= new Counter("Duality_Update_Physics_Solve");
 
 		internal	static	Counter	timeRender				= new Counter("Duality_Render");
-		internal	static	Counter	timeCollectDrawcalls	= new Counter("Duality_CollectDrawcalls");
-		internal	static	Counter	timeOptimizeDrawcalls	= new Counter("Duality_OptimizeDrawcalls");
-		internal	static	Counter	timeProcessDrawcalls	= new Counter("Duality_ProcessDrawcalls");
-		internal	static	Counter	timePostProcessing		= new Counter("Duality_PostProcessing");
+		internal	static	Counter	timeCollectDrawcalls		= new Counter("Duality_Render_CollectDrawcalls");
+		internal	static	Counter	timeOptimizeDrawcalls		= new Counter("Duality_Render_OptimizeDrawcalls");
+		internal	static	Counter	timeProcessDrawcalls		= new Counter("Duality_Render_ProcessDrawcalls");
+		internal	static	Counter	timePostProcessing			= new Counter("Duality_Render_PostProcessing");
+
+		internal	static	Counter	timeLog					= new Counter("Duality_Log");
 
 		private	static	Dictionary<string,Counter>	counterMap	= new Dictionary<string,Counter>();
 
@@ -173,6 +186,7 @@ namespace Duality
 			float yOff = 0.0f;
 			foreach (var m in Performance.GetAllMeasures())
 			{
+				if (m.Value < 0.005f) continue;
 				canvas.DrawText(string.Format(System.Globalization.CultureInfo.InvariantCulture, 
 					"{0}: {1:F}", m.Key, m.Value), 
 					x, y + yOff);
@@ -182,16 +196,13 @@ namespace Duality
 
 		internal static void InitDualityCounters()
 		{
-			counterMap.Add(timeUpdate.Name, timeUpdate);
-			counterMap.Add(timeUpdatePhysics.Name, timeUpdatePhysics);
-			counterMap.Add(timeUpdateAudio.Name, timeUpdateAudio);
-			counterMap.Add(timeUpdateScene.Name, timeUpdateScene);
+			foreach (System.Reflection.FieldInfo field in typeof(Performance).GetAllFields(ReflectionHelper.BindStaticAll))
+			{
+				if (field.FieldType != typeof(Counter)) continue;
 
-			counterMap.Add(timeRender.Name, timeRender);
-			counterMap.Add(timeCollectDrawcalls.Name, timeCollectDrawcalls);
-			counterMap.Add(timeOptimizeDrawcalls.Name, timeOptimizeDrawcalls);
-			counterMap.Add(timeProcessDrawcalls.Name, timeProcessDrawcalls);
-			counterMap.Add(timePostProcessing.Name, timePostProcessing);
+				Counter counter = field.GetValue(null) as Counter;
+				if (counter != null) counterMap.Add(counter.Name, counter);
+			}
 		}
 		internal static void ResetCounters()
 		{

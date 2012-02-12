@@ -31,7 +31,7 @@ namespace EditorBase.CamViewStates
 			}
 			public override bool HasTransform
 			{
-				get { return this.gameObj.Transform != null; }
+				get { return this.gameObj != null && !this.gameObj.Disposed && this.gameObj.Transform != null; }
 			}
 			public override Vector3 Pos
 			{

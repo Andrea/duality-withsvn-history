@@ -253,6 +253,15 @@ namespace Duality
 		{
 			get { return this.GetComponent<ICmpRenderer>(); }
 		}
+		/// <summary>
+		/// [GET] The GameObject's <see cref="Duality.Components.Collider"/> Component, if existing. 
+		/// </summary>
+		/// <remarks>Note that a GameObject may contain multiple Colliders in which case the return value of this property may be any of them.</remarks>
+		/// <seealso cref="Duality.Components.Collider"/>
+		public Components.Collider Collider
+		{
+			get { return this.GetComponent<Components.Collider>(); }
+		}
 		
 
 		/// <summary>
@@ -263,6 +272,18 @@ namespace Duality
 		/// Fired when a Component is about to be removed from the GameObject
 		/// </summary>
 		public event EventHandler<ComponentEventArgs>	EventComponentRemoving	= null;
+		/// <summary>
+		/// Fired when this GameObject starts to collide with another GameObject.
+		/// </summary>
+		public event EventHandler<CollisionEventArgs>	EventCollisionBegin		= null;
+		/// <summary>
+		/// Fired when this GameObject stops to collide with another GameObject.
+		/// </summary>
+		public event EventHandler<CollisionEventArgs>	EventCollisionEnd		= null;
+		/// <summary>
+		/// Fired each time a collision between this GameObject and another has been solved.
+		/// </summary>
+		public event EventHandler<CollisionEventArgs>	EventCollisionSolve		= null;
 
 
 		public GameObject() {}
@@ -874,6 +895,76 @@ namespace Duality
 			// Public event
 			if (this.EventComponentRemoving != null)
 				this.EventComponentRemoving(this, new ComponentEventArgs(cmp));
+		}
+
+		/// <summary>
+		/// Notifies the GameObject about a collision that has begun.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="args"></param>
+		public void NotifyCollisionBegin(Component sender, CollisionEventArgs args)
+		{
+			if (sender == null) throw new ArgumentNullException("sender");
+			
+			// Notify Components
+			for (int i = 0; i < this.compList.Count; i++)
+			{
+				Component c = this.compList[i];
+
+				if (!c.Active) continue;
+				ICmpCollisionListener cTemp = c as ICmpCollisionListener;
+				if (cTemp != null) cTemp.OnCollisionBegin(sender, args);
+			}
+
+			// Public event
+			if (this.EventCollisionBegin != null)
+				this.EventCollisionBegin(this, args);
+		}
+		/// <summary>
+		/// Notifies the GameObject about a collision that has ended.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="args"></param>
+		public void NotifyCollisionEnd(Component sender, CollisionEventArgs args)
+		{
+			if (sender == null) throw new ArgumentNullException("sender");
+			
+			// Notify Components
+			for (int i = 0; i < this.compList.Count; i++)
+			{
+				Component c = this.compList[i];
+
+				if (!c.Active) continue;
+				ICmpCollisionListener cTemp = c as ICmpCollisionListener;
+				if (cTemp != null) cTemp.OnCollisionEnd(sender, args);
+			}
+
+			// Public event
+			if (this.EventCollisionEnd != null)
+				this.EventCollisionEnd(this, args);
+		}
+		/// <summary>
+		/// Notifies the GameObject about a collision that has been solved.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="args"></param>
+		public void NotifyCollisionSolve(Component sender, CollisionEventArgs args)
+		{
+			if (sender == null) throw new ArgumentNullException("sender");
+			
+			// Notify Components
+			for (int i = 0; i < this.compList.Count; i++)
+			{
+				Component c = this.compList[i];
+
+				if (!c.Active) continue;
+				ICmpCollisionListener cTemp = c as ICmpCollisionListener;
+				if (cTemp != null) cTemp.OnCollisionSolve(sender, args);
+			}
+
+			// Public event
+			if (this.EventCollisionSolve != null)
+				this.EventCollisionSolve(this, args);
 		}
 
 		public override string ToString()

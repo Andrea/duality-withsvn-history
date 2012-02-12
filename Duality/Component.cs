@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 
+using OpenTK;
+
 using Duality.Resources;
 
 namespace Duality
@@ -134,9 +136,106 @@ namespace Duality
 	/// </summary>
 	public interface ICmpCollisionListener
 	{
-
+		/// <summary>
+		/// Called whenever the GameObject starts to collide with something.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="args"></param>
+		void OnCollisionBegin(Component sender, CollisionEventArgs args);
+		/// <summary>
+		/// Called whenever the GameObject stops to collide with something.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="args"></param>
+		void OnCollisionEnd(Component sender, CollisionEventArgs args);
+		/// <summary>
+		/// Called each frame after solving a collision with the GameObject.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="args"></param>
+		void OnCollisionSolve(Component sender, CollisionEventArgs args);
 	}
 
+
+	public class CollisionData
+	{
+		private	Vector2 pos;
+		private	Vector2	normal;
+		private	float	normalImpulse;
+		private	float	normalMass;
+		private	float	tangentImpulse;
+		private	float	tangentMass;
+
+		public Vector2 Pos
+		{
+			get { return this.pos; }
+		}
+		public Vector2 Normal
+		{
+			get { return this.normal; }
+		}
+		public float NormalImpulse
+		{
+			get { return this.normalImpulse; }
+		}
+		public float NormalMass
+		{
+			get { return this.normalMass; }
+		}
+		public float NormalSpeed
+		{
+			get { return this.normalImpulse / this.normalMass; }
+		}
+		public Vector2 Tangent
+		{
+			get { return this.normal.PerpendicularRight; }
+		}
+		public float TangentImpulse
+		{
+			get { return this.tangentImpulse; }
+		}
+		public float TangentMass
+		{
+			get { return this.tangentMass; }
+		}
+		public float TangentSpeed
+		{
+			get { return this.tangentImpulse / this.tangentMass; }
+		}
+
+		public CollisionData(Vector2 pos, Vector2 normal, float normalImpulse, float tangentImpulse, float normalMass, float tangentMass)
+		{
+			this.pos = pos;
+			this.normal = normal;
+			this.normalImpulse = normalImpulse;
+			this.tangentImpulse = tangentImpulse;
+			this.normalMass = normalMass;
+			this.tangentMass = tangentMass;
+		}
+		internal CollisionData(FarseerPhysics.Dynamics.Body localBody, FarseerPhysics.Dynamics.Contacts.ContactConstraint impulse, int pointIndex)
+		{
+			if (localBody == impulse.BodyA)
+			{
+				this.pos = impulse.Points[pointIndex].rA * 100.0f;
+				this.normal = impulse.Normal;
+				this.normalImpulse = impulse.Points[pointIndex].NormalImpulse * Time.SPFMult / 0.01f;
+				this.tangentImpulse = impulse.Points[pointIndex].TangentImpulse * Time.SPFMult / 0.01f;
+				this.normalMass = impulse.Points[pointIndex].NormalMass;
+				this.tangentMass = impulse.Points[pointIndex].TangentMass;
+			}
+			else if (localBody == impulse.BodyB)
+			{
+				this.pos = impulse.Points[pointIndex].rB * 100.0f;
+				this.normal = -impulse.Normal;
+				this.normalImpulse = impulse.Points[pointIndex].NormalImpulse * Time.SPFMult / 0.01f;
+				this.tangentImpulse = impulse.Points[pointIndex].TangentImpulse * Time.SPFMult / 0.01f;
+				this.normalMass = impulse.Points[pointIndex].NormalMass;
+				this.tangentMass = impulse.Points[pointIndex].TangentMass;
+			}
+			else
+				throw new ArgumentException("Local body is not part of the collision", "localBody");
+		}
+	}
 	
 	/// <summary>
 	/// Bitmask for special <see cref="ICmpRenderer"/> traits.

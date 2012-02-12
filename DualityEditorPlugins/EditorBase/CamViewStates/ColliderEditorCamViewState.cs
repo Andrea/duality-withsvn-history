@@ -131,12 +131,12 @@ namespace EditorBase.CamViewStates
 			{
 				get
 				{
-					return this.Collider.GameObj.Transform.GetWorldFromLocal(new Vector3(this.circle.Position));
+					return this.Collider.GameObj.Transform.GetWorldPoint(new Vector3(this.circle.Position));
 				}
 				set
 				{
 					value.Z = this.Collider.GameObj.Transform.Pos.Z;
-					this.circle.Position = this.Collider.GameObj.Transform.GetLocalFromWorld(value).Xy;
+					this.circle.Position = this.Collider.GameObj.Transform.GetLocalPoint(value).Xy;
 				}
 			}
 			public override Vector3 Scale
@@ -191,12 +191,12 @@ namespace EditorBase.CamViewStates
 			{
 				get
 				{
-					return this.Collider.GameObj.Transform.GetWorldFromLocal(new Vector3(this.center));
+					return this.Collider.GameObj.Transform.GetWorldPoint(new Vector3(this.center));
 				}
 				set
 				{
 					value.Z = this.Collider.GameObj.Transform.Pos.Z;
-					this.MoveCenterTo(this.Collider.GameObj.Transform.GetLocalFromWorld(value).Xy);
+					this.MoveCenterTo(this.Collider.GameObj.Transform.GetLocalPoint(value).Xy);
 				}
 			}
 			public override Vector3 Scale
@@ -550,7 +550,7 @@ namespace EditorBase.CamViewStates
 				Point mouseLoc = this.View.LocalGLControl.PointToClient(Cursor.Position);
 				Transform selTransform = this.selectedCollider.GameObj.Transform;
 				Vector3 spaceCoord = this.View.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, selTransform.Pos.Z));
-				Vector2 localPos = selTransform.GetLocalFromWorld(spaceCoord).Xy;
+				Vector2 localPos = selTransform.GetLocalPoint(spaceCoord).Xy;
 
 				SelPolyShape selPolyShape = this.allObjSel.OfType<SelPolyShape>().First();
 				Collider.PolyShapeInfo polyShape = selPolyShape.ActualObject as Collider.PolyShapeInfo;
@@ -831,7 +831,7 @@ namespace EditorBase.CamViewStates
 				{
 					Transform selTransform = this.selectedCollider.GameObj.Transform;
 					Vector3 spaceCoord = this.View.GetSpaceCoord(new Vector3(e.X, e.Y, selTransform.Pos.Z));
-					Vector2 localPos = selTransform.GetLocalFromWorld(spaceCoord).Xy;
+					Vector2 localPos = selTransform.GetLocalPoint(spaceCoord).Xy;
 
 					Collider.CircleShapeInfo newShape = new Collider.CircleShapeInfo(16.0f, localPos, 1.0f);
 					this.selectedCollider.AddShape(newShape);
@@ -855,7 +855,7 @@ namespace EditorBase.CamViewStates
 				{
 					Transform selTransform = this.selectedCollider.GameObj.Transform;
 					Vector3 spaceCoord = this.View.GetSpaceCoord(new Vector3(e.X, e.Y, selTransform.Pos.Z));
-					Vector2 localPos = selTransform.GetLocalFromWorld(spaceCoord).Xy;
+					Vector2 localPos = selTransform.GetLocalPoint(spaceCoord).Xy;
 
 					bool success = false;
 					if (!this.allObjSel.Any(sel => sel is SelPolyShape))

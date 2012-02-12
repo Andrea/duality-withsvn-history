@@ -1,19 +1,12 @@
 ﻿
 -->	Duality Tasks (overall)
-	-->	Physics & Collision Detection
 	-->	Particle Systems & Particle Editor
 	-->	(Property) Animations & Animation Editor
 	-->	??? Ingame GUI & GUI Editor
 	-->	??? Editor: Xml Serialization and "export game (binary)" functionality
 
---> Collision event handling (Core)
-	-->	Interpret data
-	-->	Wrap up data, cache it until Update() and then notify GameObject
--->	Physics utility
-	-->	Collider.ApplyForce()		linear / angular	local / world
-	-->	Collider.ApplyImpulse()		linear / angular	local / world
-	-->	Collider.GetVelocityAt()						local / world
 -->	Re-Implement Asteroids with physics.
+-->	Dualitor: PerformanceMonitor
 
 
 
@@ -26,36 +19,6 @@
 	-->	.. a complex character / ragdoll?
 	-->	.. a complex vehicle (tank, walker, etc.)
 	-->	.. a hanging bridge, rope, etc?
-
--->	Implement Core collision detection logic & sensor colliders
-	-->	Colliders will notify their GameObject about OnCollision, OnSeparation and AfterCollision..
-	-->	..which will then notify its ICmpCollisionListener Components.
-	-->	It may only cache / defer this until it is updated, since all those events aren't meant
-		to directly execute user code. It might lead to unexpected behaviour.
-	-->	Deferred execution should take place in Collider code, OnXY notifier should directly execute.
-		Reason: There might be different kinds of collider components later.
-		-->	Collider (default)
-		-->	TilemapCollider
-			-->	Well, this could actually be just a bool flag for a Tilemap, auto-adjusting a separate collider.
-		-->	...
-
-	ICmpCollisionListener API:
-	-->	Introduce additional public events in GameObject?
-		-->	Might want to react to different object's collision
-		-->	Fire events AFTER internal collision handling
-		-->	What other internal events might need public events in GameObject?
-	-->	OnCollisionBegin(CollisionData objA, CollisionData objB);
-	-->	OnCollisionSolve(CollisionData objA, CollisionData objB, ContactData contact);
-	-->	OnCollisionEnd(CollisionData objA, CollisionData objB);
-	-->	This is not final. Reconsider it based on actual use cases.
-	-->	"CollisionData" is not figured out yet.
-		-->	It might contain only Duality-related data and act as if there was no Farseer
-		-->	This is preferrable since replacing Farseer with a different physics engine
-			won't affect any user code. Encapsulation rulez.
-
-	-->	Collision impact force?
-	-->	Collision point relative to object?
-	-->	How to interpret Farseer Data?
 
 -->	What about Joints?
 	-->	Any Collider can be attached to the world or any other Collider using Joints.

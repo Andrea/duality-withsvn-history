@@ -130,6 +130,20 @@ namespace Duality
 				if (c != null && (!activeOnly || (c as Component).Active)) yield return c;
 			}
 		}
+		/// <summary>
+		/// Enumerates all <see cref="Duality.GameObject">GameObjects</see> <see cref="Duality.Components.Collider"/> Components.
+		/// </summary>
+		/// <param name="objEnum"></param>
+		/// <param name="activeOnly"></param>
+		/// <returns></returns>
+		public static IEnumerable<Components.Collider> Collider(this IEnumerable<GameObject> objEnum, bool activeOnly = false)
+		{
+			foreach (GameObject o in objEnum)
+			{
+				Components.Collider c = o.Collider;
+				if (c != null && (!activeOnly || c.Active)) yield return c;
+			}
+		}
 		
 		/// <summary>
 		/// Enumerates all <see cref="Component">Components</see> parent <see cref="Duality.GameObject">GameObjects</see>.

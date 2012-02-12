@@ -298,7 +298,7 @@ namespace Duality.Components
 		/// </summary>
 		/// <param name="local"></param>
 		/// <returns></returns>
-		public Vector3 GetWorldFromLocal(Vector3 local)
+		public Vector3 GetWorldPoint(Vector3 local)
 		{
 			Vector3 world;
 
@@ -313,7 +313,7 @@ namespace Duality.Components
 		/// </summary>
 		/// <param name="world"></param>
 		/// <returns></returns>
-		public Vector3 GetLocalFromWorld(Vector3 world)
+		public Vector3 GetLocalPoint(Vector3 world)
 		{
 			Vector3 local;
 			
@@ -322,6 +322,56 @@ namespace Duality.Components
 			Vector3.Divide(ref local, ref this.scaleAbs, out local);
 
 			return local;
+		}
+		/// <summary>
+		/// Calculates a world vector from a Transform-local vector.
+		/// Does only take scale and rotation into account, but not position.
+		/// </summary>
+		/// <param name="local"></param>
+		/// <returns></returns>
+		public Vector3 GetWorldVector(Vector3 local)
+		{
+			Vector3 world;
+
+			Vector3.Multiply(ref local, ref this.scaleAbs, out world);
+			MathF.TransformCoord(ref world.X, ref world.Y, this.angleAbs);
+
+			return world;
+		}
+		/// <summary>
+		/// Calculates a Transform-local vector from a world vector.
+		/// Does only take scale and rotation into account, but not position.
+		/// </summary>
+		/// <param name="world"></param>
+		/// <returns></returns>
+		public Vector3 GetLocalVector(Vector3 world)
+		{
+			Vector3 local = world;
+			
+			MathF.TransformCoord(ref local.X, ref local.Y, -this.angleAbs);
+			Vector3.Divide(ref local, ref this.scaleAbs, out local);
+
+			return local;
+		}
+		/// <summary>
+		/// Calculates the Transforms world velocity at a given world coordinate;
+		/// </summary>
+		/// <param name="world"></param>
+		/// <returns></returns>
+		public Vector3 GetWorldVelocityAt(Vector3 world)
+		{
+			return GetWorldVector(GetLocalVelocityAt(GetLocalPoint(world)));
+		}
+		/// <summary>
+		/// Calculates the Transforms local velocity at a given local coordinate;
+		/// </summary>
+		/// <param name="local"></param>
+		/// <returns></returns>
+		public Vector3 GetLocalVelocityAt(Vector3 local)
+		{
+			Vector3 vel = this.velAbs;
+			Vector2 angleVel = local.Xy.PerpendicularRight * this.angleVelAbs;
+			return vel + new Vector3(angleVel);
 		}
 
 		/// <summary>
@@ -538,7 +588,12 @@ namespace Duality.Components
 			{
 				foreach (GameObject obj in this.gameobj.Children)
 				{
-					if (obj.Transform != null) obj.Transform.UpdateAbs();
+					if (obj.Transform != null)
+					{
+						obj.Transform.UpdateAbs();
+						if (this.changes != DirtyFlags.None)
+							obj.Transform.changes |= DirtyFlags.All;
+					}
 				}
 			}
 
@@ -570,9 +625,9 @@ namespace Duality.Components
 					this.angleVel = this.angleVelAbs;
 				}
 
-				if (this.parentTransform.scaleAbs.X == 0.0f ||
-					this.parentTransform.scaleAbs.Y == 0.0f ||
-					this.parentTransform.scaleAbs.Z == 0.0f)
+				if (this.parentTransform.scaleAbs.X != 0.0f &&
+					this.parentTransform.scaleAbs.Y != 0.0f &&
+					this.parentTransform.scaleAbs.Z != 0.0f)
 				{
 					Vector3.Divide(ref this.scaleAbs, ref this.parentTransform.scaleAbs, out this.scale);
 				

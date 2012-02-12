@@ -111,7 +111,7 @@ namespace Duality.Resources
 		{
 			if (current.ResWeak != null)
 			{
-				physicsWorld.Gravity = current.ResWeak.GlobalGravity;
+				physicsWorld.Gravity = current.ResWeak.GlobalGravity * 0.01f / Time.SPFMult;
 				foreach (GameObject o in current.ResWeak.ActiveObjects) o.OnActivate();
 			}
 			if (Entered != null) Entered(current, null);
@@ -145,7 +145,7 @@ namespace Duality.Resources
 			}
 		}
 
-		private	Vector2				globalGravity	= Vector2.UnitY * 20.0f;
+		private	Vector2				globalGravity	= Vector2.UnitY * 33.0f;
 		private	GameObjectManager	objectManager	= new GameObjectManager();
 		[NonSerialized]	private	ObjectManager<Camera>	cameraManager	= new ObjectManager<Camera>();
 		[NonSerialized]	private	RendererManager			rendererManager	= new RendererManager();
@@ -209,7 +209,7 @@ namespace Duality.Resources
 			set
 			{
 				this.globalGravity = value;
-				if (this.IsCurrent) physicsWorld.Gravity = value;
+				if (this.IsCurrent) physicsWorld.Gravity = value * 0.01f / Time.SPFMult;
 			}
 		}
 		/// <summary>
@@ -253,6 +253,13 @@ namespace Duality.Resources
 			Performance.timeUpdatePhysics.BeginMeasure();
 			physicsWorld.Step(Time.TimeMult * Time.SPFMult);
 			Performance.timeUpdatePhysics.EndMeasure();
+
+			// Apply Farseers internal measurements to Duality
+			Performance.timeUpdatePhysicsAddRemove.SetMeasure(1000.0f * physicsWorld.AddRemoveTime / System.Diagnostics.Stopwatch.Frequency);
+			Performance.timeUpdatePhysicsContacts.SetMeasure(1000.0f * physicsWorld.ContactsUpdateTime / System.Diagnostics.Stopwatch.Frequency);
+			Performance.timeUpdatePhysicsContinous.SetMeasure(1000.0f * physicsWorld.ContinuousPhysicsTime / System.Diagnostics.Stopwatch.Frequency);
+			Performance.timeUpdatePhysicsController.SetMeasure(1000.0f * physicsWorld.ControllersUpdateTime / System.Diagnostics.Stopwatch.Frequency);
+			Performance.timeUpdatePhysicsSolve.SetMeasure(1000.0f * physicsWorld.SolveUpdateTime / System.Diagnostics.Stopwatch.Frequency);
 
 			Performance.timeUpdateScene.BeginMeasure();
 			GameObject[] activeObj = this.objectManager.ActiveObjects.ToArray();

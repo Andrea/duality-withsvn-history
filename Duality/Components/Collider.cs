@@ -19,7 +19,7 @@ namespace Duality.Components
 	/// </summary>
 	[Serializable]
 	[RequiredComponent(typeof(Transform))]
-	public class Collider : Component, ICmpInitializable, ITransformUpdater
+	public class Collider : Component, ICmpInitializable, ICmpUpdatable, ITransformUpdater
 	{
 		/// <summary>
 		/// The type of a <see cref="Collider">Colliders</see> physical body.
@@ -296,7 +296,29 @@ namespace Duality.Components
 			}
 		}
 
-		[NonSerialized]	private	Body	body	= null;
+		private struct ColEvent
+		{
+			public enum EventType
+			{
+				Collision,
+				Separation,
+				PostSolve
+			}
+
+			public	EventType		Type;
+			public	Fixture			FixtureA;
+			public	Fixture			FixtureB;
+			public	CollisionData	Data;
+
+			public ColEvent(EventType type, Fixture fxA, Fixture fxB, CollisionData data)
+			{
+				this.Type = type;
+				this.FixtureA = fxA;
+				this.FixtureB = fxB;
+				this.Data = data;
+			}
+		}
+
 		private	BodyType	bodyType		= BodyType.Dynamic;
 		private	float		linearDamp		= 0.0f;
 		private	float		angularDamp		= 0.0f;
@@ -305,6 +327,8 @@ namespace Duality.Components
 		private	Category	colCat			= Category.Cat1;
 		private	Category	colWith			= Category.All;
 		private	List<ShapeInfo>	shapes		= new List<ShapeInfo>();
+		[NonSerialized]	private	Body			body		= null;
+		[NonSerialized]	private	List<ColEvent>	eventBuffer	= new List<ColEvent>();
 
 		/// <summary>
 		/// [GET / SET] The type of the physical body.
@@ -528,6 +552,102 @@ namespace Duality.Components
 		}
 
 		/// <summary>
+		/// Applies a Transform-local angular impulse to the object.
+		/// </summary>
+		/// <param name="angularImpulse"></param>
+		public void ApplyLocalImpulse(float angularImpulse)
+		{
+			if (this.body == null) return;
+			this.body.ApplyAngularImpulse(angularImpulse * 0.01f / Time.SPFMult);
+		}
+		/// <summary>
+		/// Applies a Transform-local impulse to the objects mass center.
+		/// </summary>
+		/// <param name="impulse"></param>
+		public void ApplyLocalImpulse(Vector2 impulse)
+		{
+			this.ApplyWorldImpulse(this.gameobj.Transform.GetWorldVector(new Vector3(impulse)).Xy);
+		}
+		/// <summary>
+		/// Applies a Transform-local impulse to the specified point.
+		/// </summary>
+		/// <param name="impulse"></param>
+		/// <param name="applyAt"></param>
+		public void ApplyLocalImpulse(Vector2 impulse, Vector2 applyAt)
+		{
+			this.ApplyWorldImpulse(
+				this.gameobj.Transform.GetWorldVector(new Vector3(impulse)).Xy,
+				this.gameobj.Transform.GetWorldPoint(new Vector3(applyAt)).Xy);
+		}
+		/// <summary>
+		/// Applies a world impulse to the objects mass center.
+		/// </summary>
+		/// <param name="impulse"></param>
+		public void ApplyWorldImpulse(Vector2 impulse)
+		{
+			if (this.body == null) return;
+			this.body.ApplyLinearImpulse(impulse * 0.01f / Time.SPFMult);
+		}
+		/// <summary>
+		/// Applies a world impulse to the specified point.
+		/// </summary>
+		/// <param name="impulse"></param>
+		/// <param name="applyAt"></param>
+		public void ApplyWorldImpulse(Vector2 impulse, Vector2 applyAt)
+		{
+			if (this.body == null) return;
+			this.body.ApplyLinearImpulse(impulse * 0.01f / Time.SPFMult, applyAt * 0.01f);
+		}
+		
+		/// <summary>
+		/// Applies a Transform-local angular force to the object.
+		/// </summary>
+		/// <param name="angularForce"></param>
+		public void ApplyLocalForce(float angularForce)
+		{
+			if (this.body == null) return;
+			this.body.ApplyTorque(angularForce * 0.01f / Time.SPFMult);
+		}
+		/// <summary>
+		/// Applies a Transform-local force to the objects mass center.
+		/// </summary>
+		/// <param name="force"></param>
+		public void ApplyLocalForce(Vector2 force)
+		{
+			this.ApplyWorldForce(this.gameobj.Transform.GetWorldVector(new Vector3(force)).Xy);
+		}
+		/// <summary>
+		/// Applies a Transform-local force to the specified point.
+		/// </summary>
+		/// <param name="force"></param>
+		/// <param name="applyAt"></param>
+		public void ApplyLocalForce(Vector2 force, Vector2 applyAt)
+		{
+			this.ApplyWorldForce(
+				this.gameobj.Transform.GetWorldVector(new Vector3(force)).Xy,
+				this.gameobj.Transform.GetWorldPoint(new Vector3(applyAt)).Xy);
+		}
+		/// <summary>
+		/// Applies a world force to the objects mass center.
+		/// </summary>
+		/// <param name="force"></param>
+		public void ApplyWorldForce(Vector2 force)
+		{
+			if (this.body == null) return;
+			this.body.ApplyForce(force * 0.01f / Time.SPFMult);
+		}
+		/// <summary>
+		/// Applies a world force to the specified point.
+		/// </summary>
+		/// <param name="force"></param>
+		/// <param name="applyAt"></param>
+		public void ApplyWorldForce(Vector2 force, Vector2 applyAt)
+		{
+			if (this.body == null) return;
+			this.body.ApplyForce(force * 0.01f / Time.SPFMult, applyAt * 0.01f);
+		}
+
+		/// <summary>
 		/// Updates the Colliders internal body shape based on its set of <see cref="ShapeInfo"/> objects.
 		/// </summary>
 		public void UpdateBodyShape()
@@ -547,7 +667,7 @@ namespace Duality.Components
 
 			this.body.Collision -= this.body_OnCollision;
 			this.body.Separation -= this.body_OnSeparation;
-			Scene.CurrentPhysics.ContactManager.PostSolve -= this.world_PostSolve;
+			this.body.PostSolve -= this.body_PostSolve;
 
 			this.body.Dispose();
 			this.body = null;
@@ -583,7 +703,7 @@ namespace Duality.Components
 
 			this.body.Collision += this.body_OnCollision;
 			this.body.Separation += this.body_OnSeparation;
-			Scene.CurrentPhysics.ContactManager.PostSolve += this.world_PostSolve;
+			this.body.PostSolve += this.body_PostSolve;
 		}
 
 		/// <summary>
@@ -696,37 +816,49 @@ namespace Duality.Components
 		
 		private bool body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
 		{
-			//Log.Core.Write("OnCollision: {0},\t{1}", fixtureA.Body.UserData as Collider, fixtureB.Body.UserData as Collider);
+			this.eventBuffer.Add(new ColEvent(ColEvent.EventType.Collision, fixtureA, fixtureB, null));
 			return true;
 		}
 		private void body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
 		{
-			//Log.Core.Write("OnSeparation: {0},\t{1}", fixtureA.Body.UserData as Collider, fixtureB.Body.UserData as Collider);
+			this.eventBuffer.Add(new ColEvent(ColEvent.EventType.Separation, fixtureA, fixtureB, null));
 		}
-        private void world_PostSolve(Contact contact, ContactConstraint impulse)
+        private void body_PostSolve(Contact contact, ContactConstraint impulse)
         {
-			return;
-            if (impulse.BodyA == this.body || impulse.BodyB == this.body)
+            int count = contact.Manifold.PointCount;
+            for (int i = 0; i < count; ++i)
             {
-                float maxImpulse = 0.0f;
-                int count = contact.Manifold.PointCount;
-
-                for (int i = 0; i < count; ++i)
-                {
-                    maxImpulse = Math.Max(maxImpulse, impulse.Points[i].NormalImpulse);
-                }
-
-                if (maxImpulse > 200)
-                {
-					Log.Game.Write("BAM: {0}, {1}, \t{2}", MathF.RoundToInt(maxImpulse), 
-						(impulse.BodyA.UserData as Collider).GameObj.Name,
-						(impulse.BodyB.UserData as Collider).GameObj.Name);
-					Log.Game.Write("    {0:F},\t{1:F}", impulse.Normal.X, impulse.Normal.Y);
-					Log.Game.Write("    {0:F},\t{1:F}", impulse.Points[0].rA.X * 100.0f, impulse.Points[0].rA.Y * 100.0f);
-					Log.Game.Write("    {0:F},\t{1:F}", impulse.Points[0].rB.X * 100.0f, impulse.Points[0].rB.Y * 100.0f);
-                }
+				if (impulse.Points[i].NormalImpulse > 0.0f || impulse.Points[i].TangentImpulse > 0.0f)
+				{
+					CollisionData colData = new CollisionData(this.body, impulse, i);
+					if (contact.FixtureA.Body == this.body)
+						this.eventBuffer.Add(new ColEvent(ColEvent.EventType.PostSolve, contact.FixtureA, contact.FixtureB, colData));
+					else
+						this.eventBuffer.Add(new ColEvent(ColEvent.EventType.PostSolve, contact.FixtureB, contact.FixtureA, colData));
+				}
             }
         }
+		
+		void ICmpUpdatable.OnUpdate()
+		{
+			for (int i = 0; i < this.eventBuffer.Count; i++)
+			{
+				ColEvent e = this.eventBuffer[i];
+				ColliderCollisionEventArgs args = new ColliderCollisionEventArgs(
+					(e.FixtureB.Body.UserData as Collider).GameObj,
+ 					e.Data,
+					e.FixtureA.UserData as ShapeInfo,
+					e.FixtureB.UserData as ShapeInfo);
+
+				if (e.Type == ColEvent.EventType.Collision)
+					this.gameobj.NotifyCollisionBegin(this, args);
+				else if (e.Type == ColEvent.EventType.Separation)
+					this.gameobj.NotifyCollisionEnd(this, args);
+				else if (e.Type == ColEvent.EventType.PostSolve)
+					this.gameobj.NotifyCollisionSolve(this, args);
+			}
+			this.eventBuffer.Clear();
+		}
 
 		void ITransformUpdater.UpdateTransform(Transform t)
 		{
@@ -832,6 +964,27 @@ namespace Duality.Components
 				picked.AddRange(c.PickShapes(worldCoord, size));
 
 			return picked;
+		}
+	}
+
+	public class ColliderCollisionEventArgs : CollisionEventArgs
+	{
+		private	Collider.ShapeInfo	colShapeA;
+		private	Collider.ShapeInfo	colShapeB;
+
+		public Collider.ShapeInfo MyCollideShape
+		{
+			get { return this.colShapeA; }
+		}
+		public Collider.ShapeInfo OtherCollideShape
+		{
+			get { return this.colShapeB; }
+		}
+
+		public ColliderCollisionEventArgs(GameObject obj, CollisionData data, Collider.ShapeInfo shapeA, Collider.ShapeInfo shapeB) : base(obj, data)
+		{
+			this.colShapeA = shapeA;
+			this.colShapeB = shapeB;
 		}
 	}
 }

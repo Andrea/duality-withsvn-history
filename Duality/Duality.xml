@@ -886,18 +886,48 @@
             </summary>
             <param name="context">The kind of shutdown that is intended.</param>
         </member>
-        <member name="M:Duality.Components.Transform.GetWorldFromLocal(OpenTK.Vector3)">
+        <member name="M:Duality.Components.Transform.GetWorldPoint(OpenTK.Vector3)">
             <summary>
             Calculates a world coordinate from a Transform-local coordinate.
             </summary>
             <param name="local"></param>
             <returns></returns>
         </member>
-        <member name="M:Duality.Components.Transform.GetLocalFromWorld(OpenTK.Vector3)">
+        <member name="M:Duality.Components.Transform.GetLocalPoint(OpenTK.Vector3)">
             <summary>
             Calculates a Transform-local coordinate from a world coordinate.
             </summary>
             <param name="world"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Components.Transform.GetWorldVector(OpenTK.Vector3)">
+            <summary>
+            Calculates a world vector from a Transform-local vector.
+            Does only take scale and rotation into account, but not position.
+            </summary>
+            <param name="local"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Components.Transform.GetLocalVector(OpenTK.Vector3)">
+            <summary>
+            Calculates a Transform-local vector from a world vector.
+            Does only take scale and rotation into account, but not position.
+            </summary>
+            <param name="world"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Components.Transform.GetWorldVelocityAt(OpenTK.Vector3)">
+            <summary>
+            Calculates the Transforms world velocity at a given world coordinate;
+            </summary>
+            <param name="world"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Components.Transform.GetLocalVelocityAt(OpenTK.Vector3)">
+            <summary>
+            Calculates the Transforms local velocity at a given local coordinate;
+            </summary>
+            <param name="local"></param>
             <returns></returns>
         </member>
         <member name="M:Duality.Components.Transform.RegisterExternalUpdater(Duality.Components.ITransformUpdater)">
@@ -1089,6 +1119,27 @@
             Implement this interface in <see cref="T:Duality.Component">Components</see> that require notification of
             collision events that occur to the <see cref="T:Duality.GameObject"/> they belong to.
             </summary>
+        </member>
+        <member name="M:Duality.ICmpCollisionListener.OnCollisionBegin(Duality.Component,Duality.CollisionEventArgs)">
+            <summary>
+            Called whenever the GameObject starts to collide with something.
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:Duality.ICmpCollisionListener.OnCollisionEnd(Duality.Component,Duality.CollisionEventArgs)">
+            <summary>
+            Called whenever the GameObject stops to collide with something.
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:Duality.ICmpCollisionListener.OnCollisionSolve(Duality.Component,Duality.CollisionEventArgs)">
+            <summary>
+            Called each frame after solving a collision with the GameObject.
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
         </member>
         <member name="T:Duality.RendererFlags">
             <summary>
@@ -7895,6 +7946,70 @@
             </summary>
             <param name="shapes"></param>
         </member>
+        <member name="M:Duality.Components.Collider.ApplyLocalImpulse(System.Single)">
+            <summary>
+            Applies a Transform-local angular impulse to the object.
+            </summary>
+            <param name="angularImpulse"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.ApplyLocalImpulse(OpenTK.Vector2)">
+            <summary>
+            Applies a Transform-local impulse to the objects mass center.
+            </summary>
+            <param name="impulse"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.ApplyLocalImpulse(OpenTK.Vector2,OpenTK.Vector2)">
+            <summary>
+            Applies a Transform-local impulse to the specified point.
+            </summary>
+            <param name="impulse"></param>
+            <param name="applyAt"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.ApplyWorldImpulse(OpenTK.Vector2)">
+            <summary>
+            Applies a world impulse to the objects mass center.
+            </summary>
+            <param name="impulse"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.ApplyWorldImpulse(OpenTK.Vector2,OpenTK.Vector2)">
+            <summary>
+            Applies a world impulse to the specified point.
+            </summary>
+            <param name="impulse"></param>
+            <param name="applyAt"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.ApplyLocalForce(System.Single)">
+            <summary>
+            Applies a Transform-local angular force to the object.
+            </summary>
+            <param name="angularForce"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.ApplyLocalForce(OpenTK.Vector2)">
+            <summary>
+            Applies a Transform-local force to the objects mass center.
+            </summary>
+            <param name="force"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.ApplyLocalForce(OpenTK.Vector2,OpenTK.Vector2)">
+            <summary>
+            Applies a Transform-local force to the specified point.
+            </summary>
+            <param name="force"></param>
+            <param name="applyAt"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.ApplyWorldForce(OpenTK.Vector2)">
+            <summary>
+            Applies a world force to the objects mass center.
+            </summary>
+            <param name="force"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.ApplyWorldForce(OpenTK.Vector2,OpenTK.Vector2)">
+            <summary>
+            Applies a world force to the specified point.
+            </summary>
+            <param name="force"></param>
+            <param name="applyAt"></param>
+        </member>
         <member name="M:Duality.Components.Collider.UpdateBodyShape">
             <summary>
             Updates the Colliders internal body shape based on its set of <see cref="T:Duality.Components.Collider.ShapeInfo"/> objects.
@@ -11052,6 +11167,27 @@
             </summary>
             <param name="target">The target GameObject to copy to.</param>
         </member>
+        <member name="M:Duality.GameObject.NotifyCollisionBegin(Duality.Component,Duality.CollisionEventArgs)">
+            <summary>
+            Notifies the GameObject about a collision that has begun.
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:Duality.GameObject.NotifyCollisionEnd(Duality.Component,Duality.CollisionEventArgs)">
+            <summary>
+            Notifies the GameObject about a collision that has ended.
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:Duality.GameObject.NotifyCollisionSolve(Duality.Component,Duality.CollisionEventArgs)">
+            <summary>
+            Notifies the GameObject about a collision that has been solved.
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
         <member name="P:Duality.GameObject.Parent">
             <summary>
             [GET / SET] This GameObject's parent object in the scene graph.
@@ -11158,6 +11294,13 @@
             <remarks>Note that a GameObject may contain multiple Renderers in which case the return value of this property may be any of them.</remarks>
             <seealso cref="T:Duality.Components.Renderer"/>
         </member>
+        <member name="P:Duality.GameObject.Collider">
+            <summary>
+            [GET] The GameObject's <see cref="T:Duality.Components.Collider"/> Component, if existing. 
+            </summary>
+            <remarks>Note that a GameObject may contain multiple Colliders in which case the return value of this property may be any of them.</remarks>
+            <seealso cref="T:Duality.Components.Collider"/>
+        </member>
         <member name="E:Duality.GameObject.EventComponentAdded">
             <summary>
             Fired when a Component has been added to the GameObject
@@ -11166,6 +11309,21 @@
         <member name="E:Duality.GameObject.EventComponentRemoving">
             <summary>
             Fired when a Component is about to be removed from the GameObject
+            </summary>
+        </member>
+        <member name="E:Duality.GameObject.EventCollisionBegin">
+            <summary>
+            Fired when this GameObject starts to collide with another GameObject.
+            </summary>
+        </member>
+        <member name="E:Duality.GameObject.EventCollisionEnd">
+            <summary>
+            Fired when this GameObject stops to collide with another GameObject.
+            </summary>
+        </member>
+        <member name="E:Duality.GameObject.EventCollisionSolve">
+            <summary>
+            Fired each time a collision between this GameObject and another has been solved.
             </summary>
         </member>
         <member name="T:Duality.ExtMethodsIList">
@@ -11763,6 +11921,14 @@
         <member name="M:Duality.ExtMethodsIEnumerable.Renderer(System.Collections.Generic.IEnumerable{Duality.GameObject},System.Boolean)">
             <summary>
             Enumerates all <see cref="T:Duality.GameObject">GameObjects</see> <see cref="T:Duality.Components.Renderer"/> Components.
+            </summary>
+            <param name="objEnum"></param>
+            <param name="activeOnly"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ExtMethodsIEnumerable.Collider(System.Collections.Generic.IEnumerable{Duality.GameObject},System.Boolean)">
+            <summary>
+            Enumerates all <see cref="T:Duality.GameObject">GameObjects</see> <see cref="T:Duality.Components.Collider"/> Components.
             </summary>
             <param name="objEnum"></param>
             <param name="activeOnly"></param>

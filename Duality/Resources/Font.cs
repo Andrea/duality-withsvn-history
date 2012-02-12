@@ -494,6 +494,7 @@ namespace Duality.Resources
 						glyphGraphics.TextRenderingHint = (System.Drawing.Text.TextRenderingHint)this.hint;
 						glyphGraphics.DrawString(str, this.internalFont, fntBrush, new RectangleF(0, 0, glyphTemp.Width, glyphTemp.Height), formatDef);
 					}
+					
 					if (str != " ")
 					{
 						Rectangle glyphTempBounds = glyphTemp.OpaqueBounds();
