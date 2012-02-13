@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="netrtfwriter">
+</Property><Property Name="Projektmappendatei" Value="C:\Users\Fetze\Desktop\RtfWriter_V0.9.1\netrtfwriter\netrtfwriter.sln">
+</Property><Property Name="Date" Value="Dienstag, 7. Dezember 2010">
+</Property><Property Name="Time" Value="10:21">
+</Property></Properties><Event ErrorLevel="0" Project="" Source="netrtfwriter.sln" Description="Datei wurde erfolgreich als &quot;C:\Users\Fetze\Desktop\RtfWriter_V0.9.1\netrtfwriter\Backup\netrtfwriter.sln&quot; gesichert">
+</Event><Event ErrorLevel="0" Project="RtfWriter" Source="RtfWriter\RtfWriter.csproj" Description="Projektdatei erfolgreich gesichert als C:\Users\Fetze\Desktop\RtfWriter_V0.9.1\netrtfwriter\Backup\RtfWriter\RtfWriter.csproj">
+</Event><Event ErrorLevel="0" Project="RtfWriter" Source="RtfWriter\RtfWriter.csproj.user" Description="Die Projektbenutzerdatei wurde erfolgreich als &quot;C:\Users\Fetze\Desktop\RtfWriter_V0.9.1\netrtfwriter\Backup\RtfWriter\RtfWriter.csproj.user&quot; gesichert.">
+</Event><Event ErrorLevel="0" Project="RtfWriter" Source="RtfWriter\Properties\AssemblyInfo.cs" Description="Datei erfolgreich gesichert als C:\Users\Fetze\Desktop\RtfWriter_V0.9.1\netrtfwriter\Backup\RtfWriter\Properties\AssemblyInfo.cs">
+</Event><Event ErrorLevel="0" Project="RtfWriter" Source="RtfWriter\RtfAbstract.cs" Description="Datei erfolgreich gesichert als C:\Users\Fetze\Desktop\RtfWriter_V0.9.1\netrtfwriter\Backup\RtfWriter\RtfAbstract.cs">
+</Event><Event ErrorLevel="0" Project="RtfWriter" Source="RtfWriter\RtfBasics.cs" Description="Datei erfolgreich gesichert als C:\Users\Fetze\Desktop\RtfWriter_V0.9.1\netrtfwriter\Backup\RtfWriter\RtfBasics.cs">
+</Event><Event ErrorLevel="0" Project="RtfWriter" Source="RtfWriter\RtfBlockList.cs" Description="Datei erfolgreich gesichert als C:\Users\Fetze\Desktop\RtfWriter_V0.9.1\netrtfwriter\Backup\RtfWriter\RtfBlockList.cs">
+</Event><Event ErrorLevel="0" Project="RtfWriter" Source="RtfWriter\RtfCharFormat.cs" Description="Datei erfolgreich gesichert als C:\Users\Fetze\Desktop\RtfWriter_V0.9.1\netrtfwriter\Backup\RtfWriter\RtfCharFormat.cs">
+</Event><Event ErrorLevel="0" Project="RtfWriter" Source="RtfWriter\RtfDocument.cs" Description="Datei erfolgreich gesichert als C:\Users\Fetze\Desktop\RtfWriter_V0.9.1\netrtfwriter\Backup\RtfWriter\RtfDocument.cs">
+</Event><Event ErrorLevel="0" Project="RtfWriter" Source="RtfWriter\RtfFieldControlWord.cs" Description="Datei erfolgreich gesichert als C:\Users\Fetze\Desktop\RtfWriter_V0.9.1\netrtfwriter\Backup\RtfWriter\RtfFieldControlWord.cs">
+</Event><Event ErrorLevel="0" Project="RtfWriter" Source="RtfWriter\RtfFootnote.cs" Description="Datei erfolgreich gesichert als C:\Users\Fetze\Desktop\RtfWriter_V0.9.1\netrtfwriter\Backup\RtfWriter\RtfFootnote.cs">
+</Event><Event ErrorLevel="0" Project="RtfWriter" Source="RtfWriter\RtfHeaderFooter.cs" Description="Datei erfolgreich gesichert als C:\Users\Fetze\Desktop\RtfWriter_V0.9.1\netrtfwriter\Backup\RtfWriter\RtfHeaderFooter.cs">
+</Event><Event ErrorLevel="0" Project="RtfWriter" Source="RtfWriter\RtfImage.cs" Description="Datei erfolgreich gesichert als C:\Users\Fetze\Desktop\RtfWriter_V0.9.1\netrtfwriter\Backup\RtfWriter\RtfImage.cs">
+</Event><Event ErrorLevel="0" Project="RtfWriter" Source="RtfWriter\RtfParagraph.cs" Description="Datei erfolgreich gesichert als C:\Users\Fetze\Desktop\RtfWriter_V0.9.1\netrtfwriter\Backup\RtfWriter\RtfParagraph.cs">
+</Event><Event ErrorLevel="0" Project="RtfWriter" Source="RtfWriter\RtfTable.cs" Description="Datei erfolgreich gesichert als C:\Users\Fetze\Desktop\RtfWriter_V0.9.1\netrtfwriter\Backup\RtfWriter\RtfTable.cs">
+</Event><Event ErrorLevel="0" Project="RtfWriter" Source="RtfWriter\RtfTableCell.cs" Description="Datei erfolgreich gesichert als C:\Users\Fetze\Desktop\RtfWriter_V0.9.1\netrtfwriter\Backup\RtfWriter\RtfTableCell.cs">
+</Event><Event ErrorLevel="0" Project="RtfWriter" Source="RtfWriter\RtfUtility.cs" Description="Datei erfolgreich gesichert als C:\Users\Fetze\Desktop\RtfWriter_V0.9.1\netrtfwriter\Backup\RtfWriter\RtfUtility.cs">
+</Event><Event ErrorLevel="1" Project="RtfWriter" Source="RtfWriter\RtfWriter.csproj" Description="Das Projekt ist für .NET Framework 2.0 oder 3.0 konzipiert. Wenn für das Projekt Assemblys verwendet werden, die eine neuere Version von .NET Framework erfordern, kann das Projekt nicht erstellt werden. Die .NET Framework-Version kann durch Klicken auf &quot;Eigenschaften&quot; im Projektmenü und durch anschließendes Auswählen einer neuen Version im Dropdownfeld &quot;.NET Framework&quot; geändert werden. (In Visual Basic befindet sich dieses Feld auf der Registerkarte &quot;Kompilieren&quot;. Klicken Sie auf die Schaltfläche &quot;Erweiterte Compileroptionen...&quot;.)">
+</Event><Event ErrorLevel="0" Project="RtfWriter" Source="RtfWriter\RtfWriter.csproj" Description="Projekt erfolgreich konvertiert">
+</Event><Event ErrorLevel="3" Project="RtfWriter" Source="RtfWriter\RtfWriter.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="Debugging" Source="Debugging\Debugging.csproj" Description="Projektdatei erfolgreich gesichert als C:\Users\Fetze\Desktop\RtfWriter_V0.9.1\netrtfwriter\Backup\Debugging\Debugging.csproj">
+</Event><Event ErrorLevel="0" Project="Debugging" Source="Debugging\Program.cs" Description="Datei erfolgreich gesichert als C:\Users\Fetze\Desktop\RtfWriter_V0.9.1\netrtfwriter\Backup\Debugging\Program.cs">
+</Event><Event ErrorLevel="0" Project="Debugging" Source="Debugging\Properties\AssemblyInfo.cs" Description="Datei erfolgreich gesichert als C:\Users\Fetze\Desktop\RtfWriter_V0.9.1\netrtfwriter\Backup\Debugging\Properties\AssemblyInfo.cs">
+</Event><Event ErrorLevel="1" Project="Debugging" Source="Debugging\Debugging.csproj" Description="Das Projekt ist für .NET Framework 2.0 oder 3.0 konzipiert. Wenn für das Projekt Assemblys verwendet werden, die eine neuere Version von .NET Framework erfordern, kann das Projekt nicht erstellt werden. Die .NET Framework-Version kann durch Klicken auf &quot;Eigenschaften&quot; im Projektmenü und durch anschließendes Auswählen einer neuen Version im Dropdownfeld &quot;.NET Framework&quot; geändert werden. (In Visual Basic befindet sich dieses Feld auf der Registerkarte &quot;Kompilieren&quot;. Klicken Sie auf die Schaltfläche &quot;Erweiterte Compileroptionen...&quot;.)">
+</Event><Event ErrorLevel="0" Project="Debugging" Source="Debugging\Debugging.csproj" Description="Projekt erfolgreich konvertiert">
+</Event><Event ErrorLevel="3" Project="Debugging" Source="Debugging\Debugging.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="" Source="netrtfwriter.sln" Description="Die Projektmappe wurde erfolgreich konvertiert.">
+</Event><Event ErrorLevel="3" Project="" Source="netrtfwriter.sln" Description="Converted">
+</Event><Event ErrorLevel="0" Project="RtfWriter" Source="RtfWriter\RtfWriter.csproj" Description="Überprüfung abgeschlossen: Upgrade der Projektdateien nicht erforderlich.">
+</Event><Event ErrorLevel="0" Project="Debugging" Source="Debugging\Debugging.csproj" Description="Überprüfung abgeschlossen: Upgrade der Projektdateien nicht erforderlich.">
+</Event></UpgradeLog>
