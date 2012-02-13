@@ -278,12 +278,26 @@ namespace Duality.Components
 			}
 			private FarseerPhysics.Common.Vertices CreateVertices(Vector2 scale)
 			{
-				FarseerPhysics.Common.Vertices v = new FarseerPhysics.Common.Vertices(this.vertices.Length);
-				for (int i = 0; i < this.vertices.Length; i++)
+				// Sort vertices clockwise before submitting them to Farseer
+				Vector2[] sortedVertices = this.vertices.ToArray();
+				Vector2 centroid = Vector2.Zero;
+				for (int i = 0; i < sortedVertices.Length; i++)
+					centroid += sortedVertices[i];
+				centroid /= sortedVertices.Length;
+				sortedVertices.StableSort(delegate(Vector2 first, Vector2 second)
+				{
+					return MathF.RoundToInt(
+						1000000.0f * MathF.Angle(centroid.X, centroid.Y, first.X, first.Y) - 
+						1000000.0f * MathF.Angle(centroid.X, centroid.Y, second.X, second.Y));
+				});
+
+				// Submit vertices
+				FarseerPhysics.Common.Vertices v = new FarseerPhysics.Common.Vertices(sortedVertices.Length);
+				for (int i = 0; i < sortedVertices.Length; i++)
 				{
 					v.Add(new Vector2(
-						this.vertices[i].X * scale.X * 0.01f, 
-						this.vertices[i].Y * scale.Y * 0.01f));
+						sortedVertices[i].X * scale.X * 0.01f, 
+						sortedVertices[i].Y * scale.Y * 0.01f));
 				}
 				return v;
 			}
@@ -724,7 +738,7 @@ namespace Duality.Components
 		public ShapeInfo PickShape(Vector2 worldCoord)
 		{
 			if (this.body == null) return null;
-			FarseerPhysics.Wrapper.Vector2 fsWorldCoord = worldCoord * 0.01f;
+			Vector2 fsWorldCoord = worldCoord * 0.01f;
 
 			for (int i = 0; i < this.shapes.Count; i++)
 			{
@@ -744,7 +758,7 @@ namespace Duality.Components
 			if (this.body == null) return new List<ShapeInfo>();
 
 			List<ShapeInfo> picked = new List<ShapeInfo>();
-			FarseerPhysics.Wrapper.Vector2 fsWorldCoord = worldCoord * 0.01f;
+			Vector2 fsWorldCoord = worldCoord * 0.01f;
 
 			for (int i = 0; i < this.shapes.Count; i++)
 			{
@@ -764,9 +778,9 @@ namespace Duality.Components
 		public List<ShapeInfo> PickShapes(Vector2 worldCoord, Vector2 size)
 		{
 			if (this.body == null) return new List<ShapeInfo>();
-			FarseerPhysics.Wrapper.Vector2 fsTemp;
-			FarseerPhysics.Wrapper.Vector2 fsWorldCoordStep;
-			FarseerPhysics.Wrapper.Vector2 fsWorldCoord = worldCoord * 0.01f;
+			Vector2 fsTemp;
+			Vector2 fsWorldCoordStep;
+			Vector2 fsWorldCoord = worldCoord * 0.01f;
 			FarseerPhysics.Collision.AABB fsWorldAABB = new FarseerPhysics.Collision.AABB(fsWorldCoord, (worldCoord + size) * 0.01f);
 
 			List<ShapeInfo> picked = new List<ShapeInfo>();
@@ -788,8 +802,8 @@ namespace Duality.Components
 					continue;
 
 				FarseerPhysics.Collision.AABB fAABBIntersect;
-				fAABBIntersect.LowerBound = FarseerPhysics.Wrapper.Vector2.Max(fAABB.LowerBound, fsWorldAABB.LowerBound);
-				fAABBIntersect.UpperBound = FarseerPhysics.Wrapper.Vector2.Min(fAABB.UpperBound, fsWorldAABB.UpperBound);
+				fAABBIntersect.LowerBound = Vector2.ComponentMax(fAABB.LowerBound, fsWorldAABB.LowerBound);
+				fAABBIntersect.UpperBound = Vector2.ComponentMin(fAABB.UpperBound, fsWorldAABB.UpperBound);
 
 				fsWorldCoordStep = new Vector2(MathF.Max(this.shapes[i].AABB.w, 1.0f), MathF.Max(this.shapes[i].AABB.h, 1.0f)) * 0.05f * 0.01f;
 				fsTemp = fAABBIntersect.LowerBound;
@@ -931,7 +945,7 @@ namespace Duality.Components
 		/// <returns></returns>
 		public static ShapeInfo PickShapeGlobal(Vector2 worldCoord)
 		{
-			FarseerPhysics.Wrapper.Vector2 fsWorldCoord = worldCoord * 0.01f;
+			Vector2 fsWorldCoord = worldCoord * 0.01f;
 			Fixture f = Scene.CurrentPhysics.TestPoint(fsWorldCoord);
 
 			return f != null && f.UserData is ShapeInfo ? (f.UserData as ShapeInfo) : null;
@@ -944,7 +958,7 @@ namespace Duality.Components
 		/// <returns></returns>
 		public static List<ShapeInfo> PickShapesGlobal(Vector2 worldCoord)
 		{
-			FarseerPhysics.Wrapper.Vector2 fsWorldCoord = worldCoord * 0.01f;
+			Vector2 fsWorldCoord = worldCoord * 0.01f;
 			List<Fixture> fixtureList = Scene.CurrentPhysics.TestPointAll(fsWorldCoord);
 			return new List<ShapeInfo>(fixtureList.Where(f => f != null && f.UserData is ShapeInfo).Select(f => f.UserData as ShapeInfo));
 		}

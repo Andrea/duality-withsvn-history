@@ -98,7 +98,7 @@
             Fires when the joint is broken.
             </summary>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Joints.WeldJoint.#ctor(FarseerPhysics.Dynamics.Body,FarseerPhysics.Dynamics.Body,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Dynamics.Joints.WeldJoint.#ctor(FarseerPhysics.Dynamics.Body,FarseerPhysics.Dynamics.Body,OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
             You need to specify a local anchor point
             where they are attached and the relative body angle. The position
@@ -133,7 +133,7 @@
             The local anchor point relative to bodyB's origin.
             </summary>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Joints.DistanceJoint.#ctor(FarseerPhysics.Dynamics.Body,FarseerPhysics.Dynamics.Body,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Dynamics.Joints.DistanceJoint.#ctor(FarseerPhysics.Dynamics.Body,FarseerPhysics.Dynamics.Body,OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
             This requires defining an
             anchor point on both bodies and the non-zero length of the
@@ -524,7 +524,7 @@
             </summary>
             <returns>A clone of the shape</returns>
         </member>
-        <member name="M:FarseerPhysics.Collision.Shapes.Shape.TestPoint(FarseerPhysics.Common.Transform@,FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Collision.Shapes.Shape.TestPoint(FarseerPhysics.Common.Transform@,OpenTK.Vector2@)">
             <summary>
             Test a point for containment in this shape. This only works for convex shapes.
             </summary>
@@ -579,7 +579,7 @@
             Radius of the Shape
             </summary>
         </member>
-        <member name="M:FarseerPhysics.Collision.Shapes.CircleShape.TestPoint(FarseerPhysics.Common.Transform@,FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Collision.Shapes.CircleShape.TestPoint(FarseerPhysics.Common.Transform@,OpenTK.Vector2@)">
             <summary>
             Test a point for containment in this shape. This only works for convex shapes.
             </summary>
@@ -623,7 +623,7 @@
             The local anchor point relative to bodyA's origin.
             </summary>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Joints.FixedDistanceJoint.#ctor(FarseerPhysics.Dynamics.Body,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Dynamics.Joints.FixedDistanceJoint.#ctor(FarseerPhysics.Dynamics.Body,OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
             This requires defining an
             anchor point on both bodies and the non-zero length of the
@@ -711,7 +711,7 @@
             this as a massless, rigid rod.
             </summary>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Joints.SliderJoint.#ctor(FarseerPhysics.Dynamics.Body,FarseerPhysics.Dynamics.Body,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2,System.Single,System.Single)">
+        <member name="M:FarseerPhysics.Dynamics.Joints.SliderJoint.#ctor(FarseerPhysics.Dynamics.Body,FarseerPhysics.Dynamics.Body,OpenTK.Vector2,OpenTK.Vector2,System.Single,System.Single)">
             <summary>
             Initializes a new instance of the <see cref="T:FarseerPhysics.Dynamics.Joints.SliderJoint"/> class.
             Warning: Do not use a zero or short length.
@@ -789,7 +789,7 @@
             This methods flags all contacts associated with the body for filtering.
             </summary>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Fixture.TestPoint(FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Dynamics.Fixture.TestPoint(OpenTK.Vector2@)">
             <summary>
             Test a point for containment in this fixture.
             </summary>
@@ -948,14 +948,14 @@
             Edge end vertex
             </summary>
         </member>
-        <member name="M:FarseerPhysics.Collision.Shapes.EdgeShape.Set(FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Collision.Shapes.EdgeShape.Set(OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
             Set this as an isolated edge.
             </summary>
             <param name="start">The start.</param>
             <param name="end">The end.</param>
         </member>
-        <member name="M:FarseerPhysics.Collision.Shapes.EdgeShape.TestPoint(FarseerPhysics.Common.Transform@,FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Collision.Shapes.EdgeShape.TestPoint(FarseerPhysics.Common.Transform@,OpenTK.Vector2@)">
             <summary>
             Test a point for containment in this shape. This only works for convex shapes.
             </summary>
@@ -1005,7 +1005,7 @@
             <param name="test"></param>
             <returns></returns>
         </member>
-        <member name="M:QuadTree`1.RayCastAABB(FarseerPhysics.Collision.AABB,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:QuadTree`1.RayCastAABB(FarseerPhysics.Collision.AABB,OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
             tests if ray intersects AABB
             </summary>
@@ -1095,7 +1095,7 @@
             </summary>
             <param name="fixture">The fixture to be removed.</param>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Body.SetTransform(FarseerPhysics.Wrapper.Vector2@,System.Single)">
+        <member name="M:FarseerPhysics.Dynamics.Body.SetTransform(OpenTK.Vector2@,System.Single)">
             <summary>
             Set the position of the body's origin and rotation.
             This breaks any contacts and wakes the other bodies.
@@ -1104,7 +1104,7 @@
             <param name="position">The world position of the body's local origin.</param>
             <param name="rotation">The world rotation in radians.</param>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Body.SetTransform(FarseerPhysics.Wrapper.Vector2,System.Single)">
+        <member name="M:FarseerPhysics.Dynamics.Body.SetTransform(OpenTK.Vector2,System.Single)">
             <summary>
             Set the position of the body's origin and rotation.
             This breaks any contacts and wakes the other bodies.
@@ -1113,7 +1113,7 @@
             <param name="position">The world position of the body's local origin.</param>
             <param name="rotation">The world rotation in radians.</param>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Body.SetTransformIgnoreContacts(FarseerPhysics.Wrapper.Vector2@,System.Single)">
+        <member name="M:FarseerPhysics.Dynamics.Body.SetTransformIgnoreContacts(OpenTK.Vector2@,System.Single)">
             <summary>
             For teleporting a body without considering new contacts immediately.
             </summary>
@@ -1126,7 +1126,7 @@
             </summary>
             <param name="transform">The transform of the body's origin.</param>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Body.ApplyForce(FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Dynamics.Body.ApplyForce(OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
             Apply a force at a world point. If the force is not
             applied at the center of mass, it will generate a torque and
@@ -1135,19 +1135,19 @@
             <param name="force">The world force vector, usually in Newtons (N).</param>
             <param name="point">The world position of the point of application.</param>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Body.ApplyForce(FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Dynamics.Body.ApplyForce(OpenTK.Vector2@)">
             <summary>
             Applies a force at the center of mass.
             </summary>
             <param name="force">The force.</param>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Body.ApplyForce(FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Dynamics.Body.ApplyForce(OpenTK.Vector2)">
             <summary>
             Applies a force at the center of mass.
             </summary>
             <param name="force">The force.</param>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Body.ApplyForce(FarseerPhysics.Wrapper.Vector2@,FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Dynamics.Body.ApplyForce(OpenTK.Vector2@,OpenTK.Vector2@)">
             <summary>
             Apply a force at a world point. If the force is not
             applied at the center of mass, it will generate a torque and
@@ -1164,14 +1164,14 @@
             </summary>
             <param name="torque">The torque about the z-axis (out of the screen), usually in N-m.</param>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Body.ApplyLinearImpulse(FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Dynamics.Body.ApplyLinearImpulse(OpenTK.Vector2)">
             <summary>
             Apply an impulse at a point. This immediately modifies the velocity.
             This wakes up the body.
             </summary>
             <param name="impulse">The world impulse vector, usually in N-seconds or kg-m/s.</param>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Body.ApplyLinearImpulse(FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Dynamics.Body.ApplyLinearImpulse(OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
             Apply an impulse at a point. This immediately modifies the velocity.
             It also modifies the angular velocity if the point of application
@@ -1181,14 +1181,14 @@
             <param name="impulse">The world impulse vector, usually in N-seconds or kg-m/s.</param>
             <param name="point">The world position of the point of application.</param>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Body.ApplyLinearImpulse(FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Dynamics.Body.ApplyLinearImpulse(OpenTK.Vector2@)">
             <summary>
             Apply an impulse at a point. This immediately modifies the velocity.
             This wakes up the body.
             </summary>
             <param name="impulse">The world impulse vector, usually in N-seconds or kg-m/s.</param>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Body.ApplyLinearImpulse(FarseerPhysics.Wrapper.Vector2@,FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Dynamics.Body.ApplyLinearImpulse(OpenTK.Vector2@,OpenTK.Vector2@)">
             <summary>
             Apply an impulse at a point. This immediately modifies the velocity.
             It also modifies the angular velocity if the point of application
@@ -1211,21 +1211,21 @@
             the mass and you later want to reset the mass.
             </summary>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Body.GetWorldPoint(FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Dynamics.Body.GetWorldPoint(OpenTK.Vector2@)">
             <summary>
             Get the world coordinates of a point given the local coordinates.
             </summary>
             <param name="localPoint">A point on the body measured relative the the body's origin.</param>
             <returns>The same point expressed in world coordinates.</returns>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Body.GetWorldPoint(FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Dynamics.Body.GetWorldPoint(OpenTK.Vector2)">
             <summary>
             Get the world coordinates of a point given the local coordinates.
             </summary>
             <param name="localPoint">A point on the body measured relative the the body's origin.</param>
             <returns>The same point expressed in world coordinates.</returns>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Body.GetWorldVector(FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Dynamics.Body.GetWorldVector(OpenTK.Vector2@)">
             <summary>
             Get the world coordinates of a vector given the local coordinates.
             Note that the vector only takes the rotation into account, not the position.
@@ -1233,14 +1233,14 @@
             <param name="localVector">A vector fixed in the body.</param>
             <returns>The same vector expressed in world coordinates.</returns>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Body.GetWorldVector(FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Dynamics.Body.GetWorldVector(OpenTK.Vector2)">
             <summary>
             Get the world coordinates of a vector given the local coordinates.
             </summary>
             <param name="localVector">A vector fixed in the body.</param>
             <returns>The same vector expressed in world coordinates.</returns>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Body.GetLocalPoint(FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Dynamics.Body.GetLocalPoint(OpenTK.Vector2@)">
             <summary>
             Gets a local point relative to the body's origin given a world point.
             Note that the vector only takes the rotation into account, not the position.
@@ -1248,14 +1248,14 @@
             <param name="worldPoint">A point in world coordinates.</param>
             <returns>The corresponding local point relative to the body's origin.</returns>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Body.GetLocalPoint(FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Dynamics.Body.GetLocalPoint(OpenTK.Vector2)">
             <summary>
             Gets a local point relative to the body's origin given a world point.
             </summary>
             <param name="worldPoint">A point in world coordinates.</param>
             <returns>The corresponding local point relative to the body's origin.</returns>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Body.GetLocalVector(FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Dynamics.Body.GetLocalVector(OpenTK.Vector2@)">
             <summary>
             Gets a local vector given a world vector.
             Note that the vector only takes the rotation into account, not the position.
@@ -1263,7 +1263,7 @@
             <param name="worldVector">A vector in world coordinates.</param>
             <returns>The corresponding local vector.</returns>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Body.GetLocalVector(FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Dynamics.Body.GetLocalVector(OpenTK.Vector2)">
             <summary>
             Gets a local vector given a world vector.
             Note that the vector only takes the rotation into account, not the position.
@@ -1271,28 +1271,28 @@
             <param name="worldVector">A vector in world coordinates.</param>
             <returns>The corresponding local vector.</returns>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Body.GetLinearVelocityFromWorldPoint(FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Dynamics.Body.GetLinearVelocityFromWorldPoint(OpenTK.Vector2)">
             <summary>
             Get the world linear velocity of a world point attached to this body.
             </summary>
             <param name="worldPoint">A point in world coordinates.</param>
             <returns>The world velocity of a point.</returns>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Body.GetLinearVelocityFromWorldPoint(FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Dynamics.Body.GetLinearVelocityFromWorldPoint(OpenTK.Vector2@)">
             <summary>
             Get the world linear velocity of a world point attached to this body.
             </summary>
             <param name="worldPoint">A point in world coordinates.</param>
             <returns>The world velocity of a point.</returns>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Body.GetLinearVelocityFromLocalPoint(FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Dynamics.Body.GetLinearVelocityFromLocalPoint(OpenTK.Vector2)">
             <summary>
             Get the world velocity of a local point.
             </summary>
             <param name="localPoint">A point in local coordinates.</param>
             <returns>The world velocity of a point.</returns>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Body.GetLinearVelocityFromLocalPoint(FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Dynamics.Body.GetLinearVelocityFromLocalPoint(OpenTK.Vector2@)">
             <summary>
             Get the world velocity of a local point.
             </summary>
@@ -1621,7 +1621,7 @@
             Defaults to 5
             </summary>
         </member>
-        <member name="M:FarseerPhysics.Common.PhysicsLogic.Explosion.Activate(FarseerPhysics.Wrapper.Vector2,System.Single,System.Single)">
+        <member name="M:FarseerPhysics.Common.PhysicsLogic.Explosion.Activate(OpenTK.Vector2,System.Single,System.Single)">
             <summary>
             This makes the explosive explode
             </summary>
@@ -1646,7 +1646,7 @@
             Doesn't handle holes.
             </summary>
         </member>
-        <member name="M:FarseerPhysics.Common.Decomposition.FlipcodeDecomposer.InsideTriangle(FarseerPhysics.Wrapper.Vector2@,FarseerPhysics.Wrapper.Vector2@,FarseerPhysics.Wrapper.Vector2@,FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Common.Decomposition.FlipcodeDecomposer.InsideTriangle(OpenTK.Vector2@,OpenTK.Vector2@,OpenTK.Vector2@,OpenTK.Vector2@)">
             <summary>
             Check if the point P is inside the triangle defined by
             the points A, B, C
@@ -1882,7 +1882,7 @@
             An easy to use factory for using joints.
             </summary>
         </member>
-        <member name="M:FarseerPhysics.Factories.JointFactory.CreateRevoluteJoint(FarseerPhysics.Dynamics.Body,FarseerPhysics.Dynamics.Body,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Factories.JointFactory.CreateRevoluteJoint(FarseerPhysics.Dynamics.Body,FarseerPhysics.Dynamics.Body,OpenTK.Vector2)">
             <summary>
             Creates a revolute joint.
             </summary>
@@ -1891,7 +1891,7 @@
             <param name="localAnchorB">The anchor of bodyB in local coordinates</param>
             <returns></returns>
         </member>
-        <member name="M:FarseerPhysics.Factories.JointFactory.CreateRevoluteJoint(FarseerPhysics.Dynamics.World,FarseerPhysics.Dynamics.Body,FarseerPhysics.Dynamics.Body,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Factories.JointFactory.CreateRevoluteJoint(FarseerPhysics.Dynamics.World,FarseerPhysics.Dynamics.Body,FarseerPhysics.Dynamics.Body,OpenTK.Vector2)">
             <summary>
             Creates a revolute joint and adds it to the world
             </summary>
@@ -1901,7 +1901,7 @@
             <param name="anchor"></param>
             <returns></returns>
         </member>
-        <member name="M:FarseerPhysics.Factories.JointFactory.CreateFixedRevoluteJoint(FarseerPhysics.Dynamics.World,FarseerPhysics.Dynamics.Body,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Factories.JointFactory.CreateFixedRevoluteJoint(FarseerPhysics.Dynamics.World,FarseerPhysics.Dynamics.Body,OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
             Creates the fixed revolute joint.
             </summary>
@@ -1911,7 +1911,7 @@
             <param name="worldAnchor">The world anchor.</param>
             <returns></returns>
         </member>
-        <member name="M:FarseerPhysics.Factories.JointFactory.CreateWeldJoint(FarseerPhysics.Dynamics.Body,FarseerPhysics.Dynamics.Body,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Factories.JointFactory.CreateWeldJoint(FarseerPhysics.Dynamics.Body,FarseerPhysics.Dynamics.Body,OpenTK.Vector2)">
             <summary>
             Creates a weld joint
             </summary>
@@ -1920,7 +1920,7 @@
             <param name="localAnchor"></param>
             <returns></returns>
         </member>
-        <member name="M:FarseerPhysics.Factories.JointFactory.CreateWeldJoint(FarseerPhysics.Dynamics.World,FarseerPhysics.Dynamics.Body,FarseerPhysics.Dynamics.Body,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Factories.JointFactory.CreateWeldJoint(FarseerPhysics.Dynamics.World,FarseerPhysics.Dynamics.Body,FarseerPhysics.Dynamics.Body,OpenTK.Vector2)">
             <summary>
             Creates a weld joint and adds it to the world
             </summary>
@@ -1930,7 +1930,7 @@
             <param name="localanchorB"></param>
             <returns></returns>
         </member>
-        <member name="M:FarseerPhysics.Factories.JointFactory.CreatePrismaticJoint(FarseerPhysics.Dynamics.Body,FarseerPhysics.Dynamics.Body,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Factories.JointFactory.CreatePrismaticJoint(FarseerPhysics.Dynamics.Body,FarseerPhysics.Dynamics.Body,OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
             Creates a prsimatic joint
             </summary>
@@ -1940,7 +1940,7 @@
             <param name="axis"></param>
             <returns></returns>
         </member>
-        <member name="M:FarseerPhysics.Factories.JointFactory.CreatePrismaticJoint(FarseerPhysics.Dynamics.World,FarseerPhysics.Dynamics.Body,FarseerPhysics.Dynamics.Body,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Factories.JointFactory.CreatePrismaticJoint(FarseerPhysics.Dynamics.World,FarseerPhysics.Dynamics.Body,FarseerPhysics.Dynamics.Body,OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
             Creates a prismatic joint and adds it to the world
             </summary>
@@ -1951,7 +1951,7 @@
             <param name="axis"></param>
             <returns></returns>
         </member>
-        <member name="M:FarseerPhysics.Factories.JointFactory.CreateLineJoint(FarseerPhysics.Dynamics.Body,FarseerPhysics.Dynamics.Body,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Factories.JointFactory.CreateLineJoint(FarseerPhysics.Dynamics.Body,FarseerPhysics.Dynamics.Body,OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
             Creates a line joint
             </summary>
@@ -1961,7 +1961,7 @@
             <param name="axis"></param>
             <returns></returns>
         </member>
-        <member name="M:FarseerPhysics.Factories.JointFactory.CreateLineJoint(FarseerPhysics.Dynamics.World,FarseerPhysics.Dynamics.Body,FarseerPhysics.Dynamics.Body,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Factories.JointFactory.CreateLineJoint(FarseerPhysics.Dynamics.World,FarseerPhysics.Dynamics.Body,FarseerPhysics.Dynamics.Body,OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
             Creates a line joint and adds it to the world
             </summary>
@@ -2012,7 +2012,7 @@
             drive the motion or to model joint friction.
             </summary>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Joints.PrismaticJoint.#ctor(FarseerPhysics.Dynamics.Body,FarseerPhysics.Dynamics.Body,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Dynamics.Joints.PrismaticJoint.#ctor(FarseerPhysics.Dynamics.Body,FarseerPhysics.Dynamics.Body,OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
             This requires defining a line of
             motion using an axis and an anchor point. The definition uses local
@@ -2127,25 +2127,25 @@
             </summary>
             <remarks>Used by method <c>Execute()</c>.</remarks>
         </member>
-        <member name="M:FarseerPhysics.Common.PolygonManipulation.YuPengClipper.CalculateBeta(FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Common.PolygonManipulation.YuPengClipper.Edge,System.Single)">
+        <member name="M:FarseerPhysics.Common.PolygonManipulation.YuPengClipper.CalculateBeta(OpenTK.Vector2,FarseerPhysics.Common.PolygonManipulation.YuPengClipper.Edge,System.Single)">
             <summary>
             Needed to calculate the characteristics function of a simplex.
             </summary>
             <remarks>Used by method <c>CalculateEdgeCharacter()</c>.</remarks>
         </member>
-        <member name="M:FarseerPhysics.Common.PolygonManipulation.YuPengClipper.GetAlpha(FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Common.PolygonManipulation.YuPengClipper.GetAlpha(OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
             Needed for sorting multiple intersections points on the same edge.
             </summary>
             <remarks>Used by method <c>CalculateIntersections()</c>.</remarks>
         </member>
-        <member name="M:FarseerPhysics.Common.PolygonManipulation.YuPengClipper.CalculateSimplexCoefficient(FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Common.PolygonManipulation.YuPengClipper.CalculateSimplexCoefficient(OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
             Returns the coefficient of a simplex.
             </summary>
             <remarks>Used by method <c>CalculateSimplicalChain()</c>.</remarks>
         </member>
-        <member name="M:FarseerPhysics.Common.PolygonManipulation.YuPengClipper.PointInSimplex(FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Common.PolygonManipulation.YuPengClipper.Edge)">
+        <member name="M:FarseerPhysics.Common.PolygonManipulation.YuPengClipper.PointInSimplex(OpenTK.Vector2,FarseerPhysics.Common.PolygonManipulation.YuPengClipper.Edge)">
             <summary>
             Winding number test for a point in a simplex.
             </summary>
@@ -2154,7 +2154,7 @@
             <returns>False if the winding number is even and the point is outside
             the simplex and True otherwise.</returns>
         </member>
-        <member name="M:FarseerPhysics.Common.PolygonManipulation.YuPengClipper.PointOnLineSegment(FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Common.PolygonManipulation.YuPengClipper.PointOnLineSegment(OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
             Tests if a point lies on a line segment.
             </summary>
@@ -2197,7 +2197,7 @@
             <param name="halfWidth">The half-width.</param>
             <param name="halfHeight">The half-height.</param>
         </member>
-        <member name="M:FarseerPhysics.Collision.Shapes.PolygonShape.SetAsBox(System.Single,System.Single,FarseerPhysics.Wrapper.Vector2,System.Single)">
+        <member name="M:FarseerPhysics.Collision.Shapes.PolygonShape.SetAsBox(System.Single,System.Single,OpenTK.Vector2,System.Single)">
             <summary>
             Build vertices to represent an oriented box.
             </summary>
@@ -2206,7 +2206,7 @@
             <param name="center">The center of the box in local coordinates.</param>
             <param name="angle">The rotation of the box in local coordinates.</param>
         </member>
-        <member name="M:FarseerPhysics.Collision.Shapes.PolygonShape.TestPoint(FarseerPhysics.Common.Transform@,FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Collision.Shapes.PolygonShape.TestPoint(FarseerPhysics.Common.Transform@,OpenTK.Vector2@)">
             <summary>
             Test a point for containment in this shape. This only works for convex shapes.
             </summary>
@@ -2246,14 +2246,14 @@
             <param name="shape">The shape.</param>
             <param name="index">The index.</param>
         </member>
-        <member name="M:FarseerPhysics.Collision.DistanceProxy.GetSupport(FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Collision.DistanceProxy.GetSupport(OpenTK.Vector2)">
             <summary>
             Get the supporting vertex index in the given direction.
             </summary>
             <param name="direction">The direction.</param>
             <returns></returns>
         </member>
-        <member name="M:FarseerPhysics.Collision.DistanceProxy.GetSupportVertex(FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Collision.DistanceProxy.GetSupportVertex(OpenTK.Vector2)">
             <summary>
             Get the supporting vertex in the given direction.
             </summary>
@@ -2524,7 +2524,7 @@
             	<c>true</c> if it contains the specified aabb; otherwise, <c>false</c>.
             </returns>
         </member>
-        <member name="M:FarseerPhysics.Collision.AABB.Contains(FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Collision.AABB.Contains(OpenTK.Vector2@)">
             <summary>
             Determines whether the AAABB contains the specified point.
             </summary>
@@ -2573,7 +2573,7 @@
             way in the SAT collider.
             </summary>
         </member>
-        <member name="M:FarseerPhysics.Collision.Collision.GetWorldManifold(FarseerPhysics.Collision.Manifold@,FarseerPhysics.Common.Transform@,System.Single,FarseerPhysics.Common.Transform@,System.Single,FarseerPhysics.Wrapper.Vector2@,FarseerPhysics.Common.FixedArray2{FarseerPhysics.Wrapper.Vector2}@)">
+        <member name="M:FarseerPhysics.Collision.Collision.GetWorldManifold(FarseerPhysics.Collision.Manifold@,FarseerPhysics.Common.Transform@,System.Single,FarseerPhysics.Common.Transform@,System.Single,OpenTK.Vector2@,FarseerPhysics.Common.FixedArray2{OpenTK.Vector2}@)">
             <summary>
             Evaluate the manifold with supplied transforms. This assumes
             modest motion from the original state. This does not change the
@@ -2632,7 +2632,7 @@
             <param name="polygonB">The polygon B.</param>
             <param name="xfB">The xf B.</param>
         </member>
-        <member name="M:FarseerPhysics.Collision.Collision.ClipSegmentToLine(FarseerPhysics.Common.FixedArray2{FarseerPhysics.Collision.ClipVertex}@,FarseerPhysics.Common.FixedArray2{FarseerPhysics.Collision.ClipVertex}@,FarseerPhysics.Wrapper.Vector2,System.Single,System.Int32)">
+        <member name="M:FarseerPhysics.Collision.Collision.ClipSegmentToLine(FarseerPhysics.Common.FixedArray2{FarseerPhysics.Collision.ClipVertex}@,FarseerPhysics.Common.FixedArray2{FarseerPhysics.Collision.ClipVertex}@,OpenTK.Vector2,System.Single,System.Int32)">
             <summary>
             Clipping for contact manifolds.
             </summary>
@@ -2665,7 +2665,7 @@
             <param name="xf2">The XF2.</param>
             <returns></returns>
         </member>
-        <member name="M:FarseerPhysics.Factories.LinkFactory.CreateChain(FarseerPhysics.Dynamics.World,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2,System.Single,System.Single,System.Boolean,System.Boolean,System.Int32,System.Single)">
+        <member name="M:FarseerPhysics.Factories.LinkFactory.CreateChain(FarseerPhysics.Dynamics.World,OpenTK.Vector2,OpenTK.Vector2,System.Single,System.Single,System.Boolean,System.Boolean,System.Int32,System.Single)">
             <summary>
             Creates a chain.
             </summary>
@@ -2795,7 +2795,7 @@
             </summary>
             <param name="manifold">The manifold.</param>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Contacts.Contact.GetWorldManifold(FarseerPhysics.Wrapper.Vector2@,FarseerPhysics.Common.FixedArray2{FarseerPhysics.Wrapper.Vector2}@)">
+        <member name="M:FarseerPhysics.Dynamics.Contacts.Contact.GetWorldManifold(OpenTK.Vector2@,FarseerPhysics.Common.FixedArray2{OpenTK.Vector2}@)">
             <summary>
             Gets the world manifold.
             </summary>
@@ -2844,160 +2844,6 @@
             Get the child primitive index for fixture B.
             </summary>
             <value>The child index B.</value>
-        </member>
-        <member name="F:FarseerPhysics.Controllers.AbstractForceController.DecayCurve">
-            <summary>
-            Curve to be used for Decay in Curve mode
-            </summary>
-        </member>
-        <member name="F:FarseerPhysics.Controllers.AbstractForceController.ForceType">
-            <summary>
-            The Forcetype of the instance
-            </summary>
-        </member>
-        <member name="F:FarseerPhysics.Controllers.AbstractForceController.Randomize">
-            <summary>
-            Provided for reuse to provide Variation functionality in 
-            inheriting classes
-            </summary>
-        </member>
-        <member name="F:FarseerPhysics.Controllers.AbstractForceController.StrengthCurve">
-            <summary>
-            Curve used by Curve Mode as an animated multiplier for the force 
-            strength.
-            Only positions between 0 and 1 are considered as that range is 
-            stretched to have ImpulseLength.
-            </summary>
-        </member>
-        <member name="M:FarseerPhysics.Controllers.AbstractForceController.#ctor">
-            <summary>
-            Constructor
-            </summary>
-        </member>
-        <member name="M:FarseerPhysics.Controllers.AbstractForceController.#ctor(FarseerPhysics.Controllers.AbstractForceController.TimingModes)">
-            <summary>
-            Overloaded Contstructor with supplying Timing Mode
-            </summary>
-            <param name="mode"></param>
-        </member>
-        <member name="M:FarseerPhysics.Controllers.AbstractForceController.GetDecayMultiplier(FarseerPhysics.Dynamics.Body)">
-            <summary>
-            Calculate the Decay for a given body. Meant to ease force 
-            development and stick to the DRY principle and provide unified and 
-            predictable decay math.
-            </summary>
-            <param name="body">The body to calculate decay for</param>
-            <returns>A multiplier to multiply the force with to add decay 
-            support in inheriting classes</returns>
-        </member>
-        <member name="M:FarseerPhysics.Controllers.AbstractForceController.Trigger">
-            <summary>
-            Triggers the trigger modes (Trigger and Curve)
-            </summary>
-        </member>
-        <member name="M:FarseerPhysics.Controllers.AbstractForceController.Update(System.Single)">
-            <summary>
-            Inherited from Controller
-            Depending on the TimingMode perform timing logic and call ApplyForce()
-            </summary>
-            <param name="dt"></param>
-        </member>
-        <member name="M:FarseerPhysics.Controllers.AbstractForceController.ApplyForce(System.Single,System.Single)">
-            <summary>
-            Apply the force supplying strength (wich is modified in Update() 
-            according to the TimingMode
-            </summary>
-            <param name="dt"></param>
-            <param name="strength">The strength</param>
-        </member>
-        <member name="P:FarseerPhysics.Controllers.AbstractForceController.Strength">
-            <summary>
-            Global Strength of the force to be applied
-            </summary>
-        </member>
-        <member name="P:FarseerPhysics.Controllers.AbstractForceController.Position">
-            <summary>
-            Position of the Force. Can be ignored (left at (0,0) for forces
-            that are not position-dependent
-            </summary>
-        </member>
-        <member name="P:FarseerPhysics.Controllers.AbstractForceController.MaximumSpeed">
-            <summary>
-            Maximum speed of the bodies. Bodies that are travelling faster are
-            supposed to be ignored
-            </summary>
-        </member>
-        <member name="P:FarseerPhysics.Controllers.AbstractForceController.MaximumForce">
-            <summary>
-            Maximum Force to be applied. As opposed to Maximum Speed this is 
-            independent of the velocity of
-            the affected body
-            </summary>
-        </member>
-        <member name="P:FarseerPhysics.Controllers.AbstractForceController.TimingMode">
-            <summary>
-            Timing Mode of the force instance
-            </summary>
-        </member>
-        <member name="P:FarseerPhysics.Controllers.AbstractForceController.ImpulseTime">
-            <summary>
-            Time of the current impulse. Incremented in update till 
-            ImpulseLength is reached
-            </summary>
-        </member>
-        <member name="P:FarseerPhysics.Controllers.AbstractForceController.ImpulseLength">
-            <summary>
-            Length of a triggered impulse. Used in both Triggered and Curve Mode
-            </summary>
-        </member>
-        <member name="P:FarseerPhysics.Controllers.AbstractForceController.Triggered">
-            <summary>
-            Indicating if we are currently during an Impulse 
-            (Triggered and Curve Mode)
-            </summary>
-        </member>
-        <member name="P:FarseerPhysics.Controllers.AbstractForceController.Variation">
-            <summary>
-            Variation of the force applied to each body affected
-            !! Must be used in inheriting classes properly !!
-            </summary>
-        </member>
-        <member name="P:FarseerPhysics.Controllers.AbstractForceController.DecayMode">
-            <summary>
-            See DecayModes
-            </summary>
-        </member>
-        <member name="P:FarseerPhysics.Controllers.AbstractForceController.DecayStart">
-            <summary>
-            Start of the distance based Decay. To set a non decaying area
-            </summary>
-        </member>
-        <member name="P:FarseerPhysics.Controllers.AbstractForceController.DecayEnd">
-            <summary>
-            Maximum distance a force should be applied
-            </summary>
-        </member>
-        <member name="T:FarseerPhysics.Controllers.AbstractForceController.DecayModes">
-            <summary>
-            Modes for Decay. Actual Decay must be implemented in inheriting 
-            classes
-            </summary>
-        </member>
-        <member name="T:FarseerPhysics.Controllers.AbstractForceController.ForceTypes">
-            <summary>
-            Forcetypes are used in the decay math to properly get the distance.
-            They are also used to draw a representation in DebugView
-            </summary>
-        </member>
-        <member name="T:FarseerPhysics.Controllers.AbstractForceController.TimingModes">
-            <summary>
-            Timing Modes
-            Switched: Standard on/off mode using the baseclass enabled property
-            Triggered: When the Trigger() method is called the force is active 
-            for a specified Impulse Length
-            Curve: Still to be defined. The basic idea is having a Trigger 
-            combined with a curve for the strength
-            </summary>
         </member>
         <member name="T:Poly2Tri.Triangulation.TriangulationUtil">
             @author Thomas Åhlén, thahlen@gmail.com
@@ -3150,7 +2996,7 @@
             </summary>
             <param name="proxyId">The proxy id.</param>
         </member>
-        <member name="M:FarseerPhysics.Collision.DynamicTree`1.MoveProxy(System.Int32,FarseerPhysics.Collision.AABB@,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Collision.DynamicTree`1.MoveProxy(System.Int32,FarseerPhysics.Collision.AABB@,OpenTK.Vector2)">
             <summary>
             Move a proxy with a swepted AABB. If the proxy has moved outside of its fattened AABB,
             then the proxy is removed from the tree and re-inserted. Otherwise
@@ -3297,13 +3143,13 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:FarseerPhysics.Common.Vertices.Translate(FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Common.Vertices.Translate(OpenTK.Vector2@)">
             <summary>
             Translates the vertices with the specified vector.
             </summary>
             <param name="vector">The vector.</param>
         </member>
-        <member name="M:FarseerPhysics.Common.Vertices.Scale(FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Common.Vertices.Scale(OpenTK.Vector2@)">
             <summary>
             Scales the vertices with the specified vector.
             </summary>
@@ -3367,7 +3213,7 @@
             <param name="verts">The vertices.</param>
             <returns></returns>
         </member>
-        <member name="M:FarseerPhysics.Common.Vertices.ProjectToAxis(FarseerPhysics.Wrapper.Vector2@,System.Single@,System.Single@)">
+        <member name="M:FarseerPhysics.Common.Vertices.ProjectToAxis(OpenTK.Vector2@,System.Single@,System.Single@)">
             <summary>
             Projects to axis.
             </summary>
@@ -3375,7 +3221,7 @@
             <param name="min">The min.</param>
             <param name="max">The max.</param>
         </member>
-        <member name="M:FarseerPhysics.Common.Vertices.PointInPolygon(FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Common.Vertices.PointInPolygon(OpenTK.Vector2@)">
             <summary>
             Winding number test for a point in a polygon.
             </summary>
@@ -3385,7 +3231,7 @@
             the polygon, 1 if the point is inside the polygon, and 0 if the point
             is on the polygons edge.</returns>
         </member>
-        <member name="M:FarseerPhysics.Common.Vertices.PointInPolygonAngle(FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Common.Vertices.PointInPolygonAngle(OpenTK.Vector2@)">
             <summary>
             Compute the sum of the angles made between the test point and each pair of points making up the polygon. 
             If this sum is 2pi then the point is an interior point, if 0 then the point is an exterior point. 
@@ -3503,7 +3349,7 @@
             <param name="output">The output.</param>
             <param name="input">The input.</param>
         </member>
-        <member name="M:FarseerPhysics.Factories.BodyFactory.CreateCapsule(FarseerPhysics.Dynamics.World,System.Single,System.Single,System.Int32,System.Single,System.Int32,System.Single,FarseerPhysics.Wrapper.Vector2,System.Object)">
+        <member name="M:FarseerPhysics.Factories.BodyFactory.CreateCapsule(FarseerPhysics.Dynamics.World,System.Single,System.Single,System.Int32,System.Single,System.Int32,System.Single,OpenTK.Vector2,System.Object)">
             <summary>
             Creates a capsule.
             Note: Automatically decomposes the capsule if it contains too many vertices (controlled by Settings.MaxPolygonVertices)
@@ -3518,7 +3364,7 @@
             <param name="position">The position.</param>
             <returns></returns>
         </member>
-        <member name="M:FarseerPhysics.Factories.BodyFactory.CreateRoundedRectangle(FarseerPhysics.Dynamics.World,System.Single,System.Single,System.Single,System.Single,System.Int32,System.Single,FarseerPhysics.Wrapper.Vector2,System.Object)">
+        <member name="M:FarseerPhysics.Factories.BodyFactory.CreateRoundedRectangle(FarseerPhysics.Dynamics.World,System.Single,System.Single,System.Single,System.Single,System.Int32,System.Single,OpenTK.Vector2,System.Object)">
             <summary>
             Creates a rounded rectangle.
             Note: Automatically decomposes the capsule if it contains too many vertices (controlled by Settings.MaxPolygonVertices)
@@ -3533,7 +3379,7 @@
             <param name="position">The position.</param>
             <returns></returns>
         </member>
-        <member name="M:FarseerPhysics.Factories.BodyFactory.CreateBreakableBody(FarseerPhysics.Dynamics.World,FarseerPhysics.Common.Vertices,System.Single,FarseerPhysics.Wrapper.Vector2,System.Object)">
+        <member name="M:FarseerPhysics.Factories.BodyFactory.CreateBreakableBody(FarseerPhysics.Dynamics.World,FarseerPhysics.Common.Vertices,System.Single,OpenTK.Vector2,System.Object)">
             <summary>
             Creates a breakable body. You would want to remove collinear points before using this.
             </summary>
@@ -3551,7 +3397,7 @@
             drive the motion or to model joint friction.
             </summary>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Joints.FixedPrismaticJoint.#ctor(FarseerPhysics.Dynamics.Body,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Dynamics.Joints.FixedPrismaticJoint.#ctor(FarseerPhysics.Dynamics.Body,OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
             This requires defining a line of
             motion using an axis and an anchor point. The definition uses local
@@ -3676,7 +3522,7 @@
             <param name="strength">The strength.</param>
             <param name="timeStep">The time step.</param>
         </member>
-        <member name="M:FarseerPhysics.Factories.PathManager.AttachBodiesWithRevoluteJoint(FarseerPhysics.Dynamics.World,System.Collections.Generic.List{FarseerPhysics.Dynamics.Body},FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2,System.Boolean,System.Boolean)">
+        <member name="M:FarseerPhysics.Factories.PathManager.AttachBodiesWithRevoluteJoint(FarseerPhysics.Dynamics.World,System.Collections.Generic.List{FarseerPhysics.Dynamics.Body},OpenTK.Vector2,OpenTK.Vector2,System.Boolean,System.Boolean)">
             <summary>
             Attaches the bodies with revolute joints.
             </summary>
@@ -3687,7 +3533,7 @@
             <param name="connectFirstAndLast">if set to <c>true</c> [connect first and last].</param>
             <param name="collideConnected">if set to <c>true</c> [collide connected].</param>
         </member>
-        <member name="M:FarseerPhysics.Factories.PathManager.AttachBodiesWithSliderJoint(FarseerPhysics.Dynamics.World,System.Collections.Generic.List{FarseerPhysics.Dynamics.Body},FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2,System.Boolean,System.Boolean,System.Single,System.Single)">
+        <member name="M:FarseerPhysics.Factories.PathManager.AttachBodiesWithSliderJoint(FarseerPhysics.Dynamics.World,System.Collections.Generic.List{FarseerPhysics.Dynamics.Body},OpenTK.Vector2,OpenTK.Vector2,System.Boolean,System.Boolean,System.Single,System.Single)">
             <summary>
             Attaches the bodies with revolute joints.
             </summary>
@@ -3717,7 +3563,7 @@
             is provided so that infinite forces are not generated.
             </summary>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Joints.RevoluteJoint.#ctor(FarseerPhysics.Dynamics.Body,FarseerPhysics.Dynamics.Body,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Dynamics.Joints.RevoluteJoint.#ctor(FarseerPhysics.Dynamics.Body,FarseerPhysics.Dynamics.Body,OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
             Initialize the bodies and local anchor.
             This requires defining an
@@ -3801,7 +3647,7 @@
             is provided so that infinite forces are not generated.
             </summary>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Joints.FixedRevoluteJoint.#ctor(FarseerPhysics.Dynamics.Body,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Dynamics.Joints.FixedRevoluteJoint.#ctor(FarseerPhysics.Dynamics.Body,OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
             Initialize the bodies, anchors, and reference angle using the world
             anchor.
@@ -3927,7 +3773,7 @@
             Acts like waterflow. Defaults to 0,0.
             </summary>
         </member>
-        <member name="M:FarseerPhysics.Controllers.BuoyancyController.#ctor(FarseerPhysics.Collision.AABB,System.Single,System.Single,System.Single,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Controllers.BuoyancyController.#ctor(FarseerPhysics.Collision.AABB,System.Single,System.Single,System.Single,OpenTK.Vector2)">
             <summary>
             Initializes a new instance of the <see cref="T:FarseerPhysics.Controllers.BuoyancyController"/> class.
             </summary>
@@ -4004,7 +3850,7 @@
             <param name="multiPartDetection">if set to <c>true</c> it will perform multi part detection.</param>
             <returns></returns>
         </member>
-        <member name="M:FarseerPhysics.Common.TextureConverter.SearchHoleEntrance(FarseerPhysics.Common.Vertices,System.Nullable{FarseerPhysics.Wrapper.Vector2})">
+        <member name="M:FarseerPhysics.Common.TextureConverter.SearchHoleEntrance(FarseerPhysics.Common.Vertices,System.Nullable{OpenTK.Vector2})">
             <summary>
             Function to search for an entrance point of a hole in a polygon. It searches the polygon from top to bottom between the polygon edges.
             </summary>
@@ -4020,7 +3866,7 @@
             <param name="y">Y coordinate to check for edges.</param>
             <returns>Descending sorted list of x coordinates of edges that cross the specified y coordinate.</returns>
         </member>
-        <member name="M:FarseerPhysics.Common.TextureConverter.CreateSimplePolygon(FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Common.TextureConverter.CreateSimplePolygon(OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
             
             </summary>
@@ -4028,7 +3874,7 @@
             <param name="last"></param>
             <returns></returns>
         </member>
-        <member name="M:FarseerPhysics.Common.TextureConverter.SearchNextHullEntrance(System.Collections.Generic.List{FarseerPhysics.Common.DetectedVertices},FarseerPhysics.Wrapper.Vector2,System.Nullable{FarseerPhysics.Wrapper.Vector2}@)">
+        <member name="M:FarseerPhysics.Common.TextureConverter.SearchNextHullEntrance(System.Collections.Generic.List{FarseerPhysics.Common.DetectedVertices},OpenTK.Vector2,System.Nullable{OpenTK.Vector2}@)">
             <summary>
             Searches for the next shape.
             </summary>
@@ -4131,7 +3977,7 @@
             <param name="hx">the half-width.</param>
             <param name="hy">the half-height.</param>
         </member>
-        <member name="M:FarseerPhysics.Common.PolygonTools.CreateRectangle(System.Single,System.Single,FarseerPhysics.Wrapper.Vector2,System.Single)">
+        <member name="M:FarseerPhysics.Common.PolygonTools.CreateRectangle(System.Single,System.Single,OpenTK.Vector2,System.Single)">
             <summary>
             Build vertices to represent an oriented box.
             </summary>
@@ -4151,7 +3997,7 @@
             <param name="segments">The number of segments to subdivide the edges.</param>
             <returns></returns>
         </member>
-        <member name="M:FarseerPhysics.Common.PolygonTools.CreateLine(FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Common.PolygonTools.CreateLine(OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
             Set this as a single edge.
             </summary>
@@ -4256,7 +4102,7 @@
             <param name="edge">The edge.</param>
             <param name="index">The index.</param>
         </member>
-        <member name="M:FarseerPhysics.Collision.Shapes.LoopShape.TestPoint(FarseerPhysics.Common.Transform@,FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Collision.Shapes.LoopShape.TestPoint(FarseerPhysics.Common.Transform@,OpenTK.Vector2@)">
             <summary>
             Test a point for containment in this shape. This only works for convex shapes.
             </summary>
@@ -4343,7 +4189,7 @@
             Initializes a new instance of the <see cref="T:FarseerPhysics.Dynamics.World"/> class.
             </summary>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.World.#ctor(FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Dynamics.World.#ctor(OpenTK.Vector2)">
             <summary>
             Initializes a new instance of the <see cref="T:FarseerPhysics.Dynamics.World"/> class.
             </summary>
@@ -4412,7 +4258,7 @@
             <param name="callback">A user implemented callback class.</param>
             <param name="aabb">The aabb query box.</param>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.World.RayCast(FarseerPhysics.Dynamics.RayCastCallback,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Dynamics.World.RayCast(FarseerPhysics.Dynamics.RayCastCallback,OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
             Ray-cast the world for all fixtures in the path of the ray. Your callback
             controls whether you get the closest point, any point, or n-points.
@@ -4434,7 +4280,7 @@
             </summary>
             <param name="step">The step.</param>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.World.TestPointAll(FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Dynamics.World.TestPointAll(OpenTK.Vector2)">
             <summary>
             Returns a list of fixtures that are at the specified point.
             </summary>
@@ -4494,7 +4340,7 @@
             use the mouse joint, look at the testbed.
             </summary>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Joints.FixedMouseJoint.#ctor(FarseerPhysics.Dynamics.Body,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Dynamics.Joints.FixedMouseJoint.#ctor(FarseerPhysics.Dynamics.Body,OpenTK.Vector2)">
             <summary>
             This requires a world target point,
             tuning parameters, and the time step.
@@ -4590,7 +4436,7 @@
             </summary>
             <param name="flags">The flags.</param>
         </member>
-        <member name="M:FarseerPhysics.DebugView.DrawPolygon(FarseerPhysics.Wrapper.Vector2[],System.Int32,System.Single,System.Single,System.Single)">
+        <member name="M:FarseerPhysics.DebugView.DrawPolygon(OpenTK.Vector2[],System.Int32,System.Single,System.Single,System.Single)">
             <summary>
             Draw a closed polygon provided in CCW order.
             </summary>
@@ -4600,7 +4446,7 @@
             <param name="blue">The blue value.</param>
             <param name="green">The green value.</param>
         </member>
-        <member name="M:FarseerPhysics.DebugView.DrawSolidPolygon(FarseerPhysics.Wrapper.Vector2[],System.Int32,System.Single,System.Single,System.Single)">
+        <member name="M:FarseerPhysics.DebugView.DrawSolidPolygon(OpenTK.Vector2[],System.Int32,System.Single,System.Single,System.Single)">
             <summary>
             Draw a solid closed polygon provided in CCW order.
             </summary>
@@ -4610,7 +4456,7 @@
             <param name="blue">The blue value.</param>
             <param name="green">The green value.</param>
         </member>
-        <member name="M:FarseerPhysics.DebugView.DrawCircle(FarseerPhysics.Wrapper.Vector2,System.Single,System.Single,System.Single,System.Single)">
+        <member name="M:FarseerPhysics.DebugView.DrawCircle(OpenTK.Vector2,System.Single,System.Single,System.Single,System.Single)">
             <summary>
             Draw a circle.
             </summary>
@@ -4620,7 +4466,7 @@
             <param name="blue">The blue value.</param>
             <param name="green">The green value.</param>
         </member>
-        <member name="M:FarseerPhysics.DebugView.DrawSolidCircle(FarseerPhysics.Wrapper.Vector2,System.Single,FarseerPhysics.Wrapper.Vector2,System.Single,System.Single,System.Single)">
+        <member name="M:FarseerPhysics.DebugView.DrawSolidCircle(OpenTK.Vector2,System.Single,OpenTK.Vector2,System.Single,System.Single,System.Single)">
             <summary>
             Draw a solid circle.
             </summary>
@@ -4631,7 +4477,7 @@
             <param name="blue">The blue value.</param>
             <param name="green">The green value.</param>
         </member>
-        <member name="M:FarseerPhysics.DebugView.DrawSegment(FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2,System.Single,System.Single,System.Single)">
+        <member name="M:FarseerPhysics.DebugView.DrawSegment(OpenTK.Vector2,OpenTK.Vector2,System.Single,System.Single,System.Single)">
             <summary>
             Draw a line segment.
             </summary>
@@ -4652,30 +4498,6 @@
             Gets or sets the debug view flags.
             </summary>
             <value>The flags.</value>
-        </member>
-        <member name="T:FarseerPhysics.Controllers.SimpleWindForce">
-            <summary>
-            Reference implementation for forces based on AbstractForceController
-            It supports all features provided by the base class and illustrates proper
-            usage as an easy to understand example.
-            As a side-effect it is a nice and easy to use wind force for your projects
-            </summary>
-        </member>
-        <member name="P:FarseerPhysics.Controllers.SimpleWindForce.Direction">
-            <summary>
-            Direction of the windforce
-            </summary>
-        </member>
-        <member name="P:FarseerPhysics.Controllers.SimpleWindForce.Divergence">
-            <summary>
-            The amount of Direction randomization. Allowed range is 0-1.
-            </summary>
-        </member>
-        <member name="P:FarseerPhysics.Controllers.SimpleWindForce.IgnorePosition">
-            <summary>
-            Ignore the position and apply the force. If off only in the "front" (relative to position and direction)
-            will be affected
-            </summary>
         </member>
         <member name="T:FarseerPhysics.Common.TerrainTester">
             <summary>
@@ -4749,7 +4571,7 @@
             Initialize the terrain for use.
             </summary>
         </member>
-        <member name="M:FarseerPhysics.Common.MSTerrain.ApplyTexture(System.Int32,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Common.TerrainTester)">
+        <member name="M:FarseerPhysics.Common.MSTerrain.ApplyTexture(System.Int32,OpenTK.Vector2,FarseerPhysics.Common.TerrainTester)">
             <summary>
             Apply a texture to the terrain using the specified TerrainTester.
             </summary>
@@ -4757,7 +4579,7 @@
             <param name="position">Top left position of the texture relative to the terrain.</param>
             <param name="tester">Delegate method used to determine what colors should be included in the terrain.</param>
         </member>
-        <member name="M:FarseerPhysics.Common.MSTerrain.ApplyData(System.SByte[0:,0:],FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Common.MSTerrain.ApplyData(System.SByte[0:,0:],OpenTK.Vector2)">
             <summary>
             Apply a texture to the terrain using the specified TerrainTester.
             </summary>
@@ -4771,7 +4593,7 @@
             <param name="tester"></param>
             <returns></returns>
         </member>
-        <member name="M:FarseerPhysics.Common.MSTerrain.ModifyTerrain(FarseerPhysics.Wrapper.Vector2,System.SByte)">
+        <member name="M:FarseerPhysics.Common.MSTerrain.ModifyTerrain(OpenTK.Vector2,System.SByte)">
             <summary>
             Modify a single point in the terrain.
             </summary>
@@ -4800,28 +4622,28 @@
             <param name="x">The x.</param>
             <returns></returns>
         </member>
-        <member name="M:FarseerPhysics.Common.MathUtils.VectorAngle(FarseerPhysics.Wrapper.Vector2@,FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Common.MathUtils.VectorAngle(OpenTK.Vector2@,OpenTK.Vector2@)">
             <summary>
             Return the angle between two vectors on a plane
             The angle is from vector 1 to vector 2, positive anticlockwise
             The result is between -pi -> pi
             </summary>
         </member>
-        <member name="M:FarseerPhysics.Common.MathUtils.Area(FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Common.MathUtils.Area(OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
             Returns a positive number if c is to the left of the line going from a to b.
             </summary>
             <returns>Positive number if point is left, negative if point is right, 
             and 0 if points are collinear.</returns>
         </member>
-        <member name="M:FarseerPhysics.Common.MathUtils.Area(FarseerPhysics.Wrapper.Vector2@,FarseerPhysics.Wrapper.Vector2@,FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Common.MathUtils.Area(OpenTK.Vector2@,OpenTK.Vector2@,OpenTK.Vector2@)">
             <summary>
             Returns a positive number if c is to the left of the line going from a to b.
             </summary>
             <returns>Positive number if point is left, negative if point is right, 
             and 0 if points are collinear.</returns>
         </member>
-        <member name="M:FarseerPhysics.Common.MathUtils.Collinear(FarseerPhysics.Wrapper.Vector2@,FarseerPhysics.Wrapper.Vector2@,FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Common.MathUtils.Collinear(OpenTK.Vector2@,OpenTK.Vector2@,OpenTK.Vector2@)">
             <summary>
             Determines if three vertices are collinear (ie. on a straight line)
             </summary>
@@ -4856,7 +4678,7 @@
             A 2-by-2 matrix. Stored in column-major order.
             </summary>
         </member>
-        <member name="M:FarseerPhysics.Common.Mat22.#ctor(FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Common.Mat22.#ctor(OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
             Construct this matrix using columns.
             </summary>
@@ -4879,7 +4701,7 @@
             </summary>
             <param name="angle">The angle.</param>
         </member>
-        <member name="M:FarseerPhysics.Common.Mat22.Set(FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Common.Mat22.Set(OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
             Initialize this matrix using columns.
             </summary>
@@ -4903,7 +4725,7 @@
             Set this matrix to all zeros.
             </summary>
         </member>
-        <member name="M:FarseerPhysics.Common.Mat22.Solve(FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Common.Mat22.Solve(OpenTK.Vector2)">
             <summary>
             Solve A * x = b, where b is a column vector. This is more efficient
             than computing the inverse in one-shot cases.
@@ -4923,7 +4745,7 @@
             A 3-by-3 matrix. Stored in column-major order.
             </summary>
         </member>
-        <member name="M:FarseerPhysics.Common.Mat33.#ctor(FarseerPhysics.Wrapper.Vector3,FarseerPhysics.Wrapper.Vector3,FarseerPhysics.Wrapper.Vector3)">
+        <member name="M:FarseerPhysics.Common.Mat33.#ctor(OpenTK.Vector3,OpenTK.Vector3,OpenTK.Vector3)">
             <summary>
             Construct this matrix using columns.
             </summary>
@@ -4936,7 +4758,7 @@
             Set this matrix to all zeros.
             </summary>
         </member>
-        <member name="M:FarseerPhysics.Common.Mat33.Solve33(FarseerPhysics.Wrapper.Vector3)">
+        <member name="M:FarseerPhysics.Common.Mat33.Solve33(OpenTK.Vector3)">
             <summary>
             Solve A * x = b, where b is a column vector. This is more efficient
             than computing the inverse in one-shot cases.
@@ -4944,7 +4766,7 @@
             <param name="b">The b.</param>
             <returns></returns>
         </member>
-        <member name="M:FarseerPhysics.Common.Mat33.Solve22(FarseerPhysics.Wrapper.Vector2)">
+        <member name="M:FarseerPhysics.Common.Mat33.Solve22(OpenTK.Vector2)">
             <summary>
             Solve A * x = b, where b is a column vector. This is more efficient
             than computing the inverse in one-shot cases. Solve only the upper
@@ -4959,7 +4781,7 @@
             the position and orientation of rigid frames.
             </summary>
         </member>
-        <member name="M:FarseerPhysics.Common.Transform.#ctor(FarseerPhysics.Wrapper.Vector2@,FarseerPhysics.Common.Mat22@)">
+        <member name="M:FarseerPhysics.Common.Transform.#ctor(OpenTK.Vector2@,FarseerPhysics.Common.Mat22@)">
             <summary>
             Initialize using a position vector and a rotation matrix.
             </summary>
@@ -4971,7 +4793,7 @@
             Set this to the identity transform.
             </summary>
         </member>
-        <member name="M:FarseerPhysics.Common.Transform.Set(FarseerPhysics.Wrapper.Vector2,System.Single)">
+        <member name="M:FarseerPhysics.Common.Transform.Set(OpenTK.Vector2,System.Single)">
             <summary>
             Set this based on the position and angle.
             </summary>
@@ -5134,7 +4956,7 @@
             </summary>
             <value></value>
         </member>
-        <member name="M:FarseerPhysics.Dynamics.Joints.PulleyJoint.#ctor(FarseerPhysics.Dynamics.Body,FarseerPhysics.Dynamics.Body,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2,System.Single)">
+        <member name="M:FarseerPhysics.Dynamics.Joints.PulleyJoint.#ctor(FarseerPhysics.Dynamics.Body,FarseerPhysics.Dynamics.Body,OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector2,System.Single)">
             <summary>
             Initialize the bodies, anchors, lengths, max lengths, and ratio using the world anchors.
             This requires two ground anchors,
@@ -5222,7 +5044,7 @@
             <param name="nth">The Nth point to remove. Example: 5.</param>
             <returns></returns>
         </member>
-        <member name="M:FarseerPhysics.Common.PolygonManipulation.CuttingTools.SplitShape(FarseerPhysics.Dynamics.Fixture,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2,System.Single,FarseerPhysics.Common.Vertices@,FarseerPhysics.Common.Vertices@)">
+        <member name="M:FarseerPhysics.Common.PolygonManipulation.CuttingTools.SplitShape(FarseerPhysics.Dynamics.Fixture,OpenTK.Vector2,OpenTK.Vector2,System.Single,FarseerPhysics.Common.Vertices@,FarseerPhysics.Common.Vertices@)">
             <summary>
             Split a fixture into 2 vertice collections using the given entry and exit-point.
             </summary>
@@ -5233,7 +5055,7 @@
             <param name="first">The first collection of vertexes</param>
             <param name="second">The second collection of vertexes</param>
         </member>
-        <member name="M:FarseerPhysics.Common.PolygonManipulation.CuttingTools.Cut(FarseerPhysics.Dynamics.World,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2,System.Single)">
+        <member name="M:FarseerPhysics.Common.PolygonManipulation.CuttingTools.Cut(FarseerPhysics.Dynamics.World,OpenTK.Vector2,OpenTK.Vector2,System.Single)">
             <summary>
             This is a high-level function to cuts fixtures inside the given world, using the start and end points.
             Note: We don't support cutting when the start or end is inside a shape.
@@ -5262,13 +5084,13 @@
             Initializes a new instance of the <see cref="T:FarseerPhysics.Common.Path"/> class.
             </summary>
         </member>
-        <member name="M:FarseerPhysics.Common.Path.#ctor(FarseerPhysics.Wrapper.Vector2[])">
+        <member name="M:FarseerPhysics.Common.Path.#ctor(OpenTK.Vector2[])">
             <summary>
             Initializes a new instance of the <see cref="T:FarseerPhysics.Common.Path"/> class.
             </summary>
             <param name="vertices">The vertices to created the path from.</param>
         </member>
-        <member name="M:FarseerPhysics.Common.Path.#ctor(System.Collections.Generic.IList{FarseerPhysics.Wrapper.Vector2})">
+        <member name="M:FarseerPhysics.Common.Path.#ctor(System.Collections.Generic.IList{OpenTK.Vector2})">
             <summary>
             Initializes a new instance of the <see cref="T:FarseerPhysics.Common.Path"/> class.
             </summary>
@@ -5288,13 +5110,13 @@
             <param name="index">The index.</param>
             <returns></returns>
         </member>
-        <member name="M:FarseerPhysics.Common.Path.Translate(FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Common.Path.Translate(OpenTK.Vector2@)">
             <summary>
             Translates the control points by the specified vector.
             </summary>
             <param name="vector">The vector.</param>
         </member>
-        <member name="M:FarseerPhysics.Common.Path.Scale(FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Common.Path.Scale(OpenTK.Vector2@)">
             <summary>
             Scales the control points by the specified vector.
             </summary>
@@ -5334,7 +5156,7 @@
             Does float tolerance and line collisions with lines and AABBs.
             </summary>
         </member>
-        <member name="M:FarseerPhysics.Common.LineTools.LineIntersect2(FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Common.LineTools.LineIntersect2(OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector2@)">
              <summary>
             Check if the lines a0->a1 and b0->b1 cross.
             If they do, intersectionPoint will be filled
@@ -5350,7 +5172,7 @@
              <param name="intersectionPoint"></param>
              <returns></returns>
         </member>
-        <member name="M:FarseerPhysics.Common.LineTools.LineIntersect(FarseerPhysics.Wrapper.Vector2@,FarseerPhysics.Wrapper.Vector2@,FarseerPhysics.Wrapper.Vector2@,FarseerPhysics.Wrapper.Vector2@,System.Boolean,System.Boolean,FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Common.LineTools.LineIntersect(OpenTK.Vector2@,OpenTK.Vector2@,OpenTK.Vector2@,OpenTK.Vector2@,System.Boolean,System.Boolean,OpenTK.Vector2@)">
             <summary>
             This method detects if two line segments (or lines) intersect,
             and, if so, the point of intersection. Use the <paramref name="firstIsSegment"/> and
@@ -5376,7 +5198,7 @@
             intersection point be on the second line segment.</param>
             <returns>True if an intersection is detected, false otherwise.</returns>
         </member>
-        <member name="M:FarseerPhysics.Common.LineTools.LineIntersect(FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2,System.Boolean,System.Boolean,FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Common.LineTools.LineIntersect(OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector2,System.Boolean,System.Boolean,OpenTK.Vector2@)">
             <summary>
             This method detects if two line segments (or lines) intersect,
             and, if so, the point of intersection. Use the <paramref name="firstIsSegment"/> and
@@ -5402,7 +5224,7 @@
             intersection point be on the second line segment.</param>
             <returns>True if an intersection is detected, false otherwise.</returns>
         </member>
-        <member name="M:FarseerPhysics.Common.LineTools.LineIntersect(FarseerPhysics.Wrapper.Vector2@,FarseerPhysics.Wrapper.Vector2@,FarseerPhysics.Wrapper.Vector2@,FarseerPhysics.Wrapper.Vector2@,FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Common.LineTools.LineIntersect(OpenTK.Vector2@,OpenTK.Vector2@,OpenTK.Vector2@,OpenTK.Vector2@,OpenTK.Vector2@)">
             <summary>
             This method detects if two line segments intersect,
             and, if so, the point of intersection. 
@@ -5418,7 +5240,7 @@
             point if an intersection is detected.</param>
             <returns>True if an intersection is detected, false otherwise.</returns>
         </member>
-        <member name="M:FarseerPhysics.Common.LineTools.LineIntersect(FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2,FarseerPhysics.Wrapper.Vector2@)">
+        <member name="M:FarseerPhysics.Common.LineTools.LineIntersect(OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector2@)">
             <summary>
             This method detects if two line segments intersect,
             and, if so, the point of intersection. 
@@ -5434,7 +5256,7 @@
             point if an intersection is detected.</param>
             <returns>True if an intersection is detected, false otherwise.</returns>
         </member>
-        <member name="M:FarseerPhysics.Common.LineTools.LineSegmentVerticesIntersect(FarseerPhysics.Wrapper.Vector2@,FarseerPhysics.Wrapper.Vector2@,FarseerPhysics.Common.Vertices,System.Collections.Generic.List{FarseerPhysics.Wrapper.Vector2}@)">
+        <member name="M:FarseerPhysics.Common.LineTools.LineSegmentVerticesIntersect(OpenTK.Vector2@,OpenTK.Vector2@,FarseerPhysics.Common.Vertices,System.Collections.Generic.List{OpenTK.Vector2}@)">
             <summary>
             Get all intersections between a line segment and a list of vertices
             representing a polygon. The vertices reuse adjacent points, so for example
@@ -5448,7 +5270,7 @@
             <param name="intersectionPoints">An list of intersection points. Any intersection points
             found will be added to this list.</param>
         </member>
-        <member name="M:FarseerPhysics.Common.LineTools.LineSegmentAABBIntersect(FarseerPhysics.Wrapper.Vector2@,FarseerPhysics.Wrapper.Vector2@,FarseerPhysics.Collision.AABB,System.Collections.Generic.List{FarseerPhysics.Wrapper.Vector2}@)">
+        <member name="M:FarseerPhysics.Common.LineTools.LineSegmentAABBIntersect(OpenTK.Vector2@,OpenTK.Vector2@,FarseerPhysics.Collision.AABB,System.Collections.Generic.List{OpenTK.Vector2}@)">
             <summary>
             Get all intersections between a line segment and an AABB. 
             </summary>
