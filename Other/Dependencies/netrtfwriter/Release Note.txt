@@ -1,1 +1,0 @@
-Please consult Debugger project for a tutorial of how to use this library, and RtfWriter project for details. 
