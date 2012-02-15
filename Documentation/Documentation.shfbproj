@@ -19,8 +19,8 @@
     <HtmlHelpName>DDoc</HtmlHelpName>
     <Language>en-US</Language>
     <DocumentationSources>
-      <DocumentationSource sourceFile="..\Duality.sln" />
-    </DocumentationSources>
+      <DocumentationSource sourceFile="..\Duality\bin\x86\Release\Duality.dll" />
+<DocumentationSource sourceFile="..\Duality\bin\x86\Release\Duality.xml" /></DocumentationSources>
     <HelpFileFormat>HtmlHelp1, Website</HelpFileFormat>
     <HelpTitle>Duality Documentation</HelpTitle>
     <SyntaxFilters>CSharp</SyntaxFilters>
@@ -33,21 +33,22 @@
     </PlugInConfigurations>
     <ApiFilter>
       <Filter entryType="Namespace" fullName="DualityEditor" isExposed="False" />
-<Filter entryType="Namespace" fullName="DualityEditor.Controls" isExposed="False" />
-<Filter entryType="Namespace" fullName="DualityEditor.Controls.PropertyEditors" isExposed="False" />
-<Filter entryType="Namespace" fullName="DualityEditor.Controls.ToolStrip" isExposed="False" />
-<Filter entryType="Namespace" fullName="DualityEditor.EditorRes" isExposed="False" />
-<Filter entryType="Namespace" fullName="DualityEditor.Forms" isExposed="False" />
-<Filter entryType="Namespace" fullName="DualityLauncher" isExposed="False" />
-<Filter entryType="Namespace" fullName="EditorBase" isExposed="False" />
-<Filter entryType="Namespace" fullName="EditorBase.PluginRes" isExposed="False" />
-<Filter entryType="Namespace" fullName="EditorBase.PropertyEditors" isExposed="False" />
-<Filter entryType="Namespace" fullName="HelpAdvisor" isExposed="False" />
-<Filter entryType="Namespace" fullName="HelpAdvisor.PluginRes" isExposed="False" />
-<Filter entryType="Namespace" fullName="ResourceHacker" isExposed="False" />
-<Filter entryType="Namespace" fullName="ResourceHacker.PropertyEditors" isExposed="False" />
-<Filter entryType="Namespace" fullName="TestPlugin" isExposed="False" />
-<Filter entryType="Namespace" fullName="DualityEditor" isExposed="False" /></ApiFilter>
+      <Filter entryType="Namespace" fullName="DualityEditor.Controls" isExposed="False" />
+      <Filter entryType="Namespace" fullName="DualityEditor.Controls.PropertyEditors" isExposed="False" />
+      <Filter entryType="Namespace" fullName="DualityEditor.Controls.ToolStrip" isExposed="False" />
+      <Filter entryType="Namespace" fullName="DualityEditor.EditorRes" isExposed="False" />
+      <Filter entryType="Namespace" fullName="DualityEditor.Forms" isExposed="False" />
+      <Filter entryType="Namespace" fullName="DualityLauncher" isExposed="False" />
+      <Filter entryType="Namespace" fullName="EditorBase" isExposed="False" />
+      <Filter entryType="Namespace" fullName="EditorBase.PluginRes" isExposed="False" />
+      <Filter entryType="Namespace" fullName="EditorBase.PropertyEditors" isExposed="False" />
+      <Filter entryType="Namespace" fullName="HelpAdvisor" isExposed="False" />
+      <Filter entryType="Namespace" fullName="HelpAdvisor.PluginRes" isExposed="False" />
+      <Filter entryType="Namespace" fullName="ResourceHacker" isExposed="False" />
+      <Filter entryType="Namespace" fullName="ResourceHacker.PropertyEditors" isExposed="False" />
+      <Filter entryType="Namespace" fullName="TestPlugin" isExposed="False" />
+      <Filter entryType="Namespace" fullName="DualityEditor" isExposed="False" />
+    </ApiFilter>
     <VisibleItems>InheritedMembers, Protected, SealedProtected</VisibleItems>
     <ComponentConfigurations>
       <ComponentConfig id="Code Block Component" enabled="True" xmlns="">
@@ -81,6 +82,17 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Win32' ">
   </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FarseerOpenTK">
+      <HintPath>..\Duality\bin\x86\Release\FarseerOpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK">
+      <HintPath>..\Duality\bin\x86\Release\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK.GLControl">
+      <HintPath>..\Duality\bin\x86\Release\OpenTK.GLControl.dll</HintPath>
+    </Reference>
+  </ItemGroup>
   <!-- Import the SHFB build targets -->
   <Import Project="$(SHFBROOT)\SandcastleHelpFileBuilder.targets" />
 </Project>
