@@ -7,15 +7,6 @@
 
 -->	Dualitor: PerformanceMonitor
 
--->	Videoblog: New Features to introduce:
-	-->	XML Serialization
-		-->	Dynamic Reload
-	-->	Sandbox
-	-->	"Play"-Button in VS working
-	-->	Log Window
-	-->	Physics
-		-->	Collider Editor
-
 
 
 
