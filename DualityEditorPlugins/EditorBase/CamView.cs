@@ -367,7 +367,7 @@ namespace EditorBase
 		}
 		public void OnCamTransformChanged()
 		{
-			if (this.camInternal) return;
+			//if (this.camInternal) return;
 			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
 				this, new ObjectSelection(this.camObj.Transform),
 				ReflectionInfo.Property_Transform_RelativeVel,

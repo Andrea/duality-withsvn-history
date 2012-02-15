@@ -1398,6 +1398,7 @@ namespace DualityEditor.Forms
 
 		private void Resource_ResourceSaved(object sender, Duality.ResourceEventArgs e)
 		{
+			if (e.Path == null) return; // Ignore Resources without a path.
 			this.editorJustSavedRes.Add(Path.GetFullPath(e.Path));
 		}
 

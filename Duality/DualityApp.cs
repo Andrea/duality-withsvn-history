@@ -90,10 +90,8 @@ namespace Duality
 		private	static	List<Assembly>					disposedPlugins	= new List<Assembly>();
 		private static	Dictionary<Type,List<Type>>		availTypeDict	= new Dictionary<Type,List<Type>>();
 
-		/// <summary>
-		/// Fired whenever the <see cref="DualityUserData">gfx size / display resolution has changed</see>.
-		/// </summary>
-		internal static event EventHandler GfxSizeChanged	= null;
+		internal static event EventHandler UserDataChanged	= null;
+		internal static event EventHandler AppDataChanged	= null;
 
 
 		/// <summary>
@@ -144,7 +142,13 @@ namespace Duality
 		public static DualityAppData AppData
 		{
 			get { return appData; }
-			set { appData = value; if (appData == null) appData = new DualityAppData(); }
+			set 
+			{ 
+				appData = value; 
+				if (appData == null) appData = new DualityAppData();
+				// We're currently missing direct changes without invoking this setter
+				OnAppDataChanged();
+			}
 		}
 		/// <summary>
 		/// [GET / SET] Provides access to Duality's current <see cref="DualityUserData">user data</see>. This is never null.
@@ -157,8 +161,8 @@ namespace Duality
 			{ 
 				userData = value; 
 				if (userData == null) userData = new DualityUserData();
-				// Optimize this later: Only call when really needed - and we're currently missing direct changes without invoking this setter
-				OnGfxSizeChanged();
+				// We're currently missing direct changes without invoking this setter
+				OnUserDataChanged();
 			}
 		}
 		/// <summary>
@@ -322,7 +326,10 @@ namespace Duality
 			LoadAppData();
 			LoadUserData();
 			LoadMetaData();
-			sound.Init();
+
+			// Initial changed event
+			OnAppDataChanged();
+			OnUserDataChanged();
 
 			Formatter.InitDefaultMethod();
 			
@@ -648,15 +655,15 @@ namespace Duality
 		}
 		private static void UnloadPlugins()
 		{
+			ContentProvider.ClearContent();
+			ReflectionHelper.ClearTypeCache();
+			availTypeDict.Clear();
 			foreach (CorePlugin plugin in plugins.Values)
 			{
 				disposedPlugins.Add(plugin.PluginAssembly);
 				plugin.Dispose();
 			}
 			plugins.Clear();
-			availTypeDict.Clear();
-			ReflectionHelper.ClearTypeCache();
-			ContentProvider.ClearContent();
 		}
 		internal static void ReloadPlugin(string pluginFileName)
 		{
@@ -758,10 +765,17 @@ namespace Duality
 		{
 			foreach (CorePlugin plugin in plugins.Values) plugin.OnExecContextChanged(previousContext);
 		}
-		private static void OnGfxSizeChanged()
+		private static void OnUserDataChanged()
 		{
-			if (GfxSizeChanged != null)
-				GfxSizeChanged(null, EventArgs.Empty);
+			if (UserDataChanged != null)
+				UserDataChanged(null, EventArgs.Empty);
+		}
+		private static void OnAppDataChanged()
+		{
+			if (AppDataChanged != null)
+				AppDataChanged(null, EventArgs.Empty);
+
+			FarseerPhysics.Settings.VelocityThreshold = appData.PhysicsVelocityThreshold * 0.01f / Time.SPFMult;
 		}
 
 		private static void CurrentDomain_ProcessExit(object sender, EventArgs e)
@@ -802,6 +816,7 @@ namespace Duality
 		private	ContentRef<Scene>	startScene			= ContentRef<Scene>.Null;
 		private	float				speedOfSound		= 360.0f;
 		private	float				soundDopplerFactor	= 1.0f;
+		private	float				physicsVelThreshold	= 1.0f * Time.SPFMult / 0.01f;
 
 		/// <summary>
 		/// [GET / SET] The name of your application / game. It will also be used as a window title by the launcher app.
@@ -861,6 +876,14 @@ namespace Duality
 		{
 			get { return this.soundDopplerFactor; }
 			set { this.soundDopplerFactor = value; }
+		}
+		/// <summary>
+		/// [GET / SET] Any velocity below this value will be resolved using inelastic equations i.e. won't lead to "bouncing".
+		/// </summary>
+		public float PhysicsVelocityThreshold
+		{
+			get { return this.physicsVelThreshold; }
+			set { this.physicsVelThreshold = value; }
 		}
 	}
 

@@ -405,14 +405,16 @@ namespace Duality.Serialization
 				else
 					defaultMethod = FormattingMethod.Binary;
 			}
-
-			using (FileStream stream = File.OpenRead(anyResource))
+			else
 			{
-				bool isXml = XmlFormatterBase.IsXmlStream(stream);
-				if (isXml)
-					defaultMethod = FormattingMethod.Xml;
-				else
-					defaultMethod = FormattingMethod.Binary;
+				using (FileStream stream = File.OpenRead(anyResource))
+				{
+					bool isXml = XmlFormatterBase.IsXmlStream(stream);
+					if (isXml)
+						defaultMethod = FormattingMethod.Xml;
+					else
+						defaultMethod = FormattingMethod.Binary;
+				}
 			}
 		}
 		/// <summary>

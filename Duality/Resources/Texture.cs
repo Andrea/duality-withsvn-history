@@ -160,7 +160,7 @@ namespace Duality.Resources
 
 		static Texture()
 		{
-			DualityApp.GfxSizeChanged += new EventHandler(DualityApp_GfxSizeChanged);
+			DualityApp.UserDataChanged += new EventHandler(DualityApp_UserDataChanged);
 		}
 		private static void Init()
 		{
@@ -220,13 +220,13 @@ namespace Duality.Resources
 				Bind(None, i);
 			}
 		}
-		private static void DualityApp_GfxSizeChanged(object sender, EventArgs e)
+		private static void DualityApp_UserDataChanged(object sender, EventArgs e)
 		{
 			// Reload relative textures
 			Texture tex;
 			foreach (ContentRef<Texture> texRef in ContentProvider.GetAvailContent<Texture>())
 			{
-				if (!texRef.IsAvailable) continue;
+				if (!texRef.IsLoaded || !texRef.IsAvailable) continue;
 				tex = texRef.Res;
 				if (tex.SizeRelative) tex.ReloadData();
 			}

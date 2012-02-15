@@ -454,6 +454,9 @@ namespace Duality.Resources
 		}
 		protected override void OnLoaded()
 		{
+			foreach (GameObject obj in this.objectManager.AllObjects)
+				obj.PerformSanitaryCheck();
+
 			this.RebuildManagers();
 
 			base.OnLoaded();

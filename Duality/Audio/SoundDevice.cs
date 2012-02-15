@@ -162,15 +162,36 @@ namespace Duality
 			Log.Core.Write(
 				"OpenAL initialized. {0} sound sources available",
 				this.alSourcePool.Count);
+
+			DualityApp.AppDataChanged += this.DualityApp_AppDataChanged;
 		}
-		/// <summary>
-		/// Initializes the SoundDevice based on application and user settings.
-		/// </summary>
-		public void Init()
+		~SoundDevice()
 		{
-			AL.DistanceModel(ALDistanceModel.LinearDistanceClamped);
-			AL.DopplerFactor(DualityApp.AppData.SoundDopplerFactor);
-			AL.SpeedOfSound(DualityApp.AppData.SpeedOfSound);
+			this.Dispose(false);
+		}
+		public void Dispose()
+		{
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		private void Dispose(bool manually)
+		{
+			if (!this.disposed)
+			{
+				this.disposed = true;
+				DualityApp.AppDataChanged -= this.DualityApp_AppDataChanged;
+				this.OnDisposed(manually);
+			}
+		}
+		protected virtual void OnDisposed(bool manually)
+		{
+			foreach (SoundInstance inst in this.sounds) inst.Dispose();
+			this.sounds.Clear();
+
+			ContentProvider.UnregisterAllContent<Sound>();
+
+			this.context.Dispose();
+			this.context = null;
 		}
 
 		/// <summary>
@@ -329,33 +350,12 @@ namespace Duality
 			this.sounds.Add(inst);
 			return inst;
 		}
-
-		~SoundDevice()
+		
+		private void DualityApp_AppDataChanged(object sender, EventArgs e)
 		{
-			this.Dispose(false);
-		}
-		public void Dispose()
-		{
-			this.Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-		private void Dispose(bool manually)
-		{
-			if (!this.disposed)
-			{
-				this.disposed = true;
-				this.OnDisposed(manually);
-			}
-		}
-		protected virtual void OnDisposed(bool manually)
-		{
-			foreach (SoundInstance inst in this.sounds) inst.Dispose();
-			this.sounds.Clear();
-
-			ContentProvider.UnregisterAllContent<Sound>();
-
-			this.context.Dispose();
-			this.context = null;
+			AL.DistanceModel(ALDistanceModel.LinearDistanceClamped);
+			AL.DopplerFactor(DualityApp.AppData.SoundDopplerFactor);
+			AL.SpeedOfSound(DualityApp.AppData.SpeedOfSound);
 		}
 
 		/// <summary>

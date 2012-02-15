@@ -281,11 +281,6 @@
             </code>
             </example>
         </member>
-        <member name="E:Duality.DualityApp.GfxSizeChanged">
-            <summary>
-            Fired whenever the <see cref="T:Duality.DualityUserData">gfx size / display resolution has changed</see>.
-            </summary>
-        </member>
         <member name="P:Duality.DualityApp.TargetResolution">
             <summary>
             [GET / SET] The size of the current rendering surface (full screen, a single window, etc.) in pixels. Setting this will not actually change
@@ -463,6 +458,11 @@
         <member name="P:Duality.DualityAppData.SoundDopplerFactor">
             <summary>
             [GET / SET] A factor by which the strength of the doppler effect is multiplied.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityAppData.PhysicsVelocityThreshold">
+            <summary>
+            [GET / SET] Any velocity below this value will be resolved using inelastic equations i.e. won't lead to "bouncing".
             </summary>
         </member>
         <member name="T:Duality.DualityUserData">
@@ -2964,11 +2964,6 @@
         <member name="T:Duality.SoundDevice">
             <summary>
             Provides functionality to play and manage sound in Duality.
-            </summary>
-        </member>
-        <member name="M:Duality.SoundDevice.Init">
-            <summary>
-            Initializes the SoundDevice based on application and user settings.
             </summary>
         </member>
         <member name="M:Duality.SoundDevice.GetNumPlaying(Duality.ContentRef{Duality.Resources.Sound})">
@@ -11166,6 +11161,11 @@
             Deep-copies this GameObject's data to the specified target GameObject.
             </summary>
             <param name="target">The target GameObject to copy to.</param>
+        </member>
+        <member name="M:Duality.GameObject.PerformSanitaryCheck">
+            <summary>
+            Sanitary check in case something failed deserializing
+            </summary>
         </member>
         <member name="M:Duality.GameObject.NotifyCollisionBegin(Duality.Component,Duality.CollisionEventArgs)">
             <summary>

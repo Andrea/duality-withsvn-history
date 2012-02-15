@@ -132,6 +132,15 @@ namespace Duality.Resources
 			return child.GetComponent(cmpType) != null;
 		}
 
+		protected override void OnLoaded()
+		{
+			base.OnLoaded();
+			if (this.objTree != null)
+			{
+				this.objTree.PerformSanitaryCheck();
+				this.objTree.OnLoaded(true);
+			}
+		}
 		public override void CopyTo(Resource r)
 		{
 			base.CopyTo(r);

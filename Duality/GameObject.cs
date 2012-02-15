@@ -296,7 +296,6 @@ namespace Duality
 		{
 			this.LinkToPrefab(prefab);
 			this.PrefabLink.Apply();
-			this.OnLoaded(true);
 		}
 
 		/// <summary>
@@ -755,14 +754,18 @@ namespace Duality
 			}
 		}
 		
-		internal void OnLoaded(bool deep = false)
+		/// <summary>
+		/// Sanitary check in case something failed deserializing
+		/// </summary>
+		internal void PerformSanitaryCheck()
 		{
-			// Sanitary check in case something failed deserializing
 			for (int i = this.compList.Count - 1;  i >= 0; i--)
 				if (this.compList[i] == null) this.compList.RemoveAt(i);
 			foreach (Type key in this.compMap.Keys.ToArray())
 				if (this.compMap[key] == null) this.compMap.Remove(key);
-
+		}
+		internal void OnLoaded(bool deep = false)
+		{
 			// Notify Components
 			for (int i = 0; i < this.compList.Count; i++)
 			{

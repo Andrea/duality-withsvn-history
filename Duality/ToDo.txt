@@ -5,7 +5,9 @@
 	-->	??? Ingame GUI & GUI Editor
 	-->	??? Editor: Xml Serialization and "export game (binary)" functionality
 
--->	Re-Implement Asteroids with physics.
+-->	Re-Implement Asteroids
+	-->	Use Colliders for collision detection and physics
+	-->	Use Canvas for GUI
 -->	Dualitor: PerformanceMonitor
 
 

@@ -152,7 +152,7 @@ namespace DualityEditor.Forms
 				this.OnBeforeBeginReload();
 				this.state = ReloaderState.ReloadPlugins;
 			}
-			this.owner.MainContextControl.Context.MakeCurrent(null);
+			//this.owner.MainContextControl.Context.MakeCurrent(null);
 
 			this.progressTimer.Start();
 			this.owner.SetTaskbarOverlayIcon(GeneralRes.Icon_Cog, GeneralRes.TaskBarOverlay_ReloadCorePlugin_Desc);
@@ -179,7 +179,7 @@ namespace DualityEditor.Forms
 			this.owner.SetTaskbarOverlayIcon(null, null);
 			this.reloadSchedule.Clear();
 
-			this.owner.MainContextControl.MakeCurrent();
+			//this.owner.MainContextControl.MakeCurrent();
 			this.state = ReloaderState.Idle;
 			this.OnAfterEndReload();
 		}
@@ -226,7 +226,7 @@ namespace DualityEditor.Forms
 		{
 			WorkerInterface workInterface = args as WorkerInterface;
 			bool fullRestart = false;
-			workInterface.MainForm.MainContextControl.MakeCurrent();
+			//workInterface.MainForm.MainContextControl.MakeCurrent();
 
 			try { PerformPluginReload(ref workInterface, ref fullRestart); }
 			catch (Exception e)
@@ -252,7 +252,7 @@ namespace DualityEditor.Forms
 				}
 			}
 
-			workInterface.MainForm.MainContextControl.Context.MakeCurrent(null);
+			//workInterface.MainForm.MainContextControl.Context.MakeCurrent(null);
 		}
 		private static void PerformPluginReload(ref WorkerInterface workInterface, ref bool fullRestart)
 		{
@@ -291,9 +291,13 @@ namespace DualityEditor.Forms
 				StreamWriter strDataWriter = new StreamWriter(strData);
 				strDataWriter.WriteLine(Scene.CurrentPath);
 				strDataWriter.Flush();
-				Scene.Current.Save(strScene);
-				ContentProvider.UnregisterPluginContent();
+				workInterface.MainForm.Invoke((Action)delegate()
+				{
+					Scene.Current.Save(strScene);
+					ContentProvider.UnregisterPluginContent();
+				});
 				workInterface.Progress += 0.4f;
+				Thread.Sleep(20);
 			
 				if (!fullRestart)
 				{
@@ -303,11 +307,15 @@ namespace DualityEditor.Forms
 					int count = workInterface.ReloadSched.Count;
 					while (workInterface.ReloadSched.Count > 0)
 					{
-						DualityApp.ReloadPlugin(workInterface.ReloadSched[0]);
+						workInterface.MainForm.Invoke((Action<string>)DualityApp.ReloadPlugin, workInterface.ReloadSched[0]);
 						workInterface.Progress += 0.15f / (float)count;
+						Thread.Sleep(20);
 
 						string xmlDocFile = workInterface.ReloadSched[0].Replace(".dll", ".xml");
-						if (File.Exists(xmlDocFile)) workInterface.MainForm.LoadXmlCodeDoc(xmlDocFile);
+						if (File.Exists(xmlDocFile))
+						{
+							workInterface.MainForm.Invoke((Action<string>)workInterface.MainForm.LoadXmlCodeDoc, xmlDocFile);
+						}
 						workInterface.ReloadSched.RemoveAt(0);
 						workInterface.Progress += 0.05f / (float)count;
 					}
