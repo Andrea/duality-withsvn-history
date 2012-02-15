@@ -6,6 +6,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Reflection;
+using System.Xml;
 
 using OpenTK;
 
@@ -449,6 +450,35 @@ namespace DualityEditor.Forms
 				File.WriteAllText(EditorHelper.SourceCodeComponentExampleFile, file_ComponentExample_cs, Encoding.UTF8);
 				File.WriteAllText(EditorHelper.SourceCodeCorePluginFile, file_CorePlugin_cs, Encoding.UTF8);
 				File.WriteAllText(EditorHelper.SourceCodeEditorPluginFile, file_EditorPlugin_cs, Encoding.UTF8);
+			}
+			
+			// Replace exec path in user files, since VS doesn't support relative paths there..
+			{
+				XmlDocument userDoc;
+				string userFileCore = EditorHelper.SourceCodeProjectCorePluginFile + ".user";
+				string userFileEditor = EditorHelper.SourceCodeProjectEditorPluginFile + ".user";
+
+				if (File.Exists(userFileCore))
+				{
+					userDoc = new XmlDocument();
+					userDoc.Load(userFileCore);
+					foreach (XmlElement element in userDoc.GetElementsByTagName("StartProgram").OfType<XmlElement>())
+						element.InnerText = Path.GetFullPath("DualityLauncher.exe");
+					foreach (XmlElement element in userDoc.GetElementsByTagName("StartWorkingDirectory").OfType<XmlElement>())
+						element.InnerText = Path.GetFullPath(".");
+					userDoc.Save(userFileCore);
+				}
+				
+				if (File.Exists(userFileEditor))
+				{
+					userDoc = new XmlDocument();
+					userDoc.Load(userFileEditor);
+					foreach (XmlElement element in userDoc.GetElementsByTagName("StartProgram").OfType<XmlElement>())
+						element.InnerText = Path.GetFullPath("DualityEditor.exe");
+					foreach (XmlElement element in userDoc.GetElementsByTagName("StartWorkingDirectory").OfType<XmlElement>())
+						element.InnerText = Path.GetFullPath(".");
+					userDoc.Save(userFileEditor);
+				}
 			}
 
 			// Keep auto-generated files up-to-date

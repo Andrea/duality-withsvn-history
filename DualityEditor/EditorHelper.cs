@@ -21,7 +21,9 @@ namespace DualityEditor
 		public const string SourceDirectory				= @"Source";
 		public const string SourceMediaDirectory		= @"Source\Media";
 		public const string SourceCodeDirectory			= @"Source\Code";
-		public const string SourceCodeSolutionFile			= @"Source\Code\ProjectPlugins.sln";
+		public const string SourceCodeSolutionFile				= @"Source\Code\ProjectPlugins.sln";
+		public const string SourceCodeProjectCorePluginFile		= @"Source\Code\CorePlugin\CorePlugin.csproj";
+		public const string SourceCodeProjectEditorPluginFile	= @"Source\Code\EditorPlugin\EditorPlugin.csproj";
 		public const string SourceCodeGameResFile			= @"Source\Code\CorePlugin\Properties\GameRes.cs";
 		public const string SourceCodeCorePluginFile		= @"Source\Code\CorePlugin\CorePlugin.cs";
 		public const string SourceCodeComponentExampleFile	= @"Source\Code\CorePlugin\YourCustomComponentType.cs";

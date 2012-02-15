@@ -816,7 +816,7 @@ namespace Duality
 		private	ContentRef<Scene>	startScene			= ContentRef<Scene>.Null;
 		private	float				speedOfSound		= 360.0f;
 		private	float				soundDopplerFactor	= 1.0f;
-		private	float				physicsVelThreshold	= 1.0f * Time.SPFMult / 0.01f;
+		private	float				physicsVelThreshold	= 0.5f * Time.SPFMult / 0.01f;
 
 		/// <summary>
 		/// [GET / SET] The name of your application / game. It will also be used as a window title by the launcher app.
