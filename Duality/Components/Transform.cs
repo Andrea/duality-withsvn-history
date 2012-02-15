@@ -15,6 +15,11 @@ namespace Duality.Components
 	public interface ITransformUpdater
 	{
 		/// <summary>
+		/// [GET] Returns whether the Transform component should ignore its parent transform.
+		/// </summary>
+		bool IgnoreParent { get; }
+
+		/// <summary>
 		/// Called when the <see cref="Transform"/> Component is being updated.
 		/// </summary>
 		/// <param name="t"></param>
@@ -419,6 +424,25 @@ namespace Duality.Components
 			this.UpdateRel();
 			this.UpdateAbs(true);
 		}
+		/// <summary>
+		/// Updates the Transforms data all at once.
+		/// </summary>
+		/// <param name="pos"></param>
+		/// <param name="vel"></param>
+		/// <param name="scale"></param>
+		/// <param name="angle"></param>
+		/// <param name="angleVel"></param>
+		public void SetRelativeTransform(Vector3 pos, Vector3 vel, Vector3 scale, float angle, float angleVel)
+		{
+			this.pos = pos;
+			this.vel = vel;
+			this.angle = angle;
+			this.angleVel = angleVel;
+			this.scale = scale;
+
+			this.changes |= DirtyFlags.All;
+			this.UpdateAbs();
+		}
 
 		void ICmpUpdatable.OnUpdate()
 		{
@@ -431,10 +455,18 @@ namespace Duality.Components
 			}
 			else if (this.angleVel != 0.0f || this.vel != Vector3.Zero)
 			{
-				this.angle	+= this.angleVel	* Time.TimeMult;
-				this.pos	+= this.vel			* Time.TimeMult;
+				if (this.angleVel != 0.0f)
+				{
+					this.angle		+= this.angleVel	* Time.TimeMult;
+					this.changes	|= DirtyFlags.Angle;
 
-				this.angle = MathF.NormalizeAngle(this.angle);
+					this.angle = MathF.NormalizeAngle(this.angle);
+				}
+				if (this.vel != Vector3.Zero)
+				{
+					this.pos		+= this.vel			* Time.TimeMult;
+					this.changes	|= DirtyFlags.Pos;
+				}
 				this.UpdateAbs();
 			}
 			this.changes = DirtyFlags.None;
@@ -554,7 +586,7 @@ namespace Duality.Components
 					this.velAbs = this.vel;
 					this.scaleAbs = this.scale;
 				}
-				else if (this.extUpdater != null && DualityApp.ExecContext != DualityApp.ExecutionContext.Editor)
+				else if (this.extUpdater != null && this.extUpdater.IgnoreParent && DualityApp.ExecContext != DualityApp.ExecutionContext.Editor)
 				{
 					// If there is an external updater, ignore scene graph relations and just keep relative data updated.
 					this.UpdateRel();
@@ -588,11 +620,18 @@ namespace Duality.Components
 			{
 				foreach (GameObject obj in this.gameobj.Children)
 				{
-					if (obj.Transform != null)
+					if (obj.Transform == null) continue;
+					if (obj.Transform.extUpdater == null || !obj.Transform.extUpdater.IgnoreParent)
 					{
 						obj.Transform.UpdateAbs();
-						if (this.changes != DirtyFlags.None)
-							obj.Transform.changes |= DirtyFlags.All;
+
+						obj.Transform.changes |= this.changes;
+						if ((this.changes & DirtyFlags.Scale) != DirtyFlags.None || (this.changes & DirtyFlags.Angle) != DirtyFlags.None)
+							obj.Transform.changes |= DirtyFlags.Pos | DirtyFlags.Vel;
+					}
+					else
+					{
+						obj.Transform.UpdateRel();
 					}
 				}
 			}

@@ -328,7 +328,7 @@ namespace Duality.Serialization
 				}
 			}
 			// Red non-custom object data
-			else
+			else if (!this.reader.IsEmptyElement)
 			{
 				// Read fields
 				bool scopeChanged;

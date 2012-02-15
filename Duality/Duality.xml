@@ -642,6 +642,11 @@
             <param name="t"></param>
             <param name="changes"></param>
         </member>
+        <member name="P:Duality.Components.ITransformUpdater.IgnoreParent">
+            <summary>
+            [GET] Returns whether the Transform component should ignore its parent transform.
+            </summary>
+        </member>
         <member name="T:Duality.Components.Transform">
             <summary>
             Represents a <see cref="T:Duality.GameObject">GameObjects</see> physical location in the world, relative to its <see cref="P:Duality.GameObject.Parent"/>.
@@ -947,6 +952,16 @@
             <param name="updater"></param>
         </member>
         <member name="M:Duality.Components.Transform.SetTransform(OpenTK.Vector3,OpenTK.Vector3,OpenTK.Vector3,System.Single,System.Single)">
+            <summary>
+            Updates the Transforms data all at once.
+            </summary>
+            <param name="pos"></param>
+            <param name="vel"></param>
+            <param name="scale"></param>
+            <param name="angle"></param>
+            <param name="angleVel"></param>
+        </member>
+        <member name="M:Duality.Components.Transform.SetRelativeTransform(OpenTK.Vector3,OpenTK.Vector3,OpenTK.Vector3,System.Single,System.Single)">
             <summary>
             Updates the Transforms data all at once.
             </summary>

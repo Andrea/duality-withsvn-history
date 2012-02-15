@@ -358,6 +358,13 @@ namespace Duality
 			}
 			else
 			{
+				if (environment == ExecutionEnvironment.Editor && execContext == ExecutionContext.Game)
+				{
+					Scene.Current.Dispose();
+					Log.Core.Write("DualityApp Sandbox terminated");
+					return;
+				}
+
 				if (isUpdating)
 				{
 					terminateScheduled = true;

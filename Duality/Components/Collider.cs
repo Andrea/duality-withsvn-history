@@ -874,14 +874,34 @@ namespace Duality.Components
 			this.eventBuffer.Clear();
 		}
 
+		bool ITransformUpdater.IgnoreParent
+		{
+			get { return this.bodyType == BodyType.Dynamic; }
+		}
 		void ITransformUpdater.UpdateTransform(Transform t)
 		{
-			t.SetTransform(
-				new Vector3(this.body.Position.X * 100.0f, this.body.Position.Y * 100.0f, t.Pos.Z + t.Vel.Z * Time.TimeMult),
-				new Vector3(this.body.LinearVelocity.X * 100.0f * Time.SPFMult, this.body.LinearVelocity.Y * 100.0f * Time.SPFMult, t.Vel.Z),
-				t.Scale,
-				this.body.Rotation,
-				this.body.AngularVelocity * Time.SPFMult);
+			if (this.bodyType == BodyType.Dynamic)
+			{
+				t.SetTransform(
+					new Vector3(this.body.Position.X * 100.0f, this.body.Position.Y * 100.0f, t.Pos.Z + t.Vel.Z * Time.TimeMult),
+					new Vector3(this.body.LinearVelocity.X * 100.0f * Time.SPFMult, this.body.LinearVelocity.Y * 100.0f * Time.SPFMult, t.Vel.Z),
+					t.Scale,
+					this.body.Rotation,
+					this.body.AngularVelocity * Time.SPFMult);
+			}
+			else
+			{
+				if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game && (t.RelativeVel != Vector3.Zero || t.RelativeAngleVel != 0.0f))
+				{
+				    t.SetRelativeTransform(
+				        t.RelativePos + t.RelativeVel * Time.TimeMult,
+				        t.RelativeVel,
+				        t.RelativeScale,
+				        MathF.NormalizeAngle(t.RelativeAngle + t.RelativeAngleVel * Time.TimeMult),
+				        t.RelativeAngleVel);
+				    (this as ITransformUpdater).OnTransformChanged(t, Transform.DirtyFlags.Pos | Transform.DirtyFlags.Angle);
+				}
+			}
 		}
 		void ITransformUpdater.OnTransformChanged(Transform t, Transform.DirtyFlags changes)
 		{
