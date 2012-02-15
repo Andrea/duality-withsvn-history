@@ -287,6 +287,7 @@ namespace EditorBase
 		public void SetCurrentState(Type stateType)
 		{
 			if (!typeof(CamViewState).IsAssignableFrom(stateType)) return;
+			if (this.state != null && this.state.GetType() == stateType) return;
 
 			CamViewState state = stateType.CreateInstanceOf() as CamViewState;
 			state.View = this;
@@ -299,7 +300,10 @@ namespace EditorBase
 			if (this.state != null) this.state.OnLeaveState();
 
 			this.state = state;
-			this.stateSelector.SelectedIndex = this.state != null ? this.stateSelector.Items.IndexOf(this.stateSelector.Items.Cast<StateComboboxEntry>().FirstOrDefault(e => e.StateType == this.state.GetType())) : -1;
+			if (this.state != null)
+				this.stateSelector.SelectedIndex = this.stateSelector.Items.IndexOf(this.stateSelector.Items.Cast<StateComboboxEntry>().FirstOrDefault(e => e.StateType == this.state.GetType()));
+			else
+				this.stateSelector.SelectedIndex = -1;
 
 			if (this.state != null) this.state.OnEnterState();
 			this.glControl.Invalidate();
@@ -385,7 +389,7 @@ namespace EditorBase
 
 		public void FocusOnObject(GameObject obj)
 		{
-			if (obj.Transform == null) return;
+			if (obj == null || obj.Transform == null) return;
 			if (!this.state.CameraActionAllowed) return;
 			Vector3 targetPos = obj.Transform.Pos - Vector3.UnitZ * this.camComp.ParallaxRefDist;
 			targetPos.Z = MathF.Min(this.camObj.Transform.Pos.Z, targetPos.Z);
@@ -613,6 +617,9 @@ namespace EditorBase
 				this.camSelector.SelectedIndex = this.camSelector.Items.IndexOf(this.camComp);
 				return;
 			}
+		}
+		private void camSelector_SelectedIndexChanged(object sender, EventArgs e)
+		{
 			this.SetCurrentCamera(this.camSelector.SelectedItem as Camera);
 		}
 		private void stateSelector_DropDown(object sender, EventArgs e)
@@ -626,6 +633,9 @@ namespace EditorBase
 				this.stateSelector.SelectedIndex = this.state != null ? this.stateSelector.Items.IndexOf(this.stateSelector.Items.Cast<StateComboboxEntry>().FirstOrDefault(sce => sce.StateType == this.state.GetType())) : -1;
 				return;
 			}
+		}
+		private void stateSelector_SelectedIndexChanged(object sender, EventArgs e)
+		{
 			this.SetCurrentState(((StateComboboxEntry)this.stateSelector.SelectedItem).StateType);
 		}
 

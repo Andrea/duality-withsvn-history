@@ -970,27 +970,30 @@ namespace EditorBase.CamViewStates
 		}
 		private void LocalGLControl_KeyDown(object sender, KeyEventArgs e)
 		{
-			if (e.KeyCode == Keys.Delete)
+			if (this.actionAllowed)
 			{
-				this.DeleteObjects(this.actionObjSel);
-			}
-			else if (e.KeyCode == Keys.C && (Control.ModifierKeys & Keys.Control) != Keys.None)
-			{
-				List<SelObj> cloneList = this.CloneObjects(this.actionObjSel);
-				this.SelectObjects(cloneList);
-			}
-			else if (e.KeyCode == Keys.F)
-			{
-				this.view.FocusOnObject(EditorBasePlugin.Instance.EditorForm.Selection.MainGameObject);
-			}
-			else
-			{
-				bool axisLockChanged = false;
-				if (e.KeyCode == Keys.X) { this.lockedAxes |= AxisLock.X; axisLockChanged = true; }
-				if (e.KeyCode == Keys.Y) { this.lockedAxes |= AxisLock.Y; axisLockChanged = true; }
-				if (e.KeyCode == Keys.Z) { this.lockedAxes |= AxisLock.Z; axisLockChanged = true; }
+				if (e.KeyCode == Keys.Delete)
+				{
+					this.DeleteObjects(this.actionObjSel);
+				}
+				else if (e.KeyCode == Keys.C && (Control.ModifierKeys & Keys.Control) != Keys.None)
+				{
+					List<SelObj> cloneList = this.CloneObjects(this.actionObjSel);
+					this.SelectObjects(cloneList);
+				}
+				else if (e.KeyCode == Keys.F)
+				{
+					this.view.FocusOnObject(EditorBasePlugin.Instance.EditorForm.Selection.MainGameObject);
+				}
+				else
+				{
+					bool axisLockChanged = false;
+					if (e.KeyCode == Keys.X) { this.lockedAxes |= AxisLock.X; axisLockChanged = true; }
+					if (e.KeyCode == Keys.Y) { this.lockedAxes |= AxisLock.Y; axisLockChanged = true; }
+					if (e.KeyCode == Keys.Z) { this.lockedAxes |= AxisLock.Z; axisLockChanged = true; }
 
-				if (axisLockChanged) this.View.LocalGLControl.Invalidate();
+					if (axisLockChanged) this.View.LocalGLControl.Invalidate();
+				}
 			}
 		}
 		private void LocalGLControl_KeyUp(object sender, KeyEventArgs e)

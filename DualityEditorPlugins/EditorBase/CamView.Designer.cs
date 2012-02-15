@@ -47,6 +47,7 @@
 			this.stateSelector.Size = new System.Drawing.Size(121, 25);
 			this.stateSelector.DropDown += new System.EventHandler(this.stateSelector_DropDown);
 			this.stateSelector.DropDownClosed += new System.EventHandler(this.stateSelector_DropDownClosed);
+			this.stateSelector.SelectedIndexChanged += new System.EventHandler(this.stateSelector_SelectedIndexChanged);
 			// 
 			// toolStripSeparator1
 			// 
@@ -114,6 +115,7 @@
 			this.camSelector.Size = new System.Drawing.Size(121, 25);
 			this.camSelector.DropDown += new System.EventHandler(this.camSelector_DropDown);
 			this.camSelector.DropDownClosed += new System.EventHandler(this.camSelector_DropDownClosed);
+			this.camSelector.SelectedIndexChanged += new System.EventHandler(this.camSelector_SelectedIndexChanged);
 			// 
 			// toolbarCamera
 			// 

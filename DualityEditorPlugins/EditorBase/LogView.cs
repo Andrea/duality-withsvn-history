@@ -25,6 +25,8 @@ namespace EditorBase
 {
 	public partial class LogView : DockContent
 	{
+		private	DateTime	clearTime	= DateTime.MinValue;
+
 		public LogView()
 		{
 			this.InitializeComponent();
@@ -40,6 +42,7 @@ namespace EditorBase
 
 			this.UpdateView();
 			Log.LogData.NewEntry += this.LogData_NewEntry;
+			EditorBasePlugin.Instance.EditorForm.EnteringSandbox += this.EditorForm_EnteringSandbox;
 		}
 		protected override void OnClosed(EventArgs e)
 		{
@@ -48,6 +51,7 @@ namespace EditorBase
 			this.DockPanel.ActiveAutoHideContentChanged -= this.DockPanel_ActiveAutoHideContentChanged;
 
 			Log.LogData.NewEntry -= this.LogData_NewEntry;
+			EditorBasePlugin.Instance.EditorForm.EnteringSandbox -= this.EditorForm_EnteringSandbox;
 		}
 		
 		internal void SaveUserData(System.Xml.XmlElement node)
@@ -58,6 +62,7 @@ namespace EditorBase
 			node.SetAttribute("showCore", this.buttonCore.Checked.ToString());
 			node.SetAttribute("showEditor", this.buttonEditor.Checked.ToString());
 			node.SetAttribute("showGame", this.buttonGame.Checked.ToString());
+			node.SetAttribute("autoClear", this.checkAutoClear.Checked.ToString());
 		}
 		internal void LoadUserData(System.Xml.XmlElement node)
 		{
@@ -75,6 +80,8 @@ namespace EditorBase
 				this.buttonEditor.Checked = tryParseBool;
 			if (bool.TryParse(node.GetAttribute("showGame"), out tryParseBool))
 				this.buttonGame.Checked = tryParseBool;
+			if (bool.TryParse(node.GetAttribute("autoClear"), out tryParseBool))
+				this.checkAutoClear.Checked = tryParseBool;
 		}
 
 		public void UpdateView()
@@ -168,6 +175,7 @@ namespace EditorBase
 
 		private bool AcceptsEntry(DataLogOutput.LogEntry entry)
 		{
+			if (entry.Timestamp < this.clearTime) return false;
 			if (entry.Type == LogMessageType.Message && !this.buttonMessages.Checked) return false;
 			if (entry.Type == LogMessageType.Warning && !this.buttonWarnings.Checked) return false;
 			if (entry.Type == LogMessageType.Error && !this.buttonErrors.Checked) return false;
@@ -207,6 +215,11 @@ namespace EditorBase
 			if (!this.Visible) return;
 			this.UpdateView();
 		}
+		private void actionClear_ButtonClick(object sender, EventArgs e)
+		{
+			this.clearTime = DateTime.Now;
+			this.textLog.Clear();
+		}
 		private void LogData_NewEntry(object sender, DataLogOutput.LogEntryEventArgs e)
 		{
 			// Make it Thread-Safe:
@@ -222,6 +235,10 @@ namespace EditorBase
 		{
 			if (this.DockState.IsAutoHide() && this.DockPanel.ActiveAutoHideContent != this) return;
 			this.AddSingleEntry(e.Entry);
+		}
+		private void EditorForm_EnteringSandbox(object sender, EventArgs e)
+		{
+			if (this.checkAutoClear.Checked) this.actionClear_ButtonClick(sender, e);
 		}
 	}
 }

@@ -30,6 +30,7 @@ namespace EditorBase.CamViewStates
 		public GameViewCamViewState()
 		{
 			this.CameraActionAllowed = false;
+			this.MouseActionAllowed = false;
 		}
 
 		protected internal override void OnEnterState()
