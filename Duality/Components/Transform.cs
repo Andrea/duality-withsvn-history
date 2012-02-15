@@ -621,7 +621,7 @@ namespace Duality.Components
 				foreach (GameObject obj in this.gameobj.Children)
 				{
 					if (obj.Transform == null) continue;
-					if (obj.Transform.extUpdater == null || !obj.Transform.extUpdater.IgnoreParent)
+					if (obj.Transform.extUpdater == null || !obj.Transform.extUpdater.IgnoreParent || DualityApp.ExecContext == DualityApp.ExecutionContext.Editor)
 					{
 						obj.Transform.UpdateAbs();
 
