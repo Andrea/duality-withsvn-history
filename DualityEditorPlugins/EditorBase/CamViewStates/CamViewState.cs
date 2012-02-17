@@ -872,7 +872,7 @@ namespace EditorBase.CamViewStates
 			}
 			catch (Exception exception)
 			{
-				Log.Editor.Write("An error occured during CamView {1} rendering: {0}", Log.Exception(exception), this.View.CameraComponent.ToString());
+				Log.Editor.WriteError("An error occured during CamView {1} rendering: {0}", Log.Exception(exception), this.View.CameraComponent.ToString());
 			}
 
 			this.View.MainContextControl.SwapBuffers();

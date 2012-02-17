@@ -5180,7 +5180,7 @@
             <param name="includeDeclaringType">If true, the members declaring type is included in the returned name.</param>
             <returns></returns>
         </member>
-        <member name="M:Duality.Log.Exception(System.Exception)">
+        <member name="M:Duality.Log.Exception(System.Exception,System.Boolean)">
             <summary>
             Returns a string that can be used for representing an exception in log entries.
             It usually does not include the full call stack and is significantly shorter than

@@ -41,8 +41,14 @@ namespace DualityEditor.Forms
 		private void mainFormLoader_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
 		{
 			this.Hide();
-			(e.Result as MainForm).ShowDialog();
-			this.Close();
+			try
+			{
+				(e.Result as MainForm).ShowDialog();
+			}
+			finally
+			{
+				this.Close();
+			}
 		}
 	}
 }

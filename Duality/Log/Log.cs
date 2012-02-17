@@ -463,7 +463,7 @@ namespace Duality
 		/// </summary>
 		/// <param name="e"></param>
 		/// <returns></returns>
-		public static string Exception(Exception e)
+		public static string Exception(Exception e, bool callStack = true)
 		{
 			if (e == null) return null;
 
@@ -471,10 +471,11 @@ namespace Duality
 			string eSite = e.TargetSite != null ? MemberInfo(e.TargetSite) : null;
 
 			return string.Format(System.Globalization.CultureInfo.InvariantCulture, 
-				"{0}{1}: {2}",
+				"{0}{1}: {2}\nCallStack:\n{3}",
 				eName,
 				eSite != null ? " at " + eSite : "",
-				e.Message);
+				e.Message,
+				e.StackTrace);
 		}
 	}
 

@@ -1275,7 +1275,7 @@ namespace DualityEditor.Forms
 					}
 					catch (Exception exception)
 					{
-						Log.Editor.Write("An error occured during a core update: {0}", Log.Exception(exception));
+						Log.Editor.WriteError("An error occured during a core update: {0}", Log.Exception(exception));
 					}
 					this.OnAfterUpdateDualityApp();
 				}
