@@ -86,16 +86,7 @@ namespace Duality.Resources
 		/// <returns>A new GameObject instance of this Prefab.</returns>
 		public GameObject Instantiate()
 		{
-			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
-			{
-				GameObject newObj = new GameObject();
-				this.CopyTo(newObj);
-				return newObj;
-			}
-			else
-			{
-				return new GameObject(new ContentRef<Prefab>(this));
-			}
+			return new GameObject(new ContentRef<Prefab>(this));
 		}
 		/// <summary>
 		/// Copies this Prefabs data to a GameObject without linking itsself to it.

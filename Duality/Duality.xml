@@ -11392,6 +11392,86 @@
             <param name="pred">The predicate to use on the lists contents.</param>
             <returns></returns>
         </member>
+        <member name="T:Duality.EditorHints.MemberFlags">
+            <summary>
+            Some general flags for Type members that indicate preferred editor behaviour.
+            </summary>
+        </member>
+        <member name="F:Duality.EditorHints.MemberFlags.None">
+            <summary>
+            No flags set.
+            </summary>
+        </member>
+        <member name="F:Duality.EditorHints.MemberFlags.ForceWriteback">
+            <summary>
+            When editing the Properties or Fields value, a final set operation is requested to finish editing.
+            </summary>
+        </member>
+        <member name="F:Duality.EditorHints.MemberFlags.Invisible">
+            <summary>
+            The member is considered invisible.
+            </summary>
+        </member>
+        <member name="F:Duality.EditorHints.MemberFlags.ReadOnly">
+            <summary>
+            The member is considered read-only, even if writing is possible via reflection.
+            </summary>
+        </member>
+        <member name="F:Duality.EditorHints.MemberFlags.AffectsOthers">
+            <summary>
+            Indicates that editing the member may have an effect on any other member of the current object.
+            </summary>
+        </member>
+        <member name="T:Duality.EditorHints.EditorHintMemberAttribute">
+            <summary>
+            An attribute that provides member-related information about preferred editor behaviour
+            </summary>
+        </member>
+        <member name="T:Duality.EditorHints.EditorHintFlagsAttribute">
+            <summary>
+            Provides general information about a members preferred editor behaviour.
+            </summary>
+        </member>
+        <member name="P:Duality.EditorHints.EditorHintFlagsAttribute.Flags">
+            <summary>
+            [GET] Flags that indicate the members general behaviour
+            </summary>
+        </member>
+        <member name="T:Duality.EditorHints.EditorHintRangeAttribute">
+            <summary>
+            Provides information about a numerical members allowed value range.
+            </summary>
+        </member>
+        <member name="P:Duality.EditorHints.EditorHintRangeAttribute.Min">
+            <summary>
+            [GET] The members minimum value
+            </summary>
+        </member>
+        <member name="P:Duality.EditorHints.EditorHintRangeAttribute.Max">
+            <summary>
+            [GET] The members maximum value
+            </summary>
+        </member>
+        <member name="T:Duality.EditorHints.EditorHintIncrementAttribute">
+            <summary>
+            Provides information about a numerical members value increment.
+            </summary>
+        </member>
+        <member name="P:Duality.EditorHints.EditorHintIncrementAttribute.Increment">
+            <summary>
+            [GET] The members value increment.
+            </summary>
+        </member>
+        <member name="T:Duality.EditorHints.EditorHintDecimalPlacesAttribute">
+            <summary>
+            Provides information about a numerical members decimal accuracy
+            </summary>
+        </member>
+        <member name="P:Duality.EditorHints.EditorHintDecimalPlacesAttribute.Places">
+            <summary>
+            [GET] The preferred number of displayed decimal places
+            </summary>
+        </member>
         <member name="T:Duality.Serialization.BinaryFormatter">
             <summary>
             De/Serializes object data.
@@ -12002,86 +12082,6 @@
         <member name="T:Duality.Components.SoundListener">
             <summary>
             Makes this <see cref="T:Duality.GameObject"/> the 3d sound listener.
-            </summary>
-        </member>
-        <member name="T:Duality.EditorHints.MemberFlags">
-            <summary>
-            Some general flags for Type members that indicate preferred editor behaviour.
-            </summary>
-        </member>
-        <member name="F:Duality.EditorHints.MemberFlags.None">
-            <summary>
-            No flags set.
-            </summary>
-        </member>
-        <member name="F:Duality.EditorHints.MemberFlags.ForceWriteback">
-            <summary>
-            When editing the Properties or Fields value, a final set operation is requested to finish editing.
-            </summary>
-        </member>
-        <member name="F:Duality.EditorHints.MemberFlags.Invisible">
-            <summary>
-            The member is considered invisible.
-            </summary>
-        </member>
-        <member name="F:Duality.EditorHints.MemberFlags.ReadOnly">
-            <summary>
-            The member is considered read-only, even if writing is possible via reflection.
-            </summary>
-        </member>
-        <member name="F:Duality.EditorHints.MemberFlags.AffectsOthers">
-            <summary>
-            Indicates that editing the member may have an effect on any other member of the current object.
-            </summary>
-        </member>
-        <member name="T:Duality.EditorHints.EditorHintMemberAttribute">
-            <summary>
-            An attribute that provides member-related information about preferred editor behaviour
-            </summary>
-        </member>
-        <member name="T:Duality.EditorHints.EditorHintFlagsAttribute">
-            <summary>
-            Provides general information about a members preferred editor behaviour.
-            </summary>
-        </member>
-        <member name="P:Duality.EditorHints.EditorHintFlagsAttribute.Flags">
-            <summary>
-            [GET] Flags that indicate the members general behaviour
-            </summary>
-        </member>
-        <member name="T:Duality.EditorHints.EditorHintRangeAttribute">
-            <summary>
-            Provides information about a numerical members allowed value range.
-            </summary>
-        </member>
-        <member name="P:Duality.EditorHints.EditorHintRangeAttribute.Min">
-            <summary>
-            [GET] The members minimum value
-            </summary>
-        </member>
-        <member name="P:Duality.EditorHints.EditorHintRangeAttribute.Max">
-            <summary>
-            [GET] The members maximum value
-            </summary>
-        </member>
-        <member name="T:Duality.EditorHints.EditorHintIncrementAttribute">
-            <summary>
-            Provides information about a numerical members value increment.
-            </summary>
-        </member>
-        <member name="P:Duality.EditorHints.EditorHintIncrementAttribute.Increment">
-            <summary>
-            [GET] The members value increment.
-            </summary>
-        </member>
-        <member name="T:Duality.EditorHints.EditorHintDecimalPlacesAttribute">
-            <summary>
-            Provides information about a numerical members decimal accuracy
-            </summary>
-        </member>
-        <member name="P:Duality.EditorHints.EditorHintDecimalPlacesAttribute.Places">
-            <summary>
-            [GET] The preferred number of displayed decimal places
             </summary>
         </member>
     </members>

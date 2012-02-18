@@ -3,7 +3,6 @@
 	-->	Particle Systems & Particle Editor
 	-->	(Property) Animations & Animation Editor
 	-->	??? Ingame GUI & GUI Editor
-	-->	??? Editor: Xml Serialization and "export game (binary)" functionality
 
 -->	Dualitor: PerformanceMonitor
 -->	Dualitor: Completely rework PropertyEditors?

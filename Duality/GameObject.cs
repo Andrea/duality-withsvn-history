@@ -294,8 +294,15 @@ namespace Duality
 		/// <seealso cref="Duality.Resources.Prefab"/>
 		public GameObject(ContentRef<Prefab> prefab)
 		{
-			this.LinkToPrefab(prefab);
-			this.PrefabLink.Apply();
+			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
+			{
+				prefab.Res.CopyTo(this);
+			}
+			else
+			{
+				this.LinkToPrefab(prefab);
+				this.PrefabLink.Apply();
+			}
 		}
 
 		/// <summary>
