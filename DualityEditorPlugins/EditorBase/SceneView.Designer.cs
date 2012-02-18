@@ -131,6 +131,7 @@
 			this.objectView.DragDrop += new System.Windows.Forms.DragEventHandler(this.objectView_DragDrop);
 			this.objectView.DragOver += new System.Windows.Forms.DragEventHandler(this.objectView_DragOver);
 			this.objectView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.objectView_KeyDown);
+			this.objectView.Leave += new System.EventHandler(this.objectView_Leave);
 			// 
 			// contextMenuNode
 			// 

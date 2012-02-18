@@ -121,6 +121,7 @@
 			this.folderView.DragDrop += new System.Windows.Forms.DragEventHandler(this.folderView_DragDrop);
 			this.folderView.DragOver += new System.Windows.Forms.DragEventHandler(this.folderView_DragOver);
 			this.folderView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.folderView_KeyDown);
+			this.folderView.Leave += new System.EventHandler(this.folderView_Leave);
 			// 
 			// contextMenuNode
 			// 

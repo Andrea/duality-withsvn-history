@@ -21,7 +21,7 @@ namespace EditorBase.PropertyEditors
 		private	Point	dragBeginPos	= Point.Empty;
 		private	Dictionary<string,PropertyEditor>	shaderVarEditors = new Dictionary<string,PropertyEditor>();
 
-		public BatchInfoPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid, MemberFlags.Default)
+		public BatchInfoPropertyEditor()
 		{
 			this.Header.Style = GroupedPropertyEditorHeader.HeaderStyle.Big;
 			this.Header.Height = GroupedPropertyEditorHeader.DefaultBigHeight;
@@ -126,7 +126,7 @@ namespace EditorBase.PropertyEditors
 							oldEditors.Remove(texName);
 						else
 						{
-							ContentRefPropertyEditor e = new ContentRefPropertyEditor(this, this.ParentGrid);
+							ContentRefPropertyEditor e = new ContentRefPropertyEditor();
 							e.EditedType = typeof(ContentRef<Texture>);
 							e.Getter = this.CreateTextureValueGetter(texName);
 							e.Setter = !this.ReadOnly ? this.CreateTextureValueSetter(texName) : null;
@@ -151,7 +151,7 @@ namespace EditorBase.PropertyEditors
 								oldEditors.Remove(uniform.Key);
 							else
 							{
-								e = new NumericPropertyEditor(this, this.ParentGrid);
+								e = new NumericPropertyEditor();
 								e.EditedType = typeof(float);
 								e.Getter = this.CreateUniformFloatValueGetter(uniform.Key);
 								e.Setter = !this.ReadOnly ? this.CreateUniformFloatValueSetter(uniform.Key) : null;
@@ -164,7 +164,7 @@ namespace EditorBase.PropertyEditors
 								oldEditors.Remove(uniform.Key);
 							else
 							{
-								e = new Vector2PropertyEditor(this, this.ParentGrid);
+								e = new Vector2PropertyEditor();
 								e.EditedType = typeof(OpenTK.Vector2);
 								e.Getter = this.CreateUniformVec2ValueGetter(uniform.Key);
 								e.Setter = !this.ReadOnly ? this.CreateUniformVec2ValueSetter(uniform.Key) : null;
@@ -178,7 +178,7 @@ namespace EditorBase.PropertyEditors
 								oldEditors.Remove(uniform.Key);
 							else
 							{
-								e = new Vector3PropertyEditor(this, this.ParentGrid);
+								e = new Vector3PropertyEditor();
 								e.EditedType = typeof(OpenTK.Vector3);
 								e.Getter = this.CreateUniformVec3ValueGetter(uniform.Key);
 								e.Setter = !this.ReadOnly ? this.CreateUniformVec3ValueSetter(uniform.Key) : null;
@@ -193,7 +193,7 @@ namespace EditorBase.PropertyEditors
 								oldEditors.Remove(uniform.Key);
 							else
 							{
-								e = new IListPropertyEditor(this, this.ParentGrid);
+								e = new IListPropertyEditor();
 								e.EditedType = typeof(float[]);
 								e.Getter = this.CreateUniformValueGetter(uniform.Key);
 								e.Setter = !this.ReadOnly ? this.CreateUniformValueSetter(uniform.Key) : null;

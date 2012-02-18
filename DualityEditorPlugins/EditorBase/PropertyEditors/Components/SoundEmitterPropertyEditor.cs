@@ -21,10 +21,6 @@ namespace EditorBase.PropertyEditors
 	{
 		private	List<SoundEmitterSourcePropertyEditor>	soundSourceEditors	= new List<SoundEmitterSourcePropertyEditor>();
 
-		public SoundEmitterPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid)
-		{
-		}
-		
 		public override void ClearContent()
 		{
 			base.ClearContent();
@@ -91,7 +87,7 @@ namespace EditorBase.PropertyEditors
 					elementEditor = this.soundSourceEditors[i];
 				else
 				{
-					elementEditor = new SoundEmitterSourcePropertyEditor(this, this.ParentGrid);
+					elementEditor = new SoundEmitterSourcePropertyEditor();
 					this.soundSourceEditors.Add(elementEditor);
 					this.AddPropertyEditor(elementEditor);
 				}
@@ -147,7 +143,7 @@ namespace EditorBase.PropertyEditors
 
 	public class SoundEmitterSourcePropertyEditor : MemberwisePropertyEditor
 	{
-		public SoundEmitterSourcePropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid, MemberFlags.Default)
+		public SoundEmitterSourcePropertyEditor()
 		{
 			this.EditedType = typeof(SoundEmitter.Source);
 			this.Header.Style = GroupedPropertyEditorHeader.HeaderStyle.Big;
@@ -155,34 +151,6 @@ namespace EditorBase.PropertyEditors
 			this.Indent = DefaultIndent;
 		}
 
-		protected override bool MemberPredicate(MemberInfo info)
-		{
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_SoundEmitter_Source_Disposed)) return false;
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_SoundEmitter_Source_Instance)) return false;
-			return base.MemberPredicate(info);
-		}
-		protected override PropertyEditor MemberEditor(MemberInfo info)
-		{
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_SoundEmitter_Source_Volume))
-			{
-				NumericPropertyEditor e = new NumericPropertyEditor(this, this.ParentGrid);
-				e.EditedType = ReflectionInfo.Property_SoundEmitter_Source_Volume.PropertyType;
-				e.Editor.Minimum = 0.0m;
-				e.Editor.Maximum = 2.0m;
-				e.Editor.Increment = 0.1m;
-				return e;
-			}
-			else if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_SoundEmitter_Source_Pitch))
-			{
-				NumericPropertyEditor e = new NumericPropertyEditor(this, this.ParentGrid);
-				e.EditedType = ReflectionInfo.Property_SoundEmitter_Source_Volume.PropertyType;
-				e.Editor.Minimum = 0.0m;
-				e.Editor.Maximum = 10.0m;
-				e.Editor.Increment = 0.1m;
-				return e;
-			}
-			return base.MemberEditor(info);
-		}
 		protected override void OnUpdateFromObjects(object[] values)
 		{
 			base.OnUpdateFromObjects(values);

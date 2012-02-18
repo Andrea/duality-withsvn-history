@@ -20,10 +20,6 @@ namespace EditorBase.PropertyEditors
 	{
 		private TexturePreviewPropertyEditor preview = null;
 
-		public TexturePropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid)
-		{
-		}
-
 		public override void ClearContent()
 		{
 			base.ClearContent();
@@ -32,7 +28,7 @@ namespace EditorBase.PropertyEditors
 		protected override void OnAddingEditors()
 		{
 			base.OnAddingEditors();
-			if (this.preview == null) this.preview = new TexturePreviewPropertyEditor(this, this.ParentGrid);
+			if (this.preview == null) this.preview = new TexturePreviewPropertyEditor();
 			this.preview.EditedType = this.EditedType;
 			this.preview.Getter = this.Getter;
 			this.AddPropertyEditor(this.preview);
@@ -41,8 +37,7 @@ namespace EditorBase.PropertyEditors
 		{
 			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Texture_Atlas))
 			{
-				PropertyEditor e = this.ParentGrid.PropertyEditorProvider.CreateEditor(
-					ReflectionInfo.Property_Texture_Atlas.PropertyType, this, this.ParentGrid);
+				PropertyEditor e = this.ParentGrid.PropertyEditorProvider.CreateEditor(ReflectionInfo.Property_Texture_Atlas.PropertyType);
 				IListPropertyEditor listEdit = e as IListPropertyEditor;
 				if (listEdit != null)
 				{
@@ -54,19 +49,6 @@ namespace EditorBase.PropertyEditors
 			return base.MemberEditor(info);
 		}
 
-		protected override bool MemberPredicate(MemberInfo info)
-		{
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Texture_PxWidth)) return false;
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Texture_PxHeight)) return false;
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Texture_PxDiameter)) return false;
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Texture_OglWidth)) return false;
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Texture_OglHeight)) return false;
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Texture_UVRatio)) return false;
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Texture_Mipmaps)) return false;
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Texture_NeedsReload)) return false;
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Texture_AnimFrames)) return false;
-			return base.MemberPredicate(info);
-		}
 		protected override void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)
 		{
 			base.OnPropertySet(property, targets);

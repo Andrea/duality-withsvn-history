@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 
 using Duality;
 using Duality.ColorFormat;
+using Duality.EditorHints;
 
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -201,6 +202,7 @@ namespace Duality.Resources
 		/// [GET / SET] An array of <see cref="Duality.Resources.Texture">Textures</see> used as data
 		/// destination by this RenderTarget.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.ForceWriteback | MemberFlags.AffectsOthers)]
 		public ContentRef<Texture>[] Targets
 		{
 			get { return this.targetInfo.Select(i => i.target).ToArray(); }

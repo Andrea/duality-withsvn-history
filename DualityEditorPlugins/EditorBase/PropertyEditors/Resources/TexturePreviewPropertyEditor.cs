@@ -21,7 +21,7 @@ namespace EditorBase.PropertyEditors
 	{
 		private	Bitmap[]	frameCache	= null;
 
-		public TexturePreviewPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid)
+		public TexturePreviewPropertyEditor()
 		{
 			this.InitializeComponent();
 			this.SetStyle(ControlStyles.UserPaint, true);

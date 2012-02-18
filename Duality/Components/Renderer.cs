@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+
+using Duality.EditorHints;
+
 using OpenTK;
 
 namespace Duality.Components
@@ -38,10 +40,12 @@ namespace Duality.Components
 		/// <summary>
 		/// [GET] The Renderers bounding radius, originating from the <see cref="GameObject">GameObjects</see> position.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public abstract float BoundRadius { get; }
 		/// <summary>
 		/// [GET] Returns whether this Renderer visually stretches infinitely on the XY-plane.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public virtual bool IsInfiniteXY { get { return false; } }
 
 		/// <summary>

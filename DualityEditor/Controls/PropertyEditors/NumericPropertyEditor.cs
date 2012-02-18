@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using System.Reflection;
 
 using Duality;
+using Duality.EditorHints;
 
 namespace DualityEditor.Controls.PropertyEditors
 {
@@ -30,7 +31,7 @@ namespace DualityEditor.Controls.PropertyEditors
 			get { return Convert.ChangeType(this.valueEditor.Value, this.EditedType); }
 		}
 
-		public NumericPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid)
+		public NumericPropertyEditor()
 		{
 			this.InitializeComponent();
 		}
@@ -147,6 +148,18 @@ namespace DualityEditor.Controls.PropertyEditors
 				this.valueEditor.DecimalPlaces = 2;
 				this.valueEditor.Minimum = decimal.MinValue;
 				this.valueEditor.Maximum = decimal.MaxValue;
+			}
+		}
+		protected override void OnEditedMemberChanged()
+		{
+			base.OnEditedMemberChanged();
+			EditorHintDecimalPlacesAttribute places = this.EditedMember.GetCustomAttributes(typeof(EditorHintDecimalPlacesAttribute), true).FirstOrDefault() as EditorHintDecimalPlacesAttribute;
+			EditorHintRangeAttribute range = this.EditedMember.GetCustomAttributes(typeof(EditorHintRangeAttribute), true).FirstOrDefault() as EditorHintRangeAttribute;
+			if (places != null) this.valueEditor.DecimalPlaces = places.Places;
+			if (range != null)
+			{
+				this.valueEditor.Minimum = range.Min;
+				this.valueEditor.Maximum = range.Max;
 			}
 		}
 		protected override void OnSizeChanged(EventArgs e)

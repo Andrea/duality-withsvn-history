@@ -12,6 +12,7 @@ using SysDrawFont = System.Drawing.Font;
 using Duality;
 using Duality.ColorFormat;
 using Duality.VertexFormat;
+using Duality.EditorHints;
 
 using OpenTK;
 
@@ -225,6 +226,8 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET / SET] The size of the Font.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.AffectsOthers)]
+		[EditorHintRange(1, 150)]
 		public float Size
 		{
 			get { return this.size; }
@@ -287,6 +290,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET] The <see cref="Duality.Resources.Material"/> to use when rendering text of this Font.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public Material Material
 		{
 			get { return this.mat; }
@@ -322,6 +326,7 @@ namespace Duality.Resources
 		/// [GET] Returns whether this Font needs a <see cref="ReloadData">reload</see> in order to apply
 		/// changes that have been made to its Properties.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public bool NeedsReload
 		{
 			get { return this.needsReload; }
@@ -330,6 +335,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET] Returns a chunk of memory that contains this Fonts custom family data.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public byte[] CustomFamilyData
 		{
 			get { return this.customFamilyData; }
@@ -339,6 +345,7 @@ namespace Duality.Resources
 		/// the path from of the original file. This is only relevant when creating new Fonts 
 		/// at runtime or importing them in the editor environment.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public string CustomFamilyBasePath
 		{
 			get { return this.customFamilyBasePath; }

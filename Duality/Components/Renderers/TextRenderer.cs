@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 using Duality.ColorFormat;
 using Duality.Resources;
+using Duality.EditorHints;
 
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -26,6 +26,7 @@ namespace Duality.Components.Renderers
 		[NonSerialized] protected	VertexFormat.VertexC1P3T2[][]	vertFont	= null;
 		[NonSerialized] protected	VertexFormat.VertexC1P3T2[]		vertIcon	= null;
 
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public override float BoundRadius
 		{
 			get { return Rect.Align(this.align, 0.0f, 0.0f, this.metrics.Size.X, this.metrics.Size.Y).Transform(this.gameobj.Transform.Scale.Xy).BoundingRadius; }
@@ -65,6 +66,7 @@ namespace Duality.Components.Renderers
 		/// <summary>
 		/// [GET] The current texts metrics.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public FormattedText.Metrics Metrics
 		{
 			get { return this.metrics; }

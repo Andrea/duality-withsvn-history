@@ -25,7 +25,7 @@ namespace DualityEditor.Controls
 		public interface IPropertyEditorProvider
 		{
 			int IsResponsibleFor(Type baseType);
-			PropertyEditor CreateEditor(Type baseType, PropertyEditor parentEditor, PropertyGrid parentGrid);
+			PropertyEditor CreateEditor(Type baseType);
 		}
 		public class MainEditorProvider : IPropertyEditorProvider
 		{
@@ -41,7 +41,7 @@ namespace DualityEditor.Controls
 			{
 				return EditorPriority_General;
 			}
-			public PropertyEditor CreateEditor(Type baseType, PropertyEditor parentEditor, PropertyGrid parentGrid)
+			public PropertyEditor CreateEditor(Type baseType)
 			{
 				PropertyEditor e = null;
 
@@ -51,37 +51,37 @@ namespace DualityEditor.Controls
 					baseType == typeof(int) || baseType == typeof(uint) ||
 					baseType == typeof(long) || baseType == typeof(ulong) ||
 					baseType == typeof(float) || baseType == typeof(double) || baseType == typeof(decimal))
-					e = new NumericPropertyEditor(parentEditor, parentGrid);
+					e = new NumericPropertyEditor();
 				// --- Basic data type: Boolean ---
 				else if (baseType == typeof(bool))
-					e = new BoolPropertyEditor(parentEditor, parentGrid);
+					e = new BoolPropertyEditor();
 				// --- Basic data type: Flagged Enum ---
 				else if (baseType.IsEnum && baseType.GetCustomAttributes(typeof(FlagsAttribute), true).Any())
-					e = new FlagEnumPropertyEditor(parentEditor, parentGrid);
+					e = new FlagEnumPropertyEditor();
 				// --- Basic data type: Other Enums ---
 				else if (baseType.IsEnum)
-					e = new EnumPropertyEditor(parentEditor, parentGrid);
+					e = new EnumPropertyEditor();
 				// --- Basic data type: String ---
 				else if (baseType == typeof(string))
-					e = new StringPropertyEditor(parentEditor, parentGrid);
+					e = new StringPropertyEditor();
 				// --- Rect ---
 				else if (baseType == typeof(Rect))
-					e = new RectPropertyEditor(parentEditor, parentGrid);
+					e = new RectPropertyEditor();
 				// --- Vector2 ---
 				else if (baseType == typeof(Vector2))
-					e = new Vector2PropertyEditor(parentEditor, parentGrid);
+					e = new Vector2PropertyEditor();
 				// --- Vector3 ---
 				else if (baseType == typeof(Vector3))
-					e = new Vector3PropertyEditor(parentEditor, parentGrid);
+					e = new Vector3PropertyEditor();
 				// --- IColorData ---
 				else if (typeof(IColorData).IsAssignableFrom(baseType))
-					e = new IColorDataPropertyEditor(parentEditor, parentGrid);
+					e = new IColorDataPropertyEditor();
 				// --- IList collection ---
 				else if (typeof(System.Collections.IList).IsAssignableFrom(baseType))
-					e = new IListPropertyEditor(parentEditor, parentGrid);
+					e = new IListPropertyEditor();
 				// --- IDictionary collection ---
 				else if (typeof(System.Collections.IDictionary).IsAssignableFrom(baseType))
-					e = new IDictionaryPropertyEditor(parentEditor, parentGrid);
+					e = new IDictionaryPropertyEditor();
 				// --- Unknown data type ---
 				else
 				{
@@ -94,12 +94,12 @@ namespace DualityEditor.Controls
 					IPropertyEditorProvider subProvider = availSubProviders.FirstOrDefault();
 					if (subProvider != null)
 					{
-						e = subProvider.CreateEditor(baseType, parentEditor, parentGrid);
+						e = subProvider.CreateEditor(baseType);
 						return e;
 					}
 
 					// If not, default to reflection-driven MemberwisePropertyEditor
-					e = new MemberwisePropertyEditor(parentEditor, parentGrid, MemberwisePropertyEditor.MemberFlags.Default);
+					e = new MemberwisePropertyEditor();
 				}
 
 				e.EditedType = baseType;
@@ -110,7 +110,7 @@ namespace DualityEditor.Controls
 		private	MainEditorProvider	propertyEditorProvider	= new MainEditorProvider();
 		private	PropertyEditor		propertyEditor			= null;
 		private	List<object>		selectedObjects			= new List<object>();
-		private	bool				readOnlySelection		= false;
+		private	bool				readOnlySelection		= true;
 		private	Timer				updateTimer				= null;
 		private	int					updateTimerChangeMs		= 0;
 		private	bool				updateScheduled			= false;
@@ -129,6 +129,14 @@ namespace DualityEditor.Controls
 		public bool ReadOnlySelection
 		{
 			get { return this.readOnlySelection; }
+			set
+			{
+				if (this.readOnlySelection != value)
+				{
+					this.readOnlySelection = value;
+					if (this.propertyEditor != null) this.propertyEditor.UpdateReadOnlyState();
+				}
+			}
 		}
 		public PropertyEditor MainEditor
 		{
@@ -218,7 +226,8 @@ namespace DualityEditor.Controls
 		{
 			if (this.propertyEditor != null) this.DisposePropertyEditor();
 
-			this.propertyEditor = this.propertyEditorProvider.CreateEditor(type, null, this);
+			this.propertyEditor = this.propertyEditorProvider.CreateEditor(type);
+			this.propertyEditor.ParentGrid = this;
 
 			this.propertyEditor.Dock = DockStyle.Top;
 			this.Controls.Add(this.propertyEditor);

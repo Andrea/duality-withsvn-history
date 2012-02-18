@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 using Duality.ColorFormat;
 using Duality.Resources;
+using Duality.EditorHints;
 
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -51,6 +51,7 @@ namespace Duality.Components.Renderers
 		[NonSerialized]
 		protected	VertexFormat.VertexC1P3T2[]	vertices	= null;
 
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public override float BoundRadius
 		{
 			get { return this.rect.Transform(this.gameobj.Transform.Scale.Xy).BoundingRadius; }
@@ -58,6 +59,7 @@ namespace Duality.Components.Renderers
 		/// <summary>
 		/// [GET / SET] The rectangular area the sprite occupies. Relative to the <see cref="GameObject"/>.
 		/// </summary>
+		[EditorHintDecimalPlaces(1)]
 		public Rect Rect
 		{
 			get { return this.rect; }

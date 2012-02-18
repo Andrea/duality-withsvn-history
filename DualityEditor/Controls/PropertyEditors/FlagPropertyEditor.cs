@@ -26,7 +26,7 @@ namespace DualityEditor.Controls.PropertyEditors
 			get { return Convert.ChangeType(this.valueEditor.FlagValue, this.EditedType); }
 		}
 
-		public FlagPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid)
+		public FlagPropertyEditor()
 		{
 			this.InitializeComponent();
 		}

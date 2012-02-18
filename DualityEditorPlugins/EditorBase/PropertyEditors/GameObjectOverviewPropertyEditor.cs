@@ -29,12 +29,12 @@ namespace EditorBase.PropertyEditors
 			}
 		}
 
-		public GameObjectOverviewPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid)
+		public GameObjectOverviewPropertyEditor()
 		{
 			this.Header.Visible = false;
 			this.Header.ResetVisible = false;
 
-			this.gameObjEditor = new GameObjectPropertyEditor(this, parentGrid);
+			this.gameObjEditor = new GameObjectPropertyEditor();
 			this.gameObjEditor.EditedType = typeof(GameObject);
 			this.gameObjEditor.PropertyName = "GameObject";
 		}
@@ -110,7 +110,7 @@ namespace EditorBase.PropertyEditors
 			{
 				if (!this.componentEditors.ContainsKey(t))
 				{
-					PropertyEditor e = this.ParentGrid.PropertyEditorProvider.CreateEditor(t, this, this.ParentGrid);
+					PropertyEditor e = this.ParentGrid.PropertyEditorProvider.CreateEditor(t);
 					e.EditedType = t;
 					e.Getter = this.CreateComponentValueGetter(t);
 					e.Setter = this.CreateComponentValueSetter(t);

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 
 using Duality;
+using Duality.EditorHints;
 
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -122,6 +123,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET] Returns whether this ShaderProgram has been compiled.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public bool Compiled
 		{
 			get { return this.compiled; }
@@ -150,6 +152,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET / SET] The <see cref="VertexShader"/> that is used by this ShaderProgram.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.AffectsOthers)]
 		public ContentRef<VertexShader> Vertex
 		{
 			get { return this.vert; }
@@ -158,6 +161,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET / SET] The <see cref="FragmentShader"/> that is used by this ShaderProgram.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.AffectsOthers)]
 		public ContentRef<FragmentShader> Fragment
 		{
 			get { return this.frag; }

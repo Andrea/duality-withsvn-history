@@ -440,22 +440,14 @@ namespace EditorBase
 			foreach (string dir in subDirs)
 			{
 				DirectoryNode dirNode = this.ScanDirectory(dir);
-				if (dirNode != null)
-				{
-					dirNode.Parent = thisNode;
-					this.InsertNodeSorted(dirNode, thisNode);
-				}
+				if (dirNode != null) this.InsertNodeSorted(dirNode, thisNode);
 			}
 
 			string[] files = Directory.GetFiles(dirPath);
 			foreach (string file in files)
 			{
 				NodeBase fileNode = this.ScanFile(file);
-				if (fileNode != null)
-				{
-					fileNode.Parent = thisNode;
-					this.InsertNodeSorted(fileNode, thisNode);
-				}
+				if (fileNode != null) this.InsertNodeSorted(fileNode, thisNode);
 			}
 
 			return thisNode;
@@ -943,6 +935,10 @@ namespace EditorBase
 
 			this.folderView.EndUpdate();
 		}
+		private void folderView_Leave(object sender, EventArgs e)
+		{
+			this.folderView.Invalidate();
+		}
 		private NodeBase DragDropGetTargetBaseNode()
 		{
 			TreeNodeAdv dropViewNode		= this.folderView.DropPosition.Node;
@@ -973,32 +969,23 @@ namespace EditorBase
 					(SystemColors.Window.R + SystemColors.Highlight.R) / 2,
 					(SystemColors.Window.G + SystemColors.Highlight.G) / 2,
 					(SystemColors.Window.B + SystemColors.Highlight.B) / 2);
-				e.BackgroundBrush = new System.Drawing.Drawing2D.LinearGradientBrush(
-					e.Context.Bounds,
-					hlUpper,
-					hlLower,
-					90.0f);
+
+				if (e.Control.Parent.Focused)
+					e.BackgroundBrush = new SolidBrush(hlLower);
+				else
+					e.BackgroundBrush = new SolidBrush(hlUpper);
 			}
 
 			// Flashing
 			if (node == this.flashNode && !e.Context.Bounds.IsEmpty)
 			{
-				float intUpper = this.flashIntensity / 4.0f;
 				float intLower = this.flashIntensity;
 				Color hlBase = Color.FromArgb(255, 64, 32);
-				Color hlUpper = Color.FromArgb(
-					(int)(SystemColors.Window.R * (1.0f - intUpper) + hlBase.R * intUpper),
-					(int)(SystemColors.Window.G * (1.0f - intUpper) + hlBase.G * intUpper),
-					(int)(SystemColors.Window.B * (1.0f - intUpper) + hlBase.B * intUpper));
 				Color hlLower = Color.FromArgb(
 					(int)(SystemColors.Window.R * (1.0f - intLower) + hlBase.R * intLower),
 					(int)(SystemColors.Window.G * (1.0f - intLower) + hlBase.G * intLower),
 					(int)(SystemColors.Window.B * (1.0f - intLower) + hlBase.B * intLower));
-				e.BackgroundBrush = new System.Drawing.Drawing2D.LinearGradientBrush(
-					e.Context.Bounds,
-					hlUpper,
-					hlLower,
-					90.0f);
+				e.BackgroundBrush = new SolidBrush(hlLower);
 			}
 		}
 		private void nodeTextBoxName_EditorShowing(object sender, CancelEventArgs e)

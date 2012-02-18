@@ -38,18 +38,19 @@
 			this.nameLabel.Dock = System.Windows.Forms.DockStyle.Left;
 			this.nameLabel.Location = new System.Drawing.Point(0, 0);
 			this.nameLabel.Name = "nameLabel";
-			this.nameLabel.Padding = new System.Windows.Forms.Padding(3);
-			this.nameLabel.Size = new System.Drawing.Size(50, 20);
+			this.nameLabel.Size = new System.Drawing.Size(50, 14);
 			this.nameLabel.TabIndex = 1;
 			this.nameLabel.Text = "label1";
+			this.nameLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// valueEditor
 			// 
 			this.valueEditor.AutoSize = true;
 			this.valueEditor.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.valueEditor.Location = new System.Drawing.Point(50, 0);
+			this.valueEditor.Margin = new System.Windows.Forms.Padding(0);
 			this.valueEditor.Name = "valueEditor";
-			this.valueEditor.Size = new System.Drawing.Size(133, 20);
+			this.valueEditor.Size = new System.Drawing.Size(133, 14);
 			this.valueEditor.TabIndex = 2;
 			this.valueEditor.UseVisualStyleBackColor = true;
 			this.valueEditor.CheckStateChanged += new System.EventHandler(this.valueEditor_CheckStateChanged);
@@ -60,7 +61,7 @@
 			this.Controls.Add(this.nameLabel);
 			this.Margin = new System.Windows.Forms.Padding(0);
 			this.Name = "BoolPropertyEditor";
-			this.Size = new System.Drawing.Size(183, 20);
+			this.Size = new System.Drawing.Size(183, 14);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

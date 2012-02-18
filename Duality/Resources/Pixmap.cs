@@ -9,6 +9,7 @@ using System.Reflection;
 
 using Duality;
 using Duality.ColorFormat;
+using Duality.EditorHints;
 using Duality.Serialization;
 
 using OpenTK;
@@ -98,6 +99,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET / SET] A <see cref="System.Drawing.Bitmap"/> representing the actual pixel data.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public Bitmap PixelData
 		{
 			get { return this.data; }
@@ -108,6 +110,7 @@ namespace Duality.Resources
 		/// This is only relevant when creating new Pixmaps at runtime or importing them in the editor
 		/// environment.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public string PixelDataBasePath
 		{
 			get { return this.dataBasePath; }
@@ -116,6 +119,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET] The Width of the actual pixel data.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public int Width
 		{
 			get { return this.data != null ? this.data.Width : 0; }
@@ -123,6 +127,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET] The Height of the actual pixel data.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public int Height
 		{
 			get { return this.data != null ? this.data.Height : 0; }

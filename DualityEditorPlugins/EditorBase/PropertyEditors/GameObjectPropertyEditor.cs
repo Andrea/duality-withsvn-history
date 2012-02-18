@@ -22,7 +22,7 @@ namespace EditorBase.PropertyEditors
 		private	string	displayedNameExt	= "";
 		private	bool	updatingFromObj		= false;
 
-		public GameObjectPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid)
+		public GameObjectPropertyEditor()
 		{
 			this.InitializeComponent();
 			this.SetStyle(ControlStyles.UserPaint, true);

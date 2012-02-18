@@ -7,6 +7,7 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK;
 
 using Duality;
+using Duality.EditorHints;
 using Duality.VertexFormat;
 using Duality.ColorFormat;
 using Duality.Components;
@@ -23,6 +24,7 @@ namespace Duality
 		/// <summary>
 		/// When passing this to a method, this value can be used to indicate "Restore to default settings".
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		Reset = -1,
 
 		/// <summary>
@@ -58,6 +60,7 @@ namespace Duality
 		/// <summary>
 		/// The total number of available BlendModes.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		Count
 	}
 
@@ -543,6 +546,7 @@ namespace Duality.Components
 		/// <summary>
 		/// [GET / SET] A set of passes that describes the Cameras rendering process. Is never null nor empty.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.ForceWriteback)]
 		public Pass[] Passes
 		{
 			get { return this.passes; }
@@ -564,6 +568,7 @@ namespace Duality.Components
 		/// <summary>
 		/// [GET] The drawing device which this Camera uses for rendering.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public IDrawDevice DrawDevice
 		{
 			get { return this as IDrawDevice; }
@@ -571,6 +576,7 @@ namespace Duality.Components
 		/// <summary>
 		/// [GET] The drawing devices target size for rendering the Scene.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public Vector2 SceneTargetSize
 		{
 			get
@@ -590,6 +596,7 @@ namespace Duality.Components
 		/// <summary>
 		/// [GET] A Rect describing the Cameras absolute ortho value.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public Rect SceneOrthoAbs
 		{
 			get { return new Rect(this.SceneTargetSize); }
@@ -597,6 +604,7 @@ namespace Duality.Components
 		/// <summary>
 		/// [GET] A Rect describing the Cameras absolute viewport.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public Rect SceneViewportAbs
 		{
 			get { return new Rect(this.SceneTargetSize); }
@@ -604,6 +612,7 @@ namespace Duality.Components
 		/// <summary>
 		/// [GET] The Cameras view space bounding circle radius.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public float ViewBoundingRadius
 		{
 			get 

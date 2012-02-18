@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using System.Reflection;
 
 using Duality;
+using Duality.EditorHints;
 
 namespace DualityEditor.Controls.PropertyEditors
 {
@@ -67,7 +68,7 @@ namespace DualityEditor.Controls.PropertyEditors
 			}
 		}
 
-		public RectPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid)
+		public RectPropertyEditor()
 		{
 			this.InitializeComponent();
 			this.UpdateReadOnlyState();
@@ -152,6 +153,18 @@ namespace DualityEditor.Controls.PropertyEditors
 		{
 			base.OnSizeChanged(e);
 			this.nameLabel.Width = this.NameLabelWidth;
+		}
+		protected override void OnEditedMemberChanged()
+		{
+			base.OnEditedMemberChanged();
+			EditorHintDecimalPlacesAttribute places = this.EditedMember.GetCustomAttributes(typeof(EditorHintDecimalPlacesAttribute), true).FirstOrDefault() as EditorHintDecimalPlacesAttribute;
+			if (places != null)
+			{
+				this.editorX.DecimalPlaces = places.Places;
+				this.editorY.DecimalPlaces = places.Places;
+				this.editorW.DecimalPlaces = places.Places;
+				this.editorH.DecimalPlaces = places.Places;
+			}
 		}
 
 		private void editorX_ValueChanged(object sender, EventArgs e)

@@ -16,9 +16,6 @@ namespace EditorBase.PropertyEditors
 {
 	public class DualityAppDataPropertyEditor : MemberwisePropertyEditor
 	{
-		public DualityAppDataPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid, MemberFlags.Default)
-		{
-		}
 		protected override void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)
 		{
 			DualityApp.AppData = targets.Cast<DualityAppData>().NotNull().FirstOrDefault();
@@ -27,9 +24,6 @@ namespace EditorBase.PropertyEditors
 	}
 	public class DualityUserDataPropertyEditor : MemberwisePropertyEditor
 	{
-		public DualityUserDataPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid, MemberFlags.Default)
-		{
-		}
 		protected override void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)
 		{
 			DualityApp.UserData = targets.Cast<DualityUserData>().NotNull().FirstOrDefault();

@@ -10,6 +10,7 @@ using System.Reflection;
 
 using OpenTK;
 using Duality;
+using Duality.EditorHints;
 
 namespace DualityEditor.Controls.PropertyEditors
 {
@@ -47,7 +48,7 @@ namespace DualityEditor.Controls.PropertyEditors
 			}
 		}
 
-		public Vector3PropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid)
+		public Vector3PropertyEditor()
 		{
 			this.InitializeComponent();
 			this.UpdateReadOnlyState();
@@ -115,6 +116,17 @@ namespace DualityEditor.Controls.PropertyEditors
 		{
 			base.OnSizeChanged(e);
 			this.nameLabel.Width = this.NameLabelWidth;
+		}
+		protected override void OnEditedMemberChanged()
+		{
+			base.OnEditedMemberChanged();
+			EditorHintDecimalPlacesAttribute places = this.EditedMember.GetCustomAttributes(typeof(EditorHintDecimalPlacesAttribute), true).FirstOrDefault() as EditorHintDecimalPlacesAttribute;
+			if (places != null)
+			{
+				this.editorX.DecimalPlaces = places.Places;
+				this.editorY.DecimalPlaces = places.Places;
+				this.editorZ.DecimalPlaces = places.Places;
+			}
 		}
 
 		private void editorX_ValueChanged(object sender, EventArgs e)

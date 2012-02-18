@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.IO;
 using System.Reflection;
+
+using Duality.EditorHints;
 
 namespace Duality.Serialization.MetaFormat
 {
@@ -21,6 +22,7 @@ namespace Duality.Serialization.MetaFormat
 		/// <summary>
 		/// [GET] Enumerates this nodes child nodes.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public IEnumerable<DataNode> SubNodes
 		{
 			get { return this.subNodes; }
@@ -28,6 +30,7 @@ namespace Duality.Serialization.MetaFormat
 		/// <summary>
 		/// [GET / SET] This nodes parent node.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public DataNode Parent
 		{
 			get { return this.parent; }
@@ -43,6 +46,7 @@ namespace Duality.Serialization.MetaFormat
 		/// <summary>
 		/// [GET] The <see cref="Duality.Serialization.DataType"/> that is associated with this data node.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public DataType NodeType
 		{
 			get { return this.dataType; }

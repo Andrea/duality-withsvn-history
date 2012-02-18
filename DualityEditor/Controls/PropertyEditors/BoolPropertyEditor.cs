@@ -26,7 +26,7 @@ namespace DualityEditor.Controls.PropertyEditors
 			get { return Convert.ChangeType(this.valueEditor.Checked, this.EditedType); }
 		}
 
-		public BoolPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid)
+		public BoolPropertyEditor()
 		{
 			this.InitializeComponent();
 			this.UpdateReadOnlyState();

@@ -17,15 +17,11 @@ using PropertyGrid = DualityEditor.Controls.PropertyGrid;
 
 namespace ResourceHacker.PropertyEditors
 {
-	public class PrimitiveNodePropertyEditor : DataNodePropertyEditor
+	public class PrimitiveNodePropertyEditor : MemberwisePropertyEditor
 	{
 		protected	PropertyEditor	editorPrimitiveValue	= null;
 		protected	bool			isInitializingContent	= false;
 		
-		public PrimitiveNodePropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid)
-		{
-		}
-
 		public override void PerformGetValue()
 		{
 			if (this.isInitializingContent) return;
@@ -44,7 +40,7 @@ namespace ResourceHacker.PropertyEditors
 				Type actualType = primitiveNode.NodeType.ToActualType();
 				if (actualType == null) actualType = (info as PropertyInfo).PropertyType;
 
-				this.editorPrimitiveValue = this.ParentGrid.PropertyEditorProvider.CreateEditor(actualType, this, this.ParentGrid);
+				this.editorPrimitiveValue = this.ParentGrid.PropertyEditorProvider.CreateEditor(actualType);
 				return this.editorPrimitiveValue;
 			}
 			else

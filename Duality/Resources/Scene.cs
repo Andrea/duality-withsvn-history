@@ -7,6 +7,7 @@ using OpenTK;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Collision;
 
+using Duality.EditorHints;
 using Duality.Components;
 using Duality.ObjectManagers;
 using Duality.Serialization;
@@ -154,6 +155,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET] Enumerates all registered objects.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public IEnumerable<GameObject> AllObjects
 		{
 			get { return this.objectManager.AllObjects; }
@@ -161,6 +163,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET] Enumerates all registered objects that are currently active.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public IEnumerable<GameObject> ActiveObjects
 		{
 			get { return this.objectManager.ActiveObjects; }
@@ -168,6 +171,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET] Enumerates all root GameObjects, i.e. all GameObjects without a parent object.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public IEnumerable<GameObject> RootObjects
 		{
 			get { return this.objectManager.RootObjects; }
@@ -175,6 +179,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET] Enumerates all <see cref="RootObjects"/> that are currently active.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public IEnumerable<GameObject> ActiveRootObjects
 		{
 			get { return this.objectManager.ActiveRootObjects; }
@@ -182,6 +187,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET] Enumerates the Scenes <see cref="Camera"/> objects.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public IEnumerable<Camera> Cameras
 		{
 			get { return this.cameraManager.AllObjects; }
@@ -189,6 +195,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET] Enumerates the Scenes <see cref="Renderer"/> objects.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public IEnumerable<Renderer> Renderers
 		{
 			get { return this.rendererManager.AllObjects; }
@@ -196,6 +203,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET] Enumerates the Scenes <see cref="ICmpScreenOverlayRenderer"/> objects.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public IEnumerable<ICmpScreenOverlayRenderer> OverlayRenderers
 		{
 			get { return this.overlayManager.AllObjects.OfType<ICmpScreenOverlayRenderer>(); }
@@ -215,6 +223,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET] Returns whether this Scene is <see cref="Scene.Current"/>.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public bool IsCurrent
 		{
 			get { return current.ResWeak == this; }

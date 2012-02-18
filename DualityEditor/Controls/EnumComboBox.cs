@@ -8,6 +8,7 @@ using System.Drawing.Design;
 using System.Windows.Forms.Design;
 
 using Duality;
+using Duality.EditorHints;
 
 namespace DualityEditor.Controls
 {
@@ -48,8 +49,12 @@ namespace DualityEditor.Controls
 		/// </summary>
 		private void FillEnumMembers()
 		{
-			foreach ( string name in Enum.GetNames(enumType))
+			foreach (string name in Enum.GetNames(enumType))
 			{
+				var field = enumType.GetField(name, ReflectionHelper.BindAll);
+				EditorHintFlagsAttribute flagsAttrib = field.GetCustomAttributes(typeof(EditorHintFlagsAttribute), true).FirstOrDefault() as EditorHintFlagsAttribute;
+				if (flagsAttrib != null && (flagsAttrib.Flags & MemberFlags.Invisible) != MemberFlags.None) continue;
+
 				this.Items.Add(name);
 			}
 		}

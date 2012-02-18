@@ -17,23 +17,13 @@ namespace EditorBase.PropertyEditors
 {
 	public class PixmapPropertyEditor : ResourcePropertyEditor
 	{
-		public PixmapPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid)
-		{
-		}
-
 		protected override void OnAddingEditors()
 		{
 			base.OnAddingEditors();
-			PixmapPreviewPropertyEditor preview = new PixmapPreviewPropertyEditor(this, this.ParentGrid);
+			PixmapPreviewPropertyEditor preview = new PixmapPreviewPropertyEditor();
 			preview.EditedType = this.EditedType;
 			preview.Getter = this.Getter;
 			this.AddPropertyEditor(preview);
-		}
-		protected override bool MemberPredicate(MemberInfo info)
-		{
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Pixmap_PixelData)) return false;
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Pixmap_PixelDataBasePath)) return false;
-			return base.MemberPredicate(info);
 		}
 	}
 }

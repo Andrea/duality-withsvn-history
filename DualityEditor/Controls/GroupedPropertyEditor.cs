@@ -75,7 +75,7 @@ namespace DualityEditor.Controls
 			get { return this.propertyEditors; }
 		}
 
-		protected GroupedPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid)
+		protected GroupedPropertyEditor()
 		{
 			this.InitializeComponent();
 		}
@@ -127,6 +127,7 @@ namespace DualityEditor.Controls
 		}
 		protected void AddPropertyEditor(PropertyEditor editor)
 		{
+			editor.ParentEditor = this;
 			editor.Dock = DockStyle.Top;
 			editor.ValueEdited += this.OnValueEdited;
 			editor.EditingFinished += this.OnEditingFinished;
@@ -138,6 +139,7 @@ namespace DualityEditor.Controls
 		}
 		protected void RemovePropertyEditor(PropertyEditor editor)
 		{
+			editor.ParentEditor = null;
 			editor.ValueEdited -= this.OnValueEdited;
 			editor.EditingFinished -= this.OnEditingFinished;
 			this.OnEditorRemoving(editor);
@@ -150,6 +152,7 @@ namespace DualityEditor.Controls
 			this.SuspendLayout();
 			foreach (PropertyEditor e in this.propertyEditors)
 			{
+				e.ParentEditor = null;
 				e.ValueEdited -= this.OnValueEdited;
 				e.EditingFinished -= this.OnEditingFinished;
 				this.OnEditorRemoving(e);

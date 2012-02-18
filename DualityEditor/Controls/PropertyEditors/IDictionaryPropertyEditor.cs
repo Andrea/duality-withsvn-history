@@ -18,9 +18,9 @@ namespace DualityEditor.Controls.PropertyEditors
 		private	NumericPropertyEditor	offsetEditor	= null;
 		private	int						offset			= 0;
 
-		public IDictionaryPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid)
+		public IDictionaryPropertyEditor()
 		{
-			this.offsetEditor = new NumericPropertyEditor(this, parentGrid);
+			this.offsetEditor = new NumericPropertyEditor();
 			this.offsetEditor.EditedType = typeof(uint);
 			this.offsetEditor.PropertyName = "Offset";
 			this.offsetEditor.Getter = this.OffsetValueGetter;
@@ -38,7 +38,7 @@ namespace DualityEditor.Controls.PropertyEditors
 				this.Header.ExpandEnabled = true;
 
 				Type keyType = this.GetKeyType();
-				this.addKeyEditor = ParentGrid.PropertyEditorProvider.CreateEditor(keyType, this, this.ParentGrid);
+				this.addKeyEditor = ParentGrid.PropertyEditorProvider.CreateEditor(keyType);
 				this.addKeyEditor.EditedType = keyType;
 				this.addKeyEditor.PropertyName = "Add Entry";
 				this.addKeyEditor.Getter = this.AddKeyValueGetter;
@@ -173,7 +173,7 @@ namespace DualityEditor.Controls.PropertyEditors
 				}
 				else
 				{
-					elementEditor = this.ParentGrid.PropertyEditorProvider.CreateEditor(elementType, this, this.ParentGrid);
+					elementEditor = this.ParentGrid.PropertyEditorProvider.CreateEditor(elementType);
 					this.AddPropertyEditor(elementEditor);
 				}
 				elementEditor.Getter = this.CreateElementValueGetter(indexer, keys[i - 2]);

@@ -14,11 +14,6 @@ namespace EditorBase.PropertyEditors
 {
 	public class TextRendererPropertyEditor : ComponentPropertyEditor
 	{
-		public TextRendererPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid)
-		{
-
-		}
-
 		protected override void OnAddingEditors()
 		{
 			base.OnAddingEditors();
@@ -27,14 +22,13 @@ namespace EditorBase.PropertyEditors
 		protected override bool MemberPredicate(System.Reflection.MemberInfo info)
 		{
 			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_TextRenderer_CustomMaterial)) return false;
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_TextRenderer_Metrics)) return false;
 			return base.MemberPredicate(info);
 		}
 		protected override PropertyEditor MemberEditor(System.Reflection.MemberInfo info)
 		{
 			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Renderer_VisibilityGroup))
 			{
-				FlagPropertyEditor e = new FlagPropertyEditor(this, this.ParentGrid);
+				FlagPropertyEditor e = new FlagPropertyEditor();
 				e.EditedType = (info as System.Reflection.PropertyInfo).PropertyType;
 				// ToDo: Use actual user-definable visibility groups
 				e.AddFlag("None", 0);

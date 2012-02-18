@@ -6,6 +6,10 @@
 	-->	??? Editor: Xml Serialization and "export game (binary)" functionality
 
 -->	Dualitor: PerformanceMonitor
+-->	Dualitor: Completely rework PropertyEditors?
+	-->	Goals: Performance, Style
+	-->	Experiment externally first!
+	-->	Single Control (Grid), PropertyEditor not deriving from "Control"-stuff, custom Drawing, custom Layout
 
 
 

@@ -35,7 +35,7 @@ namespace EditorBase.PropertyEditors
 			}
 		}
 
-		public ContentRefPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid)
+		public ContentRefPropertyEditor()
 		{
 			this.InitializeComponent();
 			this.UpdateReadOnlyState();

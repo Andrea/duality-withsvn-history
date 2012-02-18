@@ -7,29 +7,16 @@ using System.Windows.Forms;
 using System.Reflection;
 
 using Duality;
+using Duality.EditorHints;
 
 namespace DualityEditor.Controls
 {
 	public class MemberwisePropertyEditor : GroupedPropertyEditor
 	{
-		[Flags]
-		public enum MemberFlags
-		{
-			None		= 0x0,
-
-			Properties	= 0x1,
-			Fields		= 0x2,
-
-			All			= Properties | Fields,
-			Default		= All
-		}
-
-		protected	MemberFlags	flags	= MemberFlags.Default;
 		protected	Dictionary<PropertyEditor,MemberInfo>	memberMap	= new Dictionary<PropertyEditor,MemberInfo>();
 
-		public MemberwisePropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid, MemberFlags flags) : base(parentEditor, parentGrid)
+		public MemberwisePropertyEditor()
 		{
-			this.flags = flags;
 			this.Header.ResetClicked += new EventHandler(Header_ResetClicked);
 		}
 
@@ -44,7 +31,7 @@ namespace DualityEditor.Controls
 				// Generate and add property editors for the current type
 				this.BeginUpdate();
 				this.OnAddingEditors();
-				if ((this.flags & MemberFlags.Properties) != MemberFlags.None)
+				// Properties
 				{
 					PropertyInfo[] propArr = this.EditedType.GetProperties(BindingFlags.Instance | BindingFlags.Public);
 					var propQuery = 
@@ -57,7 +44,7 @@ namespace DualityEditor.Controls
 						this.AddEditorForProperty(prop);
 					}
 				}
-				if ((this.flags & MemberFlags.Fields) != MemberFlags.None)
+				// Fields
 				{
 					FieldInfo[] fieldArr = this.EditedType.GetFields(BindingFlags.Instance | BindingFlags.Public);
 					var fieldQuery =
@@ -86,15 +73,19 @@ namespace DualityEditor.Controls
 		}
 		protected virtual bool MemberPredicate(MemberInfo info)
 		{
-			return true;
+			EditorHintFlagsAttribute flagsAttrib = info.GetCustomAttributes(typeof(EditorHintFlagsAttribute), true).FirstOrDefault() as EditorHintFlagsAttribute;
+			return flagsAttrib == null || (flagsAttrib.Flags & MemberFlags.Invisible) == MemberFlags.None;
 		}
 
 		public PropertyEditor AddEditorForProperty(PropertyInfo prop)
 		{
+			EditorHintFlagsAttribute flagsAttrib = prop.GetCustomAttributes(typeof(EditorHintFlagsAttribute), true).FirstOrDefault() as EditorHintFlagsAttribute;
+			bool flaggedReadOnly = flagsAttrib != null && (flagsAttrib.Flags & MemberFlags.ReadOnly) != MemberFlags.None;
+
 			PropertyEditor e = this.MemberEditor(prop);
-			if (e == null) e = this.ParentGrid.PropertyEditorProvider.CreateEditor(prop.PropertyType, this, this.ParentGrid);
+			if (e == null) e = this.ParentGrid.PropertyEditorProvider.CreateEditor(prop.PropertyType);
 			e.Getter = this.CreatePropertyValueGetter(prop);
-			e.Setter = prop.CanWrite ? this.CreatePropertyValueSetter(prop) : null;
+			e.Setter = (prop.CanWrite && !flaggedReadOnly) ? this.CreatePropertyValueSetter(prop) : null;
 			e.PropertyName = prop.Name;
 			e.EditedMember = prop;
 			if (e is GroupedPropertyEditor) (e as GroupedPropertyEditor).Indent = DefaultIndent;
@@ -104,10 +95,13 @@ namespace DualityEditor.Controls
 		}
 		public PropertyEditor AddEditorForField(FieldInfo field)
 		{
+			EditorHintFlagsAttribute flagsAttrib = field.GetCustomAttributes(typeof(EditorHintFlagsAttribute), true).FirstOrDefault() as EditorHintFlagsAttribute;
+			bool flaggedReadOnly = flagsAttrib != null && (flagsAttrib.Flags & MemberFlags.ReadOnly) != MemberFlags.None;
+
 			PropertyEditor e = this.MemberEditor(field);
-			if (e == null) e = this.ParentGrid.PropertyEditorProvider.CreateEditor(field.FieldType, this, this.ParentGrid);
+			if (e == null) e = this.ParentGrid.PropertyEditorProvider.CreateEditor(field.FieldType);
 			e.Getter = this.CreateFieldValueGetter(field);
-			e.Setter = this.CreateFieldValueSetter(field);
+			e.Setter = !flaggedReadOnly ? this.CreateFieldValueSetter(field) : null;
 			e.PropertyName = field.Name;
 			e.EditedMember = field;
 			if (e is GroupedPropertyEditor) (e as GroupedPropertyEditor).Indent = DefaultIndent;
@@ -181,6 +175,8 @@ namespace DualityEditor.Controls
 		}
 		protected Action<IEnumerable<object>> CreatePropertyValueSetter(PropertyInfo property)
 		{
+			EditorHintFlagsAttribute flagsAttrib = property.GetCustomAttributes(typeof(EditorHintFlagsAttribute), true).FirstOrDefault() as EditorHintFlagsAttribute;
+			bool affectsOthers = flagsAttrib != null && (flagsAttrib.Flags & MemberFlags.AffectsOthers) != MemberFlags.None;
 			return delegate(IEnumerable<object> values)
 			{
 				IEnumerator<object> valuesEnum = values.GetEnumerator();
@@ -194,14 +190,17 @@ namespace DualityEditor.Controls
 					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}
 				this.OnPropertySet(property, targetArray);
+				if (affectsOthers) this.PerformGetValue();
 				this.UpdateModifiedState();
 
 				// Fixup struct values by assigning the modified struct copy to its original member
-				if (this.EditedType.IsValueType) this.Setter(targetArray);
+				if (this.EditedType.IsValueType || this.ForceWriteBack) this.Setter(targetArray);
 			};
 		}
 		protected Action<IEnumerable<object>> CreateFieldValueSetter(FieldInfo field)
 		{
+			EditorHintFlagsAttribute flagsAttrib = field.GetCustomAttributes(typeof(EditorHintFlagsAttribute), true).FirstOrDefault() as EditorHintFlagsAttribute;
+			bool affectsOthers = flagsAttrib != null && (flagsAttrib.Flags & MemberFlags.AffectsOthers) != MemberFlags.None;
 			return delegate(IEnumerable<object> values)
 			{
 				IEnumerator<object> valuesEnum = values.GetEnumerator();
@@ -215,10 +214,11 @@ namespace DualityEditor.Controls
 					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}
 				this.OnFieldSet(field, targetArray);
+				if (affectsOthers) this.PerformGetValue();
 				this.UpdateModifiedState();
 
 				// Fixup struct values by assigning the modified struct copy to its original member
-				if (this.EditedType.IsValueType) this.Setter(targetArray);
+				if (this.EditedType.IsValueType || this.ForceWriteBack) this.Setter(targetArray);
 			};
 		}
 

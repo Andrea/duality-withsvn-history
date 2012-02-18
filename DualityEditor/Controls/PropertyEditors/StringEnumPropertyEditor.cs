@@ -30,7 +30,7 @@ namespace DualityEditor.Controls.PropertyEditors
 			get { return Convert.ChangeType(this.valueEditor.SelectedItem, this.EditedType); }
 		}
 
-		public StringEnumPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid)
+		public StringEnumPropertyEditor()
 		{
 			this.InitializeComponent();
 		}

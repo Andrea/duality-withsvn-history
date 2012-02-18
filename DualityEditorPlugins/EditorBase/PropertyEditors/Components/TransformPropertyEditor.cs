@@ -23,7 +23,7 @@ namespace EditorBase.PropertyEditors
 	{
 		private	bool	updatingFromObj		= false;
 
-		public TransformPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid)
+		public TransformPropertyEditor()
 		{
 			this.InitializeComponent();
 			this.SetStyle(ControlStyles.UserPaint, true);
@@ -353,7 +353,7 @@ namespace EditorBase.PropertyEditors
 
 	public class TransformPropertyEditorContainer : ComponentPropertyEditor
 	{
-		public TransformPropertyEditorContainer(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid)
+		public TransformPropertyEditorContainer()
 		{
 			this.Indent = 0;
 		}
@@ -361,7 +361,7 @@ namespace EditorBase.PropertyEditors
 		protected override void OnAddingEditors()
 		{
 			base.OnAddingEditors();
-			TransformPropertyEditor transformEdit = new TransformPropertyEditor(this, this.ParentGrid);
+			TransformPropertyEditor transformEdit = new TransformPropertyEditor();
 			transformEdit.EditedType = this.EditedType;
 			transformEdit.Getter = this.Getter;
 			transformEdit.Setter = this.Setter;

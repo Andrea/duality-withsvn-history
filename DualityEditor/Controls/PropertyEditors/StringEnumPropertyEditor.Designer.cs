@@ -38,28 +38,28 @@
 			this.nameLabel.Dock = System.Windows.Forms.DockStyle.Left;
 			this.nameLabel.Location = new System.Drawing.Point(0, 0);
 			this.nameLabel.Name = "nameLabel";
-			this.nameLabel.Padding = new System.Windows.Forms.Padding(3);
 			this.nameLabel.Size = new System.Drawing.Size(50, 21);
 			this.nameLabel.TabIndex = 1;
 			this.nameLabel.Text = "label1";
+			this.nameLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// valueEditor
 			// 
 			this.valueEditor.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.valueEditor.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.valueEditor.FormattingEnabled = true;
 			this.valueEditor.Location = new System.Drawing.Point(50, 0);
 			this.valueEditor.Name = "valueEditor";
 			this.valueEditor.Size = new System.Drawing.Size(154, 21);
 			this.valueEditor.TabIndex = 2;
-			this.valueEditor.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.valueEditor.SelectedIndexChanged += new System.EventHandler(this.valueEditor_SelectedItemChanged);
 			// 
-			// EnumPropertyEditor
+			// StringEnumPropertyEditor
 			// 
 			this.Controls.Add(this.valueEditor);
 			this.Controls.Add(this.nameLabel);
 			this.Margin = new System.Windows.Forms.Padding(0);
-			this.Name = "EnumPropertyEditor";
+			this.Name = "StringEnumPropertyEditor";
 			this.Size = new System.Drawing.Size(204, 21);
 			this.ResumeLayout(false);
 
@@ -68,6 +68,6 @@
 		#endregion
 
 		private System.Windows.Forms.Label nameLabel;
-		private System.Windows.Forms.ComboBox valueEditor;
+		private EnumComboBox valueEditor;
 	}
 }

@@ -16,10 +16,6 @@ namespace EditorBase.PropertyEditors
 {
 	public class MaterialPropertyEditor : ResourcePropertyEditor
 	{
-		public MaterialPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid)
-		{
-		}
-
 		protected override void OnAddingEditors()
 		{
 			base.OnAddingEditors();

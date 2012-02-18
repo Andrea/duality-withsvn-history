@@ -86,6 +86,7 @@
     <Compile Include="Components\SoundEmitter.cs" />
     <Compile Include="Components\SoundListener.cs" />
     <Compile Include="Helpers\Canvas.cs" />
+    <Compile Include="Helpers\EditorHint.cs" />
     <Compile Include="Helpers\ExtMethodsIEnumerable.cs" />
     <Compile Include="Helpers\SerializationHelper.cs" />
     <Compile Include="Input\IKeyboardInput.cs" />

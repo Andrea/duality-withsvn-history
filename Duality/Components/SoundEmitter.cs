@@ -7,6 +7,7 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK;
 
 using Duality;
+using Duality.EditorHints;
 using Duality.VertexFormat;
 using Duality.ColorFormat;
 using Duality.Components;
@@ -41,6 +42,7 @@ namespace Duality.Components
 			/// [GET] Returns whether this sound source has been disposed. Disposed objects are not to be used again.
 			/// Treat them as null or similar.
 			/// </summary>
+			[EditorHintFlags(MemberFlags.Invisible)]
 			public bool Disposed
 			{
 				get { return this.disposed; }
@@ -49,6 +51,7 @@ namespace Duality.Components
 			/// [GET] The <see cref="SoundInstance"/> that is currently allocated to emit
 			/// this sources sound.
 			/// </summary>
+			[EditorHintFlags(MemberFlags.Invisible)]
 			public SoundInstance Instance
 			{
 				get { return this.instance; }
@@ -88,6 +91,8 @@ namespace Duality.Components
 			/// <summary>
 			/// [GET / SET] The volume of this source.
 			/// </summary>
+			[EditorHintIncrement(0.1f)]
+			[EditorHintRange(0.0f, 2.0f)]
 			public float Volume
 			{
 				get { return this.volume; }
@@ -100,6 +105,8 @@ namespace Duality.Components
 			/// <summary>
 			/// [GET / SET] The sources pitch factor.
 			/// </summary>
+			[EditorHintIncrement(0.1f)]
+			[EditorHintRange(0.0f, 10.0f)]
 			public float Pitch
 			{
 				get { return this.pitch; }

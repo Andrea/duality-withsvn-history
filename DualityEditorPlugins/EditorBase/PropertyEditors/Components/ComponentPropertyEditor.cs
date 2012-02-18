@@ -15,7 +15,7 @@ namespace EditorBase.PropertyEditors
 {
 	public class ComponentPropertyEditor : MemberwisePropertyEditor
 	{
-		public ComponentPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid, MemberFlags.Default)
+		public ComponentPropertyEditor()
 		{
 			this.Header.ResetVisible = false;
 			this.Header.ActiveVisible = true;

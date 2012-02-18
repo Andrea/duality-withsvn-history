@@ -92,21 +92,9 @@
     <Compile Include="PropertyEditors\Resources\FontPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="PropertyEditors\Resources\ScenePropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="PropertyEditors\Resources\RenderTargetPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="ShaderFileImporter.cs" />
     <Compile Include="PixmapFileImporter.cs" />
     <Compile Include="PropertyEditors\DualityAppDataPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="PropertyEditors\Resources\DrawTechniquePropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="PropertyEditors\Resources\ShaderProgramPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="PropertyEditors\Resources\TexturePreviewPropertyEditor.cs">
@@ -128,9 +116,6 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="PropertyEditors\Components\SoundEmitterPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="PropertyEditors\Resources\SoundPropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="PropertyEditors\Resources\TexturePropertyEditor.cs">

@@ -11,6 +11,7 @@ using BitmapPixelFormat = System.Drawing.Imaging.PixelFormat;
 
 using Duality;
 using Duality.ColorFormat;
+using Duality.EditorHints;
 
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -258,6 +259,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET] The Textures diameter
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public float PxDiameter
 		{
 			get { return this.pxDiameter; }
@@ -265,6 +267,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET] The Textures internal width as uploaded to video memory
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public int OglWidth
 		{
 			get { return this.oglWidth; }
@@ -272,6 +275,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET] The Textures internal height as uploaded to video memory
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public int OglHeight
 		{
 			get { return this.oglHeight; }
@@ -279,6 +283,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET] The Textures width after taking relative sizes into account
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public int PxWidth
 		{
 			get { return this.pxWidth; }
@@ -286,6 +291,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET] The Textures height after taking relative sizes into account
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public int PxHeight
 		{
 			get { return this.pxHeight; }
@@ -300,6 +306,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET] UV (Texture) coordinates for the Textures lower right
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public Vector2 UVRatio
 		{
 			get { return this.curUVRatio; }
@@ -307,6 +314,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// Returns whether or not the texture uses mipmaps.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public bool Mipmaps
 		{
 			get { return 
@@ -319,6 +327,7 @@ namespace Duality.Resources
 		/// Indicates that the textures parameters have been changed in a way that might make it
 		/// necessary to reload its data before using it next time.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public bool NeedsReload
 		{
 			get { return this.needsReload; }
@@ -338,6 +347,9 @@ namespace Duality.Resources
 				}
 			}
 		}						//	GS
+		/// <summary>
+		/// [GET / SET] Whether the specified size is interpreted as factor for the <see cref="DualityApp.TargetResolution"/>.
+		/// </summary>
 		public bool SizeRelative
 		{
 			get { return this.sizeRelative; }
@@ -347,7 +359,7 @@ namespace Duality.Resources
 				this.AdjustSize(this.size.X, this.size.Y);
 				this.needsReload = true;
 			}
-		}
+		}					//	GS
 		/// <summary>
 		/// [GET / SET] The Textures magnifying filter
 		/// </summary>
@@ -441,6 +453,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET] Total number of animation frames in this Texture
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public int AnimFrames
 		{
 			get { return this.animRows * this.animCols; }

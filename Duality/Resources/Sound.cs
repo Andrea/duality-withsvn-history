@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 
+using Duality.EditorHints;
+
 namespace Duality.Resources
 {
 	/// <summary>
@@ -139,6 +141,7 @@ namespace Duality.Resources
 		/// Note that the value is a factor to <see cref="SoundDevice.DefaultMinDist"/>.
 		/// </summary>
 		/// <seealso cref="MinDist"/>
+		[EditorHintFlags(MemberFlags.AffectsOthers)]
 		public float MinDistFactor
 		{
 			get { return this.minDistFactor; }
@@ -149,6 +152,7 @@ namespace Duality.Resources
 		/// Note that the value is a factor to <see cref="SoundDevice.DefaultMaxDist"/>.
 		/// </summary>
 		/// <seealso cref="MaxDist"/>
+		[EditorHintFlags(MemberFlags.AffectsOthers)]
 		public float MaxDistFactor
 		{
 			get { return this.maxDistFactor; }
@@ -158,6 +162,7 @@ namespace Duality.Resources
 		/// [GET / SET] The distance at which the sound is played at full volume. Getting nearer to the source won't increase the volume anymore.
 		/// </summary>
 		/// <seealso cref="MinDistFactor"/>
+		[EditorHintFlags(MemberFlags.AffectsOthers)]
 		public float MinDist
 		{
 			get { return DualityApp.Sound.DefaultMinDist * this.minDistFactor; }
@@ -167,6 +172,7 @@ namespace Duality.Resources
 		/// [GET / SET] The distance at which the sound is played at zero volume.
 		/// </summary>
 		/// <seealso cref="MaxDistFactor"/>
+		[EditorHintFlags(MemberFlags.AffectsOthers)]
 		public float MaxDist
 		{
 			get { return DualityApp.Sound.DefaultMaxDist * this.maxDistFactor; }
@@ -182,6 +188,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// The OpenAL buffer handle to the audio data that is used by this Sound.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public int AlBuffer
 		{
 			get { return this.audioData.IsAvailable ? this.audioData.Res.AlBuffer : AudioData.AlBuffer_NotAvailable; }

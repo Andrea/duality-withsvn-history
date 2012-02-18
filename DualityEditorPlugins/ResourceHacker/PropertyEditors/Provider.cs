@@ -16,16 +16,14 @@ namespace ResourceHacker.PropertyEditors
 		{
 			if (baseType == typeof(ArrayNode))			return PropertyGrid.EditorPriority_Specialized;
 			else if (baseType == typeof(PrimitiveNode))	return PropertyGrid.EditorPriority_Specialized;
-			else if (typeof(DataNode).IsAssignableFrom(baseType))	return PropertyGrid.EditorPriority_General;
 			else return PropertyGrid.EditorPriority_None;
 		}
-		public PropertyEditor CreateEditor(Type baseType, PropertyEditor parentEditor, PropertyGrid parentGrid)
+		public PropertyEditor CreateEditor(Type baseType)
 		{
 			PropertyEditor e = null;
 
-			if (baseType == typeof(ArrayNode))			e = new ArrayNodePropertyEditor(parentEditor, parentGrid);
-			else if (baseType == typeof(PrimitiveNode))	e = new PrimitiveNodePropertyEditor(parentEditor, parentGrid);
-			else if (typeof(DataNode).IsAssignableFrom(baseType))	e = new DataNodePropertyEditor(parentEditor, parentGrid);
+			if (baseType == typeof(ArrayNode))			e = new ArrayNodePropertyEditor();
+			else if (baseType == typeof(PrimitiveNode))	e = new PrimitiveNodePropertyEditor();
 
 			e.EditedType = baseType;
 			return e;

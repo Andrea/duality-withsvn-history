@@ -36,7 +36,7 @@ namespace DualityEditor.Controls.PropertyEditors
 			}
 		}
 
-		public IColorDataPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid)
+		public IColorDataPropertyEditor()
 		{
 			this.InitializeComponent();
 			this.UpdateReadOnlyState();

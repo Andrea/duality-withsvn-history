@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 using OpenTK;
+
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Dynamics.Contacts;
 using FarseerPhysics.Factories;
 using FarseerPhysics.Collision.Shapes;
 
 using Duality;
+using Duality.EditorHints;
 using Duality.Resources;
 
 namespace Duality.Components
@@ -53,6 +54,7 @@ namespace Duality.Components
 			/// <summary>
 			/// [GET] The shape's parent <see cref="Collider"/>.
 			/// </summary>
+			[EditorHintFlags(MemberFlags.Invisible)]
 			public Collider Parent
 			{
 				get { return this.parent; }
@@ -69,6 +71,8 @@ namespace Duality.Components
 			/// <summary>
 			/// [GET / SET] The shapes density.
 			/// </summary>
+			[EditorHintIncrement(0.05f)]
+			[EditorHintRange(0.0f, 100.0f)]
 			public float Density
 			{
 				get { return this.density; }
@@ -92,6 +96,8 @@ namespace Duality.Components
 			/// <summary>
 			/// [GET / SET] The shapes friction value.
 			/// </summary>
+			[EditorHintIncrement(0.05f)]
+			[EditorHintRange(0.0f, 1.0f)]
 			public float Friction
 			{
 				get { return this.friction; }
@@ -100,6 +106,8 @@ namespace Duality.Components
 			/// <summary>
 			/// [GET / SET] The shapes restitution value.
 			/// </summary>
+			[EditorHintIncrement(0.05f)]
+			[EditorHintRange(0.0f, 1.0f)]
 			public float Restitution
 			{
 				get { return this.restitution; }
@@ -108,6 +116,7 @@ namespace Duality.Components
 			/// <summary>
 			/// [GET] Returns the Shapes axis-aligned bounding box
 			/// </summary>
+			[EditorHintFlags(MemberFlags.Invisible)]
 			public abstract Rect AABB { get; }
 
 			protected ShapeInfo()
@@ -230,6 +239,7 @@ namespace Duality.Components
 			/// <summary>
 			/// [GET / SET] The polygons vertices.
 			/// </summary>
+			[EditorHintFlags(MemberFlags.ForceWriteback)]
 			public Vector2[] Vertices
 			{
 				get { return this.vertices; }
@@ -359,6 +369,8 @@ namespace Duality.Components
 		/// <summary>
 		/// [GET / SET] The damping that is applied to the bodies velocity.
 		/// </summary>
+		[EditorHintIncrement(0.1f)]
+		[EditorHintRange(0.0f, 100.0f)]
 		public float LinearDamping
 		{
 			get { return this.linearDamp; }
@@ -371,6 +383,8 @@ namespace Duality.Components
 		/// <summary>
 		/// [GET / SET] The damping that is applied to the bodies angular velocity.
 		/// </summary>
+		[EditorHintIncrement(0.1f)]
+		[EditorHintRange(0.0f, 100.0f)]
 		public float AngularDamping
 		{
 			get { return this.angularDamp; }
@@ -432,6 +446,7 @@ namespace Duality.Components
 		/// [GET / SET] Enumerates all <see cref="ShapeInfo">primitive shapes</see> which this body consists of.
 		/// If you modify any of the returned ShapeInfos, be sure to call <see cref="UpdateBodyShape"/> afterwards.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public IEnumerable<ShapeInfo> Shapes
 		{
 			get { return this.shapes; }
@@ -443,6 +458,7 @@ namespace Duality.Components
 		/// <summary>
 		/// [GET] The physical bodys bounding radius.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public float BoundRadius
 		{
 			get

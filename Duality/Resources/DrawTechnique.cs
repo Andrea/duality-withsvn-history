@@ -5,6 +5,7 @@ using System.Text;
 
 using Duality;
 using Duality.VertexFormat;
+using Duality.EditorHints;
 
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -224,6 +225,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET / SET] Specifies how incoming color values interact with the existing background color.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.AffectsOthers)]
 		public BlendMode Blending
 		{
 			get { return this.blendType; }

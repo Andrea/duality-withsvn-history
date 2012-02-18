@@ -9,6 +9,8 @@ using System.ComponentModel;
 using System.Reflection;
 
 using Duality;
+using Duality.EditorHints;
+
 using DualityEditor.Forms;
 
 namespace DualityEditor.Controls
@@ -43,6 +45,7 @@ namespace DualityEditor.Controls
 		private	PropertyGrid	parentGrid			= null;
 		private	PropertyEditor	parentEditor		= null;
 		private	bool			contentInit			= false;
+		private	bool			forceWriteBack		= false;
 
 		public event EventHandler<PropertyGridValueEditedEventArgs> ValueEdited = null;
 		public event EventHandler EditingFinished = null;
@@ -56,6 +59,18 @@ namespace DualityEditor.Controls
 				{
 					this.editedType = value;
 					this.OnEditedTypeChanged();
+				}
+			}
+		}
+		public MemberInfo EditedMember
+		{
+			get { return this.editedMember; }
+			set 
+			{
+				if (this.editedMember != value)
+				{
+					this.editedMember = value;
+					this.OnEditedMemberChanged();
 				}
 			}
 		}
@@ -81,6 +96,11 @@ namespace DualityEditor.Controls
 		{
 			get { return o => this.Setter(new object[1] { o }); }
 		}
+		public bool ForceWriteBack
+		{
+			get { return this.forceWriteBack; }
+			set { this.forceWriteBack = value; }
+		}
 		public virtual bool Expanded
 		{
 			get { return true; }
@@ -91,19 +111,24 @@ namespace DualityEditor.Controls
 			get { return null; }
 			set {}
 		}
-		public virtual MemberInfo EditedMember
-		{
-			get { return this.editedMember; }
-			set { this.editedMember = value; }
-		}
 
 		public PropertyGrid ParentGrid
 		{
 			get { return this.parentGrid; }
+			internal set
+			{
+				this.parentGrid = value;
+				if (this.parentGrid == null) this.parentEditor = null;
+			}
 		}
 		public PropertyEditor ParentEditor
 		{
 			get { return this.parentEditor; }
+			internal set
+			{
+				this.parentEditor = value;
+				if (this.parentEditor != null) this.parentGrid = this.parentEditor.ParentGrid;
+			}
 		}
 		public int NameLabelWidth
 		{
@@ -115,7 +140,7 @@ namespace DualityEditor.Controls
 			{ 
 				return 
 					this.setter == null ||
-					this.parentGrid.ReadOnlySelection || 
+					(this.parentGrid != null && this.parentGrid.ReadOnlySelection) || 
 					(this.parentEditor != null && this.parentEditor.ReadOnly);
 			}
 		}
@@ -142,11 +167,6 @@ namespace DualityEditor.Controls
 		}
 
 		protected PropertyEditor() {}
-		protected PropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid)
-		{
-			this.parentEditor = parentEditor;
-			this.parentGrid = parentGrid;
-		}
 
 		public virtual void PerformGetValue() {}
 		public virtual void PerformSetValue() {}
@@ -164,6 +184,16 @@ namespace DualityEditor.Controls
 		protected virtual bool IsChildValueModified(PropertyEditor childEditor) { return false; }
 
 		protected virtual void OnEditedTypeChanged() {}
+		protected virtual void OnEditedMemberChanged()
+		{
+			if (this.editedMember != null)
+			{
+				EditorHintFlagsAttribute flagsAttrib = this.editedMember.GetCustomAttributes(typeof(EditorHintFlagsAttribute), true).FirstOrDefault() as EditorHintFlagsAttribute;
+				this.forceWriteBack = flagsAttrib != null && (flagsAttrib.Flags & MemberFlags.ForceWriteback) != MemberFlags.None;
+			}
+			else
+				this.forceWriteBack = false;
+		}
 		protected override void OnLeave(EventArgs e)
 		{
 			base.OnLeave(e);

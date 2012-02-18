@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using Duality.EditorHints;
 using Duality.Resources;
 using Duality.VertexFormat;
 using Duality.ColorFormat;
@@ -637,6 +638,7 @@ namespace Duality
 		/// <summary>
 		/// [GET / SET] A set of icons that is available in the text.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.ForceWriteback)]
 		public Icon[] Icons
 		{
 			get { return this.icons; }
@@ -645,6 +647,7 @@ namespace Duality
 		/// <summary>
 		/// [GET / SET] A set of flow areas to be considered in word wrap.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.ForceWriteback)]
 		public FlowArea[] FlowAreas
 		{
 			get { return this.flowAreas; }
@@ -653,6 +656,7 @@ namespace Duality
 		/// <summary>
 		/// [GET / SET] A set of <see cref="Duality.Resources.Font">Fonts</see> that is available in the text.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.ForceWriteback)]
 		public ContentRef<Font>[] Fonts
 		{
 			get { return this.fonts; }
@@ -686,6 +690,7 @@ namespace Duality
 		/// <summary>
 		/// [GET] The text that is actually displayed.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public string DisplayedText
 		{
 			get { return this.displayedText; }
@@ -693,6 +698,7 @@ namespace Duality
 		/// <summary>
 		/// [GET] The formatted text elements that have been generated analyzing the incoming source text.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public Element[] Elements
 		{
 			get { return this.elements; }

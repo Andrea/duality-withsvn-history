@@ -58,12 +58,7 @@
     <Compile Include="PropertyEditors\ArrayNodePropertyEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="PropertyEditors\DataNodePropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="PropertyEditors\PrimitiveNodePropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="PropertyEditors\PrimitiveNodePropertyEditor.cs" />
     <Compile Include="PropertyEditors\Provider.cs" />
     <Compile Include="RenameTypeDialog.cs">
       <SubType>Form</SubType>

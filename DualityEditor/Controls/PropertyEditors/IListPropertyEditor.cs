@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using System.Reflection;
 
 using Duality;
+using Duality.EditorHints;
 
 namespace DualityEditor.Controls.PropertyEditors
 {
@@ -16,22 +17,15 @@ namespace DualityEditor.Controls.PropertyEditors
 		private	NumericPropertyEditor	sizeEditor		= null;
 		private	NumericPropertyEditor	offsetEditor	= null;
 		private	int						offset			= 0;
-		private	bool					forceWriteBack	= false;
 
-		public bool ForceWriteBack
+		public IListPropertyEditor()
 		{
-			get { return this.forceWriteBack; }
-			set { this.forceWriteBack = value; }
-		}
-
-		public IListPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid)
-		{
-			this.sizeEditor = new NumericPropertyEditor(this, parentGrid);
+			this.sizeEditor = new NumericPropertyEditor();
 			this.sizeEditor.EditedType = typeof(uint);
 			this.sizeEditor.PropertyName = "Size";
 			this.sizeEditor.Getter = this.SizeValueGetter;
 			this.sizeEditor.Setter = this.SizeValueSetter;
-			this.offsetEditor = new NumericPropertyEditor(this, parentGrid);
+			this.offsetEditor = new NumericPropertyEditor();
 			this.offsetEditor.EditedType = typeof(uint);
 			this.offsetEditor.PropertyName = "Offset";
 			this.offsetEditor.Getter = this.OffsetValueGetter;
@@ -157,7 +151,7 @@ namespace DualityEditor.Controls.PropertyEditors
 				}
 				else
 				{
-					elementEditor = this.ParentGrid.PropertyEditorProvider.CreateEditor(elementType, this, this.ParentGrid);
+					elementEditor = this.ParentGrid.PropertyEditorProvider.CreateEditor(elementType);
 					this.AddPropertyEditor(elementEditor);
 				}
 				elementEditor.Getter = this.CreateElementValueGetter(indexer, i - 2 + this.offset);
@@ -213,7 +207,7 @@ namespace DualityEditor.Controls.PropertyEditors
 				}
 				if (valuesEnum.MoveNext()) curValue = (uint)valuesEnum.Current;
 			}
-			if (writeBack || this.forceWriteBack) this.Setter(targetArray);
+			if (writeBack || this.ForceWriteBack) this.Setter(targetArray);
 			this.PerformGetValue();
 		}
 		protected IEnumerable<object> OffsetValueGetter()
@@ -244,7 +238,7 @@ namespace DualityEditor.Controls.PropertyEditors
 					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}
 				this.UpdateModifiedState();
-				if (this.forceWriteBack) this.Setter(targetArray);
+				if (this.ForceWriteBack) this.Setter(targetArray);
 			};
 		}
 

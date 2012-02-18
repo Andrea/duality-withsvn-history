@@ -13,11 +13,6 @@ namespace EditorBase.PropertyEditors
 {
 	public class CameraRenderPassPropertyEditor : MemberwisePropertyEditor
 	{
-		public CameraRenderPassPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid, MemberFlags.Default)
-		{
-			
-		}
-
 		protected override void OnAddingEditors()
 		{
 			this.AddEditorForProperty(ReflectionInfo.Property_Camera_RenderPass_Input);
@@ -36,7 +31,7 @@ namespace EditorBase.PropertyEditors
 		{
 			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Camera_RenderPass_VisibilityMask))
 			{
-				FlagPropertyEditor e = new FlagPropertyEditor(this, this.ParentGrid);
+				FlagPropertyEditor e = new FlagPropertyEditor();
 				e.EditedType = (info as System.Reflection.PropertyInfo).PropertyType;
 				// ToDo: Use actual user-definable visibility groups
 				e.AddFlag("None", 0);
@@ -45,12 +40,6 @@ namespace EditorBase.PropertyEditors
 				return e;
 			}
 			return base.MemberEditor(info);
-		}
-		protected override void OnPropertySet(System.Reflection.PropertyInfo property, IEnumerable<object> targets)
-		{
-			base.OnPropertySet(property, targets);
-			// Write-back values to trigger editor-wide PropertyChanged event in Camera.Passes
-			this.Setter(this.Getter());
 		}
 	}
 }

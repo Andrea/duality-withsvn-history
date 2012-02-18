@@ -869,6 +869,10 @@ namespace EditorBase
 		{
 			e.Handled = this.OpenResource(e.Node);
 		}
+		private void objectView_Leave(object sender, EventArgs e)
+		{
+			this.objectView.Invalidate();
+		}
 		private NodeBase DragDropGetTargetNode()
 		{
 			TreeNodeAdv dropViewNode		= this.objectView.DropPosition.Node;
@@ -895,11 +899,11 @@ namespace EditorBase
 						(SystemColors.Window.R + SystemColors.Highlight.R) / 2,
 						(SystemColors.Window.G + SystemColors.Highlight.G) / 2,
 						(SystemColors.Window.B + SystemColors.Highlight.B) / 2);
-					e.BackgroundBrush = new System.Drawing.Drawing2D.LinearGradientBrush(
-						e.Context.Bounds,
-						hlUpper,
-						hlLower,
-						90.0f);
+
+					if (e.Control.Parent.Focused)
+						e.BackgroundBrush = new SolidBrush(hlLower);
+					else
+						e.BackgroundBrush = new SolidBrush(hlUpper);
 				}
 
 				// Prefab-linked entities
@@ -911,22 +915,13 @@ namespace EditorBase
 				// Flashing
 				if (node == this.flashNode)
 				{
-					float intUpper = this.flashIntensity / 4.0f;
 					float intLower = this.flashIntensity;
 					Color hlBase = Color.FromArgb(255, 64, 32);
-					Color hlUpper = Color.FromArgb(
-						(int)(SystemColors.Window.R * (1.0f - intUpper) + hlBase.R * intUpper),
-						(int)(SystemColors.Window.G * (1.0f - intUpper) + hlBase.G * intUpper),
-						(int)(SystemColors.Window.B * (1.0f - intUpper) + hlBase.B * intUpper));
 					Color hlLower = Color.FromArgb(
 						(int)(SystemColors.Window.R * (1.0f - intLower) + hlBase.R * intLower),
 						(int)(SystemColors.Window.G * (1.0f - intLower) + hlBase.G * intLower),
 						(int)(SystemColors.Window.B * (1.0f - intLower) + hlBase.B * intLower));
-					e.BackgroundBrush = new System.Drawing.Drawing2D.LinearGradientBrush(
-						e.Context.Bounds,
-						hlUpper,
-						hlLower,
-						90.0f);
+					e.BackgroundBrush = new SolidBrush(hlLower);
 				}
 			}
 		}

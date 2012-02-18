@@ -19,7 +19,7 @@ namespace EditorBase.PropertyEditors
 {
 	public partial class PixmapPreviewPropertyEditor : PropertyEditor
 	{
-		public PixmapPreviewPropertyEditor(PropertyEditor parentEditor, PropertyGrid parentGrid) : base(parentEditor, parentGrid)
+		public PixmapPreviewPropertyEditor()
 		{
 			this.InitializeComponent();
 			this.SetStyle(ControlStyles.UserPaint, true);

@@ -6,6 +6,7 @@ using System.IO;
 using System.Reflection;
 
 using Duality.Serialization;
+using Duality.EditorHints;
 
 namespace Duality
 {
@@ -39,6 +40,7 @@ namespace Duality
 		/// [GET] Returns whether the Resource has been disposed. 
 		/// Disposed Resources are not to be used and are treated the same as a null value by most methods.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public bool Disposed
 		{
 			get { return this.disposed; }
@@ -47,6 +49,7 @@ namespace Duality
 		/// [GET] The path where this Resource has been originally loaded from or was first saved to.
 		/// It is also the path under which this Resource is registered at the ContentProvider.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public string Path
 		{
 			get { return this.path; }
@@ -55,6 +58,7 @@ namespace Duality
 		/// <summary>
 		/// [GET] The name of the Resource.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public string Name
 		{
 			get
@@ -67,6 +71,7 @@ namespace Duality
 		/// <summary>
 		/// [GET] Returns whether the Resource is part of Duality's embedded default content.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public bool IsDefaultContent
 		{
 			get { return this.path != null && this.path.Contains(':'); }

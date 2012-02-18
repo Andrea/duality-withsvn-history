@@ -7,6 +7,9 @@ using System.Windows.Forms;
 using System.Drawing.Design;
 using System.Windows.Forms.Design;
 
+using Duality;
+using Duality.EditorHints;
+
 namespace DualityEditor.Controls
 {
 	public class EnumFlagCheckedListBox : CustomFlagCheckedListBox
@@ -51,8 +54,12 @@ namespace DualityEditor.Controls
 		
 		private void FillEnumMembers()
 		{
-			foreach ( string name in Enum.GetNames(enumType))
+			foreach (string name in Enum.GetNames(enumType))
 			{
+				var field = enumType.GetField(name, ReflectionHelper.BindAll);
+				EditorHintFlagsAttribute flagsAttrib = field.GetCustomAttributes(typeof(EditorHintFlagsAttribute), true).FirstOrDefault() as EditorHintFlagsAttribute;
+				if (flagsAttrib != null && (flagsAttrib.Flags & MemberFlags.Invisible) != MemberFlags.None) continue;
+
 				object val = Enum.Parse(enumType,name);
 				ulong ulongVal = (ulong)Convert.ChangeType(val, typeof(ulong));
 
