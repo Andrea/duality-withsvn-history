@@ -849,7 +849,28 @@ namespace EditorBase.CamViewStates
 				}
 				this.PostPerformAction(this.actionObjSel, this.action);
 			}
+
 			this.UpdateSelectionStats();
+
+			// If scaling didn't change the total bounding radius, the selected object doesn't support it properly - roll back!
+			if (lastRadius == this.selectionRadius)
+			{
+				float invScale = 1.0f / scale;
+				foreach (SelObj s in this.actionObjSel)
+				{
+					Vector3 scaleVec = new Vector3(invScale, invScale, invScale);
+					//scaleVec = this.LockAxis(scaleVec, this.actionAxisLock, 1.0f);
+					Vector3 posRelCenter = s.Pos - this.selectionCenter;
+					Vector3 posRelCenterTarget;
+					Vector3.Multiply(ref posRelCenter, ref scaleVec, out posRelCenterTarget);
+
+					s.Pos = this.selectionCenter + posRelCenterTarget;
+					s.Scale *= scaleVec;
+				}
+				this.PostPerformAction(this.actionObjSel, this.action);
+				this.UpdateSelectionStats();
+			}
+
 			this.actionBeginLocSpace = spaceCoord;
 			this.View.LocalGLControl.Invalidate();
 		}
