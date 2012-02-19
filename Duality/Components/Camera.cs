@@ -1332,9 +1332,10 @@ namespace Duality.Components
 			
 			if (material.Technique.Res.NeedsVertexPreprocess)
 			{
-				material = new BatchInfo(material);
-				vertices = vertices.Clone() as T[];
-				material.Technique.Res.PreprocessVertices<T>(ref material, ref vertexMode, ref vertices);
+				// Screw idiot-proof behaviour. This is about performance.
+				//material = new BatchInfo(material);
+				//vertices = vertices.Clone() as T[];
+				material.Technique.Res.PreprocessVertices<T>(this, ref material, ref vertexMode, ref vertices);
 			}
 
 			bool zSort = material.Technique.Res.NeedsZSort;

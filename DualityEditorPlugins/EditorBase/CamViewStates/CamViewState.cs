@@ -363,6 +363,10 @@ namespace EditorBase.CamViewStates
 			if (this.action == MouseAction.RectSelection)
 				canvas.DrawRect(this.actionBeginLoc.X, this.actionBeginLoc.Y, cursorPos.X - this.actionBeginLoc.X, cursorPos.Y - this.actionBeginLoc.Y);
 
+			#if DEBUG
+			Performance.DrawAllMeasures(canvas);
+			#endif
+
 			canvas.PopState();
 		}
 		protected virtual void DrawStatusText(Canvas canvas, ref bool handled)

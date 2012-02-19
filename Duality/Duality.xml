@@ -5869,7 +5869,7 @@
             <param name="shader"></param>
             <param name="formatPref"></param>
         </member>
-        <member name="M:Duality.Resources.DrawTechnique.PreprocessVertices``1(Duality.Resources.BatchInfo@,OpenTK.Graphics.OpenGL.BeginMode@,``0[]@)">
+        <member name="M:Duality.Resources.DrawTechnique.PreprocessVertices``1(Duality.IDrawDevice,Duality.Resources.BatchInfo@,OpenTK.Graphics.OpenGL.BeginMode@,``0[]@)">
             <summary>
             Performs a preprocessing operation for incoming vertices. Does nothing by default but may be overloaded, if needed.
             </summary>
@@ -6015,7 +6015,7 @@
         </member>
         <member name="P:Duality.Resources.DrawTechnique.NeedsVertexPreprocess">
             <summary>
-            [GET] Returns whether this DrawTechnique requires <see cref="M:Duality.Resources.DrawTechnique.PreprocessVertices``1(Duality.Resources.BatchInfo@,OpenTK.Graphics.OpenGL.BeginMode@,``0[]@)">vertex preprocessing</see>.
+            [GET] Returns whether this DrawTechnique requires <see cref="M:Duality.Resources.DrawTechnique.PreprocessVertices``1(Duality.IDrawDevice,Duality.Resources.BatchInfo@,OpenTK.Graphics.OpenGL.BeginMode@,``0[]@)">vertex preprocessing</see>.
             This is false for all standard DrawTechniques, but may return true when deriving custom DrawTechniques.
             </summary>
         </member>

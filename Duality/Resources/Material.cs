@@ -285,7 +285,14 @@ namespace Duality.Resources
 			info.technique = this.technique;
 			info.mainColor = this.mainColor;
 			info.textures = this.textures == null ? null : new Dictionary<string,ContentRef<Texture>>(this.textures);
-			info.uniforms = this.uniforms == null ? null : new Dictionary<string,float[]>(this.uniforms);
+			if (this.uniforms == null)
+				info.uniforms = null;
+			else
+			{
+				info.uniforms = new Dictionary<string,float[]>();
+				foreach (var pair in this.uniforms)
+					info.uniforms[pair.Key] = pair.Value.ToArray();
+			}
 		}
 
 		/// <summary>
@@ -353,7 +360,13 @@ namespace Duality.Resources
 				if (first.uniforms.Count != second.uniforms.Count) return false;
 				foreach (var pair in first.uniforms)
 				{
-					if (second.uniforms[pair.Key] != pair.Value) return false;
+					float[] firstArr = pair.Value;
+					float[] secondArr = second.uniforms[pair.Key];
+					if (firstArr.Length != secondArr.Length) return false;
+					for (int i = 0; i < firstArr.Length; i++)
+					{
+						if (firstArr[i] != secondArr[i]) return false;
+					}
 				}
 			}
 			else if (second.uniforms != null) return false;

@@ -304,7 +304,7 @@ namespace Duality.Resources
 		/// <param name="material"><see cref="Duality.Resources.Material"/> information for the current batch.</param>
 		/// <param name="vertexMode">The mode of incoming vertex data.</param>
 		/// <param name="vertices">Incoming vertex data.</param>
-		public virtual void PreprocessVertices<T>(ref BatchInfo material, ref BeginMode vertexMode, ref T[] vertices)
+		public virtual void PreprocessVertices<T>(IDrawDevice device, ref BatchInfo material, ref BeginMode vertexMode, ref T[] vertices)
 		{
 
 		}
