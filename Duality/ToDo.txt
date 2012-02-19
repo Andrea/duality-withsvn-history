@@ -1,8 +1,20 @@
 ﻿
 -->	Duality Tasks (overall)
 	-->	Particle Systems & Particle Editor
+	-->	Scripts (Each deriving from Script-Baseclass)
 	-->	(Property) Animations & Animation Editor
 	-->	??? Ingame GUI & GUI Editor
+
+-->	Space game: Experiment with lighting system approaches
+	-->	Object-based, different levels of detail
+	-->	Custom Drawtechnique Types
+		-->	Revisit "Vertex Preprocessing", optimize it if needed
+		-->	First time custom Resources used in editor
+	-->	HDR and tonemapping, render to offscreen Rgba16 target
+		-->	Does Pixel-Z-Coord recovery still work then?
+		-->	If not, there should be some method to do it, think of lens flare stuff, etc.
+		-->	Maybe implement filmic tonemapping, expose some parameters to play with
+		-->	However, Auto-exposure is probably not a good idea in a space environment.
 
 -->	Dualitor: PerformanceMonitor
 -->	Dualitor: Completely rework PropertyEditors?
