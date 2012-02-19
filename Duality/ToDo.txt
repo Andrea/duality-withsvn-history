@@ -11,6 +11,8 @@
 			-->	Too much time spent in assigning redundant uniforms and copying BatchInfos even though unnecessary.
 			-->	There is no useful / reasonable API for PerformVertexPreprocessing
 				-->	Need one method per-batch and one per-frame
+				-->	Introduce helper class like "DrawTechnique.Batch/FramePreprocessor" or something
+				-->	It will keep track of changes and only produce a minimum overhead
 			-->	There should be a way of getting rid of unused uniform values
 			-->	Optimize: Maybe don't assign uniform values identical to the last one set already?
 			-->	There is no handling of auto-assigned uniform values, they probably shouldn't appear in the editor
