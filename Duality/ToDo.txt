@@ -10,6 +10,15 @@
 		-->	Issues in the current System:
 			-->	Optimize: Maybe don't assign uniform values identical to the last one set already?
 			-->	There is no handling of auto-assigned uniform values, they probably shouldn't appear in the editor
+				-->	Also, the current editor isn't very good and a codedesign-nightmare
+			-->	Optimize Lighting experiment, only set frame-constant values once per frame!
+				-->	Directly in the material?
+		-->	Still to do:
+			-->	Specular reflections
+			-->	Ambient light
+			-->	Directional light
+			-->	Spotlight
+			-->	Normal Mapping
 	-->	HDR and tonemapping, render to offscreen Rgba16 target
 		-->	Does Pixel-Z-Coord recovery still work then?
 		-->	If not, there should be some method to do it, think of lens flare stuff, etc.

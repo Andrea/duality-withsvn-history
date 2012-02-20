@@ -6,6 +6,8 @@ using System.Windows.Forms;
 using System.Reflection;
 using System.Drawing;
 
+using OpenTK;
+
 using Duality;
 using Duality.Resources;
 
@@ -121,7 +123,7 @@ namespace EditorBase.PropertyEditors
 							foreach (BatchInfo info in batchInfos)
 							{
 								if (info.GetTexture(varInfo.name).IsExplicitNull)
-									info.SetTexture(varInfo.name, ContentRef<Texture>.Null);
+									info.SetTexture(varInfo.name, Texture.White);
 							}
 						}
 						// Set other uniform variables
@@ -175,64 +177,143 @@ namespace EditorBase.PropertyEditors
 				{
 					foreach (var uniform in uniformDict)
 					{
+						ShaderVarInfo varInfo = varInfoArray.FirstOrDefault(v => v.scope == ShaderVarScope.Uniform && v.name == uniform.Key);
 						PropertyEditor e = null;
 
 						PropertyEditor oldEditor;
 						oldEditors.TryGetValue(uniform.Key, out oldEditor);
 
-						if (uniform.Value.Length == 1)
+						if (varInfo.arraySize == 1)
 						{
-							if (oldEditor is NumericPropertyEditor)
-								oldEditors.Remove(uniform.Key);
-							else
+							if (varInfo.type == ShaderVarType.Float || varInfo.type == ShaderVarType.Int)
 							{
-								e = new NumericPropertyEditor();
-								e.EditedType = typeof(float);
-								e.Getter = this.CreateUniformFloatValueGetter(uniform.Key);
-								e.Setter = !this.ReadOnly ? this.CreateUniformFloatValueSetter(uniform.Key) : null;
-								(e as NumericPropertyEditor).Editor.Increment = 0.1m;
+								Type editType = typeof(float);
+								if (varInfo.type == ShaderVarType.Int) editType = typeof(int);
+
+								if (oldEditor is NumericPropertyEditor && oldEditor.EditedType == editType)
+									oldEditors.Remove(uniform.Key);
+								else
+								{
+									e = new NumericPropertyEditor();
+									e.EditedType = editType;
+									if (varInfo.type == ShaderVarType.Int)
+									{
+										e.Getter = this.CreateUniformIntValueGetter(uniform.Key);
+										e.Setter = !this.ReadOnly ? this.CreateUniformIntValueSetter(uniform.Key) : null;
+									}
+									else
+									{
+										e.Getter = this.CreateUniformFloatValueGetter(uniform.Key);
+										e.Setter = !this.ReadOnly ? this.CreateUniformFloatValueSetter(uniform.Key) : null;
+										(e as NumericPropertyEditor).Editor.Increment = 0.1m;
+									}
+								}
 							}
-						}
-						else if (uniform.Value.Length == 2)
-						{
-							if (oldEditor is Vector2PropertyEditor)
-								oldEditors.Remove(uniform.Key);
-							else
+							else if (varInfo.type == ShaderVarType.Vec2)
 							{
-								e = new Vector2PropertyEditor();
-								e.EditedType = typeof(OpenTK.Vector2);
-								e.Getter = this.CreateUniformVec2ValueGetter(uniform.Key);
-								e.Setter = !this.ReadOnly ? this.CreateUniformVec2ValueSetter(uniform.Key) : null;
-								(e as Vector2PropertyEditor).EditorX.Increment = 0.1m;
-								(e as Vector2PropertyEditor).EditorY.Increment = 0.1m;
+								if (oldEditor is Vector2PropertyEditor)
+									oldEditors.Remove(uniform.Key);
+								else
+								{
+									e = new Vector2PropertyEditor();
+									e.EditedType = typeof(OpenTK.Vector2);
+									e.Getter = this.CreateUniformVec2ValueGetter(uniform.Key);
+									e.Setter = !this.ReadOnly ? this.CreateUniformVec2ValueSetter(uniform.Key) : null;
+									(e as Vector2PropertyEditor).EditorX.Increment = 0.1m;
+									(e as Vector2PropertyEditor).EditorY.Increment = 0.1m;
+								}
 							}
-						}
-						else if (uniform.Value.Length == 3)
-						{
-							if (oldEditor is Vector3PropertyEditor)
-								oldEditors.Remove(uniform.Key);
+							else if (varInfo.type == ShaderVarType.Vec3)
+							{
+								if (oldEditor is Vector3PropertyEditor)
+									oldEditors.Remove(uniform.Key);
+								else
+								{
+									e = new Vector3PropertyEditor();
+									e.EditedType = typeof(OpenTK.Vector3);
+									e.Getter = this.CreateUniformVec3ValueGetter(uniform.Key);
+									e.Setter = !this.ReadOnly ? this.CreateUniformVec3ValueSetter(uniform.Key) : null;
+									(e as Vector3PropertyEditor).EditorX.Increment = 0.1m;
+									(e as Vector3PropertyEditor).EditorY.Increment = 0.1m;
+									(e as Vector3PropertyEditor).EditorZ.Increment = 0.1m;
+								}
+							}
 							else
 							{
-								e = new Vector3PropertyEditor();
-								e.EditedType = typeof(OpenTK.Vector3);
-								e.Getter = this.CreateUniformVec3ValueGetter(uniform.Key);
-								e.Setter = !this.ReadOnly ? this.CreateUniformVec3ValueSetter(uniform.Key) : null;
-								(e as Vector3PropertyEditor).EditorX.Increment = 0.1m;
-								(e as Vector3PropertyEditor).EditorY.Increment = 0.1m;
-								(e as Vector3PropertyEditor).EditorZ.Increment = 0.1m;
+								if (oldEditor is IListPropertyEditor)
+									oldEditors.Remove(uniform.Key);
+								else
+								{
+									e = new IListPropertyEditor();
+									e.EditedType = typeof(float[]);
+									e.Getter = this.CreateUniformValueGetter(uniform.Key);
+									e.Setter = !this.ReadOnly ? this.CreateUniformValueSetter(uniform.Key) : null;
+									(e as IListPropertyEditor).EditorAdded += this.UniformList_EditorAdded;
+								}
 							}
 						}
 						else
 						{
-							if (oldEditor is IListPropertyEditor)
-								oldEditors.Remove(uniform.Key);
+							Array oldValue = oldEditor != null ? (oldEditor as IListPropertyEditor).Getter().FirstOrDefault() as Array : null;
+							Type oldElementType = oldValue != null ? oldValue.GetType().GetElementType() : null;
+							int oldLen = oldValue != null ? oldValue.Length : -1;
+
+							if (varInfo.type == ShaderVarType.Float || varInfo.type == ShaderVarType.Int)
+							{
+								Type editType = typeof(float);
+								if (varInfo.type == ShaderVarType.Int) editType = typeof(int);
+
+								if (oldLen == varInfo.arraySize && oldElementType == editType)
+									oldEditors.Remove(uniform.Key);
+								else
+								{
+									e = new IListPropertyEditor();
+									e.EditedType = editType.MakeArrayType();
+									e.Getter = this.CreateUniformValueGetter(uniform.Key);
+									e.Setter = !this.ReadOnly ? this.CreateUniformValueSetter(uniform.Key) : null;
+									e.ForceWriteBack = true;
+									if (varInfo.type == ShaderVarType.Float) (e as IListPropertyEditor).EditorAdded += this.UniformList_EditorAdded;
+								}
+							}
+							else if (varInfo.type == ShaderVarType.Vec2)
+							{
+								if (oldLen == varInfo.arraySize && oldElementType == typeof(Vector2))
+									oldEditors.Remove(uniform.Key);
+								else
+								{
+									e = new IListPropertyEditor();
+									e.EditedType = typeof(Vector2[]);
+									e.Getter = this.CreateUniformVec2ArrayValueGetter(uniform.Key);
+									e.Setter = !this.ReadOnly ? this.CreateUniformVec2ArrayValueSetter(uniform.Key) : null;
+									e.ForceWriteBack = true;
+								}
+							}
+							else if (varInfo.type == ShaderVarType.Vec3)
+							{
+								if (oldLen == varInfo.arraySize && oldElementType == typeof(Vector3))
+									oldEditors.Remove(uniform.Key);
+								else
+								{
+									e = new IListPropertyEditor();
+									e.EditedType = typeof(Vector3[]);
+									e.Getter = this.CreateUniformVec3ArrayValueGetter(uniform.Key);
+									e.Setter = !this.ReadOnly ? this.CreateUniformVec3ArrayValueSetter(uniform.Key) : null;
+									e.ForceWriteBack = true;
+								}
+							}
 							else
 							{
-								e = new IListPropertyEditor();
-								e.EditedType = typeof(float[]);
-								e.Getter = this.CreateUniformValueGetter(uniform.Key);
-								e.Setter = !this.ReadOnly ? this.CreateUniformValueSetter(uniform.Key) : null;
-								(e as IListPropertyEditor).EditorAdded += this.UniformList_EditorAdded;
+								if (oldLen == varInfo.arraySize)
+									oldEditors.Remove(uniform.Key);
+								else
+								{
+									e = new IListPropertyEditor();
+									e.EditedType = typeof(float[][]);
+									e.Getter = this.CreateUniformArrayValueGetter(uniform.Key, varInfo.arraySize);
+									e.Setter = !this.ReadOnly ? this.CreateUniformArrayValueSetter(uniform.Key) : null;
+									(e as IListPropertyEditor).EditorAdded += this.UniformList_EditorAdded;
+									e.ForceWriteBack = true;
+								}
 							}
 						}
 
@@ -269,6 +350,10 @@ namespace EditorBase.PropertyEditors
 		{
 			return () => this.Getter().Cast<BatchInfo>().Select(o => o != null ? (object)o.GetUniform(name)[0] : null);
 		}
+		protected Func<IEnumerable<object>> CreateUniformIntValueGetter(string name)
+		{
+			return () => this.Getter().Cast<BatchInfo>().Select(o => o != null ? (object)(int)o.GetUniform(name)[0] : null);
+		}
 		protected Func<IEnumerable<object>> CreateUniformVec2ValueGetter(string name)
 		{
 			return () => this.Getter().Cast<BatchInfo>().Select(o => o != null ? (object)
@@ -281,6 +366,77 @@ namespace EditorBase.PropertyEditors
 				new OpenTK.Vector3(o.GetUniform(name)[0], o.GetUniform(name)[1], o.GetUniform(name)[2])
 				: null);
 		}
+
+		protected Func<IEnumerable<object>> CreateUniformArrayValueGetter(string name, int arraySize)
+		{
+			return delegate()
+			{
+				var batchInfos = this.Getter().Cast<BatchInfo>();
+				List<object> result = new List<object>();
+				foreach (var info in batchInfos)
+				{
+					float[] arrayBase = info.GetUniform(name);
+					int elementCount = arrayBase.Length / arraySize;
+					float[][] arrays = new float[arraySize][];
+					for (int i = 0; i < arraySize; i++)
+					{
+						arrays[i] = new float[elementCount];
+						for (int j = 0; j < elementCount; j++)
+						{
+							arrays[i][j] = arrayBase[i * elementCount + j];
+						}
+					}
+					result.Add(arrays);
+				}
+				return result;
+			};
+		}
+		protected Func<IEnumerable<object>> CreateUniformVec2ArrayValueGetter(string name)
+		{
+			return delegate()
+			{
+				var batchInfos = this.Getter().Cast<BatchInfo>();
+				List<object> result = new List<object>();
+				foreach (var info in batchInfos)
+				{
+					float[] arrayBase = info.GetUniform(name);
+					int arraySize = arrayBase.Length / 2;
+					Vector2[] arrays = new Vector2[arraySize];
+					for (int i = 0; i < arraySize; i++)
+					{
+						arrays[i] = new Vector2(
+							arrayBase[i * 2 + 0],
+							arrayBase[i * 2 + 1]);
+					}
+					result.Add(arrays);
+				}
+				return result;
+			};
+		}
+		protected Func<IEnumerable<object>> CreateUniformVec3ArrayValueGetter(string name)
+		{
+			return delegate()
+			{
+				var batchInfos = this.Getter().Cast<BatchInfo>();
+				List<object> result = new List<object>();
+				foreach (var info in batchInfos)
+				{
+					float[] arrayBase = info.GetUniform(name);
+					int arraySize = arrayBase.Length / 3;
+					Vector3[] arrays = new Vector3[arraySize];
+					for (int i = 0; i < arraySize; i++)
+					{
+						arrays[i] = new Vector3(
+							arrayBase[i * 3 + 0],
+							arrayBase[i * 3 + 1],
+							arrayBase[i * 3 + 2]);
+					}
+					result.Add(arrays);
+				}
+				return result;
+			};
+		}
+
 		protected Action<IEnumerable<object>> CreateTextureValueSetter(string name)
 		{
 			return delegate(IEnumerable<object> values)
@@ -335,6 +491,24 @@ namespace EditorBase.PropertyEditors
 				this.UpdateModifiedState();
 			};
 		}
+		protected Action<IEnumerable<object>> CreateUniformIntValueSetter(string name)
+		{
+			return delegate(IEnumerable<object> values)
+			{
+				IEnumerator<int> valuesEnum = values.Cast<int>().GetEnumerator();
+				BatchInfo[] batchInfoArray = this.Getter().Cast<BatchInfo>().ToArray();
+
+				int curValue = 0;
+				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
+				foreach (BatchInfo info in batchInfoArray)
+				{
+					if (info != null) info.SetUniform(name, 0, curValue);
+					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
+				}
+				this.OnPropertySet(ReflectionInfo.Property_BatchInfo_Uniforms, batchInfoArray);
+				this.UpdateModifiedState();
+			};
+		}
 		protected Action<IEnumerable<object>> CreateUniformVec2ValueSetter(string name)
 		{
 			return delegate(IEnumerable<object> values)
@@ -373,6 +547,85 @@ namespace EditorBase.PropertyEditors
 						info.SetUniform(name, 0, curValue.X);
 						info.SetUniform(name, 1, curValue.Y);
 						info.SetUniform(name, 2, curValue.Z);
+					}
+					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
+				}
+				this.OnPropertySet(ReflectionInfo.Property_BatchInfo_Uniforms, batchInfoArray);
+				this.UpdateModifiedState();
+			};
+		}
+
+		protected Action<IEnumerable<object>> CreateUniformArrayValueSetter(string name)
+		{
+			return delegate(IEnumerable<object> values)
+			{
+				IEnumerator<float[][]> valuesEnum = values.Cast<float[][]>().GetEnumerator();
+				BatchInfo[] batchInfoArray = this.Getter().Cast<BatchInfo>().ToArray();
+
+				float[][] curValue = null;
+				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
+				foreach (BatchInfo info in batchInfoArray)
+				{
+					if (info != null)
+					{
+						IEnumerable<float> curValueConcat = new float[0];
+						foreach (float[] arrayChunk in curValue) curValueConcat = curValueConcat.Concat(arrayChunk);
+						info.SetUniform(name, curValueConcat.ToArray());
+					}
+					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
+				}
+				this.OnPropertySet(ReflectionInfo.Property_BatchInfo_Uniforms, batchInfoArray);
+				this.UpdateModifiedState();
+			};
+		}
+		protected Action<IEnumerable<object>> CreateUniformVec2ArrayValueSetter(string name)
+		{
+			return delegate(IEnumerable<object> values)
+			{
+				IEnumerator<Vector2[]> valuesEnum = values.Cast<Vector2[]>().GetEnumerator();
+				BatchInfo[] batchInfoArray = this.Getter().Cast<BatchInfo>().ToArray();
+
+				Vector2[] curValue = null;
+				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
+				foreach (BatchInfo info in batchInfoArray)
+				{
+					if (info != null)
+					{
+						float[] curValueConcat = new float[curValue.Length * 2];
+						for (int i = 0; i < curValue.Length; i++)
+						{
+							curValueConcat[i * 2 + 0] = curValue[i].X;
+							curValueConcat[i * 2 + 1] = curValue[i].Y;
+						}
+						info.SetUniform(name, curValueConcat);
+					}
+					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
+				}
+				this.OnPropertySet(ReflectionInfo.Property_BatchInfo_Uniforms, batchInfoArray);
+				this.UpdateModifiedState();
+			};
+		}
+		protected Action<IEnumerable<object>> CreateUniformVec3ArrayValueSetter(string name)
+		{
+			return delegate(IEnumerable<object> values)
+			{
+				IEnumerator<Vector3[]> valuesEnum = values.Cast<Vector3[]>().GetEnumerator();
+				BatchInfo[] batchInfoArray = this.Getter().Cast<BatchInfo>().ToArray();
+
+				Vector3[] curValue = null;
+				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
+				foreach (BatchInfo info in batchInfoArray)
+				{
+					if (info != null)
+					{
+						float[] curValueConcat = new float[curValue.Length * 3];
+						for (int i = 0; i < curValue.Length; i++)
+						{
+							curValueConcat[i * 3 + 0] = curValue[i].X;
+							curValueConcat[i * 3 + 1] = curValue[i].Y;
+							curValueConcat[i * 3 + 2] = curValue[i].Z;
+						}
+						info.SetUniform(name, curValueConcat);
 					}
 					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}
@@ -450,6 +703,8 @@ namespace EditorBase.PropertyEditors
 		{
 			NumericPropertyEditor numEdit = e.Editor as NumericPropertyEditor;
 			if (numEdit != null) numEdit.Editor.Increment = 0.1m;
+
+			e.Editor.ForceWriteBack = true;
 		}
 		
 		private void Header_MouseUp(object sender, MouseEventArgs e)

@@ -5929,7 +5929,7 @@
             <param name="shader"></param>
             <param name="formatPref"></param>
         </member>
-        <member name="M:Duality.Resources.DrawTechnique.PreprocessVertices``1(Duality.IDrawDevice,Duality.Resources.BatchInfo@,OpenTK.Graphics.OpenGL.BeginMode@,``0[]@)">
+        <member name="M:Duality.Resources.DrawTechnique.PreprocessBatch``1(Duality.IDrawDevice,Duality.Resources.BatchInfo@,OpenTK.Graphics.OpenGL.BeginMode@,``0[]@)">
             <summary>
             Performs a preprocessing operation for incoming vertices. Does nothing by default but may be overloaded, if needed.
             </summary>
@@ -5938,7 +5938,7 @@
             <param name="vertexMode">The mode of incoming vertex data.</param>
             <param name="vertices">Incoming vertex data.</param>
         </member>
-        <member name="M:Duality.Resources.DrawTechnique.SetupForRendering(Duality.Resources.DrawTechnique,System.Collections.Generic.Dictionary{System.String,Duality.ContentRef{Duality.Resources.Texture}},System.Collections.Generic.Dictionary{System.String,System.Single[]})">
+        <member name="M:Duality.Resources.DrawTechnique.SetupForRendering(Duality.Resources.BatchInfo,Duality.Resources.DrawTechnique)">
             <summary>
             Sets up the appropriate OpenGL rendering state for this DrawTechnique.
             </summary>
@@ -5959,12 +5959,11 @@
             </summary>
             <param name="mode">The BlendMode to set up.</param>
         </member>
-        <member name="M:Duality.Resources.DrawTechnique.SelectShader(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,Duality.ContentRef{Duality.Resources.Texture}}},System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Single[]}})">
+        <member name="M:Duality.Resources.DrawTechnique.SelectShader(Duality.Resources.BatchInfo)">
             <summary>
             Dynamically selects the <see cref="T:Duality.Resources.ShaderProgram"/> to use. Just returns <see cref="P:Duality.Resources.DrawTechnique.Shader"/> by default.
             </summary>
-            <param name="textures">The current set of textures.</param>
-            <param name="uniforms">The current set of uniforms.</param>
+            <param name="info"></param>
             <returns>The selected <see cref="T:Duality.Resources.ShaderProgram"/>.</returns>
         </member>
         <member name="P:Duality.Resources.DrawTechnique.Solid">
@@ -6073,9 +6072,9 @@
             [GET] Returns whether this DrawTechnique requires z sorting. It is derived from its <see cref="P:Duality.Resources.DrawTechnique.Blending"/>.
             </summary>
         </member>
-        <member name="P:Duality.Resources.DrawTechnique.NeedsVertexPreprocess">
+        <member name="P:Duality.Resources.DrawTechnique.NeedsPreprocess">
             <summary>
-            [GET] Returns whether this DrawTechnique requires <see cref="M:Duality.Resources.DrawTechnique.PreprocessVertices``1(Duality.IDrawDevice,Duality.Resources.BatchInfo@,OpenTK.Graphics.OpenGL.BeginMode@,``0[]@)">vertex preprocessing</see>.
+            [GET] Returns whether this DrawTechnique requires <see cref="M:Duality.Resources.DrawTechnique.PreprocessBatch``1(Duality.IDrawDevice,Duality.Resources.BatchInfo@,OpenTK.Graphics.OpenGL.BeginMode@,``0[]@)">vertex preprocessing</see>.
             This is false for all standard DrawTechniques, but may return true when deriving custom DrawTechniques.
             </summary>
         </member>

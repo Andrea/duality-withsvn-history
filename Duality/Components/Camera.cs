@@ -1338,10 +1338,10 @@ namespace Duality.Components
 					material = new BatchInfo(DrawTechnique.Picking, new ColorRgba((this.picking << 8) | 0xFF), material.Textures);
 			}
 			
-			if (material.Technique.Res.NeedsVertexPreprocess)
+			if (material.Technique.Res.NeedsPreprocess)
 			{
 				material = new BatchInfo(material);
-				material.Technique.Res.PreprocessVertices<T>(this, ref material, ref vertexMode, ref vertices);
+				material.Technique.Res.PreprocessBatch<T>(this, ref material, ref vertexMode, ref vertices);
 			}
 
 			bool zSort = material.Technique.Res.NeedsZSort;

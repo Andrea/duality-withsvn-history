@@ -218,6 +218,7 @@ namespace Duality.Resources
 		}
 
 
+		[NonSerialized] private	int	lastPreprocessFrame	= -1;
 		private	BlendMode					blendType	= BlendMode.Solid;
 		private	ContentRef<ShaderProgram>	shader		= ContentRef<ShaderProgram>.Null;
 		private	VertexDataFormat			formatPref	= VertexDataFormat.Unknown;
@@ -264,10 +265,10 @@ namespace Duality.Resources
 			}
 		}
 		/// <summary>
-		/// [GET] Returns whether this DrawTechnique requires <see cref="PreprocessVertices{T}">vertex preprocessing</see>.
+		/// [GET] Returns whether this DrawTechnique requires <see cref="PreprocessBatch{T}">vertex preprocessing</see>.
 		/// This is false for all standard DrawTechniques, but may return true when deriving custom DrawTechniques.
 		/// </summary>
-		public virtual bool NeedsVertexPreprocess
+		public virtual bool NeedsPreprocess
 		{
 			get { return false; }
 		}
@@ -304,7 +305,7 @@ namespace Duality.Resources
 		/// <param name="material"><see cref="Duality.Resources.Material"/> information for the current batch.</param>
 		/// <param name="vertexMode">The mode of incoming vertex data.</param>
 		/// <param name="vertices">Incoming vertex data.</param>
-		public virtual void PreprocessVertices<T>(IDrawDevice device, ref BatchInfo material, ref BeginMode vertexMode, ref T[] vertices)
+		public virtual void PreprocessBatch<T>(IDrawDevice device, ref BatchInfo material, ref BeginMode vertexMode, ref T[] vertices)
 		{
 
 		}
@@ -315,14 +316,14 @@ namespace Duality.Resources
 		/// specifying it will increase performance by reducing redundant state changes.</param>
 		/// <param name="textures">A set of <see cref="Duality.Resources.Texture">Textures</see> to use.</param>
 		/// <param name="uniforms">A set of <see cref="Duality.Resources.ShaderVarInfo">uniform values</see> to apply.</param>
-		public void SetupForRendering(DrawTechnique lastTechnique, Dictionary<string,ContentRef<Texture>> textures, Dictionary<string,float[]> uniforms)
+		public void SetupForRendering(BatchInfo info, DrawTechnique lastTechnique)
 		{
 			// Setup BlendType
 			if (lastTechnique == null || this.blendType != lastTechnique.blendType)
 				this.SetupBlendType(this.blendType);
 
 			// Bind Shader
-			ContentRef<ShaderProgram> selShader = this.SelectShader(textures, uniforms);
+			ContentRef<ShaderProgram> selShader = this.SelectShader(info);
 			if (lastTechnique == null || selShader.Res != lastTechnique.shader.Res)
 				ShaderProgram.Bind(selShader);
 
@@ -333,14 +334,14 @@ namespace Duality.Resources
 
 				// Setup sampler bindings automatically
 				int curSamplerIndex = 0;
-				if (textures != null && textures.Count > 0)
+				if (info.Textures != null)
 				{
 					ContentRef<Texture> tex;
 					for (int i = 0; i < varInfo.Length; i++)
 					{
 						if (varInfo[i].glVarLoc == -1) continue;
 						if (varInfo[i].type != ShaderVarType.Sampler2D) continue;
-						if (!textures.TryGetValue(varInfo[i].name, out tex)) continue;
+						tex = info.GetTexture(varInfo[i].name);
 						Texture.Bind(tex, curSamplerIndex);
 						GL.Uniform1(varInfo[i].glVarLoc, curSamplerIndex);
 						curSamplerIndex++;
@@ -349,13 +350,14 @@ namespace Duality.Resources
 				Texture.ResetBinding(curSamplerIndex);
 
 				// Transfer uniform data from material to actual shader
-				if (uniforms != null && uniforms.Count > 0)
+				if (info.Uniforms != null)
 				{
 					float[] data = null;
 					for (int i = 0; i < varInfo.Length; i++)
 					{
 						if (varInfo[i].glVarLoc == -1) continue;
-						if (!uniforms.TryGetValue(varInfo[i].name, out data)) continue;
+						data = info.GetUniform(varInfo[i].name);
+						if (data == null) continue;
 						varInfo[i].SetupUniform(data);
 					}
 				}
@@ -364,12 +366,12 @@ namespace Duality.Resources
 			else
 			{
 				// Fixed function texture binding
-				if (textures != null && textures.Count > 0)
+				if (info.Textures != null)
 				{
 					int samplerIndex = 0;
-					foreach (var tex in textures.Values)
+					foreach (var pair in info.Textures)
 					{
-						Texture.Bind(tex, samplerIndex);
+						Texture.Bind(pair.Value, samplerIndex);
 						samplerIndex++;
 					}
 					Texture.ResetBinding(samplerIndex);
@@ -455,10 +457,9 @@ namespace Duality.Resources
 		/// <summary>
 		/// Dynamically selects the <see cref="Duality.Resources.ShaderProgram"/> to use. Just returns <see cref="Shader"/> by default.
 		/// </summary>
-		/// <param name="textures">The current set of textures.</param>
-		/// <param name="uniforms">The current set of uniforms.</param>
+		/// <param name="info"></param>
 		/// <returns>The selected <see cref="Duality.Resources.ShaderProgram"/>.</returns>
-		protected virtual ContentRef<ShaderProgram> SelectShader(IEnumerable<KeyValuePair<string,ContentRef<Texture>>> textures, IEnumerable<KeyValuePair<string,float[]>> uniforms)
+		protected virtual ContentRef<ShaderProgram> SelectShader(BatchInfo info)
 		{
 			return this.shader;
 		}

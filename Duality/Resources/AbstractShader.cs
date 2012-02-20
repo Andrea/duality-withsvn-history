@@ -139,22 +139,22 @@ namespace Duality.Resources
 					GL.Uniform1(this.glVarLoc, data.Length, data);
 					break;
 				case ShaderVarType.Vec2:
-					GL.Uniform2(this.glVarLoc, 1, data);
+					GL.Uniform2(this.glVarLoc, data.Length / 2, data);
 					break;
 				case ShaderVarType.Vec3:
-					GL.Uniform3(this.glVarLoc, 1, data);
+					GL.Uniform3(this.glVarLoc, data.Length / 3, data);
 					break;
 				case ShaderVarType.Vec4:
-					GL.Uniform4(this.glVarLoc, 1, data);
+					GL.Uniform4(this.glVarLoc, data.Length / 4, data);
 					break;
 				case ShaderVarType.Mat2:
-					GL.UniformMatrix2(this.glVarLoc, 1, false, data);
+					GL.UniformMatrix2(this.glVarLoc, data.Length / 4, false, data);
 					break;
 				case ShaderVarType.Mat3:
-					GL.UniformMatrix3(this.glVarLoc, 1, false, data);
+					GL.UniformMatrix3(this.glVarLoc, data.Length / 9, false, data);
 					break;
 				case ShaderVarType.Mat4:
-					GL.UniformMatrix4(this.glVarLoc, 1, false, data);
+					GL.UniformMatrix4(this.glVarLoc, data.Length / 16, false, data);
 					break;
 			}
 		}
@@ -171,17 +171,17 @@ namespace Duality.Resources
 				case ShaderVarType.Float:
 					return new float[this.arraySize];
 				case ShaderVarType.Vec2:
-					return new float[2];
+					return new float[2 * this.arraySize];
 				case ShaderVarType.Vec3:
-					return new float[3];
+					return new float[3 * this.arraySize];
 				case ShaderVarType.Vec4:
-					return new float[4];
+					return new float[4 * this.arraySize];
 				case ShaderVarType.Mat2:
-					return new float[4];
+					return new float[4 * this.arraySize];
 				case ShaderVarType.Mat3:
-					return new float[9];
+					return new float[9 * this.arraySize];
 				case ShaderVarType.Mat4:
-					return new float[16];
+					return new float[16 * this.arraySize];
 			}
 			return null;
 		}
@@ -191,7 +191,7 @@ namespace Duality.Resources
 			return string.Format("{1} {0}{2}", 
 				this.name, 
 				this.type, 
-				this.arraySize > 0 ? string.Format("[{0}]", this.arraySize) : "");
+				this.arraySize > 1 ? string.Format("[{0}]", this.arraySize) : "");
 		}
 	}
 
@@ -335,7 +335,7 @@ namespace Duality.Resources
 
 			// Scan remaining code chunk for variable declarations
 			List<ShaderVarInfo> varInfoList = new List<ShaderVarInfo>();
-			string[] lines = sourceWithoutComments.Split(new char[] {';'}, StringSplitOptions.RemoveEmptyEntries);
+			string[] lines = sourceWithoutComments.Split(new char[] {';','\n'}, StringSplitOptions.RemoveEmptyEntries);
 			ShaderVarInfo varInfo = new ShaderVarInfo();;
 			for (int i = 0; i < lines.Length; i++)
 			{

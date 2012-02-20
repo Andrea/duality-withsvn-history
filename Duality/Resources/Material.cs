@@ -372,9 +372,14 @@ namespace Duality.Resources
 			}
 			if ((clean & DirtyFlag.Uniforms) != DirtyFlag.None && this.uniforms != null)
 			{
+				var oldUniforms = this.uniforms;
 				this.uniforms = new Dictionary<string,float[]>();
-				foreach (var pair in this.uniforms)
-					this.uniforms[pair.Key] = pair.Value.ToArray();
+				foreach (var pair in oldUniforms)
+				{
+					float[] newArr = new float[pair.Value.Length];
+					Array.Copy(pair.Value, newArr, newArr.Length);
+					this.uniforms[pair.Key] = newArr;
+				}
 			}
 
 			this.dirtyFlag &= ~clean;
@@ -407,10 +412,7 @@ namespace Duality.Resources
 			GL.Color4(this.mainColor.r, this.mainColor.g, this.mainColor.b, this.mainColor.a);
 
 			// Setup technique
-			this.technique.Res.SetupForRendering(
-				(lastInfo == null) ? null : lastInfo.technique.Res,
-				this.textures,
-				this.uniforms);
+			this.technique.Res.SetupForRendering(this, (lastInfo == null) ? null : lastInfo.technique.Res);
 		}
 		/// <summary>
 		/// Resets the OpenGL rendering state. This should only be called if there are no more
