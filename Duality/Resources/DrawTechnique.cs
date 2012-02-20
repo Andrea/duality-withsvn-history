@@ -458,7 +458,7 @@ namespace Duality.Resources
 		/// <param name="textures">The current set of textures.</param>
 		/// <param name="uniforms">The current set of uniforms.</param>
 		/// <returns>The selected <see cref="Duality.Resources.ShaderProgram"/>.</returns>
-		protected virtual ContentRef<ShaderProgram> SelectShader(Dictionary<string,ContentRef<Texture>> textures, Dictionary<string,float[]> uniforms)
+		protected virtual ContentRef<ShaderProgram> SelectShader(IEnumerable<KeyValuePair<string,ContentRef<Texture>>> textures, IEnumerable<KeyValuePair<string,float[]>> uniforms)
 		{
 			return this.shader;
 		}

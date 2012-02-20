@@ -138,6 +138,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET] Returns the number of vertex attributes that have been declared.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public int AttribCount
 		{
 			get { return this.varInfo != null ? this.varInfo.Count(v => v.scope == ShaderVarScope.Attribute) : 0; }
@@ -145,6 +146,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET] Returns the number of uniform variables that have been declared.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public int UniformCount
 		{
 			get { return this.varInfo != null ? this.varInfo.Count(v => v.scope == ShaderVarScope.Uniform) : 0; }

@@ -53,6 +53,7 @@ namespace EditorBase.PropertyEditors
 
 			if (values.Any(o => o != null))
 			{
+				bool invokeSetter = false;
 				IEnumerable<BatchInfo> batchInfos = null;
 				DrawTechnique refTech = null;
 				batchInfos = values.Cast<BatchInfo>().NotNull();
@@ -74,6 +75,39 @@ namespace EditorBase.PropertyEditors
 					varInfoArray[0].type = ShaderVarType.Sampler2D;
 				}
 
+				// Get rid of unused variables (This changes actual Resource data!)
+				foreach (BatchInfo info in batchInfos)
+				{
+					List<string> texRemoveSched = null;
+					List<string> uniRemoveSched = null;
+					foreach (var pair in info.Textures)
+					{
+						if (!varInfoArray.Any(v => v.scope == ShaderVarScope.Uniform && v.type == ShaderVarType.Sampler2D && v.name == pair.Key))
+						{
+							if (texRemoveSched == null) texRemoveSched = new List<string>();
+							texRemoveSched.Add(pair.Key);
+						}
+					}
+					foreach (var pair in info.Uniforms)
+					{
+						if (!varInfoArray.Any(v => v.scope == ShaderVarScope.Uniform && v.type != ShaderVarType.Sampler2D && v.name == pair.Key))
+						{
+							if (uniRemoveSched == null) uniRemoveSched = new List<string>();
+							uniRemoveSched.Add(pair.Key);
+						}
+					}
+					if (texRemoveSched != null)
+					{
+						foreach (string name in texRemoveSched) info.SetTexture(name, ContentRef<Texture>.Null);
+						invokeSetter = true;
+					}
+					if (uniRemoveSched != null)
+					{
+						foreach (string name in uniRemoveSched) info.SetUniform(name, null);
+						invokeSetter = true;
+					}
+				}
+
 				// Create BatchInfo variables according to Shader uniforms, if not existing yet
 				if (!this.ReadOnly)
 				{
@@ -86,9 +120,8 @@ namespace EditorBase.PropertyEditors
 						{
 							foreach (BatchInfo info in batchInfos)
 							{
-								if (info.Textures == null) info.Textures = new Dictionary<string,ContentRef<Texture>>();
-								if (!info.Textures.ContainsKey(varInfo.name))
-									info.Textures[varInfo.name] = ContentRef<Texture>.Null;
+								if (info.GetTexture(varInfo.name).IsExplicitNull)
+									info.SetTexture(varInfo.name, ContentRef<Texture>.Null);
 							}
 						}
 						// Set other uniform variables
@@ -99,14 +132,15 @@ namespace EditorBase.PropertyEditors
 							{
 								foreach (BatchInfo info in batchInfos)
 								{
-									if (info.Uniforms == null) info.Uniforms = new Dictionary<string,float[]>();
-									float[] oldVal;
-									if (!info.Uniforms.TryGetValue(varInfo.name, out oldVal) || oldVal == null)
-										info.Uniforms[varInfo.name] = uniformVal;
+									float[] oldVal = info.GetUniform(varInfo.name);
+									if (oldVal == null) 
+									{
+										info.SetUniform(varInfo.name, uniformVal);
+									}
 									else if (oldVal.Length != uniformVal.Length)
 									{
 										for (int i = 0; i < Math.Min(oldVal.Length, uniformVal.Length); i++) uniformVal[i] = oldVal[i];
-										info.Uniforms[varInfo.name] = uniformVal;
+										info.SetUniform(varInfo.name, uniformVal);
 									}
 								}
 							}
@@ -120,8 +154,9 @@ namespace EditorBase.PropertyEditors
 				Dictionary<string,PropertyEditor> oldEditors = new Dictionary<string,PropertyEditor>(this.shaderVarEditors);
 				if (texDict != null)
 				{
-					foreach (string texName in texDict.Keys)
+					foreach (var pair in texDict)
 					{
+						string texName = pair.Key;
 						if (oldEditors.ContainsKey(texName))
 							oldEditors.Remove(texName);
 						else
@@ -216,31 +251,34 @@ namespace EditorBase.PropertyEditors
 					if (this.shaderVarEditors[pair.Key] == pair.Value) this.shaderVarEditors.Remove(pair.Key);
 					this.RemovePropertyEditor(pair.Value);
 				}
+
+				// If we actually changed (updated) data here, invoke the setter
+				if (invokeSetter) this.Setter(batchInfos);
 			}
 		}
 		
 		protected Func<IEnumerable<object>> CreateTextureValueGetter(string name)
 		{
-			return () => this.Getter().Cast<BatchInfo>().Select(o => o != null ? (object)o.Textures[name] : null);
+			return () => this.Getter().Cast<BatchInfo>().Select(o => o != null ? (object)o.GetTexture(name) : null);
 		}
 		protected Func<IEnumerable<object>> CreateUniformValueGetter(string name)
 		{
-			return () => this.Getter().Cast<BatchInfo>().Select(o => o != null ? (object)o.Uniforms[name] : null);
+			return () => this.Getter().Cast<BatchInfo>().Select(o => o != null ? (object)o.GetUniform(name) : null);
 		}
 		protected Func<IEnumerable<object>> CreateUniformFloatValueGetter(string name)
 		{
-			return () => this.Getter().Cast<BatchInfo>().Select(o => o != null ? (object)o.Uniforms[name][0] : null);
+			return () => this.Getter().Cast<BatchInfo>().Select(o => o != null ? (object)o.GetUniform(name)[0] : null);
 		}
 		protected Func<IEnumerable<object>> CreateUniformVec2ValueGetter(string name)
 		{
 			return () => this.Getter().Cast<BatchInfo>().Select(o => o != null ? (object)
-				new OpenTK.Vector2(o.Uniforms[name][0], o.Uniforms[name][1])
+				new OpenTK.Vector2(o.GetUniform(name)[0], o.GetUniform(name)[1])
 				: null);
 		}
 		protected Func<IEnumerable<object>> CreateUniformVec3ValueGetter(string name)
 		{
 			return () => this.Getter().Cast<BatchInfo>().Select(o => o != null ? (object)
-				new OpenTK.Vector3(o.Uniforms[name][0], o.Uniforms[name][1], o.Uniforms[name][2])
+				new OpenTK.Vector3(o.GetUniform(name)[0], o.GetUniform(name)[1], o.GetUniform(name)[2])
 				: null);
 		}
 		protected Action<IEnumerable<object>> CreateTextureValueSetter(string name)
@@ -254,7 +292,7 @@ namespace EditorBase.PropertyEditors
 				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				foreach (BatchInfo info in batchInfoArray)
 				{
-					if (info != null) info.Textures[name] = curValue;
+					if (info != null) info.SetTexture(name, curValue);
 					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}
 				this.OnPropertySet(ReflectionInfo.Property_BatchInfo_Textures, batchInfoArray);
@@ -272,7 +310,7 @@ namespace EditorBase.PropertyEditors
 				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				foreach (BatchInfo info in batchInfoArray)
 				{
-					if (info != null) info.Uniforms[name] = curValue;
+					if (info != null) info.SetUniform(name, curValue);
 					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}
 				this.OnPropertySet(ReflectionInfo.Property_BatchInfo_Uniforms, batchInfoArray);
@@ -290,7 +328,7 @@ namespace EditorBase.PropertyEditors
 				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				foreach (BatchInfo info in batchInfoArray)
 				{
-					if (info != null) info.Uniforms[name][0] = curValue;
+					if (info != null) info.SetUniform(name, 0, curValue);
 					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}
 				this.OnPropertySet(ReflectionInfo.Property_BatchInfo_Uniforms, batchInfoArray);
@@ -310,8 +348,8 @@ namespace EditorBase.PropertyEditors
 				{
 					if (info != null)
 					{
-						info.Uniforms[name][0] = curValue.X;
-						info.Uniforms[name][1] = curValue.Y;
+						info.SetUniform(name, 0, curValue.X);
+						info.SetUniform(name, 1, curValue.Y);
 					}
 					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}
@@ -332,9 +370,9 @@ namespace EditorBase.PropertyEditors
 				{
 					if (info != null)
 					{
-						info.Uniforms[name][0] = curValue.X;
-						info.Uniforms[name][1] = curValue.Y;
-						info.Uniforms[name][2] = curValue.Z;
+						info.SetUniform(name, 0, curValue.X);
+						info.SetUniform(name, 1, curValue.Y);
+						info.SetUniform(name, 2, curValue.Z);
 					}
 					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}

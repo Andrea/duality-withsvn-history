@@ -110,16 +110,10 @@ namespace Duality.Components.Renderers
 
 		protected Texture RetrieveMainTex()
 		{
-			if (this.customMat != null && 
-				this.customMat.Textures != null && 
-				this.customMat.Textures.Count > 0 && 
-				this.customMat.Textures.Values.First().IsAvailable)
-				return this.customMat.Textures.Values.First().Res;
-			else if (this.sharedMat.IsAvailable && 
-				this.sharedMat.Res.Textures != null && 
-				this.sharedMat.Res.Textures.Count > 0 && 
-				this.sharedMat.Res.Textures.Values.First().IsAvailable)
-				return this.sharedMat.Res.Textures.Values.First().Res;
+			if (this.customMat != null)
+				return this.customMat.MainTexture.Res;
+			else if (this.sharedMat.IsAvailable)
+				return this.sharedMat.Res.MainTexture.Res;
 			else
 				return null;
 		}

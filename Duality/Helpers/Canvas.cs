@@ -664,7 +664,7 @@ namespace Duality
 			float scale = 1.0f;
 			device.PreprocessCoords(ref pos, ref scale);
 
-			Texture mainTex = this.CurrentState.MaterialDirect.Textures.Count > 0 ? this.CurrentState.MaterialDirect.Textures.First().Value.Res : null;
+			Texture mainTex = this.CurrentState.MaterialDirect.MainTexture.Res;
 			Vector2 mainTexUVRatio = mainTex != null ? mainTex.UVRatio : Vector2.One;
 
 			Vector2 shapeHandle = pos.Xy;
@@ -701,7 +701,7 @@ namespace Duality
 		/// <param name="uvH">UV coordinate height</param>
 		public void DrawTexturedRect(float x, float y, float z, float uvX, float uvY, float uvW, float uvH)
 		{
-			Texture mainTex = this.CurrentState.MaterialDirect.Textures.Count > 0 ? this.CurrentState.MaterialDirect.Textures.First().Value.Res : null;
+			Texture mainTex = this.CurrentState.MaterialDirect.MainTexture.Res;
 			Vector2 mainTexSize = mainTex != null ? mainTex.Size : Vector2.One * 10.0f;
 			this.DrawTexturedRect(x, y, z, mainTexSize.X, mainTexSize.Y, uvX, uvY, uvW, uvH);
 		}
@@ -725,7 +725,7 @@ namespace Duality
 		/// <param name="z"></param>
 		public void DrawTexturedRect(float x, float y, float z)
 		{
-			Texture mainTex = this.CurrentState.MaterialDirect.Textures.Count > 0 ? this.CurrentState.MaterialDirect.Textures.First().Value.Res : null;
+			Texture mainTex = this.CurrentState.MaterialDirect.MainTexture.Res;
 			Vector2 mainTexSize = mainTex != null ? mainTex.Size : Vector2.One * 10.0f;
 			this.DrawTexturedRect(x, y, z, mainTexSize.X, mainTexSize.Y, 0.0f, 0.0f, 1.0f, 1.0f);
 		}
@@ -755,7 +755,7 @@ namespace Duality
 		/// <param name="uvH">UV coordinate height</param>
 		public void DrawTexturedRect(float x, float y, float uvX, float uvY, float uvW, float uvH)
 		{
-			Texture mainTex = this.CurrentState.MaterialDirect.Textures.Count > 0 ? this.CurrentState.MaterialDirect.Textures.First().Value.Res : null;
+			Texture mainTex = this.CurrentState.MaterialDirect.MainTexture.Res;
 			Vector2 mainTexSize = mainTex != null ? mainTex.Size : Vector2.One * 10.0f;
 			this.DrawTexturedRect(x, y, 0, mainTexSize.X, mainTexSize.Y, uvX, uvY, uvW, uvH);
 		}
@@ -777,7 +777,7 @@ namespace Duality
 		/// <param name="y"></param>
 		public void DrawTexturedRect(float x, float y)
 		{
-			Texture mainTex = this.CurrentState.MaterialDirect.Textures.Count > 0 ? this.CurrentState.MaterialDirect.Textures.First().Value.Res : null;
+			Texture mainTex = this.CurrentState.MaterialDirect.MainTexture.Res;
 			Vector2 mainTexSize = mainTex != null ? mainTex.Size : Vector2.One * 10.0f;
 			this.DrawTexturedRect(x, y, 0, mainTexSize.X, mainTexSize.Y, 0.0f, 0.0f, 1.0f, 1.0f);
 		}

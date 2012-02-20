@@ -3717,6 +3717,20 @@
             <param name="textures">A set of <see cref="T:Duality.Resources.Texture">Textures</see> to use.</param>
             <param name="uniforms">A set of <see cref="T:Duality.Resources.ShaderVarInfo">uniform values</see> to use.</param>
         </member>
+        <member name="M:Duality.Resources.Material.GetTexture(System.String)">
+            <summary>
+            Gets a texture by name. Returns a null reference if the name doesn't exist.
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Resources.Material.GetUniform(System.String)">
+            <summary>
+            Gets a uniform by name. Returns a null reference if the name doesn't exist.
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
         <member name="P:Duality.Resources.Material.SolidWhite">
             <summary>
             A solid, white Material.
@@ -3754,7 +3768,7 @@
         </member>
         <member name="P:Duality.Resources.Material.Textures">
             <summary>
-            [GET / SET] A set of <see cref="T:Duality.Resources.Texture">Textures</see> to use.
+            [GET] The set of <see cref="T:Duality.Resources.Texture">Textures</see> to use.
             </summary>
         </member>
         <member name="P:Duality.Resources.Material.MainTexture">
@@ -3764,7 +3778,7 @@
         </member>
         <member name="P:Duality.Resources.Material.Uniforms">
             <summary>
-            [GET / SET] A set of <see cref="T:Duality.Resources.ShaderVarInfo">uniform values</see> to use.
+            [GET] The set of <see cref="T:Duality.Resources.ShaderVarInfo">uniform values</see> to use.
             </summary>
         </member>
         <member name="T:Duality.Resources.BatchInfo">
@@ -3798,7 +3812,7 @@
             <param name="mainColor">The <see cref="P:Duality.Resources.BatchInfo.MainColor"/> to use.</param>
             <param name="mainTex">The main <see cref="T:Duality.Resources.Texture"/> to use.</param>
         </member>
-        <member name="M:Duality.Resources.BatchInfo.#ctor(Duality.ContentRef{Duality.Resources.DrawTechnique},Duality.ColorFormat.ColorRgba,System.Collections.Generic.Dictionary{System.String,Duality.ContentRef{Duality.Resources.Texture}},System.Collections.Generic.Dictionary{System.String,System.Single[]})">
+        <member name="M:Duality.Resources.BatchInfo.#ctor(Duality.ContentRef{Duality.Resources.DrawTechnique},Duality.ColorFormat.ColorRgba,System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,Duality.ContentRef{Duality.Resources.Texture}}},System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Single[]}})">
             <summary>
             Creates a new complex BatchInfo.
             </summary>
@@ -3812,6 +3826,16 @@
             Copies this BatchInfo's data to a different one.
             </summary>
             <param name="info">The target BatchInfo to copy data to.</param>
+        </member>
+        <member name="M:Duality.Resources.BatchInfo.CleanDirty">
+            <summary>
+            Assures that the current BatchInfo is not a temporarily shallow copy of an existing one.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.BatchInfo.MakeAvailable">
+            <summary>
+            Triggers content retrieval in all references Resources.
+            </summary>
         </member>
         <member name="M:Duality.Resources.BatchInfo.SetupForRendering(Duality.Resources.BatchInfo)">
             <summary>
@@ -3829,6 +3853,42 @@
             BatchInfos to be set up directy after this one, i.e. if this is the last BatchInfo
             that has been rendered so far.
             </summary>
+        </member>
+        <member name="M:Duality.Resources.BatchInfo.GetTexture(System.String)">
+            <summary>
+            Gets a texture by name. Returns a null reference if the name doesn't exist.
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Resources.BatchInfo.SetTexture(System.String,Duality.ContentRef{Duality.Resources.Texture})">
+            <summary>
+            Sets a texture.
+            </summary>
+            <param name="name"></param>
+            <param name="tex"></param>
+        </member>
+        <member name="M:Duality.Resources.BatchInfo.GetUniform(System.String)">
+            <summary>
+            Gets a uniform by name. Returns a null reference if the name doesn't exist.
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Resources.BatchInfo.SetUniform(System.String,System.Single[])">
+            <summary>
+            Sets a uniform value
+            </summary>
+            <param name="name"></param>
+            <param name="uniform"></param>
+        </member>
+        <member name="M:Duality.Resources.BatchInfo.SetUniform(System.String,System.Int32,System.Single)">
+            <summary>
+            Sets a uniform value
+            </summary>
+            <param name="name"></param>
+            <param name="index"></param>
+            <param name="uniformVal"></param>
         </member>
         <member name="M:Duality.Resources.BatchInfo.op_Equality(Duality.Resources.BatchInfo,Duality.Resources.BatchInfo)">
             <summary>
@@ -3860,7 +3920,7 @@
         </member>
         <member name="P:Duality.Resources.BatchInfo.Textures">
             <summary>
-            [GET / SET] A set of <see cref="T:Duality.Resources.Texture">Textures</see> to use.
+            [GET / SET] The set of <see cref="T:Duality.Resources.Texture">Textures</see> to use.
             </summary>
         </member>
         <member name="P:Duality.Resources.BatchInfo.MainTexture">
@@ -3870,7 +3930,7 @@
         </member>
         <member name="P:Duality.Resources.BatchInfo.Uniforms">
             <summary>
-            [GET / SET] A set of <see cref="T:Duality.Resources.ShaderVarInfo">uniform values</see> to use.
+            [GET / SET] The set of <see cref="T:Duality.Resources.ShaderVarInfo">uniform values</see> to use.
             </summary>
         </member>
         <member name="T:Duality.ObjectManagerEventArgs`1">
@@ -5899,7 +5959,7 @@
             </summary>
             <param name="mode">The BlendMode to set up.</param>
         </member>
-        <member name="M:Duality.Resources.DrawTechnique.SelectShader(System.Collections.Generic.Dictionary{System.String,Duality.ContentRef{Duality.Resources.Texture}},System.Collections.Generic.Dictionary{System.String,System.Single[]})">
+        <member name="M:Duality.Resources.DrawTechnique.SelectShader(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,Duality.ContentRef{Duality.Resources.Texture}}},System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Single[]}})">
             <summary>
             Dynamically selects the <see cref="T:Duality.Resources.ShaderProgram"/> to use. Just returns <see cref="P:Duality.Resources.DrawTechnique.Shader"/> by default.
             </summary>
@@ -6250,6 +6310,17 @@
             <param name="material">The <see cref="T:Duality.Resources.BatchInfo"/> to use for rendering the vertices.</param>
             <param name="vertexMode">The vertices drawing mode.</param>
             <param name="vertices">The vertex data to add.</param>
+        </member>
+        <member name="P:Duality.IDrawDevice.RefCoord">
+            <summary>
+            [GET] Reference coordinate for rendering i.e. the position of the drawing device's Camera.
+            </summary>
+        </member>
+        <member name="P:Duality.IDrawDevice.ParallaxRefDist">
+            <summary>
+            [GET] Reference distance for calculating the parallax effect. An object this far away from
+            the Camera will appear in its original size.
+            </summary>
         </member>
         <member name="P:Duality.IDrawDevice.VisibilityMask">
             <summary>

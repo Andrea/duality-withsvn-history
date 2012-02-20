@@ -70,6 +70,15 @@ namespace Duality
 	public interface IDrawDevice
 	{
 		/// <summary>
+		/// [GET] Reference coordinate for rendering i.e. the position of the drawing device's Camera.
+		/// </summary>
+		Vector3 RefCoord { get; }
+		/// <summary>
+		/// [GET] Reference distance for calculating the parallax effect. An object this far away from
+		/// the Camera will appear in its original size.
+		/// </summary>
+		float ParallaxRefDist { get; }
+		/// <summary>
 		/// [GET] A bitmask flagging all visibility groups that are considered visible to this drawing device.
 		/// </summary>
 		uint VisibilityMask { get; }
@@ -490,6 +499,11 @@ namespace Duality.Components
 		/// </summary>
 		public event EventHandler CollectOverlayDrawcalls	= null;
 		
+		
+		Vector3 IDrawDevice.RefCoord
+		{
+			get { return this.deviceCacheValid ? this.deviceCachePos : this.gameobj.Transform.Pos; }
+		}
 		/// <summary>
 		/// [GET / SET] The lowest Z value that can be displayed by the device.
 		/// </summary>
@@ -900,11 +914,7 @@ namespace Duality.Components
 			{
 				this.SetupMatrices(true);
 
-				Texture mainTex = 
-					p.Input.Textures != null && 
-					p.Input.Textures.Values.Any() &&
-					p.Input.Textures.Values.First().IsAvailable ?
-					p.Input.Textures.Values.First().Res : null;
+				Texture mainTex = p.Input.MainTexture.Res;
 				Vector2 uvRatio = mainTex != null ? mainTex.UVRatio : Vector2.One;
 				Vector2 inputSize = mainTex != null ? new Vector2(mainTex.PxWidth, mainTex.PxHeight) : Vector2.One;
 				Rect targetRect = new Rect(p.FitOutput ? refSize : inputSize);
@@ -1046,11 +1056,9 @@ namespace Duality.Components
 					if (this.passes[i].Output == null && this.passes[i].FitOutput)
 					{
 						Vector2 targetSize = this.passes[i].Input == null || 
-							this.passes[i].Input.Textures == null || 
-							this.passes[i].Input.Textures.Values.FirstOrDefault() == null || 
-							!this.passes[i].Input.Textures.Values.FirstOrDefault().IsAvailable ? 
+							!this.passes[i].Input.MainTexture.IsAvailable ? 
 							DualityApp.TargetResolution : 
-							new Vector2(this.passes[i].Input.Textures.Values.First().Res.PxWidth, this.passes[i].Input.Textures.Values.First().Res.PxHeight);
+							new Vector2(this.passes[i].Input.MainTexture.Res.PxWidth, this.passes[i].Input.MainTexture.Res.PxHeight);
 						refSize = targetSize;
 						break;
 					}
@@ -1332,9 +1340,7 @@ namespace Duality.Components
 			
 			if (material.Technique.Res.NeedsVertexPreprocess)
 			{
-				// Screw idiot-proof behaviour. This is about performance.
-				//material = new BatchInfo(material);
-				//vertices = vertices.Clone() as T[];
+				material = new BatchInfo(material);
 				material.Technique.Res.PreprocessVertices<T>(this, ref material, ref vertexMode, ref vertices);
 			}
 

@@ -7,6 +7,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 
 using Duality;
+using Duality.EditorHints;
 
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -184,6 +185,14 @@ namespace Duality.Resources
 			}
 			return null;
 		}
+
+		public override string ToString()
+		{
+			return string.Format("{1} {0}{2}", 
+				this.name, 
+				this.type, 
+				this.arraySize > 0 ? string.Format("[{0}]", this.arraySize) : "");
+		}
 	}
 
 	/// <summary>
@@ -219,6 +228,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET] The path of the file from which the source code has been loaded.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public string SourcePath
 		{
 			get { return this.sourcePath; }
@@ -226,6 +236,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET] The shaders source code.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public string Source
 		{
 			get { return this.source; }

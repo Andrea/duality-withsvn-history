@@ -44,7 +44,6 @@
 			this.nameLabel.Dock = System.Windows.Forms.DockStyle.Left;
 			this.nameLabel.Location = new System.Drawing.Point(0, 0);
 			this.nameLabel.Name = "nameLabel";
-			this.nameLabel.Padding = new System.Windows.Forms.Padding(3);
 			this.nameLabel.Size = new System.Drawing.Size(50, 54);
 			this.nameLabel.TabIndex = 1;
 			this.nameLabel.Text = "label1";
