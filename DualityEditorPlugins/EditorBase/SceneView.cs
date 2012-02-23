@@ -322,8 +322,10 @@ namespace EditorBase
 		}
 		protected void ClearObjects()
 		{
+			this.objectView.BeginUpdate();
 			this.objectModel.Nodes.Clear();
 			this.objToNode.Clear();
+			this.objectView.EndUpdate();
 		}
 		protected void RegisterNodeTree(Node node)
 		{
@@ -459,6 +461,7 @@ namespace EditorBase
 			if (!EditorBasePlugin.Instance.EditorForm.DisplayConfirmBreakPrefabLink(new ObjectSelection(objList.AsEnumerable<object>().Concat(cmpList)))) return;
 
 			// Delete objects
+			this.objectView.BeginUpdate();
 			foreach (GameObject o in objList)
 			{ 
 				if (o.Disposed) continue;
@@ -470,6 +473,7 @@ namespace EditorBase
 				if (c.Disposed) continue;
 				c.Dispose();
 			}
+			this.objectView.EndUpdate();
 		}
 		protected Component CheckComponentsRemovable(List<Component> cmpList, List<GameObject> ignoreGameObjList)
 		{
