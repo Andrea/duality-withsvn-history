@@ -272,6 +272,14 @@ namespace Duality.Resources
 		{
 			get { return false; }
 		}
+		/// <summary>
+		/// [GET] Returns whether this DrawTechnique requires any <see cref="PrepareRendering">rendering preparation</see>.
+		/// This is false for all standard DrawTechniques, but may return true when deriving custom DrawTechniques.
+		/// </summary>
+		public virtual bool NeedsPreparation
+		{
+			get { return false; }
+		}
 
 		/// <summary>
 		/// Creates a new, default DrawTechnique
@@ -305,10 +313,7 @@ namespace Duality.Resources
 		/// <param name="material"><see cref="Duality.Resources.Material"/> information for the current batch.</param>
 		/// <param name="vertexMode">The mode of incoming vertex data.</param>
 		/// <param name="vertices">Incoming vertex data.</param>
-		public virtual void PreprocessBatch<T>(IDrawDevice device, ref BatchInfo material, ref BeginMode vertexMode, ref T[] vertices)
-		{
-
-		}
+		public virtual void PreprocessBatch<T>(IDrawDevice device, BatchInfo material, ref BeginMode vertexMode, ref T[] vertices) {}
 		/// <summary>
 		/// Sets up the appropriate OpenGL rendering state for this DrawTechnique.
 		/// </summary>
@@ -316,14 +321,22 @@ namespace Duality.Resources
 		/// specifying it will increase performance by reducing redundant state changes.</param>
 		/// <param name="textures">A set of <see cref="Duality.Resources.Texture">Textures</see> to use.</param>
 		/// <param name="uniforms">A set of <see cref="Duality.Resources.ShaderVarInfo">uniform values</see> to apply.</param>
-		public void SetupForRendering(BatchInfo info, DrawTechnique lastTechnique)
+		public void SetupForRendering(IDrawDevice device, BatchInfo material, DrawTechnique lastTechnique)
 		{
+			// Prepare Rendering
+			if (this.NeedsPreparation)
+			{
+				// Clone the material, if not done yet due to vertex preprocessing
+				if (!this.NeedsPreprocess) material = new BatchInfo(material);
+				this.PrepareRendering(device, material);
+			}
+
 			// Setup BlendType
 			if (lastTechnique == null || this.blendType != lastTechnique.blendType)
 				this.SetupBlendType(this.blendType);
 
 			// Bind Shader
-			ContentRef<ShaderProgram> selShader = this.SelectShader(info);
+			ContentRef<ShaderProgram> selShader = this.SelectShader();
 			if (lastTechnique == null || selShader.Res != lastTechnique.shader.Res)
 				ShaderProgram.Bind(selShader);
 
@@ -334,14 +347,14 @@ namespace Duality.Resources
 
 				// Setup sampler bindings automatically
 				int curSamplerIndex = 0;
-				if (info.Textures != null)
+				if (material.Textures != null)
 				{
 					ContentRef<Texture> tex;
 					for (int i = 0; i < varInfo.Length; i++)
 					{
 						if (varInfo[i].glVarLoc == -1) continue;
 						if (varInfo[i].type != ShaderVarType.Sampler2D) continue;
-						tex = info.GetTexture(varInfo[i].name);
+						tex = material.GetTexture(varInfo[i].name);
 						Texture.Bind(tex, curSamplerIndex);
 						GL.Uniform1(varInfo[i].glVarLoc, curSamplerIndex);
 						curSamplerIndex++;
@@ -350,13 +363,13 @@ namespace Duality.Resources
 				Texture.ResetBinding(curSamplerIndex);
 
 				// Transfer uniform data from material to actual shader
-				if (info.Uniforms != null)
+				if (material.Uniforms != null)
 				{
 					float[] data = null;
 					for (int i = 0; i < varInfo.Length; i++)
 					{
 						if (varInfo[i].glVarLoc == -1) continue;
-						data = info.GetUniform(varInfo[i].name);
+						data = material.GetUniform(varInfo[i].name);
 						if (data == null) continue;
 						varInfo[i].SetupUniform(data);
 					}
@@ -366,10 +379,10 @@ namespace Duality.Resources
 			else
 			{
 				// Fixed function texture binding
-				if (info.Textures != null)
+				if (material.Textures != null)
 				{
 					int samplerIndex = 0;
-					foreach (var pair in info.Textures)
+					foreach (var pair in material.Textures)
 					{
 						Texture.Bind(pair.Value, samplerIndex);
 						samplerIndex++;
@@ -457,12 +470,17 @@ namespace Duality.Resources
 		/// <summary>
 		/// Dynamically selects the <see cref="Duality.Resources.ShaderProgram"/> to use. Just returns <see cref="Shader"/> by default.
 		/// </summary>
-		/// <param name="info"></param>
 		/// <returns>The selected <see cref="Duality.Resources.ShaderProgram"/>.</returns>
-		protected virtual ContentRef<ShaderProgram> SelectShader(BatchInfo info)
+		protected virtual ContentRef<ShaderProgram> SelectShader()
 		{
 			return this.shader;
 		}
+		/// <summary>
+		/// Prepares rendering using this DrawTechnique.
+		/// </summary>
+		/// <param name="device"></param>
+		/// <param name="material"></param>
+		protected virtual void PrepareRendering(IDrawDevice device, BatchInfo material) {}
 
 		public override void CopyTo(Resource r)
 		{

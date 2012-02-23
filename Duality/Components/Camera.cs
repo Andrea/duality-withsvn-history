@@ -267,7 +267,7 @@ namespace Duality.Components
 
 			void SetupVBO(List<IDrawBatch> batches);
 			void FinishVBO();
-			void Render(ref int vertexOffset, ref IDrawBatch lastBatchRendered);
+			void Render(IDrawDevice device, ref int vertexOffset, ref IDrawBatch lastBatchRendered);
 			void FinishRendering();
 
 			bool CanShareVBO(IDrawBatch other);
@@ -361,10 +361,10 @@ namespace Duality.Components
 				// Finish VBO
 				this.vertices[0].FinishVBO(this.material);
 			}
-			public void Render(ref int vertexOffset, ref IDrawBatch lastBatchRendered)
+			public void Render(IDrawDevice device, ref int vertexOffset, ref IDrawBatch lastBatchRendered)
 			{
 				if (lastBatchRendered == null || lastBatchRendered.Material != this.material)
-				    this.material.SetupForRendering(lastBatchRendered == null ? null : lastBatchRendered.Material);
+				    this.material.SetupForRendering(device, lastBatchRendered == null ? null : lastBatchRendered.Material);
 
 				GL.DrawArrays(this.vertexMode, vertexOffset, this.vertexCount);
 
@@ -378,7 +378,7 @@ namespace Duality.Components
 
 			public bool CanShareVBO(IDrawBatch other)
 			{
-				return other.GetType() == this.GetType();
+				return other is DrawBatch<T>;
 			}
 			public bool CanAppendJIT<U>(float invZSortAccuracy, float zSortIndex, BatchInfo material, BeginMode vertexMode) where U : struct, IVertexData
 			{
@@ -387,10 +387,10 @@ namespace Duality.Components
 					if (Math.Abs(zSortIndex - this.ZSortIndex) > invZSortAccuracy) return false;
 				}
 				return 
-					vertexMode == this.VertexMode && 
-					IsVertexModeAppendable(this.VertexMode) &&
+					vertexMode == this.vertexMode && 
 					this is DrawBatch<U> &&
-					material == this.Material;
+					IsVertexModeAppendable(this.VertexMode) &&
+					material == this.material;
 			}
 			public void AppendJIT(object vertexData)
 			{
@@ -412,10 +412,10 @@ namespace Duality.Components
 			public bool CanAppend(IDrawBatch other)
 			{
 				return 
-					other.VertexMode == this.VertexMode && 
-					IsVertexModeAppendable(this.VertexMode) &&
+					other.VertexMode == this.vertexMode && 
 					other is DrawBatch<T> &&
-					other.Material == this.Material;
+					IsVertexModeAppendable(this.VertexMode) &&
+					other.Material == this.material;
 			}
 			public void Append(IDrawBatch other)
 			{
@@ -1200,7 +1200,7 @@ namespace Duality.Components
 					batchesSharingVBO[0].SetupVBO(batchesSharingVBO);
 
 					foreach (IDrawBatch renderBatch in batchesSharingVBO)
-						renderBatch.Render(ref vertexOffset, ref lastBatchRendered);
+						renderBatch.Render(this.DrawDevice, ref vertexOffset, ref lastBatchRendered);
 
 					batchesSharingVBO[0].FinishVBO();
 					batchesSharingVBO.Clear();
@@ -1341,7 +1341,8 @@ namespace Duality.Components
 			if (material.Technique.Res.NeedsPreprocess)
 			{
 				material = new BatchInfo(material);
-				material.Technique.Res.PreprocessBatch<T>(this, ref material, ref vertexMode, ref vertices);
+				material.Technique.Res.PreprocessBatch<T>(this, material, ref vertexMode, ref vertices);
+				if (vertices == null || vertices.Length == 0) return;
 			}
 
 			bool zSort = material.Technique.Res.NeedsZSort;

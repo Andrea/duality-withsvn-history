@@ -3837,7 +3837,7 @@
             Triggers content retrieval in all references Resources.
             </summary>
         </member>
-        <member name="M:Duality.Resources.BatchInfo.SetupForRendering(Duality.Resources.BatchInfo)">
+        <member name="M:Duality.Resources.BatchInfo.SetupForRendering(Duality.IDrawDevice,Duality.Resources.BatchInfo)">
             <summary>
             Sets up the appropriate OpenGL rendering state to render vertices using this BatchInfo.
             </summary>
@@ -5929,7 +5929,7 @@
             <param name="shader"></param>
             <param name="formatPref"></param>
         </member>
-        <member name="M:Duality.Resources.DrawTechnique.PreprocessBatch``1(Duality.IDrawDevice,Duality.Resources.BatchInfo@,OpenTK.Graphics.OpenGL.BeginMode@,``0[]@)">
+        <member name="M:Duality.Resources.DrawTechnique.PreprocessBatch``1(Duality.IDrawDevice,Duality.Resources.BatchInfo,OpenTK.Graphics.OpenGL.BeginMode@,``0[]@)">
             <summary>
             Performs a preprocessing operation for incoming vertices. Does nothing by default but may be overloaded, if needed.
             </summary>
@@ -5938,7 +5938,7 @@
             <param name="vertexMode">The mode of incoming vertex data.</param>
             <param name="vertices">Incoming vertex data.</param>
         </member>
-        <member name="M:Duality.Resources.DrawTechnique.SetupForRendering(Duality.Resources.BatchInfo,Duality.Resources.DrawTechnique)">
+        <member name="M:Duality.Resources.DrawTechnique.SetupForRendering(Duality.IDrawDevice,Duality.Resources.BatchInfo,Duality.Resources.DrawTechnique)">
             <summary>
             Sets up the appropriate OpenGL rendering state for this DrawTechnique.
             </summary>
@@ -5959,12 +5959,18 @@
             </summary>
             <param name="mode">The BlendMode to set up.</param>
         </member>
-        <member name="M:Duality.Resources.DrawTechnique.SelectShader(Duality.Resources.BatchInfo)">
+        <member name="M:Duality.Resources.DrawTechnique.SelectShader">
             <summary>
             Dynamically selects the <see cref="T:Duality.Resources.ShaderProgram"/> to use. Just returns <see cref="P:Duality.Resources.DrawTechnique.Shader"/> by default.
             </summary>
-            <param name="info"></param>
             <returns>The selected <see cref="T:Duality.Resources.ShaderProgram"/>.</returns>
+        </member>
+        <member name="M:Duality.Resources.DrawTechnique.PrepareRendering(Duality.IDrawDevice,Duality.Resources.BatchInfo)">
+            <summary>
+            Prepares rendering using this DrawTechnique.
+            </summary>
+            <param name="device"></param>
+            <param name="material"></param>
         </member>
         <member name="P:Duality.Resources.DrawTechnique.Solid">
             <summary>
@@ -6074,7 +6080,13 @@
         </member>
         <member name="P:Duality.Resources.DrawTechnique.NeedsPreprocess">
             <summary>
-            [GET] Returns whether this DrawTechnique requires <see cref="M:Duality.Resources.DrawTechnique.PreprocessBatch``1(Duality.IDrawDevice,Duality.Resources.BatchInfo@,OpenTK.Graphics.OpenGL.BeginMode@,``0[]@)">vertex preprocessing</see>.
+            [GET] Returns whether this DrawTechnique requires <see cref="M:Duality.Resources.DrawTechnique.PreprocessBatch``1(Duality.IDrawDevice,Duality.Resources.BatchInfo,OpenTK.Graphics.OpenGL.BeginMode@,``0[]@)">vertex preprocessing</see>.
+            This is false for all standard DrawTechniques, but may return true when deriving custom DrawTechniques.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.DrawTechnique.NeedsPreparation">
+            <summary>
+            [GET] Returns whether this DrawTechnique requires any <see cref="M:Duality.Resources.DrawTechnique.PrepareRendering(Duality.IDrawDevice,Duality.Resources.BatchInfo)">rendering preparation</see>.
             This is false for all standard DrawTechniques, but may return true when deriving custom DrawTechniques.
             </summary>
         </member>

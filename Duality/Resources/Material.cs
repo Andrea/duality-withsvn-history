@@ -373,12 +373,10 @@ namespace Duality.Resources
 			if ((clean & DirtyFlag.Uniforms) != DirtyFlag.None && this.uniforms != null)
 			{
 				var oldUniforms = this.uniforms;
-				this.uniforms = new Dictionary<string,float[]>();
+				this.uniforms = new Dictionary<string,float[]>(oldUniforms);
 				foreach (var pair in oldUniforms)
 				{
-					float[] newArr = new float[pair.Value.Length];
-					Array.Copy(pair.Value, newArr, newArr.Length);
-					this.uniforms[pair.Key] = newArr;
+					this.uniforms[pair.Key] = (float[])pair.Value.Clone();
 				}
 			}
 
@@ -404,7 +402,7 @@ namespace Duality.Resources
 		/// optional but supplying it will improve rendering performance by reducing redundant
 		/// state changes.
 		/// </param>
-		public void SetupForRendering(BatchInfo lastInfo)
+		public void SetupForRendering(IDrawDevice device, BatchInfo lastInfo)
 		{
 			if (object.ReferenceEquals(this, lastInfo)) return;
 
@@ -412,7 +410,7 @@ namespace Duality.Resources
 			GL.Color4(this.mainColor.r, this.mainColor.g, this.mainColor.b, this.mainColor.a);
 
 			// Setup technique
-			this.technique.Res.SetupForRendering(this, (lastInfo == null) ? null : lastInfo.technique.Res);
+			this.technique.Res.SetupForRendering(device, this, (lastInfo == null) ? null : lastInfo.technique.Res);
 		}
 		/// <summary>
 		/// Resets the OpenGL rendering state. This should only be called if there are no more
