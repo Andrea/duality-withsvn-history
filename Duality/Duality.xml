@@ -6215,6 +6215,11 @@
             </summary>
             <returns>A new uniform dataset</returns>
         </member>
+        <member name="P:Duality.Resources.ShaderVarInfo.IsEditorVisible">
+            <summary>
+            [GET] Returns whether the shader variable will be visible in the editor.
+            </summary>
+        </member>
         <member name="T:Duality.BlendMode">
             <summary>
             Enumerates different behviours on how to blend color data onto existing background color.

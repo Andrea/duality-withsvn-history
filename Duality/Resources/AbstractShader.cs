@@ -121,6 +121,14 @@ namespace Duality.Resources
 		public	int				glVarLoc;
 
 		/// <summary>
+		/// [GET] Returns whether the shader variable will be visible in the editor.
+		/// </summary>
+		public bool IsEditorVisible
+		{
+			get { return this.name != null && this.name.Length > 0 && this.name[0] != '_'; }
+		}
+
+		/// <summary>
 		/// Assigns the specified data to the OpenGL uniform represented by this <see cref="ShaderVarInfo"/>.
 		/// </summary>
 		/// <param name="data">Incoming uniform data.</param>

@@ -7,9 +7,6 @@
 
 -->	Experiment with lighting system approaches
 	-->	Object-based, different levels of detail
-		-->	Issues in the current System:
-			-->	There is no handling of auto-assigned uniform values, they probably shouldn't appear in the editor
-				-->	Also, the current editor isn't very good and a codedesign-nightmare
 		-->	Still to do:
 			-->	Specular reflections
 			-->	Ambient light

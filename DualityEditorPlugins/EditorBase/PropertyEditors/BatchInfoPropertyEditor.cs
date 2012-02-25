@@ -156,9 +156,12 @@ namespace EditorBase.PropertyEditors
 				Dictionary<string,PropertyEditor> oldEditors = new Dictionary<string,PropertyEditor>(this.shaderVarEditors);
 				if (texDict != null)
 				{
-					foreach (var pair in texDict)
+					foreach (var tex in texDict)
 					{
-						string texName = pair.Key;
+						ShaderVarInfo varInfo = varInfoArray.FirstOrDefault(v => v.scope == ShaderVarScope.Uniform && v.name == tex.Key);
+						if (!varInfo.IsEditorVisible) continue;
+
+						string texName = varInfo.name;
 						if (oldEditors.ContainsKey(texName))
 							oldEditors.Remove(texName);
 						else
@@ -178,150 +181,19 @@ namespace EditorBase.PropertyEditors
 					foreach (var uniform in uniformDict)
 					{
 						ShaderVarInfo varInfo = varInfoArray.FirstOrDefault(v => v.scope == ShaderVarScope.Uniform && v.name == uniform.Key);
-						PropertyEditor e = null;
+						if (!varInfo.IsEditorVisible) continue;
 
-						PropertyEditor oldEditor;
-						oldEditors.TryGetValue(uniform.Key, out oldEditor);
-
-						if (varInfo.arraySize == 1)
-						{
-							if (varInfo.type == ShaderVarType.Float || varInfo.type == ShaderVarType.Int)
-							{
-								Type editType = typeof(float);
-								if (varInfo.type == ShaderVarType.Int) editType = typeof(int);
-
-								if (oldEditor is NumericPropertyEditor && oldEditor.EditedType == editType)
-									oldEditors.Remove(uniform.Key);
-								else
-								{
-									e = new NumericPropertyEditor();
-									e.EditedType = editType;
-									if (varInfo.type == ShaderVarType.Int)
-									{
-										e.Getter = this.CreateUniformIntValueGetter(uniform.Key);
-										e.Setter = !this.ReadOnly ? this.CreateUniformIntValueSetter(uniform.Key) : null;
-									}
-									else
-									{
-										e.Getter = this.CreateUniformFloatValueGetter(uniform.Key);
-										e.Setter = !this.ReadOnly ? this.CreateUniformFloatValueSetter(uniform.Key) : null;
-										(e as NumericPropertyEditor).Editor.Increment = 0.1m;
-									}
-								}
-							}
-							else if (varInfo.type == ShaderVarType.Vec2)
-							{
-								if (oldEditor is Vector2PropertyEditor)
-									oldEditors.Remove(uniform.Key);
-								else
-								{
-									e = new Vector2PropertyEditor();
-									e.EditedType = typeof(OpenTK.Vector2);
-									e.Getter = this.CreateUniformVec2ValueGetter(uniform.Key);
-									e.Setter = !this.ReadOnly ? this.CreateUniformVec2ValueSetter(uniform.Key) : null;
-									(e as Vector2PropertyEditor).EditorX.Increment = 0.1m;
-									(e as Vector2PropertyEditor).EditorY.Increment = 0.1m;
-								}
-							}
-							else if (varInfo.type == ShaderVarType.Vec3)
-							{
-								if (oldEditor is Vector3PropertyEditor)
-									oldEditors.Remove(uniform.Key);
-								else
-								{
-									e = new Vector3PropertyEditor();
-									e.EditedType = typeof(OpenTK.Vector3);
-									e.Getter = this.CreateUniformVec3ValueGetter(uniform.Key);
-									e.Setter = !this.ReadOnly ? this.CreateUniformVec3ValueSetter(uniform.Key) : null;
-									(e as Vector3PropertyEditor).EditorX.Increment = 0.1m;
-									(e as Vector3PropertyEditor).EditorY.Increment = 0.1m;
-									(e as Vector3PropertyEditor).EditorZ.Increment = 0.1m;
-								}
-							}
-							else
-							{
-								if (oldEditor is IListPropertyEditor)
-									oldEditors.Remove(uniform.Key);
-								else
-								{
-									e = new IListPropertyEditor();
-									e.EditedType = typeof(float[]);
-									e.Getter = this.CreateUniformValueGetter(uniform.Key);
-									e.Setter = !this.ReadOnly ? this.CreateUniformValueSetter(uniform.Key) : null;
-									(e as IListPropertyEditor).EditorAdded += this.UniformList_EditorAdded;
-								}
-							}
-						}
-						else
-						{
-							Array oldValue = oldEditor != null ? (oldEditor as IListPropertyEditor).Getter().FirstOrDefault() as Array : null;
-							Type oldElementType = oldValue != null ? oldValue.GetType().GetElementType() : null;
-							int oldLen = oldValue != null ? oldValue.Length : -1;
-
-							if (varInfo.type == ShaderVarType.Float || varInfo.type == ShaderVarType.Int)
-							{
-								Type editType = typeof(float);
-								if (varInfo.type == ShaderVarType.Int) editType = typeof(int);
-
-								if (oldLen == varInfo.arraySize && oldElementType == editType)
-									oldEditors.Remove(uniform.Key);
-								else
-								{
-									e = new IListPropertyEditor();
-									e.EditedType = editType.MakeArrayType();
-									e.Getter = this.CreateUniformValueGetter(uniform.Key);
-									e.Setter = !this.ReadOnly ? this.CreateUniformValueSetter(uniform.Key) : null;
-									e.ForceWriteBack = true;
-									if (varInfo.type == ShaderVarType.Float) (e as IListPropertyEditor).EditorAdded += this.UniformList_EditorAdded;
-								}
-							}
-							else if (varInfo.type == ShaderVarType.Vec2)
-							{
-								if (oldLen == varInfo.arraySize && oldElementType == typeof(Vector2))
-									oldEditors.Remove(uniform.Key);
-								else
-								{
-									e = new IListPropertyEditor();
-									e.EditedType = typeof(Vector2[]);
-									e.Getter = this.CreateUniformVec2ArrayValueGetter(uniform.Key);
-									e.Setter = !this.ReadOnly ? this.CreateUniformVec2ArrayValueSetter(uniform.Key) : null;
-									e.ForceWriteBack = true;
-								}
-							}
-							else if (varInfo.type == ShaderVarType.Vec3)
-							{
-								if (oldLen == varInfo.arraySize && oldElementType == typeof(Vector3))
-									oldEditors.Remove(uniform.Key);
-								else
-								{
-									e = new IListPropertyEditor();
-									e.EditedType = typeof(Vector3[]);
-									e.Getter = this.CreateUniformVec3ArrayValueGetter(uniform.Key);
-									e.Setter = !this.ReadOnly ? this.CreateUniformVec3ArrayValueSetter(uniform.Key) : null;
-									e.ForceWriteBack = true;
-								}
-							}
-							else
-							{
-								if (oldLen == varInfo.arraySize)
-									oldEditors.Remove(uniform.Key);
-								else
-								{
-									e = new IListPropertyEditor();
-									e.EditedType = typeof(float[][]);
-									e.Getter = this.CreateUniformArrayValueGetter(uniform.Key, varInfo.arraySize);
-									e.Setter = !this.ReadOnly ? this.CreateUniformArrayValueSetter(uniform.Key) : null;
-									(e as IListPropertyEditor).EditorAdded += this.UniformList_EditorAdded;
-									e.ForceWriteBack = true;
-								}
-							}
-						}
-
+						PropertyEditor e = this.CreateUniformEditor(varInfo);
 						if (e != null)
 						{
-							e.PropertyName = uniform.Key;
-							this.shaderVarEditors[uniform.Key] = e;
-							this.AddPropertyEditor(e);
+							if (oldEditors.ContainsValue(e))
+								oldEditors.Remove(varInfo.name);
+							else
+							{
+								e.PropertyName = uniform.Key;
+								this.shaderVarEditors[uniform.Key] = e;
+								this.AddPropertyEditor(e);
+							}
 						}
 					}
 				}
@@ -336,6 +208,155 @@ namespace EditorBase.PropertyEditors
 				// If we actually changed (updated) data here, invoke the setter
 				if (invokeSetter) this.Setter(batchInfos);
 			}
+		}
+
+		protected PropertyEditor CreateUniformEditor(ShaderVarInfo varInfo)
+		{
+			PropertyEditor oldEditor;
+			this.shaderVarEditors.TryGetValue(varInfo.name, out oldEditor);
+
+			if (varInfo.arraySize == 1)
+			{
+				if (varInfo.type == ShaderVarType.Float || varInfo.type == ShaderVarType.Int)
+				{
+					Type editType = typeof(float);
+					if (varInfo.type == ShaderVarType.Int) editType = typeof(int);
+
+					if (oldEditor is NumericPropertyEditor && oldEditor.EditedType == editType)
+						return oldEditor;
+					else
+					{
+						NumericPropertyEditor e = new NumericPropertyEditor();
+						e.EditedType = editType;
+						if (varInfo.type == ShaderVarType.Int)
+						{
+							e.Getter = this.CreateUniformIntValueGetter(varInfo.name);
+							e.Setter = !this.ReadOnly ? this.CreateUniformIntValueSetter(varInfo.name) : null;
+						}
+						else
+						{
+							e.Getter = this.CreateUniformFloatValueGetter(varInfo.name);
+							e.Setter = !this.ReadOnly ? this.CreateUniformFloatValueSetter(varInfo.name) : null;
+							e.Editor.Increment = 0.1m;
+						}
+						return e;
+					}
+				}
+				else if (varInfo.type == ShaderVarType.Vec2)
+				{
+					if (oldEditor is Vector2PropertyEditor)
+						return oldEditor;
+					else
+					{
+						Vector2PropertyEditor e = new Vector2PropertyEditor();
+						e.EditedType = typeof(OpenTK.Vector2);
+						e.Getter = this.CreateUniformVec2ValueGetter(varInfo.name);
+						e.Setter = !this.ReadOnly ? this.CreateUniformVec2ValueSetter(varInfo.name) : null;
+						e.EditorX.Increment = 0.1m;
+						e.EditorY.Increment = 0.1m;
+						return e;
+					}
+				}
+				else if (varInfo.type == ShaderVarType.Vec3)
+				{
+					if (oldEditor is Vector3PropertyEditor)
+						return oldEditor;
+					else
+					{
+						Vector3PropertyEditor e = new Vector3PropertyEditor();
+						e.EditedType = typeof(OpenTK.Vector3);
+						e.Getter = this.CreateUniformVec3ValueGetter(varInfo.name);
+						e.Setter = !this.ReadOnly ? this.CreateUniformVec3ValueSetter(varInfo.name) : null;
+						e.EditorX.Increment = 0.1m;
+						e.EditorY.Increment = 0.1m;
+						e.EditorZ.Increment = 0.1m;
+						return e;
+					}
+				}
+				else
+				{
+					if (oldEditor is IListPropertyEditor)
+						return oldEditor;
+					else
+					{
+						IListPropertyEditor e = new IListPropertyEditor();
+						e.EditedType = typeof(float[]);
+						e.Getter = this.CreateUniformValueGetter(varInfo.name);
+						e.Setter = !this.ReadOnly ? this.CreateUniformValueSetter(varInfo.name) : null;
+						e.EditorAdded += this.UniformList_EditorAdded;
+						return e;
+					}
+				}
+			}
+			else
+			{
+				Array oldValue = oldEditor != null ? (oldEditor as IListPropertyEditor).Getter().FirstOrDefault() as Array : null;
+				Type oldElementType = oldValue != null ? oldValue.GetType().GetElementType() : null;
+				int oldLen = oldValue != null ? oldValue.Length : -1;
+
+				if (varInfo.type == ShaderVarType.Float || varInfo.type == ShaderVarType.Int)
+				{
+					Type editType = typeof(float);
+					if (varInfo.type == ShaderVarType.Int) editType = typeof(int);
+
+					if (oldLen == varInfo.arraySize && oldElementType == editType)
+						return oldEditor;
+					else
+					{
+						IListPropertyEditor e = new IListPropertyEditor();
+						e.EditedType = editType.MakeArrayType();
+						e.Getter = this.CreateUniformValueGetter(varInfo.name);
+						e.Setter = !this.ReadOnly ? this.CreateUniformValueSetter(varInfo.name) : null;
+						e.ForceWriteBack = true;
+						if (varInfo.type == ShaderVarType.Float) e.EditorAdded += this.UniformList_EditorAdded;
+						return e;
+					}
+				}
+				else if (varInfo.type == ShaderVarType.Vec2)
+				{
+					if (oldLen == varInfo.arraySize && oldElementType == typeof(Vector2))
+						return oldEditor;
+					else
+					{
+						IListPropertyEditor e = new IListPropertyEditor();
+						e.EditedType = typeof(Vector2[]);
+						e.Getter = this.CreateUniformVec2ArrayValueGetter(varInfo.name);
+						e.Setter = !this.ReadOnly ? this.CreateUniformVec2ArrayValueSetter(varInfo.name) : null;
+						e.ForceWriteBack = true;
+						return e;
+					}
+				}
+				else if (varInfo.type == ShaderVarType.Vec3)
+				{
+					if (oldLen == varInfo.arraySize && oldElementType == typeof(Vector3))
+						return oldEditor;
+					else
+					{
+						IListPropertyEditor e = new IListPropertyEditor();
+						e.EditedType = typeof(Vector3[]);
+						e.Getter = this.CreateUniformVec3ArrayValueGetter(varInfo.name);
+						e.Setter = !this.ReadOnly ? this.CreateUniformVec3ArrayValueSetter(varInfo.name) : null;
+						e.ForceWriteBack = true;
+						return e;
+					}
+				}
+				else
+				{
+					if (oldLen == varInfo.arraySize)
+						return oldEditor;
+					else
+					{
+						IListPropertyEditor e = new IListPropertyEditor();
+						e.EditedType = typeof(float[][]);
+						e.Getter = this.CreateUniformArrayValueGetter(varInfo.name, varInfo.arraySize);
+						e.Setter = !this.ReadOnly ? this.CreateUniformArrayValueSetter(varInfo.name) : null;
+						e.EditorAdded += this.UniformList_EditorAdded;
+						e.ForceWriteBack = true;
+						return e;
+					}
+				}
+			}
+			return null;
 		}
 		
 		protected Func<IEnumerable<object>> CreateTextureValueGetter(string name)
