@@ -8,11 +8,16 @@
 -->	Experiment with lighting system approaches
 	-->	Object-based, different levels of detail
 		-->	Still to do:
-			-->	Specular reflections
 			-->	Ambient light
 			-->	Directional light
 			-->	Spotlight
-			-->	Normal Mapping
+			-->	Light Objects & automatic light management
+				-->	Fixed number of lights, priority-sorted
+				-->	Culled if too many or too insignificant
+			-->	Vertex-Lighting
+				-->	Preprocessor-DrawTechnique?
+				-->	Manually in LightingSpriteRendererer?
+				-->	Vertex-Lighting fallback for culled lights if too many?
 	-->	HDR and tonemapping, render to offscreen Rgba16 target
 		-->	Does Pixel-Z-Coord recovery still work then?
 		-->	If not, there should be some method to do it, think of lens flare stuff, etc.
