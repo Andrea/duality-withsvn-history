@@ -15,7 +15,8 @@ namespace DualityEditor.Controls.PropertyEditors
 {
 	public partial class NumericPropertyEditor : PropertyEditor
 	{
-		private	bool		updatingFromObj	= false;
+		private	bool	updatingFromObj	= false;
+		private	bool	updatingRange	= false;
 
 		public NumericUpDown Editor
 		{
@@ -159,8 +160,10 @@ namespace DualityEditor.Controls.PropertyEditors
 			if (places != null) this.valueEditor.DecimalPlaces = places.Places;
 			if (range != null)
 			{
+				this.updatingRange = true;
 				this.valueEditor.Minimum = range.Min;
 				this.valueEditor.Maximum = range.Max;
+				this.updatingRange = false;
 			}
 			if (increment != null) this.valueEditor.Increment = increment.Increment;
 		}
@@ -173,6 +176,8 @@ namespace DualityEditor.Controls.PropertyEditors
 		private void valueEditor_ValueChanged(object sender, EventArgs e)
 		{
 			if (this.updatingFromObj) return;
+			if (this.updatingRange) return;
+
 			this.PerformSetValue();
 			this.OnValueEdited(this.DisplayedValue);
 			this.PerformGetValue();

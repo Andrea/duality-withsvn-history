@@ -8,9 +8,6 @@
 -->	Experiment with lighting system approaches
 	-->	Object-based, different levels of detail
 		-->	Still to do:
-			-->	Specularmaps
-			-->	Use Normalmaps alpha channel for "glow"
-			-->	Test Nullpunkt ships
 			-->	Vertex-Lighting
 				-->	Preprocessor-DrawTechnique?
 				-->	Manually in LightingSpriteRendererer?
