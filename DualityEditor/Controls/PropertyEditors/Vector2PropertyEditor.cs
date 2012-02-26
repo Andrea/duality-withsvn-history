@@ -110,10 +110,16 @@ namespace DualityEditor.Controls.PropertyEditors
 		{
 			base.OnEditedMemberChanged();
 			EditorHintDecimalPlacesAttribute places = this.EditedMember.GetCustomAttributes(typeof(EditorHintDecimalPlacesAttribute), true).FirstOrDefault() as EditorHintDecimalPlacesAttribute;
+			EditorHintIncrementAttribute increment = this.EditedMember.GetCustomAttributes(typeof(EditorHintIncrementAttribute), true).FirstOrDefault() as EditorHintIncrementAttribute;
 			if (places != null)
 			{
 				this.editorX.DecimalPlaces = places.Places;
 				this.editorY.DecimalPlaces = places.Places;
+			}
+			if (increment != null)
+			{
+				this.editorX.Increment = increment.Increment;
+				this.editorY.Increment = increment.Increment;
 			}
 		}
 

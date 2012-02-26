@@ -8,12 +8,9 @@
 -->	Experiment with lighting system approaches
 	-->	Object-based, different levels of detail
 		-->	Still to do:
-			-->	Ambient light
-			-->	Directional light
-			-->	Spotlight
-			-->	Light Objects & automatic light management
-				-->	Fixed number of lights, priority-sorted
-				-->	Culled if too many or too insignificant
+			-->	Specularmaps
+			-->	Use Normalmaps alpha channel for "glow"
+			-->	Test Nullpunkt ships
 			-->	Vertex-Lighting
 				-->	Preprocessor-DrawTechnique?
 				-->	Manually in LightingSpriteRendererer?

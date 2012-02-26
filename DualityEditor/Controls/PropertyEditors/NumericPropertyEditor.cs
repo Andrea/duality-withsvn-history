@@ -155,12 +155,14 @@ namespace DualityEditor.Controls.PropertyEditors
 			base.OnEditedMemberChanged();
 			EditorHintDecimalPlacesAttribute places = this.EditedMember.GetCustomAttributes(typeof(EditorHintDecimalPlacesAttribute), true).FirstOrDefault() as EditorHintDecimalPlacesAttribute;
 			EditorHintRangeAttribute range = this.EditedMember.GetCustomAttributes(typeof(EditorHintRangeAttribute), true).FirstOrDefault() as EditorHintRangeAttribute;
+			EditorHintIncrementAttribute increment = this.EditedMember.GetCustomAttributes(typeof(EditorHintIncrementAttribute), true).FirstOrDefault() as EditorHintIncrementAttribute;
 			if (places != null) this.valueEditor.DecimalPlaces = places.Places;
 			if (range != null)
 			{
 				this.valueEditor.Minimum = range.Min;
 				this.valueEditor.Maximum = range.Max;
 			}
+			if (increment != null) this.valueEditor.Increment = increment.Increment;
 		}
 		protected override void OnSizeChanged(EventArgs e)
 		{
