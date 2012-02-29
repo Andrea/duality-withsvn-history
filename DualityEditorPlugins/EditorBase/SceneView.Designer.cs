@@ -54,6 +54,7 @@
 			this.panelBottom = new System.Windows.Forms.Panel();
 			this.textBoxFilter = new System.Windows.Forms.TextBox();
 			this.labelFilter = new System.Windows.Forms.Label();
+			this.toolStripSeparatorCustomActions = new System.Windows.Forms.ToolStripSeparator();
 			this.toolStrip.SuspendLayout();
 			this.contextMenuNode.SuspendLayout();
 			this.contextMenuDragMoveCopy.SuspendLayout();
@@ -136,13 +137,14 @@
 			// contextMenuNode
 			// 
 			this.contextMenuNode.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripSeparatorCustomActions,
             this.newToolStripMenuItem,
             this.toolStripSeparatorNew,
             this.cloneToolStripMenuItem,
             this.deleteToolStripMenuItem,
             this.renameToolStripMenuItem});
 			this.contextMenuNode.Name = "contextMenuNode";
-			this.contextMenuNode.Size = new System.Drawing.Size(150, 98);
+			this.contextMenuNode.Size = new System.Drawing.Size(153, 126);
 			this.contextMenuNode.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuNode_Opening);
 			// 
 			// newToolStripMenuItem
@@ -151,33 +153,33 @@
             this.gameObjectToolStripMenuItem,
             this.newGameObjectSeparator});
 			this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-			this.newToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+			this.newToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.newToolStripMenuItem.Text = "New";
 			this.newToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.newToolStripMenuItem_DropDownItemClicked);
 			// 
 			// gameObjectToolStripMenuItem
 			// 
 			this.gameObjectToolStripMenuItem.Name = "gameObjectToolStripMenuItem";
-			this.gameObjectToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+			this.gameObjectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.gameObjectToolStripMenuItem.Text = "GameObject";
 			this.gameObjectToolStripMenuItem.Click += new System.EventHandler(this.gameObjectToolStripMenuItem_Click);
 			// 
 			// newGameObjectSeparator
 			// 
 			this.newGameObjectSeparator.Name = "newGameObjectSeparator";
-			this.newGameObjectSeparator.Size = new System.Drawing.Size(137, 6);
+			this.newGameObjectSeparator.Size = new System.Drawing.Size(149, 6);
 			// 
 			// toolStripSeparatorNew
 			// 
 			this.toolStripSeparatorNew.Name = "toolStripSeparatorNew";
-			this.toolStripSeparatorNew.Size = new System.Drawing.Size(146, 6);
+			this.toolStripSeparatorNew.Size = new System.Drawing.Size(149, 6);
 			// 
 			// cloneToolStripMenuItem
 			// 
 			this.cloneToolStripMenuItem.Image = global::EditorBase.Properties.Resources.page_copy;
 			this.cloneToolStripMenuItem.Name = "cloneToolStripMenuItem";
 			this.cloneToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-			this.cloneToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+			this.cloneToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.cloneToolStripMenuItem.Text = "Clone";
 			this.cloneToolStripMenuItem.Click += new System.EventHandler(this.cloneToolStripMenuItem_Click);
 			// 
@@ -186,14 +188,14 @@
 			this.deleteToolStripMenuItem.Image = global::EditorBase.Properties.Resources.cross;
 			this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
 			this.deleteToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-			this.deleteToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+			this.deleteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.deleteToolStripMenuItem.Text = "Delete";
 			this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
 			// 
 			// renameToolStripMenuItem
 			// 
 			this.renameToolStripMenuItem.Name = "renameToolStripMenuItem";
-			this.renameToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+			this.renameToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.renameToolStripMenuItem.Text = "Rename";
 			this.renameToolStripMenuItem.Click += new System.EventHandler(this.renameToolStripMenuItem_Click);
 			// 
@@ -285,6 +287,12 @@
 			this.labelFilter.Text = "Filter:";
 			this.labelFilter.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			// 
+			// toolStripSeparatorCustomActions
+			// 
+			this.toolStripSeparatorCustomActions.Name = "toolStripSeparatorCustomActions";
+			this.toolStripSeparatorCustomActions.Size = new System.Drawing.Size(149, 6);
+			this.toolStripSeparatorCustomActions.Visible = false;
+			// 
 			// SceneView
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -340,5 +348,6 @@
 		private System.Windows.Forms.ToolStripMenuItem gameObjectToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator newGameObjectSeparator;
 		private System.Windows.Forms.ToolStripButton toolStripButtonSaveScene;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparatorCustomActions;
 	}
 }

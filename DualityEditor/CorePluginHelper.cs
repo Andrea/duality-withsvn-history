@@ -63,12 +63,13 @@ namespace DualityEditor
 			Image Icon { get; }
 
 			void Perform(object obj);
+			void Perform(IEnumerable<object> obj);
+			bool CanPerformOn(IEnumerable<object> obj);
 		}
-		public class EditorAction<T> : IEditorAction
+		public abstract class EditorActionBase<T> : IEditorAction
 		{
 			private	string		name;
 			private	Image		icon;
-			private	Action<T>	action;
 
 			public string Name
 			{
@@ -78,25 +79,72 @@ namespace DualityEditor
 			{
 				get { return this.icon; }
 			}
-			public Action<T> Action
-			{
-				get { return this.action; }
-			}
 
-			public EditorAction(string name, Image icon, Action<T> action)
+			public EditorActionBase(string name, Image icon)
 			{
 				this.name = name;
 				this.icon = icon;
-				this.action = action;
 			}
 
 			public void Perform(T obj)
 			{
-				this.action(obj);
+				this.Perform(new T[] { obj });
 			}
+			public abstract void Perform(IEnumerable<T> objEnum);
+			public abstract bool CanPerformOn(IEnumerable<T> objEnum);
+
 			void IEditorAction.Perform(object obj)
 			{
 				this.Perform((T)obj);
+			}
+			void IEditorAction.Perform(IEnumerable<object> obj)
+			{
+				this.Perform(obj.Cast<T>());
+			}
+			bool IEditorAction.CanPerformOn(IEnumerable<object> obj)
+			{
+				if (obj == null) return true;
+				return this.CanPerformOn(obj.Cast<T>());
+			}
+		}
+		public class EditorAction<T> : EditorActionBase<T>
+		{
+			private	Action<T>	action;
+
+			public EditorAction(string name, Image icon, Action<T> action) : base(name, icon)
+			{
+				this.action = action;
+			}
+
+			public override void Perform(IEnumerable<T> objEnum)
+			{
+				foreach (T obj in objEnum) this.action(obj);
+			}
+			public override bool CanPerformOn(IEnumerable<T> objEnum)
+			{
+				return true;
+			}
+		}
+		public class EditorGroupAction<T> : EditorActionBase<T>
+		{
+			private	Action<IEnumerable<T>>		action;
+			private	Predicate<IEnumerable<T>>	actionPredicate;
+
+			public EditorGroupAction(string name, Image icon, Action<IEnumerable<T>> action, Predicate<IEnumerable<T>> predicate) : base(name, icon)
+			{
+				this.action = action;
+				this.actionPredicate = predicate;
+			}
+
+			public override void Perform(IEnumerable<T> objEnum)
+			{
+				this.action(objEnum);
+			}
+			public override bool CanPerformOn(IEnumerable<T> obj)
+			{
+				if (obj == null) return true;
+				if (this.actionPredicate == null) return true;
+				return this.actionPredicate(obj);
 			}
 		}
 
@@ -147,28 +195,31 @@ namespace DualityEditor
 		}
 		private static List<T> RequestAllCorePluginRes<T>(Type type, Predicate<T> predicate = null) where T : IResEntry
 		{
-			if (type == null) return new List<T>();
-			string typeString = ReflectionHelper.GetTypeId(type);
-
 			List<T> result = null;
-			List<IResEntry> resList = null;
-			if (corePluginRes.TryGetValue(typeString, out resList))
+
+			while (type != null)
 			{
-				foreach (IResEntry res in resList)
+				string typeString = ReflectionHelper.GetTypeId(type);
+
+				List<IResEntry> resList = null;
+				if (corePluginRes.TryGetValue(typeString, out resList))
 				{
-					if (typeof(T).IsAssignableFrom(res.GetType()))
+					foreach (IResEntry res in resList)
 					{
-						T casted = (T)res;
-						if (predicate == null || predicate(casted))
+						if (typeof(T).IsAssignableFrom(res.GetType()))
 						{
-							if (result == null) result = new List<T>();
-							result.Add(casted);
+							T casted = (T)res;
+							if (predicate == null || predicate(casted))
+							{
+								if (result == null) result = new List<T>();
+								result.Add(casted);
+							}
 						}
 					}
 				}
-			}
 
-			if (result == null && type != typeof(object)) return RequestAllCorePluginRes<T>(type.BaseType, predicate);
+				type = type.BaseType;
+			}
 
 			if (result == null) result = new List<T>();
 			return result;
@@ -206,13 +257,18 @@ namespace DualityEditor
 		{
 			RegisterCorePluginRes(typeof(T), new EditorActionEntry(new EditorAction<T>(name, icon, action), context));
 		}
-		public static IEnumerable<EditorAction<T>> RequestEditorActions<T>(string context)
+		public static void RegisterEditorGroupAction<T>(string name, Image icon, Action<IEnumerable<T>> action, string context, Predicate<IEnumerable<T>> actionPredicate = null)
 		{
-			return RequestAllCorePluginRes<EditorActionEntry>(typeof(T), e => e.context == context).Select(e => e.action as EditorAction<T>);
+			IEditorAction editorAction = new EditorGroupAction<T>(name, icon, action, actionPredicate);
+			RegisterCorePluginRes(typeof(T), new EditorActionEntry(editorAction, context));
 		}
-		public static IEnumerable<IEditorAction> RequestEditorActions(Type type, string context)
+		public static IEnumerable<IEditorAction> RequestEditorActions<T>(string context, IEnumerable<object> forGroup = null)
 		{
-			return RequestAllCorePluginRes<EditorActionEntry>(type, e => e.context == context).Select(e => e.action);
+			return RequestEditorActions(typeof(T), context, forGroup);
+		}
+		public static IEnumerable<IEditorAction> RequestEditorActions(Type type, string context, IEnumerable<object> forGroup = null)
+		{
+			return RequestAllCorePluginRes<EditorActionEntry>(type, e => e.context == context && e.action.CanPerformOn(forGroup)).Select(e => e.action);
 		}
 
 		public static void RegisterXmlCodeDoc(XmlCodeDoc doc)

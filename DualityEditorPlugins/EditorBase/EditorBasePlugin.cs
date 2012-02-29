@@ -201,6 +201,11 @@ namespace EditorBase
 				EditorBaseRes.IconResMaterial,
 				this.ActionTextureCreateMaterial, 
 				CorePluginHelper.ActionContext_ContextMenu);
+			CorePluginHelper.RegisterEditorGroupAction<AbstractShader>(
+				EditorBaseRes.ActionName_CreateShaderProgram, 
+				EditorBaseRes.IconResShaderProgram,
+				this.ActionShaderCreateProgram, 
+				CorePluginHelper.ActionContext_ContextMenu);
 			CorePluginHelper.RegisterEditorAction<AudioData>(
 				EditorBaseRes.ActionName_CreateSound, 
 				EditorBaseRes.IconResSound,
@@ -392,24 +397,57 @@ namespace EditorBase
 
 		private void ActionPixmapCreateTexture(Pixmap pixmap)
 		{
-			string pathExt = Pixmap.FileExt;
-			string texPath = PathHelper.GetFreePath(pixmap.Path.Substring(0, pixmap.Path.Length - pathExt.Length), Texture.FileExt);
+			string texPath = PathHelper.GetFreePath(pixmap.FullName, Texture.FileExt);
 			Texture tex = new Texture(pixmap);
 			tex.Save(texPath);
 		}
 		private void ActionTextureCreateMaterial(Texture tex)
 		{
-			string pathExt = Texture.FileExt;
-			string matPath = PathHelper.GetFreePath(tex.Path.Substring(0, tex.Path.Length - pathExt.Length), Material.FileExt);
+			string matPath = PathHelper.GetFreePath(tex.FullName, Material.FileExt);
 			Material mat = new Material(DrawTechnique.Mask, ColorRgba.White, tex);
 			mat.Save(matPath);
 		}
 		private void ActionAudioDataCreateSound(AudioData data)
 		{
-			string pathExt = AudioData.FileExt;
-			string sndPath = PathHelper.GetFreePath(data.Path.Substring(0, data.Path.Length - pathExt.Length), Sound.FileExt);
+			string sndPath = PathHelper.GetFreePath(data.FullName, Sound.FileExt);
 			Sound snd = new Sound(data);
 			snd.Save(sndPath);
+		}
+		private void ActionShaderCreateProgram(IEnumerable<AbstractShader> shaderEnum)
+		{
+			List<VertexShader> vertexShaders = shaderEnum.OfType<VertexShader>().ToList();
+			List<FragmentShader> fragmentShaders = shaderEnum.OfType<FragmentShader>().ToList();
+
+			if (vertexShaders.Count == 1 && fragmentShaders.Count >= 1)
+				foreach (FragmentShader frag in fragmentShaders) this.ActionShaderCreateProgram_Create(frag, vertexShaders[0]);
+			else if (fragmentShaders.Count == 1 && vertexShaders.Count >= 1)
+				foreach (VertexShader vert in vertexShaders) this.ActionShaderCreateProgram_Create(fragmentShaders[0], vert);
+			else
+			{
+				for (int i = 0; i < MathF.Max(vertexShaders.Count, fragmentShaders.Count); i++)
+				{
+					this.ActionShaderCreateProgram_Create(
+						i < fragmentShaders.Count ? fragmentShaders[i] : null, 
+						i < vertexShaders.Count ? vertexShaders[i] : null);
+				}
+			}
+		}
+		private void ActionShaderCreateProgram_Create(FragmentShader frag, VertexShader vert)
+		{
+			AbstractShader refShader = (vert != null) ? (AbstractShader)vert : (AbstractShader)frag;
+
+			string nameTemp = refShader.Name;
+			string dirTemp = Path.GetDirectoryName(refShader.Path);
+			if (nameTemp.Contains("Shader"))
+				nameTemp = nameTemp.Replace("Shader", "Program");
+			else if (nameTemp.Contains("Shader"))
+				nameTemp = nameTemp.Replace("shader", "program");
+			else
+				nameTemp += "Program";
+
+			string programPath = PathHelper.GetFreePath(Path.Combine(dirTemp, nameTemp), ShaderProgram.FileExt);
+			ShaderProgram program = new ShaderProgram(vert, frag);
+			program.Save(programPath);
 		}
 
 		private void ActionPixmapOpenRes(Pixmap pixmap)

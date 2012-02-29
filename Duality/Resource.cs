@@ -83,6 +83,19 @@ namespace Duality
 			}
 		}
 		/// <summary>
+		/// [GET] The full name of the Resource, including its path but not its file extension
+		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
+		public string FullName
+		{
+			get
+			{
+				string nameTemp = this.path ?? "";
+				if (this.IsDefaultContent) nameTemp = nameTemp.Replace(':', '/');
+				return System.IO.Path.Combine(System.IO.Path.GetDirectoryName(nameTemp), this.Name);
+			}
+		}
+		/// <summary>
 		/// [GET] Returns whether the Resource is part of Duality's embedded default content.
 		/// </summary>
 		[EditorHintFlags(MemberFlags.Invisible)]

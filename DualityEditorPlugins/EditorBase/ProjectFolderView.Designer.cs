@@ -158,7 +158,7 @@
             this.toolStripSeparatorShowInExplorer,
             this.showInExplorerToolStripMenuItem});
 			this.contextMenuNode.Name = "contextMenuNode";
-			this.contextMenuNode.Size = new System.Drawing.Size(162, 176);
+			this.contextMenuNode.Size = new System.Drawing.Size(162, 198);
 			this.contextMenuNode.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuNode_Opening);
 			// 
 			// toolStripSeparatorCustomActions

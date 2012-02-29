@@ -114,8 +114,8 @@ namespace Duality.Resources
 		}
 
 
-		private	ContentRef<VertexShader>	vert	= ContentRef<VertexShader>.Null;
-		private	ContentRef<FragmentShader>	frag	= ContentRef<FragmentShader>.Null;
+		private	ContentRef<VertexShader>	vert	= VertexShader.Minimal;
+		private	ContentRef<FragmentShader>	frag	= FragmentShader.Minimal;
 		[NonSerialized] private	int				glProgramId	= 0;
 		[NonSerialized] private bool			compiled	= false;
 		[NonSerialized] private	ShaderVarInfo[]	varInfo		= null;

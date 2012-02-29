@@ -70,6 +70,15 @@ namespace EditorBase.PluginRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Create ShaderProgram ähnelt.
+        /// </summary>
+        public static string ActionName_CreateShaderProgram {
+            get {
+                return ResourceManager.GetString("ActionName_CreateShaderProgram", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Create Sound ähnelt.
         /// </summary>
         public static string ActionName_CreateSound {

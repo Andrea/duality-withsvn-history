@@ -58,6 +58,10 @@ namespace Duality
 		/// [GET] The name of the referenced Resource.
 		/// </summary>
 		string Name { get; }
+		/// <summary>
+		/// [GET] The full name of the referenced Resource, including its path but not its file extension
+		/// </summary>
+		string FullName { get; }
 
 		/// <summary>
 		/// Determines if the references Resource's Type is assignable to the specified Type.
@@ -219,6 +223,19 @@ namespace Duality
 				string nameTemp = this.contentPath;
 				if (this.IsDefaultContent) nameTemp = nameTemp.Replace(':', '/');
 				return System.IO.Path.GetFileNameWithoutExtension(System.IO.Path.GetFileNameWithoutExtension(nameTemp));
+			}
+		}
+		/// <summary>
+		/// [GET] The full name of the referenced Resource, including its path but not its file extension
+		/// </summary>
+		public string FullName
+		{
+			get
+			{
+				if (this.IsExplicitNull) return "null";
+				string nameTemp = this.contentPath;
+				if (this.IsDefaultContent) nameTemp = nameTemp.Replace(':', '/');
+				return System.IO.Path.Combine(System.IO.Path.GetDirectoryName(nameTemp), this.Name);
 			}
 		}
 

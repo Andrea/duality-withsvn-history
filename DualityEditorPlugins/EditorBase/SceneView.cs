@@ -1183,6 +1183,9 @@ namespace EditorBase
 				from vn in this.objectView.SelectedNodes
 				where vn.Tag is NodeBase
 				select vn.Tag as NodeBase);
+			List<object> selObjData = 
+				selNodeData.OfType<ComponentNode>().Select(n => n.Component).AsEnumerable<object>().Concat(
+				selNodeData.OfType<GameObjectNode>().Select(n => n.Obj)).ToList();
 
 			bool noSelect = selNodeData.Count == 0;
 			bool singleSelect = selNodeData.Count == 1;
@@ -1197,6 +1200,46 @@ namespace EditorBase
 			this.deleteToolStripMenuItem.Visible = !noSelect;
 
 			this.renameToolStripMenuItem.Enabled = singleSelect;
+			
+			// Provide custom actions
+			Type mainResType = null;
+			if (selObjData.Any())
+			{
+				mainResType = selObjData.First().GetType();
+				// Find mutual type
+				foreach (var obj in selObjData)
+				{
+					Type resType = obj.GetType();
+					while (mainResType != null && !mainResType.IsAssignableFrom(resType))
+						mainResType = mainResType.BaseType;
+				}
+			}
+			for (int i = this.contextMenuNode.Items.Count - 1; i >= 0; i--)
+			{
+				if (this.contextMenuNode.Items[i].Tag is CorePluginHelper.IEditorAction)
+					this.contextMenuNode.Items.RemoveAt(i);
+			}
+			if (mainResType != null)
+			{
+				this.toolStripSeparatorCustomActions.Visible = true;
+				int baseIndex = this.contextMenuNode.Items.IndexOf(this.toolStripSeparatorCustomActions);
+				var customActions = CorePluginHelper.RequestEditorActions(
+					mainResType, 
+					CorePluginHelper.ActionContext_ContextMenu, 
+					selObjData)
+					.ToArray();
+				foreach (var actionEntry in customActions)
+				{
+					ToolStripMenuItem actionItem = new ToolStripMenuItem(actionEntry.Name, actionEntry.Icon);
+					actionItem.Click += this.customObjectActionItem_Click;
+					actionItem.Tag = actionEntry;
+					this.contextMenuNode.Items.Insert(baseIndex, actionItem);
+					baseIndex++;
+				}
+				if (customActions.Length == 0) this.toolStripSeparatorCustomActions.Visible = false;
+			}
+			else
+				this.toolStripSeparatorCustomActions.Visible = false;
 
 			// Reset "New" menu to original state
 			this.gameObjectToolStripMenuItem.Image = CorePluginHelper.RequestTypeImage(typeof(GameObject), CorePluginHelper.ImageContext_Icon);
@@ -1210,7 +1253,7 @@ namespace EditorBase
 			// Populate the "New" menu
 			if (gameObjSelect)
 			{
-				GameObject targetObj = (selNodeData[0] as GameObjectNode).Obj;
+				GameObject targetObj = selNodeData.OfType<GameObjectNode>().First().Obj;
 				List<ToolStripItem> newItems = new List<ToolStripItem>();
 				foreach (Type cmpType in this.QueryComponentTypes())
 				{
@@ -1277,6 +1320,20 @@ namespace EditorBase
 			if (e.ClickedItem.Tag as Type == null) return;
 			Type clickedType = e.ClickedItem.Tag as Type;
 			this.CreateComponent(this.objectView.SelectedNode, clickedType);
+		}
+		private void customObjectActionItem_Click(object sender, EventArgs e)
+		{
+			List<NodeBase> selNodeData = new List<NodeBase>(
+				from vn in this.objectView.SelectedNodes
+				where vn.Tag is NodeBase
+				select vn.Tag as NodeBase);
+			List<object> selObjData = 
+				selNodeData.OfType<ComponentNode>().Select(n => n.Component).AsEnumerable<object>().Concat(
+				selNodeData.OfType<GameObjectNode>().Select(n => n.Obj)).ToList();
+
+			ToolStripMenuItem clickedItem = sender as ToolStripMenuItem;
+			CorePluginHelper.IEditorAction action = clickedItem.Tag as CorePluginHelper.IEditorAction;
+			action.Perform(selObjData);
 		}
 
 		private void toolStripButtonCreateScene_Click(object sender, EventArgs e)

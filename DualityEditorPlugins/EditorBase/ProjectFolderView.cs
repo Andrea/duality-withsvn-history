@@ -1181,7 +1181,13 @@ namespace EditorBase
 			if (selResData.Any())
 			{
 				mainResType = selResData.First().ResType;
-				if (selResData.Any(cr => cr.ResType != mainResType)) mainResType = null;
+				// Find mutual type
+				foreach (var resRef in selResData)
+				{
+					Type resType = resRef.ResType;
+					while (mainResType != null && !mainResType.IsAssignableFrom(resType))
+						mainResType = mainResType.BaseType;
+				}
 			}
 			for (int i = this.contextMenuNode.Items.Count - 1; i >= 0; i--)
 			{
@@ -1193,8 +1199,9 @@ namespace EditorBase
 				this.toolStripSeparatorCustomActions.Visible = true;
 				int baseIndex = this.contextMenuNode.Items.IndexOf(this.toolStripSeparatorCustomActions);
 				var customActions = CorePluginHelper.RequestEditorActions(
-						mainResType, 
-						CorePluginHelper.ActionContext_ContextMenu)
+					mainResType, 
+					CorePluginHelper.ActionContext_ContextMenu, 
+					selResData.Select(resRef => resRef.Res))
 					.ToArray();
 				foreach (var actionEntry in customActions)
 				{
@@ -1306,10 +1313,7 @@ namespace EditorBase
 
 			ToolStripMenuItem clickedItem = sender as ToolStripMenuItem;
 			CorePluginHelper.IEditorAction action = clickedItem.Tag as CorePluginHelper.IEditorAction;
-			foreach (ContentRef<Resource> resRef in selResData)
-			{
-				action.Perform(resRef.Res);
-			}
+			action.Perform(selResData.Select(resRef => resRef.Res));
 		}
 
 		private void toolStripButtonWorkDir_Click(object sender, EventArgs e)

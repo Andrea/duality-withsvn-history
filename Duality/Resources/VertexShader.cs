@@ -67,6 +67,11 @@ namespace Duality.Resources
 			get { return ShaderType.VertexShader; }
 		}
 
-		public VertexShader() {}
+		public VertexShader()
+		{
+			// By default, use minimal shader source.
+			if (VertexShader.Minimal.IsAvailable)
+				this.SetSource(VertexShader.Minimal.Res.Source);
+		}
 	}
 }

@@ -80,7 +80,12 @@ namespace Duality.Resources
 		{
 			get { return ShaderType.FragmentShader; }
 		}
-
-		public FragmentShader() {}
+		
+		public FragmentShader()
+		{
+			// By default, use minimal shader source.
+			if (FragmentShader.Minimal.IsAvailable)
+				this.SetSource(FragmentShader.Minimal.Res.Source);
+		}
 	}
 }

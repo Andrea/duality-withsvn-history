@@ -3304,6 +3304,11 @@
             [GET] The name of the Resource.
             </summary>
         </member>
+        <member name="P:Duality.Resource.FullName">
+            <summary>
+            [GET] The full name of the Resource, including its path but not its file extension
+            </summary>
+        </member>
         <member name="P:Duality.Resource.IsDefaultContent">
             <summary>
             [GET] Returns whether the Resource is part of Duality's embedded default content.
@@ -11755,6 +11760,11 @@
             [GET] The name of the referenced Resource.
             </summary>
         </member>
+        <member name="P:Duality.IContentRef.FullName">
+            <summary>
+            [GET] The full name of the referenced Resource, including its path but not its file extension
+            </summary>
+        </member>
         <!-- Ungültiger XML-Kommentar wurde für den Member "T:Duality.ContentRef`1" ignoriert -->
         <member name="F:Duality.ContentRef`1.Null">
             <summary>
@@ -11875,6 +11885,11 @@
         <member name="P:Duality.ContentRef`1.Name">
             <summary>
             [GET] The name of the referenced Resource.
+            </summary>
+        </member>
+        <member name="P:Duality.ContentRef`1.FullName">
+            <summary>
+            [GET] The full name of the referenced Resource, including its path but not its file extension
             </summary>
         </member>
         <member name="T:Duality.ContentProvider">
