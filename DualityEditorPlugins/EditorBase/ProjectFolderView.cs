@@ -56,6 +56,10 @@ namespace EditorBase
 			{
 				get { return this.readOnly; }
 			}
+			public virtual string TypeName
+			{
+				get { return null; }
+			}
 
 			public NodeBase(string path, string name, bool readOnly = false) : base(name)
 			{
@@ -161,6 +165,10 @@ namespace EditorBase
 			public Type ResType
 			{
 				get { return this.resType; }
+			}
+			public override string TypeName
+			{
+				get { return this.resType != null ? this.resType.GetTypeKeyword() : null; }
 			}
 
 			public ResourceNode(string path) : base(path, null, false)
@@ -280,6 +288,7 @@ namespace EditorBase
 			this.folderModel = new TreeModel();
 			this.folderView.Model = this.folderModel;
 
+			this.nodeTextBoxType.DrawText += new EventHandler<Aga.Controls.Tree.NodeControls.DrawEventArgs>(nodeTextBoxType_DrawText);
 			this.nodeTextBoxName.DrawText += new EventHandler<Aga.Controls.Tree.NodeControls.DrawEventArgs>(nodeTextBoxName_DrawText);
 			this.nodeTextBoxName.EditorShowing += new CancelEventHandler(nodeTextBoxName_EditorShowing);
 			this.nodeTextBoxName.EditorHided += new EventHandler(nodeTextBoxName_EditorHided);
@@ -1020,6 +1029,11 @@ namespace EditorBase
 			this.InsertNodeSorted(node, parentNode);
 			this.RegisterNodeTree(node);
 		}
+		private void nodeTextBoxType_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawEventArgs e)
+		{
+			e.TextColor = SystemColors.GrayText;
+			e.BackgroundBrush = null;
+		}
 		private void timerFlashItem_Tick(object sender, EventArgs e)
 		{
 			this.flashDuration += (this.timerFlashItem.Interval / 1000.0f);
@@ -1065,6 +1079,14 @@ namespace EditorBase
 						
 				// Display error message if moving wasn't possible
 				if (errorMove) this.DisplayErrorMoveFile(dstPath);
+
+				// Adjust / Initialize cloned Resource
+				if (Resource.IsResourceFile(dstPath))
+				{
+					IContentRef tempResRef = ContentProvider.RequestContent(dstPath);
+					tempResRef.Res.SourcePath = null;
+					tempResRef.Res.Save();
+				}
 
 				this.ScheduleSelect(dstPath);
 			}

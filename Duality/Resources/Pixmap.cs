@@ -93,8 +93,7 @@ namespace Duality.Resources
 		}
 
 
-		private	Bitmap	data			= null;
-		private	string	dataBasePath	= null;
+		private	Bitmap	data	= null;
 
 		/// <summary>
 		/// [GET / SET] A <see cref="System.Drawing.Bitmap"/> representing the actual pixel data.
@@ -104,17 +103,6 @@ namespace Duality.Resources
 		{
 			get { return this.data; }
 			set { this.data = value; }
-		}
-		/// <summary>
-		/// [GET / SET] The path from which the pixel data has been originally imported in Duality.
-		/// This is only relevant when creating new Pixmaps at runtime or importing them in the editor
-		/// environment.
-		/// </summary>
-		[EditorHintFlags(MemberFlags.Invisible)]
-		public string PixelDataBasePath
-		{
-			get { return this.dataBasePath; }
-			set { this.dataBasePath = value; }
 		}
 		/// <summary>
 		/// [GET] The Width of the actual pixel data.
@@ -163,10 +151,10 @@ namespace Duality.Resources
 		/// <param name="imagePath">The path of the file to which the pixel data is written.</param>
 		public void SavePixelData(string imagePath = null)
 		{
-			if (imagePath == null) imagePath = this.dataBasePath;
+			if (imagePath == null) imagePath = this.sourcePath;
 
 			// We're saving this Pixmaps pixel data for the first time
-			if (!this.path.Contains(':') && this.dataBasePath == null) this.dataBasePath = imagePath;
+			if (!this.path.Contains(':') && this.sourcePath == null) this.sourcePath = imagePath;
 
 			this.data.Save(imagePath);
 		}
@@ -176,15 +164,15 @@ namespace Duality.Resources
 		/// <param name="imagePath">The path of the file from which to retrieve the new pixel data.</param>
 		public void LoadPixelData(string imagePath = null)
 		{
-			if (imagePath == null) imagePath = this.dataBasePath;
+			if (imagePath == null) imagePath = this.sourcePath;
 
-			this.dataBasePath = imagePath;
+			this.sourcePath = imagePath;
 
-			if (String.IsNullOrEmpty(this.dataBasePath) || !File.Exists(this.dataBasePath))
+			if (String.IsNullOrEmpty(this.sourcePath) || !File.Exists(this.sourcePath))
 				this.data = null;
 			else
 			{
-				byte[] buffer = File.ReadAllBytes(this.dataBasePath);
+				byte[] buffer = File.ReadAllBytes(this.sourcePath);
 				this.data = new Bitmap(new MemoryStream(buffer));
 				this.data = this.data.ColorTransparentPixels();
 			}
@@ -195,7 +183,6 @@ namespace Duality.Resources
 			base.CopyTo(r);
 			Pixmap c = r as Pixmap;
 			c.data			= this.data.Clone() as Bitmap;
-			c.dataBasePath	= null;
 		}
 
 		void ISerializable.WriteData(IDataWriter writer)
@@ -211,7 +198,7 @@ namespace Duality.Resources
 			else
 				writer.WriteValue("data", null);
 
-			writer.WriteValue("dataBasePath", this.dataBasePath);
+			writer.WriteValue("dataBasePath", this.sourcePath);
 
 		}
 		void ISerializable.ReadData(IDataReader reader)
@@ -235,7 +222,7 @@ namespace Duality.Resources
 				this.data = null;
 			}
 
-			reader.ReadValue("dataBasePath", out this.dataBasePath);
+			reader.ReadValue("dataBasePath", out this.sourcePath);
 		}
 	}
 }

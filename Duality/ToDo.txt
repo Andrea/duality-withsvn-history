@@ -5,19 +5,6 @@
 	-->	(Property) Animations & Animation Editor
 	-->	??? Ingame GUI & GUI Editor
 
--->	Experiment with lighting system approaches
-	-->	Object-based, different levels of detail
-		-->	Still to do:
-			-->	Vertex-Lighting
-				-->	Preprocessor-DrawTechnique?
-				-->	Manually in LightingSpriteRendererer?
-				-->	Vertex-Lighting fallback for culled lights if too many?
-	-->	HDR and tonemapping, render to offscreen Rgba16 target
-		-->	Does Pixel-Z-Coord recovery still work then?
-		-->	If not, there should be some method to do it, think of lens flare stuff, etc.
-		-->	Maybe implement filmic tonemapping, expose some parameters to play with
-		-->	However, Auto-exposure is probably not a good idea in a space environment.
-
 -->	Dualitor: PerformanceMonitor
 -->	Dualitor: Completely rework PropertyEditors?
 	-->	Goals: Performance, Style

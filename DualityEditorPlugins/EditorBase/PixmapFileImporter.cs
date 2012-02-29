@@ -34,7 +34,7 @@ namespace EditorBase
 		public bool IsUsingSrcFile(Resource r, string srcFile)
 		{
 			Pixmap p = r as Pixmap;
-			return p != null && p.PixelDataBasePath == srcFile;
+			return p != null && p.SourcePath == srcFile;
 		}
 		public void ReimportFile(Resource r, string srcFile)
 		{

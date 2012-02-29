@@ -34,7 +34,7 @@ namespace EditorBase
 		public bool IsUsingSrcFile(Resource r, string srcFile)
 		{
 			AudioData a = r as AudioData;
-			return a != null && a.OggVorbisDataBasePath == srcFile;
+			return a != null && a.SourcePath == srcFile;
 		}
 		public void ReimportFile(Resource r, string srcFile)
 		{

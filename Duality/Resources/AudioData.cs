@@ -83,7 +83,6 @@ namespace Duality.Resources
 
 
 		private	byte[]	data			= null;
-		private	string	dataBasePath	= null;
 		private	bool	forceStream		= false;
 		[NonSerialized]	private	int	alBuffer	= AlBuffer_NotAvailable;
 
@@ -95,16 +94,6 @@ namespace Duality.Resources
 		{
 			get { return this.data; }
 			set { this.data = value; this.DisposeAlBuffer(); }
-		}
-		/// <summary>
-		/// [GET / SET] The path from which the audio data has been originally imported in Duality.
-		/// This is only relevant when creating new AudioData at runtime or importing them in the editor
-		/// environment.
-		/// </summary>
-		public string OggVorbisDataBasePath
-		{
-			get { return this.dataBasePath; }
-			set { this.LoadOggVorbisData(value); }
 		}
 		/// <summary>
 		/// [GET / SET] If set to true, when playing a <see cref="Duality.Resources.Sound"/> that refers to this
@@ -171,10 +160,10 @@ namespace Duality.Resources
 		/// <param name="oggVorbisPath">The path of the file to which the audio data is written.</param>
 		public void SaveOggVorbisData(string oggVorbisPath = null)
 		{
-			if (oggVorbisPath == null) oggVorbisPath = this.dataBasePath;
+			if (oggVorbisPath == null) oggVorbisPath = this.sourcePath;
 
 			// We're saving this data for the first time
-			if (!this.path.Contains(':') && this.dataBasePath == null) this.dataBasePath = oggVorbisPath;
+			if (!this.path.Contains(':') && this.sourcePath == null) this.sourcePath = oggVorbisPath;
 
 			File.WriteAllBytes(oggVorbisPath, this.data);
 		}
@@ -184,14 +173,14 @@ namespace Duality.Resources
 		/// <param name="oggVorbisPath">The path of the file from which the audio data is read.</param>
 		public void LoadOggVorbisData(string oggVorbisPath = null)
 		{
-			if (oggVorbisPath == null) oggVorbisPath = this.dataBasePath;
+			if (oggVorbisPath == null) oggVorbisPath = this.sourcePath;
 
-			this.dataBasePath = oggVorbisPath;
+			this.sourcePath = oggVorbisPath;
 
-			if (String.IsNullOrEmpty(this.dataBasePath) || !File.Exists(this.dataBasePath))
+			if (String.IsNullOrEmpty(this.sourcePath) || !File.Exists(this.sourcePath))
 				this.data = null;
 			else
-				this.data = File.ReadAllBytes(this.dataBasePath);
+				this.data = File.ReadAllBytes(this.sourcePath);
 
 			this.DisposeAlBuffer();
 		}
@@ -251,8 +240,7 @@ namespace Duality.Resources
 		{
 			base.CopyTo(r);
 			AudioData c = r as AudioData;
-			c.data			= (byte[])this.data.Clone();
-			c.dataBasePath	= null;
+			c.data	= (byte[])this.data.Clone();
 		}
 	}
 }

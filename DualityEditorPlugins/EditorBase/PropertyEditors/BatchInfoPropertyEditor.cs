@@ -82,20 +82,26 @@ namespace EditorBase.PropertyEditors
 				{
 					List<string> texRemoveSched = null;
 					List<string> uniRemoveSched = null;
-					foreach (var pair in info.Textures)
+					if (info.Textures != null)
 					{
-						if (!varInfoArray.Any(v => v.scope == ShaderVarScope.Uniform && v.type == ShaderVarType.Sampler2D && v.name == pair.Key))
+						foreach (var pair in info.Textures)
 						{
-							if (texRemoveSched == null) texRemoveSched = new List<string>();
-							texRemoveSched.Add(pair.Key);
+							if (!varInfoArray.Any(v => v.scope == ShaderVarScope.Uniform && v.type == ShaderVarType.Sampler2D && v.name == pair.Key))
+							{
+								if (texRemoveSched == null) texRemoveSched = new List<string>();
+								texRemoveSched.Add(pair.Key);
+							}
 						}
 					}
-					foreach (var pair in info.Uniforms)
+					if (info.Uniforms != null)
 					{
-						if (!varInfoArray.Any(v => v.scope == ShaderVarScope.Uniform && v.type != ShaderVarType.Sampler2D && v.name == pair.Key))
+						foreach (var pair in info.Uniforms)
 						{
-							if (uniRemoveSched == null) uniRemoveSched = new List<string>();
-							uniRemoveSched.Add(pair.Key);
+							if (!varInfoArray.Any(v => v.scope == ShaderVarScope.Uniform && v.type != ShaderVarType.Sampler2D && v.name == pair.Key))
+							{
+								if (uniRemoveSched == null) uniRemoveSched = new List<string>();
+								uniRemoveSched.Add(pair.Key);
+							}
 						}
 					}
 					if (texRemoveSched != null)

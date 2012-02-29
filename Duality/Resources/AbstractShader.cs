@@ -210,7 +210,6 @@ namespace Duality.Resources
 	public abstract class AbstractShader : Resource
 	{
 		private	string	source		= null;
-		private	string	sourcePath	= null;
 		[NonSerialized] private	int				glShaderId	= 0;
 		[NonSerialized] private	bool			compiled	= false;
 		[NonSerialized] private	ShaderVarInfo[]	varInfo		= null;
@@ -232,14 +231,6 @@ namespace Duality.Resources
 		public ShaderVarInfo[] VarInfo
 		{
 			get { return this.varInfo; }
-		}
-		/// <summary>
-		/// [GET] The path of the file from which the source code has been loaded.
-		/// </summary>
-		[EditorHintFlags(MemberFlags.Invisible)]
-		public string SourcePath
-		{
-			get { return this.sourcePath; }
 		}
 		/// <summary>
 		/// [GET] The shaders source code.

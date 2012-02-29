@@ -415,17 +415,17 @@ namespace EditorBase
 		private void ActionPixmapOpenRes(Pixmap pixmap)
 		{
 			if (pixmap == null) return;
-			EditorHelper.OpenResourceSrcFile(pixmap, ".png", pixmap.PixelDataBasePath, pixmap.SavePixelData);
+			EditorHelper.OpenResourceSrcFile(pixmap, ".png", pixmap.SavePixelData);
 		}
 		private void ActionAudioDataOpenRes(AudioData audio)
 		{
 			if (audio == null) return;
-			EditorHelper.OpenResourceSrcFile(audio, ".ogg", audio.OggVorbisDataBasePath, audio.SaveOggVorbisData);
+			EditorHelper.OpenResourceSrcFile(audio, ".ogg", audio.SaveOggVorbisData);
 		}
 		private void ActionAbstractShaderOpenRes(AbstractShader shader)
 		{
 			if (shader == null) return;
-			EditorHelper.OpenResourceSrcFile(shader, shader is FragmentShader ? ".frag" : ".vert", shader.SourcePath, shader.SaveSource);
+			EditorHelper.OpenResourceSrcFile(shader, shader is FragmentShader ? ".frag" : ".vert", shader.SaveSource);
 		}
 		private void ActionPrefabOpenRes(Prefab prefab)
 		{

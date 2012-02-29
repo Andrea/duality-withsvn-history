@@ -34,6 +34,8 @@
 			this.toolStripButtonWorkDir = new System.Windows.Forms.ToolStripButton();
 			this.toolStripLabelProjectName = new System.Windows.Forms.ToolStripLabel();
 			this.folderView = new Aga.Controls.Tree.TreeViewAdv();
+			this.treeColumnName = new Aga.Controls.Tree.TreeColumn();
+			this.treeColumnType = new Aga.Controls.Tree.TreeColumn();
 			this.contextMenuNode = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.toolStripSeparatorCustomActions = new System.Windows.Forms.ToolStripSeparator();
 			this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -49,6 +51,7 @@
 			this.showInExplorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.nodeStateIcon = new Aga.Controls.Tree.NodeControls.NodeStateIcon();
 			this.nodeTextBoxName = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+			this.nodeTextBoxType = new Aga.Controls.Tree.NodeControls.NodeTextBox();
 			this.timerFlashItem = new System.Windows.Forms.Timer(this.components);
 			this.contextMenuDragMoveCopy = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.copyHereToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -98,6 +101,8 @@
 			this.folderView.AllowDrop = true;
 			this.folderView.BackColor = System.Drawing.SystemColors.Window;
 			this.folderView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.folderView.Columns.Add(this.treeColumnName);
+			this.folderView.Columns.Add(this.treeColumnType);
 			this.folderView.ContextMenuStrip = this.contextMenuNode;
 			this.folderView.DefaultToolTipProvider = null;
 			this.folderView.DisplayDraggingNodes = true;
@@ -109,11 +114,13 @@
 			this.folderView.Name = "folderView";
 			this.folderView.NodeControls.Add(this.nodeStateIcon);
 			this.folderView.NodeControls.Add(this.nodeTextBoxName);
+			this.folderView.NodeControls.Add(this.nodeTextBoxType);
 			this.folderView.NodeFilter = null;
 			this.folderView.SelectedNode = null;
 			this.folderView.SelectionMode = Aga.Controls.Tree.TreeSelectionMode.Multi;
 			this.folderView.Size = new System.Drawing.Size(206, 496);
 			this.folderView.TabIndex = 1;
+			this.folderView.UseColumns = true;
 			this.folderView.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.folderView_ItemDrag);
 			this.folderView.NodeMouseDoubleClick += new System.EventHandler<Aga.Controls.Tree.TreeNodeAdvMouseEventArgs>(this.folderView_NodeMouseDoubleClick);
 			this.folderView.SelectionChanged += new System.EventHandler(this.folderView_SelectionChanged);
@@ -122,6 +129,20 @@
 			this.folderView.DragOver += new System.Windows.Forms.DragEventHandler(this.folderView_DragOver);
 			this.folderView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.folderView_KeyDown);
 			this.folderView.Leave += new System.EventHandler(this.folderView_Leave);
+			// 
+			// treeColumnName
+			// 
+			this.treeColumnName.Header = "Name";
+			this.treeColumnName.SortOrder = System.Windows.Forms.SortOrder.None;
+			this.treeColumnName.TooltipText = null;
+			this.treeColumnName.Width = 150;
+			// 
+			// treeColumnType
+			// 
+			this.treeColumnType.Header = "Type";
+			this.treeColumnType.SortOrder = System.Windows.Forms.SortOrder.None;
+			this.treeColumnType.TooltipText = null;
+			this.treeColumnType.Width = 100;
 			// 
 			// contextMenuNode
 			// 
@@ -232,7 +253,7 @@
 			// 
 			this.nodeStateIcon.DataPropertyName = "Image";
 			this.nodeStateIcon.LeftMargin = 1;
-			this.nodeStateIcon.ParentColumn = null;
+			this.nodeStateIcon.ParentColumn = this.treeColumnName;
 			this.nodeStateIcon.ScaleMode = Aga.Controls.Tree.ImageScaleMode.Clip;
 			// 
 			// nodeTextBoxName
@@ -241,7 +262,14 @@
 			this.nodeTextBoxName.EditEnabled = true;
 			this.nodeTextBoxName.IncrementalSearchEnabled = true;
 			this.nodeTextBoxName.LeftMargin = 3;
-			this.nodeTextBoxName.ParentColumn = null;
+			this.nodeTextBoxName.ParentColumn = this.treeColumnName;
+			// 
+			// nodeTextBoxType
+			// 
+			this.nodeTextBoxType.DataPropertyName = "TypeName";
+			this.nodeTextBoxType.IncrementalSearchEnabled = true;
+			this.nodeTextBoxType.LeftMargin = 3;
+			this.nodeTextBoxType.ParentColumn = this.treeColumnType;
 			// 
 			// timerFlashItem
 			// 
@@ -374,5 +402,8 @@
 		private System.Windows.Forms.TextBox textBoxFilter;
 		private System.Windows.Forms.Label labelFilter;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparatorCustomActions;
+		private Aga.Controls.Tree.TreeColumn treeColumnName;
+		private Aga.Controls.Tree.TreeColumn treeColumnType;
+		private Aga.Controls.Tree.NodeControls.NodeTextBox nodeTextBoxType;
 	}
 }

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GamePlugin.core</name>
+    </assembly>
+    <members>
+        <member name="T:GamePlugin.AsteroidsCorePlugin">
+            <summary>
+            Defines a Duality core plugin.
+            </summary>
+        </member>
+        <member name="T:GamePlugin.Asteroid">
+            <summary>
+            This is an Asteroid. Imagine some docs here.
+            </summary>
+        </member>
+    </members>
+</doc>

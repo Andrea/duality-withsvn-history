@@ -31,6 +31,10 @@ namespace Duality
 		public static event EventHandler<ResourceEventArgs>	ResourceSaved = null;
 		
 		/// <summary>
+		/// The path of the file from which the Resource has been originally imported or initialized.
+		/// </summary>
+		protected	string	sourcePath	= null;
+		/// <summary>
 		/// The path of this Resource.
 		/// </summary>
 		[NonSerialized]	protected	string	path		= null;
@@ -54,6 +58,16 @@ namespace Duality
 		{
 			get { return this.path; }
 			internal set { this.path = value; }
+		}
+		/// <summary>
+		/// [GET / SET] The path of the file from which the Resource has been originally imported or initialized.
+		/// Setting this does not affect the Resource in any way.
+		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
+		public string SourcePath
+		{
+			get { return this.sourcePath; }
+			set { this.sourcePath = value; }
 		}
 		/// <summary>
 		/// [GET] The name of the Resource.
@@ -150,7 +164,8 @@ namespace Duality
 		/// <param name="r">The target Resource to copy this Resource's data to</param>
 		public virtual void CopyTo(Resource r)
 		{
-			r.path	= this.path;
+			r.path			= this.path;
+			r.sourcePath	= null;
 		}
 
 		/// <summary>

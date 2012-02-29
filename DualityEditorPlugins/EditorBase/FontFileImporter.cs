@@ -36,7 +36,7 @@ namespace EditorBase
 		public bool IsUsingSrcFile(Resource r, string srcFile)
 		{
 			Font f = r as Font;
-			return f != null && f.CustomFamilyData != null && f.CustomFamilyBasePath == srcFile;
+			return f != null && f.CustomFamilyData != null && f.SourcePath == srcFile;
 		}
 		public void ReimportFile(Resource r, string srcFile)
 		{

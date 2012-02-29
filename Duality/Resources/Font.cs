@@ -195,8 +195,7 @@ namespace Duality.Resources
 		private	bool		monospace	= false;
 		private	bool		kerning		= false;
 		// Embedded custom font family
-		private	byte[]		customFamilyData		= null;
-		private	string		customFamilyBasePath	= null;
+		private	byte[]		customFamilyData	= null;
 		// Data that is automatically acquired while loading the font
 		[NonSerialized]	private SysDrawFont	internalFont	= new SysDrawFont(FontFamily.GenericMonospace, 10);
 		[NonSerialized]	private	GlyphData[]	glyphs			= null;
@@ -340,16 +339,6 @@ namespace Duality.Resources
 		{
 			get { return this.customFamilyData; }
 		}
-		/// <summary>
-		/// [GET] If a custom font file has been imported in order to create this Font, this is
-		/// the path from of the original file. This is only relevant when creating new Fonts 
-		/// at runtime or importing them in the editor environment.
-		/// </summary>
-		[EditorHintFlags(MemberFlags.Invisible)]
-		public string CustomFamilyBasePath
-		{
-			get { return this.customFamilyBasePath; }
-		}
 
 		/// <summary>
 		/// [GET] The Fonts height.
@@ -412,15 +401,15 @@ namespace Duality.Resources
 		/// <param name="path">The path of the file from which to retrieve the new font family data.</param>
 		public void LoadCustomFamilyData(string path = null)
 		{
-			if (path == null) path = this.customFamilyBasePath;
+			if (path == null) path = this.sourcePath;
 
-			this.customFamilyBasePath = path;
+			this.sourcePath = path;
 
-			if (String.IsNullOrEmpty(this.customFamilyBasePath) || !File.Exists(this.customFamilyBasePath))
-				this.customFamilyBasePath = null;
+			if (String.IsNullOrEmpty(this.sourcePath) || !File.Exists(this.sourcePath))
+				this.sourcePath = null;
 			else
 			{
-				this.customFamilyData = File.ReadAllBytes(this.customFamilyBasePath);
+				this.customFamilyData = File.ReadAllBytes(this.sourcePath);
 				this.familyName = LoadFontFamilyFromMemory(this.customFamilyData).Name;
 			}
 		}
@@ -430,10 +419,10 @@ namespace Duality.Resources
 		/// <param name="path">The path of the file to which to save the font family data.</param>
 		public void SaveCustomFamilyData(string path = null)
 		{
-			if (path == null) path = this.customFamilyBasePath;
+			if (path == null) path = this.sourcePath;
 
 			// We're saving this Pixmaps pixel data for the first time
-			if (!this.path.Contains(':') && this.customFamilyBasePath == null) this.customFamilyBasePath = path;
+			if (!this.path.Contains(':') && this.sourcePath == null) this.sourcePath = path;
 
 			File.WriteAllBytes(path, this.customFamilyData);
 		}
@@ -965,7 +954,6 @@ namespace Duality.Resources
 		{
 			base.CopyTo(r);
 			Font c = r as Font;
-			c.customFamilyBasePath = null;
 			c.customFamilyData = this.customFamilyData != null ? (byte[])this.customFamilyData.Clone() : null;
 			c.familyName = this.familyName;
 			c.size = this.size;
