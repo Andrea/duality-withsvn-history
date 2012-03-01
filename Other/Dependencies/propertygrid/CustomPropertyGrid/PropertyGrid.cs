@@ -266,6 +266,9 @@ namespace CustomPropertyGrid
 
 			e.Graphics.FillRectangle(new SolidBrush(this.BackColor), this.ClientRectangle);
 
+			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
+			watch.Restart();
+
 			GraphicsState originalState = e.Graphics.Save();
 			if (this.mainEditor != null)
 			{
@@ -276,6 +279,8 @@ namespace CustomPropertyGrid
 				this.mainEditor.OnPaint(e);
 			}
 			e.Graphics.Restore(originalState);
+
+			Console.WriteLine("Paint: {0} ms", watch.ElapsedMilliseconds);
 		}
 
 		protected override void OnMouseEnter(EventArgs e)
