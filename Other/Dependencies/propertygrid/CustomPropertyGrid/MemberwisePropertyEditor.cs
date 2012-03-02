@@ -10,29 +10,78 @@ namespace CustomPropertyGrid
 {
 	public class MemberwisePropertyEditor : GroupedPropertyEditor
 	{
-		private	object[]	curObjects	= null;
+		private	object[]						curObjects	= null;
+		private	Predicate<MemberInfo>			memberPredicate		= null;
+		private	Predicate<MemberInfo>			memberAffectsOthers	= null;
+		private	Func<MemberInfo,PropertyEditor>	memberEditorCreator	= null;
 
 		public override object DisplayedValue
 		{
 			get { return this.curObjects; }
 		}
+		public Predicate<MemberInfo> MemberPredicate
+		{
+			get { return this.memberPredicate; }
+			set
+			{
+				if (value == null) value = this.DefaultMemberPredicate;
+				if (this.memberPredicate != value)
+				{
+					this.memberPredicate = value;
+					if (this.ContentInitialized) this.InitContent();
+				}
+			}
+		}
+		public Predicate<MemberInfo> MemberAffectsOthers
+		{
+			get { return this.memberAffectsOthers; }
+			set
+			{
+				if (value == null) value = this.DefaultMemberAffectsOthers;
+				if (this.memberAffectsOthers != value)
+				{
+					this.memberAffectsOthers = value;
+					if (this.ContentInitialized) this.InitContent();
+				}
+			}
+		}
+		public Func<MemberInfo,PropertyEditor> MemberEditorCreator
+		{
+			get { return this.memberEditorCreator; }
+			set
+			{
+				if (value == null) value = this.DefaultMemberEditorCreator;
+				if (this.memberEditorCreator != value)
+				{
+					this.memberEditorCreator = value;
+					if (this.ContentInitialized) this.InitContent();
+				}
+			}
+		}
+
+
+		public MemberwisePropertyEditor()
+		{
+			this.memberEditorCreator = this.DefaultMemberEditorCreator;
+			this.memberAffectsOthers = this.DefaultMemberAffectsOthers;
+			this.memberPredicate = this.DefaultMemberPredicate;
+		}
 
 		public override void InitContent()
 		{
-			base.InitContent();
-
 			this.ClearContent();
+
+			base.InitContent();
 			if (this.EditedType != null)
 			{
 				// Generate and add property editors for the current type
 				this.BeginUpdate();
-				this.OnAddingEditors();
 				// Properties
 				{
 					PropertyInfo[] propArr = this.EditedType.GetProperties(BindingFlags.Instance | BindingFlags.Public);
 					var propQuery = 
 						from p in propArr
-						where p.CanRead && p.GetIndexParameters().Length == 0 && this.MemberPredicate(p)
+						where p.CanRead && p.GetIndexParameters().Length == 0 && this.memberPredicate(p)
 						orderby GetTypeHierarchyLevel(p.DeclaringType) ascending, p.Name
 						select p;
 					foreach (PropertyInfo prop in propQuery)
@@ -45,7 +94,7 @@ namespace CustomPropertyGrid
 					FieldInfo[] fieldArr = this.EditedType.GetFields(BindingFlags.Instance | BindingFlags.Public);
 					var fieldQuery =
 						from f in fieldArr
-						where this.MemberPredicate(f)
+						where this.memberPredicate(f)
 						orderby GetTypeHierarchyLevel(f.DeclaringType) ascending, f.Name
 						select f;
 					foreach (FieldInfo field in fieldQuery)
@@ -57,44 +106,30 @@ namespace CustomPropertyGrid
 				this.PerformGetValue();
 			}
 		}
-		protected virtual void OnAddingEditors()
-		{
-
-		}
-		protected virtual PropertyEditor MemberEditor(MemberInfo info)
-		{
-			return null;
-		}
-		protected virtual bool MemberPredicate(MemberInfo info)
-		{
-			return true;
-		}
 
 		public PropertyEditor AddEditorForProperty(PropertyInfo prop)
 		{
-			bool flaggedReadOnly = false;
-
-			PropertyEditor e = this.MemberEditor(prop);
+			PropertyEditor e = this.memberEditorCreator(prop);
 			if (e == null) e = this.ParentGrid.CreateEditor(prop.PropertyType);
 			if (e == null) return null;
 			e.Getter = this.CreatePropertyValueGetter(prop);
-			e.Setter = (prop.CanWrite && !flaggedReadOnly) ? this.CreatePropertyValueSetter(prop) : null;
+			e.Setter = prop.CanWrite ? this.CreatePropertyValueSetter(prop) : null;
 			e.PropertyName = prop.Name;
 			e.EditedMember = prop;
+			this.ParentGrid.ConfigureEditor(e);
 			this.AddPropertyEditor(e);
 			return e;
 		}
 		public PropertyEditor AddEditorForField(FieldInfo field)
 		{
-			bool flaggedReadOnly = false;
-
-			PropertyEditor e = this.MemberEditor(field);
+			PropertyEditor e = this.memberEditorCreator(field);
 			if (e == null) e = this.ParentGrid.CreateEditor(field.FieldType);
 			if (e == null) return null;
 			e.Getter = this.CreateFieldValueGetter(field);
-			e.Setter = !flaggedReadOnly ? this.CreateFieldValueSetter(field) : null;
+			e.Setter = this.CreateFieldValueSetter(field);
 			e.PropertyName = field.Name;
 			e.EditedMember = field;
+			this.ParentGrid.ConfigureEditor(e);
 			this.AddPropertyEditor(e);
 			return e;
 		}
@@ -111,15 +146,15 @@ namespace CustomPropertyGrid
 
 			this.OnUpdateFromObjects(this.curObjects);
 
-			foreach (PropertyEditor e in this.PropertyEditors)
+			foreach (PropertyEditor e in this.Children)
 				e.PerformGetValue();
 		}
 		public override void PerformSetValue()
 		{
 			base.PerformSetValue();
-			if (!this.PropertyEditors.Any()) return;
+			if (!this.Children.Any()) return;
 
-			foreach (PropertyEditor e in this.PropertyEditors)
+			foreach (PropertyEditor e in this.Children)
 				e.PerformSetValue();
 		}
 		protected virtual void OnUpdateFromObjects(object[] values)
@@ -152,7 +187,7 @@ namespace CustomPropertyGrid
 		}
 		protected Action<IEnumerable<object>> CreatePropertyValueSetter(PropertyInfo property)
 		{
-			bool affectsOthers = false;
+			bool affectsOthers = this.memberAffectsOthers(property);
 			return delegate(IEnumerable<object> values)
 			{
 				IEnumerator<object> valuesEnum = values.GetEnumerator();
@@ -174,7 +209,7 @@ namespace CustomPropertyGrid
 		}
 		protected Action<IEnumerable<object>> CreateFieldValueSetter(FieldInfo field)
 		{
-			bool affectsOthers = false;
+			bool affectsOthers = this.memberAffectsOthers(field);
 			return delegate(IEnumerable<object> values)
 			{
 				IEnumerator<object> valuesEnum = values.GetEnumerator();
@@ -202,6 +237,19 @@ namespace CustomPropertyGrid
 		protected virtual void OnFieldSet(FieldInfo property, IEnumerable<object> targets)
 		{
 
+		}
+
+		private bool DefaultMemberPredicate(MemberInfo info)
+		{
+			return true;
+		}
+		private bool DefaultMemberAffectsOthers(MemberInfo info)
+		{
+			return false;
+		}
+		private	PropertyEditor DefaultMemberEditorCreator(MemberInfo info)
+		{
+			return null;
 		}
 
 		private static int GetTypeHierarchyLevel(Type t)

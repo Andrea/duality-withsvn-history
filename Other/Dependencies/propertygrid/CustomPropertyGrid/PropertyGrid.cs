@@ -216,6 +216,8 @@ namespace CustomPropertyGrid
 				GroupedPropertyEditor mainGroupEditor = this.mainEditor as GroupedPropertyEditor;
 				mainGroupEditor.Expanded = true;
 			}
+
+			this.AutoScrollMinSize = new Size(0, this.mainEditor.Height);
 		}
 		protected void DisposePropertyEditor()
 		{
@@ -241,9 +243,14 @@ namespace CustomPropertyGrid
 			e.ParentGrid = this;
 			return e;
 		}
+		public virtual void ConfigureEditor(PropertyEditor editor)
+		{
+
+		}
 
 		public void Focus(PropertyEditor editor)
 		{
+			if (this.focusEditor != editor) this.Invalidate();
 			if (editor != null)
 			{
 				this.focusEditor = editor;
@@ -293,7 +300,7 @@ namespace CustomPropertyGrid
 				Rectangle editorRect = new Rectangle(this.ClientRectangle.Location, this.mainEditor.Size);
 				editorRect.Intersect(this.ClientRectangle);
 				e.Graphics.SetClip(editorRect);
-				e.Graphics.TranslateTransform(this.ClientRectangle.X, this.ClientRectangle.Y);
+				e.Graphics.TranslateTransform(this.ClientRectangle.X, this.ClientRectangle.Y + this.AutoScrollPosition.Y);
 				this.mainEditor.OnPaint(e);
 			}
 			e.Graphics.Restore(originalState);
@@ -326,7 +333,12 @@ namespace CustomPropertyGrid
 
 			if (this.mainEditor != null)
 			{
-				this.mainEditor.OnMouseMove(new MouseEventArgs(e.Button, e.Clicks, e.X - this.ClientRectangle.X, e.Y - this.ClientRectangle.Y, e.Delta));
+				this.mainEditor.OnMouseMove(new MouseEventArgs(
+					e.Button, 
+					e.Clicks, 
+					e.X - this.ClientRectangle.X, 
+					e.Y - this.ClientRectangle.Y - this.AutoScrollPosition.Y, 
+					e.Delta));
 			}
 		}
 		protected override void OnMouseDown(MouseEventArgs e)
@@ -335,7 +347,12 @@ namespace CustomPropertyGrid
 
 			if (this.mainEditor != null)
 			{
-				this.mainEditor.OnMouseDown(new MouseEventArgs(e.Button, e.Clicks, e.X - this.ClientRectangle.X, e.Y - this.ClientRectangle.Y, e.Delta));
+				this.mainEditor.OnMouseDown(new MouseEventArgs(
+					e.Button, 
+					e.Clicks, 
+					e.X - this.ClientRectangle.X, 
+					e.Y - this.ClientRectangle.Y - this.AutoScrollPosition.Y, 
+					e.Delta));
 			}
 		}
 		protected override void OnMouseUp(MouseEventArgs e)
@@ -344,7 +361,12 @@ namespace CustomPropertyGrid
 
 			if (this.mainEditor != null)
 			{
-				this.mainEditor.OnMouseUp(new MouseEventArgs(e.Button, e.Clicks, e.X - this.ClientRectangle.X, e.Y - this.ClientRectangle.Y, e.Delta));
+				this.mainEditor.OnMouseUp(new MouseEventArgs(
+					e.Button, 
+					e.Clicks, 
+					e.X - this.ClientRectangle.X, 
+					e.Y - this.ClientRectangle.Y - this.AutoScrollPosition.Y, 
+					e.Delta));
 			}
 		}
 		protected override void OnMouseClick(MouseEventArgs e)
@@ -353,7 +375,12 @@ namespace CustomPropertyGrid
 
 			if (this.mainEditor != null)
 			{
-				this.mainEditor.OnMouseClick(new MouseEventArgs(e.Button, e.Clicks, e.X - this.ClientRectangle.X, e.Y - this.ClientRectangle.Y, e.Delta));
+				this.mainEditor.OnMouseClick(new MouseEventArgs(
+					e.Button, 
+					e.Clicks, 
+					e.X - this.ClientRectangle.X, 
+					e.Y - this.ClientRectangle.Y - this.AutoScrollPosition.Y, 
+					e.Delta));
 			}
 		}
 		protected override void OnMouseDoubleClick(MouseEventArgs e)
@@ -362,14 +389,81 @@ namespace CustomPropertyGrid
 
 			if (this.mainEditor != null)
 			{
-				this.mainEditor.OnMouseDoubleClick(new MouseEventArgs(e.Button, e.Clicks, e.X - this.ClientRectangle.X, e.Y - this.ClientRectangle.Y, e.Delta));
+				this.mainEditor.OnMouseDoubleClick(new MouseEventArgs(
+					e.Button, 
+					e.Clicks, 
+					e.X - this.ClientRectangle.X, 
+					e.Y - this.ClientRectangle.Y - this.AutoScrollPosition.Y, 
+					e.Delta));
 			}
 		}
 
+		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+		{
+			if (keyData == Keys.Up || keyData == Keys.Down || keyData == Keys.Left || keyData == Keys.Right)
+			{
+				KeyEventArgs args = new KeyEventArgs(keyData);
+				args.Handled = false;
+				this.OnKeyDown(args);
+				return args.Handled;
+			}
+			return base.ProcessCmdKey(ref msg, keyData);
+		}
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
 			base.OnKeyDown(e);
 			if (this.focusEditor != null) this.focusEditor.OnKeyDown(e);
+
+			if (!e.Handled)
+			{
+				if (this.focusEditor != null)
+				{
+					if (e.KeyCode == Keys.Down)
+					{
+						PropertyEditor current = this.focusEditor;
+						PropertyEditor next;
+						while (current != null)
+						{
+							next = current.NextEditor;
+							if (next != null)
+							{
+								next.Focus();
+								break;
+							}
+							else
+								current = current.ParentEditor;
+						}
+						e.Handled = true;
+					}
+					else if (e.KeyCode == Keys.Up)
+					{
+						PropertyEditor current = this.focusEditor;
+						PropertyEditor prev;
+						while (current != null)
+						{
+							prev = current.PrevEditor;
+							if (prev != null)
+							{
+								prev.Focus();
+								break;
+							}
+							else
+								current = current.ParentEditor;
+						}
+						e.Handled = true;
+					}
+					else if (e.KeyCode == Keys.Left)
+					{
+						if (this.focusEditor.ParentEditor != null) this.focusEditor.ParentEditor.Focus();
+						e.Handled = true;
+					}
+					else if (e.KeyCode == Keys.Right)
+					{
+						if (this.focusEditor.Children.Any()) this.focusEditor.Children.First().Focus();
+						e.Handled = true;
+					}
+				}
+			}
 		}
 		protected override void OnKeyUp(KeyEventArgs e)
 		{
@@ -388,7 +482,13 @@ namespace CustomPropertyGrid
 
 			if (this.mainEditor != null)
 			{
-				DragEventArgs subEvent = new DragEventArgs(e.Data, e.KeyState, e.X - this.ClientRectangle.X, e.Y - this.ClientRectangle.Y, e.AllowedEffect, e.Effect);
+				DragEventArgs subEvent = new DragEventArgs(
+					e.Data, 
+					e.KeyState, 
+					e.X - this.ClientRectangle.X,
+					e.Y - this.ClientRectangle.Y - this.AutoScrollPosition.Y,
+					e.AllowedEffect,
+					e.Effect);
 				this.mainEditor.OnDragEnter(subEvent);
 				e.Effect = subEvent.Effect;
 			}
@@ -408,7 +508,13 @@ namespace CustomPropertyGrid
 
 			if (this.mainEditor != null)
 			{
-				DragEventArgs subEvent = new DragEventArgs(e.Data, e.KeyState, e.X - this.ClientRectangle.X, e.Y - this.ClientRectangle.Y, e.AllowedEffect, e.Effect);
+				DragEventArgs subEvent = new DragEventArgs(
+					e.Data, 
+					e.KeyState, 
+					e.X - this.ClientRectangle.X,
+					e.Y - this.ClientRectangle.Y - this.AutoScrollPosition.Y,
+					e.AllowedEffect,
+					e.Effect);
 				this.mainEditor.OnDragOver(subEvent);
 				e.Effect = subEvent.Effect;
 			}
@@ -419,7 +525,13 @@ namespace CustomPropertyGrid
 
 			if (this.mainEditor != null)
 			{
-				DragEventArgs subEvent = new DragEventArgs(e.Data, e.KeyState, e.X - this.ClientRectangle.X, e.Y - this.ClientRectangle.Y, e.AllowedEffect, e.Effect);
+				DragEventArgs subEvent = new DragEventArgs(
+					e.Data, 
+					e.KeyState, 
+					e.X - this.ClientRectangle.X,
+					e.Y - this.ClientRectangle.Y - this.AutoScrollPosition.Y,
+					e.AllowedEffect,
+					e.Effect);
 				this.mainEditor.OnDragDrop(subEvent);
 				e.Effect = subEvent.Effect;
 			}
@@ -440,6 +552,16 @@ namespace CustomPropertyGrid
 		{
 			base.OnSizeChanged(e);
 			this.UpdatePropertyEditor();
+		}
+		protected override void OnScroll(ScrollEventArgs se)
+		{
+			base.OnScroll(se);
+			this.Invalidate();
+			if (this.ClientRectangle.Contains(this.PointToClient(Cursor.Position)))
+			{
+				MouseEventArgs childArgs = new MouseEventArgs(Control.MouseButtons, 0, Control.MousePosition.X, Control.MousePosition.Y, 0);
+				this.OnMouseMove(childArgs);
+			}
 		}
 		protected override Point ScrollToControl(Control activeControl)
 		{

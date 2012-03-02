@@ -52,11 +52,14 @@ namespace CustomPropertyGrid
 			None			= 0x0,
 
 			HasPropertyName	= 0x1,
-			HasRemoveButton	= 0x2,
+			HasButton	= 0x2,
 
-			All = HasPropertyName | HasRemoveButton,
-			Default = HasPropertyName
+			All = HasPropertyName | HasButton,
+			Default = All | HasPropertyName
 		}
+
+		private	static	Font	fontNormal		= SystemFonts.DefaultFont;
+		private	static	Font	fontModified	= new Font(SystemFonts.DefaultFont, FontStyle.Bold);
 
 		private	PropertyGrid	parentGrid		= null;
 		private	PropertyEditor	parentEditor	= null;
@@ -68,13 +71,16 @@ namespace CustomPropertyGrid
 		private	HintFlags		hints			= HintFlags.Default;
 		private	Size			size			= new Size(0, 20);
 		private	Rectangle		clientRect		= Rectangle.Empty;
-		private	bool			removeButtonHovered	= false;
-		private	bool			removeButtonPressed	= false;
+		private	Rectangle		nameLabelRect	= Rectangle.Empty;
+		private	Rectangle		buttonRect		= Rectangle.Empty;
+		private	bool			buttonHovered	= false;
+		private	bool			buttonPressed	= false;
+		private	Image			buttonIcon		= CustomPropertyGrid.Properties.Resources.ImageDelete;
 		private	Func<IEnumerable<object>>	getter	= null;
 		private	Action<IEnumerable<object>>	setter	= null;
 
 
-		public event EventHandler	RemoveButtonPressed	= null;
+		public event EventHandler	RightButtonPressed	= null;
 		public event EventHandler<PropertyEditorValueEventArgs>	EditingFinished = null;
 		public event EventHandler<PropertyEditorValueEventArgs>	ValueChanged	= null;
 
@@ -100,6 +106,38 @@ namespace CustomPropertyGrid
 				if (this.parentEditor != null) this.parentGrid = this.parentEditor.ParentGrid;
 				if (this.ReadOnly != lastReadOnly) this.OnReadOnlyChanged();
 			}
+		}
+		public PropertyEditor NextEditor
+		{
+			get
+			{
+				if (this.parentEditor == null) return null;
+				bool foundMe = false;
+				foreach (PropertyEditor child in this.parentEditor.Children)
+				{
+					if (foundMe) return child;
+					if (child == this) foundMe = true;
+				}
+				return null;
+			}
+		}
+		public PropertyEditor PrevEditor
+		{
+			get
+			{
+				if (this.parentEditor == null) return null;
+				PropertyEditor last = null;
+				foreach (PropertyEditor child in this.parentEditor.Children)
+				{
+					if (child == this) return last;
+					last = child;
+				}
+				return null;
+			}
+		}
+		public virtual IEnumerable<PropertyEditor> Children
+		{
+			get { return new PropertyEditor[0]; }
 		}
 		
 		public Type EditedType
@@ -191,7 +229,19 @@ namespace CustomPropertyGrid
 				if (this.hints != value)
 				{
 					this.hints = value;
-					this.UpdateClientRectangle();
+					this.UpdateGeometry();
+				}
+			}
+		}
+		public Image ButtonIcon
+		{
+			get { return this.buttonIcon; }
+			set
+			{
+				if (this.buttonIcon != value)
+				{
+					this.buttonIcon = value;
+					this.Invalidate();
 				}
 			}
 		}
@@ -226,26 +276,17 @@ namespace CustomPropertyGrid
 		public Rectangle ClientRectangle
 		{
 			get { return this.clientRect; }
+			protected set { this.clientRect = value; }
 		}
-		public Rectangle NameLabelRectangle
+		protected Rectangle NameLabelRectangle
 		{
-			get
-			{
-				if ((this.hints & HintFlags.HasPropertyName) != HintFlags.None)
-					return new Rectangle(0, 0, this.size.Width * 2 / 5, this.size.Height);
-				else
-					return Rectangle.Empty;
-			}
+			get { return this.nameLabelRect; }
+			set { this.nameLabelRect = value; }
 		}
-		public Rectangle RemoveButtonRectangle
+		protected Rectangle ButtonRectangle
 		{
-			get
-			{
-				if ((this.hints & HintFlags.HasRemoveButton) != HintFlags.None)
-					return new Rectangle(this.size.Width - 15, 0, 15, this.size.Height);
-				else
-					return Rectangle.Empty;
-			}
+			get { return this.buttonRect; }
+			set { this.buttonRect = value; }
 		}
 		
 
@@ -294,20 +335,23 @@ namespace CustomPropertyGrid
 			return Point.Empty;
 		}
 
-		protected void UpdateClientRectangle()
+		protected virtual void UpdateGeometry()
 		{
-			this.clientRect = new Rectangle(0, 0, this.size.Width, this.size.Height);
 			if ((this.hints & HintFlags.HasPropertyName) != HintFlags.None)
-			{
-				int nameLabelWidth = this.NameLabelRectangle.Width;
-				this.clientRect.X += nameLabelWidth;
-				this.clientRect.Width -= nameLabelWidth;
-			}
-			if ((this.hints & HintFlags.HasRemoveButton) != HintFlags.None)
-			{
-				int removeButtonWidth = this.RemoveButtonRectangle.Width;
-				this.clientRect.Width -= removeButtonWidth;
-			}
+				this.nameLabelRect = new Rectangle(0, 0, this.size.Width * 2 / 5, this.size.Height);
+			else
+				this.nameLabelRect = Rectangle.Empty;
+
+			Size rightButtonSize = this.buttonIcon != null ? this.buttonIcon.Size : new Size(10, 10);
+			if ((this.hints & HintFlags.HasButton) != HintFlags.None)
+				this.buttonRect = new Rectangle(this.size.Width - rightButtonSize.Width - 4, this.size.Height / 2 - rightButtonSize.Height / 2 - 2, rightButtonSize.Width + 4, rightButtonSize.Height + 4);
+			else
+				this.buttonRect = Rectangle.Empty;
+
+			this.clientRect = new Rectangle(0, 0, this.size.Width, this.size.Height);
+			this.clientRect.X += this.nameLabelRect.Width;
+			this.clientRect.Width -= this.nameLabelRect.Width;
+			this.clientRect.Width -= this.buttonRect.Width;
 		}
 		protected void BeginUpdate()
 		{
@@ -322,124 +366,160 @@ namespace CustomPropertyGrid
 		
 		protected virtual bool IsChildValueModified(PropertyEditor childEditor) { return false; }
 
+		protected void PaintBackground(Graphics g, Rectangle rect)
+		{
+			g.FillRectangle(this.Focused ? SystemBrushes.ControlLight : SystemBrushes.Control, rect);
+		}
+		protected void PaintButton(Graphics g, Rectangle rect)
+		{
+			if ((this.hints & HintFlags.HasButton) == HintFlags.None || this.buttonIcon == null) return;
+
+			Size rightButtonSize = this.buttonIcon.Size;
+			Point rightButtonCenter = new Point(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
+
+			var imgAttribs = new System.Drawing.Imaging.ImageAttributes();
+			System.Drawing.Imaging.ColorMatrix colorMatrix = null;
+			if (this.buttonPressed)
+			{
+				colorMatrix = new System.Drawing.Imaging.ColorMatrix(new float[][] {
+					new float[] {1.3f, 0.0f, 0.0f, 0.0f, 0.0f},
+					new float[] {0.0f, 1.3f, 0.0f, 0.0f, 0.0f},
+					new float[] {0.0f, 0.0f, 1.3f, 0.0f, 0.0f},
+					new float[] {0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
+					new float[] {0.0f, 0.0f, 0.0f, 0.0f, 1.0f}});
+			}
+			else if (this.buttonHovered)
+			{
+				colorMatrix = new System.Drawing.Imaging.ColorMatrix(new float[][] {
+					new float[] {1.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+					new float[] {0.0f, 1.0f, 0.0f, 0.0f, 0.0f},
+					new float[] {0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
+					new float[] {0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
+					new float[] {0.0f, 0.0f, 0.0f, 0.0f, 1.0f}});
+			}
+			else
+			{
+				colorMatrix = new System.Drawing.Imaging.ColorMatrix(new float[][] {
+					new float[] {0.34f, 0.34f, 0.34f, 0.0f, 0.0f},
+					new float[] {0.34f, 0.34f, 0.34f, 0.0f, 0.0f},
+					new float[] {0.34f, 0.34f, 0.34f, 0.0f, 0.0f},
+					new float[] {0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
+					new float[] {0.0f, 0.0f, 0.0f, 0.0f, 1.0f}});
+			}
+			imgAttribs.SetColorMatrix(colorMatrix);
+				
+			if (this.buttonHovered)
+			{
+				Rectangle rightButtonBgRect = rect;
+				rightButtonBgRect.X += 1;
+				rightButtonBgRect.Y += 1;
+				rightButtonBgRect.Width -= 3;
+				rightButtonBgRect.Height -= 3;
+				g.FillRectangle(new SolidBrush(Color.FromArgb(128, SystemColors.Window)), rightButtonBgRect);
+				g.DrawRectangle(new Pen(Color.FromArgb(255, SystemColors.Window)), rightButtonBgRect);
+			}
+				
+			g.DrawImage(this.buttonIcon, 
+				new Rectangle(
+					rightButtonCenter.X - rightButtonSize.Width / 2,
+					rightButtonCenter.Y - rightButtonSize.Height / 2,
+					rightButtonSize.Width,
+					rightButtonSize.Height), 
+				0, 0, this.buttonIcon.Width, this.buttonIcon.Height, GraphicsUnit.Pixel, 
+				imgAttribs);
+		}
+		protected void PaintNameLabel(Graphics g, Rectangle rect)
+		{
+			if ((this.hints & HintFlags.HasPropertyName) == HintFlags.None) return;
+
+			Rectangle nameLabelTextRect = rect;
+			nameLabelTextRect.Width -= 5;
+
+			StringFormat nameLabelFormat = StringFormat.GenericDefault;
+			nameLabelFormat.Alignment = StringAlignment.Near;
+			nameLabelFormat.LineAlignment = StringAlignment.Center;
+			nameLabelFormat.Trimming = StringTrimming.Character;
+			nameLabelFormat.FormatFlags |= StringFormatFlags.NoWrap;
+
+			Font nameLabelFont = this.IsValueModified ? fontModified : fontNormal;
+
+			int charsFit, lines;
+			SizeF nameLabelSize = g.MeasureString(this.propertyName, nameLabelFont, nameLabelTextRect.Size, nameLabelFormat, out charsFit, out lines);
+			g.DrawString(this.propertyName, nameLabelFont, SystemBrushes.ControlText, nameLabelTextRect, nameLabelFormat);
+
+			if (charsFit < this.propertyName.Length)
+			{
+				Pen ellipsisPen = new Pen(SystemColors.ControlText);
+				ellipsisPen.DashStyle = DashStyle.Dot;
+				g.DrawLine(ellipsisPen, 
+					nameLabelTextRect.Right, 
+					(nameLabelTextRect.Y + nameLabelTextRect.Height * 0.5f) + (nameLabelSize.Height * 0.3f), 
+					rect.Right - 2, 
+					(nameLabelTextRect.Y + nameLabelTextRect.Height * 0.5f) + (nameLabelSize.Height * 0.3f));
+			}
+		}
 		internal protected virtual void OnPaint(PaintEventArgs e)
 		{
-			// Draw the background
-			e.Graphics.FillRectangle(this.Focused ? SystemBrushes.ControlLight : SystemBrushes.Control, 0, 0, this.size.Width, this.size.Height);
-
-			// Draw the name label if requested
-			if ((this.hints & HintFlags.HasPropertyName) != HintFlags.None)
-			{
-				Rectangle nameLabelRect = this.NameLabelRectangle;
-				Rectangle nameLabelTextRect = nameLabelRect; nameLabelTextRect.Width -= 5;
-				StringFormat nameLabelFormat = StringFormat.GenericDefault;
-				nameLabelFormat.Alignment = StringAlignment.Near;
-				nameLabelFormat.LineAlignment = StringAlignment.Center;
-				nameLabelFormat.Trimming = StringTrimming.Character;
-				nameLabelFormat.FormatFlags |= StringFormatFlags.NoWrap;
-
-				Font nameLabelFont = this.IsValueModified ? new Font(SystemFonts.DefaultFont, FontStyle.Bold) : SystemFonts.DefaultFont;
-
-				int charsFit, lines;
-				SizeF nameLabelSize = e.Graphics.MeasureString(this.propertyName, nameLabelFont, nameLabelTextRect.Size, nameLabelFormat, out charsFit, out lines);
-				e.Graphics.DrawString(this.propertyName, nameLabelFont, SystemBrushes.ControlText, nameLabelTextRect, nameLabelFormat);
-
-				if (charsFit < this.propertyName.Length)
-				{
-					Pen ellipsisPen = new Pen(SystemColors.ControlText);
-					ellipsisPen.DashStyle = DashStyle.Dot;
-					e.Graphics.DrawLine(ellipsisPen, 
-						nameLabelTextRect.Right, 
-						(nameLabelTextRect.Y + nameLabelTextRect.Height * 0.5f) + (nameLabelSize.Height * 0.3f), 
-						nameLabelRect.Right - 2, 
-						(nameLabelTextRect.Y + nameLabelTextRect.Height * 0.5f) + (nameLabelSize.Height * 0.3f));
-				}
-			}
-
-			// Draw the remove button if requested
-			if ((this.hints & HintFlags.HasRemoveButton) != HintFlags.None)
-			{
-				Rectangle removeButtonRect = this.RemoveButtonRectangle;
-				int removeButtonSize = 4;
-				Point removeButtonCenter = new Point(removeButtonRect.X + removeButtonRect.Width / 2, removeButtonRect.Y + removeButtonRect.Height / 2);
-				Pen removeButtonPen = null;
-				
-				if (this.removeButtonPressed)
-				{
-					e.Graphics.FillRectangle(Brushes.LightGray, removeButtonRect);
-					removeButtonPen = new Pen(Color.Black, 2.0f);
-				}
-				else if (this.removeButtonHovered)
-				{
-					e.Graphics.FillRectangle(Brushes.White, removeButtonRect);
-					removeButtonPen = new Pen(Color.FromArgb(64, 64, 64), 2.0f);
-				}
-				else
-				{
-					removeButtonPen = new Pen(Color.Gray, 2.0f);
-				}
-
-				e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-				e.Graphics.DrawLine(removeButtonPen, 
-					removeButtonCenter.X - removeButtonSize, 
-					removeButtonCenter.Y - removeButtonSize,
-					removeButtonCenter.X + removeButtonSize, 
-					removeButtonCenter.Y + removeButtonSize);
-				e.Graphics.DrawLine(removeButtonPen, 
-					removeButtonCenter.X + removeButtonSize, 
-					removeButtonCenter.Y - removeButtonSize,
-					removeButtonCenter.X - removeButtonSize, 
-					removeButtonCenter.Y + removeButtonSize);
-				e.Graphics.SmoothingMode = SmoothingMode.Default;
-			}
+			this.PaintBackground(e.Graphics, new Rectangle(Point.Empty, this.size));
+			this.PaintNameLabel(e.Graphics, this.nameLabelRect);
+			this.PaintButton(e.Graphics, this.buttonRect);
 		}
 		
 		internal protected virtual void OnMouseEnter(EventArgs e) {}
 		internal protected virtual void OnMouseLeave(EventArgs e)
 		{
-			if (this.removeButtonHovered) this.Invalidate();
-			this.removeButtonHovered = false;
-			this.removeButtonPressed = false;
+			if (this.buttonHovered) this.Invalidate();
+			this.buttonHovered = false;
+			this.buttonPressed = false;
 		}
 		internal protected virtual void OnMouseMove(MouseEventArgs e)
 		{
-			bool lastHovered = this.removeButtonHovered;
-			this.removeButtonHovered = this.RemoveButtonRectangle.Contains(e.Location);
-			if (lastHovered != this.removeButtonHovered) this.Invalidate();
+			bool lastHovered = this.buttonHovered;
+			this.buttonHovered = this.ButtonRectangle.Contains(e.Location);
+			if (lastHovered != this.buttonHovered) this.Invalidate();
 		}
 		internal protected virtual void OnMouseDown(MouseEventArgs e)
 		{
-			if (this.removeButtonHovered && (e.Button & MouseButtons.Left) != MouseButtons.None)
+			if (this.buttonHovered && (e.Button & MouseButtons.Left) != MouseButtons.None)
 			{
-				this.removeButtonPressed = true;
+				this.buttonPressed = true;
 				this.Invalidate();
 			}
 		}
 		internal protected virtual void OnMouseUp(MouseEventArgs e)
 		{
-			if (this.removeButtonPressed && (e.Button & MouseButtons.Left) != MouseButtons.None)
+			if (this.buttonPressed && (e.Button & MouseButtons.Left) != MouseButtons.None)
 			{
-				this.removeButtonPressed = false;
+				this.buttonPressed = false;
 				this.Invalidate();
 			}
 		}
 		internal protected virtual void OnMouseClick(MouseEventArgs e)
 		{
-			if (this.removeButtonHovered && (e.Button & MouseButtons.Left) != MouseButtons.None)
+			if (this.buttonHovered && (e.Button & MouseButtons.Left) != MouseButtons.None)
 				this.OnRemoveButtonPressed();
-			else if (new Rectangle(0, 0, this.size.Width, this.size.Height).Contains(e.Location))
+			if (new Rectangle(0, 0, this.size.Width, this.size.Height).Contains(e.Location))
 				this.Focus();
 		}
 		internal protected virtual void OnMouseDoubleClick(MouseEventArgs e) {}
 
-		internal protected virtual void OnKeyDown(KeyEventArgs e) {}
-		internal protected virtual void OnKeyUp(KeyEventArgs e) {}
-		internal protected virtual void OnKeyPress(KeyPressEventArgs e) {}
+		internal protected virtual void OnKeyDown(KeyEventArgs e)
+		{
+			if (!e.Handled && this.parentEditor != null) this.parentEditor.OnKeyDown(e);
+		}
+		internal protected virtual void OnKeyUp(KeyEventArgs e)
+		{
+			if (!e.Handled && this.parentEditor != null) this.parentEditor.OnKeyUp(e);
+		}
+		internal protected virtual void OnKeyPress(KeyPressEventArgs e)
+		{
+			if (!e.Handled && this.parentEditor != null) this.parentEditor.OnKeyPress(e);
+		}
 
-		internal protected virtual void OnDragEnter(DragEventArgs drgevent) {}
+		internal protected virtual void OnDragEnter(DragEventArgs e) {}
 		internal protected virtual void OnDragLeave(EventArgs e) {}
-		internal protected virtual void OnDragOver(DragEventArgs drgevent) {}
-		internal protected virtual void OnDragDrop(DragEventArgs drgevent) {}
+		internal protected virtual void OnDragOver(DragEventArgs e) {}
+		internal protected virtual void OnDragDrop(DragEventArgs e) {}
 
 		internal protected virtual void OnReadOnlyChanged()
 		{
@@ -462,12 +542,12 @@ namespace CustomPropertyGrid
 		}
 		protected virtual void OnSizeChanged()
 		{
-			this.UpdateClientRectangle();
+			this.UpdateGeometry();
 		}
 		protected virtual void OnRemoveButtonPressed()
 		{
-			if (this.RemoveButtonPressed != null)
-				this.RemoveButtonPressed(this, EventArgs.Empty);
+			if (this.RightButtonPressed != null)
+				this.RightButtonPressed(this, EventArgs.Empty);
 		}
 		protected virtual void OnValueChanged(object sender, PropertyEditorValueEventArgs args)
 		{

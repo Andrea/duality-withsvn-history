@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ControlRenderer.cs" />
     <Compile Include="GroupedPropertyEditor.cs" />
     <Compile Include="MemberwisePropertyEditor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -59,7 +60,7 @@
     </Compile>
     <Compile Include="ReflectionHelper.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -83,6 +84,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="cross.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ToDo.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

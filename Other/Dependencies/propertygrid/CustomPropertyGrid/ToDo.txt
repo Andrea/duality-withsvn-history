@@ -1,0 +1,6 @@
+﻿
+-->	GroupedPropertyEditor header
+	-->	Expand button
+	-->	Icon
+	-->	Style / Coloring
+	-->	Accessible and extendable (Active button!)

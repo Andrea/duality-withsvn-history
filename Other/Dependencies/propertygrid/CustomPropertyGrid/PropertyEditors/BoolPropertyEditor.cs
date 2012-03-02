@@ -18,6 +18,12 @@ namespace CustomPropertyGrid.PropertyEditors
 			get { return Convert.ChangeType(this.state == CheckState.Checked, this.EditedType); }
 		}
 		
+
+		public BoolPropertyEditor()
+		{
+			this.Height = 18;
+		}
+
 		public override void PerformGetValue()
 		{
 			base.PerformGetValue();
@@ -87,12 +93,12 @@ namespace CustomPropertyGrid.PropertyEditors
 				else if (this.hovered)	boxState = CheckBoxState.MixedHot;
 				else					boxState = CheckBoxState.MixedNormal;	
 			}
-
-			Size boxSize = CheckBoxRenderer.GetGlyphSize(e.Graphics, boxState);
+			
+			Size boxSize = ControlRenderer.CheckBoxSize;
 			Point boxLoc = new Point(
 				this.ClientRectangle.X + 2,
 				this.ClientRectangle.Y + this.ClientRectangle.Height / 2 - boxSize.Height / 2 - 1);
-			CheckBoxRenderer.DrawCheckBox(e.Graphics, boxLoc, Rectangle.Empty, "", null, this.Focused, boxState);
+			ControlRenderer.DrawCheckBox(e.Graphics, boxLoc, boxState);
 		}
 		protected internal override void OnMouseMove(MouseEventArgs e)
 		{
@@ -122,10 +128,10 @@ namespace CustomPropertyGrid.PropertyEditors
 			base.OnMouseUp(e);
 			if ((e.Button & MouseButtons.Left) != MouseButtons.None)
 			{
+				if (this.hovered && this.pressed) this.ToggleState();
 				if (this.pressed) this.Invalidate();
 				this.pressed = false;
 			}
-			if (this.hovered) this.ToggleState();
 		}
 		protected internal override void OnKeyDown(KeyEventArgs e)
 		{
