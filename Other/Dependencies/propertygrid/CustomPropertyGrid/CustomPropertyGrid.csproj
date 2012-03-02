@@ -49,6 +49,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GroupedPropertyEditor.cs" />
+    <Compile Include="MemberwisePropertyEditor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyEditor.cs" />
     <Compile Include="PropertyEditors\BoolPropertyEditor.cs" />

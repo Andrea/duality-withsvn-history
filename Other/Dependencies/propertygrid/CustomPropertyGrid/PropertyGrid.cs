@@ -64,25 +64,25 @@ namespace CustomPropertyGrid
 				//// IList collection
 				//else if (typeof(System.Collections.IList).IsAssignableFrom(baseType))
 				//    e = new IListPropertyEditor(parentEditor, parentGrid);
-				//// Unknown data type
-				//else
-				//{
-				//    // Ask around if any sub-editor can handle it and choose the most specialized
-				//    var availSubProviders = 
-				//        from p in this.subProviders
-				//        where p.IsResponsibleFor(baseType) != EditorPriority_None
-				//        orderby p.IsResponsibleFor(baseType) descending
-				//        select p;
-				//    IPropertyEditorProvider subProvider = availSubProviders.FirstOrDefault();
-				//    if (subProvider != null)
-				//    {
-				//        e = subProvider.CreateEditor(baseType);
-				//        return e;
-				//    }
+				// Unknown data type
+				else
+				{
+					// Ask around if any sub-editor can handle it and choose the most specialized
+					var availSubProviders = 
+						from p in this.subProviders
+						where p.IsResponsibleFor(baseType) != EditorPriority_None
+						orderby p.IsResponsibleFor(baseType) descending
+						select p;
+					IPropertyEditorProvider subProvider = availSubProviders.FirstOrDefault();
+					if (subProvider != null)
+					{
+						e = subProvider.CreateEditor(baseType);
+						return e;
+					}
 
-				//    // If not, default to reflection-driven MemberwisePropertyEditor
-				//    e = new MemberwisePropertyEditor();
-				//}
+					// If not, default to reflection-driven MemberwisePropertyEditor
+					e = new MemberwisePropertyEditor();
+				}
 
 				e.EditedType = baseType;
 				return e;
@@ -110,7 +110,7 @@ namespace CustomPropertyGrid
 				if (this.readOnly != value)
 				{
 					this.readOnly = value;
-					this.UpdatePropertyEditor();
+					if (this.mainEditor != null) this.mainEditor.OnReadOnlyChanged();
 				}
 			}
 		}
@@ -211,6 +211,11 @@ namespace CustomPropertyGrid
 			this.mainEditor.Getter = this.ValueGetter;
 			this.mainEditor.Setter = this.readOnly ? null : (Action<IEnumerable<object>>)this.ValueSetter;
 			this.mainEditor.Width = this.ClientSize.Width;
+			if (this.mainEditor is GroupedPropertyEditor)
+			{
+				GroupedPropertyEditor mainGroupEditor = this.mainEditor as GroupedPropertyEditor;
+				mainGroupEditor.Expanded = true;
+			}
 		}
 		protected void DisposePropertyEditor()
 		{
@@ -248,6 +253,19 @@ namespace CustomPropertyGrid
 			{
 				this.focusEditor = null;
 			}
+		}
+		public PropertyEditor PickEditorAt(int x, int y)
+		{
+			if (this.mainEditor == null) return null;
+			return this.mainEditor.PickEditorAt(x - this.ClientRectangle.X, y - this.ClientRectangle.Y);
+		}
+		public Point GetEditorLocation(PropertyEditor editor)
+		{
+			if (this.mainEditor == null) return Point.Empty;
+			Point result = this.mainEditor.GetChildLocation(editor);
+			result.X += this.ClientRectangle.X;
+			result.Y += this.ClientRectangle.Y;
+			return result;
 		}
 
 		protected IEnumerable<object> ValueGetter()

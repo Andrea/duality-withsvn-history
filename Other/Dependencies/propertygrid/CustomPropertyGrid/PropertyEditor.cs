@@ -4,9 +4,25 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Reflection;
 
 namespace CustomPropertyGrid
 {
+	public class PropertyEditorEventArgs : EventArgs
+	{
+		PropertyEditor editor;
+
+		public PropertyEditor Editor
+		{
+			get { return this.editor; }
+		}
+
+		public PropertyEditorEventArgs(PropertyEditor e)
+		{
+			this.editor = e;
+		}
+	}
+
 	public class PropertyEditorValueEventArgs : EventArgs
 	{
 		private	PropertyEditor	editor	= null;
@@ -45,7 +61,9 @@ namespace CustomPropertyGrid
 		private	PropertyGrid	parentGrid		= null;
 		private	PropertyEditor	parentEditor	= null;
 		private	Type			editedType		= null;
+		private	MemberInfo		editedMember	= null;
 		private	string			propertyName	= "Hello World, I'm a PropertyEditor. Yay!";
+		private	bool			forceWriteBack	= false;
 		private	bool			updatingFromObj	= false;
 		private	HintFlags		hints			= HintFlags.Default;
 		private	Size			size			= new Size(0, 20);
@@ -96,6 +114,18 @@ namespace CustomPropertyGrid
 				}
 			}
 		}
+		public MemberInfo EditedMember
+		{
+			get { return this.editedMember; }
+			set 
+			{
+				if (this.editedMember != value)
+				{
+					this.editedMember = value;
+					this.OnEditedMemberChanged();
+				}
+			}
+		}
 		public string PropertyName
 		{
 			get { return this.propertyName; }
@@ -104,6 +134,11 @@ namespace CustomPropertyGrid
 				this.propertyName = value;
 				this.Invalidate();
 			}
+		}
+		public bool ForceWriteBack
+		{
+			get { return this.forceWriteBack; }
+			set { this.forceWriteBack = value; }
 		}
 		public bool IsValueModified
 		{
@@ -131,6 +166,13 @@ namespace CustomPropertyGrid
 			get 
 			{ 
 				return this.setter == null || (this.parentEditor != null && this.parentEditor.ReadOnly);
+			}
+		}
+		public bool Enabled
+		{
+			get 
+			{ 
+				return this.parentGrid != null && this.parentGrid.Enabled;
 			}
 		}
 		public bool Focused
@@ -180,7 +222,7 @@ namespace CustomPropertyGrid
 			get { return this.size.Height; }
 			set { this.Size = new Size(this.size.Width, value); }
 		}
-
+		
 		public Rectangle ClientRectangle
 		{
 			get { return this.clientRect; }
@@ -229,14 +271,29 @@ namespace CustomPropertyGrid
 			this.SetValue(new object[] { obj });
 		}
 
-		protected void Invalidate()
+		public void Invalidate()
 		{
 			if (this.parentGrid != null) this.parentGrid.Invalidate();
 		}
-		protected void Focus()
+		public void Focus()
 		{
 			if (this.parentGrid != null) this.parentGrid.Focus(this);
 		}
+		public bool IsChildOf(PropertyEditor parent)
+		{
+			if (this.parentEditor == parent) return true;
+			if (this.parentEditor == null) return false;
+			return this.parentEditor.IsChildOf(parent);
+		}
+		public virtual PropertyEditor PickEditorAt(int x, int y)
+		{
+			return this;
+		}
+		public virtual Point GetChildLocation(PropertyEditor child)
+		{
+			return Point.Empty;
+		}
+
 		protected void UpdateClientRectangle()
 		{
 			this.clientRect = new Rectangle(0, 0, this.size.Width, this.size.Height);
@@ -267,6 +324,9 @@ namespace CustomPropertyGrid
 
 		internal protected virtual void OnPaint(PaintEventArgs e)
 		{
+			// Draw the background
+			e.Graphics.FillRectangle(this.Focused ? SystemBrushes.ControlLight : SystemBrushes.Control, 0, 0, this.size.Width, this.size.Height);
+
 			// Draw the name label if requested
 			if ((this.hints & HintFlags.HasPropertyName) != HintFlags.None)
 			{
@@ -349,7 +409,7 @@ namespace CustomPropertyGrid
 		}
 		internal protected virtual void OnMouseDown(MouseEventArgs e)
 		{
-			if (this.removeButtonHovered)
+			if (this.removeButtonHovered && (e.Button & MouseButtons.Left) != MouseButtons.None)
 			{
 				this.removeButtonPressed = true;
 				this.Invalidate();
@@ -357,7 +417,7 @@ namespace CustomPropertyGrid
 		}
 		internal protected virtual void OnMouseUp(MouseEventArgs e)
 		{
-			if (this.removeButtonPressed)
+			if (this.removeButtonPressed && (e.Button & MouseButtons.Left) != MouseButtons.None)
 			{
 				this.removeButtonPressed = false;
 				this.Invalidate();
@@ -365,7 +425,10 @@ namespace CustomPropertyGrid
 		}
 		internal protected virtual void OnMouseClick(MouseEventArgs e)
 		{
-			if (this.removeButtonHovered) this.OnRemoveButtonPressed();
+			if (this.removeButtonHovered && (e.Button & MouseButtons.Left) != MouseButtons.None)
+				this.OnRemoveButtonPressed();
+			else if (new Rectangle(0, 0, this.size.Width, this.size.Height).Contains(e.Location))
+				this.Focus();
 		}
 		internal protected virtual void OnMouseDoubleClick(MouseEventArgs e) {}
 
@@ -378,13 +441,24 @@ namespace CustomPropertyGrid
 		internal protected virtual void OnDragOver(DragEventArgs drgevent) {}
 		internal protected virtual void OnDragDrop(DragEventArgs drgevent) {}
 
-		protected virtual void OnReadOnlyChanged()
+		internal protected virtual void OnReadOnlyChanged()
 		{
 			this.Invalidate();
 		}
 		protected virtual void OnEditedTypeChanged()
 		{
 			this.Invalidate();
+		}
+		protected virtual void OnEditedMemberChanged()
+		{
+			this.Invalidate();
+			if (this.editedMember != null)
+			{
+				bool flaggedForceWriteBack = false;
+				this.forceWriteBack = flaggedForceWriteBack;
+			}
+			else
+				this.forceWriteBack = false;
 		}
 		protected virtual void OnSizeChanged()
 		{
@@ -395,24 +469,24 @@ namespace CustomPropertyGrid
 			if (this.RemoveButtonPressed != null)
 				this.RemoveButtonPressed(this, EventArgs.Empty);
 		}
-		protected virtual void OnValueChanged(PropertyEditorValueEventArgs args)
+		protected virtual void OnValueChanged(object sender, PropertyEditorValueEventArgs args)
 		{
 			if (this.ValueChanged != null)
-				this.ValueChanged(this, args);
+				this.ValueChanged(sender, args);
 		}
-		protected virtual void OnEditingFinished(PropertyEditorValueEventArgs args)
+		protected virtual void OnEditingFinished(object sender, PropertyEditorValueEventArgs args)
 		{
 			if (this.EditingFinished != null)
-				this.EditingFinished(this, args);
+				this.EditingFinished(sender, args);
 		}
 
-		protected void OnValueChanged(object value)
+		protected void OnValueChanged()
 		{
-			this.OnValueChanged(new PropertyEditorValueEventArgs(this, value));
+			this.OnValueChanged(this, new PropertyEditorValueEventArgs(this, this.DisplayedValue));
 		}
-		protected void OnEditingFinished(object value)
+		protected void OnEditingFinished()
 		{
-			this.OnEditingFinished(new PropertyEditorValueEventArgs(this, value));
+			this.OnEditingFinished(this, new PropertyEditorValueEventArgs(this, this.DisplayedValue));
 		}
 	}
 }

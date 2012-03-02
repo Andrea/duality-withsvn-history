@@ -93,6 +93,12 @@ namespace CustomPropertyGrid
 				this.yoink = val;
 			}
 		}
+		private class Test3
+		{
+			public bool boolOne;
+			public bool BoolTwo { get; set; }
+			public bool BoolThree { get; private set; }
+		}
 		#endregion
 
 		public DemoForm()
@@ -113,7 +119,7 @@ namespace CustomPropertyGrid
 			testObj2.enum2 = EnumTest.Three;
 
 			// Case A: Singleselect
-			this.propertyGrid1.SelectObjects(new object[] { true });
+			this.propertyGrid1.SelectObject(new Test3());
 			// Case B: Multiselect
 			//this.propertyGrid1.SelectObjects(new object[] { testObj, testObj2 });
 			// Case C: Select this very form
