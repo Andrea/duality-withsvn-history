@@ -207,15 +207,15 @@ namespace CustomPropertyGrid
 		{
 			int curY = 0;
 			// Paint background and name label
-			this.PaintBackground(e.Graphics, new Rectangle(Point.Empty, this.Size));
-			this.PaintNameLabel(e.Graphics, this.NameLabelRectangle);
+			this.PaintBackground(e.Graphics);
+			this.PaintNameLabel(e.Graphics);
 
 			// Paint header
 			this.PaintHeader(e.Graphics, new Rectangle(this.ClientRectangle.X, this.ClientRectangle.Y + curY, this.ClientRectangle.Width, this.headerHeight));
 			curY += this.headerHeight;
 
 			// Paint right button
-			this.PaintButton(e.Graphics, this.ButtonRectangle);
+			this.PaintButton(e.Graphics);
 			
 			// Paint children
 			if (this.expanded)

@@ -55,7 +55,7 @@ namespace CustomPropertyGrid
 			HasButton	= 0x2,
 
 			All = HasPropertyName | HasButton,
-			Default = All | HasPropertyName
+			Default = HasPropertyName
 		}
 
 		private	static	Font	fontNormal		= SystemFonts.DefaultFont;
@@ -366,16 +366,16 @@ namespace CustomPropertyGrid
 		
 		protected virtual bool IsChildValueModified(PropertyEditor childEditor) { return false; }
 
-		protected void PaintBackground(Graphics g, Rectangle rect)
+		protected void PaintBackground(Graphics g)
 		{
-			g.FillRectangle(this.Focused ? SystemBrushes.ControlLight : SystemBrushes.Control, rect);
+			g.FillRectangle(this.Focused ? SystemBrushes.ControlLight : SystemBrushes.Control, new Rectangle(Point.Empty, this.size));
 		}
-		protected void PaintButton(Graphics g, Rectangle rect)
+		protected void PaintButton(Graphics g)
 		{
 			if ((this.hints & HintFlags.HasButton) == HintFlags.None || this.buttonIcon == null) return;
 
 			Size rightButtonSize = this.buttonIcon.Size;
-			Point rightButtonCenter = new Point(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
+			Point rightButtonCenter = new Point(this.buttonRect.X + this.buttonRect.Width / 2, this.buttonRect.Y + this.buttonRect.Height / 2);
 
 			var imgAttribs = new System.Drawing.Imaging.ImageAttributes();
 			System.Drawing.Imaging.ColorMatrix colorMatrix = null;
@@ -410,7 +410,7 @@ namespace CustomPropertyGrid
 				
 			if (this.buttonHovered)
 			{
-				Rectangle rightButtonBgRect = rect;
+				Rectangle rightButtonBgRect = this.buttonRect;
 				rightButtonBgRect.X += 1;
 				rightButtonBgRect.Y += 1;
 				rightButtonBgRect.Width -= 3;
@@ -428,11 +428,11 @@ namespace CustomPropertyGrid
 				0, 0, this.buttonIcon.Width, this.buttonIcon.Height, GraphicsUnit.Pixel, 
 				imgAttribs);
 		}
-		protected void PaintNameLabel(Graphics g, Rectangle rect)
+		protected void PaintNameLabel(Graphics g)
 		{
 			if ((this.hints & HintFlags.HasPropertyName) == HintFlags.None) return;
 
-			Rectangle nameLabelTextRect = rect;
+			Rectangle nameLabelTextRect = this.nameLabelRect;
 			nameLabelTextRect.Width -= 5;
 
 			StringFormat nameLabelFormat = StringFormat.GenericDefault;
@@ -454,15 +454,15 @@ namespace CustomPropertyGrid
 				g.DrawLine(ellipsisPen, 
 					nameLabelTextRect.Right, 
 					(nameLabelTextRect.Y + nameLabelTextRect.Height * 0.5f) + (nameLabelSize.Height * 0.3f), 
-					rect.Right - 2, 
+					this.nameLabelRect.Right - 2, 
 					(nameLabelTextRect.Y + nameLabelTextRect.Height * 0.5f) + (nameLabelSize.Height * 0.3f));
 			}
 		}
 		internal protected virtual void OnPaint(PaintEventArgs e)
 		{
-			this.PaintBackground(e.Graphics, new Rectangle(Point.Empty, this.size));
-			this.PaintNameLabel(e.Graphics, this.nameLabelRect);
-			this.PaintButton(e.Graphics, this.buttonRect);
+			this.PaintBackground(e.Graphics);
+			this.PaintNameLabel(e.Graphics);
+			this.PaintButton(e.Graphics);
 		}
 		
 		internal protected virtual void OnMouseEnter(EventArgs e) {}
