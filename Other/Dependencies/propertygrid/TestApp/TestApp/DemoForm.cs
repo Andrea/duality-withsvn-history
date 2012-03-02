@@ -132,5 +132,30 @@ namespace CustomPropertyGrid
 			// Case C: Select this very form
 			//this.propertyGrid1.SelectObjects(new object[] { this });
 		}
+
+		private void radioEnabled_CheckedChanged(object sender, EventArgs e)
+		{
+			if (this.radioEnabled.Checked)
+			{
+				this.propertyGrid1.Enabled = true;
+				this.propertyGrid1.ReadOnly = false;
+			}
+		}
+		private void radioReadOnly_CheckedChanged(object sender, EventArgs e)
+		{
+			if (this.radioReadOnly.Checked)
+			{
+				this.propertyGrid1.Enabled = true;
+				this.propertyGrid1.ReadOnly = true;
+			}
+		}
+		private void radioDisabled_CheckedChanged(object sender, EventArgs e)
+		{
+			if (this.radioDisabled.Checked)
+			{
+				this.propertyGrid1.Enabled = false;
+				this.propertyGrid1.ReadOnly = false;
+			}
+		}
 	}
 }

@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Reflection;
 
-using CustomPropertyGrid.ControlRenderer;
+using CustomPropertyGrid.Renderer;
 
 namespace CustomPropertyGrid
 {
@@ -51,13 +51,17 @@ namespace CustomPropertyGrid
 		[Flags]
 		public enum HintFlags
 		{
-			None			= 0x0,
+			None			= 0x00,
 
-			HasPropertyName	= 0x1,
-			HasButton	= 0x2,
+			HasPropertyName	= 0x01,
+			HasButton		= 0x02,
+			HasExpandCheck	= 0x04,
+			HasActiveCheck	= 0x08,
 
-			All = HasPropertyName | HasButton,
-			Default = All | HasPropertyName
+			ExpandEnabled	= 0x10,
+
+			All = HasPropertyName | HasButton | HasExpandCheck | HasActiveCheck | ExpandEnabled,
+			Default = HasPropertyName
 		}
 
 		protected	static	readonly	Font	FontNormal	= SystemFonts.DefaultFont;
@@ -77,7 +81,7 @@ namespace CustomPropertyGrid
 		private	Rectangle		buttonRect		= Rectangle.Empty;
 		private	bool			buttonHovered	= false;
 		private	bool			buttonPressed	= false;
-		private	Image			buttonIcon		= CustomPropertyGrid.Properties.Resources.ImageDelete;
+		private	IconImage		buttonIcon		= null;
 		private	Func<IEnumerable<object>>	getter	= null;
 		private	Action<IEnumerable<object>>	setter	= null;
 
@@ -237,12 +241,13 @@ namespace CustomPropertyGrid
 		}
 		public Image ButtonIcon
 		{
-			get { return this.buttonIcon; }
+			get { return this.buttonIcon.SourceImage; }
 			set
 			{
-				if (this.buttonIcon != value)
+				if (value == null) value = CustomPropertyGrid.Properties.Resources.ImageDelete;
+				if (this.buttonIcon == null || this.buttonIcon.SourceImage != value)
 				{
-					this.buttonIcon = value;
+					this.buttonIcon = new IconImage(value);
 					this.Invalidate();
 				}
 			}
@@ -291,6 +296,11 @@ namespace CustomPropertyGrid
 			set { this.buttonRect = value; }
 		}
 		
+
+		public PropertyEditor()
+		{
+			this.ButtonIcon = null;
+		}
 
 		public virtual void PerformGetValue()
 		{
@@ -386,36 +396,15 @@ namespace CustomPropertyGrid
 				Math.Min(this.buttonIcon.Height, this.buttonRect.Height));
 			Point buttonCenter = new Point(this.buttonRect.X + this.buttonRect.Width / 2, this.buttonRect.Y + this.buttonRect.Height / 2);
 
-			var imgAttribs = new System.Drawing.Imaging.ImageAttributes();
-			System.Drawing.Imaging.ColorMatrix colorMatrix = null;
-			if (this.buttonPressed)
-			{
-				colorMatrix = new System.Drawing.Imaging.ColorMatrix(new float[][] {
-					new float[] {1.3f, 0.0f, 0.0f, 0.0f, 0.0f},
-					new float[] {0.0f, 1.3f, 0.0f, 0.0f, 0.0f},
-					new float[] {0.0f, 0.0f, 1.3f, 0.0f, 0.0f},
-					new float[] {0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
-					new float[] {0.0f, 0.0f, 0.0f, 0.0f, 1.0f}});
-			}
+			Image buttonImage;
+			if (this.ReadOnly || !this.Enabled)
+				buttonImage = this.buttonIcon.Disabled;
+			else if (this.buttonPressed)
+				buttonImage = this.buttonIcon.Active;
 			else if (this.buttonHovered)
-			{
-				colorMatrix = new System.Drawing.Imaging.ColorMatrix(new float[][] {
-					new float[] {1.0f, 0.0f, 0.0f, 0.0f, 0.0f},
-					new float[] {0.0f, 1.0f, 0.0f, 0.0f, 0.0f},
-					new float[] {0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
-					new float[] {0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
-					new float[] {0.0f, 0.0f, 0.0f, 0.0f, 1.0f}});
-			}
+				buttonImage = this.buttonIcon.Normal;
 			else
-			{
-				colorMatrix = new System.Drawing.Imaging.ColorMatrix(new float[][] {
-					new float[] {0.34f, 0.34f, 0.34f, 0.0f, 0.0f},
-					new float[] {0.34f, 0.34f, 0.34f, 0.0f, 0.0f},
-					new float[] {0.34f, 0.34f, 0.34f, 0.0f, 0.0f},
-					new float[] {0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
-					new float[] {0.0f, 0.0f, 0.0f, 0.0f, 1.0f}});
-			}
-			imgAttribs.SetColorMatrix(colorMatrix);
+				buttonImage = this.buttonIcon.Passive;
 				
 			if (this.buttonHovered)
 			{
@@ -428,19 +417,12 @@ namespace CustomPropertyGrid
 				g.DrawRectangle(new Pen(Color.FromArgb(255, Color.White)), buttonBgRect);
 			}
 				
-			g.DrawImage(this.buttonIcon, 
-				new Rectangle(
-					buttonCenter.X - buttonSize.Width / 2,
-					buttonCenter.Y - buttonSize.Height / 2,
-					buttonSize.Width,
-					buttonSize.Height), 
-				0, 0, this.buttonIcon.Width, this.buttonIcon.Height, GraphicsUnit.Pixel, 
-				imgAttribs);
+			g.DrawImage(buttonImage, buttonCenter.X - buttonSize.Width / 2, buttonCenter.Y - buttonSize.Height / 2, buttonSize.Width, buttonSize.Height);
 		}
 		protected void PaintNameLabel(Graphics g)
 		{
 			if ((this.hints & HintFlags.HasPropertyName) == HintFlags.None) return;
-			Renderer.DrawStringLine(g, this.propertyName, this.IsValueModified ? FontBold : FontNormal, this.nameLabelRect, SystemColors.ControlText);
+			ControlRenderer.DrawStringLine(g, this.propertyName, this.IsValueModified ? FontBold : FontNormal, this.nameLabelRect, this.Enabled ? SystemColors.ControlText : SystemColors.GrayText);
 		}
 		internal protected virtual void OnPaint(PaintEventArgs e)
 		{
@@ -459,7 +441,7 @@ namespace CustomPropertyGrid
 		internal protected virtual void OnMouseMove(MouseEventArgs e)
 		{
 			bool lastHovered = this.buttonHovered;
-			this.buttonHovered = this.ButtonRectangle.Contains(e.Location);
+			this.buttonHovered = !this.ReadOnly && this.ButtonRectangle.Contains(e.Location);
 			if (lastHovered != this.buttonHovered) this.Invalidate();
 		}
 		internal protected virtual void OnMouseDown(MouseEventArgs e)
@@ -483,7 +465,7 @@ namespace CustomPropertyGrid
 		internal protected virtual void OnMouseClick(MouseEventArgs e)
 		{
 			if (this.buttonHovered && (e.Button & MouseButtons.Left) != MouseButtons.None)
-				this.OnRemoveButtonPressed();
+				this.OnButtonPressed();
 		}
 		internal protected virtual void OnMouseDoubleClick(MouseEventArgs e) {}
 
@@ -528,7 +510,7 @@ namespace CustomPropertyGrid
 		{
 			this.UpdateGeometry();
 		}
-		protected virtual void OnRemoveButtonPressed()
+		protected virtual void OnButtonPressed()
 		{
 			if (this.RightButtonPressed != null)
 				this.RightButtonPressed(this, EventArgs.Empty);

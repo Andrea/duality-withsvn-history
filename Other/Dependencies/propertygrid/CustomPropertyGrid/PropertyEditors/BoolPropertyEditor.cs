@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using System.Drawing;
-using System.Windows.Forms.VisualStyles;
 
-using CustomPropertyGrid.ControlRenderer;
+using CustomPropertyGrid.Renderer;
 
 namespace CustomPropertyGrid.PropertyEditors
 {
@@ -96,17 +95,17 @@ namespace CustomPropertyGrid.PropertyEditors
 				else					boxState = CheckBoxState.MixedNormal;	
 			}
 			
-			Size boxSize = Renderer.CheckBoxSize;
+			Size boxSize = ControlRenderer.CheckBoxSize;
 			Point boxLoc = new Point(
 				this.ClientRectangle.X + 2,
 				this.ClientRectangle.Y + this.ClientRectangle.Height / 2 - boxSize.Height / 2 - 1);
-			Renderer.DrawCheckBox(e.Graphics, boxLoc, boxState);
+			ControlRenderer.DrawCheckBox(e.Graphics, boxLoc, boxState);
 		}
 		protected internal override void OnMouseMove(MouseEventArgs e)
 		{
 			base.OnMouseMove(e);
 			bool lastHovered = this.hovered;
-			this.hovered = this.ClientRectangle.Contains(e.Location);
+			this.hovered = !this.ReadOnly && this.ClientRectangle.Contains(e.Location);
 			if (lastHovered != this.hovered) this.Invalidate();
 		}
 		protected internal override void OnMouseLeave(EventArgs e)

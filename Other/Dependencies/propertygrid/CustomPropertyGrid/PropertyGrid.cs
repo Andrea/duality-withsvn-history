@@ -110,7 +110,7 @@ namespace CustomPropertyGrid
 				if (this.readOnly != value)
 				{
 					this.readOnly = value;
-					if (this.mainEditor != null) this.mainEditor.OnReadOnlyChanged();
+					if (this.mainEditor != null) this.UpdatePropertyEditor();
 				}
 			}
 		}
@@ -216,6 +216,7 @@ namespace CustomPropertyGrid
 			{
 				GroupedPropertyEditor mainGroupEditor = this.mainEditor as GroupedPropertyEditor;
 				mainGroupEditor.Expanded = true;
+				mainGroupEditor.Hints &= ~PropertyEditor.HintFlags.HasExpandCheck;
 			}
 
 			this.AutoScrollMinSize = new Size(0, this.mainEditor.Height);
@@ -556,6 +557,7 @@ namespace CustomPropertyGrid
 		{
 			base.OnGotFocus(e);
 			this.Focus(this.focusEditor ?? this.mainEditor);
+			this.Invalidate();
 		}
 		protected override void OnLostFocus(EventArgs e)
 		{

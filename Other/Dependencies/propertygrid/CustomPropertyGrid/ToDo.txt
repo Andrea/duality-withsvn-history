@@ -1,5 +1,3 @@
 ﻿
 -->	GroupedPropertyEditor header
-	-->	Expand button
-	-->	Icon
 	-->	Accessible and extendable? Or just hardcode some stuff? (Active button!)

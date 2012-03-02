@@ -5,7 +5,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
-using CustomPropertyGrid.ControlRenderer;
+using CustomPropertyGrid.Renderer;
 
 namespace CustomPropertyGrid
 {
@@ -22,9 +22,13 @@ namespace CustomPropertyGrid
 		private	List<PropertyEditor>	propertyEditors	= new List<PropertyEditor>();
 		private	PropertyEditor			hoverEditor		= null;
 		private	bool					hoverEditorLock	= false;
-		private	Image					headerIcon	= null;
-		private	Color					headerColor	= SystemColors.Control;
-		private	GroupHeaderStyle		headerStyle	= GroupHeaderStyle.Emboss;
+		private	IconImage				headerIcon		= null;
+		private	Color					headerColor		= SystemColors.Control;
+		private	GroupHeaderStyle		headerStyle		= GroupHeaderStyle.Emboss;
+		private	Rectangle				headerRect			= Rectangle.Empty;
+		private	Rectangle				expandCheckRect		= Rectangle.Empty;
+		private	bool					expandCheckHovered	= false;
+		private	bool					expandCheckPressed	= false;
 
 		public event EventHandler<PropertyEditorEventArgs>	EditorAdded;
 		public event EventHandler<PropertyEditorEventArgs>	EditorRemoving;
@@ -57,6 +61,18 @@ namespace CustomPropertyGrid
 				}
 			}
 		}
+		public Image HeaderIcon
+		{
+			get { return this.headerIcon.SourceImage; }
+			set
+			{
+				if (this.headerIcon == null || this.headerIcon.SourceImage != value)
+				{
+					this.headerIcon = value != null ? new IconImage(value) : null;
+					this.Invalidate();
+				}
+			}
+		}
 		public bool ContentInitialized
 		{
 			get { return this.contentInit; }
@@ -69,7 +85,9 @@ namespace CustomPropertyGrid
 
 		public GroupedPropertyEditor()
 		{
+			this.HeaderIcon = CustomPropertyGrid.Properties.Resources.ImageAdd;
 			this.Hints &= (~HintFlags.HasPropertyName);
+			this.Hints |= HintFlags.HasExpandCheck | HintFlags.ExpandEnabled;
 			this.ClearContent();
 		}
 
@@ -180,6 +198,20 @@ namespace CustomPropertyGrid
 
 			this.ClientRectangle = clientRect;
 			this.ButtonRectangle = buttonRect;
+
+			this.headerRect = new Rectangle(this.ClientRectangle.X, this.ClientRectangle.Y, this.ClientRectangle.Width, this.headerHeight);
+			if ((this.Hints & HintFlags.HasExpandCheck) != HintFlags.None)
+			{
+				this.expandCheckRect = new Rectangle(
+					this.headerRect.X + 2,
+					this.headerRect.Y + this.headerRect.Height / 2 - ControlRenderer.CheckBoxSize.Height / 2 - 1,
+					ControlRenderer.CheckBoxSize.Width,
+					ControlRenderer.CheckBoxSize.Height);
+			}
+			else
+			{
+				this.expandCheckRect = new Rectangle(headerRect.X, headerRect.Y, 0, 0);
+			}
 		}
 		
 		protected void OnEditorAdded(PropertyEditor e)
@@ -209,12 +241,62 @@ namespace CustomPropertyGrid
 
 		protected void PaintHeader(Graphics g)
 		{
-			Rectangle headerRect = new Rectangle(this.ClientRectangle.X, this.ClientRectangle.Y, this.ClientRectangle.Width, this.headerHeight);
 			Rectangle buttonRect = this.ButtonRectangle;
-			Rectangle textRect = new Rectangle(headerRect.X, headerRect.Y, headerRect.Width - buttonRect.Width, headerRect.Height);
 
-			Renderer.DrawGroupHeaderBackground(g, headerRect, this.Focused ? this.headerColor.ScaleBrightness(0.9f) : this.headerColor, this.headerStyle);
-			Renderer.DrawStringLine(g, this.PropertyName, this.IsValueModified ? FontBold : FontNormal, textRect, SystemColors.ControlText);
+			CheckBoxState expandState = CheckBoxState.UncheckedDisabled;
+			if ((this.Hints & HintFlags.HasExpandCheck) != HintFlags.None)
+			{
+				if (this.Enabled && (this.Hints & HintFlags.ExpandEnabled) != HintFlags.None)
+				{
+					if (this.Expanded)
+					{
+						if (this.expandCheckPressed)		expandState = CheckBoxState.PlusPressed;
+						else if (this.expandCheckHovered)	expandState = CheckBoxState.PlusHot;
+						else								expandState = CheckBoxState.PlusNormal;
+					}
+					else
+					{
+						if (this.expandCheckPressed)		expandState = CheckBoxState.MinusPressed;
+						else if (this.expandCheckHovered)	expandState = CheckBoxState.MinusHot;
+						else								expandState = CheckBoxState.MinusNormal;
+					}
+				}
+				else
+				{
+					if (this.Expanded)	expandState = CheckBoxState.PlusDisabled;
+					else				expandState = CheckBoxState.MinusDisabled;
+				}
+			}
+
+			Rectangle iconRect;
+			if (this.headerIcon != null)
+			{
+				iconRect = new Rectangle(
+					this.expandCheckRect.Right + 2,
+					this.headerRect.Y + this.headerRect.Height / 2 - this.headerIcon.Height / 2, 
+					this.headerIcon.Width,
+					this.headerIcon.Height);
+			}
+			else
+			{
+				iconRect = new Rectangle(this.expandCheckRect.Right, this.headerRect.Y, 0, 0);
+			}
+			Rectangle textRect = new Rectangle(iconRect.Right, this.headerRect.Y, this.headerRect.Width - buttonRect.Width - iconRect.Width, this.headerRect.Height);
+
+
+			ControlRenderer.DrawGroupHeaderBackground(g, this.headerRect, this.Focused ? this.headerColor.ScaleBrightness(0.9f) : this.headerColor, this.headerStyle);
+			
+			if ((this.Hints & HintFlags.HasExpandCheck) != HintFlags.None)
+			{
+				ControlRenderer.DrawCheckBox(g, this.expandCheckRect.Location, expandState);
+			}
+
+			if (this.headerIcon != null)
+			{
+				g.DrawImage(this.Enabled ? this.headerIcon.Normal : this.headerIcon.Disabled, iconRect);
+			}
+
+			ControlRenderer.DrawStringLine(g, this.PropertyName, this.IsValueModified ? FontBold : FontNormal, textRect, this.Enabled ? SystemColors.ControlText : SystemColors.GrayText);
 		}
 		protected internal override void OnPaint(PaintEventArgs e)
 		{
@@ -275,6 +357,12 @@ namespace CustomPropertyGrid
 					e.Y - this.ClientRectangle.Y - editorLoc.Y, 
 					e.Delta));
 			}
+			else
+			{
+				bool lastHovered = this.expandCheckHovered;
+				this.expandCheckHovered = (this.Hints & HintFlags.ExpandEnabled) != HintFlags.None && this.expandCheckRect.Contains(e.Location);
+				if (lastHovered != this.expandCheckHovered) this.Invalidate();
+			}
 		}
 		protected internal override void OnMouseEnter(EventArgs e)
 		{
@@ -291,13 +379,17 @@ namespace CustomPropertyGrid
 				if (lastHoverEditor != this.hoverEditor && lastHoverEditor != null)
 					lastHoverEditor.OnMouseLeave(EventArgs.Empty);
 			}
+
+			if (this.expandCheckHovered) this.Invalidate();
+			this.expandCheckHovered = false;
+			this.expandCheckPressed = false;
 		}
 		protected internal override void OnMouseDown(MouseEventArgs e)
 		{
 			base.OnMouseDown(e);
+			this.hoverEditorLock = Control.MouseButtons != MouseButtons.None;
 			if (this.hoverEditor != null)
 			{
-				this.hoverEditorLock = Control.MouseButtons != MouseButtons.None;
 				Point editorLoc = this.GetChildLocation(this.hoverEditor);
 				this.hoverEditor.OnMouseDown(new MouseEventArgs(
 					e.Button, 
@@ -306,13 +398,22 @@ namespace CustomPropertyGrid
 					e.Y - this.ClientRectangle.Y - editorLoc.Y, 
 					e.Delta));
 			}
+			else
+			{
+				if (this.expandCheckHovered && (e.Button & MouseButtons.Left) != MouseButtons.None)
+				{
+					this.expandCheckPressed = true;
+					this.Invalidate();
+					this.OnExpandCheckPressed();
+				}
+			}
 		}
 		protected internal override void OnMouseUp(MouseEventArgs e)
 		{
 			base.OnMouseUp(e);
+			this.hoverEditorLock = Control.MouseButtons != MouseButtons.None;
 			if (this.hoverEditor != null)
 			{
-				this.hoverEditorLock = Control.MouseButtons != MouseButtons.None;
 				Point editorLoc = this.GetChildLocation(this.hoverEditor);
 				this.hoverEditor.OnMouseUp(new MouseEventArgs(
 					e.Button, 
@@ -320,6 +421,14 @@ namespace CustomPropertyGrid
 					e.X - this.ClientRectangle.X - editorLoc.X, 
 					e.Y - this.ClientRectangle.Y - editorLoc.Y, 
 					e.Delta));
+			}
+			else
+			{
+				if (this.expandCheckPressed && (e.Button & MouseButtons.Left) != MouseButtons.None)
+				{
+					this.expandCheckPressed = false;
+					this.Invalidate();
+				}
 			}
 		}
 		protected internal override void OnMouseClick(MouseEventArgs e)
@@ -356,7 +465,9 @@ namespace CustomPropertyGrid
 			base.OnKeyDown(e);
 			if (this.Focused && e.KeyCode == Keys.Return)
 			{
-				this.Expanded = !this.Expanded;
+				if ((this.Hints & HintFlags.ExpandEnabled) != HintFlags.None &&
+					(this.Hints & HintFlags.HasExpandCheck) != HintFlags.None)
+					this.Expanded = !this.Expanded;
 				e.Handled = true;
 			}
 		}
@@ -422,6 +533,10 @@ namespace CustomPropertyGrid
 		{
 			base.OnSizeChanged();
 			this.UpdateSize();
+		}
+		protected void OnExpandCheckPressed()
+		{
+			this.Expanded = !this.Expanded;
 		}
 	}
 }
