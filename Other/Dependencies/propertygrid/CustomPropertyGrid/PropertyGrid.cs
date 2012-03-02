@@ -202,6 +202,7 @@ namespace CustomPropertyGrid
 
 			this.mainEditor = this.editorProvider.CreateEditor(type);
 			this.UpdatePropertyEditor();
+			this.ConfigureEditor(this.mainEditor);
 		}
 		protected void UpdatePropertyEditor()
 		{

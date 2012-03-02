@@ -96,6 +96,13 @@ namespace CustomPropertyGrid
 		private class Test3
 		{
 			public bool boolOne;
+			public bool boolOneB;
+			public bool boolOneC;
+			public bool boolOneD;
+			public bool boolOneE;
+			public bool boolOneF;
+			public bool boolOneG;
+			public bool boolOneH;
 			public bool BoolTwo { get; set; }
 			public bool BoolThree { get; private set; }
 		}
