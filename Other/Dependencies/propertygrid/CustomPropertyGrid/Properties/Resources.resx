@@ -127,4 +127,7 @@
   <data name="PropertyGrid_N_Objects" xml:space="preserve">
     <value>{0} objects</value>
   </data>
+  <data name="PropertyName_Default" xml:space="preserve">
+    <value>Properties</value>
+  </data>
 </root>

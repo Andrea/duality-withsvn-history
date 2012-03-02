@@ -5,6 +5,8 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Windows.Forms.VisualStyles;
 
+using CustomPropertyGrid.ControlRenderer;
+
 namespace CustomPropertyGrid.PropertyEditors
 {
 	public class BoolPropertyEditor : PropertyEditor
@@ -94,11 +96,11 @@ namespace CustomPropertyGrid.PropertyEditors
 				else					boxState = CheckBoxState.MixedNormal;	
 			}
 			
-			Size boxSize = ControlRenderer.CheckBoxSize;
+			Size boxSize = Renderer.CheckBoxSize;
 			Point boxLoc = new Point(
 				this.ClientRectangle.X + 2,
 				this.ClientRectangle.Y + this.ClientRectangle.Height / 2 - boxSize.Height / 2 - 1);
-			ControlRenderer.DrawCheckBox(e.Graphics, boxLoc, boxState);
+			Renderer.DrawCheckBox(e.Graphics, boxLoc, boxState);
 		}
 		protected internal override void OnMouseMove(MouseEventArgs e)
 		{

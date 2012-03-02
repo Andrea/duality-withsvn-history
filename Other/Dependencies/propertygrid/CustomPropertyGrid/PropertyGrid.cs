@@ -423,16 +423,24 @@ namespace CustomPropertyGrid
 					{
 						PropertyEditor current = this.focusEditor;
 						PropertyEditor next;
-						while (current != null)
+						if (current.ParentEditor == null && current.Children.Any())
 						{
-							next = current.NextEditor;
-							if (next != null)
+							next = current.Children.First();
+							next.Focus();
+						}
+						else
+						{
+							while (current != null)
 							{
-								next.Focus();
-								break;
+								next = current.NextEditor;
+								if (next != null)
+								{
+									next.Focus();
+									break;
+								}
+								else
+									current = current.ParentEditor;
 							}
-							else
-								current = current.ParentEditor;
 						}
 						e.Handled = true;
 					}
@@ -445,6 +453,12 @@ namespace CustomPropertyGrid
 							prev = current.PrevEditor;
 							if (prev != null)
 							{
+								prev.Focus();
+								break;
+							}
+							else if (current.ParentEditor != null)
+							{
+								prev = current.ParentEditor;
 								prev.Focus();
 								break;
 							}
@@ -541,12 +555,12 @@ namespace CustomPropertyGrid
 		protected override void OnGotFocus(EventArgs e)
 		{
 			base.OnGotFocus(e);
-			this.Focus(this.mainEditor);
+			this.Focus(this.focusEditor ?? this.mainEditor);
 		}
 		protected override void OnLostFocus(EventArgs e)
 		{
 			base.OnLostFocus(e);
-			this.Focus(null);
+			this.Invalidate();
 		}
 
 		protected override void OnSizeChanged(EventArgs e)

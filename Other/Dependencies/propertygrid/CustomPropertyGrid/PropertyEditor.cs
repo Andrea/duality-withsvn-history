@@ -6,6 +6,8 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Reflection;
 
+using CustomPropertyGrid.ControlRenderer;
+
 namespace CustomPropertyGrid
 {
 	public class PropertyEditorEventArgs : EventArgs
@@ -55,17 +57,17 @@ namespace CustomPropertyGrid
 			HasButton	= 0x2,
 
 			All = HasPropertyName | HasButton,
-			Default = HasPropertyName
+			Default = All | HasPropertyName
 		}
 
-		private	static	Font	fontNormal		= SystemFonts.DefaultFont;
-		private	static	Font	fontModified	= new Font(SystemFonts.DefaultFont, FontStyle.Bold);
+		protected	static	readonly	Font	FontNormal	= SystemFonts.DefaultFont;
+		protected	static	readonly	Font	FontBold	= new Font(SystemFonts.DefaultFont, FontStyle.Bold);
 
 		private	PropertyGrid	parentGrid		= null;
 		private	PropertyEditor	parentEditor	= null;
 		private	Type			editedType		= null;
 		private	MemberInfo		editedMember	= null;
-		private	string			propertyName	= "Hello World, I'm a PropertyEditor. Yay!";
+		private	string			propertyName	= CustomPropertyGrid.Properties.Resources.PropertyName_Default;
 		private	bool			forceWriteBack	= false;
 		private	bool			updatingFromObj	= false;
 		private	HintFlags		hints			= HintFlags.Default;
@@ -342,9 +344,14 @@ namespace CustomPropertyGrid
 			else
 				this.nameLabelRect = Rectangle.Empty;
 
-			Size rightButtonSize = this.buttonIcon != null ? this.buttonIcon.Size : new Size(10, 10);
 			if ((this.hints & HintFlags.HasButton) != HintFlags.None)
-				this.buttonRect = new Rectangle(this.size.Width - rightButtonSize.Width - 4, this.size.Height / 2 - rightButtonSize.Height / 2 - 2, rightButtonSize.Width + 4, rightButtonSize.Height + 4);
+			{
+				Size buttonSize = this.buttonIcon != null ? this.buttonIcon.Size : new Size(10, 10);
+				this.buttonRect.Height = this.Size.Height;
+				this.buttonRect.Width = Math.Min(this.size.Height - 2, buttonSize.Height + 2);
+				this.buttonRect.X = this.Size.Width - buttonRect.Width - 1;
+				this.buttonRect.Y = 0;
+			}
 			else
 				this.buttonRect = Rectangle.Empty;
 
@@ -374,8 +381,10 @@ namespace CustomPropertyGrid
 		{
 			if ((this.hints & HintFlags.HasButton) == HintFlags.None || this.buttonIcon == null) return;
 
-			Size rightButtonSize = this.buttonIcon.Size;
-			Point rightButtonCenter = new Point(this.buttonRect.X + this.buttonRect.Width / 2, this.buttonRect.Y + this.buttonRect.Height / 2);
+			Size buttonSize = new Size(
+				Math.Min(this.buttonIcon.Width, this.buttonRect.Width),
+				Math.Min(this.buttonIcon.Height, this.buttonRect.Height));
+			Point buttonCenter = new Point(this.buttonRect.X + this.buttonRect.Width / 2, this.buttonRect.Y + this.buttonRect.Height / 2);
 
 			var imgAttribs = new System.Drawing.Imaging.ImageAttributes();
 			System.Drawing.Imaging.ColorMatrix colorMatrix = null;
@@ -410,53 +419,28 @@ namespace CustomPropertyGrid
 				
 			if (this.buttonHovered)
 			{
-				Rectangle rightButtonBgRect = this.buttonRect;
-				rightButtonBgRect.X += 1;
-				rightButtonBgRect.Y += 1;
-				rightButtonBgRect.Width -= 3;
-				rightButtonBgRect.Height -= 3;
-				g.FillRectangle(new SolidBrush(Color.FromArgb(128, SystemColors.Window)), rightButtonBgRect);
-				g.DrawRectangle(new Pen(Color.FromArgb(255, SystemColors.Window)), rightButtonBgRect);
+				Rectangle buttonBgRect = this.buttonRect;
+				buttonBgRect.Height = Math.Min(buttonBgRect.Height, buttonBgRect.Width) - 1;
+				buttonBgRect.Width = buttonBgRect.Height;
+				buttonBgRect.X = this.buttonRect.X + this.buttonRect.Width / 2 - buttonBgRect.Width / 2 - 1;
+				buttonBgRect.Y = this.buttonRect.Y + this.buttonRect.Height / 2 - buttonBgRect.Height / 2 - 1;
+				g.FillRectangle(new SolidBrush(Color.FromArgb(128, Color.White)), buttonBgRect);
+				g.DrawRectangle(new Pen(Color.FromArgb(255, Color.White)), buttonBgRect);
 			}
 				
 			g.DrawImage(this.buttonIcon, 
 				new Rectangle(
-					rightButtonCenter.X - rightButtonSize.Width / 2,
-					rightButtonCenter.Y - rightButtonSize.Height / 2,
-					rightButtonSize.Width,
-					rightButtonSize.Height), 
+					buttonCenter.X - buttonSize.Width / 2,
+					buttonCenter.Y - buttonSize.Height / 2,
+					buttonSize.Width,
+					buttonSize.Height), 
 				0, 0, this.buttonIcon.Width, this.buttonIcon.Height, GraphicsUnit.Pixel, 
 				imgAttribs);
 		}
 		protected void PaintNameLabel(Graphics g)
 		{
 			if ((this.hints & HintFlags.HasPropertyName) == HintFlags.None) return;
-
-			Rectangle nameLabelTextRect = this.nameLabelRect;
-			nameLabelTextRect.Width -= 5;
-
-			StringFormat nameLabelFormat = StringFormat.GenericDefault;
-			nameLabelFormat.Alignment = StringAlignment.Near;
-			nameLabelFormat.LineAlignment = StringAlignment.Center;
-			nameLabelFormat.Trimming = StringTrimming.Character;
-			nameLabelFormat.FormatFlags |= StringFormatFlags.NoWrap;
-
-			Font nameLabelFont = this.IsValueModified ? fontModified : fontNormal;
-
-			int charsFit, lines;
-			SizeF nameLabelSize = g.MeasureString(this.propertyName, nameLabelFont, nameLabelTextRect.Size, nameLabelFormat, out charsFit, out lines);
-			g.DrawString(this.propertyName, nameLabelFont, SystemBrushes.ControlText, nameLabelTextRect, nameLabelFormat);
-
-			if (charsFit < this.propertyName.Length)
-			{
-				Pen ellipsisPen = new Pen(SystemColors.ControlText);
-				ellipsisPen.DashStyle = DashStyle.Dot;
-				g.DrawLine(ellipsisPen, 
-					nameLabelTextRect.Right, 
-					(nameLabelTextRect.Y + nameLabelTextRect.Height * 0.5f) + (nameLabelSize.Height * 0.3f), 
-					this.nameLabelRect.Right - 2, 
-					(nameLabelTextRect.Y + nameLabelTextRect.Height * 0.5f) + (nameLabelSize.Height * 0.3f));
-			}
+			Renderer.DrawStringLine(g, this.propertyName, this.IsValueModified ? FontBold : FontNormal, this.nameLabelRect, SystemColors.ControlText);
 		}
 		internal protected virtual void OnPaint(PaintEventArgs e)
 		{
@@ -480,6 +464,8 @@ namespace CustomPropertyGrid
 		}
 		internal protected virtual void OnMouseDown(MouseEventArgs e)
 		{
+			if (new Rectangle(0, 0, this.size.Width, this.size.Height).Contains(e.Location))
+				this.Focus();
 			if (this.buttonHovered && (e.Button & MouseButtons.Left) != MouseButtons.None)
 			{
 				this.buttonPressed = true;
@@ -498,8 +484,6 @@ namespace CustomPropertyGrid
 		{
 			if (this.buttonHovered && (e.Button & MouseButtons.Left) != MouseButtons.None)
 				this.OnRemoveButtonPressed();
-			if (new Rectangle(0, 0, this.size.Width, this.size.Height).Contains(e.Location))
-				this.Focus();
 		}
 		internal protected virtual void OnMouseDoubleClick(MouseEventArgs e) {}
 

@@ -82,5 +82,14 @@ namespace CustomPropertyGrid.Properties {
                 return ResourceManager.GetString("PropertyGrid_N_Objects", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Properties ähnelt.
+        /// </summary>
+        public static string PropertyName_Default {
+            get {
+                return ResourceManager.GetString("PropertyName_Default", resourceCulture);
+            }
+        }
     }
 }

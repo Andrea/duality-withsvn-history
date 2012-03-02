@@ -5,12 +5,14 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
+using CustomPropertyGrid.ControlRenderer;
+
 namespace CustomPropertyGrid
 {
 	public abstract class GroupedPropertyEditor : PropertyEditor
 	{
-		public const int	DefaultIndent		= 20;
-		public const int	DefaultHeaderHeight	= 20;
+		public const int	DefaultIndent		= 15;
+		public const int	DefaultHeaderHeight	= 18;
 		public const int	BigHeaderHeight		= 30;
 
 		private	int						headerHeight	= DefaultHeaderHeight;
@@ -20,6 +22,9 @@ namespace CustomPropertyGrid
 		private	List<PropertyEditor>	propertyEditors	= new List<PropertyEditor>();
 		private	PropertyEditor			hoverEditor		= null;
 		private	bool					hoverEditorLock	= false;
+		private	Image					headerIcon	= null;
+		private	Color					headerColor	= SystemColors.Control;
+		private	GroupHeaderStyle		headerStyle	= GroupHeaderStyle.Emboss;
 
 		public event EventHandler<PropertyEditorEventArgs>	EditorAdded;
 		public event EventHandler<PropertyEditorEventArgs>	EditorRemoving;
@@ -58,7 +63,7 @@ namespace CustomPropertyGrid
 		}
 		public override IEnumerable<PropertyEditor> Children
 		{
-			get { return this.propertyEditors; }
+			get { return this.expanded ? this.propertyEditors : base.Children; }
 		}
 
 
@@ -165,13 +170,16 @@ namespace CustomPropertyGrid
 			base.UpdateGeometry();
 
 			Rectangle clientRect = this.ClientRectangle;
-			Rectangle rightButtonRect = this.ButtonRectangle;
+			Rectangle buttonRect = this.ButtonRectangle;
 
-			clientRect.Width += rightButtonRect.Width;
-			rightButtonRect.Y = this.headerHeight / 2 - rightButtonRect.Height / 2;
+			clientRect.Width += buttonRect.Width;
+			buttonRect.Height = this.headerHeight;
+			buttonRect.Width = Math.Min(buttonRect.Height, this.headerHeight - 2);
+			buttonRect.X = this.Size.Width - buttonRect.Width - 1;
+			buttonRect.Y = this.headerHeight / 2 - buttonRect.Height / 2;
 
 			this.ClientRectangle = clientRect;
-			this.ButtonRectangle = rightButtonRect;
+			this.ButtonRectangle = buttonRect;
 		}
 		
 		protected void OnEditorAdded(PropertyEditor e)
@@ -199,9 +207,14 @@ namespace CustomPropertyGrid
 				e.OnReadOnlyChanged();
 		}
 
-		protected void PaintHeader(Graphics g, Rectangle rect)
+		protected void PaintHeader(Graphics g)
 		{
-			g.FillRectangle(Brushes.Red, rect);
+			Rectangle headerRect = new Rectangle(this.ClientRectangle.X, this.ClientRectangle.Y, this.ClientRectangle.Width, this.headerHeight);
+			Rectangle buttonRect = this.ButtonRectangle;
+			Rectangle textRect = new Rectangle(headerRect.X, headerRect.Y, headerRect.Width - buttonRect.Width, headerRect.Height);
+
+			Renderer.DrawGroupHeaderBackground(g, headerRect, this.Focused ? this.headerColor.ScaleBrightness(0.9f) : this.headerColor, this.headerStyle);
+			Renderer.DrawStringLine(g, this.PropertyName, this.IsValueModified ? FontBold : FontNormal, textRect, SystemColors.ControlText);
 		}
 		protected internal override void OnPaint(PaintEventArgs e)
 		{
@@ -211,7 +224,7 @@ namespace CustomPropertyGrid
 			this.PaintNameLabel(e.Graphics);
 
 			// Paint header
-			this.PaintHeader(e.Graphics, new Rectangle(this.ClientRectangle.X, this.ClientRectangle.Y + curY, this.ClientRectangle.Width, this.headerHeight));
+			this.PaintHeader(e.Graphics);
 			curY += this.headerHeight;
 
 			// Paint right button
@@ -270,6 +283,14 @@ namespace CustomPropertyGrid
 		protected internal override void OnMouseLeave(EventArgs e)
 		{
 			base.OnMouseLeave(e);
+			if (this.hoverEditor != null)
+			{
+				PropertyEditor lastHoverEditor = this.hoverEditor;
+				this.hoverEditor = null;
+
+				if (lastHoverEditor != this.hoverEditor && lastHoverEditor != null)
+					lastHoverEditor.OnMouseLeave(EventArgs.Empty);
+			}
 		}
 		protected internal override void OnMouseDown(MouseEventArgs e)
 		{
@@ -327,6 +348,16 @@ namespace CustomPropertyGrid
 					e.X - this.ClientRectangle.X - editorLoc.X, 
 					e.Y - this.ClientRectangle.Y - editorLoc.Y, 
 					e.Delta));
+			}
+		}
+
+		protected internal override void OnKeyDown(KeyEventArgs e)
+		{
+			base.OnKeyDown(e);
+			if (this.Focused && e.KeyCode == Keys.Return)
+			{
+				this.Expanded = !this.Expanded;
+				e.Handled = true;
 			}
 		}
 
