@@ -302,7 +302,12 @@ namespace CustomPropertyGrid.Renderer
 				CharacterRange[] charRanges = new [] { new CharacterRange(selPos, Math.Abs(selLength)) };
 				Region[] charRegions = MeasureStringLine(g, text, charRanges, font, textRectScrolled);
 				RectangleF selectionRect = charRegions.Length > 0 ? charRegions[0].GetBounds(g) : RectangleF.Empty;
-				selectionRect.Inflate(2, 2);
+				selectionRect.Inflate(0, 2);
+				if (selPos == 0)
+				{
+					selectionRect.X -= 2;
+					selectionRect.Width += 2;
+				}
 
 				if ((state & TextBoxState.ReadOnlyFlag) == TextBoxState.ReadOnlyFlag)
 					g.FillRectangle(new SolidBrush(Color.FromArgb(128, SystemColors.GrayText)), selectionRect);
