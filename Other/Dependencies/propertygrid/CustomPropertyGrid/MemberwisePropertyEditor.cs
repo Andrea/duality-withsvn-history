@@ -255,7 +255,7 @@ namespace CustomPropertyGrid
 		}
 		private bool DefaultMemberAffectsOthers(MemberInfo info)
 		{
-			return true;
+			return false;
 		}
 		private	PropertyEditor DefaultMemberEditorCreator(MemberInfo info)
 		{

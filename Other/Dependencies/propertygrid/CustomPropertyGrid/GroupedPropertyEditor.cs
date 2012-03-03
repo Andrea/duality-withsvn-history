@@ -139,7 +139,7 @@ namespace CustomPropertyGrid
 
 		public GroupedPropertyEditor()
 		{
-			//this.Hints &= (~HintFlags.HasPropertyName);
+			this.Hints &= (~HintFlags.HasPropertyName);
 			this.Hints |= HintFlags.HasExpandCheck | HintFlags.ExpandEnabled;
 
 			this.ClearContent();
