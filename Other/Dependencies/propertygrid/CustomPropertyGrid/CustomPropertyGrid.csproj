@@ -55,6 +55,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyEditor.cs" />
     <Compile Include="PropertyEditors\BoolPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\StringPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\NumericPropertyEditor.cs" />
     <Compile Include="PropertyGrid.cs">
       <SubType>UserControl</SubType>
     </Compile>

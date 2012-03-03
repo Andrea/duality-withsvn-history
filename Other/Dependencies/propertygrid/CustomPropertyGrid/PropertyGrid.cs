@@ -42,15 +42,15 @@ namespace CustomPropertyGrid
 			{
 				PropertyEditor e = null;
 
-				//// Basic numeric data types
-				//if (baseType == typeof(sbyte) || baseType == typeof(byte) ||
-				//    baseType == typeof(short) || baseType == typeof(ushort) ||
-				//    baseType == typeof(int) || baseType == typeof(uint) ||
-				//    baseType == typeof(long) || baseType == typeof(ulong) ||
-				//    baseType == typeof(float) || baseType == typeof(double) || baseType == typeof(decimal))
-				//    e = new NumericPropertyEditor(parentEditor, parentGrid);
+				// Basic numeric data types
+				if (baseType == typeof(sbyte) || baseType == typeof(byte) ||
+					baseType == typeof(short) || baseType == typeof(ushort) ||
+					baseType == typeof(int) || baseType == typeof(uint) ||
+					baseType == typeof(long) || baseType == typeof(ulong) ||
+					baseType == typeof(float) || baseType == typeof(double) || baseType == typeof(decimal))
+					e = new NumericPropertyEditor();
 				// Basic data type: Boolean
-				/* else */ if (baseType == typeof(bool))
+				else if (baseType == typeof(bool))
 				    e = new BoolPropertyEditor();
 				//// Basic data type: Flagged Enum
 				//else if (baseType.IsEnum && baseType.GetCustomAttributes(typeof(FlagsAttribute), true).Any())
@@ -58,9 +58,9 @@ namespace CustomPropertyGrid
 				//// Basic data type: Other Enums
 				//else if (baseType.IsEnum)
 				//    e = new EnumPropertyEditor(parentEditor, parentGrid);
-				//// Basic data type: String
-				//else if (baseType == typeof(string))
-				//    e = new StringPropertyEditor(parentEditor, parentGrid);
+				// Basic data type: String
+				else if (baseType == typeof(string))
+					e = new StringPropertyEditor();
 				//// IList collection
 				//else if (typeof(System.Collections.IList).IsAssignableFrom(baseType))
 				//    e = new IListPropertyEditor(parentEditor, parentGrid);
@@ -122,15 +122,6 @@ namespace CustomPropertyGrid
 		{
 			get { return this.focusEditor; }
 		}
-		protected override CreateParams CreateParams
-		{
-			get
-			{
-				CreateParams cp = base.CreateParams;
-				cp.ExStyle |= 0x02000000;  // Turn on WS_EX_COMPOSITED
-				return cp;
-			}
-		}
 
 		public PropertyGrid()
 		{
@@ -139,6 +130,7 @@ namespace CustomPropertyGrid
 			this.updateTimer.Tick += this.updateTimer_Tick;
 			this.updateTimer.Enabled = true;
 
+			this.AllowDrop = true;
 			this.AutoScroll = true;
 			//this.DoubleBuffered = true;
 
@@ -201,6 +193,7 @@ namespace CustomPropertyGrid
 			if (this.mainEditor != null) this.DisposePropertyEditor();
 
 			this.mainEditor = this.editorProvider.CreateEditor(type);
+			this.mainEditor.SizeChanged += this.mainEditor_SizeChanged;
 			this.UpdatePropertyEditor();
 			this.ConfigureEditor(this.mainEditor);
 		}
@@ -216,16 +209,21 @@ namespace CustomPropertyGrid
 			{
 				GroupedPropertyEditor mainGroupEditor = this.mainEditor as GroupedPropertyEditor;
 				mainGroupEditor.Expanded = true;
+				mainGroupEditor.HeaderStyle = Renderer.GroupHeaderStyle.Emboss;
 				mainGroupEditor.Hints &= ~PropertyEditor.HintFlags.HasExpandCheck;
 			}
-
-			this.AutoScrollMinSize = new Size(0, this.mainEditor.Height);
 		}
 		protected void DisposePropertyEditor()
 		{
 			if (this.mainEditor == null) return;
 
+			this.mainEditor.SizeChanged -= this.mainEditor_SizeChanged;
 			this.mainEditor = null;
+		}
+		private void mainEditor_SizeChanged(object sender, EventArgs e)
+		{
+			this.AutoScrollMinSize = new Size(0, this.mainEditor.Height);
+			this.Invalidate();
 		}
 
 		public void RegisterEditorProvider(IPropertyEditorProvider provider)
@@ -252,29 +250,53 @@ namespace CustomPropertyGrid
 
 		public void Focus(PropertyEditor editor)
 		{
-			if (this.focusEditor != editor) this.Invalidate();
-			if (editor != null)
+			if (this.focusEditor == editor) return;
+
+			if (this.focusEditor != null && this.Focused) this.focusEditor.OnLostFocus(EventArgs.Empty);
+
+			this.focusEditor = editor;
+			this.ScrollToEditor(this.focusEditor);
+
+			if (this.focusEditor != null)
 			{
-				this.focusEditor = editor;
-				if (!this.Focused) this.Focus();
+				if (!this.Focused)
+					this.Focus();
+				else
+					this.focusEditor.OnGotFocus(EventArgs.Empty);
 			}
-			else
-			{
-				this.focusEditor = null;
-			}
+
+			//this.Invalidate();
 		}
 		public PropertyEditor PickEditorAt(int x, int y)
 		{
 			if (this.mainEditor == null) return null;
 			return this.mainEditor.PickEditorAt(x - this.ClientRectangle.X, y - this.ClientRectangle.Y);
 		}
-		public Point GetEditorLocation(PropertyEditor editor)
+		public Point GetEditorLocation(PropertyEditor editor, bool scrolled = false)
 		{
 			if (this.mainEditor == null) return Point.Empty;
 			Point result = this.mainEditor.GetChildLocation(editor);
 			result.X += this.ClientRectangle.X;
 			result.Y += this.ClientRectangle.Y;
+			if (scrolled)
+			{
+				result.X += this.AutoScrollPosition.X;
+				result.Y += this.AutoScrollPosition.Y;
+			}
 			return result;
+		}
+		public void ScrollToEditor(PropertyEditor editor)
+		{
+			Point editorLoc = this.GetEditorLocation(editor);
+			Rectangle editorRect = new Rectangle(editorLoc, editor.Size);
+			Point scrollPos = this.AutoScrollPosition;
+			
+			if (editorRect.Bottom > this.ClientRectangle.Y - scrollPos.Y + this.ClientRectangle.Height)
+				scrollPos.Y = -editorRect.Bottom + this.ClientRectangle.Y + this.ClientRectangle.Height;
+			if (editorRect.Y < this.ClientRectangle.Y - scrollPos.Y)
+				scrollPos.Y = this.ClientRectangle.Y - editorRect.Y;
+
+			this.AutoScrollPosition = new Point(-scrollPos.X, -scrollPos.Y);
 		}
 
 		protected IEnumerable<object> ValueGetter()
@@ -301,13 +323,15 @@ namespace CustomPropertyGrid
 			{
 				Rectangle editorRect = new Rectangle(this.ClientRectangle.Location, this.mainEditor.Size);
 				editorRect.Intersect(this.ClientRectangle);
-				e.Graphics.SetClip(editorRect);
+				RectangleF clipRect = editorRect;
+				clipRect.Intersect(e.Graphics.ClipBounds);
+				e.Graphics.SetClip(clipRect);
 				e.Graphics.TranslateTransform(this.ClientRectangle.X, this.ClientRectangle.Y + this.AutoScrollPosition.Y);
 				this.mainEditor.OnPaint(e);
 			}
 			e.Graphics.Restore(originalState);
 
-			Console.WriteLine("Paint: {0} ms", watch.ElapsedMilliseconds);
+			//Console.WriteLine("Paint: {1},\t {0} ms", watch.ElapsedMilliseconds, e.ClipRectangle);
 		}
 
 		protected override void OnMouseEnter(EventArgs e)
@@ -402,7 +426,7 @@ namespace CustomPropertyGrid
 
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 		{
-			if (keyData == Keys.Up || keyData == Keys.Down || keyData == Keys.Left || keyData == Keys.Right)
+			if (keyData.HasFlag(Keys.Up) || keyData.HasFlag(Keys.Down) || keyData.HasFlag(Keys.Left) || keyData.HasFlag(Keys.Right))
 			{
 				KeyEventArgs args = new KeyEventArgs(keyData);
 				args.Handled = false;
@@ -498,11 +522,12 @@ namespace CustomPropertyGrid
 
 			if (this.mainEditor != null)
 			{
+				Point localPoint = this.PointToClient(new Point(e.X, e.Y));
 				DragEventArgs subEvent = new DragEventArgs(
 					e.Data, 
 					e.KeyState, 
-					e.X - this.ClientRectangle.X,
-					e.Y - this.ClientRectangle.Y - this.AutoScrollPosition.Y,
+					localPoint.X - this.ClientRectangle.X,
+					localPoint.Y - this.ClientRectangle.Y - this.AutoScrollPosition.Y,
 					e.AllowedEffect,
 					e.Effect);
 				this.mainEditor.OnDragEnter(subEvent);
@@ -524,11 +549,12 @@ namespace CustomPropertyGrid
 
 			if (this.mainEditor != null)
 			{
+				Point localPoint = this.PointToClient(new Point(e.X, e.Y));
 				DragEventArgs subEvent = new DragEventArgs(
 					e.Data, 
 					e.KeyState, 
-					e.X - this.ClientRectangle.X,
-					e.Y - this.ClientRectangle.Y - this.AutoScrollPosition.Y,
+					localPoint.X - this.ClientRectangle.X,
+					localPoint.Y - this.ClientRectangle.Y - this.AutoScrollPosition.Y,
 					e.AllowedEffect,
 					e.Effect);
 				this.mainEditor.OnDragOver(subEvent);
@@ -541,11 +567,12 @@ namespace CustomPropertyGrid
 
 			if (this.mainEditor != null)
 			{
+				Point localPoint = this.PointToClient(new Point(e.X, e.Y));
 				DragEventArgs subEvent = new DragEventArgs(
 					e.Data, 
 					e.KeyState, 
-					e.X - this.ClientRectangle.X,
-					e.Y - this.ClientRectangle.Y - this.AutoScrollPosition.Y,
+					localPoint.X - this.ClientRectangle.X,
+					localPoint.Y - this.ClientRectangle.Y - this.AutoScrollPosition.Y,
 					e.AllowedEffect,
 					e.Effect);
 				this.mainEditor.OnDragDrop(subEvent);
@@ -556,13 +583,17 @@ namespace CustomPropertyGrid
 		protected override void OnGotFocus(EventArgs e)
 		{
 			base.OnGotFocus(e);
-			this.Focus(this.focusEditor ?? this.mainEditor);
-			this.Invalidate();
+			if (this.focusEditor != null)
+				this.focusEditor.OnGotFocus(EventArgs.Empty);
+			else
+				this.Focus(this.mainEditor);
+			//this.Invalidate();
 		}
 		protected override void OnLostFocus(EventArgs e)
 		{
 			base.OnLostFocus(e);
-			this.Invalidate();
+			if (this.focusEditor != null) this.focusEditor.OnLostFocus(e);
+			//this.Invalidate();
 		}
 
 		protected override void OnSizeChanged(EventArgs e)

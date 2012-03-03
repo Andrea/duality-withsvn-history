@@ -58,9 +58,11 @@ namespace CustomPropertyGrid
 			HasExpandCheck	= 0x04,
 			HasActiveCheck	= 0x08,
 
-			ExpandEnabled	= 0x10,
+			ButtonEnabled	= 0x10,
+			ExpandEnabled	= 0x20,
+			ActiveEnabled	= 0x40,
 
-			All = HasPropertyName | HasButton | HasExpandCheck | HasActiveCheck | ExpandEnabled,
+			All = HasPropertyName | HasButton | HasExpandCheck | HasActiveCheck | ButtonEnabled | ExpandEnabled | ActiveEnabled,
 			Default = HasPropertyName
 		}
 
@@ -86,7 +88,8 @@ namespace CustomPropertyGrid
 		private	Action<IEnumerable<object>>	setter	= null;
 
 
-		public event EventHandler	RightButtonPressed	= null;
+		public event EventHandler	SizeChanged		= null;
+		public event EventHandler	ButtonPressed	= null;
 		public event EventHandler<PropertyEditorValueEventArgs>	EditingFinished = null;
 		public event EventHandler<PropertyEditorValueEventArgs>	ValueChanged	= null;
 
@@ -227,6 +230,10 @@ namespace CustomPropertyGrid
 				return this.parentGrid.Focused && this.parentGrid.FocusEditor == this;
 			}
 		}
+		protected virtual bool FocusOnClick
+		{
+			get { return true; }
+		}
 		public HintFlags Hints
 		{
 			get { return this.hints; }
@@ -308,7 +315,8 @@ namespace CustomPropertyGrid
 		}
 		public virtual void PerformSetValue()
 		{
-			this.Invalidate();
+			if (this.ReadOnly) return;
+			this.SetValue(this.DisplayedValue);
 		}
 
 		protected IEnumerable<object> GetValue()
@@ -326,7 +334,11 @@ namespace CustomPropertyGrid
 
 		public void Invalidate()
 		{
-			if (this.parentGrid != null) this.parentGrid.Invalidate();
+			if (this.parentGrid != null) 
+			{
+				Rectangle invalidateRect = new Rectangle(this.parentGrid.GetEditorLocation(this, true), this.size);
+				this.parentGrid.Invalidate(invalidateRect);
+			}
 		}
 		public void Focus()
 		{
@@ -385,7 +397,7 @@ namespace CustomPropertyGrid
 
 		protected void PaintBackground(Graphics g)
 		{
-			g.FillRectangle(this.Focused ? SystemBrushes.ControlLight : SystemBrushes.Control, new Rectangle(Point.Empty, this.size));
+			g.FillRectangle(new SolidBrush(this.Focused ? SystemColors.Control.ScaleBrightness(0.9f) : SystemColors.Control), new Rectangle(Point.Empty, this.size));
 		}
 		protected void PaintButton(Graphics g)
 		{
@@ -397,7 +409,7 @@ namespace CustomPropertyGrid
 			Point buttonCenter = new Point(this.buttonRect.X + this.buttonRect.Width / 2, this.buttonRect.Y + this.buttonRect.Height / 2);
 
 			Image buttonImage;
-			if (this.ReadOnly || !this.Enabled)
+			if ((this.Hints & HintFlags.ButtonEnabled) == HintFlags.None || this.ReadOnly || !this.Enabled)
 				buttonImage = this.buttonIcon.Disabled;
 			else if (this.buttonPressed)
 				buttonImage = this.buttonIcon.Active;
@@ -441,12 +453,12 @@ namespace CustomPropertyGrid
 		internal protected virtual void OnMouseMove(MouseEventArgs e)
 		{
 			bool lastHovered = this.buttonHovered;
-			this.buttonHovered = !this.ReadOnly && this.ButtonRectangle.Contains(e.Location);
+			this.buttonHovered = (this.Hints & HintFlags.ButtonEnabled) != HintFlags.None && !this.ReadOnly && this.ButtonRectangle.Contains(e.Location);
 			if (lastHovered != this.buttonHovered) this.Invalidate();
 		}
 		internal protected virtual void OnMouseDown(MouseEventArgs e)
 		{
-			if (new Rectangle(0, 0, this.size.Width, this.size.Height).Contains(e.Location))
+			if (this.FocusOnClick && new Rectangle(0, 0, this.size.Width, this.size.Height).Contains(e.Location))
 				this.Focus();
 			if (this.buttonHovered && (e.Button & MouseButtons.Left) != MouseButtons.None)
 			{
@@ -482,10 +494,19 @@ namespace CustomPropertyGrid
 			if (!e.Handled && this.parentEditor != null) this.parentEditor.OnKeyPress(e);
 		}
 
-		internal protected virtual void OnDragEnter(DragEventArgs e) {}
-		internal protected virtual void OnDragLeave(EventArgs e) {}
+		internal protected virtual void OnDragEnter(DragEventArgs e) { Console.WriteLine("DragEnter: {0}", this.PropertyName); }
+		internal protected virtual void OnDragLeave(EventArgs e) { Console.WriteLine("DragLeabe: {0}", this.PropertyName);}
 		internal protected virtual void OnDragOver(DragEventArgs e) {}
 		internal protected virtual void OnDragDrop(DragEventArgs e) {}
+
+		internal protected virtual void OnGotFocus(EventArgs e)
+		{
+			this.Invalidate();
+		}
+		internal protected virtual void OnLostFocus(EventArgs e)
+		{
+			this.Invalidate();
+		}
 
 		internal protected virtual void OnReadOnlyChanged()
 		{
@@ -509,11 +530,13 @@ namespace CustomPropertyGrid
 		protected virtual void OnSizeChanged()
 		{
 			this.UpdateGeometry();
+			if (this.SizeChanged != null)
+				this.SizeChanged(this, EventArgs.Empty);
 		}
 		protected virtual void OnButtonPressed()
 		{
-			if (this.RightButtonPressed != null)
-				this.RightButtonPressed(this, EventArgs.Empty);
+			if (this.ButtonPressed != null)
+				this.ButtonPressed(this, EventArgs.Empty);
 		}
 		protected virtual void OnValueChanged(object sender, PropertyEditorValueEventArgs args)
 		{

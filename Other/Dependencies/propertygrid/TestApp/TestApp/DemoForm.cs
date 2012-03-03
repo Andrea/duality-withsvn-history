@@ -72,6 +72,11 @@ namespace CustomPropertyGrid
 				get { return this.t; }
 				set { this.t = value; }
 			}
+			public string SomeString2
+			{
+				get { return this.t; }
+				set { this.t = value; }
+			}
 			public Test2 Subclass
 			{
 				get { return this.subclass; }
@@ -121,12 +126,12 @@ namespace CustomPropertyGrid
 			testObj.sl = new List<string>() { "hallo", "welt" };
 			Test testObj2 = new Test();
 			testObj2.IPropWithAVeryLongName = 447;
-			testObj2.SomeString = "Blubdiwupp";
+			testObj2.SomeString = "Kratatazong";
 			testObj2.Subclass = new Test2();
 			testObj2.enum2 = EnumTest.Three;
 
 			// Case A: Singleselect
-			this.propertyGrid1.SelectObject(new Test3());
+			this.propertyGrid1.SelectObject(testObj);
 			// Case B: Multiselect
 			//this.propertyGrid1.SelectObjects(new object[] { testObj, testObj2 });
 			// Case C: Select this very form

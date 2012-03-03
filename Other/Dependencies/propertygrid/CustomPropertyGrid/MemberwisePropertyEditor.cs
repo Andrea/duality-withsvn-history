@@ -10,14 +10,13 @@ namespace CustomPropertyGrid
 {
 	public class MemberwisePropertyEditor : GroupedPropertyEditor
 	{
-		private	object[]						curObjects	= null;
 		private	Predicate<MemberInfo>			memberPredicate		= null;
 		private	Predicate<MemberInfo>			memberAffectsOthers	= null;
 		private	Func<MemberInfo,PropertyEditor>	memberEditorCreator	= null;
 
 		public override object DisplayedValue
 		{
-			get { return this.curObjects; }
+			get { return this.GetValue().ToArray(); }
 		}
 		public Predicate<MemberInfo> MemberPredicate
 		{
@@ -137,22 +136,23 @@ namespace CustomPropertyGrid
 		public override void PerformGetValue()
 		{
 			base.PerformGetValue();
-			this.curObjects = this.GetValue().ToArray();
+			object[] curObjects = this.GetValue().ToArray();
 
-			if (this.curObjects == null)
+			if (curObjects == null)
 			{
 				return;
 			}
 
-			this.OnUpdateFromObjects(this.curObjects);
+			this.OnUpdateFromObjects(curObjects);
 
 			foreach (PropertyEditor e in this.Children)
 				e.PerformGetValue();
 		}
 		public override void PerformSetValue()
 		{
-			base.PerformSetValue();
+			if (this.ReadOnly) return;
 			if (!this.Children.Any()) return;
+			base.PerformSetValue();
 
 			foreach (PropertyEditor e in this.Children)
 				e.PerformSetValue();
@@ -176,14 +176,24 @@ namespace CustomPropertyGrid
 					string.Format(CustomPropertyGrid.Properties.Resources.PropertyGrid_N_Objects, values.Count());
 			}
 		}
+		protected override void OnEditedTypeChanged()
+		{
+			base.OnEditedTypeChanged();
+			if (this.ContentInitialized) this.InitContent();
+		}
+		protected override void OnEditedMemberChanged()
+		{
+			base.OnEditedTypeChanged();
+			if (this.ContentInitialized) this.InitContent();
+		}
 
 		protected Func<IEnumerable<object>> CreatePropertyValueGetter(PropertyInfo property)
 		{
-			return () => this.curObjects.Select(o => o != null ? property.GetValue(o, null) : null);
+			return () => this.GetValue().Select(o => o != null ? property.GetValue(o, null) : null);
 		}
 		protected Func<IEnumerable<object>> CreateFieldValueGetter(FieldInfo field)
 		{
-			return () => this.curObjects.Select(o => o != null ? field.GetValue(o) : null);
+			return () => this.GetValue().Select(o => o != null ? field.GetValue(o) : null);
 		}
 		protected Action<IEnumerable<object>> CreatePropertyValueSetter(PropertyInfo property)
 		{
@@ -191,7 +201,7 @@ namespace CustomPropertyGrid
 			return delegate(IEnumerable<object> values)
 			{
 				IEnumerator<object> valuesEnum = values.GetEnumerator();
-				object[] targetArray = this.curObjects;
+				object[] targetArray = this.GetValue().ToArray();
 
 				object curValue = null;
 				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
@@ -213,7 +223,7 @@ namespace CustomPropertyGrid
 			return delegate(IEnumerable<object> values)
 			{
 				IEnumerator<object> valuesEnum = values.GetEnumerator();
-				object[] targetArray = this.curObjects;
+				object[] targetArray = this.GetValue().ToArray();
 
 				object curValue = null;
 				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
@@ -245,7 +255,7 @@ namespace CustomPropertyGrid
 		}
 		private bool DefaultMemberAffectsOthers(MemberInfo info)
 		{
-			return false;
+			return true;
 		}
 		private	PropertyEditor DefaultMemberEditorCreator(MemberInfo info)
 		{

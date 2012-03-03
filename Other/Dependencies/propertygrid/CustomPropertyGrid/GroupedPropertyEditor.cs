@@ -11,27 +11,32 @@ namespace CustomPropertyGrid
 {
 	public abstract class GroupedPropertyEditor : PropertyEditor
 	{
-		public const int	DefaultIndent		= 15;
+		public const int	DefaultIndent		= 16;
 		public const int	DefaultHeaderHeight	= 18;
 		public const int	BigHeaderHeight		= 30;
 
 		private	int						headerHeight	= DefaultHeaderHeight;
 		private	int						indent			= DefaultIndent;
 		private	bool					expanded		= false;
+		private	bool					active			= false;
 		private	bool					contentInit		= false;
 		private	List<PropertyEditor>	propertyEditors	= new List<PropertyEditor>();
 		private	PropertyEditor			hoverEditor		= null;
 		private	bool					hoverEditorLock	= false;
 		private	IconImage				headerIcon		= null;
 		private	Color					headerColor		= SystemColors.Control;
-		private	GroupHeaderStyle		headerStyle		= GroupHeaderStyle.Emboss;
+		private	GroupHeaderStyle		headerStyle		= GroupHeaderStyle.Flat;
 		private	Rectangle				headerRect			= Rectangle.Empty;
 		private	Rectangle				expandCheckRect		= Rectangle.Empty;
 		private	bool					expandCheckHovered	= false;
 		private	bool					expandCheckPressed	= false;
+		private	Rectangle				activeCheckRect		= Rectangle.Empty;
+		private	bool					activeCheckHovered	= false;
+		private	bool					activeCheckPressed	= false;
 
 		public event EventHandler<PropertyEditorEventArgs>	EditorAdded;
 		public event EventHandler<PropertyEditorEventArgs>	EditorRemoving;
+		public event EventHandler							ActiveChanged;
 		
 
 		public bool Expanded
@@ -43,8 +48,23 @@ namespace CustomPropertyGrid
 				{
 					this.expanded = value;
 					this.Invalidate();
-					if (this.expanded && !this.contentInit) this.InitContent();
-					this.UpdateSize();
+					if (this.expanded && !this.contentInit)
+						this.InitContent();
+					else
+						this.UpdateHeight();
+				}
+			}
+		}
+		public bool Active
+		{
+			get { return this.active; }
+			set 
+			{ 
+				if (this.active != value)
+				{
+					this.active = value;
+					this.Invalidate();
+					this.OnActiveChanged();
 				}
 			}
 		}
@@ -56,8 +76,20 @@ namespace CustomPropertyGrid
 				if (this.indent != value)
 				{
 					this.indent = value;
-					this.UpdateSize();
+					this.UpdateChildWidth();
 					this.Invalidate();
+				}
+			}
+		}
+		public int HeaderHeight
+		{
+			get { return this.headerHeight; }
+			set
+			{
+				if (this.headerHeight != value)
+				{
+					this.headerHeight = value;
+					this.UpdateHeight();
 				}
 			}
 		}
@@ -73,6 +105,24 @@ namespace CustomPropertyGrid
 				}
 			}
 		}
+		public Color HeaderColor
+		{
+			get { return this.headerColor; }
+			set
+			{
+				this.headerColor = value;
+				this.Invalidate();
+			}
+		}
+		public GroupHeaderStyle HeaderStyle
+		{
+			get { return this.headerStyle; }
+			set
+			{
+				this.headerStyle = value;
+				this.Invalidate();
+			}
+		}
 		public bool ContentInitialized
 		{
 			get { return this.contentInit; }
@@ -81,13 +131,17 @@ namespace CustomPropertyGrid
 		{
 			get { return this.expanded ? this.propertyEditors : base.Children; }
 		}
+		protected override bool FocusOnClick
+		{
+			get { return false; }
+		}
 
 
 		public GroupedPropertyEditor()
 		{
-			this.HeaderIcon = CustomPropertyGrid.Properties.Resources.ImageAdd;
-			this.Hints &= (~HintFlags.HasPropertyName);
+			//this.Hints &= (~HintFlags.HasPropertyName);
 			this.Hints |= HintFlags.HasExpandCheck | HintFlags.ExpandEnabled;
+
 			this.ClearContent();
 		}
 
@@ -101,7 +155,9 @@ namespace CustomPropertyGrid
 			this.ClearPropertyEditors();
 		}
 
-		public override PropertyEditor PickEditorAt(int x, int y)
+		public override void PerformSetValue() {}
+
+		public PropertyEditor PickEditorAt(int x, int y, bool ownChildrenOnly)
 		{
 			// Pick child editor, if applying
 			int curY = this.headerHeight;
@@ -112,12 +168,16 @@ namespace CustomPropertyGrid
 			{
 				foreach (PropertyEditor e in this.propertyEditors)
 				{
-					if (y >= curY && y < curY + e.Height) return e.PickEditorAt(x - this.indent, y - curY);
+					if (y >= curY && y < curY + e.Height) return ownChildrenOnly ? e : e.PickEditorAt(x - indentClientRect.X, y - curY - indentClientRect.Y);
 					curY += e.Height;
 				}
 			}
 
 			return base.PickEditorAt(x, y);
+		}
+		public override PropertyEditor PickEditorAt(int x, int y)
+		{
+			return this.PickEditorAt(x, y, false);
 		}
 		public override Point GetChildLocation(PropertyEditor child)
 		{
@@ -128,8 +188,8 @@ namespace CustomPropertyGrid
 				if (child == e || child.IsChildOf(e))
 				{
 					Point result = e.GetChildLocation(child);
-					result.X += this.indent;
-					result.Y += curY;
+					result.X += this.ClientRectangle.X + this.indent;
+					result.Y += this.ClientRectangle.Y + curY;
 					return result;
 				}
 				curY += e.Height;
@@ -143,10 +203,11 @@ namespace CustomPropertyGrid
 			editor.ParentEditor = this;
 			editor.ValueChanged += this.OnValueChanged;
 			editor.EditingFinished += this.OnEditingFinished;
+			this.UpdateChildWidth(editor);
 
 			this.propertyEditors.Add(editor);
 			this.OnEditorAdded(editor);
-			this.UpdateSize();
+			this.UpdateHeight();
 		}
 		protected void RemovePropertyEditor(PropertyEditor editor)
 		{
@@ -156,7 +217,7 @@ namespace CustomPropertyGrid
 
 			this.OnEditorRemoving(editor);
 			this.propertyEditors.Remove(editor);
-			this.UpdateSize();
+			this.UpdateHeight();
 		}
 		protected void ClearPropertyEditors()
 		{
@@ -168,20 +229,29 @@ namespace CustomPropertyGrid
 				this.OnEditorRemoving(e);
 			}
 			this.propertyEditors.Clear();
-			this.UpdateSize();
+			this.UpdateHeight();
 		}
-		protected void UpdateSize()
+		protected void UpdateHeight()
 		{
 			int h = this.headerHeight;
 			if (this.expanded)
 			{
 				foreach (PropertyEditor e in this.propertyEditors)
-				{
-					e.Width = this.ClientRectangle.Width - this.indent;
 					h += e.Height;
-				}
 			}
 			this.Height = h;
+		}
+		protected void UpdateChildWidth(PropertyEditor child = null)
+		{
+			if (child == null)
+			{
+				foreach (PropertyEditor e in this.propertyEditors)
+					e.Width = this.ClientRectangle.Width - this.indent;
+			}
+			else
+			{
+				child.Width = this.ClientRectangle.Width - this.indent;
+			}
 		}
 		protected override void UpdateGeometry()
 		{
@@ -210,12 +280,26 @@ namespace CustomPropertyGrid
 			}
 			else
 			{
-				this.expandCheckRect = new Rectangle(headerRect.X, headerRect.Y, 0, 0);
+				this.expandCheckRect = new Rectangle(this.headerRect.X, this.headerRect.Y, 0, 0);
+			}
+
+			if ((this.Hints & HintFlags.HasActiveCheck) != HintFlags.None)
+			{
+				this.activeCheckRect = new Rectangle(
+					this.expandCheckRect.X + 2,
+					this.headerRect.Y + this.headerRect.Height / 2 - ControlRenderer.CheckBoxSize.Height / 2 - 1,
+					ControlRenderer.CheckBoxSize.Width,
+					ControlRenderer.CheckBoxSize.Height);
+			}
+			else
+			{
+				this.activeCheckRect = new Rectangle(this.expandCheckRect.Right, this.expandCheckRect.Y, 0, 0);
 			}
 		}
 		
 		protected void OnEditorAdded(PropertyEditor e)
 		{
+			e.SizeChanged += this.child_SizeChanged;
 			if (this.EditorAdded != null)
 				this.EditorAdded(this, new PropertyEditorEventArgs(e));
 		}
@@ -223,6 +307,7 @@ namespace CustomPropertyGrid
 		{
 			if (this.EditorRemoving != null)
 				this.EditorRemoving(this, new PropertyEditorEventArgs(e));
+			e.SizeChanged -= this.child_SizeChanged;
 		}
 
 		protected override bool IsChildValueModified(PropertyEditor childEditor)
@@ -241,14 +326,16 @@ namespace CustomPropertyGrid
 
 		protected void PaintHeader(Graphics g)
 		{
+			if (this.headerHeight == 0) return;
 			Rectangle buttonRect = this.ButtonRectangle;
 
+			CheckBoxState activeState = CheckBoxState.UncheckedDisabled;
 			CheckBoxState expandState = CheckBoxState.UncheckedDisabled;
 			if ((this.Hints & HintFlags.HasExpandCheck) != HintFlags.None)
 			{
 				if (this.Enabled && (this.Hints & HintFlags.ExpandEnabled) != HintFlags.None)
 				{
-					if (this.Expanded)
+					if (!this.Expanded)
 					{
 						if (this.expandCheckPressed)		expandState = CheckBoxState.PlusPressed;
 						else if (this.expandCheckHovered)	expandState = CheckBoxState.PlusHot;
@@ -267,34 +354,55 @@ namespace CustomPropertyGrid
 					else				expandState = CheckBoxState.MinusDisabled;
 				}
 			}
+			if ((this.Hints & HintFlags.HasActiveCheck) != HintFlags.None)
+			{
+				if (this.Enabled && (this.Hints & HintFlags.ActiveEnabled) != HintFlags.None)
+				{
+					if (this.Active)
+					{
+						if (this.activeCheckPressed)		activeState = CheckBoxState.CheckedPressed;
+						else if (this.activeCheckHovered)	activeState = CheckBoxState.CheckedHot;
+						else								activeState = CheckBoxState.CheckedNormal;
+					}
+					else
+					{
+						if (this.activeCheckPressed)		activeState = CheckBoxState.UncheckedPressed;
+						else if (this.activeCheckHovered)	activeState = CheckBoxState.UncheckedHot;
+						else								activeState = CheckBoxState.UncheckedNormal;
+					}
+				}
+				else
+				{
+					if (this.Active)	activeState = CheckBoxState.CheckedDisabled;
+					else				activeState = CheckBoxState.UncheckedDisabled;
+				}
+			}
 
 			Rectangle iconRect;
 			if (this.headerIcon != null)
 			{
 				iconRect = new Rectangle(
-					this.expandCheckRect.Right + 2,
+					this.activeCheckRect.Right + 2,
 					this.headerRect.Y + this.headerRect.Height / 2 - this.headerIcon.Height / 2, 
 					this.headerIcon.Width,
 					this.headerIcon.Height);
 			}
 			else
 			{
-				iconRect = new Rectangle(this.expandCheckRect.Right, this.headerRect.Y, 0, 0);
+				iconRect = new Rectangle(this.activeCheckRect.Right, this.headerRect.Y, 0, 0);
 			}
 			Rectangle textRect = new Rectangle(iconRect.Right, this.headerRect.Y, this.headerRect.Width - buttonRect.Width - iconRect.Width, this.headerRect.Height);
 
 
-			ControlRenderer.DrawGroupHeaderBackground(g, this.headerRect, this.Focused ? this.headerColor.ScaleBrightness(0.9f) : this.headerColor, this.headerStyle);
+			ControlRenderer.DrawGroupHeaderBackground(g, this.headerRect, this.Focused ? this.headerColor.ScaleBrightness(0.85f) : this.headerColor, this.headerStyle);
 			
 			if ((this.Hints & HintFlags.HasExpandCheck) != HintFlags.None)
-			{
 				ControlRenderer.DrawCheckBox(g, this.expandCheckRect.Location, expandState);
-			}
+			if ((this.Hints & HintFlags.HasActiveCheck) != HintFlags.None)
+				ControlRenderer.DrawCheckBox(g, this.activeCheckRect.Location, activeState);
 
 			if (this.headerIcon != null)
-			{
 				g.DrawImage(this.Enabled ? this.headerIcon.Normal : this.headerIcon.Disabled, iconRect);
-			}
 
 			ControlRenderer.DrawStringLine(g, this.PropertyName, this.IsValueModified ? FontBold : FontNormal, textRect, this.Enabled ? SystemColors.ControlText : SystemColors.GrayText);
 		}
@@ -315,18 +423,32 @@ namespace CustomPropertyGrid
 			// Paint children
 			if (this.expanded)
 			{
+				Rectangle clipRectBase = new Rectangle(
+					(int)e.Graphics.ClipBounds.X,
+					(int)e.Graphics.ClipBounds.Y,
+					(int)e.Graphics.ClipBounds.Width,
+					(int)e.Graphics.ClipBounds.Height);
 				foreach (PropertyEditor child in this.propertyEditors)
 				{
-					GraphicsState oldState = e.Graphics.Save();
-					Rectangle editorRect = new Rectangle(this.ClientRectangle.X + this.indent, this.ClientRectangle.Y + curY, child.Width, child.Height);
-					editorRect.Intersect(this.ClientRectangle);
-					e.Graphics.SetClip(editorRect);
-					e.Graphics.TranslateTransform(this.ClientRectangle.X + this.indent, this.ClientRectangle.Y + curY);
+					if (clipRectBase.IntersectsWith(new Rectangle(
+						this.ClientRectangle.X + this.indent, 
+						this.ClientRectangle.Y + curY,
+						child.Width, 
+						child.Height)))
+					{
+						GraphicsState oldState = e.Graphics.Save();
+						Rectangle editorRect = new Rectangle(this.ClientRectangle.X + this.indent, this.ClientRectangle.Y + curY, child.Width, child.Height);
+						editorRect.Intersect(this.ClientRectangle);
+						Rectangle clipRect = editorRect;
+						clipRect.Intersect(clipRectBase);
+						e.Graphics.SetClip(clipRect);
+						e.Graphics.TranslateTransform(this.ClientRectangle.X + this.indent, this.ClientRectangle.Y + curY);
 
-					child.OnPaint(e);
+						child.OnPaint(e);
+						e.Graphics.Restore(oldState);
+					}
+
 					curY += child.Height;
-
-					e.Graphics.Restore(oldState);
 				}
 			}
 		}
@@ -338,7 +460,7 @@ namespace CustomPropertyGrid
 			
 			if (!this.hoverEditorLock)
 			{
-				this.hoverEditor = this.PickEditorAt(e.X, e.Y);
+				this.hoverEditor = this.PickEditorAt(e.X, e.Y, true);
 				if (this.hoverEditor == this) this.hoverEditor = null;
 
 				if (lastHoverEditor != this.hoverEditor && lastHoverEditor != null)
@@ -353,15 +475,18 @@ namespace CustomPropertyGrid
 				this.hoverEditor.OnMouseMove(new MouseEventArgs(
 					e.Button, 
 					e.Clicks, 
-					e.X - this.ClientRectangle.X - editorLoc.X, 
-					e.Y - this.ClientRectangle.Y - editorLoc.Y, 
+					e.X - editorLoc.X, 
+					e.Y - editorLoc.Y, 
 					e.Delta));
 			}
 			else
 			{
-				bool lastHovered = this.expandCheckHovered;
+				bool lastExpandHovered = this.expandCheckHovered;
+				bool lastActiveHovered = this.activeCheckHovered;
 				this.expandCheckHovered = (this.Hints & HintFlags.ExpandEnabled) != HintFlags.None && this.expandCheckRect.Contains(e.Location);
-				if (lastHovered != this.expandCheckHovered) this.Invalidate();
+				this.activeCheckHovered = !this.ReadOnly && (this.Hints & HintFlags.ActiveEnabled) != HintFlags.None && this.activeCheckRect.Contains(e.Location);
+				if (lastExpandHovered != this.expandCheckHovered) this.Invalidate();
+				if (lastActiveHovered != this.activeCheckHovered) this.Invalidate();
 			}
 		}
 		protected internal override void OnMouseEnter(EventArgs e)
@@ -381,8 +506,11 @@ namespace CustomPropertyGrid
 			}
 
 			if (this.expandCheckHovered) this.Invalidate();
+			if (this.activeCheckHovered) this.Invalidate();
 			this.expandCheckHovered = false;
 			this.expandCheckPressed = false;
+			this.activeCheckHovered = false;
+			this.activeCheckPressed = false;
 		}
 		protected internal override void OnMouseDown(MouseEventArgs e)
 		{
@@ -394,17 +522,25 @@ namespace CustomPropertyGrid
 				this.hoverEditor.OnMouseDown(new MouseEventArgs(
 					e.Button, 
 					e.Clicks, 
-					e.X - this.ClientRectangle.X - editorLoc.X, 
-					e.Y - this.ClientRectangle.Y - editorLoc.Y, 
+					e.X - editorLoc.X, 
+					e.Y - editorLoc.Y, 
 					e.Delta));
 			}
 			else
 			{
+				if (new Rectangle(0, 0, this.Width, this.Height).Contains(e.Location))
+					this.Focus();
 				if (this.expandCheckHovered && (e.Button & MouseButtons.Left) != MouseButtons.None)
 				{
 					this.expandCheckPressed = true;
 					this.Invalidate();
 					this.OnExpandCheckPressed();
+				}
+				else if (this.activeCheckHovered && (e.Button & MouseButtons.Left) != MouseButtons.None)
+				{
+					this.activeCheckPressed = true;
+					this.Invalidate();
+					this.OnActiveCheckPressed();
 				}
 			}
 		}
@@ -418,8 +554,8 @@ namespace CustomPropertyGrid
 				this.hoverEditor.OnMouseUp(new MouseEventArgs(
 					e.Button, 
 					e.Clicks, 
-					e.X - this.ClientRectangle.X - editorLoc.X, 
-					e.Y - this.ClientRectangle.Y - editorLoc.Y, 
+					e.X - editorLoc.X, 
+					e.Y - editorLoc.Y, 
 					e.Delta));
 			}
 			else
@@ -427,6 +563,11 @@ namespace CustomPropertyGrid
 				if (this.expandCheckPressed && (e.Button & MouseButtons.Left) != MouseButtons.None)
 				{
 					this.expandCheckPressed = false;
+					this.Invalidate();
+				}
+				else if (this.activeCheckPressed && (e.Button & MouseButtons.Left) != MouseButtons.None)
+				{
+					this.activeCheckPressed = false;
 					this.Invalidate();
 				}
 			}
@@ -440,8 +581,8 @@ namespace CustomPropertyGrid
 				this.hoverEditor.OnMouseClick(new MouseEventArgs(
 					e.Button, 
 					e.Clicks, 
-					e.X - this.ClientRectangle.X - editorLoc.X, 
-					e.Y - this.ClientRectangle.Y - editorLoc.Y, 
+					e.X - editorLoc.X, 
+					e.Y - editorLoc.Y, 
 					e.Delta));
 			}
 		}
@@ -454,8 +595,8 @@ namespace CustomPropertyGrid
 				this.hoverEditor.OnMouseDoubleClick(new MouseEventArgs(
 					e.Button, 
 					e.Clicks, 
-					e.X - this.ClientRectangle.X - editorLoc.X, 
-					e.Y - this.ClientRectangle.Y - editorLoc.Y, 
+					e.X - editorLoc.X, 
+					e.Y - editorLoc.Y, 
 					e.Delta));
 			}
 		}
@@ -467,7 +608,7 @@ namespace CustomPropertyGrid
 			{
 				if ((this.Hints & HintFlags.ExpandEnabled) != HintFlags.None &&
 					(this.Hints & HintFlags.HasExpandCheck) != HintFlags.None)
-					this.Expanded = !this.Expanded;
+					this.OnExpandCheckPressed();
 				e.Handled = true;
 			}
 		}
@@ -480,6 +621,11 @@ namespace CustomPropertyGrid
 		protected internal override void OnDragLeave(EventArgs e)
 		{
 			base.OnDragLeave(e);
+			if (this.hoverEditor != null)
+			{
+				this.hoverEditor.OnDragLeave(e);
+				this.hoverEditor = null;
+			}
 		}
 		protected internal override void OnDragOver(DragEventArgs e)
 		{
@@ -500,13 +646,15 @@ namespace CustomPropertyGrid
 			if (this.hoverEditor != null)
 			{
 				Point editorLoc = this.GetChildLocation(this.hoverEditor);
-				this.hoverEditor.OnDragOver(new DragEventArgs(
+				DragEventArgs childEvent = new DragEventArgs(
 					e.Data, 
 					e.KeyState, 
-					e.X - this.ClientRectangle.X - editorLoc.X, 
-					e.Y - this.ClientRectangle.Y - editorLoc.Y, 
+					e.X - editorLoc.X, 
+					e.Y - editorLoc.Y, 
 					e.AllowedEffect,
-					e.Effect));
+					e.Effect);
+				this.hoverEditor.OnDragOver(childEvent);
+				e.Effect = childEvent.Effect;
 			}
 			else
 			{
@@ -519,24 +667,47 @@ namespace CustomPropertyGrid
 			if (this.hoverEditor != null)
 			{
 				Point editorLoc = this.GetChildLocation(this.hoverEditor);
-				this.hoverEditor.OnDragDrop(new DragEventArgs(
+				DragEventArgs childEvent = new DragEventArgs(
 					e.Data, 
 					e.KeyState, 
-					e.X - this.ClientRectangle.X - editorLoc.X, 
-					e.Y - this.ClientRectangle.Y - editorLoc.Y, 
+					e.X - editorLoc.X, 
+					e.Y - editorLoc.Y, 
 					e.AllowedEffect,
-					e.Effect));
+					e.Effect);
+				this.hoverEditor.OnDragDrop(childEvent);
+				e.Effect = childEvent.Effect;
 			}
+		}
+
+		protected internal override void OnLostFocus(EventArgs e)
+		{
+			base.OnLostFocus(e);
+			this.hoverEditorLock = false;
 		}
 
 		protected override void OnSizeChanged()
 		{
 			base.OnSizeChanged();
-			this.UpdateSize();
+			this.UpdateChildWidth();
 		}
 		protected void OnExpandCheckPressed()
 		{
 			this.Expanded = !this.Expanded;
+		}
+		protected void OnActiveCheckPressed()
+		{
+			if (this.ReadOnly) return;
+			this.Active = !this.Active;
+		}
+		protected void OnActiveChanged()
+		{
+			if (this.ActiveChanged != null)
+				this.ActiveChanged(this, EventArgs.Empty);
+		}
+
+		private void child_SizeChanged(object sender, EventArgs e)
+		{
+			this.UpdateHeight();
 		}
 	}
 }

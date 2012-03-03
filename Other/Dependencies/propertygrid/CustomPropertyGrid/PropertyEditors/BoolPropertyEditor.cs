@@ -47,11 +47,8 @@ namespace CustomPropertyGrid.PropertyEditors
 		}
 		public override void PerformSetValue()
 		{
-			base.PerformSetValue();
-			if (this.ReadOnly) return;
 			if (this.state == CheckState.Indeterminate) return;
-
-			this.SetValue(this.DisplayedValue);
+			base.PerformSetValue();
 		}
 
 		protected void ToggleState()

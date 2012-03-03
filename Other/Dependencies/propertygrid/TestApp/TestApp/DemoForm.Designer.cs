@@ -34,6 +34,8 @@
 			this.radioEnabled = new System.Windows.Forms.RadioButton();
 			this.radioDisabled = new System.Windows.Forms.RadioButton();
 			this.radioReadOnly = new System.Windows.Forms.RadioButton();
+			this.textBox1 = new System.Windows.Forms.TextBox();
+			this.textBox2 = new System.Windows.Forms.TextBox();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -48,14 +50,14 @@
 			this.propertyGrid1.Location = new System.Drawing.Point(12, 12);
 			this.propertyGrid1.Name = "propertyGrid1";
 			this.propertyGrid1.ReadOnly = false;
-			this.propertyGrid1.Size = new System.Drawing.Size(264, 224);
+			this.propertyGrid1.Size = new System.Drawing.Size(264, 197);
 			this.propertyGrid1.TabIndex = 0;
 			// 
 			// numericUpDown1
 			// 
 			this.numericUpDown1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.numericUpDown1.Location = new System.Drawing.Point(12, 265);
+			this.numericUpDown1.Location = new System.Drawing.Point(12, 238);
 			this.numericUpDown1.Name = "numericUpDown1";
 			this.numericUpDown1.Size = new System.Drawing.Size(183, 20);
 			this.numericUpDown1.TabIndex = 1;
@@ -63,7 +65,7 @@
 			// button1
 			// 
 			this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.button1.Location = new System.Drawing.Point(201, 265);
+			this.button1.Location = new System.Drawing.Point(201, 238);
 			this.button1.Name = "button1";
 			this.button1.Size = new System.Drawing.Size(75, 23);
 			this.button1.TabIndex = 2;
@@ -74,7 +76,7 @@
 			// 
 			this.radioEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.radioEnabled.AutoSize = true;
-			this.radioEnabled.Location = new System.Drawing.Point(12, 242);
+			this.radioEnabled.Location = new System.Drawing.Point(12, 215);
 			this.radioEnabled.Name = "radioEnabled";
 			this.radioEnabled.Size = new System.Drawing.Size(64, 17);
 			this.radioEnabled.TabIndex = 3;
@@ -87,7 +89,7 @@
 			// 
 			this.radioDisabled.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.radioDisabled.AutoSize = true;
-			this.radioDisabled.Location = new System.Drawing.Point(160, 242);
+			this.radioDisabled.Location = new System.Drawing.Point(160, 215);
 			this.radioDisabled.Name = "radioDisabled";
 			this.radioDisabled.Size = new System.Drawing.Size(66, 17);
 			this.radioDisabled.TabIndex = 4;
@@ -100,7 +102,7 @@
 			// 
 			this.radioReadOnly.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.radioReadOnly.AutoSize = true;
-			this.radioReadOnly.Location = new System.Drawing.Point(82, 242);
+			this.radioReadOnly.Location = new System.Drawing.Point(82, 215);
 			this.radioReadOnly.Name = "radioReadOnly";
 			this.radioReadOnly.Size = new System.Drawing.Size(72, 17);
 			this.radioReadOnly.TabIndex = 5;
@@ -109,11 +111,31 @@
 			this.radioReadOnly.UseVisualStyleBackColor = true;
 			this.radioReadOnly.CheckedChanged += new System.EventHandler(this.radioReadOnly_CheckedChanged);
 			// 
+			// textBox1
+			// 
+			this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.textBox1.Location = new System.Drawing.Point(12, 267);
+			this.textBox1.Name = "textBox1";
+			this.textBox1.Size = new System.Drawing.Size(135, 20);
+			this.textBox1.TabIndex = 6;
+			// 
+			// textBox2
+			// 
+			this.textBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.textBox2.Location = new System.Drawing.Point(153, 267);
+			this.textBox2.Name = "textBox2";
+			this.textBox2.Size = new System.Drawing.Size(123, 20);
+			this.textBox2.TabIndex = 7;
+			// 
 			// DemoForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(288, 297);
+			this.ClientSize = new System.Drawing.Size(288, 299);
+			this.Controls.Add(this.textBox2);
+			this.Controls.Add(this.textBox1);
 			this.Controls.Add(this.radioReadOnly);
 			this.Controls.Add(this.radioDisabled);
 			this.Controls.Add(this.radioEnabled);
@@ -136,6 +158,8 @@
 		private System.Windows.Forms.RadioButton radioEnabled;
 		private System.Windows.Forms.RadioButton radioDisabled;
 		private System.Windows.Forms.RadioButton radioReadOnly;
+		private System.Windows.Forms.TextBox textBox1;
+		private System.Windows.Forms.TextBox textBox2;
 	}
 }
 

@@ -1,3 +1,14 @@
 ﻿
--->	GroupedPropertyEditor header
-	-->	Accessible and extendable? Or just hardcode some stuff? (Active button!)
+##################################################################
+#                                                                #
+#   The CustomPropertyGrid Project is in an experimental state   #
+#                                                                #
+##################################################################
+
+-->	NumericPropertyEditor
+	-->	Use the StringEditorTemplate
+	-->	Implement number parsing and restrictions
+	-->	Plus / Minus buttons like in NumericUpDown
+	-->	Grip button for quick mousedrag-adjustments.
+
+-->	
