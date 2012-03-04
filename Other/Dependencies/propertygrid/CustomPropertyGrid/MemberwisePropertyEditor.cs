@@ -10,13 +10,14 @@ namespace CustomPropertyGrid
 {
 	public class MemberwisePropertyEditor : GroupedPropertyEditor
 	{
+		private	bool	buttonIsCreate	= false;
 		private	Predicate<MemberInfo>			memberPredicate		= null;
 		private	Predicate<MemberInfo>			memberAffectsOthers	= null;
 		private	Func<MemberInfo,PropertyEditor>	memberEditorCreator	= null;
 
 		public override object DisplayedValue
 		{
-			get { return this.GetValue().ToArray(); }
+			get { return this.GetValue().FirstOrDefault(); }
 		}
 		public Predicate<MemberInfo> MemberPredicate
 		{
@@ -61,6 +62,7 @@ namespace CustomPropertyGrid
 
 		public MemberwisePropertyEditor()
 		{
+			this.Hints |= HintFlags.HasButton | HintFlags.ButtonEnabled;
 			this.memberEditorCreator = this.DefaultMemberEditorCreator;
 			this.memberAffectsOthers = this.DefaultMemberAffectsOthers;
 			this.memberPredicate = this.DefaultMemberPredicate;
@@ -69,10 +71,10 @@ namespace CustomPropertyGrid
 		public override void InitContent()
 		{
 			this.ClearContent();
-
-			base.InitContent();
 			if (this.EditedType != null)
 			{
+				base.InitContent();
+
 				// Generate and add property editors for the current type
 				this.BeginUpdate();
 				// Properties
@@ -140,6 +142,7 @@ namespace CustomPropertyGrid
 
 			if (curObjects == null)
 			{
+				this.HeaderValueText = null;
 				return;
 			}
 
@@ -165,16 +168,26 @@ namespace CustomPropertyGrid
 			{
 				this.ClearContent();
 
+				this.Hints &= ~HintFlags.ExpandEnabled;
+				this.ButtonIcon = CustomPropertyGrid.Properties.Resources.ImageAdd;
+				this.buttonIsCreate = true;
 				this.Expanded = false;
 					
 				valString = "null";
 			}
 			else
 			{
+				this.Hints |= HintFlags.ExpandEnabled;
+				if (!this.CanExpand) this.Expanded = false;
+				this.ButtonIcon = CustomPropertyGrid.Properties.Resources.ImageDelete;
+				this.buttonIsCreate = false;
+
 				valString = values.Count() == 1 ? 
 					values.First().ToString() :
 					string.Format(CustomPropertyGrid.Properties.Resources.PropertyGrid_N_Objects, values.Count());
 			}
+
+			this.HeaderValueText = valString;
 		}
 		protected override void OnEditedTypeChanged()
 		{
@@ -185,6 +198,28 @@ namespace CustomPropertyGrid
 		{
 			base.OnEditedTypeChanged();
 			if (this.ContentInitialized) this.InitContent();
+		}
+		protected override void OnButtonPressed()
+		{
+			base.OnButtonPressed();
+			if (this.EditedType.IsValueType)
+			{
+				this.SetValue(this.ParentGrid.CreateObjectInstance(this.EditedType));
+			}
+			else
+			{
+				if (this.buttonIsCreate)
+				{
+					this.SetValue(this.ParentGrid.CreateObjectInstance(this.EditedType));
+					this.Expanded = true;
+				}
+				else
+				{
+					this.SetValue(null);
+				}
+			}
+
+			this.PerformGetValue();
 		}
 
 		protected Func<IEnumerable<object>> CreatePropertyValueGetter(PropertyInfo property)
@@ -214,7 +249,7 @@ namespace CustomPropertyGrid
 				if (affectsOthers) this.PerformGetValue();
 
 				// Fixup struct values by assigning the modified struct copy to its original member
-				if (this.EditedType.IsValueType || this.ForceWriteBack) this.SetValue((IEnumerable<object>)targetArray);
+				if (this.EditedType.IsValueType || this.ForceWriteBack) this.SetValues((IEnumerable<object>)targetArray);
 			};
 		}
 		protected Action<IEnumerable<object>> CreateFieldValueSetter(FieldInfo field)
@@ -236,7 +271,7 @@ namespace CustomPropertyGrid
 				if (affectsOthers) this.PerformGetValue();
 
 				// Fixup struct values by assigning the modified struct copy to its original member
-				if (this.EditedType.IsValueType || this.ForceWriteBack) this.SetValue((IEnumerable<object>)targetArray);
+				if (this.EditedType.IsValueType || this.ForceWriteBack) this.SetValues((IEnumerable<object>)targetArray);
 			};
 		}
 

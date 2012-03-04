@@ -23,6 +23,7 @@ namespace CustomPropertyGrid
 		private	List<PropertyEditor>	propertyEditors	= new List<PropertyEditor>();
 		private	PropertyEditor			hoverEditor		= null;
 		private	bool					hoverEditorLock	= false;
+		private	string					headerValueText	= null;
 		private	IconImage				headerIcon		= null;
 		private	Color					headerColor		= SystemColors.Control;
 		private	GroupHeaderStyle		headerStyle		= GroupHeaderStyle.Flat;
@@ -33,6 +34,7 @@ namespace CustomPropertyGrid
 		private	Rectangle				activeCheckRect		= Rectangle.Empty;
 		private	bool					activeCheckHovered	= false;
 		private	bool					activeCheckPressed	= false;
+		private	Size					sizeBeforeUpdate	= Size.Empty;
 
 		public event EventHandler<PropertyEditorEventArgs>	EditorAdded;
 		public event EventHandler<PropertyEditorEventArgs>	EditorRemoving;
@@ -123,9 +125,25 @@ namespace CustomPropertyGrid
 				this.Invalidate();
 			}
 		}
+		public string HeaderValueText
+		{
+			get { return this.headerValueText; }
+			set
+			{
+				if (this.headerValueText != value)
+				{
+					this.headerValueText = value;
+					this.Invalidate();
+				}
+			}
+		}
 		public bool ContentInitialized
 		{
 			get { return this.contentInit; }
+		}
+		public bool CanExpand
+		{
+			get { return !this.contentInit || this.propertyEditors.Count > 0; }
 		}
 		public override IEnumerable<PropertyEditor> Children
 		{
@@ -153,6 +171,17 @@ namespace CustomPropertyGrid
 		{
 			this.contentInit = false;
 			this.ClearPropertyEditors();
+		}
+		protected override void BeginUpdate()
+		{
+			base.BeginUpdate();
+			this.sizeBeforeUpdate = this.Size;
+		}
+		protected override void EndUpdate()
+		{
+			base.EndUpdate();
+			if (this.Size != this.sizeBeforeUpdate)
+				this.OnSizeChanged();
 		}
 
 		public override void PerformSetValue() {}
@@ -206,6 +235,11 @@ namespace CustomPropertyGrid
 			this.UpdateChildWidth(editor);
 
 			this.propertyEditors.Add(editor);
+			
+			GroupedPropertyEditor groupedEditor = editor as GroupedPropertyEditor;
+			if (groupedEditor != null && groupedEditor.Expanded && !groupedEditor.ContentInitialized)
+				groupedEditor.InitContent();
+
 			this.OnEditorAdded(editor);
 			this.UpdateHeight();
 		}
@@ -261,7 +295,7 @@ namespace CustomPropertyGrid
 			Rectangle buttonRect = this.ButtonRectangle;
 
 			clientRect.Width += buttonRect.Width;
-			buttonRect.Height = this.headerHeight;
+			buttonRect.Height = Math.Min(buttonRect.Height, this.headerHeight);
 			buttonRect.Width = Math.Min(buttonRect.Height, this.headerHeight - 2);
 			buttonRect.X = this.Size.Width - buttonRect.Width - 1;
 			buttonRect.Y = this.headerHeight / 2 - buttonRect.Height / 2;
@@ -333,7 +367,7 @@ namespace CustomPropertyGrid
 			CheckBoxState expandState = CheckBoxState.UncheckedDisabled;
 			if ((this.Hints & HintFlags.HasExpandCheck) != HintFlags.None)
 			{
-				if (this.Enabled && (this.Hints & HintFlags.ExpandEnabled) != HintFlags.None)
+				if (this.Enabled && this.CanExpand && (this.Hints & HintFlags.ExpandEnabled) != HintFlags.None)
 				{
 					if (!this.Expanded)
 					{
@@ -391,7 +425,30 @@ namespace CustomPropertyGrid
 			{
 				iconRect = new Rectangle(this.activeCheckRect.Right, this.headerRect.Y, 0, 0);
 			}
-			Rectangle textRect = new Rectangle(iconRect.Right, this.headerRect.Y, this.headerRect.Width - buttonRect.Width - iconRect.Width, this.headerRect.Height);
+			Rectangle textRect = new Rectangle(
+				iconRect.Right, 
+				this.headerRect.Y, 
+				this.headerRect.Width - buttonRect.Width - iconRect.Width - this.expandCheckRect.Width - this.activeCheckRect.Width - 2, 
+				this.headerRect.Height);
+			Rectangle nameTextRect;
+			Rectangle valueTextRect;
+			if (!string.IsNullOrEmpty(this.PropertyName) && !string.IsNullOrEmpty(this.headerValueText))
+			{
+				int nameWidth;
+				nameWidth = this.Width * 2 / 5 - textRect.X;
+				nameTextRect = new Rectangle(textRect.X, textRect.Y, nameWidth, textRect.Height);
+				valueTextRect = new Rectangle(textRect.X + nameWidth, textRect.Y, textRect.Width - nameWidth, textRect.Height);
+			}
+			else if (!string.IsNullOrEmpty(this.headerValueText))
+			{
+				nameTextRect = new Rectangle(textRect.X, textRect.Y, 0, 0);
+				valueTextRect = textRect;
+			}
+			else
+			{
+				nameTextRect = textRect;
+				valueTextRect = new Rectangle(textRect.X, textRect.Y, 0, 0);
+			}
 
 
 			ControlRenderer.DrawGroupHeaderBackground(g, this.headerRect, this.Focused ? this.headerColor.ScaleBrightness(0.85f) : this.headerColor, this.headerStyle);
@@ -404,7 +461,8 @@ namespace CustomPropertyGrid
 			if (this.headerIcon != null)
 				g.DrawImage(this.Enabled ? this.headerIcon.Normal : this.headerIcon.Disabled, iconRect);
 
-			ControlRenderer.DrawStringLine(g, this.PropertyName, this.IsValueModified ? FontBold : FontNormal, textRect, this.Enabled ? SystemColors.ControlText : SystemColors.GrayText);
+			ControlRenderer.DrawStringLine(g, this.PropertyName, this.IsValueModified ? FontBold : FontNormal, nameTextRect, this.Enabled ? SystemColors.ControlText : SystemColors.GrayText);
+			ControlRenderer.DrawStringLine(g, this.headerValueText, this.IsValueModified ? FontBold : FontNormal, valueTextRect, this.Enabled ? SystemColors.ControlText : SystemColors.GrayText);
 		}
 		protected internal override void OnPaint(PaintEventArgs e)
 		{
@@ -483,7 +541,7 @@ namespace CustomPropertyGrid
 			{
 				bool lastExpandHovered = this.expandCheckHovered;
 				bool lastActiveHovered = this.activeCheckHovered;
-				this.expandCheckHovered = (this.Hints & HintFlags.ExpandEnabled) != HintFlags.None && this.expandCheckRect.Contains(e.Location);
+				this.expandCheckHovered = this.CanExpand && (this.Hints & HintFlags.ExpandEnabled) != HintFlags.None && this.expandCheckRect.Contains(e.Location);
 				this.activeCheckHovered = !this.ReadOnly && (this.Hints & HintFlags.ActiveEnabled) != HintFlags.None && this.activeCheckRect.Contains(e.Location);
 				if (lastExpandHovered != this.expandCheckHovered) this.Invalidate();
 				if (lastActiveHovered != this.activeCheckHovered) this.Invalidate();
@@ -606,7 +664,8 @@ namespace CustomPropertyGrid
 			base.OnKeyDown(e);
 			if (this.Focused && e.KeyCode == Keys.Return)
 			{
-				if ((this.Hints & HintFlags.ExpandEnabled) != HintFlags.None &&
+				if (this.CanExpand && 
+					(this.Hints & HintFlags.ExpandEnabled) != HintFlags.None &&
 					(this.Hints & HintFlags.HasExpandCheck) != HintFlags.None)
 					this.OnExpandCheckPressed();
 				e.Handled = true;
@@ -687,6 +746,7 @@ namespace CustomPropertyGrid
 
 		protected override void OnSizeChanged()
 		{
+			if (this.IsUpdatingFromObject) return;
 			base.OnSizeChanged();
 			this.UpdateChildWidth();
 		}

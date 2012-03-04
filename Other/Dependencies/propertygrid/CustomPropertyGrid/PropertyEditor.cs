@@ -323,13 +323,13 @@ namespace CustomPropertyGrid
 		{
 			return this.getter();
 		}
-		protected void SetValue(IEnumerable<object> objEnum)
+		protected void SetValues(IEnumerable<object> objEnum)
 		{
 			this.setter(objEnum);
 		}
 		protected void SetValue(object obj)
 		{
-			this.SetValue(new object[] { obj });
+			this.SetValues(new object[] { obj });
 		}
 
 		public void Invalidate()
@@ -382,12 +382,12 @@ namespace CustomPropertyGrid
 			this.clientRect.Width -= this.nameLabelRect.Width;
 			this.clientRect.Width -= this.buttonRect.Width;
 		}
-		protected void BeginUpdate()
+		protected virtual void BeginUpdate()
 		{
 			if (this.updatingFromObj) throw new InvalidOperationException("The PropertyEditor already is updating");
 			this.updatingFromObj = true;
 		}
-		protected void EndUpdate()
+		protected virtual void EndUpdate()
 		{
 			if (!this.updatingFromObj) throw new InvalidOperationException("The PropertyEditor was not updating");
 			this.updatingFromObj = false;

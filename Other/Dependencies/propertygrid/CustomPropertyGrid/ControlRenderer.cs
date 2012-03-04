@@ -532,10 +532,10 @@ namespace CustomPropertyGrid.Renderer
 			System.Drawing.Imaging.ColorMatrix colorMatrix = null;
 			{
 				colorMatrix = new System.Drawing.Imaging.ColorMatrix(new float[][] {
-					new float[] {0.34f, 0.34f, 0.34f, 0.0f, 0.0f},
-					new float[] {0.34f, 0.34f, 0.34f, 0.0f, 0.0f},
-					new float[] {0.34f, 0.34f, 0.34f, 0.0f, 0.0f},
-					new float[] {0.0f, 0.0f, 0.0f, 1.0f, 0.0f},
+					new float[] {1.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+					new float[] {0.0f, 1.0f, 0.0f, 0.0f, 0.0f},
+					new float[] {0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
+					new float[] {0.0f, 0.0f, 0.0f, 0.65f, 0.0f},
 					new float[] {0.0f, 0.0f, 0.0f, 0.0f, 1.0f}});
 				imgAttribs.SetColorMatrix(colorMatrix);
 				this.images[0] = new Bitmap(source.Width, source.Height);

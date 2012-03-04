@@ -70,25 +70,26 @@ namespace CustomPropertyGrid.PropertyEditors
 			
 			CheckBoxState boxState = CheckBoxState.UncheckedNormal;
 			bool boxEnabled = this.Enabled && !this.ReadOnly;
+			bool hot = this.hovered | this.Focused;
 			if (this.state == CheckState.Checked)
 			{
 				if (!boxEnabled)		boxState = CheckBoxState.CheckedDisabled;
 				else if (this.pressed)	boxState = CheckBoxState.CheckedPressed;
-				else if (this.hovered)	boxState = CheckBoxState.CheckedHot;
+				else if (hot)			boxState = CheckBoxState.CheckedHot;
 				else					boxState = CheckBoxState.CheckedNormal;				
 			}
 			else if (this.state == CheckState.Unchecked)
 			{
 				if (!boxEnabled)		boxState = CheckBoxState.UncheckedDisabled;
 				else if (this.pressed)	boxState = CheckBoxState.UncheckedPressed;
-				else if (this.hovered)	boxState = CheckBoxState.UncheckedHot;
+				else if (hot)			boxState = CheckBoxState.UncheckedHot;
 				else					boxState = CheckBoxState.UncheckedNormal;	
 			}
 			else if (this.state == CheckState.Indeterminate)
 			{
 				if (!boxEnabled)		boxState = CheckBoxState.MixedDisabled;
 				else if (this.pressed)	boxState = CheckBoxState.MixedPressed;
-				else if (this.hovered)	boxState = CheckBoxState.MixedHot;
+				else if (hot)			boxState = CheckBoxState.MixedHot;
 				else					boxState = CheckBoxState.MixedNormal;	
 			}
 			

@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ControlRenderer.cs" />
+    <Compile Include="EditorTemplates\StringEditorTemplate.cs" />
     <Compile Include="GroupedPropertyEditor.cs" />
     <Compile Include="MemberwisePropertyEditor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -122,6 +122,16 @@ namespace CustomPropertyGrid
 		{
 			get { return this.focusEditor; }
 		}
+		protected override CreateParams CreateParams
+		{
+			get
+			{
+				CreateParams cp = base.CreateParams;
+				// This somehow fixes the "ghost scrollbar" bug. Note that it also isn't animated anymore and doesn't react properly to hover events.
+				cp.ExStyle |= 0x02000000;  // Turn on WS_EX_COMPOSITED
+				return cp;
+			}
+		}
 
 		public PropertyGrid()
 		{
@@ -196,12 +206,19 @@ namespace CustomPropertyGrid
 			this.mainEditor.SizeChanged += this.mainEditor_SizeChanged;
 			this.UpdatePropertyEditor();
 			this.ConfigureEditor(this.mainEditor);
+
+			if (this.mainEditor is GroupedPropertyEditor)
+			{
+				GroupedPropertyEditor mainGroupEditor = this.mainEditor as GroupedPropertyEditor;
+				mainGroupEditor.InitContent();
+			}
 		}
 		protected void UpdatePropertyEditor()
 		{
 			if (this.mainEditor == null) return;
 
 			this.mainEditor.ParentGrid = this;
+			this.mainEditor.Hints &= ~(PropertyEditor.HintFlags.HasButton | PropertyEditor.HintFlags.ButtonEnabled);
 			this.mainEditor.Getter = this.ValueGetter;
 			this.mainEditor.Setter = this.readOnly ? null : (Action<IEnumerable<object>>)this.ValueSetter;
 			this.mainEditor.Width = this.ClientSize.Width;
@@ -222,8 +239,11 @@ namespace CustomPropertyGrid
 		}
 		private void mainEditor_SizeChanged(object sender, EventArgs e)
 		{
-			this.AutoScrollMinSize = new Size(0, this.mainEditor.Height);
-			this.Invalidate();
+			if (this.AutoScrollMinSize.Height != this.mainEditor.Height)
+			{
+				this.AutoScrollMinSize = new Size(0, this.mainEditor.Height);
+				//this.Invalidate();
+			}
 		}
 
 		public void RegisterEditorProvider(IPropertyEditorProvider provider)
@@ -246,6 +266,22 @@ namespace CustomPropertyGrid
 		public virtual void ConfigureEditor(PropertyEditor editor)
 		{
 
+		}
+		public virtual object CreateObjectInstance(Type objectType)
+		{
+			try
+			{
+				if (objectType == typeof(string))
+					return "";
+				else if (typeof(Array).IsAssignableFrom(objectType) && objectType.GetArrayRank() == 1)
+					return Array.CreateInstance(objectType.GetElementType(), 0);
+				else
+					return Activator.CreateInstance(objectType, true);
+			}
+			catch (Exception)
+			{
+				return null;
+			}
 		}
 
 		public void Focus(PropertyEditor editor)

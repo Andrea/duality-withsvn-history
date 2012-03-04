@@ -82,6 +82,8 @@ namespace CustomPropertyGrid
 				get { return this.subclass; }
 				set { this.subclass = value; }
 			}
+			public bool BoolOne { get; set; }
+			public bool BoolTwo { get; set; }
 		}
 		private struct Test2
 		{
@@ -97,19 +99,6 @@ namespace CustomPropertyGrid
 			{
 				this.yoink = val;
 			}
-		}
-		private class Test3
-		{
-			public bool boolOne;
-			public bool boolOneB;
-			public bool boolOneC;
-			public bool boolOneD;
-			public bool boolOneE;
-			public bool boolOneF;
-			public bool boolOneG;
-			public bool boolOneH;
-			public bool BoolTwo { get; set; }
-			public bool BoolThree { get; private set; }
 		}
 		#endregion
 
