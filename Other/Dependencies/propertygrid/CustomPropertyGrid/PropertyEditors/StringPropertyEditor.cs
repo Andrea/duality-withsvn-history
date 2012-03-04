@@ -11,7 +11,7 @@ namespace CustomPropertyGrid.PropertyEditors
 {
 	public class StringPropertyEditor : PropertyEditor
 	{
-		private	StringEditorTemplate	stringEditor	= null;
+		private	StringEditorTemplate	stringEditor	= new StringEditorTemplate();
 		private string	val				= null;
 		private	bool	valMultiple		= false;
 
@@ -23,9 +23,9 @@ namespace CustomPropertyGrid.PropertyEditors
 
 		public StringPropertyEditor()
 		{
-			this.stringEditor = new StringEditorTemplate();
 			this.stringEditor.Invalidate += this.stringEditor_Invalidate;
 			this.stringEditor.TextEdited += this.stringEditor_TextEdited;
+			this.stringEditor.EditingFinished += this.stringEditor_EditingFinished;
 
 			this.Height = 18;
 		}
@@ -73,15 +73,7 @@ namespace CustomPropertyGrid.PropertyEditors
 		protected internal override void OnKeyDown(KeyEventArgs e)
 		{
 			base.OnKeyDown(e);
-			if (e.KeyCode == Keys.Return)
-			{
-				this.OnEditingFinished();
-				e.Handled = true;
-			}
-			else
-			{
-				this.stringEditor.OnKeyDown(e);
-			}
+			this.stringEditor.OnKeyDown(e);
 		}
 		protected internal override void OnMouseMove(MouseEventArgs e)
 		{
@@ -100,7 +92,7 @@ namespace CustomPropertyGrid.PropertyEditors
 		}
 		protected internal override void OnMouseUp(MouseEventArgs e)
 		{
-			base.OnMouseDown(e);
+			base.OnMouseUp(e);
 			this.stringEditor.OnMouseUp(e);
 		}
 
@@ -130,6 +122,10 @@ namespace CustomPropertyGrid.PropertyEditors
 			this.PerformSetValue();
 			this.OnValueChanged();
 			this.PerformGetValue();
+		}
+		private void stringEditor_EditingFinished(object sender, EventArgs e)
+		{
+			this.OnEditingFinished();
 		}
 	}
 }

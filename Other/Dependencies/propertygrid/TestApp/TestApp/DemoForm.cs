@@ -111,6 +111,8 @@ namespace CustomPropertyGrid
 			testObj.IPropWithAVeryLongName = 42;
 			testObj.SomeString = "Blubdiwupp";
 			testObj.SomeIntArray = new int[] { 3, 4, 5 };
+			testObj.SomeFloat = (float)Math.PI;
+			testObj.SomeByte = 128;
 			testObj.Subclass = new Test2(42);
 			testObj.sl = new List<string>() { "hallo", "welt" };
 			Test testObj2 = new Test();

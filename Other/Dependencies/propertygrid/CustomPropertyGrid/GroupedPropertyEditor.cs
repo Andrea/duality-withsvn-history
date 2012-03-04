@@ -435,7 +435,7 @@ namespace CustomPropertyGrid
 			if (!string.IsNullOrEmpty(this.PropertyName) && !string.IsNullOrEmpty(this.headerValueText))
 			{
 				int nameWidth;
-				nameWidth = this.Width * 2 / 5 - textRect.X;
+				nameWidth = this.NameLabelWidth - textRect.X;
 				nameTextRect = new Rectangle(textRect.X, textRect.Y, nameWidth, textRect.Height);
 				valueTextRect = new Rectangle(textRect.X + nameWidth, textRect.Y, textRect.Width - nameWidth, textRect.Height);
 			}

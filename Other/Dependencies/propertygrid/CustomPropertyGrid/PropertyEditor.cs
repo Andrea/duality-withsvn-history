@@ -199,12 +199,9 @@ namespace CustomPropertyGrid
 		{
 			set
 			{ 
-				if (this.setter != value)
-				{
-					bool lastReadOnly = this.ReadOnly;
-					this.setter = value;
-					if (this.ReadOnly != lastReadOnly) this.OnReadOnlyChanged();
-				}
+				bool lastReadOnly = this.ReadOnly;
+				this.setter = value;
+				if (this.ReadOnly != lastReadOnly) this.OnReadOnlyChanged();
 			}
 		}
 		public abstract object DisplayedValue { get; }
@@ -302,6 +299,10 @@ namespace CustomPropertyGrid
 			get { return this.buttonRect; }
 			set { this.buttonRect = value; }
 		}
+		protected int NameLabelWidth
+		{
+			get { return this.size.Width * 2 / 5; }
+		}
 		
 
 		public PropertyEditor()
@@ -362,7 +363,7 @@ namespace CustomPropertyGrid
 		protected virtual void UpdateGeometry()
 		{
 			if ((this.hints & HintFlags.HasPropertyName) != HintFlags.None)
-				this.nameLabelRect = new Rectangle(0, 0, this.size.Width * 2 / 5, this.size.Height);
+				this.nameLabelRect = new Rectangle(0, 0, this.NameLabelWidth, this.size.Height);
 			else
 				this.nameLabelRect = Rectangle.Empty;
 
@@ -458,7 +459,7 @@ namespace CustomPropertyGrid
 		}
 		internal protected virtual void OnMouseDown(MouseEventArgs e)
 		{
-			if (this.FocusOnClick && new Rectangle(0, 0, this.size.Width, this.size.Height).Contains(e.Location))
+			if (this.FocusOnClick && this.ClientRectangle.Contains(e.Location))
 				this.Focus();
 			if (this.buttonHovered && (e.Button & MouseButtons.Left) != MouseButtons.None)
 			{
@@ -468,17 +469,16 @@ namespace CustomPropertyGrid
 		}
 		internal protected virtual void OnMouseUp(MouseEventArgs e)
 		{
+			if (this.FocusOnClick && new Rectangle(0, 0, this.size.Width, this.size.Height).Contains(e.Location))
+				this.Focus();
 			if (this.buttonPressed && (e.Button & MouseButtons.Left) != MouseButtons.None)
 			{
 				this.buttonPressed = false;
 				this.Invalidate();
+				if (this.buttonHovered) this.OnButtonPressed();
 			}
 		}
-		internal protected virtual void OnMouseClick(MouseEventArgs e)
-		{
-			if (this.buttonHovered && (e.Button & MouseButtons.Left) != MouseButtons.None)
-				this.OnButtonPressed();
-		}
+		internal protected virtual void OnMouseClick(MouseEventArgs e) {}
 		internal protected virtual void OnMouseDoubleClick(MouseEventArgs e) {}
 
 		internal protected virtual void OnKeyDown(KeyEventArgs e)
@@ -506,7 +506,6 @@ namespace CustomPropertyGrid
 		internal protected virtual void OnLostFocus(EventArgs e)
 		{
 			this.Invalidate();
-			this.OnEditingFinished();
 		}
 
 		internal protected virtual void OnReadOnlyChanged()

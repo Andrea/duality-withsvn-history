@@ -6,9 +6,10 @@
 ##################################################################
 
 -->	NumericPropertyEditor
-	-->	Use the StringEditorTemplate
-	-->	Implement number parsing and restrictions
-	-->	Plus / Minus buttons like in NumericUpDown
-	-->	Grip button for quick mousedrag-adjustments.
+	-->	Use the NumberEditorTemplate
+		-->	Implement Minimum, Maximum and Increment
+		-->	Plus / Minus buttons like in NumericUpDown
+		-->	Grip button for quick mousedrag-adjustments.
+	-->	Properly adjust number editor based on EditedType
 
 -->	

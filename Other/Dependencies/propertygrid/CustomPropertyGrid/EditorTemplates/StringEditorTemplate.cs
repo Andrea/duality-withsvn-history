@@ -12,7 +12,7 @@ namespace CustomPropertyGrid.EditorTemplates
 	{
 		private	Rectangle	rect			= Rectangle.Empty;
 		private	string		text			= null;
-		private	bool		readOnly		= false;
+		private	bool		readOnly		= true;
 		private	bool		hovered			= false;
 		private	bool		focused			= false;
 		private	Timer		cursorTimer		= null;
@@ -24,6 +24,7 @@ namespace CustomPropertyGrid.EditorTemplates
 
 		public event EventHandler Invalidate = null;
 		public event EventHandler TextEdited = null;
+		public event EventHandler EditingFinished = null;
 
 		public Rectangle Rect
 		{
@@ -38,7 +39,16 @@ namespace CustomPropertyGrid.EditorTemplates
 		public string Text
 		{
 			get { return this.text; }
-			set { this.text = value; }
+			set
+			{
+				if (this.text != value)
+				{
+					this.text = value;
+					this.cursorIndex = Math.Min(this.cursorIndex, this.text.Length);
+					this.selectionLength = Math.Min(this.cursorIndex + this.selectionLength, this.text.Length) - this.cursorIndex;
+					this.selectionLength = Math.Max(this.cursorIndex + this.selectionLength, 0) - this.cursorIndex;
+				}
+			}
 		}
 		public string SelectedText
 		{
@@ -186,6 +196,7 @@ namespace CustomPropertyGrid.EditorTemplates
 				this.cursorVisible = false;
 			}
 			this.scroll = 0;
+			this.EmitEditingFinished();
 		}
 		public void OnKeyPress(KeyPressEventArgs e)
 		{
@@ -195,7 +206,12 @@ namespace CustomPropertyGrid.EditorTemplates
 		}
 		public void OnKeyDown(KeyEventArgs e)
 		{
-			if (e.KeyCode == Keys.Delete)
+			if (e.KeyCode == Keys.Return)
+			{
+				this.EmitEditingFinished();
+				e.Handled = true;
+			}
+			else if (e.KeyCode == Keys.Delete)
 			{
 				if (!this.readOnly && this.selectionLength == 0 && this.text != null && this.cursorIndex < this.text.Length)
 				{
@@ -404,6 +420,11 @@ namespace CustomPropertyGrid.EditorTemplates
 		{
 			if (this.TextEdited != null)
 				this.TextEdited(this, EventArgs.Empty);
+		}
+		protected void EmitEditingFinished()
+		{
+			if (this.EditingFinished != null)
+				this.EditingFinished(this, EventArgs.Empty);
 		}
 	}
 }

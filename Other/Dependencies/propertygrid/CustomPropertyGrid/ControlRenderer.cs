@@ -308,6 +308,10 @@ namespace CustomPropertyGrid.Renderer
 					selectionRect.X -= 2;
 					selectionRect.Width += 2;
 				}
+				if (selPos + Math.Abs(selLength) == text.Length)
+				{
+					selectionRect.Width += 2;
+				}
 
 				if ((state & TextBoxState.ReadOnlyFlag) == TextBoxState.ReadOnlyFlag)
 					g.FillRectangle(new SolidBrush(Color.FromArgb(128, SystemColors.GrayText)), selectionRect);

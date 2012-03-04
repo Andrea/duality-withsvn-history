@@ -45,6 +45,7 @@
 			this.propertyGrid1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.propertyGrid1.AutoScroll = true;
 			this.propertyGrid1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.propertyGrid1.Location = new System.Drawing.Point(12, 12);
 			this.propertyGrid1.Name = "propertyGrid1";
@@ -56,6 +57,7 @@
 			// 
 			this.numericUpDown1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.numericUpDown1.DecimalPlaces = 2;
 			this.numericUpDown1.Location = new System.Drawing.Point(12, 238);
 			this.numericUpDown1.Name = "numericUpDown1";
 			this.numericUpDown1.Size = new System.Drawing.Size(183, 20);

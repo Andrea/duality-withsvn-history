@@ -242,7 +242,7 @@ namespace CustomPropertyGrid
 			if (this.AutoScrollMinSize.Height != this.mainEditor.Height)
 			{
 				this.AutoScrollMinSize = new Size(0, this.mainEditor.Height);
-				//this.Invalidate();
+				this.Invalidate();
 			}
 		}
 
