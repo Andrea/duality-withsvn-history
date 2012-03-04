@@ -55,6 +55,7 @@ namespace CustomPropertyGrid.Renderer
 	public enum GroupHeaderStyle
 	{
 		Flat,
+		Simple,
 		Emboss,
 		SmoothSunken
 	}
@@ -86,8 +87,13 @@ namespace CustomPropertyGrid.Renderer
 			Color darkColor = baseColor.ScaleBrightness(style == GroupHeaderStyle.SmoothSunken ? 0.95f : 0.85f);
 			LinearGradientBrush gradientBrush = new LinearGradientBrush(rect, lightColor, darkColor, 90.0f);
 
-			if (style != GroupHeaderStyle.Flat)
+			if (style != GroupHeaderStyle.Simple && style != GroupHeaderStyle.Flat)
 				g.FillRectangle(gradientBrush, rect);
+			else
+				g.FillRectangle(new SolidBrush(baseColor), rect);
+
+			if (style == GroupHeaderStyle.Flat) return;
+
 			g.DrawLine(new Pen(Color.FromArgb(128, Color.White)), rect.Left, rect.Top, rect.Right, rect.Top);
 			g.DrawLine(new Pen(Color.FromArgb(64, Color.Black)), rect.Left, rect.Bottom - 1, rect.Right, rect.Bottom - 1);
 

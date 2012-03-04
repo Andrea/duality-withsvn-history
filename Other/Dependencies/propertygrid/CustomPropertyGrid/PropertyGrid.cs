@@ -367,7 +367,7 @@ namespace CustomPropertyGrid
 			}
 			e.Graphics.Restore(originalState);
 
-			//Console.WriteLine("Paint: {1},\t {0} ms", watch.ElapsedMilliseconds, e.ClipRectangle);
+			Console.WriteLine("Paint: {1},\t {0} ms", watch.ElapsedMilliseconds, e.ClipRectangle);
 		}
 
 		protected override void OnMouseEnter(EventArgs e)
@@ -536,6 +536,16 @@ namespace CustomPropertyGrid
 					else if (e.KeyCode == Keys.Right)
 					{
 						if (this.focusEditor.Children.Any()) this.focusEditor.Children.First().Focus();
+						e.Handled = true;
+					}
+					else if (e.KeyCode == Keys.PageUp || e.KeyCode == Keys.Home)
+					{
+						if (this.focusEditor.ParentEditor != null) this.focusEditor.ParentEditor.Children.First().Focus();
+						e.Handled = true;
+					}
+					else if (e.KeyCode == Keys.PageDown || e.KeyCode == Keys.End)
+					{
+						if (this.focusEditor.ParentEditor != null) this.focusEditor.ParentEditor.Children.Last().Focus();
 						e.Handled = true;
 					}
 				}

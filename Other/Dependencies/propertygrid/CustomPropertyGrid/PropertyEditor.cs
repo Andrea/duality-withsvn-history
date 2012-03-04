@@ -335,11 +335,19 @@ namespace CustomPropertyGrid
 
 		public void Invalidate()
 		{
-			if (this.parentGrid != null) 
-			{
-				Rectangle invalidateRect = new Rectangle(this.parentGrid.GetEditorLocation(this, true), this.size);
-				this.parentGrid.Invalidate(invalidateRect);
-			}
+			if (this.parentGrid == null) return;
+			Rectangle invalidateRect = new Rectangle(this.parentGrid.GetEditorLocation(this, true), this.size);
+			this.parentGrid.Invalidate(invalidateRect);
+		}
+		public void Invalidate(Rectangle rect)
+		{
+			if (this.parentGrid == null) return;
+			Point editorLoc = this.parentGrid.GetEditorLocation(this, true);
+			this.parentGrid.Invalidate(new Rectangle(
+				editorLoc.X + rect.X,
+				editorLoc.Y + rect.Y,
+				rect.Width,
+				rect.Height));
 		}
 		public void Focus()
 		{

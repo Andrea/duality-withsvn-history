@@ -38,7 +38,7 @@ namespace CustomPropertyGrid
 			private int[] i3;
 			private string t;
 			private Test2 subclass;
-			public List<string> sl;
+			public List<string> stringlist;
 			public FlaggedEnumTest enum1;
 			public EnumTest enum2;
 
@@ -114,7 +114,7 @@ namespace CustomPropertyGrid
 			testObj.SomeFloat = (float)Math.PI;
 			testObj.SomeByte = 128;
 			testObj.Subclass = new Test2(42);
-			testObj.sl = new List<string>() { "hallo", "welt" };
+			testObj.stringlist = new List<string>() { "hallo", "welt" };
 			Test testObj2 = new Test();
 			testObj2.IPropWithAVeryLongName = 447;
 			testObj2.SomeString = "Kratatazong";
@@ -123,6 +123,7 @@ namespace CustomPropertyGrid
 
 			// Case A: Singleselect
 			this.propertyGrid1.SelectObject(testObj);
+			this.propertyGrid2.SelectedObject = testObj;
 			// Case B: Multiselect
 			//this.propertyGrid1.SelectObjects(new object[] { testObj, testObj2 });
 			// Case C: Select this very form
@@ -135,6 +136,7 @@ namespace CustomPropertyGrid
 			{
 				this.propertyGrid1.Enabled = true;
 				this.propertyGrid1.ReadOnly = false;
+				this.propertyGrid2.Enabled = true;
 			}
 		}
 		private void radioReadOnly_CheckedChanged(object sender, EventArgs e)
@@ -143,6 +145,7 @@ namespace CustomPropertyGrid
 			{
 				this.propertyGrid1.Enabled = true;
 				this.propertyGrid1.ReadOnly = true;
+				this.propertyGrid2.Enabled = true;
 			}
 		}
 		private void radioDisabled_CheckedChanged(object sender, EventArgs e)
@@ -151,6 +154,7 @@ namespace CustomPropertyGrid
 			{
 				this.propertyGrid1.Enabled = false;
 				this.propertyGrid1.ReadOnly = false;
+				this.propertyGrid2.Enabled = false;
 			}
 		}
 	}

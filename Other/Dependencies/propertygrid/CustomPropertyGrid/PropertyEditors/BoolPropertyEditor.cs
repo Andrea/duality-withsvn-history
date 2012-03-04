@@ -22,7 +22,7 @@ namespace CustomPropertyGrid.PropertyEditors
 
 		public BoolPropertyEditor()
 		{
-			this.Height = 18;
+			this.Height = 16;
 		}
 
 		public override void PerformGetValue()

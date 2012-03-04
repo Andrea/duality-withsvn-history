@@ -11,9 +11,8 @@ namespace CustomPropertyGrid
 {
 	public abstract class GroupedPropertyEditor : PropertyEditor
 	{
-		public const int	DefaultIndent		= 16;
+		public const int	DefaultIndent		= 15;
 		public const int	DefaultHeaderHeight	= 18;
-		public const int	BigHeaderHeight		= 30;
 
 		private	int						headerHeight	= DefaultHeaderHeight;
 		private	int						indent			= DefaultIndent;
@@ -152,6 +151,10 @@ namespace CustomPropertyGrid
 		protected override bool FocusOnClick
 		{
 			get { return false; }
+		}
+		protected bool UseIndentChildExpand
+		{
+			get { return this.indent > ControlRenderer.CheckBoxSize.Width + 1; }
 		}
 
 
@@ -304,7 +307,8 @@ namespace CustomPropertyGrid
 			this.ButtonRectangle = buttonRect;
 
 			this.headerRect = new Rectangle(this.ClientRectangle.X, this.ClientRectangle.Y, this.ClientRectangle.Width, this.headerHeight);
-			if ((this.Hints & HintFlags.HasExpandCheck) != HintFlags.None)
+			bool parentExpand = (this.ParentEditor as GroupedPropertyEditor) != null && (this.ParentEditor as GroupedPropertyEditor).UseIndentChildExpand;
+			if (!parentExpand && (this.Hints & HintFlags.HasExpandCheck) != HintFlags.None)
 			{
 				this.expandCheckRect = new Rectangle(
 					this.headerRect.X + 2,
@@ -365,7 +369,8 @@ namespace CustomPropertyGrid
 
 			CheckBoxState activeState = CheckBoxState.UncheckedDisabled;
 			CheckBoxState expandState = CheckBoxState.UncheckedDisabled;
-			if ((this.Hints & HintFlags.HasExpandCheck) != HintFlags.None)
+			bool parentExpand = (this.ParentEditor as GroupedPropertyEditor) != null && (this.ParentEditor as GroupedPropertyEditor).UseIndentChildExpand;
+			if (!parentExpand && (this.Hints & HintFlags.HasExpandCheck) != HintFlags.None)
 			{
 				if (this.Enabled && this.CanExpand && (this.Hints & HintFlags.ExpandEnabled) != HintFlags.None)
 				{
@@ -453,7 +458,7 @@ namespace CustomPropertyGrid
 
 			ControlRenderer.DrawGroupHeaderBackground(g, this.headerRect, this.Focused ? this.headerColor.ScaleBrightness(0.85f) : this.headerColor, this.headerStyle);
 			
-			if ((this.Hints & HintFlags.HasExpandCheck) != HintFlags.None)
+			if (!parentExpand && (this.Hints & HintFlags.HasExpandCheck) != HintFlags.None)
 				ControlRenderer.DrawCheckBox(g, this.expandCheckRect.Location, expandState);
 			if ((this.Hints & HintFlags.HasActiveCheck) != HintFlags.None)
 				ControlRenderer.DrawCheckBox(g, this.activeCheckRect.Location, activeState);
@@ -463,6 +468,41 @@ namespace CustomPropertyGrid
 
 			ControlRenderer.DrawStringLine(g, this.PropertyName, this.IsValueModified ? FontBold : FontNormal, nameTextRect, this.Enabled ? SystemColors.ControlText : SystemColors.GrayText);
 			ControlRenderer.DrawStringLine(g, this.headerValueText, this.IsValueModified ? FontBold : FontNormal, valueTextRect, this.Enabled ? SystemColors.ControlText : SystemColors.GrayText);
+		}
+		protected void PaintIndentExpandButton(Graphics g, GroupedPropertyEditor childGroup, int curY)
+		{
+			if (childGroup.headerHeight == 0) return;
+			if ((childGroup.Hints & HintFlags.HasExpandCheck) == HintFlags.None) return;
+
+			Rectangle indentExpandRect = new Rectangle(0, curY, this.indent, childGroup.headerHeight);
+			Rectangle expandButtonRect = new Rectangle(
+				indentExpandRect.X + indentExpandRect.Width / 2 - ControlRenderer.CheckBoxSize.Width / 2,
+				indentExpandRect.Y + indentExpandRect.Height / 2 - ControlRenderer.CheckBoxSize.Height / 2 - 1,
+				ControlRenderer.CheckBoxSize.Width,
+				ControlRenderer.CheckBoxSize.Height);
+			CheckBoxState expandState = CheckBoxState.UncheckedDisabled;
+			if (childGroup.Enabled && childGroup.CanExpand && (childGroup.Hints & HintFlags.ExpandEnabled) != HintFlags.None)
+			{
+				if (!childGroup.Expanded)
+				{
+					if (childGroup.expandCheckPressed)		expandState = CheckBoxState.PlusPressed;
+					else if (childGroup.expandCheckHovered)	expandState = CheckBoxState.PlusHot;
+					else									expandState = CheckBoxState.PlusNormal;
+				}
+				else
+				{
+					if (childGroup.expandCheckPressed)		expandState = CheckBoxState.MinusPressed;
+					else if (childGroup.expandCheckHovered)	expandState = CheckBoxState.MinusHot;
+					else									expandState = CheckBoxState.MinusNormal;
+				}
+			}
+			else
+			{
+				if (childGroup.Expanded)	expandState = CheckBoxState.PlusDisabled;
+				else						expandState = CheckBoxState.MinusDisabled;
+			}
+
+			ControlRenderer.DrawCheckBox(g, expandButtonRect.Location, expandState);
 		}
 		protected internal override void OnPaint(PaintEventArgs e)
 		{
@@ -489,11 +529,12 @@ namespace CustomPropertyGrid
 				foreach (PropertyEditor child in this.propertyEditors)
 				{
 					if (clipRectBase.IntersectsWith(new Rectangle(
-						this.ClientRectangle.X + this.indent, 
+						this.ClientRectangle.X, 
 						this.ClientRectangle.Y + curY,
 						child.Width, 
 						child.Height)))
 					{
+						// Paint child editor
 						GraphicsState oldState = e.Graphics.Save();
 						Rectangle editorRect = new Rectangle(this.ClientRectangle.X + this.indent, this.ClientRectangle.Y + curY, child.Width, child.Height);
 						editorRect.Intersect(this.ClientRectangle);
@@ -504,10 +545,63 @@ namespace CustomPropertyGrid
 
 						child.OnPaint(e);
 						e.Graphics.Restore(oldState);
+
+						// Paint child groups expand button
+						if (child is GroupedPropertyEditor && this.UseIndentChildExpand)
+							this.PaintIndentExpandButton(e.Graphics, child as GroupedPropertyEditor, curY);
 					}
 
 					curY += child.Height;
 				}
+			}
+		}
+
+		protected void IndentChildExpandOnMouseMove(MouseEventArgs e, GroupedPropertyEditor childGroup, int curY)
+		{
+			if (childGroup == null) return;
+			Rectangle expandRect = new Rectangle(0, curY, this.indent, childGroup.headerHeight);
+			bool lastExpandHovered = childGroup.expandCheckHovered;
+
+			childGroup.expandCheckHovered = 
+				childGroup.CanExpand && 
+				(childGroup.Hints & HintFlags.ExpandEnabled) != HintFlags.None && 
+				expandRect.Contains(e.Location);
+
+			if (lastExpandHovered != childGroup.expandCheckHovered) this.Invalidate(expandRect);
+		}
+		protected void IndentChildExpandOnMouseLeave(EventArgs e, GroupedPropertyEditor childGroup, int curY)
+		{
+			if (childGroup == null) return;
+			Rectangle expandRect = new Rectangle(0, curY, this.indent, childGroup.headerHeight);
+
+			if (childGroup.expandCheckHovered) this.Invalidate(expandRect);
+			childGroup.expandCheckHovered = false;
+			childGroup.expandCheckPressed = false;
+		}
+		protected bool IndentChildExpandOnMouseDown(MouseEventArgs e, GroupedPropertyEditor childGroup, int curY)
+		{
+			if (childGroup == null) return false;
+
+			if (childGroup.expandCheckHovered && (e.Button & MouseButtons.Left) != MouseButtons.None)
+			{
+				Rectangle expandRect = new Rectangle(0, curY, this.indent, childGroup.headerHeight);
+				childGroup.expandCheckPressed = true;
+				this.Invalidate(expandRect);
+				childGroup.OnExpandCheckPressed();
+				return true;
+			}
+
+			return false;
+		}
+		protected void IndentChildExpandOnMouseUp(MouseEventArgs e, GroupedPropertyEditor childGroup, int curY)
+		{
+			if (childGroup == null) return;
+			
+			if (childGroup.expandCheckPressed && (e.Button & MouseButtons.Left) != MouseButtons.None)
+			{
+				Rectangle expandRect = new Rectangle(0, curY, this.indent, childGroup.headerHeight);
+				childGroup.expandCheckPressed = false;
+				this.Invalidate(expandRect);
 			}
 		}
 
@@ -524,7 +618,20 @@ namespace CustomPropertyGrid
 				if (lastHoverEditor != this.hoverEditor && lastHoverEditor != null)
 					lastHoverEditor.OnMouseLeave(EventArgs.Empty);
 				if (lastHoverEditor != this.hoverEditor && this.hoverEditor != null)
+				{
+					// Indent expand button
+					if (this.UseIndentChildExpand)
+					{
+						int curY = this.headerHeight;
+						foreach (PropertyEditor child in this.propertyEditors)
+						{
+							this.IndentChildExpandOnMouseLeave(e, child as GroupedPropertyEditor, curY);
+							curY += child.Height;
+						}
+					}
+
 					this.hoverEditor.OnMouseEnter(EventArgs.Empty);
+				}
 			}
 
 			if (this.hoverEditor != null)
@@ -545,6 +652,17 @@ namespace CustomPropertyGrid
 				this.activeCheckHovered = !this.ReadOnly && (this.Hints & HintFlags.ActiveEnabled) != HintFlags.None && this.activeCheckRect.Contains(e.Location);
 				if (lastExpandHovered != this.expandCheckHovered) this.Invalidate();
 				if (lastActiveHovered != this.activeCheckHovered) this.Invalidate();
+
+				// Indent expand button
+				if (this.UseIndentChildExpand)
+				{
+					int curY = this.headerHeight;
+					foreach (PropertyEditor child in this.propertyEditors)
+					{
+						this.IndentChildExpandOnMouseMove(e, child as GroupedPropertyEditor, curY);
+						curY += child.Height;
+					}
+				}
 			}
 		}
 		protected internal override void OnMouseEnter(EventArgs e)
@@ -569,6 +687,17 @@ namespace CustomPropertyGrid
 			this.expandCheckPressed = false;
 			this.activeCheckHovered = false;
 			this.activeCheckPressed = false;
+			
+			// Indent expand button
+			if (this.UseIndentChildExpand)
+			{
+				int curY = this.headerHeight;
+				foreach (PropertyEditor child in this.propertyEditors)
+				{
+					this.IndentChildExpandOnMouseLeave(e, child as GroupedPropertyEditor, curY);
+					curY += child.Height;
+				}
+			}
 		}
 		protected internal override void OnMouseDown(MouseEventArgs e)
 		{
@@ -586,19 +715,35 @@ namespace CustomPropertyGrid
 			}
 			else
 			{
-				if (new Rectangle(0, 0, this.Width, this.Height).Contains(e.Location))
-					this.Focus();
-				if (this.expandCheckHovered && (e.Button & MouseButtons.Left) != MouseButtons.None)
+				// Indent expand button
+				bool handled = false;
+				if (this.UseIndentChildExpand)
 				{
-					this.expandCheckPressed = true;
-					this.Invalidate();
-					this.OnExpandCheckPressed();
+					int curY = this.headerHeight;
+					foreach (PropertyEditor child in this.propertyEditors)
+					{
+						handled = handled || this.IndentChildExpandOnMouseDown(e, child as GroupedPropertyEditor, curY);
+						curY += child.Height;
+					}
 				}
-				else if (this.activeCheckHovered && (e.Button & MouseButtons.Left) != MouseButtons.None)
+
+				if (!handled)
 				{
-					this.activeCheckPressed = true;
-					this.Invalidate();
-					this.OnActiveCheckPressed();
+					if (new Rectangle(0, 0, this.Width, this.Height).Contains(e.Location))
+						this.Focus();
+
+					if (this.expandCheckHovered && (e.Button & MouseButtons.Left) != MouseButtons.None)
+					{
+						this.expandCheckPressed = true;
+						this.Invalidate();
+						this.OnExpandCheckPressed();
+					}
+					else if (this.activeCheckHovered && (e.Button & MouseButtons.Left) != MouseButtons.None)
+					{
+						this.activeCheckPressed = true;
+						this.Invalidate();
+						this.OnActiveCheckPressed();
+					}
 				}
 			}
 		}
@@ -627,6 +772,17 @@ namespace CustomPropertyGrid
 				{
 					this.activeCheckPressed = false;
 					this.Invalidate();
+				}
+
+				// Indent expand button
+				if (this.UseIndentChildExpand)
+				{
+					int curY = this.headerHeight;
+					foreach (PropertyEditor child in this.propertyEditors)
+					{
+						this.IndentChildExpandOnMouseUp(e, child as GroupedPropertyEditor, curY);
+						curY += child.Height;
+					}
 				}
 			}
 		}
@@ -667,7 +823,15 @@ namespace CustomPropertyGrid
 				if (this.CanExpand && 
 					(this.Hints & HintFlags.ExpandEnabled) != HintFlags.None &&
 					(this.Hints & HintFlags.HasExpandCheck) != HintFlags.None)
+				{
 					this.OnExpandCheckPressed();
+
+					// Indent expand button
+					if (this.ParentEditor != null && 
+						this.ParentEditor is GroupedPropertyEditor && 
+						(this.ParentEditor as GroupedPropertyEditor).UseIndentChildExpand)
+						this.ParentEditor.Invalidate();
+				}
 				e.Handled = true;
 			}
 		}
