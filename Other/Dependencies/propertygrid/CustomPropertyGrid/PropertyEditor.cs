@@ -506,6 +506,7 @@ namespace CustomPropertyGrid
 		internal protected virtual void OnLostFocus(EventArgs e)
 		{
 			this.Invalidate();
+			this.OnEditingFinished();
 		}
 
 		internal protected virtual void OnReadOnlyChanged()
