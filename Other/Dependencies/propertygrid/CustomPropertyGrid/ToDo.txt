@@ -5,6 +5,13 @@
 #                                                                #
 ##################################################################
 
+-->	GroupedPropertyEditor: Find a way to indent sub-editors selectively
+	-->	Specifically, don't indent extend- or active-checkboxes, only the names
+	-->	Do Indent per PropertyEditor? Each PropertyEditor may handle it itsself
+	-->	The base class PropertyEditor can handle it all (UpdateGeometry, ClientRectangle)
+	-->	Store indent per editor or per parent?
+		-->	Better per parent?
+
 -->	NumericPropertyEditor
 	-->	Use the NumberEditorTemplate
 		-->	Implement Minimum, Maximum and Increment
