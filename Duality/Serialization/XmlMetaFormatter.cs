@@ -205,7 +205,7 @@ namespace Duality.Serialization
 			uint	objId			= objIdString == null ? 0 : XmlConvert.ToUInt32(objIdString);
 			MemberInfoNode result;
 			
-			string typeString = this.reader.ReadString();
+			string typeString = this.reader.GetAttribute("value");
 			result = new MemberInfoNode(dataType, typeString, objId);
 			
 			// Prepare object reference
