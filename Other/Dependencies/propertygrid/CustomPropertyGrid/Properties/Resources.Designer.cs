@@ -60,6 +60,62 @@ namespace CustomPropertyGrid.Properties {
             }
         }
         
+        public static System.Drawing.Bitmap ExpandNodeClosedDisabled {
+            get {
+                object obj = ResourceManager.GetObject("ExpandNodeClosedDisabled", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap ExpandNodeClosedHot {
+            get {
+                object obj = ResourceManager.GetObject("ExpandNodeClosedHot", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap ExpandNodeClosedNormal {
+            get {
+                object obj = ResourceManager.GetObject("ExpandNodeClosedNormal", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap ExpandNodeClosedPressed {
+            get {
+                object obj = ResourceManager.GetObject("ExpandNodeClosedPressed", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap ExpandNodeOpenedDisabled {
+            get {
+                object obj = ResourceManager.GetObject("ExpandNodeOpenedDisabled", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap ExpandNodeOpenedHot {
+            get {
+                object obj = ResourceManager.GetObject("ExpandNodeOpenedHot", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap ExpandNodeOpenedNormal {
+            get {
+                object obj = ResourceManager.GetObject("ExpandNodeOpenedNormal", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap ExpandNodeOpenedPressed {
+            get {
+                object obj = ResourceManager.GetObject("ExpandNodeOpenedPressed", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         public static System.Drawing.Bitmap ImageAdd {
             get {
                 object obj = ResourceManager.GetObject("ImageAdd", resourceCulture);

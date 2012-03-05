@@ -154,7 +154,11 @@ namespace CustomPropertyGrid
 		}
 		protected bool UseIndentChildExpand
 		{
-			get { return this.indent > ControlRenderer.CheckBoxSize.Width + 1; }
+			get { return this.indent > ControlRenderer.ExpandNodeSize.Width + 1; }
+		}
+		protected bool ParentUseIndentChildExpand
+		{
+			get { return (this.ParentEditor as GroupedPropertyEditor) != null && (this.ParentEditor as GroupedPropertyEditor).UseIndentChildExpand; }
 		}
 
 
@@ -369,7 +373,7 @@ namespace CustomPropertyGrid
 
 			CheckBoxState activeState = CheckBoxState.UncheckedDisabled;
 			CheckBoxState expandState = CheckBoxState.UncheckedDisabled;
-			bool parentExpand = (this.ParentEditor as GroupedPropertyEditor) != null && (this.ParentEditor as GroupedPropertyEditor).UseIndentChildExpand;
+			bool parentExpand = this.ParentUseIndentChildExpand;
 			if (!parentExpand && (this.Hints & HintFlags.HasExpandCheck) != HintFlags.None)
 			{
 				if (this.Enabled && this.CanExpand && (this.Hints & HintFlags.ExpandEnabled) != HintFlags.None)
@@ -476,33 +480,35 @@ namespace CustomPropertyGrid
 
 			Rectangle indentExpandRect = new Rectangle(0, curY, this.indent, childGroup.headerHeight);
 			Rectangle expandButtonRect = new Rectangle(
-				indentExpandRect.X + indentExpandRect.Width / 2 - ControlRenderer.CheckBoxSize.Width / 2,
-				indentExpandRect.Y + indentExpandRect.Height / 2 - ControlRenderer.CheckBoxSize.Height / 2 - 1,
-				ControlRenderer.CheckBoxSize.Width,
-				ControlRenderer.CheckBoxSize.Height);
-			CheckBoxState expandState = CheckBoxState.UncheckedDisabled;
+				indentExpandRect.X + indentExpandRect.Width / 2 - ControlRenderer.ExpandNodeSize.Width / 2,
+				indentExpandRect.Y + indentExpandRect.Height / 2 - ControlRenderer.ExpandNodeSize.Height / 2 - 1,
+				ControlRenderer.ExpandNodeSize.Width,
+				ControlRenderer.ExpandNodeSize.Height);
+			ExpandNodeState expandState = ExpandNodeState.OpenedDisabled;
 			if (childGroup.Enabled && childGroup.CanExpand && (childGroup.Hints & HintFlags.ExpandEnabled) != HintFlags.None)
 			{
 				if (!childGroup.Expanded)
 				{
-					if (childGroup.expandCheckPressed)		expandState = CheckBoxState.PlusPressed;
-					else if (childGroup.expandCheckHovered)	expandState = CheckBoxState.PlusHot;
-					else									expandState = CheckBoxState.PlusNormal;
+					if (childGroup.expandCheckPressed)		expandState = ExpandNodeState.ClosedPressed;
+					else if (childGroup.expandCheckHovered)	expandState = ExpandNodeState.ClosedHot;
+					else if (childGroup.Focused)			expandState = ExpandNodeState.ClosedHot;
+					else									expandState = ExpandNodeState.ClosedNormal;
 				}
 				else
 				{
-					if (childGroup.expandCheckPressed)		expandState = CheckBoxState.MinusPressed;
-					else if (childGroup.expandCheckHovered)	expandState = CheckBoxState.MinusHot;
-					else									expandState = CheckBoxState.MinusNormal;
+					if (childGroup.expandCheckPressed)		expandState = ExpandNodeState.OpenedPressed;
+					else if (childGroup.expandCheckHovered)	expandState = ExpandNodeState.OpenedHot;
+					else if (childGroup.Focused)			expandState = ExpandNodeState.OpenedHot;
+					else									expandState = ExpandNodeState.OpenedNormal;
 				}
 			}
 			else
 			{
-				if (childGroup.Expanded)	expandState = CheckBoxState.PlusDisabled;
-				else						expandState = CheckBoxState.MinusDisabled;
+				if (childGroup.Expanded)	expandState = ExpandNodeState.OpenedDisabled;
+				else						expandState = ExpandNodeState.ClosedDisabled;
 			}
 
-			ControlRenderer.DrawCheckBox(g, expandButtonRect.Location, expandState);
+			ControlRenderer.DrawExpandNode(g, expandButtonRect.Location, expandState);
 		}
 		protected internal override void OnPaint(PaintEventArgs e)
 		{
@@ -906,6 +912,12 @@ namespace CustomPropertyGrid
 		{
 			base.OnLostFocus(e);
 			this.hoverEditorLock = false;
+			if (this.ParentUseIndentChildExpand) this.ParentEditor.Invalidate();
+		}
+		protected internal override void OnGotFocus(EventArgs e)
+		{
+			base.OnGotFocus(e);
+			if (this.ParentUseIndentChildExpand) this.ParentEditor.Invalidate();
 		}
 
 		protected override void OnSizeChanged()

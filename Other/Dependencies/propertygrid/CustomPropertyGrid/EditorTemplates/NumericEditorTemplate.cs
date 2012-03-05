@@ -12,7 +12,10 @@ namespace CustomPropertyGrid.EditorTemplates
 	public class NumericEditorTemplate
 	{
 		private	bool					isTextValid		= false;
+		private	bool					isValueClamped	= false;
 		private	decimal					value			= decimal.MinValue;
+		private	decimal					min				= decimal.MinValue;
+		private	decimal					max				= decimal.MaxValue;
 		private	int						decimalPlaces	= 0;
 		private	Rectangle				rect			= Rectangle.Empty;
 		private	StringEditorTemplate	stringEditor	= new StringEditorTemplate();
@@ -52,6 +55,30 @@ namespace CustomPropertyGrid.EditorTemplates
 				{
 					this.decimalPlaces = value;
 					this.SetTextFromValue();
+				}
+			}
+		}
+		public decimal Maximum
+		{
+			get { return this.max; }
+			set
+			{
+				if (this.max != value)
+				{
+					this.max = value;
+					if (this.value > this.max) this.Value = this.max;
+				}
+			}
+		}
+		public decimal Minimum
+		{
+			get { return this.min; }
+			set
+			{
+				if (this.min != value)
+				{
+					this.min = value;
+					if (this.value > this.min) this.Value = this.min;
 				}
 			}
 		}
@@ -135,12 +162,21 @@ namespace CustomPropertyGrid.EditorTemplates
 				this.stringEditor.Text = Math.Round(this.value).ToString();
 			}
 			this.isTextValid = true;
+			this.isValueClamped = false;
 		}
 		protected void SetValueFromText()
 		{
 			decimal valResult;
 			this.isTextValid = decimal.TryParse(this.stringEditor.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out valResult);
-			if (this.isTextValid) this.value = valResult;
+			if (this.isTextValid)
+			{
+				this.value = Math.Max(Math.Min(valResult, this.max), this.min);
+				this.isValueClamped = this.value != valResult;
+			}
+			else
+			{
+				this.isValueClamped = false;
+			}
 		}
 
 		protected void EmitInvalidate()
@@ -173,10 +209,8 @@ namespace CustomPropertyGrid.EditorTemplates
 		}
 		void stringEditor_EditingFinished(object sender, EventArgs e)
 		{
-			if (this.isTextValid)
-				this.EmitEditingFinished();
-			else
-				System.Media.SystemSounds.Beep.Play();
+			if (!this.isTextValid || this.isValueClamped) System.Media.SystemSounds.Beep.Play();
+			if (this.isTextValid) this.EmitEditingFinished();
 			this.SetTextFromValue();
 			this.Select();
 			this.EmitInvalidate();

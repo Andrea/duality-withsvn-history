@@ -407,7 +407,7 @@ namespace CustomPropertyGrid.EditorTemplates
 
 		private void cursorTimer_Tick(object sender, EventArgs e)
 		{
-			if (this.selectionLength > 0) return;
+			if (this.selectionLength != 0) return;
 			this.EmitInvalidate();
 			this.cursorVisible = !this.cursorVisible;
 		}

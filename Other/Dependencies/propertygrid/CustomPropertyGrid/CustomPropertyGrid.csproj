@@ -84,12 +84,20 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="add.png" />
+    <None Include="Properties\add.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="cross.png" />
+    <None Include="Properties\cross.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Properties\ExpandNodeClosedDisabled.png" />
+    <None Include="Properties\ExpandNodeClosedHot.png" />
+    <None Include="Properties\ExpandNodeClosedNormal.png" />
+    <None Include="Properties\ExpandNodeClosedPressed.png" />
+    <None Include="Properties\ExpandNodeOpenedDisabled.png" />
+    <None Include="Properties\ExpandNodeOpenedHot.png" />
+    <None Include="Properties\ExpandNodeOpenedPressed.png" />
+    <None Include="Properties\ExpandNodeOpenedNormal.png" />
     <Content Include="ToDo.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

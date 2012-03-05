@@ -7,8 +7,44 @@ using System.Drawing.Drawing2D;
 
 using System.Windows.Forms;
 
+using CustomPropertyGrid.Properties;
+
 namespace CustomPropertyGrid.Renderer
 {
+	[Flags]
+	public enum TextBoxState
+	{
+		Disabled		= 0x1,
+		Normal			= 0x2,
+		Hot				= 0x4,
+		Focus			= 0x8,
+
+		ReadOnlyFlag	= 0x100
+	}
+	public enum TextBoxStyle
+	{
+		Plain,
+		Flat,
+		Sunken
+	}
+	public enum GroupHeaderStyle
+	{
+		Flat,
+		Simple,
+		Emboss,
+		SmoothSunken
+	}
+	public enum ExpandNodeState
+	{
+		OpenedDisabled,
+		OpenedNormal,
+		OpenedHot,
+		OpenedPressed,
+		ClosedDisabled,
+		ClosedNormal,
+		ClosedHot,
+		ClosedPressed
+	}
 	public enum CheckBoxState
 	{
 		CheckedDisabled		= System.Windows.Forms.VisualStyles.CheckBoxState.CheckedDisabled,
@@ -36,32 +72,11 @@ namespace CustomPropertyGrid.Renderer
 		MinusHot,
 		MinusNormal
 	}
-	public enum TextBoxStyle
-	{
-		Plain,
-		Flat,
-		Sunken
-	}
-	[Flags]
-	public enum TextBoxState
-	{
-		Disabled		= 0x1,
-		Normal			= 0x2,
-		Hot				= 0x4,
-		Focus			= 0x8,
-
-		ReadOnlyFlag	= 0x100
-	}
-	public enum GroupHeaderStyle
-	{
-		Flat,
-		Simple,
-		Emboss,
-		SmoothSunken
-	}
 
 	public static class ControlRenderer
 	{
+		private	static	Size								expandNodeSize		= Size.Empty;
+		private	static	Dictionary<ExpandNodeState,Bitmap>	expandNodeImages	= null;
 		private	static	Size								checkBoxSize	= Size.Empty;
 		private	static	Dictionary<CheckBoxState,Bitmap>	checkBoxImages	= null;
 
@@ -78,6 +93,24 @@ namespace CustomPropertyGrid.Renderer
 		{
 			InitCheckBox(state);
 			g.DrawImageUnscaled(checkBoxImages[state], loc);
+		}
+
+		public static Size ExpandNodeSize
+		{
+			get
+			{
+				if (expandNodeSize.IsEmpty)
+				{
+					InitExpandNode(ExpandNodeState.ClosedNormal);
+					expandNodeSize = expandNodeImages[ExpandNodeState.ClosedNormal].Size;
+				}
+				return expandNodeSize;
+			}
+		}
+		public static void DrawExpandNode(Graphics g, Point loc, ExpandNodeState state)
+		{
+			InitExpandNode(state);
+			g.DrawImageUnscaled(expandNodeImages[state], loc);
 		}
 
 		public static void DrawGroupHeaderBackground(Graphics g, Rectangle rect, Color baseColor, GroupHeaderStyle style)
@@ -491,6 +524,25 @@ namespace CustomPropertyGrid.Renderer
 				}
 			}
 			checkBoxImages[checkState] = image;
+		}
+		private static void InitExpandNode(ExpandNodeState expandState)
+		{
+			if (expandNodeImages != null && expandNodeImages.ContainsKey(expandState)) return;
+			if (expandNodeImages == null) expandNodeImages = new Dictionary<ExpandNodeState,Bitmap>();
+
+			Bitmap image = null;
+			switch (expandState)
+			{
+				case ExpandNodeState.OpenedDisabled:	image = Resources.ExpandNodeOpenedDisabled;	break;
+				case ExpandNodeState.OpenedNormal:		image = Resources.ExpandNodeOpenedNormal;	break;
+				case ExpandNodeState.OpenedHot:			image = Resources.ExpandNodeOpenedHot;		break;
+				case ExpandNodeState.OpenedPressed:		image = Resources.ExpandNodeOpenedPressed;	break;
+				case ExpandNodeState.ClosedDisabled:	image = Resources.ExpandNodeClosedDisabled;	break;
+				case ExpandNodeState.ClosedNormal:		image = Resources.ExpandNodeClosedNormal;	break;
+				case ExpandNodeState.ClosedHot:			image = Resources.ExpandNodeClosedHot;		break;
+				case ExpandNodeState.ClosedPressed:		image = Resources.ExpandNodeClosedPressed;	break;
+			}
+			expandNodeImages[expandState] = image;
 		}
 	}
 
