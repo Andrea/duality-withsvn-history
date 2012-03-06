@@ -55,9 +55,9 @@ namespace CustomPropertyGrid
 				//// Basic data type: Flagged Enum
 				//else if (baseType.IsEnum && baseType.GetCustomAttributes(typeof(FlagsAttribute), true).Any())
 				//    e = new FlagEnumPropertyEditor(parentEditor, parentGrid);
-				//// Basic data type: Other Enums
-				//else if (baseType.IsEnum)
-				//    e = new EnumPropertyEditor(parentEditor, parentGrid);
+				// Basic data type: Other Enums
+				else if (baseType.IsEnum)
+					e = new EnumPropertyEditor();
 				// Basic data type: String
 				else if (baseType == typeof(string))
 					e = new StringPropertyEditor();
@@ -265,7 +265,7 @@ namespace CustomPropertyGrid
 		}
 		public virtual void ConfigureEditor(PropertyEditor editor)
 		{
-
+			Console.WriteLine(editor.EditedMember);
 		}
 		public virtual object CreateObjectInstance(Type objectType)
 		{

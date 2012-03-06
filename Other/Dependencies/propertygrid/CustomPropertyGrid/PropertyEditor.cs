@@ -391,12 +391,12 @@ namespace CustomPropertyGrid
 			this.clientRect.Width -= this.nameLabelRect.Width;
 			this.clientRect.Width -= this.buttonRect.Width;
 		}
-		protected virtual void BeginUpdate()
+		public virtual void BeginUpdate()
 		{
 			if (this.updatingFromObj) throw new InvalidOperationException("The PropertyEditor already is updating");
 			this.updatingFromObj = true;
 		}
-		protected virtual void EndUpdate()
+		public virtual void EndUpdate()
 		{
 			if (!this.updatingFromObj) throw new InvalidOperationException("The PropertyEditor was not updating");
 			this.updatingFromObj = false;

@@ -8,13 +8,9 @@ using CustomPropertyGrid.Renderer;
 
 namespace CustomPropertyGrid.EditorTemplates
 {
-	public class StringEditorTemplate
+	public class StringEditorTemplate : EditorTemplate
 	{
-		private	Rectangle	rect			= Rectangle.Empty;
 		private	string		text			= null;
-		private	bool		readOnly		= true;
-		private	bool		hovered			= false;
-		private	bool		focused			= false;
 		private	Timer		cursorTimer		= null;
 		private	bool		cursorVisible	= false;
 		private	int			cursorIndex		= 0;
@@ -22,24 +18,6 @@ namespace CustomPropertyGrid.EditorTemplates
 		private int			scroll			= 0;
 		private	bool		mouseSelect		= false;
 
-		public event EventHandler Invalidate = null;
-		public event EventHandler TextEdited = null;
-		public event EventHandler EditingFinished = null;
-
-		public Rectangle Rect
-		{
-			get { return this.rect; }
-			set { this.rect = value; }
-		}
-		public bool ReadOnly
-		{
-			get { return this.readOnly; }
-			set { this.readOnly = value; }
-		}
-		public bool Focused
-		{
-			get { return this.focused; }
-		}
 		public string Text
 		{
 			get { return this.text; }
@@ -47,10 +25,21 @@ namespace CustomPropertyGrid.EditorTemplates
 			{
 				if (this.text != value)
 				{
+					bool allWasSelected = 
+						!string.IsNullOrEmpty(this.text) && 
+						Math.Min(this.cursorIndex, this.cursorIndex + this.selectionLength) == 0 && 
+						Math.Abs(this.selectionLength) == this.text.Length;
+
 					this.text = value;
-					this.cursorIndex = Math.Min(this.cursorIndex, this.text.Length);
-					this.selectionLength = Math.Min(this.cursorIndex + this.selectionLength, this.text.Length) - this.cursorIndex;
-					this.selectionLength = Math.Max(this.cursorIndex + this.selectionLength, 0) - this.cursorIndex;
+
+					if (allWasSelected)
+						this.Select();
+					else
+					{
+						this.cursorIndex = Math.Min(this.cursorIndex, this.text.Length);
+						this.selectionLength = Math.Min(this.cursorIndex + this.selectionLength, this.text.Length) - this.cursorIndex;
+						this.selectionLength = Math.Max(this.cursorIndex + this.selectionLength, 0) - this.cursorIndex;
+					}
 				}
 			}
 		}
@@ -63,6 +52,8 @@ namespace CustomPropertyGrid.EditorTemplates
 				return this.text.Substring(begin, Math.Abs(this.selectionLength));
 			}
 		}
+
+		public StringEditorTemplate(PropertyEditor parent) : base(parent) {}
 
 		public void Select(int pos = 0, int length = -1)
 		{
@@ -91,7 +82,7 @@ namespace CustomPropertyGrid.EditorTemplates
 			this.cursorIndex = begin;
 
 			this.UpdateScroll();
-			this.EmitTextEdited();
+			this.EmitEdited();
 		}
 		public void InsertText(string insertText)
 		{
@@ -117,7 +108,7 @@ namespace CustomPropertyGrid.EditorTemplates
 			this.selectionLength = 0;
 
 			this.UpdateScroll();
-			this.EmitTextEdited();
+			this.EmitEdited();
 		}
 		public void ShowCursor()
 		{
@@ -177,9 +168,9 @@ namespace CustomPropertyGrid.EditorTemplates
 				this.selectionLength);
 		}
 
-		public void OnGotFocus(EventArgs e)
+		public override void OnGotFocus(EventArgs e)
 		{
-			this.focused = true;
+			base.OnGotFocus(e);
 			if (this.cursorTimer == null)
 			{
 				this.cursorTimer = new Timer();
@@ -189,9 +180,9 @@ namespace CustomPropertyGrid.EditorTemplates
 				this.cursorVisible = true;
 			}
 		}
-		public void OnLostFocus(EventArgs e)
+		public override void OnLostFocus(EventArgs e)
 		{
-			this.focused = false;
+			base.OnLostFocus(e);
 			if (this.cursorTimer != null)
 			{
 				this.cursorTimer.Tick -= this.cursorTimer_Tick;
@@ -221,7 +212,7 @@ namespace CustomPropertyGrid.EditorTemplates
 				{
 					this.text = this.text.Remove(this.cursorIndex, 1);
 					this.UpdateScroll();
-					this.EmitTextEdited();
+					this.EmitEdited();
 				}
 				else
 					this.DeleteSelection();
@@ -234,7 +225,7 @@ namespace CustomPropertyGrid.EditorTemplates
 					this.text = this.text.Remove(this.cursorIndex - 1, 1);
 					this.cursorIndex--;
 					this.UpdateScroll();
-					this.EmitTextEdited();
+					this.EmitEdited();
 				}
 				else
 					this.DeleteSelection();
@@ -374,11 +365,9 @@ namespace CustomPropertyGrid.EditorTemplates
 			Cursor.Current = Cursors.IBeam;
 			this.mouseSelect = false;
 		}
-		public void OnMouseMove(MouseEventArgs e)
+		public override void OnMouseMove(MouseEventArgs e)
 		{
-			bool lastHovered = this.hovered;
-			this.hovered = this.rect.Contains(e.Location);
-			if (lastHovered != this.hovered) this.EmitInvalidate();
+			base.OnMouseMove(e);
 
 			Cursor.Current = (this.hovered || this.mouseSelect) ? Cursors.IBeam : Cursors.Default;
 			if (this.mouseSelect)
@@ -401,11 +390,9 @@ namespace CustomPropertyGrid.EditorTemplates
 				this.EmitInvalidate();
 			}
 		}
-		public void OnMouseLeave(EventArgs e)
+		public override void OnMouseLeave(EventArgs e)
 		{
-			if (this.hovered) this.EmitInvalidate();
-			this.hovered = false;
-
+			base.OnMouseLeave(e);
 			Cursor.Current = (this.hovered || this.mouseSelect) ? Cursors.IBeam : Cursors.Default;
 		}
 
@@ -414,21 +401,6 @@ namespace CustomPropertyGrid.EditorTemplates
 			if (this.selectionLength != 0) return;
 			this.EmitInvalidate();
 			this.cursorVisible = !this.cursorVisible;
-		}
-		protected void EmitInvalidate()
-		{
-			if (this.Invalidate != null)
-				this.Invalidate(this, EventArgs.Empty);
-		}
-		protected void EmitTextEdited()
-		{
-			if (this.TextEdited != null)
-				this.TextEdited(this, EventArgs.Empty);
-		}
-		protected void EmitEditingFinished()
-		{
-			if (this.EditingFinished != null)
-				this.EditingFinished(this, EventArgs.Empty);
 		}
 	}
 }

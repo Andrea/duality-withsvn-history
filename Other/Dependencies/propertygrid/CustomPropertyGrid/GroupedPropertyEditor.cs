@@ -179,12 +179,12 @@ namespace CustomPropertyGrid
 			this.contentInit = false;
 			this.ClearPropertyEditors();
 		}
-		protected override void BeginUpdate()
+		public override void BeginUpdate()
 		{
 			base.BeginUpdate();
 			this.sizeBeforeUpdate = this.Size;
 		}
-		protected override void EndUpdate()
+		public override void EndUpdate()
 		{
 			base.EndUpdate();
 			if (this.Size != this.sizeBeforeUpdate)
@@ -911,7 +911,6 @@ namespace CustomPropertyGrid
 		protected internal override void OnLostFocus(EventArgs e)
 		{
 			base.OnLostFocus(e);
-			this.hoverEditorLock = false;
 			if (this.ParentUseIndentChildExpand) this.ParentEditor.Invalidate();
 		}
 		protected internal override void OnGotFocus(EventArgs e)

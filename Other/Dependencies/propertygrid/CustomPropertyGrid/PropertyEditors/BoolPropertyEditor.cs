@@ -63,6 +63,15 @@ namespace CustomPropertyGrid.PropertyEditors
 			this.PerformGetValue();
 			this.OnEditingFinished();
 		}
+		protected void SetState(bool value)
+		{
+			this.state = value ? CheckState.Checked : CheckState.Unchecked;
+
+			this.PerformSetValue();
+			this.OnValueChanged();
+			this.PerformGetValue();
+			this.OnEditingFinished();
+		}
 
 		protected internal override void OnPaint(PaintEventArgs e)
 		{
@@ -138,6 +147,18 @@ namespace CustomPropertyGrid.PropertyEditors
 			if (e.KeyCode == Keys.Return)
 			{
 				this.ToggleState();
+				e.Handled = true;
+			}
+			else if (e.Control && e.KeyCode == Keys.C)
+			{
+				Clipboard.SetText((this.state == CheckState.Checked).ToString());
+				e.Handled = true;
+			}
+			else if (e.Control && e.KeyCode == Keys.V)
+			{
+				bool temp;
+				if (bool.TryParse(Clipboard.GetText(), out temp))
+					this.SetState(temp);
 				e.Handled = true;
 			}
 		}

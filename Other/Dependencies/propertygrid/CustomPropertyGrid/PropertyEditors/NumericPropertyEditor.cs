@@ -11,7 +11,7 @@ namespace CustomPropertyGrid.PropertyEditors
 {
 	public class NumericPropertyEditor : PropertyEditor
 	{
-		private	NumericEditorTemplate	numEditor	= new NumericEditorTemplate();
+		private	NumericEditorTemplate	numEditor = null;
 		private	decimal	val			= 0m;
 		private	bool	valMultiple	= false;
 
@@ -19,12 +19,33 @@ namespace CustomPropertyGrid.PropertyEditors
 		{
 			get { return Convert.ChangeType(this.val, this.EditedType); }
 		}
-		
+		public decimal Minimum
+		{
+			get { return this.numEditor.Minimum; }
+			set { this.numEditor.Minimum = value; }
+		}
+		public decimal Maximum
+		{
+			get { return this.numEditor.Maximum; }
+			set { this.numEditor.Maximum = value; }
+		}
+		public decimal Increment
+		{
+			get { return this.numEditor.Increment; }
+			set { this.numEditor.Increment = value; }
+		}
+		public int DecimalPlaces
+		{
+			get { return this.numEditor.DecimalPlaces; }
+			set { this.numEditor.DecimalPlaces = value; }
+		}
+
 
 		public NumericPropertyEditor()
 		{
+			this.numEditor = new NumericEditorTemplate(this);
 			this.numEditor.Invalidate += this.numEditor_Invalidate;
-			this.numEditor.ValueEdited += this.numEditor_ValueEdited;
+			this.numEditor.Edited += this.numEditor_Edited;
 			this.numEditor.EditingFinished += this.numEditor_EditingFinished;
 
 			this.Height = 18;
@@ -116,9 +137,81 @@ namespace CustomPropertyGrid.PropertyEditors
 			base.OnReadOnlyChanged();
 			this.numEditor.ReadOnly = this.ReadOnly;
 		}
-
-		private void numEditor_ValueEdited(object sender, EventArgs e)
+		protected override void OnEditedTypeChanged()
 		{
+			base.OnEditedTypeChanged();
+			if (this.EditedType == typeof(byte))
+			{
+				this.numEditor.DecimalPlaces = 0;
+				this.numEditor.Minimum = byte.MinValue;
+				this.numEditor.Maximum = byte.MaxValue;
+			}
+			else if (this.EditedType == typeof(sbyte))
+			{
+				this.numEditor.DecimalPlaces = 0;
+				this.numEditor.Minimum = sbyte.MinValue;
+				this.numEditor.Maximum = sbyte.MaxValue;
+			}
+			else if (this.EditedType == typeof(short))
+			{
+				this.numEditor.DecimalPlaces = 0;
+				this.numEditor.Minimum = short.MinValue;
+				this.numEditor.Maximum = short.MaxValue;
+			}
+			else if (this.EditedType == typeof(ushort))
+			{
+				this.numEditor.DecimalPlaces = 0;
+				this.numEditor.Minimum = ushort.MinValue;
+				this.numEditor.Maximum = ushort.MaxValue;
+			}
+			else if (this.EditedType == typeof(int))
+			{
+				this.numEditor.DecimalPlaces = 0;
+				this.numEditor.Minimum = int.MinValue;
+				this.numEditor.Maximum = int.MaxValue;
+			}
+			else if (this.EditedType == typeof(uint))
+			{
+				this.numEditor.DecimalPlaces = 0;
+				this.numEditor.Minimum = uint.MinValue;
+				this.numEditor.Maximum = uint.MaxValue;
+			}
+			else if (this.EditedType == typeof(long))
+			{
+				this.numEditor.DecimalPlaces = 0;
+				this.numEditor.Minimum = long.MinValue;
+				this.numEditor.Maximum = long.MaxValue;
+			}
+			else if (this.EditedType == typeof(ulong))
+			{
+				this.numEditor.DecimalPlaces = 0;
+				this.numEditor.Minimum = ulong.MinValue;
+				this.numEditor.Maximum = ulong.MaxValue;
+			}
+			else if (this.EditedType == typeof(float))
+			{
+				this.numEditor.DecimalPlaces = 2;
+				this.numEditor.Minimum = decimal.MinValue;
+				this.numEditor.Maximum = decimal.MaxValue;
+			}
+			else if (this.EditedType == typeof(double))
+			{
+				this.numEditor.DecimalPlaces = 2;
+				this.numEditor.Minimum = decimal.MinValue;
+				this.numEditor.Maximum = decimal.MaxValue;
+			}
+			else if (this.EditedType == typeof(decimal))
+			{
+				this.numEditor.DecimalPlaces = 2;
+				this.numEditor.Minimum = decimal.MinValue;
+				this.numEditor.Maximum = decimal.MaxValue;
+			}
+		}
+
+		private void numEditor_Edited(object sender, EventArgs e)
+		{
+			if (this.IsUpdatingFromObject) return;
+
 			this.val = this.numEditor.Value;
 			this.Invalidate();
 			this.PerformSetValue();

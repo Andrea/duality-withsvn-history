@@ -11,7 +11,7 @@ namespace CustomPropertyGrid.PropertyEditors
 {
 	public class StringPropertyEditor : PropertyEditor
 	{
-		private	StringEditorTemplate	stringEditor	= new StringEditorTemplate();
+		private	StringEditorTemplate	stringEditor	= null;
 		private string	val				= null;
 		private	bool	valMultiple		= false;
 
@@ -23,8 +23,9 @@ namespace CustomPropertyGrid.PropertyEditors
 
 		public StringPropertyEditor()
 		{
+			this.stringEditor = new StringEditorTemplate(this);
 			this.stringEditor.Invalidate += this.stringEditor_Invalidate;
-			this.stringEditor.TextEdited += this.stringEditor_TextEdited;
+			this.stringEditor.Edited += this.stringEditor_Edited;
 			this.stringEditor.EditingFinished += this.stringEditor_EditingFinished;
 
 			this.Height = 18;
@@ -115,8 +116,10 @@ namespace CustomPropertyGrid.PropertyEditors
 		{
 			this.Invalidate();
 		}
-		private void stringEditor_TextEdited(object sender, EventArgs e)
+		private void stringEditor_Edited(object sender, EventArgs e)
 		{
+			if (this.IsUpdatingFromObject) return;
+
 			this.val = this.stringEditor.Text;
 			this.Invalidate();
 			this.PerformSetValue();

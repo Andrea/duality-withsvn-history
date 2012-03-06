@@ -60,6 +60,13 @@ namespace CustomPropertyGrid.Properties {
             }
         }
         
+        public static System.Drawing.Bitmap DropDownIcon {
+            get {
+                object obj = ResourceManager.GetObject("DropDownIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         public static System.Drawing.Bitmap ExpandNodeClosedDisabled {
             get {
                 object obj = ResourceManager.GetObject("ExpandNodeClosedDisabled", resourceCulture);

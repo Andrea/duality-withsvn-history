@@ -10,7 +10,7 @@ using ButtonState = CustomPropertyGrid.Renderer.ButtonState;
 
 namespace CustomPropertyGrid.EditorTemplates
 {
-	public class NumericEditorTemplate
+	public class NumericEditorTemplate : EditorTemplate
 	{
 		public const int GripSize = 11;
 
@@ -23,24 +23,21 @@ namespace CustomPropertyGrid.EditorTemplates
 		private	decimal					max				= decimal.MaxValue;
 		private	decimal					increment		= 1;
 		private	int						decimalPlaces	= 0;
-		private	Rectangle				rect			= Rectangle.Empty;
-		private	StringEditorTemplate	stringEditor	= new StringEditorTemplate();
+		private	StringEditorTemplate	stringEditor	= null;
 		private	Rectangle				gripRect		= Rectangle.Empty;
 		private	bool					gripHovered		= false;
 		private	bool					gripPressed		= false;
+		private	Point					gripDragPos		= Point.Empty;
+		private	decimal					gripDragVal		= 0m;
 
-		public event EventHandler Invalidate = null;
-		public event EventHandler ValueEdited = null;
-		public event EventHandler EditingFinished = null;
-
-		public Rectangle Rect
+		public override Rectangle Rect
 		{
-			get { return this.rect; }
+			get { return base.Rect; }
 			set
 			{
 				if (this.rect != value)
 				{
-					this.rect = value;
+					base.Rect = value;
 					this.gripRect = new Rectangle(
 						this.rect.Right - GripSize + 2,
 						this.rect.Y,
@@ -54,17 +51,21 @@ namespace CustomPropertyGrid.EditorTemplates
 				}
 			}
 		}
-		public bool ReadOnly
+		public override bool ReadOnly
 		{
-			get { return this.stringEditor.ReadOnly; }
-			set { this.stringEditor.ReadOnly = value; }
+			get { return base.ReadOnly; }
+			set
+			{
+				base.ReadOnly = value;
+				this.stringEditor.ReadOnly = value;
+			}
 		}
 		public int DecimalPlaces
 		{
 			get { return this.decimalPlaces; }
 			set
 			{
-				value = Math.Max(Math.Min(this.decimalPlaces, 10), 0);
+				value = Math.Max(Math.Min(value, 10), 0);
 				if (this.decimalPlaces != value)
 				{
 					this.decimalPlaces = value;
@@ -116,10 +117,11 @@ namespace CustomPropertyGrid.EditorTemplates
 		}
 
 
-		public NumericEditorTemplate()
+		public NumericEditorTemplate(PropertyEditor parent) : base(parent)
 		{
+			this.stringEditor = new StringEditorTemplate(parent);
 			this.stringEditor.Invalidate += this.ForwardInvalidate;
-			this.stringEditor.TextEdited += this.stringEditor_TextEdited;
+			this.stringEditor.Edited += this.stringEditor_Edited;
 			this.stringEditor.EditingFinished += this.stringEditor_EditingFinished;
 		}
 
@@ -134,9 +136,9 @@ namespace CustomPropertyGrid.EditorTemplates
 			this.stringEditor.OnPaint(e, enabled, multiple);
 
 			ButtonState gripState = ButtonState.Normal;
-			if (!enabled)
+			if (!enabled || this.ReadOnly)
 				gripState = ButtonState.Disabled;
-			if (this.gripPressed || Control.ModifierKeys.HasFlag(Keys.Control))
+			else if (this.gripPressed || Control.ModifierKeys.HasFlag(Keys.Control))
 				gripState = ButtonState.Pressed;
 			else if (this.gripHovered || this.stringEditor.Focused)
 				gripState = ButtonState.Hot;
@@ -144,12 +146,14 @@ namespace CustomPropertyGrid.EditorTemplates
 			ControlRenderer.DrawButton(e.Graphics, gfxGripRect, gripState, null, enabled ? gripIcon.Normal : gripIcon.Disabled);
 		}
 
-		public void OnGotFocus(EventArgs e)
+		public override void OnGotFocus(EventArgs e)
 		{
+			base.OnGotFocus(e);
 			this.stringEditor.OnGotFocus(e);
 		}
-		public void OnLostFocus(EventArgs e)
+		public override void OnLostFocus(EventArgs e)
 		{
+			base.OnLostFocus(e);
 			this.stringEditor.OnLostFocus(e);
 		}
 		public void OnKeyPress(KeyPressEventArgs e)
@@ -159,21 +163,24 @@ namespace CustomPropertyGrid.EditorTemplates
 		public void OnKeyDown(KeyEventArgs e)
 		{
 			this.stringEditor.OnKeyDown(e);
-			if (e.KeyCode == Keys.ControlKey)
+			if (!this.ReadOnly)
 			{
-				this.EmitInvalidate();
-			}
-			else if (e.Control && e.KeyCode == Keys.Up)
-			{
-				this.Value += this.increment;
-				this.EmitValueEdited();
-				e.Handled = true;
-			}
-			else if (e.Control && e.KeyCode == Keys.Down)
-			{
-				this.Value -= this.increment;
-				this.EmitValueEdited();
-				e.Handled = true;
+				if (e.KeyCode == Keys.ControlKey)
+				{
+					this.EmitInvalidate();
+				}
+				else if (e.Control && e.KeyCode == Keys.Up)
+				{
+					this.Value += this.increment;
+					this.EmitEdited();
+					e.Handled = true;
+				}
+				else if (e.Control && e.KeyCode == Keys.Down)
+				{
+					this.Value -= this.increment;
+					this.EmitEdited();
+					e.Handled = true;
+				}
 			}
 		}
 		public void OnKeyUp(KeyEventArgs e)
@@ -190,8 +197,9 @@ namespace CustomPropertyGrid.EditorTemplates
 			if (this.gripHovered && (e.Button & MouseButtons.Left) != MouseButtons.None)
 			{
 				this.gripPressed = true;
+				this.gripDragPos = e.Location;
+				this.gripDragVal = this.value;
 				this.EmitInvalidate();
-				// Begin grip action here
 			}
 		}
 		public void OnMouseUp(MouseEventArgs e)
@@ -200,25 +208,29 @@ namespace CustomPropertyGrid.EditorTemplates
 			if (this.gripPressed && (e.Button & MouseButtons.Left) != MouseButtons.None)
 			{
 				this.gripPressed = false;
+				this.gripDragPos = Point.Empty;
+				this.gripDragVal = 0m;
 				this.EmitInvalidate();
-				// End grip action here
 			}
 		}
-		public void OnMouseMove(MouseEventArgs e)
+		public override void OnMouseMove(MouseEventArgs e)
 		{
+			base.OnMouseMove(e);
 			this.stringEditor.OnMouseMove(e);
 
 			bool lastGripHovered = this.gripHovered;
-			this.gripHovered = this.gripRect.Contains(e.Location);
+			this.gripHovered = !this.ReadOnly && this.gripRect.Contains(e.Location);
 			if (lastGripHovered != this.gripHovered) this.EmitInvalidate();
 
 			if (this.gripPressed)
 			{
-				// Update grip action here
+				this.Value = this.gripDragVal - this.increment * Math.Round((e.Location.Y - this.gripDragPos.Y) / 3m);
+				this.EmitEdited();
 			}
 		}
-		public void OnMouseLeave(EventArgs e)
+		public override void OnMouseLeave(EventArgs e)
 		{
+			base.OnMouseLeave(e);
 			this.stringEditor.OnMouseLeave(e);
 
 			if (this.gripHovered) this.EmitInvalidate();
@@ -255,32 +267,16 @@ namespace CustomPropertyGrid.EditorTemplates
 				this.isValueClamped = false;
 			}
 		}
-
-		protected void EmitInvalidate()
-		{
-			if (this.Invalidate != null)
-				this.Invalidate(this, EventArgs.Empty);
-		}
-		protected void EmitValueEdited()
-		{
-			if (this.ValueEdited != null)
-				this.ValueEdited(this, EventArgs.Empty);
-		}
-		protected void EmitEditingFinished()
-		{
-			if (this.EditingFinished != null)
-				this.EditingFinished(this, EventArgs.Empty);
-		}
 		
 		private void ForwardInvalidate(object sender, EventArgs e)
 		{
 			this.EmitInvalidate();
 		}
-		private void stringEditor_TextEdited(object sender, EventArgs e)
+		private void stringEditor_Edited(object sender, EventArgs e)
 		{
 			this.SetValueFromText();
 			if (this.isTextValid)
-				this.EmitValueEdited();
+				this.EmitEdited();
 			else
 				this.EmitInvalidate();
 		}

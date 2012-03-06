@@ -5,9 +5,11 @@
 #                                                                #
 ##################################################################
 
--->	NumericPropertyEditor
-	-->	Use the NumberEditorTemplate
-		-->	Grip button for quick mousedrag-adjustments, use Increment
-	-->	Properly adjust number editor based on EditedType
+-->	Editors to do:
+	-->	StringSelector and Enum
+	-->	StringMultiSelector and FlaggedEnum
+	--> IList
+	-->	IDictionary
 
--->	
+-->	StringSelector
+	-->	Create a new ComboBoxEditorTemplate

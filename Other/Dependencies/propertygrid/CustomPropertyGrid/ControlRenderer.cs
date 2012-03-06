@@ -87,6 +87,7 @@ namespace CustomPropertyGrid.Renderer
 		private	static	Dictionary<ExpandNodeState,Bitmap>	expandNodeImages	= null;
 		private	static	Size								checkBoxSize	= Size.Empty;
 		private	static	Dictionary<CheckBoxState,Bitmap>	checkBoxImages	= null;
+		private	static	IconImage	dropDownIcon	= new IconImage(Resources.DropDownIcon);
 
 		public static Size CheckBoxSize
 		{
@@ -430,11 +431,9 @@ namespace CustomPropertyGrid.Renderer
 		{
 			g.FillRectangle(Brushes.Black, rect);
 		}
-
-		public static void DrawButton(Graphics g, Rectangle rect, ButtonState state, string text, Image icon = null)
+		
+		public static void DrawButtonBackground(Graphics g, Rectangle rect, ButtonState state)
 		{
-			GraphicsState graphicsState = g.Save();
-
 			GraphicsPath borderPath = new GraphicsPath();
 			borderPath.AddPolygon(new [] {
 				new Point(rect.Left, rect.Top + 2),
@@ -460,7 +459,6 @@ namespace CustomPropertyGrid.Renderer
 			Rectangle innerRectUpper = new Rectangle(innerRect.X, innerRect.Y, innerRect.Width, innerRect.Height / 2);
 			Rectangle innerRectLower = new Rectangle(innerRect.X, innerRect.Y + innerRectUpper.Height, innerRect.Width, innerRect.Height - innerRectUpper.Height);
 			
-			Color colorText;
 			Color colorInner;
 			Color colorBorder;
 			Brush upperBrush;
@@ -468,7 +466,6 @@ namespace CustomPropertyGrid.Renderer
 
 			if (state == ButtonState.Normal)
 			{
-				colorText = SystemColors.ControlText;
 				colorInner = SystemColors.Window;
 				colorBorder = SystemColors.ControlDarkDark;//.MixWith(colorHighlight, 0.4f);
 
@@ -483,7 +480,6 @@ namespace CustomPropertyGrid.Renderer
 			}
 			else if (state == ButtonState.Hot)
 			{
-				colorText = SystemColors.ControlText;
 				colorInner = SystemColors.Window;
 				colorBorder = SystemColors.ControlDarkDark.MixWith(SystemColors.Highlight, 0.4f);
 
@@ -498,7 +494,6 @@ namespace CustomPropertyGrid.Renderer
 			}
 			else if (state == ButtonState.Pressed)
 			{
-				colorText = SystemColors.ControlText;
 				colorBorder = SystemColors.ControlDarkDark.MixWith(SystemColors.Highlight, 1.0f, true);
 				colorInner = colorBorder;
 
@@ -518,7 +513,6 @@ namespace CustomPropertyGrid.Renderer
 			}
 			else
 			{
-				colorText = SystemColors.GrayText;
 				colorInner = Color.FromArgb(128, SystemColors.Window);
 				colorBorder = Color.FromArgb(128, SystemColors.ControlDarkDark);
 				upperBrush = new SolidBrush(Color.Transparent);
@@ -535,6 +529,19 @@ namespace CustomPropertyGrid.Renderer
 
 			if (state == ButtonState.Pressed)
 				g.DrawLine(new Pen((lowerBrush as LinearGradientBrush).LinearColors[1]), innerRectLower.X + 1, innerRectLower.Bottom - 1, innerRectLower.Right - 2, innerRectLower.Bottom - 1);
+		}
+		public static void DrawButton(Graphics g, Rectangle rect, ButtonState state, string text, Image icon = null)
+		{
+			GraphicsState graphicsState = g.Save();
+
+			DrawButtonBackground(g, rect, state);
+
+			Rectangle innerRect = new Rectangle(rect.X + 1, rect.Y + 1, rect.Width - 2, rect.Height - 2);
+			Color colorText;
+			if (state == ButtonState.Disabled)
+				colorText = SystemColors.GrayText;
+			else
+				colorText = SystemColors.ControlText;
 
 			RectangleF clipRect = innerRect;
 			clipRect.Intersect(g.ClipBounds);
@@ -565,6 +572,74 @@ namespace CustomPropertyGrid.Renderer
 				iconTextSize = new Size(icon.Width + (int)textSize.Width, innerRect.Height);
 				iconRect = new Rectangle(
 					innerRect.X + innerRect.Width / 2 - (int)textSize.Width / 2 - icon.Width * 3 / 4, 
+					innerRect.Y + innerRect.Height / 2 - icon.Height / 2, 
+					icon.Width, 
+					icon.Height);
+				textRect = new Rectangle(
+					iconRect.Right, 
+					innerRect.Y, 
+					innerRect.Width - iconRect.Width, 
+					innerRect.Height);
+
+				g.DrawImageUnscaled(icon, iconRect);
+				DrawStringLine(g, text, SystemFonts.DefaultFont, textRect, colorText);
+			}
+
+			g.Restore(graphicsState);
+		}
+		public static void DrawComboButton(Graphics g, Rectangle rect, ButtonState state, string text, Image icon = null)
+		{
+			GraphicsState graphicsState = g.Save();
+
+			DrawButtonBackground(g, rect, state);
+
+			Rectangle innerRect = new Rectangle(rect.X + 1, rect.Y + 1, rect.Width - 2, rect.Height - 2);
+			Color colorText;
+			if (state == ButtonState.Disabled)
+				colorText = SystemColors.GrayText;
+			else
+				colorText = SystemColors.ControlText;
+
+			Rectangle dropDownIconRect = new Rectangle(
+				innerRect.Right - dropDownIcon.Width - 4,
+				innerRect.Y + innerRect.Height / 2 - dropDownIcon.Height / 2,
+				dropDownIcon.Width,
+				dropDownIcon.Height);
+			innerRect = new Rectangle(innerRect.X, innerRect.Y, innerRect.Width - dropDownIconRect.Width - 4, innerRect.Height);
+
+			Image stateDropDownIcon = dropDownIcon.Normal;
+			if (state == ButtonState.Disabled) stateDropDownIcon = dropDownIcon.Disabled;
+			g.DrawImageUnscaled(stateDropDownIcon, dropDownIconRect.Location);
+
+			RectangleF clipRect = innerRect;
+			clipRect.Intersect(g.ClipBounds);
+			g.SetClip(clipRect);
+
+			if (icon == null && !string.IsNullOrEmpty(text))
+			{
+				DrawStringLine(g, text, SystemFonts.DefaultFont, innerRect, colorText);
+			}
+			else if (string.IsNullOrEmpty(text))
+			{
+				Rectangle iconRect;
+				iconRect = new Rectangle(
+					innerRect.X + innerRect.Width / 2 - icon.Width / 2, 
+					innerRect.Y + innerRect.Height / 2 - icon.Height / 2, 
+					icon.Width, 
+					icon.Height);
+				g.DrawImageUnscaled(icon, iconRect);
+			}
+			else
+			{
+				Region[] charRegions = MeasureStringLine(g, text, new [] { new CharacterRange(0, text.Length) }, SystemFonts.DefaultFont, innerRect);
+				SizeF textSize = charRegions[0].GetBounds(g).Size;
+				Size iconTextSize;
+				Rectangle textRect;
+				Rectangle iconRect;
+
+				iconTextSize = new Size(icon.Width + (int)textSize.Width, innerRect.Height);
+				iconRect = new Rectangle(
+					innerRect.X, 
 					innerRect.Y + innerRect.Height / 2 - icon.Height / 2, 
 					icon.Width, 
 					icon.Height);
