@@ -222,6 +222,21 @@ namespace CustomPropertyGrid
 			this.PerformGetValue();
 		}
 
+		protected internal override void OnKeyDown(KeyEventArgs e)
+		{
+			base.OnKeyDown(e);
+			if (!this.buttonIsCreate && e.KeyCode == Keys.Delete)
+			{
+				this.OnButtonPressed();
+				e.Handled = true;
+			}
+			else if (this.buttonIsCreate && e.KeyCode == Keys.Return)
+			{
+				this.OnButtonPressed();
+				e.Handled = true;
+			}
+		}
+
 		protected Func<IEnumerable<object>> CreatePropertyValueGetter(PropertyInfo property)
 		{
 			return () => this.GetValue().Select(o => o != null ? property.GetValue(o, null) : null);

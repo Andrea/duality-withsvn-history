@@ -76,6 +76,11 @@ namespace CustomPropertyGrid.PropertyEditors
 			base.OnKeyDown(e);
 			this.numEditor.OnKeyDown(e);
 		}
+		protected internal override void OnKeyUp(KeyEventArgs e)
+		{
+			base.OnKeyUp(e);
+			this.numEditor.OnKeyUp(e);
+		}
 		protected internal override void OnMouseMove(MouseEventArgs e)
 		{
 			base.OnMouseMove(e);

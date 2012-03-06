@@ -98,6 +98,7 @@
     <None Include="Properties\ExpandNodeOpenedHot.png" />
     <None Include="Properties\ExpandNodeOpenedPressed.png" />
     <None Include="Properties\ExpandNodeOpenedNormal.png" />
+    <None Include="Properties\NumberGripIcon.png" />
     <Content Include="ToDo.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

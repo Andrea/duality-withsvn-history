@@ -130,6 +130,13 @@ namespace CustomPropertyGrid.Properties {
             }
         }
         
+        public static System.Drawing.Bitmap NumberGripIcon {
+            get {
+                object obj = ResourceManager.GetObject("NumberGripIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die {0} objects ähnelt.
         /// </summary>

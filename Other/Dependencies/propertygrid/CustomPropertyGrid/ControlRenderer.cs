@@ -11,16 +11,6 @@ using CustomPropertyGrid.Properties;
 
 namespace CustomPropertyGrid.Renderer
 {
-	[Flags]
-	public enum TextBoxState
-	{
-		Disabled		= 0x1,
-		Normal			= 0x2,
-		Hot				= 0x4,
-		Focus			= 0x8,
-
-		ReadOnlyFlag	= 0x100
-	}
 	public enum TextBoxStyle
 	{
 		Plain,
@@ -33,6 +23,17 @@ namespace CustomPropertyGrid.Renderer
 		Simple,
 		Emboss,
 		SmoothSunken
+	}
+
+	[Flags]
+	public enum TextBoxState
+	{
+		Disabled		= 0x1,
+		Normal			= 0x2,
+		Hot				= 0x4,
+		Focus			= 0x8,
+
+		ReadOnlyFlag	= 0x100
 	}
 	public enum ExpandNodeState
 	{
@@ -71,6 +72,13 @@ namespace CustomPropertyGrid.Renderer
 		MinusPressed,
 		MinusHot,
 		MinusNormal
+	}
+	public enum ButtonState
+	{
+		Disabled,
+		Normal,
+		Hot,
+		Pressed
 	}
 
 	public static class ControlRenderer
@@ -421,6 +429,156 @@ namespace CustomPropertyGrid.Renderer
 		public static void DrawCursor(Graphics g, Rectangle rect)
 		{
 			g.FillRectangle(Brushes.Black, rect);
+		}
+
+		public static void DrawButton(Graphics g, Rectangle rect, ButtonState state, string text, Image icon = null)
+		{
+			GraphicsState graphicsState = g.Save();
+
+			GraphicsPath borderPath = new GraphicsPath();
+			borderPath.AddPolygon(new [] {
+				new Point(rect.Left, rect.Top + 2),
+				new Point(rect.Left + 2, rect.Top),
+				new Point(rect.Right - 3, rect.Top),
+				new Point(rect.Right - 1, rect.Top + 2),
+				new Point(rect.Right - 1, rect.Bottom - 3),
+				new Point(rect.Right - 3, rect.Bottom - 1),
+				new Point(rect.Left + 2, rect.Bottom - 1),
+				new Point(rect.Left, rect.Bottom - 3) });
+			Rectangle outerRect = new Rectangle(rect.X + 1, rect.Y + 1, rect.Width - 2, rect.Height - 2);
+			GraphicsPath outerPath = new GraphicsPath();
+			outerPath.AddPolygon(new [] {
+				new Point(outerRect.Left, outerRect.Top + 1),
+				new Point(outerRect.Left + 1, outerRect.Top),
+				new Point(outerRect.Right - 2, outerRect.Top),
+				new Point(outerRect.Right - 1, outerRect.Top + 1),
+				new Point(outerRect.Right - 1, outerRect.Bottom - 2),
+				new Point(outerRect.Right - 2, outerRect.Bottom - 1),
+				new Point(outerRect.Left + 1, outerRect.Bottom - 1),
+				new Point(outerRect.Left, outerRect.Bottom - 2) });
+			Rectangle innerRect = new Rectangle(rect.X + 1, rect.Y + 1, rect.Width - 2, rect.Height - 2);
+			Rectangle innerRectUpper = new Rectangle(innerRect.X, innerRect.Y, innerRect.Width, innerRect.Height / 2);
+			Rectangle innerRectLower = new Rectangle(innerRect.X, innerRect.Y + innerRectUpper.Height, innerRect.Width, innerRect.Height - innerRectUpper.Height);
+			
+			Color colorText;
+			Color colorInner;
+			Color colorBorder;
+			Brush upperBrush;
+			Brush lowerBrush;
+
+			if (state == ButtonState.Normal)
+			{
+				colorText = SystemColors.ControlText;
+				colorInner = SystemColors.Window;
+				colorBorder = SystemColors.ControlDarkDark;//.MixWith(colorHighlight, 0.4f);
+
+				Color colorGradBase = SystemColors.ControlDarkDark;
+				Color gradLight2 = colorGradBase.MixWith(colorInner, 0.9f);
+				Color gradLight = colorGradBase.MixWith(colorInner, 0.8f);
+				Color gradDark = colorGradBase.MixWith(colorInner, 0.725f);
+				Color gradDark2 = colorGradBase.MixWith(colorInner, 0.625f);
+
+				upperBrush = new LinearGradientBrush(innerRectUpper, gradLight2, gradLight, 90.0f);
+				lowerBrush = new LinearGradientBrush(innerRectUpper, gradDark, gradDark2, 90.0f);
+			}
+			else if (state == ButtonState.Hot)
+			{
+				colorText = SystemColors.ControlText;
+				colorInner = SystemColors.Window;
+				colorBorder = SystemColors.ControlDarkDark.MixWith(SystemColors.Highlight, 0.4f);
+
+				Color colorGradBase = SystemColors.Highlight;
+				Color gradLight2 = colorGradBase.MixWith(colorInner, 0.9f);
+				Color gradLight = colorGradBase.MixWith(colorInner, 0.8f);
+				Color gradDark = colorGradBase.MixWith(colorInner, 0.7f);
+				Color gradDark2 = colorGradBase.MixWith(colorInner, 0.6f);
+
+				upperBrush = new LinearGradientBrush(innerRectUpper, gradLight2, gradLight, 90.0f);
+				lowerBrush = new LinearGradientBrush(innerRectUpper, gradDark, gradDark2, 90.0f);
+			}
+			else if (state == ButtonState.Pressed)
+			{
+				colorText = SystemColors.ControlText;
+				colorBorder = SystemColors.ControlDarkDark.MixWith(SystemColors.Highlight, 1.0f, true);
+				colorInner = colorBorder;
+
+				Color colorGradBase = SystemColors.Highlight;
+				Color colorGradBase2 = SystemColors.Window;
+				Color gradLight2 = colorGradBase.MixWith(colorGradBase2, 0.9f);
+				Color gradLight = colorGradBase.MixWith(colorGradBase2, 0.7f);
+				Color gradDark = colorGradBase.MixWith(colorGradBase2, 0.5f);
+				Color gradDark2 = colorGradBase.MixWith(colorGradBase2, 0.2f);
+
+				innerRectUpper.Height += 1;
+				innerRectLower.Y += 1;
+				innerRectLower.Height -= 1;
+
+				upperBrush = new LinearGradientBrush(innerRectUpper, gradLight2, gradLight, 90.0f);
+				lowerBrush = new LinearGradientBrush(innerRectUpper, gradDark, gradDark2, 90.0f);
+			}
+			else
+			{
+				colorText = SystemColors.GrayText;
+				colorInner = Color.FromArgb(128, SystemColors.Window);
+				colorBorder = Color.FromArgb(128, SystemColors.ControlDarkDark);
+				upperBrush = new SolidBrush(Color.Transparent);
+				lowerBrush = new SolidBrush(Color.Transparent);
+			}
+
+			g.FillRectangle(lowerBrush, innerRectLower);
+			g.FillRectangle(upperBrush, innerRectUpper);
+
+			g.SmoothingMode = SmoothingMode.AntiAlias;
+			g.DrawPath(new Pen(colorBorder), borderPath);
+			g.DrawPath(new Pen(Color.FromArgb(128, colorInner)), outerPath);
+			g.SmoothingMode = SmoothingMode.Default;
+
+			if (state == ButtonState.Pressed)
+				g.DrawLine(new Pen((lowerBrush as LinearGradientBrush).LinearColors[1]), innerRectLower.X + 1, innerRectLower.Bottom - 1, innerRectLower.Right - 2, innerRectLower.Bottom - 1);
+
+			RectangleF clipRect = innerRect;
+			clipRect.Intersect(g.ClipBounds);
+			g.SetClip(clipRect);
+
+			if (icon == null && !string.IsNullOrEmpty(text))
+			{
+				DrawStringLine(g, text, SystemFonts.DefaultFont, innerRect, colorText, StringAlignment.Center);
+			}
+			else if (string.IsNullOrEmpty(text))
+			{
+				Rectangle iconRect;
+				iconRect = new Rectangle(
+					innerRect.X + innerRect.Width / 2 - icon.Width / 2, 
+					innerRect.Y + innerRect.Height / 2 - icon.Height / 2, 
+					icon.Width, 
+					icon.Height);
+				g.DrawImageUnscaled(icon, iconRect);
+			}
+			else
+			{
+				Region[] charRegions = MeasureStringLine(g, text, new [] { new CharacterRange(0, text.Length) }, SystemFonts.DefaultFont, innerRect);
+				SizeF textSize = charRegions[0].GetBounds(g).Size;
+				Size iconTextSize;
+				Rectangle textRect;
+				Rectangle iconRect;
+
+				iconTextSize = new Size(icon.Width + (int)textSize.Width, innerRect.Height);
+				iconRect = new Rectangle(
+					innerRect.X + innerRect.Width / 2 - (int)textSize.Width / 2 - icon.Width * 3 / 4, 
+					innerRect.Y + innerRect.Height / 2 - icon.Height / 2, 
+					icon.Width, 
+					icon.Height);
+				textRect = new Rectangle(
+					iconRect.Right, 
+					innerRect.Y, 
+					innerRect.Width - iconRect.Width, 
+					innerRect.Height);
+
+				g.DrawImageUnscaled(icon, iconRect);
+				DrawStringLine(g, text, SystemFonts.DefaultFont, textRect, colorText);
+			}
+
+			g.Restore(graphicsState);
 		}
 
 		private static void InitCheckBox(CheckBoxState checkState)

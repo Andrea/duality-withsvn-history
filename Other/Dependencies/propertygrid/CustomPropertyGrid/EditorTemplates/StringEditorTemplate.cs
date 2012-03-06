@@ -36,6 +36,10 @@ namespace CustomPropertyGrid.EditorTemplates
 			get { return this.readOnly; }
 			set { this.readOnly = value; }
 		}
+		public bool Focused
+		{
+			get { return this.focused; }
+		}
 		public string Text
 		{
 			get { return this.text; }
