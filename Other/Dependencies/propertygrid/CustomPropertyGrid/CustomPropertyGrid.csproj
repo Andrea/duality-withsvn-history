@@ -50,6 +50,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ControlRenderer.cs" />
+    <Compile Include="EditorTemplates\ComboBoxDropDown.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditorTemplates\ComboBoxDropDown.Designer.cs">
+      <DependentUpon>ComboBoxDropDown.cs</DependentUpon>
+    </Compile>
     <Compile Include="EditorTemplates\ComboBoxEditorTemplate.cs" />
     <Compile Include="EditorTemplates\EditorTemplate.cs" />
     <Compile Include="EditorTemplates\NumericEditorTemplate.cs" />
@@ -66,6 +72,9 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="ReflectionHelper.cs" />
+    <EmbeddedResource Include="EditorTemplates\ComboBoxDropDown.resx">
+      <DependentUpon>ComboBoxDropDown.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

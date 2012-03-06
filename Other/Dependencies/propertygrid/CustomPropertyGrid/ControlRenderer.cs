@@ -145,6 +145,7 @@ namespace CustomPropertyGrid.Renderer
 
 		public static void DrawStringLine(Graphics g, string text, Font font, Rectangle textRect, Color textColor, StringAlignment align = StringAlignment.Near, StringAlignment lineAlign = StringAlignment.Center)
 		{
+			if (textRect.Width < 1 || textRect.Height < 1) return;
 			if (text == null) return;
 
 			textRect.Width -= 5;
@@ -156,7 +157,8 @@ namespace CustomPropertyGrid.Renderer
 
 			int charsFit, lines;
 			SizeF nameLabelSize = g.MeasureString(text, font, textRect.Size, nameLabelFormat, out charsFit, out lines);
-			g.DrawString(text, font, new SolidBrush(textColor), textRect, nameLabelFormat);
+			if (textRect.Width >= 1)
+				g.DrawString(text, font, new SolidBrush(textColor), textRect, nameLabelFormat);
 
 			if (charsFit < text.Length)
 			{
@@ -221,6 +223,7 @@ namespace CustomPropertyGrid.Renderer
 
 		public static Rectangle DrawTextBoxBorder(Graphics g, Rectangle rect, TextBoxState state, TextBoxStyle style, Color backColor)
 		{
+			if (rect.Width < 4 || rect.Height < 4) return rect;
 			Rectangle clientRect = rect;
 
 			Color borderColor = SystemColors.ControlDark.ScaleBrightness(1.2f);
@@ -328,6 +331,7 @@ namespace CustomPropertyGrid.Renderer
 		}
 		public static void DrawTextField(Graphics g, Rectangle rect, string text, Font font, Color textColor, Color backColor, TextBoxState state, TextBoxStyle style, int scroll = 0, int cursorPos = -1, int selLength = 0)
 		{
+			if (rect.Width < 4 || rect.Height < 4) return;
 			GraphicsState oldState = g.Save();
 
 			// Draw Background
@@ -434,6 +438,8 @@ namespace CustomPropertyGrid.Renderer
 		
 		public static void DrawButtonBackground(Graphics g, Rectangle rect, ButtonState state)
 		{
+			if (rect.Width < 4 || rect.Height < 4) return;
+
 			GraphicsPath borderPath = new GraphicsPath();
 			borderPath.AddPolygon(new [] {
 				new Point(rect.Left, rect.Top + 2),
@@ -532,6 +538,8 @@ namespace CustomPropertyGrid.Renderer
 		}
 		public static void DrawButton(Graphics g, Rectangle rect, ButtonState state, string text, Image icon = null)
 		{
+			if (rect.Width < 4 || rect.Height < 4) return;
+
 			GraphicsState graphicsState = g.Save();
 
 			DrawButtonBackground(g, rect, state);
@@ -589,6 +597,7 @@ namespace CustomPropertyGrid.Renderer
 		}
 		public static void DrawComboButton(Graphics g, Rectangle rect, ButtonState state, string text, Image icon = null)
 		{
+			if (rect.Width < 8 + dropDownIcon.Width || rect.Height < 4) return;
 			GraphicsState graphicsState = g.Save();
 
 			DrawButtonBackground(g, rect, state);
@@ -605,7 +614,7 @@ namespace CustomPropertyGrid.Renderer
 				innerRect.Y + innerRect.Height / 2 - dropDownIcon.Height / 2,
 				dropDownIcon.Width,
 				dropDownIcon.Height);
-			innerRect = new Rectangle(innerRect.X, innerRect.Y, innerRect.Width - dropDownIconRect.Width - 4, innerRect.Height);
+			innerRect = new Rectangle(innerRect.X + 2, innerRect.Y, innerRect.Width - dropDownIconRect.Width - 6, innerRect.Height);
 
 			Image stateDropDownIcon = dropDownIcon.Normal;
 			if (state == ButtonState.Disabled) stateDropDownIcon = dropDownIcon.Disabled;

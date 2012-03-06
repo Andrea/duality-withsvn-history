@@ -12,4 +12,5 @@
 	-->	IDictionary
 
 -->	StringSelector
-	-->	Create a new ComboBoxEditorTemplate
+	-->	Base class for "user string enums"
+	-->	Implement one the same way as EnumPropertyEditor

@@ -47,7 +47,7 @@ namespace CustomPropertyGrid.PropertyEditors
 				this.valMultiple = values.Any(o => o == null) || !values.All(o => Enum.Equals(o, firstVal));
 			}
 
-			this.stringSelector.SelectedText = this.val.ToString();
+			this.stringSelector.SelectedObject = this.val.ToString();
 			this.EndUpdate();
 		}
 
@@ -55,6 +55,41 @@ namespace CustomPropertyGrid.PropertyEditors
 		{
 			base.OnPaint(e);
 			this.stringSelector.OnPaint(e, this.Enabled, this.valMultiple);
+		}
+		protected internal override void OnGotFocus(EventArgs e)
+		{
+			base.OnGotFocus(e);
+			this.stringSelector.OnGotFocus(e);
+		}
+		protected internal override void OnLostFocus(EventArgs e)
+		{
+			base.OnLostFocus(e);
+			this.stringSelector.OnLostFocus(e);
+		}
+		protected internal override void OnMouseMove(MouseEventArgs e)
+		{
+			base.OnMouseMove(e);
+			this.stringSelector.OnMouseMove(e);
+		}
+		protected internal override void OnMouseLeave(EventArgs e)
+		{
+			base.OnMouseLeave(e);
+			this.stringSelector.OnMouseLeave(e);
+		}
+		protected internal override void OnMouseDown(MouseEventArgs e)
+		{
+			base.OnMouseDown(e);
+			this.stringSelector.OnMouseDown(e);
+		}
+		protected internal override void OnMouseUp(MouseEventArgs e)
+		{
+			base.OnMouseUp(e);
+			this.stringSelector.OnMouseUp(e);
+		}
+		protected internal override void OnKeyDown(KeyEventArgs e)
+		{
+			base.OnKeyDown(e);
+			this.stringSelector.OnKeyDown(e);
 		}
 
 		protected override void UpdateGeometry()
@@ -71,6 +106,11 @@ namespace CustomPropertyGrid.PropertyEditors
 			base.OnReadOnlyChanged();
 			this.stringSelector.ReadOnly = this.ReadOnly;
 		}
+		protected override void OnEditedTypeChanged()
+		{
+			base.OnEditedTypeChanged();
+			this.stringSelector.DropDownItems = Enum.GetNames(this.EditedType);
+		}
 
 		private void stringSelector_Invalidate(object sender, EventArgs e)
 		{
@@ -80,7 +120,7 @@ namespace CustomPropertyGrid.PropertyEditors
 		{
 			if (this.IsUpdatingFromObject) return;
 
-			this.val = (Enum)Enum.Parse(this.EditedType, this.stringSelector.SelectedText);
+			this.val = (Enum)Enum.Parse(this.EditedType, this.stringSelector.SelectedObject.ToString());
 			this.Invalidate();
 			this.PerformSetValue();
 			this.OnValueChanged();

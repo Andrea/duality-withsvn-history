@@ -10,6 +10,10 @@
 	-->	Goals: Performance, Style
 	-->	Experiment externally first!
 	-->	Single Control (Grid), PropertyEditor not deriving from "Control"-stuff, custom Drawing, custom Layout
+	-->	ToDo When implementing it in Dualitor:
+		-->	Enable EditorHint support
+		-->	Rebuild Duality PropertyEditors
+		-->	Enable full IHelpProvider support
 
 
 
