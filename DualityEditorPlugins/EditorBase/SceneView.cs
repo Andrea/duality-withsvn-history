@@ -811,7 +811,7 @@ namespace EditorBase
 					else
 						e.Effect = DragDropEffects.None;
 				}
-				else if (data.ContainsContentRefs<Prefab>())
+				else if (CorePluginHelper.CanConvertFromDataObject<GameObject>(data))
 				{
 					if (dropParent is ComponentNode)
 						e.Effect = DragDropEffects.None;
@@ -850,20 +850,21 @@ namespace EditorBase
 					else
 						this.moveHereToolStripMenuItem_Click(this, null);
 				}
-				else if (data.ContainsContentRefs<Prefab>())
+				else if (CorePluginHelper.CanConvertFromDataObject<GameObject>(data))
 				{
 					GameObject dropObj = (this.tempDropTarget is GameObjectNode) ? (this.tempDropTarget as GameObjectNode).Obj : null;
-					ContentRef<Prefab>[] dropdata = data.GetContentRefs<Prefab>();
-					foreach (ContentRef<Prefab> pRef in dropdata)
+					var gameObjQuery = CorePluginHelper.ConvertFromDataObject<GameObject>(data);
+					if (gameObjQuery != null)
 					{
-						GameObject newObj = pRef.Res.Instantiate();
-						newObj.Parent = dropObj;
-						Scene.Current.RegisterObj(newObj);
-
 						this.objectView.ClearSelection();
-						TreeNodeAdv dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(this.FindNode(newObj)));
-						dragObjViewNode.IsSelected = true;
-						this.objectView.EnsureVisible(dragObjViewNode);
+						foreach (GameObject newObj in gameObjQuery)
+						{
+							newObj.Parent = dropObj;
+							Scene.Current.RegisterObj(newObj);
+							TreeNodeAdv dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(this.FindNode(newObj)));
+							dragObjViewNode.IsSelected = true;
+							this.objectView.EnsureVisible(dragObjViewNode);
+						}
 					}
 				}
 			}
