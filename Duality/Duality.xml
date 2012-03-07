@@ -9105,6 +9105,11 @@
             A 180 degree angle in radians. Equals <see cref="F:Duality.MathF.Pi"/>.
             </summary>
         </member>
+        <member name="F:Duality.MathF.RadAngle270">
+            <summary>
+            A 270 degree angle in radians. Equals <see cref="F:Duality.MathF.Pi"/>.
+            </summary>
+        </member>
         <member name="F:Duality.MathF.RadAngle360">
             <summary>
             A 360 degree angle in radians. Equals <see cref="F:Duality.MathF.TwoPi"/>.

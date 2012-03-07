@@ -696,6 +696,7 @@ namespace EditorBase.CamViewStates
 				Vector3 mouseSpaceCoord = this.View.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, this.selectionCenter.Z));
 				float scale = this.View.GetScaleAtZ(this.selectionCenter.Z);
 				float boundaryThickness = MathF.Max(10.0f, 5.0f / scale);
+				bool tooSmall = this.selectionRadius <= boundaryThickness * 2.0f;
 				bool mouseOverBoundary = MathF.Abs((mouseSpaceCoord - this.selectionCenter).Length - this.selectionRadius) < boundaryThickness;
 				bool mouseInsideBoundary = !mouseOverBoundary && (mouseSpaceCoord - this.selectionCenter).Length < this.selectionRadius;
 				bool mouseAtCenterAxis = MathF.Abs(mouseSpaceCoord.X - this.selectionCenter.X) < boundaryThickness || MathF.Abs(mouseSpaceCoord.Y - this.selectionCenter.Y) < boundaryThickness;
@@ -711,9 +712,9 @@ namespace EditorBase.CamViewStates
 				this.mouseoverSelect = false;
 				if (shift || ctrl)
 					this.mouseoverAction = MouseAction.RectSelection;
-				else if (anySelection && mouseOverBoundary && mouseAtCenterAxis && this.selectionRadius > 0.0f && canScale)
+				else if (anySelection && !tooSmall && mouseOverBoundary && mouseAtCenterAxis && this.selectionRadius > 0.0f && canScale)
 					this.mouseoverAction = MouseAction.ScaleObj;
-				else if (anySelection && mouseOverBoundary && canRotate)
+				else if (anySelection && !tooSmall && mouseOverBoundary && canRotate)
 					this.mouseoverAction = MouseAction.RotateObj;
 				else if (anySelection && mouseInsideBoundary && canMove)
 					this.mouseoverAction = MouseAction.MoveObj;

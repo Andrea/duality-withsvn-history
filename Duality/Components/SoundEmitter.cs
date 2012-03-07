@@ -20,7 +20,7 @@ namespace Duality.Components
 	/// </summary>
 	[Serializable]
 	[RequiredComponent(typeof(Transform))]
-	public sealed class SoundEmitter : Component, ICmpUpdatable, ICmpInitializable
+	public sealed class SoundEmitter : Component, ICmpUpdatable, ICmpInitializable, ICmpEditorUpdatable
 	{
 		/// <summary>
 		/// A single sound source.
@@ -215,6 +215,14 @@ namespace Duality.Components
 		{
 			for (int i = this.sources.Count - 1; i >= 0; i--)
 				if (this.sources[i] != null && !this.sources[i].Update(this)) this.sources.RemoveAt(i);
+		}
+		void ICmpEditorUpdatable.OnUpdate()
+		{
+			if (DualityApp.ExecContext != DualityApp.ExecutionContext.Game)
+			{
+				for (int i = this.sources.Count - 1; i >= 0; i--)
+					if (this.sources[i].Instance != null) this.sources[i].Instance.Stop();
+			}
 		}
 		void ICmpInitializable.OnInit(Component.InitContext context)
 		{

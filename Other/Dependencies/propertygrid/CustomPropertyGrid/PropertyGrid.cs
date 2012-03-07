@@ -263,10 +263,7 @@ namespace CustomPropertyGrid
 			e.ParentGrid = this;
 			return e;
 		}
-		public virtual void ConfigureEditor(PropertyEditor editor)
-		{
-			Console.WriteLine(editor.EditedMember);
-		}
+		public virtual void ConfigureEditor(PropertyEditor editor) {}
 		public virtual object CreateObjectInstance(Type objectType)
 		{
 			try

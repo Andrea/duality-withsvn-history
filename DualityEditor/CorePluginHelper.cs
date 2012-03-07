@@ -13,6 +13,11 @@ namespace DualityEditor
 {
 	public static class CorePluginHelper
 	{
+		public const int Priority_None			= 0;
+		public const int Priority_General		= 20;
+		public const int Priority_Specialized	= 50;
+		public const int Priority_Override		= 100;
+
 		private interface IResEntry {}
 		private struct ImageResEntry : IResEntry
 		{
@@ -54,6 +59,59 @@ namespace DualityEditor
 			{
 				this.categoryTree = category.Split(new char[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
 				this.context = context;
+			}
+		}
+		private struct DataSelectorEntry : IResEntry
+		{
+			public	IDataSelector	selector;
+			public	string			context;
+
+			public DataSelectorEntry(IDataSelector selector, string context)
+			{
+				this.selector = selector;
+				this.context = context;
+			}
+		}
+
+		public interface IDataSelector
+		{
+			int Priority { get; }
+			bool CanSelectFromData(DataObject data);
+			IEnumerable<object> SelectFromData(DataObject data);
+		}
+		public class DataSelector<T> : IDataSelector
+		{
+			private	Predicate<DataObject>			predicate;
+			private	Func<DataObject,IEnumerable<T>>	selector;
+			private	int								priority;
+
+			public int Priority
+			{
+				get { return this.priority; }
+			}
+
+			public DataSelector(Func<DataObject,IEnumerable<T>> selector, Predicate<DataObject> predicate, int priority)
+			{
+				this.predicate = predicate;
+				this.selector = selector;
+				this.priority = priority;
+			}
+
+			public bool CanSelectFromData(DataObject data)
+			{
+				return this.predicate(data);
+			}
+			public IEnumerable<T> SelectFromData(DataObject data)
+			{
+				return this.selector(data);
+			}
+			IEnumerable<object> IDataSelector.SelectFromData(DataObject data)
+			{
+				IEnumerable<T> result = this.selector(data);
+				if (result == null)
+					return null;
+				else
+					return result.OfType<object>();
 			}
 		}
 
@@ -148,10 +206,11 @@ namespace DualityEditor
 			}
 		}
 
-		public const string ImageContext_Icon			= "Icon";
-		public const string CategoryContext_General		= "General";
-		public const string ActionContext_ContextMenu	= "ContextMenu";
-		public const string ActionContext_OpenRes		= "OpenRes";
+		public const string ImageContext_Icon				= "Icon";
+		public const string CategoryContext_General			= "General";
+		public const string ActionContext_ContextMenu		= "ContextMenu";
+		public const string ActionContext_OpenRes			= "OpenRes";
+		public const string DataSelectorContext_CamViewDrop	= "CamViewDrop";
 
 		private	static	Dictionary<string,List<IResEntry>>	corePluginRes	= new Dictionary<string,List<IResEntry>>();
 		private	static	XmlCodeDoc							corePluginDoc	= new XmlCodeDoc();
@@ -170,11 +229,9 @@ namespace DualityEditor
 			}
 			if (!resList.Contains(res)) resList.Add(res);
 		}
-		private static T RequestCorePluginRes<T>(Type type, Predicate<T> predicate = null) where T : IResEntry
+		private static IEnumerable<T> QueryPluginResCandidates<T>(Type type, Predicate<T> predicate) where T : IResEntry
 		{
-			if (type == null) return default(T);
 			string typeString = ReflectionHelper.GetTypeId(type);
-
 			List<IResEntry> resList = null;
 			if (corePluginRes.TryGetValue(typeString, out resList))
 			{
@@ -183,46 +240,82 @@ namespace DualityEditor
 					if (typeof(T).IsAssignableFrom(res.GetType()))
 					{
 						T casted = (T)res;
-						if (predicate == null || predicate(casted)) return casted;
+						if (predicate == null || predicate(casted)) yield return casted;
 					}
 				}
 			}
-
-			if (type != typeof(object))
-				return RequestCorePluginRes<T>(type.BaseType, predicate);
-			else
-				return default(T);
+			yield break;
 		}
-		private static List<T> RequestAllCorePluginRes<T>(Type type, Predicate<T> predicate = null) where T : IResEntry
+		private static T RequestCorePluginRes<T>(Type type, bool contravariantType, Predicate<T> predicate) where T : IResEntry
 		{
-			List<T> result = null;
-
-			while (type != null)
+			if (type == null) return default(T);
+			if (contravariantType)
 			{
-				string typeString = ReflectionHelper.GetTypeId(type);
-
-				List<IResEntry> resList = null;
-				if (corePluginRes.TryGetValue(typeString, out resList))
+				List<Type> contravariantTypes = new List<Type>();
+				contravariantTypes.Add(type);
+				foreach (string key in corePluginRes.Keys)
 				{
-					foreach (IResEntry res in resList)
+					Type keyType = ReflectionHelper.ResolveType(key);
+					if (type.IsAssignableFrom(keyType) && !contravariantTypes.Contains(keyType)) contravariantTypes.Add(keyType);
+				}
+				foreach (Type contra in contravariantTypes)
+				{
+					foreach (T entry in QueryPluginResCandidates<T>(contra, predicate))
+						return entry;
+				}
+				return default(T);
+			}
+			else
+			{
+				foreach (T entry in QueryPluginResCandidates<T>(type, predicate))
+					return entry;
+
+				if (type != typeof(object))
+					return RequestCorePluginRes<T>(type.BaseType, contravariantType, predicate);
+				else
+					return default(T);
+			}
+		}
+		private static List<T> RequestAllCorePluginRes<T>(Type type, bool contravariantType, Predicate<T> predicate) where T : IResEntry
+		{
+			if (contravariantType)
+			{
+				List<Type> contravariantTypes = new List<Type>();
+				contravariantTypes.Add(type);
+				foreach (string key in corePluginRes.Keys)
+				{
+					Type keyType = ReflectionHelper.ResolveType(key);
+					if (type.IsAssignableFrom(keyType) && !contravariantTypes.Contains(keyType)) contravariantTypes.Add(keyType);
+				}
+				List<T> result = null;
+				foreach (Type contra in contravariantTypes)
+				{
+					foreach (T entry in QueryPluginResCandidates<T>(contra, predicate))
 					{
-						if (typeof(T).IsAssignableFrom(res.GetType()))
-						{
-							T casted = (T)res;
-							if (predicate == null || predicate(casted))
-							{
-								if (result == null) result = new List<T>();
-								result.Add(casted);
-							}
-						}
+						if (result == null) result = new List<T>();
+						result.Add(entry);
 					}
 				}
-
-				type = type.BaseType;
+				if (result == null) result = new List<T>();
+				return result;
 			}
+			else
+			{
+				List<T> result = null;
 
-			if (result == null) result = new List<T>();
-			return result;
+				while (type != null)
+				{
+					foreach (T entry in QueryPluginResCandidates<T>(type, predicate))
+					{
+						if (result == null) result = new List<T>();
+						result.Add(entry);
+					}
+					type = type.BaseType;
+				}
+
+				if (result == null) result = new List<T>();
+				return result;
+			}
 		}
 
 
@@ -232,7 +325,7 @@ namespace DualityEditor
 		}
 		public static Image RequestTypeImage(Type type, string context)
 		{
-			return RequestCorePluginRes<ImageResEntry>(type, e => e.context == context).img;
+			return RequestCorePluginRes<ImageResEntry>(type, false, e => e.context == context).img;
 		}
 
 		public static void RegisterTypeCategory(Type type, string category, string context)
@@ -241,7 +334,7 @@ namespace DualityEditor
 		}
 		public static string[] RequestTypeCategory(Type type, string context)
 		{
-			return RequestCorePluginRes<CategoryEntry>(type, e => e.context == context).categoryTree;
+			return RequestCorePluginRes<CategoryEntry>(type, false, e => e.context == context).categoryTree;
 		}
 
 		public static void RegisterPropertyEditorProvider(PropertyGrid.IPropertyEditorProvider provider)
@@ -250,7 +343,7 @@ namespace DualityEditor
 		}
 		public static IEnumerable<PropertyGrid.IPropertyEditorProvider> RequestPropertyEditorProviders()
 		{
-			return RequestAllCorePluginRes<PropertyEditorProviderResEntry>(typeof(object)).Select(e => e.provider);
+			return RequestAllCorePluginRes<PropertyEditorProviderResEntry>(typeof(object), false, null).Select(e => e.provider);
 		}
 
 		public static void RegisterEditorAction<T>(string name, Image icon, Action<T> action, string context)
@@ -268,7 +361,52 @@ namespace DualityEditor
 		}
 		public static IEnumerable<IEditorAction> RequestEditorActions(Type type, string context, IEnumerable<object> forGroup = null)
 		{
-			return RequestAllCorePluginRes<EditorActionEntry>(type, e => e.context == context && e.action.CanPerformOn(forGroup)).Select(e => e.action);
+			return RequestAllCorePluginRes<EditorActionEntry>(type, false, e => e.context == context && e.action.CanPerformOn(forGroup)).Select(e => e.action);
+		}
+
+		public static void RegisterDataSelector<T>(Func<DataObject,IEnumerable<T>> selector, Predicate<DataObject> predicate, int priority, string context)
+		{
+			RegisterCorePluginRes(typeof(T), new DataSelectorEntry(new DataSelector<T>(selector, predicate, priority), context));
+		}
+		public static IEnumerable<DataSelector<T>> RequestDataSelectors<T>(string context)
+		{
+			return RequestDataSelectors(typeof(T), context).OfType<DataSelector<T>>();
+		}
+		public static IEnumerable<IDataSelector> RequestDataSelectors(Type type, string context)
+		{
+			return RequestAllCorePluginRes<DataSelectorEntry>(type, true, e => e.context == context).Select(e => e.selector);
+		}
+		public static IEnumerable<T> SelectFromDataObject<T>(DataObject data, string context)
+		{
+			IEnumerable<object> result = SelectFromDataObject(typeof(T), data, context); 
+			if (result == null)
+				return null;
+			else
+				return result.Cast<T>();
+		}
+		public static bool CanSelectFromDataObject<T>(DataObject data, string context)
+		{
+			return CanSelectFromDataObject(typeof(T), data, context);
+		}
+		public static IEnumerable<object> SelectFromDataObject(Type type, DataObject data, string context)
+		{
+			IEnumerable<object> result = null;
+			if (data != null)
+			{
+				List<IDataSelector> selectors = RequestDataSelectors(type, context).Where(s => s.CanSelectFromData(data)).ToList();
+				selectors.StableSort((s1, s2) => s2.Priority - s1.Priority);
+				foreach (var s in selectors)
+				{
+					result = s.SelectFromData(data);
+					if (result != null) break;
+				}
+			}
+			return result;
+		}
+		public static bool CanSelectFromDataObject(Type type, DataObject data, string context)
+		{
+			if (data == null) return false;
+			return RequestDataSelectors(type, context).Where(s => s.CanSelectFromData(data)).Any();
 		}
 
 		public static void RegisterXmlCodeDoc(XmlCodeDoc doc)

@@ -60,6 +60,10 @@ namespace Duality
 		/// </summary>
 		public const float RadAngle180 = Pi;
 		/// <summary>
+		/// A 270 degree angle in radians. Equals <see cref="Pi"/>.
+		/// </summary>
+		public const float RadAngle270 = Pi + PiOver2;
+		/// <summary>
 		/// A 360 degree angle in radians. Equals <see cref="TwoPi"/>.
 		/// </summary>
 		public const float RadAngle360 = TwoPi;

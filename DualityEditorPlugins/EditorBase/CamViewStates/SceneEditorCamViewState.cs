@@ -305,8 +305,8 @@ namespace EditorBase.CamViewStates
 			foreach (SelObj obj in this.allObjSel)
 			{
 				GameObject gameObj = obj.ActualObject as GameObject;
-				gameObj.Dispose();
 				Scene.Current.UnregisterObj(gameObj);
+				gameObj.Dispose();
 			}
 			this.ClearSelection();
 		}
@@ -315,38 +315,33 @@ namespace EditorBase.CamViewStates
 			e.Effect = DragDropEffects.None;
 
 			DataObject data = e.Data as DataObject;
-			if (data != null)
+			var dragObjQuery = CorePluginHelper.SelectFromDataObject<GameObject>(data, CorePluginHelper.DataSelectorContext_CamViewDrop);
+			if (dragObjQuery != null)
 			{
-				if (data.ContainsContentRefs<Prefab>())
+				List<GameObject> dragObj = dragObjQuery.ToList();
+
+				Point mouseLoc = this.View.LocalGLControl.PointToClient(new Point(e.X, e.Y));
+				Vector3 spaceCoord = this.View.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, this.View.CameraObj.Transform.Pos.Z + this.View.CameraComponent.ParallaxRefDist));
+
+				// Setup GameObjects
+				foreach (GameObject newObj in dragObj)
 				{
-					ContentRef<Prefab>[] dropdata = data.GetContentRefs<Prefab>();
-
-					Point mouseLoc = this.View.LocalGLControl.PointToClient(new Point(e.X, e.Y));
-					Vector3 spaceCoord = this.View.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, this.View.CameraObj.Transform.Pos.Z + this.View.CameraComponent.ParallaxRefDist));
-
-					// Instantiate Prefabs
-					List<GameObject> dragObj = new List<GameObject>();
-					foreach (ContentRef<Prefab> pRef in dropdata)
+					if (newObj.Transform != null)
 					{
-						GameObject newObj = pRef.Res.Instantiate();
-						if (newObj.Transform != null)
-						{
-							newObj.Transform.Pos = spaceCoord;
-							newObj.Transform.Angle += this.View.CameraObj.Transform.Angle;
-						}
-						Scene.Current.RegisterObj(newObj);
-						dragObj.Add(newObj);
+						newObj.Transform.Pos = spaceCoord;
+						newObj.Transform.Angle += this.View.CameraObj.Transform.Angle;
 					}
-
-					// Select them & begin action
-					this.SelectObjects(dragObj.Select(g => new SelGameObj(g) as SelObj));
-					this.BeginAction(MouseAction.MoveObj);
-
-					// Get focused
-					this.View.LocalGLControl.Focus();
-
-					e.Effect = e.AllowedEffect;
+					Scene.Current.RegisterObj(newObj);
 				}
+
+				// Select them & begin action
+				this.SelectObjects(dragObj.Select(g => new SelGameObj(g) as SelObj));
+				this.BeginAction(MouseAction.MoveObj);
+
+				// Get focused
+				this.View.LocalGLControl.Focus();
+
+				e.Effect = e.AllowedEffect;
 			}
 		}
 		private void LocalGLControl_DragDrop(object sender, DragEventArgs e)

@@ -817,6 +817,8 @@ namespace EditorBase
 		private void folderView_DragOver(object sender, DragEventArgs e)
 		{
 			NodeBase baseTarget = this.DragDropGetTargetBaseNode();
+			ResourceNode targetResNode = baseTarget as ResourceNode;
+			DirectoryNode targetDirNode = baseTarget as DirectoryNode;
 			string baseTargetPath = this.GetInsertActionTargetBasePath(baseTarget);
 			DataObject data = e.Data as DataObject;
 			if (data != null)
@@ -844,21 +846,21 @@ namespace EditorBase
 						else
 							e.Effect = (DragDropEffects.Move | DragDropEffects.Copy) & e.AllowedEffect;
 					}
-					else
-						e.Effect = DragDropEffects.None;
 				}
-				// Dragging GameObjects around
-				else if (data.ContainsGameObjectRefs())
+				// Dragging a single GameObject to Prefab
+				else if (
+					data.ContainsGameObjectRefs() &&
+					targetResNode != null && 
+					targetResNode.ResLink.Is<Duality.Resources.Prefab>() && 
+					data.GetGameObjectRefs().Length == 1)
 				{
-					ResourceNode targetResNode = baseTarget as ResourceNode;
-					DirectoryNode targetDirNode = baseTarget as DirectoryNode;
-					
-					if (targetResNode != null && targetResNode.ResLink.Is<Duality.Resources.Prefab>() && data.GetGameObjectRefs().Length == 1)
-						e.Effect = DragDropEffects.Link & e.AllowedEffect;
-					else if (targetResNode == null && (targetDirNode == null || !targetDirNode.NodePath.Contains(':')))
-						e.Effect = DragDropEffects.Link & e.AllowedEffect;
-					else
-						e.Effect = DragDropEffects.None;
+					e.Effect = DragDropEffects.Link & e.AllowedEffect;
+				}
+				// See if we can retrieve Resources from data
+				else
+				{
+					bool canSelectResource = CorePluginHelper.CanSelectFromDataObject<Resource>(data, CorePluginHelper.DataSelectorContext_CamViewDrop);
+					if (canSelectResource) e.Effect = DragDropEffects.Link & e.AllowedEffect;
 				}
 			}
 
@@ -869,6 +871,8 @@ namespace EditorBase
 			this.folderView.BeginUpdate();
 
 			NodeBase baseTarget = this.DragDropGetTargetBaseNode();
+			ResourceNode targetResNode = baseTarget as ResourceNode;
+			DirectoryNode targetDirNode = baseTarget as DirectoryNode;
 			this.tempDropBasePath = this.GetInsertActionTargetBasePath(baseTarget);
 			DataObject data = e.Data as DataObject;
 			if (data != null)
@@ -884,60 +888,55 @@ namespace EditorBase
 					else
 						this.moveHereToolStripMenuItem_Click(this, null);
 				}
-				// Dropping GameObjects
-				else if (data.ContainsGameObjectRefs())
+				// Dropping GameObject to Prefab
+				else if (data.ContainsGameObjectRefs() &&
+						targetResNode != null && 
+						targetResNode.ResLink.Is<Duality.Resources.Prefab>() && 
+						data.GetGameObjectRefs().Length == 1)
 				{
-					if (baseTarget is ResourceNode)
+					Prefab prefab = targetResNode.ResLink.Res as Prefab;
+					if (prefab != null)
 					{
-						ResourceNode targetResNode = baseTarget as ResourceNode;
-						Prefab prefab = targetResNode.ResLink.Res as Prefab;
-						if (prefab != null)
-						{
-							GameObject draggedObj = data.GetGameObjectRefs()[0];
+						GameObject draggedObj = data.GetGameObjectRefs()[0];
 
-							// Prevent recursion
-							foreach (GameObject child in draggedObj.ChildrenDeep)
-								if (child.PrefabLink != null && child.PrefabLink.Prefab == prefab)
-									child.BreakPrefabLink();
+						// Prevent recursion
+						foreach (GameObject child in draggedObj.ChildrenDeep)
+							if (child.PrefabLink != null && child.PrefabLink.Prefab == prefab)
+								child.BreakPrefabLink();
 
-							// Inject GameObject to Prefab
-							prefab.Inject(draggedObj);
-							EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(prefab));
+						// Inject GameObject to Prefab
+						prefab.Inject(draggedObj);
+						EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(prefab));
 
-							// Establish PrefabLink & clear previously existing changes
-							if (draggedObj.PrefabLink != null) draggedObj.PrefabLink.ClearChanges();
-							draggedObj.LinkToPrefab(prefab);
-							EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(draggedObj), ReflectionInfo.Property_GameObject_PrefabLink);
-						}
+						// Establish PrefabLink & clear previously existing changes
+						if (draggedObj.PrefabLink != null) draggedObj.PrefabLink.ClearChanges();
+						draggedObj.LinkToPrefab(prefab);
+						EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(draggedObj), ReflectionInfo.Property_GameObject_PrefabLink);
 					}
-					else
+				}
+				// See if we can retrieve Resources from data
+				else
+				{
+					var resQuery = CorePluginHelper.SelectFromDataObject<Resource>(data, CorePluginHelper.DataSelectorContext_CamViewDrop);
+					if (resQuery != null)
 					{
-						DirectoryNode targetDirNode = baseTarget as DirectoryNode;
-						GameObject[] draggedObjArray = data.GetGameObjectRefs();
+						List<Resource> resList = resQuery.ToList();
 
-						// Filter out GameObjects that are children of others
-						draggedObjArray = draggedObjArray.Where(o => !draggedObjArray.Any(o2 => o.IsChildOf(o2))).ToArray();
+						this.folderView.ClearSelection();
 
-						// Generate Prefabs
-						List<Prefab> createdPrefabs = new List<Prefab>();
-						foreach (GameObject draggedObj in draggedObjArray)
+						// Save generated Resources
+						foreach (Resource res in resList)
 						{
-							// Create Prefab
-							ContentRef<Prefab> prefabRef = this.CreateResource(typeof(Prefab), targetDirNode, draggedObj.Name).As<Prefab>();
-							Prefab prefab = prefabRef.Res;
-							createdPrefabs.Add(prefab);
+							string desiredName = Path.GetFileNameWithoutExtension(res.SourcePath);
+							string basePath = this.GetInsertActionTargetBasePath(targetDirNode);
+							string nameExt = Resource.GetFileExtByType(res.GetType());
+							string resPath = PathHelper.GetFreePath(Path.Combine(basePath, desiredName), nameExt);
+							resPath = PathHelper.MakeFilePathRelative(resPath, ".");
 
-							// Inject GameObject to Prefab
-							prefab.Inject(draggedObj);
+							res.Save(resPath);
 
-							// Establish PrefabLink & clear previously existing changes
-							if (draggedObj.PrefabLink != null) draggedObj.PrefabLink.ClearChanges();
-							draggedObj.LinkToPrefab(prefabRef);
+							this.ScheduleSelect(resPath);
 						}
-
-						// Fire PropertyChanged events
-						EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(createdPrefabs));
-						EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(draggedObjArray), ReflectionInfo.Property_GameObject_PrefabLink);
 					}
 				}
 			}

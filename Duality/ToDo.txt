@@ -17,7 +17,6 @@
 
 
 
-
 -->	How would you do.. (All those should be possible in some way!)
 	-->	.. a platformer with moving platforms?
 	-->	.. an Rpg using Tilemaps?
