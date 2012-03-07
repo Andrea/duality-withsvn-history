@@ -203,6 +203,8 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="CorePluginHelper.cs" />
+    <Compile Include="CorePluginInterface\DataConversion.cs" />
+    <Compile Include="CorePluginInterface\EditorAction.cs" />
     <Compile Include="CursorHelper.cs" />
     <Compile Include="EditorHelper.cs">
       <SubType>Code</SubType>

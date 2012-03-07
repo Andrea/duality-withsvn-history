@@ -315,7 +315,7 @@ namespace EditorBase.CamViewStates
 			e.Effect = DragDropEffects.None;
 
 			DataObject data = e.Data as DataObject;
-			var dragObjQuery = CorePluginHelper.SelectFromDataObject<GameObject>(data, CorePluginHelper.DataSelectorContext_CamViewDrop);
+			var dragObjQuery = CorePluginHelper.ConvertFromDataObject<GameObject>(data);
 			if (dragObjQuery != null)
 			{
 				List<GameObject> dragObj = dragObjQuery.ToList();

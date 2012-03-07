@@ -216,5 +216,26 @@ namespace Duality
 		{
 			return collection.Skip(startIndex).Take(length);
 		}
+
+		/// <summary>
+		/// Converts an enumeration of Resources to an enumeration of content references to it.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="res"></param>
+		/// <returns></returns>
+		public static IEnumerable<ContentRef<T>> Ref<T>(this IEnumerable<T> res) where T : Resource
+		{
+			return res.Select(r => new ContentRef<T>(r));
+		}
+		/// <summary>
+		/// Converts an enumeration of content references to an enumeration of Resources.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="res"></param>
+		/// <returns></returns>
+		public static IEnumerable<T> Res<T>(this IEnumerable<ContentRef<T>> res) where T : Resource
+		{
+			return res.Select(r => r.Res);
+		}
 	}
 }

@@ -13,54 +13,54 @@ namespace DualityEditor
 {
 	public static class ExtMethodsDataObject
 	{
-		public static void AppendComponentRefs(this DataObject data, IEnumerable<Component> cmp)
+		public static void AppendComponentRefs(this IDataObject data, IEnumerable<Component> cmp)
 		{
 			Component[] cmpArray = cmp.ToArray();
 			if (cmpArray.Length > 0) data.SetData(cmpArray);
 		}
-		public static bool ContainsComponentRefs(this DataObject data)
+		public static bool ContainsComponentRefs(this IDataObject data)
 		{
 			return data.GetDataPresent(typeof(Component[]));
 		}
-		public static Component[] GetComponentRefs(this DataObject data)
+		public static Component[] GetComponentRefs(this IDataObject data)
 		{
 			return data.GetData(typeof(Component[])) as Component[];
 		}
 
-		public static void AppendGameObjectRefs(this DataObject data, IEnumerable<GameObject> obj)
+		public static void AppendGameObjectRefs(this IDataObject data, IEnumerable<GameObject> obj)
 		{
 			GameObject[] objArray = obj.ToArray();
 			if (objArray.Length > 0) data.SetData(objArray);
 		}
-		public static bool ContainsGameObjectRefs(this DataObject data)
+		public static bool ContainsGameObjectRefs(this IDataObject data)
 		{
 			return data.GetDataPresent(typeof(GameObject[]));
 		}
-		public static GameObject[] GetGameObjectRefs(this DataObject data)
+		public static GameObject[] GetGameObjectRefs(this IDataObject data)
 		{
 			return data.GetData(typeof(GameObject[])) as GameObject[];
 		}
 
-		public static void AppendContentRefs<T>(this DataObject data, IEnumerable<ContentRef<T>> content) where T : Resource
+		public static void AppendContentRefs<T>(this IDataObject data, IEnumerable<ContentRef<T>> content) where T : Resource
 		{
 			if (!content.Any()) return;
 			ContentRef<Resource>[] refArray = content.Select(c => c.As<Resource>()).ToArray();
 			data.SetData(refArray);
 		}
-		public static bool ContainsContentRefs<T>(this DataObject data) where T : Resource
+		public static bool ContainsContentRefs<T>(this IDataObject data) where T : Resource
 		{
 			if (!data.GetDataPresent(typeof(ContentRef<Resource>[]))) return false;
 			ContentRef<Resource>[] refArray = data.GetData(typeof(ContentRef<Resource>[])) as ContentRef<Resource>[];
 			return refArray.Any(r => r.Is<T>());
 		}
-		public static bool ContainsContentRefs(this DataObject data, Type resType = null)
+		public static bool ContainsContentRefs(this IDataObject data, Type resType = null)
 		{
 			if (resType == null) resType = typeof(Resource);
 			if (!data.GetDataPresent(typeof(ContentRef<Resource>[]))) return false;
 			ContentRef<Resource>[] refArray = data.GetData(typeof(ContentRef<Resource>[])) as ContentRef<Resource>[];
 			return refArray.Any(r => r.Is(resType));
 		}
-		public static ContentRef<T>[] GetContentRefs<T>(this DataObject data) where T : Resource
+		public static ContentRef<T>[] GetContentRefs<T>(this IDataObject data) where T : Resource
 		{
 			if (!data.GetDataPresent(typeof(ContentRef<Resource>[]))) return null;
 			ContentRef<Resource>[] refArray = data.GetData(typeof(ContentRef<Resource>[])) as ContentRef<Resource>[];
@@ -70,7 +70,7 @@ namespace DualityEditor
 				select r.As<T>()
 				).ToArray();
 		}
-		public static ContentRef<Resource>[] GetContentRefs(this DataObject data, Type resType = null)
+		public static ContentRef<Resource>[] GetContentRefs(this IDataObject data, Type resType = null)
 		{
 			if (resType == null) resType = typeof(Resource);
 			if (!data.GetDataPresent(typeof(ContentRef<Resource>[]))) return null;
@@ -82,30 +82,30 @@ namespace DualityEditor
 				).ToArray();
 		}
 		
-		public static void AppendBatchInfos(this DataObject data, IEnumerable<BatchInfo> obj)
+		public static void AppendBatchInfos(this IDataObject data, IEnumerable<BatchInfo> obj)
 		{
 			BatchInfo[] objArray = obj.ToArray();
 			if (objArray.Length > 0) data.SetData(objArray);
 		}
-		public static bool ContainsBatchInfos(this DataObject data)
+		public static bool ContainsBatchInfos(this IDataObject data)
 		{
 			return data.GetDataPresent(typeof(BatchInfo[]));
 		}
-		public static BatchInfo[] GetBatchInfos(this DataObject data)
+		public static BatchInfo[] GetBatchInfos(this IDataObject data)
 		{
 			return (data.GetData(typeof(BatchInfo[])) as BatchInfo[]).Select(b => new BatchInfo(b)).ToArray();
 		}
 
-		public static void AppendIColorData(this DataObject data, IEnumerable<IColorData> color)
+		public static void AppendIColorData(this IDataObject data, IEnumerable<IColorData> color)
 		{
 			if (!color.Any()) return;
 			data.SetData(color.ToArray());
 		}
-		public static bool ContainsIColorData(this DataObject data)
+		public static bool ContainsIColorData(this IDataObject data)
 		{
 			return data.GetDataPresent(typeof(IColorData[]));
 		}
-		public static T[] GetIColorData<T>(this DataObject data) where T : IColorData
+		public static T[] GetIColorData<T>(this IDataObject data) where T : IColorData
 		{
 			if (!data.GetDataPresent(typeof(IColorData[]))) return null;
 			IColorData[] clrArray = data.GetData(typeof(IColorData[])) as IColorData[];

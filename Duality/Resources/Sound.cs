@@ -67,6 +67,19 @@ namespace Duality.Resources
 			LogoJingle	= ContentProvider.RequestContent<Sound>(ContentPath_LogoJingle);
 		}
 
+		/// <summary>
+		/// Creates a new Sound Resource based on the specified AudioData, saves it and returns a reference to it.
+		/// </summary>
+		/// <param name="baseRes"></param>
+		/// <returns></returns>
+		public static ContentRef<Sound> CreateFromAudioData(ContentRef<AudioData> baseRes)
+		{
+			string resPath = PathHelper.GetFreePath(baseRes.FullName, FileExt);
+			Sound res = new Sound(baseRes);
+			res.Save(resPath);
+			return res;
+		}
+
 
 		private	int			maxInstances	= 5;
 		private	float		minDistFactor	= 1.0f;

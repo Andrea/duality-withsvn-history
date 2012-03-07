@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Drawing;
 
 using Duality;
+using DualityEditor.CorePluginInterface;
 using PropertyGrid = DualityEditor.Controls.PropertyGrid;
 
 namespace DualityEditor
@@ -18,6 +18,7 @@ namespace DualityEditor
 		public const int Priority_Specialized	= 50;
 		public const int Priority_Override		= 100;
 
+		#region Resource Entries
 		private interface IResEntry {}
 		private struct ImageResEntry : IResEntry
 		{
@@ -63,154 +64,20 @@ namespace DualityEditor
 		}
 		private struct DataSelectorEntry : IResEntry
 		{
-			public	IDataSelector	selector;
-			public	string			context;
+			public	DataConverter	selector;
 
-			public DataSelectorEntry(IDataSelector selector, string context)
+			public DataSelectorEntry(DataConverter selector)
 			{
 				this.selector = selector;
-				this.context = context;
 			}
 		}
+		#endregion
 
-		public interface IDataSelector
-		{
-			int Priority { get; }
-			bool CanSelectFromData(DataObject data);
-			IEnumerable<object> SelectFromData(DataObject data);
-		}
-		public class DataSelector<T> : IDataSelector
-		{
-			private	Predicate<DataObject>			predicate;
-			private	Func<DataObject,IEnumerable<T>>	selector;
-			private	int								priority;
-
-			public int Priority
-			{
-				get { return this.priority; }
-			}
-
-			public DataSelector(Func<DataObject,IEnumerable<T>> selector, Predicate<DataObject> predicate, int priority)
-			{
-				this.predicate = predicate;
-				this.selector = selector;
-				this.priority = priority;
-			}
-
-			public bool CanSelectFromData(DataObject data)
-			{
-				return this.predicate(data);
-			}
-			public IEnumerable<T> SelectFromData(DataObject data)
-			{
-				return this.selector(data);
-			}
-			IEnumerable<object> IDataSelector.SelectFromData(DataObject data)
-			{
-				IEnumerable<T> result = this.selector(data);
-				if (result == null)
-					return null;
-				else
-					return result.OfType<object>();
-			}
-		}
-
-		public interface IEditorAction
-		{
-			string Name { get; }
-			Image Icon { get; }
-
-			void Perform(object obj);
-			void Perform(IEnumerable<object> obj);
-			bool CanPerformOn(IEnumerable<object> obj);
-		}
-		public abstract class EditorActionBase<T> : IEditorAction
-		{
-			private	string		name;
-			private	Image		icon;
-
-			public string Name
-			{
-				get { return this.name; }
-			}
-			public Image Icon
-			{
-				get { return this.icon; }
-			}
-
-			public EditorActionBase(string name, Image icon)
-			{
-				this.name = name;
-				this.icon = icon;
-			}
-
-			public void Perform(T obj)
-			{
-				this.Perform(new T[] { obj });
-			}
-			public abstract void Perform(IEnumerable<T> objEnum);
-			public abstract bool CanPerformOn(IEnumerable<T> objEnum);
-
-			void IEditorAction.Perform(object obj)
-			{
-				this.Perform((T)obj);
-			}
-			void IEditorAction.Perform(IEnumerable<object> obj)
-			{
-				this.Perform(obj.Cast<T>());
-			}
-			bool IEditorAction.CanPerformOn(IEnumerable<object> obj)
-			{
-				if (obj == null) return true;
-				return this.CanPerformOn(obj.Cast<T>());
-			}
-		}
-		public class EditorAction<T> : EditorActionBase<T>
-		{
-			private	Action<T>	action;
-
-			public EditorAction(string name, Image icon, Action<T> action) : base(name, icon)
-			{
-				this.action = action;
-			}
-
-			public override void Perform(IEnumerable<T> objEnum)
-			{
-				foreach (T obj in objEnum) this.action(obj);
-			}
-			public override bool CanPerformOn(IEnumerable<T> objEnum)
-			{
-				return true;
-			}
-		}
-		public class EditorGroupAction<T> : EditorActionBase<T>
-		{
-			private	Action<IEnumerable<T>>		action;
-			private	Predicate<IEnumerable<T>>	actionPredicate;
-
-			public EditorGroupAction(string name, Image icon, Action<IEnumerable<T>> action, Predicate<IEnumerable<T>> predicate) : base(name, icon)
-			{
-				this.action = action;
-				this.actionPredicate = predicate;
-			}
-
-			public override void Perform(IEnumerable<T> objEnum)
-			{
-				this.action(objEnum);
-			}
-			public override bool CanPerformOn(IEnumerable<T> obj)
-			{
-				if (obj == null) return true;
-				if (this.actionPredicate == null) return true;
-				return this.actionPredicate(obj);
-			}
-		}
 
 		public const string ImageContext_Icon				= "Icon";
 		public const string CategoryContext_General			= "General";
 		public const string ActionContext_ContextMenu		= "ContextMenu";
 		public const string ActionContext_OpenRes			= "OpenRes";
-		public const string DataSelectorContext_CamViewDrop	= "CamViewDrop";
 
 		private	static	Dictionary<string,List<IResEntry>>	corePluginRes	= new Dictionary<string,List<IResEntry>>();
 		private	static	XmlCodeDoc							corePluginDoc	= new XmlCodeDoc();
@@ -364,49 +231,50 @@ namespace DualityEditor
 			return RequestAllCorePluginRes<EditorActionEntry>(type, false, e => e.context == context && e.action.CanPerformOn(forGroup)).Select(e => e.action);
 		}
 
-		public static void RegisterDataSelector<T>(Func<DataObject,IEnumerable<T>> selector, Predicate<DataObject> predicate, int priority, string context)
+		public static void RegisterDataConverter<T>(DataConverter selector)
 		{
-			RegisterCorePluginRes(typeof(T), new DataSelectorEntry(new DataSelector<T>(selector, predicate, priority), context));
+			RegisterCorePluginRes(typeof(T), new DataSelectorEntry(selector));
 		}
-		public static IEnumerable<DataSelector<T>> RequestDataSelectors<T>(string context)
+		public static IEnumerable<DataConverter> RequestDataConverters<T>()
 		{
-			return RequestDataSelectors(typeof(T), context).OfType<DataSelector<T>>();
+			return RequestDataConverters(typeof(T)).OfType<DataConverter>();
 		}
-		public static IEnumerable<IDataSelector> RequestDataSelectors(Type type, string context)
+		public static IEnumerable<DataConverter> RequestDataConverters(Type type)
 		{
-			return RequestAllCorePluginRes<DataSelectorEntry>(type, true, e => e.context == context).Select(e => e.selector);
+			return RequestAllCorePluginRes<DataSelectorEntry>(type, true, null).Select(e => e.selector);
 		}
-		public static IEnumerable<T> SelectFromDataObject<T>(DataObject data, string context)
+
+		public static IEnumerable<T> ConvertFromDataObject<T>(IDataObject data)
 		{
-			IEnumerable<object> result = SelectFromDataObject(typeof(T), data, context); 
+			IEnumerable<object> result = ConvertFromDataObject(typeof(T), data); 
 			if (result == null)
 				return null;
 			else
-				return result.Cast<T>();
+				return result.OfType<T>();
 		}
-		public static bool CanSelectFromDataObject<T>(DataObject data, string context)
+		public static bool CanConvertFromDataObject<T>(IDataObject data)
 		{
-			return CanSelectFromDataObject(typeof(T), data, context);
+			return CanConvertFromDataObject(typeof(T), data);
 		}
-		public static IEnumerable<object> SelectFromDataObject(Type type, DataObject data, string context)
+		public static IEnumerable<object> ConvertFromDataObject(Type type, IDataObject data)
 		{
-			IEnumerable<object> result = null;
-			if (data != null)
-			{
-				List<IDataSelector> selectors = RequestDataSelectors(type, context).Where(s => s.CanSelectFromData(data)).ToList();
-				selectors.StableSort((s1, s2) => s2.Priority - s1.Priority);
-				foreach (var s in selectors)
-				{
-					result = s.SelectFromData(data);
-					if (result != null) break;
-				}
-			}
-			return result;
+			if (data == null) return null;
+			return ConvertFromDataObject(type, new ConvertOperation(data));
 		}
-		public static bool CanSelectFromDataObject(Type type, DataObject data, string context)
+		public static IEnumerable<object> ConvertFromDataObject(Type type, ConvertOperation selection)
+		{
+			if (selection == null) return null;
+
+			List<DataConverter> selectors = RequestDataConverters(type).Where(s => s.CanConvertFrom(selection.Data)).ToList();
+			selectors.StableSort((s1, s2) => s2.Priority - s1.Priority);
+			foreach (var s in selectors) s.Convert(selection);
+
+			return selection.Result.Any() ? selection.Result : null;
+		}
+		public static bool CanConvertFromDataObject(Type type, IDataObject data)
 		{
 			if (data == null) return false;
-			return RequestDataSelectors(type, context).Where(s => s.CanSelectFromData(data)).Any();
+			return RequestDataConverters(type).Where(s => s.CanConvertFrom(data)).Any();
 		}
 
 		public static void RegisterXmlCodeDoc(XmlCodeDoc doc)

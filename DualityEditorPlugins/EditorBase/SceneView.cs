@@ -19,6 +19,7 @@ using Duality;
 using Duality.Resources;
 using DualityEditor;
 using DualityEditor.Forms;
+using DualityEditor.CorePluginInterface;
 
 namespace EditorBase
 {
@@ -1216,7 +1217,7 @@ namespace EditorBase
 			}
 			for (int i = this.contextMenuNode.Items.Count - 1; i >= 0; i--)
 			{
-				if (this.contextMenuNode.Items[i].Tag is CorePluginHelper.IEditorAction)
+				if (this.contextMenuNode.Items[i].Tag is IEditorAction)
 					this.contextMenuNode.Items.RemoveAt(i);
 			}
 			if (mainResType != null)
@@ -1332,7 +1333,7 @@ namespace EditorBase
 				selNodeData.OfType<GameObjectNode>().Select(n => n.Obj)).ToList();
 
 			ToolStripMenuItem clickedItem = sender as ToolStripMenuItem;
-			CorePluginHelper.IEditorAction action = clickedItem.Tag as CorePluginHelper.IEditorAction;
+			IEditorAction action = clickedItem.Tag as IEditorAction;
 			action.Perform(selObjData);
 		}
 

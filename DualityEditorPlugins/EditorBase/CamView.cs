@@ -636,6 +636,7 @@ namespace EditorBase
 		}
 		private void stateSelector_SelectedIndexChanged(object sender, EventArgs e)
 		{
+			if (this.stateSelector.SelectedItem == null) return;
 			this.SetCurrentState(((StateComboboxEntry)this.stateSelector.SelectedItem).StateType);
 		}
 

@@ -3339,6 +3339,13 @@
             (Virtual) path of the <see cref="P:Duality.Resources.Sound.LogoJingle"/> Sound.
             </summary>
         </member>
+        <member name="M:Duality.Resources.Sound.CreateFromAudioData(Duality.ContentRef{Duality.Resources.AudioData})">
+            <summary>
+            Creates a new Sound Resource based on the specified AudioData, saves it and returns a reference to it.
+            </summary>
+            <param name="baseRes"></param>
+            <returns></returns>
+        </member>
         <member name="M:Duality.Resources.Sound.#ctor">
             <summary>
             Creates a new, empty sound. Since it does not refer to any <see cref="T:Duality.Resources.AudioData"/> yet,
@@ -3710,6 +3717,13 @@
             <summary>
             (Virtual) path of the <see cref="P:Duality.Resources.Material.DualityLogoB256"/> Material.
             </summary>
+        </member>
+        <member name="M:Duality.Resources.Material.CreateFromTexture(Duality.ContentRef{Duality.Resources.Texture})">
+            <summary>
+            Creates a new Material Resource based on the specified Texture, saves it and returns a reference to it.
+            </summary>
+            <param name="baseRes"></param>
+            <returns></returns>
         </member>
         <member name="M:Duality.Resources.Material.#ctor">
             <summary>
@@ -7024,6 +7038,13 @@
             Resets all Texture bindings to texture units beginning at a certain index.
             </summary>
             <param name="beginAtIndex">The first texture unit index from which on all bindings will be cleared.</param>
+        </member>
+        <member name="M:Duality.Resources.Texture.CreateFromPixmap(Duality.ContentRef{Duality.Resources.Pixmap})">
+            <summary>
+            Creates a new Texture Resource based on the specified Pixmap, saves it and returns a reference to it.
+            </summary>
+            <param name="pixmap"></param>
+            <returns></returns>
         </member>
         <member name="M:Duality.Resources.Texture.#ctor(Duality.ContentRef{Duality.Resources.Pixmap},Duality.Resources.Texture.SizeMode,OpenTK.Graphics.OpenGL.TextureMagFilter,OpenTK.Graphics.OpenGL.TextureMinFilter,OpenTK.Graphics.OpenGL.TextureWrapMode,OpenTK.Graphics.OpenGL.TextureWrapMode,OpenTK.Graphics.OpenGL.PixelInternalFormat)">
             <summary>
@@ -12169,6 +12190,22 @@
             <param name="collection">A set of objects.</param>
             <param name="startIndex">Index of the first object to be enumerated.</param>
             <param name="length">Number of objects to be enumerated.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ExtMethodsIEnumerable.Ref``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Converts an enumeration of Resources to an enumeration of content references to it.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="res"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ExtMethodsIEnumerable.Res``1(System.Collections.Generic.IEnumerable{Duality.ContentRef{``0}})">
+            <summary>
+            Converts an enumeration of content references to an enumeration of Resources.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="res"></param>
             <returns></returns>
         </member>
         <member name="T:Duality.Components.SoundListener">

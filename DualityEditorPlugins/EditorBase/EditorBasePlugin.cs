@@ -20,6 +20,7 @@ using TextRenderer = Duality.Components.Renderers.TextRenderer;
 using DualityEditor;
 using DualityEditor.Forms;
 using DualityEditor.EditorRes;
+using DualityEditor.CorePluginInterface;
 
 using EditorBase.PluginRes;
 
@@ -191,9 +192,9 @@ namespace EditorBase
 			CorePluginHelper.RegisterTypeCategory(typeof(Sound), EditorBaseRes.Category_Sound, CorePluginHelper.CategoryContext_General);
 
 			// Register conversion actions
-			CorePluginHelper.RegisterEditorAction<Pixmap>(EditorBaseRes.ActionName_CreateTexture, EditorBaseRes.IconResTexture, this.ActionPixmapCreateTexture, CorePluginHelper.ActionContext_ContextMenu);
-			CorePluginHelper.RegisterEditorAction<Texture>(EditorBaseRes.ActionName_CreateMaterial, EditorBaseRes.IconResMaterial, this.ActionTextureCreateMaterial, CorePluginHelper.ActionContext_ContextMenu);
-			CorePluginHelper.RegisterEditorAction<AudioData>(EditorBaseRes.ActionName_CreateSound, EditorBaseRes.IconResSound, this.ActionAudioDataCreateSound, CorePluginHelper.ActionContext_ContextMenu);
+			CorePluginHelper.RegisterEditorAction<Pixmap>(EditorBaseRes.ActionName_CreateTexture, EditorBaseRes.IconResTexture, p => Texture.CreateFromPixmap(p), CorePluginHelper.ActionContext_ContextMenu);
+			CorePluginHelper.RegisterEditorAction<Texture>(EditorBaseRes.ActionName_CreateMaterial, EditorBaseRes.IconResMaterial, t => Material.CreateFromTexture(t), CorePluginHelper.ActionContext_ContextMenu);
+			CorePluginHelper.RegisterEditorAction<AudioData>(EditorBaseRes.ActionName_CreateSound, EditorBaseRes.IconResSound, a => Sound.CreateFromAudioData(a), CorePluginHelper.ActionContext_ContextMenu);
 			CorePluginHelper.RegisterEditorGroupAction<AbstractShader>(EditorBaseRes.ActionName_CreateShaderProgram, EditorBaseRes.IconResShaderProgram, this.ActionShaderCreateProgram, CorePluginHelper.ActionContext_ContextMenu);
 
 			// Register open actions
@@ -206,13 +207,13 @@ namespace EditorBase
 			CorePluginHelper.RegisterEditorAction<Component>(null, null, this.ActionComponentOpenRes, CorePluginHelper.ActionContext_OpenRes);
 
 			// Register data selectors
-			CorePluginHelper.RegisterDataSelector<GameObject>(this.SelectGameObjectFromPrefab, d => d.ContainsContentRefs<Prefab>(), CorePluginHelper.Priority_Specialized, CorePluginHelper.DataSelectorContext_CamViewDrop);
-			CorePluginHelper.RegisterDataSelector<GameObject>(this.SelectGameObjectFromMaterial, d => d.ContainsContentRefs<Material>(), CorePluginHelper.Priority_General, CorePluginHelper.DataSelectorContext_CamViewDrop);
-			CorePluginHelper.RegisterDataSelector<GameObject>(this.SelectGameObjectFromTexture, d => d.ContainsContentRefs<Texture>(), CorePluginHelper.Priority_General, CorePluginHelper.DataSelectorContext_CamViewDrop);
-			CorePluginHelper.RegisterDataSelector<GameObject>(this.SelectGameObjectFromPixmap, d => d.ContainsContentRefs<Pixmap>(), CorePluginHelper.Priority_General, CorePluginHelper.DataSelectorContext_CamViewDrop);
-			CorePluginHelper.RegisterDataSelector<GameObject>(this.SelectGameObjectFromSound, d => d.ContainsContentRefs<Sound>(), CorePluginHelper.Priority_General, CorePluginHelper.DataSelectorContext_CamViewDrop);
-			CorePluginHelper.RegisterDataSelector<GameObject>(this.SelectGameObjectFromAudioData, d => d.ContainsContentRefs<AudioData>(), CorePluginHelper.Priority_General, CorePluginHelper.DataSelectorContext_CamViewDrop);
-			CorePluginHelper.RegisterDataSelector<Prefab>(this.SelectPrefabFromGameObject, d => d.ContainsGameObjectRefs(), CorePluginHelper.Priority_Specialized, CorePluginHelper.DataSelectorContext_CamViewDrop);
+			CorePluginHelper.RegisterDataConverter<GameObject>(new DataConverters.GameObjFromPrefab());
+			CorePluginHelper.RegisterDataConverter<GameObject>(new DataConverters.GameObjFromMaterial());
+			CorePluginHelper.RegisterDataConverter<GameObject>(new DataConverters.GameObjFromSound());
+			CorePluginHelper.RegisterDataConverter<Material>(new DataConverters.MaterialFromTexture());
+			CorePluginHelper.RegisterDataConverter<Texture>(new DataConverters.TextureFromPixmap());
+			CorePluginHelper.RegisterDataConverter<Sound>(new DataConverters.SoundFromAudioData());
+			CorePluginHelper.RegisterDataConverter<Prefab>(new DataConverters.PrefabFromGameObject());
 
 			// Register PropertyEditor provider
 			CorePluginHelper.RegisterPropertyEditorProvider(new PropertyEditors.PropertyEditorProvider());
@@ -388,24 +389,6 @@ namespace EditorBase
 			this.EditorForm.Select(this, new ObjectSelection(DualityApp.UserData));
 		}
 
-		private void ActionPixmapCreateTexture(Pixmap pixmap)
-		{
-			string texPath = PathHelper.GetFreePath(pixmap.FullName, Texture.FileExt);
-			Texture tex = new Texture(pixmap);
-			tex.Save(texPath);
-		}
-		private void ActionTextureCreateMaterial(Texture tex)
-		{
-			string matPath = PathHelper.GetFreePath(tex.FullName, Material.FileExt);
-			Material mat = new Material(DrawTechnique.Mask, ColorRgba.White, tex);
-			mat.Save(matPath);
-		}
-		private void ActionAudioDataCreateSound(AudioData data)
-		{
-			string sndPath = PathHelper.GetFreePath(data.FullName, Sound.FileExt);
-			Sound snd = new Sound(data);
-			snd.Save(sndPath);
-		}
 		private void ActionShaderCreateProgram(IEnumerable<AbstractShader> shaderEnum)
 		{
 			List<VertexShader> vertexShaders = shaderEnum.OfType<VertexShader>().ToList();
@@ -501,297 +484,6 @@ namespace EditorBase
 			this.ActionGameObjectOpenRes(obj);
 		}
 
-		private IEnumerable<GameObject> SelectGameObjectFromPrefab(DataObject data)
-		{
-			if (data.ContainsContentRefs<Prefab>())
-			{
-				ContentRef<Prefab>[] dropdata = data.GetContentRefs<Prefab>();
-
-				// Instantiate Prefabs
-				List<GameObject> dragObj = null;
-				foreach (ContentRef<Prefab> pRef in dropdata)
-				{
-					if (!pRef.IsAvailable) continue;
-					GameObject newObj = pRef.Res.Instantiate();
-					if (newObj != null)
-					{
-						if (dragObj == null) dragObj = new List<GameObject>();
-						dragObj.Add(newObj);
-					}
-				}
-				return dragObj;
-			}
-			return null;
-		}
-		private IEnumerable<GameObject> SelectGameObjectFromMaterial(DataObject data)
-		{
-			if (data.ContainsContentRefs<Material>())
-			{
-				ContentRef<Material>[] dropdata = data.GetContentRefs<Material>();
-
-				// Generate objects
-				List<GameObject> dragObj = null;
-				foreach (ContentRef<Material> matRef in dropdata)
-				{
-					if (!matRef.IsAvailable) continue;
-					Material mat = matRef.Res;
-					Texture mainTex = mat.MainTexture.Res;
-
-					GameObject newObj = new GameObject();
-					newObj.AddComponent<Transform>();
-					newObj.Name = mat.Name;
-
-					if (mainTex == null || mainTex.AnimFrames == 0)
-					{
-						SpriteRenderer sprite = newObj.AddComponent<SpriteRenderer>();
-						sprite.SharedMaterial = matRef;
-						if (mainTex != null) sprite.Rect = Rect.AlignCenter(0.0f, 0.0f, mainTex.PxWidth, mainTex.PxHeight);
-					}
-					else
-					{
-						AnimSpriteRenderer sprite = newObj.AddComponent<AnimSpriteRenderer>();
-						sprite.SharedMaterial = matRef;
-						sprite.Rect = Rect.AlignCenter(0.0f, 0.0f, mainTex.PxWidth / mainTex.AnimCols, mainTex.PxHeight / mainTex.AnimRows);
-					}
-
-					if (dragObj == null) dragObj = new List<GameObject>();
-					dragObj.Add(newObj);
-				}
-				return dragObj;
-			}
-			return null;
-		}
-		private IEnumerable<GameObject> SelectGameObjectFromTexture(DataObject data)
-		{
-			if (data.ContainsContentRefs<Texture>())
-			{
-				ContentRef<Texture>[] dropdata = data.GetContentRefs<Texture>();
-
-				// Generate objects
-				List<GameObject> dragObj = null;
-				foreach (ContentRef<Texture> texRef in dropdata)
-				{
-					if (!texRef.IsAvailable) continue;
-					Texture tex = texRef.Res;
-
-					// Find Material matching Texture
-					ContentRef<Material> matRef = ContentRef<Material>.Null;
-					if (texRef.IsDefaultContent)
-					{
-						var defaultContent = ContentProvider.GetAllDefaultContent();
-						matRef = defaultContent.Where(r => r.Is<Material>() && (r.Res as Material).MainTexture == tex).FirstOrDefault().As<Material>();
-					}
-					else
-					{
-						string matPath = tex.FullName + Material.FileExt;
-						matRef = ContentProvider.RequestContent<Material>(matPath);
-						if (!matRef.IsAvailable)
-						{
-							// Auto-Generate Material
-							this.ActionTextureCreateMaterial(tex);
-							matRef = ContentProvider.RequestContent<Material>(matPath);
-						}
-					}
-
-					if (!matRef.IsAvailable) continue;
-
-					GameObject newObj = new GameObject();
-					newObj.AddComponent<Transform>();
-					newObj.Name = tex.Name;
-
-					if (tex.AnimFrames == 0)
-					{
-						SpriteRenderer sprite = newObj.AddComponent<SpriteRenderer>();
-						sprite.SharedMaterial = matRef;
-						if (tex != null) sprite.Rect = Rect.AlignCenter(0.0f, 0.0f, tex.PxWidth, tex.PxHeight);
-					}
-					else
-					{
-						AnimSpriteRenderer sprite = newObj.AddComponent<AnimSpriteRenderer>();
-						sprite.SharedMaterial = matRef;
-						sprite.Rect = Rect.AlignCenter(0.0f, 0.0f, tex.PxWidth / tex.AnimCols, tex.PxHeight / tex.AnimRows);
-					}
-
-					if (dragObj == null) dragObj = new List<GameObject>();
-					dragObj.Add(newObj);
-				}
-				return dragObj;
-			}
-			return null;
-		}
-		private IEnumerable<GameObject> SelectGameObjectFromPixmap(DataObject data)
-		{
-			if (data.ContainsContentRefs<Pixmap>())
-			{
-				ContentRef<Pixmap>[] dropdata = data.GetContentRefs<Pixmap>();
-
-				// Generate objects
-				List<GameObject> dragObj = null;
-				foreach (ContentRef<Pixmap> pixRef in dropdata)
-				{
-					if (!pixRef.IsAvailable) continue;
-					Pixmap pix = pixRef.Res;
-					Texture tex = null;
-
-					// Find Material matching Texture
-					ContentRef<Texture> texRef = ContentRef<Texture>.Null;
-					ContentRef<Material> matRef = ContentRef<Material>.Null;
-					if (pixRef.IsDefaultContent)
-					{
-						var defaultContent = ContentProvider.GetAllDefaultContent();
-						matRef = defaultContent.Where(r => 
-							r.Is<Material>() && 
-							(r.Res as Material).MainTexture.IsAvailable && 
-							(r.Res as Material).MainTexture.Res.BasePixmap.Res == pix).FirstOrDefault().As<Material>();
-						if (matRef.IsAvailable)
-						{
-							tex = matRef.Res.MainTexture.Res;
-						}
-					}
-					else
-					{
-						string texPath = pix.FullName + Texture.FileExt;
-						texRef = ContentProvider.RequestContent<Texture>(texPath);
-						if (!texRef.IsAvailable)
-						{
-							// Auto-Generate Texture
-							this.ActionPixmapCreateTexture(pix);
-							texRef = ContentProvider.RequestContent<Texture>(texPath);
-						}
-						if (texRef.IsAvailable)
-						{
-							tex = texRef.Res;
-							string matPath = tex.FullName + Material.FileExt;
-							matRef = ContentProvider.RequestContent<Material>(matPath);
-							if (!matRef.IsAvailable)
-							{
-								// Auto-Generate Material
-								this.ActionTextureCreateMaterial(tex);
-								matRef = ContentProvider.RequestContent<Material>(matPath);
-							}
-						}
-					}
-
-					if (!matRef.IsAvailable) continue;
-
-					GameObject newObj = new GameObject();
-					newObj.AddComponent<Transform>();
-					newObj.Name = pix.Name;
-
-					SpriteRenderer sprite = newObj.AddComponent<SpriteRenderer>();
-					sprite.SharedMaterial = matRef;
-					sprite.Rect = Rect.AlignCenter(0.0f, 0.0f, tex.PxWidth, tex.PxHeight);
-
-					if (dragObj == null) dragObj = new List<GameObject>();
-					dragObj.Add(newObj);
-				}
-				return dragObj;
-			}
-			return null;
-		}
-		private IEnumerable<GameObject> SelectGameObjectFromSound(DataObject data)
-		{
-			if (data.ContainsContentRefs<Sound>())
-			{
-				ContentRef<Sound>[] dropdata = data.GetContentRefs<Sound>();
-
-				// Generate objects
-				List<GameObject> dragObj = null;
-				foreach (ContentRef<Sound> sndRef in dropdata)
-				{
-					if (!sndRef.IsAvailable) continue;
-					Sound snd = sndRef.Res;
-
-					GameObject newObj = new GameObject();
-					newObj.AddComponent<Transform>();
-					newObj.Name = snd.Name;
-
-					SoundEmitter emitter = newObj.AddComponent<SoundEmitter>();
-					SoundEmitter.Source source = new SoundEmitter.Source(snd);
-					source.Paused = false;
-					emitter.Sources.Add(source);
-
-					if (dragObj == null) dragObj = new List<GameObject>();
-					dragObj.Add(newObj);
-				}
-				return dragObj;
-			}
-			return null;
-		}
-		private IEnumerable<GameObject> SelectGameObjectFromAudioData(DataObject data)
-		{
-			if (data.ContainsContentRefs<AudioData>())
-			{
-				ContentRef<AudioData>[] dropdata = data.GetContentRefs<AudioData>();
-
-				// Generate objects
-				List<GameObject> dragObj = null;
-				foreach (ContentRef<AudioData> audRef in dropdata)
-				{
-					if (!audRef.IsAvailable) continue;
-					AudioData aud = audRef.Res;
-
-					// Find Sound matching AudioData
-					ContentRef<Sound> sndRef = ContentRef<Sound>.Null;
-					if (audRef.IsDefaultContent)
-					{
-						var defaultContent = ContentProvider.GetAllDefaultContent();
-						sndRef = defaultContent.Where(r => r.Is<Sound>() && (r.Res as Sound).Data.Res == aud).FirstOrDefault().As<Sound>();
-					}
-					else
-					{
-						string sndPath = aud.FullName + Sound.FileExt;
-						sndRef = ContentProvider.RequestContent<Sound>(sndPath);
-						if (!sndRef.IsAvailable)
-						{
-							// Auto-Generate Sound
-							this.ActionAudioDataCreateSound(aud);
-							sndRef = ContentProvider.RequestContent<Sound>(sndPath);
-						}
-					}
-
-					if (!sndRef.IsAvailable) continue;
-
-					GameObject newObj = new GameObject();
-					newObj.AddComponent<Transform>();
-					newObj.Name = aud.Name;
-
-					SoundEmitter emitter = newObj.AddComponent<SoundEmitter>();
-					SoundEmitter.Source source = new SoundEmitter.Source(sndRef.Res);
-					source.Paused = false;
-					emitter.Sources.Add(source);
-
-					if (dragObj == null) dragObj = new List<GameObject>();
-					dragObj.Add(newObj);
-				}
-				return dragObj;
-			}
-			return null;
-		}
-		private IEnumerable<Prefab> SelectPrefabFromGameObject(DataObject data)
-		{
-			if (data.ContainsGameObjectRefs())
-			{
-				GameObject[] draggedObjArray = data.GetGameObjectRefs();
-
-				// Filter out GameObjects that are children of others
-				draggedObjArray = draggedObjArray.Where(o => !draggedObjArray.Any(o2 => o.IsChildOf(o2))).ToArray();
-
-				// Generate Prefabs
-				List<Prefab> createdPrefabs = null;
-				foreach (GameObject draggedObj in draggedObjArray)
-				{
-					// Create Prefab
-					Prefab prefab = new Prefab(draggedObj);
-					prefab.SourcePath = draggedObj.Name; // Dummy "source path" that may be used as indicator where to save the Resource later.
-					if (createdPrefabs == null) createdPrefabs = new List<Prefab>();
-					createdPrefabs.Add(prefab);
-				}
-				return createdPrefabs;
-			}
-			return null;
-		}
-
 		private void main_ResourceModified(object sender, ResourceEventArgs e)
 		{
 			// If a font has been modified, update all TextRenderers
@@ -879,6 +571,306 @@ namespace EditorBase
 			{
 				ToolStripMenuItem menuItem = item as ToolStripMenuItem;
 				if (menuItem != null && menuItem.HasDropDownItems) SortToolStripTypeItems(menuItem.DropDownItems);
+			}
+		}
+	}
+
+	namespace DataConverters
+	{
+		public class GameObjFromPrefab : DataConverter
+		{
+			public override int Priority
+			{
+				get { return CorePluginHelper.Priority_Specialized; }
+			}
+
+			public override bool CanConvertFrom(IDataObject data)
+			{
+				return data.ContainsContentRefs<Prefab>();
+			}
+			public override void Convert(ConvertOperation convert)
+			{
+				if (convert.Data.ContainsContentRefs<Prefab>())
+				{
+					ContentRef<Prefab>[] dropdata = convert.Data.GetContentRefs<Prefab>();
+
+					// Instantiate Prefabs
+					foreach (ContentRef<Prefab> pRef in dropdata)
+					{
+						if (convert.IsObjectHandled(pRef)) continue;
+						if (!pRef.IsAvailable) continue;
+						GameObject newObj = pRef.Res.Instantiate();
+						if (newObj != null)
+						{
+							convert.Result.Add(newObj);
+							convert.MarkObjectHandled(pRef);
+						}
+					}
+				}
+			}
+		}
+		public class GameObjFromSound : DataConverter
+		{
+			public override bool CanConvertFrom(IDataObject data)
+			{
+				return data.ContainsContentRefs<Sound>() || CorePluginHelper.CanConvertFromDataObject<Sound>(data);
+			}
+			public override void Convert(ConvertOperation convert)
+			{
+				List<ContentRef<Sound>> dropdata = new List<ContentRef<Sound>>();
+				if (convert.Data.ContainsContentRefs<Sound>())
+					dropdata.AddRange(convert.Data.GetContentRefs<Sound>());
+				if (CorePluginHelper.CanConvertFromDataObject<Sound>(convert.Data))
+				{
+					var matSelectionQuery = CorePluginHelper.ConvertFromDataObject<Sound>(convert.Data);
+					if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
+				}
+
+				// Generate objects
+				foreach (ContentRef<Sound> sndRef in dropdata)
+				{
+					if (convert.IsObjectHandled(sndRef)) continue;
+					if (!sndRef.IsAvailable) continue;
+					Sound snd = sndRef.Res;
+
+					GameObject gameObj = convert.Result.OfType<GameObject>().FirstOrDefault();
+					if (gameObj == null) gameObj = new GameObject();
+					gameObj.AddComponent<Transform>();
+					gameObj.Name = snd.Name;
+					
+					SoundEmitter emitter = gameObj.AddComponent<SoundEmitter>();
+					SoundEmitter.Source source = new SoundEmitter.Source(snd);
+					source.Paused = false;
+					emitter.Sources.Add(source);
+
+					if (gameObj != null && !convert.Result.Contains(gameObj)) convert.Result.Add(gameObj);
+					convert.MarkObjectHandled(sndRef);
+				}
+			}
+		}
+		public class GameObjFromMaterial : DataConverter
+		{
+			public override bool CanConvertFrom(IDataObject data)
+			{
+				return data.ContainsContentRefs<Material>() || CorePluginHelper.CanConvertFromDataObject<Material>(data);
+			}
+			public override void Convert(ConvertOperation convert)
+			{
+				List<ContentRef<Material>> dropdata = new List<ContentRef<Material>>();
+				if (convert.Data.ContainsContentRefs<Material>())
+					dropdata.AddRange(convert.Data.GetContentRefs<Material>());
+				if (CorePluginHelper.CanConvertFromDataObject<Material>(convert.Data))
+				{
+					var matSelectionQuery = CorePluginHelper.ConvertFromDataObject<Material>(convert.Data);
+					if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
+				}
+
+				// Generate objects
+				foreach (ContentRef<Material> matRef in dropdata)
+				{
+					if (convert.IsObjectHandled(matRef)) continue;
+					if (!matRef.IsAvailable) continue;
+					Material mat = matRef.Res;
+					Texture mainTex = mat.MainTexture.Res;
+
+					GameObject gameObj = convert.Result.OfType<GameObject>().FirstOrDefault();
+					if (gameObj == null) gameObj = new GameObject();
+					gameObj.AddComponent<Transform>();
+					gameObj.Name = mat.Name;
+
+					if (mainTex == null || mainTex.AnimFrames == 0)
+					{
+						SpriteRenderer sprite = gameObj.AddComponent<SpriteRenderer>();
+						sprite.SharedMaterial = matRef;
+						if (mainTex != null) sprite.Rect = Rect.AlignCenter(0.0f, 0.0f, mainTex.PxWidth, mainTex.PxHeight);
+					}
+					else
+					{
+						AnimSpriteRenderer sprite = gameObj.AddComponent<AnimSpriteRenderer>();
+						sprite.SharedMaterial = matRef;
+						sprite.Rect = Rect.AlignCenter(0.0f, 0.0f, mainTex.PxWidth / mainTex.AnimCols, mainTex.PxHeight / mainTex.AnimRows);
+					}
+
+					if (gameObj != null && !convert.Result.Contains(gameObj)) convert.Result.Add(gameObj);
+					convert.MarkObjectHandled(matRef);
+				}
+			}
+		}
+		public class PrefabFromGameObject : DataConverter
+		{
+			public override int Priority
+			{
+				get { return CorePluginHelper.Priority_Specialized; }
+			}
+
+			public override bool CanConvertFrom(IDataObject data)
+			{
+				return data.ContainsGameObjectRefs();
+			}
+			public override void Convert(ConvertOperation convert)
+			{
+				if (convert.Data.ContainsGameObjectRefs())
+				{
+					GameObject[] draggedObjArray = convert.Data.GetGameObjectRefs();
+
+					// Filter out GameObjects that are children of others
+					draggedObjArray = draggedObjArray.Where(o => !draggedObjArray.Any(o2 => o.IsChildOf(o2))).ToArray();
+
+					// Generate Prefabs
+					foreach (GameObject draggedObj in draggedObjArray)
+					{
+						if (convert.IsObjectHandled(draggedObj)) continue;
+						// Create Prefab
+						Prefab prefab = new Prefab(draggedObj);
+						prefab.SourcePath = draggedObj.Name; // Dummy "source path" that may be used as indicator where to save the Resource later.
+						convert.MarkObjectHandled(draggedObj);						
+						convert.Result.Add(prefab);
+					}
+				}
+			}
+		}
+		public class MaterialFromTexture : DataConverter
+		{
+			public override bool CanConvertFrom(IDataObject data)
+			{
+				return data.ContainsContentRefs<Texture>() || CorePluginHelper.CanConvertFromDataObject<Texture>(data);
+			}
+			public override void Convert(ConvertOperation convert)
+			{
+				List<ContentRef<Texture>> dropdata = new List<ContentRef<Texture>>();
+				if (convert.Data.ContainsContentRefs<Texture>())
+					dropdata.AddRange(convert.Data.GetContentRefs<Texture>());
+				if (CorePluginHelper.CanConvertFromDataObject<Texture>(convert.Data))
+				{
+					var matSelectionQuery = CorePluginHelper.ConvertFromDataObject<Texture>(convert.Data);
+					if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
+				}
+
+				// Generate objects
+				foreach (ContentRef<Texture> texRef in dropdata)
+				{
+					if (convert.IsObjectHandled(texRef)) continue;
+					if (!texRef.IsAvailable) continue;
+					Texture tex = texRef.Res;
+
+					// Find Material matching Texture
+					ContentRef<Material> matRef = ContentRef<Material>.Null;
+					if (texRef.IsDefaultContent)
+					{
+						var defaultContent = ContentProvider.GetAllDefaultContent();
+						matRef = defaultContent.Where(r => r.Is<Material>() && (r.Res as Material).MainTexture == tex).FirstOrDefault().As<Material>();
+					}
+					else
+					{
+						string matPath = tex.FullName + Material.FileExt;
+						matRef = ContentProvider.RequestContent<Material>(matPath);
+						if (!matRef.IsAvailable)
+						{
+							// Auto-Generate Material
+							matRef = Material.CreateFromTexture(tex);
+						}
+					}
+
+					if (!matRef.IsAvailable) continue;
+					convert.Result.Add(matRef.Res);
+					convert.MarkObjectHandled(texRef);
+				}
+			}
+		}
+		public class TextureFromPixmap : DataConverter
+		{
+			public override bool CanConvertFrom(IDataObject data)
+			{
+				return data.ContainsContentRefs<Pixmap>() || CorePluginHelper.CanConvertFromDataObject<Pixmap>(data);
+			}
+			public override void Convert(ConvertOperation convert)
+			{
+				List<ContentRef<Pixmap>> dropdata = new List<ContentRef<Pixmap>>();
+				if (convert.Data.ContainsContentRefs<Pixmap>())
+					dropdata.AddRange(convert.Data.GetContentRefs<Pixmap>());
+				if (CorePluginHelper.CanConvertFromDataObject<Pixmap>(convert.Data))
+				{
+					var matSelectionQuery = CorePluginHelper.ConvertFromDataObject<Pixmap>(convert.Data);
+					if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
+				}
+
+				// Generate objects
+				foreach (ContentRef<Pixmap> pixRef in dropdata)
+				{
+					if (convert.IsObjectHandled(pixRef)) continue;
+					if (!pixRef.IsAvailable) continue;
+					Pixmap pix = pixRef.Res;
+
+					// Find Material matching Texture
+					ContentRef<Texture> texRef = ContentRef<Texture>.Null;
+					if (pixRef.IsDefaultContent)
+					{
+						var defaultContent = ContentProvider.GetAllDefaultContent();
+						texRef = defaultContent.Where(r => r.Is<Texture>() && (r.Res as Texture).BasePixmap == pix).FirstOrDefault().As<Texture>();
+					}
+					else
+					{
+						string texPath = pix.FullName + Texture.FileExt;
+						texRef = ContentProvider.RequestContent<Texture>(texPath);
+						if (!texRef.IsAvailable)
+						{
+							// Auto-Generate Texture
+							texRef = Texture.CreateFromPixmap(pix);
+						}
+					}
+
+					if (!texRef.IsAvailable) continue;
+					convert.Result.Add(texRef.Res);
+					convert.MarkObjectHandled(pixRef);
+				}
+			}
+		}
+		public class SoundFromAudioData : DataConverter
+		{
+			public override bool CanConvertFrom(IDataObject data)
+			{
+				return data.ContainsContentRefs<AudioData>() || CorePluginHelper.CanConvertFromDataObject<AudioData>(data);
+			}
+			public override void Convert(ConvertOperation convert)
+			{
+				List<ContentRef<AudioData>> dropdata = new List<ContentRef<AudioData>>();
+				if (convert.Data.ContainsContentRefs<AudioData>())
+					dropdata.AddRange(convert.Data.GetContentRefs<AudioData>());
+				if (CorePluginHelper.CanConvertFromDataObject<AudioData>(convert.Data))
+				{
+					var matSelectionQuery = CorePluginHelper.ConvertFromDataObject<AudioData>(convert.Data);
+					if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
+				}
+
+				// Generate objects
+				foreach (ContentRef<AudioData> audRef in dropdata)
+				{
+					if (convert.IsObjectHandled(audRef)) continue;
+					if (!audRef.IsAvailable) continue;
+					AudioData aud = audRef.Res;
+
+					// Find Material matching Texture
+					ContentRef<Sound> sndRef = ContentRef<Sound>.Null;
+					if (audRef.IsDefaultContent)
+					{
+						var defaultContent = ContentProvider.GetAllDefaultContent();
+						sndRef = defaultContent.Where(r => r.Is<Sound>() && (r.Res as Sound).Data.Res == aud).FirstOrDefault().As<Sound>();
+					}
+					else
+					{
+						string sndPath = aud.FullName + Sound.FileExt;
+						sndRef = ContentProvider.RequestContent<Sound>(sndPath);
+						if (!sndRef.IsAvailable)
+						{
+							// Auto-Generate Material
+							sndRef = Sound.CreateFromAudioData(aud);
+						}
+					}
+
+					if (!sndRef.IsAvailable) continue;
+					convert.Result.Add(sndRef.Res);
+					convert.MarkObjectHandled(audRef);
+				}
 			}
 		}
 	}

@@ -17,6 +17,7 @@ using Aga.Controls.Tree;
 using Duality;
 using Duality.Resources;
 using DualityEditor;
+using DualityEditor.CorePluginInterface;
 
 namespace EditorBase
 {
@@ -859,7 +860,7 @@ namespace EditorBase
 				// See if we can retrieve Resources from data
 				else
 				{
-					bool canSelectResource = CorePluginHelper.CanSelectFromDataObject<Resource>(data, CorePluginHelper.DataSelectorContext_CamViewDrop);
+					bool canSelectResource = CorePluginHelper.CanConvertFromDataObject<Resource>(data);
 					if (canSelectResource) e.Effect = DragDropEffects.Link & e.AllowedEffect;
 				}
 			}
@@ -917,7 +918,7 @@ namespace EditorBase
 				// See if we can retrieve Resources from data
 				else
 				{
-					var resQuery = CorePluginHelper.SelectFromDataObject<Resource>(data, CorePluginHelper.DataSelectorContext_CamViewDrop);
+					var resQuery = CorePluginHelper.ConvertFromDataObject<Resource>(data);
 					if (resQuery != null)
 					{
 						List<Resource> resList = resQuery.ToList();
@@ -1190,7 +1191,7 @@ namespace EditorBase
 			}
 			for (int i = this.contextMenuNode.Items.Count - 1; i >= 0; i--)
 			{
-				if (this.contextMenuNode.Items[i].Tag is CorePluginHelper.IEditorAction)
+				if (this.contextMenuNode.Items[i].Tag is IEditorAction)
 					this.contextMenuNode.Items.RemoveAt(i);
 			}
 			if (mainResType != null)
@@ -1311,7 +1312,7 @@ namespace EditorBase
 				select (n as ResourceNode).ResLink);
 
 			ToolStripMenuItem clickedItem = sender as ToolStripMenuItem;
-			CorePluginHelper.IEditorAction action = clickedItem.Tag as CorePluginHelper.IEditorAction;
+			IEditorAction action = clickedItem.Tag as IEditorAction;
 			action.Perform(selResData.Select(resRef => resRef.Res));
 		}
 

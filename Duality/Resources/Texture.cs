@@ -233,6 +233,19 @@ namespace Duality.Resources
 			}
 		}
 
+		/// <summary>
+		/// Creates a new Texture Resource based on the specified Pixmap, saves it and returns a reference to it.
+		/// </summary>
+		/// <param name="pixmap"></param>
+		/// <returns></returns>
+		public static ContentRef<Texture> CreateFromPixmap(ContentRef<Pixmap> pixmap)
+		{
+			string texPath = PathHelper.GetFreePath(pixmap.FullName, FileExt);
+			Texture tex = new Texture(pixmap);
+			tex.Save(texPath);
+			return tex;
+		}
+
 		
 		private	ContentRef<Pixmap>		basePixmap	= ContentRef<Pixmap>.Null;
 		private	Vector2					size		= Vector2.Zero;
