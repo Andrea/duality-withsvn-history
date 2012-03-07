@@ -143,7 +143,7 @@ namespace CustomPropertyGrid.EditorTemplates
 			else if (this.gripHovered || this.stringEditor.Focused)
 				gripState = ButtonState.Hot;
 			Rectangle gfxGripRect = new Rectangle(this.gripRect.X - 1, this.gripRect.Y, this.gripRect.Width, this.gripRect.Height);
-			ControlRenderer.DrawButton(e.Graphics, gfxGripRect, gripState, null, enabled ? gripIcon.Normal : gripIcon.Disabled);
+			ControlRenderer.DrawButton(e.Graphics, gfxGripRect, gripState, null, (enabled && !this.ReadOnly) ? gripIcon.Normal : gripIcon.Disabled);
 		}
 
 		public override void OnGotFocus(EventArgs e)

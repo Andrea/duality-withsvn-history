@@ -1,6 +1,6 @@
 ﻿namespace CustomPropertyGrid.EditorTemplates
 {
-	partial class ComboBoxDropDown
+	partial class MultiComboBoxDropDown
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -28,34 +28,34 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.listBox = new System.Windows.Forms.ListBox();
+			this.checkedListBox = new System.Windows.Forms.CheckedListBox();
 			this.SuspendLayout();
 			// 
-			// listBox
+			// checkedListBox
 			// 
-			this.listBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+			this.checkedListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.listBox.IntegralHeight = false;
-			this.listBox.Location = new System.Drawing.Point(0, 0);
-			this.listBox.Margin = new System.Windows.Forms.Padding(0);
-			this.listBox.Name = "listBox";
-			this.listBox.Size = new System.Drawing.Size(120, 87);
-			this.listBox.TabIndex = 0;
-			this.listBox.Click += new System.EventHandler(this.listBox_Click);
-			this.listBox.SelectedIndexChanged += new System.EventHandler(this.listBox_SelectedIndexChanged);
-			this.listBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listBox_KeyDown);
-			this.listBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.listBox_KeyUp);
+			this.checkedListBox.CheckOnClick = true;
+			this.checkedListBox.IntegralHeight = false;
+			this.checkedListBox.Location = new System.Drawing.Point(0, 0);
+			this.checkedListBox.Margin = new System.Windows.Forms.Padding(0);
+			this.checkedListBox.Name = "checkedListBox";
+			this.checkedListBox.Size = new System.Drawing.Size(171, 110);
+			this.checkedListBox.TabIndex = 0;
+			this.checkedListBox.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.checkedListBox_ItemCheck);
+			this.checkedListBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.checkedListBox_KeyDown);
+			this.checkedListBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.checkedListBox_KeyUp);
 			// 
-			// ComboBoxDropDown
+			// MultiComboBoxDropDown
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(120, 87);
+			this.ClientSize = new System.Drawing.Size(171, 110);
 			this.ControlBox = false;
-			this.Controls.Add(this.listBox);
+			this.Controls.Add(this.checkedListBox);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-			this.Name = "ComboBoxDropDown";
+			this.Name = "MultiComboBoxDropDown";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
 			this.TopMost = true;
@@ -65,6 +65,7 @@
 
 		#endregion
 
-		private System.Windows.Forms.ListBox listBox;
+		private System.Windows.Forms.CheckedListBox checkedListBox;
+
 	}
 }

@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BitmaskItem.cs" />
     <Compile Include="ControlRenderer.cs" />
     <Compile Include="EditorTemplates\ComboBoxDropDown.cs">
       <SubType>Form</SubType>
@@ -58,6 +59,20 @@
     </Compile>
     <Compile Include="EditorTemplates\ComboBoxEditorTemplate.cs" />
     <Compile Include="EditorTemplates\EditorTemplate.cs" />
+    <Compile Include="EditorTemplates\BitmaskSelectorDropDown.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditorTemplates\BitmaskSelectorDropDown.Designer.cs">
+      <DependentUpon>BitmaskSelectorDropDown.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EditorTemplates\BitmaskEditorTemplate.cs" />
+    <Compile Include="EditorTemplates\MultiComboBoxDropDown.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditorTemplates\MultiComboBoxDropDown.Designer.cs">
+      <DependentUpon>MultiComboBoxDropDown.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EditorTemplates\MultiComboBoxEditorTemplate.cs" />
     <Compile Include="EditorTemplates\NumericEditorTemplate.cs" />
     <Compile Include="EditorTemplates\StringEditorTemplate.cs" />
     <Compile Include="GroupedPropertyEditor.cs" />
@@ -66,6 +81,9 @@
     <Compile Include="PropertyEditor.cs" />
     <Compile Include="PropertyEditors\BoolPropertyEditor.cs" />
     <Compile Include="PropertyEditors\EnumPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\FlaggedEnumPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\BitmaskPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\ObjectSelectorPropertyEditor.cs" />
     <Compile Include="PropertyEditors\StringPropertyEditor.cs" />
     <Compile Include="PropertyEditors\NumericPropertyEditor.cs" />
     <Compile Include="PropertyGrid.cs">
@@ -74,6 +92,12 @@
     <Compile Include="ReflectionHelper.cs" />
     <EmbeddedResource Include="EditorTemplates\ComboBoxDropDown.resx">
       <DependentUpon>ComboBoxDropDown.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EditorTemplates\BitmaskSelectorDropDown.resx">
+      <DependentUpon>BitmaskSelectorDropDown.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EditorTemplates\MultiComboBoxDropDown.resx">
+      <DependentUpon>MultiComboBoxDropDown.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

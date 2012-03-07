@@ -9,23 +9,23 @@ using ButtonState = CustomPropertyGrid.Renderer.ButtonState;
 
 namespace CustomPropertyGrid.EditorTemplates
 {
-	public class ComboBoxEditorTemplate : EditorTemplate
+	public class MultiComboBoxEditorTemplate : EditorTemplate
 	{
-		private const string ClipboardDataFormat = "ComboBoxEditorTemplateData";
+		private const string ClipboardDataFormat = "MultiComboBoxEditorTemplateData";
 
-		private	object				selectedObject	= null;
-		private	bool				pressed			= false;
-		private	int					dropdownHeight	= 100;
-		private	ComboBoxDropDown	dropdown		= null;
-		private	List<object>		dropdownItems	= new List<object>();
+		private	List<object>			selectedObjects	= new List<object>();
+		private	bool					pressed			= false;
+		private	int						dropdownHeight	= 100;
+		private	MultiComboBoxDropDown	dropdown		= null;
+		private	List<object>			dropdownItems	= new List<object>();
 
-		public object SelectedObject
+		public IEnumerable<object> SelectedObjects
 		{
-			get { return this.selectedObject; }
+			get { return this.selectedObjects; }
 			set
 			{
-				this.selectedObject = value;
-				if (this.dropdown != null) this.dropdown.SelectedItem = this.selectedObject;
+				this.selectedObjects = value.ToList();
+				if (this.dropdown != null) this.dropdown.CheckedItems = this.selectedObjects;
 			}
 		}
 		public bool IsDropDownOpened
@@ -47,7 +47,7 @@ namespace CustomPropertyGrid.EditorTemplates
 			}
 		}
 		
-		public ComboBoxEditorTemplate(PropertyEditor parent) : base(parent) {}
+		public MultiComboBoxEditorTemplate(PropertyEditor parent) : base(parent) {}
 
 		public void OnPaint(PaintEventArgs e, bool enabled, bool multiple)
 		{
@@ -59,7 +59,7 @@ namespace CustomPropertyGrid.EditorTemplates
 			else if (this.hovered || this.focused)
 				comboState = ButtonState.Hot;
 
-			ControlRenderer.DrawComboButton(e.Graphics, this.rect, comboState, this.selectedObject.ToString());
+			ControlRenderer.DrawComboButton(e.Graphics, this.rect, comboState, DefaultValueStringGenerator(this.selectedObjects));
 		}
 		public override void OnMouseMove(MouseEventArgs e)
 		{
@@ -96,50 +96,33 @@ namespace CustomPropertyGrid.EditorTemplates
 				this.OpenDropDown();
 				e.Handled = true;
 			}
-			else if (e.KeyCode == Keys.Down && e.Control)
-			{
-				int index = this.dropdownItems.IndexOf(this.selectedObject);
-				this.selectedObject = this.dropdownItems[(index + 1) % this.dropdownItems.Count];
-				this.EmitEdited();
-				e.Handled = true;
-			}
-			else if (e.KeyCode == Keys.Up && e.Control)
-			{
-				int index = this.dropdownItems.IndexOf(this.selectedObject);
-				this.selectedObject = this.dropdownItems[(index + this.dropdownItems.Count - 1) % this.dropdownItems.Count];
-				this.EmitEdited();
-				e.Handled = true;
-			}
 			else if (e.Control && e.KeyCode == Keys.C)
 			{
 				DataObject data = new DataObject();
-				data.SetText(this.selectedObject.ToString());
-				data.SetData(ClipboardDataFormat, this.selectedObject);
+				data.SetText(DefaultValueStringGenerator(this.selectedObjects));
+				data.SetData(ClipboardDataFormat, this.selectedObjects);
 				Clipboard.SetDataObject(data);
 				e.Handled = true;
 			}
 			else if (e.Control && e.KeyCode == Keys.V)
 			{
 				bool success = false;
-				if (Clipboard.ContainsData(ClipboardDataFormat) || Clipboard.ContainsText())
+				List<object> pasteObjProxy = null; 
+				if (Clipboard.ContainsData(ClipboardDataFormat))
 				{
-					object pasteObjProxy = null;
-					if (Clipboard.ContainsData(ClipboardDataFormat))
-					{
-						object pasteObj = Clipboard.GetData(ClipboardDataFormat);
-						pasteObjProxy = this.dropdownItems.FirstOrDefault(obj => object.Equals(obj, pasteObj));
-					}
-					else if (Clipboard.ContainsText())
-					{
-						string pasteObj = Clipboard.GetText();
-						pasteObjProxy = this.dropdownItems.FirstOrDefault(obj => obj != null && obj.ToString() == pasteObj);
-					}
-					if (pasteObjProxy != null && this.selectedObject != pasteObjProxy)
-					{
-						this.selectedObject = pasteObjProxy;
-						this.EmitEdited();
-						success = true;
-					}
+					List<object> pasteObj = Clipboard.GetData(ClipboardDataFormat) as List<object>;
+					pasteObjProxy = pasteObj.Select(p => this.dropdownItems.FirstOrDefault(obj => object.Equals(obj, p))).Where(o => o != null).ToList(); 
+				}
+				else if (Clipboard.ContainsText())
+				{
+					string[] pasteObj = Clipboard.GetText().Split(new [] { ", " }, StringSplitOptions.RemoveEmptyEntries);
+					pasteObjProxy = pasteObj.Select(p => this.dropdownItems.FirstOrDefault(obj => obj != null && p == obj.ToString())).ToList(); 
+				}
+				if (pasteObjProxy != null && pasteObjProxy.Count > 0)
+				{
+					this.selectedObjects = pasteObjProxy;
+					this.EmitEdited();
+					success = true;
 				}
 				if (!success) System.Media.SystemSounds.Beep.Play();
 				e.Handled = true;
@@ -152,9 +135,9 @@ namespace CustomPropertyGrid.EditorTemplates
 			if (this.ReadOnly) return;
 			PropertyGrid parentGrid = this.Parent.ParentGrid;
 
-			this.dropdown = new ComboBoxDropDown();
+			this.dropdown = new MultiComboBoxDropDown();
 			this.dropdown.Items = this.dropdownItems;
-			this.dropdown.SelectedItem = this.selectedObject;
+			this.dropdown.CheckedItems = this.selectedObjects;
 
 			Size dropDownSize = new Size(
 				this.rect.Width, 
@@ -164,7 +147,7 @@ namespace CustomPropertyGrid.EditorTemplates
 			dropDownLoc = parentGrid.PointToScreen(dropDownLoc);
 			dropDownLoc.Y += this.rect.Height + 1;
 			dropDownLoc.X += this.Parent.Width - this.rect.Width;
-			
+
 			this.dropdown.Location = dropDownLoc;
 			this.dropdown.Size = dropDownSize;
 			this.dropdown.FormClosed += this.dropdown_FormClosed;
@@ -188,11 +171,20 @@ namespace CustomPropertyGrid.EditorTemplates
 		}
 		private void dropdown_AcceptSelection(object sender, EventArgs e)
 		{
-			if (this.selectedObject != this.dropdown.SelectedItem)
+			if (this.selectedObjects.Any(o => !this.dropdown.CheckedItems.Contains(o)) ||
+				this.dropdown.CheckedItems.Any(o => !this.selectedObjects.Contains(o)))
 			{
-				this.selectedObject = this.dropdown.SelectedItem;
+				this.selectedObjects = this.dropdown.CheckedItems.ToList();
 				this.EmitEdited();
 			}
+		}
+
+		protected string DefaultValueStringGenerator(IEnumerable<object> objEnum)
+		{
+			string valueString = "";
+			foreach (object obj in objEnum)
+				valueString += (valueString.Length > 0 ? ", " : "") + obj.ToString();
+			return valueString;
 		}
 	}
 }

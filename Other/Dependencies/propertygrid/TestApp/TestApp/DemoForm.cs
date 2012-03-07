@@ -38,9 +38,9 @@ namespace CustomPropertyGrid
 			private int[] i3;
 			private string t;
 			private Test2 subclass;
-			public List<string> stringlist;
-			public FlaggedEnumTest enum1;
-			public EnumTest enum2;
+			public List<string> stringListField;
+			public FlaggedEnumTest enumField1;
+			public EnumTest enumField2;
 
 			public int IPropWithAVeryLongName
 			{
@@ -114,12 +114,12 @@ namespace CustomPropertyGrid
 			testObj.SomeFloat = (float)Math.PI;
 			testObj.SomeByte = 128;
 			testObj.Subclass = new Test2(42);
-			testObj.stringlist = new List<string>() { "hallo", "welt" };
+			testObj.stringListField = new List<string>() { "hallo", "welt" };
 			Test testObj2 = new Test();
 			testObj2.IPropWithAVeryLongName = 447;
 			testObj2.SomeString = "Kratatazong";
 			testObj2.Subclass = new Test2();
-			testObj2.enum2 = EnumTest.Three;
+			testObj2.enumField2 = EnumTest.Three;
 
 			// Case A: Singleselect
 			this.propertyGrid1.SelectObject(testObj);

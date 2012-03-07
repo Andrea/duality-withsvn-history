@@ -9,23 +9,32 @@ using CustomPropertyGrid.EditorTemplates;
 
 namespace CustomPropertyGrid.PropertyEditors
 {
-	public class EnumPropertyEditor : PropertyEditor
+	public class BitmaskPropertyEditor : PropertyEditor
 	{
-		private	ComboBoxEditorTemplate	stringSelector	= null;
-		private Enum	val				= null;
+		private	BitmaskEditorTemplate	bitmaskSelector	= null;
+		private ulong	val				= 0L;
 		private	bool	valMultiple		= false;
 
 		public override object DisplayedValue
 		{
 			get { return Convert.ChangeType(this.val, this.EditedType); }
 		}
+		public ulong BitmaskValue
+		{
+			get { return this.val; }
+		}
+		public IEnumerable<BitmaskItem> Items
+		{
+			get { return this.bitmaskSelector.DropDownItems; }
+			set { this.bitmaskSelector.DropDownItems = value; }
+		}
 		
 
-		public EnumPropertyEditor()
+		public BitmaskPropertyEditor()
 		{
-			this.stringSelector = new ComboBoxEditorTemplate(this);
-			this.stringSelector.Invalidate += this.stringSelector_Invalidate;
-			this.stringSelector.Edited += this.stringSelector_Edited;
+			this.bitmaskSelector = new BitmaskEditorTemplate(this);
+			this.bitmaskSelector.Invalidate += this.stringSelector_Invalidate;
+			this.bitmaskSelector.Edited += this.stringSelector_Edited;
 
 			this.Height = 18;
 		}
@@ -38,69 +47,67 @@ namespace CustomPropertyGrid.PropertyEditors
 
 			// Apply values to editors
 			if (!values.Any())
-				this.val = null;
+				this.val = 0L;
 			else
 			{
-				Enum firstVal = (Enum)values.Where(o => o != null).First();
-
-				this.val = firstVal;
-				this.valMultiple = values.Any(o => o == null) || !values.All(o => Enum.Equals(o, firstVal));
+				this.val = Convert.ToUInt64(values.Where(o => o != null).First());
+				this.valMultiple = values.Any(o => o == null) || !values.All(o => this.val == Convert.ToUInt64(o));
 			}
 
-			this.stringSelector.SelectedObject = this.val.ToString();
+			this.bitmaskSelector.BitmaskValue = this.val;
 			this.EndUpdate();
 		}
 
 		protected internal override void OnPaint(PaintEventArgs e)
 		{
 			base.OnPaint(e);
-			this.stringSelector.OnPaint(e, this.Enabled, this.valMultiple);
+			this.bitmaskSelector.OnPaint(e, this.Enabled, this.valMultiple);
 		}
 		protected internal override void OnGotFocus(EventArgs e)
 		{
 			base.OnGotFocus(e);
-			this.stringSelector.OnGotFocus(e);
+			this.bitmaskSelector.OnGotFocus(e);
 		}
 		protected internal override void OnLostFocus(EventArgs e)
 		{
 			base.OnLostFocus(e);
-			this.stringSelector.OnLostFocus(e);
+			this.bitmaskSelector.OnLostFocus(e);
 		}
 		protected internal override void OnMouseMove(MouseEventArgs e)
 		{
 			base.OnMouseMove(e);
-			this.stringSelector.OnMouseMove(e);
+			this.bitmaskSelector.OnMouseMove(e);
 		}
 		protected internal override void OnMouseLeave(EventArgs e)
 		{
 			base.OnMouseLeave(e);
-			this.stringSelector.OnMouseLeave(e);
+			this.bitmaskSelector.OnMouseLeave(e);
 		}
 		protected internal override void OnMouseDown(MouseEventArgs e)
 		{
 			base.OnMouseDown(e);
-			this.stringSelector.OnMouseDown(e);
+			this.bitmaskSelector.OnMouseDown(e);
 		}
 		protected internal override void OnMouseUp(MouseEventArgs e)
 		{
 			base.OnMouseUp(e);
-			this.stringSelector.OnMouseUp(e);
+			this.bitmaskSelector.OnMouseUp(e);
 		}
 		protected internal override void OnKeyDown(KeyEventArgs e)
 		{
 			base.OnKeyDown(e);
-			this.stringSelector.OnKeyDown(e);
+			this.bitmaskSelector.OnKeyDown(e);
 		}
 		protected internal override void OnKeyUp(KeyEventArgs e)
 		{
 			base.OnKeyUp(e);
-			this.stringSelector.OnKeyUp(e);
+			this.bitmaskSelector.OnKeyUp(e);
 		}
 
 		protected override void UpdateGeometry()
 		{
 			base.UpdateGeometry();
-			this.stringSelector.Rect = new Rectangle(
+			this.bitmaskSelector.Rect = new Rectangle(
 				this.ClientRectangle.X + 1,
 				this.ClientRectangle.Y + 1,
 				this.ClientRectangle.Width - 2,
@@ -109,12 +116,7 @@ namespace CustomPropertyGrid.PropertyEditors
 		protected internal override void OnReadOnlyChanged()
 		{
 			base.OnReadOnlyChanged();
-			this.stringSelector.ReadOnly = this.ReadOnly;
-		}
-		protected override void OnEditedTypeChanged()
-		{
-			base.OnEditedTypeChanged();
-			this.stringSelector.DropDownItems = Enum.GetNames(this.EditedType);
+			this.bitmaskSelector.ReadOnly = this.ReadOnly;
 		}
 
 		private void stringSelector_Invalidate(object sender, EventArgs e)
@@ -125,7 +127,7 @@ namespace CustomPropertyGrid.PropertyEditors
 		{
 			if (this.IsUpdatingFromObject) return;
 
-			this.val = (Enum)Enum.Parse(this.EditedType, this.stringSelector.SelectedObject.ToString());
+			this.val = this.bitmaskSelector.BitmaskValue;
 			this.Invalidate();
 			this.PerformSetValue();
 			this.OnValueChanged();

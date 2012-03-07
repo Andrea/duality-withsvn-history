@@ -6,11 +6,5 @@
 ##################################################################
 
 -->	Editors to do:
-	-->	StringSelector and Enum
-	-->	StringMultiSelector and FlaggedEnum
 	--> IList
 	-->	IDictionary
-
--->	StringSelector
-	-->	Base class for "user string enums"
-	-->	Implement one the same way as EnumPropertyEditor

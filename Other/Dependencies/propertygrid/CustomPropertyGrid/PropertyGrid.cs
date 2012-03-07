@@ -52,9 +52,9 @@ namespace CustomPropertyGrid
 				// Basic data type: Boolean
 				else if (baseType == typeof(bool))
 				    e = new BoolPropertyEditor();
-				//// Basic data type: Flagged Enum
-				//else if (baseType.IsEnum && baseType.GetCustomAttributes(typeof(FlagsAttribute), true).Any())
-				//    e = new FlagEnumPropertyEditor(parentEditor, parentGrid);
+				// Basic data type: Flagged Enum
+				else if (baseType.IsEnum && baseType.GetCustomAttributes(typeof(FlagsAttribute), true).Any())
+					e = new FlaggedEnumPropertyEditor();
 				// Basic data type: Other Enums
 				else if (baseType.IsEnum)
 					e = new EnumPropertyEditor();

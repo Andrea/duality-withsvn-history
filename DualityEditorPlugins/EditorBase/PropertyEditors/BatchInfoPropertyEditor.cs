@@ -129,7 +129,10 @@ namespace EditorBase.PropertyEditors
 							foreach (BatchInfo info in batchInfos)
 							{
 								if (info.GetTexture(varInfo.name).IsExplicitNull)
+								{
 									info.SetTexture(varInfo.name, Texture.White);
+									invokeSetter = true;
+								}
 							}
 						}
 						// Set other uniform variables
@@ -144,11 +147,13 @@ namespace EditorBase.PropertyEditors
 									if (oldVal == null) 
 									{
 										info.SetUniform(varInfo.name, uniformVal);
+										invokeSetter = true;
 									}
 									else if (oldVal.Length != uniformVal.Length)
 									{
 										for (int i = 0; i < Math.Min(oldVal.Length, uniformVal.Length); i++) uniformVal[i] = oldVal[i];
 										info.SetUniform(varInfo.name, uniformVal);
+										invokeSetter = true;
 									}
 								}
 							}

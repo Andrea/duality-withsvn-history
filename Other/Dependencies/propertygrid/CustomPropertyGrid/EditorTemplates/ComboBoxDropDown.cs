@@ -11,6 +11,7 @@ namespace CustomPropertyGrid.EditorTemplates
 {
 	public partial class ComboBoxDropDown : Form
 	{
+		private bool openedWithCtrl	= false;
 		public event EventHandler AcceptSelection = null;
 
 		public int ItemHeight
@@ -48,22 +49,26 @@ namespace CustomPropertyGrid.EditorTemplates
 		{
 			this.InitializeComponent();
 		}
-		public ComboBoxDropDown(IEnumerable<object> items)
+		public ComboBoxDropDown(IEnumerable<object> items) : this()
 		{
 			this.listBox.Items.AddRange(items.ToArray());
 		}
 
 		protected void Accept()
 		{
-			if (this.AcceptSelection != null)
-				this.AcceptSelection(this, EventArgs.Empty);
-			this.Close();
+			if (this.AcceptSelection != null) this.AcceptSelection(this, EventArgs.Empty);
 		}
 
+		protected override void OnShown(EventArgs e)
+		{
+			base.OnShown(e);
+			this.openedWithCtrl = (Control.ModifierKeys & Keys.Control) == Keys.Control;
+		}
 		protected override void OnDeactivate(EventArgs e)
 		{
 			base.OnDeactivate(e);
-			this.Close();
+			this.BeginInvoke((MethodInvoker)(() => this.Close()));
+			//this.Close();
 		}
 		private void listBox_Click(object sender, EventArgs e)
 		{
@@ -72,15 +77,32 @@ namespace CustomPropertyGrid.EditorTemplates
 		}
 		private void listBox_KeyDown(object sender, KeyEventArgs e)
 		{
-			if (e.KeyCode == Keys.Return)
+			if (e.KeyCode == Keys.Return || e.KeyCode == Keys.Left)
 			{
-				if (this.listBox.SelectionMode == SelectionMode.One)
-					this.Accept();
+				this.Accept();
+				this.Close();
 			}
-			else if (e.KeyCode == Keys.Escape)
+			else if (e.KeyCode == Keys.C && e.Control)
+			{
+				if (this.listBox.SelectedItem != null)
+					Clipboard.SetText(this.listBox.SelectedItem.ToString());
+			}
+			else if (e.KeyCode == Keys.Back || e.KeyCode == Keys.Escape)
 			{
 				this.Close();
 			}
+		}
+		private void listBox_KeyUp(object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.ControlKey && this.openedWithCtrl)
+			{
+				this.Accept();
+				this.Close();
+			}
+		}
+		private void listBox_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (this.openedWithCtrl) this.Accept();
 		}
 	}
 }

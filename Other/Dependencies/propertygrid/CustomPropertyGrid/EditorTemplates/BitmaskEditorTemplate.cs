@@ -9,23 +9,23 @@ using ButtonState = CustomPropertyGrid.Renderer.ButtonState;
 
 namespace CustomPropertyGrid.EditorTemplates
 {
-	public class ComboBoxEditorTemplate : EditorTemplate
+	public class BitmaskEditorTemplate : EditorTemplate
 	{
-		private const string ClipboardDataFormat = "ComboBoxEditorTemplateData";
+		private const string ClipboardDataFormat = "BitmaskEditorTemplateData";
 
-		private	object				selectedObject	= null;
-		private	bool				pressed			= false;
-		private	int					dropdownHeight	= 100;
-		private	ComboBoxDropDown	dropdown		= null;
-		private	List<object>		dropdownItems	= new List<object>();
+		private	ulong					bitmask			= 0;
+		private	bool					pressed			= false;
+		private	int						dropdownHeight	= 100;
+		private	BitmaskSelectorDropDown	dropdown		= null;
+		private	List<BitmaskItem>		dropdownItems	= new List<BitmaskItem>();
 
-		public object SelectedObject
+		public ulong BitmaskValue
 		{
-			get { return this.selectedObject; }
+			get { return this.bitmask; }
 			set
 			{
-				this.selectedObject = value;
-				if (this.dropdown != null) this.dropdown.SelectedItem = this.selectedObject;
+				this.bitmask = value;
+				if (this.dropdown != null) this.dropdown.BitmaskValue = this.bitmask;;
 			}
 		}
 		public bool IsDropDownOpened
@@ -37,17 +37,17 @@ namespace CustomPropertyGrid.EditorTemplates
 			get { return this.dropdownHeight; }
 			set { this.dropdownHeight = value; }
 		}
-		public IEnumerable<object> DropDownItems
+		public IEnumerable<BitmaskItem> DropDownItems
 		{
 			get { return this.dropdownItems; }
 			set
 			{
-				this.dropdownItems = value.ToList();
+				this.dropdownItems = value.OrderBy(i => i.Value).ToList();
 				if (this.dropdown != null) this.dropdown.Items = this.dropdownItems;
 			}
 		}
 		
-		public ComboBoxEditorTemplate(PropertyEditor parent) : base(parent) {}
+		public BitmaskEditorTemplate(PropertyEditor parent) : base(parent) {}
 
 		public void OnPaint(PaintEventArgs e, bool enabled, bool multiple)
 		{
@@ -59,7 +59,7 @@ namespace CustomPropertyGrid.EditorTemplates
 			else if (this.hovered || this.focused)
 				comboState = ButtonState.Hot;
 
-			ControlRenderer.DrawComboButton(e.Graphics, this.rect, comboState, this.selectedObject.ToString());
+			ControlRenderer.DrawComboButton(e.Graphics, this.rect, comboState, DefaultValueStringGenerator(this.bitmask));
 		}
 		public override void OnMouseMove(MouseEventArgs e)
 		{
@@ -96,52 +96,44 @@ namespace CustomPropertyGrid.EditorTemplates
 				this.OpenDropDown();
 				e.Handled = true;
 			}
-			else if (e.KeyCode == Keys.Down && e.Control)
-			{
-				int index = this.dropdownItems.IndexOf(this.selectedObject);
-				this.selectedObject = this.dropdownItems[(index + 1) % this.dropdownItems.Count];
-				this.EmitEdited();
-				e.Handled = true;
-			}
-			else if (e.KeyCode == Keys.Up && e.Control)
-			{
-				int index = this.dropdownItems.IndexOf(this.selectedObject);
-				this.selectedObject = this.dropdownItems[(index + this.dropdownItems.Count - 1) % this.dropdownItems.Count];
-				this.EmitEdited();
-				e.Handled = true;
-			}
 			else if (e.Control && e.KeyCode == Keys.C)
 			{
 				DataObject data = new DataObject();
-				data.SetText(this.selectedObject.ToString());
-				data.SetData(ClipboardDataFormat, this.selectedObject);
+				data.SetText(DefaultValueStringGenerator(this.bitmask));
+				data.SetData(ClipboardDataFormat, this.bitmask);
 				Clipboard.SetDataObject(data);
 				e.Handled = true;
 			}
 			else if (e.Control && e.KeyCode == Keys.V)
 			{
 				bool success = false;
-				if (Clipboard.ContainsData(ClipboardDataFormat) || Clipboard.ContainsText())
+				ulong pasteValue = 0; 
+				if (Clipboard.ContainsData(ClipboardDataFormat))
 				{
-					object pasteObjProxy = null;
-					if (Clipboard.ContainsData(ClipboardDataFormat))
+					pasteValue = (ulong)Clipboard.GetData(ClipboardDataFormat);
+					success = true;
+				}
+				else if (Clipboard.ContainsText())
+				{
+					string[] pasteObj = Clipboard.GetText().Split(new [] { ", " }, StringSplitOptions.RemoveEmptyEntries);
+					foreach (string p in pasteObj)
 					{
-						object pasteObj = Clipboard.GetData(ClipboardDataFormat);
-						pasteObjProxy = this.dropdownItems.FirstOrDefault(obj => object.Equals(obj, pasteObj));
-					}
-					else if (Clipboard.ContainsText())
-					{
-						string pasteObj = Clipboard.GetText();
-						pasteObjProxy = this.dropdownItems.FirstOrDefault(obj => obj != null && obj.ToString() == pasteObj);
-					}
-					if (pasteObjProxy != null && this.selectedObject != pasteObjProxy)
-					{
-						this.selectedObject = pasteObjProxy;
-						this.EmitEdited();
-						success = true;
+						if (p == null) continue;
+						BitmaskItem item = this.dropdownItems.FirstOrDefault(obj => obj != null && p == obj.ToString());
+						if (item != null)
+						{
+							pasteValue |= item.Value;
+							success = true;
+						}
 					}
 				}
-				if (!success) System.Media.SystemSounds.Beep.Play();
+				if (success)
+				{
+					this.bitmask = pasteValue;
+					this.EmitEdited();
+				}
+				else
+					System.Media.SystemSounds.Beep.Play();
 				e.Handled = true;
 			}
 		}
@@ -152,9 +144,9 @@ namespace CustomPropertyGrid.EditorTemplates
 			if (this.ReadOnly) return;
 			PropertyGrid parentGrid = this.Parent.ParentGrid;
 
-			this.dropdown = new ComboBoxDropDown();
+			this.dropdown = new BitmaskSelectorDropDown();
 			this.dropdown.Items = this.dropdownItems;
-			this.dropdown.SelectedItem = this.selectedObject;
+			this.dropdown.BitmaskValue = this.bitmask;
 
 			Size dropDownSize = new Size(
 				this.rect.Width, 
@@ -188,11 +180,36 @@ namespace CustomPropertyGrid.EditorTemplates
 		}
 		private void dropdown_AcceptSelection(object sender, EventArgs e)
 		{
-			if (this.selectedObject != this.dropdown.SelectedItem)
+			if (this.bitmask != this.dropdown.BitmaskValue)
 			{
-				this.selectedObject = this.dropdown.SelectedItem;
+				this.bitmask = this.dropdown.BitmaskValue;
 				this.EmitEdited();
 			}
+		}
+
+		protected string DefaultValueStringGenerator(ulong bitmask)
+		{
+			ulong num = bitmask;
+			int index = this.dropdownItems.Count - 1;
+			System.Text.StringBuilder builder = new System.Text.StringBuilder();
+			bool flag = true;
+			ulong num3 = num;
+			while (index >= 0)
+			{
+				if ((index == 0) && (this.dropdownItems[index].Value == 0L)) break;
+				if ((num & this.dropdownItems[index].Value) == this.dropdownItems[index].Value)
+				{
+					num -= this.dropdownItems[index].Value;
+					if (!flag) builder.Insert(0, ", ");
+					builder.Insert(0, this.dropdownItems[index].Caption);
+					flag = false;
+				}
+				index--;
+			}
+			if (num != 0L) return bitmask.ToString();
+			if (num3 != 0L) return builder.ToString();
+			if (this.dropdownItems.Count > 0 && this.dropdownItems[0].Value == 0L) return this.dropdownItems[0].Caption;
+			return "0";
 		}
 	}
 }
