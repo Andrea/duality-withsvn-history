@@ -5,15 +5,9 @@
 #                                                                #
 ##################################################################
 
--->	Numeric
-	-->	Parse empty string as default value / zero;
+-->	GroupedPropertyEditor: Update HeaderValue when (any) child (value) changes
 
 -->	IList
-	-->	structListField bug
-	-->	Remove elements via del key?
-	-->	Really keep remove-buttons?
-		-->	They look annoying with their red stuff
-		-->	Redesign them for IList PropertyEditor?
 	-->	Redesign "header"? Distinguish Size / Offset editors from element editors.
 
 -->	Editors to do:

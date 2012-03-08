@@ -257,6 +257,12 @@ namespace CustomPropertyGrid.EditorTemplates
 		{
 			decimal valResult;
 			this.isTextValid = decimal.TryParse(this.stringEditor.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out valResult);
+			if (!this.isTextValid && string.IsNullOrWhiteSpace(this.stringEditor.Text))
+			{
+				this.isTextValid = true;
+				valResult = 0m;
+			}
+
 			if (this.isTextValid)
 			{
 				this.value = Math.Max(Math.Min(valResult, this.max), this.min);

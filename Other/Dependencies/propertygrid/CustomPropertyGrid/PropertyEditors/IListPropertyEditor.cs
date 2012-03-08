@@ -110,15 +110,6 @@ namespace CustomPropertyGrid.PropertyEditors
 				e.PerformSetValue();
 		}
 
-		protected internal override void OnKeyDown(KeyEventArgs e)
-		{
-			if (e.KeyCode == Keys.Delete)
-			{
-				Console.WriteLine("Delete element?");
-			}
-			base.OnKeyDown(e);
-		}
-
 		protected Type GetElementType()
 		{
 			if (this.EditedType.HasElementType)
@@ -162,38 +153,38 @@ namespace CustomPropertyGrid.PropertyEditors
 				else
 				{
 					elementEditor = this.ParentGrid.CreateEditor(elementType);
-					elementEditor.ButtonPressed += elementEditor_ButtonPressed;
+					//elementEditor.ButtonPressed += elementEditor_ButtonPressed;
 					this.AddPropertyEditor(elementEditor);
 				}
 				elementEditor.Getter = this.CreateElementValueGetter(indexer, i - (showOffset ? 2 : 1) + this.offset);
 				elementEditor.Setter = this.CreateElementValueSetter(indexer, i - (showOffset ? 2 : 1) + this.offset);
 				elementEditor.PropertyName = "Element " + (i - (showOffset ? 2 : 1) + this.offset);
-				elementEditor.Hints |= HintFlags.HasButton | HintFlags.ButtonEnabled;
+				//elementEditor.Hints |= HintFlags.HasButton | HintFlags.ButtonEnabled;
 			}
 			// Remove overflowing editors
 			for (int i = this.Children.Count() - (showOffset ? 3 : 2); i >= visibleElementCount; i--)
 			{
 				PropertyEditor child = this.Children.Last();
-				child.ButtonPressed -= elementEditor_ButtonPressed;
+				//child.ButtonPressed -= elementEditor_ButtonPressed;
 				this.RemovePropertyEditor(child);
 			}
 			this.Invalidate();
 			this.EndUpdate();
 		}
 		
-		protected void elementEditor_ButtonPressed(object sender, EventArgs e)
-		{
-			PropertyEditor editor = sender as PropertyEditor;
-			int index = 0;
-			foreach (PropertyEditor child in this.Children)
-			{
-				if (child == editor) break;
-				index++;
-			}
-			index -= this.offsetEditor.ParentEditor == null ? 1 : 2;
+		//protected void elementEditor_ButtonPressed(object sender, EventArgs e)
+		//{
+		//    PropertyEditor editor = sender as PropertyEditor;
+		//    int index = 0;
+		//    foreach (PropertyEditor child in this.Children)
+		//    {
+		//        if (child == editor) break;
+		//        index++;
+		//    }
+		//    index -= this.offsetEditor.ParentEditor == null ? 1 : 2;
 
-			this.RemoveElementAt(index);
-		}
+		//    this.RemoveElementAt(index);
+		//}
 
 		protected void RemoveElementAt(int index)
 		{

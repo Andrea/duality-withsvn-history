@@ -100,6 +100,11 @@ namespace CustomPropertyGrid
 			{
 				this.yoink = val;
 			}
+
+			public override string ToString()
+			{
+				return "Yoink: " + this.yoink;
+			}
 		}
 		#endregion
 
