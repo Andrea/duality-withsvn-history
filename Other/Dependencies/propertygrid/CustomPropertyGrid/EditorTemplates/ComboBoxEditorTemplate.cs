@@ -91,7 +91,10 @@ namespace CustomPropertyGrid.EditorTemplates
 		}
 		public void OnKeyDown(KeyEventArgs e)
 		{
-			if (e.KeyCode == Keys.Return || e.KeyCode == Keys.Right || e.KeyCode == Keys.ControlKey)
+			if (e.KeyCode == Keys.ControlKey)
+				this.EmitInvalidate();
+
+			if (e.KeyCode == Keys.Return || e.KeyCode == Keys.Right || (e.KeyCode == Keys.Down && e.Control))
 			{
 				this.OpenDropDown();
 				e.Handled = true;
@@ -134,10 +137,10 @@ namespace CustomPropertyGrid.EditorTemplates
 						string pasteObj = Clipboard.GetText();
 						pasteObjProxy = this.dropdownItems.FirstOrDefault(obj => obj != null && obj.ToString() == pasteObj);
 					}
-					if (pasteObjProxy != null && this.selectedObject != pasteObjProxy)
+					if (pasteObjProxy != null)
 					{
+						if (this.selectedObject != pasteObjProxy) this.EmitEdited();
 						this.selectedObject = pasteObjProxy;
-						this.EmitEdited();
 						success = true;
 					}
 				}

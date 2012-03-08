@@ -91,7 +91,10 @@ namespace CustomPropertyGrid.EditorTemplates
 		}
 		public void OnKeyDown(KeyEventArgs e)
 		{
-			if (e.KeyCode == Keys.Return || e.KeyCode == Keys.Right || e.KeyCode == Keys.ControlKey)
+			if (e.KeyCode == Keys.ControlKey)
+				this.EmitInvalidate();
+
+			if (e.KeyCode == Keys.Return || e.KeyCode == Keys.Right || (e.KeyCode == Keys.Down && e.Control))
 			{
 				this.OpenDropDown();
 				e.Handled = true;
