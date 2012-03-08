@@ -39,6 +39,7 @@ namespace CustomPropertyGrid
 			private string t;
 			private Test2 subclass;
 			public List<string> stringListField;
+			public List<Test2> structListField;
 			public FlaggedEnumTest enumField1;
 			public EnumTest enumField2;
 

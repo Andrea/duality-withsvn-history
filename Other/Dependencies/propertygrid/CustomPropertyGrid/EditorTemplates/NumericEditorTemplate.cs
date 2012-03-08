@@ -138,7 +138,7 @@ namespace CustomPropertyGrid.EditorTemplates
 			ButtonState gripState = ButtonState.Normal;
 			if (!enabled || this.ReadOnly)
 				gripState = ButtonState.Disabled;
-			else if (this.gripPressed || Control.ModifierKeys.HasFlag(Keys.Control))
+			else if (this.gripPressed || (this.focused && Control.ModifierKeys.HasFlag(Keys.Control)))
 				gripState = ButtonState.Pressed;
 			else if (this.gripHovered || this.stringEditor.Focused)
 				gripState = ButtonState.Hot;

@@ -25,10 +25,11 @@ namespace CustomPropertyGrid.EditorTemplates
 			{
 				if (this.text != value)
 				{
+					int textLen = this.text != null ? this.text.Length : 0;
 					bool allWasSelected = 
 						!string.IsNullOrEmpty(this.text) && 
 						Math.Min(this.cursorIndex, this.cursorIndex + this.selectionLength) == 0 && 
-						Math.Abs(this.selectionLength) == this.text.Length;
+						Math.Abs(this.selectionLength) == textLen;
 
 					this.text = value;
 
@@ -36,8 +37,8 @@ namespace CustomPropertyGrid.EditorTemplates
 						this.Select();
 					else
 					{
-						this.cursorIndex = Math.Min(this.cursorIndex, this.text.Length);
-						this.selectionLength = Math.Min(this.cursorIndex + this.selectionLength, this.text.Length) - this.cursorIndex;
+						this.cursorIndex = Math.Min(this.cursorIndex, textLen);
+						this.selectionLength = Math.Min(this.cursorIndex + this.selectionLength, textLen) - this.cursorIndex;
 						this.selectionLength = Math.Max(this.cursorIndex + this.selectionLength, 0) - this.cursorIndex;
 					}
 				}

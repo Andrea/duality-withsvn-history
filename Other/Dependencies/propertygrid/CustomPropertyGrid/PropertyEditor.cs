@@ -422,7 +422,7 @@ namespace CustomPropertyGrid
 				buttonImage = this.buttonIcon.Disabled;
 			else if (this.buttonPressed)
 				buttonImage = this.buttonIcon.Active;
-			else if (this.buttonHovered)
+			else if (this.buttonHovered || this.Focused)
 				buttonImage = this.buttonIcon.Normal;
 			else
 				buttonImage = this.buttonIcon.Passive;

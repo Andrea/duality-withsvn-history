@@ -6,216 +6,182 @@ using System.Reflection;
 
 namespace CustomPropertyGrid
 {
-	public static class ReflectionHelper
+	internal static class ReflectionHelper
 	{
-		public static object CreateInstanceOf(Type instanceType)
+		public const BindingFlags BindInstanceAll = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+		public const BindingFlags BindStaticAll = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+		public const BindingFlags BindAll = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
+		public static object CreateInstanceOf(this Type instanceType, bool noConstructor = false)
 		{
-			return Activator.CreateInstance(instanceType, true);
+			try
+			{
+				if (instanceType == typeof(string))
+					return "";
+				else if (typeof(Array).IsAssignableFrom(instanceType) && instanceType.GetArrayRank() == 1)
+					return Array.CreateInstance(instanceType.GetElementType(), 0);
+				else if (noConstructor)
+					return System.Runtime.Serialization.FormatterServices.GetUninitializedObject(instanceType);
+				else
+					return Activator.CreateInstance(instanceType, true);
+			}
+			catch (Exception)
+			{
+				return null;
+			}
+		}
+		public static object GetDefaultInstanceOf(this Type instanceType)
+		{
+			if (instanceType.IsValueType)
+				return Activator.CreateInstance(instanceType, true);
+			else
+				return null;
 		}
 
-		/// <summary>
-		/// A configuration enum for GetTypeString
-		/// </summary>
-		public enum TypeStringAttrib
+		public static bool MemberInfoEquals(MemberInfo lhs, MemberInfo rhs)
 		{
-			/// <summary>
-			/// The method will return a type keyword, its "short" name. Just the types "base", no generic
-			/// type parameters or array specifications.
-			/// </summary>
-			Keyword,
-			/// <summary>
-			/// The types full name, but without generic arguments, element types or assembly names
-			/// </summary>
-			LongName,
-			/// <summary>
-			/// A type name / definition as you would see it in normal C# code. Complete with generic parameters
-			/// or possible array specifications.
-			/// </summary>
-			CSCodeIdent,
-			/// <summary>
-			/// As CSCodeIdent, but shortened to Keywords
-			/// </summary>
-			CSCodeIdentShort
-		}
-		/// <summary>
-		/// Returns a string describing a certain Type.
-		/// </summary>
-		/// <param name="T">The Type to describe</param>
-		/// <param name="attrib">How to describe the Type</param>
-		/// <returns></returns>
-		public static string GetTypeString(Type T, TypeStringAttrib attrib)
-		{
-			if (attrib == TypeStringAttrib.LongName)
+			if (lhs == rhs)
+				return true;
+ 
+			if (lhs.DeclaringType != rhs.DeclaringType)
+				return false;
+ 
+			// Methods on arrays do not have metadata tokens but their ReflectedType
+			// always equals their DeclaringType
+			if (lhs.DeclaringType != null && lhs.DeclaringType.IsArray)
+				return false;
+ 
+			if (lhs.MetadataToken != rhs.MetadataToken || lhs.Module != rhs.Module)
+				return false;
+ 
+			if (lhs is MethodInfo)
 			{
-				return T.FullName.Split(new char[] {'`'}, StringSplitOptions.RemoveEmptyEntries)[0];
-			}
-			else if (attrib == TypeStringAttrib.Keyword)
-			{
-				return T.Name.Split(new char[] {'`'}, StringSplitOptions.RemoveEmptyEntries)[0].Replace('+', '.');
-			}
-			else if (attrib == TypeStringAttrib.CSCodeIdent || attrib == TypeStringAttrib.CSCodeIdentShort)
-			{
-				StringBuilder typeStr = new StringBuilder();
-
-				if (T.IsArray)
+				MethodInfo lhsMethod = lhs as MethodInfo;
+ 
+				if (lhsMethod.IsGenericMethod)
 				{
-					typeStr.Append(GetTypeString(T.GetElementType(), attrib));
-					typeStr.Append('[');
-					typeStr.Append(',', T.GetArrayRank() - 1);
-					typeStr.Append(']');
+					MethodInfo rhsMethod = rhs as MethodInfo;
+ 
+					Type[] lhsGenArgs = lhsMethod.GetGenericArguments();
+					Type[] rhsGenArgs = rhsMethod.GetGenericArguments();
+					for (int i = 0; i < rhsGenArgs.Length; i++)
+					{
+						if (lhsGenArgs[i] != rhsGenArgs[i])
+							return false;
+					}
+				}
+			}
+			return true;
+		}
+		public static int GetTypeHierarchyLevel(this Type t)
+		{
+			int level = 0;
+			while (t.BaseType != null) { t = t.BaseType; level++; }
+			return level;
+		}
+
+
+		public static string GetTypeKeyword(this Type T)
+		{
+			return T.Name.Split(new char[] {'`'}, StringSplitOptions.RemoveEmptyEntries)[0].Replace('+', '.');
+		}
+		public static string GetTypeCSCodeName(this Type T, bool shortName = false)
+		{
+			StringBuilder typeStr = new StringBuilder();
+
+			if (T.IsGenericParameter)
+			{
+				return T.Name;
+			}
+			if (T.IsArray)
+			{
+				typeStr.Append(GetTypeCSCodeName(T.GetElementType(), shortName));
+				typeStr.Append('[');
+				typeStr.Append(',', T.GetArrayRank() - 1);
+				typeStr.Append(']');
+			}
+			else
+			{
+				Type[] genArgs = T.IsGenericType ? T.GetGenericArguments() : null;
+
+				if (T.IsNested)
+				{
+					Type declType = T.DeclaringType;
+					if (declType.IsGenericTypeDefinition)
+					{
+						Array.Resize(ref genArgs, declType.GetGenericArguments().Length);
+						declType = declType.MakeGenericType(genArgs);
+						genArgs = T.GetGenericArguments().Skip(genArgs.Length).ToArray();
+					}
+					string parentName = GetTypeCSCodeName(declType, shortName);
+
+					string[] nestedNameToken = shortName ? T.Name.Split('+') : T.FullName.Split('+');
+					string nestedName = nestedNameToken[nestedNameToken.Length - 1];
+						
+					int genTypeSepIndex = nestedName.IndexOf("[[");
+					if (genTypeSepIndex != -1) nestedName = nestedName.Substring(0, genTypeSepIndex);
+					genTypeSepIndex = nestedName.IndexOf('`');
+					if (genTypeSepIndex != -1) nestedName = nestedName.Substring(0, genTypeSepIndex);
+
+					typeStr.Append(parentName);
+					typeStr.Append('.');
+					typeStr.Append(nestedName);
 				}
 				else
 				{
-					typeStr.Append(GetTypeString(T, attrib == TypeStringAttrib.CSCodeIdentShort ? TypeStringAttrib.Keyword : TypeStringAttrib.LongName));
-					
+					if (shortName)
+						typeStr.Append(T.Name.Split(new char[] {'`'}, StringSplitOptions.RemoveEmptyEntries)[0].Replace('+', '.'));
+					else
+						typeStr.Append(T.FullName.Split(new char[] {'`'}, StringSplitOptions.RemoveEmptyEntries)[0].Replace('+', '.'));
+				}
+
+				if (genArgs != null && genArgs.Length > 0)
+				{
 					if (T.IsGenericTypeDefinition)
 					{
 						typeStr.Append('<');
-						Type[] genArg = T.GetGenericArguments();
-						typeStr.Append(',', genArg.Length - 1);
+						typeStr.Append(',', genArgs.Length - 1);
 						typeStr.Append('>');
 					}
 					else if (T.IsGenericType)
 					{
 						typeStr.Append('<');
-						Type[] genArg = T.GetGenericArguments();
-						for (int i = 0; i < genArg.Length; i++)
+						for (int i = 0; i < genArgs.Length; i++)
 						{
-							typeStr.Append(GetTypeString(genArg[i], attrib));
-							if (i < genArg.Length - 1)
+							typeStr.Append(GetTypeCSCodeName(genArgs[i], shortName));
+							if (i < genArgs.Length - 1)
 								typeStr.Append(',');
 						}
 						typeStr.Append('>');
 					}
 				}
-
-				return typeStr.Replace('+', '.').ToString();
 			}
-			return null;
+
+			return typeStr.Replace('+', '.').ToString();
 		}
-		/// <summary>
-		/// Converts a full name type string from CS code style to GetType compatible. Warning:
-		/// As GetType only searches in a specific assembly, type identifiers combined out of types from
-		/// different Assemblies won't be found.
-		/// </summary>
-		/// <param name="csCodeType"></param>
-		/// <returns></returns>
-		public static string ConvertTypeCodeToGetType(string csCodeType)
+
+		public static string[] SplitArgs(string argList, char pushLevel, char popLevel, char separator, int splitLevel)
 		{
-			if (csCodeType.IndexOfAny(new char[]{'<','>'}) != -1)
-			{
-				int first = csCodeType.IndexOf('<');
-				int last = 0;
-				while (csCodeType.IndexOf('>', last + 1) > last)
-				{
-					last = csCodeType.IndexOf('>', last + 1);
-				}
-				string[] tokenTemp = new string[3];
-				tokenTemp[0] = csCodeType.Substring(0, first);
-				tokenTemp[1] = csCodeType.Substring(first + 1, last - (first + 1));
-				tokenTemp[2] = csCodeType.Substring(last + 1, csCodeType.Length - (last + 1));
-				string[] tokenTemp2 = tokenTemp[1].Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries);
-				for (int i = 0; i < tokenTemp2.Length; i++)
-				{
-					tokenTemp2[i] = ConvertTypeCodeToGetType(tokenTemp2[i]);
-				}
-				return tokenTemp[0] + '`' + tokenTemp2.Length.ToString() + '[' + String.Join(", ", tokenTemp2) + ']' + ((tokenTemp.Length > 2) ? tokenTemp[2] : "");
-			}
-			else
-				return csCodeType;
-		}
-		/// <summary>
-		/// Searches a specific type (specified as would be valid in C# code) in an array of Assemblies.
-		/// Generates the type if neccessary (generic). Also supports generic types combined using types 
-		/// from different Assemblies.
-		/// </summary>
-		/// <param name="csCodeType"></param>
-		/// <param name="asmSearch"></param>
-		/// <returns></returns>
-		public static Type FindType(string csCodeType, Assembly[] asmSearch)
-		{
-			Type result = null;
-			csCodeType = csCodeType.Trim();
-			
-			bool		array	= (csCodeType.IndexOfAny(new char[]{'[',']'}) != -1);
-			string[]	arrRank	= null;
-			if (array)
-			{
-				int first = 0;
-				while (csCodeType.IndexOf('[', first + 1) > first)
-				{
-					first = csCodeType.IndexOf('[', first + 1);
-				}
-				int last = 0;
-				while (csCodeType.IndexOf(']', last + 1) > last)
-				{
-					last = csCodeType.IndexOf(']', last + 1);
-				}
+			if (argList == null) return new string[0];
 
-				if (csCodeType.IndexOf('>', first + 1) == -1)
-				{
-					arrRank		= csCodeType.Substring(first + 1, last - (first + 1)).Split(new char[] {','}, StringSplitOptions.None);
-					csCodeType	= csCodeType.TrimEnd('[', ']');
-				}
-				else
-				{
-					array	= false;
-					arrRank	= null;
-				}
-			}
-
-			if (csCodeType.IndexOfAny(new char[]{'<','>'}) != -1)
+			// Splitting the parameter list without destroying generic arguments
+			int lastSplitIndex = -1;
+			int genArgLevel = 0;
+			List<string> ptm = new List<string>();
+			for (int i = 0; i < argList.Length; i++)
 			{
-				int first = csCodeType.IndexOf('<');
-				int last = 0;
-				while (csCodeType.IndexOf('>', last + 1) > last)
+				if (argList[i] == separator && genArgLevel == splitLevel)
 				{
-					last = csCodeType.IndexOf('>', last + 1);
+					ptm.Add(argList.Substring(lastSplitIndex + 1, i - lastSplitIndex - 1));
+					lastSplitIndex = i;
 				}
-				string[] tokenTemp = new string[3];
-				tokenTemp[0] = csCodeType.Substring(0, first);
-				tokenTemp[1] = csCodeType.Substring(first + 1, last - (first + 1));
-				tokenTemp[2] = csCodeType.Substring(last + 1, csCodeType.Length - (last + 1));
-				string[] tokenTemp2 = tokenTemp[1].Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries);
-				
-				Type[]	types		= new Type[tokenTemp2.Length];
-				Type	mainType	= FindType(tokenTemp[0] + '`' + tokenTemp2.Length, asmSearch);;
-				for (int i = 0; i < tokenTemp2.Length; i++)
-				{
-					types[i] = FindType(tokenTemp2[i], asmSearch);
-				}
-
-				result = mainType.MakeGenericType(types);
+				else if (argList[i] == pushLevel)
+					genArgLevel++;
+				else if (argList[i] == popLevel)
+					genArgLevel--;
 			}
-			else
-			{
-				Type[]	asmTypes;
-				string	nameTemp;
-				for (int i = 0; i < asmSearch.Length; i++)
-				{
-					asmTypes = asmSearch[i].GetTypes();
-					for (int j = 0; j < asmTypes.Length; j++)
-					{
-						nameTemp = asmTypes[j].FullName;
-						if (csCodeType == nameTemp || 
-							csCodeType == nameTemp.Replace('+', '.'))
-						{
-							result = asmTypes[j];
-							break;
-						}
-					}
-					if (result != null) break;
-				}
-			}
-
-			if (result == null)
-				return null;
-			else if (array && arrRank.Length != 1)
-				return result.MakeArrayType(arrRank.Length);
-			else if (array)
-				return result.MakeArrayType();
-			else
-				return result;
+			ptm.Add(argList.Substring(lastSplitIndex + 1, argList.Length - lastSplitIndex - 1));
+			return ptm.ToArray();
 		}
 	}
 }

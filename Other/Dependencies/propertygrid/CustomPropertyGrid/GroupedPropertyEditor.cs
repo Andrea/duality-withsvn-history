@@ -234,14 +234,17 @@ namespace CustomPropertyGrid
 			return base.GetChildLocation(child);
 		}
 
-		protected void AddPropertyEditor(PropertyEditor editor)
+		protected void AddPropertyEditor(PropertyEditor editor, int atIndex = -1)
 		{
 			editor.ParentEditor = this;
 			editor.ValueChanged += this.OnValueChanged;
 			editor.EditingFinished += this.OnEditingFinished;
 			this.UpdateChildWidth(editor);
 
-			this.propertyEditors.Add(editor);
+			if (atIndex == -1)
+				this.propertyEditors.Add(editor);
+			else
+				this.propertyEditors.Insert(atIndex, editor);
 			
 			GroupedPropertyEditor groupedEditor = editor as GroupedPropertyEditor;
 			if (groupedEditor != null && groupedEditor.Expanded && !groupedEditor.ContentInitialized)

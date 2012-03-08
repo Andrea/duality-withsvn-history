@@ -61,9 +61,9 @@ namespace CustomPropertyGrid
 				// Basic data type: String
 				else if (baseType == typeof(string))
 					e = new StringPropertyEditor();
-				//// IList collection
-				//else if (typeof(System.Collections.IList).IsAssignableFrom(baseType))
-				//    e = new IListPropertyEditor(parentEditor, parentGrid);
+				// IEnumerable
+				else if (typeof(System.Collections.IEnumerable).IsAssignableFrom(baseType))
+					e = new IListPropertyEditor();
 				// Unknown data type
 				else
 				{
@@ -97,6 +97,7 @@ namespace CustomPropertyGrid
 		private	Timer				updateTimer			= null;
 		private	int					updateTimerChangeMs	= 0;
 		private	bool				updateScheduled		= false;
+		private	bool				deferredSizeUpdate	= false;
 
 		public IEnumerable<object> Selection
 		{
@@ -241,7 +242,10 @@ namespace CustomPropertyGrid
 		{
 			if (this.AutoScrollMinSize.Height != this.mainEditor.Height)
 			{
-				this.AutoScrollMinSize = new Size(0, this.mainEditor.Height);
+				if (Control.MouseButtons != System.Windows.Forms.MouseButtons.None)
+					this.deferredSizeUpdate = true;
+				else
+					this.AutoScrollMinSize = new Size(0, this.mainEditor.Height);
 				this.Invalidate();
 			}
 		}
@@ -266,19 +270,7 @@ namespace CustomPropertyGrid
 		public virtual void ConfigureEditor(PropertyEditor editor) {}
 		public virtual object CreateObjectInstance(Type objectType)
 		{
-			try
-			{
-				if (objectType == typeof(string))
-					return "";
-				else if (typeof(Array).IsAssignableFrom(objectType) && objectType.GetArrayRank() == 1)
-					return Array.CreateInstance(objectType.GetElementType(), 0);
-				else
-					return Activator.CreateInstance(objectType, true);
-			}
-			catch (Exception)
-			{
-				return null;
-			}
+			return ReflectionHelper.CreateInstanceOf(objectType);
 		}
 
 		public void Focus(PropertyEditor editor)
@@ -417,6 +409,9 @@ namespace CustomPropertyGrid
 		protected override void OnMouseUp(MouseEventArgs e)
 		{
 			base.OnMouseUp(e);
+
+			if (Control.MouseButtons == System.Windows.Forms.MouseButtons.None)
+				this.mainEditor_SizeChanged(this, EventArgs.Empty);
 
 			if (this.mainEditor != null)
 			{

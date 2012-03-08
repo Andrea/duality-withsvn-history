@@ -5,6 +5,16 @@
 #                                                                #
 ##################################################################
 
+-->	Numeric
+	-->	Parse empty string as default value / zero;
+
+-->	IList
+	-->	structListField bug
+	-->	Remove elements via del key?
+	-->	Really keep remove-buttons?
+		-->	They look annoying with their red stuff
+		-->	Redesign them for IList PropertyEditor?
+	-->	Redesign "header"? Distinguish Size / Offset editors from element editors.
+
 -->	Editors to do:
-	--> IList
 	-->	IDictionary
