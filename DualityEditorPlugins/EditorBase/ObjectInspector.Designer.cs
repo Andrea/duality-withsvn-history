@@ -34,9 +34,9 @@
 			this.nodeTextBoxName = new Aga.Controls.Tree.NodeControls.NodeTextBox();
 			this.timerSelectSched = new System.Windows.Forms.Timer(this.components);
 			this.toolStrip = new System.Windows.Forms.ToolStrip();
-			this.propertyGrid = new DualityEditor.Controls.PropertyGrid();
 			this.buttonAutoRefresh = new System.Windows.Forms.ToolStripButton();
 			this.buttonClone = new System.Windows.Forms.ToolStripButton();
+			this.propertyGrid = new DualityEditor.Controls.DualitorPropertyGrid();
 			this.toolStrip.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -73,15 +73,6 @@
 			this.toolStrip.TabIndex = 1;
 			this.toolStrip.Text = "toolStrip";
 			// 
-			// propertyGrid
-			// 
-			this.propertyGrid.AutoScroll = true;
-			this.propertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.propertyGrid.Location = new System.Drawing.Point(0, 25);
-			this.propertyGrid.Name = "propertyGrid";
-			this.propertyGrid.Size = new System.Drawing.Size(231, 407);
-			this.propertyGrid.TabIndex = 0;
-			// 
 			// buttonAutoRefresh
 			// 
 			this.buttonAutoRefresh.CheckOnClick = true;
@@ -103,6 +94,19 @@
 			this.buttonClone.Size = new System.Drawing.Size(23, 22);
 			this.buttonClone.Text = "Clone View";
 			this.buttonClone.Click += new System.EventHandler(this.buttonClone_Click);
+			// 
+			// propertyGrid
+			// 
+			this.propertyGrid.AllowDrop = true;
+			this.propertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.propertyGrid.AutoScroll = true;
+			this.propertyGrid.Location = new System.Drawing.Point(0, 25);
+			this.propertyGrid.Name = "propertyGrid";
+			this.propertyGrid.ReadOnly = false;
+			this.propertyGrid.Size = new System.Drawing.Size(228, 407);
+			this.propertyGrid.TabIndex = 0;
 			// 
 			// ObjectInspector
 			// 
@@ -128,7 +132,7 @@
 
 		private Aga.Controls.Tree.NodeControls.NodeTextBox nodeTextBoxName;
 		private Aga.Controls.Tree.NodeControls.NodeStateIcon nodeStateIcon;
-		private DualityEditor.Controls.PropertyGrid propertyGrid;
+		private DualityEditor.Controls.DualitorPropertyGrid propertyGrid;
 		private System.Windows.Forms.Timer timerSelectSched;
 		private System.Windows.Forms.ToolStrip toolStrip;
 		private System.Windows.Forms.ToolStripButton buttonAutoRefresh;

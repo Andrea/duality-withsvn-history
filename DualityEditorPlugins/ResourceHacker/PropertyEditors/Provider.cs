@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using AdamsLair.PropertyGrid;
+
 using Duality;
 using Duality.Serialization;
 using Duality.Serialization.MetaFormat;
@@ -10,7 +12,7 @@ using DualityEditor.Controls;
 
 namespace ResourceHacker.PropertyEditors
 {
-	public class PropertyEditorProvider : PropertyGrid.IPropertyEditorProvider
+	public class PropertyEditorProvider : IPropertyEditorProvider
 	{
 		public int IsResponsibleFor(Type baseType)
 		{
@@ -25,7 +27,6 @@ namespace ResourceHacker.PropertyEditors
 			if (baseType == typeof(ArrayNode))			e = new ArrayNodePropertyEditor();
 			else if (baseType == typeof(PrimitiveNode))	e = new PrimitiveNodePropertyEditor();
 
-			e.EditedType = baseType;
 			return e;
 		}
 	}

@@ -142,19 +142,4 @@ namespace DualityEditor
 			this.oldPath = oldPath;
 		}
 	}
-
-	public class PropertyEditorEventArgs : EventArgs
-	{
-		PropertyEditor editor;
-
-		public PropertyEditor Editor
-		{
-			get { return this.editor; }
-		}
-
-		public PropertyEditorEventArgs(PropertyEditor e)
-		{
-			this.editor = e;
-		}
-	}
 }

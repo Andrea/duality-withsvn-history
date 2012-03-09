@@ -5,9 +5,10 @@ using System.Reflection;
 using System.Windows.Forms;
 using System.Drawing;
 
+using AdamsLair.PropertyGrid;
+
 using Duality;
 using DualityEditor.CorePluginInterface;
-using PropertyGrid = DualityEditor.Controls.PropertyGrid;
 
 namespace DualityEditor
 {
@@ -33,9 +34,9 @@ namespace DualityEditor
 		}
 		private struct PropertyEditorProviderResEntry : IResEntry
 		{
-			public	PropertyGrid.IPropertyEditorProvider	provider;
+			public	IPropertyEditorProvider	provider;
 
-			public PropertyEditorProviderResEntry(PropertyGrid.IPropertyEditorProvider provider)
+			public PropertyEditorProviderResEntry(IPropertyEditorProvider provider)
 			{
 				this.provider = provider;
 			}
@@ -204,11 +205,11 @@ namespace DualityEditor
 			return RequestCorePluginRes<CategoryEntry>(type, false, e => e.context == context).categoryTree;
 		}
 
-		public static void RegisterPropertyEditorProvider(PropertyGrid.IPropertyEditorProvider provider)
+		public static void RegisterPropertyEditorProvider(IPropertyEditorProvider provider)
 		{
 			RegisterCorePluginRes(typeof(object), new PropertyEditorProviderResEntry(provider));
 		}
-		public static IEnumerable<PropertyGrid.IPropertyEditorProvider> RequestPropertyEditorProviders()
+		public static IEnumerable<IPropertyEditorProvider> RequestPropertyEditorProviders()
 		{
 			return RequestAllCorePluginRes<PropertyEditorProviderResEntry>(typeof(object), false, null).Select(e => e.provider);
 		}

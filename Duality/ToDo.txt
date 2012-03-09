@@ -9,6 +9,12 @@
 -->	Dualitor: Implement new PropertyGrid
 	-->	Enable EditorHint support
 	-->	Rebuild Duality PropertyEditors
+		-->	Vector2, Vector3, Vector4, Rect
+		-->	IColorData
+		-->	GameObject
+		-->	Component
+		-->	Resource
+		-->	...
 	-->	Enable full IHelpProvider support
 -->	Dualitor: Improve User learning curve
 	-->	More Advisor information?

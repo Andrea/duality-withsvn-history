@@ -461,10 +461,9 @@ namespace ResourceHacker
 			ObjectTreeNode objNode = node as ObjectTreeNode;
 			if (objNode != null && objNode.ResolvedMember == null) e.TextColor = Color.Red;
 		}
-		private void propertyGrid_EditingFinished(object sender, EventArgs e)
+		private void propertyGrid_EditingFinished(object sender, AdamsLair.PropertyGrid.PropertyEditorValueEventArgs e)
 		{
-			var editor = sender as DualityEditor.Controls.PropertyEditor;
-			if (typeof(TypeDataLayoutNode).IsAssignableFrom(editor.EditedType))
+			if (typeof(TypeDataLayoutNode).IsAssignableFrom(e.Editor.EditedType))
 			{
 				this.UpdateTypeDataLayout();
 			}

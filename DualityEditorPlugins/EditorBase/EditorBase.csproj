@@ -34,6 +34,9 @@
     <Reference Include="Aga.Controls">
       <HintPath>..\..\DualityEditor\Aga.Controls.dll</HintPath>
     </Reference>
+    <Reference Include="CustomPropertyGrid">
+      <HintPath>..\..\DualityEditor\CustomPropertyGrid.dll</HintPath>
+    </Reference>
     <Reference Include="OpenTK, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Duality\OpenTK.dll</HintPath>
@@ -74,94 +77,13 @@
     <Compile Include="LogView.Designer.cs">
       <DependentUpon>LogView.cs</DependentUpon>
     </Compile>
-    <Compile Include="PropertyEditors\Components\ColliderPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="PropertyEditors\Components\CameraRenderPassPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="PropertyEditors\Components\ColliderShapePropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="PropertyEditors\Components\TextRendererPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="PropertyEditors\FormattedTextPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="PropertyEditors\Resources\FontPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="ShaderFileImporter.cs" />
     <Compile Include="PixmapFileImporter.cs" />
-    <Compile Include="PropertyEditors\DualityAppDataPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="PropertyEditors\Resources\TexturePreviewPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="PropertyEditors\Resources\TexturePreviewPropertyEditor.Designer.cs">
-      <DependentUpon>TexturePreviewPropertyEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="PropertyEditors\Resources\PixmapPreviewPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="PropertyEditors\Resources\PixmapPreviewPropertyEditor.Designer.cs">
-      <DependentUpon>PixmapPreviewPropertyEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="PropertyEditors\Resources\PixmapPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="PropertyEditors\Resources\MaterialPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="PropertyEditors\Components\SoundEmitterPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="PropertyEditors\Resources\TexturePropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="PropertyEditors\Resources\ResourcePropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="ObjectInspector.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ObjectInspector.Designer.cs">
       <DependentUpon>ObjectInspector.cs</DependentUpon>
-    </Compile>
-    <Compile Include="PropertyEditors\ContentRefPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="PropertyEditors\ContentRefPropertyEditor.Designer.cs">
-      <DependentUpon>ContentRefPropertyEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="PropertyEditors\GameObjectOverviewPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="PropertyEditors\GameObjectPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="PropertyEditors\GameObjectPropertyEditor.Designer.cs">
-      <DependentUpon>GameObjectPropertyEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="PropertyEditors\Components\ComponentPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="PropertyEditors\Components\CameraPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="PropertyEditors\BatchInfoPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="PropertyEditors\Components\SpriteRendererPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="PropertyEditors\Components\TransformPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="PropertyEditors\Components\TransformPropertyEditor.Designer.cs">
-      <DependentUpon>TransformPropertyEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="PropertyEditors\Provider.cs" />
     <Compile Include="SceneView.cs">
@@ -205,23 +127,8 @@
     <EmbeddedResource Include="LogView.resx">
       <DependentUpon>LogView.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PropertyEditors\Resources\TexturePreviewPropertyEditor.resx">
-      <DependentUpon>TexturePreviewPropertyEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="PropertyEditors\Resources\PixmapPreviewPropertyEditor.resx">
-      <DependentUpon>PixmapPreviewPropertyEditor.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="ObjectInspector.resx">
       <DependentUpon>ObjectInspector.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="PropertyEditors\ContentRefPropertyEditor.resx">
-      <DependentUpon>ContentRefPropertyEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="PropertyEditors\GameObjectPropertyEditor.resx">
-      <DependentUpon>GameObjectPropertyEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="PropertyEditors\Components\TransformPropertyEditor.resx">
-      <DependentUpon>TransformPropertyEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SceneView.resx">
       <DependentUpon>SceneView.cs</DependentUpon>
@@ -239,7 +146,10 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="PropertyEditors\Components\" />
+    <Folder Include="PropertyEditors\Resources\" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="Resources\speaker.png" />
     <None Include="Resources\arrow_right_accelerate.png" />

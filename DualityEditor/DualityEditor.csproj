@@ -65,6 +65,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\Aga.Controls.dll</HintPath>
     </Reference>
+    <Reference Include="CustomPropertyGrid">
+      <HintPath>.\CustomPropertyGrid.dll</HintPath>
+    </Reference>
     <Reference Include="Ionic.Zip">
       <HintPath>.\Ionic.Zip.dll</HintPath>
     </Reference>
@@ -103,98 +106,11 @@
     <Compile Include="Controls\EnumFlagCheckedListBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\GroupedPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\GroupedPropertyEditor.Designer.cs">
-      <DependentUpon>GroupedPropertyEditor.cs</DependentUpon>
-    </Compile>
     <Compile Include="Controls\EnumComboBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\MemberwisePropertyEditor.cs">
+    <Compile Include="Controls\DualitorPropertyGrid.cs">
       <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\PropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\PropertyEditors\BoolPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\PropertyEditors\BoolPropertyEditor.Designer.cs">
-      <DependentUpon>BoolPropertyEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\PropertyEditors\IListPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\PropertyEditors\FlagEnumPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\PropertyEditors\FlagEnumPropertyEditor.Designer.cs">
-      <DependentUpon>FlagEnumPropertyEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\PropertyEditors\EnumPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\PropertyEditors\EnumPropertyEditor.Designer.cs">
-      <DependentUpon>EnumPropertyEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\PropertyEditors\FlagPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\PropertyEditors\FlagPropertyEditor.Designer.cs">
-      <DependentUpon>FlagPropertyEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\PropertyEditors\IColorDataPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\PropertyEditors\IColorDataPropertyEditor.Designer.cs">
-      <DependentUpon>IColorDataPropertyEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\PropertyEditors\IDictionaryPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\PropertyEditors\StringEnumPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\PropertyEditors\StringEnumPropertyEditor.Designer.cs">
-      <DependentUpon>StringEnumPropertyEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\PropertyEditors\Vector3PropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\PropertyEditors\Vector3PropertyEditor.Designer.cs">
-      <DependentUpon>Vector3PropertyEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\PropertyEditors\Vector2PropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\PropertyEditors\Vector2PropertyEditor.Designer.cs">
-      <DependentUpon>Vector2PropertyEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\PropertyEditors\RectPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\PropertyEditors\RectPropertyEditor.Designer.cs">
-      <DependentUpon>RectPropertyEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\PropertyEditors\NumericPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\PropertyEditors\NumericPropertyEditor.Designer.cs">
-      <DependentUpon>NumericPropertyEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\PropertyEditors\StringPropertyEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\PropertyEditors\StringPropertyEditor.Designer.cs">
-      <DependentUpon>StringPropertyEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\PropertyGrid.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\DBTableLayoutPanel.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\ToolStrip\ToolStripCheckBox.cs">
       <SubType>Component</SubType>
@@ -275,42 +191,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RecycleBin.cs" />
     <Compile Include="XmlCodeDoc.cs" />
-    <EmbeddedResource Include="Controls\GroupedPropertyEditor.resx">
-      <DependentUpon>GroupedPropertyEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\PropertyEditors\BoolPropertyEditor.resx">
-      <DependentUpon>BoolPropertyEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\PropertyEditors\FlagEnumPropertyEditor.resx">
-      <DependentUpon>FlagEnumPropertyEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\PropertyEditors\EnumPropertyEditor.resx">
-      <DependentUpon>EnumPropertyEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\PropertyEditors\FlagPropertyEditor.resx">
-      <DependentUpon>FlagPropertyEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\PropertyEditors\IColorDataPropertyEditor.resx">
-      <DependentUpon>IColorDataPropertyEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\PropertyEditors\StringEnumPropertyEditor.resx">
-      <DependentUpon>StringEnumPropertyEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\PropertyEditors\Vector3PropertyEditor.resx">
-      <DependentUpon>Vector3PropertyEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\PropertyEditors\Vector2PropertyEditor.resx">
-      <DependentUpon>Vector2PropertyEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\PropertyEditors\RectPropertyEditor.resx">
-      <DependentUpon>RectPropertyEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\PropertyEditors\NumericPropertyEditor.resx">
-      <DependentUpon>NumericPropertyEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\PropertyEditors\StringPropertyEditor.resx">
-      <DependentUpon>StringPropertyEditor.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="EditorRes\GeneralRes.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>GeneralRes.Designer.cs</LastGenOutput>
@@ -394,7 +274,9 @@
     <None Include="Resources\CursorArrow.png" />
     <None Include="EditorRes\cog.ico" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Controls\PropertyEditors\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

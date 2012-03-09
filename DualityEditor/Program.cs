@@ -25,7 +25,6 @@ namespace DualityEditor
 				else if (a == "recover")
 					recover = true;
 			}
-
 			//Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en-US"); // en-US, de-DE
 			//Thread.CurrentThread.CurrentUICulture = Thread.CurrentThread.CurrentCulture;
 

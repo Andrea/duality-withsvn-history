@@ -21,74 +21,6 @@
             the contents of this method with the code editor.
             </summary>
         </member>
-        <member name="F:DualityEditor.Controls.PropertyEditors.FlagEnumPropertyEditor.components">
-            <summary> 
-            Erforderliche Designervariable.
-            </summary>
-        </member>
-        <member name="M:DualityEditor.Controls.PropertyEditors.FlagEnumPropertyEditor.Dispose(System.Boolean)">
-            <summary> 
-            Verwendete Ressourcen bereinigen.
-            </summary>
-            <param name="disposing">True, wenn verwaltete Ressourcen gelöscht werden sollen; andernfalls False.</param>
-        </member>
-        <member name="M:DualityEditor.Controls.PropertyEditors.FlagEnumPropertyEditor.InitializeComponent">
-            <summary> 
-            Erforderliche Methode für die Designerunterstützung. 
-            Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
-            </summary>
-        </member>
-        <member name="F:DualityEditor.Controls.GroupedPropertyEditor.components">
-            <summary> 
-            Erforderliche Designervariable.
-            </summary>
-        </member>
-        <member name="M:DualityEditor.Controls.GroupedPropertyEditor.Dispose(System.Boolean)">
-            <summary> 
-            Verwendete Ressourcen bereinigen.
-            </summary>
-            <param name="disposing">True, wenn verwaltete Ressourcen gelöscht werden sollen; andernfalls False.</param>
-        </member>
-        <member name="M:DualityEditor.Controls.GroupedPropertyEditor.InitializeComponent">
-            <summary> 
-            Erforderliche Methode für die Designerunterstützung. 
-            Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
-            </summary>
-        </member>
-        <member name="F:DualityEditor.Controls.PropertyEditors.FlagPropertyEditor.components">
-            <summary> 
-            Erforderliche Designervariable.
-            </summary>
-        </member>
-        <member name="M:DualityEditor.Controls.PropertyEditors.FlagPropertyEditor.Dispose(System.Boolean)">
-            <summary> 
-            Verwendete Ressourcen bereinigen.
-            </summary>
-            <param name="disposing">True, wenn verwaltete Ressourcen gelöscht werden sollen; andernfalls False.</param>
-        </member>
-        <member name="M:DualityEditor.Controls.PropertyEditors.FlagPropertyEditor.InitializeComponent">
-            <summary> 
-            Erforderliche Methode für die Designerunterstützung. 
-            Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
-            </summary>
-        </member>
-        <member name="F:DualityEditor.Controls.PropertyEditors.BoolPropertyEditor.components">
-            <summary> 
-            Erforderliche Designervariable.
-            </summary>
-        </member>
-        <member name="M:DualityEditor.Controls.PropertyEditors.BoolPropertyEditor.Dispose(System.Boolean)">
-            <summary> 
-            Verwendete Ressourcen bereinigen.
-            </summary>
-            <param name="disposing">True, wenn verwaltete Ressourcen gelöscht werden sollen; andernfalls False.</param>
-        </member>
-        <member name="M:DualityEditor.Controls.PropertyEditors.BoolPropertyEditor.InitializeComponent">
-            <summary> 
-            Erforderliche Methode für die Designerunterstützung. 
-            Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
-            </summary>
-        </member>
         <member name="T:DualityEditor.RecycleBin">
             <summary>
             Send files directly to the recycle bin.
@@ -224,111 +156,9 @@
             the contents of this method with the code editor.
             </summary>
         </member>
-        <member name="F:DualityEditor.Controls.PropertyEditors.StringPropertyEditor.components">
-            <summary> 
-            Erforderliche Designervariable.
-            </summary>
-        </member>
-        <member name="M:DualityEditor.Controls.PropertyEditors.StringPropertyEditor.Dispose(System.Boolean)">
-            <summary> 
-            Verwendete Ressourcen bereinigen.
-            </summary>
-            <param name="disposing">True, wenn verwaltete Ressourcen gelöscht werden sollen; andernfalls False.</param>
-        </member>
-        <member name="M:DualityEditor.Controls.PropertyEditors.StringPropertyEditor.InitializeComponent">
-            <summary> 
-            Erforderliche Methode für die Designerunterstützung. 
-            Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
-            </summary>
-        </member>
-        <member name="F:DualityEditor.Controls.PropertyEditors.Vector3PropertyEditor.components">
-            <summary> 
-            Erforderliche Designervariable.
-            </summary>
-        </member>
-        <member name="M:DualityEditor.Controls.PropertyEditors.Vector3PropertyEditor.Dispose(System.Boolean)">
-            <summary> 
-            Verwendete Ressourcen bereinigen.
-            </summary>
-            <param name="disposing">True, wenn verwaltete Ressourcen gelöscht werden sollen; andernfalls False.</param>
-        </member>
-        <member name="M:DualityEditor.Controls.PropertyEditors.Vector3PropertyEditor.InitializeComponent">
-            <summary> 
-            Erforderliche Methode für die Designerunterstützung. 
-            Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
-            </summary>
-        </member>
         <member name="M:DualityEditor.Controls.EnumComboBox.FillEnumMembers">
             <summary>
             Adds items to the checklistbox based on the members of the enum
-            </summary>
-        </member>
-        <member name="F:DualityEditor.Controls.PropertyEditors.NumericPropertyEditor.components">
-            <summary> 
-            Erforderliche Designervariable.
-            </summary>
-        </member>
-        <member name="M:DualityEditor.Controls.PropertyEditors.NumericPropertyEditor.Dispose(System.Boolean)">
-            <summary> 
-            Verwendete Ressourcen bereinigen.
-            </summary>
-            <param name="disposing">True, wenn verwaltete Ressourcen gelöscht werden sollen; andernfalls False.</param>
-        </member>
-        <member name="M:DualityEditor.Controls.PropertyEditors.NumericPropertyEditor.InitializeComponent">
-            <summary> 
-            Erforderliche Methode für die Designerunterstützung. 
-            Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
-            </summary>
-        </member>
-        <member name="F:DualityEditor.Controls.PropertyEditors.RectPropertyEditor.components">
-            <summary> 
-            Erforderliche Designervariable.
-            </summary>
-        </member>
-        <member name="M:DualityEditor.Controls.PropertyEditors.RectPropertyEditor.Dispose(System.Boolean)">
-            <summary> 
-            Verwendete Ressourcen bereinigen.
-            </summary>
-            <param name="disposing">True, wenn verwaltete Ressourcen gelöscht werden sollen; andernfalls False.</param>
-        </member>
-        <member name="M:DualityEditor.Controls.PropertyEditors.RectPropertyEditor.InitializeComponent">
-            <summary> 
-            Erforderliche Methode für die Designerunterstützung. 
-            Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
-            </summary>
-        </member>
-        <member name="F:DualityEditor.Controls.PropertyEditors.Vector2PropertyEditor.components">
-            <summary> 
-            Erforderliche Designervariable.
-            </summary>
-        </member>
-        <member name="M:DualityEditor.Controls.PropertyEditors.Vector2PropertyEditor.Dispose(System.Boolean)">
-            <summary> 
-            Verwendete Ressourcen bereinigen.
-            </summary>
-            <param name="disposing">True, wenn verwaltete Ressourcen gelöscht werden sollen; andernfalls False.</param>
-        </member>
-        <member name="M:DualityEditor.Controls.PropertyEditors.Vector2PropertyEditor.InitializeComponent">
-            <summary> 
-            Erforderliche Methode für die Designerunterstützung. 
-            Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
-            </summary>
-        </member>
-        <member name="F:DualityEditor.Controls.PropertyEditors.StringEnumPropertyEditor.components">
-            <summary> 
-            Erforderliche Designervariable.
-            </summary>
-        </member>
-        <member name="M:DualityEditor.Controls.PropertyEditors.StringEnumPropertyEditor.Dispose(System.Boolean)">
-            <summary> 
-            Verwendete Ressourcen bereinigen.
-            </summary>
-            <param name="disposing">True, wenn verwaltete Ressourcen gelöscht werden sollen; andernfalls False.</param>
-        </member>
-        <member name="M:DualityEditor.Controls.PropertyEditors.StringEnumPropertyEditor.InitializeComponent">
-            <summary> 
-            Erforderliche Methode für die Designerunterstützung. 
-            Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
             </summary>
         </member>
         <member name="M:DualityEditor.EditorPlugin.LoadPlugin">
@@ -383,23 +213,6 @@
             <summary>
             Required method for Designer support - do not modify
             the contents of this method with the code editor.
-            </summary>
-        </member>
-        <member name="F:DualityEditor.Controls.PropertyEditors.IColorDataPropertyEditor.components">
-            <summary> 
-            Erforderliche Designervariable.
-            </summary>
-        </member>
-        <member name="M:DualityEditor.Controls.PropertyEditors.IColorDataPropertyEditor.Dispose(System.Boolean)">
-            <summary> 
-            Verwendete Ressourcen bereinigen.
-            </summary>
-            <param name="disposing">True, wenn verwaltete Ressourcen gelöscht werden sollen; andernfalls False.</param>
-        </member>
-        <member name="M:DualityEditor.Controls.PropertyEditors.IColorDataPropertyEditor.InitializeComponent">
-            <summary> 
-            Erforderliche Methode für die Designerunterstützung. 
-            Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
             </summary>
         </member>
         <member name="F:DualityEditor.Forms.SplashScreen.components">
@@ -590,23 +403,6 @@
         <member name="M:DualityEditor.Forms.MainForm.InitializeComponent">
             <summary>
             Erforderliche Methode für die Designerunterstützung.
-            Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
-            </summary>
-        </member>
-        <member name="F:DualityEditor.Controls.PropertyEditors.EnumPropertyEditor.components">
-            <summary> 
-            Erforderliche Designervariable.
-            </summary>
-        </member>
-        <member name="M:DualityEditor.Controls.PropertyEditors.EnumPropertyEditor.Dispose(System.Boolean)">
-            <summary> 
-            Verwendete Ressourcen bereinigen.
-            </summary>
-            <param name="disposing">True, wenn verwaltete Ressourcen gelöscht werden sollen; andernfalls False.</param>
-        </member>
-        <member name="M:DualityEditor.Controls.PropertyEditors.EnumPropertyEditor.InitializeComponent">
-            <summary> 
-            Erforderliche Methode für die Designerunterstützung. 
             Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
             </summary>
         </member>

@@ -1,25 +1,16 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using System.IO;
-using System.Threading;
-
-using CancelEventHandler = System.ComponentModel.CancelEventHandler;
-using CancelEventArgs = System.ComponentModel.CancelEventArgs;
 
 using WeifenLuo.WinFormsUI.Docking;
-using Aga.Controls.Tree;
+using AdamsLair.PropertyGrid;
+using PropertyGrid = AdamsLair.PropertyGrid.PropertyGrid;
 
 using Duality;
-using Duality.Resources;
 using DualityEditor;
-using DualityEditor.Controls;
 
 namespace EditorBase
 {
@@ -134,6 +125,7 @@ namespace EditorBase
 		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
 		{
 			if (!e.PrefabApplied && (sender is PropertyEditor) && (sender as PropertyEditor).ParentGrid == this.propertyGrid) return;
+			if (!e.PrefabApplied && sender is PropertyGrid) return;
 
 			// Update values if anything changed that relates to the grids current selection
 			if (e.Objects.Components.GameObject().Any(o => this.propertyGrid.Selection.Contains(o)) ||
