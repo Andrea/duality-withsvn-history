@@ -148,11 +148,25 @@ namespace AdamsLair.PropertyGrid
 		{
 			get { return new PropertyEditor[0]; }
 		}
+		public IEnumerable<PropertyEditor> ChildrenDeep
+		{
+			get
+			{
+				foreach (PropertyEditor child in this.Children)
+				{
+					yield return child;
+					foreach (PropertyEditor subChild in child.ChildrenDeep)
+					{
+						yield return subChild;
+					}
+				}
+			}
+		}
 		
 		public Type EditedType
 		{
 			get { return this.editedType; }
-			internal set 
+			internal protected set 
 			{
 				if (this.editedType != value)
 				{
@@ -176,7 +190,7 @@ namespace AdamsLair.PropertyGrid
 		public string PropertyName
 		{
 			get { return this.propertyName; }
-			internal set 
+			set 
 			{
 				this.propertyName = value;
 				this.Invalidate();
@@ -227,9 +241,13 @@ namespace AdamsLair.PropertyGrid
 				return this.parentGrid.Focused && this.parentGrid.FocusEditor == this;
 			}
 		}
-		protected virtual bool FocusOnClick
+		public virtual bool FocusOnClick
 		{
-			get { return true; }
+			get { return this.CanGetFocus; }
+		}
+		public virtual bool CanGetFocus
+		{
+			get { return this.Height > 0; }
 		}
 		public HintFlags Hints
 		{

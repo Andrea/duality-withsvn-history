@@ -18,7 +18,6 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 		{
 			get { return Convert.ChangeType(this.state == CheckState.Checked, this.EditedType); }
 		}
-		
 
 		public BoolPropertyEditor()
 		{

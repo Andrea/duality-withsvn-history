@@ -60,6 +60,11 @@ namespace EditorBase
 			EditorBasePlugin.Instance.EditorForm.ResourceModified -= this.EditorForm_ResourceModified;
 			EditorBasePlugin.Instance.EditorForm.FormClosing -= this.EditorForm_FormClosing;
 		}
+		protected override void OnGotFocus(EventArgs e)
+		{
+			base.OnGotFocus(e);
+			this.propertyGrid.Focus();
+		}
 
 		internal void SaveUserData(System.Xml.XmlElement node)
 		{

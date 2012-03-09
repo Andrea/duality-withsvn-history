@@ -21,12 +21,7 @@ namespace ResourceHacker.PropertyEditors
 	{
 		protected	PropertyEditor	editorPrimitiveData	= null;
 
-		public ArrayNodePropertyEditor()
-		{
-			this.MemberEditorCreator = this.MemberEditor;
-		}
-
-		protected PropertyEditor MemberEditor(MemberInfo info)
+		protected override PropertyEditor AutoCreateMemberEditor(MemberInfo info)
 		{
 			if (ReflectionHelper.MemberInfoEquals(info, typeof(ArrayNode).GetProperty("PrimitiveData")))
 			{
@@ -41,7 +36,7 @@ namespace ResourceHacker.PropertyEditors
 				return this.editorPrimitiveData;
 			}
 			else
-				return base.DefaultMemberEditorCreator(info);
+				return base.AutoCreateMemberEditor(info);
 		}
 	}
 }

@@ -82,7 +82,7 @@ namespace AdamsLair.PropertyGrid
 					PropertyInfo[] propArr = this.EditedType.GetProperties(BindingFlags.Instance | BindingFlags.Public);
 					var propQuery = 
 						from p in propArr
-						where p.CanRead && p.GetIndexParameters().Length == 0 && this.memberPredicate(p)
+						where p.CanRead && p.GetIndexParameters().Length == 0 && this.IsAutoCreateMember(p)
 						orderby GetTypeHierarchyLevel(p.DeclaringType) ascending, p.Name
 						select p;
 					foreach (PropertyInfo prop in propQuery)
@@ -95,7 +95,7 @@ namespace AdamsLair.PropertyGrid
 					FieldInfo[] fieldArr = this.EditedType.GetFields(BindingFlags.Instance | BindingFlags.Public);
 					var fieldQuery =
 						from f in fieldArr
-						where this.memberPredicate(f)
+						where this.IsAutoCreateMember(f)
 						orderby GetTypeHierarchyLevel(f.DeclaringType) ascending, f.Name
 						select f;
 					foreach (FieldInfo field in fieldQuery)
@@ -110,7 +110,7 @@ namespace AdamsLair.PropertyGrid
 
 		public PropertyEditor AddEditorForProperty(PropertyInfo prop)
 		{
-			PropertyEditor e = this.memberEditorCreator(prop);
+			PropertyEditor e = this.AutoCreateMemberEditor(prop);
 			if (e == null) e = this.ParentGrid.CreateEditor(prop.PropertyType);
 			if (e == null) return null;
 			e.BeginUpdate();
@@ -125,7 +125,7 @@ namespace AdamsLair.PropertyGrid
 		}
 		public PropertyEditor AddEditorForField(FieldInfo field)
 		{
-			PropertyEditor e = this.memberEditorCreator(field);
+			PropertyEditor e = this.AutoCreateMemberEditor(field);
 			if (e == null) e = this.ParentGrid.CreateEditor(field.FieldType);
 			if (e == null) return null;
 			e.BeginUpdate();
@@ -228,6 +228,15 @@ namespace AdamsLair.PropertyGrid
 			}
 
 			this.PerformGetValue();
+		}
+
+		protected virtual bool IsAutoCreateMember(MemberInfo info)
+		{
+			return this.memberPredicate(info);
+		}
+		protected virtual PropertyEditor AutoCreateMemberEditor(MemberInfo info)
+		{
+			return this.memberEditorCreator(info);
 		}
 
 		protected internal override void OnKeyDown(KeyEventArgs e)

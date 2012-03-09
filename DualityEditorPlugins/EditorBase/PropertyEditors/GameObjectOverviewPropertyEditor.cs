@@ -5,9 +5,10 @@ using System.Text;
 using System.Windows.Forms;
 using System.Reflection;
 
+using AdamsLair.PropertyGrid;
+
 using Duality;
 using DualityEditor.Controls;
-using PropertyGrid = DualityEditor.Controls.PropertyGrid;
 
 namespace EditorBase.PropertyEditors
 {
@@ -15,45 +16,45 @@ namespace EditorBase.PropertyEditors
 	{
 		private	GameObjectPropertyEditor		gameObjEditor		= null;
 		private	Dictionary<Type,PropertyEditor>	componentEditors	= new Dictionary<Type,PropertyEditor>();
-
-		public override string PropertyName
+		
+		public override object DisplayedValue
 		{
-			get { return base.PropertyName; }
-			set
-			{
-				if (this.PropertyName != value)
-				{
-					base.PropertyName = value;
-					this.Header.Visible = !string.IsNullOrEmpty(this.PropertyName);
-				}
-			}
+			get { return this.GetValue(); }
+		}
+		public override bool CanGetFocus
+		{
+			get { return false; }
 		}
 
 		public GameObjectOverviewPropertyEditor()
 		{
-			this.Header.Visible = false;
-			this.Header.ResetVisible = false;
-
+			this.HeaderHeight = 0;
+			this.Hints = HintFlags.None;
+			this.Indent = 0;
 			this.gameObjEditor = new GameObjectPropertyEditor();
-			this.gameObjEditor.EditedType = typeof(GameObject);
-			this.gameObjEditor.PropertyName = "GameObject";
 		}
 
 		public override void InitContent()
 		{
+			if (this.ContentInitialized) this.ClearContent();
 			base.InitContent();
 
-			this.ClearPropertyEditors();
 			if (this.EditedType != null)
 			{
 				this.PerformGetValue();
 			}
 		}
+		public override void ClearContent()
+		{
+			base.ClearContent();
+			this.ClearPropertyEditors();
+			this.componentEditors.Clear();
+		}
 
 		public override void PerformGetValue()
 		{
 			base.PerformGetValue();
-			GameObject[] values = this.Getter().Cast<GameObject>().ToArray();
+			GameObject[] values = this.GetValue().Cast<GameObject>().ToArray();
 			if (values == null) return;
 
 			if (!values.Any() || values.All(o => o == null))
@@ -66,19 +67,19 @@ namespace EditorBase.PropertyEditors
 				if (this.ContentInitialized)
 				{
 					this.UpdateComponentEditors(values);
-					foreach (PropertyEditor e in this.PropertyEditors)
+					foreach (PropertyEditor e in this.Children)
 						e.PerformGetValue();
 				}
-				if (!this.Header.Visible)
-					this.Expanded = !this.ContentInitialized || this.PropertyEditors.Any();
+				this.Expanded = !this.ContentInitialized || this.Children.Any();
 			}
 		}
 		public override void PerformSetValue()
 		{
 			base.PerformSetValue();
-			if (!this.PropertyEditors.Any()) return;
+			if (this.ReadOnly) return;
+			if (!this.Children.Any()) return;
 
-			foreach (PropertyEditor e in this.PropertyEditors)
+			foreach (PropertyEditor e in this.Children)
 				e.PerformSetValue();
 		}
 
@@ -86,12 +87,11 @@ namespace EditorBase.PropertyEditors
 		{
 			this.BeginUpdate();
 
-			if (!this.PropertyEditors.Any())
+			if (!this.Children.Any())
 			{
-				this.gameObjEditor.Getter = this.Getter;
-				this.gameObjEditor.Setter = this.Setter;
+				this.gameObjEditor.Getter = this.GetValue;
+				this.gameObjEditor.Setter = this.SetValue;
 				this.AddPropertyEditor(this.gameObjEditor);
-				this.gameObjEditor.UpdateReadOnlyState();
 			}
 
 			// Remove Component editors that aren't needed anymore
@@ -110,13 +110,12 @@ namespace EditorBase.PropertyEditors
 			{
 				if (!this.componentEditors.ContainsKey(t))
 				{
-					PropertyEditor e = this.ParentGrid.PropertyEditorProvider.CreateEditor(t);
-					e.EditedType = t;
+					PropertyEditor e = this.ParentGrid.CreateEditor(t);
 					e.Getter = this.CreateComponentValueGetter(t);
 					e.Setter = this.CreateComponentValueSetter(t);
 					e.PropertyName = t.GetTypeCSCodeName(true);
+					this.ParentGrid.ConfigureEditor(e);
 					this.AddPropertyEditor(e);
-					e.UpdateReadOnlyState();
 					this.componentEditors[t] = e;
 				}
 			}
@@ -126,7 +125,7 @@ namespace EditorBase.PropertyEditors
 
 		protected Func<IEnumerable<object>> CreateComponentValueGetter(Type componentType)
 		{
-			return () => this.Getter().Select(o => o != null ? (o as GameObject).GetComponent(componentType) : null);
+			return () => this.GetValue().Select(o => o != null ? (o as GameObject).GetComponent(componentType) : null);
 		}
 		protected Action<IEnumerable<object>> CreateComponentValueSetter(Type componentType)
 		{

@@ -6,20 +6,26 @@
 	-->	??? Ingame GUI & GUI Editor
 
 -->	Dualitor: PerformanceMonitor
--->	Dualitor: Implement new PropertyGrid
-	-->	Enable EditorHint support
-	-->	Rebuild Duality PropertyEditors
-		-->	Vector2, Vector3, Vector4, Rect
-		-->	IColorData
-		-->	GameObject
-		-->	Component
-		-->	Resource
-		-->	...
-	-->	Enable full IHelpProvider support
 -->	Dualitor: Improve User learning curve
 	-->	More Advisor information?
 	-->	"Did you know..?" screen?
 
+	
+-->	Dualitor: Implement new PropertyGrid
+	-->	Fix PropertyEditor-Popup "Focus disco"
+		-->	Keep focus as is, just forward keyboard events to popup
+		-->	Fix in CustomPropertyGrid dependency
+	-->	Rebuild Duality PropertyEditors
+		-->	Vector2, Vector3, Vector4, Rect
+		-->	IColorData
+		-->	GameObject
+			-->	Draw header
+			-->	React to active check and buttons
+		-->	Resource
+			-->	Keep similar to Component, in Style
+		-->	...
+	-->	Enable full IHelpProvider support
+	-->	Profile selection times and remove "update delay" if small enough
 
 
 -->	How would you do.. (All those should be possible in some way!)

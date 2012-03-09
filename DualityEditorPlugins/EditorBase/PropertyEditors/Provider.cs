@@ -17,33 +17,31 @@ namespace EditorBase.PropertyEditors
 	{
 		public int IsResponsibleFor(Type baseType)
 		{
-			return PropertyGrid.EditorPriority_None;
-
 			// -------- Specialized area --------
 			if (baseType == typeof(GameObject))			return PropertyGrid.EditorPriority_Specialized;
-			else if (baseType == typeof(Transform))		return PropertyGrid.EditorPriority_Specialized;
-			else if (baseType == typeof(Camera))		return PropertyGrid.EditorPriority_Specialized;
-			else if (baseType == typeof(Camera.Pass))	return PropertyGrid.EditorPriority_Specialized;
-			else if (baseType == typeof(SoundEmitter))	return PropertyGrid.EditorPriority_Specialized;
-			else if (baseType == typeof(BatchInfo))		return PropertyGrid.EditorPriority_Specialized;
-			else if (baseType == typeof(Material))		return PropertyGrid.EditorPriority_Specialized;
-			else if (baseType == typeof(Texture))		return PropertyGrid.EditorPriority_Specialized;
-			else if (baseType == typeof(Pixmap))		return PropertyGrid.EditorPriority_Specialized;
-			else if (baseType == typeof(Font))			return PropertyGrid.EditorPriority_Specialized;
-			else if (baseType == typeof(FormattedText))	return PropertyGrid.EditorPriority_Specialized;
-			else if (baseType == typeof(TextRenderer))	return PropertyGrid.EditorPriority_Specialized;
+			//else if (baseType == typeof(Transform))		return PropertyGrid.EditorPriority_Specialized;
+			//else if (baseType == typeof(Camera))		return PropertyGrid.EditorPriority_Specialized;
+			//else if (baseType == typeof(Camera.Pass))	return PropertyGrid.EditorPriority_Specialized;
+			//else if (baseType == typeof(SoundEmitter))	return PropertyGrid.EditorPriority_Specialized;
+			//else if (baseType == typeof(BatchInfo))		return PropertyGrid.EditorPriority_Specialized;
+			//else if (baseType == typeof(Material))		return PropertyGrid.EditorPriority_Specialized;
+			//else if (baseType == typeof(Texture))		return PropertyGrid.EditorPriority_Specialized;
+			//else if (baseType == typeof(Pixmap))		return PropertyGrid.EditorPriority_Specialized;
+			//else if (baseType == typeof(Font))			return PropertyGrid.EditorPriority_Specialized;
+			//else if (baseType == typeof(FormattedText))	return PropertyGrid.EditorPriority_Specialized;
+			//else if (baseType == typeof(TextRenderer))	return PropertyGrid.EditorPriority_Specialized;
 
-			// -------- Semi-Specialized area --------
-			else if (typeof(SpriteRenderer).IsAssignableFrom(baseType))		return PropertyGrid.EditorPriority_General + 1;
-			else if (typeof(Collider).IsAssignableFrom(baseType))			return PropertyGrid.EditorPriority_General + 1;
+			//// -------- Semi-Specialized area --------
+			//else if (typeof(SpriteRenderer).IsAssignableFrom(baseType))		return PropertyGrid.EditorPriority_General + 1;
+			//else if (typeof(Collider).IsAssignableFrom(baseType))			return PropertyGrid.EditorPriority_General + 1;
 
 			// -------- General area --------
-			else if (typeof(Collider.ShapeInfo).IsAssignableFrom(baseType))	return PropertyGrid.EditorPriority_General;
+			//else if (typeof(Collider.ShapeInfo).IsAssignableFrom(baseType))	return PropertyGrid.EditorPriority_General;
 			else if (typeof(Component).IsAssignableFrom(baseType))			return PropertyGrid.EditorPriority_General;
-			else if (typeof(Resource).IsAssignableFrom(baseType))			return PropertyGrid.EditorPriority_General;
-			else if (typeof(IContentRef).IsAssignableFrom(baseType))		return PropertyGrid.EditorPriority_General;
-			else if (typeof(DualityAppData).IsAssignableFrom(baseType))		return PropertyGrid.EditorPriority_General;
-			else if (typeof(DualityUserData).IsAssignableFrom(baseType))	return PropertyGrid.EditorPriority_General;
+			//else if (typeof(Resource).IsAssignableFrom(baseType))			return PropertyGrid.EditorPriority_General;
+			//else if (typeof(IContentRef).IsAssignableFrom(baseType))		return PropertyGrid.EditorPriority_General;
+			//else if (typeof(DualityAppData).IsAssignableFrom(baseType))		return PropertyGrid.EditorPriority_General;
+			//else if (typeof(DualityUserData).IsAssignableFrom(baseType))	return PropertyGrid.EditorPriority_General;
 			
 			else return PropertyGrid.EditorPriority_None;
 		}
@@ -51,8 +49,8 @@ namespace EditorBase.PropertyEditors
 		{
 			PropertyEditor e = null;
 
-			//// -------- Specialized area --------
-			//if (baseType == typeof(GameObject))			e = new GameObjectOverviewPropertyEditor();
+			// -------- Specialized area --------
+			if (baseType == typeof(GameObject))			e = new GameObjectOverviewPropertyEditor();
 			//else if (baseType == typeof(Transform))		e = new TransformPropertyEditorContainer();
 			//else if (baseType == typeof(Camera))		e = new CameraPropertyEditor();
 			//else if (baseType == typeof(Camera.Pass))	e = new CameraRenderPassPropertyEditor();
@@ -69,15 +67,14 @@ namespace EditorBase.PropertyEditors
 			//else if (typeof(SpriteRenderer).IsAssignableFrom(baseType))		e = new SpriteRendererPropertyEditor();
 			//else if (typeof(Collider).IsAssignableFrom(baseType))			e = new ColliderPropertyEditor();
 
-			//// -------- General area --------
+			// -------- General area --------
 			//else if (typeof(Collider.ShapeInfo).IsAssignableFrom(baseType))	e = new ColliderShapePropertyEditor();
-			//else if (typeof(Component).IsAssignableFrom(baseType))			e = new ComponentPropertyEditor();
+			else if (typeof(Component).IsAssignableFrom(baseType))			e = new ComponentPropertyEditor();
 			//else if (typeof(Resource).IsAssignableFrom(baseType))			e = new ResourcePropertyEditor();
 			//else if (typeof(IContentRef).IsAssignableFrom(baseType))		e = new ContentRefPropertyEditor();
 			//else if (typeof(DualityAppData).IsAssignableFrom(baseType))		e = new DualityAppDataPropertyEditor();
 			//else if (typeof(DualityUserData).IsAssignableFrom(baseType))	e = new DualityUserDataPropertyEditor();
 
-			//e.EditedType = baseType;
 			return e;
 		}
 	}

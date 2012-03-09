@@ -21,10 +21,6 @@ namespace ResourceHacker.PropertyEditors
 		protected	PropertyEditor	editorPrimitiveValue	= null;
 		protected	bool			isInitializingContent	= false;
 		
-		public PrimitiveNodePropertyEditor()
-		{
-			this.MemberEditorCreator = this.MemberEditor;
-		}
 
 		public override void PerformGetValue()
 		{
@@ -36,7 +32,7 @@ namespace ResourceHacker.PropertyEditors
 
 			base.PerformGetValue();
 		}
-		protected PropertyEditor MemberEditor(MemberInfo info)
+		protected override PropertyEditor AutoCreateMemberEditor(MemberInfo info)
 		{
 			if (ReflectionHelper.MemberInfoEquals(info, typeof(PrimitiveNode).GetProperty("PrimitiveValue")))
 			{
@@ -48,7 +44,7 @@ namespace ResourceHacker.PropertyEditors
 				return this.editorPrimitiveValue;
 			}
 			else
-				return base.DefaultMemberEditorCreator(info);
+				return base.AutoCreateMemberEditor(info);
 		}
 	}
 }

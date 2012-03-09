@@ -148,7 +148,7 @@ namespace AdamsLair.PropertyGrid
 		{
 			get { return this.expanded ? this.propertyEditors : base.Children; }
 		}
-		protected override bool FocusOnClick
+		public override bool FocusOnClick
 		{
 			get { return false; }
 		}
@@ -331,7 +331,7 @@ namespace AdamsLair.PropertyGrid
 			if ((this.Hints & HintFlags.HasActiveCheck) != HintFlags.None)
 			{
 				this.activeCheckRect = new Rectangle(
-					this.expandCheckRect.X + 2,
+					this.expandCheckRect.Right + 2,
 					this.headerRect.Y + this.headerRect.Height / 2 - ControlRenderer.CheckBoxSize.Height / 2 - 1,
 					ControlRenderer.CheckBoxSize.Width,
 					ControlRenderer.CheckBoxSize.Height);
@@ -937,7 +937,7 @@ namespace AdamsLair.PropertyGrid
 			if (this.ReadOnly) return;
 			this.Active = !this.Active;
 		}
-		protected void OnActiveChanged()
+		protected virtual void OnActiveChanged()
 		{
 			if (this.ActiveChanged != null)
 				this.ActiveChanged(this, EventArgs.Empty);
