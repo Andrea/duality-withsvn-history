@@ -61,9 +61,12 @@ namespace CustomPropertyGrid
 				// Basic data type: String
 				else if (baseType == typeof(string))
 					e = new StringPropertyEditor();
-				// IEnumerable
-				else if (typeof(System.Collections.IEnumerable).IsAssignableFrom(baseType))
+				// IList
+				else if (typeof(System.Collections.IList).IsAssignableFrom(baseType))
 					e = new IListPropertyEditor();
+				// IList
+				else if (typeof(System.Collections.IDictionary).IsAssignableFrom(baseType))
+					e = new IDictionaryPropertyEditor();
 				// Unknown data type
 				else
 				{

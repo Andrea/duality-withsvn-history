@@ -84,6 +84,7 @@
     <Compile Include="PropertyEditors\FlaggedEnumPropertyEditor.cs" />
     <Compile Include="PropertyEditors\BitmaskPropertyEditor.cs" />
     <Compile Include="PropertyEditors\IListPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\IDictionaryPropertyEditor.cs" />
     <Compile Include="PropertyEditors\ObjectSelectorPropertyEditor.cs" />
     <Compile Include="PropertyEditors\StringPropertyEditor.cs" />
     <Compile Include="PropertyEditors\NumericPropertyEditor.cs" />

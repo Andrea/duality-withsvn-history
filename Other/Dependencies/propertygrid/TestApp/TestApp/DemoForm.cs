@@ -39,7 +39,6 @@ namespace CustomPropertyGrid
 			private string t;
 			private Test2 subclass;
 			public List<string> stringListField;
-			public List<Test2> structListField;
 			public FlaggedEnumTest enumField1;
 			public EnumTest enumField2;
 
@@ -85,6 +84,8 @@ namespace CustomPropertyGrid
 			}
 			public bool BoolOne { get; set; }
 			public bool BoolTwo { get; set; }
+			public List<Test2> StructList { get; set; }
+			public Dictionary<string,int> SomeDict { get; set; }
 		}
 		private struct Test2
 		{
@@ -129,11 +130,10 @@ namespace CustomPropertyGrid
 
 			// Case A: Singleselect
 			this.propertyGrid1.SelectObject(testObj);
-			this.propertyGrid2.SelectedObject = testObj;
 			// Case B: Multiselect
 			//this.propertyGrid1.SelectObjects(new object[] { testObj, testObj2 });
 			// Case C: Select this very form
-			//this.propertyGrid1.SelectObjects(new object[] { this });
+			//this.propertyGrid1.SelectObject(this);
 		}
 
 		private void radioEnabled_CheckedChanged(object sender, EventArgs e)
@@ -142,7 +142,6 @@ namespace CustomPropertyGrid
 			{
 				this.propertyGrid1.Enabled = true;
 				this.propertyGrid1.ReadOnly = false;
-				this.propertyGrid2.Enabled = true;
 			}
 		}
 		private void radioReadOnly_CheckedChanged(object sender, EventArgs e)
@@ -151,7 +150,6 @@ namespace CustomPropertyGrid
 			{
 				this.propertyGrid1.Enabled = true;
 				this.propertyGrid1.ReadOnly = true;
-				this.propertyGrid2.Enabled = true;
 			}
 		}
 		private void radioDisabled_CheckedChanged(object sender, EventArgs e)
@@ -160,7 +158,6 @@ namespace CustomPropertyGrid
 			{
 				this.propertyGrid1.Enabled = false;
 				this.propertyGrid1.ReadOnly = false;
-				this.propertyGrid2.Enabled = false;
 			}
 		}
 	}

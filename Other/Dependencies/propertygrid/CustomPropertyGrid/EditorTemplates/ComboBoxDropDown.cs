@@ -73,7 +73,10 @@ namespace CustomPropertyGrid.EditorTemplates
 		private void listBox_Click(object sender, EventArgs e)
 		{
 			if (this.listBox.SelectionMode == SelectionMode.One)
+			{
 				this.Accept();
+				this.Close();
+			}
 		}
 		private void listBox_KeyDown(object sender, KeyEventArgs e)
 		{

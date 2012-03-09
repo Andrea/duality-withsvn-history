@@ -178,7 +178,7 @@ namespace CustomPropertyGrid.Renderer
 			nameLabelFormat.Alignment = align;
 			nameLabelFormat.LineAlignment = lineAlign;
 			nameLabelFormat.Trimming = StringTrimming.Character;
-			nameLabelFormat.FormatFlags |= StringFormatFlags.NoWrap;
+			nameLabelFormat.FormatFlags |= StringFormatFlags.NoWrap | StringFormatFlags.MeasureTrailingSpaces;
 			nameLabelFormat.SetMeasurableCharacterRanges(measureRanges);
 
 			return g.MeasureCharacterRanges(text, font, textRect, nameLabelFormat);
@@ -194,7 +194,7 @@ namespace CustomPropertyGrid.Renderer
 			nameLabelFormat.LineAlignment = lineAlign;
 			nameLabelFormat.Trimming = StringTrimming.Character;
 			nameLabelFormat.FormatFlags |= StringFormatFlags.LineLimit;
-			nameLabelFormat.FormatFlags |= StringFormatFlags.NoWrap;
+			nameLabelFormat.FormatFlags |= StringFormatFlags.NoWrap | StringFormatFlags.MeasureTrailingSpaces;
 
 			RectangleF pickRect = new RectangleF(textRect.X, textRect.Y, pickLoc.X - textRect.X, textRect.Height);
 
@@ -422,7 +422,7 @@ namespace CustomPropertyGrid.Renderer
 				nameLabelFormat.Alignment = StringAlignment.Near;
 				nameLabelFormat.LineAlignment = StringAlignment.Center;
 				nameLabelFormat.Trimming = StringTrimming.Character;
-				nameLabelFormat.FormatFlags |= StringFormatFlags.NoWrap;
+				nameLabelFormat.FormatFlags |= StringFormatFlags.NoWrap | StringFormatFlags.MeasureTrailingSpaces;
 				nameLabelFormat.SetMeasurableCharacterRanges(new [] {new CharacterRange(0, index)});
 
 				Region[] measured = g.MeasureCharacterRanges(text, font, rectScrolled, nameLabelFormat);

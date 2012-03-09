@@ -5,10 +5,3 @@
 #                                                                #
 ##################################################################
 
--->	GroupedPropertyEditor: Update HeaderValue when (any) child (value) changes
-
--->	IList
-	-->	Redesign "header"? Distinguish Size / Offset editors from element editors.
-
--->	Editors to do:
-	-->	IDictionary

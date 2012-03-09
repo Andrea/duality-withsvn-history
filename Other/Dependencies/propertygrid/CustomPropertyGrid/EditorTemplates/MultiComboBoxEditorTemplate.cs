@@ -71,7 +71,7 @@ namespace CustomPropertyGrid.EditorTemplates
 			if (!this.rect.Contains(e.Location)) return;
 			if (this.hovered && (e.Button & MouseButtons.Left) != MouseButtons.None)
 			{
-				this.pressed = true;
+				this.pressed = !this.IsDropDownOpened;
 				this.EmitInvalidate();
 			}
 		}

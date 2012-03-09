@@ -64,8 +64,8 @@ namespace CustomPropertyGrid
 		{
 			this.Hints |= HintFlags.HasButton | HintFlags.ButtonEnabled;
 			this.memberEditorCreator = this.DefaultMemberEditorCreator;
-			this.memberAffectsOthers = this.DefaultMemberAffectsOthers;
 			this.memberPredicate = this.DefaultMemberPredicate;
+			this.memberAffectsOthers = this.DefaultMemberAffectsOthers;
 		}
 
 		public override void InitContent()
@@ -192,6 +192,10 @@ namespace CustomPropertyGrid
 		protected override void OnEditedTypeChanged()
 		{
 			base.OnEditedTypeChanged();
+			if (this.EditedType.IsValueType)
+				this.Hints &= ~HintFlags.HasButton;
+			else
+				this.Hints |= HintFlags.HasButton;
 			if (this.ContentInitialized) this.InitContent();
 		}
 		protected override void OnEditedMemberChanged()
@@ -260,11 +264,15 @@ namespace CustomPropertyGrid
 					if (target != null) property.SetValue(target, curValue, null);
 					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}
-				this.OnPropertySet(property, targetArray);
-				if (affectsOthers) this.PerformGetValue();
 
 				// Fixup struct values by assigning the modified struct copy to its original member
 				if (this.EditedType.IsValueType || this.ForceWriteBack) this.SetValues((IEnumerable<object>)targetArray);
+
+				this.OnPropertySet(property, targetArray);
+				if (affectsOthers)
+					this.PerformGetValue();
+				else
+					this.OnUpdateFromObjects(this.GetValue().ToArray());
 			};
 		}
 		protected Action<IEnumerable<object>> CreateFieldValueSetter(FieldInfo field)
@@ -282,11 +290,15 @@ namespace CustomPropertyGrid
 					if (target != null) field.SetValue(target, curValue);
 					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}
-				this.OnFieldSet(field, targetArray);
-				if (affectsOthers) this.PerformGetValue();
 
 				// Fixup struct values by assigning the modified struct copy to its original member
 				if (this.EditedType.IsValueType || this.ForceWriteBack) this.SetValues((IEnumerable<object>)targetArray);
+
+				this.OnFieldSet(field, targetArray);
+				if (affectsOthers)
+					this.PerformGetValue();
+				else
+					this.OnUpdateFromObjects(this.GetValue().ToArray());
 			};
 		}
 
