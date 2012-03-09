@@ -101,7 +101,7 @@ namespace Debug
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public bool IsDirectional
 		{
-			get { return this.GameObj.Transform == null; }
+			get { return this.GameObj == null || this.GameObj.Transform == null; }
 		}
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public bool IsSpot
@@ -167,7 +167,7 @@ namespace Debug
 					nullDeviceInfo = info;
 				}
 				info.FrameId = Time.FrameCount;
-				info.PriorizedLights = Scene.Current.ActiveObjects.GetComponents<Light>().ToList();
+				info.PriorizedLights = Scene.Current.ActiveObjects.GetComponents<Light>(true).ToList();
 			}
 			else
 			{
@@ -179,7 +179,7 @@ namespace Debug
 					deviceInfo[device] = info;
 				}
 				info.FrameId = Time.FrameCount;
-				info.PriorizedLights = Scene.Current.ActiveObjects.GetComponents<Light>().Where(l => l.IsVisibleTo(device)).ToList();
+				info.PriorizedLights = Scene.Current.ActiveObjects.GetComponents<Light>(true).Where(l => l.IsVisibleTo(device)).ToList();
 				info.PriorizedLights.StableSort((Light a, Light b) => a.CalcPriority(device) - b.CalcPriority(device));
 			}
 
@@ -195,9 +195,10 @@ namespace Debug
 			float[] _lightColor = new float[3 * MaxVisible];
 			int _lightCount = MathF.Min(MaxVisible, info.PriorizedLights.Count);
 
-			for (int i = 0; i < _lightCount; i++)
+			int i = 0;
+			foreach (Light light in info.PriorizedLights)
 			{
-				Light light = info.PriorizedLights[i];
+				if (light.Disposed) continue;
 
 				Vector3 dir;
 				Vector3 pos;
@@ -241,7 +242,11 @@ namespace Debug
 				_lightColor[i * 3 + 0] = (float)light.color.r * light.intensity / 255.0f;
 				_lightColor[i * 3 + 1] = (float)light.color.g * light.intensity / 255.0f;
 				_lightColor[i * 3 + 2] = (float)light.color.b * light.intensity / 255.0f;
+
+				i++;
+				if (i >= _lightCount) break;
 			}
+			if (i + 1 < _lightCount) _lightCount = i + 1;
 
 			material.SetUniform("_lightCount", _lightCount);
 			material.SetUniform("_lightPos", _lightPos);
@@ -255,6 +260,7 @@ namespace Debug
 
 			foreach (Light light in info.PriorizedLights)
 			{
+				if (light.Disposed) continue;
 				if (light.IsDirectional)
 				{
 					float translucencyFactor = Vector3.Dot(light.dir, Vector3.UnitZ);
