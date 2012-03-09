@@ -1,4 +1,4 @@
-﻿namespace CustomPropertyGrid.EditorTemplates
+﻿namespace AdamsLair.PropertyGrid.EditorTemplates
 {
 	partial class MultiComboBoxDropDown
 	{

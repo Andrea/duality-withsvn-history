@@ -8,9 +8,9 @@ using System.Drawing.Drawing2D;
 using System.ComponentModel;
 using System.Reflection;
 
-using CustomPropertyGrid.PropertyEditors;
+using AdamsLair.PropertyGrid.PropertyEditors;
 
-namespace CustomPropertyGrid
+namespace AdamsLair.PropertyGrid
 {
 	public interface IPropertyEditorProvider
 	{
@@ -80,6 +80,7 @@ namespace CustomPropertyGrid
 					if (subProvider != null)
 					{
 						e = subProvider.CreateEditor(baseType);
+						e.EditedType = baseType;
 						return e;
 					}
 
@@ -101,6 +102,9 @@ namespace CustomPropertyGrid
 		private	int					updateTimerChangeMs	= 0;
 		private	bool				updateScheduled		= false;
 		private	bool				deferredSizeUpdate	= false;
+		
+		public event EventHandler<PropertyEditorValueEventArgs>	EditingFinished = null;
+		public event EventHandler<PropertyEditorValueEventArgs>	ValueChanged	= null;
 
 		public IEnumerable<object> Selection
 		{
@@ -208,6 +212,8 @@ namespace CustomPropertyGrid
 
 			this.mainEditor = this.editorProvider.CreateEditor(type);
 			this.mainEditor.SizeChanged += this.mainEditor_SizeChanged;
+			this.mainEditor.ValueChanged += this.mainEditor_ValueChanged;
+			this.mainEditor.EditingFinished += this.mainEditor_EditingFinished;
 			this.UpdatePropertyEditor();
 			this.ConfigureEditor(this.mainEditor);
 
@@ -251,6 +257,16 @@ namespace CustomPropertyGrid
 					this.AutoScrollMinSize = new Size(0, this.mainEditor.Height);
 				this.Invalidate();
 			}
+		}
+		private void mainEditor_ValueChanged(object sender, PropertyEditorValueEventArgs e)
+		{
+			if (this.ValueChanged != null)
+				this.ValueChanged(this, e);
+		}
+		private void mainEditor_EditingFinished(object sender, PropertyEditorValueEventArgs e)
+		{
+			if (this.EditingFinished != null)
+				this.EditingFinished(this, e);
 		}
 
 		public void RegisterEditorProvider(IPropertyEditorProvider provider)
@@ -413,8 +429,11 @@ namespace CustomPropertyGrid
 		{
 			base.OnMouseUp(e);
 
-			if (Control.MouseButtons == System.Windows.Forms.MouseButtons.None)
+			if (this.deferredSizeUpdate && Control.MouseButtons == System.Windows.Forms.MouseButtons.None)
+			{
 				this.mainEditor_SizeChanged(this, EventArgs.Empty);
+				this.deferredSizeUpdate = false;
+			}
 
 			if (this.mainEditor != null)
 			{

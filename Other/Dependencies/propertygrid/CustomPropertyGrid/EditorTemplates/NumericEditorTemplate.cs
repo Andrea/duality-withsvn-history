@@ -5,16 +5,17 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Globalization;
 
-using CustomPropertyGrid.Renderer;
-using ButtonState = CustomPropertyGrid.Renderer.ButtonState;
+using AdamsLair.PropertyGrid.Renderer;
+using AdamsLair.PropertyGrid.EmbeddedResources;
+using ButtonState = AdamsLair.PropertyGrid.Renderer.ButtonState;
 
-namespace CustomPropertyGrid.EditorTemplates
+namespace AdamsLair.PropertyGrid.EditorTemplates
 {
 	public class NumericEditorTemplate : EditorTemplate
 	{
 		public const int GripSize = 11;
 
-		private static IconImage gripIcon = new IconImage(Properties.Resources.NumberGripIcon);
+		private static IconImage gripIcon = new IconImage(Resources.NumberGripIcon);
 
 		private	bool					isTextValid		= false;
 		private	bool					isValueClamped	= false;

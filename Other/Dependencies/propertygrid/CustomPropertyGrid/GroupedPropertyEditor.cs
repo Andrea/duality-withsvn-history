@@ -5,9 +5,9 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
-using CustomPropertyGrid.Renderer;
+using AdamsLair.PropertyGrid.Renderer;
 
-namespace CustomPropertyGrid
+namespace AdamsLair.PropertyGrid
 {
 	public abstract class GroupedPropertyEditor : PropertyEditor
 	{

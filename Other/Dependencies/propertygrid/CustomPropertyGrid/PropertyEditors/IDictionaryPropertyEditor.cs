@@ -7,10 +7,10 @@ using System.Reflection;
 
 using IDictionary = System.Collections.IDictionary;
 
-using CustomPropertyGrid.Renderer;
-using CustomPropertyGrid.EditorTemplates;
+using AdamsLair.PropertyGrid.Renderer;
+using AdamsLair.PropertyGrid.EditorTemplates;
 
-namespace CustomPropertyGrid.PropertyEditors
+namespace AdamsLair.PropertyGrid.PropertyEditors
 {
 	public class IDictionaryPropertyEditor : GroupedPropertyEditor
 	{
@@ -80,7 +80,7 @@ namespace CustomPropertyGrid.PropertyEditors
 				this.ClearContent();
 
 				this.Hints &= ~HintFlags.ExpandEnabled;
-				this.ButtonIcon = CustomPropertyGrid.Properties.Resources.ImageAdd;
+				this.ButtonIcon = AdamsLair.PropertyGrid.EmbeddedResources.Resources.ImageAdd;
 				this.buttonIsCreate = true;
 				this.Expanded = false;
 					
@@ -93,12 +93,12 @@ namespace CustomPropertyGrid.PropertyEditors
 				
 				this.Hints |= HintFlags.ExpandEnabled;
 				if (!this.CanExpand) this.Expanded = false;
-				this.ButtonIcon = CustomPropertyGrid.Properties.Resources.ImageDelete;
+				this.ButtonIcon = AdamsLair.PropertyGrid.EmbeddedResources.Resources.ImageDelete;
 				this.buttonIsCreate = false;
 
 				valString = values.Count() == 1 ? 
 					string.Format("{0}, Count = {1}", this.EditedType.GetTypeCSCodeName(true), values.First().Count) :
-					string.Format(CustomPropertyGrid.Properties.Resources.PropertyGrid_N_Objects, values.Count());
+					string.Format(AdamsLair.PropertyGrid.EmbeddedResources.Resources.PropertyGrid_N_Objects, values.Count());
 			}
 
 			this.HeaderValueText = valString;

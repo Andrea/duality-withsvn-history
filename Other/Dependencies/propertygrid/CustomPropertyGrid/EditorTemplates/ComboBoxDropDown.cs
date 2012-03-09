@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace CustomPropertyGrid.EditorTemplates
+namespace AdamsLair.PropertyGrid.EditorTemplates
 {
 	public partial class ComboBoxDropDown : Form
 	{

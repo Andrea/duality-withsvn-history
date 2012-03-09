@@ -4,9 +4,9 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Drawing;
 
-using CustomPropertyGrid.Renderer;
+using AdamsLair.PropertyGrid.Renderer;
 
-namespace CustomPropertyGrid.PropertyEditors
+namespace AdamsLair.PropertyGrid.PropertyEditors
 {
 	public class BoolPropertyEditor : PropertyEditor
 	{
@@ -147,6 +147,11 @@ namespace CustomPropertyGrid.PropertyEditors
 			if (e.KeyCode == Keys.Return)
 			{
 				this.ToggleState();
+				e.Handled = true;
+			}
+			else if (e.KeyCode == Keys.Delete)
+			{
+				this.SetState(false);
 				e.Handled = true;
 			}
 			else if (e.Control && e.KeyCode == Keys.C)

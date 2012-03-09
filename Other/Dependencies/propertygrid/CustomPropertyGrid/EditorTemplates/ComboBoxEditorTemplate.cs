@@ -4,10 +4,10 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Drawing;
 
-using CustomPropertyGrid.Renderer;
-using ButtonState = CustomPropertyGrid.Renderer.ButtonState;
+using AdamsLair.PropertyGrid.Renderer;
+using ButtonState = AdamsLair.PropertyGrid.Renderer.ButtonState;
 
-namespace CustomPropertyGrid.EditorTemplates
+namespace AdamsLair.PropertyGrid.EditorTemplates
 {
 	public class ComboBoxEditorTemplate : EditorTemplate
 	{

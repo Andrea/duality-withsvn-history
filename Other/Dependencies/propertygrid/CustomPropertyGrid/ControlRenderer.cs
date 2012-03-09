@@ -7,9 +7,9 @@ using System.Drawing.Drawing2D;
 
 using System.Windows.Forms;
 
-using CustomPropertyGrid.Properties;
+using AdamsLair.PropertyGrid.EmbeddedResources;
 
-namespace CustomPropertyGrid.Renderer
+namespace AdamsLair.PropertyGrid.Renderer
 {
 	public enum TextBoxStyle
 	{

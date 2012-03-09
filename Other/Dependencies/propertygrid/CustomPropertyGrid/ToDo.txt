@@ -1,7 +1,7 @@
 ﻿
 ##################################################################
 #                                                                #
-#   The CustomPropertyGrid Project is in an experimental state   #
+#   The AdamsLair.PropertyGrid Project is in an experimental state   #
 #                                                                #
 ##################################################################
 

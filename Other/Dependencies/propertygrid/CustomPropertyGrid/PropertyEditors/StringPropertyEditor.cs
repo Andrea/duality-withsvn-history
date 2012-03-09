@@ -4,10 +4,10 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Drawing;
 
-using CustomPropertyGrid.Renderer;
-using CustomPropertyGrid.EditorTemplates;
+using AdamsLair.PropertyGrid.Renderer;
+using AdamsLair.PropertyGrid.EditorTemplates;
 
-namespace CustomPropertyGrid.PropertyEditors
+namespace AdamsLair.PropertyGrid.PropertyEditors
 {
 	public class StringPropertyEditor : PropertyEditor
 	{

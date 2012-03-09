@@ -1,4 +1,4 @@
-﻿namespace CustomPropertyGrid
+﻿namespace AdamsLair.PropertyGrid
 {
 	partial class DemoForm
 	{
@@ -28,7 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.propertyGrid1 = new CustomPropertyGrid.PropertyGrid();
+			this.propertyGrid1 = new AdamsLair.PropertyGrid.PropertyGrid();
 			this.radioEnabled = new System.Windows.Forms.RadioButton();
 			this.radioDisabled = new System.Windows.Forms.RadioButton();
 			this.radioReadOnly = new System.Windows.Forms.RadioButton();

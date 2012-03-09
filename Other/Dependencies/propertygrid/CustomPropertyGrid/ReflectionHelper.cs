@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 
-namespace CustomPropertyGrid
+namespace AdamsLair.PropertyGrid
 {
 	internal static class ReflectionHelper
 	{

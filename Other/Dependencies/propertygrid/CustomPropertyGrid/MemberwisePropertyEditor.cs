@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Reflection;
 
-namespace CustomPropertyGrid
+namespace AdamsLair.PropertyGrid
 {
 	public class MemberwisePropertyEditor : GroupedPropertyEditor
 	{
@@ -113,12 +113,14 @@ namespace CustomPropertyGrid
 			PropertyEditor e = this.memberEditorCreator(prop);
 			if (e == null) e = this.ParentGrid.CreateEditor(prop.PropertyType);
 			if (e == null) return null;
+			e.BeginUpdate();
 			e.Getter = this.CreatePropertyValueGetter(prop);
 			e.Setter = prop.CanWrite ? this.CreatePropertyValueSetter(prop) : null;
 			e.PropertyName = prop.Name;
 			e.EditedMember = prop;
 			this.ParentGrid.ConfigureEditor(e);
 			this.AddPropertyEditor(e);
+			e.EndUpdate();
 			return e;
 		}
 		public PropertyEditor AddEditorForField(FieldInfo field)
@@ -126,12 +128,14 @@ namespace CustomPropertyGrid
 			PropertyEditor e = this.memberEditorCreator(field);
 			if (e == null) e = this.ParentGrid.CreateEditor(field.FieldType);
 			if (e == null) return null;
+			e.BeginUpdate();
 			e.Getter = this.CreateFieldValueGetter(field);
 			e.Setter = this.CreateFieldValueSetter(field);
 			e.PropertyName = field.Name;
 			e.EditedMember = field;
 			this.ParentGrid.ConfigureEditor(e);
 			this.AddPropertyEditor(e);
+			e.EndUpdate();
 			return e;
 		}
 
@@ -169,7 +173,7 @@ namespace CustomPropertyGrid
 				this.ClearContent();
 
 				this.Hints &= ~HintFlags.ExpandEnabled;
-				this.ButtonIcon = CustomPropertyGrid.Properties.Resources.ImageAdd;
+				this.ButtonIcon = AdamsLair.PropertyGrid.EmbeddedResources.Resources.ImageAdd;
 				this.buttonIsCreate = true;
 				this.Expanded = false;
 					
@@ -179,12 +183,12 @@ namespace CustomPropertyGrid
 			{
 				this.Hints |= HintFlags.ExpandEnabled;
 				if (!this.CanExpand) this.Expanded = false;
-				this.ButtonIcon = CustomPropertyGrid.Properties.Resources.ImageDelete;
+				this.ButtonIcon = AdamsLair.PropertyGrid.EmbeddedResources.Resources.ImageDelete;
 				this.buttonIsCreate = false;
 
 				valString = values.Count() == 1 ? 
 					values.First().ToString() :
-					string.Format(CustomPropertyGrid.Properties.Resources.PropertyGrid_N_Objects, values.Count());
+					string.Format(AdamsLair.PropertyGrid.EmbeddedResources.Resources.PropertyGrid_N_Objects, values.Count());
 			}
 
 			this.HeaderValueText = valString;
@@ -311,15 +315,15 @@ namespace CustomPropertyGrid
 
 		}
 
-		private bool DefaultMemberPredicate(MemberInfo info)
+		protected bool DefaultMemberPredicate(MemberInfo info)
 		{
 			return true;
 		}
-		private bool DefaultMemberAffectsOthers(MemberInfo info)
+		protected bool DefaultMemberAffectsOthers(MemberInfo info)
 		{
 			return false;
 		}
-		private	PropertyEditor DefaultMemberEditorCreator(MemberInfo info)
+		protected PropertyEditor DefaultMemberEditorCreator(MemberInfo info)
 		{
 			return null;
 		}

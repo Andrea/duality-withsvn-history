@@ -4,9 +4,9 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Drawing;
 
-using CustomPropertyGrid.Renderer;
+using AdamsLair.PropertyGrid.Renderer;
 
-namespace CustomPropertyGrid.EditorTemplates
+namespace AdamsLair.PropertyGrid.EditorTemplates
 {
 	public abstract class EditorTemplate
 	{

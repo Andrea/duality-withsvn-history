@@ -92,6 +92,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="ReflectionHelper.cs" />
+    <Compile Include="Resources\Resources.cs" />
     <EmbeddedResource Include="EditorTemplates\ComboBoxDropDown.resx">
       <DependentUpon>ComboBoxDropDown.cs</DependentUpon>
     </EmbeddedResource>
@@ -101,43 +102,25 @@
     <EmbeddedResource Include="EditorTemplates\MultiComboBoxDropDown.resx">
       <DependentUpon>MultiComboBoxDropDown.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
+    <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Properties\add.png" />
+    <EmbeddedResource Include="Resources\add.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Properties\cross.png" />
+    <EmbeddedResource Include="Resources\cross.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Properties\ExpandNodeClosedDisabled.png" />
-    <None Include="Properties\ExpandNodeClosedHot.png" />
-    <None Include="Properties\ExpandNodeClosedNormal.png" />
-    <None Include="Properties\ExpandNodeClosedPressed.png" />
-    <None Include="Properties\ExpandNodeOpenedDisabled.png" />
-    <None Include="Properties\ExpandNodeOpenedHot.png" />
-    <None Include="Properties\ExpandNodeOpenedPressed.png" />
-    <None Include="Properties\ExpandNodeOpenedNormal.png" />
-    <None Include="Properties\NumberGripIcon.png" />
-    <None Include="Properties\DropDownIcon.png" />
+    <EmbeddedResource Include="Resources\ExpandNodeClosedDisabled.png" />
+    <EmbeddedResource Include="Resources\ExpandNodeClosedHot.png" />
+    <EmbeddedResource Include="Resources\ExpandNodeClosedNormal.png" />
+    <EmbeddedResource Include="Resources\ExpandNodeClosedPressed.png" />
+    <EmbeddedResource Include="Resources\ExpandNodeOpenedDisabled.png" />
+    <EmbeddedResource Include="Resources\ExpandNodeOpenedHot.png" />
+    <EmbeddedResource Include="Resources\ExpandNodeOpenedPressed.png" />
+    <EmbeddedResource Include="Resources\ExpandNodeOpenedNormal.png" />
+    <EmbeddedResource Include="Resources\NumberGripIcon.png" />
+    <EmbeddedResource Include="Resources\DropDownIcon.png" />
     <Content Include="ToDo.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

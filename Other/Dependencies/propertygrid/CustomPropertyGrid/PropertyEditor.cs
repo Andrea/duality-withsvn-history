@@ -6,9 +6,9 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Reflection;
 
-using CustomPropertyGrid.Renderer;
+using AdamsLair.PropertyGrid.Renderer;
 
-namespace CustomPropertyGrid
+namespace AdamsLair.PropertyGrid
 {
 	public class PropertyEditorEventArgs : EventArgs
 	{
@@ -73,7 +73,7 @@ namespace CustomPropertyGrid
 		private	PropertyEditor	parentEditor	= null;
 		private	Type			editedType		= null;
 		private	MemberInfo		editedMember	= null;
-		private	string			propertyName	= CustomPropertyGrid.Properties.Resources.PropertyName_Default;
+		private	string			propertyName	= AdamsLair.PropertyGrid.EmbeddedResources.Resources.PropertyName_Default;
 		private	bool			forceWriteBack	= false;
 		private	bool			updatingFromObj	= false;
 		private	HintFlags		hints			= HintFlags.Default;
@@ -248,7 +248,7 @@ namespace CustomPropertyGrid
 			get { return this.buttonIcon.SourceImage; }
 			set
 			{
-				if (value == null) value = CustomPropertyGrid.Properties.Resources.ImageDelete;
+				if (value == null) value = AdamsLair.PropertyGrid.EmbeddedResources.Resources.ImageDelete;
 				if (this.buttonIcon == null || this.buttonIcon.SourceImage != value)
 				{
 					this.buttonIcon = new IconImage(value);
