@@ -9,77 +9,49 @@ using System.Windows.Forms;
 
 namespace AdamsLair.PropertyGrid.EditorTemplates
 {
-	public partial class ComboBoxDropDown : Form
+	public partial class ComboBoxDropDown : ListBox
 	{
 		private bool openedWithCtrl	= false;
-		public event EventHandler AcceptSelection = null;
 
-		public int ItemHeight
-		{
-			get { return this.listBox.ItemHeight; }
-		}
-		public int PreferredHeight
-		{
-			get { return this.listBox.PreferredHeight; }
-		}
-		public ListBox ListControl
-		{
-			get { return this.listBox; }
-		}
-		public IEnumerable<object> Items
-		{
-			get { return this.listBox.Items.Cast<object>(); }
-			set
-			{ 
-				this.listBox.Items.Clear();
-				this.listBox.Items.AddRange(value.ToArray());
-			}
-		}
-		public IEnumerable<object> SelectedItems
-		{
-			get { return this.listBox.SelectedItems.Cast<object>(); }
-		}
-		public object SelectedItem
-		{
-			get { return this.listBox.SelectedItem; }
-			set { this.listBox.SelectedItem = value; }
-		}
+		public event EventHandler AcceptSelection = null;
+		public event EventHandler RequestClose = null;
 
 		public ComboBoxDropDown()
 		{
-			this.InitializeComponent();
+			this.IntegralHeight = false;
+			this.Font = this.Font; // Prevents parent PopupControl from interfering on resize.
 		}
 		public ComboBoxDropDown(IEnumerable<object> items) : this()
 		{
-			this.listBox.Items.AddRange(items.ToArray());
+			this.Items.AddRange(items.ToArray());
 		}
 
 		protected void Accept()
 		{
 			if (this.AcceptSelection != null) this.AcceptSelection(this, EventArgs.Empty);
 		}
-
-		protected override void OnShown(EventArgs e)
+		protected void Close()
 		{
-			base.OnShown(e);
+			if (this.RequestClose != null) this.RequestClose(this, EventArgs.Empty);
+		}
+
+		protected override void OnGotFocus(EventArgs e)
+		{
+			base.OnGotFocus(e);
 			this.openedWithCtrl = (Control.ModifierKeys & Keys.Control) == Keys.Control;
 		}
-		protected override void OnDeactivate(EventArgs e)
+		protected override void OnClick(EventArgs e)
 		{
-			base.OnDeactivate(e);
-			this.BeginInvoke((MethodInvoker)(() => this.Close()));
-			//this.Close();
-		}
-		private void listBox_Click(object sender, EventArgs e)
-		{
-			if (this.listBox.SelectionMode == SelectionMode.One)
+			base.OnClick(e);
+			if (this.SelectionMode == SelectionMode.One)
 			{
 				this.Accept();
 				this.Close();
 			}
 		}
-		private void listBox_KeyDown(object sender, KeyEventArgs e)
+		protected override void OnKeyDown(KeyEventArgs e)
 		{
+			base.OnKeyDown(e);
 			if (e.KeyCode == Keys.Return || e.KeyCode == Keys.Left)
 			{
 				this.Accept();
@@ -87,24 +59,26 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			}
 			else if (e.KeyCode == Keys.C && e.Control)
 			{
-				if (this.listBox.SelectedItem != null)
-					Clipboard.SetText(this.listBox.SelectedItem.ToString());
+				if (this.SelectedItem != null)
+					Clipboard.SetText(this.SelectedItem.ToString());
 			}
 			else if (e.KeyCode == Keys.Back || e.KeyCode == Keys.Escape)
 			{
 				this.Close();
 			}
 		}
-		private void listBox_KeyUp(object sender, KeyEventArgs e)
+		protected override void OnKeyUp(KeyEventArgs e)
 		{
+			base.OnKeyUp(e);
 			if (e.KeyCode == Keys.ControlKey && this.openedWithCtrl)
 			{
 				this.Accept();
 				this.Close();
 			}
 		}
-		private void listBox_SelectedIndexChanged(object sender, EventArgs e)
+		protected override void OnSelectedIndexChanged(EventArgs e)
 		{
+			base.OnSelectedIndexChanged(e);
 			if (this.openedWithCtrl) this.Accept();
 		}
 	}

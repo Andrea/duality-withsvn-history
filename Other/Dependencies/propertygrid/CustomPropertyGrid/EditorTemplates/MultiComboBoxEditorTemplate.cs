@@ -9,15 +9,17 @@ using ButtonState = AdamsLair.PropertyGrid.Renderer.ButtonState;
 
 namespace AdamsLair.PropertyGrid.EditorTemplates
 {
-	public class MultiComboBoxEditorTemplate : EditorTemplate
+	public class MultiComboBoxEditorTemplate : EditorTemplate, IPopupControlHost
 	{
 		private const string ClipboardDataFormat = "MultiComboBoxEditorTemplateData";
 
 		private	List<object>			selectedObjects	= new List<object>();
 		private	bool					pressed			= false;
+		private	bool					justMouseClosed	= false;
 		private	int						dropdownHeight	= 100;
 		private	MultiComboBoxDropDown	dropdown		= null;
 		private	List<object>			dropdownItems	= new List<object>();
+        private PopupControl			popupControl	= new PopupControl();
 
 		public IEnumerable<object> SelectedObjects
 		{
@@ -25,7 +27,11 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			set
 			{
 				this.selectedObjects = value.ToList();
-				if (this.dropdown != null) this.dropdown.CheckedItems = this.selectedObjects;
+				if (this.dropdown != null)
+				{
+					for (int i = 0; i < this.dropdown.Items.Count; i++)
+						this.dropdown.SetItemChecked(i, value.Contains(this.dropdown.Items[i]));
+				}
 			}
 		}
 		public bool IsDropDownOpened
@@ -43,11 +49,19 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			set
 			{
 				this.dropdownItems = value.ToList();
-				if (this.dropdown != null) this.dropdown.Items = this.dropdownItems;
+				if (this.dropdown != null)
+				{
+					this.dropdown.Items.Clear();
+					this.dropdown.Items.AddRange(this.dropdownItems.ToArray());
+				}
 			}
 		}
 		
-		public MultiComboBoxEditorTemplate(PropertyEditor parent) : base(parent) {}
+		public MultiComboBoxEditorTemplate(PropertyEditor parent) : base(parent)
+		{
+			this.popupControl.PopupControlHost = this;
+			this.popupControl.Closed += this.popupControl_Closed;
+		}
 
 		public void OnPaint(PaintEventArgs e, bool enabled, bool multiple)
 		{
@@ -68,21 +82,30 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		}
 		public void OnMouseDown(MouseEventArgs e)
 		{
-			if (!this.rect.Contains(e.Location)) return;
-			if (this.hovered && (e.Button & MouseButtons.Left) != MouseButtons.None)
+			if (this.rect.Contains(e.Location))
 			{
-				this.pressed = !this.IsDropDownOpened;
-				this.EmitInvalidate();
+				if (this.hovered && (e.Button & MouseButtons.Left) != MouseButtons.None && !this.justMouseClosed)
+				{
+					this.pressed = true;
+					this.EmitInvalidate();
+				}
 			}
+
+			if (this.justMouseClosed) this.justMouseClosed = false;
 		}
 		public void OnMouseUp(MouseEventArgs e)
 		{
 			if (this.pressed && (e.Button & MouseButtons.Left) != MouseButtons.None)
 			{
-				if (this.hovered) this.OpenDropDown();
+				if (this.hovered) this.ShowDropDown();
 				this.pressed = false;
 				this.EmitInvalidate();
 			}
+		}
+		public override void OnLostFocus(EventArgs e)
+		{
+			base.OnLostFocus(e);
+			if (this.justMouseClosed) this.justMouseClosed = false;
 		}
 		public void OnKeyUp(KeyEventArgs e)
 		{
@@ -96,7 +119,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 
 			if (e.KeyCode == Keys.Return || e.KeyCode == Keys.Right || (e.KeyCode == Keys.Down && e.Control))
 			{
-				this.OpenDropDown();
+				this.ShowDropDown();
 				e.Handled = true;
 			}
 			else if (e.Control && e.KeyCode == Keys.C)
@@ -132,15 +155,15 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			}
 		}
 
-		public void OpenDropDown()
+		public void ShowDropDown()
 		{
 			if (this.dropdown != null) return;
 			if (this.ReadOnly) return;
 			PropertyGrid parentGrid = this.Parent.ParentGrid;
 
-			this.dropdown = new MultiComboBoxDropDown();
-			this.dropdown.Items = this.dropdownItems;
-			this.dropdown.CheckedItems = this.selectedObjects;
+			this.dropdown = new MultiComboBoxDropDown(this.dropdownItems);
+			for (int i = 0; i < this.dropdown.Items.Count; i++)
+				this.dropdown.SetItemChecked(i, this.selectedObjects.Contains(this.dropdown.Items[i]));
 
 			Size dropDownSize = new Size(
 				this.rect.Width, 
@@ -153,13 +176,14 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 
 			this.dropdown.Location = dropDownLoc;
 			this.dropdown.Size = dropDownSize;
-			this.dropdown.FormClosed += this.dropdown_FormClosed;
+			this.dropdown.RequestClose += this.dropdown_RequestClose;
 			this.dropdown.AcceptSelection += this.dropdown_AcceptSelection;
-			this.dropdown.Show(this.Parent.ParentGrid);
+
+			this.popupControl.Show(this.dropdown, dropDownLoc.X, dropDownLoc.Y, dropDownSize.Width, dropDownSize.Height, PopupResizeMode.None);
 
 			this.EmitInvalidate();
 		}
-		public void CloseDropDown()
+		public void HideDropDown()
 		{
 			if (this.dropdown == null) return;
 			if (!this.dropdown.Disposing && !this.dropdown.IsDisposed)
@@ -168,18 +192,23 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 
 			this.EmitInvalidate();
 		}
-		private void dropdown_FormClosed(object sender, FormClosedEventArgs e)
+		private void dropdown_RequestClose(object sender, EventArgs e)
 		{
-			this.CloseDropDown();
+			this.HideDropDown();
 		}
 		private void dropdown_AcceptSelection(object sender, EventArgs e)
 		{
 			if (this.selectedObjects.Any(o => !this.dropdown.CheckedItems.Contains(o)) ||
-				this.dropdown.CheckedItems.Any(o => !this.selectedObjects.Contains(o)))
+				this.dropdown.CheckedItems.Cast<object>().Any(o => !this.selectedObjects.Contains(o)))
 			{
-				this.selectedObjects = this.dropdown.CheckedItems.ToList();
+				this.selectedObjects = this.dropdown.CheckedItems.Cast<object>().ToList();
 				this.EmitEdited();
 			}
+		}
+		private void popupControl_Closed(object sender, ToolStripDropDownClosedEventArgs e)
+		{
+			this.HideDropDown();
+			this.justMouseClosed = true;
 		}
 
 		protected string DefaultValueStringGenerator(IEnumerable<object> objEnum)

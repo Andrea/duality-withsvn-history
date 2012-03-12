@@ -9,15 +9,17 @@ using ButtonState = AdamsLair.PropertyGrid.Renderer.ButtonState;
 
 namespace AdamsLair.PropertyGrid.EditorTemplates
 {
-	public class BitmaskEditorTemplate : EditorTemplate
+	public class BitmaskEditorTemplate : EditorTemplate, IPopupControlHost
 	{
 		private const string ClipboardDataFormat = "BitmaskEditorTemplateData";
 
 		private	ulong					bitmask			= 0;
 		private	bool					pressed			= false;
+		private	bool					justMouseClosed	= false;
 		private	int						dropdownHeight	= 100;
 		private	BitmaskSelectorDropDown	dropdown		= null;
 		private	List<BitmaskItem>		dropdownItems	= new List<BitmaskItem>();
+        private PopupControl			popupControl	= new PopupControl();
 
 		public ulong BitmaskValue
 		{
@@ -47,7 +49,11 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			}
 		}
 		
-		public BitmaskEditorTemplate(PropertyEditor parent) : base(parent) {}
+		public BitmaskEditorTemplate(PropertyEditor parent) : base(parent)
+		{
+			this.popupControl.PopupControlHost = this;
+			this.popupControl.Closed += this.popupControl_Closed;
+		}
 
 		public void OnPaint(PaintEventArgs e, bool enabled, bool multiple)
 		{
@@ -68,21 +74,30 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		}
 		public void OnMouseDown(MouseEventArgs e)
 		{
-			if (!this.rect.Contains(e.Location)) return;
-			if (this.hovered && (e.Button & MouseButtons.Left) != MouseButtons.None)
+			if (this.rect.Contains(e.Location))
 			{
-				this.pressed = !this.IsDropDownOpened;
-				this.EmitInvalidate();
+				if (this.hovered && (e.Button & MouseButtons.Left) != MouseButtons.None && !this.justMouseClosed)
+				{
+					this.pressed = true;
+					this.EmitInvalidate();
+				}
 			}
+
+			if (this.justMouseClosed) this.justMouseClosed = false;
 		}
 		public void OnMouseUp(MouseEventArgs e)
 		{
 			if (this.pressed && (e.Button & MouseButtons.Left) != MouseButtons.None)
 			{
-				if (this.hovered) this.OpenDropDown();
+				if (this.hovered) this.ShowDropDown();
 				this.pressed = false;
 				this.EmitInvalidate();
 			}
+		}
+		public override void OnLostFocus(EventArgs e)
+		{
+			base.OnLostFocus(e);
+			if (this.justMouseClosed) this.justMouseClosed = false;
 		}
 		public void OnKeyUp(KeyEventArgs e)
 		{
@@ -96,7 +111,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 
 			if (e.KeyCode == Keys.Return || e.KeyCode == Keys.Right || (e.KeyCode == Keys.Down && e.Control))
 			{
-				this.OpenDropDown();
+				this.ShowDropDown();
 				e.Handled = true;
 			}
 			else if (e.Control && e.KeyCode == Keys.C)
@@ -141,14 +156,13 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			}
 		}
 
-		public void OpenDropDown()
+		public void ShowDropDown()
 		{
 			if (this.dropdown != null) return;
 			if (this.ReadOnly) return;
 			PropertyGrid parentGrid = this.Parent.ParentGrid;
 
-			this.dropdown = new BitmaskSelectorDropDown();
-			this.dropdown.Items = this.dropdownItems;
+			this.dropdown = new BitmaskSelectorDropDown(this.dropdownItems);
 			this.dropdown.BitmaskValue = this.bitmask;
 
 			Size dropDownSize = new Size(
@@ -162,24 +176,30 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			
 			this.dropdown.Location = dropDownLoc;
 			this.dropdown.Size = dropDownSize;
-			this.dropdown.FormClosed += this.dropdown_FormClosed;
+			this.dropdown.RequestClose += this.dropdown_RequestClose;
 			this.dropdown.AcceptSelection += this.dropdown_AcceptSelection;
-			this.dropdown.Show(this.Parent.ParentGrid);
+
+			this.popupControl.Show(this.dropdown, dropDownLoc.X, dropDownLoc.Y, dropDownSize.Width, dropDownSize.Height, PopupResizeMode.None);
 
 			this.EmitInvalidate();
 		}
-		public void CloseDropDown()
+		public void HideDropDown()
 		{
-			if (this.dropdown == null) return;
-			if (!this.dropdown.Disposing && !this.dropdown.IsDisposed)
-				this.dropdown.Dispose();
-			this.dropdown = null;
+			if (this.popupControl.Visible)
+				this.popupControl.Hide();
+			
+			if (this.dropdown != null)
+			{
+				if (!this.dropdown.Disposing && !this.dropdown.IsDisposed)
+					this.dropdown.Dispose();
+				this.dropdown = null;
+			}
 
 			this.EmitInvalidate();
 		}
-		private void dropdown_FormClosed(object sender, FormClosedEventArgs e)
+		private void dropdown_RequestClose(object sender, EventArgs e)
 		{
-			this.CloseDropDown();
+			this.HideDropDown();
 		}
 		private void dropdown_AcceptSelection(object sender, EventArgs e)
 		{
@@ -188,6 +208,11 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 				this.bitmask = this.dropdown.BitmaskValue;
 				this.EmitEdited();
 			}
+		}
+		private void popupControl_Closed(object sender, ToolStripDropDownClosedEventArgs e)
+		{
+			this.HideDropDown();
+			this.justMouseClosed = true;
 		}
 
 		protected string DefaultValueStringGenerator(ulong bitmask)
