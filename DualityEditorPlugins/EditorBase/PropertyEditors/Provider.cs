@@ -38,7 +38,7 @@ namespace EditorBase.PropertyEditors
 			// -------- General area --------
 			//else if (typeof(Collider.ShapeInfo).IsAssignableFrom(baseType))	return PropertyGrid.EditorPriority_General;
 			else if (typeof(Component).IsAssignableFrom(baseType))			return PropertyGrid.EditorPriority_General;
-			//else if (typeof(Resource).IsAssignableFrom(baseType))			return PropertyGrid.EditorPriority_General;
+			else if (typeof(Resource).IsAssignableFrom(baseType))			return PropertyGrid.EditorPriority_General;
 			//else if (typeof(IContentRef).IsAssignableFrom(baseType))		return PropertyGrid.EditorPriority_General;
 			//else if (typeof(DualityAppData).IsAssignableFrom(baseType))		return PropertyGrid.EditorPriority_General;
 			//else if (typeof(DualityUserData).IsAssignableFrom(baseType))	return PropertyGrid.EditorPriority_General;
@@ -70,7 +70,7 @@ namespace EditorBase.PropertyEditors
 			// -------- General area --------
 			//else if (typeof(Collider.ShapeInfo).IsAssignableFrom(baseType))	e = new ColliderShapePropertyEditor();
 			else if (typeof(Component).IsAssignableFrom(baseType))			e = new ComponentPropertyEditor();
-			//else if (typeof(Resource).IsAssignableFrom(baseType))			e = new ResourcePropertyEditor();
+			else if (typeof(Resource).IsAssignableFrom(baseType))			e = new ResourcePropertyEditor();
 			//else if (typeof(IContentRef).IsAssignableFrom(baseType))		e = new ContentRefPropertyEditor();
 			//else if (typeof(DualityAppData).IsAssignableFrom(baseType))		e = new DualityAppDataPropertyEditor();
 			//else if (typeof(DualityUserData).IsAssignableFrom(baseType))	e = new DualityUserDataPropertyEditor();

@@ -92,11 +92,11 @@ namespace EditorBase
 			if (lastSelChange == ObjectSelection.Category.None) return;
 
 			if ((lastSelChange & ObjectSelection.Category.GameObjCmp) != ObjectSelection.Category.None)
-				this.propertyGrid.SelectObjects(sel.GameObjects.Union(sel.Components.GameObject()), scheduleMs: 300);
+				this.propertyGrid.SelectObjects(sel.GameObjects.Union(sel.Components.GameObject()));
 			else if ((lastSelChange & ObjectSelection.Category.Resource) != ObjectSelection.Category.None)
-				this.propertyGrid.SelectObjects(sel.Resources, sel.Resources.Any(r => r.Path.Contains(':')), 300);
+				this.propertyGrid.SelectObjects(sel.Resources, sel.Resources.Any(r => r.Path.Contains(':')));
 			else if ((lastSelChange & ObjectSelection.Category.Other) != ObjectSelection.Category.None)
-				this.propertyGrid.SelectObjects(sel.OtherObjects, scheduleMs: 300);
+				this.propertyGrid.SelectObjects(sel.OtherObjects);
 
 			this.buttonClone.Enabled = this.propertyGrid.Selection.Any();
 		}

@@ -80,6 +80,7 @@
     <Compile Include="PropertyEditors\ComponentPropertyEditor.cs" />
     <Compile Include="PropertyEditors\GameObjectOverviewPropertyEditor.cs" />
     <Compile Include="PropertyEditors\GameObjectPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\ResourcePropertyEditor.cs" />
     <Compile Include="ShaderFileImporter.cs" />
     <Compile Include="PixmapFileImporter.cs" />
     <Compile Include="ObjectInspector.cs">
