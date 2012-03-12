@@ -208,11 +208,11 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
                 ResizeFromContent(-1);
         }
         
-        public new void Show(int x, int y)
+        public new void Show(Control parent, int x, int y)
         {
-            Show(x, y, -1, -1);
+            Show(parent, x, y, -1, -1);
         }
-        public void Show(int x, int y, int width, int height)
+        public void Show(Control parent, int x, int y, int width, int height)
         {
             // If no hosted control is associated, this procedure is pointless!
             Control hostedControl = GetHostedControl();
@@ -227,7 +227,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 
                 // Display actual popup and occupy just 1x1 pixel to avoid automatic reposition.
                 Size = new Size(1, 1);
-                base.Show(x, y);
+                base.Show(parent, x, y);
 
                 m_lockedHostedControlSize = false;
                 m_lockedThisSize = false;
@@ -600,22 +600,22 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
                 PopupControlHost.HideDropDown();
         }
 
-        public void Show(Control control, int x, int y)
+        public void Show(Control parent, Control control, int x, int y)
         {
-            Show(control, x, y, PopupResizeMode.None);
+            Show(parent, control, x, y, PopupResizeMode.None);
         }
-        public void Show(Control control, int x, int y, PopupResizeMode resizeMode)
+        public void Show(Control parent, Control control, int x, int y, PopupResizeMode resizeMode)
         {
-            Show(control, x, y, -1, -1, resizeMode);
+            Show(parent, control, x, y, -1, -1, resizeMode);
         }
-        public void Show(Control control, int x, int y, int width, int height, PopupResizeMode resizeMode)
+        public void Show(Control parent, Control control, int x, int y, int width, int height, PopupResizeMode resizeMode)
         {
             Size controlSize = control.Size;
 
             InitializeHost(control);
 
             m_dropDown.ResizeMode = resizeMode;
-            m_dropDown.Show(x, y, width, height);
+            m_dropDown.Show(parent, x, y, width, height);
 
             control.Focus();
         }

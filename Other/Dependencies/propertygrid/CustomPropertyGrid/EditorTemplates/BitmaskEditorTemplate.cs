@@ -170,7 +170,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 				Math.Min(this.dropdownHeight, this.dropdown.PreferredHeight));
 
 			Point dropDownLoc = parentGrid.GetEditorLocation(this.Parent, true);
-			dropDownLoc = parentGrid.PointToScreen(dropDownLoc);
+			//dropDownLoc = parentGrid.PointToScreen(dropDownLoc);
 			dropDownLoc.Y += this.rect.Height + 1;
 			dropDownLoc.X += this.Parent.Width - this.rect.Width;
 			
@@ -179,7 +179,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			this.dropdown.RequestClose += this.dropdown_RequestClose;
 			this.dropdown.AcceptSelection += this.dropdown_AcceptSelection;
 
-			this.popupControl.Show(this.dropdown, dropDownLoc.X, dropDownLoc.Y, dropDownSize.Width, dropDownSize.Height, PopupResizeMode.None);
+			this.popupControl.Show(parentGrid, this.dropdown, dropDownLoc.X, dropDownLoc.Y, dropDownSize.Width, dropDownSize.Height, PopupResizeMode.None);
 
 			this.EmitInvalidate();
 		}
