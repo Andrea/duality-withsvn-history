@@ -38,6 +38,14 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		{
 			get { return this.dropdown != null; }
 		}
+		public object DropDownHoveredObject
+		{
+			get
+			{
+				if (this.dropdown.HoveredIndex == -1) return null;
+				return this.dropdown.Items[this.dropdown.HoveredIndex];
+			}
+		}
 		public int DropDownHeight
 		{
 			get { return this.dropdownHeight; }

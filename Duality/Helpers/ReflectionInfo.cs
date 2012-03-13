@@ -34,6 +34,11 @@ namespace Duality
 		public static readonly PropertyInfo	Property_Transform_RelativeScale;
 		public static readonly PropertyInfo	Property_Transform_RelativeVel;
 		public static readonly PropertyInfo	Property_Transform_RelativeAngleVel;
+		public static readonly PropertyInfo	Property_Transform_Pos;
+		public static readonly PropertyInfo	Property_Transform_Angle;
+		public static readonly PropertyInfo	Property_Transform_Scale;
+		public static readonly PropertyInfo	Property_Transform_Vel;
+		public static readonly PropertyInfo	Property_Transform_AngleVel;
 		public static readonly PropertyInfo	Property_Transform_DeriveAngle;
 
 		public static readonly PropertyInfo	Property_Renderer_VisibilityGroup;
@@ -173,6 +178,11 @@ namespace Duality
 			Property_Transform_RelativeScale	= transform.GetProperty("RelativeScale");
 			Property_Transform_RelativeVel		= transform.GetProperty("RelativeVel");
 			Property_Transform_RelativeAngleVel	= transform.GetProperty("RelativeAngleVel");
+			Property_Transform_Pos				= transform.GetProperty("Pos");
+			Property_Transform_Angle			= transform.GetProperty("Angle");
+			Property_Transform_Scale			= transform.GetProperty("Scale");
+			Property_Transform_Vel				= transform.GetProperty("Vel");
+			Property_Transform_AngleVel			= transform.GetProperty("AngleVel");
 			Property_Transform_DeriveAngle		= transform.GetProperty("DeriveAngle");
 
 			Type renderer = typeof(Renderer);

@@ -8,6 +8,7 @@ using System.Reflection;
 using AdamsLair.PropertyGrid;
 
 using Duality;
+using DualityEditor;
 using DualityEditor.Controls;
 
 namespace EditorBase.PropertyEditors

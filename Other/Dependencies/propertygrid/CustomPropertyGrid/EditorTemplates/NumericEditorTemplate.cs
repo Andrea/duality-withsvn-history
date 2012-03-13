@@ -242,10 +242,17 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		{
 			if (this.decimalPlaces > 0)
 			{
-				decimal beforeSep = Math.Floor(this.value);
-				decimal afterSep = this.value - beforeSep;
-				afterSep = Math.Round(afterSep * (decimal)Math.Pow(10.0d, this.decimalPlaces));
-				this.stringEditor.Text = beforeSep.ToString() + "." + afterSep.ToString().PadLeft(this.decimalPlaces, '0');
+				decimal beforeSep = this.value >= 0m ? Math.Floor(this.value) : Math.Ceiling(this.value);
+				decimal afterSep = Math.Abs(this.value - beforeSep);
+				decimal placesMult = (decimal)Math.Pow(10.0d, this.decimalPlaces);
+				beforeSep = Math.Abs(beforeSep);
+				afterSep = Math.Round(afterSep * placesMult);
+				while (afterSep >= placesMult)
+				{
+					beforeSep++;
+					afterSep -= placesMult;
+				}
+				this.stringEditor.Text = (this.value < 0m ? "-" : "") + beforeSep.ToString() + "." + afterSep.ToString().PadLeft(this.decimalPlaces, '0');
 			}
 			else
 			{

@@ -18,42 +18,49 @@ using Duality.EditorHints;
 
 namespace DualityEditor.Controls
 {
-	public class DualitorPropertyGrid : PropertyGrid
+	public class DualitorPropertyGrid : PropertyGrid, IHelpProvider
 	{
-		public override void ConfigureEditor(PropertyEditor editor)
+		public override void ConfigureEditor(PropertyEditor editor, object configureData = null)
 		{
 			base.ConfigureEditor(editor);
+			var hintOverride = configureData as IEnumerable<EditorHintMemberAttribute>;
+
 			if (editor is MemberwisePropertyEditor)
 			{
 				MemberwisePropertyEditor memberEditor = editor as MemberwisePropertyEditor;
 				memberEditor.MemberPredicate = this.EditorMemberPredicate;
 				memberEditor.MemberAffectsOthers = this.EditorMemberAffectsOthers;
 			}
-			if (editor.EditedMember != null)
-			{
-				EditorHintFlagsAttribute flagsAttrib = editor.EditedMember.GetCustomAttributes(typeof(EditorHintFlagsAttribute), true).FirstOrDefault() as EditorHintFlagsAttribute;
-				if (flagsAttrib != null)
-				{
-					editor.ForceWriteBack = (flagsAttrib.Flags & MemberFlags.ForceWriteback) == MemberFlags.ForceWriteback;
-					if ((flagsAttrib.Flags & MemberFlags.ReadOnly) == MemberFlags.ReadOnly)
-						editor.Setter = null;
-				}
 
-				if (editor is NumericPropertyEditor)
-				{
-					EditorHintRangeAttribute rangeAttrib = editor.EditedMember.GetCustomAttributes(typeof(EditorHintRangeAttribute), true).FirstOrDefault() as EditorHintRangeAttribute;
-					EditorHintIncrementAttribute incAttrib = editor.EditedMember.GetCustomAttributes(typeof(EditorHintIncrementAttribute), true).FirstOrDefault() as EditorHintIncrementAttribute;
-					EditorHintDecimalPlacesAttribute placesAttrib = editor.EditedMember.GetCustomAttributes(typeof(EditorHintDecimalPlacesAttribute), true).FirstOrDefault() as EditorHintDecimalPlacesAttribute;
-					NumericPropertyEditor numEditor = editor as NumericPropertyEditor;
-					if (rangeAttrib != null)
-					{
-						numEditor.Maximum = rangeAttrib.Max;
-						numEditor.Minimum = rangeAttrib.Min;
-					}
-					if (incAttrib != null) numEditor.Increment = incAttrib.Increment;
-					if (placesAttrib != null) numEditor.DecimalPlaces = placesAttrib.Places;
-				}
+			EditorHintFlagsAttribute flagsAttrib = ConfigureEditor_GetHintFlags<EditorHintFlagsAttribute>(editor.EditedMember, hintOverride);
+			if (flagsAttrib != null)
+			{
+				editor.ForceWriteBack = (flagsAttrib.Flags & MemberFlags.ForceWriteback) == MemberFlags.ForceWriteback;
+				if ((flagsAttrib.Flags & MemberFlags.ReadOnly) == MemberFlags.ReadOnly)
+					editor.Setter = null;
 			}
+
+			if (editor is NumericPropertyEditor)
+			{
+				EditorHintRangeAttribute rangeAttrib = ConfigureEditor_GetHintFlags<EditorHintRangeAttribute>(editor.EditedMember, hintOverride);
+				EditorHintIncrementAttribute incAttrib = ConfigureEditor_GetHintFlags<EditorHintIncrementAttribute>(editor.EditedMember, hintOverride);
+				EditorHintDecimalPlacesAttribute placesAttrib = ConfigureEditor_GetHintFlags<EditorHintDecimalPlacesAttribute>(editor.EditedMember, hintOverride);
+				NumericPropertyEditor numEditor = editor as NumericPropertyEditor;
+				if (rangeAttrib != null)
+				{
+					numEditor.Maximum = rangeAttrib.Max;
+					numEditor.Minimum = rangeAttrib.Min;
+				}
+				if (incAttrib != null) numEditor.Increment = incAttrib.Increment;
+				if (placesAttrib != null) numEditor.DecimalPlaces = placesAttrib.Places;
+			}
+		}
+		private T ConfigureEditor_GetHintFlags<T>(MemberInfo editedMember, IEnumerable<EditorHintMemberAttribute> hintOverride) where T : EditorHintMemberAttribute
+		{
+			T attrib = null;
+			if (hintOverride != null) attrib = hintOverride.OfType<T>().FirstOrDefault();
+			if (attrib == null && editedMember != null) attrib = editedMember.GetCustomAttributes(typeof(T), true).FirstOrDefault() as T;
+			return attrib;
 		}
 
 		protected bool EditorMemberPredicate(MemberInfo info)
@@ -65,6 +72,85 @@ namespace DualityEditor.Controls
 		{
 			EditorHintFlagsAttribute flagsAttrib = info.GetCustomAttributes(typeof(EditorHintFlagsAttribute), true).FirstOrDefault() as EditorHintFlagsAttribute;
 			return flagsAttrib != null && (flagsAttrib.Flags & MemberFlags.AffectsOthers) != MemberFlags.None;
+		}
+
+		HelpInfo IHelpProvider.ProvideHoverHelp(Point localPos, ref bool captured)
+		{
+			// A dropdown is opened. Provide dropdown help.
+			IPopupControlHost dropdownEdit = this.FocusEditor as IPopupControlHost;
+			if (dropdownEdit != null && dropdownEdit.IsDropDownOpened)
+			{
+				// Special case: Its a known basic dropdown.
+				EnumPropertyEditor enumEdit = dropdownEdit as EnumPropertyEditor;
+				FlaggedEnumPropertyEditor enumFlagEdit = dropdownEdit as FlaggedEnumPropertyEditor;
+				if (enumEdit != null)
+				{
+					captured = true;
+					if (enumEdit.DropDownHoveredName != null)
+						return HelpInfo.FromMember(enumEdit.EditedType.GetField(enumEdit.DropDownHoveredName, ReflectionHelper.BindAll));
+					else
+					{
+						FieldInfo field = enumEdit.EditedType.GetField(enumEdit.DisplayedValue.ToString(), ReflectionHelper.BindAll);
+						if (field != null) return HelpInfo.FromMember(field);
+					}
+				}
+				else if (enumFlagEdit != null)
+				{
+					captured = true;
+					if (enumFlagEdit.DropDownHoveredItem != null)
+						return HelpInfo.FromMember(enumFlagEdit.EditedType.GetField(enumFlagEdit.DropDownHoveredItem.Caption, ReflectionHelper.BindAll));
+					else
+					{
+						FieldInfo field = enumFlagEdit.EditedType.GetField(enumFlagEdit.DisplayedValue.ToString(), ReflectionHelper.BindAll);
+						if (field != null) return HelpInfo.FromMember(field);
+					}
+				}
+				// Its able to provide help. Redirect.
+				else if (dropdownEdit is IHelpProvider)
+				{
+					captured = true;
+					Point dropdownEditorPos = this.GetEditorLocation(dropdownEdit as PropertyEditor, true);
+					return (dropdownEdit as IHelpProvider).ProvideHoverHelp(new Point(localPos.X - dropdownEditorPos.X, localPos.Y - dropdownEditorPos.Y), ref captured);
+				}
+
+				// No help available.
+				return null;
+			}
+			captured = false;
+
+			// Pick an editor and see if it has access to an actual IHelpProvider
+			PropertyEditor pickedEditor = this.PickEditorAt(localPos.X, localPos.Y, true);
+			IHelpProvider localProvider = null;
+			PropertyEditor helpEditor = pickedEditor;
+			Point helpEditorPos = Point.Empty;
+			HelpInfo localHelp = null;
+			while (helpEditor != null)
+			{
+				helpEditorPos = this.GetEditorLocation(helpEditor, true);
+				if (helpEditor is IHelpProvider)
+				{
+					localProvider = helpEditor as IHelpProvider;
+					localHelp = localProvider.ProvideHoverHelp(new Point(localPos.X - helpEditorPos.X, localPos.Y - helpEditorPos.Y), ref captured);
+					if (localHelp != null)
+						return localHelp;
+				}
+				helpEditor = helpEditor.ParentEditor;
+			}
+
+			// If not, default to member or type information
+			if (pickedEditor != null)
+			{
+				if (pickedEditor.EditedMember != null)
+					return HelpInfo.FromMember(pickedEditor.EditedMember);
+				else if (pickedEditor.EditedType != null)
+					return HelpInfo.FromMember(pickedEditor.EditedType);
+			}
+
+			return null;
+		}
+		bool IHelpProvider.PerformHelpAction(HelpInfo info)
+		{
+			return (this as IHelpProvider).DefaultPerformHelpAction(info);
 		}
 	}
 }

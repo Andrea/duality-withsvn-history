@@ -9,7 +9,7 @@ using AdamsLair.PropertyGrid.EditorTemplates;
 
 namespace AdamsLair.PropertyGrid.PropertyEditors
 {
-	public class ObjectSelectorPropertyEditor : PropertyEditor
+	public class ObjectSelectorPropertyEditor : PropertyEditor, IPopupControlHost
 	{
 		private	ComboBoxEditorTemplate	objSelector	= null;
 		private object	val			= null;
@@ -24,6 +24,14 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 			get { return this.objSelector.DropDownItems; }
 			set { this.objSelector.DropDownItems = value; }
 		}
+		public bool IsDropDownOpened
+		{
+			get { return this.objSelector.IsDropDownOpened; }
+		}
+		public object DropDownHoveredObject
+		{
+			get { return this.objSelector.DropDownHoveredObject; }
+		}
 		
 
 		public ObjectSelectorPropertyEditor()
@@ -34,7 +42,15 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 
 			this.Height = 18;
 		}
-
+		
+		public void ShowDropDown()
+		{
+			this.objSelector.ShowDropDown();
+		}
+		public void HideDropDown()
+		{
+			this.objSelector.HideDropDown();
+		}
 		public override void PerformGetValue()
 		{
 			base.PerformGetValue();

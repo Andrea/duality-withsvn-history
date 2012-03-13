@@ -9,7 +9,7 @@ using AdamsLair.PropertyGrid.EditorTemplates;
 
 namespace AdamsLair.PropertyGrid.PropertyEditors
 {
-	public class BitmaskPropertyEditor : PropertyEditor
+	public class BitmaskPropertyEditor : PropertyEditor, IPopupControlHost
 	{
 		private	BitmaskEditorTemplate	bitmaskSelector	= null;
 		private ulong	val				= 0L;
@@ -28,6 +28,14 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 			get { return this.bitmaskSelector.DropDownItems; }
 			set { this.bitmaskSelector.DropDownItems = value; }
 		}
+		public bool IsDropDownOpened
+		{
+			get { return this.bitmaskSelector.IsDropDownOpened; }
+		}
+		public BitmaskItem DropDownHoveredItem
+		{
+			get { return this.bitmaskSelector.DropDownHoveredItem; }
+		}
 		
 
 		public BitmaskPropertyEditor()
@@ -38,7 +46,15 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 
 			this.Height = 18;
 		}
-
+		
+		public void ShowDropDown()
+		{
+			this.bitmaskSelector.ShowDropDown();
+		}
+		public void HideDropDown()
+		{
+			this.bitmaskSelector.HideDropDown();
+		}
 		public override void PerformGetValue()
 		{
 			base.PerformGetValue();

@@ -11,16 +11,10 @@
 	-->	"Did you know..?" screen?
 
 	
--->	Dualitor: Implement new PropertyGrid
-	-->	Rebuild Duality PropertyEditors
-		-->	GameObject
-			-->	Draw header
-			-->	React to active check and buttons
-		-->	Vector2, Vector3, Vector4, Rect
-		-->	IColorData
-		-->	...
-	-->	Enable full IHelpProvider support
-	-->	Profile selection times and remove "update delay" if small enough
+-->	Dualitor: Implement new PropertyGrid - Rebuild Editors
+	-->	Vector2, Vector3, Vector4, Rect
+	-->	IColorData
+	-->	...
 
 
 --> Example Project: Tetris with Physics

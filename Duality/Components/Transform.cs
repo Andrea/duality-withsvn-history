@@ -5,6 +5,8 @@ using System.Text;
 
 using OpenTK;
 
+using Duality.EditorHints;
+
 namespace Duality.Components
 {
 	/// <summary>
@@ -116,6 +118,7 @@ namespace Duality.Components
 		/// [GET / SET] If false, this objects rotation values aren't relative to its parent.
 		/// However, its position, velocity, etc. still depend on parent rotation.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.AffectsOthers)]
 		public bool DeriveAngle
 		{
 			get { return this.deriveAngle; }

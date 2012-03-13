@@ -191,6 +191,7 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 			else if (this.EditedType == typeof(float))
 			{
 				this.numEditor.DecimalPlaces = 2;
+				this.numEditor.Increment = 0.1m;
 				this.numEditor.Minimum = decimal.MinValue;
 				this.numEditor.Maximum = decimal.MaxValue;
 			}

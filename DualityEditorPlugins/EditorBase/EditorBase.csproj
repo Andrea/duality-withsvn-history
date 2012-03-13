@@ -78,6 +78,7 @@
       <DependentUpon>LogView.cs</DependentUpon>
     </Compile>
     <Compile Include="PropertyEditors\ComponentPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\Components\TransformPropertyEditor.cs" />
     <Compile Include="PropertyEditors\GameObjectOverviewPropertyEditor.cs" />
     <Compile Include="PropertyEditors\GameObjectPropertyEditor.cs" />
     <Compile Include="PropertyEditors\ResourcePropertyEditor.cs" />
@@ -151,7 +152,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="PropertyEditors\Components\" />
     <Folder Include="PropertyEditors\Resources\" />
   </ItemGroup>
   <ItemGroup>

@@ -8,7 +8,7 @@ using System.Windows.Forms;
 // http://www.codeproject.com/Articles/25471/Customizable-ComboBox-Drop-Down
 // (c) Lea Hayes
 
-namespace AdamsLair.PropertyGrid.EditorTemplates
+namespace AdamsLair.PropertyGrid
 {
     public enum PopupResizeMode
     {
@@ -515,13 +515,9 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 
     public interface IPopupControlHost
     {
-        /// <summary>
-        /// Displays drop-down area of combo box, if not already shown.
-        /// </summary>
+		bool IsDropDownOpened { get; }
+
         void ShowDropDown();
-        /// <summary>
-        /// Hides drop-down area of combo box, if shown.
-        /// </summary>
         void HideDropDown();
     }
 

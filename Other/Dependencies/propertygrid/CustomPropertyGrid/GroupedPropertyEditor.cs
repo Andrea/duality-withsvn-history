@@ -402,7 +402,7 @@ namespace AdamsLair.PropertyGrid
 			}
 			if ((this.Hints & HintFlags.HasActiveCheck) != HintFlags.None)
 			{
-				if (this.Enabled && (this.Hints & HintFlags.ActiveEnabled) != HintFlags.None)
+				if (this.Enabled && !this.ReadOnly && (this.Hints & HintFlags.ActiveEnabled) != HintFlags.None)
 				{
 					if (this.Active)
 					{

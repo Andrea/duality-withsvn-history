@@ -290,7 +290,7 @@ namespace AdamsLair.PropertyGrid
 			e.ParentGrid = this;
 			return e;
 		}
-		public virtual void ConfigureEditor(PropertyEditor editor) {}
+		public virtual void ConfigureEditor(PropertyEditor editor, object configureData = null) {}
 		public virtual object CreateObjectInstance(Type objectType)
 		{
 			return ReflectionHelper.CreateInstanceOf(objectType);
@@ -324,9 +324,14 @@ namespace AdamsLair.PropertyGrid
 
 			//this.Invalidate();
 		}
-		public PropertyEditor PickEditorAt(int x, int y)
+		public PropertyEditor PickEditorAt(int x, int y, bool scrolled = false)
 		{
 			if (this.mainEditor == null) return null;
+			if (scrolled)
+			{
+				x -= this.AutoScrollPosition.X;
+				y -= this.AutoScrollPosition.Y;
+			}
 			return this.mainEditor.PickEditorAt(x - this.ClientRectangle.X, y - this.ClientRectangle.Y);
 		}
 		public Point GetEditorLocation(PropertyEditor editor, bool scrolled = false)

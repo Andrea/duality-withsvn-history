@@ -77,6 +77,7 @@ namespace AdamsLair.PropertyGrid
 
 				// Generate and add property editors for the current type
 				this.BeginUpdate();
+				this.BeforeAutoCreateEditors();
 				// Properties
 				{
 					PropertyInfo[] propArr = this.EditedType.GetProperties(BindingFlags.Instance | BindingFlags.Public);
@@ -230,6 +231,7 @@ namespace AdamsLair.PropertyGrid
 			this.PerformGetValue();
 		}
 
+		protected virtual void BeforeAutoCreateEditors() {}
 		protected virtual bool IsAutoCreateMember(MemberInfo info)
 		{
 			return this.memberPredicate(info);

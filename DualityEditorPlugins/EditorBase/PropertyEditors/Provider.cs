@@ -19,7 +19,7 @@ namespace EditorBase.PropertyEditors
 		{
 			// -------- Specialized area --------
 			if (baseType == typeof(GameObject))			return PropertyGrid.EditorPriority_Specialized;
-			//else if (baseType == typeof(Transform))		return PropertyGrid.EditorPriority_Specialized;
+			else if (baseType == typeof(Transform))		return PropertyGrid.EditorPriority_Specialized;
 			//else if (baseType == typeof(Camera))		return PropertyGrid.EditorPriority_Specialized;
 			//else if (baseType == typeof(Camera.Pass))	return PropertyGrid.EditorPriority_Specialized;
 			//else if (baseType == typeof(SoundEmitter))	return PropertyGrid.EditorPriority_Specialized;
@@ -51,7 +51,7 @@ namespace EditorBase.PropertyEditors
 
 			// -------- Specialized area --------
 			if (baseType == typeof(GameObject))			e = new GameObjectOverviewPropertyEditor();
-			//else if (baseType == typeof(Transform))		e = new TransformPropertyEditorContainer();
+			else if (baseType == typeof(Transform))		e = new TransformPropertyEditor();
 			//else if (baseType == typeof(Camera))		e = new CameraPropertyEditor();
 			//else if (baseType == typeof(Camera.Pass))	e = new CameraRenderPassPropertyEditor();
 			//else if (baseType == typeof(SoundEmitter))	e = new SoundEmitterPropertyEditor();

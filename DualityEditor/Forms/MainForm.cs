@@ -212,6 +212,7 @@ namespace DualityEditor.Forms
 			// Hook message filter
 			InputEventMessageFilter inputFilter = new InputEventMessageFilter();
 			inputFilter.MouseMove += this.inputFilter_MouseMove;
+			inputFilter.MouseLeave += this.inputFilter_MouseLeave;
 			inputFilter.KeyDown += this.inputFilter_KeyDown;
 			Application.AddMessageFilter(inputFilter);
 		}
@@ -1240,6 +1241,73 @@ namespace DualityEditor.Forms
 			this.sourceDirEventBuffer.Clear();
 		}
 
+		private void UpdateHelpStack()
+		{
+			Control lastHoveredControl = this.hoveredControl;
+			foreach (Form f in EditorHelper.GetZSortedAppWindows())
+			{
+				if (!f.Visible) continue;
+				if (!new Rectangle(f.Location, f.Size).Contains(Cursor.Position)) continue;
+
+				Point localPos = f.PointToClient(Cursor.Position);
+				this.hoveredControl = f.GetChildAtPointDeep(localPos, GetChildAtPointSkip.Invisible | GetChildAtPointSkip.Transparent);
+				break;
+			}
+
+			Control c;
+			HelpInfo help;
+
+			// An IHelpProvider has captured the mouse: Ask what to do with it.
+			if (this.hoveredHelpCaptured)
+			{
+				c = this.hoveredHelpProvider as Control;
+				help = this.hoveredHelpProvider.ProvideHoverHelp(c.PointToClient(Cursor.Position), ref this.hoveredHelpCaptured);
+				lastHoveredControl = c;
+
+				// Update provider's help info
+				this.Help.UpdateFromProvider(this.hoveredHelpProvider, help);
+
+				// If still in charge: Return early.
+				if (this.hoveredHelpCaptured) return;
+			}
+
+			// No IHelpProvider in charge: Find one that provides help
+			help = null;
+			IHelpProvider lastHelpProvider = this.hoveredHelpProvider;
+			foreach (IHelpProvider hp in this.hoveredControl.GetControlAncestors<IHelpProvider>())
+			{
+				c = hp as Control;
+				help = hp.ProvideHoverHelp(c.PointToClient(Cursor.Position), ref this.hoveredHelpCaptured);
+				this.hoveredHelpProvider = hp;
+				if (help != null || this.hoveredHelpCaptured) break;
+			}
+
+			// Update help system based on the result.
+			if (lastHelpProvider != this.hoveredHelpProvider)
+				this.Help.UpdateFromProvider(lastHelpProvider, this.hoveredHelpProvider, help);
+			else if (this.hoveredHelpProvider != null)
+				this.Help.UpdateFromProvider(this.hoveredHelpProvider, help);
+		}
+		private bool PerformHelpAction()
+		{
+			bool success = false;
+
+			// Ask Help Provider for help
+			if (this.Help.ActiveHelpProvider != null)
+			{
+				success = success | this.Help.ActiveHelpProvider.PerformHelpAction(this.Help.ActiveHelp);
+			}
+
+			// No reaction? Just open the reference then.
+			if (!success && File.Exists("DDoc.chm") && !System.Diagnostics.Process.GetProcessesByName("hh").Any())
+			{
+				System.Diagnostics.Process.Start("HH.exe", Path.GetFullPath("DDoc.chm"));
+				success = true;
+			}
+
+			return success;
+		}
+
 		private void corePluginWatcher_Changed(object sender, FileSystemEventArgs e)
 		{
 			string pluginStr = Path.Combine("Plugins", e.Name);
@@ -1331,70 +1399,19 @@ namespace DualityEditor.Forms
 			about.ShowDialog(this);
 		}
 
+		private void inputFilter_MouseLeave(object sender, EventArgs e)
+		{
+			// Schedule help stack update
+			this.BeginInvoke((Action)this.UpdateHelpStack);
+		}
 		private void inputFilter_MouseMove(object sender, EventArgs e)
 		{
-			Control lastHoveredControl = this.hoveredControl;
-			foreach (Form f in EditorHelper.GetZSortedAppWindows())
-			{
-				if (!f.Visible) continue;
-				if (!new Rectangle(f.Location, f.Size).Contains(Cursor.Position)) continue;
-
-				Point localPos = f.PointToClient(Cursor.Position);
-				this.hoveredControl = f.GetChildAtPointDeep(localPos, GetChildAtPointSkip.Invisible | GetChildAtPointSkip.Transparent);
-				break;
-			}
-
-			Control c;
-			HelpInfo help;
-
-			// An IHelpProvider has captured the mouse: Ask what to do with it.
-			if (this.hoveredHelpCaptured)
-			{
-				c = this.hoveredHelpProvider as Control;
-				help = this.hoveredHelpProvider.ProvideHoverHelp(c.PointToClient(Cursor.Position), ref this.hoveredHelpCaptured);
-				lastHoveredControl = c;
-
-				// Update provider's help info
-				this.Help.UpdateFromProvider(this.hoveredHelpProvider, help);
-
-				// If still in charge: Return early.
-				if (this.hoveredHelpCaptured) return;
-			}
-
-			// No IHelpProvider in charge: Find one that provides help
-			help = null;
-			IHelpProvider lastHelpProvider = this.hoveredHelpProvider;
-			foreach (IHelpProvider hp in this.hoveredControl.GetControlAncestors<IHelpProvider>())
-			{
-				c = hp as Control;
-				help = hp.ProvideHoverHelp(c.PointToClient(Cursor.Position), ref this.hoveredHelpCaptured);
-				this.hoveredHelpProvider = hp;
-				if (help != null || this.hoveredHelpCaptured) break;
-			}
-
-			// Update help system based on the result.
-			if (lastHelpProvider != this.hoveredHelpProvider)
-				this.Help.UpdateFromProvider(lastHelpProvider, this.hoveredHelpProvider, help);
-			else if (this.hoveredHelpProvider != null)
-				this.Help.UpdateFromProvider(this.hoveredHelpProvider, help);
+			this.UpdateHelpStack();
 		}
 		private void inputFilter_KeyDown(object sender, KeyEventArgs e)
 		{
 			if (e.KeyCode == Keys.F1)
-			{
-				// Ask Help Provider for help
-				if (this.Help.ActiveHelpProvider != null)
-				{
-					e.Handled = e.Handled | this.Help.ActiveHelpProvider.PerformHelpAction(this.Help.ActiveHelp);
-				}
-
-				// No reaction? Just open the reference then.
-				if (!e.Handled && File.Exists("DDoc.chm") && !System.Diagnostics.Process.GetProcessesByName("hh").Any())
-				{
-					System.Diagnostics.Process.Start("HH.exe", Path.GetFullPath("DDoc.chm"));
-					e.Handled = true;
-				}
-			}
+				e.Handled = e.Handled || this.PerformHelpAction();
 		}
 
 		private void formatBinary_Click(object sender, EventArgs e)

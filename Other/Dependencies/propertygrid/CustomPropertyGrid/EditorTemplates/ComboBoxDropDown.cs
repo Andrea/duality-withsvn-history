@@ -12,9 +12,15 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 	public partial class ComboBoxDropDown : ListBox
 	{
 		private bool openedWithCtrl	= false;
+		private int hoveredIndex = -1;
 
 		public event EventHandler AcceptSelection = null;
 		public event EventHandler RequestClose = null;
+
+		public int HoveredIndex
+		{
+			get { return this.hoveredIndex; }
+		}
 
 		public ComboBoxDropDown()
 		{
@@ -75,6 +81,18 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 				this.Accept();
 				this.Close();
 			}
+		}
+		protected override void OnMouseMove(MouseEventArgs e)
+		{
+			base.OnMouseMove(e);
+			int clientY = e.Y - this.ClientRectangle.Y;
+			this.hoveredIndex = (clientY / this.ItemHeight) + this.TopIndex;
+			if (this.hoveredIndex < 0 || this.hoveredIndex >= this.Items.Count) this.hoveredIndex = -1;
+		}
+		protected override void OnMouseLeave(EventArgs e)
+		{
+			base.OnMouseLeave(e);
+			this.hoveredIndex = -1;
 		}
 		protected override void OnSelectedIndexChanged(EventArgs e)
 		{
