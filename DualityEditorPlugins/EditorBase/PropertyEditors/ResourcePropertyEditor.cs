@@ -21,9 +21,9 @@ namespace EditorBase.PropertyEditors
 			this.HeaderStyle = AdamsLair.PropertyGrid.Renderer.GroupHeaderStyle.Emboss;
 		}
 
-		public override void PerformGetValue()
+		protected override void OnUpdateFromObjects(object[] values)
 		{
-			base.PerformGetValue();
+			base.OnUpdateFromObjects(values);
 			this.HeaderValueText = null;
 		}
 		protected override void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)

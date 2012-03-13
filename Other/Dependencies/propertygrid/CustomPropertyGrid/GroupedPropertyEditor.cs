@@ -614,34 +614,36 @@ namespace AdamsLair.PropertyGrid
 			}
 		}
 
+		protected void UpdateHoverEditor(int x, int y)
+		{
+			PropertyEditor lastHoverEditor = this.hoverEditor;
+			this.hoverEditor = this.PickEditorAt(x, y, true);
+			if (this.hoverEditor == this) this.hoverEditor = null;
+
+			if (lastHoverEditor != this.hoverEditor && lastHoverEditor != null)
+				lastHoverEditor.OnMouseLeave(EventArgs.Empty);
+			if (lastHoverEditor != this.hoverEditor && this.hoverEditor != null)
+			{
+				// Indent expand button
+				if (this.UseIndentChildExpand)
+				{
+					int curY = this.headerHeight;
+					foreach (PropertyEditor child in this.propertyEditors)
+					{
+						this.IndentChildExpandOnMouseLeave(EventArgs.Empty, child as GroupedPropertyEditor, curY);
+						curY += child.Height;
+					}
+				}
+
+				this.hoverEditor.OnMouseEnter(EventArgs.Empty);
+			}
+		}
 		protected internal override void OnMouseMove(MouseEventArgs e)
 		{
 			base.OnMouseMove(e);
 			PropertyEditor lastHoverEditor = this.hoverEditor;
 			
-			if (!this.hoverEditorLock)
-			{
-				this.hoverEditor = this.PickEditorAt(e.X, e.Y, true);
-				if (this.hoverEditor == this) this.hoverEditor = null;
-
-				if (lastHoverEditor != this.hoverEditor && lastHoverEditor != null)
-					lastHoverEditor.OnMouseLeave(EventArgs.Empty);
-				if (lastHoverEditor != this.hoverEditor && this.hoverEditor != null)
-				{
-					// Indent expand button
-					if (this.UseIndentChildExpand)
-					{
-						int curY = this.headerHeight;
-						foreach (PropertyEditor child in this.propertyEditors)
-						{
-							this.IndentChildExpandOnMouseLeave(e, child as GroupedPropertyEditor, curY);
-							curY += child.Height;
-						}
-					}
-
-					this.hoverEditor.OnMouseEnter(EventArgs.Empty);
-				}
-			}
+			if (!this.hoverEditorLock) this.UpdateHoverEditor(e.X, e.Y);
 
 			if (this.hoverEditor != null)
 			{

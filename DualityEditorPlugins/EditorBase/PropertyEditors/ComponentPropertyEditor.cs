@@ -22,11 +22,6 @@ namespace EditorBase.PropertyEditors
 			this.HeaderStyle = AdamsLair.PropertyGrid.Renderer.GroupHeaderStyle.Emboss;
 		}
 
-		public override void PerformGetValue()
-		{
-			base.PerformGetValue();
-			this.HeaderValueText = null;
-		}
 		public void PerformSetActive(bool active)
 		{
 			Component[] values = this.GetValue().Cast<Component>().NotNull().ToArray();
@@ -59,6 +54,7 @@ namespace EditorBase.PropertyEditors
 			base.OnUpdateFromObjects(values);
 
 			this.PropertyName = this.EditedType.GetTypeCSCodeName(true);
+			this.HeaderValueText = null;
 			if (!values.Any() || values.All(o => o == null))
 				this.Active = false;
 			else

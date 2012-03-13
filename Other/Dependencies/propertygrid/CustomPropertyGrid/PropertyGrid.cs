@@ -102,6 +102,8 @@ namespace AdamsLair.PropertyGrid
 		private	int					updateTimerChangeMs	= 0;
 		private	bool				updateScheduled		= false;
 		private	bool				deferredSizeUpdate	= false;
+		private	bool				mouseInside			= false;
+		private	MouseButtons		mouseDownTemp		= MouseButtons.None;
 		
 		public event EventHandler<PropertyEditorValueEventArgs>	EditingFinished = null;
 		public event EventHandler<PropertyEditorValueEventArgs>	ValueChanged	= null;
@@ -393,7 +395,10 @@ namespace AdamsLair.PropertyGrid
 
 		protected override void OnMouseEnter(EventArgs e)
 		{
+			if (this.mouseInside) return; // Ignore if called multiple times - Windows.Forms bug due to dropdown stuff?
 			base.OnMouseEnter(e);
+			this.mouseInside = true;
+
 			if (this.updateScheduled) this.UpdateFromObjects();
 
 			if (this.mainEditor != null)
@@ -403,7 +408,9 @@ namespace AdamsLair.PropertyGrid
 		}
 		protected override void OnMouseLeave(EventArgs e)
 		{
+			if (!this.mouseInside) return; // Ignore if called before MouseEnter - Windows.Forms bug due to dropdown stuff?
 			base.OnMouseLeave(e);
+			this.mouseInside = false;
 
 			if (this.mainEditor != null)
 			{
@@ -412,6 +419,7 @@ namespace AdamsLair.PropertyGrid
 		}
 		protected override void OnMouseMove(MouseEventArgs e)
 		{
+			if (!this.mouseInside) return; // Ignore if called before MouseEnter - Windows.Forms bug due to dropdown stuff?
 			base.OnMouseMove(e);
 
 			if (this.mainEditor != null)
@@ -426,7 +434,10 @@ namespace AdamsLair.PropertyGrid
 		}
 		protected override void OnMouseDown(MouseEventArgs e)
 		{
+			if (!this.mouseInside) return; // Ignore if called before MouseEnter - Windows.Forms bug due to dropdown stuff?
+			if ((this.mouseDownTemp & e.Button) == e.Button) return; // Ignore if called multiple - Windows.Forms bug due to dropdown stuff?
 			base.OnMouseDown(e);
+			this.mouseDownTemp |= e.Button;
 
 			if (this.mainEditor != null)
 			{
@@ -440,7 +451,10 @@ namespace AdamsLair.PropertyGrid
 		}
 		protected override void OnMouseUp(MouseEventArgs e)
 		{
+			if (!this.mouseInside) return; // Ignore if called before MouseEnter - Windows.Forms bug due to dropdown stuff?
+			if ((this.mouseDownTemp & e.Button) == MouseButtons.None) return; // Ignore if called without MouseDown - Windows.Forms bug due to dropdown stuff?
 			base.OnMouseUp(e);
+			this.mouseDownTemp &= ~e.Button;
 
 			if (this.deferredSizeUpdate && Control.MouseButtons == System.Windows.Forms.MouseButtons.None)
 			{
