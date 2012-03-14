@@ -424,7 +424,7 @@ namespace AdamsLair.PropertyGrid
 
 		protected void PaintBackground(Graphics g)
 		{
-			g.FillRectangle(new SolidBrush(this.Focused ? SystemColors.Control.ScaleBrightness(0.9f) : SystemColors.Control), new Rectangle(Point.Empty, this.size));
+			g.FillRectangle(new SolidBrush(this.Focused ? SystemColors.Control.ScaleBrightness(0.85f) : SystemColors.Control), new Rectangle(Point.Empty, this.size));
 		}
 		protected void PaintButton(Graphics g)
 		{
