@@ -1875,13 +1875,6 @@
             </summary>
             <param name="rgba"></param>
         </member>
-        <member name="M:Duality.ColorFormat.IColorData.ConvertTo``1">
-            <summary>
-            Converts the color to the specified format.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <returns></returns>
-        </member>
         <member name="F:Duality.ColorFormat.ColorRgba.CompSize">
             <summary>
             Size of a single color component in bytes.
@@ -2117,14 +2110,6 @@
             <summary>
             Converts the color to Hsva.
             </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.ColorFormat.ColorRgba.ConvertTo``1">
-            <summary>
-            Converts the color to a different color data format. If there is also a
-            specific method doing the desired conversion, use that instead - it might be faster.
-            </summary>
-            <typeparam name="T"></typeparam>
             <returns></returns>
         </member>
         <member name="M:Duality.ColorFormat.ColorRgba.SetIntArgb(System.Int32)">
@@ -2488,14 +2473,6 @@
             <summary>
             Converts the color to Rgba.
             </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.ColorFormat.ColorHsva.ConvertTo``1">
-            <summary>
-            Converts the color to a different color data format. If there is also a
-            specific method doing the desired conversion, use that instead - it might be faster.
-            </summary>
-            <typeparam name="T"></typeparam>
             <returns></returns>
         </member>
         <member name="M:Duality.ColorFormat.ColorHsva.SetIntRgba(System.Int32)">
@@ -3962,6 +3939,24 @@
             <summary>
             [GET / SET] The set of <see cref="T:Duality.Resources.ShaderVarInfo">uniform values</see> to use.
             </summary>
+        </member>
+        <member name="M:Duality.ColorFormat.ExtMethodsIColorData.ConvertTo``1(Duality.ColorFormat.IColorData)">
+            <summary>
+            Converts the color to a different color data format. If there is also a
+            specific method doing the desired conversion, use that instead - it might be faster.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="source"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ExtMethodsIColorData.ConvertTo(Duality.ColorFormat.IColorData,System.Type)">
+            <summary>
+            Converts the color to a different color data format. If there is also a
+            specific method doing the desired conversion, use that instead - it might be faster.
+            </summary>
+            <param name="source"></param>
+            <param name="type"></param>
+            <returns></returns>
         </member>
         <member name="T:Duality.ObjectManagerEventArgs`1">
             <summary>

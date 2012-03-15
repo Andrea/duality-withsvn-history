@@ -13,6 +13,8 @@
 	
 -->	Dualitor: Implement new PropertyGrid - Rebuild Editors
 	-->	IColorData
+		-->	DragDrop
+	-->	Other editors, see old "not-in-project" source files
 	-->	...
 
 

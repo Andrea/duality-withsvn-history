@@ -185,25 +185,6 @@ namespace Duality.ColorFormat
 			else if (hi == 4)	return new ColorRgba(t, p, v, (byte)(int)MathF.Clamp(this.a * 255.0f, 0.0f, 255.0f));
 			else				return new ColorRgba(v, p, q, (byte)(int)MathF.Clamp(this.a * 255.0f, 0.0f, 255.0f));
 		}
-		/// <summary>
-		/// Converts the color to a different color data format. If there is also a
-		/// specific method doing the desired conversion, use that instead - it might be faster.
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		public T ConvertTo<T>() where T : IColorData
-		{
-			T clr = default(T);
-			if (clr == null)
-			{
-				if (typeof(T) == typeof(IColorData))
-					return (T)(IColorData)new ColorHsva(this);
-				else
-					clr = (T)ReflectionHelper.CreateInstanceOf(typeof(T), true);
-			}
-			clr.SetIntArgb(this.ToIntArgb());
-			return clr;
-		}
 		
 		/// <summary>
 		/// Adjusts the color to match the specified int-Rgba color.

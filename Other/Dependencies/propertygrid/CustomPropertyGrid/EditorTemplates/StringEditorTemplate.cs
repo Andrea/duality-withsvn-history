@@ -364,18 +364,17 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		}
 		public void OnMouseUp(MouseEventArgs e)
 		{
-			if (!this.rect.Contains(e.Location)) return;
 			Cursor.Current = Cursors.IBeam;
 			this.mouseSelect = false;
 		}
 		public override void OnMouseMove(MouseEventArgs e)
 		{
 			base.OnMouseMove(e);
-			if (!this.rect.Contains(e.Location)) return;
 
-			Cursor.Current = (this.hovered || this.mouseSelect) ? Cursors.IBeam : Cursors.Default;
 			if (this.mouseSelect)
 			{
+				Cursor.Current = Cursors.IBeam;
+
 				// Pick char
 				int pickedCharIndex;
 				Point pickLoc = new Point(Math.Min(Math.Max(e.X, rect.X + 2), rect.Right - 2), rect.Y + rect.Height / 2);
@@ -392,6 +391,11 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 				this.cursorIndex = pickedCharIndex;
 				this.UpdateScroll();
 				this.EmitInvalidate();
+			}
+			else
+			{
+				if (!this.rect.Contains(e.Location)) return;
+				Cursor.Current = this.hovered && (Control.MouseButtons == MouseButtons.None) ? Cursors.IBeam : Cursors.Default;
 			}
 		}
 		public override void OnMouseLeave(EventArgs e)

@@ -113,6 +113,11 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 			bool lastHovered = this.hovered;
 			this.hovered = !this.ReadOnly && this.ClientRectangle.Contains(e.Location);
 			if (lastHovered != this.hovered) this.Invalidate();
+
+			if (this.pressed)
+			{
+				this.ParentGrid.DoDragDrop(new DataObject(), DragDropEffects.All | DragDropEffects.Link);
+			}
 		}
 		protected internal override void OnMouseLeave(EventArgs e)
 		{

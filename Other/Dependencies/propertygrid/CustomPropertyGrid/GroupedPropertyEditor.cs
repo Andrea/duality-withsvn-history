@@ -34,6 +34,7 @@ namespace AdamsLair.PropertyGrid
 		private	bool					activeCheckHovered	= false;
 		private	bool					activeCheckPressed	= false;
 		private	Size					sizeBeforeUpdate	= Size.Empty;
+		private	MouseButtons			mousePressedTemp	= MouseButtons.None;
 
 		public event EventHandler<PropertyEditorEventArgs>	EditorAdded;
 		public event EventHandler<PropertyEditorEventArgs>	EditorRemoving;
@@ -465,7 +466,8 @@ namespace AdamsLair.PropertyGrid
 			}
 
 
-			ControlRenderer.DrawGroupHeaderBackground(g, this.headerRect, this.Focused ? this.headerColor.ScaleBrightness(0.85f) : this.headerColor, this.headerStyle);
+			bool focusBg = this.Focused || (this is IPopupControlHost && (this as IPopupControlHost).IsDropDownOpened);
+			ControlRenderer.DrawGroupHeaderBackground(g, this.headerRect, focusBg ? this.headerColor.ScaleBrightness(0.85f) : this.headerColor, this.headerStyle);
 			
 			if (!parentExpand && (this.Hints & HintFlags.HasExpandCheck) != HintFlags.None)
 				ControlRenderer.DrawCheckBox(g, this.expandCheckRect.Location, expandState);
@@ -616,10 +618,10 @@ namespace AdamsLair.PropertyGrid
 			}
 		}
 
-		protected void UpdateHoverEditor(int x, int y)
+		protected void UpdateHoverEditor(MouseEventArgs e)
 		{
 			PropertyEditor lastHoverEditor = this.hoverEditor;
-			this.hoverEditor = this.PickEditorAt(x, y, true);
+			this.hoverEditor = this.PickEditorAt(e.X, e.Y, true);
 			if (this.hoverEditor == this) this.hoverEditor = null;
 
 			if (lastHoverEditor != this.hoverEditor && lastHoverEditor != null)
@@ -645,7 +647,7 @@ namespace AdamsLair.PropertyGrid
 			base.OnMouseMove(e);
 			PropertyEditor lastHoverEditor = this.hoverEditor;
 			
-			if (!this.hoverEditorLock) this.UpdateHoverEditor(e.X, e.Y);
+			if (!this.hoverEditorLock) this.UpdateHoverEditor(e);
 
 			if (this.hoverEditor != null)
 			{
@@ -677,10 +679,6 @@ namespace AdamsLair.PropertyGrid
 					}
 				}
 			}
-		}
-		protected internal override void OnMouseEnter(EventArgs e)
-		{
-			base.OnMouseEnter(e);
 		}
 		protected internal override void OnMouseLeave(EventArgs e)
 		{
@@ -852,6 +850,11 @@ namespace AdamsLair.PropertyGrid
 		protected internal override void OnDragEnter(DragEventArgs e)
 		{
 			base.OnDragEnter(e);
+			if (this.hoverEditorLock)
+			{
+				this.hoverEditorLock = false;
+				this.hoverEditor = null;
+			}
 			e.Effect = e.AllowedEffect; // Accept anything to pass it on to children
 		}
 		protected internal override void OnDragLeave(EventArgs e)
@@ -868,7 +871,7 @@ namespace AdamsLair.PropertyGrid
 			base.OnDragOver(e);
 			PropertyEditor lastHoverEditor = this.hoverEditor;
 			
-			this.hoverEditor = this.PickEditorAt(e.X, e.Y);
+			this.hoverEditor = this.PickEditorAt(e.X, e.Y, true);
 			if (this.hoverEditor == this) this.hoverEditor = null;
 
 			if (lastHoverEditor != this.hoverEditor && lastHoverEditor != null)

@@ -98,14 +98,13 @@
 			// propertyGrid
 			// 
 			this.propertyGrid.AllowDrop = true;
-			this.propertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
 			this.propertyGrid.AutoScroll = true;
+			this.propertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.propertyGrid.Location = new System.Drawing.Point(0, 25);
+			this.propertyGrid.Margin = new System.Windows.Forms.Padding(0);
 			this.propertyGrid.Name = "propertyGrid";
 			this.propertyGrid.ReadOnly = false;
-			this.propertyGrid.Size = new System.Drawing.Size(228, 407);
+			this.propertyGrid.Size = new System.Drawing.Size(231, 407);
 			this.propertyGrid.TabIndex = 0;
 			// 
 			// ObjectInspector

@@ -230,6 +230,13 @@ namespace EditorBase.PropertyEditors
 			ControlRenderer.DrawButton(e.Graphics, this.rectButtonPrefabApply, this.curButton == 2 ? buttonState : buttonStateDefault, "Apply");
 			ControlRenderer.DrawButton(e.Graphics, this.rectButtonPrefabBreak, this.curButton == 3 ? buttonState : buttonStateDefault, "Break");
 		}
+		protected override void OnMouseLeave(EventArgs e)
+		{
+			base.OnMouseLeave(e);
+			if (this.activeCheckHovered || this.curButtonHovered) this.Invalidate();
+			this.activeCheckHovered = false;
+			this.curButtonHovered = false;
+		}
 		protected override void OnMouseMove(MouseEventArgs e)
 		{
 			base.OnMouseMove(e);

@@ -15,7 +15,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 
 		private	List<object>			selectedObjects	= new List<object>();
 		private	bool					pressed			= false;
-		private	bool					justMouseClosed	= false;
+		private	DateTime				mouseClosed		= DateTime.MinValue;
 		private	int						dropdownHeight	= 100;
 		private	MultiComboBoxDropDown	dropdown		= null;
 		private	List<object>			dropdownItems	= new List<object>();
@@ -92,14 +92,12 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		{
 			if (this.rect.Contains(e.Location))
 			{
-				if (this.hovered && (e.Button & MouseButtons.Left) != MouseButtons.None && !this.justMouseClosed)
+				if (this.hovered && (e.Button & MouseButtons.Left) != MouseButtons.None && (DateTime.Now - this.mouseClosed).TotalMilliseconds > 200)
 				{
 					this.pressed = true;
 					this.EmitInvalidate();
 				}
 			}
-
-			if (this.justMouseClosed) this.justMouseClosed = false;
 		}
 		public void OnMouseUp(MouseEventArgs e)
 		{
@@ -109,11 +107,6 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 				this.pressed = false;
 				this.EmitInvalidate();
 			}
-		}
-		public override void OnLostFocus(EventArgs e)
-		{
-			base.OnLostFocus(e);
-			if (this.justMouseClosed) this.justMouseClosed = false;
 		}
 		public void OnKeyUp(KeyEventArgs e)
 		{
@@ -216,7 +209,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		private void popupControl_Closed(object sender, ToolStripDropDownClosedEventArgs e)
 		{
 			this.HideDropDown();
-			this.justMouseClosed = true;
+			this.mouseClosed = DateTime.Now;
 		}
 
 		protected string DefaultValueStringGenerator(IEnumerable<object> objEnum)

@@ -111,6 +111,7 @@
     <Compile Include="Controls\DualitorPropertyGrid.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Controls\PropertyEditors\IColorDataPropertyEditor.cs" />
     <Compile Include="Controls\PropertyEditors\RectPropertyEditor.cs" />
     <Compile Include="Controls\PropertyEditors\Vector4PropertyEditor.cs" />
     <Compile Include="Controls\PropertyEditors\Vector3PropertyEditor.cs" />

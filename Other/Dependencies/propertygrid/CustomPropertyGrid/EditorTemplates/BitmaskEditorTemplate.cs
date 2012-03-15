@@ -15,7 +15,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 
 		private	ulong					bitmask			= 0;
 		private	bool					pressed			= false;
-		private	bool					justMouseClosed	= false;
+		private	DateTime				mouseClosed		= DateTime.MinValue;
 		private	int						dropdownHeight	= 100;
 		private	BitmaskSelectorDropDown	dropdown		= null;
 		private	List<BitmaskItem>		dropdownItems	= new List<BitmaskItem>();
@@ -79,20 +79,17 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		{
 			base.OnMouseMove(e);
 			if (this.ReadOnly) this.hovered = false;
-			if (this.justMouseClosed) this.justMouseClosed = false;
 		}
 		public void OnMouseDown(MouseEventArgs e)
 		{
 			if (this.rect.Contains(e.Location))
 			{
-				if (this.hovered && (e.Button & MouseButtons.Left) != MouseButtons.None && !this.justMouseClosed)
+				if (this.hovered && (e.Button & MouseButtons.Left) != MouseButtons.None && (DateTime.Now - this.mouseClosed).TotalMilliseconds > 200)
 				{
 					this.pressed = true;
 					this.EmitInvalidate();
 				}
 			}
-
-			if (this.justMouseClosed) this.justMouseClosed = false;
 		}
 		public void OnMouseUp(MouseEventArgs e)
 		{
@@ -102,11 +99,6 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 				this.pressed = false;
 				this.EmitInvalidate();
 			}
-		}
-		public override void OnLostFocus(EventArgs e)
-		{
-			base.OnLostFocus(e);
-			if (this.justMouseClosed) this.justMouseClosed = false;
 		}
 		public void OnKeyUp(KeyEventArgs e)
 		{
@@ -221,7 +213,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		private void popupControl_Closed(object sender, ToolStripDropDownClosedEventArgs e)
 		{
 			this.HideDropDown();
-			this.justMouseClosed = true;
+			this.mouseClosed = DateTime.Now;
 		}
 
 		protected string DefaultValueStringGenerator(ulong bitmask)

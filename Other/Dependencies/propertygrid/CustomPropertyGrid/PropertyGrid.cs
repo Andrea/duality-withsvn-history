@@ -399,6 +399,7 @@ namespace AdamsLair.PropertyGrid
 		protected override void OnMouseEnter(EventArgs e)
 		{
 			if (this.mouseInside) return; // Ignore if called multiple times - Windows.Forms bug due to dropdown stuff?
+
 			base.OnMouseEnter(e);
 			this.mouseInside = true;
 
@@ -412,6 +413,7 @@ namespace AdamsLair.PropertyGrid
 		protected override void OnMouseLeave(EventArgs e)
 		{
 			if (!this.mouseInside) return; // Ignore if called before MouseEnter - Windows.Forms bug due to dropdown stuff?
+
 			base.OnMouseLeave(e);
 			this.mouseInside = false;
 
@@ -422,7 +424,9 @@ namespace AdamsLair.PropertyGrid
 		}
 		protected override void OnMouseMove(MouseEventArgs e)
 		{
-			if (!this.mouseInside) return; // Ignore if called before MouseEnter - Windows.Forms bug due to dropdown stuff?
+			if (!this.mouseInside) this.OnMouseEnter(EventArgs.Empty);
+			//Console.WriteLine("OnMouseMove");
+
 			base.OnMouseMove(e);
 
 			if (this.mainEditor != null)
@@ -437,8 +441,10 @@ namespace AdamsLair.PropertyGrid
 		}
 		protected override void OnMouseDown(MouseEventArgs e)
 		{
-			if (!this.mouseInside) return; // Ignore if called before MouseEnter - Windows.Forms bug due to dropdown stuff?
-			if ((this.mouseDownTemp & e.Button) == e.Button) return; // Ignore if called multiple - Windows.Forms bug due to dropdown stuff?
+			// Emulate stuff if called in wrong order - Windows.Forms bug due to dropdown stuff?
+			if (!this.mouseInside) this.OnMouseMove(e);
+			if ((this.mouseDownTemp & e.Button) == e.Button) this.OnMouseUp(new MouseEventArgs((this.mouseDownTemp & e.Button), e.Clicks, e.X, e.Y, e.Delta));
+
 			base.OnMouseDown(e);
 			this.mouseDownTemp |= e.Button;
 
@@ -454,8 +460,10 @@ namespace AdamsLair.PropertyGrid
 		}
 		protected override void OnMouseUp(MouseEventArgs e)
 		{
-			if (!this.mouseInside) return; // Ignore if called before MouseEnter - Windows.Forms bug due to dropdown stuff?
-			if ((this.mouseDownTemp & e.Button) == MouseButtons.None) return; // Ignore if called without MouseDown - Windows.Forms bug due to dropdown stuff?
+			// Emulate stuff if called in wrong order - Windows.Forms bug due to dropdown stuff?
+			if (!this.mouseInside) this.OnMouseMove(e);
+			if ((this.mouseDownTemp & e.Button) == MouseButtons.None) this.OnMouseDown(new MouseEventArgs(e.Button, e.Clicks, e.X, e.Y, e.Delta));
+
 			base.OnMouseUp(e);
 			this.mouseDownTemp &= ~e.Button;
 
@@ -666,6 +674,7 @@ namespace AdamsLair.PropertyGrid
 		}
 		protected override void OnDragOver(DragEventArgs e)
 		{
+			//Console.WriteLine("OnDragOver");
 			base.OnDragOver(e);
 
 			if (this.mainEditor != null)
@@ -714,6 +723,10 @@ namespace AdamsLair.PropertyGrid
 		{
 			base.OnLostFocus(e);
 			if (this.focusEditor != null) this.focusEditor.OnLostFocus(e);
+
+			// Emulate leaving mouse if losing focus to something that might be a dropdown popup
+			if (!Application.OpenForms.OfType<Form>().Any(c => c.Focused || c.ContainsFocus))
+				this.OnMouseLeave(EventArgs.Empty);
 			//this.Invalidate();
 		}
 

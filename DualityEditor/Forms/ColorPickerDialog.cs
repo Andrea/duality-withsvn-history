@@ -54,6 +54,8 @@ namespace DualityEditor.Forms
 		private	PrimaryAttrib	primAttrib			= PrimaryAttrib.Hue;
 		private	bool			suspendTextEvents	= false;
 
+		public event EventHandler ColorEdited = null;
+
 		public bool AlphaEnabled
 		{
 			get { return this.alphaEnabled; }
@@ -351,6 +353,7 @@ namespace DualityEditor.Forms
 						(int)Math.Round(this.colorSlider.ValuePercentual * 255.0f)));
 					break;
 			}
+			this.OnColorEdited();
 		}
 		private void UpdateSelectedColorFromPanelValue()
 		{
@@ -395,10 +398,18 @@ namespace DualityEditor.Forms
 						tmp.B));
 					break;
 			}
+			this.OnColorEdited();
 		}
 		private void UpdateSelectedColorFromAlphaValue()
 		{
 			this.selColor.a = this.alphaSlider.ValuePercentual;
+			this.OnColorEdited();
+		}
+
+		private void OnColorEdited()
+		{
+			if (this.ColorEdited != null)
+				this.ColorEdited(this, EventArgs.Empty);
 		}
 
 		protected override void OnShown(EventArgs e)

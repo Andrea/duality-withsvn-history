@@ -90,6 +90,7 @@ namespace AdamsLair.PropertyGrid
 		private struct Test2
 		{
 			private int yoink;
+			public bool testBool;
 
 			public int Yoink
 			{
@@ -100,6 +101,7 @@ namespace AdamsLair.PropertyGrid
 			public Test2(int val)
 			{
 				this.yoink = val;
+				this.testBool = true;
 			}
 
 			public override string ToString()

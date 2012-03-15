@@ -424,7 +424,8 @@ namespace AdamsLair.PropertyGrid
 
 		protected void PaintBackground(Graphics g)
 		{
-			g.FillRectangle(new SolidBrush(this.Focused ? SystemColors.Control.ScaleBrightness(0.85f) : SystemColors.Control), new Rectangle(Point.Empty, this.size));
+			bool focusBg = this.Focused || (this is IPopupControlHost && (this as IPopupControlHost).IsDropDownOpened);
+			g.FillRectangle(new SolidBrush(focusBg ? SystemColors.Control.ScaleBrightness(0.85f) : SystemColors.Control), new Rectangle(Point.Empty, this.size));
 		}
 		protected void PaintButton(Graphics g)
 		{
@@ -485,7 +486,7 @@ namespace AdamsLair.PropertyGrid
 		}
 		internal protected virtual void OnMouseDown(MouseEventArgs e)
 		{
-			if (this.FocusOnClick && this.ClientRectangle.Contains(e.Location))
+			if (this.FocusOnClick && new Rectangle(0, 0, this.size.Width, this.size.Height).Contains(e.Location))
 				this.Focus();
 			if (this.buttonHovered && (e.Button & MouseButtons.Left) != MouseButtons.None)
 			{
@@ -495,8 +496,8 @@ namespace AdamsLair.PropertyGrid
 		}
 		internal protected virtual void OnMouseUp(MouseEventArgs e)
 		{
-			if (this.FocusOnClick && new Rectangle(0, 0, this.size.Width, this.size.Height).Contains(e.Location))
-				this.Focus();
+			//if (this.FocusOnClick && new Rectangle(0, 0, this.size.Width, this.size.Height).Contains(e.Location))
+			//    this.Focus();
 			if (this.buttonPressed && (e.Button & MouseButtons.Left) != MouseButtons.None)
 			{
 				this.buttonPressed = false;
@@ -520,8 +521,8 @@ namespace AdamsLair.PropertyGrid
 			if (!e.Handled && this.parentEditor != null) this.parentEditor.OnKeyPress(e);
 		}
 
-		internal protected virtual void OnDragEnter(DragEventArgs e) { Console.WriteLine("DragEnter: {0}", this.PropertyName); }
-		internal protected virtual void OnDragLeave(EventArgs e) { Console.WriteLine("DragLeabe: {0}", this.PropertyName);}
+		internal protected virtual void OnDragEnter(DragEventArgs e) {}
+		internal protected virtual void OnDragLeave(EventArgs e) {}
 		internal protected virtual void OnDragOver(DragEventArgs e) {}
 		internal protected virtual void OnDragDrop(DragEventArgs e) {}
 
