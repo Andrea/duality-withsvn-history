@@ -167,6 +167,7 @@ namespace DualityEditor.Controls.PropertyEditors
 					}
 					if (success)
 					{
+						this.PerformSetValue();
 						this.OnValueChanged();
 						this.PerformGetValue();
 						this.SetFocusEditorIndex(-1, true);
