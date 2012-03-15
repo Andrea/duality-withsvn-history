@@ -12,7 +12,6 @@
 
 	
 -->	Dualitor: Implement new PropertyGrid - Rebuild Editors
-	-->	Vector2, Vector3, Vector4, Rect
 	-->	IColorData
 	-->	...
 

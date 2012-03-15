@@ -22,7 +22,7 @@ namespace DualityEditor.Controls
 	{
 		public override void ConfigureEditor(PropertyEditor editor, object configureData = null)
 		{
-			base.ConfigureEditor(editor);
+			base.ConfigureEditor(editor, configureData);
 			var hintOverride = configureData as IEnumerable<EditorHintMemberAttribute>;
 
 			if (editor is MemberwisePropertyEditor)
@@ -32,7 +32,7 @@ namespace DualityEditor.Controls
 				memberEditor.MemberAffectsOthers = this.EditorMemberAffectsOthers;
 			}
 
-			EditorHintFlagsAttribute flagsAttrib = ConfigureEditor_GetHintFlags<EditorHintFlagsAttribute>(editor.EditedMember, hintOverride);
+			var flagsAttrib = editor.EditedMember.GetEditorHint<EditorHintFlagsAttribute>(hintOverride);
 			if (flagsAttrib != null)
 			{
 				editor.ForceWriteBack = (flagsAttrib.Flags & MemberFlags.ForceWriteback) == MemberFlags.ForceWriteback;
@@ -42,9 +42,9 @@ namespace DualityEditor.Controls
 
 			if (editor is NumericPropertyEditor)
 			{
-				EditorHintRangeAttribute rangeAttrib = ConfigureEditor_GetHintFlags<EditorHintRangeAttribute>(editor.EditedMember, hintOverride);
-				EditorHintIncrementAttribute incAttrib = ConfigureEditor_GetHintFlags<EditorHintIncrementAttribute>(editor.EditedMember, hintOverride);
-				EditorHintDecimalPlacesAttribute placesAttrib = ConfigureEditor_GetHintFlags<EditorHintDecimalPlacesAttribute>(editor.EditedMember, hintOverride);
+				var rangeAttrib = editor.EditedMember.GetEditorHint<EditorHintRangeAttribute>(hintOverride);
+				var incAttrib = editor.EditedMember.GetEditorHint<EditorHintIncrementAttribute>(hintOverride);
+				var placesAttrib = editor.EditedMember.GetEditorHint<EditorHintDecimalPlacesAttribute>(hintOverride);
 				NumericPropertyEditor numEditor = editor as NumericPropertyEditor;
 				if (rangeAttrib != null)
 				{
@@ -54,13 +54,6 @@ namespace DualityEditor.Controls
 				if (incAttrib != null) numEditor.Increment = incAttrib.Increment;
 				if (placesAttrib != null) numEditor.DecimalPlaces = placesAttrib.Places;
 			}
-		}
-		private T ConfigureEditor_GetHintFlags<T>(MemberInfo editedMember, IEnumerable<EditorHintMemberAttribute> hintOverride) where T : EditorHintMemberAttribute
-		{
-			T attrib = null;
-			if (hintOverride != null) attrib = hintOverride.OfType<T>().FirstOrDefault();
-			if (attrib == null && editedMember != null) attrib = editedMember.GetCustomAttributes(typeof(T), true).FirstOrDefault() as T;
-			return attrib;
 		}
 
 		protected bool EditorMemberPredicate(MemberInfo info)

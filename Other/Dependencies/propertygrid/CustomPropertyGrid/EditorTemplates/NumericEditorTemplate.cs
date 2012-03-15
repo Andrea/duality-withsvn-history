@@ -19,7 +19,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 
 		private	bool					isTextValid		= false;
 		private	bool					isValueClamped	= false;
-		private	decimal					value			= 0;
+		private	decimal					value			= decimal.MinValue;
 		private	decimal					min;
 		private	decimal					max;
 		private	decimal					increment;
@@ -126,6 +126,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			this.stringEditor.EditingFinished += this.stringEditor_EditingFinished;
 
 			this.ResetProperties();
+			this.Value = 0;
 		}
 
 		

@@ -140,9 +140,22 @@ namespace Duality.EditorHints
 		{
 			return info.GetCustomAttributes(typeof(T), true).FirstOrDefault() as T;
 		}
+		public static T GetEditorHint<T>(this MemberInfo info, IEnumerable<EditorHintMemberAttribute> hintOverride) where T : EditorHintMemberAttribute
+		{
+			T attrib = null;
+			if (hintOverride != null) attrib = hintOverride.OfType<T>().FirstOrDefault();
+			if (attrib == null && info != null) attrib = info.GetEditorHint<T>();
+			return attrib;
+		}
 		public static IEnumerable<T> GetEditorHints<T>(this MemberInfo info) where T : EditorHintMemberAttribute
 		{
 			return info.GetCustomAttributes(typeof(T), true).OfType<T>();
+		}
+		public static IEnumerable<T> GetEditorHints<T>(this MemberInfo info, IEnumerable<EditorHintMemberAttribute> hintOverride) where T : EditorHintMemberAttribute
+		{
+			if (hintOverride != null && hintOverride.OfType<T>().Any()) return hintOverride.OfType<T>();
+			if (info != null) return info.GetEditorHints<T>();
+			return null;
 		}
 	}
 }

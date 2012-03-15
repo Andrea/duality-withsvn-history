@@ -575,6 +575,8 @@ namespace AdamsLair.PropertyGrid
 				this.EditingFinished(sender, args);
 		}
 
+		internal protected virtual void ConfigureEditor(object configureData) {}
+
 		protected void OnValueChanged()
 		{
 			this.OnValueChanged(this, new PropertyEditorValueEventArgs(this, this.DisplayedValue));

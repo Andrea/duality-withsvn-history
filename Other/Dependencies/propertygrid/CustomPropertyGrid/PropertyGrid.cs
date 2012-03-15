@@ -292,7 +292,10 @@ namespace AdamsLair.PropertyGrid
 			e.ParentGrid = this;
 			return e;
 		}
-		public virtual void ConfigureEditor(PropertyEditor editor, object configureData = null) {}
+		public virtual void ConfigureEditor(PropertyEditor editor, object configureData = null)
+		{
+			editor.ConfigureEditor(configureData);
+		}
 		public virtual object CreateObjectInstance(Type objectType)
 		{
 			return ReflectionHelper.CreateInstanceOf(objectType);

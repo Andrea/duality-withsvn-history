@@ -42,7 +42,8 @@ namespace EditorBase.PropertyEditors
 				this.editorPos.Getter = this.PosGetter;
 				this.editorPos.Setter = this.PosSetter;
 				this.editorPos.PropertyName = "Pos";
-				this.ParentGrid.ConfigureEditor(this.editorPos, new[] { new EditorHintDecimalPlacesAttribute(0) });
+				this.ParentGrid.ConfigureEditor(this.editorPos, new EditorHintMemberAttribute[] 
+				{ new EditorHintDecimalPlacesAttribute(0), new EditorHintIncrementAttribute(1) });
 				this.AddPropertyEditor(this.editorPos);
 				this.editorPos.EndUpdate();
 			}
@@ -53,7 +54,7 @@ namespace EditorBase.PropertyEditors
 				this.editorVel.Getter = this.VelGetter;
 				this.editorVel.Setter = this.VelSetter;
 				this.editorVel.PropertyName = "Vel";
-				this.ParentGrid.ConfigureEditor(this.editorVel, new[] { new EditorHintIncrementAttribute(0.1f) });
+				this.ParentGrid.ConfigureEditor(this.editorVel);
 				this.AddPropertyEditor(this.editorVel);
 				this.editorVel.EndUpdate();
 			}
@@ -64,7 +65,7 @@ namespace EditorBase.PropertyEditors
 				this.editorScale.Getter = this.ScaleGetter;
 				this.editorScale.Setter = this.ScaleSetter;
 				this.editorScale.PropertyName = "Scale";
-				this.ParentGrid.ConfigureEditor(this.editorScale, new[] { new EditorHintIncrementAttribute(0.1f) });
+				this.ParentGrid.ConfigureEditor(this.editorScale);
 				this.AddPropertyEditor(this.editorScale);
 				this.editorScale.EndUpdate();
 			}

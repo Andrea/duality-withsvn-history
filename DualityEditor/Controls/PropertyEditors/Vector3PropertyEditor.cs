@@ -8,28 +8,29 @@ using System.Drawing;
 using AdamsLair.PropertyGrid;
 using AdamsLair.PropertyGrid.EditorTemplates;
 
-using Vector2 = OpenTK.Vector2;
+using Vector3 = OpenTK.Vector3;
 
 using Duality;
 using Duality.EditorHints;
 
 namespace DualityEditor.Controls.PropertyEditors
 {
-	public class Vector2PropertyEditor : VectorPropertyEditor
+	public class Vector3PropertyEditor : VectorPropertyEditor
 	{
 		public override object DisplayedValue
 		{
 			get 
 			{ 
-				return new Vector2((float)this.editor[0].Value, (float)this.editor[1].Value);
+				return new Vector3((float)this.editor[0].Value, (float)this.editor[1].Value, (float)this.editor[2].Value);
 			}
 		}
 
 
-		public Vector2PropertyEditor() : base(2, 1)
+		public Vector3PropertyEditor() : base(3, 1)
 		{
 			this.editor[0].Edited += this.editorX_Edited;
 			this.editor[1].Edited += this.editorY_Edited;
+			this.editor[2].Edited += this.editorZ_Edited;
 		}
 
 
@@ -43,18 +44,22 @@ namespace DualityEditor.Controls.PropertyEditors
 			{
 				this.editor[0].Value = 0;
 				this.editor[1].Value = 0;
+				this.editor[2].Value = 0;
 			}
 			else
 			{
 				var valNotNull = values.NotNull();
-				float avgX = valNotNull.Average(o => ((Vector2)o).X);
-				float avgY = valNotNull.Average(o => ((Vector2)o).Y);
+				float avgX = valNotNull.Average(o => ((Vector3)o).X);
+				float avgY = valNotNull.Average(o => ((Vector3)o).Y);
+				float avgZ = valNotNull.Average(o => ((Vector3)o).Z);
 
 				this.editor[0].Value = MathF.SafeToDecimal(avgX);
 				this.editor[1].Value = MathF.SafeToDecimal(avgY);
+				this.editor[2].Value = MathF.SafeToDecimal(avgZ);
 
-				this.multiple[0] = (values.Any(o => o == null) || values.Any(o => ((Vector2)o).X != avgX));
-				this.multiple[1] = (values.Any(o => o == null) || values.Any(o => ((Vector2)o).Y != avgY));
+				this.multiple[0] = (values.Any(o => o == null) || values.Any(o => ((Vector3)o).X != avgX));
+				this.multiple[1] = (values.Any(o => o == null) || values.Any(o => ((Vector3)o).Y != avgY));
+				this.multiple[2] = (values.Any(o => o == null) || values.Any(o => ((Vector3)o).Z != avgZ));
 			}
 			this.EndUpdate();
 		}
@@ -65,15 +70,15 @@ namespace DualityEditor.Controls.PropertyEditors
 			if (!this.ReadOnly)
 			{
 				object[] values = this.GetValue().ToArray();
-				Vector2 newVal = (Vector2)this.DisplayedValue;
+				Vector3 newVal = (Vector3)this.DisplayedValue;
 				for (int i = 0; i < values.Length; i++)
 				{
 					if (values[i] == null)
 						values[i] = this.DisplayedValue;
 					else
 					{
-						Vector2 oldVal = (Vector2)values[i];
-						values[i] = new Vector2(newVal.X, oldVal.Y);
+						Vector3 oldVal = (Vector3)values[i];
+						values[i] = new Vector3(newVal.X, oldVal.Y, oldVal.Z);
 					}
 				}
 				this.SetValues(values);
@@ -87,15 +92,37 @@ namespace DualityEditor.Controls.PropertyEditors
 			if (!this.ReadOnly)
 			{
 				object[] values = this.GetValue().ToArray();
-				Vector2 newVal = (Vector2)this.DisplayedValue;
+				Vector3 newVal = (Vector3)this.DisplayedValue;
 				for (int i = 0; i < values.Length; i++)
 				{
 					if (values[i] == null)
 						values[i] = this.DisplayedValue;
 					else
 					{
-						Vector2 oldVal = (Vector2)values[i];
-						values[i] = new Vector2(oldVal.X, newVal.Y);
+						Vector3 oldVal = (Vector3)values[i];
+						values[i] = new Vector3(oldVal.X, newVal.Y, oldVal.Z);
+					}
+				}
+				this.SetValues(values);
+				this.OnValueChanged();
+			}
+			this.PerformGetValue();
+		}
+		private void editorZ_Edited(object sender, EventArgs e)
+		{
+			if (this.IsUpdatingFromObject) return;
+			if (!this.ReadOnly)
+			{
+				object[] values = this.GetValue().ToArray();
+				Vector3 newVal = (Vector3)this.DisplayedValue;
+				for (int i = 0; i < values.Length; i++)
+				{
+					if (values[i] == null)
+						values[i] = this.DisplayedValue;
+					else
+					{
+						Vector3 oldVal = (Vector3)values[i];
+						values[i] = new Vector3(oldVal.X, oldVal.Y, newVal.Z);
 					}
 				}
 				this.SetValues(values);
