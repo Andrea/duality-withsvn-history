@@ -9136,6 +9136,13 @@
             A 360 degree angle in radians. Equals <see cref="F:Duality.MathF.TwoPi"/>.
             </summary>
         </member>
+        <member name="M:Duality.MathF.SafeToDecimal(System.Single)">
+            <summary>
+            Converts the specified float value to decimal and clamps it if necessary.
+            </summary>
+            <param name="v"></param>
+            <returns></returns>
+        </member>
         <member name="M:Duality.MathF.Abs(System.Single)">
             <summary>
             Returns the absolute value of a <see cref="T:System.Single"/>.

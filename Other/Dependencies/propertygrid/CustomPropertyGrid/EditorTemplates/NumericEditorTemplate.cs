@@ -19,11 +19,11 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 
 		private	bool					isTextValid		= false;
 		private	bool					isValueClamped	= false;
-		private	decimal					value			= decimal.MinValue;
-		private	decimal					min				= decimal.MinValue;
-		private	decimal					max				= decimal.MaxValue;
-		private	decimal					increment		= 1;
-		private	int						decimalPlaces	= 0;
+		private	decimal					value			= 0;
+		private	decimal					min;
+		private	decimal					max;
+		private	decimal					increment;
+		private	int						decimalPlaces;
 		private	StringEditorTemplate	stringEditor	= null;
 		private	Rectangle				gripRect		= Rectangle.Empty;
 		private	bool					gripHovered		= false;
@@ -124,9 +124,20 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			this.stringEditor.Invalidate += this.ForwardInvalidate;
 			this.stringEditor.Edited += this.stringEditor_Edited;
 			this.stringEditor.EditingFinished += this.stringEditor_EditingFinished;
+
+			this.ResetProperties();
 		}
 
+		
+		public void ResetProperties()
+		{
+			this.min = decimal.MinValue;
+			this.max = decimal.MaxValue;
+			this.increment = 1;
+			this.decimalPlaces = 0;
 
+			this.Value = this.value;
+		}
 		public void Select()
 		{
 			this.stringEditor.Select();

@@ -28,10 +28,11 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 					int textLen = this.text != null ? this.text.Length : 0;
 					bool allWasSelected = 
 						!string.IsNullOrEmpty(this.text) && 
-						Math.Min(this.cursorIndex, this.cursorIndex + this.selectionLength) == 0 && 
-						Math.Abs(this.selectionLength) == textLen;
+						Math.Min(this.cursorIndex, this.cursorIndex + this.selectionLength) <= 0 && 
+						Math.Abs(this.selectionLength) >= textLen;
 
 					this.text = value;
+					textLen = this.text != null ? this.text.Length : 0;
 
 					if (allWasSelected)
 						this.Select();
@@ -363,12 +364,14 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		}
 		public void OnMouseUp(MouseEventArgs e)
 		{
+			if (!this.rect.Contains(e.Location)) return;
 			Cursor.Current = Cursors.IBeam;
 			this.mouseSelect = false;
 		}
 		public override void OnMouseMove(MouseEventArgs e)
 		{
 			base.OnMouseMove(e);
+			if (!this.rect.Contains(e.Location)) return;
 
 			Cursor.Current = (this.hovered || this.mouseSelect) ? Cursors.IBeam : Cursors.Default;
 			if (this.mouseSelect)
@@ -393,6 +396,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		}
 		public override void OnMouseLeave(EventArgs e)
 		{
+			if (!this.hovered) return;
 			base.OnMouseLeave(e);
 			Cursor.Current = (this.hovered || this.mouseSelect) ? Cursors.IBeam : Cursors.Default;
 		}

@@ -81,7 +81,6 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
@@ -112,6 +111,9 @@
     <Compile Include="Controls\DualitorPropertyGrid.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Controls\PropertyEditors\VectorPropertyEditor.cs" />
+    <Compile Include="Controls\PropertyEditors\Provider.cs" />
+    <Compile Include="Controls\PropertyEditors\Vector2PropertyEditor.cs" />
     <Compile Include="Controls\ToolStrip\ToolStripCheckBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -274,9 +276,7 @@
     <None Include="Resources\CursorArrow.png" />
     <None Include="EditorRes\cog.ico" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Controls\PropertyEditors\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

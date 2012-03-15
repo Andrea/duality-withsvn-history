@@ -503,12 +503,12 @@ namespace AdamsLair.PropertyGrid
 
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 		{
-			if (keyData.HasFlag(Keys.Up) || keyData.HasFlag(Keys.Down) || keyData.HasFlag(Keys.Left) || keyData.HasFlag(Keys.Right))
+			if (keyData.HasFlag(Keys.Up) || keyData.HasFlag(Keys.Down) || keyData.HasFlag(Keys.Left) || keyData.HasFlag(Keys.Right) || keyData.HasFlag(Keys.Tab))
 			{
 				KeyEventArgs args = new KeyEventArgs(keyData);
 				args.Handled = false;
 				this.OnKeyDown(args);
-				return args.Handled;
+				if (args.Handled) return true;
 			}
 			return base.ProcessCmdKey(ref msg, keyData);
 		}

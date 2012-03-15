@@ -237,8 +237,6 @@ namespace AdamsLair.PropertyGrid
 		protected void AddPropertyEditor(PropertyEditor editor, int atIndex = -1)
 		{
 			editor.ParentEditor = this;
-			editor.ValueChanged += this.OnValueChanged;
-			editor.EditingFinished += this.OnEditingFinished;
 			this.UpdateChildWidth(editor);
 
 			if (atIndex == -1)
@@ -252,12 +250,17 @@ namespace AdamsLair.PropertyGrid
 
 			this.OnEditorAdded(editor);
 			this.UpdateHeight();
+
+			editor.ValueChanged += this.OnValueChanged;
+			editor.EditingFinished += this.OnEditingFinished;
+			editor.SizeChanged += this.child_SizeChanged;
 		}
 		protected void RemovePropertyEditor(PropertyEditor editor)
 		{
 			editor.ParentEditor = null;
 			editor.ValueChanged -= this.OnValueChanged;
 			editor.EditingFinished -= this.OnEditingFinished;
+			editor.SizeChanged -= this.child_SizeChanged;
 
 			this.OnEditorRemoving(editor);
 			this.propertyEditors.Remove(editor);
@@ -270,6 +273,7 @@ namespace AdamsLair.PropertyGrid
 				e.ParentEditor = null;
 				e.ValueChanged -= this.OnValueChanged;
 				e.EditingFinished -= this.OnEditingFinished;
+				e.SizeChanged -= this.child_SizeChanged;
 				this.OnEditorRemoving(e);
 			}
 			this.propertyEditors.Clear();
@@ -344,7 +348,6 @@ namespace AdamsLair.PropertyGrid
 		
 		protected void OnEditorAdded(PropertyEditor e)
 		{
-			e.SizeChanged += this.child_SizeChanged;
 			if (this.EditorAdded != null)
 				this.EditorAdded(this, new PropertyEditorEventArgs(e));
 		}
@@ -352,7 +355,6 @@ namespace AdamsLair.PropertyGrid
 		{
 			if (this.EditorRemoving != null)
 				this.EditorRemoving(this, new PropertyEditorEventArgs(e));
-			e.SizeChanged -= this.child_SizeChanged;
 		}
 
 		protected override bool IsChildValueModified(PropertyEditor childEditor)
@@ -948,6 +950,7 @@ namespace AdamsLair.PropertyGrid
 		private void child_SizeChanged(object sender, EventArgs e)
 		{
 			this.UpdateHeight();
+			this.Invalidate();
 		}
 	}
 }

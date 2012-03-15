@@ -348,6 +348,8 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET / SET] The Textures (original, unadjusted) size
 		/// </summary>
+		[EditorHintFlags(MemberFlags.AffectsOthers)]
+		[EditorHintRange(0.0f, float.MaxValue)]
 		public Vector2 Size
 		{
 			get { return this.size; }
@@ -363,6 +365,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET / SET] Whether the specified size is interpreted as factor for the <see cref="DualityApp.TargetResolution"/>.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.AffectsOthers)]
 		public bool SizeRelative
 		{
 			get { return this.sizeRelative; }
@@ -416,6 +419,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET / SET] Handles how the Textures base Pixmap is adjusted in order to fit GPU texture size requirements (Power of Two dimensions)
 		/// </summary>
+		[EditorHintFlags(MemberFlags.AffectsOthers)]
 		public SizeMode OglSizeMode
 		{
 			get { return this.oglSizeMode; }
@@ -449,6 +453,7 @@ namespace Duality.Resources
 		/// [GET / SET] Information about different animation frames contained in this Texture.
 		/// Setting this will lead to an auto-generated atlas map according to the animation.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.AffectsOthers)]
 		public int AnimCols
 		{
 			get { return this.animCols; }
@@ -458,6 +463,7 @@ namespace Duality.Resources
 		/// [GET / SET] Information about different animation frames contained in this Texture.
 		/// Setting this will lead to an auto-generated atlas map according to the animation.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.AffectsOthers)]
 		public int AnimRows
 		{
 			get { return this.animRows; }
@@ -652,7 +658,7 @@ namespace Duality.Resources
 		/// <param name="height"></param>
 		protected void AdjustSize(float width, float height)
 		{
-			this.size = new Vector2(width, height);
+			this.size = new Vector2(MathF.Abs(width), MathF.Abs(height));
 			if (this.sizeRelative)
 			{
 				this.pxWidth = MathF.RoundToInt(this.size.X * DualityApp.UserData.GfxWidth);

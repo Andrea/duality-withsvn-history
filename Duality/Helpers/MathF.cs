@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Runtime.CompilerServices;
 
 using OpenTK;
 
@@ -78,6 +78,23 @@ namespace Duality
 			set { rnd = value ?? new Random(); }
 		}
 
+
+		/// <summary>
+		/// Converts the specified float value to decimal and clamps it if necessary.
+		/// </summary>
+		/// <param name="v"></param>
+		/// <returns></returns>
+		public static decimal SafeToDecimal(float v)
+		{
+			if (float.IsNaN(v))
+				return decimal.Zero;
+			else if (v <= (float)decimal.MinValue || float.IsNegativeInfinity(v))
+				return decimal.MinValue;
+			else if (v >= (float)decimal.MaxValue || float.IsPositiveInfinity(v))
+				return decimal.MaxValue;
+			else
+				return (decimal)v;
+		}
 
 		/// <summary>
 		/// Returns the absolute value of a <see cref="System.Single"/>.

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Reflection;
 
 namespace Duality.EditorHints
 {
@@ -87,8 +87,8 @@ namespace Duality.EditorHints
 		}
 		public EditorHintRangeAttribute(float min, float max)
 		{
-			this.min = (decimal)min;
-			this.max = (decimal)max;
+			this.min = MathF.SafeToDecimal(min);
+			this.max = MathF.SafeToDecimal(max);
 		}
 	}
 
@@ -131,6 +131,18 @@ namespace Duality.EditorHints
 		public EditorHintDecimalPlacesAttribute(int places)
 		{
 			this.places = places;
+		}
+	}
+
+	public static class ExtMethodsMemberInfoEditorHint
+	{
+		public static T GetEditorHint<T>(this MemberInfo info) where T : EditorHintMemberAttribute
+		{
+			return info.GetCustomAttributes(typeof(T), true).FirstOrDefault() as T;
+		}
+		public static IEnumerable<T> GetEditorHints<T>(this MemberInfo info) where T : EditorHintMemberAttribute
+		{
+			return info.GetCustomAttributes(typeof(T), true).OfType<T>();
 		}
 	}
 }

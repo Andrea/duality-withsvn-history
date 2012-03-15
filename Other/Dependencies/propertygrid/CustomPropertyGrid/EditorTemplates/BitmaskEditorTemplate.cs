@@ -79,6 +79,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		{
 			base.OnMouseMove(e);
 			if (this.ReadOnly) this.hovered = false;
+			if (this.justMouseClosed) this.justMouseClosed = false;
 		}
 		public void OnMouseDown(MouseEventArgs e)
 		{
