@@ -589,7 +589,9 @@ namespace EditorBase
 
 			public override bool CanConvertFrom(ConvertOperation convert)
 			{
-				return convert.Data.ContainsContentRefs<Prefab>();
+				return 
+					convert.AllowedOperations.HasFlag(ConvertOperation.Operation.CreateObj) && 
+					convert.Data.ContainsContentRefs<Prefab>();
 			}
 			public override void Convert(ConvertOperation convert)
 			{
@@ -616,7 +618,9 @@ namespace EditorBase
 		{
 			public override bool CanConvertFrom(ConvertOperation convert)
 			{
-				return convert.CanPerform<Sound>();
+				return 
+					convert.AllowedOperations.HasFlag(ConvertOperation.Operation.CreateObj) && 
+					convert.CanPerform<Sound>();
 			}
 			public override void Convert(ConvertOperation convert)
 			{
@@ -650,7 +654,9 @@ namespace EditorBase
 		{
 			public override bool CanConvertFrom(ConvertOperation convert)
 			{
-				return convert.CanPerform<Material>();
+				return 
+					convert.AllowedOperations.HasFlag(ConvertOperation.Operation.CreateObj) && 
+					convert.CanPerform<Material>();
 			}
 			public override void Convert(ConvertOperation convert)
 			{
@@ -698,7 +704,9 @@ namespace EditorBase
 
 			public override bool CanConvertFrom(ConvertOperation convert)
 			{
-				return convert.Data.ContainsGameObjectRefs();
+				return 
+					convert.AllowedOperations.HasFlag(ConvertOperation.Operation.CreateRes) && 
+					convert.Data.ContainsGameObjectRefs();
 			}
 			public override void Convert(ConvertOperation convert)
 			{
@@ -726,7 +734,9 @@ namespace EditorBase
 		{
 			public override bool CanConvertFrom(ConvertOperation convert)
 			{
-				return convert.CanPerform<Texture>();
+				return 
+					convert.AllowedOperations.HasFlag(ConvertOperation.Operation.Convert) && 
+					convert.CanPerform<Texture>();
 			}
 			public override void Convert(ConvertOperation convert)
 			{
@@ -752,7 +762,7 @@ namespace EditorBase
 					{
 						string matPath = tex.FullName + Material.FileExt;
 						matRef = ContentProvider.RequestContent<Material>(matPath);
-						if (!matRef.IsAvailable)
+						if (!matRef.IsAvailable && convert.AllowedOperations.HasFlag(ConvertOperation.Operation.CreateRes))
 						{
 							// Auto-Generate Material
 							matRef = Material.CreateFromTexture(tex);
@@ -769,7 +779,9 @@ namespace EditorBase
 		{
 			public override bool CanConvertFrom(ConvertOperation convert)
 			{
-				return convert.CanPerform<Material>();
+				return 
+					convert.AllowedOperations.HasFlag(ConvertOperation.Operation.Convert) && 
+					convert.CanPerform<Material>();
 			}
 			public override void Convert(ConvertOperation convert)
 			{
@@ -793,7 +805,9 @@ namespace EditorBase
 		{
 			public override bool CanConvertFrom(ConvertOperation convert)
 			{
-				return convert.CanPerform<Pixmap>();
+				return 
+					convert.AllowedOperations.HasFlag(ConvertOperation.Operation.Convert) && 
+					convert.CanPerform<Pixmap>();
 			}
 			public override void Convert(ConvertOperation convert)
 			{
@@ -819,7 +833,7 @@ namespace EditorBase
 					{
 						string texPath = pix.FullName + Texture.FileExt;
 						texRef = ContentProvider.RequestContent<Texture>(texPath);
-						if (!texRef.IsAvailable)
+						if (!texRef.IsAvailable && convert.AllowedOperations.HasFlag(ConvertOperation.Operation.CreateRes))
 						{
 							// Auto-Generate Texture
 							texRef = Texture.CreateFromPixmap(pix);
@@ -836,7 +850,9 @@ namespace EditorBase
 		{
 			public override bool CanConvertFrom(ConvertOperation convert)
 			{
-				return convert.CanPerform<Texture>();
+				return 
+					convert.AllowedOperations.HasFlag(ConvertOperation.Operation.Convert) && 
+					convert.CanPerform<Texture>();
 			}
 			public override void Convert(ConvertOperation convert)
 			{
@@ -860,7 +876,9 @@ namespace EditorBase
 		{
 			public override bool CanConvertFrom(ConvertOperation convert)
 			{
-				return convert.CanPerform<AudioData>();
+				return 
+					convert.AllowedOperations.HasFlag(ConvertOperation.Operation.Convert) && 
+					convert.CanPerform<AudioData>();
 			}
 			public override void Convert(ConvertOperation convert)
 			{
@@ -886,7 +904,7 @@ namespace EditorBase
 					{
 						string sndPath = aud.FullName + Sound.FileExt;
 						sndRef = ContentProvider.RequestContent<Sound>(sndPath);
-						if (!sndRef.IsAvailable)
+						if (!sndRef.IsAvailable && convert.AllowedOperations.HasFlag(ConvertOperation.Operation.CreateRes))
 						{
 							// Auto-Generate Material
 							sndRef = Sound.CreateFromAudioData(aud);
@@ -903,7 +921,9 @@ namespace EditorBase
 		{
 			public override bool CanConvertFrom(ConvertOperation convert)
 			{
-				return convert.CanPerform<Sound>();
+				return 
+					convert.AllowedOperations.HasFlag(ConvertOperation.Operation.Convert) && 
+					convert.CanPerform<Sound>();
 			}
 			public override void Convert(ConvertOperation convert)
 			{

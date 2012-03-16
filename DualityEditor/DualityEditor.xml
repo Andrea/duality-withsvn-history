@@ -237,6 +237,24 @@
             Der Haupteinstiegspunkt für die Anwendung.
             </summary>
         </member>
+        <member name="F:DualityEditor.CorePluginInterface.ConvertOperation.Operation.Convert">
+            <summary>
+            A simple conversion operation that does not affect any data.
+            Example: Retrieving Texture from Material.
+            </summary>
+        </member>
+        <member name="F:DualityEditor.CorePluginInterface.ConvertOperation.Operation.CreateRes">
+            <summary>
+            A conversion that might create new resource data.
+            Example: Creating Material from Texture.
+            </summary>
+        </member>
+        <member name="F:DualityEditor.CorePluginInterface.ConvertOperation.Operation.CreateObj">
+            <summary>
+            A conversion that might create new object data.
+            Example: Construct a GameObject out of a set of Resources.
+            </summary>
+        </member>
         <member name="T:DualityEditor.Properties.Resources">
             <summary>
               Eine stark typisierte Ressourcenklasse zum Suchen von lokalisierten Zeichenfolgen usw.

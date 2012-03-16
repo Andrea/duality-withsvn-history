@@ -156,7 +156,14 @@ namespace Duality
 			get
 			{
 				if (this.contentInstance != null && !this.contentInstance.Disposed) return this.contentInstance.GetType();
-				return Resource.GetTypeByFileName(this.contentPath);
+				
+				Type result = Resource.GetTypeByFileName(this.contentPath);
+				if (result != null) return result;
+
+				this.RetrieveInstance();
+				if (this.contentInstance != null && !this.contentInstance.Disposed) return this.contentInstance.GetType();
+
+				return null;
 			}
 		}
 		/// <summary>

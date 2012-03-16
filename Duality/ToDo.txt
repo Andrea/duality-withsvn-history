@@ -12,9 +12,6 @@
 
 	
 -->	Dualitor: Implement new PropertyGrid - Rebuild Editors
-	-->	Why is everything in a Material Resource ReadOnly?
-	-->	ContentRef
-		-->	Maybe texturize background if related to Pixmap?
 	-->	BatchInfo
 		-->	Maybe, just maybe, this time not make it spaghetti as hell?
 	-->	Other editors, see old "not-in-project" source files

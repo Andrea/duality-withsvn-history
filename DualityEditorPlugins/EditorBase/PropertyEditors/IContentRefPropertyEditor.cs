@@ -35,6 +35,9 @@ namespace EditorBase.PropertyEditors
 		protected	bool		buttonShowPressed	= false;
 		protected	bool		panelHovered		= false;
 		private		Point		panelDragBegin		= Point.Empty;
+		private		Bitmap		bgImage				= null;
+		private		Color		bgImageColor		= Color.White;
+		protected	string		bgImagePath			= null;
 		
 		public override object DisplayedValue
 		{
@@ -82,30 +85,102 @@ namespace EditorBase.PropertyEditors
 			{
 				IContentRef first = values.NotNull().FirstOrDefault();
 				this.contentPath = first.Path;
-				this.multiple = (values.Any(o => o == null) && values.Any(o => o.Path != first.Path));
+				this.multiple = (values.Any(o => o == null) || values.Any(o => o.Path != first.Path));
+
+				this.GenerateBackgroundImage();
 			}
 			this.EndUpdate();
+		}
+
+		protected void GenerateBackgroundImage()
+		{
+			if (this.bgImagePath == this.contentPath) return;
+			this.bgImagePath = this.contentPath;
+
+			if (this.bgImage != null) this.bgImage.Dispose();
+			this.bgImage = null;
+			this.Height = 22;
+
+			Resource res = (this.DisplayedValue as IContentRef).Res;
+			if (res != null)
+			{
+				this.bgImage = res.GetPreviewImage(this.ClientRectangle.Width - 4 - 22, 64 - 4, PreviewSizeMode.FixedHeight);
+				if (this.bgImage != null)
+				{
+					this.Height = 64;
+					float luminance = this.bgImage.GetAverageColor().GetLuminance();
+					if (luminance < 0.5f)
+						luminance = 1.0f;
+					else
+						luminance = 0.0f;
+					int lumVal = MathF.RoundToInt(255.0f * luminance);
+					this.bgImageColor = Color.FromArgb(lumVal, lumVal, lumVal);
+				}
+			}
 		}
 
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			base.OnPaint(e);
 
-			Color bgColor = Color.White;
-			if (this.dragHover) bgColor = bgColor.MixWith(Color.FromArgb(192, 255, 0), 0.4f);
-			else if (this.multiple) bgColor = Color.Bisque;
-			if (this.ReadOnly || !this.Enabled) bgColor = Color.FromArgb(128, bgColor);
+			Color bgColorBright = Color.White;
+			if (this.dragHover) bgColorBright = bgColorBright.MixWith(Color.FromArgb(192, 255, 0), 0.4f);
+			else if (this.multiple) bgColorBright = Color.Bisque;
 
-			e.Graphics.FillRectangle(new SolidBrush(bgColor), this.rectPanel);
+			Rectangle rectImage = new Rectangle(this.rectPanel.X + 2, this.rectPanel.Y + 2, this.rectPanel.Width - 4, this.rectPanel.Height - 4);
+			if (this.bgImage == null)
+			{
+				if (this.ReadOnly || !this.Enabled)
+					e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(128, bgColorBright)), rectImage);
+				else
+					e.Graphics.FillRectangle(new SolidBrush(bgColorBright), rectImage);
+			}
+			else
+			{
+				Color bgImageBaseColor = this.bgImageColor;
+				if (this.dragHover) bgImageBaseColor = bgImageBaseColor.MixWith(Color.FromArgb(192, 255, 0), 0.4f);
+				else if (this.multiple) bgImageBaseColor = bgImageBaseColor.MixWith(Color.FromArgb(255, 200, 128), 0.4f);
 
-			//Resource res = (this.DisplayedValue as IContentRef).Res;
-			//ConvertOperation convert = new ConvertOperation(new[] { res });
-			//if (convert.CanPerform<Pixmap>())
-			//{
-			//    Pixmap pixmap = convert.Perform<Pixmap>().FirstOrDefault();
-			//    e.Graphics.FillRectangle(new TextureBrush(pixmap.PixelData), this.rectPanel);
-			//}
+				if (this.ReadOnly || !this.Enabled)
+					e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(128, bgImageBaseColor)), rectImage);
+				else
+					e.Graphics.FillRectangle(new SolidBrush(bgImageBaseColor), rectImage);
 
+				TextureBrush bgImageBrush = new TextureBrush(this.bgImage);
+				bgImageBrush.ResetTransform();
+				bgImageBrush.TranslateTransform(rectImage.X, rectImage.Y);
+				e.Graphics.FillRectangle(bgImageBrush, rectImage);
+			}
+
+			StringFormat format = StringFormat.GenericDefault;
+			format.Alignment = StringAlignment.Center;
+			format.LineAlignment = StringAlignment.Center;
+			format.Trimming = StringTrimming.EllipsisPath;
+			SizeF textSize = e.Graphics.MeasureString(
+				(this.DisplayedValue as IContentRef).FullName,
+				SystemFonts.DefaultFont,
+				new SizeF(this.rectPanel.Width, this.rectPanel.Height),
+				format);
+
+			Rectangle rectText;
+			if (this.bgImage == null)
+				rectText = this.rectPanel;
+			else
+				rectText = new Rectangle(
+					this.rectPanel.X, this.rectPanel.Bottom - (int)textSize.Height - 2, this.rectPanel.Width, (int)textSize.Height);
+
+			e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(192, bgColorBright)), 
+				rectText.X + rectText.Width / 2 - textSize.Width / 2 - 2, 
+				rectText.Y + rectText.Height / 2 - textSize.Height / 2 - 2, 
+				textSize.Width + 2, 
+				textSize.Height + 2);
+			e.Graphics.DrawString(
+				(this.DisplayedValue as IContentRef).FullName,
+				SystemFonts.DefaultFont,
+				new SolidBrush(this.Enabled ? SystemColors.ControlText : SystemColors.GrayText),
+				rectText,
+				format);
+			
 			e.Graphics.DrawRectangle(new Pen((this.ReadOnly || !this.Enabled) ? Color.FromArgb(128, SystemColors.ControlLightLight) : SystemColors.ControlLightLight), 
 				this.rectPanel.X + 1,
 				this.rectPanel.Y + 1,
@@ -116,17 +191,6 @@ namespace EditorBase.PropertyEditors
 				this.rectPanel.Y,
 				this.rectPanel.Width - 1,
 				this.rectPanel.Height - 1);
-
-			StringFormat format = StringFormat.GenericDefault;
-			format.Alignment = StringAlignment.Center;
-			format.LineAlignment = StringAlignment.Center;
-			format.Trimming = StringTrimming.EllipsisPath;
-			e.Graphics.DrawString(
-				(this.DisplayedValue as IContentRef).FullName,
-				SystemFonts.DefaultFont,
-				new SolidBrush(this.Enabled ? SystemColors.ControlText : SystemColors.GrayText),
-				this.rectPanel,
-				format);
 
 			ButtonState buttonStateReset = ButtonState.Disabled;
 			if (!this.ReadOnly && this.Enabled && !string.IsNullOrEmpty(this.contentPath))
@@ -167,7 +231,7 @@ namespace EditorBase.PropertyEditors
 			else if (e.KeyCode == Keys.C && e.Control)
 			{
 				DataObject data = new DataObject();
-				data.AppendContentRefs(new[] { this.DisplayedValue as IContentRef });
+				data.SetContentRefs(new[] { this.DisplayedValue as IContentRef });
 				Clipboard.SetDataObject(data);
 				e.Handled = true;
 			}
@@ -211,7 +275,8 @@ namespace EditorBase.PropertyEditors
 				if (Math.Abs(this.panelDragBegin.X - e.X) > 5 || Math.Abs(this.panelDragBegin.Y - e.Y) > 5)
 				{
 					DataObject dragDropData = new DataObject();
-					dragDropData.AppendContentRefs(new[] { this.DisplayedValue as IContentRef });
+					dragDropData.SetContentRefs(new[] { this.DisplayedValue as IContentRef });
+					//dragDropData.SetAllowedConvertOp(ConvertOperation.Operation.Convert);
 					this.ParentGrid.DoDragDrop(dragDropData, DragDropEffects.All | DragDropEffects.Link);
 				}
 			}
@@ -288,8 +353,10 @@ namespace EditorBase.PropertyEditors
 		{
 			base.OnDragDrop(e);
 			if (this.ReadOnly || !this.Enabled) return;
-			DataObject data = e.Data as DataObject;
+			if (this.dragHover) this.Invalidate();
+			this.dragHover = false;
 
+			DataObject data = e.Data as DataObject;
 			if (data.ContainsContentRefs())
 			{
 				IContentRef[] refArray = data.GetContentRefs();
@@ -307,21 +374,42 @@ namespace EditorBase.PropertyEditors
 
 			int buttonWidth = 22;
 
-			this.rectButtonReset = new Rectangle(
-				this.ClientRectangle.Right - buttonWidth,
-				this.ClientRectangle.Top,
-				buttonWidth,
-				this.ClientRectangle.Height);
-			this.rectButtonShow = new Rectangle(
-				this.ClientRectangle.Right - buttonWidth - buttonWidth,
-				this.ClientRectangle.Top,
-				buttonWidth,
-				this.ClientRectangle.Height);
-			this.rectPanel = new Rectangle(
-				this.ClientRectangle.X,
-				this.ClientRectangle.Y,
-				this.ClientRectangle.Width - buttonWidth * 2,
-				this.ClientRectangle.Height);
+			if (this.Height >= 44)
+			{
+				this.rectButtonShow = new Rectangle(
+					this.ClientRectangle.Right - buttonWidth,
+					this.ClientRectangle.Top + this.ClientRectangle.Height / 2 - buttonWidth,
+					buttonWidth,
+					buttonWidth);
+				this.rectButtonReset = new Rectangle(
+					this.ClientRectangle.Right - buttonWidth,
+					this.rectButtonShow.Bottom,
+					buttonWidth,
+					buttonWidth);
+				this.rectPanel = new Rectangle(
+					this.ClientRectangle.X,
+					this.ClientRectangle.Y,
+					this.ClientRectangle.Width - buttonWidth,
+					this.ClientRectangle.Height);
+			}
+			else
+			{
+				this.rectButtonShow = new Rectangle(
+					this.ClientRectangle.Right - buttonWidth - buttonWidth,
+					this.ClientRectangle.Top,
+					buttonWidth,
+					this.ClientRectangle.Height);
+				this.rectButtonReset = new Rectangle(
+					this.ClientRectangle.Right - buttonWidth,
+					this.ClientRectangle.Top,
+					buttonWidth,
+					this.ClientRectangle.Height);
+				this.rectPanel = new Rectangle(
+					this.ClientRectangle.X,
+					this.ClientRectangle.Y,
+					this.ClientRectangle.Width - buttonWidth * 2,
+					this.ClientRectangle.Height);
+			}
 		}
 	}
 }

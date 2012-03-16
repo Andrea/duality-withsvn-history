@@ -316,7 +316,7 @@ namespace EditorBase.CamViewStates
 			e.Effect = DragDropEffects.None;
 
 			DataObject data = e.Data as DataObject;
-			var dragObjQuery = new ConvertOperation(data).Perform<GameObject>();
+			var dragObjQuery = new ConvertOperation(data, ConvertOperation.Operation.All).Perform<GameObject>();
 			if (dragObjQuery != null)
 			{
 				List<GameObject> dragObj = dragObjQuery.ToList();

@@ -214,7 +214,7 @@ namespace EditorBase.PropertyEditors
 			
 			ButtonState buttonState = ButtonState.Normal;
 			ButtonState buttonStateDefault = ButtonState.Normal;
-			if (!this.ReadOnly && this.Enabled && this.prefabLinked && this.prefabLinkAvailable)
+			if (!this.ReadOnly && this.Enabled && this.prefabLinked && (this.prefabLinkAvailable || this.curButton == 3))
 			{
 				if (this.curButtonPressed)		buttonState = ButtonState.Pressed;
 				else if (this.curButtonHovered)	buttonState = ButtonState.Hot;
@@ -246,22 +246,22 @@ namespace EditorBase.PropertyEditors
 
 			bool lastButtonHovered = this.curButtonHovered;
 			int lastButton = this.curButton;
-			if (this.ReadOnly || !this.prefabLinked || !this.prefabLinkAvailable)
+			if (this.ReadOnly || !this.prefabLinked)
 			{
 				this.curButton = -1;
 				this.curButtonHovered = false;
 			}
-			else if ((!this.curButtonPressed || this.curButton == 0) && this.rectButtonPrefabShow.Contains(e.Location))
+			else if (this.prefabLinkAvailable && (!this.curButtonPressed || this.curButton == 0) && this.rectButtonPrefabShow.Contains(e.Location))
 			{
 				this.curButton = 0;
 				this.curButtonHovered = true;
 			}
-			else if ((!this.curButtonPressed || this.curButton == 1) && this.rectButtonPrefabRevert.Contains(e.Location))
+			else if (this.prefabLinkAvailable && (!this.curButtonPressed || this.curButton == 1) && this.rectButtonPrefabRevert.Contains(e.Location))
 			{
 				this.curButton = 1;
 				this.curButtonHovered = true;
 			}
-			else if ((!this.curButtonPressed || this.curButton == 2) && this.rectButtonPrefabApply.Contains(e.Location))
+			else if (this.prefabLinkAvailable && (!this.curButtonPressed || this.curButton == 2) && this.rectButtonPrefabApply.Contains(e.Location))
 			{
 				this.curButton = 2;
 				this.curButtonHovered = true;

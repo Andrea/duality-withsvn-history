@@ -597,11 +597,11 @@ namespace EditorBase
 			if (!guardRequiredComponents)
 			{
 				data.SetData(nodes.ToArray());
-				data.AppendComponentRefs(
+				data.SetComponentRefs(
 					from c in nodes
 					where c.Tag is ComponentNode
 					select (c.Tag as ComponentNode).Component);
-				data.AppendGameObjectRefs(
+				data.SetGameObjectRefs(
 					from c in nodes
 					where c.Tag is GameObjectNode
 					select (c.Tag as GameObjectNode).Obj);
@@ -811,7 +811,7 @@ namespace EditorBase
 					else
 						e.Effect = DragDropEffects.None;
 				}
-				else if (new ConvertOperation(data).CanPerform<GameObject>())
+				else if (new ConvertOperation(data, ConvertOperation.Operation.All).CanPerform<GameObject>())
 				{
 					if (dropParent is ComponentNode)
 						e.Effect = DragDropEffects.None;
@@ -850,10 +850,10 @@ namespace EditorBase
 					else
 						this.moveHereToolStripMenuItem_Click(this, null);
 				}
-				else if (new ConvertOperation(data).CanPerform<GameObject>())
+				else if (new ConvertOperation(data, ConvertOperation.Operation.All).CanPerform<GameObject>())
 				{
 					GameObject dropObj = (this.tempDropTarget is GameObjectNode) ? (this.tempDropTarget as GameObjectNode).Obj : null;
-					var gameObjQuery = new ConvertOperation(data).Perform<GameObject>();
+					var gameObjQuery = new ConvertOperation(data, ConvertOperation.Operation.All).Perform<GameObject>();
 					if (gameObjQuery != null)
 					{
 						this.objectView.ClearSelection();

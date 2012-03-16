@@ -91,6 +91,10 @@ namespace Duality
 		{
 			get { return !this.isDirectory; }
 		}
+		public bool IsDefaultContent
+		{
+			get { return this.Content.IsDefaultContent; }
+		}
 		public Type ContentType
 		{
 			get 

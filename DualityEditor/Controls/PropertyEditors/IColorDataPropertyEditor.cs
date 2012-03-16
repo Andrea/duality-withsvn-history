@@ -119,7 +119,7 @@ namespace DualityEditor.Controls.PropertyEditors
 			else if (e.KeyCode == Keys.C && e.Control)
 			{
 				DataObject data = new DataObject();
-				data.AppendIColorData(new[] { this.value ?? (IColorData)ColorRgba.TransparentBlack });
+				data.SetIColorData(new[] { this.value ?? (IColorData)ColorRgba.TransparentBlack });
 				Clipboard.SetDataObject(data);
 				e.Handled = true;
 			}
@@ -155,7 +155,7 @@ namespace DualityEditor.Controls.PropertyEditors
 				if (Math.Abs(this.panelDragBegin.X - e.X) > 5 || Math.Abs(this.panelDragBegin.Y - e.Y) > 5)
 				{
 					DataObject dragDropData = new DataObject();
-					dragDropData.AppendIColorData(new[] { this.value });
+					dragDropData.SetIColorData(new[] { this.value });
 					this.ParentGrid.DoDragDrop(dragDropData, DragDropEffects.All | DragDropEffects.Link);
 				}
 			}

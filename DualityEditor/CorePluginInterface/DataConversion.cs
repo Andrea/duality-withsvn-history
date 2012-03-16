@@ -78,9 +78,35 @@ namespace DualityEditor.CorePluginInterface
 	}
 	public class ConvertOperation
 	{
+		[Flags]
+		public enum Operation
+		{
+			None		= 0x0,
+
+			/// <summary>
+			/// A simple conversion operation that does not affect any data.
+			/// Example: Retrieving Texture from Material.
+			/// </summary>
+			Convert		= 0x1,
+			/// <summary>
+			/// A conversion that might create new resource data.
+			/// Example: Creating Material from Texture.
+			/// </summary>
+			CreateRes	= 0x2,
+			/// <summary>
+			/// A conversion that might create new object data.
+			/// Example: Construct a GameObject out of a set of Resources.
+			/// </summary>
+			CreateObj	= 0x4,
+
+			All		= Convert | CreateRes | CreateObj
+		}
+
+		private	Operation		allowedOp	= Operation.All;
 		private	ConversionData	data		= null;
 		private	HashSet<object>	result		= new HashSet<object>();
 		private	HashSet<object>	handledObj	= new HashSet<object>();
+		// For preventing conversion loops:
 		private	HashSet<DataConverter>	usedConverters	= new HashSet<DataConverter>();
 		private	HashSet<Type>			checkedTypes	= new HashSet<Type>();
 
@@ -93,17 +119,29 @@ namespace DualityEditor.CorePluginInterface
 		{
 			get { return this.result; }
 		}
-
-
-		public ConvertOperation(IDataObject data)
+		public Operation AllowedOperations
 		{
-			this.data = new ConversionData(data);
+			get { return this.allowedOp; }
 		}
-		public ConvertOperation(IEnumerable<object> data)
+
+
+		public ConvertOperation(IDataObject data, Operation allowedOp)
+		{
+			allowedOp &= data.GetAllowedConvertOp();
+
+			this.data = new ConversionData(data);
+			this.allowedOp = allowedOp;
+		}
+		public ConvertOperation(IEnumerable<object> data, Operation allowedOp)
 		{
 			DataObject dataObj = new DataObject();
-			foreach (object obj in data) dataObj.SetData(obj.GetType(), obj);
+			foreach (object obj in data)
+			{
+				if (obj == null) continue;
+				dataObj.SetData(obj.GetType(), obj);
+			}
 			this.data = new ConversionData(dataObj);
+			this.allowedOp = allowedOp;
 		}
 			
 		public bool IsObjectHandled(object data)

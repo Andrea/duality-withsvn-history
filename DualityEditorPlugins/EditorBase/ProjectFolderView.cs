@@ -658,11 +658,11 @@ namespace EditorBase
 		protected void AppendNodesToData(DataObject data, IEnumerable<TreeNodeAdv> nodes)
 		{
 			data.SetData(nodes.ToArray());
-			data.AppendContentRefs(
+			data.SetContentRefs(
 				from c in nodes
 				where c.Tag is ResourceNode
 				select (c.Tag as ResourceNode).ResLink as IContentRef);
-			data.AppendFiles(
+			data.SetFiles(
 				from c in nodes
 				where c.Tag is NodeBase && !(c.Tag as NodeBase).NodePath.Contains(':')
 				select (c.Tag as NodeBase).NodePath);
@@ -822,6 +822,7 @@ namespace EditorBase
 			DirectoryNode targetDirNode = baseTarget as DirectoryNode;
 			string baseTargetPath = this.GetInsertActionTargetBasePath(baseTarget);
 			DataObject data = e.Data as DataObject;
+			ConvertOperation.Operation convOp = data.GetAllowedConvertOp();
 			if (data != null)
 			{
 				// Dragging files around
@@ -850,6 +851,7 @@ namespace EditorBase
 				}
 				// Dragging a single GameObject to Prefab
 				else if (
+					e.AllowedEffect.HasFlag(DragDropEffects.Link) &&
 					data.ContainsGameObjectRefs() &&
 					targetResNode != null && 
 					targetResNode.ResLink.Is<Duality.Resources.Prefab>() && 
@@ -858,10 +860,12 @@ namespace EditorBase
 					e.Effect = DragDropEffects.Link & e.AllowedEffect;
 				}
 				// See if we can retrieve Resources from data
-				else
+				else if (
+					(e.AllowedEffect.HasFlag(DragDropEffects.Copy) || e.AllowedEffect.HasFlag(DragDropEffects.Move)) &&
+					(convOp.HasFlag(ConvertOperation.Operation.CreateRes) || convOp.HasFlag(ConvertOperation.Operation.CreateObj)))
 				{
-					bool canSelectResource = new ConvertOperation(data).CanPerform<IContentRef>();
-					if (canSelectResource) e.Effect = DragDropEffects.Link & e.AllowedEffect;
+					bool canSelectResource = new ConvertOperation(data, ConvertOperation.Operation.All).CanPerform<IContentRef>();
+					if (canSelectResource) e.Effect = DragDropEffects.Copy & e.AllowedEffect;
 				}
 			}
 
@@ -876,6 +880,7 @@ namespace EditorBase
 			DirectoryNode targetDirNode = baseTarget as DirectoryNode;
 			this.tempDropBasePath = this.GetInsertActionTargetBasePath(baseTarget);
 			DataObject data = e.Data as DataObject;
+			ConvertOperation.Operation convOp = data.GetAllowedConvertOp();
 			if (data != null)
 			{
 				// Dropping files
@@ -884,16 +889,18 @@ namespace EditorBase
 					this.tempFileDropList = data.GetFileDropList();
 
 					// Display context menu if both moving and copying are availabled
-					if ((e.Effect & DragDropEffects.Move) != DragDropEffects.None && (e.Effect & DragDropEffects.Copy) != DragDropEffects.None)
+					if (e.Effect.HasFlag(DragDropEffects.Move) && e.Effect.HasFlag(DragDropEffects.Copy))
 						this.contextMenuDragMoveCopy.Show(this, this.PointToClient(new Point(e.X, e.Y)));
 					else
 						this.moveHereToolStripMenuItem_Click(this, null);
 				}
 				// Dropping GameObject to Prefab
-				else if (data.ContainsGameObjectRefs() &&
-						targetResNode != null && 
-						targetResNode.ResLink.Is<Duality.Resources.Prefab>() && 
-						data.GetGameObjectRefs().Length == 1)
+				else if (
+					e.Effect.HasFlag(DragDropEffects.Link) &&
+					data.ContainsGameObjectRefs() &&
+					targetResNode != null && 
+					targetResNode.ResLink.Is<Duality.Resources.Prefab>() && 
+					data.GetGameObjectRefs().Length == 1)
 				{
 					Prefab prefab = targetResNode.ResLink.Res as Prefab;
 					if (prefab != null)
@@ -916,19 +923,19 @@ namespace EditorBase
 					}
 				}
 				// See if we can retrieve Resources from data
-				else
+				else if (
+					(e.Effect.HasFlag(DragDropEffects.Copy) || e.Effect.HasFlag(DragDropEffects.Move)) &&
+					(convOp.HasFlag(ConvertOperation.Operation.CreateRes) || convOp.HasFlag(ConvertOperation.Operation.CreateObj)))
 				{
-					var resQuery = new ConvertOperation(data).Perform<IContentRef>();
+					var resQuery = new ConvertOperation(data, ConvertOperation.Operation.All).Perform<IContentRef>();
 					if (resQuery != null)
 					{
-						List<Resource> resList = resQuery.Res().ToList();
-
-						this.folderView.ClearSelection();
-
 						// Save generated Resources
+						List<Resource> resList = resQuery.Res().ToList();
+						this.folderView.ClearSelection();
 						foreach (Resource res in resList)
 						{
-							string desiredName = Path.GetFileNameWithoutExtension(res.SourcePath);
+							string desiredName = res.SourcePath != null ? Path.GetFileNameWithoutExtension(res.SourcePath) : res.Name;
 							string basePath = this.GetInsertActionTargetBasePath(targetDirNode);
 							string nameExt = Resource.GetFileExtByType(res.GetType());
 							string resPath = PathHelper.GetFreePath(Path.Combine(basePath, desiredName), nameExt);

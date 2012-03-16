@@ -9,11 +9,25 @@ using Duality;
 using Duality.ColorFormat;
 using Duality.Resources;
 
+using DualityEditor.CorePluginInterface;
+
 namespace DualityEditor
 {
 	public static class ExtMethodsDataObject
 	{
-		public static void AppendComponentRefs(this IDataObject data, IEnumerable<Component> cmp)
+		public static void SetAllowedConvertOp(this IDataObject data, ConvertOperation.Operation allowedOp)
+		{
+			data.SetData(typeof(ConvertOperation.Operation), allowedOp);
+		}
+		public static ConvertOperation.Operation GetAllowedConvertOp(this IDataObject data)
+		{
+			if (data.GetDataPresent(typeof(ConvertOperation.Operation)))
+				return (ConvertOperation.Operation)data.GetData(typeof(ConvertOperation.Operation));
+			else
+				return ConvertOperation.Operation.All;
+		}
+
+		public static void SetComponentRefs(this IDataObject data, IEnumerable<Component> cmp)
 		{
 			Component[] cmpArray = cmp.ToArray();
 			if (cmpArray.Length > 0) data.SetData(cmpArray);
@@ -27,7 +41,7 @@ namespace DualityEditor
 			return data.GetData(typeof(Component[])) as Component[];
 		}
 
-		public static void AppendGameObjectRefs(this IDataObject data, IEnumerable<GameObject> obj)
+		public static void SetGameObjectRefs(this IDataObject data, IEnumerable<GameObject> obj)
 		{
 			GameObject[] objArray = obj.ToArray();
 			if (objArray.Length > 0) data.SetData(objArray);
@@ -41,7 +55,7 @@ namespace DualityEditor
 			return data.GetData(typeof(GameObject[])) as GameObject[];
 		}
 
-		public static void AppendContentRefs(this IDataObject data, IEnumerable<IContentRef> content)
+		public static void SetContentRefs(this IDataObject data, IEnumerable<IContentRef> content)
 		{
 			if (!content.Any()) return;
 			data.SetData(content.ToArray());
@@ -56,7 +70,7 @@ namespace DualityEditor
 		{
 			if (resType == null) resType = typeof(Resource);
 			if (!data.GetDataPresent(typeof(IContentRef[]))) return false;
-		IContentRef[] refArray = data.GetData(typeof(IContentRef[])) as IContentRef[];
+			IContentRef[] refArray = data.GetData(typeof(IContentRef[])) as IContentRef[];
 			return refArray.Any(r => r.Is(resType));
 		}
 		public static ContentRef<T>[] GetContentRefs<T>(this IDataObject data) where T : Resource
@@ -81,7 +95,7 @@ namespace DualityEditor
 				).ToArray();
 		}
 		
-		public static void AppendBatchInfos(this IDataObject data, IEnumerable<BatchInfo> obj)
+		public static void SetBatchInfos(this IDataObject data, IEnumerable<BatchInfo> obj)
 		{
 			BatchInfo[] objArray = obj.ToArray();
 			if (objArray.Length > 0) data.SetData(objArray);
@@ -95,7 +109,7 @@ namespace DualityEditor
 			return (data.GetData(typeof(BatchInfo[])) as BatchInfo[]).Select(b => new BatchInfo(b)).ToArray();
 		}
 
-		public static void AppendIColorData(this IDataObject data, IEnumerable<IColorData> color)
+		public static void SetIColorData(this IDataObject data, IEnumerable<IColorData> color)
 		{
 			if (!color.Any()) return;
 			data.SetData(color.ToArray());
@@ -174,7 +188,7 @@ namespace DualityEditor
 				return null;
 		}
 
-		public static void AppendString(this IDataObject data, string text)
+		public static void SetString(this IDataObject data, string text)
 		{
 			data.SetData(text);
 			data.SetData("Text", true, text);
@@ -198,7 +212,7 @@ namespace DualityEditor
 				return null;
 		}
 
-		public static void AppendFiles(this DataObject data, IEnumerable<string> files)
+		public static void SetFiles(this DataObject data, IEnumerable<string> files)
 		{
 			var sc = new System.Collections.Specialized.StringCollection();
 			foreach (string file in files)
