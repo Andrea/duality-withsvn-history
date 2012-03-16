@@ -222,6 +222,7 @@ namespace DualityEditor.CorePluginInterface
 			if (typeof(IContentRef).IsAssignableFrom(originalType))
 				returnValue = result.OfType<Resource>().Select(r => r.GetContentRef());
 
+			returnValue = returnValue.Where(o => originalType.IsAssignableFrom(o.GetType()));
 			return returnValue.Any() ? returnValue : null;
 		}
 

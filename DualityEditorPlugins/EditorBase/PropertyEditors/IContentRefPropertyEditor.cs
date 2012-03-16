@@ -106,12 +106,12 @@ namespace EditorBase.PropertyEditors
 			//    e.Graphics.FillRectangle(new TextureBrush(pixmap.PixelData), this.rectPanel);
 			//}
 
-			e.Graphics.DrawRectangle(SystemPens.ControlLightLight, 
+			e.Graphics.DrawRectangle(new Pen((this.ReadOnly || !this.Enabled) ? Color.FromArgb(128, SystemColors.ControlLightLight) : SystemColors.ControlLightLight), 
 				this.rectPanel.X + 1,
 				this.rectPanel.Y + 1,
 				this.rectPanel.Width - 3,
 				this.rectPanel.Height - 3);
-			e.Graphics.DrawRectangle(SystemPens.ControlDark,
+			e.Graphics.DrawRectangle(new Pen((this.ReadOnly || !this.Enabled) ? Color.FromArgb(128, SystemColors.ControlDark) : SystemColors.ControlDark),
 				this.rectPanel.X,
 				this.rectPanel.Y,
 				this.rectPanel.Width - 1,
