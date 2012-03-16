@@ -126,35 +126,9 @@ namespace DualityEditor.Controls.PropertyEditors
 			else if (e.KeyCode == Keys.V && e.Control)
 			{
 				DataObject data = Clipboard.GetDataObject() as DataObject;
-				bool success = false;
 				if (data.ContainsIColorData())
 				{
 					this.value = data.GetIColorData<IColorData>().FirstOrDefault();
-					success = true;
-				}
-				else if (data.ContainsText())
-				{
-					string valString = data.GetText();
-					string[] token = valString.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-					byte[] valToken = new byte[4];
-					valToken[3] = 255;
-
-					success = true;
-					for (int i = 0; i < token.Length; i++)
-					{
-						token[i] = token[i].Trim();
-						if (!byte.TryParse(token[i], out valToken[i]))
-						{
-							success = false;
-							break;
-						}
-					}
-
-					if (success) this.value = new ColorRgba(valToken[0], valToken[1], valToken[2], valToken[3]);
-				}
-
-				if (success)
-				{
 					this.PerformSetValue();
 					this.OnValueChanged();
 					this.PerformGetValue();
@@ -173,7 +147,7 @@ namespace DualityEditor.Controls.PropertyEditors
 			bool lastButtonHovered = this.buttonHovered;
 			bool lastPanelHovered = this.panelHovered;
 			this.buttonHovered = !this.ReadOnly && this.rectButton.Contains(e.Location);
-			this.panelHovered = !this.ReadOnly && this.rectPanel.Contains(e.Location);
+			this.panelHovered = this.rectPanel.Contains(e.Location);
 			if (lastButtonHovered != this.buttonHovered || lastPanelHovered != this.panelHovered) this.Invalidate();
 			
 			if (this.panelDragBegin != Point.Empty)
@@ -222,6 +196,26 @@ namespace DualityEditor.Controls.PropertyEditors
 			base.OnMouseDoubleClick(e);
 			if (this.panelHovered && (e.Button & MouseButtons.Left) != MouseButtons.None)
 				this.ShowColorDialog();
+		}
+		protected override void OnDragOver(DragEventArgs e)
+		{
+			base.OnDragOver(e);
+			DataObject data = e.Data as DataObject;
+			if (data.ContainsIColorData()) e.Effect = e.AllowedEffect;
+		}
+		protected override void OnDragDrop(DragEventArgs e)
+		{
+			base.OnDragDrop(e);
+			DataObject data = e.Data as DataObject;
+
+			if (data.ContainsIColorData())
+			{
+				this.value = data.GetIColorData<IColorData>().FirstOrDefault();
+				this.PerformSetValue();
+				this.OnValueChanged();
+				this.PerformGetValue();
+				this.OnEditingFinished();
+			}
 		}
 
 		protected override void UpdateGeometry()

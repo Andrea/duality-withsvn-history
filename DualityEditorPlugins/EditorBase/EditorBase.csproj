@@ -81,6 +81,7 @@
     <Compile Include="PropertyEditors\Components\TransformPropertyEditor.cs" />
     <Compile Include="PropertyEditors\GameObjectOverviewPropertyEditor.cs" />
     <Compile Include="PropertyEditors\GameObjectPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\IContentRefPropertyEditor.cs" />
     <Compile Include="PropertyEditors\ResourcePropertyEditor.cs" />
     <Compile Include="ShaderFileImporter.cs" />
     <Compile Include="PixmapFileImporter.cs" />

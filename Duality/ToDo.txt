@@ -12,10 +12,18 @@
 
 	
 -->	Dualitor: Implement new PropertyGrid - Rebuild Editors
-	-->	IColorData
-		-->	DragDrop
+	-->	ContentRef
+		-->	Maybe texturize background if related to Pixmap?
+	-->	BatchInfo
+		-->	Maybe, just maybe, this time not make it spaghetti as hell?
 	-->	Other editors, see old "not-in-project" source files
 	-->	...
+
+-->	Write a propert DualityLighting Plugin (Core and Editor)
+	-->	Stuff
+	-->	Also, define a new GameObjectFromMaterial converter that implements
+		a special case for materials using lighting techniques. We should create a
+		LightingSpriteRenderer here, not a SpriteRenderer.
 
 
 --> Example Project: Tetris with Physics

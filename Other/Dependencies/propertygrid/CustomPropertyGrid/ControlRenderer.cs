@@ -536,6 +536,10 @@ namespace AdamsLair.PropertyGrid.Renderer
 			if (state == ButtonState.Pressed)
 				g.DrawLine(new Pen((lowerBrush as LinearGradientBrush).LinearColors[1]), innerRectLower.X + 1, innerRectLower.Bottom - 1, innerRectLower.Right - 2, innerRectLower.Bottom - 1);
 		}
+		public static void DrawButton(Graphics g, Rectangle rect, ButtonState state, string text, IconImage icon)
+		{
+			DrawButton(g, rect, state, text, state == ButtonState.Disabled ? icon.Disabled : icon.Normal);
+		}
 		public static void DrawButton(Graphics g, Rectangle rect, ButtonState state, string text, Image icon = null)
 		{
 			if (rect.Width < 4 || rect.Height < 4) return;
@@ -594,6 +598,10 @@ namespace AdamsLair.PropertyGrid.Renderer
 			}
 
 			g.Restore(graphicsState);
+		}
+		public static void DrawComboButton(Graphics g, Rectangle rect, ButtonState state, string text, IconImage icon)
+		{
+			DrawComboButton(g, rect, state, text, state == ButtonState.Disabled ? icon.Disabled : icon.Normal);
 		}
 		public static void DrawComboButton(Graphics g, Rectangle rect, ButtonState state, string text, Image icon = null)
 		{

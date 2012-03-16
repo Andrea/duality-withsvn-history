@@ -245,39 +245,6 @@ namespace DualityEditor
 			return RequestAllCorePluginRes<DataSelectorEntry>(type, true, null).Select(e => e.selector);
 		}
 
-		public static IEnumerable<T> ConvertFromDataObject<T>(IDataObject data)
-		{
-			IEnumerable<object> result = ConvertFromDataObject(typeof(T), data); 
-			if (result == null)
-				return null;
-			else
-				return result.OfType<T>();
-		}
-		public static bool CanConvertFromDataObject<T>(IDataObject data)
-		{
-			return CanConvertFromDataObject(typeof(T), data);
-		}
-		public static IEnumerable<object> ConvertFromDataObject(Type type, IDataObject data)
-		{
-			if (data == null) return null;
-			return ConvertFromDataObject(type, new ConvertOperation(data));
-		}
-		public static IEnumerable<object> ConvertFromDataObject(Type type, ConvertOperation selection)
-		{
-			if (selection == null) return null;
-
-			List<DataConverter> selectors = RequestDataConverters(type).Where(s => s.CanConvertFrom(selection.Data)).ToList();
-			selectors.StableSort((s1, s2) => s2.Priority - s1.Priority);
-			foreach (var s in selectors) s.Convert(selection);
-
-			return selection.Result.Any() ? selection.Result : null;
-		}
-		public static bool CanConvertFromDataObject(Type type, IDataObject data)
-		{
-			if (data == null) return false;
-			return RequestDataConverters(type).Where(s => s.CanConvertFrom(data)).Any();
-		}
-
 		public static void RegisterXmlCodeDoc(XmlCodeDoc doc)
 		{
 			corePluginDoc.AppendDoc(doc);

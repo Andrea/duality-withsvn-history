@@ -13,6 +13,7 @@ using Duality.VertexFormat;
 
 using DualityEditor;
 using DualityEditor.Forms;
+using DualityEditor.CorePluginInterface;
 
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -315,7 +316,7 @@ namespace EditorBase.CamViewStates
 			e.Effect = DragDropEffects.None;
 
 			DataObject data = e.Data as DataObject;
-			var dragObjQuery = CorePluginHelper.ConvertFromDataObject<GameObject>(data);
+			var dragObjQuery = new ConvertOperation(data).Perform<GameObject>();
 			if (dragObjQuery != null)
 			{
 				List<GameObject> dragObj = dragObjQuery.ToList();

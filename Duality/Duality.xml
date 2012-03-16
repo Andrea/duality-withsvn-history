@@ -12210,6 +12210,13 @@
             <param name="res"></param>
             <returns></returns>
         </member>
+        <member name="M:Duality.ExtMethodsIEnumerable.Res(System.Collections.Generic.IEnumerable{Duality.IContentRef})">
+            <summary>
+            Converts an enumeration of content references to an enumeration of Resources.
+            </summary>
+            <param name="res"></param>
+            <returns></returns>
+        </member>
         <member name="T:Duality.Components.SoundListener">
             <summary>
             Makes this <see cref="T:Duality.GameObject"/> the 3d sound listener.

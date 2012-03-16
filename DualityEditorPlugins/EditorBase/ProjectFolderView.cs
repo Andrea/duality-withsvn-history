@@ -156,10 +156,10 @@ namespace EditorBase
 		}
 		public class ResourceNode : NodeBase
 		{
-			private	ContentRef<Resource>	res		= ContentRef<Resource>.Null;
-			private	Type					resType	= null;
+			private	IContentRef	res		= ContentRef<Resource>.Null;
+			private	Type		resType	= null;
 
-			public ContentRef<Resource> ResLink
+			public IContentRef ResLink
 			{
 				get { return this.res; }
 			}
@@ -180,7 +180,7 @@ namespace EditorBase
 				this.resType = Resource.GetTypeByFileName(path);
 				this.ApplyPathToName();
 			}
-			public ResourceNode(ContentRef<Resource> res) : base(res.Path, null, res.Path.Contains(':'))
+			public ResourceNode(IContentRef res) : base(res.Path, null, res.Path.Contains(':'))
 			{
 				this.res = res;
 				this.resType = TypeFromContent(res);
@@ -235,11 +235,11 @@ namespace EditorBase
 				this.UpdateImage();
 			}
 
-			public static Type TypeFromContent(ContentRef<Resource> content)
+			public static Type TypeFromContent(IContentRef content)
 			{
 				return content.Res.GetType();
 			}
-			public static Image GetTypeImage(Type type, ContentRef<Resource> resLink)
+			public static Image GetTypeImage(Type type, IContentRef resLink)
 			{
 				Image result = null;
 				if (type == typeof(Duality.Resources.Prefab))
@@ -661,7 +661,7 @@ namespace EditorBase
 			data.AppendContentRefs(
 				from c in nodes
 				where c.Tag is ResourceNode
-				select (c.Tag as ResourceNode).ResLink);
+				select (c.Tag as ResourceNode).ResLink as IContentRef);
 			data.AppendFiles(
 				from c in nodes
 				where c.Tag is NodeBase && !(c.Tag as NodeBase).NodePath.Contains(':')
@@ -860,7 +860,7 @@ namespace EditorBase
 				// See if we can retrieve Resources from data
 				else
 				{
-					bool canSelectResource = CorePluginHelper.CanConvertFromDataObject<Resource>(data);
+					bool canSelectResource = new ConvertOperation(data).CanPerform<IContentRef>();
 					if (canSelectResource) e.Effect = DragDropEffects.Link & e.AllowedEffect;
 				}
 			}
@@ -918,10 +918,10 @@ namespace EditorBase
 				// See if we can retrieve Resources from data
 				else
 				{
-					var resQuery = CorePluginHelper.ConvertFromDataObject<Resource>(data);
+					var resQuery = new ConvertOperation(data).Perform<IContentRef>();
 					if (resQuery != null)
 					{
-						List<Resource> resList = resQuery.ToList();
+						List<Resource> resList = resQuery.Res().ToList();
 
 						this.folderView.ClearSelection();
 
@@ -1143,10 +1143,10 @@ namespace EditorBase
 				from vn in this.folderView.SelectedNodes
 				where vn.Tag is NodeBase
 				select vn.Tag as NodeBase);
-			List<ContentRef<Resource>> selResData = new List<ContentRef<Resource>>(
+			List<IContentRef> selResData = (
 				from n in selNodeData
 				where n is ResourceNode
-				select (n as ResourceNode).ResLink);
+				select (n as ResourceNode).ResLink).ToList();
 
 			bool noSelect = selNodeData.Count == 0;
 			bool singleSelect = selNodeData.Count == 1;
@@ -1306,10 +1306,10 @@ namespace EditorBase
 				from vn in this.folderView.SelectedNodes
 				where vn.Tag is NodeBase
 				select vn.Tag as NodeBase);
-			List<ContentRef<Resource>> selResData = new List<ContentRef<Resource>>(
+			List<IContentRef> selResData = (
 				from n in selNodeData
 				where n is ResourceNode
-				select (n as ResourceNode).ResLink);
+				select (n as ResourceNode).ResLink).ToList();
 
 			ToolStripMenuItem clickedItem = sender as ToolStripMenuItem;
 			IEditorAction action = clickedItem.Tag as IEditorAction;

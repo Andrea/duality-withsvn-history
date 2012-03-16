@@ -206,13 +206,16 @@ namespace EditorBase
 			CorePluginHelper.RegisterEditorAction<GameObject>(null, null, this.ActionGameObjectOpenRes, CorePluginHelper.ActionContext_OpenRes);
 			CorePluginHelper.RegisterEditorAction<Component>(null, null, this.ActionComponentOpenRes, CorePluginHelper.ActionContext_OpenRes);
 
-			// Register data selectors
+			// Register data converters
 			CorePluginHelper.RegisterDataConverter<GameObject>(new DataConverters.GameObjFromPrefab());
 			CorePluginHelper.RegisterDataConverter<GameObject>(new DataConverters.GameObjFromMaterial());
 			CorePluginHelper.RegisterDataConverter<GameObject>(new DataConverters.GameObjFromSound());
 			CorePluginHelper.RegisterDataConverter<Material>(new DataConverters.MaterialFromTexture());
+			CorePluginHelper.RegisterDataConverter<Texture>(new DataConverters.TextureFromMaterial());
 			CorePluginHelper.RegisterDataConverter<Texture>(new DataConverters.TextureFromPixmap());
+			CorePluginHelper.RegisterDataConverter<Pixmap>(new DataConverters.PixmapFromTexture());
 			CorePluginHelper.RegisterDataConverter<Sound>(new DataConverters.SoundFromAudioData());
+			CorePluginHelper.RegisterDataConverter<AudioData>(new DataConverters.AudioDataFromSound());
 			CorePluginHelper.RegisterDataConverter<Prefab>(new DataConverters.PrefabFromGameObject());
 
 			// Register PropertyEditor provider
@@ -584,9 +587,9 @@ namespace EditorBase
 				get { return CorePluginHelper.Priority_Specialized; }
 			}
 
-			public override bool CanConvertFrom(IDataObject data)
+			public override bool CanConvertFrom(ConvertOperation convert)
 			{
-				return data.ContainsContentRefs<Prefab>();
+				return convert.Data.ContainsContentRefs<Prefab>();
 			}
 			public override void Convert(ConvertOperation convert)
 			{
@@ -597,13 +600,13 @@ namespace EditorBase
 					// Instantiate Prefabs
 					foreach (ContentRef<Prefab> pRef in dropdata)
 					{
-						if (convert.IsObjectHandled(pRef)) continue;
+						if (convert.IsObjectHandled(pRef.Res)) continue;
 						if (!pRef.IsAvailable) continue;
 						GameObject newObj = pRef.Res.Instantiate();
 						if (newObj != null)
 						{
-							convert.Result.Add(newObj);
-							convert.MarkObjectHandled(pRef);
+							convert.AddResult(newObj);
+							convert.MarkObjectHandled(pRef.Res);
 						}
 					}
 				}
@@ -611,25 +614,20 @@ namespace EditorBase
 		}
 		public class GameObjFromSound : DataConverter
 		{
-			public override bool CanConvertFrom(IDataObject data)
+			public override bool CanConvertFrom(ConvertOperation convert)
 			{
-				return data.ContainsContentRefs<Sound>() || CorePluginHelper.CanConvertFromDataObject<Sound>(data);
+				return convert.CanPerform<Sound>();
 			}
 			public override void Convert(ConvertOperation convert)
 			{
 				List<ContentRef<Sound>> dropdata = new List<ContentRef<Sound>>();
-				if (convert.Data.ContainsContentRefs<Sound>())
-					dropdata.AddRange(convert.Data.GetContentRefs<Sound>());
-				if (CorePluginHelper.CanConvertFromDataObject<Sound>(convert.Data))
-				{
-					var matSelectionQuery = CorePluginHelper.ConvertFromDataObject<Sound>(convert.Data);
-					if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
-				}
+				var matSelectionQuery = convert.Perform<Sound>();
+				if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
 
 				// Generate objects
 				foreach (ContentRef<Sound> sndRef in dropdata)
 				{
-					if (convert.IsObjectHandled(sndRef)) continue;
+					if (convert.IsObjectHandled(sndRef.Res)) continue;
 					if (!sndRef.IsAvailable) continue;
 					Sound snd = sndRef.Res;
 
@@ -643,32 +641,27 @@ namespace EditorBase
 					source.Paused = false;
 					emitter.Sources.Add(source);
 
-					if (gameObj != null && !convert.Result.Contains(gameObj)) convert.Result.Add(gameObj);
-					convert.MarkObjectHandled(sndRef);
+					if (gameObj != null && !convert.Result.Contains(gameObj)) convert.AddResult(gameObj);
+					convert.MarkObjectHandled(sndRef.Res);
 				}
 			}
 		}
 		public class GameObjFromMaterial : DataConverter
 		{
-			public override bool CanConvertFrom(IDataObject data)
+			public override bool CanConvertFrom(ConvertOperation convert)
 			{
-				return data.ContainsContentRefs<Material>() || CorePluginHelper.CanConvertFromDataObject<Material>(data);
+				return convert.CanPerform<Material>();
 			}
 			public override void Convert(ConvertOperation convert)
 			{
 				List<ContentRef<Material>> dropdata = new List<ContentRef<Material>>();
-				if (convert.Data.ContainsContentRefs<Material>())
-					dropdata.AddRange(convert.Data.GetContentRefs<Material>());
-				if (CorePluginHelper.CanConvertFromDataObject<Material>(convert.Data))
-				{
-					var matSelectionQuery = CorePluginHelper.ConvertFromDataObject<Material>(convert.Data);
-					if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
-				}
+				var matSelectionQuery = convert.Perform<Material>();
+				if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
 
 				// Generate objects
 				foreach (ContentRef<Material> matRef in dropdata)
 				{
-					if (convert.IsObjectHandled(matRef)) continue;
+					if (convert.IsObjectHandled(matRef.Res)) continue;
 					if (!matRef.IsAvailable) continue;
 					Material mat = matRef.Res;
 					Texture mainTex = mat.MainTexture.Res;
@@ -691,8 +684,8 @@ namespace EditorBase
 						sprite.Rect = Rect.AlignCenter(0.0f, 0.0f, mainTex.PxWidth / mainTex.AnimCols, mainTex.PxHeight / mainTex.AnimRows);
 					}
 
-					if (gameObj != null && !convert.Result.Contains(gameObj)) convert.Result.Add(gameObj);
-					convert.MarkObjectHandled(matRef);
+					if (gameObj != null && !convert.Result.Contains(gameObj)) convert.AddResult(gameObj);
+					convert.MarkObjectHandled(matRef.Res);
 				}
 			}
 		}
@@ -703,9 +696,9 @@ namespace EditorBase
 				get { return CorePluginHelper.Priority_Specialized; }
 			}
 
-			public override bool CanConvertFrom(IDataObject data)
+			public override bool CanConvertFrom(ConvertOperation convert)
 			{
-				return data.ContainsGameObjectRefs();
+				return convert.Data.ContainsGameObjectRefs();
 			}
 			public override void Convert(ConvertOperation convert)
 			{
@@ -724,32 +717,27 @@ namespace EditorBase
 						Prefab prefab = new Prefab(draggedObj);
 						prefab.SourcePath = draggedObj.Name; // Dummy "source path" that may be used as indicator where to save the Resource later.
 						convert.MarkObjectHandled(draggedObj);						
-						convert.Result.Add(prefab);
+						convert.AddResult(prefab);
 					}
 				}
 			}
 		}
 		public class MaterialFromTexture : DataConverter
 		{
-			public override bool CanConvertFrom(IDataObject data)
+			public override bool CanConvertFrom(ConvertOperation convert)
 			{
-				return data.ContainsContentRefs<Texture>() || CorePluginHelper.CanConvertFromDataObject<Texture>(data);
+				return convert.CanPerform<Texture>();
 			}
 			public override void Convert(ConvertOperation convert)
 			{
 				List<ContentRef<Texture>> dropdata = new List<ContentRef<Texture>>();
-				if (convert.Data.ContainsContentRefs<Texture>())
-					dropdata.AddRange(convert.Data.GetContentRefs<Texture>());
-				if (CorePluginHelper.CanConvertFromDataObject<Texture>(convert.Data))
-				{
-					var matSelectionQuery = CorePluginHelper.ConvertFromDataObject<Texture>(convert.Data);
-					if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
-				}
+				var matSelectionQuery = convert.Perform<Texture>();
+				if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
 
 				// Generate objects
 				foreach (ContentRef<Texture> texRef in dropdata)
 				{
-					if (convert.IsObjectHandled(texRef)) continue;
+					if (convert.IsObjectHandled(texRef.Res)) continue;
 					if (!texRef.IsAvailable) continue;
 					Texture tex = texRef.Res;
 
@@ -772,32 +760,51 @@ namespace EditorBase
 					}
 
 					if (!matRef.IsAvailable) continue;
-					convert.Result.Add(matRef.Res);
-					convert.MarkObjectHandled(texRef);
+					convert.AddResult(matRef.Res);
+					// convert.MarkObjectHandled(texRef.Res); We're basically just casting - dont "handle" the object
+				}
+			}
+		}
+		public class TextureFromMaterial : DataConverter
+		{
+			public override bool CanConvertFrom(ConvertOperation convert)
+			{
+				return convert.CanPerform<Material>();
+			}
+			public override void Convert(ConvertOperation convert)
+			{
+				List<ContentRef<Material>> dropdata = new List<ContentRef<Material>>();
+				var matSelectionQuery = convert.Perform<Material>();
+				if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
+
+				// Append objects
+				foreach (ContentRef<Material> matRef in dropdata)
+				{
+					if (convert.IsObjectHandled(matRef.Res)) continue;
+					if (!matRef.IsAvailable) continue;
+
+					if (!matRef.Res.MainTexture.IsAvailable) continue;
+					convert.AddResult(matRef.Res.MainTexture.Res);
+					// convert.MarkObjectHandled(texRef.Res); We're basically just casting - dont "handle" the object
 				}
 			}
 		}
 		public class TextureFromPixmap : DataConverter
 		{
-			public override bool CanConvertFrom(IDataObject data)
+			public override bool CanConvertFrom(ConvertOperation convert)
 			{
-				return data.ContainsContentRefs<Pixmap>() || CorePluginHelper.CanConvertFromDataObject<Pixmap>(data);
+				return convert.CanPerform<Pixmap>();
 			}
 			public override void Convert(ConvertOperation convert)
 			{
 				List<ContentRef<Pixmap>> dropdata = new List<ContentRef<Pixmap>>();
-				if (convert.Data.ContainsContentRefs<Pixmap>())
-					dropdata.AddRange(convert.Data.GetContentRefs<Pixmap>());
-				if (CorePluginHelper.CanConvertFromDataObject<Pixmap>(convert.Data))
-				{
-					var matSelectionQuery = CorePluginHelper.ConvertFromDataObject<Pixmap>(convert.Data);
-					if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
-				}
+				var matSelectionQuery = convert.Perform<Pixmap>();
+				if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
 
 				// Generate objects
 				foreach (ContentRef<Pixmap> pixRef in dropdata)
 				{
-					if (convert.IsObjectHandled(pixRef)) continue;
+					if (convert.IsObjectHandled(pixRef.Res)) continue;
 					if (!pixRef.IsAvailable) continue;
 					Pixmap pix = pixRef.Res;
 
@@ -820,32 +827,51 @@ namespace EditorBase
 					}
 
 					if (!texRef.IsAvailable) continue;
-					convert.Result.Add(texRef.Res);
-					convert.MarkObjectHandled(pixRef);
+					convert.AddResult(texRef.Res);
+					// convert.MarkObjectHandled(texRef.Res); We're basically just casting - dont "handle" the object
+				}
+			}
+		}
+		public class PixmapFromTexture : DataConverter
+		{
+			public override bool CanConvertFrom(ConvertOperation convert)
+			{
+				return convert.CanPerform<Texture>();
+			}
+			public override void Convert(ConvertOperation convert)
+			{
+				List<ContentRef<Texture>> dropdata = new List<ContentRef<Texture>>();
+				var matSelectionQuery = convert.Perform<Texture>();
+				if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
+
+				// Append objects
+				foreach (ContentRef<Texture> texRef in dropdata)
+				{
+					if (convert.IsObjectHandled(texRef.Res)) continue;
+					if (!texRef.IsAvailable) continue;
+
+					if (!texRef.Res.BasePixmap.IsAvailable) continue;
+					convert.AddResult(texRef.Res.BasePixmap.Res);
+					// convert.MarkObjectHandled(texRef.Res); We're basically just casting - dont "handle" the object
 				}
 			}
 		}
 		public class SoundFromAudioData : DataConverter
 		{
-			public override bool CanConvertFrom(IDataObject data)
+			public override bool CanConvertFrom(ConvertOperation convert)
 			{
-				return data.ContainsContentRefs<AudioData>() || CorePluginHelper.CanConvertFromDataObject<AudioData>(data);
+				return convert.CanPerform<AudioData>();
 			}
 			public override void Convert(ConvertOperation convert)
 			{
 				List<ContentRef<AudioData>> dropdata = new List<ContentRef<AudioData>>();
-				if (convert.Data.ContainsContentRefs<AudioData>())
-					dropdata.AddRange(convert.Data.GetContentRefs<AudioData>());
-				if (CorePluginHelper.CanConvertFromDataObject<AudioData>(convert.Data))
-				{
-					var matSelectionQuery = CorePluginHelper.ConvertFromDataObject<AudioData>(convert.Data);
-					if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
-				}
+				var matSelectionQuery = convert.Perform<AudioData>();
+				if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
 
 				// Generate objects
 				foreach (ContentRef<AudioData> audRef in dropdata)
 				{
-					if (convert.IsObjectHandled(audRef)) continue;
+					if (convert.IsObjectHandled(audRef.Res)) continue;
 					if (!audRef.IsAvailable) continue;
 					AudioData aud = audRef.Res;
 
@@ -868,8 +894,32 @@ namespace EditorBase
 					}
 
 					if (!sndRef.IsAvailable) continue;
-					convert.Result.Add(sndRef.Res);
-					convert.MarkObjectHandled(audRef);
+					convert.AddResult(sndRef.Res);
+					// convert.MarkObjectHandled(texRef.Res); We're basically just casting - dont "handle" the object
+				}
+			}
+		}
+		public class AudioDataFromSound : DataConverter
+		{
+			public override bool CanConvertFrom(ConvertOperation convert)
+			{
+				return convert.CanPerform<Sound>();
+			}
+			public override void Convert(ConvertOperation convert)
+			{
+				List<ContentRef<Sound>> dropdata = new List<ContentRef<Sound>>();
+				var matSelectionQuery = convert.Perform<Sound>();
+				if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
+
+				// Append objects
+				foreach (ContentRef<Sound> sndRef in dropdata)
+				{
+					if (convert.IsObjectHandled(sndRef.Res)) continue;
+					if (!sndRef.IsAvailable) continue;
+
+					if (!sndRef.Res.Data.IsAvailable) continue;
+					convert.AddResult(sndRef.Res.Data.Res);
+					// convert.MarkObjectHandled(texRef.Res); We're basically just casting - dont "handle" the object
 				}
 			}
 		}

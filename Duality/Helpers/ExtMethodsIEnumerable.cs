@@ -237,5 +237,14 @@ namespace Duality
 		{
 			return res.Select(r => r.Res);
 		}
+		/// <summary>
+		/// Converts an enumeration of content references to an enumeration of Resources.
+		/// </summary>
+		/// <param name="res"></param>
+		/// <returns></returns>
+		public static IEnumerable<Resource> Res(this IEnumerable<IContentRef> res)
+		{
+			return res.Select(r => r.Res);
+		}
 	}
 }

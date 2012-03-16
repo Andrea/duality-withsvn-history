@@ -95,7 +95,7 @@ namespace DualityEditor
 
 			return FromText(member.Name, DualityEditor.EditorRes.GeneralRes.HelpInfo_NotAvailable_Desc);
 		}
-		public static HelpInfo FromResource(ContentRef<Resource> res)
+		public static HelpInfo FromResource(IContentRef res)
 		{
 			return FromMember(res.ResType);
 		}

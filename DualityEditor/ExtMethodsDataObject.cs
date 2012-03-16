@@ -41,40 +41,39 @@ namespace DualityEditor
 			return data.GetData(typeof(GameObject[])) as GameObject[];
 		}
 
-		public static void AppendContentRefs<T>(this IDataObject data, IEnumerable<ContentRef<T>> content) where T : Resource
+		public static void AppendContentRefs(this IDataObject data, IEnumerable<IContentRef> content)
 		{
 			if (!content.Any()) return;
-			ContentRef<Resource>[] refArray = content.Select(c => c.As<Resource>()).ToArray();
-			data.SetData(refArray);
+			data.SetData(content.ToArray());
 		}
 		public static bool ContainsContentRefs<T>(this IDataObject data) where T : Resource
 		{
-			if (!data.GetDataPresent(typeof(ContentRef<Resource>[]))) return false;
-			ContentRef<Resource>[] refArray = data.GetData(typeof(ContentRef<Resource>[])) as ContentRef<Resource>[];
+			if (!data.GetDataPresent(typeof(IContentRef[]))) return false;
+			IContentRef[] refArray = data.GetData(typeof(IContentRef[])) as IContentRef[];
 			return refArray.Any(r => r.Is<T>());
 		}
 		public static bool ContainsContentRefs(this IDataObject data, Type resType = null)
 		{
 			if (resType == null) resType = typeof(Resource);
-			if (!data.GetDataPresent(typeof(ContentRef<Resource>[]))) return false;
-			ContentRef<Resource>[] refArray = data.GetData(typeof(ContentRef<Resource>[])) as ContentRef<Resource>[];
+			if (!data.GetDataPresent(typeof(IContentRef[]))) return false;
+		IContentRef[] refArray = data.GetData(typeof(IContentRef[])) as IContentRef[];
 			return refArray.Any(r => r.Is(resType));
 		}
 		public static ContentRef<T>[] GetContentRefs<T>(this IDataObject data) where T : Resource
 		{
-			if (!data.GetDataPresent(typeof(ContentRef<Resource>[]))) return null;
-			ContentRef<Resource>[] refArray = data.GetData(typeof(ContentRef<Resource>[])) as ContentRef<Resource>[];
+			if (!data.GetDataPresent(typeof(IContentRef[]))) return null;
+			IContentRef[] refArray = data.GetData(typeof(IContentRef[])) as IContentRef[];
 			return (
 				from r in refArray
 				where r.Is<T>()
 				select r.As<T>()
 				).ToArray();
 		}
-		public static ContentRef<Resource>[] GetContentRefs(this IDataObject data, Type resType = null)
+		public static IContentRef[] GetContentRefs(this IDataObject data, Type resType = null)
 		{
 			if (resType == null) resType = typeof(Resource);
-			if (!data.GetDataPresent(typeof(ContentRef<Resource>[]))) return null;
-			ContentRef<Resource>[] refArray = data.GetData(typeof(ContentRef<Resource>[])) as ContentRef<Resource>[];
+			if (!data.GetDataPresent(typeof(IContentRef[]))) return null;
+			IContentRef[] refArray = data.GetData(typeof(IContentRef[])) as IContentRef[];
 			return (
 				from r in refArray
 				where r.Is(resType)
@@ -110,18 +109,93 @@ namespace DualityEditor
 		}
 		public static bool ContainsIColorData(this IDataObject data)
 		{
-			return data.GetDataPresent(typeof(IColorData[]));
+			if (data.GetDataPresent(typeof(IColorData[])))
+				return true;
+
+			if (data.ContainsString())
+			{
+				string valString = data.GetString();
+				string[] token = valString.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+				byte[] valToken = new byte[4];
+				valToken[3] = 255;
+
+				bool success = true;
+				for (int i = 0; i < token.Length; i++)
+				{
+					token[i] = token[i].Trim();
+					if (!byte.TryParse(token[i], out valToken[i]))
+					{
+						success = false;
+						break;
+					}
+				}
+
+				if (success) return true;
+			}
+
+			return false;
 		}
 		public static T[] GetIColorData<T>(this IDataObject data) where T : IColorData
 		{
-			if (!data.GetDataPresent(typeof(IColorData[]))) return null;
-			IColorData[] clrArray = data.GetData(typeof(IColorData[])) as IColorData[];
+			IColorData[] clrArray = null;
+			if (data.GetDataPresent(typeof(IColorData[])))
+			{
+				clrArray = data.GetData(typeof(IColorData[])) as IColorData[];
+			}
+			else if (data.ContainsString())
+			{
+				string valString = data.GetString();
+				string[] token = valString.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+				byte[] valToken = new byte[4];
+				valToken[3] = 255;
 
-			// Don't care which format? Great, just return the array as is
-			if (typeof(T) == typeof(IColorData)) return (T[])(object)clrArray;
+				bool success = true;
+				for (int i = 0; i < token.Length; i++)
+				{
+					token[i] = token[i].Trim();
+					if (!byte.TryParse(token[i], out valToken[i]))
+					{
+						success = false;
+						break;
+					}
+				}
 
-			// Convert to specific format
-			return clrArray.Select<IColorData,T>(ic => ic is T ? (T)ic : ic.ConvertTo<T>()).ToArray();
+				if (success) clrArray = new IColorData[] { new ColorRgba(valToken[0], valToken[1], valToken[2], valToken[3]) };
+			}
+
+			if (clrArray != null)
+			{
+				// Don't care which format? Great, just return the array as is
+				if (typeof(T) == typeof(IColorData)) return (T[])(object)clrArray;
+				// Convert to specific format
+				return clrArray.Select<IColorData,T>(ic => ic is T ? (T)ic : ic.ConvertTo<T>()).ToArray();
+			}
+			else
+				return null;
+		}
+
+		public static void AppendString(this IDataObject data, string text)
+		{
+			data.SetData(text);
+			data.SetData("Text", true, text);
+			data.SetData("UnicodeText", true, text);
+		}
+		public static bool ContainsString(this IDataObject data)
+		{
+			return data.GetDataPresent(typeof(string)) ||
+				data.GetDataPresent("Text", true) ||
+				data.GetDataPresent("UnicodeText", true);
+		}
+		public static string GetString(this IDataObject data)
+		{
+			if (data.GetDataPresent(typeof(string)))
+				return data.GetData(typeof(string)) as string;
+			else if (data.GetDataPresent("UnicodeText", true))
+				return data.GetData("UnicodeText", true) as string;
+			else if (data.GetDataPresent("Text", true))
+				return data.GetData("Text", true) as string;
+			else
+				return null;
 		}
 
 		public static void AppendFiles(this DataObject data, IEnumerable<string> files)

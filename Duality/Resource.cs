@@ -17,6 +17,7 @@ namespace Duality
 	/// <seealso cref="ContentRef{T}"/>
 	/// <seealso cref="ContentProvider"/>
 	[Serializable]
+	[System.Diagnostics.DebuggerDisplay("{GetType().Name,nq} {FullName}")]
 	public abstract class Resource : IManageableObject, IDisposable
 	{
 		/// <summary>

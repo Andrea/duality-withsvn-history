@@ -20,7 +20,7 @@ namespace DualityEditor.Controls.PropertyEditors
 			else if (baseType == typeof(Vector4))	return PropertyGrid.EditorPriority_General;
 			else if (baseType == typeof(Rect))		return PropertyGrid.EditorPriority_General;
 
-			else if (typeof(IColorData).IsAssignableFrom(baseType))	return PropertyGrid.EditorPriority_General;
+			else if (typeof(IColorData).IsAssignableFrom(baseType))		return PropertyGrid.EditorPriority_General;
 
 			else return PropertyGrid.EditorPriority_None;
 		}
@@ -33,7 +33,7 @@ namespace DualityEditor.Controls.PropertyEditors
 			else if (baseType == typeof(Vector4))	e = new Vector4PropertyEditor();
 			else if (baseType == typeof(Rect))		e = new RectPropertyEditor();
 
-			else if (typeof(IColorData).IsAssignableFrom(baseType))	e = new IColorDataPropertyEditor();
+			else if (typeof(IColorData).IsAssignableFrom(baseType))		e = new IColorDataPropertyEditor();
 
 			return e;
 		}

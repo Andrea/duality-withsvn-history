@@ -811,7 +811,7 @@ namespace EditorBase
 					else
 						e.Effect = DragDropEffects.None;
 				}
-				else if (CorePluginHelper.CanConvertFromDataObject<GameObject>(data))
+				else if (new ConvertOperation(data).CanPerform<GameObject>())
 				{
 					if (dropParent is ComponentNode)
 						e.Effect = DragDropEffects.None;
@@ -850,10 +850,10 @@ namespace EditorBase
 					else
 						this.moveHereToolStripMenuItem_Click(this, null);
 				}
-				else if (CorePluginHelper.CanConvertFromDataObject<GameObject>(data))
+				else if (new ConvertOperation(data).CanPerform<GameObject>())
 				{
 					GameObject dropObj = (this.tempDropTarget is GameObjectNode) ? (this.tempDropTarget as GameObjectNode).Obj : null;
-					var gameObjQuery = CorePluginHelper.ConvertFromDataObject<GameObject>(data);
+					var gameObjQuery = new ConvertOperation(data).Perform<GameObject>();
 					if (gameObjQuery != null)
 					{
 						this.objectView.ClearSelection();
