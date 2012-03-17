@@ -76,7 +76,8 @@ namespace EditorBase.PropertyEditors
 				this.editorAngle.Getter = this.AngleGetter;
 				this.editorAngle.Setter = this.AngleSetter;
 				this.editorAngle.PropertyName = "Angle";
-				this.ParentGrid.ConfigureEditor(this.editorAngle, new[] { new EditorHintDecimalPlacesAttribute(1) });
+				this.ParentGrid.ConfigureEditor(this.editorAngle, new EditorHintMemberAttribute[] 
+				{ new EditorHintDecimalPlacesAttribute(1), new EditorHintIncrementAttribute(1) });
 				this.AddPropertyEditor(this.editorAngle);
 				this.editorAngle.EndUpdate();
 			}
