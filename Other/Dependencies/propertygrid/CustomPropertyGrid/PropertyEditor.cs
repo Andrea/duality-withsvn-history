@@ -166,7 +166,7 @@ namespace AdamsLair.PropertyGrid
 		public Type EditedType
 		{
 			get { return this.editedType; }
-			internal protected set 
+			set 
 			{
 				if (this.editedType != value)
 				{

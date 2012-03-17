@@ -23,7 +23,7 @@ using DualityEditor.CorePluginInterface;
 
 namespace EditorBase
 {
-	public partial class SceneView : DockContent, IHelpProvider
+	public partial class SceneView : DockContent, IHelpProvider, IToolTipProvider
 	{
 		private class ToolTipProvider : IToolTipProvider
 		{
@@ -200,6 +200,7 @@ namespace EditorBase
 		{
 			this.InitializeComponent();
 
+			this.objectView.DefaultToolTipProvider = this;
 			this.objectModel = new TreeModel();
 			this.objectView.Model = this.objectModel;
 
@@ -535,44 +536,51 @@ namespace EditorBase
 			dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(this.FindNode(newCmp)));
 			dragObjViewNode.IsSelected = true;
 			this.objectView.EnsureVisible(dragObjViewNode);
+
+			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(baseObj));
 		}
 		protected bool OpenResource(TreeNodeAdv node)
 		{
 			GameObjectNode objNode = node.Tag as GameObjectNode;
 			ComponentNode cmpNode = node.Tag as ComponentNode;
-			if (objNode != null) return this.OpenResource(objNode.Obj);
-			if (cmpNode != null) return this.OpenResource(cmpNode.Component);			
-			return false;
-		}
-		protected bool OpenResource(GameObject obj)
-		{
-			// Determine applying open actions
-			var actions = CorePluginHelper.RequestEditorActions<GameObject>(CorePluginHelper.ActionContext_OpenRes);
 
-			// Perform first open action
-			var action = actions.FirstOrDefault();
-			if (action != null)
+			IEditorAction action = null;
+			object subject = null;
+			if (objNode != null)
 			{
-				action.Perform(obj);
-				return true;
+				subject = objNode.Obj;
+				action = this.GetResourceOpenAction(objNode.Obj);
+			}
+			if (cmpNode != null)
+			{
+				subject = cmpNode.Component;
+				action = this.GetResourceOpenAction(cmpNode.Component);	
 			}
 
-			return false;
-		}
-		protected bool OpenResource(Component cmp)
-		{
-			// Determine applying open actions
-			var actions = CorePluginHelper.RequestEditorActions(cmp.GetType(), CorePluginHelper.ActionContext_OpenRes);
-
-			// Perform first open action
-			var action = actions.FirstOrDefault();
 			if (action != null)
 			{
-				action.Perform(cmp);
+				action.Perform(subject);
 				return true;
 			}
-
-			return false;
+			else return false;
+		}
+		protected IEditorAction GetResourceOpenAction(TreeNodeAdv node)
+		{
+			GameObjectNode objNode = node.Tag as GameObjectNode;
+			ComponentNode cmpNode = node.Tag as ComponentNode;
+			if (objNode != null) return this.GetResourceOpenAction(objNode.Obj);
+			if (cmpNode != null) return this.GetResourceOpenAction(cmpNode.Component);			
+			return null;
+		}
+		protected IEditorAction GetResourceOpenAction(GameObject obj)
+		{
+			var actions = CorePluginHelper.RequestEditorActions<GameObject>(CorePluginHelper.ActionContext_OpenRes, new[] { obj });
+			return actions == null ? null : actions.FirstOrDefault();
+		}
+		protected IEditorAction GetResourceOpenAction(Component cmp)
+		{
+			var actions = CorePluginHelper.RequestEditorActions(cmp.GetType(), CorePluginHelper.ActionContext_OpenRes, new[] { cmp });
+			return actions == null ? null : actions.FirstOrDefault();
 		}
 
 		protected void AssureMonoSelection()
@@ -811,6 +819,10 @@ namespace EditorBase
 					else
 						e.Effect = DragDropEffects.None;
 				}
+				else if (dropParent != null && new ConvertOperation(data, ConvertOperation.Operation.All).CanPerform<Component>())
+				{
+					e.Effect = e.AllowedEffect;
+				}
 				else if (new ConvertOperation(data, ConvertOperation.Operation.All).CanPerform<GameObject>())
 				{
 					if (dropParent is ComponentNode)
@@ -829,6 +841,7 @@ namespace EditorBase
 			DataObject data = e.Data as DataObject;
 			if (data != null)
 			{
+				ConvertOperation convertOp = new ConvertOperation(data, ConvertOperation.Operation.All);
 				this.tempDropTarget = this.DragDropGetTargetNode();
 				if (data.ContainsGameObjectRefs())
 				{
@@ -850,21 +863,60 @@ namespace EditorBase
 					else
 						this.moveHereToolStripMenuItem_Click(this, null);
 				}
-				else if (new ConvertOperation(data, ConvertOperation.Operation.All).CanPerform<GameObject>())
+				else if (this.tempDropTarget != null && convertOp.CanPerform<Component>())
+				{
+					GameObject dropObj = null;
+					if (this.tempDropTarget is GameObjectNode)
+						dropObj = (this.tempDropTarget as GameObjectNode).Obj;
+					else
+						dropObj = (this.tempDropTarget as ComponentNode).Component.GameObj;
+					// Make drop target available to converters by adding it to the result set.
+					convertOp.AddResult(dropObj);
+
+					var componentQuery = convertOp.Perform<Component>();
+					if (componentQuery != null)
+					{
+						List<TreeNodeAdv> newNodes = new List<TreeNodeAdv>();
+						foreach (Component newComponent in componentQuery)
+						{
+							if (newComponent.GameObj != null) continue;
+							dropObj.AddComponent(newComponent);
+							if (newComponent.GameObj == dropObj)
+								newNodes.Add(this.objectView.FindNode(this.objectModel.GetPath(this.FindNode(newComponent))));
+						}
+
+						if (newNodes.Count > 0) this.objectView.ClearSelection();
+						foreach (TreeNodeAdv viewNode in newNodes)
+						{
+							viewNode.IsSelected = true;
+							this.objectView.EnsureVisible(viewNode);
+						}
+
+						EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(dropObj));
+					}
+				}
+				else if (convertOp.CanPerform<GameObject>())
 				{
 					GameObject dropObj = (this.tempDropTarget is GameObjectNode) ? (this.tempDropTarget as GameObjectNode).Obj : null;
-					var gameObjQuery = new ConvertOperation(data, ConvertOperation.Operation.All).Perform<GameObject>();
+					var gameObjQuery = convertOp.Perform<GameObject>();
 					if (gameObjQuery != null)
 					{
-						this.objectView.ClearSelection();
+						List<TreeNodeAdv> newNodes = new List<TreeNodeAdv>();
 						foreach (GameObject newObj in gameObjQuery)
 						{
 							newObj.Parent = dropObj;
 							Scene.Current.RegisterObj(newObj);
-							TreeNodeAdv dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(this.FindNode(newObj)));
-							dragObjViewNode.IsSelected = true;
-							this.objectView.EnsureVisible(dragObjViewNode);
+							newNodes.Add(this.objectView.FindNode(this.objectModel.GetPath(this.FindNode(newObj))));
 						}
+
+						if (newNodes.Count > 0) this.objectView.ClearSelection();
+						foreach (TreeNodeAdv viewNode in newNodes)
+						{
+							viewNode.IsSelected = true;
+							this.objectView.EnsureVisible(viewNode);
+						}
+
+						EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(dropObj));
 					}
 				}
 			}
@@ -1477,6 +1529,15 @@ namespace EditorBase
 		bool IHelpProvider.PerformHelpAction(HelpInfo info)
 		{
 			return this.DefaultPerformHelpAction(info);
+		}
+
+		string IToolTipProvider.GetToolTip(TreeNodeAdv viewNode, Aga.Controls.Tree.NodeControls.NodeControl nodeControl)
+		{
+			IEditorAction action = this.GetResourceOpenAction(viewNode);
+			if (action != null) return string.Format(
+				EditorBase.PluginRes.EditorBaseRes.SceneView_Help_Doubleclick,
+				action.Description);
+			else return null;
 		}
 	}
 }

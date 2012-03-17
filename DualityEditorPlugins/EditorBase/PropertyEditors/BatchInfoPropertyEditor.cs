@@ -690,7 +690,7 @@ namespace EditorBase.PropertyEditors
 			DataObject dragDropData = e.Data as DataObject;
 			if (this.HoverEditor == null && dragDropData != null && !this.ReadOnly)
 			{
-				var batchInfoQuery = new ConvertOperation(dragDropData, ConvertOperation.Operation.All).Perform<BatchInfo>().ToArray();
+				var batchInfoQuery = new ConvertOperation(dragDropData, ConvertOperation.Operation.All).Perform<BatchInfo>();
 				if (batchInfoQuery != null)
 				{
 					BatchInfo[] newBatchInfoArray = batchInfoQuery.ToArray();

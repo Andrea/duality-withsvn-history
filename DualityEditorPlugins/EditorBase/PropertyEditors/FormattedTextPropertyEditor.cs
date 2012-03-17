@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
-using System.Windows.Forms;
 using System.Reflection;
 
-using Duality;
+using AdamsLair.PropertyGrid;
 
+using Duality;
 using DualityEditor;
-using DualityEditor.Controls;
-using DualityEditor.Controls.PropertyEditors;
-using PropertyGrid = DualityEditor.Controls.PropertyGrid;
 
 namespace EditorBase.PropertyEditors
 {
@@ -23,7 +18,7 @@ namespace EditorBase.PropertyEditors
 			FormattedText[] text = targets.Cast<FormattedText>().NotNull().ToArray();
 			foreach (FormattedText t in text) t.ApplySource();
 
-			this.Setter(targets);
+			this.SetValues(targets);
 		}
 	}
 }

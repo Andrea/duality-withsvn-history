@@ -8,6 +8,7 @@ namespace DualityEditor.CorePluginInterface
 	public interface IEditorAction
 	{
 		string Name { get; }
+		string Description { get; }
 		Image Icon { get; }
 
 		void Perform(object obj);
@@ -17,21 +18,27 @@ namespace DualityEditor.CorePluginInterface
 	public abstract class EditorActionBase<T> : IEditorAction
 	{
 		private	string		name;
+		private	string		desc;
 		private	Image		icon;
 
 		public string Name
 		{
 			get { return this.name; }
 		}
+		public string Description
+		{
+			get { return this.desc; }
+		}
 		public Image Icon
 		{
 			get { return this.icon; }
 		}
 
-		public EditorActionBase(string name, Image icon)
+		public EditorActionBase(string name, Image icon, string desc)
 		{
 			this.name = name;
 			this.icon = icon;
+			this.desc = desc;
 		}
 
 		public void Perform(T obj)
@@ -57,20 +64,28 @@ namespace DualityEditor.CorePluginInterface
 	}
 	public class EditorAction<T> : EditorActionBase<T>
 	{
-		private	Action<T>	action;
+		private	Action<T>		action;
+		private	Predicate<T>	actionPredicate;
 
-		public EditorAction(string name, Image icon, Action<T> action) : base(name, icon)
+		public EditorAction(string name, Image icon, Action<T> action, string desc = null, Predicate<T> predicate = null) : base(name, icon, desc)
 		{
 			this.action = action;
+			this.actionPredicate = predicate;
 		}
 
 		public override void Perform(IEnumerable<T> objEnum)
 		{
-			foreach (T obj in objEnum) this.action(obj);
+			foreach (T obj in objEnum)
+			{
+				if (this.actionPredicate != null && !this.actionPredicate(obj)) continue;
+				this.action(obj);
+			}
 		}
 		public override bool CanPerformOn(IEnumerable<T> objEnum)
 		{
-			return true;
+			if (objEnum == null) return true;
+			if (this.actionPredicate == null) return true;
+			return objEnum.Any(o => this.actionPredicate(o));
 		}
 	}
 	public class EditorGroupAction<T> : EditorActionBase<T>
@@ -78,7 +93,7 @@ namespace DualityEditor.CorePluginInterface
 		private	Action<IEnumerable<T>>		action;
 		private	Predicate<IEnumerable<T>>	actionPredicate;
 
-		public EditorGroupAction(string name, Image icon, Action<IEnumerable<T>> action, Predicate<IEnumerable<T>> predicate) : base(name, icon)
+		public EditorGroupAction(string name, Image icon, Action<IEnumerable<T>> action, string desc = null, Predicate<IEnumerable<T>> predicate = null) : base(name, icon, desc)
 		{
 			this.action = action;
 			this.actionPredicate = predicate;
@@ -88,11 +103,11 @@ namespace DualityEditor.CorePluginInterface
 		{
 			this.action(objEnum);
 		}
-		public override bool CanPerformOn(IEnumerable<T> obj)
+		public override bool CanPerformOn(IEnumerable<T> objEnum)
 		{
-			if (obj == null) return true;
+			if (objEnum == null) return true;
 			if (this.actionPredicate == null) return true;
-			return this.actionPredicate(obj);
+			return this.actionPredicate(objEnum);
 		}
 	}
 }

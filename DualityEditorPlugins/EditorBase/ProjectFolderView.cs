@@ -21,7 +21,7 @@ using DualityEditor.CorePluginInterface;
 
 namespace EditorBase
 {
-	public partial class ProjectFolderView : DockContent, IHelpProvider
+	public partial class ProjectFolderView : DockContent, IHelpProvider, IToolTipProvider
 	{
 		public abstract class NodeBase : Node
 		{
@@ -286,6 +286,7 @@ namespace EditorBase
 		{
 			this.InitializeComponent();
 
+			this.folderView.DefaultToolTipProvider = this;
 			this.folderModel = new TreeModel();
 			this.folderView.Model = this.folderModel;
 
@@ -644,15 +645,24 @@ namespace EditorBase
 		}
 		protected void OpenResource(TreeNodeAdv node)
 		{
+			IEditorAction openAction = this.GetResourceOpenAction(node);
+			if (openAction != null)
+			{
+				ResourceNode resNode = node.Tag as ResourceNode;
+				openAction.Perform(resNode.ResLink.Res);
+			}
+		}
+		protected IEditorAction GetResourceOpenAction(TreeNodeAdv node)
+		{
+			if (node == null) return null;
 			ResourceNode resNode = node.Tag as ResourceNode;
-			if (resNode == null) return;
+			if (resNode == null) return null;
 
 			// Determine applying open actions
-			var actions = CorePluginHelper.RequestEditorActions(resNode.ResType, CorePluginHelper.ActionContext_OpenRes);
+			var actions = CorePluginHelper.RequestEditorActions(resNode.ResType, CorePluginHelper.ActionContext_OpenRes, new[] { resNode.ResLink.Res });
 
 			// Perform first open action
-			var action = actions.FirstOrDefault();
-			if (action != null) action.Perform(resNode.ResLink.Res);
+			return actions.FirstOrDefault();
 		}
 
 		protected void AppendNodesToData(DataObject data, IEnumerable<TreeNodeAdv> nodes)
@@ -1467,10 +1477,7 @@ namespace EditorBase
 				{
 					TreeNodeAdv viewNode = this.folderView.GetNodeAt(treeLocalPos);
 					ResourceNode resNode = viewNode != null ? viewNode.Tag as ResourceNode : null;
-					if (resNode != null)
-					{
-						result = HelpInfo.FromResource(resNode.ResLink);
-					}
+					if (resNode != null) result = HelpInfo.FromResource(resNode.ResLink);
 				}
 				captured = false;
 			}
@@ -1480,6 +1487,15 @@ namespace EditorBase
 		bool IHelpProvider.PerformHelpAction(HelpInfo info)
 		{
 			return this.DefaultPerformHelpAction(info);
+		}
+
+		string IToolTipProvider.GetToolTip(TreeNodeAdv viewNode, Aga.Controls.Tree.NodeControls.NodeControl nodeControl)
+		{
+			IEditorAction action = this.GetResourceOpenAction(viewNode);
+			if (action != null) return string.Format(
+				EditorBase.PluginRes.EditorBaseRes.ProjectFolderView_Help_Doubleclick,
+				action.Description);
+			else return null;
 		}
 	}
 }

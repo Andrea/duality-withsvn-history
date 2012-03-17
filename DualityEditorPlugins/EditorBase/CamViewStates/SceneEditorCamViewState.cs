@@ -127,6 +127,10 @@ namespace EditorBase.CamViewStates
 		{
 			get { return "Scene Editor"; }
 		}
+		private bool DragMustWait
+		{
+			get { return (DateTime.Now - this.dragTime).TotalMilliseconds <= 500; }
+		}
 
 		internal protected override void OnEnterState()
 		{
@@ -172,6 +176,17 @@ namespace EditorBase.CamViewStates
 		{
 			base.OnSceneChanged();
 			this.UpdateSelectionStats();
+		}
+		protected override void OnCollectStateOverlayDrawcalls(Canvas canvas)
+		{
+			base.OnCollectStateOverlayDrawcalls(canvas);
+			if (this.DragMustWait && !this.dragLastLoc.IsEmpty)
+			{
+				canvas.DrawCircle(
+					this.dragLastLoc.X, 
+					this.dragLastLoc.Y, 
+					15.0f);
+			}
 		}
 
 		public override CamViewState.SelObj PickSelObjAt(int x, int y)
@@ -296,50 +311,22 @@ namespace EditorBase.CamViewStates
 
 		private void LocalGLControl_DragOver(object sender, DragEventArgs e)
 		{
-			if (this.SelObjAction == MouseAction.None && (DateTime.Now - this.dragTime).TotalMilliseconds > 1000)
-			{
-				DataObject data = e.Data as DataObject;
-				var dragObjQuery = new ConvertOperation(data, ConvertOperation.Operation.All).Perform<GameObject>();
-				if (dragObjQuery != null)
-				{
-					List<GameObject> dragObj = dragObjQuery.ToList();
-
-					Point mouseLoc = this.View.LocalGLControl.PointToClient(new Point(e.X, e.Y));
-					Vector3 spaceCoord = this.View.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, this.View.CameraObj.Transform.Pos.Z + this.View.CameraComponent.ParallaxRefDist));
-
-					// Setup GameObjects
-					foreach (GameObject newObj in dragObj)
-					{
-						if (newObj.Transform != null)
-						{
-							newObj.Transform.Pos = spaceCoord;
-							newObj.Transform.Angle += this.View.CameraObj.Transform.Angle;
-						}
-						Scene.Current.RegisterObj(newObj);
-					}
-
-					// Select them & begin action
-					this.selBeforeDrag = EditorBasePlugin.Instance.EditorForm.Selection;
-					this.SelectObjects(dragObj.Select(g => new SelGameObj(g) as SelObj));
-					this.BeginAction(MouseAction.MoveObj);
-
-					// Get focused
-					this.View.LocalGLControl.Focus();
-
-					e.Effect = e.AllowedEffect;
-				}
-			}
+			if (this.SelObjAction == MouseAction.None && !this.DragMustWait)
+				this.DragBeginAction(e);
 			
-			if (Math.Abs(e.X - this.dragLastLoc.X) > 20 || Math.Abs(e.Y - this.dragLastLoc.Y) > 20)
-			{
+			Point clientCoord = this.View.LocalGLControl.PointToClient(new Point(e.X, e.Y));
+			if (Math.Abs(clientCoord.X - this.dragLastLoc.X) > 20 || Math.Abs(clientCoord.Y - this.dragLastLoc.Y) > 20)
 				this.dragTime = DateTime.Now;
-			}
-			this.dragLastLoc = new Point(e.X, e.Y);
+			this.dragLastLoc = clientCoord;
+			this.View.LocalGLControl.Invalidate();
 
 			if (this.SelObjAction != MouseAction.None) this.UpdateAction();
 		}
 		private void LocalGLControl_DragLeave(object sender, EventArgs e)
 		{
+			this.dragLastLoc = Point.Empty;
+			this.dragTime = DateTime.Now;
+			this.View.LocalGLControl.Invalidate();
 			if (this.SelObjAction == MouseAction.None) return;
 			
 			this.EndAction();
@@ -367,9 +354,49 @@ namespace EditorBase.CamViewStates
 		}
 		private void LocalGLControl_DragDrop(object sender, DragEventArgs e)
 		{
-			if (this.SelObjAction == MouseAction.None) return;
+			if (this.SelObjAction == MouseAction.None)
+			{
+				this.DragBeginAction(e);
+				if (this.SelObjAction != MouseAction.None) this.UpdateAction();
+			}
+			
+			this.dragLastLoc = Point.Empty;
+			this.dragTime = DateTime.Now;
 
-			this.EndAction();
+			if (this.SelObjAction != MouseAction.None) this.EndAction();
+		}
+		private void DragBeginAction(DragEventArgs e)
+		{
+			DataObject data = e.Data as DataObject;
+			var dragObjQuery = new ConvertOperation(data, ConvertOperation.Operation.All).Perform<GameObject>();
+			if (dragObjQuery != null)
+			{
+				List<GameObject> dragObj = dragObjQuery.ToList();
+
+				Point mouseLoc = this.View.LocalGLControl.PointToClient(new Point(e.X, e.Y));
+				Vector3 spaceCoord = this.View.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, this.View.CameraObj.Transform.Pos.Z + this.View.CameraComponent.ParallaxRefDist));
+
+				// Setup GameObjects
+				foreach (GameObject newObj in dragObj)
+				{
+					if (newObj.Transform != null)
+					{
+						newObj.Transform.Pos = spaceCoord;
+						newObj.Transform.Angle += this.View.CameraObj.Transform.Angle;
+					}
+					Scene.Current.RegisterObj(newObj);
+				}
+
+				// Select them & begin action
+				this.selBeforeDrag = EditorBasePlugin.Instance.EditorForm.Selection;
+				this.SelectObjects(dragObj.Select(g => new SelGameObj(g) as SelObj));
+				this.BeginAction(MouseAction.MoveObj);
+
+				// Get focused
+				this.View.LocalGLControl.Focus();
+
+				e.Effect = e.AllowedEffect;
+			}
 		}
 
 		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)

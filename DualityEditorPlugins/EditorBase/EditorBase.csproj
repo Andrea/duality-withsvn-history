@@ -71,6 +71,7 @@
     <Compile Include="CamViewStates\GameViewCamViewState.cs" />
     <Compile Include="CamViewStates\ColliderEditorCamViewState.cs" />
     <Compile Include="CamViewStates\SceneEditorCamViewState.cs" />
+    <Compile Include="DataConverters.cs" />
     <Compile Include="LogView.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -80,10 +81,13 @@
     <Compile Include="PropertyEditors\BatchInfoPropertyEditor.cs" />
     <Compile Include="PropertyEditors\ComponentPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Components\TransformPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\DualityAppDataPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\FormattedTextPropertyEditor.cs" />
     <Compile Include="PropertyEditors\GameObjectOverviewPropertyEditor.cs" />
     <Compile Include="PropertyEditors\GameObjectPropertyEditor.cs" />
     <Compile Include="PropertyEditors\IContentRefPropertyEditor.cs" />
     <Compile Include="PropertyEditors\ResourcePropertyEditor.cs" />
+    <Compile Include="PropertyEditors\Resources\FontPropertyEditor.cs" />
     <Compile Include="ShaderFileImporter.cs" />
     <Compile Include="PixmapFileImporter.cs" />
     <Compile Include="ObjectInspector.cs">
@@ -153,9 +157,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="PropertyEditors\Resources\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="Resources\speaker.png" />
     <None Include="Resources\arrow_right_accelerate.png" />

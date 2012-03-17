@@ -27,8 +27,8 @@ namespace EditorBase.PropertyEditors
 			//else if (baseType == typeof(Material))		return PropertyGrid.EditorPriority_Specialized;
 			//else if (baseType == typeof(Texture))		return PropertyGrid.EditorPriority_Specialized;
 			//else if (baseType == typeof(Pixmap))		return PropertyGrid.EditorPriority_Specialized;
-			//else if (baseType == typeof(Font))			return PropertyGrid.EditorPriority_Specialized;
-			//else if (baseType == typeof(FormattedText))	return PropertyGrid.EditorPriority_Specialized;
+			else if (baseType == typeof(Font))			return PropertyGrid.EditorPriority_Specialized;
+			else if (baseType == typeof(FormattedText))	return PropertyGrid.EditorPriority_Specialized;
 			//else if (baseType == typeof(TextRenderer))	return PropertyGrid.EditorPriority_Specialized;
 
 			//// -------- Semi-Specialized area --------
@@ -40,8 +40,8 @@ namespace EditorBase.PropertyEditors
 			else if (typeof(Component).IsAssignableFrom(baseType))			return PropertyGrid.EditorPriority_General;
 			else if (typeof(Resource).IsAssignableFrom(baseType))			return PropertyGrid.EditorPriority_General;
 			else if (typeof(IContentRef).IsAssignableFrom(baseType))		return PropertyGrid.EditorPriority_General;
-			//else if (typeof(DualityAppData).IsAssignableFrom(baseType))		return PropertyGrid.EditorPriority_General;
-			//else if (typeof(DualityUserData).IsAssignableFrom(baseType))	return PropertyGrid.EditorPriority_General;
+			else if (typeof(DualityAppData).IsAssignableFrom(baseType))		return PropertyGrid.EditorPriority_General;
+			else if (typeof(DualityUserData).IsAssignableFrom(baseType))	return PropertyGrid.EditorPriority_General;
 			
 			else return PropertyGrid.EditorPriority_None;
 		}
@@ -59,8 +59,8 @@ namespace EditorBase.PropertyEditors
 			//else if (baseType == typeof(Material))		e = new MaterialPropertyEditor();
 			//else if (baseType == typeof(Texture))		e = new TexturePropertyEditor();
 			//else if (baseType == typeof(Pixmap))		e = new PixmapPropertyEditor();
-			//else if (baseType == typeof(Font))			e = new FontPropertyEditor();
-			//else if (baseType == typeof(FormattedText))	e = new FormattedTextPropertyEditor();
+			else if (baseType == typeof(Font))			e = new FontPropertyEditor();
+			else if (baseType == typeof(FormattedText))	e = new FormattedTextPropertyEditor();
 			//else if (baseType == typeof(TextRenderer))	e = new TextRendererPropertyEditor();
 
 			//// -------- Semi-Specialized area --------
@@ -72,8 +72,8 @@ namespace EditorBase.PropertyEditors
 			else if (typeof(Component).IsAssignableFrom(baseType))			e = new ComponentPropertyEditor();
 			else if (typeof(Resource).IsAssignableFrom(baseType))			e = new ResourcePropertyEditor();
 			else if (typeof(IContentRef).IsAssignableFrom(baseType))		e = new IContentRefPropertyEditor();
-			//else if (typeof(DualityAppData).IsAssignableFrom(baseType))		e = new DualityAppDataPropertyEditor();
-			//else if (typeof(DualityUserData).IsAssignableFrom(baseType))	e = new DualityUserDataPropertyEditor();
+			else if (typeof(DualityAppData).IsAssignableFrom(baseType))		e = new DualityAppDataPropertyEditor();
+			else if (typeof(DualityUserData).IsAssignableFrom(baseType))	e = new DualityUserDataPropertyEditor();
 
 			return e;
 		}

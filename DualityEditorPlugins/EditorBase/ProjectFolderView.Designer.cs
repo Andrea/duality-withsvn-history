@@ -118,6 +118,7 @@
 			this.folderView.NodeFilter = null;
 			this.folderView.SelectedNode = null;
 			this.folderView.SelectionMode = Aga.Controls.Tree.TreeSelectionMode.Multi;
+			this.folderView.ShowNodeToolTips = true;
 			this.folderView.Size = new System.Drawing.Size(206, 496);
 			this.folderView.TabIndex = 1;
 			this.folderView.UseColumns = true;

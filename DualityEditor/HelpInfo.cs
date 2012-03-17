@@ -64,6 +64,11 @@ namespace DualityEditor
 
 		private HelpInfo() {}
 
+		public void AppendText(string text)
+		{
+			this.desc += "\n\n" + text;
+		}
+
 		public static HelpInfo FromText(string topic, string desc, string id = null)
 		{
 			HelpInfo info = new HelpInfo();
@@ -87,13 +92,13 @@ namespace DualityEditor
 				info.topic = member.Name;
 				info.desc = "";
 
-				if (doc.Summary != null) info.desc += doc.Summary + "\n\n";
-				if (doc.Remarks != null) info.desc += doc.Remarks;
+				if (doc.Summary != null) info.desc += doc.Summary;
+				if (doc.Remarks != null) info.desc += "\n\n" + doc.Remarks;
 
 				return info;
 			}
 
-			return FromText(member.Name, DualityEditor.EditorRes.GeneralRes.HelpInfo_NotAvailable_Desc);
+			return CreateNotAvailable(member.Name);
 		}
 		public static HelpInfo FromResource(IContentRef res)
 		{
@@ -126,6 +131,10 @@ namespace DualityEditor
 			return FromGameObject(sel.GameObjects.First());
 
 			// ToDo: Probably improve later
+		}
+		public static HelpInfo CreateNotAvailable(string topic)
+		{
+			return FromText(topic, DualityEditor.EditorRes.GeneralRes.HelpInfo_NotAvailable_Desc);
 		}
 	}
 

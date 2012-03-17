@@ -78,6 +78,18 @@ namespace DualityEditor.CorePluginInterface
 	}
 	public class ConvertOperation
 	{
+		private struct ConvComplexityEntry
+		{
+			public DataConverter Converter;
+			public int Complexity;
+
+			public ConvComplexityEntry(DataConverter converter, int complexity)
+			{
+				this.Converter = converter;
+				this.Complexity = complexity;
+			}
+		}
+
 		[Flags]
 		public enum Operation
 		{
@@ -104,11 +116,13 @@ namespace DualityEditor.CorePluginInterface
 
 		private	Operation		allowedOp	= Operation.All;
 		private	ConversionData	data		= null;
-		private	HashSet<object>	result		= new HashSet<object>();
+		private	List<object>	result		= new List<object>();
 		private	HashSet<object>	handledObj	= new HashSet<object>();
-		// For preventing conversion loops:
+		// For "converter pathfinding":
 		private	HashSet<DataConverter>	usedConverters	= new HashSet<DataConverter>();
 		private	HashSet<Type>			checkedTypes	= new HashSet<Type>();
+		private	int						curComplexity	= 0;
+		private	int						maxComplexity	= 0;
 
 
 		public ConversionData Data
@@ -143,20 +157,34 @@ namespace DualityEditor.CorePluginInterface
 			this.data = new ConversionData(dataObj);
 			this.allowedOp = allowedOp;
 		}
+
+		public void Reset()
+		{
+			this.handledObj.Clear();
+			this.result.Clear();
+			this.usedConverters.Clear();
+			this.checkedTypes.Clear();
+			this.curComplexity = 0;
+			this.maxComplexity = 0;
+		}
 			
 		public bool IsObjectHandled(object data)
 		{
+			if (data == null) return false;
 			if (data is IContentRef) data = (data as IContentRef).Res;
 			return this.handledObj.Contains(data);
 		}
 		public void MarkObjectHandled(object data)
 		{
+			if (data == null) return;
 			if (data is IContentRef) data = (data as IContentRef).Res;
 			this.handledObj.Add(data);
 			//Log.Editor.Write("handled: {0} {1}", data != null ? data.GetType().Name : "", data);
 		}
 		public void AddResult(object obj)
 		{
+			if (obj == null) return;
+			if (this.result.Contains(obj)) return;
 			this.result.Add(obj);
 			//Log.Editor.Write("addresult: {0} {1}", obj != null ? obj.GetType().Name : "", obj);
 		}
@@ -182,6 +210,7 @@ namespace DualityEditor.CorePluginInterface
 			target = this.ResTypeFromRefType(target);
 
 			if (this.checkedTypes.Contains(target)) return false;
+			this.curComplexity++;
 			this.checkedTypes.Add(target);
 			
 			bool result = false;
@@ -194,7 +223,11 @@ namespace DualityEditor.CorePluginInterface
 					.Where(s => !this.usedConverters.Contains(s) && s.CanConvertFrom(this))
 					.Any();
 			}
+
 			if (result) this.checkedTypes.Remove(target);
+			this.maxComplexity = Math.Max(this.maxComplexity, this.curComplexity);
+			this.curComplexity--;
+
 			return result;
 		}
 		public IEnumerable<object> Perform(Type target)
@@ -204,6 +237,7 @@ namespace DualityEditor.CorePluginInterface
 			target = this.ResTypeFromRefType(target);
 
 			//Log.Editor.Write("Convert to {0}", target.Name);
+			int resultCountBefore = this.result.Count;
 
 			// Check if there already is fitting data available
 			IEnumerable<object> fittingData = null;
@@ -232,25 +266,31 @@ namespace DualityEditor.CorePluginInterface
 			}
 
 			// No result yet? Search suitable converters
-			if (this.result.Count == 0)
+			if (this.result.Count == resultCountBefore)
 			{
-				List<DataConverter> selectors = 
-					CorePluginHelper.RequestDataConverters(target)
-					.Where(s => !this.usedConverters.Contains(s) && s.CanConvertFrom(this))
-					.ToList();
+				var converterQuery = CorePluginHelper.RequestDataConverters(target);
+				List<ConvComplexityEntry> converters = new List<ConvComplexityEntry>();
+				foreach (var c in converterQuery)
+				{
+					this.maxComplexity = 0;
+					if (this.usedConverters.Contains(c)) continue;
+					if (!c.CanConvertFrom(this)) continue;
+					converters.Add(new ConvComplexityEntry(c, this.maxComplexity));
+				}
 
 				// Perform conversion
-				selectors.StableSort((s1, s2) => s2.Priority - s1.Priority);
-				foreach (var s in selectors)
+				converters.StableSort((c1, c2) => (c2.Converter.Priority - c1.Converter.Priority) * 10000 + (c1.Complexity - c2.Complexity));
+				foreach (var c in converters)
 				{
 					//Log.Editor.Write("using {0}", s.GetType().Name);
 					//Log.Editor.PushIndent();
 					//Log.Editor.Write("before: {0}", this.Result.ToString(o => string.Format("{0} {1}", o.GetType().Name, o), ", "));
-					this.usedConverters.Add(s);
-					s.Convert(this);
-					this.usedConverters.Remove(s);
+					this.usedConverters.Add(c.Converter);
+					bool handled = c.Converter.Convert(this);
+					this.usedConverters.Remove(c.Converter);
 					//Log.Editor.Write("after: {0}", this.Result.ToString(o => string.Format("{0} {1}", o.GetType().Name, o), ", "));
 					//Log.Editor.PopIndent();
+					if (handled) break;
 				}
 			}
 
@@ -285,6 +325,6 @@ namespace DualityEditor.CorePluginInterface
 		}
 
 		public abstract bool CanConvertFrom(ConvertOperation convert);
-		public abstract void Convert(ConvertOperation convert);
+		public abstract bool Convert(ConvertOperation convert);
 	}
 }

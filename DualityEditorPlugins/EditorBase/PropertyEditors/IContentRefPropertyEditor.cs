@@ -125,9 +125,13 @@ namespace EditorBase.PropertyEditors
 		{
 			base.OnPaint(e);
 
+			IContentRef link = this.DisplayedValue as IContentRef;
+			bool linkBroken = !link.IsExplicitNull && !link.IsAvailable;
+
 			Color bgColorBright = Color.White;
 			if (this.dragHover) bgColorBright = bgColorBright.MixWith(Color.FromArgb(192, 255, 0), 0.4f);
 			else if (this.multiple) bgColorBright = Color.Bisque;
+			else if (linkBroken) bgColorBright = Color.FromArgb(255,128, 128);
 
 			Rectangle rectImage = new Rectangle(this.rectPanel.X + 2, this.rectPanel.Y + 2, this.rectPanel.Width - 4, this.rectPanel.Height - 4);
 			if (this.bgImage == null)
@@ -142,6 +146,7 @@ namespace EditorBase.PropertyEditors
 				Color bgImageBaseColor = this.bgImageColor;
 				if (this.dragHover) bgImageBaseColor = bgImageBaseColor.MixWith(Color.FromArgb(192, 255, 0), 0.4f);
 				else if (this.multiple) bgImageBaseColor = bgImageBaseColor.MixWith(Color.FromArgb(255, 200, 128), 0.4f);
+				else if (linkBroken) bgImageBaseColor = bgImageBaseColor.MixWith(Color.FromArgb(255, 128, 128), 0.4f);
 
 				e.Graphics.FillRectangle(new SolidBrush(bgImageBaseColor), rectImage);
 
@@ -151,7 +156,7 @@ namespace EditorBase.PropertyEditors
 				e.Graphics.FillRectangle(bgImageBrush, rectImage);
 
 				if (this.ReadOnly || !this.Enabled)
-					e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(128, bgImageBaseColor)), rectImage);
+					e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(128, SystemColors.Control)), rectImage);
 			}
 
 			StringFormat format = StringFormat.GenericDefault;

@@ -214,14 +214,13 @@ namespace DualityEditor
 			return RequestAllCorePluginRes<PropertyEditorProviderResEntry>(typeof(object), false, null).Select(e => e.provider);
 		}
 
-		public static void RegisterEditorAction<T>(string name, Image icon, Action<T> action, string context)
+		public static void RegisterEditorAction<T>(EditorAction<T> action, string context)
 		{
-			RegisterCorePluginRes(typeof(T), new EditorActionEntry(new EditorAction<T>(name, icon, action), context));
+			RegisterCorePluginRes(typeof(T), new EditorActionEntry(action, context));
 		}
-		public static void RegisterEditorGroupAction<T>(string name, Image icon, Action<IEnumerable<T>> action, string context, Predicate<IEnumerable<T>> actionPredicate = null)
+		public static void RegisterEditorAction<T>(EditorGroupAction<T> action, string context)
 		{
-			IEditorAction editorAction = new EditorGroupAction<T>(name, icon, action, actionPredicate);
-			RegisterCorePluginRes(typeof(T), new EditorActionEntry(editorAction, context));
+			RegisterCorePluginRes(typeof(T), new EditorActionEntry(action, context));
 		}
 		public static IEnumerable<IEditorAction> RequestEditorActions<T>(string context, IEnumerable<object> forGroup = null)
 		{
