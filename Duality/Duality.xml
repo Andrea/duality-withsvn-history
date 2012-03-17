@@ -11497,6 +11497,13 @@
             <param name="pred">The predicate to use on the lists contents.</param>
             <returns></returns>
         </member>
+        <member name="M:Duality.ExtMethodsIList.GetCombinedHashCode(System.Collections.Generic.IList{System.Byte})">
+            <summary>
+            Returns the combined hash code of the specified byte list.
+            </summary>
+            <param name="list"></param>
+            <returns></returns>
+        </member>
         <member name="T:Duality.EditorHints.MemberFlags">
             <summary>
             Some general flags for Type members that indicate preferred editor behaviour.

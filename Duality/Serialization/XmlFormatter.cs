@@ -76,9 +76,9 @@ namespace Duality.Serialization
 			if (objAsArray is byte[])
 			{
 				byte[] byteArr = objAsArray as byte[];
-				string binHexString = this.reader.ReadString();
-				for (int l = 0; l < byteArr.Length; l++)
-					writer.WriteString(byteArr[l].ToString("X2"));
+				this.writer.WriteString(this.ByteArrayToString(byteArr));
+				//for (int l = 0; l < byteArr.Length; l++)
+				//	this.writer.WriteString(byteArr[l].ToString("X2"));
 			}
 			else
 			{
@@ -209,25 +209,27 @@ namespace Duality.Serialization
 			Type	arrType			= ReflectionHelper.ResolveType(arrTypeString, false);
 			if (arrType == null) this.LogCantResolveTypeError(objId, arrTypeString);
 
-			Array arrObj = arrType != null ? Array.CreateInstance(arrType.GetElementType(), arrLength) : null;
-			
-			// Prepare object reference
-			this.idManager.Inject(arrObj, objId);
-
-			if (arrObj is byte[])
+			Array arrObj = null;
+			if (arrType == typeof(byte[]))
 			{
-				byte[] byteArr = arrObj as byte[];
-				string binHexString = this.reader.ReadString();
-				for (int l = 0; l < arrLength; l++)
-					byteArr[l] = byte.Parse(binHexString.Substring(l * 2, 2), System.Globalization.NumberStyles.HexNumber);
+			    string binHexString = this.reader.ReadString();
+			    byte[] byteArr = byteArr = this.StringToByteArray(binHexString);
+
+			    // Set object reference
+			    this.idManager.Inject(byteArr, objId);
+			    arrObj = byteArr;
 			}
 			else
 			{
-				for (int l = 0; l < arrLength; l++)
-				{
-					object elem = this.ReadObject();
-					if (arrObj != null) arrObj.SetValue(elem, l);
-				}
+			    // Prepare object reference
+			    arrObj = arrType != null ? Array.CreateInstance(arrType.GetElementType(), arrLength) : null;
+			    this.idManager.Inject(arrObj, objId);
+
+			    for (int l = 0; l < arrLength; l++)
+			    {
+			        object elem = this.ReadObject();
+			        if (arrObj != null) arrObj.SetValue(elem, l);
+			    }
 			}
 
 			return arrObj;
@@ -489,6 +491,15 @@ namespace Duality.Serialization
 
 			this.SerializationLog.WriteWarning("Can't parse enum value '{0}' of Type '{1}'. Using numerical value '{2}' instead.", name, typeName, val);
 			return (Enum)Enum.ToObject(enumType, val);
+		}
+
+		private byte[] StringToByteArray(string str)
+		{
+			return Convert.FromBase64String(str);
+		}
+		private string ByteArrayToString(byte[] arr)
+		{
+			return Convert.ToBase64String(arr, Base64FormattingOptions.None);
 		}
 	}
 }

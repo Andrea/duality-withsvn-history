@@ -222,7 +222,7 @@ namespace AdamsLair.PropertyGrid
 			if (this.mainEditor is GroupedPropertyEditor)
 			{
 				GroupedPropertyEditor mainGroupEditor = this.mainEditor as GroupedPropertyEditor;
-				mainGroupEditor.InitContent();
+				mainGroupEditor.Expanded = true;
 			}
 
 			this.Invalidate();
@@ -239,7 +239,6 @@ namespace AdamsLair.PropertyGrid
 			if (this.mainEditor is GroupedPropertyEditor)
 			{
 				GroupedPropertyEditor mainGroupEditor = this.mainEditor as GroupedPropertyEditor;
-				mainGroupEditor.Expanded = true;
 				mainGroupEditor.HeaderStyle = Renderer.GroupHeaderStyle.Emboss;
 				mainGroupEditor.Hints &= ~PropertyEditor.HintFlags.HasExpandCheck;
 			}

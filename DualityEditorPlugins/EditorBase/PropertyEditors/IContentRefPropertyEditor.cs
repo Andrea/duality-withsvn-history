@@ -108,8 +108,9 @@ namespace EditorBase.PropertyEditors
 				if (this.bgImage != null)
 				{
 					this.Height = 64;
-					float luminance = this.bgImage.GetAverageColor().GetLuminance();
-					if (luminance < 0.5f)
+					var avgColor = this.bgImage.GetAverageColor();
+					float luminance = avgColor.GetLuminance();
+					if (luminance < 0.4f)
 						luminance = 1.0f;
 					else
 						luminance = 0.0f;
@@ -131,7 +132,7 @@ namespace EditorBase.PropertyEditors
 			if (this.bgImage == null)
 			{
 				if (this.ReadOnly || !this.Enabled)
-					e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(128, bgColorBright)), rectImage);
+					e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(64, bgColorBright)), rectImage);
 				else
 					e.Graphics.FillRectangle(new SolidBrush(bgColorBright), rectImage);
 			}
@@ -141,15 +142,15 @@ namespace EditorBase.PropertyEditors
 				if (this.dragHover) bgImageBaseColor = bgImageBaseColor.MixWith(Color.FromArgb(192, 255, 0), 0.4f);
 				else if (this.multiple) bgImageBaseColor = bgImageBaseColor.MixWith(Color.FromArgb(255, 200, 128), 0.4f);
 
-				if (this.ReadOnly || !this.Enabled)
-					e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(128, bgImageBaseColor)), rectImage);
-				else
-					e.Graphics.FillRectangle(new SolidBrush(bgImageBaseColor), rectImage);
+				e.Graphics.FillRectangle(new SolidBrush(bgImageBaseColor), rectImage);
 
 				TextureBrush bgImageBrush = new TextureBrush(this.bgImage);
 				bgImageBrush.ResetTransform();
 				bgImageBrush.TranslateTransform(rectImage.X, rectImage.Y);
 				e.Graphics.FillRectangle(bgImageBrush, rectImage);
+
+				if (this.ReadOnly || !this.Enabled)
+					e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(128, bgImageBaseColor)), rectImage);
 			}
 
 			StringFormat format = StringFormat.GenericDefault;

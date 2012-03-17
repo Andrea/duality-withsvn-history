@@ -11,13 +11,10 @@
 	-->	"Did you know..?" screen?
 
 
--->	Optimize preview generation for large AudioData (like songs)
-	-->	Don't split into stereo - instead, do it by clever access calculations while drawing
-	-->	If thats not enough, clamp maximum previewed audio size and don't unpack further.
--->	Why is Attack.ogg 9Mb big instead of 4.5Mb? Look into that
 -->	Dualitor: Implement new PropertyGrid - Rebuild Editors
 	-->	BatchInfo
 		-->	Maybe, just maybe, this time not make it spaghetti as hell?
+	-->	Do a preview area for AudioData
 	-->	Other editors, see old "not-in-project" source files
 	-->	...
 

@@ -28,14 +28,17 @@ namespace Duality.OggVorbis
 			result.data = (dataStream != null) ? dataStream.ToArray() : null;
 			return result;
 		}
-		public static PcmData LoadFromMemory(byte[] memory)
+		public static PcmData LoadFromMemory(byte[] memory, int maxPcmByteCount = 0)
 		{
 			MemoryStream dataStream = null;
 			PcmData result;
 			IntPtr ovStream;
 
 			BeginStreamFromMemory(memory, out ovStream);
-			while (StreamChunk(ovStream, ref dataStream, out result.channelCount, out result.sampleRate));
+			while (StreamChunk(ovStream, ref dataStream, out result.channelCount, out result.sampleRate))
+			{
+				if (maxPcmByteCount != 0 && dataStream.Length > maxPcmByteCount) break;
+			}
 			EndStream(ref ovStream);
 
 			// Return data

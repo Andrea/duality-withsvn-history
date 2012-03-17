@@ -34,7 +34,18 @@ namespace DualityEditor.CorePluginInterface
 				if (result != null)
 				{
 					float widthRatio = (float)result.Width / (float)result.Height;
-					if (mode == PreviewSizeMode.FixedBoth)
+					if (pixmap.Width * pixmap.Height > 4096 * 4096)
+					{
+						result = result.Clone(new Rectangle(
+							pixmap.Width / 2 - Math.Min(desiredWidth, pixmap.Width) / 2,
+							pixmap.Height / 2 - Math.Min(desiredHeight, pixmap.Height) / 2,
+							Math.Min(desiredWidth, pixmap.Width),
+							Math.Min(desiredHeight, pixmap.Height)), 
+							System.Drawing.Imaging.PixelFormat.DontCare);
+						if (result.Width != desiredWidth || result.Height != desiredHeight)
+							result = result.Rescale(desiredWidth, desiredHeight, InterpolationMode.HighQualityBicubic);
+					}
+					else if (mode == PreviewSizeMode.FixedBoth)
 						result = result.Rescale(desiredWidth, desiredHeight, InterpolationMode.HighQualityBicubic);
 					else if (mode == PreviewSizeMode.FixedWidth)
 						result = result.Rescale(desiredWidth, MathF.RoundToInt(desiredWidth / widthRatio), InterpolationMode.HighQualityBicubic);
@@ -47,48 +58,41 @@ namespace DualityEditor.CorePluginInterface
 			else if (convert.CanPerform<AudioData>())
 			{
 			    AudioData audio = convert.Perform<AudioData>().FirstOrDefault();
-				Duality.OggVorbis.PcmData pcm = Duality.OggVorbis.OV.LoadFromMemory(audio.OggVorbisData);
+				int oggHash = audio.OggVorbisData.GetCombinedHashCode();
+				int oggLen = audio.OggVorbisData.Length;
+				Duality.OggVorbis.PcmData pcm = Duality.OggVorbis.OV.LoadFromMemory(audio.OggVorbisData, 1000000); //41236992
 				short[] sdata = new short[pcm.data.Length / 2];
 				Buffer.BlockCopy(pcm.data, 0, sdata, 0, pcm.data.Length);
-				
-				short[] channel1 = null;
-				short[] channel2 = null;
-				if (pcm.channelCount == 1)
-				{
-					channel1 = sdata;
-					channel2 = sdata;
-				}
-				else
-				{
-					channel1 = new short[sdata.Length / 2];
-					channel2 = new short[sdata.Length / 2];
-					for (int i = 0, j = 0; i < sdata.Length; i+=2, ++j)
-					{
-						channel1[j] = sdata[i];
-						channel2[j] = sdata[i+1];
-					}
-				}
 
 				result = new Bitmap(desiredWidth, desiredHeight);
+				int channelLength = sdata.Length / pcm.channelCount;
 				int yMid = result.Height / 2;
-				int stepWidth = (channel1.Length / (2 * result.Width)) - 1;
+				int stepWidth = (channelLength / (2 * result.Width)) - 1;
 				int samples = 10;
 				using (Graphics g = Graphics.FromImage(result))
 				{
-					Pen linePen = new Pen(Color.FromArgb(MathF.RoundToInt(255.0f / MathF.Pow((float)samples, 0.75f)), Color.GreenYellow));
+					Color baseColor = ExtMethodsSystemDrawingColor.ColorFromHSV(
+						(float)(oggHash % 90) * (float)(oggLen % 4) / 360.0f, 
+						0.65f, 
+						1f);
+					Pen linePen = new Pen(Color.FromArgb(MathF.RoundToInt(255.0f / MathF.Pow((float)samples, 0.75f)), baseColor));
 					g.Clear(Color.Transparent);
 					for (int x = 0; x < result.Width; x++)
 					{
 						float timePercentage = (float)x / (float)result.Width;
-						int i = MathF.RoundToInt(timePercentage * channel1.Length);
+						int i = MathF.RoundToInt(timePercentage * channelLength);
 						float left;
 						float right;
+						short channel1;
+						short channel2;
 
 						for (int s = 0; s <= samples; s++)
 						{
 							int offset = MathF.RoundToInt((float)stepWidth * (float)s / (float)samples);
-							left = (float)Math.Abs(channel1[i + offset]) / (float)short.MaxValue;
-							right = (float)Math.Abs(channel2[i + offset]) / (float)short.MaxValue;
+							channel1 = sdata[(i + offset) * pcm.channelCount + 0];
+							channel2 = sdata[(i + offset) * pcm.channelCount + 1];
+							left = (float)Math.Abs(channel1) / (float)short.MaxValue;
+							right = (float)Math.Abs(channel2) / (float)short.MaxValue;
 							g.DrawLine(linePen, x, yMid, x, yMid + MathF.RoundToInt(left * yMid));
 							g.DrawLine(linePen, x, yMid, x, yMid - MathF.RoundToInt(right * yMid));
 						}

@@ -79,5 +79,26 @@ namespace Duality
 				if (pred(collection[i])) return i;
 			return -1;
 		}
+
+		/// <summary>
+		/// Returns the combined hash code of the specified byte list.
+		/// </summary>
+		/// <param name="list"></param>
+		/// <returns></returns>
+		public static int GetCombinedHashCode(this IList<byte> list)
+		{ unchecked {
+			const int p = 16777619;
+			int hash = (int)2166136261;
+
+			for (int i = 0; i < list.Count; i++)
+					hash = (hash ^ list[i]) * p;
+
+			hash += hash << 13;
+			hash ^= hash >> 7;
+			hash += hash << 3;
+			hash ^= hash >> 17;
+			hash += hash << 5;
+			return hash;
+		} }
 	}
 }
