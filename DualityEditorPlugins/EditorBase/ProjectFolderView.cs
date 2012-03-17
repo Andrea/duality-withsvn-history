@@ -936,6 +936,8 @@ namespace EditorBase
 						foreach (Resource res in resList)
 						{
 							string desiredName = res.SourcePath != null ? Path.GetFileNameWithoutExtension(res.SourcePath) : res.Name;
+							if (string.IsNullOrEmpty(desiredName)) desiredName = res.GetType().Name;
+
 							string basePath = this.GetInsertActionTargetBasePath(targetDirNode);
 							string nameExt = Resource.GetFileExtByType(res.GetType());
 							string resPath = PathHelper.GetFreePath(Path.Combine(basePath, desiredName), nameExt);

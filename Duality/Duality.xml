@@ -3724,6 +3724,12 @@
             <param name="textures">A set of <see cref="T:Duality.Resources.Texture">Textures</see> to use.</param>
             <param name="uniforms">A set of <see cref="T:Duality.Resources.ShaderVarInfo">uniform values</see> to use.</param>
         </member>
+        <member name="M:Duality.Resources.Material.#ctor(Duality.Resources.BatchInfo)">
+            <summary>
+            Creates a new Material based on the specified BatchInfo
+            </summary>
+            <param name="info"></param>
+        </member>
         <member name="M:Duality.Resources.Material.GetTexture(System.String)">
             <summary>
             Gets a texture by name. Returns a null reference if the name doesn't exist.

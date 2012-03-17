@@ -6,15 +6,20 @@ using System.Windows.Forms;
 using System.Reflection;
 using System.Drawing;
 
+using AdamsLair.PropertyGrid;
+using AdamsLair.PropertyGrid.Renderer;
+using AdamsLair.PropertyGrid.PropertyEditors;
+
 using OpenTK;
 
 using Duality;
 using Duality.Resources;
+using Duality.EditorHints;
 
 using DualityEditor;
+using DualityEditor.CorePluginInterface;
 using DualityEditor.Controls;
 using DualityEditor.Controls.PropertyEditors;
-using PropertyGrid = DualityEditor.Controls.PropertyGrid;
 
 namespace EditorBase.PropertyEditors
 {
@@ -25,12 +30,8 @@ namespace EditorBase.PropertyEditors
 
 		public BatchInfoPropertyEditor()
 		{
-			this.Header.Style = GroupedPropertyEditorHeader.HeaderStyle.Big;
-			this.Header.Height = GroupedPropertyEditorHeader.DefaultBigHeight;
-			this.Header.MouseDown += this.Header_MouseDown;
-			this.Header.MouseLeave += this.Header_MouseLeave;
-			this.Header.MouseMove += this.Header_MouseMove;
-			this.Header.MouseUp += this.Header_MouseUp;
+			//this.HeaderStyle = GroupHeaderStyle.SmoothSunken;
+			//this.HeaderHeight = 35;
 		}
 
 		public override void  ClearContent()
@@ -39,15 +40,11 @@ namespace EditorBase.PropertyEditors
 			this.shaderVarEditors.Clear();
 		}
 
-		protected override bool MemberPredicate(MemberInfo info)
+		protected override bool IsAutoCreateMember(MemberInfo info)
 		{
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_BatchInfo_MainColor)) return true;
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_BatchInfo_Technique)) return true;
 			return false;
-		}
-		protected override void OnAddingEditors()
-		{
-			base.OnAddingEditors();
-			this.AddEditorForProperty(ReflectionInfo.Property_BatchInfo_MainColor);
-			this.AddEditorForProperty(ReflectionInfo.Property_BatchInfo_Technique);
 		}
 		protected override void OnUpdateFromObjects(object[] values)
 		{
@@ -78,41 +75,44 @@ namespace EditorBase.PropertyEditors
 				}
 
 				// Get rid of unused variables (This changes actual Resource data!)
-				foreach (BatchInfo info in batchInfos)
+				if (!this.ReadOnly)
 				{
-					List<string> texRemoveSched = null;
-					List<string> uniRemoveSched = null;
-					if (info.Textures != null)
+					foreach (BatchInfo info in batchInfos)
 					{
-						foreach (var pair in info.Textures)
+						List<string> texRemoveSched = null;
+						List<string> uniRemoveSched = null;
+						if (info.Textures != null)
 						{
-							if (!varInfoArray.Any(v => v.scope == ShaderVarScope.Uniform && v.type == ShaderVarType.Sampler2D && v.name == pair.Key))
+							foreach (var pair in info.Textures)
 							{
-								if (texRemoveSched == null) texRemoveSched = new List<string>();
-								texRemoveSched.Add(pair.Key);
+								if (!varInfoArray.Any(v => v.scope == ShaderVarScope.Uniform && v.type == ShaderVarType.Sampler2D && v.name == pair.Key))
+								{
+									if (texRemoveSched == null) texRemoveSched = new List<string>();
+									texRemoveSched.Add(pair.Key);
+								}
 							}
 						}
-					}
-					if (info.Uniforms != null)
-					{
-						foreach (var pair in info.Uniforms)
+						if (info.Uniforms != null)
 						{
-							if (!varInfoArray.Any(v => v.scope == ShaderVarScope.Uniform && v.type != ShaderVarType.Sampler2D && v.name == pair.Key))
+							foreach (var pair in info.Uniforms)
 							{
-								if (uniRemoveSched == null) uniRemoveSched = new List<string>();
-								uniRemoveSched.Add(pair.Key);
+								if (!varInfoArray.Any(v => v.scope == ShaderVarScope.Uniform && v.type != ShaderVarType.Sampler2D && v.name == pair.Key))
+								{
+									if (uniRemoveSched == null) uniRemoveSched = new List<string>();
+									uniRemoveSched.Add(pair.Key);
+								}
 							}
 						}
-					}
-					if (texRemoveSched != null)
-					{
-						foreach (string name in texRemoveSched) info.SetTexture(name, ContentRef<Texture>.Null);
-						invokeSetter = true;
-					}
-					if (uniRemoveSched != null)
-					{
-						foreach (string name in uniRemoveSched) info.SetUniform(name, null);
-						invokeSetter = true;
+						if (texRemoveSched != null)
+						{
+							foreach (string name in texRemoveSched) info.SetTexture(name, ContentRef<Texture>.Null);
+							invokeSetter = true;
+						}
+						if (uniRemoveSched != null)
+						{
+							foreach (string name in uniRemoveSched) info.SetUniform(name, null);
+							invokeSetter = true;
+						}
 					}
 				}
 
@@ -177,12 +177,12 @@ namespace EditorBase.PropertyEditors
 							oldEditors.Remove(texName);
 						else
 						{
-							ContentRefPropertyEditor e = new ContentRefPropertyEditor();
-							e.EditedType = typeof(ContentRef<Texture>);
+							PropertyEditor e = this.ParentGrid.CreateEditor(typeof(ContentRef<Texture>));
 							e.Getter = this.CreateTextureValueGetter(texName);
 							e.Setter = !this.ReadOnly ? this.CreateTextureValueSetter(texName) : null;
 							e.PropertyName = texName;
 							this.shaderVarEditors[texName] = e;
+							this.ParentGrid.ConfigureEditor(e);
 							this.AddPropertyEditor(e);
 						}
 					}
@@ -217,7 +217,7 @@ namespace EditorBase.PropertyEditors
 				}
 
 				// If we actually changed (updated) data here, invoke the setter
-				if (invokeSetter) this.Setter(batchInfos);
+				if (invokeSetter) this.SetValues(batchInfos);
 			}
 		}
 
@@ -225,6 +225,7 @@ namespace EditorBase.PropertyEditors
 		{
 			PropertyEditor oldEditor;
 			this.shaderVarEditors.TryGetValue(varInfo.name, out oldEditor);
+			List<EditorHintMemberAttribute> configData = new List<EditorHintMemberAttribute>();
 
 			if (varInfo.arraySize == 1)
 			{
@@ -233,12 +234,11 @@ namespace EditorBase.PropertyEditors
 					Type editType = typeof(float);
 					if (varInfo.type == ShaderVarType.Int) editType = typeof(int);
 
-					if (oldEditor is NumericPropertyEditor && oldEditor.EditedType == editType)
+					if (oldEditor.EditedType == editType)
 						return oldEditor;
 					else
 					{
-						NumericPropertyEditor e = new NumericPropertyEditor();
-						e.EditedType = editType;
+						PropertyEditor e = this.ParentGrid.CreateEditor(editType);
 						if (varInfo.type == ShaderVarType.Int)
 						{
 							e.Getter = this.CreateUniformIntValueGetter(varInfo.name);
@@ -248,60 +248,61 @@ namespace EditorBase.PropertyEditors
 						{
 							e.Getter = this.CreateUniformFloatValueGetter(varInfo.name);
 							e.Setter = !this.ReadOnly ? this.CreateUniformFloatValueSetter(varInfo.name) : null;
-							e.Editor.Increment = 0.1m;
+							configData.Add(new EditorHintIncrementAttribute(0.1f));
 						}
+						this.ParentGrid.ConfigureEditor(e, configData);
 						return e;
 					}
 				}
 				else if (varInfo.type == ShaderVarType.Vec2)
 				{
-					if (oldEditor is Vector2PropertyEditor)
+					if (oldEditor.EditedType == typeof(Vector2))
 						return oldEditor;
 					else
 					{
-						Vector2PropertyEditor e = new Vector2PropertyEditor();
-						e.EditedType = typeof(OpenTK.Vector2);
+						PropertyEditor e = this.ParentGrid.CreateEditor(typeof(Vector2));
 						e.Getter = this.CreateUniformVec2ValueGetter(varInfo.name);
 						e.Setter = !this.ReadOnly ? this.CreateUniformVec2ValueSetter(varInfo.name) : null;
-						e.EditorX.Increment = 0.1m;
-						e.EditorY.Increment = 0.1m;
+						configData.Add(new EditorHintIncrementAttribute(0.1f));
+						this.ParentGrid.ConfigureEditor(e, configData);
 						return e;
 					}
 				}
 				else if (varInfo.type == ShaderVarType.Vec3)
 				{
-					if (oldEditor is Vector3PropertyEditor)
+					if (oldEditor.EditedType == typeof(Vector3))
 						return oldEditor;
 					else
 					{
-						Vector3PropertyEditor e = new Vector3PropertyEditor();
-						e.EditedType = typeof(OpenTK.Vector3);
+						PropertyEditor e = this.ParentGrid.CreateEditor(typeof(Vector3));
 						e.Getter = this.CreateUniformVec3ValueGetter(varInfo.name);
 						e.Setter = !this.ReadOnly ? this.CreateUniformVec3ValueSetter(varInfo.name) : null;
-						e.EditorX.Increment = 0.1m;
-						e.EditorY.Increment = 0.1m;
-						e.EditorZ.Increment = 0.1m;
+						configData.Add(new EditorHintIncrementAttribute(0.1f));
+						this.ParentGrid.ConfigureEditor(e, configData);
 						return e;
 					}
 				}
 				else
 				{
-					if (oldEditor is IListPropertyEditor)
+					if (oldEditor.EditedType == typeof(float[]))
 						return oldEditor;
 					else
 					{
-						IListPropertyEditor e = new IListPropertyEditor();
-						e.EditedType = typeof(float[]);
+						PropertyEditor e = this.ParentGrid.CreateEditor(typeof(float[]));
 						e.Getter = this.CreateUniformValueGetter(varInfo.name);
 						e.Setter = !this.ReadOnly ? this.CreateUniformValueSetter(varInfo.name) : null;
-						e.EditorAdded += this.UniformList_EditorAdded;
+						if (e is GroupedPropertyEditor)
+						{
+							(e as GroupedPropertyEditor).EditorAdded += this.UniformList_EditorAdded;
+						}
+						this.ParentGrid.ConfigureEditor(e, configData);
 						return e;
 					}
 				}
 			}
 			else
 			{
-				Array oldValue = oldEditor != null ? (oldEditor as IListPropertyEditor).Getter().FirstOrDefault() as Array : null;
+				Array oldValue = oldEditor != null ? (oldEditor as IListPropertyEditor).DisplayedValue as Array : null;
 				Type oldElementType = oldValue != null ? oldValue.GetType().GetElementType() : null;
 				int oldLen = oldValue != null ? oldValue.Length : -1;
 
@@ -314,12 +315,15 @@ namespace EditorBase.PropertyEditors
 						return oldEditor;
 					else
 					{
-						IListPropertyEditor e = new IListPropertyEditor();
-						e.EditedType = editType.MakeArrayType();
+						PropertyEditor e = this.ParentGrid.CreateEditor(editType.MakeArrayType());
 						e.Getter = this.CreateUniformValueGetter(varInfo.name);
 						e.Setter = !this.ReadOnly ? this.CreateUniformValueSetter(varInfo.name) : null;
 						e.ForceWriteBack = true;
-						if (varInfo.type == ShaderVarType.Float) e.EditorAdded += this.UniformList_EditorAdded;
+						if (e is GroupedPropertyEditor)
+						{
+							if (varInfo.type == ShaderVarType.Float) (e as GroupedPropertyEditor).EditorAdded += this.UniformList_EditorAdded;
+						}
+						this.ParentGrid.ConfigureEditor(e, configData);
 						return e;
 					}
 				}
@@ -329,11 +333,15 @@ namespace EditorBase.PropertyEditors
 						return oldEditor;
 					else
 					{
-						IListPropertyEditor e = new IListPropertyEditor();
-						e.EditedType = typeof(Vector2[]);
+						PropertyEditor e = this.ParentGrid.CreateEditor(typeof(Vector2[]));
 						e.Getter = this.CreateUniformVec2ArrayValueGetter(varInfo.name);
 						e.Setter = !this.ReadOnly ? this.CreateUniformVec2ArrayValueSetter(varInfo.name) : null;
 						e.ForceWriteBack = true;
+						if (e is GroupedPropertyEditor)
+						{
+							(e as GroupedPropertyEditor).EditorAdded += this.UniformList_EditorAdded;
+						}
+						this.ParentGrid.ConfigureEditor(e, configData);
 						return e;
 					}
 				}
@@ -343,11 +351,15 @@ namespace EditorBase.PropertyEditors
 						return oldEditor;
 					else
 					{
-						IListPropertyEditor e = new IListPropertyEditor();
-						e.EditedType = typeof(Vector3[]);
+						PropertyEditor e = this.ParentGrid.CreateEditor(typeof(Vector3[]));
 						e.Getter = this.CreateUniformVec3ArrayValueGetter(varInfo.name);
 						e.Setter = !this.ReadOnly ? this.CreateUniformVec3ArrayValueSetter(varInfo.name) : null;
 						e.ForceWriteBack = true;
+						if (e is GroupedPropertyEditor)
+						{
+							(e as GroupedPropertyEditor).EditorAdded += this.UniformList_EditorAdded;
+						}
+						this.ParentGrid.ConfigureEditor(e, configData);
 						return e;
 					}
 				}
@@ -357,12 +369,15 @@ namespace EditorBase.PropertyEditors
 						return oldEditor;
 					else
 					{
-						IListPropertyEditor e = new IListPropertyEditor();
-						e.EditedType = typeof(float[][]);
+						PropertyEditor e = this.ParentGrid.CreateEditor(typeof(float[][]));
 						e.Getter = this.CreateUniformArrayValueGetter(varInfo.name, varInfo.arraySize);
 						e.Setter = !this.ReadOnly ? this.CreateUniformArrayValueSetter(varInfo.name) : null;
-						e.EditorAdded += this.UniformList_EditorAdded;
 						e.ForceWriteBack = true;
+						if (e is GroupedPropertyEditor)
+						{
+							(e as GroupedPropertyEditor).EditorAdded += this.UniformList_EditorAdded;
+						}
+						this.ParentGrid.ConfigureEditor(e, configData);
 						return e;
 					}
 				}
@@ -372,29 +387,29 @@ namespace EditorBase.PropertyEditors
 		
 		protected Func<IEnumerable<object>> CreateTextureValueGetter(string name)
 		{
-			return () => this.Getter().Cast<BatchInfo>().Select(o => o != null ? (object)o.GetTexture(name) : null);
+			return () => this.GetValue().Cast<BatchInfo>().Select(o => o != null ? (object)o.GetTexture(name) : null);
 		}
 		protected Func<IEnumerable<object>> CreateUniformValueGetter(string name)
 		{
-			return () => this.Getter().Cast<BatchInfo>().Select(o => o != null ? (object)o.GetUniform(name) : null);
+			return () => this.GetValue().Cast<BatchInfo>().Select(o => o != null ? (object)o.GetUniform(name) : null);
 		}
 		protected Func<IEnumerable<object>> CreateUniformFloatValueGetter(string name)
 		{
-			return () => this.Getter().Cast<BatchInfo>().Select(o => o != null ? (object)o.GetUniform(name)[0] : null);
+			return () => this.GetValue().Cast<BatchInfo>().Select(o => o != null ? (object)o.GetUniform(name)[0] : null);
 		}
 		protected Func<IEnumerable<object>> CreateUniformIntValueGetter(string name)
 		{
-			return () => this.Getter().Cast<BatchInfo>().Select(o => o != null ? (object)(int)o.GetUniform(name)[0] : null);
+			return () => this.GetValue().Cast<BatchInfo>().Select(o => o != null ? (object)(int)o.GetUniform(name)[0] : null);
 		}
 		protected Func<IEnumerable<object>> CreateUniformVec2ValueGetter(string name)
 		{
-			return () => this.Getter().Cast<BatchInfo>().Select(o => o != null ? (object)
+			return () => this.GetValue().Cast<BatchInfo>().Select(o => o != null ? (object)
 				new OpenTK.Vector2(o.GetUniform(name)[0], o.GetUniform(name)[1])
 				: null);
 		}
 		protected Func<IEnumerable<object>> CreateUniformVec3ValueGetter(string name)
 		{
-			return () => this.Getter().Cast<BatchInfo>().Select(o => o != null ? (object)
+			return () => this.GetValue().Cast<BatchInfo>().Select(o => o != null ? (object)
 				new OpenTK.Vector3(o.GetUniform(name)[0], o.GetUniform(name)[1], o.GetUniform(name)[2])
 				: null);
 		}
@@ -403,7 +418,7 @@ namespace EditorBase.PropertyEditors
 		{
 			return delegate()
 			{
-				var batchInfos = this.Getter().Cast<BatchInfo>();
+				var batchInfos = this.GetValue().Cast<BatchInfo>();
 				List<object> result = new List<object>();
 				foreach (var info in batchInfos)
 				{
@@ -427,7 +442,7 @@ namespace EditorBase.PropertyEditors
 		{
 			return delegate()
 			{
-				var batchInfos = this.Getter().Cast<BatchInfo>();
+				var batchInfos = this.GetValue().Cast<BatchInfo>();
 				List<object> result = new List<object>();
 				foreach (var info in batchInfos)
 				{
@@ -449,7 +464,7 @@ namespace EditorBase.PropertyEditors
 		{
 			return delegate()
 			{
-				var batchInfos = this.Getter().Cast<BatchInfo>();
+				var batchInfos = this.GetValue().Cast<BatchInfo>();
 				List<object> result = new List<object>();
 				foreach (var info in batchInfos)
 				{
@@ -474,7 +489,7 @@ namespace EditorBase.PropertyEditors
 			return delegate(IEnumerable<object> values)
 			{
 				IEnumerator<ContentRef<Texture>> valuesEnum = values.Cast<ContentRef<Texture>>().GetEnumerator();
-				BatchInfo[] batchInfoArray = this.Getter().Cast<BatchInfo>().ToArray();
+				BatchInfo[] batchInfoArray = this.GetValue().Cast<BatchInfo>().ToArray();
 
 				ContentRef<Texture> curValue = ContentRef<Texture>.Null;
 				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
@@ -484,7 +499,6 @@ namespace EditorBase.PropertyEditors
 					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}
 				this.OnPropertySet(ReflectionInfo.Property_BatchInfo_Textures, batchInfoArray);
-				this.UpdateModifiedState();
 			};
 		}
 		protected Action<IEnumerable<object>> CreateUniformValueSetter(string name)
@@ -492,7 +506,7 @@ namespace EditorBase.PropertyEditors
 			return delegate(IEnumerable<object> values)
 			{
 				IEnumerator<float[]> valuesEnum = values.Cast<float[]>().GetEnumerator();
-				BatchInfo[] batchInfoArray = this.Getter().Cast<BatchInfo>().ToArray();
+				BatchInfo[] batchInfoArray = this.GetValue().Cast<BatchInfo>().ToArray();
 
 				float[] curValue = null;
 				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
@@ -502,7 +516,6 @@ namespace EditorBase.PropertyEditors
 					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}
 				this.OnPropertySet(ReflectionInfo.Property_BatchInfo_Uniforms, batchInfoArray);
-				this.UpdateModifiedState();
 			};
 		}
 		protected Action<IEnumerable<object>> CreateUniformFloatValueSetter(string name)
@@ -510,7 +523,7 @@ namespace EditorBase.PropertyEditors
 			return delegate(IEnumerable<object> values)
 			{
 				IEnumerator<float> valuesEnum = values.Cast<float>().GetEnumerator();
-				BatchInfo[] batchInfoArray = this.Getter().Cast<BatchInfo>().ToArray();
+				BatchInfo[] batchInfoArray = this.GetValue().Cast<BatchInfo>().ToArray();
 
 				float curValue = 0.0f;
 				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
@@ -520,7 +533,6 @@ namespace EditorBase.PropertyEditors
 					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}
 				this.OnPropertySet(ReflectionInfo.Property_BatchInfo_Uniforms, batchInfoArray);
-				this.UpdateModifiedState();
 			};
 		}
 		protected Action<IEnumerable<object>> CreateUniformIntValueSetter(string name)
@@ -528,7 +540,7 @@ namespace EditorBase.PropertyEditors
 			return delegate(IEnumerable<object> values)
 			{
 				IEnumerator<int> valuesEnum = values.Cast<int>().GetEnumerator();
-				BatchInfo[] batchInfoArray = this.Getter().Cast<BatchInfo>().ToArray();
+				BatchInfo[] batchInfoArray = this.GetValue().Cast<BatchInfo>().ToArray();
 
 				int curValue = 0;
 				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
@@ -538,7 +550,6 @@ namespace EditorBase.PropertyEditors
 					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}
 				this.OnPropertySet(ReflectionInfo.Property_BatchInfo_Uniforms, batchInfoArray);
-				this.UpdateModifiedState();
 			};
 		}
 		protected Action<IEnumerable<object>> CreateUniformVec2ValueSetter(string name)
@@ -546,7 +557,7 @@ namespace EditorBase.PropertyEditors
 			return delegate(IEnumerable<object> values)
 			{
 				IEnumerator<OpenTK.Vector2> valuesEnum = values.Cast<OpenTK.Vector2>().GetEnumerator();
-				BatchInfo[] batchInfoArray = this.Getter().Cast<BatchInfo>().ToArray();
+				BatchInfo[] batchInfoArray = this.GetValue().Cast<BatchInfo>().ToArray();
 
 				OpenTK.Vector2 curValue = OpenTK.Vector2.Zero;
 				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
@@ -560,7 +571,6 @@ namespace EditorBase.PropertyEditors
 					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}
 				this.OnPropertySet(ReflectionInfo.Property_BatchInfo_Uniforms, batchInfoArray);
-				this.UpdateModifiedState();
 			};
 		}
 		protected Action<IEnumerable<object>> CreateUniformVec3ValueSetter(string name)
@@ -568,7 +578,7 @@ namespace EditorBase.PropertyEditors
 			return delegate(IEnumerable<object> values)
 			{
 				IEnumerator<OpenTK.Vector3> valuesEnum = values.Cast<OpenTK.Vector3>().GetEnumerator();
-				BatchInfo[] batchInfoArray = this.Getter().Cast<BatchInfo>().ToArray();
+				BatchInfo[] batchInfoArray = this.GetValue().Cast<BatchInfo>().ToArray();
 
 				OpenTK.Vector3 curValue = OpenTK.Vector3.Zero;
 				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
@@ -583,7 +593,6 @@ namespace EditorBase.PropertyEditors
 					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}
 				this.OnPropertySet(ReflectionInfo.Property_BatchInfo_Uniforms, batchInfoArray);
-				this.UpdateModifiedState();
 			};
 		}
 
@@ -592,7 +601,7 @@ namespace EditorBase.PropertyEditors
 			return delegate(IEnumerable<object> values)
 			{
 				IEnumerator<float[][]> valuesEnum = values.Cast<float[][]>().GetEnumerator();
-				BatchInfo[] batchInfoArray = this.Getter().Cast<BatchInfo>().ToArray();
+				BatchInfo[] batchInfoArray = this.GetValue().Cast<BatchInfo>().ToArray();
 
 				float[][] curValue = null;
 				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
@@ -607,7 +616,6 @@ namespace EditorBase.PropertyEditors
 					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}
 				this.OnPropertySet(ReflectionInfo.Property_BatchInfo_Uniforms, batchInfoArray);
-				this.UpdateModifiedState();
 			};
 		}
 		protected Action<IEnumerable<object>> CreateUniformVec2ArrayValueSetter(string name)
@@ -615,7 +623,7 @@ namespace EditorBase.PropertyEditors
 			return delegate(IEnumerable<object> values)
 			{
 				IEnumerator<Vector2[]> valuesEnum = values.Cast<Vector2[]>().GetEnumerator();
-				BatchInfo[] batchInfoArray = this.Getter().Cast<BatchInfo>().ToArray();
+				BatchInfo[] batchInfoArray = this.GetValue().Cast<BatchInfo>().ToArray();
 
 				Vector2[] curValue = null;
 				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
@@ -634,7 +642,6 @@ namespace EditorBase.PropertyEditors
 					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}
 				this.OnPropertySet(ReflectionInfo.Property_BatchInfo_Uniforms, batchInfoArray);
-				this.UpdateModifiedState();
 			};
 		}
 		protected Action<IEnumerable<object>> CreateUniformVec3ArrayValueSetter(string name)
@@ -642,7 +649,7 @@ namespace EditorBase.PropertyEditors
 			return delegate(IEnumerable<object> values)
 			{
 				IEnumerator<Vector3[]> valuesEnum = values.Cast<Vector3[]>().GetEnumerator();
-				BatchInfo[] batchInfoArray = this.Getter().Cast<BatchInfo>().ToArray();
+				BatchInfo[] batchInfoArray = this.GetValue().Cast<BatchInfo>().ToArray();
 
 				Vector3[] curValue = null;
 				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
@@ -662,23 +669,16 @@ namespace EditorBase.PropertyEditors
 					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 				}
 				this.OnPropertySet(ReflectionInfo.Property_BatchInfo_Uniforms, batchInfoArray);
-				this.UpdateModifiedState();
 			};
 		}
 
-		public override void UpdateReadOnlyState()
+		protected override void OnDragOver(DragEventArgs e)
 		{
-			base.UpdateReadOnlyState();
-			this.AllowDrop = !this.ReadOnly;
-		}
-
-		protected override void OnDragEnter(DragEventArgs e)
-		{
-			base.OnDragEnter(e);
+			base.OnDragOver(e);
 			DataObject dragDropData = e.Data as DataObject;
-			if (dragDropData != null)
+			if (this.HoverEditor == null && dragDropData != null && !this.ReadOnly)
 			{
-				if (dragDropData.ContainsContentRefs<Material>() || dragDropData.ContainsBatchInfos())
+				if (new ConvertOperation(dragDropData, ConvertOperation.Operation.All).CanPerform<BatchInfo>())
 				{
 					// Accept drop
 					e.Effect = e.AllowedEffect;
@@ -687,81 +687,108 @@ namespace EditorBase.PropertyEditors
 		}
 		protected override void OnDragDrop(DragEventArgs e)
 		{
-			base.OnDragDrop(e);
 			DataObject dragDropData = e.Data as DataObject;
-			if (dragDropData != null)
+			if (this.HoverEditor == null && dragDropData != null && !this.ReadOnly)
 			{
-				BatchInfo[] newBatchInfoArray = null;
-				if (dragDropData.ContainsContentRefs<Material>())
+				var batchInfoQuery = new ConvertOperation(dragDropData, ConvertOperation.Operation.All).Perform<BatchInfo>().ToArray();
+				if (batchInfoQuery != null)
 				{
-					ContentRef<Material>[] ctRefs = dragDropData.GetContentRefs<Material>();
-					newBatchInfoArray = ctRefs.Select(r => r.Res.Info).ToArray();
-				}
-				else if (dragDropData.ContainsBatchInfos())
-				{
-					newBatchInfoArray = dragDropData.GetBatchInfos();
-				}
-
-				if (newBatchInfoArray != null)
-				{
+					BatchInfo[] newBatchInfoArray = batchInfoQuery.ToArray();
 					// Accept drop
 					e.Effect = e.AllowedEffect;
 
-					IEnumerable<object> values = this.Getter();
+					IEnumerable<object> values = this.GetValue();
 					IEnumerable<BatchInfo> batchInfoValues = values.Cast<BatchInfo>().NotNull();
 					if (batchInfoValues.Any())
 					{
 						foreach (BatchInfo info in batchInfoValues) newBatchInfoArray[0].CopyTo(info);
 						// BatchInfos aren't usually referenced, they're nested. Make sure the change notification is passed on.
-						this.Setter(batchInfoValues);
+						this.SetValues(batchInfoValues);
 					}
 					else
 					{
-						this.SetterSingle(newBatchInfoArray[0]);
+						this.SetValue(newBatchInfoArray[0]);
 					}
 					this.PerformGetValue();
+					return;
 				}
 			}
+
+			// Move on to children if failed otherwise
+			base.OnDragDrop(e);
 		}
 
 		protected override void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)
 		{
 			base.OnPropertySet(property, targets);
 			// BatchInfos aren't usually referenced, they're nested. Make sure the change notification is passed on.
-			this.Setter(targets);
+			this.SetValues(targets);
 		}
 
 		private void UniformList_EditorAdded(object sender, PropertyEditorEventArgs e)
 		{
-			NumericPropertyEditor numEdit = e.Editor as NumericPropertyEditor;
-			if (numEdit != null) numEdit.Editor.Increment = 0.1m;
-
+			this.ParentGrid.ConfigureEditor(e.Editor, new[] { new EditorHintIncrementAttribute(0.1f) });
 			e.Editor.ForceWriteBack = true;
 		}
-		
-		private void Header_MouseUp(object sender, MouseEventArgs e)
+
+		protected override void OnMouseUp(MouseEventArgs e)
 		{
+			base.OnMouseUp(e);
 			this.dragBeginPos = Point.Empty;
 		}
-		private void Header_MouseMove(object sender, MouseEventArgs e)
+		protected override void OnMouseDown(MouseEventArgs e)
 		{
+			base.OnMouseDown(e);
+			if (this.ClientRectangle.Contains(e.Location) && e.Y - this.ClientRectangle.Y < this.HeaderHeight)
+			{
+				this.dragBeginPos = e.Location;
+			}
+		}
+		protected override void OnMouseMove(MouseEventArgs e)
+		{
+			base.OnMouseMove(e);
 			if (this.dragBeginPos != Point.Empty)
 			{
 				if (Math.Abs(this.dragBeginPos.X - e.X) > 5 || Math.Abs(this.dragBeginPos.Y - e.Y) > 5)
 				{
 					DataObject dragDropData = new DataObject();
-					dragDropData.AppendBatchInfos(this.Getter().OfType<BatchInfo>().ToArray());
-					this.DoDragDrop(dragDropData, DragDropEffects.All);
+					dragDropData.SetBatchInfos(this.GetValue().OfType<BatchInfo>().ToArray());
+					this.ParentGrid.DoDragDrop(dragDropData, DragDropEffects.All);
 				}
 			}
 		}
-		private void Header_MouseLeave(object sender, EventArgs e)
+		protected override void OnMouseLeave(EventArgs e)
 		{
+			base.OnMouseLeave(e);
 			this.dragBeginPos = Point.Empty;
 		}
-		private void Header_MouseDown(object sender, MouseEventArgs e)
+		protected override void OnKeyDown(KeyEventArgs e)
 		{
-			this.dragBeginPos = e.Location;
+			base.OnKeyDown(e);
+			if (e.KeyCode == Keys.C && e.Control)
+			{
+				DataObject data = new DataObject();
+				data.SetBatchInfos(new[] { this.DisplayedValue as BatchInfo });
+				Clipboard.SetDataObject(data);
+				e.Handled = true;
+			}
+			else if (e.KeyCode == Keys.V && e.Control)
+			{
+				DataObject data = Clipboard.GetDataObject() as DataObject;
+				ConvertOperation convert = new ConvertOperation(data, ConvertOperation.Operation.All);
+				IEnumerable<BatchInfo> refQuery = null;
+				if (convert.CanPerform<BatchInfo>() && (refQuery = convert.Perform<BatchInfo>()) != null)
+				{
+					this.SetValue(refQuery.FirstOrDefault());
+					this.OnValueChanged();
+					this.PerformGetValue();
+					this.OnEditingFinished();
+				}
+				else
+					System.Media.SystemSounds.Beep.Play();
+
+				e.Handled = true;
+			}
 		}
 	}
 }

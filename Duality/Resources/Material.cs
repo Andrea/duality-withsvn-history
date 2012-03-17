@@ -170,6 +170,14 @@ namespace Duality.Resources
 		{
 			this.info = new BatchInfo(technique, mainColor, textures, uniforms);
 		}
+		/// <summary>
+		/// Creates a new Material based on the specified BatchInfo
+		/// </summary>
+		/// <param name="info"></param>
+		public Material(BatchInfo info)
+		{
+			this.info = new BatchInfo(info);
+		}
 		
 		/// <summary>
 		/// Gets a texture by name. Returns a null reference if the name doesn't exist.

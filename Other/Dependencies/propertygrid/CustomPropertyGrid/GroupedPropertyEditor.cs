@@ -161,6 +161,10 @@ namespace AdamsLair.PropertyGrid
 		{
 			get { return (this.ParentEditor as GroupedPropertyEditor) != null && (this.ParentEditor as GroupedPropertyEditor).UseIndentChildExpand; }
 		}
+		protected PropertyEditor HoverEditor
+		{
+			get { return this.hoverEditor; }
+		}
 
 
 		public GroupedPropertyEditor()
@@ -311,7 +315,7 @@ namespace AdamsLair.PropertyGrid
 
 			clientRect.Width += buttonRect.Width;
 			buttonRect.Height = Math.Min(buttonRect.Height, this.headerHeight);
-			buttonRect.Width = Math.Min(buttonRect.Height, this.headerHeight - 2);
+			buttonRect.Width = Math.Min(buttonRect.Width, this.headerHeight - 2);
 			buttonRect.X = this.Size.Width - buttonRect.Width - 1;
 			buttonRect.Y = this.headerHeight / 2 - buttonRect.Height / 2;
 

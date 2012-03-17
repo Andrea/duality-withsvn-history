@@ -23,6 +23,7 @@ namespace EditorBase.PropertyEditors
 		private static readonly IconImage iconShow = new IconImage(EditorBase.PluginRes.EditorBaseRes.IconEye.ToBitmap());
 		private static readonly IconImage iconReset = new IconImage(EditorBase.Properties.Resources.cross);
 
+		protected	Type		editedResType		= null;
 		protected	string		contentPath			= null;
 		protected	bool		multiple			= false;
 		protected	bool		dragHover			= false;
@@ -110,7 +111,7 @@ namespace EditorBase.PropertyEditors
 					this.Height = 64;
 					var avgColor = this.bgImage.GetAverageColor();
 					float luminance = avgColor.GetLuminance();
-					if (luminance < 0.4f)
+					if (luminance < 0.5f)
 						luminance = 1.0f;
 					else
 						luminance = 0.0f;
@@ -239,9 +240,11 @@ namespace EditorBase.PropertyEditors
 			else if (e.KeyCode == Keys.V && e.Control)
 			{
 				DataObject data = Clipboard.GetDataObject() as DataObject;
-				if (data.ContainsContentRefs())
+				ConvertOperation convert = new ConvertOperation(data, ConvertOperation.Operation.All);
+				IEnumerable<object> refQuery = null;
+				if (convert.CanPerform(this.editedResType) && (refQuery = convert.Perform(this.editedResType)) != null)
 				{
-					IContentRef[] refArray = data.GetContentRefs();
+					IContentRef[] refArray = refQuery.Cast<Resource>().Select(r => r.GetContentRef()).ToArray();
 					this.contentPath = (refArray != null && refArray.Length > 0) ? refArray[0].Path : null;
 					this.PerformSetValue();
 					this.OnValueChanged();
@@ -336,7 +339,7 @@ namespace EditorBase.PropertyEditors
 			base.OnDragOver(e);
 			if (this.ReadOnly || !this.Enabled) return;
 			DataObject data = e.Data as DataObject;
-			if (data.ContainsContentRefs())
+			if (new ConvertOperation(data, ConvertOperation.Operation.All).CanPerform(this.editedResType))
 			{
 				e.Effect = e.AllowedEffect;
 				if (!this.dragHover) this.Invalidate();
@@ -358,17 +361,30 @@ namespace EditorBase.PropertyEditors
 			this.dragHover = false;
 
 			DataObject data = e.Data as DataObject;
-			if (data.ContainsContentRefs())
+			ConvertOperation convert = new ConvertOperation(data, ConvertOperation.Operation.All);
+			if (convert.CanPerform(this.editedResType))
 			{
-				IContentRef[] refArray = data.GetContentRefs();
-				this.contentPath = (refArray != null && refArray.Length > 0) ? refArray[0].Path : null;
-				this.PerformSetValue();
-				this.OnValueChanged();
-				this.PerformGetValue();
-				this.OnEditingFinished();
+				var refQuery = convert.Perform(this.editedResType);
+				if (refQuery != null)
+				{
+					IContentRef[] refArray = refQuery.Cast<Resource>().Select(r => r.GetContentRef()).ToArray();
+					this.contentPath = (refArray != null && refArray.Length > 0) ? refArray[0].Path : null;
+					this.PerformSetValue();
+					this.OnValueChanged();
+					this.PerformGetValue();
+					this.OnEditingFinished();
+				}
 			}
 		}
 
+		protected override void OnEditedTypeChanged()
+		{
+			base.OnEditedTypeChanged();
+			if (this.EditedType.IsGenericType)
+				this.editedResType = this.EditedType.GetGenericArguments()[0];
+			else
+				this.editedResType = typeof(Resource);
+		}
 		protected override void UpdateGeometry()
 		{
 			base.UpdateGeometry();

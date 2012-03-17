@@ -210,6 +210,8 @@ namespace EditorBase
 			CorePluginHelper.RegisterDataConverter<GameObject>(new DataConverters.GameObjFromPrefab());
 			CorePluginHelper.RegisterDataConverter<GameObject>(new DataConverters.GameObjFromMaterial());
 			CorePluginHelper.RegisterDataConverter<GameObject>(new DataConverters.GameObjFromSound());
+			CorePluginHelper.RegisterDataConverter<BatchInfo>(new DataConverters.BatchInfoFromMaterial());
+			CorePluginHelper.RegisterDataConverter<Material>(new DataConverters.MaterialFromBatchInfo());
 			CorePluginHelper.RegisterDataConverter<Material>(new DataConverters.MaterialFromTexture());
 			CorePluginHelper.RegisterDataConverter<Texture>(new DataConverters.TextureFromMaterial());
 			CorePluginHelper.RegisterDataConverter<Texture>(new DataConverters.TextureFromPixmap());
@@ -727,6 +729,62 @@ namespace EditorBase
 						convert.MarkObjectHandled(draggedObj);						
 						convert.AddResult(prefab);
 					}
+				}
+			}
+		}
+		public class BatchInfoFromMaterial : DataConverter
+		{
+			public override bool CanConvertFrom(ConvertOperation convert)
+			{
+				return 
+					convert.AllowedOperations.HasFlag(ConvertOperation.Operation.Convert) && 
+					convert.CanPerform<Material>();
+			}
+			public override void Convert(ConvertOperation convert)
+			{
+				List<ContentRef<Material>> dropdata = new List<ContentRef<Material>>();
+				var matSelectionQuery = convert.Perform<Material>();
+				if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
+
+				// Append objects
+				foreach (ContentRef<Material> matRef in dropdata)
+				{
+					if (convert.IsObjectHandled(matRef.Res)) continue;
+					if (!matRef.IsAvailable) continue;
+
+					convert.AddResult(matRef.Res.Info);
+					// convert.MarkObjectHandled(texRef.Res); We're basically just casting - dont "handle" the object
+				}
+			}
+		}
+		public class MaterialFromBatchInfo : DataConverter
+		{
+			public override bool CanConvertFrom(ConvertOperation convert)
+			{
+				return 
+					convert.AllowedOperations.HasFlag(ConvertOperation.Operation.CreateRes) && 
+					convert.CanPerform<BatchInfo>();
+			}
+			public override void Convert(ConvertOperation convert)
+			{
+				List<BatchInfo> dropdata = new List<BatchInfo>();
+				var matSelectionQuery = convert.Perform<BatchInfo>();
+				if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery);
+
+				// Generate objects
+				foreach (BatchInfo info in dropdata)
+				{
+					if (convert.IsObjectHandled(info)) continue;
+
+					// Auto-Generate Material
+					string matName = "Material";
+					if (!info.MainTexture.IsExplicitNull) matName = info.MainTexture.FullName;
+					string matPath = PathHelper.GetFreePath(matName, Material.FileExt);
+					Material mat = new Material(info);
+					mat.Save(matPath);
+
+					convert.AddResult(mat);
+					// convert.MarkObjectHandled(texRef.Res); We're basically just casting - dont "handle" the object
 				}
 			}
 		}

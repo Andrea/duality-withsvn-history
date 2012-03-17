@@ -23,7 +23,7 @@ namespace EditorBase.PropertyEditors
 			//else if (baseType == typeof(Camera))		return PropertyGrid.EditorPriority_Specialized;
 			//else if (baseType == typeof(Camera.Pass))	return PropertyGrid.EditorPriority_Specialized;
 			//else if (baseType == typeof(SoundEmitter))	return PropertyGrid.EditorPriority_Specialized;
-			//else if (baseType == typeof(BatchInfo))		return PropertyGrid.EditorPriority_Specialized;
+			else if (baseType == typeof(BatchInfo))		return PropertyGrid.EditorPriority_Specialized;
 			//else if (baseType == typeof(Material))		return PropertyGrid.EditorPriority_Specialized;
 			//else if (baseType == typeof(Texture))		return PropertyGrid.EditorPriority_Specialized;
 			//else if (baseType == typeof(Pixmap))		return PropertyGrid.EditorPriority_Specialized;
@@ -55,7 +55,7 @@ namespace EditorBase.PropertyEditors
 			//else if (baseType == typeof(Camera))		e = new CameraPropertyEditor();
 			//else if (baseType == typeof(Camera.Pass))	e = new CameraRenderPassPropertyEditor();
 			//else if (baseType == typeof(SoundEmitter))	e = new SoundEmitterPropertyEditor();
-			//else if (baseType == typeof(BatchInfo))		e = new BatchInfoPropertyEditor();
+			else if (baseType == typeof(BatchInfo))		e = new BatchInfoPropertyEditor();
 			//else if (baseType == typeof(Material))		e = new MaterialPropertyEditor();
 			//else if (baseType == typeof(Texture))		e = new TexturePropertyEditor();
 			//else if (baseType == typeof(Pixmap))		e = new PixmapPropertyEditor();

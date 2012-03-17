@@ -12,8 +12,6 @@
 
 
 -->	Dualitor: Implement new PropertyGrid - Rebuild Editors
-	-->	BatchInfo
-		-->	Maybe, just maybe, this time not make it spaghetti as hell?
 	-->	Do a preview area for AudioData
 	-->	Other editors, see old "not-in-project" source files
 	-->	...

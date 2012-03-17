@@ -75,7 +75,7 @@ namespace DualityEditor.CorePluginInterface
 						(float)(oggHash % 90) * (float)(oggLen % 4) / 360.0f, 
 						0.65f, 
 						1f);
-					Pen linePen = new Pen(Color.FromArgb(MathF.RoundToInt(255.0f / MathF.Pow((float)samples, 0.75f)), baseColor));
+					Pen linePen = new Pen(Color.FromArgb(MathF.RoundToInt(255.0f / MathF.Pow((float)samples, 0.65f)), baseColor));
 					g.Clear(Color.Transparent);
 					for (int x = 0; x < result.Width; x++)
 					{
