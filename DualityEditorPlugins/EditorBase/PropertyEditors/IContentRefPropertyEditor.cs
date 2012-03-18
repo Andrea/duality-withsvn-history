@@ -10,6 +10,7 @@ using AdamsLair.PropertyGrid;
 using AdamsLair.PropertyGrid.EditorTemplates;
 using AdamsLair.PropertyGrid.Renderer;
 using ButtonState = AdamsLair.PropertyGrid.Renderer.ButtonState;
+using BorderStyle = AdamsLair.PropertyGrid.Renderer.BorderStyle;
 
 using Duality;
 using Duality.Resources;
@@ -36,9 +37,9 @@ namespace EditorBase.PropertyEditors
 		protected	bool		buttonShowPressed	= false;
 		protected	bool		panelHovered		= false;
 		private		Point		panelDragBegin		= Point.Empty;
-		private		Bitmap		bgImage				= null;
-		private		Color		bgImageColor		= Color.White;
-		protected	string		bgImagePath			= null;
+		private		Bitmap		prevImage			= null;
+		private		Color		prevImageBgColor	= Color.White;
+		protected	string		prevImagePath		= null;
 		
 		public override object DisplayedValue
 		{
@@ -88,35 +89,35 @@ namespace EditorBase.PropertyEditors
 				this.contentPath = first.Path;
 				this.multiple = (values.Any(o => o == null) || values.Any(o => o.Path != first.Path));
 
-				this.GenerateBackgroundImage();
+				this.GeneratePreviewImage();
 			}
 			this.EndUpdate();
 		}
 
-		protected void GenerateBackgroundImage()
+		protected void GeneratePreviewImage()
 		{
-			if (this.bgImagePath == this.contentPath) return;
-			this.bgImagePath = this.contentPath;
+			if (this.prevImagePath == this.contentPath) return;
+			this.prevImagePath = this.contentPath;
 
-			if (this.bgImage != null) this.bgImage.Dispose();
-			this.bgImage = null;
+			if (this.prevImage != null) this.prevImage.Dispose();
+			this.prevImage = null;
 			this.Height = 22;
 
 			Resource res = (this.DisplayedValue as IContentRef).Res;
 			if (res != null)
 			{
-				this.bgImage = res.GetPreviewImage(this.ClientRectangle.Width - 4 - 22, 64 - 4, PreviewSizeMode.FixedHeight);
-				if (this.bgImage != null)
+				this.prevImage = res.GetPreviewImage(this.ClientRectangle.Width - 4 - 22, 64 - 4, PreviewSizeMode.FixedHeight);
+				if (this.prevImage != null)
 				{
 					this.Height = 64;
-					var avgColor = this.bgImage.GetAverageColor();
+					var avgColor = this.prevImage.GetAverageColor();
 					float luminance = avgColor.GetLuminance();
 					if (luminance < 0.5f)
 						luminance = 1.0f;
 					else
 						luminance = 0.0f;
 					int lumVal = MathF.RoundToInt(255.0f * luminance);
-					this.bgImageColor = Color.FromArgb(lumVal, lumVal, lumVal);
+					this.prevImageBgColor = Color.FromArgb(lumVal, lumVal, lumVal);
 				}
 			}
 		}
@@ -134,7 +135,7 @@ namespace EditorBase.PropertyEditors
 			else if (linkBroken) bgColorBright = Color.FromArgb(255,128, 128);
 
 			Rectangle rectImage = new Rectangle(this.rectPanel.X + 2, this.rectPanel.Y + 2, this.rectPanel.Width - 4, this.rectPanel.Height - 4);
-			if (this.bgImage == null)
+			if (this.prevImage == null)
 			{
 				if (this.ReadOnly || !this.Enabled)
 					e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(64, bgColorBright)), rectImage);
@@ -143,14 +144,14 @@ namespace EditorBase.PropertyEditors
 			}
 			else
 			{
-				Color bgImageBaseColor = this.bgImageColor;
+				Color bgImageBaseColor = this.prevImageBgColor;
 				if (this.dragHover) bgImageBaseColor = bgImageBaseColor.MixWith(Color.FromArgb(192, 255, 0), 0.4f);
 				else if (this.multiple) bgImageBaseColor = bgImageBaseColor.MixWith(Color.FromArgb(255, 200, 128), 0.4f);
 				else if (linkBroken) bgImageBaseColor = bgImageBaseColor.MixWith(Color.FromArgb(255, 128, 128), 0.4f);
 
 				e.Graphics.FillRectangle(new SolidBrush(bgImageBaseColor), rectImage);
 
-				TextureBrush bgImageBrush = new TextureBrush(this.bgImage);
+				TextureBrush bgImageBrush = new TextureBrush(this.prevImage);
 				bgImageBrush.ResetTransform();
 				bgImageBrush.TranslateTransform(rectImage.X, rectImage.Y);
 				e.Graphics.FillRectangle(bgImageBrush, rectImage);
@@ -170,7 +171,7 @@ namespace EditorBase.PropertyEditors
 				format);
 
 			Rectangle rectText;
-			if (this.bgImage == null)
+			if (this.prevImage == null)
 				rectText = this.rectPanel;
 			else
 				rectText = new Rectangle(
@@ -188,16 +189,10 @@ namespace EditorBase.PropertyEditors
 				rectText,
 				format);
 			
-			e.Graphics.DrawRectangle(new Pen((this.ReadOnly || !this.Enabled) ? Color.FromArgb(128, SystemColors.ControlLightLight) : SystemColors.ControlLightLight), 
-				this.rectPanel.X + 1,
-				this.rectPanel.Y + 1,
-				this.rectPanel.Width - 3,
-				this.rectPanel.Height - 3);
-			e.Graphics.DrawRectangle(new Pen((this.ReadOnly || !this.Enabled) ? Color.FromArgb(128, SystemColors.ControlDark) : SystemColors.ControlDark),
-				this.rectPanel.X,
-				this.rectPanel.Y,
-				this.rectPanel.Width - 1,
-				this.rectPanel.Height - 1);
+			ControlRenderer.DrawBorder(e.Graphics, 
+				this.rectPanel, 
+				BorderStyle.ContentBox, 
+				(this.ReadOnly || !this.Enabled) ? BorderState.Disabled : BorderState.Normal);
 
 			ButtonState buttonStateReset = ButtonState.Disabled;
 			if (!this.ReadOnly && this.Enabled && !string.IsNullOrEmpty(this.contentPath))

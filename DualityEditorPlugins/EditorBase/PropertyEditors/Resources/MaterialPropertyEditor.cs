@@ -1,30 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 using System.Reflection;
+
+using AdamsLair.PropertyGrid;
+using AdamsLair.PropertyGrid.PropertyEditors;
 
 using Duality;
 using Duality.Resources;
-
 using DualityEditor;
-using DualityEditor.Controls;
-using PropertyGrid = DualityEditor.Controls.PropertyGrid;
 
 namespace EditorBase.PropertyEditors
 {
 	public class MaterialPropertyEditor : ResourcePropertyEditor
 	{
-		protected override void OnAddingEditors()
+		protected override void BeforeAutoCreateEditors()
 		{
-			base.OnAddingEditors();
+			base.BeforeAutoCreateEditors();
 			BatchInfoPropertyEditor e = this.AddEditorForField(ReflectionInfo.Field_Material_Info) as BatchInfoPropertyEditor;
-			e.Header.Visible = false;
-			e.Expanded = true;
+			e.PropertyName = null;
+			e.Hints = HintFlags.None;
+			e.HeaderIcon = null;
+			e.HeaderValueText = null;
+			e.HeaderHeight = 0;
 			e.Indent = 0;
+			e.Expanded = true;
 		}
-		protected override bool MemberPredicate(MemberInfo info)
+		protected override bool IsAutoCreateMember(MemberInfo info)
 		{
 			return false;
 		}

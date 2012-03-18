@@ -80,6 +80,17 @@ namespace AdamsLair.PropertyGrid.Renderer
 		Hot,
 		Pressed
 	}
+	public enum BorderState
+	{
+		Normal,
+		Disabled
+	}
+	public enum BorderStyle
+	{
+		Simple,
+		ContentBox,
+		Sunken
+	}
 
 	public static class ControlRenderer
 	{
@@ -434,6 +445,38 @@ namespace AdamsLair.PropertyGrid.Renderer
 		public static void DrawCursor(Graphics g, Rectangle rect)
 		{
 			g.FillRectangle(Brushes.Black, rect);
+		}
+
+		public static void DrawBorder(Graphics g, Rectangle rect, BorderStyle style, BorderState state)
+		{
+			Color darkColor = SystemColors.ControlDark;
+			Color lightColor = SystemColors.ControlLightLight;
+			
+			if (style == BorderStyle.Simple)
+				darkColor = SystemColors.ControlDarkDark;
+			else if (style == BorderStyle.Sunken)
+			{
+				darkColor = Color.FromArgb(128, SystemColors.ControlDark);
+				lightColor = SystemColors.ControlLightLight;
+			}
+
+			Pen darkPen = new Pen(state == BorderState.Disabled ? Color.FromArgb(darkColor.A / 2, darkColor) : darkColor);
+			Pen lightPen = new Pen(state == BorderState.Disabled ? Color.FromArgb(lightColor.A / 2, lightColor) : lightColor);
+
+			if (style == BorderStyle.ContentBox)
+			{
+				g.DrawRectangle(lightPen, rect.X + 1, rect.Y + 1, rect.Width - 3, rect.Height - 3);
+				g.DrawRectangle(darkPen, rect.X, rect.Y, rect.Width - 1, rect.Height - 1);
+			}
+			else if (style == BorderStyle.Simple)
+			{
+				g.DrawRectangle(darkPen, rect.X, rect.Y, rect.Width - 1, rect.Height - 1);
+			}
+			else if (style == BorderStyle.Sunken)
+			{
+				g.DrawRectangle(lightPen, rect.X + 1, rect.Y + 1, rect.Width - 1, rect.Height - 1);
+				g.DrawRectangle(darkPen, rect.X, rect.Y, rect.Width - 1, rect.Height - 1);
+			}
 		}
 		
 		public static void DrawButtonBackground(Graphics g, Rectangle rect, ButtonState state)

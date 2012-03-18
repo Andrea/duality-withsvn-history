@@ -1,29 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 using System.Reflection;
+
+using AdamsLair.PropertyGrid;
 
 using Duality;
 using Duality.Resources;
 
 using DualityEditor;
-using DualityEditor.Controls;
-using DualityEditor.Controls.PropertyEditors;
-using PropertyGrid = DualityEditor.Controls.PropertyGrid;
 
 namespace EditorBase.PropertyEditors
 {
-	public class PixmapPropertyEditor : ResourcePropertyEditor
+	public class PixmapPropertyEditor : MemberwisePropertyEditor
 	{
-		protected override void OnAddingEditors()
+		public PixmapPropertyEditor()
 		{
-			base.OnAddingEditors();
+			this.Indent = 0;
+		}
+
+		protected override bool IsAutoCreateMember(MemberInfo info)
+		{
+			return false;
+		}
+		protected override void BeforeAutoCreateEditors()
+		{
+			base.BeforeAutoCreateEditors();
 			PixmapPreviewPropertyEditor preview = new PixmapPreviewPropertyEditor();
 			preview.EditedType = this.EditedType;
-			preview.Getter = this.Getter;
+			preview.Getter = this.GetValue;
+			this.ParentGrid.ConfigureEditor(preview);
 			this.AddPropertyEditor(preview);
+			PixmapContentPropertyEditor content = new PixmapContentPropertyEditor();
+			content.EditedType = this.EditedType;
+			content.Getter = this.GetValue;
+			content.Setter = this.SetValues;
+			this.ParentGrid.ConfigureEditor(content);
+			this.AddPropertyEditor(content);
 		}
 	}
 }

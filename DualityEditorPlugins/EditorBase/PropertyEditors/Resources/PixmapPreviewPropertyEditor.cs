@@ -1,96 +1,193 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-
 using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 using System.Reflection;
+using System.Windows.Forms;
+
+using AdamsLair.PropertyGrid;
+using AdamsLair.PropertyGrid.PropertyEditors;
+using AdamsLair.PropertyGrid.Renderer;
+using BorderStyle = AdamsLair.PropertyGrid.Renderer.BorderStyle;
 
 using Duality;
 using Duality.Resources;
+
 using DualityEditor;
-using DualityEditor.Controls;
-using PropertyGrid = DualityEditor.Controls.PropertyGrid;
+using DualityEditor.CorePluginInterface;
 
 namespace EditorBase.PropertyEditors
 {
 	public partial class PixmapPreviewPropertyEditor : PropertyEditor
 	{
+		protected const int HeaderHeight = 32;
+		protected const int SmallHeight = 64 + HeaderHeight;
+		protected const int BigHeight = 256 + HeaderHeight;
+
+		private	Pixmap		value				= null;
+		private	Bitmap		prevImage			= null;
+		private	float		prevImageLum		= 0.0f;
+		private	Pixmap		prevImageValue		= null;
+		private	Rectangle	rectHeader			= Rectangle.Empty;
+		private	Rectangle	rectPreview			= Rectangle.Empty;
+		private	Rectangle	rectLabelName		= Rectangle.Empty;
+		private	Rectangle	rectLabelWidth		= Rectangle.Empty;
+		private	Rectangle	rectLabelHeight		= Rectangle.Empty;
+		private	Rectangle	rectLabelWidthVal	= Rectangle.Empty;
+		private	Rectangle	rectLabelHeightVal	= Rectangle.Empty;
+
+		public override object DisplayedValue
+		{
+			get { return this.value; }
+		}
+
+
 		public PixmapPreviewPropertyEditor()
 		{
-			this.InitializeComponent();
-			this.SetStyle(ControlStyles.UserPaint, true);
-			this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
-			this.SetStyle(ControlStyles.Opaque, true);
-			this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
-			this.SetStyle(ControlStyles.ResizeRedraw, true);
+			this.Height = SmallHeight;
+			this.Hints = HintFlags.None;
+		}
+		
+		protected void GeneratePreviewImage()
+		{
+			if (this.prevImageValue == this.value) return;
+			this.prevImageValue = this.value;
+
+			if (this.prevImage != null) this.prevImage.Dispose();
+			this.prevImage = null;
+
+			if (this.value != null)
+			{
+				int prevHeight = Math.Min(BigHeight - 2, this.value.Height);
+				this.prevImage = this.value.GetPreviewImage(this.ClientRectangle.Width - 2, prevHeight, PreviewSizeMode.FixedHeight);
+				if (this.prevImage != null)
+				{
+					var avgColor = this.prevImage.GetAverageColor();
+					this.prevImageLum = avgColor.GetLuminance();
+				}
+			}
+		}
+		protected void AdjustPreviewHeight(bool toggle)
+		{
+			int targetHeight = MathF.Clamp(this.prevImage.Height + 2 + this.rectHeader.Height, SmallHeight, BigHeight);
+			if (!toggle || this.Height != targetHeight)
+				this.Height = targetHeight;
+			else
+				this.Height = SmallHeight;
 		}
 
 		public override void PerformGetValue()
 		{
 			base.PerformGetValue();
-			Pixmap[] values = this.Getter().Cast<Pixmap>().ToArray();
-			Pixmap first = values.NotNull().FirstOrDefault() as Pixmap;
-
-			if (first == null)
-			{
-				this.labelPath.Text = "null";
-				this.labelSizeValue.Text = "-\n-";
-				this.previewBox.BackgroundImage = null;
-			}
-			else
-			{
-				this.labelPath.Text = first.Path;
-				this.labelSizeValue.Text = string.Format("{0}\n{1}", first.PixelData.Width, first.PixelData.Height);
-				this.previewBox.BackgroundImage = first.PixelData;
-				this.AdjustPreviewHeight(false);
-			}
+			Pixmap[] values = this.GetValue().Cast<Pixmap>().ToArray();
+			this.value = values.NotNull().FirstOrDefault() as Pixmap;
+			this.GeneratePreviewImage();
+			this.AdjustPreviewHeight(false);
 		}
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			base.OnPaint(e);
-			Rectangle headerRect = new Rectangle(
-				this.labelSize.Bounds.X,
-				this.labelSize.Bounds.Y,
-				this.ClientRectangle.Width,
-				this.labelSize.Bounds.Height);
 			
-			Color upperGradClr = ExtMethodsSystemDrawingColor.ColorFromHSV(
-				this.ParentEditor.BackColor.GetHSVHue(),
-				this.ParentEditor.BackColor.GetHSVSaturation(),
-				0.78f);
-			Color lowerGradClr = ExtMethodsSystemDrawingColor.ColorFromHSV(
-				this.ParentEditor.BackColor.GetHSVHue(),
-				this.ParentEditor.BackColor.GetHSVSaturation(),
-				0.86f);
+			Rectangle rectImage = new Rectangle(this.rectPreview.X + 1, this.rectPreview.Y + 1, this.rectPreview.Width - 2, this.rectPreview.Height - 2);
+			Color brightChecker = this.prevImageLum > 0.5f ? Color.FromArgb(48, 48, 48) : Color.FromArgb(224, 224, 224);
+			Color darkChecker = this.prevImageLum > 0.5f ? Color.FromArgb(32, 32, 32) : Color.FromArgb(192, 192, 192);
+			e.Graphics.FillRectangle(new HatchBrush(HatchStyle.LargeCheckerBoard, brightChecker, darkChecker), rectImage);
+			if (this.prevImage != null)
+			{
+				Size imgSize = this.prevImage.Size;
+				float widthForHeight = (float)this.prevImage.Width / (float)this.prevImage.Height;
+				if (imgSize.Height > rectImage.Height && imgSize.Width > rectImage.Width)
+				{
+					if (imgSize.Height > imgSize.Width)
+					{
+						imgSize.Height = rectImage.Height;
+						imgSize.Width = MathF.RoundToInt(widthForHeight * imgSize.Height);
+					}
+					else
+					{
+						imgSize.Width = rectImage.Width;
+						imgSize.Height = MathF.RoundToInt(imgSize.Width / widthForHeight);
+					}
+				}
+				else if (imgSize.Height > rectImage.Height)
+				{
+					imgSize.Height = rectImage.Height;
+					imgSize.Width = MathF.RoundToInt(widthForHeight * imgSize.Height);
+				}
+				else if (imgSize.Width > rectImage.Width)
+				{
+					imgSize.Width = rectImage.Width;
+					imgSize.Height = MathF.RoundToInt(imgSize.Width / widthForHeight);
+				}
+				e.Graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+				e.Graphics.DrawImage(this.prevImage, 
+					rectImage.X + rectImage.Width / 2 - imgSize.Width / 2,
+					rectImage.Y + rectImage.Height / 2 - imgSize.Height / 2,
+					imgSize.Width,
+					imgSize.Height);
+				e.Graphics.InterpolationMode = InterpolationMode.Default;
+			}
 
-			e.Graphics.FillRectangle(
-				new LinearGradientBrush(headerRect, upperGradClr, lowerGradClr, 90.0f), 
-				headerRect);
-			e.Graphics.DrawLine(
-				new Pen(Color.FromArgb(64, Color.White)),
-				headerRect.Left, headerRect.Top, headerRect.Right, headerRect.Top);
-		}
-		
-		protected void AdjustPreviewHeight(bool toggle)
-		{
-			int preferredHeight = MathF.Min(this.previewBox.BackgroundImage.Height, (int)MathF.Ceiling(
-				(float)this.previewBox.BackgroundImage.Height * 
-				(float)this.previewBox.ClientSize.Width / 
-				(float)this.previewBox.BackgroundImage.Width));
-			int targetHeight = MathF.Clamp(preferredHeight + this.labelSize.Height + 2, 70, 250);
-			if (!toggle || this.Height != targetHeight)
-				this.Height = targetHeight;
-			else
-				this.Height = 70;
-		}
+			ControlRenderer.DrawBorder(e.Graphics, 
+				this.rectPreview, 
+				BorderStyle.Simple, 
+				!this.Enabled ? BorderState.Disabled : BorderState.Normal);
 
-		private void previewBox_DoubleClick(object sender, EventArgs e)
+			bool focusBg = this.Focused || (this is IPopupControlHost && (this as IPopupControlHost).IsDropDownOpened);
+			ControlRenderer.DrawGroupHeaderBackground(
+				e.Graphics, 
+				this.rectHeader, 
+				focusBg ? SystemColors.Control.ScaleBrightness(0.85f) : SystemColors.Control, 
+				GroupHeaderStyle.SmoothSunken);
+		}
+		protected override void OnMouseDoubleClick(System.Windows.Forms.MouseEventArgs e)
 		{
+			base.OnMouseDoubleClick(e);
 			this.AdjustPreviewHeight(true);
+		}
+		protected override void UpdateGeometry()
+		{
+			base.UpdateGeometry();
+
+			this.rectHeader = new Rectangle(
+				this.ClientRectangle.X,
+				this.ClientRectangle.Y,
+				this.ClientRectangle.Width,
+				HeaderHeight);
+			this.rectPreview = new Rectangle(
+				this.ClientRectangle.X,
+				this.ClientRectangle.Y + HeaderHeight,
+				this.ClientRectangle.Width,
+				this.ClientRectangle.Height - HeaderHeight);
+
+			this.rectLabelWidth = new Rectangle(
+				this.rectHeader.X,
+				this.rectHeader.Y,
+				40,
+				this.rectHeader.Height / 2);
+			this.rectLabelHeight = new Rectangle(
+				this.rectHeader.X,
+				this.rectLabelWidth.Bottom,
+				40,
+				this.rectHeader.Height / 2);
+
+			this.rectLabelWidthVal = new Rectangle(
+				this.rectLabelWidth.Right,
+				this.rectHeader.Y,
+				40,
+				this.rectHeader.Height / 2);
+			this.rectLabelHeightVal = new Rectangle(
+				this.rectLabelHeight.Right,
+				this.rectLabelWidthVal.Bottom,
+				40,
+				this.rectHeader.Height / 2);
+			
+			this.rectLabelName = new Rectangle(
+				this.rectLabelWidthVal.Right,
+				this.rectHeader.Y,
+				this.rectHeader.Width - this.rectLabelWidthVal.Right,
+				this.rectHeader.Height);
 		}
 	}
 }

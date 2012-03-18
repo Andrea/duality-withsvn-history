@@ -23,8 +23,8 @@ namespace DualityEditor.CorePluginInterface
 		{
 			Bitmap result = null;
 			
-			System.Diagnostics.Stopwatch w = new System.Diagnostics.Stopwatch();
-			w.Restart();
+			//System.Diagnostics.Stopwatch w = new System.Diagnostics.Stopwatch();
+			//w.Restart();
 
 			ConvertOperation convert = new ConvertOperation(new[] { res }, ConvertOperation.Operation.Convert);
 			if (convert.CanPerform<Pixmap>())

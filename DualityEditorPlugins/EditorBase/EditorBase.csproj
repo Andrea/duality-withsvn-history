@@ -88,6 +88,12 @@
     <Compile Include="PropertyEditors\IContentRefPropertyEditor.cs" />
     <Compile Include="PropertyEditors\ResourcePropertyEditor.cs" />
     <Compile Include="PropertyEditors\Resources\FontPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\Resources\PixmapContentPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\Resources\MaterialPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\Resources\PixmapPreviewPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\Resources\PixmapPropertyEditor.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="ShaderFileImporter.cs" />
     <Compile Include="PixmapFileImporter.cs" />
     <Compile Include="ObjectInspector.cs">

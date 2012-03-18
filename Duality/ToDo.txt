@@ -12,7 +12,7 @@
 
 
 -->	Dualitor: Implement new PropertyGrid - Rebuild Editors
-	-->	Do a preview area for AudioData
+	-->	Implement a new AudioDataEditor that shows a preview image
 	-->	Other editors, see old "not-in-project" source files
 	-->	...
 
