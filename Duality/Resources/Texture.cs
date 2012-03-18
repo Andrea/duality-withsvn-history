@@ -349,7 +349,9 @@ namespace Duality.Resources
 		/// [GET / SET] The Textures (original, unadjusted) size
 		/// </summary>
 		[EditorHintFlags(MemberFlags.AffectsOthers)]
-		[EditorHintRange(0.0f, float.MaxValue)]
+		[EditorHintRange(0, int.MaxValue)]
+		[EditorHintIncrement(1)]
+		[EditorHintDecimalPlaces(0)]
 		public Vector2 Size
 		{
 			get { return this.size; }
@@ -444,6 +446,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET / SET] The Textures atlas array, distinguishing different areas in texture coordinates
 		/// </summary>
+		[EditorHintFlags(MemberFlags.ForceWriteback)]
 		public List<Rect> Atlas
 		{
 			get { return this.atlas; }
@@ -454,6 +457,7 @@ namespace Duality.Resources
 		/// Setting this will lead to an auto-generated atlas map according to the animation.
 		/// </summary>
 		[EditorHintFlags(MemberFlags.AffectsOthers)]
+		[EditorHintRange(0, 1024)]
 		public int AnimCols
 		{
 			get { return this.animCols; }
@@ -464,6 +468,7 @@ namespace Duality.Resources
 		/// Setting this will lead to an auto-generated atlas map according to the animation.
 		/// </summary>
 		[EditorHintFlags(MemberFlags.AffectsOthers)]
+		[EditorHintRange(0, 1024)]
 		public int AnimRows
 		{
 			get { return this.animRows; }

@@ -21,7 +21,7 @@ namespace EditorBase.PropertyEditors
 {
 	public partial class PixmapPreviewPropertyEditor : PropertyEditor
 	{
-		protected const int HeaderHeight = 32;
+		protected const int HeaderHeight = 30;
 		protected const int SmallHeight = 64 + HeaderHeight;
 		protected const int BigHeight = 256 + HeaderHeight;
 
@@ -97,27 +97,14 @@ namespace EditorBase.PropertyEditors
 			{
 				Size imgSize = this.prevImage.Size;
 				float widthForHeight = (float)this.prevImage.Width / (float)this.prevImage.Height;
-				if (imgSize.Height > rectImage.Height && imgSize.Width > rectImage.Width)
+				if (widthForHeight * (imgSize.Height - rectImage.Height) > imgSize.Width - rectImage.Width)
 				{
-					if (imgSize.Height > imgSize.Width)
-					{
-						imgSize.Height = rectImage.Height;
-						imgSize.Width = MathF.RoundToInt(widthForHeight * imgSize.Height);
-					}
-					else
-					{
-						imgSize.Width = rectImage.Width;
-						imgSize.Height = MathF.RoundToInt(imgSize.Width / widthForHeight);
-					}
-				}
-				else if (imgSize.Height > rectImage.Height)
-				{
-					imgSize.Height = rectImage.Height;
+					imgSize.Height = Math.Min(rectImage.Height, imgSize.Height);
 					imgSize.Width = MathF.RoundToInt(widthForHeight * imgSize.Height);
 				}
-				else if (imgSize.Width > rectImage.Width)
+				else
 				{
-					imgSize.Width = rectImage.Width;
+					imgSize.Width = Math.Min(rectImage.Width, imgSize.Width);
 					imgSize.Height = MathF.RoundToInt(imgSize.Width / widthForHeight);
 				}
 				e.Graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
@@ -140,6 +127,34 @@ namespace EditorBase.PropertyEditors
 				this.rectHeader, 
 				focusBg ? SystemColors.Control.ScaleBrightness(0.85f) : SystemColors.Control, 
 				GroupHeaderStyle.SmoothSunken);
+
+			ControlRenderer.DrawStringLine(e.Graphics, 
+				"Width:", 
+				SystemFonts.DefaultFont, 
+				this.rectLabelWidth, 
+				!this.Enabled ? SystemColors.GrayText : SystemColors.ControlText);
+			ControlRenderer.DrawStringLine(e.Graphics, 
+				"Height:", 
+				SystemFonts.DefaultFont, 
+				this.rectLabelHeight, 
+				!this.Enabled ? SystemColors.GrayText : SystemColors.ControlText);
+			ControlRenderer.DrawStringLine(e.Graphics, 
+				this.value != null ? this.value.Width.ToString() : " - ", 
+				SystemFonts.DefaultFont, 
+				this.rectLabelWidthVal, 
+				!this.Enabled ? SystemColors.GrayText : SystemColors.ControlText);
+			ControlRenderer.DrawStringLine(e.Graphics, 
+				this.value != null ? this.value.Height.ToString() : " - ", 
+				SystemFonts.DefaultFont, 
+				this.rectLabelHeightVal, 
+				!this.Enabled ? SystemColors.GrayText : SystemColors.ControlText);
+
+			ControlRenderer.DrawStringLine(e.Graphics, 
+				this.value != null ? this.value.Name : " - ", 
+				SystemFonts.DefaultFont, 
+				this.rectLabelName, 
+				!this.Enabled ? SystemColors.GrayText : SystemColors.ControlText,
+				StringAlignment.Far);
 		}
 		protected override void OnMouseDoubleClick(System.Windows.Forms.MouseEventArgs e)
 		{
@@ -161,33 +176,39 @@ namespace EditorBase.PropertyEditors
 				this.ClientRectangle.Width,
 				this.ClientRectangle.Height - HeaderHeight);
 
+			Rectangle rectHeaderContent = new Rectangle(
+				this.rectHeader.X + 2,
+				this.rectHeader.Y + 2,
+				this.rectHeader.Width - 4,
+				this.rectHeader.Height - 4);
+
 			this.rectLabelWidth = new Rectangle(
-				this.rectHeader.X,
-				this.rectHeader.Y,
-				40,
-				this.rectHeader.Height / 2);
+				rectHeaderContent.X,
+				rectHeaderContent.Y,
+				45,
+				rectHeaderContent.Height / 2);
 			this.rectLabelHeight = new Rectangle(
-				this.rectHeader.X,
+				rectHeaderContent.X,
 				this.rectLabelWidth.Bottom,
-				40,
-				this.rectHeader.Height / 2);
+				45,
+				rectHeaderContent.Height / 2);
 
 			this.rectLabelWidthVal = new Rectangle(
 				this.rectLabelWidth.Right,
-				this.rectHeader.Y,
-				40,
-				this.rectHeader.Height / 2);
+				rectHeaderContent.Y,
+				35,
+				rectHeaderContent.Height / 2);
 			this.rectLabelHeightVal = new Rectangle(
 				this.rectLabelHeight.Right,
 				this.rectLabelWidthVal.Bottom,
-				40,
-				this.rectHeader.Height / 2);
+				35,
+				rectHeaderContent.Height / 2);
 			
 			this.rectLabelName = new Rectangle(
 				this.rectLabelWidthVal.Right,
-				this.rectHeader.Y,
-				this.rectHeader.Width - this.rectLabelWidthVal.Right,
-				this.rectHeader.Height);
+				rectHeaderContent.Y,
+				rectHeaderContent.Width - this.rectLabelWidthVal.Right,
+				rectHeaderContent.Height);
 		}
 	}
 }

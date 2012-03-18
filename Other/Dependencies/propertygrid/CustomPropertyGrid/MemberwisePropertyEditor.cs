@@ -145,13 +145,14 @@ namespace AdamsLair.PropertyGrid
 			base.PerformGetValue();
 			object[] curObjects = this.GetValue().ToArray();
 
+			this.BeginUpdate();
 			if (curObjects == null)
 			{
 				this.HeaderValueText = null;
 				return;
 			}
-
 			this.OnUpdateFromObjects(curObjects);
+			this.EndUpdate();
 
 			foreach (PropertyEditor e in this.Children)
 				e.PerformGetValue();

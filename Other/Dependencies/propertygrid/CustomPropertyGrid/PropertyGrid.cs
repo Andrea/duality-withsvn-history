@@ -303,15 +303,7 @@ namespace AdamsLair.PropertyGrid
 		public void Focus(PropertyEditor editor)
 		{
 			if (this.focusEditor == editor) return;
-			while (!editor.CanGetFocus)
-			{
-				if (editor.ChildrenDeep.Any(e => e.CanGetFocus))
-					editor = editor.ChildrenDeep.FirstOrDefault(e => e.CanGetFocus);
-				else if (editor.NextEditor != null)
-					editor = editor.NextEditor;
-				else
-					return;
-			}
+			editor = this.GetFocusReciever(editor);
 
 			if (this.focusEditor != null && this.Focused) this.focusEditor.OnLostFocus(EventArgs.Empty);
 
@@ -327,6 +319,33 @@ namespace AdamsLair.PropertyGrid
 			}
 
 			//this.Invalidate();
+		}
+		public PropertyEditor GetFocusReciever(PropertyEditor primary, bool secondaryNext = true)
+		{
+			if (primary == null) return null;
+			while (!primary.CanGetFocus)
+			{
+				if (secondaryNext)
+				{
+					if (primary.ChildrenDeep.Any(e => e.CanGetFocus))
+						primary = primary.ChildrenDeep.FirstOrDefault(e => e.CanGetFocus);
+					else if (primary.NextEditor != null)
+						primary = primary.NextEditor;
+					else if (primary.ParentEditor != null)
+						primary = this.GetFocusReciever(primary.ParentEditor.NextEditor, secondaryNext);
+					else
+						return null;
+				}
+				else
+				{
+					if (primary.PrevEditor != null)
+						primary = primary.PrevEditor;
+					else
+						primary = this.GetFocusReciever(primary.ParentEditor, secondaryNext);
+				}
+				if (primary == null) break;
+			}
+			return primary;
 		}
 		public PropertyEditor PickEditorAt(int x, int y, bool scrolled = false)
 		{
@@ -534,50 +553,25 @@ namespace AdamsLair.PropertyGrid
 					if (e.KeyCode == Keys.Down)
 					{
 						PropertyEditor current = this.focusEditor;
-						PropertyEditor next;
-						while (current != null)
-						{
-							next = current.NextEditor; 
-							while (next != null && !next.CanGetFocus) next = next.NextEditor;
+						PropertyEditor next = current.NextEditor;
+						if (next == null)
+							next = current.Children.FirstOrDefault();
+						if (next == null && current.ParentEditor != null)
+							next = current.ParentEditor.NextEditor;
 
-							if (next == null && current == this.mainEditor && current.Children.Any())
-								next = current.Children.FirstOrDefault(editor => editor.CanGetFocus);
-
-							if (next != null)
-							{
-								next.Focus();
-								break;
-							}
-							else if (current.ParentEditor == this.mainEditor)
-								current = null;
-							else
-								current = current.ParentEditor;
-						}
+						next = this.GetFocusReciever(next, true);
+						if (next != null) next.Focus();
 						e.Handled = true;
 					}
 					else if (e.KeyCode == Keys.Up)
 					{
 						PropertyEditor current = this.focusEditor;
-						PropertyEditor prev;
-						while (current != null)
-						{
-							prev = current.PrevEditor;
-							while (prev != null && !prev.CanGetFocus) prev = prev.PrevEditor;
-							
-							if (prev == null && current.ParentEditor != null)
-							{
-								prev = current.ParentEditor;
-								while (prev != null && !prev.CanGetFocus) prev = prev.ParentEditor;
-							}
+						PropertyEditor prev = current.PrevEditor;
+						if (prev == null)
+							prev = current.ParentEditor;
 
-							if (prev != null)
-							{
-								prev.Focus();
-								break;
-							}
-							else
-								current = current.ParentEditor;
-						}
+						prev = this.GetFocusReciever(prev, false);
+						if (prev != null) prev.Focus();
 						e.Handled = true;
 					}
 					else if (e.KeyCode == Keys.Left)

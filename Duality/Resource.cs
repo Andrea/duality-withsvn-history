@@ -91,7 +91,8 @@ namespace Duality
 		{
 			get
 			{
-				string nameTemp = this.path ?? "";
+				if (string.IsNullOrEmpty(this.path)) return "";
+				string nameTemp = this.path;
 				if (this.IsDefaultContent) nameTemp = nameTemp.Replace(':', '/');
 				return System.IO.Path.Combine(System.IO.Path.GetDirectoryName(nameTemp), this.Name);
 			}
@@ -245,7 +246,7 @@ namespace Duality
 		
 		public override string ToString()
 		{
-			return this.Name;
+			return this.FullName;
 		}
 
 		/// <summary>

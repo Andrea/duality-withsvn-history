@@ -38,7 +38,7 @@ namespace EditorBase.PropertyEditors
 		protected	bool		panelHovered		= false;
 		private		Point		panelDragBegin		= Point.Empty;
 		private		Bitmap		prevImage			= null;
-		private		Color		prevImageBgColor	= Color.White;
+		private		float		prevImageLum		= 0.0f;
 		protected	string		prevImagePath		= null;
 		
 		public override object DisplayedValue
@@ -111,13 +111,7 @@ namespace EditorBase.PropertyEditors
 				{
 					this.Height = 64;
 					var avgColor = this.prevImage.GetAverageColor();
-					float luminance = avgColor.GetLuminance();
-					if (luminance < 0.5f)
-						luminance = 1.0f;
-					else
-						luminance = 0.0f;
-					int lumVal = MathF.RoundToInt(255.0f * luminance);
-					this.prevImageBgColor = Color.FromArgb(lumVal, lumVal, lumVal);
+					this.prevImageLum = avgColor.GetLuminance();
 				}
 			}
 		}
@@ -144,12 +138,26 @@ namespace EditorBase.PropertyEditors
 			}
 			else
 			{
-				Color bgImageBaseColor = this.prevImageBgColor;
-				if (this.dragHover) bgImageBaseColor = bgImageBaseColor.MixWith(Color.FromArgb(192, 255, 0), 0.4f);
-				else if (this.multiple) bgImageBaseColor = bgImageBaseColor.MixWith(Color.FromArgb(255, 200, 128), 0.4f);
-				else if (linkBroken) bgImageBaseColor = bgImageBaseColor.MixWith(Color.FromArgb(255, 128, 128), 0.4f);
+				Color brightChecker = this.prevImageLum > 0.5f ? Color.FromArgb(48, 48, 48) : Color.FromArgb(224, 224, 224);
+				Color darkChecker = this.prevImageLum > 0.5f ? Color.FromArgb(32, 32, 32) : Color.FromArgb(192, 192, 192);
 
-				e.Graphics.FillRectangle(new SolidBrush(bgImageBaseColor), rectImage);
+				if (this.dragHover)
+				{
+					brightChecker = brightChecker.MixWith(Color.FromArgb(192, 255, 0), 0.4f);
+					darkChecker = darkChecker.MixWith(Color.FromArgb(192, 255, 0), 0.4f);
+				}
+				else if (this.multiple)
+				{
+					brightChecker = brightChecker.MixWith(Color.FromArgb(255, 200, 128), 0.4f);
+					darkChecker = darkChecker.MixWith(Color.FromArgb(255, 200, 128), 0.4f);
+				}
+				else if (linkBroken)
+				{
+					brightChecker = brightChecker.MixWith(Color.FromArgb(255, 128, 128), 0.4f);
+					darkChecker = darkChecker.MixWith(Color.FromArgb(255, 128, 128), 0.4f);
+				}
+
+				e.Graphics.FillRectangle(new HatchBrush(HatchStyle.LargeCheckerBoard, brightChecker, darkChecker), rectImage);
 
 				TextureBrush bgImageBrush = new TextureBrush(this.prevImage);
 				bgImageBrush.ResetTransform();

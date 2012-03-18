@@ -63,6 +63,7 @@ namespace DualityEditor.Forms
 		private	bool					dualityAppSuspended	= true;
 		private	bool					sandboxStateChange	= false;
 		private	bool					sandboxSceneFreeze	= false;
+		private	List<Resource>			unsavedResources	= new List<Resource>();
 
 		private	List<string>				editorJustSavedRes		= new List<string>();
 		private	List<FileSystemEventArgs>	dataDirEventBuffer		= new List<FileSystemEventArgs>();
@@ -77,13 +78,13 @@ namespace DualityEditor.Forms
 		private	Dictionary<string,ToolStripMenuItem>	menuRegistry	= new Dictionary<string,ToolStripMenuItem>();
 
 
-		public	event	EventHandler	BeforeReloadCorePlugins	= null;
-		public	event	EventHandler	AfterReloadCorePlugins	= null;
-		public	event	EventHandler	BeforeUpdateDualityApp	= null;
-		public	event	EventHandler	AfterUpdateDualityApp	= null;
-		public	event	EventHandler	SaveAllProjectData		= null;
-		public	event	EventHandler	EnteringSandbox			= null;
-		public	event	EventHandler	LeaveSandbox			= null;
+		public	event	EventHandler	BeforeReloadCorePlugins			= null;
+		public	event	EventHandler	AfterReloadCorePlugins			= null;
+		public	event	EventHandler	BeforeUpdateDualityApp			= null;
+		public	event	EventHandler	AfterUpdateDualityApp			= null;
+		public	event	EventHandler	SaveAllProjectDataTriggered		= null;
+		public	event	EventHandler	EnteringSandbox					= null;
+		public	event	EventHandler	LeaveSandbox					= null;
 		public	event	EventHandler<SelectionChangedEventArgs>			SelectionChanged		= null;
 		public	event	EventHandler<ObjectPropertyChangedEventArgs>	ObjectPropertyChanged	= null;
 		public	event	EventHandler<ResourceEventArgs>					ResourceCreated			= null;
@@ -408,12 +409,39 @@ namespace DualityEditor.Forms
 				Scene.Current.Save(path);
 			}
 		}
-		public void RequestSaveAllProjectData()
+		public void SaveResources()
 		{
-			this.SaveCurrentScene();
+			foreach (Resource res in this.unsavedResources)
+			{
+				if (res.Disposed) continue;
+				res.Save();
+			}
+			this.unsavedResources.Clear();
+		}
+		public void MarkResourceUnsaved(Resource res)
+		{
+			if (this.unsavedResources.Contains(res)) return;
+			this.unsavedResources.Add(res);
+		}
+		public bool IsResourceUnsaved(Resource res)
+		{
+			return this.unsavedResources.Contains(res);
+		}
+		public bool IsResourceUnsaved(IContentRef res)
+		{
+			return this.IsResourceUnsaved(res.Path);
+		}
+		public bool IsResourceUnsaved(string resPath)
+		{
+			return this.unsavedResources.Any(r => Path.GetFullPath(r.Path) == Path.GetFullPath(resPath));
+		}
+		public void SaveAllProjectData()
+		{
+			if (!this.IsResourceUnsaved(Scene.Current)) this.SaveCurrentScene();
+			this.SaveResources();
 
-			if (this.SaveAllProjectData != null)
-				this.SaveAllProjectData(this, EventArgs.Empty);
+			if (this.SaveAllProjectDataTriggered != null)
+				this.SaveAllProjectDataTriggered(this, EventArgs.Empty);
 		}
 
 		public void UpdateSourceCode()
@@ -668,7 +696,7 @@ namespace DualityEditor.Forms
 				String.Format(EditorRes.GeneralRes.Msg_ConfirmReloadResource_Text, resFilePath), 
 				EditorRes.GeneralRes.Msg_ConfirmReloadResource_Caption, 
 				MessageBoxButtons.YesNo,
-				MessageBoxIcon.Question);
+				MessageBoxIcon.Exclamation);
 			return result == DialogResult.Yes;
 		}
 
@@ -990,15 +1018,21 @@ namespace DualityEditor.Forms
 				}
 			}
 
-			// If a Resource's Properties are modified, save the Resource
+			// If a Resource's Properties are modified, mark Resource for saving
 			if (args.Objects.ResourceCount > 0)
 			{
-				// This is probably not the best idea for generalized behaviour, but sufficient for now
 				foreach (Resource res in args.Objects.Resources)
 				{
 					if (this.sandboxState != SandboxState.Inactive && res is Scene && (res as Scene).IsCurrent) continue;
-					res.Save();
+					this.MarkResourceUnsaved(res);
 				}
+			}
+
+			// If a GameObjects's Property is modified, mark current Scene for saving
+			if (args.Objects.GameObjects.Any(g => Scene.Current.AllObjects.Contains(g)) ||
+				args.Objects.Components.Any(c => Scene.Current.AllObjects.Contains(c.GameObj)))
+			{
+				this.MarkResourceUnsaved(Scene.Current);
 			}
 
 			// If DualityAppData or DualityUserData is modified, save it
@@ -1077,6 +1111,31 @@ namespace DualityEditor.Forms
 		protected override void OnFormClosing(FormClosingEventArgs e)
 		{
 			base.OnFormClosing(e);
+
+			if (this.unsavedResources.Count > 0)
+			{
+				string unsavedResText = this.unsavedResources.Take(5).ToString(r => r.FullName, "\n");
+				if (this.unsavedResources.Count > 5) 
+					unsavedResText += "\n" + string.Format(EditorRes.GeneralRes.Msg_ConfirmQuitUnsaved_Desc_More, this.unsavedResources.Count - 5);
+				DialogResult result = MessageBox.Show(
+					string.Format(EditorRes.GeneralRes.Msg_ConfirmQuitUnsaved_Desc, "\n\n" + unsavedResText + "\n\n"), 
+					EditorRes.GeneralRes.Msg_ConfirmQuitUnsaved_Caption, 
+					MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
+				if (result == DialogResult.Yes)
+					this.SaveAllProjectData();
+				else if (result == DialogResult.Cancel)
+					e.Cancel = true;
+			}
+			else
+			{
+				DialogResult result = MessageBox.Show(
+					EditorRes.GeneralRes.Msg_ConfirmQuit_Desc, 
+					EditorRes.GeneralRes.Msg_ConfirmQuit_Caption, 
+					MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+				if (result == DialogResult.No)
+					e.Cancel = true;
+			}
+
 			if (!e.Cancel) this.SaveUserData();
 		}
 		protected override void OnFormClosed(FormClosedEventArgs e)
@@ -1130,7 +1189,7 @@ namespace DualityEditor.Forms
 					// Unregister outdated resources, if modified outside the editor
 					if (!this.editorJustSavedRes.Contains(Path.GetFullPath(e.FullPath)) && ContentProvider.IsContentRegistered(args.Path))
 					{
-						if (args.Content.Is<Scene>() && Scene.Current == args.Content.Res)
+						if ((args.Content.Is<Scene>() && Scene.Current == args.Content.Res) || this.IsResourceUnsaved(e.FullPath))
 						{
 							if (this.DisplayConfirmReloadResource(e.FullPath))
 								ContentProvider.UnregisterContent(args.Path);
@@ -1360,21 +1419,21 @@ namespace DualityEditor.Forms
 
 		private void actionRunApp_Click(object sender, EventArgs e)
 		{
-			this.RequestSaveAllProjectData();
+			this.SaveAllProjectData();
 			System.Diagnostics.Process appProc = System.Diagnostics.Process.Start("DualityLauncher.exe", "editor");
 			AppRunningDialog runningDialog = new AppRunningDialog(appProc);
 			runningDialog.ShowDialog(this);
 		}
 		private void actionDebugApp_Click(object sender, EventArgs e)
 		{
-			this.RequestSaveAllProjectData();
+			this.SaveAllProjectData();
 			System.Diagnostics.Process appProc = System.Diagnostics.Process.Start("DualityLauncher.exe", "editor debug");
 			AppRunningDialog runningDialog = new AppRunningDialog(appProc);
 			runningDialog.ShowDialog(this);
 		}
 		private void actionSaveAll_Click(object sender, EventArgs e)
 		{
-			this.RequestSaveAllProjectData();
+			this.SaveAllProjectData();
 			System.Media.SystemSounds.Asterisk.Play();
 		}
 		private void actionOpenCode_Click(object sender, EventArgs e)

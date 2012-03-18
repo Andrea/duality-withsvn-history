@@ -14,6 +14,18 @@ namespace EditorBase.PropertyEditors
 {
 	public class ResourcePropertyEditor : MemberwisePropertyEditor
 	{
+		private	bool	preventFocus	= false;
+
+		public override bool CanGetFocus
+		{
+			get { return base.CanGetFocus && !this.preventFocus; }
+		}
+		public bool PreventFocus
+		{
+			get { return this.preventFocus; }
+			set { this.preventFocus = value; }
+		}
+
 		public ResourcePropertyEditor()
 		{
 			this.PropertyName = "Resource";
@@ -24,7 +36,6 @@ namespace EditorBase.PropertyEditors
 		protected override void OnUpdateFromObjects(object[] values)
 		{
 			base.OnUpdateFromObjects(values);
-			this.HeaderValueText = null;
 		}
 		protected override void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)
 		{

@@ -86,6 +86,8 @@ namespace AdamsLair.PropertyGrid
 		private	IconImage		buttonIcon		= null;
 		private	Func<IEnumerable<object>>	getter	= null;
 		private	Action<IEnumerable<object>>	setter	= null;
+		private	Func<object,object>	converterGet	= null;
+		private	Func<object,object>	converterSet	= null;
 
 
 		public event EventHandler	SizeChanged		= null;
@@ -218,6 +220,23 @@ namespace AdamsLair.PropertyGrid
 				if (this.ReadOnly != lastReadOnly) this.OnReadOnlyChanged();
 			}
 		}
+		public Func<object,object> ConverterGet
+		{
+			get { return this.converterGet; }
+			set
+			{
+				if (this.converterGet != value)
+				{
+					this.converterGet = value;
+					if (this.getter != null) this.PerformGetValue();
+				}
+			}
+		}
+		public Func<object,object> ConverterSet
+		{
+			get { return this.converterSet; }
+			set { this.converterSet = value; }
+		}
 		public abstract object DisplayedValue { get; }
 		public bool ReadOnly
 		{
@@ -340,11 +359,20 @@ namespace AdamsLair.PropertyGrid
 
 		protected IEnumerable<object> GetValue()
 		{
-			return this.getter();
+			if (this.getter == null) return null;
+			IEnumerable<object> result = this.getter();
+			if (this.converterGet != null && result != null)
+				return result.Select(this.converterGet);
+			else
+				return result;
 		}
 		protected void SetValues(IEnumerable<object> objEnum)
 		{
-			this.setter(objEnum);
+			if (this.setter == null) return;
+			if (this.converterSet != null && objEnum != null)
+				this.setter(objEnum.Select(this.converterSet));
+			else
+				this.setter(objEnum);
 		}
 		protected void SetValue(object obj)
 		{

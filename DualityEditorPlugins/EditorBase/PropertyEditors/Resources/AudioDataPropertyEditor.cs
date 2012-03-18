@@ -12,9 +12,9 @@ using DualityEditor;
 
 namespace EditorBase.PropertyEditors
 {
-	public class PixmapPropertyEditor : ResourcePropertyEditor
+	public class AudioDataPropertyEditor : ResourcePropertyEditor
 	{
-		public PixmapPropertyEditor()
+		public AudioDataPropertyEditor()
 		{
 			this.Indent = 0;
 		}
@@ -26,7 +26,7 @@ namespace EditorBase.PropertyEditors
 		protected override void BeforeAutoCreateEditors()
 		{
 			base.BeforeAutoCreateEditors();
-			PixmapPreviewPropertyEditor preview = new PixmapPreviewPropertyEditor();
+			AudioDataPreviewPropertyEditor preview = new AudioDataPreviewPropertyEditor();
 			preview.EditedType = this.EditedType;
 			preview.Getter = this.GetValue;
 			this.ParentGrid.ConfigureEditor(preview);

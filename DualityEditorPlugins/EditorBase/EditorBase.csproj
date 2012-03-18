@@ -88,7 +88,11 @@
     <Compile Include="PropertyEditors\IContentRefPropertyEditor.cs" />
     <Compile Include="PropertyEditors\ResourcePropertyEditor.cs" />
     <Compile Include="PropertyEditors\Resources\FontPropertyEditor.cs" />
-    <Compile Include="PropertyEditors\Resources\PixmapContentPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\Resources\AudioDataPreviewPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\Resources\AudioDataPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\Resources\TextureContentPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\Resources\TexturePreviewPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\Resources\TexturePropertyEditor.cs" />
     <Compile Include="PropertyEditors\Resources\MaterialPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Resources\PixmapPreviewPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Resources\PixmapPropertyEditor.cs">

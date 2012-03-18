@@ -347,6 +347,31 @@
               Sucht eine lokalisierte Zeichenfolge, die This action will break the objects Prefab Link. Proceed? ähnelt.
             </summary>
         </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.Msg_ConfirmQuit_Caption">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Really quit? ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.Msg_ConfirmQuit_Desc">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Do you really want to quit? ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.Msg_ConfirmQuitUnsaved_Caption">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Really quit? ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.Msg_ConfirmQuitUnsaved_Desc">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die The following Resources have been modified without saving:{0}Do you want to save them before exiting? ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.Msg_ConfirmQuitUnsaved_Desc_More">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die [ and {0} more ] ähnelt.
+            </summary>
+        </member>
         <member name="P:DualityEditor.EditorRes.GeneralRes.Msg_ConfirmReloadResource_Caption">
             <summary>
               Sucht eine lokalisierte Zeichenfolge, die Reload Resource? ähnelt.

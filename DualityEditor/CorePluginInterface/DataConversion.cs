@@ -196,13 +196,8 @@ namespace DualityEditor.CorePluginInterface
 		public IEnumerable<T> Perform<T>()
 		{
 			IEnumerable<object> result = this.Perform(typeof(T)); 
-			if (result == null)
-				return null;
-			else
-			{
-				IEnumerable<T> castResult = result.OfType<T>();
-				return castResult;
-			}
+			IEnumerable<T> castResult = result.OfType<T>();
+			return castResult;
 		}
 		public bool CanPerform(Type target)
 		{
@@ -301,7 +296,7 @@ namespace DualityEditor.CorePluginInterface
 				returnValue = result.OfType<Resource>().Select(r => r.GetContentRef());
 
 			returnValue = returnValue.Where(o => originalType.IsAssignableFrom(o.GetType()));
-			return returnValue.Any() ? returnValue : null;
+			return returnValue ?? (IEnumerable<object>)Array.CreateInstance(originalType, 0);
 		}
 
 		private Type ResTypeFromRefType(Type type)

@@ -25,7 +25,8 @@ namespace EditorBase.PropertyEditors
 			//else if (baseType == typeof(SoundEmitter))	return PropertyGrid.EditorPriority_Specialized;
 			else if (baseType == typeof(BatchInfo))		return PropertyGrid.EditorPriority_Specialized;
 			else if (baseType == typeof(Material))		return PropertyGrid.EditorPriority_Specialized;
-			//else if (baseType == typeof(Texture))		return PropertyGrid.EditorPriority_Specialized;
+			else if (baseType == typeof(Texture))		return PropertyGrid.EditorPriority_Specialized;
+			else if (baseType == typeof(AudioData))		return PropertyGrid.EditorPriority_Specialized;
 			else if (baseType == typeof(Pixmap))		return PropertyGrid.EditorPriority_Specialized;
 			else if (baseType == typeof(Font))			return PropertyGrid.EditorPriority_Specialized;
 			else if (baseType == typeof(FormattedText))	return PropertyGrid.EditorPriority_Specialized;
@@ -57,7 +58,8 @@ namespace EditorBase.PropertyEditors
 			//else if (baseType == typeof(SoundEmitter))	e = new SoundEmitterPropertyEditor();
 			else if (baseType == typeof(BatchInfo))		e = new BatchInfoPropertyEditor();
 			else if (baseType == typeof(Material))		e = new MaterialPropertyEditor();
-			//else if (baseType == typeof(Texture))		e = new TexturePropertyEditor();
+			else if (baseType == typeof(Texture))		e = new TexturePropertyEditor();
+			else if (baseType == typeof(AudioData))		e = new AudioDataPropertyEditor();
 			else if (baseType == typeof(Pixmap))		e = new PixmapPropertyEditor();
 			else if (baseType == typeof(Font))			e = new FontPropertyEditor();
 			else if (baseType == typeof(FormattedText))	e = new FormattedTextPropertyEditor();

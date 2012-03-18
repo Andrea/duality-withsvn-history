@@ -175,6 +175,21 @@
   <data name="Msg_ConfirmBreakPrefabLink_Desc" xml:space="preserve">
     <value>This action will break the objects Prefab Link. Proceed?</value>
   </data>
+  <data name="Msg_ConfirmQuitUnsaved_Caption" xml:space="preserve">
+    <value>Really quit?</value>
+  </data>
+  <data name="Msg_ConfirmQuitUnsaved_Desc" xml:space="preserve">
+    <value>The following Resources have been modified without saving:{0}Do you want to save them before exiting?</value>
+  </data>
+  <data name="Msg_ConfirmQuitUnsaved_Desc_More" xml:space="preserve">
+    <value>[ and {0} more ]</value>
+  </data>
+  <data name="Msg_ConfirmQuit_Caption" xml:space="preserve">
+    <value>Really quit?</value>
+  </data>
+  <data name="Msg_ConfirmQuit_Desc" xml:space="preserve">
+    <value>Do you really want to quit?</value>
+  </data>
   <data name="Msg_ConfirmReloadResource_Caption" xml:space="preserve">
     <value>Reload Resource?</value>
   </data>

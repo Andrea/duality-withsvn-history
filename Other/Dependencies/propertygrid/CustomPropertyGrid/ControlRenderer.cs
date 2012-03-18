@@ -154,16 +154,20 @@ namespace AdamsLair.PropertyGrid.Renderer
 			g.DrawLine(new Pen(Color.FromArgb(32, Color.Black)), rect.Right, rect.Top, rect.Right, rect.Bottom - 1);
 		}
 
-		public static void DrawStringLine(Graphics g, string text, Font font, Rectangle textRect, Color textColor, StringAlignment align = StringAlignment.Near, StringAlignment lineAlign = StringAlignment.Center)
+		public static void DrawStringLine(Graphics g, string text, Font font, Rectangle textRect, Color textColor, StringAlignment align = StringAlignment.Near, StringAlignment lineAlign = StringAlignment.Center, StringTrimming trimming = StringTrimming.EllipsisCharacter)
 		{
 			if (textRect.Width < 1 || textRect.Height < 1) return;
 			if (text == null) return;
 
-			textRect.Width -= 5;
+			bool manualEllipsis = trimming == StringTrimming.EllipsisCharacter || trimming == StringTrimming.EllipsisWord;
+			if (trimming == StringTrimming.EllipsisCharacter)	trimming = StringTrimming.Character;
+			if (trimming == StringTrimming.EllipsisWord)		trimming = StringTrimming.Word;
+
+			if (manualEllipsis) textRect.Width -= 5;
 			StringFormat nameLabelFormat = StringFormat.GenericDefault;
 			nameLabelFormat.Alignment = align;
 			nameLabelFormat.LineAlignment = lineAlign;
-			nameLabelFormat.Trimming = StringTrimming.Character;
+			nameLabelFormat.Trimming = trimming;
 			nameLabelFormat.FormatFlags |= StringFormatFlags.NoWrap;
 
 			int charsFit, lines;
@@ -171,7 +175,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 			if (textRect.Width >= 1)
 				g.DrawString(text, font, new SolidBrush(textColor), textRect, nameLabelFormat);
 
-			if (charsFit < text.Length)
+			if (charsFit < text.Length && manualEllipsis)
 			{
 				Pen ellipsisPen = new Pen(textColor);
 				ellipsisPen.DashStyle = DashStyle.Dot;
