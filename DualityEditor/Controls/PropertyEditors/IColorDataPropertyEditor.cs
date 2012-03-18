@@ -110,7 +110,6 @@ namespace DualityEditor.Controls.PropertyEditors
 		}
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
-			base.OnKeyDown(e);
 			if (e.KeyCode == Keys.Return)
 			{
 				this.ShowColorDialog();
@@ -139,6 +138,7 @@ namespace DualityEditor.Controls.PropertyEditors
 
 				e.Handled = true;
 			}
+			base.OnKeyDown(e);
 		}
 		protected override void OnMouseMove(MouseEventArgs e)
 		{

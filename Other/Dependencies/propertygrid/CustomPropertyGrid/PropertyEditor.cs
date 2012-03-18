@@ -536,18 +536,9 @@ namespace AdamsLair.PropertyGrid
 		internal protected virtual void OnMouseClick(MouseEventArgs e) {}
 		internal protected virtual void OnMouseDoubleClick(MouseEventArgs e) {}
 
-		internal protected virtual void OnKeyDown(KeyEventArgs e)
-		{
-			if (!e.Handled && this.parentEditor != null) this.parentEditor.OnKeyDown(e);
-		}
-		internal protected virtual void OnKeyUp(KeyEventArgs e)
-		{
-			if (!e.Handled && this.parentEditor != null) this.parentEditor.OnKeyUp(e);
-		}
-		internal protected virtual void OnKeyPress(KeyPressEventArgs e)
-		{
-			if (!e.Handled && this.parentEditor != null) this.parentEditor.OnKeyPress(e);
-		}
+		internal protected virtual void OnKeyDown(KeyEventArgs e) {}
+		internal protected virtual void OnKeyUp(KeyEventArgs e) {}
+		internal protected virtual void OnKeyPress(KeyPressEventArgs e) {}
 
 		internal protected virtual void OnDragEnter(DragEventArgs e) {}
 		internal protected virtual void OnDragLeave(EventArgs e) {}

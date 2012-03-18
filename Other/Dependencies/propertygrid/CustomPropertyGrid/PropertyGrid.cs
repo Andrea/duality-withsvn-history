@@ -544,7 +544,16 @@ namespace AdamsLair.PropertyGrid
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
 			base.OnKeyDown(e);
-			if (this.focusEditor != null) this.focusEditor.OnKeyDown(e);
+			if (this.focusEditor != null)
+			{
+				PropertyEditor current = this.focusEditor;
+				while (current != null)
+				{
+					current.OnKeyDown(e);
+					if (e.Handled) break;
+					current = current.ParentEditor;
+				}
+			}
 
 			if (!e.Handled)
 			{
@@ -630,12 +639,30 @@ namespace AdamsLair.PropertyGrid
 		protected override void OnKeyUp(KeyEventArgs e)
 		{
 			base.OnKeyUp(e);
-			if (this.focusEditor != null) this.focusEditor.OnKeyUp(e);
+			if (this.focusEditor != null)
+			{
+				PropertyEditor current = this.focusEditor;
+				while (current != null)
+				{
+					current.OnKeyUp(e);
+					if (e.Handled) break;
+					current = current.ParentEditor;
+				}
+			}
 		}
 		protected override void OnKeyPress(KeyPressEventArgs e)
 		{
 			base.OnKeyPress(e);
-			if (this.focusEditor != null) this.focusEditor.OnKeyPress(e);
+			if (this.focusEditor != null)
+			{
+				PropertyEditor current = this.focusEditor;
+				while (current != null)
+				{
+					current.OnKeyPress(e);
+					if (e.Handled) break;
+					current = current.ParentEditor;
+				}
+			}
 		}
 
 		protected override void OnDragEnter(DragEventArgs e)

@@ -313,7 +313,6 @@ namespace EditorBase.PropertyEditors
 		}
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
-			base.OnKeyDown(e);
 			if (e.KeyCode == Keys.Return)
 			{
 				GameObject[] values = this.GetValue().Cast<GameObject>().ToArray();
@@ -325,6 +324,7 @@ namespace EditorBase.PropertyEditors
 				}
 				e.Handled = true;
 			}
+			base.OnKeyDown(e);
 		}
 
 		protected void OnActiveCheckPressed()

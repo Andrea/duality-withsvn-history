@@ -259,8 +259,8 @@ namespace EditorBase.PropertyEditors
 		}
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
-			base.OnKeyDown(e);
 			this.subImageSelector.OnKeyDown(e);
+			base.OnKeyDown(e);
 		}
 		protected override void OnKeyUp(KeyEventArgs e)
 		{

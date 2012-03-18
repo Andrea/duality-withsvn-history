@@ -409,9 +409,12 @@ namespace Duality.Resources
 		public void MakeAvailable()
 		{
 			this.technique.MakeAvailable();
-			foreach (var pair in this.textures.ToArray())
+			if (this.textures != null)
 			{
-				this.textures[pair.Key] = pair.Value.Res;
+				foreach (var pair in this.textures.ToArray())
+				{
+					this.textures[pair.Key] = pair.Value.Res;
+				}
 			}
 		}
 

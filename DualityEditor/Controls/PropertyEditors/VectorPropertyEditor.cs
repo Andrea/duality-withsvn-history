@@ -123,7 +123,6 @@ namespace DualityEditor.Controls.PropertyEditors
 		}
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
-			base.OnKeyDown(e);
 			if (e.KeyCode == Keys.Tab || e.KeyCode == Keys.Oemcomma || e.KeyCode == Keys.Return || e.KeyCode == Keys.Space)
 			{
 				this.SetFocusEditorIndex((this.focusEditor + 1) % this.editor.Length, true);
@@ -194,6 +193,7 @@ namespace DualityEditor.Controls.PropertyEditors
 					}
 				}
 			}
+			base.OnKeyDown(e);
 		}
 		protected override void OnKeyUp(KeyEventArgs e)
 		{

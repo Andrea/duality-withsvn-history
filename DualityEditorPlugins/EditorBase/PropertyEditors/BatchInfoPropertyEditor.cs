@@ -55,8 +55,8 @@ namespace EditorBase.PropertyEditors
 				bool invokeSetter = false;
 				IEnumerable<BatchInfo> batchInfos = null;
 				DrawTechnique refTech = null;
-				batchInfos = values.Cast<BatchInfo>().NotNull();
-				refTech = batchInfos.First().Technique.Res;
+				batchInfos = values.Cast<BatchInfo>();
+				refTech = batchInfos.NotNull().First().Technique.Res;
 
 				// Retrieve data about shader variables
 				ShaderVarInfo[] varInfoArray = null;
@@ -77,7 +77,7 @@ namespace EditorBase.PropertyEditors
 				// Get rid of unused variables (This changes actual Resource data!)
 				if (!this.ReadOnly)
 				{
-					foreach (BatchInfo info in batchInfos)
+					foreach (BatchInfo info in batchInfos.NotNull())
 					{
 						List<string> texRemoveSched = null;
 						List<string> uniRemoveSched = null;
@@ -126,7 +126,7 @@ namespace EditorBase.PropertyEditors
 						// Set Texture variables
 						if (varInfo.type == ShaderVarType.Sampler2D)
 						{
-							foreach (BatchInfo info in batchInfos)
+							foreach (BatchInfo info in batchInfos.NotNull())
 							{
 								if (info.GetTexture(varInfo.name).IsExplicitNull)
 								{
@@ -141,7 +141,7 @@ namespace EditorBase.PropertyEditors
 							float[] uniformVal = varInfo.InitUniformData();
 							if (uniformVal != null)
 							{
-								foreach (BatchInfo info in batchInfos)
+								foreach (BatchInfo info in batchInfos.NotNull())
 								{
 									float[] oldVal = info.GetUniform(varInfo.name);
 									if (oldVal == null) 
@@ -162,8 +162,8 @@ namespace EditorBase.PropertyEditors
 				}
 
 				// Create editors according to existing variables
-				var texDict = batchInfos.First().Textures;
-				var uniformDict = batchInfos.First().Uniforms;
+				var texDict = batchInfos.NotNull().First().Textures;
+				var uniformDict = batchInfos.NotNull().First().Uniforms;
 				Dictionary<string,PropertyEditor> oldEditors = new Dictionary<string,PropertyEditor>(this.shaderVarEditors);
 				if (texDict != null)
 				{
@@ -217,7 +217,15 @@ namespace EditorBase.PropertyEditors
 				}
 
 				// If we actually changed (updated) data here, invoke the setter
-				if (invokeSetter) this.SetValues(this.GetValue());
+				if (invokeSetter)
+				{
+					this.SetValues(batchInfos);
+					if (!this.IsUpdatingFromObject)
+					{
+						this.OnValueChanged();
+						this.PerformGetValue();
+					}
+				}
 			}
 		}
 
@@ -764,7 +772,6 @@ namespace EditorBase.PropertyEditors
 		}
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
-			base.OnKeyDown(e);
 			if (e.KeyCode == Keys.C && e.Control)
 			{
 				DataObject data = new DataObject();
@@ -789,6 +796,7 @@ namespace EditorBase.PropertyEditors
 
 				e.Handled = true;
 			}
+			base.OnKeyDown(e);
 		}
 	}
 }
