@@ -217,7 +217,7 @@ namespace EditorBase.PropertyEditors
 				}
 
 				// If we actually changed (updated) data here, invoke the setter
-				if (invokeSetter) this.SetValues(batchInfos);
+				if (invokeSetter) this.SetValues(this.GetValue());
 			}
 		}
 

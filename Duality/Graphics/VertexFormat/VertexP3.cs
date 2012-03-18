@@ -31,12 +31,13 @@ namespace Duality.VertexFormat
 			get { return (int)VertexDataFormat.VertexP3; }
 		}
 
-		void IVertexData.SetupVBO<T>(T[] vertexData, Duality.Resources.BatchInfo mat)
+		void IVertexData.SetupVBO(Duality.Resources.BatchInfo mat)
 		{
 			GL.EnableClientState(ArrayCap.VertexArray);
-
 			GL.VertexPointer(3, VertexPointerType.Float, Size, (IntPtr)OffsetPos);
-
+		}
+		void IVertexData.UploadToVBO<T>(T[] vertexData)
+		{
 			GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(Size * vertexData.Length), IntPtr.Zero, BufferUsageHint.StreamDraw);
 			GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(Size * vertexData.Length), vertexData, BufferUsageHint.StreamDraw);
 		}

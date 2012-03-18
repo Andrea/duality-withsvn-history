@@ -12,15 +12,30 @@
 
 
 -->	Dualitor: Implement new PropertyGrid - Rebuild Editors
+	-->	Provide preview for FontPropertyEditor
 	-->	Other editors, see old "not-in-project" source files
 	-->	...
+	
+-->	Dualitor: Improve preview behaviour?
+	-->	Make PreviewProvider work in a background process
+	-->	Don't return a Bitmap, but a ResourcePreview object..
+	-->	..from which a Bitmap can be retrieved
+		-->	If not finished, this is a dummy bitmap
+		-->	When finishing, fire an event..
+		-->	..that will be used by the PropertyEditor to update itsself if the preview is available
+	-->	Immediate results can be forced by calling a blocking method.
+	-->	If that works, remove restrictions to AudioData and Pixmaps?
 
-
--->	Write a propert DualityLighting Plugin (Core and Editor)
+-->	Write a proper DualityLighting Plugin (Core and Editor)
 	-->	Stuff
 	-->	Also, define a new GameObjectFromMaterial converter that implements
 		a special case for materials using lighting techniques. We should create a
 		LightingSpriteRenderer here, not a SpriteRenderer.
+
+
+-->	Publish next Duality version
+	--> Update TechDemos to use new version
+	-->	Write blog stuff
 
 
 --> Example Project: Tetris with Physics

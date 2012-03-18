@@ -871,11 +871,16 @@ namespace EditorBase
 				}
 				// See if we can retrieve Resources from data
 				else if (
+					(baseTarget == null || !baseTarget.ReadOnly) &&
 					(e.AllowedEffect.HasFlag(DragDropEffects.Copy) || e.AllowedEffect.HasFlag(DragDropEffects.Move)) &&
 					(convOp.HasFlag(ConvertOperation.Operation.CreateRes) || convOp.HasFlag(ConvertOperation.Operation.CreateObj)))
 				{
 					bool canSelectResource = new ConvertOperation(data, ConvertOperation.Operation.All).CanPerform<IContentRef>();
 					if (canSelectResource) e.Effect = DragDropEffects.Copy & e.AllowedEffect;
+				}
+				else
+				{
+					e.Effect = DragDropEffects.None;
 				}
 			}
 
@@ -934,6 +939,7 @@ namespace EditorBase
 				}
 				// See if we can retrieve Resources from data
 				else if (
+					(baseTarget == null || !baseTarget.ReadOnly) &&
 					(e.Effect.HasFlag(DragDropEffects.Copy) || e.Effect.HasFlag(DragDropEffects.Move)) &&
 					(convOp.HasFlag(ConvertOperation.Operation.CreateRes) || convOp.HasFlag(ConvertOperation.Operation.CreateObj)))
 				{

@@ -35,14 +35,16 @@ namespace Duality.VertexFormat
 			get { return (int)VertexDataFormat.VertexP3T2; }
 		}
 		
-		void IVertexData.SetupVBO<T>(T[] vertexData, Duality.Resources.BatchInfo mat)
+		void IVertexData.SetupVBO(Duality.Resources.BatchInfo mat)
 		{
 			GL.EnableClientState(ArrayCap.VertexArray);
 			GL.EnableClientState(ArrayCap.TextureCoordArray);
 
 			GL.VertexPointer(3, VertexPointerType.Float, Size, (IntPtr)OffsetPos);
 			GL.TexCoordPointer(2, TexCoordPointerType.Float, Size, (IntPtr)OffsetTex0);
-
+		}
+		void IVertexData.UploadToVBO<T>(T[] vertexData)
+		{
 			GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(Size * vertexData.Length), IntPtr.Zero, BufferUsageHint.StreamDraw);
 			GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(Size * vertexData.Length), vertexData, BufferUsageHint.StreamDraw);
 		}

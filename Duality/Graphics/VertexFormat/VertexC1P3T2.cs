@@ -40,7 +40,7 @@ namespace Duality.VertexFormat
 			get { return (int)VertexDataFormat.VertexC1P3T2; }
 		}
 		
-		void IVertexData.SetupVBO<T>(T[] vertexData, Duality.Resources.BatchInfo mat)
+		void IVertexData.SetupVBO(Duality.Resources.BatchInfo mat)
 		{
 			if (mat.Technique != Duality.Resources.DrawTechnique.Picking) GL.EnableClientState(ArrayCap.ColorArray);
 			GL.EnableClientState(ArrayCap.VertexArray);
@@ -49,7 +49,9 @@ namespace Duality.VertexFormat
 			if (mat.Technique != Duality.Resources.DrawTechnique.Picking) GL.ColorPointer(4, ColorPointerType.UnsignedByte, Size, (IntPtr)OffsetColor);
 			GL.VertexPointer(3, VertexPointerType.Float, Size, (IntPtr)OffsetPos);
 			GL.TexCoordPointer(2, TexCoordPointerType.Float, Size, (IntPtr)OffsetTex0);
-
+		}
+		void IVertexData.UploadToVBO<T>(T[] vertexData)
+		{
 			GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(Size * vertexData.Length), IntPtr.Zero, BufferUsageHint.StreamDraw);
 			GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(Size * vertexData.Length), vertexData, BufferUsageHint.StreamDraw);
 		}

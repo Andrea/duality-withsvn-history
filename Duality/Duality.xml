@@ -1268,16 +1268,21 @@
             A general interface for different types of vertex data.
             </summary>
         </member>
-        <member name="M:Duality.VertexFormat.IVertexData.SetupVBO``1(``0[],Duality.Resources.BatchInfo)">
+        <member name="M:Duality.VertexFormat.IVertexData.SetupVBO(Duality.Resources.BatchInfo)">
             <summary>
             Sets up the currently bound OpenGL VertexBufferObject and injects actual vertex data.
             </summary>
-            <typeparam name="T">The type of input vertex data to use.</typeparam>
-            <param name="vertexData">The vertex data to be uploaded into the VBO.</param>
             <param name="mat">
             The <see cref="T:Duality.Resources.Material"/> that is currently active. Usually only needed
             for custom vertex attributes in order to access <see cref="T:Duality.Resources.ShaderVarInfo">shader variables</see>.
             </param>
+        </member>
+        <member name="M:Duality.VertexFormat.IVertexData.UploadToVBO``1(``0[])">
+            <summary>
+            Uploads vertex data to the currently bound OpenGL VertexBufferObject.
+            </summary>
+            <typeparam name="T">The type of input vertex data to use.</typeparam>
+            <param name="vertexData">The vertex data to be uploaded into the VBO.</param>
         </member>
         <member name="M:Duality.VertexFormat.IVertexData.FinishVBO(Duality.Resources.BatchInfo)">
             <summary>

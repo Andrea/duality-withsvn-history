@@ -265,7 +265,8 @@ namespace Duality.Components
 			BeginMode VertexMode { get; }
 			BatchInfo Material { get; }
 
-			void SetupVBO(List<IDrawBatch> batches);
+			void UploadToVBO(List<IDrawBatch> batches);
+			void SetupVBO();
 			void FinishVBO();
 			void Render(IDrawDevice device, ref int vertexOffset, ref IDrawBatch lastBatchRendered);
 			void FinishRendering();
@@ -333,7 +334,12 @@ namespace Duality.Components
 				}
 			}
 
-			public void SetupVBO(List<IDrawBatch> batches)
+			public void SetupVBO()
+			{
+				// Set up VBO
+				this.vertices[0].SetupVBO(this.material);
+			}
+			public void UploadToVBO(List<IDrawBatch> batches)
 			{
 				// Check how many vertices we got
 				int totalVertexNum = 0;
@@ -353,8 +359,8 @@ namespace Duality.Components
 					curVertexPos += b.vertexCount;
 				}
 
-				// Set up VBO and submit vertex data to GPU
-				this.vertices[0].SetupVBO(vertexData, this.material);
+				// Submit vertex data to GPU
+				this.vertices[0].UploadToVBO(vertexData);
 			}
 			public void FinishVBO()
 			{
@@ -1197,12 +1203,15 @@ namespace Duality.Components
 				if (batchesSharingVBO.Count > 0 && (nextBatch == null || !currentBatch.CanShareVBO(nextBatch)))
 				{
 					vertexOffset = 0;
-					batchesSharingVBO[0].SetupVBO(batchesSharingVBO);
+					batchesSharingVBO[0].UploadToVBO(batchesSharingVBO);
 
 					foreach (IDrawBatch renderBatch in batchesSharingVBO)
+					{
+						renderBatch.SetupVBO();
 						renderBatch.Render(this.DrawDevice, ref vertexOffset, ref lastBatchRendered);
+						renderBatch.FinishVBO();
+					}
 
-					batchesSharingVBO[0].FinishVBO();
 					batchesSharingVBO.Clear();
 					lastBatch = null;
 				}
