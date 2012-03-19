@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
-using System.Windows.Forms;
 using System.Reflection;
+
+using AdamsLair.PropertyGrid;
 
 using Duality;
 using Duality.Components;
 using DualityEditor;
-using DualityEditor.Controls;
-using DualityEditor.Controls.PropertyEditors;
-using PropertyGrid = DualityEditor.Controls.PropertyGrid;
 
 namespace EditorBase.PropertyEditors
 {
@@ -19,10 +15,8 @@ namespace EditorBase.PropertyEditors
 	{
 		public ColliderShapePropertyEditor()
 		{
-			this.Header.ResetVisible = false;
-			this.Header.ActiveVisible = false;
-			this.Header.Text = null;
-			this.Header.ValueText = "ColliderShape";
+			this.Hints &= ~HintFlags.HasButton;
+			this.Hints &= ~HintFlags.ButtonEnabled;
 		}
 
 		protected override void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)

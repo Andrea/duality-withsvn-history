@@ -14,36 +14,41 @@ namespace EditorBase.PropertyEditors
 {
 	public class FontPropertyEditor : ResourcePropertyEditor
 	{
-		protected override PropertyEditor AutoCreateMemberEditor(MemberInfo info)
+		public FontPropertyEditor()
 		{
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Font_Family))
-			{
-				ObjectSelectorPropertyEditor e = new ObjectSelectorPropertyEditor();
-				e.EditedType = (info as System.Reflection.PropertyInfo).PropertyType;
-				e.Items = System.Drawing.FontFamily.Families.Select(f => f.Name);
-				this.ParentGrid.ConfigureEditor(e);
-				return e;
-			}
-			return base.AutoCreateMemberEditor(info);
+			this.Indent = 0;
 		}
-		protected override void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)
-		{
-			base.OnPropertySet(property, targets);
-			Font[] fntArr = targets.Cast<Font>().ToArray();
-			bool anyReload = false;
-			foreach (Font fnt in fntArr)
-			{
-				if (fnt.NeedsReload) 
-				{
-					fnt.ReloadData();
-					anyReload = true;
-				}
-			}
 
-			if (anyReload)
-			{
-				this.PerformGetValue();
-			}
+		protected override bool IsAutoCreateMember(MemberInfo info)
+		{
+			return false;
+		}
+		protected override void BeforeAutoCreateEditors()
+		{
+			base.BeforeAutoCreateEditors();
+			FontPreviewPropertyEditor preview = new FontPreviewPropertyEditor();
+			preview.EditedType = this.EditedType;
+			preview.Getter = this.GetValue;
+			this.ParentGrid.ConfigureEditor(preview);
+			this.AddPropertyEditor(preview);
+			FontContentPropertyEditor content = new FontContentPropertyEditor();
+			content.EditedType = this.EditedType;
+			content.Getter = this.GetValue;
+			content.Setter = this.SetValues;
+			content.Hints = HintFlags.None;
+			content.HeaderHeight = 0;
+			content.HeaderValueText = null;
+			content.PreventFocus = true;
+			this.ParentGrid.ConfigureEditor(content);
+			this.AddPropertyEditor(content);
+			content.Expanded = true;
+		}
+
+		public void UpdatePreview()
+		{
+			FontPreviewPropertyEditor preview = this.Children.OfType<FontPreviewPropertyEditor>().First();
+			preview.InvalidatePreview();
+			preview.PerformGetValue();
 		}
 	}
 }

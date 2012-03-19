@@ -166,6 +166,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		}
 		public override void OnLostFocus(EventArgs e)
 		{
+			if (this.focused && !this.stringEditor.Focused) this.EmitEditingFinished();			
 			base.OnLostFocus(e);
 			this.stringEditor.OnLostFocus(e);
 		}
@@ -201,6 +202,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			if (e.KeyCode == Keys.ControlKey)
 			{
 				this.EmitInvalidate();
+				this.EmitEditingFinished();
 			}
 		}
 		public void OnMouseDown(MouseEventArgs e)
@@ -224,6 +226,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 				this.gripDragPos = Point.Empty;
 				this.gripDragVal = 0m;
 				this.EmitInvalidate();
+				this.EmitEditingFinished();
 			}
 		}
 		public override void OnMouseMove(MouseEventArgs e)

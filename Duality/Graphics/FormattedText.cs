@@ -1055,6 +1055,62 @@ namespace Duality
 			if (vertIcons.Length > vertIconLen)
 				Array.Resize(ref vertIcons, vertIconLen);
 		}
+		
+		/// <summary>
+		/// Renders a text to the specified target Image.
+		/// </summary>
+		/// <param name="text"></param>
+		/// <param name="target"></param>
+		public void RenderToBitmap(string text, System.Drawing.Image target, float x = 0.0f, float y = 0.0f, System.Drawing.Image icons = null)
+		{
+			using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(target))
+			{
+				g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+				g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+
+				// Rendering
+				int fontNum = this.fonts != null ? this.fonts.Length : 0;
+				RenderState state = new RenderState(this);
+				Element elem;
+				while ((elem = state.NextElement()) != null)
+				{
+					if (elem is TextElement && state.Font != null)
+					{
+						TextElement textElem = elem as TextElement;
+						state.Font.RenderToBitmap(
+							state.CurrentElemText, 
+							target, 
+							x + state.CurrentElemOffset.X, 
+							y + state.CurrentElemOffset.Y + state.LineBaseLine - state.Font.BaseLine, 
+							state.Color);
+					}
+					else if (elem is IconElement)
+					{
+						IconElement iconElem = elem as IconElement;
+						Icon icon = iconElem.IconIndex > 0 && iconElem.IconIndex < this.icons.Length ? this.icons[iconElem.IconIndex] : new Icon();
+						Vector2 iconSize = icon.size;
+						Rect iconUvRect = icon.uvRect;
+						Vector2 dataCoord = iconUvRect.Pos * new Vector2(icons.Width, icons.Height);
+						
+						var attrib = new System.Drawing.Imaging.ImageAttributes();
+						attrib.SetColorMatrix(new System.Drawing.Imaging.ColorMatrix(new[] {
+							new[] {state.Color.r / 255.0f, 0, 0, 0},
+							new[] {0, state.Color.g / 255.0f, 0, 0},
+							new[] {0, 0, state.Color.b / 255.0f, 0},
+							new[] {0, 0, 0, state.Color.a / 255.0f} }));
+						g.DrawImage(icons,
+							new System.Drawing.Rectangle(
+								MathF.RoundToInt(state.CurrentElemOffset.X), 
+								MathF.RoundToInt(state.CurrentElemOffset.Y + state.LineBaseLine - iconSize.Y), 
+								MathF.RoundToInt(iconSize.X), 
+								MathF.RoundToInt(iconSize.Y)),
+							dataCoord.X, dataCoord.Y, iconSize.X, iconSize.Y,
+							System.Drawing.GraphicsUnit.Pixel,
+							attrib);
+					}
+				}
+			}
+		}
 
 		/// <summary>
 		/// Measures the formatted text block.

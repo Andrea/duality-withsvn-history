@@ -184,6 +184,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		}
 		public override void OnLostFocus(EventArgs e)
 		{
+			if (this.focused) this.EmitEditingFinished();			
 			base.OnLostFocus(e);
 			if (this.cursorTimer != null)
 			{
@@ -193,7 +194,6 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 				this.cursorVisible = false;
 			}
 			this.scroll = 0;
-			this.EmitEditingFinished();
 		}
 		public void OnKeyPress(KeyPressEventArgs e)
 		{

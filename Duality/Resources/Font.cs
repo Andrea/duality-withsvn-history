@@ -227,6 +227,8 @@ namespace Duality.Resources
 		/// </summary>
 		[EditorHintFlags(MemberFlags.AffectsOthers)]
 		[EditorHintRange(1, 150)]
+		[EditorHintIncrement(1)]
+		[EditorHintDecimalPlaces(1)]
 		public float Size
 		{
 			get { return this.size; }
@@ -436,7 +438,16 @@ namespace Duality.Resources
 		{
 			FontFamily family = GetFontFamily(this.familyName);
 			if (family != null)
-				this.internalFont = new SysDrawFont(family, this.size, this.style);
+			{
+				try
+				{
+					this.internalFont = new SysDrawFont(family, this.size, this.style);
+				}
+				catch (Exception)
+				{
+					this.internalFont = new SysDrawFont(FontFamily.GenericMonospace, this.size, this.style);
+				}
+			}
 			else
 				this.internalFont = new SysDrawFont(FontFamily.GenericMonospace, this.size, this.style);
 		}
@@ -796,6 +807,71 @@ namespace Duality.Resources
 				vertices[i * 4 + 3].clr = ColorRgba.White;
 
 				curOffset += glyphXAdv;
+			}
+		}
+		
+		/// <summary>
+		/// Renders a text to the specified target Image.
+		/// </summary>
+		/// <param name="text"></param>
+		/// <param name="target"></param>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		public void RenderToBitmap(string text, Image target, float x = 0.0f, float y = 0.0f)
+		{
+			this.RenderToBitmap(text, target, x, y, ColorRgba.White);
+		}
+		/// <summary>
+		/// Renders a text to the specified target Image.
+		/// </summary>
+		/// <param name="text"></param>
+		/// <param name="target"></param>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="clr"></param>
+		public void RenderToBitmap(string text, Image target, float x, float y, ColorRgba clr)
+		{
+			using (Graphics g = Graphics.FromImage(target))
+			{
+				g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+				g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+
+				float curOffset = 0.0f;
+				GlyphData glyphData;
+				Rect uvRect;
+				float glyphXOff;
+				float glyphXAdv;
+				var attrib = new System.Drawing.Imaging.ImageAttributes();
+				attrib.SetColorMatrix(new System.Drawing.Imaging.ColorMatrix(new[] {
+					new[] {clr.r / 255.0f,					0.0f, 			0.0f, 			0.0f, 0.0f},
+					new[] {0.0f,			clr.g / 255.0f, 0.0f, 			0.0f, 			0.0f, 0.0f},
+					new[] {0.0f,			0.0f, 			clr.b / 255.0f, 0.0f, 			0.0f, 0.0f},
+					new[] {0.0f, 			0.0f, 			0.0f, 			clr.a / 255.0f, 0.0f, 0.0f},
+					new[] {0.0f, 			0.0f, 			0.0f, 			0.0f, 			0.0f, 0.0f},
+					new[] {0.0f, 			0.0f, 			0.0f, 			0.0f, 			0.0f, 0.0f} }));
+				for (int i = 0; i < text.Length; i++)
+				{
+					this.ProcessTextAdv(text, i, out glyphData, out uvRect, out glyphXAdv, out glyphXOff);
+					Vector2 dataCoord = uvRect.Pos * new Vector2(this.pixelData.Width, this.pixelData.Height) / this.texture.UVRatio;
+
+					if (clr == ColorRgba.White)
+					{
+						g.DrawImage(this.pixelData.PixelData,
+							new Rectangle(MathF.RoundToInt(x + curOffset + glyphXOff), MathF.RoundToInt(y), glyphData.width, glyphData.height),
+							new Rectangle(MathF.RoundToInt(dataCoord.X), MathF.RoundToInt(dataCoord.Y), glyphData.width, glyphData.height),
+							GraphicsUnit.Pixel);
+					}
+					else
+					{
+						g.DrawImage(this.pixelData.PixelData,
+							new Rectangle(MathF.RoundToInt(x + curOffset + glyphXOff), MathF.RoundToInt(y), glyphData.width, glyphData.height),
+							dataCoord.X, dataCoord.Y, glyphData.width, glyphData.height,
+							GraphicsUnit.Pixel,
+							attrib);
+					}
+
+					curOffset += glyphXAdv;
+				}
 			}
 		}
 

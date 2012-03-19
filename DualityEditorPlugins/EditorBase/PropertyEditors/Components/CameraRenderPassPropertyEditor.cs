@@ -1,45 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Reflection;
 
 using Duality;
-using DualityEditor;
-using DualityEditor.Controls;
+using Duality.Components.Renderers;
 
-using DualityEditor.Controls.PropertyEditors;
+using AdamsLair.PropertyGrid;
+using AdamsLair.PropertyGrid.PropertyEditors;
+
+using DualityEditor;
 
 namespace EditorBase.PropertyEditors
 {
 	public class CameraRenderPassPropertyEditor : MemberwisePropertyEditor
 	{
-		protected override void OnAddingEditors()
+		protected override void BeforeAutoCreateEditors()
 		{
 			this.AddEditorForProperty(ReflectionInfo.Property_Camera_RenderPass_Input);
 			this.AddEditorForProperty(ReflectionInfo.Property_Camera_RenderPass_Output);
 			this.AddEditorForProperty(ReflectionInfo.Property_Camera_RenderPass_VisibilityMask);
-			base.OnAddingEditors();
+			base.BeforeAutoCreateEditors();
 		}
-		protected override bool MemberPredicate(System.Reflection.MemberInfo info)
+		protected override bool IsAutoCreateMember(System.Reflection.MemberInfo info)
 		{
 			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Camera_RenderPass_Input)) return false;
 			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Camera_RenderPass_Output)) return false;
 			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Camera_RenderPass_VisibilityMask)) return false;
-			return base.MemberPredicate(info);
+			return base.IsAutoCreateMember(info);
 		}
-		protected override PropertyEditor MemberEditor(System.Reflection.MemberInfo info)
+		protected override PropertyEditor AutoCreateMemberEditor(System.Reflection.MemberInfo info)
 		{
 			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Camera_RenderPass_VisibilityMask))
 			{
-				FlagPropertyEditor e = new FlagPropertyEditor();
-				e.EditedType = (info as System.Reflection.PropertyInfo).PropertyType;
+				BitmaskPropertyEditor e = new BitmaskPropertyEditor();
+				e.EditedType = (info as PropertyInfo).PropertyType;
 				// ToDo: Use actual user-definable visibility groups
-				e.AddFlag("None", 0);
-				for (int i = 0; i < 32; ++i) e.AddFlag("Group " + i, 1UL << i);
-				e.AddFlag("All", (1UL << 32) - 1);
+				List<BitmaskItem> items = Enumerable.Range(0, 31).Select(i => new BitmaskItem(1UL << i, "Group " + i)).ToList();
+				items.Insert(0, new BitmaskItem(0, "None"));
+				items.Add(new BitmaskItem((1UL << 32) - 1, "All"));
+				e.Items = items;
+				this.ParentGrid.ConfigureEditor(e);
 				return e;
 			}
-			return base.MemberEditor(info);
+			return base.AutoCreateMemberEditor(info);
 		}
 	}
 }

@@ -13,11 +13,11 @@ using DualityEditor;
 
 namespace EditorBase.PropertyEditors
 {
-	public class CameraPropertyEditor : ComponentPropertyEditor
+	public class RendererPropertyEditor : ComponentPropertyEditor
 	{
-		protected override PropertyEditor AutoCreateMemberEditor(System.Reflection.MemberInfo info)
+		protected override PropertyEditor AutoCreateMemberEditor(MemberInfo info)
 		{
-			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Camera_VisibilityMask))
+			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Renderer_VisibilityGroup))
 			{
 				BitmaskPropertyEditor e = new BitmaskPropertyEditor();
 				e.EditedType = (info as PropertyInfo).PropertyType;

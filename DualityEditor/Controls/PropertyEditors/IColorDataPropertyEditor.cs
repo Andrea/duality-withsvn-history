@@ -84,8 +84,10 @@ namespace DualityEditor.Controls.PropertyEditors
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			base.OnPaint(e);
-
-			e.Graphics.FillRectangle(new HatchBrush(HatchStyle.LargeCheckerBoard, Color.LightGray, Color.Gray), this.rectPanel);
+			
+			Color brightChecker = Color.FromArgb(224, 224, 224);
+			Color darkChecker = Color.FromArgb(192, 192, 192);
+			e.Graphics.FillRectangle(new HatchBrush(HatchStyle.LargeCheckerBoard, brightChecker, darkChecker), this.rectPanel);
 			if (this.value != null) e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(this.value.ToIntArgb())), this.rectPanel);
 			e.Graphics.DrawRectangle(SystemPens.ControlLightLight, 
 				this.rectPanel.X + 1,

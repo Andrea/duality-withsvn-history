@@ -55,7 +55,6 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		public virtual void OnLostFocus(EventArgs e)
 		{
 			this.focused = false;
-			this.EmitEditingFinished();
 		}
 		public virtual void OnMouseMove(MouseEventArgs e)
 		{

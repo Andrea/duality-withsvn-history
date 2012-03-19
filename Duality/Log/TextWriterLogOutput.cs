@@ -49,6 +49,7 @@ namespace Duality
 				{
 					lines[i] = source.Prefix + "         " + new string(' ', indent * 4) + lines[i];
 				}
+
 				this.writer.WriteLine(lines[i]);
 			}
 		}

@@ -11,6 +11,7 @@ namespace DualityEditor
 	{
 		public event EventHandler MouseMove;
 		public event EventHandler MouseLeave;
+		public event EventHandler MouseUp;
 		public event EventHandler<KeyEventArgs> KeyDown;
 
 		private enum WindowsMessages : int
@@ -35,6 +36,14 @@ namespace DualityEditor
 			else if (m.Msg == (int)WindowsMessages.WM_MOUSELEAVE)
 			{
 				if (this.MouseLeave != null) this.MouseLeave(this, EventArgs.Empty);
+			}
+			else if (m.Msg == (int)WindowsMessages.WM_LBUTTONUP)
+			{
+				if (this.MouseUp != null) this.MouseUp(this, EventArgs.Empty);
+			}
+			else if (m.Msg == (int)WindowsMessages.WM_RBUTTONUP)
+			{
+				if (this.MouseUp != null) this.MouseUp(this, EventArgs.Empty);
 			}
 			else if (m.Msg == (int)WindowsMessages.WM_KEYDOWN)
 			{

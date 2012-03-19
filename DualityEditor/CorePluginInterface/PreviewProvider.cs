@@ -4,8 +4,10 @@ using System.Linq;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
+using OpenTK;
 using Duality;
 using Duality.Resources;
+using Font = Duality.Resources.Font;
 
 namespace DualityEditor.CorePluginInterface
 {
@@ -101,6 +103,27 @@ namespace DualityEditor.CorePluginInterface
 							}
 						}
 					}
+				}
+			}
+
+			if (result == null && convert.CanPerform<Font>())
+			{
+			    Font font = convert.Perform<Font>().FirstOrDefault();
+				if (font != null)
+				{
+					string text = "/acThe quick brown fox jumps over the lazy dog.";
+					FormattedText formatText = new FormattedText();
+					formatText.MaxWidth = Math.Max(1, desiredWidth - 10);
+					formatText.MaxHeight = Math.Max(1, desiredHeight - 10);
+					formatText.WordWrap = FormattedText.WrapMode.Word;
+					formatText.Fonts = new[] { new ContentRef<Font>(font) };
+					formatText.ApplySource(text);
+					FormattedText.Metrics metrics = formatText.Measure();
+					Vector2 textSize = metrics.Size;
+					Bitmap textBitmap = new Bitmap(desiredWidth, MathF.RoundToInt(textSize.Y) + 2);
+					formatText.RenderToBitmap(text, textBitmap, 5, 5);
+
+					result = textBitmap.Resize(desiredWidth, desiredHeight, Alignment.Left);
 				}
 			}
 

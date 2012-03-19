@@ -5,17 +5,15 @@
 	-->	(Property) Animations & Animation Editor
 	-->	??? Ingame GUI & GUI Editor
 
+-->	Dualitor: Improve "look and feel"
+	-->	Less contrast, go for some neutral grey instead of "BAM IN YOUR FACE"-White, stuff like that
+	-->	Unity did a great job at that. Or Photoshop.
 -->	Dualitor: PerformanceMonitor
 -->	Dualitor: Improve User learning curve
 	-->	More Advisor information?
 	-->	"Did you know..?" screen?
 
 
--->	Dualitor: Implement new PropertyGrid - Rebuild Editors
-	-->	Provide preview for FontPropertyEditor
-	-->	Other editors, see old "not-in-project" source files
-	-->	...
-	
 -->	Dualitor: Improve preview behaviour?
 	-->	Make PreviewProvider work in a background process
 	-->	Don't return a Bitmap, but a ResourcePreview object..

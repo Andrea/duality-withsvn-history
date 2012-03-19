@@ -8875,6 +8875,13 @@
             <param name="vertText">One set of vertices for each Font that is available to this ForattedText.</param>
             <param name="vertIcons">A set of icon vertices.</param>
         </member>
+        <member name="M:Duality.FormattedText.RenderToBitmap(System.String,System.Drawing.Image,System.Single,System.Single,System.Drawing.Image)">
+            <summary>
+            Renders a text to the specified target Image.
+            </summary>
+            <param name="text"></param>
+            <param name="target"></param>
+        </member>
         <member name="M:Duality.FormattedText.Measure">
             <summary>
             Measures the formatted text block.
@@ -10715,6 +10722,25 @@
             </summary>
             <param name="text">The text to render.</param>
             <param name="vertices">The set of vertices that is emitted. You can re-use the same array each frame.</param>
+        </member>
+        <member name="M:Duality.Resources.Font.RenderToBitmap(System.String,System.Drawing.Image,System.Single,System.Single)">
+            <summary>
+            Renders a text to the specified target Image.
+            </summary>
+            <param name="text"></param>
+            <param name="target"></param>
+            <param name="x"></param>
+            <param name="y"></param>
+        </member>
+        <member name="M:Duality.Resources.Font.RenderToBitmap(System.String,System.Drawing.Image,System.Single,System.Single,Duality.ColorFormat.ColorRgba)">
+            <summary>
+            Renders a text to the specified target Image.
+            </summary>
+            <param name="text"></param>
+            <param name="target"></param>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="clr"></param>
         </member>
         <member name="M:Duality.Resources.Font.MeasureText(System.String)">
             <summary>

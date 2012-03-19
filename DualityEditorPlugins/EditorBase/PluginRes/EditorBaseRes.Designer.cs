@@ -61,6 +61,42 @@ namespace EditorBase.PluginRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Creates a new Material Resource based on the Texture. ähnelt.
+        /// </summary>
+        public static string ActionDesc_CreateMaterial {
+            get {
+                return ResourceManager.GetString("ActionDesc_CreateMaterial", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Creates a new ShaderProgram Resource based on Vertex- and Fragmentshaders. ähnelt.
+        /// </summary>
+        public static string ActionDesc_CreateShaderProgram {
+            get {
+                return ResourceManager.GetString("ActionDesc_CreateShaderProgram", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Creates a new Sound Resource based on the AudioData. ähnelt.
+        /// </summary>
+        public static string ActionDesc_CreateSound {
+            get {
+                return ResourceManager.GetString("ActionDesc_CreateSound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Creates a new Texture Resource based on the Pixmap. ähnelt.
+        /// </summary>
+        public static string ActionDesc_CreateTexture {
+            get {
+                return ResourceManager.GetString("ActionDesc_CreateTexture", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Focus Camera on GameObject. ähnelt.
         /// </summary>
         public static string ActionDesc_FocusGameObject {

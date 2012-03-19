@@ -190,19 +190,19 @@ namespace EditorBase
 			CorePluginHelper.RegisterTypeCategory(typeof(Sound), EditorBaseRes.Category_Sound, CorePluginHelper.CategoryContext_General);
 
 			// Register conversion actions
-			CorePluginHelper.RegisterEditorAction(new EditorAction<Pixmap>(EditorBaseRes.ActionName_CreateTexture, EditorBaseRes.IconResTexture, p => Texture.CreateFromPixmap(p)), CorePluginHelper.ActionContext_ContextMenu);
-			CorePluginHelper.RegisterEditorAction(new EditorAction<Texture>(EditorBaseRes.ActionName_CreateMaterial, EditorBaseRes.IconResMaterial, t => Material.CreateFromTexture(t)), CorePluginHelper.ActionContext_ContextMenu);
-			CorePluginHelper.RegisterEditorAction(new EditorAction<AudioData>(EditorBaseRes.ActionName_CreateSound, EditorBaseRes.IconResSound, a => Sound.CreateFromAudioData(a)), CorePluginHelper.ActionContext_ContextMenu);
-			CorePluginHelper.RegisterEditorAction(new EditorGroupAction<AbstractShader>(EditorBaseRes.ActionName_CreateShaderProgram, EditorBaseRes.IconResShaderProgram, this.ActionShaderCreateProgram), CorePluginHelper.ActionContext_ContextMenu);
+			CorePluginHelper.RegisterEditorAction(new EditorAction<Pixmap>				(EditorBaseRes.ActionName_CreateTexture,		EditorBaseRes.IconResTexture,		p => Texture.CreateFromPixmap(p),	EditorBaseRes.ActionDesc_CreateTexture),		CorePluginHelper.ActionContext_ContextMenu);
+			CorePluginHelper.RegisterEditorAction(new EditorAction<Texture>				(EditorBaseRes.ActionName_CreateMaterial,		EditorBaseRes.IconResMaterial,		t => Material.CreateFromTexture(t), EditorBaseRes.ActionDesc_CreateMaterial),		CorePluginHelper.ActionContext_ContextMenu);
+			CorePluginHelper.RegisterEditorAction(new EditorAction<AudioData>			(EditorBaseRes.ActionName_CreateSound,			EditorBaseRes.IconResSound,			a => Sound.CreateFromAudioData(a),	EditorBaseRes.ActionDesc_CreateSound),			CorePluginHelper.ActionContext_ContextMenu);
+			CorePluginHelper.RegisterEditorAction(new EditorGroupAction<AbstractShader>	(EditorBaseRes.ActionName_CreateShaderProgram,	EditorBaseRes.IconResShaderProgram, this.ActionShaderCreateProgram,		EditorBaseRes.ActionDesc_CreateShaderProgram),	CorePluginHelper.ActionContext_ContextMenu);
 
 			// Register open actions
-			CorePluginHelper.RegisterEditorAction(new EditorAction<Pixmap>(null, null, this.ActionPixmapOpenRes, EditorBaseRes.ActionDesc_OpenResourceExternal), CorePluginHelper.ActionContext_OpenRes);
-			CorePluginHelper.RegisterEditorAction(new EditorAction<AudioData>(null, null, this.ActionAudioDataOpenRes, EditorBaseRes.ActionDesc_OpenResourceExternal), CorePluginHelper.ActionContext_OpenRes);
-			CorePluginHelper.RegisterEditorAction(new EditorAction<AbstractShader>(null, null, this.ActionAbstractShaderOpenRes, EditorBaseRes.ActionDesc_OpenResourceExternal), CorePluginHelper.ActionContext_OpenRes);
-			CorePluginHelper.RegisterEditorAction(new EditorAction<Prefab>(null, null, this.ActionPrefabOpenRes, EditorBaseRes.ActionDesc_InstantiatePrefab), CorePluginHelper.ActionContext_OpenRes);
-			CorePluginHelper.RegisterEditorAction(new EditorAction<Scene>(null, null, this.ActionSceneOpenRes, EditorBaseRes.ActionDesc_OpenScene), CorePluginHelper.ActionContext_OpenRes);
-			CorePluginHelper.RegisterEditorAction(new EditorAction<GameObject>(null, null, this.ActionGameObjectOpenRes, EditorBaseRes.ActionDesc_FocusGameObject, g => g.Transform != null), CorePluginHelper.ActionContext_OpenRes);
-			CorePluginHelper.RegisterEditorAction(new EditorAction<Component>(null, null, this.ActionComponentOpenRes, EditorBaseRes.ActionDesc_FocusGameObject, c => c.GameObj.Transform != null), CorePluginHelper.ActionContext_OpenRes);
+			CorePluginHelper.RegisterEditorAction(new EditorAction<Pixmap>			(null, null, this.ActionPixmapOpenRes,			EditorBaseRes.ActionDesc_OpenResourceExternal), CorePluginHelper.ActionContext_OpenRes);
+			CorePluginHelper.RegisterEditorAction(new EditorAction<AudioData>		(null, null, this.ActionAudioDataOpenRes,		EditorBaseRes.ActionDesc_OpenResourceExternal), CorePluginHelper.ActionContext_OpenRes);
+			CorePluginHelper.RegisterEditorAction(new EditorAction<AbstractShader>	(null, null, this.ActionAbstractShaderOpenRes,	EditorBaseRes.ActionDesc_OpenResourceExternal), CorePluginHelper.ActionContext_OpenRes);
+			CorePluginHelper.RegisterEditorAction(new EditorAction<Prefab>			(null, null, this.ActionPrefabOpenRes,			EditorBaseRes.ActionDesc_InstantiatePrefab),	CorePluginHelper.ActionContext_OpenRes);
+			CorePluginHelper.RegisterEditorAction(new EditorAction<Scene>			(null, null, this.ActionSceneOpenRes,			EditorBaseRes.ActionDesc_OpenScene),			CorePluginHelper.ActionContext_OpenRes);
+			CorePluginHelper.RegisterEditorAction(new EditorAction<GameObject>		(null, null, this.ActionGameObjectOpenRes,		EditorBaseRes.ActionDesc_FocusGameObject,		g => g.Transform != null),			CorePluginHelper.ActionContext_OpenRes);
+			CorePluginHelper.RegisterEditorAction(new EditorAction<Component>		(null, null, this.ActionComponentOpenRes,		EditorBaseRes.ActionDesc_FocusGameObject,		c => c.GameObj.Transform != null),	CorePluginHelper.ActionContext_OpenRes);
 
 			// Register data converters
 			CorePluginHelper.RegisterDataConverter<GameObject>(new DataConverters.GameObjFromPrefab());
@@ -230,7 +230,6 @@ namespace EditorBase
 			this.menuItemProjectView = main.RequestMenu(Path.Combine(GeneralRes.MenuName_View, EditorBaseRes.MenuItemName_ProjectView));
 			this.menuItemSceneView = main.RequestMenu(Path.Combine(GeneralRes.MenuName_View, EditorBaseRes.MenuItemName_SceneView));
 			this.menuItemObjView = main.RequestMenu(Path.Combine(GeneralRes.MenuName_View, EditorBaseRes.MenuItemName_ObjView));
-			this.menuItemResView = main.RequestMenu(Path.Combine(GeneralRes.MenuName_View, EditorBaseRes.MenuItemName_ResView));
 			this.menuItemCamView = main.RequestMenu(Path.Combine(GeneralRes.MenuName_View, EditorBaseRes.MenuItemName_CamView));
 			this.menuItemLogView = main.RequestMenu(Path.Combine(GeneralRes.MenuName_View, EditorBaseRes.MenuItemName_LogView));
 			this.menuItemAppData = main.RequestMenu(Path.Combine(GeneralRes.MenuName_Settings, EditorBaseRes.MenuItemName_AppData));
@@ -240,14 +239,12 @@ namespace EditorBase
 			this.menuItemProjectView.Image = EditorBaseRes.IconProjectView.ToBitmap();
 			this.menuItemSceneView.Image = EditorBaseRes.IconSceneView.ToBitmap();
 			this.menuItemObjView.Image = EditorBaseRes.IconObjView.ToBitmap();
-			this.menuItemResView.Image = EditorBaseRes.IconObjView.ToBitmap();
 			this.menuItemCamView.Image = EditorBaseRes.IconEye.ToBitmap();
 			this.menuItemLogView.Image = EditorBaseRes.IconLogView.ToBitmap();
 
 			this.menuItemProjectView.Click += new EventHandler(this.menuItemProjectView_Click);
 			this.menuItemSceneView.Click += new EventHandler(this.menuItemSceneView_Click);
 			this.menuItemObjView.Click += new EventHandler(this.menuItemObjView_Click);
-			this.menuItemResView.Click += new EventHandler(this.menuItemResView_Click);
 			this.menuItemCamView.Click += new EventHandler(this.menuItemCamView_Click);
 			this.menuItemLogView.Click += new EventHandler(this.menuItemLogView_Click);
 			this.menuItemAppData.Click += new EventHandler(this.menuItemAppData_Click);
@@ -368,13 +365,6 @@ namespace EditorBase
 		private void menuItemObjView_Click(object sender, EventArgs e)
 		{
 			ObjectInspector objView = this.RequestObjView();
-			objView.AcceptedCategories = ObjectSelection.Category.GameObjCmp;
-		}
-		private void menuItemResView_Click(object sender, EventArgs e)
-		{
-			ObjectInspector objView = this.RequestObjView();
-			objView.AcceptedCategories = ObjectSelection.Category.Resource | ObjectSelection.Category.Other;
-			objView.Text = "Resource Inspector";
 		}
 		private void menuItemCamView_Click(object sender, EventArgs e)
 		{

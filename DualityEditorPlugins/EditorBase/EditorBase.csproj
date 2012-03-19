@@ -80,6 +80,13 @@
     </Compile>
     <Compile Include="PropertyEditors\BatchInfoPropertyEditor.cs" />
     <Compile Include="PropertyEditors\ComponentPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\Components\CameraPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\Components\CameraRenderPassPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\Components\ColliderPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\Components\ColliderShapePropertyEditor.cs" />
+    <Compile Include="PropertyEditors\Components\RendererPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\Components\SoundEmitterPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\Components\TextRendererPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Components\TransformPropertyEditor.cs" />
     <Compile Include="PropertyEditors\DualityAppDataPropertyEditor.cs" />
     <Compile Include="PropertyEditors\FormattedTextPropertyEditor.cs" />
@@ -90,6 +97,8 @@
     <Compile Include="PropertyEditors\Resources\FontPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Resources\AudioDataPreviewPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Resources\AudioDataPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\Resources\FontPreviewPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\Resources\FontContentPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Resources\TextureContentPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Resources\TexturePreviewPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Resources\TexturePropertyEditor.cs" />

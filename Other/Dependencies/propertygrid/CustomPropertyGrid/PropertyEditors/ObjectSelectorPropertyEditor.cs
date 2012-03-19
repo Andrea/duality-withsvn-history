@@ -66,7 +66,7 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 				this.valMultiple = values.Any(o => o == null) || !values.All(o => object.Equals(o, this.val));
 			}
 
-			this.objSelector.SelectedObject = this.val.ToString();
+			this.objSelector.SelectedObject = this.val;
 			this.EndUpdate();
 		}
 
@@ -139,7 +139,7 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 		{
 			if (this.IsUpdatingFromObject) return;
 
-			this.val = (Enum)Enum.Parse(this.EditedType, this.objSelector.SelectedObject.ToString());
+			this.val = this.objSelector.SelectedObject;
 			this.Invalidate();
 			this.PerformSetValue();
 			this.OnValueChanged();

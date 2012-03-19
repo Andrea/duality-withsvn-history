@@ -1287,6 +1287,7 @@ namespace EditorBase
 					ToolStripMenuItem actionItem = new ToolStripMenuItem(actionEntry.Name, actionEntry.Icon);
 					actionItem.Click += this.customObjectActionItem_Click;
 					actionItem.Tag = actionEntry;
+					actionItem.ToolTipText = actionEntry.Description;
 					this.contextMenuNode.Items.Insert(baseIndex, actionItem);
 					baseIndex++;
 				}

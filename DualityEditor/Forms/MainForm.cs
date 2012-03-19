@@ -123,6 +123,10 @@ namespace DualityEditor.Forms
 		{
 			get { return this.sandboxState; }
 		}
+		public IEnumerable<Resource> UnsavedResources
+		{
+			get { return this.unsavedResources.Where(r => !r.Disposed && !r.IsDefaultContent && !string.IsNullOrEmpty(r.Path)); }
+		}
 		private bool AppStillIdle
 		{
 			 get
@@ -215,6 +219,7 @@ namespace DualityEditor.Forms
 			inputFilter.MouseMove += this.inputFilter_MouseMove;
 			inputFilter.MouseLeave += this.inputFilter_MouseLeave;
 			inputFilter.KeyDown += this.inputFilter_KeyDown;
+			inputFilter.MouseUp += this.inputFilter_MouseUp;
 			Application.AddMessageFilter(inputFilter);
 		}
 		private void ApplyDockPanelSkin()
@@ -411,9 +416,8 @@ namespace DualityEditor.Forms
 		}
 		public void SaveResources()
 		{
-			foreach (Resource res in this.unsavedResources)
+			foreach (Resource res in this.UnsavedResources) // The Property does some safety checks
 			{
-				if (res.Disposed) continue;
 				res.Save();
 			}
 			this.unsavedResources.Clear();
@@ -423,9 +427,13 @@ namespace DualityEditor.Forms
 			if (this.unsavedResources.Contains(res)) return;
 			this.unsavedResources.Add(res);
 		}
+		public void MarkResourceSaved(Resource res)
+		{
+			this.unsavedResources.Remove(res);
+		}
 		public bool IsResourceUnsaved(Resource res)
 		{
-			return this.unsavedResources.Contains(res);
+			return this.UnsavedResources.Contains(res);
 		}
 		public bool IsResourceUnsaved(IContentRef res)
 		{
@@ -433,7 +441,7 @@ namespace DualityEditor.Forms
 		}
 		public bool IsResourceUnsaved(string resPath)
 		{
-			return this.unsavedResources.Any(r => Path.GetFullPath(r.Path) == Path.GetFullPath(resPath));
+			return this.UnsavedResources.Any(r => Path.GetFullPath(r.Path) == Path.GetFullPath(resPath));
 		}
 		public void SaveAllProjectData()
 		{
@@ -1112,11 +1120,12 @@ namespace DualityEditor.Forms
 		{
 			base.OnFormClosing(e);
 
-			if (this.unsavedResources.Count > 0)
+			var unsavedResTemp = this.UnsavedResources.ToArray();
+			if (unsavedResTemp.Any())
 			{
-				string unsavedResText = this.unsavedResources.Take(5).ToString(r => r.FullName, "\n");
-				if (this.unsavedResources.Count > 5) 
-					unsavedResText += "\n" + string.Format(EditorRes.GeneralRes.Msg_ConfirmQuitUnsaved_Desc_More, this.unsavedResources.Count - 5);
+				string unsavedResText = unsavedResTemp.Take(5).ToString(r => r.FullName, "\n");
+				if (unsavedResTemp.Count() > 5) 
+					unsavedResText += "\n" + string.Format(EditorRes.GeneralRes.Msg_ConfirmQuitUnsaved_Desc_More, unsavedResTemp.Count() - 5);
 				DialogResult result = MessageBox.Show(
 					string.Format(EditorRes.GeneralRes.Msg_ConfirmQuitUnsaved_Desc, "\n\n" + unsavedResText + "\n\n"), 
 					EditorRes.GeneralRes.Msg_ConfirmQuitUnsaved_Caption, 
@@ -1467,7 +1476,13 @@ namespace DualityEditor.Forms
 		}
 		private void inputFilter_MouseMove(object sender, EventArgs e)
 		{
+			if (Control.MouseButtons != MouseButtons.None) return;
 			this.UpdateHelpStack();
+		}
+		private void inputFilter_MouseUp(object sender, EventArgs e)
+		{
+			if (Control.MouseButtons == MouseButtons.None)
+				this.UpdateHelpStack();
 		}
 		private void inputFilter_KeyDown(object sender, KeyEventArgs e)
 		{
@@ -1509,6 +1524,7 @@ namespace DualityEditor.Forms
 			if (e.Path == null) return; // Ignore Resources without a path.
 			if (e.IsDefaultContent) return; // Ignore default content
 			this.editorJustSavedRes.Add(Path.GetFullPath(e.Path));
+			this.MarkResourceSaved(e.Content.Res);
 		}
 
 		private System.Collections.IEnumerable async_ChangeDataFormat(ProcessingBigTaskDialog.WorkerInterface state)

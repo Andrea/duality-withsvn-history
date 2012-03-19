@@ -38,13 +38,13 @@
 			this.labelTopic.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.labelTopic.AutoEllipsis = true;
+			this.labelTopic.BackColor = System.Drawing.Color.Transparent;
 			this.labelTopic.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.labelTopic.Location = new System.Drawing.Point(4, 6);
 			this.labelTopic.Margin = new System.Windows.Forms.Padding(0);
 			this.labelTopic.Name = "labelTopic";
 			this.labelTopic.Size = new System.Drawing.Size(242, 19);
 			this.labelTopic.TabIndex = 0;
-			this.labelTopic.Text = "Advisor Window";
 			// 
 			// labelDescription
 			// 
@@ -52,13 +52,12 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.labelDescription.AutoEllipsis = true;
+			this.labelDescription.BackColor = System.Drawing.Color.Transparent;
 			this.labelDescription.Location = new System.Drawing.Point(9, 28);
 			this.labelDescription.Margin = new System.Windows.Forms.Padding(0);
 			this.labelDescription.Name = "labelDescription";
 			this.labelDescription.Size = new System.Drawing.Size(232, 33);
 			this.labelDescription.TabIndex = 1;
-			this.labelDescription.Text = "The Advisor Window will support you with context-based information about Duality." +
-    "";
 			// 
 			// HelpAdvisor
 			// 

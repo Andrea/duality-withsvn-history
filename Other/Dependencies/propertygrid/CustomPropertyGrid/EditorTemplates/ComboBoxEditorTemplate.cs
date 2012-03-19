@@ -79,6 +79,11 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 
 			ControlRenderer.DrawComboButton(e.Graphics, this.rect, comboState, this.selectedObject.ToString());
 		}
+		public override void OnLostFocus(EventArgs e)
+		{
+			if (this.focused) this.EmitEditingFinished();			
+			base.OnLostFocus(e);
+		}
 		public override void OnMouseMove(MouseEventArgs e)
 		{
 			base.OnMouseMove(e);
