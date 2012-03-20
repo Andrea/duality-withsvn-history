@@ -129,7 +129,11 @@ namespace EditorBase.CamViewStates
 		}
 		private bool DragMustWait
 		{
-			get { return (DateTime.Now - this.dragTime).TotalMilliseconds <= 500; }
+			get { return this.DragMustWaitProgress < 1.0f; }
+		}
+		private float DragMustWaitProgress
+		{
+			get { return MathF.Clamp((float)(DateTime.Now - this.dragTime).TotalMilliseconds / 500.0f, 0.0f, 1.0f); }
 		}
 
 		internal protected override void OnEnterState()
@@ -182,6 +186,12 @@ namespace EditorBase.CamViewStates
 			base.OnCollectStateOverlayDrawcalls(canvas);
 			if (this.DragMustWait && !this.dragLastLoc.IsEmpty)
 			{
+				canvas.CurrentState.ColorTint = ColorRgba.White.WithAlpha(this.DragMustWaitProgress);
+				canvas.FillCircle(
+					this.dragLastLoc.X, 
+					this.dragLastLoc.Y, 
+					15.0f);
+				canvas.CurrentState.ColorTint = ColorRgba.White;
 				canvas.DrawCircle(
 					this.dragLastLoc.X, 
 					this.dragLastLoc.Y, 
@@ -311,6 +321,7 @@ namespace EditorBase.CamViewStates
 
 		private void LocalGLControl_DragOver(object sender, DragEventArgs e)
 		{
+			if (e.Effect == DragDropEffects.None) return;
 			if (this.SelObjAction == MouseAction.None && !this.DragMustWait)
 				this.DragBeginAction(e);
 			
@@ -342,14 +353,18 @@ namespace EditorBase.CamViewStates
 		}
 		private void LocalGLControl_DragEnter(object sender, DragEventArgs e)
 		{
-			e.Effect = DragDropEffects.None;
-
 			DataObject data = e.Data as DataObject;
 			if (new ConvertOperation(data, ConvertOperation.Operation.All).CanPerform<GameObject>())
 			{
 				e.Effect = e.AllowedEffect;
 				this.dragTime = DateTime.Now;
 				this.dragLastLoc = new Point(e.X, e.Y);
+			}
+			else
+			{
+				e.Effect = DragDropEffects.None;
+				this.dragLastLoc = Point.Empty;
+				this.dragTime = DateTime.Now;
 			}
 		}
 		private void LocalGLControl_DragDrop(object sender, DragEventArgs e)

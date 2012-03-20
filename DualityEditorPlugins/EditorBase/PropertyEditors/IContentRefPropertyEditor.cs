@@ -289,6 +289,7 @@ namespace EditorBase.PropertyEditors
 					DataObject dragDropData = new DataObject();
 					dragDropData.SetContentRefs(new[] { this.DisplayedValue as IContentRef });
 					//dragDropData.SetAllowedConvertOp(ConvertOperation.Operation.Convert);
+					this.panelDragBegin = Point.Empty;
 					this.ParentGrid.DoDragDrop(dragDropData, DragDropEffects.All | DragDropEffects.Link);
 				}
 			}
@@ -323,6 +324,7 @@ namespace EditorBase.PropertyEditors
 		protected override void OnMouseUp(MouseEventArgs e)
 		{
 			base.OnMouseUp(e);
+			this.panelDragBegin = Point.Empty;
 			if (this.buttonResetPressed && (e.Button & MouseButtons.Left) != MouseButtons.None)
 			{
 				if (this.buttonResetPressed && this.buttonResetHovered) this.ResetReference();
