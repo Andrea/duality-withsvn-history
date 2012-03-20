@@ -143,6 +143,7 @@ namespace DualityEditor.Forms
 			instance = this;
 			this.InitializeComponent();
 			this.ApplyDockPanelSkin();
+			this.mainToolStrip.Renderer = new DualityEditor.Controls.ToolStrip.DualitorToolStripProfessionalRenderer();
 
 			this.needsRecovery = recover;
 
@@ -224,19 +225,39 @@ namespace DualityEditor.Forms
 		}
 		private void ApplyDockPanelSkin()
 		{
-			Color bgColor = Color.FromArgb(255, 128, 128, 128);
-			Color inactiveTab = Color.FromArgb(255, 230, 235, 240);
-			Color inactiveTab2 = Color.FromArgb(255, 255, 255, 255);
-			Color activeTab = Color.FromArgb(255, 255, 225, 155);
-			Color activeTab2 = Color.FromArgb(255, 255, 235, 205);
+			Color bgColor = Color.FromArgb(255, 162, 162, 162);
+			Color fgColor = Color.FromArgb(255, 196, 196, 196);
+			Color inactiveTab = Color.FromArgb(255, 192, 192, 192);
+			Color inactiveTab2 = Color.FromArgb(255, 224, 224, 224);
+			Color activeTab = Color.FromArgb(255, 224, 224, 224);
+			Color activeTab2 = Color.FromArgb(255, 242, 242, 242);
 
-			//this.dockPanel.Skin.DockPaneStripSkin.DocumentGradient.DockStripGradient.StartColor = bgColor;
-			//this.dockPanel.Skin.DockPaneStripSkin.DocumentGradient.DockStripGradient.EndColor = bgColor;
-			//this.dockPanel.Skin.AutoHideStripSkin.DockStripGradient.StartColor = bgColor;
-			//this.dockPanel.Skin.AutoHideStripSkin.DockStripGradient.EndColor = bgColor;
+			this.dockPanel.Skin.DockPaneStripSkin.DocumentGradient.DockStripGradient.StartColor = bgColor;
+			this.dockPanel.Skin.DockPaneStripSkin.DocumentGradient.DockStripGradient.EndColor = bgColor;
 
-			this.dockPanel.Skin.DockPaneStripSkin.DocumentGradient.InactiveTabGradient.StartColor = inactiveTab2;
-			this.dockPanel.Skin.DockPaneStripSkin.DocumentGradient.InactiveTabGradient.EndColor = inactiveTab;
+			this.dockPanel.Skin.AutoHideStripSkin.DockStripGradient.StartColor = bgColor;
+			this.dockPanel.Skin.AutoHideStripSkin.DockStripGradient.EndColor = bgColor;
+			this.dockPanel.Skin.AutoHideStripSkin.TabGradient.StartColor = fgColor;
+			this.dockPanel.Skin.AutoHideStripSkin.TabGradient.EndColor = fgColor;
+
+			this.dockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.ActiveCaptionGradient.StartColor = activeTab2;
+			this.dockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.ActiveCaptionGradient.EndColor = activeTab;
+			this.dockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.InactiveCaptionGradient.StartColor = inactiveTab2;
+			this.dockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.InactiveCaptionGradient.EndColor = inactiveTab;
+
+			this.dockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.ActiveTabGradient.StartColor = fgColor;
+			this.dockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.ActiveTabGradient.EndColor = fgColor;
+			this.dockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.ActiveTabGradient.LinearGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
+
+			this.dockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.InactiveTabGradient.StartColor = bgColor;
+			this.dockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.InactiveTabGradient.EndColor = bgColor;
+			this.dockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.InactiveTabGradient.LinearGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
+
+			this.dockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.DockStripGradient.StartColor = bgColor;
+			this.dockPanel.Skin.DockPaneStripSkin.ToolWindowGradient.DockStripGradient.EndColor = bgColor;
+
+			this.dockPanel.Skin.DockPaneStripSkin.DocumentGradient.InactiveTabGradient.StartColor = fgColor;
+			this.dockPanel.Skin.DockPaneStripSkin.DocumentGradient.InactiveTabGradient.EndColor = fgColor;
 			this.dockPanel.Skin.DockPaneStripSkin.DocumentGradient.InactiveTabGradient.LinearGradientMode = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
 			this.dockPanel.Skin.DockPaneStripSkin.DocumentGradient.InactiveTabGradient.TextColor = Color.Black;
 
@@ -984,9 +1005,8 @@ namespace DualityEditor.Forms
 		private void OnSelectionChanged(object sender, ObjectSelection.Category changedCategoryFallback)
 		{
 			//if (this.selectionCurrent == this.selectionPrevious) return;
+			//if (this.selectionCurrent == this.selectionPrevious) Log.Editor.WriteWarning("equal sel: {0}", this.selectionCurrent);
 			if (sender == null) sender = this;
-			if (this.selectionCurrent == this.selectionPrevious)
-				Log.Editor.WriteWarning("equal sel: {0}", this.selectionCurrent);
 
 			this.selectionChanging = true;
 

@@ -373,9 +373,12 @@ namespace Duality.Resources
 			get { return this.sizeRelative; }
 			set
 			{
-				this.sizeRelative = value;
-				this.AdjustSize(this.size.X, this.size.Y);
-				this.needsReload = true;
+				if (this.basePixmap.IsExplicitNull && this.sizeRelative != value)
+				{
+					this.sizeRelative = value;
+					this.AdjustSize(this.size.X, this.size.Y);
+					this.needsReload = true;
+				}
 			}
 		}					//	GS
 		/// <summary>

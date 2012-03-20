@@ -81,7 +81,7 @@
 			// 
 			// toolStrip
 			// 
-			this.toolStrip.BackColor = System.Drawing.SystemColors.InactiveCaption;
+			this.toolStrip.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(162)))), ((int)(((byte)(162)))), ((int)(((byte)(162)))));
 			this.toolStrip.GripMargin = new System.Windows.Forms.Padding(0);
 			this.toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {

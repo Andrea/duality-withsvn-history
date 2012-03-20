@@ -26,7 +26,7 @@ namespace DualityEditor
 
 			return (max == 0) ? 0.0f : 1.0f - (1.0f * (float)min / (float)max);
 		}
-		
+
 		public static Duality.ColorFormat.ColorRgba ToDualityRgba(this System.Drawing.Color color)
 		{
 			return Duality.ColorFormat.ColorRgba.FromIntArgb(color.ToArgb());
@@ -35,7 +35,6 @@ namespace DualityEditor
 		{
 			return Duality.ColorFormat.ColorHsva.FromIntArgb(color.ToArgb());
 		}
-
 		public static System.Drawing.Color ToSysDrawColor(this Duality.ColorFormat.IColorData color)
 		{
 			return System.Drawing.Color.FromArgb(color.ToIntArgb());

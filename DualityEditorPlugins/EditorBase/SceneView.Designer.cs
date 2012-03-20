@@ -34,7 +34,6 @@
 			this.toolStripButtonCreateScene = new System.Windows.Forms.ToolStripButton();
 			this.toolStripButtonSaveScene = new System.Windows.Forms.ToolStripButton();
 			this.toolStripLabelSceneName = new System.Windows.Forms.ToolStripLabel();
-			this.objectView = new Aga.Controls.Tree.TreeViewAdv();
 			this.contextMenuNode = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.toolStripSeparatorCustomActions = new System.Windows.Forms.ToolStripSeparator();
 			this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -44,8 +43,6 @@
 			this.cloneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.renameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.nodeStateIcon = new Aga.Controls.Tree.NodeControls.NodeStateIcon();
-			this.nodeTextBoxName = new Aga.Controls.Tree.NodeControls.NodeTextBox();
 			this.timerFlashItem = new System.Windows.Forms.Timer(this.components);
 			this.contextMenuDragMoveCopy = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.copyHereToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -55,6 +52,9 @@
 			this.panelBottom = new System.Windows.Forms.Panel();
 			this.textBoxFilter = new System.Windows.Forms.TextBox();
 			this.labelFilter = new System.Windows.Forms.Label();
+			this.objectView = new Aga.Controls.Tree.TreeViewAdv();
+			this.nodeStateIcon = new Aga.Controls.Tree.NodeControls.NodeStateIcon();
+			this.nodeTextBoxName = new Aga.Controls.Tree.NodeControls.NodeTextBox();
 			this.toolStrip.SuspendLayout();
 			this.contextMenuNode.SuspendLayout();
 			this.contextMenuDragMoveCopy.SuspendLayout();
@@ -63,7 +63,8 @@
 			// 
 			// toolStrip
 			// 
-			this.toolStrip.BackColor = System.Drawing.SystemColors.InactiveCaption;
+			this.toolStrip.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(212)))), ((int)(((byte)(212)))), ((int)(((byte)(212)))));
+			this.toolStrip.GripMargin = new System.Windows.Forms.Padding(0);
 			this.toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButtonCreateScene,
@@ -104,38 +105,6 @@
 			this.toolStripLabelSceneName.Text = "Scene: Some Name";
 			this.toolStripLabelSceneName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
-			// objectView
-			// 
-			this.objectView.AllowDrop = true;
-			this.objectView.BackColor = System.Drawing.SystemColors.Window;
-			this.objectView.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.objectView.ContextMenuStrip = this.contextMenuNode;
-			this.objectView.DefaultToolTipProvider = null;
-			this.objectView.DisplayDraggingNodes = true;
-			this.objectView.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.objectView.DragDropMarkColor = System.Drawing.Color.Black;
-			this.objectView.LineColor = System.Drawing.SystemColors.ControlDark;
-			this.objectView.Location = new System.Drawing.Point(0, 25);
-			this.objectView.Model = null;
-			this.objectView.Name = "objectView";
-			this.objectView.NodeControls.Add(this.nodeStateIcon);
-			this.objectView.NodeControls.Add(this.nodeTextBoxName);
-			this.objectView.NodeFilter = null;
-			this.objectView.SelectedNode = null;
-			this.objectView.SelectionMode = Aga.Controls.Tree.TreeSelectionMode.Multi;
-			this.objectView.ShowNodeToolTips = true;
-			this.objectView.Size = new System.Drawing.Size(206, 496);
-			this.objectView.TabIndex = 1;
-			this.objectView.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.objectView_ItemDrag);
-			this.objectView.NodeMouseDoubleClick += new System.EventHandler<Aga.Controls.Tree.TreeNodeAdvMouseEventArgs>(this.objectView_NodeMouseDoubleClick);
-			this.objectView.SelectionChanged += new System.EventHandler(this.objectView_SelectionChanged);
-			this.objectView.DragDrop += new System.Windows.Forms.DragEventHandler(this.objectView_DragDrop);
-			this.objectView.DragOver += new System.Windows.Forms.DragEventHandler(this.objectView_DragOver);
-			this.objectView.Enter += new System.EventHandler(this.objectView_Enter);
-			this.objectView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.objectView_KeyDown);
-			this.objectView.Leave += new System.EventHandler(this.objectView_Leave);
-			this.objectView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.objectView_MouseUp);
-			// 
 			// contextMenuNode
 			// 
 			this.contextMenuNode.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -146,13 +115,13 @@
             this.deleteToolStripMenuItem,
             this.renameToolStripMenuItem});
 			this.contextMenuNode.Name = "contextMenuNode";
-			this.contextMenuNode.Size = new System.Drawing.Size(153, 126);
+			this.contextMenuNode.Size = new System.Drawing.Size(150, 104);
 			this.contextMenuNode.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuNode_Opening);
 			// 
 			// toolStripSeparatorCustomActions
 			// 
 			this.toolStripSeparatorCustomActions.Name = "toolStripSeparatorCustomActions";
-			this.toolStripSeparatorCustomActions.Size = new System.Drawing.Size(149, 6);
+			this.toolStripSeparatorCustomActions.Size = new System.Drawing.Size(146, 6);
 			this.toolStripSeparatorCustomActions.Visible = false;
 			// 
 			// newToolStripMenuItem
@@ -161,7 +130,7 @@
             this.gameObjectToolStripMenuItem,
             this.newGameObjectSeparator});
 			this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-			this.newToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.newToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
 			this.newToolStripMenuItem.Text = "New";
 			this.newToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.newToolStripMenuItem_DropDownItemClicked);
 			// 
@@ -180,14 +149,14 @@
 			// toolStripSeparatorNew
 			// 
 			this.toolStripSeparatorNew.Name = "toolStripSeparatorNew";
-			this.toolStripSeparatorNew.Size = new System.Drawing.Size(149, 6);
+			this.toolStripSeparatorNew.Size = new System.Drawing.Size(146, 6);
 			// 
 			// cloneToolStripMenuItem
 			// 
 			this.cloneToolStripMenuItem.Image = global::EditorBase.Properties.Resources.page_copy;
 			this.cloneToolStripMenuItem.Name = "cloneToolStripMenuItem";
 			this.cloneToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-			this.cloneToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.cloneToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
 			this.cloneToolStripMenuItem.Text = "Clone";
 			this.cloneToolStripMenuItem.Click += new System.EventHandler(this.cloneToolStripMenuItem_Click);
 			// 
@@ -196,31 +165,16 @@
 			this.deleteToolStripMenuItem.Image = global::EditorBase.Properties.Resources.cross;
 			this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
 			this.deleteToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-			this.deleteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.deleteToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
 			this.deleteToolStripMenuItem.Text = "Delete";
 			this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
 			// 
 			// renameToolStripMenuItem
 			// 
 			this.renameToolStripMenuItem.Name = "renameToolStripMenuItem";
-			this.renameToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.renameToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
 			this.renameToolStripMenuItem.Text = "Rename";
 			this.renameToolStripMenuItem.Click += new System.EventHandler(this.renameToolStripMenuItem_Click);
-			// 
-			// nodeStateIcon
-			// 
-			this.nodeStateIcon.DataPropertyName = "Image";
-			this.nodeStateIcon.LeftMargin = 1;
-			this.nodeStateIcon.ParentColumn = null;
-			this.nodeStateIcon.ScaleMode = Aga.Controls.Tree.ImageScaleMode.Clip;
-			// 
-			// nodeTextBoxName
-			// 
-			this.nodeTextBoxName.DataPropertyName = "Text";
-			this.nodeTextBoxName.EditEnabled = true;
-			this.nodeTextBoxName.IncrementalSearchEnabled = true;
-			this.nodeTextBoxName.LeftMargin = 3;
-			this.nodeTextBoxName.ParentColumn = null;
 			// 
 			// timerFlashItem
 			// 
@@ -264,6 +218,7 @@
 			// 
 			// panelBottom
 			// 
+			this.panelBottom.BackColor = System.Drawing.Color.Transparent;
 			this.panelBottom.Controls.Add(this.textBoxFilter);
 			this.panelBottom.Controls.Add(this.labelFilter);
 			this.panelBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -275,6 +230,8 @@
 			// 
 			// textBoxFilter
 			// 
+			this.textBoxFilter.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(196)))), ((int)(((byte)(196)))), ((int)(((byte)(196)))));
+			this.textBoxFilter.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.textBoxFilter.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.textBoxFilter.Location = new System.Drawing.Point(41, 3);
 			this.textBoxFilter.Name = "textBoxFilter";
@@ -285,6 +242,7 @@
 			// labelFilter
 			// 
 			this.labelFilter.AutoSize = true;
+			this.labelFilter.BackColor = System.Drawing.Color.Transparent;
 			this.labelFilter.Dock = System.Windows.Forms.DockStyle.Left;
 			this.labelFilter.ImeMode = System.Windows.Forms.ImeMode.NoControl;
 			this.labelFilter.Location = new System.Drawing.Point(3, 3);
@@ -295,10 +253,61 @@
 			this.labelFilter.Text = "Filter:";
 			this.labelFilter.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			// 
+			// objectView
+			// 
+			this.objectView.AllowDrop = true;
+			this.objectView.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(196)))), ((int)(((byte)(196)))), ((int)(((byte)(196)))));
+			this.objectView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.objectView.ContextMenuStrip = this.contextMenuNode;
+			this.objectView.DefaultToolTipProvider = null;
+			this.objectView.DisplayDraggingNodes = true;
+			this.objectView.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.objectView.DragDropMarkColor = System.Drawing.Color.Black;
+			this.objectView.FullRowSelect = true;
+			this.objectView.FullRowSelectActiveColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+			this.objectView.FullRowSelectInactiveColor = System.Drawing.Color.FromArgb(((int)(((byte)(212)))), ((int)(((byte)(212)))), ((int)(((byte)(212)))));
+			this.objectView.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(92)))), ((int)(((byte)(92)))), ((int)(((byte)(92)))));
+			this.objectView.Location = new System.Drawing.Point(0, 25);
+			this.objectView.Model = null;
+			this.objectView.Name = "objectView";
+			this.objectView.NodeControls.Add(this.nodeStateIcon);
+			this.objectView.NodeControls.Add(this.nodeTextBoxName);
+			this.objectView.NodeFilter = null;
+			this.objectView.SelectedNode = null;
+			this.objectView.SelectionMode = Aga.Controls.Tree.TreeSelectionMode.Multi;
+			this.objectView.ShowNodeToolTips = true;
+			this.objectView.Size = new System.Drawing.Size(206, 496);
+			this.objectView.TabIndex = 1;
+			this.objectView.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.objectView_ItemDrag);
+			this.objectView.NodeMouseDoubleClick += new System.EventHandler<Aga.Controls.Tree.TreeNodeAdvMouseEventArgs>(this.objectView_NodeMouseDoubleClick);
+			this.objectView.SelectionChanged += new System.EventHandler(this.objectView_SelectionChanged);
+			this.objectView.DragDrop += new System.Windows.Forms.DragEventHandler(this.objectView_DragDrop);
+			this.objectView.DragOver += new System.Windows.Forms.DragEventHandler(this.objectView_DragOver);
+			this.objectView.Enter += new System.EventHandler(this.objectView_Enter);
+			this.objectView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.objectView_KeyDown);
+			this.objectView.Leave += new System.EventHandler(this.objectView_Leave);
+			this.objectView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.objectView_MouseUp);
+			// 
+			// nodeStateIcon
+			// 
+			this.nodeStateIcon.DataPropertyName = "Image";
+			this.nodeStateIcon.LeftMargin = 1;
+			this.nodeStateIcon.ParentColumn = null;
+			this.nodeStateIcon.ScaleMode = Aga.Controls.Tree.ImageScaleMode.Clip;
+			// 
+			// nodeTextBoxName
+			// 
+			this.nodeTextBoxName.DataPropertyName = "Text";
+			this.nodeTextBoxName.EditEnabled = true;
+			this.nodeTextBoxName.IncrementalSearchEnabled = true;
+			this.nodeTextBoxName.LeftMargin = 3;
+			this.nodeTextBoxName.ParentColumn = null;
+			// 
 			// SceneView
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(212)))), ((int)(((byte)(212)))), ((int)(((byte)(212)))));
 			this.ClientSize = new System.Drawing.Size(206, 547);
 			this.Controls.Add(this.objectView);
 			this.Controls.Add(this.panelBottom);

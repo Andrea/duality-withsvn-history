@@ -24,7 +24,7 @@ namespace AdamsLair.PropertyGrid
 		private	bool					hoverEditorLock	= false;
 		private	string					headerValueText	= null;
 		private	IconImage				headerIcon		= null;
-		private	Color					headerColor		= SystemColors.Control;
+		private	Color?					headerColor		= null;
 		private	GroupHeaderStyle		headerStyle		= GroupHeaderStyle.Flat;
 		private	Rectangle				headerRect			= Rectangle.Empty;
 		private	Rectangle				expandCheckRect		= Rectangle.Empty;
@@ -34,7 +34,6 @@ namespace AdamsLair.PropertyGrid
 		private	bool					activeCheckHovered	= false;
 		private	bool					activeCheckPressed	= false;
 		private	Size					sizeBeforeUpdate	= Size.Empty;
-		private	MouseButtons			mousePressedTemp	= MouseButtons.None;
 
 		public event EventHandler<PropertyEditorEventArgs>	EditorAdded;
 		public event EventHandler<PropertyEditorEventArgs>	EditorRemoving;
@@ -109,7 +108,7 @@ namespace AdamsLair.PropertyGrid
 		}
 		public Color HeaderColor
 		{
-			get { return this.headerColor; }
+			get { return this.headerColor.Value; }
 			set
 			{
 				this.headerColor = value;
@@ -471,7 +470,7 @@ namespace AdamsLair.PropertyGrid
 
 
 			bool focusBg = this.Focused || (this is IPopupControlHost && (this as IPopupControlHost).IsDropDownOpened);
-			ControlRenderer.DrawGroupHeaderBackground(g, this.headerRect, focusBg ? this.headerColor.ScaleBrightness(0.85f) : this.headerColor, this.headerStyle);
+			ControlRenderer.DrawGroupHeaderBackground(g, this.headerRect, focusBg ? this.headerColor.Value.ScaleBrightness(0.85f) : this.headerColor.Value, this.headerStyle);
 			
 			if (!parentExpand && (this.Hints & HintFlags.HasExpandCheck) != HintFlags.None)
 				ControlRenderer.DrawCheckBox(g, this.expandCheckRect.Location, expandState);
@@ -481,8 +480,8 @@ namespace AdamsLair.PropertyGrid
 			if (this.headerIcon != null)
 				g.DrawImage(this.Enabled ? this.headerIcon.Normal : this.headerIcon.Disabled, iconRect);
 
-			ControlRenderer.DrawStringLine(g, this.PropertyName, this.IsValueModified ? FontBold : FontNormal, nameTextRect, this.Enabled ? SystemColors.ControlText : SystemColors.GrayText);
-			ControlRenderer.DrawStringLine(g, this.headerValueText, this.IsValueModified ? FontBold : FontNormal, valueTextRect, this.Enabled ? SystemColors.ControlText : SystemColors.GrayText);
+			ControlRenderer.DrawStringLine(g, this.PropertyName, this.IsValueModified ? FontBold : FontNormal, nameTextRect, this.Enabled ? ControlRenderer.ColorText : ControlRenderer.ColorGrayText);
+			ControlRenderer.DrawStringLine(g, this.headerValueText, this.IsValueModified ? FontBold : FontNormal, valueTextRect, this.Enabled ? ControlRenderer.ColorText : ControlRenderer.ColorGrayText);
 		}
 		protected void PaintIndentExpandButton(Graphics g, GroupedPropertyEditor childGroup, int curY)
 		{
@@ -933,6 +932,11 @@ namespace AdamsLair.PropertyGrid
 			if (this.ParentUseIndentChildExpand) this.ParentEditor.Invalidate();
 		}
 
+		protected override void OnParentEditorChanged()
+		{
+			base.OnParentEditorChanged();
+			if (!this.headerColor.HasValue) this.headerColor = ControlRenderer.ColorBackground;
+		}
 		protected override void OnSizeChanged()
 		{
 			if (this.IsUpdatingFromObject) return;

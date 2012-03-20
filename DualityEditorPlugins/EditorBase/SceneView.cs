@@ -210,6 +210,8 @@ namespace EditorBase
 			this.nodeTextBoxName.EditorShowing += new CancelEventHandler(nodeTextBoxName_EditorShowing);
 			this.nodeTextBoxName.EditorHided += new EventHandler(nodeTextBoxName_EditorHided);
 			this.nodeTextBoxName.ChangesApplied += new EventHandler(nodeTextBoxName_ChangesApplied);
+
+			this.toolStrip.Renderer = new DualityEditor.Controls.ToolStrip.DualitorToolStripProfessionalRenderer();
 		}
 		protected override void OnShown(EventArgs e)
 		{
@@ -958,40 +960,23 @@ namespace EditorBase
 
 			if (!e.Context.Bounds.IsEmpty)
 			{
-				// Highlight handling
-				if (e.Context.DrawSelection != DrawSelectionMode.None)
-				{
-					e.TextColor = SystemColors.ControlText;
-					Color hlUpper = Color.FromArgb(
-						(SystemColors.Window.R * 5 + SystemColors.Highlight.R) / 6,
-						(SystemColors.Window.G * 5 + SystemColors.Highlight.G) / 6,
-						(SystemColors.Window.B * 5 + SystemColors.Highlight.B) / 6);
-					Color hlLower = Color.FromArgb(
-						(SystemColors.Window.R + SystemColors.Highlight.R) / 2,
-						(SystemColors.Window.G + SystemColors.Highlight.G) / 2,
-						(SystemColors.Window.B + SystemColors.Highlight.B) / 2);
-
-					if (e.Control.Parent.Focused)
-						e.BackgroundBrush = new SolidBrush(hlLower);
-					else
-						e.BackgroundBrush = new SolidBrush(hlUpper);
-				}
-
 				// Prefab-linked entities
 				if (node.LinkState == NodeBase.PrefabLinkState.Active)
 					e.TextColor = Color.Blue;
 				else if (node.LinkState == NodeBase.PrefabLinkState.Broken)
-					e.TextColor = Color.Red;
+					e.TextColor = Color.DarkRed;
+				else
+					e.TextColor = Color.Black;
 
 				// Flashing
 				if (node == this.flashNode)
 				{
 					float intLower = this.flashIntensity;
-					Color hlBase = Color.FromArgb(255, 64, 32);
+					Color hlBase = Color.FromArgb(224, 64, 32);
 					Color hlLower = Color.FromArgb(
-						(int)(SystemColors.Window.R * (1.0f - intLower) + hlBase.R * intLower),
-						(int)(SystemColors.Window.G * (1.0f - intLower) + hlBase.G * intLower),
-						(int)(SystemColors.Window.B * (1.0f - intLower) + hlBase.B * intLower));
+						(int)(this.objectView.BackColor.R * (1.0f - intLower) + hlBase.R * intLower),
+						(int)(this.objectView.BackColor.G * (1.0f - intLower) + hlBase.G * intLower),
+						(int)(this.objectView.BackColor.B * (1.0f - intLower) + hlBase.B * intLower));
 					e.BackgroundBrush = new SolidBrush(hlLower);
 				}
 			}

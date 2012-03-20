@@ -47,9 +47,9 @@
 			this.actionRenameType = new System.Windows.Forms.ToolStripButton();
 			this.batchActionButton = new System.Windows.Forms.ToolStripSplitButton();
 			this.batchActionRenameType = new System.Windows.Forms.ToolStripMenuItem();
-			this.propertyGrid = new DualityEditor.Controls.DualitorPropertyGrid();
 			this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
 			this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
+			this.propertyGrid = new DualityEditor.Controls.DualitorPropertyGrid();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
 			this.splitContainer.Panel1.SuspendLayout();
 			this.splitContainer.Panel2.SuspendLayout();
@@ -78,8 +78,8 @@
 			// 
 			// treeView
 			// 
-			this.treeView.BackColor = System.Drawing.SystemColors.Window;
-			this.treeView.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.treeView.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(196)))), ((int)(((byte)(196)))), ((int)(((byte)(196)))));
+			this.treeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.treeView.Columns.Add(this.treeViewColumnName);
 			this.treeView.Columns.Add(this.treeViewColumnObjId);
 			this.treeView.Columns.Add(this.treeViewColumnValue);
@@ -88,7 +88,9 @@
 			this.treeView.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.treeView.DragDropMarkColor = System.Drawing.Color.Black;
 			this.treeView.FullRowSelect = true;
-			this.treeView.LineColor = System.Drawing.SystemColors.ControlDark;
+			this.treeView.FullRowSelectActiveColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+			this.treeView.FullRowSelectInactiveColor = System.Drawing.Color.FromArgb(((int)(((byte)(212)))), ((int)(((byte)(212)))), ((int)(((byte)(212)))));
+			this.treeView.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(92)))), ((int)(((byte)(92)))), ((int)(((byte)(92)))));
 			this.treeView.Location = new System.Drawing.Point(0, 25);
 			this.treeView.Model = null;
 			this.treeView.Name = "treeView";
@@ -170,6 +172,7 @@
 			// 
 			// mainToolStrip
 			// 
+			this.mainToolStrip.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(212)))), ((int)(((byte)(212)))), ((int)(((byte)(212)))));
 			this.mainToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.mainToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.actionOpen,
@@ -237,15 +240,6 @@
 			this.batchActionRenameType.Text = "Rename Type...";
 			this.batchActionRenameType.Click += new System.EventHandler(this.batchActionRenameType_Click);
 			// 
-			// propertyGrid
-			// 
-			this.propertyGrid.AutoScroll = true;
-			this.propertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.propertyGrid.Location = new System.Drawing.Point(0, 0);
-			this.propertyGrid.Name = "propertyGrid";
-			this.propertyGrid.Size = new System.Drawing.Size(537, 155);
-			this.propertyGrid.TabIndex = 0;
-			// 
 			// openFileDialog
 			// 
 			this.openFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog_FileOk);
@@ -254,10 +248,22 @@
 			// 
 			this.saveFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog_FileOk);
 			// 
+			// propertyGrid
+			// 
+			this.propertyGrid.AllowDrop = true;
+			this.propertyGrid.AutoScroll = true;
+			this.propertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.propertyGrid.Location = new System.Drawing.Point(0, 0);
+			this.propertyGrid.Name = "propertyGrid";
+			this.propertyGrid.ReadOnly = false;
+			this.propertyGrid.Size = new System.Drawing.Size(537, 155);
+			this.propertyGrid.TabIndex = 0;
+			// 
 			// ResourceHacker
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(162)))), ((int)(((byte)(162)))), ((int)(((byte)(162)))));
 			this.ClientSize = new System.Drawing.Size(537, 447);
 			this.Controls.Add(this.splitContainer);
 			this.DockAreas = ((WeifenLuo.WinFormsUI.Docking.DockAreas)((WeifenLuo.WinFormsUI.Docking.DockAreas.Float | WeifenLuo.WinFormsUI.Docking.DockAreas.Document)));

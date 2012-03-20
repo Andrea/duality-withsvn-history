@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Reflection;
 
 using AdamsLair.PropertyGrid.PropertyEditors;
+using AdamsLair.PropertyGrid.Renderer;
 
 namespace AdamsLair.PropertyGrid
 {
@@ -94,6 +95,7 @@ namespace AdamsLair.PropertyGrid
 		}
 
 		private	MainEditorProvider	editorProvider		= new MainEditorProvider();
+		private	ControlRenderer		renderer			= new ControlRenderer();
 		private	PropertyEditor		mainEditor			= null;
 		private	PropertyEditor		focusEditor			= null;
 		private	List<object>		selectedObjects		= new List<object>();
@@ -131,6 +133,10 @@ namespace AdamsLair.PropertyGrid
 		public PropertyEditor FocusEditor
 		{
 			get { return this.focusEditor; }
+		}
+		public ControlRenderer ControlRenderer
+		{
+			get { return this.renderer; }
 		}
 		protected override CreateParams CreateParams
 		{
@@ -232,6 +238,7 @@ namespace AdamsLair.PropertyGrid
 			if (this.mainEditor == null) return;
 
 			this.mainEditor.ParentGrid = this;
+			this.mainEditor.ParentEditor = null;
 			this.mainEditor.Hints &= ~(PropertyEditor.HintFlags.HasButton | PropertyEditor.HintFlags.ButtonEnabled);
 			this.mainEditor.Getter = this.ValueGetter;
 			this.mainEditor.Setter = this.readOnly ? null : (Action<IEnumerable<object>>)this.ValueSetter;
@@ -239,7 +246,7 @@ namespace AdamsLair.PropertyGrid
 			if (this.mainEditor is GroupedPropertyEditor)
 			{
 				GroupedPropertyEditor mainGroupEditor = this.mainEditor as GroupedPropertyEditor;
-				mainGroupEditor.HeaderStyle = Renderer.GroupHeaderStyle.Emboss;
+				mainGroupEditor.HeaderStyle = GroupHeaderStyle.Emboss;
 				mainGroupEditor.Hints &= ~PropertyEditor.HintFlags.HasExpandCheck;
 			}
 		}

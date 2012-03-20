@@ -296,6 +296,11 @@ namespace EditorBase
 			this.nodeTextBoxName.EditorShowing += new CancelEventHandler(nodeTextBoxName_EditorShowing);
 			this.nodeTextBoxName.EditorHided += new EventHandler(nodeTextBoxName_EditorHided);
 			this.nodeTextBoxName.ChangesApplied += new EventHandler(nodeTextBoxName_ChangesApplied);
+
+			this.treeColumnName.DrawColHeaderBg += this.treeColumn_DrawColHeaderBg;
+			this.treeColumnType.DrawColHeaderBg += this.treeColumn_DrawColHeaderBg;
+
+			this.toolStrip.Renderer = new DualityEditor.Controls.ToolStrip.DualitorToolStripProfessionalRenderer();
 		}
 
 		protected override void OnShown(EventArgs e)
@@ -986,6 +991,11 @@ namespace EditorBase
 				this.folderView_SelectionChanged(this.folderView, EventArgs.Empty);
 			}
 		}
+		private void treeColumn_DrawColHeaderBg(object sender, DrawColHeaderBgEventArgs e)
+		{
+			e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(255, 212, 212, 212)), e.Bounds);
+			e.Handled = true;
+		}
 		private NodeBase DragDropGetTargetBaseNode()
 		{
 			TreeNodeAdv dropViewNode		= this.folderView.DropPosition.Node;
@@ -1000,38 +1010,19 @@ namespace EditorBase
 
 			// Readonly nodes
 			if (node.ReadOnly)
-			{
-				e.TextColor = SystemColors.GrayText;
-			}
-
-			// Highlight handling
-			if (e.Context.DrawSelection != DrawSelectionMode.None && !e.Context.Bounds.IsEmpty)
-			{
-				e.TextColor = SystemColors.ControlText;
-				Color hlUpper = Color.FromArgb(
-					(SystemColors.Window.R * 5 + SystemColors.Highlight.R) / 6,
-					(SystemColors.Window.G * 5 + SystemColors.Highlight.G) / 6,
-					(SystemColors.Window.B * 5 + SystemColors.Highlight.B) / 6);
-				Color hlLower = Color.FromArgb(
-					(SystemColors.Window.R + SystemColors.Highlight.R) / 2,
-					(SystemColors.Window.G + SystemColors.Highlight.G) / 2,
-					(SystemColors.Window.B + SystemColors.Highlight.B) / 2);
-
-				if (e.Control.Parent.Focused)
-					e.BackgroundBrush = new SolidBrush(hlLower);
-				else
-					e.BackgroundBrush = new SolidBrush(hlUpper);
-			}
+				e.TextColor = Color.FromArgb(192, 0, 0, 32);
+			else
+				e.TextColor = Color.Black;
 
 			// Flashing
 			if (node == this.flashNode && !e.Context.Bounds.IsEmpty)
 			{
 				float intLower = this.flashIntensity;
-				Color hlBase = Color.FromArgb(255, 64, 32);
+				Color hlBase = Color.FromArgb(224, 64, 32);
 				Color hlLower = Color.FromArgb(
-					(int)(SystemColors.Window.R * (1.0f - intLower) + hlBase.R * intLower),
-					(int)(SystemColors.Window.G * (1.0f - intLower) + hlBase.G * intLower),
-					(int)(SystemColors.Window.B * (1.0f - intLower) + hlBase.B * intLower));
+					(int)(this.folderView.BackColor.R * (1.0f - intLower) + hlBase.R * intLower),
+					(int)(this.folderView.BackColor.G * (1.0f - intLower) + hlBase.G * intLower),
+					(int)(this.folderView.BackColor.B * (1.0f - intLower) + hlBase.B * intLower));
 				e.BackgroundBrush = new SolidBrush(hlLower);
 			}
 		}
@@ -1069,7 +1060,7 @@ namespace EditorBase
 		}
 		private void nodeTextBoxType_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawEventArgs e)
 		{
-			e.TextColor = SystemColors.GrayText;
+			e.TextColor = Color.FromArgb(128, 0, 0, 0);
 			e.BackgroundBrush = null;
 		}
 		private void timerFlashItem_Tick(object sender, EventArgs e)

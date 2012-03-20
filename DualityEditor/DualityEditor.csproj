@@ -118,6 +118,7 @@
     <Compile Include="Controls\PropertyEditors\VectorPropertyEditor.cs" />
     <Compile Include="Controls\PropertyEditors\Provider.cs" />
     <Compile Include="Controls\PropertyEditors\Vector2PropertyEditor.cs" />
+    <Compile Include="Controls\ToolStrip\DualitorToolStripRenderer.cs" />
     <Compile Include="Controls\ToolStrip\ToolStripCheckBox.cs">
       <SubType>Component</SubType>
     </Compile>

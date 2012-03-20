@@ -105,6 +105,11 @@ namespace DualityEditor.Controls.ToolStrip
 			get { return this.num.TextAlign; }
 			set { this.num.TextAlign = value; }
 		}
+		public Color NumBackColor
+		{
+			get { return this.num.BackColor; }
+			set { this.num.BackColor = value; }
+		}
 
 		public ToolStripNumericUpDown() : base(new FlowLayoutPanel())
 		{

@@ -42,6 +42,10 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		{
 			get { return this.hovered; }
 		}
+		protected ControlRenderer ControlRenderer
+		{
+			get { return this.parent.ControlRenderer; }
+		}
 		
 		public EditorTemplate(PropertyEditor parent)
 		{

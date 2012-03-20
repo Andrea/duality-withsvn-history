@@ -246,7 +246,11 @@ namespace Aga.Controls.Tree
 			DrawBackground(gr, bounds, pressed, hot);
 			DrawContent(gr, bounds, font);
 		}
-
+		internal void DrawBackground(Graphics gr, Rectangle bounds, bool pressed, bool hot)
+		{
+			if (!OnDrawColHeaderBg(gr, bounds, pressed, hot))
+				DrawDefaultBackground(gr, bounds, pressed, hot);
+		}
         private void DrawContent(Graphics gr, Rectangle bounds, Font font)
         {
             Rectangle innerBounds = new Rectangle(bounds.X + HeaderLeftMargin, bounds.Y,
@@ -278,7 +282,6 @@ namespace Aga.Controls.Tree
             else
 				TextRenderer.DrawText(gr, Header, font, innerBounds, SystemColors.ControlText, _headerFlags);
         }
-
 		private void DrawSortMark(Graphics gr, Rectangle bounds, int x)
 		{
 			int y = bounds.Y + bounds.Height / 2 - 2;
@@ -301,8 +304,7 @@ namespace Aga.Controls.Tree
 		{
 			gr.FillRectangle(SystemBrushes.HotTrack, rect.X-1, rect.Y, 2, rect.Height);
 		}
-
-		internal static void DrawBackground(Graphics gr, Rectangle bounds, bool pressed, bool hot)
+		internal static void DrawDefaultBackground(Graphics gr, Rectangle bounds, bool pressed, bool hot)
 		{
 			if (Application.RenderWithVisualStyles)
 			{
@@ -364,6 +366,14 @@ namespace Aga.Controls.Tree
 		{
 			if (WidthChanged != null)
 				WidthChanged(this, EventArgs.Empty);
+		}
+		
+		public event EventHandler<DrawColHeaderBgEventArgs> DrawColHeaderBg;
+		private bool OnDrawColHeaderBg(Graphics gr, Rectangle bounds, bool pressed, bool hot)
+		{
+			DrawColHeaderBgEventArgs colBgArgs = new DrawColHeaderBgEventArgs(gr, bounds, pressed, hot);
+			if (this.DrawColHeaderBg != null) this.DrawColHeaderBg(this, colBgArgs);
+			return colBgArgs.Handled;
 		}
 
 		#endregion

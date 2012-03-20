@@ -125,35 +125,35 @@ namespace EditorBase.PropertyEditors
 			ControlRenderer.DrawGroupHeaderBackground(
 				e.Graphics, 
 				this.rectHeader, 
-				focusBg ? SystemColors.Control.ScaleBrightness(0.85f) : SystemColors.Control, 
+				focusBg ? ControlRenderer.ColorBackground.ScaleBrightness(0.85f) : ControlRenderer.ColorBackground, 
 				GroupHeaderStyle.SmoothSunken);
 
 			ControlRenderer.DrawStringLine(e.Graphics, 
 				"Width:", 
 				SystemFonts.DefaultFont, 
 				this.rectLabelWidth, 
-				!this.Enabled ? SystemColors.GrayText : SystemColors.ControlText);
+				!this.Enabled ? ControlRenderer.ColorGrayText : ControlRenderer.ColorText);
 			ControlRenderer.DrawStringLine(e.Graphics, 
 				"Height:", 
 				SystemFonts.DefaultFont, 
 				this.rectLabelHeight, 
-				!this.Enabled ? SystemColors.GrayText : SystemColors.ControlText);
+				!this.Enabled ? ControlRenderer.ColorGrayText : ControlRenderer.ColorText);
 			ControlRenderer.DrawStringLine(e.Graphics, 
 				this.value != null ? this.value.Width.ToString() : " - ", 
 				SystemFonts.DefaultFont, 
 				this.rectLabelWidthVal, 
-				!this.Enabled ? SystemColors.GrayText : SystemColors.ControlText);
+				!this.Enabled ? ControlRenderer.ColorGrayText : ControlRenderer.ColorText);
 			ControlRenderer.DrawStringLine(e.Graphics, 
 				this.value != null ? this.value.Height.ToString() : " - ", 
 				SystemFonts.DefaultFont, 
 				this.rectLabelHeightVal, 
-				!this.Enabled ? SystemColors.GrayText : SystemColors.ControlText);
+				!this.Enabled ? ControlRenderer.ColorGrayText : ControlRenderer.ColorText);
 
 			ControlRenderer.DrawStringLine(e.Graphics, 
 				this.value != null ? this.value.Name : " - ", 
 				SystemFonts.DefaultFont, 
 				this.rectLabelName, 
-				!this.Enabled ? SystemColors.GrayText : SystemColors.ControlText,
+				!this.Enabled ? ControlRenderer.ColorGrayText : ControlRenderer.ColorText,
 				StringAlignment.Far);
 		}
 		protected override void OnMouseDoubleClick(System.Windows.Forms.MouseEventArgs e)

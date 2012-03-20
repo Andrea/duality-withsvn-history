@@ -364,6 +364,7 @@ namespace EditorBase.CamViewStates
 				canvas.DrawRect(this.actionBeginLoc.X, this.actionBeginLoc.Y, cursorPos.X - this.actionBeginLoc.X, cursorPos.Y - this.actionBeginLoc.Y);
 
 			#if DEBUG
+			canvas.CurrentState.ColorTint = ColorRgba.White.WithAlpha(0.35f);
 			Performance.DrawAllMeasures(canvas);
 			#endif
 

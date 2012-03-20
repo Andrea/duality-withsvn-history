@@ -116,6 +116,7 @@ namespace AdamsLair.PropertyGrid
 				this.parentEditor = value;
 				if (this.parentEditor != null) this.parentGrid = this.parentEditor.ParentGrid;
 				if (this.ReadOnly != lastReadOnly) this.OnReadOnlyChanged();
+				this.OnParentEditorChanged();
 			}
 		}
 		public PropertyEditor NextEditor
@@ -276,7 +277,7 @@ namespace AdamsLair.PropertyGrid
 				if (this.hints != value)
 				{
 					this.hints = value;
-					this.UpdateGeometry();
+					if (this.parentGrid != null) this.UpdateGeometry();
 				}
 			}
 		}
@@ -339,6 +340,10 @@ namespace AdamsLair.PropertyGrid
 		protected int NameLabelWidth
 		{
 			get { return this.size.Width * 2 / 5; }
+		}
+		internal protected ControlRenderer ControlRenderer
+		{
+			get { return this.parentGrid != null ? this.parentGrid.ControlRenderer : null; }
 		}
 		
 
@@ -453,7 +458,7 @@ namespace AdamsLair.PropertyGrid
 		protected void PaintBackground(Graphics g)
 		{
 			bool focusBg = this.Focused || (this is IPopupControlHost && (this as IPopupControlHost).IsDropDownOpened);
-			g.FillRectangle(new SolidBrush(focusBg ? SystemColors.Control.ScaleBrightness(0.85f) : SystemColors.Control), new Rectangle(Point.Empty, this.size));
+			g.FillRectangle(new SolidBrush(focusBg ? ControlRenderer.ColorBackground.ScaleBrightness(0.85f) : ControlRenderer.ColorBackground), new Rectangle(Point.Empty, this.size));
 		}
 		protected void PaintButton(Graphics g)
 		{
@@ -490,7 +495,7 @@ namespace AdamsLair.PropertyGrid
 		protected void PaintNameLabel(Graphics g)
 		{
 			if ((this.hints & HintFlags.HasPropertyName) == HintFlags.None) return;
-			ControlRenderer.DrawStringLine(g, this.propertyName, this.IsValueModified ? FontBold : FontNormal, this.nameLabelRect, this.Enabled ? SystemColors.ControlText : SystemColors.GrayText);
+			ControlRenderer.DrawStringLine(g, this.propertyName, this.IsValueModified ? FontBold : FontNormal, this.nameLabelRect, this.Enabled ? ControlRenderer.ColorText : ControlRenderer.ColorGrayText);
 		}
 		internal protected virtual void OnPaint(PaintEventArgs e)
 		{
@@ -575,7 +580,7 @@ namespace AdamsLair.PropertyGrid
 		}
 		protected virtual void OnSizeChanged()
 		{
-			this.UpdateGeometry();
+			if (this.parentGrid != null) this.UpdateGeometry();
 			if (this.SizeChanged != null)
 				this.SizeChanged(this, EventArgs.Empty);
 		}
@@ -584,6 +589,7 @@ namespace AdamsLair.PropertyGrid
 			if (this.ButtonPressed != null)
 				this.ButtonPressed(this, EventArgs.Empty);
 		}
+		protected virtual void OnParentEditorChanged() {}
 		protected virtual void OnValueChanged(object sender, PropertyEditorValueEventArgs args)
 		{
 			if (this.ValueChanged != null)

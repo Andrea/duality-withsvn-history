@@ -62,7 +62,7 @@
 			// 
 			// toolStrip
 			// 
-			this.toolStrip.BackColor = System.Drawing.SystemColors.InactiveCaption;
+			this.toolStrip.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(212)))), ((int)(((byte)(212)))), ((int)(((byte)(212)))));
 			this.toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.buttonAutoRefresh,
@@ -72,6 +72,7 @@
 			this.toolStrip.Size = new System.Drawing.Size(231, 25);
 			this.toolStrip.TabIndex = 1;
 			this.toolStrip.Text = "toolStrip";
+			this.toolStrip.GripMargin = new System.Windows.Forms.Padding(0);
 			// 
 			// buttonAutoRefresh
 			// 
@@ -99,6 +100,7 @@
 			// 
 			this.propertyGrid.AllowDrop = true;
 			this.propertyGrid.AutoScroll = true;
+			this.propertyGrid.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(196)))), ((int)(((byte)(196)))), ((int)(((byte)(196)))));
 			this.propertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.propertyGrid.Location = new System.Drawing.Point(0, 25);
 			this.propertyGrid.Margin = new System.Windows.Forms.Padding(0);
@@ -111,6 +113,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(212)))), ((int)(((byte)(212)))), ((int)(((byte)(212)))));
 			this.ClientSize = new System.Drawing.Size(231, 432);
 			this.Controls.Add(this.propertyGrid);
 			this.Controls.Add(this.toolStrip);

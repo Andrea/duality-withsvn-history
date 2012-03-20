@@ -79,7 +79,7 @@ namespace EditorBase.PropertyEditors
 
 			this.PropertyName = this.EditedType.GetTypeCSCodeName(true);
 			this.HeaderIcon = iconBitmap;
-			this.HeaderColor = ExtMethodsSystemDrawingColor.ColorFromHSV(avgClr.h, 0.2f + avgClr.s * 0.4f, 1.0f);
+			this.HeaderColor = ExtMethodsSystemDrawingColor.ColorFromHSV(avgClr.h, 0.2f + avgClr.s * 0.2f, 0.85f);
 
 			this.Hints &= ~HintFlags.HasButton;
 			this.Hints &= ~HintFlags.ButtonEnabled;

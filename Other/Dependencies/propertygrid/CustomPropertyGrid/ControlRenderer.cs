@@ -92,15 +92,16 @@ namespace AdamsLair.PropertyGrid.Renderer
 		Sunken
 	}
 
-	public static class ControlRenderer
+	public class ControlRenderer
 	{
-		private	static	Size								expandNodeSize		= Size.Empty;
-		private	static	Dictionary<ExpandNodeState,Bitmap>	expandNodeImages	= null;
-		private	static	Size								checkBoxSize	= Size.Empty;
-		private	static	Dictionary<CheckBoxState,Bitmap>	checkBoxImages	= null;
-		private	static	IconImage	dropDownIcon	= new IconImage(Resources.DropDownIcon);
+		private	Size								expandNodeSize		= Size.Empty;
+		private	Dictionary<ExpandNodeState,Bitmap>	expandNodeImages	= null;
+		private	Size								checkBoxSize		= Size.Empty;
+		private	Dictionary<CheckBoxState,Bitmap>	checkBoxImages		= null;
+		private	IconImage	dropDownIcon	= new IconImage(Resources.DropDownIcon);
 
-		public static Size CheckBoxSize
+
+		public Size CheckBoxSize
 		{
 			get
 			{
@@ -109,13 +110,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 				return checkBoxSize;
 			}
 		}
-		public static void DrawCheckBox(Graphics g, Point loc, CheckBoxState state)
-		{
-			InitCheckBox(state);
-			g.DrawImageUnscaled(checkBoxImages[state], loc);
-		}
-
-		public static Size ExpandNodeSize
+		public Size ExpandNodeSize
 		{
 			get
 			{
@@ -127,13 +122,47 @@ namespace AdamsLair.PropertyGrid.Renderer
 				return expandNodeSize;
 			}
 		}
-		public static void DrawExpandNode(Graphics g, Point loc, ExpandNodeState state)
+		public Color ColorHightlight { get; set; }
+		public Color ColorVeryDarkBackground { get; set; }
+		public Color ColorDarkBackground { get; set; }
+		public Color ColorBackground { get; set; }
+		public Color ColorLightBackground { get; set; }
+		public Color ColorVeryLightBackground { get; set; }
+		public Color ColorMultiple { get; set; }
+		public Color ColorText { get; set; }
+		public Color ColorGrayText { get; set; }
+
+
+		public ControlRenderer()
+		{
+			this.ResetColors();
+		}
+		public void ResetColors()
+		{
+			this.ColorHightlight = SystemColors.Highlight;
+			this.ColorVeryDarkBackground = SystemColors.ControlDarkDark;
+			this.ColorDarkBackground = SystemColors.ControlDark;
+			this.ColorLightBackground = SystemColors.ControlLightLight;
+			this.ColorVeryLightBackground = SystemColors.Window;
+			this.ColorBackground = SystemColors.Control;
+			this.ColorText = SystemColors.ControlText;
+			this.ColorMultiple = Color.Bisque;
+			this.ColorGrayText = SystemColors.GrayText;
+		}
+
+
+		public void DrawCheckBox(Graphics g, Point loc, CheckBoxState state)
+		{
+			InitCheckBox(state);
+			g.DrawImageUnscaled(checkBoxImages[state], loc);
+		}
+		public void DrawExpandNode(Graphics g, Point loc, ExpandNodeState state)
 		{
 			InitExpandNode(state);
 			g.DrawImageUnscaled(expandNodeImages[state], loc);
 		}
 
-		public static void DrawGroupHeaderBackground(Graphics g, Rectangle rect, Color baseColor, GroupHeaderStyle style)
+		public void DrawGroupHeaderBackground(Graphics g, Rectangle rect, Color baseColor, GroupHeaderStyle style)
 		{
 			if (rect.Height == 0 || rect.Width == 0) return;
 			Color lightColor = baseColor.ScaleBrightness(style == GroupHeaderStyle.SmoothSunken ? 0.85f : 1.1f);
@@ -154,7 +183,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 			g.DrawLine(new Pen(Color.FromArgb(32, Color.Black)), rect.Right, rect.Top, rect.Right, rect.Bottom - 1);
 		}
 
-		public static void DrawStringLine(Graphics g, string text, Font font, Rectangle textRect, Color textColor, StringAlignment align = StringAlignment.Near, StringAlignment lineAlign = StringAlignment.Center, StringTrimming trimming = StringTrimming.EllipsisCharacter)
+		public void DrawStringLine(Graphics g, string text, Font font, Rectangle textRect, Color textColor, StringAlignment align = StringAlignment.Near, StringAlignment lineAlign = StringAlignment.Center, StringTrimming trimming = StringTrimming.EllipsisCharacter)
 		{
 			if (textRect.Width < 1 || textRect.Height < 1) return;
 			if (text == null) return;
@@ -186,7 +215,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 					(textRect.Y + textRect.Height * 0.5f) + (nameLabelSize.Height * 0.3f));
 			}
 		}
-		public static Region[] MeasureStringLine(Graphics g, string text, CharacterRange[] measureRanges, Font font, Rectangle textRect, StringAlignment align = StringAlignment.Near, StringAlignment lineAlign = StringAlignment.Center)
+		public Region[] MeasureStringLine(Graphics g, string text, CharacterRange[] measureRanges, Font font, Rectangle textRect, StringAlignment align = StringAlignment.Near, StringAlignment lineAlign = StringAlignment.Center)
 		{
 			textRect.Width -= 5;
 			StringFormat nameLabelFormat = StringFormat.GenericDefault;
@@ -198,7 +227,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 
 			return g.MeasureCharacterRanges(text, font, textRect, nameLabelFormat);
 		}
-		public static int PickCharStringLine(string text, Font font, Rectangle textRect, Point pickLoc, StringAlignment align = StringAlignment.Near, StringAlignment lineAlign = StringAlignment.Center)
+		public int PickCharStringLine(string text, Font font, Rectangle textRect, Point pickLoc, StringAlignment align = StringAlignment.Near, StringAlignment lineAlign = StringAlignment.Center)
 		{
 			if (text == null) return -1;
 			if (!textRect.Contains(pickLoc)) return -1;
@@ -236,13 +265,13 @@ namespace AdamsLair.PropertyGrid.Renderer
 			return -1;
 		}
 
-		public static Rectangle DrawTextBoxBorder(Graphics g, Rectangle rect, TextBoxState state, TextBoxStyle style, Color backColor)
+		public Rectangle DrawTextBoxBorder(Graphics g, Rectangle rect, TextBoxState state, TextBoxStyle style, Color backColor)
 		{
 			if (rect.Width < 4 || rect.Height < 4) return rect;
 			Rectangle clientRect = rect;
 
-			Color borderColor = SystemColors.ControlDark.ScaleBrightness(1.2f);
-			Color borderColorDark = SystemColors.ControlDark.ScaleBrightness(0.85f);
+			Color borderColor = this.ColorDarkBackground.ScaleBrightness(1.2f);
+			Color borderColorDark = this.ColorDarkBackground.ScaleBrightness(0.85f);
 
 			if (style == TextBoxStyle.Plain)
 			{
@@ -255,11 +284,11 @@ namespace AdamsLair.PropertyGrid.Renderer
 				}
 				else if (state == TextBoxState.Hot)
 				{
-					innerPen = new Pen(Color.FromArgb(32, SystemColors.Highlight));
+					innerPen = new Pen(Color.FromArgb(32, this.ColorHightlight));
 				}
 				else if (state == TextBoxState.Focus)
 				{
-					innerPen = new Pen(Color.FromArgb(64, SystemColors.Highlight));
+					innerPen = new Pen(Color.FromArgb(64, this.ColorHightlight));
 				}
 				else //if (state == TextBoxState.Disabled)
 				{
@@ -282,13 +311,13 @@ namespace AdamsLair.PropertyGrid.Renderer
 				}
 				else if (state == TextBoxState.Hot)
 				{
-					borderPen = new Pen(borderColorDark.MixWith(SystemColors.Highlight, 0.25f, true));
-					innerPen = new Pen(Color.FromArgb(32, SystemColors.Highlight));
+					borderPen = new Pen(borderColorDark.MixWith(this.ColorHightlight, 0.25f, true));
+					innerPen = new Pen(Color.FromArgb(32, this.ColorHightlight));
 				}
 				else if (state == TextBoxState.Focus)
 				{
-					borderPen = new Pen(borderColorDark.MixWith(SystemColors.Highlight, 0.5f, true));
-					innerPen = new Pen(Color.FromArgb(48, SystemColors.Highlight));
+					borderPen = new Pen(borderColorDark.MixWith(this.ColorHightlight, 0.5f, true));
+					innerPen = new Pen(Color.FromArgb(48, this.ColorHightlight));
 				}
 				else //if (state == TextBoxState.Disabled)
 				{
@@ -316,15 +345,15 @@ namespace AdamsLair.PropertyGrid.Renderer
 				}
 				else if (state == TextBoxState.Hot)
 				{
-					borderPenDark = new Pen(borderColorDark.MixWith(SystemColors.Highlight, 0.25f, true));
-					borderPen = new Pen(borderColor.MixWith(SystemColors.Highlight, 0.25f, true));
-					innerPen = new Pen(Color.FromArgb(32, SystemColors.Highlight));
+					borderPenDark = new Pen(borderColorDark.MixWith(this.ColorHightlight, 0.25f, true));
+					borderPen = new Pen(borderColor.MixWith(this.ColorHightlight, 0.25f, true));
+					innerPen = new Pen(Color.FromArgb(32, this.ColorHightlight));
 				}
 				else if (state == TextBoxState.Focus)
 				{
-					borderPenDark = new Pen(borderColorDark.MixWith(SystemColors.Highlight, 0.5f, true));
-					borderPen = new Pen(borderColor.MixWith(SystemColors.Highlight, 0.5f, true));
-					innerPen = new Pen(Color.FromArgb(48, SystemColors.Highlight));
+					borderPenDark = new Pen(borderColorDark.MixWith(this.ColorHightlight, 0.5f, true));
+					borderPen = new Pen(borderColor.MixWith(this.ColorHightlight, 0.5f, true));
+					innerPen = new Pen(Color.FromArgb(48, this.ColorHightlight));
 				}
 				else //if (state == TextBoxState.Disabled)
 				{
@@ -344,7 +373,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 
 			return clientRect;
 		}
-		public static void DrawTextField(Graphics g, Rectangle rect, string text, Font font, Color textColor, Color backColor, TextBoxState state, TextBoxStyle style, int scroll = 0, int cursorPos = -1, int selLength = 0)
+		public void DrawTextField(Graphics g, Rectangle rect, string text, Font font, Color textColor, Color backColor, TextBoxState state, TextBoxStyle style, int scroll = 0, int cursorPos = -1, int selLength = 0)
 		{
 			if (rect.Width < 4 || rect.Height < 4) return;
 			GraphicsState oldState = g.Save();
@@ -381,9 +410,9 @@ namespace AdamsLair.PropertyGrid.Renderer
 				}
 
 				if ((state & TextBoxState.ReadOnlyFlag) == TextBoxState.ReadOnlyFlag)
-					g.FillRectangle(new SolidBrush(Color.FromArgb(128, SystemColors.GrayText)), selectionRect);
+					g.FillRectangle(new SolidBrush(Color.FromArgb(128, this.ColorGrayText)), selectionRect);
 				else
-					g.FillRectangle(new SolidBrush(Color.FromArgb(128, SystemColors.Highlight)), selectionRect);
+					g.FillRectangle(new SolidBrush(Color.FromArgb(128, this.ColorHightlight)), selectionRect);
 			}
 
 			// Draw Text
@@ -402,7 +431,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 
 			g.Restore(oldState);
 		}
-		public static int PickCharTextField(Rectangle rect, string text, Font font, TextBoxStyle style, Point pickLoc, int scroll = 0)
+		public int PickCharTextField(Rectangle rect, string text, Font font, TextBoxStyle style, Point pickLoc, int scroll = 0)
 		{
 
 			if (style == TextBoxStyle.Plain)
@@ -416,7 +445,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 			return PickCharStringLine(text, font, rect, pickLoc);
 
 		}
-		public static int GetCharPosTextField(Rectangle rect, string text, Font font, TextBoxStyle style, int index, int scroll = 0)
+		public int GetCharPosTextField(Rectangle rect, string text, Font font, TextBoxStyle style, int index, int scroll = 0)
 		{
 			if (style == TextBoxStyle.Plain)
 				rect = new Rectangle(rect.X + 1, rect.Y + 1, rect.Width - 2, rect.Height - 2);
@@ -446,22 +475,22 @@ namespace AdamsLair.PropertyGrid.Renderer
 			}}
 		}
 
-		public static void DrawCursor(Graphics g, Rectangle rect)
+		public void DrawCursor(Graphics g, Rectangle rect)
 		{
 			g.FillRectangle(Brushes.Black, rect);
 		}
 
-		public static void DrawBorder(Graphics g, Rectangle rect, BorderStyle style, BorderState state)
+		public void DrawBorder(Graphics g, Rectangle rect, BorderStyle style, BorderState state)
 		{
-			Color darkColor = SystemColors.ControlDark;
-			Color lightColor = SystemColors.ControlLightLight;
+			Color darkColor = this.ColorDarkBackground;
+			Color lightColor = this.ColorLightBackground;
 			
 			if (style == BorderStyle.Simple)
-				darkColor = SystemColors.ControlDarkDark;
+				darkColor = this.ColorVeryDarkBackground;
 			else if (style == BorderStyle.Sunken)
 			{
-				darkColor = Color.FromArgb(128, SystemColors.ControlDark);
-				lightColor = SystemColors.ControlLightLight;
+				darkColor = Color.FromArgb(128, this.ColorDarkBackground);
+				lightColor = this.ColorLightBackground;
 			}
 
 			Pen darkPen = new Pen(state == BorderState.Disabled ? Color.FromArgb(darkColor.A / 2, darkColor) : darkColor);
@@ -483,7 +512,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 			}
 		}
 		
-		public static void DrawButtonBackground(Graphics g, Rectangle rect, ButtonState state)
+		public void DrawButtonBackground(Graphics g, Rectangle rect, ButtonState state)
 		{
 			if (rect.Width < 4 || rect.Height < 4) return;
 
@@ -519,10 +548,10 @@ namespace AdamsLair.PropertyGrid.Renderer
 
 			if (state == ButtonState.Normal)
 			{
-				colorInner = SystemColors.Window;
-				colorBorder = SystemColors.ControlDarkDark;//.MixWith(colorHighlight, 0.4f);
+				colorInner = this.ColorVeryLightBackground;
+				colorBorder = this.ColorVeryDarkBackground;
 
-				Color colorGradBase = SystemColors.ControlDarkDark;
+				Color colorGradBase = this.ColorVeryDarkBackground;
 				Color gradLight2 = colorGradBase.MixWith(colorInner, 0.9f);
 				Color gradLight = colorGradBase.MixWith(colorInner, 0.8f);
 				Color gradDark = colorGradBase.MixWith(colorInner, 0.725f);
@@ -533,10 +562,10 @@ namespace AdamsLair.PropertyGrid.Renderer
 			}
 			else if (state == ButtonState.Hot)
 			{
-				colorInner = SystemColors.Window;
-				colorBorder = SystemColors.ControlDarkDark.MixWith(SystemColors.Highlight, 0.4f);
+				colorInner = this.ColorVeryLightBackground;
+				colorBorder = this.ColorVeryDarkBackground.MixWith(this.ColorHightlight, 0.4f);
 
-				Color colorGradBase = SystemColors.Highlight;
+				Color colorGradBase = this.ColorHightlight;
 				Color gradLight2 = colorGradBase.MixWith(colorInner, 0.9f);
 				Color gradLight = colorGradBase.MixWith(colorInner, 0.8f);
 				Color gradDark = colorGradBase.MixWith(colorInner, 0.7f);
@@ -547,11 +576,11 @@ namespace AdamsLair.PropertyGrid.Renderer
 			}
 			else if (state == ButtonState.Pressed)
 			{
-				colorBorder = SystemColors.ControlDarkDark.MixWith(SystemColors.Highlight, 1.0f, true);
+				colorBorder = this.ColorVeryDarkBackground.MixWith(this.ColorHightlight, 1.0f, true);
 				colorInner = colorBorder;
 
-				Color colorGradBase = SystemColors.Highlight;
-				Color colorGradBase2 = SystemColors.Window;
+				Color colorGradBase = this.ColorHightlight;
+				Color colorGradBase2 = this.ColorVeryLightBackground;
 				Color gradLight2 = colorGradBase.MixWith(colorGradBase2, 0.9f);
 				Color gradLight = colorGradBase.MixWith(colorGradBase2, 0.7f);
 				Color gradDark = colorGradBase.MixWith(colorGradBase2, 0.5f);
@@ -566,8 +595,8 @@ namespace AdamsLair.PropertyGrid.Renderer
 			}
 			else
 			{
-				colorInner = Color.FromArgb(128, SystemColors.Window);
-				colorBorder = Color.FromArgb(128, SystemColors.ControlDarkDark);
+				colorInner = Color.FromArgb(128, this.ColorVeryLightBackground);
+				colorBorder = Color.FromArgb(128, this.ColorVeryDarkBackground);
 				upperBrush = new SolidBrush(Color.Transparent);
 				lowerBrush = new SolidBrush(Color.Transparent);
 			}
@@ -583,11 +612,11 @@ namespace AdamsLair.PropertyGrid.Renderer
 			if (state == ButtonState.Pressed)
 				g.DrawLine(new Pen((lowerBrush as LinearGradientBrush).LinearColors[1]), innerRectLower.X + 1, innerRectLower.Bottom - 1, innerRectLower.Right - 2, innerRectLower.Bottom - 1);
 		}
-		public static void DrawButton(Graphics g, Rectangle rect, ButtonState state, string text, IconImage icon)
+		public void DrawButton(Graphics g, Rectangle rect, ButtonState state, string text, IconImage icon)
 		{
 			DrawButton(g, rect, state, text, state == ButtonState.Disabled ? icon.Disabled : icon.Normal);
 		}
-		public static void DrawButton(Graphics g, Rectangle rect, ButtonState state, string text, Image icon = null)
+		public void DrawButton(Graphics g, Rectangle rect, ButtonState state, string text, Image icon = null)
 		{
 			if (rect.Width < 4 || rect.Height < 4) return;
 
@@ -598,9 +627,9 @@ namespace AdamsLair.PropertyGrid.Renderer
 			Rectangle innerRect = new Rectangle(rect.X + 1, rect.Y + 1, rect.Width - 2, rect.Height - 2);
 			Color colorText;
 			if (state == ButtonState.Disabled)
-				colorText = SystemColors.GrayText;
+				colorText = this.ColorGrayText;
 			else
-				colorText = SystemColors.ControlText;
+				colorText = this.ColorText;
 
 			RectangleF clipRect = innerRect;
 			clipRect.Intersect(g.ClipBounds);
@@ -646,11 +675,11 @@ namespace AdamsLair.PropertyGrid.Renderer
 
 			g.Restore(graphicsState);
 		}
-		public static void DrawComboButton(Graphics g, Rectangle rect, ButtonState state, string text, IconImage icon)
+		public void DrawComboButton(Graphics g, Rectangle rect, ButtonState state, string text, IconImage icon)
 		{
 			DrawComboButton(g, rect, state, text, state == ButtonState.Disabled ? icon.Disabled : icon.Normal);
 		}
-		public static void DrawComboButton(Graphics g, Rectangle rect, ButtonState state, string text, Image icon = null)
+		public void DrawComboButton(Graphics g, Rectangle rect, ButtonState state, string text, Image icon = null)
 		{
 			if (rect.Width < 8 + dropDownIcon.Width || rect.Height < 4) return;
 			GraphicsState graphicsState = g.Save();
@@ -660,9 +689,9 @@ namespace AdamsLair.PropertyGrid.Renderer
 			Rectangle innerRect = new Rectangle(rect.X + 1, rect.Y + 1, rect.Width - 2, rect.Height - 2);
 			Color colorText;
 			if (state == ButtonState.Disabled)
-				colorText = SystemColors.GrayText;
+				colorText = this.ColorGrayText;
 			else
-				colorText = SystemColors.ControlText;
+				colorText = this.ColorText;
 
 			Rectangle dropDownIconRect = new Rectangle(
 				innerRect.Right - dropDownIcon.Width - 4,
@@ -720,7 +749,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 			g.Restore(graphicsState);
 		}
 
-		private static void InitCheckBox(CheckBoxState checkState)
+		private void InitCheckBox(CheckBoxState checkState)
 		{
 			if (checkBoxImages != null && checkBoxImages.ContainsKey(checkState)) return;
 			if (checkBoxImages == null) checkBoxImages = new Dictionary<CheckBoxState,Bitmap>();
@@ -822,7 +851,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 			}
 			checkBoxImages[checkState] = image;
 		}
-		private static void InitExpandNode(ExpandNodeState expandState)
+		private void InitExpandNode(ExpandNodeState expandState)
 		{
 			if (expandNodeImages != null && expandNodeImages.ContainsKey(expandState)) return;
 			if (expandNodeImages == null) expandNodeImages = new Dictionary<ExpandNodeState,Bitmap>();

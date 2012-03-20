@@ -33,6 +33,8 @@ namespace EditorBase
 
 			this.SetStyle(ControlStyles.Opaque, true);
 			this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+
+			this.toolStrip.Renderer = new DualityEditor.Controls.ToolStrip.DualitorToolStripSystemRenderer();
 		}
 		protected override void OnShown(EventArgs e)
 		{

@@ -43,6 +43,7 @@
 			// stateSelector
 			// 
 			this.stateSelector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.stateSelector.FlatStyle = System.Windows.Forms.FlatStyle.Standard;
 			this.stateSelector.Name = "stateSelector";
 			this.stateSelector.Size = new System.Drawing.Size(121, 25);
 			this.stateSelector.DropDown += new System.EventHandler(this.stateSelector_DropDown);
@@ -79,6 +80,7 @@
             0,
             0});
 			this.parallaxRefDist.Name = "parallaxRefDist";
+			this.parallaxRefDist.NumBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(196)))), ((int)(((byte)(196)))), ((int)(((byte)(196)))));
 			this.parallaxRefDist.NumericWidth = 75;
 			this.parallaxRefDist.Size = new System.Drawing.Size(128, 22);
 			this.parallaxRefDist.Text = "RefDist";
@@ -111,6 +113,7 @@
 			// 
 			this.camSelector.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
 			this.camSelector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.camSelector.FlatStyle = System.Windows.Forms.FlatStyle.Standard;
 			this.camSelector.Name = "camSelector";
 			this.camSelector.Size = new System.Drawing.Size(121, 25);
 			this.camSelector.DropDown += new System.EventHandler(this.camSelector_DropDown);
@@ -119,6 +122,7 @@
 			// 
 			// toolbarCamera
 			// 
+			this.toolbarCamera.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(212)))), ((int)(((byte)(212)))), ((int)(((byte)(212)))));
 			this.toolbarCamera.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.toolbarCamera.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.stateSelector,
@@ -138,6 +142,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(162)))), ((int)(((byte)(162)))), ((int)(((byte)(162)))));
 			this.ClientSize = new System.Drawing.Size(539, 397);
 			this.Controls.Add(this.toolbarCamera);
 			this.DockAreas = ((WeifenLuo.WinFormsUI.Docking.DockAreas)((WeifenLuo.WinFormsUI.Docking.DockAreas.Float | WeifenLuo.WinFormsUI.Docking.DockAreas.Document)));

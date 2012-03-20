@@ -182,50 +182,50 @@ namespace EditorBase.PropertyEditors
 			ControlRenderer.DrawGroupHeaderBackground(
 				e.Graphics, 
 				this.rectHeader, 
-				focusBg ? SystemColors.Control.ScaleBrightness(0.85f) : SystemColors.Control, 
+				focusBg ? ControlRenderer.ColorBackground.ScaleBrightness(0.85f) : ControlRenderer.ColorBackground, 
 				GroupHeaderStyle.SmoothSunken);
-
+			
 			ControlRenderer.DrawStringLine(e.Graphics, 
 				"Width:", 
 				SystemFonts.DefaultFont, 
 				this.rectLabelWidth, 
-				!this.Enabled ? SystemColors.GrayText : SystemColors.ControlText);
+				!this.Enabled ? ControlRenderer.ColorGrayText : ControlRenderer.ColorText);
 			ControlRenderer.DrawStringLine(e.Graphics, 
 				"Height:", 
 				SystemFonts.DefaultFont, 
 				this.rectLabelHeight, 
-				!this.Enabled ? SystemColors.GrayText : SystemColors.ControlText);
+				!this.Enabled ? ControlRenderer.ColorGrayText : ControlRenderer.ColorText);
 			ControlRenderer.DrawStringLine(e.Graphics, 
 				this.value != null ? this.value.PxWidth.ToString() : " - ", 
 				SystemFonts.DefaultFont, 
 				this.rectLabelWidthVal, 
-				!this.Enabled ? SystemColors.GrayText : SystemColors.ControlText);
+				!this.Enabled ? ControlRenderer.ColorGrayText : ControlRenderer.ColorText);
 			ControlRenderer.DrawStringLine(e.Graphics, 
 				this.value != null ? this.value.PxHeight.ToString() : " - ", 
 				SystemFonts.DefaultFont, 
 				this.rectLabelHeightVal, 
-				!this.Enabled ? SystemColors.GrayText : SystemColors.ControlText);
+				!this.Enabled ? ControlRenderer.ColorGrayText : ControlRenderer.ColorText);
 
 			ControlRenderer.DrawStringLine(e.Graphics, 
 				"OglWidth:", 
 				SystemFonts.DefaultFont, 
 				this.rectLabelOglWidth, 
-				!this.Enabled ? SystemColors.GrayText : SystemColors.ControlText);
+				!this.Enabled ? ControlRenderer.ColorGrayText : ControlRenderer.ColorText);
 			ControlRenderer.DrawStringLine(e.Graphics, 
 				"OglHeight:", 
 				SystemFonts.DefaultFont, 
 				this.rectLabelOglHeight, 
-				!this.Enabled ? SystemColors.GrayText : SystemColors.ControlText);
+				!this.Enabled ? ControlRenderer.ColorGrayText : ControlRenderer.ColorText);
 			ControlRenderer.DrawStringLine(e.Graphics, 
 				this.value != null ? this.value.OglWidth.ToString() : " - ", 
 				SystemFonts.DefaultFont, 
 				this.rectLabelOglWidthVal, 
-				!this.Enabled ? SystemColors.GrayText : SystemColors.ControlText);
+				!this.Enabled ? ControlRenderer.ColorGrayText : ControlRenderer.ColorText);
 			ControlRenderer.DrawStringLine(e.Graphics, 
 				this.value != null ? this.value.OglHeight.ToString() : " - ", 
 				SystemFonts.DefaultFont, 
 				this.rectLabelOglHeightVal, 
-				!this.Enabled ? SystemColors.GrayText : SystemColors.ControlText);
+				!this.Enabled ? ControlRenderer.ColorGrayText : ControlRenderer.ColorText);
 
 			if (this.subImageSelector.Rect.Width > 0)
 			{
@@ -233,7 +233,7 @@ namespace EditorBase.PropertyEditors
 					"Frame Index", 
 					SystemFonts.DefaultFont, 
 					this.rectLabelName, 
-					!this.Enabled ? SystemColors.GrayText : SystemColors.ControlText,
+					!this.Enabled ? ControlRenderer.ColorGrayText : ControlRenderer.ColorText,
 					StringAlignment.Far);
 				this.subImageSelector.OnPaint(e, this.Enabled && !this.subImageSelector.ReadOnly, false);
 			}
@@ -243,7 +243,7 @@ namespace EditorBase.PropertyEditors
 					this.value != null ? this.value.Name : " - ", 
 					SystemFonts.DefaultFont, 
 					this.rectLabelName, 
-					!this.Enabled ? SystemColors.GrayText : SystemColors.ControlText,
+					!this.Enabled ? ControlRenderer.ColorGrayText : ControlRenderer.ColorText,
 					StringAlignment.Far);
 			}
 		}

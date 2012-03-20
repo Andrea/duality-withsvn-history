@@ -213,6 +213,22 @@ namespace Aga.Controls.Tree
 
 		#region DesignTime
 
+		private Color _fullRowSelectActiveColor;
+		[Category("Appearance")]
+		public Color FullRowSelectActiveColor
+		{
+			get { return _fullRowSelectActiveColor; }
+			set { _fullRowSelectActiveColor = value; }
+		}
+
+		private Color _fullRowSelectInactiveColor;
+		[Category("Appearance")]
+		public Color FullRowSelectInactiveColor
+		{
+			get { return _fullRowSelectInactiveColor; }
+			set { _fullRowSelectInactiveColor = value; }
+		}
+
 		private bool _shiftFirstNode;
 		[DefaultValue(false), Category("Behavior")]
 		public bool ShiftFirstNode

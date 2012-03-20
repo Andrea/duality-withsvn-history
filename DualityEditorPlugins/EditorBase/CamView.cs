@@ -171,6 +171,7 @@ namespace EditorBase
 			this.bgColorDialog.AlphaEnabled = false;
 			this.Text = PluginRes.EditorBaseRes.MenuItemName_CamView + " #" + runtimeId;
 			this.runtimeId = runtimeId;
+			this.toolbarCamera.Renderer = new DualityEditor.Controls.ToolStrip.DualitorToolStripProfessionalRenderer();
 		}
 		protected override void OnShown(EventArgs e)
 		{

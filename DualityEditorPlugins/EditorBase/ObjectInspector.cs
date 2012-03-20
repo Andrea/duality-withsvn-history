@@ -32,6 +32,7 @@ namespace EditorBase
 		{
 			this.InitializeComponent();
 			this.runtimeId = runtimeId;
+			this.toolStrip.Renderer = new DualityEditor.Controls.ToolStrip.DualitorToolStripProfessionalRenderer();
 		}
 		public ObjectInspector(ObjectInspector other) : this(-1)
 		{

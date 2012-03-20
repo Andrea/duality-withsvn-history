@@ -217,13 +217,22 @@ namespace ResourceHacker
 
 			this.nodeTextBoxObjId.DrawText += this.nodeTextBoxObjId_DrawText;
 			this.nodeTextBoxType.DrawText += this.nodeTextBoxType_DrawText;
+			this.nodeTextBoxName.DrawText += this.nodeTextBoxName_DrawText;
+			this.nodeTextBoxValue.DrawText += this.nodeTextBoxValue_DrawText;
+			this.treeViewColumnName.DrawColHeaderBg += this.treeViewColumn_DrawColHeaderBg;
+			this.treeViewColumnObjId.DrawColHeaderBg += this.treeViewColumn_DrawColHeaderBg;
+			this.treeViewColumnType.DrawColHeaderBg += this.treeViewColumn_DrawColHeaderBg;
+			this.treeViewColumnValue.DrawColHeaderBg += this.treeViewColumn_DrawColHeaderBg;
 			this.propertyGrid.EditingFinished += this.propertyGrid_EditingFinished;
 
 			this.openFileDialog.InitialDirectory = EditorHelper.DataDirectory;
 			this.openFileDialog.Filter = "Duality Resource|*" + Resource.FileExt;
 			this.saveFileDialog.InitialDirectory = this.openFileDialog.InitialDirectory;
 			this.saveFileDialog.Filter = this.openFileDialog.Filter;
+
+			this.mainToolStrip.Renderer = new DualityEditor.Controls.ToolStrip.DualitorToolStripProfessionalRenderer();
 		}
+
 		protected override void OnShown(EventArgs e)
 		{
 			this.propertyGrid.RegisterEditorProvider(CorePluginHelper.RequestPropertyEditorProviders());
@@ -447,18 +456,39 @@ namespace ResourceHacker
 		{
 			DataTreeNode node = e.Node.Tag as DataTreeNode;
 			ObjectRefTreeNode objRefNode = node as ObjectRefTreeNode;
-			if (e.Text == "0") e.TextColor = SystemColors.GrayText;
+			if (e.Text == "0") 
+				e.TextColor = SystemColors.GrayText;
 			else if (objRefNode != null)
 			{
-				if (this.IsObjectIdExisting(objRefNode.ObjId)) e.TextColor = Color.Blue;
-				else e.TextColor = Color.Red;
+				if (this.IsObjectIdExisting(objRefNode.ObjId))
+					e.TextColor = Color.Blue;
+				else 
+					e.TextColor = Color.Red;
 			}
+			else
+				e.TextColor = Color.Black;
 		}
 		private void nodeTextBoxType_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawEventArgs e)
 		{
 			DataTreeNode node = e.Node.Tag as DataTreeNode;
 			ObjectTreeNode objNode = node as ObjectTreeNode;
-			if (objNode != null && objNode.ResolvedMember == null) e.TextColor = Color.Red;
+			if (objNode != null && objNode.ResolvedMember == null)
+				e.TextColor = Color.Red;
+			else
+				e.TextColor = Color.Black;
+		}
+		private void nodeTextBoxName_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawEventArgs e)
+		{
+			e.TextColor = Color.Black;
+		}
+		private void nodeTextBoxValue_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawEventArgs e)
+		{
+			e.TextColor = Color.Black;
+		}
+		private void treeViewColumn_DrawColHeaderBg(object sender, DrawColHeaderBgEventArgs e)
+		{
+			e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(255, 212, 212, 212)), e.Bounds);
+			e.Handled = true;
 		}
 		private void propertyGrid_EditingFinished(object sender, AdamsLair.PropertyGrid.PropertyEditorValueEventArgs e)
 		{

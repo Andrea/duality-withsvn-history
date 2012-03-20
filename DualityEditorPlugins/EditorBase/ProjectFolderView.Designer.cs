@@ -69,7 +69,7 @@
 			// 
 			// toolStrip
 			// 
-			this.toolStrip.BackColor = System.Drawing.SystemColors.InactiveCaption;
+			this.toolStrip.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(212)))), ((int)(((byte)(212)))), ((int)(((byte)(212)))));
 			this.toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButtonWorkDir,
@@ -99,7 +99,7 @@
 			// folderView
 			// 
 			this.folderView.AllowDrop = true;
-			this.folderView.BackColor = System.Drawing.SystemColors.Window;
+			this.folderView.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(196)))), ((int)(((byte)(196)))), ((int)(((byte)(196)))));
 			this.folderView.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.folderView.Columns.Add(this.treeColumnName);
 			this.folderView.Columns.Add(this.treeColumnType);
@@ -108,7 +108,10 @@
 			this.folderView.DisplayDraggingNodes = true;
 			this.folderView.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.folderView.DragDropMarkColor = System.Drawing.Color.Black;
-			this.folderView.LineColor = System.Drawing.SystemColors.ControlDark;
+			this.folderView.FullRowSelect = true;
+			this.folderView.FullRowSelectActiveColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+			this.folderView.FullRowSelectInactiveColor = System.Drawing.Color.FromArgb(((int)(((byte)(212)))), ((int)(((byte)(212)))), ((int)(((byte)(212)))));
+			this.folderView.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(92)))), ((int)(((byte)(92)))), ((int)(((byte)(92)))));
 			this.folderView.Location = new System.Drawing.Point(0, 25);
 			this.folderView.Model = null;
 			this.folderView.Name = "folderView";
@@ -161,7 +164,7 @@
             this.toolStripSeparatorShowInExplorer,
             this.showInExplorerToolStripMenuItem});
 			this.contextMenuNode.Name = "contextMenuNode";
-			this.contextMenuNode.Size = new System.Drawing.Size(162, 198);
+			this.contextMenuNode.Size = new System.Drawing.Size(162, 176);
 			this.contextMenuNode.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuNode_Opening);
 			// 
 			// toolStripSeparatorCustomActions
@@ -316,6 +319,7 @@
 			// 
 			// panelBottom
 			// 
+			this.panelBottom.BackColor = System.Drawing.Color.Transparent;
 			this.panelBottom.Controls.Add(this.textBoxFilter);
 			this.panelBottom.Controls.Add(this.labelFilter);
 			this.panelBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -327,6 +331,8 @@
 			// 
 			// textBoxFilter
 			// 
+			this.textBoxFilter.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(196)))), ((int)(((byte)(196)))), ((int)(((byte)(196)))));
+			this.textBoxFilter.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.textBoxFilter.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.textBoxFilter.Location = new System.Drawing.Point(41, 3);
 			this.textBoxFilter.Name = "textBoxFilter";
@@ -337,6 +343,7 @@
 			// labelFilter
 			// 
 			this.labelFilter.AutoSize = true;
+			this.labelFilter.BackColor = System.Drawing.Color.Transparent;
 			this.labelFilter.Dock = System.Windows.Forms.DockStyle.Left;
 			this.labelFilter.Location = new System.Drawing.Point(3, 3);
 			this.labelFilter.Name = "labelFilter";
@@ -350,6 +357,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(212)))), ((int)(((byte)(212)))), ((int)(((byte)(212)))));
 			this.ClientSize = new System.Drawing.Size(206, 547);
 			this.Controls.Add(this.folderView);
 			this.Controls.Add(this.panelBottom);

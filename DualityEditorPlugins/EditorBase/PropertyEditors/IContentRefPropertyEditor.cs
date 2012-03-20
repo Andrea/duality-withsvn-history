@@ -126,7 +126,7 @@ namespace EditorBase.PropertyEditors
 			Color bgColorBright = Color.White;
 			if (this.dragHover) bgColorBright = bgColorBright.MixWith(Color.FromArgb(192, 255, 0), 0.4f);
 			else if (this.multiple) bgColorBright = Color.Bisque;
-			else if (linkBroken) bgColorBright = Color.FromArgb(255,128, 128);
+			else if (linkBroken) bgColorBright = Color.FromArgb(255, 128, 128);
 
 			Rectangle rectImage = new Rectangle(this.rectPanel.X + 2, this.rectPanel.Y + 2, this.rectPanel.Width - 4, this.rectPanel.Height - 4);
 			if (this.prevImage == null)
