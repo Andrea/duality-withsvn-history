@@ -387,6 +387,8 @@ namespace EditorBase.CamViewStates
 			this.toolCreatePoly.DisplayStyle = ToolStripItemDisplayStyle.Image;
 			this.toolCreatePoly.AutoToolTip = true;
 			this.toolstrip.Items.Add(this.toolCreatePoly);
+			this.toolstrip.Renderer = new DualityEditor.Controls.ToolStrip.DualitorToolStripProfessionalRenderer();
+			this.toolstrip.BackColor = Color.FromArgb(212, 212, 212);
 
 			this.View.Controls.Add(this.toolstrip);
 			this.View.Controls.SetChildIndex(this.toolstrip, 0);
