@@ -31,6 +31,7 @@ namespace Aga.Controls.Tree
 
 		private Pen _linePen;
 		private Pen _markPen;
+		private bool _justGotFocus;
 		private bool _suspendUpdate;
 		private bool _needFullUpdate;
 		private bool _fireSelectionEvent;
@@ -518,6 +519,7 @@ namespace Aga.Controls.Tree
 
 		protected override void OnGotFocus(EventArgs e)
 		{
+			this._justGotFocus = true;
 			UpdateView();
 			ChangeInput();
 			base.OnGotFocus(e);

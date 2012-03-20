@@ -136,7 +136,7 @@ namespace Aga.Controls.Tree.NodeControls
 					BeginEdit();
 					args.Handled = true;
 				}
-				else if (_editFlag)// && args.Node.IsSelected)
+				else if (_editFlag && !args.JustGotFocus)// && args.Node.IsSelected)
 					_timer.Start();
 			}
 		}

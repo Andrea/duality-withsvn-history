@@ -209,6 +209,7 @@ namespace EditorBase
 			CorePluginHelper.RegisterDataConverter<GameObject>(new DataConverters.GameObjFromComponents());
 			CorePluginHelper.RegisterDataConverter<Component>(new DataConverters.ComponentFromSound());
 			CorePluginHelper.RegisterDataConverter<Component>(new DataConverters.ComponentFromMaterial());
+			CorePluginHelper.RegisterDataConverter<Component>(new DataConverters.ComponentFromFont());
 			CorePluginHelper.RegisterDataConverter<BatchInfo>(new DataConverters.BatchInfoFromMaterial());
 			CorePluginHelper.RegisterDataConverter<Material>(new DataConverters.MaterialFromBatchInfo());
 			CorePluginHelper.RegisterDataConverter<Material>(new DataConverters.MaterialFromTexture());

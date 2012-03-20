@@ -424,6 +424,7 @@ namespace Duality
 						fittingText = textElem.Text;
 					}
 					Vector2 textElemSize = this.font.MeasureText(fittingText);
+					Vector2 textElemSizeTrimmed = this.font.MeasureText(fittingText.Trim());
 
 					// Perform word wrap by whole Element
 					if (this.parent.maxWidth > 0 && this.parent.wrapMode == WrapMode.Element)
@@ -462,7 +463,7 @@ namespace Duality
 
 					this.vertTextIndex[this.fontIndex] += fittingText.Length * 4;
 					this.offset.X += textElemSize.X;
-					this.lineWidth += textElemSize.X;
+					this.lineWidth += textElemSizeTrimmed.X;
 					this.lineHeight = Math.Max(this.lineHeight, this.font.Height);
 				}
 				else if (elem is TextElement && this.font == null)

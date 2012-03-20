@@ -44,6 +44,13 @@ namespace Aga.Controls.Tree
 			set { _handled = value; }
 		}
 
+		private bool _justGotFocus;
+		public bool JustGotFocus
+		{
+			get { return _justGotFocus; }
+			internal set { _justGotFocus = value; }
+		}
+
 		private Rectangle _controlBounds;
 		public Rectangle ControlBounds
 		{

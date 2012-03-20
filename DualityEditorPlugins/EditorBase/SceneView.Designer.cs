@@ -36,6 +36,7 @@
 			this.toolStripLabelSceneName = new System.Windows.Forms.ToolStripLabel();
 			this.objectView = new Aga.Controls.Tree.TreeViewAdv();
 			this.contextMenuNode = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.toolStripSeparatorCustomActions = new System.Windows.Forms.ToolStripSeparator();
 			this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.gameObjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.newGameObjectSeparator = new System.Windows.Forms.ToolStripSeparator();
@@ -54,7 +55,6 @@
 			this.panelBottom = new System.Windows.Forms.Panel();
 			this.textBoxFilter = new System.Windows.Forms.TextBox();
 			this.labelFilter = new System.Windows.Forms.Label();
-			this.toolStripSeparatorCustomActions = new System.Windows.Forms.ToolStripSeparator();
 			this.toolStrip.SuspendLayout();
 			this.contextMenuNode.SuspendLayout();
 			this.contextMenuDragMoveCopy.SuspendLayout();
@@ -131,8 +131,10 @@
 			this.objectView.SelectionChanged += new System.EventHandler(this.objectView_SelectionChanged);
 			this.objectView.DragDrop += new System.Windows.Forms.DragEventHandler(this.objectView_DragDrop);
 			this.objectView.DragOver += new System.Windows.Forms.DragEventHandler(this.objectView_DragOver);
+			this.objectView.Enter += new System.EventHandler(this.objectView_Enter);
 			this.objectView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.objectView_KeyDown);
 			this.objectView.Leave += new System.EventHandler(this.objectView_Leave);
+			this.objectView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.objectView_MouseUp);
 			// 
 			// contextMenuNode
 			// 
@@ -147,6 +149,12 @@
 			this.contextMenuNode.Size = new System.Drawing.Size(153, 126);
 			this.contextMenuNode.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuNode_Opening);
 			// 
+			// toolStripSeparatorCustomActions
+			// 
+			this.toolStripSeparatorCustomActions.Name = "toolStripSeparatorCustomActions";
+			this.toolStripSeparatorCustomActions.Size = new System.Drawing.Size(149, 6);
+			this.toolStripSeparatorCustomActions.Visible = false;
+			// 
 			// newToolStripMenuItem
 			// 
 			this.newToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -160,14 +168,14 @@
 			// gameObjectToolStripMenuItem
 			// 
 			this.gameObjectToolStripMenuItem.Name = "gameObjectToolStripMenuItem";
-			this.gameObjectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.gameObjectToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
 			this.gameObjectToolStripMenuItem.Text = "GameObject";
 			this.gameObjectToolStripMenuItem.Click += new System.EventHandler(this.gameObjectToolStripMenuItem_Click);
 			// 
 			// newGameObjectSeparator
 			// 
 			this.newGameObjectSeparator.Name = "newGameObjectSeparator";
-			this.newGameObjectSeparator.Size = new System.Drawing.Size(149, 6);
+			this.newGameObjectSeparator.Size = new System.Drawing.Size(137, 6);
 			// 
 			// toolStripSeparatorNew
 			// 
@@ -286,12 +294,6 @@
 			this.labelFilter.TabIndex = 1;
 			this.labelFilter.Text = "Filter:";
 			this.labelFilter.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			// 
-			// toolStripSeparatorCustomActions
-			// 
-			this.toolStripSeparatorCustomActions.Name = "toolStripSeparatorCustomActions";
-			this.toolStripSeparatorCustomActions.Size = new System.Drawing.Size(149, 6);
-			this.toolStripSeparatorCustomActions.Visible = false;
 			// 
 			// SceneView
 			// 

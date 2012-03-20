@@ -111,6 +111,15 @@ namespace Duality.Components.Renderers
 			MathF.TransformDotVec(ref textOffset, ref xDot, ref yDot);
 			posTemp.X += textOffset.X;
 			posTemp.Y += textOffset.Y;
+			if (this.text.Fonts.All(r => !r.IsAvailable || r.Res.GlyphRenderHint == Font.RenderHint.Monochrome))
+			{
+				posTemp.X = MathF.Round(posTemp.X);
+				posTemp.Y = MathF.Round(posTemp.Y);
+				if (MathF.RoundToInt(DualityApp.TargetResolution.X) != (MathF.RoundToInt(DualityApp.TargetResolution.X) / 2) * 2)
+					posTemp.X += 0.5f;
+				if (MathF.RoundToInt(DualityApp.TargetResolution.Y) != (MathF.RoundToInt(DualityApp.TargetResolution.Y) / 2) * 2)
+					posTemp.Y += 0.5f;
+			}
 
 			// Draw design time data
 			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Editor)

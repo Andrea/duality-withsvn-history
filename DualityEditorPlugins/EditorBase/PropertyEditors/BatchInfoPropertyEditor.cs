@@ -731,6 +731,8 @@ namespace EditorBase.PropertyEditors
 			base.OnPropertySet(property, targets);
 			// BatchInfos aren't usually referenced, they're nested. Make sure the change notification is passed on.
 			this.SetValues(targets);
+			// Run a GetValue-pass to make sure automatic changes are applied if necessary.
+			this.PerformGetValue();
 		}
 
 		private void UniformList_EditorAdded(object sender, PropertyEditorEventArgs e)

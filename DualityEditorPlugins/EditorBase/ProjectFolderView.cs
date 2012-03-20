@@ -280,6 +280,7 @@ namespace EditorBase
 		private	string					tempUpperFilter			= null;
 		private	string					tempDropBasePath		= null;
 		private	StringCollection		tempFileDropList		= null;
+		private bool	tempScheduleSelectionChange	= false;
 
 
 		public ProjectFolderView()
@@ -733,7 +734,7 @@ namespace EditorBase
 
 			return baseTargetPath;
 		}
-		
+
 		private void textBoxFilter_TextChanged(object sender, EventArgs e)
 		{
 			this.ApplyNodeFilter();
@@ -972,6 +973,18 @@ namespace EditorBase
 		private void folderView_Leave(object sender, EventArgs e)
 		{
 			this.folderView.Invalidate();
+		}
+		private void folderView_Enter(object sender, EventArgs e)
+		{
+			this.tempScheduleSelectionChange = true;
+		}
+		private void folderView_MouseUp(object sender, MouseEventArgs e)
+		{
+			if (this.tempScheduleSelectionChange)
+			{
+				this.tempScheduleSelectionChange = false;
+				this.folderView_SelectionChanged(this.folderView, EventArgs.Empty);
+			}
 		}
 		private NodeBase DragDropGetTargetBaseNode()
 		{

@@ -50,6 +50,7 @@ namespace Aga.Controls.Tree
 
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
+			this._justGotFocus = false;
 			base.OnKeyDown(e);
 			if (!e.Handled)
 			{
@@ -70,6 +71,7 @@ namespace Aga.Controls.Tree
 
 		protected override void OnKeyUp(KeyEventArgs e)
 		{
+			this._justGotFocus = false;
 			base.OnKeyUp(e);
 			if (!e.Handled)
 			{
@@ -89,6 +91,7 @@ namespace Aga.Controls.Tree
 
 		protected override void OnKeyPress(KeyPressEventArgs e)
 		{
+			this._justGotFocus = false;
 			base.OnKeyPress(e);
 			if (!e.Handled)
 				_search.Search(e.KeyChar);
@@ -108,6 +111,7 @@ namespace Aga.Controls.Tree
 			NodeControlInfo info = GetNodeControlInfoAt(args.Node, e.Location);
 			args.ControlBounds = info.Bounds;
 			args.Control = info.Control;
+			args.JustGotFocus = _justGotFocus;
 			return args;
 		}
 
@@ -215,6 +219,7 @@ namespace Aga.Controls.Tree
 
 				base.OnMouseUp(e);
 			}
+			this._justGotFocus = false;
 		}
 
 		protected override void OnMouseMove(MouseEventArgs e)
@@ -236,6 +241,7 @@ namespace Aga.Controls.Tree
 
 		protected override void OnMouseLeave(EventArgs e)
 		{
+			this._justGotFocus = false;
 			_hotColumn = null;
 			UpdateHeaders();
 			base.OnMouseLeave(e);

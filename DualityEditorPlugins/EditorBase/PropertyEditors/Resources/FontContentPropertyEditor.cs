@@ -30,7 +30,7 @@ namespace EditorBase.PropertyEditors
 		{
 			base.OnEditingFinished(sender, args);
 
-			Font[] fntArr = this.GetValue().Cast<Font>().NotNull().ToArray();
+			Font[] fntArr = this.GetValue().OfType<Font>().NotNull().ToArray();
 			bool anyReload = false;
 			foreach (Font fnt in fntArr)
 			{

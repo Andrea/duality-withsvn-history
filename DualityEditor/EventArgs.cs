@@ -59,12 +59,13 @@ namespace DualityEditor
 			get { return this.removed; }
 		}
 
-		public SelectionChangedEventArgs(ObjectSelection current, ObjectSelection previous)
+		public SelectionChangedEventArgs(ObjectSelection current, ObjectSelection previous, ObjectSelection.Category changedCategoryFallback)
 		{
 			this.current = current;
 			this.previous = previous;
 
 			this.diffCat = ObjectSelection.GetAffectedCategories(this.previous, this.current);
+			if (this.diffCat == ObjectSelection.Category.None) this.diffCat = changedCategoryFallback;
 			this.added = this.current - this.previous;
 			this.removed = this.previous - this.current;
 		}

@@ -382,25 +382,25 @@ namespace DualityEditor.Forms
 				this.selectionCurrent = this.selectionCurrent.Append(sel);
 			else if (mode == SelectMode.Toggle)
 				this.selectionCurrent = this.selectionCurrent.Toggle(sel);
-			this.OnSelectionChanged(sender);
+			this.OnSelectionChanged(sender, ObjectSelection.GetCategoriesInSelection(sel));
 		}
 		public void Deselect(object sender, ObjectSelection sel)
 		{
 			this.selectionPrevious = this.selectionCurrent;
 			this.selectionCurrent = this.selectionCurrent.Remove(sel);
-			this.OnSelectionChanged(sender);
+			this.OnSelectionChanged(sender, ObjectSelection.Category.None);
 		}
 		public void Deselect(object sender, ObjectSelection.Category category)
 		{
 			this.selectionPrevious = this.selectionCurrent;
 			this.selectionCurrent = this.selectionCurrent.Clear(category);
-			this.OnSelectionChanged(sender);
+			this.OnSelectionChanged(sender, ObjectSelection.Category.None);
 		}
 		public void Deselect(object sender, Predicate<object> predicate)
 		{
 			this.selectionPrevious = this.selectionCurrent;
 			this.selectionCurrent = this.selectionCurrent.Clear(predicate);
-			this.OnSelectionChanged(sender);
+			this.OnSelectionChanged(sender, ObjectSelection.Category.None);
 		}
 
 		public void SaveCurrentScene(bool skipYetUnsaved = true)
@@ -981,15 +981,17 @@ namespace DualityEditor.Forms
 			if (this.LeaveSandbox != null)
 				this.LeaveSandbox(this, null);
 		}
-		private void OnSelectionChanged(object sender)
+		private void OnSelectionChanged(object sender, ObjectSelection.Category changedCategoryFallback)
 		{
-			if (this.selectionCurrent == this.selectionPrevious) return;
+			//if (this.selectionCurrent == this.selectionPrevious) return;
 			if (sender == null) sender = this;
+			if (this.selectionCurrent == this.selectionPrevious)
+				Log.Editor.WriteWarning("equal sel: {0}", this.selectionCurrent);
 
 			this.selectionChanging = true;
 
 			if (this.SelectionChanged != null)
-				this.SelectionChanged(sender, new SelectionChangedEventArgs(this.selectionCurrent, this.selectionPrevious));
+				this.SelectionChanged(sender, new SelectionChangedEventArgs(this.selectionCurrent, this.selectionPrevious, changedCategoryFallback));
 
 			this.selectionChanging = false;
 		}

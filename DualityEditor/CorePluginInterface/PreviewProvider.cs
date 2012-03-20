@@ -23,6 +23,7 @@ namespace DualityEditor.CorePluginInterface
 	{
 		public static Bitmap GetPreviewImage(this Resource res, int desiredWidth, int desiredHeight, PreviewSizeMode mode = PreviewSizeMode.FixedNone)
 		{
+			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Terminated) return null;
 			Bitmap result = null;
 			
 			//System.Diagnostics.Stopwatch w = new System.Diagnostics.Stopwatch();
@@ -120,8 +121,8 @@ namespace DualityEditor.CorePluginInterface
 					formatText.ApplySource(text);
 					FormattedText.Metrics metrics = formatText.Measure();
 					Vector2 textSize = metrics.Size;
-					Bitmap textBitmap = new Bitmap(desiredWidth, MathF.RoundToInt(textSize.Y) + 2);
-					formatText.RenderToBitmap(text, textBitmap, 5, 5);
+					Bitmap textBitmap = new Bitmap(desiredWidth, MathF.RoundToInt(textSize.Y));
+					formatText.RenderToBitmap(text, textBitmap, 5, 0);
 
 					result = textBitmap.Resize(desiredWidth, desiredHeight, Alignment.Left);
 				}

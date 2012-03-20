@@ -128,8 +128,10 @@
 			this.folderView.Expanding += new System.EventHandler<Aga.Controls.Tree.TreeViewAdvEventArgs>(this.folderView_Expanding);
 			this.folderView.DragDrop += new System.Windows.Forms.DragEventHandler(this.folderView_DragDrop);
 			this.folderView.DragOver += new System.Windows.Forms.DragEventHandler(this.folderView_DragOver);
+			this.folderView.Enter += new System.EventHandler(this.folderView_Enter);
 			this.folderView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.folderView_KeyDown);
 			this.folderView.Leave += new System.EventHandler(this.folderView_Leave);
+			this.folderView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.folderView_MouseUp);
 			// 
 			// treeColumnName
 			// 

@@ -432,7 +432,7 @@ namespace Duality.Resources
 		private void UpdateCharSpacing()
 		{
 			this.UpdateInternalFont();
-			this.spacing = this.hint == RenderHint.Monochrome ? MathF.Round(this.internalFont.Size / 10.0f) : this.internalFont.Size / 10.0f;
+			this.spacing = this.internalFont.Size / 10.0f;
 		}
 		private void UpdateInternalFont()
 		{
@@ -738,6 +738,12 @@ namespace Duality.Resources
 
 				vertices[i].pos = vertex;
 				vertices[i].clr = clr;
+
+				if (this.GlyphRenderHint == RenderHint.Monochrome)
+				{
+					vertices[i].pos.X = MathF.Round(vertices[i].pos.X);
+					vertices[i].pos.Y = MathF.Round(vertices[i].pos.Y);
+				}
 			}
 		}
 		/// <summary>
@@ -761,6 +767,12 @@ namespace Duality.Resources
 				vertex += offset;
 				vertices[i].pos = vertex;
 				vertices[i].clr = clr;
+
+				if (this.GlyphRenderHint == RenderHint.Monochrome)
+				{
+					vertices[i].pos.X = MathF.Round(vertices[i].pos.X);
+					vertices[i].pos.Y = MathF.Round(vertices[i].pos.Y);
+				}
 			}
 		}
 		/// <summary>
@@ -805,6 +817,15 @@ namespace Duality.Resources
 				vertices[i * 4 + 3].pos.Z = 0.0f;
 				vertices[i * 4 + 3].texCoord = uvRect.BottomLeft;
 				vertices[i * 4 + 3].clr = ColorRgba.White;
+
+				if (this.GlyphRenderHint == RenderHint.Monochrome)
+				{
+					for (int k = 0; k < 4; k++)
+					{
+						vertices[i * 4 + k].pos.X = MathF.Round(vertices[i * 4 + k].pos.X);
+						vertices[i * 4 + k].pos.Y = MathF.Round(vertices[i * 4 + k].pos.Y);
+					}
+				}
 
 				curOffset += glyphXAdv;
 			}

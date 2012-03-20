@@ -188,6 +188,50 @@ namespace EditorBase.DataConverters
 			return false;
 		}
 	}
+	public class ComponentFromFont : DataConverter
+	{
+		public override bool CanConvertFrom(ConvertOperation convert)
+		{
+			return 
+				convert.AllowedOperations.HasFlag(ConvertOperation.Operation.CreateObj) && 
+				convert.CanPerform<Font>();
+		}
+		public override bool Convert(ConvertOperation convert)
+		{
+			List<ContentRef<Font>> dropdata = new List<ContentRef<Font>>();
+			var matSelectionQuery = convert.Perform<Font>();
+			if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
+
+			// Generate objects
+			foreach (ContentRef<Font> fontRef in dropdata)
+			{
+				if (convert.IsObjectHandled(fontRef.Res)) continue;
+				if (!fontRef.IsAvailable) continue;
+				Font font = fontRef.Res;
+
+				GameObject gameobj = convert.Result.OfType<GameObject>().FirstOrDefault();
+				TextRenderer renderer = convert.Result.OfType<TextRenderer>().FirstOrDefault();
+				if (renderer == null && gameobj != null) renderer = gameobj.GetComponent<TextRenderer>();
+				if (renderer == null) renderer = new TextRenderer();
+				convert.AddResult(font.Name); // Leave a name string in the result to pick up for the GameObject constructor
+					
+				if (!renderer.Text.Fonts.Contains(fontRef))
+				{
+					var fonts = renderer.Text.Fonts.ToList();
+					if (fonts[0] == Font.GenericMonospace10) fonts.RemoveAt(0);
+					fonts.Add(fontRef);
+					renderer.Text.Fonts = fonts.ToArray();
+					renderer.Text.ApplySource();
+					renderer.UpdateMetrics();
+				}
+
+				convert.AddResult(renderer);
+				convert.MarkObjectHandled(fontRef.Res);
+			}
+
+			return false;
+		}
+	}
 	public class PrefabFromGameObject : DataConverter
 	{
 		public override int Priority

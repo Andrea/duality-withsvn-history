@@ -163,6 +163,7 @@ namespace EditorBase
 		private	NodeBase	tempDropTarget	= null;
 		private	Dictionary<Node,bool>	tempNodeVisibilityCache	= new Dictionary<Node,bool>();
 		private	string					tempUpperFilter			= null;
+		private bool	tempScheduleSelectionChange	= false;
 
 		
 		public IEnumerable<NodeBase> SelectedNodes
@@ -930,6 +931,18 @@ namespace EditorBase
 		private void objectView_Leave(object sender, EventArgs e)
 		{
 			this.objectView.Invalidate();
+		}
+		private void objectView_Enter(object sender, EventArgs e)
+		{
+			this.tempScheduleSelectionChange = true;
+		}
+		private void objectView_MouseUp(object sender, MouseEventArgs e)
+		{
+			if (this.tempScheduleSelectionChange)
+			{
+				this.tempScheduleSelectionChange = false;
+				this.objectView_SelectionChanged(this.objectView, EventArgs.Empty);
+			}
 		}
 		private NodeBase DragDropGetTargetNode()
 		{
