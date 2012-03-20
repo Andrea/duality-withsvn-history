@@ -184,7 +184,7 @@ namespace EditorBase.CamViewStates
 		protected override void OnCollectStateOverlayDrawcalls(Canvas canvas)
 		{
 			base.OnCollectStateOverlayDrawcalls(canvas);
-			if (this.DragMustWait && !this.dragLastLoc.IsEmpty)
+			if (this.SelObjAction == MouseAction.None && this.DragMustWait && !this.dragLastLoc.IsEmpty)
 			{
 				canvas.CurrentState.ColorTint = ColorRgba.White.WithAlpha(this.DragMustWaitProgress);
 				canvas.FillCircle(
