@@ -79,7 +79,7 @@ namespace DualityEditor.CorePluginInterface
 					{
 						Color baseColor = ExtMethodsSystemDrawingColor.ColorFromHSV(
 							(float)(oggHash % 90) * (float)(oggLen % 4) / 360.0f, 
-							0.65f, 
+							0.5f, 
 							1f);
 						Pen linePen = new Pen(Color.FromArgb(MathF.RoundToInt(255.0f / MathF.Pow((float)samples, 0.65f)), baseColor));
 						g.Clear(Color.Transparent);
@@ -97,8 +97,8 @@ namespace DualityEditor.CorePluginInterface
 								int offset = MathF.RoundToInt((float)stepWidth * (float)s / (float)samples);
 								channel1 = sdata[(i + offset) * pcm.channelCount + 0];
 								channel2 = sdata[(i + offset) * pcm.channelCount + 1];
-								left = (float)Math.Abs(channel1) / (float)short.MaxValue;
-								right = (float)Math.Abs(channel2) / (float)short.MaxValue;
+								left = (float)Math.Abs((int)channel1) / (float)short.MaxValue;
+								right = (float)Math.Abs((int)channel2) / (float)short.MaxValue;
 								g.DrawLine(linePen, x, yMid, x, yMid + MathF.RoundToInt(left * yMid));
 								g.DrawLine(linePen, x, yMid, x, yMid - MathF.RoundToInt(right * yMid));
 							}
