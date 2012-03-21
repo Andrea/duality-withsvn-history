@@ -143,6 +143,7 @@ namespace DualityEditor.Forms
 			instance = this;
 			this.InitializeComponent();
 			this.ApplyDockPanelSkin();
+			this.mainMenuStrip.Renderer = new DualityEditor.Controls.ToolStrip.DualitorToolStripProfessionalRenderer();
 			this.mainToolStrip.Renderer = new DualityEditor.Controls.ToolStrip.DualitorToolStripProfessionalRenderer();
 
 			this.needsRecovery = recover;

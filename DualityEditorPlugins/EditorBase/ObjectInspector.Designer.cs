@@ -36,6 +36,7 @@
 			this.toolStrip = new System.Windows.Forms.ToolStrip();
 			this.buttonAutoRefresh = new System.Windows.Forms.ToolStripButton();
 			this.buttonClone = new System.Windows.Forms.ToolStripButton();
+			this.buttonLock = new System.Windows.Forms.ToolStripButton();
 			this.propertyGrid = new DualityEditor.Controls.DualitorPropertyGrid();
 			this.toolStrip.SuspendLayout();
 			this.SuspendLayout();
@@ -63,16 +64,17 @@
 			// toolStrip
 			// 
 			this.toolStrip.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(212)))), ((int)(((byte)(212)))), ((int)(((byte)(212)))));
+			this.toolStrip.GripMargin = new System.Windows.Forms.Padding(0);
 			this.toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.buttonAutoRefresh,
-            this.buttonClone});
+            this.buttonClone,
+            this.buttonLock});
 			this.toolStrip.Location = new System.Drawing.Point(0, 0);
 			this.toolStrip.Name = "toolStrip";
 			this.toolStrip.Size = new System.Drawing.Size(231, 25);
 			this.toolStrip.TabIndex = 1;
 			this.toolStrip.Text = "toolStrip";
-			this.toolStrip.GripMargin = new System.Windows.Forms.Padding(0);
 			// 
 			// buttonAutoRefresh
 			// 
@@ -95,6 +97,17 @@
 			this.buttonClone.Size = new System.Drawing.Size(23, 22);
 			this.buttonClone.Text = "Clone View";
 			this.buttonClone.Click += new System.EventHandler(this.buttonClone_Click);
+			// 
+			// buttonLock
+			// 
+			this.buttonLock.CheckOnClick = true;
+			this.buttonLock.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonLock.Enabled = false;
+			this.buttonLock.Image = global::EditorBase.Properties.Resources._lock;
+			this.buttonLock.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonLock.Name = "buttonLock";
+			this.buttonLock.Size = new System.Drawing.Size(23, 22);
+			this.buttonLock.Text = "Lock View";
 			// 
 			// propertyGrid
 			// 
@@ -139,5 +152,6 @@
 		private System.Windows.Forms.ToolStrip toolStrip;
 		private System.Windows.Forms.ToolStripButton buttonAutoRefresh;
 		private System.Windows.Forms.ToolStripButton buttonClone;
+		private System.Windows.Forms.ToolStripButton buttonLock;
 	}
 }

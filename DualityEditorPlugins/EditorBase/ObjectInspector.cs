@@ -25,7 +25,11 @@ namespace EditorBase
 		public ObjectSelection.Category AcceptedCategories
 		{
 			get { return this.acceptedCats; }
-			set { this.acceptedCats = value; }
+			set 
+			{
+				this.acceptedCats = value;
+				this.UpdateButtons();
+			}
 		}
 
 		public ObjectInspector(int runtimeId)
@@ -34,16 +38,17 @@ namespace EditorBase
 			this.runtimeId = runtimeId;
 			this.toolStrip.Renderer = new DualityEditor.Controls.ToolStrip.DualitorToolStripProfessionalRenderer();
 		}
-		public ObjectInspector(ObjectInspector other) : this(-1)
+		public void CopyTo(ObjectInspector other)
 		{
-			this.buttonAutoRefresh.Checked = other.buttonAutoRefresh.Checked;
+			other.buttonAutoRefresh.Checked = this.buttonAutoRefresh.Checked;
+			other.buttonLock.Checked = this.buttonLock.Checked;
 		}
 		protected override void OnShown(EventArgs e)
 		{
 			base.OnShown(e);
 
 			this.propertyGrid.RegisterEditorProvider(CorePluginHelper.RequestPropertyEditorProviders());
-			this.buttonClone.Enabled = this.propertyGrid.Selection.Any();
+			this.UpdateButtons();
 
 			EditorBasePlugin.Instance.EditorForm.AfterUpdateDualityApp += this.EditorForm_AfterUpdateDualityApp;
 			EditorBasePlugin.Instance.EditorForm.SelectionChanged += this.EditorForm_SelectionChanged;
@@ -71,6 +76,7 @@ namespace EditorBase
 		{
 			node.SetAttribute("acceptedCats", ((uint)this.acceptedCats).ToString());
 			node.SetAttribute("autoRefresh", this.buttonAutoRefresh.Checked.ToString());
+			node.SetAttribute("locked", this.buttonLock.Checked.ToString());
 			node.SetAttribute("titleText", this.Text);
 		}
 		internal void LoadUserData(System.Xml.XmlElement node)
@@ -82,9 +88,16 @@ namespace EditorBase
 				this.acceptedCats = (ObjectSelection.Category)tryParseUInt;
 			if (bool.TryParse(node.GetAttribute("autoRefresh"), out tryParseBool))
 				this.buttonAutoRefresh.Checked = tryParseBool;
+			if (bool.TryParse(node.GetAttribute("locked"), out tryParseBool))
+				this.buttonLock.Checked = tryParseBool;
 			this.Text = node.GetAttribute("titleText");
 		}
 
+		private void UpdateButtons()
+		{
+			this.buttonClone.Enabled = this.propertyGrid.Selection.Any();
+			this.buttonLock.Enabled = this.acceptedCats != ObjectSelection.Category.None;
+		}
 		private void UpdateSelection(ObjectSelection sel, ObjectSelection.Category lastSelChange)
 		{
 			this.selSchedMouse = null;
@@ -115,6 +128,7 @@ namespace EditorBase
 		private void EditorForm_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if ((e.AffectedCategories & this.acceptedCats) == ObjectSelection.Category.None) return;
+			if (this.buttonLock.Checked) return;
 
 			// If a mouse button is pressed, reschedule the selection for later - there might be a drag in progress
 			if (Control.MouseButtons != System.Windows.Forms.MouseButtons.None)
@@ -168,14 +182,15 @@ namespace EditorBase
 
 		private void buttonClone_Click(object sender, EventArgs e)
 		{
-			ObjectInspector objView = new ObjectInspector(this);
-			objView.propertyGrid.RegisterEditorProvider(CorePluginHelper.RequestPropertyEditorProviders());
+			ObjectInspector objView = EditorBasePlugin.Instance.RequestObjView(true);
+			this.CopyTo(objView);
+			objView.buttonLock.Checked = true;
 
 			DockPanel mainDoc = EditorBasePlugin.Instance.EditorForm.MainDockPanel;
-			objView.Show(EditorBasePlugin.Instance.EditorForm.MainDockPanel, DockState.Float);
-
-			objView.Text = string.Format("Inspecting: {0}", this.propertyGrid.Selection.First().ToString());
-			objView.AcceptedCategories = ObjectSelection.Category.None;
+			objView.Show(this.DockHandler.Pane, DockAlignment.Bottom, 0.5d);
+			
+			// Need it before showing because of instant-selection
+			objView.propertyGrid.RegisterEditorProvider(CorePluginHelper.RequestPropertyEditorProviders());
 			objView.propertyGrid.SelectObjects(this.propertyGrid.Selection);
 		}
 		private void buttonAutoRefresh_CheckedChanged(object sender, EventArgs e)

@@ -320,13 +320,13 @@ namespace EditorBase
 
 			return this.logView;
 		}
-		public ObjectInspector RequestObjView()
+		public ObjectInspector RequestObjView(bool dontShow = false)
 		{
 			ObjectInspector objView = new ObjectInspector(this.objViews.Count);
 			this.objViews.Add(objView);
 			objView.FormClosed += delegate(object sender, FormClosedEventArgs e) { this.objViews.Remove(sender as ObjectInspector); };
 
-			if (!this.isLoading)
+			if (!this.isLoading && !dontShow)
 			{
 				objView.Show(this.EditorForm.MainDockPanel);
 				if (objView.Pane != null)

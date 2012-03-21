@@ -11,11 +11,6 @@
 	-->	"Did you know..?" screen?
 
 
--->	Dualitor: ObjectInspector improvements
-	-->	Implement "Lock"-Button
-	-->	Improve Clone-Button in order to prevent "need to dock that somewhere now.."
-		-->	Auto-Dock it at origin area?
-
 -->	Dualitor: Improve preview behaviour?
 	-->	Make PreviewProvider work in a background process
 	-->	Don't return a Bitmap, but a ResourcePreview object..

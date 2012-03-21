@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Drawing;
 
+using Duality;
 using DualityEditor;
 
 namespace DualityEditor.Controls.ToolStrip
