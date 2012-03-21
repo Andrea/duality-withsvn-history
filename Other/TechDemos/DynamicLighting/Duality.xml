@@ -1268,16 +1268,21 @@
             A general interface for different types of vertex data.
             </summary>
         </member>
-        <member name="M:Duality.VertexFormat.IVertexData.SetupVBO``1(``0[],Duality.Resources.BatchInfo)">
+        <member name="M:Duality.VertexFormat.IVertexData.SetupVBO(Duality.Resources.BatchInfo)">
             <summary>
             Sets up the currently bound OpenGL VertexBufferObject and injects actual vertex data.
             </summary>
-            <typeparam name="T">The type of input vertex data to use.</typeparam>
-            <param name="vertexData">The vertex data to be uploaded into the VBO.</param>
             <param name="mat">
             The <see cref="T:Duality.Resources.Material"/> that is currently active. Usually only needed
             for custom vertex attributes in order to access <see cref="T:Duality.Resources.ShaderVarInfo">shader variables</see>.
             </param>
+        </member>
+        <member name="M:Duality.VertexFormat.IVertexData.UploadToVBO``1(``0[])">
+            <summary>
+            Uploads vertex data to the currently bound OpenGL VertexBufferObject.
+            </summary>
+            <typeparam name="T">The type of input vertex data to use.</typeparam>
+            <param name="vertexData">The vertex data to be uploaded into the VBO.</param>
         </member>
         <member name="M:Duality.VertexFormat.IVertexData.FinishVBO(Duality.Resources.BatchInfo)">
             <summary>
@@ -1875,13 +1880,6 @@
             </summary>
             <param name="rgba"></param>
         </member>
-        <member name="M:Duality.ColorFormat.IColorData.ConvertTo``1">
-            <summary>
-            Converts the color to the specified format.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <returns></returns>
-        </member>
         <member name="F:Duality.ColorFormat.ColorRgba.CompSize">
             <summary>
             Size of a single color component in bytes.
@@ -2117,14 +2115,6 @@
             <summary>
             Converts the color to Hsva.
             </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.ColorFormat.ColorRgba.ConvertTo``1">
-            <summary>
-            Converts the color to a different color data format. If there is also a
-            specific method doing the desired conversion, use that instead - it might be faster.
-            </summary>
-            <typeparam name="T"></typeparam>
             <returns></returns>
         </member>
         <member name="M:Duality.ColorFormat.ColorRgba.SetIntArgb(System.Int32)">
@@ -2488,14 +2478,6 @@
             <summary>
             Converts the color to Rgba.
             </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.ColorFormat.ColorHsva.ConvertTo``1">
-            <summary>
-            Converts the color to a different color data format. If there is also a
-            specific method doing the desired conversion, use that instead - it might be faster.
-            </summary>
-            <typeparam name="T"></typeparam>
             <returns></returns>
         </member>
         <member name="M:Duality.ColorFormat.ColorHsva.SetIntRgba(System.Int32)">
@@ -3304,6 +3286,11 @@
             [GET] The name of the Resource.
             </summary>
         </member>
+        <member name="P:Duality.Resource.FullName">
+            <summary>
+            [GET] The full name of the Resource, including its path but not its file extension
+            </summary>
+        </member>
         <member name="P:Duality.Resource.IsDefaultContent">
             <summary>
             [GET] Returns whether the Resource is part of Duality's embedded default content.
@@ -3333,6 +3320,13 @@
             <summary>
             (Virtual) path of the <see cref="P:Duality.Resources.Sound.LogoJingle"/> Sound.
             </summary>
+        </member>
+        <member name="M:Duality.Resources.Sound.CreateFromAudioData(Duality.ContentRef{Duality.Resources.AudioData})">
+            <summary>
+            Creates a new Sound Resource based on the specified AudioData, saves it and returns a reference to it.
+            </summary>
+            <param name="baseRes"></param>
+            <returns></returns>
         </member>
         <member name="M:Duality.Resources.Sound.#ctor">
             <summary>
@@ -3706,6 +3700,13 @@
             (Virtual) path of the <see cref="P:Duality.Resources.Material.DualityLogoB256"/> Material.
             </summary>
         </member>
+        <member name="M:Duality.Resources.Material.CreateFromTexture(Duality.ContentRef{Duality.Resources.Texture})">
+            <summary>
+            Creates a new Material Resource based on the specified Texture, saves it and returns a reference to it.
+            </summary>
+            <param name="baseRes"></param>
+            <returns></returns>
+        </member>
         <member name="M:Duality.Resources.Material.#ctor">
             <summary>
             Creates a new Material
@@ -3727,6 +3728,12 @@
             <param name="mainColor">The <see cref="P:Duality.Resources.Material.MainColor"/> to use.</param>
             <param name="textures">A set of <see cref="T:Duality.Resources.Texture">Textures</see> to use.</param>
             <param name="uniforms">A set of <see cref="T:Duality.Resources.ShaderVarInfo">uniform values</see> to use.</param>
+        </member>
+        <member name="M:Duality.Resources.Material.#ctor(Duality.Resources.BatchInfo)">
+            <summary>
+            Creates a new Material based on the specified BatchInfo
+            </summary>
+            <param name="info"></param>
         </member>
         <member name="M:Duality.Resources.Material.GetTexture(System.String)">
             <summary>
@@ -3943,6 +3950,24 @@
             <summary>
             [GET / SET] The set of <see cref="T:Duality.Resources.ShaderVarInfo">uniform values</see> to use.
             </summary>
+        </member>
+        <member name="M:Duality.ColorFormat.ExtMethodsIColorData.ConvertTo``1(Duality.ColorFormat.IColorData)">
+            <summary>
+            Converts the color to a different color data format. If there is also a
+            specific method doing the desired conversion, use that instead - it might be faster.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="source"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ColorFormat.ExtMethodsIColorData.ConvertTo(Duality.ColorFormat.IColorData,System.Type)">
+            <summary>
+            Converts the color to a different color data format. If there is also a
+            specific method doing the desired conversion, use that instead - it might be faster.
+            </summary>
+            <param name="source"></param>
+            <param name="type"></param>
+            <returns></returns>
         </member>
         <member name="T:Duality.ObjectManagerEventArgs`1">
             <summary>
@@ -7020,6 +7045,13 @@
             </summary>
             <param name="beginAtIndex">The first texture unit index from which on all bindings will be cleared.</param>
         </member>
+        <member name="M:Duality.Resources.Texture.CreateFromPixmap(Duality.ContentRef{Duality.Resources.Pixmap})">
+            <summary>
+            Creates a new Texture Resource based on the specified Pixmap, saves it and returns a reference to it.
+            </summary>
+            <param name="pixmap"></param>
+            <returns></returns>
+        </member>
         <member name="M:Duality.Resources.Texture.#ctor(Duality.ContentRef{Duality.Resources.Pixmap},Duality.Resources.Texture.SizeMode,OpenTK.Graphics.OpenGL.TextureMagFilter,OpenTK.Graphics.OpenGL.TextureMinFilter,OpenTK.Graphics.OpenGL.TextureWrapMode,OpenTK.Graphics.OpenGL.TextureWrapMode,OpenTK.Graphics.OpenGL.PixelInternalFormat)">
             <summary>
             Creates a new Texture based on a <see cref="T:Duality.Resources.Pixmap"/>.
@@ -8843,6 +8875,13 @@
             <param name="vertText">One set of vertices for each Font that is available to this ForattedText.</param>
             <param name="vertIcons">A set of icon vertices.</param>
         </member>
+        <member name="M:Duality.FormattedText.RenderToBitmap(System.String,System.Drawing.Image,System.Single,System.Single,System.Drawing.Image)">
+            <summary>
+            Renders a text to the specified target Image.
+            </summary>
+            <param name="text"></param>
+            <param name="target"></param>
+        </member>
         <member name="M:Duality.FormattedText.Measure">
             <summary>
             Measures the formatted text block.
@@ -9100,10 +9139,22 @@
             A 180 degree angle in radians. Equals <see cref="F:Duality.MathF.Pi"/>.
             </summary>
         </member>
+        <member name="F:Duality.MathF.RadAngle270">
+            <summary>
+            A 270 degree angle in radians. Equals <see cref="F:Duality.MathF.Pi"/>.
+            </summary>
+        </member>
         <member name="F:Duality.MathF.RadAngle360">
             <summary>
             A 360 degree angle in radians. Equals <see cref="F:Duality.MathF.TwoPi"/>.
             </summary>
+        </member>
+        <member name="M:Duality.MathF.SafeToDecimal(System.Single)">
+            <summary>
+            Converts the specified float value to decimal and clamps it if necessary.
+            </summary>
+            <param name="v"></param>
+            <returns></returns>
         </member>
         <member name="M:Duality.MathF.Abs(System.Single)">
             <summary>
@@ -10672,6 +10723,25 @@
             <param name="text">The text to render.</param>
             <param name="vertices">The set of vertices that is emitted. You can re-use the same array each frame.</param>
         </member>
+        <member name="M:Duality.Resources.Font.RenderToBitmap(System.String,System.Drawing.Image,System.Single,System.Single)">
+            <summary>
+            Renders a text to the specified target Image.
+            </summary>
+            <param name="text"></param>
+            <param name="target"></param>
+            <param name="x"></param>
+            <param name="y"></param>
+        </member>
+        <member name="M:Duality.Resources.Font.RenderToBitmap(System.String,System.Drawing.Image,System.Single,System.Single,Duality.ColorFormat.ColorRgba)">
+            <summary>
+            Renders a text to the specified target Image.
+            </summary>
+            <param name="text"></param>
+            <param name="target"></param>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="clr"></param>
+        </member>
         <member name="M:Duality.Resources.Font.MeasureText(System.String)">
             <summary>
             Measures the size of a text rendered using this Font.
@@ -11464,6 +11534,13 @@
             <param name="pred">The predicate to use on the lists contents.</param>
             <returns></returns>
         </member>
+        <member name="M:Duality.ExtMethodsIList.GetCombinedHashCode(System.Collections.Generic.IList{System.Byte})">
+            <summary>
+            Returns the combined hash code of the specified byte list.
+            </summary>
+            <param name="list"></param>
+            <returns></returns>
+        </member>
         <member name="T:Duality.EditorHints.MemberFlags">
             <summary>
             Some general flags for Type members that indicate preferred editor behaviour.
@@ -11755,6 +11832,11 @@
             [GET] The name of the referenced Resource.
             </summary>
         </member>
+        <member name="P:Duality.IContentRef.FullName">
+            <summary>
+            [GET] The full name of the referenced Resource, including its path but not its file extension
+            </summary>
+        </member>
         <!-- Ungültiger XML-Kommentar wurde für den Member "T:Duality.ContentRef`1" ignoriert -->
         <member name="F:Duality.ContentRef`1.Null">
             <summary>
@@ -11875,6 +11957,11 @@
         <member name="P:Duality.ContentRef`1.Name">
             <summary>
             [GET] The name of the referenced Resource.
+            </summary>
+        </member>
+        <member name="P:Duality.ContentRef`1.FullName">
+            <summary>
+            [GET] The full name of the referenced Resource, including its path but not its file extension
             </summary>
         </member>
         <member name="T:Duality.ContentProvider">
@@ -12149,6 +12236,29 @@
             <param name="collection">A set of objects.</param>
             <param name="startIndex">Index of the first object to be enumerated.</param>
             <param name="length">Number of objects to be enumerated.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ExtMethodsIEnumerable.Ref``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Converts an enumeration of Resources to an enumeration of content references to it.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="res"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ExtMethodsIEnumerable.Res``1(System.Collections.Generic.IEnumerable{Duality.ContentRef{``0}})">
+            <summary>
+            Converts an enumeration of content references to an enumeration of Resources.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="res"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ExtMethodsIEnumerable.Res(System.Collections.Generic.IEnumerable{Duality.IContentRef})">
+            <summary>
+            Converts an enumeration of content references to an enumeration of Resources.
+            </summary>
+            <param name="res"></param>
             <returns></returns>
         </member>
         <member name="T:Duality.Components.SoundListener">

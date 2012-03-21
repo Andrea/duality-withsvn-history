@@ -20,12 +20,15 @@
           <normalTex dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Texture]]">
             <contentPath dataType="String">Data\normalBall.Texture.res</contentPath>
           </normalTex>
+          <specularTex dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Texture]]">
+            <contentPath dataType="String">Default:Texture:White</contentPath>
+          </specularTex>
         </customSerialIO>
       </textures>
       <uniforms dataType="Class" type="System.Collections.Generic.Dictionary`2[[System.String],[System.Single[]]]" id="4" surrogate="true">
         <customSerialIO />
         <customSerialIO>
-          <_lightColor dataType="Array" type="System.Single[]" id="5" length="12">
+          <_lightColor dataType="Array" type="System.Single[]" id="5" length="24">
             <object dataType="Float">1</object>
             <object dataType="Float">1</object>
             <object dataType="Float">1</object>
@@ -38,8 +41,20 @@
             <object dataType="Float">0</object>
             <object dataType="Float">0</object>
             <object dataType="Float">1</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
           </_lightColor>
-          <_lightPos dataType="Array" type="System.Single[]" id="6" length="16">
+          <_lightPos dataType="Array" type="System.Single[]" id="6" length="32">
             <object dataType="Float">0</object>
             <object dataType="Float">0</object>
             <object dataType="Float">0</object>
@@ -56,6 +71,22 @@
             <object dataType="Float">0</object>
             <object dataType="Float">500</object>
             <object dataType="Float">1000</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
           </_lightPos>
           <_lightCount dataType="Array" type="System.Single[]" id="7" length="1">
             <object dataType="Float">1</object>
@@ -68,9 +99,44 @@
           <_camRefDist dataType="Array" type="System.Single[]" id="9" length="1">
             <object dataType="Float">0</object>
           </_camRefDist>
+          <_lightDir dataType="Array" type="System.Single[]" id="10" length="32">
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+          </_lightDir>
         </customSerialIO>
       </uniforms>
       <dirtyFlag dataType="Enum" type="Duality.Resources.BatchInfo+DirtyFlag" name="None" value="0" />
     </info>
+    <sourcePath />
   </object>
 </root>

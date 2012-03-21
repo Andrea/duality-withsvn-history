@@ -246,6 +246,12 @@ namespace Duality.Components
 				this.fitOutput = copyFrom.fitOutput;
 				this.keepOutput = copyFrom.keepOutput;
 				this.visibilityMask = copyFrom.visibilityMask;
+
+				this.MakeAvailable();
+			}
+			public void MakeAvailable()
+			{
+				this.output.MakeAvailable();
 			}
 
 			public override string ToString()
@@ -658,12 +664,18 @@ namespace Duality.Components
 			t.clearMask			= this.clearMask;
 			t.passes			= this.passes != null ? this.passes.Clone() as Pass[] : null;
 		}
+		public void MakeAvailable()
+		{
+			foreach (var pass in this.passes)
+				pass.MakeAvailable();
+		}
 
 		/// <summary>
 		/// Renders the current <see cref="Duality.Resources.Scene"/>.
 		/// </summary>
 		public void Render()
 		{
+			this.MakeAvailable();
 			this.deviceCacheValid = true;
 			this.deviceCachePos = this.GameObj.Transform.Pos;
 

@@ -137,5 +137,6 @@
       </uniforms>
       <dirtyFlag dataType="Enum" type="Duality.Resources.BatchInfo+DirtyFlag" name="None" value="0" />
     </info>
+    <sourcePath />
   </object>
 </root>

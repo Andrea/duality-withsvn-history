@@ -379,12 +379,28 @@ namespace Duality
 		/// </remarks>
 		public static bool operator ==(ContentRef<T> first, ContentRef<T> second)
 		{
-			if (first.contentInstance != null && second.contentInstance != null)
+			// Old check, didn't work for XY == null when XY was a Resource created at runtime
+			//if (first.contentInstance != null && second.contentInstance != null)
+			//    return first.contentInstance == second.contentInstance;
+			//else
+			//    return first.contentPath == second.contentPath;
+
+			// Completely identical
+			if (first.contentInstance == second.contentInstance && first.contentPath == second.contentPath)
+				return true;
+			// Same instances
+			else if (first.contentInstance != null && second.contentInstance != null)
 				return first.contentInstance == second.contentInstance;
-			else if (first.contentPath != null && second.contentPath != null)
-				return first.contentPath == second.contentPath;
+			// Null checks
+			else if (first.IsExplicitNull) return second.IsExplicitNull;
+			else if (second.IsExplicitNull) return first.IsExplicitNull;
+			// Path comparison
 			else
-				return first.contentInstance == second.contentInstance;
+			{
+				string firstPath = first.contentInstance != null ? first.contentInstance.Path : first.contentPath;
+				string secondPath = second.contentInstance != null ? second.contentInstance.Path : second.contentPath;
+				return firstPath == secondPath;
+			}
 		}
 		/// <summary>
 		/// Compares two ContentRefs for inequality.

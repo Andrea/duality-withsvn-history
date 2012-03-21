@@ -7,5 +7,6 @@
     <frag dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.FragmentShader]]">
       <contentPath dataType="String">Data\PseudoHdr\Tonemapping.FragmentShader.res</contentPath>
     </frag>
+    <sourcePath />
   </object>
 </root>

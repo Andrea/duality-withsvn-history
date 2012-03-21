@@ -33,7 +33,7 @@ namespace Debug
 			get { return (int)VertexDataFormat.Count; }
 		}
 		
-		void IVertexData.SetupVBO<T>(T[] vertexData, BatchInfo mat)
+		void IVertexData.SetupVBO(BatchInfo mat)
 		{
 			if (mat.Technique != DrawTechnique.Picking) GL.EnableClientState(ArrayCap.ColorArray);
 			GL.EnableClientState(ArrayCap.VertexArray);
@@ -57,7 +57,9 @@ namespace Debug
 					break;
 				}
 			}
-
+		}
+		void IVertexData.UploadToVBO<T>(T[] vertexData)
+		{
 			GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(Size * vertexData.Length), IntPtr.Zero, BufferUsageHint.StreamDraw);
 			GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(Size * vertexData.Length), vertexData, BufferUsageHint.StreamDraw);
 		}

@@ -438,7 +438,7 @@ namespace DualityEditor.Forms
 		}
 		public void SaveResources()
 		{
-			foreach (Resource res in this.UnsavedResources) // The Property does some safety checks
+			foreach (Resource res in this.UnsavedResources.ToArray()) // The Property does some safety checks
 			{
 				res.Save();
 			}

@@ -6,5 +6,6 @@
       <contentPath dataType="String">Data\PerPixelLighting\Light.ShaderProgram.res</contentPath>
     </shader>
     <formatPref dataType="Enum" type="Duality.VertexFormat.VertexDataFormat" name="Unknown" value="-1" />
+    <sourcePath />
   </object>
 </root>

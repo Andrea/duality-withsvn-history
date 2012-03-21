@@ -88,7 +88,23 @@ namespace DualityEditor.Controls.PropertyEditors
 			Color brightChecker = Color.FromArgb(224, 224, 224);
 			Color darkChecker = Color.FromArgb(192, 192, 192);
 			e.Graphics.FillRectangle(new HatchBrush(HatchStyle.LargeCheckerBoard, brightChecker, darkChecker), this.rectPanel);
-			if (this.value != null) e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(this.value.ToIntArgb())), this.rectPanel);
+			if (this.value != null)
+			{
+				Color val = Color.FromArgb(this.value.ToIntArgb());
+				Color valSolid = Color.FromArgb(255, val);
+				e.Graphics.FillRectangle(
+					new SolidBrush(val), 
+					this.rectPanel.X,
+					this.rectPanel.Y,
+					this.rectPanel.Width / 2,
+					this.rectPanel.Height);
+				e.Graphics.FillRectangle(
+					new SolidBrush(valSolid), 
+					this.rectPanel.X + this.rectPanel.Width / 2,
+					this.rectPanel.Y,
+					this.rectPanel.Width / 2,
+					this.rectPanel.Height);
+			}
 			e.Graphics.DrawRectangle(SystemPens.ControlLightLight, 
 				this.rectPanel.X + 1,
 				this.rectPanel.Y + 1,

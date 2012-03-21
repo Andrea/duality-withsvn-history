@@ -23,7 +23,7 @@ namespace EditorBase
 		private	ObjectSelection.Category	selSchedMouseCat	= ObjectSelection.Category.None;
 		private	ObjectSelection				selSchedMouse		= null;
 
-		private	HashSet<string>				expandedComponents	= new HashSet<string>();
+		private	ExpandState					gridExpandState		= new ExpandState();
 		
 
 		public ObjectSelection.Category AcceptedCategories
@@ -45,13 +45,12 @@ namespace EditorBase
 		}
 		public void CopyTo(ObjectInspector other)
 		{
-			this.GetExpandedComponents();
+			this.gridExpandState.UpdateFrom(this.propertyGrid.MainEditor);
 
 			other.buttonAutoRefresh.Checked = this.buttonAutoRefresh.Checked;
 			other.buttonLock.Checked = this.buttonLock.Checked;
 
-			other.expandedComponents.Clear();
-			foreach (var cmpType in this.expandedComponents) other.expandedComponents.Add(cmpType);
+			this.gridExpandState.CopyTo(other.gridExpandState);
 		}
 
 		protected override void OnShown(EventArgs e)
@@ -109,42 +108,13 @@ namespace EditorBase
 			this.buttonClone.Enabled = this.propertyGrid.Selection.Any();
 			this.buttonLock.Enabled = this.acceptedCats != ObjectSelection.Category.None;
 		}
-		private	void GetExpandedComponents()
-		{
-			var gameObjOverviewEditor = this.propertyGrid.MainEditor as GameObjectOverviewPropertyEditor;
-			if (gameObjOverviewEditor != null)
-			{
-				var componentEditors = gameObjOverviewEditor.Children.OfType<ComponentPropertyEditor>().ToArray();
-				foreach (var compEdit in componentEditors)
-				{
-					if (compEdit.Expanded)
-						this.expandedComponents.Add(compEdit.EditedType.GetTypeId());
-					else
-						this.expandedComponents.Remove(compEdit.EditedType.GetTypeId());
-				}
-			}
-
-			Log.Editor.WriteWarning(this.expandedComponents.ToString(", "));
-		}
-		private	void SetExpandedComponents()
-		{
-			var gameObjOverviewEditor = this.propertyGrid.MainEditor as GameObjectOverviewPropertyEditor;
-			if (gameObjOverviewEditor != null)
-			{
-				var componentEditors = gameObjOverviewEditor.Children.OfType<ComponentPropertyEditor>().ToArray();
-				foreach (var compEdit in componentEditors)
-				{
-					compEdit.Expanded = this.expandedComponents.Contains(compEdit.EditedType.GetTypeId());
-				}
-			}
-		}
 		private void UpdateSelection(ObjectSelection sel, ObjectSelection.Category lastSelChange)
 		{
 			this.selSchedMouse = null;
 			this.selSchedMouseCat = ObjectSelection.Category.None;
 
 			if (lastSelChange == ObjectSelection.Category.None) return;
-			this.GetExpandedComponents();
+			this.gridExpandState.UpdateFrom(this.propertyGrid.MainEditor);
 
 			if ((lastSelChange & ObjectSelection.Category.GameObjCmp) != ObjectSelection.Category.None)
 				this.propertyGrid.SelectObjects(sel.GameObjects.Union(sel.Components.GameObject()), false);
@@ -153,7 +123,7 @@ namespace EditorBase
 			else if ((lastSelChange & ObjectSelection.Category.Other) != ObjectSelection.Category.None)
 				this.propertyGrid.SelectObjects(sel.OtherObjects, false);
 
-			this.SetExpandedComponents();
+			this.gridExpandState.ApplyTo(this.propertyGrid.MainEditor);
 			this.buttonClone.Enabled = this.propertyGrid.Selection.Any();
 		}
 		
@@ -170,7 +140,15 @@ namespace EditorBase
 		private void EditorForm_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if ((e.AffectedCategories & this.acceptedCats) == ObjectSelection.Category.None) return;
-			if (this.buttonLock.Checked) return;
+			if (this.buttonLock.Checked)
+			{
+				// Ignore selection change but make sure disposed objects are deselected
+				var disposedObj = e.Removed.Objects.OfType<IManageableObject>().Where(o => o.Disposed).ToArray();
+				ObjectSelection disposedSel = new ObjectSelection(disposedObj);
+				ObjectSelection oldSel = new ObjectSelection(this.propertyGrid.Selection);
+				this.UpdateSelection(oldSel - disposedSel, ObjectSelection.GetCategoriesInSelection(oldSel));
+				return;
+			}
 
 			// If a mouse button is pressed, reschedule the selection for later - there might be a drag in progress
 			if (Control.MouseButtons != System.Windows.Forms.MouseButtons.None)
@@ -234,7 +212,7 @@ namespace EditorBase
 			// Need it before showing because of instant-selection
 			objView.propertyGrid.RegisterEditorProvider(CorePluginHelper.RequestPropertyEditorProviders());
 			objView.propertyGrid.SelectObjects(this.propertyGrid.Selection);
-			objView.SetExpandedComponents();
+			objView.gridExpandState.ApplyTo(objView.propertyGrid.MainEditor);
 		}
 		private void buttonAutoRefresh_CheckedChanged(object sender, EventArgs e)
 		{

@@ -6,7 +6,7 @@
 [Core] Info:    Assembly loaded: FarseerOpenTK
 [Core] Info:    DualityApp initialized
 [Core] Info:    Debug Mode: False
-[Core] Info:    Command line arguments: editor
+[Core] Info:    Command line arguments: 
 [Core] Info:    Initializing default content..
 [Core] Info:    ..done
 [Core] Info:    Loading Ressource 'Data\TestScene.Scene.res'...

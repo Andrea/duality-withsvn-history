@@ -18,5 +18,6 @@
     <animCols dataType="Int">0</animCols>
     <animRows dataType="Int">0</animRows>
     <sizeRelative dataType="Bool">true</sizeRelative>
+    <sourcePath />
   </object>
 </root>

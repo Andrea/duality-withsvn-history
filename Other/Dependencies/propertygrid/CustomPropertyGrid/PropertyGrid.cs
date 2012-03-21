@@ -19,6 +19,72 @@ namespace AdamsLair.PropertyGrid
 		PropertyEditor CreateEditor(Type baseType);
 	}
 
+	public class ExpandState
+	{
+		HashSet<string>	expandedNodes	= new HashSet<string>();
+
+		public ExpandState() {}
+		public ExpandState(ExpandState cc)
+		{
+			this.expandedNodes = new HashSet<string>(cc.expandedNodes);
+		}
+		public void CopyTo(ExpandState other)
+		{
+			other.expandedNodes.Clear();
+			foreach (var n in this.expandedNodes) other.expandedNodes.Add(n);
+		}
+
+		public bool IsEditorExpanded(GroupedPropertyEditor editor)
+		{
+			if (editor == null) return false;
+			string id = GetEditorFullId(editor);
+			return expandedNodes.Contains(id);
+		}
+		public void SetEditorExpanded(GroupedPropertyEditor editor, bool expanded)
+		{
+			if (editor == null) return;
+			string id = GetEditorFullId(editor);
+			if (expanded) this.expandedNodes.Add(id);
+			else this.expandedNodes.Remove(id);
+		}
+		public void Clear()
+		{
+			this.expandedNodes.Clear();
+		}
+		public void UpdateFrom(PropertyEditor mainEditor)
+		{
+			if (mainEditor == null) return;
+			foreach (GroupedPropertyEditor child in mainEditor.ChildrenDeep.OfType<GroupedPropertyEditor>())
+				this.SetEditorExpanded(child, child.Expanded);
+		}
+		public void ApplyTo(PropertyEditor mainEditor, bool dontCollapse = true)
+		{
+			if (mainEditor == null) return;
+			foreach (GroupedPropertyEditor child in mainEditor.ChildrenDeep.OfType<GroupedPropertyEditor>())
+			{
+				if (child.Expanded && dontCollapse) continue;
+				child.Expanded = this.IsEditorExpanded(child);
+			}
+		}
+
+		private static string GetEditorId(PropertyEditor editor)
+		{
+			if (editor == null) return "";
+			return editor.PropertyName + editor.EditedType;
+		}
+		private static string GetEditorFullId(PropertyEditor editor)
+		{
+			if (editor == null) return "";
+			string fullId = "";
+			while (editor != null)
+			{
+				fullId = GetEditorId(editor) + "/" + fullId;
+				editor = editor.ParentEditor;
+			}
+			return fullId;
+		}
+	}
+
 	public partial class PropertyGrid : UserControl
 	{
 		public const int EditorPriority_None		= 0;
