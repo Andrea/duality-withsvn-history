@@ -416,7 +416,9 @@ namespace AdamsLair.PropertyGrid.Renderer
 			}
 
 			// Draw Text
-			if ((state & TextBoxState.Disabled) == TextBoxState.Disabled) textColor = Color.FromArgb(128, textColor);
+			if ((state & TextBoxState.Disabled) == TextBoxState.Disabled ||
+				(state & TextBoxState.ReadOnlyFlag) == TextBoxState.ReadOnlyFlag)
+				textColor = Color.FromArgb(128, textColor);
 			DrawStringLine(g, text, font, textRectScrolled, textColor);
 
 			// Draw Cursor

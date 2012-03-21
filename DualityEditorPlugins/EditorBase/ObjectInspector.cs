@@ -11,6 +11,7 @@ using PropertyGrid = AdamsLair.PropertyGrid.PropertyGrid;
 
 using Duality;
 using DualityEditor;
+using EditorBase.PropertyEditors;
 
 namespace EditorBase
 {
@@ -22,6 +23,9 @@ namespace EditorBase
 		private	ObjectSelection.Category	selSchedMouseCat	= ObjectSelection.Category.None;
 		private	ObjectSelection				selSchedMouse		= null;
 
+		private	HashSet<string>				expandedComponents	= new HashSet<string>();
+		
+
 		public ObjectSelection.Category AcceptedCategories
 		{
 			get { return this.acceptedCats; }
@@ -32,6 +36,7 @@ namespace EditorBase
 			}
 		}
 
+
 		public ObjectInspector(int runtimeId)
 		{
 			this.InitializeComponent();
@@ -40,9 +45,15 @@ namespace EditorBase
 		}
 		public void CopyTo(ObjectInspector other)
 		{
+			this.GetExpandedComponents();
+
 			other.buttonAutoRefresh.Checked = this.buttonAutoRefresh.Checked;
 			other.buttonLock.Checked = this.buttonLock.Checked;
+
+			other.expandedComponents.Clear();
+			foreach (var cmpType in this.expandedComponents) other.expandedComponents.Add(cmpType);
 		}
+
 		protected override void OnShown(EventArgs e)
 		{
 			base.OnShown(e);
@@ -98,12 +109,42 @@ namespace EditorBase
 			this.buttonClone.Enabled = this.propertyGrid.Selection.Any();
 			this.buttonLock.Enabled = this.acceptedCats != ObjectSelection.Category.None;
 		}
+		private	void GetExpandedComponents()
+		{
+			var gameObjOverviewEditor = this.propertyGrid.MainEditor as GameObjectOverviewPropertyEditor;
+			if (gameObjOverviewEditor != null)
+			{
+				var componentEditors = gameObjOverviewEditor.Children.OfType<ComponentPropertyEditor>().ToArray();
+				foreach (var compEdit in componentEditors)
+				{
+					if (compEdit.Expanded)
+						this.expandedComponents.Add(compEdit.EditedType.GetTypeId());
+					else
+						this.expandedComponents.Remove(compEdit.EditedType.GetTypeId());
+				}
+			}
+
+			Log.Editor.WriteWarning(this.expandedComponents.ToString(", "));
+		}
+		private	void SetExpandedComponents()
+		{
+			var gameObjOverviewEditor = this.propertyGrid.MainEditor as GameObjectOverviewPropertyEditor;
+			if (gameObjOverviewEditor != null)
+			{
+				var componentEditors = gameObjOverviewEditor.Children.OfType<ComponentPropertyEditor>().ToArray();
+				foreach (var compEdit in componentEditors)
+				{
+					compEdit.Expanded = this.expandedComponents.Contains(compEdit.EditedType.GetTypeId());
+				}
+			}
+		}
 		private void UpdateSelection(ObjectSelection sel, ObjectSelection.Category lastSelChange)
 		{
 			this.selSchedMouse = null;
 			this.selSchedMouseCat = ObjectSelection.Category.None;
 
 			if (lastSelChange == ObjectSelection.Category.None) return;
+			this.GetExpandedComponents();
 
 			if ((lastSelChange & ObjectSelection.Category.GameObjCmp) != ObjectSelection.Category.None)
 				this.propertyGrid.SelectObjects(sel.GameObjects.Union(sel.Components.GameObject()), false);
@@ -112,6 +153,7 @@ namespace EditorBase
 			else if ((lastSelChange & ObjectSelection.Category.Other) != ObjectSelection.Category.None)
 				this.propertyGrid.SelectObjects(sel.OtherObjects, false);
 
+			this.SetExpandedComponents();
 			this.buttonClone.Enabled = this.propertyGrid.Selection.Any();
 		}
 		
@@ -192,6 +234,7 @@ namespace EditorBase
 			// Need it before showing because of instant-selection
 			objView.propertyGrid.RegisterEditorProvider(CorePluginHelper.RequestPropertyEditorProviders());
 			objView.propertyGrid.SelectObjects(this.propertyGrid.Selection);
+			objView.SetExpandedComponents();
 		}
 		private void buttonAutoRefresh_CheckedChanged(object sender, EventArgs e)
 		{

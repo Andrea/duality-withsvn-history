@@ -23,7 +23,7 @@ namespace DualityEditor.Controls
 		public DualitorPropertyGrid()
 		{
 			this.ControlRenderer.ColorMultiple = Color.FromArgb(242, 212, 170);
-			this.ControlRenderer.ColorGrayText = Color.FromArgb(160, 160, 160);
+			this.ControlRenderer.ColorGrayText = Color.FromArgb(96, 96, 96);
 			this.ControlRenderer.ColorVeryLightBackground = Color.FromArgb(224, 224, 224);
 			this.ControlRenderer.ColorLightBackground = Color.FromArgb(212, 212, 212);
 			this.ControlRenderer.ColorBackground = Color.FromArgb(196, 196, 196);

@@ -185,11 +185,14 @@ namespace EditorBase.PropertyEditors
 				rectText = new Rectangle(
 					this.rectPanel.X, this.rectPanel.Bottom - (int)textSize.Height - 2, this.rectPanel.Width, (int)textSize.Height);
 
-			e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(192, bgColorBright)), 
-				rectText.X + rectText.Width / 2 - textSize.Width / 2 - 2, 
-				rectText.Y + rectText.Height / 2 - textSize.Height / 2 - 2, 
-				textSize.Width + 2, 
-				textSize.Height + 2);
+			if (this.prevImage != null)
+			{
+				e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(192, bgColorBright)), 
+					rectText.X + rectText.Width / 2 - textSize.Width / 2 - 2, 
+					rectText.Y + rectText.Height / 2 - textSize.Height / 2 - 2, 
+					textSize.Width + 2, 
+					textSize.Height + 2);
+			}
 			e.Graphics.DrawString(
 				(this.DisplayedValue as IContentRef).FullName,
 				SystemFonts.DefaultFont,

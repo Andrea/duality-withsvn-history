@@ -23,13 +23,14 @@ namespace Duality.Components.Renderers
 		protected	ColorRgba				colorTint	= ColorRgba.White;
 		protected	ContentRef<Material>	iconMat		= ContentRef<Material>.Null;
 		[NonSerialized] protected	FormattedText.Metrics			metrics		= new FormattedText.Metrics(Vector2.Zero, new Rect[0], new Rect[0]);
+		[NonSerialized]	protected	Rect							textRect	= Rect.Empty;
 		[NonSerialized] protected	VertexFormat.VertexC1P3T2[][]	vertFont	= null;
 		[NonSerialized] protected	VertexFormat.VertexC1P3T2[]		vertIcon	= null;
 
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public override float BoundRadius
 		{
-			get { return Rect.Align(this.align, 0.0f, 0.0f, this.metrics.Size.X, this.metrics.Size.Y).Transform(this.gameobj.Transform.Scale.Xy).BoundingRadius; }
+			get { return this.textRect.Transform(this.gameobj.Transform.Scale.Xy).BoundingRadius; }
 		}
 		/// <summary>
 		/// [GET / SET] The text blocks alignment relative to the <see cref="GameObject"/>.
@@ -37,7 +38,11 @@ namespace Duality.Components.Renderers
 		public Alignment Align
 		{
 			get { return this.align; }
-			set { this.align = value; }
+			set
+			{
+				this.align = value;
+				this.UpdateMetrics();
+			}
 		}
 		/// <summary>
 		/// [GET / SET] The text to display.
@@ -95,6 +100,9 @@ namespace Duality.Components.Renderers
 		public void UpdateMetrics()
 		{
 			this.metrics = this.text.Measure();
+			this.textRect = Rect.Align(this.align, 0.0f, 0.0f, 
+				MathF.Max(this.metrics.Size.X, this.text.MaxWidth), 
+				MathF.Min(this.metrics.Size.Y, this.text.MaxHeight));
 		}
 
 		public override void Draw(IDrawDevice device)

@@ -381,8 +381,10 @@ namespace Duality
 		{
 			if (first.contentInstance != null && second.contentInstance != null)
 				return first.contentInstance == second.contentInstance;
-			else
+			else if (first.contentPath != null && second.contentPath != null)
 				return first.contentPath == second.contentPath;
+			else
+				return first.contentInstance == second.contentInstance;
 		}
 		/// <summary>
 		/// Compares two ContentRefs for inequality.

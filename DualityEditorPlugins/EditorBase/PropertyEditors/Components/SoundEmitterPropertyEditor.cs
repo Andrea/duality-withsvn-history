@@ -134,7 +134,7 @@ namespace EditorBase.PropertyEditors
 				{
 					foreach (SoundEmitter target in targetArray)
 					{
-						if (target.Sources[index].Instance != null) target.Sources[index].Instance.Dispose();
+						if (target.Sources[index].Instance != null) target.Sources[index].Instance.Stop();
 						target.Sources.RemoveAt(index);
 					}
 					this.PerformGetValue();
