@@ -13,7 +13,8 @@ namespace DualityEditor.Controls.ToolStrip
 	{
 		protected override void OnRenderToolStripBorder(ToolStripRenderEventArgs e)
 		{
-			//base.OnRenderToolStripBorder(e);
+			if (e.ToolStrip.IsDropDown)
+				base.OnRenderToolStripBorder(e);
 		}
 		protected override void OnRenderSeparator(ToolStripSeparatorRenderEventArgs e)
 		{
@@ -40,7 +41,8 @@ namespace DualityEditor.Controls.ToolStrip
 	{
 		protected override void OnRenderToolStripBorder(ToolStripRenderEventArgs e)
 		{
-			//base.OnRenderToolStripBorder(e);
+			if (e.ToolStrip.IsDropDown)
+				base.OnRenderToolStripBorder(e);
 		}
 		protected override void OnRenderSeparator(ToolStripSeparatorRenderEventArgs e)
 		{
