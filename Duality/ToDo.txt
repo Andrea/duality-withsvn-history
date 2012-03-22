@@ -56,6 +56,31 @@
 
 
 
+		
+		
+		
+-->	Concept for "Component Wizard" dialog / editor:
+	Das bezieht sich natürlich nicht auf deinen Grundgedanken sondern auf die Implikationen, welche das Bild das ich vom Feature Request insgesamt gewonnen habe mit sich bringt. Insofern würd ich erstmal sagen "Nein, so in der Form halte ich das für keine gute Idee", was aber nichts am Problem ändert das dein Feature hätte lösen sollen. Folgendes wäre ein alternativer Ansatz, den ich mir gut vorstellen könnte:
+
+	--> Implementierung eines neuen Sub-Editors oder Dialogfelds, dem "Component Wizard" (o.Ä.)
+	--> Aufgabe dessen ist es, auf Basis einiger Angaben, z.B. einer Auflistung von Property-Definitionen eine Komponentenklasse im Projekt zu erstellen. 
+	--> Dabei können dann auch so Späße getrieben werden wie automatisch die Backend-Fields generieren, triviale Getter und Setter implementieren und sowas. Das Ergebnis wird als .cs-Code File im Projekt abgelegt und über Bearbeitung der Projektdatei automatisch hinzugefügt.
+	--> Wenn es mir gelingt, über Dualitor Visual Studio dazu zu bewegen, ein bestimmtes Projekt neu zu kompilieren, dann könnte der Component Wizard auch das automatisch veranlassen, sobald die neue Komponentenklasse erstellt wurde
+	--> Ist letzteres der Fall wäre es denkbar, im Editor einige Shortcuts einzufügen, die den Component Wizard aufrufen, z.B. direkt im PropertyGrid oder als Rechtsklick-Aktion auf ein GameObject. 
+
+	Im Idealfall wäre der Ablauf also:
+	1. GameObject (z.B. Asteroid) erstellen und damit rumbasteln bis zufrieden
+	2. Rechtsklick auf GameObject --> "Add custom Component" --> Component Wizard wird aufgerufen
+	3. Gewünschte Konfiguration im Component Wizard festlegen
+	4. Klick auf "Ok" sorgt für Neukompilierung des Core Plugins, was automatisch zum Neuladen dieses führt
+	5. Anschließend kann der neue Komponententyp per Reflection gefunden und automatisch an das GameObject angefügt werden.
+
+	Die Schritte 4 und 5 können natürlich nur umgesetzt werden, wenn ich diese Sache mit Visual Studio ansteuern hinbekomme. Mir ist zwar klar dass ich auch programmatisch ohne Probleme C# Code kompilieren kann, aber effektiv würde ich mit dem manuellen Versuch schon wieder eine neue Baustelle für mögliche Inkonsistenzen einführen, falls ich ein bestimmtes Verhalten in Bezug auf Projektkonfiguration falsch (oder anders als Visual Studio) emuliere. Von daher würde ich hier klar sagen "entweder VS selbst kompilieren lassen oder gar nicht".
+		
+		
+		
+		
+		
 
 
 -->	Isometric perspective: How to implement for a game?
