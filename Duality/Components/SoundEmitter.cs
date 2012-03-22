@@ -145,6 +145,9 @@ namespace Duality.Components
 			/// <returns>True, if the source is still active. False, if it requests to be removed.</returns>
 			public bool Update(SoundEmitter emitter)
 			{
+				// Revalidate Sound reference
+				this.sound.MakeAvailable();
+
 				// If the SoundInstance has been disposed, set to null
 				if (this.instance != null && this.instance.Disposed) this.instance = null;
 

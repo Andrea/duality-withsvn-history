@@ -725,11 +725,12 @@ namespace Duality
 					ALSourceState stateTemp = ALSourceState.Stopped;
 					if (sndInst.alSource > AlSource_NotAvailable) stateTemp = AL.GetSourceState(sndInst.alSource);
 
-					if (stateTemp == ALSourceState.Stopped && sndInst.strStopReq)
+					if (sndInst.strStopReq)
 					{
 						// Stopped intentionally due to Stop() or eof. If strStopReq is NOT set,
 						// the source stopped playing because it reached the end of the buffer
 						// but in fact only because we were too slow inserting new data.
+						if (stateTemp != ALSourceState.Stopped) sndInst.Stop();
 						return;
 					}
 

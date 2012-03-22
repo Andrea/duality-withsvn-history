@@ -24,7 +24,7 @@ namespace Duality
 		private	List<SoundInstance>		sounds			= new List<SoundInstance>();
 		private	SoundBudgetQueue		budgetMusic		= new SoundBudgetQueue();
 		private	SoundBudgetQueue		budgetAmbient	= new SoundBudgetQueue();
-		private	Dictionary<Sound,int>	resPlaying		= new Dictionary<Sound,int>();
+		private	Dictionary<string,int>	resPlaying		= new Dictionary<string,int>();
 		private	int						maxAlSources	= 0;
 		private	int						numPlaying2D	= 0;
 		private	int						numPlaying3D	= 0;
@@ -202,7 +202,7 @@ namespace Duality
 		public int GetNumPlaying(ContentRef<Sound> snd)
 		{
 			int curNumSoundRes;
-			if (!snd.IsAvailable || !this.resPlaying.TryGetValue(snd.Res, out curNumSoundRes)) curNumSoundRes = 0;
+			if (!snd.IsAvailable || !this.resPlaying.TryGetValue(snd.Path, out curNumSoundRes)) curNumSoundRes = 0;
 			return curNumSoundRes;
 		}
 		/// <summary>
@@ -226,10 +226,10 @@ namespace Duality
 
 			if (snd.IsAvailable)
 			{
-				if (!this.resPlaying.ContainsKey(snd.Res))
-					this.resPlaying.Add(snd.Res, 1);
+				if (!this.resPlaying.ContainsKey(snd.Path))
+					this.resPlaying.Add(snd.Path, 1);
 				else
-					this.resPlaying[snd.Res]++;
+					this.resPlaying[snd.Path]++;
 			}
 		}
 		/// <summary>
@@ -249,7 +249,7 @@ namespace Duality
 		{
 			if (is3D)				this.numPlaying3D--;
 			else					this.numPlaying2D--;
-			if (snd.IsAvailable)	this.resPlaying[snd.Res]--;
+			if (snd.IsAvailable)	this.resPlaying[snd.Path]--;
 		}
 		
 		/// <summary>
