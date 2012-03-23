@@ -1382,7 +1382,9 @@ namespace EditorBase
 			// Add new directory tree
 			else if (e.IsDirectory)
 			{
-				NodeBase newNode = this.ScanDirectory(e.Path);
+				// Actually, only add the directory itsself. Each file will trigger its own ResourceCreated event
+				DirectoryNode newNode = new DirectoryNode(e.Path);
+				//NodeBase newNode = this.ScanDirectory(e.Path);
 
 				Node parentNode = this.NodeFromPath(Path.GetDirectoryName(e.Path));
 				if (parentNode == null) parentNode = this.folderModel.Root;

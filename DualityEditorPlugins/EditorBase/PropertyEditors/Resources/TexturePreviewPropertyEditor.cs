@@ -98,13 +98,14 @@ namespace EditorBase.PropertyEditors
 
 			if (this.prevImage == null) return null;
 			if (this.value.Atlas == null) return null;
+			if (!this.value.BasePixmap.IsAvailable) return null;
 
 			while (this.prevImageFrame.Count <= frameIndex) this.prevImageFrame.Add(null);
 			if (this.prevImageFrame[frameIndex] == null)
 			{
 				Rect uvRect = this.value.Atlas[frameIndex];
 				Rect pxRect = uvRect.Transform(this.value.OglWidth, this.value.OglHeight);
-				this.prevImageFrame[frameIndex] = this.prevImage.SubImage((int)pxRect.x, (int)pxRect.y, (int)pxRect.w, (int)pxRect.h);
+				this.prevImageFrame[frameIndex] = this.value.BasePixmap.Res.PixelData.SubImage((int)pxRect.x, (int)pxRect.y, (int)pxRect.w, (int)pxRect.h);
 			}
 
 			return this.prevImageFrame[frameIndex];

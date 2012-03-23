@@ -119,10 +119,10 @@ namespace DualityEditor.CorePluginInterface
 		private	List<object>	result		= new List<object>();
 		private	HashSet<object>	handledObj	= new HashSet<object>();
 		// For "converter pathfinding":
-		private	HashSet<DataConverter>	usedConverters	= new HashSet<DataConverter>();
-		private	HashSet<Type>			checkedTypes	= new HashSet<Type>();
-		private	int						curComplexity	= 0;
-		private	int						maxComplexity	= 0;
+		private	HashSet<DataConverter>	usedConverters	= new HashSet<DataConverter>();	// Flags "visited nodes" (DataConverters)
+		private	HashSet<Type>			checkedTypes	= new HashSet<Type>();			// Flags "visited nodes" (CanPerform-Types)
+		private	int						curComplexity	= 0;							// Measures "path length" (working variable)
+		private	int						maxComplexity	= 0;							// Measures "path length" (final value)
 
 
 		public ConversionData Data
