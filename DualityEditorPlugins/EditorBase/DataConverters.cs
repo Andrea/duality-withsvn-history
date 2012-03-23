@@ -30,7 +30,6 @@ namespace EditorBase.DataConverters
 		}
 		public override bool Convert(ConvertOperation convert)
 		{
-			bool finishConvertOp = false;
 			if (convert.Data.ContainsContentRefs<Prefab>())
 			{
 				ContentRef<Prefab>[] dropdata = convert.Data.GetContentRefs<Prefab>();
@@ -45,11 +44,11 @@ namespace EditorBase.DataConverters
 					{
 						convert.AddResult(newObj);
 						convert.MarkObjectHandled(pRef.Res);
-						finishConvertOp = true;
 					}
 				}
 			}
-			return finishConvertOp;
+			// Don't finish convert operation - other converters miht contribute to the new GameObjects!
+			return false; 
 		}
 	}
 	public class GameObjFromComponents : DataConverter
