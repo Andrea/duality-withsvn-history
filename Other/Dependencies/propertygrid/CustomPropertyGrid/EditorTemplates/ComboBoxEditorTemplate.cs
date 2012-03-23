@@ -77,7 +77,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			else if (this.hovered || this.focused)
 				comboState = ButtonState.Hot;
 
-			ControlRenderer.DrawComboButton(e.Graphics, this.rect, comboState, this.selectedObject.ToString());
+			ControlRenderer.DrawComboButton(e.Graphics, this.rect, comboState, this.selectedObject != null ? this.selectedObject.ToString() : "null");
 		}
 		public override void OnLostFocus(EventArgs e)
 		{
@@ -142,10 +142,15 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			}
 			else if (e.Control && e.KeyCode == Keys.C)
 			{
-				DataObject data = new DataObject();
-				data.SetText(this.selectedObject.ToString());
-				data.SetData(ClipboardDataFormat, this.selectedObject);
-				Clipboard.SetDataObject(data);
+				if (this.selectedObject != null)
+				{
+					DataObject data = new DataObject();
+					data.SetText(this.selectedObject.ToString());
+					data.SetData(ClipboardDataFormat, this.selectedObject);
+					Clipboard.SetDataObject(data);
+				}
+				else
+					Clipboard.Clear();
 				e.Handled = true;
 			}
 			else if (e.Control && e.KeyCode == Keys.V)

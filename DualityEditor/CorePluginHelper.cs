@@ -25,7 +25,6 @@ namespace DualityEditor
 		{
 			public	Image	img;
 			public	string	context;
-
 			public ImageResEntry(Image img, string context)
 			{
 				this.img = img;
@@ -35,7 +34,6 @@ namespace DualityEditor
 		private struct PropertyEditorProviderResEntry : IResEntry
 		{
 			public	IPropertyEditorProvider	provider;
-
 			public PropertyEditorProviderResEntry(IPropertyEditorProvider provider)
 			{
 				this.provider = provider;
@@ -45,7 +43,6 @@ namespace DualityEditor
 		{
 			public	IEditorAction	action;
 			public	string			context;
-
 			public EditorActionEntry(IEditorAction action, string context)
 			{
 				this.action = action;
@@ -56,7 +53,6 @@ namespace DualityEditor
 		{
 			public	string[]	categoryTree;
 			public	string		context;
-
 			public CategoryEntry(string category, string context)
 			{
 				this.categoryTree = category.Split(new char[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
@@ -66,10 +62,17 @@ namespace DualityEditor
 		private struct DataSelectorEntry : IResEntry
 		{
 			public	DataConverter	selector;
-
 			public DataSelectorEntry(DataConverter selector)
 			{
 				this.selector = selector;
+			}
+		}
+		private struct PreviewGeneratorEntry : IResEntry
+		{
+			public	IPreviewGenerator	generator;
+			public PreviewGeneratorEntry(IPreviewGenerator generator)
+			{
+				this.generator = generator;
 			}
 		}
 		#endregion
@@ -237,11 +240,20 @@ namespace DualityEditor
 		}
 		public static IEnumerable<DataConverter> RequestDataConverters<T>()
 		{
-			return RequestDataConverters(typeof(T)).OfType<DataConverter>();
+			return RequestDataConverters(typeof(T));
 		}
 		public static IEnumerable<DataConverter> RequestDataConverters(Type type)
 		{
 			return RequestAllCorePluginRes<DataSelectorEntry>(type, true, null).Select(e => e.selector);
+		}
+
+		public static void RegisterPreviewGenerator(IPreviewGenerator generator)
+		{
+			RegisterCorePluginRes(typeof(object), new PreviewGeneratorEntry(generator));
+		}
+		public static IEnumerable<IPreviewGenerator> RequestPreviewGenerators()
+		{
+			return RequestAllCorePluginRes<PreviewGeneratorEntry>(typeof(object), false, null).Select(e => e.generator);
 		}
 
 		public static void RegisterXmlCodeDoc(XmlCodeDoc doc)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Threading.Tasks;
 
 using OpenTK;
 using Duality;
@@ -23,114 +24,89 @@ namespace DualityEditor.CorePluginInterface
 	{
 		public static Bitmap GetPreviewImage(this Resource res, int desiredWidth, int desiredHeight, PreviewSizeMode mode = PreviewSizeMode.FixedNone)
 		{
+			return GetPreviewImage((object)res, desiredWidth, desiredHeight, mode);
+		}
+		public static Bitmap GetPreviewImage(object obj, int desiredWidth, int desiredHeight, PreviewSizeMode mode = PreviewSizeMode.FixedNone)
+		{
 			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Terminated) return null;
+			if (obj == null) return null;
 			Bitmap result = null;
+			PreviewSettings settings = new PreviewSettings(desiredWidth, desiredHeight, mode);
 			
 			//System.Diagnostics.Stopwatch w = new System.Diagnostics.Stopwatch();
+			//System.Diagnostics.Stopwatch w2 = new System.Diagnostics.Stopwatch();
 			//w.Restart();
 
-			ConvertOperation convert = new ConvertOperation(new[] { res }, ConvertOperation.Operation.Convert);
-			if (result == null && convert.CanPerform<Pixmap>())
+			var generators = CorePluginHelper.RequestPreviewGenerators().ToArray();
+			generators.StableSort((g1, g2) => g2.Priority - g1.Priority);
+
+			ConvertOperation convert = new ConvertOperation(new[] { obj }, ConvertOperation.Operation.Convert);
+			foreach (IPreviewGenerator gen in generators)
 			{
-			    Pixmap pixmap = convert.Perform<Pixmap>().FirstOrDefault();
-				if (pixmap != null)
+				if (convert.CanPerform(gen.ObjectType))
 				{
-					result = pixmap.PixelData;
-					float widthRatio = (float)result.Width / (float)result.Height;
-					if (pixmap.Width * pixmap.Height > 4096 * 4096)
-					{
-						result = result.Clone(new Rectangle(
-							pixmap.Width / 2 - Math.Min(desiredWidth, pixmap.Width) / 2,
-							pixmap.Height / 2 - Math.Min(desiredHeight, pixmap.Height) / 2,
-							Math.Min(desiredWidth, pixmap.Width),
-							Math.Min(desiredHeight, pixmap.Height)), 
-							System.Drawing.Imaging.PixelFormat.DontCare);
-						if (result.Width != desiredWidth || result.Height != desiredHeight)
-							result = result.Rescale(desiredWidth, desiredHeight, InterpolationMode.HighQualityBicubic);
-					}
-					else if (mode == PreviewSizeMode.FixedBoth)
-						result = result.Rescale(desiredWidth, desiredHeight, InterpolationMode.HighQualityBicubic);
-					else if (mode == PreviewSizeMode.FixedWidth)
-						result = result.Rescale(desiredWidth, MathF.RoundToInt(desiredWidth / widthRatio), InterpolationMode.HighQualityBicubic);
-					else if (mode == PreviewSizeMode.FixedHeight)
-						result = result.Rescale(MathF.RoundToInt(widthRatio * desiredHeight), desiredHeight, InterpolationMode.HighQualityBicubic);
-					else
-						result = result.Clone() as Bitmap;
+					object genObj = convert.Perform(gen.ObjectType).FirstOrDefault();
+
+					if (genObj == null) continue;
+					if (!gen.CanPerformOn(genObj, settings)) continue;
+					//w2.Restart();
+					result = gen.Perform(genObj, settings);
+					//w2.Stop();
+
+					break;
 				}
 			}
 
-			if (result == null && convert.CanPerform<AudioData>())
-			{
-			    AudioData audio = convert.Perform<AudioData>().FirstOrDefault();
-				if (audio != null)
-				{
-					int oggHash = audio.OggVorbisData.GetCombinedHashCode();
-					int oggLen = audio.OggVorbisData.Length;
-					Duality.OggVorbis.PcmData pcm = Duality.OggVorbis.OV.LoadFromMemory(audio.OggVorbisData, 1000000); //41236992
-					short[] sdata = new short[pcm.data.Length / 2];
-					Buffer.BlockCopy(pcm.data, 0, sdata, 0, pcm.data.Length);
-
-					result = new Bitmap(desiredWidth, desiredHeight);
-					int channelLength = sdata.Length / pcm.channelCount;
-					int yMid = result.Height / 2;
-					int stepWidth = (channelLength / (2 * result.Width)) - 1;
-					int samples = 10;
-					using (Graphics g = Graphics.FromImage(result))
-					{
-						Color baseColor = ExtMethodsSystemDrawingColor.ColorFromHSV(
-							(float)(oggHash % 90) * (float)(oggLen % 4) / 360.0f, 
-							0.5f, 
-							1f);
-						Pen linePen = new Pen(Color.FromArgb(MathF.RoundToInt(255.0f / MathF.Pow((float)samples, 0.65f)), baseColor));
-						g.Clear(Color.Transparent);
-						for (int x = 0; x < result.Width; x++)
-						{
-							float timePercentage = (float)x / (float)result.Width;
-							int i = MathF.RoundToInt(timePercentage * channelLength);
-							float left;
-							float right;
-							short channel1;
-							short channel2;
-
-							for (int s = 0; s <= samples; s++)
-							{
-								int offset = MathF.RoundToInt((float)stepWidth * (float)s / (float)samples);
-								channel1 = sdata[(i + offset) * pcm.channelCount + 0];
-								channel2 = sdata[(i + offset) * pcm.channelCount + 1];
-								left = (float)Math.Abs((int)channel1) / (float)short.MaxValue;
-								right = (float)Math.Abs((int)channel2) / (float)short.MaxValue;
-								g.DrawLine(linePen, x, yMid, x, yMid + MathF.RoundToInt(left * yMid));
-								g.DrawLine(linePen, x, yMid, x, yMid - MathF.RoundToInt(right * yMid));
-							}
-						}
-					}
-				}
-			}
-
-			if (result == null && convert.CanPerform<Font>())
-			{
-			    Font font = convert.Perform<Font>().FirstOrDefault();
-				if (font != null)
-				{
-					string text = "/acThe quick brown fox jumps over the lazy dog.";
-					FormattedText formatText = new FormattedText();
-					formatText.MaxWidth = Math.Max(1, desiredWidth - 10);
-					formatText.MaxHeight = Math.Max(1, desiredHeight - 10);
-					formatText.WordWrap = FormattedText.WrapMode.Word;
-					formatText.Fonts = new[] { new ContentRef<Font>(font) };
-					formatText.ApplySource(text);
-					FormattedText.Metrics metrics = formatText.Measure();
-					Vector2 textSize = metrics.Size;
-					Bitmap textBitmap = new Bitmap(desiredWidth, MathF.RoundToInt(textSize.Y));
-					formatText.RenderToBitmap(text, textBitmap, 5, 0);
-
-					result = textBitmap.Resize(desiredWidth, desiredHeight, Alignment.Left);
-				}
-			}
-
-			//Log.Editor.Write("Generating preview for {0} took {1} ms", res, w.ElapsedMilliseconds);
+			//Log.Editor.Write("Generating preview for {0} took {1} and {2} ms", obj, w.ElapsedMilliseconds, w2.ElapsedMilliseconds);
 
 			return result;
+		}
+	}
+
+	public class PreviewSettings
+	{
+		public int DesiredWidth { get; private set; }
+		public int DesiredHeight { get; private set; }
+		public PreviewSizeMode SizeMode { get; private set; }
+
+		public PreviewSettings(int desiredWidth, int desiredHeight, PreviewSizeMode mode)
+		{
+			this.DesiredWidth = desiredWidth;
+			this.DesiredHeight = desiredHeight;
+			this.SizeMode = mode;
+		}
+	}
+	
+	public interface IPreviewGenerator
+	{
+		int Priority { get; }
+		Type ObjectType { get; }
+
+		Bitmap Perform(object obj, PreviewSettings settings);
+		bool CanPerformOn(object obj, PreviewSettings settings);
+	}
+	public abstract class PreviewGenerator<T> : IPreviewGenerator
+	{
+		public virtual int Priority
+		{
+			get { return CorePluginHelper.Priority_General; }
+		}
+		public Type ObjectType
+		{
+			get { return typeof(T); }
+		}
+
+		public abstract Bitmap Perform(T obj, PreviewSettings settings);
+		public abstract bool CanPerformOn(T obj, PreviewSettings settings);
+
+		Bitmap IPreviewGenerator.Perform(object obj, PreviewSettings settings)
+		{
+			return this.Perform((T)obj, settings);
+		}
+		bool IPreviewGenerator.CanPerformOn(object obj, PreviewSettings settings)
+		{
+			if (obj == null) return false;
+			return this.CanPerformOn((T)obj, settings);
 		}
 	}
 }

@@ -220,6 +220,11 @@ namespace EditorBase
 			CorePluginHelper.RegisterDataConverter<AudioData>(new DataConverters.AudioDataFromSound());
 			CorePluginHelper.RegisterDataConverter<Prefab>(new DataConverters.PrefabFromGameObject());
 
+			// Register preview generators
+			CorePluginHelper.RegisterPreviewGenerator(new PreviewGenerators.PixmapPreviewGenerator());
+			CorePluginHelper.RegisterPreviewGenerator(new PreviewGenerators.AudioDataPreviewGenerator());
+			CorePluginHelper.RegisterPreviewGenerator(new PreviewGenerators.FontPreviewGenerator());
+
 			// Register PropertyEditor provider
 			CorePluginHelper.RegisterPropertyEditorProvider(new PropertyEditors.PropertyEditorProvider());
 		}

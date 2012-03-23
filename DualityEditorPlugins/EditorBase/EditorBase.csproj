@@ -72,6 +72,7 @@
     <Compile Include="CamViewStates\ColliderEditorCamViewState.cs" />
     <Compile Include="CamViewStates\SceneEditorCamViewState.cs" />
     <Compile Include="DataConverters.cs" />
+    <Compile Include="PreviewGenerators.cs" />
     <Compile Include="LogView.cs">
       <SubType>Form</SubType>
     </Compile>

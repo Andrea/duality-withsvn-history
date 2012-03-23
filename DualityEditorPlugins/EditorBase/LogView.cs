@@ -225,7 +225,7 @@ namespace EditorBase
 		private void LogData_NewEntry(object sender, DataLogOutput.LogEntryEventArgs e)
 		{
 			// Make it Thread-Safe:
-			this.Invoke((EventHandler<DataLogOutput.LogEntryEventArgs>)this.LogData_NewEntry_Handler, sender, e);
+			if (this.IsHandleCreated) this.Invoke((EventHandler<DataLogOutput.LogEntryEventArgs>)this.LogData_NewEntry_Handler, sender, e);
 		}
 		private void DockPanel_ActiveAutoHideContentChanged(object sender, EventArgs e)
 		{
