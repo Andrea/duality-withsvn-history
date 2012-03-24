@@ -12,6 +12,23 @@
 	-->	"Did you know..?" screen?
 
 
+-->	Example Project: Super Mario style platformer
+	-->	Tile-based
+	-->	Will need something to edit tilemaps and probably a distinct Tilemap Resource
+	-->	Component: TilemapRenderer
+	-->	Component: TilemapCollider
+	-->	Resource: Tileset
+		-->	References Material to use
+		-->	Defines tile data
+			-->	Collision Group (0 == dont collide)
+			-->	Collision mask (Top, Bottom, Left, Right) (?)
+			-->	Is AutoTile?
+			-->	etc.
+	-->	CamViewState: Tile Editor (?)
+	-->	Is there a way to generalize all this enough to make dynamically lit tilemap rendering
+		blend into existing design  smoothly?
+
+
 --> Example Project: Tetris with Physics
 	-->	Need Joints for this in order to create partially destructible blocks
 

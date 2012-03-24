@@ -8,6 +8,7 @@ using System.Reflection;
 
 using Duality.OggVorbis;
 using OpenTK.Audio.OpenAL;
+using Duality.EditorHints;
 
 namespace Duality.Resources
 {
@@ -90,6 +91,7 @@ namespace Duality.Resources
 		/// [GET / SET] A data chunk representing <see cref="Duality.OggVorbis.OV">Ogg Vorbis</see> compressed
 		/// audio data.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public byte[] OggVorbisData
 		{
 			get { return this.data; }
@@ -115,6 +117,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET] The OpenAL buffer handle of this AudioData.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public int AlBuffer
 		{
 			get 
