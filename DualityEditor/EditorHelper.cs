@@ -72,6 +72,7 @@ namespace DualityEditor
 				{
 					srcFilePath = EditorHelper.GenerateResourceSrcFilePath(r, srcFileExt);
 					Directory.CreateDirectory(Path.GetDirectoryName(srcFilePath));
+					r.SourcePath = srcFilePath;
 				}
 
 				if (srcFilePath != null)
