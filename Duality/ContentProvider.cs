@@ -236,7 +236,7 @@ namespace Duality
 			get
 			{
 				if (this.IsExplicitNull) return "null";
-				if (this.IsRuntimeResource) return string.Format("rt:{0}", this.contentInstance.GetHashCode());
+				if (this.IsRuntimeResource) return this.contentInstance.GetHashCode().ToString();
 				string nameTemp = this.contentPath;
 				if (this.IsDefaultContent) nameTemp = nameTemp.Replace(':', '/');
 				return System.IO.Path.GetFileNameWithoutExtension(System.IO.Path.GetFileNameWithoutExtension(nameTemp));
@@ -250,7 +250,7 @@ namespace Duality
 			get
 			{
 				if (this.IsExplicitNull) return "null";
-				if (this.IsRuntimeResource) return string.Format("rt:{0}", this.contentInstance.GetHashCode());
+				if (this.IsRuntimeResource) return this.contentInstance.GetHashCode().ToString();
 				string nameTemp = this.contentPath;
 				if (this.IsDefaultContent) nameTemp = nameTemp.Replace(':', '/');
 				return System.IO.Path.Combine(System.IO.Path.GetDirectoryName(nameTemp), this.Name);
@@ -338,7 +338,20 @@ namespace Duality
 		public override string ToString()
 		{
 			Type resType = this.ResType ?? typeof(Resource);
-			return string.Format("CR: {0} \"{1}\"", resType.Name, this.FullName);
+
+			char stateChar;
+			if (this.IsDefaultContent)
+				stateChar = 'D';
+			else if (this.IsRuntimeResource)
+				stateChar = 'R';
+			else if (this.IsExplicitNull)
+				stateChar = 'N';
+			else if (this.IsLoaded)
+				stateChar = 'L';
+			else
+				stateChar = '_';
+
+			return string.Format("[{2}] {0} \"{1}\"", resType.Name, this.FullName, stateChar);
 		}
 		public override bool Equals(object obj)
 		{

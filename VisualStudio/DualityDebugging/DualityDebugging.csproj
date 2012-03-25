@@ -48,6 +48,7 @@
     <Compile Include="BitmapForm.Designer.cs">
       <DependentUpon>BitmapForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="BitmapVisualizer.cs" />
     <Compile Include="TextureVisualizer.cs" />
     <Compile Include="PixmapVisualizer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

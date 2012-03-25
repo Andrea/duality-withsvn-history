@@ -49,8 +49,8 @@ namespace DualityDebuggingTest
 				// Run the DualityApp
 				launcherWindow.VSync = VSyncMode.On;
 				//launcherWindow.Run();
-				PixmapDebuggerVisualizer.TestShow(Pixmap.DualityLogo256.Res);
-				TextureDebuggerVisualizer.TestShow(Texture.DualityLogo256.Res);
+				BitmapDebuggerVisualizer.TestShow(Pixmap.DualityLogo256.Res);
+				BitmapDebuggerVisualizer.TestShow(Texture.DualityLogo256.Res);
 			}
 			DualityApp.Terminate();
 		}

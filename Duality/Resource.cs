@@ -78,7 +78,7 @@ namespace Duality
 		{
 			get
 			{
-				if (this.IsRuntimeResource) return string.Format("rt:{0}", this.GetHashCode());
+				if (this.IsRuntimeResource) return this.GetHashCode().ToString();
 				string nameTemp = this.path;
 				if (this.IsDefaultContent) nameTemp = nameTemp.Replace(':', '/');
 				return System.IO.Path.GetFileNameWithoutExtension(System.IO.Path.GetFileNameWithoutExtension(nameTemp));
@@ -92,7 +92,7 @@ namespace Duality
 		{
 			get
 			{
-				if (this.IsRuntimeResource) return string.Format("rt:{0}", this.GetHashCode());
+				if (this.IsRuntimeResource) return this.GetHashCode().ToString();
 				string nameTemp = this.path;
 				if (this.IsDefaultContent) nameTemp = nameTemp.Replace(':', '/');
 				return System.IO.Path.Combine(System.IO.Path.GetDirectoryName(nameTemp), this.Name);
