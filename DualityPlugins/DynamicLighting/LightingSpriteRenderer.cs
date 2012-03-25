@@ -15,6 +15,9 @@ using Duality.Resources;
 
 namespace DynamicLighting
 {
+	/// <summary>
+	/// Renders a sprite using dynamic lighting, either per-vertex or per-pixel, depending on the DrawTechnique that is used.
+	/// </summary>
 	[Serializable]
 	public class LightingSpriteRenderer : SpriteRenderer
 	{

@@ -3,7 +3,7 @@
   <object dataType="Class" type="Duality.Resources.Material" id="1">
     <info dataType="Class" type="Duality.Resources.BatchInfo" id="2">
       <technique dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.DrawTechnique]]">
-        <contentPath dataType="String">Data\PerPixelLighting\Mask.LightingTechnique.res</contentPath>
+        <contentPath dataType="String">Data\PerPixelLighting\SmoothAnim\Mask.LightingTechnique.res</contentPath>
       </technique>
       <mainColor dataType="Struct" type="Duality.ColorFormat.ColorRgba">
         <r dataType="Byte">255</r>
@@ -15,13 +15,13 @@
         <customSerialIO />
         <customSerialIO>
           <mainTex dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Texture]]">
-            <contentPath dataType="String">Default:Texture:DualityLogo256</contentPath>
+            <contentPath dataType="String">Data\ship_c_anim.Texture.res</contentPath>
           </mainTex>
           <normalTex dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Texture]]">
-            <contentPath dataType="String">Default:Texture:White</contentPath>
+            <contentPath dataType="String">Data\ship_n.Texture.res</contentPath>
           </normalTex>
           <specularTex dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Texture]]">
-            <contentPath dataType="String">Default:Texture:White</contentPath>
+            <contentPath dataType="String">Data\ship_s.Texture.res</contentPath>
           </specularTex>
         </customSerialIO>
       </textures>
@@ -29,18 +29,18 @@
         <customSerialIO />
         <customSerialIO>
           <_lightColor dataType="Array" type="System.Single[]" id="5" length="24">
+            <object dataType="Float">1</object>
+            <object dataType="Float">1</object>
+            <object dataType="Float">1</object>
+            <object dataType="Float">1</object>
             <object dataType="Float">0</object>
             <object dataType="Float">0</object>
             <object dataType="Float">0</object>
+            <object dataType="Float">1</object>
             <object dataType="Float">0</object>
             <object dataType="Float">0</object>
             <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
+            <object dataType="Float">1</object>
             <object dataType="Float">0</object>
             <object dataType="Float">0</object>
             <object dataType="Float">0</object>
@@ -54,7 +54,52 @@
             <object dataType="Float">0</object>
             <object dataType="Float">0</object>
           </_lightColor>
-          <_lightDir dataType="Array" type="System.Single[]" id="6" length="32">
+          <_lightPos dataType="Array" type="System.Single[]" id="6" length="32">
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">1000</object>
+            <object dataType="Float">500</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">1000</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">500</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">1000</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">500</object>
+            <object dataType="Float">1000</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+          </_lightPos>
+          <_lightCount dataType="Array" type="System.Single[]" id="7" length="1">
+            <object dataType="Float">1</object>
+          </_lightCount>
+          <_camWorldPos dataType="Array" type="System.Single[]" id="8" length="3">
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+            <object dataType="Float">0</object>
+          </_camWorldPos>
+          <_camRefDist dataType="Array" type="System.Single[]" id="9" length="1">
+            <object dataType="Float">0</object>
+          </_camRefDist>
+          <_lightDir dataType="Array" type="System.Single[]" id="10" length="32">
             <object dataType="Float">0</object>
             <object dataType="Float">0</object>
             <object dataType="Float">0</object>
@@ -88,51 +133,6 @@
             <object dataType="Float">0</object>
             <object dataType="Float">0</object>
           </_lightDir>
-          <_lightPos dataType="Array" type="System.Single[]" id="7" length="32">
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-          </_lightPos>
-          <_lightCount dataType="Array" type="System.Single[]" id="8" length="1">
-            <object dataType="Float">0</object>
-          </_lightCount>
-          <_camWorldPos dataType="Array" type="System.Single[]" id="9" length="3">
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-            <object dataType="Float">0</object>
-          </_camWorldPos>
-          <_camRefDist dataType="Array" type="System.Single[]" id="10" length="1">
-            <object dataType="Float">0</object>
-          </_camRefDist>
         </customSerialIO>
       </uniforms>
       <dirtyFlag dataType="Enum" type="Duality.Resources.BatchInfo+DirtyFlag" name="None" value="0" />

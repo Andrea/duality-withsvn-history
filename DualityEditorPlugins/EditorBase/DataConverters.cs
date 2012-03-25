@@ -178,6 +178,8 @@ namespace EditorBase.DataConverters
 					if (sprite == null) sprite = new AnimSpriteRenderer();
 					sprite.SharedMaterial = matRef;
 					sprite.Rect = Rect.AlignCenter(0.0f, 0.0f, mainTex.PxWidth / mainTex.AnimCols, mainTex.PxHeight / mainTex.AnimRows);
+					sprite.AnimDuration = 5.0f;
+					sprite.AnimFrameCount = mainTex.AnimFrames;
 					convert.AddResult(sprite);
 				}
 

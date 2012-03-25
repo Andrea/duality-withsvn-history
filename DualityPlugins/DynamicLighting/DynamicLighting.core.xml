@@ -4,6 +4,11 @@
         <name>DynamicLighting.core</name>
     </assembly>
     <members>
+        <member name="T:DynamicLighting.LightingSpriteRenderer">
+            <summary>
+            Renders a sprite using dynamic lighting, either per-vertex or per-pixel, depending on the DrawTechnique that is used.
+            </summary>
+        </member>
         <member name="P:DynamicLighting.LightingSpriteRenderer.VertexTranslucency">
             <summary>
             [GET / SET] Specifies the objects translucency for Light when using vertex lighting.
@@ -56,6 +61,18 @@
         <member name="T:DynamicLighting.DynamicLightingCorePlugin">
             <summary>
             Defines the dynamic lighting core plugin.
+            </summary>
+        </member>
+        <member name="T:DynamicLighting.LightingAnimSpriteRenderer">
+            <summary>
+            Renders an animated sprite using dynamic lighting, either per-vertex or per-pixel, depending on the DrawTechnique that is used.
+            </summary>
+        </member>
+        <member name="P:DynamicLighting.LightingAnimSpriteRenderer.VertexTranslucency">
+            <summary>
+            [GET / SET] Specifies the objects translucency for Light when using vertex lighting.
+            A very translucent object (1.0) is affected from Lights behind it as well as from Lights in front of it.
+            Non-translucent objects (0.0) are only affected by Lights in front of them.
             </summary>
         </member>
     </members>

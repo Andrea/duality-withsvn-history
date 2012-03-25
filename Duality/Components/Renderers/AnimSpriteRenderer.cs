@@ -246,21 +246,13 @@ namespace Duality.Components.Renderers
 			vertices[3].clr = mainClr;
 			vertices[3].attrib = curAnimFrameFade;
 		}
-
-		public override void Draw(IDrawDevice device)
+		protected void CalcAnimData(Texture mainTex, DrawTechnique tech, bool smoothShaderInput, out Rect uvRect, out Rect uvRectNext, out float curAnimFrameFade)
 		{
-			Texture mainTex = this.RetrieveMainTex();
-			ColorRgba mainClr = this.RetrieveMainColor();
-			DrawTechnique tech = this.RetrieveDrawTechnique();
-
-			bool smoothShaderInput = tech != null && tech.PreferredVertexFormat == DrawTechnique.VertexType_C1P3T4A1;
 			bool isAnimated = this.animFrameCount > 0 && this.animDuration > 0 && mainTex != null && mainTex.Atlas != null;
 			int curAnimFrame = 0;
 			int nextAnimFrame = 0;
-			float curAnimFrameFade = 0.0f;
+			curAnimFrameFade = 0.0f;
 
-			Rect uvRect;
-			Rect uvRectNext;
 			if (mainTex != null)
 			{
 				if (isAnimated)
@@ -308,6 +300,19 @@ namespace Duality.Components.Renderers
 			}
 			else
 				uvRect = uvRectNext = new Rect(1.0f, 1.0f);
+		}
+
+		public override void Draw(IDrawDevice device)
+		{
+			Texture mainTex = this.RetrieveMainTex();
+			ColorRgba mainClr = this.RetrieveMainColor();
+			DrawTechnique tech = this.RetrieveDrawTechnique();
+
+			float curAnimFrameFade;
+			Rect uvRect;
+			Rect uvRectNext;
+			bool smoothShaderInput = tech != null && tech.PreferredVertexFormat == DrawTechnique.VertexType_C1P3T4A1;
+			this.CalcAnimData(mainTex, tech, smoothShaderInput, out uvRect, out uvRectNext, out curAnimFrameFade);
 
 			if (!smoothShaderInput)
 			{

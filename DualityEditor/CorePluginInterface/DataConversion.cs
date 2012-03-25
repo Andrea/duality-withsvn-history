@@ -232,7 +232,7 @@ namespace DualityEditor.CorePluginInterface
 			target = this.ResTypeFromRefType(target);
 
 			//Log.Editor.Write("Convert to {0}", target.Name);
-			int resultCountBefore = this.result.Count;
+			bool fittingDataFound = false;
 
 			// Check if there already is fitting data available
 			IEnumerable<object> fittingData = null;
@@ -256,12 +256,13 @@ namespace DualityEditor.CorePluginInterface
 			// If something fitting was found, directly add it to the operation results
 			if (fittingData != null)
 			{
+				fittingDataFound = true;
 				foreach (object obj in fittingData)
 					this.AddResult(obj);
 			}
 
 			// No result yet? Search suitable converters
-			if (this.result.Count == resultCountBefore)
+			if (!fittingDataFound)
 			{
 				var converterQuery = CorePluginHelper.RequestDataConverters(target);
 				List<ConvComplexityEntry> converters = new List<ConvComplexityEntry>();
