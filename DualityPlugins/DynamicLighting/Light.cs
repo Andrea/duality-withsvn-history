@@ -10,8 +10,12 @@ using Duality.EditorHints;
 using Duality.Resources;
 using Duality.ColorFormat;
 
-namespace Debug
+namespace DynamicLighting
 {
+	/// <summary>
+	/// A source of light. Supported light types are directional, ambient, point and spot.
+	/// To create directional or ambient lights, add this Component to a GameObject without Transform.
+	/// </summary>
 	[Serializable]
     public class Light : Component
     {
@@ -33,6 +37,10 @@ namespace Debug
 		private	float		range				= 1500.0f;
 		private	float		spotFocus			= 0.0f;
 
+		/// <summary>
+		/// [GET / SET] The direction this Light points to. Used in spot and directional light. Set this to zero
+		/// in order to create a point light.
+		/// </summary>
 		[EditorHintIncrement(0.1f)]
 		public Vector3 Direction
 		{
@@ -43,6 +51,9 @@ namespace Debug
 				if (this.dir != Vector3.Zero) this.dir.Normalize();
 			}
 		}
+		/// <summary>
+		/// [GET / SET] The Lights main color.
+		/// </summary>
 		[EditorHintFlags(MemberFlags.AffectsOthers)]
 		public ColorRgba Color
 		{
@@ -59,12 +70,18 @@ namespace Debug
 				this.color = hsva.ToRgba();
 			}
 		}
+		/// <summary>
+		/// [GET / SET] The Lights intensity.
+		/// </summary>
 		[EditorHintIncrement(0.1f)]
 		public float Intensity
 		{
 			get { return this.intensity; }
 			set { this.intensity = value; }
 		}
+		/// <summary>
+		/// [GET / SET] The Lights ambient color value. Ambient light is used as base value in directional lighting.
+		/// </summary>
 		[EditorHintFlags(MemberFlags.AffectsOthers)]
 		public ColorRgba AmbientColor
 		{
@@ -81,17 +98,26 @@ namespace Debug
 				this.ambientColor = hsva.ToRgba();
 			}
 		}
+		/// <summary>
+		/// [GET / SET] The Lights ambient intensity. Ambient light is used as base value in directional lighting.
+		/// </summary>
 		[EditorHintIncrement(0.1f)]
 		public float AmbientIntensity
 		{
 			get { return this.ambientIntensity; }
 			set { this.ambientIntensity = value; }
 		}
+		/// <summary>
+		/// [GET / SET] The Lights range. Only applies to point and spot lights.
+		/// </summary>
 		public float Range
 		{
 			get { return this.range; }
 			set { this.range = value; }
 		}
+		/// <summary>
+		/// [GET / SET] The Lights spot focus. The higher this value is, the smaller the spot radius.
+		/// </summary>
 		[EditorHintRange(1.0f, 100.0f)]
 		public float SpotFocus
 		{

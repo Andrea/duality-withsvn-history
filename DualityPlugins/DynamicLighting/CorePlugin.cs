@@ -1,0 +1,27 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+using Duality;
+using Duality.Resources;
+
+namespace DynamicLighting
+{
+	/// <summary>
+	/// Defines the dynamic lighting core plugin.
+	/// </summary>
+    public class DynamicLightingCorePlugin : CorePlugin
+	{
+		protected override void InitPlugin()
+		{
+			base.InitPlugin();
+			VertexC1P3T2A4.vertexTypeIndex = DrawTechnique.RequestVertexTypeIndex(typeof(VertexC1P3T2A4).Name);
+		}
+		protected override void OnDisposePlugin()
+		{
+			base.OnDisposePlugin();
+			DrawTechnique.ReleaseVertexTypeIndex(typeof(VertexC1P3T2A4).Name);
+		}
+	}
+}

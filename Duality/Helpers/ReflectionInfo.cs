@@ -92,6 +92,7 @@ namespace Duality
 		public static readonly PropertyInfo	Property_Scene_GlobalGravity;
 
 		public static readonly PropertyInfo	Property_DrawTechnique_Blending;
+		public static readonly PropertyInfo	Property_DrawTechnique_PreferredVertexFormat;
 
 		public static readonly PropertyInfo	Property_ShaderProgram_Compiled;
 		public static readonly PropertyInfo	Property_ShaderProgram_VarInfo;
@@ -239,7 +240,8 @@ namespace Duality
 			Property_Scene_GlobalGravity		= scene.GetProperty("GlobalGravity");
 
 			Type drawTech = typeof(DrawTechnique);
-			Property_DrawTechnique_Blending		= drawTech.GetProperty("Blending");
+			Property_DrawTechnique_Blending					= drawTech.GetProperty("Blending");
+			Property_DrawTechnique_PreferredVertexFormat	= drawTech.GetProperty("PreferredVertexFormat");
 			
 			Type shaderProgram = typeof(ShaderProgram);
 			Property_ShaderProgram_Compiled		= shaderProgram.GetProperty("Compiled");

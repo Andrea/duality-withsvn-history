@@ -12,12 +12,18 @@ using Duality.ColorFormat;
 using Duality.VertexFormat;
 using Duality.Resources;
 
-namespace Debug
+namespace DynamicLighting
 {
 	[Serializable]
 	[StructLayout(LayoutKind.Sequential)]
 	public struct VertexC1P3T2A4 : IVertexData
 	{
+		internal static int vertexTypeIndex = DrawTechnique.VertexType_Unknown;
+		public static int VertexTypeIndex
+		{
+			get { return vertexTypeIndex; }
+		}
+
 		public ColorRgba clr;
 		public Vector3 pos;
 		public Vector2 texCoord;
@@ -28,9 +34,9 @@ namespace Debug
 			get { return this.pos; }
 			set { this.pos = value; }
 		}
-		public int VertexTypeIndex
+		public int TypeIndex
 		{
-			get { return (int)VertexDataFormat.Count; }
+			get { return vertexTypeIndex; }
 		}
 		
 		void IVertexData.SetupVBO(BatchInfo mat)

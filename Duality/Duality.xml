@@ -1290,12 +1290,7 @@
             </summary>
             <param name="mat">The <see cref="T:Duality.Resources.Material"/> that was active when setting it up.</param>
         </member>
-        <member name="P:Duality.VertexFormat.IVertexData.VertexTypeIndex">
-            <summary>
-            [GET] An integer id representing this kind of vertex data. Usually equals the respective <see cref="T:Duality.VertexFormat.VertexDataFormat"/>.
-            This member is static by design.
-            </summary>
-        </member>
+        <!-- Ungültiger XML-Kommentar wurde für den Member "P:Duality.VertexFormat.IVertexData.TypeIndex" ignoriert -->
         <member name="P:Duality.VertexFormat.IVertexData.Pos">
             <summary>
             [GET] The vertices position.
@@ -4106,46 +4101,6 @@
             The vertices custom attribute.
             </summary>
         </member>
-        <member name="T:Duality.VertexFormat.VertexDataFormat">
-            <summary>
-            Enumerates Dualitys default vertex data formats.
-            </summary>
-        </member>
-        <member name="F:Duality.VertexFormat.VertexDataFormat.Unknown">
-            <summary>
-            Unknown format.
-            </summary>
-        </member>
-        <member name="F:Duality.VertexFormat.VertexDataFormat.VertexP3">
-            <summary>
-            <see cref="T:Duality.VertexFormat.VertexP3"/> format.
-            </summary>
-        </member>
-        <member name="F:Duality.VertexFormat.VertexDataFormat.VertexC1P3">
-            <summary>
-            <see cref="T:Duality.VertexFormat.VertexC1P3"/> format.
-            </summary>
-        </member>
-        <member name="F:Duality.VertexFormat.VertexDataFormat.VertexC1P3T2">
-            <summary>
-            <see cref="T:Duality.VertexFormat.VertexC1P3T2"/> format.
-            </summary>
-        </member>
-        <member name="F:Duality.VertexFormat.VertexDataFormat.VertexC1P3T4A1">
-            <summary>
-            <see cref="T:Duality.VertexFormat.VertexC1P3T4A1"/> format.
-            </summary>
-        </member>
-        <member name="F:Duality.VertexFormat.VertexDataFormat.VertexP3T2">
-            <summary>
-            <see cref="T:Duality.VertexFormat.VertexP3T2"/> format.
-            </summary>
-        </member>
-        <member name="F:Duality.VertexFormat.VertexDataFormat.Count">
-            <summary>
-            Total number of default vertex data formats.
-            </summary>
-        </member>
         <member name="T:Duality.Resources.VertexShader">
             <summary>
             Represents an OpenGL VertexShader.
@@ -5941,6 +5896,41 @@
             (Virtual) path of the <see cref="P:Duality.Resources.DrawTechnique.SmoothAnim_Invert"/> DrawTechnique.
             </summary>
         </member>
+        <member name="F:Duality.Resources.DrawTechnique.MaxVertexTypes">
+            <summary>
+            The maximum number of vertex types.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.DrawTechnique.VertexType_Unknown">
+            <summary>
+            Unknown format.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.DrawTechnique.VertexType_P3">
+            <summary>
+            <see cref="T:Duality.VertexFormat.VertexP3"/> format.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.DrawTechnique.VertexType_C1P3">
+            <summary>
+            <see cref="T:Duality.VertexFormat.VertexC1P3"/> format.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.DrawTechnique.VertexType_C1P3T2">
+            <summary>
+            <see cref="T:Duality.VertexFormat.VertexC1P3T2"/> format.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.DrawTechnique.VertexType_C1P3T4A1">
+            <summary>
+            <see cref="T:Duality.VertexFormat.VertexC1P3T4A1"/> format.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.DrawTechnique.VertexType_P3T2">
+            <summary>
+            <see cref="T:Duality.VertexFormat.VertexP3T2"/> format.
+            </summary>
+        </member>
         <member name="M:Duality.Resources.DrawTechnique.#ctor">
             <summary>
             Creates a new, default DrawTechnique
@@ -5952,7 +5942,7 @@
             </summary>
             <param name="blendType"></param>
         </member>
-        <member name="M:Duality.Resources.DrawTechnique.#ctor(Duality.BlendMode,Duality.ContentRef{Duality.Resources.ShaderProgram},Duality.VertexFormat.VertexDataFormat)">
+        <member name="M:Duality.Resources.DrawTechnique.#ctor(Duality.BlendMode,Duality.ContentRef{Duality.Resources.ShaderProgram},System.Int32)">
             <summary>
             Creates a new DrawTechnique using the specified <see cref="T:Duality.BlendMode"/> and <see cref="T:Duality.Resources.ShaderProgram"/>.
             </summary>
@@ -6101,7 +6091,7 @@
         <member name="P:Duality.Resources.DrawTechnique.PreferredVertexFormat">
             <summary>
             [GET / SET] The vertex format that is preferred by this DrawTechnique. If there is no specific preference,
-            <see cref="F:Duality.VertexFormat.VertexDataFormat.Unknown"/> is returned.
+            <see cref="F:Duality.Resources.DrawTechnique.VertexType_Unknown"/> is returned.
             </summary>
         </member>
         <member name="P:Duality.Resources.DrawTechnique.NeedsZSort">

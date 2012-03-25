@@ -20,7 +20,7 @@ namespace EditorBase.PropertyEditors
 			{
 				ObjectSelectorPropertyEditor e = new ObjectSelectorPropertyEditor();
 				e.EditedType = (info as System.Reflection.PropertyInfo).PropertyType;
-				e.Items = System.Drawing.FontFamily.Families.Select(f => f.Name);
+				e.Items = System.Drawing.FontFamily.Families.Select(f => new ObjectItem(f.Name, f.Name));
 				this.ParentGrid.ConfigureEditor(e);
 				return e;
 			}

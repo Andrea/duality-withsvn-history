@@ -40,9 +40,9 @@ namespace Duality.VertexFormat
 			get { return this.pos; }
 			set { this.pos = value; }
 		}
-		int IVertexData.VertexTypeIndex
+		int IVertexData.TypeIndex
 		{
-			get { return (int)VertexDataFormat.VertexC1P3T4A1; }
+			get { return VertexTypeIndex; }
 		}
 		
 		void IVertexData.SetupVBO(Duality.Resources.BatchInfo mat)
@@ -132,23 +132,24 @@ namespace Duality.VertexFormat
 		/// <summary>
 		/// Byte offset for the color.
 		/// </summary>
-		public const int OffsetColor	= 0;
+		public const int OffsetColor		= 0;
 		/// <summary>
 		/// Byte offset for the position.
 		/// </summary>
-		public const int OffsetPos		= OffsetColor + 4 * sizeof(byte);
+		public const int OffsetPos			= OffsetColor + 4 * sizeof(byte);
 		/// <summary>
 		/// Byte offset for the (double) texture coordinate.
 		/// </summary>
-		public const int OffsetTex0		= OffsetPos + 3 * sizeof(float);
+		public const int OffsetTex0			= OffsetPos + 3 * sizeof(float);
 		/// <summary>
 		/// Byte offset for the custom attribute.
 		/// </summary>
-		public const int OffsetAttrib	= OffsetTex0 + 4 * sizeof(float);
+		public const int OffsetAttrib		= OffsetTex0 + 4 * sizeof(float);
 		/// <summary>
 		/// Total size in bytes.
 		/// </summary>
-		public const int Size			= OffsetAttrib + 1 * sizeof(float);
+		public const int Size				= OffsetAttrib + 1 * sizeof(float);
+		public const int VertexTypeIndex	= Duality.Resources.DrawTechnique.VertexType_C1P3T4A1;
 
 		public VertexC1P3T4A1(float x, float y, float z, float s, float t, float p, float q, float attrib, byte r = 255, byte g = 255, byte b = 255, byte a = 255)
 		{

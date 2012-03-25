@@ -287,6 +287,31 @@
               Ressourcenzuordnungen, die diese stark typisierte Ressourcenklasse verwenden.
             </summary>
         </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.Category_Advanced">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Advanced ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.Category_General">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die General ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.Category_Graphics">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Graphics ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.Category_Physics">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Physics ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.Category_Sound">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Sound ähnelt.
+            </summary>
+        </member>
         <member name="P:DualityEditor.EditorRes.GeneralRes.HelpInfo_NotAvailable_Desc">
             <summary>
               Sucht eine lokalisierte Zeichenfolge, die No information available. ähnelt.

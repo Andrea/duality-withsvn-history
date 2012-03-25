@@ -390,7 +390,6 @@ namespace EditorBase.PropertyEditors
 					}
 				}
 			}
-			return null;
 		}
 		
 		protected Func<IEnumerable<object>> CreateTextureValueGetter(string name)

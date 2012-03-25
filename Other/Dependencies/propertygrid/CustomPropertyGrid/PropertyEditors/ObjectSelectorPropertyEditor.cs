@@ -19,9 +19,9 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 		{
 			get { return Convert.ChangeType(this.val, this.EditedType); }
 		}
-		public IEnumerable<object> Items
+		public IEnumerable<ObjectItem> Items
 		{
-			get { return this.objSelector.DropDownItems; }
+			get { return this.objSelector.DropDownItems.Cast<ObjectItem>(); }
 			set { this.objSelector.DropDownItems = value; }
 		}
 		public bool IsDropDownOpened
@@ -66,7 +66,7 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 				this.valMultiple = values.Any(o => o == null) || !values.All(o => object.Equals(o, this.val));
 			}
 
-			this.objSelector.SelectedObject = this.val;
+			this.objSelector.SelectedObject = this.objSelector.DropDownItems.Cast<ObjectItem>().FirstOrDefault(i => object.Equals(i.Value, this.val));
 			this.EndUpdate();
 		}
 
@@ -139,7 +139,7 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 		{
 			if (this.IsUpdatingFromObject) return;
 
-			this.val = this.objSelector.SelectedObject;
+			this.val = (this.objSelector.SelectedObject as ObjectItem).Value;
 			this.Invalidate();
 			this.PerformSetValue();
 			this.OnValueChanged();

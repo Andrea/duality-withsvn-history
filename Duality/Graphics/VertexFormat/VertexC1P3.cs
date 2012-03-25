@@ -31,9 +31,9 @@ namespace Duality.VertexFormat
 			get { return this.pos; }
 			set { this.pos = value; }
 		}
-		int IVertexData.VertexTypeIndex
+		int IVertexData.TypeIndex
 		{
-			get { return (int)VertexDataFormat.VertexC1P3; }
+			get { return VertexTypeIndex; }
 		}
 		
 		void IVertexData.SetupVBO(Duality.Resources.BatchInfo mat)
@@ -58,15 +58,16 @@ namespace Duality.VertexFormat
 		/// <summary>
 		/// Byte offset for the color.
 		/// </summary>
-		public const int OffsetColor	= 0;
+		public const int OffsetColor		= 0;
 		/// <summary>
 		/// Byte offset for the position.
 		/// </summary>
-		public const int OffsetPos		= OffsetColor + 4 * sizeof(byte);
+		public const int OffsetPos			= OffsetColor + 4 * sizeof(byte);
 		/// <summary>
 		/// Total size in bytes.
 		/// </summary>
-		public const int Size			= OffsetPos + 3 * sizeof(float);
+		public const int Size				= OffsetPos + 3 * sizeof(float);
+		public const int VertexTypeIndex	= Duality.Resources.DrawTechnique.VertexType_C1P3;
 
 		public VertexC1P3(float x, float y, float z, byte r = 255, byte g = 255, byte b = 255, byte a = 255)
 		{

@@ -120,6 +120,14 @@ namespace Duality
 			if (this.disposed) throw new ApplicationException("Can't save Ressource that already has been disposed.");
 			if (saveAsPath == null) saveAsPath = this.path;
 
+#if DEBUG
+			if (!PathHelper.IsPathLocatedIn(saveAsPath, "Data"))
+			{
+				Log.Editor.WriteWarning("Saving Resource '{0}' outside of data folder.. is this really intended? Target path: {1}", this.FullName, saveAsPath);
+				if (System.Diagnostics.Debugger.IsAttached) System.Diagnostics.Debugger.Break();
+			}
+#endif
+
 			// We're saving a new Ressource for the first time: Register it in the library
 			if (this.path == null)
 			{

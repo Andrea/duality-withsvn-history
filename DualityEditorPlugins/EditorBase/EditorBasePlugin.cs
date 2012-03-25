@@ -44,7 +44,6 @@ namespace EditorBase
 		private	ToolStripMenuItem	menuItemProjectView	= null;
 		private	ToolStripMenuItem	menuItemSceneView	= null;
 		private	ToolStripMenuItem	menuItemObjView		= null;
-		private	ToolStripMenuItem	menuItemResView		= null;
 		private	ToolStripMenuItem	menuItemCamView		= null;
 		private	ToolStripMenuItem	menuItemLogView		= null;
 		private	ToolStripMenuItem	menuItemAppData		= null;
@@ -167,27 +166,27 @@ namespace EditorBase
 			CorePluginHelper.RegisterTypeImage(typeof(Collider), EditorBaseRes.IconCmpRectCollider, CorePluginHelper.ImageContext_Icon);
 
 			CorePluginHelper.RegisterTypeCategory(typeof(Transform), "", CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(SpriteRenderer), EditorBaseRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(AnimSpriteRenderer), EditorBaseRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(TextRenderer), EditorBaseRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(Camera), EditorBaseRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(SoundEmitter), EditorBaseRes.Category_Sound, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(SoundListener), EditorBaseRes.Category_Sound, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(Collider), EditorBaseRes.Category_Physics, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(SpriteRenderer), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(AnimSpriteRenderer), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(TextRenderer), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(Camera), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(SoundEmitter), GeneralRes.Category_Sound, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(SoundListener), GeneralRes.Category_Sound, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(Collider), GeneralRes.Category_Physics, CorePluginHelper.CategoryContext_General);
 
 			CorePluginHelper.RegisterTypeCategory(typeof(Scene), "", CorePluginHelper.CategoryContext_General);
 			CorePluginHelper.RegisterTypeCategory(typeof(Prefab), "", CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(Pixmap), EditorBaseRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(Texture), EditorBaseRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(Material), EditorBaseRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(Font), EditorBaseRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(RenderTarget), EditorBaseRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(DrawTechnique), EditorBaseRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(ShaderProgram), EditorBaseRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(VertexShader), EditorBaseRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(FragmentShader), EditorBaseRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(AudioData), EditorBaseRes.Category_Sound, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(Sound), EditorBaseRes.Category_Sound, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(Pixmap), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(Texture), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(Material), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(Font), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(RenderTarget), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(DrawTechnique), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(ShaderProgram), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(VertexShader), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(FragmentShader), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(AudioData), GeneralRes.Category_Sound, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(Sound), GeneralRes.Category_Sound, CorePluginHelper.CategoryContext_General);
 
 			// Register conversion actions
 			CorePluginHelper.RegisterEditorAction(new EditorAction<Pixmap>				(EditorBaseRes.ActionName_CreateTexture,		EditorBaseRes.IconResTexture,		p => Texture.CreateFromPixmap(p),	EditorBaseRes.ActionDesc_CreateTexture),		CorePluginHelper.ActionContext_ContextMenu);

@@ -5,7 +5,7 @@
     <shader dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.ShaderProgram]]">
       <contentPath dataType="String">Data\PseudoHdr\Tonemapping.ShaderProgram.res</contentPath>
     </shader>
-    <formatPref dataType="Enum" type="Duality.VertexFormat.VertexDataFormat" name="Unknown" value="-1" />
+    <formatPref dataType="Int">-1</formatPref>
     <sourcePath />
   </object>
 </root>

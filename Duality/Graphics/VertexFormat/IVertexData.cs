@@ -8,53 +8,16 @@ using OpenTK;
 namespace Duality.VertexFormat
 {
 	/// <summary>
-	/// Enumerates Dualitys default vertex data formats.
-	/// </summary>
-	public enum VertexDataFormat
-	{
-		/// <summary>
-		/// Unknown format.
-		/// </summary>
-		Unknown	= -1,
-
-		/// <summary>
-		/// <see cref="Duality.VertexFormat.VertexP3"/> format.
-		/// </summary>
-		VertexP3,
-		/// <summary>
-		/// <see cref="Duality.VertexFormat.VertexC1P3"/> format.
-		/// </summary>
-		VertexC1P3,
-		/// <summary>
-		/// <see cref="Duality.VertexFormat.VertexC1P3T2"/> format.
-		/// </summary>
-		VertexC1P3T2,
-		/// <summary>
-		/// <see cref="Duality.VertexFormat.VertexC1P3T4A1"/> format.
-		/// </summary>
-		VertexC1P3T4A1,
-		/// <summary>
-		/// <see cref="Duality.VertexFormat.VertexP3T2"/> format.
-		/// </summary>
-		VertexP3T2,
-
-		/// <summary>
-		/// Total number of default vertex data formats.
-		/// </summary>
-		Count
-	}
-
-	/// <summary>
 	/// A general interface for different types of vertex data.
 	/// </summary>
 	public interface IVertexData
 	{
 		#region Static Members
 		/// <summary>
-		/// [GET] An integer id representing this kind of vertex data. Usually equals the respective <see cref="VertexDataFormat"/>.
+		/// [GET] An integer id representing this kind of vertex data. Usually equals the respective VertexDataFormat constant in <see="Duality.Resources.DrawTechnique" />.
 		/// This member is static by design.
 		/// </summary>
-		int VertexTypeIndex { get; }
+		int TypeIndex { get; }
 
 		/// <summary>
 		/// Sets up the currently bound OpenGL VertexBufferObject and injects actual vertex data.

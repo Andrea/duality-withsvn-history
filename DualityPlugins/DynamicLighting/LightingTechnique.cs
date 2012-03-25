@@ -10,8 +10,9 @@ using Duality.Resources;
 using Duality.VertexFormat;
 using Duality.Components;
 
-namespace Debug
+namespace DynamicLighting
 {
+	[Serializable]
 	public class LightingTechnique : DrawTechnique
 	{
 		public override bool NeedsPreparation
@@ -29,7 +30,7 @@ namespace Debug
 			material.SetUniform("_camRefDist", camRefDist);
 			material.SetUniform("_camWorldPos", camPos.X, camPos.Y, camPos.Z);
 
-			Debug.Light.SetupLighting(device, material);
+			DynamicLighting.Light.SetupLighting(device, material);
 		}
 	}
 }

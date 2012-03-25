@@ -67,6 +67,7 @@
     <Compile Include="EditorTemplates\NumericEditorTemplate.cs" />
     <Compile Include="EditorTemplates\StringEditorTemplate.cs" />
     <Compile Include="GroupedPropertyEditor.cs" />
+    <Compile Include="ObjectItem.cs" />
     <Compile Include="MemberwisePropertyEditor.cs" />
     <Compile Include="PopupControl.cs">
       <SubType>Component</SubType>

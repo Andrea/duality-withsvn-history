@@ -60,6 +60,51 @@ namespace DualityEditor.EditorRes {
             }
         }
         
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Advanced ähnelt.
+        /// </summary>
+        public static string Category_Advanced {
+            get {
+                return ResourceManager.GetString("Category_Advanced", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die General ähnelt.
+        /// </summary>
+        public static string Category_General {
+            get {
+                return ResourceManager.GetString("Category_General", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Graphics ähnelt.
+        /// </summary>
+        public static string Category_Graphics {
+            get {
+                return ResourceManager.GetString("Category_Graphics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Physics ähnelt.
+        /// </summary>
+        public static string Category_Physics {
+            get {
+                return ResourceManager.GetString("Category_Physics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Sound ähnelt.
+        /// </summary>
+        public static string Category_Sound {
+            get {
+                return ResourceManager.GetString("Category_Sound", resourceCulture);
+            }
+        }
+        
         public static System.Drawing.Bitmap CursorArrow {
             get {
                 object obj = ResourceManager.GetObject("CursorArrow", resourceCulture);

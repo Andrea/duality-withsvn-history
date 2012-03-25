@@ -13,8 +13,8 @@ namespace GameRes
 			public static Duality.ContentRef<Duality.Resources.ShaderProgram> Light_ShaderProgram { get { if (_Light_ShaderProgram.IsExplicitNull) _Light_ShaderProgram = Duality.ContentProvider.RequestContent<Duality.Resources.ShaderProgram>(@"Data\PerPixelLighting\Light.ShaderProgram.res"); return _Light_ShaderProgram; }}
 			private static Duality.ContentRef<Duality.Resources.VertexShader> _Light_VertexShader;
 			public static Duality.ContentRef<Duality.Resources.VertexShader> Light_VertexShader { get { if (_Light_VertexShader.IsExplicitNull) _Light_VertexShader = Duality.ContentProvider.RequestContent<Duality.Resources.VertexShader>(@"Data\PerPixelLighting\Light.VertexShader.res"); return _Light_VertexShader; }}
-			private static Duality.ContentRef<Debug.LightingTechnique> _Mask_LightingTechnique;
-			public static Duality.ContentRef<Debug.LightingTechnique> Mask_LightingTechnique { get { if (_Mask_LightingTechnique.IsExplicitNull) _Mask_LightingTechnique = Duality.ContentProvider.RequestContent<Debug.LightingTechnique>(@"Data\PerPixelLighting\Mask.LightingTechnique.res"); return _Mask_LightingTechnique; }}
+			private static Duality.ContentRef<DynamicLighting.LightingTechnique> _Mask_LightingTechnique;
+			public static Duality.ContentRef<DynamicLighting.LightingTechnique> Mask_LightingTechnique { get { if (_Mask_LightingTechnique.IsExplicitNull) _Mask_LightingTechnique = Duality.ContentProvider.RequestContent<DynamicLighting.LightingTechnique>(@"Data\PerPixelLighting\Mask.LightingTechnique.res"); return _Mask_LightingTechnique; }}
 			public static void LoadAll() {
 				Light_FragmentShader.MakeAvailable();
 				Light_ShaderProgram.MakeAvailable();
@@ -57,12 +57,10 @@ namespace GameRes
 				Tonemapping_ShaderProgram.MakeAvailable();
 			}
 		}
-		private static Duality.ContentRef<Duality.Resources.AudioData> _Attack_AudioData;
-		public static Duality.ContentRef<Duality.Resources.AudioData> Attack_AudioData { get { if (_Attack_AudioData.IsExplicitNull) _Attack_AudioData = Duality.ContentProvider.RequestContent<Duality.Resources.AudioData>(@"Data\Attack.AudioData.res"); return _Attack_AudioData; }}
-		private static Duality.ContentRef<Duality.Resources.Sound> _Attack_Sound;
-		public static Duality.ContentRef<Duality.Resources.Sound> Attack_Sound { get { if (_Attack_Sound.IsExplicitNull) _Attack_Sound = Duality.ContentProvider.RequestContent<Duality.Resources.Sound>(@"Data\Attack.Sound.res"); return _Attack_Sound; }}
 		private static Duality.ContentRef<Duality.Resources.Material> _LightBall_Material;
 		public static Duality.ContentRef<Duality.Resources.Material> LightBall_Material { get { if (_LightBall_Material.IsExplicitNull) _LightBall_Material = Duality.ContentProvider.RequestContent<Duality.Resources.Material>(@"Data\LightBall.Material.res"); return _LightBall_Material; }}
+		private static Duality.ContentRef<Duality.Resources.Material> _LightBallVertex_Material;
+		public static Duality.ContentRef<Duality.Resources.Material> LightBallVertex_Material { get { if (_LightBallVertex_Material.IsExplicitNull) _LightBallVertex_Material = Duality.ContentProvider.RequestContent<Duality.Resources.Material>(@"Data\LightBallVertex.Material.res"); return _LightBallVertex_Material; }}
 		private static Duality.ContentRef<Duality.Resources.Material> _LightShip_Material;
 		public static Duality.ContentRef<Duality.Resources.Material> LightShip_Material { get { if (_LightShip_Material.IsExplicitNull) _LightShip_Material = Duality.ContentProvider.RequestContent<Duality.Resources.Material>(@"Data\LightShip.Material.res"); return _LightShip_Material; }}
 		private static Duality.ContentRef<Duality.Resources.Material> _LightShip3_Material;
@@ -103,9 +101,8 @@ namespace GameRes
 			PerPixelLighting.LoadAll();
 			PerVertexLighting.LoadAll();
 			PseudoHdr.LoadAll();
-			Attack_AudioData.MakeAvailable();
-			Attack_Sound.MakeAvailable();
 			LightBall_Material.MakeAvailable();
+			LightBallVertex_Material.MakeAvailable();
 			LightShip_Material.MakeAvailable();
 			LightShip3_Material.MakeAvailable();
 			LightTest_Material.MakeAvailable();

@@ -35,6 +35,7 @@ namespace EditorBase.PropertyEditors
 			//// -------- Semi-Specialized area --------
 			else if (typeof(Collider).IsAssignableFrom(baseType))			return PropertyGrid.EditorPriority_General + 1;
 			else if (typeof(Renderer).IsAssignableFrom(baseType))			return PropertyGrid.EditorPriority_General + 1;
+			else if (typeof(DrawTechnique).IsAssignableFrom(baseType))		return PropertyGrid.EditorPriority_General + 1;
 
 			// -------- General area --------
 			else if (typeof(Collider.ShapeInfo).IsAssignableFrom(baseType))	return PropertyGrid.EditorPriority_General;
@@ -68,6 +69,7 @@ namespace EditorBase.PropertyEditors
 			//// -------- Semi-Specialized area --------
 			else if (typeof(Collider).IsAssignableFrom(baseType))			e = new ColliderPropertyEditor();
 			else if (typeof(Renderer).IsAssignableFrom(baseType))			e = new RendererPropertyEditor();
+			else if (typeof(DrawTechnique).IsAssignableFrom(baseType))		e = new DrawTechniquePropertyEditor();
 
 			// -------- General area --------
 			else if (typeof(Collider.ShapeInfo).IsAssignableFrom(baseType))	e = new ColliderShapePropertyEditor();

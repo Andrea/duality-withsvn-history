@@ -13,7 +13,7 @@ using Duality.VertexFormat;
 using Duality.ColorFormat;
 using Duality.Resources;
 
-namespace Debug
+namespace DynamicLighting
 {
 	[Serializable]
 	public class LightingSpriteRenderer : SpriteRenderer
@@ -21,6 +21,11 @@ namespace Debug
 		private	float	vertexTranslucency	= 0.0f;
 		[NonSerialized]	private	VertexC1P3T2A4[]	verticesLight	= null;
 
+		/// <summary>
+		/// [GET / SET] Specifies the objects translucency for Light when using vertex lighting.
+		/// A very translucent object (1.0) is affected from Lights behind it as well as from Lights in front of it.
+		/// Non-translucent objects (0.0) are only affected by Lights in front of them.
+		/// </summary>
 		[EditorHintIncrement(0.1f)]
 		[EditorHintRange(0.0f, 1.0f)]
 		public float VertexTranslucency

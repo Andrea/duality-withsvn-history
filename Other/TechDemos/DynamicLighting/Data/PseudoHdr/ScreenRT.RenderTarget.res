@@ -25,7 +25,7 @@
         </object>
       </_items>
       <_size dataType="Int">1</_size>
-      <_version dataType="Int">88</_version>
+      <_version dataType="Int">100</_version>
     </targetInfo>
     <multisample dataType="Bool">true</multisample>
     <sourcePath />

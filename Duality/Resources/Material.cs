@@ -592,17 +592,46 @@ namespace Duality.Resources
 		}
 		public override int GetHashCode()
 		{
-			// This method is used by the DrawBatch Optimizer for generating
-			// priorized BatchInfo sort indices. The lower 23 bits of this hash
-			// code are used.
-
-			int techHash = this.technique.IsAvailable ? this.technique.Res.GetHashCode() : 0;
-			int texHash = 0;
-			if (this.textures != null) foreach (var tex in this.textures.Values) texHash ^= tex.IsAvailable ? tex.Res.GetHashCode() : 0;
-
-			return							// -- Priority ascending --
-				(techHash & 2047) << 0 |	// 11 Bit Technique
-				(texHash & 4095) << 11;		// 12 Bit Used Textures
+			unchecked // Overflow is fine, just wrap
+			{
+				int hash = 17;
+				hash = hash * 23 + this.mainColor.GetHashCode();
+				hash = hash * 23 + this.GetTechniqueHashCode();
+				hash = hash * 23 + this.GetTextureHashCode();
+				hash = hash * 23 + this.GetUniformHashCode();
+				return hash;
+			}
+		}
+		public int GetTechniqueHashCode()
+		{
+			return this.technique.IsAvailable ? this.technique.Res.GetHashCode() : 0;
+		}
+		public int GetTextureHashCode()
+		{
+			if (this.textures == null) return 0;
+			int texHash = 17;
+			unchecked
+			{
+				foreach (var tex in this.textures.Values)
+				{
+					if (!tex.IsAvailable) continue;
+					texHash = texHash * 23 + tex.Res.GetHashCode();
+				}
+			}
+			return texHash;
+		}
+		public int GetUniformHashCode()
+		{
+			if (this.uniforms == null) return 0;
+			int uniformHash = 17;
+			unchecked
+			{
+				foreach (var val in this.uniforms.Values)
+				{
+					uniformHash = uniformHash * 23 + val.GetHashCode();
+				}
+			}
+			return uniformHash;
 		}
 		public override bool Equals(object obj)
 		{

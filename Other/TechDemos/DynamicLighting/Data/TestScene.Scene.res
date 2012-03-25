@@ -39,7 +39,7 @@
                       <customSerialIO>
                         <keys dataType="Array" type="System.Type[]" id="17" length="2">
                           <object dataType="Type" id="18" value="Duality.Components.Transform" />
-                          <object dataType="Type" id="19" value="Debug.LightingSpriteRenderer" />
+                          <object dataType="Type" id="19" value="DynamicLighting.LightingSpriteRenderer" />
                         </keys>
                         <values dataType="Array" type="Duality.Component[]" id="20" length="2">
                           <object dataType="Class" type="Duality.Components.Transform" id="21">
@@ -85,7 +85,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="22">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="22">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -200,7 +200,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="36">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="36">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -303,7 +303,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="44">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="44">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -406,7 +406,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="52">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="52">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -509,7 +509,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="60">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="60">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -612,7 +612,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="68">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="68">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -715,7 +715,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="76">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="76">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -818,7 +818,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="84">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="84">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -921,7 +921,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="92">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="92">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -1024,7 +1024,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="100">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="100">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -1127,7 +1127,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="108">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="108">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -1230,7 +1230,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="116">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="116">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -1333,7 +1333,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="124">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="124">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -1436,7 +1436,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="132">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="132">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -1539,7 +1539,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="140">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="140">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -1642,7 +1642,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="148">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="148">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -1745,7 +1745,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="156">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="156">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -1848,7 +1848,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="164">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="164">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -1951,7 +1951,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="172">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="172">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -2054,7 +2054,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="180">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="180">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -2157,7 +2157,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="188">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="188">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -2260,7 +2260,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="196">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="196">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -2363,7 +2363,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="204">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="204">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -2466,7 +2466,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="212">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="212">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -2569,7 +2569,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="220">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="220">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -2672,7 +2672,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="228">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="228">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -2775,7 +2775,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="236">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="236">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -2878,7 +2878,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="244">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="244">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -2981,7 +2981,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="252">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="252">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -3084,7 +3084,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="260">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="260">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -3187,7 +3187,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="268">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="268">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -3290,7 +3290,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="276">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="276">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -3393,7 +3393,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="284">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="284">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -3496,7 +3496,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="292">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="292">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -3599,7 +3599,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="300">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="300">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -3702,7 +3702,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="308">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="308">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -3805,7 +3805,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="316">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="316">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -3908,7 +3908,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="324">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="324">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -4011,7 +4011,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="332">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="332">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -4114,7 +4114,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="340">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="340">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -4217,7 +4217,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="348">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="348">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -4320,7 +4320,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="356">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="356">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -4423,7 +4423,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="364">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="364">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -4526,7 +4526,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="372">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="372">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -4629,7 +4629,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="380">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="380">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -4732,7 +4732,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="388">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="388">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -4835,7 +4835,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="396">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="396">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -4938,7 +4938,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="404">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="404">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -5041,7 +5041,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="412">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="412">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -5144,7 +5144,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="420">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="420">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -5247,7 +5247,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="428">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="428">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -5350,7 +5350,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="436">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="436">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -5453,7 +5453,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="444">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="444">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -5556,7 +5556,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="452">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="452">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -5659,7 +5659,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="460">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="460">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -5762,7 +5762,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="468">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="468">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -5865,7 +5865,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="476">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="476">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -5968,7 +5968,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="484">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="484">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -6071,7 +6071,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="492">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="492">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -6174,7 +6174,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="500">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="500">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -6277,7 +6277,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="508">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="508">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -6380,7 +6380,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="516">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="516">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -6483,7 +6483,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="524">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="524">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -6586,7 +6586,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="532">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="532">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -6689,7 +6689,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="540">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="540">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -6792,7 +6792,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="548">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="548">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -6895,7 +6895,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="556">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="556">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -6998,7 +6998,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="564">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="564">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -7101,7 +7101,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="572">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="572">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -7204,7 +7204,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="580">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="580">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -7307,7 +7307,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="588">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="588">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -7410,7 +7410,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="596">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="596">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -7513,7 +7513,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="604">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="604">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -7616,7 +7616,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="612">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="612">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -7719,7 +7719,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="620">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="620">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -7822,7 +7822,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="628">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="628">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -7925,7 +7925,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="636">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="636">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -8028,7 +8028,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="644">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="644">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -8131,7 +8131,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="652">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="652">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -8234,7 +8234,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="660">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="660">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -8337,7 +8337,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="668">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="668">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -8440,7 +8440,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="676">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="676">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -8543,7 +8543,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="684">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="684">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -8646,7 +8646,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="692">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="692">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -8749,7 +8749,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="700">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="700">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -8852,7 +8852,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="708">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="708">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -8955,7 +8955,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="716">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="716">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -9058,7 +9058,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="724">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="724">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -9161,7 +9161,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="732">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="732">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -9264,7 +9264,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="740">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="740">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -9367,7 +9367,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="748">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="748">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -9470,7 +9470,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="756">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="756">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -9573,7 +9573,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="764">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="764">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -9676,7 +9676,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="772">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="772">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -9779,7 +9779,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="780">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="780">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -9882,7 +9882,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="788">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="788">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -9985,7 +9985,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="796">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="796">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -10088,7 +10088,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="804">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="804">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -10191,7 +10191,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="812">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="812">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -10294,7 +10294,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="820">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="820">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -10397,7 +10397,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="828">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="828">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -10500,7 +10500,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="836">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="836">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -10603,7 +10603,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="844">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="844">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -10706,7 +10706,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="852">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="852">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -10809,7 +10809,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="860">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="860">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -10912,7 +10912,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="868">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="868">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -11015,7 +11015,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="876">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="876">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -11118,7 +11118,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="884">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="884">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -11221,7 +11221,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="892">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="892">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -11324,7 +11324,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="900">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="900">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -11427,7 +11427,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="908">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="908">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -11530,7 +11530,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="916">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="916">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -11633,7 +11633,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="924">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="924">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -11736,7 +11736,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="932">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="932">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -11839,7 +11839,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="940">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="940">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -11942,7 +11942,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="948">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="948">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -12045,7 +12045,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="956">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="956">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -12148,7 +12148,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="964">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="964">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -12251,7 +12251,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="972">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="972">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -12354,7 +12354,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="980">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="980">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -12457,7 +12457,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="988">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="988">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -12560,7 +12560,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="996">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="996">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -12663,7 +12663,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1004">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1004">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -12766,7 +12766,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1012">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1012">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -12869,7 +12869,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1020">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1020">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -12972,7 +12972,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1028">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1028">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -13075,7 +13075,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1036">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1036">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -13178,7 +13178,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1044">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1044">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -13281,7 +13281,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1052">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1052">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -13384,7 +13384,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1060">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1060">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -13487,7 +13487,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1068">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1068">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -13590,7 +13590,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1076">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1076">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -13693,7 +13693,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1084">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1084">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -13796,7 +13796,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1092">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1092">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -13899,7 +13899,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1100">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1100">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -14002,7 +14002,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1108">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1108">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -14105,7 +14105,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1116">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1116">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -14208,7 +14208,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1124">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1124">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -14311,7 +14311,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1132">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1132">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -14414,7 +14414,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1140">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1140">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -14517,7 +14517,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1148">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1148">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -14620,7 +14620,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1156">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1156">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -14723,7 +14723,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1164">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1164">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -14826,7 +14826,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1172">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1172">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -14929,7 +14929,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1180">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1180">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -15032,7 +15032,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1188">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1188">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-64</x>
@@ -16302,7 +16302,7 @@
                 </keys>
                 <values dataType="Array" type="Duality.Component[]" id="1496" length="2">
                   <object dataType="ObjectRef">1200</object>
-                  <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1497">
+                  <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1497">
                     <vertexTranslucency dataType="Float">0</vertexTranslucency>
                     <rect dataType="Struct" type="Duality.Rect">
                       <x dataType="Float">-64</x>
@@ -16505,10 +16505,10 @@
               <customSerialIO />
               <customSerialIO>
                 <keys dataType="Array" type="System.Type[]" id="1502" length="1">
-                  <object dataType="Type" id="1503" value="Debug.Light" />
+                  <object dataType="Type" id="1503" value="DynamicLighting.Light" />
                 </keys>
                 <values dataType="Array" type="Duality.Component[]" id="1504" length="1">
-                  <object dataType="Class" type="Debug.Light" id="1505">
+                  <object dataType="Class" type="DynamicLighting.Light" id="1505">
                     <dir dataType="Struct" type="OpenTK.Vector3">
                       <X dataType="Float">0.495549351</X>
                       <Y dataType="Float">0.6003446</Y>
@@ -16620,7 +16620,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1517">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1517">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-60</x>
@@ -16723,7 +16723,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1525">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1525">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-60</x>
@@ -16826,7 +16826,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1533">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1533">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-86</x>
@@ -16929,7 +16929,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1541">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1541">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-86</x>
@@ -17032,7 +17032,7 @@
                             <disposed dataType="Bool">false</disposed>
                             <active dataType="Bool">true</active>
                           </object>
-                          <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1549">
+                          <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1549">
                             <vertexTranslucency dataType="Float">0</vertexTranslucency>
                             <rect dataType="Struct" type="Duality.Rect">
                               <x dataType="Float">-86</x>
@@ -17208,7 +17208,7 @@
                 </keys>
                 <values dataType="Array" type="Duality.Component[]" id="1574" length="2">
                   <object dataType="ObjectRef">1560</object>
-                  <object dataType="Class" type="Debug.LightingSpriteRenderer" id="1575">
+                  <object dataType="Class" type="DynamicLighting.LightingSpriteRenderer" id="1575">
                     <vertexTranslucency dataType="Float">0</vertexTranslucency>
                     <rect dataType="Struct" type="Duality.Rect">
                       <x dataType="Float">-60</x>
@@ -17415,7 +17415,7 @@
                   <object dataType="Type" id="1596" value="Duality.Components.Renderers.SpriteRenderer" />
                 </keys>
                 <values dataType="Array" type="Duality.Component[]" id="1597" length="3">
-                  <object dataType="Class" type="Debug.Light" id="1598">
+                  <object dataType="Class" type="DynamicLighting.Light" id="1598">
                     <dir dataType="Struct" type="OpenTK.Vector3">
                       <X dataType="Float">0</X>
                       <Y dataType="Float">0</Y>
@@ -17515,7 +17515,7 @@
                   <object dataType="ObjectRef">1596</object>
                 </keys>
                 <values dataType="Array" type="Duality.Component[]" id="1606" length="3">
-                  <object dataType="Class" type="Debug.Light" id="1607">
+                  <object dataType="Class" type="DynamicLighting.Light" id="1607">
                     <dir dataType="Struct" type="OpenTK.Vector3">
                       <X dataType="Float">0</X>
                       <Y dataType="Float">-1</Y>
@@ -17645,13 +17645,13 @@
                 <values dataType="Array" type="Duality.Component[]" id="1616" length="2">
                   <object dataType="Class" type="Duality.Components.Transform" id="1617">
                     <pos dataType="Struct" type="OpenTK.Vector3">
-                      <X dataType="Float">315.005829</X>
-                      <Y dataType="Float">565.7091</Y>
+                      <X dataType="Float">317.461151</X>
+                      <Y dataType="Float">569.090149</Y>
                       <Z dataType="Float">-350</Z>
                     </pos>
                     <vel dataType="Struct" type="OpenTK.Vector3">
                       <X dataType="Float">0</X>
-                      <Y dataType="Float">0.05</Y>
+                      <Y dataType="Float">0</Y>
                       <Z dataType="Float">0.1</Z>
                     </vel>
                     <angle dataType="Float">0</angle>
@@ -17666,13 +17666,13 @@
                     <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
                     <parentTransform />
                     <posAbs dataType="Struct" type="OpenTK.Vector3">
-                      <X dataType="Float">315.005829</X>
-                      <Y dataType="Float">565.7091</Y>
+                      <X dataType="Float">317.461151</X>
+                      <Y dataType="Float">569.090149</Y>
                       <Z dataType="Float">-350</Z>
                     </posAbs>
                     <velAbs dataType="Struct" type="OpenTK.Vector3">
                       <X dataType="Float">0</X>
-                      <Y dataType="Float">0.05</Y>
+                      <Y dataType="Float">0</Y>
                       <Z dataType="Float">0.1</Z>
                     </velAbs>
                     <angleAbs dataType="Float">0</angleAbs>
@@ -17762,8 +17762,162 @@
             <active dataType="Bool">true</active>
             <disposed dataType="Bool">false</disposed>
             <compTransform dataType="ObjectRef">1617</compTransform>
-            <EventComponentAdded dataType="ObjectRef">25</EventComponentAdded>
-            <EventComponentRemoving dataType="ObjectRef">28</EventComponentRemoving>
+            <EventComponentAdded dataType="Delegate" type="System.EventHandler`1[[Duality.ComponentEventArgs]]" id="1626" multi="true">
+              <object dataType="ObjectRef">26</object>
+              <object dataType="Class" type="Duality.ObjectManagers.GameObjectManager" id="1627">
+                <RegisteredObjectComponentAdded />
+                <RegisteredObjectComponentRemoved />
+                <allObj dataType="Class" type="System.Collections.Generic.List`1[[Duality.GameObject]]" id="1628">
+                  <_items dataType="Array" type="Duality.GameObject[]" id="1629" length="4">
+                    <object dataType="Class" type="Duality.GameObject" id="1630">
+                      <prefabLink />
+                      <parent />
+                      <children />
+                      <compMap dataType="Class" type="System.Collections.Generic.Dictionary`2[[System.Type],[Duality.Component]]" id="1631" surrogate="true">
+                        <customSerialIO />
+                        <customSerialIO>
+                          <keys dataType="Array" type="System.Type[]" id="1632" length="3">
+                            <object dataType="ObjectRef">18</object>
+                            <object dataType="Type" id="1633" value="Duality.Components.SoundListener" />
+                            <object dataType="ObjectRef">1615</object>
+                          </keys>
+                          <values dataType="Array" type="Duality.Component[]" id="1634" length="3">
+                            <object dataType="Class" type="Duality.Components.Transform" id="1635">
+                              <pos dataType="Struct" type="OpenTK.Vector3">
+                                <X dataType="Float">312.66748</X>
+                                <Y dataType="Float">466.619537</Y>
+                                <Z dataType="Float">-500</Z>
+                              </pos>
+                              <vel dataType="Struct" type="OpenTK.Vector3">
+                                <X dataType="Float">0</X>
+                                <Y dataType="Float">0</Y>
+                                <Z dataType="Float">0</Z>
+                              </vel>
+                              <angle dataType="Float">0</angle>
+                              <angleVel dataType="Float">0</angleVel>
+                              <scale dataType="Struct" type="OpenTK.Vector3">
+                                <X dataType="Float">1</X>
+                                <Y dataType="Float">1</Y>
+                                <Z dataType="Float">1</Z>
+                              </scale>
+                              <deriveAngle dataType="Bool">true</deriveAngle>
+                              <extUpdater />
+                              <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                              <parentTransform />
+                              <posAbs dataType="Struct" type="OpenTK.Vector3">
+                                <X dataType="Float">312.66748</X>
+                                <Y dataType="Float">466.619537</Y>
+                                <Z dataType="Float">-500</Z>
+                              </posAbs>
+                              <velAbs dataType="Struct" type="OpenTK.Vector3">
+                                <X dataType="Float">0</X>
+                                <Y dataType="Float">0</Y>
+                                <Z dataType="Float">0</Z>
+                              </velAbs>
+                              <angleAbs dataType="Float">0</angleAbs>
+                              <angleVelAbs dataType="Float">0</angleVelAbs>
+                              <scaleAbs dataType="Struct" type="OpenTK.Vector3">
+                                <X dataType="Float">1</X>
+                                <Y dataType="Float">1</Y>
+                                <Z dataType="Float">1</Z>
+                              </scaleAbs>
+                              <gameobj dataType="ObjectRef">1630</gameobj>
+                              <disposed dataType="Bool">false</disposed>
+                              <active dataType="Bool">true</active>
+                            </object>
+                            <object dataType="Class" type="Duality.Components.SoundListener" id="1636">
+                              <gameobj dataType="ObjectRef">1630</gameobj>
+                              <disposed dataType="Bool">false</disposed>
+                              <active dataType="Bool">true</active>
+                            </object>
+                            <object dataType="Class" type="Duality.Components.Camera" id="1637">
+                              <nearZ dataType="Float">0</nearZ>
+                              <farZ dataType="Float">100000</farZ>
+                              <zSortAccuracy dataType="Float">100</zSortAccuracy>
+                              <parallaxRefDist dataType="Float">500</parallaxRefDist>
+                              <visibilityMask dataType="UInt">4294967295</visibilityMask>
+                              <clearColor dataType="Struct" type="Duality.ColorFormat.ColorRgba">
+                                <r dataType="Byte">13</r>
+                                <g dataType="Byte">13</g>
+                                <b dataType="Byte">16</b>
+                                <a dataType="Byte">0</a>
+                              </clearColor>
+                              <clearMask dataType="Enum" type="Duality.Components.Camera+ClearFlags" name="All" value="3" />
+                              <passes dataType="Array" type="Duality.Components.Camera+Pass[]" id="1638" length="1">
+                                <object dataType="Class" type="Duality.Components.Camera+Pass" id="1639">
+                                  <input />
+                                  <output dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.RenderTarget]]">
+                                    <contentPath />
+                                  </output>
+                                  <fitOutput dataType="Bool">false</fitOutput>
+                                  <keepOutput dataType="Bool">false</keepOutput>
+                                  <visibilityMask dataType="UInt">4294967295</visibilityMask>
+                                </object>
+                              </passes>
+                              <CollectRendererDrawcalls />
+                              <CollectOverlayDrawcalls />
+                              <gameobj dataType="ObjectRef">1630</gameobj>
+                              <disposed dataType="Bool">false</disposed>
+                              <active dataType="Bool">true</active>
+                            </object>
+                          </values>
+                        </customSerialIO>
+                      </compMap>
+                      <compList dataType="Class" type="System.Collections.Generic.List`1[[Duality.Component]]" id="1640">
+                        <_items dataType="Array" type="Duality.Component[]" id="1641" length="4">
+                          <object dataType="ObjectRef">1635</object>
+                          <object dataType="ObjectRef">1636</object>
+                          <object dataType="ObjectRef">1637</object>
+                          <object />
+                        </_items>
+                        <_size dataType="Int">3</_size>
+                        <_version dataType="Int">3</_version>
+                      </compList>
+                      <name dataType="String">CamView Camera 0</name>
+                      <active dataType="Bool">true</active>
+                      <disposed dataType="Bool">false</disposed>
+                      <compTransform dataType="ObjectRef">1635</compTransform>
+                      <EventComponentAdded dataType="Delegate" type="System.EventHandler`1[[Duality.ComponentEventArgs]]" id="1642" multi="true">
+                        <object dataType="ObjectRef">26</object>
+                        <object dataType="ObjectRef">1627</object>
+                        <object dataType="Array" type="System.Delegate[]" id="1643" length="1">
+                          <object dataType="ObjectRef">1642</object>
+                        </object>
+                      </EventComponentAdded>
+                      <EventComponentRemoving dataType="Delegate" type="System.EventHandler`1[[Duality.ComponentEventArgs]]" id="1644" multi="true">
+                        <object dataType="ObjectRef">29</object>
+                        <object dataType="ObjectRef">1627</object>
+                        <object dataType="Array" type="System.Delegate[]" id="1645" length="1">
+                          <object dataType="ObjectRef">1644</object>
+                        </object>
+                      </EventComponentRemoving>
+                      <EventCollisionBegin />
+                      <EventCollisionEnd />
+                      <EventCollisionSolve />
+                    </object>
+                    <object dataType="ObjectRef">1612</object>
+                    <object />
+                    <object />
+                  </_items>
+                  <_size dataType="Int">2</_size>
+                  <_version dataType="Int">2</_version>
+                </allObj>
+                <Registered />
+                <Unregistered />
+              </object>
+              <object dataType="Array" type="System.Delegate[]" id="1646" length="2">
+                <object dataType="ObjectRef">25</object>
+                <object dataType="ObjectRef">1642</object>
+              </object>
+            </EventComponentAdded>
+            <EventComponentRemoving dataType="Delegate" type="System.EventHandler`1[[Duality.ComponentEventArgs]]" id="1647" multi="true">
+              <object dataType="ObjectRef">29</object>
+              <object dataType="ObjectRef">1627</object>
+              <object dataType="Array" type="System.Delegate[]" id="1648" length="2">
+                <object dataType="ObjectRef">28</object>
+                <object dataType="ObjectRef">1644</object>
+              </object>
+            </EventComponentRemoving>
             <EventCollisionBegin />
             <EventCollisionEnd />
             <EventCollisionSolve />
@@ -19659,20 +19813,20 @@
           <object />
         </_items>
         <_size dataType="Int">160</_size>
-        <_version dataType="Int">4516</_version>
+        <_version dataType="Int">4998</_version>
       </allObj>
-      <Registered dataType="Delegate" type="System.EventHandler`1[[Duality.ObjectManagerEventArgs`1[[Duality.GameObject]]]]" id="1626" multi="true">
-        <object dataType="MethodInfo" id="1627" value="M:Duality.Resources.Scene:objectManager_Registered(System.Object,Duality.ObjectManagerEventArgs`1[[Duality.GameObject]])" />
+      <Registered dataType="Delegate" type="System.EventHandler`1[[Duality.ObjectManagerEventArgs`1[[Duality.GameObject]]]]" id="1649" multi="true">
+        <object dataType="MethodInfo" id="1650" value="M:Duality.Resources.Scene:objectManager_Registered(System.Object,Duality.ObjectManagerEventArgs`1[[Duality.GameObject]])" />
         <object dataType="ObjectRef">1</object>
-        <object dataType="Array" type="System.Delegate[]" id="1628" length="1">
-          <object dataType="ObjectRef">1626</object>
+        <object dataType="Array" type="System.Delegate[]" id="1651" length="1">
+          <object dataType="ObjectRef">1649</object>
         </object>
       </Registered>
-      <Unregistered dataType="Delegate" type="System.EventHandler`1[[Duality.ObjectManagerEventArgs`1[[Duality.GameObject]]]]" id="1629" multi="true">
-        <object dataType="MethodInfo" id="1630" value="M:Duality.Resources.Scene:objectManager_Unregistered(System.Object,Duality.ObjectManagerEventArgs`1[[Duality.GameObject]])" />
+      <Unregistered dataType="Delegate" type="System.EventHandler`1[[Duality.ObjectManagerEventArgs`1[[Duality.GameObject]]]]" id="1652" multi="true">
+        <object dataType="MethodInfo" id="1653" value="M:Duality.Resources.Scene:objectManager_Unregistered(System.Object,Duality.ObjectManagerEventArgs`1[[Duality.GameObject]])" />
         <object dataType="ObjectRef">1</object>
-        <object dataType="Array" type="System.Delegate[]" id="1631" length="1">
-          <object dataType="ObjectRef">1629</object>
+        <object dataType="Array" type="System.Delegate[]" id="1654" length="1">
+          <object dataType="ObjectRef">1652</object>
         </object>
       </Unregistered>
     </objectManager>

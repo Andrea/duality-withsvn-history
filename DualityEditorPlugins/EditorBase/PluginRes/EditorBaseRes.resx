@@ -177,21 +177,6 @@
   <data name="CamView_Status_PosZ" xml:space="preserve">
     <value>Z: {0:F}</value>
   </data>
-  <data name="Category_Advanced" xml:space="preserve">
-    <value>Advanced</value>
-  </data>
-  <data name="Category_General" xml:space="preserve">
-    <value>General</value>
-  </data>
-  <data name="Category_Graphics" xml:space="preserve">
-    <value>Graphics</value>
-  </data>
-  <data name="Category_Physics" xml:space="preserve">
-    <value>Physics</value>
-  </data>
-  <data name="Category_Sound" xml:space="preserve">
-    <value>Sound</value>
-  </data>
   <data name="ColliderEditor_CreateCircle" xml:space="preserve">
     <value>Create Circle...</value>
   </data>

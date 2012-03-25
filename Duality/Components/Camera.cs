@@ -270,6 +270,7 @@ namespace Duality.Components
 			int VertexCount { get; }
 			BeginMode VertexMode { get; }
 			BatchInfo Material { get; }
+			int VertexTypeIndex { get; }
 
 			void UploadToVBO(List<IDrawBatch> batches);
 			void SetupVBO();
@@ -308,6 +309,10 @@ namespace Duality.Components
 			{
 				get { return this.vertexMode; }
 			}
+			public int VertexTypeIndex
+			{
+				get { return this.vertices[0].TypeIndex; }
+			}
 			public BatchInfo Material
 			{
 				get { return this.material; }
@@ -325,8 +330,10 @@ namespace Duality.Components
 
 				if (!this.material.Technique.Res.NeedsZSort)
 				{
-					int vTypeSI = vertices[0].VertexTypeIndex;
-					int matHash = material.GetHashCode();
+					int vTypeSI = vertices[0].TypeIndex;
+					int matHash = 
+						(this.material.GetTechniqueHashCode() & 2047) << 0 |	// 11 Bit Technique
+						(this.material.GetTextureHashCode() & 4095) << 11;		// 12 Bit Used Textures
 
 					// Bit significancy is used to achieve sorting by multiple traits at once.
 					// The higher a traits bit significancy, the higher its priority when sorting.

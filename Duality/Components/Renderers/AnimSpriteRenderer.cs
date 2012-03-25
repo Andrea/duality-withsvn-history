@@ -253,7 +253,7 @@ namespace Duality.Components.Renderers
 			ColorRgba mainClr = this.RetrieveMainColor();
 			DrawTechnique tech = this.RetrieveDrawTechnique();
 
-			bool smoothShaderInput = tech != null && tech.PreferredVertexFormat == VertexFormat.VertexDataFormat.VertexC1P3T4A1;
+			bool smoothShaderInput = tech != null && tech.PreferredVertexFormat == DrawTechnique.VertexType_C1P3T4A1;
 			bool isAnimated = this.animFrameCount > 0 && this.animDuration > 0 && mainTex != null && mainTex.Atlas != null;
 			int curAnimFrame = 0;
 			int nextAnimFrame = 0;
