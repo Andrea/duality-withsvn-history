@@ -41,7 +41,6 @@ namespace DynamicLighting
 		/// [GET / SET] The direction this Light points to. Used in spot and directional light. Set this to zero
 		/// in order to create a point light.
 		/// </summary>
-		[EditorHintIncrement(0.1f)]
 		public Vector3 Direction
 		{
 			get { return this.dir; }
@@ -73,7 +72,6 @@ namespace DynamicLighting
 		/// <summary>
 		/// [GET / SET] The Lights intensity.
 		/// </summary>
-		[EditorHintIncrement(0.1f)]
 		public float Intensity
 		{
 			get { return this.intensity; }
@@ -101,7 +99,6 @@ namespace DynamicLighting
 		/// <summary>
 		/// [GET / SET] The Lights ambient intensity. Ambient light is used as base value in directional lighting.
 		/// </summary>
-		[EditorHintIncrement(0.1f)]
 		public float AmbientIntensity
 		{
 			get { return this.ambientIntensity; }
@@ -110,6 +107,7 @@ namespace DynamicLighting
 		/// <summary>
 		/// [GET / SET] The Lights range. Only applies to point and spot lights.
 		/// </summary>
+		[EditorHintIncrement(10.0f)]
 		public float Range
 		{
 			get { return this.range; }

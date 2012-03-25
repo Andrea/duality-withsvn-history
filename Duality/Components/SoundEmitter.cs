@@ -91,7 +91,6 @@ namespace Duality.Components
 			/// <summary>
 			/// [GET / SET] The volume of this source.
 			/// </summary>
-			[EditorHintIncrement(0.1f)]
 			[EditorHintRange(0.0f, 2.0f)]
 			public float Volume
 			{
@@ -105,7 +104,6 @@ namespace Duality.Components
 			/// <summary>
 			/// [GET / SET] The sources pitch factor.
 			/// </summary>
-			[EditorHintIncrement(0.1f)]
 			[EditorHintRange(0.0f, 10.0f)]
 			public float Pitch
 			{

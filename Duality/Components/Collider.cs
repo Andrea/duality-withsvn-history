@@ -189,6 +189,7 @@ namespace Duality.Components
 				get { return this.position; }
 				set { this.position = value; this.UpdateFixture(); }
 			}
+			[EditorHintFlags(MemberFlags.Invisible)]
 			public override Rect AABB
 			{
 				get { return Rect.AlignCenter(position.X, position.Y, radius * 2, radius * 2); }
@@ -245,6 +246,7 @@ namespace Duality.Components
 				get { return this.vertices; }
 				set { this.vertices = value; this.UpdateFixture(); }
 			}
+			[EditorHintFlags(MemberFlags.Invisible)]
 			public override Rect AABB
 			{
 				get 
@@ -369,7 +371,6 @@ namespace Duality.Components
 		/// <summary>
 		/// [GET / SET] The damping that is applied to the bodies velocity.
 		/// </summary>
-		[EditorHintIncrement(0.1f)]
 		[EditorHintRange(0.0f, 100.0f)]
 		public float LinearDamping
 		{
@@ -383,7 +384,6 @@ namespace Duality.Components
 		/// <summary>
 		/// [GET / SET] The damping that is applied to the bodies angular velocity.
 		/// </summary>
-		[EditorHintIncrement(0.1f)]
 		[EditorHintRange(0.0f, 100.0f)]
 		public float AngularDamping
 		{

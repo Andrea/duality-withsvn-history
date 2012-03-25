@@ -14,7 +14,7 @@
 
 -->	Example Project: Super Mario style platformer
 	-->	Tile-based
-	-->	Will need something to edit tilemaps and probably a distinct Tilemap Resource
+	-->	Will need something to edit tilemaps and probably a distinct Tileset Resource
 	-->	Component: TilemapRenderer
 	-->	Component: TilemapCollider
 	-->	Resource: Tileset
@@ -83,6 +83,8 @@
 	-->	Should actually use the Z Component, but apply it other than currently
 	-->	Maybe just utilize PreprocessCoords to add Z to Y?
 		-->	Will that work in all cases? Editor? Canvas? Any Renderer?
+	-->	Is it really necessary to adjust the Camera? Isn't it possible to 
+		adjust objects and rendering setup on the Game-side?
 
 -->	Keep in mind: Saving GameObjects with PrefabLinks is currently highly data-redundant.
 	-->	When in ExecutionContext.Editor, consider not saving Components that are part of the Prefab.

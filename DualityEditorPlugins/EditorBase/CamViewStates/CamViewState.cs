@@ -158,6 +158,10 @@ namespace EditorBase.CamViewStates
 		}
 		public abstract string StateName { get; }
 
+		public IEnumerable<SelObj> SelectedObjects
+		{
+			get { return this.allObjSel; }
+		}
 		public bool MouseActionAllowed
 		{
 			get { return this.actionAllowed; }

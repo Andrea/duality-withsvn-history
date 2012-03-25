@@ -526,6 +526,8 @@ namespace Duality.Components
 		/// <summary>
 		/// [GET / SET] The lowest Z value that can be displayed by the device.
 		/// </summary>
+		[EditorHintDecimalPlaces(1)]
+		[EditorHintIncrement(10.0f)]
 		public float NearZ
 		{
 			get { return this.nearZ; }
@@ -534,6 +536,8 @@ namespace Duality.Components
 		/// <summary>
 		/// [GET / SET] The highest Z value that can be displayed by the device.
 		/// </summary>
+		[EditorHintDecimalPlaces(1)]
+		[EditorHintIncrement(10.0f)]
 		public float FarZ
 		{
 			get { return this.farZ; }
@@ -543,6 +547,8 @@ namespace Duality.Components
 		/// [GET / SET] Reference distance for calculating the parallax effect. An object this far away from
 		/// the Camera will appear in its original size.
 		/// </summary>
+		[EditorHintDecimalPlaces(1)]
+		[EditorHintIncrement(10.0f)]
 		public float ParallaxRefDist
 		{
 			get { return this.parallaxRefDist; }
