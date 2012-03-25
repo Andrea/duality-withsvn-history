@@ -660,6 +660,29 @@ namespace Duality.Resources
 		}
 
 		/// <summary>
+		/// Retrieves the pixel data that is currently stored in video memory.
+		/// </summary>
+		/// <returns></returns>
+		public Bitmap RetrievePixelData()
+		{
+			int lastTexId;
+			GL.GetInteger(GetPName.TextureBinding2D, out lastTexId);
+			GL.BindTexture(TextureTarget.Texture2D, this.glTexId);
+			
+			Bitmap bm = new Bitmap(this.oglWidth, this.oglHeight);
+			BitmapData data = bm.LockBits(
+				new Rectangle(0, 0, bm.Width, bm.Height),
+				ImageLockMode.WriteOnly,
+				BitmapPixelFormat.Format32bppArgb);
+			GL.GetTexImage(TextureTarget.Texture2D, 0, GLPixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
+			bm.UnlockBits(data);
+
+			GL.BindTexture(TextureTarget.Texture2D, lastTexId);
+
+			return bm;
+		}
+
+		/// <summary>
 		/// Processes the specified size based on the Textures <see cref="SizeMode"/>.
 		/// </summary>
 		/// <param name="width"></param>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
@@ -108,12 +109,13 @@ namespace Duality
 	/// <seealso cref="ContentProvider"/>
 	/// <seealso cref="IContentRef"/>
 	[Serializable]
-	[System.Diagnostics.DebuggerDisplay("ContentRef {Path}, {IsAvailable}")]
+	[DebuggerTypeProxy(typeof(ContentRef<>.DebuggerTypeProxy))]
 	public struct ContentRef<T> : IEquatable<ContentRef<T>>, IContentRef where T : Resource
 	{
 		/// <summary>
 		/// An explicit null reference.
 		/// </summary>
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		public static readonly ContentRef<T> Null = new ContentRef<T>(null);
 
 		[NonSerialized]
@@ -220,6 +222,13 @@ namespace Duality
 			get { return this.contentPath != null && this.contentPath.Contains(':'); }
 		}
 		/// <summary>
+		/// [GET] Returns whether the Resource has been generated at runtime and  cannot be retrieved via content path.
+		/// </summary>
+		public bool IsRuntimeResource
+		{
+			get { return this.IsLoaded && string.IsNullOrEmpty(this.contentPath); }
+		}
+		/// <summary>
 		/// [GET] The name of the referenced Resource.
 		/// </summary>
 		public string Name
@@ -227,6 +236,7 @@ namespace Duality
 			get
 			{
 				if (this.IsExplicitNull) return "null";
+				if (this.IsRuntimeResource) return string.Format("rt:{0}", this.contentInstance.GetHashCode());
 				string nameTemp = this.contentPath;
 				if (this.IsDefaultContent) nameTemp = nameTemp.Replace(':', '/');
 				return System.IO.Path.GetFileNameWithoutExtension(System.IO.Path.GetFileNameWithoutExtension(nameTemp));
@@ -240,6 +250,7 @@ namespace Duality
 			get
 			{
 				if (this.IsExplicitNull) return "null";
+				if (this.IsRuntimeResource) return string.Format("rt:{0}", this.contentInstance.GetHashCode());
 				string nameTemp = this.contentPath;
 				if (this.IsDefaultContent) nameTemp = nameTemp.Replace(':', '/');
 				return System.IO.Path.Combine(System.IO.Path.GetDirectoryName(nameTemp), this.Name);
@@ -326,9 +337,8 @@ namespace Duality
 
 		public override string ToString()
 		{
-			if (this.IsExplicitNull) return "null";
-			else if (this.IsAvailable) return this.contentPath;
-			else return "not available: " + this.contentPath;
+			Type resType = this.ResType ?? typeof(Resource);
+			return string.Format("CR: {0} \"{1}\"", resType.Name, this.FullName);
 		}
 		public override bool Equals(object obj)
 		{
@@ -348,10 +358,12 @@ namespace Duality
 			return this == other;
 		}
 
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		Resource IContentRef.Res
 		{
 			get { return this.Res; }
 		}
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		Resource IContentRef.ResWeak
 		{
 			get { return this.ResWeak; }
@@ -411,6 +423,22 @@ namespace Duality
 		public static bool operator !=(ContentRef<T> first, ContentRef<T> second)
 		{
 			return !(first == second);
+		}
+
+		internal class DebuggerTypeProxy
+		{
+			private	ContentRef<T>	cr;
+
+			[DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+			public T Res
+			{
+				get { return this.cr.Res; }
+			}
+
+			public DebuggerTypeProxy(ContentRef<T> cr)
+			{
+				this.cr = cr;
+			}
 		}
 	}
 

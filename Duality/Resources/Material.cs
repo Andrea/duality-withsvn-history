@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 
 using Duality;
 using Duality.ColorFormat;
@@ -587,8 +588,8 @@ namespace Duality.Resources
 		{
 			ContentRef<Texture> inputTex = this.MainTexture;
 			return string.Format("{0}, {1}", 
-				inputTex.IsExplicitNull ? "null" : inputTex.Name,
-				this.technique.IsExplicitNull ? "null" : this.technique.Name);
+				inputTex.FullName,
+				this.technique.FullName);
 		}
 		public override int GetHashCode()
 		{

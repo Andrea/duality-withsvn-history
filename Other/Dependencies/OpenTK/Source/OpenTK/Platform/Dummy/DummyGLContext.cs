@@ -23,7 +23,6 @@ namespace OpenTK.Platform.Dummy
     internal sealed class DummyGLContext : DesktopGraphicsContext
     {
         // This mode is not real. To receive a real mode we'd have to create a temporary context, which is not desirable!
-        bool vsync;
         int swap_interval;
         static int handle_count;
         Thread current_thread;

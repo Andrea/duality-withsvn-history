@@ -194,6 +194,11 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 			this.Invalidate();
 			this.EndUpdate();
 		}
+		protected override bool IsChildReadOnly(PropertyEditor childEditor)
+		{
+			if (childEditor == this.offsetEditor) return false;
+			return base.IsChildReadOnly(childEditor);
+		}
 		
 		protected IEnumerable<object> AddKeyValueGetter()
 		{

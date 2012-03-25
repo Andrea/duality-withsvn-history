@@ -58,11 +58,6 @@
             [GET / SET] The Lights spot focus. The higher this value is, the smaller the spot radius.
             </summary>
         </member>
-        <member name="T:DynamicLighting.DynamicLightingCorePlugin">
-            <summary>
-            Defines the dynamic lighting core plugin.
-            </summary>
-        </member>
         <member name="T:DynamicLighting.LightingAnimSpriteRenderer">
             <summary>
             Renders an animated sprite using dynamic lighting, either per-vertex or per-pixel, depending on the DrawTechnique that is used.
@@ -73,6 +68,11 @@
             [GET / SET] Specifies the objects translucency for Light when using vertex lighting.
             A very translucent object (1.0) is affected from Lights behind it as well as from Lights in front of it.
             Non-translucent objects (0.0) are only affected by Lights in front of them.
+            </summary>
+        </member>
+        <member name="T:DynamicLighting.DynamicLightingCorePlugin">
+            <summary>
+            Defines the dynamic lighting core plugin.
             </summary>
         </member>
     </members>

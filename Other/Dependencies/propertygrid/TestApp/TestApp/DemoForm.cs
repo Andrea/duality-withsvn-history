@@ -35,7 +35,7 @@ namespace AdamsLair.PropertyGrid
 			private int i2;
 			private float f;
 			private byte b;
-			private int[] i3;
+			private int[] i3 = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
 			private string t;
 			private Test2 subclass;
 			public List<string> stringListField;
@@ -65,7 +65,6 @@ namespace AdamsLair.PropertyGrid
 			public int[] SomeIntArray
 			{
 				get { return this.i3; }
-				set { this.i3 = value; }
 			}
 			public string SomeString
 			{
@@ -119,7 +118,6 @@ namespace AdamsLair.PropertyGrid
 			Test testObj = new Test();
 			testObj.IPropWithAVeryLongName = 42;
 			testObj.SomeString = "Blubdiwupp";
-			testObj.SomeIntArray = new int[] { 3, 4, 5 };
 			testObj.SomeFloat = (float)Math.PI;
 			testObj.SomeByte = 128;
 			testObj.Subclass = new Test2(42);

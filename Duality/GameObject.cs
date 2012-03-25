@@ -21,7 +21,6 @@ namespace Duality
 	/// <seealso cref="Duality.Resources.Scene"/>
 	/// <seealso cref="Duality.Resources.PrefabLink"/>
 	[Serializable]
-	[System.Diagnostics.DebuggerDisplay("GameObject {FullName}")]
 	public sealed class GameObject : IManageableObject
 	{
 		internal	PrefabLink					prefabLink	= null;
@@ -979,7 +978,7 @@ namespace Duality
 
 		public override string ToString()
 		{
-			return this.FullName;
+			return string.Format("GameObject \"{0}\"", this.FullName);
 		}
 	}
 }

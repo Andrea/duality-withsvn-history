@@ -89,7 +89,6 @@ namespace Duality.Resources
 	/// <summary>
 	/// Provides information about a <see cref="AbstractShader">shader</see> variable.
 	/// </summary>
-	[System.Diagnostics.DebuggerDisplay("ShaderVarInfo: {scope} {type} {name}[{arraySize}]")]
 	public struct ShaderVarInfo
 	{
 		/// <summary>

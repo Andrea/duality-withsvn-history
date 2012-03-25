@@ -311,7 +311,6 @@ namespace Duality
 	/// Also, a Component may not belong to multiple GameObjects at once.
 	/// </summary>
 	[Serializable]
-	[System.Diagnostics.DebuggerDisplay("{ToString()}")]
 	public abstract class Component : IManageableObject
 	{
 		/// <summary>
@@ -567,7 +566,10 @@ namespace Duality
 
 		public override string ToString()
 		{
-			return string.Format("{0} in {1}", this.GetType().Name, this.gameobj != null ? this.gameobj.FullName : "null");
+			if (this.gameobj == null)
+				return this.GetType().Name;
+			else
+				return string.Format("{0} in \"{1}\"", this.GetType().Name, this.gameobj.FullName);
 		}
 
 		/// <summary>

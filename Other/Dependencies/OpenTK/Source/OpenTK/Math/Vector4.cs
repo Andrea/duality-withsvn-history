@@ -200,6 +200,7 @@ namespace OpenTK
         /// Constructs a new Vector4 from the given Vector2.
         /// </summary>
         /// <param name="v">The Vector2 to copy components from.</param>
+		/// <param name="z"></param>
         public Vector4(Vector2 v, float z)
         {
             X = v.X;
@@ -211,6 +212,8 @@ namespace OpenTK
         /// Constructs a new Vector4 from the given Vector2.
         /// </summary>
         /// <param name="v">The Vector2 to copy components from.</param>
+		/// <param name="z"></param>
+		/// <param name="w"></param>
         public Vector4(Vector2 v, float z, float w)
         {
             X = v.X;

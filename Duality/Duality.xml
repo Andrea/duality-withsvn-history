@@ -3291,6 +3291,11 @@
             [GET] Returns whether the Resource is part of Duality's embedded default content.
             </summary>
         </member>
+        <member name="P:Duality.Resource.IsRuntimeResource">
+            <summary>
+            [GET] Returns whether the Resource has been generated at runtime and  cannot be retrieved via content path.
+            </summary>
+        </member>
         <member name="F:Duality.Resources.Sound.FileExt">
             <summary>
             A Sound resources file extension.
@@ -7094,6 +7099,12 @@
             </summary>
             <param name="basePixmap">The <see cref="T:Duality.Resources.Pixmap"/> that is used as pixel data source.</param>
             <param name="sizeMode">Specifies behaviour in case the source data has non-power-of-two dimensions.</param>
+        </member>
+        <member name="M:Duality.Resources.Texture.RetrievePixelData">
+            <summary>
+            Retrieves the pixel data that is currently stored in video memory.
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:Duality.Resources.Texture.AdjustSize(System.Single,System.Single)">
             <summary>
@@ -11942,6 +11953,11 @@
         <member name="P:Duality.ContentRef`1.IsDefaultContent">
             <summary>
             [GET] Returns whether the referenced Resource is part of Duality's embedded default content.
+            </summary>
+        </member>
+        <member name="P:Duality.ContentRef`1.IsRuntimeResource">
+            <summary>
+            [GET] Returns whether the Resource has been generated at runtime and  cannot be retrieved via content path.
             </summary>
         </member>
         <member name="P:Duality.ContentRef`1.Name">

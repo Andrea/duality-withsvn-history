@@ -243,7 +243,7 @@ namespace AdamsLair.PropertyGrid
 		{
 			get 
 			{ 
-				return this.setter == null || (this.parentEditor != null && this.parentEditor.ReadOnly);
+				return this.setter == null || (this.parentEditor != null && this.parentEditor.IsChildReadOnly(this));
 			}
 		}
 		public bool Enabled
@@ -453,6 +453,7 @@ namespace AdamsLair.PropertyGrid
 			this.updatingFromObj = false;
 		}
 		
+		protected virtual bool IsChildReadOnly(PropertyEditor childEditor) { return this.ReadOnly; }
 		protected virtual bool IsChildValueModified(PropertyEditor childEditor) { return false; }
 
 		protected void PaintBackground(Graphics g)

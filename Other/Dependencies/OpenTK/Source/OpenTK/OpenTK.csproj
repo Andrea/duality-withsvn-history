@@ -74,6 +74,7 @@
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <DebugType>none</DebugType>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
@@ -109,8 +110,20 @@
     <Compile Include="DisplayIndex.cs" />
     <Compile Include="Graphics\GraphicsModeComparer.cs" />
     <Compile Include="Input\IGamePadDriver.cs" />
+    <Compile Include="Input\IInputDriver.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Input\IInputDriver2.cs" />
+    <Compile Include="Input\IJoystickDriver.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Input\IKeyboardDriver.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Input\IKeyboardDriver2.cs" />
+    <Compile Include="Input\IMouseDriver.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Input\IMouseDriver2.cs" />
     <Compile Include="Math\Half.cs">
       <SubType>Code</SubType>
@@ -504,15 +517,6 @@
     <Compile Include="Input\Key.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Input\IJoystickDriver.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Input\IMouseDriver.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Input\IInputDriver.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Input\KeyboardDevice.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -523,9 +527,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Input\JoystickDevice.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Input\IKeyboardDriver.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Input\KeyboardKeyEventArgs.cs">

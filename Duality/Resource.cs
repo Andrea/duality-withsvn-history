@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Reflection;
+using System.Diagnostics;
 
 using Duality.Serialization;
 using Duality.EditorHints;
@@ -17,7 +18,6 @@ namespace Duality
 	/// <seealso cref="ContentRef{T}"/>
 	/// <seealso cref="ContentProvider"/>
 	[Serializable]
-	[System.Diagnostics.DebuggerDisplay("{GetType().Name,nq} {FullName}")]
 	public abstract class Resource : IManageableObject, IDisposable
 	{
 		/// <summary>
@@ -78,7 +78,8 @@ namespace Duality
 		{
 			get
 			{
-				string nameTemp = this.path ?? "";
+				if (this.IsRuntimeResource) return string.Format("rt:{0}", this.GetHashCode());
+				string nameTemp = this.path;
 				if (this.IsDefaultContent) nameTemp = nameTemp.Replace(':', '/');
 				return System.IO.Path.GetFileNameWithoutExtension(System.IO.Path.GetFileNameWithoutExtension(nameTemp));
 			}
@@ -91,7 +92,7 @@ namespace Duality
 		{
 			get
 			{
-				if (string.IsNullOrEmpty(this.path)) return "";
+				if (this.IsRuntimeResource) return string.Format("rt:{0}", this.GetHashCode());
 				string nameTemp = this.path;
 				if (this.IsDefaultContent) nameTemp = nameTemp.Replace(':', '/');
 				return System.IO.Path.Combine(System.IO.Path.GetDirectoryName(nameTemp), this.Name);
@@ -104,6 +105,14 @@ namespace Duality
 		public bool IsDefaultContent
 		{
 			get { return this.path != null && this.path.Contains(':'); }
+		}
+		/// <summary>
+		/// [GET] Returns whether the Resource has been generated at runtime and  cannot be retrieved via content path.
+		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
+		public bool IsRuntimeResource
+		{
+			get { return string.IsNullOrEmpty(this.path); }
 		}
 		bool IManageableObject.Active
 		{
@@ -254,7 +263,7 @@ namespace Duality
 		
 		public override string ToString()
 		{
-			return this.FullName;
+			return string.Format("{0} \"{1}\"", this.GetType().Name, this.FullName);
 		}
 
 		/// <summary>
@@ -346,7 +355,7 @@ namespace Duality
 		/// <returns>The Resource Type of the specified file</returns>
 		public static Type GetTypeByFileName(string filePath)
 		{
-			if (filePath == null || filePath.Contains(':')) return null;
+			if (string.IsNullOrEmpty(filePath) || filePath.Contains(':')) return null;
 			filePath = System.IO.Path.GetFileNameWithoutExtension(filePath);
 			string[] token = filePath.Split('.');
 			if (token.Length < 2) return null;

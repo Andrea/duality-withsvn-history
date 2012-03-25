@@ -50,7 +50,6 @@ namespace OpenTK.Platform.MacOS
         GraphicsMode graphics_mode;
         CarbonWindowInfo carbonWindow;
         IntPtr shareContextRef;
-        DisplayDevice device;
         bool mIsFullscreen = false;
 
         public AglContext(GraphicsMode mode, IWindowInfo window, IGraphicsContext shareContext)
