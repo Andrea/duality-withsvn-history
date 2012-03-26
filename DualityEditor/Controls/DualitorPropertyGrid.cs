@@ -31,9 +31,34 @@ namespace DualityEditor.Controls
 
 		public override void ConfigureEditor(PropertyEditor editor, object configureData = null)
 		{
-			base.ConfigureEditor(editor, configureData);
-			var hintOverride = configureData as IEnumerable<EditorHintMemberAttribute>;
+			IEnumerable<EditorHintMemberAttribute> hintOverride = configureData as IEnumerable<EditorHintMemberAttribute>;
+			IEnumerable<EditorHintMemberAttribute> parentHint = null;
+			if (editor.ParentEditor != null)
+			{
+				IEnumerable<EditorHintMemberAttribute> parentHintOverride = editor.ParentEditor.ConfigureData as IEnumerable<EditorHintMemberAttribute>;
+				if (editor.ParentEditor.EditedMember != null)
+					parentHint = editor.ParentEditor.EditedMember.GetEditorHints<EditorHintMemberAttribute>(parentHintOverride);
+				else
+					parentHint = parentHintOverride;
+			}
 
+			if (hintOverride == null && parentHint != null)
+			{
+				// No configuration data available? Allow to derive certain types from parent list or dictionary.
+				if (editor.ParentEditor is IListPropertyEditor || editor.ParentEditor is IDictionaryPropertyEditor)
+				{
+					hintOverride = parentHint.Where(a => 
+						a is EditorHintDecimalPlacesAttribute ||
+						a is EditorHintIncrementAttribute ||
+						a is EditorHintRangeAttribute);
+				}
+				// That way we can specify the decimal places of an array of Vector2-structs and actually change those Vector2 editors.
+			}
+
+			// Invoke the PropertyEditor's configure method
+			base.ConfigureEditor(editor, hintOverride);
+
+			// Do some final configuration for editors that do not behave as intended by default.
 			if (editor is MemberwisePropertyEditor)
 			{
 				MemberwisePropertyEditor memberEditor = editor as MemberwisePropertyEditor;

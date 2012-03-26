@@ -176,6 +176,8 @@ namespace Duality.Components
 			/// <summary>
 			/// [GET / SET] The circles radius.
 			/// </summary>
+			[EditorHintIncrement(1)]
+			[EditorHintDecimalPlaces(1)]
 			public float Radius
 			{
 				get { return this.radius; }
@@ -184,6 +186,8 @@ namespace Duality.Components
 			/// <summary>
 			/// [GET / SET] The circles position.
 			/// </summary>
+			[EditorHintIncrement(1)]
+			[EditorHintDecimalPlaces(1)]
 			public Vector2 Position
 			{
 				get { return this.position; }
@@ -241,6 +245,8 @@ namespace Duality.Components
 			/// [GET / SET] The polygons vertices.
 			/// </summary>
 			[EditorHintFlags(MemberFlags.ForceWriteback)]
+			[EditorHintIncrement(1)]
+			[EditorHintDecimalPlaces(1)]
 			public Vector2[] Vertices
 			{
 				get { return this.vertices; }

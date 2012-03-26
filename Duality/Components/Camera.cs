@@ -1164,7 +1164,7 @@ namespace Duality.Components
 					this.drawBuffer.StableSort(this.DrawBatchComparerZSort);
 				}
 				else
-					this.drawBuffer.Sort(this.DrawBatchComparer);
+					this.drawBuffer.StableSort(this.DrawBatchComparer);
 				this.drawBuffer = this.OptimizeBatches(this.drawBuffer);
 			}
 

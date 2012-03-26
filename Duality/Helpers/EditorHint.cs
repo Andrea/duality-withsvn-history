@@ -149,13 +149,19 @@ namespace Duality.EditorHints
 		}
 		public static IEnumerable<T> GetEditorHints<T>(this MemberInfo info) where T : EditorHintMemberAttribute
 		{
-			return info.GetCustomAttributes(typeof(T), true).OfType<T>();
+			object[] customAttribs = info.GetCustomAttributes(true);
+			return customAttribs.OfType<T>();
 		}
 		public static IEnumerable<T> GetEditorHints<T>(this MemberInfo info, IEnumerable<EditorHintMemberAttribute> hintOverride) where T : EditorHintMemberAttribute
 		{
-			if (hintOverride != null && hintOverride.OfType<T>().Any()) return hintOverride.OfType<T>();
-			if (info != null) return info.GetEditorHints<T>();
+			if (info != null) return info.GetEditorHints<T>().OverrideEditorHintsBy(hintOverride).OfType<T>();
 			return null;
+		}
+		public static IEnumerable<EditorHintMemberAttribute> OverrideEditorHintsBy(this IEnumerable<EditorHintMemberAttribute> hints, IEnumerable<EditorHintMemberAttribute> overrideHints)
+		{
+			if (overrideHints == null) return hints;
+			if (hints == null) return overrideHints;
+			return hints.Where(h => !overrideHints.Any(o => o.GetType().IsAssignableFrom(h.GetType())));
 		}
 	}
 }

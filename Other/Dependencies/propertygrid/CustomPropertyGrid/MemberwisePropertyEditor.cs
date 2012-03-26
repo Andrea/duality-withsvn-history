@@ -119,8 +119,8 @@ namespace AdamsLair.PropertyGrid
 			e.Setter = prop.CanWrite ? this.CreatePropertyValueSetter(prop) : null;
 			e.PropertyName = prop.Name;
 			e.EditedMember = prop;
-			this.ParentGrid.ConfigureEditor(e);
 			this.AddPropertyEditor(e);
+			this.ParentGrid.ConfigureEditor(e);
 			e.EndUpdate();
 			return e;
 		}
@@ -134,8 +134,8 @@ namespace AdamsLair.PropertyGrid
 			e.Setter = this.CreateFieldValueSetter(field);
 			e.PropertyName = field.Name;
 			e.EditedMember = field;
-			this.ParentGrid.ConfigureEditor(e);
 			this.AddPropertyEditor(e);
+			this.ParentGrid.ConfigureEditor(e);
 			e.EndUpdate();
 			return e;
 		}

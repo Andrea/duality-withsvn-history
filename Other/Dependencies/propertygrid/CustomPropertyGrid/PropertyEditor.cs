@@ -74,6 +74,7 @@ namespace AdamsLair.PropertyGrid
 		private	Type			editedType		= null;
 		private	MemberInfo		editedMember	= null;
 		private	string			propertyName	= AdamsLair.PropertyGrid.EmbeddedResources.Resources.PropertyName_Default;
+		private	object			configureData	= null;
 		private	bool			forceWriteBack	= false;
 		private	bool			updatingFromObj	= false;
 		private	HintFlags		hints			= HintFlags.Default;
@@ -198,6 +199,10 @@ namespace AdamsLair.PropertyGrid
 				this.propertyName = value;
 				this.Invalidate();
 			}
+		}
+		public object ConfigureData
+		{
+			get { return this.configureData; }
 		}
 		public bool ForceWriteBack
 		{
@@ -602,7 +607,10 @@ namespace AdamsLair.PropertyGrid
 				this.EditingFinished(sender, args);
 		}
 
-		internal protected virtual void ConfigureEditor(object configureData) {}
+		internal protected virtual void ConfigureEditor(object configureData)
+		{
+			this.configureData = configureData;
+		}
 
 		protected void OnValueChanged()
 		{

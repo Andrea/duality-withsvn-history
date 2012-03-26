@@ -288,7 +288,7 @@ namespace EditorBase.CamViewStates
 					canvas.DrawSphere(
 						this.selectionCenter.X, 
 						this.selectionCenter.Y, 
-						this.selectionCenter.Z, 
+						this.selectionCenter.Z - 0.1f, 
 						this.selectionRadius);
 				}
 				else
@@ -297,7 +297,7 @@ namespace EditorBase.CamViewStates
 					canvas.DrawCircle(
 						this.selectionCenter.X, 
 						this.selectionCenter.Y, 
-						this.selectionCenter.Z, 
+						this.selectionCenter.Z - 0.1f, 
 						this.selectionRadius);
 				}
 			}
@@ -312,22 +312,22 @@ namespace EditorBase.CamViewStates
 				canvas.FillCircle(
 					this.selectionCenter.X + this.selectionRadius, 
 					this.selectionCenter.Y, 
-					this.selectionCenter.Z - 0.01f,
+					this.selectionCenter.Z - 0.1f,
 					dotR);
 				canvas.FillCircle(
 					this.selectionCenter.X - this.selectionRadius, 
 					this.selectionCenter.Y, 
-					this.selectionCenter.Z - 0.01f,
+					this.selectionCenter.Z - 0.1f,
 					dotR);
 				canvas.FillCircle(
 					this.selectionCenter.X, 
 					this.selectionCenter.Y + this.selectionRadius, 
-					this.selectionCenter.Z - 0.01f,
+					this.selectionCenter.Z - 0.1f,
 					dotR);
 				canvas.FillCircle(
 					this.selectionCenter.X, 
 					this.selectionCenter.Y - this.selectionRadius, 
-					this.selectionCenter.Z - 0.01f,
+					this.selectionCenter.Z - 0.1f,
 					dotR);
 			}
 
@@ -566,12 +566,12 @@ namespace EditorBase.CamViewStates
 					posTemp = selObj.Pos + 
 						radTemp * right * MathF.Sin(selObj.Angle - camAngle) - 
 						radTemp * down * MathF.Cos(selObj.Angle - camAngle);
-					canvas.DrawLine(selObj.Pos.X, selObj.Pos.Y, selObj.Pos.Z - 0.01f, posTemp.X, posTemp.Y, posTemp.Z - 0.01f);
+					canvas.DrawLine(selObj.Pos.X, selObj.Pos.Y, selObj.Pos.Z - 0.1f, posTemp.X, posTemp.Y, posTemp.Z - 0.1f);
 				}
 
 				// Draw boundary
 				if (selObj.ShowBoundRadius && radTemp > 0.0f)
-					canvas.DrawCircle(selObj.Pos.X, selObj.Pos.Y, selObj.Pos.Z - 0.01f, radTemp);
+					canvas.DrawCircle(selObj.Pos.X, selObj.Pos.Y, selObj.Pos.Z - 0.1f, radTemp);
 			}
 		}
 		protected void DrawLockedAxes(Canvas canvas, float x, float y, float z, float r)
@@ -700,11 +700,13 @@ namespace EditorBase.CamViewStates
 				// Determine action variables
 				Vector3 mouseSpaceCoord = this.View.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, this.selectionCenter.Z));
 				float scale = this.View.GetScaleAtZ(this.selectionCenter.Z);
-				float boundaryThickness = MathF.Max(10.0f, 5.0f / scale);
-				bool tooSmall = this.selectionRadius <= boundaryThickness * 2.0f;
-				bool mouseOverBoundary = MathF.Abs((mouseSpaceCoord - this.selectionCenter).Length - this.selectionRadius) < boundaryThickness;
+				float boundaryThickness = 10.0f;
+				bool tooSmall = this.selectionRadius * scale <= boundaryThickness * 2.0f;
+				bool mouseOverBoundary = MathF.Abs((mouseSpaceCoord - this.selectionCenter).Length - this.selectionRadius) * scale < boundaryThickness;
 				bool mouseInsideBoundary = !mouseOverBoundary && (mouseSpaceCoord - this.selectionCenter).Length < this.selectionRadius;
-				bool mouseAtCenterAxis = MathF.Abs(mouseSpaceCoord.X - this.selectionCenter.X) < boundaryThickness || MathF.Abs(mouseSpaceCoord.Y - this.selectionCenter.Y) < boundaryThickness;
+				bool mouseAtCenterAxis = 
+					MathF.Abs(mouseSpaceCoord.X - this.selectionCenter.X) * scale < boundaryThickness || 
+					MathF.Abs(mouseSpaceCoord.Y - this.selectionCenter.Y) * scale < boundaryThickness;
 				bool shift = (Control.ModifierKeys & Keys.Shift) != Keys.None;
 				bool ctrl = (Control.ModifierKeys & Keys.Control) != Keys.None;
 

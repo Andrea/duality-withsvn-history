@@ -391,7 +391,7 @@ namespace EditorBase.CamViewStates
 			this.toolstrip.BackColor = Color.FromArgb(212, 212, 212);
 
 			this.View.Controls.Add(this.toolstrip);
-			this.View.Controls.SetChildIndex(this.toolstrip, 0);
+			this.View.Controls.SetChildIndex(this.toolstrip, this.View.Controls.IndexOf(this.View.ToolbarCamera));
 			this.toolstrip.ResumeLayout(true);
 			this.View.ResumeLayout(true);
 
@@ -429,7 +429,6 @@ namespace EditorBase.CamViewStates
 		}
 		protected override void OnCollectStateDrawcalls(Canvas canvas)
 		{
-			base.OnCollectStateDrawcalls(canvas);
 			List<Collider> visibleColliders = this.QueryVisibleColliders().ToList();
 
 			this.RetrieveResources();
@@ -517,6 +516,8 @@ namespace EditorBase.CamViewStates
 					index++;
 				}
 			}
+
+			base.OnCollectStateDrawcalls(canvas);
 		}
 		protected override void DrawStatusText(Canvas canvas, ref bool handled)
 		{

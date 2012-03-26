@@ -68,8 +68,8 @@ namespace DynamicLighting
 				if (tech == null) continue;
 
 				bool isDynamicLighting = lightTech != null ||
-					tech.PreferredVertexFormat != VertexC1P3T2A4.VertexTypeIndex ||
-					tech.PreferredVertexFormat != VertexC1P3T4A4A1.VertexTypeIndex;
+					tech.PreferredVertexFormat == VertexC1P3T2A4.VertexTypeIndex ||
+					tech.PreferredVertexFormat == VertexC1P3T4A4A1.VertexTypeIndex;
 				if (!isDynamicLighting) continue;
 
 				Texture mainTex = mat.MainTexture.Res;

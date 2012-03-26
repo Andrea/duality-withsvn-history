@@ -158,6 +158,7 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 					elementEditor = this.ParentGrid.CreateEditor(elementType);
 					//elementEditor.ButtonPressed += elementEditor_ButtonPressed;
 					this.AddPropertyEditor(elementEditor);
+					this.ParentGrid.ConfigureEditor(elementEditor);
 				}
 				elementEditor.Getter = this.CreateElementValueGetter(indexer, i - this.internalEditors + this.offset);
 				elementEditor.Setter = this.CreateElementValueSetter(indexer, i - this.internalEditors + this.offset);
@@ -340,6 +341,10 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 			}
 
 			this.PerformGetValue();
+		}
+		protected internal override void ConfigureEditor(object configureData)
+		{
+			base.ConfigureEditor(configureData);
 		}
 	}
 }

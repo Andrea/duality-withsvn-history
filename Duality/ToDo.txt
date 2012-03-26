@@ -12,6 +12,10 @@
 	-->	"Did you know..?" screen?
 
 
+--> Example Project: Tetris with Physics
+	-->	Need Joints for this in order to create partially destructible blocks
+
+
 -->	Example Project: Super Mario style platformer
 	-->	Tile-based
 	-->	Will need something to edit tilemaps and probably a distinct Tileset Resource
@@ -27,10 +31,6 @@
 	-->	CamViewState: Tile Editor (?)
 	-->	Is there a way to generalize all this enough to make dynamically lit tilemap rendering
 		blend into existing design  smoothly?
-
-
---> Example Project: Tetris with Physics
-	-->	Need Joints for this in order to create partially destructible blocks
 
 
 --> Physics Thoughts

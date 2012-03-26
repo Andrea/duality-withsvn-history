@@ -180,6 +180,7 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 				{
 					elementEditor = this.ParentGrid.CreateEditor(valueType);
 					this.AddPropertyEditor(elementEditor);
+					this.ParentGrid.ConfigureEditor(elementEditor);
 				}
 				elementEditor.Getter = this.CreateElementValueGetter(indexer, keys[i - this.internalEditors]);
 				elementEditor.Setter = this.CreateElementValueSetter(indexer, keys[i - this.internalEditors]);
