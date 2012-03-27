@@ -294,7 +294,10 @@ namespace Duality.Resources
 			}
 			set
 			{
-				if (this.textures == null) this.textures = new Dictionary<string,ContentRef<Texture>>();
+				if (this.textures == null)
+					this.textures = new Dictionary<string,ContentRef<Texture>>();
+				else
+					this.CleanDirty(DirtyFlag.Textures);
 				this.textures[ShaderVarInfo.VarName_MainTex] = value;
 			}
 		}
