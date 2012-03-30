@@ -303,16 +303,30 @@ namespace Duality
 			execContext = context;
 
 			// Initialize Logfile
-			logfile = new StreamWriter(logfilePath + ".txt");
-			TextWriterLogOutput logfileOutput = new TextWriterLogOutput(logfile);
-			Log.Game.RegisterOutput(logfileOutput);
-			Log.Core.RegisterOutput(logfileOutput);
-			Log.Editor.RegisterOutput(logfileOutput);
+			try
+			{
+				logfile = new StreamWriter(logfilePath + ".txt");
+				TextWriterLogOutput logfileOutput = new TextWriterLogOutput(logfile);
+				Log.Game.RegisterOutput(logfileOutput);
+				Log.Core.RegisterOutput(logfileOutput);
+				Log.Editor.RegisterOutput(logfileOutput);
+			}
+			catch (Exception e)
+			{
+				Log.Core.WriteWarning("Text Logfile unavailable: {0}", Log.Exception(e));
+			}
 
-			logfileRtf = new RtfDocument(PaperSize.A4, PaperOrientation.Portrait, Lcid.English);
-			Log.Game.RegisterOutput(new RtfDocWriterLogOutput(logfileRtf, new ColorFormat.ColorRgba(230, 255, 220)));
-			Log.Core.RegisterOutput(new RtfDocWriterLogOutput(logfileRtf, new ColorFormat.ColorRgba(220, 220, 255)));
-			Log.Editor.RegisterOutput(new RtfDocWriterLogOutput(logfileRtf, new ColorFormat.ColorRgba(245, 220, 255)));
+			try
+			{
+				logfileRtf = new RtfDocument(PaperSize.A4, PaperOrientation.Portrait, Lcid.English);
+				Log.Game.RegisterOutput(new RtfDocWriterLogOutput(logfileRtf, new ColorFormat.ColorRgba(230, 255, 220)));
+				Log.Core.RegisterOutput(new RtfDocWriterLogOutput(logfileRtf, new ColorFormat.ColorRgba(220, 220, 255)));
+				Log.Editor.RegisterOutput(new RtfDocWriterLogOutput(logfileRtf, new ColorFormat.ColorRgba(245, 220, 255)));
+			}
+			catch (Exception e)
+			{
+				Log.Core.WriteWarning("Rtf Logfile unavailable: {0}", Log.Exception(e));
+			}
 
 			// Assure Duality is properly terminated in any case and register additional AppDomain events
 			AppDomain.CurrentDomain.ProcessExit			+= CurrentDomain_ProcessExit;
@@ -615,6 +629,7 @@ namespace Duality
 			{
 				using (var formatter = Formatter.Create(str, FormattingMethod.Binary))
 				{
+					formatter.AddFieldBlocker(Resource.NonSerializedResourceBlocker);
 					formatter.WriteObject(metaData);
 				}
 			}
@@ -996,7 +1011,7 @@ namespace Duality
 		private class Entry
 		{
 			public Dictionary<string,Entry> children;
-			public string value;
+			public object value;
 
 			public Entry()
 			{
@@ -1011,7 +1026,7 @@ namespace Duality
 				foreach (var pair in cc.children)
 					this.children[pair.Key] = new Entry(pair.Value);
 			}
-			public Entry(string value)
+			public Entry(object value)
 			{
 				this.value = value;
 				this.children = null;
@@ -1041,12 +1056,12 @@ namespace Duality
 				else
 					return null;
 			}
-			public string ReadValue(string key)
+			public object ReadValue(string key)
 			{
 				Entry valEntry = this.ReadValueEntry(key);
 				return valEntry != null ? valEntry.value : null;
 			}
-			public void WriteValue(string key, string value)
+			public void WriteValue(string key, object value)
 			{
 				if (String.IsNullOrEmpty(key))
 				{
@@ -1095,7 +1110,7 @@ namespace Duality
 		/// </example>
 		/// <seealso cref="ReadValue(string)"/>
 		/// <seealso cref="ReadValueAs{T}(string, out T)"/>
-		public string this[string key]
+		public object this[string key]
 		{
 			get { return this.ReadValue(key); }
 			set { this.WriteValue(key, value); }
@@ -1114,31 +1129,38 @@ namespace Duality
 		/// </code>
 		/// </example>
 		/// <seealso cref="ReadValueAs{T}(string, out T)"/>
-		public string ReadValue(string key)
+		public object ReadValue(string key)
 		{
 			return this.rootEntry.ReadValue(key);
 		}
 		/// <summary>
-		/// Reads the specified key's string value and tries to parse it.
+		/// Reads the specified keys value and tries to convert it to the specified type.
 		/// </summary>
 		/// <typeparam name="T">The desired value type</typeparam>
 		/// <param name="key">The key that defines where to look for the value.</param>
-		/// <param name="value">The parsed value based on the string that is associated with the specified key.</param>
+		/// <param name="value">The parsed value that is associated with the specified key.</param>
 		/// <returns>True, if successful, false if not.</returns>
 		/// <seealso cref="ReadValue(string)"/>
 		/// <example>
 		/// The following code writes and reads an int value:
 		/// <code>
 		/// DualityApp.MetaData.WriteValue("SomeKey", 42);
-		/// int value =  DualityApp.MetaData.ReadValueAs{int}("SomeKey");
+		/// int value;
+		/// bool success = DualityApp.MetaData.ReadValueAs{int}("SomeKey", out value);
 		/// </code>
 		/// </example>
 		public bool ReadValueAs<T>(string key, out T value)
 		{
-			string valStr = this.ReadValue(key);
+			object valObj = this.ReadValue(key);
+			if (valObj is T)
+			{
+				value = (T)valObj;
+				return true;
+			}
+
 			try
 			{
-				value = (T)Convert.ChangeType(valStr, typeof(T), System.Globalization.CultureInfo.InvariantCulture);
+				value = (T)Convert.ChangeType(valObj, typeof(T), System.Globalization.CultureInfo.InvariantCulture);
 				return true;
 			}
 			catch (Exception)
@@ -1155,9 +1177,9 @@ namespace Duality
 		/// <example>
 		/// The following code creates a small hierarchy and reads a part of it out again:
 		/// <code>
-		/// DualityApp.MetaData["MainNode/SubNode/SomeKey"] = "42";
-		/// DualityApp.MetaData["MainNode/SubNode/SomeOtherKey"] = "43";
-		/// DualityApp.MetaData["MainNode/SubNode/SomeOtherKey2"] = "44";
+		/// DualityApp.MetaData["MainNode/SubNode/SomeKey"] = 42;
+		/// DualityApp.MetaData["MainNode/SubNode/SomeOtherKey"] = "Hello";
+		/// DualityApp.MetaData["MainNode/SubNode/SomeOtherKey2"] = 44;
 		/// DualityApp.MetaData["MainNode/SubNode2"] = "Something";
 		/// 
 		/// var pairs = DualityApp.MetaData.ReadSubValues("MainNode/SubNode");
@@ -1169,55 +1191,29 @@ namespace Duality
 		/// The expected output is:
 		/// <code>
 		/// SomeKey: 42
-		/// SomeOtherKey: 43
+		/// SomeOtherKey: Hello
 		/// SomeOtherKey2: 44
 		/// </code>
 		/// </example>
-		public IEnumerable<KeyValuePair<string,string>> ReadSubValues(string key)
+		public IEnumerable<KeyValuePair<string,object>> ReadSubValues(string key)
 		{
 			Entry parentEntry = this.rootEntry.ReadValueEntry(key);
 			if (parentEntry == null) yield break;
 
 			foreach (var pair in parentEntry.children)
-				yield return new KeyValuePair<string,string>(pair.Key, pair.Value.value);
+				yield return new KeyValuePair<string,object>(pair.Key, pair.Value.value);
 		}
 		/// <summary>
-		/// Writes the specified string value to the specified key. Keys are organized hierarchially and behave
-		/// like file paths. Use the normal path separator chars to address keys in keys.
-		/// </summary>
-		/// <param name="key">The key that defines to write the value to.</param>
-		/// <param name="value">The value to write</param>
-		/// <seealso cref="WriteValue{T}(string, T)"/>
-		public void WriteValue(string key, string value)
-		{
-			this.rootEntry.WriteValue(key, value);
-		}
-		/// <summary>
-		/// Writes the specified value to the specified key. Keys are organized hierarchially and behave
+		/// Writes a value to the specified key. Keys are organized hierarchially and behave
 		/// like file paths. Use the normal path separator chars to address keys in keys.
 		/// </summary>
 		/// <typeparam name="T">The value's Type.</typeparam>
 		/// <param name="key">The key that defines to write the value to.</param>
 		/// <param name="value">The value to write</param>
 		/// <seealso cref="WriteValue(string, string)"/>
-		public void WriteValue<T>(string key, T value)
+		public void WriteValue(string key, object value)
 		{
-			string valStr = value as string;
-			if (valStr != null)
-			{
-				this.WriteValue(key, valStr);
-				return;
-			}
-
-			IFormattable valFormattable = value as IFormattable;
-			if (valFormattable != null)
-			{
-				this.WriteValue(key, valFormattable.ToString(null, System.Globalization.CultureInfo.InvariantCulture));
-				return;
-			}
-
-			this.WriteValue(key, value.ToString());
-			return;
+			this.rootEntry.WriteValue(key, value);
 		}
 	}
 }

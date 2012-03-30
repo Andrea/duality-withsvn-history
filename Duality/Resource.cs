@@ -368,7 +368,7 @@ namespace Duality
 		/// </summary>
 		/// <param name="field"></param>
 		/// <returns></returns>
-		protected static bool NonSerializedResourceBlocker(FieldInfo field)
+		public static bool NonSerializedResourceBlocker(FieldInfo field)
 		{
 			return field.GetCustomAttributes(typeof(NonSerializedResourceAttribute), true).Any();
 		}
