@@ -27,6 +27,7 @@ namespace EditorBase.PropertyEditors
 			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(colShapes), property);
 
 			var colliders = colShapes.Select(c => c.Parent).ToArray();
+			foreach (var c in colliders) c.AwakeBody();
 			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(colliders), ReflectionInfo.Property_Collider_Shapes);
 		}
 	}

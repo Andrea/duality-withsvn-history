@@ -517,6 +517,8 @@ namespace Duality
 			{
 				try
 				{
+					Log.Core.Write("Loading AppData..");
+					Log.Core.PushIndent();
 					using (FileStream str = File.OpenRead(path))
 					{
 						using (var formatter = Formatter.Create(str))
@@ -524,6 +526,7 @@ namespace Duality
 							appData = formatter.ReadObject() as DualityAppData ?? new DualityAppData();
 						}
 					}
+					Log.Core.PopIndent();
 				}
 				catch (Exception)
 				{
@@ -544,6 +547,8 @@ namespace Duality
 			{
 				try
 				{
+					Log.Core.Write("Loading UserData..");
+					Log.Core.PushIndent();
 					using (FileStream str = File.OpenRead(path))
 					{
 						using (var formatter = Formatter.Create(str))
@@ -551,6 +556,7 @@ namespace Duality
 							UserData = formatter.ReadObject() as DualityUserData ?? new DualityUserData();
 						}
 					}
+					Log.Core.PopIndent();
 				}
 				catch (Exception)
 				{
@@ -570,6 +576,8 @@ namespace Duality
 			{
 				try
 				{
+					Log.Core.Write("Loading MetaData..");
+					Log.Core.PushIndent();
 					using (FileStream str = File.OpenRead(path))
 					{
 						using (var formatter = Formatter.Create(str))
@@ -577,6 +585,7 @@ namespace Duality
 							metaData = formatter.ReadObject() as DualityMetaData ?? new DualityMetaData();
 						}
 					}
+					Log.Core.PopIndent();
 				}
 				catch (Exception)
 				{
@@ -591,48 +600,75 @@ namespace Duality
 		/// </summary>
 		public static void SaveAppData()
 		{
-			string path = AppDataPath;
-			using (FileStream str = File.Open(path, FileMode.Create))
+			Log.Core.Write("Saving AppData..");
+			Log.Core.PushIndent();
+
+			try
 			{
-				using (var formatter = Formatter.Create(str, FormattingMethod.Binary))
+				string path = AppDataPath;
+				using (FileStream str = File.Open(path, FileMode.Create))
 				{
-					formatter.WriteObject(appData);
+					using (var formatter = Formatter.Create(str, FormattingMethod.Binary))
+					{
+						formatter.WriteObject(appData);
+					}
 				}
 			}
+			catch (Exception e) { Log.Core.WriteError(Log.Exception(e)); }
+
+			Log.Core.PopIndent();
 		}
 		/// <summary>
 		/// Triggers Duality to save its <see cref="DualityUserData"/>.
 		/// </summary>
 		public static void SaveUserData()
 		{
-			string path = UserDataPath;
-			if (!Directory.Exists(Path.GetDirectoryName(path))) Directory.CreateDirectory(Path.GetDirectoryName(path));
-			if (execContext == ExecutionContext.Editor) path = "defaultuserdata.dat";
+			Log.Core.Write("Saving UserData..");
+			Log.Core.PushIndent();
 
-			using (FileStream str = File.Open(path, FileMode.Create))
+			try
 			{
-				using (var formatter = Formatter.Create(str, FormattingMethod.Binary))
+				string path = UserDataPath;
+				if (!Directory.Exists(Path.GetDirectoryName(path))) Directory.CreateDirectory(Path.GetDirectoryName(path));
+				if (execContext == ExecutionContext.Editor) path = "defaultuserdata.dat";
+
+				using (FileStream str = File.Open(path, FileMode.Create))
 				{
-					formatter.WriteObject(userData);
+					using (var formatter = Formatter.Create(str, FormattingMethod.Binary))
+					{
+						formatter.WriteObject(userData);
+					}
 				}
 			}
+			catch (Exception e) { Log.Core.WriteError(Log.Exception(e)); }
+
+			Log.Core.PopIndent();
 		}
 		/// <summary>
 		/// Triggers Duality to save its <see cref="DualityMetaData"/>.
 		/// </summary>
 		public static void SaveMetaData()
 		{
-			string path = MetaDataPath;
-			if (!Directory.Exists(Path.GetDirectoryName(path))) Directory.CreateDirectory(Path.GetDirectoryName(path));
+			Log.Core.Write("Saving MetaData..");
+			Log.Core.PushIndent();
 
-			using (FileStream str = File.Open(path, FileMode.Create))
+			try
 			{
-				using (var formatter = Formatter.Create(str, FormattingMethod.Binary))
+				string path = MetaDataPath;
+				if (!Directory.Exists(Path.GetDirectoryName(path))) Directory.CreateDirectory(Path.GetDirectoryName(path));
+
+				using (FileStream str = File.Open(path, FileMode.Create))
 				{
-					formatter.AddFieldBlocker(Resource.NonSerializedResourceBlocker);
-					formatter.WriteObject(metaData);
+					using (var formatter = Formatter.Create(str, FormattingMethod.Binary))
+					{
+						formatter.AddFieldBlocker(Resource.NonSerializedResourceBlocker);
+						formatter.WriteObject(metaData);
+					}
 				}
 			}
+			catch (Exception e) { Log.Core.WriteError(Log.Exception(e)); }
+
+			Log.Core.PopIndent();
 		}
 
 		private static void LoadPlugins()
@@ -797,7 +833,7 @@ namespace Duality
 			if (AppDataChanged != null)
 				AppDataChanged(null, EventArgs.Empty);
 
-			FarseerPhysics.Settings.VelocityThreshold = appData.PhysicsVelocityThreshold * 0.01f / Time.SPFMult;
+			FarseerPhysics.Settings.VelocityThreshold = PhysicsConvert.ToPhysicalUnit(appData.PhysicsVelocityThreshold / Time.SPFMult);
 		}
 
 		private static void CurrentDomain_ProcessExit(object sender, EventArgs e)
@@ -838,7 +874,7 @@ namespace Duality
 		private	ContentRef<Scene>	startScene			= ContentRef<Scene>.Null;
 		private	float				speedOfSound		= 360.0f;
 		private	float				soundDopplerFactor	= 1.0f;
-		private	float				physicsVelThreshold	= 0.5f * Time.SPFMult / 0.01f;
+		private	float				physicsVelThreshold	= PhysicsConvert.ToDualityUnit(0.5f * Time.SPFMult);
 
 		/// <summary>
 		/// [GET / SET] The name of your application / game. It will also be used as a window title by the launcher app.
@@ -1207,10 +1243,8 @@ namespace Duality
 		/// Writes a value to the specified key. Keys are organized hierarchially and behave
 		/// like file paths. Use the normal path separator chars to address keys in keys.
 		/// </summary>
-		/// <typeparam name="T">The value's Type.</typeparam>
 		/// <param name="key">The key that defines to write the value to.</param>
 		/// <param name="value">The value to write</param>
-		/// <seealso cref="WriteValue(string, string)"/>
 		public void WriteValue(string key, object value)
 		{
 			this.rootEntry.WriteValue(key, value);

@@ -9,10 +9,11 @@ using System.IO;
 
 namespace Duality
 {
+
 	/// <summary>
 	/// Provides helper methods for Reflection-driven object cloning & serialization.
 	/// </summary>
-	public static class SerializationHelper
+	public static class CloneHelper
 	{
 		/// <summary>
 		/// Returns whether the specified type may just be assigned in a clone operation (even if deep)
@@ -33,7 +34,7 @@ namespace Duality
 		/// <returns></returns>
 		public static T DeepCloneObject<T>(T instance)
 		{
-			return (T)DeepCloneObject(instance, new VisitedGraph());
+			return (T)DeepCloneObject(instance, new CloneProvider());
 		}
 		/// <summary>
 		/// Creates a deep clone of an object.
@@ -42,7 +43,7 @@ namespace Duality
 		/// <returns></returns>
 		public static object DeepCloneObject(object instance)
 		{
-			return DeepCloneObject(instance, new VisitedGraph());
+			return DeepCloneObject(instance, new CloneProvider());
 		}
 		/// <summary>
 		/// Creates a deep clone of an object but considering only specific Types for "unwrapping".
@@ -54,7 +55,7 @@ namespace Duality
 		/// <returns></returns>
 		public static T DeepCloneObjectExplicit<T>(T instance, params Type[] unwrapTypes)
 		{
-			return (T)DeepCloneObjectExplicit(instance, new VisitedGraph(), unwrapTypes);
+			return (T)DeepCloneObjectExplicit(instance, new CloneProvider(), unwrapTypes);
 		}
 		/// <summary>
 		/// Creates a deep clone of an object but considering only specific Types for "unwrapping".
@@ -65,7 +66,7 @@ namespace Duality
 		/// <returns></returns>
 		public static object DeepCloneObjectExplicit(object instance, params Type[] unwrapTypes)
 		{
-			return DeepCloneObjectExplicit(instance, new VisitedGraph(), unwrapTypes);
+			return DeepCloneObjectExplicit(instance, new CloneProvider(), unwrapTypes);
 		}
 
 		/// <summary>
@@ -76,7 +77,7 @@ namespace Duality
 		/// <param name="target"></param>
 		public static void DeepCopyFields(FieldInfo[] fields, object source, object target)
 		{
-			DeepCopyFields(fields, source, target, new VisitedGraph());
+			DeepCopyFields(fields, source, target, new CloneProvider());
 		}
 		/// <summary>
 		/// Copies the specified fields from one object to another, but considering only specific 
@@ -89,25 +90,41 @@ namespace Duality
 		/// <param name="unwrapTypes"></param>
 		public static void DeepCopyFieldsExplicit(FieldInfo[] fields, object source, object target, params Type[] unwrapTypes)
 		{
-			DeepCopyFieldsExplicit(fields, source, target, new VisitedGraph(), unwrapTypes);
+			DeepCopyFieldsExplicit(fields, source, target, new CloneProvider(), unwrapTypes);
 		}
 
 
 		#region Private Methods
-		private class VisitedGraph : Dictionary<object, object>
+		private class CloneProvider
 		{
-			public new bool ContainsKey(object key)
+			private Dictionary<object, object> dict = new Dictionary<object,object>();
+
+			public bool ContainsKey(object key)
 			{
 				if (key == null) return true;
-				return base.ContainsKey(key);
+				return this.dict.ContainsKey(key);
 			}
-			public new object this[object key]
+			public void Add(object key, object value)
 			{
-				get { if (key == null) return null; return base[key]; }
+				this[key] = value;
+			}
+			public object this[object key]
+			{
+				get
+				{ 
+					if (key == null) return null;
+					return this.dict[key];
+				}
+				set 
+				{
+					if (key == null) return;
+					if (this.ContainsKey(key)) return;
+					this.dict[key] = value;
+				}
 			}
 		}
 
-		private static object DeepCloneObject(object instance, VisitedGraph visited)
+		private static object DeepCloneObject(object instance, CloneProvider visited)
 		{
 			if (instance == null) return null;
 			if (visited.ContainsKey(instance)) return visited[instance];
@@ -143,7 +160,7 @@ namespace Duality
 				return copy;
 			}
 		}
-		private static object DeepCloneObjectExplicit(object instance, VisitedGraph visited, Type[] unwrapTypes)
+		private static object DeepCloneObjectExplicit(object instance, CloneProvider visited, Type[] unwrapTypes)
 		{
 			if (instance == null) return null;
 			if (visited.ContainsKey(instance)) return visited[instance];
@@ -201,14 +218,14 @@ namespace Duality
 			}
 		}
 
-		private static void DeepCopyFields(FieldInfo[] fields, object source, object target, VisitedGraph visited)
+		private static void DeepCopyFields(FieldInfo[] fields, object source, object target, CloneProvider visited)
 		{
 			foreach (FieldInfo field in fields)
 			{
 				field.SetValue(target, DeepCloneObject(field.GetValue(source), visited));
 			}
 		}
-		private static void DeepCopyFieldsExplicit(FieldInfo[] fields, object source, object target, VisitedGraph visited, Type[] unwrapTypes)
+		private static void DeepCopyFieldsExplicit(FieldInfo[] fields, object source, object target, CloneProvider visited, Type[] unwrapTypes)
 		{
 			foreach (FieldInfo f in fields)
 			{

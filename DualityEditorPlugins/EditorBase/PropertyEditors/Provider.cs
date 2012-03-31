@@ -39,6 +39,7 @@ namespace EditorBase.PropertyEditors
 
 			// -------- General area --------
 			else if (typeof(Collider.ShapeInfo).IsAssignableFrom(baseType))	return PropertyGrid.EditorPriority_General;
+			else if (typeof(Collider.JointInfo).IsAssignableFrom(baseType))	return PropertyGrid.EditorPriority_General;
 			else if (typeof(Component).IsAssignableFrom(baseType))			return PropertyGrid.EditorPriority_General;
 			else if (typeof(Resource).IsAssignableFrom(baseType))			return PropertyGrid.EditorPriority_General;
 			else if (typeof(IContentRef).IsAssignableFrom(baseType))		return PropertyGrid.EditorPriority_General;
@@ -73,6 +74,7 @@ namespace EditorBase.PropertyEditors
 
 			// -------- General area --------
 			else if (typeof(Collider.ShapeInfo).IsAssignableFrom(baseType))	e = new ColliderShapePropertyEditor();
+			else if (typeof(Collider.JointInfo).IsAssignableFrom(baseType))	e = new ColliderJointPropertyEditor();
 			else if (typeof(Component).IsAssignableFrom(baseType))			e = new ComponentPropertyEditor();
 			else if (typeof(Resource).IsAssignableFrom(baseType))			e = new ResourcePropertyEditor();
 			else if (typeof(IContentRef).IsAssignableFrom(baseType))		e = new IContentRefPropertyEditor();

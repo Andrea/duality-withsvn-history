@@ -216,19 +216,19 @@ namespace Duality
 		{
 			if (localBody == impulse.BodyA)
 			{
-				this.pos = impulse.Points[pointIndex].rA * 100.0f;
+				this.pos = PhysicsConvert.ToDualityUnit(impulse.Points[pointIndex].rA);
 				this.normal = impulse.Normal;
-				this.normalImpulse = impulse.Points[pointIndex].NormalImpulse * Time.SPFMult / 0.01f;
-				this.tangentImpulse = impulse.Points[pointIndex].TangentImpulse * Time.SPFMult / 0.01f;
+				this.normalImpulse = PhysicsConvert.ToDualityUnit(impulse.Points[pointIndex].NormalImpulse * Time.SPFMult);
+				this.tangentImpulse = PhysicsConvert.ToDualityUnit(impulse.Points[pointIndex].TangentImpulse * Time.SPFMult);
 				this.normalMass = impulse.Points[pointIndex].NormalMass;
 				this.tangentMass = impulse.Points[pointIndex].TangentMass;
 			}
 			else if (localBody == impulse.BodyB)
 			{
-				this.pos = impulse.Points[pointIndex].rB * 100.0f;
+				this.pos = PhysicsConvert.ToDualityUnit(impulse.Points[pointIndex].rB);
 				this.normal = -impulse.Normal;
-				this.normalImpulse = impulse.Points[pointIndex].NormalImpulse * Time.SPFMult / 0.01f;
-				this.tangentImpulse = impulse.Points[pointIndex].TangentImpulse * Time.SPFMult / 0.01f;
+				this.normalImpulse = PhysicsConvert.ToDualityUnit(impulse.Points[pointIndex].NormalImpulse * Time.SPFMult);
+				this.tangentImpulse = PhysicsConvert.ToDualityUnit(impulse.Points[pointIndex].TangentImpulse * Time.SPFMult);
 				this.normalMass = impulse.Points[pointIndex].NormalMass;
 				this.tangentMass = impulse.Points[pointIndex].TangentMass;
 			}
@@ -502,7 +502,7 @@ namespace Duality
 				// Apply default behaviour to any class that doesn't have an OnCopyTo override
 				if (curType.GetMethod("OnCopyTo", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly, null, new Type[] { typeof(Component) }, null) == null)
 				{
-					SerializationHelper.DeepCopyFieldsExplicit(
+					CloneHelper.DeepCopyFieldsExplicit(
 						curType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly), 
 						this, target, typeof(System.Collections.ICollection));
 				}

@@ -77,6 +77,7 @@ namespace Duality
 		public static readonly PropertyInfo	Property_Collider_LinearDamping;
 		public static readonly PropertyInfo	Property_Collider_AngularDamping;
 		public static readonly PropertyInfo	Property_Collider_Shapes;
+		public static readonly PropertyInfo	Property_Collider_Joints;
 		public static readonly PropertyInfo	Property_Collider_BoundRadius;
 
 		public static readonly PropertyInfo	Property_Collider_ShapeInfo_Parent;
@@ -222,6 +223,7 @@ namespace Duality
 			Property_Collider_LinearDamping		= collider.GetProperty("LinearDamping");
 			Property_Collider_AngularDamping	= collider.GetProperty("AngularDamping");
 			Property_Collider_Shapes			= collider.GetProperty("Shapes");
+			Property_Collider_Joints			= collider.GetProperty("Joints");
 			Property_Collider_BoundRadius		= collider.GetProperty("BoundRadius");
 
 			Type colliderShapeInfo = typeof(Collider.ShapeInfo);

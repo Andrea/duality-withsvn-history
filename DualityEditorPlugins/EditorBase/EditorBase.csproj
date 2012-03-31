@@ -63,6 +63,7 @@
       <DependentUpon>CamView.cs</DependentUpon>
     </Compile>
     <Compile Include="CamViewStates\CamViewState.cs" />
+    <Compile Include="CamViewStates\ColliderEditorCamViewState.SelObj.cs" />
     <Compile Include="EditorBasePlugin.cs" />
     <Compile Include="AudioDataFileImporter.cs" />
     <Compile Include="FontFileImporter.cs">
@@ -85,6 +86,7 @@
     <Compile Include="PropertyEditors\Components\CameraRenderPassPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Components\ColliderPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Components\ColliderShapePropertyEditor.cs" />
+    <Compile Include="PropertyEditors\Components\ColliderJointPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Components\RendererPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Components\SoundEmitterPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Components\TextRendererPropertyEditor.cs" />

@@ -112,7 +112,7 @@ namespace Duality.Resources
 		{
 			if (current.ResWeak != null)
 			{
-				physicsWorld.Gravity = current.ResWeak.GlobalGravity * 0.01f / Time.SPFMult;
+				physicsWorld.Gravity = PhysicsConvert.ToPhysicalUnit(current.ResWeak.GlobalGravity / Time.SPFMult);
 				foreach (GameObject o in current.ResWeak.ActiveObjects) o.OnActivate();
 			}
 			if (Entered != null) Entered(current, null);
@@ -217,7 +217,7 @@ namespace Duality.Resources
 			set
 			{
 				this.globalGravity = value;
-				if (this.IsCurrent) physicsWorld.Gravity = value * 0.01f / Time.SPFMult;
+				if (this.IsCurrent) physicsWorld.Gravity = PhysicsConvert.ToPhysicalUnit(value / Time.SPFMult);
 			}
 		}
 		/// <summary>

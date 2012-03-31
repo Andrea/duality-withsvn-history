@@ -20,7 +20,7 @@ namespace Duality.Components
 	/// </summary>
 	[Serializable]
 	[RequiredComponent(typeof(Transform))]
-	public class Collider : Component, ICmpInitializable, ICmpUpdatable, ITransformUpdater
+	public partial class Collider : Component, ICmpInitializable, ICmpUpdatable, ITransformUpdater
 	{
 		/// <summary>
 		/// The type of a <see cref="Collider">Colliders</see> physical body.
@@ -36,298 +36,6 @@ namespace Duality.Components
 			/// </summary>
 			Dynamic
 		}
-
-		/// <summary>
-		/// Describes a <see cref="Collider">Colliders</see> primitive shape. A Colliders overall shape may be combined of any number of primitive shapes.
-		/// </summary>
-		[Serializable]
-		public abstract class ShapeInfo
-		{
-			[NonSerialized]	
-			protected	Fixture		fixture		= null;
-			private		Collider	parent		= null;
-			private		float		density		= 1.0f;
-			private		float		friction	= 0.3f;
-			private		float		restitution	= 0.3f;
-			private		bool		sensor		= false;
-			
-			/// <summary>
-			/// [GET] The shape's parent <see cref="Collider"/>.
-			/// </summary>
-			[EditorHintFlags(MemberFlags.Invisible)]
-			public Collider Parent
-			{
-				get { return this.parent; }
-				set 
-				{ 
-					if (this.parent != value)
-					{
-						if (this.parent != null) this.parent.RemoveShape(this);
-						this.parent = value;
-						if (this.parent != null) this.parent.AddShape(this);
-					}
-				}
-			}
-			/// <summary>
-			/// [GET / SET] The shapes density.
-			/// </summary>
-			[EditorHintIncrement(0.05f)]
-			[EditorHintRange(0.0f, 100.0f)]
-			public float Density
-			{
-				get { return this.density; }
-				set 
-				{
-					this.density = value;
-					if (this.parent != null) // Full update to recalculate mass
-						this.parent.UpdateBodyShape();
-					else
-						this.UpdateFixture();
-				}
-			}
-			/// <summary>
-			/// [GET / SET] Whether or not the shape acts as sensor i.e. is not part of a rigid body.
-			/// </summary>
-			public bool IsSensor
-			{
-				get { return this.sensor; }
-				set { this.sensor = value; this.UpdateFixture(); }
-			}
-			/// <summary>
-			/// [GET / SET] The shapes friction value.
-			/// </summary>
-			[EditorHintIncrement(0.05f)]
-			[EditorHintRange(0.0f, 1.0f)]
-			public float Friction
-			{
-				get { return this.friction; }
-				set { this.friction = value; this.UpdateFixture(); }
-			}
-			/// <summary>
-			/// [GET / SET] The shapes restitution value.
-			/// </summary>
-			[EditorHintIncrement(0.05f)]
-			[EditorHintRange(0.0f, 1.0f)]
-			public float Restitution
-			{
-				get { return this.restitution; }
-				set { this.restitution = value; this.UpdateFixture(); }
-			}
-			/// <summary>
-			/// [GET] Returns the Shapes axis-aligned bounding box
-			/// </summary>
-			[EditorHintFlags(MemberFlags.Invisible)]
-			public abstract Rect AABB { get; }
-
-			protected ShapeInfo()
-			{
-			}
-			protected ShapeInfo(float density)
-			{
-				this.density = density;
-			}
-
-			internal void DestroyFixture(Body body)
-			{
-				if (this.fixture == null) return;
-				body.DestroyFixture(this.fixture);
-			}
-			internal abstract void CreateFixture(Body body);
-			internal virtual void UpdateFixture()
-			{
-				this.fixture.Shape.Density = this.density;
-				this.fixture.IsSensor = this.sensor;
-				this.fixture.Restitution = this.restitution;
-				this.fixture.Friction = this.friction;
-			}
-
-			/// <summary>
-			/// Copies this ShapeInfos data to another one. It is assumed that both are of the same type.
-			/// </summary>
-			/// <param name="target"></param>
-			protected virtual void CopyTo(ShapeInfo target)
-			{
-				// Don't copy the parent!
-				target.density = this.density;
-				target.sensor = this.sensor;
-				target.friction = this.friction;
-				target.restitution = this.restitution;
-			}
-			/// <summary>
-			/// Clones the ShapeInfo.
-			/// </summary>
-			/// <returns></returns>
-			public ShapeInfo Clone()
-			{
-				ShapeInfo newObj = ReflectionHelper.CreateInstanceOf(this.GetType()) as ShapeInfo;
-				this.CopyTo(newObj);
-				return newObj;
-			}
-		}
-		/// <summary>
-		/// Describes a <see cref="Collider">Colliders</see> circle shape.
-		/// </summary>
-		[Serializable]
-		public sealed class CircleShapeInfo : ShapeInfo
-		{
-			private	float	radius;
-			private	Vector2	position;
-
-			/// <summary>
-			/// [GET / SET] The circles radius.
-			/// </summary>
-			[EditorHintIncrement(1)]
-			[EditorHintDecimalPlaces(1)]
-			public float Radius
-			{
-				get { return this.radius; }
-				set { this.radius = value; this.UpdateFixture(); }
-			}
-			/// <summary>
-			/// [GET / SET] The circles position.
-			/// </summary>
-			[EditorHintIncrement(1)]
-			[EditorHintDecimalPlaces(1)]
-			public Vector2 Position
-			{
-				get { return this.position; }
-				set { this.position = value; this.UpdateFixture(); }
-			}
-			[EditorHintFlags(MemberFlags.Invisible)]
-			public override Rect AABB
-			{
-				get { return Rect.AlignCenter(position.X, position.Y, radius * 2, radius * 2); }
-			}
-
-			public CircleShapeInfo() {}
-			public CircleShapeInfo(float radius, Vector2 position, float density) : base(density)
-			{
-				this.radius = radius;
-				this.position = position;
-			}
-
-			internal override void CreateFixture(Body body)
-			{
-				this.fixture = body.CreateFixture(new CircleShape(1.0f, 1.0f), this);
-			}
-			internal override void UpdateFixture()
-			{
-				base.UpdateFixture();
-
-				if (this.Parent == null) return;
-				Vector2 scale = Vector2.One;
-				if (this.Parent != null && this.Parent.GameObj != null && this.Parent.GameObj.Transform != null)
-					scale = this.Parent.GameObj.Transform.Scale.Xy;
-				float uniformScale = scale.Length / MathF.Sqrt(2.0f);
-
-				CircleShape circle = this.fixture.Shape as CircleShape;
-				circle.Radius = this.radius * uniformScale * 0.01f;
-				circle.Position = new Vector2(this.position.X * scale.X, this.position.Y * scale.Y) * 0.01f;
-			}
-
-			protected override void CopyTo(ShapeInfo target)
-			{
-				base.CopyTo(target);
-				CircleShapeInfo c = target as CircleShapeInfo;
-				c.radius = this.radius;
-				c.position = this.position;
-			}
-		}
-		/// <summary>
-		/// Describes a <see cref="Collider">Colliders</see> polygon shape.
-		/// </summary>
-		[Serializable]
-		public sealed class PolyShapeInfo : ShapeInfo
-		{
-			private	Vector2[]	vertices;
-
-			/// <summary>
-			/// [GET / SET] The polygons vertices.
-			/// </summary>
-			[EditorHintFlags(MemberFlags.ForceWriteback)]
-			[EditorHintIncrement(1)]
-			[EditorHintDecimalPlaces(1)]
-			public Vector2[] Vertices
-			{
-				get { return this.vertices; }
-				set { this.vertices = value; this.UpdateFixture(); }
-			}
-			[EditorHintFlags(MemberFlags.Invisible)]
-			public override Rect AABB
-			{
-				get 
-				{
-					float minX = float.MaxValue;
-					float minY = float.MaxValue;
-					float maxX = float.MinValue;
-					float maxY = float.MinValue;
-					for (int i = 0; i < this.vertices.Length; i++)
-					{
-						minX = MathF.Min(minX, this.vertices[i].X);
-						minY = MathF.Min(minY, this.vertices[i].Y);
-						maxX = MathF.Max(maxX, this.vertices[i].X);
-						maxY = MathF.Max(maxY, this.vertices[i].Y);
-					}
-					return new Rect(minX, minY, maxX - minX, maxY - minY);
-				}
-			}
-			
-			public PolyShapeInfo() {}
-			public PolyShapeInfo(IEnumerable<Vector2> vertices, float density) : base(density)
-			{
-				this.vertices = vertices.ToArray();
-			}
-
-			internal override void CreateFixture(Body body)
-			{
-				FarseerPhysics.Common.Vertices dummy = this.CreateVertices(Vector2.One);
-				this.fixture = body.CreateFixture(new PolygonShape(dummy, 1.0f), this);
-			}
-			internal override void UpdateFixture()
-			{
-				base.UpdateFixture();
-				
-				Vector2 scale = Vector2.One;
-				if (this.Parent != null && this.Parent.GameObj != null && this.Parent.GameObj.Transform != null)
-					scale = this.Parent.GameObj.Transform.Scale.Xy;
-
-				PolygonShape poly = this.fixture.Shape as PolygonShape;
-				poly.Set(this.CreateVertices(scale));
-			}
-			private FarseerPhysics.Common.Vertices CreateVertices(Vector2 scale)
-			{
-				// Sort vertices clockwise before submitting them to Farseer
-				Vector2[] sortedVertices = this.vertices.ToArray();
-				Vector2 centroid = Vector2.Zero;
-				for (int i = 0; i < sortedVertices.Length; i++)
-					centroid += sortedVertices[i];
-				centroid /= sortedVertices.Length;
-				sortedVertices.StableSort(delegate(Vector2 first, Vector2 second)
-				{
-					return MathF.RoundToInt(
-						1000000.0f * MathF.Angle(centroid.X, centroid.Y, first.X, first.Y) - 
-						1000000.0f * MathF.Angle(centroid.X, centroid.Y, second.X, second.Y));
-				});
-
-				// Submit vertices
-				FarseerPhysics.Common.Vertices v = new FarseerPhysics.Common.Vertices(sortedVertices.Length);
-				for (int i = 0; i < sortedVertices.Length; i++)
-				{
-					v.Add(new Vector2(
-						sortedVertices[i].X * scale.X * 0.01f, 
-						sortedVertices[i].Y * scale.Y * 0.01f));
-				}
-				return v;
-			}
-
-			protected override void CopyTo(ShapeInfo target)
-			{
-				base.CopyTo(target);
-				PolyShapeInfo c = target as PolyShapeInfo;
-				c.vertices = this.vertices != null ? (Vector2[])this.vertices.Clone() : null;
-			}
-		}
-
 		private struct ColEvent
 		{
 			public enum EventType
@@ -359,6 +67,8 @@ namespace Duality.Components
 		private	Category	colCat			= Category.Cat1;
 		private	Category	colWith			= Category.All;
 		private	List<ShapeInfo>	shapes		= new List<ShapeInfo>();
+		private	List<JointInfo>	joints		= new List<JointInfo>();
+		[NonSerialized]	private	bool			initialized	= false;
 		[NonSerialized]	private	Body			body		= null;
 		[NonSerialized]	private	List<ColEvent>	eventBuffer	= new List<ColEvent>();
 
@@ -450,7 +160,7 @@ namespace Duality.Components
 		}
 		/// <summary>
 		/// [GET / SET] Enumerates all <see cref="ShapeInfo">primitive shapes</see> which this body consists of.
-		/// If you modify any of the returned ShapeInfos, be sure to call <see cref="UpdateBodyShape"/> afterwards.
+		/// If you modify any of the returned ShapeInfos, be sure to call <see cref="UpdateBody"/> afterwards.
 		/// </summary>
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public IEnumerable<ShapeInfo> Shapes
@@ -460,6 +170,15 @@ namespace Duality.Components
 			{
 				this.SetShapes(value);
 			}
+		}
+		/// <summary>
+		/// [GET] Enumerates all <see cref="JointInfo">joints</see> that are connected to this Collider.
+		/// If you modify any of the returned ShapeInfos, be sure to call <see cref="UpdateBody"/> afterwards.
+		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
+		public IEnumerable<JointInfo> Joints
+		{
+			get { return this.joints; }
 		}
 		/// <summary>
 		/// [GET] The physical bodys bounding radius.
@@ -483,7 +202,7 @@ namespace Duality.Components
 		public Collider()
 		{
 			// Default shape
-			this.AddShape(new CircleShapeInfo(64.0f, Vector2.Zero, 1.0f));
+			this.AddShape(new CircleShapeInfo(128.0f, Vector2.Zero, 1.0f));
 		}
 
 		/// <summary>
@@ -492,7 +211,7 @@ namespace Duality.Components
 		/// <param name="shape"></param>
 		public void AddShape(ShapeInfo shape)
 		{
-			if (shape == null) throw new ArgumentNullException("shapes");
+			if (shape == null) throw new ArgumentNullException("shape");
 			if (this.shapes != null && this.shapes.Contains(shape)) return;
 
 			if (this.shapes == null) this.shapes = new List<ShapeInfo>();
@@ -504,7 +223,7 @@ namespace Duality.Components
 				bool wasEnabled = this.body.Enabled;
 				if (wasEnabled) this.body.Enabled = false;
 
-				shape.CreateFixture(this.body);
+				shape.InitFixture(this.body);
 				this.UpdateBodyShape();
 
 				if (wasEnabled) this.body.Enabled = true;
@@ -516,7 +235,7 @@ namespace Duality.Components
 		/// <param name="shape"></param>
 		public void RemoveShape(ShapeInfo shape)
 		{
-			if (shape == null) throw new ArgumentNullException("shapes");
+			if (shape == null) throw new ArgumentNullException("shape");
 			if (this.shapes == null || !this.shapes.Contains(shape)) return;
 
 			this.shapes.Remove(shape);
@@ -558,6 +277,11 @@ namespace Duality.Components
 				cloned[i] = cloned[i].Clone();
 			shapes = cloned;
 
+			// Disable body during shape update
+			bool wasEnabled = this.body != null && this.body.Enabled;
+			if (wasEnabled) this.body.Enabled = false;
+			
+			// Destroy old shapes
 			if (this.shapes != null)
 			{
 				var oldShapes = this.shapes.ToArray();
@@ -569,9 +293,7 @@ namespace Duality.Components
 				}
 			}
 
-			bool wasEnabled = this.body != null && this.body.Enabled;
-			if (wasEnabled) this.body.Enabled = false;
-
+			// Generate new shapes
 			if (this.shapes == null) this.shapes = new List<ShapeInfo>();
 			foreach (ShapeInfo shape in shapes)
 			{
@@ -580,11 +302,83 @@ namespace Duality.Components
 				this.shapes.Add(shape);
 				shape.Parent = this;
 
-				if (this.body != null) shape.CreateFixture(this.body);
+				if (this.body != null) shape.InitFixture(this.body);
 			}
-
 			this.UpdateBodyShape();
+
+			// Reactivate body after shape update
 			if (wasEnabled) this.body.Enabled = true;
+		}
+		
+		/// <summary>
+		/// Removes an existing joint from the Collider.
+		/// </summary>
+		/// <param name="joint"></param>
+		public void RemoveJoint(JointInfo joint)
+		{
+			if (joint == null) throw new ArgumentNullException("joint");
+			if (this.joints == null || !this.joints.Contains(joint)) return;
+
+			this.joints.Remove(joint);
+			if (joint.ColliderA == this)
+				joint.ColliderA = null;
+			else
+				joint.ColliderB = null;
+
+			joint.DestroyJoint();
+			if (this.body != null) this.UpdateBodyJoints();
+		}
+		/// <summary>
+		/// Adds a new joint to the Collider
+		/// </summary>
+		/// <param name="joint"></param>
+		public void AddJoint(JointInfo joint, Collider other = null)
+		{
+			if (joint == null) throw new ArgumentNullException("joint");
+			if (this.joints != null && this.joints.Contains(joint)) return;
+
+			if (this.joints == null) this.joints = new List<JointInfo>();
+			this.joints.Add(joint);
+
+			if (joint.ColliderA == null || joint.ColliderA == this)
+			{
+				joint.ColliderA = this;
+				joint.ColliderB = other;
+
+				if (this.body != null && (other == null || other.body != null))
+				{
+					joint.InitJoint(this.body, other != null ? other.body : null);
+					this.UpdateBodyJoints();
+				}
+			}
+			else
+			{
+				joint.ColliderB = this;
+				joint.ColliderA = other;
+
+				if (this.body != null && (other == null || other.body != null))
+				{
+					joint.InitJoint(other != null ? other.body : null, this.body);
+					this.UpdateBodyJoints();
+				}
+			}
+		}
+		/// <summary>
+		/// Removes all existing joints from the Collider.
+		/// </summary>
+		public void ClearJoints()
+		{
+			if (this.joints == null) return;
+
+			var oldJoints = this.joints.ToArray();
+			this.joints.Clear();
+			foreach (JointInfo joint in oldJoints)
+			{
+				joint.DestroyJoint();
+				joint.ColliderA = null;
+				joint.ColliderB = null;
+			}
+			this.UpdateBodyJoints();
 		}
 
 		/// <summary>
@@ -594,7 +388,7 @@ namespace Duality.Components
 		public void ApplyLocalImpulse(float angularImpulse)
 		{
 			if (this.body == null) return;
-			this.body.ApplyAngularImpulse(angularImpulse * 0.01f / Time.SPFMult);
+			this.body.ApplyAngularImpulse(angularImpulse / Time.SPFMult);
 		}
 		/// <summary>
 		/// Applies a Transform-local impulse to the objects mass center.
@@ -622,7 +416,7 @@ namespace Duality.Components
 		public void ApplyWorldImpulse(Vector2 impulse)
 		{
 			if (this.body == null) return;
-			this.body.ApplyLinearImpulse(impulse * 0.01f / Time.SPFMult);
+			this.body.ApplyLinearImpulse(PhysicsConvert.ToPhysicalUnit(impulse) / Time.SPFMult);
 		}
 		/// <summary>
 		/// Applies a world impulse to the specified point.
@@ -632,7 +426,7 @@ namespace Duality.Components
 		public void ApplyWorldImpulse(Vector2 impulse, Vector2 applyAt)
 		{
 			if (this.body == null) return;
-			this.body.ApplyLinearImpulse(impulse * 0.01f / Time.SPFMult, applyAt * 0.01f);
+			this.body.ApplyLinearImpulse(PhysicsConvert.ToPhysicalUnit(impulse) / Time.SPFMult, PhysicsConvert.ToPhysicalUnit(applyAt));
 		}
 		
 		/// <summary>
@@ -642,7 +436,7 @@ namespace Duality.Components
 		public void ApplyLocalForce(float angularForce)
 		{
 			if (this.body == null) return;
-			this.body.ApplyTorque(angularForce * 0.01f / Time.SPFMult);
+			this.body.ApplyTorque(angularForce / Time.SPFMult);
 		}
 		/// <summary>
 		/// Applies a Transform-local force to the objects mass center.
@@ -670,7 +464,7 @@ namespace Duality.Components
 		public void ApplyWorldForce(Vector2 force)
 		{
 			if (this.body == null) return;
-			this.body.ApplyForce(force * 0.01f / Time.SPFMult);
+			this.body.ApplyForce(PhysicsConvert.ToPhysicalUnit(force) / Time.SPFMult);
 		}
 		/// <summary>
 		/// Applies a world force to the specified point.
@@ -680,13 +474,10 @@ namespace Duality.Components
 		public void ApplyWorldForce(Vector2 force, Vector2 applyAt)
 		{
 			if (this.body == null) return;
-			this.body.ApplyForce(force * 0.01f / Time.SPFMult, applyAt * 0.01f);
+			this.body.ApplyForce(PhysicsConvert.ToPhysicalUnit(force) / Time.SPFMult, PhysicsConvert.ToPhysicalUnit(applyAt));
 		}
 
-		/// <summary>
-		/// Updates the Colliders internal body shape based on its set of <see cref="ShapeInfo"/> objects.
-		/// </summary>
-		public void UpdateBodyShape()
+		private void UpdateBodyShape()
 		{
 			if (this.body == null) return;
 
@@ -711,7 +502,10 @@ namespace Duality.Components
 		private Body CreateBody()
 		{
 			Body b = new Body(Scene.CurrentPhysics, this);
-			foreach (ShapeInfo s in this.shapes) s.CreateFixture(b);
+			if (this.shapes != null)
+			{
+				foreach (ShapeInfo s in this.shapes) s.InitFixture(b);
+			}
 			return b;
 		}
 		private void InitBody()
@@ -732,8 +526,8 @@ namespace Duality.Components
 
 			if (t != null)
 			{
-				this.body.SetTransform(t.Pos.Xy * 0.01f, t.Angle);
-				this.body.LinearVelocity = t.Vel.Xy * 0.01f / Time.SPFMult;
+				this.body.SetTransform(PhysicsConvert.ToPhysicalUnit(t.Pos.Xy), t.Angle);
+				this.body.LinearVelocity = PhysicsConvert.ToPhysicalUnit(t.Vel.Xy) / Time.SPFMult;
 				this.body.AngularVelocity = t.AngleVel / Time.SPFMult;
 			}
 
@@ -751,6 +545,66 @@ namespace Duality.Components
 			//var testJoint = JointFactory.CreateAngleJoint(
 		}
 
+		private void UpdateBodyJoints()
+		{
+			foreach (JointInfo info in this.joints)
+			{
+				if (!info.IsInitialized) continue;
+				info.UpdateJoint();
+			}
+		}
+		private void CleanupJoints()
+		{
+			foreach (JointInfo j in this.joints)
+				j.DestroyJoint();
+		}
+		private void InitJoints()
+		{
+			if (this.joints == null) return;
+			foreach (JointInfo j in this.joints)
+			{
+				if (j.ColliderA != null && j.ColliderA.body == null) j.ColliderA.InitBody();
+				if (j.ColliderB != null && j.ColliderB.body == null) j.ColliderB.InitBody();
+				j.InitJoint(j.ColliderA.body, j.ColliderB != null ? j.ColliderB.body : null);
+			}
+			this.UpdateBodyJoints();
+		}
+
+		private void Initialize()
+		{
+			if (this.initialized) return;
+
+			this.InitBody();
+			this.GameObj.Transform.RegisterExternalUpdater(this);
+
+			this.initialized = true;
+
+			this.InitJoints();
+		}
+		private void Shutdown()
+		{
+			if (!this.initialized) return;
+			
+			this.CleanupJoints();
+			this.CleanupBody();
+			this.GameObj.Transform.UnregisterExternalUpdater(this);
+
+			this.initialized = false;
+		}
+		private void CleanupInvalidJoints()
+		{
+			for (int i = this.joints.Count - 1; i >= 0; i--)
+			{
+				JointInfo joint = this.joints[i];
+				if (joint.ColliderA != null && joint.ColliderA.Disposed ||
+					joint.ColliderB != null && joint.ColliderB.Disposed)
+				{
+					joint.DestroyJoint();
+					this.RemoveJoint(joint);
+				}
+			}
+		}
+
 		/// <summary>
 		/// Awakes the body if it has been in a resting state that is now being left, such as
 		/// when changing physical properties at runtime. You usually don't need to call this.
@@ -758,6 +612,14 @@ namespace Duality.Components
 		public void AwakeBody()
 		{
 			if (this.body != null) this.body.Awake = true;
+		}
+		/// <summary>
+		/// Updates the Colliders internal body shape and joints.
+		/// </summary>
+		public void UpdateBody()
+		{
+			this.UpdateBodyShape();
+			this.UpdateBodyJoints();
 		}
 
 		/// <summary>
@@ -769,7 +631,7 @@ namespace Duality.Components
 		public ShapeInfo PickShape(Vector2 worldCoord)
 		{
 			if (this.body == null) return null;
-			Vector2 fsWorldCoord = worldCoord * 0.01f;
+			Vector2 fsWorldCoord = PhysicsConvert.ToPhysicalUnit(worldCoord);
 
 			for (int i = 0; i < this.shapes.Count; i++)
 			{
@@ -789,7 +651,7 @@ namespace Duality.Components
 			if (this.body == null) return new List<ShapeInfo>();
 
 			List<ShapeInfo> picked = new List<ShapeInfo>();
-			Vector2 fsWorldCoord = worldCoord * 0.01f;
+			Vector2 fsWorldCoord = PhysicsConvert.ToPhysicalUnit(worldCoord);
 
 			for (int i = 0; i < this.shapes.Count; i++)
 			{
@@ -811,8 +673,8 @@ namespace Duality.Components
 			if (this.body == null) return new List<ShapeInfo>();
 			Vector2 fsTemp;
 			Vector2 fsWorldCoordStep;
-			Vector2 fsWorldCoord = worldCoord * 0.01f;
-			FarseerPhysics.Collision.AABB fsWorldAABB = new FarseerPhysics.Collision.AABB(fsWorldCoord, (worldCoord + size) * 0.01f);
+			Vector2 fsWorldCoord = PhysicsConvert.ToPhysicalUnit(worldCoord);
+			FarseerPhysics.Collision.AABB fsWorldAABB = new FarseerPhysics.Collision.AABB(fsWorldCoord, PhysicsConvert.ToPhysicalUnit(worldCoord + size));
 
 			List<ShapeInfo> picked = new List<ShapeInfo>();
 			for (int i = 0; i < this.shapes.Count; i++)
@@ -836,7 +698,7 @@ namespace Duality.Components
 				fAABBIntersect.LowerBound = Vector2.ComponentMax(fAABB.LowerBound, fsWorldAABB.LowerBound);
 				fAABBIntersect.UpperBound = Vector2.ComponentMin(fAABB.UpperBound, fsWorldAABB.UpperBound);
 
-				fsWorldCoordStep = new Vector2(MathF.Max(this.shapes[i].AABB.w, 1.0f), MathF.Max(this.shapes[i].AABB.h, 1.0f)) * 0.05f * 0.01f;
+				fsWorldCoordStep = PhysicsConvert.ToPhysicalUnit(new Vector2(MathF.Max(this.shapes[i].AABB.w, 1.0f), MathF.Max(this.shapes[i].AABB.h, 1.0f)) * 0.05f);
 				fsTemp = fAABBIntersect.LowerBound;
 				do
 				{
@@ -886,6 +748,8 @@ namespace Duality.Components
 		
 		void ICmpUpdatable.OnUpdate()
 		{
+			this.CleanupInvalidJoints();
+
 			for (int i = 0; i < this.eventBuffer.Count; i++)
 			{
 				ColEvent e = this.eventBuffer[i];
@@ -914,8 +778,14 @@ namespace Duality.Components
 			if (this.bodyType == BodyType.Dynamic)
 			{
 				t.SetTransform(
-					new Vector3(this.body.Position.X * 100.0f, this.body.Position.Y * 100.0f, t.Pos.Z + t.Vel.Z * Time.TimeMult),
-					new Vector3(this.body.LinearVelocity.X * 100.0f * Time.SPFMult, this.body.LinearVelocity.Y * 100.0f * Time.SPFMult, t.Vel.Z),
+					new Vector3(
+						PhysicsConvert.ToDualityUnit(this.body.Position.X), 
+						PhysicsConvert.ToDualityUnit(this.body.Position.Y), 
+						t.Pos.Z + t.Vel.Z * Time.TimeMult),
+					new Vector3(
+						PhysicsConvert.ToDualityUnit(this.body.LinearVelocity.X * Time.SPFMult), 
+						PhysicsConvert.ToDualityUnit(this.body.LinearVelocity.Y * Time.SPFMult), 
+						t.Vel.Z),
 					t.Scale,
 					this.body.Rotation,
 					this.body.AngularVelocity * Time.SPFMult);
@@ -937,9 +807,9 @@ namespace Duality.Components
 		void ITransformUpdater.OnTransformChanged(Transform t, Transform.DirtyFlags changes)
 		{
 			if ((changes & Transform.DirtyFlags.Pos) != Transform.DirtyFlags.None)
-				this.body.Position = t.Pos.Xy * 0.01f;
+				this.body.Position = PhysicsConvert.ToPhysicalUnit(t.Pos.Xy);
 			if ((changes & Transform.DirtyFlags.Vel) != Transform.DirtyFlags.None)
-				this.body.LinearVelocity = t.Vel.Xy * 0.01f / Time.SPFMult;
+				this.body.LinearVelocity = PhysicsConvert.ToPhysicalUnit(t.Vel.Xy) / Time.SPFMult;
 			if ((changes & Transform.DirtyFlags.Angle) != Transform.DirtyFlags.None)
 				this.body.Rotation = t.Angle;
 			if ((changes & Transform.DirtyFlags.AngleVel) != Transform.DirtyFlags.None)
@@ -947,23 +817,32 @@ namespace Duality.Components
 			if ((changes & Transform.DirtyFlags.Scale) != Transform.DirtyFlags.None)
 				this.UpdateBodyShape();
 
-			if (changes != Transform.DirtyFlags.None) this.body.Awake = true;
+			if (changes != Transform.DirtyFlags.None)
+			{
+				// Update joints
+				this.CleanupInvalidJoints();
+				foreach (JointInfo joint in this.joints)
+				{
+					joint.UpdateFromWorld();
+					joint.UpdateJoint();
+				}
+
+				this.body.Awake = true;
+			}
 		}
 		void ICmpInitializable.OnInit(Component.InitContext context)
 		{
 			if (context == InitContext.Activate)
-			{
-				this.InitBody();
-				this.GameObj.Transform.RegisterExternalUpdater(this);
-			}
+				this.Initialize();
+			else if (context == InitContext.Loaded)
+				this.CleanupInvalidJoints();
 		}
 		void ICmpInitializable.OnShutdown(Component.ShutdownContext context)
 		{
 			if (context == ShutdownContext.Deactivate)
-			{
-				this.CleanupBody();
-				this.GameObj.Transform.UnregisterExternalUpdater(this);
-			}
+				this.Shutdown();
+			else if (context == ShutdownContext.Saving)
+				this.CleanupInvalidJoints();
 		}
 
 		internal override void CopyToInternal(Component target)
@@ -971,8 +850,8 @@ namespace Duality.Components
 			base.CopyToInternal(target);
 			Collider c = target as Collider;
 
-			bool wasInitialized = c.body != null;
-			if (wasInitialized) c.CleanupBody();
+			bool wasInitialized = c.initialized;
+			if (wasInitialized) c.Shutdown();
 
 			c.bodyType = this.bodyType;
 			c.linearDamp = this.linearDamp;
@@ -981,11 +860,14 @@ namespace Duality.Components
 			c.ignoreGravity = this.ignoreGravity;
 			c.colCat = this.colCat;
 
-			// Discard old shape list.
-			c.shapes = null;
+			// Discard old shape list and set new.
+			c.ClearShapes();
 			if (this.shapes != null) c.SetShapes(this.shapes);
 
-			if (wasInitialized) c.InitBody();
+			// Do not copy any joints.
+			//c.ClearJoints();
+
+			if (wasInitialized) c.Initialize();
 		}
 		
 		/// <summary>
@@ -996,7 +878,7 @@ namespace Duality.Components
 		/// <returns></returns>
 		public static ShapeInfo PickShapeGlobal(Vector2 worldCoord)
 		{
-			Vector2 fsWorldCoord = worldCoord * 0.01f;
+			Vector2 fsWorldCoord = PhysicsConvert.ToPhysicalUnit(worldCoord);
 			Fixture f = Scene.CurrentPhysics.TestPoint(fsWorldCoord);
 
 			return f != null && f.UserData is ShapeInfo ? (f.UserData as ShapeInfo) : null;
@@ -1009,7 +891,7 @@ namespace Duality.Components
 		/// <returns></returns>
 		public static List<ShapeInfo> PickShapesGlobal(Vector2 worldCoord)
 		{
-			Vector2 fsWorldCoord = worldCoord * 0.01f;
+			Vector2 fsWorldCoord = PhysicsConvert.ToPhysicalUnit(worldCoord);
 			List<Fixture> fixtureList = Scene.CurrentPhysics.TestPointAll(fsWorldCoord);
 			return new List<ShapeInfo>(fixtureList.Where(f => f != null && f.UserData is ShapeInfo).Select(f => f.UserData as ShapeInfo));
 		}

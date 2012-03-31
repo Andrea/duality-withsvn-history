@@ -131,10 +131,10 @@ namespace EditorBase
 		{
 			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game && 
 				this.buttonAutoRefresh.Checked && 
-				Time.MainTimer - this.lastAutoRefresh > 1000.0f)
+				Time.MainTimer - this.lastAutoRefresh > 500.0f)
 			{
 				this.lastAutoRefresh = Time.MainTimer;
-				this.propertyGrid.UpdateFromObjects(100);
+				this.propertyGrid.UpdateFromObjects();
 			}
 		}
 		private void EditorForm_SelectionChanged(object sender, SelectionChangedEventArgs e)

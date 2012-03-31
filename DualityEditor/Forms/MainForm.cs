@@ -1440,7 +1440,17 @@ namespace DualityEditor.Forms
 					}
 					this.OnAfterUpdateDualityApp();
 				}
-				System.Threading.Thread.Sleep(Math.Max(1, 17 - (int)watch.ElapsedMilliseconds));
+
+				// Assure we'll at least wait 16 ms until updating again.
+				while (watch.Elapsed.TotalSeconds < 0.016666d) 
+				{
+					// Go to sleep if we'd have to wait too long
+					if (watch.Elapsed.TotalSeconds < 0.012d)
+						System.Threading.Thread.Sleep(1);
+					// App wants to do something? Stop waiting.
+					else if (!this.AppStillIdle)
+						break;
+				}
 			}
 		}
 		private void Scene_Leaving(object sender, EventArgs e)

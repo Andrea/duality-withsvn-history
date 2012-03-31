@@ -52,6 +52,10 @@ namespace FarseerPhysics.Dynamics.Joints
     {
         public Vector2 LocalAnchorA;
         public Vector2 LocalAnchorB;
+        /// <summary>
+        /// The body2 angle minus body1 angle in the reference state (radians).
+        /// </summary>
+		public float ReferenceAngle;
         private Vector3 _impulse;
         private Mat33 _mass;
 
@@ -91,11 +95,6 @@ namespace FarseerPhysics.Dynamics.Joints
             get { return BodyB.GetWorldPoint(LocalAnchorB); }
             set { Debug.Assert(false, "You can't set the world anchor on this joint type."); }
         }
-
-        /// <summary>
-        /// The body2 angle minus body1 angle in the reference state (radians).
-        /// </summary>
-        public float ReferenceAngle { get; private set; }
 
         public override Vector2 GetReactionForce(float inv_dt)
         {

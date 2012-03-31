@@ -368,6 +368,56 @@ namespace Duality
 		{
 			this.DrawLine(x, y, 0, x2, y2, 0);
 		}
+		/// <summary>
+		/// Draws a thick, three-dimensional line.
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="z"></param>
+		/// <param name="x2"></param>
+		/// <param name="y2"></param>
+		/// <param name="z2"></param>
+		public void DrawThickLine(float x, float y, float z, float x2, float y2, float z2, float width)
+		{
+			Vector3 pos = new Vector3(x, y, z);
+			Vector3 target = new Vector3(x2, y2, z2);
+			float scale = 1.0f;
+			float scale2 = 1.0f;
+			
+			device.PreprocessCoords(ref pos, ref scale);
+			device.PreprocessCoords(ref target, ref scale2);
+
+			Vector2 dir = (target.Xy - pos.Xy).Normalized;
+			Vector2 left = dir.PerpendicularLeft * width * 0.5f * scale;
+			Vector2 right = dir.PerpendicularRight * width * 0.5f * scale;
+			Vector2 left2 = dir.PerpendicularLeft * width * 0.5f * scale2;
+			Vector2 right2 = dir.PerpendicularRight * width * 0.5f * scale2;
+
+			Vector2 shapeHandle = pos.Xy;
+			ColorRgba shapeColor = this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor;
+			VertexC1P3[] vertices = new VertexC1P3[4];
+			vertices[0].pos = pos + new Vector3(left);
+			vertices[1].pos = target + new Vector3(left2);
+			vertices[2].pos = target + new Vector3(right2);
+			vertices[3].pos = pos + new Vector3(right);
+			vertices[0].clr = shapeColor;
+			vertices[1].clr = shapeColor;
+			vertices[2].clr = shapeColor;
+			vertices[3].clr = shapeColor;
+			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
+			device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.LineLoop, vertices);
+		}
+		/// <summary>
+		/// Draws a thick, flat line.
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="x2"></param>
+		/// <param name="y2"></param>
+		public void DrawThickLine(float x, float y, float x2, float y2, float width)
+		{
+			this.DrawThickLine(x, y, 0, x2, y2, 0, width);
+		}
 
 		/// <summary>
 		/// Draws a rectangle.
@@ -517,6 +567,57 @@ namespace Duality
 
 			this.CurrentState.TransformVertices(vertices, pos.Xy, scale);
 			this.device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.Polygon, vertices);
+		}
+
+		/// <summary>
+		/// Fills a three-dimensional line.
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="z"></param>
+		/// <param name="x2"></param>
+		/// <param name="y2"></param>
+		/// <param name="z2"></param>
+		public void FillThickLine(float x, float y, float z, float x2, float y2, float z2, float width)
+		{
+			Vector3 pos = new Vector3(x, y, z);
+			Vector3 target = new Vector3(x2, y2, z2);
+			float scale = 1.0f;
+			float scale2 = 1.0f;
+			
+			device.PreprocessCoords(ref pos, ref scale);
+			device.PreprocessCoords(ref target, ref scale2);
+
+			Vector2 dir = (target.Xy - pos.Xy).Normalized;
+			Vector2 left = dir.PerpendicularLeft * width * 0.5f * scale;
+			Vector2 right = dir.PerpendicularRight * width * 0.5f * scale;
+			Vector2 left2 = dir.PerpendicularLeft * width * 0.5f * scale2;
+			Vector2 right2 = dir.PerpendicularRight * width * 0.5f * scale2;
+
+			Vector2 shapeHandle = pos.Xy;
+			ColorRgba shapeColor = this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor;
+			VertexC1P3[] vertices = new VertexC1P3[4];
+			vertices[0].pos = pos + new Vector3(left);
+			vertices[1].pos = target + new Vector3(left2);
+			vertices[2].pos = target + new Vector3(right2);
+			vertices[3].pos = pos + new Vector3(right);
+			vertices[0].clr = shapeColor;
+			vertices[1].clr = shapeColor;
+			vertices[2].clr = shapeColor;
+			vertices[3].clr = shapeColor;
+			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
+			device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.Quads, vertices);
+		}
+		/// <summary>
+		/// Fills a thick, flat line.
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="x2"></param>
+		/// <param name="y2"></param>
+		public void FillThickLine(float x, float y, float x2, float y2, float width)
+		{
+			this.FillThickLine(x, y, 0, x2, y2, 0, width);
 		}
 
 		/// <summary>
