@@ -878,6 +878,11 @@ namespace EditorBase
 						foreach (Component newComponent in componentQuery)
 						{
 							if (newComponent.GameObj != null) continue;
+
+							// Make sure all requirements are met
+							foreach (Type t in newComponent.GetRequiredComponents())
+								dropObj.AddComponent(t);
+
 							dropObj.AddComponent(newComponent);
 							if (newComponent.GameObj == dropObj)
 								newNodes.Add(this.objectView.FindNode(this.objectModel.GetPath(this.FindNode(newComponent))));
