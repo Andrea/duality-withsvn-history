@@ -13,16 +13,16 @@ namespace Duality.ObjectManagers
 	/// If a registered object has been disposed, it will be automatically unregistered.
 	/// </summary>
 	[Serializable]
-	public class RendererManager : ObjectManager<Renderer>
+	public class RendererManager : ObjectManager<Component>
 	{
 		/// <summary>
 		/// Enumerates all <see cref="Duality.Components.Renderer">Renderers</see> that are visible to the specified <see cref="IDrawDevice"/>.
 		/// </summary>
 		/// <param name="device"></param>
 		/// <returns></returns>
-		public IEnumerable<Renderer> QueryVisible(IDrawDevice device)
+		public IEnumerable<ICmpRenderer> QueryVisible(IDrawDevice device)
 		{
-			foreach (Renderer r in this.ActiveObjects)
+			foreach (ICmpRenderer r in this.ActiveObjects)
 			{
 				if (r.IsVisible(device))
 					yield return r;

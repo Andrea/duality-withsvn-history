@@ -5247,6 +5247,68 @@
             Provides Reflection data on Properties and Fields.
             </summary>
         </member>
+        <!-- Ungültiger XML-Kommentar wurde für den Member "T:Duality.CloneHelper" ignoriert -->
+        <member name="M:Duality.CloneHelper.IsSafeAssignType(System.Type)">
+            <summary>
+            Returns whether the specified type may just be assigned in a clone operation (even if deep)
+            instead of being investigated further.
+            </summary>
+            <param name="t"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.CloneHelper.DeepCloneObject``1(``0)">
+            <summary>
+            Creates a deep clone of an object.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="instance"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.CloneHelper.DeepCloneObject(System.Object)">
+            <summary>
+            Creates a deep clone of an object.
+            </summary>
+            <param name="instance"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.CloneHelper.DeepCloneObjectExplicit``1(``0,System.Type[])">
+            <summary>
+            Creates a deep clone of an object but considering only specific Types for "unwrapping".
+            References regarding other Types are treated as references, and therefor aren't cloned.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="instance"></param>
+            <param name="unwrapTypes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.CloneHelper.DeepCloneObjectExplicit(System.Object,System.Type[])">
+            <summary>
+            Creates a deep clone of an object but considering only specific Types for "unwrapping".
+            References regarding other Types are treated as references, and therefor aren't cloned.
+            </summary>
+            <param name="instance"></param>
+            <param name="unwrapTypes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.CloneHelper.DeepCopyFields(System.Reflection.FieldInfo[],System.Object,System.Object)">
+            <summary>
+            Copies the specified fields from one object to another, deep-cloning all referenced objects.
+            </summary>
+            <param name="fields"></param>
+            <param name="source"></param>
+            <param name="target"></param>
+        </member>
+        <member name="M:Duality.CloneHelper.DeepCopyFieldsExplicit(System.Reflection.FieldInfo[],System.Object,System.Object,System.Type[])">
+            <summary>
+            Copies the specified fields from one object to another, but considering only specific 
+            Types for "unwrapping". References regarding other Types are treated as references, 
+            and therefor aren't cloned.
+            </summary>
+            <param name="fields"></param>
+            <param name="source"></param>
+            <param name="target"></param>
+            <param name="unwrapTypes"></param>
+        </member>
         <member name="T:Duality.Components.Renderers.TextRenderer">
             <summary>
             Renders a text to represent the <see cref="T:Duality.GameObject"/>.
@@ -6694,6 +6756,333 @@
             <param name="splitLevel">The hierarchy level at which to perform the split operation.</param>
             <returns></returns>
         </member>
+        <member name="T:Duality.Components.Collider">
+            <summary>
+            Represents a body instance for physical simulation, collision detection and response.
+            </summary>
+        </member>
+        <member name="M:Duality.Components.Collider.AddShape(Duality.Components.Collider.ShapeInfo)">
+            <summary>
+            Adds a new shape to the Collider
+            </summary>
+            <param name="shape"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.RemoveShape(Duality.Components.Collider.ShapeInfo)">
+            <summary>
+            Removes an existing shape from the Collider.
+            </summary>
+            <param name="shape"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.ClearShapes">
+            <summary>
+            Removes all existing shapes from the Collider.
+            </summary>
+        </member>
+        <member name="M:Duality.Components.Collider.SetShapes(System.Collections.Generic.IEnumerable{Duality.Components.Collider.ShapeInfo})">
+            <summary>
+            Sets the Colliders shape.
+            </summary>
+            <param name="shapes"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.RemoveJoint(Duality.Components.Collider.JointInfo)">
+            <summary>
+            Removes an existing joint from the Collider.
+            </summary>
+            <param name="joint"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.AddJoint(Duality.Components.Collider.JointInfo,Duality.Components.Collider)">
+            <summary>
+            Adds a new joint to the Collider
+            </summary>
+            <param name="joint"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.ClearJoints">
+            <summary>
+            Removes all existing joints from the Collider.
+            </summary>
+        </member>
+        <member name="M:Duality.Components.Collider.ApplyLocalImpulse(System.Single)">
+            <summary>
+            Applies a Transform-local angular impulse to the object.
+            </summary>
+            <param name="angularImpulse"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.ApplyLocalImpulse(OpenTK.Vector2)">
+            <summary>
+            Applies a Transform-local impulse to the objects mass center.
+            </summary>
+            <param name="impulse"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.ApplyLocalImpulse(OpenTK.Vector2,OpenTK.Vector2)">
+            <summary>
+            Applies a Transform-local impulse to the specified point.
+            </summary>
+            <param name="impulse"></param>
+            <param name="applyAt"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.ApplyWorldImpulse(OpenTK.Vector2)">
+            <summary>
+            Applies a world impulse to the objects mass center.
+            </summary>
+            <param name="impulse"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.ApplyWorldImpulse(OpenTK.Vector2,OpenTK.Vector2)">
+            <summary>
+            Applies a world impulse to the specified point.
+            </summary>
+            <param name="impulse"></param>
+            <param name="applyAt"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.ApplyLocalForce(System.Single)">
+            <summary>
+            Applies a Transform-local angular force to the object.
+            </summary>
+            <param name="angularForce"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.ApplyLocalForce(OpenTK.Vector2)">
+            <summary>
+            Applies a Transform-local force to the objects mass center.
+            </summary>
+            <param name="force"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.ApplyLocalForce(OpenTK.Vector2,OpenTK.Vector2)">
+            <summary>
+            Applies a Transform-local force to the specified point.
+            </summary>
+            <param name="force"></param>
+            <param name="applyAt"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.ApplyWorldForce(OpenTK.Vector2)">
+            <summary>
+            Applies a world force to the objects mass center.
+            </summary>
+            <param name="force"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.ApplyWorldForce(OpenTK.Vector2,OpenTK.Vector2)">
+            <summary>
+            Applies a world force to the specified point.
+            </summary>
+            <param name="force"></param>
+            <param name="applyAt"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.AwakeBody">
+            <summary>
+            Awakes the body if it has been in a resting state that is now being left, such as
+            when changing physical properties at runtime. You usually don't need to call this.
+            </summary>
+        </member>
+        <member name="M:Duality.Components.Collider.UpdateBody">
+            <summary>
+            Updates the Colliders internal body shape and joints.
+            </summary>
+        </member>
+        <member name="M:Duality.Components.Collider.PickShape(OpenTK.Vector2)">
+            <summary>
+            Performs a physical picking operation and returns the <see cref="T:Duality.Components.Collider.ShapeInfo">shape</see> in which
+            the specified world coordinate is located in.
+            </summary>
+            <param name="worldCoord"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Components.Collider.PickShapes(OpenTK.Vector2)">
+            <summary>
+            Performs a physical picking operation and returns the <see cref="T:Duality.Components.Collider.ShapeInfo">shapes</see> that
+            intersect the specified world coordinate.
+            </summary>
+            <param name="worldCoord"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Components.Collider.PickShapes(OpenTK.Vector2,OpenTK.Vector2)">
+            <summary>
+            Performs a physical picking operation and returns the <see cref="T:Duality.Components.Collider.ShapeInfo">shapes</see> that
+            intersect the specified world coordinate area.
+            </summary>
+            <param name="worldCoord"></param>
+            <param name="size"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Components.Collider.PickShapeGlobal(OpenTK.Vector2)">
+            <summary>
+            Performs a global physical picking operation and returns the <see cref="T:Duality.Components.Collider.ShapeInfo">shape</see> in which
+            the specified world coordinate is located in.
+            </summary>
+            <param name="worldCoord"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Components.Collider.PickShapesGlobal(OpenTK.Vector2)">
+            <summary>
+            Performs a global physical picking operation and returns the <see cref="T:Duality.Components.Collider.ShapeInfo">shapes</see> that
+            intersect the specified world coordinate.
+            </summary>
+            <param name="worldCoord"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Components.Collider.PickShapesGlobal(OpenTK.Vector2,OpenTK.Vector2)">
+            <summary>
+            Performs a global physical picking operation and returns the <see cref="T:Duality.Components.Collider.ShapeInfo">shapes</see> that
+            intersect the specified world coordinate area.
+            </summary>
+            <param name="worldCoord"></param>
+            <param name="size"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Duality.Components.Collider.PhysicsBodyType">
+            <summary>
+            [GET / SET] The type of the physical body.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.LinearDamping">
+            <summary>
+            [GET / SET] The damping that is applied to the bodies velocity.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.AngularDamping">
+            <summary>
+            [GET / SET] The damping that is applied to the bodies angular velocity.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.FixedAngle">
+            <summary>
+            [GET / SET] Whether the bodies rotation is fixed.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.IgnoreGravity">
+            <summary>
+            [GET / SET] Whether the body ignores gravity.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.CollisionCategory">
+            <summary>
+            [GET / SET] A bitmask that specifies the collision categories to which this Collider belongs.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.CollidesWith">
+            <summary>
+            [GET / SET] A bitmask that specifies which collision categories this Collider interacts with.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.Shapes">
+            <summary>
+            [GET / SET] Enumerates all <see cref="T:Duality.Components.Collider.ShapeInfo">primitive shapes</see> which this body consists of.
+            If you modify any of the returned ShapeInfos, be sure to call <see cref="M:Duality.Components.Collider.UpdateBody"/> afterwards.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.Joints">
+            <summary>
+            [GET] Enumerates all <see cref="T:Duality.Components.Collider.JointInfo">joints</see> that are connected to this Collider.
+            If you modify any of the returned ShapeInfos, be sure to call <see cref="M:Duality.Components.Collider.UpdateBody"/> afterwards.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.BoundRadius">
+            <summary>
+            [GET] The physical bodys bounding radius.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Collider.ShapeInfo">
+            <summary>
+            Describes a <see cref="T:Duality.Components.Collider">Colliders</see> primitive shape. A Colliders overall shape may be combined of any number of primitive shapes.
+            </summary>
+        </member>
+        <member name="M:Duality.Components.Collider.ShapeInfo.CopyTo(Duality.Components.Collider.ShapeInfo)">
+            <summary>
+            Copies this ShapeInfos data to another one. It is assumed that both are of the same type.
+            </summary>
+            <param name="target"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.ShapeInfo.Clone">
+            <summary>
+            Clones the ShapeInfo.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Duality.Components.Collider.ShapeInfo.Parent">
+            <summary>
+            [GET] The shape's parent <see cref="T:Duality.Components.Collider"/>.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.ShapeInfo.Density">
+            <summary>
+            [GET / SET] The shapes density.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.ShapeInfo.IsSensor">
+            <summary>
+            [GET / SET] Whether or not the shape acts as sensor i.e. is not part of a rigid body.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.ShapeInfo.Friction">
+            <summary>
+            [GET / SET] The shapes friction value.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.ShapeInfo.Restitution">
+            <summary>
+            [GET / SET] The shapes restitution value.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.ShapeInfo.AABB">
+            <summary>
+            [GET] Returns the Shapes axis-aligned bounding box
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Collider.CircleShapeInfo">
+            <summary>
+            Describes a <see cref="T:Duality.Components.Collider">Colliders</see> circle shape.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.CircleShapeInfo.Radius">
+            <summary>
+            [GET / SET] The circles radius.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.CircleShapeInfo.Position">
+            <summary>
+            [GET / SET] The circles position.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Collider.PolyShapeInfo">
+            <summary>
+            Describes a <see cref="T:Duality.Components.Collider">Colliders</see> polygon shape.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.PolyShapeInfo.Vertices">
+            <summary>
+            [GET / SET] The polygons vertices.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Collider.BodyType">
+            <summary>
+            The type of a <see cref="T:Duality.Components.Collider">Colliders</see> physical body.
+            </summary>
+        </member>
+        <member name="F:Duality.Components.Collider.BodyType.Static">
+            <summary>
+            A static body. It will never move due to physical forces.
+            </summary>
+        </member>
+        <member name="F:Duality.Components.Collider.BodyType.Dynamic">
+            <summary>
+            A dynamic body. Its movement is determined by physical effects.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Collider.JointInfo">
+            <summary>
+            Describes a <see cref="T:Duality.Components.Collider"/> joint. Joints limit a Colliders degree of freedom 
+            by connecting it to fixed world coordinates or other Colliders.
+            </summary>
+        </member>
+        <member name="M:Duality.Components.Collider.JointInfo.CopyTo(Duality.Components.Collider.JointInfo)">
+            <summary>
+            Copies this JointInfos data to another one. It is assumed that both are of the same type.
+            </summary>
+            <param name="target"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.JointInfo.Clone">
+            <summary>
+            Clones the JointInfo.
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:Duality.Resources.Prefab">
             <summary>
             Prefab is short for "prefabricated object" and encapsulates a single <see cref="T:Duality.GameObject"/> that can serve as a template.
@@ -7980,333 +8369,6 @@
             [GET / SET] The 3d offset of the emitted sound relative to the GameObject.
             </summary>
         </member>
-        <member name="T:Duality.Components.Collider">
-            <summary>
-            Represents a body instance for physical simulation, collision detection and response.
-            </summary>
-        </member>
-        <member name="M:Duality.Components.Collider.AddShape(Duality.Components.Collider.ShapeInfo)">
-            <summary>
-            Adds a new shape to the Collider
-            </summary>
-            <param name="shape"></param>
-        </member>
-        <member name="M:Duality.Components.Collider.RemoveShape(Duality.Components.Collider.ShapeInfo)">
-            <summary>
-            Removes an existing shape from the Collider.
-            </summary>
-            <param name="shape"></param>
-        </member>
-        <member name="M:Duality.Components.Collider.ClearShapes">
-            <summary>
-            Removes all existing shapes from the Collider.
-            </summary>
-        </member>
-        <member name="M:Duality.Components.Collider.SetShapes(System.Collections.Generic.IEnumerable{Duality.Components.Collider.ShapeInfo})">
-            <summary>
-            Sets the Colliders shape.
-            </summary>
-            <param name="shapes"></param>
-        </member>
-        <member name="M:Duality.Components.Collider.RemoveJoint(Duality.Components.Collider.JointInfo)">
-            <summary>
-            Removes an existing joint from the Collider.
-            </summary>
-            <param name="joint"></param>
-        </member>
-        <member name="M:Duality.Components.Collider.AddJoint(Duality.Components.Collider.JointInfo,Duality.Components.Collider)">
-            <summary>
-            Adds a new joint to the Collider
-            </summary>
-            <param name="joint"></param>
-        </member>
-        <member name="M:Duality.Components.Collider.ClearJoints">
-            <summary>
-            Removes all existing joints from the Collider.
-            </summary>
-        </member>
-        <member name="M:Duality.Components.Collider.ApplyLocalImpulse(System.Single)">
-            <summary>
-            Applies a Transform-local angular impulse to the object.
-            </summary>
-            <param name="angularImpulse"></param>
-        </member>
-        <member name="M:Duality.Components.Collider.ApplyLocalImpulse(OpenTK.Vector2)">
-            <summary>
-            Applies a Transform-local impulse to the objects mass center.
-            </summary>
-            <param name="impulse"></param>
-        </member>
-        <member name="M:Duality.Components.Collider.ApplyLocalImpulse(OpenTK.Vector2,OpenTK.Vector2)">
-            <summary>
-            Applies a Transform-local impulse to the specified point.
-            </summary>
-            <param name="impulse"></param>
-            <param name="applyAt"></param>
-        </member>
-        <member name="M:Duality.Components.Collider.ApplyWorldImpulse(OpenTK.Vector2)">
-            <summary>
-            Applies a world impulse to the objects mass center.
-            </summary>
-            <param name="impulse"></param>
-        </member>
-        <member name="M:Duality.Components.Collider.ApplyWorldImpulse(OpenTK.Vector2,OpenTK.Vector2)">
-            <summary>
-            Applies a world impulse to the specified point.
-            </summary>
-            <param name="impulse"></param>
-            <param name="applyAt"></param>
-        </member>
-        <member name="M:Duality.Components.Collider.ApplyLocalForce(System.Single)">
-            <summary>
-            Applies a Transform-local angular force to the object.
-            </summary>
-            <param name="angularForce"></param>
-        </member>
-        <member name="M:Duality.Components.Collider.ApplyLocalForce(OpenTK.Vector2)">
-            <summary>
-            Applies a Transform-local force to the objects mass center.
-            </summary>
-            <param name="force"></param>
-        </member>
-        <member name="M:Duality.Components.Collider.ApplyLocalForce(OpenTK.Vector2,OpenTK.Vector2)">
-            <summary>
-            Applies a Transform-local force to the specified point.
-            </summary>
-            <param name="force"></param>
-            <param name="applyAt"></param>
-        </member>
-        <member name="M:Duality.Components.Collider.ApplyWorldForce(OpenTK.Vector2)">
-            <summary>
-            Applies a world force to the objects mass center.
-            </summary>
-            <param name="force"></param>
-        </member>
-        <member name="M:Duality.Components.Collider.ApplyWorldForce(OpenTK.Vector2,OpenTK.Vector2)">
-            <summary>
-            Applies a world force to the specified point.
-            </summary>
-            <param name="force"></param>
-            <param name="applyAt"></param>
-        </member>
-        <member name="M:Duality.Components.Collider.AwakeBody">
-            <summary>
-            Awakes the body if it has been in a resting state that is now being left, such as
-            when changing physical properties at runtime. You usually don't need to call this.
-            </summary>
-        </member>
-        <member name="M:Duality.Components.Collider.UpdateBody">
-            <summary>
-            Updates the Colliders internal body shape and joints.
-            </summary>
-        </member>
-        <member name="M:Duality.Components.Collider.PickShape(OpenTK.Vector2)">
-            <summary>
-            Performs a physical picking operation and returns the <see cref="T:Duality.Components.Collider.ShapeInfo">shape</see> in which
-            the specified world coordinate is located in.
-            </summary>
-            <param name="worldCoord"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.Components.Collider.PickShapes(OpenTK.Vector2)">
-            <summary>
-            Performs a physical picking operation and returns the <see cref="T:Duality.Components.Collider.ShapeInfo">shapes</see> that
-            intersect the specified world coordinate.
-            </summary>
-            <param name="worldCoord"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.Components.Collider.PickShapes(OpenTK.Vector2,OpenTK.Vector2)">
-            <summary>
-            Performs a physical picking operation and returns the <see cref="T:Duality.Components.Collider.ShapeInfo">shapes</see> that
-            intersect the specified world coordinate area.
-            </summary>
-            <param name="worldCoord"></param>
-            <param name="size"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.Components.Collider.PickShapeGlobal(OpenTK.Vector2)">
-            <summary>
-            Performs a global physical picking operation and returns the <see cref="T:Duality.Components.Collider.ShapeInfo">shape</see> in which
-            the specified world coordinate is located in.
-            </summary>
-            <param name="worldCoord"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.Components.Collider.PickShapesGlobal(OpenTK.Vector2)">
-            <summary>
-            Performs a global physical picking operation and returns the <see cref="T:Duality.Components.Collider.ShapeInfo">shapes</see> that
-            intersect the specified world coordinate.
-            </summary>
-            <param name="worldCoord"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.Components.Collider.PickShapesGlobal(OpenTK.Vector2,OpenTK.Vector2)">
-            <summary>
-            Performs a global physical picking operation and returns the <see cref="T:Duality.Components.Collider.ShapeInfo">shapes</see> that
-            intersect the specified world coordinate area.
-            </summary>
-            <param name="worldCoord"></param>
-            <param name="size"></param>
-            <returns></returns>
-        </member>
-        <member name="P:Duality.Components.Collider.PhysicsBodyType">
-            <summary>
-            [GET / SET] The type of the physical body.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Collider.LinearDamping">
-            <summary>
-            [GET / SET] The damping that is applied to the bodies velocity.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Collider.AngularDamping">
-            <summary>
-            [GET / SET] The damping that is applied to the bodies angular velocity.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Collider.FixedAngle">
-            <summary>
-            [GET / SET] Whether the bodies rotation is fixed.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Collider.IgnoreGravity">
-            <summary>
-            [GET / SET] Whether the body ignores gravity.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Collider.CollisionCategory">
-            <summary>
-            [GET / SET] A bitmask that specifies the collision categories to which this Collider belongs.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Collider.CollidesWith">
-            <summary>
-            [GET / SET] A bitmask that specifies which collision categories this Collider interacts with.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Collider.Shapes">
-            <summary>
-            [GET / SET] Enumerates all <see cref="T:Duality.Components.Collider.ShapeInfo">primitive shapes</see> which this body consists of.
-            If you modify any of the returned ShapeInfos, be sure to call <see cref="M:Duality.Components.Collider.UpdateBody"/> afterwards.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Collider.Joints">
-            <summary>
-            [GET] Enumerates all <see cref="T:Duality.Components.Collider.JointInfo">joints</see> that are connected to this Collider.
-            If you modify any of the returned ShapeInfos, be sure to call <see cref="M:Duality.Components.Collider.UpdateBody"/> afterwards.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Collider.BoundRadius">
-            <summary>
-            [GET] The physical bodys bounding radius.
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Collider.BodyType">
-            <summary>
-            The type of a <see cref="T:Duality.Components.Collider">Colliders</see> physical body.
-            </summary>
-        </member>
-        <member name="F:Duality.Components.Collider.BodyType.Static">
-            <summary>
-            A static body. It will never move due to physical forces.
-            </summary>
-        </member>
-        <member name="F:Duality.Components.Collider.BodyType.Dynamic">
-            <summary>
-            A dynamic body. Its movement is determined by physical effects.
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Collider.ShapeInfo">
-            <summary>
-            Describes a <see cref="T:Duality.Components.Collider">Colliders</see> primitive shape. A Colliders overall shape may be combined of any number of primitive shapes.
-            </summary>
-        </member>
-        <member name="M:Duality.Components.Collider.ShapeInfo.CopyTo(Duality.Components.Collider.ShapeInfo)">
-            <summary>
-            Copies this ShapeInfos data to another one. It is assumed that both are of the same type.
-            </summary>
-            <param name="target"></param>
-        </member>
-        <member name="M:Duality.Components.Collider.ShapeInfo.Clone">
-            <summary>
-            Clones the ShapeInfo.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="P:Duality.Components.Collider.ShapeInfo.Parent">
-            <summary>
-            [GET] The shape's parent <see cref="T:Duality.Components.Collider"/>.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Collider.ShapeInfo.Density">
-            <summary>
-            [GET / SET] The shapes density.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Collider.ShapeInfo.IsSensor">
-            <summary>
-            [GET / SET] Whether or not the shape acts as sensor i.e. is not part of a rigid body.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Collider.ShapeInfo.Friction">
-            <summary>
-            [GET / SET] The shapes friction value.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Collider.ShapeInfo.Restitution">
-            <summary>
-            [GET / SET] The shapes restitution value.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Collider.ShapeInfo.AABB">
-            <summary>
-            [GET] Returns the Shapes axis-aligned bounding box
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Collider.CircleShapeInfo">
-            <summary>
-            Describes a <see cref="T:Duality.Components.Collider">Colliders</see> circle shape.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Collider.CircleShapeInfo.Radius">
-            <summary>
-            [GET / SET] The circles radius.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Collider.CircleShapeInfo.Position">
-            <summary>
-            [GET / SET] The circles position.
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Collider.PolyShapeInfo">
-            <summary>
-            Describes a <see cref="T:Duality.Components.Collider">Colliders</see> polygon shape.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Collider.PolyShapeInfo.Vertices">
-            <summary>
-            [GET / SET] The polygons vertices.
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Collider.JointInfo">
-            <summary>
-            Describes a <see cref="T:Duality.Components.Collider"/> joint. Joints limit a Colliders degree of freedom 
-            by connecting it to fixed world coordinates or other Colliders.
-            </summary>
-        </member>
-        <member name="M:Duality.Components.Collider.JointInfo.CopyTo(Duality.Components.Collider.JointInfo)">
-            <summary>
-            Copies this JointInfos data to another one. It is assumed that both are of the same type.
-            </summary>
-            <param name="target"></param>
-        </member>
-        <member name="M:Duality.Components.Collider.JointInfo.Clone">
-            <summary>
-            Clones the JointInfo.
-            </summary>
-            <returns></returns>
-        </member>
         <member name="T:Duality.VertexFormat.VertexC1P3">
             <summary>
             Vertex data providing each vertex a position (3x4 byte) and color (1x4 byte).
@@ -8724,6 +8786,394 @@
             <param name="r">A random number generator.</param>
             <param name="weightedValues">A weighted value pool.</param>
             <returns></returns>
+        </member>
+        <member name="T:Duality.Canvas">
+            <summary>
+            Provides high level drawing operations on top of an existing <see cref="T:Duality.IDrawDevice"/>. However, this class is not designed
+            for drawing large batches of primitives / vertices at once. For large amounts of primitives you should consider directly 
+            using the underlying IDrawDevice instead to achieve best performance.
+            </summary>
+        </member>
+        <member name="M:Duality.Canvas.PushState">
+            <summary>
+            Adds a clone of the <see cref="P:Duality.Canvas.CurrentState">current state</see> on top of the internal
+            <see cref="T:Duality.Canvas.State"/> stack.
+            </summary>
+        </member>
+        <member name="M:Duality.Canvas.PopState">
+            <summary>
+            Removes the topmost <see cref="T:Duality.Canvas.State"/> from the internal State stack.
+            </summary>
+        </member>
+        <member name="M:Duality.Canvas.DrawVertices``1(``0[],OpenTK.Graphics.OpenGL.BeginMode)">
+            <summary>
+            Draws a predefined set of vertices using the Canvas transformation.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="vertices"></param>
+            <param name="mode"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawConvexPolygon(OpenTK.Vector2[],System.Single)">
+            <summary>
+            Draws a convex polygon. All vertices share the same Z value.
+            </summary>
+            <param name="points"></param>
+            <param name="z"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawSphere(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a three-dimensional sphere.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="r"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawLine(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a three-dimensional line.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="x2"></param>
+            <param name="y2"></param>
+            <param name="z2"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawLine(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a flat line.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="x2"></param>
+            <param name="y2"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawThickLine(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a thick, three-dimensional line.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="x2"></param>
+            <param name="y2"></param>
+            <param name="z2"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawThickLine(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a thick, flat line.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="x2"></param>
+            <param name="y2"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawRect(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a rectangle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawRect(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a rectangle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawOval(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws an oval.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawOval(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws an oval.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawCircle(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a circle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="r"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawCircle(System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a circle
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="r"></param>
+        </member>
+        <member name="M:Duality.Canvas.FillConvexPolygon(OpenTK.Vector2[],System.Single)">
+            <summary>
+            Fills a convex polygon. All vertices share the same Z value.
+            </summary>
+            <param name="points"></param>
+            <param name="z"></param>
+        </member>
+        <member name="M:Duality.Canvas.FillThickLine(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Fills a three-dimensional line.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="x2"></param>
+            <param name="y2"></param>
+            <param name="z2"></param>
+        </member>
+        <member name="M:Duality.Canvas.FillThickLine(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Fills a thick, flat line.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="x2"></param>
+            <param name="y2"></param>
+        </member>
+        <member name="M:Duality.Canvas.FillOval(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Fills an oval.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+        </member>
+        <member name="M:Duality.Canvas.FillOval(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Fills an oval
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+        </member>
+        <member name="M:Duality.Canvas.FillCircle(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Fills a circle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="r"></param>
+        </member>
+        <member name="M:Duality.Canvas.FillCircle(System.Single,System.Single,System.Single)">
+            <summary>
+            Fills a circle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="r"></param>
+        </member>
+        <member name="M:Duality.Canvas.FillRect(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Fills a rectangle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+        </member>
+        <member name="M:Duality.Canvas.FillRect(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Fills a rectangle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawTexturedRect(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a textured rectangle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+            <param name="uvX">UV x coordinate</param>
+            <param name="uvY">UV y coordinate</param>
+            <param name="uvW">UV coordinate width</param>
+            <param name="uvH">UV coordinate height</param>
+        </member>
+        <member name="M:Duality.Canvas.DrawTexturedRect(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a textured rectangle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="uvX">UV x coordinate</param>
+            <param name="uvY">UV y coordinate</param>
+            <param name="uvW">UV coordinate width</param>
+            <param name="uvH">UV coordinate height</param>
+        </member>
+        <member name="M:Duality.Canvas.DrawTexturedRect(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a textured rectangle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawTexturedRect(System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a textured rectangle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawTexturedRect(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a textured rectangle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+            <param name="uvX">UV x coordinate</param>
+            <param name="uvY">UV y coordinate</param>
+            <param name="uvW">UV coordinate width</param>
+            <param name="uvH">UV coordinate height</param>
+        </member>
+        <member name="M:Duality.Canvas.DrawTexturedRect(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a textured rectangle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="uvX">UV x coordinate</param>
+            <param name="uvY">UV y coordinate</param>
+            <param name="uvW">UV coordinate width</param>
+            <param name="uvH">UV coordinate height</param>
+        </member>
+        <member name="M:Duality.Canvas.DrawTexturedRect(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a textured rectangle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawTexturedRect(System.Single,System.Single)">
+            <summary>
+            Draws a textured rectangle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawText(System.String,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws the specified text string.
+            </summary>
+            <param name="text"></param>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawText(System.String,System.Single,System.Single)">
+            <summary>
+            Draws the specified text string.
+            </summary>
+            <param name="text"></param>
+            <param name="x"></param>
+            <param name="y"></param>
+        </member>
+        <member name="P:Duality.Canvas.DrawDevice">
+            <summary>
+            [GET] The underlying <see cref="T:Duality.IDrawDevice"/> that is used for drawing.
+            </summary>
+        </member>
+        <member name="P:Duality.Canvas.CurrentState">
+            <summary>
+            [GET / SET] The Canvas' current <see cref="T:Duality.Canvas.State"/>.
+            </summary>
+        </member>
+        <member name="T:Duality.Canvas.State">
+            <summary>
+            Describes the state of a <see cref="T:Duality.Canvas"/>.
+            </summary>
+        </member>
+        <member name="M:Duality.Canvas.State.Clone">
+            <summary>
+            Creates a clone of this State.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Canvas.State.Reset">
+            <summary>
+            Resets this State to its initial settings.
+            </summary>
+        </member>
+        <member name="M:Duality.Canvas.State.SetMaterial(Duality.Resources.BatchInfo)">
+            <summary>
+            Sets the States drawing material.
+            </summary>
+            <param name="material"></param>
+        </member>
+        <member name="M:Duality.Canvas.State.SetMaterial(Duality.ContentRef{Duality.Resources.Material})">
+            <summary>
+            Sets the States drawing material.
+            </summary>
+            <param name="material"></param>
+        </member>
+        <member name="P:Duality.Canvas.State.Material">
+            <summary>
+            [GET] The material that is used for drawing.
+            </summary>
+        </member>
+        <member name="P:Duality.Canvas.State.TextFont">
+            <summary>
+            [GET / SET] The <see cref="T:Duality.Resources.Font"/> to use for text rendering.
+            </summary>
+        </member>
+        <member name="P:Duality.Canvas.State.ColorTint">
+            <summary>
+            [GET / SET] The color tint to use for drawing.
+            </summary>
+        </member>
+        <member name="P:Duality.Canvas.State.TransformAngle">
+            <summary>
+            [GET / SET] The angle by which all shapes are transformed.
+            </summary>
+        </member>
+        <member name="P:Duality.Canvas.State.TransformScale">
+            <summary>
+            [GET / SET] The scale by which all shapes are transformed.
+            </summary>
+        </member>
+        <member name="P:Duality.Canvas.State.TransformHandle">
+            <summary>
+            [GET / SET] The handle used for transforming all shapes.
+            </summary>
         </member>
         <member name="T:Duality.FormattedText">
             <summary>
@@ -11892,456 +12342,6 @@
             <summary>
             Makes this <see cref="T:Duality.GameObject"/> the 3d sound listener.
             </summary>
-        </member>
-        <member name="T:Duality.Canvas">
-            <summary>
-            Provides high level drawing operations on top of an existing <see cref="T:Duality.IDrawDevice"/>. However, this class is not designed
-            for drawing large batches of primitives / vertices at once. For large amounts of primitives you should consider directly 
-            using the underlying IDrawDevice instead to achieve best performance.
-            </summary>
-        </member>
-        <member name="M:Duality.Canvas.PushState">
-            <summary>
-            Adds a clone of the <see cref="P:Duality.Canvas.CurrentState">current state</see> on top of the internal
-            <see cref="T:Duality.Canvas.State"/> stack.
-            </summary>
-        </member>
-        <member name="M:Duality.Canvas.PopState">
-            <summary>
-            Removes the topmost <see cref="T:Duality.Canvas.State"/> from the internal State stack.
-            </summary>
-        </member>
-        <member name="M:Duality.Canvas.DrawVertices``1(``0[],OpenTK.Graphics.OpenGL.BeginMode)">
-            <summary>
-            Draws a predefined set of vertices using the Canvas transformation.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="vertices"></param>
-            <param name="mode"></param>
-        </member>
-        <member name="M:Duality.Canvas.DrawConvexPolygon(OpenTK.Vector2[],System.Single)">
-            <summary>
-            Draws a convex polygon. All vertices share the same Z value.
-            </summary>
-            <param name="points"></param>
-            <param name="z"></param>
-        </member>
-        <member name="M:Duality.Canvas.DrawSphere(System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Draws a three-dimensional sphere.
-            </summary>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="z"></param>
-            <param name="r"></param>
-        </member>
-        <member name="M:Duality.Canvas.DrawLine(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Draws a three-dimensional line.
-            </summary>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="z"></param>
-            <param name="x2"></param>
-            <param name="y2"></param>
-            <param name="z2"></param>
-        </member>
-        <member name="M:Duality.Canvas.DrawLine(System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Draws a flat line.
-            </summary>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="x2"></param>
-            <param name="y2"></param>
-        </member>
-        <member name="M:Duality.Canvas.DrawThickLine(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Draws a thick, three-dimensional line.
-            </summary>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="z"></param>
-            <param name="x2"></param>
-            <param name="y2"></param>
-            <param name="z2"></param>
-        </member>
-        <member name="M:Duality.Canvas.DrawThickLine(System.Single,System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Draws a thick, flat line.
-            </summary>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="x2"></param>
-            <param name="y2"></param>
-        </member>
-        <member name="M:Duality.Canvas.DrawRect(System.Single,System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Draws a rectangle.
-            </summary>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="z"></param>
-            <param name="w"></param>
-            <param name="h"></param>
-        </member>
-        <member name="M:Duality.Canvas.DrawRect(System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Draws a rectangle.
-            </summary>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="w"></param>
-            <param name="h"></param>
-        </member>
-        <member name="M:Duality.Canvas.DrawOval(System.Single,System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Draws an oval.
-            </summary>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="z"></param>
-            <param name="w"></param>
-            <param name="h"></param>
-        </member>
-        <member name="M:Duality.Canvas.DrawOval(System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Draws an oval.
-            </summary>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="w"></param>
-            <param name="h"></param>
-        </member>
-        <member name="M:Duality.Canvas.DrawCircle(System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Draws a circle.
-            </summary>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="z"></param>
-            <param name="r"></param>
-        </member>
-        <member name="M:Duality.Canvas.DrawCircle(System.Single,System.Single,System.Single)">
-            <summary>
-            Draws a circle
-            </summary>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="r"></param>
-        </member>
-        <member name="M:Duality.Canvas.FillConvexPolygon(OpenTK.Vector2[],System.Single)">
-            <summary>
-            Fills a convex polygon. All vertices share the same Z value.
-            </summary>
-            <param name="points"></param>
-            <param name="z"></param>
-        </member>
-        <member name="M:Duality.Canvas.FillThickLine(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Fills a three-dimensional line.
-            </summary>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="z"></param>
-            <param name="x2"></param>
-            <param name="y2"></param>
-            <param name="z2"></param>
-        </member>
-        <member name="M:Duality.Canvas.FillThickLine(System.Single,System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Fills a thick, flat line.
-            </summary>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="x2"></param>
-            <param name="y2"></param>
-        </member>
-        <member name="M:Duality.Canvas.FillOval(System.Single,System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Fills an oval.
-            </summary>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="z"></param>
-            <param name="w"></param>
-            <param name="h"></param>
-        </member>
-        <member name="M:Duality.Canvas.FillOval(System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Fills an oval
-            </summary>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="w"></param>
-            <param name="h"></param>
-        </member>
-        <member name="M:Duality.Canvas.FillCircle(System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Fills a circle.
-            </summary>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="z"></param>
-            <param name="r"></param>
-        </member>
-        <member name="M:Duality.Canvas.FillCircle(System.Single,System.Single,System.Single)">
-            <summary>
-            Fills a circle.
-            </summary>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="r"></param>
-        </member>
-        <member name="M:Duality.Canvas.FillRect(System.Single,System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Fills a rectangle.
-            </summary>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="z"></param>
-            <param name="w"></param>
-            <param name="h"></param>
-        </member>
-        <member name="M:Duality.Canvas.FillRect(System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Fills a rectangle.
-            </summary>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="w"></param>
-            <param name="h"></param>
-        </member>
-        <member name="M:Duality.Canvas.DrawTexturedRect(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Draws a textured rectangle.
-            </summary>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="z"></param>
-            <param name="w"></param>
-            <param name="h"></param>
-            <param name="uvX">UV x coordinate</param>
-            <param name="uvY">UV y coordinate</param>
-            <param name="uvW">UV coordinate width</param>
-            <param name="uvH">UV coordinate height</param>
-        </member>
-        <member name="M:Duality.Canvas.DrawTexturedRect(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Draws a textured rectangle.
-            </summary>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="z"></param>
-            <param name="uvX">UV x coordinate</param>
-            <param name="uvY">UV y coordinate</param>
-            <param name="uvW">UV coordinate width</param>
-            <param name="uvH">UV coordinate height</param>
-        </member>
-        <member name="M:Duality.Canvas.DrawTexturedRect(System.Single,System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Draws a textured rectangle.
-            </summary>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="z"></param>
-            <param name="w"></param>
-            <param name="h"></param>
-        </member>
-        <member name="M:Duality.Canvas.DrawTexturedRect(System.Single,System.Single,System.Single)">
-            <summary>
-            Draws a textured rectangle.
-            </summary>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="z"></param>
-        </member>
-        <member name="M:Duality.Canvas.DrawTexturedRect(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Draws a textured rectangle.
-            </summary>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="w"></param>
-            <param name="h"></param>
-            <param name="uvX">UV x coordinate</param>
-            <param name="uvY">UV y coordinate</param>
-            <param name="uvW">UV coordinate width</param>
-            <param name="uvH">UV coordinate height</param>
-        </member>
-        <member name="M:Duality.Canvas.DrawTexturedRect(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Draws a textured rectangle.
-            </summary>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="uvX">UV x coordinate</param>
-            <param name="uvY">UV y coordinate</param>
-            <param name="uvW">UV coordinate width</param>
-            <param name="uvH">UV coordinate height</param>
-        </member>
-        <member name="M:Duality.Canvas.DrawTexturedRect(System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Draws a textured rectangle.
-            </summary>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="w"></param>
-            <param name="h"></param>
-        </member>
-        <member name="M:Duality.Canvas.DrawTexturedRect(System.Single,System.Single)">
-            <summary>
-            Draws a textured rectangle.
-            </summary>
-            <param name="x"></param>
-            <param name="y"></param>
-        </member>
-        <member name="M:Duality.Canvas.DrawText(System.String,System.Single,System.Single,System.Single)">
-            <summary>
-            Draws the specified text string.
-            </summary>
-            <param name="text"></param>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="z"></param>
-        </member>
-        <member name="M:Duality.Canvas.DrawText(System.String,System.Single,System.Single)">
-            <summary>
-            Draws the specified text string.
-            </summary>
-            <param name="text"></param>
-            <param name="x"></param>
-            <param name="y"></param>
-        </member>
-        <member name="P:Duality.Canvas.DrawDevice">
-            <summary>
-            [GET] The underlying <see cref="T:Duality.IDrawDevice"/> that is used for drawing.
-            </summary>
-        </member>
-        <member name="P:Duality.Canvas.CurrentState">
-            <summary>
-            [GET / SET] The Canvas' current <see cref="T:Duality.Canvas.State"/>.
-            </summary>
-        </member>
-        <member name="T:Duality.Canvas.State">
-            <summary>
-            Describes the state of a <see cref="T:Duality.Canvas"/>.
-            </summary>
-        </member>
-        <member name="M:Duality.Canvas.State.Clone">
-            <summary>
-            Creates a clone of this State.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.Canvas.State.Reset">
-            <summary>
-            Resets this State to its initial settings.
-            </summary>
-        </member>
-        <member name="M:Duality.Canvas.State.SetMaterial(Duality.Resources.BatchInfo)">
-            <summary>
-            Sets the States drawing material.
-            </summary>
-            <param name="material"></param>
-        </member>
-        <member name="M:Duality.Canvas.State.SetMaterial(Duality.ContentRef{Duality.Resources.Material})">
-            <summary>
-            Sets the States drawing material.
-            </summary>
-            <param name="material"></param>
-        </member>
-        <member name="P:Duality.Canvas.State.Material">
-            <summary>
-            [GET] The material that is used for drawing.
-            </summary>
-        </member>
-        <member name="P:Duality.Canvas.State.TextFont">
-            <summary>
-            [GET / SET] The <see cref="T:Duality.Resources.Font"/> to use for text rendering.
-            </summary>
-        </member>
-        <member name="P:Duality.Canvas.State.ColorTint">
-            <summary>
-            [GET / SET] The color tint to use for drawing.
-            </summary>
-        </member>
-        <member name="P:Duality.Canvas.State.TransformAngle">
-            <summary>
-            [GET / SET] The angle by which all shapes are transformed.
-            </summary>
-        </member>
-        <member name="P:Duality.Canvas.State.TransformScale">
-            <summary>
-            [GET / SET] The scale by which all shapes are transformed.
-            </summary>
-        </member>
-        <member name="P:Duality.Canvas.State.TransformHandle">
-            <summary>
-            [GET / SET] The handle used for transforming all shapes.
-            </summary>
-        </member>
-        <!-- Ungültiger XML-Kommentar wurde für den Member "T:Duality.CloneHelper" ignoriert -->
-        <member name="M:Duality.CloneHelper.IsSafeAssignType(System.Type)">
-            <summary>
-            Returns whether the specified type may just be assigned in a clone operation (even if deep)
-            instead of being investigated further.
-            </summary>
-            <param name="t"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.CloneHelper.DeepCloneObject``1(``0)">
-            <summary>
-            Creates a deep clone of an object.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="instance"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.CloneHelper.DeepCloneObject(System.Object)">
-            <summary>
-            Creates a deep clone of an object.
-            </summary>
-            <param name="instance"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.CloneHelper.DeepCloneObjectExplicit``1(``0,System.Type[])">
-            <summary>
-            Creates a deep clone of an object but considering only specific Types for "unwrapping".
-            References regarding other Types are treated as references, and therefor aren't cloned.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="instance"></param>
-            <param name="unwrapTypes"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.CloneHelper.DeepCloneObjectExplicit(System.Object,System.Type[])">
-            <summary>
-            Creates a deep clone of an object but considering only specific Types for "unwrapping".
-            References regarding other Types are treated as references, and therefor aren't cloned.
-            </summary>
-            <param name="instance"></param>
-            <param name="unwrapTypes"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.CloneHelper.DeepCopyFields(System.Reflection.FieldInfo[],System.Object,System.Object)">
-            <summary>
-            Copies the specified fields from one object to another, deep-cloning all referenced objects.
-            </summary>
-            <param name="fields"></param>
-            <param name="source"></param>
-            <param name="target"></param>
-        </member>
-        <member name="M:Duality.CloneHelper.DeepCopyFieldsExplicit(System.Reflection.FieldInfo[],System.Object,System.Object,System.Type[])">
-            <summary>
-            Copies the specified fields from one object to another, but considering only specific 
-            Types for "unwrapping". References regarding other Types are treated as references, 
-            and therefor aren't cloned.
-            </summary>
-            <param name="fields"></param>
-            <param name="source"></param>
-            <param name="target"></param>
-            <param name="unwrapTypes"></param>
         </member>
     </members>
 </doc>

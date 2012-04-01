@@ -196,9 +196,9 @@ namespace Duality.Resources
 		/// [GET] Enumerates the Scenes <see cref="Renderer"/> objects.
 		/// </summary>
 		[EditorHintFlags(MemberFlags.Invisible)]
-		public IEnumerable<Renderer> Renderers
+		public IEnumerable<ICmpRenderer> Renderers
 		{
-			get { return this.rendererManager.AllObjects; }
+			get { return this.rendererManager.AllObjects.OfType<ICmpRenderer>(); }
 		}
 		/// <summary>
 		/// [GET] Enumerates the Scenes <see cref="ICmpScreenOverlayRenderer"/> objects.
@@ -364,7 +364,7 @@ namespace Duality.Resources
 		/// </summary>
 		/// <param name="device"></param>
 		/// <returns></returns>
-		public IEnumerable<Renderer> QueryVisibleRenderers(IDrawDevice device)
+		public IEnumerable<ICmpRenderer> QueryVisibleRenderers(IDrawDevice device)
 		{
 			return this.rendererManager.QueryVisible(device);
 		}
