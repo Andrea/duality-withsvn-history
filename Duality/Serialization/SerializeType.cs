@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Reflection;
 
 namespace Duality.Serialization
@@ -55,9 +53,9 @@ namespace Duality.Serialization
 		public SerializeType(Type t)
 		{
 			this.type = t;
-			this.fields = ReflectionHelper.GetAllFields(this.type, ReflectionHelper.BindInstanceAll).Where(f => !f.IsNotSerialized).ToArray();
-			this.typeString = ReflectionHelper.GetTypeId(this.type);
-			this.dataType = ReflectionHelper.GetDataType(this.type);
+			this.fields = this.type.GetAllFields(ReflectionHelper.BindInstanceAll).Where(f => !f.IsNotSerialized).ToArray();
+			this.typeString = this.type.GetTypeId();
+			this.dataType = this.type.GetDataType();
 		}
 	}
 }

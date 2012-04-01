@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 using Duality;
-using Duality.Components;
 using Duality.Resources;
 using Duality.ColorFormat;
 using Duality.VertexFormat;
@@ -700,7 +697,7 @@ namespace EditorBase.CamViewStates
 				// Determine action variables
 				Vector3 mouseSpaceCoord = this.View.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, this.selectionCenter.Z));
 				float scale = this.View.GetScaleAtZ(this.selectionCenter.Z);
-				float boundaryThickness = 10.0f;
+				const float boundaryThickness = 10.0f;
 				bool tooSmall = this.selectionRadius * scale <= boundaryThickness * 2.0f;
 				bool mouseOverBoundary = MathF.Abs((mouseSpaceCoord - this.selectionCenter).Length - this.selectionRadius) * scale < boundaryThickness;
 				bool mouseInsideBoundary = !mouseOverBoundary && (mouseSpaceCoord - this.selectionCenter).Length < this.selectionRadius;

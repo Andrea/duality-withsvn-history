@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.IO;
 using System.Diagnostics;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-
 using Duality.Resources;
 
 namespace Duality
@@ -136,8 +133,7 @@ namespace Duality
 			}
 			set
 			{
-				if (value == null)	this.contentPath = null;
-				else				this.contentPath = value.Path;
+				this.contentPath = value == null ? null : value.Path;
 				this.contentInstance = value;
 			}
 		}
@@ -236,7 +232,7 @@ namespace Duality
 			get
 			{
 				if (this.IsExplicitNull) return "null";
-				if (this.IsRuntimeResource) return this.contentInstance.GetHashCode().ToString();
+				if (this.IsRuntimeResource) return this.contentInstance.GetHashCode().ToString(CultureInfo.InvariantCulture);
 				string nameTemp = this.contentPath;
 				if (this.IsDefaultContent) nameTemp = nameTemp.Replace(':', '/');
 				return System.IO.Path.GetFileNameWithoutExtension(System.IO.Path.GetFileNameWithoutExtension(nameTemp));
@@ -250,7 +246,7 @@ namespace Duality
 			get
 			{
 				if (this.IsExplicitNull) return "null";
-				if (this.IsRuntimeResource) return this.contentInstance.GetHashCode().ToString();
+				if (this.IsRuntimeResource) return this.contentInstance.GetHashCode().ToString(CultureInfo.InvariantCulture);
 				string nameTemp = this.contentPath;
 				if (this.IsDefaultContent) nameTemp = nameTemp.Replace(':', '/');
 				return System.IO.Path.Combine(System.IO.Path.GetDirectoryName(nameTemp), this.Name);
@@ -537,7 +533,7 @@ namespace Duality
 		/// <returns></returns>
 		public static List<IContentRef> GetAvailContent(Type t)
 		{
-			return resLibrary.Values.Where(r => t.IsAssignableFrom(r.GetType()) && !r.Disposed).Select(r => r.GetContentRef()).ToList();
+			return resLibrary.Values.Where(r => t.IsInstanceOfType(r) && !r.Disposed).Select(r => r.GetContentRef()).ToList();
 		}
 		/// <summary>
 		/// Clears all non-default content.

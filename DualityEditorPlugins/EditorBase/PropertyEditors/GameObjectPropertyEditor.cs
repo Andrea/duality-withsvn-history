@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -11,7 +9,6 @@ using ButtonState = AdamsLair.PropertyGrid.Renderer.ButtonState;
 
 using Duality;
 using DualityEditor;
-using DualityEditor.Controls;
 
 namespace EditorBase.PropertyEditors
 {

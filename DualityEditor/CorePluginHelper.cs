@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Windows.Forms;
 using System.Drawing;
 
 using AdamsLair.PropertyGrid;
@@ -55,7 +54,7 @@ namespace DualityEditor
 			public	string		context;
 			public CategoryEntry(string category, string context)
 			{
-				this.categoryTree = category.Split(new char[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
+				this.categoryTree = category.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
 				this.context = context;
 			}
 		}
@@ -90,9 +89,9 @@ namespace DualityEditor
 		private static void RegisterCorePluginRes(Type type, IResEntry res)
 		{
 			if (type == null) throw new ArgumentNullException("type");
-			string typeString = ReflectionHelper.GetTypeId(type);
+			string typeString = type.GetTypeId();
 
-			List<IResEntry> resList = null;
+			List<IResEntry> resList;
 			if (!corePluginRes.TryGetValue(typeString, out resList))
 			{
 				resList = new List<IResEntry>();
@@ -102,13 +101,13 @@ namespace DualityEditor
 		}
 		private static IEnumerable<T> QueryPluginResCandidates<T>(Type type, Predicate<T> predicate) where T : IResEntry
 		{
-			string typeString = ReflectionHelper.GetTypeId(type);
-			List<IResEntry> resList = null;
+			string typeString = type.GetTypeId();
+			List<IResEntry> resList;
 			if (corePluginRes.TryGetValue(typeString, out resList))
 			{
 				foreach (IResEntry res in resList)
 				{
-					if (typeof(T).IsAssignableFrom(res.GetType()))
+					if (res is T)
 					{
 						T casted = (T)res;
 						if (predicate == null || predicate(casted)) yield return casted;
@@ -167,8 +166,7 @@ namespace DualityEditor
 						result.Add(entry);
 					}
 				}
-				if (result == null) result = new List<T>();
-				return result;
+				return result ?? new List<T>();
 			}
 			else
 			{
@@ -184,8 +182,7 @@ namespace DualityEditor
 					type = type.BaseType;
 				}
 
-				if (result == null) result = new List<T>();
-				return result;
+				return result ?? new List<T>();
 			}
 		}
 

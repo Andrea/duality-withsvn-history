@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 
 using Duality.ColorFormat;
@@ -114,8 +113,8 @@ namespace Duality.Components.Renderers
 			Vector2 xDot, yDot;
 			MathF.GetTransformDotVec(this.GameObj.Transform.Angle, this.gameobj.Transform.Scale.Xy * scaleTemp, out xDot, out yDot);
 
-			Rect textRect = Rect.Align(this.align, 0.0f, 0.0f, MathF.Max(this.text.MaxWidth, this.metrics.Size.X), this.metrics.Size.Y);
-			Vector2 textOffset = textRect.TopLeft;
+			Rect rect = Rect.Align(this.align, 0.0f, 0.0f, MathF.Max(this.text.MaxWidth, this.metrics.Size.X), this.metrics.Size.Y);
+			Vector2 textOffset = rect.TopLeft;
 			MathF.TransformDotVec(ref textOffset, ref xDot, ref yDot);
 			posTemp.X += textOffset.X;
 			posTemp.Y += textOffset.Y;
@@ -132,10 +131,10 @@ namespace Duality.Components.Renderers
 			// Draw design time data
 			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Editor)
 			{
-				Vector3 textWidth = Vector3.UnitX * textRect.w;
+				Vector3 textWidth = Vector3.UnitX * rect.w;
 				Vector3 textMaxWidth = Vector3.UnitX * this.text.MaxWidth;
-				Vector3 textHeight = Vector3.UnitY * textRect.h;
-				Vector3 textMaxHeight = Vector3.UnitY * MathF.Max(this.text.MaxHeight, textRect.h);
+				Vector3 textHeight = Vector3.UnitY * rect.h;
+				Vector3 textMaxHeight = Vector3.UnitY * MathF.Max(this.text.MaxHeight, rect.h);
 				MathF.TransformDotVec(ref textWidth, ref xDot, ref yDot);
 				MathF.TransformDotVec(ref textMaxWidth, ref xDot, ref yDot);
 				MathF.TransformDotVec(ref textHeight, ref xDot, ref yDot);
@@ -178,11 +177,11 @@ namespace Duality.Components.Renderers
 		}
 
 		
-		void ICmpInitializable.OnInit(Component.InitContext context)
+		void ICmpInitializable.OnInit(InitContext context)
 		{
 			if (context == InitContext.Loaded) this.UpdateMetrics();
 		}
-		void ICmpInitializable.OnShutdown(Component.ShutdownContext context) {}
+		void ICmpInitializable.OnShutdown(ShutdownContext context) {}
 
 		internal override void CopyToInternal(Component target)
 		{

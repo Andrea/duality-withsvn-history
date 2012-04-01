@@ -1,19 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Reflection;
 
-using Duality;
 using Duality.ColorFormat;
 using Duality.EditorHints;
 using Duality.Serialization;
-
-using OpenTK;
-using OpenTK.Graphics.OpenGL;
 
 namespace Duality.Resources
 {

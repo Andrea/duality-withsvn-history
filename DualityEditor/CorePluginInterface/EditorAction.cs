@@ -34,7 +34,7 @@ namespace DualityEditor.CorePluginInterface
 			get { return this.icon; }
 		}
 
-		public EditorActionBase(string name, Image icon, string desc)
+		protected EditorActionBase(string name, Image icon, string desc)
 		{
 			this.name = name;
 			this.icon = icon;
@@ -43,7 +43,7 @@ namespace DualityEditor.CorePluginInterface
 
 		public void Perform(T obj)
 		{
-			this.Perform(new T[] { obj });
+			this.Perform(new[] { obj });
 		}
 		public abstract void Perform(IEnumerable<T> objEnum);
 		public abstract bool CanPerformOn(IEnumerable<T> objEnum);

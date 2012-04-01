@@ -2,10 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Reflection;
 using System.Runtime.Serialization;
-using System.IO;
 
 namespace Duality
 {
@@ -150,7 +148,7 @@ namespace Duality
 			// Reference types / complex objects
 			else
 			{
-				object copy = ReflectionHelper.CreateInstanceOf(instanceType);
+				object copy = instanceType.CreateInstanceOf();
 				if (instanceType.IsClass) visited.Add(instance, copy);
 
 				DeepCopyFields(
@@ -180,17 +178,7 @@ namespace Duality
 				visited.Add(instance, copy);
 
 				bool unwrap = elemType.IsValueType && !IsSafeAssignType(elemType);
-				if (!unwrap)
-				{
-					for (int i = 0; i < unwrapTypes.Length; i++)
-					{
-						if (unwrapTypes[i].IsAssignableFrom(elemType))
-						{
-							unwrap = true;
-							break;
-						}
-					}
-				}
+				if (!unwrap) unwrap = unwrapTypes.Any(t => t.IsAssignableFrom(elemType));
 
 				if (unwrap)
 				{
@@ -207,7 +195,7 @@ namespace Duality
 			// Reference types / complex objects
 			else
 			{
-				object copy = ReflectionHelper.CreateInstanceOf(instanceType);
+				object copy = instanceType.CreateInstanceOf();
 				if (instanceType.IsClass) visited.Add(instance, copy);
 
 				DeepCopyFieldsExplicit(
@@ -218,29 +206,19 @@ namespace Duality
 			}
 		}
 
-		private static void DeepCopyFields(FieldInfo[] fields, object source, object target, CloneProvider visited)
+		private static void DeepCopyFields(IEnumerable<FieldInfo> fields, object source, object target, CloneProvider visited)
 		{
 			foreach (FieldInfo field in fields)
 			{
 				field.SetValue(target, DeepCloneObject(field.GetValue(source), visited));
 			}
 		}
-		private static void DeepCopyFieldsExplicit(FieldInfo[] fields, object source, object target, CloneProvider visited, Type[] unwrapTypes)
+		private static void DeepCopyFieldsExplicit(IEnumerable<FieldInfo> fields, object source, object target, CloneProvider visited, Type[] unwrapTypes)
 		{
 			foreach (FieldInfo f in fields)
 			{
 				bool unwrap = f.FieldType.IsValueType && !IsSafeAssignType(f.FieldType);
-				if (!unwrap)
-				{
-					for (int i = 0; i < unwrapTypes.Length; i++)
-					{
-						if (unwrapTypes[i].IsAssignableFrom(f.FieldType))
-						{
-							unwrap = true;
-							break;
-						}
-					}
-				}
+				if (!unwrap) unwrap = (unwrapTypes.Any(t => t.IsAssignableFrom(f.FieldType)));
 
 				if (unwrap)
 					f.SetValue(target, DeepCloneObjectExplicit(f.GetValue(source), visited, unwrapTypes));
@@ -263,13 +241,8 @@ namespace Duality
 			// Reset check
 			else if (!instanceType.IsValueType)
 			{
-				for (int i = 0; i < resetTypes.Length; i++)
-				{
-					if (resetTypes[i].IsAssignableFrom(instanceType))
-					{
-						return null;
-					}
-				}
+				if (resetTypes.Any(t => t.IsAssignableFrom(instanceType)))
+					return null;
 			}
 
 			// Arrays
@@ -297,7 +270,7 @@ namespace Duality
 				return instance;
 			}
 		}
-		private static void DeepResetReferenceFields(FieldInfo[] fields, object source, HashSet<object> visited, Type[] resetTypes)
+		private static void DeepResetReferenceFields(IEnumerable<FieldInfo> fields, object source, HashSet<object> visited, Type[] resetTypes)
 		{
 			foreach (FieldInfo f in fields)
 			{
@@ -323,7 +296,7 @@ namespace Duality
 				}
 				else
 				{
-					BindingFlags bindFlagsAll = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
+					const BindingFlags bindFlagsAll = ReflectionHelper.BindAll;
 					Type infoDeclarerType = binder.BindToType(info.DeclaringType.Assembly.FullName, info.DeclaringType.FullName);
 					if (info is FieldInfo)
 					{
@@ -389,15 +362,14 @@ namespace Duality
 
 				IDictionary dict = instance as IDictionary;
 				List<DictionaryEntry> entries = new List<DictionaryEntry>(dict.Count);
-				foreach (DictionaryEntry pair in dict)
-					entries.Add(pair);
-				
+				entries.AddRange(dict.Cast<DictionaryEntry>());
+
 				MethodInfo m_Clear = instanceType.GetMethod("Clear");
 				MethodInfo m_Add = instanceType.GetMethod("Add");
 
 				m_Clear.Invoke(instance, null);
 				foreach (DictionaryEntry pair in entries)
-					m_Add.Invoke(instance, new object[] { DeepResolveTypeReferenceObject(pair.Key, binder, visited), pair.Value });
+					m_Add.Invoke(instance, new[] { DeepResolveTypeReferenceObject(pair.Key, binder, visited), pair.Value });
 
 				return instance;
 			}
@@ -410,16 +382,14 @@ namespace Duality
 				visited.Add(instance);
 
 				IEnumerable set = instance as IEnumerable;
-				List<object> entries = new List<object>();
-				foreach (object obj in set)
-					entries.Add(obj);
-				
+				List<object> entries = set.Cast<object>().ToList();
+
 				MethodInfo m_Clear = instanceType.GetMethod("Clear");
 				MethodInfo m_Add = instanceType.GetMethod("Add");
 
 				m_Clear.Invoke(instance, null);
 				foreach (DictionaryEntry pair in entries)
-					m_Add.Invoke(instance, new object[] { DeepResolveTypeReferenceObject(pair.Key, binder, visited) });
+					m_Add.Invoke(instance, new[] { DeepResolveTypeReferenceObject(pair.Key, binder, visited) });
 
 				return instance;
 			}
@@ -433,7 +403,7 @@ namespace Duality
 				return instance;
 			}
 		}
-		private static void DeepResolveTypeReferenceFields(FieldInfo[] fields, object source, SerializationBinder binder, HashSet<object> visited)
+		private static void DeepResolveTypeReferenceFields(IEnumerable<FieldInfo> fields, object source, SerializationBinder binder, HashSet<object> visited)
 		{
 			foreach (FieldInfo f in fields)
 			{

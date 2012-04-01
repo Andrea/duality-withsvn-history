@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 using Duality.ColorFormat;
 using Duality.Resources;
@@ -257,7 +254,7 @@ namespace Duality.Components.Renderers
 			{
 				if (isAnimated)
 				{
-					float frameTemp = this.animFrameCount * this.animTime / (float)this.animDuration;
+					float frameTemp = this.animFrameCount * this.animTime / this.animDuration;
 					curAnimFrame = this.animFirstFrame + MathF.Clamp((int)frameTemp, 0, this.animFrameCount - 1);
 					curAnimFrame = MathF.Clamp(curAnimFrame, 0, mainTex.Atlas.Count - 1);
 

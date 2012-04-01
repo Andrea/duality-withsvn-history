@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 
 namespace Duality
@@ -27,7 +24,7 @@ namespace Duality
 		public virtual void Write(Log source, LogMessageType type, string msg)
 		{
 			int indent = source.Indent;
-			string[] lines = msg.Split(new char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+			string[] lines = msg.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 			for (int i = 0; i < lines.Length; i++)
 			{
 				if (i == 0)

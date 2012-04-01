@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
 using OpenTK;
 using AudioContext = OpenTK.Audio.AudioContext;
 using OpenTK.Audio.OpenAL;
@@ -148,10 +146,9 @@ namespace Duality
 			this.context = new AudioContext();
 
 			// Generate OpenAL source pool
-			int newSrc;
 			while (true)
 			{
-				newSrc = AL.GenSource();
+				int newSrc = AL.GenSource();
 				if (!this.CheckErrors(true))
 					this.alSourcePool.Push(newSrc);
 				else
@@ -271,7 +268,7 @@ namespace Duality
 			}
 			this.CheckErrors();
 
-			this.sounds.Sort(delegate(SoundInstance obj1, SoundInstance obj2) { return obj2.Priority - obj1.Priority; });
+			this.sounds.Sort((obj1, obj2) => obj2.Priority - obj1.Priority);
 
 			Performance.timeUpdateAudio.EndMeasure();
 		}

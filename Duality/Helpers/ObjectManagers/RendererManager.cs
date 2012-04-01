@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
-using OpenTK;
-using Duality.Components;
 
 namespace Duality.ObjectManagers
 {
@@ -22,11 +18,7 @@ namespace Duality.ObjectManagers
 		/// <returns></returns>
 		public IEnumerable<ICmpRenderer> QueryVisible(IDrawDevice device)
 		{
-			foreach (ICmpRenderer r in this.ActiveObjects)
-			{
-				if (r.IsVisible(device))
-					yield return r;
-			}
+			return this.ActiveObjects.OfType<ICmpRenderer>().Where(renderer => renderer.IsVisible(device));
 		}
 	}
 	
@@ -44,11 +36,7 @@ namespace Duality.ObjectManagers
 		/// <returns></returns>
 		public IEnumerable<ICmpScreenOverlayRenderer> QueryVisible(IDrawDevice device)
 		{
-			foreach (Component r in this.ActiveObjects)
-			{
-				ICmpScreenOverlayRenderer overlayRenderer = r as ICmpScreenOverlayRenderer;
-				if (overlayRenderer != null && overlayRenderer.IsVisible(device)) yield return overlayRenderer;
-			}
+			return this.ActiveObjects.OfType<ICmpScreenOverlayRenderer>().Where(renderer => renderer.IsVisible(device));
 		}
 	}
 }

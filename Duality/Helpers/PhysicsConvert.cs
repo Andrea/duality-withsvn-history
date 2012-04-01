@@ -1,17 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using OpenTK;
-
-using FarseerPhysics.Dynamics;
-using FarseerPhysics.Dynamics.Contacts;
-using FarseerPhysics.Factories;
-using FarseerPhysics.Collision.Shapes;
-
-using Duality;
-using Duality.EditorHints;
-using Duality.Resources;
+﻿using OpenTK;
 
 namespace Duality
 {

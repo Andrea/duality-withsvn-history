@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Reflection;
 
 using Duality;
-using DualityEditor.Controls;
 
 namespace DualityEditor
 {
@@ -117,11 +115,11 @@ namespace DualityEditor
 
 		public bool HasAnyProperty(params PropertyInfo[] info)
 		{
-			return info.Any(i => this.HasProperty(i));
+			return info.Any(this.HasProperty);
 		}
 		public bool HasAnyProperty(params string[] name)
 		{
-			return name.Any(n => this.HasProperty(n));
+			return name.Any(this.HasProperty);
 		}
 	}
 

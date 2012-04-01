@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-
-namespace Duality.Serialization
+﻿namespace Duality.Serialization
 {
 	/// <summary>
 	/// Provides a general interface for an object type with custom serialization.

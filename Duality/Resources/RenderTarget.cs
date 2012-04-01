@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Runtime.Serialization;
 
-using Duality;
-using Duality.ColorFormat;
 using Duality.EditorHints;
 
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using GLPixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 
 namespace Duality.Resources
 {
@@ -297,10 +292,7 @@ namespace Duality.Resources
 		{
 			if (this.targetInfo == null || this.targetInfo.Count == 0) return;
 
-			if (this.multisample)
-				this.samples = Math.Min(MaxRenderTargetSamples, DualityApp.TargetMode.Samples);
-			else
-				this.samples = 0;
+			this.samples = this.multisample ? Math.Min(MaxRenderTargetSamples, DualityApp.TargetMode.Samples) : 0;
 
 			#region Setup FBO & RBO: Non-multisampled
 			if (this.samples == 0)
@@ -347,8 +339,6 @@ namespace Duality.Resources
 			#region Setup FBO & RBO: Multisampled
 			if (this.samples > 0)
 			{
-				FramebufferErrorCode status;
-
 				// Generate texture target FBO
 				if (this.glFboId == 0) GL.Ext.GenFramebuffers(1, out this.glFboId);
 				GL.Ext.BindFramebuffer(FramebufferTarget.FramebufferExt, this.glFboId);
@@ -371,7 +361,7 @@ namespace Duality.Resources
 				}
 
 				// Check status
-				status = GL.Ext.CheckFramebufferStatus(FramebufferTarget.FramebufferExt);
+				FramebufferErrorCode status = GL.Ext.CheckFramebufferStatus(FramebufferTarget.FramebufferExt);
 				if (status != FramebufferErrorCode.FramebufferCompleteExt)
 				{
 					Log.Core.WriteError("Can't create RenderTarget '{0}'. Incomplete Texture Framebuffer: {1}", this.path, status);

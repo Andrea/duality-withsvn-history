@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 using OpenTK;
 using FarseerPhysics.Dynamics;
-using FarseerPhysics.Collision;
 
 using Duality.EditorHints;
 using Duality.Components;
 using Duality.ObjectManagers;
-using Duality.Serialization;
 
 namespace Duality.Resources
 {
@@ -59,11 +56,11 @@ namespace Duality.Resources
 				if (current.ResWeak != value)
 				{
 					OnLeaving();
-					current.Res = (value != null) ? value : new Scene();
+					current.Res = value ?? new Scene();
 					OnEntered();
 				}
 				else
-					current.Res = (value != null) ? value : new Scene();
+					current.Res = value ?? new Scene();
 			}
 		}
 		/// <summary>

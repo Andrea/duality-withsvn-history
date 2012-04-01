@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Reflection;
 
 namespace Duality
@@ -24,8 +22,8 @@ namespace Duality
 		{
 			get { return this.asmName; }
 		}
-		
-		public CorePlugin()
+
+		protected CorePlugin()
 		{
 			this.assembly = this.GetType().Assembly;
 			this.asmName = this.assembly.FullName.Split(',')[0];

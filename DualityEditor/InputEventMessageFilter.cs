@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using System.Runtime.InteropServices;
 
 namespace DualityEditor
 {
@@ -14,7 +10,7 @@ namespace DualityEditor
 		public event EventHandler MouseUp;
 		public event EventHandler<KeyEventArgs> KeyDown;
 
-		private enum WindowsMessages : int
+		private enum WindowsMessages
 		{
 			WM_LBUTTONDOWN	= 0x0201,
 			WM_LBUTTONUP	= 0x0202,

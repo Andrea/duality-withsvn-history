@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.ComponentModel;
 using System.Windows.Forms;
-using System.Drawing.Design;
-using System.Windows.Forms.Design;
 
 using Duality;
 using Duality.EditorHints;
@@ -34,7 +31,7 @@ namespace DualityEditor.Controls
 					this.enumType = valEnumType; // Store enum type
 					this.FillEnumMembers(); // Add items for enum members
 				}
-				this.SelectedItem = Enum.GetName(enumType, value) ?? ((long)Convert.ChangeType(value, typeof(long))).ToString();
+				this.SelectedItem = Enum.GetName(enumType, value);
 				this.OnEnumValueChanged();
 			}
 		}

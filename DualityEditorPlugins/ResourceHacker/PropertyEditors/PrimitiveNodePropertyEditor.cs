@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
-using System.Windows.Forms;
 using System.Reflection;
 
 using AdamsLair.PropertyGrid;
@@ -11,8 +7,6 @@ using AdamsLair.PropertyGrid;
 using Duality;
 using Duality.Serialization;
 using Duality.Serialization.MetaFormat;
-
-using DualityEditor;
 
 namespace ResourceHacker.PropertyEditors
 {

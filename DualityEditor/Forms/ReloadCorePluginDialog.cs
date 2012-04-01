@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using System.Threading;
 using System.Diagnostics;
@@ -10,7 +9,6 @@ using Windows7.DesktopIntegration;
 using Windows7.DesktopIntegration.WindowsForms;
 
 using Duality;
-using DualityEditor;
 using DualityEditor.EditorRes;
 using Duality.Resources;
 
@@ -264,14 +262,7 @@ namespace DualityEditor.Forms
 				// No full restart scheduled? Well, check if it should be!
 				if (!fullRestart)
 				{
-					foreach (string asmFile in workInterface.ReloadSched)
-					{
-						if (asmFile.EndsWith(".editor.dll") || !DualityApp.IsLeafPlugin(asmFile))
-						{
-							fullRestart = true;
-							break;
-						}
-					}
+					fullRestart = workInterface.ReloadSched.Any(asmFile => asmFile.EndsWith(".editor.dll") || !DualityApp.IsLeafPlugin(asmFile));
 				}
 
 				if (fullRestart)

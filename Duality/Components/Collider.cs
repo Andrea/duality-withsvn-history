@@ -6,10 +6,7 @@ using OpenTK;
 
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Dynamics.Contacts;
-using FarseerPhysics.Factories;
-using FarseerPhysics.Collision.Shapes;
 
-using Duality;
 using Duality.EditorHints;
 using Duality.Resources;
 
@@ -671,8 +668,6 @@ namespace Duality.Components
 		public List<ShapeInfo> PickShapes(Vector2 worldCoord, Vector2 size)
 		{
 			if (this.body == null) return new List<ShapeInfo>();
-			Vector2 fsTemp;
-			Vector2 fsWorldCoordStep;
 			Vector2 fsWorldCoord = PhysicsConvert.ToPhysicalUnit(worldCoord);
 			FarseerPhysics.Collision.AABB fsWorldAABB = new FarseerPhysics.Collision.AABB(fsWorldCoord, PhysicsConvert.ToPhysicalUnit(worldCoord + size));
 
@@ -698,8 +693,8 @@ namespace Duality.Components
 				fAABBIntersect.LowerBound = Vector2.ComponentMax(fAABB.LowerBound, fsWorldAABB.LowerBound);
 				fAABBIntersect.UpperBound = Vector2.ComponentMin(fAABB.UpperBound, fsWorldAABB.UpperBound);
 
-				fsWorldCoordStep = PhysicsConvert.ToPhysicalUnit(new Vector2(MathF.Max(this.shapes[i].AABB.w, 1.0f), MathF.Max(this.shapes[i].AABB.h, 1.0f)) * 0.05f);
-				fsTemp = fAABBIntersect.LowerBound;
+				Vector2 fsWorldCoordStep = PhysicsConvert.ToPhysicalUnit(new Vector2(MathF.Max(this.shapes[i].AABB.w, 1.0f), MathF.Max(this.shapes[i].AABB.h, 1.0f)) * 0.05f);
+				Vector2 fsTemp = fAABBIntersect.LowerBound;
 				do
 				{
 					if (f.TestPoint(ref fsTemp))
@@ -750,12 +745,11 @@ namespace Duality.Components
 		{
 			this.CleanupInvalidJoints();
 
-			for (int i = 0; i < this.eventBuffer.Count; i++)
+			foreach (ColEvent e in this.eventBuffer)
 			{
-				ColEvent e = this.eventBuffer[i];
 				ColliderCollisionEventArgs args = new ColliderCollisionEventArgs(
 					(e.FixtureB.Body.UserData as Collider).GameObj,
- 					e.Data,
+					e.Data,
 					e.FixtureA.UserData as ShapeInfo,
 					e.FixtureB.UserData as ShapeInfo);
 
@@ -830,14 +824,14 @@ namespace Duality.Components
 				this.body.Awake = true;
 			}
 		}
-		void ICmpInitializable.OnInit(Component.InitContext context)
+		void ICmpInitializable.OnInit(InitContext context)
 		{
 			if (context == InitContext.Activate)
 				this.Initialize();
 			else if (context == InitContext.Loaded)
 				this.CleanupInvalidJoints();
 		}
-		void ICmpInitializable.OnShutdown(Component.ShutdownContext context)
+		void ICmpInitializable.OnShutdown(ShutdownContext context)
 		{
 			if (context == ShutdownContext.Deactivate)
 				this.Shutdown();

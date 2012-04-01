@@ -19,7 +19,6 @@ namespace Duality.Serialization.Surrogates
 		{
 			Type dictType = this.RealObject.GetType();
 			Type[] genArgs = dictType.GetGenericArguments();
-			MethodInfo[] m = typeof(DictionarySurrogate).GetMethods(ReflectionHelper.BindInstanceAll);
 			MethodInfo cast = typeof(DictionarySurrogate).GetMethod("WriteDataSpecific", ReflectionHelper.BindInstanceAll).MakeGenericMethod(genArgs);
 			cast.Invoke(this, new[] { writer });
 		}

@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using System.Reflection;
 using System.Drawing;
 
 using AdamsLair.PropertyGrid;
 using AdamsLair.PropertyGrid.EditorTemplates;
-
-using Vector2 = OpenTK.Vector2;
 
 using Duality;
 using Duality.EditorHints;
@@ -23,7 +20,7 @@ namespace DualityEditor.Controls.PropertyEditors
 		protected	int						lines;
 
 
-		public VectorPropertyEditor(int size, int lines)
+		protected VectorPropertyEditor(int size, int lines)
 		{
 			this.editor = new NumericEditorTemplate[size];
 			this.multiple = new bool[size];
@@ -43,7 +40,6 @@ namespace DualityEditor.Controls.PropertyEditors
 		{
 			index = MathF.Clamp(index, -1, this.editor.Length - 1);
 			if (this.focusEditor == index) return;
-			int lastFocus = this.focusEditor;
 
 			if (this.Focused) this.LeaveFocusIndexState(this.focusEditor, index);
 
@@ -55,11 +51,10 @@ namespace DualityEditor.Controls.PropertyEditors
 		{
 			if (newFocus == -1)
 			{
-				for (int i = 0; i < this.editor.Length; i++)
+				foreach (NumericEditorTemplate t in this.editor)
 				{
-					if (!this.editor[i].Focused)
-						this.editor[i].OnGotFocus(EventArgs.Empty);
-					if (select) this.editor[i].Select();
+					if (!t.Focused) t.OnGotFocus(EventArgs.Empty);
+					if (select) t.Select();
 				}
 			}
 			else
@@ -216,15 +211,17 @@ namespace DualityEditor.Controls.PropertyEditors
 		protected override void OnMouseMove(MouseEventArgs e)
 		{
 			base.OnMouseMove(e);
-			for (int i = 0; i < this.editor.Length; i++)
-				this.editor[i].OnMouseMove(e);
+			foreach (NumericEditorTemplate t in this.editor)
+				t.OnMouseMove(e);
 		}
+
 		protected override void OnMouseLeave(EventArgs e)
 		{
 			base.OnMouseLeave(e);
-			for (int i = 0; i < this.editor.Length; i++)
-				this.editor[i].OnMouseLeave(e);
+			foreach (NumericEditorTemplate t in this.editor)
+				t.OnMouseLeave(e);
 		}
+
 		protected override void OnMouseDown(MouseEventArgs e)
 		{
 			base.OnMouseDown(e);
@@ -238,8 +235,8 @@ namespace DualityEditor.Controls.PropertyEditors
 		protected override void OnMouseUp(MouseEventArgs e)
 		{
 			base.OnMouseUp(e);
-			for (int i = 0; i < this.editor.Length; i++)
-				this.editor[i].OnMouseUp(e);
+			foreach (NumericEditorTemplate t in this.editor)
+				t.OnMouseUp(e);
 		}
 
 		protected override void UpdateGeometry()
@@ -249,7 +246,7 @@ namespace DualityEditor.Controls.PropertyEditors
 			int horNum = MathF.RoundToInt((float)this.editor.Length / (float)this.lines);
 			int verNum = this.lines;
 
-			int subEditSpace = 1;
+			const int subEditSpace = 1;
 			int subEditWidth = (this.ClientRectangle.Width - 2 - (subEditSpace * (horNum - 1))) / horNum;
 			int subEditHeight = (this.ClientRectangle.Height - 1 - (subEditSpace * (verNum - 1))) / verNum;
 			
@@ -269,32 +266,33 @@ namespace DualityEditor.Controls.PropertyEditors
 		protected override void OnReadOnlyChanged()
 		{
 			base.OnReadOnlyChanged();
-			for (int i = 0; i < this.editor.Length; i++)
-				this.editor[i].ReadOnly = this.ReadOnly;
+			foreach (NumericEditorTemplate t in this.editor)
+				t.ReadOnly = this.ReadOnly;
 		}
+
 		protected override void ConfigureEditor(object configureData)
 		{
 			base.ConfigureEditor(configureData);
 			var hintOverride = configureData as IEnumerable<EditorHintMemberAttribute>;
 
-			for (int i = 0; i < this.editor.Length; i++)
+			foreach (NumericEditorTemplate t in this.editor)
 			{
-				this.editor[i].ResetProperties();
-				this.ApplyDefaultSubEditorConfig(this.editor[i]);
+				t.ResetProperties();
+				this.ApplyDefaultSubEditorConfig(t);
 			}
 
 			var places = this.EditedMember.GetEditorHint<EditorHintDecimalPlacesAttribute>(hintOverride);
 			var increment = this.EditedMember.GetEditorHint<EditorHintIncrementAttribute>(hintOverride);
 			var range = this.EditedMember.GetEditorHint<EditorHintRangeAttribute>(hintOverride);
 				
-			for (int i = 0; i < this.editor.Length; i++)
+			foreach (NumericEditorTemplate t in this.editor)
 			{
-				if (places != null) this.editor[i].DecimalPlaces = places.Places;
-				if (increment != null) this.editor[i].Increment = increment.Increment;
+				if (places != null) t.DecimalPlaces = places.Places;
+				if (increment != null) t.Increment = increment.Increment;
 				if (range != null)
 				{
-					this.editor[i].Minimum = range.Min;
-					this.editor[i].Maximum = range.Max;
+					t.Minimum = range.Min;
+					t.Maximum = range.Max;
 				}
 			}
 		}

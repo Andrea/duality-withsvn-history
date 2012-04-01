@@ -161,7 +161,7 @@ namespace Duality.EditorHints
 		{
 			if (overrideHints == null) return hints;
 			if (hints == null) return overrideHints;
-			return hints.Where(h => !overrideHints.Any(o => o.GetType().IsAssignableFrom(h.GetType())));
+			return hints.Where(h => !overrideHints.Any(o => o.GetType().IsInstanceOfType(h)));
 		}
 	}
 }

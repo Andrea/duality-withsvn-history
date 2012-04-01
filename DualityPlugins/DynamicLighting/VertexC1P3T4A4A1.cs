@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Runtime.InteropServices;
 
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
-
-using Duality;
 using Duality.ColorFormat;
 using Duality.VertexFormat;
 using Duality.Resources;

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Runtime.InteropServices;
 
 using Duality.ColorFormat;
@@ -45,13 +42,13 @@ namespace Duality.VertexFormat
 			get { return VertexTypeIndex; }
 		}
 		
-		void IVertexData.SetupVBO(Duality.Resources.BatchInfo mat)
+		void IVertexData.SetupVBO(Resources.BatchInfo mat)
 		{
-			if (mat.Technique != Duality.Resources.DrawTechnique.Picking) GL.EnableClientState(ArrayCap.ColorArray);
+			if (mat.Technique != Resources.DrawTechnique.Picking) GL.EnableClientState(ArrayCap.ColorArray);
 			GL.EnableClientState(ArrayCap.VertexArray);
 			GL.EnableClientState(ArrayCap.TextureCoordArray);
 
-			if (mat.Technique != Duality.Resources.DrawTechnique.Picking) GL.ColorPointer(4, ColorPointerType.UnsignedByte, Size, (IntPtr)OffsetColor);
+			if (mat.Technique != Resources.DrawTechnique.Picking) GL.ColorPointer(4, ColorPointerType.UnsignedByte, Size, (IntPtr)OffsetColor);
 			GL.VertexPointer(3, VertexPointerType.Float, Size, (IntPtr)OffsetPos);
 			GL.TexCoordPointer(4, TexCoordPointerType.Float, Size, (IntPtr)OffsetTex0);
 
@@ -98,7 +95,7 @@ namespace Duality.VertexFormat
 			GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(Size * vertexData.Length), IntPtr.Zero, BufferUsageHint.StreamDraw);
 			GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(Size * vertexData.Length), vertexData, BufferUsageHint.StreamDraw);
 		}
-		void IVertexData.FinishVBO(Duality.Resources.BatchInfo mat)
+		void IVertexData.FinishVBO(Resources.BatchInfo mat)
 		{
 			GL.DisableClientState(ArrayCap.ColorArray);
 			GL.DisableClientState(ArrayCap.VertexArray);
@@ -149,7 +146,7 @@ namespace Duality.VertexFormat
 		/// Total size in bytes.
 		/// </summary>
 		public const int Size				= OffsetAttrib + 1 * sizeof(float);
-		public const int VertexTypeIndex	= Duality.Resources.DrawTechnique.VertexType_C1P3T4A1;
+		public const int VertexTypeIndex	= Resources.DrawTechnique.VertexType_C1P3T4A1;
 
 		public VertexC1P3T4A1(float x, float y, float z, float s, float t, float p, float q, float attrib, byte r = 255, byte g = 255, byte b = 255, byte a = 255)
 		{

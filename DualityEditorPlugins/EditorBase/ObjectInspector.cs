@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -11,7 +10,6 @@ using PropertyGrid = AdamsLair.PropertyGrid.PropertyGrid;
 
 using Duality;
 using DualityEditor;
-using EditorBase.PropertyEditors;
 
 namespace EditorBase
 {
@@ -84,9 +82,9 @@ namespace EditorBase
 
 		internal void SaveUserData(System.Xml.XmlElement node)
 		{
-			node.SetAttribute("acceptedCats", ((uint)this.acceptedCats).ToString());
-			node.SetAttribute("autoRefresh", this.buttonAutoRefresh.Checked.ToString());
-			node.SetAttribute("locked", this.buttonLock.Checked.ToString());
+			node.SetAttribute("acceptedCats", ((uint)this.acceptedCats).ToString(CultureInfo.InvariantCulture));
+			node.SetAttribute("autoRefresh", this.buttonAutoRefresh.Checked.ToString(CultureInfo.InvariantCulture));
+			node.SetAttribute("locked", this.buttonLock.Checked.ToString(CultureInfo.InvariantCulture));
 			node.SetAttribute("titleText", this.Text);
 		}
 		internal void LoadUserData(System.Xml.XmlElement node)

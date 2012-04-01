@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
 
 namespace Duality.Serialization
 {
@@ -119,7 +115,7 @@ namespace Duality.Serialization
 		/// <returns>An instance of the specified <see cref="System.Type"/> that has been constructed using the provided data.</returns>
 		public virtual object ConstructObject(IDataReader reader, Type objType)
 		{
-			return ReflectionHelper.CreateInstanceOf(objType) ?? ReflectionHelper.CreateInstanceOf(objType, true);
+			return objType.CreateInstanceOf() ?? objType.CreateInstanceOf(true);
 		}
 		/// <summary>
 		/// Reads and applies the object data to the specified <see cref="IDataReader"/>.

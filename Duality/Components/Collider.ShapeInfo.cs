@@ -5,13 +5,9 @@ using System.Linq;
 using OpenTK;
 
 using FarseerPhysics.Dynamics;
-using FarseerPhysics.Dynamics.Contacts;
-using FarseerPhysics.Factories;
 using FarseerPhysics.Collision.Shapes;
 
-using Duality;
 using Duality.EditorHints;
-using Duality.Resources;
 
 namespace Duality.Components
 {
@@ -145,7 +141,7 @@ namespace Duality.Components
 			/// <returns></returns>
 			public ShapeInfo Clone()
 			{
-				ShapeInfo newObj = ReflectionHelper.CreateInstanceOf(this.GetType()) as ShapeInfo;
+				ShapeInfo newObj = this.GetType().CreateInstanceOf() as ShapeInfo;
 				this.CopyTo(newObj);
 				return newObj;
 			}

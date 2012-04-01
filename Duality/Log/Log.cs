@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.IO;
 using System.Reflection;
 
 namespace Duality
@@ -339,7 +337,7 @@ namespace Duality
 		{
 			string declTypeName = Type(info.DeclaringType);
 			string[] paramNames = info.GetParameters().Select(p => Type(p.ParameterType)).ToArray();
-			string[] genArgNames = info.GetGenericArguments().Select(t => Type(t)).ToArray();
+			string[] genArgNames = info.GetGenericArguments().Select(Type).ToArray();
 			return string.Format(System.Globalization.CultureInfo.InvariantCulture, 
 				"{0}{1}{3}({2})",
 				includeDeclaringType ? declTypeName + "." : "",

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using System.Reflection;
 
 using Duality;
 
@@ -202,7 +201,7 @@ namespace DualityEditor.CorePluginInterface
 		public bool CanPerform(Type target)
 		{
 			// Convert ContentRef requests to their respective Resource-requests
-			target = this.ResTypeFromRefType(target);
+			target = ResTypeFromRefType(target);
 
 			if (this.checkedTypes.Contains(target)) return false;
 			this.curComplexity++;
@@ -214,9 +213,7 @@ namespace DualityEditor.CorePluginInterface
 			if (!result && this.data.ContainsContentRefs(target)) result = true;
 			if (!result)
 			{
-				result = CorePluginHelper.RequestDataConverters(target)
-					.Where(s => !this.usedConverters.Contains(s) && s.CanConvertFrom(this))
-					.Any();
+				result = CorePluginHelper.RequestDataConverters(target).Any(s => !this.usedConverters.Contains(s) && s.CanConvertFrom(this));
 			}
 
 			if (result) this.checkedTypes.Remove(target);
@@ -229,7 +226,7 @@ namespace DualityEditor.CorePluginInterface
 		{
 			// Convert ContentRef requests to their respective Resource-requests
 			Type originalType = target;
-			target = this.ResTypeFromRefType(target);
+			target = ResTypeFromRefType(target);
 
 			//Log.Editor.Write("Convert to {0}", target.Name);
 			bool fittingDataFound = false;
@@ -239,7 +236,7 @@ namespace DualityEditor.CorePluginInterface
 			if (fittingData == null)
 			{
 				// Single object
-				if (this.data.GetDataPresent(target)) fittingData = new object[] { this.data.GetData(target) };
+				if (this.data.GetDataPresent(target)) fittingData = new[] { this.data.GetData(target) };
 			}
 			if (fittingData == null)
 			{
@@ -296,18 +293,16 @@ namespace DualityEditor.CorePluginInterface
 			if (typeof(IContentRef).IsAssignableFrom(originalType))
 				returnValue = result.OfType<Resource>().Select(r => r.GetContentRef());
 
-			returnValue = returnValue.Where(o => originalType.IsAssignableFrom(o.GetType()));
-			return returnValue ?? (IEnumerable<object>)Array.CreateInstance(originalType, 0);
+			returnValue = returnValue ?? (IEnumerable<object>)Array.CreateInstance(originalType, 0);
+			returnValue = returnValue.Where(originalType.IsInstanceOfType);
+			return returnValue;
 		}
 
-		private Type ResTypeFromRefType(Type type)
+		private static Type ResTypeFromRefType(Type type)
 		{
 			if (typeof(IContentRef).IsAssignableFrom(type))
 			{
-				if (type.IsGenericType)
-					type = type.GetGenericArguments()[0];
-				else
-					type = typeof(Resource);
+				type = type.IsGenericType ? type.GetGenericArguments()[0] : typeof(Resource);
 			}
 
 			return type;

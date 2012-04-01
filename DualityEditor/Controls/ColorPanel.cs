@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -120,7 +117,7 @@ namespace DualityEditor.Controls
         {
 			this.pickerDragTimer = new Timer();
 			this.pickerDragTimer.Interval = 10;
-			this.pickerDragTimer.Tick += new EventHandler(pickerDragTimer_Tick);
+			this.pickerDragTimer.Tick += pickerDragTimer_Tick;
 
 			this.SetStyle(ControlStyles.UserPaint, true);
 			this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);

@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-using Duality;
 using Duality.VertexFormat;
 using Duality.EditorHints;
 
-using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
 namespace Duality.Resources
@@ -417,12 +414,11 @@ namespace Duality.Resources
 				int curSamplerIndex = 0;
 				if (material.Textures != null)
 				{
-					ContentRef<Texture> tex;
 					for (int i = 0; i < varInfo.Length; i++)
 					{
 						if (varInfo[i].glVarLoc == -1) continue;
 						if (varInfo[i].type != ShaderVarType.Sampler2D) continue;
-						tex = material.GetTexture(varInfo[i].name);
+						ContentRef<Texture> tex = material.GetTexture(varInfo[i].name);
 						Texture.Bind(tex, curSamplerIndex);
 						GL.Uniform1(varInfo[i].glVarLoc, curSamplerIndex);
 						curSamplerIndex++;
@@ -433,11 +429,10 @@ namespace Duality.Resources
 				// Transfer uniform data from material to actual shader
 				if (material.Uniforms != null)
 				{
-					float[] data = null;
 					for (int i = 0; i < varInfo.Length; i++)
 					{
 						if (varInfo[i].glVarLoc == -1) continue;
-						data = material.GetUniform(varInfo[i].name);
+						float[] data = material.GetUniform(varInfo[i].name);
 						if (data == null) continue;
 						varInfo[i].SetupUniform(data);
 					}

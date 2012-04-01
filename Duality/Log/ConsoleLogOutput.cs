@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Duality
 {
 	/// <summary>
 	/// A <see cref="ILogOutput">Log output</see> that uses the <see cref="System.Console"/> as message destination.
 	/// </summary>
-	public class ConsoleLogOutput : TextWriterLogOutput, ILogOutput
+	public class ConsoleLogOutput : TextWriterLogOutput
 	{
 		private	ConsoleColor	bgColor;
 
@@ -25,7 +22,6 @@ namespace Duality
 		/// <param name="msg">The message to write.</param>
 		public override void Write(Log source, LogMessageType type, string msg)
 		{
-			int indent = source.Indent;
 			ConsoleColor clrBg = Console.BackgroundColor;
 			ConsoleColor clrFg = Console.ForegroundColor;
 

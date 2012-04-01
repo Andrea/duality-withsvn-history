@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 using OpenTK;
 
@@ -164,9 +161,8 @@ namespace Duality.Components
 
 				if (this.parentTransform != null)
 				{
-					Vector3 temp;
 					this.pos = this.posAbs;
-					temp = this.parentTransform.posAbs;
+					Vector3 temp = this.parentTransform.posAbs;
 					Vector3.Subtract(ref this.pos, ref temp, out this.pos);
 					temp = this.parentTransform.scaleAbs;
 					Vector3.Divide(ref this.pos, ref temp, out this.pos);
@@ -194,8 +190,7 @@ namespace Duality.Components
 				if (this.parentTransform != null)
 				{
 					this.vel = this.velAbs;
-					Vector3 temp;
-					temp = this.parentTransform.velAbs;
+					Vector3 temp = this.parentTransform.velAbs;
 					Vector3.Subtract(ref this.vel, ref temp, out this.vel);
 					temp = this.parentTransform.scaleAbs;
 					Vector3.Divide(ref this.vel, ref temp, out this.vel);
@@ -516,7 +511,7 @@ namespace Duality.Components
 
 			this.UpdateRel();
 		}
-		void ICmpInitializable.OnInit(Component.InitContext context)
+		void ICmpInitializable.OnInit(InitContext context)
 		{
 			if (context == InitContext.AddToGameObject)
 			{
@@ -533,7 +528,7 @@ namespace Duality.Components
 				this.UpdateAbs();
 			}
 		}
-		void ICmpInitializable.OnShutdown(Component.ShutdownContext context)
+		void ICmpInitializable.OnShutdown(ShutdownContext context)
 		{
 			if (context == ShutdownContext.RemovingFromGameObject)
 			{

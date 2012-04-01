@@ -2,18 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using System.Reflection;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
 using AdamsLair.PropertyGrid;
-using AdamsLair.PropertyGrid.EditorTemplates;
 using AdamsLair.PropertyGrid.Renderer;
 using ButtonState = AdamsLair.PropertyGrid.Renderer.ButtonState;
 using BorderStyle = AdamsLair.PropertyGrid.Renderer.BorderStyle;
 
 using Duality;
-using Duality.Resources;
 using DualityEditor;
 using DualityEditor.CorePluginInterface;
 

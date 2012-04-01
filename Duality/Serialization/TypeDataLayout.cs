@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using System.Reflection;
+﻿using System.IO;
 
 namespace Duality.Serialization
 {
@@ -82,7 +77,7 @@ namespace Duality.Serialization
 			for (int i = 0; i < t.Fields.Length; i++)
 			{
 				this.fields[i].name = t.Fields[i].Name;
-				this.fields[i].typeString = ReflectionHelper.GetTypeId(t.Fields[i].FieldType);
+				this.fields[i].typeString = t.Fields[i].FieldType.GetTypeId();
 			}
 		}
 

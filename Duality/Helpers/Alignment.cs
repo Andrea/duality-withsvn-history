@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Duality
+﻿namespace Duality
 {
 	/// <summary>
 	/// Represents a 2D spatial alignment.

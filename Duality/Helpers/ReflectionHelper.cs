@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.IO;
@@ -47,7 +48,6 @@ namespace Duality
 				Replace(Path.AltDirectorySeparatorChar, '.').
 				Trim('.');
 
-			string[] names = asm.GetManifestResourceNames();
 			ManifestResourceInfo info = asm.GetManifestResourceInfo(resName);
 			if (info == null) return null;
 
@@ -161,8 +161,8 @@ namespace Duality
 		}
 
 		
-		public delegate void Setter<T,U>(T instance, U value);
-		public delegate void ByRefSetter<T,U>(ref T instance, U value);
+		public delegate void Setter<in T, in U>(T instance, U value);
+		public delegate void ByRefSetter<T, in U>(ref T instance, U value);
 		public static ByRefSetter<T,U> BuildFieldRefSetter<T,U>(this FieldInfo field)
 		{
 			ParameterExpression instance = Expression.Parameter(typeof(T).MakeByRefType(), "instance");
@@ -250,7 +250,7 @@ namespace Duality
 			if (typeResolveCache.TryGetValue(typeString, out result)) return result;
 
 			Assembly[] searchAsm = AppDomain.CurrentDomain.GetAssemblies().Except(DualityApp.DisposedPlugins).ToArray();
-			result = ReflectionHelper.FindType(typeString, searchAsm, declaringMethod);
+			result = FindType(typeString, searchAsm, declaringMethod);
 			if (result != null && declaringMethod == null) typeResolveCache[typeString] = result;
 
 			if (result == null && throwOnError) throw new ApplicationException(string.Format("Can't resolve Type '{0}'. Type not found", typeString));
@@ -268,7 +268,7 @@ namespace Duality
 			if (memberResolveCache.TryGetValue(memberString, out result)) return result;
 
 			Assembly[] searchAsm = AppDomain.CurrentDomain.GetAssemblies().Except(DualityApp.DisposedPlugins).ToArray();
-			result = ReflectionHelper.FindMember(memberString, searchAsm);
+			result = FindMember(memberString, searchAsm);
 			if (result != null) memberResolveCache[memberString] = result;
 
 			if (result == null && throwOnError) throw new ApplicationException(string.Format("Can't resolve MemberInfo '{0}'. Member not found", memberString));
@@ -350,7 +350,7 @@ namespace Duality
 		/// <returns></returns>
 		public static string GetTypeKeyword(this Type T)
 		{
-			return T.Name.Split(new char[] {'`'}, StringSplitOptions.RemoveEmptyEntries)[0].Replace('+', '.');
+			return T.Name.Split(new[] {'`'}, StringSplitOptions.RemoveEmptyEntries)[0].Replace('+', '.');
 		}
 		/// <summary>
 		/// Returns a string describing a certain Type.
@@ -390,7 +390,7 @@ namespace Duality
 					string[] nestedNameToken = shortName ? T.Name.Split('+') : T.FullName.Split('+');
 					string nestedName = nestedNameToken[nestedNameToken.Length - 1];
 						
-					int genTypeSepIndex = nestedName.IndexOf("[[");
+					int genTypeSepIndex = nestedName.IndexOf("[[", StringComparison.Ordinal);
 					if (genTypeSepIndex != -1) nestedName = nestedName.Substring(0, genTypeSepIndex);
 					genTypeSepIndex = nestedName.IndexOf('`');
 					if (genTypeSepIndex != -1) nestedName = nestedName.Substring(0, genTypeSepIndex);
@@ -402,9 +402,9 @@ namespace Duality
 				else
 				{
 					if (shortName)
-						typeStr.Append(T.Name.Split(new char[] {'`'}, StringSplitOptions.RemoveEmptyEntries)[0].Replace('+', '.'));
+						typeStr.Append(T.Name.Split(new[] {'`'}, StringSplitOptions.RemoveEmptyEntries)[0].Replace('+', '.'));
 					else
-						typeStr.Append(T.FullName.Split(new char[] {'`'}, StringSplitOptions.RemoveEmptyEntries)[0].Replace('+', '.'));
+						typeStr.Append(T.FullName.Split(new[] {'`'}, StringSplitOptions.RemoveEmptyEntries)[0].Replace('+', '.'));
 				}
 
 				if (genArgs != null && genArgs.Length > 0)
@@ -477,9 +477,9 @@ namespace Duality
 				if (genArgs.Length != 0)
 				{
 					if (method.IsGenericMethodDefinition)
-						result += "``" + genArgs.Length.ToString();
+						result += "``" + genArgs.Length.ToString(CultureInfo.InvariantCulture);
 					else
-						result += "``" + genArgs.Length.ToString() + '[' + genArgs.ToString(t => "[" + t.GetTypeId() + "]", ",") + ']';
+						result += "``" + genArgs.Length.ToString(CultureInfo.InvariantCulture) + '[' + genArgs.ToString(t => "[" + t.GetTypeId() + "]", ",") + ']';
 				}
 				if (parameters.Length != 0)
 					result += '(' + parameters.ToString(p => p.ParameterType.GetTypeId(), ",") + ')';
@@ -535,7 +535,7 @@ namespace Duality
 				return arrayRank == 1 ? elementType.MakeArrayType() : elementType.MakeArrayType(arrayRank);
 			}
 
-			if (csCodeType.IndexOfAny(new char[]{'<','>'}) != -1)
+			if (csCodeType.IndexOfAny(new[]{'<','>'}) != -1)
 			{
 				int first = csCodeType.IndexOf('<');
 				int eof = csCodeType.IndexOf('<', first + 1);
@@ -550,7 +550,7 @@ namespace Duality
 				tokenTemp[0] = csCodeType.Substring(0, first);
 				tokenTemp[1] = csCodeType.Substring(first + 1, last - (first + 1));
 				tokenTemp[2] = csCodeType.Substring(last + 1, csCodeType.Length - (last + 1));
-				string[] tokenTemp2 = tokenTemp[1].Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries);
+				string[] tokenTemp2 = tokenTemp[1].Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries);
 				
 				Type[]	types		= new Type[tokenTemp2.Length];
 				Type	mainType	= FindTypeByCSCode(tokenTemp[0] + '`' + tokenTemp2.Length, asmSearch, declaringType);
@@ -577,28 +577,25 @@ namespace Duality
 			{
 				if (declaringType == null)
 				{
-					Type[]	asmTypes;
-					string	nameTemp;
 					foreach (Assembly asm in asmSearch)
 					{
-						asmTypes = asm.GetTypes();
-						for (int j = 0; j < asmTypes.Length; j++)
+						Type[]	asmTypes = asm.GetTypes();
+						foreach (Type t in asmTypes)
 						{
-							nameTemp = asmTypes[j].FullName.Replace('+', '.');
-							if (csCodeType == nameTemp) return asmTypes[j];
+							string	nameTemp = t.FullName.Replace('+', '.');
+							if (csCodeType == nameTemp) return t;
 						}
 					}
 				}
 				else
 				{
 					Type[] nestedTypes = declaringType.GetNestedTypes(BindStaticAll);
-					string nameTemp;
-					for (int j = 0; j < nestedTypes.Length; j++)
+					foreach (Type t in nestedTypes)
 					{
-						nameTemp = nestedTypes[j].FullName;
+						string nameTemp = t.FullName;
 						nameTemp = nameTemp.Remove(0, nameTemp.LastIndexOf('+') + 1);
 						nameTemp = nameTemp.Replace('+', '.');
-						if (csCodeType == nameTemp) return nestedTypes[j];
+						if (csCodeType == nameTemp) return t;
 					}
 				}
 			}
@@ -801,7 +798,7 @@ namespace Duality
 				}
 			}
 
-			int genArgTokenStartIndex = token[2].IndexOf("``");
+			int genArgTokenStartIndex = token[2].IndexOf("``", StringComparison.Ordinal);
 			int genArgTokenEndIndex = memberParamListStartIndex != -1 ? memberParamListStartIndex : token[2].Length;
 			string genArgToken = genArgTokenStartIndex != -1 ? token[2].Substring(genArgTokenStartIndex + 2, genArgTokenEndIndex - genArgTokenStartIndex - 2) : "";
 			if (genArgTokenStartIndex != -1) memberName = token[2].Substring(0, genArgTokenStartIndex);			
@@ -815,7 +812,7 @@ namespace Duality
 			int genArgCount = genArgToken.Length > 0 ? int.Parse(genArgToken.Substring(0, genArgListStartIndex != -1 ? genArgListStartIndex : genArgToken.Length)) : 0;
 
 			// Select the method that fits
-			MethodInfo[] availMethods = declaringType.GetMethods(ReflectionHelper.BindAll).Where(
+			MethodInfo[] availMethods = declaringType.GetMethods(BindAll).Where(
 				m => m.Name == memberName && 
 				m.GetGenericArguments().Length == genArgCount &&
 				m.GetParameters().Length == memberParams.Length).ToArray();

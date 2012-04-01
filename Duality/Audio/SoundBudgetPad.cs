@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
 using Duality.Resources;
 
 namespace Duality
@@ -10,7 +8,7 @@ namespace Duality
 	/// <summary>
 	/// Defines priorities for the budget-based sound system
 	/// </summary>
-	public enum SoundBudgetPriority : int
+	public enum SoundBudgetPriority
 	{
 		/// <summary>
 		/// Highest priority. Overpowers anything else. Value: 100.
@@ -238,14 +236,9 @@ namespace Duality
 		/// <returns>True, if there is, false if not.</returns>
 		public bool IsAnyScheduled()
 		{
-			if (this.budgetPads.Count == 0) return false;
-			foreach (SoundBudgetPad pad in this.budgetPads)
-			{
-				if (pad.Sound.FadeTarget > 0.0f)
-					return true;
-			}
-			return false;
+			return this.budgetPads.Any(pad => pad.Sound.FadeTarget > 0.0f);
 		}
+
 		/// <summary>
 		/// Schedules a new budget pad.
 		/// </summary>
@@ -269,14 +262,15 @@ namespace Duality
 		/// <param name="fadeOutTimeSec"></param>
 		public void Pop(ContentRef<Sound> snd, float fadeOutTimeSec = DefaultFadeOutTime)
 		{
-			for (int i = 0; i < this.budgetPads.Count; i++)
+			foreach (SoundBudgetPad t in this.budgetPads)
 			{
-				if (this.budgetPads[i].Sound.SoundRef.Res == snd.Res)
+				if (t.Sound.SoundRef.Res == snd.Res)
 				{
-					this.budgetPads[i].Sound.FadeOut(fadeOutTimeSec);
+					t.Sound.FadeOut(fadeOutTimeSec);
 				}
 			}
 		}
+
 		/// <summary>
 		/// Fades out the pad with the highest priority i.e. that is (most) audible.
 		/// </summary>
@@ -302,7 +296,8 @@ namespace Duality
 		public void Clear(float fadeOutTimeSec = DefaultFadeOutTime)
 		{
 			if (this.budgetPads.Count == 0) return;
-			for (int i = 0; i < this.budgetPads.Count; i++) this.budgetPads[i].Sound.FadeOut(fadeOutTimeSec);
+			foreach (SoundBudgetPad t in this.budgetPads)
+				t.Sound.FadeOut(fadeOutTimeSec);
 		}
 	}
 }

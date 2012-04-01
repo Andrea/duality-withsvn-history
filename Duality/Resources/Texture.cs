@@ -1,16 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Drawing;
-using System.IO;
-using System.Runtime.Serialization;
 using System.Drawing.Imaging;
 using GLPixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 using BitmapPixelFormat = System.Drawing.Imaging.PixelFormat;
-
-using Duality;
-using Duality.ColorFormat;
 using Duality.EditorHints;
 
 using OpenTK;
@@ -161,7 +154,7 @@ namespace Duality.Resources
 
 		static Texture()
 		{
-			DualityApp.UserDataChanged += new EventHandler(DualityApp_UserDataChanged);
+			DualityApp.UserDataChanged += DualityApp_UserDataChanged;
 		}
 		private static void Init()
 		{
@@ -224,11 +217,10 @@ namespace Duality.Resources
 		private static void DualityApp_UserDataChanged(object sender, EventArgs e)
 		{
 			// Reload relative textures
-			Texture tex;
 			foreach (ContentRef<Texture> texRef in ContentProvider.GetAvailContent<Texture>())
 			{
 				if (!texRef.IsLoaded || !texRef.IsAvailable) continue;
-				tex = texRef.Res;
+				Texture tex = texRef.Res;
 				if (tex.SizeRelative) tex.ReloadData();
 			}
 		}

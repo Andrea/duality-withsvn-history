@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Runtime.InteropServices;
 
 using OpenTK;
@@ -35,7 +32,7 @@ namespace Duality.VertexFormat
 			get { return VertexTypeIndex; }
 		}
 		
-		void IVertexData.SetupVBO(Duality.Resources.BatchInfo mat)
+		void IVertexData.SetupVBO(Resources.BatchInfo mat)
 		{
 			GL.EnableClientState(ArrayCap.VertexArray);
 			GL.EnableClientState(ArrayCap.TextureCoordArray);
@@ -48,7 +45,7 @@ namespace Duality.VertexFormat
 			GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(Size * vertexData.Length), IntPtr.Zero, BufferUsageHint.StreamDraw);
 			GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(Size * vertexData.Length), vertexData, BufferUsageHint.StreamDraw);
 		}
-		void IVertexData.FinishVBO(Duality.Resources.BatchInfo mat)
+		void IVertexData.FinishVBO(Resources.BatchInfo mat)
 		{
 			GL.DisableClientState(ArrayCap.VertexArray);
 			GL.DisableClientState(ArrayCap.TextureCoordArray);
@@ -66,7 +63,7 @@ namespace Duality.VertexFormat
 		/// Total size in bytes.
 		/// </summary>
 		public const int Size				= OffsetTex0 + 2 * sizeof(float);
-		public const int VertexTypeIndex	= Duality.Resources.DrawTechnique.VertexType_P3T2;
+		public const int VertexTypeIndex	= Resources.DrawTechnique.VertexType_P3T2;
 
 		public VertexP3T2(float x, float y, float z, float u, float v)
 		{

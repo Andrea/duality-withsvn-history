@@ -13,11 +13,6 @@ using OpenTK;
 using Duality;
 using Duality.ObjectManagers;
 using Duality.Resources;
-using Duality.Components;
-using Duality.ColorFormat;
-
-using DualityEditor;
-using DualityEditor.Controls;
 
 using WeifenLuo.WinFormsUI.Docking;
 using Ionic.Zip;
@@ -143,8 +138,8 @@ namespace DualityEditor.Forms
 			instance = this;
 			this.InitializeComponent();
 			this.ApplyDockPanelSkin();
-			this.mainMenuStrip.Renderer = new DualityEditor.Controls.ToolStrip.DualitorToolStripProfessionalRenderer();
-			this.mainToolStrip.Renderer = new DualityEditor.Controls.ToolStrip.DualitorToolStripProfessionalRenderer();
+			this.mainMenuStrip.Renderer = new Controls.ToolStrip.DualitorToolStripProfessionalRenderer();
+			this.mainToolStrip.Renderer = new Controls.ToolStrip.DualitorToolStripProfessionalRenderer();
 
 			this.needsRecovery = recover;
 
@@ -180,7 +175,7 @@ namespace DualityEditor.Forms
 
 			this.actionDebugApp.Enabled = EditorHelper.IsJITDebuggerAvailable();
 
-			DualityApp.Init(DualityApp.ExecutionEnvironment.Editor, DualityApp.ExecutionContext.Editor, new string[] {"logfile", "logfile_editor"});
+			DualityApp.Init(DualityApp.ExecutionEnvironment.Editor, DualityApp.ExecutionContext.Editor, new[] {"logfile", "logfile_editor"});
 			this.InitMenus();
 			this.InitMainGLContext();
 			ContentProvider.InitDefaultContent();
@@ -195,7 +190,7 @@ namespace DualityEditor.Forms
 			this.corePluginReloader.AfterEndReload		+= this.corePluginReloader_AfterEndReload;
 			this.pluginWatcher.EnableRaisingEvents = true;
 
-			Scene.Leaving += new EventHandler(this.Scene_Leaving);
+			Scene.Leaving += this.Scene_Leaving;
 			Scene.Current = new Scene();
 
 			this.dataDirWatcher.Path = EditorHelper.DataDirectory;
@@ -514,8 +509,8 @@ namespace DualityEditor.Forms
 			// Replace exec path in user files, since VS doesn't support relative paths there..
 			{
 				XmlDocument userDoc;
-				string userFileCore = EditorHelper.SourceCodeProjectCorePluginFile + ".user";
-				string userFileEditor = EditorHelper.SourceCodeProjectEditorPluginFile + ".user";
+				const string userFileCore = EditorHelper.SourceCodeProjectCorePluginFile + ".user";
+				const string userFileEditor = EditorHelper.SourceCodeProjectEditorPluginFile + ".user";
 
 				if (File.Exists(userFileCore))
 				{
@@ -555,11 +550,7 @@ namespace DualityEditor.Forms
 
 		public T GetPlugin<T>() where T : EditorPlugin
 		{
-			foreach (EditorPlugin p in this.plugins)
-			{
-				if (p is T) return p as T;
-			}
-			return null;
+			return this.plugins.OfType<T>().FirstOrDefault();
 		}
 
 		public void LoadXmlCodeDoc()
@@ -595,9 +586,9 @@ namespace DualityEditor.Forms
 			{
 				if (i.CanImportFile(srcFilePath))
 				{
-					foreach (string file in i.GetOutputFiles(srcFilePath, targetName, targetDir))
+					if (i.GetOutputFiles(srcFilePath, targetName, targetDir).Any(File.Exists))
 					{
-						if (File.Exists(file)) return true;
+						return true;
 					}
 					// If we've got a hit, don't search further - ImportFile won't either.
 					break;
@@ -754,7 +745,7 @@ namespace DualityEditor.Forms
 		
 		private void LoadPlugins()
 		{
-			CorePluginHelper.RegisterPropertyEditorProvider(new DualityEditor.Controls.PropertyEditors.DualityPropertyEditorProvider());
+			CorePluginHelper.RegisterPropertyEditorProvider(new Controls.PropertyEditors.DualityPropertyEditorProvider());
 
 			Log.Editor.Write("Scanning for editor plugins...");
 			Log.Editor.PushIndent();
@@ -762,14 +753,12 @@ namespace DualityEditor.Forms
 			if (Directory.Exists("Plugins"))
 			{
 				string[] pluginDllPaths = Directory.GetFiles("Plugins", "*.editor.dll", SearchOption.AllDirectories);
-				Assembly pluginAssembly;
-				Type[] exportedTypes;
-				for (int i = 0; i < pluginDllPaths.Length; i++)
+				foreach (string dllPath in pluginDllPaths)
 				{
-					Log.Editor.Write("Loading '{0}'...", pluginDllPaths[i]);
+					Log.Editor.Write("Loading '{0}'...", dllPath);
 					Log.Editor.PushIndent();
-					pluginAssembly = Assembly.Load(File.ReadAllBytes(pluginDllPaths[i])); //Assembly.LoadFile(Path.GetFullPath(pluginDllPaths[i]));
-					exportedTypes = pluginAssembly.GetExportedTypes();
+					Assembly pluginAssembly = Assembly.Load(File.ReadAllBytes(dllPath));
+					Type[] exportedTypes = pluginAssembly.GetExportedTypes();
 					try
 					{
 						// Initialize plugin objects
@@ -778,7 +767,7 @@ namespace DualityEditor.Forms
 							if (typeof(EditorPlugin).IsAssignableFrom(exportedTypes[j]))
 							{
 								Log.Editor.Write("Instantiating class '{0}'...", exportedTypes[j].Name);
-								EditorPlugin plugin = (EditorPlugin)ReflectionHelper.CreateInstanceOf(exportedTypes[j]);
+								EditorPlugin plugin = (EditorPlugin)exportedTypes[j].CreateInstanceOf();
 								plugin.LoadPlugin();
 								this.plugins.Add(plugin);
 							}
@@ -786,7 +775,7 @@ namespace DualityEditor.Forms
 					}
 					catch (Exception e)
 					{
-						Log.Editor.WriteError("Error loading plugin '{0}'. Exception: {1}", pluginDllPaths[i], Log.Exception(e));
+						Log.Editor.WriteError("Error loading plugin '{0}'. Exception: {1}", dllPath, Log.Exception(e));
 					}
 					Log.Editor.PopIndent();
 				}
@@ -839,12 +828,12 @@ namespace DualityEditor.Forms
 			{
 				StreamWriter writer = new StreamWriter(str);
 				// --- Save custom user data here ---
-				System.Xml.XmlDocument xmlDoc = new System.Xml.XmlDocument();
-				System.Xml.XmlElement rootElement = xmlDoc.CreateElement("PluginUserData");
+				XmlDocument xmlDoc = new XmlDocument();
+				XmlElement rootElement = xmlDoc.CreateElement("PluginUserData");
 				xmlDoc.AppendChild(rootElement);
 				foreach (EditorPlugin plugin in this.plugins)
 				{
-					System.Xml.XmlElement pluginXmlElement = xmlDoc.CreateElement("Plugin_" + plugin.Id);
+					XmlElement pluginXmlElement = xmlDoc.CreateElement("Plugin_" + plugin.Id);
 					rootElement.AppendChild(pluginXmlElement);
 					plugin.SaveUserData(xmlDoc, pluginXmlElement);
 				}
@@ -885,7 +874,7 @@ namespace DualityEditor.Forms
 				{
 					this.dockPanel.LoadFromXml(dockPanelDataStream, this.DeserializeDockContent);
 				}
-				catch (System.Xml.XmlException e)
+				catch (XmlException e)
 				{
 					Log.Editor.WriteError("Cannot load DockPanel data due to malformed or non-existent Xml: {0}", Log.Exception(e));
 				}
@@ -894,11 +883,11 @@ namespace DualityEditor.Forms
 				// --- Read custom user data from StringBuilder here ---
 				Log.Editor.Write("Loading plugin user data...");
 				Log.Editor.PushIndent();
-				System.Xml.XmlDocument xmlDoc = new System.Xml.XmlDocument();
+				XmlDocument xmlDoc = new XmlDocument();
 				try
 				{
 					xmlDoc.LoadXml(editorData.ToString());
-					foreach (System.Xml.XmlElement child in xmlDoc.DocumentElement)
+					foreach (XmlElement child in xmlDoc.DocumentElement)
 					{
 						if (child.Name.StartsWith("Plugin_"))
 						{
@@ -914,7 +903,7 @@ namespace DualityEditor.Forms
 						}
 					}
 				}
-				catch (System.Xml.XmlException e)
+				catch (XmlException e)
 				{
 					Log.Editor.WriteError("Cannot load plugin user data due to malformed or non-existent Xml: {0}", Log.Exception(e));
 				}
@@ -927,8 +916,6 @@ namespace DualityEditor.Forms
 		private IDockContent DeserializeDockContent(string persistName)
 		{
 			Log.Editor.Write("Deserializing layout: '" + persistName + "'");
-
-			string[] persistNameToken = persistName.Split('.');
 
 			Type dockContentType = null;
 			Assembly dockContentAssembly = null;
@@ -958,10 +945,7 @@ namespace DualityEditor.Forms
 				}
 
 				// If none exists, create one
-				if (deserializeDockContent == null) 
-					deserializeDockContent = ReflectionHelper.CreateInstanceOf(dockContentType) as IDockContent;
-
-				return deserializeDockContent;
+				return deserializeDockContent ?? (dockContentType.CreateInstanceOf() as IDockContent);
 			}
 		}
 
@@ -1306,7 +1290,7 @@ namespace DualityEditor.Forms
 		private void PushSourceDirEvent(FileSystemEventArgs e)
 		{
 			if (this.IsSourcePathIgnored(e.FullPath)) return;
-			this.sourceDirEventBuffer.RemoveAll(f => f.FullPath == e.FullPath && e.ChangeType == e.ChangeType);
+			this.sourceDirEventBuffer.RemoveAll(f => f.FullPath == e.FullPath && f.ChangeType == e.ChangeType);
 			this.sourceDirEventBuffer.Add(e);
 		}
 		private void ProcessSourceDirEvents()
@@ -1336,7 +1320,6 @@ namespace DualityEditor.Forms
 
 		private void UpdateHelpStack()
 		{
-			Control lastHoveredControl = this.hoveredControl;
 			foreach (Form f in EditorHelper.GetZSortedAppWindows())
 			{
 				if (!f.Visible) continue;
@@ -1355,7 +1338,6 @@ namespace DualityEditor.Forms
 			{
 				c = this.hoveredHelpProvider as Control;
 				help = this.hoveredHelpProvider.ProvideHoverHelp(c.PointToClient(Cursor.Position), ref this.hoveredHelpCaptured);
-				lastHoveredControl = c;
 
 				// Update provider's help info
 				this.Help.UpdateFromProvider(this.hoveredHelpProvider, help);

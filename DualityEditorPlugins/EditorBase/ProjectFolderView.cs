@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.IO;
-using System.Threading;
-
 using WeifenLuo.WinFormsUI.Docking;
 using Aga.Controls.Tree;
 
@@ -62,7 +58,7 @@ namespace EditorBase
 				get { return null; }
 			}
 
-			public NodeBase(string path, string name, bool readOnly = false) : base(name)
+			protected NodeBase(string path, string name, bool readOnly = false) : base(name)
 			{
 				this.nodePath = path;
 				this.readOnly = readOnly;
@@ -91,7 +87,7 @@ namespace EditorBase
 			{
 				if (defaultContentPath)
 				{
-					string[] pathSplit = path.Split(new char[] {':'}, StringSplitOptions.RemoveEmptyEntries);
+					string[] pathSplit = path.Split(new[] {':'}, StringSplitOptions.RemoveEmptyEntries);
 					return pathSplit[pathSplit.Length - 1];
 				}
 				else

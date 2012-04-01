@@ -1,22 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 
 using Duality;
 using Duality.Components;
-using Duality.Resources;
-using Duality.ColorFormat;
-using Duality.VertexFormat;
-using Font = Duality.Resources.Font;
-
-using DualityEditor;
-using DualityEditor.Forms;
 
 using OpenTK;
-using OpenTK.Graphics.OpenGL;
 
 namespace EditorBase.CamViewStates
 {
@@ -91,7 +79,7 @@ namespace EditorBase.CamViewStates
 				get { return this.shape.Parent; }
 			}
 
-			public SelShape(Collider.ShapeInfo shape)
+			protected SelShape(Collider.ShapeInfo shape)
 			{
 				this.shape = shape;
 			}

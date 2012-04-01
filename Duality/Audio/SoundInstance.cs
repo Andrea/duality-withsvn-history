@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
 using OpenTK;
@@ -403,14 +400,13 @@ namespace Duality
 					this.alSource = AlSource_NotAvailable;
 					this.curPriority = this.PreCalcPriority();
 
-					float ownPrioMult;
 					foreach (SoundInstance inst in DualityApp.Sound.Playing)
 					{
 						if (inst.alSource <= AlSource_NotAvailable) continue;
 						if (!searchSimilar && this.is3D != inst.is3D) continue;
 						if (searchSimilar && this.snd.Res != inst.snd.Res) continue;
 						
-						ownPrioMult = 1.0f;
+						float ownPrioMult = 1.0f;
 						if (searchSimilar && !inst.Looped) ownPrioMult *= MathF.Sqrt(inst.playTime + 1.0f);
 							
 						if (this.curPriority * ownPrioMult > inst.curPriority + 
@@ -454,8 +450,7 @@ namespace Duality
 					(posTemp.X - listenerPos.X) * (posTemp.X - listenerPos.X) +
 					(posTemp.Y - listenerPos.Y) * (posTemp.Y - listenerPos.Y) +
 					(posTemp.Z - listenerPos.Z) * (posTemp.Z - listenerPos.Z) * 0.25f);
-				priorityTemp *= Math.Max(0.0f, 
-					1.0f - ((float)dist - minDistTemp) / (maxDistTemp - minDistTemp));
+				priorityTemp *= Math.Max(0.0f, 1.0f - (dist - minDistTemp) / (maxDistTemp - minDistTemp));
 			}
 
 			int numPlaying = DualityApp.Sound.GetNumPlaying(this.snd);
@@ -516,7 +511,7 @@ namespace Duality
 				Vector3 velAbs = this.vel;
 				if (this.is3D)
 				{
-					Duality.Components.Transform attachTransform = this.attachedTo != null ? this.attachedTo.Transform : null;
+					Components.Transform attachTransform = this.attachedTo != null ? this.attachedTo.Transform : null;
 
 					// Attach to object
 					if (this.attachedTo != null && this.attachedTo != DualityApp.Sound.Listener)
@@ -547,7 +542,7 @@ namespace Duality
 						return;
 					}
 					else
-						priorityTemp *= Math.Max(0.0f, 1.0f - ((float)dist - minDistTemp) / (maxDistTemp - minDistTemp));
+						priorityTemp *= Math.Max(0.0f, 1.0f - (dist - minDistTemp) / (maxDistTemp - minDistTemp));
 				}
 
 				// Grab an OpenAL source, if not yet assigned
@@ -586,13 +581,12 @@ namespace Duality
 				} 
 
 				// Fading in and out
-				bool fadeOut = false;
-				if (this.fadeTarget <= 0.0f) fadeOut = true;
+				bool fadeOut = this.fadeTarget <= 0.0f;
 				if (!this.paused)
 				{
 					if (this.fadeTarget != this.curFade)
 					{
-						float fadeTemp = (float)(Time.TimeMult * Time.SPFMult) / Math.Max(0.05f, this.fadeTimeSec);
+						float fadeTemp = Time.TimeMult * Time.SPFMult / Math.Max(0.05f, this.fadeTimeSec);
 
 						if (this.fadeTarget > this.curFade)
 							this.curFade += fadeTemp;
@@ -753,11 +747,10 @@ namespace Duality
 						OV.BeginStreamFromMemory(res.Data.Res.OggVorbisData, out sndInst.strOvStr);
 
 						// Initially, completely fill all buffers
-						bool eof = false;
 						for (int i = 0; i < sndInst.strAlBuffers.Length; ++i)
 						{
 							PcmData pcm;
-							eof = !OV.StreamChunk(sndInst.strOvStr, out pcm);
+							bool eof = !OV.StreamChunk(sndInst.strOvStr, out pcm);
 							if (pcm.data.Length > 0)
 							{
 								AL.BufferData(
@@ -778,13 +771,13 @@ namespace Duality
 					}
 					else
 					{
-						int num = 0;
+						int num;
 						AL.GetSource(sndInst.alSource, ALGetSourcei.BuffersProcessed, out num);
 						while (num > 0)
 						{
 							num--;
 
-							int unqueued = 0;
+							int unqueued;
 							unqueued = AL.SourceUnqueueBuffer(sndInst.alSource);
 
 							if (sndInst.strOvStr != IntPtr.Zero)

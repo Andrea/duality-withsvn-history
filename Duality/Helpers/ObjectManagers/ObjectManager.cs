@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Runtime.Serialization;
 
 namespace Duality
 {
@@ -66,11 +64,6 @@ namespace Duality
 			{
 				return this.AllObjects.Where(o => o.Active);
 			}
-		}
-
-		public ObjectManager()
-		{
-
 		}
 
 		/// <summary>

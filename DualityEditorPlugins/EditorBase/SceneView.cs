@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.IO;
-using System.Threading;
-
 using CancelEventHandler = System.ComponentModel.CancelEventHandler;
 using CancelEventArgs = System.ComponentModel.CancelEventArgs;
 

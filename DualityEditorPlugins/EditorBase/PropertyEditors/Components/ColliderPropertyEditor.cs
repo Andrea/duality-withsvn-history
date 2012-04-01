@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-
-using AdamsLair.PropertyGrid;
-
-using Duality;
 using Duality.Components;
-using DualityEditor;
 
 namespace EditorBase.PropertyEditors
 {

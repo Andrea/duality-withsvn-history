@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace DualityEditor.Forms
@@ -551,12 +547,12 @@ namespace DualityEditor.Forms
 
 		private void buttonOk_Click(object sender, EventArgs e)
 		{
-			this.DialogResult = System.Windows.Forms.DialogResult.OK;
+			this.DialogResult = DialogResult.OK;
 			this.Hide();
 		}
 		private void ColorPickerDialog_FormClosed(object sender, FormClosedEventArgs e)
 		{
-			if (this.DialogResult == System.Windows.Forms.DialogResult.Cancel)
+			if (this.DialogResult == DialogResult.Cancel)
 				this.SelectedColor = this.OldColor;
 			else
 				this.OldColor = this.SelectedColor;

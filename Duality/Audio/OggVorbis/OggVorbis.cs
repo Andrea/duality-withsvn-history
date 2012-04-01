@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.IO;
 
 namespace Duality.OggVorbis
@@ -50,11 +48,10 @@ namespace Duality.OggVorbis
 		{
 			vFPtr = IntPtr.Zero;
 
-			NativeMethods.ErrorCode err;
 			unsafe
 			{
 				void* vorbisFile = null;
-				err = (NativeMethods.ErrorCode)NativeMethods.init_for_ogg_decode(filename, &vorbisFile);
+				NativeMethods.ErrorCode err = (NativeMethods.ErrorCode)NativeMethods.init_for_ogg_decode(filename, &vorbisFile);
 				if (err != NativeMethods.ErrorCode.None)
 				{
 					throw new ApplicationException(
@@ -67,11 +64,10 @@ namespace Duality.OggVorbis
 		{
 			vFPtr = IntPtr.Zero;
 
-			NativeMethods.ErrorCode err;
 			unsafe
 			{
 				void* vorbisFile = null;
-				err = (NativeMethods.ErrorCode)NativeMethods.memory_stream_for_ogg_decode(memory, memory.Length, &vorbisFile);
+				NativeMethods.ErrorCode err = (NativeMethods.ErrorCode)NativeMethods.memory_stream_for_ogg_decode(memory, memory.Length, &vorbisFile);
 				if (err != NativeMethods.ErrorCode.None)
 				{
 					throw new ApplicationException(
@@ -109,7 +105,7 @@ namespace Duality.OggVorbis
 
 				while(totalPcmSize < pcmBuffer.Length)
 				{
-					int pcmBytes = 0;
+					int pcmBytes;
 					fixed(byte* buf = &pcmBuffer[0])
 					{
 						pcmBytes = NativeMethods.ogg_decode_one_vorbis_packet(

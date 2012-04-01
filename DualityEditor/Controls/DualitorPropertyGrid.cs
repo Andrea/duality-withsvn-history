@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.ComponentModel;
 using System.Reflection;
 
-using OpenTK;
 using AdamsLair.PropertyGrid;
 using AdamsLair.PropertyGrid.PropertyEditors;
 using PropertyGrid = AdamsLair.PropertyGrid.PropertyGrid;
@@ -147,17 +141,14 @@ namespace DualityEditor.Controls
 
 			// Pick an editor and see if it has access to an actual IHelpProvider
 			PropertyEditor pickedEditor = this.PickEditorAt(localPos.X, localPos.Y, true);
-			IHelpProvider localProvider = null;
 			PropertyEditor helpEditor = pickedEditor;
-			Point helpEditorPos = Point.Empty;
-			HelpInfo localHelp = null;
 			while (helpEditor != null)
 			{
-				helpEditorPos = this.GetEditorLocation(helpEditor, true);
+				Point helpEditorPos = this.GetEditorLocation(helpEditor, true);
 				if (helpEditor is IHelpProvider)
 				{
-					localProvider = helpEditor as IHelpProvider;
-					localHelp = localProvider.ProvideHoverHelp(new Point(localPos.X - helpEditorPos.X, localPos.Y - helpEditorPos.Y), ref captured);
+					IHelpProvider localProvider = helpEditor as IHelpProvider;
+					HelpInfo localHelp = localProvider.ProvideHoverHelp(new Point(localPos.X - helpEditorPos.X, localPos.Y - helpEditorPos.Y), ref captured);
 					if (localHelp != null)
 						return localHelp;
 				}

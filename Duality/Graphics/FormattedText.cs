@@ -104,7 +104,6 @@ namespace Duality
 		/// </summary>
 		[Serializable] public class NewLineElement : Element
 		{
-			public NewLineElement() {}
 		}
 		/// <summary>
 		/// Changes the currently used <see cref="Duality.Resources.Font"/>.

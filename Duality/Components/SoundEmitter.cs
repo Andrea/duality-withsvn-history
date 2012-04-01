@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-using OpenTK.Graphics.OpenGL;
 using OpenTK;
 
-using Duality;
 using Duality.EditorHints;
-using Duality.VertexFormat;
-using Duality.ColorFormat;
-using Duality.Components;
 using Duality.Resources;
 
 namespace Duality.Components
@@ -28,7 +22,6 @@ namespace Duality.Components
 		[Serializable]
 		public class Source
 		{
-			private	bool				disposed	= false;
 			private	ContentRef<Sound>	sound		= ContentRef<Sound>.Null;
 			private	bool				looped		= true;
 			private	bool				paused		= true;
@@ -38,15 +31,6 @@ namespace Duality.Components
 			[NonSerializedResource]	private	bool			hasBeenPlayed	= false;
 			[NonSerialized]			private	SoundInstance	instance		= null;
 
-			/// <summary>
-			/// [GET] Returns whether this sound source has been disposed. Disposed objects are not to be used again.
-			/// Treat them as null or similar.
-			/// </summary>
-			[EditorHintFlags(MemberFlags.Invisible)]
-			public bool Disposed
-			{
-				get { return this.disposed; }
-			}
 			/// <summary>
 			/// [GET] The <see cref="SoundInstance"/> that is currently allocated to emit
 			/// this sources sound.
@@ -199,12 +183,9 @@ namespace Duality.Components
 		public List<Source> Sources
 		{
 			get { return this.sources; }
-			set { this.sources = value; if (this.sources == null) this.sources = new List<Source>(); }
+			set { this.sources = value ?? new List<Source>(); }
 		}
 
-		public SoundEmitter()
-		{
-		}
 		internal override void CopyToInternal(Component target)
 		{
 			base.CopyToInternal(target);
@@ -225,10 +206,10 @@ namespace Duality.Components
 					if (this.sources[i].Instance != null) this.sources[i].Instance.Stop();
 			}
 		}
-		void ICmpInitializable.OnInit(Component.InitContext context)
+		void ICmpInitializable.OnInit(InitContext context)
 		{
 		}
-		void ICmpInitializable.OnShutdown(Component.ShutdownContext context)
+		void ICmpInitializable.OnShutdown(ShutdownContext context)
 		{
 			if (context == ShutdownContext.Deactivate || context == ShutdownContext.RemovingFromGameObject)
 			{

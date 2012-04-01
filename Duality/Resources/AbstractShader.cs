@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 using System.Linq;
-using System.Text;
 using System.IO;
 using System.Text.RegularExpressions;
 
-using Duality;
 using Duality.EditorHints;
 
-using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
 namespace Duality.Resources
@@ -124,7 +120,7 @@ namespace Duality.Resources
 		/// </summary>
 		public bool IsEditorVisible
 		{
-			get { return this.name != null && this.name.Length > 0 && this.name[0] != '_'; }
+			get { return !string.IsNullOrEmpty(this.name) && this.name[0] != '_'; }
 		}
 
 		/// <summary>
@@ -316,10 +312,10 @@ namespace Duality.Resources
 			// Remove comments from source code before extracting variables
 			string sourceWithoutComments;
 			{
-				string blockComments = @"/\*(.*?)\*/";
-				string lineComments = @"//(.*?)\r?\n";
-				string strings = @"""((\\[^\n]|[^""\n])*)""";
-				string verbatimStrings = @"@(""[^""]*"")+";
+				const string blockComments = @"/\*(.*?)\*/";
+				const string lineComments = @"//(.*?)\r?\n";
+				const string strings = @"""((\\[^\n]|[^""\n])*)""";
+				const string verbatimStrings = @"@(""[^""]*"")+";
 				sourceWithoutComments = Regex.Replace(this.source,
 					blockComments + "|" + lineComments + "|" + strings + "|" + verbatimStrings,
 					me => {
@@ -333,11 +329,11 @@ namespace Duality.Resources
 
 			// Scan remaining code chunk for variable declarations
 			List<ShaderVarInfo> varInfoList = new List<ShaderVarInfo>();
-			string[] lines = sourceWithoutComments.Split(new char[] {';','\n'}, StringSplitOptions.RemoveEmptyEntries);
-			ShaderVarInfo varInfo = new ShaderVarInfo();;
-			for (int i = 0; i < lines.Length; i++)
+			string[] lines = sourceWithoutComments.Split(new[] {';','\n'}, StringSplitOptions.RemoveEmptyEntries);
+			ShaderVarInfo varInfo = new ShaderVarInfo();
+			foreach (string t in lines)
 			{
-				string curLine = lines[i].TrimStart();
+				string curLine = t.TrimStart();
 
 				if (curLine.StartsWith("uniform"))
 					varInfo.scope = ShaderVarScope.Uniform;
@@ -345,7 +341,7 @@ namespace Duality.Resources
 					varInfo.scope = ShaderVarScope.Attribute;
 				else continue;
 
-				string[] curLineSplit = curLine.Split(new char[] {' '}, StringSplitOptions.RemoveEmptyEntries);
+				string[] curLineSplit = curLine.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
 				switch (curLineSplit[1].ToUpper())
 				{
 					case "FLOAT":		varInfo.type = ShaderVarType.Float; break;

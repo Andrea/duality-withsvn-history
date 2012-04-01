@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Runtime.InteropServices;
 
 using Duality.ColorFormat;
@@ -36,7 +33,7 @@ namespace Duality.VertexFormat
 			get { return VertexTypeIndex; }
 		}
 		
-		void IVertexData.SetupVBO(Duality.Resources.BatchInfo mat)
+		void IVertexData.SetupVBO(Resources.BatchInfo mat)
 		{
 			if (mat.Technique != Duality.Resources.DrawTechnique.Picking) GL.EnableClientState(ArrayCap.ColorArray);
 			GL.EnableClientState(ArrayCap.VertexArray);
@@ -49,7 +46,7 @@ namespace Duality.VertexFormat
 			GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(Size * vertexData.Length), IntPtr.Zero, BufferUsageHint.StreamDraw);
 			GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(Size * vertexData.Length), vertexData, BufferUsageHint.StreamDraw);
 		}
-		void IVertexData.FinishVBO(Duality.Resources.BatchInfo mat)
+		void IVertexData.FinishVBO(Resources.BatchInfo mat)
 		{
 			GL.DisableClientState(ArrayCap.ColorArray);
 			GL.DisableClientState(ArrayCap.VertexArray);

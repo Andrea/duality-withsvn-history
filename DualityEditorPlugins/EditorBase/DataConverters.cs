@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using OpenTK;
-
 using Duality;
 using Duality.Components;
 using Duality.Components.Renderers;
@@ -367,7 +365,7 @@ namespace EditorBase.DataConverters
 				if (texRef.IsDefaultContent)
 				{
 					var defaultContent = ContentProvider.GetAllDefaultContent();
-					matRef = defaultContent.Where(r => r.Is<Material>() && (r.Res as Material).MainTexture == tex).FirstOrDefault().As<Material>();
+					matRef = defaultContent.FirstOrDefault(r => r.Is<Material>() && (r.Res as Material).MainTexture == tex).As<Material>();
 				}
 				else
 				{
@@ -448,7 +446,7 @@ namespace EditorBase.DataConverters
 				if (pixRef.IsDefaultContent)
 				{
 					var defaultContent = ContentProvider.GetAllDefaultContent();
-					texRef = defaultContent.Where(r => r.Is<Texture>() && (r.Res as Texture).BasePixmap == pix).FirstOrDefault().As<Texture>();
+					texRef = defaultContent.FirstOrDefault(r => r.Is<Texture>() && (r.Res as Texture).BasePixmap == pix).As<Texture>();
 				}
 				else
 				{
@@ -529,7 +527,7 @@ namespace EditorBase.DataConverters
 				if (audRef.IsDefaultContent)
 				{
 					var defaultContent = ContentProvider.GetAllDefaultContent();
-					sndRef = defaultContent.Where(r => r.Is<Sound>() && (r.Res as Sound).Data.Res == aud).FirstOrDefault().As<Sound>();
+					sndRef = defaultContent.FirstOrDefault(r => r.Is<Sound>() && (r.Res as Sound).Data.Res == aud).As<Sound>();
 				}
 				else
 				{

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.IO;
 using System.Reflection;
 
@@ -55,7 +54,7 @@ namespace Duality.Serialization
 				get { return this.data; }
 			}
 
-			public CustomSerialIOBase()
+			protected CustomSerialIOBase()
 			{
 				this.data = new Dictionary<string,object>();
 			}
@@ -217,7 +216,10 @@ namespace Duality.Serialization
 			GC.SuppressFinalize(this);
 			this.Dispose(true);
 		}
-		protected virtual void Dispose(bool manually) {}
+		protected virtual void Dispose(bool manually)
+		{
+			this.disposed = true;
+		}
 
 		
 		/// <summary>
@@ -249,7 +251,7 @@ namespace Duality.Serialization
 		protected virtual void GetWriteObjectData(object obj, out SerializeType objSerializeType, out DataType dataType, out uint objId)
 		{
 			Type objType = obj.GetType();
-			objSerializeType = ReflectionHelper.GetSerializeType(objType);
+			objSerializeType = objType.GetSerializeType();
 			objId = 0;
 			dataType = objSerializeType.DataType;
 			
@@ -305,9 +307,7 @@ namespace Duality.Serialization
 		/// <returns>True, if the <see cref="System.Reflection.FieldInfo">field</see> is blocked, false if not.</returns>
 		public bool IsFieldBlocked(FieldInfo field)
 		{
-			foreach (var blocker in this.fieldBlockers)
-				if (blocker(field)) return true;
-			return false;
+			return this.fieldBlockers.Any(blocker => blocker(field));
 		}
 
 		/// <summary>

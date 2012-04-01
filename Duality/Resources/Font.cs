@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Drawing;
 using System.Drawing.Text;
 using System.IO;
-using System.Runtime.Serialization;
 using System.Runtime.InteropServices;
 using SysDrawFont = System.Drawing.Font;
 
-using Duality;
 using Duality.ColorFormat;
 using Duality.VertexFormat;
 using Duality.EditorHints;
@@ -124,7 +122,7 @@ namespace Duality.Resources
 		/// A string containing all characters that are supported by Duality.
 		/// </summary>
 		public static readonly string			SupportedChars	= " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890,;.:-_<>|#'+*~@^°!\"§$%&/()=?`²³{[]}\\´öäüÖÄÜ";
-		private static readonly string			BodyAscentRef	= "acehmnorsuvwxz";
+		private const string					BodyAscentRef = "acehmnorsuvwxz";
 		private static readonly int[]			CharLookup;
 
 		private	static	PrivateFontCollection			fontManager			= new PrivateFontCollection();
@@ -474,7 +472,7 @@ namespace Duality.Resources
 			Bitmap glyphTemp;
 			Bitmap glyphTempTypo;
 			Rect[] atlas = new Rect[SupportedChars.Length];
-			using (Graphics pxGraphics = Graphics.FromImage((Image)pxTemp))
+			using (Graphics pxGraphics = Graphics.FromImage(pxTemp))
 			{
 				Brush fntBrush = new SolidBrush(Color.FromArgb(this.color.a, this.color.r, this.color.g, this.color.b));
 
@@ -489,13 +487,12 @@ namespace Duality.Resources
 				int y = 0;
 				for (int i = 0; i < SupportedChars.Length; ++i)
 				{
-					string str = SupportedChars[i].ToString();
+					string str = SupportedChars[i].ToString(CultureInfo.InvariantCulture);
 					SizeF charSize = pxGraphics.MeasureString(str, this.internalFont, pxTemp.Width, formatDef);
-					SizeF charSizeTypo = pxGraphics.MeasureString(str, this.internalFont, pxTemp.Width, formatTypo);
 
 					// Render a single glyph
 					glyphTemp = new Bitmap((int)Math.Ceiling(Math.Max(1, charSize.Width)), this.internalFont.Height);
-					using (Graphics glyphGraphics = Graphics.FromImage((Image)glyphTemp))
+					using (Graphics glyphGraphics = Graphics.FromImage(glyphTemp))
 					{
 						glyphGraphics.Clear(Color.FromArgb(this.bgColor.a, this.bgColor.r, this.bgColor.g, this.bgColor.b));
 						glyphGraphics.TextRenderingHint = (System.Drawing.Text.TextRenderingHint)this.hint;
@@ -511,7 +508,7 @@ namespace Duality.Resources
 
 						// Render a single glyph in typographic mode
 						glyphTempTypo = new Bitmap((int)Math.Ceiling(Math.Max(1, charSize.Width)), this.internalFont.Height);
-						using (Graphics glyphGraphics = Graphics.FromImage((Image)glyphTempTypo))
+						using (Graphics glyphGraphics = Graphics.FromImage(glyphTempTypo))
 						{
 							glyphGraphics.Clear(Color.FromArgb(this.bgColor.a, this.bgColor.r, this.bgColor.g, this.bgColor.b));
 							glyphGraphics.TextRenderingHint = (System.Drawing.Text.TextRenderingHint)this.hint;

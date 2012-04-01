@@ -3,15 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using System.IO;
-using System.Diagnostics;
-
-using OpenTK;
 using WeifenLuo.WinFormsUI.Docking;
 
 using Duality;
 using Duality.Components;
 using Duality.Components.Renderers;
-using Duality.ColorFormat;
 using Duality.Resources;
 using TextRenderer = Duality.Components.Renderers.TextRenderer;
 
@@ -247,13 +243,13 @@ namespace EditorBase
 			this.menuItemCamView.Image = EditorBaseRes.IconEye.ToBitmap();
 			this.menuItemLogView.Image = EditorBaseRes.IconLogView.ToBitmap();
 
-			this.menuItemProjectView.Click += new EventHandler(this.menuItemProjectView_Click);
-			this.menuItemSceneView.Click += new EventHandler(this.menuItemSceneView_Click);
-			this.menuItemObjView.Click += new EventHandler(this.menuItemObjView_Click);
-			this.menuItemCamView.Click += new EventHandler(this.menuItemCamView_Click);
-			this.menuItemLogView.Click += new EventHandler(this.menuItemLogView_Click);
-			this.menuItemAppData.Click += new EventHandler(this.menuItemAppData_Click);
-			this.menuItemUserData.Click += new EventHandler(this.menuItemUserData_Click);
+			this.menuItemProjectView.Click += this.menuItemProjectView_Click;
+			this.menuItemSceneView.Click += this.menuItemSceneView_Click;
+			this.menuItemObjView.Click += this.menuItemObjView_Click;
+			this.menuItemCamView.Click += this.menuItemCamView_Click;
+			this.menuItemLogView.Click += this.menuItemLogView_Click;
+			this.menuItemAppData.Click += this.menuItemAppData_Click;
+			this.menuItemUserData.Click += this.menuItemUserData_Click;
 
 			// Register file importers
 			main.RegisterFileImporter(new PixmapFileImporter());
@@ -546,7 +542,6 @@ namespace EditorBase
 		{
 			items.StableSort(delegate(ToolStripItem item1, ToolStripItem item2)
 			{
-				int result;
 				ToolStripMenuItem menuItem1 = item1 as ToolStripMenuItem;
 				ToolStripMenuItem menuItem2 = item2 as ToolStripMenuItem;
 
@@ -554,7 +549,7 @@ namespace EditorBase
 				System.Reflection.Assembly assembly2 = item2.Tag is Type ? (item2.Tag as Type).Assembly : item2.Tag as System.Reflection.Assembly;
 				int score1 = assembly1 == typeof(DualityApp).Assembly ? 1 : 0;
 				int score2 = assembly2 == typeof(DualityApp).Assembly ? 1 : 0;
-				result = score2 - score1;
+				int result = score2 - score1;
 				if (result != 0) return result;
 
 				result = 
@@ -562,7 +557,7 @@ namespace EditorBase
 					(menuItem2 != null ? Math.Sign(menuItem2.DropDownItems.Count) : 0);
 				if (result != 0) return result;
 
-				result = item1.Text.CompareTo(item2.Text);
+				result = System.String.CompareOrdinal(item1.Text, item2.Text);
 				return result;
 			});
 

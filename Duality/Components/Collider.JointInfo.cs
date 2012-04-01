@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 
 using OpenTK;
 
 using FarseerPhysics.Dynamics;
-using FarseerPhysics.Dynamics.Contacts;
 using FarseerPhysics.Factories;
-using FarseerPhysics.Collision.Shapes;
 using FarseerPhysics.Dynamics.Joints;
 
-using Duality;
 using Duality.EditorHints;
 using Duality.Resources;
 
@@ -84,8 +79,6 @@ namespace Duality.Components
 			}
 
 
-			protected JointInfo() {}
-
 			internal void DestroyJoint()
 			{
 				if (this.joint == null) return;
@@ -152,7 +145,7 @@ namespace Duality.Components
 			/// <returns></returns>
 			public JointInfo Clone()
 			{
-				JointInfo newObj = ReflectionHelper.CreateInstanceOf(this.GetType()) as JointInfo;
+				JointInfo newObj = this.GetType().CreateInstanceOf() as JointInfo;
 				this.CopyTo(newObj);
 				return newObj;
 			}
@@ -165,8 +158,6 @@ namespace Duality.Components
 			private	Vector2	localPointB	= Vector2.Zero;
 			private	float	refAngle	= 0.0f;
 
-
-			public WeldJointInfo() {}
 
 			protected override Joint CreateJoint(Body bodyA, Body bodyB)
 			{

@@ -1,14 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using AdamsLair.PropertyGrid;
-
-using Duality;
-using Duality.Serialization;
 using Duality.Serialization.MetaFormat;
-using DualityEditor.Controls;
 
 namespace ResourceHacker.PropertyEditors
 {

@@ -1,14 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
 using OpenTK;
-using OpenTK.Graphics.OpenGL;
-
 using Duality;
 using Duality.Resources;
-using Duality.VertexFormat;
-using Duality.Components;
 
 namespace DynamicLighting
 {

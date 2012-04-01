@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 
 namespace Duality
@@ -71,7 +68,7 @@ namespace Duality
 		{
 			string dir		= Path.GetFullPath(filePath);
 			string dirRel	= Path.GetFullPath(relativeToDir);
-			string fileName	= "";
+			string fileName;
 
 			fileName = Path.GetFileName(dir);
 			dir = Path.GetDirectoryName(dir);
@@ -137,17 +134,12 @@ namespace Duality
 			string[]	dirRelToken	= dirRel.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 
 			int numBackDir = dirRelToken.Length - dirToken.Length;
-			int sameDirIndex = int.MaxValue;
 			for (int i = 1; i < Math.Min(dirToken.Length, dirRelToken.Length); i++)
 			{
 				if (dirToken[i] != dirRelToken[i])
 				{
 					numBackDir = dirRelToken.Length - i;
 					break;
-				}
-				else
-				{
-					sameDirIndex = i;
 				}
 			}
 

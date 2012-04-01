@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Reflection;
 
 using OpenTK;
@@ -96,7 +95,7 @@ namespace Duality
 		/// <summary>
 		/// [GET] The Renderers center location in space.
 		/// </summary>
-		OpenTK.Vector3 SpaceCoord { get; }
+		Vector3 SpaceCoord { get; }
 
 		/// <summary>
 		/// Determines whether or not this renderer is visible to the specified <see cref="IDrawDevice"/>.
@@ -392,7 +391,7 @@ namespace Duality
 					if (value)
 					{
 						ICmpInitializable cInit = this as ICmpInitializable;
-						if (cInit != null) cInit.OnInit(Component.InitContext.Activate);
+						if (cInit != null) cInit.OnInit(InitContext.Activate);
 					}
 					else
 					{
@@ -455,7 +454,7 @@ namespace Duality
 		/// <returns>A reference to a newly created deep copy of this Component.</returns>
 		public Component Clone()
 		{
-			Component newObj = ReflectionHelper.CreateInstanceOf(this.GetType()) as Component;
+			Component newObj = this.GetType().CreateInstanceOf() as Component;
 			this.CopyTo(newObj);
 			return newObj;
 		}
@@ -494,13 +493,10 @@ namespace Duality
 		{
 			// Travel up the inheritance hierarchy until we hit an object located here
 			Type curType = this.GetType();
-			Type lastType = null;
 			while (curType.Assembly != Assembly.GetExecutingAssembly())
 			{
-				lastType = curType;
-
 				// Apply default behaviour to any class that doesn't have an OnCopyTo override
-				if (curType.GetMethod("OnCopyTo", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly, null, new Type[] { typeof(Component) }, null) == null)
+				if (curType.GetMethod("OnCopyTo", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly, null, new[] { typeof(Component) }, null) == null)
 				{
 					CloneHelper.DeepCopyFieldsExplicit(
 						curType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly), 
@@ -528,12 +524,7 @@ namespace Duality
 		public bool IsComponentRequirementMet(Component evenWhenRemovingThis = null)
 		{
 			Type[] reqTypes = this.GetRequiredComponents();
-			foreach (Type r in reqTypes)
-			{
-				if (!this.GameObj.GetComponents(r).Any(c => c != evenWhenRemovingThis)) return false;
-			}
-
-			return true;
+			return reqTypes.All(r => this.GameObj.GetComponents(r).Any(c => c != evenWhenRemovingThis));
 		}
 		/// <summary>
 		/// Returns whether this objects Component requirement is met assuming a different <see cref="GameObj">parent GameObject</see>
@@ -549,7 +540,7 @@ namespace Duality
 				if (isMetInObj.GetComponent(r) == null)
 				{
 					if (whenAddingThose == null) return false;
-					else if (!whenAddingThose.Any(c => r.IsAssignableFrom(c.GetType()))) return false;
+					else if (!whenAddingThose.Any(c => r.IsInstanceOfType(c))) return false;
 				}
 			}
 

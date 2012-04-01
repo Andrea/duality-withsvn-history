@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Runtime.InteropServices;
 
 namespace Duality.ColorFormat
@@ -333,15 +330,15 @@ namespace Duality.ColorFormat
 
 		public static explicit operator ColorHsva(int c)
 		{
-			return ColorHsva.FromIntRgba(c);
+			return FromIntRgba(c);
 		}
 		public static explicit operator ColorHsva(ColorRgba c)
 		{
-			return ColorHsva.FromRgba(c);
+			return FromRgba(c);
 		}
 		public static explicit operator ColorHsva(OpenTK.Graphics.Color4 c)
 		{
-			return ColorHsva.FromRgba(new ColorRgba(
+			return FromRgba(new ColorRgba(
 				(byte)Math.Max(0, Math.Min(255, 255 * c.R)),
 				(byte)Math.Max(0, Math.Min(255, 255 * c.G)),
 				(byte)Math.Max(0, Math.Min(255, 255 * c.B)),

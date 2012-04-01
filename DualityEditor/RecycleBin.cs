@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Runtime.InteropServices;
-
-// David Amenta - dave@DaveAmenta.com
+﻿// David Amenta - dave@DaveAmenta.com
 // 05/05/08
 // Updated 04/18/2010 for x64
 

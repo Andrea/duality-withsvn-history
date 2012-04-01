@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-
 using DW.RtfWriter;
 
 using Duality.ColorFormat;
@@ -46,7 +41,7 @@ namespace Duality
 		{
 			int indent = source.Indent;
 			string parText = "";
-			string[] lines = msg.Split(new char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+			string[] lines = msg.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 			for (int i = 0; i < lines.Length; i++)
 			{
 				if (i == 0)

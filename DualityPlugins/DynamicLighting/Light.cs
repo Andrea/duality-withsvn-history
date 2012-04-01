@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 using OpenTK;
-using OpenTK.Graphics.OpenGL;
-
 using Duality;
 using Duality.EditorHints;
 using Duality.Resources;

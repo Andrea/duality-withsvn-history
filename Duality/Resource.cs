@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.IO;
 using System.Reflection;
-using System.Diagnostics;
 
 using Duality.Serialization;
 using Duality.EditorHints;
@@ -78,7 +77,7 @@ namespace Duality
 		{
 			get
 			{
-				if (this.IsRuntimeResource) return this.GetHashCode().ToString();
+				if (this.IsRuntimeResource) return this.GetHashCode().ToString(CultureInfo.InvariantCulture);
 				string nameTemp = this.path;
 				if (this.IsDefaultContent) nameTemp = nameTemp.Replace(':', '/');
 				return System.IO.Path.GetFileNameWithoutExtension(System.IO.Path.GetFileNameWithoutExtension(nameTemp));
@@ -92,7 +91,7 @@ namespace Duality
 		{
 			get
 			{
-				if (this.IsRuntimeResource) return this.GetHashCode().ToString();
+				if (this.IsRuntimeResource) return this.GetHashCode().ToString(CultureInfo.InvariantCulture);
 				string nameTemp = this.path;
 				if (this.IsDefaultContent) nameTemp = nameTemp.Replace(':', '/');
 				return System.IO.Path.Combine(System.IO.Path.GetDirectoryName(nameTemp), this.Name);
@@ -165,7 +164,7 @@ namespace Duality
 			}
 			this.OnSaved();
 
-			string streamName = null;
+			string streamName;
 			if (str is FileStream)
 			{
 				FileStream fileStream = str as FileStream;
@@ -185,7 +184,7 @@ namespace Duality
 		/// <returns></returns>
 		public Resource Clone()
 		{
-			Resource r = ReflectionHelper.CreateInstanceOf(this.GetType()) as Resource;
+			Resource r = this.GetType().CreateInstanceOf() as Resource;
 			this.CopyTo(r);
 			return r;
 		}
@@ -280,7 +279,7 @@ namespace Duality
 		{
 			if (!File.Exists(path)) return null;
 
-			T newContent = null;
+			T newContent;
 			using (FileStream str = File.OpenRead(path))
 			{
 				newContent = LoadResource<T>(str, path);
@@ -337,7 +336,7 @@ namespace Duality
 		public static bool IsResourceFile(string filePath)
 		{
 			string lowerExt = System.IO.Path.GetExtension(filePath).ToLower();
-			return lowerExt == Resource.FileExt;
+			return lowerExt == FileExt;
 		}
 		/// <summary>
 		/// Returns the Resource file extension for a specific Resource Type.
@@ -346,7 +345,7 @@ namespace Duality
 		/// <returns>The specified Resource Type's file extension.</returns>
 		public static string GetFileExtByType(Type resType)
 		{
-			return "." + resType.Name + Resource.FileExt;
+			return "." + resType.Name + FileExt;
 		}
 		/// <summary>
 		/// Returns the Resource Type that is associated with the specified file, based on its extension.
@@ -359,7 +358,7 @@ namespace Duality
 			filePath = System.IO.Path.GetFileNameWithoutExtension(filePath);
 			string[] token = filePath.Split('.');
 			if (token.Length < 2) return null;
-			return DualityApp.GetAvailDualityTypes(typeof(Duality.Resource)).FirstOrDefault(t => t.Name == token[token.Length - 1]);
+			return DualityApp.GetAvailDualityTypes(typeof(Resource)).FirstOrDefault(t => t.Name == token[token.Length - 1]);
 		}
 
 		/// <summary>
@@ -389,6 +388,5 @@ namespace Duality
 	[AttributeUsage(AttributeTargets.Field)]
 	public class NonSerializedResourceAttribute : Attribute
 	{
-		public NonSerializedResourceAttribute() {}
 	}
 }

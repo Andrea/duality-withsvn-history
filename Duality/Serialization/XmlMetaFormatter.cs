@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using System.IO;
-using System.Reflection;
-
 using Duality.Serialization.MetaFormat;
 
 namespace Duality.Serialization
@@ -73,13 +70,11 @@ namespace Duality.Serialization
 				if (objAsArray is byte[])
 				{
 					byte[] byteArr = objAsArray as byte[];
-					string binHexString = this.reader.ReadString();
-					for (int l = 0; l < byteArr.Length; l++)
-						writer.WriteString(byteArr[l].ToString("X2"));
+					this.writer.WriteString(this.ByteArrayToString(byteArr));
 				}
 				else
 				{
-					SerializeType elemType = ReflectionHelper.GetSerializeType(objAsArray.GetType().GetElementType());
+					SerializeType elemType = objAsArray.GetType().GetElementType().GetSerializeType();
 					for (long l = 0; l < objAsArray.Length; l++)
 						this.WriteObject(new PrimitiveNode(elemType.DataType, objAsArray.GetValue(l)));
 				}
@@ -203,10 +198,9 @@ namespace Duality.Serialization
 		{
 			string	objIdString		= this.reader.GetAttribute("id");
 			uint	objId			= objIdString == null ? 0 : XmlConvert.ToUInt32(objIdString);
-			MemberInfoNode result;
-			
+
 			string typeString = this.reader.GetAttribute("value");
-			result = new MemberInfoNode(dataType, typeString, objId);
+			MemberInfoNode result = new MemberInfoNode(dataType, typeString, objId);
 			
 			// Prepare object reference
 			this.idManager.Inject(result, objId);
@@ -234,7 +228,7 @@ namespace Duality.Serialization
 			this.idManager.Inject(result, objId);
 
 			// Store primitive data block
-			bool nonPrimitive = false;
+			bool nonPrimitive;
 			if (arrType != null)
 			{
 				Array arrObj = Array.CreateInstance(arrType.GetElementType(), arrLength);
@@ -257,8 +251,9 @@ namespace Duality.Serialization
 					{
 						byte[] byteArr = arrObj as byte[];
 						string binHexString = this.reader.ReadString();
+						byte[] byteArr2 = this.StringToByteArray(binHexString);
 						for (int l = 0; l < arrLength; l++)
-							byteArr[l] = byte.Parse(binHexString.Substring(l * 2, 2), System.Globalization.NumberStyles.HexNumber);
+							byteArr[l] = byteArr2[l];
 					}
 					else
 					{
@@ -298,8 +293,8 @@ namespace Duality.Serialization
 			string	customString	= this.reader.GetAttribute("custom");
 			string	surrogateString	= this.reader.GetAttribute("surrogate");
 			uint	objId			= objIdString == null ? 0 : XmlConvert.ToUInt32(objIdString);
-			bool	custom			= customString == null ? false : XmlConvert.ToBoolean(customString);
-			bool	surrogate		= surrogateString == null ? false : XmlConvert.ToBoolean(surrogateString);
+			bool	custom			= customString != null && XmlConvert.ToBoolean(customString);
+			bool	surrogate		= surrogateString != null && XmlConvert.ToBoolean(surrogateString);
 
 			StructNode result = new StructNode(classType, objTypeString, objId, custom, surrogate);
 			
@@ -372,7 +367,7 @@ namespace Duality.Serialization
 			string	objIdString			= this.reader.GetAttribute("id");
 			string	multiString			= this.reader.GetAttribute("multi");
 			uint	objId				= objIdString == null ? 0 : XmlConvert.ToUInt32(objIdString);
-			bool	multi				= objIdString == null ? false : XmlConvert.ToBoolean(multiString);
+			bool	multi				= objIdString != null && XmlConvert.ToBoolean(multiString);
 
 			DataNode method	= this.ReadObject() as DataNode;
 			DataNode target	= null;

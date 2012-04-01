@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Diagnostics;
 
-using Duality;
 using Duality.ColorFormat;
 
-using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
 namespace Duality.Resources
@@ -156,7 +152,7 @@ namespace Duality.Resources
 		/// <param name="technique">The <see cref="Duality.Resources.DrawTechnique"/> to use.</param>
 		/// <param name="mainColor">The <see cref="MainColor"/> to use.</param>
 		/// <param name="mainTex">The main <see cref="Duality.Resources.Texture"/> to use.</param>
-		public Material(ContentRef<DrawTechnique> technique, ColorFormat.ColorRgba mainColor, ContentRef<Texture> mainTex)
+		public Material(ContentRef<DrawTechnique> technique, ColorRgba mainColor, ContentRef<Texture> mainTex)
 		{
 			this.info = new BatchInfo(technique, mainColor, mainTex);
 		}
@@ -167,7 +163,7 @@ namespace Duality.Resources
 		/// <param name="mainColor">The <see cref="MainColor"/> to use.</param>
 		/// <param name="textures">A set of <see cref="Duality.Resources.Texture">Textures</see> to use.</param>
 		/// <param name="uniforms">A set of <see cref="Duality.Resources.ShaderVarInfo">uniform values</see> to use.</param>
-		public Material(ContentRef<DrawTechnique> technique, ColorFormat.ColorRgba mainColor, Dictionary<string,ContentRef<Texture>> textures = null, Dictionary<string,float[]> uniforms = null)
+		public Material(ContentRef<DrawTechnique> technique, ColorRgba mainColor, Dictionary<string,ContentRef<Texture>> textures = null, Dictionary<string,float[]> uniforms = null)
 		{
 			this.info = new BatchInfo(technique, mainColor, textures, uniforms);
 		}
@@ -236,7 +232,7 @@ namespace Duality.Resources
 		}
 
 		private	ContentRef<DrawTechnique>	technique	= DrawTechnique.Mask;
-		private	ColorFormat.ColorRgba		mainColor	= ColorFormat.ColorRgba.White;
+		private	ColorRgba					mainColor	= ColorRgba.White;
 		private	Dictionary<string,ContentRef<Texture>>	textures	= null;
 		private	Dictionary<string,float[]>				uniforms	= null;
 		private	DirtyFlag	dirtyFlag	= DirtyFlag.None;
@@ -252,7 +248,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET / SET] The main color, typically used for coloring displayed vertices.
 		/// </summary>
-		public ColorFormat.ColorRgba MainColor
+		public ColorRgba MainColor
 		{
 			get { return this.mainColor; }
 			set { this.mainColor = value; }
@@ -551,10 +547,7 @@ namespace Duality.Resources
 			{
 				if (first.textures == null || second.textures == null) return false;
 				if (first.textures.Count != second.textures.Count) return false;
-				foreach (var pair in first.textures)
-				{
-					if (second.textures[pair.Key].Res != pair.Value.Res) return false;
-				}
+				if (first.textures.Any(pair => second.textures[pair.Key].Res != pair.Value.Res)) return false;
 			}
 
 			if (first.uniforms != second.uniforms)

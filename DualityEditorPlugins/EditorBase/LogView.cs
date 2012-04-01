@@ -1,25 +1,14 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using System.IO;
-using System.Threading;
-
-using CancelEventHandler = System.ComponentModel.CancelEventHandler;
-using CancelEventArgs = System.ComponentModel.CancelEventArgs;
 
 using WeifenLuo.WinFormsUI.Docking;
-using Aga.Controls.Tree;
 
 using Duality;
-using Duality.Resources;
 using DualityEditor;
-using DualityEditor.Controls;
 
 namespace EditorBase
 {
@@ -58,13 +47,13 @@ namespace EditorBase
 		
 		internal void SaveUserData(System.Xml.XmlElement node)
 		{
-			node.SetAttribute("showMessages", this.buttonMessages.Checked.ToString());
-			node.SetAttribute("showWarnings", this.buttonWarnings.Checked.ToString());
-			node.SetAttribute("showErrors", this.buttonErrors.Checked.ToString());
-			node.SetAttribute("showCore", this.buttonCore.Checked.ToString());
-			node.SetAttribute("showEditor", this.buttonEditor.Checked.ToString());
-			node.SetAttribute("showGame", this.buttonGame.Checked.ToString());
-			node.SetAttribute("autoClear", this.checkAutoClear.Checked.ToString());
+			node.SetAttribute("showMessages", this.buttonMessages.Checked.ToString(CultureInfo.InvariantCulture));
+			node.SetAttribute("showWarnings", this.buttonWarnings.Checked.ToString(CultureInfo.InvariantCulture));
+			node.SetAttribute("showErrors", this.buttonErrors.Checked.ToString(CultureInfo.InvariantCulture));
+			node.SetAttribute("showCore", this.buttonCore.Checked.ToString(CultureInfo.InvariantCulture));
+			node.SetAttribute("showEditor", this.buttonEditor.Checked.ToString(CultureInfo.InvariantCulture));
+			node.SetAttribute("showGame", this.buttonGame.Checked.ToString(CultureInfo.InvariantCulture));
+			node.SetAttribute("autoClear", this.checkAutoClear.Checked.ToString(CultureInfo.InvariantCulture));
 		}
 		internal void LoadUserData(System.Xml.XmlElement node)
 		{
@@ -94,7 +83,7 @@ namespace EditorBase
 
 			this.textLog.Clear();
 			StringBuilder builder = new StringBuilder();
-			DataLogOutput.LogEntry[] acceptedData = Log.LogData.Data.Where(d => this.AcceptsEntry(d)).ToArray();
+			DataLogOutput.LogEntry[] acceptedData = Log.LogData.Data.Where(this.AcceptsEntry).ToArray();
 			for (int i = 0; i < acceptedData.Length; i++)
 			{
 				DataLogOutput.LogEntry entry = acceptedData[i];

@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Reflection;
-using System.Runtime.Serialization;
-using System.IO;
-
 using Duality.Resources;
 using Duality.Components;
 using Duality.Components.Renderers;
@@ -317,7 +310,7 @@ namespace Duality
 			Property_SoundEmitter_Source_Pitch		= soundEmitterSource.GetProperty("Pitch");
 
 			// Retrieve FieldInfo data
-			BindingFlags fieldFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
+			const BindingFlags fieldFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
 			Field_GameObject_Name		= gameobject.GetField("name", fieldFlags);
 			Field_GameObject_PrefabLink	= gameobject.GetField("prefabLink", fieldFlags);
 

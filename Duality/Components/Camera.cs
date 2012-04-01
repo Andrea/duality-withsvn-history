@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 using OpenTK.Graphics.OpenGL;
 using OpenTK;
 
-using Duality;
 using Duality.EditorHints;
 using Duality.VertexFormat;
 using Duality.ColorFormat;
-using Duality.Components;
 using Duality.Resources;
 
 namespace Duality
@@ -355,18 +352,15 @@ namespace Duality.Components
 			public void UploadToVBO(List<IDrawBatch> batches)
 			{
 				// Check how many vertices we got
-				int totalVertexNum = 0;
-				for (int i = 0; i < batches.Count; i++) 
-					totalVertexNum += batches[i].VertexCount;
+				int totalVertexNum = batches.Sum(t => t.VertexCount);
 
 				// Collect vertex data in one array
-				DrawBatch<T> b;
 				int curVertexPos = 0;
 				T[] vertexData = new T[totalVertexNum];
 				int[] batchBeginIndices = new int[batches.Count];
 				for (int i = 0; i < batches.Count; i++)
 				{
-					b = batches[i] as DrawBatch<T>;
+					DrawBatch<T> b = batches[i] as DrawBatch<T>;
 					Array.Copy(b.vertices, 0, vertexData, curVertexPos, b.vertexCount);
 					batchBeginIndices[i] = curVertexPos;
 					curVertexPos += b.vertexCount;
@@ -486,7 +480,7 @@ namespace Duality.Components
 		private	uint	visibilityMask		= uint.MaxValue;
 		private	ColorRgba	clearColor		= ColorRgba.TransparentBlack;
 		private	ClearFlags	clearMask		= ClearFlags.All;
-		private	Pass[]		passes			= new Pass[] { new Pass() };
+		private	Pass[]		passes			= new[] { new Pass() };
 
 		[NonSerialized]	private	Matrix4	matModelView		= Matrix4.Identity;
 		[NonSerialized]	private	Matrix4	matProjection		= Matrix4.Identity;
@@ -599,7 +593,7 @@ namespace Duality.Components
 					if (i == 0)
 						this.passes[i] = new Pass(value[i], null);
 					else
-						this.passes[i] = new Pass(value[i], value[i].Input == null ? new BatchInfo() : value[i].Input);
+						this.passes[i] = new Pass(value[i], value[i].Input ?? new BatchInfo());
 				}
 			}
 		}
@@ -610,7 +604,7 @@ namespace Duality.Components
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public IDrawDevice DrawDevice
 		{
-			get { return this as IDrawDevice; }
+			get { return this; }
 		}
 		/// <summary>
 		/// [GET] The drawing devices target size for rendering the Scene.
@@ -620,13 +614,13 @@ namespace Duality.Components
 		{
 			get
 			{
-				for (int i = 0; i < this.passes.Length; i++)
+				foreach (Pass t in this.passes)
 				{
-					if (this.passes[i].Input == null)
+					if (t.Input == null)
 					{
-						return !this.passes[i].Output.IsAvailable ? 
-							DualityApp.TargetResolution : 
-							new Vector2(this.passes[i].Output.Res.Width, this.passes[i].Output.Res.Height);
+						return !t.Output.IsAvailable ?
+							DualityApp.TargetResolution :
+							new Vector2(t.Output.Res.Width, t.Output.Res.Height);
 					}
 				}
 				return DualityApp.TargetResolution;
@@ -715,10 +709,10 @@ namespace Duality.Components
 				Performance.BeginMeasure("Camera_" + this.gameobj.Name + "_Render");
 				Performance.timeRender.BeginMeasure();
 
-				for (int i = 0; i < this.passes.Length; i++)
+				foreach (Pass t in this.passes)
 				{
-					this.deviceVisibility = this.visibilityMask & this.passes[i].VisibilityMask;
-					this.RenderSinglePass(this.passes[i]);
+					this.deviceVisibility = this.visibilityMask & t.VisibilityMask;
+					this.RenderSinglePass(t);
 				}
 				this.deviceVisibility = this.visibilityMask;
 
@@ -806,23 +800,18 @@ namespace Duality.Components
 			y = Math.Max(y, 0);
 			w = Math.Min(w, this.pickingTex.PxWidth - x);
 			h = Math.Min(h, this.pickingTex.PxHeight - y);
-			int pxNum = w * h;
-			int pxByteNum = pxNum * 4;
 
 			HashSet<ICmpRenderer> result = new HashSet<ICmpRenderer>();
-			int rendererId;
 			int rendererIdLast = 0;
 			unsafe { fixed (byte* pDataBegin = this.pickingBuffer) {
-				byte* pData;
 				for (int j = 0; j < h; ++j)
 				{
-					pData = pDataBegin + 4 * (x + (y + j) * this.pickingTex.PxWidth);
+					byte* pData = pDataBegin + 4 * (x + (y + j) * this.pickingTex.PxWidth);
 					for (int i = 0; i < w; ++i)
 					{
-						rendererId = 
-							(*pData << 16) |
-							(*(pData + 1) << 8) |
-							(*(pData + 2) << 0);
+						int rendererId = (*pData << 16) |
+						                 (*(pData + 1) << 8) |
+						                 (*(pData + 2) << 0);
 						if (rendererId != rendererIdLast)
 						{
 							if (rendererId - 1 > this.pickingMap.Count)
@@ -1082,14 +1071,13 @@ namespace Duality.Components
 			// If we're expecting a crunched image, also crunch the picking pass
 			if (this.picking != 0)
 			{
-				for (int i = 0; i < this.passes.Length; i++)
+				foreach (Pass t in this.passes)
 				{
-					if (this.passes[i].Output == null && this.passes[i].FitOutput)
+					if (t.Output == null && t.FitOutput)
 					{
-						Vector2 targetSize = this.passes[i].Input == null || 
-							!this.passes[i].Input.MainTexture.IsAvailable ? 
+						Vector2 targetSize = t.Input == null || !t.Input.MainTexture.IsAvailable ? 
 							DualityApp.TargetResolution : 
-							new Vector2(this.passes[i].Input.MainTexture.Res.PxWidth, this.passes[i].Input.MainTexture.Res.PxHeight);
+							new Vector2(t.Input.MainTexture.Res.PxWidth, t.Input.MainTexture.Res.PxHeight);
 						refSize = targetSize;
 						break;
 					}
@@ -1210,7 +1198,6 @@ namespace Duality.Components
 		{
 			if (this.picking == 0) Performance.timeProcessDrawcalls.BeginMeasure();
 
-			int vertexOffset;
 			List<IDrawBatch> batchesSharingVBO = new List<IDrawBatch>();
 			IDrawBatch lastBatchRendered = null;
 
@@ -1227,7 +1214,7 @@ namespace Duality.Components
 
 				if (batchesSharingVBO.Count > 0 && (nextBatch == null || !currentBatch.CanShareVBO(nextBatch)))
 				{
-					vertexOffset = 0;
+					int vertexOffset = 0;
 					batchesSharingVBO[0].UploadToVBO(batchesSharingVBO);
 
 					foreach (IDrawBatch renderBatch in batchesSharingVBO)

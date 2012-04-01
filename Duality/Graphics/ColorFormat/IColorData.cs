@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Duality.ColorFormat
 {
@@ -50,7 +47,7 @@ namespace Duality.ColorFormat
 				if (typeof(T) == typeof(IColorData))
 					return (T)source;
 				else
-					clr = (T)ReflectionHelper.CreateInstanceOf(typeof(T), true);
+					clr = (T)typeof(T).CreateInstanceOf(true);
 			}
 			clr.SetIntArgb(source.ToIntArgb());
 			return clr;
@@ -68,7 +65,7 @@ namespace Duality.ColorFormat
 			if (type == typeof(IColorData)) return source;
 
 			IColorData clr = type.GetDefaultInstanceOf() as IColorData;
-			if (clr == null) clr = ReflectionHelper.CreateInstanceOf(type, true) as IColorData;
+			if (clr == null) clr = type.CreateInstanceOf(true) as IColorData;
 			clr.SetIntArgb(source.ToIntArgb());
 			return clr;
 		}

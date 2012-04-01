@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-
 using OpenTK;
 
 namespace Duality
@@ -68,7 +65,7 @@ namespace Duality
 		/// </summary>
 		public const float RadAngle360 = TwoPi;
 
-		private static Random rnd = new Random((int)(DateTime.Now.Ticks % (long)int.MaxValue));
+		private static Random rnd = new Random((int)(DateTime.Now.Ticks % int.MaxValue));
 		/// <summary>
 		/// [GET / SET] Global random number generator. Is never null.
 		/// </summary>
@@ -1213,11 +1210,10 @@ namespace Duality
 			bool neg = false;
 			bool pos = false;
 
-			int b, c;
 			for (int a = 0; a < vertices.Length; a++)
 			{
-				b = (a + 1) % vertices.Length;
-				c = (b + 1) % vertices.Length;
+				int b = (a + 1) % vertices.Length;
+				int c = (b + 1) % vertices.Length;
 				Vector2 ab = vertices[b] - vertices[a];
 				Vector2 bc = vertices[c] - vertices[b];
 

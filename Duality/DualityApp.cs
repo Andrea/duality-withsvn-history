@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Reflection;
 using System.IO;
 
 using OpenTK;
-using OpenTK.Input;
 using OpenTK.Graphics;
 
 using DW.RtfWriter;
@@ -27,7 +25,7 @@ namespace Duality
 		/// <summary>
 		/// Describes the context in which the current DualityApp runs.
 		/// </summary>
-		public enum ExecutionContext : int
+		public enum ExecutionContext
 		{
 			/// <summary>
 			/// Duality has been terminated. There is no guarantee that any object is still valid or usable.
@@ -49,7 +47,7 @@ namespace Duality
 		/// <summary>
 		/// Describes the environment in which the current DualityApp runs.
 		/// </summary>
-		public enum ExecutionEnvironment : int
+		public enum ExecutionEnvironment
 		{
 			/// <summary>
 			/// The environment in which Duality is executed is unknown.
@@ -144,8 +142,7 @@ namespace Duality
 			get { return appData; }
 			set 
 			{ 
-				appData = value; 
-				if (appData == null) appData = new DualityAppData();
+				appData = value ?? new DualityAppData();
 				// We're currently missing direct changes without invoking this setter
 				OnAppDataChanged();
 			}
@@ -159,8 +156,7 @@ namespace Duality
 			get { return userData; }
 			set 
 			{ 
-				userData = value; 
-				if (userData == null) userData = new DualityUserData();
+				userData = value ?? new DualityUserData();
 				// We're currently missing direct changes without invoking this setter
 				OnUserDataChanged();
 			}
@@ -289,7 +285,7 @@ namespace Duality
 			}
 
 			// Determine available and default graphics modes
-			foreach (int samplecount in new int[] { 0, 2, 4, 6, 8, 16, 32, 48, 64 })
+			foreach (int samplecount in new[] { 0, 2, 4, 6, 8, 16, 32, 48, 64 })
 			{
 				GraphicsMode mode = new GraphicsMode(32, 24, 0, samplecount);
 				if (!availModes.Contains(mode))
@@ -489,9 +485,9 @@ namespace Duality
 		/// </summary>
 		public static void LoadSaveAll()
 		{
-			DualityApp.LoadAppData();
-			DualityApp.LoadUserData();
-			DualityApp.LoadMetaData();
+			LoadAppData();
+			LoadUserData();
+			LoadMetaData();
 
 			ContentProvider.ClearContent();
 			string[] resFiles = Directory.GetFiles("Data", "*" + Resource.FileExt, SearchOption.AllDirectories);
@@ -502,9 +498,9 @@ namespace Duality
 			}
 			ContentProvider.ClearContent();
 
-			DualityApp.SaveAppData();
-			DualityApp.SaveUserData();
-			DualityApp.SaveMetaData();
+			SaveAppData();
+			SaveUserData();
+			SaveMetaData();
 		}
 
 		/// <summary>
@@ -681,25 +677,23 @@ namespace Duality
 			if (Directory.Exists("Plugins"))
 			{
 				string[] pluginDllPaths = Directory.GetFiles("Plugins", "*.core.dll", SearchOption.AllDirectories);
-				Assembly pluginAssembly;
-				Type pluginType;
-				CorePlugin plugin;
-				for (int i = 0; i < pluginDllPaths.Length; i++)
+				foreach (string dllPath in pluginDllPaths)
 				{
-					Log.Core.Write("Loading '{0}'...", pluginDllPaths[i]);
+					Log.Core.Write("Loading '{0}'...", dllPath);
 					Log.Core.PushIndent();
+					Assembly pluginAssembly;
 					if (environment == ExecutionEnvironment.Launcher)
-						pluginAssembly = Assembly.LoadFrom(pluginDllPaths[i]);
+						pluginAssembly = Assembly.LoadFrom(dllPath);
 					else
-						pluginAssembly = Assembly.Load(File.ReadAllBytes(pluginDllPaths[i]));
-					pluginType = pluginAssembly.GetExportedTypes().FirstOrDefault(t => typeof(CorePlugin).IsAssignableFrom(t));
+						pluginAssembly = Assembly.Load(File.ReadAllBytes(dllPath));
+					Type pluginType = pluginAssembly.GetExportedTypes().FirstOrDefault(t => typeof(CorePlugin).IsAssignableFrom(t));
 					if (pluginType == null)
 					{
 						Log.Core.WriteError("Can't find CorePlugin class. Discarding plugin...");
 						disposedPlugins.Add(pluginAssembly);
 						continue;
 					}
-					plugin = (CorePlugin)ReflectionHelper.CreateInstanceOf(pluginType);
+					CorePlugin plugin = (CorePlugin)pluginType.CreateInstanceOf();
 					plugins.Add(plugin.AssemblyName, plugin);
 					Log.Core.PopIndent();
 				}
@@ -731,11 +725,10 @@ namespace Duality
 			// Load new plugin
 			Assembly pluginAssembly = Assembly.Load(File.ReadAllBytes(pluginFileName));
 			Type pluginType = pluginAssembly.GetExportedTypes().FirstOrDefault(t => typeof(CorePlugin).IsAssignableFrom(t));
-			CorePlugin plugin = (CorePlugin)ReflectionHelper.CreateInstanceOf(pluginType);
+			CorePlugin plugin = (CorePlugin)pluginType.CreateInstanceOf();
 
 			// If we're overwritin an old plugin here, add the old version to the "disposed" blacklist
-			CorePlugin oldPlugin = null;
-			Type[] oldResTypes = new Type[0];
+			CorePlugin oldPlugin;
 			if (plugins.TryGetValue(plugin.AssemblyName, out oldPlugin))
 			{
 				disposedPlugins.Add(oldPlugin.PluginAssembly);
@@ -759,10 +752,7 @@ namespace Duality
 			foreach (CorePlugin plugin in plugins.Values)
 			{
 				AssemblyName[] refNames = plugin.PluginAssembly.GetReferencedAssemblies();
-				foreach (AssemblyName rn in refNames)
-				{
-					if (rn.Name == asmName) return false;
-				}
+				if (refNames.Any(rn => rn.Name == asmName)) return false;
 			}
 			return true;
 		}
@@ -773,7 +763,7 @@ namespace Duality
 		/// <returns></returns>
 		public static IEnumerable<Assembly> GetDualityAssemblies()
 		{
-			yield return typeof(Duality.DualityApp).Assembly;
+			yield return typeof(DualityApp).Assembly;
 			foreach (CorePlugin p in LoadedPlugins) yield return p.PluginAssembly;
 		}
 		/// <summary>
@@ -850,7 +840,7 @@ namespace Duality
 			// If this method gets called, assume we are searching for a dynamically loaded plugin assembly
 			string assemblyNameStub = args.Name.Split(',')[0];
 			CorePlugin plugin;
-			if (DualityApp.plugins.TryGetValue(assemblyNameStub, out plugin))
+			if (plugins.TryGetValue(assemblyNameStub, out plugin))
 				return plugin.PluginAssembly;
 			else
 				return null;

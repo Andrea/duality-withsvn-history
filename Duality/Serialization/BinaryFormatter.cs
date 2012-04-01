@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.IO;
 using System.Reflection;
-
-using Duality.Serialization.Surrogates;
 
 namespace Duality.Serialization
 {
@@ -41,7 +38,7 @@ namespace Duality.Serialization
 			if (obj is Type)
 			{
 				Type type = obj as Type;
-				SerializeType cachedType = ReflectionHelper.GetSerializeType(type);
+				SerializeType cachedType = type.GetSerializeType();
 
 				this.writer.Write(cachedType.TypeString);
 			}
@@ -140,7 +137,7 @@ namespace Duality.Serialization
 					object val = field.GetValue(obj);
 
 					if (val != null && this.IsFieldBlocked(field))
-						val = ReflectionHelper.GetDefaultInstanceOf(field.FieldType);
+						val = field.FieldType.GetDefaultInstanceOf();
 
 					this.WriteObject(val);
 				}
@@ -184,7 +181,7 @@ namespace Duality.Serialization
 		protected void WriteEnum(Enum obj, SerializeType objSerializeType)
 		{
 			this.writer.Write(objSerializeType.TypeString);
-			this.writer.Write(obj.ToString());
+			this.writer.Write(obj.ToString(CultureInfo.InvariantCulture));
 			this.writer.Write(Convert.ToInt64(obj));
 		}
 
@@ -262,7 +259,7 @@ namespace Duality.Serialization
 			if (objType == null) this.LogCantResolveTypeError(objId, objTypeString);
 
 			SerializeType objSerializeType = null;
-			if (objType != null) objSerializeType = ReflectionHelper.GetSerializeType(objType);
+			if (objType != null) objSerializeType = objType.GetSerializeType();
 			
 			// Retrieve surrogate if requested
 			ISurrogate objSurrogate = null;
@@ -284,8 +281,8 @@ namespace Duality.Serialization
 					try { obj = objSurrogate.ConstructObject(customIO, objType); }
 					catch (Exception e) { this.LogCustomDeserializationError(objId, objType, e); }
 				}
-				if (obj == null) obj = ReflectionHelper.CreateInstanceOf(objType);
-				if (obj == null) obj = ReflectionHelper.CreateInstanceOf(objType, true);
+				if (obj == null) obj = objType.CreateInstanceOf();
+				if (obj == null) obj = objType.CreateInstanceOf(true);
 			}
 
 			// Prepare object reference
@@ -325,7 +322,7 @@ namespace Duality.Serialization
 						{
 							this.SerializationLog.WriteWarning("No match found: {0}", pair.Key);
 						}
-						else if (field.FieldType.IsAssignableFrom(pair.Value.GetType()))
+						else if (field.FieldType.IsInstanceOfType(pair.Value))
 						{
 							this.SerializationLog.WriteWarning("Match '{0}' differs in FieldType: '{1}', but required '{2}", pair.Key, 
 								Log.Type(field.FieldType), 
@@ -360,10 +357,9 @@ namespace Duality.Serialization
 						{
 							this.SerializationLog.WriteWarning("Data layout Type '{0}' of field '{1}' does not match reflected Type '{2}'. Trying to convert...'", layout.Fields[i].typeString, layout.Fields[i].name, Log.Type(field.FieldType));
 							this.SerializationLog.PushIndent();
-							object castVal;
 							try
 							{
-								castVal = Convert.ChangeType(fieldValue, fieldType, System.Globalization.CultureInfo.InvariantCulture);
+								object castVal = Convert.ChangeType(fieldValue, fieldType, System.Globalization.CultureInfo.InvariantCulture);
 								this.SerializationLog.Write("...succeeded! Assigning value '{0}'", castVal);
 								field.SetValue(obj, castVal);
 							}
@@ -579,14 +575,12 @@ namespace Duality.Serialization
 		/// <returns>The object that has been read.</returns>
 		protected Enum ReadEnum()
 		{
-			object result;
-
 			string typeName = this.reader.ReadString();
 			string name = this.reader.ReadString();
 			long val = this.reader.ReadInt64();
 			Type enumType = ReflectionHelper.ResolveType(typeName);
 
-			result = Enum.Parse(enumType, name);
+			object result = Enum.Parse(enumType, name);
 			if (result != null) return (Enum)result;
 
 			this.SerializationLog.WriteWarning("Can't parse enum value '{0}' of Type '{1}'. Using numerical value '{2}' instead.", name, typeName, val);

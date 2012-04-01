@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using System.Drawing;
@@ -114,7 +111,7 @@ namespace DualityEditor.Controls.ToolStrip
 		public ToolStripNumericUpDown() : base(new FlowLayoutPanel())
 		{
 			// Set up the FlowLayouPanel.
-			this.controlPanel = (FlowLayoutPanel)base.Control;
+			this.controlPanel = (FlowLayoutPanel)Control;
 			this.controlPanel.BackColor = Color.Transparent;
 			this.controlPanel.WrapContents = false;
 			this.controlPanel.AutoSize = true;
@@ -155,20 +152,6 @@ namespace DualityEditor.Controls.ToolStrip
 			{
 				this.num.Width = this.controlPanel.ClientSize.Width - this.txt.Width - this.controlPanel.Margin.Horizontal - this.controlPanel.Margin.Horizontal;
 			}
-		}
-
-		protected override void OnBoundsChanged()
-		{
-			base.OnBoundsChanged();
-
-		}
-		protected override void OnSubscribeControlEvents(Control control)
-		{
-			base.OnSubscribeControlEvents(control);
-		}
-		protected override void OnUnsubscribeControlEvents(Control control)
-		{
-			base.OnUnsubscribeControlEvents(control);
 		}
 	}
 }

@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.Reflection;
 using System.Drawing;
 
 using AdamsLair.PropertyGrid;
-using AdamsLair.PropertyGrid.Renderer;
 using AdamsLair.PropertyGrid.PropertyEditors;
 
 using OpenTK;
@@ -18,8 +16,6 @@ using Duality.EditorHints;
 
 using DualityEditor;
 using DualityEditor.CorePluginInterface;
-using DualityEditor.Controls;
-using DualityEditor.Controls.PropertyEditors;
 
 namespace EditorBase.PropertyEditors
 {

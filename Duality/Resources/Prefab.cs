@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.IO;
 using System.Reflection;
-
-using Duality.Serialization;
 
 namespace Duality.Resources
 {
@@ -240,10 +236,9 @@ namespace Duality.Resources
 			{
 				if (this.changes[i].childIndex.Take(childPath.Count).SequenceEqual(childPath))
 				{
-					GameObject targetObj;
 					object target;
 
-					targetObj = this.obj.ChildAtIndexPath(this.changes[i].childIndex);
+					GameObject targetObj = this.obj.ChildAtIndexPath(this.changes[i].childIndex);
 					if (this.changes[i].componentType != null)
 						target = targetObj.GetComponent(this.changes[i].componentType);
 					else
@@ -330,11 +325,10 @@ namespace Duality.Resources
 		{
 			if (this.changes == null || this.changes.Count == 0) return;
 
-			GameObject targetObj;
-			object target;
 			for (int i = 0; i < this.changes.Count; i++)
 			{
-				targetObj = this.obj.ChildAtIndexPath(this.changes[i].childIndex);
+				GameObject targetObj = this.obj.ChildAtIndexPath(this.changes[i].childIndex);
+				object target;
 				if (this.changes[i].componentType != null)
 					target = targetObj.GetComponent(this.changes[i].componentType);
 				else
@@ -364,11 +358,10 @@ namespace Duality.Resources
 		{
 			if (this.changes == null || this.changes.Count == 0) return;
 
-			GameObject targetObj;
-			object target;
 			for (int i = 0; i < this.changes.Count; i++)
 			{
-				targetObj = this.obj.ChildAtIndexPath(this.changes[i].childIndex);
+				GameObject targetObj = this.obj.ChildAtIndexPath(this.changes[i].childIndex);
+				object target;
 				if (this.changes[i].componentType != null)
 					target = targetObj.GetComponent(this.changes[i].componentType);
 				else
@@ -399,7 +392,7 @@ namespace Duality.Resources
 				throw new ArgumentException("Target object is not a valid child of this PrefabLinks GameObject", "target");
 			if (value == null && prop.PropertyType.IsValueType)
 				throw new ArgumentException("Target field cannot be assigned from null value.", "value");
-			if (value != null && !prop.PropertyType.IsAssignableFrom(value.GetType()))
+			if (value != null && !prop.PropertyType.IsInstanceOfType(value))
 				throw new ArgumentException("Target field not assignable from Type " + value.GetType().Name + ".", "value");
 
 			VarMod change;

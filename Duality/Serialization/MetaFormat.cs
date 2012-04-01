@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.IO;
-using System.Reflection;
-
 using Duality.EditorHints;
 
 namespace Duality.Serialization.MetaFormat
@@ -98,10 +95,9 @@ namespace Duality.Serialization.MetaFormat
 		/// <returns></returns>
 		public virtual bool IsObjectIdDefined(uint objId)
 		{
-			foreach (DataNode n in this.subNodes)
-				if (n.IsObjectIdDefined(objId)) return true;
-			return false;
+			return this.subNodes.Any(n => n.IsObjectIdDefined(objId));
 		}
+
 		/// <summary>
 		/// Searches for one <see cref="ReflectionHelper.GetTypeId">type string</see> and replaces it with another.
 		/// DataNodes may override this method to rename their own type strings. The base version iterates
@@ -112,10 +108,7 @@ namespace Duality.Serialization.MetaFormat
 		/// <returns>The number of occurences that have been replaced.</returns>
 		public virtual int ReplaceTypeStrings(string oldTypeString, string newTypeString)
 		{
-			int count = 0;
-			foreach (DataNode n in this.subNodes)
-				count += n.ReplaceTypeStrings(oldTypeString, newTypeString);
-			return count;
+			return this.subNodes.Sum(n => n.ReplaceTypeStrings(oldTypeString, newTypeString));
 		}
 	}
 	/// <summary>
@@ -240,7 +233,7 @@ namespace Duality.Serialization.MetaFormat
 			set { this.objId = value; }
 		}
 
-		public ObjectNode(DataType dataType, string typeString, uint objId) : base(dataType)
+		protected ObjectNode(DataType dataType, string typeString, uint objId) : base(dataType)
 		{
 			this.typeString = typeString;
 			this.objId = objId;

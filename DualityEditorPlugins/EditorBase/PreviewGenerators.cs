@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
 using OpenTK;
 
 using Duality;
-using Duality.Components;
-using Duality.Components.Renderers;
 using Duality.Resources;
 using Font = Duality.Resources.Font;
 
@@ -69,7 +65,7 @@ namespace EditorBase.PreviewGenerators
 			int channelLength = sdata.Length / pcm.channelCount;
 			int yMid = result.Height / 2;
 			int stepWidth = (channelLength / (2 * result.Width)) - 1;
-			int samples = 10;
+			const int samples = 10;
 			using (Graphics g = Graphics.FromImage(result))
 			{
 				Color baseColor = ExtMethodsSystemDrawingColor.ColorFromHSV(
@@ -113,7 +109,7 @@ namespace EditorBase.PreviewGenerators
 		{
 			int desiredWidth = settings.DesiredWidth;
 			int desiredHeight = settings.DesiredHeight;
-			string text = "/acThe quick brown fox jumps over the lazy dog.";
+			const string text = "/acThe quick brown fox jumps over the lazy dog.";
 			FormattedText formatText = new FormattedText();
 			formatText.MaxWidth = Math.Max(1, desiredWidth - 10);
 			formatText.MaxHeight = Math.Max(1, desiredHeight - 10);

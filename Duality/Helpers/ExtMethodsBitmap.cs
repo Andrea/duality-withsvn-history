@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
-
-using Duality;
 using Duality.ColorFormat;
 
 namespace Duality
@@ -29,7 +24,7 @@ namespace Duality
 		{
 			if (w == 0 || h == 0) return null;
 			Bitmap result = new Bitmap(w, h);
-			using (Graphics g = Graphics.FromImage((Image)result))
+			using (Graphics g = Graphics.FromImage(result))
 			{
 				g.DrawImageUnscaledAndClipped(bm, new Rectangle(-x, -y, bm.Width, bm.Height));
 			}
@@ -105,11 +100,11 @@ namespace Duality
 		public static Bitmap Rescale(this Bitmap bm, int w, int h, InterpolationMode mode = InterpolationMode.Bilinear)
 		{
 			Bitmap result = new Bitmap(w, h);
-			using (Graphics g = Graphics.FromImage((Image)result))
+			using (Graphics g = Graphics.FromImage(result))
 			{
 				g.InterpolationMode = mode;
 
-				System.Drawing.Imaging.ImageAttributes imageAttr = new System.Drawing.Imaging.ImageAttributes();
+				ImageAttributes imageAttr = new ImageAttributes();
 				imageAttr.SetWrapMode(WrapMode.TileFlipXY);
 				g.DrawImage(bm, 
 					new Rectangle(0, 0, w, h),
@@ -180,7 +175,7 @@ namespace Duality
 			Point	pos		= new Point();
 			int[]	nPos	= new int[8];
 			bool[]	nOk		= new bool[8];
-			int[]	nMult	= new int[]{2, 2, 2, 2, 1, 1, 1, 1};
+			int[]	nMult	= new[]{2, 2, 2, 2, 1, 1, 1, 1};
 			int[]	mixClr	= null;
 
 			for (int i = 0; i < pixelData.Length; i++)

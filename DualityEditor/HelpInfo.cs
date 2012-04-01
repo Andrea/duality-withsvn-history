@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Reflection;
 using System.Drawing;
 using System.Diagnostics;
@@ -107,9 +106,8 @@ namespace DualityEditor
 		public static HelpInfo FromGameObject(GameObject obj)
 		{
 			if (obj == null) return null;
-			HelpInfo info = FromMember(typeof(GameObject));
+			HelpInfo info = FromMember(typeof(GameObject)) ?? new HelpInfo();
 
-			if (info == null) info = new HelpInfo();
 			info.topic = obj.FullName;
 			info.desc = obj.GetComponents<Component>().ToString(c => c.GetType().GetTypeKeyword(), "\n");
 
@@ -118,9 +116,8 @@ namespace DualityEditor
 		public static HelpInfo FromComponent(Component cmp)
 		{
 			if (cmp == null) return null;
-			HelpInfo info = FromMember(cmp.GetType());
+			HelpInfo info = FromMember(cmp.GetType()) ?? new HelpInfo();
 
-			if (info == null) info = new HelpInfo();
 			info.topic = cmp.ToString();
 
 			return info;
@@ -152,8 +149,6 @@ namespace DualityEditor
 		{
 			get { return this.stack.Count > 0 ? this.stack[this.stack.Count - 1].Key : null; }
 		}
-
-		public HelpStack() {}
 
 		public void Push(IHelpProvider sender, HelpInfo info)
 		{

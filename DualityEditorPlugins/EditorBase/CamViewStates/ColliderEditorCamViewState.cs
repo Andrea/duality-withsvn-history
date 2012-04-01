@@ -1,22 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 using Duality;
 using Duality.Components;
 using Duality.Resources;
 using Duality.ColorFormat;
-using Duality.VertexFormat;
 using Font = Duality.Resources.Font;
 
 using DualityEditor;
 using DualityEditor.Forms;
 
 using OpenTK;
-using OpenTK.Graphics.OpenGL;
 
 namespace EditorBase.CamViewStates
 {
@@ -208,10 +206,10 @@ namespace EditorBase.CamViewStates
 							colliderPos.Z - 0.01f, 
 							circle.Radius * uniformScale);
 
-						Vector2 textSize = textFont.MeasureText(index.ToString());
+						Vector2 textSize = textFont.MeasureText(index.ToString(CultureInfo.InvariantCulture));
 						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, fontClr.WithAlpha(shapeAlpha)));
 						canvas.CurrentState.TransformHandle = textSize * 0.5f;
-						canvas.DrawText(index.ToString(), 
+						canvas.DrawText(index.ToString(CultureInfo.InvariantCulture), 
 							colliderPos.X + circlePos.X, 
 							colliderPos.Y + circlePos.Y,
 							colliderPos.Z - 0.01f);
@@ -240,10 +238,10 @@ namespace EditorBase.CamViewStates
 						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha(shapeAlpha)));
 						canvas.DrawConvexPolygon(polyVert, colliderPos.Z - 0.01f);
 
-						Vector2 textSize = textFont.MeasureText(index.ToString());
+						Vector2 textSize = textFont.MeasureText(index.ToString(CultureInfo.InvariantCulture));
 						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, fontClr.WithAlpha(shapeAlpha)));
 						canvas.CurrentState.TransformHandle = textSize * 0.5f;
-						canvas.DrawText(index.ToString(), 
+						canvas.DrawText(index.ToString(CultureInfo.InvariantCulture), 
 							colliderPos.X + center.X, 
 							colliderPos.Y + center.Y,
 							colliderPos.Z - 0.01f);

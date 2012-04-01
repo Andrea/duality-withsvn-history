@@ -8327,12 +8327,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="P:Duality.Components.SoundEmitter.Source.Disposed">
-            <summary>
-            [GET] Returns whether this sound source has been disposed. Disposed objects are not to be used again.
-            Treat them as null or similar.
-            </summary>
-        </member>
         <member name="P:Duality.Components.SoundEmitter.Source.Instance">
             <summary>
             [GET] The <see cref="T:Duality.SoundInstance"/> that is currently allocated to emit
@@ -11198,6 +11192,13 @@
             <summary>
             Breaks this GameObject's <see cref="T:Duality.Resources.PrefabLink"/>
             </summary>
+        </member>
+        <member name="M:Duality.GameObject.ChildByName(System.String)">
+            <summary>
+            Returns the first child GameObject with the specified name. You may also specify a full name to access children's children.
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
         </member>
         <member name="M:Duality.GameObject.ChildAtIndex(System.Int32)">
             <summary>

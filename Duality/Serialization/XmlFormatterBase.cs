@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.IO;
-using System.Reflection;
 using System.Xml;
-using System.Xml.XPath;
-
-using CultureInfo = System.Globalization.CultureInfo;
 
 namespace Duality.Serialization
 {
@@ -127,8 +121,8 @@ namespace Duality.Serialization
 			get { return this.reader != null; }
 		}
 
-		public XmlFormatterBase() : this(null) {}
-		public XmlFormatterBase(Stream stream)
+		protected XmlFormatterBase() : this(null) {}
+		protected XmlFormatterBase(Stream stream)
 		{
 			XmlWriterSettings writerSettings = new XmlWriterSettings();
 			writerSettings.Indent = true;
@@ -155,6 +149,8 @@ namespace Duality.Serialization
 			{
 				this.reader = null;
 			}
+
+			base.Dispose(manually);
 		}
 		
 
@@ -379,7 +375,7 @@ namespace Duality.Serialization
 		/// </summary>
 		/// <param name="stream"></param>
 		/// <returns></returns>
-		[System.Diagnostics.DebuggerStepThrough()]
+		[System.Diagnostics.DebuggerStepThrough]
 		public static bool IsXmlStream(Stream stream)
 		{
 			if (!stream.CanRead) throw new InvalidOperationException("The specified stream is not readable.");
@@ -388,14 +384,14 @@ namespace Duality.Serialization
 			long oldPos = stream.Position;
 
 			bool isXml = true;
-			var xmlSettings = new System.Xml.XmlReaderSettings();
+			var xmlSettings = new XmlReaderSettings();
 			xmlSettings.CloseInput = false;
 			xmlSettings.IgnoreComments = true;
 			xmlSettings.IgnoreWhitespace = true;
 			xmlSettings.IgnoreProcessingInstructions = true;
 			try
 			{
-				using (System.Xml.XmlReader xmlRead = System.Xml.XmlReader.Create(stream, xmlSettings))
+				using (XmlReader xmlRead = XmlReader.Create(stream, xmlSettings))
 				{
 					xmlRead.Read();
 				}
@@ -403,6 +399,15 @@ namespace Duality.Serialization
 			stream.Seek(oldPos, SeekOrigin.Begin);
 
 			return isXml;
+		}
+
+		protected byte[] StringToByteArray(string str)
+		{
+			return Convert.FromBase64String(str);
+		}
+		protected string ByteArrayToString(byte[] arr)
+		{
+			return Convert.ToBase64String(arr, Base64FormattingOptions.None);
 		}
 	}
 }

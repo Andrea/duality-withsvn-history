@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 using OpenTK.Graphics.OpenGL;
 using OpenTK;
 
-using Duality;
 using Duality.VertexFormat;
 using Duality.ColorFormat;
 using Duality.Resources;
@@ -293,7 +290,7 @@ namespace Duality
 				vertices[i].pos.Z = pos.Z;
 				vertices[i].clr = shapeColor;
 				this.device.PreprocessCoords(ref vertices[i].pos, ref scale);
-				angle += (MathF.TwoPi / (float)segmentNum);
+				angle += (MathF.TwoPi / segmentNum);
 			}
 			this.CurrentState.TransformVertices(vertices, shapeHandle, shapeHandleScale);
 			this.device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.LineLoop, vertices);
@@ -308,7 +305,7 @@ namespace Duality
 				vertices[i].pos.Z = pos.Z - (float)Math.Cos(angle) * r;
 				vertices[i].clr = shapeColor;
 				this.device.PreprocessCoords(ref vertices[i].pos, ref scale);
-				angle += (MathF.TwoPi / (float)segmentNum);
+				angle += (MathF.TwoPi / segmentNum);
 			}
 			this.CurrentState.TransformVertices(vertices, shapeHandle, shapeHandleScale);
 			this.device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.LineLoop, vertices);
@@ -323,7 +320,7 @@ namespace Duality
 				vertices[i].pos.Z = pos.Z - (float)Math.Cos(angle) * r;
 				vertices[i].clr = shapeColor;
 				this.device.PreprocessCoords(ref vertices[i].pos, ref scale);
-				angle += (MathF.TwoPi / (float)segmentNum);
+				angle += (MathF.TwoPi / segmentNum);
 			}
 			this.CurrentState.TransformVertices(vertices, shapeHandle, shapeHandleScale);
 			this.device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.LineLoop, vertices);
@@ -500,7 +497,7 @@ namespace Duality
 				vertices[i].pos.Y = pos.Y - (float)Math.Cos(angle) * h + 0.5f;
 				vertices[i].pos.Z = pos.Z;
 				vertices[i].clr = shapeColor;
-				angle += (MathF.TwoPi / (float)segmentNum);
+				angle += (MathF.TwoPi / segmentNum);
 			}
 			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
 			this.device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.LineLoop, vertices);
@@ -657,7 +654,7 @@ namespace Duality
 				vertices[i].pos.Y = pos.Y - (float)Math.Cos(angle) * h;
 				vertices[i].pos.Z = pos.Z;
 				vertices[i].clr = shapeColor;
-				angle += (MathF.TwoPi / (float)segmentNum);
+				angle += (MathF.TwoPi / segmentNum);
 			}
 			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
 			device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.TriangleFan, vertices);

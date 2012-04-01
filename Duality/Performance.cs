@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Diagnostics;
 
 namespace Duality
@@ -184,7 +182,7 @@ namespace Duality
 		public static void DrawAllMeasures(Canvas canvas, float x = 10.0f, float y = 10.0f)
 		{
 			float yOff = 0.0f;
-			foreach (var m in Performance.GetAllMeasures())
+			foreach (var m in GetAllMeasures())
 			{
 				if (m.Value < 0.005f) continue;
 				canvas.DrawText(string.Format(System.Globalization.CultureInfo.InvariantCulture, 

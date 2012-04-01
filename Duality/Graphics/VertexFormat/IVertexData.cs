@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using OpenTK;
+﻿using OpenTK;
 
 namespace Duality.VertexFormat
 {
@@ -26,7 +21,7 @@ namespace Duality.VertexFormat
 		/// The <see cref="Duality.Resources.Material"/> that is currently active. Usually only needed
 		/// for custom vertex attributes in order to access <see cref="Duality.Resources.ShaderVarInfo">shader variables</see>.
 		/// </param>
-		void SetupVBO(Duality.Resources.BatchInfo mat);
+		void SetupVBO(Resources.BatchInfo mat);
 		/// <summary>
 		/// Uploads vertex data to the currently bound OpenGL VertexBufferObject.
 		/// </summary>
@@ -37,7 +32,7 @@ namespace Duality.VertexFormat
 		/// Resets the VBO configuration.
 		/// </summary>
 		/// <param name="mat">The <see cref="Duality.Resources.Material"/> that was active when setting it up.</param>
-		void FinishVBO(Duality.Resources.BatchInfo mat);
+		void FinishVBO(Resources.BatchInfo mat);
 		#endregion
 
 		/// <summary>

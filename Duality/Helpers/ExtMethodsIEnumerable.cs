@@ -17,8 +17,7 @@ namespace Duality
 		/// <returns></returns>
 		public static IEnumerable<GameObject> Children(this IEnumerable<GameObject> objEnum)
 		{
-			foreach (GameObject o in objEnum)
-				foreach (GameObject c in o.Children) yield return c;
+			return objEnum.SelectMany(o => o.Children);
 		}
 		/// <summary>
 		/// Enumerates the <see cref="Duality.GameObject">GameObjects</see> children, grandchildren, etc.
@@ -27,8 +26,7 @@ namespace Duality
 		/// <returns></returns>
 		public static IEnumerable<GameObject> ChildrenDeep(this IEnumerable<GameObject> objEnum)
 		{
-			foreach (GameObject o in objEnum)
-				foreach (GameObject c in o.ChildrenDeep) yield return c;
+			return objEnum.SelectMany(o => o.ChildrenDeep);
 		}
 		/// <summary>
 		/// Enumerates all <see cref="Duality.GameObject">GameObjects</see> that match the specified name.
@@ -38,7 +36,19 @@ namespace Duality
 		/// <returns></returns>
 		public static IEnumerable<GameObject> ByName(this IEnumerable<GameObject> objEnum, string name)
 		{
-			return objEnum.Where(o => o.Name == name);
+			if (name.Contains('/'))
+			{
+				string[] names = name.Split('/');
+				IEnumerable<GameObject> cur = objEnum.ByName(names[0]);
+				for (int i = 1; i < names.Length; i++)
+				{
+					if (cur == null) return null;
+					cur = cur.Children().ByName(names[i]);
+				}
+				return cur;
+			}
+			else
+				return objEnum.Where(o => o.Name == name);
 		}
 		/// <summary>
 		/// Returns the first <see cref="Duality.GameObject"/> that matches the specified name.
@@ -48,7 +58,19 @@ namespace Duality
 		/// <returns></returns>
 		public static GameObject FirstByName(this IEnumerable<GameObject> objEnum, string name)
 		{
-			return objEnum.FirstOrDefault(o => o.Name == name);
+			if (name.Contains('/'))
+			{
+				string[] names = name.Split('/');
+				GameObject cur = objEnum.FirstByName(names[0]);
+				for (int i = 1; i < names.Length; i++)
+				{
+					if (cur == null) return null;
+					cur = cur.Children.FirstByName(names[i]);
+				}
+				return cur;
+			}
+			else
+				return objEnum.FirstOrDefault(o => o.Name == name);
 		}
 
 		/// <summary>
@@ -60,8 +82,7 @@ namespace Duality
 		/// <returns></returns>
 		public static IEnumerable<T> GetComponents<T>(this IEnumerable<GameObject> objEnum, bool activeOnly = false) where T : class
 		{
-			foreach (GameObject o in objEnum)
-				foreach (T c in o.GetComponents<T>(activeOnly)) yield return c;
+			return objEnum.SelectMany(o => o.GetComponents<T>(activeOnly));
 		}
 		/// <summary>
 		/// Enumerates all <see cref="Duality.GameObject">GameObjects</see> childrens <see cref="Component">Components</see> of the specified type.
@@ -72,8 +93,7 @@ namespace Duality
 		/// <returns></returns>
 		public static IEnumerable<T> GetComponentsInChildren<T>(this IEnumerable<GameObject> objEnum, bool activeOnly = false) where T : class
 		{
-			foreach (GameObject o in objEnum)
-				foreach (T c in o.GetComponentsInChildren<T>(activeOnly)) yield return c;
+			return objEnum.SelectMany(o => o.GetComponentsInChildren<T>(activeOnly));
 		}
 		/// <summary>
 		/// Enumerates all <see cref="Duality.GameObject">GameObjects</see> (and their childrens) <see cref="Component">Components</see> of the specified type.
@@ -84,8 +104,7 @@ namespace Duality
 		/// <returns></returns>
 		public static IEnumerable<T> GetComponentsDeep<T>(this IEnumerable<GameObject> objEnum, bool activeOnly = false) where T : class
 		{
-			foreach (GameObject o in objEnum)
-				foreach (T c in o.GetComponentsDeep<T>(activeOnly)) yield return c;
+			return objEnum.SelectMany(o => o.GetComponentsDeep<T>(activeOnly));
 		}
 
 		/// <summary>
@@ -96,11 +115,7 @@ namespace Duality
 		/// <returns></returns>
 		public static IEnumerable<Components.Transform> Transform(this IEnumerable<GameObject> objEnum, bool activeOnly = false)
 		{
-			foreach (GameObject o in objEnum)
-			{
-				Components.Transform c = o.Transform;
-				if (c != null && (!activeOnly || c.Active)) yield return c;
-			}
+			return objEnum.Select(o => o.Transform).Where(c => c != null && (!activeOnly || c.Active));
 		}
 		/// <summary>
 		/// Enumerates all <see cref="Duality.GameObject">GameObjects</see> <see cref="Duality.Components.Camera"/> Components.
@@ -110,11 +125,7 @@ namespace Duality
 		/// <returns></returns>
 		public static IEnumerable<Components.Camera> Camera(this IEnumerable<GameObject> objEnum, bool activeOnly = false)
 		{
-			foreach (GameObject o in objEnum)
-			{
-				Components.Camera c = o.Camera;
-				if (c != null && (!activeOnly || c.Active)) yield return c;
-			}
+			return objEnum.Select(o => o.Camera).Where(c => c != null && (!activeOnly || c.Active));
 		}
 		/// <summary>
 		/// Enumerates all <see cref="Duality.GameObject">GameObjects</see> <see cref="Duality.Components.Renderer"/> Components.
@@ -124,11 +135,7 @@ namespace Duality
 		/// <returns></returns>
 		public static IEnumerable<ICmpRenderer> Renderer(this IEnumerable<GameObject> objEnum, bool activeOnly = false)
 		{
-			foreach (GameObject o in objEnum)
-			{
-				ICmpRenderer c = o.Renderer;
-				if (c != null && (!activeOnly || (c as Component).Active)) yield return c;
-			}
+			return objEnum.Select(o => o.Renderer).Where(c => c != null && (!activeOnly || (c as Component).Active));
 		}
 		/// <summary>
 		/// Enumerates all <see cref="Duality.GameObject">GameObjects</see> <see cref="Duality.Components.Collider"/> Components.
@@ -138,13 +145,9 @@ namespace Duality
 		/// <returns></returns>
 		public static IEnumerable<Components.Collider> Collider(this IEnumerable<GameObject> objEnum, bool activeOnly = false)
 		{
-			foreach (GameObject o in objEnum)
-			{
-				Components.Collider c = o.Collider;
-				if (c != null && (!activeOnly || c.Active)) yield return c;
-			}
+			return objEnum.Select(o => o.Collider).Where(c => c != null && (!activeOnly || c.Active));
 		}
-		
+
 		/// <summary>
 		/// Enumerates all <see cref="Component">Components</see> parent <see cref="Duality.GameObject">GameObjects</see>.
 		/// </summary>
@@ -153,8 +156,9 @@ namespace Duality
 		/// <returns></returns>
 		public static IEnumerable<GameObject> GameObject(this IEnumerable<Component> compEnum, bool activeOnly = false)
 		{
-			foreach (Component c in compEnum)
-				if (c.GameObj != null && (!activeOnly || c.GameObj.Active)) yield return c.GameObj;
+			return from c in compEnum 
+				   where c.GameObj != null && (!activeOnly || c.GameObj.Active) 
+				   select c.GameObj;
 		}
 
 		/// <summary>

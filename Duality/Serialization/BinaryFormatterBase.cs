@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
-using System.Reflection;
 
 namespace Duality.Serialization
 {
@@ -148,8 +145,8 @@ namespace Duality.Serialization
 		}
 
 
-		public BinaryFormatterBase() : this(null) {}
-		public BinaryFormatterBase(Stream stream)
+		protected BinaryFormatterBase() : this(null) {}
+		protected BinaryFormatterBase(Stream stream)
 		{
 			this.WriteTarget = (stream != null && stream.CanWrite) ? new BinaryWriter(stream) : null;
 			this.ReadTarget = (stream != null && stream.CanRead) ? new BinaryReader(stream) : null;
@@ -168,6 +165,8 @@ namespace Duality.Serialization
 			{
 				this.reader = null;
 			}
+
+			base.Dispose(manually);
 		}
 
 		/// <summary>
@@ -238,7 +237,7 @@ namespace Duality.Serialization
 		/// <returns>A <see cref="Duality.Serialization.TypeDataLayout"/> describing the specified <see cref="System.Type"/></returns>
 		protected TypeDataLayout ReadTypeDataLayout(Type t)
 		{
-			return this.ReadTypeDataLayout(ReflectionHelper.GetSerializeType(t).TypeString);
+			return this.ReadTypeDataLayout(t.GetSerializeType().TypeString);
 		}
 		/// <summary>
 		/// Reads the <see cref="Duality.Serialization.TypeDataLayout"/> describing the specified <see cref="System.Type"/>.
@@ -249,7 +248,7 @@ namespace Duality.Serialization
 		{
 			long backRef = this.reader.ReadInt64();
 
-			TypeDataLayout result = null;
+			TypeDataLayout result;
 			if (this.typeDataLayout.TryGetValue(t, out result) && backRef != -1L) return result;
 
 			long lastPos = this.reader.BaseStream.Position;
@@ -552,7 +551,7 @@ namespace Duality.Serialization
 			}
 
 			Type resolved = ReflectionHelper.ResolveType(typeString, false);
-			SerializeType cached = resolved != null ? ReflectionHelper.GetSerializeType(resolved) : null;
+			SerializeType cached = resolved != null ? resolved.GetSerializeType() : null;
 			TypeDataLayout layout = cached != null ? new TypeDataLayout(cached) : null;
 			this.WriteTypeDataLayout(layout, typeString);
 		}

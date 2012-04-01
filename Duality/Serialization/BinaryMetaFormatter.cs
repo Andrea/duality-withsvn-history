@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.IO;
-using System.Reflection;
-
 using Duality.Serialization.MetaFormat;
 
 namespace Duality.Serialization
@@ -15,7 +11,7 @@ namespace Duality.Serialization
 	/// <seealso cref="Duality.Serialization.BinaryFormatter"/>
 	public class BinaryMetaFormatter : BinaryFormatterBase
 	{
-		public BinaryMetaFormatter() : base() {}
+		public BinaryMetaFormatter() {}
 		public BinaryMetaFormatter(Stream stream) : base(stream) {}
 		
 		protected override void GetWriteObjectData(object obj, out SerializeType objSerializeType, out DataType dataType, out uint objId)
@@ -219,10 +215,9 @@ namespace Duality.Serialization
 		protected MemberInfoNode ReadMemberInfo(DataType dataType)
 		{
 			uint objId = this.reader.ReadUInt32();
-			MemberInfoNode result;
-			
+
 			string typeString = this.reader.ReadString();
-			result = new MemberInfoNode(dataType, typeString, objId);
+			MemberInfoNode result = new MemberInfoNode(dataType, typeString, objId);
 			
 			// Prepare object reference
 			this.idManager.Inject(result, objId);

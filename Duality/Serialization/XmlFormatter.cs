@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Xml;
 using System.IO;
 using System.Reflection;
-
-using CultureInfo = System.Globalization.CultureInfo;
 
 namespace Duality.Serialization
 {
@@ -42,7 +40,7 @@ namespace Duality.Serialization
 			if (obj is Type)
 			{
 				Type type = obj as Type;
-				SerializeType cachedType = ReflectionHelper.GetSerializeType(type);
+				SerializeType cachedType = type.GetSerializeType();
 				this.writer.WriteAttributeString("value", cachedType.TypeString);
 			}
 			else if (obj is MemberInfo)
@@ -129,7 +127,7 @@ namespace Duality.Serialization
 					object val = field.GetValue(obj);
 
 					if (val != null && this.IsFieldBlocked(field))
-						val = ReflectionHelper.GetDefaultInstanceOf(field.FieldType);
+						val = field.FieldType.GetDefaultInstanceOf();
 
 					this.WriteObject(val, field.Name);
 				}
@@ -173,7 +171,7 @@ namespace Duality.Serialization
 		protected void WriteEnum(Enum obj, SerializeType objSerializeType)
 		{
 			this.writer.WriteAttributeString("type", objSerializeType.TypeString);
-			this.writer.WriteAttributeString("name", obj.ToString());
+			this.writer.WriteAttributeString("name", obj.ToString(CultureInfo.InvariantCulture));
 			this.writer.WriteAttributeString("value", XmlConvert.ToString(Convert.ToInt64(obj)));
 		}
 		
@@ -209,11 +207,11 @@ namespace Duality.Serialization
 			Type	arrType			= ReflectionHelper.ResolveType(arrTypeString, false);
 			if (arrType == null) this.LogCantResolveTypeError(objId, arrTypeString);
 
-			Array arrObj = null;
+			Array arrObj;
 			if (arrType == typeof(byte[]))
 			{
 			    string binHexString = this.reader.ReadString();
-			    byte[] byteArr = byteArr = this.StringToByteArray(binHexString);
+			    byte[] byteArr = this.StringToByteArray(binHexString);
 
 			    // Set object reference
 			    this.idManager.Inject(byteArr, objId);
@@ -246,13 +244,13 @@ namespace Duality.Serialization
 			string	customString	= this.reader.GetAttribute("custom");
 			string	surrogateString	= this.reader.GetAttribute("surrogate");
 			uint	objId			= objIdString == null ? 0 : XmlConvert.ToUInt32(objIdString);
-			bool	custom			= customString == null ? false : XmlConvert.ToBoolean(customString);
-			bool	surrogate		= surrogateString == null ? false : XmlConvert.ToBoolean(surrogateString);
+			bool	custom			= customString != null && XmlConvert.ToBoolean(customString);
+			bool	surrogate		= surrogateString != null && XmlConvert.ToBoolean(surrogateString);
 			Type	objType			= ReflectionHelper.ResolveType(objTypeString, false);
 			if (objType == null) this.LogCantResolveTypeError(objId, objTypeString);
 
 			SerializeType objSerializeType = null;
-			if (objType != null) objSerializeType = ReflectionHelper.GetSerializeType(objType);
+			if (objType != null) objSerializeType = objType.GetSerializeType();
 			
 			// Retrieve surrogate if requested
 			ISurrogate objSurrogate = null;
@@ -274,8 +272,8 @@ namespace Duality.Serialization
 					try { obj = objSurrogate.ConstructObject(customIO, objType); }
 					catch (Exception e) { this.LogCustomDeserializationError(objId, objType, e); }
 				}
-				if (obj == null) obj = ReflectionHelper.CreateInstanceOf(objType);
-				if (obj == null) obj = ReflectionHelper.CreateInstanceOf(objType, true);
+				if (obj == null) obj = objType.CreateInstanceOf();
+				if (obj == null) obj = objType.CreateInstanceOf(true);
 			}
 
 			// Prepare object reference
@@ -315,7 +313,7 @@ namespace Duality.Serialization
 						{
 							this.SerializationLog.WriteWarning("No match found: {0}", pair.Key);
 						}
-						else if (field.FieldType.IsAssignableFrom(pair.Value.GetType()))
+						else if (field.FieldType.IsInstanceOfType(pair.Value))
 						{
 							this.SerializationLog.WriteWarning("Match '{0}' differs in FieldType: '{1}', but required '{2}", pair.Key, 
 								Log.Type(field.FieldType), 
@@ -356,7 +354,7 @@ namespace Duality.Serialization
 								object castVal;
 								try
 								{
-									castVal = Convert.ChangeType(fieldValue, fieldType, System.Globalization.CultureInfo.InvariantCulture);
+									castVal = Convert.ChangeType(fieldValue, fieldType, CultureInfo.InvariantCulture);
 									this.SerializationLog.Write("...succeeded! Assigning value '{0}'", castVal);
 									field.SetValue(obj, castVal);
 								}
@@ -402,7 +400,7 @@ namespace Duality.Serialization
 		{
 			string	objIdString		= this.reader.GetAttribute("id");
 			uint	objId			= objIdString == null ? 0 : XmlConvert.ToUInt32(objIdString);
-			MemberInfo result = null;
+			MemberInfo result;
 
 			try
 			{
@@ -443,7 +441,7 @@ namespace Duality.Serialization
 			string	objIdString			= this.reader.GetAttribute("id");
 			string	multiString			= this.reader.GetAttribute("multi");
 			uint	objId				= objIdString == null ? 0 : XmlConvert.ToUInt32(objIdString);
-			bool	multi				= objIdString == null ? false : XmlConvert.ToBoolean(multiString);
+			bool	multi				= objIdString != null && XmlConvert.ToBoolean(multiString);
 			Type	delType				= ReflectionHelper.ResolveType(delegateTypeString, false);
 			if (delType == null) this.LogCantResolveTypeError(objId, delegateTypeString);
 
@@ -478,28 +476,17 @@ namespace Duality.Serialization
 		/// <returns>The object that has been read.</returns>
 		protected Enum ReadEnum()
 		{
-			object result;
-			
 			string typeName		= this.reader.GetAttribute("type");
 			string name			= this.reader.GetAttribute("name");
 			string valueString	= this.reader.GetAttribute("value");
 			long val = valueString == null ? 0 : XmlConvert.ToInt64(valueString);
 			Type enumType = ReflectionHelper.ResolveType(typeName);
 
-			result = Enum.Parse(enumType, name);
+			object result = Enum.Parse(enumType, name);
 			if (result != null) return (Enum)result;
 
 			this.SerializationLog.WriteWarning("Can't parse enum value '{0}' of Type '{1}'. Using numerical value '{2}' instead.", name, typeName, val);
 			return (Enum)Enum.ToObject(enumType, val);
-		}
-
-		private byte[] StringToByteArray(string str)
-		{
-			return Convert.FromBase64String(str);
-		}
-		private string ByteArrayToString(byte[] arr)
-		{
-			return Convert.ToBase64String(arr, Base64FormattingOptions.None);
 		}
 	}
 }

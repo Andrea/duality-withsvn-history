@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.IO;
@@ -336,7 +335,7 @@ namespace DualityEditor
 				}
 				else
 				{
-					int genMethodArgDeclIndex = methodName.IndexOf("``");
+					int genMethodArgDeclIndex = methodName.IndexOf("``", System.StringComparison.Ordinal);
 					int genMethodArgs = 0;
 					if (genMethodArgDeclIndex != -1)
 					{
@@ -392,14 +391,12 @@ namespace DualityEditor
 		}
 		private static string ConvertFromDocStyleType(string typeString)
 		{
-			string genArgList = null;
-			string[] genArgStrings = null;
 			int genArgStartIndex = typeString.IndexOf('{');
 			int genArgEndIndex = typeString.LastIndexOf('}');
 			if (genArgStartIndex != -1)
 			{
-				genArgList = typeString.Substring(genArgStartIndex + 1, genArgEndIndex - genArgStartIndex - 1);
-				genArgStrings = SplitGenArgs(genArgList);
+				string genArgList = typeString.Substring(genArgStartIndex + 1, genArgEndIndex - genArgStartIndex - 1);
+				string[] genArgStrings = SplitGenArgs(genArgList);
 				typeString = 
 					typeString.Substring(0, genArgStartIndex) + "`" + genArgStrings.Length + "[" + 
 					genArgStrings.ToString(s => "[" + ConvertFromDocStyleType(s) + "]", ",") + 

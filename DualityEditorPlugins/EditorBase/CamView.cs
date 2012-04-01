@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using BitArray = System.Collections.BitArray;
@@ -10,9 +11,7 @@ using WeifenLuo.WinFormsUI.Docking;
 using Duality;
 using Duality.Components;
 using Duality.ColorFormat;
-using Duality.VertexFormat;
 using Duality.Resources;
-using Font = Duality.Resources.Font;
 
 using DualityEditor;
 using DualityEditor.Forms;
@@ -20,9 +19,6 @@ using DualityEditor.Forms;
 using EditorBase.CamViewStates;
 
 using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
-
 using Key = OpenTK.Input.Key;
 using MouseButton = OpenTK.Input.MouseButton;
 using MouseButtonEventArgs = OpenTK.Input.MouseButtonEventArgs;
@@ -202,8 +198,7 @@ namespace EditorBase
 			this.SetCurrentCamera(null);
 
 			// Initialize state
-			Type stateType = ReflectionHelper.ResolveType(this.loadTempState, false);
-			if (stateType == null) stateType = typeof(SceneEditorCamViewState);
+			Type stateType = ReflectionHelper.ResolveType(this.loadTempState, false) ?? typeof(SceneEditorCamViewState);
 			this.SetCurrentState(stateType);
 
 			// Register DualityApp updater for camera steering behaviour
@@ -312,9 +307,9 @@ namespace EditorBase
 
 		internal void SaveUserData(System.Xml.XmlElement node)
 		{
-			node.SetAttribute("toggleParallaxity", this.toggleParallaxity.Checked.ToString());
-			node.SetAttribute("parallaxRefDist", this.nativeCamObj.Camera.ParallaxRefDist.ToString());
-			node.SetAttribute("bgColorArgb", this.nativeCamObj.Camera.ClearColor.ToIntArgb().ToString());
+			node.SetAttribute("toggleParallaxity", this.toggleParallaxity.Checked.ToString(CultureInfo.InvariantCulture));
+			node.SetAttribute("parallaxRefDist", this.nativeCamObj.Camera.ParallaxRefDist.ToString(CultureInfo.InvariantCulture));
+			node.SetAttribute("bgColorArgb", this.nativeCamObj.Camera.ClearColor.ToIntArgb().ToString(CultureInfo.InvariantCulture));
 
 			if (this.state != null) 
 				node.SetAttribute("state", this.state.GetType().GetTypeId());
@@ -356,15 +351,15 @@ namespace EditorBase
 			this.glControl.Name = "glControl";
 			this.glControl.VSync = false;
 			this.glControl.AllowDrop = true;
-			this.glControl.MouseDown += new MouseEventHandler(this.glControl_MouseDown);
-			this.glControl.MouseUp += new MouseEventHandler(this.glControl_MouseUp);
-			this.glControl.MouseWheel += new MouseEventHandler(this.glControl_MouseWheel);
-			this.glControl.MouseMove += new MouseEventHandler(this.glControl_MouseMove);
-			this.glControl.GotFocus += new EventHandler(this.glControl_GotFocus);
-			this.glControl.PreviewKeyDown += new PreviewKeyDownEventHandler(glControl_PreviewKeyDown);
-			this.glControl.KeyDown += new KeyEventHandler(this.glControl_KeyDown);
-			this.glControl.KeyUp += new KeyEventHandler(this.glControl_KeyUp);
-			this.glControl.Resize += new EventHandler(this.glControl_Resize);
+			this.glControl.MouseDown += this.glControl_MouseDown;
+			this.glControl.MouseUp += this.glControl_MouseUp;
+			this.glControl.MouseWheel += this.glControl_MouseWheel;
+			this.glControl.MouseMove += this.glControl_MouseMove;
+			this.glControl.GotFocus += this.glControl_GotFocus;
+			this.glControl.PreviewKeyDown += glControl_PreviewKeyDown;
+			this.glControl.KeyDown += this.glControl_KeyDown;
+			this.glControl.KeyUp += this.glControl_KeyUp;
+			this.glControl.Resize += this.glControl_Resize;
 			this.Controls.Add(this.glControl);
 			this.Controls.SetChildIndex(this.glControl, 0);
 

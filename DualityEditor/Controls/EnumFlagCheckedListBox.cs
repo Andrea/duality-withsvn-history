@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;
 using System.Windows.Forms;
-using System.Drawing.Design;
-using System.Windows.Forms.Design;
 
 using Duality;
 using Duality.EditorHints;

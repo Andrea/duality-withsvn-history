@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
-using System.Drawing;
-using System.ComponentModel;
 
 namespace DualityEditor.Controls.ToolStrip
 {

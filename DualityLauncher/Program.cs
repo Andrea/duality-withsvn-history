@@ -1,18 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Diagnostics;
 
 using Duality;
 using Duality.Resources;
-using Duality.Components;
-using Duality.Components.Renderers;
-using Duality.ColorFormat;
-
 using OpenTK;
 using OpenTK.Graphics;
-using OpenTK.Input;
 
 namespace DualityLauncher
 {

@@ -1,19 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
-using System.Diagnostics;
-
 using OpenTK;
 using OpenTK.Graphics;
-using OpenTK.Input;
-
 using Duality;
 using Duality.Resources;
-using Duality.Components;
-using Duality.Components.Renderers;
-using Duality.ColorFormat;
-
 using DualityDebugging;
 
 namespace DualityDebuggingTest

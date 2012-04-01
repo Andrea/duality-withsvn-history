@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Duality;
+﻿using Duality;
 using Duality.Resources;
 
 namespace DynamicLighting
