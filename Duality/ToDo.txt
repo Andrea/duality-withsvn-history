@@ -24,8 +24,20 @@
 			-->	How to limit the object graph?
 			-->	Also, it might be slow.
 		-->	## Implement CloneProvider that accepts clone methods for specific Types and use automatic cloning
+			-->	Completely rewrite CloneHelper. Is only used in OnCopyTo anyway.
+			-->	Implement a special CloneProvider for cloning GameObjects and Components.
+			-->	Test all this in an isolated environment first. Migrate it when finished testing.
+
+			-->	CloneRoot object is provided in order to determine object Graph
+				-->	Don't clone GameObject or Component references that are not children of that graph.
+				-->	Optionally, even set them null (Prefabs)
+			-->	Don't clone or assign Resource references
+			-->	What about event fields? Preprocess them to remove external recievers?
+
 			-->	Register custom clone methods for GameObject (CopyTo-like) and Component (CopyTo-like)
 			-->	Reqrite automatic OnCopyTo (Component) to use CloneProvider
+
+
 
 --> Example Project: Tetris with Physics
 	-->	Need Joints for this in order to create partially destructible blocks
