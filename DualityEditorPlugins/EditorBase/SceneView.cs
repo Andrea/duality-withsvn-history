@@ -675,7 +675,7 @@ namespace EditorBase
 		protected void UpdateSceneLabel()
 		{
 			bool sceneAvail = Scene.Current != null;
-			this.toolStripLabelSceneName.Text = (!sceneAvail || String.IsNullOrEmpty(Scene.Current.Name)) ? 
+			this.toolStripLabelSceneName.Text = (!sceneAvail || Scene.Current.IsRuntimeResource) ? 
 				PluginRes.EditorBaseRes.SceneNameNotYetSaved : 
 				Scene.Current.Name;
 			this.toolStripButtonSaveScene.Enabled = EditorBasePlugin.Instance.EditorForm.CurrentSandboxState == MainForm.SandboxState.Inactive;

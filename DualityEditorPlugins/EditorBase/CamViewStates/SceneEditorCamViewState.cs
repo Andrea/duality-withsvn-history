@@ -310,6 +310,11 @@ namespace EditorBase.CamViewStates
 			{ 
 				if (o.Disposed) continue;
 				GameObject clone = o.Clone();
+
+				// Prevent physics from getting crazy.
+				if (clone.Transform != null && clone.GetComponent<Collider>() != null)
+					clone.Transform.Pos += Vector3.UnitX * 0.001f;
+
 				Scene.Current.RegisterObj(clone); 
 				clones.Add(new SelGameObj(clone));
 			}
