@@ -61,6 +61,7 @@ namespace Duality.Components
 		private	float		angularDamp		= 0.0f;
 		private	bool		fixedAngle		= false;
 		private	bool		ignoreGravity	= false;
+		private	bool		continous		= false;
 		private	Category	colCat			= Category.Cat1;
 		private	Category	colWith			= Category.All;
 		private	List<ShapeInfo>	shapes		= new List<ShapeInfo>();
@@ -129,6 +130,19 @@ namespace Duality.Components
 			{
 				if (this.body != null) this.body.IgnoreGravity = value;
 				this.ignoreGravity = value;
+			}
+		}
+		/// <summary>
+		/// [GET / SET] Whether the body is included in continous collision detection or not.
+		/// It prevents the body from moving through others at high speeds at the cost of performance.
+		/// </summary>
+		public bool ContinousCollision
+		{
+			get { return this.continous; }
+			set 
+			{
+				if (this.body != null) this.body.IsBullet = value;
+				this.continous = value;
 			}
 		}
 		/// <summary>
@@ -518,6 +532,7 @@ namespace Duality.Components
 			this.body.AngularDamping = this.angularDamp;
 			this.body.FixedRotation = this.fixedAngle;
 			this.body.IgnoreGravity = this.ignoreGravity;
+			this.body.IsBullet = this.continous;
 			this.body.CollisionCategories = this.colCat;
 			this.body.CollidesWith = this.colWith;
 
@@ -852,6 +867,7 @@ namespace Duality.Components
 			c.angularDamp = this.angularDamp;
 			c.fixedAngle = this.fixedAngle;
 			c.ignoreGravity = this.ignoreGravity;
+			c.continous = this.continous;
 			c.colCat = this.colCat;
 
 			// Discard old shape list and set new.

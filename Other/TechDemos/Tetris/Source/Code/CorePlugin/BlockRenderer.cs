@@ -72,9 +72,9 @@ namespace Tetris
 			// Determine texture sprite rect
 			Rect blockSpriteRect;
 			if (mainTex != null)
-				blockSpriteRect = Rect.AlignCenter(0, 0, mainTex.PxWidth, mainTex.PxHeight);
+				blockSpriteRect = Rect.AlignTopLeft(0, 0, mainTex.PxWidth, mainTex.PxHeight);
 			else
-				blockSpriteRect = Rect.AlignCenter(0, 0, 1, 1);
+				blockSpriteRect = Rect.AlignTopLeft(0, 0, 1, 1);
 
 			// Determine block rects to draw
 			Collider col = this.GameObj.GetComponent<Collider>();

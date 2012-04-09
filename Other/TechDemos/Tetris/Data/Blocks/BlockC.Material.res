@@ -15,7 +15,7 @@
         <customSerialIO />
         <customSerialIO>
           <mainTex dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Texture]]">
-            <contentPath dataType="String">Data\BlockA.Texture.res</contentPath>
+            <contentPath dataType="String">Data\Blocks\BlockC.Texture.res</contentPath>
           </mainTex>
         </customSerialIO>
       </textures>

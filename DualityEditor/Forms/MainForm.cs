@@ -642,7 +642,7 @@ namespace DualityEditor.Forms
 		}
 		private bool IsPathIgnored(string filePath)
 		{
-			if (!File.Exists(filePath) || !Directory.Exists(filePath)) return false;
+			if (!File.Exists(filePath) && !Directory.Exists(filePath)) return false;
 			if (!PathHelper.IsPathVisible(filePath)) return true;
 			if (filePath.Contains(@"/.svn/") || filePath.Contains(@"\.svn\")) return true;
 			return false;
