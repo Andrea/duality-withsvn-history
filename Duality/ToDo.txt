@@ -24,6 +24,14 @@
 			-->	How to limit the object graph?
 			-->	Also, it might be slow.
 		-->	## Implement CloneProvider that accepts clone methods for specific Types and use automatic cloning
+			-->	Use a design analogue to Serialization:
+				-->	[CloneFlags(mode)] attribute (Fields):
+					-->	Deep: Deep-Copy.
+					-->	Shallow: Shallow-Copy. Also, all objects beyond this "node" may be considered weak references
+						if the current cloning operation wants to cut them out.
+					-->	Ignore: This field will be ignored by the cloning operation
+				-->	IClonable interface for specific implementation
+				-->	ISurrogate interface and Surrogate<T> base class for surrogate clonable implementations
 			-->	Completely rewrite CloneHelper. Is only used in OnCopyTo anyway.
 			-->	Implement a special CloneProvider for cloning GameObjects and Components.
 			-->	Test all this in an isolated environment first. Migrate it when finished testing.
@@ -35,7 +43,7 @@
 			-->	What about event fields? Preprocess them to remove external recievers?
 
 			-->	Register custom clone methods for GameObject (CopyTo-like) and Component (CopyTo-like)
-			-->	Reqrite automatic OnCopyTo (Component) to use CloneProvider
+			-->	Rewrite automatic OnCopyTo (Component) to use CloneProvider
 
 
 
