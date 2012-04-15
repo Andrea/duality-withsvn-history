@@ -252,7 +252,8 @@ namespace Duality
 				return System.IO.Path.Combine(System.IO.Path.GetDirectoryName(nameTemp), this.Name);
 			}
 		}
-
+		
+		
 		/// <summary>
 		/// Creates a ContentRef pointing to the specified <see cref="Resource"/>, assuming the
 		/// specified path as its origin, if the Resource itsself is either null or doesn't

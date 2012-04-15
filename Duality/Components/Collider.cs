@@ -407,7 +407,8 @@ namespace Duality.Components
 		/// <param name="impulse"></param>
 		public void ApplyLocalImpulse(Vector2 impulse)
 		{
-			this.ApplyWorldImpulse(this.gameobj.Transform.GetWorldVector(new Vector3(impulse)).Xy);
+			if (this.body == null) return;
+			this.ApplyWorldImpulse(this.gameobj.Transform.GetWorldVector(new Vector3(impulse)).Xy, this.body.LocalCenter);
 		}
 		/// <summary>
 		/// Applies a Transform-local impulse to the specified point.
@@ -427,7 +428,9 @@ namespace Duality.Components
 		public void ApplyWorldImpulse(Vector2 impulse)
 		{
 			if (this.body == null) return;
-			this.body.ApplyLinearImpulse(PhysicsConvert.ToPhysicalUnit(impulse) / Time.SPFMult);
+			this.body.ApplyLinearImpulse(
+				PhysicsConvert.ToPhysicalUnit(impulse) / Time.SPFMult, 
+				this.body.GetWorldPoint(this.body.LocalCenter));
 		}
 		/// <summary>
 		/// Applies a world impulse to the specified point.
@@ -455,7 +458,8 @@ namespace Duality.Components
 		/// <param name="force"></param>
 		public void ApplyLocalForce(Vector2 force)
 		{
-			this.ApplyWorldForce(this.gameobj.Transform.GetWorldVector(new Vector3(force)).Xy);
+			if (this.body == null) return;
+			this.ApplyWorldForce(this.gameobj.Transform.GetWorldVector(new Vector3(force)).Xy, this.body.LocalCenter);
 		}
 		/// <summary>
 		/// Applies a Transform-local force to the specified point.
@@ -475,7 +479,9 @@ namespace Duality.Components
 		public void ApplyWorldForce(Vector2 force)
 		{
 			if (this.body == null) return;
-			this.body.ApplyForce(PhysicsConvert.ToPhysicalUnit(force) / Time.SPFMult);
+			this.body.ApplyForce(
+				PhysicsConvert.ToPhysicalUnit(force) / Time.SPFMult, 
+				this.body.GetWorldPoint(this.body.LocalCenter));
 		}
 		/// <summary>
 		/// Applies a world force to the specified point.
@@ -762,6 +768,10 @@ namespace Duality.Components
 
 			foreach (ColEvent e in this.eventBuffer)
 			{
+				// Ignore disposed fixtures / bodies
+				if (e.FixtureA.Body == null) continue;
+				if (e.FixtureB.Body == null) continue;
+
 				ColliderCollisionEventArgs args = new ColliderCollisionEventArgs(
 					(e.FixtureB.Body.UserData as Collider).GameObj,
 					e.Data,

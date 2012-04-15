@@ -73,12 +73,12 @@ namespace Duality
 
 	public class ResourceEventArgs : EventArgs
 	{
-		private string		path;
-		private	bool		isDirectory;
+		private ContentRef<Resource>	content;
+		private	bool					isDirectory;
 
 		public string Path
 		{
-			get { return this.path; }
+			get { return this.content.Path; }
 		}
 		public bool IsDirectory
 		{
@@ -90,28 +90,28 @@ namespace Duality
 		}
 		public bool IsDefaultContent
 		{
-			get { return this.Content.IsDefaultContent; }
+			get { return this.content.IsDefaultContent; }
 		}
 		public Type ContentType
 		{
 			get 
 			{
 				if (isDirectory) return null;
-				else return Resource.GetTypeByFileName(this.path);
+				else return this.content.ResType;
 			}
 		}
 		public ContentRef<Resource> Content
 		{
-			get { return this.isDirectory ? ContentRef<Resource>.Null : new ContentRef<Resource>(null, this.path); }
+			get { return this.isDirectory ? ContentRef<Resource>.Null : this.content; }
 		}
 
-		public ResourceEventArgs(string path)
+		public ResourceEventArgs(string path) : this(new ContentRef<Resource>(null, path)) {}
+		public ResourceEventArgs(IContentRef resRef) : this(new ContentRef<Resource>(resRef.ResWeak, resRef.Path)) {}
+		public ResourceEventArgs(ContentRef<Resource> resRef)
 		{
-			this.path = path;
-
-			this.isDirectory = System.IO.Directory.Exists(this.path);
+			this.content = resRef;
+			this.isDirectory = System.IO.Directory.Exists(this.content.Path);
 		}
-		public ResourceEventArgs(ContentRef<Resource> resRef) : this(resRef.Path) {}
 	}
 
 	public class CollisionEventArgs : EventArgs

@@ -181,7 +181,7 @@ namespace Duality.Serialization
 		protected void WriteEnum(Enum obj, SerializeType objSerializeType)
 		{
 			this.writer.Write(objSerializeType.TypeString);
-			this.writer.Write(obj.ToString(CultureInfo.InvariantCulture));
+			this.writer.Write(obj.ToString());
 			this.writer.Write(Convert.ToInt64(obj));
 		}
 
