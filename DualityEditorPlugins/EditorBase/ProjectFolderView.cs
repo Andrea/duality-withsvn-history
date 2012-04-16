@@ -948,7 +948,7 @@ namespace EditorBase
 					var resQuery = new ConvertOperation(data, ConvertOperation.Operation.All).Perform<IContentRef>();
 					if (resQuery != null)
 					{
-						// Save generated Resources
+						// Save or move generated Resources
 						List<Resource> resList = resQuery.Res().ToList();
 						this.folderView.ClearSelection();
 						foreach (Resource res in resList)
@@ -958,10 +958,15 @@ namespace EditorBase
 
 							string basePath = this.GetInsertActionTargetBasePath(targetDirNode);
 							string nameExt = Resource.GetFileExtByType(res.GetType());
-							string resPath = PathHelper.GetFreePath(Path.Combine(basePath, desiredName), nameExt);
+							string resPath = Path.Combine(basePath, desiredName) + nameExt;
+							if (Path.GetFullPath(resPath) != Path.GetFullPath(res.Path))
+								resPath = PathHelper.GetFreePath(Path.Combine(basePath, desiredName), nameExt);
 							resPath = PathHelper.MakeFilePathRelative(resPath, ".");
 
-							res.Save(resPath);
+							if (!string.IsNullOrEmpty(res.Path) && File.Exists(res.Path))
+								File.Move(res.Path, resPath);
+							else
+								res.Save(resPath);
 
 							this.ScheduleSelect(resPath);
 						}

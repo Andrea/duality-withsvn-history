@@ -75,6 +75,7 @@ namespace Duality
 	{
 		private ContentRef<Resource>	content;
 		private	bool					isDirectory;
+		private	bool					isResource;
 
 		public string Path
 		{
@@ -86,7 +87,7 @@ namespace Duality
 		}
 		public bool IsResource
 		{
-			get { return !this.isDirectory; }
+			get { return this.isResource; }
 		}
 		public bool IsDefaultContent
 		{
@@ -111,6 +112,12 @@ namespace Duality
 		{
 			this.content = resRef;
 			this.isDirectory = System.IO.Directory.Exists(this.content.Path);
+			this.isResource = System.IO.File.Exists(this.content.Path);
+			if (!this.isDirectory && !this.isResource)
+			{
+				this.isDirectory = string.IsNullOrEmpty(System.IO.Path.GetExtension(this.content.Path));
+				this.isResource = !this.isDirectory;
+			}
 		}
 	}
 
