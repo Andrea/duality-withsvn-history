@@ -97,7 +97,6 @@
     <Compile Include="Helpers\PhysicsConvert.cs" />
     <Compile Include="Helpers\EditorHint.cs" />
     <Compile Include="Helpers\ExtMethodsIEnumerable.cs" />
-    <Compile Include="Helpers\CloneHelper.cs" />
     <Compile Include="Input\IKeyboardInput.cs" />
     <Compile Include="Input\IMouseInput.cs" />
     <Compile Include="Input\WindowMouseInput.cs" />

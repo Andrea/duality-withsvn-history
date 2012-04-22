@@ -76,12 +76,18 @@ namespace DualityEditor
 		}
 		public static Key ToOpenTKSingle(this Keys buttons)
 		{
-			return (Key)mapToOpenTK[(int)(buttons & ~Keys.Modifiers)];
+			int k;
+			if (mapToOpenTK.TryGetValue((int)(buttons & ~Keys.Modifiers), out k))
+				return (Key)k;
+			else
+				return Key.Unknown;
 		}
 		public static BitArray ToOpenTK(this Keys buttons)
 		{
 			BitArray result = new BitArray((int)Key.LastKey + 1, false);
-			result[mapToOpenTK[(int)(buttons & ~Keys.Modifiers)]] = true;
+			int k;
+			if (mapToOpenTK.TryGetValue((int)(buttons & ~Keys.Modifiers), out k))
+				result[k] = true;
 			return result;
 		}
 	}
