@@ -440,9 +440,9 @@ namespace Duality.Resources
 			if (this.IsCurrent) OnRegisteredObjectComponentRemoved(e);
 		}
 
-		public override void CopyTo(Resource r)
+		protected override void OnCopyTo(Resource r, Duality.Cloning.CloneProvider provider)
 		{
-			base.CopyTo(r);
+			base.OnCopyTo(r, provider);
 			Scene s = r as Scene;
 			s.Clear();
 			s.Append(this);

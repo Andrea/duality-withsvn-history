@@ -392,9 +392,9 @@ namespace Duality.Resources
 			}
 		}
 
-		public override void CopyTo(Resource r)
+		protected override void OnCopyTo(Resource r, Duality.Cloning.CloneProvider provider)
 		{
-			base.CopyTo(r);
+			base.OnCopyTo(r, provider);
 			AbstractShader c = r as AbstractShader;
 			c.source		= this.source;
 			c.sourcePath	= null;

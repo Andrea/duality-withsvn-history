@@ -6,6 +6,9 @@ using System.Reflection;
 using OpenTK;
 
 using Duality.Resources;
+using Duality.Cloning;
+
+using ICloneable = Duality.Cloning.ICloneable;
 
 namespace Duality
 {
@@ -310,7 +313,7 @@ namespace Duality
 	/// Also, a Component may not belong to multiple GameObjects at once.
 	/// </summary>
 	[Serializable]
-	public abstract class Component : IManageableObject
+	public abstract class Component : IManageableObject, ICloneable
 	{
 		/// <summary>
 		/// Describes the kind of initialization that can be performed on a Component
@@ -434,7 +437,7 @@ namespace Duality
 			if (!this.disposed)
 			{
 				// Remove from GameObject
-				if (this.gameobj != null) this.gameobj.RemoveComponent(this.GetType());
+				if (this.gameobj != null) this.gameobj.RemoveComponent(this);
 
 				this.disposed = true;
 			}
@@ -454,9 +457,7 @@ namespace Duality
 		/// <returns>A reference to a newly created deep copy of this Component.</returns>
 		public Component Clone()
 		{
-			Component newObj = this.GetType().CreateInstanceOf() as Component;
-			this.CopyTo(newObj);
-			return newObj;
+			return CloneProvider.DeepClone(this);
 		}
 		/// <summary>
 		/// Deep-copies this Components data to the specified target Component. If source and 
@@ -465,10 +466,7 @@ namespace Duality
 		/// <param name="target">The target Component to copy to.</param>
 		public void CopyTo(Component target)
 		{
-			// CopyTo for all basic Component types
-			this.CopyToInternal(target);
-			// CopyTo for custom Components - defaults to reflection
-			this.OnCopyTo(target);
+			CloneProvider.DeepCopyTo(this, target);
 		}
 		/// <summary>
 		/// Note: Since PrefabLinks may contain references to object-local values,
@@ -476,7 +474,7 @@ namespace Duality
 		/// DO NOT modify any referenced objects. Instead, discard them and create new.
 		/// </summary>
 		/// <param name="target"></param>
-		internal virtual void CopyToInternal(Component target)
+		internal virtual void CopyToInternal(Component target, CloneProvider provider)
 		{
 			// Copy "pure" data
 			target.active	= this.active;
@@ -489,8 +487,10 @@ namespace Duality
 		/// up a bit by not using Reflection.
 		/// </summary>
 		/// <param name="target">The target Component where this Components data is copied to.</param>
-		protected virtual void OnCopyTo(Component target)
+		protected virtual void OnCopyTo(Component target, CloneProvider provider)
 		{
+			provider.SetExplicitUnwrap(typeof(System.Collections.ICollection));
+
 			// Travel up the inheritance hierarchy until we hit an object located here
 			Type curType = this.GetType();
 			while (curType.Assembly != Assembly.GetExecutingAssembly())
@@ -498,13 +498,30 @@ namespace Duality
 				// Apply default behaviour to any class that doesn't have an OnCopyTo override
 				if (curType.GetMethod("OnCopyTo", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly, null, new[] { typeof(Component) }, null) == null)
 				{
-					CloneHelper.DeepCopyFieldsExplicit(
-						curType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly), 
-						this, target, typeof(System.Collections.ICollection));
+					provider.CopyObjectTo(
+						this, 
+						target, 
+						curType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
 				}
 
 				curType = curType.BaseType;
 			}
+
+			provider.SetExplicitUnwrap((Type[])null);
+		}
+
+		object ICloneable.CreateTargetObject(CloneProvider provider)
+		{
+			return this.GetType().CreateInstanceOf();
+		}
+		void ICloneable.CopyDataTo(object targetObj, CloneProvider provider)
+		{
+			Component target = targetObj as Component;
+
+			// CopyTo for all basic Component types
+			this.CopyToInternal(target, provider);
+			// CopyTo for custom Components - defaults to reflection
+			this.OnCopyTo(target, provider);
 		}
 
 		/// <summary>

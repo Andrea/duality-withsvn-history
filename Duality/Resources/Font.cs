@@ -1044,9 +1044,9 @@ namespace Duality.Resources
 			if (this.texture != null) { this.texture.Dispose(); this.texture = null; }
 			if (this.pixelData != null) { this.pixelData.Dispose(); this.pixelData = null; }
 		}
-		public override void CopyTo(Resource r)
+		protected override void OnCopyTo(Resource r, Duality.Cloning.CloneProvider provider)
 		{
-			base.CopyTo(r);
+			base.OnCopyTo(r, provider);
 			Font c = r as Font;
 			c.customFamilyData = this.customFamilyData != null ? (byte[])this.customFamilyData.Clone() : null;
 			c.familyName = this.familyName;

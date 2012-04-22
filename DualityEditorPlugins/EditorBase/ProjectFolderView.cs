@@ -959,7 +959,7 @@ namespace EditorBase
 							string basePath = this.GetInsertActionTargetBasePath(targetDirNode);
 							string nameExt = Resource.GetFileExtByType(res.GetType());
 							string resPath = Path.Combine(basePath, desiredName) + nameExt;
-							if (Path.GetFullPath(resPath) != Path.GetFullPath(res.Path))
+							if (string.IsNullOrEmpty(res.Path) || Path.GetFullPath(resPath) != Path.GetFullPath(res.Path))
 								resPath = PathHelper.GetFreePath(Path.Combine(basePath, desiredName), nameExt);
 							resPath = PathHelper.MakeFilePathRelative(resPath, ".");
 

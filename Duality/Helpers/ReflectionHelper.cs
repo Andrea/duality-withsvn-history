@@ -17,9 +17,10 @@ namespace Duality
 	/// </summary>
 	public static class ReflectionHelper
 	{
-		private	static	Dictionary<Type,SerializeType>	typeCache			= new Dictionary<Type,SerializeType>();
+		private	static	Dictionary<Type,SerializeType>	serializeTypeCache	= new Dictionary<Type,SerializeType>();
 		private	static	Dictionary<string,Type>			typeResolveCache	= new Dictionary<string,Type>();
 		private	static	Dictionary<string,MemberInfo>	memberResolveCache	= new Dictionary<string,MemberInfo>();
+		private	static	Dictionary<Type,bool>			shallowTypeCache	= new Dictionary<Type,bool>();
 
 		/// <summary>
 		/// Equals <c>BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic</c>.
@@ -160,6 +161,41 @@ namespace Duality
 			return result.ToArray();
 		}
 
+		/// <summary>
+		/// Returns whether the specified type can be cloned by assignment.
+		/// </summary>
+		/// <param name="baseObj"></param>
+		/// <returns></returns>
+		public static bool IsShallowType(this Type type)
+		{
+			if (type.IsPrimitive) return true;
+			if (type.IsEnum) return true;
+			if (type == typeof(string)) return true;
+			if (type == typeof(decimal)) return true;
+			if (typeof(MemberInfo).IsAssignableFrom(type)) return true;
+			if (typeof(IContentRef).IsAssignableFrom(type)) return true;
+			if (type.IsClass) return false;
+
+			bool shallowType;
+			if (shallowTypeCache.TryGetValue(type, out shallowType))
+				return shallowType;
+			else
+			{
+				shallowType = true;
+				FieldInfo[] fields = type.GetAllFields(ReflectionHelper.BindInstanceAll);
+				foreach (FieldInfo field in fields)
+				{
+					if (!IsShallowType(field.FieldType))
+					{
+						shallowType = false;
+						break;
+					}
+				}
+				shallowTypeCache[type] = shallowType;
+				return shallowType;
+			}
+		}
+
 		
 		public delegate void Setter<in T, in U>(T instance, U value);
 		public delegate void ByRefSetter<T, in U>(ref T instance, U value);
@@ -231,9 +267,10 @@ namespace Duality
 		/// </summary>
 		public static void ClearTypeCache()
 		{
-			typeCache.Clear();
+			serializeTypeCache.Clear();
 			typeResolveCache.Clear();
 			memberResolveCache.Clear();
+			shallowTypeCache.Clear();
 		}
 		/// <summary>
 		/// Resolves a Type based on its <see cref="GetTypeId">type id</see>.
@@ -282,10 +319,10 @@ namespace Duality
 		public static SerializeType GetSerializeType(this Type t)
 		{
 			SerializeType result;
-			if (typeCache.TryGetValue(t, out result)) return result;
+			if (serializeTypeCache.TryGetValue(t, out result)) return result;
 
 			result = new SerializeType(t);
-			typeCache[t] = result;
+			serializeTypeCache[t] = result;
 			typeResolveCache[result.TypeString] = result.Type;
 			return result;
 		}

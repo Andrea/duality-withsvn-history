@@ -419,9 +419,9 @@ namespace Duality.Resources
 				this.FreeOpenGLRes();
 			}
 		}
-		public override void CopyTo(Resource r)
+		protected override void OnCopyTo(Resource r, Duality.Cloning.CloneProvider provider)
 		{
-			base.CopyTo(r);
+			base.OnCopyTo(r, provider);
 			RenderTarget c = r as RenderTarget;
 			c.multisample	= this.multisample;
 			c.targetInfo	= new List<TargetInfo>(this.targetInfo);

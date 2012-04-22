@@ -171,9 +171,9 @@ namespace Duality.Resources
 			}
 		}
 
-		public override void CopyTo(Resource r)
+		protected override void OnCopyTo(Resource r, Duality.Cloning.CloneProvider provider)
 		{
-			base.CopyTo(r);
+			base.OnCopyTo(r, provider);
 			Pixmap c = r as Pixmap;
 			c.data			= this.data.Clone() as Bitmap;
 		}

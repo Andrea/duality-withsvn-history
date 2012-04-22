@@ -186,9 +186,9 @@ namespace Duality.Components
 			set { this.sources = value ?? new List<Source>(); }
 		}
 
-		internal override void CopyToInternal(Component target)
+		internal override void CopyToInternal(Component target, Duality.Cloning.CloneProvider provider)
 		{
-			base.CopyToInternal(target);
+			base.CopyToInternal(target, provider);
 			SoundEmitter c = target as SoundEmitter;
 			c.sources = this.sources == null ? null : new List<Source>(this.sources.Select(s => s.Clone()));
 		}

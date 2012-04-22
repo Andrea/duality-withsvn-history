@@ -77,6 +77,12 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cloning\CloneProvider.cs" />
+    <Compile Include="Cloning\ICloneable.cs" />
+    <Compile Include="Cloning\ISurrogate.cs" />
+    <Compile Include="Cloning\Surrogates\BitmapSurrogate.cs" />
+    <Compile Include="Cloning\Surrogates\DelegateSurrogate.cs" />
+    <Compile Include="Cloning\Surrogates\DictionarySurrogate.cs" />
     <Compile Include="Components\Collider.cs" />
     <Compile Include="Components\Collider.ShapeInfo.cs" />
     <Compile Include="Components\Collider.JointInfo.cs" />

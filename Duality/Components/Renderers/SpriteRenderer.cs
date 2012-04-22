@@ -210,9 +210,9 @@ namespace Duality.Components.Renderers
 			else
 				device.AddVertices(this.sharedMat, BeginMode.Quads, this.vertices);
 		}
-		internal override void CopyToInternal(Component target)
+		internal override void CopyToInternal(Component target, Duality.Cloning.CloneProvider provider)
 		{
-			base.CopyToInternal(target);
+			base.CopyToInternal(target, provider);
 			SpriteRenderer t = target as SpriteRenderer;
 			t.sharedMat	= this.sharedMat;
 			t.customMat	= this.customMat != null ? new BatchInfo(this.customMat) : null;

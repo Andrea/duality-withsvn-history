@@ -681,18 +681,27 @@ namespace Duality.Components
 			this.CheckValidTransform();
 		}
 
-		internal override void CopyToInternal(Component target)
+		internal override void CopyToInternal(Component target, Duality.Cloning.CloneProvider provider)
 		{
-			base.CopyToInternal(target);
+			base.CopyToInternal(target, provider);
 			Transform t = target as Transform;
+			t.deriveAngle = this.deriveAngle;
+
 			t.pos		= this.pos;
 			t.vel		= this.vel;
 			t.angle		= this.angle;
 			t.angleVel	= this.angleVel;
 			t.scale		= this.scale;
-			t.deriveAngle = this.deriveAngle;
+
+			t.posAbs		= this.posAbs;
+			t.velAbs		= this.velAbs;
+			t.angleAbs		= this.angleAbs;
+			t.angleVelAbs	= this.angleVelAbs;
+			t.scaleAbs		= this.scaleAbs;
+
+			t.UpdateRel();
+
 			// Don't copy external updaters. They're usually other Components and thus, object-local.
-			t.UpdateAbs();
 		}
 
 		[System.Diagnostics.Conditional("DEBUG")]

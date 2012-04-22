@@ -7,6 +7,9 @@ using System.Reflection;
 
 using Duality.Serialization;
 using Duality.EditorHints;
+using Duality.Cloning;
+
+using ICloneable = Duality.Cloning.ICloneable;
 
 namespace Duality
 {
@@ -17,7 +20,7 @@ namespace Duality
 	/// <seealso cref="ContentRef{T}"/>
 	/// <seealso cref="ContentProvider"/>
 	[Serializable]
-	public abstract class Resource : IManageableObject, IDisposable
+	public abstract class Resource : IManageableObject, IDisposable, ICloneable
 	{
 		/// <summary>
 		/// A Resource files extension.
@@ -184,21 +187,36 @@ namespace Duality
 		/// <returns></returns>
 		public Resource Clone()
 		{
-			Resource r = this.GetType().CreateInstanceOf() as Resource;
-			this.CopyTo(r);
-			return r;
+			return CloneProvider.DeepClone(this);
 		}
 		/// <summary>
 		/// Deep-copies this Resource to the specified target Resource. The target Resource's Type must
 		/// match this Resource's Type.
 		/// </summary>
 		/// <param name="r">The target Resource to copy this Resource's data to</param>
-		public virtual void CopyTo(Resource r)
+		public void CopyTo(Resource r)
+		{
+			CloneProvider.DeepCopyTo(this, r);
+		}
+		object ICloneable.CreateTargetObject(CloneProvider provider)
+		{
+			return this.GetType().CreateInstanceOf();
+		}
+		void ICloneable.CopyDataTo(object targetObj, CloneProvider provider)
+		{
+			this.OnCopyTo(targetObj as Resource, provider);
+		}
+
+		/// <summary>
+		/// Deep-copies this Resource to the specified target Resource. The target Resource's Type must
+		/// match this Resource's Type.
+		/// </summary>
+		/// <param name="r">The target Resource to copy this Resource's data to</param>
+		protected virtual void OnCopyTo(Resource r, CloneProvider provider)
 		{
 			r.path			= this.path;
 			r.sourcePath	= null;
 		}
-
 		/// <summary>
 		/// Called when this Resource is now beginning to be saved.
 		/// </summary>

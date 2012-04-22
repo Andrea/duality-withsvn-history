@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Duality.Resources;
+using Duality.Cloning;
+
+using ICloneable = Duality.Cloning.ICloneable;
 
 namespace Duality
 {
@@ -17,7 +20,7 @@ namespace Duality
 	/// <seealso cref="Duality.Resources.Scene"/>
 	/// <seealso cref="Duality.Resources.PrefabLink"/>
 	[Serializable]
-	public sealed class GameObject : IManageableObject
+	public sealed class GameObject : IManageableObject, ICloneable
 	{
 		internal	PrefabLink					prefabLink	= null;
 		private		GameObject					parent		= null;
@@ -691,8 +694,7 @@ namespace Duality
 		/// <returns>A reference to a newly created deep copy of this GameObject.</returns>
 		public GameObject Clone()
 		{
-			GameObject target = new GameObject();
-			this.CopyTo(target);
+			GameObject target = CloneProvider.DeepClone(this);
 			target.Parent = this.Parent;
 			return target;
 		}
@@ -702,25 +704,39 @@ namespace Duality
 		/// <param name="target">The target GameObject to copy to.</param>
 		public void CopyTo(GameObject target)
 		{
+			CloneProvider.DeepCopyTo(this, target);
+		}
+
+		object ICloneable.CreateTargetObject(CloneProvider provider)
+		{
+			return new GameObject();
+		}
+		void ICloneable.CopyDataTo(object targetObj, CloneProvider provider)
+		{
+			GameObject target = targetObj as GameObject;
+
 			// Copy "pure" data
 			target.name			= this.name;
 			target.active		= this.active;
 			target.disposed		= this.disposed;
 
+			// Prepass: Create & Register all necessary GameObjects and Components
+			this.PrepassCopyData(target, provider);
+
 			// Copy component data, create missing components
 			foreach (Component c in this.compList)
 			{
-				c.CopyTo(target.AddComponent(c.GetType()));
+				provider.CopyObjectTo(c, provider.GetRegisteredObjectClone(c));
 			}
 
-			// Copy child data, create missing children
 			if (this.children != null)
 			{
+				// Copy child data, create missing children
 				for (int i = 0; i < this.children.Count; i++)
 				{
 					GameObject thisChild	= this.children[i];
-					GameObject targetChild	= (target.children != null && target.children.Count > i) ? target.children[i] : new GameObject();
-					thisChild.CopyTo(targetChild);
+					GameObject targetChild	= provider.GetRegisteredObjectClone(thisChild);
+					provider.CopyObjectTo(thisChild, targetChild);
 					targetChild.Parent = target;
 				}
 			}
@@ -730,6 +746,25 @@ namespace Duality
 			{
 				target.prefabLink = this.prefabLink.Clone(target);
 				target.PrefabLink.UpdateChanges();
+			}
+		}
+		private void PrepassCopyData(GameObject target, CloneProvider provider)
+		{
+			foreach (Component c in this.compList)
+			{
+				if (provider.GetRegisteredObjectClone(c) != null) return; // Don't prepass twice
+				provider.RegisterObjectClone(c, target.AddComponent(c.GetType()));
+			}
+			if (this.children != null)
+			{
+				for (int i = 0; i < this.children.Count; i++)
+				{
+					GameObject thisChild	= this.children[i];
+					GameObject targetChild	= (target.children != null && target.children.Count > i) ? target.children[i] : new GameObject();
+					if (provider.GetRegisteredObjectClone(thisChild) != null) return; // Don't prepass twice
+					provider.RegisterObjectClone(thisChild, targetChild);
+					thisChild.PrepassCopyData(targetChild, provider);
+				}
 			}
 		}
 
@@ -743,7 +778,6 @@ namespace Duality
 				if (selfUpd != null) selfUpd.OnUpdate();
 			}
 		}
-
 		internal void EditorUpdate()
 		{
 			// Update Components
@@ -780,7 +814,6 @@ namespace Duality
 				foreach (GameObject c in this.children) c.OnLoaded(deep);
 			}
 		}
-
 		internal void OnSaving(bool deep = false)
 		{
 			// Notify Components
@@ -796,7 +829,6 @@ namespace Duality
 				foreach (GameObject c in this.children) c.OnSaving(deep);
 			}
 		}
-
 		internal void OnSaved(bool deep = false)
 		{
 			// Notify Components
@@ -812,7 +844,6 @@ namespace Duality
 				foreach (GameObject c in this.children) c.OnSaved(deep);
 			}
 		}
-
 		internal void OnActivate()
 		{
 			// Notify Components
@@ -823,7 +854,6 @@ namespace Duality
 				if (cInit != null) cInit.OnInit(Component.InitContext.Activate);
 			}
 		}
-
 		internal void OnDeactivate()
 		{
 			// Notify Components
@@ -834,7 +864,6 @@ namespace Duality
 				if (cInit != null) cInit.OnShutdown(Component.ShutdownContext.Deactivate);
 			}
 		}
-
 		private void OnParentChanged(GameObject oldParent, GameObject newParent)
 		{
 			// Notify Components
@@ -845,7 +874,6 @@ namespace Duality
 				if (cParent != null) cParent.OnGameObjectParentChanged(oldParent, this.parent);
 			}
 		}
-
 		private void OnComponentAdded(Component cmp)
 		{
 			// Notify Components

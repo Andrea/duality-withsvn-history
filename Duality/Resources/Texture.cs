@@ -762,9 +762,9 @@ namespace Duality.Resources
 			}
 		}
 
-		public override void CopyTo(Resource r)
+		protected override void OnCopyTo(Resource r, Duality.Cloning.CloneProvider provider)
 		{
-			base.CopyTo(r);
+			base.OnCopyTo(r, provider);
 			Texture c = r as Texture;
 			c.sizeRelative = this.sizeRelative;
 			c.size = this.size;

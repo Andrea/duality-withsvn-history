@@ -273,9 +273,9 @@ namespace Duality.Resources
 			}
 		}
 
-		public override void CopyTo(Resource r)
+		protected override void OnCopyTo(Resource r, Duality.Cloning.CloneProvider provider)
 		{
-			base.CopyTo(r);
+			base.OnCopyTo(r, provider);
 			ShaderProgram c = r as ShaderProgram;
 			c.AttachShaders(this.vert, this.frag);
 			if (this.compiled) c.Compile();

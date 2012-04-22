@@ -226,9 +226,9 @@ namespace Duality.Resources
 			if (this.audioData.IsAvailable) this.audioData.Res.SetupAlBuffer();
 		}
 
-		public override void CopyTo(Resource r)
+		protected override void OnCopyTo(Resource r, Duality.Cloning.CloneProvider provider)
 		{
-			base.CopyTo(r);
+			base.OnCopyTo(r, provider);
 			Sound c = r as Sound;
 			c.maxInstances = this.maxInstances;
 			c.minDistFactor = this.minDistFactor;

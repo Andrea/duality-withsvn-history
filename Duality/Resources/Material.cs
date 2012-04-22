@@ -195,9 +195,9 @@ namespace Duality.Resources
 			return this.info.GetUniform(name);
 		}
 
-		public override void CopyTo(Resource r)
+		protected override void OnCopyTo(Resource r, Duality.Cloning.CloneProvider provider)
 		{
-			base.CopyTo(r);
+			base.OnCopyTo(r, provider);
 			Material c = r as Material;
 			c.info = new BatchInfo(this.info);
 			c.info.CleanDirty();

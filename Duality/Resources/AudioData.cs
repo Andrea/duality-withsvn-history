@@ -236,9 +236,9 @@ namespace Duality.Resources
 				this.DisposeAlBuffer();
 		}
 
-		public override void CopyTo(Resource r)
+		protected override void OnCopyTo(Resource r, Duality.Cloning.CloneProvider provider)
 		{
-			base.CopyTo(r);
+			base.OnCopyTo(r, provider);
 			AudioData c = r as AudioData;
 			c.data	= (byte[])this.data.Clone();
 		}

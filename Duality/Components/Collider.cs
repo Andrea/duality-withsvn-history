@@ -864,9 +864,9 @@ namespace Duality.Components
 				this.CleanupInvalidJoints();
 		}
 
-		internal override void CopyToInternal(Component target)
+		internal override void CopyToInternal(Component target, Duality.Cloning.CloneProvider provider)
 		{
-			base.CopyToInternal(target);
+			base.CopyToInternal(target, provider);
 			Collider c = target as Collider;
 
 			bool wasInitialized = c.initialized;

@@ -324,9 +324,9 @@ namespace Duality.Components.Renderers
 				else						device.AddVertices(this.sharedMat, BeginMode.Quads, this.verticesSmooth);
 			}
 		}
-		internal override void CopyToInternal(Component target)
+		internal override void CopyToInternal(Component target, Duality.Cloning.CloneProvider provider)
 		{
-			base.CopyToInternal(target);
+			base.CopyToInternal(target, provider);
 			AnimSpriteRenderer t = target as AnimSpriteRenderer;
 			t.animCycle = this.animCycle;
 			t.animDuration = this.animDuration;

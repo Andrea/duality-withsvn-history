@@ -128,9 +128,9 @@ namespace Duality.Resources
 				this.objTree.OnLoaded(true);
 			}
 		}
-		public override void CopyTo(Resource r)
+		protected override void OnCopyTo(Resource r, Duality.Cloning.CloneProvider provider)
 		{
-			base.CopyTo(r);
+			base.OnCopyTo(r, provider);
 			Prefab c = r as Prefab;
 			c.objTree = this.objTree.Clone();
 		}

@@ -659,9 +659,9 @@ namespace Duality.Components
 		{
 			this.UpdateZSortAccuracy();
 		}
-		internal override void CopyToInternal(Component target)
+		internal override void CopyToInternal(Component target, Duality.Cloning.CloneProvider provider)
 		{
-			base.CopyToInternal(target);
+			base.CopyToInternal(target, provider);
 			Camera t = target as Camera;
 			t.nearZ				= this.nearZ;
 			t.farZ				= this.farZ;
