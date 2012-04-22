@@ -33,19 +33,6 @@ namespace Duality.Cloning
 			this.AddSurrogate(new BitmapSurrogate());
 		}
 
-		public CloneProvider Clone()
-		{
-			CloneProvider copy = new CloneProvider();
-			this.CopyTo(copy);
-			return copy;
-		}
-		public void CopyTo(CloneProvider target)
-		{
-			target.objToClone = new Dictionary<object,object>(this.objToClone);
-			target.surrogates = new List<ISurrogate>(this.surrogates);
-			target.explicitUnwrap = this.explicitUnwrap != null ? this.explicitUnwrap.ToArray() : null;
-		}
-
 		/// <summary>
 		/// Unregisters all <see cref="Duality.Cloning.ISurrogate">Surrogates</see>.
 		/// </summary>
