@@ -496,7 +496,7 @@ namespace Duality
 			while (curType.Assembly != Assembly.GetExecutingAssembly())
 			{
 				// Apply default behaviour to any class that doesn't have an OnCopyTo override
-				if (curType.GetMethod("OnCopyTo", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly, null, new[] { typeof(Component) }, null) == null)
+				if (curType.GetMethod("OnCopyTo", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly, null, new[] { typeof(Component), typeof(CloneProvider) }, null) == null)
 				{
 					provider.CopyObjectTo(
 						this, 

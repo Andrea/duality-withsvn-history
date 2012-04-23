@@ -147,7 +147,7 @@ namespace Duality
 			}
 
 			string dirName = System.IO.Path.GetDirectoryName(saveAsPath);
-			if (!Directory.Exists(dirName)) Directory.CreateDirectory(dirName);
+			if (!string.IsNullOrEmpty(dirName) && !Directory.Exists(dirName)) Directory.CreateDirectory(dirName);
 			using (FileStream str = File.Open(saveAsPath, FileMode.Create))
 			{
 				this.Save(str);

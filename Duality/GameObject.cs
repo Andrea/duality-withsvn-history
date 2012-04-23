@@ -804,7 +804,6 @@ namespace Duality
 			// Notify Components
 			foreach (Component c in this.compList)
 			{
-				if (!c.Active) continue;
 				ICmpInitializable cInit = c as ICmpInitializable;
 				if (cInit != null) cInit.OnInit(Component.InitContext.Loaded);
 			}
@@ -819,7 +818,6 @@ namespace Duality
 			// Notify Components
 			foreach (Component c in this.compList)
 			{
-				if (!c.Active) continue;
 				ICmpInitializable cInit = c as ICmpInitializable;
 				if (cInit != null) cInit.OnShutdown(Component.ShutdownContext.Saving);
 			}
@@ -834,7 +832,6 @@ namespace Duality
 			// Notify Components
 			foreach (Component c in this.compList)
 			{
-				if (!c.Active) continue;
 				ICmpInitializable cInit = c as ICmpInitializable;
 				if (cInit != null) cInit.OnInit(Component.InitContext.Saved);
 			}

@@ -183,7 +183,7 @@ namespace Duality.Serialization
 
 
 			int elementDepth = this.ReadUntilElementStart();
-			objName = this.reader.Name;
+			objName = this.GetCodeElementName(this.reader.Name);
 			scopeChanged = elementDepth == -1;
 
 			// Moved outside of current scope? Return null
@@ -296,6 +296,7 @@ namespace Duality.Serialization
 		{
 			if (!this.CanWrite) throw new InvalidOperationException("Can't write object to a read-only serializer");
 			if (this.writer.WriteState == WriteState.Start) this.writer.WriteStartElement("root");
+			elementName = this.GetXmlElementName(elementName);
 			this.writer.WriteStartElement(elementName);
 
 			// Null? Empty Element.
@@ -408,6 +409,15 @@ namespace Duality.Serialization
 		protected string ByteArrayToString(byte[] arr)
 		{
 			return Convert.ToBase64String(arr, Base64FormattingOptions.None);
+		}
+
+		protected string GetXmlElementName(string codeName)
+		{
+			return codeName.Replace("<", "__sbo__").Replace(">", "__sbc__");
+		}
+		protected string GetCodeElementName(string xmlName)
+		{
+			return xmlName.Replace("__sbo__", "<").Replace("__sbc__", ">");
 		}
 	}
 }

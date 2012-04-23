@@ -8407,12 +8407,6 @@
             <param name="emitter">The sources parent <see cref="T:Duality.Components.SoundEmitter"/>.</param>
             <returns>True, if the source is still active. False, if it requests to be removed.</returns>
         </member>
-        <member name="M:Duality.Components.SoundEmitter.Source.Clone">
-            <summary>
-            Creates a deep copy of the sound source.
-            </summary>
-            <returns></returns>
-        </member>
         <member name="P:Duality.Components.SoundEmitter.Source.Instance">
             <summary>
             [GET] The <see cref="T:Duality.SoundInstance"/> that is currently allocated to emit

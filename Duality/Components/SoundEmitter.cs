@@ -6,6 +6,7 @@ using OpenTK;
 
 using Duality.EditorHints;
 using Duality.Resources;
+using ICloneable = Duality.Cloning.ICloneable;
 
 namespace Duality.Components
 {
@@ -20,7 +21,7 @@ namespace Duality.Components
 		/// A single sound source.
 		/// </summary>
 		[Serializable]
-		public class Source
+		public class Source : ICloneable
 		{
 			private	ContentRef<Sound>	sound		= ContentRef<Sound>.Null;
 			private	bool				looped		= true;
@@ -157,13 +158,14 @@ namespace Duality.Components
 				return true;
 			}
 
-			/// <summary>
-			/// Creates a deep copy of the sound source.
-			/// </summary>
-			/// <returns></returns>
-			public Source Clone()
+			
+			object ICloneable.CreateTargetObject(Cloning.CloneProvider provider)
 			{
-				Source newSrc = new Source();
+				return new Source();
+			}
+			void ICloneable.CopyDataTo(object targetObj, Cloning.CloneProvider provider)
+			{
+				Source newSrc = targetObj as Source;
 				newSrc.sound			= this.sound;
 				newSrc.looped			= this.looped;
 				newSrc.paused			= this.paused;
@@ -171,7 +173,7 @@ namespace Duality.Components
 				newSrc.pitch			= this.pitch;
 				newSrc.offset			= this.offset;
 				newSrc.hasBeenPlayed	= this.hasBeenPlayed;
-				return newSrc;
+				newSrc.instance			= null;
 			}
 		}
 
@@ -190,7 +192,7 @@ namespace Duality.Components
 		{
 			base.CopyToInternal(target, provider);
 			SoundEmitter c = target as SoundEmitter;
-			c.sources = this.sources == null ? null : new List<Source>(this.sources.Select(s => s.Clone()));
+			c.sources = this.sources == null ? null : this.sources.Select(s => provider.RequestObjectClone(s)).ToList();
 		}
 
 		void ICmpUpdatable.OnUpdate()

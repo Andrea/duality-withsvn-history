@@ -265,7 +265,8 @@ namespace Duality.Serialization
 				if (!newId) dataType = DataType.ObjectRef;
 			}
 
-			if (!objSerializeType.Type.IsSerializable && 
+			if (dataType != DataType.ObjectRef &&
+				!objSerializeType.Type.IsSerializable && 
 				!typeof(ISerializable).IsAssignableFrom(objSerializeType.Type) &&
 				this.GetSurrogateFor(objSerializeType.Type) == null) 
 			{
