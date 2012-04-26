@@ -794,7 +794,7 @@ namespace Duality
 										pcm.sampleRate);
 								}
 								AL.SourceQueueBuffer(sndInst.alSource, unqueued);
-								if (eof)
+								if (eof && pcm.data.Length == 0)
 								{
 									OV.EndStream(ref sndInst.strOvStr);
 									if (sndInst.looped)

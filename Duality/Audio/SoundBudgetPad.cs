@@ -204,13 +204,16 @@ namespace Duality
 		/// </summary>
 		public const float DefaultFadeOutTime = 3.0f;
 
-		private	List<SoundBudgetPad>	budgetPads	= new List<SoundBudgetPad>();
+		private	List<SoundBudgetPad>	budgetPads		= new List<SoundBudgetPad>();
 
 		/// <summary>
 		/// Updates the queue.
 		/// </summary>
 		public void Update()
 		{
+			if (DualityApp.ExecContext != DualityApp.ExecutionContext.Game)
+				this.Clear(0.0f);
+
 			float budget = 1.0f;
 			bool nonWeakPassed = false;
 
@@ -238,7 +241,7 @@ namespace Duality
 		{
 			return this.budgetPads.Any(pad => pad.Sound.FadeTarget > 0.0f);
 		}
-
+		
 		/// <summary>
 		/// Schedules a new budget pad.
 		/// </summary>

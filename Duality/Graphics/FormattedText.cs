@@ -828,15 +828,18 @@ namespace Duality
 						else if (this.sourceText[i] == 'i')
 						{
 							int indexOfClose = this.sourceText.IndexOf(']', i + 1);
-							string numStr = this.sourceText.Substring(i + 2, indexOfClose - (i + 2));
-							int num;
-							if (int.TryParse(numStr, out num))
-								elemList.Add(new IconElement(num));
-							else
-								elemList.Add(new IconElement(0));
+							if (indexOfClose != -1)
+							{
+								string numStr = this.sourceText.Substring(i + 2, indexOfClose - (i + 2));
+								int num;
+								if (int.TryParse(numStr, out num))
+									elemList.Add(new IconElement(num));
+								else
+									elemList.Add(new IconElement(0));
 
-							this.iconCount++;
-							i += 2 + numStr.Length;
+								this.iconCount++;
+								i += 2 + numStr.Length;
+							}
 						}
 						else if (this.sourceText[i] == 'n')
 						{

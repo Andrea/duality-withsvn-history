@@ -1200,30 +1200,34 @@ namespace DualityEditor.Forms
 			{
 				if (e.ChangeType == WatcherChangeTypes.Changed)
 				{
-					ResourceEventArgs args = new ResourceEventArgs(e.FullPath);
-
-					// Unregister outdated resources, if modified outside the editor
-					if (!this.editorJustSavedRes.Contains(Path.GetFullPath(e.FullPath)) && ContentProvider.IsContentRegistered(args.Path))
+					// Is it a Resource file or just something else?
+					if (Resource.IsResourceFile(e.FullPath))
 					{
-						if ((args.Content.Is<Scene>() && Scene.Current == args.Content.Res) || this.IsResourceUnsaved(e.FullPath))
+						ResourceEventArgs args = new ResourceEventArgs(e.FullPath);
+
+						// Unregister outdated resources, if modified outside the editor
+						if (!this.editorJustSavedRes.Contains(Path.GetFullPath(e.FullPath)) && ContentProvider.IsContentRegistered(args.Path))
 						{
-							if (this.DisplayConfirmReloadResource(e.FullPath))
+							if ((args.Content.Is<Scene>() && Scene.Current == args.Content.Res) || this.IsResourceUnsaved(e.FullPath))
+							{
+								if (this.DisplayConfirmReloadResource(e.FullPath))
+									ContentProvider.UnregisterContent(args.Path);
+							}
+							else
 								ContentProvider.UnregisterContent(args.Path);
 						}
-						else
-							ContentProvider.UnregisterContent(args.Path);
-					}
 
-					// When modifying prefabs, apply changes to all linked objects
-					if (args.IsResource && args.Content.Is<Prefab>())
-					{
-						ContentRef<Prefab> prefabRef = args.Content.As<Prefab>();
-						List<PrefabLink> appliedLinks = PrefabLink.ApplyAllLinks(Scene.Current.AllObjects, p => p.Prefab == prefabRef);
-						List<GameObject> changedObjects = new List<GameObject>(appliedLinks.Select(p => p.Obj));
-						this.NotifyObjPrefabApplied(this, new ObjectSelection(changedObjects));
-					}
+						// When modifying prefabs, apply changes to all linked objects
+						if (args.IsResource && args.Content.Is<Prefab>())
+						{
+							ContentRef<Prefab> prefabRef = args.Content.As<Prefab>();
+							List<PrefabLink> appliedLinks = PrefabLink.ApplyAllLinks(Scene.Current.AllObjects, p => p.Prefab == prefabRef);
+							List<GameObject> changedObjects = new List<GameObject>(appliedLinks.Select(p => p.Obj));
+							this.NotifyObjPrefabApplied(this, new ObjectSelection(changedObjects));
+						}
 
-					if (this.ResourceModified != null) this.ResourceModified(this, args);
+						if (this.ResourceModified != null) this.ResourceModified(this, args);
+					}
 				}
 				else if (e.ChangeType == WatcherChangeTypes.Created)
 				{
@@ -1260,29 +1264,37 @@ namespace DualityEditor.Forms
 				}
 				else if (e.ChangeType == WatcherChangeTypes.Deleted)
 				{
-					ResourceEventArgs args = new ResourceEventArgs(e.FullPath);
+					// Is it a Resource file or just something else?
+					if (Resource.IsResourceFile(e.FullPath))
+					{
+						ResourceEventArgs args = new ResourceEventArgs(e.FullPath);
 
-					// Unregister no-more existing resources
-					if (args.IsDirectory)	ContentProvider.UnregisterContentTree(args.Path);
-					else					ContentProvider.UnregisterContent(args.Path);
+						// Unregister no-more existing resources
+						if (args.IsDirectory)	ContentProvider.UnregisterContentTree(args.Path);
+						else					ContentProvider.UnregisterContent(args.Path);
 
-					if (this.ResourceDeleted != null)
-						this.ResourceDeleted(this, args);
+						if (this.ResourceDeleted != null)
+							this.ResourceDeleted(this, args);
+					}
 				}
 				else if (e.ChangeType == WatcherChangeTypes.Renamed)
 				{
-					RenamedEventArgs re = e as RenamedEventArgs;
-					ResourceRenamedEventArgs args = new ResourceRenamedEventArgs(re.FullPath, re.OldFullPath);
+					// Is it a Resource file or just something else?
+					if (Resource.IsResourceFile(e.FullPath))
+					{
+						RenamedEventArgs re = e as RenamedEventArgs;
+						ResourceRenamedEventArgs args = new ResourceRenamedEventArgs(re.FullPath, re.OldFullPath);
 
-					// Rename content registerations
-					if (args.IsDirectory)	ContentProvider.RenameContentTree(args.OldPath, args.Path);
-					else					ContentProvider.RenameContent(args.OldPath, args.Path);
+						// Rename content registerations
+						if (args.IsDirectory)	ContentProvider.RenameContentTree(args.OldPath, args.Path);
+						else					ContentProvider.RenameContent(args.OldPath, args.Path);
 
-					// If we just renamed the currently loaded scene, relocate it.
-					// Doesn't trigger if done properly from inside the editor.
-					if (Scene.CurrentPath == re.OldFullPath) Scene.Current = Resource.LoadResource<Scene>(re.FullPath);
+						// If we just renamed the currently loaded scene, relocate it.
+						// Doesn't trigger if done properly from inside the editor.
+						if (Scene.CurrentPath == re.OldFullPath) Scene.Current = Resource.LoadResource<Scene>(re.FullPath);
 
-					if (this.ResourceRenamed != null) this.ResourceRenamed(this, args);
+						if (this.ResourceRenamed != null) this.ResourceRenamed(this, args);
+					}
 				}
 			}
 			this.dataDirEventBuffer.Clear();

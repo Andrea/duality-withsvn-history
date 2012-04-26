@@ -393,7 +393,10 @@ namespace Duality.Resources
 		/// <summary>
 		/// Creates a new, empty Font.
 		/// </summary>
-		public Font() {}
+		public Font()
+		{
+			this.ReloadData();
+		}
 		
 		/// <summary>
 		/// Replaces the Fonts custom font family with a new dataset that has been retrieved from file.
