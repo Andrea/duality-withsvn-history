@@ -21,11 +21,92 @@ namespace Tetris
 			get { return instance; }
 		}
 
+		private	int		score		= 0;
 		private	float	beginTime	= 0.0f;
 		private bool	gameOver	= false;
 		private	int		gameStage	= 0;
 
+		public bool FirstGameInSession
+		{
+			get { return this.beginTime < 5.0f; }
+		}
+		public int Score
+		{
+			get { return this.score; }
+			set
+			{
+				this.score = value;
+
+				GameObject scoreObj = Scene.Current.AllObjects.FirstByName("PointDisplay");
+				if (scoreObj != null)
+				{
+					TextRenderer scoreText = scoreObj.GetComponent<TextRenderer>();
+					if (scoreText != null)
+					{
+						scoreText.Text.ApplySource("Score: " + this.score.ToString());
+						scoreText.UpdateMetrics();
+					}
+				}
+			}
+		}
+
 		void ICmpUpdatable.OnUpdate()
+		{
+			if (!this.UpdateIntro())
+				this.UpdateGame();
+		}
+		void ICmpInitializable.OnInit(Component.InitContext context)
+		{
+			if (context == InitContext.Activate)
+			{
+				if (instance == null)
+				{
+					instance = this;
+					DualityApp.Keyboard.KeyDown += this.Keyboard_KeyDown;
+
+					this.beginTime = Time.GameTimer;
+
+					// Play some music
+					SoundBudgetPad bgMusic = DualityApp.Sound.Music.Push(GameRes.Data.Music.tetrisloop_Sound, SoundBudgetPriority.Background, 0.0f);
+					bgMusic.Sound.Looped = true;
+
+					// Play some intro
+					if (this.FirstGameInSession) DualityApp.Sound.Music.Push(GameRes.Data.Music.tetrisintro_Sound, SoundBudgetPriority.Tension, 0.0f);
+				}
+			}
+		}
+		void ICmpInitializable.OnShutdown(Component.ShutdownContext context)
+		{
+			if (context == ShutdownContext.Deactivate)
+			{
+				if (instance == this)
+				{
+					instance = null;
+					DualityApp.Keyboard.KeyDown -= this.Keyboard_KeyDown;
+				}
+			}
+		}
+		void Keyboard_KeyDown(object sender, KeyboardKeyEventArgs e)
+		{
+			if (Block.ActiveBlock != null)
+			{
+				Transform activeTrans = Block.ActiveBlock.GameObj.Transform;
+
+				// Continous keyboard commands
+				if (e.Key == Key.Enter)
+				{
+					activeTrans.Angle += MathF.RadAngle90;
+					DualityApp.Sound.PlaySound(GameRes.Data.Sound.BlockTurnRight_Sound);
+				}
+				else if (e.Key == Key.ShiftRight)
+				{
+					activeTrans.Angle -= MathF.RadAngle90;
+					DualityApp.Sound.PlaySound(GameRes.Data.Sound.BlockTurnLeft_Sound);
+				}
+			}
+		}
+
+		private bool UpdateIntro()
 		{
 			if (this.gameStage == 0)
 			{
@@ -34,7 +115,7 @@ namespace Tetris
 				GameObject intro1 = Scene.Current.AllObjects.FirstByName("Intro1");
 				TextRenderer text = intro1.GetComponent<TextRenderer>();
 
-				if (localTime >= 6000.0f || DualityApp.Keyboard[Key.Enter])
+				if (localTime >= 6000.0f || DualityApp.Keyboard[Key.Enter] || !this.FirstGameInSession)
 				{
 					intro1.Active = false;
 					this.gameStage++;
@@ -44,6 +125,7 @@ namespace Tetris
 					intro1.Active = true;
 					text.ColorTint = text.ColorTint.WithAlpha(1.0f - MathF.Clamp((localTime - 0.0f) / 6000.0f, 0.0f, 1.0f));
 				}
+				return true;
 			}
 			else if (this.gameStage == 1)
 			{
@@ -52,7 +134,7 @@ namespace Tetris
 				GameObject intro2 = Scene.Current.AllObjects.FirstByName("Intro2");
 				TextRenderer text = intro2.GetComponent<TextRenderer>();
 
-				if (localTime >= 6000.0f || DualityApp.Keyboard[Key.Enter])
+				if (localTime >= 6000.0f || DualityApp.Keyboard[Key.Enter] || !this.FirstGameInSession)
 				{
 					intro2.Active = false;
 					this.gameStage++;
@@ -62,6 +144,7 @@ namespace Tetris
 					intro2.Active = true;
 					text.ColorTint = text.ColorTint.WithAlpha(1.0f - MathF.Clamp((localTime - 0.0f) / 6000.0f, 0.0f, 1.0f));
 				}
+				return true;
 			}
 			else if (this.gameStage == 2)
 			{
@@ -70,7 +153,7 @@ namespace Tetris
 				GameObject intro3 = Scene.Current.AllObjects.FirstByName("Intro3");
 				TextRenderer text = intro3.GetComponent<TextRenderer>();
 
-				if (localTime >= 6000.0f || DualityApp.Keyboard[Key.Enter])
+				if (localTime >= 6000.0f || DualityApp.Keyboard[Key.Enter] || !this.FirstGameInSession)
 				{
 					intro3.Active = false;
 					this.gameStage++;
@@ -80,6 +163,7 @@ namespace Tetris
 					intro3.Active = true;
 					text.ColorTint = text.ColorTint.WithAlpha(1.0f - MathF.Clamp((localTime - 0.0f) / 6000.0f, 0.0f, 1.0f));
 				}
+				return true;
 			}
 			else if (this.gameStage == 3)
 			{
@@ -90,7 +174,7 @@ namespace Tetris
 				SpriteRenderer text = intro4.GetComponent<SpriteRenderer>();
 				SpriteRenderer plate = blackPlate.GetComponent<SpriteRenderer>();
 
-				if (localTime >= 6000.0f || DualityApp.Keyboard[Key.Enter])
+				if (localTime >= 6000.0f || DualityApp.Keyboard[Key.Enter] || !this.FirstGameInSession)
 				{
 					intro4.Active = false;
 					blackPlate.Active = false;
@@ -102,8 +186,15 @@ namespace Tetris
 					text.ColorTint = text.ColorTint.WithAlpha(1.0f - MathF.Clamp((localTime - 0.0f) / 6000.0f, 0.0f, 1.0f));
 					plate.ColorTint = plate.ColorTint.WithAlpha(1.0f - MathF.Clamp((localTime - 0.0f) / 6000.0f, 0.0f, 1.0f));
 				}
+				return true;
 			}
-			else if (!this.gameOver)
+			else return false;
+		}
+		private void UpdateGame()
+		{
+			CommentGuy.Update(); // Make comments
+
+			if (!this.gameOver)
 			{
 				if (Block.ActiveBlock != null)
 				{
@@ -135,7 +226,10 @@ namespace Tetris
 						List<Collider> colliders = line.Select(s => s.Parent).Distinct().ToList();
 						List<Transform> transforms = colliders.Select(c => c.GameObj.Transform).ToList();
 						List<Block> blocks = colliders.Select(c => c.GameObj.GetComponent<Block>()).ToList();
-						if (!blocks.Any(b => b == Block.ActiveBlock) && !transforms.Any(t => t.Vel.Length > 0.001f))
+
+						if (!blocks.Any(b => b == Block.ActiveBlock) && 
+							!transforms.Any(t => t.Vel.Length > 0.001f) &&
+							line.Sum(s => MathF.CircularDist(0.0f, s.Parent.GameObj.Transform.Angle, 0.0f, MathF.PiOver2)) < Math.PI)
 						{
 							foreach (Collider.ShapeInfo shape in line)
 							{
@@ -151,6 +245,7 @@ namespace Tetris
 								//    if (b != null) b.SplitToPieces();
 								//}
 							}
+							this.Score += 1000;
 							anyLineRemoved = true;
 							DualityApp.Sound.PlaySound(GameRes.Data.Sound.LineRemoved_Sound);
 						}
@@ -162,58 +257,17 @@ namespace Tetris
 						c.AwakeBody();
 				}
 			}
-		}
-		void ICmpInitializable.OnInit(Component.InitContext context)
-		{
-			if (context == InitContext.Activate)
+			else
 			{
-				if (instance == null)
-				{
-					instance = this;
-					DualityApp.Keyboard.KeyDown += this.Keyboard_KeyDown;
-
-					this.beginTime = Time.GameTimer;
-
-					// Play some music
-					SoundBudgetPad bgMusic = DualityApp.Sound.Music.Push(GameRes.Data.Music.tetrisloop_Sound, SoundBudgetPriority.Background, 0.0f);
-					bgMusic.Sound.Looped = true;
-
-					// Play some intro
-					DualityApp.Sound.Music.Push(GameRes.Data.Music.tetrisintro_Sound, SoundBudgetPriority.Tension, 0.0f);
-				}
-			}
-		}
-		void ICmpInitializable.OnShutdown(Component.ShutdownContext context)
-		{
-			if (context == ShutdownContext.Deactivate)
-			{
-				if (instance == this)
-				{
-					instance = null;
-					DualityApp.Keyboard.KeyDown -= this.Keyboard_KeyDown;
-				}
-			}
-		}
-		void Keyboard_KeyDown(object sender, KeyboardKeyEventArgs e)
-		{
-			if (Block.ActiveBlock != null)
-			{
-				Transform activeTrans = Block.ActiveBlock.GameObj.Transform;
-
-				// Continous keyboard commands
-				if (DualityApp.Keyboard[Key.Enter])
-				{
-					activeTrans.Angle += MathF.RadAngle90;
-					DualityApp.Sound.PlaySound(GameRes.Data.Sound.BlockTurnRight_Sound);
-				}
-				else if (DualityApp.Keyboard[Key.ShiftRight])
-				{
-					activeTrans.Angle -= MathF.RadAngle90;
-					DualityApp.Sound.PlaySound(GameRes.Data.Sound.BlockTurnLeft_Sound);
-				}
+				if (DualityApp.Keyboard[Key.Enter]) this.RestartGame();
 			}
 		}
 
+		public void RestartGame()
+		{
+			Scene.Current.Dispose();
+			Scene.Current = GameRes.Data.GameScene_Scene.Res;
+		}
 		public void NotifyGameOver()
 		{
 			if (this.gameOver) return;

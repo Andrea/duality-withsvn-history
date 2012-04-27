@@ -162,6 +162,12 @@ namespace GameRes
 		public static Duality.ContentRef<Duality.Resources.Texture> GameOver_Texture { get { if (_GameOver_Texture.IsExplicitNull) _GameOver_Texture = Duality.ContentProvider.RequestContent<Duality.Resources.Texture>(@"Data\GameOver.Texture.res"); return _GameOver_Texture; }}
 		private static Duality.ContentRef<Duality.Resources.Scene> _GameScene_Scene;
 		public static Duality.ContentRef<Duality.Resources.Scene> GameScene_Scene { get { if (_GameScene_Scene.IsExplicitNull) _GameScene_Scene = Duality.ContentProvider.RequestContent<Duality.Resources.Scene>(@"Data\GameScene.Scene.res"); return _GameScene_Scene; }}
+		private static Duality.ContentRef<Duality.Resources.Material> _Keyboard_Material;
+		public static Duality.ContentRef<Duality.Resources.Material> Keyboard_Material { get { if (_Keyboard_Material.IsExplicitNull) _Keyboard_Material = Duality.ContentProvider.RequestContent<Duality.Resources.Material>(@"Data\Keyboard.Material.res"); return _Keyboard_Material; }}
+		private static Duality.ContentRef<Duality.Resources.Pixmap> _Keyboard_Pixmap;
+		public static Duality.ContentRef<Duality.Resources.Pixmap> Keyboard_Pixmap { get { if (_Keyboard_Pixmap.IsExplicitNull) _Keyboard_Pixmap = Duality.ContentProvider.RequestContent<Duality.Resources.Pixmap>(@"Data\Keyboard.Pixmap.res"); return _Keyboard_Pixmap; }}
+		private static Duality.ContentRef<Duality.Resources.Texture> _Keyboard_Texture;
+		public static Duality.ContentRef<Duality.Resources.Texture> Keyboard_Texture { get { if (_Keyboard_Texture.IsExplicitNull) _Keyboard_Texture = Duality.ContentProvider.RequestContent<Duality.Resources.Texture>(@"Data\Keyboard.Texture.res"); return _Keyboard_Texture; }}
 		private static Duality.ContentRef<Duality.Resources.Material> _TetrisLogo_Material;
 		public static Duality.ContentRef<Duality.Resources.Material> TetrisLogo_Material { get { if (_TetrisLogo_Material.IsExplicitNull) _TetrisLogo_Material = Duality.ContentProvider.RequestContent<Duality.Resources.Material>(@"Data\TetrisLogo.Material.res"); return _TetrisLogo_Material; }}
 		private static Duality.ContentRef<Duality.Resources.Pixmap> _TetrisLogo_Pixmap;
@@ -184,6 +190,9 @@ namespace GameRes
 			GameOver_Pixmap.MakeAvailable();
 			GameOver_Texture.MakeAvailable();
 			GameScene_Scene.MakeAvailable();
+			Keyboard_Material.MakeAvailable();
+			Keyboard_Pixmap.MakeAvailable();
+			Keyboard_Texture.MakeAvailable();
 			TetrisLogo_Material.MakeAvailable();
 			TetrisLogo_Pixmap.MakeAvailable();
 			TetrisLogo_Texture.MakeAvailable();

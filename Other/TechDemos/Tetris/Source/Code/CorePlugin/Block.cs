@@ -56,10 +56,10 @@ namespace Tetris
 				collisionSound.Volume = MathF.Clamp(args.CollisionData.NormalSpeed / 5.0f, 0.0f, 0.5f);
 			}
 
-			if (activeBlock == this && MathF.Abs(args.CollisionData.Normal.Y) > 0.05f)
+			if (activeBlock == this && timeFirstContact == 0.0f && MathF.Abs(args.CollisionData.Normal.Y) > 0.05f)
 			{
+				timeFirstContact = Time.GameTimer;
 				if (this.GameObj.Transform.Pos.Y <= -500) GameController.Instance.NotifyGameOver();
-				if (timeFirstContact == 0.0f) timeFirstContact = Time.GameTimer;
 				this.GameObj.GetComponent<Collider>().IgnoreGravity = false;
 				this.GameObj.GetComponent<Collider>().FixedAngle = false;
 			}
@@ -71,6 +71,10 @@ namespace Tetris
 			{
 				activeBlock = null;
 				DualityApp.Sound.PlaySound(GameRes.Data.Sound.BlockDrop_Sound);
+
+				float angleDistFromIdeal = MathF.CircularDist(0.0f, this.GameObj.Transform.Angle, 0.0f, MathF.PiOver2);
+				float angleDistTolerance = MathF.Pi * 0.1f;
+				GameController.Instance.Score += MathF.RoundToInt(50.0f * (1.0f - MathF.Clamp(angleDistFromIdeal / angleDistTolerance, 0.0f, 1.0f)));
 			}
 		}
 

@@ -23,6 +23,7 @@
       <allObj dataType="Class" type="System.Collections.Generic.List`1[[Duality.GameObject]]" id="9">
         <_items dataType="Array" type="Duality.GameObject[]" id="10" length="16">
           <object dataType="Class" type="Duality.GameObject" id="11">
+            <name dataType="String">BottomWall</name>
             <prefabLink />
             <parent />
             <children />
@@ -41,18 +42,18 @@
                       <Y dataType="Float">0</Y>
                       <Z dataType="Float">0</Z>
                     </pos>
-                    <vel dataType="Struct" type="OpenTK.Vector3">
-                      <X dataType="Float">0</X>
-                      <Y dataType="Float">0</Y>
-                      <Z dataType="Float">0</Z>
-                    </vel>
                     <angle dataType="Float">0</angle>
-                    <angleVel dataType="Float">0</angleVel>
                     <scale dataType="Struct" type="OpenTK.Vector3">
                       <X dataType="Float">1</X>
                       <Y dataType="Float">1</Y>
                       <Z dataType="Float">1</Z>
                     </scale>
+                    <vel dataType="Struct" type="OpenTK.Vector3">
+                      <X dataType="Float">0</X>
+                      <Y dataType="Float">0</Y>
+                      <Z dataType="Float">0</Z>
+                    </vel>
+                    <angleVel dataType="Float">0</angleVel>
                     <deriveAngle dataType="Bool">true</deriveAngle>
                     <extUpdater dataType="Class" type="Duality.Components.Collider" id="19">
                       <bodyType dataType="Enum" type="Duality.Components.Collider+BodyType" name="Static" value="0" />
@@ -167,7 +168,6 @@
               <_size dataType="Int">3</_size>
               <_version dataType="Int">3</_version>
             </compList>
-            <name dataType="String">BottomWall</name>
             <active dataType="Bool">true</active>
             <disposed dataType="Bool">false</disposed>
             <compTransform dataType="ObjectRef">18</compTransform>
@@ -190,6 +190,7 @@
             <EventCollisionSolve />
           </object>
           <object dataType="Class" type="Duality.GameObject" id="35">
+            <name dataType="String">LeftWall</name>
             <prefabLink />
             <parent />
             <children />
@@ -208,18 +209,18 @@
                       <Y dataType="Float">-288</Y>
                       <Z dataType="Float">0</Z>
                     </pos>
-                    <vel dataType="Struct" type="OpenTK.Vector3">
-                      <X dataType="Float">0</X>
-                      <Y dataType="Float">0</Y>
-                      <Z dataType="Float">0</Z>
-                    </vel>
                     <angle dataType="Float">0</angle>
-                    <angleVel dataType="Float">0</angleVel>
                     <scale dataType="Struct" type="OpenTK.Vector3">
                       <X dataType="Float">1</X>
                       <Y dataType="Float">1</Y>
                       <Z dataType="Float">1</Z>
                     </scale>
+                    <vel dataType="Struct" type="OpenTK.Vector3">
+                      <X dataType="Float">0</X>
+                      <Y dataType="Float">0</Y>
+                      <Z dataType="Float">0</Z>
+                    </vel>
+                    <angleVel dataType="Float">0</angleVel>
                     <deriveAngle dataType="Bool">true</deriveAngle>
                     <extUpdater dataType="Class" type="Duality.Components.Collider" id="40">
                       <bodyType dataType="Enum" type="Duality.Components.Collider+BodyType" name="Static" value="0" />
@@ -334,7 +335,6 @@
               <_size dataType="Int">3</_size>
               <_version dataType="Int">3</_version>
             </compList>
-            <name dataType="String">LeftWall</name>
             <active dataType="Bool">true</active>
             <disposed dataType="Bool">false</disposed>
             <compTransform dataType="ObjectRef">39</compTransform>
@@ -345,6 +345,7 @@
             <EventCollisionSolve />
           </object>
           <object dataType="Class" type="Duality.GameObject" id="50">
+            <name dataType="String">RightWall</name>
             <prefabLink />
             <parent />
             <children />
@@ -363,18 +364,18 @@
                       <Y dataType="Float">-288</Y>
                       <Z dataType="Float">0</Z>
                     </pos>
-                    <vel dataType="Struct" type="OpenTK.Vector3">
-                      <X dataType="Float">0</X>
-                      <Y dataType="Float">0</Y>
-                      <Z dataType="Float">0</Z>
-                    </vel>
                     <angle dataType="Float">0</angle>
-                    <angleVel dataType="Float">0</angleVel>
                     <scale dataType="Struct" type="OpenTK.Vector3">
                       <X dataType="Float">1</X>
                       <Y dataType="Float">1</Y>
                       <Z dataType="Float">1</Z>
                     </scale>
+                    <vel dataType="Struct" type="OpenTK.Vector3">
+                      <X dataType="Float">0</X>
+                      <Y dataType="Float">0</Y>
+                      <Z dataType="Float">0</Z>
+                    </vel>
+                    <angleVel dataType="Float">0</angleVel>
                     <deriveAngle dataType="Bool">true</deriveAngle>
                     <extUpdater dataType="Class" type="Duality.Components.Collider" id="55">
                       <bodyType dataType="Enum" type="Duality.Components.Collider+BodyType" name="Static" value="0" />
@@ -489,7 +490,6 @@
               <_size dataType="Int">3</_size>
               <_version dataType="Int">3</_version>
             </compList>
-            <name dataType="String">RightWall</name>
             <active dataType="Bool">true</active>
             <disposed dataType="Bool">false</disposed>
             <compTransform dataType="ObjectRef">54</compTransform>
@@ -500,6 +500,7 @@
             <EventCollisionSolve />
           </object>
           <object dataType="Class" type="Duality.GameObject" id="65">
+            <name dataType="String">MainCamera</name>
             <prefabLink />
             <parent />
             <children />
@@ -518,18 +519,18 @@
                       <Y dataType="Float">-272</Y>
                       <Z dataType="Float">-500</Z>
                     </pos>
-                    <vel dataType="Struct" type="OpenTK.Vector3">
-                      <X dataType="Float">0</X>
-                      <Y dataType="Float">0</Y>
-                      <Z dataType="Float">0</Z>
-                    </vel>
                     <angle dataType="Float">0</angle>
-                    <angleVel dataType="Float">0</angleVel>
                     <scale dataType="Struct" type="OpenTK.Vector3">
                       <X dataType="Float">1</X>
                       <Y dataType="Float">1</Y>
                       <Z dataType="Float">1</Z>
                     </scale>
+                    <vel dataType="Struct" type="OpenTK.Vector3">
+                      <X dataType="Float">0</X>
+                      <Y dataType="Float">0</Y>
+                      <Z dataType="Float">0</Z>
+                    </vel>
+                    <angleVel dataType="Float">0</angleVel>
                     <deriveAngle dataType="Bool">true</deriveAngle>
                     <extUpdater />
                     <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
@@ -603,7 +604,6 @@
               <_size dataType="Int">3</_size>
               <_version dataType="Int">3</_version>
             </compList>
-            <name dataType="String">MainCamera</name>
             <active dataType="Bool">true</active>
             <disposed dataType="Bool">false</disposed>
             <compTransform dataType="ObjectRef">71</compTransform>
@@ -614,6 +614,7 @@
             <EventCollisionSolve />
           </object>
           <object dataType="Class" type="Duality.GameObject" id="78">
+            <name dataType="String">GameController</name>
             <prefabLink />
             <parent />
             <children />
@@ -625,7 +626,8 @@
                 </keys>
                 <values dataType="Array" type="Duality.Component[]" id="82" length="1">
                   <object dataType="Class" type="Tetris.GameController" id="83">
-                    <beginTime dataType="Float">1837.3335</beginTime>
+                    <score dataType="Int">0</score>
+                    <beginTime dataType="Float">3720379</beginTime>
                     <gameOver dataType="Bool">false</gameOver>
                     <gameStage dataType="Int">0</gameStage>
                     <gameobj dataType="ObjectRef">78</gameobj>
@@ -645,7 +647,6 @@
               <_size dataType="Int">1</_size>
               <_version dataType="Int">1</_version>
             </compList>
-            <name dataType="String">GameController</name>
             <active dataType="Bool">true</active>
             <disposed dataType="Bool">false</disposed>
             <compTransform />
@@ -656,6 +657,7 @@
             <EventCollisionSolve />
           </object>
           <object dataType="Class" type="Duality.GameObject" id="86">
+            <name dataType="String">Intro1</name>
             <prefabLink />
             <parent />
             <children />
@@ -673,18 +675,18 @@
                       <Y dataType="Float">-272</Y>
                       <Z dataType="Float">-10</Z>
                     </pos>
-                    <vel dataType="Struct" type="OpenTK.Vector3">
-                      <X dataType="Float">0</X>
-                      <Y dataType="Float">0</Y>
-                      <Z dataType="Float">-0.5</Z>
-                    </vel>
                     <angle dataType="Float">0</angle>
-                    <angleVel dataType="Float">0</angleVel>
                     <scale dataType="Struct" type="OpenTK.Vector3">
                       <X dataType="Float">1</X>
                       <Y dataType="Float">1</Y>
                       <Z dataType="Float">1</Z>
                     </scale>
+                    <vel dataType="Struct" type="OpenTK.Vector3">
+                      <X dataType="Float">0</X>
+                      <Y dataType="Float">0</Y>
+                      <Z dataType="Float">-0.5</Z>
+                    </vel>
+                    <angleVel dataType="Float">0</angleVel>
                     <deriveAngle dataType="Bool">true</deriveAngle>
                     <extUpdater />
                     <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Vel" value="3" />
@@ -764,7 +766,6 @@
               <_size dataType="Int">2</_size>
               <_version dataType="Int">2</_version>
             </compList>
-            <name dataType="String">Intro1</name>
             <active dataType="Bool">false</active>
             <disposed dataType="Bool">false</disposed>
             <compTransform dataType="ObjectRef">91</compTransform>
@@ -775,6 +776,7 @@
             <EventCollisionSolve />
           </object>
           <object dataType="Class" type="Duality.GameObject" id="100">
+            <name dataType="String">Intro2</name>
             <prefabLink />
             <parent />
             <children />
@@ -792,18 +794,18 @@
                       <Y dataType="Float">-272</Y>
                       <Z dataType="Float">-10</Z>
                     </pos>
-                    <vel dataType="Struct" type="OpenTK.Vector3">
-                      <X dataType="Float">0</X>
-                      <Y dataType="Float">0</Y>
-                      <Z dataType="Float">-0.5</Z>
-                    </vel>
                     <angle dataType="Float">0</angle>
-                    <angleVel dataType="Float">0</angleVel>
                     <scale dataType="Struct" type="OpenTK.Vector3">
                       <X dataType="Float">1</X>
                       <Y dataType="Float">1</Y>
                       <Z dataType="Float">1</Z>
                     </scale>
+                    <vel dataType="Struct" type="OpenTK.Vector3">
+                      <X dataType="Float">0</X>
+                      <Y dataType="Float">0</Y>
+                      <Z dataType="Float">-0.5</Z>
+                    </vel>
+                    <angleVel dataType="Float">0</angleVel>
                     <deriveAngle dataType="Bool">true</deriveAngle>
                     <extUpdater />
                     <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Vel" value="3" />
@@ -894,7 +896,6 @@
               <_size dataType="Int">2</_size>
               <_version dataType="Int">2</_version>
             </compList>
-            <name dataType="String">Intro2</name>
             <active dataType="Bool">false</active>
             <disposed dataType="Bool">false</disposed>
             <compTransform dataType="ObjectRef">104</compTransform>
@@ -905,6 +906,7 @@
             <EventCollisionSolve />
           </object>
           <object dataType="Class" type="Duality.GameObject" id="118">
+            <name dataType="String">Intro3</name>
             <prefabLink />
             <parent />
             <children />
@@ -922,18 +924,18 @@
                       <Y dataType="Float">-272</Y>
                       <Z dataType="Float">-10</Z>
                     </pos>
-                    <vel dataType="Struct" type="OpenTK.Vector3">
-                      <X dataType="Float">0</X>
-                      <Y dataType="Float">0</Y>
-                      <Z dataType="Float">-0.5</Z>
-                    </vel>
                     <angle dataType="Float">0</angle>
-                    <angleVel dataType="Float">0</angleVel>
                     <scale dataType="Struct" type="OpenTK.Vector3">
                       <X dataType="Float">1</X>
                       <Y dataType="Float">1</Y>
                       <Z dataType="Float">1</Z>
                     </scale>
+                    <vel dataType="Struct" type="OpenTK.Vector3">
+                      <X dataType="Float">0</X>
+                      <Y dataType="Float">0</Y>
+                      <Z dataType="Float">-0.5</Z>
+                    </vel>
+                    <angleVel dataType="Float">0</angleVel>
                     <deriveAngle dataType="Bool">true</deriveAngle>
                     <extUpdater />
                     <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Vel" value="3" />
@@ -1013,7 +1015,6 @@
               <_size dataType="Int">2</_size>
               <_version dataType="Int">2</_version>
             </compList>
-            <name dataType="String">Intro3</name>
             <active dataType="Bool">false</active>
             <disposed dataType="Bool">false</disposed>
             <compTransform dataType="ObjectRef">122</compTransform>
@@ -1024,6 +1025,7 @@
             <EventCollisionSolve />
           </object>
           <object dataType="Class" type="Duality.GameObject" id="131">
+            <name dataType="String">Intro4</name>
             <prefabLink />
             <parent />
             <children />
@@ -1041,18 +1043,18 @@
                       <Y dataType="Float">-272</Y>
                       <Z dataType="Float">-10</Z>
                     </pos>
-                    <vel dataType="Struct" type="OpenTK.Vector3">
-                      <X dataType="Float">0</X>
-                      <Y dataType="Float">0</Y>
-                      <Z dataType="Float">-0.5</Z>
-                    </vel>
                     <angle dataType="Float">0</angle>
-                    <angleVel dataType="Float">0</angleVel>
                     <scale dataType="Struct" type="OpenTK.Vector3">
                       <X dataType="Float">1</X>
                       <Y dataType="Float">1</Y>
                       <Z dataType="Float">1</Z>
                     </scale>
+                    <vel dataType="Struct" type="OpenTK.Vector3">
+                      <X dataType="Float">0</X>
+                      <Y dataType="Float">0</Y>
+                      <Z dataType="Float">-0.5</Z>
+                    </vel>
+                    <angleVel dataType="Float">0</angleVel>
                     <deriveAngle dataType="Bool">true</deriveAngle>
                     <extUpdater />
                     <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
@@ -1115,7 +1117,6 @@
               <_size dataType="Int">2</_size>
               <_version dataType="Int">4</_version>
             </compList>
-            <name dataType="String">Intro4</name>
             <active dataType="Bool">false</active>
             <disposed dataType="Bool">false</disposed>
             <compTransform dataType="ObjectRef">135</compTransform>
@@ -1126,6 +1127,7 @@
             <EventCollisionSolve />
           </object>
           <object dataType="Class" type="Duality.GameObject" id="139">
+            <name dataType="String">BlackPlate</name>
             <prefabLink />
             <parent />
             <children />
@@ -1143,18 +1145,18 @@
                       <Y dataType="Float">-312.417358</Y>
                       <Z dataType="Float">-1</Z>
                     </pos>
-                    <vel dataType="Struct" type="OpenTK.Vector3">
-                      <X dataType="Float">0</X>
-                      <Y dataType="Float">0</Y>
-                      <Z dataType="Float">0</Z>
-                    </vel>
                     <angle dataType="Float">0</angle>
-                    <angleVel dataType="Float">0</angleVel>
                     <scale dataType="Struct" type="OpenTK.Vector3">
                       <X dataType="Float">4.07332134</X>
                       <Y dataType="Float">4.07332134</Y>
                       <Z dataType="Float">4.07332134</Z>
                     </scale>
+                    <vel dataType="Struct" type="OpenTK.Vector3">
+                      <X dataType="Float">0</X>
+                      <Y dataType="Float">0</Y>
+                      <Z dataType="Float">0</Z>
+                    </vel>
+                    <angleVel dataType="Float">0</angleVel>
                     <deriveAngle dataType="Bool">true</deriveAngle>
                     <extUpdater />
                     <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
@@ -1237,7 +1239,6 @@
               <_size dataType="Int">2</_size>
               <_version dataType="Int">2</_version>
             </compList>
-            <name dataType="String">BlackPlate</name>
             <active dataType="Bool">true</active>
             <disposed dataType="Bool">false</disposed>
             <compTransform dataType="ObjectRef">143</compTransform>
@@ -1248,6 +1249,7 @@
             <EventCollisionSolve />
           </object>
           <object dataType="Class" type="Duality.GameObject" id="149">
+            <name dataType="String">GameOver</name>
             <prefabLink />
             <parent />
             <children />
@@ -1265,18 +1267,18 @@
                       <Y dataType="Float">-272</Y>
                       <Z dataType="Float">-10</Z>
                     </pos>
-                    <vel dataType="Struct" type="OpenTK.Vector3">
-                      <X dataType="Float">0</X>
-                      <Y dataType="Float">0</Y>
-                      <Z dataType="Float">0</Z>
-                    </vel>
                     <angle dataType="Float">0</angle>
-                    <angleVel dataType="Float">0</angleVel>
                     <scale dataType="Struct" type="OpenTK.Vector3">
                       <X dataType="Float">1</X>
                       <Y dataType="Float">1</Y>
                       <Z dataType="Float">1</Z>
                     </scale>
+                    <vel dataType="Struct" type="OpenTK.Vector3">
+                      <X dataType="Float">0</X>
+                      <Y dataType="Float">0</Y>
+                      <Z dataType="Float">0</Z>
+                    </vel>
+                    <angleVel dataType="Float">0</angleVel>
                     <deriveAngle dataType="Bool">true</deriveAngle>
                     <extUpdater />
                     <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
@@ -1339,7 +1341,6 @@
               <_size dataType="Int">2</_size>
               <_version dataType="Int">2</_version>
             </compList>
-            <name dataType="String">GameOver</name>
             <active dataType="Bool">false</active>
             <disposed dataType="Bool">false</disposed>
             <compTransform dataType="ObjectRef">153</compTransform>
@@ -1350,6 +1351,7 @@
             <EventCollisionSolve />
           </object>
           <object dataType="Class" type="Duality.GameObject" id="157">
+            <name dataType="String">PointDisplay</name>
             <prefabLink />
             <parent />
             <children />
@@ -1367,18 +1369,18 @@
                       <Y dataType="Float">-537.939148</Y>
                       <Z dataType="Float">0</Z>
                     </pos>
-                    <vel dataType="Struct" type="OpenTK.Vector3">
-                      <X dataType="Float">0</X>
-                      <Y dataType="Float">0</Y>
-                      <Z dataType="Float">0</Z>
-                    </vel>
                     <angle dataType="Float">0</angle>
-                    <angleVel dataType="Float">0</angleVel>
                     <scale dataType="Struct" type="OpenTK.Vector3">
                       <X dataType="Float">1</X>
                       <Y dataType="Float">1</Y>
                       <Z dataType="Float">1</Z>
                     </scale>
+                    <vel dataType="Struct" type="OpenTK.Vector3">
+                      <X dataType="Float">0</X>
+                      <Y dataType="Float">0</Y>
+                      <Z dataType="Float">0</Z>
+                    </vel>
+                    <angleVel dataType="Float">0</angleVel>
                     <deriveAngle dataType="Bool">true</deriveAngle>
                     <extUpdater />
                     <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
@@ -1458,7 +1460,6 @@
               <_size dataType="Int">2</_size>
               <_version dataType="Int">2</_version>
             </compList>
-            <name dataType="String">PointDisplay</name>
             <active dataType="Bool">true</active>
             <disposed dataType="Bool">false</disposed>
             <compTransform dataType="ObjectRef">161</compTransform>
@@ -1469,6 +1470,7 @@
             <EventCollisionSolve />
           </object>
           <object dataType="Class" type="Duality.GameObject" id="170">
+            <name dataType="String">Commentary</name>
             <prefabLink />
             <parent />
             <children />
@@ -1486,18 +1488,18 @@
                       <Y dataType="Float">-445.9392</Y>
                       <Z dataType="Float">0</Z>
                     </pos>
-                    <vel dataType="Struct" type="OpenTK.Vector3">
-                      <X dataType="Float">0</X>
-                      <Y dataType="Float">0</Y>
-                      <Z dataType="Float">0</Z>
-                    </vel>
                     <angle dataType="Float">0</angle>
-                    <angleVel dataType="Float">0</angleVel>
                     <scale dataType="Struct" type="OpenTK.Vector3">
                       <X dataType="Float">1</X>
                       <Y dataType="Float">1</Y>
                       <Z dataType="Float">1</Z>
                     </scale>
+                    <vel dataType="Struct" type="OpenTK.Vector3">
+                      <X dataType="Float">0</X>
+                      <Y dataType="Float">0</Y>
+                      <Z dataType="Float">0</Z>
+                    </vel>
+                    <angleVel dataType="Float">0</angleVel>
                     <deriveAngle dataType="Bool">true</deriveAngle>
                     <extUpdater />
                     <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
@@ -1535,7 +1537,7 @@
                         </object>
                       </fonts>
                       <maxWidth dataType="Int">310</maxWidth>
-                      <maxHeight dataType="Int">484</maxHeight>
+                      <maxHeight dataType="Int">358</maxHeight>
                       <wrapMode dataType="Enum" type="Duality.FormattedText+WrapMode" name="Word" value="1" />
                       <displayedText dataType="String">Commentary</displayedText>
                       <fontGlyphCount dataType="Array" type="System.Int32[]" id="178" length="1">
@@ -1577,7 +1579,6 @@
               <_size dataType="Int">2</_size>
               <_version dataType="Int">2</_version>
             </compList>
-            <name dataType="String">Commentary</name>
             <active dataType="Bool">true</active>
             <disposed dataType="Bool">false</disposed>
             <compTransform dataType="ObjectRef">174</compTransform>
@@ -1587,25 +1588,126 @@
             <EventCollisionEnd />
             <EventCollisionSolve />
           </object>
-          <object />
+          <object dataType="Class" type="Duality.GameObject" id="183">
+            <name dataType="String">Keyboard</name>
+            <prefabLink />
+            <parent />
+            <children />
+            <compMap dataType="Class" type="System.Collections.Generic.Dictionary`2[[System.Type],[Duality.Component]]" id="184" surrogate="true">
+              <customSerialIO />
+              <customSerialIO>
+                <keys dataType="Array" type="System.Type[]" id="185" length="2">
+                  <object dataType="ObjectRef">14</object>
+                  <object dataType="ObjectRef">15</object>
+                </keys>
+                <values dataType="Array" type="Duality.Component[]" id="186" length="2">
+                  <object dataType="Class" type="Duality.Components.Transform" id="187">
+                    <pos dataType="Struct" type="OpenTK.Vector3">
+                      <X dataType="Float">301.285431</X>
+                      <Y dataType="Float">-41.8894043</Y>
+                      <Z dataType="Float">0</Z>
+                    </pos>
+                    <angle dataType="Float">0</angle>
+                    <scale dataType="Struct" type="OpenTK.Vector3">
+                      <X dataType="Float">0.6233829</X>
+                      <Y dataType="Float">0.6233829</Y>
+                      <Z dataType="Float">0.6233829</Z>
+                    </scale>
+                    <vel dataType="Struct" type="OpenTK.Vector3">
+                      <X dataType="Float">0</X>
+                      <Y dataType="Float">0</Y>
+                      <Z dataType="Float">0</Z>
+                    </vel>
+                    <angleVel dataType="Float">0</angleVel>
+                    <deriveAngle dataType="Bool">true</deriveAngle>
+                    <extUpdater />
+                    <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                    <parentTransform />
+                    <posAbs dataType="Struct" type="OpenTK.Vector3">
+                      <X dataType="Float">301.285431</X>
+                      <Y dataType="Float">-41.8894043</Y>
+                      <Z dataType="Float">0</Z>
+                    </posAbs>
+                    <velAbs dataType="Struct" type="OpenTK.Vector3">
+                      <X dataType="Float">0</X>
+                      <Y dataType="Float">0</Y>
+                      <Z dataType="Float">0</Z>
+                    </velAbs>
+                    <angleAbs dataType="Float">0</angleAbs>
+                    <angleVelAbs dataType="Float">0</angleVelAbs>
+                    <scaleAbs dataType="Struct" type="OpenTK.Vector3">
+                      <X dataType="Float">0.6233829</X>
+                      <Y dataType="Float">0.6233829</Y>
+                      <Z dataType="Float">0.6233829</Z>
+                    </scaleAbs>
+                    <gameobj dataType="ObjectRef">183</gameobj>
+                    <disposed dataType="Bool">false</disposed>
+                    <active dataType="Bool">true</active>
+                  </object>
+                  <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="188">
+                    <rect dataType="Struct" type="Duality.Rect">
+                      <x dataType="Float">-138</x>
+                      <y dataType="Float">-95.5</y>
+                      <w dataType="Float">276</w>
+                      <h dataType="Float">191</h>
+                    </rect>
+                    <sharedMat dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Material]]">
+                      <contentPath dataType="String">Data\Keyboard.Material.res</contentPath>
+                    </sharedMat>
+                    <customMat />
+                    <colorTint dataType="Struct" type="Duality.ColorFormat.ColorRgba">
+                      <r dataType="Byte">103</r>
+                      <g dataType="Byte">131</g>
+                      <b dataType="Byte">82</b>
+                      <a dataType="Byte">255</a>
+                    </colorTint>
+                    <rectMode dataType="Enum" type="Duality.Components.Renderers.SpriteRenderer+UVMode" name="Stretch" value="0" />
+                    <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
+                    <visibilityGroup dataType="UInt">1</visibilityGroup>
+                    <gameobj dataType="ObjectRef">183</gameobj>
+                    <disposed dataType="Bool">false</disposed>
+                    <active dataType="Bool">true</active>
+                  </object>
+                </values>
+              </customSerialIO>
+            </compMap>
+            <compList dataType="Class" type="System.Collections.Generic.List`1[[Duality.Component]]" id="189">
+              <_items dataType="Array" type="Duality.Component[]" id="190" length="4">
+                <object dataType="ObjectRef">187</object>
+                <object dataType="ObjectRef">188</object>
+                <object />
+                <object />
+              </_items>
+              <_size dataType="Int">2</_size>
+              <_version dataType="Int">2</_version>
+            </compList>
+            <active dataType="Bool">true</active>
+            <disposed dataType="Bool">false</disposed>
+            <compTransform dataType="ObjectRef">187</compTransform>
+            <EventComponentAdded dataType="ObjectRef">29</EventComponentAdded>
+            <EventComponentRemoving dataType="ObjectRef">32</EventComponentRemoving>
+            <EventCollisionBegin />
+            <EventCollisionEnd />
+            <EventCollisionSolve />
+          </object>
           <object />
           <object />
         </_items>
-        <_size dataType="Int">13</_size>
-        <_version dataType="Int">107</_version>
+        <_size dataType="Int">14</_size>
+        <_version dataType="Int">108</_version>
       </allObj>
-      <Registered dataType="Delegate" type="System.EventHandler`1[[Duality.ObjectManagerEventArgs`1[[Duality.GameObject]]]]" id="183" multi="true">
-        <object dataType="MethodInfo" id="184" value="M:Duality.Resources.Scene:objectManager_Registered(System.Object,Duality.ObjectManagerEventArgs`1[[Duality.GameObject]])" />
+      <Registered dataType="Delegate" type="System.EventHandler`1[[Duality.ObjectManagerEventArgs`1[[Duality.GameObject]]]]" id="191" multi="true">
+        <object dataType="MethodInfo" id="192" value="M:Duality.Resources.Scene:objectManager_Registered(System.Object,Duality.ObjectManagerEventArgs`1[[Duality.GameObject]])" />
         <object dataType="ObjectRef">1</object>
-        <object dataType="Array" type="System.Delegate[]" id="185" length="1">
-          <object dataType="ObjectRef">183</object>
+        <object dataType="Array" type="System.Delegate[]" id="193" length="1">
+          <object dataType="ObjectRef">191</object>
         </object>
       </Registered>
-      <Unregistered dataType="Delegate" type="System.EventHandler`1[[Duality.ObjectManagerEventArgs`1[[Duality.GameObject]]]]" id="186" multi="true">
-        <object dataType="MethodInfo" id="187" value="M:Duality.Resources.Scene:objectManager_Unregistered(System.Object,Duality.ObjectManagerEventArgs`1[[Duality.GameObject]])" />
+      <Unregistered dataType="Delegate" type="System.EventHandler`1[[Duality.ObjectManagerEventArgs`1[[Duality.GameObject]]]]" id="194" multi="true">
+        <object dataType="MethodInfo" id="195" value="M:Duality.Resources.Scene:objectManager_Unregistered(System.Object,Duality.ObjectManagerEventArgs`1[[Duality.GameObject]])" />
         <object dataType="ObjectRef">1</object>
-        <object dataType="Array" type="System.Delegate[]" id="188" length="1">
-          <object dataType="ObjectRef">186</object>
+        <object dataType="Array" type="System.Delegate[]" id="196" length="1">
+          <object dataType="ObjectRef">194</object>
         </object>
       </Unregistered>
     </objectManager>
