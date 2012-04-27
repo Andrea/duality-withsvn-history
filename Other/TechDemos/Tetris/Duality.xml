@@ -669,6 +669,11 @@
             [GET] Returns whether the object is currently active.
             </summary>
         </member>
+        <member name="T:Duality.Cloning.ICloneable">
+            <summary>
+            Provides a general interface for an object type with custom cloning.
+            </summary>
+        </member>
         <member name="M:Duality.Component.Dispose">
             <summary>
             Disposes this Component. You usually don't need this - use <see cref="M:Duality.Component.DisposeLater"/> instead.
@@ -694,7 +699,7 @@
             </summary>
             <param name="target">The target Component to copy to.</param>
         </member>
-        <member name="M:Duality.Component.CopyToInternal(Duality.Component)">
+        <member name="M:Duality.Component.CopyToInternal(Duality.Component,Duality.Cloning.CloneProvider)">
             <summary>
             Note: Since PrefabLinks may contain references to object-local values,
             all objects fields should either be overwritten or left untouched.
@@ -702,7 +707,7 @@
             </summary>
             <param name="target"></param>
         </member>
-        <member name="M:Duality.Component.OnCopyTo(Duality.Component)">
+        <member name="M:Duality.Component.OnCopyTo(Duality.Component,Duality.Cloning.CloneProvider)">
             <summary>
             This method Performs the <see cref="M:Duality.Component.CopyTo(Duality.Component)"/> operation for custom Component Types.
             It uses reflection to copy each field that is declared inside a Duality plugin automatically.
@@ -3100,6 +3105,13 @@
             </summary>
             <param name="r">The target Resource to copy this Resource's data to</param>
         </member>
+        <member name="M:Duality.Resource.OnCopyTo(Duality.Resource,Duality.Cloning.CloneProvider)">
+            <summary>
+            Deep-copies this Resource to the specified target Resource. The target Resource's Type must
+            match this Resource's Type.
+            </summary>
+            <param name="r">The target Resource to copy this Resource's data to</param>
+        </member>
         <member name="M:Duality.Resource.OnSaving">
             <summary>
             Called when this Resource is now beginning to be saved.
@@ -3981,6 +3993,129 @@
         <member name="P:Duality.Performance.PostProcessingTime">
             <summary>
             [GET] Time in milliseconds the last frame used for postprocessing.
+            </summary>
+        </member>
+        <member name="T:Duality.Cloning.ISurrogate">
+            <summary>
+            Clones an object instead of letting it clone itsself or using a Reflection-driven approach.
+            </summary>
+            <seealso cref="T:Duality.Cloning.Surrogate`1"/>
+        </member>
+        <member name="M:Duality.Cloning.ISurrogate.MatchesType(System.Type)">
+            <summary>
+            Checks whether this surrogate is able to clone the specified object type.
+            </summary>
+            <param name="t">The <see cref="T:System.Type"/> of the object in question.</param>
+            <returns>True, if this surrogate is able to clone such object, false if not.</returns>
+        </member>
+        <member name="P:Duality.Cloning.ISurrogate.RealObject">
+            <summary>
+            [GET / SET] The object that is cloned
+            </summary>
+        </member>
+        <member name="P:Duality.Cloning.ISurrogate.SurrogateObject">
+            <summary>
+            [GET] Returns a clonable object that represents the <see cref="P:Duality.Cloning.ISurrogate.RealObject"/>.
+            </summary>
+        </member>
+        <member name="P:Duality.Cloning.ISurrogate.Priority">
+            <summary>
+            [GET] If more than one registered ISurrogate is capable of cloning a given object type, the one
+            with the highest priority is picked.
+            </summary>
+        </member>
+        <member name="T:Duality.Cloning.Surrogate`1">
+            <summary>
+            Default base class for <see cref="T:Duality.Cloning.ISurrogate">Serialization Surrogates</see>. It implements both
+            <see cref="T:Duality.Cloning.ISurrogate"/> and <see cref="T:Duality.Cloning.ICloneable"/>, thus being able to fully perform de/serialization
+            of a designated object type.
+            </summary>
+            <typeparam name="T">
+            The base <see cref="T:System.Type"/> of objects this surrogate can replace.
+            </typeparam>
+        </member>
+        <member name="M:Duality.Cloning.Surrogate`1.MatchesType(System.Type)">
+            <summary>
+            Checks whether this surrogate is able to clone the specified object type.
+            </summary>
+            <param name="t">The <see cref="T:System.Type"/> of the object in question.</param>
+            <returns>True, if this surrogate is able to clone such object, false if not.</returns>
+        </member>
+        <member name="P:Duality.Cloning.Surrogate`1.RealObject">
+            <summary>
+            [GET / SET] The object that is cloned
+            </summary>
+        </member>
+        <member name="P:Duality.Cloning.Surrogate`1.Priority">
+            <summary>
+            [GET] If more than one registered ISurrogate is capable of cloning a given object type, the one
+            with the highest priority is picked.
+            </summary>
+        </member>
+        <member name="M:Duality.Cloning.CloneProvider.ClearSurrogates">
+            <summary>
+            Unregisters all <see cref="T:Duality.Cloning.ISurrogate">Surrogates</see>.
+            </summary>
+        </member>
+        <member name="M:Duality.Cloning.CloneProvider.AddSurrogate(Duality.Cloning.ISurrogate)">
+            <summary>
+            Registers a new <see cref="T:Duality.Cloning.ISurrogate">Surrogate</see>.
+            </summary>
+            <param name="surrogate"></param>
+        </member>
+        <member name="M:Duality.Cloning.CloneProvider.RemoveSurrogate(Duality.Cloning.ISurrogate)">
+            <summary>
+            Unregisters an existing <see cref="T:Duality.Cloning.ISurrogate">Surrogate</see>.
+            </summary>
+            <param name="surrogate"></param>
+        </member>
+        <member name="M:Duality.Cloning.CloneProvider.GetSurrogateFor(System.Type)">
+            <summary>
+            Retrieves a matching <see cref="T:Duality.Cloning.ISurrogate"/> for the specified <see cref="T:System.Type"/>.
+            </summary>
+            <param name="t">The <see cref="T:System.Type"/> to retrieve a <see cref="T:Duality.Cloning.ISurrogate"/> for.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Cloning.CloneProvider.ClearObjectMap">
+            <summary>
+            Clears all existing object mappings.
+            </summary>
+        </member>
+        <member name="M:Duality.Cloning.CloneProvider.RequestObjectClone``1(``0)">
+            <summary>
+            Requests the clone(d) object mapped to the specified base object.
+            </summary>
+            <param name="baseObj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Cloning.CloneProvider.GetRegisteredObjectClone``1(``0)">
+            <summary>
+            Returns an already registered clone object, if existing.
+            </summary>
+            <param name="baseObj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Cloning.CloneProvider.CopyObjectTo``1(``0,``0,System.Reflection.FieldInfo[])">
+            <summary>
+            Copies the base objects data to the specified target object.
+            </summary>
+            <param name="baseObj"></param>
+            <param name="targetObj"></param>
+            <param name="fields"></param>
+        </member>
+        <member name="M:Duality.Cloning.CloneProvider.RegisterObjectClone``1(``0,``0)">
+            <summary>
+            Registers a new base-clone mapping.
+            </summary>
+            <param name="baseObj"></param>
+            <param name="clone"></param>
+        </member>
+        <member name="P:Duality.Cloning.CloneProvider.Surrogates">
+            <summary>
+            [GET] Enumerates registered <see cref="T:Duality.Cloning.ISurrogate">Cloning Surrogates</see>. If any of them
+            matches the <see cref="T:System.Type"/> of an object that is to be cloned, instead of letting it
+            clone itsself, the <see cref="T:Duality.Cloning.ISurrogate"/> with the highest <see cref="P:Duality.Cloning.ISurrogate.Priority"/>
+            is used instead.
             </summary>
         </member>
         <member name="T:Duality.VertexFormat.VertexC1P3T4A1">
@@ -5246,68 +5381,6 @@
             <summary>
             Provides Reflection data on Properties and Fields.
             </summary>
-        </member>
-        <!-- Ungültiger XML-Kommentar wurde für den Member "T:Duality.CloneHelper" ignoriert -->
-        <member name="M:Duality.CloneHelper.IsSafeAssignType(System.Type)">
-            <summary>
-            Returns whether the specified type may just be assigned in a clone operation (even if deep)
-            instead of being investigated further.
-            </summary>
-            <param name="t"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.CloneHelper.DeepCloneObject``1(``0)">
-            <summary>
-            Creates a deep clone of an object.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="instance"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.CloneHelper.DeepCloneObject(System.Object)">
-            <summary>
-            Creates a deep clone of an object.
-            </summary>
-            <param name="instance"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.CloneHelper.DeepCloneObjectExplicit``1(``0,System.Type[])">
-            <summary>
-            Creates a deep clone of an object but considering only specific Types for "unwrapping".
-            References regarding other Types are treated as references, and therefor aren't cloned.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="instance"></param>
-            <param name="unwrapTypes"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.CloneHelper.DeepCloneObjectExplicit(System.Object,System.Type[])">
-            <summary>
-            Creates a deep clone of an object but considering only specific Types for "unwrapping".
-            References regarding other Types are treated as references, and therefor aren't cloned.
-            </summary>
-            <param name="instance"></param>
-            <param name="unwrapTypes"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.CloneHelper.DeepCopyFields(System.Reflection.FieldInfo[],System.Object,System.Object)">
-            <summary>
-            Copies the specified fields from one object to another, deep-cloning all referenced objects.
-            </summary>
-            <param name="fields"></param>
-            <param name="source"></param>
-            <param name="target"></param>
-        </member>
-        <member name="M:Duality.CloneHelper.DeepCopyFieldsExplicit(System.Reflection.FieldInfo[],System.Object,System.Object,System.Type[])">
-            <summary>
-            Copies the specified fields from one object to another, but considering only specific 
-            Types for "unwrapping". References regarding other Types are treated as references, 
-            and therefor aren't cloned.
-            </summary>
-            <param name="fields"></param>
-            <param name="source"></param>
-            <param name="target"></param>
-            <param name="unwrapTypes"></param>
         </member>
         <member name="T:Duality.Components.Renderers.TextRenderer">
             <summary>
@@ -6651,6 +6724,13 @@
             Returns all fields matching the specified bindingflags, even if private and inherited.
             </summary>
             <param name="flags"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ReflectionHelper.IsShallowType(System.Type)">
+            <summary>
+            Returns whether the specified type can be cloned by assignment.
+            </summary>
+            <param name="baseObj"></param>
             <returns></returns>
         </member>
         <member name="M:Duality.ReflectionHelper.ClearTypeCache">
@@ -8326,12 +8406,6 @@
             </summary>
             <param name="emitter">The sources parent <see cref="T:Duality.Components.SoundEmitter"/>.</param>
             <returns>True, if the source is still active. False, if it requests to be removed.</returns>
-        </member>
-        <member name="M:Duality.Components.SoundEmitter.Source.Clone">
-            <summary>
-            Creates a deep copy of the sound source.
-            </summary>
-            <returns></returns>
         </member>
         <member name="P:Duality.Components.SoundEmitter.Source.Instance">
             <summary>

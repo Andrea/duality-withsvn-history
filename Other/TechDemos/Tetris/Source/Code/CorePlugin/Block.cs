@@ -13,7 +13,7 @@ namespace Tetris
 	[Serializable]
 	[RequiredComponent(typeof(Transform))]
 	[RequiredComponent(typeof(Collider))]
-	public class Block : Component, ICmpInitializable, ICmpCollisionListener
+	public class Block : Component, ICmpInitializable, ICmpCollisionListener, ICmpUpdatable
 	{
 		private	static	List<Block>	blocks		= new List<Block>();
 		private	static	Block		activeBlock	= null;
@@ -26,6 +26,8 @@ namespace Tetris
 		{
 			get { return activeBlock; }
 		}
+
+		private	float timeFirstContact	= 0.0f;
 
 		void ICmpInitializable.OnInit(Component.InitContext context)
 		{
@@ -43,13 +45,55 @@ namespace Tetris
 				if (activeBlock == this) activeBlock = null;
 			}
 		}
-		void ICmpCollisionListener.OnCollisionBegin(Component sender, CollisionEventArgs args)
-		{
-			this.GameObj.GetComponent<Collider>().IgnoreGravity = false;
-			if (activeBlock == this) activeBlock = null;
-		}
+		void ICmpCollisionListener.OnCollisionBegin(Component sender, CollisionEventArgs args) {}
 		void ICmpCollisionListener.OnCollisionEnd(Component sender, CollisionEventArgs args) {}
-		void ICmpCollisionListener.OnCollisionSolve(Component sender, CollisionEventArgs args) {}
+		void ICmpCollisionListener.OnCollisionSolve(Component sender, CollisionEventArgs args)
+		{
+			if (args.CollisionData.NormalSpeed > 1.0f && this.GameObj.Transform.Vel.Length > 0.5f)
+			{
+				SoundInstance collisionSound = DualityApp.Sound.PlaySound(GameRes.Data.Sound.BlockCollide_Sound);
+				collisionSound.Pitch = MathF.Rnd.NextFloat(0.8f, 1.25f);
+				collisionSound.Volume = MathF.Clamp(args.CollisionData.NormalSpeed / 5.0f, 0.0f, 0.5f);
+			}
+
+			if (activeBlock == this && MathF.Abs(args.CollisionData.Normal.Y) > 0.05f)
+			{
+				if (this.GameObj.Transform.Pos.Y <= -500) GameController.Instance.NotifyGameOver();
+				if (timeFirstContact == 0.0f) timeFirstContact = Time.GameTimer;
+				this.GameObj.GetComponent<Collider>().IgnoreGravity = false;
+				this.GameObj.GetComponent<Collider>().FixedAngle = false;
+			}
+		}
+		void ICmpUpdatable.OnUpdate()
+		{
+			if (activeBlock != this) return;
+			if ((this.timeFirstContact != 0.0f && Time.GameTimer - this.timeFirstContact > 750.0f) || this.GameObj.Transform.Vel.Length <= 0.1f)
+			{
+				activeBlock = null;
+				DualityApp.Sound.PlaySound(GameRes.Data.Sound.BlockDrop_Sound);
+			}
+		}
+
+		public void SplitToPieces()
+		{
+			List<GameObject> pieces = new List<GameObject>();
+			foreach (Collider.ShapeInfo shape in this.GameObj.GetComponent<Collider>().Shapes)
+			{
+				GameObject pieceObj = this.GameObj.Clone();
+				pieceObj.RemoveComponent<Block>();
+				Collider pieceCollider = pieceObj.GetComponent<Collider>();
+				foreach (Collider.ShapeInfo pieceShape in pieceCollider.Shapes.Where(s => s.AABB != shape.AABB).ToArray())
+				{
+					pieceCollider.RemoveShape(pieceShape);
+				}
+				pieces.Add(pieceObj);
+			}
+
+			Scene.Current.UnregisterObj(this.GameObj);
+			this.GameObj.DisposeLater();
+
+			Scene.Current.RegisterObj(pieces);
+		}
 
 		public static Block Create()
 		{
@@ -66,7 +110,8 @@ namespace Tetris
 				case 5: blockObj = GameRes.Data.Blocks.BlockF_Prefab.Res.Instantiate(); break;
 				case 6: blockObj = GameRes.Data.Blocks.BlockG_Prefab.Res.Instantiate(); break;
 			}
-			blockObj.Transform.Pos = Vector3.UnitY * -550;
+			blockObj.Transform.Pos = Vector3.UnitY * -500;
+			blockObj.Transform.Vel = Vector3.UnitY;
 			Scene.Current.RegisterObj(blockObj);
 			return blockObj.GetComponent<Block>();
 		}

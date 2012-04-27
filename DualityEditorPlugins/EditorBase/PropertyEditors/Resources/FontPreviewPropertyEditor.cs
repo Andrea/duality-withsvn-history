@@ -65,7 +65,7 @@ namespace EditorBase.PropertyEditors
 		public override void PerformGetValue()
 		{
 			base.PerformGetValue();
-			Font[] values = this.GetValue().Cast<Font>().ToArray();
+			Font[] values = this.GetValue().OfType<Font>().ToArray();
 			this.value = values.NotNull().FirstOrDefault() as Font;
 			this.GeneratePreviewImage();
 		}

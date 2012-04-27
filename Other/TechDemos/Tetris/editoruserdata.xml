@@ -1,4 +1,5 @@
 <PluginUserData>
+  <Plugin_DynamicLighting />
   <Plugin_EditorBase>
     <CamView_0 toggleParallaxity="True" parallaxRefDist="500" bgColorArgb="855312" state="EditorBase.CamViewStates.SceneEditorCamViewState" />
     <ObjInspector_0 acceptedCats="7" autoRefresh="False" locked="False" titleText="Object Inspector" />

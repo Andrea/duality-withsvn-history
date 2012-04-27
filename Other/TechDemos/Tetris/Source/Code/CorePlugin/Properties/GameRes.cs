@@ -94,8 +94,80 @@ namespace GameRes
 				BlockG_Texture.MakeAvailable();
 			}
 		}
+		public static class Music {
+			private static Duality.ContentRef<Duality.Resources.AudioData> _tetrisintro_AudioData;
+			public static Duality.ContentRef<Duality.Resources.AudioData> tetrisintro_AudioData { get { if (_tetrisintro_AudioData.IsExplicitNull) _tetrisintro_AudioData = Duality.ContentProvider.RequestContent<Duality.Resources.AudioData>(@"Data\Music\tetrisintro.AudioData.res"); return _tetrisintro_AudioData; }}
+			private static Duality.ContentRef<Duality.Resources.Sound> _tetrisintro_Sound;
+			public static Duality.ContentRef<Duality.Resources.Sound> tetrisintro_Sound { get { if (_tetrisintro_Sound.IsExplicitNull) _tetrisintro_Sound = Duality.ContentProvider.RequestContent<Duality.Resources.Sound>(@"Data\Music\tetrisintro.Sound.res"); return _tetrisintro_Sound; }}
+			private static Duality.ContentRef<Duality.Resources.AudioData> _tetrisloop_AudioData;
+			public static Duality.ContentRef<Duality.Resources.AudioData> tetrisloop_AudioData { get { if (_tetrisloop_AudioData.IsExplicitNull) _tetrisloop_AudioData = Duality.ContentProvider.RequestContent<Duality.Resources.AudioData>(@"Data\Music\tetrisloop.AudioData.res"); return _tetrisloop_AudioData; }}
+			private static Duality.ContentRef<Duality.Resources.Sound> _tetrisloop_Sound;
+			public static Duality.ContentRef<Duality.Resources.Sound> tetrisloop_Sound { get { if (_tetrisloop_Sound.IsExplicitNull) _tetrisloop_Sound = Duality.ContentProvider.RequestContent<Duality.Resources.Sound>(@"Data\Music\tetrisloop.Sound.res"); return _tetrisloop_Sound; }}
+			public static void LoadAll() {
+				tetrisintro_AudioData.MakeAvailable();
+				tetrisintro_Sound.MakeAvailable();
+				tetrisloop_AudioData.MakeAvailable();
+				tetrisloop_Sound.MakeAvailable();
+			}
+		}
+		public static class Sound {
+			private static Duality.ContentRef<Duality.Resources.AudioData> _BlockCollide_AudioData;
+			public static Duality.ContentRef<Duality.Resources.AudioData> BlockCollide_AudioData { get { if (_BlockCollide_AudioData.IsExplicitNull) _BlockCollide_AudioData = Duality.ContentProvider.RequestContent<Duality.Resources.AudioData>(@"Data\Sound\BlockCollide.AudioData.res"); return _BlockCollide_AudioData; }}
+			private static Duality.ContentRef<Duality.Resources.Sound> _BlockCollide_Sound;
+			public static Duality.ContentRef<Duality.Resources.Sound> BlockCollide_Sound { get { if (_BlockCollide_Sound.IsExplicitNull) _BlockCollide_Sound = Duality.ContentProvider.RequestContent<Duality.Resources.Sound>(@"Data\Sound\BlockCollide.Sound.res"); return _BlockCollide_Sound; }}
+			private static Duality.ContentRef<Duality.Resources.AudioData> _BlockDrop_AudioData;
+			public static Duality.ContentRef<Duality.Resources.AudioData> BlockDrop_AudioData { get { if (_BlockDrop_AudioData.IsExplicitNull) _BlockDrop_AudioData = Duality.ContentProvider.RequestContent<Duality.Resources.AudioData>(@"Data\Sound\BlockDrop.AudioData.res"); return _BlockDrop_AudioData; }}
+			private static Duality.ContentRef<Duality.Resources.Sound> _BlockDrop_Sound;
+			public static Duality.ContentRef<Duality.Resources.Sound> BlockDrop_Sound { get { if (_BlockDrop_Sound.IsExplicitNull) _BlockDrop_Sound = Duality.ContentProvider.RequestContent<Duality.Resources.Sound>(@"Data\Sound\BlockDrop.Sound.res"); return _BlockDrop_Sound; }}
+			private static Duality.ContentRef<Duality.Resources.AudioData> _BlockTurnLeft_AudioData;
+			public static Duality.ContentRef<Duality.Resources.AudioData> BlockTurnLeft_AudioData { get { if (_BlockTurnLeft_AudioData.IsExplicitNull) _BlockTurnLeft_AudioData = Duality.ContentProvider.RequestContent<Duality.Resources.AudioData>(@"Data\Sound\BlockTurnLeft.AudioData.res"); return _BlockTurnLeft_AudioData; }}
+			private static Duality.ContentRef<Duality.Resources.Sound> _BlockTurnLeft_Sound;
+			public static Duality.ContentRef<Duality.Resources.Sound> BlockTurnLeft_Sound { get { if (_BlockTurnLeft_Sound.IsExplicitNull) _BlockTurnLeft_Sound = Duality.ContentProvider.RequestContent<Duality.Resources.Sound>(@"Data\Sound\BlockTurnLeft.Sound.res"); return _BlockTurnLeft_Sound; }}
+			private static Duality.ContentRef<Duality.Resources.AudioData> _BlockTurnRight_AudioData;
+			public static Duality.ContentRef<Duality.Resources.AudioData> BlockTurnRight_AudioData { get { if (_BlockTurnRight_AudioData.IsExplicitNull) _BlockTurnRight_AudioData = Duality.ContentProvider.RequestContent<Duality.Resources.AudioData>(@"Data\Sound\BlockTurnRight.AudioData.res"); return _BlockTurnRight_AudioData; }}
+			private static Duality.ContentRef<Duality.Resources.Sound> _BlockTurnRight_Sound;
+			public static Duality.ContentRef<Duality.Resources.Sound> BlockTurnRight_Sound { get { if (_BlockTurnRight_Sound.IsExplicitNull) _BlockTurnRight_Sound = Duality.ContentProvider.RequestContent<Duality.Resources.Sound>(@"Data\Sound\BlockTurnRight.Sound.res"); return _BlockTurnRight_Sound; }}
+			private static Duality.ContentRef<Duality.Resources.AudioData> _GameOver_AudioData;
+			public static Duality.ContentRef<Duality.Resources.AudioData> GameOver_AudioData { get { if (_GameOver_AudioData.IsExplicitNull) _GameOver_AudioData = Duality.ContentProvider.RequestContent<Duality.Resources.AudioData>(@"Data\Sound\GameOver.AudioData.res"); return _GameOver_AudioData; }}
+			private static Duality.ContentRef<Duality.Resources.Sound> _GameOver_Sound;
+			public static Duality.ContentRef<Duality.Resources.Sound> GameOver_Sound { get { if (_GameOver_Sound.IsExplicitNull) _GameOver_Sound = Duality.ContentProvider.RequestContent<Duality.Resources.Sound>(@"Data\Sound\GameOver.Sound.res"); return _GameOver_Sound; }}
+			private static Duality.ContentRef<Duality.Resources.AudioData> _LineRemoved_AudioData;
+			public static Duality.ContentRef<Duality.Resources.AudioData> LineRemoved_AudioData { get { if (_LineRemoved_AudioData.IsExplicitNull) _LineRemoved_AudioData = Duality.ContentProvider.RequestContent<Duality.Resources.AudioData>(@"Data\Sound\LineRemoved.AudioData.res"); return _LineRemoved_AudioData; }}
+			private static Duality.ContentRef<Duality.Resources.Sound> _LineRemoved_Sound;
+			public static Duality.ContentRef<Duality.Resources.Sound> LineRemoved_Sound { get { if (_LineRemoved_Sound.IsExplicitNull) _LineRemoved_Sound = Duality.ContentProvider.RequestContent<Duality.Resources.Sound>(@"Data\Sound\LineRemoved.Sound.res"); return _LineRemoved_Sound; }}
+			public static void LoadAll() {
+				BlockCollide_AudioData.MakeAvailable();
+				BlockCollide_Sound.MakeAvailable();
+				BlockDrop_AudioData.MakeAvailable();
+				BlockDrop_Sound.MakeAvailable();
+				BlockTurnLeft_AudioData.MakeAvailable();
+				BlockTurnLeft_Sound.MakeAvailable();
+				BlockTurnRight_AudioData.MakeAvailable();
+				BlockTurnRight_Sound.MakeAvailable();
+				GameOver_AudioData.MakeAvailable();
+				GameOver_Sound.MakeAvailable();
+				LineRemoved_AudioData.MakeAvailable();
+				LineRemoved_Sound.MakeAvailable();
+			}
+		}
+		private static Duality.ContentRef<Duality.Resources.Font> _BigFont_Font;
+		public static Duality.ContentRef<Duality.Resources.Font> BigFont_Font { get { if (_BigFont_Font.IsExplicitNull) _BigFont_Font = Duality.ContentProvider.RequestContent<Duality.Resources.Font>(@"Data\BigFont.Font.res"); return _BigFont_Font; }}
+		private static Duality.ContentRef<Duality.Resources.Font> _CommentaryFont_Font;
+		public static Duality.ContentRef<Duality.Resources.Font> CommentaryFont_Font { get { if (_CommentaryFont_Font.IsExplicitNull) _CommentaryFont_Font = Duality.ContentProvider.RequestContent<Duality.Resources.Font>(@"Data\CommentaryFont.Font.res"); return _CommentaryFont_Font; }}
+		private static Duality.ContentRef<Duality.Resources.Material> _GameOver_Material;
+		public static Duality.ContentRef<Duality.Resources.Material> GameOver_Material { get { if (_GameOver_Material.IsExplicitNull) _GameOver_Material = Duality.ContentProvider.RequestContent<Duality.Resources.Material>(@"Data\GameOver.Material.res"); return _GameOver_Material; }}
+		private static Duality.ContentRef<Duality.Resources.Pixmap> _GameOver_Pixmap;
+		public static Duality.ContentRef<Duality.Resources.Pixmap> GameOver_Pixmap { get { if (_GameOver_Pixmap.IsExplicitNull) _GameOver_Pixmap = Duality.ContentProvider.RequestContent<Duality.Resources.Pixmap>(@"Data\GameOver.Pixmap.res"); return _GameOver_Pixmap; }}
+		private static Duality.ContentRef<Duality.Resources.Texture> _GameOver_Texture;
+		public static Duality.ContentRef<Duality.Resources.Texture> GameOver_Texture { get { if (_GameOver_Texture.IsExplicitNull) _GameOver_Texture = Duality.ContentProvider.RequestContent<Duality.Resources.Texture>(@"Data\GameOver.Texture.res"); return _GameOver_Texture; }}
 		private static Duality.ContentRef<Duality.Resources.Scene> _GameScene_Scene;
 		public static Duality.ContentRef<Duality.Resources.Scene> GameScene_Scene { get { if (_GameScene_Scene.IsExplicitNull) _GameScene_Scene = Duality.ContentProvider.RequestContent<Duality.Resources.Scene>(@"Data\GameScene.Scene.res"); return _GameScene_Scene; }}
+		private static Duality.ContentRef<Duality.Resources.Material> _TetrisLogo_Material;
+		public static Duality.ContentRef<Duality.Resources.Material> TetrisLogo_Material { get { if (_TetrisLogo_Material.IsExplicitNull) _TetrisLogo_Material = Duality.ContentProvider.RequestContent<Duality.Resources.Material>(@"Data\TetrisLogo.Material.res"); return _TetrisLogo_Material; }}
+		private static Duality.ContentRef<Duality.Resources.Pixmap> _TetrisLogo_Pixmap;
+		public static Duality.ContentRef<Duality.Resources.Pixmap> TetrisLogo_Pixmap { get { if (_TetrisLogo_Pixmap.IsExplicitNull) _TetrisLogo_Pixmap = Duality.ContentProvider.RequestContent<Duality.Resources.Pixmap>(@"Data\TetrisLogo.Pixmap.res"); return _TetrisLogo_Pixmap; }}
+		private static Duality.ContentRef<Duality.Resources.Texture> _TetrisLogo_Texture;
+		public static Duality.ContentRef<Duality.Resources.Texture> TetrisLogo_Texture { get { if (_TetrisLogo_Texture.IsExplicitNull) _TetrisLogo_Texture = Duality.ContentProvider.RequestContent<Duality.Resources.Texture>(@"Data\TetrisLogo.Texture.res"); return _TetrisLogo_Texture; }}
 		private static Duality.ContentRef<Duality.Resources.Material> _Wall_Material;
 		public static Duality.ContentRef<Duality.Resources.Material> Wall_Material { get { if (_Wall_Material.IsExplicitNull) _Wall_Material = Duality.ContentProvider.RequestContent<Duality.Resources.Material>(@"Data\Wall.Material.res"); return _Wall_Material; }}
 		private static Duality.ContentRef<Duality.Resources.Pixmap> _Wall_Pixmap;
@@ -104,7 +176,17 @@ namespace GameRes
 		public static Duality.ContentRef<Duality.Resources.Texture> Wall_Texture { get { if (_Wall_Texture.IsExplicitNull) _Wall_Texture = Duality.ContentProvider.RequestContent<Duality.Resources.Texture>(@"Data\Wall.Texture.res"); return _Wall_Texture; }}
 		public static void LoadAll() {
 			Blocks.LoadAll();
+			Music.LoadAll();
+			Sound.LoadAll();
+			BigFont_Font.MakeAvailable();
+			CommentaryFont_Font.MakeAvailable();
+			GameOver_Material.MakeAvailable();
+			GameOver_Pixmap.MakeAvailable();
+			GameOver_Texture.MakeAvailable();
 			GameScene_Scene.MakeAvailable();
+			TetrisLogo_Material.MakeAvailable();
+			TetrisLogo_Pixmap.MakeAvailable();
+			TetrisLogo_Texture.MakeAvailable();
 			Wall_Material.MakeAvailable();
 			Wall_Pixmap.MakeAvailable();
 			Wall_Texture.MakeAvailable();

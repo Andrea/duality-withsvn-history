@@ -2,7 +2,6 @@
 <root>
   <object dataType="Class" type="Duality.Resources.Prefab" id="1">
     <objTree dataType="Class" type="Duality.GameObject" id="2">
-      <name dataType="String">BlockC</name>
       <prefabLink />
       <parent />
       <children />
@@ -22,18 +21,18 @@
                 <Y dataType="Float">0</Y>
                 <Z dataType="Float">0</Z>
               </pos>
-              <angle dataType="Float">0</angle>
-              <scale dataType="Struct" type="OpenTK.Vector3">
-                <X dataType="Float">1</X>
-                <Y dataType="Float">1</Y>
-                <Z dataType="Float">1</Z>
-              </scale>
               <vel dataType="Struct" type="OpenTK.Vector3">
                 <X dataType="Float">0</X>
                 <Y dataType="Float">0</Y>
                 <Z dataType="Float">0</Z>
               </vel>
+              <angle dataType="Float">0</angle>
               <angleVel dataType="Float">0</angleVel>
+              <scale dataType="Struct" type="OpenTK.Vector3">
+                <X dataType="Float">1</X>
+                <Y dataType="Float">1</Y>
+                <Z dataType="Float">1</Z>
+              </scale>
               <deriveAngle dataType="Bool">true</deriveAngle>
               <extUpdater />
               <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
@@ -63,7 +62,7 @@
               <bodyType dataType="Enum" type="Duality.Components.Collider+BodyType" name="Dynamic" value="1" />
               <linearDamp dataType="Float">0</linearDamp>
               <angularDamp dataType="Float">0</angularDamp>
-              <fixedAngle dataType="Bool">false</fixedAngle>
+              <fixedAngle dataType="Bool">true</fixedAngle>
               <ignoreGravity dataType="Bool">true</ignoreGravity>
               <continous dataType="Bool">true</continous>
               <colCat dataType="Enum" type="FarseerPhysics.Dynamics.Category" name="Cat1" value="1" />
@@ -217,6 +216,7 @@
         <_size dataType="Int">4</_size>
         <_version dataType="Int">4</_version>
       </compList>
+      <name dataType="String">BlockC</name>
       <active dataType="Bool">true</active>
       <disposed dataType="Bool">false</disposed>
       <compTransform dataType="ObjectRef">10</compTransform>

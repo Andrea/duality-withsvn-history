@@ -284,8 +284,15 @@ namespace DualityEditor.Forms
 				strDataWriter.Flush();
 				workInterface.MainForm.Invoke((Action)delegate()
 				{
-					Scene.Current.Save(strScene);
-					ContentProvider.UnregisterPluginContent();
+					try
+					{
+						Scene.Current.Save(strScene);
+						ContentProvider.UnregisterPluginContent();
+					}
+					catch (Exception e)
+					{
+						Log.Editor.WriteError("Error saving current Scene backup: {0}", Log.Exception(e));
+					}
 				});
 				workInterface.Progress += 0.4f;
 				Thread.Sleep(20);
