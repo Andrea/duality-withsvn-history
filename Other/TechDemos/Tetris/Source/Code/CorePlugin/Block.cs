@@ -63,6 +63,12 @@ namespace Tetris
 				this.GameObj.GetComponent<Collider>().IgnoreGravity = false;
 				this.GameObj.GetComponent<Collider>().FixedAngle = false;
 			}
+
+			if (this.timeFirstContact != 0.0f && Time.GameTimer - timeFirstContact < 3000.0f && this.GameObj.Transform.Vel.Length <= 0.1f)
+			{
+				float angleDistFromIdeal = MathF.CircularDist(0.0f, this.GameObj.Transform.Angle, 0.0f, MathF.PiOver2);
+				if (angleDistFromIdeal >= MathF.Pi * 0.1f) GameController.Instance.NotifyBlockFellOver(this.GameObj);
+			}
 		}
 		void ICmpUpdatable.OnUpdate()
 		{
@@ -101,18 +107,18 @@ namespace Tetris
 
 		public static Block Create()
 		{
-			int blockId = MathF.Rnd.Next(7);
+			int blockId = MathF.Rnd.Next(GameController.Instance.TotalPlayTime < 10000.0f ? 5 : 7);
 			GameObject blockObj = null;
 			switch (blockId)
 			{
 				default:
 				case 0: blockObj = GameRes.Data.Blocks.BlockA_Prefab.Res.Instantiate(); break;
-				case 1: blockObj = GameRes.Data.Blocks.BlockB_Prefab.Res.Instantiate(); break;
-				case 2: blockObj = GameRes.Data.Blocks.BlockC_Prefab.Res.Instantiate(); break;
-				case 3: blockObj = GameRes.Data.Blocks.BlockD_Prefab.Res.Instantiate(); break;
-				case 4: blockObj = GameRes.Data.Blocks.BlockE_Prefab.Res.Instantiate(); break;
-				case 5: blockObj = GameRes.Data.Blocks.BlockF_Prefab.Res.Instantiate(); break;
-				case 6: blockObj = GameRes.Data.Blocks.BlockG_Prefab.Res.Instantiate(); break;
+				case 1: blockObj = GameRes.Data.Blocks.BlockD_Prefab.Res.Instantiate(); break;
+				case 2: blockObj = GameRes.Data.Blocks.BlockE_Prefab.Res.Instantiate(); break;
+				case 3: blockObj = GameRes.Data.Blocks.BlockF_Prefab.Res.Instantiate(); break;
+				case 4: blockObj = GameRes.Data.Blocks.BlockG_Prefab.Res.Instantiate(); break;
+				case 5: blockObj = GameRes.Data.Blocks.BlockB_Prefab.Res.Instantiate(); break;
+				case 6: blockObj = GameRes.Data.Blocks.BlockC_Prefab.Res.Instantiate(); break;
 			}
 			blockObj.Transform.Pos = Vector3.UnitY * -500;
 			blockObj.Transform.Vel = Vector3.UnitY;

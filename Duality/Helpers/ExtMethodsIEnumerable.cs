@@ -162,6 +162,36 @@ namespace Duality
 		}
 
 		/// <summary>
+		/// Converts an enumeration of Resources to an enumeration of content references to it.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="res"></param>
+		/// <returns></returns>
+		public static IEnumerable<ContentRef<T>> Ref<T>(this IEnumerable<T> res) where T : Resource
+		{
+			return res.Select(r => new ContentRef<T>(r));
+		}
+		/// <summary>
+		/// Converts an enumeration of content references to an enumeration of Resources.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="res"></param>
+		/// <returns></returns>
+		public static IEnumerable<T> Res<T>(this IEnumerable<ContentRef<T>> res) where T : Resource
+		{
+			return res.Select(r => r.Res);
+		}
+		/// <summary>
+		/// Converts an enumeration of content references to an enumeration of Resources.
+		/// </summary>
+		/// <param name="res"></param>
+		/// <returns></returns>
+		public static IEnumerable<Resource> Res(this IEnumerable<IContentRef> res)
+		{
+			return res.Select(r => r.Res);
+		}
+
+		/// <summary>
 		/// Creates a separated list of the string versions of a set of objects.
 		/// </summary>
 		/// <typeparam name="T">The type of the incoming objects.</typeparam>
@@ -207,7 +237,6 @@ namespace Duality
 		{
 			return collection.Where(i => i != null);
 		}
-
 		/// <summary>
 		/// Enumerates a all objects within a specific index range.
 		/// </summary>
@@ -220,35 +249,27 @@ namespace Duality
 		{
 			return collection.Skip(startIndex).Take(length);
 		}
+		/// <summary>
+		/// Shuffles the specified eumerable.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="collection"></param>
+		/// <param name="rnd">The random number generator to use. Defaults to <see cref="MathF.Rnd"/>, if null.</param>
+		/// <returns></returns>
+		public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> collection, Random rnd = null)
+		{
+			if (!collection.Any()) yield break;
+			if (rnd == null) rnd = MathF.Rnd;
 
-		/// <summary>
-		/// Converts an enumeration of Resources to an enumeration of content references to it.
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="res"></param>
-		/// <returns></returns>
-		public static IEnumerable<ContentRef<T>> Ref<T>(this IEnumerable<T> res) where T : Resource
-		{
-			return res.Select(r => new ContentRef<T>(r));
-		}
-		/// <summary>
-		/// Converts an enumeration of content references to an enumeration of Resources.
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="res"></param>
-		/// <returns></returns>
-		public static IEnumerable<T> Res<T>(this IEnumerable<ContentRef<T>> res) where T : Resource
-		{
-			return res.Select(r => r.Res);
-		}
-		/// <summary>
-		/// Converts an enumeration of content references to an enumeration of Resources.
-		/// </summary>
-		/// <param name="res"></param>
-		/// <returns></returns>
-		public static IEnumerable<Resource> Res(this IEnumerable<IContentRef> res)
-		{
-			return res.Select(r => r.Res);
+			T[] colArray = collection.ToArray();
+			List<int> indices = Enumerable.Range(0, colArray.Length).ToList();
+			while (indices.Count > 0)
+			{
+				int temp = rnd.Next(indices.Count);
+				int index = indices[temp];
+				indices.RemoveAt(temp);
+				yield return colArray[index];
+			}
 		}
 	}
 }

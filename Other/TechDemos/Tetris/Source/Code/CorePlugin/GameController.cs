@@ -22,13 +22,23 @@ namespace Tetris
 		}
 
 		private	int		score		= 0;
-		private	float	beginTime	= 0.0f;
+		private	float	beginIntroTime	= 0.0f;
+		private	float	beginGameTime	= 0.0f;
 		private bool	gameOver	= false;
 		private	int		gameStage	= 0;
 
+		private	HashSet<GameObject>	fellOverBlocks	= new HashSet<GameObject>();
+		private	float	gameOverTime		= -100000.0f;
+		private	float	blockFellOverTime	= -100000.0f;
+		private	float	lineClearTime		= -100000.0f;
+
 		public bool FirstGameInSession
 		{
-			get { return this.beginTime < 5.0f; }
+			get { return this.beginIntroTime < 5.0f; }
+		}
+		public float TotalPlayTime
+		{
+			get { return this.beginGameTime != 0.0f ? Time.GameTimer - this.beginGameTime : 0.0f; }
 		}
 		public int Score
 		{
@@ -49,6 +59,23 @@ namespace Tetris
 				}
 			}
 		}
+		public bool GameOver
+		{
+			get { return this.gameOver; }
+		}
+		
+		public bool GameJustEnded
+		{
+			get { return this.gameOver && Time.GameTimer - this.gameOverTime < 3000.0f; }
+		}
+		public bool BlockJustFellOver
+		{
+			get { return Time.GameTimer - this.blockFellOverTime < 1000.0f; }
+		}
+		public bool LineJustCleared
+		{
+			get { return Time.GameTimer - this.lineClearTime < 1000.0f; }
+		}
 
 		void ICmpUpdatable.OnUpdate()
 		{
@@ -64,7 +91,9 @@ namespace Tetris
 					instance = this;
 					DualityApp.Keyboard.KeyDown += this.Keyboard_KeyDown;
 
-					this.beginTime = Time.GameTimer;
+					this.beginIntroTime = Time.GameTimer;
+
+					CommentGuy.Init(Scene.Current.AllObjects.FirstByName("Commentary").GetComponent<TextRenderer>());
 
 					// Play some music
 					SoundBudgetPad bgMusic = DualityApp.Sound.Music.Push(GameRes.Data.Music.tetrisloop_Sound, SoundBudgetPriority.Background, 0.0f);
@@ -110,7 +139,7 @@ namespace Tetris
 		{
 			if (this.gameStage == 0)
 			{
-				float beginTime = this.beginTime;
+				float beginTime = this.beginIntroTime;
 				float localTime = Time.GameTimer - beginTime;
 				GameObject intro1 = Scene.Current.AllObjects.FirstByName("Intro1");
 				TextRenderer text = intro1.GetComponent<TextRenderer>();
@@ -129,7 +158,7 @@ namespace Tetris
 			}
 			else if (this.gameStage == 1)
 			{
-				float beginTime = 6000.0f + this.beginTime;
+				float beginTime = 6000.0f + this.beginIntroTime;
 				float localTime = Time.GameTimer - beginTime;
 				GameObject intro2 = Scene.Current.AllObjects.FirstByName("Intro2");
 				TextRenderer text = intro2.GetComponent<TextRenderer>();
@@ -148,7 +177,7 @@ namespace Tetris
 			}
 			else if (this.gameStage == 2)
 			{
-				float beginTime = 12000.0f + this.beginTime;
+				float beginTime = 12000.0f + this.beginIntroTime;
 				float localTime = Time.GameTimer - beginTime;
 				GameObject intro3 = Scene.Current.AllObjects.FirstByName("Intro3");
 				TextRenderer text = intro3.GetComponent<TextRenderer>();
@@ -167,7 +196,7 @@ namespace Tetris
 			}
 			else if (this.gameStage == 3)
 			{
-				float beginTime = 18000.0f + this.beginTime;
+				float beginTime = 18000.0f + this.beginIntroTime;
 				float localTime = Time.GameTimer - beginTime;
 				GameObject blackPlate = Scene.Current.AllObjects.FirstByName("BlackPlate");
 				GameObject intro4 = Scene.Current.AllObjects.FirstByName("Intro4");
@@ -178,6 +207,7 @@ namespace Tetris
 				{
 					intro4.Active = false;
 					blackPlate.Active = false;
+					this.beginGameTime = Time.GameTimer;
 					this.gameStage++;
 				}
 				else if (localTime >= 0.0f)
@@ -246,6 +276,7 @@ namespace Tetris
 								//}
 							}
 							this.Score += 1000;
+							this.lineClearTime = Time.GameTimer;
 							anyLineRemoved = true;
 							DualityApp.Sound.PlaySound(GameRes.Data.Sound.LineRemoved_Sound);
 						}
@@ -272,10 +303,17 @@ namespace Tetris
 		{
 			if (this.gameOver) return;
 			this.gameOver = true;
+			this.gameOverTime = Time.GameTimer;
 			GameObject gameOverText = Scene.Current.AllObjects.FirstByName("GameOver");
 			gameOverText.Active = true;
 			DualityApp.Sound.PlaySound(GameRes.Data.Sound.GameOver_Sound);
 			DualityApp.Sound.Music.PopHigh(0.1f);
+		}
+		public void NotifyBlockFellOver(GameObject blockObj)
+		{
+			if (this.fellOverBlocks.Contains(blockObj)) return;
+			this.fellOverBlocks.Add(blockObj);
+			this.blockFellOverTime = Time.GameTimer;
 		}
 	}
 }
