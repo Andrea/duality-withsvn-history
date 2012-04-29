@@ -66,7 +66,7 @@ namespace Tetris
 		
 		public bool GameJustEnded
 		{
-			get { return this.gameOver && Time.GameTimer - this.gameOverTime < 3000.0f; }
+			get { return this.gameOver && Time.GameTimer - this.gameOverTime < 5000.0f; }
 		}
 		public bool BlockJustFellOver
 		{

@@ -175,7 +175,7 @@ namespace Tetris
 				new Line("Well, you might know that."),
 				new Line("You should know it."),
 				new Line("Everybody knows it.") ,
-				new Line("This probably isn't new to you.")},
+				new Line("It probably isn't new to you.")},
 				null,
 				null,
 				actionHello3);
@@ -217,13 +217,17 @@ namespace Tetris
 				new Line("I hate when that happens."),
 				new Line("Ba-dum."),
 				new Line("What we need is more chaos."),
-				new Line("Uh-oh.") },
+				new Line("More chaos!"),
+				new Line("That doesn't look right."),
+				new Line("Uh-oh."),
+				new Line("hehe..") },
 				c => GameController.Instance.BlockJustFellOver && blockFellOverCount > 0 && Time.GameTimer - timeLastBlockFellOver > 10000.0f,
 				c => { blockFellOverCount++; timeLastBlockFellOver = Time.GameTimer; });
 			Comment actionBlockFellOver2 = new Comment(new Line[] {
 				new Line("Are you TRYING to make them fall over?"),
 				new Line("In soviet russia, TETRIS plays YOU."),
-				new Line("There is nothing like the sound of a falling block."),
+				new Line("Damnit, what kind of architect ARE you?"),
+				new Line("There is nothing like the sound of a block falling over."),
 				new Line("You must be the worst player I've ever seen."),
 				new Line("You know you're supposed to arrange those blocks, do you?"),
 				new Line("Have you even played Tetris before?") },
@@ -256,7 +260,7 @@ namespace Tetris
 				null,
 				null,
 				actionGameOver5);
-			Comment actionGameOver3a3 = new Comment(new Line[] {
+			Comment actionGameOver3a4 = new Comment(new Line[] {
 				new Line("Someday.", null, 0.4f), 
 				new Line("Maybe.", null, 0.4f),
 				new Line("*cough*", null, 0.4f),
@@ -266,6 +270,11 @@ namespace Tetris
 				null,
 				null,
 				actionGameOver4);
+			Comment actionGameOver3a3 = new Comment(new Line[] {
+				new Line("", null, 0.5f) },
+				null,
+				null,
+				actionGameOver3a4);
 			Comment actionGameOver3a2 = new Comment(new Line[] {
 				new Line("I'm sure you'll improve.", null, 1.5f), 
 				new Line("You can do it.", null, 1.5f),
@@ -299,7 +308,7 @@ namespace Tetris
 				new Line("Maybe you should practice a little more."),
 				new Line("Do you want to play again?"),
 				new Line("Will you try again?"),
-				new Line("You could improve your reflexes."),
+				new Line("You should improve your reflexes."),
 				new Line("You could try that again. I suppose."),
 				new Line("Will you play another round?") },
 				null,
@@ -325,7 +334,9 @@ namespace Tetris
 				new Line("Aaaaand thats you losing the game."),
 				new Line("You just lost the game"),
 				new Line("Bam. You're dead."),
-				new Line("That's it.") },
+				new Line("That's it."),
+				new Line("When life gives you lemons.."),
+				new Line("If at first you don't succeed..") },
 				c => GameController.Instance.GameJustEnded,
 				null,
 				actionGameOver1);

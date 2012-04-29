@@ -27,7 +27,8 @@ namespace Tetris
 			get { return activeBlock; }
 		}
 
-		private	float timeFirstContact	= 0.0f;
+		private	float	timeFirstContact	= 0.0f;
+		private	float	angleFirstTimeHit	= 0.0f;
 
 		void ICmpInitializable.OnInit(Component.InitContext context)
 		{
@@ -58,7 +59,8 @@ namespace Tetris
 
 			if (activeBlock == this && timeFirstContact == 0.0f && MathF.Abs(args.CollisionData.Normal.Y) > 0.05f)
 			{
-				timeFirstContact = Time.GameTimer;
+				this.timeFirstContact = Time.GameTimer;
+				this.angleFirstTimeHit = this.GameObj.Transform.Angle;
 				if (this.GameObj.Transform.Pos.Y <= -500) GameController.Instance.NotifyGameOver();
 				this.GameObj.GetComponent<Collider>().IgnoreGravity = false;
 				this.GameObj.GetComponent<Collider>().FixedAngle = false;
@@ -66,8 +68,8 @@ namespace Tetris
 
 			if (this.timeFirstContact != 0.0f && Time.GameTimer - timeFirstContact < 3000.0f && this.GameObj.Transform.Vel.Length <= 0.1f)
 			{
-				float angleDistFromIdeal = MathF.CircularDist(0.0f, this.GameObj.Transform.Angle, 0.0f, MathF.PiOver2);
-				if (angleDistFromIdeal >= MathF.Pi * 0.1f) GameController.Instance.NotifyBlockFellOver(this.GameObj);
+				float angleDistFromSetup = MathF.CircularDist(this.angleFirstTimeHit, this.GameObj.Transform.Angle);
+				if (angleDistFromSetup >= MathF.Pi * 0.1f) GameController.Instance.NotifyBlockFellOver(this.GameObj);
 			}
 		}
 		void ICmpUpdatable.OnUpdate()
