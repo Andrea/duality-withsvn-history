@@ -281,6 +281,22 @@
             </code>
             </example>
         </member>
+        <member name="E:Duality.DualityApp.UserDataChanged">
+            <summary>
+            Called when the games UserData changes
+            </summary>
+        </member>
+        <member name="E:Duality.DualityApp.AppDataChanged">
+            <summary>
+            Called when the games AppData changes
+            </summary>
+        </member>
+        <member name="E:Duality.DualityApp.Terminating">
+            <summary>
+            Called when Duality is being terminated by choice (e.g. not because of crashes or similar).
+            It is also called in an editor environment.
+            </summary>
+        </member>
         <member name="P:Duality.DualityApp.TargetResolution">
             <summary>
             [GET / SET] The size of the current rendering surface (full screen, a single window, etc.) in pixels. Setting this will not actually change
@@ -8859,6 +8875,24 @@
             <typeparam name="T">Type of the random values.</typeparam>
             <param name="r">A random number generator.</param>
             <param name="weightedValues">A weighted value pool.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ExtMethodsRandom.OneOf``1(System.Random,``0[])">
+            <summary>
+            Returns one randomly selected element.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="r"></param>
+            <param name="values"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ExtMethodsRandom.OneOf``1(System.Random,System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Returns one randomly selected element.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="r"></param>
+            <param name="values"></param>
             <returns></returns>
         </member>
         <member name="T:Duality.Canvas">

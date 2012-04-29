@@ -284,5 +284,28 @@ namespace Duality
 		{
 			return WeightedNext<T>(r, weightedValues as IEnumerable<KeyValuePair<T,float>>);
 		}
+
+		/// <summary>
+		/// Returns one randomly selected element.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="r"></param>
+		/// <param name="values"></param>
+		/// <returns></returns>
+		public static T OneOf<T>(this Random r, params T[] values)
+		{
+			return values[r.Next(values.Length)];
+		}
+		/// <summary>
+		/// Returns one randomly selected element.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="r"></param>
+		/// <param name="values"></param>
+		/// <returns></returns>
+		public static T OneOf<T>(this Random r, IEnumerable<T> values)
+		{
+			return values.ElementAt(r.Next(values.Count()));
+		}
 	}
 }

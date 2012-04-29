@@ -81,6 +81,8 @@ namespace Tetris
 		{
 			if (!this.UpdateIntro())
 				this.UpdateGame();
+
+			if (DualityApp.Keyboard[Key.Escape]) DualityApp.Terminate();
 		}
 		void ICmpInitializable.OnInit(Component.InitContext context)
 		{

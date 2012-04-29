@@ -88,8 +88,19 @@ namespace Duality
 		private	static	List<Assembly>					disposedPlugins	= new List<Assembly>();
 		private static	Dictionary<Type,List<Type>>		availTypeDict	= new Dictionary<Type,List<Type>>();
 
-		internal static event EventHandler UserDataChanged	= null;
-		internal static event EventHandler AppDataChanged	= null;
+		/// <summary>
+		/// Called when the games UserData changes
+		/// </summary>
+		public static event EventHandler UserDataChanged	= null;
+		/// <summary>
+		/// Called when the games AppData changes
+		/// </summary>
+		public static event EventHandler AppDataChanged		= null;
+		/// <summary>
+		/// Called when Duality is being terminated by choice (e.g. not because of crashes or similar).
+		/// It is also called in an editor environment.
+		/// </summary>
+		public static event EventHandler Terminating		= null;
 
 
 		/// <summary>
@@ -382,6 +393,7 @@ namespace Duality
 				}
 				if (execContext != ExecutionContext.Editor)
 				{
+					OnTerminating();
 					SaveUserData();
 					SaveMetaData();
 				}
@@ -824,6 +836,11 @@ namespace Duality
 				AppDataChanged(null, EventArgs.Empty);
 
 			FarseerPhysics.Settings.VelocityThreshold = PhysicsConvert.ToPhysicalUnit(appData.PhysicsVelocityThreshold / Time.SPFMult);
+		}
+		private static void OnTerminating()
+		{
+			if (Terminating != null)
+				Terminating(null, EventArgs.Empty);
 		}
 
 		private static void CurrentDomain_ProcessExit(object sender, EventArgs e)
