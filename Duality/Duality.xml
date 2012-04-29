@@ -559,19 +559,18 @@
         </member>
         <member name="M:Duality.DualityMetaData.ReadValueAs``1(System.String,``0@)">
             <summary>
-            Reads the specified keys value and tries to convert it to the specified type.
+            Reads the specified key's string value and tries to parse it.
             </summary>
             <typeparam name="T">The desired value type</typeparam>
             <param name="key">The key that defines where to look for the value.</param>
-            <param name="value">The parsed value that is associated with the specified key.</param>
+            <param name="value">The parsed value based on the string that is associated with the specified key.</param>
             <returns>True, if successful, false if not.</returns>
             <seealso cref="M:Duality.DualityMetaData.ReadValue(System.String)"/>
             <example>
             The following code writes and reads an int value:
             <code>
             DualityApp.MetaData.WriteValue("SomeKey", 42);
-            int value;
-            bool success = DualityApp.MetaData.ReadValueAs{int}("SomeKey", out value);
+            int value =  DualityApp.MetaData.ReadValueAs{int}("SomeKey");
             </code>
             </example>
         </member>
@@ -584,32 +583,43 @@
             <example>
             The following code creates a small hierarchy and reads a part of it out again:
             <code>
-            DualityApp.MetaData["MainNode/SubNode/SomeKey"] = 42;
-            DualityApp.MetaData["MainNode/SubNode/SomeOtherKey"] = "Hello";
-            DualityApp.MetaData["MainNode/SubNode/SomeOtherKey2"] = 44;
+            DualityApp.MetaData["MainNode/SubNode/SomeKey"] = "42";
+            DualityApp.MetaData["MainNode/SubNode/SomeOtherKey"] = "43";
+            DualityApp.MetaData["MainNode/SubNode/SomeOtherKey2"] = "44";
             DualityApp.MetaData["MainNode/SubNode2"] = "Something";
             
             var pairs = DualityApp.MetaData.ReadSubValues("MainNode/SubNode");
             foreach (var pair in pairs)
             {
-            	Log.Core.Write("{0}: {1}", pair.Key, pair.Value);
+                Log.Core.Write("{0}: {1}", pair.Key, pair.Value);
             }
             </code>
             The expected output is:
             <code>
             SomeKey: 42
-            SomeOtherKey: Hello
+            SomeOtherKey: 43
             SomeOtherKey2: 44
             </code>
             </example>
         </member>
-        <member name="M:Duality.DualityMetaData.WriteValue(System.String,System.Object)">
+        <member name="M:Duality.DualityMetaData.WriteValue(System.String,System.String)">
             <summary>
-            Writes a value to the specified key. Keys are organized hierarchially and behave
+            Writes the specified string value to the specified key. Keys are organized hierarchially and behave
             like file paths. Use the normal path separator chars to address keys in keys.
             </summary>
             <param name="key">The key that defines to write the value to.</param>
             <param name="value">The value to write</param>
+            <seealso cref="M:Duality.DualityMetaData.WriteValue``1(System.String,``0)"/>
+        </member>
+        <member name="M:Duality.DualityMetaData.WriteValue``1(System.String,``0)">
+            <summary>
+            Writes the specified value to the specified key. Keys are organized hierarchially and behave
+            like file paths. Use the normal path separator chars to address keys in keys.
+            </summary>
+            <typeparam name="T">The value's Type.</typeparam>
+            <param name="key">The key that defines to write the value to.</param>
+            <param name="value">The value to write</param>
+            <seealso cref="M:Duality.DualityMetaData.WriteValue(System.String,System.String)"/>
         </member>
         <member name="P:Duality.DualityMetaData.Item(System.String)">
             <summary>
