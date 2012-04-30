@@ -28,9 +28,9 @@ namespace Tetris
 		private	int		gameStage	= 0;
 
 		private	HashSet<GameObject>	fellOverBlocks	= new HashSet<GameObject>();
-		private	float	gameOverTime		= -100000.0f;
-		private	float	blockFellOverTime	= -100000.0f;
-		private	float	lineClearTime		= -100000.0f;
+		private	float	gameOverTime		= 0.0f;
+		private	float	blockFellOverTime	= 0.0f;
+		private	float	lineClearTime		= 0.0f;
 
 		public bool FirstGameInSession
 		{
@@ -66,15 +66,24 @@ namespace Tetris
 		
 		public bool GameJustEnded
 		{
-			get { return this.gameOver && Time.GameTimer - this.gameOverTime < 5000.0f; }
+			get { return this.gameOverTime > 0.0f && this.gameOver && Time.GameTimer - this.gameOverTime < 5000.0f; }
 		}
 		public bool BlockJustFellOver
 		{
-			get { return Time.GameTimer - this.blockFellOverTime < 1000.0f; }
+			get { return this.blockFellOverTime > 0.0f && Time.GameTimer - this.blockFellOverTime < 1000.0f; }
 		}
 		public bool LineJustCleared
 		{
-			get { return Time.GameTimer - this.lineClearTime < 1000.0f; }
+			get { return this.lineClearTime > 0.0f && Time.GameTimer - this.lineClearTime < 1000.0f; }
+		}
+
+		public float TimeSinceBlockFellOver
+		{
+			get { return Time.GameTimer - this.blockFellOverTime; }
+		}
+		public float TimeSinceLineCleared
+		{
+			get { return Time.GameTimer - this.lineClearTime; }
 		}
 
 		void ICmpUpdatable.OnUpdate()
@@ -211,6 +220,7 @@ namespace Tetris
 					blackPlate.Active = false;
 					this.beginGameTime = Time.GameTimer;
 					this.gameStage++;
+					CommentGuy.OnBeginGameRound();
 				}
 				else if (localTime >= 0.0f)
 				{

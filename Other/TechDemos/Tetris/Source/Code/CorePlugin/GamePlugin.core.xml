@@ -4,6 +4,11 @@
         <name>GamePlugin.core</name>
     </assembly>
     <members>
+        <member name="T:Tetris.TetrisCorePlugin">
+            <summary>
+            Defines a Duality core plugin.
+            </summary>
+        </member>
         <member name="T:Tetris.BlockRenderer">
             <summary>
             Renders a sprite to represent the <see cref="T:Duality.GameObject"/>.
@@ -17,11 +22,6 @@
         <member name="P:Tetris.BlockRenderer.ColorTint">
             <summary>
             [GET / SET] A color by which the sprite is tinted.
-            </summary>
-        </member>
-        <member name="T:Tetris.TetrisCorePlugin">
-            <summary>
-            Defines a Duality core plugin.
             </summary>
         </member>
     </members>

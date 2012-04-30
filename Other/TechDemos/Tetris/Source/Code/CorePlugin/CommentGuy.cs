@@ -188,7 +188,8 @@ namespace Tetris
 			public int		CountBlockFellOver	= 0;
 			public float	TimeBlockFellOver	= -10000.0f;
 			public string	UserName			= System.Environment.UserName;
-			public TimeSpan	TimeLastMet			= TimeSpan.Zero;
+			public TimeSpan	TimeSinceLastMet	= TimeSpan.Zero;
+			public float	TimeNextBored;
 		}
 
 		private static	TextRenderer	targetText	= null;
@@ -246,16 +247,18 @@ namespace Tetris
 				new Line("Welcome."),
 				new Line("Hello there.") },
 				c => GameController.Instance.TotalPlayTime < 5000.0f && !permanentMind.FirstTimePlayed,
-				c => permanentMind.FirstTimePlayed = true,
+				c => { permanentMind.FirstTimePlayed = true; temporaryMind.TimeNextBored += 20000.0f; },
 				actionFirstHello1);
 			
 			Comment actionHello3 = new Comment(new Line[] {
 				new Line("Good luck."), 
 				new Line("Have fun."), 
 				new Line("Do your best."), 
+				new Line("Do your worst."), 
 				new Line("Make the best out of it."), 
+				new Line("Make the worst out of it."), 
 				new Line("Go get those points."), 
-				new Line("Stack 'em.")},
+				new Line("Go stack 'em.")},
 				null,
 				null,
 				null);
@@ -265,7 +268,7 @@ namespace Tetris
 				new Line("However.."), 
 				new Line("Well.."), 
 				new Line("*sigh*"), 
-				new Line("Nevermind."), 
+				new Line("But nevermind."), 
 				new Line("")},
 				null,
 				null,
@@ -277,14 +280,14 @@ namespace Tetris
 				new Line("We both knew you'd return."),
 				new Line("I have waited for you."),
 				new Line("I didn't expect to see you again."),
-				new Line("Did you miss me already? It's only been {0} since we last met.", l => temporaryMind.TimeLastMet.TotalHours < 1, 1.0f, SayTimeLastMet),
-				new Line("I'm surprised. It's only been {0} since we last met.", l => temporaryMind.TimeLastMet.TotalHours < 1, 1.0f, SayTimeLastMet),
-				new Line("Finally. After {0} you have returned.", l => temporaryMind.TimeLastMet.TotalHours >= 1, 1.0f, SayTimeLastMet),
-				new Line("It's been a long time.", l => temporaryMind.TimeLastMet.TotalDays >= 5),
-				new Line("What did you do all the time?", l => temporaryMind.TimeLastMet.TotalDays >= 2),
-				new Line("How's life going?", l => temporaryMind.TimeLastMet.TotalDays >= 5),
-				new Line("You haven't shown up here lately.", l => temporaryMind.TimeLastMet.TotalDays >= 5),
-				new Line("How long has it been? {0}?", l => temporaryMind.TimeLastMet.TotalDays >= 2, 1.0f, SayTimeLastMet)},
+				new Line("Did you miss me already? It's only been {0} since we last met.", l => temporaryMind.TimeSinceLastMet.TotalHours < 1, 1.0f, SayTimeLastMet),
+				new Line("I'm surprised. It's only been {0} since we last met.", l => temporaryMind.TimeSinceLastMet.TotalHours < 1, 1.0f, SayTimeLastMet),
+				new Line("Finally. After {0} you have returned.", l => temporaryMind.TimeSinceLastMet.TotalHours >= 1, 1.0f, SayTimeLastMet),
+				new Line("It's been a long time.", l => temporaryMind.TimeSinceLastMet.TotalDays >= 5),
+				new Line("What did you do all the time?", l => temporaryMind.TimeSinceLastMet.TotalDays >= 2),
+				new Line("How's life going?", l => temporaryMind.TimeSinceLastMet.TotalDays >= 5),
+				new Line("You haven't shown up here lately.", l => temporaryMind.TimeSinceLastMet.TotalDays >= 5),
+				new Line("How long has it been? {0}?", l => temporaryMind.TimeSinceLastMet.TotalDays >= 2, 1.0f, SayTimeLastMet)},
 				null,
 				null,
 				actionHello2);
@@ -311,13 +314,14 @@ namespace Tetris
 			Comment actionBlockFellOver0 = new Comment(new Line[] {
 				new Line("Too bad, those blocks can fall over."),
 				new Line("Physics isn't fair, huh?"),
-				new Line("Oh noes! They can fall over!"),
+				new Line("Oh noes! Those blocks can fall over!"),
 				new Line("DAMN YOU, PHYSICS"),
 				new Line("I guess, Newton sneaked in here somewhere."),
 				new Line("Let there be physics."),
 				new Line("Physics, huh?"),
 				new Line("I love physics. Who doesn't?"),
-				new Line("I bet you didn't expect that would happen.", l => !permanentMind.FirstTimePlayed) },
+				new Line("I bet you didn't expect that would happen.", l => !permanentMind.FirstTimePlayed),
+				new Line("Man, you should've seen your face.", l => !permanentMind.FirstTimePlayed) },
 				c => GameController.Instance.BlockJustFellOver && temporaryMind.CountBlockFellOver == 0,
 				c => { temporaryMind.CountBlockFellOver++; temporaryMind.TimeBlockFellOver = Time.GameTimer; });
 			Comment actionBlockFellOver1 = new Comment(new Line[] {
@@ -349,6 +353,49 @@ namespace Tetris
 				new Line("Have you even played Tetris before?") },
 				c => GameController.Instance.BlockJustFellOver && temporaryMind.CountBlockFellOver >= 8 && MathF.Rnd.Next((int)(Time.GameTimer - temporaryMind.TimeBlockFellOver)) > 6000,
 				c => { permanentMind.CountBlockFellOver++; temporaryMind.CountBlockFellOver++; temporaryMind.TimeBlockFellOver = Time.GameTimer; });
+
+			Comment actionNothingFellOver0 = new Comment(new Line[] {
+				new Line("I'm bored."),
+				new Line("tzzz...."),
+				new Line("Man, you're boring."),
+				new Line("I feel a little useless."),
+				new Line("*sigh*"),
+				new Line("I'm still here, by the way."),
+				new Line("Seems you don't need me."),
+				new Line("Dub-de-dub", null, 0.5f),
+				new Line("Seems like you're done screwing up stuff.", l => temporaryMind.CountBlockFellOver > 0),
+				new Line("Are you done throwing around blocks?", l => temporaryMind.CountBlockFellOver > 0),
+				new Line("No more chaos?", l => temporaryMind.CountBlockFellOver > 0) },
+				c => !GameController.Instance.GameOver && GameController.Instance.TimeSinceBlockFellOver > 20000.0f && Time.GameTimer > temporaryMind.TimeNextBored,
+				c => temporaryMind.TimeNextBored = Time.GameTimer + MathF.Rnd.NextFloat(15000.0f, 25000.0f));
+			Comment actionNothingFellOverB1 = new Comment(new Line[] {
+				new Line("For a human."),
+				new Line("For someone like you."),
+				new Line("For someone who's obviously never played Tetris."),
+				new Line("At least, if you don't have hands."),
+				new Line("At least, if you are blind."),
+				new Line("Except.. well.. nevermind."),
+				new Line("NOT."),
+				new Line("No, really."),
+				new Line("Not kidding. Totally."),
+				new Line("*cough*"),
+				new Line("*sigh*") },
+				null,
+				null);
+			Comment actionNothingFellOverB0 = new Comment(new Line[] {
+				new Line("You're doing good."),
+				new Line("You're good."),
+				new Line("Good game."),
+				new Line("You're making good progress."),
+				new Line("Excellent game."),
+				new Line("You're getting better and better."),
+				new Line("Man, look at your score. That's cool.", l => GameController.Instance.Score > 5000.0f),
+				new Line("Wow, look at your score value. It's great.", l => GameController.Instance.Score > 5000.0f),
+				new Line("Nice score.", l => GameController.Instance.Score > 5000.0f),
+				new Line("I like your playstyle.") },
+				c => !GameController.Instance.GameOver && GameController.Instance.TimeSinceBlockFellOver > 20000.0f && Time.GameTimer > temporaryMind.TimeNextBored,
+				c => temporaryMind.TimeNextBored = Time.GameTimer + MathF.Rnd.NextFloat(15000.0f, 25000.0f),
+				actionNothingFellOverB1);
 
 			Comment actionLineClear = new Comment(new Line[] {
 				new Line("BAM!"),
@@ -397,6 +444,7 @@ namespace Tetris
 				new Line("It won't work.", null, 0.4f),
 				new Line("It won't change anything.", null, 0.3f),
 				new Line("What a waste of time.", null, 0.3f),
+				new Line("Or stop getting on my nerves and do something useful instead.", null, 0.2f),
 				new Line("*sigh*", null, 0.3f),
 				new Line("Or not.", null, 0.4f) },
 				null,
@@ -412,15 +460,17 @@ namespace Tetris
 				new Line("Another round?"),
 				new Line("Another try?"),
 				new Line("You should improve your reflexes."),
-				new Line("You could try that again. I suppose."),
+				new Line("You could try that again, I suppose."),
 				new Line("Will you play another round?") },
 				null,
 				null,
-				Comment.Pause(1.0f, actionGameOver3a), Comment.Pause(1.0f, actionGameOver3b));
+				actionGameOver3a, Comment.Pause(1.0f, actionGameOver3b), actionGameOver4);
 			Comment actionGameOver1 = new Comment(new Line[] {
 				new Line("It was inevitable, I guess."), 
 				new Line("That sucks."),
 				new Line("I'm sorry."),
+				new Line("It's okay I guess."),
+				new Line("Time to make lemonade."),
 				new Line("That's just life."),
 				new Line("I'm making a note here: HUGE SUCCESS"),
 				new Line("It's hard to overstate my satisfaction."),
@@ -438,9 +488,10 @@ namespace Tetris
 				new Line("Aaaaand thats you losing the game."),
 				new Line("You just lost the game"),
 				new Line("Bam. You're dead."),
+				new Line("DING! You're done."),
 				new Line("That's it."),
-				new Line("When life gives you lemons.."),
-				new Line("If at first you don't succeed..") },
+				new Line("When life gives you lemons"),
+				new Line("If at first you don't succeed") },
 				c => GameController.Instance.GameJustEnded,
 				c => { permanentMind.Highscore = MathF.Max(permanentMind.Highscore, GameController.Instance.Score); permanentMind.CountGamesLost++; temporaryMind.CountGamesLost++; },
 				actionGameOver1);
@@ -473,6 +524,8 @@ namespace Tetris
 			supply.Add(actionLineClear);
 			supply.Add(actionGameOver0);
 			supply.Add(actionGameOverB0);
+			supply.Add(actionNothingFellOver0);
+			supply.Add(actionNothingFellOverB0);
 
 			supply = supply.Shuffle().ToList();
 		}
@@ -481,32 +534,39 @@ namespace Tetris
 			CommentGuy.targetText = targetText;
 			CommentGuy.schedule = new List<Comment>();
 
-			if (initialized) return; // Only do once what is behind this line.
-			initialized = true;
-
 			// Load permanent data, if existing
-			string mindPath = Path.Combine(Path.GetDirectoryName(DualityApp.UserDataPath), "mind.dat");
-			if (File.Exists(mindPath))
+			if (permanentMind == null)
 			{
-				try {
-				using (FileStream stream = File.OpenRead(mindPath)) {
-				using (Formatter formatter = Formatter.Create(stream))
+				string mindPath = Path.Combine(Path.GetDirectoryName(DualityApp.UserDataPath), "mind.dat");
+				if (File.Exists(mindPath))
 				{
-					permanentMind = formatter.ReadObject() as PermanentData;
-				}}}
-				catch (Exception e)
-				{
-					Log.Game.WriteError("Error loading permanent data: {0}", Log.Exception(e));
+					try
+					{
+						using (FileStream stream = File.OpenRead(mindPath))
+						{
+							using (Formatter formatter = Formatter.Create(stream))
+							{
+								permanentMind = formatter.ReadObject() as PermanentData;
+							}
+						}
+					}
+					catch (Exception e)
+					{
+						Log.Game.WriteError("Error loading permanent data: {0}", Log.Exception(e));
+					}
 				}
 			}
 
 			// Create new permanent data, if not
 			if (permanentMind == null) permanentMind = new PermanentData();
 			if (temporaryMind == null) temporaryMind = new TemporaryData();
+			
+			// Only do once what is behind this line.
+			if (initialized) return;
+			initialized = true;
 
 			DualityApp.Terminating += (s, e) => Terminate();
-
-			temporaryMind.TimeLastMet = DateTime.Now - permanentMind.TimeShutdown;
+			temporaryMind.TimeSinceLastMet = DateTime.Now - permanentMind.TimeShutdown;
 		}
 		public static void Terminate()
 		{
@@ -555,6 +615,10 @@ namespace Tetris
 			else if (schedule.Count > 0)
 				schedule.RemoveAt(0);
 		}
+		public static void OnBeginGameRound()
+		{
+			temporaryMind.TimeNextBored = Time.GameTimer + (GameController.Instance.FirstGameInSession ? 40000.0f : 30000.0f);
+		}
 
 		private static Comment SelectNewComment()
 		{
@@ -576,7 +640,7 @@ namespace Tetris
 		}
 		private static string SayTimeLastMet()
 		{
-			return SayTimeSpan(temporaryMind.TimeLastMet);
+			return SayTimeSpan(temporaryMind.TimeSinceLastMet);
 		}
 		private static string SayTimeSpan(TimeSpan span)
 		{
