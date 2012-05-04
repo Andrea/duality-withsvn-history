@@ -258,6 +258,9 @@ namespace Duality.Resources
 			if (!this.IsCurrent) throw new InvalidOperationException("Can't update non-current Scene!");
 
 			Performance.timeUpdatePhysics.BeginMeasure();
+			// Apply dynamic velocity threshold
+			FarseerPhysics.Settings.VelocityThreshold = PhysicsConvert.ToPhysicalUnit(Time.TimeMult * DualityApp.AppData.PhysicsVelocityThreshold / Time.SPFMult);
+			// Update physics
 			physicsWorld.Step(Time.TimeMult * Time.SPFMult);
 			Performance.timeUpdatePhysics.EndMeasure();
 

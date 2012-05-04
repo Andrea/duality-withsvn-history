@@ -834,8 +834,6 @@ namespace Duality
 		{
 			if (AppDataChanged != null)
 				AppDataChanged(null, EventArgs.Empty);
-
-			FarseerPhysics.Settings.VelocityThreshold = PhysicsConvert.ToPhysicalUnit(appData.PhysicsVelocityThreshold / Time.SPFMult);
 		}
 		private static void OnTerminating()
 		{
