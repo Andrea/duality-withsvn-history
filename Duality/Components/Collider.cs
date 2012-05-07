@@ -796,18 +796,22 @@ namespace Duality.Components
 		{
 			if (this.bodyType == BodyType.Dynamic)
 			{
+				Vector2 bodyVel = this.body.LinearVelocity;
+				Vector2 bodyPos = this.body.Position + bodyVel * Scene.PhysicsAlpha * Time.SPFMult;
+				float bodyAngleVel = this.body.AngularVelocity;
+				float bodyAngle = this.body.Rotation + bodyAngleVel * Scene.PhysicsAlpha * Time.SPFMult;
 				t.SetTransform(
 					new Vector3(
-						PhysicsConvert.ToDualityUnit(this.body.Position.X), 
-						PhysicsConvert.ToDualityUnit(this.body.Position.Y), 
+						PhysicsConvert.ToDualityUnit(bodyPos.X), 
+						PhysicsConvert.ToDualityUnit(bodyPos.Y), 
 						t.Pos.Z + t.Vel.Z * Time.TimeMult),
 					new Vector3(
-						PhysicsConvert.ToDualityUnit(this.body.LinearVelocity.X * Time.SPFMult), 
-						PhysicsConvert.ToDualityUnit(this.body.LinearVelocity.Y * Time.SPFMult), 
+						PhysicsConvert.ToDualityUnit(bodyVel.X * Time.SPFMult), 
+						PhysicsConvert.ToDualityUnit(bodyVel.Y * Time.SPFMult), 
 						t.Vel.Z),
 					t.Scale,
-					this.body.Rotation,
-					this.body.AngularVelocity * Time.SPFMult);
+					bodyAngle,
+					bodyAngleVel * Time.SPFMult);
 			}
 			else
 			{

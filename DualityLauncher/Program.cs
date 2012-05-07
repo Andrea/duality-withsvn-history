@@ -33,12 +33,12 @@ namespace DualityLauncher
 			// Assure we'll at least wait 16 ms until updating again.
 			if (this.frameLimiterWatch.IsRunning)
 			{
-				while (this.frameLimiterWatch.Elapsed.TotalSeconds < 0.016d) 
-				{
-					// Go to sleep if we'd have to wait too long
-					if (this.frameLimiterWatch.Elapsed.TotalSeconds < 0.01d)
-						System.Threading.Thread.Sleep(1);
-				}
+			    while (this.frameLimiterWatch.Elapsed.TotalSeconds < 0.016d) 
+			    {
+			        // Go to sleep if we'd have to wait too long
+			        if (this.frameLimiterWatch.Elapsed.TotalSeconds < 0.01d)
+			            System.Threading.Thread.Sleep(1);
+			    }
 			}
 			this.frameLimiterWatch.Restart();
 			DualityApp.Update();

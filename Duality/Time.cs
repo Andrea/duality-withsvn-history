@@ -36,7 +36,7 @@ namespace Duality
 		/// </summary>
 		public static float MainTimer
 		{
-			get { return mainTimer; }
+			get { return watch.ElapsedMilliseconds; }
 		}	//	G
 		/// <summary>
 		/// [GET] MainTimer value at the beginning of the current frame

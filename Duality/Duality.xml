@@ -8159,6 +8159,12 @@
             <param name="device"></param>
             <returns></returns>
         </member>
+        <member name="P:Duality.Resources.Scene.PhysicsAlpha">
+            <summary>
+            [GET] When using fixed-timestep physics, the alpha value [0.0 - 1.0] indicates how
+            complete the next step is. This is used for linear interpolation inbetween fixed physics steps.
+            </summary>
+        </member>
         <member name="P:Duality.Resources.Scene.CurrentPhysics">
             <summary>
             [GET] Returns the current physics world.

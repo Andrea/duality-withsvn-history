@@ -27,8 +27,19 @@ namespace Duality.Resources
 		public new const string FileExt = ".Scene" + Resource.FileExt;
 
 		private	static	World				physicsWorld	= new World(Vector2.Zero);
+		private	static	float				physicsAcc		= 0.0f;
+		private	static	float				physicsTime		= 0.0f;
 		private	static	ContentRef<Scene>	current			= ContentRef<Scene>.Null;
 		private	static	bool				curAutoGen		= false;
+
+		/// <summary>
+		/// [GET] When using fixed-timestep physics, the alpha value [0.0 - 1.0] indicates how
+		/// complete the next step is. This is used for linear interpolation inbetween fixed physics steps.
+		/// </summary>
+		public static float PhysicsAlpha
+		{
+			get { return physicsAcc / Time.MsPFMult; }
+		}
 		/// <summary>
 		/// [GET] Returns the current physics world.
 		/// </summary>
@@ -104,12 +115,16 @@ namespace Duality.Resources
 			{
 				foreach (GameObject o in current.ResWeak.ActiveObjects) o.OnDeactivate();
 				physicsWorld.Clear();
+				physicsAcc = 0.0f;
+				physicsTime = 0.0f;
 			}
 		}
 		private static void OnEntered()
 		{
 			if (current.ResWeak != null)
 			{
+				physicsAcc = 0.0f;
+				physicsTime = 0.0f;
 				physicsWorld.Gravity = PhysicsConvert.ToPhysicalUnit(current.ResWeak.GlobalGravity / Time.SPFMult);
 				foreach (GameObject o in current.ResWeak.ActiveObjects) o.OnActivate();
 			}
@@ -258,10 +273,23 @@ namespace Duality.Resources
 			if (!this.IsCurrent) throw new InvalidOperationException("Can't update non-current Scene!");
 
 			Performance.timeUpdatePhysics.BeginMeasure();
-			// Apply dynamic velocity threshold
-			FarseerPhysics.Settings.VelocityThreshold = PhysicsConvert.ToPhysicalUnit(Time.TimeMult * DualityApp.AppData.PhysicsVelocityThreshold / Time.SPFMult);
-			// Update physics
-			physicsWorld.Step(Time.TimeMult * Time.SPFMult);
+			if (physicsTime > 0.0f)
+			{
+			    float timeCoverage = Time.MainTimer - physicsTime;
+			    physicsAcc += timeCoverage;
+			    int iterations = 0;
+			    while (physicsAcc > Time.MsPFMult)
+			    {
+			        FarseerPhysics.Settings.VelocityThreshold = PhysicsConvert.ToPhysicalUnit(DualityApp.AppData.PhysicsVelocityThreshold / Time.SPFMult);
+			        physicsWorld.Step(Time.SPFMult);
+			        physicsAcc -= Time.MsPFMult;
+			        iterations++;
+			    }
+			}
+			physicsTime = Time.MainTimer;
+			// Variable timestep physics:
+			//FarseerPhysics.Settings.VelocityThreshold = PhysicsConvert.ToPhysicalUnit(Time.TimeMult * DualityApp.AppData.PhysicsVelocityThreshold / Time.SPFMult);
+			//physicsWorld.Step(Time.TimeMult * Time.SPFMult);
 			Performance.timeUpdatePhysics.EndMeasure();
 
 			// Apply Farseers internal measurements to Duality
@@ -283,6 +311,9 @@ namespace Duality.Resources
 		public void EditorUpdate()
 		{
 			if (!this.IsCurrent) throw new InvalidOperationException("Can't update non-current Scene!");
+			
+			physicsAcc = 0.0f;
+			physicsTime = 0.0f;
 
 			Performance.timeUpdateScene.BeginMeasure();
 			GameObject[] activeObj = this.objectManager.ActiveObjects.ToArray();
