@@ -481,6 +481,11 @@
             [GET / SET] Any velocity below this value will be resolved using inelastic equations i.e. won't lead to "bouncing".
             </summary>
         </member>
+        <member name="P:Duality.DualityAppData.PhysicsFixedTime">
+            <summary>
+            [GET / SET] Does the physics simulation use fixed time steps?
+            </summary>
+        </member>
         <member name="T:Duality.DualityUserData">
             <summary>
             Provides information about user settings for this Duality application / game.

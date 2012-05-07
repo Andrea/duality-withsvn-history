@@ -880,6 +880,7 @@ namespace Duality
 		private	float				speedOfSound		= 360.0f;
 		private	float				soundDopplerFactor	= 1.0f;
 		private	float				physicsVelThreshold	= PhysicsConvert.ToDualityUnit(0.5f * Time.SPFMult);
+		private	bool				physicsFixedTime	= true;
 
 		/// <summary>
 		/// [GET / SET] The name of your application / game. It will also be used as a window title by the launcher app.
@@ -947,6 +948,14 @@ namespace Duality
 		{
 			get { return this.physicsVelThreshold; }
 			set { this.physicsVelThreshold = value; }
+		}
+		/// <summary>
+		/// [GET / SET] Does the physics simulation use fixed time steps?
+		/// </summary>
+		public bool PhysicsFixedTime
+		{
+			get { return this.physicsFixedTime; }
+			set { this.physicsFixedTime = value; }
 		}
 	}
 
