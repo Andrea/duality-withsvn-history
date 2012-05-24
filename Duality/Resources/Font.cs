@@ -183,15 +183,16 @@ namespace Duality.Resources
 		}
 
 		
-		private	string		familyName	= FontFamily.GenericMonospace.Name;
-		private	float		size		= 10.0f;
-		private	FontStyle	style		= FontStyle.Regular;
-		private	ColorRgba	color		= ColorRgba.White;
-		private	ColorRgba	bgColor		= ColorRgba.TransparentWhite;
-		private	RenderHint	hint		= RenderHint.AntiAlias;
-		private	float		spacing		= 0.0f;
-		private	bool		monospace	= false;
-		private	bool		kerning		= false;
+		private	string		familyName		= FontFamily.GenericMonospace.Name;
+		private	float		size			= 10.0f;
+		private	FontStyle	style			= FontStyle.Regular;
+		private	ColorRgba	color			= ColorRgba.White;
+		private	ColorRgba	bgColor			= ColorRgba.TransparentWhite;
+		private	RenderHint	hint			= RenderHint.AntiAlias;
+		private	float		spacing			= 0.0f;
+		private	bool		monospace		= false;
+		private	bool		kerning			= false;
+		private bool		pixelPerfect	= true;
 		// Embedded custom font family
 		private	byte[]		customFamilyData	= null;
 		// Data that is automatically acquired while loading the font
@@ -320,6 +321,14 @@ namespace Duality.Resources
 		{
 			get { return this.kerning; }
 			set { this.kerning = value; this.needsReload = true; }
+		}
+		/// <summary>
+		/// [GET / SET] Whether this Font is to be displayed pixel-perfect without any <see cref="FlightSim.Resources.Texture"/> interpolation.
+		/// </summary>
+		public bool PixelPerfect
+		{
+			get { return this.pixelPerfect; }
+			set { this.pixelPerfect = value; this.needsReload = true; }
 		}
 		/// <summary>
 		/// [GET] Returns whether this Font needs a <see cref="ReloadData">reload</see> in order to apply
@@ -546,12 +555,13 @@ namespace Duality.Resources
 				}
 			}
 
+			bool useNearest = this.pixelPerfect || this.hint == RenderHint.Monochrome;
 			this.bodyAscent /= BodyAscentRef.Length;
 			this.pixelData = new Pixmap(pxTemp);
 			this.texture = new Texture(this.pixelData, 
 				Texture.SizeMode.Enlarge, 
-				this.hint == RenderHint.Monochrome ? OpenTK.Graphics.OpenGL.TextureMagFilter.Nearest : OpenTK.Graphics.OpenGL.TextureMagFilter.Linear,
-				this.hint == RenderHint.Monochrome ? OpenTK.Graphics.OpenGL.TextureMinFilter.Nearest : OpenTK.Graphics.OpenGL.TextureMinFilter.LinearMipmapLinear);
+				useNearest ? OpenTK.Graphics.OpenGL.TextureMagFilter.Nearest : OpenTK.Graphics.OpenGL.TextureMagFilter.Linear,
+				useNearest ? OpenTK.Graphics.OpenGL.TextureMinFilter.Nearest : OpenTK.Graphics.OpenGL.TextureMinFilter.LinearMipmapLinear);
 			this.texture.Atlas = new List<Rect>(atlas.Select(r => r.Transform(this.texture.UVRatio)));
 
 			this.mat = new Material(this.hint == RenderHint.Monochrome ? DrawTechnique.Mask : DrawTechnique.Alpha, ColorRgba.White, this.texture);
