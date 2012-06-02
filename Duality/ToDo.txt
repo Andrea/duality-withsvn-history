@@ -12,16 +12,35 @@
 	-->	"Did you know..?" screen?
 
 
+-->	Remove (comment out) Joint feature for now, since its incomplete and probably unstable
+-->	Reconsider RenderPasses / Rendering Pipeline
+	-->	Make it more like the one in FluSi?
+		-->	Freely configurable
+		-->	No hardcoded "Screen Overlay" (but a default one),
+			no hardcoded "ICmpScreenOverlayRenderer" (but a default base class)
 
---> Example Project: Tetris with Physics
-	-->	Need Joints for this in order to create partially destructible blocks
-	-->	No, actually we don't need Joints for this. As Farseer Joints are solved
-		iteratively, they will never be 100% rigid, not even the WeldJoint. To achieve
-		100% rigid connections (and improve performance) there should be a single (!)
-		body with multiple fixtures where each fixture can be removed individually
-		-->	Need a game-specific "BlockRenderer" for that which uses Collider shapes
-			to define its form and applies a texture to it.
-
+-->	Do some tweaks / cleanup according to FluSi
+	-->	Rename public fields to property-uppercase, since they might be replaced by properties some time
+	-->	Check timing and Time.TickFrame for bugs and tweaks
+		-->	Don't limit frame time in debug mode
+		-->	Don't use VSync in debug mode (is it used anyway?)
+			
+-->	Re-Implement Pixmaps without using System.Drawing.Bitmap except for loading image files
+	-->	System.Drawing.Bitmap doesn't properly handle fully transparent pixels (ignores their color)
+	-->	Can store pixel data directly as ColorRgba
+	-->	What class will replace Bitmap?
+		-->	Pixmap.Layer could do the job
+		-->	Should be fully usable without using a Pixmap, provide its own save / load
+		-->	Also, multi-layer support for Pixmaps would be neat
+		-->	No more auto-generated mipmaps in Textures, instead generate them in Pixmap?
+			-->	No, it's fine like it is now.
+			-->	But if there ARE suitable layers in the Pixmap already, use them instead.
+			-->	This enabled custom mipmap creation. Provide a debug Pixmap that shows mipmap levels.
+	-->	Remove Bitmap extension methods and directly implement them in Pixmap.Layer
+		-->	Don't clone by default, but provide a cloning version
+	-->	After that, ColorTransparentPixels will work properly for the first time - check current usages
+	-->	Use transparent white as background color for Fonts, always convert to fully-white-with-alpha first.
+	-->	Since I'm at it... implement Font effects?
 
 -->	Reconsider Transform External Updaters
 	-->	Would be great if they could be removed. Its inconsistent design and a little hacky.
