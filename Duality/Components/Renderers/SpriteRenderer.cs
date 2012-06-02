@@ -155,33 +155,33 @@ namespace Duality.Components.Renderers
 
 			if (vertices == null || vertices.Length != 4) vertices = new VertexFormat.VertexC1P3T2[4];
 
-			vertices[0].pos.X = posTemp.X + edge1.X;
-			vertices[0].pos.Y = posTemp.Y + edge1.Y;
-			vertices[0].pos.Z = posTemp.Z;
-			vertices[0].texCoord.X = uvRect.x;
-			vertices[0].texCoord.Y = uvRect.y;
-			vertices[0].clr = mainClr;
+			vertices[0].Pos.X = posTemp.X + edge1.X;
+			vertices[0].Pos.Y = posTemp.Y + edge1.Y;
+			vertices[0].Pos.Z = posTemp.Z;
+			vertices[0].TexCoord.X = uvRect.x;
+			vertices[0].TexCoord.Y = uvRect.y;
+			vertices[0].Color = mainClr;
 
-			vertices[1].pos.X = posTemp.X + edge2.X;
-			vertices[1].pos.Y = posTemp.Y + edge2.Y;
-			vertices[1].pos.Z = posTemp.Z;
-			vertices[1].texCoord.X = uvRect.x;
-			vertices[1].texCoord.Y = uvRect.MaxY;
-			vertices[1].clr = mainClr;
+			vertices[1].Pos.X = posTemp.X + edge2.X;
+			vertices[1].Pos.Y = posTemp.Y + edge2.Y;
+			vertices[1].Pos.Z = posTemp.Z;
+			vertices[1].TexCoord.X = uvRect.x;
+			vertices[1].TexCoord.Y = uvRect.MaxY;
+			vertices[1].Color = mainClr;
 
-			vertices[2].pos.X = posTemp.X + edge3.X;
-			vertices[2].pos.Y = posTemp.Y + edge3.Y;
-			vertices[2].pos.Z = posTemp.Z;
-			vertices[2].texCoord.X = uvRect.MaxX;
-			vertices[2].texCoord.Y = uvRect.MaxY;
-			vertices[2].clr = mainClr;
+			vertices[2].Pos.X = posTemp.X + edge3.X;
+			vertices[2].Pos.Y = posTemp.Y + edge3.Y;
+			vertices[2].Pos.Z = posTemp.Z;
+			vertices[2].TexCoord.X = uvRect.MaxX;
+			vertices[2].TexCoord.Y = uvRect.MaxY;
+			vertices[2].Color = mainClr;
 				
-			vertices[3].pos.X = posTemp.X + edge4.X;
-			vertices[3].pos.Y = posTemp.Y + edge4.Y;
-			vertices[3].pos.Z = posTemp.Z;
-			vertices[3].texCoord.X = uvRect.MaxX;
-			vertices[3].texCoord.Y = uvRect.y;
-			vertices[3].clr = mainClr;
+			vertices[3].Pos.X = posTemp.X + edge4.X;
+			vertices[3].Pos.Y = posTemp.Y + edge4.Y;
+			vertices[3].Pos.Z = posTemp.Z;
+			vertices[3].TexCoord.X = uvRect.MaxX;
+			vertices[3].TexCoord.Y = uvRect.y;
+			vertices[3].Color = mainClr;
 		}
 
 		public override void Draw(IDrawDevice device)
@@ -206,9 +206,9 @@ namespace Duality.Components.Renderers
 
 			this.PrepareVertices(ref this.vertices, device, mainClr, uvRect);
 			if (this.customMat != null)
-				device.AddVertices(this.customMat, BeginMode.Quads, this.vertices);
+				device.AddVertices(this.customMat, VertexMode.Quads, this.vertices);
 			else
-				device.AddVertices(this.sharedMat, BeginMode.Quads, this.vertices);
+				device.AddVertices(this.sharedMat, VertexMode.Quads, this.vertices);
 		}
 		internal override void CopyToInternal(Component target, Duality.Cloning.CloneProvider provider)
 		{

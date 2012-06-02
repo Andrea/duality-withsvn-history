@@ -140,12 +140,12 @@ namespace Duality.Components.Renderers
 				MathF.TransformDotVec(ref textHeight, ref xDot, ref yDot);
 				MathF.TransformDotVec(ref textMaxHeight, ref xDot, ref yDot);
 
-				device.AddVertices(new BatchInfo(DrawTechnique.Alpha, this.colorTint.WithAlpha(128)), BeginMode.LineLoop,
+				device.AddVertices(new BatchInfo(DrawTechnique.Alpha, this.colorTint.WithAlpha(128)), VertexMode.LineLoop,
 					new VertexFormat.VertexP3(posTemp),
 					new VertexFormat.VertexP3(posTemp + textWidth),
 					new VertexFormat.VertexP3(posTemp + textWidth + textHeight),
 					new VertexFormat.VertexP3(posTemp + textHeight));
-				device.AddVertices(new BatchInfo(DrawTechnique.Alpha, (ColorRgba.Red * this.colorTint).WithAlpha(128)), BeginMode.LineLoop,
+				device.AddVertices(new BatchInfo(DrawTechnique.Alpha, (ColorRgba.Red * this.colorTint).WithAlpha(128)), VertexMode.LineLoop,
 					new VertexFormat.VertexP3(posTemp),
 					new VertexFormat.VertexP3(posTemp + textMaxWidth),
 					new VertexFormat.VertexP3(posTemp + textMaxWidth + textMaxHeight),
@@ -160,19 +160,19 @@ namespace Duality.Components.Renderers
 					if (this.text.Fonts[i] != null && this.text.Fonts[i].IsAvailable) 
 					{
 						if (this.customMat == null)
-							device.AddVertices(this.text.Fonts[i].Res.Material, BeginMode.Quads, this.vertFont[i]);
+							device.AddVertices(this.text.Fonts[i].Res.Material, VertexMode.Quads, this.vertFont[i]);
 						else
 						{
 							BatchInfo cm = new BatchInfo(this.customMat);
 							cm.Textures = this.text.Fonts[i].Res.Material.Textures;
-							device.AddVertices(cm, BeginMode.Quads, this.vertFont[i]);
+							device.AddVertices(cm, VertexMode.Quads, this.vertFont[i]);
 						}
 					}
 				}
 			}
 			if (this.text.Icons != null && this.iconMat.IsAvailable)
 			{
-				device.AddVertices(this.iconMat, BeginMode.Quads, this.vertIcon);
+				device.AddVertices(this.iconMat, VertexMode.Quads, this.vertIcon);
 			}
 		}
 

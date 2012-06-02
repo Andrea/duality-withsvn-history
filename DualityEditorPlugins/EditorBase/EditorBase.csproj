@@ -82,7 +82,6 @@
     </Compile>
     <Compile Include="PropertyEditors\BatchInfoPropertyEditor.cs" />
     <Compile Include="PropertyEditors\ComponentPropertyEditor.cs" />
-    <Compile Include="PropertyEditors\Components\CameraPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Components\CameraRenderPassPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Components\ColliderPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Components\ColliderShapePropertyEditor.cs" />

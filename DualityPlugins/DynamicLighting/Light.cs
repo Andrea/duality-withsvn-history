@@ -58,11 +58,11 @@ namespace DynamicLighting
 			set
 			{
 				ColorHsva hsva = value.ToHsva();
-				if (hsva.v != 1.0f || hsva.a != 1.0f)
+				if (hsva.V != 1.0f || hsva.A != 1.0f)
 				{
-					this.intensity = hsva.v * hsva.a;
-					hsva.v = 1.0f;
-					hsva.a = 1.0f;
+					this.intensity = hsva.V * hsva.A;
+					hsva.V = 1.0f;
+					hsva.A = 1.0f;
 				}
 				this.color = hsva.ToRgba();
 			}
@@ -85,11 +85,11 @@ namespace DynamicLighting
 			set
 			{
 				ColorHsva hsva = value.ToHsva();
-				if (hsva.v != 1.0f || hsva.a != 1.0f)
+				if (hsva.V != 1.0f || hsva.A != 1.0f)
 				{
-					this.ambientIntensity = hsva.v * hsva.a;
-					hsva.v = 1.0f;
-					hsva.a = 1.0f;
+					this.ambientIntensity = hsva.V * hsva.A;
+					hsva.V = 1.0f;
+					hsva.A = 1.0f;
 				}
 				this.ambientColor = hsva.ToRgba();
 			}
@@ -243,9 +243,9 @@ namespace DynamicLighting
 
 				if (directional)
 				{
-					_lightPos[i * 4 + 0] = (float)light.ambientColor.r * light.ambientIntensity / 255.0f;
-					_lightPos[i * 4 + 1] = (float)light.ambientColor.g * light.ambientIntensity / 255.0f;
-					_lightPos[i * 4 + 2] = (float)light.ambientColor.b * light.ambientIntensity / 255.0f;
+					_lightPos[i * 4 + 0] = (float)light.ambientColor.R * light.ambientIntensity / 255.0f;
+					_lightPos[i * 4 + 1] = (float)light.ambientColor.G * light.ambientIntensity / 255.0f;
+					_lightPos[i * 4 + 2] = (float)light.ambientColor.B * light.ambientIntensity / 255.0f;
 					_lightPos[i * 4 + 3] = 0.0f;
 				}
 				else
@@ -261,9 +261,9 @@ namespace DynamicLighting
 				_lightDir[i * 4 + 2] = dir.Z;
 				_lightDir[i * 4 + 3] = dir == Vector3.Zero ? 0.0f : MathF.Max(light.spotFocus, 1.0f);
 
-				_lightColor[i * 3 + 0] = (float)light.color.r * light.intensity / 255.0f;
-				_lightColor[i * 3 + 1] = (float)light.color.g * light.intensity / 255.0f;
-				_lightColor[i * 3 + 2] = (float)light.color.b * light.intensity / 255.0f;
+				_lightColor[i * 3 + 0] = (float)light.color.R * light.intensity / 255.0f;
+				_lightColor[i * 3 + 1] = (float)light.color.G * light.intensity / 255.0f;
+				_lightColor[i * 3 + 2] = (float)light.color.B * light.intensity / 255.0f;
 
 				i++;
 				if (i >= _lightCount) break;
@@ -291,9 +291,9 @@ namespace DynamicLighting
 					translucencyFactor = MathF.Clamp(translucencyFactor, 0.0f, 1.0f);
 
 					Vector3 color = new Vector3(
-						(float)light.color.r * light.intensity / 255.0f,
-						(float)light.color.g * light.intensity / 255.0f,
-						(float)light.color.b * light.intensity / 255.0f);
+						(float)light.color.R * light.intensity / 255.0f,
+						(float)light.color.G * light.intensity / 255.0f,
+						(float)light.color.B * light.intensity / 255.0f);
 					Vector3.Multiply(ref color, translucencyFactor, out color);
 
 					lightColor += new Vector4(color);
@@ -319,9 +319,9 @@ namespace DynamicLighting
 					translucencyFactor = MathF.Clamp(translucencyFactor, 0.0f, 1.0f);
 					
 					Vector3 color = new Vector3(
-						(float)light.color.r * light.intensity / 255.0f,
-						(float)light.color.g * light.intensity / 255.0f,
-						(float)light.color.b * light.intensity / 255.0f);
+						(float)light.color.R * light.intensity / 255.0f,
+						(float)light.color.G * light.intensity / 255.0f,
+						(float)light.color.B * light.intensity / 255.0f);
 					Vector3.Multiply(ref color, attenFactor * spotFactor * translucencyFactor, out color);
 
 					lightColor += new Vector4(color);

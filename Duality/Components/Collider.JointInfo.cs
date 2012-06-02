@@ -11,6 +11,7 @@ using Duality.Resources;
 
 namespace Duality.Components
 {
+#if FALSE // Removed for now. Joints are an experimental feature.
 	public partial class Collider
 	{
 		/// <summary>
@@ -191,4 +192,5 @@ namespace Duality.Components
 			}
 		}
 	}
+#endif
 }

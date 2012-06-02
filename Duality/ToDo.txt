@@ -12,19 +12,6 @@
 	-->	"Did you know..?" screen?
 
 
--->	Remove (comment out) Joint feature for now, since its incomplete and probably unstable
--->	Reconsider RenderPasses / Rendering Pipeline
-	-->	Make it more like the one in FluSi?
-		-->	Freely configurable
-		-->	No hardcoded "Screen Overlay" (but a default one),
-			no hardcoded "ICmpScreenOverlayRenderer" (but a default base class)
-
--->	Do some tweaks / cleanup according to FluSi
-	-->	Rename public fields to property-uppercase, since they might be replaced by properties some time
-	-->	Check timing and Time.TickFrame for bugs and tweaks
-		-->	Don't limit frame time in debug mode
-		-->	Don't use VSync in debug mode (is it used anyway?)
-			
 -->	Re-Implement Pixmaps without using System.Drawing.Bitmap except for loading image files
 	-->	System.Drawing.Bitmap doesn't properly handle fully transparent pixels (ignores their color)
 	-->	Can store pixel data directly as ColorRgba

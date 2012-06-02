@@ -16,16 +16,16 @@ namespace Duality.VertexFormat
 		/// <summary>
 		/// The vertices position.
 		/// </summary>
-		public Vector3 pos;
+		public Vector3 Pos;
 		/// <summary>
 		/// The vertices texture coordinate.
 		/// </summary>
-		public Vector2 texCoord;
+		public Vector2 TexCoord;
 
 		Vector3 IVertexData.Pos
 		{
-			get { return this.pos; }
-			set { this.pos = value; }
+			get { return this.Pos; }
+			set { this.Pos = value; }
 		}
 		int IVertexData.TypeIndex
 		{
@@ -67,16 +67,16 @@ namespace Duality.VertexFormat
 
 		public VertexP3T2(float x, float y, float z, float u, float v)
 		{
-			this.pos.X = x;
-			this.pos.Y = y;
-			this.pos.Z = z;
-			this.texCoord.X = u;
-			this.texCoord.Y = v;
+			this.Pos.X = x;
+			this.Pos.Y = y;
+			this.Pos.Z = z;
+			this.TexCoord.X = u;
+			this.TexCoord.Y = v;
 		}
 		public VertexP3T2(Vector3 p, Vector2 t)
 		{
-			this.pos = p;
-			this.texCoord = t;
+			this.Pos = p;
+			this.TexCoord = t;
 		}
 	}
 }

@@ -15,7 +15,6 @@ namespace EditorBase.PropertyEditors
 			// -------- Specialized area --------
 			if (baseType == typeof(GameObject))			return PropertyGrid.EditorPriority_Specialized;
 			else if (baseType == typeof(Transform))		return PropertyGrid.EditorPriority_Specialized;
-			else if (baseType == typeof(Camera))		return PropertyGrid.EditorPriority_Specialized;
 			else if (baseType == typeof(Camera.Pass))	return PropertyGrid.EditorPriority_Specialized;
 			else if (baseType == typeof(SoundEmitter))	return PropertyGrid.EditorPriority_Specialized;
 			else if (baseType == typeof(BatchInfo))		return PropertyGrid.EditorPriority_Specialized;
@@ -34,7 +33,9 @@ namespace EditorBase.PropertyEditors
 
 			// -------- General area --------
 			else if (typeof(Collider.ShapeInfo).IsAssignableFrom(baseType))	return PropertyGrid.EditorPriority_General;
+#if FALSE // Removed for now. Joints are an experimental feature.
 			else if (typeof(Collider.JointInfo).IsAssignableFrom(baseType))	return PropertyGrid.EditorPriority_General;
+#endif
 			else if (typeof(Component).IsAssignableFrom(baseType))			return PropertyGrid.EditorPriority_General;
 			else if (typeof(Resource).IsAssignableFrom(baseType))			return PropertyGrid.EditorPriority_General;
 			else if (typeof(IContentRef).IsAssignableFrom(baseType))		return PropertyGrid.EditorPriority_General;
@@ -50,7 +51,6 @@ namespace EditorBase.PropertyEditors
 			// -------- Specialized area --------
 			if (baseType == typeof(GameObject))			e = new GameObjectOverviewPropertyEditor();
 			else if (baseType == typeof(Transform))		e = new TransformPropertyEditor();
-			else if (baseType == typeof(Camera))		e = new CameraPropertyEditor();
 			else if (baseType == typeof(Camera.Pass))	e = new CameraRenderPassPropertyEditor();
 			else if (baseType == typeof(SoundEmitter))	e = new SoundEmitterPropertyEditor();
 			else if (baseType == typeof(BatchInfo))		e = new BatchInfoPropertyEditor();
@@ -69,7 +69,9 @@ namespace EditorBase.PropertyEditors
 
 			// -------- General area --------
 			else if (typeof(Collider.ShapeInfo).IsAssignableFrom(baseType))	e = new ColliderShapePropertyEditor();
+#if FALSE // Removed for now. Joints are an experimental feature.
 			else if (typeof(Collider.JointInfo).IsAssignableFrom(baseType))	e = new ColliderJointPropertyEditor();
+#endif
 			else if (typeof(Component).IsAssignableFrom(baseType))			e = new ComponentPropertyEditor();
 			else if (typeof(Resource).IsAssignableFrom(baseType))			e = new ResourcePropertyEditor();
 			else if (typeof(IContentRef).IsAssignableFrom(baseType))		e = new IContentRefPropertyEditor();

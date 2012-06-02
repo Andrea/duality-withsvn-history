@@ -113,26 +113,6 @@ namespace Duality
 		void Draw(IDrawDevice device);
 	}
 	/// <summary>
-	/// Implement this interface in <see cref="Component">Components</see> that are able to render a screen overlay. 
-	/// This is useful for HUD, GUI or debug rendering. Screen overlays are rendered after both regular rendering and 
-	/// postprocessing. Unlike regular <see cref="ICmpRenderer">Renderers</see> they do not operate in 
-	/// <see cref="Duality.Components.Camera"/>-local space but screen space.
-	/// </summary>
-	public interface ICmpScreenOverlayRenderer
-	{
-		/// <summary>
-		/// Determines whether or not this screen overlay is visible to the specified <see cref="IDrawDevice"/>.
-		/// </summary>
-		/// <param name="device">The <see cref="IDrawDevice"/> to which visibility is determined.</param>
-		/// <returns>True, if this screen overlay is visible to the <see cref="IDrawDevice"/>. False, if not.</returns>
-		bool IsVisible(IDrawDevice device);
-		/// <summary>
-		/// Draws the screen overlay.
-		/// </summary>
-		/// <param name="device">The <see cref="IDrawDevice"/> to which the screen overlay is drawn.</param>
-		void DrawOverlay(IDrawDevice device);
-	}
-	/// <summary>
 	/// Implement this interface in <see cref="Component">Components</see> that require notification of
 	/// collision events that occur to the <see cref="GameObject"/> they belong to.
 	/// </summary>

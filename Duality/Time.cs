@@ -113,7 +113,7 @@ namespace Duality
 
 			frameCount++;
 
-			mainTimer = watch.ElapsedMilliseconds;
+			mainTimer = (float)watch.Elapsed.TotalMilliseconds;
 			lastDelta = MathF.Min(mainTimer - frameBegin, MsPFMult * 2); // Don't skip more than 2 frames / fall below 30 fps
 			frameBegin = mainTimer;
 

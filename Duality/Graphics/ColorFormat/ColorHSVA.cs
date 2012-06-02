@@ -92,19 +92,19 @@ namespace Duality.ColorFormat
 		/// <summary>
 		/// Hue component as float [0.0f - 1.0f].
 		/// </summary>
-		public	float	h;
+		public	float	H;
 		/// <summary>
 		/// Saturation component as float [0.0f - 1.0f].
 		/// </summary>
-		public	float	s;
+		public	float	S;
 		/// <summary>
 		/// Value component as float [0.0f - 1.0f].
 		/// </summary>
-		public	float	v;
+		public	float	V;
 		/// <summary>
 		/// Alpha component as float [0.0f - 1.0f].
 		/// </summary>
-		public	float	a;
+		public	float	A;
 
 		/// <summary>
 		/// Creates a new color based on an existing one. This is basically a copy-constructor.
@@ -112,10 +112,10 @@ namespace Duality.ColorFormat
 		/// <param name="clr"></param>
 		public ColorHsva(ColorHsva clr)
 		{
-			this.h = clr.h;
-			this.s = clr.s;
-			this.v = clr.v;
-			this.a = clr.a;
+			this.H = clr.H;
+			this.S = clr.S;
+			this.V = clr.V;
+			this.A = clr.A;
 		}
 		/// <summary>
 		/// Creates a new color.
@@ -126,10 +126,10 @@ namespace Duality.ColorFormat
 		/// <param name="a">Alpha as float [0.0f - 1.0f].</param>
 		public ColorHsva(float h, float s, float v, float a = 1.0f)
 		{
-			this.h = h;
-			this.s = s;
-			this.v = v;
-			this.a = a;
+			this.H = h;
+			this.S = s;
+			this.V = v;
+			this.A = a;
 		}
 		
 		/// <summary>
@@ -164,23 +164,23 @@ namespace Duality.ColorFormat
 		/// <returns></returns>
 		public ColorRgba ToRgba()
 		{
-			float hTemp = MathF.NormalizeVar(this.h * 360.0f, 0.0f, 360.0f) / 60.0f;
+			float hTemp = MathF.NormalizeVar(this.H * 360.0f, 0.0f, 360.0f) / 60.0f;
 			int hi = (int)MathF.Floor(hTemp) % 6;
 			float f = hTemp - MathF.Floor(hTemp);
 
-			float vTemp = MathF.Clamp(this.v, 0.0f, 1.0f) * 255.0f;
-			float sTemp = MathF.Clamp(this.s, 0.0f, 1.0f);
+			float vTemp = MathF.Clamp(this.V, 0.0f, 1.0f) * 255.0f;
+			float sTemp = MathF.Clamp(this.S, 0.0f, 1.0f);
 			byte v = (byte)vTemp;
 			byte p = (byte)(vTemp * (1.0f - sTemp));
 			byte q = (byte)(vTemp * (1.0f - f * sTemp));
 			byte t = (byte)(vTemp * (1.0f - (1.0f - f) * sTemp));
 
-			if (hi == 0)		return new ColorRgba(v, t, p, (byte)(int)MathF.Clamp(this.a * 255.0f, 0.0f, 255.0f));
-			else if (hi == 1)	return new ColorRgba(q, v, p, (byte)(int)MathF.Clamp(this.a * 255.0f, 0.0f, 255.0f));
-			else if (hi == 2)	return new ColorRgba(p, v, t, (byte)(int)MathF.Clamp(this.a * 255.0f, 0.0f, 255.0f));
-			else if (hi == 3)	return new ColorRgba(p, q, v, (byte)(int)MathF.Clamp(this.a * 255.0f, 0.0f, 255.0f));
-			else if (hi == 4)	return new ColorRgba(t, p, v, (byte)(int)MathF.Clamp(this.a * 255.0f, 0.0f, 255.0f));
-			else				return new ColorRgba(v, p, q, (byte)(int)MathF.Clamp(this.a * 255.0f, 0.0f, 255.0f));
+			if (hi == 0)		return new ColorRgba(v, t, p, (byte)(int)MathF.Clamp(this.A * 255.0f, 0.0f, 255.0f));
+			else if (hi == 1)	return new ColorRgba(q, v, p, (byte)(int)MathF.Clamp(this.A * 255.0f, 0.0f, 255.0f));
+			else if (hi == 2)	return new ColorRgba(p, v, t, (byte)(int)MathF.Clamp(this.A * 255.0f, 0.0f, 255.0f));
+			else if (hi == 3)	return new ColorRgba(p, q, v, (byte)(int)MathF.Clamp(this.A * 255.0f, 0.0f, 255.0f));
+			else if (hi == 4)	return new ColorRgba(t, p, v, (byte)(int)MathF.Clamp(this.A * 255.0f, 0.0f, 255.0f));
+			else				return new ColorRgba(v, p, q, (byte)(int)MathF.Clamp(this.A * 255.0f, 0.0f, 255.0f));
 		}
 		
 		/// <summary>
@@ -205,47 +205,47 @@ namespace Duality.ColorFormat
 		/// <param name="rgba"></param>
 		public void SetRgba(ColorRgba rgba)
 		{
-			float	min		= Math.Min(Math.Min(rgba.r, rgba.g), rgba.b);
-			float	max		= Math.Max(Math.Max(rgba.r, rgba.g), rgba.b);
+			float	min		= Math.Min(Math.Min(rgba.R, rgba.G), rgba.B);
+			float	max		= Math.Max(Math.Max(rgba.R, rgba.G), rgba.B);
 			float	delta	= max - min;
 			
 			if (max > 0.0f)
 			{
-				this.s = delta / max;
-				this.v = max / 255.0f;
+				this.S = delta / max;
+				this.V = max / 255.0f;
 
 				int maxInt = MathF.RoundToInt(max);
 				if (delta != 0.0f)
 				{
-					if (MathF.RoundToInt((float)rgba.r) == maxInt)
+					if (MathF.RoundToInt((float)rgba.R) == maxInt)
 					{
-						this.h = (float)(rgba.g - rgba.b) / delta;
+						this.H = (float)(rgba.G - rgba.B) / delta;
 					}
-					else if (MathF.RoundToInt((float)rgba.g) == maxInt)
+					else if (MathF.RoundToInt((float)rgba.G) == maxInt)
 					{
-						this.h = 2.0f + (float)(rgba.b - rgba.r) / delta;
+						this.H = 2.0f + (float)(rgba.B - rgba.R) / delta;
 					}
 					else
 					{
-						this.h = 4.0f + (float)(rgba.r - rgba.g) / delta;
+						this.H = 4.0f + (float)(rgba.R - rgba.G) / delta;
 					}
-					this.h *= 60.0f;
-					if (this.h < 0.0f) this.h += 360.0f;
+					this.H *= 60.0f;
+					if (this.H < 0.0f) this.H += 360.0f;
 				}
 				else
 				{
-					this.h = 0.0f;
+					this.H = 0.0f;
 				}
 			}
 			else
 			{
-				this.h = 0.0f;
-				this.s = 0.0f;
-				this.v = 0.0f;
+				this.H = 0.0f;
+				this.S = 0.0f;
+				this.V = 0.0f;
 			}
 
-			this.h /= 360.0f;
-			this.a = (float)rgba.a / 255.0f;
+			this.H /= 360.0f;
+			this.A = (float)rgba.A / 255.0f;
 		}
 		
 		/// <summary>
@@ -255,7 +255,7 @@ namespace Duality.ColorFormat
 		/// <returns></returns>
 		public bool Equals(ColorHsva other)
 		{
-			return this.h == other.h && this.s == other.s && this.v == other.v && this.a == other.a;
+			return this.H == other.H && this.S == other.S && this.V == other.V && this.A == other.A;
 		}
 		public override bool Equals(object obj)
 		{
@@ -270,7 +270,7 @@ namespace Duality.ColorFormat
 		}
 		public override string ToString()
 		{
-			return string.Format("ColorHSVA ({0:F}, {1:F}, {2:F}, {3:F} / #{4:X8})", this.h, this.s, this.v, this.a, this.ToIntRgba());
+			return string.Format("ColorHSVA ({0:F}, {1:F}, {2:F}, {3:F} / #{4:X8})", this.H, this.S, this.V, this.A, this.ToIntRgba());
 		}
 		
 		/// <summary>
@@ -356,10 +356,10 @@ namespace Duality.ColorFormat
 		{
 			ColorRgba temp = c.ToRgba();
 			return new OpenTK.Graphics.Color4(
-				temp.r,
-				temp.g,
-				temp.b,
-				temp.a);
+				temp.R,
+				temp.G,
+				temp.B,
+				temp.A);
 		}
 	}
 }

@@ -138,7 +138,7 @@ namespace Duality
 			Rectangle bounds = new Rectangle(bm.Width, bm.Height, 0, 0);
 			for (int i = 0; i < pixels.Length; i++)
 			{
-				if (pixels[i].a == 0) continue;
+				if (pixels[i].A == 0) continue;
 				int x = i % bm.Width;
 				int y = i / bm.Width;
 				bounds.X = Math.Min(bounds.X, x);
@@ -180,7 +180,7 @@ namespace Duality
 
 			for (int i = 0; i < pixelData.Length; i++)
 			{
-				if (pixelData[i].a != 0) continue;
+				if (pixelData[i].A != 0) continue;
 
 				pos.Y	= i / bm.Width;
 				pos.X	= i - (pos.Y * bm.Width);
@@ -206,22 +206,22 @@ namespace Duality
 				for (int j = 0; j < nPos.Length; j++)
 				{
 					if (!nOk[j]) continue;
-					if (pixelData[nPos[j]].a == 0) continue;
+					if (pixelData[nPos[j]].A == 0) continue;
 
 					if (mixClr == null)
 						mixClr = new int[4];
 
-					mixClr[0] += pixelData[nPos[j]].r * nMult[j];
-					mixClr[1] += pixelData[nPos[j]].g * nMult[j];
-					mixClr[2] += pixelData[nPos[j]].b * nMult[j];
+					mixClr[0] += pixelData[nPos[j]].R * nMult[j];
+					mixClr[1] += pixelData[nPos[j]].G * nMult[j];
+					mixClr[2] += pixelData[nPos[j]].B * nMult[j];
 					mixClr[3] += nMult[j];
 				}
 
 				if (mixClr != null)
 				{
-					pixelData[i].r = (byte)Math.Round((float)mixClr[0] / (float)mixClr[3]);
-					pixelData[i].g = (byte)Math.Round((float)mixClr[1] / (float)mixClr[3]);
-					pixelData[i].b = (byte)Math.Round((float)mixClr[2] / (float)mixClr[3]);
+					pixelData[i].R = (byte)Math.Round((float)mixClr[0] / (float)mixClr[3]);
+					pixelData[i].G = (byte)Math.Round((float)mixClr[1] / (float)mixClr[3]);
+					pixelData[i].B = (byte)Math.Round((float)mixClr[2] / (float)mixClr[3]);
 					mixClr = null;
 				}
 			}
@@ -243,7 +243,7 @@ namespace Duality
 
 			for (int i = 0; i < pixelData.Length; i++)
 			{
-				if (pixelData[i].a != 0) continue;
+				if (pixelData[i].A != 0) continue;
 				pixelData[i] = transparentColor;
 			}
 
@@ -266,10 +266,10 @@ namespace Duality
 			{
 				for (int i = 0; i < pixelData.Length; i++)
 				{
-					sum[0] += pixelData[i].r * ((float)pixelData[i].a / 255.0f);
-					sum[1] += pixelData[i].g * ((float)pixelData[i].a / 255.0f);
-					sum[2] += pixelData[i].b * ((float)pixelData[i].a / 255.0f);
-					sum[3] += (float)pixelData[i].a / 255.0f;
+					sum[0] += pixelData[i].R * ((float)pixelData[i].A / 255.0f);
+					sum[1] += pixelData[i].G * ((float)pixelData[i].A / 255.0f);
+					sum[2] += pixelData[i].B * ((float)pixelData[i].A / 255.0f);
+					sum[3] += (float)pixelData[i].A / 255.0f;
 					++count;
 				}
 				if (sum[3] <= 0.001f) return ColorRgba.TransparentBlack;
@@ -284,10 +284,10 @@ namespace Duality
 			{
 				for (int i = 0; i < pixelData.Length; i++)
 				{
-					sum[0] += pixelData[i].r;
-					sum[1] += pixelData[i].g;
-					sum[2] += pixelData[i].b;
-					sum[3] += pixelData[i].a;
+					sum[0] += pixelData[i].R;
+					sum[1] += pixelData[i].G;
+					sum[2] += pixelData[i].B;
+					sum[3] += pixelData[i].A;
 					++count;
 				}
 				if (count == 0) return ColorRgba.TransparentBlack;

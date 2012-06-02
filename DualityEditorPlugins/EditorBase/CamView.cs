@@ -557,9 +557,9 @@ namespace EditorBase
 		{
 			this.bgColorDialog.OldColor = Color.FromArgb(
 				255,
-				this.camComp.ClearColor.r,
-				this.camComp.ClearColor.g,
-				this.camComp.ClearColor.b);
+				this.camComp.ClearColor.R,
+				this.camComp.ClearColor.G,
+				this.camComp.ClearColor.B);
 			this.bgColorDialog.PrimaryAttribute = ColorPickerDialog.PrimaryAttrib.Hue;
 			if (this.bgColorDialog.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
 				this.bgColorDialog_ValueChanged(this.bgColorDialog, null);

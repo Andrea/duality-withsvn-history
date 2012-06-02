@@ -341,7 +341,9 @@ namespace Duality.Serialization
 					else
 					{
 						FieldInfo field = objSerializeType != null ? objSerializeType.Fields.FirstOrDefault(f => f.Name == fieldName) : null;
-						Type fieldType = fieldValue != null ? fieldValue.GetType() : field.FieldType;
+						Type fieldType = null;
+						if (fieldValue != null) fieldType = fieldValue.GetType();
+						else if (field != null) fieldType = field.FieldType;
 
 						if (obj != null)
 						{

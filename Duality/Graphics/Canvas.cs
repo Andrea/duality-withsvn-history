@@ -219,7 +219,7 @@ namespace Duality
 		/// <typeparam name="T"></typeparam>
 		/// <param name="vertices"></param>
 		/// <param name="mode"></param>
-		public void DrawVertices<T>(T[] vertices, BeginMode mode) where T : struct, IVertexData
+		public void DrawVertices<T>(T[] vertices, VertexMode mode) where T : struct, IVertexData
 		{
 			Vector3 pos = vertices[0].Pos;
 			float scale = 1.0f;
@@ -246,14 +246,14 @@ namespace Duality
 			VertexC1P3[] vertices = new VertexC1P3[points.Length];
 			for (int i = 0; i < points.Length; i++)
 			{
-				vertices[i].pos.X = (points[i].X - pos.X) * scale + posTemp.X + 0.5f;
-				vertices[i].pos.Y = (points[i].Y - pos.Y) * scale + posTemp.Y + 0.5f;
-				vertices[i].pos.Z = (z - pos.Z) * scale + posTemp.Z;
-				vertices[i].clr = shapeColor;
+				vertices[i].Pos.X = (points[i].X - pos.X) * scale + posTemp.X + 0.5f;
+				vertices[i].Pos.Y = (points[i].Y - pos.Y) * scale + posTemp.Y + 0.5f;
+				vertices[i].Pos.Z = (z - pos.Z) * scale + posTemp.Z;
+				vertices[i].Color = shapeColor;
 			}
 
 			this.CurrentState.TransformVertices(vertices, pos.Xy, scale);
-			this.device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.LineLoop, vertices);
+			this.device.AddVertices(this.CurrentState.MaterialDirect, VertexMode.LineLoop, vertices);
 		}
 
 		/// <summary>
@@ -285,45 +285,45 @@ namespace Duality
 			angle = 0.0f;
 			for (int i = 0; i < vertices.Length; i++)
 			{
-				vertices[i].pos.X = pos.X + (float)Math.Sin(angle) * r;
-				vertices[i].pos.Y = pos.Y - (float)Math.Cos(angle) * r;
-				vertices[i].pos.Z = pos.Z;
-				vertices[i].clr = shapeColor;
-				this.device.PreprocessCoords(ref vertices[i].pos, ref scale);
+				vertices[i].Pos.X = pos.X + (float)Math.Sin(angle) * r;
+				vertices[i].Pos.Y = pos.Y - (float)Math.Cos(angle) * r;
+				vertices[i].Pos.Z = pos.Z;
+				vertices[i].Color = shapeColor;
+				this.device.PreprocessCoords(ref vertices[i].Pos, ref scale);
 				angle += (MathF.TwoPi / segmentNum);
 			}
 			this.CurrentState.TransformVertices(vertices, shapeHandle, shapeHandleScale);
-			this.device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.LineLoop, vertices);
+			this.device.AddVertices(this.CurrentState.MaterialDirect, VertexMode.LineLoop, vertices);
 
 			// XZ circle
 			vertices = new VertexC1P3[segmentNum];
 			angle = 0.0f;
 			for (int i = 0; i < vertices.Length; i++)
 			{
-				vertices[i].pos.X = pos.X + (float)Math.Sin(angle) * r;
-				vertices[i].pos.Y = pos.Y;
-				vertices[i].pos.Z = pos.Z - (float)Math.Cos(angle) * r;
-				vertices[i].clr = shapeColor;
-				this.device.PreprocessCoords(ref vertices[i].pos, ref scale);
+				vertices[i].Pos.X = pos.X + (float)Math.Sin(angle) * r;
+				vertices[i].Pos.Y = pos.Y;
+				vertices[i].Pos.Z = pos.Z - (float)Math.Cos(angle) * r;
+				vertices[i].Color = shapeColor;
+				this.device.PreprocessCoords(ref vertices[i].Pos, ref scale);
 				angle += (MathF.TwoPi / segmentNum);
 			}
 			this.CurrentState.TransformVertices(vertices, shapeHandle, shapeHandleScale);
-			this.device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.LineLoop, vertices);
+			this.device.AddVertices(this.CurrentState.MaterialDirect, VertexMode.LineLoop, vertices);
 
 			// YZ circle
 			vertices = new VertexC1P3[segmentNum];
 			angle = 0.0f;
 			for (int i = 0; i < vertices.Length; i++)
 			{
-				vertices[i].pos.X = pos.X;
-				vertices[i].pos.Y = pos.Y + (float)Math.Sin(angle) * r;
-				vertices[i].pos.Z = pos.Z - (float)Math.Cos(angle) * r;
-				vertices[i].clr = shapeColor;
-				this.device.PreprocessCoords(ref vertices[i].pos, ref scale);
+				vertices[i].Pos.X = pos.X;
+				vertices[i].Pos.Y = pos.Y + (float)Math.Sin(angle) * r;
+				vertices[i].Pos.Z = pos.Z - (float)Math.Cos(angle) * r;
+				vertices[i].Color = shapeColor;
+				this.device.PreprocessCoords(ref vertices[i].Pos, ref scale);
 				angle += (MathF.TwoPi / segmentNum);
 			}
 			this.CurrentState.TransformVertices(vertices, shapeHandle, shapeHandleScale);
-			this.device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.LineLoop, vertices);
+			this.device.AddVertices(this.CurrentState.MaterialDirect, VertexMode.LineLoop, vertices);
 		}
 
 		/// <summary>
@@ -347,12 +347,12 @@ namespace Duality
 			Vector2 shapeHandle = pos.Xy;
 			ColorRgba shapeColor = this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor;
 			VertexC1P3[] vertices = new VertexC1P3[2];
-			vertices[0].pos = pos + new Vector3(0.5f, 0.5f, 0.0f);
-			vertices[1].pos = target + new Vector3(0.5f, 0.5f, 0.0f);
-			vertices[0].clr = shapeColor;
-			vertices[1].clr = shapeColor;
+			vertices[0].Pos = pos + new Vector3(0.5f, 0.5f, 0.0f);
+			vertices[1].Pos = target + new Vector3(0.5f, 0.5f, 0.0f);
+			vertices[0].Color = shapeColor;
+			vertices[1].Color = shapeColor;
 			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
-			device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.Lines, vertices);
+			device.AddVertices(this.CurrentState.MaterialDirect, VertexMode.Lines, vertices);
 		}
 		/// <summary>
 		/// Draws a flat line.
@@ -393,16 +393,16 @@ namespace Duality
 			Vector2 shapeHandle = pos.Xy;
 			ColorRgba shapeColor = this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor;
 			VertexC1P3[] vertices = new VertexC1P3[4];
-			vertices[0].pos = pos + new Vector3(left);
-			vertices[1].pos = target + new Vector3(left2);
-			vertices[2].pos = target + new Vector3(right2);
-			vertices[3].pos = pos + new Vector3(right);
-			vertices[0].clr = shapeColor;
-			vertices[1].clr = shapeColor;
-			vertices[2].clr = shapeColor;
-			vertices[3].clr = shapeColor;
+			vertices[0].Pos = pos + new Vector3(left);
+			vertices[1].Pos = target + new Vector3(left2);
+			vertices[2].Pos = target + new Vector3(right2);
+			vertices[3].Pos = pos + new Vector3(right);
+			vertices[0].Color = shapeColor;
+			vertices[1].Color = shapeColor;
+			vertices[2].Color = shapeColor;
+			vertices[3].Color = shapeColor;
 			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
-			device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.LineLoop, vertices);
+			device.AddVertices(this.CurrentState.MaterialDirect, VertexMode.LineLoop, vertices);
 		}
 		/// <summary>
 		/// Draws a thick, flat line.
@@ -436,18 +436,18 @@ namespace Duality
 			Vector2 shapeHandle = pos.Xy;
 			ColorRgba shapeColor = this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor;
 			VertexC1P3[] vertices = new VertexC1P3[4];
-			vertices[0].pos = new Vector3(pos.X + 0.5f, pos.Y + 0.5f, pos.Z);
-			vertices[1].pos = new Vector3(pos.X + w * scale + 0.5f, pos.Y + 0.5f, pos.Z);
-			vertices[2].pos = new Vector3(pos.X + w * scale + 0.5f, pos.Y + h * scale + 0.5f, pos.Z);
-			vertices[3].pos = new Vector3(pos.X + 0.5f, pos.Y + h * scale + 0.5f, pos.Z);
+			vertices[0].Pos = new Vector3(pos.X + 0.5f, pos.Y + 0.5f, pos.Z);
+			vertices[1].Pos = new Vector3(pos.X + w * scale + 0.5f, pos.Y + 0.5f, pos.Z);
+			vertices[2].Pos = new Vector3(pos.X + w * scale + 0.5f, pos.Y + h * scale + 0.5f, pos.Z);
+			vertices[3].Pos = new Vector3(pos.X + 0.5f, pos.Y + h * scale + 0.5f, pos.Z);
 
-			vertices[0].clr = shapeColor;
-			vertices[1].clr = shapeColor;
-			vertices[2].clr = shapeColor;
-			vertices[3].clr = shapeColor;
+			vertices[0].Color = shapeColor;
+			vertices[1].Color = shapeColor;
+			vertices[2].Color = shapeColor;
+			vertices[3].Color = shapeColor;
 
 			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
-			device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.LineLoop, vertices);
+			device.AddVertices(this.CurrentState.MaterialDirect, VertexMode.LineLoop, vertices);
 		}
 		/// <summary>
 		/// Draws a rectangle.
@@ -493,14 +493,14 @@ namespace Duality
 			// XY circle
 			for (int i = 0; i < vertices.Length; i++)
 			{
-				vertices[i].pos.X = pos.X + (float)Math.Sin(angle) * w + 0.5f;
-				vertices[i].pos.Y = pos.Y - (float)Math.Cos(angle) * h + 0.5f;
-				vertices[i].pos.Z = pos.Z;
-				vertices[i].clr = shapeColor;
+				vertices[i].Pos.X = pos.X + (float)Math.Sin(angle) * w + 0.5f;
+				vertices[i].Pos.Y = pos.Y - (float)Math.Cos(angle) * h + 0.5f;
+				vertices[i].Pos.Z = pos.Z;
+				vertices[i].Color = shapeColor;
 				angle += (MathF.TwoPi / segmentNum);
 			}
 			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
-			this.device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.LineLoop, vertices);
+			this.device.AddVertices(this.CurrentState.MaterialDirect, VertexMode.LineLoop, vertices);
 		}
 		/// <summary>
 		/// Draws an oval.
@@ -556,14 +556,14 @@ namespace Duality
 			VertexC1P3[] vertices = new VertexC1P3[points.Length];
 			for (int i = 0; i < points.Length; i++)
 			{
-				vertices[i].pos.X = (points[i].X - pos.X) * scale + posTemp.X;
-				vertices[i].pos.Y = (points[i].Y - pos.Y) * scale + posTemp.Y;
-				vertices[i].pos.Z = (z - pos.Z) * scale + posTemp.Z;
-				vertices[i].clr = shapeColor;
+				vertices[i].Pos.X = (points[i].X - pos.X) * scale + posTemp.X;
+				vertices[i].Pos.Y = (points[i].Y - pos.Y) * scale + posTemp.Y;
+				vertices[i].Pos.Z = (z - pos.Z) * scale + posTemp.Z;
+				vertices[i].Color = shapeColor;
 			}
 
 			this.CurrentState.TransformVertices(vertices, pos.Xy, scale);
-			this.device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.Polygon, vertices);
+			this.device.AddVertices(this.CurrentState.MaterialDirect, VertexMode.Polygon, vertices);
 		}
 
 		/// <summary>
@@ -594,16 +594,16 @@ namespace Duality
 			Vector2 shapeHandle = pos.Xy;
 			ColorRgba shapeColor = this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor;
 			VertexC1P3[] vertices = new VertexC1P3[4];
-			vertices[0].pos = pos + new Vector3(left);
-			vertices[1].pos = target + new Vector3(left2);
-			vertices[2].pos = target + new Vector3(right2);
-			vertices[3].pos = pos + new Vector3(right);
-			vertices[0].clr = shapeColor;
-			vertices[1].clr = shapeColor;
-			vertices[2].clr = shapeColor;
-			vertices[3].clr = shapeColor;
+			vertices[0].Pos = pos + new Vector3(left);
+			vertices[1].Pos = target + new Vector3(left2);
+			vertices[2].Pos = target + new Vector3(right2);
+			vertices[3].Pos = pos + new Vector3(right);
+			vertices[0].Color = shapeColor;
+			vertices[1].Color = shapeColor;
+			vertices[2].Color = shapeColor;
+			vertices[3].Color = shapeColor;
 			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
-			device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.Quads, vertices);
+			device.AddVertices(this.CurrentState.MaterialDirect, VertexMode.Quads, vertices);
 		}
 		/// <summary>
 		/// Fills a thick, flat line.
@@ -646,18 +646,18 @@ namespace Duality
 			ColorRgba shapeColor = this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor;
 			VertexC1P3[] vertices = new VertexC1P3[segmentNum + 2];
 
-			vertices[0].pos = pos;
-			vertices[0].clr = shapeColor;
+			vertices[0].Pos = pos;
+			vertices[0].Color = shapeColor;
 			for (int i = 1; i < vertices.Length; i++)
 			{
-				vertices[i].pos.X = pos.X + (float)Math.Sin(angle) * w;
-				vertices[i].pos.Y = pos.Y - (float)Math.Cos(angle) * h;
-				vertices[i].pos.Z = pos.Z;
-				vertices[i].clr = shapeColor;
+				vertices[i].Pos.X = pos.X + (float)Math.Sin(angle) * w;
+				vertices[i].Pos.Y = pos.Y - (float)Math.Cos(angle) * h;
+				vertices[i].Pos.Z = pos.Z;
+				vertices[i].Color = shapeColor;
 				angle += (MathF.TwoPi / segmentNum);
 			}
 			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
-			device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.TriangleFan, vertices);
+			device.AddVertices(this.CurrentState.MaterialDirect, VertexMode.TriangleFan, vertices);
 		}
 		/// <summary>
 		/// Fills an oval
@@ -716,18 +716,18 @@ namespace Duality
 			Vector2 shapeHandle = pos.Xy;
 			ColorRgba shapeColor = this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor;
 			VertexC1P3[] vertices = new VertexC1P3[4];
-			vertices[0].pos = new Vector3(pos.X, pos.Y, pos.Z);
-			vertices[1].pos = new Vector3(pos.X + w * scale, pos.Y, pos.Z);
-			vertices[2].pos = new Vector3(pos.X + w * scale, pos.Y + h * scale, pos.Z);
-			vertices[3].pos = new Vector3(pos.X, pos.Y + h * scale, pos.Z);
+			vertices[0].Pos = new Vector3(pos.X, pos.Y, pos.Z);
+			vertices[1].Pos = new Vector3(pos.X + w * scale, pos.Y, pos.Z);
+			vertices[2].Pos = new Vector3(pos.X + w * scale, pos.Y + h * scale, pos.Z);
+			vertices[3].Pos = new Vector3(pos.X, pos.Y + h * scale, pos.Z);
 
-			vertices[0].clr = shapeColor;
-			vertices[1].clr = shapeColor;
-			vertices[2].clr = shapeColor;
-			vertices[3].clr = shapeColor;
+			vertices[0].Color = shapeColor;
+			vertices[1].Color = shapeColor;
+			vertices[2].Color = shapeColor;
+			vertices[3].Color = shapeColor;
 
 			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
-			device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.Quads, vertices);
+			device.AddVertices(this.CurrentState.MaterialDirect, VertexMode.Quads, vertices);
 		}
 		/// <summary>
 		/// Fills a rectangle.
@@ -769,23 +769,23 @@ namespace Duality
 			ColorRgba shapeColor = this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor;
 			VertexC1P3T2[] vertices = new VertexC1P3T2[4];
 
-			vertices[0].pos = new Vector3(pos.X, pos.Y, pos.Z);
-			vertices[1].pos = new Vector3(pos.X + w * scale, pos.Y, pos.Z);
-			vertices[2].pos = new Vector3(pos.X + w * scale, pos.Y + h * scale, pos.Z);
-			vertices[3].pos = new Vector3(pos.X, pos.Y + h * scale, pos.Z);
+			vertices[0].Pos = new Vector3(pos.X, pos.Y, pos.Z);
+			vertices[1].Pos = new Vector3(pos.X + w * scale, pos.Y, pos.Z);
+			vertices[2].Pos = new Vector3(pos.X + w * scale, pos.Y + h * scale, pos.Z);
+			vertices[3].Pos = new Vector3(pos.X, pos.Y + h * scale, pos.Z);
 
-			vertices[0].texCoord = new Vector2(uvX * mainTexUVRatio.X, uvY * mainTexUVRatio.Y);
-			vertices[1].texCoord = new Vector2((uvX + uvW) * mainTexUVRatio.X, uvY * mainTexUVRatio.Y);
-			vertices[2].texCoord = new Vector2((uvX + uvW) * mainTexUVRatio.X, (uvY + uvH) * mainTexUVRatio.Y);
-			vertices[3].texCoord = new Vector2(uvX * mainTexUVRatio.X, (uvY + uvH) * mainTexUVRatio.Y);
+			vertices[0].TexCoord = new Vector2(uvX * mainTexUVRatio.X, uvY * mainTexUVRatio.Y);
+			vertices[1].TexCoord = new Vector2((uvX + uvW) * mainTexUVRatio.X, uvY * mainTexUVRatio.Y);
+			vertices[2].TexCoord = new Vector2((uvX + uvW) * mainTexUVRatio.X, (uvY + uvH) * mainTexUVRatio.Y);
+			vertices[3].TexCoord = new Vector2(uvX * mainTexUVRatio.X, (uvY + uvH) * mainTexUVRatio.Y);
 
-			vertices[0].clr = shapeColor;
-			vertices[1].clr = shapeColor;
-			vertices[2].clr = shapeColor;
-			vertices[3].clr = shapeColor;
+			vertices[0].Color = shapeColor;
+			vertices[1].Color = shapeColor;
+			vertices[2].Color = shapeColor;
+			vertices[3].Color = shapeColor;
 
 			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
-			device.AddVertices(this.CurrentState.MaterialDirect, BeginMode.Quads, vertices);
+			device.AddVertices(this.CurrentState.MaterialDirect, VertexMode.Quads, vertices);
 		}
 		/// <summary>
 		/// Draws a textured rectangle.
@@ -902,7 +902,7 @@ namespace Duality
 			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
 			BatchInfo customMat = new BatchInfo(this.CurrentState.MaterialDirect);
 			customMat.MainTexture = font.Material.MainTexture;
-			device.AddVertices(customMat, BeginMode.Quads, vertices);
+			device.AddVertices(customMat, VertexMode.Quads, vertices);
 		}
 		/// <summary>
 		/// Draws the specified text string.

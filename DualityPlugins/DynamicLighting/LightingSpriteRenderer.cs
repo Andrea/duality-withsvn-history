@@ -124,8 +124,8 @@ namespace DynamicLighting
 
 			this.PrepareVerticesLight(ref this.verticesLight, device, mainClr, uvRect, tech);
 
-			if (this.customMat != null)	device.AddVertices(this.customMat, BeginMode.Quads, this.verticesLight);
-			else						device.AddVertices(this.sharedMat, BeginMode.Quads, this.verticesLight);
+			if (this.customMat != null)	device.AddVertices(this.customMat, VertexMode.Quads, this.verticesLight);
+			else						device.AddVertices(this.sharedMat, VertexMode.Quads, this.verticesLight);
 		}
 	}
 }

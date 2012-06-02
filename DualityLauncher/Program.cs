@@ -11,7 +11,6 @@ namespace DualityLauncher
 	public class DualityLauncher : GameWindow
 	{
 		private Stopwatch	frameLimiterWatch	= new Stopwatch();
-		private	double		frameLimiterLast	= 0.0d;
 
 		public DualityLauncher(int w, int h, GraphicsMode mode, string title, GameWindowFlags flags)
 			: base(w, h, mode, title, flags)
@@ -30,17 +29,20 @@ namespace DualityLauncher
 				return;
 			}
 			
-			// Assure we'll at least wait 16 ms until updating again.
-			if (this.frameLimiterWatch.IsRunning)
+			if (!System.Diagnostics.Debugger.IsAttached) // Don't limit frame rate when debugging.
 			{
-			    while (this.frameLimiterWatch.Elapsed.TotalSeconds < 0.016d) 
-			    {
-			        // Go to sleep if we'd have to wait too long
-			        if (this.frameLimiterWatch.Elapsed.TotalSeconds < 0.01d)
-			            System.Threading.Thread.Sleep(1);
-			    }
+				// Assure we'll at least wait 16 ms until updating again.
+				if (this.frameLimiterWatch.IsRunning)
+				{
+					while (this.frameLimiterWatch.Elapsed.TotalSeconds < 0.016d) 
+					{
+						// Go to sleep if we'd have to wait too long
+						if (this.frameLimiterWatch.Elapsed.TotalSeconds < 0.01d)
+							System.Threading.Thread.Sleep(1);
+					}
+				}
+				this.frameLimiterWatch.Restart();
 			}
-			this.frameLimiterWatch.Restart();
 			DualityApp.Update();
 		}
 		protected override void OnRenderFrame(FrameEventArgs e)
@@ -93,7 +95,7 @@ namespace DualityLauncher
 				Scene.Current = DualityApp.AppData.StartScene.Res;
 
 				// Run the DualityApp
-				launcherWindow.VSync = VSyncMode.On;
+				launcherWindow.VSync = System.Diagnostics.Debugger.IsAttached ? VSyncMode.Off : VSyncMode.On; // Don't limit frame rate when debugging.
 				launcherWindow.Run();
 			}
 			DualityApp.Terminate();

@@ -16,12 +16,12 @@ namespace Duality.VertexFormat
 		/// <summary>
 		/// The vertices position.
 		/// </summary>
-		public Vector3 pos;
+		public Vector3 Pos;
 
 		Vector3 IVertexData.Pos
 		{
-			get { return this.pos; }
-			set { this.pos = value; }
+			get { return this.Pos; }
+			set { this.Pos = value; }
 		}
 		int IVertexData.TypeIndex
 		{
@@ -55,13 +55,13 @@ namespace Duality.VertexFormat
 
 		public VertexP3(float x, float y, float z)
 		{
-			this.pos.X = x;
-			this.pos.Y = y;
-			this.pos.Z = z;
+			this.Pos.X = x;
+			this.Pos.Y = y;
+			this.Pos.Z = z;
 		}
 		public VertexP3(Vector3 p)
 		{
-			this.pos = p;
+			this.Pos = p;
 		}
 	}
 }

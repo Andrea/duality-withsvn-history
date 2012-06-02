@@ -117,7 +117,7 @@ namespace DualityEditor
 			if (dataObj != null)
 			{
 				var rgbaQuery = color.Select(c => c.ConvertTo<ColorRgba>());
-				dataObj.SetText(rgbaQuery.ToString(c => string.Format("{0},{1},{2},{3}", c.r, c.g, c.b, c.a), ", "));
+				dataObj.SetText(rgbaQuery.ToString(c => string.Format("{0},{1},{2},{3}", c.R, c.G, c.B, c.A), ", "));
 			}
 		}
 		public static bool ContainsIColorData(this IDataObject data)

@@ -21,22 +21,4 @@ namespace Duality.ObjectManagers
 			return this.ActiveObjects.OfType<ICmpRenderer>().Where(renderer => renderer.IsVisible(device));
 		}
 	}
-	
-	/// <summary>
-	/// Manages a set of <see cref="ICmpScreenOverlayRenderer">Screen Overlays</see> and exposes suitable object enumerations as well as un/registeration events.
-	/// If a registered object has been disposed, it will be automatically unregistered.
-	/// </summary>
-	[Serializable]
-	public class OverlayRendererManager : ObjectManager<Component>
-	{
-		/// <summary>
-		/// Enumerates all <see cref="ICmpScreenOverlayRenderer">Screen Overlays</see> that are visible to the specified <see cref="IDrawDevice"/>.
-		/// </summary>
-		/// <param name="device"></param>
-		/// <returns></returns>
-		public IEnumerable<ICmpScreenOverlayRenderer> QueryVisible(IDrawDevice device)
-		{
-			return this.ActiveObjects.OfType<ICmpScreenOverlayRenderer>().Where(renderer => renderer.IsVisible(device));
-		}
-	}
 }

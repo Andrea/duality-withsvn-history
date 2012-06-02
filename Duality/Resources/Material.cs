@@ -431,7 +431,7 @@ namespace Duality.Resources
 			if (object.ReferenceEquals(this, lastInfo)) return;
 
 			// Setup main color
-			GL.Color4(this.mainColor.r, this.mainColor.g, this.mainColor.b, this.mainColor.a);
+			GL.Color4(this.mainColor.R, this.mainColor.G, this.mainColor.B, this.mainColor.A);
 
 			// Setup technique
 			this.technique.Res.SetupForRendering(device, this, (lastInfo == null) ? null : lastInfo.technique.Res);

@@ -92,19 +92,19 @@ namespace Duality.ColorFormat
 		/// <summary>
 		/// Red color component.
 		/// </summary>
-		public	byte	r;
+		public	byte	R;
 		/// <summary>
 		/// Green color component.
 		/// </summary>
-		public	byte	g;
+		public	byte	G;
 		/// <summary>
 		/// Blue color component.
 		/// </summary>
-		public	byte	b;
+		public	byte	B;
 		/// <summary>
 		/// Alpha color component. Usually treated as opacity.
 		/// </summary>
-		public	byte	a;
+		public	byte	A;
 
 		/// <summary>
 		/// Creates a new color based on an existing one. This is basically a copy-constructor.
@@ -112,10 +112,10 @@ namespace Duality.ColorFormat
 		/// <param name="clr"></param>
 		public ColorRgba(ColorRgba clr)
 		{
-			this.r = clr.r;
-			this.g = clr.g;
-			this.b = clr.b;
-			this.a = clr.a;
+			this.R = clr.R;
+			this.G = clr.G;
+			this.B = clr.B;
+			this.A = clr.A;
 		}
 		/// <summary>
 		/// Creates a new color based on an int-Rgba value.
@@ -123,10 +123,10 @@ namespace Duality.ColorFormat
 		/// <param name="rgba"></param>
 		public ColorRgba(int rgba)
 		{
-			this.r = (byte)((rgba & 0xFF000000) >> 24);
-			this.g = (byte)((rgba & 0x00FF0000) >> 16);
-			this.b = (byte)((rgba & 0x0000FF00) >> 8);
-			this.a = (byte)(rgba & 0x000000FF);
+			this.R = (byte)((rgba & 0xFF000000) >> 24);
+			this.G = (byte)((rgba & 0x00FF0000) >> 16);
+			this.B = (byte)((rgba & 0x0000FF00) >> 8);
+			this.A = (byte)(rgba & 0x000000FF);
 		}
 		/// <summary>
 		/// Creates a new color.
@@ -137,10 +137,10 @@ namespace Duality.ColorFormat
 		/// <param name="a">The alpha component.</param>
 		public ColorRgba(byte r, byte g, byte b, byte a = 255)
 		{
-			this.r = r;
-			this.g = g;
-			this.b = b;
-			this.a = a;
+			this.R = r;
+			this.G = g;
+			this.B = b;
+			this.A = a;
 		}
 		/// <summary>
 		/// Creates a new color based on value (brightness) and alpha.
@@ -149,10 +149,10 @@ namespace Duality.ColorFormat
 		/// <param name="a">The colors alpha value.</param>
 		public ColorRgba(byte value, byte a = 255)
 		{
-			this.r = value;
-			this.g = value;
-			this.b = value;
-			this.a = a;
+			this.R = value;
+			this.G = value;
+			this.B = value;
+			this.A = a;
 		}
 		/// <summary>
 		/// Creates a new color.
@@ -163,10 +163,10 @@ namespace Duality.ColorFormat
 		/// <param name="a">The alpha component as float [0.0f - 1.0f].</param>
 		public ColorRgba(float r, float g, float b, float a = 1.0f)
 		{
-			this.r = (byte)MathF.Clamp((int)(r * 255.0f), 0, 255);
-			this.g = (byte)MathF.Clamp((int)(g * 255.0f), 0, 255);
-			this.b = (byte)MathF.Clamp((int)(b * 255.0f), 0, 255);
-			this.a = (byte)MathF.Clamp((int)(a * 255.0f), 0, 255);
+			this.R = (byte)MathF.Clamp((int)(r * 255.0f), 0, 255);
+			this.G = (byte)MathF.Clamp((int)(g * 255.0f), 0, 255);
+			this.B = (byte)MathF.Clamp((int)(b * 255.0f), 0, 255);
+			this.A = (byte)MathF.Clamp((int)(a * 255.0f), 0, 255);
 		}
 		/// <summary>
 		/// Creates a new color based on value (brightness) and alpha.
@@ -175,10 +175,10 @@ namespace Duality.ColorFormat
 		/// <param name="a">The colors alpha value as float [0.0f - 1.0f].</param>
 		public ColorRgba(float value, float a = 1.0f)
 		{
-			this.r = (byte)MathF.Clamp((int)(value * 255.0f), 0, 255);
-			this.g = this.r;
-			this.b = this.r;
-			this.a = (byte)MathF.Clamp((int)(a * 255.0f), 0, 255);
+			this.R = (byte)MathF.Clamp((int)(value * 255.0f), 0, 255);
+			this.G = this.R;
+			this.B = this.R;
+			this.A = (byte)MathF.Clamp((int)(a * 255.0f), 0, 255);
 		}
 		
 		/// <summary>
@@ -188,7 +188,7 @@ namespace Duality.ColorFormat
 		/// <returns>A new color with the specified adjustments.</returns>
 		public ColorRgba WithRed(byte r)
 		{
-			return new ColorRgba(r, this.g, this.b, this.a);
+			return new ColorRgba(r, this.G, this.B, this.A);
 		}
 		/// <summary>
 		/// Returns a new version of the color with an adjusted green component.
@@ -197,7 +197,7 @@ namespace Duality.ColorFormat
 		/// <returns>A new color with the specified adjustments.</returns>
 		public ColorRgba WithGreen(byte g)
 		{
-			return new ColorRgba(this.r, g, this.b, this.a);
+			return new ColorRgba(this.R, g, this.B, this.A);
 		}
 		/// <summary>
 		/// Returns a new version of the color with an adjusted blue component.
@@ -206,7 +206,7 @@ namespace Duality.ColorFormat
 		/// <returns>A new color with the specified adjustments.</returns>
 		public ColorRgba WithBlue(byte b)
 		{
-			return new ColorRgba(this.r, this.g, b, this.a);
+			return new ColorRgba(this.R, this.G, b, this.A);
 		}
 		/// <summary>
 		/// Returns a new version of the color with an adjusted alpha component.
@@ -215,7 +215,7 @@ namespace Duality.ColorFormat
 		/// <returns>A new color with the specified adjustments.</returns>
 		public ColorRgba WithAlpha(byte a)
 		{
-			return new ColorRgba(this.r, this.g, this.b, a);
+			return new ColorRgba(this.R, this.G, this.B, a);
 		}
 		/// <summary>
 		/// Returns a new version of the color with an adjusted red component.
@@ -224,7 +224,7 @@ namespace Duality.ColorFormat
 		/// <returns>A new color with the specified adjustments.</returns>
 		public ColorRgba WithRed(float r)
 		{
-			return new ColorRgba((byte)MathF.Clamp((int)(r * 255.0f), 0, 255), this.g, this.b, this.a);
+			return new ColorRgba((byte)MathF.Clamp((int)(r * 255.0f), 0, 255), this.G, this.B, this.A);
 		}
 		/// <summary>
 		/// Returns a new version of the color with an adjusted green component.
@@ -233,7 +233,7 @@ namespace Duality.ColorFormat
 		/// <returns>A new color with the specified adjustments.</returns>
 		public ColorRgba WithGreen(float g)
 		{
-			return new ColorRgba(this.r, (byte)MathF.Clamp((int)(g * 255.0f), 0, 255), this.b, this.a);
+			return new ColorRgba(this.R, (byte)MathF.Clamp((int)(g * 255.0f), 0, 255), this.B, this.A);
 		}
 		/// <summary>
 		/// Returns a new version of the color with an adjusted blue component.
@@ -242,7 +242,7 @@ namespace Duality.ColorFormat
 		/// <returns>A new color with the specified adjustments.</returns>
 		public ColorRgba WithBlue(float b)
 		{
-			return new ColorRgba(this.r, this.g, (byte)MathF.Clamp((int)(b * 255.0f), 0, 255), this.a);
+			return new ColorRgba(this.R, this.G, (byte)MathF.Clamp((int)(b * 255.0f), 0, 255), this.A);
 		}
 		/// <summary>
 		/// Returns a new version of the color with an adjusted alpha component.
@@ -251,7 +251,7 @@ namespace Duality.ColorFormat
 		/// <returns>A new color with the specified adjustments.</returns>
 		public ColorRgba WithAlpha(float a)
 		{
-			return new ColorRgba(this.r, this.g, this.b, (byte)MathF.Clamp((int)(a * 255.0f), 0, 255));
+			return new ColorRgba(this.R, this.G, this.B, (byte)MathF.Clamp((int)(a * 255.0f), 0, 255));
 		}
 
 		/// <summary>
@@ -261,7 +261,7 @@ namespace Duality.ColorFormat
 		/// <returns>The colors luminance as float [0.0f - 1.0f].</returns>
 		public float GetLuminance()
 		{
-			return (0.2126f * this.r + 0.7152f * this.g + 0.0722f * this.b) / 255.0f;
+			return (0.2126f * this.R + 0.7152f * this.G + 0.0722f * this.B) / 255.0f;
 		}
 
 		/// <summary>
@@ -270,7 +270,7 @@ namespace Duality.ColorFormat
 		/// <returns></returns>
 		public int ToIntRgba()
 		{
-			return ((int)this.r << 24) | ((int)this.g << 16) | ((int)this.b << 8) | ((int)this.a);
+			return ((int)this.R << 24) | ((int)this.G << 16) | ((int)this.B << 8) | ((int)this.A);
 		}
 		/// <summary>
 		/// Converts the color to int-Argb.
@@ -278,7 +278,7 @@ namespace Duality.ColorFormat
 		/// <returns></returns>
 		public int ToIntArgb()
 		{
-			return ((int)this.a << 24) | ((int)this.r << 16) | ((int)this.g << 8) | ((int)this.b);
+			return ((int)this.A << 24) | ((int)this.R << 16) | ((int)this.G << 8) | ((int)this.B);
 		}
 		/// <summary>
 		/// Converts the color to Hsva.
@@ -295,10 +295,10 @@ namespace Duality.ColorFormat
 		/// <param name="argb"></param>
 		public void SetIntArgb(int argb)
 		{
-			this.a = (byte)((argb & 0xFF000000) >> 24);
-			this.r = (byte)((argb & 0x00FF0000) >> 16);
-			this.g = (byte)((argb & 0x0000FF00) >> 8);
-			this.b = (byte)(argb & 0x000000FF);
+			this.A = (byte)((argb & 0xFF000000) >> 24);
+			this.R = (byte)((argb & 0x00FF0000) >> 16);
+			this.G = (byte)((argb & 0x0000FF00) >> 8);
+			this.B = (byte)(argb & 0x000000FF);
 		}
 		/// <summary>
 		/// Adjusts the color to match the specified int-Rgba color.
@@ -306,10 +306,10 @@ namespace Duality.ColorFormat
 		/// <param name="rgba"></param>
 		public void SetIntRgba(int rgba)
 		{
-			this.r = (byte)((rgba & 0xFF000000) >> 24);
-			this.g = (byte)((rgba & 0x00FF0000) >> 16);
-			this.b = (byte)((rgba & 0x0000FF00) >> 8);
-			this.a = (byte)(rgba & 0x000000FF);
+			this.R = (byte)((rgba & 0xFF000000) >> 24);
+			this.G = (byte)((rgba & 0x00FF0000) >> 16);
+			this.B = (byte)((rgba & 0x0000FF00) >> 8);
+			this.A = (byte)(rgba & 0x000000FF);
 		}
 		/// <summary>
 		/// Adjusts the color to match the specified Hsva color.
@@ -327,7 +327,7 @@ namespace Duality.ColorFormat
 		/// <returns></returns>
 		public bool Equals(ColorRgba other)
 		{
-			return this.r == other.r && this.g == other.g && this.b == other.b && this.a == other.a;
+			return this.R == other.R && this.G == other.G && this.B == other.B && this.A == other.A;
 		}
 		public override bool Equals(object obj)
 		{
@@ -342,7 +342,7 @@ namespace Duality.ColorFormat
 		}
 		public override string ToString()
 		{
-			return string.Format("ColorRGBA ({0}, {1}, {2}, {3} / #{4:X8})", this.r, this.g, this.b, this.a, this.ToIntRgba());
+			return string.Format("ColorRGBA ({0}, {1}, {2}, {3} / #{4:X8})", this.R, this.G, this.B, this.A, this.ToIntRgba());
 		}
 
 		/// <summary>
@@ -388,10 +388,10 @@ namespace Duality.ColorFormat
 		{
 			float invFactor = 1.0f - factor;
 			return new ColorRgba(
-				(byte)Math.Min(255.0f, Math.Max(0.0f, first.r * invFactor + second.r * factor)),
-				(byte)Math.Min(255.0f, Math.Max(0.0f, first.g * invFactor + second.g * factor)),
-				(byte)Math.Min(255.0f, Math.Max(0.0f, first.b * invFactor + second.b * factor)),
-				(byte)Math.Min(255.0f, Math.Max(0.0f, first.a * invFactor + second.a * factor)));
+				(byte)Math.Min(255.0f, Math.Max(0.0f, first.R * invFactor + second.R * factor)),
+				(byte)Math.Min(255.0f, Math.Max(0.0f, first.G * invFactor + second.G * factor)),
+				(byte)Math.Min(255.0f, Math.Max(0.0f, first.B * invFactor + second.B * factor)),
+				(byte)Math.Min(255.0f, Math.Max(0.0f, first.A * invFactor + second.A * factor)));
 		}
 
 		/// <summary>
@@ -443,10 +443,10 @@ namespace Duality.ColorFormat
 		public static ColorRgba operator +(ColorRgba left, ColorRgba right)
         {
             return new ColorRgba(
-				(byte)Math.Min(255, left.r + right.r), 
-				(byte)Math.Min(255, left.g + right.g), 
-				(byte)Math.Min(255, left.b + right.b), 
-				(byte)Math.Min(255, left.a + right.a));
+				(byte)Math.Min(255, left.R + right.R), 
+				(byte)Math.Min(255, left.G + right.G), 
+				(byte)Math.Min(255, left.B + right.B), 
+				(byte)Math.Min(255, left.A + right.A));
         }
 		/// <summary>
 		/// Subtracts the second color from the first.
@@ -457,10 +457,10 @@ namespace Duality.ColorFormat
 		public static ColorRgba operator -(ColorRgba left, ColorRgba right)
         {
             return new ColorRgba(
-				(byte)Math.Max(0, left.r - right.r), 
-				(byte)Math.Max(0, left.g - right.g), 
-				(byte)Math.Max(0, left.b - right.b), 
-				(byte)Math.Max(0, left.a - right.a));
+				(byte)Math.Max(0, left.R - right.R), 
+				(byte)Math.Max(0, left.G - right.G), 
+				(byte)Math.Max(0, left.B - right.B), 
+				(byte)Math.Max(0, left.A - right.A));
         }
 		/// <summary>
 		/// Multiplies two colors.
@@ -471,10 +471,10 @@ namespace Duality.ColorFormat
 		public static ColorRgba operator *(ColorRgba left, ColorRgba right)
         {
             return new ColorRgba(
-				(byte)(left.r * right.r / 255), 
-				(byte)(left.g * right.g / 255), 
-				(byte)(left.b * right.b / 255), 
-				(byte)(left.a * right.a / 255));
+				(byte)(left.R * right.R / 255), 
+				(byte)(left.G * right.G / 255), 
+				(byte)(left.B * right.B / 255), 
+				(byte)(left.A * right.A / 255));
         }
 		/// <summary>
 		/// Returns the inverse of a color.
@@ -484,10 +484,10 @@ namespace Duality.ColorFormat
 		public static ColorRgba operator -(ColorRgba c)
         {
             return new ColorRgba(
-				(byte)(255 - c.r), 
-				(byte)(255 - c.g), 
-				(byte)(255 - c.b), 
-				(byte)(255 - c.a));
+				(byte)(255 - c.R), 
+				(byte)(255 - c.G), 
+				(byte)(255 - c.B), 
+				(byte)(255 - c.A));
         }
 		
 		public static explicit operator ColorRgba(int c)
@@ -517,10 +517,10 @@ namespace Duality.ColorFormat
 		public static explicit operator OpenTK.Graphics.Color4(ColorRgba c)
 		{
 			return new OpenTK.Graphics.Color4(
-				c.r,
-				c.g,
-				c.b,
-				c.a);
+				c.R,
+				c.G,
+				c.B,
+				c.A);
 		}
 	}
 }

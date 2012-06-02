@@ -192,7 +192,6 @@ namespace Duality.Resources
 		private	float		spacing			= 0.0f;
 		private	bool		monospace		= false;
 		private	bool		kerning			= false;
-		private bool		pixelPerfect	= true;
 		// Embedded custom font family
 		private	byte[]		customFamilyData	= null;
 		// Data that is automatically acquired while loading the font
@@ -321,14 +320,6 @@ namespace Duality.Resources
 		{
 			get { return this.kerning; }
 			set { this.kerning = value; this.needsReload = true; }
-		}
-		/// <summary>
-		/// [GET / SET] Whether this Font is to be displayed pixel-perfect without any <see cref="FlightSim.Resources.Texture"/> interpolation.
-		/// </summary>
-		public bool PixelPerfect
-		{
-			get { return this.pixelPerfect; }
-			set { this.pixelPerfect = value; this.needsReload = true; }
 		}
 		/// <summary>
 		/// [GET] Returns whether this Font needs a <see cref="ReloadData">reload</see> in order to apply
@@ -486,9 +477,9 @@ namespace Duality.Resources
 			Rect[] atlas = new Rect[SupportedChars.Length];
 			using (Graphics pxGraphics = Graphics.FromImage(pxTemp))
 			{
-				Brush fntBrush = new SolidBrush(Color.FromArgb(this.color.a, this.color.r, this.color.g, this.color.b));
+				Brush fntBrush = new SolidBrush(Color.FromArgb(this.color.A, this.color.R, this.color.G, this.color.B));
 
-				pxGraphics.Clear(Color.FromArgb(this.bgColor.a, this.bgColor.r, this.bgColor.g, this.bgColor.b));
+				pxGraphics.Clear(Color.FromArgb(this.bgColor.A, this.bgColor.R, this.bgColor.G, this.bgColor.B));
 
 				StringFormat formatDef = StringFormat.GenericDefault;
 				formatDef.LineAlignment = StringAlignment.Near;
@@ -506,7 +497,7 @@ namespace Duality.Resources
 					glyphTemp = new Bitmap((int)Math.Ceiling(Math.Max(1, charSize.Width)), this.internalFont.Height);
 					using (Graphics glyphGraphics = Graphics.FromImage(glyphTemp))
 					{
-						glyphGraphics.Clear(Color.FromArgb(this.bgColor.a, this.bgColor.r, this.bgColor.g, this.bgColor.b));
+						glyphGraphics.Clear(Color.FromArgb(this.bgColor.A, this.bgColor.R, this.bgColor.G, this.bgColor.B));
 						glyphGraphics.TextRenderingHint = (System.Drawing.Text.TextRenderingHint)this.hint;
 						glyphGraphics.DrawString(str, this.internalFont, fntBrush, new RectangleF(0, 0, glyphTemp.Width, glyphTemp.Height), formatDef);
 					}
@@ -522,7 +513,7 @@ namespace Duality.Resources
 						glyphTempTypo = new Bitmap((int)Math.Ceiling(Math.Max(1, charSize.Width)), this.internalFont.Height);
 						using (Graphics glyphGraphics = Graphics.FromImage(glyphTempTypo))
 						{
-							glyphGraphics.Clear(Color.FromArgb(this.bgColor.a, this.bgColor.r, this.bgColor.g, this.bgColor.b));
+							glyphGraphics.Clear(Color.FromArgb(this.bgColor.A, this.bgColor.R, this.bgColor.G, this.bgColor.B));
 							glyphGraphics.TextRenderingHint = (System.Drawing.Text.TextRenderingHint)this.hint;
 							glyphGraphics.DrawString(str, this.internalFont, fntBrush, new RectangleF(0, 0, glyphTempTypo.Width, glyphTempTypo.Height), formatTypo);
 						}
@@ -555,7 +546,7 @@ namespace Duality.Resources
 				}
 			}
 
-			bool useNearest = this.pixelPerfect || this.hint == RenderHint.Monochrome;
+			bool useNearest = this.hint == RenderHint.Monochrome;
 			this.bodyAscent /= BodyAscentRef.Length;
 			this.pixelData = new Pixmap(pxTemp);
 			this.texture = new Texture(this.pixelData, 
@@ -633,7 +624,7 @@ namespace Duality.Resources
 							{
 								pxIndex = MathF.Clamp(kerningY[sampleIndex] + off - 1, 0, glyphTemp.Height - 1) * glyphTemp.Width;
 								c[off] = 0;
-								while (glyphTempPx[pxIndex + c[off]].a == 0)
+								while (glyphTempPx[pxIndex + c[off]].A == 0)
 								{
 									c[off]++;
 									if (c[off] >= glyphTemp.Width / 2) break;
@@ -649,7 +640,7 @@ namespace Duality.Resources
 							{
 								pxIndex = MathF.Clamp(kerningY[sampleIndex] + off - 1, 0, glyphTemp.Height - 1) * glyphTemp.Width + glyphTemp.Width - 1;
 								c[off] = 0;
-								while (glyphTempPx[pxIndex - c[off]].a == 0)
+								while (glyphTempPx[pxIndex - c[off]].A == 0)
 								{
 									c[off]++;
 									if (c[off] >= glyphTemp.Width / 2) break;
@@ -741,18 +732,18 @@ namespace Duality.Resources
 
 			for (int i = 0; i < vertices.Length; i++)
 			{
-				Vector3 vertex = vertices[i].pos;
+				Vector3 vertex = vertices[i].Pos;
 
 				MathF.TransformDotVec(ref vertex, ref xDot, ref yDot);
 				vertex += offset;
 
-				vertices[i].pos = vertex;
-				vertices[i].clr = clr;
+				vertices[i].Pos = vertex;
+				vertices[i].Color = clr;
 
 				if (this.GlyphRenderHint == RenderHint.Monochrome)
 				{
-					vertices[i].pos.X = MathF.Round(vertices[i].pos.X);
-					vertices[i].pos.Y = MathF.Round(vertices[i].pos.Y);
+					vertices[i].Pos.X = MathF.Round(vertices[i].Pos.X);
+					vertices[i].Pos.Y = MathF.Round(vertices[i].Pos.Y);
 				}
 			}
 		}
@@ -773,15 +764,15 @@ namespace Duality.Resources
 
 			for (int i = 0; i < vertices.Length; i++)
 			{
-				Vector3 vertex = vertices[i].pos;
+				Vector3 vertex = vertices[i].Pos;
 				vertex += offset;
-				vertices[i].pos = vertex;
-				vertices[i].clr = clr;
+				vertices[i].Pos = vertex;
+				vertices[i].Color = clr;
 
 				if (this.GlyphRenderHint == RenderHint.Monochrome)
 				{
-					vertices[i].pos.X = MathF.Round(vertices[i].pos.X);
-					vertices[i].pos.Y = MathF.Round(vertices[i].pos.Y);
+					vertices[i].Pos.X = MathF.Round(vertices[i].Pos.X);
+					vertices[i].Pos.Y = MathF.Round(vertices[i].Pos.Y);
 				}
 			}
 		}
@@ -804,36 +795,36 @@ namespace Duality.Resources
 			{
 				this.ProcessTextAdv(text, i, out glyphData, out uvRect, out glyphXAdv, out glyphXOff);
 
-				vertices[i * 4 + 0].pos.X = curOffset + glyphXOff;
-				vertices[i * 4 + 0].pos.Y = 0.0f;
-				vertices[i * 4 + 0].pos.Z = 0.0f;
-				vertices[i * 4 + 0].texCoord = uvRect.TopLeft;
-				vertices[i * 4 + 0].clr = ColorRgba.White;
+				vertices[i * 4 + 0].Pos.X = curOffset + glyphXOff;
+				vertices[i * 4 + 0].Pos.Y = 0.0f;
+				vertices[i * 4 + 0].Pos.Z = 0.0f;
+				vertices[i * 4 + 0].TexCoord = uvRect.TopLeft;
+				vertices[i * 4 + 0].Color = ColorRgba.White;
 
-				vertices[i * 4 + 1].pos.X = curOffset + glyphXOff + glyphData.width;
-				vertices[i * 4 + 1].pos.Y = 0.0f;
-				vertices[i * 4 + 1].pos.Z = 0.0f;
-				vertices[i * 4 + 1].texCoord = uvRect.TopRight;
-				vertices[i * 4 + 1].clr = ColorRgba.White;
+				vertices[i * 4 + 1].Pos.X = curOffset + glyphXOff + glyphData.width;
+				vertices[i * 4 + 1].Pos.Y = 0.0f;
+				vertices[i * 4 + 1].Pos.Z = 0.0f;
+				vertices[i * 4 + 1].TexCoord = uvRect.TopRight;
+				vertices[i * 4 + 1].Color = ColorRgba.White;
 
-				vertices[i * 4 + 2].pos.X = curOffset + glyphXOff + glyphData.width;
-				vertices[i * 4 + 2].pos.Y = glyphData.height;
-				vertices[i * 4 + 2].pos.Z = 0.0f;
-				vertices[i * 4 + 2].texCoord = uvRect.BottomRight;
-				vertices[i * 4 + 2].clr = ColorRgba.White;
+				vertices[i * 4 + 2].Pos.X = curOffset + glyphXOff + glyphData.width;
+				vertices[i * 4 + 2].Pos.Y = glyphData.height;
+				vertices[i * 4 + 2].Pos.Z = 0.0f;
+				vertices[i * 4 + 2].TexCoord = uvRect.BottomRight;
+				vertices[i * 4 + 2].Color = ColorRgba.White;
 
-				vertices[i * 4 + 3].pos.X = curOffset + glyphXOff;
-				vertices[i * 4 + 3].pos.Y = glyphData.height;
-				vertices[i * 4 + 3].pos.Z = 0.0f;
-				vertices[i * 4 + 3].texCoord = uvRect.BottomLeft;
-				vertices[i * 4 + 3].clr = ColorRgba.White;
+				vertices[i * 4 + 3].Pos.X = curOffset + glyphXOff;
+				vertices[i * 4 + 3].Pos.Y = glyphData.height;
+				vertices[i * 4 + 3].Pos.Z = 0.0f;
+				vertices[i * 4 + 3].TexCoord = uvRect.BottomLeft;
+				vertices[i * 4 + 3].Color = ColorRgba.White;
 
 				if (this.GlyphRenderHint == RenderHint.Monochrome)
 				{
 					for (int k = 0; k < 4; k++)
 					{
-						vertices[i * 4 + k].pos.X = MathF.Round(vertices[i * 4 + k].pos.X);
-						vertices[i * 4 + k].pos.Y = MathF.Round(vertices[i * 4 + k].pos.Y);
+						vertices[i * 4 + k].Pos.X = MathF.Round(vertices[i * 4 + k].Pos.X);
+						vertices[i * 4 + k].Pos.Y = MathF.Round(vertices[i * 4 + k].Pos.Y);
 					}
 				}
 
@@ -874,10 +865,10 @@ namespace Duality.Resources
 				float glyphXAdv;
 				var attrib = new System.Drawing.Imaging.ImageAttributes();
 				attrib.SetColorMatrix(new System.Drawing.Imaging.ColorMatrix(new[] {
-					new[] {clr.r / 255.0f,					0.0f, 			0.0f, 			0.0f, 0.0f},
-					new[] {0.0f,			clr.g / 255.0f, 0.0f, 			0.0f, 			0.0f, 0.0f},
-					new[] {0.0f,			0.0f, 			clr.b / 255.0f, 0.0f, 			0.0f, 0.0f},
-					new[] {0.0f, 			0.0f, 			0.0f, 			clr.a / 255.0f, 0.0f, 0.0f},
+					new[] {clr.R / 255.0f,					0.0f, 			0.0f, 			0.0f, 0.0f},
+					new[] {0.0f,			clr.G / 255.0f, 0.0f, 			0.0f, 			0.0f, 0.0f},
+					new[] {0.0f,			0.0f, 			clr.B / 255.0f, 0.0f, 			0.0f, 0.0f},
+					new[] {0.0f, 			0.0f, 			0.0f, 			clr.A / 255.0f, 0.0f, 0.0f},
 					new[] {0.0f, 			0.0f, 			0.0f, 			0.0f, 			0.0f, 0.0f},
 					new[] {0.0f, 			0.0f, 			0.0f, 			0.0f, 			0.0f, 0.0f} }));
 				for (int i = 0; i < text.Length; i++)

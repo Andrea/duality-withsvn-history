@@ -905,18 +905,18 @@ namespace Duality
 			{
 				for (int j = 0; j < vertText[i].Length; j++)
 				{
-					Vector3 vertex = vertText[i][j].pos;
+					Vector3 vertex = vertText[i][j].Pos;
 					vertex += offset;
-					vertText[i][j].pos = vertex;
-					vertText[i][j].clr *= clr;
+					vertText[i][j].Pos = vertex;
+					vertText[i][j].Color *= clr;
 				}
 			}
 			for (int i = 0; i < vertIcons.Length; i++)
 			{
-				Vector3 vertex = vertIcons[i].pos;
+				Vector3 vertex = vertIcons[i].Pos;
 				vertex += offset;
-				vertIcons[i].pos = vertex;
-				vertIcons[i].clr *= clr;
+				vertIcons[i].Pos = vertex;
+				vertIcons[i].Color *= clr;
 			}
 		}
 		/// <summary>
@@ -958,24 +958,24 @@ namespace Duality
 			{
 				for (int j = 0; j < vertText[i].Length; j++)
 				{
-					Vector3 vertex = vertText[i][j].pos;
+					Vector3 vertex = vertText[i][j].Pos;
 
 					MathF.TransformDotVec(ref vertex, ref xDot, ref yDot);
 					vertex += offset;
 
-					vertText[i][j].pos = vertex;
-					vertText[i][j].clr *= clr;
+					vertText[i][j].Pos = vertex;
+					vertText[i][j].Color *= clr;
 				}
 			}
 			for (int i = 0; i < vertIcons.Length; i++)
 			{
-				Vector3 vertex = vertIcons[i].pos;
+				Vector3 vertex = vertIcons[i].Pos;
 
 				MathF.TransformDotVec(ref vertex, ref xDot, ref yDot);
 				vertex += offset;
 
-				vertIcons[i].pos = vertex;
-				vertIcons[i].clr *= clr;
+				vertIcons[i].Pos = vertex;
+				vertIcons[i].Color *= clr;
 			}
 		}
 		/// <summary>
@@ -1022,29 +1022,29 @@ namespace Duality
 					Vector2 iconSize = icon.size;
 					Rect iconUvRect = icon.uvRect;
 
-					vertIcons[state.CurrentElemIconVertexIndex + 0].pos.X = state.CurrentElemOffset.X;
-					vertIcons[state.CurrentElemIconVertexIndex + 0].pos.Y = state.CurrentElemOffset.Y + state.LineBaseLine - iconSize.Y;
-					vertIcons[state.CurrentElemIconVertexIndex + 0].pos.Z = 0;
-					vertIcons[state.CurrentElemIconVertexIndex + 0].clr = state.Color;
-					vertIcons[state.CurrentElemIconVertexIndex + 0].texCoord = iconUvRect.TopLeft;
+					vertIcons[state.CurrentElemIconVertexIndex + 0].Pos.X = state.CurrentElemOffset.X;
+					vertIcons[state.CurrentElemIconVertexIndex + 0].Pos.Y = state.CurrentElemOffset.Y + state.LineBaseLine - iconSize.Y;
+					vertIcons[state.CurrentElemIconVertexIndex + 0].Pos.Z = 0;
+					vertIcons[state.CurrentElemIconVertexIndex + 0].Color = state.Color;
+					vertIcons[state.CurrentElemIconVertexIndex + 0].TexCoord = iconUvRect.TopLeft;
 
-					vertIcons[state.CurrentElemIconVertexIndex + 1].pos.X = state.CurrentElemOffset.X + iconSize.X;
-					vertIcons[state.CurrentElemIconVertexIndex + 1].pos.Y = state.CurrentElemOffset.Y + state.LineBaseLine - iconSize.Y;
-					vertIcons[state.CurrentElemIconVertexIndex + 1].pos.Z = 0;
-					vertIcons[state.CurrentElemIconVertexIndex + 1].clr = state.Color;
-					vertIcons[state.CurrentElemIconVertexIndex + 1].texCoord = iconUvRect.TopRight;
+					vertIcons[state.CurrentElemIconVertexIndex + 1].Pos.X = state.CurrentElemOffset.X + iconSize.X;
+					vertIcons[state.CurrentElemIconVertexIndex + 1].Pos.Y = state.CurrentElemOffset.Y + state.LineBaseLine - iconSize.Y;
+					vertIcons[state.CurrentElemIconVertexIndex + 1].Pos.Z = 0;
+					vertIcons[state.CurrentElemIconVertexIndex + 1].Color = state.Color;
+					vertIcons[state.CurrentElemIconVertexIndex + 1].TexCoord = iconUvRect.TopRight;
 
-					vertIcons[state.CurrentElemIconVertexIndex + 2].pos.X = state.CurrentElemOffset.X + iconSize.X;
-					vertIcons[state.CurrentElemIconVertexIndex + 2].pos.Y = state.CurrentElemOffset.Y + state.LineBaseLine;
-					vertIcons[state.CurrentElemIconVertexIndex + 2].pos.Z = 0;
-					vertIcons[state.CurrentElemIconVertexIndex + 2].clr = state.Color;
-					vertIcons[state.CurrentElemIconVertexIndex + 2].texCoord = iconUvRect.BottomRight;
+					vertIcons[state.CurrentElemIconVertexIndex + 2].Pos.X = state.CurrentElemOffset.X + iconSize.X;
+					vertIcons[state.CurrentElemIconVertexIndex + 2].Pos.Y = state.CurrentElemOffset.Y + state.LineBaseLine;
+					vertIcons[state.CurrentElemIconVertexIndex + 2].Pos.Z = 0;
+					vertIcons[state.CurrentElemIconVertexIndex + 2].Color = state.Color;
+					vertIcons[state.CurrentElemIconVertexIndex + 2].TexCoord = iconUvRect.BottomRight;
 
-					vertIcons[state.CurrentElemIconVertexIndex + 3].pos.X = state.CurrentElemOffset.X;
-					vertIcons[state.CurrentElemIconVertexIndex + 3].pos.Y = state.CurrentElemOffset.Y + state.LineBaseLine;
-					vertIcons[state.CurrentElemIconVertexIndex + 3].pos.Z = 0;
-					vertIcons[state.CurrentElemIconVertexIndex + 3].clr = state.Color;
-					vertIcons[state.CurrentElemIconVertexIndex + 3].texCoord = iconUvRect.BottomLeft;
+					vertIcons[state.CurrentElemIconVertexIndex + 3].Pos.X = state.CurrentElemOffset.X;
+					vertIcons[state.CurrentElemIconVertexIndex + 3].Pos.Y = state.CurrentElemOffset.Y + state.LineBaseLine;
+					vertIcons[state.CurrentElemIconVertexIndex + 3].Pos.Z = 0;
+					vertIcons[state.CurrentElemIconVertexIndex + 3].Color = state.Color;
+					vertIcons[state.CurrentElemIconVertexIndex + 3].TexCoord = iconUvRect.BottomLeft;
 
 					vertIconLen = state.CurrentElemIconVertexIndex + 4;
 				}
@@ -1097,10 +1097,10 @@ namespace Duality
 						
 						var attrib = new System.Drawing.Imaging.ImageAttributes();
 						attrib.SetColorMatrix(new System.Drawing.Imaging.ColorMatrix(new[] {
-							new[] {state.Color.r / 255.0f, 0, 0, 0},
-							new[] {0, state.Color.g / 255.0f, 0, 0},
-							new[] {0, 0, state.Color.b / 255.0f, 0},
-							new[] {0, 0, 0, state.Color.a / 255.0f} }));
+							new[] {state.Color.R / 255.0f, 0, 0, 0},
+							new[] {0, state.Color.G / 255.0f, 0, 0},
+							new[] {0, 0, state.Color.B / 255.0f, 0},
+							new[] {0, 0, 0, state.Color.A / 255.0f} }));
 						g.DrawImage(icons,
 							new System.Drawing.Rectangle(
 								MathF.RoundToInt(state.CurrentElemOffset.X), 

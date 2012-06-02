@@ -15,7 +15,7 @@ namespace Duality.Components
 	public abstract class Renderer : Component, ICmpRenderer
 	{
 		private	RendererFlags	renderFlags		= RendererFlags.Default;
-		private	uint			visibilityGroup	= 1;
+		private	VisibilityFlag	visibilityGroup	= VisibilityFlag.Group0;
 
 		/// <summary>
 		/// [GET / SET] The <see cref="RendererFlags">appearance flags</see> of this Renderer.
@@ -30,7 +30,7 @@ namespace Duality.Components
 		/// belongs. Usually, a Renderer is considered visible to a <see cref="Duality.Components.Camera"/> if they
 		/// share at least one mutual visibility group.
 		/// </summary>
-		public uint VisibilityGroup
+		public VisibilityFlag VisibilityGroup
 		{
 			get { return this.visibilityGroup; }
 			set { this.visibilityGroup = value; }
@@ -60,7 +60,8 @@ namespace Duality.Components
 		/// <returns></returns>
 		public bool IsVisible(IDrawDevice device)
 		{
-			if ((this.visibilityGroup & device.VisibilityMask) == 0) return false;
+			if ((this.visibilityGroup & device.VisibilityMask) == VisibilityFlag.None) return false;
+			if ((device.VisibilityMask & VisibilityFlag.ScreenOverlay) != (this.visibilityGroup & VisibilityFlag.ScreenOverlay)) return false;
 			return device.IsRendererInView(this);
 		}
 

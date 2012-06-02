@@ -17,16 +17,16 @@ namespace Duality.VertexFormat
 		/// <summary>
 		/// The vertices color.
 		/// </summary>
-		public ColorRgba clr;
+		public ColorRgba Color;
 		/// <summary>
 		/// The vertices position.
 		/// </summary>
-		public Vector3 pos;
+		public Vector3 Pos;
 
 		Vector3 IVertexData.Pos
 		{
-			get { return this.pos; }
-			set { this.pos = value; }
+			get { return this.Pos; }
+			set { this.Pos = value; }
 		}
 		int IVertexData.TypeIndex
 		{
@@ -68,33 +68,33 @@ namespace Duality.VertexFormat
 
 		public VertexC1P3(float x, float y, float z, byte r = 255, byte g = 255, byte b = 255, byte a = 255)
 		{
-			this.pos.X = x;
-			this.pos.Y = y;
-			this.pos.Z = z;
-			this.clr.r = r;
-			this.clr.g = g;
-			this.clr.b = b;
-			this.clr.a = a;
+			this.Pos.X = x;
+			this.Pos.Y = y;
+			this.Pos.Z = z;
+			this.Color.R = r;
+			this.Color.G = g;
+			this.Color.B = b;
+			this.Color.A = a;
 		}
 		public VertexC1P3(float x, float y, float z, ColorRgba clr)
 		{
-			this.pos.X = x;
-			this.pos.Y = y;
-			this.pos.Z = z;
-			this.clr = clr;
+			this.Pos.X = x;
+			this.Pos.Y = y;
+			this.Pos.Z = z;
+			this.Color = clr;
 		}
 		public VertexC1P3(Vector3 pos, byte r = 255, byte g = 255, byte b = 255, byte a = 255)
 		{
-			this.pos = pos;
-			this.clr.r = r;
-			this.clr.g = g;
-			this.clr.b = b;
-			this.clr.a = a;
+			this.Pos = pos;
+			this.Color.R = r;
+			this.Color.G = g;
+			this.Color.B = b;
+			this.Color.A = a;
 		}
 		public VertexC1P3(Vector3 pos, ColorRgba clr)
 		{
-			this.pos = pos;
-			this.clr = clr;
+			this.Pos = pos;
+			this.Color = clr;
 		}
 	}
 }

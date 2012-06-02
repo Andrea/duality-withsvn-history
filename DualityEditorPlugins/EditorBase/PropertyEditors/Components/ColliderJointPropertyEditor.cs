@@ -10,6 +10,7 @@ using DualityEditor;
 
 namespace EditorBase.PropertyEditors
 {
+#if FALSE // Removed for now. Joints are an experimental feature.
 	public class ColliderJointPropertyEditor : MemberwisePropertyEditor
 	{
 		public ColliderJointPropertyEditor()
@@ -33,4 +34,5 @@ namespace EditorBase.PropertyEditors
 			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(colliders), ReflectionInfo.Property_Collider_Joints);
 		}
 	}
+#endif
 }

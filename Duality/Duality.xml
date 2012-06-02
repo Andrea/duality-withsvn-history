@@ -1134,27 +1134,6 @@
             [GET] The Renderers center location in space.
             </summary>
         </member>
-        <member name="T:Duality.ICmpScreenOverlayRenderer">
-            <summary>
-            Implement this interface in <see cref="T:Duality.Component">Components</see> that are able to render a screen overlay. 
-            This is useful for HUD, GUI or debug rendering. Screen overlays are rendered after both regular rendering and 
-            postprocessing. Unlike regular <see cref="T:Duality.ICmpRenderer">Renderers</see> they do not operate in 
-            <see cref="T:Duality.Components.Camera"/>-local space but screen space.
-            </summary>
-        </member>
-        <member name="M:Duality.ICmpScreenOverlayRenderer.IsVisible(Duality.IDrawDevice)">
-            <summary>
-            Determines whether or not this screen overlay is visible to the specified <see cref="T:Duality.IDrawDevice"/>.
-            </summary>
-            <param name="device">The <see cref="T:Duality.IDrawDevice"/> to which visibility is determined.</param>
-            <returns>True, if this screen overlay is visible to the <see cref="T:Duality.IDrawDevice"/>. False, if not.</returns>
-        </member>
-        <member name="M:Duality.ICmpScreenOverlayRenderer.DrawOverlay(Duality.IDrawDevice)">
-            <summary>
-            Draws the screen overlay.
-            </summary>
-            <param name="device">The <see cref="T:Duality.IDrawDevice"/> to which the screen overlay is drawn.</param>
-        </member>
         <member name="T:Duality.ICmpCollisionListener">
             <summary>
             Implement this interface in <see cref="T:Duality.Component">Components</see> that require notification of
@@ -1342,17 +1321,17 @@
             Total size in bytes.
             </summary>
         </member>
-        <member name="F:Duality.VertexFormat.VertexC1P3T2.clr">
+        <member name="F:Duality.VertexFormat.VertexC1P3T2.Color">
             <summary>
             The vertices color.
             </summary>
         </member>
-        <member name="F:Duality.VertexFormat.VertexC1P3T2.pos">
+        <member name="F:Duality.VertexFormat.VertexC1P3T2.Pos">
             <summary>
             The vertices position.
             </summary>
         </member>
-        <member name="F:Duality.VertexFormat.VertexC1P3T2.texCoord">
+        <member name="F:Duality.VertexFormat.VertexC1P3T2.TexCoord">
             <summary>
             The vertices texture coordinate.
             </summary>
@@ -1993,22 +1972,22 @@
             a background color.
             </summary>
         </member>
-        <member name="F:Duality.ColorFormat.ColorRgba.r">
+        <member name="F:Duality.ColorFormat.ColorRgba.R">
             <summary>
             Red color component.
             </summary>
         </member>
-        <member name="F:Duality.ColorFormat.ColorRgba.g">
+        <member name="F:Duality.ColorFormat.ColorRgba.G">
             <summary>
             Green color component.
             </summary>
         </member>
-        <member name="F:Duality.ColorFormat.ColorRgba.b">
+        <member name="F:Duality.ColorFormat.ColorRgba.B">
             <summary>
             Blue color component.
             </summary>
         </member>
-        <member name="F:Duality.ColorFormat.ColorRgba.a">
+        <member name="F:Duality.ColorFormat.ColorRgba.A">
             <summary>
             Alpha color component. Usually treated as opacity.
             </summary>
@@ -2379,22 +2358,22 @@
             a background color.
             </summary>
         </member>
-        <member name="F:Duality.ColorFormat.ColorHsva.h">
+        <member name="F:Duality.ColorFormat.ColorHsva.H">
             <summary>
             Hue component as float [0.0f - 1.0f].
             </summary>
         </member>
-        <member name="F:Duality.ColorFormat.ColorHsva.s">
+        <member name="F:Duality.ColorFormat.ColorHsva.S">
             <summary>
             Saturation component as float [0.0f - 1.0f].
             </summary>
         </member>
-        <member name="F:Duality.ColorFormat.ColorHsva.v">
+        <member name="F:Duality.ColorFormat.ColorHsva.V">
             <summary>
             Value component as float [0.0f - 1.0f].
             </summary>
         </member>
-        <member name="F:Duality.ColorFormat.ColorHsva.a">
+        <member name="F:Duality.ColorFormat.ColorHsva.A">
             <summary>
             Alpha component as float [0.0f - 1.0f].
             </summary>
@@ -4180,22 +4159,22 @@
             Total size in bytes.
             </summary>
         </member>
-        <member name="F:Duality.VertexFormat.VertexC1P3T4A1.clr">
+        <member name="F:Duality.VertexFormat.VertexC1P3T4A1.Color">
             <summary>
             The vertices color.
             </summary>
         </member>
-        <member name="F:Duality.VertexFormat.VertexC1P3T4A1.pos">
+        <member name="F:Duality.VertexFormat.VertexC1P3T4A1.Pos">
             <summary>
             The vertices position.
             </summary>
         </member>
-        <member name="F:Duality.VertexFormat.VertexC1P3T4A1.texCoord">
+        <member name="F:Duality.VertexFormat.VertexC1P3T4A1.TexCoord">
             <summary>
             The vertices texture coordinates (two of them).
             </summary>
         </member>
-        <member name="F:Duality.VertexFormat.VertexC1P3T4A1.attrib">
+        <member name="F:Duality.VertexFormat.VertexC1P3T4A1.Attrib">
             <summary>
             The vertices custom attribute.
             </summary>
@@ -5111,19 +5090,6 @@
             <param name="device"></param>
             <returns></returns>
         </member>
-        <member name="T:Duality.ObjectManagers.OverlayRendererManager">
-            <summary>
-            Manages a set of <see cref="T:Duality.ICmpScreenOverlayRenderer">Screen Overlays</see> and exposes suitable object enumerations as well as un/registeration events.
-            If a registered object has been disposed, it will be automatically unregistered.
-            </summary>
-        </member>
-        <member name="M:Duality.ObjectManagers.OverlayRendererManager.QueryVisible(Duality.IDrawDevice)">
-            <summary>
-            Enumerates all <see cref="T:Duality.ICmpScreenOverlayRenderer">Screen Overlays</see> that are visible to the specified <see cref="T:Duality.IDrawDevice"/>.
-            </summary>
-            <param name="device"></param>
-            <returns></returns>
-        </member>
         <member name="T:Duality.Log">
             <summary>
             Listens for log entries and writes them to registered <see cref="T:Duality.ILogOutput">ILogOutputs</see>.
@@ -5567,12 +5533,12 @@
             Total size in bytes.
             </summary>
         </member>
-        <member name="F:Duality.VertexFormat.VertexP3T2.pos">
+        <member name="F:Duality.VertexFormat.VertexP3T2.Pos">
             <summary>
             The vertices position.
             </summary>
         </member>
-        <member name="F:Duality.VertexFormat.VertexP3T2.texCoord">
+        <member name="F:Duality.VertexFormat.VertexP3T2.TexCoord">
             <summary>
             The vertices texture coordinate.
             </summary>
@@ -6049,7 +6015,7 @@
             <param name="shader"></param>
             <param name="formatPref"></param>
         </member>
-        <member name="M:Duality.Resources.DrawTechnique.PreprocessBatch``1(Duality.IDrawDevice,Duality.Resources.BatchInfo,OpenTK.Graphics.OpenGL.BeginMode@,``0[]@)">
+        <member name="M:Duality.Resources.DrawTechnique.PreprocessBatch``1(Duality.IDrawDevice,Duality.Resources.BatchInfo,Duality.VertexMode@,``0[]@)">
             <summary>
             Performs a preprocessing operation for incoming vertices. Does nothing by default but may be overloaded, if needed.
             </summary>
@@ -6200,7 +6166,7 @@
         </member>
         <member name="P:Duality.Resources.DrawTechnique.NeedsPreprocess">
             <summary>
-            [GET] Returns whether this DrawTechnique requires <see cref="M:Duality.Resources.DrawTechnique.PreprocessBatch``1(Duality.IDrawDevice,Duality.Resources.BatchInfo,OpenTK.Graphics.OpenGL.BeginMode@,``0[]@)">vertex preprocessing</see>.
+            [GET] Returns whether this DrawTechnique requires <see cref="M:Duality.Resources.DrawTechnique.PreprocessBatch``1(Duality.IDrawDevice,Duality.Resources.BatchInfo,Duality.VertexMode@,``0[]@)">vertex preprocessing</see>.
             This is false for all standard DrawTechniques, but may return true when deriving custom DrawTechniques.
             </summary>
         </member>
@@ -6340,6 +6306,19 @@
             [GET] Returns whether the shader variable will be visible in the editor.
             </summary>
         </member>
+        <member name="T:Duality.VertexMode">
+            <summary>
+            Specifies the way in which incoming vertex data is interpreted in order to generate geometry.
+            We're not using OpenTK.Graphics.OpenGL.BeginMode in order to keep the abstraction layer that
+            is introduced by <see cref="T:Duality.IDrawDevice"/> consistent. Also, we're able to limit the supported
+            vertex modes and remove obsolete or inefficient ones.
+            </summary>
+        </member>
+        <member name="T:Duality.RenderMatrix">
+            <summary>
+            Specifies a matrix setup used in a <see cref="T:Duality.Components.Camera.Pass"/>.
+            </summary>
+        </member>
         <member name="T:Duality.BlendMode">
             <summary>
             Enumerates different behviours on how to blend color data onto existing background color.
@@ -6429,7 +6408,7 @@
             <param name="r">The ICmpRenderer to test.</param>
             <returns>True, if the ICmpRenderer or a portion of its bounding circle is inside the view space, false if not.</returns>
         </member>
-        <member name="M:Duality.IDrawDevice.AddVertices``1(Duality.ContentRef{Duality.Resources.Material},OpenTK.Graphics.OpenGL.BeginMode,``0[])">
+        <member name="M:Duality.IDrawDevice.AddVertices``1(Duality.ContentRef{Duality.Resources.Material},Duality.VertexMode,``0[])">
             <summary>
             Adds a parameterized set of vertices to the drawing devices rendering schedule.
             </summary>
@@ -6438,7 +6417,7 @@
             <param name="vertexMode">The vertices drawing mode.</param>
             <param name="vertices">The vertex data to add.</param>
         </member>
-        <member name="M:Duality.IDrawDevice.AddVertices``1(Duality.Resources.BatchInfo,OpenTK.Graphics.OpenGL.BeginMode,``0[])">
+        <member name="M:Duality.IDrawDevice.AddVertices``1(Duality.Resources.BatchInfo,Duality.VertexMode,``0[])">
             <summary>
             Adds a parameterized set of vertices to the drawing devices rendering schedule.
             </summary>
@@ -6557,14 +6536,8 @@
         </member>
         <member name="E:Duality.Components.Camera.CollectRendererDrawcalls">
             <summary>
-            Fired as soon as <see cref="T:Duality.ICmpRenderer"/> drawcalls have been collected, but
-            right before processing them.
-            </summary>
-        </member>
-        <member name="E:Duality.Components.Camera.CollectOverlayDrawcalls">
-            <summary>
-            Fired as soon as <see cref="T:Duality.ICmpScreenOverlayRenderer"/> drawcalls have been collected, but
-            right before processing them.
+            Fired as soon as drawcalls have been collected, but right before processing them.
+            This is the perfect place to sneak some diagnostic drawcalls into the renderpipeline.
             </summary>
         </member>
         <member name="P:Duality.Components.Camera.NearZ">
@@ -6586,11 +6559,6 @@
         <member name="P:Duality.Components.Camera.VisibilityMask">
             <summary>
             [GET / SET] A bitmask flagging all visibility groups that are considered visible to this drawing device.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Camera.ClearMask">
-            <summary>
-            [GET / SET] A Bitmask describing which components of the current (or back-)buffer to clear before rendering.
             </summary>
         </member>
         <member name="P:Duality.Components.Camera.ClearColor">
@@ -6680,10 +6648,24 @@
             Specifies whether this passes output shall be scaled in order to fit the specified outputs dimensions.
             </summary>
         </member>
-        <member name="P:Duality.Components.Camera.Pass.KeepOutput">
+        <member name="P:Duality.Components.Camera.Pass.ClearColor">
             <summary>
-            Specifies whether previous image data on this passes rendering target should be kept, i.e. whether clearing
-            it before beginning to render can be skipped.
+            [GET / SET] The clear color to apply when clearing the color buffer
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Camera.Pass.ClearDepth">
+            <summary>
+            [GET / SET] The clear depth to apply when clearing the depth buffer
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Camera.Pass.ClearFlags">
+            <summary>
+            [GET / SET] Specifies which buffers to clean before rendering this pass
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Camera.Pass.MatrixMode">
+            <summary>
+            [GET / SET] How to set up the coordinate space before rendering
             </summary>
         </member>
         <member name="P:Duality.Components.Camera.Pass.VisibilityMask">
@@ -6895,23 +6877,6 @@
             </summary>
             <param name="shapes"></param>
         </member>
-        <member name="M:Duality.Components.Collider.RemoveJoint(Duality.Components.Collider.JointInfo)">
-            <summary>
-            Removes an existing joint from the Collider.
-            </summary>
-            <param name="joint"></param>
-        </member>
-        <member name="M:Duality.Components.Collider.AddJoint(Duality.Components.Collider.JointInfo,Duality.Components.Collider)">
-            <summary>
-            Adds a new joint to the Collider
-            </summary>
-            <param name="joint"></param>
-        </member>
-        <member name="M:Duality.Components.Collider.ClearJoints">
-            <summary>
-            Removes all existing joints from the Collider.
-            </summary>
-        </member>
         <member name="M:Duality.Components.Collider.ApplyLocalImpulse(System.Single)">
             <summary>
             Applies a Transform-local angular impulse to the object.
@@ -7084,12 +7049,6 @@
             If you modify any of the returned ShapeInfos, be sure to call <see cref="M:Duality.Components.Collider.UpdateBody"/> afterwards.
             </summary>
         </member>
-        <member name="P:Duality.Components.Collider.Joints">
-            <summary>
-            [GET] Enumerates all <see cref="T:Duality.Components.Collider.JointInfo">joints</see> that are connected to this Collider.
-            If you modify any of the returned ShapeInfos, be sure to call <see cref="M:Duality.Components.Collider.UpdateBody"/> afterwards.
-            </summary>
-        </member>
         <member name="P:Duality.Components.Collider.BoundRadius">
             <summary>
             [GET] The physical bodys bounding radius.
@@ -7181,24 +7140,6 @@
             <summary>
             A dynamic body. Its movement is determined by physical effects.
             </summary>
-        </member>
-        <member name="T:Duality.Components.Collider.JointInfo">
-            <summary>
-            Describes a <see cref="T:Duality.Components.Collider"/> joint. Joints limit a Colliders degree of freedom 
-            by connecting it to fixed world coordinates or other Colliders.
-            </summary>
-        </member>
-        <member name="M:Duality.Components.Collider.JointInfo.CopyTo(Duality.Components.Collider.JointInfo)">
-            <summary>
-            Copies this JointInfos data to another one. It is assumed that both are of the same type.
-            </summary>
-            <param name="target"></param>
-        </member>
-        <member name="M:Duality.Components.Collider.JointInfo.Clone">
-            <summary>
-            Clones the JointInfo.
-            </summary>
-            <returns></returns>
         </member>
         <member name="T:Duality.Resources.Prefab">
             <summary>
@@ -8156,14 +8097,6 @@
             <param name="device"></param>
             <returns></returns>
         </member>
-        <member name="M:Duality.Resources.Scene.QueryVisibleOverlayRenderers(Duality.IDrawDevice)">
-            <summary>
-            Enumerates all <see cref="T:Duality.ICmpScreenOverlayRenderer">Screen Overlays</see> that are visible to
-            the specified <see cref="T:Duality.IDrawDevice"/>.
-            </summary>
-            <param name="device"></param>
-            <returns></returns>
-        </member>
         <member name="P:Duality.Resources.Scene.PhysicsAlpha">
             <summary>
             [GET] When using fixed-timestep physics, the alpha value [0.0 - 1.0] indicates how
@@ -8244,11 +8177,6 @@
         <member name="P:Duality.Resources.Scene.Renderers">
             <summary>
             [GET] Enumerates the Scenes <see cref="T:Duality.Components.Renderer"/> objects.
-            </summary>
-        </member>
-        <member name="P:Duality.Resources.Scene.OverlayRenderers">
-            <summary>
-            [GET] Enumerates the Scenes <see cref="T:Duality.ICmpScreenOverlayRenderer"/> objects.
             </summary>
         </member>
         <member name="P:Duality.Resources.Scene.GlobalGravity">
@@ -8500,12 +8428,12 @@
             Total size in bytes.
             </summary>
         </member>
-        <member name="F:Duality.VertexFormat.VertexC1P3.clr">
+        <member name="F:Duality.VertexFormat.VertexC1P3.Color">
             <summary>
             The vertices color.
             </summary>
         </member>
-        <member name="F:Duality.VertexFormat.VertexC1P3.pos">
+        <member name="F:Duality.VertexFormat.VertexC1P3.Pos">
             <summary>
             The vertices position.
             </summary>
@@ -8934,7 +8862,7 @@
             Removes the topmost <see cref="T:Duality.Canvas.State"/> from the internal State stack.
             </summary>
         </member>
-        <member name="M:Duality.Canvas.DrawVertices``1(``0[],OpenTK.Graphics.OpenGL.BeginMode)">
+        <member name="M:Duality.Canvas.DrawVertices``1(``0[],Duality.VertexMode)">
             <summary>
             Draws a predefined set of vertices using the Canvas transformation.
             </summary>
@@ -10455,7 +10383,7 @@
             Total size in bytes.
             </summary>
         </member>
-        <member name="F:Duality.VertexFormat.VertexP3.pos">
+        <member name="F:Duality.VertexFormat.VertexP3.Pos">
             <summary>
             The vertices position.
             </summary>

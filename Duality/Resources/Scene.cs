@@ -163,7 +163,6 @@ namespace Duality.Resources
 		private	GameObjectManager	objectManager	= new GameObjectManager();
 		[NonSerialized]	private	ObjectManager<Camera>	cameraManager	= new ObjectManager<Camera>();
 		[NonSerialized]	private	RendererManager			rendererManager	= new RendererManager();
-		[NonSerialized]	private	OverlayRendererManager	overlayManager	= new OverlayRendererManager();
 
 		/// <summary>
 		/// [GET] Enumerates all registered objects.
@@ -212,14 +211,6 @@ namespace Duality.Resources
 		public IEnumerable<ICmpRenderer> Renderers
 		{
 			get { return this.rendererManager.AllObjects.OfType<ICmpRenderer>(); }
-		}
-		/// <summary>
-		/// [GET] Enumerates the Scenes <see cref="ICmpScreenOverlayRenderer"/> objects.
-		/// </summary>
-		[EditorHintFlags(MemberFlags.Invisible)]
-		public IEnumerable<ICmpScreenOverlayRenderer> OverlayRenderers
-		{
-			get { return this.overlayManager.AllObjects.OfType<ICmpScreenOverlayRenderer>(); }
 		}
 		/// <summary>
 		/// [GET / SET] Global gravity force that is applied to all objects that obey the laws of physics.
@@ -407,16 +398,6 @@ namespace Duality.Resources
 		{
 			return this.rendererManager.QueryVisible(device);
 		}
-		/// <summary>
-		/// Enumerates all <see cref="Duality.ICmpScreenOverlayRenderer">Screen Overlays</see> that are visible to
-		/// the specified <see cref="IDrawDevice"/>.
-		/// </summary>
-		/// <param name="device"></param>
-		/// <returns></returns>
-		public IEnumerable<ICmpScreenOverlayRenderer> QueryVisibleOverlayRenderers(IDrawDevice device)
-		{
-			return this.overlayManager.QueryVisible(device);
-		}
 
 		private void AddToManagers(GameObject obj)
 		{
@@ -425,14 +406,11 @@ namespace Duality.Resources
 
 			foreach (Renderer r in obj.GetComponents<Renderer>())
 				this.rendererManager.RegisterObj(r);
-			foreach (ICmpScreenOverlayRenderer r in obj.GetComponents<ICmpScreenOverlayRenderer>())
-				this.overlayManager.RegisterObj(r as Component);
 		}
 		private void AddToManagers(Component cmp)
 		{
 			if (cmp is Camera)						this.cameraManager.RegisterObj(cmp as Camera);
 			if (cmp is Renderer)					this.rendererManager.RegisterObj(cmp as Renderer);
-			if (cmp is ICmpScreenOverlayRenderer)	this.overlayManager.RegisterObj(cmp);
 		}
 		private void RemoveFromManagers(GameObject obj)
 		{
@@ -441,20 +419,16 @@ namespace Duality.Resources
 
 			foreach (Renderer r in obj.GetComponents<Renderer>())
 				this.rendererManager.UnregisterObj(r);
-			foreach (ICmpScreenOverlayRenderer r in obj.GetComponents<ICmpScreenOverlayRenderer>())
-				this.overlayManager.UnregisterObj(r as Component);
 		}
 		private void RemoveFromManagers(Component cmp)
 		{
 			if (cmp is Camera)						this.cameraManager.UnregisterObj(cmp as Camera);
 			if (cmp is Renderer)					this.rendererManager.UnregisterObj(cmp as Renderer);
-			if (cmp is ICmpScreenOverlayRenderer)	this.overlayManager.UnregisterObj(cmp);
 		}
 		private void RebuildManagers()
 		{
 			this.cameraManager.Clear();
 			this.rendererManager.Clear();
-			this.overlayManager.Clear();
 
 			foreach (GameObject obj in this.objectManager.AllObjects)
 				this.AddToManagers(obj);

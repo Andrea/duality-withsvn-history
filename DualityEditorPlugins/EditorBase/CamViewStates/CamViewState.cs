@@ -550,7 +550,7 @@ namespace EditorBase.CamViewStates
 				{
 					canvas.DrawDevice.PreprocessCoords(ref posTemp, ref scaleTemp);
 					posTemp.Z = 0.0f;
-					canvas.DrawDevice.AddVertices(canvas.CurrentState.Material, BeginMode.Lines,
+					canvas.DrawDevice.AddVertices(canvas.CurrentState.Material, VertexMode.Lines,
 						new VertexP3(posTemp - right * 10.0f),
 						new VertexP3(posTemp + right * 10.0f),
 						new VertexP3(posTemp - down * 10.0f),
@@ -893,12 +893,8 @@ namespace EditorBase.CamViewStates
 			try
 			{
 				this.View.CameraComponent.CollectRendererDrawcalls	+= this.CameraComponent_CollectRendererDrawcalls;
-				this.View.CameraComponent.CollectOverlayDrawcalls	+= this.CameraComponent_CollectOverlayDrawcalls;
-
 				this.OnRenderState();
-
 				this.View.CameraComponent.CollectRendererDrawcalls	-= this.CameraComponent_CollectRendererDrawcalls;
-				this.View.CameraComponent.CollectOverlayDrawcalls	-= this.CameraComponent_CollectOverlayDrawcalls;
 			}
 			catch (Exception exception)
 			{
@@ -1062,21 +1058,24 @@ namespace EditorBase.CamViewStates
 		{
 			this.OnSceneChanged();
 		}
-		private void CameraComponent_CollectOverlayDrawcalls(object sender, EventArgs e)
+		private void CameraComponent_CollectRendererDrawcalls(object sender, CollectDrawcallEventArgs e)
 		{
-			Canvas canvas = new Canvas(this.View.CameraComponent.DrawDevice);
-			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Mask, this.View.FgColor));
-			canvas.CurrentState.TextFont = Duality.Resources.Font.GenericMonospace8;
+			if ((e.Device.VisibilityMask & VisibilityFlag.ScreenOverlay) != VisibilityFlag.None)
+			{
+				Canvas canvas = new Canvas(this.View.CameraComponent.DrawDevice);
+				canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Mask, this.View.FgColor));
+				canvas.CurrentState.TextFont = Duality.Resources.Font.GenericMonospace8;
 
-			this.OnCollectStateOverlayDrawcalls(canvas);
-		}
-		private void CameraComponent_CollectRendererDrawcalls(object sender, EventArgs e)
-		{
-			Canvas canvas = new Canvas(this.View.CameraComponent.DrawDevice);
-			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Mask, this.View.FgColor));
-			canvas.CurrentState.TextFont = Duality.Resources.Font.GenericMonospace8;
+				this.OnCollectStateOverlayDrawcalls(canvas);
+			}
+			else
+			{
+				Canvas canvas = new Canvas(this.View.CameraComponent.DrawDevice);
+				canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Mask, this.View.FgColor));
+				canvas.CurrentState.TextFont = Duality.Resources.Font.GenericMonospace8;
 
-			this.OnCollectStateDrawcalls(canvas);
+				this.OnCollectStateDrawcalls(canvas);
+			}
 		}
 	}
 }

@@ -26,7 +26,7 @@ namespace Duality
 			this.clrNormal	= this.rtfDoc.createColor(new DW.RtfWriter.Color(0, 0, 0));
 			this.clrWarning	= this.rtfDoc.createColor(new DW.RtfWriter.Color(206, 141, 0));
 			this.clrError	= this.rtfDoc.createColor(new DW.RtfWriter.Color(220, 0, 0));
-			this.clrBg		= this.rtfDoc.createColor(new DW.RtfWriter.Color(bgColor.r, bgColor.g, bgColor.b));
+			this.clrBg		= this.rtfDoc.createColor(new DW.RtfWriter.Color(bgColor.R, bgColor.G, bgColor.B));
 		}
 		public RtfDocWriterLogOutput(RtfDocument bufferDoc) : this(bufferDoc, ColorRgba.White) {}
 		

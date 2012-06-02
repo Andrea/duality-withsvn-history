@@ -251,6 +251,7 @@ namespace EditorBase.CamViewStates
 				}
 			}
 
+#if FALSE // Removed for now. Joints are an experimental feature.
 			// Draw Joint layer
 			List<Collider.JointInfo> visibleJoints = new List<Collider.JointInfo>();
 			foreach (Collider c in visibleColliders) visibleJoints.AddRange(c.Joints.Where(j => !visibleJoints.Contains(j)));
@@ -284,6 +285,7 @@ namespace EditorBase.CamViewStates
 					colliderPosB.Z - 0.01f,
 					5.0f);
 			}
+#endif
 
 			base.OnCollectStateDrawcalls(canvas);
 		}
@@ -348,7 +350,9 @@ namespace EditorBase.CamViewStates
 		{
 			Collider pickedCollider = null;
 			Collider.ShapeInfo pickedShape = null;
+#if FALSE // Removed for now. Joints are an experimental feature.
 			Collider.JointInfo pickedJoint = null;
+#endif
 
 			Collider[] visibleColliders = this.QueryVisibleColliders().ToArray();
 			visibleColliders.StableSort(delegate(Collider c1, Collider c2) 
@@ -360,6 +364,7 @@ namespace EditorBase.CamViewStates
 			{
 				Vector3 worldCoord = this.View.GetSpaceCoord(new Vector3(x, y, c.GameObj.Transform.Pos.Z));
 
+#if FALSE // Removed for now. Joints are an experimental feature.
 				foreach (Collider.JointInfo joint in c.Joints)
 				{
 					Vector3 jointAnchorA = Vector3.Zero;
@@ -380,6 +385,14 @@ namespace EditorBase.CamViewStates
 					pickedCollider = c;
 					break;
 				}
+#else
+				pickedShape = c.PickShape(worldCoord.Xy);
+				if (pickedShape != null)
+				{
+					pickedCollider = c;
+					break;
+				}
+#endif
 			}
 
 			if (pickedShape != null) return SelShape.Create(pickedShape);

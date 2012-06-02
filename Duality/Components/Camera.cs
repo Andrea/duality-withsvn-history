@@ -13,6 +13,82 @@ using Duality.Resources;
 namespace Duality
 {
 	/// <summary>
+	/// Specifies the way in which incoming vertex data is interpreted in order to generate geometry.
+	/// We're not using OpenTK.Graphics.OpenGL.BeginMode in order to keep the abstraction layer that
+	/// is introduced by <see cref="IDrawDevice"/> consistent. Also, we're able to limit the supported
+	/// vertex modes and remove obsolete or inefficient ones.
+	/// </summary>
+	public enum VertexMode
+	{
+		Points = BeginMode.Points,
+		Lines = BeginMode.Lines,
+		LineLoop = BeginMode.LineLoop,
+		Triangles = BeginMode.Triangles,
+		TriangleStrip = BeginMode.TriangleStrip,
+		TriangleFan = BeginMode.TriangleFan,
+		Quads = BeginMode.Quads,
+		QuadStrip = BeginMode.QuadStrip,
+		Polygon = BeginMode.Polygon
+	}
+
+	/// <summary>
+	/// Specifies a matrix setup used in a <see cref="Duality.Components.Camera.Pass"/>.
+	/// </summary>
+	public enum RenderMatrix
+	{
+		PerspectiveWorld,
+		OrthoScreen
+	}
+
+	[Flags]
+	public enum VisibilityFlag : uint
+	{
+		None = 0U,
+
+		// User-defined groups
+		Group0 = 1U << 0,
+		Group1 = 1U << 1,
+		Group2 = 1U << 2,
+		Group3 = 1U << 3,
+		Group4 = 1U << 4,
+		Group5 = 1U << 5,
+		Group6 = 1U << 6,
+		Group7 = 1U << 7,
+		Group8 = 1U << 8,
+		Group9 = 1U << 9,
+		Group10 = 1U << 10,
+		Group11 = 1U << 11,
+		Group12 = 1U << 12,
+		Group13 = 1U << 13,
+		Group14 = 1U << 14,
+		Group15 = 1U << 15,
+		Group16 = 1U << 16,
+		Group17 = 1U << 17,
+		Group18 = 1U << 18,
+		Group19 = 1U << 19,
+		Group20 = 1U << 20,
+		Group21 = 1U << 21,
+		Group22 = 1U << 22,
+		Group23 = 1U << 23,
+		Group24 = 1U << 24,
+		Group25 = 1U << 25,
+		Group26 = 1U << 26,
+		Group27 = 1U << 27,
+		Group28 = 1U << 28,
+		Group29 = 1U << 29,
+		Group30 = 1U << 30,
+
+		// Special groups (Might cause special behaviour)
+		ScreenOverlay = 1U << 31,
+
+		// Compound groups
+		All = uint.MaxValue,
+		AllWorld = All & (~ScreenOverlay),
+		AllOverlay = All
+
+	}
+
+	/// <summary>
 	/// Enumerates different behviours on how to blend color data onto existing background color.
 	/// </summary>
 	/// <seealso cref="Duality.Resources.DrawTechnique"/>
@@ -78,7 +154,7 @@ namespace Duality
 		/// <summary>
 		/// [GET] A bitmask flagging all visibility groups that are considered visible to this drawing device.
 		/// </summary>
-		uint VisibilityMask { get; }
+		VisibilityFlag VisibilityMask { get; }
 		/// <summary>
 		/// [GET] The devices general background color.
 		/// </summary>
@@ -129,7 +205,7 @@ namespace Duality
 		/// <param name="material">The <see cref="Duality.Resources.Material"/> to use for rendering the vertices.</param>
 		/// <param name="vertexMode">The vertices drawing mode.</param>
 		/// <param name="vertices">The vertex data to add.</param>
-		void AddVertices<T>(ContentRef<Material> material, BeginMode vertexMode, params T[] vertices) where T : struct, IVertexData;
+		void AddVertices<T>(ContentRef<Material> material, VertexMode vertexMode, params T[] vertices) where T : struct, IVertexData;
 		/// <summary>
 		/// Adds a parameterized set of vertices to the drawing devices rendering schedule.
 		/// </summary>
@@ -137,7 +213,7 @@ namespace Duality
 		/// <param name="material">The <see cref="Duality.Resources.BatchInfo"/> to use for rendering the vertices.</param>
 		/// <param name="vertexMode">The vertices drawing mode.</param>
 		/// <param name="vertices">The vertex data to add.</param>
-		void AddVertices<T>(BatchInfo material, BeginMode vertexMode, params T[] vertices) where T : struct, IVertexData;
+		void AddVertices<T>(BatchInfo material, VertexMode vertexMode, params T[] vertices) where T : struct, IVertexData;
 	}
 }
 
@@ -185,11 +261,14 @@ namespace Duality.Components
 		[Serializable]
 		public class Pass
 		{
+			private ColorRgba					clearColor		= ColorRgba.TransparentBlack;
+			private float						clearDepth		= 1.0f;
+			private ClearFlags					clearFlags		= ClearFlags.All;
+			private RenderMatrix				matrixMode		= RenderMatrix.PerspectiveWorld;
+			private	bool						fitOutput		= false;
+			private	VisibilityFlag				visibilityMask	= VisibilityFlag.AllWorld;
 			private	BatchInfo					input			= null;
 			private	ContentRef<RenderTarget>	output			= ContentRef<RenderTarget>.Null;
-			private	bool						fitOutput		= false;
-			private	bool						keepOutput		= false;
-			private	uint						visibilityMask	= uint.MaxValue;
 			
 			/// <summary>
 			/// The input to use for rendering. This can for example be a <see cref="Duality.Resources.Texture"/> that
@@ -218,30 +297,69 @@ namespace Duality.Components
 				set { this.fitOutput = value; }
 			}
 			/// <summary>
-			/// Specifies whether previous image data on this passes rendering target should be kept, i.e. whether clearing
-			/// it before beginning to render can be skipped.
+			/// [GET / SET] The clear color to apply when clearing the color buffer
 			/// </summary>
-			public bool KeepOutput
+			public ColorRgba ClearColor
 			{
-				get { return this.keepOutput; }
-				set { this.keepOutput = value; }
+				get { return this.clearColor; }
+				set { this.clearColor = value; }
+			}
+			/// <summary>
+			/// [GET / SET] The clear depth to apply when clearing the depth buffer
+			/// </summary>
+			public float ClearDepth
+			{
+				get { return this.clearDepth; }
+				set { this.clearDepth = value; }
+			}
+			/// <summary>
+			/// [GET / SET] Specifies which buffers to clean before rendering this pass
+			/// </summary>
+			public ClearFlags ClearFlags
+			{
+				get { return this.clearFlags; }
+				set { this.clearFlags = value; }
+			}
+			/// <summary>
+			/// [GET / SET] How to set up the coordinate space before rendering
+			/// </summary>
+			public RenderMatrix MatrixMode
+			{
+				get { return this.matrixMode; }
+				set { this.matrixMode = value; }
 			}
 			/// <summary>
 			/// [GET / SET] A Pass-local bitmask flagging all visibility groups that are considered visible to this drawing device.
 			/// </summary>
-			public uint VisibilityMask
+			public VisibilityFlag VisibilityMask
 			{
 				get { return this.visibilityMask; }
 				set { this.visibilityMask = value; }
 			}
 
 			public Pass() {}
+			public Pass(Pass copyFrom)
+			{
+				this.input = copyFrom.input;
+				this.output = copyFrom.output;
+				this.fitOutput = copyFrom.fitOutput;
+				this.clearColor = copyFrom.clearColor;
+				this.clearDepth = copyFrom.clearDepth;
+				this.clearFlags = copyFrom.clearFlags;
+				this.matrixMode = copyFrom.matrixMode;
+				this.visibilityMask = copyFrom.visibilityMask;
+
+				this.MakeAvailable();
+			}
 			public Pass(Pass copyFrom, BatchInfo inputOverride)
 			{
 				this.input = inputOverride;
 				this.output = copyFrom.output;
 				this.fitOutput = copyFrom.fitOutput;
-				this.keepOutput = copyFrom.keepOutput;
+				this.clearColor = copyFrom.clearColor;
+				this.clearDepth = copyFrom.clearDepth;
+				this.clearFlags = copyFrom.clearFlags;
+				this.matrixMode = copyFrom.matrixMode;
 				this.visibilityMask = copyFrom.visibilityMask;
 
 				this.MakeAvailable();
@@ -254,9 +372,10 @@ namespace Duality.Components
 			public override string ToString()
 			{
 				ContentRef<Texture> inputTex = input == null ? ContentRef<Texture>.Null : input.MainTexture;
-				return string.Format("{0} => {1}",
+				return string.Format("{0} => {1}{2}",
 					inputTex.IsExplicitNull ? (input == null ? "Camera" : "Undefined") : inputTex.Name,
-					output.IsExplicitNull ? "Screen" : output.Name);
+					output.IsExplicitNull ? "Screen" : output.Name,
+					(this.visibilityMask & VisibilityFlag.ScreenOverlay) != VisibilityFlag.None ? " (Overlay)" : "");
 			}
 		}
 
@@ -265,7 +384,7 @@ namespace Duality.Components
 			int SortIndex { get; }
 			float ZSortIndex { get; }
 			int VertexCount { get; }
-			BeginMode VertexMode { get; }
+			VertexMode VertexMode { get; }
 			BatchInfo Material { get; }
 			int VertexTypeIndex { get; }
 
@@ -276,7 +395,7 @@ namespace Duality.Components
 			void FinishRendering();
 
 			bool CanShareVBO(IDrawBatch other);
-			bool CanAppendJIT<T>(float invZSortAccuracy, float zSortIndex, BatchInfo material, BeginMode vertexMode) where T : struct, IVertexData;
+			bool CanAppendJIT<T>(float invZSortAccuracy, float zSortIndex, BatchInfo material, VertexMode vertexMode) where T : struct, IVertexData;
 			void AppendJIT(object vertexData);
 			bool CanAppend(IDrawBatch other);
 			void Append(IDrawBatch other);
@@ -287,7 +406,7 @@ namespace Duality.Components
 			private	int			vertexCount	= 0;
 			private	int			sortIndex	= 0;
 			private	float		zSortIndex	= 0.0f;
-			private	BeginMode	vertexMode	= BeginMode.Points;
+			private	VertexMode	vertexMode	= VertexMode.Points;
 			private	BatchInfo	material	= null;
 
 			public int SortIndex
@@ -302,7 +421,7 @@ namespace Duality.Components
 			{
 				get { return this.vertexCount; }
 			}
-			public BeginMode VertexMode
+			public VertexMode VertexMode
 			{
 				get { return this.vertexMode; }
 			}
@@ -315,7 +434,7 @@ namespace Duality.Components
 				get { return this.material; }
 			}
 
-			public DrawBatch(BatchInfo material, BeginMode vertexMode, T[] vertices, float zSortIndex)
+			public DrawBatch(BatchInfo material, VertexMode vertexMode, T[] vertices, float zSortIndex)
 			{
 				if (vertices == null || vertices.Length == 0) throw new ArgumentException("A zero-vertex DrawBatch is invalid.");
 				
@@ -379,7 +498,7 @@ namespace Duality.Components
 				if (lastBatchRendered == null || lastBatchRendered.Material != this.material)
 				    this.material.SetupForRendering(device, lastBatchRendered == null ? null : lastBatchRendered.Material);
 
-				GL.DrawArrays(this.vertexMode, vertexOffset, this.vertexCount);
+				GL.DrawArrays((BeginMode)this.vertexMode, vertexOffset, this.vertexCount);
 
 				vertexOffset += this.vertexCount;
 				lastBatchRendered = this;
@@ -393,7 +512,7 @@ namespace Duality.Components
 			{
 				return other is DrawBatch<T>;
 			}
-			public bool CanAppendJIT<U>(float invZSortAccuracy, float zSortIndex, BatchInfo material, BeginMode vertexMode) where U : struct, IVertexData
+			public bool CanAppendJIT<U>(float invZSortAccuracy, float zSortIndex, BatchInfo material, VertexMode vertexMode) where U : struct, IVertexData
 			{
 				if (invZSortAccuracy > 0.0f && this.material.Technique.Res.NeedsZSort)
 				{
@@ -448,13 +567,13 @@ namespace Duality.Components
 					this.zSortIndex = CalcZSortIndex(this.vertices, this.vertexCount);
 			}
 
-			public static bool IsVertexModeAppendable(BeginMode mode)
+			public static bool IsVertexModeAppendable(VertexMode mode)
 			{
 				return 
-					mode == BeginMode.Lines || 
-					mode == BeginMode.Points || 
-					mode == BeginMode.Quads || 
-					mode == BeginMode.Triangles;
+					mode == VertexMode.Lines || 
+					mode == VertexMode.Points || 
+					mode == VertexMode.Quads || 
+					mode == VertexMode.Triangles;
 			}
 			public static float CalcZSortIndex(T[] vertices, int count = -1)
 			{
@@ -477,10 +596,8 @@ namespace Duality.Components
 		private	float	farZ				= 10000.0f;
 		private	float	zSortAccuracy		= 0.0f;
 		private	float	parallaxRefDist		= DefaultParallaxRefDist;
-		private	uint	visibilityMask		= uint.MaxValue;
-		private	ColorRgba	clearColor		= ColorRgba.TransparentBlack;
-		private	ClearFlags	clearMask		= ClearFlags.All;
-		private	Pass[]		passes			= new[] { new Pass() };
+		private	VisibilityFlag	visibilityMask	= VisibilityFlag.All;
+		private	List<Pass>	passes			= new List<Pass>();
 
 		[NonSerialized]	private	Matrix4	matModelView		= Matrix4.Identity;
 		[NonSerialized]	private	Matrix4	matProjection		= Matrix4.Identity;
@@ -488,7 +605,7 @@ namespace Duality.Components
 		[NonSerialized]	private	bool	overlayMatrices		= false;
 
 		[NonSerialized]	private	uint				hndlPrimaryVBO		= 0;
-		[NonSerialized]	private	uint				deviceVisibility	= uint.MaxValue;
+		[NonSerialized]	private	VisibilityFlag		deviceVisibility	= VisibilityFlag.All;
 		[NonSerialized]	private	bool				deviceCacheValid	= false;
 		[NonSerialized]	private	Vector3				deviceCachePos		= Vector3.Zero;
 		[NonSerialized]	private	int					picking				= 0;
@@ -502,15 +619,10 @@ namespace Duality.Components
 		[NonSerialized]	private	List<Predicate<ICmpRenderer>>	editorRenderFilter	= new List<Predicate<ICmpRenderer>>();
 
 		/// <summary>
-		/// Fired as soon as <see cref="Duality.ICmpRenderer"/> drawcalls have been collected, but
-		/// right before processing them.
+		/// Fired as soon as drawcalls have been collected, but right before processing them.
+		/// This is the perfect place to sneak some diagnostic drawcalls into the renderpipeline.
 		/// </summary>
-		public event EventHandler CollectRendererDrawcalls	= null;
-		/// <summary>
-		/// Fired as soon as <see cref="Duality.ICmpScreenOverlayRenderer"/> drawcalls have been collected, but
-		/// right before processing them.
-		/// </summary>
-		public event EventHandler CollectOverlayDrawcalls	= null;
+		public event EventHandler<CollectDrawcallEventArgs> CollectRendererDrawcalls	= null;
 		
 		
 		Vector3 IDrawDevice.RefCoord
@@ -551,49 +663,50 @@ namespace Duality.Components
 		/// <summary>
 		/// [GET / SET] A bitmask flagging all visibility groups that are considered visible to this drawing device.
 		/// </summary>
-		public uint VisibilityMask
+		public VisibilityFlag VisibilityMask
 		{
 			get { return this.visibilityMask; }
 			set { this.visibilityMask = value; }
 		}
-		uint IDrawDevice.VisibilityMask
+		VisibilityFlag IDrawDevice.VisibilityMask
 		{
 			get { return this.deviceVisibility; }
-		}
-		/// <summary>
-		/// [GET / SET] A Bitmask describing which components of the current (or back-)buffer to clear before rendering.
-		/// </summary>
-		public ClearFlags ClearMask
-		{
-			get { return this.clearMask; }
-			set { this.clearMask = value; }
 		}
 		/// <summary>
 		/// [GET / SET] The background color of the rendered image.
 		/// </summary>
 		public ColorRgba ClearColor
 		{
-			get { return this.clearColor; }
-			set { this.clearColor = value; }
+			get
+			{
+				Pass clearPass = this.passes.FirstOrDefault(p => (p.ClearFlags & ClearFlags.Color) != ClearFlags.None);
+				if (clearPass == null) return ColorRgba.TransparentBlack;
+				return clearPass.ClearColor;
+			}
+			set
+			{
+				Pass clearPass = this.passes.FirstOrDefault(p => (p.ClearFlags & ClearFlags.Color) != ClearFlags.None);
+				if (clearPass != null) clearPass.ClearColor = value;
+			}
 		}
 		/// <summary>
 		/// [GET / SET] A set of passes that describes the Cameras rendering process. Is never null nor empty.
 		/// </summary>
 		[EditorHintFlags(MemberFlags.ForceWriteback)]
-		public Pass[] Passes
+		public List<Pass> Passes
 		{
 			get { return this.passes; }
 			set 
 			{ 
-				if (value == null || value.Length < 1) value = new Pass[1];
-				Array.Resize(ref this.passes, value.Length);
-				for (int i = 0; i < value.Length; i++)
+				if (value == null || value.Count < 1) value = new List<Pass>();
+				this.passes.Clear();
+				for (int i = 0; i < value.Count; i++)
 				{
 					if (value[i] == null) value[i] = new Pass();
 					if (i == 0)
-						this.passes[i] = new Pass(value[i], null);
+						this.passes.Add(new Pass(value[i], null));
 					else
-						this.passes[i] = new Pass(value[i], value[i].Input ?? new BatchInfo());
+						this.passes.Add(new Pass(value[i], value[i].Input ?? new BatchInfo()));
 				}
 			}
 		}
@@ -658,6 +771,16 @@ namespace Duality.Components
 		public Camera()
 		{
 			this.UpdateZSortAccuracy();
+
+			// Set up default rendering
+			Pass worldPass = new Pass();
+			Pass overlayPass = new Pass();
+			overlayPass.MatrixMode = RenderMatrix.OrthoScreen;
+			overlayPass.ClearFlags = ClearFlags.None;
+			overlayPass.VisibilityMask = VisibilityFlag.AllOverlay;
+
+			this.passes.Add(worldPass);
+			this.passes.Add(overlayPass);
 		}
 		internal override void CopyToInternal(Component target, Duality.Cloning.CloneProvider provider)
 		{
@@ -667,9 +790,7 @@ namespace Duality.Components
 			t.farZ				= this.farZ;
 			t.parallaxRefDist	= this.parallaxRefDist;
 			t.visibilityMask	= this.visibilityMask;
-			t.clearColor		= this.clearColor;
-			t.clearMask			= this.clearMask;
-			t.passes			= this.passes != null ? this.passes.Clone() as Pass[] : null;
+			t.passes			= this.passes != null ? new List<Pass>(this.passes.Select(p => new Pass(p))) : null;
 		}
 		public void MakeAvailable()
 		{
@@ -700,8 +821,12 @@ namespace Duality.Components
 				GL.ClearColor(System.Drawing.Color.Black);
 				GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-				this.deviceVisibility = this.visibilityMask;
-				this.RenderBaseInput();
+				this.deviceVisibility = this.visibilityMask & VisibilityFlag.AllWorld;
+				// Setup matrices
+				this.SetupMatrices(false);
+				// Render Scene
+				this.CollectDrawcalls();
+				this.ProcessDrawcalls(false);
 				RenderTarget.Bind(RenderTarget.None);
 			}
 			else
@@ -715,9 +840,7 @@ namespace Duality.Components
 					this.RenderSinglePass(t);
 				}
 				this.deviceVisibility = this.visibilityMask;
-
 				RenderTarget.Bind(RenderTarget.None);
-				this.RenderScreenOverlay();
 
 				Performance.timeRender.EndMeasure();
 				Performance.EndMeasure("Camera_" + this.gameobj.Name + "_Render");
@@ -909,27 +1032,23 @@ namespace Duality.Components
 			GL.Viewport((int)viewportAbs.x, (int)refSize.Y - (int)viewportAbs.h - (int)viewportAbs.y, (int)viewportAbs.w, (int)viewportAbs.h);
 			GL.Scissor((int)viewportAbs.x, (int)refSize.Y - (int)viewportAbs.h - (int)viewportAbs.y, (int)viewportAbs.w, (int)viewportAbs.h);
 
-			if (!p.KeepOutput)
-			{
-				if (p.Input == null)
-				{
-					GL.ClearDepth(1.0d);
-					GL.ClearColor((OpenTK.Graphics.Color4)this.clearColor);
-					ClearBufferMask glClearMask = 0;
-					if ((this.clearMask & ClearFlags.Color) != ClearFlags.None) glClearMask |= ClearBufferMask.ColorBufferBit;
-					if ((this.clearMask & ClearFlags.Depth) != ClearFlags.None) glClearMask |= ClearBufferMask.DepthBufferBit;
-					GL.Clear(glClearMask);
-				}
-				else
-				{
-					GL.ClearDepth(1.0d);
-					GL.ClearColor((OpenTK.Graphics.Color4)ColorRgba.TransparentBlack);
-					GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-				}
-			}
+			// Clear buffers
+			ClearBufferMask glClearMask = 0;
+			if ((p.ClearFlags & ClearFlags.Color) != ClearFlags.None) glClearMask |= ClearBufferMask.ColorBufferBit;
+			if ((p.ClearFlags & ClearFlags.Depth) != ClearFlags.None) glClearMask |= ClearBufferMask.DepthBufferBit;
+			GL.ClearColor((OpenTK.Graphics.Color4)p.ClearColor);
+			GL.ClearDepth((double)p.ClearDepth); // The "float version" is from OpenGL 4.1..
+			GL.Clear(glClearMask);
 
 			if (p.Input == null)
-				this.RenderBaseInput();
+			{
+				bool screenOverlay = p.MatrixMode == RenderMatrix.OrthoScreen;
+				// Setup matrices
+				this.SetupMatrices(screenOverlay);
+				// Render Scene
+				this.CollectDrawcalls();
+				this.ProcessDrawcalls(screenOverlay);
+			}
 			else
 			{
 				this.SetupMatrices(true);
@@ -945,7 +1064,7 @@ namespace Duality.Components
 				}
 
 				IDrawDevice device = this.DrawDevice;
-				device.AddVertices(p.Input, BeginMode.Quads,
+				device.AddVertices(p.Input, VertexMode.Quads,
 					new VertexP3T2(targetRect.MinX,	targetRect.MinY,	0.0f,	0.0f,		0.0f),
 					new VertexP3T2(targetRect.MaxX,	targetRect.MinY,	0.0f,	uvRatio.X,	0.0f),
 					new VertexP3T2(targetRect.MaxX,	targetRect.MaxY,	0.0f,	uvRatio.X,	uvRatio.Y),
@@ -954,13 +1073,10 @@ namespace Duality.Components
 				Performance.timePostProcessing.BeginMeasure();
 				this.ProcessDrawcalls(true);
 				Performance.timePostProcessing.EndMeasure();
-				this.SetupMatrices();
 			}
 		}
-		private void RenderBaseInput()
+		private void CollectDrawcalls()
 		{
-			this.SetupMatrices();
-
 			// Query renderers
 			IEnumerable<ICmpRenderer> rendererQuery = Scene.Current.QueryVisibleRenderers(this.DrawDevice);
 			foreach (Predicate<ICmpRenderer> p in this.editorRenderFilter) rendererQuery = rendererQuery.Where(r => p(r));
@@ -983,27 +1099,12 @@ namespace Duality.Components
 					r.Draw(this);
 
 				if (this.CollectRendererDrawcalls != null)
-					this.CollectRendererDrawcalls(this, EventArgs.Empty);
+					this.CollectRendererDrawcalls(this, new CollectDrawcallEventArgs(this.DrawDevice));
 
 				Performance.timeCollectDrawcalls.EndMeasure();
 			}
-
-			this.ProcessDrawcalls();
 		}
-		private void RenderScreenOverlay()
-		{
-			this.SetupMatrices(true);
-
-			foreach (ICmpScreenOverlayRenderer r in Scene.Current.QueryVisibleOverlayRenderers(this.DrawDevice))
-				r.DrawOverlay(this);
-			
-			if (this.CollectOverlayDrawcalls != null)
-				this.CollectOverlayDrawcalls(this, EventArgs.Empty);
-
-			this.ProcessDrawcalls(true);
-			this.SetupMatrices();
-		}
-		private void ProcessDrawcalls(bool screenOverlay = false)
+		private void ProcessDrawcalls(bool screenOverlay)
 		{
 			if (screenOverlay)
 			{
@@ -1063,7 +1164,7 @@ namespace Duality.Components
 		{
 			this.zSortAccuracy = 10000000.0f / Math.Max(1.0f, Math.Abs(this.farZ - this.nearZ));
 		}
-		private void SetupMatrices(bool screenOverlay = false)
+		private void SetupMatrices(bool screenOverlay)
 		{
 			ContentRef<RenderTarget> rt = RenderTarget.BoundRT.Res;
 			Vector2 refSize = rt.IsAvailable ? new Vector2(rt.Res.Width, rt.Res.Height) : DualityApp.TargetResolution;
@@ -1089,7 +1190,7 @@ namespace Duality.Components
 			this.matFinal = this.matModelView * this.matProjection;
 			this.overlayMatrices = screenOverlay;
 		}
-		private void GenerateModelView(out Matrix4 mvMat, bool screenOverlay = false)
+		private void GenerateModelView(out Matrix4 mvMat, bool screenOverlay)
 		{
 			mvMat = Matrix4.Identity;
 			if (screenOverlay) return;
@@ -1101,7 +1202,7 @@ namespace Duality.Components
 			// Rotate them according to the camera angle
 			mvMat *= Matrix4.CreateRotationZ(-this.GameObj.Transform.Angle);
 		}
-		private void GenerateProjection(Rect orthoAbs, out Matrix4 projMat, bool screenOverlay = false)
+		private void GenerateProjection(Rect orthoAbs, out Matrix4 projMat, bool screenOverlay)
 		{
 			if (screenOverlay)
 			{
@@ -1346,7 +1447,7 @@ namespace Duality.Components
 				posTemp.X <= 1.0f + boundRadVec.X &&
 				posTemp.Y <= 1.0f + boundRadVec.Y;
 		}
-		void IDrawDevice.AddVertices<T>(BatchInfo material, BeginMode vertexMode, params T[] vertices)
+		void IDrawDevice.AddVertices<T>(BatchInfo material, VertexMode vertexMode, params T[] vertices)
 		{
 			if (material == null || material.Technique == null || !material.Technique.IsAvailable) return;
 			if (vertices == null || vertices.Length == 0) return;
@@ -1383,7 +1484,7 @@ namespace Duality.Components
 				buffer.Add(new DrawBatch<T>(material, vertexMode, vertices, zSortIndex));
 			}
 		}
-		void IDrawDevice.AddVertices<T>(ContentRef<Material> material, BeginMode vertexMode, params T[] vertices)
+		void IDrawDevice.AddVertices<T>(ContentRef<Material> material, VertexMode vertexMode, params T[] vertices)
 		{
 			if (!material.IsAvailable) return;
 			(this as IDrawDevice).AddVertices<T>(material.Res.InfoDirect, vertexMode, vertices);

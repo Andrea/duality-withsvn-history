@@ -378,7 +378,7 @@ namespace Duality.Resources
 		/// <param name="material"><see cref="Duality.Resources.Material"/> information for the current batch.</param>
 		/// <param name="vertexMode">The mode of incoming vertex data.</param>
 		/// <param name="vertices">Incoming vertex data.</param>
-		public virtual void PreprocessBatch<T>(IDrawDevice device, BatchInfo material, ref BeginMode vertexMode, ref T[] vertices) {}
+		public virtual void PreprocessBatch<T>(IDrawDevice device, BatchInfo material, ref VertexMode vertexMode, ref T[] vertices) {}
 		/// <summary>
 		/// Sets up the appropriate OpenGL rendering state for this DrawTechnique.
 		/// </summary>

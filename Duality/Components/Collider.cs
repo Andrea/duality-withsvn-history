@@ -65,7 +65,9 @@ namespace Duality.Components
 		private	Category	colCat			= Category.Cat1;
 		private	Category	colWith			= Category.All;
 		private	List<ShapeInfo>	shapes		= new List<ShapeInfo>();
+#if FALSE // Removed for now. Joints are an experimental feature.
 		private	List<JointInfo>	joints		= new List<JointInfo>();
+#endif
 		[NonSerialized]	private	bool			initialized	= false;
 		[NonSerialized]	private	Body			body		= null;
 		[NonSerialized]	private	List<ColEvent>	eventBuffer	= new List<ColEvent>();
@@ -182,6 +184,7 @@ namespace Duality.Components
 				this.SetShapes(value);
 			}
 		}
+#if FALSE // Removed for now. Joints are an experimental feature.
 		/// <summary>
 		/// [GET] Enumerates all <see cref="JointInfo">joints</see> that are connected to this Collider.
 		/// If you modify any of the returned ShapeInfos, be sure to call <see cref="UpdateBody"/> afterwards.
@@ -189,8 +192,9 @@ namespace Duality.Components
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public IEnumerable<JointInfo> Joints
 		{
-			get { return this.joints; }
+		    get { return this.joints; }
 		}
+#endif
 		/// <summary>
 		/// [GET] The physical bodys bounding radius.
 		/// </summary>
@@ -321,6 +325,7 @@ namespace Duality.Components
 			if (wasEnabled) this.body.Enabled = true;
 		}
 		
+#if FALSE // Removed for now. Joints are an experimental feature.
 		/// <summary>
 		/// Removes an existing joint from the Collider.
 		/// </summary>
@@ -391,6 +396,7 @@ namespace Duality.Components
 			}
 			this.UpdateBodyJoints();
 		}
+#endif
 
 		/// <summary>
 		/// Applies a Transform-local angular impulse to the object.
@@ -563,6 +569,7 @@ namespace Duality.Components
 			//var testJoint = JointFactory.CreateAngleJoint(
 		}
 
+#if FALSE // Removed for now. Joints are an experimental feature.
 		private void UpdateBodyJoints()
 		{
 			foreach (JointInfo info in this.joints)
@@ -587,28 +594,6 @@ namespace Duality.Components
 			}
 			this.UpdateBodyJoints();
 		}
-
-		private void Initialize()
-		{
-			if (this.initialized) return;
-
-			this.InitBody();
-			this.GameObj.Transform.RegisterExternalUpdater(this);
-
-			this.initialized = true;
-
-			this.InitJoints();
-		}
-		private void Shutdown()
-		{
-			if (!this.initialized) return;
-			
-			this.CleanupJoints();
-			this.CleanupBody();
-			this.GameObj.Transform.UnregisterExternalUpdater(this);
-
-			this.initialized = false;
-		}
 		private void CleanupInvalidJoints()
 		{
 			for (int i = this.joints.Count - 1; i >= 0; i--)
@@ -621,6 +606,33 @@ namespace Duality.Components
 					this.RemoveJoint(joint);
 				}
 			}
+		}
+#endif
+
+		private void Initialize()
+		{
+			if (this.initialized) return;
+
+			this.InitBody();
+			this.GameObj.Transform.RegisterExternalUpdater(this);
+
+			this.initialized = true;
+
+#if FALSE // Removed for now. Joints are an experimental feature.
+			this.InitJoints();
+#endif
+		}
+		private void Shutdown()
+		{
+			if (!this.initialized) return;
+			
+#if FALSE // Removed for now. Joints are an experimental feature.
+			this.CleanupJoints();
+#endif
+			this.CleanupBody();
+			this.GameObj.Transform.UnregisterExternalUpdater(this);
+
+			this.initialized = false;
 		}
 
 		/// <summary>
@@ -637,7 +649,9 @@ namespace Duality.Components
 		public void UpdateBody()
 		{
 			this.UpdateBodyShape();
+#if FALSE // Removed for now. Joints are an experimental feature.
 			this.UpdateBodyJoints();
+#endif
 		}
 
 		/// <summary>
@@ -764,7 +778,9 @@ namespace Duality.Components
 		
 		void ICmpUpdatable.OnUpdate()
 		{
+#if FALSE // Removed for now. Joints are an experimental feature.
 			this.CleanupInvalidJoints();
+#endif
 
 			foreach (ColEvent e in this.eventBuffer)
 			{
@@ -842,6 +858,7 @@ namespace Duality.Components
 
 			if (changes != Transform.DirtyFlags.None)
 			{
+#if FALSE // Removed for now. Joints are an experimental feature.
 				// Update joints
 				this.CleanupInvalidJoints();
 				foreach (JointInfo joint in this.joints)
@@ -849,6 +866,7 @@ namespace Duality.Components
 					joint.UpdateFromWorld();
 					joint.UpdateJoint();
 				}
+#endif
 
 				this.body.Awake = true;
 			}
@@ -857,15 +875,19 @@ namespace Duality.Components
 		{
 			if (context == InitContext.Activate)
 				this.Initialize();
+#if FALSE // Removed for now. Joints are an experimental feature.
 			else if (context == InitContext.Loaded)
 				this.CleanupInvalidJoints();
+#endif
 		}
 		void ICmpInitializable.OnShutdown(ShutdownContext context)
 		{
 			if (context == ShutdownContext.Deactivate)
 				this.Shutdown();
+#if FALSE // Removed for now. Joints are an experimental feature.
 			else if (context == ShutdownContext.Saving)
 				this.CleanupInvalidJoints();
+#endif
 		}
 
 		internal override void CopyToInternal(Component target, Duality.Cloning.CloneProvider provider)
