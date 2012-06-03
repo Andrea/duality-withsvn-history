@@ -131,10 +131,10 @@ namespace Duality.Components.Renderers
 			// Draw design time data
 			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Editor)
 			{
-				Vector3 textWidth = Vector3.UnitX * rect.w;
+				Vector3 textWidth = Vector3.UnitX * rect.W;
 				Vector3 textMaxWidth = Vector3.UnitX * this.text.MaxWidth;
-				Vector3 textHeight = Vector3.UnitY * rect.h;
-				Vector3 textMaxHeight = Vector3.UnitY * MathF.Max(this.text.MaxHeight, rect.h);
+				Vector3 textHeight = Vector3.UnitY * rect.H;
+				Vector3 textMaxHeight = Vector3.UnitY * MathF.Max(this.text.MaxHeight, rect.H);
 				MathF.TransformDotVec(ref textWidth, ref xDot, ref yDot);
 				MathF.TransformDotVec(ref textMaxWidth, ref xDot, ref yDot);
 				MathF.TransformDotVec(ref textHeight, ref xDot, ref yDot);

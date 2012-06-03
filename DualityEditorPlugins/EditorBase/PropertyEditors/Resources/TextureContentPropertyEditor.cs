@@ -75,10 +75,10 @@ namespace EditorBase.PropertyEditors
 			Texture tex = this.GetValue().NotNull().FirstOrDefault() as Texture;
 			if (tex == null) return rect;
 			return new Rect(
-				rect.x * tex.OglWidth,
-				rect.y * tex.OglHeight,
-				rect.w * tex.OglWidth,
-				rect.h * tex.OglHeight);
+				rect.X * tex.OglWidth,
+				rect.Y * tex.OglHeight,
+				rect.W * tex.OglWidth,
+				rect.H * tex.OglHeight);
 		}
 		private object AtlasConverterSet(object val)
 		{
@@ -86,10 +86,10 @@ namespace EditorBase.PropertyEditors
 			Texture tex = this.GetValue().NotNull().FirstOrDefault() as Texture;
 			if (tex == null) return rect;
 			return new Rect(
-				rect.x / tex.OglWidth,
-				rect.y / tex.OglHeight,
-				rect.w / tex.OglWidth,
-				rect.h / tex.OglHeight);
+				rect.X / tex.OglWidth,
+				rect.Y / tex.OglHeight,
+				rect.W / tex.OglWidth,
+				rect.H / tex.OglHeight);
 		}
 	}
 }

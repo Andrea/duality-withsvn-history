@@ -9,6 +9,11 @@ using Duality.Resources;
 	typeof(DualityDebugging.PixmapDebuggerVisualizerObjectSource), 
 	Target = typeof(Pixmap), 
 	Description = "Pixmap Visualizer")]
+[assembly: DebuggerVisualizer(
+	typeof(DualityDebugging.BitmapDebuggerVisualizer), 
+	typeof(DualityDebugging.PixmapLayerDebuggerVisualizerObjectSource), 
+	Target = typeof(Pixmap.Layer), 
+	Description = "Pixmap Layer Visualizer")]
 
 namespace DualityDebugging
 {
@@ -19,7 +24,18 @@ namespace DualityDebugging
 			Pixmap pixmap = target as Pixmap;
 			BinaryFormatter formatter = new BinaryFormatter();
 			formatter.Serialize(outgoingData, pixmap.ToString());
-			formatter.Serialize(outgoingData, pixmap.PixelData);
+			formatter.Serialize(outgoingData, pixmap.MainLayer.ToBitmap());
+			outgoingData.Flush();
+		}
+	}
+	public class PixmapLayerDebuggerVisualizerObjectSource : VisualizerObjectSource
+	{
+		public override void GetData(object target, Stream outgoingData)
+		{
+			Pixmap.Layer layer = target as Pixmap.Layer;
+			BinaryFormatter formatter = new BinaryFormatter();
+			formatter.Serialize(outgoingData, string.Format("Layer {0}x{1}", layer.Width, layer.Height));
+			formatter.Serialize(outgoingData, layer.ToBitmap());
 			outgoingData.Flush();
 		}
 	}

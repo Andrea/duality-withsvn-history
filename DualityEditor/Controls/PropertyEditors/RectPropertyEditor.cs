@@ -43,20 +43,20 @@ namespace DualityEditor.Controls.PropertyEditors
 			else
 			{
 				var valNotNull = values.NotNull();
-				float avgX = valNotNull.Average(o => ((Rect)o).x);
-				float avgY = valNotNull.Average(o => ((Rect)o).y);
-				float avgW = valNotNull.Average(o => ((Rect)o).w);
-				float avgH = valNotNull.Average(o => ((Rect)o).h);
+				float avgX = valNotNull.Average(o => ((Rect)o).X);
+				float avgY = valNotNull.Average(o => ((Rect)o).Y);
+				float avgW = valNotNull.Average(o => ((Rect)o).W);
+				float avgH = valNotNull.Average(o => ((Rect)o).H);
 
 				this.editor[0].Value = MathF.SafeToDecimal(avgX);
 				this.editor[1].Value = MathF.SafeToDecimal(avgY);
 				this.editor[2].Value = MathF.SafeToDecimal(avgW);
 				this.editor[3].Value = MathF.SafeToDecimal(avgH);
 
-				this.multiple[0] = (values.Any(o => o == null) || values.Any(o => ((Rect)o).x != avgX));
-				this.multiple[1] = (values.Any(o => o == null) || values.Any(o => ((Rect)o).y != avgY));
-				this.multiple[2] = (values.Any(o => o == null) || values.Any(o => ((Rect)o).w != avgW));
-				this.multiple[3] = (values.Any(o => o == null) || values.Any(o => ((Rect)o).h != avgH));
+				this.multiple[0] = (values.Any(o => o == null) || values.Any(o => ((Rect)o).X != avgX));
+				this.multiple[1] = (values.Any(o => o == null) || values.Any(o => ((Rect)o).Y != avgY));
+				this.multiple[2] = (values.Any(o => o == null) || values.Any(o => ((Rect)o).W != avgW));
+				this.multiple[3] = (values.Any(o => o == null) || values.Any(o => ((Rect)o).H != avgH));
 			}
 			this.EndUpdate();
 		}
@@ -81,7 +81,7 @@ namespace DualityEditor.Controls.PropertyEditors
 					else
 					{
 						Rect oldVal = (Rect)values[i];
-						values[i] = new Rect(newVal.x, oldVal.y, oldVal.w, oldVal.h);
+						values[i] = new Rect(newVal.X, oldVal.Y, oldVal.W, oldVal.H);
 					}
 				}
 				this.SetValues(values);
@@ -103,7 +103,7 @@ namespace DualityEditor.Controls.PropertyEditors
 					else
 					{
 						Rect oldVal = (Rect)values[i];
-						values[i] = new Rect(oldVal.x, newVal.y, oldVal.w, oldVal.h);
+						values[i] = new Rect(oldVal.X, newVal.Y, oldVal.W, oldVal.H);
 					}
 				}
 				this.SetValues(values);
@@ -125,7 +125,7 @@ namespace DualityEditor.Controls.PropertyEditors
 					else
 					{
 						Rect oldVal = (Rect)values[i];
-						values[i] = new Rect(oldVal.x, oldVal.y, newVal.w, oldVal.h);
+						values[i] = new Rect(oldVal.X, oldVal.Y, newVal.W, oldVal.H);
 					}
 				}
 				this.SetValues(values);
@@ -147,7 +147,7 @@ namespace DualityEditor.Controls.PropertyEditors
 					else
 					{
 						Rect oldVal = (Rect)values[i];
-						values[i] = new Rect(oldVal.x, oldVal.y, oldVal.w, newVal.h);
+						values[i] = new Rect(oldVal.X, oldVal.Y, oldVal.W, newVal.H);
 					}
 				}
 				this.SetValues(values);

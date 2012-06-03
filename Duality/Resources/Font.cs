@@ -471,15 +471,15 @@ namespace Duality.Resources
 			int rows;
 			cols = rows = (int)Math.Ceiling(Math.Sqrt(SupportedChars.Length));
 
-			Bitmap pxTemp = new Bitmap(MathF.RoundToInt(cols * this.internalFont.Size), MathF.RoundToInt(rows * this.internalFont.Height));
-			Bitmap glyphTemp;
-			Bitmap glyphTempTypo;
+			Pixmap.Layer pixelLayer = new Pixmap.Layer(MathF.RoundToInt(cols * this.internalFont.Size), MathF.RoundToInt(rows * this.internalFont.Height));
+			Pixmap.Layer glyphTemp;
+			Pixmap.Layer glyphTempTypo;
+			Bitmap bm;
+			Bitmap measureBm = new Bitmap(1, 1);
 			Rect[] atlas = new Rect[SupportedChars.Length];
-			using (Graphics pxGraphics = Graphics.FromImage(pxTemp))
+			using (Graphics measureGraphics = Graphics.FromImage(measureBm))
 			{
-				Brush fntBrush = new SolidBrush(Color.FromArgb(this.color.A, this.color.R, this.color.G, this.color.B));
-
-				pxGraphics.Clear(Color.FromArgb(this.bgColor.A, this.bgColor.R, this.bgColor.G, this.bgColor.B));
+				Brush fntBrush = new SolidBrush(Color.Black);
 
 				StringFormat formatDef = StringFormat.GenericDefault;
 				formatDef.LineAlignment = StringAlignment.Near;
@@ -491,39 +491,41 @@ namespace Duality.Resources
 				for (int i = 0; i < SupportedChars.Length; ++i)
 				{
 					string str = SupportedChars[i].ToString(CultureInfo.InvariantCulture);
-					SizeF charSize = pxGraphics.MeasureString(str, this.internalFont, pxTemp.Width, formatDef);
+					SizeF charSize = measureGraphics.MeasureString(str, this.internalFont, pixelLayer.Width, formatDef);
 
 					// Render a single glyph
-					glyphTemp = new Bitmap((int)Math.Ceiling(Math.Max(1, charSize.Width)), this.internalFont.Height);
-					using (Graphics glyphGraphics = Graphics.FromImage(glyphTemp))
+					bm = new Bitmap((int)Math.Ceiling(Math.Max(1, charSize.Width)), this.internalFont.Height);
+					using (Graphics glyphGraphics = Graphics.FromImage(bm))
 					{
-						glyphGraphics.Clear(Color.FromArgb(this.bgColor.A, this.bgColor.R, this.bgColor.G, this.bgColor.B));
+						glyphGraphics.Clear(Color.Transparent);
 						glyphGraphics.TextRenderingHint = (System.Drawing.Text.TextRenderingHint)this.hint;
-						glyphGraphics.DrawString(str, this.internalFont, fntBrush, new RectangleF(0, 0, glyphTemp.Width, glyphTemp.Height), formatDef);
+						glyphGraphics.DrawString(str, this.internalFont, fntBrush, new RectangleF(0, 0, bm.Width, bm.Height), formatDef);
 					}
+					glyphTemp = new Pixmap.Layer(bm);
 					
 					if (str != " ")
 					{
 						Rectangle glyphTempBounds = glyphTemp.OpaqueBounds();
-						glyphTemp = glyphTemp.SubImage(glyphTempBounds.X, 0, glyphTempBounds.Width, glyphTemp.Height);
+						glyphTemp.SubImage(glyphTempBounds.X, 0, glyphTempBounds.Width, glyphTemp.Height);
 						if (BodyAscentRef.Contains(SupportedChars[i]))
 							this.bodyAscent += glyphTempBounds.Height;
-
+						
 						// Render a single glyph in typographic mode
-						glyphTempTypo = new Bitmap((int)Math.Ceiling(Math.Max(1, charSize.Width)), this.internalFont.Height);
-						using (Graphics glyphGraphics = Graphics.FromImage(glyphTempTypo))
+						bm = new Bitmap((int)Math.Ceiling(Math.Max(1, charSize.Width)), this.internalFont.Height);
+						using (Graphics glyphGraphics = Graphics.FromImage(bm))
 						{
-							glyphGraphics.Clear(Color.FromArgb(this.bgColor.A, this.bgColor.R, this.bgColor.G, this.bgColor.B));
+							glyphGraphics.Clear(Color.Transparent);
 							glyphGraphics.TextRenderingHint = (System.Drawing.Text.TextRenderingHint)this.hint;
-							glyphGraphics.DrawString(str, this.internalFont, fntBrush, new RectangleF(0, 0, glyphTempTypo.Width, glyphTempTypo.Height), formatTypo);
+							glyphGraphics.DrawString(str, this.internalFont, fntBrush, new RectangleF(0, 0, bm.Width, bm.Height), formatTypo);
 						}
-						glyphTempTypo = glyphTempTypo.Crop(true, false);
+						glyphTempTypo = new Pixmap.Layer(bm);
+						glyphTempTypo.Crop(true, false);
 					}
 					else
 						glyphTempTypo = glyphTemp;
 
 					// Update xy values if it doesn't fit anymore
-					if (x + glyphTemp.Width + 2 > pxTemp.Width)
+					if (x + glyphTemp.Width + 2 > pixelLayer.Width)
 					{
 						x = 0;
 						y += this.internalFont.Height + 2;
@@ -534,21 +536,33 @@ namespace Duality.Resources
 					this.glyphs[i].width = glyphTemp.Width;
 					this.glyphs[i].height = glyphTemp.Height;
 					this.glyphs[i].offsetX = glyphTemp.Width - glyphTempTypo.Width;
-					atlas[i].x = (float)x / (float)pxTemp.Width;
-					atlas[i].y = (float)y / (float)pxTemp.Height;
-					atlas[i].w = (float)glyphTemp.Width / (float)pxTemp.Width;
-					atlas[i].h = (float)this.internalFont.Height / (float)pxTemp.Height;
+					atlas[i].X = (float)x / (float)pixelLayer.Width;
+					atlas[i].Y = (float)y / (float)pixelLayer.Height;
+					atlas[i].W = (float)glyphTemp.Width / (float)pixelLayer.Width;
+					atlas[i].H = (float)this.internalFont.Height / (float)pixelLayer.Height;
 
 					// Draw it onto the font surface
-					pxGraphics.DrawImageUnscaled(glyphTemp, x, y);
+					glyphTemp.DrawOnto(pixelLayer, BlendMode.Solid, x, y);
 
 					x += glyphTemp.Width + 2;
 				}
 			}
 
+			// Adjust colors based on alpha value
+			//for (int i = 0; i < pixelLayer.Data.Length; i++)
+			System.Threading.Tasks.Parallel.For(0, pixelLayer.Data.Length, i =>
+			{
+				float factor = pixelLayer.Data[i].A / 255.0f;
+				float invFactor = 1.0f - factor;
+				pixelLayer.Data[i].R = (byte)Math.Min(255.0f, Math.Max(0.0f, this.bgColor.R * invFactor + this.color.R * factor));
+				pixelLayer.Data[i].G = (byte)Math.Min(255.0f, Math.Max(0.0f, this.bgColor.G * invFactor + this.color.G * factor));
+				pixelLayer.Data[i].B = (byte)Math.Min(255.0f, Math.Max(0.0f, this.bgColor.B * invFactor + this.color.B * factor));
+				pixelLayer.Data[i].A = (byte)Math.Min(255.0f, Math.Max(0.0f, this.bgColor.A * invFactor + this.color.A * factor));
+			});
+
 			bool useNearest = this.hint == RenderHint.Monochrome;
 			this.bodyAscent /= BodyAscentRef.Length;
-			this.pixelData = new Pixmap(pxTemp);
+			this.pixelData = new Pixmap(pixelLayer);
 			this.texture = new Texture(this.pixelData, 
 				Texture.SizeMode.Enlarge, 
 				useNearest ? OpenTK.Graphics.OpenGL.TextureMagFilter.Nearest : OpenTK.Graphics.OpenGL.TextureMagFilter.Linear,
@@ -607,14 +621,13 @@ namespace Duality.Resources
 				int[] c = new int[3];
 				for (int i = 0; i < SupportedChars.Length; ++i)
 				{
-					Bitmap glyphTemp = this.GetGlyphBitmap(SupportedChars[i]);
+					Pixmap.Layer glyphTemp = this.GetGlyphBitmap(SupportedChars[i]);
 
 					this.glyphs[i].kerningSamplesLeft	= new int[kerningY.Length];
 					this.glyphs[i].kerningSamplesRight	= new int[kerningY.Length];
 
 					if (SupportedChars[i] != ' ')
 					{
-						ColorRgba[] glyphTempPx = glyphTemp.GetPixelDataRgba();
 						int pxIndex;
 						// Left side samples
 						for (int sampleIndex = 0; sampleIndex < this.glyphs[i].kerningSamplesLeft.Length; sampleIndex++)
@@ -624,7 +637,7 @@ namespace Duality.Resources
 							{
 								pxIndex = MathF.Clamp(kerningY[sampleIndex] + off - 1, 0, glyphTemp.Height - 1) * glyphTemp.Width;
 								c[off] = 0;
-								while (glyphTempPx[pxIndex + c[off]].A == 0)
+								while (glyphTemp.Data[pxIndex + c[off]].A == 0)
 								{
 									c[off]++;
 									if (c[off] >= glyphTemp.Width / 2) break;
@@ -640,7 +653,7 @@ namespace Duality.Resources
 							{
 								pxIndex = MathF.Clamp(kerningY[sampleIndex] + off - 1, 0, glyphTemp.Height - 1) * glyphTemp.Width + glyphTemp.Width - 1;
 								c[off] = 0;
-								while (glyphTempPx[pxIndex - c[off]].A == 0)
+								while (glyphTemp.Data[pxIndex - c[off]].A == 0)
 								{
 									c[off]++;
 									if (c[off] >= glyphTemp.Width / 2) break;
@@ -686,15 +699,17 @@ namespace Duality.Resources
 		/// </summary>
 		/// <param name="glyph">The glyph of which to retrieve the Bitmap.</param>
 		/// <returns>The Bitmap that has been retrieved, or null if the glyph is not supported.</returns>
-		public Bitmap GetGlyphBitmap(char glyph)
+		public Pixmap.Layer GetGlyphBitmap(char glyph)
 		{
 			Rect targetRect = this.texture.Atlas[CharLookup[(int)glyph]];
 			targetRect = targetRect.Transform(this.pixelData.Width / this.texture.UVRatio.X, this.pixelData.Height / this.texture.UVRatio.Y);
-			return this.pixelData.PixelData.SubImage(
-				MathF.RoundToInt(targetRect.x), 
-				MathF.RoundToInt(targetRect.y), 
-				MathF.RoundToInt(targetRect.w), 
-				MathF.RoundToInt(targetRect.h));
+			Pixmap.Layer subImg = new Pixmap.Layer(
+				MathF.RoundToInt(targetRect.W), 
+				MathF.RoundToInt(targetRect.H));
+			this.pixelData.MainLayer.DrawOnto(subImg, BlendMode.Solid, 
+				-MathF.RoundToInt(targetRect.X), 
+				-MathF.RoundToInt(targetRect.Y));
+			return subImg;
 		}
 
 		/// <summary>
@@ -853,6 +868,7 @@ namespace Duality.Resources
 		/// <param name="clr"></param>
 		public void RenderToBitmap(string text, Image target, float x, float y, ColorRgba clr)
 		{
+			Bitmap pixelData = this.pixelData.MainLayer.ToBitmap();
 			using (Graphics g = Graphics.FromImage(target))
 			{
 				g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
@@ -878,14 +894,14 @@ namespace Duality.Resources
 
 					if (clr == ColorRgba.White)
 					{
-						g.DrawImage(this.pixelData.PixelData,
+						g.DrawImage(pixelData,
 							new Rectangle(MathF.RoundToInt(x + curOffset + glyphXOff), MathF.RoundToInt(y), glyphData.width, glyphData.height),
 							new Rectangle(MathF.RoundToInt(dataCoord.X), MathF.RoundToInt(dataCoord.Y), glyphData.width, glyphData.height),
 							GraphicsUnit.Pixel);
 					}
 					else
 					{
-						g.DrawImage(this.pixelData.PixelData,
+						g.DrawImage(pixelData,
 							new Rectangle(MathF.RoundToInt(x + curOffset + glyphXOff), MathF.RoundToInt(y), glyphData.width, glyphData.height),
 							dataCoord.X, dataCoord.Y, glyphData.width, glyphData.height,
 							GraphicsUnit.Pixel,

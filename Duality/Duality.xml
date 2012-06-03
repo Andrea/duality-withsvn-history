@@ -4281,22 +4281,22 @@
             An empty Rect.
             </summary>
         </member>
-        <member name="F:Duality.Rect.x">
+        <member name="F:Duality.Rect.X">
             <summary>
             The Rects x-Coordinate.
             </summary>
         </member>
-        <member name="F:Duality.Rect.y">
+        <member name="F:Duality.Rect.Y">
             <summary>
             The Rects y-Coordinate.
             </summary>
         </member>
-        <member name="F:Duality.Rect.w">
+        <member name="F:Duality.Rect.W">
             <summary>
             The Rects width.
             </summary>
         </member>
-        <member name="F:Duality.Rect.h">
+        <member name="F:Duality.Rect.H">
             <summary>
             The Rects height.
             </summary>
@@ -8189,140 +8189,6 @@
             [GET] Returns whether this Scene is <see cref="P:Duality.Resources.Scene.Current"/>.
             </summary>
         </member>
-        <member name="T:Duality.ExtMethodsBitmap">
-            <summary>
-            Provides extension methods for <see cref="T:System.Drawing.Bitmap">Bitmaps</see>.
-            </summary>
-        </member>
-        <member name="M:Duality.ExtMethodsBitmap.SubImage(System.Drawing.Bitmap,System.Int32,System.Int32,System.Int32,System.Int32)">
-            <summary>
-            Extracts a rectangular portion of the original image.
-            </summary>
-            <param name="bm">The original Bitmap.</param>
-            <param name="x">The rectangular portion to extract.</param>
-            <param name="y">The rectangular portion to extract.</param>
-            <param name="w">The rectangular portion to extract.</param>
-            <param name="h">The rectangular portion to extract.</param>
-            <returns>A new Bitmap containing the selected area.</returns>
-        </member>
-        <member name="M:Duality.ExtMethodsBitmap.SubImage(System.Drawing.Bitmap,Duality.Rect)">
-            <summary>
-            Extracts a rectangular portion of the original image.
-            </summary>
-            <param name="bm">The original Bitmap.</param>
-            <param name="rect">The rectangular portion to extract.</param>
-            <returns>A new Bitmap containing the selected area.</returns>
-        </member>
-        <member name="M:Duality.ExtMethodsBitmap.SubImage(System.Drawing.Bitmap,System.Drawing.Rectangle)">
-            <summary>
-            Extracts a rectangular portion of the original image.
-            </summary>
-            <param name="bm">The original Bitmap.</param>
-            <param name="rect">The rectangular portion to extract.</param>
-            <returns>A new Bitmap containing the selected area.</returns>
-        </member>
-        <member name="M:Duality.ExtMethodsBitmap.Resize(System.Drawing.Bitmap,System.Int32,System.Int32,Duality.Alignment)">
-            <summary>
-            Creates a resized version of a Bitmap. Gained space will be empty, lost space will crop the image.
-            </summary>
-            <param name="bm">The original Bitmap.</param>
-            <param name="w">The desired width.</param>
-            <param name="h">The desired height.</param>
-            <param name="origin">The desired resize origin in the original image.</param>
-            <returns>A new Bitmap that has the specified size.</returns>
-        </member>
-        <member name="M:Duality.ExtMethodsBitmap.Rescale(System.Drawing.Bitmap,System.Int32,System.Int32,System.Drawing.Drawing2D.InterpolationMode)">
-            <summary>
-            Creates a rescaled version of a Bitmap.
-            </summary>
-            <param name="bm">The original Bitmap.</param>
-            <param name="w">The desired width.</param>
-            <param name="h">The desired height.</param>
-            <param name="mode">Specified how to interpolate the original image in order to calculate the result image.</param>
-            <returns>A new Bitmap that has been scaled to the specified size.</returns>
-        </member>
-        <member name="M:Duality.ExtMethodsBitmap.Crop(System.Drawing.Bitmap,System.Boolean,System.Boolean)">
-            <summary>
-            Creates a cropped version of the specified Bitmap, removing transparent / empty border areas.
-            </summary>
-            <param name="bm">The original Bitmap.</param>
-            <param name="cropX">Whether the image should be cropped in X-direction</param>
-            <param name="cropY">Whether the image should be cropped in Y-direction</param>
-            <returns>A cropped version of the original Bitmap.</returns>
-        </member>
-        <member name="M:Duality.ExtMethodsBitmap.OpaqueBounds(System.Drawing.Bitmap)">
-            <summary>
-            Measures the bounding rectangle of the opaque pixels in a Bitmap.
-            </summary>
-            <param name="bm"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.ExtMethodsBitmap.OpaqueBoundsF(System.Drawing.Bitmap)">
-            <summary>
-            Measures the bounding rectangle of the opaque pixels in a Bitmap. Returns a float value result
-            </summary>
-            <param name="bm"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.ExtMethodsBitmap.ColorTransparentPixels(System.Drawing.Bitmap)">
-            <summary>
-            Creates a new version of a Bitmap, where transparent pixels have been colored based on the non-transparent color values next to them.
-            This does not affect any alpha values but prepares the Bitmap for correct filtering of edges.
-            </summary>
-            <param name="bm">The original Bitmap.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.ExtMethodsBitmap.ColorTransparentPixels(System.Drawing.Bitmap,Duality.ColorFormat.ColorRgba)">
-            <summary>
-            Creates a new version of a Bitmap, where transparent pixels have been colored based on the specified transparent color.
-            This does not affect any alpha values but prepares the Bitmap for correct filtering of edges.
-            </summary>
-            <param name="bm">The original Bitmap.</param>
-            <param name="transparentColor"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.ExtMethodsBitmap.GetAverageColor(System.Drawing.Bitmap,System.Boolean)">
-            <summary>
-            Determines the average color of a Bitmap.
-            </summary>
-            <param name="bm"></param>
-            <param name="weightTransparent">If true, the alpha value weights a pixels color value. </param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.ExtMethodsBitmap.GetPixelDataRgba(System.Drawing.Bitmap)">
-            <summary>
-            Extracts a Bitmaps pixel data.
-            </summary>
-            <param name="bm"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.ExtMethodsBitmap.GetPixelDataIntArgb(System.Drawing.Bitmap)">
-            <summary>
-            Extracts a Bitmaps pixel data as (signed) IntArgb values.
-            </summary>
-            <param name="bm"></param>
-        </member>
-        <member name="M:Duality.ExtMethodsBitmap.SetPixelDataRgba(System.Drawing.Bitmap,Duality.ColorFormat.ColorRgba[])">
-            <summary>
-            Replaces a Bitmaps pixel data.
-            </summary>
-            <param name="bm"></param>
-            <param name="pixelData"></param>
-        </member>
-        <member name="M:Duality.ExtMethodsBitmap.SetPixelDataRgba(System.Drawing.Bitmap,System.Byte[])">
-            <summary>
-            Replaces a Bitmaps pixel data.
-            </summary>
-            <param name="bm"></param>
-            <param name="pixelData"></param>
-        </member>
-        <member name="M:Duality.ExtMethodsBitmap.SetPixelDataIntArgb(System.Drawing.Bitmap,System.Int32[])">
-            <summary>
-            Replaces a Bitmaps pixel data.
-            </summary>
-            <param name="bm"></param>
-            <param name="pixelData"></param>
-        </member>
         <member name="T:Duality.IKeyboardInput">
             <summary>
             Provides access to user keyboard input
@@ -10632,6 +10498,11 @@
             Represents the PNG-compressed Pixmap version.
             </summary>
         </member>
+        <member name="F:Duality.Resources.Pixmap.ResFormat_Version_LayerPng">
+            <summary>
+            Represents the PNG-compressed layered Pixmap version.
+            </summary>
+        </member>
         <member name="F:Duality.Resources.Pixmap.VirtualContentPath">
             <summary>
             (Virtual) base path for Duality's embedded default Pixmaps.
@@ -10662,6 +10533,12 @@
             Creates a new Pixmap from the specified <see cref="T:System.Drawing.Bitmap"/>.
             </summary>
             <param name="image">The <see cref="T:System.Drawing.Bitmap"/> that will be used by the Pixmap.</param>
+        </member>
+        <member name="M:Duality.Resources.Pixmap.#ctor(Duality.Resources.Pixmap.Layer)">
+            <summary>
+            Creates a new Pixmap from the specified <see cref="T:Duality.Resources.Pixmap.Layer"/>.
+            </summary>
+            <param name="image"></param>
         </member>
         <member name="M:Duality.Resources.Pixmap.#ctor(System.String)">
             <summary>
@@ -10696,9 +10573,14 @@
             [GET] A plain white 1x1 Pixmap. Can be used as a dummy.
             </summary>
         </member>
+        <member name="P:Duality.Resources.Pixmap.MainLayer">
+            <summary>
+            [GET / SET] The main pixel data <see cref="T:Duality.Resources.Pixmap.Layer"/>.
+            </summary>
+        </member>
         <member name="P:Duality.Resources.Pixmap.PixelData">
             <summary>
-            [GET / SET] A <see cref="T:System.Drawing.Bitmap"/> representing the actual pixel data.
+            [GET / SET] A list of pixel data <see cref="T:Duality.Resources.Pixmap.Layer">Layers</see>.
             </summary>
         </member>
         <member name="P:Duality.Resources.Pixmap.Width">
@@ -10710,6 +10592,215 @@
             <summary>
             [GET] The Height of the actual pixel data.
             </summary>
+        </member>
+        <member name="T:Duality.Resources.Pixmap.FilterMethod">
+            <summary>
+            Represents a filtering method.
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Pixmap.FilterMethod.Nearest">
+            <summary>
+            Nearest neighbor filterting. (No interpolation)
+            </summary>
+        </member>
+        <member name="F:Duality.Resources.Pixmap.FilterMethod.Linear">
+            <summary>
+            Linear interpolation.
+            </summary>
+        </member>
+        <member name="T:Duality.Resources.Pixmap.Layer">
+            <summary>
+            Represents a pixel data layer.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.Pixmap.Layer.Clone">
+            <summary>
+            Clones the pixel data layer and returns the new instance.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Resources.Pixmap.Layer.CopyTo(Duality.Resources.Pixmap.Layer)">
+            <summary>
+            Copies all data contained in this pixel data layer to a target layer.
+            </summary>
+            <param name="target"></param>
+        </member>
+        <member name="M:Duality.Resources.Pixmap.Layer.SavePixelData(System.String)">
+            <summary>
+            Saves the pixel data contained in this layer to the specified file.
+            </summary>
+            <param name="imagePath"></param>
+        </member>
+        <member name="M:Duality.Resources.Pixmap.Layer.LoadPixelData(System.String)">
+            <summary>
+            Loads the pixel data in this layer from the specified file.
+            </summary>
+            <param name="imagePath"></param>
+        </member>
+        <member name="M:Duality.Resources.Pixmap.Layer.ClearPixelData">
+            <summary>
+            Discards all pixel data in this Layer.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.Pixmap.Layer.ToBitmap">
+            <summary>
+            Creates a <see cref="T:System.Drawing.Bitmap"/> out of this Layer.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Resources.Pixmap.Layer.GetPixelDataRgba">
+            <summary>
+            Gets the Layers pixel data in the ColorRgba format. Note that this data is a clone and thus modifying it won't
+            affect the Layer it has been retrieved from.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Resources.Pixmap.Layer.GetPixelDataByteRgba">
+            <summary>
+            Gets the Layers pixel data in bytewise Rgba format. (Four elements per pixel)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Resources.Pixmap.Layer.GetPixelDataIntArgb">
+            <summary>
+            Gets the Layers pixel data in the integer Argb format. (One element per pixel)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Resources.Pixmap.Layer.FromBitmap(System.Drawing.Bitmap)">
+            <summary>
+            Sets this Layers pixel data to the one contained in the specified <see cref="T:System.Drawing.Bitmap"/>
+            </summary>
+            <param name="bm"></param>
+        </member>
+        <member name="M:Duality.Resources.Pixmap.Layer.SetPixelDataRgba(Duality.ColorFormat.ColorRgba[],System.Int32,System.Int32)">
+            <summary>
+            Sets the layers pixel data in the ColorRgba format. Note that the specified data will be copied and thus modifying it
+            outside won't affect the Layer it has been inserted into.
+            </summary>
+            <param name="pixelData"></param>
+            <param name="width"></param>
+            <param name="height"></param>
+        </member>
+        <member name="M:Duality.Resources.Pixmap.Layer.SetPixelDataRgba(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Sets the Layers pixel data in bytewise Rgba format. (Four elements per pixel)
+            </summary>
+            <param name="pixelData"></param>
+            <param name="width"></param>
+            <param name="height"></param>
+        </member>
+        <member name="M:Duality.Resources.Pixmap.Layer.SetPixelDataArgb(System.Int32[],System.Int32,System.Int32)">
+            <summary>
+            Sets the Layers pixel data in the integer Argb format. (One element per pixel)
+            </summary>
+            <param name="pixelData"></param>
+            <param name="width"></param>
+            <param name="height"></param>
+        </member>
+        <member name="M:Duality.Resources.Pixmap.Layer.Rescale(System.Int32,System.Int32,Duality.Resources.Pixmap.FilterMethod)">
+            <summary>
+            Rescales the Layer, stretching it to the specified size.
+            </summary>
+            <param name="w"></param>
+            <param name="h"></param>
+            <param name="filter">The filtering method to use when rescaling</param>
+        </member>
+        <member name="M:Duality.Resources.Pixmap.Layer.Resize(System.Int32,System.Int32,Duality.Alignment)">
+            <summary>
+            Resizes the Layers boundaries.
+            </summary>
+            <param name="w"></param>
+            <param name="h"></param>
+            <param name="origin"></param>
+        </member>
+        <member name="M:Duality.Resources.Pixmap.Layer.SubImage(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Extracts a rectangular region of this Layer. If the extracted region is bigger than the original Layer,
+            all new space is filled with a background color.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+        </member>
+        <member name="M:Duality.Resources.Pixmap.Layer.SubImage(System.Int32,System.Int32,System.Int32,System.Int32,Duality.ColorFormat.ColorRgba)">
+            <summary>
+            Extracts a rectangular region of this Layer. If the extracted region is bigger than the original Layer,
+            all new space is filled with a background color.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+            <param name="backColor"></param>
+        </member>
+        <member name="M:Duality.Resources.Pixmap.Layer.Crop(System.Boolean,System.Boolean)">
+            <summary>
+            Crops the Layer, removing transparent / empty border areas.
+            </summary>
+            <param name="cropX">Whether the Layer should be cropped in X-direction</param>
+            <param name="cropY">Whether the Layer should be cropped in Y-direction</param>
+        </member>
+        <member name="M:Duality.Resources.Pixmap.Layer.OpaqueBounds">
+            <summary>
+            Measures the bounding rectangle of the Layers opaque pixels.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Resources.Pixmap.Layer.GetAverageColor(System.Boolean)">
+            <summary>
+            Determines the average color of a Layer.
+            </summary>
+            <param name="weightTransparent">If true, the alpha value weights a pixels color value. </param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Resources.Pixmap.Layer.ColorTransparentPixels">
+            <summary>
+            Sets the color of all transparent pixels based on the non-transparent color values next to them.
+            This does not affect any alpha values but prepares the Layer for correct filtering once uploaded
+            to <see cref="T:Duality.Resources.Texture"/>.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.Pixmap.Layer.ColorTransparentPixels(Duality.ColorFormat.ColorRgba)">
+            <summary>
+            Sets the color of all transparent pixels to the specified color.
+            </summary>
+            <param name="transparentColor"></param>
+        </member>
+        <member name="M:Duality.Resources.Pixmap.Layer.DrawOnto(Duality.Resources.Pixmap.Layer,Duality.BlendMode,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Performs a drawing operation from this Layer to a target layer.
+            </summary>
+            <param name="target"></param>
+            <param name="blend"></param>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+        </member>
+        <member name="P:Duality.Resources.Pixmap.Layer.Width">
+            <summary>
+            [GET] The layers width in pixels
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Pixmap.Layer.Height">
+            <summary>
+            [GET] The layers height in pixels
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Pixmap.Layer.Data">
+            <summary>
+            [GET] The layers pixel data
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Pixmap.Layer.Item(System.Int32,System.Int32)">
+            <summary>
+            [GET / SET] A single pixels color.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <returns></returns>
         </member>
         <member name="T:Duality.Resources.Font">
             <summary>
@@ -12415,6 +12506,116 @@
             <summary>
             Makes this <see cref="T:Duality.GameObject"/> the 3d sound listener.
             </summary>
+        </member>
+        <member name="T:Duality.ExtMethodsBitmap">
+            <summary>
+            Provides extension methods for <see cref="T:System.Drawing.Bitmap">Bitmaps</see>.
+            </summary>
+        </member>
+        <member name="M:Duality.ExtMethodsBitmap.SubImage(System.Drawing.Bitmap,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Extracts a rectangular portion of the original image.
+            </summary>
+            <param name="bm">The original Bitmap.</param>
+            <param name="x">The rectangular portion to extract.</param>
+            <param name="y">The rectangular portion to extract.</param>
+            <param name="w">The rectangular portion to extract.</param>
+            <param name="h">The rectangular portion to extract.</param>
+            <returns>A new Bitmap containing the selected area.</returns>
+        </member>
+        <member name="M:Duality.ExtMethodsBitmap.SubImage(System.Drawing.Bitmap,Duality.Rect)">
+            <summary>
+            Extracts a rectangular portion of the original image.
+            </summary>
+            <param name="bm">The original Bitmap.</param>
+            <param name="rect">The rectangular portion to extract.</param>
+            <returns>A new Bitmap containing the selected area.</returns>
+        </member>
+        <member name="M:Duality.ExtMethodsBitmap.SubImage(System.Drawing.Bitmap,System.Drawing.Rectangle)">
+            <summary>
+            Extracts a rectangular portion of the original image.
+            </summary>
+            <param name="bm">The original Bitmap.</param>
+            <param name="rect">The rectangular portion to extract.</param>
+            <returns>A new Bitmap containing the selected area.</returns>
+        </member>
+        <member name="M:Duality.ExtMethodsBitmap.Resize(System.Drawing.Bitmap,System.Int32,System.Int32,Duality.Alignment)">
+            <summary>
+            Creates a resized version of a Bitmap. Gained space will be empty, lost space will crop the image.
+            </summary>
+            <param name="bm">The original Bitmap.</param>
+            <param name="w">The desired width.</param>
+            <param name="h">The desired height.</param>
+            <param name="origin">The desired resize origin in the original image.</param>
+            <returns>A new Bitmap that has the specified size.</returns>
+        </member>
+        <member name="M:Duality.ExtMethodsBitmap.Rescale(System.Drawing.Bitmap,System.Int32,System.Int32,System.Drawing.Drawing2D.InterpolationMode)">
+            <summary>
+            Creates a rescaled version of a Bitmap.
+            </summary>
+            <param name="bm">The original Bitmap.</param>
+            <param name="w">The desired width.</param>
+            <param name="h">The desired height.</param>
+            <param name="mode">Specified how to interpolate the original image in order to calculate the result image.</param>
+            <returns>A new Bitmap that has been scaled to the specified size.</returns>
+        </member>
+        <member name="M:Duality.ExtMethodsBitmap.Crop(System.Drawing.Bitmap,System.Boolean,System.Boolean)">
+            <summary>
+            Creates a cropped version of the specified Bitmap, removing transparent / empty border areas.
+            </summary>
+            <param name="bm">The original Bitmap.</param>
+            <param name="cropX">Whether the image should be cropped in X-direction</param>
+            <param name="cropY">Whether the image should be cropped in Y-direction</param>
+            <returns>A cropped version of the original Bitmap.</returns>
+        </member>
+        <member name="M:Duality.ExtMethodsBitmap.OpaqueBounds(System.Drawing.Bitmap)">
+            <summary>
+            Measures the bounding rectangle of the opaque pixels in a Bitmap.
+            </summary>
+            <param name="bm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ExtMethodsBitmap.GetAverageColor(System.Drawing.Bitmap,System.Boolean)">
+            <summary>
+            Determines the average color of a Bitmap.
+            </summary>
+            <param name="bm"></param>
+            <param name="weightTransparent">If true, the alpha value weights a pixels color value. </param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ExtMethodsBitmap.GetPixelDataRgba(System.Drawing.Bitmap)">
+            <summary>
+            Extracts a Bitmaps pixel data.
+            </summary>
+            <param name="bm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ExtMethodsBitmap.GetPixelDataIntArgb(System.Drawing.Bitmap)">
+            <summary>
+            Extracts a Bitmaps pixel data as (signed) IntArgb values.
+            </summary>
+            <param name="bm"></param>
+        </member>
+        <member name="M:Duality.ExtMethodsBitmap.SetPixelDataRgba(System.Drawing.Bitmap,Duality.ColorFormat.ColorRgba[])">
+            <summary>
+            Replaces a Bitmaps pixel data.
+            </summary>
+            <param name="bm"></param>
+            <param name="pixelData"></param>
+        </member>
+        <member name="M:Duality.ExtMethodsBitmap.SetPixelDataRgba(System.Drawing.Bitmap,System.Byte[])">
+            <summary>
+            Replaces a Bitmaps pixel data.
+            </summary>
+            <param name="bm"></param>
+            <param name="pixelData"></param>
+        </member>
+        <member name="M:Duality.ExtMethodsBitmap.SetPixelDataIntArgb(System.Drawing.Bitmap,System.Int32[])">
+            <summary>
+            Replaces a Bitmaps pixel data.
+            </summary>
+            <param name="bm"></param>
+            <param name="pixelData"></param>
         </member>
     </members>
 </doc>

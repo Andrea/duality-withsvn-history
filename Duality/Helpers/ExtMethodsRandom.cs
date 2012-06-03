@@ -136,7 +136,7 @@ namespace Duality
 		/// <returns></returns>
 		public static Vector2 NextVector2(this Random r, Rect rect)
 		{
-			return new Vector2(r.NextFloat(rect.x, rect.x + rect.w), r.NextFloat(rect.y, rect.y + rect.h));
+			return new Vector2(r.NextFloat(rect.X, rect.X + rect.W), r.NextFloat(rect.Y, rect.Y + rect.H));
 		}
 		
 		/// <summary>

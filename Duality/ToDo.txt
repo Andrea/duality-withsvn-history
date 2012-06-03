@@ -12,22 +12,7 @@
 	-->	"Did you know..?" screen?
 
 
--->	Re-Implement Pixmaps without using System.Drawing.Bitmap except for loading image files
-	-->	System.Drawing.Bitmap doesn't properly handle fully transparent pixels (ignores their color)
-	-->	Can store pixel data directly as ColorRgba
-	-->	What class will replace Bitmap?
-		-->	Pixmap.Layer could do the job
-		-->	Should be fully usable without using a Pixmap, provide its own save / load
-		-->	Also, multi-layer support for Pixmaps would be neat
-		-->	No more auto-generated mipmaps in Textures, instead generate them in Pixmap?
-			-->	No, it's fine like it is now.
-			-->	But if there ARE suitable layers in the Pixmap already, use them instead.
-			-->	This enabled custom mipmap creation. Provide a debug Pixmap that shows mipmap levels.
-	-->	Remove Bitmap extension methods and directly implement them in Pixmap.Layer
-		-->	Don't clone by default, but provide a cloning version
-	-->	After that, ColorTransparentPixels will work properly for the first time - check current usages
-	-->	Use transparent white as background color for Fonts, always convert to fully-white-with-alpha first.
-	-->	Since I'm at it... implement Font effects?
+-->	Implement some simple Font effects?
 
 -->	Reconsider Transform External Updaters
 	-->	Would be great if they could be removed. Its inconsistent design and a little hacky.

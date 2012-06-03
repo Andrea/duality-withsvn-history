@@ -59,6 +59,14 @@ namespace DualityDebugging
 					typeof(PixmapDebuggerVisualizerObjectSource));
 				visualizerHost.ShowVisualizer();
 			}
+			else if (objToVisualize is Pixmap.Layer)
+			{
+				var visualizerHost = new VisualizerDevelopmentHost(
+					objToVisualize,
+					typeof(BitmapDebuggerVisualizer),
+					typeof(PixmapLayerDebuggerVisualizerObjectSource));
+				visualizerHost.ShowVisualizer();
+			}
 			else if (objToVisualize is Texture)
 			{
 				var visualizerHost = new VisualizerDevelopmentHost(

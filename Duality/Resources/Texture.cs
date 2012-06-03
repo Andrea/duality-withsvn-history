@@ -613,31 +613,26 @@ namespace Duality.Resources
 			GL.GetInteger(GetPName.TextureBinding2D, out lastTexId);
 			GL.BindTexture(TextureTarget.Texture2D, this.glTexId);
 
-			Bitmap bm = this.basePixmap.IsAvailable ? this.basePixmap.Res.PixelData : null;
-			if (bm != null)
+			Pixmap.Layer pixelData = this.basePixmap.IsAvailable ? this.basePixmap.Res.MainLayer : null;
+			if (pixelData != null)
 			{
-				this.AdjustSize(bm.Width, bm.Height);
+				this.AdjustSize(pixelData.Width, pixelData.Height);
 				this.SetupOpenGLRes();
 				if (this.oglSizeMode != SizeMode.NonPowerOfTwo &&
 					(this.pxWidth != this.oglWidth || this.pxHeight != this.oglHeight))
 				{
+					pixelData = pixelData.Clone();
 					if (this.oglSizeMode == SizeMode.Enlarge)
-						bm = bm.Resize(this.oglWidth, this.oglHeight);
+						pixelData.Resize(this.oglWidth, this.oglHeight);
 					else
-						bm = bm.Rescale(this.oglWidth, this.oglHeight, System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic);
+						pixelData.Rescale(this.oglWidth, this.oglHeight, Pixmap.FilterMethod.Linear);
 				}
 
-				BitmapData data = bm.LockBits(
-					new Rectangle(0, 0, bm.Width, bm.Height),
-					ImageLockMode.ReadOnly,
-					BitmapPixelFormat.Format32bppArgb);
-
 				// Load pixel data to video memory
-				GL.TexImage2D(TextureTarget.Texture2D, 0,
-					this.pixelformat, data.Width, data.Height, 0,
-					GLPixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
-
-				bm.UnlockBits(data);
+				GL.TexImage2D(TextureTarget.Texture2D, 0, 
+					this.pixelformat, pixelData.Width, pixelData.Height, 0, 
+					GLPixelFormat.Rgba, PixelType.UnsignedByte, 
+					pixelData.GetPixelDataByteRgba());
 			}
 			else
 			{
@@ -655,23 +650,22 @@ namespace Duality.Resources
 		/// Retrieves the pixel data that is currently stored in video memory.
 		/// </summary>
 		/// <returns></returns>
-		public Bitmap RetrievePixelData()
+		public Pixmap.Layer RetrievePixelData()
 		{
 			int lastTexId;
 			GL.GetInteger(GetPName.TextureBinding2D, out lastTexId);
 			GL.BindTexture(TextureTarget.Texture2D, this.glTexId);
 			
-			Bitmap bm = new Bitmap(this.oglWidth, this.oglHeight);
-			BitmapData data = bm.LockBits(
-				new Rectangle(0, 0, bm.Width, bm.Height),
-				ImageLockMode.WriteOnly,
-				BitmapPixelFormat.Format32bppArgb);
-			GL.GetTexImage(TextureTarget.Texture2D, 0, GLPixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
-			bm.UnlockBits(data);
+			byte[] data = new byte[this.oglWidth * this.oglHeight * 4];
+			GL.GetTexImage(TextureTarget.Texture2D, 0, 
+				GLPixelFormat.Rgba, PixelType.UnsignedByte, 
+				data);
 
 			GL.BindTexture(TextureTarget.Texture2D, lastTexId);
 
-			return bm;
+			Pixmap.Layer result = new Pixmap.Layer();
+			result.SetPixelDataRgba(data, this.oglWidth, this.oglHeight);
+			return result;
 		}
 
 		/// <summary>

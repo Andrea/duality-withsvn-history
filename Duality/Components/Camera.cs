@@ -814,8 +814,8 @@ namespace Duality.Components
 				
 				Vector2 refSize = new Vector2(this.pickingRT.Width, this.pickingRT.Height);
 				Rect viewportAbs = new Rect(refSize);
-				GL.Viewport((int)viewportAbs.x, (int)refSize.Y - (int)viewportAbs.h - (int)viewportAbs.y, (int)viewportAbs.w, (int)viewportAbs.h);
-				GL.Scissor((int)viewportAbs.x, (int)refSize.Y - (int)viewportAbs.h - (int)viewportAbs.y, (int)viewportAbs.w, (int)viewportAbs.h);
+				GL.Viewport((int)viewportAbs.X, (int)refSize.Y - (int)viewportAbs.H - (int)viewportAbs.Y, (int)viewportAbs.W, (int)viewportAbs.H);
+				GL.Scissor((int)viewportAbs.X, (int)refSize.Y - (int)viewportAbs.H - (int)viewportAbs.Y, (int)viewportAbs.W, (int)viewportAbs.H);
 
 				GL.ClearDepth(1.0d);
 				GL.ClearColor(System.Drawing.Color.Black);
@@ -1029,8 +1029,8 @@ namespace Duality.Components
 			
 			Vector2 refSize = p.Output.IsAvailable ? new Vector2(p.Output.Res.Width, p.Output.Res.Height) : DualityApp.TargetResolution;
 			Rect viewportAbs = new Rect(refSize);
-			GL.Viewport((int)viewportAbs.x, (int)refSize.Y - (int)viewportAbs.h - (int)viewportAbs.y, (int)viewportAbs.w, (int)viewportAbs.h);
-			GL.Scissor((int)viewportAbs.x, (int)refSize.Y - (int)viewportAbs.h - (int)viewportAbs.y, (int)viewportAbs.w, (int)viewportAbs.h);
+			GL.Viewport((int)viewportAbs.X, (int)refSize.Y - (int)viewportAbs.H - (int)viewportAbs.Y, (int)viewportAbs.W, (int)viewportAbs.H);
+			GL.Scissor((int)viewportAbs.X, (int)refSize.Y - (int)viewportAbs.H - (int)viewportAbs.Y, (int)viewportAbs.W, (int)viewportAbs.H);
 
 			// Clear buffers
 			ClearBufferMask glClearMask = 0;
@@ -1059,8 +1059,8 @@ namespace Duality.Components
 				Rect targetRect = new Rect(p.FitOutput ? refSize : inputSize);
 				if (!p.FitOutput)
 				{
-					targetRect.x = MathF.Round(refSize.X * 0.5f - inputSize.X * 0.5f);
-					targetRect.y = MathF.Round(refSize.Y * 0.5f - inputSize.Y * 0.5f);
+					targetRect.X = MathF.Round(refSize.X * 0.5f - inputSize.X * 0.5f);
+					targetRect.Y = MathF.Round(refSize.Y * 0.5f - inputSize.Y * 0.5f);
 				}
 
 				IDrawDevice device = this.DrawDevice;
@@ -1207,10 +1207,10 @@ namespace Duality.Components
 			if (screenOverlay)
 			{
 				Matrix4.CreateOrthographicOffCenter(
-					orthoAbs.x,
-					orthoAbs.x + orthoAbs.w, 
-					orthoAbs.y + orthoAbs.h, 
-					orthoAbs.y, 
+					orthoAbs.X,
+					orthoAbs.X + orthoAbs.W, 
+					orthoAbs.Y + orthoAbs.H, 
+					orthoAbs.Y, 
 					this.nearZ, 
 					this.farZ,
 					out projMat);
@@ -1220,10 +1220,10 @@ namespace Duality.Components
 			else
 			{
 				Matrix4.CreateOrthographicOffCenter(
-					orthoAbs.x - orthoAbs.w * 0.5f, 
-					orthoAbs.x + orthoAbs.w * 0.5f, 
-					orthoAbs.y + orthoAbs.h * 0.5f, 
-					orthoAbs.y - orthoAbs.h * 0.5f, 
+					orthoAbs.X - orthoAbs.W * 0.5f, 
+					orthoAbs.X + orthoAbs.W * 0.5f, 
+					orthoAbs.Y + orthoAbs.H * 0.5f, 
+					orthoAbs.Y - orthoAbs.H * 0.5f, 
 					this.nearZ, 
 					this.farZ,
 					out projMat);
@@ -1496,8 +1496,8 @@ namespace Duality.Components
 			
 			Vector2 refSize = DualityApp.TargetResolution;
 			Rect viewportAbs = new Rect(refSize);
-			GL.Viewport((int)viewportAbs.x, (int)refSize.Y - (int)viewportAbs.h - (int)viewportAbs.y, (int)viewportAbs.w, (int)viewportAbs.h);
-			GL.Scissor((int)viewportAbs.x, (int)refSize.Y - (int)viewportAbs.h - (int)viewportAbs.y, (int)viewportAbs.w, (int)viewportAbs.h);
+			GL.Viewport((int)viewportAbs.X, (int)refSize.Y - (int)viewportAbs.H - (int)viewportAbs.Y, (int)viewportAbs.W, (int)viewportAbs.H);
+			GL.Scissor((int)viewportAbs.X, (int)refSize.Y - (int)viewportAbs.H - (int)viewportAbs.Y, (int)viewportAbs.W, (int)viewportAbs.H);
 
 			GL.ClearDepth(1.0d);
 			GL.ClearColor((OpenTK.Graphics.Color4)ColorRgba.TransparentBlack);

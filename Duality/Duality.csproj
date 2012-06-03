@@ -94,6 +94,7 @@
     <Compile Include="Components\SoundEmitter.cs" />
     <Compile Include="Components\SoundListener.cs" />
     <Compile Include="Graphics\Canvas.cs" />
+    <Compile Include="Helpers\ExtMethodsBitmap.cs" />
     <Compile Include="Helpers\PhysicsConvert.cs" />
     <Compile Include="Helpers\EditorHint.cs" />
     <Compile Include="Helpers\ExtMethodsIEnumerable.cs" />
@@ -105,7 +106,6 @@
     <Compile Include="Log\ConsoleLogOutput.cs" />
     <Compile Include="ContentProvider.cs" />
     <Compile Include="Helpers\EventArgs.cs" />
-    <Compile Include="Helpers\ExtMethodsBitmap.cs" />
     <Compile Include="Helpers\ExtMethodsIList.cs" />
     <Compile Include="Helpers\ExtMethodsRandom.cs" />
     <Compile Include="Helpers\ExtMethodsString.cs" />

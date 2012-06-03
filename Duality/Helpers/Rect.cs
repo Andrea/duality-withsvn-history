@@ -17,35 +17,35 @@ namespace Duality
 		/// <summary>
 		/// The Rects x-Coordinate.
 		/// </summary>
-		public	float	x;
+		public	float	X;
 		/// <summary>
 		/// The Rects y-Coordinate.
 		/// </summary>
-		public	float	y;
+		public	float	Y;
 		/// <summary>
 		/// The Rects width.
 		/// </summary>
-		public	float	w;
+		public	float	W;
 		/// <summary>
 		/// The Rects height.
 		/// </summary>
-		public	float	h;
+		public	float	H;
 
 		/// <summary>
 		/// [GET / SET] The Rects position
 		/// </summary>
 		public Vector2 Pos
 		{
-			get { return new Vector2(this.x, this.y); }
-			set { this.x = value.X; this.y = value.Y; }
+			get { return new Vector2(this.X, this.Y); }
+			set { this.X = value.X; this.Y = value.Y; }
 		}
 		/// <summary>
 		/// [GET / SET] The Rects size.
 		/// </summary>
 		public Vector2 Size
 		{
-			get { return new Vector2(w, h); }
-			set { this.w = value.X; this.h = value.Y; }
+			get { return new Vector2(W, H); }
+			set { this.W = value.X; this.H = value.Y; }
 		}
 
 		/// <summary>
@@ -53,42 +53,42 @@ namespace Duality
 		/// </summary>
 		public float MinX
 		{
-			get { return MathF.Min(x, x + w); }
+			get { return MathF.Min(X, X + W); }
 		}
 		/// <summary>
 		/// [GET] The minimum y-Coordinate occupied by the Rect. Accounts for negative sizes.
 		/// </summary>
 		public float MinY
 		{
-			get { return MathF.Min(y, y + h); }
+			get { return MathF.Min(Y, Y + H); }
 		}
 		/// <summary>
 		/// [GET] The maximum x-Coordinate occupied by the Rect. Accounts for negative sizes.
 		/// </summary>
 		public float MaxY
 		{
-			get { return MathF.Max(y, y + h); }
+			get { return MathF.Max(Y, Y + H); }
 		}
 		/// <summary>
 		/// [GET] The maximum y-Coordinate occupied by the Rect. Accounts for negative sizes.
 		/// </summary>
 		public float MaxX
 		{
-			get { return MathF.Max(x, x + w); }
+			get { return MathF.Max(X, X + W); }
 		}
 		/// <summary>
 		/// [GET] The center x-Coordinate occupied by the Rect.
 		/// </summary>
 		public float CenterX
 		{
-			get { return x + w * 0.5f; }
+			get { return X + W * 0.5f; }
 		}
 		/// <summary>
 		/// [GET] The center y-Coordinate occupied by the Rect.
 		/// </summary>
 		public float CenterY
 		{
-			get { return y + h * 0.5f; }
+			get { return Y + H * 0.5f; }
 		}
 
 		/// <summary>
@@ -160,14 +160,14 @@ namespace Duality
 		/// </summary>
 		public float Area
 		{
-			get { return MathF.Abs(w * h); }
+			get { return MathF.Abs(W * H); }
 		}
 		/// <summary>
 		/// [GET] The Rects perimeter i.e. sum of all edge lengths.
 		/// </summary>
 		public float Perimeter
 		{
-			get { return 2 * MathF.Abs(w) + 2 * MathF.Abs(h); }
+			get { return 2 * MathF.Abs(W) + 2 * MathF.Abs(H); }
 		}
 		/// <summary>
 		/// [GET] If this Rect was to fit inside a bounding circle originating from [0,0],
@@ -191,10 +191,10 @@ namespace Duality
 		/// <param name="size"></param>
 		public Rect(Vector2 size)
 		{
-			this.x = 0;
-			this.y = 0;
-			this.w = size.X;
-			this.h = size.Y;
+			this.X = 0;
+			this.Y = 0;
+			this.W = size.X;
+			this.H = size.Y;
 		}
 		/// <summary>
 		/// Creates a Rect of the given size.
@@ -203,10 +203,10 @@ namespace Duality
 		/// <param name="h"></param>
 		public Rect(float w, float h)
 		{
-			this.x = 0;
-			this.y = 0;
-			this.w = w;
-			this.h = h;
+			this.X = 0;
+			this.Y = 0;
+			this.W = w;
+			this.H = h;
 		}
 		/// <summary>
 		/// Creates a Rect of the given size and position.
@@ -217,10 +217,10 @@ namespace Duality
 		/// <param name="h"></param>
 		public Rect(float x, float y, float w, float h)
 		{
-			this.x = x;
-			this.y = y;
-			this.w = w;
-			this.h = h;
+			this.X = x;
+			this.Y = y;
+			this.W = w;
+			this.H = h;
 		}
 
 		/// <summary>
@@ -232,8 +232,8 @@ namespace Duality
 		public Rect Offset(float x, float y)
 		{
 			Rect newRect = this;
-			newRect.x += x;
-			newRect.y += y;
+			newRect.X += x;
+			newRect.Y += y;
 			return newRect;
 		}
 		/// <summary>
@@ -244,8 +244,8 @@ namespace Duality
 		public Rect Offset(Vector2 offset)
 		{
 			Rect newRect = this;
-			newRect.x += offset.X;
-			newRect.y += offset.Y;
+			newRect.X += offset.X;
+			newRect.Y += offset.Y;
 			return newRect;
 		}
 
@@ -259,8 +259,8 @@ namespace Duality
 		public Rect Scale(float x, float y)
 		{
 			Rect newRect = this;
-			newRect.w *= x;
-			newRect.h *= y;
+			newRect.W *= x;
+			newRect.H *= y;
 			return newRect;
 		}
 		/// <summary>
@@ -272,8 +272,8 @@ namespace Duality
 		public Rect Scale(Vector2 factor)
 		{
 			Rect newRect = this;
-			newRect.w *= factor.X;
-			newRect.h *= factor.Y;
+			newRect.W *= factor.X;
+			newRect.H *= factor.Y;
 			return newRect;
 		}
 		/// <summary>
@@ -286,10 +286,10 @@ namespace Duality
 		public Rect Transform(float x, float y)
 		{
 			Rect newRect = this;
-			newRect.x *= x;
-			newRect.y *= y;
-			newRect.w *= x;
-			newRect.h *= y;
+			newRect.X *= x;
+			newRect.Y *= y;
+			newRect.W *= x;
+			newRect.H *= y;
 			return newRect;
 		}
 		/// <summary>
@@ -301,10 +301,10 @@ namespace Duality
 		public Rect Transform(Vector2 scale)
 		{
 			Rect newRect = this;
-			newRect.x *= scale.X;
-			newRect.y *= scale.Y;
-			newRect.w *= scale.X;
-			newRect.h *= scale.Y;
+			newRect.X *= scale.X;
+			newRect.Y *= scale.Y;
+			newRect.W *= scale.X;
+			newRect.H *= scale.Y;
 			return newRect;
 		}
 
@@ -329,7 +329,7 @@ namespace Duality
 		/// <returns>A new Rect with the specified adjustments.</returns>
 		public Rect ExpandToContain(Rect other)
 		{
-			return this.ExpandToContain(other.x, other.y).ExpandToContain(other.x + other.w, other.y + other.h);
+			return this.ExpandToContain(other.X, other.Y).ExpandToContain(other.X + other.W, other.Y + other.H);
 		}
 		/// <summary>
 		/// Returns a new version of this Rect that has been expanded to contain
@@ -341,18 +341,18 @@ namespace Duality
 		public Rect ExpandToContain(float x, float y)
 		{
 			Rect newRect = this;
-			if (x < newRect.x)
+			if (x < newRect.X)
 			{
-				newRect.w += newRect.x - x;
-				newRect.x = x;
+				newRect.W += newRect.X - x;
+				newRect.X = x;
 			}
-			if (y < newRect.y)
+			if (y < newRect.Y)
 			{
-				newRect.h += newRect.y - y;
-				newRect.y = y;
+				newRect.H += newRect.Y - y;
+				newRect.Y = y;
 			}
-			if (x > newRect.x + newRect.w) newRect.w = x - newRect.x;
-			if (y > newRect.y + newRect.h) newRect.h = y - newRect.y;
+			if (x > newRect.X + newRect.W) newRect.W = x - newRect.X;
+			if (y > newRect.Y + newRect.H) newRect.H = y - newRect.Y;
 			return newRect;
 		}
 		/// <summary>
@@ -373,7 +373,7 @@ namespace Duality
 		/// <returns>A new Rect with the specified adjustments.</returns>
 		public Rect Round()
 		{
-			return new Rect(MathF.Round(x), MathF.Round(y), MathF.Round(w), MathF.Round(h));
+			return new Rect(MathF.Round(X), MathF.Round(Y), MathF.Round(W), MathF.Round(H));
 		}
 		/// <summary>
 		/// Returns a new version of this Rect with integer coordinates and size.
@@ -382,7 +382,7 @@ namespace Duality
 		/// <returns>A new Rect with the specified adjustments.</returns>
 		public Rect Ceiling()
 		{
-			return new Rect(MathF.Ceiling(x), MathF.Ceiling(y), MathF.Ceiling(w), MathF.Ceiling(h));
+			return new Rect(MathF.Ceiling(X), MathF.Ceiling(Y), MathF.Ceiling(W), MathF.Ceiling(H));
 		}
 		/// <summary>
 		/// Returns a new version of this Rect with integer coordinates and size.
@@ -391,7 +391,7 @@ namespace Duality
 		/// <returns>A new Rect with the specified adjustments.</returns>
 		public Rect Floor()
 		{
-			return new Rect(MathF.Floor(x), MathF.Floor(y), MathF.Floor(w), MathF.Floor(h));
+			return new Rect(MathF.Floor(X), MathF.Floor(Y), MathF.Floor(W), MathF.Floor(H));
 		}
 
 		/// <summary>
@@ -432,7 +432,7 @@ namespace Duality
 		/// <returns>True, if the Rect contains the other Rect, false if not.</returns>
 		public bool Contains(Rect rect)
 		{
-			return this.Contains(rect.x, rect.y) && this.Contains(rect.x + rect.w, rect.y + rect.h);
+			return this.Contains(rect.X, rect.Y) && this.Contains(rect.X + rect.W, rect.Y + rect.H);
 		}
 		
 		/// <summary>
@@ -445,8 +445,8 @@ namespace Duality
 		/// <returns>True, if the Rect intersects the other Rect, false if not.</returns>
 		public bool Intersects(float x, float y, float w, float h)
 		{
-			if (this.x > (x + w) || (this.x + this.w) < x) return false;
-			if (this.y > (y + h) || (this.y + this.h) < y) return false;
+			if (this.X > (x + w) || (this.X + this.W) < x) return false;
+			if (this.Y > (y + h) || (this.Y + this.H) < y) return false;
 			return true;
 		}
 		/// <summary>
@@ -456,8 +456,8 @@ namespace Duality
 		/// <returns>True, if the Rect intersects the other Rect, false if not.</returns>
 		public bool Intersects(Rect rect)
 		{
-			if (this.x > (rect.x + rect.w) || (this.x + this.w) < rect.x) return false;
-			if (this.y > (rect.y + rect.h) || (this.y + this.h) < rect.y) return false;
+			if (this.X > (rect.X + rect.W) || (this.X + this.W) < rect.X) return false;
+			if (this.Y > (rect.Y + rect.H) || (this.Y + this.H) < rect.Y) return false;
 			return true;
 		}
 		/// <summary>
@@ -479,16 +479,16 @@ namespace Duality
 		/// <returns>A new Rect that describes both Rects intersection area.</returns>
 		public Rect Intersection(Rect rect)
 		{
-			float tempWidth = Math.Min(rect.w, this.w - (rect.x - this.x));
-			float tempHeight = Math.Min(rect.h, this.h - (rect.y - this.y));
-			if ((this.x - rect.x) > 0.0f) tempWidth -= (this.x - rect.x);
-			if ((this.y - rect.y) > 0.0f) tempHeight -= (this.y - rect.y);
+			float tempWidth = Math.Min(rect.W, this.W - (rect.X - this.X));
+			float tempHeight = Math.Min(rect.H, this.H - (rect.Y - this.Y));
+			if ((this.X - rect.X) > 0.0f) tempWidth -= (this.X - rect.X);
+			if ((this.Y - rect.Y) > 0.0f) tempHeight -= (this.Y - rect.Y);
 
 			return new Rect(
-				Math.Max(this.x, rect.x),
-				Math.Max(this.y, rect.y),
-				Math.Min(this.w, tempWidth),
-				Math.Min(this.h, tempHeight));
+				Math.Max(this.X, rect.X),
+				Math.Max(this.Y, rect.Y),
+				Math.Min(this.W, tempWidth),
+				Math.Min(this.H, tempHeight));
 		}
 
 		/// <summary>
@@ -499,10 +499,10 @@ namespace Duality
 		public bool Equals(Rect other)
 		{
 			return 
-				this.x == other.x &&
-				this.y == other.y &&
-				this.w == other.w &&
-				this.h == other.h;
+				this.X == other.X &&
+				this.Y == other.Y &&
+				this.W == other.W &&
+				this.H == other.H;
 		}
 		public override bool Equals(object obj)
 		{
@@ -513,11 +513,11 @@ namespace Duality
 		}
 		public override int GetHashCode()
 		{
-			return this.x.GetHashCode() ^ this.y.GetHashCode() ^ this.w.GetHashCode() ^ this.h.GetHashCode();
+			return this.X.GetHashCode() ^ this.Y.GetHashCode() ^ this.W.GetHashCode() ^ this.H.GetHashCode();
 		}
 		public override string ToString()
 		{
-			return string.Format("Rect ({0}, {1}, {2}, {3})", this.x, this.y, this.w, this.h);
+			return string.Format("Rect ({0}, {1}, {2}, {3})", this.X, this.Y, this.W, this.H);
 		}
 
 		/// <summary>
@@ -684,7 +684,7 @@ namespace Duality
 
 		public static implicit operator System.Drawing.Rectangle(Rect r)
 		{
-			return new System.Drawing.Rectangle((int)r.x, (int)r.y, (int)r.w, (int)r.h);
+			return new System.Drawing.Rectangle((int)r.X, (int)r.Y, (int)r.W, (int)r.H);
 		}
 		public static implicit operator Rect(System.Drawing.Rectangle r)
 		{

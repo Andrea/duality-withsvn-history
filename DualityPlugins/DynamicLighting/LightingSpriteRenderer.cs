@@ -82,15 +82,15 @@ namespace DynamicLighting
 			vertices[0].pos.X = posTemp.X + edge1.X;
 			vertices[0].pos.Y = posTemp.Y + edge1.Y;
 			vertices[0].pos.Z = posTemp.Z;
-			vertices[0].texCoord.X = uvRect.x;
-			vertices[0].texCoord.Y = uvRect.y;
+			vertices[0].texCoord.X = uvRect.X;
+			vertices[0].texCoord.Y = uvRect.Y;
 			vertices[0].clr = mainClr;
 			vertices[0].attrib = perPixel ? objRotMat : vertexLight[0];
 
 			vertices[1].pos.X = posTemp.X + edge2.X;
 			vertices[1].pos.Y = posTemp.Y + edge2.Y;
 			vertices[1].pos.Z = posTemp.Z;
-			vertices[1].texCoord.X = uvRect.x;
+			vertices[1].texCoord.X = uvRect.X;
 			vertices[1].texCoord.Y = uvRect.MaxY;
 			vertices[1].clr = mainClr;
 			vertices[1].attrib = perPixel ? objRotMat : vertexLight[1];
@@ -107,7 +107,7 @@ namespace DynamicLighting
 			vertices[3].pos.Y = posTemp.Y + edge4.Y;
 			vertices[3].pos.Z = posTemp.Z;
 			vertices[3].texCoord.X = uvRect.MaxX;
-			vertices[3].texCoord.Y = uvRect.y;
+			vertices[3].texCoord.Y = uvRect.Y;
 			vertices[3].clr = mainClr;
 			vertices[3].attrib = perPixel ? objRotMat : vertexLight[3];
 		}

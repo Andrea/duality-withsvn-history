@@ -728,7 +728,7 @@ namespace Duality.Components
 				fAABBIntersect.LowerBound = Vector2.ComponentMax(fAABB.LowerBound, fsWorldAABB.LowerBound);
 				fAABBIntersect.UpperBound = Vector2.ComponentMin(fAABB.UpperBound, fsWorldAABB.UpperBound);
 
-				Vector2 fsWorldCoordStep = PhysicsConvert.ToPhysicalUnit(new Vector2(MathF.Max(this.shapes[i].AABB.w, 1.0f), MathF.Max(this.shapes[i].AABB.h, 1.0f)) * 0.05f);
+				Vector2 fsWorldCoordStep = PhysicsConvert.ToPhysicalUnit(new Vector2(MathF.Max(this.shapes[i].AABB.W, 1.0f), MathF.Max(this.shapes[i].AABB.H, 1.0f)) * 0.05f);
 				Vector2 fsTemp = fAABBIntersect.LowerBound;
 				do
 				{

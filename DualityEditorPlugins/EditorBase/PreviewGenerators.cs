@@ -20,29 +20,28 @@ namespace EditorBase.PreviewGenerators
 		{
 			int desiredWidth = settings.DesiredWidth;
 			int desiredHeight = settings.DesiredHeight;
-			Bitmap result = pixmap.PixelData;
-			float widthRatio = (float)result.Width / (float)result.Height;
+
+			Pixmap.Layer layer = pixmap.MainLayer.Clone();
+			float widthRatio = (float)layer.Width / (float)layer.Height;
+
 			if (pixmap.Width * pixmap.Height > 4096 * 4096)
 			{
-				result = result.Clone(new Rectangle(
+				layer.SubImage(
 					pixmap.Width / 2 - Math.Min(desiredWidth, pixmap.Width) / 2,
 					pixmap.Height / 2 - Math.Min(desiredHeight, pixmap.Height) / 2,
 					Math.Min(desiredWidth, pixmap.Width),
-					Math.Min(desiredHeight, pixmap.Height)), 
-					System.Drawing.Imaging.PixelFormat.DontCare);
-				if (result.Width != desiredWidth || result.Height != desiredHeight)
-					result = result.Rescale(desiredWidth, desiredHeight, InterpolationMode.HighQualityBicubic);
+					Math.Min(desiredHeight, pixmap.Height));
+				if (layer.Width != desiredWidth || layer.Height != desiredHeight)
+					layer.Rescale(desiredWidth, desiredHeight, Pixmap.FilterMethod.Linear);
 			}
 			else if (settings.SizeMode == PreviewSizeMode.FixedBoth)
-				result = result.Rescale(desiredWidth, desiredHeight, InterpolationMode.HighQualityBicubic);
+				layer.Rescale(desiredWidth, desiredHeight, Pixmap.FilterMethod.Linear);
 			else if (settings.SizeMode == PreviewSizeMode.FixedWidth)
-				result = result.Rescale(desiredWidth, MathF.RoundToInt(desiredWidth / widthRatio), InterpolationMode.HighQualityBicubic);
+				layer.Rescale(desiredWidth, MathF.RoundToInt(desiredWidth / widthRatio), Pixmap.FilterMethod.Linear);
 			else if (settings.SizeMode == PreviewSizeMode.FixedHeight)
-				result = result.Rescale(MathF.RoundToInt(widthRatio * desiredHeight), desiredHeight, InterpolationMode.HighQualityBicubic);
-			else
-				result = result.Clone() as Bitmap;
+				layer.Rescale(MathF.RoundToInt(widthRatio * desiredHeight), desiredHeight, Pixmap.FilterMethod.Linear);
 
-			return result;
+			return layer.ToBitmap();
 		}
 		public override bool CanPerformOn(Pixmap obj, PreviewSettings settings)
 		{

@@ -39,10 +39,10 @@ namespace Duality
 		public static Bitmap SubImage(this Bitmap bm, Rect rect)
 		{
 			return SubImage(bm,
-				MathF.RoundToInt(rect.x),
-				MathF.RoundToInt(rect.y),
-				MathF.RoundToInt(rect.w),
-				MathF.RoundToInt(rect.h));
+				MathF.RoundToInt(rect.X),
+				MathF.RoundToInt(rect.Y),
+				MathF.RoundToInt(rect.W),
+				MathF.RoundToInt(rect.H));
 		}
 		/// <summary>
 		/// Extracts a rectangular portion of the original image.
@@ -150,105 +150,6 @@ namespace Duality
 			bounds.Height = 1 + Math.Max(0, bounds.Height - bounds.Y);
 
 			return bounds;
-		}
-		/// <summary>
-		/// Measures the bounding rectangle of the opaque pixels in a Bitmap. Returns a float value result
-		/// </summary>
-		/// <param name="bm"></param>
-		/// <returns></returns>
-		public static Rect OpaqueBoundsF(this Bitmap bm)
-		{
-			Rectangle bounds = OpaqueBounds(bm);
-			return new Rect(bounds.X, bounds.Y, bounds.Width, bounds.Height);
-		}
-		/// <summary>
-		/// Creates a new version of a Bitmap, where transparent pixels have been colored based on the non-transparent color values next to them.
-		/// This does not affect any alpha values but prepares the Bitmap for correct filtering of edges.
-		/// </summary>
-		/// <param name="bm">The original Bitmap.</param>
-		/// <returns></returns>
-		public static Bitmap ColorTransparentPixels(this Bitmap bm)
-		{
-			Bitmap result = bm.Clone() as Bitmap;
-			ColorRgba[] pixelData = result.GetPixelDataRgba();
-
-			Point	pos		= new Point();
-			int[]	nPos	= new int[8];
-			bool[]	nOk		= new bool[8];
-			int[]	nMult	= new[]{2, 2, 2, 2, 1, 1, 1, 1};
-			int[]	mixClr	= null;
-
-			for (int i = 0; i < pixelData.Length; i++)
-			{
-				if (pixelData[i].A != 0) continue;
-
-				pos.Y	= i / bm.Width;
-				pos.X	= i - (pos.Y * bm.Width);
-
-				nPos[0] = (pos.X + ((pos.Y - 1) * bm.Width));
-				nPos[1] = (pos.X + ((pos.Y + 1) * bm.Width));
-				nPos[2] = ((pos.X - 1) + (pos.Y * bm.Width));
-				nPos[3] = ((pos.X + 1) + (pos.Y * bm.Width));
-				nPos[4] = ((pos.X - 1) + ((pos.Y - 1) * bm.Width));
-				nPos[5] = ((pos.X - 1) + ((pos.Y + 1) * bm.Width));
-				nPos[6] = ((pos.X + 1) + ((pos.Y - 1) * bm.Width));
-				nPos[7] = ((pos.X + 1) + ((pos.Y + 1) * bm.Width));
-
-				nOk[0]	= pos.Y > 0;
-				nOk[1]	= pos.Y < bm.Height - 1;
-				nOk[2]	= pos.X > 0;
-				nOk[3]	= pos.X < bm.Width - 1;
-				nOk[4]	= pos.X > 0 && pos.Y > 0;
-				nOk[5]	= pos.X > 0 && pos.Y < bm.Height - 1;
-				nOk[6]	= pos.X < bm.Width - 1 && pos.Y > 0;
-				nOk[7]	= pos.X < bm.Width - 1 && pos.Y < bm.Height - 1;
-
-				for (int j = 0; j < nPos.Length; j++)
-				{
-					if (!nOk[j]) continue;
-					if (pixelData[nPos[j]].A == 0) continue;
-
-					if (mixClr == null)
-						mixClr = new int[4];
-
-					mixClr[0] += pixelData[nPos[j]].R * nMult[j];
-					mixClr[1] += pixelData[nPos[j]].G * nMult[j];
-					mixClr[2] += pixelData[nPos[j]].B * nMult[j];
-					mixClr[3] += nMult[j];
-				}
-
-				if (mixClr != null)
-				{
-					pixelData[i].R = (byte)Math.Round((float)mixClr[0] / (float)mixClr[3]);
-					pixelData[i].G = (byte)Math.Round((float)mixClr[1] / (float)mixClr[3]);
-					pixelData[i].B = (byte)Math.Round((float)mixClr[2] / (float)mixClr[3]);
-					mixClr = null;
-				}
-			}
-
-			result.SetPixelDataRgba(pixelData);
-			return result;
-		}
-		/// <summary>
-		/// Creates a new version of a Bitmap, where transparent pixels have been colored based on the specified transparent color.
-		/// This does not affect any alpha values but prepares the Bitmap for correct filtering of edges.
-		/// </summary>
-		/// <param name="bm">The original Bitmap.</param>
-		/// <param name="transparentColor"></param>
-		/// <returns></returns>
-		public static Bitmap ColorTransparentPixels(this Bitmap bm, ColorRgba transparentColor)
-		{
-			Bitmap result = bm.Clone() as Bitmap;
-			ColorRgba[] pixelData = result.GetPixelDataRgba();
-
-			for (int i = 0; i < pixelData.Length; i++)
-			{
-				if (pixelData[i].A != 0) continue;
-				pixelData[i] = transparentColor;
-			}
-
-			result.SetPixelDataRgba(pixelData);
-			return result;
 		}
 		/// <summary>
 		/// Determines the average color of a Bitmap.

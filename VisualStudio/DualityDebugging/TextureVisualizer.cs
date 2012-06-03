@@ -19,7 +19,7 @@ namespace DualityDebugging
 			Texture texture = target as Texture;
 			BinaryFormatter formatter = new BinaryFormatter();
 			formatter.Serialize(outgoingData, texture.ToString());
-			formatter.Serialize(outgoingData, texture.RetrievePixelData());
+			formatter.Serialize(outgoingData, texture.RetrievePixelData().ToBitmap());
 			outgoingData.Flush();
 		}
 	}

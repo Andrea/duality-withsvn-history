@@ -158,14 +158,14 @@ namespace Duality.Components.Renderers
 			vertices[0].Pos.X = posTemp.X + edge1.X;
 			vertices[0].Pos.Y = posTemp.Y + edge1.Y;
 			vertices[0].Pos.Z = posTemp.Z;
-			vertices[0].TexCoord.X = uvRect.x;
-			vertices[0].TexCoord.Y = uvRect.y;
+			vertices[0].TexCoord.X = uvRect.X;
+			vertices[0].TexCoord.Y = uvRect.Y;
 			vertices[0].Color = mainClr;
 
 			vertices[1].Pos.X = posTemp.X + edge2.X;
 			vertices[1].Pos.Y = posTemp.Y + edge2.Y;
 			vertices[1].Pos.Z = posTemp.Z;
-			vertices[1].TexCoord.X = uvRect.x;
+			vertices[1].TexCoord.X = uvRect.X;
 			vertices[1].TexCoord.Y = uvRect.MaxY;
 			vertices[1].Color = mainClr;
 
@@ -180,7 +180,7 @@ namespace Duality.Components.Renderers
 			vertices[3].Pos.Y = posTemp.Y + edge4.Y;
 			vertices[3].Pos.Z = posTemp.Z;
 			vertices[3].TexCoord.X = uvRect.MaxX;
-			vertices[3].TexCoord.Y = uvRect.y;
+			vertices[3].TexCoord.Y = uvRect.Y;
 			vertices[3].Color = mainClr;
 		}
 
@@ -193,11 +193,11 @@ namespace Duality.Components.Renderers
 			if (mainTex != null)
 			{
 				if (this.rectMode == UVMode.WrapBoth)
-					uvRect = new Rect(mainTex.UVRatio.X * this.rect.w / mainTex.PxWidth, mainTex.UVRatio.Y * this.rect.h / mainTex.PxHeight);
+					uvRect = new Rect(mainTex.UVRatio.X * this.rect.W / mainTex.PxWidth, mainTex.UVRatio.Y * this.rect.H / mainTex.PxHeight);
 				else if (this.rectMode == UVMode.WrapHorizontal)
-					uvRect = new Rect(mainTex.UVRatio.X * this.rect.w / mainTex.PxWidth, mainTex.UVRatio.Y);
+					uvRect = new Rect(mainTex.UVRatio.X * this.rect.W / mainTex.PxWidth, mainTex.UVRatio.Y);
 				else if (this.rectMode == UVMode.WrapVertical)
-					uvRect = new Rect(mainTex.UVRatio.X, mainTex.UVRatio.Y * this.rect.h / mainTex.PxHeight);
+					uvRect = new Rect(mainTex.UVRatio.X, mainTex.UVRatio.Y * this.rect.H / mainTex.PxHeight);
 				else
 					uvRect = new Rect(mainTex.UVRatio.X, mainTex.UVRatio.Y);
 			}
