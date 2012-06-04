@@ -874,8 +874,6 @@ namespace Duality.Resources
 						int sourceN = i + this.width * (j);
 						int targetN = x + i + target.width * (y + j);
 
-						targetColor	= target.data[targetN];
-
 						if (blend == BlendMode.Solid)
 						{
 							target.data[targetN] = this.data[sourceN];
@@ -886,6 +884,7 @@ namespace Duality.Resources
 						}
 						else if (blend == BlendMode.Add)
 						{
+							targetColor	= target.data[targetN];
 							float alphaTemp = (float)this.data[sourceN].A / 255.0f;
 							target.data[targetN].R = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(targetColor.R + this.data[sourceN].R * alphaTemp)));
 							target.data[targetN].G = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(targetColor.G + this.data[sourceN].G * alphaTemp)));
@@ -894,6 +893,7 @@ namespace Duality.Resources
 						}
 						else if (blend == BlendMode.Alpha)
 						{
+							targetColor	= target.data[targetN];
 							float alphaTemp = (float)this.data[sourceN].A / 255.0f;
 							target.data[targetN].R = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(targetColor.R * (1.0f - alphaTemp) + this.data[sourceN].R * alphaTemp)));
 							target.data[targetN].G = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(targetColor.G * (1.0f - alphaTemp) + this.data[sourceN].G * alphaTemp)));
@@ -902,6 +902,7 @@ namespace Duality.Resources
 						}
 						else if (blend == BlendMode.Multiply)
 						{
+							targetColor	= target.data[targetN];
 							float clrTempR = (float)targetColor.R / 255.0f;
 							float clrTempG = (float)targetColor.G / 255.0f;
 							float clrTempB = (float)targetColor.B / 255.0f;
@@ -913,6 +914,7 @@ namespace Duality.Resources
 						}
 						else if (blend == BlendMode.Light)
 						{
+							targetColor	= target.data[targetN];
 							float clrTempR = (float)targetColor.R / 255.0f;
 							float clrTempG = (float)targetColor.G / 255.0f;
 							float clrTempB = (float)targetColor.B / 255.0f;
@@ -924,6 +926,7 @@ namespace Duality.Resources
 						}
 						else if (blend == BlendMode.Invert)
 						{
+							targetColor	= target.data[targetN];
 							float clrTempR = (float)targetColor.R / 255.0f;
 							float clrTempG = (float)targetColor.G / 255.0f;
 							float clrTempB = (float)targetColor.B / 255.0f;
