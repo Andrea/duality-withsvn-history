@@ -621,11 +621,10 @@ namespace Duality.Resources
 				if (this.oglSizeMode != SizeMode.NonPowerOfTwo &&
 					(this.pxWidth != this.oglWidth || this.pxHeight != this.oglHeight))
 				{
-					pixelData = pixelData.Clone();
 					if (this.oglSizeMode == SizeMode.Enlarge)
-						pixelData.Resize(this.oglWidth, this.oglHeight);
+						pixelData = pixelData.CloneResize(this.oglWidth, this.oglHeight);
 					else
-						pixelData.Rescale(this.oglWidth, this.oglHeight, Pixmap.FilterMethod.Linear);
+						pixelData = pixelData.CloneRescale(this.oglWidth, this.oglHeight, Pixmap.FilterMethod.Linear);
 				}
 
 				// Load pixel data to video memory

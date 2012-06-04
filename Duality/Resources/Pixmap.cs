@@ -109,7 +109,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// Represents a pixel data layer.
 		/// </summary>
-		public class Layer
+		public class Layer : Duality.Cloning.ICloneable
 		{
 			private	int	width;
 			private	int height;
@@ -686,6 +686,167 @@ namespace Duality.Resources
 					this.data[i] = transparentColor;
 				}
 			}
+			
+			/// <summary>
+			/// Rescales the Layer, stretching it to the specified size.
+			/// </summary>
+			/// <param name="w"></param>
+			/// <param name="h"></param>
+			/// <param name="filter">The filtering method to use when rescaling</param>
+			public Layer CloneRescale(int w, int h, FilterMethod filter = FilterMethod.Linear)
+			{
+				if (this.width == w && this.height == h) return this.Clone();
+
+				ColorRgba[]	tempDestData	= new ColorRgba[w * h];
+				if (filter == FilterMethod.Nearest)
+				{
+					//for (int i = 0; i < tempDestData.Length; i++)
+					System.Threading.Tasks.Parallel.For(0, tempDestData.Length, i =>
+					{
+						int y = i / w;
+						int x = i - (y * w);
+
+						int xTmp	= (x * this.width) / w;
+						int yTmp	= (y * this.height) / h;
+						int nTmp	= xTmp + (yTmp * this.width);
+						tempDestData[i].R = this.data[nTmp].R;
+						tempDestData[i].G = this.data[nTmp].G;
+						tempDestData[i].B = this.data[nTmp].B;
+						tempDestData[i].A = this.data[nTmp].A;
+					});
+				}
+				else if (filter == FilterMethod.Linear)
+				{
+					//for (int i = 0; i < tempDestData.Length; i++)
+					//foreach (int i in Enumerable.Range(0, tempDestData.Length).AsParallel())
+					System.Threading.Tasks.Parallel.For(0, tempDestData.Length, i =>
+					{
+						int y = i / w;
+						int x = i - (y * w);
+
+						float	xRatio	= ((float)(x * this.width) / (float)w) + ((w != this.width) ? ((w > this.width) ? -1.0f : 1.0f) : 0.0f) * 0.5f;
+						float	yRatio	= ((float)(y * this.height) / (float)h) + ((h != this.height) ? ((h > this.height) ? -1.0f : 1.0f) : 0.0f) * 0.5f;
+						int		xTmp	= (int)Math.Floor(xRatio);
+						int		yTmp	= (int)Math.Floor(yRatio);
+						bool	xLim1	= (xTmp < 0);
+						bool	yLim1	= (yTmp < 0);
+						bool	xLim2	= (xTmp >= this.width - 1);
+						bool	yLim2	= (yTmp >= this.height - 1);
+						int		nTmp0	= xTmp + (xLim1 ? 1 : 0) + ((yTmp + (yLim1 ? 1 : 0)) * this.width);
+						int		nTmp1	= xTmp + (xLim2 ? 0 : 1) + ((yTmp + (yLim1 ? 1 : 0)) * this.width);
+						int		nTmp2	= xTmp + (xLim1 ? 1 : 0) + ((yTmp + (yLim2 ? 0 : 1)) * this.width);
+						int		nTmp3	= xTmp + (xLim2 ? 0 : 1) + ((yTmp + (yLim2 ? 0 : 1)) * this.width);
+						xRatio -= xTmp;
+						yRatio -= yTmp;
+
+						tempDestData[i].R = 
+							(byte)
+							(
+								((float)this.data[nTmp0].R * (1.0f - xRatio) * (1.0f - yRatio)) +
+								((float)this.data[nTmp1].R * xRatio * (1.0f - yRatio)) + 
+								((float)this.data[nTmp2].R * yRatio * (1.0f - xRatio)) +
+								((float)this.data[nTmp3].R * xRatio * yRatio)
+							);
+						tempDestData[i].G = 
+							(byte)
+							(
+								((float)this.data[nTmp0].G * (1.0f - xRatio) * (1.0f - yRatio)) +
+								((float)this.data[nTmp1].G * xRatio * (1.0f - yRatio)) + 
+								((float)this.data[nTmp2].G * yRatio * (1.0f - xRatio)) +
+								((float)this.data[nTmp3].G * xRatio * yRatio)
+							);
+						tempDestData[i].B = 
+							(byte)
+							(
+								((float)this.data[nTmp0].B * (1.0f - xRatio) * (1.0f - yRatio)) +
+								((float)this.data[nTmp1].B * xRatio * (1.0f - yRatio)) + 
+								((float)this.data[nTmp2].B * yRatio * (1.0f - xRatio)) +
+								((float)this.data[nTmp3].B * xRatio * yRatio)
+							);
+						tempDestData[i].A = 
+							(byte)
+							(
+								((float)this.data[nTmp0].A * (1.0f - xRatio) * (1.0f - yRatio)) +
+								((float)this.data[nTmp1].A * xRatio * (1.0f - yRatio)) + 
+								((float)this.data[nTmp2].A * yRatio * (1.0f - xRatio)) +
+								((float)this.data[nTmp3].A * xRatio * yRatio)
+							);
+					});
+				}
+
+				return new Layer(w, h, tempDestData);
+			}
+			/// <summary>
+			/// Resizes the Layers boundaries.
+			/// </summary>
+			/// <param name="w"></param>
+			/// <param name="h"></param>
+			/// <param name="origin"></param>
+			public Layer CloneResize(int w, int h, Alignment origin = Alignment.TopLeft)
+			{
+				int x = 0;
+				int y = 0;
+
+				if (origin == Alignment.Right || 
+					origin == Alignment.TopRight || 
+					origin == Alignment.BottomRight)
+					x = w - this.width;
+				else if (
+					origin == Alignment.Center || 
+					origin == Alignment.Top || 
+					origin == Alignment.Bottom)
+					x = (w - this.width) / 2;
+
+				if (origin == Alignment.Bottom || 
+					origin == Alignment.BottomLeft || 
+					origin == Alignment.BottomRight)
+					y = h - this.height;
+				else if (
+					origin == Alignment.Center || 
+					origin == Alignment.Left || 
+					origin == Alignment.Right)
+					y = (h - this.height) / 2;
+
+				return this.CloneSubImage(-x, -y, w, h);
+			}
+			/// <summary>
+			/// Extracts a rectangular region of this Layer. If the extracted region is bigger than the original Layer,
+			/// all new space is filled with a background color.
+			/// </summary>
+			/// <param name="x"></param>
+			/// <param name="y"></param>
+			/// <param name="w"></param>
+			/// <param name="h"></param>
+			public Layer CloneSubImage(int x, int y, int w, int h)
+			{
+				return this.CloneSubImage(x, y, w, h, ColorRgba.TransparentBlack);
+			}
+			/// <summary>
+			/// Extracts a rectangular region of this Layer. If the extracted region is bigger than the original Layer,
+			/// all new space is filled with a background color.
+			/// </summary>
+			/// <param name="x"></param>
+			/// <param name="y"></param>
+			/// <param name="w"></param>
+			/// <param name="h"></param>
+			/// <param name="backColor"></param>
+			public Layer CloneSubImage(int x, int y, int w, int h, ColorRgba backColor)
+			{
+				Layer tempLayer = new Layer(w, h, backColor);
+				this.DrawOnto(tempLayer, BlendMode.Solid, -x, -y);
+				return tempLayer;
+			}
+			/// <summary>
+			/// Crops the Layer, removing transparent / empty border areas.
+			/// </summary>
+			/// <param name="cropX">Whether the Layer should be cropped in X-direction</param>
+			/// <param name="cropY">Whether the Layer should be cropped in Y-direction</param>
+			public Layer CloneCrop(bool cropX = true, bool cropY = true)
+			{
+				if (!cropX && !cropY) return this.Clone();
+				Rectangle bounds = this.OpaqueBounds();
+				return this.CloneSubImage(cropX ? bounds.X : 0, cropY ? bounds.Y : 0, cropX ? bounds.Width : this.width, cropY ? bounds.Height : this.height);
+			}
 
 			/// <summary>
 			/// Performs a drawing operation from this Layer to a target layer.
@@ -700,48 +861,44 @@ namespace Duality.Resources
 			{
 				if (w == -1) w = this.width;
 				if (h == -1) h = this.height;
-				w = Math.Min(w, this.width);
-				h = Math.Min(h, this.height);
-				ColorRgba sourceColor;
+				w = MathF.Min(w, this.width, target.width - x);
+				h = MathF.Min(h, this.height, target.height - y);
 				ColorRgba targetColor;
 				for (int i = 0; i < w; i++)
 				{
-					if (x + i >= target.width) break;
 					if (x + i < 0) continue;
 					for (int j = 0; j < h; j++)
 					{
-						if (y + j >= target.height) break;
 						if (y + j < 0) continue;
 
 						int sourceN = i + this.width * (j);
 						int targetN = x + i + target.width * (y + j);
 
-						sourceColor	= this.data[sourceN];
 						targetColor	= target.data[targetN];
 
 						if (blend == BlendMode.Solid)
 						{
-							target.data[targetN] = sourceColor;
+							target.data[targetN] = this.data[sourceN];
 						}
 						else if (blend == BlendMode.Mask)
 						{
-							if (sourceColor.A >= 0) target.data[targetN] = sourceColor;
+							if (this.data[sourceN].A >= 0) target.data[targetN] = this.data[sourceN];
 						}
 						else if (blend == BlendMode.Add)
 						{
-							float alphaTemp = (float)sourceColor.A / 255.0f;
-							target.data[targetN].R = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(targetColor.R + sourceColor.R * alphaTemp)));
-							target.data[targetN].G = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(targetColor.G + sourceColor.G * alphaTemp)));
-							target.data[targetN].B = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(targetColor.B + sourceColor.B * alphaTemp)));
-							target.data[targetN].A = (byte)Math.Min(255, Math.Max(0, (int)targetColor.A + (int)sourceColor.A));
+							float alphaTemp = (float)this.data[sourceN].A / 255.0f;
+							target.data[targetN].R = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(targetColor.R + this.data[sourceN].R * alphaTemp)));
+							target.data[targetN].G = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(targetColor.G + this.data[sourceN].G * alphaTemp)));
+							target.data[targetN].B = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(targetColor.B + this.data[sourceN].B * alphaTemp)));
+							target.data[targetN].A = (byte)Math.Min(255, Math.Max(0, (int)targetColor.A + (int)this.data[sourceN].A));
 						}
 						else if (blend == BlendMode.Alpha)
 						{
-							float alphaTemp = (float)sourceColor.A / 255.0f;
-							target.data[targetN].R = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(targetColor.R * (1.0f - alphaTemp) + sourceColor.R * alphaTemp)));
-							target.data[targetN].G = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(targetColor.G * (1.0f - alphaTemp) + sourceColor.G * alphaTemp)));
-							target.data[targetN].B = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(targetColor.B * (1.0f - alphaTemp) + sourceColor.B * alphaTemp)));
-							target.data[targetN].A = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(targetColor.A * (1.0f - alphaTemp) + sourceColor.A)));
+							float alphaTemp = (float)this.data[sourceN].A / 255.0f;
+							target.data[targetN].R = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(targetColor.R * (1.0f - alphaTemp) + this.data[sourceN].R * alphaTemp)));
+							target.data[targetN].G = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(targetColor.G * (1.0f - alphaTemp) + this.data[sourceN].G * alphaTemp)));
+							target.data[targetN].B = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(targetColor.B * (1.0f - alphaTemp) + this.data[sourceN].B * alphaTemp)));
+							target.data[targetN].A = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(targetColor.A * (1.0f - alphaTemp) + this.data[sourceN].A)));
 						}
 						else if (blend == BlendMode.Multiply)
 						{
@@ -749,10 +906,10 @@ namespace Duality.Resources
 							float clrTempG = (float)targetColor.G / 255.0f;
 							float clrTempB = (float)targetColor.B / 255.0f;
 							float clrTempA = (float)targetColor.A / 255.0f;
-							target.data[targetN].R = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(sourceColor.R * clrTempR)));
-							target.data[targetN].G = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(sourceColor.G * clrTempG)));
-							target.data[targetN].B = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(sourceColor.B * clrTempB)));
-							target.data[targetN].A = (byte)Math.Min(255, Math.Max(0, (int)targetColor.A + (int)sourceColor.A));
+							target.data[targetN].R = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(this.data[sourceN].R * clrTempR)));
+							target.data[targetN].G = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(this.data[sourceN].G * clrTempG)));
+							target.data[targetN].B = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(this.data[sourceN].B * clrTempB)));
+							target.data[targetN].A = (byte)Math.Min(255, Math.Max(0, (int)targetColor.A + (int)this.data[sourceN].A));
 						}
 						else if (blend == BlendMode.Light)
 						{
@@ -760,10 +917,10 @@ namespace Duality.Resources
 							float clrTempG = (float)targetColor.G / 255.0f;
 							float clrTempB = (float)targetColor.B / 255.0f;
 							float clrTempA = (float)targetColor.A / 255.0f;
-							target.data[targetN].R = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(sourceColor.R * clrTempR + targetColor.R)));
-							target.data[targetN].G = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(sourceColor.G * clrTempG + targetColor.G)));
-							target.data[targetN].B = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(sourceColor.B * clrTempB + targetColor.B)));
-							target.data[targetN].A = (byte)Math.Min(255, Math.Max(0, (int)targetColor.A + (int)sourceColor.A));
+							target.data[targetN].R = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(this.data[sourceN].R * clrTempR + targetColor.R)));
+							target.data[targetN].G = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(this.data[sourceN].G * clrTempG + targetColor.G)));
+							target.data[targetN].B = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(this.data[sourceN].B * clrTempB + targetColor.B)));
+							target.data[targetN].A = (byte)Math.Min(255, Math.Max(0, (int)targetColor.A + (int)this.data[sourceN].A));
 						}
 						else if (blend == BlendMode.Invert)
 						{
@@ -771,17 +928,29 @@ namespace Duality.Resources
 							float clrTempG = (float)targetColor.G / 255.0f;
 							float clrTempB = (float)targetColor.B / 255.0f;
 							float clrTempA = (float)targetColor.A / 255.0f;
-							float clrTempR2 = (float)sourceColor.R / 255.0f;
-							float clrTempG2 = (float)sourceColor.G / 255.0f;
-							float clrTempB2 = (float)sourceColor.B / 255.0f;
-							float clrTempA2 = (float)sourceColor.A / 255.0f;
-							target.data[targetN].R = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(sourceColor.R * (1.0f - clrTempR) + targetColor.R * (1.0f - clrTempR2))));
-							target.data[targetN].G = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(sourceColor.G * (1.0f - clrTempG) + targetColor.G * (1.0f - clrTempG2))));
-							target.data[targetN].B = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(sourceColor.B * (1.0f - clrTempB) + targetColor.B * (1.0f - clrTempB2))));
-							target.data[targetN].A = (byte)Math.Min(255, Math.Max(0, (int)(targetColor.A + sourceColor.A)));
+							float clrTempR2 = (float)this.data[sourceN].R / 255.0f;
+							float clrTempG2 = (float)this.data[sourceN].G / 255.0f;
+							float clrTempB2 = (float)this.data[sourceN].B / 255.0f;
+							float clrTempA2 = (float)this.data[sourceN].A / 255.0f;
+							target.data[targetN].R = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(this.data[sourceN].R * (1.0f - clrTempR) + targetColor.R * (1.0f - clrTempR2))));
+							target.data[targetN].G = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(this.data[sourceN].G * (1.0f - clrTempG) + targetColor.G * (1.0f - clrTempG2))));
+							target.data[targetN].B = (byte)Math.Min(255, Math.Max(0, (int)Math.Round(this.data[sourceN].B * (1.0f - clrTempB) + targetColor.B * (1.0f - clrTempB2))));
+							target.data[targetN].A = (byte)Math.Min(255, Math.Max(0, (int)(targetColor.A + this.data[sourceN].A)));
 						}
 					}
 				}
+			}
+
+			object Cloning.ICloneable.CreateTargetObject(Cloning.CloneProvider provider)
+			{
+				return new Layer();
+			}
+			void Cloning.ICloneable.CopyDataTo(object targetObj, Cloning.CloneProvider provider)
+			{
+				Layer targetLayer = targetObj as Layer;
+				targetLayer.width = this.width;
+				targetLayer.height = this.height;
+				targetLayer.data = this.data == null ? null : this.data.Clone() as ColorRgba[];
 			}
 		}
 

@@ -101,8 +101,7 @@ namespace EditorBase.PropertyEditors
 			{
 				Rect uvRect = this.value.Atlas[frameIndex];
 				Rect pxRect = uvRect.Transform(this.value.OglWidth, this.value.OglHeight);
-				Pixmap.Layer subImage = this.value.BasePixmap.Res.MainLayer.Clone();
-				subImage.SubImage((int)pxRect.X, (int)pxRect.Y, (int)pxRect.W, (int)pxRect.H);
+				Pixmap.Layer subImage = this.value.BasePixmap.Res.MainLayer.CloneSubImage((int)pxRect.X, (int)pxRect.Y, (int)pxRect.W, (int)pxRect.H);
 				this.prevImageFrame[frameIndex] = subImage.ToBitmap();
 			}
 

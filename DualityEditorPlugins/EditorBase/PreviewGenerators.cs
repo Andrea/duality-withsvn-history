@@ -21,25 +21,27 @@ namespace EditorBase.PreviewGenerators
 			int desiredWidth = settings.DesiredWidth;
 			int desiredHeight = settings.DesiredHeight;
 
-			Pixmap.Layer layer = pixmap.MainLayer.Clone();
+			Pixmap.Layer layer = pixmap.MainLayer;
 			float widthRatio = (float)layer.Width / (float)layer.Height;
 
 			if (pixmap.Width * pixmap.Height > 4096 * 4096)
 			{
-				layer.SubImage(
+				layer = layer.CloneSubImage(
 					pixmap.Width / 2 - Math.Min(desiredWidth, pixmap.Width) / 2,
 					pixmap.Height / 2 - Math.Min(desiredHeight, pixmap.Height) / 2,
 					Math.Min(desiredWidth, pixmap.Width),
 					Math.Min(desiredHeight, pixmap.Height));
 				if (layer.Width != desiredWidth || layer.Height != desiredHeight)
-					layer.Rescale(desiredWidth, desiredHeight, Pixmap.FilterMethod.Linear);
+					layer = layer.CloneRescale(desiredWidth, desiredHeight, Pixmap.FilterMethod.Linear);
 			}
 			else if (settings.SizeMode == PreviewSizeMode.FixedBoth)
-				layer.Rescale(desiredWidth, desiredHeight, Pixmap.FilterMethod.Linear);
+				layer = layer.CloneRescale(desiredWidth, desiredHeight, Pixmap.FilterMethod.Linear);
 			else if (settings.SizeMode == PreviewSizeMode.FixedWidth)
-				layer.Rescale(desiredWidth, MathF.RoundToInt(desiredWidth / widthRatio), Pixmap.FilterMethod.Linear);
+				layer = layer.CloneRescale(desiredWidth, MathF.RoundToInt(desiredWidth / widthRatio), Pixmap.FilterMethod.Linear);
 			else if (settings.SizeMode == PreviewSizeMode.FixedHeight)
-				layer.Rescale(MathF.RoundToInt(widthRatio * desiredHeight), desiredHeight, Pixmap.FilterMethod.Linear);
+				layer = layer.CloneRescale(MathF.RoundToInt(widthRatio * desiredHeight), desiredHeight, Pixmap.FilterMethod.Linear);
+			else
+				layer = layer.Clone();
 
 			return layer.ToBitmap();
 		}
