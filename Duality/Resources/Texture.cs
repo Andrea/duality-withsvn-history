@@ -631,7 +631,7 @@ namespace Duality.Resources
 				GL.TexImage2D(TextureTarget.Texture2D, 0, 
 					this.pixelformat, pixelData.Width, pixelData.Height, 0, 
 					GLPixelFormat.Rgba, PixelType.UnsignedByte, 
-					pixelData.GetPixelDataByteRgba());
+					pixelData.Data);
 			}
 			else
 			{
