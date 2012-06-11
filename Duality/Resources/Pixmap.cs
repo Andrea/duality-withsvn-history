@@ -391,85 +391,10 @@ namespace Duality.Resources
 			/// <param name="filter">The filtering method to use when rescaling</param>
 			public void Rescale(int w, int h, FilterMethod filter = FilterMethod.Linear)
 			{
-				if (this.width == w && this.height == h) return;
+				ColorRgba[] result = this.InternalRescale(w, h, filter);
+				if (result == null) return;
 
-				ColorRgba[]	tempDestData	= new ColorRgba[w * h];
-				if (filter == FilterMethod.Nearest)
-				{
-					//for (int i = 0; i < tempDestData.Length; i++)
-					System.Threading.Tasks.Parallel.For(0, tempDestData.Length, i =>
-					{
-						int y = i / w;
-						int x = i - (y * w);
-
-						int xTmp	= (x * this.width) / w;
-						int yTmp	= (y * this.height) / h;
-						int nTmp	= xTmp + (yTmp * this.width);
-						tempDestData[i].R = this.data[nTmp].R;
-						tempDestData[i].G = this.data[nTmp].G;
-						tempDestData[i].B = this.data[nTmp].B;
-						tempDestData[i].A = this.data[nTmp].A;
-					});
-				}
-				else if (filter == FilterMethod.Linear)
-				{
-					//for (int i = 0; i < tempDestData.Length; i++)
-					//foreach (int i in Enumerable.Range(0, tempDestData.Length).AsParallel())
-					System.Threading.Tasks.Parallel.For(0, tempDestData.Length, i =>
-					{
-						int y = i / w;
-						int x = i - (y * w);
-
-						float	xRatio	= ((float)(x * this.width) / (float)w) + ((w != this.width) ? ((w > this.width) ? -1.0f : 1.0f) : 0.0f) * 0.5f;
-						float	yRatio	= ((float)(y * this.height) / (float)h) + ((h != this.height) ? ((h > this.height) ? -1.0f : 1.0f) : 0.0f) * 0.5f;
-						int		xTmp	= (int)Math.Floor(xRatio);
-						int		yTmp	= (int)Math.Floor(yRatio);
-						bool	xLim1	= (xTmp < 0);
-						bool	yLim1	= (yTmp < 0);
-						bool	xLim2	= (xTmp >= this.width - 1);
-						bool	yLim2	= (yTmp >= this.height - 1);
-						int		nTmp0	= xTmp + (xLim1 ? 1 : 0) + ((yTmp + (yLim1 ? 1 : 0)) * this.width);
-						int		nTmp1	= xTmp + (xLim2 ? 0 : 1) + ((yTmp + (yLim1 ? 1 : 0)) * this.width);
-						int		nTmp2	= xTmp + (xLim1 ? 1 : 0) + ((yTmp + (yLim2 ? 0 : 1)) * this.width);
-						int		nTmp3	= xTmp + (xLim2 ? 0 : 1) + ((yTmp + (yLim2 ? 0 : 1)) * this.width);
-						xRatio -= xTmp;
-						yRatio -= yTmp;
-
-						tempDestData[i].R = 
-							(byte)
-							(
-								((float)this.data[nTmp0].R * (1.0f - xRatio) * (1.0f - yRatio)) +
-								((float)this.data[nTmp1].R * xRatio * (1.0f - yRatio)) + 
-								((float)this.data[nTmp2].R * yRatio * (1.0f - xRatio)) +
-								((float)this.data[nTmp3].R * xRatio * yRatio)
-							);
-						tempDestData[i].G = 
-							(byte)
-							(
-								((float)this.data[nTmp0].G * (1.0f - xRatio) * (1.0f - yRatio)) +
-								((float)this.data[nTmp1].G * xRatio * (1.0f - yRatio)) + 
-								((float)this.data[nTmp2].G * yRatio * (1.0f - xRatio)) +
-								((float)this.data[nTmp3].G * xRatio * yRatio)
-							);
-						tempDestData[i].B = 
-							(byte)
-							(
-								((float)this.data[nTmp0].B * (1.0f - xRatio) * (1.0f - yRatio)) +
-								((float)this.data[nTmp1].B * xRatio * (1.0f - yRatio)) + 
-								((float)this.data[nTmp2].B * yRatio * (1.0f - xRatio)) +
-								((float)this.data[nTmp3].B * xRatio * yRatio)
-							);
-						tempDestData[i].A = 
-							(byte)
-							(
-								((float)this.data[nTmp0].A * (1.0f - xRatio) * (1.0f - yRatio)) +
-								((float)this.data[nTmp1].A * xRatio * (1.0f - yRatio)) + 
-								((float)this.data[nTmp2].A * yRatio * (1.0f - xRatio)) +
-								((float)this.data[nTmp3].A * xRatio * yRatio)
-							);
-					});
-				}
-				this.data = tempDestData;
+				this.data = result;
 				this.width = w;
 				this.height = h;
 
@@ -695,86 +620,10 @@ namespace Duality.Resources
 			/// <param name="filter">The filtering method to use when rescaling</param>
 			public Layer CloneRescale(int w, int h, FilterMethod filter = FilterMethod.Linear)
 			{
-				if (this.width == w && this.height == h) return this.Clone();
+				ColorRgba[] result = this.InternalRescale(w, h, filter);
+				if (result == null) return this.Clone();
 
-				ColorRgba[]	tempDestData	= new ColorRgba[w * h];
-				if (filter == FilterMethod.Nearest)
-				{
-					//for (int i = 0; i < tempDestData.Length; i++)
-					System.Threading.Tasks.Parallel.For(0, tempDestData.Length, i =>
-					{
-						int y = i / w;
-						int x = i - (y * w);
-
-						int xTmp	= (x * this.width) / w;
-						int yTmp	= (y * this.height) / h;
-						int nTmp	= xTmp + (yTmp * this.width);
-						tempDestData[i].R = this.data[nTmp].R;
-						tempDestData[i].G = this.data[nTmp].G;
-						tempDestData[i].B = this.data[nTmp].B;
-						tempDestData[i].A = this.data[nTmp].A;
-					});
-				}
-				else if (filter == FilterMethod.Linear)
-				{
-					//for (int i = 0; i < tempDestData.Length; i++)
-					//foreach (int i in Enumerable.Range(0, tempDestData.Length).AsParallel())
-					System.Threading.Tasks.Parallel.For(0, tempDestData.Length, i =>
-					{
-						int y = i / w;
-						int x = i - (y * w);
-
-						float	xRatio	= ((float)(x * this.width) / (float)w) + ((w != this.width) ? ((w > this.width) ? -1.0f : 1.0f) : 0.0f) * 0.5f;
-						float	yRatio	= ((float)(y * this.height) / (float)h) + ((h != this.height) ? ((h > this.height) ? -1.0f : 1.0f) : 0.0f) * 0.5f;
-						int		xTmp	= (int)Math.Floor(xRatio);
-						int		yTmp	= (int)Math.Floor(yRatio);
-						bool	xLim1	= (xTmp < 0);
-						bool	yLim1	= (yTmp < 0);
-						bool	xLim2	= (xTmp >= this.width - 1);
-						bool	yLim2	= (yTmp >= this.height - 1);
-						int		nTmp0	= xTmp + (xLim1 ? 1 : 0) + ((yTmp + (yLim1 ? 1 : 0)) * this.width);
-						int		nTmp1	= xTmp + (xLim2 ? 0 : 1) + ((yTmp + (yLim1 ? 1 : 0)) * this.width);
-						int		nTmp2	= xTmp + (xLim1 ? 1 : 0) + ((yTmp + (yLim2 ? 0 : 1)) * this.width);
-						int		nTmp3	= xTmp + (xLim2 ? 0 : 1) + ((yTmp + (yLim2 ? 0 : 1)) * this.width);
-						xRatio -= xTmp;
-						yRatio -= yTmp;
-
-						tempDestData[i].R = 
-							(byte)
-							(
-								((float)this.data[nTmp0].R * (1.0f - xRatio) * (1.0f - yRatio)) +
-								((float)this.data[nTmp1].R * xRatio * (1.0f - yRatio)) + 
-								((float)this.data[nTmp2].R * yRatio * (1.0f - xRatio)) +
-								((float)this.data[nTmp3].R * xRatio * yRatio)
-							);
-						tempDestData[i].G = 
-							(byte)
-							(
-								((float)this.data[nTmp0].G * (1.0f - xRatio) * (1.0f - yRatio)) +
-								((float)this.data[nTmp1].G * xRatio * (1.0f - yRatio)) + 
-								((float)this.data[nTmp2].G * yRatio * (1.0f - xRatio)) +
-								((float)this.data[nTmp3].G * xRatio * yRatio)
-							);
-						tempDestData[i].B = 
-							(byte)
-							(
-								((float)this.data[nTmp0].B * (1.0f - xRatio) * (1.0f - yRatio)) +
-								((float)this.data[nTmp1].B * xRatio * (1.0f - yRatio)) + 
-								((float)this.data[nTmp2].B * yRatio * (1.0f - xRatio)) +
-								((float)this.data[nTmp3].B * xRatio * yRatio)
-							);
-						tempDestData[i].A = 
-							(byte)
-							(
-								((float)this.data[nTmp0].A * (1.0f - xRatio) * (1.0f - yRatio)) +
-								((float)this.data[nTmp1].A * xRatio * (1.0f - yRatio)) + 
-								((float)this.data[nTmp2].A * yRatio * (1.0f - xRatio)) +
-								((float)this.data[nTmp3].A * xRatio * yRatio)
-							);
-					});
-				}
-
-				return new Layer(w, h, tempDestData);
+				return new Layer(w, h, result);
 			}
 			/// <summary>
 			/// Resizes the Layers boundaries.
@@ -861,16 +710,19 @@ namespace Duality.Resources
 			{
 				if (w == -1) w = this.width;
 				if (h == -1) h = this.height;
-				w = MathF.Min(w, this.width, target.width - x);
-				h = MathF.Min(h, this.height, target.height - y);
-				ColorRgba targetColor;
-				for (int i = 0; i < w; i++)
-				{
-					if (x + i < 0) continue;
-					for (int j = 0; j < h; j++)
-					{
-						if (y + j < 0) continue;
 
+				int beginX = Math.Max(x, -x);
+				int beginY = Math.Max(y, -y);
+				int endX = MathF.Min(w, this.width, target.width - x);
+				int endY = MathF.Min(h, this.height, target.height - y);
+				if (endX - beginX < 1) return;
+				if (endY - beginY < 1) return;
+
+				ColorRgba targetColor;
+				for (int i = beginX; i < endX; i++)
+				{
+					for (int j = beginY; j < endY; j++)
+					{
 						int sourceN = i + this.width * (j);
 						int targetN = x + i + target.width * (y + j);
 
@@ -942,6 +794,89 @@ namespace Duality.Resources
 						}
 					}
 				}
+			}
+
+			private ColorRgba[] InternalRescale(int w, int h, FilterMethod filter)
+			{
+				if (this.width == w && this.height == h) return null;
+				
+				ColorRgba[]	tempDestData	= new ColorRgba[w * h];
+				if (filter == FilterMethod.Nearest)
+				{
+					//for (int i = 0; i < tempDestData.Length; i++)
+					System.Threading.Tasks.Parallel.For(0, tempDestData.Length, i =>
+					{
+						int y = i / w;
+						int x = i - (y * w);
+
+						int xTmp	= (x * this.width) / w;
+						int yTmp	= (y * this.height) / h;
+						int nTmp	= xTmp + (yTmp * this.width);
+						tempDestData[i].R = this.data[nTmp].R;
+						tempDestData[i].G = this.data[nTmp].G;
+						tempDestData[i].B = this.data[nTmp].B;
+						tempDestData[i].A = this.data[nTmp].A;
+					});
+				}
+				else if (filter == FilterMethod.Linear)
+				{
+					//for (int i = 0; i < tempDestData.Length; i++)
+					System.Threading.Tasks.Parallel.For(0, tempDestData.Length, i =>
+					{
+						int y = i / w;
+						int x = i - (y * w);
+
+						float	xRatio	= ((float)(x * this.width) / (float)w) + ((w != this.width) ? ((w > this.width) ? -1.0f : 1.0f) : 0.0f) * 0.5f;
+						float	yRatio	= ((float)(y * this.height) / (float)h) + ((h != this.height) ? ((h > this.height) ? -1.0f : 1.0f) : 0.0f) * 0.5f;
+						int		xTmp	= (int)Math.Floor(xRatio);
+						int		yTmp	= (int)Math.Floor(yRatio);
+						bool	xLim1	= (xTmp < 0);
+						bool	yLim1	= (yTmp < 0);
+						bool	xLim2	= (xTmp >= this.width - 1);
+						bool	yLim2	= (yTmp >= this.height - 1);
+						int		nTmp0	= xTmp + (xLim1 ? 1 : 0) + ((yTmp + (yLim1 ? 1 : 0)) * this.width);
+						int		nTmp1	= xTmp + (xLim2 ? 0 : 1) + ((yTmp + (yLim1 ? 1 : 0)) * this.width);
+						int		nTmp2	= xTmp + (xLim1 ? 1 : 0) + ((yTmp + (yLim2 ? 0 : 1)) * this.width);
+						int		nTmp3	= xTmp + (xLim2 ? 0 : 1) + ((yTmp + (yLim2 ? 0 : 1)) * this.width);
+						xRatio -= xTmp;
+						yRatio -= yTmp;
+
+						tempDestData[i].R = 
+							(byte)
+							(
+								((float)this.data[nTmp0].R * (1.0f - xRatio) * (1.0f - yRatio)) +
+								((float)this.data[nTmp1].R * xRatio * (1.0f - yRatio)) + 
+								((float)this.data[nTmp2].R * yRatio * (1.0f - xRatio)) +
+								((float)this.data[nTmp3].R * xRatio * yRatio)
+							);
+						tempDestData[i].G = 
+							(byte)
+							(
+								((float)this.data[nTmp0].G * (1.0f - xRatio) * (1.0f - yRatio)) +
+								((float)this.data[nTmp1].G * xRatio * (1.0f - yRatio)) + 
+								((float)this.data[nTmp2].G * yRatio * (1.0f - xRatio)) +
+								((float)this.data[nTmp3].G * xRatio * yRatio)
+							);
+						tempDestData[i].B = 
+							(byte)
+							(
+								((float)this.data[nTmp0].B * (1.0f - xRatio) * (1.0f - yRatio)) +
+								((float)this.data[nTmp1].B * xRatio * (1.0f - yRatio)) + 
+								((float)this.data[nTmp2].B * yRatio * (1.0f - xRatio)) +
+								((float)this.data[nTmp3].B * xRatio * yRatio)
+							);
+						tempDestData[i].A = 
+							(byte)
+							(
+								((float)this.data[nTmp0].A * (1.0f - xRatio) * (1.0f - yRatio)) +
+								((float)this.data[nTmp1].A * xRatio * (1.0f - yRatio)) + 
+								((float)this.data[nTmp2].A * yRatio * (1.0f - xRatio)) +
+								((float)this.data[nTmp3].A * xRatio * yRatio)
+							);
+					});
+				}
+				
+				return tempDestData;
 			}
 
 			object Cloning.ICloneable.CreateTargetObject(Cloning.CloneProvider provider)
