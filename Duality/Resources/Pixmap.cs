@@ -711,8 +711,8 @@ namespace Duality.Resources
 				if (w == -1) w = this.width;
 				if (h == -1) h = this.height;
 
-				int beginX = Math.Max(x, -x);
-				int beginY = Math.Max(y, -y);
+				int beginX = Math.Max(0, -x);
+				int beginY = Math.Max(0, -y);
 				int endX = MathF.Min(w, this.width, target.width - x);
 				int endY = MathF.Min(h, this.height, target.height - y);
 				if (endX - beginX < 1) return;

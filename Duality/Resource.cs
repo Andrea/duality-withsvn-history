@@ -214,7 +214,7 @@ namespace Duality
 		/// <param name="r">The target Resource to copy this Resource's data to</param>
 		protected virtual void OnCopyTo(Resource r, CloneProvider provider)
 		{
-			r.path			= this.path;
+			r.path			= null; //this.path;
 			r.sourcePath	= null;
 		}
 		/// <summary>
