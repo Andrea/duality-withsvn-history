@@ -457,7 +457,7 @@ namespace Duality.Serialization
 
 			// Read the target object now and replace the dummy
 			target = this.ReadObject();
-			if (del != null)
+			if (del != null && target != null)
 			{
 				FieldInfo targetField = delType.GetField("_target", ReflectionHelper.BindInstanceAll);
 				targetField.SetValue(del, target);
