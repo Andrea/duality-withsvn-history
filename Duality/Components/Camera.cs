@@ -840,6 +840,7 @@ namespace Duality.Components
 					this.RenderSinglePass(t);
 				}
 				this.deviceVisibility = this.visibilityMask;
+				this.SetupMatrices(false); // Reset matrices for projection calculations during update
 				RenderTarget.Bind(RenderTarget.None);
 
 				Performance.timeRender.EndMeasure();

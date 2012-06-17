@@ -17,7 +17,7 @@ namespace Duality.Components
 	/// </summary>
 	[Serializable]
 	[RequiredComponent(typeof(Transform))]
-	public partial class Collider : Component, ICmpInitializable, ICmpUpdatable, ITransformUpdater
+	public partial class Collider : Component, ICmpInitializable, ICmpUpdatable
 	{
 		/// <summary>
 		/// The type of a <see cref="Collider">Colliders</see> physical body.
@@ -62,6 +62,8 @@ namespace Duality.Components
 		private	bool		fixedAngle		= false;
 		private	bool		ignoreGravity	= false;
 		private	bool		continous		= false;
+		private	Vector2		linearVel		= Vector2.Zero;
+		private	float		angularVel		= 0.0f;
 		private	Category	colCat			= Category.Cat1;
 		private	Category	colWith			= Category.All;
 		private	List<ShapeInfo>	shapes		= new List<ShapeInfo>();
@@ -145,6 +147,30 @@ namespace Duality.Components
 			{
 				if (this.body != null) this.body.IsBullet = value;
 				this.continous = value;
+			}
+		}
+		/// <summary>
+		/// [GET / SET] The Colliders current linear velocity.
+		/// </summary>
+		public Vector2 LinearVelocity
+		{
+			get { return this.linearVel; }
+			set
+			{
+				if (this.body != null) this.body.LinearVelocity = PhysicsConvert.ToPhysicalUnit(value) / Time.SPFMult;
+				this.linearVel = value;
+			}
+		}
+		/// <summary>
+		/// [GET / SET] The Colliders current angular velocity.
+		/// </summary>
+		public float AngularVelocity
+		{
+			get { return this.angularVel; }
+			set
+			{
+				if (this.body != null) this.body.AngularVelocity = value / Time.SPFMult;
+				this.angularVel = value;
 			}
 		}
 		/// <summary>
@@ -456,6 +482,7 @@ namespace Duality.Components
 		public void ApplyLocalForce(float angularForce)
 		{
 			if (this.body == null) return;
+			if (DualityApp.AppData.PhysicsFixedTime) angularForce *= Time.TimeMult;
 			this.body.ApplyTorque(angularForce / Time.SPFMult);
 		}
 		/// <summary>
@@ -485,6 +512,7 @@ namespace Duality.Components
 		public void ApplyWorldForce(Vector2 force)
 		{
 			if (this.body == null) return;
+			if (DualityApp.AppData.PhysicsFixedTime) force *= Time.TimeMult;
 			this.body.ApplyForce(
 				PhysicsConvert.ToPhysicalUnit(force) / Time.SPFMult, 
 				this.body.GetWorldPoint(this.body.LocalCenter));
@@ -497,6 +525,7 @@ namespace Duality.Components
 		public void ApplyWorldForce(Vector2 force, Vector2 applyAt)
 		{
 			if (this.body == null) return;
+			if (DualityApp.AppData.PhysicsFixedTime) force *= Time.TimeMult;
 			this.body.ApplyForce(PhysicsConvert.ToPhysicalUnit(force) / Time.SPFMult, PhysicsConvert.ToPhysicalUnit(applyAt));
 		}
 
@@ -551,8 +580,8 @@ namespace Duality.Components
 			if (t != null)
 			{
 				this.body.SetTransform(PhysicsConvert.ToPhysicalUnit(t.Pos.Xy), t.Angle);
-				this.body.LinearVelocity = PhysicsConvert.ToPhysicalUnit(t.Vel.Xy) / Time.SPFMult;
-				this.body.AngularVelocity = t.AngleVel / Time.SPFMult;
+				this.body.LinearVelocity = PhysicsConvert.ToPhysicalUnit(this.linearVel) / Time.SPFMult;
+				this.body.AngularVelocity = this.angularVel / Time.SPFMult;
 			}
 
 			this.body.Collision += this.body_OnCollision;
@@ -614,7 +643,7 @@ namespace Duality.Components
 			if (this.initialized) return;
 
 			this.InitBody();
-			this.GameObj.Transform.RegisterExternalUpdater(this);
+			this.GameObj.Transform.OnTransformChanged += this.OnTransformChanged;
 
 			this.initialized = true;
 
@@ -630,7 +659,7 @@ namespace Duality.Components
 			this.CleanupJoints();
 #endif
 			this.CleanupBody();
-			this.GameObj.Transform.UnregisterExternalUpdater(this);
+			this.GameObj.Transform.OnTransformChanged -= this.OnTransformChanged;
 
 			this.initialized = false;
 		}
@@ -781,7 +810,25 @@ namespace Duality.Components
 #if FALSE // Removed for now. Joints are an experimental feature.
 			this.CleanupInvalidJoints();
 #endif
+			// Update velocity and transform values
+			this.linearVel = PhysicsConvert.ToDualityUnit(this.body.LinearVelocity) * Time.SPFMult;
+			this.angularVel = this.body.AngularVelocity * Time.SPFMult;
+			Transform t = this.gameobj.Transform;
+			if (this.bodyType == BodyType.Dynamic)
+			{
+				Vector2 bodyVel = this.body.LinearVelocity;
+				Vector2 bodyPos = this.body.Position + bodyVel * Scene.PhysicsAlpha * Time.SPFMult;
+				float bodyAngleVel = this.body.AngularVelocity;
+				float bodyAngle = this.body.Rotation + bodyAngleVel * Scene.PhysicsAlpha * Time.SPFMult;
+				t.MoveToAbs(new Vector3(
+					PhysicsConvert.ToDualityUnit(bodyPos.X), 
+					PhysicsConvert.ToDualityUnit(bodyPos.Y), 
+					t.Pos.Z));
+				t.TurnToAbs(bodyAngle);
+				t.CommitChanges(this);
+			}
 
+			// Process events
 			foreach (ColEvent e in this.eventBuffer)
 			{
 				// Ignore disposed fixtures / bodies
@@ -804,59 +851,19 @@ namespace Duality.Components
 			this.eventBuffer.Clear();
 		}
 
-		bool ITransformUpdater.IgnoreParent
+		private void OnTransformChanged(object sender, TransformChangedEventArgs e)
 		{
-			get { return this.bodyType == BodyType.Dynamic; }
-		}
-		void ITransformUpdater.UpdateTransform(Transform t)
-		{
-			if (this.bodyType == BodyType.Dynamic)
-			{
-				Vector2 bodyVel = this.body.LinearVelocity;
-				Vector2 bodyPos = this.body.Position + bodyVel * Scene.PhysicsAlpha * Time.SPFMult;
-				float bodyAngleVel = this.body.AngularVelocity;
-				float bodyAngle = this.body.Rotation + bodyAngleVel * Scene.PhysicsAlpha * Time.SPFMult;
-				t.SetTransform(
-					new Vector3(
-						PhysicsConvert.ToDualityUnit(bodyPos.X), 
-						PhysicsConvert.ToDualityUnit(bodyPos.Y), 
-						t.Pos.Z + t.Vel.Z * Time.TimeMult),
-					new Vector3(
-						PhysicsConvert.ToDualityUnit(bodyVel.X * Time.SPFMult), 
-						PhysicsConvert.ToDualityUnit(bodyVel.Y * Time.SPFMult), 
-						t.Vel.Z),
-					t.Scale,
-					bodyAngle,
-					bodyAngleVel * Time.SPFMult);
-			}
-			else
-			{
-				if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game && (t.RelativeVel != Vector3.Zero || t.RelativeAngleVel != 0.0f))
-				{
-				    t.SetRelativeTransform(
-				        t.RelativePos + t.RelativeVel * Time.TimeMult,
-				        t.RelativeVel,
-				        t.RelativeScale,
-				        MathF.NormalizeAngle(t.RelativeAngle + t.RelativeAngleVel * Time.TimeMult),
-				        t.RelativeAngleVel);
-				    (this as ITransformUpdater).OnTransformChanged(t, Transform.DirtyFlags.Pos | Transform.DirtyFlags.Angle);
-				}
-			}
-		}
-		void ITransformUpdater.OnTransformChanged(Transform t, Transform.DirtyFlags changes)
-		{
-			if ((changes & Transform.DirtyFlags.Pos) != Transform.DirtyFlags.None)
-				this.body.Position = PhysicsConvert.ToPhysicalUnit(t.Pos.Xy);
-			if ((changes & Transform.DirtyFlags.Vel) != Transform.DirtyFlags.None)
-				this.body.LinearVelocity = PhysicsConvert.ToPhysicalUnit(t.Vel.Xy) / Time.SPFMult;
-			if ((changes & Transform.DirtyFlags.Angle) != Transform.DirtyFlags.None)
-				this.body.Rotation = t.Angle;
-			if ((changes & Transform.DirtyFlags.AngleVel) != Transform.DirtyFlags.None)
-				this.body.AngularVelocity = t.AngleVel / Time.SPFMult;
-			if ((changes & Transform.DirtyFlags.Scale) != Transform.DirtyFlags.None)
-				this.UpdateBodyShape();
+			if (sender == this) return;
+			Transform t = e.Component as Transform;
 
-			if (changes != Transform.DirtyFlags.None)
+			if ((e.Changes & Transform.DirtyFlags.Pos) != Transform.DirtyFlags.None)
+			    this.body.Position = PhysicsConvert.ToPhysicalUnit(t.Pos.Xy);
+			if ((e.Changes & Transform.DirtyFlags.Angle) != Transform.DirtyFlags.None)
+			    this.body.Rotation = t.Angle;
+			if ((e.Changes & Transform.DirtyFlags.Scale) != Transform.DirtyFlags.None)
+			    this.UpdateBodyShape();
+
+			if (e.Changes != Transform.DirtyFlags.None)
 			{
 #if FALSE // Removed for now. Joints are an experimental feature.
 				// Update joints

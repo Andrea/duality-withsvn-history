@@ -47,7 +47,6 @@ namespace EditorBase.PropertyEditors
 			{
 				this.editorVel.BeginUpdate();
 				this.editorVel.Getter = this.VelGetter;
-				this.editorVel.Setter = this.VelSetter;
 				this.editorVel.PropertyName = "Vel";
 				this.ParentGrid.ConfigureEditor(this.editorVel);
 				this.AddPropertyEditor(this.editorVel);
@@ -81,7 +80,6 @@ namespace EditorBase.PropertyEditors
 			{
 				this.editorAngleVel.BeginUpdate();
 				this.editorAngleVel.Getter = this.AngleVelGetter;
-				this.editorAngleVel.Setter = this.AngleVelSetter;
 				this.editorAngleVel.PropertyName = "AngleVel";
 				this.ParentGrid.ConfigureEditor(this.editorAngleVel, new[] { new EditorHintIncrementAttribute(0.1f) });
 				this.AddPropertyEditor(this.editorAngleVel);
@@ -89,6 +87,7 @@ namespace EditorBase.PropertyEditors
 			}
 
 			this.AddEditorForProperty(ReflectionInfo.Property_Transform_DeriveAngle);
+			this.AddEditorForProperty(ReflectionInfo.Property_Transform_IgnoreParent);
 
 			this.editorShowRelative = this.ParentGrid.CreateEditor(typeof(bool));
 			if (editorShowRelative != null)
@@ -176,28 +175,6 @@ namespace EditorBase.PropertyEditors
 			else
 				return this.GetValue().Cast<Transform>().Select(o => o != null ? (object)o.Vel : null);
 		}
-		protected void VelSetter(IEnumerable<object> values)
-		{
-			IEnumerator<Vector3> valuesEnum = values.Cast<Vector3>().GetEnumerator();
-			Transform[] targetArray = this.GetValue().Cast<Transform>().ToArray();
-
-			Vector3 curValue = Vector3.Zero;
-			if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
-			foreach (Transform target in targetArray)
-			{
-				if (target != null)
-				{
-					if (this.showRelative)
-						target.RelativeVel = curValue;
-					else
-						target.Vel = curValue;						
-				}
-				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
-			}
-
-			this.OnPropertySet(ReflectionInfo.Property_Transform_RelativeVel, targetArray);
-			this.OnUpdateFromObjects(this.GetValue().ToArray());
-		}
 		protected IEnumerable<object> ScaleGetter()
 		{
 			if (this.showRelative)
@@ -262,28 +239,6 @@ namespace EditorBase.PropertyEditors
 				return this.GetValue().Cast<Transform>().Select(o => o != null ? (object)MathF.RadToDeg(o.RelativeAngleVel) : null);
 			else
 				return this.GetValue().Cast<Transform>().Select(o => o != null ? (object)MathF.RadToDeg(o.AngleVel) : null);
-		}
-		protected void AngleVelSetter(IEnumerable<object> values)
-		{
-			IEnumerator<float> valuesEnum = values.Cast<float>().GetEnumerator();
-			Transform[] targetArray = this.GetValue().Cast<Transform>().ToArray();
-
-			float curValue = 0.0f;
-			if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
-			foreach (Transform target in targetArray)
-			{
-				if (target != null)
-				{
-					if (this.showRelative)
-						target.RelativeAngleVel = MathF.DegToRad(curValue);
-					else
-						target.AngleVel = MathF.DegToRad(curValue);						
-				}
-				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
-			}
-
-			this.OnPropertySet(ReflectionInfo.Property_Transform_RelativeAngleVel, targetArray);
-			this.OnUpdateFromObjects(this.GetValue().ToArray());
 		}
 
 		HelpInfo IHelpProvider.ProvideHoverHelp(System.Drawing.Point localPos, ref bool captured)

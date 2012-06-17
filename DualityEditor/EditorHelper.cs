@@ -230,7 +230,11 @@ namespace DualityEditor
 				if (!char.IsLetterOrDigit(pathChars[i]))
 					pathChars[i] = '_';
 			}
-			path = new string(pathChars);
+			// Do not allow beginning digit
+			if (char.IsDigit(pathChars[0]))
+				path = "_" + new string(pathChars);
+			else
+				path = new string(pathChars);
 
 			// Avoid certain ambiguity
 			if (path == "System")		path = "System_";

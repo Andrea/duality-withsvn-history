@@ -34,17 +34,17 @@ namespace EditorBase.CamViewStates
 			public override Vector3 Pos
 			{
 				get { return this.gameObj.Transform.Pos; }
-				set { this.gameObj.Transform.Pos = value; this.OnTransformChanged(); }
+				set { this.gameObj.Transform.Pos = value; }
 			}
 			public override float Angle
 			{
 				get { return this.gameObj.Transform.Angle; }
-				set { this.gameObj.Transform.Angle = value; this.OnTransformChanged(); }
+				set { this.gameObj.Transform.Angle = value; }
 			}
 			public override Vector3 Scale
 			{
 				get { return this.gameObj.Transform.Scale; }
-				set { this.gameObj.Transform.Scale = value; this.OnTransformChanged(); }
+				set { this.gameObj.Transform.Scale = value; }
 			}
 			public override float BoundRadius
 			{
@@ -106,13 +106,6 @@ namespace EditorBase.CamViewStates
 				{
 					canvas.DrawText(string.Format("Angle:{0,5:0}", MathF.RadToDeg(this.gameObj.Transform.RelativeAngle)), curLoc.X + 30, curLoc.Y + 10);
 				}
-			}
-
-			protected void OnTransformChanged()
-			{
-				if (EditorBasePlugin.Instance.EditorForm.CurrentSandboxState != MainForm.SandboxState.Playing) return;
-				this.gameObj.Transform.Vel = Vector3.Zero;
-				this.gameObj.Transform.AngleVel = 0.0f;
 			}
 		}
 

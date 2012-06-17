@@ -643,31 +643,6 @@
             <seealso cref="M:Duality.DualityMetaData.ReadValue(System.String)"/>
             <seealso cref="M:Duality.DualityMetaData.ReadValueAs``1(System.String,``0@)"/>
         </member>
-        <member name="T:Duality.Components.ITransformUpdater">
-            <summary>
-            Represents an object that takes care of <see cref="T:Duality.Components.Transform"/> updates instead of
-            the Components default behaviour. This is, for example, used by the <see cref="T:Duality.Components.Collider"/>
-            Component in order to apply physics.
-            </summary>
-        </member>
-        <member name="M:Duality.Components.ITransformUpdater.UpdateTransform(Duality.Components.Transform)">
-            <summary>
-            Called when the <see cref="T:Duality.Components.Transform"/> Component is being updated.
-            </summary>
-            <param name="t"></param>
-        </member>
-        <member name="M:Duality.Components.ITransformUpdater.OnTransformChanged(Duality.Components.Transform,Duality.Components.Transform.DirtyFlags)">
-            <summary>
-            Called when the <see cref="T:Duality.Components.Transform"/> Component has been changed externally
-            </summary>
-            <param name="t"></param>
-            <param name="changes"></param>
-        </member>
-        <member name="P:Duality.Components.ITransformUpdater.IgnoreParent">
-            <summary>
-            [GET] Returns whether the Transform component should ignore its parent transform.
-            </summary>
-        </member>
         <member name="T:Duality.Components.Transform">
             <summary>
             Represents a <see cref="T:Duality.GameObject">GameObjects</see> physical location in the world, relative to its <see cref="P:Duality.GameObject.Parent"/>.
@@ -961,23 +936,43 @@
             <param name="local"></param>
             <returns></returns>
         </member>
-        <member name="M:Duality.Components.Transform.RegisterExternalUpdater(Duality.Components.ITransformUpdater)">
+        <member name="M:Duality.Components.Transform.MoveBy(OpenTK.Vector3)">
             <summary>
-            Registers an external Transform updater. As long as one is registered, the Transform component 
-            won't attempt to update by itsself in any way and query the registered instead.
-            There can only be one Transform updater registered at a time.
+            Moves the object by the given vector. This will affect the Transforms <see cref="P:Duality.Components.Transform.Vel">velocity</see> value.
             </summary>
-            <param name="updater"></param>
+            <param name="value"></param>
         </member>
-        <member name="M:Duality.Components.Transform.UnregisterExternalUpdater(Duality.Components.ITransformUpdater)">
+        <member name="M:Duality.Components.Transform.MoveTo(OpenTK.Vector3)">
             <summary>
-            Unregisters an external Transform updater. As long as one is registered, the Transform component 
-            won't attempt to update by itsself in any way and query the registered instead.
-            There can only be one Transform updater registered at a time.
+            Moves the object to the given relative position. This will affect the Transforms <see cref="P:Duality.Components.Transform.Vel">velocity</see> value.
             </summary>
-            <param name="updater"></param>
+            <param name="value"></param>
         </member>
-        <member name="M:Duality.Components.Transform.SetTransform(OpenTK.Vector3,OpenTK.Vector3,OpenTK.Vector3,System.Single,System.Single)">
+        <member name="M:Duality.Components.Transform.MoveToAbs(OpenTK.Vector3)">
+            <summary>
+            Moves the object to the given absolute position. This will affect the Transforms <see cref="P:Duality.Components.Transform.Vel">velocity</see> value.
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="M:Duality.Components.Transform.TurnBy(System.Single)">
+            <summary>
+            Turns the object by the given radian angle. This will affect the Transforms <see cref="P:Duality.Components.Transform.AngleVel">angular velocity</see> value.
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="M:Duality.Components.Transform.TurnTo(System.Single)">
+            <summary>
+            Turns the object to the given relative radian angle. This will affect the Transforms <see cref="P:Duality.Components.Transform.AngleVel">angular velocity</see> value.
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="M:Duality.Components.Transform.TurnToAbs(System.Single)">
+            <summary>
+            Turns the object to the given absolute radian angle. This will affect the Transforms <see cref="P:Duality.Components.Transform.AngleVel">angular velocity</see> value.
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="M:Duality.Components.Transform.SetTransform(OpenTK.Vector3,OpenTK.Vector3,System.Single)">
             <summary>
             Updates the Transforms data all at once.
             </summary>
@@ -987,7 +982,7 @@
             <param name="angle"></param>
             <param name="angleVel"></param>
         </member>
-        <member name="M:Duality.Components.Transform.SetRelativeTransform(OpenTK.Vector3,OpenTK.Vector3,OpenTK.Vector3,System.Single,System.Single)">
+        <member name="M:Duality.Components.Transform.SetRelativeTransform(OpenTK.Vector3,OpenTK.Vector3,System.Single)">
             <summary>
             Updates the Transforms data all at once.
             </summary>
@@ -996,6 +991,12 @@
             <param name="scale"></param>
             <param name="angle"></param>
             <param name="angleVel"></param>
+        </member>
+        <member name="M:Duality.Components.Transform.CommitChanges(Duality.Component)">
+            <summary>
+            Checks whether transform values have been changed, clears the changelist and fires the appropriate events
+            </summary>
+            <param name="sender"></param>
         </member>
         <member name="P:Duality.Components.Transform.RelativePos">
             <summary>
@@ -1022,6 +1023,11 @@
             [GET / SET] The objects scale relative to its parent object.
             </summary>
         </member>
+        <member name="P:Duality.Components.Transform.IgnoreParent">
+            <summary>
+            [GET / SET] Specifies whether the Transform component should ignore its parent transform.
+            </summary>
+        </member>
         <member name="P:Duality.Components.Transform.DeriveAngle">
             <summary>
             [GET / SET] If false, this objects rotation values aren't relative to its parent.
@@ -1045,7 +1051,7 @@
         </member>
         <member name="P:Duality.Components.Transform.Vel">
             <summary>
-            [GET / SET] The objects velocity.
+            [GET] The objects velocity.
             </summary>
         </member>
         <member name="P:Duality.Components.Transform.Angle">
@@ -1055,7 +1061,7 @@
         </member>
         <member name="P:Duality.Components.Transform.AngleVel">
             <summary>
-            [GET / SET] The objects angle / rotation velocity, in radians.
+            [GET] The objects angle / rotation velocity, in radians.
             </summary>
         </member>
         <member name="P:Duality.Components.Transform.Scale">
@@ -3953,6 +3959,11 @@
         <member name="P:Duality.GameObjectParentChangedEventArgs.NewParent">
             <summary>
             [GET] The GameObjects new parent.
+            </summary>
+        </member>
+        <member name="P:Duality.TransformChangedEventArgs.Changes">
+            <summary>
+            [GET] The changes that have been made since the last update.
             </summary>
         </member>
         <member name="T:Duality.Performance">
@@ -7031,6 +7042,16 @@
             <summary>
             [GET / SET] Whether the body is included in continous collision detection or not.
             It prevents the body from moving through others at high speeds at the cost of performance.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.LinearVelocity">
+            <summary>
+            [GET / SET] The Colliders current linear velocity.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.AngularVelocity">
+            <summary>
+            [GET / SET] The Colliders current angular velocity.
             </summary>
         </member>
         <member name="P:Duality.Components.Collider.CollisionCategory">

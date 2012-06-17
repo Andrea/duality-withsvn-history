@@ -580,8 +580,12 @@ namespace Duality.Serialization
 			long val = this.reader.ReadInt64();
 			Type enumType = ReflectionHelper.ResolveType(typeName);
 
-			object result = Enum.Parse(enumType, name);
-			if (result != null) return (Enum)result;
+			try
+			{
+				object result = Enum.Parse(enumType, name);
+				if (result != null) return (Enum)result;
+			}
+			catch (Exception) {}
 
 			this.SerializationLog.WriteWarning("Can't parse enum value '{0}' of Type '{1}'. Using numerical value '{2}' instead.", name, typeName, val);
 			return (Enum)Enum.ToObject(enumType, val);

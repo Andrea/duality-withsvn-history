@@ -319,6 +319,7 @@ namespace Duality.Resources
 				bm.UnlockBits(data);
 				
 				this.SetPixelDataArgb(argbValues, bm.Width, bm.Height);
+				this.ColorTransparentPixels();
 			}
 			/// <summary>
 			/// Sets the layers pixel data in the ColorRgba format. Note that the specified data will be copied and thus modifying it

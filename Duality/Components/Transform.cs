@@ -7,31 +7,6 @@ using Duality.EditorHints;
 namespace Duality.Components
 {
 	/// <summary>
-	/// Represents an object that takes care of <see cref="Transform"/> updates instead of
-	/// the Components default behaviour. This is, for example, used by the <see cref="Collider"/>
-	/// Component in order to apply physics.
-	/// </summary>
-	public interface ITransformUpdater
-	{
-		/// <summary>
-		/// [GET] Returns whether the Transform component should ignore its parent transform.
-		/// </summary>
-		bool IgnoreParent { get; }
-
-		/// <summary>
-		/// Called when the <see cref="Transform"/> Component is being updated.
-		/// </summary>
-		/// <param name="t"></param>
-		void UpdateTransform(Transform t);
-		/// <summary>
-		/// Called when the <see cref="Transform"/> Component has been changed externally
-		/// </summary>
-		/// <param name="t"></param>
-		/// <param name="changes"></param>
-		void OnTransformChanged(Transform t, Transform.DirtyFlags changes);
-	}
-
-	/// <summary>
 	/// Represents a <see cref="GameObject">GameObjects</see> physical location in the world, relative to its <see cref="GameObject.Parent"/>.
 	/// </summary>
 	[Serializable]
@@ -46,30 +21,38 @@ namespace Duality.Components
 			None		= 0x00,
 
 			Pos			= 0x01,
-			Vel			= 0x02,
 			Angle		= 0x04,
-			AngleVel	= 0x08,
 			Scale		= 0x10,
 
-			All			= Pos | Vel | Angle | AngleVel | Scale
+			All			= Pos | Angle | Scale
 		}
 
 		private	Vector3	pos			= Vector3.Zero;
-		private	Vector3	vel			= Vector3.Zero;
 		private	float	angle		= 0.0f;
-		private	float	angleVel	= 0.0f;
 		private	Vector3	scale		= Vector3.One;
-		private	bool	deriveAngle	= true;
-		private	ITransformUpdater	extUpdater = null;
+		private	bool	deriveAngle		= true;
+		private	bool	ignoreParent	= false;
 		private	DirtyFlags	changes	= DirtyFlags.None;
 
 		// Cached values, recalc on change
 		private	Transform	parentTransform	= null;
 		private	Vector3		posAbs			= Vector3.Zero;
-		private	Vector3		velAbs			= Vector3.Zero;
 		private	float		angleAbs		= 0.0f;
-		private	float		angleVelAbs		= 0.0f;
 		private	Vector3		scaleAbs		= Vector3.One;
+		// Auto-calculated values
+		private	Vector3		vel				= Vector3.Zero;
+		private	Vector3		velAbs			= Vector3.Zero;
+		private	float		angleVel		= 0.0f;
+		private	float		angleVelAbs		= 0.0f;
+		// Last frame's values
+		private	Vector3		lastPos			= Vector3.Zero;
+		private	Vector3		lastPosAbs		= Vector3.Zero;
+		private	float		lastAngle		= 0.0f;
+		private	float		lastAngleAbs	= 0.0f;
+
+
+		public event EventHandler<TransformChangedEventArgs> OnTransformChanged = null;
+
 
 		/// <summary>
 		/// [GET / SET] The objects position relative to its parent object.
@@ -77,15 +60,20 @@ namespace Duality.Components
 		public Vector3 RelativePos
 		{
 			get { return this.pos; }
-			set { this.pos = value; this.changes |= DirtyFlags.Pos; this.UpdateAbs(); }
+			set
+			{ 
+				// Move last value as well to keep velocity constant - because we're "teleporting" here
+				this.lastPos += value - this.pos;
+				this.MoveTo(value);
+			}
 		}
 		/// <summary>
 		/// [GET / SET] The objects velocity relative to its parent object.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public Vector3 RelativeVel
 		{
 			get { return this.vel; }
-			set { this.vel = value; this.changes |= DirtyFlags.Vel; this.UpdateAbs(); }
 		}
 		/// <summary>
 		/// [GET / SET] The objects angle / rotation relative to its parent object, in radians.
@@ -93,15 +81,20 @@ namespace Duality.Components
 		public float RelativeAngle
 		{
 			get { return this.angle; }
-			set { this.angle = value; this.changes |= DirtyFlags.Angle; this.UpdateAbs(); }
+			set 
+			{ 
+				// Move last value as well to keep velocity constant - because we're "teleporting" here
+				this.lastAngle += value - this.angle;
+				this.TurnTo(value);
+			}
 		}
 		/// <summary>
 		/// [GET / SET] The objects angle / rotation velocity relative to its parent object, in radians.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public float RelativeAngleVel
 		{
 			get { return this.angleVel; }
-			set { this.angleVel = value; this.changes |= DirtyFlags.AngleVel; this.UpdateAbs(); }
 		}
 		/// <summary>
 		/// [GET / SET] The objects scale relative to its parent object.
@@ -110,6 +103,21 @@ namespace Duality.Components
 		{
 			get { return this.scale; }
 			set { this.scale = value; this.changes |= DirtyFlags.Scale; this.UpdateAbs(); }
+		}
+		/// <summary>
+		/// [GET / SET] Specifies whether the Transform component should ignore its parent transform.
+		/// </summary>
+		public bool IgnoreParent
+		{
+			get { return this.ignoreParent; }
+			set
+			{
+				if (this.ignoreParent != value)
+				{
+					this.ignoreParent = value;
+					this.UpdateAbs();
+				}
+			}
 		}
 		/// <summary>
 		/// [GET / SET] If false, this objects rotation values aren't relative to its parent.
@@ -157,53 +165,30 @@ namespace Duality.Components
 			get { return this.posAbs; }
 			set 
 			{ 
-				this.posAbs = value;
-
+				// Move last value as well to keep velocity constant - because we're "teleporting" here
+				this.lastPosAbs += value - this.posAbs;
 				if (this.parentTransform != null)
 				{
-					this.pos = this.posAbs;
-					Vector3 temp = this.parentTransform.posAbs;
-					Vector3.Subtract(ref this.pos, ref temp, out this.pos);
-					temp = this.parentTransform.scaleAbs;
-					Vector3.Divide(ref this.pos, ref temp, out this.pos);
-					MathF.TransformCoord(ref this.pos.X, ref this.pos.Y, -this.parentTransform.angleAbs);
+					this.lastPos = this.lastPosAbs;
+					Vector3.Subtract(ref this.lastPos, ref this.parentTransform.posAbs, out this.lastPos);
+					Vector3.Divide(ref this.lastPos, ref this.parentTransform.scaleAbs, out this.lastPos);
+					MathF.TransformCoord(ref this.lastPos.X, ref this.lastPos.Y, -this.parentTransform.angleAbs);
 				}
 				else
 				{
-					this.pos = value;
+					this.lastPos = this.lastPosAbs;
 				}
 
-				this.changes |= DirtyFlags.Pos;
-				this.UpdateAbs(true);
+				this.MoveToAbs(value);
 			}
 		}
 		/// <summary>
-		/// [GET / SET] The objects velocity.
+		/// [GET] The objects velocity.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public Vector3 Vel
 		{
 			get { return this.velAbs; }
-			set 
-			{ 
-				this.velAbs = value;
-
-				if (this.parentTransform != null)
-				{
-					this.vel = this.velAbs;
-					Vector3 temp = this.parentTransform.velAbs;
-					Vector3.Subtract(ref this.vel, ref temp, out this.vel);
-					temp = this.parentTransform.scaleAbs;
-					Vector3.Divide(ref this.vel, ref temp, out this.vel);
-					MathF.TransformCoord(ref this.vel.X, ref this.vel.Y, -this.parentTransform.angleAbs);
-				}
-				else
-				{
-					this.vel = value;
-				}
-
-				this.changes |= DirtyFlags.Vel;
-				this.UpdateAbs(true);
-			}
 		}
 		/// <summary>
 		/// [GET / SET] The objects angle / rotation, in radians.
@@ -213,35 +198,23 @@ namespace Duality.Components
 			get { return this.angleAbs; }
 			set 
 			{ 
-				this.angleAbs = value;
-
+				// Move last value as well to keep velocity constant - because we're "teleporting" here
+				this.lastAngleAbs += value - this.angleAbs;
 				if (this.parentTransform != null && this.deriveAngle)
-					this.angle = this.angleAbs - this.parentTransform.angleAbs;
+					this.lastAngle = this.lastAngleAbs - this.parentTransform.angleAbs;
 				else
-					this.angle = value;
+					this.lastAngle = this.lastAngleAbs;
 
-				this.changes |= DirtyFlags.Angle;
-				this.UpdateAbs(true);
+				this.TurnToAbs(value);
 			}
 		}
 		/// <summary>
-		/// [GET / SET] The objects angle / rotation velocity, in radians.
+		/// [GET] The objects angle / rotation velocity, in radians.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public float AngleVel
 		{
 			get { return this.angleVelAbs; }
-			set 
-			{ 
-				this.angleVelAbs = value;
-
-				if (this.parentTransform != null && this.deriveAngle)
-					this.angleVel = this.angleVelAbs - this.parentTransform.angleVelAbs;
-				else
-					this.angleVel = value;
-
-				this.changes |= DirtyFlags.AngleVel;
-				this.UpdateAbs(true);
-			}
 		}
 		/// <summary>
 		/// [GET / SET] The objects scale.
@@ -295,6 +268,7 @@ namespace Duality.Components
 					0.0f);
 			}
 		}
+
 
 		/// <summary>
 		/// Calculates a world coordinate from a Transform-local coordinate.
@@ -378,30 +352,82 @@ namespace Duality.Components
 		}
 
 		/// <summary>
-		/// Registers an external Transform updater. As long as one is registered, the Transform component 
-		/// won't attempt to update by itsself in any way and query the registered instead.
-		/// There can only be one Transform updater registered at a time.
+		/// Moves the object by the given vector. This will affect the Transforms <see cref="Vel">velocity</see> value.
 		/// </summary>
-		/// <param name="updater"></param>
-		public void RegisterExternalUpdater(ITransformUpdater updater)
+		/// <param name="value"></param>
+		public void MoveBy(Vector3 value)
 		{
-			if (this.extUpdater == updater) return;
-			if (this.extUpdater != null) Log.Core.WriteWarning(
-				"Registering ITransformUpdater '{0}' at Transform '{1}', although '{2}' hasn't been unregistered.", 
-				updater, this, this.extUpdater);
-			this.extUpdater = updater;
+			this.MoveTo(this.pos + value);
 		}
 		/// <summary>
-		/// Unregisters an external Transform updater. As long as one is registered, the Transform component 
-		/// won't attempt to update by itsself in any way and query the registered instead.
-		/// There can only be one Transform updater registered at a time.
+		/// Moves the object to the given relative position. This will affect the Transforms <see cref="Vel">velocity</see> value.
 		/// </summary>
-		/// <param name="updater"></param>
-		public void UnregisterExternalUpdater(ITransformUpdater updater)
+		/// <param name="value"></param>
+		public void MoveTo(Vector3 value)
 		{
-			if (this.extUpdater != updater) return;
-			this.extUpdater = null;
+			this.pos = value; 
+			this.changes |= DirtyFlags.Pos; 
+			this.UpdateAbs();
 		}
+		/// <summary>
+		/// Moves the object to the given absolute position. This will affect the Transforms <see cref="Vel">velocity</see> value.
+		/// </summary>
+		/// <param name="value"></param>
+		public void MoveToAbs(Vector3 value)
+		{
+			this.posAbs = value;
+
+			if (this.parentTransform != null)
+			{
+				this.pos = this.posAbs;
+				Vector3.Subtract(ref this.pos, ref this.parentTransform.posAbs, out this.pos);
+				Vector3.Divide(ref this.pos, ref this.parentTransform.scaleAbs, out this.pos);
+				MathF.TransformCoord(ref this.pos.X, ref this.pos.Y, -this.parentTransform.angleAbs);
+			}
+			else
+			{
+				this.pos = this.posAbs;
+			}
+
+			this.changes |= DirtyFlags.Pos;
+			this.UpdateAbs(true);
+		}
+		/// <summary>
+		/// Turns the object by the given radian angle. This will affect the Transforms <see cref="AngleVel">angular velocity</see> value.
+		/// </summary>
+		/// <param name="value"></param>
+		public void TurnBy(float value)
+		{
+			this.angle += value;
+			this.TurnTo(this.angle);
+		}
+		/// <summary>
+		/// Turns the object to the given relative radian angle. This will affect the Transforms <see cref="AngleVel">angular velocity</see> value.
+		/// </summary>
+		/// <param name="value"></param>
+		public void TurnTo(float value)
+		{
+			this.angle = value; 
+			this.changes |= DirtyFlags.Angle; 
+			this.UpdateAbs();
+		}
+		/// <summary>
+		/// Turns the object to the given absolute radian angle. This will affect the Transforms <see cref="AngleVel">angular velocity</see> value.
+		/// </summary>
+		/// <param name="value"></param>
+		public void TurnToAbs(float value)
+		{
+			this.angleAbs = value;
+
+			if (this.parentTransform != null && this.deriveAngle)
+				this.angle = this.angleAbs - this.parentTransform.angleAbs;
+			else
+				this.angle = this.angleAbs;
+
+			this.changes |= DirtyFlags.Angle;
+			this.UpdateAbs(true);
+		}
+
 		/// <summary>
 		/// Updates the Transforms data all at once.
 		/// </summary>
@@ -410,12 +436,29 @@ namespace Duality.Components
 		/// <param name="scale"></param>
 		/// <param name="angle"></param>
 		/// <param name="angleVel"></param>
-		public void SetTransform(Vector3 pos, Vector3 vel, Vector3 scale, float angle, float angleVel)
+		public void SetTransform(Vector3 pos, Vector3 scale, float angle)
 		{
+			// Move last value as well to keep velocity constant - because we're "teleporting" here
+			this.lastPosAbs += pos - this.posAbs;
+			if (this.parentTransform != null)
+			{
+				this.lastPos = this.lastPosAbs;
+				Vector3.Subtract(ref this.lastPos, ref this.parentTransform.posAbs, out this.lastPos);
+				Vector3.Divide(ref this.lastPos, ref this.parentTransform.scaleAbs, out this.lastPos);
+				MathF.TransformCoord(ref this.lastPos.X, ref this.lastPos.Y, -this.parentTransform.angleAbs);
+			}
+			else
+			{
+				this.lastPos = this.lastPosAbs;
+			}
+			this.lastAngleAbs += angle - this.angleAbs;
+			if (this.parentTransform != null && this.deriveAngle)
+				this.lastAngle = this.lastAngleAbs - this.parentTransform.angleAbs;
+			else
+				this.lastAngle = this.lastAngleAbs;
+
 			this.posAbs = pos;
-			this.velAbs = vel;
 			this.angleAbs = angle;
-			this.angleVelAbs = angleVel;
 			this.scaleAbs = scale;
 
 			this.changes |= DirtyFlags.All;
@@ -430,61 +473,61 @@ namespace Duality.Components
 		/// <param name="scale"></param>
 		/// <param name="angle"></param>
 		/// <param name="angleVel"></param>
-		public void SetRelativeTransform(Vector3 pos, Vector3 vel, Vector3 scale, float angle, float angleVel)
+		public void SetRelativeTransform(Vector3 pos, Vector3 scale, float angle)
 		{
+			// Move last value as well to keep velocity constant - because we're "teleporting" here
+			this.lastPos += pos - this.pos;
+			this.lastAngle += angle - this.angle;
+
 			this.pos = pos;
-			this.vel = vel;
 			this.angle = angle;
-			this.angleVel = angleVel;
 			this.scale = scale;
 
 			this.changes |= DirtyFlags.All;
 			this.UpdateAbs();
+		}
+		
+		/// <summary>
+		/// Checks whether transform values have been changed, clears the changelist and fires the appropriate events
+		/// </summary>
+		/// <param name="sender"></param>
+		public void CommitChanges(Component sender = null)
+		{
+			if (this.changes == DirtyFlags.None) return;
+			if (sender == null) sender = this;
+			if (this.OnTransformChanged != null)
+				this.OnTransformChanged(sender, new TransformChangedEventArgs(this, this.changes));
+			this.changes = DirtyFlags.None;
 		}
 
 		void ICmpUpdatable.OnUpdate()
 		{
 			this.CheckValidTransform();
 
-			if (this.extUpdater != null)
-			{
-				if (this.changes != DirtyFlags.None) this.extUpdater.OnTransformChanged(this, this.changes);
-				this.extUpdater.UpdateTransform(this);
-			}
-			else if (this.angleVel != 0.0f || this.vel != Vector3.Zero)
-			{
-				if (this.angleVel != 0.0f)
-				{
-					this.angle		+= this.angleVel	* Time.TimeMult;
-					this.changes	|= DirtyFlags.Angle;
+			// Calculate velocity values
+			this.vel = (this.pos - this.lastPos) / Time.TimeMult;
+			this.velAbs = (this.posAbs - this.lastPosAbs) / Time.TimeMult;
+			this.angleVel = MathF.CircularDist(this.angle, this.lastAngle) * MathF.TurnDir(this.lastAngle, this.angle) / Time.TimeMult;
+			this.angleVelAbs = MathF.CircularDist(this.angleAbs, this.lastAngleAbs) * MathF.TurnDir(this.lastAngleAbs, this.angleAbs) / Time.TimeMult;
 
-					this.angle = MathF.NormalizeAngle(this.angle);
-				}
-				if (this.vel != Vector3.Zero)
-				{
-					this.pos		+= this.vel			* Time.TimeMult;
-					this.changes	|= DirtyFlags.Pos;
-				}
-				this.UpdateAbs();
-			}
-			this.changes = DirtyFlags.None;
+			// Clear change flags
+			this.CommitChanges();
+
+			// Set last values
+			this.lastPos = this.pos;
+			this.lastPosAbs = this.posAbs;
+			this.lastAngle = this.angle;
+			this.lastAngleAbs = this.angleAbs;
 
 			this.CheckValidTransform();
 		}
 		void ICmpEditorUpdatable.OnUpdate()
 		{
 			this.CheckValidTransform();
-			
-			if (this.extUpdater != null)
-			{
-				if (this.changes != DirtyFlags.None) this.extUpdater.OnTransformChanged(this, this.changes);
-				this.extUpdater.UpdateTransform(this);
-			}
-			else
-			{
-				this.UpdateAbs();
-			}
-			this.changes = DirtyFlags.None;
+
+			this.UpdateAbs();
+			// Clear change flags
+			this.CommitChanges();
 
 			this.CheckValidTransform();
 		}
@@ -579,12 +622,12 @@ namespace Duality.Components
 				if (this.parentTransform == null)
 				{
 					this.angleAbs = this.angle;
-					this.angleVelAbs = this.angleVel;
+					this.lastAngleAbs = this.lastAngle;
 					this.posAbs = this.pos;
-					this.velAbs = this.vel;
+					this.lastPosAbs = this.lastPos;
 					this.scaleAbs = this.scale;
 				}
-				else if (this.extUpdater != null && this.extUpdater.IgnoreParent && DualityApp.ExecContext != DualityApp.ExecutionContext.Editor)
+				else if (this.ignoreParent && DualityApp.ExecContext != DualityApp.ExecutionContext.Editor)
 				{
 					// If there is an external updater, ignore scene graph relations and just keep relative data updated.
 					this.UpdateRel();
@@ -595,12 +638,12 @@ namespace Duality.Components
 					{
 						this.angleAbs = this.angle + this.parentTransform.angleAbs;
 						this.angleAbs = MathF.NormalizeAngle(this.angleAbs);
-						this.angleVelAbs = this.angleVel + this.parentTransform.angleVelAbs;
+						this.lastAngleAbs = this.lastAngle + this.parentTransform.angleAbs;
 					}
 					else
 					{
 						this.angleAbs = this.angle;
-						this.angleVelAbs = this.angleVel;
+						this.lastAngleAbs = this.lastAngle;
 					}
 					Vector3.Multiply(ref this.scale, ref this.parentTransform.scaleAbs, out this.scaleAbs);
 
@@ -608,9 +651,9 @@ namespace Duality.Components
 					MathF.TransformCoord(ref this.posAbs.X, ref this.posAbs.Y, this.parentTransform.angleAbs);
 					Vector3.Add(ref this.posAbs, ref this.parentTransform.posAbs, out this.posAbs);
 
-					Vector3.Multiply(ref this.vel, ref this.parentTransform.scaleAbs, out this.velAbs);
-					MathF.TransformCoord(ref this.velAbs.X, ref this.velAbs.Y, this.parentTransform.angleAbs);
-					Vector3.Add(ref this.velAbs, ref this.parentTransform.velAbs, out this.velAbs);
+					Vector3.Multiply(ref this.lastPos, ref this.parentTransform.scaleAbs, out this.lastPosAbs);
+					MathF.TransformCoord(ref this.lastPosAbs.X, ref this.lastPosAbs.Y, this.parentTransform.angleAbs);
+					Vector3.Add(ref this.lastPosAbs, ref this.parentTransform.posAbs, out this.lastPosAbs);
 				}
 			}
 
@@ -619,13 +662,13 @@ namespace Duality.Components
 				foreach (GameObject obj in this.gameobj.Children)
 				{
 					if (obj.Transform == null) continue;
-					if (obj.Transform.extUpdater == null || !obj.Transform.extUpdater.IgnoreParent || DualityApp.ExecContext == DualityApp.ExecutionContext.Editor)
+					if (!this.ignoreParent || DualityApp.ExecContext == DualityApp.ExecutionContext.Editor)
 					{
 						obj.Transform.UpdateAbs();
 
 						obj.Transform.changes |= this.changes;
 						if ((this.changes & DirtyFlags.Scale) != DirtyFlags.None || (this.changes & DirtyFlags.Angle) != DirtyFlags.None)
-							obj.Transform.changes |= DirtyFlags.Pos | DirtyFlags.Vel;
+							obj.Transform.changes |= DirtyFlags.Pos;
 					}
 					else
 					{
@@ -643,9 +686,9 @@ namespace Duality.Components
 			if (this.parentTransform == null)
 			{
 				this.angle = this.angleAbs;
-				this.angleVel = this.angleVelAbs;
+				this.lastAngle = this.lastAngleAbs;
 				this.pos = this.posAbs;
-				this.vel = this.velAbs;
+				this.lastPos = this.lastPosAbs;
 				this.scale = this.scaleAbs;
 			}
 			else
@@ -654,12 +697,12 @@ namespace Duality.Components
 				{
 					this.angle = this.angleAbs - this.parentTransform.angleAbs;
 					this.angle = MathF.NormalizeAngle(this.angle);
-					this.angleVel = this.angleVelAbs - this.parentTransform.angleVelAbs;
+					this.lastAngle = this.lastAngleAbs - this.parentTransform.angleAbs;
 				}
 				else
 				{
 					this.angle = this.angleAbs;
-					this.angleVel = this.angleVelAbs;
+					this.lastAngle = this.lastAngleAbs;
 				}
 
 				if (this.parentTransform.scaleAbs.X != 0.0f &&
@@ -672,9 +715,9 @@ namespace Duality.Components
 					MathF.TransformCoord(ref this.pos.X, ref this.pos.Y, -this.parentTransform.angleAbs);
 					Vector3.Divide(ref this.pos, ref this.parentTransform.scaleAbs, out this.pos);
 
-					Vector3.Subtract(ref this.velAbs, ref this.parentTransform.velAbs, out this.vel);
-					MathF.TransformCoord(ref this.vel.X, ref this.vel.Y, -this.parentTransform.angleAbs);
-					Vector3.Divide(ref this.vel, ref this.parentTransform.scaleAbs, out this.vel);
+					Vector3.Subtract(ref this.lastPosAbs, ref this.parentTransform.posAbs, out this.lastPos);
+					MathF.TransformCoord(ref this.lastPos.X, ref this.lastPos.Y, -this.parentTransform.angleAbs);
+					Vector3.Divide(ref this.lastPos, ref this.parentTransform.scaleAbs, out this.lastPos);
 				}
 			}
 
@@ -685,23 +728,29 @@ namespace Duality.Components
 		{
 			base.CopyToInternal(target, provider);
 			Transform t = target as Transform;
-			t.deriveAngle = this.deriveAngle;
+
+			t.deriveAngle	= this.deriveAngle;
+			t.ignoreParent	= this.ignoreParent;
 
 			t.pos		= this.pos;
-			t.vel		= this.vel;
 			t.angle		= this.angle;
-			t.angleVel	= this.angleVel;
 			t.scale		= this.scale;
 
 			t.posAbs		= this.posAbs;
-			t.velAbs		= this.velAbs;
 			t.angleAbs		= this.angleAbs;
-			t.angleVelAbs	= this.angleVelAbs;
 			t.scaleAbs		= this.scaleAbs;
 
-			t.UpdateRel();
+			t.lastPos		= this.lastPos;
+			t.lastPosAbs	= this.lastPosAbs;
+			t.lastAngle		= this.lastAngle;
+			t.lastAngleAbs	= this.lastAngleAbs;
 
-			// Don't copy external updaters. They're usually other Components and thus, object-local.
+			t.velAbs		= this.velAbs;
+			t.vel			= this.vel;
+			t.angleVel		= this.angleVel;
+			t.angleVelAbs	= this.angleVelAbs;
+
+			t.UpdateRel();
 		}
 
 		[System.Diagnostics.Conditional("DEBUG")]

@@ -121,6 +121,8 @@ namespace EditorBase.CamViewStates
 
 		private	CamView			view					= null;
 		private	AxisLock		lockedAxes				= AxisLock.None;
+		private Vector3			camVel					= Vector3.Zero;
+		private	float			camAngleVel				= 0.0f;
 		private	Point			camActionBeginLoc		= Point.Empty;
 		private Vector3			camActionBeginLocSpace	= Vector3.Zero;
 		private	CameraAction	camAction				= CameraAction.None;
@@ -383,13 +385,13 @@ namespace EditorBase.CamViewStates
 				{
 					canvas.DrawLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, this.camActionBeginLoc.Y);
 
-					if (MathF.Abs(this.view.CameraObj.Transform.AngleVel) > 0.0f)
+					if (MathF.Abs(this.camAngleVel) > 0.0f)
 					{
 						canvas.DrawText(string.Format("Cam Angle: {0,3:0}°", MathF.RadToDeg(this.view.CameraObj.Transform.Angle)), 10, viewSize.Height - 20);
 						handled = true;
 					}
 				}
-				else if (this.camAction == CameraAction.MoveCam || this.view.CameraObj.Transform.Vel.Z != 0.0f)
+				else if (this.camAction == CameraAction.MoveCam || this.camVel.Z != 0.0f)
 				{
 					if (this.camAction == CameraAction.MoveCam)
 					{
@@ -399,7 +401,7 @@ namespace EditorBase.CamViewStates
 						canvas.DrawText(string.Format("Cam Z:{0,7:0}", this.view.CameraObj.Transform.Pos.Z), 10, viewSize.Height - 20);
 						handled = true;
 					}
-					else if (this.view.CameraObj.Transform.Vel.Z != 0.0f)
+					else if (this.camVel.Z != 0.0f)
 					{
 						canvas.DrawText(string.Format("Cam Z:{0,7:0}", this.view.CameraObj.Transform.Pos.Z), 10, viewSize.Height - 20);
 						handled = true;
@@ -436,22 +438,22 @@ namespace EditorBase.CamViewStates
 				Vector3 moveVec = new Vector3(
 					0.125f * MathF.Sign(cursorPos.X - this.camActionBeginLoc.X) * MathF.Pow(MathF.Abs(cursorPos.X - this.camActionBeginLoc.X), 1.25f),
 					0.125f * MathF.Sign(cursorPos.Y - this.camActionBeginLoc.Y) * MathF.Pow(MathF.Abs(cursorPos.Y - this.camActionBeginLoc.Y), 1.25f),
-					camObj.Transform.RelativeVel.Z);
+					this.camVel.Z);
 
 				MathF.TransformCoord(ref moveVec.X, ref moveVec.Y, camObj.Transform.Angle);
-				camObj.Transform.RelativeVel = moveVec;
+				this.camVel = moveVec;
 
 				this.camTransformChanged = true;
 			}
-			else if (camObj.Transform.RelativeVel.Length > 0.01f)
+			else if (this.camVel.Length > 0.01f)
 			{
-				camObj.Transform.RelativeVel *= MathF.Pow(0.9f, Time.TimeMult);
+				this.camVel *= MathF.Pow(0.9f, Time.TimeMult);
 				this.camTransformChanged = true;
 			}
 			else
 			{
-				this.camTransformChanged = this.camTransformChanged || (camObj.Transform.RelativeVel != Vector3.Zero);
-				camObj.Transform.RelativeVel = Vector3.Zero;
+				this.camTransformChanged = this.camTransformChanged || (this.camVel != Vector3.Zero);
+				this.camVel = Vector3.Zero;
 			}
 			
 
@@ -460,24 +462,27 @@ namespace EditorBase.CamViewStates
 				float turnDir = 
 					0.000125f * MathF.Sign(cursorPos.X - this.camActionBeginLoc.X) * 
 					MathF.Pow(MathF.Abs(cursorPos.X - this.camActionBeginLoc.X), 1.25f);
-				camObj.Transform.RelativeAngleVel = turnDir;
+				this.camAngleVel = turnDir;
 
 				this.camTransformChanged = true;
 			}
-			else if (Math.Abs(camObj.Transform.RelativeAngleVel) > 0.001f)
+			else if (Math.Abs(this.camAngleVel) > 0.001f)
 			{
-				camObj.Transform.RelativeAngleVel *= MathF.Pow(0.9f, Time.TimeMult);
+				this.camAngleVel *= MathF.Pow(0.9f, Time.TimeMult);
 				this.camTransformChanged = true;
 			}
 			else
 			{
-				this.camTransformChanged = this.camTransformChanged || (camObj.Transform.RelativeAngleVel != 0.0f);
-				camObj.Transform.RelativeAngleVel = 0.0f;
+				this.camTransformChanged = this.camTransformChanged || (this.camAngleVel != 0.0f);
+				this.camAngleVel = 0.0f;
 			}
 
 
 			if (this.camTransformChanged)
 			{
+				camObj.Transform.MoveBy(this.camVel);
+				camObj.Transform.TurnBy(this.camAngleVel);
+
 				this.View.OnCamTransformChanged();
 				this.View.LocalGLControl.Invalidate();
 			}
@@ -610,7 +615,7 @@ namespace EditorBase.CamViewStates
 			this.actionBeginLoc = mouseLoc;
 			this.action = action;
 
-			this.View.CameraObj.Transform.Vel = Vector3.Zero;
+			this.camVel = Vector3.Zero;
 
 			if (EditorBasePlugin.Instance.EditorForm.CurrentSandboxState == MainForm.SandboxState.Playing)
 				EditorBasePlugin.Instance.EditorForm.SandboxSceneStartFreeze();
@@ -798,6 +803,7 @@ namespace EditorBase.CamViewStates
 		{
 			float zMovement = this.View.CameraObj.Transform.Pos.Z - this.actionBeginLocSpace.Z;
 			Vector3 spaceCoord = this.View.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, this.selectionCenter.Z + zMovement));
+			Console.WriteLine(spaceCoord);
 			Vector3 movement = spaceCoord - this.actionBeginLocSpace;
 			movement.Z = zMovement;
 			movement = this.ApplyAxisLock(movement);
@@ -960,7 +966,7 @@ namespace EditorBase.CamViewStates
 				if (this.View.ParallaxActive)
 				{
 					GameObject camObj = this.View.CameraObj;
-					float curVel = camObj.Transform.RelativeVel.Length * MathF.Sign(camObj.Transform.RelativeVel.Z);
+					float curVel = this.camVel.Length * MathF.Sign(this.camVel.Z);
 					Vector2 curTemp = new Vector2(
 						(e.X * 2.0f / this.View.LocalGLControl.Width) - 1.0f,
 						(e.Y * 2.0f / this.View.LocalGLControl.Height) - 1.0f);
@@ -976,7 +982,7 @@ namespace EditorBase.CamViewStates
 						MathF.Sign(e.Delta) * MathF.Sign(curTemp.Y) * MathF.Pow(curTemp.Y, 2.0f), 
 						1.0f);
 					movVec.Normalize();
-					camObj.Transform.RelativeVel = movVec * curVel;
+					this.camVel = movVec * curVel;
 				}
 				else
 				{

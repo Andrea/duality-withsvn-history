@@ -14,24 +14,6 @@
 
 -->	Implement some simple Font effects?
 
--->	Reconsider Transform External Updaters
-	-->	Would be great if they could be removed. Its inconsistent design and a little hacky.
-	-->	What are they doing currently?
-		-->	IgnoreParent flag
-		-->	Are informed about external (setABC-)changes on update
-		-->	Are called on update instead of default velocity calculations
-		(+)	Small overhead, distinct job
-		(-)	Very specific, seems hacky
-		(-)	Distinct job tailored for one specific other Component.. the Collider.
-	-->	How can that be achieved otherwise?
-		-->	Move IgnoreParent flag to Transform itsself
-		-->	Introduce TransformSet event in Transform that may be called on update
-		-->	Introduce UpdateTransform event that is called instead of default velocity calculations,
-			if any handler is registered.
-		(+)	Not as specific, more flexible
-		(.)	Events.. is that consistent to the Component concept?
-	-->	Reconsider this and choose one.
-
 
 -->	Example Project: Super Mario style platformer
 	-->	Tile-based
