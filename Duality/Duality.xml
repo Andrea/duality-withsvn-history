@@ -942,6 +942,12 @@
             </summary>
             <param name="value"></param>
         </member>
+        <member name="M:Duality.Components.Transform.MoveByAbs(OpenTK.Vector3)">
+            <summary>
+            Moves the object by given absolute vector. This will affect the Transforms <see cref="P:Duality.Components.Transform.Vel">velocity</see> value.
+            </summary>
+            <param name="value"></param>
+        </member>
         <member name="M:Duality.Components.Transform.MoveTo(OpenTK.Vector3)">
             <summary>
             Moves the object to the given relative position. This will affect the Transforms <see cref="P:Duality.Components.Transform.Vel">velocity</see> value.
@@ -957,6 +963,12 @@
         <member name="M:Duality.Components.Transform.TurnBy(System.Single)">
             <summary>
             Turns the object by the given radian angle. This will affect the Transforms <see cref="P:Duality.Components.Transform.AngleVel">angular velocity</see> value.
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="M:Duality.Components.Transform.TurnByAbs(System.Single)">
+            <summary>
+            Turns the object by the given absolute radian angle. This will affect the Transforms <see cref="P:Duality.Components.Transform.AngleVel">angular velocity</see> value.
             </summary>
             <param name="value"></param>
         </member>

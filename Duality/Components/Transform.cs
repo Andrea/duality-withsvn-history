@@ -360,6 +360,14 @@ namespace Duality.Components
 			this.MoveTo(this.pos + value);
 		}
 		/// <summary>
+		/// Moves the object by given absolute vector. This will affect the Transforms <see cref="Vel">velocity</see> value.
+		/// </summary>
+		/// <param name="value"></param>
+		public void MoveByAbs(Vector3 value)
+		{
+			this.MoveToAbs(this.posAbs + value);
+		}
+		/// <summary>
 		/// Moves the object to the given relative position. This will affect the Transforms <see cref="Vel">velocity</see> value.
 		/// </summary>
 		/// <param name="value"></param>
@@ -398,8 +406,15 @@ namespace Duality.Components
 		/// <param name="value"></param>
 		public void TurnBy(float value)
 		{
-			this.angle += value;
-			this.TurnTo(this.angle);
+			this.TurnTo(this.angle + value);
+		}
+		/// <summary>
+		/// Turns the object by the given absolute radian angle. This will affect the Transforms <see cref="AngleVel">angular velocity</see> value.
+		/// </summary>
+		/// <param name="value"></param>
+		public void TurnByAbs(float value)
+		{
+			this.TurnToAbs(this.angleAbs + value);
 		}
 		/// <summary>
 		/// Turns the object to the given relative radian angle. This will affect the Transforms <see cref="AngleVel">angular velocity</see> value.
@@ -661,18 +676,19 @@ namespace Duality.Components
 			{
 				foreach (GameObject obj in this.gameobj.Children)
 				{
-					if (obj.Transform == null) continue;
-					if (!this.ignoreParent || DualityApp.ExecContext == DualityApp.ExecutionContext.Editor)
+					Transform t = obj.Transform;
+					if (t == null) continue;
+					if (!t.ignoreParent || DualityApp.ExecContext == DualityApp.ExecutionContext.Editor)
 					{
-						obj.Transform.UpdateAbs();
+						t.UpdateAbs();
 
-						obj.Transform.changes |= this.changes;
+						t.changes |= this.changes;
 						if ((this.changes & DirtyFlags.Scale) != DirtyFlags.None || (this.changes & DirtyFlags.Angle) != DirtyFlags.None)
-							obj.Transform.changes |= DirtyFlags.Pos;
+							t.changes |= DirtyFlags.Pos;
 					}
 					else
 					{
-						obj.Transform.UpdateRel();
+						t.UpdateRel();
 					}
 				}
 			}
