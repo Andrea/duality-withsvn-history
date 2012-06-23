@@ -1,4 +1,5 @@
 <PluginUserData>
+  <Plugin_DynamicLighting />
   <Plugin_EditorBase>
     <CamView_0 toggleParallaxity="True" parallaxRefDist="500" bgColorArgb="592655" state="EditorBase.CamViewStates.SceneEditorCamViewState" />
     <ObjInspector_0 acceptedCats="7" autoRefresh="False" locked="False" titleText="Object Inspector" />
@@ -12,7 +13,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--DockPanel configuration file. Author: Weifen Luo, all rights reserved.-->
 <!--!!! AUTOMATICALLY GENERATED FILE. DO NOT MODIFY !!!-->
-<DockPanel FormatVersion="1.0" DockLeftPortion="0.2140625" DockRightPortion="0.44140625" DockTopPortion="0.25" DockBottomPortion="0.25" ActiveDocumentPane="0" ActivePane="4">
+<DockPanel FormatVersion="1.0" DockLeftPortion="0.2140625" DockRightPortion="0.44140625" DockTopPortion="0.25" DockBottomPortion="0.25" ActiveDocumentPane="0" ActivePane="0">
   <Contents Count="7">
     <Content ID="0" PersistString="EditorBase.CamView" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
     <Content ID="1" PersistString="EditorBase.ProjectFolderView" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
