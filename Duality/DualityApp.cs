@@ -399,6 +399,7 @@ namespace Duality
 				}
 				sound.Dispose();
 				UnloadPlugins();
+				Performance.SaveTextReport(environment == ExecutionEnvironment.Editor ? "perflog_editor.txt" : "perflog.txt");
 				Log.Core.Write("DualityApp terminated");
 			}
 
@@ -418,7 +419,7 @@ namespace Duality
 			Performance.timeUpdate.BeginMeasure();
 
 			Time.FrameTick();
-			Performance.ResetCounters();
+			Performance.FrameTick();
 			OnBeforeUpdate();
 			Scene.Current.Update();
 			sound.Update();
@@ -469,7 +470,7 @@ namespace Duality
 			Performance.timeUpdate.BeginMeasure();
 			
 			Time.FrameTick();
-			Performance.ResetCounters();
+			Performance.FrameTick();
 			OnBeforeUpdate();
 			if (execContext == ExecutionContext.Editor)
 			{

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
+using System.IO;
+using System;
 
 namespace Duality
 {
@@ -18,6 +20,10 @@ namespace Duality
 			private	bool		used		= true;
 			private	bool		lastUsed	= true;
 			private	bool		neverRemove	= true;
+			// Profiling report data
+			private	double		accumValue		= 0.0d;
+			private	int			accumSamples	= 0;
+
 
 			public string Name
 			{
@@ -35,6 +41,20 @@ namespace Duality
 			{
 				get { return this.lastValue; }
 			}
+
+			internal double ProfileAccumValue
+			{
+				get { return this.accumValue; }
+			}
+			internal double ProfileAverage
+			{
+				get { return this.accumValue / this.accumSamples; }
+			}
+			internal int ProfileAccumSamples
+			{
+				get { return this.accumSamples; }
+			}
+
 
 			public Counter(string name, bool timeout = false)
 			{
@@ -63,6 +83,15 @@ namespace Duality
 
 				this.lastValue = this.value;
 				this.value = 0.0f;
+			}
+
+			internal void SampleProfile()
+			{
+				if (this.used)
+				{
+					this.accumSamples++;
+					this.accumValue += this.value;
+				}
 			}
 		}
 
@@ -191,6 +220,46 @@ namespace Duality
 				yOff += canvas.CurrentState.TextFont.Res.Height;
 			}
 		}
+		public static void SaveTextReport(string filePath)
+		{
+			using (FileStream str = File.Open(filePath, FileMode.Create))
+			{
+				SaveTextReport(str);
+			}
+		}
+		public static void SaveTextReport(Stream stream)
+		{
+			using (StreamWriter writer = new StreamWriter(stream))
+			{
+				Counter[] counters = counterMap.Values.ToArray();
+				counters.StableSort((a, b) => (int)(100.0d * (b.ProfileAccumValue - a.ProfileAccumValue)));
+
+				int maxNameLen = counters.Max(c => c.Name.Length);
+				
+				// Write header
+				writer.Write("Name".PadRight(maxNameLen));
+				writer.Write(": ");
+				writer.Write("Total value (ms)".PadRight(18));
+				writer.Write(" ");
+				writer.Write("Samples".PadRight(18));
+				writer.Write(" ");
+				writer.Write("Avg. value (ms)");
+				writer.WriteLine();
+
+				// Write data
+				foreach (Counter c in counters)
+				{
+					writer.Write(c.Name.PadRight(maxNameLen));
+					writer.Write(": ");
+					writer.Write(string.Format("{0:F2}", c.ProfileAccumValue).PadRight(18));
+					writer.Write(" ");
+					writer.Write(string.Format("{0}", c.ProfileAccumSamples).PadRight(18));
+					writer.Write(" ");
+					writer.Write(string.Format("{0:F2}", c.ProfileAverage));
+					writer.WriteLine();
+				}
+			}
+		}
 
 		internal static void InitDualityCounters()
 		{
@@ -202,11 +271,15 @@ namespace Duality
 				if (counter != null) counterMap.Add(counter.Name, counter);
 			}
 		}
-		internal static void ResetCounters()
+		internal static void FrameTick()
 		{
 			foreach (Counter c in counterMap.Values.ToArray())
 			{
+				// Remove unused counters
 				if (!c.WasUsed && !c.NeverRemove) counterMap.Remove(c.Name);
+				// Gather profiling data
+				c.SampleProfile();
+				// Reset counter values
 				c.Reset();
 			}
 		}
