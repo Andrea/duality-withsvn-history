@@ -811,22 +811,25 @@ namespace Duality.Components
 			this.CleanupInvalidJoints();
 #endif
 			// Update velocity and transform values
-			this.linearVel = PhysicsConvert.ToDualityUnit(this.body.LinearVelocity) * Time.SPFMult;
-			this.angularVel = this.body.AngularVelocity * Time.SPFMult;
-			Transform t = this.gameobj.Transform;
-			if (this.bodyType == BodyType.Dynamic)
+			if (this.body != null)
 			{
-				Vector2 bodyVel = this.body.LinearVelocity;
-				Vector2 bodyPos = this.body.Position + bodyVel * Scene.PhysicsAlpha * Time.SPFMult;
-				float bodyAngleVel = this.body.AngularVelocity;
-				float bodyAngle = this.body.Rotation + bodyAngleVel * Scene.PhysicsAlpha * Time.SPFMult;
-				t.IgnoreParent = true; // Force ignore parent!
-				t.MoveToAbs(new Vector3(
-					PhysicsConvert.ToDualityUnit(bodyPos.X), 
-					PhysicsConvert.ToDualityUnit(bodyPos.Y), 
-					t.Pos.Z));
-				t.TurnToAbs(bodyAngle);
-				t.CommitChanges(this);
+				this.linearVel = PhysicsConvert.ToDualityUnit(this.body.LinearVelocity) * Time.SPFMult;
+				this.angularVel = this.body.AngularVelocity * Time.SPFMult;
+				Transform t = this.gameobj.Transform;
+				if (this.bodyType == BodyType.Dynamic)
+				{
+					Vector2 bodyVel = this.body.LinearVelocity;
+					Vector2 bodyPos = this.body.Position + bodyVel * Scene.PhysicsAlpha * Time.SPFMult;
+					float bodyAngleVel = this.body.AngularVelocity;
+					float bodyAngle = this.body.Rotation + bodyAngleVel * Scene.PhysicsAlpha * Time.SPFMult;
+					t.IgnoreParent = true; // Force ignore parent!
+					t.MoveToAbs(new Vector3(
+						PhysicsConvert.ToDualityUnit(bodyPos.X), 
+						PhysicsConvert.ToDualityUnit(bodyPos.Y), 
+						t.Pos.Z));
+					t.TurnToAbs(bodyAngle);
+					t.CommitChanges(this);
+				}
 			}
 
 			// Process events

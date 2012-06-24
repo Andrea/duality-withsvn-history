@@ -119,11 +119,11 @@ namespace EditorBase.PreviewGenerators
 			formatText.ApplySource(text);
 			FormattedText.Metrics metrics = formatText.Measure();
 			Vector2 textSize = metrics.Size;
-			Bitmap textBitmap = new Bitmap(desiredWidth, MathF.RoundToInt(textSize.Y));
-			formatText.RenderToBitmap(text, textBitmap, 5, 0);
+			Pixmap.Layer textLayer = new Pixmap.Layer(desiredWidth, MathF.RoundToInt(textSize.Y));
+			formatText.RenderToBitmap(text, textLayer, 5, 0);
 
-			Bitmap result = textBitmap.Resize(desiredWidth, desiredHeight, Alignment.Left);
-			return result;
+			textLayer.Resize(desiredWidth, desiredHeight, Alignment.Left);
+			return textLayer.ToBitmap();
 		}
 		public override bool CanPerformOn(Font obj, PreviewSettings settings)
 		{

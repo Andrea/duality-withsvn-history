@@ -1114,6 +1114,50 @@ namespace Duality
 				}
 			}
 		}
+		/// <summary>
+		/// Renders a text to the specified target Image.
+		/// </summary>
+		/// <param name="text"></param>
+		/// <param name="target"></param>
+		public void RenderToBitmap(string text, Pixmap.Layer target, float x = 0.0f, float y = 0.0f, Pixmap.Layer icons = null)
+		{
+			// Rendering
+			int fontNum = this.fonts != null ? this.fonts.Length : 0;
+			RenderState state = new RenderState(this);
+			Element elem;
+			while ((elem = state.NextElement()) != null)
+			{
+				if (elem is TextElement && state.Font != null)
+				{
+					TextElement textElem = elem as TextElement;
+					state.Font.RenderToBitmap(
+						state.CurrentElemText, 
+						target, 
+						x + state.CurrentElemOffset.X, 
+						y + state.CurrentElemOffset.Y + state.LineBaseLine - state.Font.BaseLine, 
+						state.Color);
+				}
+				else if (elem is IconElement)
+				{
+					IconElement iconElem = elem as IconElement;
+					Icon icon = iconElem.IconIndex > 0 && iconElem.IconIndex < this.icons.Length ? this.icons[iconElem.IconIndex] : new Icon();
+					Vector2 iconSize = icon.size;
+					Rect iconUvRect = icon.uvRect;
+					Vector2 dataCoord = iconUvRect.Pos * new Vector2(icons.Width, icons.Height);
+					
+					icons.DrawOnto(target,
+						BlendMode.Alpha,
+						MathF.RoundToInt(state.CurrentElemOffset.X), 
+						MathF.RoundToInt(state.CurrentElemOffset.Y + state.LineBaseLine - iconSize.Y), 
+						MathF.RoundToInt(iconSize.X), 
+						MathF.RoundToInt(iconSize.Y),
+						MathF.RoundToInt(dataCoord.X), 
+						MathF.RoundToInt(dataCoord.Y),
+						state.Color);
+
+				}
+			}
+		}
 
 		/// <summary>
 		/// Measures the formatted text block.

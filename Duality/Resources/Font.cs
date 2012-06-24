@@ -912,6 +912,52 @@ namespace Duality.Resources
 				}
 			}
 		}
+		/// <summary>
+		/// Renders a text to the specified target <see cref="Duality.Resources.Pixmap"/> <see cref="Duality.Resources.Pixmap.Layer"/>.
+		/// </summary>
+		/// <param name="text"></param>
+		/// <param name="target"></param>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		public void RenderToBitmap(string text, Pixmap.Layer target, float x = 0.0f, float y = 0.0f)
+		{
+			this.RenderToBitmap(text, target, x, y, ColorRgba.White);
+		}
+		/// <summary>
+		/// Renders a text to the specified target <see cref="Duality.Resources.Pixmap"/> <see cref="Duality.Resources.Pixmap.Layer"/>.
+		/// </summary>
+		/// <param name="text"></param>
+		/// <param name="target"></param>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="clr"></param>
+		public void RenderToBitmap(string text, Pixmap.Layer target, float x, float y, ColorRgba clr)
+		{
+			Pixmap.Layer pixelData = this.pixelData.MainLayer;
+
+			float curOffset = 0.0f;
+			GlyphData glyphData;
+			Rect uvRect;
+			float glyphXOff;
+			float glyphXAdv;
+			for (int i = 0; i < text.Length; i++)
+			{
+				this.ProcessTextAdv(text, i, out glyphData, out uvRect, out glyphXAdv, out glyphXOff);
+				Vector2 dataCoord = uvRect.Pos * new Vector2(this.pixelData.Width, this.pixelData.Height) / this.texture.UVRatio;
+				
+				pixelData.DrawOnto(target, 
+					BlendMode.Alpha, 
+					MathF.RoundToInt(x + curOffset + glyphXOff), 
+					MathF.RoundToInt(y),
+					glyphData.width, 
+					glyphData.height,
+					MathF.RoundToInt(dataCoord.X), 
+					MathF.RoundToInt(dataCoord.Y), 
+					clr);
+
+				curOffset += glyphXAdv;
+			}
+		}
 
 		/// <summary>
 		/// Measures the size of a text rendered using this Font.

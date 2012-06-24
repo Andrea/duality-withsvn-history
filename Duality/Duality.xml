@@ -9368,6 +9368,13 @@
             <param name="text"></param>
             <param name="target"></param>
         </member>
+        <member name="M:Duality.FormattedText.RenderToBitmap(System.String,Duality.Resources.Pixmap.Layer,System.Single,System.Single,Duality.Resources.Pixmap.Layer)">
+            <summary>
+            Renders a text to the specified target Image.
+            </summary>
+            <param name="text"></param>
+            <param name="target"></param>
+        </member>
         <member name="M:Duality.FormattedText.Measure">
             <summary>
             Measures the formatted text block.
@@ -10955,16 +10962,32 @@
             <param name="cropX">Whether the Layer should be cropped in X-direction</param>
             <param name="cropY">Whether the Layer should be cropped in Y-direction</param>
         </member>
-        <member name="M:Duality.Resources.Pixmap.Layer.DrawOnto(Duality.Resources.Pixmap.Layer,Duality.BlendMode,System.Int32,System.Int32,System.Int32,System.Int32)">
+        <member name="M:Duality.Resources.Pixmap.Layer.DrawOnto(Duality.Resources.Pixmap.Layer,Duality.BlendMode,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
             <summary>
             Performs a drawing operation from this Layer to a target layer.
             </summary>
             <param name="target"></param>
             <param name="blend"></param>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="w"></param>
-            <param name="h"></param>
+            <param name="destX"></param>
+            <param name="destY"></param>
+            <param name="width"></param>
+            <param name="height"></param>
+            <param name="srcX"></param>
+            <param name="srcY"></param>
+        </member>
+        <member name="M:Duality.Resources.Pixmap.Layer.DrawOnto(Duality.Resources.Pixmap.Layer,Duality.BlendMode,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,Duality.ColorFormat.ColorRgba)">
+            <summary>
+            Performs a drawing operation from this Layer to a target layer.
+            </summary>
+            <param name="target"></param>
+            <param name="blend"></param>
+            <param name="destX"></param>
+            <param name="destY"></param>
+            <param name="width"></param>
+            <param name="height"></param>
+            <param name="srcX"></param>
+            <param name="srcY"></param>
+            <param name="colorTint"></param>
         </member>
         <member name="P:Duality.Resources.Pixmap.Layer.Width">
             <summary>
@@ -11142,6 +11165,25 @@
         <member name="M:Duality.Resources.Font.RenderToBitmap(System.String,System.Drawing.Image,System.Single,System.Single,Duality.ColorFormat.ColorRgba)">
             <summary>
             Renders a text to the specified target Image.
+            </summary>
+            <param name="text"></param>
+            <param name="target"></param>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="clr"></param>
+        </member>
+        <member name="M:Duality.Resources.Font.RenderToBitmap(System.String,Duality.Resources.Pixmap.Layer,System.Single,System.Single)">
+            <summary>
+            Renders a text to the specified target <see cref="T:Duality.Resources.Pixmap"/> <see cref="T:Duality.Resources.Pixmap.Layer"/>.
+            </summary>
+            <param name="text"></param>
+            <param name="target"></param>
+            <param name="x"></param>
+            <param name="y"></param>
+        </member>
+        <member name="M:Duality.Resources.Font.RenderToBitmap(System.String,Duality.Resources.Pixmap.Layer,System.Single,System.Single,Duality.ColorFormat.ColorRgba)">
+            <summary>
+            Renders a text to the specified target <see cref="T:Duality.Resources.Pixmap"/> <see cref="T:Duality.Resources.Pixmap.Layer"/>.
             </summary>
             <param name="text"></param>
             <param name="target"></param>

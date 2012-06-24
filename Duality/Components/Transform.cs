@@ -520,10 +520,13 @@ namespace Duality.Components
 			this.CheckValidTransform();
 
 			// Calculate velocity values
-			this.vel = (this.pos - this.lastPos) / Time.TimeMult;
-			this.velAbs = (this.posAbs - this.lastPosAbs) / Time.TimeMult;
-			this.angleVel = MathF.CircularDist(this.angle, this.lastAngle) * MathF.TurnDir(this.lastAngle, this.angle) / Time.TimeMult;
-			this.angleVelAbs = MathF.CircularDist(this.angleAbs, this.lastAngleAbs) * MathF.TurnDir(this.lastAngleAbs, this.angleAbs) / Time.TimeMult;
+			if (MathF.Abs(Time.TimeMult) > float.Epsilon)
+			{
+				this.vel = (this.pos - this.lastPos) / Time.TimeMult;
+				this.velAbs = (this.posAbs - this.lastPosAbs) / Time.TimeMult;
+				this.angleVel = MathF.CircularDist(this.angle, this.lastAngle) * MathF.TurnDir(this.lastAngle, this.angle) / Time.TimeMult;
+				this.angleVelAbs = MathF.CircularDist(this.angleAbs, this.lastAngleAbs) * MathF.TurnDir(this.lastAngleAbs, this.angleAbs) / Time.TimeMult;
+			}
 
 			// Clear change flags
 			this.CommitChanges();
@@ -782,6 +785,7 @@ namespace Duality.Components
 			CheckValidValue(this.scale.Y);
 			CheckValidValue(this.scale.Z);
 			CheckValidValue(this.angle);
+			CheckValidValue(this.angleVel);
 			
 			CheckValidValue(this.posAbs.X);
 			CheckValidValue(this.posAbs.Y);
@@ -793,6 +797,7 @@ namespace Duality.Components
 			CheckValidValue(this.scaleAbs.Y);
 			CheckValidValue(this.scaleAbs.Z);
 			CheckValidValue(this.angleAbs);
+			CheckValidValue(this.angleVelAbs);
 		}
 		private static void CheckValidValue(float value)
 		{
