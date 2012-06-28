@@ -27,6 +27,8 @@ namespace Duality.Components
 			All			= Pos | Angle | Scale
 		}
 
+		private const float MinScale = 0.0000001f;
+
 		private	Vector3	pos			= Vector3.Zero;
 		private	float	angle		= 0.0f;
 		private	Vector3	scale		= Vector3.One;
@@ -102,7 +104,14 @@ namespace Duality.Components
 		public Vector3 RelativeScale
 		{
 			get { return this.scale; }
-			set { this.scale = value; this.changes |= DirtyFlags.Scale; this.UpdateAbs(); }
+			set
+			{ 
+				this.scale.X = MathF.Max(value.X, MinScale);
+				this.scale.Y = MathF.Max(value.Y, MinScale);
+				this.scale.Z = MathF.Max(value.Z, MinScale);
+				this.changes |= DirtyFlags.Scale; 
+				this.UpdateAbs();
+			}
 		}
 		/// <summary>
 		/// [GET / SET] Specifies whether the Transform component should ignore its parent transform.
@@ -224,7 +233,9 @@ namespace Duality.Components
 			get { return this.scaleAbs; }
 			set 
 			{ 
-				this.scaleAbs = value;
+				this.scaleAbs.X = MathF.Max(value.X, MinScale);
+				this.scaleAbs.Y = MathF.Max(value.Y, MinScale);
+				this.scaleAbs.Z = MathF.Max(value.Z, MinScale);
 
 				if (this.parentTransform != null)
 				{
@@ -526,6 +537,7 @@ namespace Duality.Components
 				this.velAbs = (this.posAbs - this.lastPosAbs) / Time.TimeMult;
 				this.angleVel = MathF.CircularDist(this.angle, this.lastAngle) * MathF.TurnDir(this.lastAngle, this.angle) / Time.TimeMult;
 				this.angleVelAbs = MathF.CircularDist(this.angleAbs, this.lastAngleAbs) * MathF.TurnDir(this.lastAngleAbs, this.angleAbs) / Time.TimeMult;
+				this.CheckValidTransform();
 			}
 
 			// Clear change flags
@@ -724,20 +736,15 @@ namespace Duality.Components
 					this.lastAngle = this.lastAngleAbs;
 				}
 
-				if (this.parentTransform.scaleAbs.X != 0.0f &&
-					this.parentTransform.scaleAbs.Y != 0.0f &&
-					this.parentTransform.scaleAbs.Z != 0.0f)
-				{
-					Vector3.Divide(ref this.scaleAbs, ref this.parentTransform.scaleAbs, out this.scale);
+				Vector3.Divide(ref this.scaleAbs, ref this.parentTransform.scaleAbs, out this.scale);
 				
-					Vector3.Subtract(ref this.posAbs, ref this.parentTransform.posAbs, out this.pos);
-					MathF.TransformCoord(ref this.pos.X, ref this.pos.Y, -this.parentTransform.angleAbs);
-					Vector3.Divide(ref this.pos, ref this.parentTransform.scaleAbs, out this.pos);
+				Vector3.Subtract(ref this.posAbs, ref this.parentTransform.posAbs, out this.pos);
+				MathF.TransformCoord(ref this.pos.X, ref this.pos.Y, -this.parentTransform.angleAbs);
+				Vector3.Divide(ref this.pos, ref this.parentTransform.scaleAbs, out this.pos);
 
-					Vector3.Subtract(ref this.lastPosAbs, ref this.parentTransform.posAbs, out this.lastPos);
-					MathF.TransformCoord(ref this.lastPos.X, ref this.lastPos.Y, -this.parentTransform.angleAbs);
-					Vector3.Divide(ref this.lastPos, ref this.parentTransform.scaleAbs, out this.lastPos);
-				}
+				Vector3.Subtract(ref this.lastPosAbs, ref this.parentTransform.posAbs, out this.lastPos);
+				MathF.TransformCoord(ref this.lastPos.X, ref this.lastPos.Y, -this.parentTransform.angleAbs);
+				Vector3.Divide(ref this.lastPos, ref this.parentTransform.scaleAbs, out this.lastPos);
 			}
 
 			this.CheckValidTransform();
@@ -775,34 +782,51 @@ namespace Duality.Components
 		[System.Diagnostics.Conditional("DEBUG")]
 		private void CheckValidTransform()
 		{
-			CheckValidValue(this.pos.X);
-			CheckValidValue(this.pos.Y);
-			CheckValidValue(this.pos.Z);
-			CheckValidValue(this.vel.X);
-			CheckValidValue(this.vel.Y);
-			CheckValidValue(this.vel.Z);
-			CheckValidValue(this.scale.X);
-			CheckValidValue(this.scale.Y);
-			CheckValidValue(this.scale.Z);
-			CheckValidValue(this.angle);
-			CheckValidValue(this.angleVel);
+			CheckValidValue(ref this.pos.X);
+			CheckValidValue(ref this.pos.Y);
+			CheckValidValue(ref this.pos.Z);
+			CheckValidValue(ref this.lastPos.X);
+			CheckValidValue(ref this.lastPos.Y);
+			CheckValidValue(ref this.lastPos.Z);
+			CheckValidValue(ref this.vel.X);
+			CheckValidValue(ref this.vel.Y);
+			CheckValidValue(ref this.vel.Z);
+			CheckValidValue(ref this.scale.X);
+			CheckValidValue(ref this.scale.Y);
+			CheckValidValue(ref this.scale.Z);
+			CheckValidValue(ref this.angle);
+			CheckValidValue(ref this.lastAngle);
+			CheckValidValue(ref this.angleVel);
 			
-			CheckValidValue(this.posAbs.X);
-			CheckValidValue(this.posAbs.Y);
-			CheckValidValue(this.posAbs.Z);
-			CheckValidValue(this.velAbs.X);
-			CheckValidValue(this.velAbs.Y);
-			CheckValidValue(this.velAbs.Z);
-			CheckValidValue(this.scaleAbs.X);
-			CheckValidValue(this.scaleAbs.Y);
-			CheckValidValue(this.scaleAbs.Z);
-			CheckValidValue(this.angleAbs);
-			CheckValidValue(this.angleVelAbs);
+			CheckValidValue(ref this.posAbs.X);
+			CheckValidValue(ref this.posAbs.Y);
+			CheckValidValue(ref this.posAbs.Z);
+			CheckValidValue(ref this.lastPosAbs.X);
+			CheckValidValue(ref this.lastPosAbs.Y);
+			CheckValidValue(ref this.lastPosAbs.Z);
+			CheckValidValue(ref this.velAbs.X);
+			CheckValidValue(ref this.velAbs.Y);
+			CheckValidValue(ref this.velAbs.Z);
+			CheckValidValue(ref this.scaleAbs.X);
+			CheckValidValue(ref this.scaleAbs.Y);
+			CheckValidValue(ref this.scaleAbs.Z);
+			CheckValidValue(ref this.angleAbs);
+			CheckValidValue(ref this.lastAngleAbs);
+			CheckValidValue(ref this.angleVelAbs);
 		}
-		private static void CheckValidValue(float value)
+		[System.Diagnostics.Conditional("DEBUG")]
+		private static void CheckValidValue(ref float value)
 		{
-			if (float.IsNaN(value))			throw new ApplicationException("Invalid transform value (NaN)");
-			if (float.IsInfinity(value))	throw new ApplicationException("Invalid transform value (Infinity)");
+			if (float.IsNaN(value))
+			{
+				Log.Core.WriteError("Invalid transform value (NaN)");
+				value = 0.0f;
+			}
+			else if (float.IsInfinity(value))
+			{
+				Log.Core.WriteError("Invalid transform value (Infinity)");
+				value = 0.0f;
+			}
 		}
 	}
 }
