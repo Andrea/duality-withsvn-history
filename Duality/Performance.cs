@@ -235,11 +235,14 @@ namespace Duality
 				counters.StableSort((a, b) => (int)(100.0d * (b.ProfileAccumValue - a.ProfileAccumValue)));
 
 				int maxNameLen = counters.Max(c => c.Name.Length);
+				int maxSamples = counters.Max(c => c.ProfileAccumSamples);
 				
 				// Write header
 				writer.Write("Name".PadRight(maxNameLen));
 				writer.Write(": ");
 				writer.Write("Total value (ms)".PadRight(18));
+				writer.Write(" ");
+				writer.Write("Total impact (ms)".PadRight(18));
 				writer.Write(" ");
 				writer.Write("Samples".PadRight(18));
 				writer.Write(" ");
@@ -252,6 +255,8 @@ namespace Duality
 					writer.Write(c.Name.PadRight(maxNameLen));
 					writer.Write(": ");
 					writer.Write(string.Format("{0:F2}", c.ProfileAccumValue).PadRight(18));
+					writer.Write(" ");
+					writer.Write(string.Format("{0:F2}", c.ProfileAccumValue / (double)maxSamples).PadRight(18));
 					writer.Write(" ");
 					writer.Write(string.Format("{0}", c.ProfileAccumSamples).PadRight(18));
 					writer.Write(" ");

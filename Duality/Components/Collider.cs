@@ -553,7 +553,7 @@ namespace Duality.Components
 		}
 		private Body CreateBody()
 		{
-			Body b = new Body(Scene.CurrentPhysics, this);
+			Body b = new Body(Scene.PhysicsWorld, this);
 			if (this.shapes != null)
 			{
 				foreach (ShapeInfo s in this.shapes) s.InitFixture(b);
@@ -936,7 +936,7 @@ namespace Duality.Components
 		public static ShapeInfo PickShapeGlobal(Vector2 worldCoord)
 		{
 			Vector2 fsWorldCoord = PhysicsConvert.ToPhysicalUnit(worldCoord);
-			Fixture f = Scene.CurrentPhysics.TestPoint(fsWorldCoord);
+			Fixture f = Scene.PhysicsWorld.TestPoint(fsWorldCoord);
 
 			return f != null && f.UserData is ShapeInfo ? (f.UserData as ShapeInfo) : null;
 		}
@@ -949,7 +949,7 @@ namespace Duality.Components
 		public static List<ShapeInfo> PickShapesGlobal(Vector2 worldCoord)
 		{
 			Vector2 fsWorldCoord = PhysicsConvert.ToPhysicalUnit(worldCoord);
-			List<Fixture> fixtureList = Scene.CurrentPhysics.TestPointAll(fsWorldCoord);
+			List<Fixture> fixtureList = Scene.PhysicsWorld.TestPointAll(fsWorldCoord);
 			return new List<ShapeInfo>(fixtureList.Where(f => f != null && f.UserData is ShapeInfo).Select(f => f.UserData as ShapeInfo));
 		}
 		/// <summary>

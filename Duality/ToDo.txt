@@ -12,6 +12,8 @@
 	-->	"Did you know..?" screen?
 
 
+--> Joints! Without great editor for now, but reconsider them.. they're important for platformers
+-->	Physics Raycast
 -->	Implement some simple Font effects?
 
 

@@ -8136,7 +8136,7 @@
             complete the next step is. This is used for linear interpolation inbetween fixed physics steps.
             </summary>
         </member>
-        <member name="P:Duality.Resources.Scene.CurrentPhysics">
+        <member name="P:Duality.Resources.Scene.PhysicsWorld">
             <summary>
             [GET] Returns the current physics world.
             </summary>

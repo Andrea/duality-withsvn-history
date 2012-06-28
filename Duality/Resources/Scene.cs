@@ -43,7 +43,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// [GET] Returns the current physics world.
 		/// </summary>
-		public static World CurrentPhysics
+		public static World PhysicsWorld
 		{
 			get { return physicsWorld; }
 		}

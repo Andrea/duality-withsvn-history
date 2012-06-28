@@ -38,29 +38,13 @@ namespace Duality.Components
 			public Collider ColliderA
 			{
 				get { return this.colA; }
-				set 
-				{ 
-					if (this.colA != value)
-					{
-						if (this.colA != null) this.colA.RemoveJoint(this);
-						this.colA = value;
-						if (this.colA != null) this.colA.AddJoint(this, this.colB);
-					}
-				}
+				internal set { this.colA = value; }
 			}
 			[EditorHintFlags(MemberFlags.Invisible)]
 			public Collider ColliderB
 			{
 				get { return this.colB; }
-				set 
-				{ 
-					if (this.colB != value)
-					{
-						if (this.colB != null) this.colB.RemoveJoint(this);
-						this.colB = value;
-						if (this.colB != null) this.colB.AddJoint(this, this.colA);
-					}
-				}
+				internal set { this.colB = value; }
 			}
 			public bool CollideConnected
 			{

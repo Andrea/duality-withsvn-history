@@ -17,7 +17,7 @@ namespace Duality.Components
 		/// Describes a <see cref="Collider">Colliders</see> primitive shape. A Colliders overall shape may be combined of any number of primitive shapes.
 		/// </summary>
 		[Serializable]
-		public abstract class ShapeInfo
+		public abstract class ShapeInfo : Duality.Cloning.ICloneable
 		{
 			[NonSerialized]	
 			protected	Fixture		fixture		= null;
@@ -34,15 +34,7 @@ namespace Duality.Components
 			public Collider Parent
 			{
 				get { return this.parent; }
-				set 
-				{ 
-					if (this.parent != value)
-					{
-						if (this.parent != null) this.parent.RemoveShape(this);
-						this.parent = value;
-						if (this.parent != null) this.parent.AddShape(this);
-					}
-				}
+				internal set { this.parent = value; }
 			}
 			/// <summary>
 			/// [GET / SET] The shapes density.
@@ -144,6 +136,16 @@ namespace Duality.Components
 				ShapeInfo newObj = this.GetType().CreateInstanceOf() as ShapeInfo;
 				this.CopyTo(newObj);
 				return newObj;
+			}
+
+			object Cloning.ICloneable.CreateTargetObject(Cloning.CloneProvider provider)
+			{
+				return this.GetType().CreateInstanceOf();
+			}
+			void Cloning.ICloneable.CopyDataTo(object targetObj, Cloning.CloneProvider provider)
+			{
+				ShapeInfo targetShape = targetObj as ShapeInfo;
+				this.CopyTo(targetShape);
 			}
 		}
 		/// <summary>
