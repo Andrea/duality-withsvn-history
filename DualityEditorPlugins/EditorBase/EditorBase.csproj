@@ -85,7 +85,6 @@
     <Compile Include="PropertyEditors\Components\CameraRenderPassPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Components\ColliderPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Components\ColliderShapePropertyEditor.cs" />
-    <Compile Include="PropertyEditors\Components\ColliderJointPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Components\RendererPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Components\SoundEmitterPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Components\TextRendererPropertyEditor.cs" />

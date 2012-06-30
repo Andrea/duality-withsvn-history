@@ -12,7 +12,13 @@
 	-->	"Did you know..?" screen?
 
 
---> Joints! Without great editor for now, but reconsider them.. they're important for platformers
+--> Joints and Joint Editors
+	-->	Implement usecase: Add Joint of Type X
+	-->	Implement usecase: Redirect dual Joint
+	-->	Test usecase: Add dual Joint without target, then redirect to valid target
+	-->	Create JointInfo classes for all relevant Farseer Joints
+	-->	Display dual and single JointInfos in ColliderEditor
+	-->	Make some of them editable there?
 -->	Physics Raycast
 -->	Implement some simple Font effects?
 
@@ -32,43 +38,6 @@
 	-->	CamViewState: Tile Editor (?)
 	-->	Is there a way to generalize all this enough to make dynamically lit tilemap rendering
 		blend into existing design  smoothly?
-
-
-
-
---> Physics Thoughts
-	-->	What about Joints?
-		-->	Any Collider can be attached to the world or any other Collider using Joints.
-			This is NOT a scene-hierarchial thing.
-		-->	Handle joints as some kind of property of a Collider, since any Joint will be
-			attached to at least one Collider.
-		-->	WYSIWYG-Editor for those joints as well when CamView in Collider edit mode.
-		-->	Complex physical objects can be composed out of several parented GameObjects.
-			They can also be done using custom Components, but likely won't.
-
-		-->	Joints
-			-->	Probably change Joint concept - use unidirectional code design?
-			-->	Assure WeldJoint works 100% (represents Joint system tests)
-			-->	Add other Joint types
-		-->	Joint Editor
-			-->	Make Joints selectable and configurable
-			-->	It should be possible to move a Joints contact points, both individually
-				-->	Doesn't make any sense for the WeldJoint.
-				-->	Also, doesn't make any sense for most or all other Joints.
-				-->	They generally have one anchor point (if any), not two.
-				-->	Cut out Joint selection and editing from the ColliderView alltogether?
-				-->	Configure Joints in the Collider via PropertyGrid similar to SoundEmitter?
-					-->	How to add them?
-					-->	Using a special PropertyEditor?
-			-->	Make sure everything updates properly
-
-	-->	How would you do.. (All those should be possible in some way!)
-		-->	.. a platformer with moving platforms?
-		-->	.. an Rpg using Tilemaps?
-		-->	.. a complex character / ragdoll?
-		-->	.. a complex vehicle (tank, walker, etc.)
-		-->	.. a hanging bridge, rope, etc?
-
 
 
 

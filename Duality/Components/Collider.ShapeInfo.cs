@@ -101,14 +101,19 @@ namespace Duality.Components
 				body.DestroyFixture(this.fixture);
 				this.fixture = null;
 			}
-			internal void InitFixture(Body body)
-			{
-				this.fixture = this.CreateFixture(body);
-				this.fixture.UserData = this;
-			}
 			protected abstract Fixture CreateFixture(Body body);
 			internal virtual void UpdateFixture()
 			{
+				if (this.fixture == null)
+				{
+					if (this.parent != null && this.parent.body != null)
+					{
+						this.fixture = this.CreateFixture(this.parent.body);
+						this.fixture.UserData = this;
+					}
+					else return;
+				}
+
 				this.fixture.Shape.Density = this.density;
 				this.fixture.IsSensor = this.sensor;
 				this.fixture.Restitution = this.restitution;
@@ -133,14 +138,12 @@ namespace Duality.Components
 			/// <returns></returns>
 			public ShapeInfo Clone()
 			{
-				ShapeInfo newObj = this.GetType().CreateInstanceOf() as ShapeInfo;
-				this.CopyTo(newObj);
-				return newObj;
+				return Cloning.CloneProvider.DeepClone(this);
 			}
 
 			object Cloning.ICloneable.CreateTargetObject(Cloning.CloneProvider provider)
 			{
-				return this.GetType().CreateInstanceOf();
+				return this.GetType().CreateInstanceOf() ?? this.GetType().CreateInstanceOf(true);
 			}
 			void Cloning.ICloneable.CopyDataTo(object targetObj, Cloning.CloneProvider provider)
 			{
@@ -197,10 +200,11 @@ namespace Duality.Components
 			internal override void UpdateFixture()
 			{
 				base.UpdateFixture();
-
+				if (this.fixture == null) return;
 				if (this.Parent == null) return;
+
 				Vector2 scale = Vector2.One;
-				if (this.Parent != null && this.Parent.GameObj != null && this.Parent.GameObj.Transform != null)
+				if (this.Parent.GameObj != null && this.Parent.GameObj.Transform != null)
 					scale = this.Parent.GameObj.Transform.Scale.Xy;
 				float uniformScale = scale.Length / MathF.Sqrt(2.0f);
 
@@ -269,9 +273,11 @@ namespace Duality.Components
 			internal override void UpdateFixture()
 			{
 				base.UpdateFixture();
+				if (this.fixture == null) return;
+				if (this.Parent == null) return;
 				
 				Vector2 scale = Vector2.One;
-				if (this.Parent != null && this.Parent.GameObj != null && this.Parent.GameObj.Transform != null)
+				if (this.Parent.GameObj != null && this.Parent.GameObj.Transform != null)
 					scale = this.Parent.GameObj.Transform.Scale.Xy;
 
 				PolygonShape poly = this.fixture.Shape as PolygonShape;

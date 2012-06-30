@@ -803,7 +803,6 @@ namespace EditorBase.CamViewStates
 		{
 			float zMovement = this.View.CameraObj.Transform.Pos.Z - this.actionBeginLocSpace.Z;
 			Vector3 spaceCoord = this.View.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, this.selectionCenter.Z + zMovement));
-			Console.WriteLine(spaceCoord);
 			Vector3 movement = spaceCoord - this.actionBeginLocSpace;
 			movement.Z = zMovement;
 			movement = this.ApplyAxisLock(movement);

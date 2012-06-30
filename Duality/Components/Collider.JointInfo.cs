@@ -11,7 +11,6 @@ using Duality.Resources;
 
 namespace Duality.Components
 {
-#if FALSE // Removed for now. Joints are an experimental feature.
 	public partial class Collider
 	{
 		/// <summary>
@@ -19,7 +18,7 @@ namespace Duality.Components
 		/// by connecting it to fixed world coordinates or other Colliders.
 		/// </summary>
 		[Serializable]
-		public abstract class JointInfo
+		public abstract class JointInfo : Duality.Cloning.ICloneable
 		{
 			[NonSerialized]	
 			protected	Joint		joint		= null;
@@ -67,50 +66,25 @@ namespace Duality.Components
 			internal void DestroyJoint()
 			{
 				if (this.joint == null) return;
-				Scene.CurrentPhysics.RemoveJoint(this.joint);
+				Scene.PhysicsWorld.RemoveJoint(this.joint);
 				this.joint = null;
-			}
-			internal void InitJoint(Body bodyA, Body bodyB)
-			{
-				this.joint = this.CreateJoint(bodyA, bodyB);
-				this.joint.UserData = this;
 			}
 			protected abstract Joint CreateJoint(Body bodyA, Body bodyB);
 			internal virtual void UpdateJoint()
 			{
+				if (this.joint == null)
+				{
+					if (this.colA != null && this.colA.body != null && (this.colB == null || this.colB.body != null))
+					{
+						this.joint = this.CreateJoint(this.colA.body, this.colB != null ? this.colB.body : null);
+						this.joint.UserData = this;
+					}
+					else return;
+				}
+
 				this.joint.CollideConnected = this.collide;
 				this.joint.Enabled = this.enabled;
-				this.joint.Breakpoint = this.breakPoint < 0.0f ? float.MaxValue : this.breakPoint;
-			}
-
-			public virtual void UpdateFromWorld()
-			{
-
-			}
-
-			protected Vector2 GetFarseerPoint(bool secondCollider, Vector2 dualityPoint)
-			{
-				Collider c = secondCollider ? this.ColliderB : this.ColliderA;
-				if (c == null) return dualityPoint;
-
-				Vector2 scale = Vector2.One;
-				if (c.GameObj != null && c.GameObj.Transform != null)
-					scale = c.GameObj.Transform.Scale.Xy;
-				float uniformScale = scale.Length / MathF.Sqrt(2.0f);
-
-				return PhysicsConvert.ToPhysicalUnit(dualityPoint * scale);
-			}
-			protected Vector2 GetDualityPoint(bool secondCollider, Vector2 farseerPoint)
-			{
-				Collider c = secondCollider ? this.ColliderB : this.ColliderA;
-				if (c == null) return farseerPoint;
-
-				Vector2 scale = Vector2.One;
-				if (c.GameObj != null && c.GameObj.Transform != null)
-					scale = c.GameObj.Transform.Scale.Xy;
-				float uniformScale = scale.Length / MathF.Sqrt(2.0f);
-
-				return PhysicsConvert.ToDualityUnit(farseerPoint / scale);
+				this.joint.Breakpoint = this.breakPoint <= 0.0f ? float.MaxValue : this.breakPoint;
 			}
 
 			/// <summary>
@@ -134,6 +108,69 @@ namespace Duality.Components
 				this.CopyTo(newObj);
 				return newObj;
 			}
+
+			object Cloning.ICloneable.CreateTargetObject(Cloning.CloneProvider provider)
+			{
+				return this.GetType().CreateInstanceOf() ?? this.GetType().CreateInstanceOf(true);
+			}
+			void Cloning.ICloneable.CopyDataTo(object targetObj, Cloning.CloneProvider provider)
+			{
+				JointInfo targetJoint = targetObj as JointInfo;
+				this.CopyTo(targetJoint);
+			}
+
+			protected static Vector2 GetFarseerPoint(Collider c, Vector2 dualityPoint)
+			{
+				if (c == null) return PhysicsConvert.ToPhysicalUnit(dualityPoint);
+
+				Vector2 scale = (c.GameObj != null && c.GameObj.Transform != null) ? c.GameObj.Transform.Scale.Xy : Vector2.One;
+				return PhysicsConvert.ToPhysicalUnit(dualityPoint * scale);
+			}
+			protected static Vector2 GetDualityPoint(Collider c, Vector2 farseerPoint)
+			{
+				if (c == null) return PhysicsConvert.ToDualityUnit(farseerPoint);
+
+				Vector2 scale = (c.GameObj != null && c.GameObj.Transform != null) ? c.GameObj.Transform.Scale.Xy : Vector2.One;
+				return PhysicsConvert.ToDualityUnit(farseerPoint / scale);
+			}
+		}
+
+		[Serializable]
+		public sealed class FixedAngleJointInfo : JointInfo
+		{
+			private	float	angle	= 0.0f;
+
+			public float TargetAngle
+			{
+				get { return this.angle; }
+				set { this.angle = value; this.UpdateJoint(); }
+			}
+
+			public FixedAngleJointInfo() : this(0.0f) {}
+			public FixedAngleJointInfo(float angle)
+			{
+				this.angle = angle;
+			}
+
+			protected override Joint CreateJoint(Body bodyA, Body bodyB)
+			{
+				return JointFactory.CreateFixedAngleJoint(Scene.PhysicsWorld, bodyA);
+			}
+			internal override void UpdateJoint()
+			{
+				base.UpdateJoint();
+				if (this.joint == null) return;
+
+				FixedAngleJoint j = this.joint as FixedAngleJoint;
+				j.TargetAngle = this.angle;
+			}
+
+			protected override void CopyTo(JointInfo target)
+			{
+				base.CopyTo(target);
+				FixedAngleJointInfo c = target as FixedAngleJointInfo;
+				c.angle = this.angle;
+			}
 		}
 
 		[Serializable]
@@ -143,27 +180,35 @@ namespace Duality.Components
 			private	Vector2	localPointB	= Vector2.Zero;
 			private	float	refAngle	= 0.0f;
 
+			public Vector2 LocalPointA
+			{
+				get { return this.localPointA; }
+				set { this.localPointA = value; this.UpdateJoint(); }
+			}
+			public Vector2 LocalPointB
+			{
+				get { return this.localPointB; }
+				set { this.localPointB = value; this.UpdateJoint(); }
+			}
+			public float RefAngle
+			{
+				get { return this.refAngle; }
+				set { this.refAngle = value; this.UpdateJoint(); }
+			}
 
 			protected override Joint CreateJoint(Body bodyA, Body bodyB)
 			{
-				return JointFactory.CreateWeldJoint(Scene.CurrentPhysics, bodyA, bodyB, Vector2.Zero);
+				return JointFactory.CreateWeldJoint(Scene.PhysicsWorld, bodyA, bodyB, Vector2.Zero);
 			}
 			internal override void UpdateJoint()
 			{
 				base.UpdateJoint();
+				if (this.joint == null) return;
+
 				WeldJoint j = this.joint as WeldJoint;
-				j.LocalAnchorA = this.GetFarseerPoint(false, this.localPointA);
-				j.LocalAnchorB = this.GetFarseerPoint(true, this.localPointB);
+				j.LocalAnchorA = GetFarseerPoint(this.ColliderA, this.localPointA);
+				j.LocalAnchorB = GetFarseerPoint(this.ColliderB, this.localPointB);
 				j.ReferenceAngle = this.refAngle;
-			}
-
-			public override void UpdateFromWorld()
-			{
-				base.UpdateFromWorld();
-
-				this.localPointA = this.ColliderA.GameObj.Transform.GetLocalPoint(Vector3.Zero).Xy;
-				this.localPointB = this.ColliderB.GameObj.Transform.GetLocalPoint(Vector3.Zero).Xy;
-				this.refAngle = this.ColliderB.GameObj.Transform.Angle - this.ColliderA.GameObj.Transform.Angle;
 			}
 
 			protected override void CopyTo(JointInfo target)
@@ -176,5 +221,4 @@ namespace Duality.Components
 			}
 		}
 	}
-#endif
 }

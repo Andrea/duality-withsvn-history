@@ -6900,6 +6900,29 @@
             </summary>
             <param name="shapes"></param>
         </member>
+        <member name="M:Duality.Components.Collider.RemoveJoint(Duality.Components.Collider.JointInfo)">
+            <summary>
+            Removes an existing joint from the Collider.
+            </summary>
+            <param name="joint"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.AddJoint(Duality.Components.Collider.JointInfo,Duality.Components.Collider)">
+            <summary>
+            Adds a new joint to the Collider
+            </summary>
+            <param name="joint"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.ClearJoints">
+            <summary>
+            Removes all existing joints from the Collider.
+            </summary>
+        </member>
+        <member name="M:Duality.Components.Collider.SetJoints(System.Collections.Generic.IEnumerable{Duality.Components.Collider.JointInfo})">
+            <summary>
+            Sets the Colliders joint configuration. This may also affect other Colliders!
+            </summary>
+            <param name="joints"></param>
+        </member>
         <member name="M:Duality.Components.Collider.ApplyLocalImpulse(System.Single)">
             <summary>
             Applies a Transform-local angular impulse to the object.
@@ -7082,6 +7105,12 @@
             If you modify any of the returned ShapeInfos, be sure to call <see cref="M:Duality.Components.Collider.UpdateBody"/> afterwards.
             </summary>
         </member>
+        <member name="P:Duality.Components.Collider.Joints">
+            <summary>
+            [GET] Enumerates all <see cref="T:Duality.Components.Collider.JointInfo">joints</see> that are connected to this Collider.
+            If you modify any of the returned ShapeInfos, be sure to call <see cref="M:Duality.Components.Collider.UpdateBody"/> afterwards.
+            </summary>
+        </member>
         <member name="P:Duality.Components.Collider.BoundRadius">
             <summary>
             [GET] The physical bodys bounding radius.
@@ -7173,6 +7202,24 @@
             <summary>
             A dynamic body. Its movement is determined by physical effects.
             </summary>
+        </member>
+        <member name="T:Duality.Components.Collider.JointInfo">
+            <summary>
+            Describes a <see cref="T:Duality.Components.Collider"/> joint. Joints limit a Colliders degree of freedom 
+            by connecting it to fixed world coordinates or other Colliders.
+            </summary>
+        </member>
+        <member name="M:Duality.Components.Collider.JointInfo.CopyTo(Duality.Components.Collider.JointInfo)">
+            <summary>
+            Copies this JointInfos data to another one. It is assumed that both are of the same type.
+            </summary>
+            <param name="target"></param>
+        </member>
+        <member name="M:Duality.Components.Collider.JointInfo.Clone">
+            <summary>
+            Clones the JointInfo.
+            </summary>
+            <returns></returns>
         </member>
         <member name="T:Duality.Resources.Prefab">
             <summary>

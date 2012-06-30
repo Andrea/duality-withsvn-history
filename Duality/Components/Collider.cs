@@ -67,9 +67,7 @@ namespace Duality.Components
 		private	Category	colCat			= Category.Cat1;
 		private	Category	colWith			= Category.All;
 		private	List<ShapeInfo>	shapes		= new List<ShapeInfo>();
-#if FALSE // Removed for now. Joints are an experimental feature.
 		private	List<JointInfo>	joints		= new List<JointInfo>();
-#endif
 		[NonSerialized]	private	bool			initialized	= false;
 		[NonSerialized]	private	Body			body		= null;
 		[NonSerialized]	private	List<ColEvent>	eventBuffer	= new List<ColEvent>();
@@ -210,7 +208,6 @@ namespace Duality.Components
 				this.SetShapes(value);
 			}
 		}
-#if FALSE // Removed for now. Joints are an experimental feature.
 		/// <summary>
 		/// [GET] Enumerates all <see cref="JointInfo">joints</see> that are connected to this Collider.
 		/// If you modify any of the returned ShapeInfos, be sure to call <see cref="UpdateBody"/> afterwards.
@@ -220,7 +217,6 @@ namespace Duality.Components
 		{
 		    get { return this.joints; }
 		}
-#endif
 		/// <summary>
 		/// [GET] The physical bodys bounding radius.
 		/// </summary>
@@ -267,7 +263,6 @@ namespace Duality.Components
 				bool wasEnabled = this.body.Enabled;
 				if (wasEnabled) this.body.Enabled = false;
 
-				shape.InitFixture(this.body);
 				this.UpdateBodyShape();
 
 				if (wasEnabled) this.body.Enabled = true;
@@ -343,8 +338,6 @@ namespace Duality.Components
 
 				this.shapes.Add(shape);
 				shape.Parent = this;
-
-				if (this.body != null) shape.InitFixture(this.body);
 			}
 			this.UpdateBodyShape();
 
@@ -352,7 +345,6 @@ namespace Duality.Components
 			if (wasEnabled) this.body.Enabled = true;
 		}
 		
-#if FALSE // Removed for now. Joints are an experimental feature.
 		/// <summary>
 		/// Removes an existing joint from the Collider.
 		/// </summary>
@@ -360,16 +352,20 @@ namespace Duality.Components
 		public void RemoveJoint(JointInfo joint)
 		{
 			if (joint == null) throw new ArgumentNullException("joint");
-			if (this.joints == null || !this.joints.Contains(joint)) return;
+			if (joint.ColliderA != this && joint.ColliderB != this) return;
 
-			this.joints.Remove(joint);
-			if (joint.ColliderA == this)
+			if (joint.ColliderA != null)
+			{
+				joint.ColliderA.joints.Remove(joint);
 				joint.ColliderA = null;
-			else
+			}
+			if (joint.ColliderB != null)
+			{
+				joint.ColliderB.joints.Remove(joint);
 				joint.ColliderB = null;
+			}
 
 			joint.DestroyJoint();
-			if (this.body != null) this.UpdateBodyJoints();
 		}
 		/// <summary>
 		/// Adds a new joint to the Collider
@@ -379,32 +375,23 @@ namespace Duality.Components
 		{
 			if (joint == null) throw new ArgumentNullException("joint");
 			if (this.joints != null && this.joints.Contains(joint)) return;
+			
+			if (joint.ColliderA != null || joint.ColliderB != null)
+				joint.ColliderA.RemoveJoint(joint);
+			
+			joint.ColliderA = this;
+			joint.ColliderB = other;
 
-			if (this.joints == null) this.joints = new List<JointInfo>();
-			this.joints.Add(joint);
+			if (joint.ColliderA.joints == null) joint.ColliderA.joints = new List<JointInfo>();
+			joint.ColliderA.joints.Add(joint);
 
-			if (joint.ColliderA == null || joint.ColliderA == this)
+			if (joint.ColliderB != null)
 			{
-				joint.ColliderA = this;
-				joint.ColliderB = other;
-
-				if (this.body != null && (other == null || other.body != null))
-				{
-					joint.InitJoint(this.body, other != null ? other.body : null);
-					this.UpdateBodyJoints();
-				}
+				if (joint.ColliderB.joints == null) joint.ColliderB.joints = new List<JointInfo>();
+				joint.ColliderB.joints.Add(joint);
 			}
-			else
-			{
-				joint.ColliderB = this;
-				joint.ColliderA = other;
 
-				if (this.body != null && (other == null || other.body != null))
-				{
-					joint.InitJoint(other != null ? other.body : null, this.body);
-					this.UpdateBodyJoints();
-				}
-			}
+			joint.UpdateJoint();
 		}
 		/// <summary>
 		/// Removes all existing joints from the Collider.
@@ -412,18 +399,31 @@ namespace Duality.Components
 		public void ClearJoints()
 		{
 			if (this.joints == null) return;
-
-			var oldJoints = this.joints.ToArray();
-			this.joints.Clear();
-			foreach (JointInfo joint in oldJoints)
-			{
-				joint.DestroyJoint();
-				joint.ColliderA = null;
-				joint.ColliderB = null;
-			}
-			this.UpdateBodyJoints();
+			while (this.joints.Count > 0) this.RemoveJoint(this.joints[0]);
 		}
-#endif
+		/// <summary>
+		/// Sets the Colliders joint configuration. This may also affect other Colliders!
+		/// </summary>
+		/// <param name="joints"></param>
+		public void SetJoints(IEnumerable<JointInfo> joints)
+		{
+			if (joints == null) throw new ArgumentNullException("joints");
+
+			// Clone joint collection
+			joints = joints.Select(c => 
+				{
+					JointInfo c2 = c.Clone();
+					c2.ColliderA = this;
+					c2.ColliderB = c.ColliderA == this ? c.ColliderB : c.ColliderA;
+					return c2;
+				}).ToArray();
+			
+			// Destroy old joints
+			this.ClearJoints();
+
+			// Add new joints
+			foreach (JointInfo joint in joints) joint.ColliderA.AddJoint(joint, joint.ColliderB);
+		}
 
 		/// <summary>
 		/// Applies a Transform-local angular impulse to the object.
@@ -530,141 +530,6 @@ namespace Duality.Components
 			this.body.ApplyForce(PhysicsConvert.ToPhysicalUnit(force) / Time.SPFMult, PhysicsConvert.ToPhysicalUnit(applyAt));
 		}
 
-		private void UpdateBodyShape()
-		{
-			if (this.body == null) return;
-
-			foreach (ShapeInfo info in this.shapes) info.UpdateFixture();
-			this.body.CollisionCategories = this.colCat;
-			this.body.CollidesWith = this.colWith;
-			this.body.ResetMassData();
-
-			this.AwakeBody();
-		}
-		private void CleanupBody()
-		{
-			if (this.body == null) return;
-
-			this.body.Collision -= this.body_OnCollision;
-			this.body.Separation -= this.body_OnSeparation;
-			this.body.PostSolve -= this.body_PostSolve;
-
-			this.body.Dispose();
-			this.body = null;
-		}
-		private Body CreateBody()
-		{
-			Body b = new Body(Scene.PhysicsWorld, this);
-			if (this.shapes != null)
-			{
-				foreach (ShapeInfo s in this.shapes) s.InitFixture(b);
-			}
-			return b;
-		}
-		private void InitBody()
-		{
-			if (this.body != null) this.CleanupBody();
-			Transform t = this.GameObj != null ? this.GameObj.Transform : null;
-
-			this.body = this.CreateBody();
-			this.UpdateBodyShape();
-
-			this.body.BodyType = (this.bodyType == BodyType.Static ? FarseerPhysics.Dynamics.BodyType.Static : FarseerPhysics.Dynamics.BodyType.Dynamic);
-			this.body.LinearDamping = this.linearDamp;
-			this.body.AngularDamping = this.angularDamp;
-			this.body.FixedRotation = this.fixedAngle;
-			this.body.IgnoreGravity = this.ignoreGravity;
-			this.body.IsBullet = this.continous;
-			this.body.CollisionCategories = this.colCat;
-			this.body.CollidesWith = this.colWith;
-
-			if (t != null)
-			{
-				this.body.SetTransform(PhysicsConvert.ToPhysicalUnit(t.Pos.Xy), t.Angle);
-				this.body.LinearVelocity = PhysicsConvert.ToPhysicalUnit(this.linearVel) / Time.SPFMult;
-				this.body.AngularVelocity = this.angularVel / Time.SPFMult;
-			}
-
-			this.body.Collision += this.body_OnCollision;
-			this.body.Separation += this.body_OnSeparation;
-			this.body.PostSolve += this.body_PostSolve;
-
-			//var testJoint = JointFactory.CreateFixedAngleJoint(Scene.CurrentPhysics, this.body);
-			//var testJoint = JointFactory.CreateFixedDistanceJoint(Scene.CurrentPhysics, this.body, Vector2.Zero, Vector2.Zero);
-			//var testJoint = JointFactory.CreateFixedFrictionJoint(Scene.CurrentPhysics, this.body, Vector2.Zero);
-			//var testJoint = JointFactory.CreateFixedPrismaticJoint(Scene.CurrentPhysics, this.body, Vector2.Zero, Vector2.UnitX);
-			//var testJoint = JointFactory.CreateFixedRevoluteJoint(Scene.CurrentPhysics, this.body, Vector2.Zero, Vector2.Zero);
-			
-			// etc.
-			//var testJoint = JointFactory.CreateAngleJoint(
-		}
-
-#if FALSE // Removed for now. Joints are an experimental feature.
-		private void UpdateBodyJoints()
-		{
-			foreach (JointInfo info in this.joints)
-			{
-				if (!info.IsInitialized) continue;
-				info.UpdateJoint();
-			}
-		}
-		private void CleanupJoints()
-		{
-			foreach (JointInfo j in this.joints)
-				j.DestroyJoint();
-		}
-		private void InitJoints()
-		{
-			if (this.joints == null) return;
-			foreach (JointInfo j in this.joints)
-			{
-				if (j.ColliderA != null && j.ColliderA.body == null) j.ColliderA.InitBody();
-				if (j.ColliderB != null && j.ColliderB.body == null) j.ColliderB.InitBody();
-				j.InitJoint(j.ColliderA.body, j.ColliderB != null ? j.ColliderB.body : null);
-			}
-			this.UpdateBodyJoints();
-		}
-		private void CleanupInvalidJoints()
-		{
-			for (int i = this.joints.Count - 1; i >= 0; i--)
-			{
-				JointInfo joint = this.joints[i];
-				if (joint.ColliderA != null && joint.ColliderA.Disposed ||
-					joint.ColliderB != null && joint.ColliderB.Disposed)
-				{
-					joint.DestroyJoint();
-					this.RemoveJoint(joint);
-				}
-			}
-		}
-#endif
-
-		private void Initialize()
-		{
-			if (this.initialized) return;
-
-			this.InitBody();
-			this.GameObj.Transform.OnTransformChanged += this.OnTransformChanged;
-
-			this.initialized = true;
-
-#if FALSE // Removed for now. Joints are an experimental feature.
-			this.InitJoints();
-#endif
-		}
-		private void Shutdown()
-		{
-			if (!this.initialized) return;
-			
-#if FALSE // Removed for now. Joints are an experimental feature.
-			this.CleanupJoints();
-#endif
-			this.CleanupBody();
-			this.GameObj.Transform.OnTransformChanged -= this.OnTransformChanged;
-
-			this.initialized = false;
-		}
-
 		/// <summary>
 		/// Awakes the body if it has been in a resting state that is now being left, such as
 		/// when changing physical properties at runtime. You usually don't need to call this.
@@ -679,9 +544,7 @@ namespace Duality.Components
 		public void UpdateBody()
 		{
 			this.UpdateBodyShape();
-#if FALSE // Removed for now. Joints are an experimental feature.
 			this.UpdateBodyJoints();
-#endif
 		}
 
 		/// <summary>
@@ -781,6 +644,115 @@ namespace Duality.Components
 			return picked;
 		}
 		
+		
+		private void UpdateBodyShape()
+		{
+			if (this.body == null) return;
+
+			if (this.shapes != null)
+			{
+				foreach (ShapeInfo info in this.shapes) info.UpdateFixture();
+			}
+			this.body.CollisionCategories = this.colCat;
+			this.body.CollidesWith = this.colWith;
+			this.body.ResetMassData();
+
+			this.AwakeBody();
+		}
+		private void UpdateBodyJoints()
+		{
+			if (this.joints != null)
+			{
+				foreach (JointInfo info in this.joints) info.UpdateJoint();
+			}
+
+			this.AwakeBody();
+		}
+
+		private void CleanupBody()
+		{
+			if (this.body == null) return;
+
+			this.body.Collision -= this.body_OnCollision;
+			this.body.Separation -= this.body_OnSeparation;
+			this.body.PostSolve -= this.body_PostSolve;
+
+			this.body.Dispose();
+			this.body = null;
+		}
+		private void InitBody()
+		{
+			if (this.body != null) this.CleanupBody();
+			Transform t = this.GameObj != null ? this.GameObj.Transform : null;
+
+			this.body = new Body(Scene.PhysicsWorld, this);
+			this.UpdateBodyShape();
+
+			this.body.BodyType = (this.bodyType == BodyType.Static ? FarseerPhysics.Dynamics.BodyType.Static : FarseerPhysics.Dynamics.BodyType.Dynamic);
+			this.body.LinearDamping = this.linearDamp;
+			this.body.AngularDamping = this.angularDamp;
+			this.body.FixedRotation = this.fixedAngle;
+			this.body.IgnoreGravity = this.ignoreGravity;
+			this.body.IsBullet = this.continous;
+			this.body.CollisionCategories = this.colCat;
+			this.body.CollidesWith = this.colWith;
+
+			if (t != null)
+			{
+				this.body.SetTransform(PhysicsConvert.ToPhysicalUnit(t.Pos.Xy), t.Angle);
+				this.body.LinearVelocity = PhysicsConvert.ToPhysicalUnit(this.linearVel) / Time.SPFMult;
+				this.body.AngularVelocity = this.angularVel / Time.SPFMult;
+			}
+
+			this.body.Collision += this.body_OnCollision;
+			this.body.Separation += this.body_OnSeparation;
+			this.body.PostSolve += this.body_PostSolve;
+
+			//var testJoint = JointFactory.CreateFixedAngleJoint(Scene.CurrentPhysics, this.body);
+			//var testJoint = JointFactory.CreateFixedDistanceJoint(Scene.CurrentPhysics, this.body, Vector2.Zero, Vector2.Zero);
+			//var testJoint = JointFactory.CreateFixedFrictionJoint(Scene.CurrentPhysics, this.body, Vector2.Zero);
+			//var testJoint = JointFactory.CreateFixedPrismaticJoint(Scene.CurrentPhysics, this.body, Vector2.Zero, Vector2.UnitX);
+			//var testJoint = JointFactory.CreateFixedRevoluteJoint(Scene.CurrentPhysics, this.body, Vector2.Zero, Vector2.Zero);
+			
+			// etc.
+			//var testJoint = JointFactory.CreateAngleJoint(
+		}
+
+		private void CleanupJoints()
+		{
+			this.RemoveDisposedJoints();
+			foreach (JointInfo j in this.joints) j.DestroyJoint();
+		}
+		private void RemoveDisposedJoints()
+		{
+			for (int i = this.joints.Count - 1; i >= 0; i--)
+			{
+				JointInfo joint = this.joints[i];
+				if ((joint.ColliderA != null && joint.ColliderA.Disposed) || 
+					(joint.ColliderB != null && joint.ColliderB.Disposed))
+					this.RemoveJoint(joint);
+			}
+		}
+
+		private void Initialize()
+		{
+			if (this.initialized) return;
+
+			this.InitBody();
+			this.UpdateBodyJoints();
+
+			this.initialized = true;
+		}
+		private void Shutdown()
+		{
+			if (!this.initialized) return;
+			
+			this.CleanupJoints();
+			this.CleanupBody();
+
+			this.initialized = false;
+		}
+
 		private bool body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
 		{
 			this.eventBuffer.Add(new ColEvent(ColEvent.EventType.Collision, fixtureA, fixtureB, null));
@@ -808,9 +780,8 @@ namespace Duality.Components
 		
 		void ICmpUpdatable.OnUpdate()
 		{
-#if FALSE // Removed for now. Joints are an experimental feature.
-			this.CleanupInvalidJoints();
-#endif
+			this.RemoveDisposedJoints();
+
 			// Update velocity and transform values
 			if (this.body != null)
 			{
@@ -866,40 +837,28 @@ namespace Duality.Components
 			if ((e.Changes & Transform.DirtyFlags.Angle) != Transform.DirtyFlags.None)
 			    this.body.Rotation = t.Angle;
 			if ((e.Changes & Transform.DirtyFlags.Scale) != Transform.DirtyFlags.None)
-			    this.UpdateBodyShape();
+			    this.UpdateBody();
 
 			if (e.Changes != Transform.DirtyFlags.None)
-			{
-#if FALSE // Removed for now. Joints are an experimental feature.
-				// Update joints
-				this.CleanupInvalidJoints();
-				foreach (JointInfo joint in this.joints)
-				{
-					joint.UpdateFromWorld();
-					joint.UpdateJoint();
-				}
-#endif
-
 				this.body.Awake = true;
-			}
 		}
 		void ICmpInitializable.OnInit(InitContext context)
 		{
 			if (context == InitContext.Activate)
 				this.Initialize();
-#if FALSE // Removed for now. Joints are an experimental feature.
+			else if (context == InitContext.AddToGameObject)
+				this.GameObj.Transform.OnTransformChanged += this.OnTransformChanged;
 			else if (context == InitContext.Loaded)
-				this.CleanupInvalidJoints();
-#endif
+				this.RemoveDisposedJoints();
 		}
 		void ICmpInitializable.OnShutdown(ShutdownContext context)
 		{
 			if (context == ShutdownContext.Deactivate)
 				this.Shutdown();
-#if FALSE // Removed for now. Joints are an experimental feature.
+			else if (context == ShutdownContext.RemovingFromGameObject)
+				this.GameObj.Transform.OnTransformChanged -= this.OnTransformChanged;
 			else if (context == ShutdownContext.Saving)
-				this.CleanupInvalidJoints();
-#endif
+				this.RemoveDisposedJoints();
 		}
 
 		internal override void CopyToInternal(Component target, Duality.Cloning.CloneProvider provider)
@@ -923,13 +882,23 @@ namespace Duality.Components
 				c.SetShapes(this.shapes);
 			else
 				c.ClearShapes();
-
-			// Do not copy any joints.
-			//c.ClearJoints();
+			
+			// Discard old joint list and set new.
+			if (this.joints != null)
+				c.SetJoints(this.joints.Select(j => 
+				{
+					// Replace collider references with the targets references
+					j.ColliderA = provider.GetRegisteredObjectClone(j.ColliderA);
+					j.ColliderB = provider.GetRegisteredObjectClone(j.ColliderB);
+					return j;
+				}));
+			else
+				c.ClearJoints();
 
 			if (wasInitialized) c.Initialize();
 		}
 		
+
 		/// <summary>
 		/// Performs a global physical picking operation and returns the <see cref="ShapeInfo">shape</see> in which
 		/// the specified world coordinate is located in.
@@ -979,14 +948,15 @@ namespace Duality.Components
 		private	Collider.ShapeInfo	colShapeA;
 		private	Collider.ShapeInfo	colShapeB;
 
-		public Collider.ShapeInfo MyCollideShape
+		public Collider.ShapeInfo MyShape
 		{
 			get { return this.colShapeA; }
 		}
-		public Collider.ShapeInfo OtherCollideShape
+		public Collider.ShapeInfo OtherShape
 		{
 			get { return this.colShapeB; }
 		}
+
 
 		public ColliderCollisionEventArgs(GameObject obj, CollisionData data, Collider.ShapeInfo shapeA, Collider.ShapeInfo shapeB) : base(obj, data)
 		{
