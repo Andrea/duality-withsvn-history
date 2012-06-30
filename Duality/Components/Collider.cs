@@ -255,6 +255,9 @@ namespace Duality.Components
 			if (shape == null) throw new ArgumentNullException("shape");
 			if (this.shapes != null && this.shapes.Contains(shape)) return;
 
+			if (shape.Parent != null && shape.Parent != this)
+				shape.Parent.RemoveShape(shape);
+
 			if (this.shapes == null) this.shapes = new List<ShapeInfo>();
 			this.shapes.Add(shape);
 			shape.Parent = this;
@@ -277,6 +280,7 @@ namespace Duality.Components
 		public void RemoveShape(ShapeInfo shape)
 		{
 			if (shape == null) throw new ArgumentNullException("shape");
+			if (shape.Parent != this) return;
 			if (this.shapes == null || !this.shapes.Contains(shape)) return;
 
 			this.shapes.Remove(shape);
@@ -313,10 +317,7 @@ namespace Duality.Components
 			if (shapes == null) throw new ArgumentNullException("shapes");
 
 			// Clone shape collection
-			ShapeInfo[] cloned = shapes.ToArray();
-			for (int i = 0; i < cloned.Length; i++)
-				cloned[i] = cloned[i].Clone();
-			shapes = cloned;
+			shapes = shapes.Select(c => c.Clone()).ToArray();
 
 			// Disable body during shape update
 			bool wasEnabled = this.body != null && this.body.Enabled;
@@ -918,8 +919,10 @@ namespace Duality.Components
 			c.colCat = this.colCat;
 
 			// Discard old shape list and set new.
-			c.ClearShapes();
-			if (this.shapes != null) c.SetShapes(this.shapes);
+			if (this.shapes != null)
+				c.SetShapes(this.shapes);
+			else
+				c.ClearShapes();
 
 			// Do not copy any joints.
 			//c.ClearJoints();
