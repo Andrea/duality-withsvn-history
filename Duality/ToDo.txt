@@ -14,7 +14,9 @@
 
 --> Joints and Joint Editors
 	-->	Implement usecase: Add Joint of Type X
+		-->	Special PropertyEditor? ComboBox + Button (Add)
 	-->	Implement usecase: Redirect dual Joint
+		-->	Need ComponentRefPropertyEditor / GameObjectRefPropertyEditor
 	-->	Test usecase: Add dual Joint without target, then redirect to valid target
 	-->	Create JointInfo classes for all relevant Farseer Joints
 	-->	Display dual and single JointInfos in ColliderEditor
