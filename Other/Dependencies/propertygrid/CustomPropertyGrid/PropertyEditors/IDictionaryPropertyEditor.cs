@@ -44,7 +44,7 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 			if (this.EditedType != null)
 			{
 				Type keyType = this.GetKeyType();
-				this.addKeyEditor = this.ParentGrid.CreateEditor(keyType);
+				this.addKeyEditor = this.ParentGrid.CreateEditor(keyType, this);
 				this.addKeyEditor.EditedType = keyType;
 				this.addKeyEditor.PropertyName = "Add Entry";
 				this.addKeyEditor.Getter = this.AddKeyValueGetter;
@@ -178,7 +178,7 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 				}
 				else
 				{
-					elementEditor = this.ParentGrid.CreateEditor(valueType);
+					elementEditor = this.ParentGrid.CreateEditor(valueType, this);
 					this.AddPropertyEditor(elementEditor);
 					this.ParentGrid.ConfigureEditor(elementEditor);
 				}

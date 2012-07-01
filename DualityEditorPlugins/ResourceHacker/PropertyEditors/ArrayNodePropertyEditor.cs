@@ -23,7 +23,7 @@ namespace ResourceHacker.PropertyEditors
 
 				bool primitiveDataEditable = actualType != null && actualType.IsArray && (actualType.GetElementType().IsPrimitive || actualType.GetElementType() == typeof(string));
 
-				this.editorPrimitiveData = this.ParentGrid.CreateEditor(actualType);
+				this.editorPrimitiveData = this.ParentGrid.CreateEditor(actualType, this);
 				if (!primitiveDataEditable) this.editorPrimitiveData.Setter = null;
 				return this.editorPrimitiveData;
 			}

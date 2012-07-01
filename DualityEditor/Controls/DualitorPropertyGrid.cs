@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Drawing;
 using System.Reflection;
@@ -86,12 +87,12 @@ namespace DualityEditor.Controls
 
 		protected bool EditorMemberPredicate(MemberInfo info)
 		{
-			EditorHintFlagsAttribute flagsAttrib = info.GetCustomAttributes(typeof(EditorHintFlagsAttribute), true).FirstOrDefault() as EditorHintFlagsAttribute;
+			EditorHintFlagsAttribute flagsAttrib = info.GetEditorHint<EditorHintFlagsAttribute>();
 			return flagsAttrib == null || (flagsAttrib.Flags & MemberFlags.Invisible) == MemberFlags.None;
 		}
 		protected bool EditorMemberAffectsOthers(MemberInfo info)
 		{
-			EditorHintFlagsAttribute flagsAttrib = info.GetCustomAttributes(typeof(EditorHintFlagsAttribute), true).FirstOrDefault() as EditorHintFlagsAttribute;
+			EditorHintFlagsAttribute flagsAttrib = info.GetEditorHint<EditorHintFlagsAttribute>();
 			return flagsAttrib != null && (flagsAttrib.Flags & MemberFlags.AffectsOthers) != MemberFlags.None;
 		}
 

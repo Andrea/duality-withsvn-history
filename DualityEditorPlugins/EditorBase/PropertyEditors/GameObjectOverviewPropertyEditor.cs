@@ -105,7 +105,7 @@ namespace EditorBase.PropertyEditors
 			{
 				if (!this.componentEditors.ContainsKey(t))
 				{
-					PropertyEditor e = this.ParentGrid.CreateEditor(t);
+					PropertyEditor e = this.ParentGrid.CreateEditor(t, this);
 					e.Getter = this.CreateComponentValueGetter(t);
 					e.Setter = this.CreateComponentValueSetter(t);
 					e.PropertyName = t.GetTypeCSCodeName(true);

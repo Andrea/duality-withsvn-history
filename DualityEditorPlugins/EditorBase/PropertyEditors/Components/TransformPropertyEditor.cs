@@ -30,7 +30,7 @@ namespace EditorBase.PropertyEditors
 		{
 			base.BeforeAutoCreateEditors();
 			
-			this.editorPos = this.ParentGrid.CreateEditor(typeof(Vector3));
+			this.editorPos = this.ParentGrid.CreateEditor((typeof(Vector3)), this);
 			if (this.editorPos != null)
 			{
 				this.editorPos.BeginUpdate();
@@ -42,7 +42,7 @@ namespace EditorBase.PropertyEditors
 				this.AddPropertyEditor(this.editorPos);
 				this.editorPos.EndUpdate();
 			}
-			this.editorVel = this.ParentGrid.CreateEditor(typeof(Vector3));
+			this.editorVel = this.ParentGrid.CreateEditor(typeof(Vector3), this);
 			if (this.editorVel != null)
 			{
 				this.editorVel.BeginUpdate();
@@ -52,7 +52,7 @@ namespace EditorBase.PropertyEditors
 				this.AddPropertyEditor(this.editorVel);
 				this.editorVel.EndUpdate();
 			}
-			this.editorScale = this.ParentGrid.CreateEditor(typeof(Vector3));
+			this.editorScale = this.ParentGrid.CreateEditor(typeof(Vector3), this);
 			if (this.editorScale != null)
 			{
 				this.editorScale.BeginUpdate();
@@ -63,7 +63,7 @@ namespace EditorBase.PropertyEditors
 				this.AddPropertyEditor(this.editorScale);
 				this.editorScale.EndUpdate();
 			}
-			this.editorAngle = this.ParentGrid.CreateEditor(typeof(float));
+			this.editorAngle = this.ParentGrid.CreateEditor(typeof(float), this);
 			if (this.editorAngle != null)
 			{
 				this.editorAngle.BeginUpdate();
@@ -75,7 +75,7 @@ namespace EditorBase.PropertyEditors
 				this.AddPropertyEditor(this.editorAngle);
 				this.editorAngle.EndUpdate();
 			}
-			this.editorAngleVel = this.ParentGrid.CreateEditor(typeof(float));
+			this.editorAngleVel = this.ParentGrid.CreateEditor(typeof(float), this);
 			if (this.editorAngleVel != null)
 			{
 				this.editorAngleVel.BeginUpdate();
@@ -89,7 +89,7 @@ namespace EditorBase.PropertyEditors
 			this.AddEditorForProperty(ReflectionInfo.Property_Transform_DeriveAngle);
 			this.AddEditorForProperty(ReflectionInfo.Property_Transform_IgnoreParent);
 
-			this.editorShowRelative = this.ParentGrid.CreateEditor(typeof(bool));
+			this.editorShowRelative = this.ParentGrid.CreateEditor(typeof(bool), this);
 			if (editorShowRelative != null)
 			{
 				this.editorShowRelative.BeginUpdate();

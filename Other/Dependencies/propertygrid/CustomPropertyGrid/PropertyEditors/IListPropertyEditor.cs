@@ -155,7 +155,7 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 				}
 				else
 				{
-					elementEditor = this.ParentGrid.CreateEditor(elementType);
+					elementEditor = this.ParentGrid.CreateEditor(elementType, this);
 					//elementEditor.ButtonPressed += elementEditor_ButtonPressed;
 					this.AddPropertyEditor(elementEditor);
 					this.ParentGrid.ConfigureEditor(elementEditor);

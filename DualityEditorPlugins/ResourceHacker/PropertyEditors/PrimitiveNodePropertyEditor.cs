@@ -34,7 +34,7 @@ namespace ResourceHacker.PropertyEditors
 				Type actualType = primitiveNode.NodeType.ToActualType();
 				if (actualType == null) actualType = (info as PropertyInfo).PropertyType;
 
-				this.editorPrimitiveValue = this.ParentGrid.CreateEditor(actualType);
+				this.editorPrimitiveValue = this.ParentGrid.CreateEditor(actualType, this);
 				return this.editorPrimitiveValue;
 			}
 			else

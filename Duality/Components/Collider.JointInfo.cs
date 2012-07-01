@@ -46,6 +46,11 @@ namespace Duality.Components
 				internal set { this.colB = value; }
 			}
 			/// <summary>
+			/// [GET] Returns whether the joint is connecting two Colliders (instead of connecting one to the world)
+			/// </summary>
+			[EditorHintFlags(MemberFlags.Invisible)]
+			public abstract bool DualJoint { get; }
+			/// <summary>
 			/// [GET / SET] Specifies whether the connected Colliders will collide with each other.
 			/// </summary>
 			public bool CollideConnected
@@ -158,6 +163,11 @@ namespace Duality.Components
 		{
 			private	float	angle	= 0.0f;
 
+
+			public override bool DualJoint
+			{
+				get { return false; }
+			}
 			/// <summary>
 			/// [GET / SET] The Colliders target angle.
 			/// </summary>
@@ -166,6 +176,7 @@ namespace Duality.Components
 				get { return this.angle; }
 				set { this.angle = value; this.UpdateJoint(); }
 			}
+
 
 			public FixedAngleJointInfo() : this(0.0f) {}
 			public FixedAngleJointInfo(float angle)
@@ -203,7 +214,12 @@ namespace Duality.Components
 			private Vector2 localPointA	= Vector2.Zero;
 			private	Vector2	localPointB	= Vector2.Zero;
 			private	float	refAngle	= 0.0f;
+			
 
+			public override bool DualJoint
+			{
+				get { return true; }
+			}
 			/// <summary>
 			/// [GET / SET] The welding point, locally to the first object.
 			/// </summary>
@@ -228,6 +244,7 @@ namespace Duality.Components
 				get { return this.refAngle; }
 				set { this.refAngle = value; this.UpdateJoint(); }
 			}
+
 
 			protected override Joint CreateJoint(Body bodyA, Body bodyB)
 			{

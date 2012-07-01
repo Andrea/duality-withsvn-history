@@ -173,7 +173,7 @@ namespace EditorBase.PropertyEditors
 							oldEditors.Remove(texName);
 						else
 						{
-							PropertyEditor e = this.ParentGrid.CreateEditor(typeof(ContentRef<Texture>));
+							PropertyEditor e = this.ParentGrid.CreateEditor(typeof(ContentRef<Texture>), this);
 							e.Getter = this.CreateTextureValueGetter(texName);
 							e.Setter = !this.ReadOnly ? this.CreateTextureValueSetter(texName) : null;
 							e.PropertyName = texName;
@@ -242,7 +242,7 @@ namespace EditorBase.PropertyEditors
 						return oldEditor;
 					else
 					{
-						PropertyEditor e = this.ParentGrid.CreateEditor(editType);
+						PropertyEditor e = this.ParentGrid.CreateEditor(editType, this);
 						if (varInfo.type == ShaderVarType.Int)
 						{
 							e.Getter = this.CreateUniformIntValueGetter(varInfo.name);
@@ -264,7 +264,7 @@ namespace EditorBase.PropertyEditors
 						return oldEditor;
 					else
 					{
-						PropertyEditor e = this.ParentGrid.CreateEditor(typeof(Vector2));
+						PropertyEditor e = this.ParentGrid.CreateEditor(typeof(Vector2), this);
 						e.Getter = this.CreateUniformVec2ValueGetter(varInfo.name);
 						e.Setter = !this.ReadOnly ? this.CreateUniformVec2ValueSetter(varInfo.name) : null;
 						configData.Add(new EditorHintIncrementAttribute(0.1f));
@@ -278,7 +278,7 @@ namespace EditorBase.PropertyEditors
 						return oldEditor;
 					else
 					{
-						PropertyEditor e = this.ParentGrid.CreateEditor(typeof(Vector3));
+						PropertyEditor e = this.ParentGrid.CreateEditor(typeof(Vector3), this);
 						e.Getter = this.CreateUniformVec3ValueGetter(varInfo.name);
 						e.Setter = !this.ReadOnly ? this.CreateUniformVec3ValueSetter(varInfo.name) : null;
 						configData.Add(new EditorHintIncrementAttribute(0.1f));
@@ -292,7 +292,7 @@ namespace EditorBase.PropertyEditors
 						return oldEditor;
 					else
 					{
-						PropertyEditor e = this.ParentGrid.CreateEditor(typeof(float[]));
+						PropertyEditor e = this.ParentGrid.CreateEditor(typeof(float[]), this);
 						e.Getter = this.CreateUniformValueGetter(varInfo.name);
 						e.Setter = !this.ReadOnly ? this.CreateUniformValueSetter(varInfo.name) : null;
 						if (e is GroupedPropertyEditor)
@@ -319,7 +319,7 @@ namespace EditorBase.PropertyEditors
 						return oldEditor;
 					else
 					{
-						PropertyEditor e = this.ParentGrid.CreateEditor(editType.MakeArrayType());
+						PropertyEditor e = this.ParentGrid.CreateEditor(editType.MakeArrayType(), this);
 						e.Getter = this.CreateUniformValueGetter(varInfo.name);
 						e.Setter = !this.ReadOnly ? this.CreateUniformValueSetter(varInfo.name) : null;
 						e.ForceWriteBack = true;
@@ -337,7 +337,7 @@ namespace EditorBase.PropertyEditors
 						return oldEditor;
 					else
 					{
-						PropertyEditor e = this.ParentGrid.CreateEditor(typeof(Vector2[]));
+						PropertyEditor e = this.ParentGrid.CreateEditor(typeof(Vector2[]), this);
 						e.Getter = this.CreateUniformVec2ArrayValueGetter(varInfo.name);
 						e.Setter = !this.ReadOnly ? this.CreateUniformVec2ArrayValueSetter(varInfo.name) : null;
 						e.ForceWriteBack = true;
@@ -355,7 +355,7 @@ namespace EditorBase.PropertyEditors
 						return oldEditor;
 					else
 					{
-						PropertyEditor e = this.ParentGrid.CreateEditor(typeof(Vector3[]));
+						PropertyEditor e = this.ParentGrid.CreateEditor(typeof(Vector3[]), this);
 						e.Getter = this.CreateUniformVec3ArrayValueGetter(varInfo.name);
 						e.Setter = !this.ReadOnly ? this.CreateUniformVec3ArrayValueSetter(varInfo.name) : null;
 						e.ForceWriteBack = true;
@@ -373,7 +373,7 @@ namespace EditorBase.PropertyEditors
 						return oldEditor;
 					else
 					{
-						PropertyEditor e = this.ParentGrid.CreateEditor(typeof(float[][]));
+						PropertyEditor e = this.ParentGrid.CreateEditor(typeof(float[][]), this);
 						e.Getter = this.CreateUniformArrayValueGetter(varInfo.name, varInfo.arraySize);
 						e.Setter = !this.ReadOnly ? this.CreateUniformArrayValueSetter(varInfo.name) : null;
 						e.ForceWriteBack = true;

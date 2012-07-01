@@ -337,8 +337,14 @@
   <data name="PropertyDesc_AddJoint" xml:space="preserve">
     <value>Select a joint type and click the add button to add a new joint to the Collider</value>
   </data>
+  <data name="PropertyDesc_OtherCollider" xml:space="preserve">
+    <value>The joints second Collider, i.e. the one that is connected to this one using the joint.</value>
+  </data>
   <data name="PropertyName_AddJoint" xml:space="preserve">
     <value>Add Joint...</value>
+  </data>
+  <data name="PropertyName_OtherCollider" xml:space="preserve">
+    <value>Other Collider</value>
   </data>
   <data name="SceneNameLabel" xml:space="preserve">
     <value>Scene</value>

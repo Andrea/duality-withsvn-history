@@ -211,6 +211,7 @@ namespace DualityEditor.CorePluginInterface
 			if (!result && this.data.GetDataPresent(target)) result = true;
 			if (!result && this.data.GetDataPresent(target.MakeArrayType())) result = true;
 			if (!result && this.data.ContainsContentRefs(target)) result = true;
+			if (!result && this.data.ContainsComponentRefs(target)) result = true;
 			if (!result)
 			{
 				result = CorePluginHelper.RequestDataConverters(target).Any(s => !this.usedConverters.Contains(s) && s.CanConvertFrom(this));
@@ -243,6 +244,11 @@ namespace DualityEditor.CorePluginInterface
 				// Object array
 				Type arrType = target.MakeArrayType();
 				if (this.data.GetDataPresent(arrType)) fittingData = this.data.GetData(arrType) as IEnumerable<object>;
+			}
+			if (fittingData == null)
+			{
+				// ComponentRefs
+				if (this.data.ContainsComponentRefs(target)) fittingData = this.data.GetComponentRefs(target);
 			}
 			if (fittingData == null)
 			{

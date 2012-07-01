@@ -6,13 +6,13 @@ namespace ResourceHacker.PropertyEditors
 {
 	public class PropertyEditorProvider : IPropertyEditorProvider
 	{
-		public int IsResponsibleFor(Type baseType)
+		public int IsResponsibleFor(Type baseType, ProviderContext context)
 		{
 			if (baseType == typeof(ArrayNode))			return PropertyGrid.EditorPriority_Specialized;
 			else if (baseType == typeof(PrimitiveNode))	return PropertyGrid.EditorPriority_Specialized;
 			else return PropertyGrid.EditorPriority_None;
 		}
-		public PropertyEditor CreateEditor(Type baseType)
+		public PropertyEditor CreateEditor(Type baseType, ProviderContext context)
 		{
 			PropertyEditor e = null;
 

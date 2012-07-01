@@ -31,13 +31,39 @@ namespace DualityEditor
 			Component[] cmpArray = cmp.ToArray();
 			if (cmpArray.Length > 0) data.SetData(cmpArray);
 		}
-		public static bool ContainsComponentRefs(this IDataObject data)
+		public static bool ContainsComponentRefs<T>(this IDataObject data) where T : Component
 		{
-			return data.GetDataPresent(typeof(Component[]));
+			if (!data.GetDataPresent(typeof(Component[]))) return false;
+			Component[] refArray = data.GetData(typeof(Component[])) as Component[];
+			return refArray.Any(c => c is T);
 		}
-		public static Component[] GetComponentRefs(this IDataObject data)
+		public static bool ContainsComponentRefs(this IDataObject data, Type cmpType = null)
 		{
-			return data.GetData(typeof(Component[])) as Component[];
+			if (cmpType == null) cmpType = typeof(Component);
+			if (!data.GetDataPresent(typeof(Component[]))) return false;
+			Component[] refArray = data.GetData(typeof(Component[])) as Component[];
+			return refArray.Any(c => cmpType.IsInstanceOfType(c));
+		}
+		public static T[] GetComponentRefs<T>(this IDataObject data) where T : Component
+		{
+			if (!data.GetDataPresent(typeof(Component[]))) return null;
+			Component[] refArray = data.GetData(typeof(Component[])) as Component[];
+			return (
+				from r in refArray
+				where r is T
+				select r as T
+				).ToArray();
+		}
+		public static Component[] GetComponentRefs(this IDataObject data, Type cmpType = null)
+		{
+			if (cmpType == null) cmpType = typeof(Component);
+			if (!data.GetDataPresent(typeof(Component[]))) return null;
+			Component[] refArray = data.GetData(typeof(Component[])) as Component[];
+			return (
+				from c in refArray
+				where cmpType.IsInstanceOfType(c)
+				select c
+				).ToArray();
 		}
 
 		public static void SetGameObjectRefs(this IDataObject data, IEnumerable<GameObject> obj)

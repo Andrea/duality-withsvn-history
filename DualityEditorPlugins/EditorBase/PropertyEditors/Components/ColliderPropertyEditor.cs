@@ -27,7 +27,6 @@ namespace EditorBase.PropertyEditors
 			this.jointEditors.Clear();
 			this.addJointEditor = null;
 		}
-
 		protected override void BeforeAutoCreateEditors()
 		{
 			base.BeforeAutoCreateEditors();
@@ -61,13 +60,13 @@ namespace EditorBase.PropertyEditors
 
 		protected void UpdateJointEditors(IEnumerable<Collider> values)
 		{
-			values = values.NotNull();
-			int visibleElementCount = values.Min(o => o.Joints == null ? 0 : o.Joints.Count());
+			Collider[] valArray = values.ToArray();
+			int visibleElementCount = valArray.NotNull().Min(o => o.Joints == null ? 0 : o.Joints.Count());
 
 			// Add missing editors
 			for (int i = 0; i < visibleElementCount; i++)
 			{
-				Collider.JointInfo joint = values.First().Joints.ElementAtOrDefault(i);
+				Collider.JointInfo joint = valArray.NotNull().First().Joints.ElementAtOrDefault(i);
 				Type jointType = joint.GetType();
 				ColliderJointPropertyEditor elementEditor;
 				if (i < this.jointEditors.Count)
@@ -90,6 +89,7 @@ namespace EditorBase.PropertyEditors
 				elementEditor.PropertyName = string.Format("Joints[{0}]", i);
 				elementEditor.Getter = this.CreateJointValueGetter(i);
 				elementEditor.Setter = this.CreateJointValueSetter(i);
+				elementEditor.ParentCollider = valArray;
 			}
 			// Remove overflowing editors
 			for (int i = this.jointEditors.Count - 1; i >= visibleElementCount; i--)
@@ -144,6 +144,15 @@ namespace EditorBase.PropertyEditors
 
 	public class ColliderJointPropertyEditor : MemberwisePropertyEditor
 	{
+		private	Collider[] parentCollider = null;
+		private PropertyEditor otherColEditor = null;
+
+		public Collider[] ParentCollider
+		{
+			get { return this.parentCollider; }
+			internal set { this.parentCollider = value; }
+		}
+
 		public ColliderJointPropertyEditor()
 		{
 			this.EditedType = typeof(Collider.JointInfo);
@@ -151,6 +160,35 @@ namespace EditorBase.PropertyEditors
 			this.HeaderHeight = 30;
 		}
 
+		public override void ClearContent()
+		{
+			base.ClearContent();
+			this.otherColEditor = null;
+		}
+		protected override void BeforeAutoCreateEditors()
+		{
+			base.BeforeAutoCreateEditors();
+			Collider.JointInfo joint = this.GetValue().Cast<Collider.JointInfo>().FirstOrDefault();
+
+			if (joint != null && joint.DualJoint)
+			{
+				if (this.otherColEditor == null)
+				{
+					this.otherColEditor = this.ParentGrid.CreateEditor(typeof(Collider), this);
+					this.otherColEditor.Getter = this.CreateOtherColValueGetter();
+					this.otherColEditor.Setter = this.CreateOtherColValueSetter();
+					this.otherColEditor.PropertyName = PluginRes.EditorBaseRes.PropertyName_OtherCollider;
+					this.otherColEditor.PropertyDesc = PluginRes.EditorBaseRes.PropertyDesc_OtherCollider;
+					this.ParentGrid.ConfigureEditor(this.otherColEditor);
+					this.AddPropertyEditor(this.otherColEditor);
+				}
+			}
+			else if (this.otherColEditor != null)
+			{
+				this.RemovePropertyEditor(this.otherColEditor);
+				this.otherColEditor = null;
+			}
+		}
 		protected override void OnUpdateFromObjects(object[] values)
 		{
 			base.OnUpdateFromObjects(values);
@@ -175,6 +213,39 @@ namespace EditorBase.PropertyEditors
 				.Distinct().NotNull().ToArray();
 			foreach (var c in colliders) c.AwakeBody();
 			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(colliders), ReflectionInfo.Property_Collider_Joints);
+		}
+
+		protected Func<IEnumerable<object>> CreateOtherColValueGetter()
+		{
+			return () => 
+			{
+				Collider.JointInfo[] targetArray = this.GetValue().Cast<Collider.JointInfo>().ToArray();
+				Collider[] otherCollider = new Collider[targetArray.Length];
+				for (int i = 0; i < targetArray.Length; i++)
+				{
+					if (targetArray[i] != null)
+						otherCollider[i] = targetArray[i].ColliderA == parentCollider[i] ? targetArray[i].ColliderB : targetArray[i].ColliderA;
+					else
+						otherCollider[i] = null;
+				}
+				return otherCollider;
+			};
+		}
+		protected Action<IEnumerable<object>> CreateOtherColValueSetter()
+		{
+			return delegate(IEnumerable<object> values)
+			{
+				Collider[] valueArray = values.Cast<Collider>().ToArray();
+				Collider.JointInfo[] targetArray = this.GetValue().Cast<Collider.JointInfo>().ToArray();
+
+				for (int i = 0; i < targetArray.Length; i++)
+				{
+					if (targetArray[i] == null) continue;
+					parentCollider[i].AddJoint(targetArray[i], valueArray[i]);
+				}
+
+				this.PerformGetValue();
+			};
 		}
 	}
 

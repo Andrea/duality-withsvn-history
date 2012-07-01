@@ -138,7 +138,7 @@ namespace Duality.EditorHints
 	{
 		public static T GetEditorHint<T>(this MemberInfo info) where T : EditorHintMemberAttribute
 		{
-			return info.GetCustomAttributes(typeof(T), true).FirstOrDefault() as T;
+			return Attribute.GetCustomAttributes(info, typeof(T), true).FirstOrDefault() as T;
 		}
 		public static T GetEditorHint<T>(this MemberInfo info, IEnumerable<EditorHintMemberAttribute> hintOverride) where T : EditorHintMemberAttribute
 		{
@@ -149,8 +149,7 @@ namespace Duality.EditorHints
 		}
 		public static IEnumerable<T> GetEditorHints<T>(this MemberInfo info) where T : EditorHintMemberAttribute
 		{
-			object[] customAttribs = info.GetCustomAttributes(true);
-			return customAttribs.OfType<T>();
+			return Attribute.GetCustomAttributes(info, typeof(T), true).OfType<T>();
 		}
 		public static IEnumerable<T> GetEditorHints<T>(this MemberInfo info, IEnumerable<EditorHintMemberAttribute> hintOverride) where T : EditorHintMemberAttribute
 		{

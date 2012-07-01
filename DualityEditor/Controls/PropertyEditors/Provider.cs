@@ -11,7 +11,7 @@ namespace DualityEditor.Controls.PropertyEditors
 {
 	public class DualityPropertyEditorProvider : IPropertyEditorProvider
 	{
-		public int IsResponsibleFor(Type baseType)
+		public int IsResponsibleFor(Type baseType, ProviderContext context)
 		{
 			if (baseType == typeof(Vector2))		return PropertyGrid.EditorPriority_General;
 			else if (baseType == typeof(Vector3))	return PropertyGrid.EditorPriority_General;
@@ -22,7 +22,7 @@ namespace DualityEditor.Controls.PropertyEditors
 
 			else return PropertyGrid.EditorPriority_None;
 		}
-		public PropertyEditor CreateEditor(Type baseType)
+		public PropertyEditor CreateEditor(Type baseType, ProviderContext context)
 		{
 			PropertyEditor e = null;
 

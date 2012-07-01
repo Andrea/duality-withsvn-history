@@ -10,7 +10,7 @@ namespace EditorBase.PropertyEditors
 {
 	public class PropertyEditorProvider : IPropertyEditorProvider
 	{
-		public int IsResponsibleFor(Type baseType)
+		public int IsResponsibleFor(Type baseType, ProviderContext context)
 		{
 			// -------- Specialized area --------
 			if (baseType == typeof(GameObject))			return PropertyGrid.EditorPriority_Specialized;
@@ -44,39 +44,47 @@ namespace EditorBase.PropertyEditors
 			
 			else return PropertyGrid.EditorPriority_None;
 		}
-		public PropertyEditor CreateEditor(Type baseType)
+		public PropertyEditor CreateEditor(Type baseType, ProviderContext context)
 		{
 			PropertyEditor e = null;
+			bool compRef = !(context.ParentEditor is GameObjectOverviewPropertyEditor);
 
 			// -------- Specialized area --------
-			if (baseType == typeof(GameObject))			e = new GameObjectOverviewPropertyEditor();
-			else if (baseType == typeof(Transform))		e = new TransformPropertyEditor();
-			else if (baseType == typeof(Camera.Pass))	e = new CameraRenderPassPropertyEditor();
-			else if (baseType == typeof(SoundEmitter))	e = new SoundEmitterPropertyEditor();
-			else if (baseType == typeof(BatchInfo))		e = new BatchInfoPropertyEditor();
-			else if (baseType == typeof(Material))		e = new MaterialPropertyEditor();
-			else if (baseType == typeof(Texture))		e = new TexturePropertyEditor();
-			else if (baseType == typeof(AudioData))		e = new AudioDataPropertyEditor();
-			else if (baseType == typeof(Pixmap))		e = new PixmapPropertyEditor();
-			else if (baseType == typeof(Font))			e = new FontPropertyEditor();
-			else if (baseType == typeof(FormattedText))	e = new FormattedTextPropertyEditor();
-			else if (baseType == typeof(TextRenderer))	e = new TextRendererPropertyEditor();
+			if (baseType == typeof(GameObject))
+			{
+				if (context.ParentEditor == null)
+					e = new GameObjectOverviewPropertyEditor();
+				else
+					e = new GameObjectRefPropertyEditor();
+			}
+			else if (baseType == typeof(Transform) && !compRef)		e = new TransformPropertyEditor();
+			else if (baseType == typeof(Camera.Pass))				e = new CameraRenderPassPropertyEditor();
+			else if (baseType == typeof(SoundEmitter) && !compRef)	e = new SoundEmitterPropertyEditor();
+			else if (baseType == typeof(BatchInfo))					e = new BatchInfoPropertyEditor();
+			else if (baseType == typeof(Material))					e = new MaterialPropertyEditor();
+			else if (baseType == typeof(Texture))					e = new TexturePropertyEditor();
+			else if (baseType == typeof(AudioData))					e = new AudioDataPropertyEditor();
+			else if (baseType == typeof(Pixmap))					e = new PixmapPropertyEditor();
+			else if (baseType == typeof(Font))						e = new FontPropertyEditor();
+			else if (baseType == typeof(FormattedText))				e = new FormattedTextPropertyEditor();
+			else if (baseType == typeof(TextRenderer) && !compRef)	e = new TextRendererPropertyEditor();
 
 			//// -------- Semi-Specialized area --------
-			else if (typeof(Collider).IsAssignableFrom(baseType))			e = new ColliderPropertyEditor();
-			else if (typeof(Renderer).IsAssignableFrom(baseType))			e = new RendererPropertyEditor();
-			else if (typeof(DrawTechnique).IsAssignableFrom(baseType))		e = new DrawTechniquePropertyEditor();
+			else if (typeof(Collider).IsAssignableFrom(baseType) && !compRef)	e = new ColliderPropertyEditor();
+			else if (typeof(Renderer).IsAssignableFrom(baseType) && !compRef)	e = new RendererPropertyEditor();
+			else if (typeof(DrawTechnique).IsAssignableFrom(baseType))			e = new DrawTechniquePropertyEditor();
 
 			// -------- General area --------
 			else if (typeof(Collider.ShapeInfo).IsAssignableFrom(baseType))	e = new ColliderShapePropertyEditor();
 #if FALSE // Removed for now. Joints are an experimental feature.
 			else if (typeof(Collider.JointInfo).IsAssignableFrom(baseType))	e = new ColliderJointPropertyEditor();
 #endif
-			else if (typeof(Component).IsAssignableFrom(baseType))			e = new ComponentPropertyEditor();
-			else if (typeof(Resource).IsAssignableFrom(baseType))			e = new ResourcePropertyEditor();
-			else if (typeof(IContentRef).IsAssignableFrom(baseType))		e = new IContentRefPropertyEditor();
-			else if (typeof(DualityAppData).IsAssignableFrom(baseType))		e = new DualityAppDataPropertyEditor();
-			else if (typeof(DualityUserData).IsAssignableFrom(baseType))	e = new DualityUserDataPropertyEditor();
+			else if (typeof(Component).IsAssignableFrom(baseType) && compRef)	e = new ComponentRefPropertyEditor();
+			else if (typeof(Component).IsAssignableFrom(baseType) && !compRef)	e = new ComponentPropertyEditor();
+			else if (typeof(Resource).IsAssignableFrom(baseType))				e = new ResourcePropertyEditor();
+			else if (typeof(IContentRef).IsAssignableFrom(baseType))			e = new IContentRefPropertyEditor();
+			else if (typeof(DualityAppData).IsAssignableFrom(baseType))			e = new DualityAppDataPropertyEditor();
+			else if (typeof(DualityUserData).IsAssignableFrom(baseType))		e = new DualityUserDataPropertyEditor();
 
 			return e;
 		}

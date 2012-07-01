@@ -652,11 +652,29 @@ namespace EditorBase.PluginRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die The joints second Collider, i.e. the one that is connected to this one using the joint. ähnelt.
+        /// </summary>
+        public static string PropertyDesc_OtherCollider {
+            get {
+                return ResourceManager.GetString("PropertyDesc_OtherCollider", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Add Joint... ähnelt.
         /// </summary>
         public static string PropertyName_AddJoint {
             get {
                 return ResourceManager.GetString("PropertyName_AddJoint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Other Collider ähnelt.
+        /// </summary>
+        public static string PropertyName_OtherCollider {
+            get {
+                return ResourceManager.GetString("PropertyName_OtherCollider", resourceCulture);
             }
         }
         

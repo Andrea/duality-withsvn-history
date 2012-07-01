@@ -172,7 +172,12 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		}
 		public void OnKeyPress(KeyPressEventArgs e)
 		{
-			this.stringEditor.OnKeyPress(e);
+			if (e.KeyChar == ' ') return; // Don't handle spaces in pure numeric editor
+
+			KeyPressEventArgs subE = e;
+			if (e.KeyChar == ',') subE = new KeyPressEventArgs('.'); // Use dots instead of commas
+			this.stringEditor.OnKeyPress(subE);
+			if (subE.Handled) e.Handled = true;
 		}
 		public void OnKeyDown(KeyEventArgs e)
 		{

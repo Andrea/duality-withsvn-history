@@ -7219,6 +7219,11 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="P:Duality.Components.Collider.JointInfo.DualJoint">
+            <summary>
+            [GET] Returns whether the joint is connecting two Colliders (instead of connecting one to the world)
+            </summary>
+        </member>
         <member name="P:Duality.Components.Collider.JointInfo.CollideConnected">
             <summary>
             [GET / SET] Specifies whether the connected Colliders will collide with each other.

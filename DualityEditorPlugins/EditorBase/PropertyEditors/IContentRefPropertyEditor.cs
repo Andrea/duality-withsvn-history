@@ -114,7 +114,7 @@ namespace EditorBase.PropertyEditors
 		}
 		protected override void DeserializeFromData(DataObject data)
 		{
-			ConvertOperation convert = new ConvertOperation(data, ConvertOperation.Operation.All);
+			ConvertOperation convert = new ConvertOperation(data, ConvertOperation.Operation.Convert);
 			if (convert.CanPerform(this.editedResType))
 			{
 				var refQuery = convert.Perform(this.editedResType);
@@ -131,7 +131,7 @@ namespace EditorBase.PropertyEditors
 		}
 		protected override bool CanDeserializeFromData(DataObject data)
 		{
-			return new ConvertOperation(data, ConvertOperation.Operation.All).CanPerform(this.editedResType);
+			return new ConvertOperation(data, ConvertOperation.Operation.Convert).CanPerform(this.editedResType);
 		}
 
 		protected override void OnEditedTypeChanged()

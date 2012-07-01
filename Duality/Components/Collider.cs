@@ -353,11 +353,13 @@ namespace Duality.Components
 			if (joint.ColliderA != null)
 			{
 				joint.ColliderA.joints.Remove(joint);
+				joint.ColliderA.AwakeBody();
 				joint.ColliderA = null;
 			}
 			if (joint.ColliderB != null)
 			{
 				joint.ColliderB.joints.Remove(joint);
+				joint.ColliderB.AwakeBody();
 				joint.ColliderB = null;
 			}
 
@@ -370,21 +372,24 @@ namespace Duality.Components
 		public void AddJoint(JointInfo joint, Collider other = null)
 		{
 			if (joint == null) throw new ArgumentNullException("joint");
-			if (this.joints != null && this.joints.Contains(joint)) return;
 			
-			if (joint.ColliderA != null && joint.ColliderA != this)
-				joint.ColliderA.RemoveJoint(joint);
-			
+			if (joint.ColliderA != null)		joint.ColliderA.RemoveJoint(joint);
+			else if (joint.ColliderB != null)	joint.ColliderB.RemoveJoint(joint);
+
 			joint.ColliderA = this;
 			joint.ColliderB = other;
 
-			if (joint.ColliderA.joints == null) joint.ColliderA.joints = new List<JointInfo>();
-			joint.ColliderA.joints.Add(joint);
-
+			if (joint.ColliderA != null)
+			{
+				if (joint.ColliderA.joints == null) joint.ColliderA.joints = new List<JointInfo>();
+				joint.ColliderA.joints.Add(joint);
+				joint.ColliderA.AwakeBody();
+			}
 			if (joint.ColliderB != null)
 			{
 				if (joint.ColliderB.joints == null) joint.ColliderB.joints = new List<JointInfo>();
 				joint.ColliderB.joints.Add(joint);
+				joint.ColliderB.AwakeBody();
 			}
 
 			joint.UpdateJoint();
@@ -406,19 +411,21 @@ namespace Duality.Components
 			if (joints == null) throw new ArgumentNullException("joints");
 
 			// Clone joint collection
-			joints = joints.Select(c => 
-				{
-					JointInfo c2 = c.Clone();
-					c2.ColliderA = this;
-					c2.ColliderB = c.ColliderA == this ? c.ColliderB : c.ColliderA;
-					return c2;
-				}).ToArray();
+			Collider[] colliderB = new Collider[joints.Count()];
+			JointInfo[] jointClones = new JointInfo[colliderB.Length];
+			int k = 0;
+			foreach (JointInfo joint in joints)
+			{
+				jointClones[k] = joint.Clone();
+				colliderB[k] = joint.ColliderA == this ? joint.ColliderB : joint.ColliderA;
+				k++;
+			}
 			
 			// Destroy old joints
 			this.ClearJoints();
 
 			// Add new joints
-			foreach (JointInfo joint in joints) joint.ColliderA.AddJoint(joint, joint.ColliderB);
+			for (int i = 0; i < jointClones.Length; i++) this.AddJoint(jointClones[i], colliderB[i]);
 		}
 
 		/// <summary>
@@ -887,10 +894,11 @@ namespace Duality.Components
 			if (this.shapes != null) c.SetShapes(this.shapes);
 			if (this.joints != null) c.SetJoints(this.joints.Select(j => 
 				{
+					JointInfo j2 = j.Clone();
 					// Replace collider references with the targets references
-					j.ColliderA = provider.GetRegisteredObjectClone(j.ColliderA);
-					j.ColliderB = provider.GetRegisteredObjectClone(j.ColliderB);
-					return j;
+					j2.ColliderA = provider.GetRegisteredObjectClone(j.ColliderA);
+					j2.ColliderB = provider.GetRegisteredObjectClone(j.ColliderB);
+					return j2;
 				}));
 
 			if (wasInitialized) c.Initialize();

@@ -13,11 +13,6 @@
 
 
 --> Joints and Joint Editors
-	-->	Implement usecase: Redirect dual Joint
-		-->	Need ComponentRefPropertyEditor / GameObjectRefPropertyEditor
-		-->	Need Special "Other Collider" property in grid
-	-->	Test usecase: Add dual Joint without target, then redirect to valid target
-		-->	Doesn't work. Use lazy instantiation of Farseer joint as soon as both Colliders are set?
 	-->	Create JointInfo classes for all relevant Farseer Joints
 	-->	Display dual and single JointInfos in ColliderEditor
 	-->	Make some of them editable there?

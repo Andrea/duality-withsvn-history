@@ -25,7 +25,7 @@ namespace EditorBase.PropertyEditors
 		{
 			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_Texture_Atlas))
 			{
-				PropertyEditor e = this.ParentGrid.CreateEditor(ReflectionInfo.Property_Texture_Atlas.PropertyType);
+				PropertyEditor e = this.ParentGrid.CreateEditor(ReflectionInfo.Property_Texture_Atlas.PropertyType, this);
 				IListPropertyEditor listEdit = e as IListPropertyEditor;
 				if (listEdit != null)
 				{

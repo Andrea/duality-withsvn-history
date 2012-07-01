@@ -13,10 +13,31 @@ using AdamsLair.PropertyGrid.Renderer;
 
 namespace AdamsLair.PropertyGrid
 {
+	public class ProviderContext
+	{
+		private PropertyGrid parentGrid;
+		private	PropertyEditor parentEditor;
+
+		public PropertyGrid ParentGrid
+		{
+			get { return this.parentGrid; }
+		}
+		public PropertyEditor ParentEditor
+		{
+			get { return this.parentEditor; }
+		}
+
+		public ProviderContext(PropertyGrid grid, PropertyEditor editor = null)
+		{
+			this.parentEditor = editor;
+			this.parentGrid = editor != null ? editor.ParentGrid : grid;
+		}
+	}
+
 	public interface IPropertyEditorProvider
 	{
-		int IsResponsibleFor(Type baseType);
-		PropertyEditor CreateEditor(Type baseType);
+		int IsResponsibleFor(Type baseType, ProviderContext context);
+		PropertyEditor CreateEditor(Type baseType, ProviderContext context);
 	}
 
 	public class ExpandState
@@ -101,11 +122,11 @@ namespace AdamsLair.PropertyGrid
 				set { this.subProviders = value; }
 			}
 			
-			public int IsResponsibleFor(Type baseType)
+			public int IsResponsibleFor(Type baseType, ProviderContext context)
 			{
 				return EditorPriority_General;
 			}
-			public PropertyEditor CreateEditor(Type baseType)
+			public PropertyEditor CreateEditor(Type baseType, ProviderContext context)
 			{
 				PropertyEditor e = null;
 
@@ -140,13 +161,13 @@ namespace AdamsLair.PropertyGrid
 					// Ask around if any sub-editor can handle it and choose the most specialized
 					var availSubProviders = 
 						from p in this.subProviders
-						where p.IsResponsibleFor(baseType) != EditorPriority_None
-						orderby p.IsResponsibleFor(baseType) descending
+						where p.IsResponsibleFor(baseType, context) != EditorPriority_None
+						orderby p.IsResponsibleFor(baseType, context) descending
 						select p;
 					IPropertyEditorProvider subProvider = availSubProviders.FirstOrDefault();
 					if (subProvider != null)
 					{
-						e = subProvider.CreateEditor(baseType);
+						e = subProvider.CreateEditor(baseType, context);
 						e.EditedType = baseType;
 						return e;
 					}
@@ -284,7 +305,7 @@ namespace AdamsLair.PropertyGrid
 		{
 			if (this.mainEditor != null) this.DisposePropertyEditor();
 
-			this.mainEditor = this.editorProvider.CreateEditor(type);
+			this.mainEditor = this.editorProvider.CreateEditor(type, new ProviderContext(this));
 			this.mainEditor.SizeChanged += this.mainEditor_SizeChanged;
 			this.mainEditor.ValueChanged += this.mainEditor_ValueChanged;
 			this.mainEditor.EditingFinished += this.mainEditor_EditingFinished;
@@ -357,9 +378,11 @@ namespace AdamsLair.PropertyGrid
 			foreach (IPropertyEditorProvider prov in provider)
 				this.RegisterEditorProvider(prov);
 		}
-		public PropertyEditor CreateEditor(Type editedType)
+		public PropertyEditor CreateEditor(Type editedType, PropertyEditor parentEditor)
 		{
-			PropertyEditor e = this.editorProvider.CreateEditor(editedType);
+			if (parentEditor == null) throw new ArgumentNullException("parentEditor");
+			if (parentEditor.ParentGrid != this) throw new ArgumentException("The specified editor is not a child of this PropertyGrid", "parentEditor");
+			PropertyEditor e = this.editorProvider.CreateEditor(editedType, new ProviderContext(this, parentEditor));
 			e.EditedType = editedType;
 			e.ParentGrid = this;
 			return e;

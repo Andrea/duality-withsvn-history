@@ -112,7 +112,7 @@ namespace AdamsLair.PropertyGrid
 		public PropertyEditor AddEditorForProperty(PropertyInfo prop)
 		{
 			PropertyEditor e = this.AutoCreateMemberEditor(prop);
-			if (e == null) e = this.ParentGrid.CreateEditor(prop.PropertyType);
+			if (e == null) e = this.ParentGrid.CreateEditor(prop.PropertyType, this);
 			if (e == null) return null;
 			e.BeginUpdate();
 			e.Getter = this.CreatePropertyValueGetter(prop);
@@ -127,7 +127,7 @@ namespace AdamsLair.PropertyGrid
 		public PropertyEditor AddEditorForField(FieldInfo field)
 		{
 			PropertyEditor e = this.AutoCreateMemberEditor(field);
-			if (e == null) e = this.ParentGrid.CreateEditor(field.FieldType);
+			if (e == null) e = this.ParentGrid.CreateEditor(field.FieldType, this);
 			if (e == null) return null;
 			e.BeginUpdate();
 			e.Getter = this.CreateFieldValueGetter(field);

@@ -99,7 +99,7 @@ namespace EditorBase.PropertyEditors
 		}
 		protected override void DeserializeFromData(DataObject data)
 		{
-			ConvertOperation convert = new ConvertOperation(data, ConvertOperation.Operation.All);
+			ConvertOperation convert = new ConvertOperation(data, ConvertOperation.Operation.Convert);
 			if (convert.CanPerform(this.editedCmpType))
 			{
 				var refQuery = convert.Perform(this.editedCmpType);
@@ -113,10 +113,32 @@ namespace EditorBase.PropertyEditors
 					this.OnEditingFinished();
 				}
 			}
+			else if (convert.CanPerform(typeof(GameObject)))
+			{
+				GameObject obj = convert.Perform<GameObject>().FirstOrDefault();
+				Component cmp = obj != null ? obj.GetComponent(this.editedCmpType) : null;
+				if (cmp != null)
+				{
+					this.component = cmp;
+					this.PerformSetValue();
+					this.OnValueChanged();
+					this.PerformGetValue();
+					this.OnEditingFinished();
+				}
+			}
 		}
 		protected override bool CanDeserializeFromData(DataObject data)
 		{
-			return new ConvertOperation(data, ConvertOperation.Operation.All).CanPerform(this.editedCmpType);
+			ConvertOperation convert = new ConvertOperation(data, ConvertOperation.Operation.Convert);
+			if (convert.CanPerform(this.editedCmpType)) return true;
+
+			if (convert.CanPerform(typeof(GameObject)))
+			{
+				GameObject obj = convert.Perform<GameObject>().FirstOrDefault();
+				return obj != null && obj.GetComponent(this.editedCmpType) != null;
+			}
+
+			return false;
 		}
 
 		protected override void OnEditedTypeChanged()
