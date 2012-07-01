@@ -334,6 +334,12 @@
   <data name="ProjectNameLabel" xml:space="preserve">
     <value>Project</value>
   </data>
+  <data name="PropertyDesc_AddJoint" xml:space="preserve">
+    <value>Select a joint type and click the add button to add a new joint to the Collider</value>
+  </data>
+  <data name="PropertyName_AddJoint" xml:space="preserve">
+    <value>Add Joint...</value>
+  </data>
   <data name="SceneNameLabel" xml:space="preserve">
     <value>Scene</value>
   </data>

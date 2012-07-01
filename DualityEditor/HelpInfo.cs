@@ -129,9 +129,19 @@ namespace DualityEditor
 
 			// ToDo: Probably improve later
 		}
+		public static HelpInfo FromObject(object obj)
+		{
+			if (obj is MemberInfo) return FromMember(obj as MemberInfo);
+			if (obj is IContentRef) return FromResource(obj as IContentRef);
+			if (obj is GameObject) return FromGameObject(obj as GameObject);
+			if (obj is Component) return FromComponent(obj as Component);
+			if (obj is ObjectSelection) return FromSelection(obj as ObjectSelection);
+
+			return CreateNotAvailable(obj != null ? obj.ToString() : null);
+		}
 		public static HelpInfo CreateNotAvailable(string topic)
 		{
-			return FromText(topic, DualityEditor.EditorRes.GeneralRes.HelpInfo_NotAvailable_Desc);
+			return FromText(topic ?? "Unknown", DualityEditor.EditorRes.GeneralRes.HelpInfo_NotAvailable_Desc);
 		}
 	}
 

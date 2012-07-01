@@ -74,6 +74,7 @@ namespace AdamsLair.PropertyGrid
 		private	Type			editedType		= null;
 		private	MemberInfo		editedMember	= null;
 		private	string			propertyName	= AdamsLair.PropertyGrid.EmbeddedResources.Resources.PropertyName_Default;
+		private	string			propertyDesc	= null;
 		private	object			configureData	= null;
 		private	bool			forceWriteBack	= false;
 		private	bool			updatingFromObj	= false;
@@ -199,6 +200,11 @@ namespace AdamsLair.PropertyGrid
 				this.propertyName = value;
 				this.Invalidate();
 			}
+		}
+		public string PropertyDesc
+		{
+			get { return this.propertyDesc; }
+			set { this.propertyDesc = value; }
 		}
 		public object ConfigureData
 		{

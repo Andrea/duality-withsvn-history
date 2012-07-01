@@ -45,16 +45,27 @@ namespace Duality.Components
 				get { return this.colB; }
 				internal set { this.colB = value; }
 			}
+			/// <summary>
+			/// [GET / SET] Specifies whether the connected Colliders will collide with each other.
+			/// </summary>
 			public bool CollideConnected
 			{
 				get { return this.collide; }
 				set { this.collide = value; this.UpdateJoint(); }
 			}
+			/// <summary>
+			/// [GET / SET] Whether or not the joint is active.
+			/// </summary>
 			public bool Enabled
 			{
 				get { return this.enabled; }
 				set { this.enabled = value; this.UpdateJoint(); }
 			}
+			/// <summary>
+			/// [GET / SET] Maximum joint error value before the joint break. Breaking does not remove the joint, but disable it.
+			/// A value of zero or lower is interpreted as unbreakable. Note that some joints might not have breaking point support 
+			/// and will ignore this value.
+			/// </summary>
 			[EditorHintRange(-1.0f, float.MaxValue)]
 			public float BreakPoint
 			{
@@ -62,14 +73,15 @@ namespace Duality.Components
 				set { this.breakPoint = value; this.UpdateJoint(); }
 			}
 
-
+			
+			protected abstract Joint CreateJoint(Body bodyA, Body bodyB);
 			internal void DestroyJoint()
 			{
 				if (this.joint == null) return;
 				Scene.PhysicsWorld.RemoveJoint(this.joint);
+				this.joint.Broke -= this.joint_Broke;
 				this.joint = null;
 			}
-			protected abstract Joint CreateJoint(Body bodyA, Body bodyB);
 			internal virtual void UpdateJoint()
 			{
 				if (this.joint == null)
@@ -78,6 +90,7 @@ namespace Duality.Components
 					{
 						this.joint = this.CreateJoint(this.colA.body, this.colB != null ? this.colB.body : null);
 						this.joint.UserData = this;
+						this.joint.Broke += this.joint_Broke;
 					}
 					else return;
 				}
@@ -85,6 +98,10 @@ namespace Duality.Components
 				this.joint.CollideConnected = this.collide;
 				this.joint.Enabled = this.enabled;
 				this.joint.Breakpoint = this.breakPoint <= 0.0f ? float.MaxValue : this.breakPoint;
+			}
+			private void joint_Broke(Joint arg1, float arg2)
+			{
+				this.enabled = false;
 			}
 
 			/// <summary>
@@ -135,11 +152,17 @@ namespace Duality.Components
 			}
 		}
 
+		/// <summary>
+		/// Constrains the Collider to a fixed angle
+		/// </summary>
 		[Serializable]
 		public sealed class FixedAngleJointInfo : JointInfo
 		{
 			private	float	angle	= 0.0f;
 
+			/// <summary>
+			/// [GET / SET] The Colliders target angle.
+			/// </summary>
 			public float TargetAngle
 			{
 				get { return this.angle; }
@@ -173,6 +196,9 @@ namespace Duality.Components
 			}
 		}
 
+		/// <summary>
+		/// "Welds" two Colliders together so they share a common point and relative angle.
+		/// </summary>
 		[Serializable]
 		public sealed class WeldJointInfo : JointInfo
 		{
@@ -180,16 +206,25 @@ namespace Duality.Components
 			private	Vector2	localPointB	= Vector2.Zero;
 			private	float	refAngle	= 0.0f;
 
+			/// <summary>
+			/// [GET / SET] The welding point, locally to the first object.
+			/// </summary>
 			public Vector2 LocalPointA
 			{
 				get { return this.localPointA; }
 				set { this.localPointA = value; this.UpdateJoint(); }
 			}
+			/// <summary>
+			/// [GET / SET] The welding point, locally to the second object.
+			/// </summary>
 			public Vector2 LocalPointB
 			{
 				get { return this.localPointB; }
 				set { this.localPointB = value; this.UpdateJoint(); }
 			}
+			/// <summary>
+			/// [GET / SET] The relative angle both objects need to keep.
+			/// </summary>
 			public float RefAngle
 			{
 				get { return this.refAngle; }

@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Windows.Forms;
 
 using AdamsLair.PropertyGrid;
+using AdamsLair.PropertyGrid.PropertyEditors;
 
 using Duality;
 using Duality.Components;
@@ -17,12 +18,14 @@ namespace EditorBase.PropertyEditors
 {
 	public class ColliderPropertyEditor : ComponentPropertyEditor
 	{
+		private ColliderJointAddNewPropertyEditor	addJointEditor	= null;
 		private	List<ColliderJointPropertyEditor>	jointEditors	= new List<ColliderJointPropertyEditor>();
 		
 		public override void ClearContent()
 		{
 			base.ClearContent();
 			this.jointEditors.Clear();
+			this.addJointEditor = null;
 		}
 
 		protected override void BeforeAutoCreateEditors()
@@ -69,7 +72,7 @@ namespace EditorBase.PropertyEditors
 					elementEditor.EditedType = jointType;
 					this.ParentGrid.ConfigureEditor(elementEditor);
 					this.jointEditors.Add(elementEditor);
-					this.AddPropertyEditor(elementEditor);
+					this.AddPropertyEditor(elementEditor, i);
 				}
 				elementEditor.PropertyName = string.Format("Joints[{0}]", i);
 				elementEditor.Getter = this.CreateJointValueGetter(i);
@@ -80,6 +83,16 @@ namespace EditorBase.PropertyEditors
 			{
 				this.RemovePropertyEditor(this.jointEditors[i]);
 				this.jointEditors.RemoveAt(i);
+			}
+
+			// Add "Add joint" editor
+			if (this.addJointEditor == null)
+			{
+				this.addJointEditor = new ColliderJointAddNewPropertyEditor();
+				this.addJointEditor.Getter = this.CreateAddNewJointValueGetter();
+				this.addJointEditor.Setter = v => {};
+				this.ParentGrid.ConfigureEditor(this.addJointEditor);
+				this.AddPropertyEditor(this.addJointEditor);
 			}
 		}
 
@@ -103,6 +116,15 @@ namespace EditorBase.PropertyEditors
 					}
 					this.PerformGetValue();
 				}
+			};
+		}
+		
+		protected Func<IEnumerable<object>> CreateAddNewJointValueGetter()
+		{
+			return () => 
+			{
+				this.addJointEditor.TargetColliders = this.GetValue().Cast<Collider>().ToArray();
+				return new object[] { this.addJointEditor.DisplayedValue };
 			};
 		}
 	}
@@ -140,6 +162,49 @@ namespace EditorBase.PropertyEditors
 				.Distinct().NotNull().ToArray();
 			foreach (var c in colliders) c.AwakeBody();
 			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(colliders), ReflectionInfo.Property_Collider_Joints);
+		}
+	}
+
+	public class ColliderJointAddNewPropertyEditor : ObjectSelectorPropertyEditor
+	{
+		private Collider[]	targetArray	= null;
+
+		public Collider[] TargetColliders
+		{
+			get { return this.targetArray; }
+			set { this.targetArray = value; }
+		}
+
+		public ColliderJointAddNewPropertyEditor()
+		{
+			this.EditedType = typeof(Type);
+			this.ButtonIcon = AdamsLair.PropertyGrid.EmbeddedResources.Resources.ImageAdd;
+			this.Hints = HintFlags.Default | HintFlags.HasButton | HintFlags.ButtonEnabled;
+			this.PropertyName = PluginRes.EditorBaseRes.PropertyName_AddJoint;
+			this.PropertyDesc = PluginRes.EditorBaseRes.PropertyDesc_AddJoint;
+
+			this.Items = DualityApp.GetAvailDualityTypes(typeof(Collider.JointInfo)).Where(t => !t.IsAbstract).Select(t => new ObjectItem(t, t.Name));
+		}
+		protected override void OnReadOnlyChanged()
+		{
+			base.OnReadOnlyChanged();
+			if (this.ReadOnly)
+				this.Hints &= ~HintFlags.ButtonEnabled;
+			else
+				this.Hints |= HintFlags.ButtonEnabled;
+		}
+		protected override void OnButtonPressed()
+		{
+			base.OnButtonPressed();
+			Type jointType = this.DisplayedValue as Type;
+			if (jointType == null) return;
+
+			foreach (Collider c in this.targetArray)
+			{
+				Collider.JointInfo joint = (jointType.CreateInstanceOf() ?? jointType.CreateInstanceOf(true)) as Collider.JointInfo;
+				c.AddJoint(joint);
+			}
+			this.ParentEditor.PerformGetValue();
 		}
 	}
 }

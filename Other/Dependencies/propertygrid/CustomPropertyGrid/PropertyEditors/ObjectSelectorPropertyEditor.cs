@@ -17,7 +17,7 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 
 		public override object DisplayedValue
 		{
-			get { return Convert.ChangeType(this.val, this.EditedType); }
+			get { return this.val; }
 		}
 		public IEnumerable<ObjectItem> Items
 		{
@@ -28,9 +28,9 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 		{
 			get { return this.objSelector.IsDropDownOpened; }
 		}
-		public object DropDownHoveredObject
+		public ObjectItem DropDownHoveredObject
 		{
-			get { return this.objSelector.DropDownHoveredObject; }
+			get { return this.objSelector.DropDownHoveredObject as ObjectItem; }
 		}
 		
 
@@ -62,7 +62,7 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 				this.val = null;
 			else
 			{
-				this.val = values.Where(o => o != null).First();
+				this.val = values.Where(o => o != null).FirstOrDefault();
 				this.valMultiple = values.Any(o => o == null) || !values.All(o => object.Equals(o, this.val));
 			}
 

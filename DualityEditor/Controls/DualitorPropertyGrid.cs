@@ -101,10 +101,19 @@ namespace DualityEditor.Controls
 			IPopupControlHost dropdownEdit = this.FocusEditor as IPopupControlHost;
 			if (dropdownEdit != null && dropdownEdit.IsDropDownOpened)
 			{
-				// Special case: Its a known basic dropdown.
 				EnumPropertyEditor enumEdit = dropdownEdit as EnumPropertyEditor;
 				FlaggedEnumPropertyEditor enumFlagEdit = dropdownEdit as FlaggedEnumPropertyEditor;
-				if (enumEdit != null)
+				ObjectSelectorPropertyEditor objectSelectorEdit = dropdownEdit as ObjectSelectorPropertyEditor;
+
+				// Its able to provide help. Redirect.
+				if (dropdownEdit is IHelpProvider)
+				{
+					captured = true;
+					Point dropdownEditorPos = this.GetEditorLocation(dropdownEdit as PropertyEditor, true);
+					return (dropdownEdit as IHelpProvider).ProvideHoverHelp(new Point(localPos.X - dropdownEditorPos.X, localPos.Y - dropdownEditorPos.Y), ref captured);
+				}
+				// Special case: Its a known basic dropdown.
+				else if (enumEdit != null)
 				{
 					captured = true;
 					if (enumEdit.DropDownHoveredName != null)
@@ -126,12 +135,13 @@ namespace DualityEditor.Controls
 						if (field != null) return HelpInfo.FromMember(field);
 					}
 				}
-				// Its able to provide help. Redirect.
-				else if (dropdownEdit is IHelpProvider)
+				else if (objectSelectorEdit != null)
 				{
 					captured = true;
-					Point dropdownEditorPos = this.GetEditorLocation(dropdownEdit as PropertyEditor, true);
-					return (dropdownEdit as IHelpProvider).ProvideHoverHelp(new Point(localPos.X - dropdownEditorPos.X, localPos.Y - dropdownEditorPos.Y), ref captured);
+					if (objectSelectorEdit.DropDownHoveredObject != null)
+						return HelpInfo.FromObject(objectSelectorEdit.DropDownHoveredObject.Value);
+					else
+						return HelpInfo.FromObject(objectSelectorEdit.DisplayedValue);
 				}
 
 				// No help available.
@@ -158,7 +168,9 @@ namespace DualityEditor.Controls
 			// If not, default to member or type information
 			if (pickedEditor != null)
 			{
-				if (pickedEditor.EditedMember != null)
+				if (!string.IsNullOrEmpty(pickedEditor.PropertyDesc))
+					return HelpInfo.FromText(pickedEditor.PropertyName, pickedEditor.PropertyDesc);
+				else if (pickedEditor.EditedMember != null)
 					return HelpInfo.FromMember(pickedEditor.EditedMember);
 				else if (pickedEditor.EditedType != null)
 					return HelpInfo.FromMember(pickedEditor.EditedType);

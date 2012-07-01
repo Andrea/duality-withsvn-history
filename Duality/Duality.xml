@@ -7221,6 +7221,53 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="P:Duality.Components.Collider.JointInfo.CollideConnected">
+            <summary>
+            [GET / SET] Specifies whether the connected Colliders will collide with each other.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.JointInfo.Enabled">
+            <summary>
+            [GET / SET] Whether or not the joint is active.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.JointInfo.BreakPoint">
+            <summary>
+            [GET / SET] Maximum joint error value before the joint break. Breaking does not remove the joint, but disable it.
+            A value of zero or lower is interpreted as unbreakable. Note that some joints might not have breaking point support 
+            and will ignore this value.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Collider.FixedAngleJointInfo">
+            <summary>
+            Constrains the Collider to a fixed angle
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.FixedAngleJointInfo.TargetAngle">
+            <summary>
+            [GET / SET] The Colliders target angle.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Collider.WeldJointInfo">
+            <summary>
+            "Welds" two Colliders together so they share a common point and relative angle.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.WeldJointInfo.LocalPointA">
+            <summary>
+            [GET / SET] The welding point, locally to the first object.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.WeldJointInfo.LocalPointB">
+            <summary>
+            [GET / SET] The welding point, locally to the second object.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.WeldJointInfo.RefAngle">
+            <summary>
+            [GET / SET] The relative angle both objects need to keep.
+            </summary>
+        </member>
         <member name="T:Duality.Resources.Prefab">
             <summary>
             Prefab is short for "prefabricated object" and encapsulates a single <see cref="T:Duality.GameObject"/> that can serve as a template.
