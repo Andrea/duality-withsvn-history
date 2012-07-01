@@ -14,6 +14,17 @@
 
 --> Joints and Joint Editors
 	-->	Create JointInfo classes for all relevant Farseer Joints
+		--> FixedFriction
+		-->	FixedPrismatic
+		-->	FixedRevolute
+		-->	Angle
+		-->	Distance
+		-->	Friction
+		-->	Line
+		-->	Prismatic
+		-->	Pulley
+		-->	Revolute
+		-->	Slider
 	-->	Display dual and single JointInfos in ColliderEditor
 	-->	Make some of them editable there?
 -->	Physics Raycast

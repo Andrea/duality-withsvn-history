@@ -7251,17 +7251,47 @@
             [GET / SET] The Colliders target angle.
             </summary>
         </member>
+        <member name="T:Duality.Components.Collider.FixedDistanceJointInfo">
+            <summary>
+            Constrains the Collider to obtain a fixed distance to a world coordinate
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.FixedDistanceJointInfo.LocalAnchor">
+            <summary>
+            [GET / SET] The Colliders local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.FixedDistanceJointInfo.WorldAnchor">
+            <summary>
+            [GET / SET] The world anchor point to which the Collider will be attached.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.FixedDistanceJointInfo.DampingRatio">
+            <summary>
+            [GET / SET] The damping ratio. Zero means "no damping", one means "critical damping".
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.FixedDistanceJointInfo.Frequency">
+            <summary>
+            [GET / SET] The mass spring damper frequency in hertz.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Collider.FixedDistanceJointInfo.TargetDistance">
+            <summary>
+            [GET / SET] The target distance between local and world anchor
+            </summary>
+        </member>
         <member name="T:Duality.Components.Collider.WeldJointInfo">
             <summary>
             "Welds" two Colliders together so they share a common point and relative angle.
             </summary>
         </member>
-        <member name="P:Duality.Components.Collider.WeldJointInfo.LocalPointA">
+        <member name="P:Duality.Components.Collider.WeldJointInfo.LocalAnchorA">
             <summary>
             [GET / SET] The welding point, locally to the first object.
             </summary>
         </member>
-        <member name="P:Duality.Components.Collider.WeldJointInfo.LocalPointB">
+        <member name="P:Duality.Components.Collider.WeldJointInfo.LocalAnchorB">
             <summary>
             [GET / SET] The welding point, locally to the second object.
             </summary>
