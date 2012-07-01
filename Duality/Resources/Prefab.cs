@@ -343,10 +343,10 @@ namespace Duality.Resources
 					catch (Exception e)
 					{
 						Log.Core.WriteError(
-							"Error applying PrefabLink changes in {0}, property {1}. Exception:\n{2}", 
+							"Error applying PrefabLink changes in {0}, property {1}:\n{2}", 
 							this.obj.FullName,
 							this.changes[i].prop.Name,
-							e.ToString());
+							Log.Exception(e));
 					}
 				}
 			}
@@ -382,6 +382,7 @@ namespace Duality.Resources
 		public void PushChange(object target, PropertyInfo prop, object value)
 		{
 			if (ReflectionHelper.MemberInfoEquals(prop, ReflectionInfo.Property_GameObject_Parent)) return; // Reject changing "Parent" as it would destroy the PrefabLink
+			if (!prop.CanWrite) return;
 			if (this.changes == null) this.changes = new List<VarMod>();
 
 			GameObject targetObj = target as GameObject;
@@ -411,6 +412,7 @@ namespace Duality.Resources
 		/// <param name="prop">The target objects <see cref="System.Reflection.PropertyInfo">Property</see> that has been changed.</param>
 		public void PushChange(object target, PropertyInfo prop)
 		{
+			if (!prop.CanWrite || !prop.CanRead) return;
 			object changeVal = prop.GetValue(target, null);
 			this.PushChange(target, prop, changeVal);
 		}

@@ -16,51 +16,37 @@ using DualityEditor.CorePluginInterface;
 
 namespace EditorBase.PropertyEditors
 {
-	public class IContentRefPropertyEditor : ObjectRefPropertyEditor
+	public class ComponentRefPropertyEditor : ObjectRefPropertyEditor
 	{
-		protected	Type		editedResType		= null;
-		protected	string		contentPath			= null;
-		protected	string		prevImagePath		= null;
+		protected	Type		editedCmpType		= null;
+		protected	Component	component			= null;
+		protected	Component	prevImageObj		= null;
 		
 		public override object DisplayedValue
 		{
-			get 
-			{ 
-				IContentRef ctRef = ReflectionHelper.CreateInstanceOf(this.EditedType) as IContentRef;
-				ctRef.Path = this.contentPath;
-				ctRef.MakeAvailable();
-				return ctRef;
-			}
+			get { return this.component; }
 		}
 		public override string ReferenceName
 		{
-			get 
-			{
-				IContentRef r = this.DisplayedValue as IContentRef;
-				return r.IsExplicitNull ? null : r.FullName;
-			}
+			get { return this.component != null ? this.component.ToString() : null; }
 		}
 		public override bool ReferenceBroken
 		{
-			get
-			{
-				IContentRef r = this.DisplayedValue as IContentRef;
-				return !r.IsExplicitNull && !r.IsAvailable;
-			}
+			get { return this.component != null && this.component.Disposed; }
 		}
 
 
 		public override void ShowReferencedContent()
 		{
-			if (string.IsNullOrEmpty(this.contentPath)) return;
-			ProjectFolderView view = EditorBasePlugin.Instance.RequestProjectView();
-			view.FlashNode(view.NodeFromPath(this.contentPath));
+			if (this.component == null) return;
+			SceneView view = EditorBasePlugin.Instance.RequestSceneView();
+			view.FlashNode(view.FindNode(this.component));
 			System.Media.SystemSounds.Beep.Play();
 		}
 		public override void ResetReference()
 		{
 			if (this.ReadOnly) return;
-			this.contentPath = null;
+			this.component = null;
 			this.PerformSetValue();
 			this.OnValueChanged();
 			this.PerformGetValue();
@@ -69,18 +55,18 @@ namespace EditorBase.PropertyEditors
 		public override void PerformGetValue()
 		{
 			base.PerformGetValue();
-			IContentRef[] values = this.GetValue().Cast<IContentRef>().ToArray();
+			Component[] values = this.GetValue().Cast<Component>().ToArray();
 
 			this.BeginUpdate();
 			if (!values.Any())
 			{
-				this.contentPath = null;
+				this.component = null;
 			}
 			else
 			{
-				IContentRef first = values.NotNull().FirstOrDefault();
-				this.contentPath = first.Path;
-				this.multiple = (values.Any(o => o == null) || values.Any(o => o.Path != first.Path));
+				Component first = values.NotNull().FirstOrDefault();
+				this.component = first;
+				this.multiple = (values.Any(o => o == null) || values.Any(o => o != first));
 
 				this.GeneratePreviewImage();
 			}
@@ -88,17 +74,16 @@ namespace EditorBase.PropertyEditors
 		}
 		protected void GeneratePreviewImage()
 		{
-			if (this.prevImagePath == this.contentPath) return;
-			this.prevImagePath = this.contentPath;
+			if (this.prevImageObj == this.component) return;
+			this.prevImageObj = this.component;
 
 			if (this.prevImage != null) this.prevImage.Dispose();
 			this.prevImage = null;
 			this.Height = 22;
 
-			Resource res = (this.DisplayedValue as IContentRef).Res;
-			if (res != null)
+			if (this.component != null)
 			{
-				this.prevImage = PreviewProvider.GetPreviewImage(res, this.ClientRectangle.Width - 4 - 22, 64 - 4, PreviewSizeMode.FixedHeight);
+				this.prevImage = PreviewProvider.GetPreviewImage(this.component, this.ClientRectangle.Width - 4 - 22, 64 - 4, PreviewSizeMode.FixedHeight);
 				if (this.prevImage != null)
 				{
 					this.Height = 64;
@@ -110,18 +95,18 @@ namespace EditorBase.PropertyEditors
 		
 		protected override void SerializeToData(DataObject data)
 		{
-			data.SetContentRefs(new[] { this.DisplayedValue as IContentRef });
+			data.SetComponentRefs(new[] { this.component });
 		}
 		protected override void DeserializeFromData(DataObject data)
 		{
 			ConvertOperation convert = new ConvertOperation(data, ConvertOperation.Operation.All);
-			if (convert.CanPerform(this.editedResType))
+			if (convert.CanPerform(this.editedCmpType))
 			{
-				var refQuery = convert.Perform(this.editedResType);
+				var refQuery = convert.Perform(this.editedCmpType);
 				if (refQuery != null)
 				{
-					IContentRef[] refArray = refQuery.Cast<IContentRef>().ToArray();
-					this.contentPath = (refArray != null && refArray.Length > 0) ? refArray[0].Path : null;
+					Component[] refArray = refQuery.Cast<Component>().ToArray();
+					this.component = (refArray != null && refArray.Length > 0) ? refArray[0] : null;
 					this.PerformSetValue();
 					this.OnValueChanged();
 					this.PerformGetValue();
@@ -131,16 +116,16 @@ namespace EditorBase.PropertyEditors
 		}
 		protected override bool CanDeserializeFromData(DataObject data)
 		{
-			return new ConvertOperation(data, ConvertOperation.Operation.All).CanPerform(this.editedResType);
+			return new ConvertOperation(data, ConvertOperation.Operation.All).CanPerform(this.editedCmpType);
 		}
 
 		protected override void OnEditedTypeChanged()
 		{
 			base.OnEditedTypeChanged();
-			if (this.EditedType.IsGenericType)
-				this.editedResType = this.EditedType.GetGenericArguments()[0];
+			if (typeof(Component).IsAssignableFrom(this.EditedType))
+				this.editedCmpType = this.EditedType;
 			else
-				this.editedResType = typeof(Resource);
+				this.editedCmpType = typeof(Component);
 		}
 	}
 }

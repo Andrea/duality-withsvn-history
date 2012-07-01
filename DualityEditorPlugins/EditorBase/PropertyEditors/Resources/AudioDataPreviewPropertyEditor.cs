@@ -49,7 +49,7 @@ namespace EditorBase.PropertyEditors
 
 			if (this.value != null)
 			{
-				this.prevImage = this.value.GetPreviewImage(this.ClientRectangle.Width - 2, this.ClientRectangle.Height - 2, PreviewSizeMode.FixedHeight);
+				this.prevImage = PreviewProvider.GetPreviewImage(this.value, this.ClientRectangle.Width - 2, this.ClientRectangle.Height - 2, PreviewSizeMode.FixedHeight);
 				if (this.prevImage != null)
 				{
 					var avgColor = this.prevImage.GetAverageColor();

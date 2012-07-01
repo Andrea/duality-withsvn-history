@@ -72,7 +72,7 @@ namespace EditorBase.PropertyEditors
 			if (this.value != null)
 			{
 				int prevHeight = Math.Min(BigHeight - 2, this.value.PxHeight);
-				this.prevImage = this.value.GetPreviewImage(this.ClientRectangle.Width - 2, prevHeight, PreviewSizeMode.FixedHeight);
+				this.prevImage = PreviewProvider.GetPreviewImage(this.value, this.ClientRectangle.Width - 2, prevHeight, PreviewSizeMode.FixedHeight);
 				if (this.prevImage != null)
 				{
 					var avgColor = this.prevImage.GetAverageColor();

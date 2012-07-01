@@ -86,13 +86,11 @@ namespace Duality.Components
 			{
 				if (this.joint == null)
 				{
-					if (this.colA != null && this.colA.body != null && (this.colB == null || this.colB.body != null))
-					{
-						this.joint = this.CreateJoint(this.colA.body, this.colB != null ? this.colB.body : null);
-						this.joint.UserData = this;
-						this.joint.Broke += this.joint_Broke;
-					}
-					else return;
+					this.joint = this.CreateJoint(this.colA != null ? this.colA.body : null, this.colB != null ? this.colB.body : null);
+					if (this.joint == null) return; // Failed to create the joint? Return.
+
+					this.joint.UserData = this;
+					this.joint.Broke += this.joint_Broke;
 				}
 
 				this.joint.CollideConnected = this.collide;
@@ -177,7 +175,7 @@ namespace Duality.Components
 
 			protected override Joint CreateJoint(Body bodyA, Body bodyB)
 			{
-				return JointFactory.CreateFixedAngleJoint(Scene.PhysicsWorld, bodyA);
+				return bodyA != null ? JointFactory.CreateFixedAngleJoint(Scene.PhysicsWorld, bodyA) : null;
 			}
 			internal override void UpdateJoint()
 			{
@@ -233,7 +231,7 @@ namespace Duality.Components
 
 			protected override Joint CreateJoint(Body bodyA, Body bodyB)
 			{
-				return JointFactory.CreateWeldJoint(Scene.PhysicsWorld, bodyA, bodyB, Vector2.Zero);
+				return bodyA != null && bodyB != null ? JointFactory.CreateWeldJoint(Scene.PhysicsWorld, bodyA, bodyB, Vector2.Zero) : null;
 			}
 			internal override void UpdateJoint()
 			{

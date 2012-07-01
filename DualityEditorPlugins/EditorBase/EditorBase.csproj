@@ -94,6 +94,8 @@
     <Compile Include="PropertyEditors\GameObjectOverviewPropertyEditor.cs" />
     <Compile Include="PropertyEditors\GameObjectPropertyEditor.cs" />
     <Compile Include="PropertyEditors\IContentRefPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\ComponentRefPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\ObjectRefPropertyEditor.cs" />
     <Compile Include="PropertyEditors\ResourcePropertyEditor.cs" />
     <Compile Include="PropertyEditors\Resources\FontPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Resources\AudioDataPreviewPropertyEditor.cs" />

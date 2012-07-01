@@ -197,25 +197,21 @@ namespace Duality.Components
 		}
 		/// <summary>
 		/// [GET / SET] Enumerates all <see cref="ShapeInfo">primitive shapes</see> which this body consists of.
-		/// If you modify any of the returned ShapeInfos, be sure to call <see cref="UpdateBody"/> afterwards.
 		/// </summary>
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public IEnumerable<ShapeInfo> Shapes
 		{
 			get { return this.shapes; }
-			set
-			{
-				this.SetShapes(value);
-			}
+			set { this.SetShapes(value); }
 		}
 		/// <summary>
-		/// [GET] Enumerates all <see cref="JointInfo">joints</see> that are connected to this Collider.
-		/// If you modify any of the returned ShapeInfos, be sure to call <see cref="UpdateBody"/> afterwards.
+		/// [GET / SET] Enumerates all <see cref="JointInfo">joints</see> that are connected to this Collider.
 		/// </summary>
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public IEnumerable<JointInfo> Joints
 		{
 		    get { return this.joints; }
+			set { this.SetJoints(value); }
 		}
 		/// <summary>
 		/// [GET] The physical bodys bounding radius.
@@ -376,7 +372,7 @@ namespace Duality.Components
 			if (joint == null) throw new ArgumentNullException("joint");
 			if (this.joints != null && this.joints.Contains(joint)) return;
 			
-			if (joint.ColliderA != null || joint.ColliderB != null)
+			if (joint.ColliderA != null && joint.ColliderA != this)
 				joint.ColliderA.RemoveJoint(joint);
 			
 			joint.ColliderA = this;
@@ -676,6 +672,11 @@ namespace Duality.Components
 			this.body.Collision -= this.body_OnCollision;
 			this.body.Separation -= this.body_OnSeparation;
 			this.body.PostSolve -= this.body_PostSolve;
+			
+			if (this.shapes != null)
+			{
+				foreach (ShapeInfo info in this.shapes) info.DestroyFixture(this.body);
+			}
 
 			this.body.Dispose();
 			this.body = null;
@@ -720,11 +721,13 @@ namespace Duality.Components
 
 		private void CleanupJoints()
 		{
+			if (this.joints == null) return;
 			this.RemoveDisposedJoints();
 			foreach (JointInfo j in this.joints) j.DestroyJoint();
 		}
 		private void RemoveDisposedJoints()
 		{
+			if (this.joints == null) return;
 			for (int i = this.joints.Count - 1; i >= 0; i--)
 			{
 				JointInfo joint = this.joints[i];
@@ -869,6 +872,10 @@ namespace Duality.Components
 			bool wasInitialized = c.initialized;
 			if (wasInitialized) c.Shutdown();
 
+			// Reset shape and joint data before applying new
+			c.shapes = null;
+			c.joints = null;
+
 			c.bodyType = this.bodyType;
 			c.linearDamp = this.linearDamp;
 			c.angularDamp = this.angularDamp;
@@ -877,23 +884,14 @@ namespace Duality.Components
 			c.continous = this.continous;
 			c.colCat = this.colCat;
 
-			// Discard old shape list and set new.
-			if (this.shapes != null)
-				c.SetShapes(this.shapes);
-			else
-				c.ClearShapes();
-			
-			// Discard old joint list and set new.
-			if (this.joints != null)
-				c.SetJoints(this.joints.Select(j => 
+			if (this.shapes != null) c.SetShapes(this.shapes);
+			if (this.joints != null) c.SetJoints(this.joints.Select(j => 
 				{
 					// Replace collider references with the targets references
 					j.ColliderA = provider.GetRegisteredObjectClone(j.ColliderA);
 					j.ColliderB = provider.GetRegisteredObjectClone(j.ColliderB);
 					return j;
 				}));
-			else
-				c.ClearJoints();
 
 			if (wasInitialized) c.Initialize();
 		}

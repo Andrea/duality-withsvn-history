@@ -216,64 +216,26 @@ namespace EditorBase.CamViewStates
 			base.PostPerformAction(selObjEnum, action);
 			if (action == MouseAction.MoveObj)
 			{
-				if (EditorBasePlugin.Instance.EditorForm.CurrentSandboxState == MainForm.SandboxState.Playing)
-				{
-					EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
-						this,
-						new ObjectSelection(selObjEnum.Select(s => (s.ActualObject as GameObject).Transform)),
-						ReflectionInfo.Property_Transform_RelativePos);
-				}
-				else
-				{
-					EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
-						this,
-						new ObjectSelection(selObjEnum.Select(s => (s.ActualObject as GameObject).Transform)),
-						ReflectionInfo.Property_Transform_RelativePos,
-						ReflectionInfo.Property_Transform_RelativeVel,
-						ReflectionInfo.Property_Transform_RelativeAngleVel);
-				}
+				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
+					this,
+					new ObjectSelection(selObjEnum.Select(s => (s.ActualObject as GameObject).Transform)),
+					ReflectionInfo.Property_Transform_RelativePos);
 			}
 			else if (action == MouseAction.RotateObj)
 			{
-				if (EditorBasePlugin.Instance.EditorForm.CurrentSandboxState == MainForm.SandboxState.Playing)
-				{
-					EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
-						this,
-						new ObjectSelection(selObjEnum.Select(s => (s.ActualObject as GameObject).Transform)),
-						ReflectionInfo.Property_Transform_RelativePos,
-						ReflectionInfo.Property_Transform_RelativeAngle);
-				}
-				else
-				{
-					EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
-						this,
-						new ObjectSelection(selObjEnum.Select(s => (s.ActualObject as GameObject).Transform)),
-						ReflectionInfo.Property_Transform_RelativePos,
-						ReflectionInfo.Property_Transform_RelativeAngle,
-						ReflectionInfo.Property_Transform_RelativeVel,
-						ReflectionInfo.Property_Transform_RelativeAngleVel);
-				}
+				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
+					this,
+					new ObjectSelection(selObjEnum.Select(s => (s.ActualObject as GameObject).Transform)),
+					ReflectionInfo.Property_Transform_RelativePos,
+					ReflectionInfo.Property_Transform_RelativeAngle);
 			}
 			else if (action == MouseAction.ScaleObj)
 			{
-				if (EditorBasePlugin.Instance.EditorForm.CurrentSandboxState == MainForm.SandboxState.Playing)
-				{
-					EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
-						this,
-						new ObjectSelection(selObjEnum.Select(s => (s.ActualObject as GameObject).Transform)),
-						ReflectionInfo.Property_Transform_RelativePos,
-						ReflectionInfo.Property_Transform_RelativeScale);
-				}
-				else
-				{
-					EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
-						this,
-						new ObjectSelection(selObjEnum.Select(s => (s.ActualObject as GameObject).Transform)),
-						ReflectionInfo.Property_Transform_RelativePos,
-						ReflectionInfo.Property_Transform_RelativeScale,
-						ReflectionInfo.Property_Transform_RelativeVel,
-						ReflectionInfo.Property_Transform_RelativeAngleVel);
-				}
+				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
+					this,
+					new ObjectSelection(selObjEnum.Select(s => (s.ActualObject as GameObject).Transform)),
+					ReflectionInfo.Property_Transform_RelativePos,
+					ReflectionInfo.Property_Transform_RelativeScale);
 			}
 		}
 

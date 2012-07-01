@@ -956,14 +956,15 @@ namespace EditorBase
 							string desiredName = res.SourcePath != null ? Path.GetFileNameWithoutExtension(res.SourcePath) : res.Name;
 							if (string.IsNullOrEmpty(desiredName)) desiredName = res.GetType().Name;
 
+							bool pointsToFile = !res.IsDefaultContent && !res.IsRuntimeResource;
 							string basePath = this.GetInsertActionTargetBasePath(targetDirNode);
 							string nameExt = Resource.GetFileExtByType(res.GetType());
 							string resPath = Path.Combine(basePath, desiredName) + nameExt;
-							if (string.IsNullOrEmpty(res.Path) || Path.GetFullPath(resPath) != Path.GetFullPath(res.Path))
+							if (!pointsToFile || Path.GetFullPath(resPath) != Path.GetFullPath(res.Path))
 								resPath = PathHelper.GetFreePath(Path.Combine(basePath, desiredName), nameExt);
 							resPath = PathHelper.MakeFilePathRelative(resPath, ".");
 
-							if (!string.IsNullOrEmpty(res.Path) && File.Exists(res.Path))
+							if (pointsToFile && File.Exists(res.Path))
 								File.Move(res.Path, resPath);
 							else
 								res.Save(resPath);

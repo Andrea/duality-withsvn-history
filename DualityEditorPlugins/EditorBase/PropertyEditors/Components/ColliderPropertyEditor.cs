@@ -45,11 +45,24 @@ namespace EditorBase.PropertyEditors
 			foreach (Collider c in targets.OfType<Collider>())
 				c.AwakeBody();
 		}
+		protected override bool IsChildValueModified(PropertyEditor childEditor)
+		{
+			if (this.jointEditors.Contains(childEditor))
+			{
+				Component[] values = this.GetValue().Cast<Component>().NotNull().ToArray();
+				return values.Any(c => 
+				{
+					Duality.Resources.PrefabLink l = c.GameObj.AffectedByPrefabLink;
+					return l != null && l.HasChange(c, ReflectionInfo.Property_Collider_Joints);
+				});
+			}
+			else return base.IsChildValueModified(childEditor);
+		}
 
 		protected void UpdateJointEditors(IEnumerable<Collider> values)
 		{
 			values = values.NotNull();
-			int visibleElementCount = values.Min(o => o.Joints.Count());
+			int visibleElementCount = values.Min(o => o.Joints == null ? 0 : o.Joints.Count());
 
 			// Add missing editors
 			for (int i = 0; i < visibleElementCount; i++)

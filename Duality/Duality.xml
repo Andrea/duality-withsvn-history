@@ -7102,13 +7102,11 @@
         <member name="P:Duality.Components.Collider.Shapes">
             <summary>
             [GET / SET] Enumerates all <see cref="T:Duality.Components.Collider.ShapeInfo">primitive shapes</see> which this body consists of.
-            If you modify any of the returned ShapeInfos, be sure to call <see cref="M:Duality.Components.Collider.UpdateBody"/> afterwards.
             </summary>
         </member>
         <member name="P:Duality.Components.Collider.Joints">
             <summary>
-            [GET] Enumerates all <see cref="T:Duality.Components.Collider.JointInfo">joints</see> that are connected to this Collider.
-            If you modify any of the returned ShapeInfos, be sure to call <see cref="M:Duality.Components.Collider.UpdateBody"/> afterwards.
+            [GET / SET] Enumerates all <see cref="T:Duality.Components.Collider.JointInfo">joints</see> that are connected to this Collider.
             </summary>
         </member>
         <member name="P:Duality.Components.Collider.BoundRadius">
@@ -12333,6 +12331,12 @@
             to the specified Type.
             </returns>
         </member>
+        <member name="M:Duality.IContentRef.MakeAvailable">
+            <summary>
+            Loads the associated content as if it was accessed now.
+            You don't usually need to call this method. It is invoked implicitly by trying to access the ContentRef.
+            </summary>
+        </member>
         <member name="P:Duality.IContentRef.Res">
             <summary>
             [GET] Returns the actual <see cref="T:Duality.Resource"/>. If currently unavailable, it is loaded and then returned.
@@ -12436,7 +12440,7 @@
         <member name="M:Duality.ContentRef`1.MakeAvailable">
             <summary>
             Loads the associated content as if it was accessed now.
-            You don't usually need to call this method. It is invoked implicitly by trying to access the ContentRef/>
+            You don't usually need to call this method. It is invoked implicitly by trying to access the ContentRef
             </summary>
         </member>
         <member name="M:Duality.ContentRef`1.op_Equality(Duality.ContentRef{`0},Duality.ContentRef{`0})">

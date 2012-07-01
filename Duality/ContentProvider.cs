@@ -83,6 +83,12 @@ namespace Duality
 		/// to the specified Type.
 		/// </returns>
 		ContentRef<U> As<U>() where U : Resource;
+		
+		/// <summary>
+		/// Loads the associated content as if it was accessed now.
+		/// You don't usually need to call this method. It is invoked implicitly by trying to access the ContentRef.
+		/// </summary>
+		void MakeAvailable();
 	}
 	
 	/// <summary>
@@ -316,7 +322,7 @@ namespace Duality
 
 		/// <summary>
 		/// Loads the associated content as if it was accessed now.
-		/// You don't usually need to call this method. It is invoked implicitly by trying to access the ContentRef/>
+		/// You don't usually need to call this method. It is invoked implicitly by trying to access the ContentRef
 		/// </summary>
 		public void MakeAvailable()
 		{

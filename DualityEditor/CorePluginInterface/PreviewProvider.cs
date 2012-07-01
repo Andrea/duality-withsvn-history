@@ -16,10 +16,6 @@ namespace DualityEditor.CorePluginInterface
 
 	public static class PreviewProvider
 	{
-		public static Bitmap GetPreviewImage(this Resource res, int desiredWidth, int desiredHeight, PreviewSizeMode mode = PreviewSizeMode.FixedNone)
-		{
-			return GetPreviewImage((object)res, desiredWidth, desiredHeight, mode);
-		}
 		public static Bitmap GetPreviewImage(object obj, int desiredWidth, int desiredHeight, PreviewSizeMode mode = PreviewSizeMode.FixedNone)
 		{
 			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Terminated) return null;

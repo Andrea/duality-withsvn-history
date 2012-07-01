@@ -197,7 +197,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			Point dropDownLoc = parentGrid.GetEditorLocation(this.Parent, true);
 			//dropDownLoc = parentGrid.PointToScreen(dropDownLoc);
 			dropDownLoc.Y += this.rect.Height + 1;
-			dropDownLoc.X += this.Parent.Width - this.rect.Width;
+			dropDownLoc.X += this.rect.X;
 			
 			this.dropdown.Location = dropDownLoc;
 			this.dropdown.Size = dropDownSize;
