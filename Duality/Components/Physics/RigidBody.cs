@@ -10,17 +10,17 @@ using FarseerPhysics.Dynamics.Contacts;
 using Duality.EditorHints;
 using Duality.Resources;
 
-namespace Duality.Components
+namespace Duality.Components.Physics
 {
 	/// <summary>
 	/// Represents a body instance for physical simulation, collision detection and response.
 	/// </summary>
 	[Serializable]
 	[RequiredComponent(typeof(Transform))]
-	public partial class Collider : Component, ICmpInitializable, ICmpUpdatable
+	public partial class RigidBody : Component, ICmpInitializable, ICmpUpdatable
 	{
 		/// <summary>
-		/// The type of a <see cref="Collider">Colliders</see> physical body.
+		/// The type of a <see cref="RigidBody">Colliders</see> physical body.
 		/// </summary>
 		public enum BodyType
 		{
@@ -72,6 +72,10 @@ namespace Duality.Components
 		[NonSerialized]	private	Body			body		= null;
 		[NonSerialized]	private	List<ColEvent>	eventBuffer	= new List<ColEvent>();
 
+		internal Body PhysicsBody
+		{
+			get { return this.body; }
+		}
 		/// <summary>
 		/// [GET / SET] The type of the physical body.
 		/// </summary>
@@ -232,7 +236,7 @@ namespace Duality.Components
 			}
 		}
 
-		public Collider()
+		public RigidBody()
 		{
 			// Default shape
 			this.AddShape(new CircleShapeInfo(128.0f, Vector2.Zero, 1.0f));
@@ -369,7 +373,7 @@ namespace Duality.Components
 		/// Adds a new joint to the Collider
 		/// </summary>
 		/// <param name="joint"></param>
-		public void AddJoint(JointInfo joint, Collider other = null)
+		public void AddJoint(JointInfo joint, RigidBody other = null)
 		{
 			if (joint == null) throw new ArgumentNullException("joint");
 			
@@ -411,7 +415,7 @@ namespace Duality.Components
 			if (joints == null) throw new ArgumentNullException("joints");
 
 			// Clone joint collection
-			Collider[] colliderB = new Collider[joints.Count()];
+			RigidBody[] colliderB = new RigidBody[joints.Count()];
 			JointInfo[] jointClones = new JointInfo[colliderB.Length];
 			int k = 0;
 			foreach (JointInfo joint in joints)
@@ -821,8 +825,8 @@ namespace Duality.Components
 				if (e.FixtureA.Body == null) continue;
 				if (e.FixtureB.Body == null) continue;
 
-				ColliderCollisionEventArgs args = new ColliderCollisionEventArgs(
-					(e.FixtureB.Body.UserData as Collider).GameObj,
+				RigidBodyCollisionEventArgs args = new RigidBodyCollisionEventArgs(
+					(e.FixtureB.Body.UserData as RigidBody).GameObj,
 					e.Data,
 					e.FixtureA.UserData as ShapeInfo,
 					e.FixtureB.UserData as ShapeInfo);
@@ -874,7 +878,7 @@ namespace Duality.Components
 		internal override void CopyToInternal(Component target, Duality.Cloning.CloneProvider provider)
 		{
 			base.CopyToInternal(target, provider);
-			Collider c = target as Collider;
+			RigidBody c = target as RigidBody;
 
 			bool wasInitialized = c.initialized;
 			if (wasInitialized) c.Shutdown();
@@ -941,30 +945,30 @@ namespace Duality.Components
 		{
 			List<ShapeInfo> picked = new List<ShapeInfo>();
 
-			Collider[] colliderArray = Scene.Current.ActiveObjects.GetComponents<Collider>().ToArray();
-			foreach (Collider c in colliderArray)
+			RigidBody[] colliderArray = Scene.Current.ActiveObjects.GetComponents<RigidBody>().ToArray();
+			foreach (RigidBody c in colliderArray)
 				picked.AddRange(c.PickShapes(worldCoord, size));
 
 			return picked;
 		}
 	}
 
-	public class ColliderCollisionEventArgs : CollisionEventArgs
+	public class RigidBodyCollisionEventArgs : CollisionEventArgs
 	{
-		private	Collider.ShapeInfo	colShapeA;
-		private	Collider.ShapeInfo	colShapeB;
+		private	ShapeInfo	colShapeA;
+		private	ShapeInfo	colShapeB;
 
-		public Collider.ShapeInfo MyShape
+		public ShapeInfo MyShape
 		{
 			get { return this.colShapeA; }
 		}
-		public Collider.ShapeInfo OtherShape
+		public ShapeInfo OtherShape
 		{
 			get { return this.colShapeB; }
 		}
 
 
-		public ColliderCollisionEventArgs(GameObject obj, CollisionData data, Collider.ShapeInfo shapeA, Collider.ShapeInfo shapeB) : base(obj, data)
+		public RigidBodyCollisionEventArgs(GameObject obj, CollisionData data, ShapeInfo shapeA, ShapeInfo shapeB) : base(obj, data)
 		{
 			this.colShapeA = shapeA;
 			this.colShapeB = shapeB;

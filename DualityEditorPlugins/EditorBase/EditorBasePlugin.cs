@@ -8,6 +8,7 @@ using WeifenLuo.WinFormsUI.Docking;
 using Duality;
 using Duality.Components;
 using Duality.Components.Renderers;
+using Duality.Components.Physics;
 using Duality.Resources;
 using TextRenderer = Duality.Components.Renderers.TextRenderer;
 
@@ -159,7 +160,7 @@ namespace EditorBase
 			CorePluginHelper.RegisterTypeImage(typeof(Camera), EditorBaseRes.IconCmpCamera, CorePluginHelper.ImageContext_Icon);
 			CorePluginHelper.RegisterTypeImage(typeof(SoundEmitter), EditorBaseRes.IconResSound, CorePluginHelper.ImageContext_Icon);
 			CorePluginHelper.RegisterTypeImage(typeof(SoundListener), EditorBaseRes.IconCmpSoundListener, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(Collider), EditorBaseRes.IconCmpRectCollider, CorePluginHelper.ImageContext_Icon);
+			CorePluginHelper.RegisterTypeImage(typeof(RigidBody), EditorBaseRes.IconCmpRectCollider, CorePluginHelper.ImageContext_Icon);
 
 			CorePluginHelper.RegisterTypeCategory(typeof(Transform), "", CorePluginHelper.CategoryContext_General);
 			CorePluginHelper.RegisterTypeCategory(typeof(SpriteRenderer), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
@@ -168,7 +169,7 @@ namespace EditorBase
 			CorePluginHelper.RegisterTypeCategory(typeof(Camera), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
 			CorePluginHelper.RegisterTypeCategory(typeof(SoundEmitter), GeneralRes.Category_Sound, CorePluginHelper.CategoryContext_General);
 			CorePluginHelper.RegisterTypeCategory(typeof(SoundListener), GeneralRes.Category_Sound, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(Collider), GeneralRes.Category_Physics, CorePluginHelper.CategoryContext_General);
+			CorePluginHelper.RegisterTypeCategory(typeof(RigidBody), GeneralRes.Category_Physics, CorePluginHelper.CategoryContext_General);
 
 			CorePluginHelper.RegisterTypeCategory(typeof(Scene), "", CorePluginHelper.CategoryContext_General);
 			CorePluginHelper.RegisterTypeCategory(typeof(Prefab), "", CorePluginHelper.CategoryContext_General);

@@ -3,6 +3,7 @@ using System.Reflection;
 using Duality.Resources;
 using Duality.Components;
 using Duality.Components.Renderers;
+using Duality.Components.Physics;
 
 namespace Duality
 {
@@ -68,16 +69,16 @@ namespace Duality
 		public static readonly PropertyInfo	Property_SoundEmitter_Source_Volume;
 		public static readonly PropertyInfo	Property_SoundEmitter_Source_Pitch;
 		
-		public static readonly PropertyInfo	Property_Collider_LinearDamping;
-		public static readonly PropertyInfo	Property_Collider_AngularDamping;
-		public static readonly PropertyInfo	Property_Collider_Shapes;
-		public static readonly PropertyInfo	Property_Collider_Joints;
-		public static readonly PropertyInfo	Property_Collider_BoundRadius;
+		public static readonly PropertyInfo	Property_RigidBody_LinearDamping;
+		public static readonly PropertyInfo	Property_RigidBody_AngularDamping;
+		public static readonly PropertyInfo	Property_RigidBody_Shapes;
+		public static readonly PropertyInfo	Property_RigidBody_Joints;
+		public static readonly PropertyInfo	Property_RigidBody_BoundRadius;
 
-		public static readonly PropertyInfo	Property_Collider_ShapeInfo_Parent;
-		public static readonly PropertyInfo	Property_Collider_ShapeInfo_Friction;
-		public static readonly PropertyInfo	Property_Collider_ShapeInfo_Restitution;
-		public static readonly PropertyInfo	Property_Collider_ShapeInfo_Density;
+		public static readonly PropertyInfo	Property_ShapeInfo_Parent;
+		public static readonly PropertyInfo	Property_ShapeInfo_Friction;
+		public static readonly PropertyInfo	Property_ShapeInfo_Restitution;
+		public static readonly PropertyInfo	Property_ShapeInfo_Density;
 
 		public static readonly PropertyInfo	Property_Resource_Disposed;
 		public static readonly PropertyInfo	Property_Resource_Path;
@@ -214,18 +215,18 @@ namespace Duality
 			Property_Camera_RenderPass_Output			= cameraRenderPass.GetProperty("Output");
 			Property_Camera_RenderPass_VisibilityMask	= cameraRenderPass.GetProperty("VisibilityMask");
 
-			Type collider = typeof(Collider);
-			Property_Collider_LinearDamping		= collider.GetProperty("LinearDamping");
-			Property_Collider_AngularDamping	= collider.GetProperty("AngularDamping");
-			Property_Collider_Shapes			= collider.GetProperty("Shapes");
-			Property_Collider_Joints			= collider.GetProperty("Joints");
-			Property_Collider_BoundRadius		= collider.GetProperty("BoundRadius");
+			Type collider = typeof(RigidBody);
+			Property_RigidBody_LinearDamping		= collider.GetProperty("LinearDamping");
+			Property_RigidBody_AngularDamping	= collider.GetProperty("AngularDamping");
+			Property_RigidBody_Shapes			= collider.GetProperty("Shapes");
+			Property_RigidBody_Joints			= collider.GetProperty("Joints");
+			Property_RigidBody_BoundRadius		= collider.GetProperty("BoundRadius");
 
-			Type colliderShapeInfo = typeof(Collider.ShapeInfo);
-			Property_Collider_ShapeInfo_Parent		= colliderShapeInfo.GetProperty("Parent");
-			Property_Collider_ShapeInfo_Friction	= colliderShapeInfo.GetProperty("Friction");
-			Property_Collider_ShapeInfo_Restitution	= colliderShapeInfo.GetProperty("Restitution");
-			Property_Collider_ShapeInfo_Density		= colliderShapeInfo.GetProperty("Density");
+			Type colliderShapeInfo = typeof(ShapeInfo);
+			Property_ShapeInfo_Parent		= colliderShapeInfo.GetProperty("Parent");
+			Property_ShapeInfo_Friction	= colliderShapeInfo.GetProperty("Friction");
+			Property_ShapeInfo_Restitution	= colliderShapeInfo.GetProperty("Restitution");
+			Property_ShapeInfo_Density		= colliderShapeInfo.GetProperty("Density");
 
 			Type resource = typeof(Resource);
 			Property_Resource_Disposed			= resource.GetProperty("Disposed");

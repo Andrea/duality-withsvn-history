@@ -83,9 +83,14 @@
     <Compile Include="Cloning\Surrogates\BitmapSurrogate.cs" />
     <Compile Include="Cloning\Surrogates\DelegateSurrogate.cs" />
     <Compile Include="Cloning\Surrogates\DictionarySurrogate.cs" />
-    <Compile Include="Components\Collider.cs" />
-    <Compile Include="Components\Collider.ShapeInfo.cs" />
-    <Compile Include="Components\Collider.JointInfo.cs" />
+    <Compile Include="Components\Physics\CircleShapeInfo.cs" />
+    <Compile Include="Components\Physics\PolyShapeInfo.cs" />
+    <Compile Include="Components\Physics\RigidBody.cs" />
+    <Compile Include="Components\Physics\ShapeInfo.cs" />
+    <Compile Include="Components\Physics\JointInfo.cs" />
+    <Compile Include="Components\Physics\FixedAngleJointInfo.cs" />
+    <Compile Include="Components\Physics\FixedDistanceJointInfo.cs" />
+    <Compile Include="Components\Physics\WeldJointInfo.cs" />
     <Compile Include="CorePlugin.cs" />
     <Compile Include="Helpers\Alignment.cs" />
     <Compile Include="Graphics\ColorFormat\ColorHsva.cs" />

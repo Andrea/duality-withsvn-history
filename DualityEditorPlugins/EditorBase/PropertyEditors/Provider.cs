@@ -4,6 +4,7 @@ using AdamsLair.PropertyGrid;
 using Duality;
 using Duality.Resources;
 using Duality.Components;
+using Duality.Components.Physics;
 using Duality.Components.Renderers;
 
 namespace EditorBase.PropertyEditors
@@ -27,12 +28,12 @@ namespace EditorBase.PropertyEditors
 			else if (baseType == typeof(TextRenderer))	return PropertyGrid.EditorPriority_Specialized;
 
 			//// -------- Semi-Specialized area --------
-			else if (typeof(Collider).IsAssignableFrom(baseType))			return PropertyGrid.EditorPriority_General + 1;
+			else if (typeof(RigidBody).IsAssignableFrom(baseType))			return PropertyGrid.EditorPriority_General + 1;
 			else if (typeof(Renderer).IsAssignableFrom(baseType))			return PropertyGrid.EditorPriority_General + 1;
 			else if (typeof(DrawTechnique).IsAssignableFrom(baseType))		return PropertyGrid.EditorPriority_General + 1;
 
 			// -------- General area --------
-			else if (typeof(Collider.ShapeInfo).IsAssignableFrom(baseType))	return PropertyGrid.EditorPriority_General;
+			else if (typeof(ShapeInfo).IsAssignableFrom(baseType))	return PropertyGrid.EditorPriority_General;
 #if FALSE // Removed for now. Joints are an experimental feature.
 			else if (typeof(Collider.JointInfo).IsAssignableFrom(baseType))	return PropertyGrid.EditorPriority_General;
 #endif
@@ -70,12 +71,12 @@ namespace EditorBase.PropertyEditors
 			else if (baseType == typeof(TextRenderer) && !compRef)	e = new TextRendererPropertyEditor();
 
 			//// -------- Semi-Specialized area --------
-			else if (typeof(Collider).IsAssignableFrom(baseType) && !compRef)	e = new ColliderPropertyEditor();
+			else if (typeof(RigidBody).IsAssignableFrom(baseType) && !compRef)	e = new ColliderPropertyEditor();
 			else if (typeof(Renderer).IsAssignableFrom(baseType) && !compRef)	e = new RendererPropertyEditor();
 			else if (typeof(DrawTechnique).IsAssignableFrom(baseType))			e = new DrawTechniquePropertyEditor();
 
 			// -------- General area --------
-			else if (typeof(Collider.ShapeInfo).IsAssignableFrom(baseType))	e = new ColliderShapePropertyEditor();
+			else if (typeof(ShapeInfo).IsAssignableFrom(baseType))	e = new ColliderShapePropertyEditor();
 #if FALSE // Removed for now. Joints are an experimental feature.
 			else if (typeof(Collider.JointInfo).IsAssignableFrom(baseType))	e = new ColliderJointPropertyEditor();
 #endif

@@ -27,7 +27,15 @@
 		-->	Slider
 	-->	Display dual and single JointInfos in ColliderEditor
 	-->	Make some of them editable there?
+
 -->	Physics Raycast
+
+--> Reconsider "events" in Duality.
+	-->	Are they really necessary?
+	-->	Do they lead to difficult design on the user-side?
+	-->	Pros
+	-->	Cons
+
 -->	Implement some simple Font effects?
 
 

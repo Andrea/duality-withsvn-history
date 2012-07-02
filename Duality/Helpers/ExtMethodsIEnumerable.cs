@@ -138,14 +138,14 @@ namespace Duality
 			return objEnum.Select(o => o.Renderer).Where(c => c != null && (!activeOnly || (c as Component).Active));
 		}
 		/// <summary>
-		/// Enumerates all <see cref="Duality.GameObject">GameObjects</see> <see cref="Duality.Components.Collider"/> Components.
+		/// Enumerates all <see cref="Duality.GameObject">GameObjects</see> <see cref="Duality.Components.Physics.RigidBody"/> Components.
 		/// </summary>
 		/// <param name="objEnum"></param>
 		/// <param name="activeOnly"></param>
 		/// <returns></returns>
-		public static IEnumerable<Components.Collider> Collider(this IEnumerable<GameObject> objEnum, bool activeOnly = false)
+		public static IEnumerable<Components.Physics.RigidBody> RigidBody(this IEnumerable<GameObject> objEnum, bool activeOnly = false)
 		{
-			return objEnum.Select(o => o.Collider).Where(c => c != null && (!activeOnly || c.Active));
+			return objEnum.Select(o => o.RigidBody).Where(c => c != null && (!activeOnly || c.Active));
 		}
 
 		/// <summary>

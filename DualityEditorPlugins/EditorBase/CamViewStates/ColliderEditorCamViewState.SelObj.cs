@@ -3,6 +3,7 @@ using System.Linq;
 
 using Duality;
 using Duality.Components;
+using Duality.Components.Physics;
 
 using OpenTK;
 
@@ -12,7 +13,7 @@ namespace EditorBase.CamViewStates
 	{
 		public class SelCollider : SelObj
 		{
-			private	Collider	collider;
+			private	RigidBody	collider;
 
 			public override object ActualObject
 			{
@@ -51,7 +52,7 @@ namespace EditorBase.CamViewStates
 				get { return false; }
 			}
 
-			public SelCollider(Collider obj)
+			public SelCollider(RigidBody obj)
 			{
 				this.collider = obj;
 			}
@@ -64,7 +65,7 @@ namespace EditorBase.CamViewStates
 
 		public abstract class SelShape : SelObj
 		{
-			private		Collider.ShapeInfo	shape;
+			private		ShapeInfo	shape;
 			
 			public override bool HasTransform
 			{
@@ -74,12 +75,12 @@ namespace EditorBase.CamViewStates
 			{
 				get { return this.shape; }
 			}
-			public Collider Collider
+			public RigidBody Collider
 			{
 				get { return this.shape.Parent; }
 			}
 
-			protected SelShape(Collider.ShapeInfo shape)
+			protected SelShape(ShapeInfo shape)
 			{
 				this.shape = shape;
 			}
@@ -92,19 +93,19 @@ namespace EditorBase.CamViewStates
 				return false;
 			}
 
-			public static SelShape Create(Collider.ShapeInfo shape)
+			public static SelShape Create(ShapeInfo shape)
 			{
-				if (shape is Collider.CircleShapeInfo)
-					return new SelCircleShape(shape as Collider.CircleShapeInfo);
-				else if (shape is Collider.PolyShapeInfo)
-					return new SelPolyShape(shape as Collider.PolyShapeInfo);
+				if (shape is CircleShapeInfo)
+					return new SelCircleShape(shape as CircleShapeInfo);
+				else if (shape is PolyShapeInfo)
+					return new SelPolyShape(shape as PolyShapeInfo);
 				else
 					return null;
 			}
 		}
 		public class SelCircleShape : SelShape
 		{
-			private	Collider.CircleShapeInfo	circle;
+			private	CircleShapeInfo	circle;
 			
 			public override Vector3 Pos
 			{
@@ -134,7 +135,7 @@ namespace EditorBase.CamViewStates
 				get { return this.circle.Radius * this.Collider.GameObj.Transform.Scale.Xy.Length / MathF.Sqrt(2.0f); }
 			}
 
-			public SelCircleShape(Collider.CircleShapeInfo shape) : base(shape)
+			public SelCircleShape(CircleShapeInfo shape) : base(shape)
 			{
 				this.circle = shape;
 			}
@@ -160,7 +161,7 @@ namespace EditorBase.CamViewStates
 		}
 		public class SelPolyShape : SelShape
 		{
-			private	Collider.PolyShapeInfo	poly;
+			private	PolyShapeInfo	poly;
 			private	Vector2	center;
 			private	float	boundRad;
 			private	float	angle;
@@ -205,7 +206,7 @@ namespace EditorBase.CamViewStates
 				get { return this.boundRad * this.Collider.GameObj.Transform.Scale.Xy.Length / MathF.Sqrt(2.0f); }
 			}
 
-			public SelPolyShape(Collider.PolyShapeInfo shape) : base(shape)
+			public SelPolyShape(PolyShapeInfo shape) : base(shape)
 			{
 				this.poly = shape;
 				this.UpdatePolyStats();

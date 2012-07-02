@@ -252,13 +252,13 @@ namespace Duality
 			get { return this.GetComponent<ICmpRenderer>(); }
 		}
 		/// <summary>
-		/// [GET] The GameObject's <see cref="Duality.Components.Collider"/> Component, if existing. 
+		/// [GET] The GameObject's <see cref="Duality.Components.Physics.RigidBody"/> Component, if existing. 
 		/// </summary>
 		/// <remarks>Note that a GameObject may contain multiple Colliders in which case the return value of this property may be any of them.</remarks>
-		/// <seealso cref="Duality.Components.Collider"/>
-		public Components.Collider Collider
+		/// <seealso cref="Duality.Components.Physics.RigidBody"/>
+		public Components.Physics.RigidBody RigidBody
 		{
-			get { return this.GetComponent<Components.Collider>(); }
+			get { return this.GetComponent<Components.Physics.RigidBody>(); }
 		}
 		
 
