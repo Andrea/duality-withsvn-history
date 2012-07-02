@@ -1138,7 +1138,10 @@ namespace DualityEditor.Forms
 					EditorRes.GeneralRes.Msg_ConfirmQuitUnsaved_Caption, 
 					MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
 				if (result == DialogResult.Yes)
+				{
+					this.SandboxStop();
 					this.SaveAllProjectData();
+				}
 				else if (result == DialogResult.Cancel)
 					e.Cancel = true;
 			}
@@ -1152,7 +1155,11 @@ namespace DualityEditor.Forms
 					e.Cancel = true;
 			}
 
-			if (!e.Cancel) this.SaveUserData();
+			if (!e.Cancel)
+			{
+				this.SandboxStop();
+				this.SaveUserData();
+			}
 		}
 		protected override void OnFormClosed(FormClosedEventArgs e)
 		{

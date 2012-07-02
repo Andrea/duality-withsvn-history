@@ -27,6 +27,7 @@ namespace Duality.Components.Physics
 		/// <summary>
 		/// [GET / SET] The Colliders target angle.
 		/// </summary>
+		[EditorHintIncrement(MathF.RadAngle360 / 360.0f)]
 		public float TargetAngle
 		{
 			get { return this.angle; }

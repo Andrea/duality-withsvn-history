@@ -17,6 +17,7 @@ using DualityEditor;
 using DualityEditor.Forms;
 
 using EditorBase.CamViewStates;
+using EditorBase.CamViewLayers;
 
 using OpenTK;
 using Key = OpenTK.Input.Key;
@@ -50,7 +51,7 @@ namespace EditorBase
 				this.nextCam = next;
 			}
 		}
-		public class StateComboboxEntry
+		public class StateEntry
 		{
 			private Type stateType;
 			private CamViewState state;
@@ -59,8 +60,12 @@ namespace EditorBase
 			{
 				get { return this.stateType; }
 			}
+			public string StateName
+			{
+				get { return this.state.StateName; }
+			}
 
-			public StateComboboxEntry(Type stateType)
+			public StateEntry(Type stateType)
 			{
 				this.stateType = stateType;
 				this.state = stateType.CreateInstanceOf() as CamViewState;
@@ -68,7 +73,32 @@ namespace EditorBase
 
 			public override string ToString()
 			{
-				return this.state.StateName;
+				return this.StateName;
+			}
+		}
+		public class LayerEntry
+		{
+			private Type layerType;
+			private CamViewLayer layer;
+
+			public Type LayerType
+			{
+				get { return this.layerType; }
+			}
+			public string LayerName
+			{
+				get { return this.layer.LayerName; }
+			}
+
+			public LayerEntry(Type stateType)
+			{
+				this.layerType = stateType;
+				this.layer = stateType.CreateInstanceOf() as CamViewLayer;
+			}
+
+			public override string ToString()
+			{
+				return this.LayerName;
 			}
 		}
 
@@ -80,6 +110,8 @@ namespace EditorBase
 		private	Camera				camComp			= null;
 		private	bool				camInternal		= false;
 		private	CamViewState		state			= null;
+		private	List<CamViewLayer>	layers			= new List<CamViewLayer>();
+		private	List<Type>			lockedLayers	= new List<Type>();
 		private	ColorPickerDialog	bgColorDialog	= new ColorPickerDialog();
 		private	GameObject			nativeCamObj	= null;
 		private	string				loadTempState	= null;
@@ -158,6 +190,10 @@ namespace EditorBase
 		{
 			get { return this.state; }
 		}
+		public IEnumerable<CamViewLayer> ActiveViewLayers
+		{
+			get { return this.layers; }
+		}
 
 		public CamView(int runtimeId)
 		{
@@ -195,6 +231,7 @@ namespace EditorBase
 			this.InitNativeCamera();
 			this.InitCameraSelector();
 			this.InitStateSelector();
+			this.InitLayerSelector();
 			this.SetCurrentCamera(null);
 
 			// Initialize state
@@ -216,8 +253,40 @@ namespace EditorBase
 			// Update camera transform properties & GUI
 			this.OnCamTransformChanged();
 		}
+		
+		private void InitGLControl()
+		{
+			this.SuspendLayout();
 
-		protected void InitStateSelector()
+			// Get rid of a possibly existing old glControl
+			if (this.glControl != null)
+			{
+				this.glControl.Dispose();
+				this.Controls.Remove(this.glControl);
+			}
+
+			// Create a new glControl
+			this.glControl = new GLControl(this.MainContextControl.GraphicsMode);
+			this.glControl.BackColor = Color.Black;
+			this.glControl.Dock = DockStyle.Fill;
+			this.glControl.Name = "glControl";
+			this.glControl.VSync = false;
+			this.glControl.AllowDrop = true;
+			this.glControl.MouseDown += this.glControl_MouseDown;
+			this.glControl.MouseUp += this.glControl_MouseUp;
+			this.glControl.MouseWheel += this.glControl_MouseWheel;
+			this.glControl.MouseMove += this.glControl_MouseMove;
+			this.glControl.GotFocus += this.glControl_GotFocus;
+			this.glControl.PreviewKeyDown += glControl_PreviewKeyDown;
+			this.glControl.KeyDown += this.glControl_KeyDown;
+			this.glControl.KeyUp += this.glControl_KeyUp;
+			this.glControl.Resize += this.glControl_Resize;
+			this.Controls.Add(this.glControl);
+			this.Controls.SetChildIndex(this.glControl, 0);
+
+			this.ResumeLayout(true);
+		}
+		private void InitStateSelector()
 		{
 			this.stateSelector.Items.Clear();
 
@@ -227,9 +296,30 @@ namespace EditorBase
 				select t;
 
 			foreach (Type camViewState in camViewStateTypeQuery)
-				this.stateSelector.Items.Add(new StateComboboxEntry(camViewState));
+				this.stateSelector.Items.Add(new StateEntry(camViewState));
 		}
-		protected void InitCameraSelector()
+		private void InitLayerSelector()
+		{
+			this.layerSelector.DropDown.Closing -= this.layerSelector_Closing;
+			this.layerSelector.DropDownItems.Clear();
+
+			IEnumerable<Type> camViewStateTypeQuery = 
+				from t in EditorBasePlugin.Instance.EditorForm.GetAvailDualityEditorTypes(typeof(CamViewLayer))
+				where !t.IsAbstract
+				select t;
+
+			foreach (Type camViewState in camViewStateTypeQuery)
+			{
+				LayerEntry layerEntry = new LayerEntry(camViewState);
+				ToolStripMenuItem layerItem = new ToolStripMenuItem(layerEntry.LayerName);
+				layerItem.Tag = layerEntry;
+				layerItem.Checked = this.layers.Any(l => l.GetType() == layerEntry.LayerType);
+				layerItem.Enabled = !this.lockedLayers.Contains(layerEntry.LayerType);
+				this.layerSelector.DropDownItems.Add(layerItem);
+			}
+			this.layerSelector.DropDown.Closing += this.layerSelector_Closing;
+		}
+		private void InitCameraSelector()
 		{
 			this.camSelector.Items.Clear();
 			this.camSelector.Items.Add(this.nativeCamObj.Camera);
@@ -237,7 +327,7 @@ namespace EditorBase
 			foreach (Camera c in Scene.Current.AllObjects.GetComponents<Camera>())
 				this.camSelector.Items.Add(c);
 		}
-		protected void InitNativeCamera()
+		private void InitNativeCamera()
 		{
 			// Create internal Camera object
 			this.nativeCamObj = new GameObject();
@@ -252,6 +342,7 @@ namespace EditorBase
 			this.nativeCamObj.Transform.Pos = new Vector3(0.0f, 0.0f, -c.ParallaxRefDist);
 			EditorBasePlugin.Instance.EditorForm.EditorObjects.RegisterObj(this.nativeCamObj);
 		}
+
 		public void SetCurrentCamera(Camera c)
 		{
 			if (c == null) c = this.nativeCamObj.Camera;
@@ -297,12 +388,74 @@ namespace EditorBase
 
 			this.state = state;
 			if (this.state != null)
-				this.stateSelector.SelectedIndex = this.stateSelector.Items.IndexOf(this.stateSelector.Items.Cast<StateComboboxEntry>().FirstOrDefault(e => e.StateType == this.state.GetType()));
+				this.stateSelector.SelectedIndex = this.stateSelector.Items.IndexOf(this.stateSelector.Items.Cast<StateEntry>().FirstOrDefault(e => e.StateType == this.state.GetType()));
 			else
 				this.stateSelector.SelectedIndex = -1;
 
 			if (this.state != null) this.state.OnEnterState();
 			this.glControl.Invalidate();
+		}
+
+		public void SetActiveLayers(params Type[] layerTypes)
+		{
+			// Deactivate unused layers
+			for (int i = this.layers.Count - 1; i >= 0; i--)
+			{
+				Type layerType = this.layers[i].GetType();
+				if (!layerTypes.Contains(layerType)) this.DeactivateLayer(this.layers[i]);
+			}
+
+			// Activate not-yet-active layers
+			foreach (Type layerType in layerTypes)
+				this.ActivateLayer(layerType);
+		}
+		public void ActivateLayer(CamViewLayer layer)
+		{
+			if (layers == null) return;
+			if (this.layers.Contains(layer)) return;
+			if (this.layers.Any(l => l.GetType() == layer.GetType())) return;
+			if (this.lockedLayers.Contains(layer.GetType())) return;
+
+			this.layers.Add(layer);
+			layer.View = this;
+			layer.OnActivateLayer();
+			this.glControl.Invalidate();
+		}
+		public void ActivateLayer(Type layerType)
+		{
+			this.ActivateLayer(layerType.CreateInstanceOf() as CamViewLayer);
+		}
+		public void DeactivateLayer(CamViewLayer layer)
+		{
+			if (layers == null) return;
+			if (!this.layers.Contains(layer)) return;
+			if (this.lockedLayers.Contains(layer.GetType())) return;
+
+			layer.OnDeactivateLayer();
+			layer.View = null;
+			this.layers.Remove(layer);
+			this.glControl.Invalidate();
+		}
+		public void DeactivateLayer(Type layerType)
+		{
+			this.DeactivateLayer(this.layers.FirstOrDefault(l => l.GetType() == layerType));
+		}
+		public void LockLayer(CamViewLayer layer)
+		{
+			this.LockLayer(layer.GetType());
+		}
+		public void LockLayer(Type layerType)
+		{
+			if (this.lockedLayers.Contains(layerType)) return;
+			this.lockedLayers.Add(layerType);
+		}
+		public void UnlockLayer(CamViewLayer layer)
+		{
+			this.UnlockLayer(layer.GetType());
+		}
+		public void UnlockLayer(Type layerType)
+		{
+			this.lockedLayers.Remove(layerType);
 		}
 
 		internal void SaveUserData(System.Xml.XmlElement node)
@@ -333,38 +486,6 @@ namespace EditorBase
 			this.loadTempState = node.GetAttribute("state");
 		}
 
-		protected void InitGLControl()
-		{
-			this.SuspendLayout();
-
-			// Get rid of a possibly existing old glControl
-			if (this.glControl != null)
-			{
-				this.glControl.Dispose();
-				this.Controls.Remove(this.glControl);
-			}
-
-			// Create a new glControl
-			this.glControl = new GLControl(this.MainContextControl.GraphicsMode);
-			this.glControl.BackColor = Color.Black;
-			this.glControl.Dock = DockStyle.Fill;
-			this.glControl.Name = "glControl";
-			this.glControl.VSync = false;
-			this.glControl.AllowDrop = true;
-			this.glControl.MouseDown += this.glControl_MouseDown;
-			this.glControl.MouseUp += this.glControl_MouseUp;
-			this.glControl.MouseWheel += this.glControl_MouseWheel;
-			this.glControl.MouseMove += this.glControl_MouseMove;
-			this.glControl.GotFocus += this.glControl_GotFocus;
-			this.glControl.PreviewKeyDown += glControl_PreviewKeyDown;
-			this.glControl.KeyDown += this.glControl_KeyDown;
-			this.glControl.KeyUp += this.glControl_KeyUp;
-			this.glControl.Resize += this.glControl_Resize;
-			this.Controls.Add(this.glControl);
-			this.Controls.SetChildIndex(this.glControl, 0);
-
-			this.ResumeLayout(true);
-		}
 		public void OnCamTransformChanged()
 		{
 			//if (this.camInternal) return;
@@ -381,6 +502,7 @@ namespace EditorBase
 			this.parallaxRefDist.Enabled = value;
 			this.camSelector.Enabled = value;
 			this.showBgColorDialog.Enabled = value;
+			this.layerSelector.Enabled = value;
 		}
 
 		public void FocusOnObject(GameObject obj)
@@ -439,6 +561,27 @@ namespace EditorBase
 		{
 			this.MakeDualityTarget();
 			return this.camComp.GetScreenCoord(spaceCoord);
+		}
+
+		internal void CollectLayerDrawcalls(Canvas canvas)
+		{
+			this.layers.StableSort((a, b) => a.Priority - b.Priority);
+			foreach (CamViewLayer layer in this.layers)
+			{
+				canvas.PushState();
+				layer.OnCollectDrawcalls(canvas);
+				canvas.PopState();
+			}
+		}
+		internal void CollectLayerOverlayDrawcalls(Canvas canvas)
+		{
+			this.layers.StableSort((a, b) => a.Priority - b.Priority);
+			foreach (CamViewLayer layer in this.layers)
+			{
+				canvas.PushState();
+				layer.OnCollectOverlayDrawcalls(canvas);
+				canvas.PopState();
+			}
 		}
 
 		private void OnParallaxRefDistChanged()
@@ -628,14 +771,34 @@ namespace EditorBase
 		{
 			if (this.stateSelector.SelectedIndex == -1)
 			{
-				this.stateSelector.SelectedIndex = this.state != null ? this.stateSelector.Items.IndexOf(this.stateSelector.Items.Cast<StateComboboxEntry>().FirstOrDefault(sce => sce.StateType == this.state.GetType())) : -1;
+				this.stateSelector.SelectedIndex = this.state != null ? this.stateSelector.Items.IndexOf(this.stateSelector.Items.Cast<StateEntry>().FirstOrDefault(sce => sce.StateType == this.state.GetType())) : -1;
 				return;
 			}
 		}
 		private void stateSelector_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			if (this.stateSelector.SelectedItem == null) return;
-			this.SetCurrentState(((StateComboboxEntry)this.stateSelector.SelectedItem).StateType);
+			this.SetCurrentState(((StateEntry)this.stateSelector.SelectedItem).StateType);
+		}
+		private void layerSelector_DropDownOpening(object sender, EventArgs e)
+		{
+			this.InitLayerSelector();
+		}
+		private void layerSelector_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+		{
+			LayerEntry layerEntry = e.ClickedItem.Tag as LayerEntry;
+			ToolStripMenuItem layerItem = e.ClickedItem as ToolStripMenuItem;
+
+			if (layerItem.Checked)
+				this.DeactivateLayer(layerEntry.LayerType);
+			else
+				this.ActivateLayer(layerEntry.LayerType);
+
+			layerItem.Checked = this.layers.Any(l => l.GetType() == layerEntry.LayerType);
+		}
+		private void layerSelector_Closing(object sender, ToolStripDropDownClosingEventArgs e)
+		{
+			if (e.CloseReason == ToolStripDropDownCloseReason.ItemClicked) e.Cancel = true;
 		}
 
 		HelpInfo IHelpProvider.ProvideHoverHelp(Point localPos, ref bool captured)

@@ -62,15 +62,18 @@
     <Compile Include="CamView.Designer.cs">
       <DependentUpon>CamView.cs</DependentUpon>
     </Compile>
+    <Compile Include="CamViewLayers\CamViewLayer.cs" />
+    <Compile Include="CamViewLayers\RigidBodyJointCamViewLayer.cs" />
+    <Compile Include="CamViewLayers\RigidBodyShapeCamViewLayer.cs" />
     <Compile Include="CamViewStates\CamViewState.cs" />
-    <Compile Include="CamViewStates\ColliderEditorCamViewState.SelObj.cs" />
+    <Compile Include="CamViewStates\RigidBodyEditorCamViewState.SelObj.cs" />
     <Compile Include="EditorBasePlugin.cs" />
     <Compile Include="AudioDataFileImporter.cs" />
     <Compile Include="FontFileImporter.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CamViewStates\GameViewCamViewState.cs" />
-    <Compile Include="CamViewStates\ColliderEditorCamViewState.cs" />
+    <Compile Include="CamViewStates\RigidBodyEditorCamViewState.cs" />
     <Compile Include="CamViewStates\SceneEditorCamViewState.cs" />
     <Compile Include="DataConverters.cs" />
     <Compile Include="PreviewGenerators.cs" />
@@ -235,6 +238,7 @@
     <None Include="PluginRes\logview.ico" />
     <None Include="PluginRes\picture_empty.png" />
     <None Include="PluginRes\lock.png" />
+    <None Include="PluginRes\layers.png" />
     <Content Include="PluginRes\projectview.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

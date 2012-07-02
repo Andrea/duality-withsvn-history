@@ -25,6 +25,7 @@ namespace Duality
 			private	BatchInfo			batchInfo;
 			private	ColorRgba			color;
 			private	ContentRef<Font>	font;
+			private	bool		invariantTextScale;
 			private	float		transformAngle;
 			private	Vector2		transformScale;
 			private	Vector2		transformHandle;
@@ -50,7 +51,15 @@ namespace Duality
 			public ContentRef<Font> TextFont
 			{
 				get { return this.font; }
-				set { this.font = value; }
+				set { this.font = value.IsAvailable ? value : Font.GenericMonospace10; }
+			}
+			/// <summary>
+			/// [GET / SET] If true, text does not scale due to its position in space
+			/// </summary>
+			public bool TextInvariantScale
+			{
+				get { return this.invariantTextScale; }
+				set { this.invariantTextScale = value; }
 			}
 			/// <summary>
 			/// [GET / SET] The color tint to use for drawing.
@@ -95,6 +104,7 @@ namespace Duality
 				this.batchInfo = other.batchInfo;
 				this.font = other.font;
 				this.color = other.color;
+				this.invariantTextScale = other.invariantTextScale;
 				this.transformAngle = other.transformAngle;
 				this.transformHandle = other.transformHandle;
 				this.transformScale = other.transformScale;
@@ -117,6 +127,7 @@ namespace Duality
 				this.batchInfo = new BatchInfo(DrawTechnique.Solid, ColorRgba.White);
 				this.font = Font.GenericMonospace10;
 				this.color = ColorRgba.White;
+				this.invariantTextScale = false;
 				this.transformAngle = 0.0f;
 				this.transformHandle = Vector2.Zero;
 				this.transformScale = Vector2.One;
@@ -462,14 +473,16 @@ namespace Duality
 		}
 		
 		/// <summary>
-		/// Draws an oval.
+		/// Draws the section of an oval.
 		/// </summary>
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <param name="z"></param>
 		/// <param name="w"></param>
 		/// <param name="h"></param>
-		public void DrawOval(float x, float y, float z, float w, float h)
+		/// <param name="minAngle"></param>
+		/// <param name="maxAngle"></param>
+		public void DrawOvalSegment(float x, float y, float z, float w, float h, float minAngle, float maxAngle)
 		{
 			if (w < 0.0f) { x += w; w = -w; }
 			if (h < 0.0f) { y += h; h = -h; }
@@ -484,11 +497,13 @@ namespace Duality
 			w *= scale;
 			h *= scale;
 
-			int segmentNum = MathF.Clamp(MathF.RoundToInt(MathF.Pow(MathF.Max(w, h), 0.65f) * 3.5f), 4, 128);
+			float angleRange = MathF.Min(MathF.Abs(maxAngle - minAngle), MathF.RadAngle360);
+			bool loop = angleRange >= MathF.RadAngle360 - MathF.RadAngle1 * 0.001f;
+			int segmentNum = MathF.Clamp(MathF.RoundToInt(MathF.Pow(MathF.Max(w, h), 0.65f) * 3.5f * angleRange / MathF.RadAngle360), 4, 128);
 			Vector2 shapeHandle = pos.Xy - new Vector2(w, h);
 			ColorRgba shapeColor = this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor;
-			VertexC1P3[] vertices = new VertexC1P3[segmentNum];
-			float angle = 0.0f;
+			VertexC1P3[] vertices = new VertexC1P3[loop ? segmentNum : segmentNum + 1];
+			float angle = minAngle;
 
 			// XY circle
 			for (int i = 0; i < vertices.Length; i++)
@@ -497,45 +512,108 @@ namespace Duality
 				vertices[i].Pos.Y = pos.Y - (float)Math.Cos(angle) * h + 0.5f;
 				vertices[i].Pos.Z = pos.Z;
 				vertices[i].Color = shapeColor;
-				angle += (MathF.TwoPi / segmentNum);
+				angle += (angleRange / segmentNum);
 			}
 			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
-			this.device.AddVertices(this.CurrentState.MaterialDirect, VertexMode.LineLoop, vertices);
+			this.device.AddVertices(this.CurrentState.MaterialDirect, loop ? VertexMode.LineLoop : VertexMode.LineStrip, vertices);
 		}
 		/// <summary>
-		/// Draws an oval.
+		/// Draws the section of an oval.
 		/// </summary>
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <param name="w"></param>
 		/// <param name="h"></param>
-		public void DrawOval(float x, float y, float w, float h)
+		/// <param name="minAngle"></param>
+		/// <param name="maxAngle"></param>
+		public void DrawOvalSegment(float x, float y, float w, float h, float minAngle, float maxAngle)
 		{
-			this.DrawOval(x, y, 0, w, h);
+			this.DrawOvalSegment(x, y, 0, w, h, minAngle, maxAngle);
 		}
 		/// <summary>
-		/// Draws a circle.
+		/// Draws the section of a circle.
 		/// </summary>
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <param name="z"></param>
 		/// <param name="r"></param>
-		public void DrawCircle(float x, float y, float z, float r)
+		/// <param name="minAngle"></param>
+		/// <param name="maxAngle"></param>
+		public void DrawCircleSegment(float x, float y, float z, float r, float minAngle, float maxAngle)
 		{
 			this.CurrentState.TransformHandle += new Vector2(r, r);
-			this.DrawOval(x, y, z, r * 2, r * 2);
+			this.DrawOvalSegment(x, y, z, r * 2, r * 2, minAngle, maxAngle);
 			this.CurrentState.TransformHandle -= new Vector2(r, r);
 		}
 		/// <summary>
-		/// Draws a circle
+		/// Draws the section of a circle
 		/// </summary>
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <param name="r"></param>
+		/// <param name="minAngle"></param>
+		/// <param name="maxAngle"></param>
+		public void DrawCircleSegment(float x, float y, float r, float minAngle, float maxAngle)
+		{
+			this.CurrentState.TransformHandle += new Vector2(r, r);
+			this.DrawOvalSegment(x, y, 0, r * 2, r * 2, minAngle, maxAngle);
+			this.CurrentState.TransformHandle -= new Vector2(r, r);
+		}
+
+		/// <summary>
+		/// Draws the section of an oval.
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="z"></param>
+		/// <param name="w"></param>
+		/// <param name="h"></param>
+		/// <param name="minAngle"></param>
+		/// <param name="maxAngle"></param>
+		public void DrawOval(float x, float y, float z, float w, float h)
+		{
+			this.DrawOvalSegment(x, y, z, w, h, 0.0f, MathF.RadAngle360);
+		}
+		/// <summary>
+		/// Draws the section of an oval.
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="w"></param>
+		/// <param name="h"></param>
+		/// <param name="minAngle"></param>
+		/// <param name="maxAngle"></param>
+		public void DrawOval(float x, float y, float w, float h)
+		{
+			this.DrawOvalSegment(x, y, 0, w, h, 0.0f, MathF.RadAngle360);
+		}
+		/// <summary>
+		/// Draws the section of a circle.
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="z"></param>
+		/// <param name="r"></param>
+		/// <param name="minAngle"></param>
+		/// <param name="maxAngle"></param>
+		public void DrawCircle(float x, float y, float z, float r)
+		{
+			this.CurrentState.TransformHandle += new Vector2(r, r);
+			this.DrawOvalSegment(x, y, z, r * 2, r * 2, 0.0f, MathF.RadAngle360);
+			this.CurrentState.TransformHandle -= new Vector2(r, r);
+		}
+		/// <summary>
+		/// Draws the section of a circle
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="r"></param>
+		/// <param name="minAngle"></param>
+		/// <param name="maxAngle"></param>
 		public void DrawCircle(float x, float y, float r)
 		{
 			this.CurrentState.TransformHandle += new Vector2(r, r);
-			this.DrawOval(x, y, 0, r * 2, r * 2);
+			this.DrawOvalSegment(x, y, 0, r * 2, r * 2, 0.0f, MathF.RadAngle360);
 			this.CurrentState.TransformHandle -= new Vector2(r, r);
 		}
 		
@@ -892,6 +970,7 @@ namespace Duality
 			Vector3 pos = new Vector3(x, y, z);
 			float scale = 1.0f;
 			device.PreprocessCoords(ref pos, ref scale);
+			if (this.CurrentState.TextInvariantScale) scale = 1.0f;
 
 			Vector2 shapeHandle = pos.Xy;
 			VertexC1P3T2[] vertices = null;

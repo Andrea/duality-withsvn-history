@@ -37,6 +37,7 @@
 			this.showBgColorDialog = new System.Windows.Forms.ToolStripButton();
 			this.camSelector = new System.Windows.Forms.ToolStripComboBox();
 			this.toolbarCamera = new System.Windows.Forms.ToolStrip();
+			this.layerSelector = new System.Windows.Forms.ToolStripDropDownButton();
 			this.toolbarCamera.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -126,6 +127,7 @@
 			this.toolbarCamera.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.toolbarCamera.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.stateSelector,
+            this.layerSelector,
             this.toolStripSeparator1,
             this.toggleParallaxity,
             this.parallaxRefDist,
@@ -137,6 +139,17 @@
 			this.toolbarCamera.Size = new System.Drawing.Size(539, 25);
 			this.toolbarCamera.TabIndex = 1;
 			this.toolbarCamera.Text = "toolStrip";
+			// 
+			// layerSelector
+			// 
+			this.layerSelector.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.layerSelector.Image = global::EditorBase.Properties.Resources.layers;
+			this.layerSelector.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.layerSelector.Name = "layerSelector";
+			this.layerSelector.Size = new System.Drawing.Size(29, 22);
+			this.layerSelector.Text = "Select visible Layers";
+			this.layerSelector.DropDownOpening += new System.EventHandler(this.layerSelector_DropDownOpening);
+			this.layerSelector.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.layerSelector_DropDownItemClicked);
 			// 
 			// CamView
 			// 
@@ -169,6 +182,7 @@
 		private System.Windows.Forms.ToolStripButton showBgColorDialog;
 		private System.Windows.Forms.ToolStripComboBox camSelector;
 		private System.Windows.Forms.ToolStrip toolbarCamera;
+		private System.Windows.Forms.ToolStripDropDownButton layerSelector;
 
 	}
 }

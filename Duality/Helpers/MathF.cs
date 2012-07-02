@@ -39,7 +39,11 @@ namespace Duality
 		/// Equals 2 * <see cref="Pi"/>.
 		/// </summary>
 		public const float TwoPi = Pi * 2.0f;
-
+		
+		/// <summary>
+		/// A one degree angle in radians.
+		/// </summary>
+		public const float RadAngle1 = TwoPi / 360.0f;
 		/// <summary>
 		/// A 30 degree angle in radians. Equals <see cref="PiOver6"/>.
 		/// </summary>
@@ -1237,5 +1241,18 @@ namespace Duality
             if (n < 0) throw new ArgumentOutOfRangeException("n", "Must be positive.");
             return (int)System.Math.Pow(2, System.Math.Ceiling(System.Math.Log((double)n, 2)));
         }
+
+		/// <summary>
+		/// Swaps the values of two variables.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="first"></param>
+		/// <param name="second"></param>
+		public static void Swap<T>(ref T first, ref T second)
+		{
+			T temp = first;
+			first = second;
+			second = temp;
+		}
 	}
 }

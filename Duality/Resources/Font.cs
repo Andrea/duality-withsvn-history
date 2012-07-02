@@ -754,12 +754,6 @@ namespace Duality.Resources
 
 				vertices[i].Pos = vertex;
 				vertices[i].Color = clr;
-
-				if (this.GlyphRenderHint == RenderHint.Monochrome)
-				{
-					vertices[i].Pos.X = MathF.Round(vertices[i].Pos.X);
-					vertices[i].Pos.Y = MathF.Round(vertices[i].Pos.Y);
-				}
 			}
 		}
 		/// <summary>
@@ -783,12 +777,6 @@ namespace Duality.Resources
 				vertex += offset;
 				vertices[i].Pos = vertex;
 				vertices[i].Color = clr;
-
-				if (this.GlyphRenderHint == RenderHint.Monochrome)
-				{
-					vertices[i].Pos.X = MathF.Round(vertices[i].Pos.X);
-					vertices[i].Pos.Y = MathF.Round(vertices[i].Pos.Y);
-				}
 			}
 		}
 		/// <summary>

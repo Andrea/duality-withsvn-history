@@ -19,7 +19,7 @@ using OpenTK;
 
 namespace EditorBase.CamViewStates
 {
-	public partial class ColliderEditorCamViewState : CamViewState
+	public partial class RigidBodyEditorCamViewState : CamViewState
 	{
 		public static readonly Cursor ArrowCreateCircle		= CursorHelper.CreateCursor(PluginRes.EditorBaseRes.CursorArrowCreateCircle, 0, 0);
 		public static readonly Cursor ArrowCreatePolygon	= CursorHelper.CreateCursor(PluginRes.EditorBaseRes.CursorArrowCreatePolygon, 0, 0);
@@ -37,63 +37,15 @@ namespace EditorBase.CamViewStates
 		private	ToolStrip			toolstrip			= null;
 		private	ToolStripButton		toolCreateCircle	= null;
 		private	ToolStripButton		toolCreatePoly		= null;
-		private	ContentRef<Font>	bigFont				= new ContentRef<Font>(null, "__editor__bigfont__");
 
 		public override string StateName
 		{
-			get { return "Collider Editor"; }
-		}
-		public ColorRgba ShapeColor
-		{
-			get
-			{
-				float fgLum = this.View.FgColor.GetLuminance();
-				if (fgLum > 0.5f)
-					return ColorRgba.Mix(ColorRgba.Blue, ColorRgba.VeryLightGrey, 0.5f);
-				else
-					return ColorRgba.Mix(ColorRgba.Blue, ColorRgba.VeryDarkGrey, 0.5f);
-			}
-		}
-		public ColorRgba ShapeSensorColor
-		{
-			get
-			{
-				float fgLum = this.View.FgColor.GetLuminance();
-				if (fgLum > 0.5f)
-					return ColorRgba.Mix(new ColorRgba(255, 128, 0), ColorRgba.VeryLightGrey, 0.5f);
-				else
-					return ColorRgba.Mix(new ColorRgba(255, 128, 0), ColorRgba.VeryDarkGrey, 0.5f);
-			}
-		}
-		public ColorRgba ShapeErrorColor
-		{
-			get
-			{
-				float fgLum = this.View.FgColor.GetLuminance();
-				if (fgLum > 0.5f)
-					return ColorRgba.Mix(new ColorRgba(255, 0, 0), ColorRgba.VeryLightGrey, 0.5f);
-				else
-					return ColorRgba.Mix(new ColorRgba(255, 0, 0), ColorRgba.VeryDarkGrey, 0.5f);
-			}
-		}
-		public ColorRgba JointColor
-		{
-			get
-			{
-				float fgLum = this.View.FgColor.GetLuminance();
-				if (fgLum > 0.5f)
-					return ColorRgba.Mix(new ColorRgba(128, 255, 0), ColorRgba.VeryLightGrey, 0.5f);
-				else
-					return ColorRgba.Mix(new ColorRgba(128, 255, 0), ColorRgba.VeryDarkGrey, 0.5f);
-			}
+			get { return "RigidBody Editor"; }
 		}
 
 		protected internal override void OnEnterState()
 		{
 			base.OnEnterState();
-
-			// Init Resources
-			this.RetrieveResources();
 
 			// Init GUI
 			this.View.SuspendLayout();
@@ -133,13 +85,9 @@ namespace EditorBase.CamViewStates
 			this.UpdateSelectionStats();
 			this.UpdateToolbar();
 
-			// Debug:
-			//Collider colA = Scene.Current.ActiveObjects.GetComponents<Collider>().Where(c => c.PhysicsBodyType == Collider.BodyType.Dynamic).ElementAtOrDefault(0);
-			//Collider colB = Scene.Current.ActiveObjects.GetComponents<Collider>().Where(c => c.PhysicsBodyType == Collider.BodyType.Dynamic).ElementAtOrDefault(1);
-			//if (colA != null && colB != null)
-			//{
-			//    colA.AddJoint(new Collider.WeldJointInfo(), colB);
-			//}
+			this.View.ActivateLayer(typeof(CamViewLayers.RigidBodyJointCamViewLayer));
+			this.View.ActivateLayer(typeof(CamViewLayers.RigidBodyShapeCamViewLayer));
+			this.View.LockLayer(typeof(CamViewLayers.RigidBodyShapeCamViewLayer));
 		}
 		protected internal override void OnLeaveState()
 		{
@@ -160,135 +108,10 @@ namespace EditorBase.CamViewStates
 
 			this.toolstrip = null;
 			this.toolCreateCircle = null;
-		}
-		protected override void OnCollectStateDrawcalls(Canvas canvas)
-		{
-			List<RigidBody> visibleColliders = this.QueryVisibleColliders().ToList();
 
-			this.RetrieveResources();
-			canvas.CurrentState.TextFont = this.bigFont;
-			Font textFont = canvas.CurrentState.TextFont.Res;
-
-			// Draw Shape layer
-			foreach (RigidBody c in visibleColliders)
-			{
-				if (!c.Shapes.Any()) continue;
-				float colliderAlpha = c == this.selectedCollider ? 1.0f : 0.25f;
-				float maxDensity = c.Shapes.Max(s => s.Density);
-				float minDensity = c.Shapes.Min(s => s.Density);
-				float avgDensity = (maxDensity + minDensity) * 0.5f;
-				Vector3 colliderPos = c.GameObj.Transform.Pos;
-				Vector2 colliderScale = c.GameObj.Transform.Scale.Xy;
-				int index = 0;
-				foreach (ShapeInfo s in c.Shapes)
-				{
-					CircleShapeInfo circle = s as CircleShapeInfo;
-					PolyShapeInfo poly = s as PolyShapeInfo;
-					float shapeAlpha = colliderAlpha * (this.allObjSel.Any(sel => sel.ActualObject == s) ? 1.0f : 0.5f);
-					float densityRelative = MathF.Abs(maxDensity - minDensity) < 0.01f ? 1.0f : s.Density / avgDensity;
-					ColorRgba clr = s.IsSensor ? this.ShapeSensorColor : this.ShapeColor;
-					ColorRgba fontClr = ColorRgba.Mix(clr, this.View.FgColor, 0.5f);
-					if (circle != null)
-					{
-						float uniformScale = colliderScale.Length / MathF.Sqrt(2.0f);
-						Vector2 circlePos = circle.Position * colliderScale;
-						MathF.TransformCoord(ref circlePos.X, ref circlePos.Y, c.GameObj.Transform.Angle);
-
-						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha((0.25f + densityRelative * 0.25f) * colliderAlpha)));
-						canvas.FillCircle(
-							colliderPos.X + circlePos.X,
-							colliderPos.Y + circlePos.Y,
-							colliderPos.Z - 0.01f, 
-							circle.Radius * uniformScale);
-						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha(shapeAlpha)));
-						canvas.DrawCircle(
-							colliderPos.X + circlePos.X,
-							colliderPos.Y + circlePos.Y,
-							colliderPos.Z - 0.01f, 
-							circle.Radius * uniformScale);
-
-						Vector2 textSize = textFont.MeasureText(index.ToString(CultureInfo.InvariantCulture));
-						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, fontClr.WithAlpha(shapeAlpha)));
-						canvas.CurrentState.TransformHandle = textSize * 0.5f;
-						canvas.DrawText(index.ToString(CultureInfo.InvariantCulture), 
-							colliderPos.X + circlePos.X, 
-							colliderPos.Y + circlePos.Y,
-							colliderPos.Z - 0.01f);
-						canvas.CurrentState.TransformHandle = Vector2.Zero;
-					}
-					else if (poly != null)
-					{
-						if (!MathF.IsPolygonConvex(poly.Vertices) && (this.mouseState != CursorState.CreatePolygon || this.createPolyIndex > 2))
-							clr = this.ShapeErrorColor;
-
-						Vector2[] polyVert = poly.Vertices.ToArray();
-						Vector2 center = Vector2.Zero;
-						for (int i = 0; i < polyVert.Length; i++)
-						{
-							center += polyVert[i];
-							Vector2.Multiply(ref polyVert[i], ref colliderScale, out polyVert[i]);
-							MathF.TransformCoord(ref polyVert[i].X, ref polyVert[i].Y, c.GameObj.Transform.Angle);
-							polyVert[i] += colliderPos.Xy;
-						}
-						center /= polyVert.Length;
-						Vector2.Multiply(ref center, ref colliderScale, out center);
-						MathF.TransformCoord(ref center.X, ref center.Y, c.GameObj.Transform.Angle);
-
-						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha((0.25f + densityRelative * 0.25f) * colliderAlpha)));
-						canvas.FillConvexPolygon(polyVert, colliderPos.Z - 0.01f);
-						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha(shapeAlpha)));
-						canvas.DrawConvexPolygon(polyVert, colliderPos.Z - 0.01f);
-
-						Vector2 textSize = textFont.MeasureText(index.ToString(CultureInfo.InvariantCulture));
-						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, fontClr.WithAlpha(shapeAlpha)));
-						canvas.CurrentState.TransformHandle = textSize * 0.5f;
-						canvas.DrawText(index.ToString(CultureInfo.InvariantCulture), 
-							colliderPos.X + center.X, 
-							colliderPos.Y + center.Y,
-							colliderPos.Z - 0.01f);
-						canvas.CurrentState.TransformHandle = Vector2.Zero;
-					}
-					index++;
-				}
-			}
-
-#if FALSE // Removed for now. Joints are an experimental feature.
-			// Draw Joint layer
-			List<Collider.JointInfo> visibleJoints = new List<Collider.JointInfo>();
-			foreach (Collider c in visibleColliders) visibleJoints.AddRange(c.Joints.Where(j => !visibleJoints.Contains(j)));
-			foreach (Collider.JointInfo j in visibleJoints)
-			{
-				Vector3 colliderPosA = j.ColliderA.GameObj.Transform.Pos;
-				Vector2 colliderScaleA = j.ColliderA.GameObj.Transform.Scale.Xy;
-				Vector3 colliderPosB = j.ColliderB != null ? j.ColliderB.GameObj.Transform.Pos : Vector3.Zero;
-				Vector2 colliderScaleB = j.ColliderB != null ? j.ColliderB.GameObj.Transform.Scale.Xy : Vector2.One;
-
-				float jointAlpha = (j.ColliderA == this.selectedCollider || j.ColliderB == this.selectedCollider) ? 0.5f : 0.25f;
-				ColorRgba clr = this.JointColor;
-
-				canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha(jointAlpha)));
-				canvas.FillThickLine(
-					colliderPosA.X,
-					colliderPosA.Y,
-					colliderPosA.Z - 0.01f, 
-					colliderPosB.X,
-					colliderPosB.Y,
-					colliderPosB.Z - 0.01f,
-					5.0f);
-				canvas.FillCircle(
-					colliderPosA.X,
-					colliderPosA.Y,
-					colliderPosA.Z - 0.01f,
-					5.0f);
-				canvas.FillCircle(
-					colliderPosB.X,
-					colliderPosB.Y,
-					colliderPosB.Z - 0.01f,
-					5.0f);
-			}
-#endif
-
-			base.OnCollectStateDrawcalls(canvas);
+			this.View.UnlockLayer(typeof(CamViewLayers.RigidBodyShapeCamViewLayer));
+			this.View.DeactivateLayer(typeof(CamViewLayers.RigidBodyShapeCamViewLayer));
+			this.View.DeactivateLayer(typeof(CamViewLayers.RigidBodyJointCamViewLayer));
 		}
 		protected override void DrawStatusText(Canvas canvas, ref bool handled)
 		{
@@ -351,9 +174,6 @@ namespace EditorBase.CamViewStates
 		{
 			RigidBody pickedCollider = null;
 			ShapeInfo pickedShape = null;
-#if FALSE // Removed for now. Joints are an experimental feature.
-			Collider.JointInfo pickedJoint = null;
-#endif
 
 			RigidBody[] visibleColliders = this.QueryVisibleColliders().ToArray();
 			visibleColliders.StableSort(delegate(RigidBody c1, RigidBody c2) 
@@ -365,35 +185,12 @@ namespace EditorBase.CamViewStates
 			{
 				Vector3 worldCoord = this.View.GetSpaceCoord(new Vector3(x, y, c.GameObj.Transform.Pos.Z));
 
-#if FALSE // Removed for now. Joints are an experimental feature.
-				foreach (Collider.JointInfo joint in c.Joints)
-				{
-					Vector3 jointAnchorA = Vector3.Zero;
-					Vector3 jointAnchorB = Vector3.Zero;
-					if (joint.ColliderA != null) jointAnchorA = joint.ColliderA.GameObj.Transform.Pos;
-					if (joint.ColliderB != null) jointAnchorB = joint.ColliderB.GameObj.Transform.Pos;
-
-					if (MathF.PointLineDistance(worldCoord.X, worldCoord.Y, jointAnchorA.X, jointAnchorA.Y, jointAnchorB.X, jointAnchorB.Y) < 5.0f)
-					{
-						pickedJoint = joint;
-						break;
-					}
-				}
-
-				if (pickedJoint == null) pickedShape = c.PickShape(worldCoord.Xy);
-				if (pickedShape != null || pickedJoint != null)
-				{
-					pickedCollider = c;
-					break;
-				}
-#else
 				pickedShape = c.PickShape(worldCoord.Xy);
 				if (pickedShape != null)
 				{
 					pickedCollider = c;
 					break;
 				}
-#endif
 			}
 
 			if (pickedShape != null) return SelShape.Create(pickedShape);
@@ -540,20 +337,6 @@ namespace EditorBase.CamViewStates
 		protected bool RendererFilter(ICmpRenderer r)
 		{
 			return (r as Component).GameObj.GetComponent<RigidBody>() != null && (r as Component).Active;
-		}
-
-		private void RetrieveResources()
-		{
-			if (!this.bigFont.IsAvailable)
-			{
-				Font bigFontRes = new Font();
-				bigFontRes.Family = FontFamily.GenericSansSerif.Name;
-				bigFontRes.Size = 32;
-				bigFontRes.Kerning = true;
-				bigFontRes.GlyphRenderHint = Duality.Resources.Font.RenderHint.AntiAlias;
-				bigFontRes.ReloadData();
-				ContentProvider.RegisterContent("__editor__bigfont__", bigFontRes);
-			}
 		}
 		
 		private void View_CurrentCameraChanged(object sender, CamView.CameraChangedEventArgs e)

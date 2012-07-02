@@ -9,7 +9,7 @@ using OpenTK;
 
 namespace EditorBase.CamViewStates
 {
-	public partial class ColliderEditorCamViewState
+	public partial class RigidBodyEditorCamViewState
 	{
 		public class SelCollider : SelObj
 		{

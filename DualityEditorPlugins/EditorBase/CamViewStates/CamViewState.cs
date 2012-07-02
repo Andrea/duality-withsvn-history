@@ -262,6 +262,9 @@ namespace EditorBase.CamViewStates
 
 		protected virtual void OnCollectStateDrawcalls(Canvas canvas)
 		{
+			// Collect the views layer drawcalls
+			this.View.CollectLayerDrawcalls(canvas);
+
 			List<SelObj> transformObjSel = this.allObjSel.Where(s => s.HasTransform).ToList();
 			Point cursorPos = this.View.LocalGLControl.PointToClient(Cursor.Position);
 			canvas.PushState();
@@ -337,6 +340,9 @@ namespace EditorBase.CamViewStates
 		}
 		protected virtual void OnCollectStateOverlayDrawcalls(Canvas canvas)
 		{
+			// Collect the views overlay layer drawcalls
+			this.View.CollectLayerOverlayDrawcalls(canvas);
+
 			Point cursorPos = this.View.LocalGLControl.PointToClient(Cursor.Position);
 			canvas.PushState();
 

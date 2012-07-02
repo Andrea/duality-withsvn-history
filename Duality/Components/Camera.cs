@@ -22,6 +22,7 @@ namespace Duality
 	{
 		Points = BeginMode.Points,
 		Lines = BeginMode.Lines,
+		LineStrip = BeginMode.LineStrip,
 		LineLoop = BeginMode.LineLoop,
 		Triangles = BeginMode.Triangles,
 		TriangleStrip = BeginMode.TriangleStrip,

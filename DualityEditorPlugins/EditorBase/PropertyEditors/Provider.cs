@@ -34,9 +34,6 @@ namespace EditorBase.PropertyEditors
 
 			// -------- General area --------
 			else if (typeof(ShapeInfo).IsAssignableFrom(baseType))	return PropertyGrid.EditorPriority_General;
-#if FALSE // Removed for now. Joints are an experimental feature.
-			else if (typeof(Collider.JointInfo).IsAssignableFrom(baseType))	return PropertyGrid.EditorPriority_General;
-#endif
 			else if (typeof(Component).IsAssignableFrom(baseType))			return PropertyGrid.EditorPriority_General;
 			else if (typeof(Resource).IsAssignableFrom(baseType))			return PropertyGrid.EditorPriority_General;
 			else if (typeof(IContentRef).IsAssignableFrom(baseType))		return PropertyGrid.EditorPriority_General;
@@ -77,9 +74,6 @@ namespace EditorBase.PropertyEditors
 
 			// -------- General area --------
 			else if (typeof(ShapeInfo).IsAssignableFrom(baseType))	e = new ColliderShapePropertyEditor();
-#if FALSE // Removed for now. Joints are an experimental feature.
-			else if (typeof(Collider.JointInfo).IsAssignableFrom(baseType))	e = new ColliderJointPropertyEditor();
-#endif
 			else if (typeof(Component).IsAssignableFrom(baseType) && compRef)	e = new ComponentRefPropertyEditor();
 			else if (typeof(Component).IsAssignableFrom(baseType) && !compRef)	e = new ComponentPropertyEditor();
 			else if (typeof(Resource).IsAssignableFrom(baseType))				e = new ResourcePropertyEditor();

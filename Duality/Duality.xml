@@ -4028,6 +4028,56 @@
             [GET] Time in milliseconds the last frame used for postprocessing.
             </summary>
         </member>
+        <member name="T:Duality.Components.Physics.FixedAngleJointInfo">
+            <summary>
+            Constrains the Collider to a fixed angle
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Physics.JointInfo">
+            <summary>
+            Describes a <see cref="T:Duality.Components.Physics.RigidBody"/> joint. Joints limit a Colliders degree of freedom 
+            by connecting it to fixed world coordinates or other Colliders.
+            </summary>
+        </member>
+        <member name="M:Duality.Components.Physics.JointInfo.CopyTo(Duality.Components.Physics.JointInfo)">
+            <summary>
+            Copies this JointInfos data to another one. It is assumed that both are of the same type.
+            </summary>
+            <param name="target"></param>
+        </member>
+        <member name="M:Duality.Components.Physics.JointInfo.Clone">
+            <summary>
+            Clones the JointInfo.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Duality.Components.Physics.JointInfo.DualJoint">
+            <summary>
+            [GET] Returns whether the joint is connecting two Colliders (instead of connecting one to the world)
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.JointInfo.CollideConnected">
+            <summary>
+            [GET / SET] Specifies whether the connected Colliders will collide with each other.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.JointInfo.Enabled">
+            <summary>
+            [GET / SET] Whether or not the joint is active.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.JointInfo.BreakPoint">
+            <summary>
+            [GET / SET] Maximum joint error value before the joint break. Breaking does not remove the joint, but disable it.
+            A value of zero or lower is interpreted as unbreakable. Note that some joints might not have breaking point support 
+            and will ignore this value.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedAngleJointInfo.TargetAngle">
+            <summary>
+            [GET / SET] The Colliders target angle.
+            </summary>
+        </member>
         <member name="T:Duality.Cloning.ISurrogate">
             <summary>
             Clones an object instead of letting it clone itsself or using a Reflection-driven approach.
@@ -4847,6 +4897,53 @@
         <member name="E:Duality.ObjectManagers.GameObjectManager.RegisteredObjectComponentRemoved">
             <summary>
             Fired when a <see cref="T:Duality.Component"/> is removed from an already registered GameObject.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Physics.ShapeInfo">
+            <summary>
+            Describes a <see cref="T:Duality.Components.Physics.RigidBody">Colliders</see> primitive shape. A Colliders overall shape may be combined of any number of primitive shapes.
+            </summary>
+        </member>
+        <member name="M:Duality.Components.Physics.ShapeInfo.CopyTo(Duality.Components.Physics.ShapeInfo)">
+            <summary>
+            Copies this ShapeInfos data to another one. It is assumed that both are of the same type.
+            </summary>
+            <param name="target"></param>
+        </member>
+        <member name="M:Duality.Components.Physics.ShapeInfo.Clone">
+            <summary>
+            Clones the ShapeInfo.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Duality.Components.Physics.ShapeInfo.Parent">
+            <summary>
+            [GET] The shape's parent <see cref="T:Duality.Components.Physics.RigidBody"/>.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.ShapeInfo.Density">
+            <summary>
+            [GET / SET] The shapes density.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.ShapeInfo.IsSensor">
+            <summary>
+            [GET / SET] Whether or not the shape acts as sensor i.e. is not part of a rigid body.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.ShapeInfo.Friction">
+            <summary>
+            [GET / SET] The shapes friction value.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.ShapeInfo.Restitution">
+            <summary>
+            [GET / SET] The shapes restitution value.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.ShapeInfo.AABB">
+            <summary>
+            [GET] Returns the Shapes axis-aligned bounding box
             </summary>
         </member>
         <member name="T:Duality.Serialization.SerializeType">
@@ -6872,6 +6969,263 @@
             <param name="splitLevel">The hierarchy level at which to perform the split operation.</param>
             <returns></returns>
         </member>
+        <member name="T:Duality.Components.Physics.RigidBody">
+            <summary>
+            Represents a body instance for physical simulation, collision detection and response.
+            </summary>
+        </member>
+        <member name="M:Duality.Components.Physics.RigidBody.AddShape(Duality.Components.Physics.ShapeInfo)">
+            <summary>
+            Adds a new shape to the Collider
+            </summary>
+            <param name="shape"></param>
+        </member>
+        <member name="M:Duality.Components.Physics.RigidBody.RemoveShape(Duality.Components.Physics.ShapeInfo)">
+            <summary>
+            Removes an existing shape from the Collider.
+            </summary>
+            <param name="shape"></param>
+        </member>
+        <member name="M:Duality.Components.Physics.RigidBody.ClearShapes">
+            <summary>
+            Removes all existing shapes from the Collider.
+            </summary>
+        </member>
+        <member name="M:Duality.Components.Physics.RigidBody.SetShapes(System.Collections.Generic.IEnumerable{Duality.Components.Physics.ShapeInfo})">
+            <summary>
+            Sets the Colliders shape.
+            </summary>
+            <param name="shapes"></param>
+        </member>
+        <member name="M:Duality.Components.Physics.RigidBody.RemoveJoint(Duality.Components.Physics.JointInfo)">
+            <summary>
+            Removes an existing joint from the Collider.
+            </summary>
+            <param name="joint"></param>
+        </member>
+        <member name="M:Duality.Components.Physics.RigidBody.AddJoint(Duality.Components.Physics.JointInfo,Duality.Components.Physics.RigidBody)">
+            <summary>
+            Adds a new joint to the Collider
+            </summary>
+            <param name="joint"></param>
+        </member>
+        <member name="M:Duality.Components.Physics.RigidBody.ClearJoints">
+            <summary>
+            Removes all existing joints from the Collider.
+            </summary>
+        </member>
+        <member name="M:Duality.Components.Physics.RigidBody.SetJoints(System.Collections.Generic.IEnumerable{Duality.Components.Physics.JointInfo})">
+            <summary>
+            Sets the Colliders joint configuration. This may also affect other Colliders!
+            </summary>
+            <param name="joints"></param>
+        </member>
+        <member name="M:Duality.Components.Physics.RigidBody.ApplyLocalImpulse(System.Single)">
+            <summary>
+            Applies a Transform-local angular impulse to the object.
+            </summary>
+            <param name="angularImpulse"></param>
+        </member>
+        <member name="M:Duality.Components.Physics.RigidBody.ApplyLocalImpulse(OpenTK.Vector2)">
+            <summary>
+            Applies a Transform-local impulse to the objects mass center.
+            </summary>
+            <param name="impulse"></param>
+        </member>
+        <member name="M:Duality.Components.Physics.RigidBody.ApplyLocalImpulse(OpenTK.Vector2,OpenTK.Vector2)">
+            <summary>
+            Applies a Transform-local impulse to the specified point.
+            </summary>
+            <param name="impulse"></param>
+            <param name="applyAt"></param>
+        </member>
+        <member name="M:Duality.Components.Physics.RigidBody.ApplyWorldImpulse(OpenTK.Vector2)">
+            <summary>
+            Applies a world impulse to the objects mass center.
+            </summary>
+            <param name="impulse"></param>
+        </member>
+        <member name="M:Duality.Components.Physics.RigidBody.ApplyWorldImpulse(OpenTK.Vector2,OpenTK.Vector2)">
+            <summary>
+            Applies a world impulse to the specified point.
+            </summary>
+            <param name="impulse"></param>
+            <param name="applyAt"></param>
+        </member>
+        <member name="M:Duality.Components.Physics.RigidBody.ApplyLocalForce(System.Single)">
+            <summary>
+            Applies a Transform-local angular force to the object.
+            </summary>
+            <param name="angularForce"></param>
+        </member>
+        <member name="M:Duality.Components.Physics.RigidBody.ApplyLocalForce(OpenTK.Vector2)">
+            <summary>
+            Applies a Transform-local force to the objects mass center.
+            </summary>
+            <param name="force"></param>
+        </member>
+        <member name="M:Duality.Components.Physics.RigidBody.ApplyLocalForce(OpenTK.Vector2,OpenTK.Vector2)">
+            <summary>
+            Applies a Transform-local force to the specified point.
+            </summary>
+            <param name="force"></param>
+            <param name="applyAt"></param>
+        </member>
+        <member name="M:Duality.Components.Physics.RigidBody.ApplyWorldForce(OpenTK.Vector2)">
+            <summary>
+            Applies a world force to the objects mass center.
+            </summary>
+            <param name="force"></param>
+        </member>
+        <member name="M:Duality.Components.Physics.RigidBody.ApplyWorldForce(OpenTK.Vector2,OpenTK.Vector2)">
+            <summary>
+            Applies a world force to the specified point.
+            </summary>
+            <param name="force"></param>
+            <param name="applyAt"></param>
+        </member>
+        <member name="M:Duality.Components.Physics.RigidBody.AwakeBody">
+            <summary>
+            Awakes the body if it has been in a resting state that is now being left, such as
+            when changing physical properties at runtime. You usually don't need to call this.
+            </summary>
+        </member>
+        <member name="M:Duality.Components.Physics.RigidBody.UpdateBody">
+            <summary>
+            Updates the Colliders internal body shape and joints.
+            </summary>
+        </member>
+        <member name="M:Duality.Components.Physics.RigidBody.PickShape(OpenTK.Vector2)">
+            <summary>
+            Performs a physical picking operation and returns the <see cref="T:Duality.Components.Physics.ShapeInfo">shape</see> in which
+            the specified world coordinate is located in.
+            </summary>
+            <param name="worldCoord"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Components.Physics.RigidBody.PickShapes(OpenTK.Vector2)">
+            <summary>
+            Performs a physical picking operation and returns the <see cref="T:Duality.Components.Physics.ShapeInfo">shapes</see> that
+            intersect the specified world coordinate.
+            </summary>
+            <param name="worldCoord"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Components.Physics.RigidBody.PickShapes(OpenTK.Vector2,OpenTK.Vector2)">
+            <summary>
+            Performs a physical picking operation and returns the <see cref="T:Duality.Components.Physics.ShapeInfo">shapes</see> that
+            intersect the specified world coordinate area.
+            </summary>
+            <param name="worldCoord"></param>
+            <param name="size"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Components.Physics.RigidBody.PickShapeGlobal(OpenTK.Vector2)">
+            <summary>
+            Performs a global physical picking operation and returns the <see cref="T:Duality.Components.Physics.ShapeInfo">shape</see> in which
+            the specified world coordinate is located in.
+            </summary>
+            <param name="worldCoord"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Components.Physics.RigidBody.PickShapesGlobal(OpenTK.Vector2)">
+            <summary>
+            Performs a global physical picking operation and returns the <see cref="T:Duality.Components.Physics.ShapeInfo">shapes</see> that
+            intersect the specified world coordinate.
+            </summary>
+            <param name="worldCoord"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Components.Physics.RigidBody.PickShapesGlobal(OpenTK.Vector2,OpenTK.Vector2)">
+            <summary>
+            Performs a global physical picking operation and returns the <see cref="T:Duality.Components.Physics.ShapeInfo">shapes</see> that
+            intersect the specified world coordinate area.
+            </summary>
+            <param name="worldCoord"></param>
+            <param name="size"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Duality.Components.Physics.RigidBody.PhysicsBodyType">
+            <summary>
+            [GET / SET] The type of the physical body.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RigidBody.LinearDamping">
+            <summary>
+            [GET / SET] The damping that is applied to the bodies velocity.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RigidBody.AngularDamping">
+            <summary>
+            [GET / SET] The damping that is applied to the bodies angular velocity.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RigidBody.FixedAngle">
+            <summary>
+            [GET / SET] Whether the bodies rotation is fixed.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RigidBody.IgnoreGravity">
+            <summary>
+            [GET / SET] Whether the body ignores gravity.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RigidBody.ContinousCollision">
+            <summary>
+            [GET / SET] Whether the body is included in continous collision detection or not.
+            It prevents the body from moving through others at high speeds at the cost of performance.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RigidBody.LinearVelocity">
+            <summary>
+            [GET / SET] The Colliders current linear velocity.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RigidBody.AngularVelocity">
+            <summary>
+            [GET / SET] The Colliders current angular velocity.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RigidBody.CollisionCategory">
+            <summary>
+            [GET / SET] A bitmask that specifies the collision categories to which this Collider belongs.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RigidBody.CollidesWith">
+            <summary>
+            [GET / SET] A bitmask that specifies which collision categories this Collider interacts with.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RigidBody.Shapes">
+            <summary>
+            [GET / SET] Enumerates all <see cref="T:Duality.Components.Physics.ShapeInfo">primitive shapes</see> which this body consists of.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RigidBody.Joints">
+            <summary>
+            [GET / SET] Enumerates all <see cref="T:Duality.Components.Physics.JointInfo">joints</see> that are connected to this Collider.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RigidBody.BoundRadius">
+            <summary>
+            [GET] The physical bodys bounding radius.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Physics.RigidBody.BodyType">
+            <summary>
+            The type of a <see cref="T:Duality.Components.Physics.RigidBody">Colliders</see> physical body.
+            </summary>
+        </member>
+        <member name="F:Duality.Components.Physics.RigidBody.BodyType.Static">
+            <summary>
+            A static body. It will never move due to physical forces.
+            </summary>
+        </member>
+        <member name="F:Duality.Components.Physics.RigidBody.BodyType.Dynamic">
+            <summary>
+            A dynamic body. Its movement is determined by physical effects.
+            </summary>
+        </member>
         <member name="T:Duality.Resources.Prefab">
             <summary>
             Prefab is short for "prefabricated object" and encapsulates a single <see cref="T:Duality.GameObject"/> that can serve as a template.
@@ -8057,6 +8411,36 @@
             <param name="bm"></param>
             <param name="pixelData"></param>
         </member>
+        <member name="T:Duality.Components.Physics.WeldJointInfo">
+            <summary>
+            "Welds" two Colliders together so they share a common point and relative angle.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.WeldJointInfo.LocalAnchorA">
+            <summary>
+            [GET / SET] The welding point, locally to the first object.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.WeldJointInfo.LocalAnchorB">
+            <summary>
+            [GET / SET] The welding point, locally to the second object.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.WeldJointInfo.RefAngle">
+            <summary>
+            [GET / SET] The relative angle both objects need to keep.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Physics.PolyShapeInfo">
+            <summary>
+            Describes a <see cref="T:Duality.Components.Physics.RigidBody">Colliders</see> polygon shape.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PolyShapeInfo.Vertices">
+            <summary>
+            [GET / SET] The polygons vertices.
+            </summary>
+        </member>
         <member name="T:Duality.Components.SoundEmitter">
             <summary>
             Provides functionality to emit sound.
@@ -8652,41 +9036,93 @@
             <param name="w"></param>
             <param name="h"></param>
         </member>
-        <member name="M:Duality.Canvas.DrawOval(System.Single,System.Single,System.Single,System.Single,System.Single)">
+        <member name="M:Duality.Canvas.DrawOvalSegment(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
             <summary>
-            Draws an oval.
+            Draws the section of an oval.
             </summary>
             <param name="x"></param>
             <param name="y"></param>
             <param name="z"></param>
             <param name="w"></param>
             <param name="h"></param>
+            <param name="minAngle"></param>
+            <param name="maxAngle"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawOvalSegment(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws the section of an oval.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+            <param name="minAngle"></param>
+            <param name="maxAngle"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawCircleSegment(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws the section of a circle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="r"></param>
+            <param name="minAngle"></param>
+            <param name="maxAngle"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawCircleSegment(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws the section of a circle
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="r"></param>
+            <param name="minAngle"></param>
+            <param name="maxAngle"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawOval(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws the section of an oval.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+            <param name="minAngle"></param>
+            <param name="maxAngle"></param>
         </member>
         <member name="M:Duality.Canvas.DrawOval(System.Single,System.Single,System.Single,System.Single)">
             <summary>
-            Draws an oval.
+            Draws the section of an oval.
             </summary>
             <param name="x"></param>
             <param name="y"></param>
             <param name="w"></param>
             <param name="h"></param>
+            <param name="minAngle"></param>
+            <param name="maxAngle"></param>
         </member>
         <member name="M:Duality.Canvas.DrawCircle(System.Single,System.Single,System.Single,System.Single)">
             <summary>
-            Draws a circle.
+            Draws the section of a circle.
             </summary>
             <param name="x"></param>
             <param name="y"></param>
             <param name="z"></param>
             <param name="r"></param>
+            <param name="minAngle"></param>
+            <param name="maxAngle"></param>
         </member>
         <member name="M:Duality.Canvas.DrawCircle(System.Single,System.Single,System.Single)">
             <summary>
-            Draws a circle
+            Draws the section of a circle
             </summary>
             <param name="x"></param>
             <param name="y"></param>
             <param name="r"></param>
+            <param name="minAngle"></param>
+            <param name="maxAngle"></param>
         </member>
         <member name="M:Duality.Canvas.FillConvexPolygon(OpenTK.Vector2[],System.Single)">
             <summary>
@@ -8919,6 +9355,11 @@
             [GET / SET] The <see cref="T:Duality.Resources.Font"/> to use for text rendering.
             </summary>
         </member>
+        <member name="P:Duality.Canvas.State.TextInvariantScale">
+            <summary>
+            [GET / SET] If true, text does not scale due to its position in space
+            </summary>
+        </member>
         <member name="P:Duality.Canvas.State.ColorTint">
             <summary>
             [GET / SET] The color tint to use for drawing.
@@ -8937,6 +9378,36 @@
         <member name="P:Duality.Canvas.State.TransformHandle">
             <summary>
             [GET / SET] The handle used for transforming all shapes.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Physics.FixedDistanceJointInfo">
+            <summary>
+            Constrains the Collider to obtain a fixed distance to a world coordinate
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedDistanceJointInfo.LocalAnchor">
+            <summary>
+            [GET / SET] The Colliders local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedDistanceJointInfo.WorldAnchor">
+            <summary>
+            [GET / SET] The world anchor point to which the Collider will be attached.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedDistanceJointInfo.DampingRatio">
+            <summary>
+            [GET / SET] The damping ratio. Zero means "no damping", one means "critical damping".
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedDistanceJointInfo.Frequency">
+            <summary>
+            [GET / SET] The mass spring damper frequency in hertz.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedDistanceJointInfo.TargetDistance">
+            <summary>
+            [GET / SET] The target distance between local and world anchor
             </summary>
         </member>
         <member name="T:Duality.FormattedText">
@@ -9308,6 +9779,11 @@
         <member name="F:Duality.MathF.TwoPi">
             <summary>
             Equals 2 * <see cref="F:Duality.MathF.Pi"/>.
+            </summary>
+        </member>
+        <member name="F:Duality.MathF.RadAngle1">
+            <summary>
+            A one degree angle in radians.
             </summary>
         </member>
         <member name="F:Duality.MathF.RadAngle30">
@@ -10056,6 +10532,14 @@
             </summary>
             <param name="n">The specified number.</param>
             <returns>The next power of two.</returns>
+        </member>
+        <member name="M:Duality.MathF.Swap``1(``0@,``0@)">
+            <summary>
+            Swaps the values of two variables.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="first"></param>
+            <param name="second"></param>
         </member>
         <member name="P:Duality.MathF.Rnd">
             <summary>
@@ -11775,6 +12259,21 @@
             [GET] The preferred number of displayed decimal places
             </summary>
         </member>
+        <member name="T:Duality.Components.Physics.CircleShapeInfo">
+            <summary>
+            Describes a <see cref="T:Duality.Components.Physics.RigidBody">Colliders</see> circle shape.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.CircleShapeInfo.Radius">
+            <summary>
+            [GET / SET] The circles radius.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.CircleShapeInfo.Position">
+            <summary>
+            [GET / SET] The circles position.
+            </summary>
+        </member>
         <member name="T:Duality.Serialization.BinaryFormatter">
             <summary>
             De/Serializes object data.
@@ -12438,435 +12937,6 @@
         <member name="T:Duality.Components.SoundListener">
             <summary>
             Makes this <see cref="T:Duality.GameObject"/> the 3d sound listener.
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Physics.FixedAngleJointInfo">
-            <summary>
-            Constrains the Collider to a fixed angle
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Physics.JointInfo">
-            <summary>
-            Describes a <see cref="T:Duality.Components.Physics.RigidBody"/> joint. Joints limit a Colliders degree of freedom 
-            by connecting it to fixed world coordinates or other Colliders.
-            </summary>
-        </member>
-        <member name="M:Duality.Components.Physics.JointInfo.CopyTo(Duality.Components.Physics.JointInfo)">
-            <summary>
-            Copies this JointInfos data to another one. It is assumed that both are of the same type.
-            </summary>
-            <param name="target"></param>
-        </member>
-        <member name="M:Duality.Components.Physics.JointInfo.Clone">
-            <summary>
-            Clones the JointInfo.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="P:Duality.Components.Physics.JointInfo.DualJoint">
-            <summary>
-            [GET] Returns whether the joint is connecting two Colliders (instead of connecting one to the world)
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.JointInfo.CollideConnected">
-            <summary>
-            [GET / SET] Specifies whether the connected Colliders will collide with each other.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.JointInfo.Enabled">
-            <summary>
-            [GET / SET] Whether or not the joint is active.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.JointInfo.BreakPoint">
-            <summary>
-            [GET / SET] Maximum joint error value before the joint break. Breaking does not remove the joint, but disable it.
-            A value of zero or lower is interpreted as unbreakable. Note that some joints might not have breaking point support 
-            and will ignore this value.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedAngleJointInfo.TargetAngle">
-            <summary>
-            [GET / SET] The Colliders target angle.
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Physics.FixedDistanceJointInfo">
-            <summary>
-            Constrains the Collider to obtain a fixed distance to a world coordinate
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedDistanceJointInfo.LocalAnchor">
-            <summary>
-            [GET / SET] The Colliders local anchor point.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedDistanceJointInfo.WorldAnchor">
-            <summary>
-            [GET / SET] The world anchor point to which the Collider will be attached.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedDistanceJointInfo.DampingRatio">
-            <summary>
-            [GET / SET] The damping ratio. Zero means "no damping", one means "critical damping".
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedDistanceJointInfo.Frequency">
-            <summary>
-            [GET / SET] The mass spring damper frequency in hertz.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedDistanceJointInfo.TargetDistance">
-            <summary>
-            [GET / SET] The target distance between local and world anchor
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Physics.ShapeInfo">
-            <summary>
-            Describes a <see cref="T:Duality.Components.Physics.RigidBody">Colliders</see> primitive shape. A Colliders overall shape may be combined of any number of primitive shapes.
-            </summary>
-        </member>
-        <member name="M:Duality.Components.Physics.ShapeInfo.CopyTo(Duality.Components.Physics.ShapeInfo)">
-            <summary>
-            Copies this ShapeInfos data to another one. It is assumed that both are of the same type.
-            </summary>
-            <param name="target"></param>
-        </member>
-        <member name="M:Duality.Components.Physics.ShapeInfo.Clone">
-            <summary>
-            Clones the ShapeInfo.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="P:Duality.Components.Physics.ShapeInfo.Parent">
-            <summary>
-            [GET] The shape's parent <see cref="T:Duality.Components.Physics.RigidBody"/>.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.ShapeInfo.Density">
-            <summary>
-            [GET / SET] The shapes density.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.ShapeInfo.IsSensor">
-            <summary>
-            [GET / SET] Whether or not the shape acts as sensor i.e. is not part of a rigid body.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.ShapeInfo.Friction">
-            <summary>
-            [GET / SET] The shapes friction value.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.ShapeInfo.Restitution">
-            <summary>
-            [GET / SET] The shapes restitution value.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.ShapeInfo.AABB">
-            <summary>
-            [GET] Returns the Shapes axis-aligned bounding box
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Physics.WeldJointInfo">
-            <summary>
-            "Welds" two Colliders together so they share a common point and relative angle.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.WeldJointInfo.LocalAnchorA">
-            <summary>
-            [GET / SET] The welding point, locally to the first object.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.WeldJointInfo.LocalAnchorB">
-            <summary>
-            [GET / SET] The welding point, locally to the second object.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.WeldJointInfo.RefAngle">
-            <summary>
-            [GET / SET] The relative angle both objects need to keep.
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Physics.RigidBody">
-            <summary>
-            Represents a body instance for physical simulation, collision detection and response.
-            </summary>
-        </member>
-        <member name="M:Duality.Components.Physics.RigidBody.AddShape(Duality.Components.Physics.ShapeInfo)">
-            <summary>
-            Adds a new shape to the Collider
-            </summary>
-            <param name="shape"></param>
-        </member>
-        <member name="M:Duality.Components.Physics.RigidBody.RemoveShape(Duality.Components.Physics.ShapeInfo)">
-            <summary>
-            Removes an existing shape from the Collider.
-            </summary>
-            <param name="shape"></param>
-        </member>
-        <member name="M:Duality.Components.Physics.RigidBody.ClearShapes">
-            <summary>
-            Removes all existing shapes from the Collider.
-            </summary>
-        </member>
-        <member name="M:Duality.Components.Physics.RigidBody.SetShapes(System.Collections.Generic.IEnumerable{Duality.Components.Physics.ShapeInfo})">
-            <summary>
-            Sets the Colliders shape.
-            </summary>
-            <param name="shapes"></param>
-        </member>
-        <member name="M:Duality.Components.Physics.RigidBody.RemoveJoint(Duality.Components.Physics.JointInfo)">
-            <summary>
-            Removes an existing joint from the Collider.
-            </summary>
-            <param name="joint"></param>
-        </member>
-        <member name="M:Duality.Components.Physics.RigidBody.AddJoint(Duality.Components.Physics.JointInfo,Duality.Components.Physics.RigidBody)">
-            <summary>
-            Adds a new joint to the Collider
-            </summary>
-            <param name="joint"></param>
-        </member>
-        <member name="M:Duality.Components.Physics.RigidBody.ClearJoints">
-            <summary>
-            Removes all existing joints from the Collider.
-            </summary>
-        </member>
-        <member name="M:Duality.Components.Physics.RigidBody.SetJoints(System.Collections.Generic.IEnumerable{Duality.Components.Physics.JointInfo})">
-            <summary>
-            Sets the Colliders joint configuration. This may also affect other Colliders!
-            </summary>
-            <param name="joints"></param>
-        </member>
-        <member name="M:Duality.Components.Physics.RigidBody.ApplyLocalImpulse(System.Single)">
-            <summary>
-            Applies a Transform-local angular impulse to the object.
-            </summary>
-            <param name="angularImpulse"></param>
-        </member>
-        <member name="M:Duality.Components.Physics.RigidBody.ApplyLocalImpulse(OpenTK.Vector2)">
-            <summary>
-            Applies a Transform-local impulse to the objects mass center.
-            </summary>
-            <param name="impulse"></param>
-        </member>
-        <member name="M:Duality.Components.Physics.RigidBody.ApplyLocalImpulse(OpenTK.Vector2,OpenTK.Vector2)">
-            <summary>
-            Applies a Transform-local impulse to the specified point.
-            </summary>
-            <param name="impulse"></param>
-            <param name="applyAt"></param>
-        </member>
-        <member name="M:Duality.Components.Physics.RigidBody.ApplyWorldImpulse(OpenTK.Vector2)">
-            <summary>
-            Applies a world impulse to the objects mass center.
-            </summary>
-            <param name="impulse"></param>
-        </member>
-        <member name="M:Duality.Components.Physics.RigidBody.ApplyWorldImpulse(OpenTK.Vector2,OpenTK.Vector2)">
-            <summary>
-            Applies a world impulse to the specified point.
-            </summary>
-            <param name="impulse"></param>
-            <param name="applyAt"></param>
-        </member>
-        <member name="M:Duality.Components.Physics.RigidBody.ApplyLocalForce(System.Single)">
-            <summary>
-            Applies a Transform-local angular force to the object.
-            </summary>
-            <param name="angularForce"></param>
-        </member>
-        <member name="M:Duality.Components.Physics.RigidBody.ApplyLocalForce(OpenTK.Vector2)">
-            <summary>
-            Applies a Transform-local force to the objects mass center.
-            </summary>
-            <param name="force"></param>
-        </member>
-        <member name="M:Duality.Components.Physics.RigidBody.ApplyLocalForce(OpenTK.Vector2,OpenTK.Vector2)">
-            <summary>
-            Applies a Transform-local force to the specified point.
-            </summary>
-            <param name="force"></param>
-            <param name="applyAt"></param>
-        </member>
-        <member name="M:Duality.Components.Physics.RigidBody.ApplyWorldForce(OpenTK.Vector2)">
-            <summary>
-            Applies a world force to the objects mass center.
-            </summary>
-            <param name="force"></param>
-        </member>
-        <member name="M:Duality.Components.Physics.RigidBody.ApplyWorldForce(OpenTK.Vector2,OpenTK.Vector2)">
-            <summary>
-            Applies a world force to the specified point.
-            </summary>
-            <param name="force"></param>
-            <param name="applyAt"></param>
-        </member>
-        <member name="M:Duality.Components.Physics.RigidBody.AwakeBody">
-            <summary>
-            Awakes the body if it has been in a resting state that is now being left, such as
-            when changing physical properties at runtime. You usually don't need to call this.
-            </summary>
-        </member>
-        <member name="M:Duality.Components.Physics.RigidBody.UpdateBody">
-            <summary>
-            Updates the Colliders internal body shape and joints.
-            </summary>
-        </member>
-        <member name="M:Duality.Components.Physics.RigidBody.PickShape(OpenTK.Vector2)">
-            <summary>
-            Performs a physical picking operation and returns the <see cref="T:Duality.Components.Physics.ShapeInfo">shape</see> in which
-            the specified world coordinate is located in.
-            </summary>
-            <param name="worldCoord"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.Components.Physics.RigidBody.PickShapes(OpenTK.Vector2)">
-            <summary>
-            Performs a physical picking operation and returns the <see cref="T:Duality.Components.Physics.ShapeInfo">shapes</see> that
-            intersect the specified world coordinate.
-            </summary>
-            <param name="worldCoord"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.Components.Physics.RigidBody.PickShapes(OpenTK.Vector2,OpenTK.Vector2)">
-            <summary>
-            Performs a physical picking operation and returns the <see cref="T:Duality.Components.Physics.ShapeInfo">shapes</see> that
-            intersect the specified world coordinate area.
-            </summary>
-            <param name="worldCoord"></param>
-            <param name="size"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.Components.Physics.RigidBody.PickShapeGlobal(OpenTK.Vector2)">
-            <summary>
-            Performs a global physical picking operation and returns the <see cref="T:Duality.Components.Physics.ShapeInfo">shape</see> in which
-            the specified world coordinate is located in.
-            </summary>
-            <param name="worldCoord"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.Components.Physics.RigidBody.PickShapesGlobal(OpenTK.Vector2)">
-            <summary>
-            Performs a global physical picking operation and returns the <see cref="T:Duality.Components.Physics.ShapeInfo">shapes</see> that
-            intersect the specified world coordinate.
-            </summary>
-            <param name="worldCoord"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Duality.Components.Physics.RigidBody.PickShapesGlobal(OpenTK.Vector2,OpenTK.Vector2)">
-            <summary>
-            Performs a global physical picking operation and returns the <see cref="T:Duality.Components.Physics.ShapeInfo">shapes</see> that
-            intersect the specified world coordinate area.
-            </summary>
-            <param name="worldCoord"></param>
-            <param name="size"></param>
-            <returns></returns>
-        </member>
-        <member name="P:Duality.Components.Physics.RigidBody.PhysicsBodyType">
-            <summary>
-            [GET / SET] The type of the physical body.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.RigidBody.LinearDamping">
-            <summary>
-            [GET / SET] The damping that is applied to the bodies velocity.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.RigidBody.AngularDamping">
-            <summary>
-            [GET / SET] The damping that is applied to the bodies angular velocity.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.RigidBody.FixedAngle">
-            <summary>
-            [GET / SET] Whether the bodies rotation is fixed.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.RigidBody.IgnoreGravity">
-            <summary>
-            [GET / SET] Whether the body ignores gravity.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.RigidBody.ContinousCollision">
-            <summary>
-            [GET / SET] Whether the body is included in continous collision detection or not.
-            It prevents the body from moving through others at high speeds at the cost of performance.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.RigidBody.LinearVelocity">
-            <summary>
-            [GET / SET] The Colliders current linear velocity.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.RigidBody.AngularVelocity">
-            <summary>
-            [GET / SET] The Colliders current angular velocity.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.RigidBody.CollisionCategory">
-            <summary>
-            [GET / SET] A bitmask that specifies the collision categories to which this Collider belongs.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.RigidBody.CollidesWith">
-            <summary>
-            [GET / SET] A bitmask that specifies which collision categories this Collider interacts with.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.RigidBody.Shapes">
-            <summary>
-            [GET / SET] Enumerates all <see cref="T:Duality.Components.Physics.ShapeInfo">primitive shapes</see> which this body consists of.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.RigidBody.Joints">
-            <summary>
-            [GET / SET] Enumerates all <see cref="T:Duality.Components.Physics.JointInfo">joints</see> that are connected to this Collider.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.RigidBody.BoundRadius">
-            <summary>
-            [GET] The physical bodys bounding radius.
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Physics.RigidBody.BodyType">
-            <summary>
-            The type of a <see cref="T:Duality.Components.Physics.RigidBody">Colliders</see> physical body.
-            </summary>
-        </member>
-        <member name="F:Duality.Components.Physics.RigidBody.BodyType.Static">
-            <summary>
-            A static body. It will never move due to physical forces.
-            </summary>
-        </member>
-        <member name="F:Duality.Components.Physics.RigidBody.BodyType.Dynamic">
-            <summary>
-            A dynamic body. Its movement is determined by physical effects.
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Physics.CircleShapeInfo">
-            <summary>
-            Describes a <see cref="T:Duality.Components.Physics.RigidBody">Colliders</see> circle shape.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.CircleShapeInfo.Radius">
-            <summary>
-            [GET / SET] The circles radius.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.CircleShapeInfo.Position">
-            <summary>
-            [GET / SET] The circles position.
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Physics.PolyShapeInfo">
-            <summary>
-            Describes a <see cref="T:Duality.Components.Physics.RigidBody">Colliders</see> polygon shape.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.PolyShapeInfo.Vertices">
-            <summary>
-            [GET / SET] The polygons vertices.
             </summary>
         </member>
     </members>
