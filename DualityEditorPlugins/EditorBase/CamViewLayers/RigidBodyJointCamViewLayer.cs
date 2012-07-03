@@ -57,15 +57,23 @@ namespace EditorBase.CamViewLayers
 			foreach (RigidBody c in visibleColliders) visibleJoints.AddRange(c.Joints.Where(j => !visibleJoints.Contains(j)));
 			foreach (JointInfo j in visibleJoints)
 			{
-				float jointAlpha = (j.ColliderA == selectedBody || j.ColliderB == selectedBody) ? 0.5f : 0.25f;
+				float jointAlpha = selectedBody != null && (j.ColliderA == selectedBody || j.ColliderB == selectedBody) ? 1.0f : 0.5f;
 				canvas.CurrentState.ColorTint = canvas.CurrentState.ColorTint.WithAlpha(jointAlpha);
 
-				if (j is FixedAngleJointInfo)			this.DrawJointFixedAngle(canvas, j as FixedAngleJointInfo);
-				else if (j is FixedDistanceJointInfo)	this.DrawJointFixedDistance(canvas, j as FixedDistanceJointInfo);
+				this.DrawJoint(canvas, j);
 			}
 		}
 
-		protected void DrawJointFixedAngle(Canvas canvas, FixedAngleJointInfo joint)
+		protected void DrawJoint(Canvas canvas, JointInfo joint)
+		{
+			if (joint.ColliderA == null) return;
+			if (joint.DualJoint && joint.ColliderB == null) return;
+
+			if (joint is FixedAngleJointInfo)			this.DrawJoint(canvas, joint as FixedAngleJointInfo);
+			else if (joint is FixedDistanceJointInfo)	this.DrawJoint(canvas, joint as FixedDistanceJointInfo);
+			else if (joint is WeldJointInfo)			this.DrawJoint(canvas, joint as WeldJointInfo);
+		}
+		protected void DrawJoint(Canvas canvas, FixedAngleJointInfo joint)
 		{
 			Vector3 colliderPosA = joint.ColliderA.GameObj.Transform.Pos;
 
@@ -107,8 +115,8 @@ namespace EditorBase.CamViewLayers
 				canvas.CurrentState.TransformHandle = Vector2.UnitY * canvas.CurrentState.TextFont.Res.Height;
 				canvas.DrawText(
 					string.Format("{0:F0}°", MathF.RadToDeg(joint.ColliderA.GameObj.Transform.Angle)),
-					colliderPosA.X + errorVec.X + errorDir.X,
-					colliderPosA.Y + errorVec.Y + errorDir.Y,
+					colliderPosA.X + errorVec.X,
+					colliderPosA.Y + errorVec.Y,
 					colliderPosA.Z - 0.01f);
 				canvas.CurrentState.TransformHandle = Vector2.Zero;
 				canvas.CurrentState.TransformAngle = 0.0f;
@@ -129,7 +137,7 @@ namespace EditorBase.CamViewLayers
 				colliderPosA.Z - 0.01f);
 			canvas.CurrentState.TransformAngle = 0.0f;
 		}
-		protected void DrawJointFixedDistance(Canvas canvas, FixedDistanceJointInfo joint)
+		protected void DrawJoint(Canvas canvas, FixedDistanceJointInfo joint)
 		{
 			Vector3 colliderPosA = joint.ColliderA.GameObj.Transform.Pos;
 
@@ -140,7 +148,7 @@ namespace EditorBase.CamViewLayers
 			Vector2 distVec = errorVec.Normalized * joint.TargetDistance;
 			Vector2 lineNormal = errorVec.PerpendicularRight.Normalized;
 			float dist = errorVec.Length;
-			bool hasError = (errorVec - distVec).Length >= 0.1f;
+			bool hasError = (errorVec - distVec).Length >= 1.0f;
 
 			if (hasError)
 			{
@@ -196,6 +204,169 @@ namespace EditorBase.CamViewLayers
 				colliderPosA.Y + distVec.Y,
 				colliderPosA.Z - 0.01f);
 			canvas.CurrentState.TransformAngle = 0.0f;
+		}
+		protected void DrawJoint(Canvas canvas, WeldJointInfo joint)
+		{
+			Vector3 colliderPosA = joint.ColliderA.GameObj.Transform.Pos;
+			Vector3 colliderPosB = joint.ColliderB.GameObj.Transform.Pos;
+
+			ColorRgba clr = this.JointColor;
+			ColorRgba clrErr = this.JointErrorColor;
+
+			float angularCircleRad = joint.ColliderA.BoundRadius * 0.25f;
+			Vector2 anchorA = joint.ColliderA.GameObj.Transform.GetWorldVector(new Vector3(joint.LocalAnchorA)).Xy;
+			Vector2 anchorB = joint.ColliderB.GameObj.Transform.GetWorldVector(new Vector3(joint.LocalAnchorB)).Xy;
+			Vector2 errorVec = (colliderPosB.Xy + anchorB) - (colliderPosA.Xy + anchorA);
+			bool displaySecondCollider = errorVec.Length >= angularCircleRad * 2.0f;
+			
+			bool hasError = errorVec.Length >= 1.0f;
+			if (hasError)
+			{
+				string errorText = string.Format("{0:F1}", errorVec.Length);
+				Vector2 errorTextSize = canvas.MeasureText(errorText);
+				canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clrErr));
+				canvas.DrawLine(
+					colliderPosA.X + anchorA.X,
+					colliderPosA.Y + anchorA.Y,
+					colliderPosA.Z - 0.01f,
+					colliderPosB.X + anchorB.X,
+					colliderPosB.Y + anchorB.Y,
+					colliderPosB.Z - 0.01f);
+				canvas.CurrentState.TransformAngle = errorVec.PerpendicularLeft.Angle;
+				canvas.CurrentState.TransformHandle = new Vector2(errorTextSize.X * 0.5f, 0.0f);
+				canvas.DrawText(
+					errorText,
+					colliderPosA.X + anchorA.X + errorVec.X * 0.5f,
+					colliderPosA.Y + anchorA.Y + errorVec.Y * 0.5f,
+					colliderPosA.Z - 0.01f);
+				canvas.CurrentState.TransformAngle = 0.0f;
+				canvas.CurrentState.TransformHandle = Vector2.Zero;
+			}
+
+			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr));
+			canvas.DrawLine(
+				colliderPosA.X,
+				colliderPosA.Y,
+				colliderPosA.Z - 0.01f,
+				colliderPosA.X + anchorA.X,
+				colliderPosA.Y + anchorA.Y,
+				colliderPosA.Z - 0.01f);
+			canvas.FillCircle(
+				colliderPosA.X + anchorA.X,
+				colliderPosA.Y + anchorA.Y,
+				colliderPosA.Z - 0.01f,
+				3.0f);
+			canvas.DrawLine(
+				colliderPosB.X,
+				colliderPosB.Y,
+				colliderPosB.Z - 0.01f,
+				colliderPosB.X + anchorB.X,
+				colliderPosB.Y + anchorB.Y,
+				colliderPosB.Z - 0.01f);
+			canvas.FillCircle(
+				colliderPosB.X + anchorB.X,
+				colliderPosB.Y + anchorB.Y,
+				colliderPosB.Z - 0.01f,
+				3.0f);
+
+			Vector2 angleVec = Vector2.FromAngleLength(joint.ColliderA.GameObj.Transform.Angle + joint.RefAngle, angularCircleRad);
+			Vector2 angleErrorVec = Vector2.FromAngleLength(joint.ColliderB.GameObj.Transform.Angle, angularCircleRad);
+
+			bool hasAngleError = MathF.CircularDist(joint.ColliderA.GameObj.Transform.Angle + joint.RefAngle, joint.ColliderB.GameObj.Transform.Angle) >= MathF.RadAngle1;
+			if (hasAngleError)
+			{
+				float circleBegin = MathF.NormalizeAngle(joint.ColliderA.GameObj.Transform.Angle + joint.RefAngle);
+				float circleEnd = MathF.NormalizeAngle(joint.ColliderB.GameObj.Transform.Angle);
+				if (MathF.TurnDir(circleBegin, circleEnd) < 0)
+				{
+					MathF.Swap(ref circleBegin, ref circleEnd);
+					circleEnd = circleBegin + MathF.CircularDist(circleBegin, circleEnd);
+				}
+
+				canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clrErr));
+				canvas.DrawLine(
+					colliderPosA.X + anchorA.X,
+					colliderPosA.Y + anchorA.Y,
+					colliderPosA.Z - 0.01f,
+					colliderPosA.X + anchorA.X + angleErrorVec.X,
+					colliderPosA.Y + anchorA.Y + angleErrorVec.Y,
+					colliderPosA.Z - 0.01f);
+				canvas.DrawCircleSegment(
+					colliderPosA.X + anchorA.X,
+					colliderPosA.Y + anchorA.Y,
+					colliderPosA.Z - 0.01f,
+					angularCircleRad,
+					circleBegin,
+					circleEnd);
+				canvas.CurrentState.TransformAngle = angleErrorVec.Angle;
+				canvas.CurrentState.TransformHandle = Vector2.UnitY * canvas.CurrentState.TextFont.Res.Height;
+				canvas.DrawText(
+					string.Format("{0:F0}°", MathF.RadToDeg(joint.ColliderB.GameObj.Transform.Angle)),
+					colliderPosA.X + anchorA.X + angleErrorVec.X,
+					colliderPosA.Y + anchorA.Y + angleErrorVec.Y,
+					colliderPosA.Z - 0.01f);
+				canvas.CurrentState.TransformHandle = Vector2.Zero;
+				canvas.CurrentState.TransformAngle = 0.0f;
+				if (displaySecondCollider)
+				{
+					canvas.DrawLine(
+						colliderPosB.X + anchorB.X,
+						colliderPosB.Y + anchorB.Y,
+						colliderPosB.Z - 0.01f,
+						colliderPosB.X + anchorB.X + angleErrorVec.X,
+						colliderPosB.Y + anchorB.Y + angleErrorVec.Y,
+						colliderPosB.Z - 0.01f);
+					canvas.DrawCircleSegment(
+						colliderPosB.X + anchorB.X,
+						colliderPosB.Y + anchorB.Y,
+						colliderPosB.Z - 0.01f,
+						angularCircleRad,
+						circleBegin,
+						circleEnd);
+					canvas.CurrentState.TransformAngle = angleErrorVec.Angle;
+					canvas.CurrentState.TransformHandle = Vector2.UnitY * canvas.CurrentState.TextFont.Res.Height;
+					canvas.DrawText(
+						string.Format("{0:F0}°", MathF.RadToDeg(joint.ColliderB.GameObj.Transform.Angle)),
+						colliderPosB.X + anchorB.X + angleErrorVec.X,
+						colliderPosB.Y + anchorB.Y + angleErrorVec.Y,
+						colliderPosB.Z - 0.01f);
+					canvas.CurrentState.TransformHandle = Vector2.Zero;
+					canvas.CurrentState.TransformAngle = 0.0f;
+				}
+			}
+
+			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr));
+			canvas.DrawLine(
+				colliderPosA.X + anchorA.X,
+				colliderPosA.Y + anchorA.Y,
+				colliderPosA.Z - 0.01f,
+				colliderPosA.X + anchorA.X + angleVec.X,
+				colliderPosA.Y + anchorA.Y + angleVec.Y,
+				colliderPosA.Z - 0.01f);
+			canvas.CurrentState.TransformAngle = angleVec.Angle;
+			canvas.DrawText(
+				string.Format("{0:F0}°", MathF.RadToDeg(MathF.NormalizeAngle(joint.ColliderA.GameObj.Transform.Angle + joint.RefAngle))),
+				colliderPosA.X + anchorA.X + angleVec.X,
+				colliderPosA.Y + anchorA.Y + angleVec.Y,
+				colliderPosA.Z - 0.01f);
+			canvas.CurrentState.TransformAngle = 0.0f;
+			if (displaySecondCollider)
+			{
+				canvas.DrawLine(
+					colliderPosB.X + anchorB.X,
+					colliderPosB.Y + anchorB.Y,
+					colliderPosB.Z - 0.01f,
+					colliderPosB.X + anchorB.X + angleVec.X,
+					colliderPosB.Y + anchorB.Y + angleVec.Y,
+					colliderPosB.Z - 0.01f);
+				canvas.CurrentState.TransformAngle = angleVec.Angle;
+				canvas.DrawText(
+					string.Format("{0:F0}°", MathF.RadToDeg(MathF.NormalizeAngle(joint.ColliderA.GameObj.Transform.Angle + joint.RefAngle))),
+					colliderPosB.X + anchorB.X + angleVec.X,
+					colliderPosB.Y + anchorB.Y + angleVec.Y,
+					colliderPosB.Z - 0.01f);
+				canvas.CurrentState.TransformAngle = 0.0f;
+			}
 		}
 		
 		private IEnumerable<RigidBody> QueryVisibleColliders()

@@ -484,6 +484,7 @@ namespace Duality
 		/// <param name="maxAngle"></param>
 		public void DrawOvalSegment(float x, float y, float z, float w, float h, float minAngle, float maxAngle)
 		{
+			if (minAngle == maxAngle) return;
 			if (w < 0.0f) { x += w; w = -w; }
 			if (h < 0.0f) { y += h; h = -h; }
 			w *= 0.5f; x += w;
@@ -497,9 +498,14 @@ namespace Duality
 			w *= scale;
 			h *= scale;
 
-			float angleRange = MathF.Min(MathF.Abs(maxAngle - minAngle), MathF.RadAngle360);
+			minAngle = MathF.NormalizeAngle(minAngle);
+			maxAngle = MathF.NormalizeAngle(maxAngle);
+			if (maxAngle <= minAngle) maxAngle += MathF.RadAngle360;
+
+			float angleRange = MathF.Min(maxAngle - minAngle, MathF.RadAngle360);
 			bool loop = angleRange >= MathF.RadAngle360 - MathF.RadAngle1 * 0.001f;
 			int segmentNum = MathF.Clamp(MathF.RoundToInt(MathF.Pow(MathF.Max(w, h), 0.65f) * 3.5f * angleRange / MathF.RadAngle360), 4, 128);
+			float angleStep = angleRange / segmentNum;
 			Vector2 shapeHandle = pos.Xy - new Vector2(w, h);
 			ColorRgba shapeColor = this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor;
 			VertexC1P3[] vertices = new VertexC1P3[loop ? segmentNum : segmentNum + 1];
@@ -512,7 +518,7 @@ namespace Duality
 				vertices[i].Pos.Y = pos.Y - (float)Math.Cos(angle) * h + 0.5f;
 				vertices[i].Pos.Z = pos.Z;
 				vertices[i].Color = shapeColor;
-				angle += (angleRange / segmentNum);
+				angle += angleStep;
 			}
 			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
 			this.device.AddVertices(this.CurrentState.MaterialDirect, loop ? VertexMode.LineLoop : VertexMode.LineStrip, vertices);
@@ -992,6 +998,17 @@ namespace Duality
 		public void DrawText(string text, float x, float y)
 		{
 			this.DrawText(text, x, y, 0);
+		}
+
+		/// <summary>
+		/// Measures the specified text using the currently used <see cref="Duality.Resources.Font"/>.
+		/// </summary>
+		/// <param name="text"></param>
+		/// <returns></returns>
+		public Vector2 MeasureText(string text)
+		{
+			Font font = this.CurrentState.TextFont.Res;
+			return font.MeasureText(text);
 		}
 	}
 }

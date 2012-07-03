@@ -9307,6 +9307,13 @@
             <param name="x"></param>
             <param name="y"></param>
         </member>
+        <member name="M:Duality.Canvas.MeasureText(System.String)">
+            <summary>
+            Measures the specified text using the currently used <see cref="T:Duality.Resources.Font"/>.
+            </summary>
+            <param name="text"></param>
+            <returns></returns>
+        </member>
         <member name="P:Duality.Canvas.DrawDevice">
             <summary>
             [GET] The underlying <see cref="T:Duality.IDrawDevice"/> that is used for drawing.

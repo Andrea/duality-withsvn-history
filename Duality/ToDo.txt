@@ -12,6 +12,14 @@
 	-->	"Did you know..?" screen?
 
 	
+-->	Implement a "Background Plate"-CamViewLayer that inserts a half-transparent
+	background plate overlay above the scene but below all editor-drawcalls
+	-->	Not trivial, since some editor drawcalls are done inside the scene, not as overlay
+	-->	Possible solution (Do ALL of this EDITOR-ONLY, SPECIFICALLY in the CURRENT VIEW CAMERA)
+		-->	Insert a new Renderpass after worldPass that renders the editor stuff (special reserved flag)
+		-->	Insert another ortho pass after that one that renders ontop of the current frame buffer (plate layer)
+		-->	Use the collect drawcall event to insert a fullscreen quad
+
 --> Joints and Joint Editors
 	-->	Create JointInfo classes for all relevant Farseer Joints
 		--> FixedFriction

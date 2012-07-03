@@ -433,7 +433,7 @@ namespace Duality.Components
 		/// <param name="value"></param>
 		public void TurnTo(float value)
 		{
-			this.angle = value; 
+			this.angle = MathF.NormalizeAngle(value);
 			this.changes |= DirtyFlags.Angle; 
 			this.UpdateAbs();
 		}
@@ -443,10 +443,10 @@ namespace Duality.Components
 		/// <param name="value"></param>
 		public void TurnToAbs(float value)
 		{
-			this.angleAbs = value;
+			this.angleAbs = MathF.NormalizeAngle(value);
 
 			if (this.parentTransform != null && this.deriveAngle)
-				this.angle = this.angleAbs - this.parentTransform.angleAbs;
+				this.angle = MathF.NormalizeAngle(this.angleAbs - this.parentTransform.angleAbs);
 			else
 				this.angle = this.angleAbs;
 
@@ -556,6 +556,7 @@ namespace Duality.Components
 			this.CheckValidTransform();
 
 			this.UpdateAbs();
+
 			// Clear change flags
 			this.CommitChanges();
 
