@@ -153,6 +153,33 @@
   <data name="ActionName_CreateTexture" xml:space="preserve">
     <value>Create Texture</value>
   </data>
+  <data name="CamViewLayer_BackPlate_Desc" xml:space="preserve">
+    <value>Fades out the actual scene rendering to improve Layer visibility</value>
+  </data>
+  <data name="CamViewLayer_BackPlate_Name" xml:space="preserve">
+    <value>Background Plate</value>
+  </data>
+  <data name="CamViewLayer_RigidBodyJoint_Desc" xml:space="preserve">
+    <value>Displays the physical constraints of a RigidBody Component</value>
+  </data>
+  <data name="CamViewLayer_RigidBodyJoint_Name" xml:space="preserve">
+    <value>RigidBody Joints</value>
+  </data>
+  <data name="CamViewLayer_RigidBodyShape_Desc" xml:space="preserve">
+    <value>Displays the physical shape of a RigidBody Component</value>
+  </data>
+  <data name="CamViewLayer_RigidBodyShape_Name" xml:space="preserve">
+    <value>RigidBody Shapes</value>
+  </data>
+  <data name="CamViewState_GameView_Name" xml:space="preserve">
+    <value>Game View</value>
+  </data>
+  <data name="CamViewState_RigidBodyEditor_Name" xml:space="preserve">
+    <value>RigidBody Editor</value>
+  </data>
+  <data name="CamViewState_SceneEditor_Name" xml:space="preserve">
+    <value>Scene Editor</value>
+  </data>
   <data name="CamView_Action_Move" xml:space="preserve">
     <value>Move</value>
   </data>

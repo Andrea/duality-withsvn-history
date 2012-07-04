@@ -31,10 +31,12 @@ namespace EditorBase.CamViewLayers
 			get { return 0; }
 		}
 		public abstract string LayerName { get; }
+		public abstract string LayerDesc { get; }
 		
 		internal protected virtual void OnActivateLayer() {}
 		internal protected virtual void OnDeactivateLayer() {}
 		internal protected virtual void OnCollectDrawcalls(Canvas canvas) {}
 		internal protected virtual void OnCollectOverlayDrawcalls(Canvas canvas) {}
+		internal protected virtual void OnCollectBackgroundDrawcalls(Canvas canvas) {}
 	}
 }

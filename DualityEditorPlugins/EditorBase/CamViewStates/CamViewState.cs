@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Forms;
 
 using Duality;
+using Duality.Components;
 using Duality.Resources;
 using Duality.ColorFormat;
 using Duality.VertexFormat;
@@ -128,6 +129,9 @@ namespace EditorBase.CamViewStates
 		private	CameraAction	camAction				= CameraAction.None;
 		private	bool			camActionAllowed		= true;
 		private	bool			camTransformChanged		= false;
+		private	Camera.Pass		camPassBg			= null;
+		private	Camera.Pass		camPassEdWorld		= null;
+		private Camera.Pass		camPassEdScreen		= null;
 		private	bool			actionAllowed		= true;
 		private	Point			actionBeginLoc		= Point.Empty;
 		private Vector3			actionBeginLocSpace	= Vector3.Zero;
@@ -216,6 +220,23 @@ namespace EditorBase.CamViewStates
 
 		internal protected virtual void OnEnterState()
 		{
+			// Create re-usable render passes for editor gizmos
+			this.camPassBg = new Camera.Pass();
+			this.camPassBg.MatrixMode = RenderMatrix.OrthoScreen;
+			this.camPassBg.ClearFlags = Camera.ClearFlags.None;
+			this.camPassBg.VisibilityMask = VisibilityFlag.ScreenOverlay;
+			this.camPassEdWorld = new Camera.Pass();
+			this.camPassEdWorld.ClearFlags = Camera.ClearFlags.None;
+			this.camPassEdWorld.VisibilityMask = VisibilityFlag.None;
+			this.camPassEdScreen = new Camera.Pass();
+			this.camPassEdScreen.MatrixMode = RenderMatrix.OrthoScreen;
+			this.camPassEdScreen.ClearFlags = Camera.ClearFlags.None;
+			this.camPassEdScreen.VisibilityMask = VisibilityFlag.ScreenOverlay;
+
+			this.camPassBg.CollectDrawcalls			+= this.camPassBg_CollectDrawcalls;
+			this.camPassEdWorld.CollectDrawcalls	+= this.camPassEdWorld_CollectDrawcalls;
+			this.camPassEdScreen.CollectDrawcalls	+= this.camPassEdScreen_CollectDrawcalls;
+
 			this.View.LocalGLControl.Paint		+= this.LocalGLControl_Paint;
 			this.View.LocalGLControl.MouseDown	+= this.LocalGLControl_MouseDown;
 			this.View.LocalGLControl.MouseUp	+= this.LocalGLControl_MouseUp;
@@ -263,7 +284,7 @@ namespace EditorBase.CamViewStates
 		protected virtual void OnCollectStateDrawcalls(Canvas canvas)
 		{
 			// Collect the views layer drawcalls
-			this.View.CollectLayerDrawcalls(canvas);
+			this.CollectLayerDrawcalls(canvas);
 
 			List<SelObj> transformObjSel = this.allObjSel.Where(s => s.HasTransform).ToList();
 			Point cursorPos = this.View.LocalGLControl.PointToClient(Cursor.Position);
@@ -341,7 +362,7 @@ namespace EditorBase.CamViewStates
 		protected virtual void OnCollectStateOverlayDrawcalls(Canvas canvas)
 		{
 			// Collect the views overlay layer drawcalls
-			this.View.CollectLayerOverlayDrawcalls(canvas);
+			this.CollectLayerOverlayDrawcalls(canvas);
 
 			Point cursorPos = this.View.LocalGLControl.PointToClient(Cursor.Position);
 			canvas.PushState();
@@ -378,6 +399,11 @@ namespace EditorBase.CamViewStates
 			#endif
 
 			canvas.PopState();
+		}
+		protected virtual void OnCollectStateBackgroundDrawcalls(Canvas canvas)
+		{
+			// Collect the views overlay layer drawcalls
+			this.CollectLayerBackgroundDrawcalls(canvas);
 		}
 		protected virtual void DrawStatusText(Canvas canvas, ref bool handled)
 		{
@@ -895,6 +921,40 @@ namespace EditorBase.CamViewStates
 			this.View.LocalGLControl.Invalidate();
 		}
 		
+		protected void CollectLayerDrawcalls(Canvas canvas)
+		{
+			var layers = this.View.ActiveViewLayers.ToArray();
+			layers.StableSort((a, b) => a.Priority - b.Priority);
+			foreach (var layer in layers)
+			{
+				canvas.PushState();
+				layer.OnCollectDrawcalls(canvas);
+				canvas.PopState();
+			}
+		}
+		protected void CollectLayerOverlayDrawcalls(Canvas canvas)
+		{
+			var layers = this.View.ActiveViewLayers.ToArray();
+			layers.StableSort((a, b) => a.Priority - b.Priority);
+			foreach (var layer in layers)
+			{
+				canvas.PushState();
+				layer.OnCollectOverlayDrawcalls(canvas);
+				canvas.PopState();
+			}
+		}
+		protected void CollectLayerBackgroundDrawcalls(Canvas canvas)
+		{
+			var layers = this.View.ActiveViewLayers.ToArray();
+			layers.StableSort((a, b) => a.Priority - b.Priority);
+			foreach (var layer in layers)
+			{
+				canvas.PushState();
+				layer.OnCollectBackgroundDrawcalls(canvas);
+				canvas.PopState();
+			}
+		}
+
 		private void LocalGLControl_Paint(object sender, PaintEventArgs e)
 		{
 			// Retrieve OpenGL context
@@ -903,9 +963,13 @@ namespace EditorBase.CamViewStates
 
 			try
 			{
-				this.View.CameraComponent.CollectRendererDrawcalls	+= this.CameraComponent_CollectRendererDrawcalls;
+				this.View.CameraComponent.Passes.Add(this.camPassBg);
+				this.View.CameraComponent.Passes.Add(this.camPassEdWorld);
+				this.View.CameraComponent.Passes.Add(this.camPassEdScreen);
 				this.OnRenderState();
-				this.View.CameraComponent.CollectRendererDrawcalls	-= this.CameraComponent_CollectRendererDrawcalls;
+				this.View.CameraComponent.Passes.Remove(this.camPassBg);
+				this.View.CameraComponent.Passes.Remove(this.camPassEdWorld);
+				this.View.CameraComponent.Passes.Remove(this.camPassEdScreen);
 			}
 			catch (Exception exception)
 			{
@@ -1069,24 +1133,29 @@ namespace EditorBase.CamViewStates
 		{
 			this.OnSceneChanged();
 		}
-		private void CameraComponent_CollectRendererDrawcalls(object sender, CollectDrawcallEventArgs e)
+		private void camPassEdScreen_CollectDrawcalls(object sender, CollectDrawcallEventArgs e)
 		{
-			if ((e.Device.VisibilityMask & VisibilityFlag.ScreenOverlay) != VisibilityFlag.None)
-			{
-				Canvas canvas = new Canvas(this.View.CameraComponent.DrawDevice);
-				canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Mask, this.View.FgColor));
-				canvas.CurrentState.TextFont = Duality.Resources.Font.GenericMonospace8;
+			Canvas canvas = new Canvas(this.View.CameraComponent.DrawDevice);
+			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Mask, this.View.FgColor));
+			canvas.CurrentState.TextFont = Duality.Resources.Font.GenericMonospace8;
 
-				this.OnCollectStateOverlayDrawcalls(canvas);
-			}
-			else
-			{
-				Canvas canvas = new Canvas(this.View.CameraComponent.DrawDevice);
-				canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Mask, this.View.FgColor));
-				canvas.CurrentState.TextFont = Duality.Resources.Font.GenericMonospace8;
+			this.OnCollectStateOverlayDrawcalls(canvas);
+		}
+		private void camPassEdWorld_CollectDrawcalls(object sender, CollectDrawcallEventArgs e)
+		{
+			Canvas canvas = new Canvas(this.View.CameraComponent.DrawDevice);
+			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Mask, this.View.FgColor));
+			canvas.CurrentState.TextFont = Duality.Resources.Font.GenericMonospace8;
 
-				this.OnCollectStateDrawcalls(canvas);
-			}
+			this.OnCollectStateDrawcalls(canvas);
+		}
+		private void camPassBg_CollectDrawcalls(object sender, CollectDrawcallEventArgs e)
+		{
+			Canvas canvas = new Canvas(this.View.CameraComponent.DrawDevice);
+			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Mask, this.View.FgColor));
+			canvas.CurrentState.TextFont = Duality.Resources.Font.GenericMonospace8;
+
+			this.OnCollectStateBackgroundDrawcalls(canvas);
 		}
 	}
 }

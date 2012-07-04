@@ -89,6 +89,10 @@ namespace EditorBase
 			{
 				get { return this.layer.LayerName; }
 			}
+			public string LayerDesc
+			{
+				get { return this.layer.LayerDesc; }
+			}
 
 			public LayerEntry(Type stateType)
 			{
@@ -208,25 +212,7 @@ namespace EditorBase
 		protected override void OnShown(EventArgs e)
 		{
 			base.OnShown(e);
-			this.Init();
-		}
-		protected override void OnClosed(EventArgs e)
-		{
-			base.OnClosed(e);
 
-			if (this.camObj != null && !this.camInternal) EditorBasePlugin.Instance.EditorForm.EditorObjects.UnregisterObj(this.camObj);
-			if (this.nativeCamObj != null) this.nativeCamObj.Dispose();
-
-			EditorBasePlugin.Instance.EditorForm.ResourceModified -= this.EditorForm_ResourceModified;
-			EditorBasePlugin.Instance.EditorForm.ObjectPropertyChanged -= this.EditorForm_ObjectPropertyChanged;
-			Scene.Leaving -= this.Scene_Leaving;
-			Scene.GameObjectUnregistered -= this.Scene_GameObjectUnregistered;
-			Scene.RegisteredObjectComponentRemoved -= this.Scene_RegisteredObjectComponentRemoved;
-
-			this.SetCurrentState((CamViewState)null);
-		}
-		public void Init()
-		{
 			this.InitGLControl();
 			this.InitNativeCamera();
 			this.InitCameraSelector();
@@ -252,6 +238,21 @@ namespace EditorBase
 
 			// Update camera transform properties & GUI
 			this.OnCamTransformChanged();
+		}
+		protected override void OnClosed(EventArgs e)
+		{
+			base.OnClosed(e);
+
+			if (this.camObj != null && !this.camInternal) EditorBasePlugin.Instance.EditorForm.EditorObjects.UnregisterObj(this.camObj);
+			if (this.nativeCamObj != null) this.nativeCamObj.Dispose();
+
+			EditorBasePlugin.Instance.EditorForm.ResourceModified -= this.EditorForm_ResourceModified;
+			EditorBasePlugin.Instance.EditorForm.ObjectPropertyChanged -= this.EditorForm_ObjectPropertyChanged;
+			Scene.Leaving -= this.Scene_Leaving;
+			Scene.GameObjectUnregistered -= this.Scene_GameObjectUnregistered;
+			Scene.RegisteredObjectComponentRemoved -= this.Scene_RegisteredObjectComponentRemoved;
+
+			this.SetCurrentState((CamViewState)null);
 		}
 		
 		private void InitGLControl()
@@ -313,6 +314,7 @@ namespace EditorBase
 				LayerEntry layerEntry = new LayerEntry(camViewState);
 				ToolStripMenuItem layerItem = new ToolStripMenuItem(layerEntry.LayerName);
 				layerItem.Tag = layerEntry;
+				layerItem.ToolTipText = layerEntry.LayerDesc;
 				layerItem.Checked = this.layers.Any(l => l.GetType() == layerEntry.LayerType);
 				layerItem.Enabled = !this.lockedLayers.Contains(layerEntry.LayerType);
 				this.layerSelector.DropDownItems.Add(layerItem);
@@ -563,27 +565,6 @@ namespace EditorBase
 			return this.camComp.GetScreenCoord(spaceCoord);
 		}
 
-		internal void CollectLayerDrawcalls(Canvas canvas)
-		{
-			this.layers.StableSort((a, b) => a.Priority - b.Priority);
-			foreach (CamViewLayer layer in this.layers)
-			{
-				canvas.PushState();
-				layer.OnCollectDrawcalls(canvas);
-				canvas.PopState();
-			}
-		}
-		internal void CollectLayerOverlayDrawcalls(Canvas canvas)
-		{
-			this.layers.StableSort((a, b) => a.Priority - b.Priority);
-			foreach (CamViewLayer layer in this.layers)
-			{
-				canvas.PushState();
-				layer.OnCollectOverlayDrawcalls(canvas);
-				canvas.PopState();
-			}
-		}
-
 		private void OnParallaxRefDistChanged()
 		{
 			if (!this.camInternal)
@@ -605,28 +586,40 @@ namespace EditorBase
 
 		private void glControl_MouseDown(object sender, MouseEventArgs e)
 		{
-			MouseButton inputButton = e.Button.ToOpenTKSingle();
-			this.inputMouseButtons |= e.Button.ToOpenTK();
-			if (this.inputMouseDown != null) this.inputMouseDown(this, new MouseButtonEventArgs(e.X, e.Y, inputButton, true));
+			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
+			{
+				MouseButton inputButton = e.Button.ToOpenTKSingle();
+				this.inputMouseButtons |= e.Button.ToOpenTK();
+				if (this.inputMouseDown != null) this.inputMouseDown(this, new MouseButtonEventArgs(e.X, e.Y, inputButton, true));
+			}
 		}
 		private void glControl_MouseUp(object sender, MouseEventArgs e)
 		{
-			MouseButton inputButton = e.Button.ToOpenTKSingle();
-			this.inputMouseButtons &= ~e.Button.ToOpenTK();
-			if (this.inputMouseUp != null) this.inputMouseUp(this, new MouseButtonEventArgs(e.X, e.Y, inputButton, false));
+			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
+			{
+				MouseButton inputButton = e.Button.ToOpenTKSingle();
+				this.inputMouseButtons &= ~e.Button.ToOpenTK();
+				if (this.inputMouseUp != null) this.inputMouseUp(this, new MouseButtonEventArgs(e.X, e.Y, inputButton, false));
+			}
 		}
 		private void glControl_MouseWheel(object sender, MouseEventArgs e)
 		{
-			this.inputMouseWheel += e.Delta;
-			if (this.inputMouseWheelChanged != null) this.inputMouseWheelChanged(this, new MouseWheelEventArgs(e.X, e.Y, this.inputMouseWheel, e.Delta));
+			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
+			{
+				this.inputMouseWheel += e.Delta;
+				if (this.inputMouseWheelChanged != null) this.inputMouseWheelChanged(this, new MouseWheelEventArgs(e.X, e.Y, this.inputMouseWheel, e.Delta));
+			}
 		}
 		private void glControl_MouseMove(object sender, MouseEventArgs e)
 		{
-			int lastX = this.inputMouseX;
-			int lastY = this.inputMouseY;
-			this.inputMouseX = e.X;
-			this.inputMouseY = e.Y;
-			if (this.inputMouseMove != null) this.inputMouseMove(this, new MouseMoveEventArgs(e.X, e.Y, e.X - lastX, e.Y - lastY));
+			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
+			{
+				int lastX = this.inputMouseX;
+				int lastY = this.inputMouseY;
+				this.inputMouseX = e.X;
+				this.inputMouseY = e.Y;
+				if (this.inputMouseMove != null) this.inputMouseMove(this, new MouseMoveEventArgs(e.X, e.Y, e.X - lastX, e.Y - lastY));
+			}
 		}
 		private void glControl_GotFocus(object sender, EventArgs e)
 		{
@@ -642,21 +635,26 @@ namespace EditorBase
 		}
 		private void glControl_KeyDown(object sender, KeyEventArgs e)
 		{
-			Key inputKey = e.KeyCode.ToOpenTKSingle();
-			bool wasPressed = this.inputKeyPressed[(int)inputKey];
-			this.inputKeyPressed = this.inputKeyPressed.Or(e.KeyCode.ToOpenTK());
-			if (this.inputKeyDown != null)
+			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
 			{
-				if (this.inputKeyRepeat || !wasPressed)
-					this.inputKeyDown(this, inputKey.ToEventArgs());
+				Key inputKey = e.KeyCode.ToOpenTKSingle();
+				bool wasPressed = this.inputKeyPressed[(int)inputKey];
+				this.inputKeyPressed = this.inputKeyPressed.Or(e.KeyCode.ToOpenTK());
+				if (this.inputKeyDown != null)
+				{
+					if (this.inputKeyRepeat || !wasPressed)
+						this.inputKeyDown(this, inputKey.ToEventArgs());
+				}
 			}
-			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game) return;
 		}
 		private void glControl_KeyUp(object sender, KeyEventArgs e)
 		{
-			Key inputKey = e.KeyCode.ToOpenTKSingle();
-			this.inputKeyPressed = this.inputKeyPressed.And(e.KeyCode.ToOpenTK().Not());
-			if (this.inputKeyUp != null) this.inputKeyUp(this, inputKey.ToEventArgs());
+			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
+			{
+				Key inputKey = e.KeyCode.ToOpenTKSingle();
+				this.inputKeyPressed = this.inputKeyPressed.And(e.KeyCode.ToOpenTK().Not());
+				if (this.inputKeyUp != null) this.inputKeyUp(this, inputKey.ToEventArgs());
+			}
 		}
 		private void glControl_Resize(object sender, EventArgs e)
 		{

@@ -120,7 +120,7 @@ namespace EditorBase.PropertyEditors
 				var refQuery = convert.Perform(this.editedResType);
 				if (refQuery != null)
 				{
-					IContentRef[] refArray = refQuery.Cast<IContentRef>().ToArray();
+					Resource[] refArray = refQuery.Cast<Resource>().ToArray();
 					this.contentPath = (refArray != null && refArray.Length > 0) ? refArray[0].Path : null;
 					this.PerformSetValue();
 					this.OnValueChanged();

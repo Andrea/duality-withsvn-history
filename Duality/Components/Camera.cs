@@ -80,13 +80,15 @@ namespace Duality
 		Group30 = 1U << 30,
 
 		// Special groups (Might cause special behaviour)
+		/// <summary>
+		/// Special flag. This flag is set when rendering screen overlays.
+		/// </summary>
 		ScreenOverlay = 1U << 31,
 
 		// Compound groups
 		All = uint.MaxValue,
 		AllWorld = All & (~ScreenOverlay),
 		AllOverlay = All
-
 	}
 
 	/// <summary>
@@ -148,6 +150,10 @@ namespace Duality
 		/// </summary>
 		Vector3 RefCoord { get; }
 		/// <summary>
+		/// [GET] Reference angle for rendering i.e. the angle of the drawing device's Camera.
+		/// </summary>
+		float RefAngle { get; }
+		/// <summary>
 		/// [GET] Reference distance for calculating the parallax effect. An object this far away from
 		/// the Camera will appear in its original size.
 		/// </summary>
@@ -157,10 +163,6 @@ namespace Duality
 		/// </summary>
 		VisibilityFlag VisibilityMask { get; }
 		/// <summary>
-		/// [GET] The devices general background color.
-		/// </summary>
-		ColorRgba ClearColor { get; }
-		/// <summary>
 		/// [GET] The lowest Z value that can be displayed by the device.
 		/// </summary>
 		float NearZ { get; }
@@ -168,6 +170,15 @@ namespace Duality
 		/// [GET] The highest Z value that can be displayed by the device.
 		/// </summary>
 		float FarZ { get; }
+		/// <summary>
+		/// [GET] Returns whether the drawing device is currently rendering in screen overlay mode
+		/// </summary>
+		bool IsScreenOverlay { get; }
+		/// <summary>
+		/// [GET] The size of the surface this drawing device operates on.
+		/// </summary>
+		Vector2 TargetSize { get; }
+		
 
 		/// <summary>
 		/// Processes the specified world space position and scale values and transforms them to the IDrawDevices view space.
@@ -270,6 +281,11 @@ namespace Duality.Components
 			private	VisibilityFlag				visibilityMask	= VisibilityFlag.AllWorld;
 			private	BatchInfo					input			= null;
 			private	ContentRef<RenderTarget>	output			= ContentRef<RenderTarget>.Null;
+
+			/// <summary>
+			/// Fired when collecting drawcalls for this pass. Note that not all passes do collect drawcalls (see <see cref="Input"/>)
+			/// </summary>
+			public event EventHandler<CollectDrawcallEventArgs> CollectDrawcalls	= null;
 			
 			/// <summary>
 			/// The input to use for rendering. This can for example be a <see cref="Duality.Resources.Texture"/> that
@@ -368,6 +384,16 @@ namespace Duality.Components
 			public void MakeAvailable()
 			{
 				this.output.MakeAvailable();
+			}
+
+			internal void NotifyCollectDrawcalls(IDrawDevice device)
+			{
+				Performance.timeCollectDrawcalls.BeginMeasure();
+
+				if (this.CollectDrawcalls != null)
+					this.CollectDrawcalls(this, new CollectDrawcallEventArgs(device));
+
+				Performance.timeCollectDrawcalls.EndMeasure();
 			}
 
 			public override string ToString()
@@ -606,11 +632,12 @@ namespace Duality.Components
 		[NonSerialized]	private	bool	overlayMatrices		= false;
 
 		[NonSerialized]	private	uint				hndlPrimaryVBO		= 0;
+		[NonSerialized]	private	Pass				devicePass			= null;
 		[NonSerialized]	private	VisibilityFlag		deviceVisibility	= VisibilityFlag.All;
 		[NonSerialized]	private	bool				deviceCacheValid	= false;
 		[NonSerialized]	private	Vector3				deviceCachePos		= Vector3.Zero;
 		[NonSerialized]	private	int					picking				= 0;
-		[NonSerialized]	private	List<ICmpRenderer>		pickingMap			= null;
+		[NonSerialized]	private	List<ICmpRenderer>	pickingMap			= null;
 		[NonSerialized]	private	RenderTarget		pickingRT			= null;
 		[NonSerialized]	private	Texture				pickingTex			= null;
 		[NonSerialized]	private	int					pickingLast			= -1;
@@ -619,17 +646,7 @@ namespace Duality.Components
 		[NonSerialized]	private	List<IDrawBatch>	drawBufferZSort		= new List<IDrawBatch>();
 		[NonSerialized]	private	List<Predicate<ICmpRenderer>>	editorRenderFilter	= new List<Predicate<ICmpRenderer>>();
 
-		/// <summary>
-		/// Fired as soon as drawcalls have been collected, but right before processing them.
-		/// This is the perfect place to sneak some diagnostic drawcalls into the renderpipeline.
-		/// </summary>
-		public event EventHandler<CollectDrawcallEventArgs> CollectRendererDrawcalls	= null;
 		
-		
-		Vector3 IDrawDevice.RefCoord
-		{
-			get { return this.deviceCacheValid ? this.deviceCachePos : this.gameobj.Transform.Pos; }
-		}
 		/// <summary>
 		/// [GET / SET] The lowest Z value that can be displayed by the device.
 		/// </summary>
@@ -668,10 +685,6 @@ namespace Duality.Components
 		{
 			get { return this.visibilityMask; }
 			set { this.visibilityMask = value; }
-		}
-		VisibilityFlag IDrawDevice.VisibilityMask
-		{
-			get { return this.deviceVisibility; }
 		}
 		/// <summary>
 		/// [GET / SET] The background color of the rendered image.
@@ -823,6 +836,7 @@ namespace Duality.Components
 				GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
 				this.deviceVisibility = this.visibilityMask & VisibilityFlag.AllWorld;
+				this.devicePass = null;
 				// Setup matrices
 				this.SetupMatrices(false);
 				// Render Scene
@@ -838,9 +852,11 @@ namespace Duality.Components
 				foreach (Pass t in this.passes)
 				{
 					this.deviceVisibility = this.visibilityMask & t.VisibilityMask;
+					this.devicePass = t;
 					this.RenderSinglePass(t);
 				}
 				this.deviceVisibility = this.visibilityMask;
+				this.devicePass = null;
 				this.SetupMatrices(false); // Reset matrices for projection calculations during update
 				RenderTarget.Bind(RenderTarget.None);
 
@@ -1049,6 +1065,7 @@ namespace Duality.Components
 				this.SetupMatrices(screenOverlay);
 				// Render Scene
 				this.CollectDrawcalls();
+				p.NotifyCollectDrawcalls(this.DrawDevice);
 				this.ProcessDrawcalls(screenOverlay);
 			}
 			else
@@ -1099,9 +1116,6 @@ namespace Duality.Components
 
 				foreach (ICmpRenderer r in rendererQuery)
 					r.Draw(this);
-
-				if (this.CollectRendererDrawcalls != null)
-					this.CollectRendererDrawcalls(this, new CollectDrawcallEventArgs(this.DrawDevice));
 
 				Performance.timeCollectDrawcalls.EndMeasure();
 			}
@@ -1249,11 +1263,9 @@ namespace Duality.Components
 			// Non-ZSorted
 			if (this.drawBuffer.Count > 1)
 			{
+				// When rendering the screen overlay, use z sorting everywhere - there's no depth buffering!
 				if (screenOverlay)
-				{
-					// When rendering the screen overlay, use z sorting everywhere - there's no depth buffering!
 					this.drawBuffer.StableSort(this.DrawBatchComparerZSort);
-				}
 				else
 					this.drawBuffer.StableSort(this.DrawBatchComparer);
 				this.drawBuffer = this.OptimizeBatches(this.drawBuffer);
@@ -1352,6 +1364,35 @@ namespace Duality.Components
 		internal void RemoveEditorRendererFilter(Predicate<ICmpRenderer> filter)
 		{
 			this.editorRenderFilter.Remove(filter);
+		}
+
+		#region IDrawDevice implementation
+		Vector3 IDrawDevice.RefCoord
+		{
+			get { return this.deviceCacheValid ? this.deviceCachePos : this.gameobj.Transform.Pos; }
+		}
+		float IDrawDevice.RefAngle
+		{
+			get { return this.gameobj.Transform.Angle; }
+		}
+		VisibilityFlag IDrawDevice.VisibilityMask
+		{
+			get { return this.deviceVisibility; }
+		}
+		bool IDrawDevice.IsScreenOverlay
+		{
+			get { return this.devicePass != null ? this.devicePass.MatrixMode == RenderMatrix.OrthoScreen : false; }
+		}
+		Vector2 IDrawDevice.TargetSize
+		{
+			get
+			{
+				if (this.devicePass == null || !this.devicePass.Output.IsAvailable)
+					return this.SceneTargetSize;
+
+				RenderTarget target = this.devicePass.Output.Res;
+				return new Vector2(target.Width, target.Height);
+			}
 		}
 
 		void IDrawDevice.PreprocessCoords(ref Vector3 pos, ref float scale)
@@ -1491,6 +1532,7 @@ namespace Duality.Components
 			if (!material.IsAvailable) return;
 			(this as IDrawDevice).AddVertices<T>(material.Res.InfoDirect, vertexMode, vertices);
 		}
+		#endregion
 
 		public static void RenderVoid()
 		{

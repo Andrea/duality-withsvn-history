@@ -6159,11 +6159,12 @@
             DrawTechniques to follow directly.
             </summary>
         </member>
-        <member name="M:Duality.Resources.DrawTechnique.SetupBlendType(Duality.BlendMode)">
+        <member name="M:Duality.Resources.DrawTechnique.SetupBlendType(Duality.BlendMode,System.Boolean)">
             <summary>
             Sets up OpenGL rendering state according to a certain <see cref="T:Duality.BlendMode"/>.
             </summary>
             <param name="mode">The BlendMode to set up.</param>
+            <param name="depthWrite">Whether or not to allow writing depth values.</param>
         </member>
         <member name="M:Duality.Resources.DrawTechnique.SelectShader">
             <summary>
@@ -6439,6 +6440,11 @@
             Specifies a matrix setup used in a <see cref="T:Duality.Components.Camera.Pass"/>.
             </summary>
         </member>
+        <member name="F:Duality.VisibilityFlag.ScreenOverlay">
+            <summary>
+            Special flag. This flag is set when rendering screen overlays.
+            </summary>
+        </member>
         <member name="T:Duality.BlendMode">
             <summary>
             Enumerates different behviours on how to blend color data onto existing background color.
@@ -6551,6 +6557,11 @@
             [GET] Reference coordinate for rendering i.e. the position of the drawing device's Camera.
             </summary>
         </member>
+        <member name="P:Duality.IDrawDevice.RefAngle">
+            <summary>
+            [GET] Reference angle for rendering i.e. the angle of the drawing device's Camera.
+            </summary>
+        </member>
         <member name="P:Duality.IDrawDevice.ParallaxRefDist">
             <summary>
             [GET] Reference distance for calculating the parallax effect. An object this far away from
@@ -6562,11 +6573,6 @@
             [GET] A bitmask flagging all visibility groups that are considered visible to this drawing device.
             </summary>
         </member>
-        <member name="P:Duality.IDrawDevice.ClearColor">
-            <summary>
-            [GET] The devices general background color.
-            </summary>
-        </member>
         <member name="P:Duality.IDrawDevice.NearZ">
             <summary>
             [GET] The lowest Z value that can be displayed by the device.
@@ -6575,6 +6581,16 @@
         <member name="P:Duality.IDrawDevice.FarZ">
             <summary>
             [GET] The highest Z value that can be displayed by the device.
+            </summary>
+        </member>
+        <member name="P:Duality.IDrawDevice.IsScreenOverlay">
+            <summary>
+            [GET] Returns whether the drawing device is currently rendering in screen overlay mode
+            </summary>
+        </member>
+        <member name="P:Duality.IDrawDevice.TargetSize">
+            <summary>
+            [GET] The size of the surface this drawing device operates on.
             </summary>
         </member>
         <member name="T:Duality.Components.Camera">
@@ -6653,12 +6669,6 @@
             </summary>
             <param name="spacePos"></param>
             <returns></returns>
-        </member>
-        <member name="E:Duality.Components.Camera.CollectRendererDrawcalls">
-            <summary>
-            Fired as soon as drawcalls have been collected, but right before processing them.
-            This is the perfect place to sneak some diagnostic drawcalls into the renderpipeline.
-            </summary>
         </member>
         <member name="P:Duality.Components.Camera.NearZ">
             <summary>
@@ -6749,6 +6759,11 @@
         <member name="T:Duality.Components.Camera.Pass">
             <summary>
             Describes a single pass in the overall rendering process.
+            </summary>
+        </member>
+        <member name="E:Duality.Components.Camera.Pass.CollectDrawcalls">
+            <summary>
+            Fired when collecting drawcalls for this pass. Note that not all passes do collect drawcalls (see <see cref="P:Duality.Components.Camera.Pass.Input"/>)
             </summary>
         </member>
         <member name="P:Duality.Components.Camera.Pass.Input">
@@ -12173,6 +12188,24 @@
         <member name="M:Duality.ExtMethodsIList.IndexOfFirst``1(System.Collections.Generic.IList{``0},System.Predicate{``0})">
             <summary>
             Returns the index of the first object matching the specified predicate.
+            </summary>
+            <typeparam name="T">The lists object type.</typeparam>
+            <param name="collection">List to perform the sort operation on.</param>
+            <param name="pred">The predicate to use on the lists contents.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ExtMethodsIList.IndexOfLast``1(System.Collections.Generic.IList{``0},``0)">
+            <summary>
+            Returns the index of the last object matching the specified one.
+            </summary>
+            <typeparam name="T">The lists object type.</typeparam>
+            <param name="collection">List to perform the sort operation on.</param>
+            <param name="val">Object to compare the lists contents to.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ExtMethodsIList.IndexOfLast``1(System.Collections.Generic.IList{``0},System.Predicate{``0})">
+            <summary>
+            Returns the index of the last object matching the specified predicate.
             </summary>
             <typeparam name="T">The lists object type.</typeparam>
             <param name="collection">List to perform the sort operation on.</param>

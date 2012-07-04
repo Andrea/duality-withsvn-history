@@ -63,6 +63,7 @@
       <DependentUpon>CamView.cs</DependentUpon>
     </Compile>
     <Compile Include="CamViewLayers\CamViewLayer.cs" />
+    <Compile Include="CamViewLayers\BackPlateCamViewLayer.cs" />
     <Compile Include="CamViewLayers\RigidBodyJointCamViewLayer.cs" />
     <Compile Include="CamViewLayers\RigidBodyShapeCamViewLayer.cs" />
     <Compile Include="CamViewStates\CamViewState.cs" />

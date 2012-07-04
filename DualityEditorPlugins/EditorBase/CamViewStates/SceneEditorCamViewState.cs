@@ -115,7 +115,7 @@ namespace EditorBase.CamViewStates
 
 		public override string StateName
 		{
-			get { return "Scene Editor"; }
+			get { return PluginRes.EditorBaseRes.CamViewState_SceneEditor_Name; }
 		}
 		private bool DragMustWait
 		{

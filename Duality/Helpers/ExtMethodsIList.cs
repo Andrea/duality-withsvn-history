@@ -77,6 +77,32 @@ namespace Duality
 				if (pred(collection[i])) return i;
 			return -1;
 		}
+		/// <summary>
+		/// Returns the index of the last object matching the specified one.
+		/// </summary>
+		/// <typeparam name="T">The lists object type.</typeparam>
+		/// <param name="collection">List to perform the sort operation on.</param>
+		/// <param name="val">Object to compare the lists contents to.</param>
+		/// <returns></returns>
+		public static int IndexOfLast<T>(this IList<T> collection, T val) where T : class
+		{
+			for (int i = collection.Count - 1; i >= 0; i--)
+				if (collection[i] == val) return i;
+			return -1;
+		}
+		/// <summary>
+		/// Returns the index of the last object matching the specified predicate.
+		/// </summary>
+		/// <typeparam name="T">The lists object type.</typeparam>
+		/// <param name="collection">List to perform the sort operation on.</param>
+		/// <param name="pred">The predicate to use on the lists contents.</param>
+		/// <returns></returns>
+		public static int IndexOfLast<T>(this IList<T> collection, Predicate<T> pred) where T : class
+		{
+			for (int i = collection.Count - 1; i >= 0; i--)
+				if (pred(collection[i])) return i;
+			return -1;
+		}
 
 		/// <summary>
 		/// Returns the combined hash code of the specified byte list.

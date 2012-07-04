@@ -152,7 +152,8 @@ namespace Duality.Components.Renderers
 					new VertexFormat.VertexP3(posTemp + textMaxHeight));
 			}
 
-			this.text.EmitVertices(ref this.vertFont, ref this.vertIcon, posTemp.X, posTemp.Y, posTemp.Z, this.colorTint, xDot, yDot);
+			ColorRgba matColor = this.customMat != null ? this.customMat.MainColor : ColorRgba.White;
+			this.text.EmitVertices(ref this.vertFont, ref this.vertIcon, posTemp.X, posTemp.Y, posTemp.Z, this.colorTint * matColor, xDot, yDot);
 			if (this.text.Fonts != null)
 			{
 				for (int i = 0; i < this.text.Fonts.Length; i++)

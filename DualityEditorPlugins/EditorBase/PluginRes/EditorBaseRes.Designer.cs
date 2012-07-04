@@ -241,6 +241,87 @@ namespace EditorBase.PluginRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Fades out the actual scene rendering to improve Layer visibility ähnelt.
+        /// </summary>
+        public static string CamViewLayer_BackPlate_Desc {
+            get {
+                return ResourceManager.GetString("CamViewLayer_BackPlate_Desc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Background Plate ähnelt.
+        /// </summary>
+        public static string CamViewLayer_BackPlate_Name {
+            get {
+                return ResourceManager.GetString("CamViewLayer_BackPlate_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Displays the physical constraints of a RigidBody Component ähnelt.
+        /// </summary>
+        public static string CamViewLayer_RigidBodyJoint_Desc {
+            get {
+                return ResourceManager.GetString("CamViewLayer_RigidBodyJoint_Desc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die RigidBody Joints ähnelt.
+        /// </summary>
+        public static string CamViewLayer_RigidBodyJoint_Name {
+            get {
+                return ResourceManager.GetString("CamViewLayer_RigidBodyJoint_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Displays the physical shape of a RigidBody Component ähnelt.
+        /// </summary>
+        public static string CamViewLayer_RigidBodyShape_Desc {
+            get {
+                return ResourceManager.GetString("CamViewLayer_RigidBodyShape_Desc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die RigidBody Shapes ähnelt.
+        /// </summary>
+        public static string CamViewLayer_RigidBodyShape_Name {
+            get {
+                return ResourceManager.GetString("CamViewLayer_RigidBodyShape_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Game View ähnelt.
+        /// </summary>
+        public static string CamViewState_GameView_Name {
+            get {
+                return ResourceManager.GetString("CamViewState_GameView_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die RigidBody Editor ähnelt.
+        /// </summary>
+        public static string CamViewState_RigidBodyEditor_Name {
+            get {
+                return ResourceManager.GetString("CamViewState_RigidBodyEditor_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Scene Editor ähnelt.
+        /// </summary>
+        public static string CamViewState_SceneEditor_Name {
+            get {
+                return ResourceManager.GetString("CamViewState_SceneEditor_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Create Circle... ähnelt.
         /// </summary>
         public static string ColliderEditor_CreateCircle {

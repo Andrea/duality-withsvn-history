@@ -10,7 +10,7 @@ namespace EditorBase.CamViewStates
 	{
 		public override string StateName
 		{
-			get { return "Game View"; }
+			get { return PluginRes.EditorBaseRes.CamViewState_GameView_Name; }
 		}
 
 		public GameViewCamViewState()

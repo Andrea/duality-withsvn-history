@@ -22,7 +22,11 @@ namespace EditorBase.CamViewLayers
 
 		public override string LayerName
 		{
-			get { return "RigidBody Shapes"; }
+			get { return PluginRes.EditorBaseRes.CamViewLayer_RigidBodyShape_Name; }
+		}
+		public override string LayerDesc
+		{
+			get { return PluginRes.EditorBaseRes.CamViewLayer_RigidBodyShape_Desc; }
 		}
 		public ColorRgba ShapeColor
 		{
@@ -73,7 +77,7 @@ namespace EditorBase.CamViewLayers
 			foreach (RigidBody c in visibleColliders)
 			{
 				if (!c.Shapes.Any()) continue;
-				float colliderAlpha = c == selectedBody ? 1.0f : 0.25f;
+				float colliderAlpha = c == selectedBody ? 1.0f : (selectedBody != null ? 0.25f : 0.5f);
 				float maxDensity = c.Shapes.Max(s => s.Density);
 				float minDensity = c.Shapes.Min(s => s.Density);
 				float avgDensity = (maxDensity + minDensity) * 0.5f;
@@ -84,7 +88,7 @@ namespace EditorBase.CamViewLayers
 				{
 					CircleShapeInfo circle = s as CircleShapeInfo;
 					PolyShapeInfo poly = s as PolyShapeInfo;
-					float shapeAlpha = colliderAlpha * (this.View.ViewState.SelectedObjects.Any(sel => sel.ActualObject == s) ? 1.0f : 0.5f);
+					float shapeAlpha = colliderAlpha * (selectedBody == null || this.View.ViewState.SelectedObjects.Any(sel => sel.ActualObject == s) ? 1.0f : 0.5f);
 					float densityRelative = MathF.Abs(maxDensity - minDensity) < 0.01f ? 1.0f : s.Density / avgDensity;
 					ColorRgba clr = s.IsSensor ? this.ShapeSensorColor : this.ShapeColor;
 					ColorRgba fontClr = ColorRgba.Mix(clr, this.View.FgColor, 0.5f);
@@ -94,7 +98,7 @@ namespace EditorBase.CamViewLayers
 						Vector2 circlePos = circle.Position * colliderScale;
 						MathF.TransformCoord(ref circlePos.X, ref circlePos.Y, c.GameObj.Transform.Angle);
 
-						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha((0.25f + densityRelative * 0.25f) * colliderAlpha)));
+						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha((0.25f + densityRelative * 0.25f) * shapeAlpha)));
 						canvas.FillCircle(
 							colliderPos.X + circlePos.X,
 							colliderPos.Y + circlePos.Y,
@@ -134,7 +138,7 @@ namespace EditorBase.CamViewLayers
 						Vector2.Multiply(ref center, ref colliderScale, out center);
 						MathF.TransformCoord(ref center.X, ref center.Y, c.GameObj.Transform.Angle);
 
-						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha((0.25f + densityRelative * 0.25f) * colliderAlpha)));
+						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha((0.25f + densityRelative * 0.25f) * shapeAlpha)));
 						canvas.FillConvexPolygon(polyVert, colliderPos.Z - 0.01f);
 						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha(shapeAlpha)));
 						canvas.DrawConvexPolygon(polyVert, colliderPos.Z - 0.01f);

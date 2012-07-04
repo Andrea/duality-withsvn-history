@@ -40,7 +40,7 @@ namespace EditorBase.CamViewStates
 
 		public override string StateName
 		{
-			get { return "RigidBody Editor"; }
+			get { return PluginRes.EditorBaseRes.CamViewState_RigidBodyEditor_Name; }
 		}
 
 		protected internal override void OnEnterState()

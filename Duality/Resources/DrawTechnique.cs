@@ -398,7 +398,7 @@ namespace Duality.Resources
 
 			// Setup BlendType
 			if (lastTechnique == null || this.blendType != lastTechnique.blendType)
-				this.SetupBlendType(this.blendType);
+				this.SetupBlendType(this.blendType, !device.IsScreenOverlay);
 
 			// Bind Shader
 			ContentRef<ShaderProgram> selShader = this.SelectShader();
@@ -462,7 +462,7 @@ namespace Duality.Resources
 		/// </summary>
 		public void FinishRendering()
 		{
-			SetupBlendType(BlendMode.Reset);
+			this.SetupBlendType(BlendMode.Reset);
 			ShaderProgram.Bind(ContentRef<ShaderProgram>.Null);
 		}
 
@@ -470,23 +470,27 @@ namespace Duality.Resources
 		/// Sets up OpenGL rendering state according to a certain <see cref="BlendMode"/>.
 		/// </summary>
 		/// <param name="mode">The BlendMode to set up.</param>
-		protected void SetupBlendType(BlendMode mode)
+		/// <param name="depthWrite">Whether or not to allow writing depth values.</param>
+		protected void SetupBlendType(BlendMode mode, bool depthWrite = true)
 		{
 			switch (mode)
 			{
 				default:
 				case BlendMode.Reset:
 				case BlendMode.Solid:
-					GL.DepthMask(true);
+					GL.DepthMask(depthWrite);
 					GL.Disable(EnableCap.Blend);
 					GL.Disable(EnableCap.AlphaTest);
 					GL.Disable(EnableCap.SampleAlphaToCoverage);
 					break;
 				case BlendMode.Mask:
-					GL.DepthMask(true);
+					GL.DepthMask(depthWrite);
 					GL.Disable(EnableCap.Blend);
 					if (MaskUseAlphaToCoverage)
+					{
+						GL.Disable(EnableCap.AlphaTest);
 						GL.Enable(EnableCap.SampleAlphaToCoverage);
+					}
 					else
 					{
 						GL.Enable(EnableCap.AlphaTest);
