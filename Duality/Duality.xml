@@ -12979,5 +12979,25 @@
             Makes this <see cref="T:Duality.GameObject"/> the 3d sound listener.
             </summary>
         </member>
+        <member name="T:Duality.Components.Physics.FixedFrictionJointInfo">
+            <summary>
+            Applies friction to a specific point of the RigidBody.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedFrictionJointInfo.LocalAnchor">
+            <summary>
+            [GET / SET] The RigidBodys local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedFrictionJointInfo.MaxForce">
+            <summary>
+            [GET / SET] The maximum friction force in the local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedFrictionJointInfo.MaxTorque">
+            <summary>
+            [GET / SET] The maximum friction torque in the local anchor point.
+            </summary>
+        </member>
     </members>
 </doc>

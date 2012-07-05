@@ -352,19 +352,19 @@ namespace Duality.Components.Physics
 		public void RemoveJoint(JointInfo joint)
 		{
 			if (joint == null) throw new ArgumentNullException("joint");
-			if (joint.ColliderA != this && joint.ColliderB != this) return;
+			if (joint.BodyA != this && joint.BodyB != this) return;
 
-			if (joint.ColliderA != null)
+			if (joint.BodyA != null)
 			{
-				joint.ColliderA.joints.Remove(joint);
-				joint.ColliderA.AwakeBody();
-				joint.ColliderA = null;
+				joint.BodyA.joints.Remove(joint);
+				joint.BodyA.AwakeBody();
+				joint.BodyA = null;
 			}
-			if (joint.ColliderB != null)
+			if (joint.BodyB != null)
 			{
-				joint.ColliderB.joints.Remove(joint);
-				joint.ColliderB.AwakeBody();
-				joint.ColliderB = null;
+				joint.BodyB.joints.Remove(joint);
+				joint.BodyB.AwakeBody();
+				joint.BodyB = null;
 			}
 
 			joint.DestroyJoint();
@@ -377,23 +377,23 @@ namespace Duality.Components.Physics
 		{
 			if (joint == null) throw new ArgumentNullException("joint");
 			
-			if (joint.ColliderA != null)		joint.ColliderA.RemoveJoint(joint);
-			else if (joint.ColliderB != null)	joint.ColliderB.RemoveJoint(joint);
+			if (joint.BodyA != null)		joint.BodyA.RemoveJoint(joint);
+			else if (joint.BodyB != null)	joint.BodyB.RemoveJoint(joint);
 
-			joint.ColliderA = this;
-			joint.ColliderB = other;
+			joint.BodyA = this;
+			joint.BodyB = other;
 
-			if (joint.ColliderA != null)
+			if (joint.BodyA != null)
 			{
-				if (joint.ColliderA.joints == null) joint.ColliderA.joints = new List<JointInfo>();
-				joint.ColliderA.joints.Add(joint);
-				joint.ColliderA.AwakeBody();
+				if (joint.BodyA.joints == null) joint.BodyA.joints = new List<JointInfo>();
+				joint.BodyA.joints.Add(joint);
+				joint.BodyA.AwakeBody();
 			}
-			if (joint.ColliderB != null)
+			if (joint.BodyB != null)
 			{
-				if (joint.ColliderB.joints == null) joint.ColliderB.joints = new List<JointInfo>();
-				joint.ColliderB.joints.Add(joint);
-				joint.ColliderB.AwakeBody();
+				if (joint.BodyB.joints == null) joint.BodyB.joints = new List<JointInfo>();
+				joint.BodyB.joints.Add(joint);
+				joint.BodyB.AwakeBody();
 			}
 
 			joint.UpdateJoint();
@@ -421,7 +421,7 @@ namespace Duality.Components.Physics
 			foreach (JointInfo joint in joints)
 			{
 				jointClones[k] = joint.Clone();
-				colliderB[k] = joint.ColliderA == this ? joint.ColliderB : joint.ColliderA;
+				colliderB[k] = joint.BodyA == this ? joint.BodyB : joint.BodyA;
 				k++;
 			}
 			
@@ -742,8 +742,8 @@ namespace Duality.Components.Physics
 			for (int i = this.joints.Count - 1; i >= 0; i--)
 			{
 				JointInfo joint = this.joints[i];
-				if ((joint.ColliderA != null && joint.ColliderA.Disposed) || 
-					(joint.ColliderB != null && joint.ColliderB.Disposed))
+				if ((joint.BodyA != null && joint.BodyA.Disposed) || 
+					(joint.BodyB != null && joint.BodyB.Disposed))
 					this.RemoveJoint(joint);
 			}
 		}
@@ -900,8 +900,8 @@ namespace Duality.Components.Physics
 				{
 					JointInfo j2 = j.Clone();
 					// Replace collider references with the targets references
-					j2.ColliderA = provider.GetRegisteredObjectClone(j.ColliderA);
-					j2.ColliderB = provider.GetRegisteredObjectClone(j.ColliderB);
+					j2.BodyA = provider.GetRegisteredObjectClone(j.BodyA);
+					j2.BodyB = provider.GetRegisteredObjectClone(j.BodyB);
 					return j2;
 				}));
 

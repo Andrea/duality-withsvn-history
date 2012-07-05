@@ -208,8 +208,8 @@ namespace EditorBase.PropertyEditors
 			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(colJoints), property);
 
 			var colliders = 
-				colJoints.Select(c => c.ColliderA).Concat(
-				colJoints.Select(c => c.ColliderB))
+				colJoints.Select(c => c.BodyA).Concat(
+				colJoints.Select(c => c.BodyB))
 				.Distinct().NotNull().ToArray();
 			foreach (var c in colliders) c.AwakeBody();
 			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(colliders), ReflectionInfo.Property_RigidBody_Joints);
@@ -224,7 +224,7 @@ namespace EditorBase.PropertyEditors
 				for (int i = 0; i < targetArray.Length; i++)
 				{
 					if (targetArray[i] != null)
-						otherCollider[i] = targetArray[i].ColliderA == parentCollider[i] ? targetArray[i].ColliderB : targetArray[i].ColliderA;
+						otherCollider[i] = targetArray[i].BodyA == parentCollider[i] ? targetArray[i].BodyB : targetArray[i].BodyA;
 					else
 						otherCollider[i] = null;
 				}

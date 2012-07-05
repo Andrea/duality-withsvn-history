@@ -35,12 +35,6 @@ namespace Duality.Components.Physics
 		}
 
 
-		public FixedAngleJointInfo() : this(0.0f) {}
-		public FixedAngleJointInfo(float angle)
-		{
-			this.angle = angle;
-		}
-
 		protected override Joint CreateJoint(Body bodyA, Body bodyB)
 		{
 			return bodyA != null ? JointFactory.CreateFixedAngleJoint(Scene.PhysicsWorld, bodyA) : null;

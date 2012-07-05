@@ -29,6 +29,7 @@ namespace Duality.Components.Physics
 		/// <summary>
 		/// [GET / SET] The welding point, locally to the first object.
 		/// </summary>
+		[EditorHintIncrement(1)]
 		public Vector2 LocalAnchorA
 		{
 			get { return this.localAnchorA; }
@@ -37,6 +38,7 @@ namespace Duality.Components.Physics
 		/// <summary>
 		/// [GET / SET] The welding point, locally to the second object.
 		/// </summary>
+		[EditorHintIncrement(1)]
 		public Vector2 LocalAnchorB
 		{
 			get { return this.localAnchorB; }
@@ -45,6 +47,7 @@ namespace Duality.Components.Physics
 		/// <summary>
 		/// [GET / SET] The relative angle both objects need to keep.
 		/// </summary>
+		[EditorHintIncrement(MathF.RadAngle1)]
 		public float RefAngle
 		{
 			get { return this.refAngle; }
@@ -62,8 +65,8 @@ namespace Duality.Components.Physics
 			if (this.joint == null) return;
 
 			WeldJoint j = this.joint as WeldJoint;
-			j.LocalAnchorA = GetFarseerPoint(this.ColliderA, this.localAnchorA);
-			j.LocalAnchorB = GetFarseerPoint(this.ColliderB, this.localAnchorB);
+			j.LocalAnchorA = GetFarseerPoint(this.BodyA, this.localAnchorA);
+			j.LocalAnchorB = GetFarseerPoint(this.BodyB, this.localAnchorB);
 			j.ReferenceAngle = this.refAngle;
 		}
 

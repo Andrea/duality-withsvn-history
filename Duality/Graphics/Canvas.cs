@@ -448,9 +448,9 @@ namespace Duality
 			ColorRgba shapeColor = this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor;
 			VertexC1P3[] vertices = new VertexC1P3[4];
 			vertices[0].Pos = new Vector3(pos.X + 0.5f, pos.Y + 0.5f, pos.Z);
-			vertices[1].Pos = new Vector3(pos.X + w * scale + 0.5f, pos.Y + 0.5f, pos.Z);
-			vertices[2].Pos = new Vector3(pos.X + w * scale + 0.5f, pos.Y + h * scale + 0.5f, pos.Z);
-			vertices[3].Pos = new Vector3(pos.X + 0.5f, pos.Y + h * scale + 0.5f, pos.Z);
+			vertices[1].Pos = new Vector3(pos.X + w * scale - 0.5f, pos.Y + 0.5f, pos.Z);
+			vertices[2].Pos = new Vector3(pos.X + w * scale - 0.5f, pos.Y + h * scale - 0.5f, pos.Z);
+			vertices[3].Pos = new Vector3(pos.X + 0.5f, pos.Y + h * scale - 0.5f, pos.Z);
 
 			vertices[0].Color = shapeColor;
 			vertices[1].Color = shapeColor;
@@ -514,8 +514,8 @@ namespace Duality
 			// XY circle
 			for (int i = 0; i < vertices.Length; i++)
 			{
-				vertices[i].Pos.X = pos.X + (float)Math.Sin(angle) * w + 0.5f;
-				vertices[i].Pos.Y = pos.Y - (float)Math.Cos(angle) * h + 0.5f;
+				vertices[i].Pos.X = pos.X + (float)Math.Sin(angle) * (w - 0.5f);
+				vertices[i].Pos.Y = pos.Y - (float)Math.Cos(angle) * (h - 0.5f);
 				vertices[i].Pos.Z = pos.Z;
 				vertices[i].Color = shapeColor;
 				angle += angleStep;

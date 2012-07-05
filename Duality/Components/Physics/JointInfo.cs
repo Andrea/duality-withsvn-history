@@ -33,13 +33,13 @@ namespace Duality.Components.Physics
 			get { return this.joint != null; }
 		}
 		[EditorHintFlags(MemberFlags.Invisible)]
-		public RigidBody ColliderA
+		public RigidBody BodyA
 		{
 			get { return this.colA; }
 			internal set { this.colA = value; }
 		}
 		[EditorHintFlags(MemberFlags.Invisible)]
-		public RigidBody ColliderB
+		public RigidBody BodyB
 		{
 			get { return this.colB; }
 			internal set { this.colB = value; }

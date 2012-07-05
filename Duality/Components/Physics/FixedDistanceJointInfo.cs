@@ -74,8 +74,6 @@ namespace Duality.Components.Physics
 		}
 
 
-		public FixedDistanceJointInfo() {}
-
 		protected override Joint CreateJoint(Body bodyA, Body bodyB)
 		{
 			return bodyA != null ? JointFactory.CreateFixedDistanceJoint(Scene.PhysicsWorld, bodyA, Vector2.Zero, Vector2.Zero) : null;
@@ -87,7 +85,7 @@ namespace Duality.Components.Physics
 
 			FixedDistanceJoint j = this.joint as FixedDistanceJoint;
 			j.WorldAnchorB = PhysicsConvert.ToPhysicalUnit(this.worldAnchor);
-			j.LocalAnchorA = GetFarseerPoint(this.ColliderA, this.localAnchor);
+			j.LocalAnchorA = GetFarseerPoint(this.BodyA, this.localAnchor);
 			j.DampingRatio = this.dampingRatio;
 			j.Frequency = this.frequency;
 			j.Length = PhysicsConvert.ToPhysicalUnit(this.length);
