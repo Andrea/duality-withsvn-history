@@ -166,6 +166,7 @@ namespace Duality.Components.Physics
 		/// <summary>
 		/// [GET / SET] The Colliders current angular velocity.
 		/// </summary>
+		[EditorHintIncrement(MathF.RadAngle1)]
 		public float AngularVelocity
 		{
 			get { return this.angularVel; }

@@ -85,6 +85,7 @@
     <Compile Include="Cloning\Surrogates\DictionarySurrogate.cs" />
     <Compile Include="Components\Physics\CircleShapeInfo.cs" />
     <Compile Include="Components\Physics\FixedFrictionJointInfo.cs" />
+    <Compile Include="Components\Physics\FixedRevoluteJointInfo.cs" />
     <Compile Include="Components\Physics\PolyShapeInfo.cs" />
     <Compile Include="Components\Physics\RigidBody.cs" />
     <Compile Include="Components\Physics\ShapeInfo.cs" />

@@ -12999,5 +12999,65 @@
             [GET / SET] The maximum friction torque in the local anchor point.
             </summary>
         </member>
+        <member name="T:Duality.Components.Physics.FixedRevoluteJointInfo">
+            <summary>
+            Constrains the Collider to obtain a fixed distance to a world coordinate
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.LocalAnchor">
+            <summary>
+            [GET / SET] The Colliders local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.WorldAnchor">
+            <summary>
+            [GET / SET] The world anchor point to which the Collider will be attached.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.LimitEnabled">
+            <summary>
+            [GET / SET] Is the joint limited in its angle?
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.LowerLimit">
+            <summary>
+            [GET / SET] The lower joint limit in radians.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.UpperLimit">
+            <summary>
+            [GET / SET] The upper joint limit in radians.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.ReferenceAngle">
+            <summary>
+            [GET / SET] The joint's reference angle.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.MotorEnabled">
+            <summary>
+            [GET / SET] Is the joint motor enabled?
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.MaxMotorTorque">
+            <summary>
+            [GET / SET] The maximum motor torque.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.MotorSpeed">
+            <summary>
+            [GET / SET] The desired motor speed in radians per frame.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.JointSpeed">
+            <summary>
+            [GET] The current joint angle speed in radians per frame.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.MotorTorque">
+            <summary>
+            [GET] The current joint motor torque.
+            </summary>
+        </member>
     </members>
 </doc>
