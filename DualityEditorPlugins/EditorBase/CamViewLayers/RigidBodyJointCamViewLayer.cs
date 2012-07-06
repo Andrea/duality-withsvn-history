@@ -67,27 +67,6 @@ namespace EditorBase.CamViewLayers
 				this.DrawJoint(canvas, j);
 			}
 		}
-		protected internal override void OnCollectOverlayDrawcalls(Canvas canvas)
-		{
-			base.OnCollectOverlayDrawcalls(canvas);
-
-			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, ColorRgba.White.WithAlpha(0.5f)));
-			canvas.CurrentState.TransformAngle = Time.GameTimer * 0.001f;
-			canvas.DrawLine(100, 100, 150, 100);
-			canvas.DrawRect(100, 200, 50, 50);
-			canvas.FillRect(100, 200, 50, 50);
-			canvas.DrawOval(100, 300, 50, 50);
-			canvas.FillOval(100, 300, 50, 50);
-			canvas.DrawThickLine(100, 400, 150, 400, 5);
-			canvas.FillThickLine(100, 400, 150, 400, 5);
-
-			Vector2[] poly = new Vector2[] { 
-				new Vector2(100, 500),
-				new Vector2(150, 500),
-				new Vector2(150, 550) };
-			canvas.DrawConvexPolygon(poly);
-			canvas.FillConvexPolygon(poly);
-		}
 
 		protected void DrawJoint(Canvas canvas, JointInfo joint)
 		{

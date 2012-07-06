@@ -38,6 +38,7 @@ namespace Duality.Components.Physics
 		/// <summary>
 		/// [GET / SET] The maximum friction force in the local anchor point.
 		/// </summary>
+		[EditorHintIncrement(1)]
 		public float MaxForce
 		{
 			get { return this.maxForce; }
@@ -46,6 +47,7 @@ namespace Duality.Components.Physics
 		/// <summary>
 		/// [GET / SET] The maximum friction torque in the local anchor point.
 		/// </summary>
+		[EditorHintIncrement(1)]
 		public float MaxTorque
 		{
 			get { return this.maxTorque; }
