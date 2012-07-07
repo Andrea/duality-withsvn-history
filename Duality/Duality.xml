@@ -899,6 +899,13 @@
             <param name="local"></param>
             <returns></returns>
         </member>
+        <member name="M:Duality.Components.Transform.GetWorldPoint(OpenTK.Vector2)">
+            <summary>
+            Calculates a world coordinate from a Transform-local coordinate.
+            </summary>
+            <param name="local"></param>
+            <returns></returns>
+        </member>
         <member name="M:Duality.Components.Transform.GetLocalPoint(OpenTK.Vector3)">
             <summary>
             Calculates a Transform-local coordinate from a world coordinate.
@@ -906,7 +913,22 @@
             <param name="world"></param>
             <returns></returns>
         </member>
+        <member name="M:Duality.Components.Transform.GetLocalPoint(OpenTK.Vector2)">
+            <summary>
+            Calculates a Transform-local coordinate from a world coordinate.
+            </summary>
+            <param name="world"></param>
+            <returns></returns>
+        </member>
         <member name="M:Duality.Components.Transform.GetWorldVector(OpenTK.Vector3)">
+            <summary>
+            Calculates a world vector from a Transform-local vector.
+            Does only take scale and rotation into account, but not position.
+            </summary>
+            <param name="local"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Components.Transform.GetWorldVector(OpenTK.Vector2)">
             <summary>
             Calculates a world vector from a Transform-local vector.
             Does only take scale and rotation into account, but not position.
@@ -922,7 +944,22 @@
             <param name="world"></param>
             <returns></returns>
         </member>
+        <member name="M:Duality.Components.Transform.GetLocalVector(OpenTK.Vector2)">
+            <summary>
+            Calculates a Transform-local vector from a world vector.
+            Does only take scale and rotation into account, but not position.
+            </summary>
+            <param name="world"></param>
+            <returns></returns>
+        </member>
         <member name="M:Duality.Components.Transform.GetWorldVelocityAt(OpenTK.Vector3)">
+            <summary>
+            Calculates the Transforms world velocity at a given world coordinate;
+            </summary>
+            <param name="world"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Components.Transform.GetWorldVelocityAt(OpenTK.Vector2)">
             <summary>
             Calculates the Transforms world velocity at a given world coordinate;
             </summary>
@@ -936,7 +973,20 @@
             <param name="local"></param>
             <returns></returns>
         </member>
+        <member name="M:Duality.Components.Transform.GetLocalVelocityAt(OpenTK.Vector2)">
+            <summary>
+            Calculates the Transforms local velocity at a given local coordinate;
+            </summary>
+            <param name="local"></param>
+            <returns></returns>
+        </member>
         <member name="M:Duality.Components.Transform.MoveBy(OpenTK.Vector3)">
+            <summary>
+            Moves the object by the given vector. This will affect the Transforms <see cref="P:Duality.Components.Transform.Vel">velocity</see> value.
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="M:Duality.Components.Transform.MoveBy(OpenTK.Vector2)">
             <summary>
             Moves the object by the given vector. This will affect the Transforms <see cref="P:Duality.Components.Transform.Vel">velocity</see> value.
             </summary>
@@ -948,13 +998,31 @@
             </summary>
             <param name="value"></param>
         </member>
+        <member name="M:Duality.Components.Transform.MoveByAbs(OpenTK.Vector2)">
+            <summary>
+            Moves the object by given absolute vector. This will affect the Transforms <see cref="P:Duality.Components.Transform.Vel">velocity</see> value.
+            </summary>
+            <param name="value"></param>
+        </member>
         <member name="M:Duality.Components.Transform.MoveTo(OpenTK.Vector3)">
             <summary>
             Moves the object to the given relative position. This will affect the Transforms <see cref="P:Duality.Components.Transform.Vel">velocity</see> value.
             </summary>
             <param name="value"></param>
         </member>
+        <member name="M:Duality.Components.Transform.MoveTo(OpenTK.Vector2)">
+            <summary>
+            Moves the object to the given relative position. This will affect the Transforms <see cref="P:Duality.Components.Transform.Vel">velocity</see> value.
+            </summary>
+            <param name="value"></param>
+        </member>
         <member name="M:Duality.Components.Transform.MoveToAbs(OpenTK.Vector3)">
+            <summary>
+            Moves the object to the given absolute position. This will affect the Transforms <see cref="P:Duality.Components.Transform.Vel">velocity</see> value.
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="M:Duality.Components.Transform.MoveToAbs(OpenTK.Vector2)">
             <summary>
             Moves the object to the given absolute position. This will affect the Transforms <see cref="P:Duality.Components.Transform.Vel">velocity</see> value.
             </summary>

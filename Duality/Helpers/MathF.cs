@@ -701,6 +701,8 @@ namespace Duality
 		/// <returns>-1 for "left" / lower, 1 for "right" / higher and 0 for "stay" / equal</returns>
 		public static float TurnDir(float val1, float val2, float minVal, float maxVal)
 		{
+			val1 = MathF.NormalizeVar(val1, minVal, maxVal);
+			val2 = MathF.NormalizeVar(val2, minVal, maxVal);
 			if (val1 == val2) return 0.0f;
 
 			if (Math.Abs(val1 - val2) > (maxVal - minVal) * 0.5f)
@@ -725,6 +727,8 @@ namespace Duality
 		/// <returns>-1 for "left" / lower, 1 for "right" / higher and 0 for "stay" / equal</returns>
 		public static int TurnDir(int val1, int val2, int minVal, int maxVal)
 		{
+			val1 = MathF.NormalizeVar(val1, minVal, maxVal);
+			val2 = MathF.NormalizeVar(val2, minVal, maxVal);
 			if (val1 == val2) return 0;
 
 			if (Math.Abs(val1 - val2) > (maxVal - minVal) * 0.5f)
@@ -747,6 +751,8 @@ namespace Duality
 		/// <returns>-1 for "left" / lower, 1 for "right" / higher and 0 for "stay" / equal</returns>
 		public static float TurnDir(float val1, float val2)
 		{
+			val1 = MathF.NormalizeAngle(val1);
+			val2 = MathF.NormalizeAngle(val2);
 			if (val1 == val2) return 0.0f;
 
 			if (Math.Abs(val1 - val2) > RadAngle180)
