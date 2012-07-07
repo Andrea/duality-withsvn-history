@@ -238,8 +238,14 @@ namespace AdamsLair.PropertyGrid
 			return base.GetChildLocation(child);
 		}
 
+		protected bool HasPropertyEditor(PropertyEditor editor)
+		{
+			return this.propertyEditors.Contains(editor);
+		}
 		protected void AddPropertyEditor(PropertyEditor editor, int atIndex = -1)
 		{
+			if (this.propertyEditors.Contains(editor)) this.propertyEditors.Remove(editor);
+
 			editor.ParentEditor = this;
 			this.UpdateChildWidth(editor);
 

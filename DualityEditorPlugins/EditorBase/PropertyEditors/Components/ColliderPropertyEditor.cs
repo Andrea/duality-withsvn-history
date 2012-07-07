@@ -68,28 +68,36 @@ namespace EditorBase.PropertyEditors
 			{
 				JointInfo joint = valArray.NotNull().First().Joints.ElementAtOrDefault(i);
 				Type jointType = joint.GetType();
-				ColliderJointPropertyEditor elementEditor;
-				if (i < this.jointEditors.Count)
+				bool matchesAll = valArray.NotNull().All(r => jointType.IsInstanceOfType(r.Joints.ElementAtOrDefault(i)));
+				if (matchesAll)
 				{
-					elementEditor = this.jointEditors[i];
-					if (elementEditor.EditedType != jointType)
+					ColliderJointPropertyEditor elementEditor;
+					if (i < this.jointEditors.Count)
 					{
+						elementEditor = this.jointEditors[i];
+						if (elementEditor.EditedType != jointType)
+						{
+							elementEditor.EditedType = jointType;
+							this.ParentGrid.ConfigureEditor(elementEditor);
+						}
+					}
+					else
+					{
+						elementEditor = new ColliderJointPropertyEditor();
 						elementEditor.EditedType = jointType;
 						this.ParentGrid.ConfigureEditor(elementEditor);
+						this.jointEditors.Add(elementEditor);
 					}
+					elementEditor.PropertyName = string.Format("Joints[{0}]", i);
+					elementEditor.Getter = this.CreateJointValueGetter(i);
+					elementEditor.Setter = this.CreateJointValueSetter(i);
+					elementEditor.ParentCollider = valArray;
+					if (!this.HasPropertyEditor(this.jointEditors[i])) this.AddPropertyEditor(this.jointEditors[i], i);
 				}
 				else
 				{
-					elementEditor = new ColliderJointPropertyEditor();
-					elementEditor.EditedType = jointType;
-					this.ParentGrid.ConfigureEditor(elementEditor);
-					this.jointEditors.Add(elementEditor);
-					this.AddPropertyEditor(elementEditor, i);
+					this.RemovePropertyEditor(this.jointEditors[i]);
 				}
-				elementEditor.PropertyName = string.Format("Joints[{0}]", i);
-				elementEditor.Getter = this.CreateJointValueGetter(i);
-				elementEditor.Setter = this.CreateJointValueSetter(i);
-				elementEditor.ParentCollider = valArray;
 			}
 			// Remove overflowing editors
 			for (int i = this.jointEditors.Count - 1; i >= visibleElementCount; i--)

@@ -58,6 +58,7 @@ namespace Duality.Components.Physics
 		/// <summary>
 		/// [GET / SET] The mass spring damper frequency in hertz.
 		/// </summary>
+		[EditorHintRange(0.01f, 1000.0f)]
 		public float Frequency
 		{
 			get { return this.frequency; }
@@ -67,6 +68,7 @@ namespace Duality.Components.Physics
 		/// [GET / SET] The target distance between local and world anchor
 		/// </summary>
 		[EditorHintIncrement(1)]
+		[EditorHintRange(0.0f, 10000000.0f)]
 		public float TargetDistance
 		{
 			get { return this.length; }

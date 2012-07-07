@@ -33,15 +33,22 @@ namespace Duality.Components.Physics
 			get { return this.joint != null; }
 		}
 		[EditorHintFlags(MemberFlags.Invisible)]
+		public bool Disposed
+		{
+			get { return (this.colA != null && this.colA.Disposed) || (this.colB != null && this.colB.Disposed); }
+		}
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public RigidBody BodyA
 		{
-			get { return this.colA; }
+			// Return null, if disposed - someone might access it before cleanup.
+			get { return this.colA != null && !this.colA.Disposed ? this.colA : null; }
 			internal set { this.colA = value; }
 		}
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public RigidBody BodyB
 		{
-			get { return this.colB; }
+			// Return null, if disposed - someone might access it before cleanup.
+			get { return this.colB != null && !this.colB.Disposed ? this.colB : null; }
 			internal set { this.colB = value; }
 		}
 		/// <summary>

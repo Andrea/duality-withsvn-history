@@ -64,6 +64,8 @@ namespace EditorBase.CamViewLayers
 				float jointAlpha = selectedBody != null && (j.BodyA == selectedBody || j.BodyB == selectedBody) ? 1.0f : 0.5f;
 				canvas.CurrentState.ColorTint = canvas.CurrentState.ColorTint.WithAlpha(jointAlpha);
 
+				if (j.BodyA == null) continue;
+				if (j.DualJoint && j.BodyB == null) continue;
 				this.DrawJoint(canvas, j);
 			}
 		}
@@ -76,6 +78,7 @@ namespace EditorBase.CamViewLayers
 			if (joint is FixedAngleJointInfo)			this.DrawJoint(canvas, joint as FixedAngleJointInfo);
 			else if (joint is FixedDistanceJointInfo)	this.DrawJoint(canvas, joint as FixedDistanceJointInfo);
 			else if (joint is FixedFrictionJointInfo)	this.DrawJoint(canvas, joint as FixedFrictionJointInfo);
+			else if (joint is FixedRevoluteJointInfo)	this.DrawJoint(canvas, joint as FixedRevoluteJointInfo);
 			else if (joint is WeldJointInfo)			this.DrawJoint(canvas, joint as WeldJointInfo);
 		}
 		protected void DrawJoint(Canvas canvas, FixedAngleJointInfo joint)
@@ -148,8 +151,10 @@ namespace EditorBase.CamViewLayers
 
 			ColorRgba clr = this.JointColor;
 			ColorRgba clrErr = this.JointErrorColor;
-
-			Vector2 errorVec = joint.WorldAnchor - colliderPosA.Xy;
+			
+			float markerCircleRad = joint.BodyA.BoundRadius * 0.02f;
+			Vector2 anchorA = joint.BodyA.GameObj.Transform.GetWorldVector(new Vector3(joint.LocalAnchor)).Xy;
+			Vector2 errorVec = joint.WorldAnchor - (colliderPosA.Xy + anchorA);
 			Vector2 distVec = errorVec.Normalized * joint.TargetDistance;
 			Vector2 lineNormal = errorVec.PerpendicularRight.Normalized;
 			float dist = errorVec.Length;
@@ -159,54 +164,55 @@ namespace EditorBase.CamViewLayers
 			{
 				canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clrErr));
 				canvas.DrawLine(
-					colliderPosA.X + distVec.X,
-					colliderPosA.Y + distVec.Y,
+					colliderPosA.X + anchorA.X + distVec.X,
+					colliderPosA.Y + anchorA.Y + distVec.Y,
 					colliderPosA.Z - 0.01f, 
-					colliderPosA.X + errorVec.X,
-					colliderPosA.Y + errorVec.Y,
-					colliderPosA.Z - 0.01f);
-				canvas.DrawLine(
-					colliderPosA.X + errorVec.X - lineNormal.X * 5.0f,
-					colliderPosA.Y + errorVec.Y - lineNormal.Y * 5.0f,
-					colliderPosA.Z - 0.01f, 
-					colliderPosA.X + errorVec.X + lineNormal.X * 5.0f,
-					colliderPosA.Y + errorVec.Y + lineNormal.Y * 5.0f,
+					colliderPosA.X + anchorA.X + errorVec.X,
+					colliderPosA.Y + anchorA.Y + errorVec.Y,
 					colliderPosA.Z - 0.01f);
 				canvas.CurrentState.TransformAngle = errorVec.Angle;
+				canvas.CurrentState.TransformHandle = Vector2.UnitY * canvas.CurrentState.TextFont.Res.Height;
 				canvas.DrawText(
 					string.Format("{0:F1}", dist),
-					colliderPosA.X + errorVec.X,
-					colliderPosA.Y + errorVec.Y,
+					colliderPosA.X + anchorA.X + errorVec.X,
+					colliderPosA.Y + anchorA.Y + errorVec.Y,
 					colliderPosA.Z - 0.01f);
 				canvas.CurrentState.TransformAngle = 0.0f;
+				canvas.CurrentState.TransformHandle = Vector2.Zero;
 			}
 			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr));
 			canvas.DrawLine(
-				colliderPosA.X,
-				colliderPosA.Y,
+				colliderPosA.X + anchorA.X,
+				colliderPosA.Y + anchorA.Y,
 				colliderPosA.Z - 0.01f, 
-				colliderPosA.X + distVec.X,
-				colliderPosA.Y + distVec.Y,
+				colliderPosA.X + anchorA.X + distVec.X,
+				colliderPosA.Y + anchorA.Y + distVec.Y,
 				colliderPosA.Z - 0.01f);
-			canvas.DrawLine(
-				colliderPosA.X - lineNormal.X * 5.0f,
-				colliderPosA.Y - lineNormal.Y * 5.0f,
-				colliderPosA.Z - 0.01f, 
-				colliderPosA.X + lineNormal.X * 5.0f,
-				colliderPosA.Y + lineNormal.Y * 5.0f,
-				colliderPosA.Z - 0.01f);
-			canvas.DrawLine(
-				colliderPosA.X + distVec.X - lineNormal.X * 5.0f,
-				colliderPosA.Y + distVec.Y - lineNormal.Y * 5.0f,
-				colliderPosA.Z - 0.01f, 
-				colliderPosA.X + distVec.X + lineNormal.X * 5.0f,
-				colliderPosA.Y + distVec.Y + lineNormal.Y * 5.0f,
-				colliderPosA.Z - 0.01f);
+			canvas.FillCircle(
+				colliderPosA.X + anchorA.X + errorVec.X,
+				colliderPosA.Y + anchorA.Y + errorVec.Y,
+				colliderPosA.Z - 0.01f,
+				markerCircleRad);
+			canvas.FillCircle(
+				colliderPosA.X + anchorA.X,
+				colliderPosA.Y + anchorA.Y,
+				colliderPosA.Z - 0.01f,
+				markerCircleRad);
+			if (hasError)
+			{
+				canvas.DrawLine(
+					colliderPosA.X + anchorA.X + distVec.X - lineNormal.X * 5.0f,
+					colliderPosA.Y + anchorA.Y + distVec.Y - lineNormal.Y * 5.0f,
+					colliderPosA.Z - 0.01f, 
+					colliderPosA.X + anchorA.X + distVec.X + lineNormal.X * 5.0f,
+					colliderPosA.Y + anchorA.Y + distVec.Y + lineNormal.Y * 5.0f,
+					colliderPosA.Z - 0.01f);
+			}
 			canvas.CurrentState.TransformAngle = errorVec.Angle;
 			canvas.DrawText(
 				string.Format("{0:F1}", joint.TargetDistance),
-				colliderPosA.X + distVec.X,
-				colliderPosA.Y + distVec.Y,
+				colliderPosA.X + anchorA.X + distVec.X,
+				colliderPosA.Y + anchorA.Y + distVec.Y,
 				colliderPosA.Z - 0.01f);
 			canvas.CurrentState.TransformAngle = 0.0f;
 		}
@@ -236,6 +242,52 @@ namespace EditorBase.CamViewLayers
 				colliderPosA.Y + anchorVec.Y,
 				colliderPosA.Z - 0.01f,
 				markerCircleRad * 1.5f);
+		}
+		protected void DrawJoint(Canvas canvas, FixedRevoluteJointInfo joint)
+		{
+			Vector3 colliderPosA = joint.BodyA.GameObj.Transform.Pos;
+
+			ColorRgba clr = this.JointColor;
+			ColorRgba clrErr = this.JointErrorColor;
+
+			float markerCircleRad = joint.BodyA.BoundRadius * 0.02f;
+			Vector2 anchorA = joint.BodyA.GameObj.Transform.GetWorldVector(new Vector3(joint.LocalAnchor)).Xy;
+			Vector2 errorVec = joint.WorldAnchor - (colliderPosA.Xy + anchorA);
+			Vector2 lineNormal = errorVec.PerpendicularRight.Normalized;
+			float dist = errorVec.Length;
+			bool hasError = errorVec.Length >= 1.0f;
+
+			if (hasError)
+			{
+				canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clrErr));
+				canvas.DrawLine(
+					colliderPosA.X + anchorA.X,
+					colliderPosA.Y + anchorA.Y,
+					colliderPosA.Z - 0.01f, 
+					colliderPosA.X + anchorA.X + errorVec.X,
+					colliderPosA.Y + anchorA.Y + errorVec.Y,
+					colliderPosA.Z - 0.01f);
+				canvas.CurrentState.TransformAngle = errorVec.Angle;
+				canvas.CurrentState.TransformHandle = Vector2.UnitY * canvas.CurrentState.TextFont.Res.Height;
+				canvas.DrawText(
+					string.Format("{0:F1}", dist),
+					colliderPosA.X + anchorA.X + errorVec.X,
+					colliderPosA.Y + anchorA.Y + errorVec.Y,
+					colliderPosA.Z - 0.01f);
+				canvas.CurrentState.TransformAngle = 0.0f;
+				canvas.CurrentState.TransformHandle = Vector2.Zero;
+			}
+			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr));
+			canvas.FillCircle(
+				colliderPosA.X + anchorA.X + errorVec.X,
+				colliderPosA.Y + anchorA.Y + errorVec.Y,
+				colliderPosA.Z - 0.01f,
+				markerCircleRad);
+			canvas.FillCircle(
+				colliderPosA.X + anchorA.X,
+				colliderPosA.Y + anchorA.Y,
+				colliderPosA.Z - 0.01f,
+				markerCircleRad);
 		}
 		protected void DrawJoint(Canvas canvas, WeldJointInfo joint)
 		{
