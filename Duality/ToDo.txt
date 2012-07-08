@@ -15,7 +15,6 @@
 --> Joints and Joint Editors
 	-->	Create JointInfo classes for all relevant Farseer Joints
 		-->	FixedPrismatic
-		-->	FixedRevolute		ToDo: Visualization
 		-->	Angle
 		-->	Distance
 		-->	Friction

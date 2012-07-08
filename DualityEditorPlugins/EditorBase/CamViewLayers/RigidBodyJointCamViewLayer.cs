@@ -120,7 +120,21 @@ namespace EditorBase.CamViewLayers
 		}
 		private void DrawJoint(Canvas canvas, FixedRevoluteJointInfo joint)
 		{
+			float angularCircleRad = joint.BodyA.BoundRadius * 0.25f;
+
 			this.DrawWorldPosConstraint(canvas, joint.BodyA, joint.LocalAnchor, joint.WorldAnchor);
+			if (joint.LimitEnabled)
+			{
+				this.DrawLocalAngleConstraint(
+					canvas, joint.BodyA, joint.LocalAnchor, 
+					joint.LowerLimit + joint.ReferenceAngle, joint.UpperLimit + joint.ReferenceAngle, joint.BodyA.GameObj.Transform.Angle, 
+					angularCircleRad);
+			}
+
+			if (joint.MotorEnabled)
+			{
+				this.DrawLocalMotor(canvas, joint.BodyA, Vector2.Zero, joint.MotorSpeed, joint.MaxMotorTorque, joint.BodyA.BoundRadius * 1.15f);
+			}
 
 			this.DrawWorldAnchor(canvas, joint.BodyA, joint.WorldAnchor);
 			this.DrawLocalAnchor(canvas, joint.BodyA, joint.LocalAnchor);
@@ -140,20 +154,43 @@ namespace EditorBase.CamViewLayers
 			this.DrawLocalAngleConstraint(canvas, 
 				joint.BodyA, 
 				joint.LocalAnchorA, 
-				joint.BodyA.GameObj.Transform.Angle, 
 				joint.BodyB.GameObj.Transform.Angle - joint.RefAngle, 
+				joint.BodyA.GameObj.Transform.Angle, 
 				angularCircleRadA);
 			if (displaySecondCollider)
 			{
 				this.DrawLocalAngleConstraint(canvas, 
 					joint.BodyB, 
 					joint.LocalAnchorB, 
-					joint.BodyB.GameObj.Transform.Angle, 
 					joint.BodyA.GameObj.Transform.Angle + joint.RefAngle,
+					joint.BodyB.GameObj.Transform.Angle, 
 					angularCircleRadB);
 			}
 		}
 		
+		private void DrawLocalText(Canvas canvas, RigidBody body, string text, Vector2 pos, float baseAngle)
+		{
+			this.DrawLocalText(canvas, body, text, pos, Vector2.Zero, baseAngle);
+		}
+		private void DrawLocalText(Canvas canvas, RigidBody body, string text, Vector2 pos, Vector2 handle, float baseAngle)
+		{
+			Vector3 bodyPos = body.GameObj.Transform.Pos;
+			Vector2 textSize = canvas.MeasureText(text);
+			bool flipText = MathF.TurnDir(baseAngle + canvas.DrawDevice.RefAngle, MathF.RadAngle90) < 0;
+			baseAngle = MathF.NormalizeAngle(flipText ? baseAngle + MathF.RadAngle180 : baseAngle);
+
+			handle *= textSize;
+			if (flipText) handle = textSize - handle;
+
+			canvas.CurrentState.TransformHandle = handle;
+			canvas.CurrentState.TransformAngle = baseAngle;
+			canvas.DrawText(text, 
+				bodyPos.X + pos.X, 
+				bodyPos.Y + pos.Y, 
+				bodyPos.Z - 0.01f);
+			canvas.CurrentState.TransformAngle = 0.0f;
+			canvas.CurrentState.TransformHandle = Vector2.Zero;
+		}
 		private void DrawLocalAnchor(Canvas canvas, RigidBody body, Vector2 anchor)
 		{
 			Vector3 colliderPos = body.GameObj.Transform.Pos;
@@ -204,15 +241,11 @@ namespace EditorBase.CamViewLayers
 					radius,
 					circleBegin,
 					circleEnd);
-				canvas.CurrentState.TransformAngle = errorVec.Angle;
-				canvas.CurrentState.TransformHandle = Vector2.UnitY * canvas.CurrentState.TextFont.Res.Height;
-				canvas.DrawText(
+				this.DrawLocalText(canvas, body,
 					string.Format("{0:F0}°", MathF.RadToDeg(MathF.NormalizeAngle(currentAngle))),
-					bodyPos.X + anchorToWorld.X + errorVec.X,
-					bodyPos.Y + anchorToWorld.Y + errorVec.Y,
-					bodyPos.Z - 0.01f);
-				canvas.CurrentState.TransformHandle = Vector2.Zero;
-				canvas.CurrentState.TransformAngle = 0.0f;
+					anchorToWorld + errorVec,
+					Vector2.UnitY,
+					errorVec.Angle);
 			}
 			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr));
 			canvas.DrawLine(
@@ -222,13 +255,139 @@ namespace EditorBase.CamViewLayers
 				bodyPos.X + anchorToWorld.X + angleVec.X,
 				bodyPos.Y + anchorToWorld.Y + angleVec.Y,
 				bodyPos.Z - 0.01f);
-			canvas.CurrentState.TransformAngle = angleVec.Angle;
-			canvas.DrawText(
+			this.DrawLocalText(canvas, body,
 				string.Format("{0:F0}°", MathF.RadToDeg(MathF.NormalizeAngle(targetAngle))),
-				bodyPos.X + anchorToWorld.X + angleVec.X,
-				bodyPos.Y + anchorToWorld.Y + angleVec.Y,
+				anchorToWorld + angleVec,
+				angleVec.Angle);
+		}
+		private void DrawLocalAngleConstraint(Canvas canvas, RigidBody body, Vector2 anchor, float minAngle, float maxAngle, float currentAngle, float radius)
+		{
+			Vector3 bodyPos = body.GameObj.Transform.Pos;
+
+			ColorRgba clr = this.JointColor;
+			ColorRgba clrErr = this.JointErrorColor;
+
+			Vector2 anchorToWorld = body.GameObj.Transform.GetWorldVector(anchor);
+			Vector2 angleVecMin = Vector2.FromAngleLength(minAngle, radius);
+			Vector2 angleVecMax = Vector2.FromAngleLength(maxAngle, radius);
+			Vector2 errorVec = Vector2.FromAngleLength(currentAngle, radius);
+			float angleDistMin = MathF.Abs(currentAngle - minAngle);
+			float angleDistMax = MathF.Abs(currentAngle - maxAngle);
+			float angleRange = maxAngle - minAngle;
+			bool hasError = angleDistMin > angleDistMax ? angleDistMin >= angleRange : angleDistMax >= angleRange;
+
+			if (hasError)
+			{
+				float circleBegin = currentAngle;
+				float circleEnd = angleDistMin < angleDistMax ? minAngle : maxAngle;
+				if (MathF.TurnDir(circleBegin, circleEnd) < 0)
+				{
+					MathF.Swap(ref circleBegin, ref circleEnd);
+					circleEnd = circleBegin + MathF.CircularDist(circleBegin, circleEnd);
+				}
+
+				canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clrErr));
+				canvas.DrawLine(
+					bodyPos.X + anchorToWorld.X,
+					bodyPos.Y + anchorToWorld.Y,
+					bodyPos.Z - 0.01f, 
+					bodyPos.X + anchorToWorld.X + errorVec.X,
+					bodyPos.Y + anchorToWorld.Y + errorVec.Y,
+					bodyPos.Z - 0.01f);
+				canvas.DrawCircleSegment(
+					bodyPos.X + anchorToWorld.X,
+					bodyPos.Y + anchorToWorld.Y,
+					bodyPos.Z - 0.01f,
+					radius,
+					circleBegin,
+					circleEnd);
+				this.DrawLocalText(canvas, body,
+					string.Format("{0:F0}°", MathF.RadToDeg(currentAngle)),
+					anchorToWorld + errorVec,
+					Vector2.UnitY,
+					errorVec.Angle);
+			}
+			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr));
+			canvas.DrawCircleSegment(
+				bodyPos.X + anchorToWorld.X,
+				bodyPos.Y + anchorToWorld.Y,
+				bodyPos.Z - 0.01f,
+				radius,
+				minAngle,
+				maxAngle);
+			canvas.DrawLine(
+				bodyPos.X + anchorToWorld.X,
+				bodyPos.Y + anchorToWorld.Y,
+				bodyPos.Z - 0.01f, 
+				bodyPos.X + anchorToWorld.X + angleVecMin.X,
+				bodyPos.Y + anchorToWorld.Y + angleVecMin.Y,
 				bodyPos.Z - 0.01f);
-			canvas.CurrentState.TransformAngle = 0.0f;
+			canvas.DrawLine(
+				bodyPos.X + anchorToWorld.X,
+				bodyPos.Y + anchorToWorld.Y,
+				bodyPos.Z - 0.01f, 
+				bodyPos.X + anchorToWorld.X + angleVecMax.X,
+				bodyPos.Y + anchorToWorld.Y + angleVecMax.Y,
+				bodyPos.Z - 0.01f);
+			this.DrawLocalText(canvas, body,
+				string.Format("{0:F0}°", MathF.RadToDeg(minAngle)),
+				anchorToWorld + angleVecMin,
+				angleVecMin.Angle);
+			this.DrawLocalText(canvas, body,
+				string.Format("{0:F0}°", MathF.RadToDeg(maxAngle)),
+				anchorToWorld + angleVecMax,
+				angleVecMax.Angle);
+		}
+		private void DrawLocalMotor(Canvas canvas, RigidBody body, Vector2 anchor, float speed, float maxTorque, float radius)
+		{
+			Vector3 bodyPos = body.GameObj.Transform.Pos;
+
+			ColorRgba clr = this.JointColor;
+			ColorRgba clrErr = this.JointErrorColor;
+
+			float baseAngle = body.GameObj.Transform.Angle;
+			float speedAngle = baseAngle + speed;
+			float maxTorqueAngle = baseAngle + maxTorque * 0.01f;
+			Vector2 anchorToWorld = body.GameObj.Transform.GetWorldVector(anchor);
+			Vector2 arrowBase = anchorToWorld + Vector2.FromAngleLength(speedAngle, radius);
+			Vector2 arrorA = Vector2.FromAngleLength(speedAngle - MathF.RadAngle45, radius * 0.05f);
+			Vector2 arrorB = Vector2.FromAngleLength(speedAngle - MathF.RadAngle45 + MathF.RadAngle270, radius * 0.05f);
+
+			canvas.DrawCircleSegment(
+				bodyPos.X + anchorToWorld.X,
+				bodyPos.Y + anchorToWorld.Y,
+				bodyPos.Z - 0.01f,
+				radius - 2,
+				baseAngle,
+				maxTorqueAngle);
+			canvas.DrawCircleSegment(
+				bodyPos.X + anchorToWorld.X,
+				bodyPos.Y + anchorToWorld.Y,
+				bodyPos.Z - 0.01f,
+				radius + 2,
+				baseAngle,
+				maxTorqueAngle);
+			canvas.DrawCircleSegment(
+				bodyPos.X + anchorToWorld.X,
+				bodyPos.Y + anchorToWorld.Y,
+				bodyPos.Z - 0.01f,
+				radius,
+				baseAngle,
+				speedAngle);
+			canvas.DrawLine(
+				bodyPos.X + arrowBase.X,
+				bodyPos.Y + arrowBase.Y,
+				bodyPos.Z - 0.01f,
+				bodyPos.X + arrowBase.X + arrorA.X,
+				bodyPos.Y + arrowBase.Y + arrorA.Y,
+				bodyPos.Z - 0.01f);
+			canvas.DrawLine(
+				bodyPos.X + arrowBase.X,
+				bodyPos.Y + arrowBase.Y,
+				bodyPos.Z - 0.01f,
+				bodyPos.X + arrowBase.X + arrorB.X,
+				bodyPos.Y + arrowBase.Y + arrorB.Y,
+				bodyPos.Z - 0.01f);
 		}
 		private Vector2 DrawLocalPosConstraint(Canvas canvas, RigidBody bodyA, RigidBody bodyB, Vector2 anchorA, Vector2 anchorB)
 		{
@@ -249,8 +408,6 @@ namespace EditorBase.CamViewLayers
 			bool hasError = errorVec.Length >= 1.0f;
 			if (hasError)
 			{
-				string errorText = string.Format("{0:F1}", errorVec.Length);
-				Vector2 errorTextSize = canvas.MeasureText(errorText);
 				canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clrErr));
 				canvas.DrawLine(
 					colliderPosA.X + anchorAToWorld.X,
@@ -259,15 +416,11 @@ namespace EditorBase.CamViewLayers
 					colliderPosB.X + anchorBToWorld.X,
 					colliderPosB.Y + anchorBToWorld.Y,
 					colliderPosB.Z - 0.01f);
-				canvas.CurrentState.TransformAngle = errorVec.PerpendicularLeft.Y < 0.0f ? errorVec.PerpendicularLeft.Angle : errorVec.PerpendicularRight.Angle;
-				canvas.CurrentState.TransformHandle = new Vector2(errorTextSize.X * 0.5f, 0.0f);
-				canvas.DrawText(
-					errorText,
-					colliderPosA.X + anchorAToWorld.X + errorVec.X * 0.5f,
-					colliderPosA.Y + anchorAToWorld.Y + errorVec.Y * 0.5f,
-					colliderPosA.Z - 0.01f);
-				canvas.CurrentState.TransformAngle = 0.0f;
-				canvas.CurrentState.TransformHandle = Vector2.Zero;
+				this.DrawLocalText(canvas, bodyA, 
+					string.Format("{0:F1}", errorVec.Length), 
+					anchorAToWorld + errorVec * 0.5f, 
+					new Vector2(0.5f, 0.0f), 
+					errorVec.PerpendicularLeft.Angle);
 			}
 
 			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr));
@@ -287,7 +440,7 @@ namespace EditorBase.CamViewLayers
 				colliderPosB.Z - 0.01f);
 			return errorVec;
 		}
-			
+		
 		private void DrawWorldAnchor(Canvas canvas, RigidBody body, Vector2 anchor)
 		{
 			Vector3 colliderPos = body.GameObj.Transform.Pos;
@@ -314,8 +467,6 @@ namespace EditorBase.CamViewLayers
 			bool hasError = errorVec.Length >= 1.0f;
 			if (hasError)
 			{
-				string errorText = string.Format("{0:F1}", errorVec.Length);
-				Vector2 errorTextSize = canvas.MeasureText(errorText);
 				canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clrErr));
 				canvas.DrawLine(
 					colliderPosA.X + anchorAToWorld.X,
@@ -324,15 +475,11 @@ namespace EditorBase.CamViewLayers
 					worldAnchor.X,
 					worldAnchor.Y,
 					colliderPosA.Z - 0.01f);
-				canvas.CurrentState.TransformAngle = errorVec.PerpendicularLeft.Angle;
-				canvas.CurrentState.TransformHandle = new Vector2(errorTextSize.X * 0.5f, 0.0f);
-				canvas.DrawText(
-					errorText,
-					colliderPosA.X + anchorAToWorld.X + errorVec.X * 0.5f,
-					colliderPosA.Y + anchorAToWorld.Y + errorVec.Y * 0.5f,
-					colliderPosA.Z - 0.01f);
-				canvas.CurrentState.TransformAngle = 0.0f;
-				canvas.CurrentState.TransformHandle = Vector2.Zero;
+				this.DrawLocalText(canvas, body,
+					string.Format("{0:F1}", errorVec.Length),
+					anchorAToWorld + errorVec * 0.5f,
+					new Vector2(0.5f, 0.0f),
+					errorVec.PerpendicularLeft.Angle);
 			}
 
 			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr));
@@ -371,15 +518,11 @@ namespace EditorBase.CamViewLayers
 					colliderPosA.X + anchorA.X + errorVec.X,
 					colliderPosA.Y + anchorA.Y + errorVec.Y,
 					colliderPosA.Z - 0.01f);
-				canvas.CurrentState.TransformAngle = MathF.TurnDir(errorVec.Angle, MathF.RadAngle90) > 0 ? errorVec.Angle : (errorVec.Angle + MathF.RadAngle180);
-				canvas.CurrentState.TransformHandle = Vector2.UnitY * canvas.CurrentState.TextFont.Res.Height;
-				canvas.DrawText(
+				this.DrawLocalText(canvas, body,
 					string.Format("{0:F1}", dist),
-					colliderPosA.X + anchorA.X + errorVec.X,
-					colliderPosA.Y + anchorA.Y + errorVec.Y,
-					colliderPosA.Z - 0.01f);
-				canvas.CurrentState.TransformAngle = 0.0f;
-				canvas.CurrentState.TransformHandle = Vector2.Zero;
+					anchorA + errorVec,
+					Vector2.UnitY,
+					errorVec.Angle);
 			}
 			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr));
 			canvas.DrawLine(
@@ -399,13 +542,11 @@ namespace EditorBase.CamViewLayers
 					colliderPosA.Y + anchorA.Y + distVec.Y + lineNormal.Y * 5.0f,
 					colliderPosA.Z - 0.01f);
 			}
-			canvas.CurrentState.TransformAngle = MathF.TurnDir(errorVec.Angle, MathF.RadAngle90) > 0 ? errorVec.Angle : (errorVec.Angle + MathF.RadAngle180);
-			canvas.DrawText(
+			this.DrawLocalText(canvas, body,
 				string.Format("{0:F1}", targetDist),
-				colliderPosA.X + anchorA.X + distVec.X,
-				colliderPosA.Y + anchorA.Y + distVec.Y,
-				colliderPosA.Z - 0.01f);
-			canvas.CurrentState.TransformAngle = 0.0f;
+				anchorA + distVec,
+				Vector2.Zero,
+				errorVec.Angle);
 
 			return errorVec;
 		}
