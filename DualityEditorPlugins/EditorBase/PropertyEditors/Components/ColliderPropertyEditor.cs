@@ -94,7 +94,7 @@ namespace EditorBase.PropertyEditors
 					elementEditor.ParentCollider = valArray;
 					if (!this.HasPropertyEditor(this.jointEditors[i])) this.AddPropertyEditor(this.jointEditors[i], i);
 				}
-				else
+				else if (this.jointEditors.Count > i)
 				{
 					this.RemovePropertyEditor(this.jointEditors[i]);
 				}
