@@ -2568,7 +2568,7 @@
         </member>
         <member name="T:Duality.Components.Physics.FixedRevoluteJointInfo">
             <summary>
-            Constrains the Collider to obtain a fixed distance to a world coordinate
+            Pins a local anchor on the the RigidBody to a specific world position without constraining rotation.
             </summary>
         </member>
         <member name="T:Duality.Components.Physics.JointInfo">
@@ -2659,6 +2659,11 @@
         <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.JointSpeed">
             <summary>
             [GET] The current joint angle speed in radians per frame.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.JointAngle">
+            <summary>
+            [GET] The current joint angle in radians.
             </summary>
         </member>
         <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.MotorTorque">
@@ -13125,6 +13130,66 @@
         <member name="P:Duality.Components.Physics.FixedFrictionJointInfo.MaxTorque">
             <summary>
             [GET / SET] The maximum friction torque in the local anchor point.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Physics.FixedPrismaticJointInfo">
+            <summary>
+            This joint allows the RigidBody to travel on a specific axis. It can be limited to a certain area and driven by a motor force.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.WorldAnchor">
+            <summary>
+            [GET / SET] The world anchor point to which the Collider will be attached.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.MovementAxis">
+            <summary>
+            [GET / SET] The axis on which the body may move.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.LimitEnabled">
+            <summary>
+            [GET / SET] Is the joint limited in its movement?
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.LowerLimit">
+            <summary>
+            [GET / SET] The lower joint limit.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.UpperLimit">
+            <summary>
+            [GET / SET] The upper joint limit.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.MotorEnabled">
+            <summary>
+            [GET / SET] Is the joint motor enabled?
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.MaxMotorForce">
+            <summary>
+            [GET / SET] The maximum motor force.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.MotorSpeed">
+            <summary>
+            [GET / SET] The desired motor speed.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.JointSpeed">
+            <summary>
+            [GET] The current joint speed.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.JointTranslation">
+            <summary>
+            [GET] The current joint translation.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.MotorForce">
+            <summary>
+            [GET] The current joint motor force.
             </summary>
         </member>
     </members>

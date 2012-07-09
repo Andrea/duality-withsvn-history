@@ -12,7 +12,7 @@ using Duality.Resources;
 namespace Duality.Components.Physics
 {
 	/// <summary>
-	/// Constrains the Collider to obtain a fixed distance to a world coordinate
+	/// Pins a local anchor on the the RigidBody to a specific world position without constraining rotation.
 	/// </summary>
 	[Serializable]
 	public sealed class FixedRevoluteJointInfo : JointInfo
@@ -117,6 +117,14 @@ namespace Duality.Components.Physics
 		public float JointSpeed
 		{
 			get { return this.joint == null ? 0.0f : (this.joint as FixedRevoluteJoint).JointSpeed * Time.SPFMult; }
+		}
+		/// <summary>
+		/// [GET] The current joint angle in radians.
+		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
+		public float JointAngle
+		{
+			get { return this.joint == null ? 0.0f : (this.joint as FixedRevoluteJoint).JointAngle; }
 		}
 		/// <summary>
 		/// [GET] The current joint motor torque.

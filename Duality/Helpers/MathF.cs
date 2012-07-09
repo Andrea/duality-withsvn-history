@@ -1086,9 +1086,9 @@ namespace Duality
 			bool infinite = false)
 		{
 			if (lX1 == lX2 && lY1 == lY2) return new Vector2(lX1, lY1);
-			float sX = lX2 - lX1;
-			float sY = lY2 - lY1;
-			float q = ((pX - lX1) * sX + (pY - lY1) * sY) / (sX * sX + sY * sY);
+			double sX = lX2 - lX1;
+			double sY = lY2 - lY1;
+			double q = ((pX - lX1) * sX + (pY - lY1) * sY) / (sX * sX + sY * sY);
 
 			if (!infinite)
 			{
@@ -1096,7 +1096,7 @@ namespace Duality
 				if (q > 1.0) q = 1.0f;
 			}
 
-			return new Vector2((1.0f - q) * lX1 + q * lX2, (1.0f - q) * lY1 + q * lY2);
+			return new Vector2((float)((1.0d - q) * lX1 + q * lX2), (float)((1.0d - q) * lY1 + q * lY2));
 		}
 
 		/// <summary>

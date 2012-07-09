@@ -26,6 +26,17 @@ namespace EditorBase.CamViewLayers
 		{
 			get { return PluginRes.EditorBaseRes.CamViewLayer_RigidBodyJoint_Desc; }
 		}
+		public ColorRgba MotorColor
+		{
+			get
+			{
+				float fgLum = this.View.FgColor.GetLuminance();
+				if (fgLum > 0.5f)
+					return ColorRgba.Mix(new ColorRgba(64, 164, 255), ColorRgba.VeryLightGrey, 0.5f);
+				else
+					return ColorRgba.Mix(new ColorRgba(64, 164, 255), ColorRgba.VeryDarkGrey, 0.5f);
+			}
+		}
 		public ColorRgba JointColor
 		{
 			get
@@ -79,6 +90,7 @@ namespace EditorBase.CamViewLayers
 			else if (joint is FixedDistanceJointInfo)	this.DrawJoint(canvas, joint as FixedDistanceJointInfo);
 			else if (joint is FixedFrictionJointInfo)	this.DrawJoint(canvas, joint as FixedFrictionJointInfo);
 			else if (joint is FixedRevoluteJointInfo)	this.DrawJoint(canvas, joint as FixedRevoluteJointInfo);
+			else if (joint is FixedPrismaticJointInfo)	this.DrawJoint(canvas, joint as FixedPrismaticJointInfo);
 			else if (joint is WeldJointInfo)			this.DrawJoint(canvas, joint as WeldJointInfo);
 		}
 		private void DrawJoint(Canvas canvas, FixedAngleJointInfo joint)
@@ -133,11 +145,25 @@ namespace EditorBase.CamViewLayers
 
 			if (joint.MotorEnabled)
 			{
-				this.DrawLocalMotor(canvas, joint.BodyA, Vector2.Zero, joint.MotorSpeed, joint.MaxMotorTorque, joint.BodyA.BoundRadius * 1.15f);
+				this.DrawLocalAngleMotor(canvas, joint.BodyA, Vector2.Zero, joint.MotorSpeed, joint.MaxMotorTorque, joint.BodyA.BoundRadius * 1.15f);
 			}
 
 			this.DrawWorldAnchor(canvas, joint.BodyA, joint.WorldAnchor);
 			this.DrawLocalAnchor(canvas, joint.BodyA, joint.LocalAnchor);
+		}
+		private void DrawJoint(Canvas canvas, FixedPrismaticJointInfo joint)
+		{
+			float angularCircleRad = joint.BodyA.BoundRadius * 0.25f;
+
+			if (joint.LimitEnabled)
+				this.DrawWorldAxisConstraint(canvas, joint.BodyA, joint.MovementAxis, joint.WorldAnchor, joint.LowerLimit, joint.UpperLimit);
+			else
+				this.DrawWorldAxisConstraint(canvas, joint.BodyA, joint.MovementAxis, joint.WorldAnchor);
+
+			if (joint.MotorEnabled)
+				this.DrawWorldAxisMotor(canvas, joint.BodyA, joint.MovementAxis, joint.WorldAnchor, joint.MotorSpeed, joint.MaxMotorForce, joint.BodyA.BoundRadius * 1.15f);
+
+			this.DrawWorldAnchor(canvas, joint.BodyA, joint.WorldAnchor);
 		}
 		private void DrawJoint(Canvas canvas, WeldJointInfo joint)
 		{
@@ -195,9 +221,11 @@ namespace EditorBase.CamViewLayers
 		{
 			Vector3 colliderPos = body.GameObj.Transform.Pos;
 
+			ColorRgba clr = this.JointColor;
 			float markerCircleRad = body.BoundRadius * 0.02f;
 			Vector2 anchorToWorld = body.GameObj.Transform.GetWorldVector(anchor);
 
+			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr));
 			canvas.FillCircle(
 				colliderPos.X + anchorToWorld.X,
 				colliderPos.Y + anchorToWorld.Y,
@@ -338,21 +366,21 @@ namespace EditorBase.CamViewLayers
 				anchorToWorld + angleVecMax,
 				angleVecMax.Angle);
 		}
-		private void DrawLocalMotor(Canvas canvas, RigidBody body, Vector2 anchor, float speed, float maxTorque, float radius)
+		private void DrawLocalAngleMotor(Canvas canvas, RigidBody body, Vector2 anchor, float speed, float maxTorque, float radius)
 		{
 			Vector3 bodyPos = body.GameObj.Transform.Pos;
 
-			ColorRgba clr = this.JointColor;
-			ColorRgba clrErr = this.JointErrorColor;
+			ColorRgba clr = this.MotorColor;
 
 			float baseAngle = body.GameObj.Transform.Angle;
 			float speedAngle = baseAngle + speed;
-			float maxTorqueAngle = baseAngle + maxTorque * 0.01f;
+			float maxTorqueAngle = baseAngle + MathF.Sign(speed) * maxTorque * 0.01f;
 			Vector2 anchorToWorld = body.GameObj.Transform.GetWorldVector(anchor);
 			Vector2 arrowBase = anchorToWorld + Vector2.FromAngleLength(speedAngle, radius);
 			Vector2 arrorA = Vector2.FromAngleLength(speedAngle - MathF.RadAngle45, radius * 0.05f);
 			Vector2 arrorB = Vector2.FromAngleLength(speedAngle - MathF.RadAngle45 + MathF.RadAngle270, radius * 0.05f);
 
+			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr));
 			canvas.DrawCircleSegment(
 				bodyPos.X + anchorToWorld.X,
 				bodyPos.Y + anchorToWorld.Y,
@@ -445,7 +473,9 @@ namespace EditorBase.CamViewLayers
 		{
 			Vector3 colliderPos = body.GameObj.Transform.Pos;
 			float markerCircleRad = body.BoundRadius * 0.02f;
+			ColorRgba clr = this.JointColor;
 
+			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr));
 			canvas.FillCircle(
 				anchor.X,
 				anchor.Y,
@@ -454,7 +484,7 @@ namespace EditorBase.CamViewLayers
 		}
 		private Vector2 DrawWorldPosConstraint(Canvas canvas, RigidBody body, Vector2 localAnchor, Vector2 worldAnchor)
 		{
-			Vector3 colliderPosA = body.GameObj.Transform.Pos;
+			Vector3 bodyPos = body.GameObj.Transform.Pos;
 
 			ColorRgba clr = this.JointColor;
 			ColorRgba clrErr = this.JointErrorColor;
@@ -462,19 +492,19 @@ namespace EditorBase.CamViewLayers
 			float angularCircleRadA = body.BoundRadius * 0.25f;
 			float markerCircleRad = body.BoundRadius * 0.02f;
 			Vector2 anchorAToWorld = body.GameObj.Transform.GetWorldVector(localAnchor);
-			Vector2 errorVec = worldAnchor - (colliderPosA.Xy + anchorAToWorld);
+			Vector2 errorVec = worldAnchor - (bodyPos.Xy + anchorAToWorld);
 			
 			bool hasError = errorVec.Length >= 1.0f;
 			if (hasError)
 			{
 				canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clrErr));
 				canvas.DrawLine(
-					colliderPosA.X + anchorAToWorld.X,
-					colliderPosA.Y + anchorAToWorld.Y,
-					colliderPosA.Z - 0.01f,
+					bodyPos.X + anchorAToWorld.X,
+					bodyPos.Y + anchorAToWorld.Y,
+					bodyPos.Z - 0.01f,
 					worldAnchor.X,
 					worldAnchor.Y,
-					colliderPosA.Z - 0.01f);
+					bodyPos.Z - 0.01f);
 				this.DrawLocalText(canvas, body,
 					string.Format("{0:F1}", errorVec.Length),
 					anchorAToWorld + errorVec * 0.5f,
@@ -484,12 +514,12 @@ namespace EditorBase.CamViewLayers
 
 			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr));
 			canvas.DrawLine(
-				colliderPosA.X,
-				colliderPosA.Y,
-				colliderPosA.Z - 0.01f,
-				colliderPosA.X + anchorAToWorld.X,
-				colliderPosA.Y + anchorAToWorld.Y,
-				colliderPosA.Z - 0.01f);
+				bodyPos.X,
+				bodyPos.Y,
+				bodyPos.Z - 0.01f,
+				bodyPos.X + anchorAToWorld.X,
+				bodyPos.Y + anchorAToWorld.Y,
+				bodyPos.Z - 0.01f);
 
 			return errorVec;
 		}
@@ -549,6 +579,127 @@ namespace EditorBase.CamViewLayers
 				errorVec.Angle);
 
 			return errorVec;
+		}
+		private void DrawWorldAxisConstraint(Canvas canvas, RigidBody body, Vector2 worldAxis, Vector2 worldAnchor, float min = 1, float max = -1)
+		{
+			Vector3 bodyPos = body.GameObj.Transform.Pos;
+			worldAxis = worldAxis.Normalized;
+			bool infinite = false;
+			if (min > max)
+			{
+				min = -1000000000.0f;
+				max = 1000000000.0f;
+				infinite = true;
+			}
+			float axisVal = Vector2.Dot(bodyPos.Xy - worldAnchor, worldAxis);
+			Vector2 basePos = MathF.PointLineNearestPoint(
+				bodyPos.X, 
+				bodyPos.Y, 
+				worldAnchor.X + worldAxis.X * min, 
+				worldAnchor.Y + worldAxis.Y * min, 
+				worldAnchor.X + worldAxis.X * max, 
+				worldAnchor.Y + worldAxis.Y * max,
+				infinite);
+			float errorVal = (bodyPos.Xy - basePos).Length;
+			Vector2 errorVec = basePos - bodyPos.Xy;
+			bool hasError = errorVal > 0.0f;
+
+			ColorRgba clr = this.JointColor;
+			ColorRgba clrErr = this.JointErrorColor;
+			
+			if (hasError)
+			{
+				canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clrErr));
+				canvas.DrawLine(
+					bodyPos.X,
+					bodyPos.Y,
+					bodyPos.Z - 0.01f,
+					basePos.X,
+					basePos.Y,
+					bodyPos.Z - 0.01f);
+				this.DrawLocalText(canvas, body,
+					string.Format("{0:F1}", errorVal),
+					errorVec * 0.5f,
+					new Vector2(0.5f, 0.0f),
+					errorVec.PerpendicularLeft.Angle);
+			}
+
+			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr));
+			canvas.DrawLine(
+				worldAnchor.X + worldAxis.X * min,
+				worldAnchor.Y + worldAxis.Y * min,
+				bodyPos.Z - 0.01f,
+				worldAnchor.X + worldAxis.X * max,
+				worldAnchor.Y + worldAxis.Y * max,
+				bodyPos.Z - 0.01f);
+			if (!infinite)
+			{
+				canvas.DrawLine(
+					worldAnchor.X + worldAxis.X * min + worldAxis.PerpendicularLeft.X * 5.0f,
+					worldAnchor.Y + worldAxis.Y * min + worldAxis.PerpendicularLeft.Y * 5.0f,
+					bodyPos.Z - 0.01f,
+					worldAnchor.X + worldAxis.X * min + worldAxis.PerpendicularRight.X * 5.0f,
+					worldAnchor.Y + worldAxis.Y * min + worldAxis.PerpendicularRight.Y * 5.0f,
+					bodyPos.Z - 0.01f);
+				canvas.DrawLine(
+					worldAnchor.X + worldAxis.X * max + worldAxis.PerpendicularLeft.X * 5.0f,
+					worldAnchor.Y + worldAxis.Y * max + worldAxis.PerpendicularLeft.Y * 5.0f,
+					bodyPos.Z - 0.01f,
+					worldAnchor.X + worldAxis.X * max + worldAxis.PerpendicularRight.X * 5.0f,
+					worldAnchor.Y + worldAxis.Y * max + worldAxis.PerpendicularRight.Y * 5.0f,
+					bodyPos.Z - 0.01f);
+			}
+		}
+		private void DrawWorldAxisMotor(Canvas canvas, RigidBody body, Vector2 worldAxis, Vector2 worldAnchor, float speed, float maxForce, float offset)
+		{
+			Vector3 bodyPos = body.GameObj.Transform.Pos;
+
+			ColorRgba clr = this.MotorColor;
+
+			float axisAngle = worldAxis.Angle;
+			float maxForceTemp = MathF.Sign(speed) * maxForce * 0.1f;
+			float axisVal = Vector2.Dot(bodyPos.Xy - worldAnchor, worldAxis);
+			Vector2 arrowBegin = worldAnchor + worldAxis * axisVal + worldAxis.PerpendicularRight * offset;
+			Vector2 arrowBase = arrowBegin + worldAxis * speed * 10.0f;
+			Vector2 arrowA = Vector2.FromAngleLength(axisAngle + MathF.RadAngle45 + MathF.RadAngle180, MathF.Max(offset * 0.05f, 5.0f));
+			Vector2 arrowB = Vector2.FromAngleLength(axisAngle - MathF.RadAngle45 + MathF.RadAngle180, MathF.Max(offset * 0.05f, 5.0f));
+			
+			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr));
+			canvas.DrawLine(
+				arrowBegin.X + worldAxis.PerpendicularLeft.X * 2.0f,
+				arrowBegin.Y + worldAxis.PerpendicularLeft.Y * 2.0f,
+				bodyPos.Z - 0.01f,
+				arrowBegin.X + worldAxis.PerpendicularLeft.X * 2.0f + worldAxis.X * maxForceTemp,
+				arrowBegin.Y + worldAxis.PerpendicularLeft.Y * 2.0f + worldAxis.Y * maxForceTemp,
+				bodyPos.Z - 0.01f);
+			canvas.DrawLine(
+				arrowBegin.X + worldAxis.PerpendicularRight.X * 2.0f,
+				arrowBegin.Y + worldAxis.PerpendicularRight.Y * 2.0f,
+				bodyPos.Z - 0.01f,
+				arrowBegin.X + worldAxis.PerpendicularRight.X * 2.0f + worldAxis.X * maxForceTemp,
+				arrowBegin.Y + worldAxis.PerpendicularRight.Y * 2.0f + worldAxis.Y * maxForceTemp,
+				bodyPos.Z - 0.01f);
+			canvas.DrawLine(
+				arrowBegin.X,
+				arrowBegin.Y,
+				bodyPos.Z - 0.01f,
+				arrowBase.X,
+				arrowBase.Y,
+				bodyPos.Z - 0.01f);
+			canvas.DrawLine(
+				arrowBase.X,
+				arrowBase.Y,
+				bodyPos.Z - 0.01f,
+				arrowBase.X + arrowA.X,
+				arrowBase.Y + arrowA.Y,
+				bodyPos.Z - 0.01f);
+			canvas.DrawLine(
+				arrowBase.X,
+				arrowBase.Y,
+				bodyPos.Z - 0.01f,
+				arrowBase.X + arrowB.X,
+				arrowBase.Y + arrowB.Y,
+				bodyPos.Z - 0.01f);
 		}
 
 		private IEnumerable<RigidBody> QueryVisibleColliders()

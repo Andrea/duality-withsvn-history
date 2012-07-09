@@ -4981,6 +4981,11 @@
             distort somewhat because the island constraint solver is approximate.
             </summary>
         </member>
+        <member name="F:FarseerPhysics.Dynamics.Joints.WeldJoint.ReferenceAngle">
+            <summary>
+            The body2 angle minus body1 angle in the reference state (radians).
+            </summary>
+        </member>
         <member name="M:FarseerPhysics.Dynamics.Joints.WeldJoint.#ctor(FarseerPhysics.Dynamics.Body,FarseerPhysics.Dynamics.Body,OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
             You need to specify a local anchor point
@@ -4993,11 +4998,6 @@
             <param name="bodyB">The second body</param>
             <param name="localAnchorA">The first body anchor.</param>
             <param name="localAnchorB">The second body anchor.</param>
-        </member>
-        <member name="P:FarseerPhysics.Dynamics.Joints.WeldJoint.ReferenceAngle">
-            <summary>
-            The body2 angle minus body1 angle in the reference state (radians).
-            </summary>
         </member>
         <member name="T:FarseerPhysics.Dynamics.Joints.PulleyJoint">
             <summary>
