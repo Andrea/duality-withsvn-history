@@ -14,12 +14,6 @@
 	
 --> Joints and Joint Editors
 	-->	Create JointInfo classes for all relevant Farseer Joints
-		-->	FixedPrismatic
-			-->	Fix Farseer.
-				-->	React to wrong angle
-				-->	React to out-of-bounds position
-			-->	Make WorldAnchorB settable
-			-->	Introduce ReferenceAngle
 		-->	Angle
 		-->	Distance
 		-->	Friction

@@ -306,6 +306,12 @@ namespace FarseerPhysics.Dynamics.Joints
                 _localYAxis1 = MathUtils.Cross(1.0f, _localXAxis1);
             }
         }
+		
+        public float ReferenceAngle
+        {
+            get { return _refAngle; }
+            set { WakeBodies(); _refAngle = value; }
+        }
 
         public override Vector2 GetReactionForce(float inv_dt)
         {

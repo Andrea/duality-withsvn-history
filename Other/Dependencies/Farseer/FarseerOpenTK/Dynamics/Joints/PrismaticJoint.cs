@@ -322,7 +322,7 @@ namespace FarseerPhysics.Dynamics.Joints
         public float ReferenceAngle
         {
             get { return _refAngle; }
-            set { _refAngle = value; }
+            set { WakeBodies(); _refAngle = value; }
         }
 
         public override Vector2 GetReactionForce(float inv_dt)

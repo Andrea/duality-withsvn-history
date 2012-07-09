@@ -25,6 +25,7 @@ namespace Duality.Components.Physics
 		private	bool		motorEnabled	= false;
 		private float		maxMotorForce	= 0.0f;
 		private float		motorSpeed		= 0.0f;
+		private	float		refAngle		= 0.0f;
 
 
 		public override bool DualJoint
@@ -32,7 +33,7 @@ namespace Duality.Components.Physics
 			get { return false; }
 		}
 		/// <summary>
-		/// [GET / SET] The world anchor point to which the Collider will be attached.
+		/// [GET / SET] The world anchor point to which the RigidBody will be attached.
 		/// </summary>
 		[EditorHintIncrement(1)]
 		public Vector2 WorldAnchor
@@ -105,7 +106,7 @@ namespace Duality.Components.Physics
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public float JointSpeed
 		{
-			get { return this.joint == null ? 0.0f : (this.joint as FixedPrismaticJoint).JointSpeed * Time.SPFMult; }
+			get { return this.joint == null ? 0.0f : PhysicsConvert.ToDualityUnit((this.joint as FixedPrismaticJoint).JointSpeed * Time.SPFMult); }
 		}
 		/// <summary>
 		/// [GET] The current joint translation.
@@ -113,7 +114,7 @@ namespace Duality.Components.Physics
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public float JointTranslation
 		{
-			get { return this.joint == null ? 0.0f : (this.joint as FixedPrismaticJoint).JointTranslation; }
+			get { return this.joint == null ? 0.0f : PhysicsConvert.ToDualityUnit((this.joint as FixedPrismaticJoint).JointTranslation); }
 		}
 		/// <summary>
 		/// [GET] The current joint motor force.
@@ -121,7 +122,16 @@ namespace Duality.Components.Physics
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public float MotorForce
 		{
-			get { return this.joint == null ? 0.0f : (this.joint as FixedPrismaticJoint).MotorForce * Time.SPFMult; }
+			get { return this.joint == null ? 0.0f : PhysicsConvert.ToDualityUnit((this.joint as FixedPrismaticJoint).MotorForce * Time.SPFMult); }
+		}
+		/// <summary>
+		/// [GET / SET] The reference angle that is used to constrain the bodies angle.
+		/// </summary>
+		[EditorHintIncrement(MathF.RadAngle1)]
+		public float RefAngle
+		{
+			get { return this.refAngle; }
+			set { this.refAngle = MathF.NormalizeAngle(value); this.UpdateJoint(); }
 		}
 
 
@@ -135,7 +145,9 @@ namespace Duality.Components.Physics
 			if (this.joint == null) return;
 
 			FixedPrismaticJoint j = this.joint as FixedPrismaticJoint;
-			j.WorldAnchorB = PhysicsConvert.ToPhysicalUnit(this.worldAnchor); // ToDo: Fix this
+			j.LocalAnchorA = PhysicsConvert.ToPhysicalUnit(this.worldAnchor);
+			j.LocalAnchorB = Vector2.Zero;
+			j.ReferenceAngle = this.refAngle;
 			j.LocalXAxis1 = this.moveAxis;
 			j.LimitEnabled = this.limitEnabled;
 			j.LowerLimit = PhysicsConvert.ToPhysicalUnit(this.lowerLimit);
@@ -151,6 +163,7 @@ namespace Duality.Components.Physics
 			FixedPrismaticJointInfo c = target as FixedPrismaticJointInfo;
 			c.worldAnchor = this.worldAnchor;
 			c.moveAxis = this.moveAxis;
+			c.refAngle = this.refAngle;
 			c.limitEnabled = this.limitEnabled;
 			c.lowerLimit = this.lowerLimit;
 			c.upperLimit = this.upperLimit;

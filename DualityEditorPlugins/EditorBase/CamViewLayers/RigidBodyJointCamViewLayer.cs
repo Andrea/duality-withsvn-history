@@ -160,6 +160,8 @@ namespace EditorBase.CamViewLayers
 			else
 				this.DrawWorldAxisConstraint(canvas, joint.BodyA, joint.MovementAxis, joint.WorldAnchor);
 
+			this.DrawLocalAngleConstraint(canvas, joint.BodyA, Vector2.Zero, joint.RefAngle, joint.BodyA.GameObj.Transform.Angle, joint.BodyA.BoundRadius);
+
 			if (joint.MotorEnabled)
 				this.DrawWorldAxisMotor(canvas, joint.BodyA, joint.MovementAxis, joint.WorldAnchor, joint.MotorSpeed, joint.MaxMotorForce, joint.BodyA.BoundRadius * 1.15f);
 
@@ -377,8 +379,8 @@ namespace EditorBase.CamViewLayers
 			float maxTorqueAngle = baseAngle + MathF.Sign(speed) * maxTorque * 0.01f;
 			Vector2 anchorToWorld = body.GameObj.Transform.GetWorldVector(anchor);
 			Vector2 arrowBase = anchorToWorld + Vector2.FromAngleLength(speedAngle, radius);
-			Vector2 arrorA = Vector2.FromAngleLength(speedAngle - MathF.RadAngle45, radius * 0.05f);
-			Vector2 arrorB = Vector2.FromAngleLength(speedAngle - MathF.RadAngle45 + MathF.RadAngle270, radius * 0.05f);
+			Vector2 arrorA = Vector2.FromAngleLength(speedAngle - MathF.RadAngle45, MathF.Sign(speed) * radius * 0.05f);
+			Vector2 arrorB = Vector2.FromAngleLength(speedAngle - MathF.RadAngle45 + MathF.RadAngle270, MathF.Sign(speed) * radius * 0.05f);
 
 			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr));
 			canvas.DrawCircleSegment(
@@ -386,22 +388,22 @@ namespace EditorBase.CamViewLayers
 				bodyPos.Y + anchorToWorld.Y,
 				bodyPos.Z - 0.01f,
 				radius - 2,
-				baseAngle,
-				maxTorqueAngle);
+				MathF.Sign(speed) >= 0 ? baseAngle : maxTorqueAngle,
+				MathF.Sign(speed) >= 0 ? maxTorqueAngle : baseAngle);
 			canvas.DrawCircleSegment(
 				bodyPos.X + anchorToWorld.X,
 				bodyPos.Y + anchorToWorld.Y,
 				bodyPos.Z - 0.01f,
 				radius + 2,
-				baseAngle,
-				maxTorqueAngle);
+				MathF.Sign(speed) >= 0 ? baseAngle : maxTorqueAngle,
+				MathF.Sign(speed) >= 0 ? maxTorqueAngle : baseAngle);
 			canvas.DrawCircleSegment(
 				bodyPos.X + anchorToWorld.X,
 				bodyPos.Y + anchorToWorld.Y,
 				bodyPos.Z - 0.01f,
 				radius,
-				baseAngle,
-				speedAngle);
+				MathF.Sign(speed) >= 0 ? baseAngle : speedAngle,
+				MathF.Sign(speed) >= 0 ? speedAngle : baseAngle);
 			canvas.DrawLine(
 				bodyPos.X + arrowBase.X,
 				bodyPos.Y + arrowBase.Y,
@@ -602,7 +604,7 @@ namespace EditorBase.CamViewLayers
 				infinite);
 			float errorVal = (bodyPos.Xy - basePos).Length;
 			Vector2 errorVec = basePos - bodyPos.Xy;
-			bool hasError = errorVal > 0.0f;
+			bool hasError = errorVal >= 1.0f;
 
 			ColorRgba clr = this.JointColor;
 			ColorRgba clrErr = this.JointErrorColor;
@@ -661,8 +663,8 @@ namespace EditorBase.CamViewLayers
 			float axisVal = Vector2.Dot(bodyPos.Xy - worldAnchor, worldAxis);
 			Vector2 arrowBegin = worldAnchor + worldAxis * axisVal + worldAxis.PerpendicularRight * offset;
 			Vector2 arrowBase = arrowBegin + worldAxis * speed * 10.0f;
-			Vector2 arrowA = Vector2.FromAngleLength(axisAngle + MathF.RadAngle45 + MathF.RadAngle180, MathF.Max(offset * 0.05f, 5.0f));
-			Vector2 arrowB = Vector2.FromAngleLength(axisAngle - MathF.RadAngle45 + MathF.RadAngle180, MathF.Max(offset * 0.05f, 5.0f));
+			Vector2 arrowA = Vector2.FromAngleLength(axisAngle + MathF.RadAngle45 + MathF.RadAngle180, MathF.Sign(speed) * MathF.Max(offset * 0.05f, 5.0f));
+			Vector2 arrowB = Vector2.FromAngleLength(axisAngle - MathF.RadAngle45 + MathF.RadAngle180, MathF.Sign(speed) * MathF.Max(offset * 0.05f, 5.0f));
 			
 			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr));
 			canvas.DrawLine(
