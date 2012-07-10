@@ -95,6 +95,7 @@ namespace EditorBase.CamViewLayers
 			else if (joint is AngleJointInfo)			this.DrawJoint(canvas, joint as AngleJointInfo);
 			else if (joint is DistanceJointInfo)		this.DrawJoint(canvas, joint as DistanceJointInfo);
 			else if (joint is FrictionJointInfo)		this.DrawJoint(canvas, joint as FrictionJointInfo);
+			else if (joint is PrismaticJointInfo)		this.DrawJoint(canvas, joint as PrismaticJointInfo);
 			else if (joint is WeldJointInfo)			this.DrawJoint(canvas, joint as WeldJointInfo);
 		}
 		private void DrawJoint(Canvas canvas, FixedAngleJointInfo joint)
@@ -137,14 +138,14 @@ namespace EditorBase.CamViewLayers
 			float angularCircleRad = joint.BodyA.BoundRadius * 0.25f;
 
 			if (joint.LimitEnabled)
-				this.DrawWorldAxisConstraint(canvas, joint.BodyA, joint.MovementAxis, joint.WorldAnchor, joint.LowerLimit, joint.UpperLimit);
+				this.DrawWorldAxisConstraint(canvas, joint.BodyA, joint.MovementAxis, Vector2.Zero, joint.WorldAnchor, joint.LowerLimit, joint.UpperLimit);
 			else
-				this.DrawWorldAxisConstraint(canvas, joint.BodyA, joint.MovementAxis, joint.WorldAnchor);
+				this.DrawWorldAxisConstraint(canvas, joint.BodyA, joint.MovementAxis, Vector2.Zero, joint.WorldAnchor);
 
 			this.DrawLocalAngleConstraint(canvas, joint.BodyA, Vector2.Zero, joint.RefAngle, joint.BodyA.GameObj.Transform.Angle, joint.BodyA.BoundRadius);
 
 			if (joint.MotorEnabled)
-				this.DrawWorldAxisMotor(canvas, joint.BodyA, joint.MovementAxis, joint.WorldAnchor, joint.MotorSpeed, joint.MaxMotorForce, joint.BodyA.BoundRadius * 1.15f);
+				this.DrawWorldAxisMotor(canvas, joint.BodyA, joint.MovementAxis, Vector2.Zero, joint.WorldAnchor, joint.MotorSpeed, joint.MaxMotorForce, joint.BodyA.BoundRadius * 1.15f);
 
 			this.DrawWorldAnchor(canvas, joint.BodyA, joint.WorldAnchor);
 		}
@@ -175,6 +176,39 @@ namespace EditorBase.CamViewLayers
 			this.DrawLocalFrictionMarker(canvas, joint.BodyA, joint.LocalAnchorA);
 			this.DrawLocalFrictionMarker(canvas, joint.BodyB, joint.LocalAnchorB);
 			this.DrawLocalLooseConstraint(canvas, joint.BodyA, joint.BodyB, joint.LocalAnchorA, joint.LocalAnchorB);
+		}
+		private void DrawJoint(Canvas canvas, PrismaticJointInfo joint)
+		{
+			float angularCircleRadA = joint.BodyA.BoundRadius * 0.25f;
+			float angularCircleRadB = joint.BodyB.BoundRadius * 0.25f;
+			bool displaySecondCollider = (joint.BodyA.GameObj.Transform.Pos - joint.BodyB.GameObj.Transform.Pos).Length >= angularCircleRadA + angularCircleRadB;
+
+			if (joint.LimitEnabled)
+			    this.DrawLocalAxisConstraint(canvas, joint.BodyA, joint.BodyB, joint.MovementAxis, joint.LocalAnchorA, joint.LocalAnchorB, joint.LowerLimit, joint.UpperLimit);
+			else
+			    this.DrawLocalAxisConstraint(canvas, joint.BodyA, joint.BodyB, joint.MovementAxis, joint.LocalAnchorA, joint.LocalAnchorB);
+
+			this.DrawLocalAngleConstraint(canvas, 
+				joint.BodyA, 
+				joint.LocalAnchorA, 
+				joint.BodyB.GameObj.Transform.Angle - joint.RefAngle, 
+				joint.BodyA.GameObj.Transform.Angle, 
+				angularCircleRadA);
+			if (displaySecondCollider)
+			{
+				this.DrawLocalAngleConstraint(canvas, 
+					joint.BodyB, 
+					joint.LocalAnchorB, 
+					joint.BodyA.GameObj.Transform.Angle + joint.RefAngle,
+					joint.BodyB.GameObj.Transform.Angle, 
+					angularCircleRadB);
+			}
+
+			if (joint.MotorEnabled)
+			    this.DrawLocalAxisMotor(canvas, joint.BodyA, joint.BodyB, joint.MovementAxis, joint.LocalAnchorA, joint.LocalAnchorB, joint.MotorSpeed, joint.MaxMotorForce, joint.BodyA.BoundRadius * 1.15f);
+
+			this.DrawLocalAnchor(canvas, joint.BodyA, joint.LocalAnchorA);
+			this.DrawLocalAnchor(canvas, joint.BodyB, joint.LocalAnchorB);
 		}
 		private void DrawJoint(Canvas canvas, WeldJointInfo joint)
 		{
@@ -559,6 +593,24 @@ namespace EditorBase.CamViewLayers
 
 			return errorVec;
 		}
+		private void DrawLocalAxisConstraint(Canvas canvas, RigidBody bodyA, RigidBody bodyB, Vector2 localAxis, Vector2 localAnchorA, Vector2 localAnchorB, float min = 1, float max = -1)
+		{
+			Vector3 bodyPosA = bodyA.GameObj.Transform.Pos;
+			Vector3 bodyPosB = bodyB.GameObj.Transform.Pos;
+			Vector2 worldAxis = bodyB.GameObj.Transform.GetWorldVector(localAxis).Normalized;
+			Vector2 worldAnchorB = bodyB.GameObj.Transform.GetWorldPoint(localAnchorB);
+
+			this.DrawWorldAxisConstraint(canvas, bodyA, worldAxis, localAnchorA, worldAnchorB, min, max);
+		}
+		private void DrawLocalAxisMotor(Canvas canvas, RigidBody bodyA, RigidBody bodyB, Vector2 localAxis, Vector2 localAnchorA, Vector2 localAnchorB, float speed, float maxForce, float offset)
+		{
+			Vector3 bodyPosA = bodyA.GameObj.Transform.Pos;
+			Vector3 bodyPosB = bodyB.GameObj.Transform.Pos;
+			Vector2 worldAxis = bodyB.GameObj.Transform.GetWorldVector(localAxis).Normalized;
+			Vector2 worldAnchorB = bodyB.GameObj.Transform.GetWorldPoint(localAnchorB);
+
+			this.DrawWorldAxisMotor(canvas, bodyA, worldAxis, localAnchorA, worldAnchorB, speed, maxForce, offset);
+		}
 		private void DrawLocalLooseConstraint(Canvas canvas, RigidBody bodyA, RigidBody bodyB, Vector2 anchorA, Vector2 anchorB)
 		{
 			Vector3 bodyPosA = bodyA.GameObj.Transform.Pos;
@@ -690,7 +742,7 @@ namespace EditorBase.CamViewLayers
 
 			return errorVec;
 		}
-		private void DrawWorldAxisConstraint(Canvas canvas, RigidBody body, Vector2 worldAxis, Vector2 worldAnchor, float min = 1, float max = -1)
+		private void DrawWorldAxisConstraint(Canvas canvas, RigidBody body, Vector2 worldAxis, Vector2 localAnchor, Vector2 worldAnchor, float min = 1, float max = -1)
 		{
 			Vector3 bodyPos = body.GameObj.Transform.Pos;
 			worldAxis = worldAxis.Normalized;
@@ -701,16 +753,17 @@ namespace EditorBase.CamViewLayers
 				max = 1000000000.0f;
 				infinite = true;
 			}
-			float axisVal = Vector2.Dot(bodyPos.Xy - worldAnchor, worldAxis);
+			Vector2 anchorToWorld = body.GameObj.Transform.GetWorldVector(localAnchor);
+			float axisVal = Vector2.Dot(bodyPos.Xy + anchorToWorld - worldAnchor, worldAxis);
 			Vector2 basePos = MathF.PointLineNearestPoint(
-				bodyPos.X, 
-				bodyPos.Y, 
+				bodyPos.X + anchorToWorld.X, 
+				bodyPos.Y + anchorToWorld.Y, 
 				worldAnchor.X + worldAxis.X * min, 
 				worldAnchor.Y + worldAxis.Y * min, 
 				worldAnchor.X + worldAxis.X * max, 
 				worldAnchor.Y + worldAxis.Y * max,
 				infinite);
-			float errorVal = (bodyPos.Xy - basePos).Length;
+			float errorVal = (bodyPos.Xy + anchorToWorld - basePos).Length;
 			Vector2 errorVec = basePos - bodyPos.Xy;
 			bool hasError = errorVal >= 1.0f;
 
@@ -721,8 +774,8 @@ namespace EditorBase.CamViewLayers
 			{
 				canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clrErr));
 				canvas.DrawLine(
-					bodyPos.X,
-					bodyPos.Y,
+					bodyPos.X + anchorToWorld.X,
+					bodyPos.Y + anchorToWorld.Y,
 					bodyPos.Z - 0.01f,
 					basePos.X,
 					basePos.Y,
@@ -760,16 +813,16 @@ namespace EditorBase.CamViewLayers
 					bodyPos.Z - 0.01f);
 			}
 		}
-		private void DrawWorldAxisMotor(Canvas canvas, RigidBody body, Vector2 worldAxis, Vector2 worldAnchor, float speed, float maxForce, float offset)
+		private void DrawWorldAxisMotor(Canvas canvas, RigidBody body, Vector2 worldAxis, Vector2 localAnchor, Vector2 worldAnchor, float speed, float maxForce, float offset)
 		{
 			Vector3 bodyPos = body.GameObj.Transform.Pos;
 
 			ColorRgba clr = this.MotorColor;
 
+			Vector2 anchorToWorld = body.GameObj.Transform.GetWorldVector(localAnchor);
 			float axisAngle = worldAxis.Angle;
 			float maxForceTemp = MathF.Sign(speed) * maxForce * 0.1f;
-			float axisVal = Vector2.Dot(bodyPos.Xy - worldAnchor, worldAxis);
-			Vector2 arrowBegin = worldAnchor + worldAxis * axisVal + worldAxis.PerpendicularRight * offset;
+			Vector2 arrowBegin = bodyPos.Xy + worldAxis.PerpendicularRight * offset;
 			Vector2 arrowBase = arrowBegin + worldAxis * speed * 10.0f;
 			Vector2 arrowA = Vector2.FromAngleLength(axisAngle + MathF.RadAngle45 + MathF.RadAngle180, MathF.Sign(speed) * MathF.Max(offset * 0.05f, 5.0f));
 			Vector2 arrowB = Vector2.FromAngleLength(axisAngle - MathF.RadAngle45 + MathF.RadAngle180, MathF.Sign(speed) * MathF.Max(offset * 0.05f, 5.0f));

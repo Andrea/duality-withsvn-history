@@ -13356,5 +13356,75 @@
             [GET / SET] The maximum friction torque in the local anchor point.
             </summary>
         </member>
+        <member name="T:Duality.Components.Physics.PrismaticJointInfo">
+            <summary>
+            This joint allows the RigidBody to travel on a specific axis relative to another body. It can be limited to a certain area and driven by a motor force.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PrismaticJointInfo.LocalAnchorA">
+            <summary>
+            [GET / SET] The local anchor point on the first RigidBody.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PrismaticJointInfo.LocalAnchorB">
+            <summary>
+            [GET / SET] The local anchor point on the second RigidBody.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PrismaticJointInfo.MovementAxis">
+            <summary>
+            [GET / SET] The axis on which the body may move.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PrismaticJointInfo.LimitEnabled">
+            <summary>
+            [GET / SET] Is the joint limited in its movement?
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PrismaticJointInfo.LowerLimit">
+            <summary>
+            [GET / SET] The lower joint limit.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PrismaticJointInfo.UpperLimit">
+            <summary>
+            [GET / SET] The upper joint limit.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PrismaticJointInfo.MotorEnabled">
+            <summary>
+            [GET / SET] Is the joint motor enabled?
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PrismaticJointInfo.MaxMotorForce">
+            <summary>
+            [GET / SET] The maximum motor force.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PrismaticJointInfo.MotorSpeed">
+            <summary>
+            [GET / SET] The desired motor speed.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PrismaticJointInfo.JointSpeed">
+            <summary>
+            [GET] The current joint speed.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PrismaticJointInfo.JointTranslation">
+            <summary>
+            [GET] The current joint translation.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PrismaticJointInfo.MotorForce">
+            <summary>
+            [GET] The current joint motor force.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PrismaticJointInfo.RefAngle">
+            <summary>
+            [GET / SET] The reference angle that is used to constrain the bodies angle.
+            </summary>
+        </member>
     </members>
 </doc>

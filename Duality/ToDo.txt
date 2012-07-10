@@ -14,9 +14,7 @@
 	
 --> Joints and Joint Editors
 	-->	Create JointInfo classes for all relevant Farseer Joints
-		-->	Friction
 		-->	Line
-		-->	Prismatic
 		-->	Pulley
 		-->	Revolute
 		-->	Slider
