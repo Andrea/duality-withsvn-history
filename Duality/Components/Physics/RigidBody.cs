@@ -66,8 +66,8 @@ namespace Duality.Components.Physics
 		private	float		angularVel		= 0.0f;
 		private	Category	colCat			= Category.Cat1;
 		private	Category	colWith			= Category.All;
-		private	List<ShapeInfo>	shapes		= new List<ShapeInfo>();
-		private	List<JointInfo>	joints		= new List<JointInfo>();
+		private	List<ShapeInfo>	shapes		= null;
+		private	List<JointInfo>	joints		= null;
 		[NonSerialized]	private	bool			initialized	= false;
 		[NonSerialized]	private	Body			body		= null;
 		[NonSerialized]	private	List<ColEvent>	eventBuffer	= new List<ColEvent>();

@@ -12,12 +12,13 @@ using Duality.Resources;
 namespace Duality.Components.Physics
 {
 	/// <summary>
-	/// This joint allows the RigidBody to travel on a specific axis. It can be limited to a certain area and driven by a motor force.
+	/// This joint allows the RigidBody to travel on a specific axis relative to another body. It can be limited to a certain area and driven by a motor force.
 	/// </summary>
 	[Serializable]
-	public sealed class FixedPrismaticJointInfo : JointInfo
+	public sealed class PrismaticJointInfo : JointInfo
 	{
-		private	Vector2		worldAnchor		= Vector2.Zero;
+		private	Vector2		localAnchorA	= Vector2.Zero;
+		private	Vector2		localAnchorB	= Vector2.Zero;
 		private	Vector2		moveAxis		= Vector2.UnitX;
 		private	bool		limitEnabled	= false;
 		private	float		lowerLimit		= 0.0f;
@@ -30,16 +31,25 @@ namespace Duality.Components.Physics
 
 		public override bool DualJoint
 		{
-			get { return false; }
+			get { return true; }
 		}
 		/// <summary>
-		/// [GET / SET] The world anchor point to which the RigidBody will be attached.
+		/// [GET / SET] The local anchor point on the first RigidBody.
 		/// </summary>
 		[EditorHintIncrement(1)]
-		public Vector2 WorldAnchor
+		public Vector2 LocalAnchorA
 		{
-			get { return this.worldAnchor; }
-			set { this.worldAnchor = value; this.UpdateJoint(); }
+			get { return this.localAnchorA; }
+			set { this.localAnchorA = value; this.UpdateJoint(); }
+		}
+		/// <summary>
+		/// [GET / SET] The local anchor point on the second RigidBody.
+		/// </summary>
+		[EditorHintIncrement(1)]
+		public Vector2 LocalAnchorB
+		{
+			get { return this.localAnchorB; }
+			set { this.localAnchorB = value; this.UpdateJoint(); }
 		}
 		/// <summary>
 		/// [GET / SET] The axis on which the body may move.
@@ -128,7 +138,7 @@ namespace Duality.Components.Physics
 		/// [GET / SET] The reference angle that is used to constrain the bodies angle.
 		/// </summary>
 		[EditorHintIncrement(MathF.RadAngle1)]
-		public float RefAngle
+		public float ReferenceAngle
 		{
 			get { return this.refAngle; }
 			set { this.refAngle = MathF.NormalizeAngle(value); this.UpdateJoint(); }
@@ -137,31 +147,32 @@ namespace Duality.Components.Physics
 
 		protected override Joint CreateJoint(Body bodyA, Body bodyB)
 		{
-			return bodyA != null ? JointFactory.CreateFixedPrismaticJoint(Scene.PhysicsWorld, bodyA, Vector2.Zero, Vector2.UnitX) : null;
+			return bodyA != null && bodyB != null ? JointFactory.CreatePrismaticJoint(Scene.PhysicsWorld, bodyA, bodyB, Vector2.Zero, Vector2.UnitX) : null;
 		}
 		internal override void UpdateJoint()
 		{
 			base.UpdateJoint();
 			if (this.joint == null) return;
 
-			FixedPrismaticJoint j = this.joint as FixedPrismaticJoint;
-			j.LocalAnchorA = PhysicsConvert.ToPhysicalUnit(this.worldAnchor);
-			j.LocalAnchorB = Vector2.Zero;
+			PrismaticJoint j = this.joint as PrismaticJoint;
+			j.LocalAnchorA = GetFarseerPoint(this.BodyA, this.localAnchorA);
+			j.LocalAnchorB = GetFarseerPoint(this.BodyB, this.localAnchorB);
 			j.ReferenceAngle = this.refAngle;
-			j.LocalXAxis1 = this.moveAxis;
+			j.LocalXAxis1 = this.BodyA.GameObj.Transform.GetWorldVector(this.moveAxis).Normalized;
 			j.LimitEnabled = this.limitEnabled;
-			j.LowerLimit = PhysicsConvert.ToPhysicalUnit(this.lowerLimit);
-			j.UpperLimit = PhysicsConvert.ToPhysicalUnit(this.upperLimit);
+			j.LowerLimit = -PhysicsConvert.ToPhysicalUnit(this.upperLimit);
+			j.UpperLimit = -PhysicsConvert.ToPhysicalUnit(this.lowerLimit);
 			j.MotorEnabled = this.motorEnabled;
-			j.MotorSpeed = PhysicsConvert.ToPhysicalUnit(this.motorSpeed) / Time.SPFMult;
+			j.MotorSpeed = -PhysicsConvert.ToPhysicalUnit(this.motorSpeed) / Time.SPFMult;
 			j.MaxMotorForce = PhysicsConvert.ToPhysicalUnit(this.maxMotorForce) / Time.SPFMult;
 		}
 
 		protected override void CopyTo(JointInfo target)
 		{
 			base.CopyTo(target);
-			FixedPrismaticJointInfo c = target as FixedPrismaticJointInfo;
-			c.worldAnchor = this.worldAnchor;
+			PrismaticJointInfo c = target as PrismaticJointInfo;
+			c.localAnchorA = this.localAnchorA;
+			c.localAnchorB = this.localAnchorB;
 			c.moveAxis = this.moveAxis;
 			c.refAngle = this.refAngle;
 			c.limitEnabled = this.limitEnabled;

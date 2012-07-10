@@ -276,7 +276,11 @@ namespace EditorBase.PropertyEditors
 			this.PropertyName = PluginRes.EditorBaseRes.PropertyName_AddJoint;
 			this.PropertyDesc = PluginRes.EditorBaseRes.PropertyDesc_AddJoint;
 
-			this.Items = DualityApp.GetAvailDualityTypes(typeof(JointInfo)).Where(t => !t.IsAbstract).Select(t => new ObjectItem(t, t.Name));
+			this.Items = 
+				from t in DualityApp.GetAvailDualityTypes(typeof(JointInfo))
+				where !t.IsAbstract
+				orderby t.Name
+				select new ObjectItem(t, t.Name);
 		}
 		protected override void OnReadOnlyChanged()
 		{

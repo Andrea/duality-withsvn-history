@@ -294,6 +294,7 @@ namespace EditorBase
 			IEnumerable<Type> camViewStateTypeQuery = 
 				from t in EditorBasePlugin.Instance.EditorForm.GetAvailDualityEditorTypes(typeof(CamViewState))
 				where !t.IsAbstract
+				orderby t.Name
 				select t;
 
 			foreach (Type camViewState in camViewStateTypeQuery)
@@ -307,6 +308,7 @@ namespace EditorBase
 			IEnumerable<Type> camViewStateTypeQuery = 
 				from t in EditorBasePlugin.Instance.EditorForm.GetAvailDualityEditorTypes(typeof(CamViewLayer))
 				where !t.IsAbstract
+				orderby t.Name
 				select t;
 
 			foreach (Type camViewState in camViewStateTypeQuery)
@@ -326,7 +328,7 @@ namespace EditorBase
 			this.camSelector.Items.Clear();
 			this.camSelector.Items.Add(this.nativeCamObj.Camera);
 
-			foreach (Camera c in Scene.Current.AllObjects.GetComponents<Camera>())
+			foreach (Camera c in Scene.Current.AllObjects.GetComponents<Camera>().OrderBy(c => c.GameObj.FullName))
 				this.camSelector.Items.Add(c);
 		}
 		private void InitNativeCamera()

@@ -16,7 +16,6 @@
 	-->	Create JointInfo classes for all relevant Farseer Joints
 		-->	Line
 		-->	Pulley
-		-->	Revolute
 		-->	Slider
 	-->	Display dual and single JointInfos in ColliderEditor
 	-->	Make some of them editable there?

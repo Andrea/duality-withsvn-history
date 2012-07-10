@@ -69,7 +69,11 @@ namespace EditorBase.CamViewLayers
 
 			List<RigidBody> visibleColliders = this.QueryVisibleColliders().ToList();
 			List<JointInfo> visibleJoints = new List<JointInfo>();
-			foreach (RigidBody c in visibleColliders) visibleJoints.AddRange(c.Joints.Where(j => !visibleJoints.Contains(j)));
+			foreach (RigidBody c in visibleColliders)
+			{
+				if (c.Joints == null) continue;
+				visibleJoints.AddRange(c.Joints.Where(j => !visibleJoints.Contains(j)));
+			}
 			foreach (JointInfo j in visibleJoints)
 			{
 				float jointAlpha = selectedBody != null && (j.BodyA == selectedBody || j.BodyB == selectedBody) ? 1.0f : 0.5f;
@@ -95,8 +99,11 @@ namespace EditorBase.CamViewLayers
 			else if (joint is AngleJointInfo)			this.DrawJoint(canvas, joint as AngleJointInfo);
 			else if (joint is DistanceJointInfo)		this.DrawJoint(canvas, joint as DistanceJointInfo);
 			else if (joint is FrictionJointInfo)		this.DrawJoint(canvas, joint as FrictionJointInfo);
+			else if (joint is RevoluteJointInfo)		this.DrawJoint(canvas, joint as RevoluteJointInfo);
 			else if (joint is PrismaticJointInfo)		this.DrawJoint(canvas, joint as PrismaticJointInfo);
 			else if (joint is WeldJointInfo)			this.DrawJoint(canvas, joint as WeldJointInfo);
+			else if (joint is RopeJointInfo)			this.DrawJoint(canvas, joint as RopeJointInfo);
+			else if (joint is SliderJointInfo)			this.DrawJoint(canvas, joint as SliderJointInfo);
 		}
 		private void DrawJoint(Canvas canvas, FixedAngleJointInfo joint)
 		{
@@ -142,7 +149,7 @@ namespace EditorBase.CamViewLayers
 			else
 				this.DrawWorldAxisConstraint(canvas, joint.BodyA, joint.MovementAxis, Vector2.Zero, joint.WorldAnchor);
 
-			this.DrawLocalAngleConstraint(canvas, joint.BodyA, Vector2.Zero, joint.RefAngle, joint.BodyA.GameObj.Transform.Angle, joint.BodyA.BoundRadius);
+			this.DrawLocalAngleConstraint(canvas, joint.BodyA, Vector2.Zero, joint.ReferenceAngle, joint.BodyA.GameObj.Transform.Angle, joint.BodyA.BoundRadius);
 
 			if (joint.MotorEnabled)
 				this.DrawWorldAxisMotor(canvas, joint.BodyA, joint.MovementAxis, Vector2.Zero, joint.WorldAnchor, joint.MotorSpeed, joint.MaxMotorForce, joint.BodyA.BoundRadius * 1.15f);
@@ -167,7 +174,7 @@ namespace EditorBase.CamViewLayers
 		}
 		private void DrawJoint(Canvas canvas, DistanceJointInfo joint)
 		{
-			this.DrawLocalDistConstraint(canvas, joint.BodyA, joint.BodyB, joint.LocalAnchorA, joint.LocalAnchorB, joint.TargetDistance);
+			this.DrawLocalDistConstraint(canvas, joint.BodyA, joint.BodyB, joint.LocalAnchorA, joint.LocalAnchorB, joint.TargetDistance, joint.TargetDistance);
 			this.DrawLocalAnchor(canvas, joint.BodyB, joint.LocalAnchorB);
 			this.DrawLocalAnchor(canvas, joint.BodyA, joint.LocalAnchorA);
 		}
@@ -176,6 +183,43 @@ namespace EditorBase.CamViewLayers
 			this.DrawLocalFrictionMarker(canvas, joint.BodyA, joint.LocalAnchorA);
 			this.DrawLocalFrictionMarker(canvas, joint.BodyB, joint.LocalAnchorB);
 			this.DrawLocalLooseConstraint(canvas, joint.BodyA, joint.BodyB, joint.LocalAnchorA, joint.LocalAnchorB);
+		}
+		private void DrawJoint(Canvas canvas, RevoluteJointInfo joint)
+		{
+			float angularCircleRadA = joint.BodyA.BoundRadius * 0.25f;
+			float angularCircleRadB = joint.BodyB.BoundRadius * 0.25f;
+
+			float anchorDist = this.GetAnchorDist(joint.BodyA, joint.BodyB, joint.LocalAnchorA, joint.LocalAnchorB);
+			bool displaySecondCollider = anchorDist >= angularCircleRadA + angularCircleRadB;
+
+			this.DrawLocalPosConstraint(canvas, joint.BodyA, joint.BodyB, joint.LocalAnchorA, joint.LocalAnchorB);
+			
+			if (joint.LimitEnabled)
+			{
+				this.DrawLocalAngleConstraint(canvas, 
+					joint.BodyA, 
+					joint.LocalAnchorA, 
+					joint.BodyB.GameObj.Transform.Angle - joint.ReferenceAngle, 
+					joint.BodyA.GameObj.Transform.Angle, 
+					angularCircleRadA);
+				if (displaySecondCollider)
+				{
+					this.DrawLocalAngleConstraint(canvas, 
+						joint.BodyB, 
+						joint.LocalAnchorB, 
+						joint.BodyA.GameObj.Transform.Angle + joint.ReferenceAngle,
+						joint.BodyB.GameObj.Transform.Angle, 
+						angularCircleRadB);
+				}
+			}
+
+			if (joint.MotorEnabled)
+			{
+				this.DrawLocalAngleMotor(canvas, joint.BodyA, Vector2.Zero, joint.MotorSpeed, joint.MaxMotorTorque, joint.BodyA.BoundRadius * 1.15f);
+			}
+
+			this.DrawLocalAnchor(canvas, joint.BodyA, joint.LocalAnchorA);
+			this.DrawLocalAnchor(canvas, joint.BodyB, joint.LocalAnchorB);
 		}
 		private void DrawJoint(Canvas canvas, PrismaticJointInfo joint)
 		{
@@ -191,7 +235,7 @@ namespace EditorBase.CamViewLayers
 			this.DrawLocalAngleConstraint(canvas, 
 				joint.BodyA, 
 				joint.LocalAnchorA, 
-				joint.BodyB.GameObj.Transform.Angle - joint.RefAngle, 
+				joint.BodyB.GameObj.Transform.Angle - joint.ReferenceAngle, 
 				joint.BodyA.GameObj.Transform.Angle, 
 				angularCircleRadA);
 			if (displaySecondCollider)
@@ -199,7 +243,7 @@ namespace EditorBase.CamViewLayers
 				this.DrawLocalAngleConstraint(canvas, 
 					joint.BodyB, 
 					joint.LocalAnchorB, 
-					joint.BodyA.GameObj.Transform.Angle + joint.RefAngle,
+					joint.BodyA.GameObj.Transform.Angle + joint.ReferenceAngle,
 					joint.BodyB.GameObj.Transform.Angle, 
 					angularCircleRadB);
 			}
@@ -215,9 +259,10 @@ namespace EditorBase.CamViewLayers
 			float angularCircleRadA = joint.BodyA.BoundRadius * 0.25f;
 			float angularCircleRadB = joint.BodyB.BoundRadius * 0.25f;
 
-			Vector2 errorVec = this.DrawLocalPosConstraint(canvas, joint.BodyA, joint.BodyB, joint.LocalAnchorA, joint.LocalAnchorB);
+			float anchorDist = this.GetAnchorDist(joint.BodyA, joint.BodyB, joint.LocalAnchorA, joint.LocalAnchorB);
+			bool displaySecondCollider = anchorDist >= angularCircleRadA + angularCircleRadB;
 
-			bool displaySecondCollider = errorVec.Length >= angularCircleRadA + angularCircleRadB;
+			this.DrawLocalPosConstraint(canvas, joint.BodyA, joint.BodyB, joint.LocalAnchorA, joint.LocalAnchorB);
 
 			this.DrawLocalAnchor(canvas, joint.BodyA, joint.LocalAnchorA);
 			this.DrawLocalAnchor(canvas, joint.BodyB, joint.LocalAnchorB);
@@ -237,6 +282,18 @@ namespace EditorBase.CamViewLayers
 					joint.BodyB.GameObj.Transform.Angle, 
 					angularCircleRadB);
 			}
+		}
+		private void DrawJoint(Canvas canvas, RopeJointInfo joint)
+		{
+			this.DrawLocalDistConstraint(canvas, joint.BodyA, joint.BodyB, joint.LocalAnchorA, joint.LocalAnchorB, 0.0f, joint.MaxLength);
+			this.DrawLocalAnchor(canvas, joint.BodyB, joint.LocalAnchorB);
+			this.DrawLocalAnchor(canvas, joint.BodyA, joint.LocalAnchorA);
+		}
+		private void DrawJoint(Canvas canvas, SliderJointInfo joint)
+		{
+			this.DrawLocalDistConstraint(canvas, joint.BodyA, joint.BodyB, joint.LocalAnchorA, joint.LocalAnchorB, joint.MinLength, joint.MaxLength);
+			this.DrawLocalAnchor(canvas, joint.BodyB, joint.LocalAnchorB);
+			this.DrawLocalAnchor(canvas, joint.BodyA, joint.LocalAnchorA);
 		}
 		
 		private void DrawLocalText(Canvas canvas, RigidBody body, string text, Vector2 pos, float baseAngle)
@@ -487,7 +544,7 @@ namespace EditorBase.CamViewLayers
 				bodyPos.Y + arrowBase.Y + arrorB.Y,
 				bodyPos.Z - 0.01f);
 		}
-		private Vector2 DrawLocalPosConstraint(Canvas canvas, RigidBody bodyA, RigidBody bodyB, Vector2 anchorA, Vector2 anchorB)
+		private void DrawLocalPosConstraint(Canvas canvas, RigidBody bodyA, RigidBody bodyB, Vector2 anchorA, Vector2 anchorB)
 		{
 			Vector3 colliderPosA = bodyA.GameObj.Transform.Pos;
 			Vector3 colliderPosB = bodyB.GameObj.Transform.Pos;
@@ -532,9 +589,8 @@ namespace EditorBase.CamViewLayers
 				colliderPosB.X + anchorBToWorld.X,
 				colliderPosB.Y + anchorBToWorld.Y,
 				colliderPosB.Z - 0.01f);
-			return errorVec;
 		}
-		private Vector2 DrawLocalDistConstraint(Canvas canvas, RigidBody bodyA, RigidBody bodyB, Vector2 localAnchorA, Vector2 localAnchorB, float targetDist)
+		private void DrawLocalDistConstraint(Canvas canvas, RigidBody bodyA, RigidBody bodyB, Vector2 localAnchorA, Vector2 localAnchorB, float minDist, float maxDist)
 		{
 			Vector3 bodyPosA = bodyA.GameObj.Transform.Pos;
 			Vector3 bodyPosB = bodyB.GameObj.Transform.Pos;
@@ -546,9 +602,9 @@ namespace EditorBase.CamViewLayers
 			Vector2 anchorA = bodyA.GameObj.Transform.GetWorldVector(localAnchorA);
 			Vector2 anchorB = bodyB.GameObj.Transform.GetWorldVector(localAnchorB);
 			Vector2 errorVec = (bodyPosB.Xy + anchorB) - (bodyPosA.Xy + anchorA);
-			Vector2 distVec = errorVec.Normalized * targetDist;
-			Vector2 lineNormal = errorVec.PerpendicularRight.Normalized;
 			float dist = errorVec.Length;
+			Vector2 distVec = errorVec.Normalized * MathF.Clamp(dist, minDist, maxDist);
+			Vector2 lineNormal = errorVec.PerpendicularRight.Normalized;
 			bool hasError = (errorVec - distVec).Length >= 1.0f;
 
 			if (hasError)
@@ -586,12 +642,10 @@ namespace EditorBase.CamViewLayers
 					bodyPosA.Z - 0.01f);
 			}
 			this.DrawLocalText(canvas, bodyA,
-				string.Format("{0:F1}", targetDist),
+				string.Format("{0:F1}", MathF.Clamp(dist, minDist, maxDist)),
 				anchorA + distVec,
 				Vector2.Zero,
 				errorVec.Angle);
-
-			return errorVec;
 		}
 		private void DrawLocalAxisConstraint(Canvas canvas, RigidBody bodyA, RigidBody bodyB, Vector2 localAxis, Vector2 localAnchorA, Vector2 localAnchorB, float min = 1, float max = -1)
 		{
@@ -644,7 +698,7 @@ namespace EditorBase.CamViewLayers
 				colliderPos.Z - 0.01f,
 				markerCircleRad);
 		}
-		private Vector2 DrawWorldPosConstraint(Canvas canvas, RigidBody body, Vector2 localAnchor, Vector2 worldAnchor)
+		private void DrawWorldPosConstraint(Canvas canvas, RigidBody body, Vector2 localAnchor, Vector2 worldAnchor)
 		{
 			Vector3 bodyPos = body.GameObj.Transform.Pos;
 
@@ -682,10 +736,8 @@ namespace EditorBase.CamViewLayers
 				bodyPos.X + anchorAToWorld.X,
 				bodyPos.Y + anchorAToWorld.Y,
 				bodyPos.Z - 0.01f);
-
-			return errorVec;
 		}
-		private Vector2 DrawWorldDistConstraint(Canvas canvas, RigidBody body, Vector2 localAnchor, Vector2 worldAnchor, float targetDist)
+		private void DrawWorldDistConstraint(Canvas canvas, RigidBody body, Vector2 localAnchor, Vector2 worldAnchor, float targetDist)
 		{
 			Vector3 colliderPosA = body.GameObj.Transform.Pos;
 
@@ -739,8 +791,6 @@ namespace EditorBase.CamViewLayers
 				anchorA + distVec,
 				Vector2.Zero,
 				errorVec.Angle);
-
-			return errorVec;
 		}
 		private void DrawWorldAxisConstraint(Canvas canvas, RigidBody body, Vector2 worldAxis, Vector2 localAnchor, Vector2 worldAnchor, float min = 1, float max = -1)
 		{
@@ -863,6 +913,18 @@ namespace EditorBase.CamViewLayers
 				arrowBase.X + arrowB.X,
 				arrowBase.Y + arrowB.Y,
 				bodyPos.Z - 0.01f);
+		}
+
+		private float GetAnchorDist(RigidBody bodyA, RigidBody bodyB, Vector2 localAnchorA, Vector2 localAnchorB)
+		{
+			Vector3 colliderPosA = bodyA.GameObj.Transform.Pos;
+			Vector3 colliderPosB = bodyB.GameObj.Transform.Pos;
+
+			Vector2 anchorAToWorld = bodyA.GameObj.Transform.GetWorldVector(localAnchorA);
+			Vector2 anchorBToWorld = bodyB.GameObj.Transform.GetWorldVector(localAnchorB);
+			Vector2 errorVec = (colliderPosB.Xy + anchorBToWorld) - (colliderPosA.Xy + anchorAToWorld);
+
+			return errorVec.Length;
 		}
 
 		private IEnumerable<RigidBody> QueryVisibleColliders()
