@@ -178,7 +178,26 @@ namespace Duality
 			}
 		}
 
-		private static Dictionary<int,Texture>	dashTextures	= new Dictionary<int,Texture>();
+		public enum DashPattern : uint
+		{
+			Empty		= 0x0U,
+
+			DotMore		= 0xAAAAAAAAU,
+			Dot			= 0x88888888U,
+			DotLess		= 0x80808080U,
+
+			DashShort	= 0xCCCCCCCCU,
+			Dash		= 0xF0F0F0F0U,
+			DashLong	= 0xFF00FF00U,
+
+			DashDot		= 0xE4E4E4E4U,
+			DashDotDot	= 0xF888F888U,
+			DashDashDot	= 0xF0F0F088U,
+
+			Full		= 0xFFFFFFFFU
+		}
+
+		private static Dictionary<uint,Texture>	dashTextures	= new Dictionary<uint,Texture>();
 		private	IDrawDevice		device		= null;
 		private	Stack<State>	stateStack	= new Stack<State>(new [] { new State() });
 
@@ -386,17 +405,16 @@ namespace Duality
 		/// <param name="x2"></param>
 		/// <param name="y2"></param>
 		/// <param name="z2"></param>
-		public void DrawDashLine(float x, float y, float z, float x2, float y2, float z2, int dashLen = 4)
+		public void DrawDashLine(float x, float y, float z, float x2, float y2, float z2, DashPattern pattern = DashPattern.Dash, float patternLen = 1.0f)
 		{
-			dashLen = MathF.Clamp(dashLen, 1, 16);
-
-			if (!dashTextures.ContainsKey(dashLen))
+			uint patternBits = (uint)pattern;
+			if (!dashTextures.ContainsKey(patternBits))
 			{
-				Pixmap.Layer pxLayerDash = new Pixmap.Layer(dashLen * 2, 1);
-				for (int i = 0; i < dashLen; i++) pxLayerDash[i, 0] = ColorRgba.White;
+				Pixmap.Layer pxLayerDash = new Pixmap.Layer(32, 1);
+				for (int i = 31; i >= 0; i--) pxLayerDash[i, 0] = ((patternBits & (1U << i)) != 0) ? ColorRgba.White : ColorRgba.TransparentWhite;
 				Pixmap pxDash = new Pixmap(pxLayerDash);
 				Texture texDash = new Texture(pxDash, Texture.SizeMode.Stretch, TextureMagFilter.Nearest, TextureMinFilter.Nearest, TextureWrapMode.Repeat);
-				dashTextures[dashLen] = texDash;
+				dashTextures[patternBits] = texDash;
 			}
 
 			Vector3 pos = new Vector3(x, y, z);
@@ -413,12 +431,12 @@ namespace Duality
 			vertices[0].Pos = pos + new Vector3(0.5f, 0.5f, 0.0f);
 			vertices[1].Pos = target + new Vector3(0.5f, 0.5f, 0.0f);
 			vertices[0].TexCoord = new Vector2(0.0f, 0.0f);
-			vertices[1].TexCoord = new Vector2(lineLength / (dashLen * 2.0f), 0.0f);
+			vertices[1].TexCoord = new Vector2(lineLength * patternLen / 32.0f, 0.0f);
 			vertices[0].Color = shapeColor;
 			vertices[1].Color = shapeColor;
 
 			BatchInfo customMat = new BatchInfo(this.CurrentState.MaterialDirect);
-			customMat.MainTexture = dashTextures[dashLen];
+			customMat.MainTexture = dashTextures[patternBits];
 			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
 			device.AddVertices(customMat, VertexMode.Lines, vertices);
 		}
@@ -429,9 +447,9 @@ namespace Duality
 		/// <param name="y"></param>
 		/// <param name="x2"></param>
 		/// <param name="y2"></param>
-		public void DrawDashLine(float x, float y, float x2, float y2, int dashLen = 4)
+		public void DrawDashLine(float x, float y, float x2, float y2, DashPattern pattern = DashPattern.Dash, float patternLen = 1.0f)
 		{
-			this.DrawDashLine(x, y, 0, x2, y2, 0, dashLen);
+			this.DrawDashLine(x, y, 0, x2, y2, 0, pattern, patternLen);
 		}
 		/// <summary>
 		/// Draws a thick, three-dimensional line.

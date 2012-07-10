@@ -3575,6 +3575,36 @@
             The OpenAL buffer handle to the audio data that is used by this Sound.
             </summary>
         </member>
+        <member name="T:Duality.Components.Physics.DistanceJointInfo">
+            <summary>
+            Constrains two RigidBodies to obtain a fixed distance to each other
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.DistanceJointInfo.LocalAnchorA">
+            <summary>
+            [GET / SET] The first bodies local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.DistanceJointInfo.LocalAnchorB">
+            <summary>
+            [GET / SET] The second bodies local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.DistanceJointInfo.DampingRatio">
+            <summary>
+            [GET / SET] The damping ratio. Zero means "no damping", one means "critical damping".
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.DistanceJointInfo.Frequency">
+            <summary>
+            [GET / SET] The mass spring damper frequency in hertz.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.DistanceJointInfo.TargetDistance">
+            <summary>
+            [GET / SET] The target distance between local and world anchor
+            </summary>
+        </member>
         <member name="T:Duality.Serialization.Surrogates.DictionarySurrogate">
             <summary>
             De/Serializes a <see cref="T:System.Collections.Generic.Dictionary`2"/>.
@@ -5779,6 +5809,31 @@
         <member name="F:Duality.Alignment.BottomRight">
             <summary>
             Align to its bottom right.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Physics.FrictionJointInfo">
+            <summary>
+            Applies relative friction to RigidBodies.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FrictionJointInfo.LocalAnchorA">
+            <summary>
+            [GET / SET] The first RigidBodys local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FrictionJointInfo.LocalAnchorB">
+            <summary>
+            [GET / SET] The second RigidBodys local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FrictionJointInfo.MaxForce">
+            <summary>
+            [GET / SET] The maximum friction force in the local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FrictionJointInfo.MaxTorque">
+            <summary>
+            [GET / SET] The maximum friction torque in the local anchor point.
             </summary>
         </member>
         <member name="T:Duality.VertexFormat.VertexP3T2">
@@ -9225,7 +9280,7 @@
             <param name="x2"></param>
             <param name="y2"></param>
         </member>
-        <member name="M:Duality.Canvas.DrawDashLine(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Int32)">
+        <member name="M:Duality.Canvas.DrawDashLine(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,Duality.Canvas.DashPattern,System.Single)">
             <summary>
             Draws a three-dimensional line.
             </summary>
@@ -9236,7 +9291,7 @@
             <param name="y2"></param>
             <param name="z2"></param>
         </member>
-        <member name="M:Duality.Canvas.DrawDashLine(System.Single,System.Single,System.Single,System.Single,System.Int32)">
+        <member name="M:Duality.Canvas.DrawDashLine(System.Single,System.Single,System.Single,System.Single,Duality.Canvas.DashPattern,System.Single)">
             <summary>
             Draws a flat line.
             </summary>
@@ -12576,6 +12631,31 @@
             [GET] The preferred number of displayed decimal places
             </summary>
         </member>
+        <member name="T:Duality.Components.Physics.AngleJointInfo">
+            <summary>
+            Constrains two RigidBodies to a fixed relative angle
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.AngleJointInfo.TargetAngle">
+            <summary>
+            [GET / SET] The Colliders target angle.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.AngleJointInfo.BiasFactor">
+            <summary>
+            [GET / SET] The bias factor determines how strong the joint reacts to the difference between target and actual angle.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.AngleJointInfo.Softness">
+            <summary>
+            [GET / SET] The softness of the joint determines how easy it is to turn it away from its ideal angle.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.AngleJointInfo.MaxImpulse">
+            <summary>
+            [GET / SET] The maximum angular impulse to apply to the RigidBody. A negative value equals infinity.
+            </summary>
+        </member>
         <member name="T:Duality.Components.Physics.CircleShapeInfo">
             <summary>
             Describes a <see cref="T:Duality.Components.Physics.RigidBody">Colliders</see> circle shape.
@@ -13272,86 +13352,6 @@
             </summary>
         </member>
         <member name="P:Duality.Components.Physics.FixedFrictionJointInfo.MaxTorque">
-            <summary>
-            [GET / SET] The maximum friction torque in the local anchor point.
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Physics.AngleJointInfo">
-            <summary>
-            Constrains two RigidBodies to a fixed relative angle
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.AngleJointInfo.TargetAngle">
-            <summary>
-            [GET / SET] The Colliders target angle.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.AngleJointInfo.BiasFactor">
-            <summary>
-            [GET / SET] The bias factor determines how strong the joint reacts to the difference between target and actual angle.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.AngleJointInfo.Softness">
-            <summary>
-            [GET / SET] The softness of the joint determines how easy it is to turn it away from its ideal angle.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.AngleJointInfo.MaxImpulse">
-            <summary>
-            [GET / SET] The maximum angular impulse to apply to the RigidBody. A negative value equals infinity.
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Physics.DistanceJointInfo">
-            <summary>
-            Constrains two RigidBodies to obtain a fixed distance to each other
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.DistanceJointInfo.LocalAnchorA">
-            <summary>
-            [GET / SET] The first bodies local anchor point.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.DistanceJointInfo.LocalAnchorB">
-            <summary>
-            [GET / SET] The second bodies local anchor point.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.DistanceJointInfo.DampingRatio">
-            <summary>
-            [GET / SET] The damping ratio. Zero means "no damping", one means "critical damping".
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.DistanceJointInfo.Frequency">
-            <summary>
-            [GET / SET] The mass spring damper frequency in hertz.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.DistanceJointInfo.TargetDistance">
-            <summary>
-            [GET / SET] The target distance between local and world anchor
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Physics.FrictionJointInfo">
-            <summary>
-            Applies relative friction to RigidBodies.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FrictionJointInfo.LocalAnchorA">
-            <summary>
-            [GET / SET] The first RigidBodys local anchor point.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FrictionJointInfo.LocalAnchorB">
-            <summary>
-            [GET / SET] The second RigidBodys local anchor point.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FrictionJointInfo.MaxForce">
-            <summary>
-            [GET / SET] The maximum friction force in the local anchor point.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FrictionJointInfo.MaxTorque">
             <summary>
             [GET / SET] The maximum friction torque in the local anchor point.
             </summary>
