@@ -12,10 +12,10 @@ using Duality.Resources;
 namespace Duality.Components.Physics
 {
 	/// <summary>
-	/// Constrains the Collider to a fixed angle
+	/// Constrains two RigidBodies to a fixed relative angle
 	/// </summary>
 	[Serializable]
-	public sealed class FixedAngleJointInfo : JointInfo
+	public sealed class AngleJointInfo : JointInfo
 	{
 		private	float	angle		= 0.0f;
 		private	float	biasFactor	= 0.2f;
@@ -25,7 +25,7 @@ namespace Duality.Components.Physics
 
 		public override bool DualJoint
 		{
-			get { return false; }
+			get { return true; }
 		}
 		/// <summary>
 		/// [GET / SET] The Colliders target angle.
@@ -68,14 +68,14 @@ namespace Duality.Components.Physics
 
 		protected override Joint CreateJoint(Body bodyA, Body bodyB)
 		{
-			return bodyA != null ? JointFactory.CreateFixedAngleJoint(Scene.PhysicsWorld, bodyA) : null;
+			return bodyA != null && bodyB != null ? JointFactory.CreateAngleJoint(Scene.PhysicsWorld, bodyA, bodyB) : null;
 		}
 		internal override void UpdateJoint()
 		{
 			base.UpdateJoint();
 			if (this.joint == null) return;
 
-			FixedAngleJoint j = this.joint as FixedAngleJoint;
+			AngleJoint j = this.joint as AngleJoint;
 			j.TargetAngle = this.angle;
 			j.BiasFactor = this.biasFactor;
 			j.Softness = this.softness;
@@ -85,7 +85,7 @@ namespace Duality.Components.Physics
 		protected override void CopyTo(JointInfo target)
 		{
 			base.CopyTo(target);
-			FixedAngleJointInfo c = target as FixedAngleJointInfo;
+			AngleJointInfo c = target as AngleJointInfo;
 			c.angle = this.angle;
 			c.biasFactor = this.biasFactor;
 			c.softness = this.softness;

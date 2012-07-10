@@ -73,6 +73,7 @@ namespace EditorBase.CamViewLayers
 			foreach (JointInfo j in visibleJoints)
 			{
 				float jointAlpha = selectedBody != null && (j.BodyA == selectedBody || j.BodyB == selectedBody) ? 1.0f : 0.5f;
+				if (!j.Enabled) jointAlpha *= 0.25f;
 				canvas.CurrentState.ColorTint = canvas.CurrentState.ColorTint.WithAlpha(jointAlpha);
 
 				if (j.BodyA == null) continue;
@@ -91,6 +92,9 @@ namespace EditorBase.CamViewLayers
 			else if (joint is FixedFrictionJointInfo)	this.DrawJoint(canvas, joint as FixedFrictionJointInfo);
 			else if (joint is FixedRevoluteJointInfo)	this.DrawJoint(canvas, joint as FixedRevoluteJointInfo);
 			else if (joint is FixedPrismaticJointInfo)	this.DrawJoint(canvas, joint as FixedPrismaticJointInfo);
+			else if (joint is AngleJointInfo)			this.DrawJoint(canvas, joint as AngleJointInfo);
+			else if (joint is DistanceJointInfo)		this.DrawJoint(canvas, joint as DistanceJointInfo);
+			else if (joint is FrictionJointInfo)		this.DrawJoint(canvas, joint as FrictionJointInfo);
 			else if (joint is WeldJointInfo)			this.DrawJoint(canvas, joint as WeldJointInfo);
 		}
 		private void DrawJoint(Canvas canvas, FixedAngleJointInfo joint)
@@ -105,30 +109,7 @@ namespace EditorBase.CamViewLayers
 		}
 		private void DrawJoint(Canvas canvas, FixedFrictionJointInfo joint)
 		{
-			Vector3 colliderPosA = joint.BodyA.GameObj.Transform.Pos;
-
-			ColorRgba clr = this.JointColor;
-			ColorRgba clrErr = this.JointErrorColor;
-
-			float markerCircleRad = joint.BodyA.BoundRadius * 0.02f;
-			Vector2 anchorVec = joint.BodyA.GameObj.Transform.GetWorldVector(new Vector3(joint.LocalAnchor)).Xy;
-
-			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr));
-			canvas.FillCircle(
-				colliderPosA.X + anchorVec.X,
-				colliderPosA.Y + anchorVec.Y,
-				colliderPosA.Z - 0.01f,
-				markerCircleRad * 0.5f);
-			canvas.DrawCircle(
-				colliderPosA.X + anchorVec.X,
-				colliderPosA.Y + anchorVec.Y,
-				colliderPosA.Z - 0.01f,
-				markerCircleRad);
-			canvas.DrawCircle(
-				colliderPosA.X + anchorVec.X,
-				colliderPosA.Y + anchorVec.Y,
-				colliderPosA.Z - 0.01f,
-				markerCircleRad * 1.5f);
+			this.DrawLocalFrictionMarker(canvas, joint.BodyA, joint.LocalAnchor);
 		}
 		private void DrawJoint(Canvas canvas, FixedRevoluteJointInfo joint)
 		{
@@ -167,6 +148,34 @@ namespace EditorBase.CamViewLayers
 
 			this.DrawWorldAnchor(canvas, joint.BodyA, joint.WorldAnchor);
 		}
+		private void DrawJoint(Canvas canvas, AngleJointInfo joint)
+		{
+			this.DrawLocalAngleConstraint(canvas, 
+				joint.BodyA, 
+				Vector2.Zero, 
+				joint.BodyB.GameObj.Transform.Angle - joint.TargetAngle, 
+				joint.BodyA.GameObj.Transform.Angle, 
+				joint.BodyA.BoundRadius);
+			this.DrawLocalAngleConstraint(canvas, 
+				joint.BodyB, 
+				Vector2.Zero, 
+				joint.BodyA.GameObj.Transform.Angle + joint.TargetAngle, 
+				joint.BodyB.GameObj.Transform.Angle, 
+				joint.BodyB.BoundRadius);
+			this.DrawLocalLooseConstraint(canvas, joint.BodyA, joint.BodyB, Vector2.Zero, Vector2.Zero);
+		}
+		private void DrawJoint(Canvas canvas, DistanceJointInfo joint)
+		{
+			this.DrawLocalDistConstraint(canvas, joint.BodyA, joint.BodyB, joint.LocalAnchorA, joint.LocalAnchorB, joint.TargetDistance);
+			this.DrawLocalAnchor(canvas, joint.BodyB, joint.LocalAnchorB);
+			this.DrawLocalAnchor(canvas, joint.BodyA, joint.LocalAnchorA);
+		}
+		private void DrawJoint(Canvas canvas, FrictionJointInfo joint)
+		{
+			this.DrawLocalFrictionMarker(canvas, joint.BodyA, joint.LocalAnchorA);
+			this.DrawLocalFrictionMarker(canvas, joint.BodyB, joint.LocalAnchorB);
+			this.DrawLocalLooseConstraint(canvas, joint.BodyA, joint.BodyB, joint.LocalAnchorA, joint.LocalAnchorB);
+		}
 		private void DrawJoint(Canvas canvas, WeldJointInfo joint)
 		{
 			float angularCircleRadA = joint.BodyA.BoundRadius * 0.25f;
@@ -204,7 +213,7 @@ namespace EditorBase.CamViewLayers
 		{
 			Vector3 bodyPos = body.GameObj.Transform.Pos;
 			Vector2 textSize = canvas.MeasureText(text);
-			bool flipText = MathF.TurnDir(baseAngle + canvas.DrawDevice.RefAngle, MathF.RadAngle90) < 0;
+			bool flipText = MathF.TurnDir(baseAngle - canvas.DrawDevice.RefAngle, MathF.RadAngle90) < 0;
 			baseAngle = MathF.NormalizeAngle(flipText ? baseAngle + MathF.RadAngle180 : baseAngle);
 
 			handle *= textSize;
@@ -233,6 +242,31 @@ namespace EditorBase.CamViewLayers
 				colliderPos.Y + anchorToWorld.Y,
 				colliderPos.Z - 0.01f,
 				markerCircleRad);
+		}
+		private void DrawLocalFrictionMarker(Canvas canvas, RigidBody body, Vector2 anchor)
+		{
+			Vector3 colliderPos = body.GameObj.Transform.Pos;
+
+			ColorRgba clr = this.JointColor;
+			float markerCircleRad = body.BoundRadius * 0.02f;
+			Vector2 anchorToWorld = body.GameObj.Transform.GetWorldVector(anchor);
+
+			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr));
+			canvas.FillCircle(
+				colliderPos.X + anchorToWorld.X,
+				colliderPos.Y + anchorToWorld.Y,
+				colliderPos.Z - 0.01f,
+				markerCircleRad * 0.5f);
+			canvas.DrawCircle(
+				colliderPos.X + anchorToWorld.X,
+				colliderPos.Y + anchorToWorld.Y,
+				colliderPos.Z - 0.01f,
+				markerCircleRad);
+			canvas.DrawCircle(
+				colliderPos.X + anchorToWorld.X,
+				colliderPos.Y + anchorToWorld.Y,
+				colliderPos.Z - 0.01f,
+				markerCircleRad * 1.5f);
 		}
 		private void DrawLocalAngleConstraint(Canvas canvas, RigidBody body, Vector2 anchor, float targetAngle, float currentAngle, float radius)
 		{
@@ -427,13 +461,9 @@ namespace EditorBase.CamViewLayers
 			ColorRgba clr = this.JointColor;
 			ColorRgba clrErr = this.JointErrorColor;
 
-			float angularCircleRadA = bodyA.BoundRadius * 0.25f;
-			float angularCircleRadB = bodyB.BoundRadius * 0.25f;
-			float markerCircleRad = (bodyA.BoundRadius + bodyB.BoundRadius) * 0.01f;
 			Vector2 anchorAToWorld = bodyA.GameObj.Transform.GetWorldVector(anchorA);
 			Vector2 anchorBToWorld = bodyB.GameObj.Transform.GetWorldVector(anchorB);
 			Vector2 errorVec = (colliderPosB.Xy + anchorBToWorld) - (colliderPosA.Xy + anchorAToWorld);
-			bool displaySecondCollider = errorVec.Length >= angularCircleRadA + angularCircleRadB;
 			
 			bool hasError = errorVec.Length >= 1.0f;
 			if (hasError)
@@ -469,6 +499,84 @@ namespace EditorBase.CamViewLayers
 				colliderPosB.Y + anchorBToWorld.Y,
 				colliderPosB.Z - 0.01f);
 			return errorVec;
+		}
+		private Vector2 DrawLocalDistConstraint(Canvas canvas, RigidBody bodyA, RigidBody bodyB, Vector2 localAnchorA, Vector2 localAnchorB, float targetDist)
+		{
+			Vector3 bodyPosA = bodyA.GameObj.Transform.Pos;
+			Vector3 bodyPosB = bodyB.GameObj.Transform.Pos;
+
+			ColorRgba clr = this.JointColor;
+			ColorRgba clrErr = this.JointErrorColor;
+			
+			float markerCircleRad = bodyA.BoundRadius * 0.02f;
+			Vector2 anchorA = bodyA.GameObj.Transform.GetWorldVector(localAnchorA);
+			Vector2 anchorB = bodyB.GameObj.Transform.GetWorldVector(localAnchorB);
+			Vector2 errorVec = (bodyPosB.Xy + anchorB) - (bodyPosA.Xy + anchorA);
+			Vector2 distVec = errorVec.Normalized * targetDist;
+			Vector2 lineNormal = errorVec.PerpendicularRight.Normalized;
+			float dist = errorVec.Length;
+			bool hasError = (errorVec - distVec).Length >= 1.0f;
+
+			if (hasError)
+			{
+				canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clrErr));
+				canvas.DrawLine(
+					bodyPosA.X + anchorA.X + distVec.X,
+					bodyPosA.Y + anchorA.Y + distVec.Y,
+					bodyPosA.Z - 0.01f, 
+					bodyPosA.X + anchorA.X + errorVec.X,
+					bodyPosA.Y + anchorA.Y + errorVec.Y,
+					bodyPosA.Z - 0.01f);
+				this.DrawLocalText(canvas, bodyA,
+					string.Format("{0:F1}", dist),
+					anchorA + errorVec,
+					Vector2.UnitY,
+					errorVec.Angle);
+			}
+			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr));
+			canvas.DrawLine(
+				bodyPosA.X + anchorA.X,
+				bodyPosA.Y + anchorA.Y,
+				bodyPosA.Z - 0.01f, 
+				bodyPosA.X + anchorA.X + distVec.X,
+				bodyPosA.Y + anchorA.Y + distVec.Y,
+				bodyPosA.Z - 0.01f);
+			if (hasError)
+			{
+				canvas.DrawLine(
+					bodyPosA.X + anchorA.X + distVec.X - lineNormal.X * 5.0f,
+					bodyPosA.Y + anchorA.Y + distVec.Y - lineNormal.Y * 5.0f,
+					bodyPosA.Z - 0.01f, 
+					bodyPosA.X + anchorA.X + distVec.X + lineNormal.X * 5.0f,
+					bodyPosA.Y + anchorA.Y + distVec.Y + lineNormal.Y * 5.0f,
+					bodyPosA.Z - 0.01f);
+			}
+			this.DrawLocalText(canvas, bodyA,
+				string.Format("{0:F1}", targetDist),
+				anchorA + distVec,
+				Vector2.Zero,
+				errorVec.Angle);
+
+			return errorVec;
+		}
+		private void DrawLocalLooseConstraint(Canvas canvas, RigidBody bodyA, RigidBody bodyB, Vector2 anchorA, Vector2 anchorB)
+		{
+			Vector3 bodyPosA = bodyA.GameObj.Transform.Pos;
+			Vector3 bodyPosB = bodyB.GameObj.Transform.Pos;
+
+			ColorRgba clr = this.JointColor;
+
+			Vector2 anchorAToWorld = bodyA.GameObj.Transform.GetWorldVector(anchorA);
+			Vector2 anchorBToWorld = bodyB.GameObj.Transform.GetWorldVector(anchorB);
+
+			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr));
+			canvas.DrawDashLine(
+				bodyPosA.X + anchorAToWorld.X,
+				bodyPosA.Y + anchorAToWorld.Y,
+				bodyPosA.Z - 0.01f,
+				bodyPosB.X + anchorBToWorld.X,
+				bodyPosB.Y + anchorBToWorld.Y,
+				bodyPosB.Z - 0.01f);
 		}
 		
 		private void DrawWorldAnchor(Canvas canvas, RigidBody body, Vector2 anchor)

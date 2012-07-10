@@ -68,12 +68,12 @@ namespace EditorBase.PropertyEditors
 			else if (baseType == typeof(TextRenderer) && !compRef)	e = new TextRendererPropertyEditor();
 
 			//// -------- Semi-Specialized area --------
-			else if (typeof(RigidBody).IsAssignableFrom(baseType) && !compRef)	e = new ColliderPropertyEditor();
+			else if (typeof(RigidBody).IsAssignableFrom(baseType) && !compRef)	e = new RigidBodyPropertyEditor();
 			else if (typeof(Renderer).IsAssignableFrom(baseType) && !compRef)	e = new RendererPropertyEditor();
 			else if (typeof(DrawTechnique).IsAssignableFrom(baseType))			e = new DrawTechniquePropertyEditor();
 
 			// -------- General area --------
-			else if (typeof(ShapeInfo).IsAssignableFrom(baseType))	e = new ColliderShapePropertyEditor();
+			else if (typeof(ShapeInfo).IsAssignableFrom(baseType))	e = new RigidBodyShapePropertyEditor();
 			else if (typeof(Component).IsAssignableFrom(baseType) && compRef)	e = new ComponentRefPropertyEditor();
 			else if (typeof(Component).IsAssignableFrom(baseType) && !compRef)	e = new ComponentPropertyEditor();
 			else if (typeof(Resource).IsAssignableFrom(baseType))				e = new ResourcePropertyEditor();

@@ -87,6 +87,9 @@
     <Compile Include="Components\Physics\FixedFrictionJointInfo.cs" />
     <Compile Include="Components\Physics\FixedRevoluteJointInfo.cs" />
     <Compile Include="Components\Physics\FixedPrismaticJointInfo.cs" />
+    <Compile Include="Components\Physics\AngleJointInfo.cs" />
+    <Compile Include="Components\Physics\DistanceJointInfo.cs" />
+    <Compile Include="Components\Physics\FrictionJointInfo.cs" />
     <Compile Include="Components\Physics\PolyShapeInfo.cs" />
     <Compile Include="Components\Physics\RigidBody.cs" />
     <Compile Include="Components\Physics\ShapeInfo.cs" />

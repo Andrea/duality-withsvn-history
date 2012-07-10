@@ -10,9 +10,9 @@ using DualityEditor;
 
 namespace EditorBase.PropertyEditors
 {
-	public class ColliderShapePropertyEditor : MemberwisePropertyEditor
+	public class RigidBodyShapePropertyEditor : MemberwisePropertyEditor
 	{
-		public ColliderShapePropertyEditor()
+		public RigidBodyShapePropertyEditor()
 		{
 			this.Hints &= ~HintFlags.HasButton;
 			this.Hints &= ~HintFlags.ButtonEnabled;

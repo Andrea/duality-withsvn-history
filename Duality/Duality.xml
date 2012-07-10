@@ -4211,6 +4211,21 @@
             [GET / SET] The Colliders target angle.
             </summary>
         </member>
+        <member name="P:Duality.Components.Physics.FixedAngleJointInfo.BiasFactor">
+            <summary>
+            [GET / SET] The bias factor determines how strong the joint reacts to the difference between target and actual angle.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedAngleJointInfo.Softness">
+            <summary>
+            [GET / SET] The softness of the joint determines how easy it is to turn it away from its ideal angle.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedAngleJointInfo.MaxImpulse">
+            <summary>
+            [GET / SET] The maximum angular impulse to apply to the RigidBody. A negative value equals infinity.
+            </summary>
+        </member>
         <member name="T:Duality.Cloning.ISurrogate">
             <summary>
             Clones an object instead of letting it clone itsself or using a Reflection-driven approach.
@@ -9210,6 +9225,26 @@
             <param name="x2"></param>
             <param name="y2"></param>
         </member>
+        <member name="M:Duality.Canvas.DrawDashLine(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Int32)">
+            <summary>
+            Draws a three-dimensional line.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="x2"></param>
+            <param name="y2"></param>
+            <param name="z2"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawDashLine(System.Single,System.Single,System.Single,System.Single,System.Int32)">
+            <summary>
+            Draws a flat line.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="x2"></param>
+            <param name="y2"></param>
+        </member>
         <member name="M:Duality.Canvas.DrawThickLine(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
             <summary>
             Draws a thick, three-dimensional line.
@@ -9249,7 +9284,7 @@
             <param name="w"></param>
             <param name="h"></param>
         </member>
-        <member name="M:Duality.Canvas.DrawOvalSegment(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+        <member name="M:Duality.Canvas.DrawOvalSegment(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Boolean)">
             <summary>
             Draws the section of an oval.
             </summary>
@@ -9261,7 +9296,7 @@
             <param name="minAngle"></param>
             <param name="maxAngle"></param>
         </member>
-        <member name="M:Duality.Canvas.DrawOvalSegment(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+        <member name="M:Duality.Canvas.DrawOvalSegment(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Boolean)">
             <summary>
             Draws the section of an oval.
             </summary>
@@ -9272,7 +9307,7 @@
             <param name="minAngle"></param>
             <param name="maxAngle"></param>
         </member>
-        <member name="M:Duality.Canvas.DrawCircleSegment(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+        <member name="M:Duality.Canvas.DrawCircleSegment(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Boolean)">
             <summary>
             Draws the section of a circle.
             </summary>
@@ -9283,7 +9318,7 @@
             <param name="minAngle"></param>
             <param name="maxAngle"></param>
         </member>
-        <member name="M:Duality.Canvas.DrawCircleSegment(System.Single,System.Single,System.Single,System.Single,System.Single)">
+        <member name="M:Duality.Canvas.DrawCircleSegment(System.Single,System.Single,System.Single,System.Single,System.Single,System.Boolean)">
             <summary>
             Draws the section of a circle
             </summary>
@@ -9363,6 +9398,50 @@
             <param name="y"></param>
             <param name="x2"></param>
             <param name="y2"></param>
+        </member>
+        <member name="M:Duality.Canvas.FillOvalSegment(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Fills the section of an oval.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+            <param name="minAngle"></param>
+            <param name="maxAngle"></param>
+        </member>
+        <member name="M:Duality.Canvas.FillOvalSegment(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Fills the section of an oval.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="w"></param>
+            <param name="h"></param>
+            <param name="minAngle"></param>
+            <param name="maxAngle"></param>
+        </member>
+        <member name="M:Duality.Canvas.FillCircleSegment(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Fills the section of a circle.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="r"></param>
+            <param name="minAngle"></param>
+            <param name="maxAngle"></param>
+        </member>
+        <member name="M:Duality.Canvas.FillCircleSegment(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Fills the section of a circle
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="r"></param>
+            <param name="minAngle"></param>
+            <param name="maxAngle"></param>
         </member>
         <member name="M:Duality.Canvas.FillOval(System.Single,System.Single,System.Single,System.Single,System.Single)">
             <summary>
@@ -13193,6 +13272,86 @@
             </summary>
         </member>
         <member name="P:Duality.Components.Physics.FixedFrictionJointInfo.MaxTorque">
+            <summary>
+            [GET / SET] The maximum friction torque in the local anchor point.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Physics.AngleJointInfo">
+            <summary>
+            Constrains two RigidBodies to a fixed relative angle
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.AngleJointInfo.TargetAngle">
+            <summary>
+            [GET / SET] The Colliders target angle.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.AngleJointInfo.BiasFactor">
+            <summary>
+            [GET / SET] The bias factor determines how strong the joint reacts to the difference between target and actual angle.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.AngleJointInfo.Softness">
+            <summary>
+            [GET / SET] The softness of the joint determines how easy it is to turn it away from its ideal angle.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.AngleJointInfo.MaxImpulse">
+            <summary>
+            [GET / SET] The maximum angular impulse to apply to the RigidBody. A negative value equals infinity.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Physics.DistanceJointInfo">
+            <summary>
+            Constrains two RigidBodies to obtain a fixed distance to each other
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.DistanceJointInfo.LocalAnchorA">
+            <summary>
+            [GET / SET] The first bodies local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.DistanceJointInfo.LocalAnchorB">
+            <summary>
+            [GET / SET] The second bodies local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.DistanceJointInfo.DampingRatio">
+            <summary>
+            [GET / SET] The damping ratio. Zero means "no damping", one means "critical damping".
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.DistanceJointInfo.Frequency">
+            <summary>
+            [GET / SET] The mass spring damper frequency in hertz.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.DistanceJointInfo.TargetDistance">
+            <summary>
+            [GET / SET] The target distance between local and world anchor
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Physics.FrictionJointInfo">
+            <summary>
+            Applies relative friction to RigidBodies.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FrictionJointInfo.LocalAnchorA">
+            <summary>
+            [GET / SET] The first RigidBodys local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FrictionJointInfo.LocalAnchorB">
+            <summary>
+            [GET / SET] The second RigidBodys local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FrictionJointInfo.MaxForce">
+            <summary>
+            [GET / SET] The maximum friction force in the local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FrictionJointInfo.MaxTorque">
             <summary>
             [GET / SET] The maximum friction torque in the local anchor point.
             </summary>

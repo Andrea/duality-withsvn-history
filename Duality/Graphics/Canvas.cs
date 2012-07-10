@@ -178,6 +178,7 @@ namespace Duality
 			}
 		}
 
+		private static Dictionary<int,Texture>	dashTextures	= new Dictionary<int,Texture>();
 		private	IDrawDevice		device		= null;
 		private	Stack<State>	stateStack	= new Stack<State>(new [] { new State() });
 
@@ -377,6 +378,62 @@ namespace Duality
 			this.DrawLine(x, y, 0, x2, y2, 0);
 		}
 		/// <summary>
+		/// Draws a three-dimensional line.
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="z"></param>
+		/// <param name="x2"></param>
+		/// <param name="y2"></param>
+		/// <param name="z2"></param>
+		public void DrawDashLine(float x, float y, float z, float x2, float y2, float z2, int dashLen = 4)
+		{
+			dashLen = MathF.Clamp(dashLen, 1, 16);
+
+			if (!dashTextures.ContainsKey(dashLen))
+			{
+				Pixmap.Layer pxLayerDash = new Pixmap.Layer(dashLen * 2, 1);
+				for (int i = 0; i < dashLen; i++) pxLayerDash[i, 0] = ColorRgba.White;
+				Pixmap pxDash = new Pixmap(pxLayerDash);
+				Texture texDash = new Texture(pxDash, Texture.SizeMode.Stretch, TextureMagFilter.Nearest, TextureMinFilter.Nearest, TextureWrapMode.Repeat);
+				dashTextures[dashLen] = texDash;
+			}
+
+			Vector3 pos = new Vector3(x, y, z);
+			Vector3 target = new Vector3(x2, y2, z2);
+			float scale = 1.0f;
+			float lineLength = (target - pos).Length;
+			
+			device.PreprocessCoords(ref pos, ref scale);
+			device.PreprocessCoords(ref target, ref scale);
+
+			Vector2 shapeHandle = pos.Xy;
+			ColorRgba shapeColor = this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor;
+			VertexC1P3T2[] vertices = new VertexC1P3T2[2];
+			vertices[0].Pos = pos + new Vector3(0.5f, 0.5f, 0.0f);
+			vertices[1].Pos = target + new Vector3(0.5f, 0.5f, 0.0f);
+			vertices[0].TexCoord = new Vector2(0.0f, 0.0f);
+			vertices[1].TexCoord = new Vector2(lineLength / (dashLen * 2.0f), 0.0f);
+			vertices[0].Color = shapeColor;
+			vertices[1].Color = shapeColor;
+
+			BatchInfo customMat = new BatchInfo(this.CurrentState.MaterialDirect);
+			customMat.MainTexture = dashTextures[dashLen];
+			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
+			device.AddVertices(customMat, VertexMode.Lines, vertices);
+		}
+		/// <summary>
+		/// Draws a flat line.
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="x2"></param>
+		/// <param name="y2"></param>
+		public void DrawDashLine(float x, float y, float x2, float y2, int dashLen = 4)
+		{
+			this.DrawDashLine(x, y, 0, x2, y2, 0, dashLen);
+		}
+		/// <summary>
 		/// Draws a thick, three-dimensional line.
 		/// </summary>
 		/// <param name="x"></param>
@@ -482,7 +539,7 @@ namespace Duality
 		/// <param name="h"></param>
 		/// <param name="minAngle"></param>
 		/// <param name="maxAngle"></param>
-		public void DrawOvalSegment(float x, float y, float z, float w, float h, float minAngle, float maxAngle)
+		public void DrawOvalSegment(float x, float y, float z, float w, float h, float minAngle, float maxAngle, bool outline = false)
 		{
 			if (minAngle == maxAngle) return;
 			if (w < 0.0f) { x += w; w = -w; }
@@ -498,21 +555,31 @@ namespace Duality
 			w *= scale;
 			h *= scale;
 
-			minAngle = MathF.NormalizeAngle(minAngle);
-			maxAngle = MathF.NormalizeAngle(maxAngle);
-			if (maxAngle <= minAngle) maxAngle += MathF.RadAngle360;
+			if (maxAngle <= minAngle) maxAngle += MathF.Ceiling((minAngle - maxAngle) / MathF.RadAngle360) * MathF.RadAngle360;
 
 			float angleRange = MathF.Min(maxAngle - minAngle, MathF.RadAngle360);
 			bool loop = angleRange >= MathF.RadAngle360 - MathF.RadAngle1 * 0.001f;
+
+			if (loop && outline) outline = false;
+			else if (outline) loop = true;
+
 			int segmentNum = MathF.Clamp(MathF.RoundToInt(MathF.Pow(MathF.Max(w, h), 0.65f) * 3.5f * angleRange / MathF.RadAngle360), 4, 128);
 			float angleStep = angleRange / segmentNum;
 			Vector2 shapeHandle = pos.Xy - new Vector2(w, h);
 			ColorRgba shapeColor = this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor;
-			VertexC1P3[] vertices = new VertexC1P3[loop ? segmentNum : segmentNum + 1];
+			VertexC1P3[] vertices = new VertexC1P3[segmentNum + (loop ? 0 : 1) + (outline ? 2 : 0)];
 			float angle = minAngle;
+			
+			if (outline)
+			{
+				vertices[0].Pos.X = pos.X + 0.5f;
+				vertices[0].Pos.Y = pos.Y + 0.5f;
+				vertices[0].Pos.Z = pos.Z;
+				vertices[0].Color = shapeColor;
+			}
 
 			// XY circle
-			for (int i = 0; i < vertices.Length; i++)
+			for (int i = outline ? 1 : 0; i < vertices.Length; i++)
 			{
 				vertices[i].Pos.X = pos.X + (float)Math.Sin(angle) * (w - 0.5f);
 				vertices[i].Pos.Y = pos.Y - (float)Math.Cos(angle) * (h - 0.5f);
@@ -532,9 +599,9 @@ namespace Duality
 		/// <param name="h"></param>
 		/// <param name="minAngle"></param>
 		/// <param name="maxAngle"></param>
-		public void DrawOvalSegment(float x, float y, float w, float h, float minAngle, float maxAngle)
+		public void DrawOvalSegment(float x, float y, float w, float h, float minAngle, float maxAngle, bool outline = false)
 		{
-			this.DrawOvalSegment(x, y, 0, w, h, minAngle, maxAngle);
+			this.DrawOvalSegment(x, y, 0, w, h, minAngle, maxAngle, outline);
 		}
 		/// <summary>
 		/// Draws the section of a circle.
@@ -545,10 +612,10 @@ namespace Duality
 		/// <param name="r"></param>
 		/// <param name="minAngle"></param>
 		/// <param name="maxAngle"></param>
-		public void DrawCircleSegment(float x, float y, float z, float r, float minAngle, float maxAngle)
+		public void DrawCircleSegment(float x, float y, float z, float r, float minAngle, float maxAngle, bool outline = false)
 		{
 			this.CurrentState.TransformHandle += new Vector2(r, r);
-			this.DrawOvalSegment(x, y, z, r * 2, r * 2, minAngle, maxAngle);
+			this.DrawOvalSegment(x, y, z, r * 2, r * 2, minAngle, maxAngle, outline);
 			this.CurrentState.TransformHandle -= new Vector2(r, r);
 		}
 		/// <summary>
@@ -559,10 +626,10 @@ namespace Duality
 		/// <param name="r"></param>
 		/// <param name="minAngle"></param>
 		/// <param name="maxAngle"></param>
-		public void DrawCircleSegment(float x, float y, float r, float minAngle, float maxAngle)
+		public void DrawCircleSegment(float x, float y, float r, float minAngle, float maxAngle, bool outline = false)
 		{
 			this.CurrentState.TransformHandle += new Vector2(r, r);
-			this.DrawOvalSegment(x, y, 0, r * 2, r * 2, minAngle, maxAngle);
+			this.DrawOvalSegment(x, y, 0, r * 2, r * 2, minAngle, maxAngle, outline);
 			this.CurrentState.TransformHandle -= new Vector2(r, r);
 		}
 
@@ -700,17 +767,20 @@ namespace Duality
 		{
 			this.FillThickLine(x, y, 0, x2, y2, 0, width);
 		}
-
+		
 		/// <summary>
-		/// Fills an oval.
+		/// Fills the section of an oval.
 		/// </summary>
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <param name="z"></param>
 		/// <param name="w"></param>
 		/// <param name="h"></param>
-		public void FillOval(float x, float y, float z, float w, float h)
+		/// <param name="minAngle"></param>
+		/// <param name="maxAngle"></param>
+		public void FillOvalSegment(float x, float y, float z, float w, float h, float minAngle, float maxAngle)
 		{
+			if (minAngle == maxAngle) return;
 			if (w < 0.0f) { x += w; w = -w; }
 			if (h < 0.0f) { y += h; h = -h; }
 			w *= 0.5f; x += w;
@@ -724,11 +794,15 @@ namespace Duality
 			w *= scale;
 			h *= scale;
 
-			int segmentNum = MathF.Clamp(MathF.RoundToInt(MathF.Pow(MathF.Max(w, h), 0.65f) * 3.5f), 4, 128);
-			float angle = 0.0f;
+			if (maxAngle <= minAngle) maxAngle += MathF.Ceiling((minAngle - maxAngle) / MathF.RadAngle360) * MathF.RadAngle360;
+
+			float angleRange = MathF.Min(maxAngle - minAngle, MathF.RadAngle360);
+			int segmentNum = MathF.Clamp(MathF.RoundToInt(MathF.Pow(MathF.Max(w, h), 0.65f) * 3.5f * angleRange / MathF.RadAngle360), 4, 128);
+			float angleStep = angleRange / segmentNum;
 			Vector2 shapeHandle = pos.Xy - new Vector2(w, h);
 			ColorRgba shapeColor = this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor;
 			VertexC1P3[] vertices = new VertexC1P3[segmentNum + 2];
+			float angle = minAngle;
 
 			vertices[0].Pos = pos;
 			vertices[0].Color = shapeColor;
@@ -738,10 +812,65 @@ namespace Duality
 				vertices[i].Pos.Y = pos.Y - (float)Math.Cos(angle) * h;
 				vertices[i].Pos.Z = pos.Z;
 				vertices[i].Color = shapeColor;
-				angle += (MathF.TwoPi / segmentNum);
+				angle += angleStep;
 			}
 			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
-			device.AddVertices(this.CurrentState.MaterialDirect, VertexMode.TriangleFan, vertices);
+			this.device.AddVertices(this.CurrentState.MaterialDirect, VertexMode.TriangleFan, vertices);
+		}
+		/// <summary>
+		/// Fills the section of an oval.
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="w"></param>
+		/// <param name="h"></param>
+		/// <param name="minAngle"></param>
+		/// <param name="maxAngle"></param>
+		public void FillOvalSegment(float x, float y, float w, float h, float minAngle, float maxAngle)
+		{
+			this.FillOvalSegment(x, y, 0, w, h, minAngle, maxAngle);
+		}
+		/// <summary>
+		/// Fills the section of a circle.
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="z"></param>
+		/// <param name="r"></param>
+		/// <param name="minAngle"></param>
+		/// <param name="maxAngle"></param>
+		public void FillCircleSegment(float x, float y, float z, float r, float minAngle, float maxAngle)
+		{
+			this.CurrentState.TransformHandle += new Vector2(r, r);
+			this.FillOvalSegment(x, y, z, r * 2, r * 2, minAngle, maxAngle);
+			this.CurrentState.TransformHandle -= new Vector2(r, r);
+		}
+		/// <summary>
+		/// Fills the section of a circle
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="r"></param>
+		/// <param name="minAngle"></param>
+		/// <param name="maxAngle"></param>
+		public void FillCircleSegment(float x, float y, float r, float minAngle, float maxAngle)
+		{
+			this.CurrentState.TransformHandle += new Vector2(r, r);
+			this.FillOvalSegment(x, y, 0, r * 2, r * 2, minAngle, maxAngle);
+			this.CurrentState.TransformHandle -= new Vector2(r, r);
+		}
+
+		/// <summary>
+		/// Fills an oval.
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="z"></param>
+		/// <param name="w"></param>
+		/// <param name="h"></param>
+		public void FillOval(float x, float y, float z, float w, float h)
+		{
+			this.FillOvalSegment(x, y, z, w, h, 0.0f, MathF.RadAngle360);
 		}
 		/// <summary>
 		/// Fills an oval
@@ -752,7 +881,7 @@ namespace Duality
 		/// <param name="h"></param>
 		public void FillOval(float x, float y, float w, float h)
 		{
-			this.FillOval(x, y, 0, w, h);
+			this.FillOvalSegment(x, y, 0, w, h, 0.0f, MathF.RadAngle360);
 		}
 		/// <summary>
 		/// Fills a circle.
@@ -764,7 +893,7 @@ namespace Duality
 		public void FillCircle(float x, float y, float z, float r)
 		{
 			this.CurrentState.TransformHandle += new Vector2(r, r);
-			this.FillOval(x, y, z, r * 2, r * 2);
+			this.FillOvalSegment(x, y, z, r * 2, r * 2, 0.0f, MathF.RadAngle360);
 			this.CurrentState.TransformHandle -= new Vector2(r, r);
 		}
 		/// <summary>
@@ -776,7 +905,7 @@ namespace Duality
 		public void FillCircle(float x, float y, float r)
 		{
 			this.CurrentState.TransformHandle += new Vector2(r, r);
-			this.FillOval(x, y, 0, r * 2, r * 2);
+			this.FillOvalSegment(x, y, 0, r * 2, r * 2, 0.0f, MathF.RadAngle360);
 			this.CurrentState.TransformHandle -= new Vector2(r, r);
 		}
 

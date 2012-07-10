@@ -16,7 +16,7 @@ using DualityEditor.CorePluginInterface;
 
 namespace EditorBase.PropertyEditors
 {
-	public class ColliderPropertyEditor : ComponentPropertyEditor
+	public class RigidBodyPropertyEditor : ComponentPropertyEditor
 	{
 		private ColliderJointAddNewPropertyEditor	addJointEditor	= null;
 		private	List<ColliderJointPropertyEditor>	jointEditors	= new List<ColliderJointPropertyEditor>();
@@ -136,6 +136,7 @@ namespace EditorBase.PropertyEditors
 						target.RemoveJoint(target.Joints.ElementAt(index));
 					}
 					this.PerformGetValue();
+					EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(targetArray), ReflectionInfo.Property_RigidBody_Joints);
 				}
 			};
 		}
@@ -297,6 +298,7 @@ namespace EditorBase.PropertyEditors
 				c.AddJoint(joint);
 			}
 			this.ParentEditor.PerformGetValue();
+			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(targetArray), ReflectionInfo.Property_RigidBody_Joints);
 		}
 	}
 }
