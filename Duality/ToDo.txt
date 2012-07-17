@@ -22,6 +22,19 @@
 
 -->	Physics Raycast
 
+-->	Replace Acceptedcategories in ObjectInspector with clever algorithm
+	-->	When there are multiple ObjectInspectors and a selection has occured,
+		instead of just updating all unlocked selections, only do that in one
+		single ObjectInspector
+	-->	Select the one ObjectInspector that shares the new selections category
+		-->	Without ObjectSelection.Category: That has the best base class match.
+	-->	If more than one ObjectInspector share the same match score, select
+		the one with the lowest "steal selection" counter. Increase its counter.
+	-->	Reconsider ObjectSelection.Category. Replace by simple "base class" mechanic?
+		-->	Would be much more flexible!
+		-->	Could still provide some hardcoded Categories via static readonly fields.
+	-->	Test with one, two or three ObjectInspectors.
+
 --> Reconsider "events" in Duality.
 	-->	Are they really necessary?
 	-->	Do they lead to difficult design on the user-side?
