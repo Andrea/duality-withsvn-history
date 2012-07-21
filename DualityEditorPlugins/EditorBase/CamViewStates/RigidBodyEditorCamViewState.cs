@@ -248,8 +248,7 @@ namespace EditorBase.CamViewStates
 			{
 				SelShape[] selShapeArray = selObjEnum.OfType<SelShape>().ToArray();
 				// First, select the associated Collider
-				if (this.selectedCollider != selShapeArray[0].Collider)
-					EditorBasePlugin.Instance.EditorForm.Select(this, new ObjectSelection(selShapeArray[0].Collider), MainForm.SelectMode.Set);
+				EditorBasePlugin.Instance.EditorForm.Select(this, new ObjectSelection(selShapeArray[0].Collider), MainForm.SelectMode.Set);
 				// Then, select actual ShapeInfos
 				EditorBasePlugin.Instance.EditorForm.Select(this, new ObjectSelection(selShapeArray.Select(s => s.ActualObject)), mode);
 			}
@@ -384,7 +383,6 @@ namespace EditorBase.CamViewStates
 
 			this.UpdateSelectionStats();
 			this.UpdateToolbar();
-			this.OnCursorSpacePosChanged();
 			this.View.LocalGLControl.Invalidate();
 		}
 

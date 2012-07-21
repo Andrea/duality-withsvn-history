@@ -29,6 +29,16 @@ namespace DualityEditor
 		public static readonly ObjectSelection Null	= new ObjectSelection();
 
 		private	List<object>	obj	= null;
+		private Category		cat	= Category.None;
+
+		public Category Categories
+		{
+			get { return this.cat; }
+		}
+		public bool Empty
+		{
+			get { return this.obj.Count == 0; }
+		}
 
 		public object MainObject
 		{
@@ -115,24 +125,33 @@ namespace DualityEditor
 		public ObjectSelection(ObjectSelection other)
 		{
 			this.obj = new List<object>(other.obj);
+			this.cat = other.cat;
 		}
 		public ObjectSelection(IEnumerable<object> obj)
 		{
 			this.obj = new List<object>(obj.NotNull());
+			this.UpdateCategories();
 		}
 		public ObjectSelection(params object[] obj) : this(obj as IEnumerable<object>) {}
-
+		
+		protected void LocalExclusive(Category singleCat)
+		{
+			this.LocalClear(Category.All & ~singleCat);
+		}
 		protected void LocalClear()
 		{
 			this.obj.Clear();
+			this.UpdateCategories();
 		}
 		protected void LocalClear(Category clearCat)
 		{
 			this.obj.RemoveAll(o => (GetObjCategory(o) & clearCat) != Category.None);	
+			this.UpdateCategories();
 		}
 		protected void LocalClear(Predicate<object> clearPred)
 		{
 			this.obj.RemoveAll(clearPred);	
+			this.UpdateCategories();
 		}
 		protected void LocalTransform(ObjectSelection target)
 		{
@@ -158,24 +177,32 @@ namespace DualityEditor
 		protected void LocalAppend(ObjectSelection other)
 		{
 			this.obj = new List<object>(this.obj.Union(other.obj));
+			this.UpdateCategories();
 		}
 		protected void LocalRemove(ObjectSelection other)
 		{
 			this.obj = new List<object>(this.obj.Except(other.obj));
+			this.UpdateCategories();
 		}
 		protected void LocalToggle(ObjectSelection other)
 		{
 			var common = this.obj.Intersect(other.obj);
 			var added = other.obj.Except(this.obj);
 			this.obj = new List<object>(this.obj.Except(common).Union(added));
+			this.UpdateCategories();
 		}
 		protected void LocalHierarchyExpand()
 		{
 			var gameobjQuery = this.GameObjects.Concat(this.GameObjects.ChildrenDeep());
 			var componentQuery = this.GameObjects.GetComponentsDeep<Component>();
 			this.obj = new List<object>(gameobjQuery.AsEnumerable<object>().Concat(componentQuery.AsEnumerable<object>()).Distinct());
+			this.UpdateCategories();
 		}
 
+		public ObjectSelection Exclusive(Category singleCat)
+		{
+			return this.Clear(Category.All & ~singleCat);
+		}
 		public ObjectSelection Clear(Category clearCat)
 		{
 			ObjectSelection result = new ObjectSelection(this);
@@ -218,6 +245,34 @@ namespace DualityEditor
 			result.LocalHierarchyExpand();
 			return result;
 		}
+		public Type GetSharedType()
+		{
+			var query = 
+				from o in this.obj
+				select new { Obj = o, Type = o.GetType() };
+			var entry = query.OrderBy(e => e.Type.GetTypeHierarchyLevel()).LastOrDefault();
+			if (entry == null) return null;
+
+			Type t = entry.Type;
+			while (t != typeof(object) && !this.obj.All(o => t.IsInstanceOfType(o)))
+				t = t.BaseType;
+
+			return t;
+		}
+		
+		protected void UpdateCategories()
+		{
+			Category catAvail = Category.None;
+			for (int i = 0, catId = 0; (catId = (1 << i)) < (int)Category.All; i++)
+			{
+				Category curCat = (Category)catId;
+				if (this.obj.Any(o => GetObjCategory(o) == curCat))
+				{
+					catAvail |= curCat;
+				}
+			}
+			this.cat = catAvail;
+		}
 
 		public override int GetHashCode()
 		{
@@ -231,30 +286,36 @@ namespace DualityEditor
 
 			return base.Equals(obj);
 		}
+		public override string ToString()
+		{
+			return string.Format("{0}: {1}", this.cat, this.obj.Count);
+		}
 		public bool Equals(ObjectSelection other)
 		{
 			return this == other;
 		}
 
-		public static Category GetCategoriesInSelection(ObjectSelection sel)
+		public static int GetTypeShareLevel(ObjectSelection first, ObjectSelection second)
 		{
-			if (sel == null) return Category.None;
+			if (first == null || second == null) return -1;
+			Type firstType = first.GetSharedType();
+			Type secondType = second.GetSharedType();
+			if (firstType == null || secondType == null) return -1;
+			if (firstType.GetTypeHierarchyLevel() < secondType.GetTypeHierarchyLevel()) MathF.Swap(ref firstType, ref secondType);
 
-			Category catAvail = Category.None;
-			for (int i = 0, catId = 0; (catId = (1 << i)) < (int)Category.All; i++)
+			int level = 0;
+			while (firstType != secondType && !firstType.IsAssignableFrom(secondType))
 			{
-				Category curCat = (Category)catId;
-				if (sel.obj.Any(o => GetObjCategory(o) == curCat))
-				{
-					catAvail |= curCat;
-				}
+				level++;
+				firstType = firstType.BaseType;
 			}
-			return catAvail;
+			return level;
 		}
 		public static Category GetAffectedCategories(ObjectSelection first, ObjectSelection second)
 		{
-			if (first == null) return GetCategoriesInSelection(second);
-			if (second == null) return GetCategoriesInSelection(first);
+			if (first == null && second == null) return Category.None;
+			if (first == null) return second.Categories;
+			if (second == null) return first.Categories;
 
 			Category catDiff = Category.None;
 			for (int i = 0, catId = 0; (catId = (1 << i)) < (int)Category.All; i++)
@@ -276,12 +337,21 @@ namespace DualityEditor
 			}
 			return catDiff;
 		}
+		public static IEnumerable<Category> EnumerateCategories(Category cat)
+		{
+			for (int i = 0, catId = 0; (catId = (1 << i)) < (int)Category.All; i++)
+			{
+				Category curCat = (Category)catId;
+				if (cat.HasFlag(curCat)) yield return curCat;
+			}
+		}
 
 		public static bool operator ==(ObjectSelection first, ObjectSelection second)
 		{
 			if (object.ReferenceEquals(first, null) && object.ReferenceEquals(second, null)) return true;
 			if (object.ReferenceEquals(first, null) || object.ReferenceEquals(second, null)) return false;
 
+			if (first.cat != second.cat) return false;
 			if (first.obj.Count != second.obj.Count) return false;
 			if (first.obj.Any(o => !second.obj.Contains(o))) return false;
 
@@ -298,7 +368,7 @@ namespace DualityEditor
 		}
 		public static ObjectSelection operator +(ObjectSelection first, ObjectSelection second)
 		{
-			return new ObjectSelection(first.obj.Union(second.obj));
+			return new ObjectSelection(first.obj.Concat(second.obj).Distinct());
 		}
 	}
 }

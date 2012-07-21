@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 using WeifenLuo.WinFormsUI.Docking;
 using AdamsLair.PropertyGrid;
@@ -16,22 +17,33 @@ namespace EditorBase
 	public partial class ObjectInspector : DockContent
 	{
 		private	int							runtimeId			= 0;
-		private	ObjectSelection.Category	acceptedCats		= ObjectSelection.Category.All;
+		private	int							stolenSelCount		= 0;
 		private	float						lastAutoRefresh		= 0.0f;
 		private	ObjectSelection.Category	selSchedMouseCat	= ObjectSelection.Category.None;
 		private	ObjectSelection				selSchedMouse		= null;
+		private	ObjectSelection				displaySel			= null;
+		private	ObjectSelection.Category	displayCat			= ObjectSelection.Category.None;
 
 		private	ExpandState					gridExpandState		= new ExpandState();
-		
 
-		public ObjectSelection.Category AcceptedCategories
+
+		public bool LockedSelection
 		{
-			get { return this.acceptedCats; }
-			set 
-			{
-				this.acceptedCats = value;
-				this.UpdateButtons();
-			}
+			get { return this.buttonLock.Checked; }
+			set { this.buttonLock.Checked = value; }
+		}
+		public ObjectSelection DisplayedSelection
+		{
+			get { return (this.timerSelectSched.Enabled || this.selSchedMouse != null) ? this.selSchedMouse : this.displaySel; }
+			set { this.UpdateSelection(value, value.Categories); }
+		}
+		public ObjectSelection.Category DisplayedCategory
+		{
+			get { return (this.timerSelectSched.Enabled || this.selSchedMouse != null) ? this.selSchedMouseCat : this.displayCat; }
+		}
+		public bool EmptySelection
+		{
+			get { return (this.displaySel == null || this.displaySel.Empty) && (!this.timerSelectSched.Enabled || this.selSchedMouse == null); }
 		}
 
 
@@ -51,6 +63,12 @@ namespace EditorBase
 			this.gridExpandState.CopyTo(other.gridExpandState);
 		}
 
+		public bool AcceptsSelection(ObjectSelection sel)
+		{
+			if (this.LockedSelection) return false;
+			return true;
+		}
+
 		protected override void OnShown(EventArgs e)
 		{
 			base.OnShown(e);
@@ -58,8 +76,11 @@ namespace EditorBase
 			this.propertyGrid.RegisterEditorProvider(CorePluginHelper.RequestPropertyEditorProviders());
 			this.UpdateButtons();
 
+			// Add the global selection event once
+			EditorBasePlugin.Instance.EditorForm.SelectionChanged -= GlobalUpdateSelection;
+			EditorBasePlugin.Instance.EditorForm.SelectionChanged += GlobalUpdateSelection;
+
 			EditorBasePlugin.Instance.EditorForm.AfterUpdateDualityApp += this.EditorForm_AfterUpdateDualityApp;
-			EditorBasePlugin.Instance.EditorForm.SelectionChanged += this.EditorForm_SelectionChanged;
 			EditorBasePlugin.Instance.EditorForm.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
 			EditorBasePlugin.Instance.EditorForm.ResourceModified += this.EditorForm_ResourceModified;
 			EditorBasePlugin.Instance.EditorForm.FormClosing += this.EditorForm_FormClosing;
@@ -69,7 +90,6 @@ namespace EditorBase
 			base.OnClosed(e);
 
 			EditorBasePlugin.Instance.EditorForm.AfterUpdateDualityApp -= this.EditorForm_AfterUpdateDualityApp;
-			EditorBasePlugin.Instance.EditorForm.SelectionChanged -= this.EditorForm_SelectionChanged;
 			EditorBasePlugin.Instance.EditorForm.ObjectPropertyChanged -= this.EditorForm_ObjectPropertyChanged;
 			EditorBasePlugin.Instance.EditorForm.ResourceModified -= this.EditorForm_ResourceModified;
 			EditorBasePlugin.Instance.EditorForm.FormClosing -= this.EditorForm_FormClosing;
@@ -82,18 +102,14 @@ namespace EditorBase
 
 		internal void SaveUserData(System.Xml.XmlElement node)
 		{
-			node.SetAttribute("acceptedCats", ((uint)this.acceptedCats).ToString(CultureInfo.InvariantCulture));
 			node.SetAttribute("autoRefresh", this.buttonAutoRefresh.Checked.ToString(CultureInfo.InvariantCulture));
 			node.SetAttribute("locked", this.buttonLock.Checked.ToString(CultureInfo.InvariantCulture));
 			node.SetAttribute("titleText", this.Text);
 		}
 		internal void LoadUserData(System.Xml.XmlElement node)
 		{
-			uint tryParseUInt;
 			bool tryParseBool;
 
-			if (uint.TryParse(node.GetAttribute("acceptedCats"), out tryParseUInt))
-				this.acceptedCats = (ObjectSelection.Category)tryParseUInt;
 			if (bool.TryParse(node.GetAttribute("autoRefresh"), out tryParseBool))
 				this.buttonAutoRefresh.Checked = tryParseBool;
 			if (bool.TryParse(node.GetAttribute("locked"), out tryParseBool))
@@ -104,22 +120,36 @@ namespace EditorBase
 		private void UpdateButtons()
 		{
 			this.buttonClone.Enabled = this.propertyGrid.Selection.Any();
-			this.buttonLock.Enabled = this.acceptedCats != ObjectSelection.Category.None;
+			this.buttonLock.Enabled = true;
 		}
-		private void UpdateSelection(ObjectSelection sel, ObjectSelection.Category lastSelChange)
+		private void UpdateSelection(ObjectSelection sel, ObjectSelection.Category showCat)
 		{
 			this.selSchedMouse = null;
 			this.selSchedMouseCat = ObjectSelection.Category.None;
+			this.displaySel = sel;
+			this.displayCat = showCat;
 
-			if (lastSelChange == ObjectSelection.Category.None) return;
+			if (showCat == ObjectSelection.Category.None) return;
 			this.gridExpandState.UpdateFrom(this.propertyGrid.MainEditor);
 
-			if ((lastSelChange & ObjectSelection.Category.GameObjCmp) != ObjectSelection.Category.None)
-				this.propertyGrid.SelectObjects(sel.GameObjects.Union(sel.Components.GameObject()), false);
-			else if ((lastSelChange & ObjectSelection.Category.Resource) != ObjectSelection.Category.None)
-				this.propertyGrid.SelectObjects(sel.Resources, sel.Resources.Any(r => r.Path.Contains(':')));
-			else if ((lastSelChange & ObjectSelection.Category.Other) != ObjectSelection.Category.None)
-				this.propertyGrid.SelectObjects(sel.OtherObjects, false);
+			if ((showCat & ObjectSelection.Category.GameObjCmp) != ObjectSelection.Category.None)
+			{
+				this.displaySel = new ObjectSelection(sel.GameObjects.Union(sel.Components.GameObject()));
+				this.displayCat = ObjectSelection.Category.GameObjCmp;
+				this.propertyGrid.SelectObjects(this.displaySel.Objects, false);
+			}
+			else if ((showCat & ObjectSelection.Category.Resource) != ObjectSelection.Category.None)
+			{
+				this.displaySel = new ObjectSelection(sel.Resources);
+				this.displayCat = ObjectSelection.Category.Resource;
+				this.propertyGrid.SelectObjects(this.displaySel.Objects, this.displaySel.Resources.Any(r => r.Path.Contains(':')));
+			}
+			else if ((showCat & ObjectSelection.Category.Other) != ObjectSelection.Category.None)
+			{
+				this.displaySel = new ObjectSelection(sel.OtherObjects);
+				this.displayCat = ObjectSelection.Category.Other;
+				this.propertyGrid.SelectObjects(this.displaySel.Objects, false);
+			}
 
 			this.gridExpandState.ApplyTo(this.propertyGrid.MainEditor);
 			this.buttonClone.Enabled = this.propertyGrid.Selection.Any();
@@ -133,31 +163,6 @@ namespace EditorBase
 			{
 				this.lastAutoRefresh = Time.MainTimer;
 				this.propertyGrid.UpdateFromObjects();
-			}
-		}
-		private void EditorForm_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if ((e.AffectedCategories & this.acceptedCats) == ObjectSelection.Category.None) return;
-			if (this.buttonLock.Checked)
-			{
-				// Ignore selection change but make sure disposed objects are deselected
-				var disposedObj = e.Removed.Objects.OfType<IManageableObject>().Where(o => o.Disposed).ToArray();
-				ObjectSelection disposedSel = new ObjectSelection(disposedObj);
-				ObjectSelection oldSel = new ObjectSelection(this.propertyGrid.Selection);
-				this.UpdateSelection(oldSel - disposedSel, ObjectSelection.GetCategoriesInSelection(oldSel));
-				return;
-			}
-
-			// If a mouse button is pressed, reschedule the selection for later - there might be a drag in progress
-			if (Control.MouseButtons != System.Windows.Forms.MouseButtons.None)
-			{
-				this.selSchedMouse = e.Current;
-				this.selSchedMouseCat = e.AffectedCategories & this.acceptedCats;
-				this.timerSelectSched.Enabled = true;
-			}
-			else
-			{
-				this.UpdateSelection(e.Current, e.AffectedCategories & this.acceptedCats);
 			}
 		}
 		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
@@ -177,6 +182,58 @@ namespace EditorBase
 		private void EditorForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			if (this.runtimeId == -1 && !e.Cancel) this.Close();
+		}
+		private static void GlobalUpdateSelection(object sender, SelectionChangedEventArgs e)
+		{
+			ObjectInspector target = null;
+			
+			foreach (ObjectSelection.Category cat in ObjectSelection.EnumerateCategories(e.AffectedCategories))
+			{
+				var objViews = 
+					from v in EditorBasePlugin.Instance.ObjViews
+					where v.AcceptsSelection(e.Current)
+					select new { 
+						View = v, 
+						Empty = v.EmptySelection,
+						PerfectFit = v.EmptySelection || (cat & v.DisplayedCategory) != ObjectSelection.Category.None,
+						TypeShare = ObjectSelection.GetTypeShareLevel(e.Current.Exclusive(cat), v.DisplayedSelection) };
+				var sortedQuery = 
+					from o in objViews
+					orderby o.PerfectFit descending, o.Empty ascending, o.TypeShare ascending, o.View.stolenSelCount ascending
+					select o;
+				var targetItem = sortedQuery.FirstOrDefault();
+				if (targetItem == null) return;
+				target = targetItem.View;
+
+				// If the target view showed something else first, increase its stolen counter
+				if (!targetItem.PerfectFit) target.stolenSelCount++;
+
+				// If a mouse button is pressed, reschedule the selection for later - there might be a drag in progress
+				if (Control.MouseButtons != System.Windows.Forms.MouseButtons.None)
+				{
+					target.selSchedMouse = e.Current;
+					target.selSchedMouseCat = cat;
+					target.timerSelectSched.Enabled = true;
+				}
+				else
+				{
+					target.UpdateSelection(e.Current, cat);
+				}
+			}
+			
+			//  Make sure disposed objects are deselected in non-target views
+			foreach (ObjectInspector v in EditorBasePlugin.Instance.ObjViews)
+			{
+				if (v.EmptySelection) continue;
+				if (v == target) continue;
+
+				var disposedObj = e.Removed.Objects.OfType<IManageableObject>().Where(o => o.Disposed);
+				if (disposedObj.Any())
+				{
+					ObjectSelection disposedSel = new ObjectSelection(disposedObj);
+					v.UpdateSelection(v.DisplayedSelection - disposedSel, v.DisplayedCategory);
+				}
+			}
 		}
 
 		private void timerSelectSched_Tick(object sender, EventArgs e)

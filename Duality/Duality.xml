@@ -2566,6 +2566,71 @@
             <param name="right">The second color.</param>
             <returns></returns>
         </member>
+        <member name="T:Duality.Components.Physics.FrictionJointInfo">
+            <summary>
+            Applies relative friction to RigidBodies.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Physics.JointInfo">
+            <summary>
+            Describes a <see cref="T:Duality.Components.Physics.RigidBody"/> joint. Joints limit a Colliders degree of freedom 
+            by connecting it to fixed world coordinates or other Colliders.
+            </summary>
+        </member>
+        <member name="M:Duality.Components.Physics.JointInfo.CopyTo(Duality.Components.Physics.JointInfo)">
+            <summary>
+            Copies this JointInfos data to another one. It is assumed that both are of the same type.
+            </summary>
+            <param name="target"></param>
+        </member>
+        <member name="M:Duality.Components.Physics.JointInfo.Clone">
+            <summary>
+            Clones the JointInfo.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Duality.Components.Physics.JointInfo.DualJoint">
+            <summary>
+            [GET] Returns whether the joint is connecting two Colliders (instead of connecting one to the world)
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.JointInfo.CollideConnected">
+            <summary>
+            [GET / SET] Specifies whether the connected Colliders will collide with each other.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.JointInfo.Enabled">
+            <summary>
+            [GET / SET] Whether or not the joint is active.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.JointInfo.BreakPoint">
+            <summary>
+            [GET / SET] Maximum joint error value before the joint break. Breaking does not remove the joint, but disable it.
+            A value of zero or lower is interpreted as unbreakable. Note that some joints might not have breaking point support 
+            and will ignore this value.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FrictionJointInfo.LocalAnchorA">
+            <summary>
+            [GET / SET] The first RigidBodys local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FrictionJointInfo.LocalAnchorB">
+            <summary>
+            [GET / SET] The second RigidBodys local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FrictionJointInfo.MaxForce">
+            <summary>
+            [GET / SET] The maximum friction force in the local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FrictionJointInfo.MaxTorque">
+            <summary>
+            [GET / SET] The maximum friction torque in the local anchor point.
+            </summary>
+        </member>
         <member name="T:Duality.Serialization.BinaryFormatterBase">
             <summary>
             Base class for Dualitys binary serializers.
@@ -3468,6 +3533,71 @@
         <member name="P:Duality.Resources.Sound.AlBuffer">
             <summary>
             The OpenAL buffer handle to the audio data that is used by this Sound.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Physics.RevoluteJointInfo">
+            <summary>
+            Pins two locally anchored RigidBodies together without constraining rotation.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RevoluteJointInfo.LocalAnchorA">
+            <summary>
+            [GET / SET] The first RigidBodies local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RevoluteJointInfo.LocalAnchorB">
+            <summary>
+            [GET / SET] The second RigidBodies local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RevoluteJointInfo.LimitEnabled">
+            <summary>
+            [GET / SET] Is the joint limited in its angle?
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RevoluteJointInfo.LowerLimit">
+            <summary>
+            [GET / SET] The lower joint limit in radians.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RevoluteJointInfo.UpperLimit">
+            <summary>
+            [GET / SET] The upper joint limit in radians.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RevoluteJointInfo.ReferenceAngle">
+            <summary>
+            [GET / SET] The joint's reference angle.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RevoluteJointInfo.MotorEnabled">
+            <summary>
+            [GET / SET] Is the joint motor enabled?
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RevoluteJointInfo.MaxMotorTorque">
+            <summary>
+            [GET / SET] The maximum motor torque.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RevoluteJointInfo.MotorSpeed">
+            <summary>
+            [GET / SET] The desired motor speed in radians per frame.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RevoluteJointInfo.JointSpeed">
+            <summary>
+            [GET] The current joint angle speed in radians per frame.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RevoluteJointInfo.JointAngle">
+            <summary>
+            [GET] The current joint angle in radians.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RevoluteJointInfo.MotorTorque">
+            <summary>
+            [GET] The current joint motor torque.
             </summary>
         </member>
         <member name="T:Duality.Serialization.Surrogates.DictionarySurrogate">
@@ -5649,6 +5779,36 @@
         <member name="F:Duality.Alignment.BottomRight">
             <summary>
             Align to its bottom right.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Physics.FixedDistanceJointInfo">
+            <summary>
+            Constrains the Collider to obtain a fixed distance to a world coordinate
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedDistanceJointInfo.LocalAnchor">
+            <summary>
+            [GET / SET] The Colliders local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedDistanceJointInfo.WorldAnchor">
+            <summary>
+            [GET / SET] The world anchor point to which the Collider will be attached.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedDistanceJointInfo.DampingRatio">
+            <summary>
+            [GET / SET] The damping ratio. Zero means "no damping", one means "critical damping".
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedDistanceJointInfo.Frequency">
+            <summary>
+            [GET / SET] The mass spring damper frequency in hertz.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedDistanceJointInfo.TargetDistance">
+            <summary>
+            [GET / SET] The target distance between local and world anchor
             </summary>
         </member>
         <member name="T:Duality.VertexFormat.VertexP3T2">
@@ -8444,46 +8604,6 @@
             <param name="bm"></param>
             <param name="pixelData"></param>
         </member>
-        <member name="T:Duality.Components.Physics.JointInfo">
-            <summary>
-            Describes a <see cref="T:Duality.Components.Physics.RigidBody"/> joint. Joints limit a Colliders degree of freedom 
-            by connecting it to fixed world coordinates or other Colliders.
-            </summary>
-        </member>
-        <member name="M:Duality.Components.Physics.JointInfo.CopyTo(Duality.Components.Physics.JointInfo)">
-            <summary>
-            Copies this JointInfos data to another one. It is assumed that both are of the same type.
-            </summary>
-            <param name="target"></param>
-        </member>
-        <member name="M:Duality.Components.Physics.JointInfo.Clone">
-            <summary>
-            Clones the JointInfo.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="P:Duality.Components.Physics.JointInfo.DualJoint">
-            <summary>
-            [GET] Returns whether the joint is connecting two Colliders (instead of connecting one to the world)
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.JointInfo.CollideConnected">
-            <summary>
-            [GET / SET] Specifies whether the connected Colliders will collide with each other.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.JointInfo.Enabled">
-            <summary>
-            [GET / SET] Whether or not the joint is active.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.JointInfo.BreakPoint">
-            <summary>
-            [GET / SET] Maximum joint error value before the joint break. Breaking does not remove the joint, but disable it.
-            A value of zero or lower is interpreted as unbreakable. Note that some joints might not have breaking point support 
-            and will ignore this value.
-            </summary>
-        </member>
         <member name="T:Duality.Components.SoundEmitter">
             <summary>
             Provides functionality to emit sound.
@@ -8540,6 +8660,71 @@
         <member name="P:Duality.Components.SoundEmitter.Source.Offset">
             <summary>
             [GET / SET] The 3d offset of the emitted sound relative to the GameObject.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Physics.WeldJointInfo">
+            <summary>
+            "Welds" two Colliders together so they share a common point and relative angle.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.WeldJointInfo.LocalAnchorA">
+            <summary>
+            [GET / SET] The welding point, locally to the first object.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.WeldJointInfo.LocalAnchorB">
+            <summary>
+            [GET / SET] The welding point, locally to the second object.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.WeldJointInfo.RefAngle">
+            <summary>
+            [GET / SET] The relative angle both objects need to keep.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Physics.PolyShapeInfo">
+            <summary>
+            Describes a <see cref="T:Duality.Components.Physics.RigidBody">Colliders</see> polygon shape.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PolyShapeInfo.Vertices">
+            <summary>
+            [GET / SET] The polygons vertices.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Physics.FixedFrictionJointInfo">
+            <summary>
+            Applies friction to a specific point of the RigidBody.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedFrictionJointInfo.LocalAnchor">
+            <summary>
+            [GET / SET] The RigidBodys local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedFrictionJointInfo.MaxForce">
+            <summary>
+            [GET / SET] The maximum friction force in the local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedFrictionJointInfo.MaxTorque">
+            <summary>
+            [GET / SET] The maximum friction torque in the local anchor point.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Physics.CircleShapeInfo">
+            <summary>
+            Describes a <see cref="T:Duality.Components.Physics.RigidBody">Colliders</see> circle shape.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.CircleShapeInfo.Radius">
+            <summary>
+            [GET / SET] The circles radius.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.CircleShapeInfo.Position">
+            <summary>
+            [GET / SET] The circles position.
             </summary>
         </member>
         <member name="T:Duality.VertexFormat.VertexC1P3">
@@ -9492,6 +9677,71 @@
         <member name="P:Duality.Canvas.State.TransformHandle">
             <summary>
             [GET / SET] The handle used for transforming all shapes.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Physics.FixedRevoluteJointInfo">
+            <summary>
+            Pins a local anchor on the the RigidBody to a specific world position without constraining rotation.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.LocalAnchor">
+            <summary>
+            [GET / SET] The Colliders local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.WorldAnchor">
+            <summary>
+            [GET / SET] The world anchor point to which the Collider will be attached.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.LimitEnabled">
+            <summary>
+            [GET / SET] Is the joint limited in its angle?
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.LowerLimit">
+            <summary>
+            [GET / SET] The lower joint limit in radians.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.UpperLimit">
+            <summary>
+            [GET / SET] The upper joint limit in radians.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.ReferenceAngle">
+            <summary>
+            [GET / SET] The joint's reference angle.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.MotorEnabled">
+            <summary>
+            [GET / SET] Is the joint motor enabled?
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.MaxMotorTorque">
+            <summary>
+            [GET / SET] The maximum motor torque.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.MotorSpeed">
+            <summary>
+            [GET / SET] The desired motor speed in radians per frame.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.JointSpeed">
+            <summary>
+            [GET] The current joint angle speed in radians per frame.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.JointAngle">
+            <summary>
+            [GET] The current joint angle in radians.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.MotorTorque">
+            <summary>
+            [GET] The current joint motor torque.
             </summary>
         </member>
         <member name="T:Duality.FormattedText">
@@ -10650,6 +10900,76 @@
             <param name="obj"></param>
             <returns></returns>
         </member>
+        <member name="T:Duality.Components.Physics.PrismaticJointInfo">
+            <summary>
+            This joint allows the RigidBody to travel on a specific axis relative to another body. It can be limited to a certain area and driven by a motor force.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PrismaticJointInfo.LocalAnchorA">
+            <summary>
+            [GET / SET] The local anchor point on the first RigidBody.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PrismaticJointInfo.LocalAnchorB">
+            <summary>
+            [GET / SET] The local anchor point on the second RigidBody.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PrismaticJointInfo.MovementAxis">
+            <summary>
+            [GET / SET] The axis on which the body may move.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PrismaticJointInfo.LimitEnabled">
+            <summary>
+            [GET / SET] Is the joint limited in its movement?
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PrismaticJointInfo.LowerLimit">
+            <summary>
+            [GET / SET] The lower joint limit.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PrismaticJointInfo.UpperLimit">
+            <summary>
+            [GET / SET] The upper joint limit.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PrismaticJointInfo.MotorEnabled">
+            <summary>
+            [GET / SET] Is the joint motor enabled?
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PrismaticJointInfo.MaxMotorForce">
+            <summary>
+            [GET / SET] The maximum motor force.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PrismaticJointInfo.MotorSpeed">
+            <summary>
+            [GET / SET] The desired motor speed.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PrismaticJointInfo.JointSpeed">
+            <summary>
+            [GET] The current joint speed.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PrismaticJointInfo.JointTranslation">
+            <summary>
+            [GET] The current joint translation.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PrismaticJointInfo.MotorForce">
+            <summary>
+            [GET] The current joint motor force.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PrismaticJointInfo.ReferenceAngle">
+            <summary>
+            [GET / SET] The reference angle that is used to constrain the bodies angle.
+            </summary>
+        </member>
         <member name="T:Duality.VertexFormat.VertexP3">
             <summary>
             Vertex data providing each vertex a position (3x4 byte).
@@ -11805,6 +12125,127 @@
             in source code.
             </summary>
         </member>
+        <member name="T:Duality.Components.Physics.DistanceJointInfo">
+            <summary>
+            Constrains two RigidBodies to obtain a fixed distance to each other
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.DistanceJointInfo.LocalAnchorA">
+            <summary>
+            [GET / SET] The first bodies local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.DistanceJointInfo.LocalAnchorB">
+            <summary>
+            [GET / SET] The second bodies local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.DistanceJointInfo.DampingRatio">
+            <summary>
+            [GET / SET] The damping ratio. Zero means "no damping", one means "critical damping".
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.DistanceJointInfo.Frequency">
+            <summary>
+            [GET / SET] The mass spring damper frequency in hertz.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.DistanceJointInfo.TargetDistance">
+            <summary>
+            [GET / SET] The target distance between local and world anchor
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Physics.FixedPrismaticJointInfo">
+            <summary>
+            This joint allows the RigidBody to travel on a specific axis. It can be limited to a certain area and driven by a motor force.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.WorldAnchor">
+            <summary>
+            [GET / SET] The world anchor point to which the RigidBody will be attached.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.MovementAxis">
+            <summary>
+            [GET / SET] The axis on which the body may move.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.LimitEnabled">
+            <summary>
+            [GET / SET] Is the joint limited in its movement?
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.LowerLimit">
+            <summary>
+            [GET / SET] The lower joint limit.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.UpperLimit">
+            <summary>
+            [GET / SET] The upper joint limit.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.MotorEnabled">
+            <summary>
+            [GET / SET] Is the joint motor enabled?
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.MaxMotorForce">
+            <summary>
+            [GET / SET] The maximum motor force.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.MotorSpeed">
+            <summary>
+            [GET / SET] The desired motor speed.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.JointSpeed">
+            <summary>
+            [GET] The current joint speed.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.JointTranslation">
+            <summary>
+            [GET] The current joint translation.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.MotorForce">
+            <summary>
+            [GET] The current joint motor force.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.ReferenceAngle">
+            <summary>
+            [GET / SET] The reference angle that is used to constrain the bodies angle.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Physics.SliderJointInfo">
+            <summary>
+            Constrains two RigidBodies to keep their distance to each other in a certain range.
+            You can view this as a massless, rigid rod.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.SliderJointInfo.LocalAnchorA">
+            <summary>
+            [GET / SET] The first bodies local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.SliderJointInfo.LocalAnchorB">
+            <summary>
+            [GET / SET] The second bodies local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.SliderJointInfo.MaxLength">
+            <summary>
+            [GET / SET] The maximum distance between both RigidBodies.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.SliderJointInfo.MinLength">
+            <summary>
+            [GET / SET] The minimum distance between both RigidBodies.
+            </summary>
+        </member>
         <member name="T:Duality.NonSerializedResourceAttribute">
             <summary>
             Indicates that a field will be assumed null when serializing it as part of a Resource serialization.
@@ -12359,6 +12800,26 @@
         <member name="P:Duality.EditorHints.EditorHintDecimalPlacesAttribute.Places">
             <summary>
             [GET] The preferred number of displayed decimal places
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Physics.RopeJointInfo">
+            <summary>
+            Constrains two RigidBodies to not exceed a maximum distance to each other.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RopeJointInfo.LocalAnchorA">
+            <summary>
+            [GET / SET] The first bodies local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RopeJointInfo.LocalAnchorB">
+            <summary>
+            [GET / SET] The second bodies local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RopeJointInfo.MaxLength">
+            <summary>
+            [GET / SET] The maximum distance between both RigidBodies i.e. the "rope length".
             </summary>
         </member>
         <member name="T:Duality.Serialization.BinaryFormatter">
@@ -13026,396 +13487,6 @@
             Makes this <see cref="T:Duality.GameObject"/> the 3d sound listener.
             </summary>
         </member>
-        <member name="T:Duality.Components.Physics.FrictionJointInfo">
-            <summary>
-            Applies relative friction to RigidBodies.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FrictionJointInfo.LocalAnchorA">
-            <summary>
-            [GET / SET] The first RigidBodys local anchor point.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FrictionJointInfo.LocalAnchorB">
-            <summary>
-            [GET / SET] The second RigidBodys local anchor point.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FrictionJointInfo.MaxForce">
-            <summary>
-            [GET / SET] The maximum friction force in the local anchor point.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FrictionJointInfo.MaxTorque">
-            <summary>
-            [GET / SET] The maximum friction torque in the local anchor point.
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Physics.RevoluteJointInfo">
-            <summary>
-            Pins two locally anchored RigidBodies together without constraining rotation.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.RevoluteJointInfo.LocalAnchorA">
-            <summary>
-            [GET / SET] The first RigidBodies local anchor point.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.RevoluteJointInfo.LocalAnchorB">
-            <summary>
-            [GET / SET] The second RigidBodies local anchor point.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.RevoluteJointInfo.LimitEnabled">
-            <summary>
-            [GET / SET] Is the joint limited in its angle?
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.RevoluteJointInfo.LowerLimit">
-            <summary>
-            [GET / SET] The lower joint limit in radians.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.RevoluteJointInfo.UpperLimit">
-            <summary>
-            [GET / SET] The upper joint limit in radians.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.RevoluteJointInfo.ReferenceAngle">
-            <summary>
-            [GET / SET] The joint's reference angle.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.RevoluteJointInfo.MotorEnabled">
-            <summary>
-            [GET / SET] Is the joint motor enabled?
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.RevoluteJointInfo.MaxMotorTorque">
-            <summary>
-            [GET / SET] The maximum motor torque.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.RevoluteJointInfo.MotorSpeed">
-            <summary>
-            [GET / SET] The desired motor speed in radians per frame.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.RevoluteJointInfo.JointSpeed">
-            <summary>
-            [GET] The current joint angle speed in radians per frame.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.RevoluteJointInfo.JointAngle">
-            <summary>
-            [GET] The current joint angle in radians.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.RevoluteJointInfo.MotorTorque">
-            <summary>
-            [GET] The current joint motor torque.
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Physics.FixedDistanceJointInfo">
-            <summary>
-            Constrains the Collider to obtain a fixed distance to a world coordinate
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedDistanceJointInfo.LocalAnchor">
-            <summary>
-            [GET / SET] The Colliders local anchor point.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedDistanceJointInfo.WorldAnchor">
-            <summary>
-            [GET / SET] The world anchor point to which the Collider will be attached.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedDistanceJointInfo.DampingRatio">
-            <summary>
-            [GET / SET] The damping ratio. Zero means "no damping", one means "critical damping".
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedDistanceJointInfo.Frequency">
-            <summary>
-            [GET / SET] The mass spring damper frequency in hertz.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedDistanceJointInfo.TargetDistance">
-            <summary>
-            [GET / SET] The target distance between local and world anchor
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Physics.WeldJointInfo">
-            <summary>
-            "Welds" two Colliders together so they share a common point and relative angle.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.WeldJointInfo.LocalAnchorA">
-            <summary>
-            [GET / SET] The welding point, locally to the first object.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.WeldJointInfo.LocalAnchorB">
-            <summary>
-            [GET / SET] The welding point, locally to the second object.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.WeldJointInfo.RefAngle">
-            <summary>
-            [GET / SET] The relative angle both objects need to keep.
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Physics.FixedFrictionJointInfo">
-            <summary>
-            Applies friction to a specific point of the RigidBody.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedFrictionJointInfo.LocalAnchor">
-            <summary>
-            [GET / SET] The RigidBodys local anchor point.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedFrictionJointInfo.MaxForce">
-            <summary>
-            [GET / SET] The maximum friction force in the local anchor point.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedFrictionJointInfo.MaxTorque">
-            <summary>
-            [GET / SET] The maximum friction torque in the local anchor point.
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Physics.FixedRevoluteJointInfo">
-            <summary>
-            Pins a local anchor on the the RigidBody to a specific world position without constraining rotation.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.LocalAnchor">
-            <summary>
-            [GET / SET] The Colliders local anchor point.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.WorldAnchor">
-            <summary>
-            [GET / SET] The world anchor point to which the Collider will be attached.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.LimitEnabled">
-            <summary>
-            [GET / SET] Is the joint limited in its angle?
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.LowerLimit">
-            <summary>
-            [GET / SET] The lower joint limit in radians.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.UpperLimit">
-            <summary>
-            [GET / SET] The upper joint limit in radians.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.ReferenceAngle">
-            <summary>
-            [GET / SET] The joint's reference angle.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.MotorEnabled">
-            <summary>
-            [GET / SET] Is the joint motor enabled?
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.MaxMotorTorque">
-            <summary>
-            [GET / SET] The maximum motor torque.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.MotorSpeed">
-            <summary>
-            [GET / SET] The desired motor speed in radians per frame.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.JointSpeed">
-            <summary>
-            [GET] The current joint angle speed in radians per frame.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.JointAngle">
-            <summary>
-            [GET] The current joint angle in radians.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedRevoluteJointInfo.MotorTorque">
-            <summary>
-            [GET] The current joint motor torque.
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Physics.PrismaticJointInfo">
-            <summary>
-            This joint allows the RigidBody to travel on a specific axis relative to another body. It can be limited to a certain area and driven by a motor force.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.PrismaticJointInfo.LocalAnchorA">
-            <summary>
-            [GET / SET] The local anchor point on the first RigidBody.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.PrismaticJointInfo.LocalAnchorB">
-            <summary>
-            [GET / SET] The local anchor point on the second RigidBody.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.PrismaticJointInfo.MovementAxis">
-            <summary>
-            [GET / SET] The axis on which the body may move.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.PrismaticJointInfo.LimitEnabled">
-            <summary>
-            [GET / SET] Is the joint limited in its movement?
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.PrismaticJointInfo.LowerLimit">
-            <summary>
-            [GET / SET] The lower joint limit.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.PrismaticJointInfo.UpperLimit">
-            <summary>
-            [GET / SET] The upper joint limit.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.PrismaticJointInfo.MotorEnabled">
-            <summary>
-            [GET / SET] Is the joint motor enabled?
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.PrismaticJointInfo.MaxMotorForce">
-            <summary>
-            [GET / SET] The maximum motor force.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.PrismaticJointInfo.MotorSpeed">
-            <summary>
-            [GET / SET] The desired motor speed.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.PrismaticJointInfo.JointSpeed">
-            <summary>
-            [GET] The current joint speed.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.PrismaticJointInfo.JointTranslation">
-            <summary>
-            [GET] The current joint translation.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.PrismaticJointInfo.MotorForce">
-            <summary>
-            [GET] The current joint motor force.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.PrismaticJointInfo.ReferenceAngle">
-            <summary>
-            [GET / SET] The reference angle that is used to constrain the bodies angle.
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Physics.DistanceJointInfo">
-            <summary>
-            Constrains two RigidBodies to obtain a fixed distance to each other
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.DistanceJointInfo.LocalAnchorA">
-            <summary>
-            [GET / SET] The first bodies local anchor point.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.DistanceJointInfo.LocalAnchorB">
-            <summary>
-            [GET / SET] The second bodies local anchor point.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.DistanceJointInfo.DampingRatio">
-            <summary>
-            [GET / SET] The damping ratio. Zero means "no damping", one means "critical damping".
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.DistanceJointInfo.Frequency">
-            <summary>
-            [GET / SET] The mass spring damper frequency in hertz.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.DistanceJointInfo.TargetDistance">
-            <summary>
-            [GET / SET] The target distance between local and world anchor
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Physics.FixedPrismaticJointInfo">
-            <summary>
-            This joint allows the RigidBody to travel on a specific axis. It can be limited to a certain area and driven by a motor force.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.WorldAnchor">
-            <summary>
-            [GET / SET] The world anchor point to which the RigidBody will be attached.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.MovementAxis">
-            <summary>
-            [GET / SET] The axis on which the body may move.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.LimitEnabled">
-            <summary>
-            [GET / SET] Is the joint limited in its movement?
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.LowerLimit">
-            <summary>
-            [GET / SET] The lower joint limit.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.UpperLimit">
-            <summary>
-            [GET / SET] The upper joint limit.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.MotorEnabled">
-            <summary>
-            [GET / SET] Is the joint motor enabled?
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.MaxMotorForce">
-            <summary>
-            [GET / SET] The maximum motor force.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.MotorSpeed">
-            <summary>
-            [GET / SET] The desired motor speed.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.JointSpeed">
-            <summary>
-            [GET] The current joint speed.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.JointTranslation">
-            <summary>
-            [GET] The current joint translation.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.MotorForce">
-            <summary>
-            [GET] The current joint motor force.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedPrismaticJointInfo.ReferenceAngle">
-            <summary>
-            [GET / SET] The reference angle that is used to constrain the bodies angle.
-            </summary>
-        </member>
         <member name="T:Duality.Components.Physics.FixedAngleJointInfo">
             <summary>
             Constrains the Collider to a fixed angle
@@ -13464,77 +13535,6 @@
         <member name="P:Duality.Components.Physics.AngleJointInfo.MaxImpulse">
             <summary>
             [GET / SET] The maximum angular impulse to apply to the RigidBody. A negative value equals infinity.
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Physics.PolyShapeInfo">
-            <summary>
-            Describes a <see cref="T:Duality.Components.Physics.RigidBody">Colliders</see> polygon shape.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.PolyShapeInfo.Vertices">
-            <summary>
-            [GET / SET] The polygons vertices.
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Physics.CircleShapeInfo">
-            <summary>
-            Describes a <see cref="T:Duality.Components.Physics.RigidBody">Colliders</see> circle shape.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.CircleShapeInfo.Radius">
-            <summary>
-            [GET / SET] The circles radius.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.CircleShapeInfo.Position">
-            <summary>
-            [GET / SET] The circles position.
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Physics.RopeJointInfo">
-            <summary>
-            Constrains two RigidBodies to not exceed a maximum distance to each other.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.RopeJointInfo.LocalAnchorA">
-            <summary>
-            [GET / SET] The first bodies local anchor point.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.RopeJointInfo.LocalAnchorB">
-            <summary>
-            [GET / SET] The second bodies local anchor point.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.RopeJointInfo.MaxLength">
-            <summary>
-            [GET / SET] The maximum distance between both RigidBodies i.e. the "rope length".
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Physics.SliderJointInfo">
-            <summary>
-            Constrains two RigidBodies to keep their distance to each other in a certain range.
-            You can view this as a massless, rigid rod.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.SliderJointInfo.LocalAnchorA">
-            <summary>
-            [GET / SET] The first bodies local anchor point.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.SliderJointInfo.LocalAnchorB">
-            <summary>
-            [GET / SET] The second bodies local anchor point.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.SliderJointInfo.MaxLength">
-            <summary>
-            [GET / SET] The maximum distance between both RigidBodies.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.SliderJointInfo.MinLength">
-            <summary>
-            [GET / SET] The minimum distance between both RigidBodies.
             </summary>
         </member>
     </members>

@@ -399,7 +399,7 @@ namespace DualityEditor.Forms
 				this.selectionCurrent = this.selectionCurrent.Append(sel);
 			else if (mode == SelectMode.Toggle)
 				this.selectionCurrent = this.selectionCurrent.Toggle(sel);
-			this.OnSelectionChanged(sender, ObjectSelection.GetCategoriesInSelection(sel));
+			this.OnSelectionChanged(sender, sel.Categories);
 		}
 		public void Deselect(object sender, ObjectSelection sel)
 		{
@@ -994,6 +994,8 @@ namespace DualityEditor.Forms
 			if (sender == null) sender = this;
 
 			this.selectionChanging = true;
+			System.Diagnostics.StackTrace trace = new System.Diagnostics.StackTrace();
+			if (trace.FrameCount > 100) System.Diagnostics.Debugger.Break();
 
 			if (this.SelectionChanged != null)
 				this.SelectionChanged(sender, new SelectionChangedEventArgs(this.selectionCurrent, this.selectionPrevious, changedCategoryFallback));

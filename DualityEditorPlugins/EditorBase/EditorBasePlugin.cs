@@ -51,6 +51,10 @@ namespace EditorBase
 		{
 			get { return "EditorBase"; }
 		}
+		public IEnumerable<ObjectInspector>	ObjViews
+		{
+			get { return this.objViews; }
+		}
 
 
 		public EditorBasePlugin()

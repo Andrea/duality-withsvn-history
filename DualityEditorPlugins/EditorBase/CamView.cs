@@ -628,7 +628,7 @@ namespace EditorBase
 			if (this.camObj.GetComponent<SoundListener>() != null)
 				this.camObj.GetComponent<SoundListener>().MakeCurrent();
 
-			this.state.SelectObjects(this.state.SelectedObjects);
+			//this.state.SelectObjects(this.state.SelectedObjects);
 		}
 		private void glControl_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
 		{
