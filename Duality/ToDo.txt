@@ -14,13 +14,12 @@
 	
 --> Joints and Joint Editors
 	-->	Create JointInfo classes for all relevant Farseer Joints
-		-->	Line
+		-->	FixedMouseJoint
+		-->	Line (Visualization)
 		-->	Pulley
 		-->	Gear (auto-select available Revolute- or Prismatic joints)
 	-->	Display dual and single JointInfos in ColliderEditor
 	-->	Make some of them editable there?
-
--->	Physics Raycast
 
 --> Reconsider "events" in Duality.
 	-->	Are they really necessary?

@@ -33,6 +33,11 @@ namespace Duality.Components.Physics
 			/// </summary>
 			Dynamic
 		}
+		/// <summary>
+		/// Called for each shape found in the query. You control how the ray cast proceeds by returning a float:
+		/// <returns>-1 to filter, 0 to terminate, fraction to clip the ray for closest hit, 1 to continue</returns>
+		/// </summary>
+		public delegate float RayCastCallback(ShapeInfo shape, Vector2 point, Vector2 normal, float fraction);
 		private struct ColEvent
 		{
 			public enum EventType
@@ -910,6 +915,19 @@ namespace Duality.Components.Physics
 		}
 		
 
+		/// <summary>
+		/// Performs a 2d physical raycast in world coordinates.
+		/// </summary>
+		/// <param name="worldCoordA">The starting point.</param>
+		/// <param name="worldCoordB">The desired end point.</param>
+		/// <param name="callback"></param>
+		public static void Raycast(Vector2 worldCoordA, Vector2 worldCoordB, RayCastCallback callback)
+		{
+			Scene.PhysicsWorld.RayCast(delegate(Fixture fixture, Vector2 pos, Vector2 normal, float fraction)
+			{
+				return callback(fixture.UserData as ShapeInfo, pos, normal, fraction);
+			}, worldCoordA, worldCoordB);
+		}
 		/// <summary>
 		/// Performs a global physical picking operation and returns the <see cref="ShapeInfo">shape</see> in which
 		/// the specified world coordinate is located in.

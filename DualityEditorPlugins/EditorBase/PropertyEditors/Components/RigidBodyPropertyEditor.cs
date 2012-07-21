@@ -279,7 +279,6 @@ namespace EditorBase.PropertyEditors
 			this.Items = 
 				from t in DualityApp.GetAvailDualityTypes(typeof(JointInfo))
 				where !t.IsAbstract
-				orderby t.Name
 				select new ObjectItem(t, t.Name);
 		}
 		protected override void OnReadOnlyChanged()

@@ -116,7 +116,7 @@ namespace Duality.Components.Physics
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public float JointSpeed
 		{
-			get { return this.joint == null ? 0.0f : PhysicsConvert.ToDualityUnit((this.joint as FixedPrismaticJoint).JointSpeed * Time.SPFMult); }
+			get { return this.joint == null ? 0.0f : PhysicsConvert.ToDualityUnit((this.joint as PrismaticJoint).JointSpeed * Time.SPFMult); }
 		}
 		/// <summary>
 		/// [GET] The current joint translation.
@@ -124,7 +124,7 @@ namespace Duality.Components.Physics
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public float JointTranslation
 		{
-			get { return this.joint == null ? 0.0f : PhysicsConvert.ToDualityUnit((this.joint as FixedPrismaticJoint).JointTranslation); }
+			get { return this.joint == null ? 0.0f : PhysicsConvert.ToDualityUnit((this.joint as PrismaticJoint).JointTranslation); }
 		}
 		/// <summary>
 		/// [GET] The current joint motor force.
@@ -132,7 +132,7 @@ namespace Duality.Components.Physics
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public float MotorForce
 		{
-			get { return this.joint == null ? 0.0f : PhysicsConvert.ToDualityUnit((this.joint as FixedPrismaticJoint).MotorForce * Time.SPFMult); }
+			get { return this.joint == null ? 0.0f : PhysicsConvert.ToDualityUnit((this.joint as PrismaticJoint).MotorForce * Time.SPFMult); }
 		}
 		/// <summary>
 		/// [GET / SET] The reference angle that is used to constrain the bodies angle.

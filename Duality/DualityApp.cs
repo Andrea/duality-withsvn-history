@@ -807,6 +807,7 @@ namespace Duality
 				availTypes.AddRange(
 					from t in asm.GetExportedTypes()
 					where baseType.IsAssignableFrom(t)
+					orderby t.Name
 					select t);
 			}
 			availTypeDict[baseType] = availTypes;

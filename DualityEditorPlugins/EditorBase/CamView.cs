@@ -294,7 +294,6 @@ namespace EditorBase
 			IEnumerable<Type> camViewStateTypeQuery = 
 				from t in EditorBasePlugin.Instance.EditorForm.GetAvailDualityEditorTypes(typeof(CamViewState))
 				where !t.IsAbstract
-				orderby t.Name
 				select t;
 
 			foreach (Type camViewState in camViewStateTypeQuery)
@@ -308,7 +307,6 @@ namespace EditorBase
 			IEnumerable<Type> camViewStateTypeQuery = 
 				from t in EditorBasePlugin.Instance.EditorForm.GetAvailDualityEditorTypes(typeof(CamViewLayer))
 				where !t.IsAbstract
-				orderby t.Name
 				select t;
 
 			foreach (Type camViewState in camViewStateTypeQuery)

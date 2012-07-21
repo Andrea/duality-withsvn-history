@@ -812,6 +812,7 @@ namespace DualityEditor.Forms
 				availTypes.AddRange(
 					from t in asm.GetExportedTypes()
 					where baseType.IsAssignableFrom(t)
+					orderby t.Name
 					select t);
 			}
 			this.availTypeDict[baseType] = availTypes;

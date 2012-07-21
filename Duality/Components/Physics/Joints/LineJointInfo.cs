@@ -11,21 +11,17 @@ using Duality.Resources;
 
 namespace Duality.Components.Physics
 {
-	/// <summary>
-	/// Pins two locally anchored RigidBodies together without constraining rotation.
-	/// </summary>
 	[Serializable]
-	public sealed class RevoluteJointInfo : JointInfo
+	public sealed class LineJointInfo : JointInfo
 	{
 		private	Vector2		localAnchorA	= Vector2.Zero;
 		private	Vector2		localAnchorB	= Vector2.Zero;
-		private	float		lowerLimit		= 0.0f;
-		private	float		upperLimit		= 0.0f;
-		private	bool		limitEnabled	= false;
-		private	float		refAngle		= 0.0f;
+		private	Vector2		moveAxis		= Vector2.UnitY;
 		private	bool		motorEnabled	= false;
 		private float		maxMotorTorque	= 0.0f;
 		private float		motorSpeed		= 0.0f;
+		private	float		dampingRatio	= 0.5f;
+		private	float		frequency		= 5.0f;
 
 
 		public override bool DualJoint
@@ -51,39 +47,30 @@ namespace Duality.Components.Physics
 			set { this.localAnchorB = value; this.UpdateJoint(); }
 		}
 		/// <summary>
-		/// [GET / SET] Is the joint limited in its angle?
+		/// [GET / SET] The axis on which the body may move.
 		/// </summary>
-		public bool LimitEnabled
+		public Vector2 MovementAxis
 		{
-			get { return this.limitEnabled; }
-			set { this.limitEnabled = value; this.UpdateJoint(); }
+			get { return this.moveAxis; }
+			set { this.moveAxis = value; this.UpdateJoint(); }
 		}
 		/// <summary>
-		/// [GET / SET] The lower joint limit in radians.
+		/// [GET / SET] The damping ratio. Zero means "no damping", one means "critical damping".
 		/// </summary>
-		[EditorHintIncrement(MathF.RadAngle1)]
-		public float LowerLimit
+		[EditorHintRange(0.0f, 1.0f)]
+		public float DampingRatio
 		{
-			get { return this.lowerLimit; }
-			set { this.lowerLimit = MathF.Min(value, this.upperLimit); this.UpdateJoint(); }
+			get { return this.dampingRatio; }
+			set { this.dampingRatio = value; this.UpdateJoint(); }
 		}
 		/// <summary>
-		/// [GET / SET] The upper joint limit in radians.
+		/// [GET / SET] The mass spring damper frequency in hertz.
 		/// </summary>
-		[EditorHintIncrement(MathF.RadAngle1)]
-		public float UpperLimit
+		[EditorHintRange(0.01f, 1000.0f)]
+		public float Frequency
 		{
-			get { return this.upperLimit; }
-			set { this.upperLimit = MathF.Max(value, this.lowerLimit); this.UpdateJoint(); }
-		}
-		/// <summary>
-		/// [GET / SET] The joint's reference angle.
-		/// </summary>
-		[EditorHintIncrement(MathF.RadAngle1)]
-		public float ReferenceAngle
-		{
-			get { return this.refAngle; }
-			set { this.refAngle = value; this.UpdateJoint(); }
+			get { return this.frequency; }
+			set { this.frequency = value; this.UpdateJoint(); }
 		}
 		/// <summary>
 		/// [GET / SET] Is the joint motor enabled?
@@ -116,15 +103,15 @@ namespace Duality.Components.Physics
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public float JointSpeed
 		{
-			get { return this.joint == null ? 0.0f : (this.joint as RevoluteJoint).JointSpeed * Time.SPFMult; }
+			get { return this.joint == null ? 0.0f : (this.joint as LineJoint).JointSpeed * Time.SPFMult; }
 		}
 		/// <summary>
-		/// [GET] The current joint angle in radians.
+		/// [GET] The current joint translation.
 		/// </summary>
 		[EditorHintFlags(MemberFlags.Invisible)]
-		public float JointAngle
+		public float JointTranslation
 		{
-			get { return this.joint == null ? 0.0f : (this.joint as RevoluteJoint).JointAngle; }
+			get { return this.joint == null ? 0.0f : PhysicsConvert.ToDualityUnit((this.joint as LineJoint).JointTranslation); }
 		}
 		/// <summary>
 		/// [GET] The current joint motor torque.
@@ -132,43 +119,41 @@ namespace Duality.Components.Physics
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public float MotorTorque
 		{
-			get { return this.joint == null ? 0.0f : (this.joint as RevoluteJoint).MotorTorque * Time.SPFMult; }
+			get { return this.joint == null ? 0.0f : (this.joint as LineJoint).GetMotorTorque(1.0f) * Time.SPFMult; }
 		}
 
 
 		protected override Joint CreateJoint(Body bodyA, Body bodyB)
 		{
-			return bodyA != null && bodyB != null ? JointFactory.CreateRevoluteJoint(Scene.PhysicsWorld, bodyA, bodyB, Vector2.Zero) : null;
+			return bodyA != null && bodyB != null ? JointFactory.CreateLineJoint(Scene.PhysicsWorld, bodyA, bodyB, Vector2.Zero, Vector2.UnitY) : null;
 		}
 		internal override void UpdateJoint()
 		{
 			base.UpdateJoint();
 			if (this.joint == null) return;
 
-			RevoluteJoint j = this.joint as RevoluteJoint;
+			LineJoint j = this.joint as LineJoint;
 			j.LocalAnchorB = GetFarseerPoint(this.BodyB, this.localAnchorB);
 			j.LocalAnchorA = GetFarseerPoint(this.BodyA, this.localAnchorA);
+			j.LocalXAxis = this.moveAxis;
 			j.MotorEnabled = this.motorEnabled;
 			j.MotorSpeed = -this.motorSpeed / Time.SPFMult;
 			j.MaxMotorTorque = this.maxMotorTorque / Time.SPFMult;
-			j.LimitEnabled = this.limitEnabled;
-			j.LowerLimit = -this.upperLimit;
-			j.UpperLimit = -this.lowerLimit;
-			j.ReferenceAngle = -this.refAngle;
+			j.DampingRatio = this.dampingRatio;
+			j.Frequency = this.frequency;
 		}
 
 		protected override void CopyTo(JointInfo target)
 		{
 			base.CopyTo(target);
-			RevoluteJointInfo c = target as RevoluteJointInfo;
+			LineJointInfo c = target as LineJointInfo;
 			c.localAnchorB = this.localAnchorB;
 			c.localAnchorA = this.localAnchorA;
 			c.motorSpeed = this.motorSpeed;
 			c.maxMotorTorque = this.maxMotorTorque;
-			c.limitEnabled = this.limitEnabled;
-			c.lowerLimit = this.lowerLimit;
-			c.upperLimit = this.upperLimit;
-			c.refAngle = this.refAngle;
+			c.moveAxis = this.moveAxis;
+			c.dampingRatio = this.dampingRatio;
+			c.frequency = this.frequency;
 		}
 	}
 }
