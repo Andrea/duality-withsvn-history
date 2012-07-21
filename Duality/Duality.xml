@@ -7433,6 +7433,61 @@
             <returns>-1 to filter, 0 to terminate, fraction to clip the ray for closest hit, 1 to continue</returns>
             </summary>
         </member>
+        <member name="P:Duality.Components.Physics.LineJointInfo.LocalAnchorA">
+            <summary>
+            [GET / SET] The first RigidBodies local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.LineJointInfo.LocalAnchorB">
+            <summary>
+            [GET / SET] The second RigidBodies local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.LineJointInfo.MovementAxis">
+            <summary>
+            [GET / SET] The axis on which the body may move.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.LineJointInfo.DampingRatio">
+            <summary>
+            [GET / SET] The damping ratio. Zero means "no damping", one means "critical damping".
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.LineJointInfo.Frequency">
+            <summary>
+            [GET / SET] The mass spring damper frequency in hertz.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.LineJointInfo.MotorEnabled">
+            <summary>
+            [GET / SET] Is the joint motor enabled?
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.LineJointInfo.MaxMotorTorque">
+            <summary>
+            [GET / SET] The maximum motor torque.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.LineJointInfo.MotorSpeed">
+            <summary>
+            [GET / SET] The desired motor speed in radians per frame.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.LineJointInfo.JointSpeed">
+            <summary>
+            [GET] The current joint angle speed in radians per frame.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.LineJointInfo.JointTranslation">
+            <summary>
+            [GET] The current joint translation.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.LineJointInfo.MotorTorque">
+            <summary>
+            [GET] The current joint motor torque.
+            </summary>
+        </member>
         <member name="T:Duality.Resources.Prefab">
             <summary>
             Prefab is short for "prefabricated object" and encapsulates a single <see cref="T:Duality.GameObject"/> that can serve as a template.
@@ -13549,61 +13604,6 @@
         <member name="P:Duality.Components.Physics.AngleJointInfo.MaxImpulse">
             <summary>
             [GET / SET] The maximum angular impulse to apply to the RigidBody. A negative value equals infinity.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.LineJointInfo.LocalAnchorA">
-            <summary>
-            [GET / SET] The first RigidBodies local anchor point.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.LineJointInfo.LocalAnchorB">
-            <summary>
-            [GET / SET] The second RigidBodies local anchor point.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.LineJointInfo.MovementAxis">
-            <summary>
-            [GET / SET] The axis on which the body may move.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.LineJointInfo.DampingRatio">
-            <summary>
-            [GET / SET] The damping ratio. Zero means "no damping", one means "critical damping".
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.LineJointInfo.Frequency">
-            <summary>
-            [GET / SET] The mass spring damper frequency in hertz.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.LineJointInfo.MotorEnabled">
-            <summary>
-            [GET / SET] Is the joint motor enabled?
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.LineJointInfo.MaxMotorTorque">
-            <summary>
-            [GET / SET] The maximum motor torque.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.LineJointInfo.MotorSpeed">
-            <summary>
-            [GET / SET] The desired motor speed in radians per frame.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.LineJointInfo.JointSpeed">
-            <summary>
-            [GET] The current joint angle speed in radians per frame.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.LineJointInfo.JointTranslation">
-            <summary>
-            [GET] The current joint translation.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.LineJointInfo.MotorTorque">
-            <summary>
-            [GET] The current joint motor torque.
             </summary>
         </member>
     </members>

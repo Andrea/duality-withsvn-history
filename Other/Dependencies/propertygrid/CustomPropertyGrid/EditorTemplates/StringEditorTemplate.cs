@@ -54,6 +54,18 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 				return this.text.Substring(begin, Math.Abs(this.selectionLength));
 			}
 		}
+		public int SelectionBegin
+		{
+			get { return Math.Min(this.cursorIndex, this.cursorIndex + this.selectionLength); }
+		}
+		public int SelectionLength
+		{
+			get { return Math.Abs(this.selectionLength); }
+		}
+		public bool SelectedAll
+		{
+			get { return this.SelectionLength >= this.text.Length; }
+		}
 
 		public StringEditorTemplate(PropertyEditor parent) : base(parent) {}
 

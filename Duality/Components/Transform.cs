@@ -105,7 +105,7 @@ namespace Duality.Components
 		{
 			get { return this.scale; }
 			set
-			{ 
+			{
 				this.scale.X = MathF.Max(value.X, MinScale);
 				this.scale.Y = MathF.Max(value.Y, MinScale);
 				this.scale.Z = MathF.Max(value.Z, MinScale);

@@ -108,6 +108,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			get { return this.value; }
 			set
 			{
+				if (this.stringEditor.Focused && !this.stringEditor.SelectedAll) return; // Don't override while the user is typing
 				value = Math.Max(Math.Min(value, this.max), this.min);
 				if (this.value != value)
 				{

@@ -32,9 +32,9 @@ namespace EditorBase.CamViewLayers
 			{
 				float fgLum = this.View.FgColor.GetLuminance();
 				if (fgLum > 0.5f)
-					return ColorRgba.Mix(new ColorRgba(64, 164, 255), ColorRgba.VeryLightGrey, 0.5f);
+					return new ColorRgba(144, 192, 240);
 				else
-					return ColorRgba.Mix(new ColorRgba(64, 164, 255), ColorRgba.VeryDarkGrey, 0.5f);
+					return new ColorRgba(16, 32, 96);
 			}
 		}
 		public ColorRgba JointColor
@@ -43,9 +43,9 @@ namespace EditorBase.CamViewLayers
 			{
 				float fgLum = this.View.FgColor.GetLuminance();
 				if (fgLum > 0.5f)
-					return ColorRgba.Mix(new ColorRgba(128, 255, 0), ColorRgba.VeryLightGrey, 0.5f);
+					return new ColorRgba(176, 240, 112);
 				else
-					return ColorRgba.Mix(new ColorRgba(128, 255, 0), ColorRgba.VeryDarkGrey, 0.5f);
+					return new ColorRgba(16, 96, 0);
 			}
 		}
 		public ColorRgba JointErrorColor
@@ -54,9 +54,9 @@ namespace EditorBase.CamViewLayers
 			{
 				float fgLum = this.View.FgColor.GetLuminance();
 				if (fgLum > 0.5f)
-					return ColorRgba.Mix(new ColorRgba(255, 64, 0), ColorRgba.VeryLightGrey, 0.5f);
+					return new ColorRgba(240, 144, 112);
 				else
-					return ColorRgba.Mix(new ColorRgba(255, 64, 0), ColorRgba.VeryDarkGrey, 0.5f);
+					return new ColorRgba(96, 8, 0);
 			}
 		}
 

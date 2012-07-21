@@ -397,15 +397,20 @@ namespace EditorBase.CamViewStates
 				// Remove removed objects
 				foreach (SelObj s in e.Removed.GameObjects.Select(g => new SelGameObj(g) as SelObj)) this.actionObjSel.Remove(s);
 				// Remove objects whichs parents are now added
-				this.actionObjSel.RemoveAll(s => e.Added.GameObjects.Any(o => (s.ActualObject as GameObject).IsChildOf(o)));
+				this.actionObjSel.RemoveAll(s => e.Added.GameObjects.Any(o => this.IsAffectedByParent(s.ActualObject as GameObject, o)));
 				// Add objects whichs parents are not located in the current selection
-				var addedParentFreeGameObj = e.Added.GameObjects.Where(o => !this.allObjSel.Any(s => o.IsChildOf(s.ActualObject as GameObject)));
+				var addedParentFreeGameObj = e.Added.GameObjects.Where(o => !this.allObjSel.Any(s => this.IsAffectedByParent(o, s.ActualObject as GameObject)));
 				this.actionObjSel.AddRange(addedParentFreeGameObj.Select(g => new SelGameObj(g) as SelObj).Where(s => s.HasTransform));
 			}
 
 			this.UpdateSelectionStats();
 			this.OnCursorSpacePosChanged();
 			this.View.LocalGLControl.Invalidate();
+		}
+
+		private bool IsAffectedByParent(GameObject child, GameObject parent)
+		{
+			return child.IsChildOf(parent) && child.Transform != null && parent.Transform != null && !child.Transform.IgnoreParent;
 		}
 
 		HelpInfo IHelpProvider.ProvideHoverHelp(Point localPos, ref bool captured)
