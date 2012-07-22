@@ -221,7 +221,7 @@ namespace EditorBase
 				}
 			}
 			
-			//  Make sure disposed objects are deselected in non-target views
+			//  Make sure disposed objects are deselected in non-target views (locked, etc.)
 			foreach (ObjectInspector v in EditorBasePlugin.Instance.ObjViews)
 			{
 				if (v.EmptySelection) continue;
