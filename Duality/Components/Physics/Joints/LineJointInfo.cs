@@ -11,6 +11,11 @@ using Duality.Resources;
 
 namespace Duality.Components.Physics
 {
+	/// <summary>
+	/// The line joint is also called "wheel joint", because it behaves like the spring of a car tire:
+	/// A body is only allowed to travel on a specific world axis relative to the other one but can rotate
+	/// freely or accelerated by a motor.
+	/// </summary>
 	[Serializable]
 	public sealed class LineJointInfo : JointInfo
 	{
@@ -29,19 +34,19 @@ namespace Duality.Components.Physics
 			get { return true; }
 		}
 		/// <summary>
-		/// [GET / SET] The first RigidBodies local anchor point.
+		/// [GET / SET] The car RigidBodies local anchor point.
 		/// </summary>
 		[EditorHintIncrement(1)]
-		public Vector2 LocalAnchorA
+		public Vector2 CarAnchor
 		{
 			get { return this.localAnchorA; }
 			set { this.localAnchorA = value; this.UpdateJoint(); }
 		}
 		/// <summary>
-		/// [GET / SET] The second RigidBodies local anchor point.
+		/// [GET / SET] The wheel RigidBodies local anchor point.
 		/// </summary>
 		[EditorHintIncrement(1)]
-		public Vector2 LocalAnchorB
+		public Vector2 WheelAnchor
 		{
 			get { return this.localAnchorB; }
 			set { this.localAnchorB = value; this.UpdateJoint(); }
@@ -137,7 +142,7 @@ namespace Duality.Components.Physics
 			j.LocalAnchorA = GetFarseerPoint(this.BodyA, this.localAnchorA);
 			j.LocalXAxis = this.moveAxis;
 			j.MotorEnabled = this.motorEnabled;
-			j.MotorSpeed = -this.motorSpeed / Time.SPFMult;
+			j.MotorSpeed = this.motorSpeed / Time.SPFMult;
 			j.MaxMotorTorque = this.maxMotorTorque / Time.SPFMult;
 			j.DampingRatio = this.dampingRatio;
 			j.Frequency = this.frequency;
@@ -152,6 +157,7 @@ namespace Duality.Components.Physics
 			c.motorSpeed = this.motorSpeed;
 			c.maxMotorTorque = this.maxMotorTorque;
 			c.moveAxis = this.moveAxis;
+			c.motorEnabled = this.motorEnabled;
 			c.dampingRatio = this.dampingRatio;
 			c.frequency = this.frequency;
 		}

@@ -362,13 +362,13 @@ namespace Duality.Components.Physics
 
 			if (joint.BodyA != null)
 			{
-				joint.BodyA.joints.Remove(joint);
+				if (joint.BodyA.joints != null) joint.BodyA.joints.Remove(joint);
 				joint.BodyA.AwakeBody();
 				joint.BodyA = null;
 			}
 			if (joint.BodyB != null)
 			{
-				joint.BodyB.joints.Remove(joint);
+				if (joint.BodyB.joints != null) joint.BodyB.joints.Remove(joint);
 				joint.BodyB.AwakeBody();
 				joint.BodyB = null;
 			}
@@ -382,7 +382,7 @@ namespace Duality.Components.Physics
 		public void AddJoint(JointInfo joint, RigidBody other = null)
 		{
 			if (joint == null) throw new ArgumentNullException("joint");
-			
+
 			if (joint.BodyA != null)		joint.BodyA.RemoveJoint(joint);
 			else if (joint.BodyB != null)	joint.BodyB.RemoveJoint(joint);
 
@@ -418,24 +418,31 @@ namespace Duality.Components.Physics
 		/// <param name="joints"></param>
 		public void SetJoints(IEnumerable<JointInfo> joints)
 		{
-			if (joints == null) throw new ArgumentNullException("joints");
-
-			// Clone joint collection
-			RigidBody[] colliderB = new RigidBody[joints.Count()];
-			JointInfo[] jointClones = new JointInfo[colliderB.Length];
-			int k = 0;
-			foreach (JointInfo joint in joints)
-			{
-				jointClones[k] = joint.Clone();
-				colliderB[k] = joint.BodyA == this ? joint.BodyB : joint.BodyA;
-				k++;
-			}
+			JointInfo[] jointArray = joints != null ? joints.ToArray() : null;
 			
-			// Destroy old joints
-			this.ClearJoints();
+			// Remove joints that are not in the new collection
+			if (this.joints != null)
+			{
+				for (int i = this.joints.Count - 1; i >= 0; i--)
+				{
+					if (jointArray != null && jointArray.Contains(this.joints[i])) continue;
+					this.RemoveJoint(this.joints[i]);
+				}
+			}
 
-			// Add new joints
-			for (int i = 0; i < jointClones.Length; i++) this.AddJoint(jointClones[i], colliderB[i]);
+			// Add joints that are not in the old collection
+			if (jointArray != null)
+			{
+				for (int i = 0; i < jointArray.Length; i++)
+				{
+					if (this.joints != null && this.joints.Contains(jointArray[i])) continue;
+					JointInfo joint = jointArray[i];
+					if (joint.BodyA != null)
+						joint.BodyA.AddJoint(joint, joint.BodyB); // Allow reverse-add.
+					else
+						this.AddJoint(joint, null);
+				}
+			}
 		}
 
 		/// <summary>
@@ -904,10 +911,14 @@ namespace Duality.Components.Physics
 			if (this.shapes != null) c.SetShapes(this.shapes);
 			if (this.joints != null) c.SetJoints(this.joints.Select(j => 
 				{
+					// If there is a clone registered, just return the clone. Don't process a joint twice.
+					if (provider.IsOriginalObject(j)) return provider.GetRegisteredObjectClone(j);
+
 					JointInfo j2 = j.Clone();
-					// Replace collider references with the targets references
 					j2.BodyA = provider.GetRegisteredObjectClone(j.BodyA);
 					j2.BodyB = provider.GetRegisteredObjectClone(j.BodyB);
+					provider.RegisterObjectClone(j, j2);
+
 					return j2;
 				}));
 

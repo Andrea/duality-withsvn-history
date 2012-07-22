@@ -6,16 +6,18 @@
 	-->	??? Ingame GUI & GUI Editor
 
 -->	Dualitor: PerformanceMonitor
+-->	Dualitor: New Project Wizard, Project Templates
 -->	Dualitor: Component Wizard
 -->	Dualitor: Improve User learning curve
 	-->	More Advisor information?
 	-->	"Did you know..?" screen?
 
-	
+
+-->	Bug: Ctrl-Select multiple objects in CamView followed by full deselect?
+
 --> Joints and Joint Editors
 	-->	Create JointInfo classes for all relevant Farseer Joints
 		-->	FixedMouseJoint
-		-->	Line (Visualization)
 		-->	Pulley
 		-->	Gear (auto-select available Revolute- or Prismatic joints)
 	-->	Display dual and single JointInfos in ColliderEditor

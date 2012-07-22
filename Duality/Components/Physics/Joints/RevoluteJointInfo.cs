@@ -165,6 +165,7 @@ namespace Duality.Components.Physics
 			c.localAnchorA = this.localAnchorA;
 			c.motorSpeed = this.motorSpeed;
 			c.maxMotorTorque = this.maxMotorTorque;
+			c.motorEnabled = this.motorEnabled;
 			c.limitEnabled = this.limitEnabled;
 			c.lowerLimit = this.lowerLimit;
 			c.upperLimit = this.upperLimit;

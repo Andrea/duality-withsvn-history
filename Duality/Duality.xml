@@ -4326,6 +4326,20 @@
             <param name="baseObj"></param>
             <returns></returns>
         </member>
+        <member name="M:Duality.Cloning.CloneProvider.IsOriginalObject(System.Object)">
+            <summary>
+            Returns whether the specified object is a registered original / base object.
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Cloning.CloneProvider.IsCloneObject(System.Object)">
+            <summary>
+            Returns whether the specified object is a registered clone object.
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
         <member name="M:Duality.Cloning.CloneProvider.CopyObjectTo``1(``0,``0,System.Reflection.FieldInfo[])">
             <summary>
             Copies the base objects data to the specified target object.
@@ -7433,14 +7447,21 @@
             <returns>-1 to filter, 0 to terminate, fraction to clip the ray for closest hit, 1 to continue</returns>
             </summary>
         </member>
-        <member name="P:Duality.Components.Physics.LineJointInfo.LocalAnchorA">
+        <member name="T:Duality.Components.Physics.LineJointInfo">
             <summary>
-            [GET / SET] The first RigidBodies local anchor point.
+            The line joint is also called "wheel joint", because it behaves like the spring of a car tire:
+            A body is only allowed to travel on a specific world axis relative to the other one but can rotate
+            freely or accelerated by a motor.
             </summary>
         </member>
-        <member name="P:Duality.Components.Physics.LineJointInfo.LocalAnchorB">
+        <member name="P:Duality.Components.Physics.LineJointInfo.CarAnchor">
             <summary>
-            [GET / SET] The second RigidBodies local anchor point.
+            [GET / SET] The car RigidBodies local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.LineJointInfo.WheelAnchor">
+            <summary>
+            [GET / SET] The wheel RigidBodies local anchor point.
             </summary>
         </member>
         <member name="P:Duality.Components.Physics.LineJointInfo.MovementAxis">

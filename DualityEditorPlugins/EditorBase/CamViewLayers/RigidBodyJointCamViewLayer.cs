@@ -104,6 +104,7 @@ namespace EditorBase.CamViewLayers
 			else if (joint is WeldJointInfo)			this.DrawJoint(canvas, joint as WeldJointInfo);
 			else if (joint is RopeJointInfo)			this.DrawJoint(canvas, joint as RopeJointInfo);
 			else if (joint is SliderJointInfo)			this.DrawJoint(canvas, joint as SliderJointInfo);
+			else if (joint is LineJointInfo)			this.DrawJoint(canvas, joint as LineJointInfo);
 		}
 		private void DrawJoint(Canvas canvas, FixedAngleJointInfo joint)
 		{
@@ -294,6 +295,24 @@ namespace EditorBase.CamViewLayers
 			this.DrawLocalDistConstraint(canvas, joint.BodyA, joint.BodyB, joint.LocalAnchorA, joint.LocalAnchorB, joint.MinLength, joint.MaxLength);
 			this.DrawLocalAnchor(canvas, joint.BodyB, joint.LocalAnchorB);
 			this.DrawLocalAnchor(canvas, joint.BodyA, joint.LocalAnchorA);
+		}
+		private void DrawJoint(Canvas canvas, LineJointInfo joint)
+		{
+			Vector2 anchorAToWorld = joint.BodyA.GameObj.Transform.GetWorldPoint(joint.CarAnchor);
+
+			this.DrawWorldPosConstraint(canvas, joint.BodyA, joint.CarAnchor, anchorAToWorld);
+			this.DrawLocalAxisConstraint(canvas, joint.BodyB, joint.BodyA, joint.MovementAxis, joint.WheelAnchor, joint.CarAnchor, -joint.BodyB.BoundRadius * 0.25f, joint.BodyB.BoundRadius * 0.25f);
+			this.DrawLocalAnchor(canvas, joint.BodyA, joint.CarAnchor);
+			this.DrawLocalAnchor(canvas, joint.BodyB, joint.WheelAnchor);
+			
+			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, this.JointColor));
+			this.DrawLocalText(canvas, joint.BodyA, "Car", Vector2.Zero, 0.0f);
+			this.DrawLocalText(canvas, joint.BodyB, "Wheel", Vector2.Zero, 0.0f);
+
+			if (joint.MotorEnabled)
+			{
+				this.DrawLocalAngleMotor(canvas, joint.BodyB, Vector2.Zero, joint.MotorSpeed, joint.MaxMotorTorque, joint.BodyB.BoundRadius * 1.15f);
+			}
 		}
 		
 		private void DrawLocalText(Canvas canvas, RigidBody body, string text, Vector2 pos, float baseAngle)
@@ -799,8 +818,8 @@ namespace EditorBase.CamViewLayers
 			bool infinite = false;
 			if (min > max)
 			{
-				min = -1000000000.0f;
-				max = 1000000000.0f;
+				min = -10000000.0f;
+				max = 10000000.0f;
 				infinite = true;
 			}
 			Vector2 anchorToWorld = body.GameObj.Transform.GetWorldVector(localAnchor);

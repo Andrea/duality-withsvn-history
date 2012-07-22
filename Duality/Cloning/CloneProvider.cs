@@ -110,6 +110,24 @@ namespace Duality.Cloning
 			return default(T);
 		}
 		/// <summary>
+		/// Returns whether the specified object is a registered original / base object.
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		public bool IsOriginalObject(object obj)
+		{
+			return obj != null ? this.objToClone.ContainsKey(obj) : false;
+		}
+		/// <summary>
+		/// Returns whether the specified object is a registered clone object.
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <returns></returns>
+		public bool IsCloneObject(object obj)
+		{
+			return obj != null ? this.objToClone.ContainsValue(obj) : false;
+		}
+		/// <summary>
 		/// Copies the base objects data to the specified target object.
 		/// </summary>
 		/// <param name="baseObj"></param>

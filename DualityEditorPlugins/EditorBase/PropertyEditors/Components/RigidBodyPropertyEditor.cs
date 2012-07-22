@@ -91,7 +91,7 @@ namespace EditorBase.PropertyEditors
 					elementEditor.PropertyName = string.Format("Joints[{0}]", i);
 					elementEditor.Getter = this.CreateJointValueGetter(i);
 					elementEditor.Setter = this.CreateJointValueSetter(i);
-					elementEditor.ParentCollider = valArray;
+					elementEditor.ParentGetter = this.GetValue;
 					if (!this.HasPropertyEditor(this.jointEditors[i])) this.AddPropertyEditor(this.jointEditors[i], i);
 				}
 				else if (this.jointEditors.Count > i)
@@ -153,13 +153,13 @@ namespace EditorBase.PropertyEditors
 
 	public class ColliderJointPropertyEditor : MemberwisePropertyEditor
 	{
-		private	RigidBody[] parentCollider = null;
+		private Func<IEnumerable<object>> parentGetter = null;
 		private PropertyEditor otherColEditor = null;
 
-		public RigidBody[] ParentCollider
+		internal Func<IEnumerable<object>> ParentGetter
 		{
-			get { return this.parentCollider; }
-			internal set { this.parentCollider = value; }
+			get { return this.parentGetter; }
+			set { this.parentGetter = value; }
 		}
 
 		public ColliderJointPropertyEditor()
@@ -230,6 +230,7 @@ namespace EditorBase.PropertyEditors
 			{
 				JointInfo[] targetArray = this.GetValue().Cast<JointInfo>().ToArray();
 				RigidBody[] otherCollider = new RigidBody[targetArray.Length];
+				RigidBody[] parentCollider = this.parentGetter().Cast<RigidBody>().ToArray();
 				for (int i = 0; i < targetArray.Length; i++)
 				{
 					if (targetArray[i] != null)
@@ -246,6 +247,7 @@ namespace EditorBase.PropertyEditors
 			{
 				RigidBody[] valueArray = values.Cast<RigidBody>().ToArray();
 				JointInfo[] targetArray = this.GetValue().Cast<JointInfo>().ToArray();
+				RigidBody[] parentCollider = this.parentGetter().Cast<RigidBody>().ToArray();
 
 				for (int i = 0; i < targetArray.Length; i++)
 				{
