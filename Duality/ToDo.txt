@@ -14,6 +14,7 @@
 
 
 -->	Bug: Ctrl-Select multiple objects in CamView followed by full deselect?
+
 -->	CamViewStates should remember their active layers when switching from and to them.
 	-->	CamViews should also save each states layers
 
@@ -29,7 +30,8 @@
 			-->	Pro: Less problems to deal with, nearly same result
 			-->	Make it so!
 	-->	Loop
-	-->	Bug: Why aren't they properly editable at runtime?
+	-->	Bug: Why aren't they properly editable / creatable at runtime?
+	-->	Bug: Create Polygon at runtime
 
 --> Additional Joints
 	-->	FixedMouseJoint
