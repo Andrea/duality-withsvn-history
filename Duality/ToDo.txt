@@ -19,6 +19,7 @@
 
 -->	Additional Shapes
 	-->	Edge
+		-->	Reimplement adjacency (optional per side) and figure out what it does.
 	-->	Loop
 	-->	Bug: Why aren't they properly editable at runtime?
 
