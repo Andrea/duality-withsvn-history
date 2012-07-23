@@ -817,6 +817,7 @@ namespace Duality.Components.Physics
 				Transform t = this.gameobj.Transform;
 				if (this.bodyType == BodyType.Dynamic)
 				{
+					// The current PhysicsAlpha interpolation probably isn't the best one. Maybe replace later.
 					Vector2 bodyVel = this.body.LinearVelocity;
 					Vector2 bodyPos = this.body.Position - bodyVel * (1.0f - Scene.PhysicsAlpha) * Time.SPFMult;
 					float bodyAngleVel = this.body.AngularVelocity;

@@ -346,6 +346,20 @@ namespace EditorBase.PluginRes {
             }
         }
         
+        public static System.Drawing.Bitmap CursorArrowCreateEdge {
+            get {
+                object obj = ResourceManager.GetObject("CursorArrowCreateEdge", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap CursorArrowCreateLoop {
+            get {
+                object obj = ResourceManager.GetObject("CursorArrowCreateLoop", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         public static System.Drawing.Bitmap CursorArrowCreatePolygon {
             get {
                 object obj = ResourceManager.GetObject("CursorArrowCreatePolygon", resourceCulture);
@@ -370,6 +384,20 @@ namespace EditorBase.PluginRes {
         public static System.Drawing.Bitmap IconCmpCircleCollider {
             get {
                 object obj = ResourceManager.GetObject("IconCmpCircleCollider", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap IconCmpEdgeCollider {
+            get {
+                object obj = ResourceManager.GetObject("IconCmpEdgeCollider", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap IconCmpLoopCollider {
+            get {
+                object obj = ResourceManager.GetObject("IconCmpLoopCollider", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -18,8 +18,8 @@ namespace EditorBase.PropertyEditors
 {
 	public class RigidBodyPropertyEditor : ComponentPropertyEditor
 	{
-		private ColliderJointAddNewPropertyEditor	addJointEditor	= null;
-		private	List<ColliderJointPropertyEditor>	jointEditors	= new List<ColliderJointPropertyEditor>();
+		private RigidBodyJointAddNewPropertyEditor	addJointEditor	= null;
+		private	List<RigidBodyJointPropertyEditor>	jointEditors	= new List<RigidBodyJointPropertyEditor>();
 		
 		public override void ClearContent()
 		{
@@ -71,7 +71,7 @@ namespace EditorBase.PropertyEditors
 				bool matchesAll = valArray.NotNull().All(r => jointType.IsInstanceOfType(r.Joints.ElementAtOrDefault(i)));
 				if (matchesAll)
 				{
-					ColliderJointPropertyEditor elementEditor;
+					RigidBodyJointPropertyEditor elementEditor;
 					if (i < this.jointEditors.Count)
 					{
 						elementEditor = this.jointEditors[i];
@@ -83,7 +83,7 @@ namespace EditorBase.PropertyEditors
 					}
 					else
 					{
-						elementEditor = new ColliderJointPropertyEditor();
+						elementEditor = new RigidBodyJointPropertyEditor();
 						elementEditor.EditedType = jointType;
 						this.ParentGrid.ConfigureEditor(elementEditor);
 						this.jointEditors.Add(elementEditor);
@@ -109,7 +109,7 @@ namespace EditorBase.PropertyEditors
 			// Add "Add joint" editor
 			if (this.addJointEditor == null)
 			{
-				this.addJointEditor = new ColliderJointAddNewPropertyEditor();
+				this.addJointEditor = new RigidBodyJointAddNewPropertyEditor();
 				this.addJointEditor.Getter = this.CreateAddNewJointValueGetter();
 				this.addJointEditor.Setter = v => {};
 				this.ParentGrid.ConfigureEditor(this.addJointEditor);
@@ -151,7 +151,7 @@ namespace EditorBase.PropertyEditors
 		}
 	}
 
-	public class ColliderJointPropertyEditor : MemberwisePropertyEditor
+	public class RigidBodyJointPropertyEditor : MemberwisePropertyEditor
 	{
 		private Func<IEnumerable<object>> parentGetter = null;
 		private PropertyEditor otherColEditor = null;
@@ -162,7 +162,7 @@ namespace EditorBase.PropertyEditors
 			set { this.parentGetter = value; }
 		}
 
-		public ColliderJointPropertyEditor()
+		public RigidBodyJointPropertyEditor()
 		{
 			this.EditedType = typeof(JointInfo);
 			this.HeaderStyle = AdamsLair.PropertyGrid.Renderer.GroupHeaderStyle.SmoothSunken;
@@ -260,7 +260,7 @@ namespace EditorBase.PropertyEditors
 		}
 	}
 
-	public class ColliderJointAddNewPropertyEditor : ObjectSelectorPropertyEditor
+	public class RigidBodyJointAddNewPropertyEditor : ObjectSelectorPropertyEditor
 	{
 		private RigidBody[]	targetArray	= null;
 
@@ -270,7 +270,7 @@ namespace EditorBase.PropertyEditors
 			set { this.targetArray = value; }
 		}
 
-		public ColliderJointAddNewPropertyEditor()
+		public RigidBodyJointAddNewPropertyEditor()
 		{
 			this.EditedType = typeof(Type);
 			this.ButtonIcon = AdamsLair.PropertyGrid.EmbeddedResources.Resources.ImageAdd;
@@ -281,7 +281,7 @@ namespace EditorBase.PropertyEditors
 			this.Items = 
 				from t in DualityApp.GetAvailDualityTypes(typeof(JointInfo))
 				where !t.IsAbstract
-				select new ObjectItem(t, t.Name);
+				select new ObjectItem(t, t.Name.Replace("JointInfo", "Joint"));
 		}
 		protected override void OnReadOnlyChanged()
 		{

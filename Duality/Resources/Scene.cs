@@ -25,6 +25,7 @@ namespace Duality.Resources
 		/// A Scene resources file extension.
 		/// </summary>
 		public new const string FileExt = ".Scene" + Resource.FileExt;
+		private const float PhysicsAccStart = Time.MsPFMult;
 
 		private	static	World				physicsWorld	= new World(Vector2.Zero);
 		private	static	float				physicsAcc		= 0.0f;
@@ -115,7 +116,7 @@ namespace Duality.Resources
 			{
 				foreach (GameObject o in current.ResWeak.ActiveObjects) o.OnDeactivate();
 				physicsWorld.Clear();
-				physicsAcc = 0.0f;
+				physicsAcc = PhysicsAccStart;
 				physicsTime = 0.0f;
 			}
 		}
@@ -123,7 +124,7 @@ namespace Duality.Resources
 		{
 			if (current.ResWeak != null)
 			{
-				physicsAcc = 0.0f;
+				physicsAcc = PhysicsAccStart;
 				physicsTime = 0.0f;
 				physicsWorld.Gravity = PhysicsConvert.ToPhysicalUnit(current.ResWeak.GlobalGravity / Time.SPFMult);
 				foreach (GameObject o in current.ResWeak.ActiveObjects) o.OnActivate();
@@ -285,7 +286,7 @@ namespace Duality.Resources
 			{
 				FarseerPhysics.Settings.VelocityThreshold = PhysicsConvert.ToPhysicalUnit(Time.TimeMult * DualityApp.AppData.PhysicsVelocityThreshold / Time.SPFMult);
 				physicsWorld.Step(Time.TimeMult * Time.SPFMult);
-				physicsAcc = 0.0f;
+				physicsAcc = PhysicsAccStart;
 				physicsTime = 0.0f;
 			}
 			Performance.timeUpdatePhysics.EndMeasure();
@@ -310,7 +311,7 @@ namespace Duality.Resources
 		{
 			if (!this.IsCurrent) throw new InvalidOperationException("Can't update non-current Scene!");
 			
-			physicsAcc = 0.0f;
+			physicsAcc = PhysicsAccStart;
 			physicsTime = 0.0f;
 
 			Performance.timeUpdateScene.BeginMeasure();

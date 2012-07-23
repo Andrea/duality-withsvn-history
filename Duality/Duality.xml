@@ -13627,5 +13627,31 @@
             [GET / SET] The maximum angular impulse to apply to the RigidBody. A negative value equals infinity.
             </summary>
         </member>
+        <member name="T:Duality.Components.Physics.EdgeShapeInfo">
+            <summary>
+            Describes a single line-segment (edge) of a a <see cref="T:Duality.Components.Physics.RigidBody">Rigidbodies</see> shape. 
+            The edge is double-sided, so it doesn't matter in which order the vertices are defined.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.EdgeShapeInfo.VertexStart">
+            <summary>
+            [GET / SET] The first edge vertex.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.EdgeShapeInfo.VertexEnd">
+            <summary>
+            [GET / SET] The last edge vertex.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Physics.LoopShapeInfo">
+            <summary>
+            Describes a double-sided edge loop (outline) in a <see cref="T:Duality.Components.Physics.RigidBody">RigidBodies</see> shape.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.LoopShapeInfo.Vertices">
+            <summary>
+            [GET / SET] The edge loops vertices.
+            </summary>
+        </member>
     </members>
 </doc>

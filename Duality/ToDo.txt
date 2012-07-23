@@ -14,14 +14,18 @@
 
 
 -->	Bug: Ctrl-Select multiple objects in CamView followed by full deselect?
+-->	CamViewStates should remember their active layers when switching from and to them.
+	-->	CamViews should also save each states layers
 
---> Joints and Joint Editors
-	-->	Create JointInfo classes for all relevant Farseer Joints
-		-->	FixedMouseJoint
-		-->	Pulley
-		-->	Gear (auto-select available Revolute- or Prismatic joints)
-	-->	Display dual and single JointInfos in ColliderEditor
-	-->	Make some of them editable there?
+-->	Additional Shapes
+	-->	Edge
+	-->	Loop
+	-->	Bug: Why aren't they properly editable at runtime?
+
+--> Additional Joints
+	-->	FixedMouseJoint
+	-->	Pulley
+	-->	Gear (auto-select available Revolute- or Prismatic joints)
 
 --> Reconsider "events" in Duality.
 	-->	Are they really necessary?

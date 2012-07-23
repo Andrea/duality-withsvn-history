@@ -214,6 +214,12 @@
   <data name="CursorArrowCreateCircle" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>curArrowCreateCircle.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="CursorArrowCreateEdge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>curArrowCreateEdge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CursorArrowCreateLoop" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>curArrowCreateLoop.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="CursorArrowCreatePolygon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>curArrowCreatePolygon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -225,6 +231,12 @@
   </data>
   <data name="IconCmpCircleCollider" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>iconCmpCircleCollider.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="IconCmpEdgeCollider" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>iconCmpEdgeCollider.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="IconCmpLoopCollider" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>iconCmpLoopCollider.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="IconCmpRectCollider" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>iconCmpRectCollider.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

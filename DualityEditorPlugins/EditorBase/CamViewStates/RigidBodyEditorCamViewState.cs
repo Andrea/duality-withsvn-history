@@ -23,12 +23,16 @@ namespace EditorBase.CamViewStates
 	{
 		public static readonly Cursor ArrowCreateCircle		= CursorHelper.CreateCursor(PluginRes.EditorBaseRes.CursorArrowCreateCircle, 0, 0);
 		public static readonly Cursor ArrowCreatePolygon	= CursorHelper.CreateCursor(PluginRes.EditorBaseRes.CursorArrowCreatePolygon, 0, 0);
+		public static readonly Cursor ArrowCreateEdge		= CursorHelper.CreateCursor(PluginRes.EditorBaseRes.CursorArrowCreateEdge, 0, 0);
+		public static readonly Cursor ArrowCreateLoop		= CursorHelper.CreateCursor(PluginRes.EditorBaseRes.CursorArrowCreateLoop, 0, 0);
 
 		private enum CursorState
 		{
 			Normal,
 			CreateCircle,
-			CreatePolygon
+			CreatePolygon,
+			CreateEdge,
+			CreateLoop
 		}
 
 		private	CursorState			mouseState			= CursorState.Normal;
@@ -37,6 +41,8 @@ namespace EditorBase.CamViewStates
 		private	ToolStrip			toolstrip			= null;
 		private	ToolStripButton		toolCreateCircle	= null;
 		private	ToolStripButton		toolCreatePoly		= null;
+		private	ToolStripButton		toolCreateEdge		= null;
+		private	ToolStripButton		toolCreateLoop		= null;
 
 		public override string StateName
 		{
@@ -65,6 +71,17 @@ namespace EditorBase.CamViewStates
 			this.toolCreatePoly.DisplayStyle = ToolStripItemDisplayStyle.Image;
 			this.toolCreatePoly.AutoToolTip = true;
 			this.toolstrip.Items.Add(this.toolCreatePoly);
+
+			this.toolCreateEdge = new ToolStripButton("Create Edge Shape (E)", EditorBase.PluginRes.EditorBaseRes.IconCmpEdgeCollider, this.toolCreateEdge_Clicked);
+			this.toolCreateEdge.DisplayStyle = ToolStripItemDisplayStyle.Image;
+			this.toolCreateEdge.AutoToolTip = true;
+			this.toolstrip.Items.Add(this.toolCreateEdge);
+
+			this.toolCreateLoop = new ToolStripButton("Create Loop Shape (L)", EditorBase.PluginRes.EditorBaseRes.IconCmpLoopCollider, this.toolCreateLoop_Clicked);
+			this.toolCreateLoop.DisplayStyle = ToolStripItemDisplayStyle.Image;
+			this.toolCreateLoop.AutoToolTip = true;
+			this.toolstrip.Items.Add(this.toolCreateLoop);
+
 			this.toolstrip.Renderer = new DualityEditor.Controls.ToolStrip.DualitorToolStripProfessionalRenderer();
 			this.toolstrip.BackColor = Color.FromArgb(212, 212, 212);
 
@@ -142,13 +159,14 @@ namespace EditorBase.CamViewStates
 		protected override void OnCursorSpacePosChanged()
 		{
 			base.OnCursorSpacePosChanged();
+
+			Point mouseLoc = this.View.LocalGLControl.PointToClient(Cursor.Position);
+			Transform selTransform = this.selectedCollider != null && this.selectedCollider.GameObj != null ? this.selectedCollider.GameObj.Transform : null;
+			Vector3 spaceCoord = selTransform != null ? this.View.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, selTransform.Pos.Z)) : Vector3.Zero;
+			Vector2 localPos = selTransform != null ? selTransform.GetLocalPoint(spaceCoord).Xy : Vector2.Zero;
+
 			if (this.mouseState == CursorState.CreatePolygon && this.allObjSel.Any(sel => sel is SelPolyShape))
 			{
-				Point mouseLoc = this.View.LocalGLControl.PointToClient(Cursor.Position);
-				Transform selTransform = this.selectedCollider.GameObj.Transform;
-				Vector3 spaceCoord = this.View.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, selTransform.Pos.Z));
-				Vector2 localPos = selTransform.GetLocalPoint(spaceCoord).Xy;
-
 				SelPolyShape selPolyShape = this.allObjSel.OfType<SelPolyShape>().First();
 				PolyShapeInfo polyShape = selPolyShape.ActualObject as PolyShapeInfo;
 				List<Vector2> vertices = polyShape.Vertices.ToList();
@@ -162,12 +180,46 @@ namespace EditorBase.CamViewStates
 					new ObjectSelection(this.selectedCollider),
 					ReflectionInfo.Property_RigidBody_Shapes);
 			}
+			else if (this.mouseState == CursorState.CreateEdge && this.allObjSel.Any(sel => sel is SelEdgeShape))
+			{
+				SelEdgeShape selEdgeShape = this.allObjSel.OfType<SelEdgeShape>().First();
+				EdgeShapeInfo edgeShape = selEdgeShape.ActualObject as EdgeShapeInfo;
+				
+				switch (this.createPolyIndex)
+				{
+					case 0:	edgeShape.VertexStart = localPos;	break;
+					case 1:	edgeShape.VertexEnd = localPos;		break;
+				}
+
+				selEdgeShape.UpdateEdgeStats();
+
+				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
+					new ObjectSelection(this.selectedCollider),
+					ReflectionInfo.Property_RigidBody_Shapes);
+			}
+			else if (this.mouseState == CursorState.CreateLoop && this.allObjSel.Any(sel => sel is SelLoopShape))
+			{
+				SelLoopShape selPolyShape = this.allObjSel.OfType<SelLoopShape>().First();
+				LoopShapeInfo polyShape = selPolyShape.ActualObject as LoopShapeInfo;
+				List<Vector2> vertices = polyShape.Vertices.ToList();
+
+				vertices[this.createPolyIndex] = localPos;
+
+				polyShape.Vertices = vertices.ToArray();
+				selPolyShape.UpdateLoopStats();
+
+				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
+					new ObjectSelection(this.selectedCollider),
+					ReflectionInfo.Property_RigidBody_Shapes);
+			}
 		}
 
 		protected void UpdateToolbar()
 		{
 			this.toolCreateCircle.Enabled = this.selectedCollider != null && this.mouseState == CursorState.Normal;
 			this.toolCreatePoly.Enabled = this.toolCreateCircle.Enabled;
+			this.toolCreateEdge.Enabled = this.toolCreateCircle.Enabled;
+			this.toolCreateLoop.Enabled = this.toolCreateCircle.Enabled;
 		}
 
 		public override CamViewState.SelObj PickSelObjAt(int x, int y)
@@ -185,7 +237,10 @@ namespace EditorBase.CamViewStates
 			{
 				Vector3 worldCoord = this.View.GetSpaceCoord(new Vector3(x, y, c.GameObj.Transform.Pos.Z));
 
-				pickedShape = c.PickShape(worldCoord.Xy);
+				// Do a physical picking operation
+				pickedShape = this.PickShape(c, worldCoord.Xy);
+
+				// Shape picked.
 				if (pickedShape != null)
 				{
 					pickedCollider = c;
@@ -216,7 +271,7 @@ namespace EditorBase.CamViewStates
 			{
 				Vector3 worldCoord = this.View.GetSpaceCoord(new Vector3(x, y, c.GameObj.Transform.Pos.Z));
 				float scale = this.View.GetScaleAtZ(c.GameObj.Transform.Pos.Z);
-				pickedShape = c.PickShapes(worldCoord.Xy, new Vector2(w / scale, h / scale)).FirstOrDefault();
+				pickedShape = this.PickShapes(c, worldCoord.Xy, new Vector2(w / scale, h / scale)).FirstOrDefault();
 				if (pickedShape != null)
 				{
 					pickedCollider = c;
@@ -231,8 +286,124 @@ namespace EditorBase.CamViewStates
 			{
 				Vector3 worldCoord = this.View.GetSpaceCoord(new Vector3(x, y, pickedCollider.GameObj.Transform.Pos.Z));
 				float scale = this.View.GetScaleAtZ(pickedCollider.GameObj.Transform.Pos.Z);
-				List<ShapeInfo> picked = pickedCollider.PickShapes(worldCoord.Xy, new Vector2(w / scale, h / scale));
+				List<ShapeInfo> picked = this.PickShapes(pickedCollider, worldCoord.Xy, new Vector2(w / scale, h / scale));
 				if (picked.Count > 0) result.AddRange(picked.Select(s => SelShape.Create(s) as SelObj));
+			}
+
+			return result;
+		}
+
+		private ShapeInfo PickShape(RigidBody body, Vector2 worldCoord)
+		{
+			// Special case for EdgeShapes, because they are by definition unpickable
+			foreach (EdgeShapeInfo edge in body.Shapes.OfType<EdgeShapeInfo>())
+			{
+				Vector2 worldV1 = body.GameObj.Transform.GetWorldPoint(edge.VertexStart);
+				Vector2 worldV2 = body.GameObj.Transform.GetWorldPoint(edge.VertexEnd);
+				float dist = MathF.PointLineDistance(worldCoord.X, worldCoord.Y, worldV1.X, worldV1.Y, worldV2.X, worldV2.Y);
+				if (dist < 5.0f) return edge;
+			}
+
+			// Special case for LoopShapes, because they are by definition unpickable
+			foreach (LoopShapeInfo loop in body.Shapes.OfType<LoopShapeInfo>())
+			{
+				for (int i = 0; i < loop.Vertices.Length; i++)
+				{
+					Vector2 worldV1 = body.GameObj.Transform.GetWorldPoint(loop.Vertices[i]);
+					Vector2 worldV2 = body.GameObj.Transform.GetWorldPoint(loop.Vertices[(i + 1) % loop.Vertices.Length]);
+					float dist = MathF.PointLineDistance(worldCoord.X, worldCoord.Y, worldV1.X, worldV1.Y, worldV2.X, worldV2.Y);
+					if (dist < 5.0f) return loop;
+				}
+			}
+
+			// Do a physical picking operation
+			return body.PickShape(worldCoord);
+		}
+		private List<ShapeInfo> PickShapes(RigidBody body, Vector2 worldCoord, Vector2 worldSize)
+		{
+			Rect worldRect = new Rect(worldCoord.X, worldCoord.Y, worldSize.X, worldSize.Y);
+
+			// Do a physical picking operation
+			List<ShapeInfo> result = body.PickShapes(worldCoord, worldSize);
+
+			// Special case for EdgeShapes, because they are by definition unpickable
+			foreach (EdgeShapeInfo edge in body.Shapes.OfType<EdgeShapeInfo>())
+			{
+				Vector2 worldV1 = body.GameObj.Transform.GetWorldPoint(edge.VertexStart);
+				Vector2 worldV2 = body.GameObj.Transform.GetWorldPoint(edge.VertexEnd);
+				bool hit = false;
+				hit = hit || MathF.LinesCross(
+					worldRect.TopLeft.X, 
+					worldRect.TopLeft.Y, 
+					worldRect.TopRight.X, 
+					worldRect.TopRight.Y, 
+					worldV1.X, worldV1.Y, worldV2.X, worldV2.Y);
+				hit = hit || MathF.LinesCross(
+					worldRect.TopLeft.X, 
+					worldRect.TopLeft.Y, 
+					worldRect.BottomLeft.X, 
+					worldRect.BottomLeft.Y, 
+					worldV1.X, worldV1.Y, worldV2.X, worldV2.Y);
+				hit = hit || MathF.LinesCross(
+					worldRect.BottomRight.X, 
+					worldRect.BottomRight.Y, 
+					worldRect.TopRight.X, 
+					worldRect.TopRight.Y, 
+					worldV1.X, worldV1.Y, worldV2.X, worldV2.Y);
+				hit = hit || MathF.LinesCross(
+					worldRect.BottomRight.X, 
+					worldRect.BottomRight.Y, 
+					worldRect.BottomLeft.X, 
+					worldRect.BottomLeft.Y, 
+					worldV1.X, worldV1.Y, worldV2.X, worldV2.Y);
+				hit = hit || worldRect.Contains(worldV1) || worldRect.Contains(worldV2);
+				if (hit)
+				{
+					result.Add(edge);
+					continue;
+				}
+			}
+
+			// Special case for LoopShapes, because they are by definition unpickable
+			foreach (LoopShapeInfo loop in body.Shapes.OfType<LoopShapeInfo>())
+			{
+				bool hit = false;
+				for (int i = 0; i < loop.Vertices.Length; i++)
+				{
+					Vector2 worldV1 = body.GameObj.Transform.GetWorldPoint(loop.Vertices[i]);
+					Vector2 worldV2 = body.GameObj.Transform.GetWorldPoint(loop.Vertices[(i + 1) % loop.Vertices.Length]);
+					hit = hit || MathF.LinesCross(
+						worldRect.TopLeft.X, 
+						worldRect.TopLeft.Y, 
+						worldRect.TopRight.X, 
+						worldRect.TopRight.Y, 
+						worldV1.X, worldV1.Y, worldV2.X, worldV2.Y);
+					hit = hit || MathF.LinesCross(
+						worldRect.TopLeft.X, 
+						worldRect.TopLeft.Y, 
+						worldRect.BottomLeft.X, 
+						worldRect.BottomLeft.Y, 
+						worldV1.X, worldV1.Y, worldV2.X, worldV2.Y);
+					hit = hit || MathF.LinesCross(
+						worldRect.BottomRight.X, 
+						worldRect.BottomRight.Y, 
+						worldRect.TopRight.X, 
+						worldRect.TopRight.Y, 
+						worldV1.X, worldV1.Y, worldV2.X, worldV2.Y);
+					hit = hit || MathF.LinesCross(
+						worldRect.BottomRight.X, 
+						worldRect.BottomRight.Y, 
+						worldRect.BottomLeft.X, 
+						worldRect.BottomLeft.Y, 
+						worldV1.X, worldV1.Y, worldV2.X, worldV2.Y);
+					hit = hit || worldRect.Contains(worldV1) || worldRect.Contains(worldV2);
+					if (hit) break;
+				}
+				if (hit)
+				{
+					result.Add(loop);
+					continue;
+				}
 			}
 
 			return result;
@@ -305,7 +476,14 @@ namespace EditorBase.CamViewStates
 			this.mouseState = state;
 			this.createPolyIndex = 0;
 			this.MouseActionAllowed = false;
-			this.View.LocalGLControl.Cursor = state == CursorState.CreateCircle ? ArrowCreateCircle : ArrowCreatePolygon;
+			switch (state)
+			{
+				default:
+				case CursorState.CreatePolygon:	this.View.LocalGLControl.Cursor = ArrowCreatePolygon;	break;
+				case CursorState.CreateEdge:	this.View.LocalGLControl.Cursor = ArrowCreateEdge;		break;
+				case CursorState.CreateLoop:	this.View.LocalGLControl.Cursor = ArrowCreateLoop;		break;
+				case CursorState.CreateCircle:	this.View.LocalGLControl.Cursor = ArrowCreateCircle;	break;
+			}
 			this.View.LocalGLControl.MouseDown += this.LocalGLControl_MouseDown;
 			this.UpdateToolbar();
 			this.View.LocalGLControl.Invalidate();
@@ -353,8 +531,9 @@ namespace EditorBase.CamViewStates
 					EditorBasePlugin.Instance.EditorForm.Deselect(this, ObjectSelection.Category.Other);
 				else
 				{
-					foreach (SelPolyShape sps in this.allObjSel.OfType<SelPolyShape>())
-						sps.UpdatePolyStats();
+					foreach (SelPolyShape sps in this.allObjSel.OfType<SelPolyShape>()) sps.UpdatePolyStats();
+					foreach (SelEdgeShape sps in this.allObjSel.OfType<SelEdgeShape>()) sps.UpdateEdgeStats();
+					foreach (SelLoopShape sps in this.allObjSel.OfType<SelLoopShape>()) sps.UpdateLoopStats();
 					this.UpdateSelectionStats();
 				}
 			}
@@ -396,6 +575,16 @@ namespace EditorBase.CamViewStates
 			if (this.selectedCollider == null) return;
 			this.EnterCursorState(CursorState.CreatePolygon);
 		}
+		private void toolCreateEdge_Clicked(object sender, EventArgs e)
+		{
+			if (this.selectedCollider == null) return;
+			this.EnterCursorState(CursorState.CreateEdge);
+		}
+		private void toolCreateLoop_Clicked(object sender, EventArgs e)
+		{
+			if (this.selectedCollider == null) return;
+			this.EnterCursorState(CursorState.CreateLoop);
+		}
 		
 		private void LocalGLControl_KeyDown(object sender, KeyEventArgs e)
 		{
@@ -405,18 +594,23 @@ namespace EditorBase.CamViewStates
 					this.toolCreateCircle_Clicked(this, EventArgs.Empty);
 				else if (e.KeyCode == Keys.P)
 					this.toolCreatePoly_Clicked(this, EventArgs.Empty);
+				else if (e.KeyCode == Keys.E)
+					this.toolCreateEdge_Clicked(this, EventArgs.Empty);
+				else if (e.KeyCode == Keys.L)
+					this.toolCreateLoop_Clicked(this, EventArgs.Empty);
 			}
 		}
 		private void LocalGLControl_MouseDown(object sender, MouseEventArgs e)
 		{
+			Transform selTransform = this.selectedCollider.GameObj.Transform;
+			Vector3 spaceCoord = this.View.GetSpaceCoord(new Vector3(e.X, e.Y, selTransform.Pos.Z));
+			Vector2 localPos = selTransform.GetLocalPoint(spaceCoord).Xy;
+
 			if (this.mouseState == CursorState.CreateCircle)
 			{
+				#region CreateCircle
 				if (e.Button == MouseButtons.Left)
 				{
-					Transform selTransform = this.selectedCollider.GameObj.Transform;
-					Vector3 spaceCoord = this.View.GetSpaceCoord(new Vector3(e.X, e.Y, selTransform.Pos.Z));
-					Vector2 localPos = selTransform.GetLocalPoint(spaceCoord).Xy;
-
 					CircleShapeInfo newShape = new CircleShapeInfo(16.0f, localPos, 1.0f);
 					this.selectedCollider.AddShape(newShape);
 
@@ -432,15 +626,13 @@ namespace EditorBase.CamViewStates
 				{
 					this.LeaveCursorState();
 				}
+				#endregion
 			}
 			else if (this.mouseState == CursorState.CreatePolygon)
 			{
+				#region CreatePolygon
 				if (e.Button == MouseButtons.Left)
 				{
-					Transform selTransform = this.selectedCollider.GameObj.Transform;
-					Vector3 spaceCoord = this.View.GetSpaceCoord(new Vector3(e.X, e.Y, selTransform.Pos.Z));
-					Vector2 localPos = selTransform.GetLocalPoint(spaceCoord).Xy;
-
 					bool success = false;
 					if (!this.allObjSel.Any(sel => sel is SelPolyShape))
 					{
@@ -501,6 +693,132 @@ namespace EditorBase.CamViewStates
 
 					this.LeaveCursorState();
 				}
+				#endregion
+			}
+			else if (this.mouseState == CursorState.CreateEdge)
+			{
+				#region CreateEdge
+				if (e.Button == MouseButtons.Left)
+				{
+					bool success = false;
+					if (!this.allObjSel.Any(sel => sel is SelEdgeShape))
+					{
+						EdgeShapeInfo newShape = new EdgeShapeInfo(localPos, localPos + Vector2.UnitX);
+
+						this.selectedCollider.AddShape(newShape);
+						this.SelectObjects(new[] { SelShape.Create(newShape) });
+						success = true;
+					}
+					else
+					{
+						SelEdgeShape selEdgeShape = this.allObjSel.OfType<SelEdgeShape>().First();
+						EdgeShapeInfo edgeShape = selEdgeShape.ActualObject as EdgeShapeInfo;
+						
+						switch (this.createPolyIndex)
+						{
+							case 0:	edgeShape.VertexStart = localPos;	break;
+							case 1:	edgeShape.VertexEnd = localPos;		break;
+						}
+
+						selEdgeShape.UpdateEdgeStats();
+						success = true;
+					}
+
+					if (success)
+					{
+						this.createPolyIndex++;
+						EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
+							new ObjectSelection(this.selectedCollider),
+							ReflectionInfo.Property_RigidBody_Shapes);
+
+						if (this.createPolyIndex >= 2)
+							this.LeaveCursorState();
+					}
+				}
+				else if (e.Button == MouseButtons.Right)
+				{
+					if (this.allObjSel.Any(sel => sel is SelEdgeShape))
+					{
+						SelEdgeShape selEdgeShape = this.allObjSel.OfType<SelEdgeShape>().First();
+						EdgeShapeInfo edgeShape = selEdgeShape.ActualObject as EdgeShapeInfo;
+
+						if (this.createPolyIndex < 1)
+							this.DeleteObjects(new SelEdgeShape[] { selEdgeShape });
+						else
+							selEdgeShape.UpdateEdgeStats();
+
+						EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
+							new ObjectSelection(this.selectedCollider),
+							ReflectionInfo.Property_RigidBody_Shapes);
+					}
+
+					this.LeaveCursorState();
+				}
+				#endregion
+			}
+			else if (this.mouseState == CursorState.CreateLoop)
+			{
+				#region CreateLoop
+				if (e.Button == MouseButtons.Left)
+				{
+					bool success = false;
+					if (!this.allObjSel.Any(sel => sel is SelLoopShape))
+					{
+						LoopShapeInfo newShape = new LoopShapeInfo(new Vector2[] { localPos, localPos + Vector2.UnitX, localPos + Vector2.One });
+						this.selectedCollider.AddShape(newShape);
+						this.SelectObjects(new[] { SelShape.Create(newShape) });
+						success = true;
+					}
+					else
+					{
+						SelLoopShape selPolyShape = this.allObjSel.OfType<SelLoopShape>().First();
+						LoopShapeInfo polyShape = selPolyShape.ActualObject as LoopShapeInfo;
+						List<Vector2> vertices = polyShape.Vertices.ToList();
+
+						vertices[this.createPolyIndex] = localPos;
+						if (this.createPolyIndex >= vertices.Count - 1)
+							vertices.Add(localPos);
+
+						polyShape.Vertices = vertices.ToArray();
+						selPolyShape.UpdateLoopStats();
+						success = true;
+					}
+
+					if (success)
+					{
+						this.createPolyIndex++;
+						EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
+							new ObjectSelection(this.selectedCollider),
+							ReflectionInfo.Property_RigidBody_Shapes);
+					}
+				}
+				else if (e.Button == MouseButtons.Right)
+				{
+					if (this.allObjSel.Any(sel => sel is SelLoopShape))
+					{
+						SelLoopShape selPolyShape = this.allObjSel.OfType<SelLoopShape>().First();
+						LoopShapeInfo polyShape = selPolyShape.ActualObject as LoopShapeInfo;
+						List<Vector2> vertices = polyShape.Vertices.ToList();
+
+						vertices.RemoveAt(this.createPolyIndex);
+						if (vertices.Count < 3 || this.createPolyIndex < 2)
+						{
+							this.DeleteObjects(new SelLoopShape[] { selPolyShape });
+						}
+						else
+						{
+							polyShape.Vertices = vertices.ToArray();
+							selPolyShape.UpdateLoopStats();
+						}
+
+						EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
+							new ObjectSelection(this.selectedCollider),
+							ReflectionInfo.Property_RigidBody_Shapes);
+					}
+
+					this.LeaveCursorState();
+				}
+				#endregion
 			}
 		}
 	}

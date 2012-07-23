@@ -199,6 +199,8 @@
     <None Include="PluginRes\AddScene.png" />
     <None Include="PluginRes\curArrowCreateCircle.png" />
     <None Include="PluginRes\curArrowCreatePolygon.png" />
+    <None Include="PluginRes\curArrowCreateEdge.png" />
+    <None Include="PluginRes\curArrowCreateLoop.png" />
     <Content Include="PluginRes\eye.ico" />
     <None Include="PluginRes\iconResDrawTechnique.png" />
     <None Include="PluginRes\iconResFragmentShader.png" />
@@ -240,6 +242,8 @@
     <None Include="PluginRes\picture_empty.png" />
     <None Include="PluginRes\lock.png" />
     <None Include="PluginRes\layers.png" />
+    <None Include="PluginRes\iconCmpEdgeCollider.png" />
+    <None Include="PluginRes\iconCmpLoopCollider.png" />
     <Content Include="PluginRes\projectview.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

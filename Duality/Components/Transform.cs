@@ -746,7 +746,7 @@ namespace Duality.Components
 					this.lastPosAbs = this.lastPos;
 					this.scaleAbs = this.scale;
 				}
-				else if (this.ignoreParent && DualityApp.ExecContext != DualityApp.ExecutionContext.Editor)
+				else if (this.ignoreParent)
 				{
 					// If there is an external updater, ignore scene graph relations and just keep relative data updated.
 					this.UpdateRel();
@@ -782,7 +782,7 @@ namespace Duality.Components
 				{
 					Transform t = obj.Transform;
 					if (t == null) continue;
-					if (!t.ignoreParent || DualityApp.ExecContext == DualityApp.ExecutionContext.Editor)
+					if (!t.ignoreParent)
 					{
 						t.UpdateAbs();
 
