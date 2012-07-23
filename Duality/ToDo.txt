@@ -20,6 +20,10 @@
 -->	Additional Shapes
 	-->	Edge
 		-->	Reimplement adjacency (optional per side) and figure out what it does.
+		-->	Make edges actually automatically generated sequences of edges with N shapes that are treated as one?
+			-->	Pro: No public adjacency, usability, etc.
+			-->	Take care of collision events, need to convert relative position / normal / etc. info
+			-->	Is that even possible?
 	-->	Loop
 	-->	Bug: Why aren't they properly editable at runtime?
 
