@@ -24,6 +24,10 @@
 			-->	Pro: No public adjacency, usability, etc.
 			-->	Take care of collision events, need to convert relative position / normal / etc. info
 			-->	Is that even possible?
+		-->	Cut out edges for now altogether?
+			-->	Pro: Can do the same stuff with Loops actually
+			-->	Pro: Less problems to deal with, nearly same result
+			-->	Make it so!
 	-->	Loop
 	-->	Bug: Why aren't they properly editable at runtime?
 
