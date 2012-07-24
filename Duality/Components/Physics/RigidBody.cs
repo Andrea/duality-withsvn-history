@@ -17,7 +17,7 @@ namespace Duality.Components.Physics
 	/// </summary>
 	[Serializable]
 	[RequiredComponent(typeof(Transform))]
-	public partial class RigidBody : Component, ICmpInitializable, ICmpUpdatable
+	public partial class RigidBody : Component, ICmpInitializable, ICmpUpdatable, ICmpEditorUpdatable
 	{
 		/// <summary>
 		/// The type of a <see cref="RigidBody">Colliders</see> physical body.
@@ -73,9 +73,11 @@ namespace Duality.Components.Physics
 		private	Category	colWith			= Category.All;
 		private	List<ShapeInfo>	shapes		= null;
 		private	List<JointInfo>	joints		= null;
-		[NonSerialized]	private	bool			initialized	= false;
-		[NonSerialized]	private	Body			body		= null;
-		[NonSerialized]	private	List<ColEvent>	eventBuffer	= new List<ColEvent>();
+		[NonSerialized]	private	bool			initialized		= false;
+		[NonSerialized]	private	bool			schedUpdateBody	= false;
+		[NonSerialized]	private	bool			isUpdatingBody	= false;
+		[NonSerialized]	private	Body			body			= null;
+		[NonSerialized]	private	List<ColEvent>	eventBuffer		= new List<ColEvent>();
 
 		internal Body PhysicsBody
 		{
@@ -89,7 +91,11 @@ namespace Duality.Components.Physics
 			get { return this.bodyType; }
 			set 
 			{
-				if (this.body != null) this.body.BodyType = (value == BodyType.Static ? FarseerPhysics.Dynamics.BodyType.Static : FarseerPhysics.Dynamics.BodyType.Dynamic);
+				if (this.body != null)
+				{
+					this.body.BodyType = (value == BodyType.Static ? FarseerPhysics.Dynamics.BodyType.Static : FarseerPhysics.Dynamics.BodyType.Dynamic);
+					this.FlagBodyShape();
+				}
 				this.bodyType = value;
 			}
 		}
@@ -241,6 +247,18 @@ namespace Duality.Components.Physics
 				return boundRect.Transform(scale).BoundingRadius;
 			}
 		}
+		/// <summary>
+		/// [GET] Whether the body is currently awake i.e. actively simulated.
+		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
+		public bool IsAwake
+		{
+			get { return this.body != null && this.body.Awake; }
+		}
+		internal bool IsFlaggedForSync
+		{
+			get { return this.schedUpdateBody; }
+		}
 
 		public RigidBody()
 		{
@@ -264,15 +282,7 @@ namespace Duality.Components.Physics
 			this.shapes.Add(shape);
 			shape.Parent = this;
 
-			if (this.body != null)
-			{
-				bool wasEnabled = this.body.Enabled;
-				if (wasEnabled) this.body.Enabled = false;
-
-				this.UpdateBodyShape();
-
-				if (wasEnabled) this.body.Enabled = true;
-			}
+			this.FlagBodyShape();
 		}
 		/// <summary>
 		/// Removes an existing shape from the Collider.
@@ -287,11 +297,7 @@ namespace Duality.Components.Physics
 			this.shapes.Remove(shape);
 			shape.Parent = null;
 
-			if (this.body != null)
-			{
-				shape.DestroyFixture(this.body);
-				this.UpdateBodyShape();
-			}
+			if (this.body != null) shape.DestroyFixture(this.body);
 		}
 		/// <summary>
 		/// Removes all existing shapes from the Collider.
@@ -299,15 +305,12 @@ namespace Duality.Components.Physics
 		public void ClearShapes()
 		{
 			if (this.shapes == null) return;
-
-			var oldShapes = this.shapes.ToArray();
-			this.shapes.Clear();
-			foreach (ShapeInfo shape in oldShapes)
+			foreach (ShapeInfo shape in this.shapes)
 			{
 				if (this.body != null) shape.DestroyFixture(this.body);
 				shape.Parent = null;
 			}
-			this.UpdateBodyShape();
+			this.shapes.Clear();
 		}
 		/// <summary>
 		/// Sets the Colliders shape.
@@ -319,10 +322,6 @@ namespace Duality.Components.Physics
 
 			// Clone shape collection
 			shapes = shapes.Select(c => c.Clone()).ToArray();
-
-			// Disable body during shape update
-			bool wasEnabled = this.body != null && this.body.Enabled;
-			if (wasEnabled) this.body.Enabled = false;
 			
 			// Destroy old shapes
 			if (this.shapes != null)
@@ -345,10 +344,7 @@ namespace Duality.Components.Physics
 				this.shapes.Add(shape);
 				shape.Parent = this;
 			}
-			this.UpdateBodyShape();
-
-			// Reactivate body after shape update
-			if (wasEnabled) this.body.Enabled = true;
+			this.FlagBodyShape();
 		}
 		
 		/// <summary>
@@ -558,14 +554,6 @@ namespace Duality.Components.Physics
 		{
 			if (this.body != null) this.body.Awake = true;
 		}
-		/// <summary>
-		/// Updates the Colliders internal body shape and joints.
-		/// </summary>
-		public void UpdateBody()
-		{
-			this.UpdateBodyShape();
-			this.UpdateBodyJoints();
-		}
 
 		/// <summary>
 		/// Performs a physical picking operation and returns the <see cref="ShapeInfo">shape</see> in which
@@ -576,9 +564,10 @@ namespace Duality.Components.Physics
 		public ShapeInfo PickShape(Vector2 worldCoord)
 		{
 			if (this.body == null) return null;
+
 			Vector2 fsWorldCoord = PhysicsConvert.ToPhysicalUnit(worldCoord);
 
-			for (int i = 0; i < this.shapes.Count; i++)
+			for (int i = 0; i < this.body.FixtureList.Count; i++)
 			{
 				Fixture f = this.body.FixtureList[i];
 				if (f.TestPoint(ref fsWorldCoord)) return this.shapes[i];
@@ -598,7 +587,7 @@ namespace Duality.Components.Physics
 			List<ShapeInfo> picked = new List<ShapeInfo>();
 			Vector2 fsWorldCoord = PhysicsConvert.ToPhysicalUnit(worldCoord);
 
-			for (int i = 0; i < this.shapes.Count; i++)
+			for (int i = 0; i < this.body.FixtureList.Count; i++)
 			{
 				Fixture f = this.body.FixtureList[i];
 				if (f.TestPoint(ref fsWorldCoord)) picked.Add(this.shapes[i]);
@@ -616,11 +605,12 @@ namespace Duality.Components.Physics
 		public List<ShapeInfo> PickShapes(Vector2 worldCoord, Vector2 size)
 		{
 			if (this.body == null) return new List<ShapeInfo>();
+
 			Vector2 fsWorldCoord = PhysicsConvert.ToPhysicalUnit(worldCoord);
 			FarseerPhysics.Collision.AABB fsWorldAABB = new FarseerPhysics.Collision.AABB(fsWorldCoord, PhysicsConvert.ToPhysicalUnit(worldCoord + size));
 
 			List<ShapeInfo> picked = new List<ShapeInfo>();
-			for (int i = 0; i < this.shapes.Count; i++)
+			for (int i = 0; i < this.body.FixtureList.Count; i++)
 			{
 				Fixture f = this.body.FixtureList[i];
 
@@ -665,9 +655,30 @@ namespace Duality.Components.Physics
 		}
 		
 		
+		internal bool FlagBodyShape()
+		{
+			if (this.body == null) return false;
+			if (this.isUpdatingBody) return false;
+
+			this.schedUpdateBody = true;
+
+			return true;
+		}
+		private void SynchronizeBodyShape()
+		{
+			if (!this.schedUpdateBody) return;
+			bool wasEnabled = this.body != null && this.body.Enabled;
+			if (wasEnabled) this.body.Enabled = false;
+
+			this.UpdateBodyShape();
+
+			if (wasEnabled) this.body.Enabled = true;
+			this.schedUpdateBody = false;
+		}
 		private void UpdateBodyShape()
 		{
 			if (this.body == null) return;
+			this.isUpdatingBody = true;
 
 			if (this.shapes != null)
 			{
@@ -678,15 +689,7 @@ namespace Duality.Components.Physics
 			this.body.ResetMassData();
 
 			this.AwakeBody();
-		}
-		private void UpdateBodyJoints()
-		{
-			if (this.joints != null)
-			{
-				foreach (JointInfo info in this.joints) info.UpdateJoint();
-			}
-
-			this.AwakeBody();
+			this.isUpdatingBody = false;
 		}
 
 		private void CleanupBody()
@@ -766,7 +769,11 @@ namespace Duality.Components.Physics
 			if (this.initialized) return;
 
 			this.InitBody();
-			this.UpdateBodyJoints();
+			// Initialize joints
+			if (this.joints != null)
+			{
+				foreach (JointInfo info in this.joints) info.UpdateJoint();
+			}
 
 			this.initialized = true;
 		}
@@ -807,7 +814,9 @@ namespace Duality.Components.Physics
 		
 		void ICmpUpdatable.OnUpdate()
 		{
+			// Synchronize physical body / perform shape updates, etc.
 			this.RemoveDisposedJoints();
+			this.SynchronizeBodyShape();
 
 			// Update velocity and transform values
 			if (this.body != null)
@@ -854,6 +863,12 @@ namespace Duality.Components.Physics
 			}
 			this.eventBuffer.Clear();
 		}
+		void ICmpEditorUpdatable.OnUpdate()
+		{
+			// Synchronize physical body / perform shape updates, etc.
+			this.RemoveDisposedJoints();
+			this.SynchronizeBodyShape();
+		}
 
 		private void OnTransformChanged(object sender, TransformChangedEventArgs e)
 		{
@@ -865,7 +880,7 @@ namespace Duality.Components.Physics
 			if ((e.Changes & Transform.DirtyFlags.Angle) != Transform.DirtyFlags.None)
 			    this.body.Rotation = t.Angle;
 			if ((e.Changes & Transform.DirtyFlags.Scale) != Transform.DirtyFlags.None)
-			    this.UpdateBody();
+			    this.FlagBodyShape();
 
 			if (e.Changes != Transform.DirtyFlags.None)
 				this.body.Awake = true;

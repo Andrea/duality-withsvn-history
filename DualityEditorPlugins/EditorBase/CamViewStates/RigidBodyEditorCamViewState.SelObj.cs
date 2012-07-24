@@ -97,7 +97,7 @@ namespace EditorBase.CamViewStates
 			{
 				if (shape is CircleShapeInfo)		return new SelCircleShape(shape as CircleShapeInfo);
 				else if (shape is PolyShapeInfo)	return new SelPolyShape(shape as PolyShapeInfo);
-				else if (shape is EdgeShapeInfo)	return new SelEdgeShape(shape as EdgeShapeInfo);
+			//	else if (shape is EdgeShapeInfo)	return new SelEdgeShape(shape as EdgeShapeInfo);
 				else if (shape is LoopShapeInfo)	return new SelLoopShape(shape as LoopShapeInfo);
 				else								return null;
 			}
@@ -294,126 +294,6 @@ namespace EditorBase.CamViewStates
 				this.UpdatePolyStats();
 			}
 		}
-		public class SelEdgeShape : SelShape
-		{
-			private	EdgeShapeInfo	edge;
-			private	Vector2	center;
-			private	float	boundRad;
-			private	float	angle;
-			private	Vector2	scale;
-
-			public override Vector3 Pos
-			{
-				get
-				{
-					return this.Collider.GameObj.Transform.GetWorldPoint(new Vector3(this.center));
-				}
-				set
-				{
-					value.Z = this.Collider.GameObj.Transform.Pos.Z;
-					this.MoveCenterTo(this.Collider.GameObj.Transform.GetLocalPoint(value).Xy);
-				}
-			}
-			public override Vector3 Scale
-			{
-				get
-				{
-					return new Vector3(this.scale);
-				}
-				set
-				{
-					this.ScaleTo(value.Xy);
-				}
-			}
-			public override float Angle
-			{
-				get
-				{
-					return this.angle;
-				}
-				set
-				{
-					this.RotateTo(value);
-				}
-			}
-			public override float BoundRadius
-			{
-				get { return this.boundRad * this.Collider.GameObj.Transform.Scale.Xy.Length / MathF.Sqrt(2.0f); }
-			}
-
-			public SelEdgeShape(EdgeShapeInfo shape) : base(shape)
-			{
-				this.edge = shape;
-				this.UpdateEdgeStats();
-			}
-
-			public override void DrawActionGizmo(Canvas canvas, MouseAction action, Point beginLoc, Point curLoc)
-			{
-				base.DrawActionGizmo(canvas, action, beginLoc, curLoc);
-				if (action == MouseAction.MoveObj)
-				{
-				    canvas.DrawText(string.Format("Center X:{0,7:0.00}", this.center.X), curLoc.X + 30, curLoc.Y + 10);
-				    canvas.DrawText(string.Format("Center Y:{0,7:0.00}", this.center.Y), curLoc.X + 30, curLoc.Y + 18);
-				}
-				else if (action == MouseAction.ScaleObj)
-				{
-					if (MathF.Abs(this.scale.X - this.scale.Y) >= 0.01f)
-					{
-						canvas.DrawText(string.Format("Scale X:{0,7:0.00}", this.scale.X), curLoc.X + 30, curLoc.Y + 10);
-						canvas.DrawText(string.Format("Scale Y:{0,7:0.00}", this.scale.Y), curLoc.X + 30, curLoc.Y + 18);
-					}
-					else
-					{
-						canvas.DrawText(string.Format("Scale:{0,7:0.00}", this.scale.X), curLoc.X + 30, curLoc.Y + 10);
-					}
-				}
-				else if (action == MouseAction.RotateObj)
-				{
-					canvas.DrawText(string.Format("Angle:{0,6:0.0}", MathF.RadToDeg(this.angle)), curLoc.X + 30, curLoc.Y + 10);
-				}
-			}
-
-			public void UpdateEdgeStats()
-			{
-				Vector2 connection = this.edge.VertexEnd - this.edge.VertexStart;
-				this.center = (this.edge.VertexStart + this.edge.VertexEnd) * 0.5f;
-
-				this.scale.X = MathF.Abs(connection.X);
-				this.scale.Y = MathF.Abs(connection.Y);
-
-				this.boundRad = connection.Length * 0.5f;
-
-				this.angle = connection.PerpendicularLeft.Angle;
-			}
-			private void MoveCenterTo(Vector2 newPos)
-			{
-				Vector2 mov = newPos - this.center;
-
-				this.edge.VertexStart += mov;
-				this.edge.VertexEnd += mov;
-
-				this.UpdateEdgeStats();
-			}
-			private void ScaleTo(Vector2 newScale)
-			{
-				Vector2 scaleRatio = newScale / this.scale;
-
-				this.edge.VertexStart = (this.edge.VertexStart - this.center) * scaleRatio + this.center;
-				this.edge.VertexEnd = (this.edge.VertexEnd - this.center) * scaleRatio + this.center;
-
-				this.UpdateEdgeStats();
-			}
-			private void RotateTo(float newAngle)
-			{
-				float rot = newAngle - this.angle;
-
-				Vector2 temp;
-				temp = this.edge.VertexStart; MathF.TransformCoord(ref temp.X, ref temp.Y, rot, 1.0f, this.center.X, this.center.Y); this.edge.VertexStart = temp;
-				temp = this.edge.VertexEnd; MathF.TransformCoord(ref temp.X, ref temp.Y, rot, 1.0f, this.center.X, this.center.Y); this.edge.VertexEnd = temp;
-
-				this.UpdateEdgeStats();
-			}
-		}
 		public class SelLoopShape : SelShape
 		{
 			private	LoopShapeInfo	loop;
@@ -550,5 +430,125 @@ namespace EditorBase.CamViewStates
 				this.UpdateLoopStats();
 			}
 		}
+		//public class SelEdgeShape : SelShape
+		//{
+		//    private	EdgeShapeInfo	edge;
+		//    private	Vector2	center;
+		//    private	float	boundRad;
+		//    private	float	angle;
+		//    private	Vector2	scale;
+
+		//    public override Vector3 Pos
+		//    {
+		//        get
+		//        {
+		//            return this.Collider.GameObj.Transform.GetWorldPoint(new Vector3(this.center));
+		//        }
+		//        set
+		//        {
+		//            value.Z = this.Collider.GameObj.Transform.Pos.Z;
+		//            this.MoveCenterTo(this.Collider.GameObj.Transform.GetLocalPoint(value).Xy);
+		//        }
+		//    }
+		//    public override Vector3 Scale
+		//    {
+		//        get
+		//        {
+		//            return new Vector3(this.scale);
+		//        }
+		//        set
+		//        {
+		//            this.ScaleTo(value.Xy);
+		//        }
+		//    }
+		//    public override float Angle
+		//    {
+		//        get
+		//        {
+		//            return this.angle;
+		//        }
+		//        set
+		//        {
+		//            this.RotateTo(value);
+		//        }
+		//    }
+		//    public override float BoundRadius
+		//    {
+		//        get { return this.boundRad * this.Collider.GameObj.Transform.Scale.Xy.Length / MathF.Sqrt(2.0f); }
+		//    }
+
+		//    public SelEdgeShape(EdgeShapeInfo shape) : base(shape)
+		//    {
+		//        this.edge = shape;
+		//        this.UpdateEdgeStats();
+		//    }
+
+		//    public override void DrawActionGizmo(Canvas canvas, MouseAction action, Point beginLoc, Point curLoc)
+		//    {
+		//        base.DrawActionGizmo(canvas, action, beginLoc, curLoc);
+		//        if (action == MouseAction.MoveObj)
+		//        {
+		//            canvas.DrawText(string.Format("Center X:{0,7:0.00}", this.center.X), curLoc.X + 30, curLoc.Y + 10);
+		//            canvas.DrawText(string.Format("Center Y:{0,7:0.00}", this.center.Y), curLoc.X + 30, curLoc.Y + 18);
+		//        }
+		//        else if (action == MouseAction.ScaleObj)
+		//        {
+		//            if (MathF.Abs(this.scale.X - this.scale.Y) >= 0.01f)
+		//            {
+		//                canvas.DrawText(string.Format("Scale X:{0,7:0.00}", this.scale.X), curLoc.X + 30, curLoc.Y + 10);
+		//                canvas.DrawText(string.Format("Scale Y:{0,7:0.00}", this.scale.Y), curLoc.X + 30, curLoc.Y + 18);
+		//            }
+		//            else
+		//            {
+		//                canvas.DrawText(string.Format("Scale:{0,7:0.00}", this.scale.X), curLoc.X + 30, curLoc.Y + 10);
+		//            }
+		//        }
+		//        else if (action == MouseAction.RotateObj)
+		//        {
+		//            canvas.DrawText(string.Format("Angle:{0,6:0.0}", MathF.RadToDeg(this.angle)), curLoc.X + 30, curLoc.Y + 10);
+		//        }
+		//    }
+
+		//    public void UpdateEdgeStats()
+		//    {
+		//        Vector2 connection = this.edge.VertexEnd - this.edge.VertexStart;
+		//        this.center = (this.edge.VertexStart + this.edge.VertexEnd) * 0.5f;
+
+		//        this.scale.X = MathF.Abs(connection.X);
+		//        this.scale.Y = MathF.Abs(connection.Y);
+
+		//        this.boundRad = connection.Length * 0.5f;
+
+		//        this.angle = connection.PerpendicularLeft.Angle;
+		//    }
+		//    private void MoveCenterTo(Vector2 newPos)
+		//    {
+		//        Vector2 mov = newPos - this.center;
+
+		//        this.edge.VertexStart += mov;
+		//        this.edge.VertexEnd += mov;
+
+		//        this.UpdateEdgeStats();
+		//    }
+		//    private void ScaleTo(Vector2 newScale)
+		//    {
+		//        Vector2 scaleRatio = newScale / this.scale;
+
+		//        this.edge.VertexStart = (this.edge.VertexStart - this.center) * scaleRatio + this.center;
+		//        this.edge.VertexEnd = (this.edge.VertexEnd - this.center) * scaleRatio + this.center;
+
+		//        this.UpdateEdgeStats();
+		//    }
+		//    private void RotateTo(float newAngle)
+		//    {
+		//        float rot = newAngle - this.angle;
+
+		//        Vector2 temp;
+		//        temp = this.edge.VertexStart; MathF.TransformCoord(ref temp.X, ref temp.Y, rot, 1.0f, this.center.X, this.center.Y); this.edge.VertexStart = temp;
+		//        temp = this.edge.VertexEnd; MathF.TransformCoord(ref temp.X, ref temp.Y, rot, 1.0f, this.center.X, this.center.Y); this.edge.VertexEnd = temp;
+
+		//        this.UpdateEdgeStats();
+		//    }
+		//}
 	}
 }

@@ -95,7 +95,6 @@
     <Compile Include="Components\Physics\Joints\FrictionJointInfo.cs" />
     <Compile Include="Components\Physics\Joints\RevoluteJointInfo.cs" />
     <Compile Include="Components\Physics\Joints\PrismaticJointInfo.cs" />
-    <Compile Include="Components\Physics\Shapes\EdgeShapeInfo.cs" />
     <Compile Include="Components\Physics\Shapes\LoopShapeInfo.cs" />
     <Compile Include="Components\Physics\Shapes\PolyShapeInfo.cs" />
     <Compile Include="Components\Physics\RigidBody.cs" />

@@ -80,6 +80,8 @@ namespace DualityEditor.Forms
 		public	event	EventHandler	SaveAllProjectDataTriggered		= null;
 		public	event	EventHandler	EnteringSandbox					= null;
 		public	event	EventHandler	LeaveSandbox					= null;
+		public	event	EventHandler	PausedSandbox					= null;
+		public	event	EventHandler	UnpausingSandbox				= null;
 		public	event	EventHandler<SelectionChangedEventArgs>			SelectionChanged		= null;
 		public	event	EventHandler<ObjectPropertyChangedEventArgs>	ObjectPropertyChanged	= null;
 		public	event	EventHandler<ResourceEventArgs>					ResourceCreated			= null;
@@ -311,6 +313,7 @@ namespace DualityEditor.Forms
 			this.sandboxStateChange = true;
 			if (this.sandboxState == SandboxState.Paused)
 			{
+				this.OnUnpausingSandbox();
 				this.sandboxState = SandboxState.Playing;
 				DualityApp.ExecContext = DualityApp.ExecutionContext.Game;
 				this.UpdateToolbar();
@@ -350,6 +353,7 @@ namespace DualityEditor.Forms
 			DualityApp.ExecContext = DualityApp.ExecutionContext.Editor;
 			this.UpdateToolbar();
 
+			this.OnPausedSandbox();
 			this.sandboxStateChange = false;
 		}
 		public void SandboxStop()
@@ -987,6 +991,16 @@ namespace DualityEditor.Forms
 		{
 			if (this.LeaveSandbox != null)
 				this.LeaveSandbox(this, null);
+		}
+		private void OnPausedSandbox()
+		{
+			if (this.PausedSandbox != null)
+				this.PausedSandbox(this, null);
+		}
+		private void OnUnpausingSandbox()
+		{
+			if (this.UnpausingSandbox != null)
+				this.UnpausingSandbox(this, null);
 		}
 		private void OnSelectionChanged(object sender, ObjectSelection.Category changedCategoryFallback)
 		{

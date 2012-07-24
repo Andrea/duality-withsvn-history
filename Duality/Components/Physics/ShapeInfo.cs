@@ -46,7 +46,7 @@ namespace Duality.Components.Physics
 			{
 				this.density = value;
 				if (this.parent != null) // Full update to recalculate mass
-					this.parent.UpdateBody();
+					this.parent.FlagBodyShape();
 				else
 					this.UpdateFixture();
 			}
@@ -80,6 +80,14 @@ namespace Duality.Components.Physics
 			set { this.restitution = value; this.UpdateFixture(); }
 		}
 		/// <summary>
+		/// [GET] Whether or not the shape is a valid part of the physical simulation
+		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
+		public bool IsValid
+		{
+			get { return this.fixture != null || (this.parent != null && this.parent.IsFlaggedForSync); }
+		}
+		/// <summary>
 		/// [GET] Returns the Shapes axis-aligned bounding box
 		/// </summary>
 		[EditorHintFlags(MemberFlags.Invisible)]
@@ -102,11 +110,23 @@ namespace Duality.Components.Physics
 		protected abstract Fixture CreateFixture(Body body);
 		internal virtual void UpdateFixture()
 		{
+			// When updating fixtures at runtime, we'll need to re-initialize the whole body
+			if (this.fixture != null && (DualityApp.ExecContext == DualityApp.ExecutionContext.Game || DualityApp.ExecEnvironment == DualityApp.ExecutionEnvironment.Editor))
+			{
+				if (this.parent != null && this.parent.FlagBodyShape())
+				{
+					this.DestroyFixture(this.parent.PhysicsBody); // Also, kill the changed fixture, so it gets re-registered.
+					return;
+				}
+			}
+
+			// Create the fixture, if not done yet
 			if (this.fixture == null)
 			{
 				if (this.parent != null && this.parent.PhysicsBody != null)
 				{
 					this.fixture = this.CreateFixture(this.parent.PhysicsBody);
+					if (this.fixture == null) return;
 					this.fixture.UserData = this;
 				}
 				else return;

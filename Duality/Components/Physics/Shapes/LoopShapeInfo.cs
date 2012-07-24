@@ -58,10 +58,18 @@ namespace Duality.Components.Physics
 
 		protected override Fixture CreateFixture(Body body)
 		{
+			if (!body.IsStatic) return null; // Loop shapes aren't allowed on nonstatic bodies.
 			return body.CreateFixture(new LoopShape(this.CreateVertices(Vector2.One)), this);
 		}
 		internal override void UpdateFixture()
 		{
+			// Loop shapes aren't allowed on nonstatic bodies.
+			if (this.Parent.PhysicsBodyType != RigidBody.BodyType.Static)
+			{
+				this.DestroyFixture(this.Parent.PhysicsBody);
+				return;
+			}
+
 			base.UpdateFixture();
 			if (this.fixture == null) return;
 			if (this.Parent == null) return;

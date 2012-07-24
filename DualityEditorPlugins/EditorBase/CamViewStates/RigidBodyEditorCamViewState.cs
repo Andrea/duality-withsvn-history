@@ -31,7 +31,7 @@ namespace EditorBase.CamViewStates
 			Normal,
 			CreateCircle,
 			CreatePolygon,
-			CreateEdge,
+		//	CreateEdge,
 			CreateLoop
 		}
 
@@ -41,7 +41,7 @@ namespace EditorBase.CamViewStates
 		private	ToolStrip			toolstrip			= null;
 		private	ToolStripButton		toolCreateCircle	= null;
 		private	ToolStripButton		toolCreatePoly		= null;
-		private	ToolStripButton		toolCreateEdge		= null;
+	//	private	ToolStripButton		toolCreateEdge		= null;
 		private	ToolStripButton		toolCreateLoop		= null;
 
 		public override string StateName
@@ -72,10 +72,10 @@ namespace EditorBase.CamViewStates
 			this.toolCreatePoly.AutoToolTip = true;
 			this.toolstrip.Items.Add(this.toolCreatePoly);
 
-			this.toolCreateEdge = new ToolStripButton("Create Edge Shape (E)", EditorBase.PluginRes.EditorBaseRes.IconCmpEdgeCollider, this.toolCreateEdge_Clicked);
-			this.toolCreateEdge.DisplayStyle = ToolStripItemDisplayStyle.Image;
-			this.toolCreateEdge.AutoToolTip = true;
-			this.toolstrip.Items.Add(this.toolCreateEdge);
+		//	this.toolCreateEdge = new ToolStripButton("Create Edge Shape (E)", EditorBase.PluginRes.EditorBaseRes.IconCmpEdgeCollider, this.toolCreateEdge_Clicked);
+		//	this.toolCreateEdge.DisplayStyle = ToolStripItemDisplayStyle.Image;
+		//	this.toolCreateEdge.AutoToolTip = true;
+		//	this.toolstrip.Items.Add(this.toolCreateEdge);
 
 			this.toolCreateLoop = new ToolStripButton("Create Loop Shape (L)", EditorBase.PluginRes.EditorBaseRes.IconCmpLoopCollider, this.toolCreateLoop_Clicked);
 			this.toolCreateLoop.DisplayStyle = ToolStripItemDisplayStyle.Image;
@@ -147,9 +147,6 @@ namespace EditorBase.CamViewStates
 			base.PostPerformAction(selObjEnum, action);
 			SelShape[] selShapeArray = selObjEnum.OfType<SelShape>().ToArray();
 
-			// Update shapes internally
-			this.selectedCollider.UpdateBody();
-
 			// Notify property changes
 			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
 				new ObjectSelection(this.selectedCollider),
@@ -180,23 +177,6 @@ namespace EditorBase.CamViewStates
 					new ObjectSelection(this.selectedCollider),
 					ReflectionInfo.Property_RigidBody_Shapes);
 			}
-			else if (this.mouseState == CursorState.CreateEdge && this.allObjSel.Any(sel => sel is SelEdgeShape))
-			{
-				SelEdgeShape selEdgeShape = this.allObjSel.OfType<SelEdgeShape>().First();
-				EdgeShapeInfo edgeShape = selEdgeShape.ActualObject as EdgeShapeInfo;
-				
-				switch (this.createPolyIndex)
-				{
-					case 0:	edgeShape.VertexStart = localPos;	break;
-					case 1:	edgeShape.VertexEnd = localPos;		break;
-				}
-
-				selEdgeShape.UpdateEdgeStats();
-
-				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
-					new ObjectSelection(this.selectedCollider),
-					ReflectionInfo.Property_RigidBody_Shapes);
-			}
 			else if (this.mouseState == CursorState.CreateLoop && this.allObjSel.Any(sel => sel is SelLoopShape))
 			{
 				SelLoopShape selPolyShape = this.allObjSel.OfType<SelLoopShape>().First();
@@ -212,14 +192,31 @@ namespace EditorBase.CamViewStates
 					new ObjectSelection(this.selectedCollider),
 					ReflectionInfo.Property_RigidBody_Shapes);
 			}
+			//else if (this.mouseState == CursorState.CreateEdge && this.allObjSel.Any(sel => sel is SelEdgeShape))
+			//{
+			//    SelEdgeShape selEdgeShape = this.allObjSel.OfType<SelEdgeShape>().First();
+			//    EdgeShapeInfo edgeShape = selEdgeShape.ActualObject as EdgeShapeInfo;
+				
+			//    switch (this.createPolyIndex)
+			//    {
+			//        case 0:	edgeShape.VertexStart = localPos;	break;
+			//        case 1:	edgeShape.VertexEnd = localPos;		break;
+			//    }
+
+			//    selEdgeShape.UpdateEdgeStats();
+
+			//    EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
+			//        new ObjectSelection(this.selectedCollider),
+			//        ReflectionInfo.Property_RigidBody_Shapes);
+			//}
 		}
 
 		protected void UpdateToolbar()
 		{
 			this.toolCreateCircle.Enabled = this.selectedCollider != null && this.mouseState == CursorState.Normal;
 			this.toolCreatePoly.Enabled = this.toolCreateCircle.Enabled;
-			this.toolCreateEdge.Enabled = this.toolCreateCircle.Enabled;
-			this.toolCreateLoop.Enabled = this.toolCreateCircle.Enabled;
+		//	this.toolCreateEdge.Enabled = this.toolCreateCircle.Enabled;
+			this.toolCreateLoop.Enabled = this.toolCreateCircle.Enabled && this.selectedCollider.PhysicsBodyType == RigidBody.BodyType.Static;
 		}
 
 		public override CamViewState.SelObj PickSelObjAt(int x, int y)
@@ -296,13 +293,13 @@ namespace EditorBase.CamViewStates
 		private ShapeInfo PickShape(RigidBody body, Vector2 worldCoord)
 		{
 			// Special case for EdgeShapes, because they are by definition unpickable
-			foreach (EdgeShapeInfo edge in body.Shapes.OfType<EdgeShapeInfo>())
-			{
-				Vector2 worldV1 = body.GameObj.Transform.GetWorldPoint(edge.VertexStart);
-				Vector2 worldV2 = body.GameObj.Transform.GetWorldPoint(edge.VertexEnd);
-				float dist = MathF.PointLineDistance(worldCoord.X, worldCoord.Y, worldV1.X, worldV1.Y, worldV2.X, worldV2.Y);
-				if (dist < 5.0f) return edge;
-			}
+		//	foreach (EdgeShapeInfo edge in body.Shapes.OfType<EdgeShapeInfo>())
+		//	{
+		//		Vector2 worldV1 = body.GameObj.Transform.GetWorldPoint(edge.VertexStart);
+		//		Vector2 worldV2 = body.GameObj.Transform.GetWorldPoint(edge.VertexEnd);
+		//		float dist = MathF.PointLineDistance(worldCoord.X, worldCoord.Y, worldV1.X, worldV1.Y, worldV2.X, worldV2.Y);
+		//		if (dist < 5.0f) return edge;
+		//	}
 
 			// Special case for LoopShapes, because they are by definition unpickable
 			foreach (LoopShapeInfo loop in body.Shapes.OfType<LoopShapeInfo>())
@@ -327,42 +324,42 @@ namespace EditorBase.CamViewStates
 			List<ShapeInfo> result = body.PickShapes(worldCoord, worldSize);
 
 			// Special case for EdgeShapes, because they are by definition unpickable
-			foreach (EdgeShapeInfo edge in body.Shapes.OfType<EdgeShapeInfo>())
-			{
-				Vector2 worldV1 = body.GameObj.Transform.GetWorldPoint(edge.VertexStart);
-				Vector2 worldV2 = body.GameObj.Transform.GetWorldPoint(edge.VertexEnd);
-				bool hit = false;
-				hit = hit || MathF.LinesCross(
-					worldRect.TopLeft.X, 
-					worldRect.TopLeft.Y, 
-					worldRect.TopRight.X, 
-					worldRect.TopRight.Y, 
-					worldV1.X, worldV1.Y, worldV2.X, worldV2.Y);
-				hit = hit || MathF.LinesCross(
-					worldRect.TopLeft.X, 
-					worldRect.TopLeft.Y, 
-					worldRect.BottomLeft.X, 
-					worldRect.BottomLeft.Y, 
-					worldV1.X, worldV1.Y, worldV2.X, worldV2.Y);
-				hit = hit || MathF.LinesCross(
-					worldRect.BottomRight.X, 
-					worldRect.BottomRight.Y, 
-					worldRect.TopRight.X, 
-					worldRect.TopRight.Y, 
-					worldV1.X, worldV1.Y, worldV2.X, worldV2.Y);
-				hit = hit || MathF.LinesCross(
-					worldRect.BottomRight.X, 
-					worldRect.BottomRight.Y, 
-					worldRect.BottomLeft.X, 
-					worldRect.BottomLeft.Y, 
-					worldV1.X, worldV1.Y, worldV2.X, worldV2.Y);
-				hit = hit || worldRect.Contains(worldV1) || worldRect.Contains(worldV2);
-				if (hit)
-				{
-					result.Add(edge);
-					continue;
-				}
-			}
+			//foreach (EdgeShapeInfo edge in body.Shapes.OfType<EdgeShapeInfo>())
+			//{
+			//    Vector2 worldV1 = body.GameObj.Transform.GetWorldPoint(edge.VertexStart);
+			//    Vector2 worldV2 = body.GameObj.Transform.GetWorldPoint(edge.VertexEnd);
+			//    bool hit = false;
+			//    hit = hit || MathF.LinesCross(
+			//        worldRect.TopLeft.X, 
+			//        worldRect.TopLeft.Y, 
+			//        worldRect.TopRight.X, 
+			//        worldRect.TopRight.Y, 
+			//        worldV1.X, worldV1.Y, worldV2.X, worldV2.Y);
+			//    hit = hit || MathF.LinesCross(
+			//        worldRect.TopLeft.X, 
+			//        worldRect.TopLeft.Y, 
+			//        worldRect.BottomLeft.X, 
+			//        worldRect.BottomLeft.Y, 
+			//        worldV1.X, worldV1.Y, worldV2.X, worldV2.Y);
+			//    hit = hit || MathF.LinesCross(
+			//        worldRect.BottomRight.X, 
+			//        worldRect.BottomRight.Y, 
+			//        worldRect.TopRight.X, 
+			//        worldRect.TopRight.Y, 
+			//        worldV1.X, worldV1.Y, worldV2.X, worldV2.Y);
+			//    hit = hit || MathF.LinesCross(
+			//        worldRect.BottomRight.X, 
+			//        worldRect.BottomRight.Y, 
+			//        worldRect.BottomLeft.X, 
+			//        worldRect.BottomLeft.Y, 
+			//        worldV1.X, worldV1.Y, worldV2.X, worldV2.Y);
+			//    hit = hit || worldRect.Contains(worldV1) || worldRect.Contains(worldV2);
+			//    if (hit)
+			//    {
+			//        result.Add(edge);
+			//        continue;
+			//    }
+			//}
 
 			// Special case for LoopShapes, because they are by definition unpickable
 			foreach (LoopShapeInfo loop in body.Shapes.OfType<LoopShapeInfo>())
@@ -480,7 +477,7 @@ namespace EditorBase.CamViewStates
 			{
 				default:
 				case CursorState.CreatePolygon:	this.View.LocalGLControl.Cursor = ArrowCreatePolygon;	break;
-				case CursorState.CreateEdge:	this.View.LocalGLControl.Cursor = ArrowCreateEdge;		break;
+			//	case CursorState.CreateEdge:	this.View.LocalGLControl.Cursor = ArrowCreateEdge;		break;
 				case CursorState.CreateLoop:	this.View.LocalGLControl.Cursor = ArrowCreateLoop;		break;
 				case CursorState.CreateCircle:	this.View.LocalGLControl.Cursor = ArrowCreateCircle;	break;
 			}
@@ -488,6 +485,8 @@ namespace EditorBase.CamViewStates
 			this.UpdateToolbar();
 			this.View.LocalGLControl.Invalidate();
 
+			if (EditorBasePlugin.Instance.EditorForm.CurrentSandboxState == MainForm.SandboxState.Playing)
+				EditorBasePlugin.Instance.EditorForm.SandboxPause();
 			EditorBasePlugin.Instance.EditorForm.Deselect(this, ObjectSelection.Category.Other);
 		}
 		private void LeaveCursorState()
@@ -532,10 +531,11 @@ namespace EditorBase.CamViewStates
 				else
 				{
 					foreach (SelPolyShape sps in this.allObjSel.OfType<SelPolyShape>()) sps.UpdatePolyStats();
-					foreach (SelEdgeShape sps in this.allObjSel.OfType<SelEdgeShape>()) sps.UpdateEdgeStats();
+				//	foreach (SelEdgeShape sps in this.allObjSel.OfType<SelEdgeShape>()) sps.UpdateEdgeStats();
 					foreach (SelLoopShape sps in this.allObjSel.OfType<SelLoopShape>()) sps.UpdateLoopStats();
 					this.UpdateSelectionStats();
 				}
+				this.UpdateToolbar();
 			}
 		}
 		private void EditorForm_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -575,11 +575,11 @@ namespace EditorBase.CamViewStates
 			if (this.selectedCollider == null) return;
 			this.EnterCursorState(CursorState.CreatePolygon);
 		}
-		private void toolCreateEdge_Clicked(object sender, EventArgs e)
-		{
-			if (this.selectedCollider == null) return;
-			this.EnterCursorState(CursorState.CreateEdge);
-		}
+		//private void toolCreateEdge_Clicked(object sender, EventArgs e)
+	//	{
+	//		if (this.selectedCollider == null) return;
+	//		this.EnterCursorState(CursorState.CreateEdge);
+	//	}
 		private void toolCreateLoop_Clicked(object sender, EventArgs e)
 		{
 			if (this.selectedCollider == null) return;
@@ -594,8 +594,8 @@ namespace EditorBase.CamViewStates
 					this.toolCreateCircle_Clicked(this, EventArgs.Empty);
 				else if (e.KeyCode == Keys.P)
 					this.toolCreatePoly_Clicked(this, EventArgs.Empty);
-				else if (e.KeyCode == Keys.E)
-					this.toolCreateEdge_Clicked(this, EventArgs.Empty);
+			//	else if (e.KeyCode == Keys.E)
+			//		this.toolCreateEdge_Clicked(this, EventArgs.Empty);
 				else if (e.KeyCode == Keys.L)
 					this.toolCreateLoop_Clicked(this, EventArgs.Empty);
 			}
@@ -695,67 +695,6 @@ namespace EditorBase.CamViewStates
 				}
 				#endregion
 			}
-			else if (this.mouseState == CursorState.CreateEdge)
-			{
-				#region CreateEdge
-				if (e.Button == MouseButtons.Left)
-				{
-					bool success = false;
-					if (!this.allObjSel.Any(sel => sel is SelEdgeShape))
-					{
-						EdgeShapeInfo newShape = new EdgeShapeInfo(localPos, localPos + Vector2.UnitX);
-
-						this.selectedCollider.AddShape(newShape);
-						this.SelectObjects(new[] { SelShape.Create(newShape) });
-						success = true;
-					}
-					else
-					{
-						SelEdgeShape selEdgeShape = this.allObjSel.OfType<SelEdgeShape>().First();
-						EdgeShapeInfo edgeShape = selEdgeShape.ActualObject as EdgeShapeInfo;
-						
-						switch (this.createPolyIndex)
-						{
-							case 0:	edgeShape.VertexStart = localPos;	break;
-							case 1:	edgeShape.VertexEnd = localPos;		break;
-						}
-
-						selEdgeShape.UpdateEdgeStats();
-						success = true;
-					}
-
-					if (success)
-					{
-						this.createPolyIndex++;
-						EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
-							new ObjectSelection(this.selectedCollider),
-							ReflectionInfo.Property_RigidBody_Shapes);
-
-						if (this.createPolyIndex >= 2)
-							this.LeaveCursorState();
-					}
-				}
-				else if (e.Button == MouseButtons.Right)
-				{
-					if (this.allObjSel.Any(sel => sel is SelEdgeShape))
-					{
-						SelEdgeShape selEdgeShape = this.allObjSel.OfType<SelEdgeShape>().First();
-						EdgeShapeInfo edgeShape = selEdgeShape.ActualObject as EdgeShapeInfo;
-
-						if (this.createPolyIndex < 1)
-							this.DeleteObjects(new SelEdgeShape[] { selEdgeShape });
-						else
-							selEdgeShape.UpdateEdgeStats();
-
-						EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
-							new ObjectSelection(this.selectedCollider),
-							ReflectionInfo.Property_RigidBody_Shapes);
-					}
-
-					this.LeaveCursorState();
-				}
-				#endregion
-			}
 			else if (this.mouseState == CursorState.CreateLoop)
 			{
 				#region CreateLoop
@@ -820,6 +759,67 @@ namespace EditorBase.CamViewStates
 				}
 				#endregion
 			}
+			//else if (this.mouseState == CursorState.CreateEdge)
+			//{
+			//    #region CreateEdge
+			//    if (e.Button == MouseButtons.Left)
+			//    {
+			//        bool success = false;
+			//        if (!this.allObjSel.Any(sel => sel is SelEdgeShape))
+			//        {
+			//            EdgeShapeInfo newShape = new EdgeShapeInfo(localPos, localPos + Vector2.UnitX);
+
+			//            this.selectedCollider.AddShape(newShape);
+			//            this.SelectObjects(new[] { SelShape.Create(newShape) });
+			//            success = true;
+			//        }
+			//        else
+			//        {
+			//            SelEdgeShape selEdgeShape = this.allObjSel.OfType<SelEdgeShape>().First();
+			//            EdgeShapeInfo edgeShape = selEdgeShape.ActualObject as EdgeShapeInfo;
+						
+			//            switch (this.createPolyIndex)
+			//            {
+			//                case 0:	edgeShape.VertexStart = localPos;	break;
+			//                case 1:	edgeShape.VertexEnd = localPos;		break;
+			//            }
+
+			//            selEdgeShape.UpdateEdgeStats();
+			//            success = true;
+			//        }
+
+			//        if (success)
+			//        {
+			//            this.createPolyIndex++;
+			//            EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
+			//                new ObjectSelection(this.selectedCollider),
+			//                ReflectionInfo.Property_RigidBody_Shapes);
+
+			//            if (this.createPolyIndex >= 2)
+			//                this.LeaveCursorState();
+			//        }
+			//    }
+			//    else if (e.Button == MouseButtons.Right)
+			//    {
+			//        if (this.allObjSel.Any(sel => sel is SelEdgeShape))
+			//        {
+			//            SelEdgeShape selEdgeShape = this.allObjSel.OfType<SelEdgeShape>().First();
+			//            EdgeShapeInfo edgeShape = selEdgeShape.ActualObject as EdgeShapeInfo;
+
+			//            if (this.createPolyIndex < 1)
+			//                this.DeleteObjects(new SelEdgeShape[] { selEdgeShape });
+			//            else
+			//                selEdgeShape.UpdateEdgeStats();
+
+			//            EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
+			//                new ObjectSelection(this.selectedCollider),
+			//                ReflectionInfo.Property_RigidBody_Shapes);
+			//        }
+
+			//        this.LeaveCursorState();
+			//    }
+			//    #endregion
+			//}
 		}
 	}
 }

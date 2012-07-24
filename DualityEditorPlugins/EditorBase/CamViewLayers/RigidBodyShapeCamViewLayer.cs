@@ -88,13 +88,16 @@ namespace EditorBase.CamViewLayers
 				{
 					CircleShapeInfo circle = s as CircleShapeInfo;
 					PolyShapeInfo poly = s as PolyShapeInfo;
-					EdgeShapeInfo edge = s as EdgeShapeInfo;
+				//	EdgeShapeInfo edge = s as EdgeShapeInfo;
 					LoopShapeInfo loop = s as LoopShapeInfo;
 
 					float shapeAlpha = colliderAlpha * (selectedBody == null || this.View.ViewState.SelectedObjects.Any(sel => sel.ActualObject == s) ? 1.0f : 0.5f);
 					float densityRelative = MathF.Abs(maxDensity - minDensity) < 0.01f ? 1.0f : s.Density / avgDensity;
 					ColorRgba clr = s.IsSensor ? this.ShapeSensorColor : this.ShapeColor;
 					ColorRgba fontClr = ColorRgba.Mix(clr, this.View.FgColor, 0.5f);
+
+					if (!c.IsAwake) clr = clr.ToHsva().WithSaturation(0.0f).ToRgba();
+					if (!s.IsValid) clr = this.ShapeErrorColor;
 
 					if (circle != null)
 					{
@@ -126,9 +129,6 @@ namespace EditorBase.CamViewLayers
 					}
 					else if (poly != null)
 					{
-						if (!MathF.IsPolygonConvex(poly.Vertices))
-							clr = this.ShapeErrorColor;
-
 						Vector2[] polyVert = poly.Vertices.ToArray();
 						Vector2 center = Vector2.Zero;
 						for (int i = 0; i < polyVert.Length; i++)
@@ -146,33 +146,6 @@ namespace EditorBase.CamViewLayers
 						canvas.FillConvexPolygon(polyVert, colliderPos.Z - 0.01f);
 						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha(shapeAlpha)));
 						canvas.DrawConvexPolygon(polyVert, colliderPos.Z - 0.01f);
-
-						Vector2 textSize = textFont.MeasureText(index.ToString(CultureInfo.InvariantCulture));
-						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, fontClr.WithAlpha(shapeAlpha)));
-						canvas.CurrentState.TransformHandle = textSize * 0.5f;
-						canvas.DrawText(index.ToString(CultureInfo.InvariantCulture), 
-							colliderPos.X + center.X, 
-							colliderPos.Y + center.Y,
-							colliderPos.Z - 0.01f);
-						canvas.CurrentState.TransformHandle = Vector2.Zero;
-					}
-					else if (edge != null)
-					{
-						Vector2 v1 = edge.VertexStart;
-						Vector2 v2 = edge.VertexEnd;
-						Vector2 center = (v1 + v2) * 0.5f;
-
-						Vector2.Multiply(ref v1, ref colliderScale, out v1);
-						Vector2.Multiply(ref v2, ref colliderScale, out v2);
-						Vector2.Multiply(ref center, ref colliderScale, out center);
-						MathF.TransformCoord(ref v1.X, ref v1.Y, c.GameObj.Transform.Angle);
-						MathF.TransformCoord(ref v2.X, ref v2.Y, c.GameObj.Transform.Angle);
-						MathF.TransformCoord(ref center.X, ref center.Y, c.GameObj.Transform.Angle);
-						v1 += colliderPos.Xy;
-						v2 += colliderPos.Xy;
-
-						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha(shapeAlpha)));
-						canvas.DrawLine(v1.X, v1.Y, v2.X, v2.Y);
 
 						Vector2 textSize = textFont.MeasureText(index.ToString(CultureInfo.InvariantCulture));
 						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, fontClr.WithAlpha(shapeAlpha)));
@@ -210,6 +183,33 @@ namespace EditorBase.CamViewLayers
 							colliderPos.Z - 0.01f);
 						canvas.CurrentState.TransformHandle = Vector2.Zero;
 					}
+					//else if (edge != null)
+					//{
+					//    Vector2 v1 = edge.VertexStart;
+					//    Vector2 v2 = edge.VertexEnd;
+					//    Vector2 center = (v1 + v2) * 0.5f;
+
+					//    Vector2.Multiply(ref v1, ref colliderScale, out v1);
+					//    Vector2.Multiply(ref v2, ref colliderScale, out v2);
+					//    Vector2.Multiply(ref center, ref colliderScale, out center);
+					//    MathF.TransformCoord(ref v1.X, ref v1.Y, c.GameObj.Transform.Angle);
+					//    MathF.TransformCoord(ref v2.X, ref v2.Y, c.GameObj.Transform.Angle);
+					//    MathF.TransformCoord(ref center.X, ref center.Y, c.GameObj.Transform.Angle);
+					//    v1 += colliderPos.Xy;
+					//    v2 += colliderPos.Xy;
+
+					//    canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha(shapeAlpha)));
+					//    canvas.DrawLine(v1.X, v1.Y, v2.X, v2.Y);
+
+					//    Vector2 textSize = textFont.MeasureText(index.ToString(CultureInfo.InvariantCulture));
+					//    canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, fontClr.WithAlpha(shapeAlpha)));
+					//    canvas.CurrentState.TransformHandle = textSize * 0.5f;
+					//    canvas.DrawText(index.ToString(CultureInfo.InvariantCulture), 
+					//        colliderPos.X + center.X, 
+					//        colliderPos.Y + center.Y,
+					//        colliderPos.Z - 0.01f);
+					//    canvas.CurrentState.TransformHandle = Vector2.Zero;
+					//}
 					index++;
 				}
 			}

@@ -143,6 +143,43 @@ namespace Duality.ColorFormat
 		}
 		
 		/// <summary>
+		/// Returns a new version of the color with an adjusted hue component.
+		/// </summary>
+		/// <param name="r">The new hue component as float [0.0f - 1.0f].</param>
+		/// <returns>A new color with the specified adjustments.</returns>
+		public ColorHsva WithHue(float h)
+		{
+			return new ColorHsva(h, this.S, this.V, this.A);
+		}
+		/// <summary>
+		/// Returns a new version of the color with an adjusted saturation component.
+		/// </summary>
+		/// <param name="r">The new saturation component as float [0.0f - 1.0f].</param>
+		/// <returns>A new color with the specified adjustments.</returns>
+		public ColorHsva WithSaturation(float s)
+		{
+			return new ColorHsva(this.H, s, this.V, this.A);
+		}
+		/// <summary>
+		/// Returns a new version of the color with an adjusted value component.
+		/// </summary>
+		/// <param name="r">The new value component as float [0.0f - 1.0f].</param>
+		/// <returns>A new color with the specified adjustments.</returns>
+		public ColorHsva WithValue(float v)
+		{
+			return new ColorHsva(this.H, this.S, v, this.A);
+		}
+		/// <summary>
+		/// Returns a new version of the color with an adjusted alpha component.
+		/// </summary>
+		/// <param name="r">The new alpha component as float [0.0f - 1.0f].</param>
+		/// <returns>A new color with the specified adjustments.</returns>
+		public ColorHsva WithAlpha(float a)
+		{
+			return new ColorHsva(this.H, this.S, this.V, a);
+		}
+
+		/// <summary>
 		/// Converts the color to int-Rgba.
 		/// </summary>
 		/// <returns></returns>

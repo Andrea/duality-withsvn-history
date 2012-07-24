@@ -58,7 +58,10 @@ namespace Duality.Components.Physics
 
 		protected override Fixture CreateFixture(Body body)
 		{
-			return body.CreateFixture(new PolygonShape(this.CreateVertices(Vector2.One), 1.0f), this);
+			var farseerVert = this.CreateVertices(Vector2.One);
+			if (farseerVert == null) return null;
+
+			return body.CreateFixture(new PolygonShape(farseerVert, 1.0f), this);
 		}
 		internal override void UpdateFixture()
 		{
@@ -75,6 +78,8 @@ namespace Duality.Components.Physics
 		}
 		private FarseerPhysics.Common.Vertices CreateVertices(Vector2 scale)
 		{
+			if (!MathF.IsPolygonConvex(this.vertices)) return null;
+
 			// Sort vertices clockwise before submitting them to Farseer
 			Vector2[] sortedVertices = this.vertices.ToArray();
 			Vector2 centroid = Vector2.Zero;
