@@ -379,6 +379,7 @@ namespace EditorBase.CamViewStates
 		private void EditorForm_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if ((e.AffectedCategories & ObjectSelection.Category.GameObjCmp) == ObjectSelection.Category.None) return;
+			if (e.SameObjects) return;
 
 			// Update object selection
 			this.allObjSel = e.Current.GameObjects.Select(g => new SelGameObj(g) as SelObj).ToList();

@@ -69,13 +69,13 @@ namespace EditorBase.CamViewStates
 			
 			public override bool HasTransform
 			{
-				get { return this.Collider != null && !this.Collider.Disposed && this.Collider.GameObj.Transform != null; }
+				get { return this.Body != null && !this.Body.Disposed && this.Body.GameObj.Transform != null; }
 			}
 			public override object ActualObject
 			{
 				get { return this.shape; }
 			}
-			public RigidBody Collider
+			public RigidBody Body
 			{
 				get { return this.shape.Parent; }
 			}
@@ -110,12 +110,12 @@ namespace EditorBase.CamViewStates
 			{
 				get
 				{
-					return this.Collider.GameObj.Transform.GetWorldPoint(new Vector3(this.circle.Position));
+					return this.Body.GameObj.Transform.GetWorldPoint(new Vector3(this.circle.Position));
 				}
 				set
 				{
-					value.Z = this.Collider.GameObj.Transform.Pos.Z;
-					this.circle.Position = this.Collider.GameObj.Transform.GetLocalPoint(value).Xy;
+					value.Z = this.Body.GameObj.Transform.Pos.Z;
+					this.circle.Position = this.Body.GameObj.Transform.GetLocalPoint(value).Xy;
 				}
 			}
 			public override Vector3 Scale
@@ -131,7 +131,7 @@ namespace EditorBase.CamViewStates
 			}
 			public override float BoundRadius
 			{
-				get { return this.circle.Radius * this.Collider.GameObj.Transform.Scale.Xy.Length / MathF.Sqrt(2.0f); }
+				get { return this.circle.Radius * this.Body.GameObj.Transform.Scale.Xy.Length / MathF.Sqrt(2.0f); }
 			}
 
 			public SelCircleShape(CircleShapeInfo shape) : base(shape)
@@ -170,12 +170,12 @@ namespace EditorBase.CamViewStates
 			{
 				get
 				{
-					return this.Collider.GameObj.Transform.GetWorldPoint(new Vector3(this.center));
+					return this.Body.GameObj.Transform.GetWorldPoint(new Vector3(this.center));
 				}
 				set
 				{
-					value.Z = this.Collider.GameObj.Transform.Pos.Z;
-					this.MoveCenterTo(this.Collider.GameObj.Transform.GetLocalPoint(value).Xy);
+					value.Z = this.Body.GameObj.Transform.Pos.Z;
+					this.MoveCenterTo(this.Body.GameObj.Transform.GetLocalPoint(value).Xy);
 				}
 			}
 			public override Vector3 Scale
@@ -202,7 +202,7 @@ namespace EditorBase.CamViewStates
 			}
 			public override float BoundRadius
 			{
-				get { return this.boundRad * this.Collider.GameObj.Transform.Scale.Xy.Length / MathF.Sqrt(2.0f); }
+				get { return this.boundRad * this.Body.GameObj.Transform.Scale.Xy.Length / MathF.Sqrt(2.0f); }
 			}
 
 			public SelPolyShape(PolyShapeInfo shape) : base(shape)
@@ -306,12 +306,12 @@ namespace EditorBase.CamViewStates
 			{
 				get
 				{
-					return this.Collider.GameObj.Transform.GetWorldPoint(new Vector3(this.center));
+					return this.Body.GameObj.Transform.GetWorldPoint(new Vector3(this.center));
 				}
 				set
 				{
-					value.Z = this.Collider.GameObj.Transform.Pos.Z;
-					this.MoveCenterTo(this.Collider.GameObj.Transform.GetLocalPoint(value).Xy);
+					value.Z = this.Body.GameObj.Transform.Pos.Z;
+					this.MoveCenterTo(this.Body.GameObj.Transform.GetLocalPoint(value).Xy);
 				}
 			}
 			public override Vector3 Scale
@@ -338,7 +338,7 @@ namespace EditorBase.CamViewStates
 			}
 			public override float BoundRadius
 			{
-				get { return this.boundRad * this.Collider.GameObj.Transform.Scale.Xy.Length / MathF.Sqrt(2.0f); }
+				get { return this.boundRad * this.Body.GameObj.Transform.Scale.Xy.Length / MathF.Sqrt(2.0f); }
 			}
 
 			public SelLoopShape(LoopShapeInfo shape) : base(shape)

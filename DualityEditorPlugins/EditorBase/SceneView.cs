@@ -1404,6 +1404,7 @@ namespace EditorBase
 		{
 			if (sender == this) return;
 			if ((e.AffectedCategories & ObjectSelection.Category.GameObjCmp) == ObjectSelection.Category.None) return;
+			if (e.SameObjects);
 
 			IEnumerable<NodeBase> removedObjQuery;
 			removedObjQuery = e.Removed.GameObjects.Select(o => this.FindNode(o));

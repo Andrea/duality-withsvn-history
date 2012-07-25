@@ -414,9 +414,12 @@ namespace EditorBase.CamViewStates
 			// Change shape selection
 			if (selObjEnum.OfType<SelShape>().Any())
 			{
-				SelShape[] selShapeArray = selObjEnum.OfType<SelShape>().ToArray();
+				var shapeQuery = selObjEnum.OfType<SelShape>();
+				var distinctShapeQuery = shapeQuery.GroupBy(s => s.Body).First(); // Assure there is only one collider active.
+				SelShape[] selShapeArray = distinctShapeQuery.ToArray();
+
 				// First, select the associated Collider
-				EditorBasePlugin.Instance.EditorForm.Select(this, new ObjectSelection(selShapeArray[0].Collider), MainForm.SelectMode.Set);
+				EditorBasePlugin.Instance.EditorForm.Select(this, new ObjectSelection(selShapeArray[0].Body), MainForm.SelectMode.Set);
 				// Then, select actual ShapeInfos
 				EditorBasePlugin.Instance.EditorForm.Select(this, new ObjectSelection(selShapeArray.Select(s => s.ActualObject)), mode);
 			}
@@ -540,6 +543,8 @@ namespace EditorBase.CamViewStates
 		}
 		private void EditorForm_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
+			if (e.SameObjects) return;
+
 			// Collider selection changed
 			if ((e.AffectedCategories & ObjectSelection.Category.GameObjCmp) != ObjectSelection.Category.None)
 			{

@@ -13,8 +13,6 @@
 	-->	"Did you know..?" screen?
 
 
--->	Bug: Ctrl-Select multiple objects in CamView followed by full deselect?
-
 -->	CamViewStates should remember their active layers when switching from and to them.
 	-->	CamViews should also save each states layers
 

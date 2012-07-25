@@ -1359,6 +1359,7 @@ namespace EditorBase
 		{
 			if (sender == this) return;
 			if ((e.AffectedCategories & ObjectSelection.Category.Resource) == ObjectSelection.Category.None) return;
+			if (e.SameObjects) return;
 
 			foreach (Resource r in e.Removed.Resources)	this.SelectNode(this.NodeFromPath(r.Path), false);
 			foreach (Resource r in e.Added.Resources)

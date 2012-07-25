@@ -56,6 +56,10 @@ namespace DualityEditor
 		{
 			get { return this.removed; }
 		}
+		public bool SameObjects
+		{
+			get { return this.added.Empty && this.removed.Empty; }
+		}
 
 		public SelectionChangedEventArgs(ObjectSelection current, ObjectSelection previous, ObjectSelection.Category changedCategoryFallback)
 		{

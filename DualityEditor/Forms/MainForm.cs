@@ -1005,12 +1005,10 @@ namespace DualityEditor.Forms
 		private void OnSelectionChanged(object sender, ObjectSelection.Category changedCategoryFallback)
 		{
 			//if (this.selectionCurrent == this.selectionPrevious) return;
-			//if (this.selectionCurrent == this.selectionPrevious) Log.Editor.WriteWarning("equal sel: {0}", this.selectionCurrent);
+			if (this.selectionCurrent == this.selectionPrevious) Log.Editor.WriteWarning("equal sel: {0}", this.selectionCurrent);
 			if (sender == null) sender = this;
 
 			this.selectionChanging = true;
-			System.Diagnostics.StackTrace trace = new System.Diagnostics.StackTrace();
-			if (trace.FrameCount > 100) System.Diagnostics.Debugger.Break();
 
 			if (this.SelectionChanged != null)
 				this.SelectionChanged(sender, new SelectionChangedEventArgs(this.selectionCurrent, this.selectionPrevious, changedCategoryFallback));
