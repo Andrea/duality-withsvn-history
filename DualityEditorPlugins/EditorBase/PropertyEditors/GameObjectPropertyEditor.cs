@@ -58,7 +58,7 @@ namespace EditorBase.PropertyEditors
 			foreach (GameObject o in values) o.ActiveSingle = active;
 
 			// Notify ActiveSingle changed
-			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, 
+			MainForm.Instance.NotifyObjPropChanged(this, 
 				new ObjectSelection(values), 
 				ReflectionInfo.Property_GameObject_ActiveSingle);
 		}
@@ -349,7 +349,7 @@ namespace EditorBase.PropertyEditors
 			foreach (GameObject o in values) o.PrefabLink.ClearChanges();
 			Duality.Resources.PrefabLink.ApplyAllLinks(values);
 
-			EditorBasePlugin.Instance.EditorForm.NotifyObjPrefabApplied(this, new ObjectSelection(values));
+			MainForm.Instance.NotifyObjPrefabApplied(this, new ObjectSelection(values));
 			this.PerformGetValue();
 		}
 		private void OnPrefabLinkApplyPressed()
@@ -370,7 +370,7 @@ namespace EditorBase.PropertyEditors
 					o.LinkToPrefab(prefab);
 				}
 			}
-			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionInfo.Property_GameObject_PrefabLink);
+			MainForm.Instance.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionInfo.Property_GameObject_PrefabLink);
 		}
 		private void OnPrefabLinkBreakPressed()
 		{
@@ -379,7 +379,7 @@ namespace EditorBase.PropertyEditors
 			// Destroy all PrefabLinks
 			foreach (GameObject o in values) o.BreakPrefabLink();
 
-			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionInfo.Property_GameObject_PrefabLink);
+			MainForm.Instance.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionInfo.Property_GameObject_PrefabLink);
 			this.PerformGetValue();
 		}
 

@@ -1,4 +1,4 @@
-﻿namespace DualityEditor.Forms
+﻿namespace DualityEditor
 {
 	partial class MainForm
 	{

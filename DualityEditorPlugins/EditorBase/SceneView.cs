@@ -213,11 +213,11 @@ namespace EditorBase
 			base.OnShown(e);
 			this.InitObjects();
 
-			EditorBasePlugin.Instance.EditorForm.SelectionChanged += this.EditorForm_SelectionChanged;
-			EditorBasePlugin.Instance.EditorForm.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
-			EditorBasePlugin.Instance.EditorForm.ResourceCreated += this.EditorForm_ResourceCreated;
-			EditorBasePlugin.Instance.EditorForm.ResourceDeleted += this.EditorForm_ResourceDeleted;
-			EditorBasePlugin.Instance.EditorForm.ResourceRenamed += this.EditorForm_ResourceRenamed;
+			MainForm.Instance.SelectionChanged += this.EditorForm_SelectionChanged;
+			MainForm.Instance.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
+			MainForm.Instance.ResourceCreated += this.EditorForm_ResourceCreated;
+			MainForm.Instance.ResourceDeleted += this.EditorForm_ResourceDeleted;
+			MainForm.Instance.ResourceRenamed += this.EditorForm_ResourceRenamed;
 
 			Scene.Entered += this.Scene_Entered;
 			Scene.Leaving += this.Scene_Leaving;
@@ -232,11 +232,11 @@ namespace EditorBase
 		{
 			base.OnClosed(e);
 
-			EditorBasePlugin.Instance.EditorForm.SelectionChanged -= this.EditorForm_SelectionChanged;
-			EditorBasePlugin.Instance.EditorForm.ObjectPropertyChanged -= this.EditorForm_ObjectPropertyChanged;
-			EditorBasePlugin.Instance.EditorForm.ResourceCreated -= this.EditorForm_ResourceCreated;
-			EditorBasePlugin.Instance.EditorForm.ResourceDeleted -= this.EditorForm_ResourceDeleted;
-			EditorBasePlugin.Instance.EditorForm.ResourceRenamed -= this.EditorForm_ResourceRenamed;
+			MainForm.Instance.SelectionChanged -= this.EditorForm_SelectionChanged;
+			MainForm.Instance.ObjectPropertyChanged -= this.EditorForm_ObjectPropertyChanged;
+			MainForm.Instance.ResourceCreated -= this.EditorForm_ResourceCreated;
+			MainForm.Instance.ResourceDeleted -= this.EditorForm_ResourceDeleted;
+			MainForm.Instance.ResourceRenamed -= this.EditorForm_ResourceRenamed;
 
 			Scene.Entered -= this.Scene_Entered;
 			Scene.Leaving -= this.Scene_Leaving;
@@ -458,7 +458,7 @@ namespace EditorBase
 
 			// Ask user if he really wants to delete stuff
 			if (!this.DisplayConfirmDeleteSelectedObjects()) return;
-			if (!EditorBasePlugin.Instance.EditorForm.DisplayConfirmBreakPrefabLink(new ObjectSelection(objList.AsEnumerable<object>().Concat(cmpList)))) return;
+			if (!MainForm.Instance.DisplayConfirmBreakPrefabLink(new ObjectSelection(objList.AsEnumerable<object>().Concat(cmpList)))) return;
 
 			// Delete objects
 			this.objectView.BeginUpdate();
@@ -535,7 +535,7 @@ namespace EditorBase
 			dragObjViewNode.IsSelected = true;
 			this.objectView.EnsureVisible(dragObjViewNode);
 
-			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(baseObj));
+			MainForm.Instance.NotifyObjPropChanged(this, new ObjectSelection(baseObj));
 		}
 		protected bool OpenResource(TreeNodeAdv node)
 		{
@@ -647,7 +647,7 @@ namespace EditorBase
 
 		protected bool DisplayConfirmDeleteSelectedObjects()
 		{
-			if (EditorBasePlugin.Instance.EditorForm.CurrentSandboxState == MainForm.SandboxState.Playing) return true;
+			if (MainForm.Instance.CurrentSandboxState == MainForm.SandboxState.Playing) return true;
 			DialogResult result = MessageBox.Show(
 				PluginRes.EditorBaseRes.SceneView_MsgBox_ConfirmDeleteSelectedObjects_Text, 
 				PluginRes.EditorBaseRes.SceneView_MsgBox_ConfirmDeleteSelectedObjects_Caption, 
@@ -678,7 +678,7 @@ namespace EditorBase
 			this.toolStripLabelSceneName.Text = (!sceneAvail || Scene.Current.IsRuntimeResource) ? 
 				PluginRes.EditorBaseRes.SceneNameNotYetSaved : 
 				Scene.Current.Name;
-			this.toolStripButtonSaveScene.Enabled = EditorBasePlugin.Instance.EditorForm.CurrentSandboxState == MainForm.SandboxState.Inactive;
+			this.toolStripButtonSaveScene.Enabled = MainForm.Instance.CurrentSandboxState == MainForm.SandboxState.Inactive;
 		}
 		
 		private void textBoxFilter_TextChanged(object sender, EventArgs e)
@@ -711,16 +711,16 @@ namespace EditorBase
 					where (vn.Tag is GameObjectNode) && (vn.Tag as GameObjectNode).Obj != null
 					select (vn.Tag as GameObjectNode).Obj;
 
-			if (!EditorBasePlugin.Instance.EditorForm.IsSelectionChanging)
+			if (!MainForm.Instance.IsSelectionChanging)
 			{
 				var selObj = selGameObj.Union<object>(selComponent);
 				if (selObj.Any())
 				{
-					if (!selGameObj.Any() || !selComponent.Any()) EditorBasePlugin.Instance.EditorForm.Deselect(this, ObjectSelection.Category.GameObjCmp);
-					EditorBasePlugin.Instance.EditorForm.Select(this, new ObjectSelection(selObj));
+					if (!selGameObj.Any() || !selComponent.Any()) MainForm.Instance.Deselect(this, ObjectSelection.Category.GameObjCmp);
+					MainForm.Instance.Select(this, new ObjectSelection(selObj));
 				}
 				else
-					EditorBasePlugin.Instance.EditorForm.Deselect(this, ObjectSelection.Category.GameObjCmp);
+					MainForm.Instance.Deselect(this, ObjectSelection.Category.GameObjCmp);
 			}
 		}
 		private void objectView_KeyDown(object sender, KeyEventArgs e)
@@ -895,7 +895,7 @@ namespace EditorBase
 							this.objectView.EnsureVisible(viewNode);
 						}
 
-						EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(dropObj));
+						MainForm.Instance.NotifyObjPropChanged(this, new ObjectSelection(dropObj));
 					}
 				}
 				else if (convertOp.CanPerform<GameObject>())
@@ -919,7 +919,7 @@ namespace EditorBase
 							this.objectView.EnsureVisible(viewNode);
 						}
 
-						EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(dropObj));
+						MainForm.Instance.NotifyObjPropChanged(this, new ObjectSelection(dropObj));
 					}
 				}
 			}
@@ -1010,7 +1010,7 @@ namespace EditorBase
 			if (objNode != null)
 			{
 				objNode.Obj.Name = objNode.Text;
-				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(objNode.Obj), ReflectionInfo.Property_GameObject_Name);
+				MainForm.Instance.NotifyObjPropChanged(this, new ObjectSelection(objNode.Obj), ReflectionInfo.Property_GameObject_Name);
 			}
 		}
 		private void timerFlashItem_Tick(object sender, EventArgs e)
@@ -1135,7 +1135,7 @@ namespace EditorBase
 			Component[] draggedComp = this.tempDropData as Component[];
 			GameObject dropObj = (this.tempDropTarget is GameObjectNode) ? (this.tempDropTarget as GameObjectNode).Obj : null;
 
-			if (!EditorBasePlugin.Instance.EditorForm.DisplayConfirmBreakPrefabLink(new ObjectSelection(this.tempDropData as IEnumerable<object>))) return;
+			if (!MainForm.Instance.DisplayConfirmBreakPrefabLink(new ObjectSelection(this.tempDropData as IEnumerable<object>))) return;
 
 			if (draggedObj != null)
 			{
@@ -1185,7 +1185,7 @@ namespace EditorBase
 					dragObjViewNode.IsSelected = true;
 					this.objectView.EnsureVisible(dragObjViewNode);
 				}
-				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(draggedObj), ReflectionInfo.Property_GameObject_Parent);
+				MainForm.Instance.NotifyObjPropChanged(this, new ObjectSelection(draggedObj), ReflectionInfo.Property_GameObject_Parent);
 			}
 			else if (draggedComp != null)
 			{
@@ -1225,7 +1225,7 @@ namespace EditorBase
 					dragObjViewNode.IsSelected = true;
 					this.objectView.EnsureVisible(dragObjViewNode);
 				}
-				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(cmpList), ReflectionInfo.Property_Component_GameObj);
+				MainForm.Instance.NotifyObjPropChanged(this, new ObjectSelection(cmpList), ReflectionInfo.Property_Component_GameObj);
 			}
 		}
 
@@ -1391,12 +1391,12 @@ namespace EditorBase
 
 		private void toolStripButtonCreateScene_Click(object sender, EventArgs e)
 		{
-			EditorBasePlugin.Instance.EditorForm.SaveCurrentScene(true);
+			MainForm.Instance.SaveCurrentScene(true);
 			Scene.Current = null;
 		}
 		private void toolStripButtonSaveScene_Click(object sender, EventArgs e)
 		{
-			EditorBasePlugin.Instance.EditorForm.SaveCurrentScene(false);
+			MainForm.Instance.SaveCurrentScene(false);
 			this.UpdateSceneLabel();
 		}
 

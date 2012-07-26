@@ -84,7 +84,7 @@ namespace ResourceHacker
 
 			if (!this.isLoading)
 			{
-				this.resHacker.Show(this.EditorForm.MainDockPanel);
+				this.resHacker.Show(MainForm.Instance.MainDockPanel);
 				if (this.resHacker.Pane != null)
 				{
 					this.resHacker.Pane.Activate();

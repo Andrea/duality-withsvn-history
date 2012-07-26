@@ -166,13 +166,13 @@
             This method is called as soon as the plugins assembly is loaded. Initializes the plugins internal data.
             </summary>
         </member>
-        <member name="M:DualityEditor.EditorPlugin.InitPlugin(DualityEditor.Forms.MainForm)">
+        <member name="M:DualityEditor.EditorPlugin.InitPlugin(DualityEditor.MainForm)">
             <summary>
             This method is called when all plugins and the editors user data and layout are loaded. May initialize GUI.
             </summary>
             <param name="main"></param>
         </member>
-        <member name="M:DualityEditor.EditorPlugin.SaveUserData(System.Xml.XmlDocument,System.Xml.XmlElement)">
+        <member name="M:DualityEditor.EditorPlugin.SaveUserData(System.Xml.XmlElement)">
             <summary>
             Saves the plugins user data to the provided Xml Node.
             </summary>
@@ -457,18 +457,18 @@
               Sucht eine lokalisierte Zeichenfolge, die The project data format has been changed to {0}. Existing Resource files will be converted shortly. ähnelt.
             </summary>
         </member>
-        <member name="F:DualityEditor.Forms.MainForm.components">
+        <member name="F:DualityEditor.MainForm.components">
             <summary>
             Erforderliche Designervariable.
             </summary>
         </member>
-        <member name="M:DualityEditor.Forms.MainForm.Dispose(System.Boolean)">
+        <member name="M:DualityEditor.MainForm.Dispose(System.Boolean)">
             <summary>
             Verwendete Ressourcen bereinigen.
             </summary>
             <param name="disposing">True, wenn verwaltete Ressourcen gelöscht werden sollen; andernfalls False.</param>
         </member>
-        <member name="M:DualityEditor.Forms.MainForm.InitializeComponent">
+        <member name="M:DualityEditor.MainForm.InitializeComponent">
             <summary>
             Erforderliche Methode für die Designerunterstützung.
             Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.

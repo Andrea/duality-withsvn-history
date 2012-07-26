@@ -303,20 +303,20 @@ namespace EditorBase
 		{
 			base.OnShown(e);
 			this.InitRessources();
-			EditorBasePlugin.Instance.EditorForm.SelectionChanged += this.EditorForm_SelectionChanged;
-			EditorBasePlugin.Instance.EditorForm.ResourceCreated += this.EditorForm_ResourceCreated;
-			EditorBasePlugin.Instance.EditorForm.ResourceDeleted += this.EditorForm_ResourceDeleted;
-			EditorBasePlugin.Instance.EditorForm.ResourceModified += this.EditorForm_ResourceModified;
-			EditorBasePlugin.Instance.EditorForm.ResourceRenamed += this.EditorForm_ResourceRenamed;
+			MainForm.Instance.SelectionChanged += this.EditorForm_SelectionChanged;
+			MainForm.Instance.ResourceCreated += this.EditorForm_ResourceCreated;
+			MainForm.Instance.ResourceDeleted += this.EditorForm_ResourceDeleted;
+			MainForm.Instance.ResourceModified += this.EditorForm_ResourceModified;
+			MainForm.Instance.ResourceRenamed += this.EditorForm_ResourceRenamed;
 		}
 		protected override void OnClosed(EventArgs e)
 		{
 			base.OnClosed(e);
-			EditorBasePlugin.Instance.EditorForm.SelectionChanged -= this.EditorForm_SelectionChanged;
-			EditorBasePlugin.Instance.EditorForm.ResourceCreated -= this.EditorForm_ResourceCreated;
-			EditorBasePlugin.Instance.EditorForm.ResourceDeleted -= this.EditorForm_ResourceDeleted;
-			EditorBasePlugin.Instance.EditorForm.ResourceModified -= this.EditorForm_ResourceModified;
-			EditorBasePlugin.Instance.EditorForm.ResourceRenamed -= this.EditorForm_ResourceRenamed;
+			MainForm.Instance.SelectionChanged -= this.EditorForm_SelectionChanged;
+			MainForm.Instance.ResourceCreated -= this.EditorForm_ResourceCreated;
+			MainForm.Instance.ResourceDeleted -= this.EditorForm_ResourceDeleted;
+			MainForm.Instance.ResourceModified -= this.EditorForm_ResourceModified;
+			MainForm.Instance.ResourceRenamed -= this.EditorForm_ResourceRenamed;
 		}
 
 		public void FlashNode(NodeBase node)
@@ -787,12 +787,12 @@ namespace EditorBase
 			// Note: Removed this. They'll now just grab their resource if available as soon as they need their data.
 
 			// Adjust editor-wide selection
-			if (!EditorBasePlugin.Instance.EditorForm.IsSelectionChanging)
+			if (!MainForm.Instance.IsSelectionChanging)
 			{
 				if (selRes.Length > 0)
-					EditorBasePlugin.Instance.EditorForm.Select(this, new ObjectSelection(selRes));
+					MainForm.Instance.Select(this, new ObjectSelection(selRes));
 				else
-					EditorBasePlugin.Instance.EditorForm.Deselect(this, ObjectSelection.Category.Resource);
+					MainForm.Instance.Deselect(this, ObjectSelection.Category.Resource);
 			}
 		}
 		private void folderView_KeyDown(object sender, KeyEventArgs e)
@@ -931,12 +931,12 @@ namespace EditorBase
 
 						// Inject GameObject to Prefab
 						prefab.Inject(draggedObj);
-						EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(prefab));
+						MainForm.Instance.NotifyObjPropChanged(this, new ObjectSelection(prefab));
 
 						// Establish PrefabLink & clear previously existing changes
 						if (draggedObj.PrefabLink != null) draggedObj.PrefabLink.ClearChanges();
 						draggedObj.LinkToPrefab(prefab);
-						EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(draggedObj), ReflectionInfo.Property_GameObject_PrefabLink);
+						MainForm.Instance.NotifyObjPropChanged(this, new ObjectSelection(draggedObj), ReflectionInfo.Property_GameObject_PrefabLink);
 					}
 				}
 				// See if we can retrieve Resources from data

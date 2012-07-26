@@ -77,22 +77,22 @@ namespace EditorBase
 			this.UpdateButtons();
 
 			// Add the global selection event once
-			EditorBasePlugin.Instance.EditorForm.SelectionChanged -= GlobalUpdateSelection;
-			EditorBasePlugin.Instance.EditorForm.SelectionChanged += GlobalUpdateSelection;
+			MainForm.Instance.SelectionChanged -= GlobalUpdateSelection;
+			MainForm.Instance.SelectionChanged += GlobalUpdateSelection;
 
-			EditorBasePlugin.Instance.EditorForm.AfterUpdateDualityApp += this.EditorForm_AfterUpdateDualityApp;
-			EditorBasePlugin.Instance.EditorForm.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
-			EditorBasePlugin.Instance.EditorForm.ResourceModified += this.EditorForm_ResourceModified;
-			EditorBasePlugin.Instance.EditorForm.FormClosing += this.EditorForm_FormClosing;
+			MainForm.Instance.AfterUpdateDualityApp += this.EditorForm_AfterUpdateDualityApp;
+			MainForm.Instance.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
+			MainForm.Instance.ResourceModified += this.EditorForm_ResourceModified;
+			MainForm.Instance.FormClosing += this.EditorForm_FormClosing;
 		}
 		protected override void OnClosed(EventArgs e)
 		{
 			base.OnClosed(e);
 
-			EditorBasePlugin.Instance.EditorForm.AfterUpdateDualityApp -= this.EditorForm_AfterUpdateDualityApp;
-			EditorBasePlugin.Instance.EditorForm.ObjectPropertyChanged -= this.EditorForm_ObjectPropertyChanged;
-			EditorBasePlugin.Instance.EditorForm.ResourceModified -= this.EditorForm_ResourceModified;
-			EditorBasePlugin.Instance.EditorForm.FormClosing -= this.EditorForm_FormClosing;
+			MainForm.Instance.AfterUpdateDualityApp -= this.EditorForm_AfterUpdateDualityApp;
+			MainForm.Instance.ObjectPropertyChanged -= this.EditorForm_ObjectPropertyChanged;
+			MainForm.Instance.ResourceModified -= this.EditorForm_ResourceModified;
+			MainForm.Instance.FormClosing -= this.EditorForm_FormClosing;
 		}
 		protected override void OnGotFocus(EventArgs e)
 		{
@@ -261,7 +261,7 @@ namespace EditorBase
 			this.CopyTo(objView);
 			objView.buttonLock.Checked = true;
 
-			DockPanel mainDoc = EditorBasePlugin.Instance.EditorForm.MainDockPanel;
+			DockPanel mainDoc = MainForm.Instance.MainDockPanel;
 			objView.Show(this.DockHandler.Pane, DockAlignment.Bottom, 0.5d);
 			
 			// Need it before showing because of instant-selection

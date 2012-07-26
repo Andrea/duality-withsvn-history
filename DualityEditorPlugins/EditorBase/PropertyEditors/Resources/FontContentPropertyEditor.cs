@@ -42,7 +42,7 @@ namespace EditorBase.PropertyEditors
 			if (anyReload)
 			{
 				this.PerformGetValue();
-				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(fntArr));
+				MainForm.Instance.NotifyObjPropChanged(this, new ObjectSelection(fntArr));
 			}
 			(this.ParentEditor as FontPropertyEditor).UpdatePreview();
 		}

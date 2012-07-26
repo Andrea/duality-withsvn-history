@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
+using System.Xml;
 using BitArray = System.Collections.BitArray;
 
 using WeifenLuo.WinFormsUI.Docking;
@@ -187,7 +188,7 @@ namespace EditorBase
 		}
 		public GLControl MainContextControl
 		{
-			get { return EditorBasePlugin.Instance.EditorForm.MainContextControl; }
+			get { return MainForm.Instance.MainContextControl; }
 		}
 		public ToolStrip ToolbarCamera
 		{
@@ -211,13 +212,9 @@ namespace EditorBase
 			this.Text = PluginRes.EditorBaseRes.MenuItemName_CamView + " #" + runtimeId;
 			this.runtimeId = runtimeId;
 			this.toolbarCamera.Renderer = new DualityEditor.Controls.ToolStrip.DualitorToolStripProfessionalRenderer();
-		}
-		protected override void OnShown(EventArgs e)
-		{
-			base.OnShown(e);
 			
 			var camViewStateTypeQuery = 
-				from t in EditorBasePlugin.Instance.EditorForm.GetAvailDualityEditorTypes(typeof(CamViewState))
+				from t in MainForm.Instance.GetAvailDualityEditorTypes(typeof(CamViewState))
 				where !t.IsAbstract
 				select t;
 			foreach (Type t in camViewStateTypeQuery)
@@ -228,7 +225,7 @@ namespace EditorBase
 			}
 
 			var camViewLayerTypeQuery = 
-				from t in EditorBasePlugin.Instance.EditorForm.GetAvailDualityEditorTypes(typeof(CamViewLayer))
+				from t in MainForm.Instance.GetAvailDualityEditorTypes(typeof(CamViewLayer))
 				where !t.IsAbstract
 				select t;
 			foreach (Type t in camViewLayerTypeQuery)
@@ -237,6 +234,10 @@ namespace EditorBase
 				layer.View = this;
 				this.availLayers.Add(t, layer);
 			}
+		}
+		protected override void OnShown(EventArgs e)
+		{
+			base.OnShown(e);
 
 			this.InitGLControl();
 			this.InitNativeCamera();
@@ -250,8 +251,8 @@ namespace EditorBase
 			this.SetCurrentState(stateType);
 
 			// Register DualityApp updater for camera steering behaviour
-			EditorBasePlugin.Instance.EditorForm.ResourceModified += this.EditorForm_ResourceModified;
-			EditorBasePlugin.Instance.EditorForm.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
+			MainForm.Instance.ResourceModified += this.EditorForm_ResourceModified;
+			MainForm.Instance.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
 			Scene.Leaving += this.Scene_Leaving;
 			Scene.GameObjectUnregistered += this.Scene_GameObjectUnregistered;
 			Scene.RegisteredObjectComponentRemoved += this.Scene_RegisteredObjectComponentRemoved;
@@ -268,11 +269,11 @@ namespace EditorBase
 		{
 			base.OnClosed(e);
 
-			if (this.camObj != null && !this.camInternal) EditorBasePlugin.Instance.EditorForm.EditorObjects.UnregisterObj(this.camObj);
+			if (this.camObj != null && !this.camInternal) MainForm.Instance.EditorObjects.UnregisterObj(this.camObj);
 			if (this.nativeCamObj != null) this.nativeCamObj.Dispose();
 
-			EditorBasePlugin.Instance.EditorForm.ResourceModified -= this.EditorForm_ResourceModified;
-			EditorBasePlugin.Instance.EditorForm.ObjectPropertyChanged -= this.EditorForm_ObjectPropertyChanged;
+			MainForm.Instance.ResourceModified -= this.EditorForm_ResourceModified;
+			MainForm.Instance.ObjectPropertyChanged -= this.EditorForm_ObjectPropertyChanged;
 			Scene.Leaving -= this.Scene_Leaving;
 			Scene.GameObjectUnregistered -= this.Scene_GameObjectUnregistered;
 			Scene.RegisteredObjectComponentRemoved -= this.Scene_RegisteredObjectComponentRemoved;
@@ -325,7 +326,7 @@ namespace EditorBase
 			this.layerSelector.DropDownItems.Clear();
 
 			IEnumerable<Type> camViewStateTypeQuery = 
-				from t in EditorBasePlugin.Instance.EditorForm.GetAvailDualityEditorTypes(typeof(CamViewLayer))
+				from t in MainForm.Instance.GetAvailDualityEditorTypes(typeof(CamViewLayer))
 				where !t.IsAbstract
 				select t;
 
@@ -362,7 +363,7 @@ namespace EditorBase
 			c.FarZ = 100000.0f;
 
 			this.nativeCamObj.Transform.Pos = new Vector3(0.0f, 0.0f, -c.ParallaxRefDist);
-			EditorBasePlugin.Instance.EditorForm.EditorObjects.RegisterObj(this.nativeCamObj);
+			MainForm.Instance.EditorObjects.RegisterObj(this.nativeCamObj);
 		}
 
 		public void SetCurrentCamera(Camera c)
@@ -372,7 +373,7 @@ namespace EditorBase
 
 			Camera prev = this.camComp;
 			if (this.camObj != null && !this.camInternal)
-				EditorBasePlugin.Instance.EditorForm.EditorObjects.UnregisterObj(this.camObj);
+				MainForm.Instance.EditorObjects.UnregisterObj(this.camObj);
 
 			if (c.GameObj == this.nativeCamObj)
 			{
@@ -386,7 +387,7 @@ namespace EditorBase
 				this.camInternal = false;
 				this.camObj = c.GameObj;
 				this.camComp = c;
-				EditorBasePlugin.Instance.EditorForm.EditorObjects.RegisterObj(this.camObj);
+				MainForm.Instance.EditorObjects.RegisterObj(this.camObj);
 				this.camSelector.SelectedIndex = this.camSelector.Items.IndexOf(c);
 			}
 
@@ -416,6 +417,10 @@ namespace EditorBase
 		}
 
 		public void SetActiveLayers(params Type[] layerTypes)
+		{
+			this.SetActiveLayers((IEnumerable<Type>)layerTypes);
+		}
+		public void SetActiveLayers(IEnumerable<Type> layerTypes)
 		{
 			// Deactivate unused layers
 			for (int i = this.activeLayers.Count - 1; i >= 0; i--)
@@ -477,16 +482,34 @@ namespace EditorBase
 			this.lockedLayers.Remove(layerType);
 		}
 
-		internal void SaveUserData(System.Xml.XmlElement node)
+		internal void SaveUserData(XmlElement node)
 		{
 			node.SetAttribute("toggleParallaxity", this.toggleParallaxity.Checked.ToString(CultureInfo.InvariantCulture));
 			node.SetAttribute("parallaxRefDist", this.nativeCamObj.Camera.ParallaxRefDist.ToString(CultureInfo.InvariantCulture));
 			node.SetAttribute("bgColorArgb", this.nativeCamObj.Camera.ClearColor.ToIntArgb().ToString(CultureInfo.InvariantCulture));
 
 			if (this.activeState != null) 
-				node.SetAttribute("state", this.activeState.GetType().GetTypeId());
+				node.SetAttribute("activeState", this.activeState.GetType().GetTypeId());
+
+			var stateListNode = node.OwnerDocument.CreateElement("states");
+			foreach (var pair in this.availStates)
+			{
+				var stateNode = node.OwnerDocument.CreateElement(pair.Key.GetTypeId());
+				pair.Value.SaveUserData(stateNode);
+				stateListNode.AppendChild(stateNode);
+			}
+			node.AppendChild(stateListNode);
+
+			var layerListNode = node.OwnerDocument.CreateElement("layers");
+			foreach (var pair in this.availLayers)
+			{
+				var layerNode = node.OwnerDocument.CreateElement(pair.Key.GetTypeId());
+				pair.Value.SaveUserData(layerNode);
+				layerListNode.AppendChild(layerNode);
+			}
+			node.AppendChild(layerListNode);
 		}
-		internal void LoadUserData(System.Xml.XmlElement node)
+		internal void LoadUserData(XmlElement node)
 		{
 			bool tryParseBool;
 			decimal tryParseDecimal;
@@ -502,13 +525,35 @@ namespace EditorBase
 				this.bgColorDialog.SelectedColor = this.bgColorDialog.OldColor;
 			}
 
-			this.loadTempState = node.GetAttribute("state");
+			this.loadTempState = node.GetAttribute("activeState");
+
+			var stateListNode = node.ChildNodes.OfType<XmlElement>().FirstOrDefault(e => e.Name == "states");
+			if (stateListNode != null)
+			{
+				foreach (var pair in this.availStates)
+				{
+					var stateNode = stateListNode.ChildNodes.OfType<XmlElement>().FirstOrDefault(e => e.Name == pair.Key.GetTypeId());
+					if (stateNode == null) continue;
+					pair.Value.LoadUserData(stateNode);
+				}
+			}
+
+			var layerListNode = node.ChildNodes.OfType<XmlElement>().FirstOrDefault(e => e.Name == "layers");
+			if (layerListNode != null)
+			{
+				foreach (var pair in this.availLayers)
+				{
+					var layerNode = layerListNode.ChildNodes.OfType<XmlElement>().FirstOrDefault(e => e.Name == pair.Key.GetTypeId());
+					if (layerNode == null) continue;
+					pair.Value.LoadUserData(layerNode);
+				}
+			}
 		}
 
 		public void OnCamTransformChanged()
 		{
 			//if (this.camInternal) return;
-			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
+			MainForm.Instance.NotifyObjPropChanged(
 				this, new ObjectSelection(this.camObj.Transform),
 				ReflectionInfo.Property_Transform_RelativeVel,
 				ReflectionInfo.Property_Transform_RelativeAngleVel,
@@ -539,7 +584,7 @@ namespace EditorBase
 		{
 			DualityApp.TargetMode = this.MainContextControl.Context.GraphicsMode;
 			DualityApp.TargetResolution = new OpenTK.Vector2(this.glControl.Width, this.glControl.Height);
-			if (this.ContainsFocus) EditorBasePlugin.Instance.EditorForm.SetCurrentDualityAppInput(this, this);
+			if (this.ContainsFocus) MainForm.Instance.SetCurrentDualityAppInput(this, this);
 		}
 		public ICmpRenderer PickRendererAt(int x, int y)
 		{
@@ -586,7 +631,7 @@ namespace EditorBase
 		{
 			if (!this.camInternal)
 			{
-				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
+				MainForm.Instance.NotifyObjPropChanged(
 					this, new ObjectSelection(this.camComp),
 					ReflectionInfo.Property_Camera_ParallaxRefDist);
 			}
@@ -731,7 +776,7 @@ namespace EditorBase
 				0);
 			if (!this.camInternal)
 			{
-				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
+				MainForm.Instance.NotifyObjPropChanged(
 					this, new ObjectSelection(this.camComp),
 					ReflectionInfo.Property_Camera_ClearColor);
 			}

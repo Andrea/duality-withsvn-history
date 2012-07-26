@@ -649,6 +649,7 @@ namespace Duality
 		private static Type FindType(string typeName, IEnumerable<Assembly> asmSearch, MethodInfo declaringMethod = null)
 		{
 			typeName = typeName.Trim();
+			if (string.IsNullOrEmpty(typeName)) return null;
 
 			// Retrieve generic parameters
 			Match genericParamsMatch = Regex.Match(typeName, @"(\[)(\[.+\])(\])");

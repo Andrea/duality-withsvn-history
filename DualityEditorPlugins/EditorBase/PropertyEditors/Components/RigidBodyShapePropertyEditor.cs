@@ -23,11 +23,11 @@ namespace EditorBase.PropertyEditors
 			base.OnPropertySet(property, targets);
 
 			var colShapes = targets.OfType<ShapeInfo>().ToArray();
-			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(colShapes), property);
+			MainForm.Instance.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(colShapes), property);
 
 			var colliders = colShapes.Select(c => c.Parent).ToArray();
 			foreach (var c in colliders) c.AwakeBody();
-			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(colliders), ReflectionInfo.Property_RigidBody_Shapes);
+			MainForm.Instance.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(colliders), ReflectionInfo.Property_RigidBody_Shapes);
 		}
 	}
 }

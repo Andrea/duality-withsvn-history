@@ -68,7 +68,7 @@ namespace HelpAdvisor
 
 			if (!this.isLoading)
 			{
-				this.helpAdvisor.Show(this.EditorForm.MainDockPanel);
+				this.helpAdvisor.Show(MainForm.Instance.MainDockPanel);
 				if (this.helpAdvisor.Pane != null)
 				{
 					this.helpAdvisor.Pane.Activate();

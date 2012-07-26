@@ -39,13 +39,13 @@ namespace HelpAdvisor
 		protected override void OnShown(EventArgs e)
 		{
 			base.OnShown(e);
-			HelpAdvisorPlugin.Instance.EditorForm.Help.ActiveHelpChanged += this.Help_ActiveHelpChanged;
+			MainForm.Instance.Help.ActiveHelpChanged += this.Help_ActiveHelpChanged;
 			this.UpdateHelp();
 		}
 		protected override void OnClosed(EventArgs e)
 		{
 			base.OnClosed(e);
-			HelpAdvisorPlugin.Instance.EditorForm.Help.ActiveHelpChanged -= this.Help_ActiveHelpChanged;
+			MainForm.Instance.Help.ActiveHelpChanged -= this.Help_ActiveHelpChanged;
 		}
 		protected override void OnPaint(PaintEventArgs e)
 		{
@@ -87,7 +87,7 @@ namespace HelpAdvisor
 
 		public void UpdateHelp()
 		{
-			this.newHelp = HelpAdvisorPlugin.Instance.EditorForm.Help.ActiveHelp ?? advisorHelp;
+			this.newHelp = MainForm.Instance.Help.ActiveHelp ?? advisorHelp;
 			this.commitTimer.Stop();
 			this.commitTimer.Start();
 

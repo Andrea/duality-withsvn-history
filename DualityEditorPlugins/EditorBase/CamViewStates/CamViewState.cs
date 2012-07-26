@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Xml;
 using System.Windows.Forms;
 
 using Duality;
@@ -139,9 +140,10 @@ namespace EditorBase.CamViewStates
 		private	Vector3			selectionCenter		= Vector3.Zero;
 		private	float			selectionRadius		= 0.0f;
 		private	ObjectSelection	activeRectSel		= new ObjectSelection();
-		private	MouseAction		mouseoverAction	= MouseAction.None;
-		private	SelObj			mouseoverObject	= null;
-		private	bool			mouseoverSelect	= false;
+		private	MouseAction		mouseoverAction		= MouseAction.None;
+		private	SelObj			mouseoverObject		= null;
+		private	bool			mouseoverSelect		= false;
+		private	List<Type>		lastActiveLayers	= new List<Type>();
 		protected	List<SelObj>	actionObjSel	= new List<SelObj>();
 		protected	List<SelObj>	allObjSel		= new List<SelObj>();
 		protected	List<SelObj>	indirectObjSel	= new List<SelObj>();
@@ -164,6 +166,10 @@ namespace EditorBase.CamViewStates
 		public IEnumerable<SelObj> SelectedObjects
 		{
 			get { return this.allObjSel; }
+		}
+		public bool IsActive
+		{
+			get { return this.view != null && this.view.ViewState == this; }
 		}
 		public bool MouseActionAllowed
 		{
@@ -220,6 +226,8 @@ namespace EditorBase.CamViewStates
 
 		internal protected virtual void OnEnterState()
 		{
+			this.RestoreActiveLayers();
+
 			// Create re-usable render passes for editor gizmos
 			this.camPassBg = new Camera.Pass();
 			this.camPassBg.MatrixMode = RenderMatrix.OrthoScreen;
@@ -247,8 +255,8 @@ namespace EditorBase.CamViewStates
 			this.View.LocalGLControl.KeyUp		+= this.LocalGLControl_KeyUp;
 			this.View.LocalGLControl.LostFocus	+= this.LocalGLControl_LostFocus;
 			this.View.ParallaxRefDistChanged	+= this.View_ParallaxRefDistChanged;
-			EditorBasePlugin.Instance.EditorForm.AfterUpdateDualityApp += this.EditorForm_AfterUpdateDualityApp;
-			EditorBasePlugin.Instance.EditorForm.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
+			MainForm.Instance.AfterUpdateDualityApp += this.EditorForm_AfterUpdateDualityApp;
+			MainForm.Instance.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
 
 			Scene.Leaving += this.Scene_Changed;
 			Scene.Entered += this.Scene_Changed;
@@ -271,7 +279,7 @@ namespace EditorBase.CamViewStates
 			this.View.LocalGLControl.KeyUp		-= this.LocalGLControl_KeyUp;
 			this.View.LocalGLControl.LostFocus	-= this.LocalGLControl_LostFocus;
 			this.View.ParallaxRefDistChanged	-= this.View_ParallaxRefDistChanged;
-			EditorBasePlugin.Instance.EditorForm.AfterUpdateDualityApp -= this.EditorForm_AfterUpdateDualityApp;
+			MainForm.Instance.AfterUpdateDualityApp -= this.EditorForm_AfterUpdateDualityApp;
 			
 			Scene.Leaving -= this.Scene_Changed;
 			Scene.Entered -= this.Scene_Changed;
@@ -279,6 +287,36 @@ namespace EditorBase.CamViewStates
 			Scene.GameObjectUnregistered -= this.Scene_Changed;
 			Scene.RegisteredObjectComponentAdded -= this.Scene_Changed;
 			Scene.RegisteredObjectComponentRemoved -= this.Scene_Changed;
+
+			this.SaveActiveLayers();
+		}
+		
+		internal protected virtual void SaveUserData(XmlElement node)
+		{
+			if (this.IsActive) this.SaveActiveLayers();
+
+			XmlElement activeLayersNode = node.OwnerDocument.CreateElement("activeLayers");
+			foreach (Type t in this.lastActiveLayers)
+			{
+				XmlElement typeEntry = node.OwnerDocument.CreateElement(t.GetTypeId());
+				activeLayersNode.AppendChild(typeEntry);
+			}
+			node.AppendChild(activeLayersNode);
+		}
+		internal protected virtual void LoadUserData(XmlElement node)
+		{
+			XmlElement activeLayersNode = node.ChildNodes.OfType<XmlElement>().FirstOrDefault(e => e.Name == "activeLayers");
+			if (activeLayersNode != null)
+			{
+				this.lastActiveLayers.Clear();
+				foreach (XmlElement layerNode in activeLayersNode.ChildNodes.OfType<XmlElement>())
+				{
+					Type layerType = ReflectionHelper.ResolveType(layerNode.Name, false);
+					if (layerType != null) this.lastActiveLayers.Add(layerType);
+				}
+			}
+
+			if (this.IsActive) this.RestoreActiveLayers();
 		}
 
 		protected virtual void OnCollectStateDrawcalls(Canvas canvas)
@@ -553,13 +591,26 @@ namespace EditorBase.CamViewStates
 		public virtual List<SelObj> CloneObjects(IEnumerable<SelObj> objEnum) { return new List<SelObj>(); }
 		protected bool DisplayConfirmDeleteSelectedObjects()
 		{
-			if (EditorBasePlugin.Instance.EditorForm.CurrentSandboxState == MainForm.SandboxState.Playing) return true;
+			if (MainForm.Instance.CurrentSandboxState == MainForm.SandboxState.Playing) return true;
 			DialogResult result = MessageBox.Show(
 				PluginRes.EditorBaseRes.SceneView_MsgBox_ConfirmDeleteSelectedObjects_Text, 
 				PluginRes.EditorBaseRes.SceneView_MsgBox_ConfirmDeleteSelectedObjects_Caption, 
 				MessageBoxButtons.YesNo, 
 				MessageBoxIcon.Question);
 			return result == DialogResult.Yes;
+		}
+		
+		protected void SetDefaultActiveLayers(params Type[] activeLayers)
+		{
+			this.lastActiveLayers = activeLayers.ToList();
+		}
+		protected void SaveActiveLayers()
+		{
+			this.lastActiveLayers = this.view.ActiveViewLayers.Select(l => l.GetType()).ToList();
+		}
+		protected void RestoreActiveLayers()
+		{
+			this.view.SetActiveLayers(this.lastActiveLayers);
 		}
 
 		protected void DrawSelectionMarkers(Canvas canvas, IEnumerable<SelObj> obj)
@@ -649,8 +700,8 @@ namespace EditorBase.CamViewStates
 
 			this.camVel = Vector3.Zero;
 
-			if (EditorBasePlugin.Instance.EditorForm.CurrentSandboxState == MainForm.SandboxState.Playing)
-				EditorBasePlugin.Instance.EditorForm.SandboxSceneStartFreeze();
+			if (MainForm.Instance.CurrentSandboxState == MainForm.SandboxState.Playing)
+				MainForm.Instance.SandboxSceneStartFreeze();
 
 			// Begin movement
 			if (this.action == MouseAction.MoveObj)
@@ -683,8 +734,8 @@ namespace EditorBase.CamViewStates
 				this.activeRectSel = new ObjectSelection();
 			}
 
-			if (EditorBasePlugin.Instance.EditorForm.CurrentSandboxState == MainForm.SandboxState.Playing)
-				EditorBasePlugin.Instance.EditorForm.SandboxSceneStopFreeze();
+			if (MainForm.Instance.CurrentSandboxState == MainForm.SandboxState.Playing)
+				MainForm.Instance.SandboxSceneStopFreeze();
 
 			this.action = MouseAction.None;
 		}
@@ -795,7 +846,7 @@ namespace EditorBase.CamViewStates
 		}
 		private void UpdateRectSelection(Point mouseLoc)
 		{
-			if (EditorBasePlugin.Instance.EditorForm.IsSelectionChanging) return; // Prevent Recursion in case SelectObjects triggers UpdateAction.
+			if (MainForm.Instance.IsSelectionChanging) return; // Prevent Recursion in case SelectObjects triggers UpdateAction.
 
 			bool shift = (Control.ModifierKeys & Keys.Shift) != Keys.None;
 			bool ctrl = (Control.ModifierKeys & Keys.Control) != Keys.None;
@@ -1084,7 +1135,7 @@ namespace EditorBase.CamViewStates
 				}
 				else if (e.KeyCode == Keys.F)
 				{
-					this.view.FocusOnObject(EditorBasePlugin.Instance.EditorForm.Selection.MainGameObject);
+					this.view.FocusOnObject(MainForm.Instance.Selection.MainGameObject);
 				}
 				else
 				{
@@ -1108,6 +1159,8 @@ namespace EditorBase.CamViewStates
 		}
 		private void LocalGLControl_LostFocus(object sender, EventArgs e)
 		{
+			if (MainForm.Instance == null) return;
+
 			this.camAction = CameraAction.None;
 			this.EndAction();
 			this.lockedAxes = AxisLock.None;

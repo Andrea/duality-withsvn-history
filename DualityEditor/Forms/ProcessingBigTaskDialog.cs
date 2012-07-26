@@ -65,6 +65,7 @@ namespace DualityEditor.Forms
 		string					taskDesc		= "A task is being performed. Please wait.";
 
 
+		public ProcessingBigTaskDialog(string caption, string desc, TaskAction task, object data) : this(MainForm.Instance, caption, desc, task, data) {}
 		public ProcessingBigTaskDialog(MainForm owner, string caption, string desc, TaskAction task, object data)
 		{
 			this.InitializeComponent();

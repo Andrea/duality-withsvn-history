@@ -81,8 +81,9 @@ namespace EditorBase
 			return result;
 		}
 
-		protected override void SaveUserData(System.Xml.XmlDocument doc, System.Xml.XmlElement node)
+		protected override void SaveUserData(System.Xml.XmlElement node)
 		{
+			System.Xml.XmlDocument doc = node.OwnerDocument;
 			for (int i = 0; i < this.camViews.Count; i++)
 			{
 				System.Xml.XmlElement camViewElem = doc.CreateElement("CamView_" + i);
@@ -275,7 +276,7 @@ namespace EditorBase
 
 			if (!this.isLoading)
 			{
-				this.projectView.Show(this.EditorForm.MainDockPanel);
+				this.projectView.Show(MainForm.Instance.MainDockPanel);
 				if (this.projectView.Pane != null)
 				{
 					this.projectView.Pane.Activate();
@@ -295,7 +296,7 @@ namespace EditorBase
 
 			if (!this.isLoading)
 			{
-				this.sceneView.Show(this.EditorForm.MainDockPanel);
+				this.sceneView.Show(MainForm.Instance.MainDockPanel);
 				if (this.sceneView.Pane != null)
 				{
 					this.sceneView.Pane.Activate();
@@ -315,7 +316,7 @@ namespace EditorBase
 
 			if (!this.isLoading)
 			{
-				this.logView.Show(this.EditorForm.MainDockPanel);
+				this.logView.Show(MainForm.Instance.MainDockPanel);
 				if (this.logView.Pane != null)
 				{
 					this.logView.Pane.Activate();
@@ -333,7 +334,7 @@ namespace EditorBase
 
 			if (!this.isLoading && !dontShow)
 			{
-				objView.Show(this.EditorForm.MainDockPanel);
+				objView.Show(MainForm.Instance.MainDockPanel);
 				if (objView.Pane != null)
 				{
 					objView.Pane.Activate();
@@ -350,7 +351,7 @@ namespace EditorBase
 
 			if (!this.isLoading)
 			{
-				cam.Show(this.EditorForm.MainDockPanel);
+				cam.Show(MainForm.Instance.MainDockPanel);
 				if (cam.Pane != null)
 				{
 					cam.Pane.Activate();
@@ -382,11 +383,11 @@ namespace EditorBase
 		}
 		private void menuItemAppData_Click(object sender, EventArgs e)
 		{
-			this.EditorForm.Select(this, new ObjectSelection(DualityApp.AppData));
+			MainForm.Instance.Select(this, new ObjectSelection(DualityApp.AppData));
 		}
 		private void menuItemUserData_Click(object sender, EventArgs e)
 		{
-			this.EditorForm.Select(this, new ObjectSelection(DualityApp.UserData));
+			MainForm.Instance.Select(this, new ObjectSelection(DualityApp.UserData));
 		}
 
 		private void ActionShaderCreateProgram(IEnumerable<AbstractShader> shaderEnum)
@@ -447,7 +448,7 @@ namespace EditorBase
 			{
 				GameObject newObj = prefab.Instantiate();
 				Duality.Resources.Scene.Current.RegisterObj(newObj);
-				EditorBasePlugin.Instance.EditorForm.Select(this, new ObjectSelection(newObj));
+				MainForm.Instance.Select(this, new ObjectSelection(newObj));
 			}
 			catch (Exception exception)
 			{

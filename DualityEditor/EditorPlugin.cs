@@ -8,16 +8,10 @@ namespace DualityEditor
 {
 	public abstract class EditorPlugin
 	{
-		private	MainForm	editor	= null;
-
 		/// <summary>
 		/// The Plugins ID. This should be unique.
 		/// </summary>
 		public abstract string Id { get; }
-		public MainForm EditorForm
-		{
-			get { return this.editor; }
-		}
 
 		/// <summary>
 		/// This method is called as soon as the plugins assembly is loaded. Initializes the plugins internal data.
@@ -27,15 +21,12 @@ namespace DualityEditor
 		/// This method is called when all plugins and the editors user data and layout are loaded. May initialize GUI.
 		/// </summary>
 		/// <param name="main"></param>
-		internal protected virtual void InitPlugin(MainForm main)
-		{
-			this.editor = main;
-		}
+		internal protected virtual void InitPlugin(MainForm main) {}
 		/// <summary>
 		/// Saves the plugins user data to the provided Xml Node.
 		/// </summary>
 		/// <param name="node"></param>
-		internal protected virtual void SaveUserData(System.Xml.XmlDocument doc, System.Xml.XmlElement node) {}
+		internal protected virtual void SaveUserData(System.Xml.XmlElement node) {}
 		/// <summary>
 		/// Loads the plugins user data from the provided Xml Node.
 		/// </summary>

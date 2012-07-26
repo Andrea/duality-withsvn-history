@@ -49,6 +49,13 @@ namespace EditorBase.CamViewStates
 			get { return PluginRes.EditorBaseRes.CamViewState_RigidBodyEditor_Name; }
 		}
 
+		public RigidBodyEditorCamViewState()
+		{
+			this.SetDefaultActiveLayers(
+				typeof(CamViewLayers.RigidBodyJointCamViewLayer),
+				typeof(CamViewLayers.RigidBodyShapeCamViewLayer));
+		}
+
 		protected internal override void OnEnterState()
 		{
 			base.OnEnterState();
@@ -93,8 +100,8 @@ namespace EditorBase.CamViewStates
 			// Register events
 			this.View.LocalGLControl.KeyDown += this.LocalGLControl_KeyDown;
 			this.View.CurrentCameraChanged += this.View_CurrentCameraChanged;
-			EditorBasePlugin.Instance.EditorForm.SelectionChanged		+= this.EditorForm_SelectionChanged;
-			EditorBasePlugin.Instance.EditorForm.ObjectPropertyChanged	+= this.EditorForm_ObjectPropertyChanged;
+			MainForm.Instance.SelectionChanged		+= this.EditorForm_SelectionChanged;
+			MainForm.Instance.ObjectPropertyChanged	+= this.EditorForm_ObjectPropertyChanged;
 
 			// Initial update
 			this.View_CurrentCameraChanged(this, new CamView.CameraChangedEventArgs(null, this.View.CameraComponent));
@@ -102,8 +109,6 @@ namespace EditorBase.CamViewStates
 			this.UpdateSelectionStats();
 			this.UpdateToolbar();
 
-			this.View.ActivateLayer(typeof(CamViewLayers.RigidBodyJointCamViewLayer));
-			this.View.ActivateLayer(typeof(CamViewLayers.RigidBodyShapeCamViewLayer));
 			this.View.LockLayer(typeof(CamViewLayers.RigidBodyShapeCamViewLayer));
 		}
 		protected internal override void OnLeaveState()
@@ -116,8 +121,8 @@ namespace EditorBase.CamViewStates
 			// Unregister events
 			this.View.CurrentCameraChanged -= this.View_CurrentCameraChanged;
 			this.View.LocalGLControl.KeyDown -= this.LocalGLControl_KeyDown;
-			EditorBasePlugin.Instance.EditorForm.SelectionChanged		-= this.EditorForm_SelectionChanged;
-			EditorBasePlugin.Instance.EditorForm.ObjectPropertyChanged	-= this.EditorForm_ObjectPropertyChanged;
+			MainForm.Instance.SelectionChanged		-= this.EditorForm_SelectionChanged;
+			MainForm.Instance.ObjectPropertyChanged	-= this.EditorForm_ObjectPropertyChanged;
 
 			// Cleanup GUI
 			this.toolstrip.Dispose();
@@ -127,8 +132,6 @@ namespace EditorBase.CamViewStates
 			this.toolCreateCircle = null;
 
 			this.View.UnlockLayer(typeof(CamViewLayers.RigidBodyShapeCamViewLayer));
-			this.View.DeactivateLayer(typeof(CamViewLayers.RigidBodyShapeCamViewLayer));
-			this.View.DeactivateLayer(typeof(CamViewLayers.RigidBodyJointCamViewLayer));
 		}
 		protected override void DrawStatusText(Canvas canvas, ref bool handled)
 		{
@@ -148,10 +151,10 @@ namespace EditorBase.CamViewStates
 			SelShape[] selShapeArray = selObjEnum.OfType<SelShape>().ToArray();
 
 			// Notify property changes
-			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
+			MainForm.Instance.NotifyObjPropChanged(this,
 				new ObjectSelection(this.selectedCollider),
 				ReflectionInfo.Property_RigidBody_Shapes);
-			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(selShapeArray.Select(s => s.ActualObject)));
+			MainForm.Instance.NotifyObjPropChanged(this, new ObjectSelection(selShapeArray.Select(s => s.ActualObject)));
 		}
 		protected override void OnCursorSpacePosChanged()
 		{
@@ -173,7 +176,7 @@ namespace EditorBase.CamViewStates
 				polyShape.Vertices = vertices.ToArray();
 				selPolyShape.UpdatePolyStats();
 
-				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
+				MainForm.Instance.NotifyObjPropChanged(this,
 					new ObjectSelection(this.selectedCollider),
 					ReflectionInfo.Property_RigidBody_Shapes);
 			}
@@ -188,7 +191,7 @@ namespace EditorBase.CamViewStates
 				polyShape.Vertices = vertices.ToArray();
 				selPolyShape.UpdateLoopStats();
 
-				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
+				MainForm.Instance.NotifyObjPropChanged(this,
 					new ObjectSelection(this.selectedCollider),
 					ReflectionInfo.Property_RigidBody_Shapes);
 			}
@@ -205,7 +208,7 @@ namespace EditorBase.CamViewStates
 
 			//    selEdgeShape.UpdateEdgeStats();
 
-			//    EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
+			//    MainForm.Instance.NotifyObjPropChanged(this,
 			//        new ObjectSelection(this.selectedCollider),
 			//        ReflectionInfo.Property_RigidBody_Shapes);
 			//}
@@ -419,24 +422,24 @@ namespace EditorBase.CamViewStates
 				SelShape[] selShapeArray = distinctShapeQuery.ToArray();
 
 				// First, select the associated Collider
-				EditorBasePlugin.Instance.EditorForm.Select(this, new ObjectSelection(selShapeArray[0].Body), MainForm.SelectMode.Set);
+				MainForm.Instance.Select(this, new ObjectSelection(selShapeArray[0].Body), MainForm.SelectMode.Set);
 				// Then, select actual ShapeInfos
-				EditorBasePlugin.Instance.EditorForm.Select(this, new ObjectSelection(selShapeArray.Select(s => s.ActualObject)), mode);
+				MainForm.Instance.Select(this, new ObjectSelection(selShapeArray.Select(s => s.ActualObject)), mode);
 			}
 
 			// Change collider selection
 			else if (selObjEnum.OfType<SelCollider>().Any())
 			{
 				// Deselect ShapeInfos
-				EditorBasePlugin.Instance.EditorForm.Deselect(this, ObjectSelection.Category.Other);
+				MainForm.Instance.Deselect(this, ObjectSelection.Category.Other);
 				// Select Collider
-				EditorBasePlugin.Instance.EditorForm.Select(this, new ObjectSelection(selObjEnum.OfType<SelCollider>().Select(s => s.ActualObject)), mode);
+				MainForm.Instance.Select(this, new ObjectSelection(selObjEnum.OfType<SelCollider>().Select(s => s.ActualObject)), mode);
 			}
 		}
 		public override void ClearSelection()
 		{
 			base.ClearSelection();
-			EditorBasePlugin.Instance.EditorForm.Deselect(this, ObjectSelection.Category.GameObjCmp | ObjectSelection.Category.Other);
+			MainForm.Instance.Deselect(this, ObjectSelection.Category.GameObjCmp | ObjectSelection.Category.Other);
 		}
 		public override void DeleteObjects(IEnumerable<CamViewState.SelObj> objEnum)
 		{
@@ -448,8 +451,8 @@ namespace EditorBase.CamViewStates
 					ShapeInfo shape = selShape.ActualObject as ShapeInfo;
 					this.selectedCollider.RemoveShape(shape);
 				}
-				EditorBasePlugin.Instance.EditorForm.Deselect(this, ObjectSelection.Category.Other);
-				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
+				MainForm.Instance.Deselect(this, ObjectSelection.Category.Other);
+				MainForm.Instance.NotifyObjPropChanged(this,
 					new ObjectSelection(this.selectedCollider),
 					ReflectionInfo.Property_RigidBody_Shapes);
 			}
@@ -488,9 +491,9 @@ namespace EditorBase.CamViewStates
 			this.UpdateToolbar();
 			this.View.LocalGLControl.Invalidate();
 
-			if (EditorBasePlugin.Instance.EditorForm.CurrentSandboxState == MainForm.SandboxState.Playing)
-				EditorBasePlugin.Instance.EditorForm.SandboxPause();
-			EditorBasePlugin.Instance.EditorForm.Deselect(this, ObjectSelection.Category.Other);
+			if (MainForm.Instance.CurrentSandboxState == MainForm.SandboxState.Playing)
+				MainForm.Instance.SandboxPause();
+			MainForm.Instance.Deselect(this, ObjectSelection.Category.Other);
 		}
 		private void LeaveCursorState()
 		{
@@ -511,7 +514,7 @@ namespace EditorBase.CamViewStates
 		}
 		protected RigidBody QuerySelectedCollider()
 		{
-			return EditorBasePlugin.Instance.EditorForm.Selection.Components.OfType<RigidBody>().FirstOrDefault();
+			return MainForm.Instance.Selection.Components.OfType<RigidBody>().FirstOrDefault();
 		}
 		protected bool RendererFilter(ICmpRenderer r)
 		{
@@ -530,7 +533,7 @@ namespace EditorBase.CamViewStates
 			{
 				// Applying its Prefab invalidates a Collider's ShapeInfos: Deselect them.
 				if (e.PrefabApplied)
-					EditorBasePlugin.Instance.EditorForm.Deselect(this, ObjectSelection.Category.Other);
+					MainForm.Instance.Deselect(this, ObjectSelection.Category.Other);
 				else
 				{
 					foreach (SelPolyShape sps in this.allObjSel.OfType<SelPolyShape>()) sps.UpdatePolyStats();
@@ -548,7 +551,7 @@ namespace EditorBase.CamViewStates
 			// Collider selection changed
 			if ((e.AffectedCategories & ObjectSelection.Category.GameObjCmp) != ObjectSelection.Category.None)
 			{
-				EditorBasePlugin.Instance.EditorForm.Deselect(this, ObjectSelection.Category.Other);
+				MainForm.Instance.Deselect(this, ObjectSelection.Category.Other);
 				this.selectedCollider = this.QuerySelectedCollider();
 			}
 			// Other selection changed
@@ -619,7 +622,7 @@ namespace EditorBase.CamViewStates
 					CircleShapeInfo newShape = new CircleShapeInfo(16.0f, localPos, 1.0f);
 					this.selectedCollider.AddShape(newShape);
 
-					EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
+					MainForm.Instance.NotifyObjPropChanged(this,
 						new ObjectSelection(this.selectedCollider),
 						ReflectionInfo.Property_RigidBody_Shapes);
 
@@ -667,7 +670,7 @@ namespace EditorBase.CamViewStates
 					if (success)
 					{
 						this.createPolyIndex++;
-						EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
+						MainForm.Instance.NotifyObjPropChanged(this,
 							new ObjectSelection(this.selectedCollider),
 							ReflectionInfo.Property_RigidBody_Shapes);
 					}
@@ -691,7 +694,7 @@ namespace EditorBase.CamViewStates
 							selPolyShape.UpdatePolyStats();
 						}
 
-						EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
+						MainForm.Instance.NotifyObjPropChanged(this,
 							new ObjectSelection(this.selectedCollider),
 							ReflectionInfo.Property_RigidBody_Shapes);
 					}
@@ -731,7 +734,7 @@ namespace EditorBase.CamViewStates
 					if (success)
 					{
 						this.createPolyIndex++;
-						EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
+						MainForm.Instance.NotifyObjPropChanged(this,
 							new ObjectSelection(this.selectedCollider),
 							ReflectionInfo.Property_RigidBody_Shapes);
 					}
@@ -755,7 +758,7 @@ namespace EditorBase.CamViewStates
 							selPolyShape.UpdateLoopStats();
 						}
 
-						EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
+						MainForm.Instance.NotifyObjPropChanged(this,
 							new ObjectSelection(this.selectedCollider),
 							ReflectionInfo.Property_RigidBody_Shapes);
 					}
@@ -796,7 +799,7 @@ namespace EditorBase.CamViewStates
 			//        if (success)
 			//        {
 			//            this.createPolyIndex++;
-			//            EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
+			//            MainForm.Instance.NotifyObjPropChanged(this,
 			//                new ObjectSelection(this.selectedCollider),
 			//                ReflectionInfo.Property_RigidBody_Shapes);
 
@@ -816,7 +819,7 @@ namespace EditorBase.CamViewStates
 			//            else
 			//                selEdgeShape.UpdateEdgeStats();
 
-			//            EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
+			//            MainForm.Instance.NotifyObjPropChanged(this,
 			//                new ObjectSelection(this.selectedCollider),
 			//                ReflectionInfo.Property_RigidBody_Shapes);
 			//        }

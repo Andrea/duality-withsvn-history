@@ -14,10 +14,12 @@ using Duality;
 using Duality.ObjectManagers;
 using Duality.Resources;
 
+using DualityEditor.Forms;
+
 using WeifenLuo.WinFormsUI.Docking;
 using Ionic.Zip;
 
-namespace DualityEditor.Forms
+namespace DualityEditor
 {
 	public partial class MainForm : Form
 	{
@@ -36,7 +38,7 @@ namespace DualityEditor.Forms
 
 
 		private static MainForm instance;
-		internal static MainForm Instance
+		public static MainForm Instance
 		{
 			get { return instance; }
 		}
@@ -840,7 +842,7 @@ namespace DualityEditor.Forms
 				{
 					XmlElement pluginXmlElement = xmlDoc.CreateElement("Plugin_" + plugin.Id);
 					rootElement.AppendChild(pluginXmlElement);
-					plugin.SaveUserData(xmlDoc, pluginXmlElement);
+					plugin.SaveUserData(pluginXmlElement);
 				}
 				xmlDoc.Save(writer.BaseStream);
 				// ----------------------------------

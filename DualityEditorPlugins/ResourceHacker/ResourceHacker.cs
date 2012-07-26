@@ -404,7 +404,7 @@ namespace ResourceHacker
 			}
 
 			// Assure reloading the modified resource
-			if (PathHelper.IsPathLocatedIn(filePath, "."))
+			if (updateContent && PathHelper.IsPathLocatedIn(filePath, "."))
 			{
 				string dataPath = PathHelper.MakeFilePathRelative(filePath, ".");
 				ContentProvider.UnregisterContent(dataPath);
@@ -527,7 +527,7 @@ namespace ResourceHacker
 				if (dialog.ShowDialog(this) == DialogResult.OK)
 				{
 					int replaced = 0;
-					ProcessingBigTaskDialog taskDialog = new ProcessingBigTaskDialog(ResourceHackerPlugin.Instance.EditorForm, 
+					ProcessingBigTaskDialog taskDialog = new ProcessingBigTaskDialog(
 						PluginRes.ResourceHackerRes.TaskBatchRenameType_Caption,
 						string.Format(PluginRes.ResourceHackerRes.TaskBatchRenameType_Desc, dialog.SearchFor, dialog.ReplaceWith), 
 						this.async_PerformBatchAction,

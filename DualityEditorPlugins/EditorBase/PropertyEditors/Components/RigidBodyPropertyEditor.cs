@@ -136,7 +136,7 @@ namespace EditorBase.PropertyEditors
 						target.RemoveJoint(target.Joints.ElementAt(index));
 					}
 					this.PerformGetValue();
-					EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(targetArray), ReflectionInfo.Property_RigidBody_Joints);
+					MainForm.Instance.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(targetArray), ReflectionInfo.Property_RigidBody_Joints);
 				}
 			};
 		}
@@ -214,14 +214,14 @@ namespace EditorBase.PropertyEditors
 			base.OnPropertySet(property, targets);
 
 			var colJoints = targets.OfType<JointInfo>().ToArray();
-			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(colJoints), property);
+			MainForm.Instance.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(colJoints), property);
 
 			var colliders = 
 				colJoints.Select(c => c.BodyA).Concat(
 				colJoints.Select(c => c.BodyB))
 				.Distinct().NotNull().ToArray();
 			foreach (var c in colliders) c.AwakeBody();
-			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(colliders), ReflectionInfo.Property_RigidBody_Joints);
+			MainForm.Instance.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(colliders), ReflectionInfo.Property_RigidBody_Joints);
 		}
 
 		protected Func<IEnumerable<object>> CreateOtherColValueGetter()
@@ -303,7 +303,7 @@ namespace EditorBase.PropertyEditors
 				c.AddJoint(joint);
 			}
 			this.ParentEditor.PerformGetValue();
-			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(targetArray), ReflectionInfo.Property_RigidBody_Joints);
+			MainForm.Instance.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(targetArray), ReflectionInfo.Property_RigidBody_Joints);
 		}
 	}
 }

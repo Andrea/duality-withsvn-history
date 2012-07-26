@@ -35,7 +35,7 @@ namespace EditorBase.PropertyEditors
 		}
 		protected override void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)
 		{
-			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, new ObjectSelection(targets), property);
+			MainForm.Instance.NotifyObjPropChanged(this, new ObjectSelection(targets), property);
 		}
 		protected override void OnEditedTypeChanged()
 		{

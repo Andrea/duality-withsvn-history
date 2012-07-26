@@ -955,7 +955,7 @@ namespace EditorBase.CamViewLayers
 		}
 		private RigidBody QuerySelectedCollider()
 		{
-			return EditorBasePlugin.Instance.EditorForm.Selection.Components.OfType<RigidBody>().FirstOrDefault();
+			return MainForm.Instance.Selection.Components.OfType<RigidBody>().FirstOrDefault();
 		}
 	}
 }

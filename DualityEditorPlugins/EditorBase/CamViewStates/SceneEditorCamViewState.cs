@@ -134,11 +134,11 @@ namespace EditorBase.CamViewStates
 			this.View.LocalGLControl.DragLeave	+= this.LocalGLControl_DragLeave;
 			this.View.LocalGLControl.DragOver	+= this.LocalGLControl_DragOver;
 
-			EditorBasePlugin.Instance.EditorForm.SelectionChanged		+= this.EditorForm_SelectionChanged;
-			EditorBasePlugin.Instance.EditorForm.ObjectPropertyChanged	+= this.EditorForm_ObjectPropertyChanged;
+			MainForm.Instance.SelectionChanged		+= this.EditorForm_SelectionChanged;
+			MainForm.Instance.ObjectPropertyChanged	+= this.EditorForm_ObjectPropertyChanged;
 
 			// Initial selection update
-			ObjectSelection current = EditorBasePlugin.Instance.EditorForm.Selection;
+			ObjectSelection current = MainForm.Instance.Selection;
 			this.allObjSel = current.GameObjects.Select(g => new SelGameObj(g) as SelObj).ToList();
 			{
 				var selectedGameObj = current.GameObjects;
@@ -161,8 +161,8 @@ namespace EditorBase.CamViewStates
 			this.View.LocalGLControl.DragLeave	-= this.LocalGLControl_DragLeave;
 			this.View.LocalGLControl.DragOver	-= this.LocalGLControl_DragOver;
 
-			EditorBasePlugin.Instance.EditorForm.SelectionChanged		-= this.EditorForm_SelectionChanged;
-			EditorBasePlugin.Instance.EditorForm.ObjectPropertyChanged	-= this.EditorForm_ObjectPropertyChanged;
+			MainForm.Instance.SelectionChanged		-= this.EditorForm_SelectionChanged;
+			MainForm.Instance.ObjectPropertyChanged	-= this.EditorForm_ObjectPropertyChanged;
 
 			this.View.LocalGLControl.Cursor = CursorHelper.Arrow;
 		}
@@ -204,26 +204,26 @@ namespace EditorBase.CamViewStates
 		public override void ClearSelection()
 		{
 			base.ClearSelection();
-			EditorBasePlugin.Instance.EditorForm.Deselect(this, ObjectSelection.Category.GameObjCmp);
+			MainForm.Instance.Deselect(this, ObjectSelection.Category.GameObjCmp);
 		}
 		public override void SelectObjects(IEnumerable<CamViewState.SelObj> selObjEnum, MainForm.SelectMode mode = MainForm.SelectMode.Set)
 		{
 			base.SelectObjects(selObjEnum, mode);
-			EditorBasePlugin.Instance.EditorForm.Select(this, new ObjectSelection(selObjEnum.Select(s => s.ActualObject)), mode);
+			MainForm.Instance.Select(this, new ObjectSelection(selObjEnum.Select(s => s.ActualObject)), mode);
 		}
 		protected override void PostPerformAction(IEnumerable<CamViewState.SelObj> selObjEnum, CamViewState.MouseAction action)
 		{
 			base.PostPerformAction(selObjEnum, action);
 			if (action == MouseAction.MoveObj)
 			{
-				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
+				MainForm.Instance.NotifyObjPropChanged(
 					this,
 					new ObjectSelection(selObjEnum.Select(s => (s.ActualObject as GameObject).Transform)),
 					ReflectionInfo.Property_Transform_RelativePos);
 			}
 			else if (action == MouseAction.RotateObj)
 			{
-				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
+				MainForm.Instance.NotifyObjPropChanged(
 					this,
 					new ObjectSelection(selObjEnum.Select(s => (s.ActualObject as GameObject).Transform)),
 					ReflectionInfo.Property_Transform_RelativePos,
@@ -231,7 +231,7 @@ namespace EditorBase.CamViewStates
 			}
 			else if (action == MouseAction.ScaleObj)
 			{
-				EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(
+				MainForm.Instance.NotifyObjPropChanged(
 					this,
 					new ObjectSelection(selObjEnum.Select(s => (s.ActualObject as GameObject).Transform)),
 					ReflectionInfo.Property_Transform_RelativePos,
@@ -246,7 +246,7 @@ namespace EditorBase.CamViewStates
 
 			// Ask user if he really wants to delete stuff
 			if (!this.DisplayConfirmDeleteSelectedObjects()) return;
-			if (!EditorBasePlugin.Instance.EditorForm.DisplayConfirmBreakPrefabLink(new ObjectSelection(objList))) return;
+			if (!MainForm.Instance.DisplayConfirmBreakPrefabLink(new ObjectSelection(objList))) return;
 
 			// Delete objects
 			foreach (GameObject o in objList)
@@ -306,7 +306,7 @@ namespace EditorBase.CamViewStates
 				Scene.Current.UnregisterObj(gameObj);
 				gameObj.Dispose();
 			}
-			EditorBasePlugin.Instance.EditorForm.Select(this, this.selBeforeDrag);
+			MainForm.Instance.Select(this, this.selBeforeDrag);
 		}
 		private void LocalGLControl_DragEnter(object sender, DragEventArgs e)
 		{
@@ -360,7 +360,7 @@ namespace EditorBase.CamViewStates
 				}
 
 				// Select them & begin action
-				this.selBeforeDrag = EditorBasePlugin.Instance.EditorForm.Selection;
+				this.selBeforeDrag = MainForm.Instance.Selection;
 				this.SelectObjects(dragObj.Select(g => new SelGameObj(g) as SelObj));
 				this.BeginAction(MouseAction.MoveObj);
 

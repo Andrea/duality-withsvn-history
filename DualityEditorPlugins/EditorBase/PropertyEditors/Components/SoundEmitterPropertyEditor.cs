@@ -78,7 +78,7 @@ namespace EditorBase.PropertyEditors
 						}
 					}
 
-					EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this,
+					MainForm.Instance.NotifyObjPropChanged(this,
 						new ObjectSelection(values),
 						ReflectionInfo.Property_SoundEmitter_Sources);
 					this.PerformGetValue();

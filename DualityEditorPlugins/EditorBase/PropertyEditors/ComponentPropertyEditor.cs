@@ -25,7 +25,7 @@ namespace EditorBase.PropertyEditors
 			foreach (Component c in values) c.ActiveSingle = active;
 
 			// Notify ActiveSingle changed
-			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this, 
+			MainForm.Instance.NotifyObjPropChanged(this, 
 				new ObjectSelection(values), 
 				ReflectionInfo.Property_Component_ActiveSingle);
 		}
@@ -60,7 +60,7 @@ namespace EditorBase.PropertyEditors
 		protected override void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)
 		{
 			base.OnPropertySet(property, targets);
-			EditorBasePlugin.Instance.EditorForm.NotifyObjPropChanged(this.ParentGrid, new DualityEditor.ObjectSelection(targets), property);
+			MainForm.Instance.NotifyObjPropChanged(this.ParentGrid, new DualityEditor.ObjectSelection(targets), property);
 		}
 		protected override void OnActiveChanged()
 		{

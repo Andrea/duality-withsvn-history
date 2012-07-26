@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Xml;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -33,6 +34,14 @@ namespace EditorBase.CamViewLayers
 		public abstract string LayerName { get; }
 		public abstract string LayerDesc { get; }
 		
+		internal protected virtual void SaveUserData(XmlElement node)
+		{
+			
+		}
+		internal protected virtual void LoadUserData(XmlElement node)
+		{
+			
+		}
 		internal protected virtual void OnActivateLayer() {}
 		internal protected virtual void OnDeactivateLayer() {}
 		internal protected virtual void OnCollectDrawcalls(Canvas canvas) {}
