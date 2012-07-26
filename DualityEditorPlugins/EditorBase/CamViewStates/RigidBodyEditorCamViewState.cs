@@ -37,7 +37,7 @@ namespace EditorBase.CamViewStates
 
 		private	CursorState			mouseState			= CursorState.Normal;
 		private	int					createPolyIndex		= 0;
-		private	RigidBody			selectedCollider	= null;
+		private	RigidBody			selectedBody		= null;
 		private	ToolStrip			toolstrip			= null;
 		private	ToolStripButton		toolCreateCircle	= null;
 		private	ToolStripButton		toolCreatePoly		= null;
@@ -105,7 +105,7 @@ namespace EditorBase.CamViewStates
 
 			// Initial update
 			this.View_CurrentCameraChanged(this, new CamView.CameraChangedEventArgs(null, this.View.CameraComponent));
-			this.selectedCollider = this.QuerySelectedCollider();
+			this.selectedBody = this.QuerySelectedCollider();
 			this.UpdateSelectionStats();
 			this.UpdateToolbar();
 
@@ -150,9 +150,12 @@ namespace EditorBase.CamViewStates
 			base.PostPerformAction(selObjEnum, action);
 			SelShape[] selShapeArray = selObjEnum.OfType<SelShape>().ToArray();
 
+			// Update the body directly after modifying it
+			if (this.selectedBody != null) this.selectedBody.SynchronizeBodyShape();
+
 			// Notify property changes
 			MainForm.Instance.NotifyObjPropChanged(this,
-				new ObjectSelection(this.selectedCollider),
+				new ObjectSelection(this.selectedBody),
 				ReflectionInfo.Property_RigidBody_Shapes);
 			MainForm.Instance.NotifyObjPropChanged(this, new ObjectSelection(selShapeArray.Select(s => s.ActualObject)));
 		}
@@ -161,7 +164,7 @@ namespace EditorBase.CamViewStates
 			base.OnCursorSpacePosChanged();
 
 			Point mouseLoc = this.View.LocalGLControl.PointToClient(Cursor.Position);
-			Transform selTransform = this.selectedCollider != null && this.selectedCollider.GameObj != null ? this.selectedCollider.GameObj.Transform : null;
+			Transform selTransform = this.selectedBody != null && this.selectedBody.GameObj != null ? this.selectedBody.GameObj.Transform : null;
 			Vector3 spaceCoord = selTransform != null ? this.View.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, selTransform.Pos.Z)) : Vector3.Zero;
 			Vector2 localPos = selTransform != null ? selTransform.GetLocalPoint(spaceCoord).Xy : Vector2.Zero;
 
@@ -177,7 +180,7 @@ namespace EditorBase.CamViewStates
 				selPolyShape.UpdatePolyStats();
 
 				MainForm.Instance.NotifyObjPropChanged(this,
-					new ObjectSelection(this.selectedCollider),
+					new ObjectSelection(this.selectedBody),
 					ReflectionInfo.Property_RigidBody_Shapes);
 			}
 			else if (this.mouseState == CursorState.CreateLoop && this.allObjSel.Any(sel => sel is SelLoopShape))
@@ -192,7 +195,7 @@ namespace EditorBase.CamViewStates
 				selPolyShape.UpdateLoopStats();
 
 				MainForm.Instance.NotifyObjPropChanged(this,
-					new ObjectSelection(this.selectedCollider),
+					new ObjectSelection(this.selectedBody),
 					ReflectionInfo.Property_RigidBody_Shapes);
 			}
 			//else if (this.mouseState == CursorState.CreateEdge && this.allObjSel.Any(sel => sel is SelEdgeShape))
@@ -216,10 +219,10 @@ namespace EditorBase.CamViewStates
 
 		protected void UpdateToolbar()
 		{
-			this.toolCreateCircle.Enabled = this.selectedCollider != null && this.mouseState == CursorState.Normal;
+			this.toolCreateCircle.Enabled = this.selectedBody != null && this.mouseState == CursorState.Normal;
 			this.toolCreatePoly.Enabled = this.toolCreateCircle.Enabled;
 		//	this.toolCreateEdge.Enabled = this.toolCreateCircle.Enabled;
-			this.toolCreateLoop.Enabled = this.toolCreateCircle.Enabled && this.selectedCollider.PhysicsBodyType == RigidBody.BodyType.Static;
+			this.toolCreateLoop.Enabled = this.toolCreateCircle.Enabled && this.selectedBody.PhysicsBodyType == RigidBody.BodyType.Static;
 		}
 
 		public override CamViewState.SelObj PickSelObjAt(int x, int y)
@@ -249,7 +252,7 @@ namespace EditorBase.CamViewStates
 			}
 
 			if (pickedShape != null) return SelShape.Create(pickedShape);
-			if (pickedCollider != null) return new SelCollider(pickedCollider);
+			if (pickedCollider != null) return new SelBody(pickedCollider);
 
 			return null;
 		}
@@ -275,7 +278,7 @@ namespace EditorBase.CamViewStates
 				if (pickedShape != null)
 				{
 					pickedCollider = c;
-					result.Add(new SelCollider(pickedCollider));
+					result.Add(new SelBody(pickedCollider));
 					break;
 				}
 				else pickedShape = null;
@@ -428,12 +431,12 @@ namespace EditorBase.CamViewStates
 			}
 
 			// Change collider selection
-			else if (selObjEnum.OfType<SelCollider>().Any())
+			else if (selObjEnum.OfType<SelBody>().Any())
 			{
 				// Deselect ShapeInfos
 				MainForm.Instance.Deselect(this, ObjectSelection.Category.Other);
 				// Select Collider
-				MainForm.Instance.Select(this, new ObjectSelection(selObjEnum.OfType<SelCollider>().Select(s => s.ActualObject)), mode);
+				MainForm.Instance.Select(this, new ObjectSelection(selObjEnum.OfType<SelBody>().Select(s => s.ActualObject)), mode);
 			}
 		}
 		public override void ClearSelection()
@@ -449,11 +452,11 @@ namespace EditorBase.CamViewStates
 				foreach (SelShape selShape in selShapes)
 				{
 					ShapeInfo shape = selShape.ActualObject as ShapeInfo;
-					this.selectedCollider.RemoveShape(shape);
+					this.selectedBody.RemoveShape(shape);
 				}
 				MainForm.Instance.Deselect(this, ObjectSelection.Category.Other);
 				MainForm.Instance.NotifyObjPropChanged(this,
-					new ObjectSelection(this.selectedCollider),
+					new ObjectSelection(this.selectedBody),
 					ReflectionInfo.Property_RigidBody_Shapes);
 			}
 		}
@@ -467,7 +470,7 @@ namespace EditorBase.CamViewStates
 				{
 					ShapeInfo shape = selShape.ActualObject as ShapeInfo;
 					shape = shape.Clone();
-					this.selectedCollider.AddShape(shape);
+					this.selectedBody.AddShape(shape);
 					result.Add(SelShape.Create(shape));
 				}
 			}
@@ -552,7 +555,7 @@ namespace EditorBase.CamViewStates
 			if ((e.AffectedCategories & ObjectSelection.Category.GameObjCmp) != ObjectSelection.Category.None)
 			{
 				MainForm.Instance.Deselect(this, ObjectSelection.Category.Other);
-				this.selectedCollider = this.QuerySelectedCollider();
+				this.selectedBody = this.QuerySelectedCollider();
 			}
 			// Other selection changed
 			if ((e.AffectedCategories & ObjectSelection.Category.Other) != ObjectSelection.Category.None)
@@ -575,12 +578,12 @@ namespace EditorBase.CamViewStates
 
 		private void toolCreateCircle_Clicked(object sender, EventArgs e)
 		{
-			if (this.selectedCollider == null) return;
+			if (this.selectedBody == null) return;
 			this.EnterCursorState(CursorState.CreateCircle);
 		}
 		private void toolCreatePoly_Clicked(object sender, EventArgs e)
 		{
-			if (this.selectedCollider == null) return;
+			if (this.selectedBody == null) return;
 			this.EnterCursorState(CursorState.CreatePolygon);
 		}
 		//private void toolCreateEdge_Clicked(object sender, EventArgs e)
@@ -590,7 +593,7 @@ namespace EditorBase.CamViewStates
 	//	}
 		private void toolCreateLoop_Clicked(object sender, EventArgs e)
 		{
-			if (this.selectedCollider == null) return;
+			if (this.selectedBody == null) return;
 			this.EnterCursorState(CursorState.CreateLoop);
 		}
 		
@@ -610,7 +613,7 @@ namespace EditorBase.CamViewStates
 		}
 		private void LocalGLControl_MouseDown(object sender, MouseEventArgs e)
 		{
-			Transform selTransform = this.selectedCollider.GameObj.Transform;
+			Transform selTransform = this.selectedBody.GameObj.Transform;
 			Vector3 spaceCoord = this.View.GetSpaceCoord(new Vector3(e.X, e.Y, selTransform.Pos.Z));
 			Vector2 localPos = selTransform.GetLocalPoint(spaceCoord).Xy;
 
@@ -620,10 +623,10 @@ namespace EditorBase.CamViewStates
 				if (e.Button == MouseButtons.Left)
 				{
 					CircleShapeInfo newShape = new CircleShapeInfo(16.0f, localPos, 1.0f);
-					this.selectedCollider.AddShape(newShape);
+					this.selectedBody.AddShape(newShape);
 
 					MainForm.Instance.NotifyObjPropChanged(this,
-						new ObjectSelection(this.selectedCollider),
+						new ObjectSelection(this.selectedBody),
 						ReflectionInfo.Property_RigidBody_Shapes);
 
 					this.LeaveCursorState();
@@ -645,7 +648,7 @@ namespace EditorBase.CamViewStates
 					if (!this.allObjSel.Any(sel => sel is SelPolyShape))
 					{
 						PolyShapeInfo newShape = new PolyShapeInfo(new Vector2[] { localPos, localPos + Vector2.UnitX, localPos + Vector2.One }, 1.0f);
-						this.selectedCollider.AddShape(newShape);
+						this.selectedBody.AddShape(newShape);
 						this.SelectObjects(new[] { SelShape.Create(newShape) });
 						success = true;
 					}
@@ -671,7 +674,7 @@ namespace EditorBase.CamViewStates
 					{
 						this.createPolyIndex++;
 						MainForm.Instance.NotifyObjPropChanged(this,
-							new ObjectSelection(this.selectedCollider),
+							new ObjectSelection(this.selectedBody),
 							ReflectionInfo.Property_RigidBody_Shapes);
 					}
 				}
@@ -695,7 +698,7 @@ namespace EditorBase.CamViewStates
 						}
 
 						MainForm.Instance.NotifyObjPropChanged(this,
-							new ObjectSelection(this.selectedCollider),
+							new ObjectSelection(this.selectedBody),
 							ReflectionInfo.Property_RigidBody_Shapes);
 					}
 
@@ -712,7 +715,7 @@ namespace EditorBase.CamViewStates
 					if (!this.allObjSel.Any(sel => sel is SelLoopShape))
 					{
 						LoopShapeInfo newShape = new LoopShapeInfo(new Vector2[] { localPos, localPos + Vector2.UnitX, localPos + Vector2.One });
-						this.selectedCollider.AddShape(newShape);
+						this.selectedBody.AddShape(newShape);
 						this.SelectObjects(new[] { SelShape.Create(newShape) });
 						success = true;
 					}
@@ -735,7 +738,7 @@ namespace EditorBase.CamViewStates
 					{
 						this.createPolyIndex++;
 						MainForm.Instance.NotifyObjPropChanged(this,
-							new ObjectSelection(this.selectedCollider),
+							new ObjectSelection(this.selectedBody),
 							ReflectionInfo.Property_RigidBody_Shapes);
 					}
 				}
@@ -759,7 +762,7 @@ namespace EditorBase.CamViewStates
 						}
 
 						MainForm.Instance.NotifyObjPropChanged(this,
-							new ObjectSelection(this.selectedCollider),
+							new ObjectSelection(this.selectedBody),
 							ReflectionInfo.Property_RigidBody_Shapes);
 					}
 

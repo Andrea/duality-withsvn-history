@@ -265,7 +265,7 @@ namespace Duality
 		/// </summary>
 		/// <param name="points"></param>
 		/// <param name="z"></param>
-		public void DrawConvexPolygon(Vector2[] points, float z = 0.0f)
+		public void DrawPolygon(Vector2[] points, float z = 0.0f)
 		{
 			Vector3 pos = new Vector3(points[0].X, points[0].Y, z);
 
@@ -500,6 +500,51 @@ namespace Duality
 		public void DrawThickLine(float x, float y, float x2, float y2, float width)
 		{
 			this.DrawThickLine(x, y, 0, x2, y2, 0, width);
+		}
+		
+		/// <summary>
+		/// Draws a cross at the specified position.
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="z"></param>
+		/// <param name="r"></param>
+		public void DrawCross(float x, float y, float z, float r)
+		{
+			Vector3 pos = new Vector3(x - r, y, z);
+			Vector3 pos2 = new Vector3(x, y - r, z);
+			Vector3 target = new Vector3(x + r, y, z);
+			Vector3 target2 = new Vector3(x, y + r, z);
+			float scale = 1.0f;
+			
+			device.PreprocessCoords(ref pos, ref scale);
+			device.PreprocessCoords(ref pos2, ref scale);
+			device.PreprocessCoords(ref target, ref scale);
+			device.PreprocessCoords(ref target2, ref scale);
+
+			Vector2 shapeHandle = new Vector2(x, y);
+			ColorRgba shapeColor = this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor;
+			VertexC1P3[] vertices = new VertexC1P3[4];
+			vertices[0].Pos = pos + new Vector3(0.5f, 0.5f, 0.0f);
+			vertices[1].Pos = target + new Vector3(0.5f, 0.5f, 0.0f);
+			vertices[2].Pos = pos2 + new Vector3(0.5f, 0.5f, 0.0f);
+			vertices[3].Pos = target2 + new Vector3(0.5f, 0.5f, 0.0f);
+			vertices[0].Color = shapeColor;
+			vertices[1].Color = shapeColor;
+			vertices[2].Color = shapeColor;
+			vertices[3].Color = shapeColor;
+			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
+			device.AddVertices(this.CurrentState.MaterialDirect, VertexMode.Lines, vertices);
+		}
+		/// <summary>
+		/// Draws a cross at the specified position.
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="r"></param>
+		public void DrawCross(float x, float y, float r)
+		{
+			this.DrawCross(x, y, 0.0f, r);
 		}
 
 		/// <summary>

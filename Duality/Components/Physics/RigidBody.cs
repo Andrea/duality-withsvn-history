@@ -69,6 +69,7 @@ namespace Duality.Components.Physics
 		private	bool		continous		= false;
 		private	Vector2		linearVel		= Vector2.Zero;
 		private	float		angularVel		= 0.0f;
+		private	float		revolutions		= 0.0f;
 		private	Category	colCat			= Category.Cat1;
 		private	Category	colWith			= Category.All;
 		private	List<ShapeInfo>	shapes		= null;
@@ -188,6 +189,40 @@ namespace Duality.Components.Physics
 			}
 		}
 		/// <summary>
+		/// [GET / SET] The bodies overall friction value.
+		/// </summary>
+		[EditorHintIncrement(0.05f)]
+		[EditorHintRange(0.0f, 1.0f)]
+		public float Friction
+		{
+			get { return this.shapes == null ? 0.0f : this.shapes.Average(s => s.Friction); }
+			set
+			{
+				if (this.shapes != null)
+				{
+					foreach (var s in this.shapes)
+						s.Friction = value;
+				}
+			}
+		}
+		/// <summary>
+		/// [GET / SET] The bodies overall restitution value.
+		/// </summary>
+		[EditorHintIncrement(0.05f)]
+		[EditorHintRange(0.0f, 1.0f)]
+		public float Restitution
+		{
+			get { return this.shapes == null ? 0.0f : this.shapes.Average(s => s.Restitution); }
+			set
+			{
+				if (this.shapes != null)
+				{
+					foreach (var s in this.shapes)
+						s.Restitution = value;
+				}
+			}
+		}
+		/// <summary>
 		/// [GET / SET] A bitmask that specifies the collision categories to which this Collider belongs.
 		/// </summary>
 		public Category CollisionCategory
@@ -210,6 +245,30 @@ namespace Duality.Components.Physics
 				this.colWith = value;
 				if (this.body != null) this.body.CollidesWith = value;
 			}
+		}
+		/// <summary>
+		/// [GET] The bodies total number of revolutions.
+		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
+		public float Revolutions
+		{
+			get { return this.revolutions; }
+		}
+		/// <summary>
+		/// [GET] The bodies center of mass in world coordinates.
+		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
+		public Vector2 WorldMassCenter
+		{
+			get { return this.body != null ? PhysicsConvert.ToDualityUnit(this.body.WorldCenter) : this.GameObj.Transform.Pos.Xy; }
+		}
+		/// <summary>
+		/// [GET] The bodies center of mass in local coordinates.
+		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
+		public Vector2 LocalMassCenter
+		{
+			get { return this.body != null ? PhysicsConvert.ToDualityUnit(this.body.LocalCenter) : Vector2.Zero; }
 		}
 		/// <summary>
 		/// [GET / SET] Enumerates all <see cref="ShapeInfo">primitive shapes</see> which this body consists of.
@@ -664,7 +723,7 @@ namespace Duality.Components.Physics
 
 			return true;
 		}
-		private void SynchronizeBodyShape()
+		public void SynchronizeBodyShape()
 		{
 			if (!this.schedUpdateBody) return;
 			bool wasEnabled = this.body != null && this.body.Enabled;
@@ -823,6 +882,7 @@ namespace Duality.Components.Physics
 			{
 				this.linearVel = PhysicsConvert.ToDualityUnit(this.body.LinearVelocity) * Time.SPFMult;
 				this.angularVel = this.body.AngularVelocity * Time.SPFMult;
+				this.revolutions = this.body.Revolutions;
 				Transform t = this.gameobj.Transform;
 				if (this.bodyType == BodyType.Dynamic)
 				{

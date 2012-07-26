@@ -28,7 +28,7 @@ namespace Duality.Components.Physics
 		public Vector2[] Vertices
 		{
 			get { return this.vertices; }
-			set { this.vertices = value; this.UpdateFixture(); }
+			set { this.vertices = value; this.UpdateFixture(true); }
 		}
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public override Rect AABB
@@ -63,9 +63,9 @@ namespace Duality.Components.Physics
 
 			return body.CreateFixture(new PolygonShape(farseerVert, 1.0f), this);
 		}
-		internal override void UpdateFixture()
+		internal override void UpdateFixture(bool updateShape = false)
 		{
-			base.UpdateFixture();
+			base.UpdateFixture(updateShape);
 			if (this.fixture == null) return;
 			if (this.Parent == null) return;
 				

@@ -14,7 +14,6 @@
 
 
 --> Additional Joints
-	-->	FixedMouseJoint
 	-->	Pulley
 	-->	Gear (auto-select available Revolute- or Prismatic joints)
 

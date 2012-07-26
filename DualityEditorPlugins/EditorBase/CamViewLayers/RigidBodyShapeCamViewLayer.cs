@@ -28,6 +28,17 @@ namespace EditorBase.CamViewLayers
 		{
 			get { return PluginRes.EditorBaseRes.CamViewLayer_RigidBodyShape_Desc; }
 		}
+		public ColorRgba MassCenterColor
+		{
+			get
+			{
+				float fgLum = this.View.FgColor.GetLuminance();
+				if (fgLum > 0.5f)
+					return ColorRgba.Mix(new ColorRgba(255, 0, 255), ColorRgba.VeryLightGrey, 0.5f);
+				else
+					return ColorRgba.Mix(new ColorRgba(255, 0, 255), ColorRgba.VeryDarkGrey, 0.5f);
+			}
+		}
 		public ColorRgba ShapeColor
 		{
 			get
@@ -56,9 +67,9 @@ namespace EditorBase.CamViewLayers
 			{
 				float fgLum = this.View.FgColor.GetLuminance();
 				if (fgLum > 0.5f)
-					return ColorRgba.Mix(new ColorRgba(255, 0, 0), ColorRgba.VeryLightGrey, 0.5f);
+					return ColorRgba.Mix(ColorRgba.Red, ColorRgba.VeryLightGrey, 0.5f);
 				else
-					return ColorRgba.Mix(new ColorRgba(255, 0, 0), ColorRgba.VeryDarkGrey, 0.5f);
+					return ColorRgba.Mix(ColorRgba.Red, ColorRgba.VeryDarkGrey, 0.5f);
 			}
 		}
 
@@ -145,7 +156,7 @@ namespace EditorBase.CamViewLayers
 						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha((0.25f + densityRelative * 0.25f) * shapeAlpha)));
 						canvas.FillConvexPolygon(polyVert, colliderPos.Z - 0.01f);
 						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha(shapeAlpha)));
-						canvas.DrawConvexPolygon(polyVert, colliderPos.Z - 0.01f);
+						canvas.DrawPolygon(polyVert, colliderPos.Z - 0.01f);
 
 						Vector2 textSize = textFont.MeasureText(index.ToString(CultureInfo.InvariantCulture));
 						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, fontClr.WithAlpha(shapeAlpha)));
@@ -172,7 +183,7 @@ namespace EditorBase.CamViewLayers
 						MathF.TransformCoord(ref center.X, ref center.Y, c.GameObj.Transform.Angle);
 
 						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha(shapeAlpha)));
-						canvas.DrawConvexPolygon(loopVert, colliderPos.Z - 0.01f);
+						canvas.DrawPolygon(loopVert, colliderPos.Z - 0.01f);
 
 						Vector2 textSize = textFont.MeasureText(index.ToString(CultureInfo.InvariantCulture));
 						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, fontClr.WithAlpha(shapeAlpha)));
@@ -211,6 +222,19 @@ namespace EditorBase.CamViewLayers
 					//    canvas.CurrentState.TransformHandle = Vector2.Zero;
 					//}
 					index++;
+				}
+				
+				// Draw center of mass
+				if (c.PhysicsBodyType == RigidBody.BodyType.Dynamic)
+				{
+					Vector2 localMassCenter = c.LocalMassCenter;
+					MathF.TransformCoord(ref localMassCenter.X, ref localMassCenter.Y, c.GameObj.Transform.Angle);
+					canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, this.MassCenterColor));
+					canvas.DrawCross(
+						colliderPos.X + localMassCenter.X, 
+						colliderPos.Y + localMassCenter.Y, 
+						colliderPos.Z - 0.01f, 
+						5.0f);
 				}
 			}
 		}

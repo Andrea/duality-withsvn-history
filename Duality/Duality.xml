@@ -7429,6 +7429,16 @@
             [GET / SET] The Colliders current angular velocity.
             </summary>
         </member>
+        <member name="P:Duality.Components.Physics.RigidBody.Friction">
+            <summary>
+            [GET / SET] The bodies overall friction value.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RigidBody.Restitution">
+            <summary>
+            [GET / SET] The bodies overall restitution value.
+            </summary>
+        </member>
         <member name="P:Duality.Components.Physics.RigidBody.CollisionCategory">
             <summary>
             [GET / SET] A bitmask that specifies the collision categories to which this Collider belongs.
@@ -7437,6 +7447,21 @@
         <member name="P:Duality.Components.Physics.RigidBody.CollidesWith">
             <summary>
             [GET / SET] A bitmask that specifies which collision categories this Collider interacts with.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RigidBody.Revolutions">
+            <summary>
+            [GET] The bodies total number of revolutions.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RigidBody.WorldMassCenter">
+            <summary>
+            [GET] The bodies center of mass in world coordinates.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.RigidBody.LocalMassCenter">
+            <summary>
+            [GET] The bodies center of mass in local coordinates.
             </summary>
         </member>
         <member name="P:Duality.Components.Physics.RigidBody.Shapes">
@@ -7540,6 +7565,36 @@
         <member name="P:Duality.Components.Physics.LineJointInfo.MotorTorque">
             <summary>
             [GET] The current joint motor torque.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Physics.FixedMouseJointInfo">
+            <summary>
+            Constrains the RigidBody to track a specific world point, such as a mouse cursor.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedMouseJointInfo.LocalAnchor">
+            <summary>
+            [GET / SET] The RigidBodies local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedMouseJointInfo.WorldAnchor">
+            <summary>
+            [GET / SET] The world anchor point to which the RigidBody will be attached.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedMouseJointInfo.DampingRatio">
+            <summary>
+            [GET / SET] The damping ratio. Zero means "no damping", one means "critical damping".
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedMouseJointInfo.Frequency">
+            <summary>
+            [GET / SET] The mass spring damper frequency in hertz.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedMouseJointInfo.MaxForce">
+            <summary>
+            [GET / SET] The maximum tracking force.
             </summary>
         </member>
         <member name="T:Duality.Resources.Prefab">
@@ -9312,7 +9367,7 @@
             <param name="vertices"></param>
             <param name="mode"></param>
         </member>
-        <member name="M:Duality.Canvas.DrawConvexPolygon(OpenTK.Vector2[],System.Single)">
+        <member name="M:Duality.Canvas.DrawPolygon(OpenTK.Vector2[],System.Single)">
             <summary>
             Draws a convex polygon. All vertices share the same Z value.
             </summary>
@@ -9387,6 +9442,23 @@
             <param name="y"></param>
             <param name="x2"></param>
             <param name="y2"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawCross(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a cross at the specified position.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="r"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawCross(System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a cross at the specified position.
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="r"></param>
         </member>
         <member name="M:Duality.Canvas.DrawRect(System.Single,System.Single,System.Single,System.Single,System.Single)">
             <summary>

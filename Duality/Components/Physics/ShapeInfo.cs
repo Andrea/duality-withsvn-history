@@ -108,10 +108,10 @@ namespace Duality.Components.Physics
 			this.fixture = null;
 		}
 		protected abstract Fixture CreateFixture(Body body);
-		internal virtual void UpdateFixture()
+		internal virtual void UpdateFixture(bool updateShape = false)
 		{
-			// When updating fixtures at runtime, we'll need to re-initialize the whole body
-			if (this.fixture != null && (DualityApp.ExecContext == DualityApp.ExecutionContext.Game || DualityApp.ExecEnvironment == DualityApp.ExecutionEnvironment.Editor))
+			// When updating fixture shapes at runtime, we'll need to re-initialize the whole body
+			if (updateShape && this.fixture != null && (DualityApp.ExecContext == DualityApp.ExecutionContext.Game || DualityApp.ExecEnvironment == DualityApp.ExecutionEnvironment.Editor))
 			{
 				if (this.parent != null && this.parent.FlagBodyShape())
 				{

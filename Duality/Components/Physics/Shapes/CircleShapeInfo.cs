@@ -28,7 +28,7 @@ namespace Duality.Components.Physics
 		public float Radius
 		{
 			get { return this.radius; }
-			set { this.radius = value; this.UpdateFixture(); }
+			set { this.radius = value; this.UpdateFixture(true); }
 		}
 		/// <summary>
 		/// [GET / SET] The circles position.
@@ -38,7 +38,7 @@ namespace Duality.Components.Physics
 		public Vector2 Position
 		{
 			get { return this.position; }
-			set { this.position = value; this.UpdateFixture(); }
+			set { this.position = value; this.UpdateFixture(true); }
 		}
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public override Rect AABB
@@ -57,9 +57,9 @@ namespace Duality.Components.Physics
 		{
 			return body.CreateFixture(new CircleShape(1.0f, 1.0f), this);
 		}
-		internal override void UpdateFixture()
+		internal override void UpdateFixture(bool updateShape = false)
 		{
-			base.UpdateFixture();
+			base.UpdateFixture(updateShape);
 			if (this.fixture == null) return;
 			if (this.Parent == null) return;
 

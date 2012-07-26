@@ -11,38 +11,38 @@ namespace EditorBase.CamViewStates
 {
 	public partial class RigidBodyEditorCamViewState
 	{
-		public class SelCollider : SelObj
+		public class SelBody : SelObj
 		{
-			private	RigidBody	collider;
+			private	RigidBody	body;
 
 			public override object ActualObject
 			{
-				get { return this.collider == null || this.collider.Disposed ? null : this.collider; }
+				get { return this.body == null || this.body.Disposed ? null : this.body; }
 			}
 			public override bool HasTransform
 			{
-				get { return this.collider != null && !this.collider.Disposed && this.collider.GameObj.Transform != null; }
+				get { return this.body != null && !this.body.Disposed && this.body.GameObj.Transform != null; }
 			}
 			public override Vector3 Pos
 			{
-				get { return this.collider.GameObj.Transform.Pos; }
+				get { return this.body.GameObj.Transform.Pos; }
 				set { }
 			}
 			public override float Angle
 			{
-				get { return this.collider.GameObj.Transform.Angle; }
+				get { return this.body.GameObj.Transform.Angle; }
 				set { }
 			}
 			public override Vector3 Scale
 			{
-				get { return this.collider.GameObj.Transform.Scale; }
+				get { return this.body.GameObj.Transform.Scale; }
 				set { }
 			}
 			public override float BoundRadius
 			{
 				get
 				{
-					ICmpRenderer r = this.collider.GameObj.Renderer;
+					ICmpRenderer r = this.body.GameObj.Renderer;
 					if (r == null) return CamView.DefaultDisplayBoundRadius;
 					else return r.BoundRadius;
 				}
@@ -52,9 +52,9 @@ namespace EditorBase.CamViewStates
 				get { return false; }
 			}
 
-			public SelCollider(RigidBody obj)
+			public SelBody(RigidBody obj)
 			{
-				this.collider = obj;
+				this.body = obj;
 			}
 
 			public override bool IsActionAvailable(MouseAction action)

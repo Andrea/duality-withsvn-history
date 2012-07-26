@@ -93,6 +93,7 @@ namespace EditorBase.CamViewLayers
 
 			if (joint is FixedAngleJointInfo)			this.DrawJoint(canvas, joint as FixedAngleJointInfo);
 			else if (joint is FixedDistanceJointInfo)	this.DrawJoint(canvas, joint as FixedDistanceJointInfo);
+			else if (joint is FixedMouseJointInfo)		this.DrawJoint(canvas, joint as FixedMouseJointInfo);
 			else if (joint is FixedFrictionJointInfo)	this.DrawJoint(canvas, joint as FixedFrictionJointInfo);
 			else if (joint is FixedRevoluteJointInfo)	this.DrawJoint(canvas, joint as FixedRevoluteJointInfo);
 			else if (joint is FixedPrismaticJointInfo)	this.DrawJoint(canvas, joint as FixedPrismaticJointInfo);
@@ -113,6 +114,12 @@ namespace EditorBase.CamViewLayers
 		private void DrawJoint(Canvas canvas, FixedDistanceJointInfo joint)
 		{
 			this.DrawWorldDistConstraint(canvas, joint.BodyA, joint.LocalAnchor, joint.WorldAnchor, joint.TargetDistance);
+			this.DrawWorldAnchor(canvas, joint.BodyA, joint.WorldAnchor);
+			this.DrawLocalAnchor(canvas, joint.BodyA, joint.LocalAnchor);
+		}
+		private void DrawJoint(Canvas canvas, FixedMouseJointInfo joint)
+		{
+			this.DrawWorldPosConstraint(canvas, joint.BodyA, joint.LocalAnchor, joint.WorldAnchor);
 			this.DrawWorldAnchor(canvas, joint.BodyA, joint.WorldAnchor);
 			this.DrawLocalAnchor(canvas, joint.BodyA, joint.LocalAnchor);
 		}

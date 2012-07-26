@@ -28,7 +28,7 @@ namespace Duality.Components.Physics
 		public Vector2[] Vertices
 		{
 			get { return this.vertices; }
-			set { this.vertices = value; this.UpdateFixture(); }
+			set { this.vertices = value; this.UpdateFixture(true); }
 		}
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public override Rect AABB
@@ -61,7 +61,7 @@ namespace Duality.Components.Physics
 			if (!body.IsStatic) return null; // Loop shapes aren't allowed on nonstatic bodies.
 			return body.CreateFixture(new LoopShape(this.CreateVertices(Vector2.One)), this);
 		}
-		internal override void UpdateFixture()
+		internal override void UpdateFixture(bool updateShape = false)
 		{
 			// Loop shapes aren't allowed on nonstatic bodies.
 			if (this.Parent.PhysicsBodyType != RigidBody.BodyType.Static)
@@ -70,7 +70,7 @@ namespace Duality.Components.Physics
 				return;
 			}
 
-			base.UpdateFixture();
+			base.UpdateFixture(updateShape);
 			if (this.fixture == null) return;
 			if (this.Parent == null) return;
 				
