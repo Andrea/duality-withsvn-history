@@ -106,6 +106,8 @@ namespace EditorBase.CamViewLayers
 			else if (joint is RopeJointInfo)			this.DrawJoint(canvas, joint as RopeJointInfo);
 			else if (joint is SliderJointInfo)			this.DrawJoint(canvas, joint as SliderJointInfo);
 			else if (joint is LineJointInfo)			this.DrawJoint(canvas, joint as LineJointInfo);
+			else if (joint is PulleyJointInfo)			this.DrawJoint(canvas, joint as PulleyJointInfo);
+			else if (joint is GearJointInfo)			this.DrawJoint(canvas, joint as GearJointInfo);
 		}
 		private void DrawJoint(Canvas canvas, FixedAngleJointInfo joint)
 		{
@@ -113,7 +115,7 @@ namespace EditorBase.CamViewLayers
 		}
 		private void DrawJoint(Canvas canvas, FixedDistanceJointInfo joint)
 		{
-			this.DrawWorldDistConstraint(canvas, joint.BodyA, joint.LocalAnchor, joint.WorldAnchor, joint.TargetDistance);
+			this.DrawWorldDistConstraint(canvas, joint.BodyA, joint.LocalAnchor, joint.WorldAnchor, joint.TargetDistance, joint.TargetDistance);
 			this.DrawWorldAnchor(canvas, joint.BodyA, joint.WorldAnchor);
 			this.DrawLocalAnchor(canvas, joint.BodyA, joint.LocalAnchor);
 		}
@@ -320,6 +322,21 @@ namespace EditorBase.CamViewLayers
 			{
 				this.DrawLocalAngleMotor(canvas, joint.BodyB, Vector2.Zero, joint.MotorSpeed, joint.MaxMotorTorque, joint.BodyB.BoundRadius * 1.15f);
 			}
+		}
+		private void DrawJoint(Canvas canvas, PulleyJointInfo joint)
+		{
+			float maxLenA = MathF.Min(joint.MaxLengthA, joint.TotalLength - (joint.Ratio * joint.LengthB));
+			float maxLenB = MathF.Min(joint.MaxLengthB, joint.Ratio * (joint.TotalLength - joint.LengthA));
+
+			this.DrawWorldDistConstraint(canvas, joint.BodyA, joint.LocalAnchorA, joint.WorldAnchorA, 0.0f, maxLenA);
+			this.DrawWorldDistConstraint(canvas, joint.BodyB, joint.LocalAnchorB, joint.WorldAnchorB, 0.0f, maxLenB);
+			this.DrawWorldLooseConstraint(canvas, joint.BodyA, joint.WorldAnchorA, joint.WorldAnchorB);
+			this.DrawLocalAnchor(canvas, joint.BodyB, joint.LocalAnchorB);
+			this.DrawLocalAnchor(canvas, joint.BodyA, joint.LocalAnchorA);
+		}
+		private void DrawJoint(Canvas canvas, GearJointInfo joint)
+		{
+			this.DrawLocalLooseConstraint(canvas, joint.BodyA, joint.BodyB, Vector2.Zero, Vector2.Zero);
 		}
 		
 		private void DrawLocalText(Canvas canvas, RigidBody body, string text, Vector2 pos, float baseAngle)
@@ -763,7 +780,7 @@ namespace EditorBase.CamViewLayers
 				bodyPos.Y + anchorAToWorld.Y,
 				bodyPos.Z - 0.01f);
 		}
-		private void DrawWorldDistConstraint(Canvas canvas, RigidBody body, Vector2 localAnchor, Vector2 worldAnchor, float targetDist)
+		private void DrawWorldDistConstraint(Canvas canvas, RigidBody body, Vector2 localAnchor, Vector2 worldAnchor, float minDist, float maxDist)
 		{
 			Vector3 colliderPosA = body.GameObj.Transform.Pos;
 
@@ -773,9 +790,9 @@ namespace EditorBase.CamViewLayers
 			float markerCircleRad = body.BoundRadius * 0.02f;
 			Vector2 anchorA = body.GameObj.Transform.GetWorldVector(localAnchor);
 			Vector2 errorVec = worldAnchor - (colliderPosA.Xy + anchorA);
-			Vector2 distVec = errorVec.Normalized * targetDist;
 			Vector2 lineNormal = errorVec.PerpendicularRight.Normalized;
 			float dist = errorVec.Length;
+			Vector2 distVec = errorVec.Normalized * MathF.Clamp(dist, minDist, maxDist);
 			bool hasError = (errorVec - distVec).Length >= 1.0f;
 
 			if (hasError)
@@ -813,7 +830,7 @@ namespace EditorBase.CamViewLayers
 					colliderPosA.Z - 0.01f);
 			}
 			this.DrawLocalText(canvas, body,
-				string.Format("{0:F1}", targetDist),
+				string.Format("{0:F1}", MathF.Clamp(dist, minDist, maxDist)),
 				anchorA + distVec,
 				Vector2.Zero,
 				errorVec.Angle);
@@ -939,6 +956,21 @@ namespace EditorBase.CamViewLayers
 				arrowBase.X + arrowB.X,
 				arrowBase.Y + arrowB.Y,
 				bodyPos.Z - 0.01f);
+		}
+		private void DrawWorldLooseConstraint(Canvas canvas, RigidBody bodyA, Vector2 anchorA, Vector2 anchorB)
+		{
+			Vector3 bodyPosA = bodyA.GameObj.Transform.Pos;
+
+			ColorRgba clr = this.JointColor;
+
+			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr));
+			canvas.DrawDashLine(
+				anchorA.X,
+				anchorA.Y,
+				bodyPosA.Z - 0.01f,
+				anchorB.X,
+				anchorB.Y,
+				bodyPosA.Z - 0.01f);
 		}
 
 		private float GetAnchorDist(RigidBody bodyA, RigidBody bodyB, Vector2 localAnchorA, Vector2 localAnchorB)

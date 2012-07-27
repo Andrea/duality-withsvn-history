@@ -143,6 +143,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		public void Select()
 		{
 			this.stringEditor.Select();
+			this.stringEditor.UpdateScroll();
 		}
 
 		public void OnPaint(PaintEventArgs e, bool enabled, bool multiple)
@@ -220,6 +221,8 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 				this.gripPressed = true;
 				this.gripDragPos = e.Location;
 				this.gripDragVal = this.value;
+				this.stringEditor.Select();
+				this.stringEditor.UpdateScroll();
 				this.EmitInvalidate();
 			}
 		}

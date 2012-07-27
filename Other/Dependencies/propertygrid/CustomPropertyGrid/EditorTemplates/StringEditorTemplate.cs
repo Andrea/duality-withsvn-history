@@ -35,7 +35,9 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 					textLen = this.text != null ? this.text.Length : 0;
 
 					if (allWasSelected)
+					{
 						this.Select();
+					}
 					else
 					{
 						this.cursorIndex = Math.Min(this.cursorIndex, textLen);
@@ -74,8 +76,6 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			if (pos == 0 && length == -1) length = this.text != null ? this.text.Length : 0;
 			this.cursorIndex = pos + length;
 			this.selectionLength = -length;
-
-			this.UpdateScroll();
 			this.EmitInvalidate();
 		}
 		public void Deselect()
@@ -330,6 +330,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			else if (e.KeyCode == Keys.A && e.Control)
 			{
 				this.Select();
+				this.UpdateScroll();
 				e.Handled = true;
 			}
 			else if (e.KeyCode == Keys.C && e.Control)
@@ -354,6 +355,8 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		{
 			if (!this.rect.Contains(e.Location)) return;
 			Cursor.Current = Cursors.IBeam;
+
+			Console.WriteLine(e.Location);
 
 			// Pick char
 			int pickedCharIndex;

@@ -1225,12 +1225,13 @@ namespace DualityEditor
 				if (e.ChangeType == WatcherChangeTypes.Changed)
 				{
 					// Is it a Resource file or just something else?
-					if (Resource.IsResourceFile(e.FullPath))
+					ResourceEventArgs args = new ResourceEventArgs(e.FullPath);
+					if (Resource.IsResourceFile(e.FullPath) || args.IsDirectory)
 					{
-						ResourceEventArgs args = new ResourceEventArgs(e.FullPath);
-
 						// Unregister outdated resources, if modified outside the editor
-						if (!this.editorJustSavedRes.Contains(Path.GetFullPath(e.FullPath)) && ContentProvider.IsContentRegistered(args.Path))
+						if (!args.IsDirectory &&
+							!this.editorJustSavedRes.Contains(Path.GetFullPath(e.FullPath)) && 
+							ContentProvider.IsContentRegistered(args.Path))
 						{
 							if ((args.Content.Is<Scene>() && Scene.Current == args.Content.Res) || this.IsResourceUnsaved(e.FullPath))
 							{
@@ -1289,9 +1290,9 @@ namespace DualityEditor
 				else if (e.ChangeType == WatcherChangeTypes.Deleted)
 				{
 					// Is it a Resource file or just something else?
-					if (Resource.IsResourceFile(e.FullPath))
+					ResourceEventArgs args = new ResourceEventArgs(e.FullPath);
+					if (Resource.IsResourceFile(e.FullPath) || args.IsDirectory)
 					{
-						ResourceEventArgs args = new ResourceEventArgs(e.FullPath);
 
 						// Unregister no-more existing resources
 						if (args.IsDirectory)	ContentProvider.UnregisterContentTree(args.Path);
@@ -1304,10 +1305,10 @@ namespace DualityEditor
 				else if (e.ChangeType == WatcherChangeTypes.Renamed)
 				{
 					// Is it a Resource file or just something else?
-					if (Resource.IsResourceFile(e.FullPath))
+					RenamedEventArgs re = e as RenamedEventArgs;
+					ResourceRenamedEventArgs args = new ResourceRenamedEventArgs(re.FullPath, re.OldFullPath);
+					if (Resource.IsResourceFile(e.FullPath) || args.IsDirectory)
 					{
-						RenamedEventArgs re = e as RenamedEventArgs;
-						ResourceRenamedEventArgs args = new ResourceRenamedEventArgs(re.FullPath, re.OldFullPath);
 
 						// Rename content registerations
 						if (args.IsDirectory)	ContentProvider.RenameContentTree(args.OldPath, args.Path);

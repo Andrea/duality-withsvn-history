@@ -124,7 +124,7 @@ namespace Duality
 			/// </summary>
 			public void Reset()
 			{
-				this.batchInfo = new BatchInfo(DrawTechnique.Solid, ColorRgba.White);
+				this.batchInfo = new BatchInfo(DrawTechnique.Mask, ColorRgba.White);
 				this.font = Font.GenericMonospace10;
 				this.color = ColorRgba.White;
 				this.invariantTextScale = false;
@@ -1163,7 +1163,7 @@ namespace Duality
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <param name="z"></param>
-		public void DrawText(string text, float x, float y, float z)
+		public void DrawText(string text, float x, float y, float z = 0.0f)
 		{
 			Vector3 pos = new Vector3(x, y, z);
 			float scale = 1.0f;
@@ -1182,14 +1182,43 @@ namespace Duality
 			device.AddVertices(customMat, VertexMode.Quads, vertices);
 		}
 		/// <summary>
-		/// Draws the specified text string.
+		/// Draws the specified formatted text.
 		/// </summary>
 		/// <param name="text"></param>
 		/// <param name="x"></param>
 		/// <param name="y"></param>
-		public void DrawText(string text, float x, float y)
+		/// <param name="z"></param>
+		/// <param name="iconMat"></param>
+		public void DrawText(FormattedText text, float x, float y, float z = 0.0f, BatchInfo iconMat = null)
 		{
-			this.DrawText(text, x, y, 0);
+			Vector3 pos = new Vector3(x, y, z);
+			float scale = 1.0f;
+			device.PreprocessCoords(ref pos, ref scale);
+			if (this.CurrentState.TextInvariantScale) scale = 1.0f;
+
+			Vector2 shapeHandle = pos.Xy;
+			VertexC1P3T2[][] vertText = null;
+			VertexC1P3T2[] vertIcon = null;
+
+			text.EmitVertices(ref vertText, ref vertIcon, pos.X, pos.Y, pos.Z, this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor, 0.0f, scale);
+			
+			if (text.Fonts != null)
+			{
+				for (int i = 0; i < text.Fonts.Length; i++)
+				{
+					if (text.Fonts[i] != null && text.Fonts[i].IsAvailable) 
+					{
+						this.CurrentState.TransformVertices(vertText[i], shapeHandle, scale);
+						BatchInfo customMat = new BatchInfo(this.CurrentState.MaterialDirect);
+						customMat.MainTexture = text.Fonts[i].Res.Material.MainTexture;
+						device.AddVertices(customMat, VertexMode.Quads, vertText[i]);
+					}
+				}
+			}
+			if (text.Icons != null && iconMat != null)
+			{
+				device.AddVertices(iconMat, VertexMode.Quads, vertIcon);
+			}
 		}
 
 		/// <summary>

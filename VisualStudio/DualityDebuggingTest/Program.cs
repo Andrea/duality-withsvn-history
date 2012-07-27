@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using OpenTK;
 using OpenTK.Graphics;
 using Duality;
@@ -41,6 +42,7 @@ namespace DualityDebuggingTest
 				BitmapDebuggerVisualizer.TestShow(Pixmap.DualityLogo256.Res);
 				BitmapDebuggerVisualizer.TestShow(Pixmap.DualityLogo256.Res.MainLayer);
 				BitmapDebuggerVisualizer.TestShow(Texture.DualityLogo256.Res);
+				BitmapDebuggerVisualizer.TestShow(Font.GenericMonospace10.Res.Material.MainTexture.Res);
 			}
 			DualityApp.Terminate();
 		}

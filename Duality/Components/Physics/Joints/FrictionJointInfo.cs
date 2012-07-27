@@ -25,7 +25,7 @@ namespace Duality.Components.Physics
 
 		public override bool DualJoint
 		{
-			get { return false; }
+			get { return true; }
 		}
 		/// <summary>
 		/// [GET / SET] The first RigidBodys local anchor point.

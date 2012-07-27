@@ -94,6 +94,8 @@ namespace AdamsLair.PropertyGrid.Renderer
 
 	public class ControlRenderer
 	{
+		private const int DrawStringWidthAdd = 5;
+
 		private	Size								expandNodeSize		= Size.Empty;
 		private	Dictionary<ExpandNodeState,Bitmap>	expandNodeImages	= null;
 		private	Size								checkBoxSize		= Size.Empty;
@@ -188,6 +190,9 @@ namespace AdamsLair.PropertyGrid.Renderer
 			if (textRect.Width < 1 || textRect.Height < 1) return;
 			if (text == null) return;
 
+			// Expand text rect, because DrawString stops too soon
+			textRect.Width += DrawStringWidthAdd;
+
 			bool manualEllipsis = trimming == StringTrimming.EllipsisCharacter || trimming == StringTrimming.EllipsisWord;
 			if (trimming == StringTrimming.EllipsisCharacter)	trimming = StringTrimming.Character;
 			if (trimming == StringTrimming.EllipsisWord)		trimming = StringTrimming.Word;
@@ -209,14 +214,18 @@ namespace AdamsLair.PropertyGrid.Renderer
 				Pen ellipsisPen = new Pen(textColor);
 				ellipsisPen.DashStyle = DashStyle.Dot;
 				g.DrawLine(ellipsisPen, 
-					textRect.Right, 
+					textRect.Right - DrawStringWidthAdd, 
 					(textRect.Y + textRect.Height * 0.5f) + (nameLabelSize.Height * 0.3f), 
-					textRect.Right + 3, 
+					textRect.Right - DrawStringWidthAdd + 3, 
 					(textRect.Y + textRect.Height * 0.5f) + (nameLabelSize.Height * 0.3f));
 			}
 		}
 		public Region[] MeasureStringLine(Graphics g, string text, CharacterRange[] measureRanges, Font font, Rectangle textRect, StringAlignment align = StringAlignment.Near, StringAlignment lineAlign = StringAlignment.Center)
 		{
+			// Expand text rect, because DrawString stops too soon
+			textRect.Width += DrawStringWidthAdd;
+
+			// Assume manual ellipsis
 			textRect.Width -= 5;
 			StringFormat nameLabelFormat = StringFormat.GenericDefault;
 			nameLabelFormat.Alignment = align;
@@ -231,7 +240,11 @@ namespace AdamsLair.PropertyGrid.Renderer
 		{
 			if (text == null) return -1;
 			if (!textRect.Contains(pickLoc)) return -1;
+			
+			// Expand text rect, because DrawString stops too soon
+			textRect.Width += DrawStringWidthAdd;
 
+			// Assume manual ellipsis
 			textRect.Width -= 5;
 			StringFormat nameLabelFormat = StringFormat.GenericDefault;
 			nameLabelFormat.Alignment = align;
@@ -444,6 +457,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 				rect = new Rectangle(rect.X + 2, rect.Y + 2, rect.Width - 4, rect.Height - 4);
 
 			pickLoc.X += scroll;
+			rect.Width += scroll;
 			return PickCharStringLine(text, font, rect, pickLoc);
 
 		}

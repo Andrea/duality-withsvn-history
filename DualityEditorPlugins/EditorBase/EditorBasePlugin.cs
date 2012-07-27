@@ -264,6 +264,7 @@ namespace EditorBase
 			main.RegisterFileImporter(new FontFileImporter());
 
 			main.ResourceModified += this.main_ResourceModified;
+			main.ObjectPropertyChanged += this.main_ObjectPropertyChanged;
 		}
 		
 		public ProjectFolderView RequestProjectView()
@@ -487,8 +488,20 @@ namespace EditorBase
 
 		private void main_ResourceModified(object sender, ResourceEventArgs e)
 		{
+			this.OnResourceModified(e.Content);
+		}
+		private void main_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
+		{
+			if (e.Objects.ResourceCount > 0)
+			{
+				foreach (var r in e.Objects.Resources)
+					this.OnResourceModified(r);
+			}
+		}
+		private void OnResourceModified(ContentRef<Resource> resRef)
+		{
 			// If a font has been modified, update all TextRenderers
-			if (typeof(Font).IsAssignableFrom(e.ContentType))
+			if (resRef.Is<Font>())
 			{
 				foreach (Duality.Components.Renderers.TextRenderer r in Scene.Current.AllObjects.GetComponents<Duality.Components.Renderers.TextRenderer>())
 				{
@@ -497,37 +510,37 @@ namespace EditorBase
 				}
 			}
 			// If its a Pixmap, reload all associated Textures
-			else if (typeof(Pixmap).IsAssignableFrom(e.ContentType))
+			else if (resRef.Is<Pixmap>())
 			{
 				foreach (ContentRef<Texture> tex in ContentProvider.GetAvailContent<Texture>())
 				{
 					if (!tex.IsAvailable) continue;
-					if (tex.Res.BasePixmap.Res == e.Content.Res)
+					if (tex.Res.BasePixmap.Res == resRef.Res)
 					{
 						tex.Res.ReloadData();
 					}
 				}
 			}
 			// If its a Texture, update all associated RenderTargets
-			else if (typeof(Texture).IsAssignableFrom(e.ContentType))
+			else if (resRef.Is<Texture>())
 			{
 				foreach (ContentRef<RenderTarget> rt in ContentProvider.GetAvailContent<RenderTarget>())
 				{
 					if (!rt.IsAvailable) continue;
-					if (rt.Res.Targets.Any(target => target.Res == e.Content.Res as Texture))
+					if (rt.Res.Targets.Any(target => target.Res == resRef.Res as Texture))
 					{
 						rt.Res.SetupOpenGLRes();
 					}
 				}
 			}
 			// If its some kind of shader, update all associated ShaderPrograms
-			else if (typeof(AbstractShader).IsAssignableFrom(e.ContentType))
+			else if (resRef.Is<AbstractShader>())
 			{
 				foreach (ContentRef<ShaderProgram> sp in ContentProvider.GetAvailContent<ShaderProgram>())
 				{
 					if (!sp.IsAvailable) continue;
-					if (sp.Res.Fragment.Res == e.Content.Res as FragmentShader ||
-						sp.Res.Vertex.Res == e.Content.Res as VertexShader)
+					if (sp.Res.Fragment.Res == resRef.Res as FragmentShader ||
+						sp.Res.Vertex.Res == resRef.Res as VertexShader)
 					{
 						bool wasCompiled = sp.Res.Compiled;
 						sp.Res.AttachShaders();

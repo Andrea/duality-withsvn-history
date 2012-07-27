@@ -2659,6 +2659,18 @@
             [GET / SET] The maximum friction torque in the local anchor point.
             </summary>
         </member>
+        <member name="T:Duality.Components.Physics.GearJointInfo">
+            <summary>
+            Connects two bodies using a gear. The gear type is determined by the joints that are attached to
+            each body. Supported joint types are (Fixed)Prismatic- and (Fixed)Revolutejoints. Those joints
+            are required to be either fixed or attached to a static body.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.GearJointInfo.Ratio">
+            <summary>
+            [GET / SET] The gear ratio by which body movement is connected.
+            </summary>
+        </member>
         <member name="T:Duality.Serialization.BinaryFormatterBase">
             <summary>
             Base class for Dualitys binary serializers.
@@ -5232,6 +5244,62 @@
         <member name="M:Duality.CorePlugin.OnExecContextChanged(Duality.DualityApp.ExecutionContext)">
             <summary>
             Called when Dualitys <see cref="T:Duality.DualityApp.ExecutionContext"/> changes.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Physics.PulleyJointInfo">
+            <summary>
+            Constrains two RigidBodies as though connected using a rope that is fixed at
+            two world anchor points.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PulleyJointInfo.LocalAnchorA">
+            <summary>
+            [GET / SET] The first bodies local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PulleyJointInfo.LocalAnchorB">
+            <summary>
+            [GET / SET] The second bodies local anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PulleyJointInfo.WorldAnchorA">
+            <summary>
+            [GET / SET] The first bodies world anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PulleyJointInfo.WorldAnchorB">
+            <summary>
+            [GET / SET] The second bodies world anchor point.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PulleyJointInfo.MaxLengthA">
+            <summary>
+            [GET / SET] The maximum "rope length" on the first bodies side of the pulley.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PulleyJointInfo.MaxLengthB">
+            <summary>
+            [GET / SET] The maximum "rope length" on the second bodies side of the pulley.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PulleyJointInfo.LengthA">
+            <summary>
+            [GET] The current "rope length" on the first bodies side of the pulley.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PulleyJointInfo.LengthB">
+            <summary>
+            [GET] The current "rope length" on the second bodies side of the pulley.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PulleyJointInfo.Ratio">
+            <summary>
+            [GET / SET] The ratio by which the second rope end is enlarged or shrinked on size changes of the first rope end.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.PulleyJointInfo.TotalLength">
+            <summary>
+            [GET / SET] The total length of the rope.
             </summary>
         </member>
         <member name="T:Duality.Time">
@@ -9786,13 +9854,15 @@
             <param name="y"></param>
             <param name="z"></param>
         </member>
-        <member name="M:Duality.Canvas.DrawText(System.String,System.Single,System.Single)">
+        <member name="M:Duality.Canvas.DrawText(Duality.FormattedText,System.Single,System.Single,System.Single,Duality.Resources.BatchInfo)">
             <summary>
-            Draws the specified text string.
+            Draws the specified formatted text.
             </summary>
             <param name="text"></param>
             <param name="x"></param>
             <param name="y"></param>
+            <param name="z"></param>
+            <param name="iconMat"></param>
         </member>
         <member name="M:Duality.Canvas.MeasureText(System.String)">
             <summary>
@@ -12117,6 +12187,13 @@
             [GET / SET] Whether this Font uses kerning, a technique where characters are moved closer together based on their actual shape,
             which usually looks much nicer. It has no visual effect when active at the same time with <see cref="P:Duality.Resources.Font.MonoSpace"/>, however
             kerning sample data will be available on glyphs.
+            </summary>
+            <seealso cref="T:Duality.Resources.Font.GlyphData"/>
+        </member>
+        <member name="P:Duality.Resources.Font.Filtering">
+            <summary>
+            [GET / SET] Whether or not this Font uses texture filtering. Note that if texture filtering is enabled, 
+            fonts may appear slightly blurred due to full screen antialiazing / multisampling.
             </summary>
             <seealso cref="T:Duality.Resources.Font.GlyphData"/>
         </member>

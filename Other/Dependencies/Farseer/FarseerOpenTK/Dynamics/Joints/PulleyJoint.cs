@@ -175,7 +175,12 @@ namespace FarseerPhysics.Dynamics.Joints
         /// </summary>
         /// <value></value>
         public float Ratio { get; set; }
-
+		
+        public float TotalLength
+        {
+            get { return _ant; }
+            set { _ant = value; }
+        }
         public float MaxLengthA
         {
             get { return _maxLengthA; }

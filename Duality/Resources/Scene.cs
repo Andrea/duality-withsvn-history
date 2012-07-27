@@ -405,26 +405,26 @@ namespace Duality.Resources
 			Camera cam = obj.Camera;
 			if (cam != null) this.cameraManager.RegisterObj(cam);
 
-			foreach (Renderer r in obj.GetComponents<Renderer>())
-				this.rendererManager.RegisterObj(r);
+			foreach (ICmpRenderer r in obj.GetComponents<ICmpRenderer>())
+				this.rendererManager.RegisterObj(r as Component);
 		}
 		private void AddToManagers(Component cmp)
 		{
-			if (cmp is Camera)						this.cameraManager.RegisterObj(cmp as Camera);
-			if (cmp is Renderer)					this.rendererManager.RegisterObj(cmp as Renderer);
+			if (cmp is Camera)			this.cameraManager.RegisterObj(cmp as Camera);
+			if (cmp is ICmpRenderer)	this.rendererManager.RegisterObj(cmp);
 		}
 		private void RemoveFromManagers(GameObject obj)
 		{
 			Camera cam = obj.Camera;
 			if (cam != null) this.cameraManager.UnregisterObj(cam);
 
-			foreach (Renderer r in obj.GetComponents<Renderer>())
-				this.rendererManager.UnregisterObj(r);
+			foreach (ICmpRenderer r in obj.GetComponents<ICmpRenderer>())
+				this.rendererManager.UnregisterObj(r as Component);
 		}
 		private void RemoveFromManagers(Component cmp)
 		{
-			if (cmp is Camera)						this.cameraManager.UnregisterObj(cmp as Camera);
-			if (cmp is Renderer)					this.rendererManager.UnregisterObj(cmp as Renderer);
+			if (cmp is Camera)			this.cameraManager.UnregisterObj(cmp as Camera);
+			if (cmp is ICmpRenderer)	this.rendererManager.UnregisterObj(cmp);
 		}
 		private void RebuildManagers()
 		{

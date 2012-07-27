@@ -62,8 +62,8 @@ namespace Duality.Components.Physics
 		}
 
 		private	BodyType	bodyType		= BodyType.Dynamic;
-		private	float		linearDamp		= 0.0f;
-		private	float		angularDamp		= 0.0f;
+		private	float		linearDamp		= 0.3f;
+		private	float		angularDamp		= 0.3f;
 		private	bool		fixedAngle		= false;
 		private	bool		ignoreGravity	= false;
 		private	bool		continous		= false;

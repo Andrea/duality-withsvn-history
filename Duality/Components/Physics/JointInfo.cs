@@ -19,7 +19,7 @@ namespace Duality.Components.Physics
 	public abstract class JointInfo : Duality.Cloning.ICloneable
 	{
 		[NonSerialized]	
-		protected	Joint		joint		= null;
+		internal protected	Joint	joint	= null;
 		private		RigidBody	colA		= null;
 		private		RigidBody	colB		= null;
 		private		bool		collide		= false;

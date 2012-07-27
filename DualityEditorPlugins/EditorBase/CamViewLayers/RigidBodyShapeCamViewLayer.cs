@@ -229,7 +229,7 @@ namespace EditorBase.CamViewLayers
 				{
 					Vector2 localMassCenter = c.LocalMassCenter;
 					MathF.TransformCoord(ref localMassCenter.X, ref localMassCenter.Y, c.GameObj.Transform.Angle);
-					canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, this.MassCenterColor));
+					canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, this.MassCenterColor.WithAlpha(colliderAlpha)));
 					canvas.DrawCross(
 						colliderPos.X + localMassCenter.X, 
 						colliderPos.Y + localMassCenter.Y, 

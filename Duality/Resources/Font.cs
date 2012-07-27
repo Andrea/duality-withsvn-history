@@ -192,6 +192,7 @@ namespace Duality.Resources
 		private	float		spacing			= 0.0f;
 		private	bool		monospace		= false;
 		private	bool		kerning			= false;
+		private	bool		filtering		= false;
 		// Embedded custom font family
 		private	byte[]		customFamilyData	= null;
 		// Data that is automatically acquired while loading the font
@@ -320,6 +321,16 @@ namespace Duality.Resources
 		{
 			get { return this.kerning; }
 			set { this.kerning = value; this.needsReload = true; }
+		}
+		/// <summary>
+		/// [GET / SET] Whether or not this Font uses texture filtering. Note that if texture filtering is enabled, 
+		/// fonts may appear slightly blurred due to full screen antialiazing / multisampling.
+		/// </summary>
+		/// <seealso cref="GlyphData"/>
+		public bool Filtering
+		{
+			get { return this.filtering; }
+			set { this.filtering = value; this.needsReload = true; }
 		}
 		/// <summary>
 		/// [GET] Returns whether this Font needs a <see cref="ReloadData">reload</see> in order to apply
@@ -491,6 +502,7 @@ namespace Duality.Resources
 				for (int i = 0; i < SupportedChars.Length; ++i)
 				{
 					string str = SupportedChars[i].ToString(CultureInfo.InvariantCulture);
+					bool isSpace = str == " ";
 					SizeF charSize = measureGraphics.MeasureString(str, this.internalFont, pixelLayer.Width, formatDef);
 
 					// Render a single glyph
@@ -503,7 +515,7 @@ namespace Duality.Resources
 					}
 					glyphTemp = new Pixmap.Layer(bm);
 					
-					if (str != " ")
+					if (!isSpace)
 					{
 						Rectangle glyphTempBounds = glyphTemp.OpaqueBounds();
 						glyphTemp.SubImage(glyphTempBounds.X, 0, glyphTempBounds.Width, glyphTemp.Height);
@@ -536,6 +548,11 @@ namespace Duality.Resources
 					this.glyphs[i].width = glyphTemp.Width;
 					this.glyphs[i].height = glyphTemp.Height;
 					this.glyphs[i].offsetX = glyphTemp.Width - glyphTempTypo.Width;
+					if (isSpace)
+					{
+						this.glyphs[i].width /= 2;
+						this.glyphs[i].offsetX /= 2;
+					}
 					atlas[i].X = (float)x / (float)pixelLayer.Width;
 					atlas[i].Y = (float)y / (float)pixelLayer.Height;
 					atlas[i].W = (float)glyphTemp.Width / (float)pixelLayer.Width;
@@ -560,7 +577,7 @@ namespace Duality.Resources
 				pixelLayer.Data[i].A = (byte)Math.Min(255.0f, Math.Max(0.0f, this.bgColor.A * invFactor + this.color.A * factor));
 			});
 
-			bool useNearest = this.hint == RenderHint.Monochrome;
+			bool useNearest = this.hint == RenderHint.Monochrome || !this.filtering;
 			this.bodyAscent /= BodyAscentRef.Length;
 			this.pixelData = new Pixmap(pixelLayer);
 			this.texture = new Texture(this.pixelData, 
@@ -822,16 +839,14 @@ namespace Duality.Resources
 				vertices[i * 4 + 3].TexCoord = uvRect.BottomLeft;
 				vertices[i * 4 + 3].Color = ColorRgba.White;
 
-				if (this.GlyphRenderHint == RenderHint.Monochrome)
-				{
-					for (int k = 0; k < 4; k++)
-					{
-						vertices[i * 4 + k].Pos.X = MathF.Round(vertices[i * 4 + k].Pos.X);
-						vertices[i * 4 + k].Pos.Y = MathF.Round(vertices[i * 4 + k].Pos.Y);
-					}
-				}
-
 				curOffset += glyphXAdv;
+			}
+
+			//if (this.GlyphRenderHint == RenderHint.Monochrome || !this.filtering)
+			for (int i = 0; i < vertices.Length; i++)
+			{
+				vertices[i].Pos.X = MathF.Round(vertices[i].Pos.X);
+				vertices[i].Pos.Y = MathF.Round(vertices[i].Pos.Y);
 			}
 		}
 		
@@ -971,6 +986,8 @@ namespace Duality.Resources
 				curOffset += glyphXAdv;
 			}
 
+			textSize.X = MathF.Round(textSize.X);
+			textSize.Y = MathF.Round(textSize.Y);
 			return textSize;
 		}
 		/// <summary>
@@ -1067,7 +1084,7 @@ namespace Duality.Resources
 			this.GetGlyphData(glyph, out glyphData);
 			glyphXOff = -glyphData.offsetX;
 
-			if (this.kerning && !this.monospace)
+			if (this.kerning && !this.monospace && !this.needsReload)
 			{
 				char glyphNext = index + 1 < text.Length ? text[index + 1] : ' ';
 				GlyphData glyphDataNext;

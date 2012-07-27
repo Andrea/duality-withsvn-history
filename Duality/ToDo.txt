@@ -13,9 +13,10 @@
 	-->	"Did you know..?" screen?
 
 
---> Additional Joints
-	-->	Pulley
-	-->	Gear (auto-select available Revolute- or Prismatic joints)
+-->	Create a physics sandbox for presentation
+	-->	Use custom renderer that displays RigidBody shapes
+	-->	Use Testbed script to switch scenes and mouse-drag stuff
+	-->	Show off joints
 
 --> Reconsider "events" in Duality.
 	-->	Are they really necessary?
