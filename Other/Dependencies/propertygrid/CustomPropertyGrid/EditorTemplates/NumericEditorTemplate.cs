@@ -320,10 +320,10 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		}
 		void stringEditor_EditingFinished(object sender, EventArgs e)
 		{
+			this.Select();
 			if (!this.isTextValid || this.isValueClamped) System.Media.SystemSounds.Beep.Play();
 			if (this.isTextValid) this.EmitEditingFinished();
 			this.SetTextFromValue();
-			this.Select();
 			this.EmitInvalidate();
 		}
 	}

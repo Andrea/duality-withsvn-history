@@ -586,11 +586,6 @@ namespace EditorBase.CamViewStates
 			if (this.selectedBody == null) return;
 			this.EnterCursorState(CursorState.CreatePolygon);
 		}
-		//private void toolCreateEdge_Clicked(object sender, EventArgs e)
-	//	{
-	//		if (this.selectedCollider == null) return;
-	//		this.EnterCursorState(CursorState.CreateEdge);
-	//	}
 		private void toolCreateLoop_Clicked(object sender, EventArgs e)
 		{
 			if (this.selectedBody == null) return;
@@ -601,13 +596,11 @@ namespace EditorBase.CamViewStates
 		{
 			if (Control.ModifierKeys == Keys.None)
 			{
-				if (e.KeyCode == Keys.C)
+				if (e.KeyCode == Keys.C && this.toolCreateCircle.Enabled)
 					this.toolCreateCircle_Clicked(this, EventArgs.Empty);
-				else if (e.KeyCode == Keys.P)
+				else if (e.KeyCode == Keys.P && this.toolCreatePoly.Enabled)
 					this.toolCreatePoly_Clicked(this, EventArgs.Empty);
-			//	else if (e.KeyCode == Keys.E)
-			//		this.toolCreateEdge_Clicked(this, EventArgs.Empty);
-				else if (e.KeyCode == Keys.L)
+				else if (e.KeyCode == Keys.L && this.toolCreateLoop.Enabled)
 					this.toolCreateLoop_Clicked(this, EventArgs.Empty);
 			}
 		}

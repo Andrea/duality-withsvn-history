@@ -693,6 +693,7 @@ namespace EditorBase.CamViewStates
 		
 		protected void BeginAction(MouseAction action)
 		{
+			if (action == MouseAction.None) return;
 			Point mouseLoc = this.View.LocalGLControl.PointToClient(Cursor.Position);
 
 			this.actionBeginLoc = mouseLoc;
@@ -727,6 +728,7 @@ namespace EditorBase.CamViewStates
 		}
 		protected void EndAction()
 		{
+			if (this.action == MouseAction.None) return;
 			Point mouseLoc = this.View.LocalGLControl.PointToClient(Cursor.Position);
 
 			if (this.action == MouseAction.RectSelection)

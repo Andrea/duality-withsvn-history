@@ -7507,6 +7507,13 @@
             [GET / SET] The bodies overall restitution value.
             </summary>
         </member>
+        <member name="P:Duality.Components.Physics.RigidBody.Mass">
+            <summary>
+            [GET / SET] The bodies overall mass. This is usually calculated automatically. You may however
+            assign an explicit, fixed value to override the automatically calculated mass. To reset to
+            automated calculation, set to zero.
+            </summary>
+        </member>
         <member name="P:Duality.Components.Physics.RigidBody.CollisionCategory">
             <summary>
             [GET / SET] A bitmask that specifies the collision categories to which this Collider belongs.

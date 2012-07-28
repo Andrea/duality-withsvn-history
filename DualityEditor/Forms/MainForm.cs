@@ -441,6 +441,7 @@ namespace DualityEditor
 		{
 			foreach (Resource res in this.UnsavedResources.ToArray()) // The Property does some safety checks
 			{
+				if (res == Scene.Current && this.sandboxState != SandboxState.Inactive) continue;
 				res.Save();
 			}
 			this.unsavedResources.Clear();

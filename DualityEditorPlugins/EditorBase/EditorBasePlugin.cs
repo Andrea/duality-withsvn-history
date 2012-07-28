@@ -488,7 +488,7 @@ namespace EditorBase
 
 		private void main_ResourceModified(object sender, ResourceEventArgs e)
 		{
-			this.OnResourceModified(e.Content);
+			if (e.IsResource) this.OnResourceModified(e.Content);
 		}
 		private void main_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
 		{

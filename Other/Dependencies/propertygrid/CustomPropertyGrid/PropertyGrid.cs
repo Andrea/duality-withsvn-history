@@ -305,6 +305,7 @@ namespace AdamsLair.PropertyGrid
 		{
 			if (this.mainEditor != null) this.DisposePropertyEditor();
 
+			this.focusEditor = null;
 			this.mainEditor = this.editorProvider.CreateEditor(type, new ProviderContext(this));
 			this.mainEditor.SizeChanged += this.mainEditor_SizeChanged;
 			this.mainEditor.ValueChanged += this.mainEditor_ValueChanged;
@@ -343,6 +344,7 @@ namespace AdamsLair.PropertyGrid
 
 			this.mainEditor.SizeChanged -= this.mainEditor_SizeChanged;
 			this.mainEditor = null;
+			this.focusEditor = null;
 
 			this.Invalidate();
 		}

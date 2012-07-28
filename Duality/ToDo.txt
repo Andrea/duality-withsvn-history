@@ -13,13 +13,13 @@
 	-->	"Did you know..?" screen?
 
 
--->	Bug: Mouse input in Game View doesn't do anything, because mouse input blocks the game.
-	This should only be the case when in a different view than GameView. Fix that.
-
 -->	Create a physics sandbox for presentation
-	-->	Create some sprites for RigidBodies
-	-->	Also introduce some edgy ones, not all should be round.
-	-->	Show off joints
+	-->	Display stats
+		-->	Physics ms per frame
+		-->	Sleeping / Active body count
+	-->	Example: Landscape
+	-->	Example: Stacking
+	-->	Example: One for each Joint + One complex Joint scenario (car?)
 
 --> Reconsider "events" in Duality.
 	-->	Are they really necessary?

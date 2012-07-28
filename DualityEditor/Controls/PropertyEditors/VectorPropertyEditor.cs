@@ -123,53 +123,72 @@ namespace DualityEditor.Controls.PropertyEditors
 				this.SetFocusEditorIndex((this.focusEditor + 1) % this.editor.Length, true);
 				e.Handled = true;
 			}
-			else if (e.KeyCode == Keys.C && e.Control)
+			else if ((e.KeyCode == Keys.C || e.KeyCode == Keys.X) && e.Control)
 			{
-				string valString = this.editor.Select(ve => ve.Value).ToString(", ");
-				DataObject data = new DataObject();
-				data.SetText(valString);
-				data.SetData(this.DisplayedValue);
-				Clipboard.SetDataObject(data);
-				this.SetFocusEditorIndex(-1, true);
-				e.Handled = true;
+				if (this.focusEditor == -1)
+				{
+					string valString = this.editor.Select(ve => ve.Value).ToString(", ");
+					DataObject data = new DataObject();
+					data.SetText(valString);
+					data.SetData(this.DisplayedValue);
+					Clipboard.SetDataObject(data);
+					this.SetFocusEditorIndex(-1, true);
+					if (e.KeyCode == Keys.X)
+					{
+						for (int i = 0; i < this.editor.Length; i++)
+							this.editor[i].Value = 0;
+					}
+					e.Handled = true;
+				}
+				else
+				{
+					this.editor[this.focusEditor].OnKeyDown(e);
+				}
 			}
 			else if (e.KeyCode == Keys.V && e.Control)
 			{
-				DataObject data = Clipboard.GetDataObject() as DataObject;
-				bool success = false;
-				if (data.GetDataPresent(this.DisplayedValue.GetType()))
+				if (this.focusEditor == -1)
 				{
-					this.SetValue(data.GetData(this.DisplayedValue.GetType()));
-					this.OnValueChanged();
-					this.PerformGetValue();
-					this.SetFocusEditorIndex(-1, true);
-					success = true;
-				}
-				else if (data.ContainsText())
-				{
-					string valString = data.GetText();
-					string[] token = valString.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-					for (int i = 0; i < Math.Min(token.Length, this.editor.Length); i++)
+					DataObject data = Clipboard.GetDataObject() as DataObject;
+					bool success = false;
+					if (data.GetDataPresent(this.DisplayedValue.GetType()))
 					{
-						token[i] = token[i].Trim();
-						decimal val;
-						if (decimal.TryParse(token[i], out val))
-						{
-							this.editor[i].Value = val;
-							success = true;
-						}
-					}
-					if (success)
-					{
-						this.PerformSetValue();
+						this.SetValue(data.GetData(this.DisplayedValue.GetType()));
 						this.OnValueChanged();
 						this.PerformGetValue();
 						this.SetFocusEditorIndex(-1, true);
+						success = true;
 					}
-				}
+					else if (data.ContainsText())
+					{
+						string valString = data.GetText();
+						string[] token = valString.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+						for (int i = 0; i < Math.Min(token.Length, this.editor.Length); i++)
+						{
+							token[i] = token[i].Trim();
+							decimal val;
+							if (decimal.TryParse(token[i], out val))
+							{
+								this.editor[i].Value = val;
+								success = true;
+							}
+						}
+						if (success)
+						{
+							this.PerformSetValue();
+							this.OnValueChanged();
+							this.PerformGetValue();
+							this.SetFocusEditorIndex(-1, true);
+						}
+					}
 
-				if (!success) System.Media.SystemSounds.Beep.Play();
-				e.Handled = true;
+					if (!success) System.Media.SystemSounds.Beep.Play();
+					e.Handled = true;
+				}
+				else
+				{
+					this.editor[this.focusEditor].OnKeyDown(e);
+				}
 			}
 			else
 			{

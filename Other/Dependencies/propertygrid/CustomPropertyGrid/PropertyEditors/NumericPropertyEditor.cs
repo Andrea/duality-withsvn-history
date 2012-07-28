@@ -225,6 +225,7 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 		private void numEditor_EditingFinished(object sender, EventArgs e)
 		{
 			this.OnEditingFinished();
+			this.PerformGetValue();
 		}
 	}
 }

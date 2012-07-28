@@ -70,6 +70,7 @@ namespace Duality.Components.Physics
 		private	Vector2		linearVel		= Vector2.Zero;
 		private	float		angularVel		= 0.0f;
 		private	float		revolutions		= 0.0f;
+		private	float		explicitMass	= 0.0f;
 		private	Category	colCat			= Category.Cat1;
 		private	Category	colWith			= Category.All;
 		private	List<ShapeInfo>	shapes		= null;
@@ -220,6 +221,26 @@ namespace Duality.Components.Physics
 					foreach (var s in this.shapes)
 						s.Restitution = value;
 				}
+			}
+		}
+		/// <summary>
+		/// [GET / SET] The bodies overall mass. This is usually calculated automatically. You may however
+		/// assign an explicit, fixed value to override the automatically calculated mass. To reset to
+		/// automated calculation, set to zero.
+		/// </summary>
+		public float Mass
+		{
+			get 
+			{
+				if (this.explicitMass <= 0.0f && this.body != null)
+					return PhysicsConvert.ToDualityUnit(this.body.Mass);
+				else
+					return this.explicitMass;
+			}
+			set
+			{
+				this.explicitMass = value;
+				this.UpdateBodyMass();
 			}
 		}
 		/// <summary>
@@ -745,10 +766,16 @@ namespace Duality.Components.Physics
 			}
 			this.body.CollisionCategories = this.colCat;
 			this.body.CollidesWith = this.colWith;
-			this.body.ResetMassData();
+			this.UpdateBodyMass();
 
 			this.AwakeBody();
 			this.isUpdatingBody = false;
+		}
+		private void UpdateBodyMass()
+		{
+			this.body.ResetMassData();
+			if (this.explicitMass > 0.0f)
+				this.body.Mass = PhysicsConvert.ToPhysicalUnit(this.explicitMass);
 		}
 
 		private void CleanupBody()
@@ -773,8 +800,6 @@ namespace Duality.Components.Physics
 			Transform t = this.GameObj != null ? this.GameObj.Transform : null;
 
 			this.body = new Body(Scene.PhysicsWorld, this);
-			this.UpdateBodyShape();
-
 			this.body.BodyType = (this.bodyType == BodyType.Static ? FarseerPhysics.Dynamics.BodyType.Static : FarseerPhysics.Dynamics.BodyType.Dynamic);
 			this.body.LinearDamping = this.linearDamp;
 			this.body.AngularDamping = this.angularDamp;
@@ -783,6 +808,8 @@ namespace Duality.Components.Physics
 			this.body.IsBullet = this.continous;
 			this.body.CollisionCategories = this.colCat;
 			this.body.CollidesWith = this.colWith;
+
+			this.UpdateBodyShape();
 
 			if (t != null)
 			{
