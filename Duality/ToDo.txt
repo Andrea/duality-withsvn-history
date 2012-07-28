@@ -13,9 +13,12 @@
 	-->	"Did you know..?" screen?
 
 
+-->	Bug: Mouse input in Game View doesn't do anything, because mouse input blocks the game.
+	This should only be the case when in a different view than GameView. Fix that.
+
 -->	Create a physics sandbox for presentation
-	-->	Use custom renderer that displays RigidBody shapes
-	-->	Use Testbed script to switch scenes and mouse-drag stuff
+	-->	Create some sprites for RigidBodies
+	-->	Also introduce some edgy ones, not all should be round.
 	-->	Show off joints
 
 --> Reconsider "events" in Duality.

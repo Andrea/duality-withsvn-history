@@ -468,7 +468,7 @@ namespace DualityEditor
 		}
 		public void SaveAllProjectData()
 		{
-			if (!this.IsResourceUnsaved(Scene.Current)) this.SaveCurrentScene();
+			if (!this.IsResourceUnsaved(Scene.Current) && this.sandboxState == SandboxState.Inactive) this.SaveCurrentScene();
 			this.SaveResources();
 
 			if (this.SaveAllProjectDataTriggered != null)
