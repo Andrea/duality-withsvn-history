@@ -18,6 +18,9 @@
 		-->	Physics ms per frame
 		-->	Sleeping / Active body count
 	-->	Example: Landscape
+	-->	Example: Friction
+	-->	Example: Restitution
+	-->	Example: Density / Mass
 	-->	Example: Stacking
 	-->	Example: One for each Joint + One complex Joint scenario (car?)
 
