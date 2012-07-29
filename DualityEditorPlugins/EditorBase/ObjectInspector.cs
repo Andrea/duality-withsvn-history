@@ -177,7 +177,19 @@ namespace EditorBase
 		}
 		private void EditorForm_ResourceModified(object sender, ResourceEventArgs e)
 		{
-			this.propertyGrid.UpdateFromObjects(100);
+			if (!e.IsResource) return;
+			if (this.propertyGrid.Selection.Contains(e.Content.Res))
+			{
+				// To force updating all probably generated previews, r-select everything
+				object[] obj = this.propertyGrid.Selection.ToArray();
+				this.propertyGrid.SelectObject(null);
+				this.propertyGrid.SelectObjects(obj, false, 100);
+			}
+			else
+			{
+				// A (minimalistic) regular update - just in case
+				this.propertyGrid.UpdateFromObjects(100);
+			}
 		}
 		private void EditorForm_FormClosing(object sender, FormClosingEventArgs e)
 		{

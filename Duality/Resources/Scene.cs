@@ -133,7 +133,12 @@ namespace Duality.Resources
 			{
 				ResetPhysics();
 				physicsWorld.Gravity = PhysicsConvert.ToPhysicalUnit(current.ResWeak.GlobalGravity / Time.SPFMult);
-				foreach (GameObject o in current.ResWeak.ActiveObjects) o.OnActivate();
+				// When in the editor, apply prefab links
+				if (DualityApp.ExecEnvironment == DualityApp.ExecutionEnvironment.Editor)
+					current.ResWeak.ApplyPrefabLinks();
+				// Activate GameObjects
+				foreach (GameObject o in current.ResWeak.ActiveObjects)
+					o.OnActivate();
 			}
 			if (Entered != null) Entered(current, null);
 		}
