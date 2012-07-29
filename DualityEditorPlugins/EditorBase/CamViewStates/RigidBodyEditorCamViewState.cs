@@ -168,6 +168,8 @@ namespace EditorBase.CamViewStates
 			Vector3 spaceCoord = selTransform != null ? this.View.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, selTransform.Pos.Z)) : Vector3.Zero;
 			Vector2 localPos = selTransform != null ? selTransform.GetLocalPoint(spaceCoord).Xy : Vector2.Zero;
 
+			if (this.mouseState != CursorState.Normal) this.UpdateCursorImage();
+
 			if (this.mouseState == CursorState.CreatePolygon && this.allObjSel.Any(sel => sel is SelPolyShape))
 			{
 				SelPolyShape selPolyShape = this.allObjSel.OfType<SelPolyShape>().First();
@@ -198,23 +200,16 @@ namespace EditorBase.CamViewStates
 					new ObjectSelection(this.selectedBody),
 					ReflectionInfo.Property_RigidBody_Shapes);
 			}
-			//else if (this.mouseState == CursorState.CreateEdge && this.allObjSel.Any(sel => sel is SelEdgeShape))
-			//{
-			//    SelEdgeShape selEdgeShape = this.allObjSel.OfType<SelEdgeShape>().First();
-			//    EdgeShapeInfo edgeShape = selEdgeShape.ActualObject as EdgeShapeInfo;
-				
-			//    switch (this.createPolyIndex)
-			//    {
-			//        case 0:	edgeShape.VertexStart = localPos;	break;
-			//        case 1:	edgeShape.VertexEnd = localPos;		break;
-			//    }
-
-			//    selEdgeShape.UpdateEdgeStats();
-
-			//    MainForm.Instance.NotifyObjPropChanged(this,
-			//        new ObjectSelection(this.selectedCollider),
-			//        ReflectionInfo.Property_RigidBody_Shapes);
-			//}
+		}
+		protected override void OnBeginAction(CamViewState.MouseAction action)
+		{
+			base.OnBeginAction(action);
+			if (this.selectedBody != null) this.selectedBody.BeginUpdateBodyShape();
+		}
+		protected override void OnEndAction(CamViewState.MouseAction action)
+		{
+			base.OnEndAction(action);
+			if (this.selectedBody != null) this.selectedBody.EndUpdateBodyShape();
 		}
 
 		protected void UpdateToolbar()
@@ -481,17 +476,11 @@ namespace EditorBase.CamViewStates
 		{
 			this.mouseState = state;
 			this.createPolyIndex = 0;
+			this.selectedBody.BeginUpdateBodyShape();
 			this.MouseActionAllowed = false;
-			switch (state)
-			{
-				default:
-				case CursorState.CreatePolygon:	this.View.LocalGLControl.Cursor = ArrowCreatePolygon;	break;
-			//	case CursorState.CreateEdge:	this.View.LocalGLControl.Cursor = ArrowCreateEdge;		break;
-				case CursorState.CreateLoop:	this.View.LocalGLControl.Cursor = ArrowCreateLoop;		break;
-				case CursorState.CreateCircle:	this.View.LocalGLControl.Cursor = ArrowCreateCircle;	break;
-			}
 			this.View.LocalGLControl.MouseDown += this.LocalGLControl_MouseDown;
 			this.UpdateToolbar();
+			this.UpdateCursorImage();
 			this.View.LocalGLControl.Invalidate();
 
 			if (MainForm.Instance.CurrentSandboxState == MainForm.SandboxState.Playing)
@@ -502,10 +491,20 @@ namespace EditorBase.CamViewStates
 		{
 			this.mouseState = CursorState.Normal;
 			this.MouseActionAllowed = true;
-			this.View.LocalGLControl.Cursor = CursorHelper.Arrow;
+			this.selectedBody.EndUpdateBodyShape();
 			this.View.LocalGLControl.MouseDown -= this.LocalGLControl_MouseDown;
 			this.UpdateToolbar();
 			this.View.LocalGLControl.Invalidate();
+		}
+		private void UpdateCursorImage()
+		{
+			switch (this.mouseState)
+			{
+				default:						this.View.LocalGLControl.Cursor = CursorHelper.Arrow;	break;
+				case CursorState.CreatePolygon:	this.View.LocalGLControl.Cursor = ArrowCreatePolygon;	break;
+				case CursorState.CreateLoop:	this.View.LocalGLControl.Cursor = ArrowCreateLoop;		break;
+				case CursorState.CreateCircle:	this.View.LocalGLControl.Cursor = ArrowCreateCircle;	break;
+			}
 		}
 
 		protected IEnumerable<RigidBody> QueryVisibleColliders()

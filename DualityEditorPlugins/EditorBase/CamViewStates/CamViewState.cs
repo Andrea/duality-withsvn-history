@@ -563,6 +563,8 @@ namespace EditorBase.CamViewStates
 				this.View.LocalGLControl.Invalidate();
 			}
 		}
+		protected virtual void OnBeginAction(MouseAction action) {}
+		protected virtual void OnEndAction(MouseAction action) {}
 
 		protected virtual void OnSceneChanged()
 		{
@@ -725,6 +727,8 @@ namespace EditorBase.CamViewStates
 			{
 				this.actionBeginLocSpace = this.View.GetSpaceCoord(new Vector2(mouseLoc.X, mouseLoc.Y));
 			}
+
+			this.OnBeginAction(this.action);
 		}
 		protected void EndAction()
 		{
@@ -739,6 +743,7 @@ namespace EditorBase.CamViewStates
 			if (MainForm.Instance.CurrentSandboxState == MainForm.SandboxState.Playing)
 				MainForm.Instance.SandboxSceneStopFreeze();
 
+			this.OnEndAction(this.action);
 			this.action = MouseAction.None;
 		}
 		protected void UpdateAction()

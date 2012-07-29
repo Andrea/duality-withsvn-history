@@ -725,6 +725,11 @@ namespace Duality.Components.Physics
 
 			return true;
 		}
+		/// <summary>
+		/// Forces previously scheduled body shape updates to execute. Changes to a RigidBodies shape
+		/// are normally cached and executed in the following frame. Calling this method guarantes all
+		/// scheduled updates to be performed immediately.
+		/// </summary>
 		public void SynchronizeBodyShape()
 		{
 			if (!this.schedUpdateBody) return;
@@ -735,6 +740,22 @@ namespace Duality.Components.Physics
 
 			if (wasEnabled) this.body.Enabled = true;
 			this.schedUpdateBody = false;
+		}
+		/// <summary>
+		/// Prepares this RigidBody for a large-scale shape update. This isn't required but might boost update performance.
+		/// </summary>
+		public void BeginUpdateBodyShape()
+		{
+			if (this.body == null) return;
+			this.body.Enabled = false;
+		}
+		/// <summary>
+		/// Restores this RigidBody after a large-scale shape update. See <see cref="BeginUpdateBodyShape"/>.
+		/// </summary>
+		public void EndUpdateBodyShape()
+		{
+			if (this.body == null) return;
+			this.body.Enabled = true;
 		}
 		private void UpdateBodyShape()
 		{

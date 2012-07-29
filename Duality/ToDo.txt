@@ -13,10 +13,7 @@
 	-->	"Did you know..?" screen?
 
 
--->	ToDo: Update Preview (PropertyGrid) after reloading Resources
-
 -->	Create a physics sandbox for presentation
-	-->	Example: Landscape
 	-->	Example: Collision Detection / Sensors / Reaction
 	-->	Example: One for each Joint + One complex Joint scenario (car?)
 

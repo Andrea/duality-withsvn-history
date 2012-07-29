@@ -7424,6 +7424,23 @@
             <param name="size"></param>
             <returns></returns>
         </member>
+        <member name="M:Duality.Components.Physics.RigidBody.SynchronizeBodyShape">
+            <summary>
+            Forces previously scheduled body shape updates to execute. Changes to a RigidBodies shape
+            are normally cached and executed in the following frame. Calling this method guarantes all
+            scheduled updates to be performed immediately.
+            </summary>
+        </member>
+        <member name="M:Duality.Components.Physics.RigidBody.BeginUpdateBodyShape">
+            <summary>
+            Prepares this RigidBody for a large-scale shape update. This isn't required but might boost update performance.
+            </summary>
+        </member>
+        <member name="M:Duality.Components.Physics.RigidBody.EndUpdateBodyShape">
+            <summary>
+            Restores this RigidBody after a large-scale shape update. See <see cref="M:Duality.Components.Physics.RigidBody.BeginUpdateBodyShape"/>.
+            </summary>
+        </member>
         <member name="M:Duality.Components.Physics.RigidBody.Raycast(OpenTK.Vector2,OpenTK.Vector2,Duality.Components.Physics.RayCastCallback)">
             <summary>
             Performs a 2d physical raycast in world coordinates.
