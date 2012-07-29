@@ -17,8 +17,7 @@
 
 -->	Create a physics sandbox for presentation
 	-->	Example: Landscape
-	-->	Example: Restitution
-	-->	Example: Density / Mass
+	-->	Example: Collision Detection / Sensors / Reaction
 	-->	Example: One for each Joint + One complex Joint scenario (car?)
 
 --> Reconsider "events" in Duality.

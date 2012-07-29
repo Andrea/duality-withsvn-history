@@ -754,6 +754,8 @@ namespace Duality.Components.Physics
 		}
 		private void UpdateBodyMass()
 		{
+			if (this.body == null) return;
+
 			this.body.ResetMassData();
 			if (this.explicitMass > 0.0f)
 				this.body.Mass = PhysicsConvert.ToPhysicalUnit(this.explicitMass);
