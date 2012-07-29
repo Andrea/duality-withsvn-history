@@ -64,7 +64,7 @@ namespace Duality.Components.Physics
 		internal override void UpdateFixture(bool updateShape = false)
 		{
 			// Loop shapes aren't allowed on nonstatic bodies.
-			if (this.Parent.PhysicsBodyType != RigidBody.BodyType.Static)
+			if (this.Parent.BodyType != BodyType.Static)
 			{
 				this.DestroyFixture(this.Parent.PhysicsBody);
 				return;

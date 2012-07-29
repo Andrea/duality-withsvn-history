@@ -345,35 +345,8 @@ namespace Duality.Serialization
 				// Read fields
 				for (int i = 0; i < layout.Fields.Length; i++)
 				{
-					FieldInfo field = objSerializeType != null ? objSerializeType.Fields.FirstOrDefault(f => f.Name == layout.Fields[i].name) : null;
-					Type fieldType = ReflectionHelper.ResolveType(layout.Fields[i].typeString, false);
 					object fieldValue = this.ReadObject();
-
-					if (obj != null)
-					{
-						if (field == null)
-							this.SerializationLog.WriteWarning("Field '{0}' not found. Discarding value '{1}'", layout.Fields[i].name, fieldValue);
-						else if (field.FieldType != fieldType)
-						{
-							this.SerializationLog.WriteWarning("Data layout Type '{0}' of field '{1}' does not match reflected Type '{2}'. Trying to convert...'", layout.Fields[i].typeString, layout.Fields[i].name, Log.Type(field.FieldType));
-							this.SerializationLog.PushIndent();
-							try
-							{
-								object castVal = Convert.ChangeType(fieldValue, fieldType, System.Globalization.CultureInfo.InvariantCulture);
-								this.SerializationLog.Write("...succeeded! Assigning value '{0}'", castVal);
-								field.SetValue(obj, castVal);
-							}
-							catch (Exception)
-							{
-								this.SerializationLog.WriteWarning("...failed! Discarding value '{0}'", fieldValue);
-							}
-							this.SerializationLog.PopIndent();
-						}
-						else if (field.IsNotSerialized)
-							this.SerializationLog.WriteWarning("Field '{0}' flagged as [NonSerialized]. Discarding value '{1}'", layout.Fields[i].name, fieldValue);
-						else
-							field.SetValue(obj, fieldValue);
-					}
+					this.AssignValueToField(objSerializeType, obj, layout.Fields[i].name, fieldValue);
 				}
 			}
 

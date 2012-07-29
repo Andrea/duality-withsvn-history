@@ -30,6 +30,7 @@ namespace Duality.Resources
 		private	static	World				physicsWorld	= new World(Vector2.Zero);
 		private	static	float				physicsAcc		= 0.0f;
 		private	static	float				physicsTime		= 0.0f;
+		private	static	bool				physicsLowFps	= false;
 		private	static	ContentRef<Scene>	current			= ContentRef<Scene>.Null;
 		private	static	bool				curAutoGen		= false;
 
@@ -40,6 +41,13 @@ namespace Duality.Resources
 		public static float PhysicsAlpha
 		{
 			get { return physicsAcc / Time.MsPFMult; }
+		}
+		/// <summary>
+		/// [GET] Is fixed-timestep physics calculation currently active?
+		/// </summary>
+		public static bool PhysicsFixedTime
+		{
+			get { return DualityApp.AppData.PhysicsFixedTime && !physicsLowFps; }
 		}
 		/// <summary>
 		/// [GET] Returns the current physics world.
@@ -116,16 +124,14 @@ namespace Duality.Resources
 			{
 				foreach (GameObject o in current.ResWeak.ActiveObjects) o.OnDeactivate();
 				physicsWorld.Clear();
-				physicsAcc = PhysicsAccStart;
-				physicsTime = 0.0f;
+				ResetPhysics();
 			}
 		}
 		private static void OnEntered()
 		{
 			if (current.ResWeak != null)
 			{
-				physicsAcc = PhysicsAccStart;
-				physicsTime = 0.0f;
+				ResetPhysics();
 				physicsWorld.Gravity = PhysicsConvert.ToPhysicalUnit(current.ResWeak.GlobalGravity / Time.SPFMult);
 				foreach (GameObject o in current.ResWeak.ActiveObjects) o.OnActivate();
 			}
@@ -264,39 +270,66 @@ namespace Duality.Resources
 		{
 			if (!this.IsCurrent) throw new InvalidOperationException("Can't update non-current Scene!");
 
-			Performance.timeUpdatePhysics.BeginMeasure();
-			if (DualityApp.AppData.PhysicsFixedTime)
+			// Update physics
+			bool physUpdate = false;
+			float physBegin = Time.MainTimer;
+			if (Scene.PhysicsFixedTime)
 			{
 				if (physicsTime > 0.0f)
 				{
 					float timeCoverage = Time.MainTimer - physicsTime;
+					physicsTime = Time.MainTimer;
 					physicsAcc += timeCoverage;
 					int iterations = 0;
-					while (physicsAcc > Time.MsPFMult)
+					if (physicsAcc > Time.MsPFMult)
 					{
-						FarseerPhysics.Settings.VelocityThreshold = PhysicsConvert.ToPhysicalUnit(DualityApp.AppData.PhysicsVelocityThreshold / Time.SPFMult);
-						physicsWorld.Step(Time.SPFMult);
-						physicsAcc -= Time.MsPFMult;
-						iterations++;
+						Performance.timeUpdatePhysics.BeginMeasure();
+						float timeUpdateBegin = Time.MainTimer;
+						while (physicsAcc > Time.MsPFMult)
+						{
+							// Catch up on updating progress
+							FarseerPhysics.Settings.VelocityThreshold = PhysicsConvert.ToPhysicalUnit(DualityApp.AppData.PhysicsVelocityThreshold / Time.SPFMult);
+							physicsWorld.Step(Time.SPFMult);
+							physicsAcc -= Time.MsPFMult;
+							iterations++;
+							
+							float timeSpent = Time.MainTimer - timeUpdateBegin;
+							if (timeSpent >= Time.MsPFMult * 10.0f) break; // Emergency exit
+						}
+						physUpdate = true;
+						Performance.timeUpdatePhysics.EndMeasure();
 					}
 				}
-				physicsTime = Time.MainTimer;
+				else
+					physicsTime = Time.MainTimer;
 			}
 			else
 			{
+				Performance.timeUpdatePhysics.BeginMeasure();
 				FarseerPhysics.Settings.VelocityThreshold = PhysicsConvert.ToPhysicalUnit(Time.TimeMult * DualityApp.AppData.PhysicsVelocityThreshold / Time.SPFMult);
 				physicsWorld.Step(Time.TimeMult * Time.SPFMult);
 				physicsAcc = PhysicsAccStart;
-				physicsTime = 0.0f;
+				physicsTime = Time.MainTimer;
+				physUpdate = true;
+				Performance.timeUpdatePhysics.EndMeasure();
 			}
-			Performance.timeUpdatePhysics.EndMeasure();
+			float physTime = Time.MainTimer - physBegin;
 
 			// Apply Farseers internal measurements to Duality
-			Performance.timeUpdatePhysicsAddRemove.SetMeasure(1000.0f * physicsWorld.AddRemoveTime / System.Diagnostics.Stopwatch.Frequency);
-			Performance.timeUpdatePhysicsContacts.SetMeasure(1000.0f * physicsWorld.ContactsUpdateTime / System.Diagnostics.Stopwatch.Frequency);
-			Performance.timeUpdatePhysicsContinous.SetMeasure(1000.0f * physicsWorld.ContinuousPhysicsTime / System.Diagnostics.Stopwatch.Frequency);
-			Performance.timeUpdatePhysicsController.SetMeasure(1000.0f * physicsWorld.ControllersUpdateTime / System.Diagnostics.Stopwatch.Frequency);
-			Performance.timeUpdatePhysicsSolve.SetMeasure(1000.0f * physicsWorld.SolveUpdateTime / System.Diagnostics.Stopwatch.Frequency);
+			if (physUpdate)
+			{
+				Performance.timeUpdatePhysicsAddRemove.SetMeasure(1000.0f * physicsWorld.AddRemoveTime / System.Diagnostics.Stopwatch.Frequency);
+				Performance.timeUpdatePhysicsContacts.SetMeasure(1000.0f * physicsWorld.ContactsUpdateTime / System.Diagnostics.Stopwatch.Frequency);
+				Performance.timeUpdatePhysicsContinous.SetMeasure(1000.0f * physicsWorld.ContinuousPhysicsTime / System.Diagnostics.Stopwatch.Frequency);
+				Performance.timeUpdatePhysicsController.SetMeasure(1000.0f * physicsWorld.ControllersUpdateTime / System.Diagnostics.Stopwatch.Frequency);
+				Performance.timeUpdatePhysicsSolve.SetMeasure(1000.0f * physicsWorld.SolveUpdateTime / System.Diagnostics.Stopwatch.Frequency);
+			}
+
+			// Update low fps physics state
+			if (!physicsLowFps)
+				physicsLowFps = Time.LastDelta > Time.MsPFMult && physTime > Time.LastDelta * 0.85f;
+			else
+				physicsLowFps = !(Time.LastDelta < Time.MsPFMult * 0.9f || physTime < Time.LastDelta * 0.6f);
 
 			Performance.timeUpdateScene.BeginMeasure();
 			GameObject[] activeObj = this.objectManager.ActiveObjects.ToArray();
@@ -311,8 +344,7 @@ namespace Duality.Resources
 		{
 			if (!this.IsCurrent) throw new InvalidOperationException("Can't update non-current Scene!");
 			
-			physicsAcc = PhysicsAccStart;
-			physicsTime = 0.0f;
+			ResetPhysics();
 
 			Performance.timeUpdateScene.BeginMeasure();
 			GameObject[] activeObj = this.objectManager.ActiveObjects.ToArray();
@@ -433,6 +465,13 @@ namespace Duality.Resources
 
 			foreach (GameObject obj in this.objectManager.AllObjects)
 				this.AddToManagers(obj);
+		}
+
+		private static void ResetPhysics()
+		{
+			physicsLowFps = false;
+			physicsTime = 0.0f;
+			physicsAcc = PhysicsAccStart;
 		}
 
 		private void objectManager_Registered(object sender, ObjectManagerEventArgs<GameObject> e)

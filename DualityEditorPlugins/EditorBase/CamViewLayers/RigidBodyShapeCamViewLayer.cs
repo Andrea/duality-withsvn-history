@@ -187,7 +187,7 @@ namespace EditorBase.CamViewLayers
 				}
 				
 				// Draw center of mass
-				if (c.PhysicsBodyType == RigidBody.BodyType.Dynamic)
+				if (c.BodyType == BodyType.Dynamic)
 				{
 					Vector2 localMassCenter = c.LocalMassCenter;
 					MathF.TransformCoord(ref localMassCenter.X, ref localMassCenter.Y, c.GameObj.Transform.Angle);

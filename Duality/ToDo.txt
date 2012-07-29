@@ -14,14 +14,10 @@
 
 
 -->	Create a physics sandbox for presentation
-	-->	Display stats
-		-->	Physics ms per frame
-		-->	Sleeping / Active body count
 	-->	Example: Landscape
 	-->	Example: Friction
 	-->	Example: Restitution
 	-->	Example: Density / Mass
-	-->	Example: Stacking
 	-->	Example: One for each Joint + One complex Joint scenario (car?)
 
 --> Reconsider "events" in Duality.

@@ -19,25 +19,6 @@ namespace Duality.Components.Physics
 	[RequiredComponent(typeof(Transform))]
 	public partial class RigidBody : Component, ICmpInitializable, ICmpUpdatable, ICmpEditorUpdatable
 	{
-		/// <summary>
-		/// The type of a <see cref="RigidBody">Colliders</see> physical body.
-		/// </summary>
-		public enum BodyType
-		{
-			/// <summary>
-			/// A static body. It will never move due to physical forces.
-			/// </summary>
-			Static,
-			/// <summary>
-			/// A dynamic body. Its movement is determined by physical effects.
-			/// </summary>
-			Dynamic
-		}
-		/// <summary>
-		/// Called for each shape found in the query. You control how the ray cast proceeds by returning a float:
-		/// <returns>-1 to filter, 0 to terminate, fraction to clip the ray for closest hit, 1 to continue</returns>
-		/// </summary>
-		public delegate float RayCastCallback(ShapeInfo shape, Vector2 point, Vector2 normal, float fraction);
 		private struct ColEvent
 		{
 			public enum EventType
@@ -88,7 +69,7 @@ namespace Duality.Components.Physics
 		/// <summary>
 		/// [GET / SET] The type of the physical body.
 		/// </summary>
-		public BodyType PhysicsBodyType
+		public BodyType BodyType
 		{
 			get { return this.bodyType; }
 			set 
@@ -579,7 +560,7 @@ namespace Duality.Components.Physics
 		public void ApplyLocalForce(float angularForce)
 		{
 			if (this.body == null) return;
-			if (DualityApp.AppData.PhysicsFixedTime) angularForce *= Time.TimeMult;
+			if (Scene.PhysicsFixedTime) angularForce *= Time.TimeMult;
 			this.body.ApplyTorque(angularForce / Time.SPFMult);
 		}
 		/// <summary>
@@ -609,7 +590,7 @@ namespace Duality.Components.Physics
 		public void ApplyWorldForce(Vector2 force)
 		{
 			if (this.body == null) return;
-			if (DualityApp.AppData.PhysicsFixedTime) force *= Time.TimeMult;
+			if (Scene.PhysicsFixedTime) force *= Time.TimeMult;
 			this.body.ApplyForce(
 				PhysicsConvert.ToPhysicalUnit(force) / Time.SPFMult, 
 				this.body.GetWorldPoint(this.body.LocalCenter));
@@ -622,7 +603,7 @@ namespace Duality.Components.Physics
 		public void ApplyWorldForce(Vector2 force, Vector2 applyAt)
 		{
 			if (this.body == null) return;
-			if (DualityApp.AppData.PhysicsFixedTime) force *= Time.TimeMult;
+			if (Scene.PhysicsFixedTime) force *= Time.TimeMult;
 			this.body.ApplyForce(PhysicsConvert.ToPhysicalUnit(force) / Time.SPFMult, PhysicsConvert.ToPhysicalUnit(applyAt));
 		}
 
@@ -1085,6 +1066,26 @@ namespace Duality.Components.Physics
 			return picked;
 		}
 	}
+	
+	/// <summary>
+	/// The type of a <see cref="RigidBody">Colliders</see> physical body.
+	/// </summary>
+	public enum BodyType
+	{
+		/// <summary>
+		/// A static body. It will never move due to physical forces.
+		/// </summary>
+		Static,
+		/// <summary>
+		/// A dynamic body. Its movement is determined by physical effects.
+		/// </summary>
+		Dynamic
+	}
+	/// <summary>
+	/// Called for each shape found in the query. You control how the ray cast proceeds by returning a float:
+	/// <returns>-1 to filter, 0 to terminate, fraction to clip the ray for closest hit, 1 to continue</returns>
+	/// </summary>
+	public delegate float RayCastCallback(ShapeInfo shape, Vector2 point, Vector2 normal, float fraction);
 
 	public class RigidBodyCollisionEventArgs : CollisionEventArgs
 	{

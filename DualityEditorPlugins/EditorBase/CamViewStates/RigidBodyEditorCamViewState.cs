@@ -222,7 +222,7 @@ namespace EditorBase.CamViewStates
 			this.toolCreateCircle.Enabled = this.selectedBody != null && this.mouseState == CursorState.Normal;
 			this.toolCreatePoly.Enabled = this.toolCreateCircle.Enabled;
 		//	this.toolCreateEdge.Enabled = this.toolCreateCircle.Enabled;
-			this.toolCreateLoop.Enabled = this.toolCreateCircle.Enabled && this.selectedBody.PhysicsBodyType == RigidBody.BodyType.Static;
+			this.toolCreateLoop.Enabled = this.toolCreateCircle.Enabled && this.selectedBody.BodyType == BodyType.Static;
 		}
 
 		public override CamViewState.SelObj PickSelObjAt(int x, int y)

@@ -483,7 +483,8 @@
         </member>
         <member name="P:Duality.DualityAppData.PhysicsFixedTime">
             <summary>
-            [GET / SET] Does the physics simulation use fixed time steps?
+            [GET / SET] Does the physics simulation use fixed time steps? However, this setting may be overwritten dynamically due
+            to frame timing restrictions. To check whether fixed-timestep physics is currently active, use <see cref="P:Duality.Resources.Scene.PhysicsFixedTime"/>
             </summary>
         </member>
         <member name="T:Duality.DualityUserData">
@@ -7423,7 +7424,7 @@
             <param name="size"></param>
             <returns></returns>
         </member>
-        <member name="M:Duality.Components.Physics.RigidBody.Raycast(OpenTK.Vector2,OpenTK.Vector2,Duality.Components.Physics.RigidBody.RayCastCallback)">
+        <member name="M:Duality.Components.Physics.RigidBody.Raycast(OpenTK.Vector2,OpenTK.Vector2,Duality.Components.Physics.RayCastCallback)">
             <summary>
             Performs a 2d physical raycast in world coordinates.
             </summary>
@@ -7456,7 +7457,7 @@
             <param name="size"></param>
             <returns></returns>
         </member>
-        <member name="P:Duality.Components.Physics.RigidBody.PhysicsBodyType">
+        <member name="P:Duality.Components.Physics.RigidBody.BodyType">
             <summary>
             [GET / SET] The type of the physical body.
             </summary>
@@ -7559,22 +7560,22 @@
             [GET] Whether the body is currently awake i.e. actively simulated.
             </summary>
         </member>
-        <member name="T:Duality.Components.Physics.RigidBody.BodyType">
+        <member name="T:Duality.Components.Physics.BodyType">
             <summary>
             The type of a <see cref="T:Duality.Components.Physics.RigidBody">Colliders</see> physical body.
             </summary>
         </member>
-        <member name="F:Duality.Components.Physics.RigidBody.BodyType.Static">
+        <member name="F:Duality.Components.Physics.BodyType.Static">
             <summary>
             A static body. It will never move due to physical forces.
             </summary>
         </member>
-        <member name="F:Duality.Components.Physics.RigidBody.BodyType.Dynamic">
+        <member name="F:Duality.Components.Physics.BodyType.Dynamic">
             <summary>
             A dynamic body. Its movement is determined by physical effects.
             </summary>
         </member>
-        <member name="T:Duality.Components.Physics.RigidBody.RayCastCallback">
+        <member name="T:Duality.Components.Physics.RayCastCallback">
             <summary>
             Called for each shape found in the query. You control how the ray cast proceeds by returning a float:
             <returns>-1 to filter, 0 to terminate, fraction to clip the ray for closest hit, 1 to continue</returns>
@@ -8632,6 +8633,11 @@
             <summary>
             [GET] When using fixed-timestep physics, the alpha value [0.0 - 1.0] indicates how
             complete the next step is. This is used for linear interpolation inbetween fixed physics steps.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Scene.PhysicsFixedTime">
+            <summary>
+            [GET] Is fixed-timestep physics calculation currently active?
             </summary>
         </member>
         <member name="P:Duality.Resources.Scene.PhysicsWorld">

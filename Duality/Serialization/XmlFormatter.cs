@@ -308,21 +308,7 @@ namespace Duality.Serialization
 					this.SerializationLog.PushIndent();
 					foreach (var pair in customIO.Data)
 					{
-						FieldInfo field = objSerializeType.Fields.FirstOrDefault(f => f.Name == pair.Key);
-						if (field == null)
-						{
-							this.SerializationLog.WriteWarning("No match found: {0}", pair.Key);
-						}
-						else if (field.FieldType.IsInstanceOfType(pair.Value))
-						{
-							this.SerializationLog.WriteWarning("Match '{0}' differs in FieldType: '{1}', but required '{2}", pair.Key, 
-								Log.Type(field.FieldType), 
-								Log.Type(pair.Value.GetType()));
-						}
-						else
-						{
-							field.SetValue(obj, pair.Value);
-						}
+						this.AssignValueToField(objSerializeType, obj, pair.Key, pair.Value);
 					}
 					this.SerializationLog.PopIndent();
 				}
@@ -338,43 +324,7 @@ namespace Duality.Serialization
 				{
 					fieldValue = this.ReadObject(out fieldName, out scopeChanged);
 					if (scopeChanged) break;
-					else
-					{
-						FieldInfo field = objSerializeType != null ? objSerializeType.Fields.FirstOrDefault(f => f.Name == fieldName) : null;
-						Type fieldType = null;
-						if (fieldValue != null) fieldType = fieldValue.GetType();
-						else if (field != null) fieldType = field.FieldType;
-
-						if (obj != null)
-						{
-							if (field == null)
-								this.SerializationLog.WriteWarning("Field '{0}' not found. Discarding value '{1}'", fieldName, fieldValue);
-							else if (!field.FieldType.IsAssignableFrom(fieldType))
-							{
-								this.SerializationLog.WriteWarning("Actual Type '{0}' of object value in field '{1}' does not match reflected FieldType '{2}'. Trying to convert...'", fieldType.GetTypeId(), fieldName, Log.Type(field.FieldType));
-								this.SerializationLog.PushIndent();
-								object castVal;
-								try
-								{
-									castVal = Convert.ChangeType(fieldValue, fieldType, CultureInfo.InvariantCulture);
-									this.SerializationLog.Write("...succeeded! Assigning value '{0}'", castVal);
-									field.SetValue(obj, castVal);
-								}
-								catch (Exception)
-								{
-									this.SerializationLog.WriteWarning("...failed! Discarding value '{0}'", fieldValue);
-								}
-								this.SerializationLog.PopIndent();
-							}
-							else if (field.IsNotSerialized)
-								this.SerializationLog.WriteWarning("Field '{0}' flagged as [NonSerialized]. Discarding value '{1}'", fieldName, fieldValue);
-							else
-							{
-								if (fieldValue == null && field.FieldType.IsValueType) fieldValue = field.FieldType.CreateInstanceOf();
-								field.SetValue(obj, fieldValue);
-							}
-						}
-					}
+					this.AssignValueToField(objSerializeType, obj, fieldName, fieldValue);
 				}
 			}
 

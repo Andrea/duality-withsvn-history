@@ -347,6 +347,42 @@ namespace Duality.Serialization
 		}
 
 
+		protected void AssignValueToField(SerializeType objSerializeType, object obj, string fieldName, object fieldValue)
+		{
+			if (obj == null) return;
+			FieldInfo field = objSerializeType != null ? objSerializeType.Fields.FirstOrDefault(f => f.Name == fieldName) : null;
+
+			if (field == null)
+				this.SerializationLog.WriteWarning("Field '{0}' not found. Discarding value '{1}'", fieldName, fieldValue);
+			else if (field.IsNotSerialized)
+				this.SerializationLog.WriteWarning("Field '{0}' flagged as [NonSerialized]. Discarding value '{1}'", fieldName, fieldValue);
+			else if (fieldValue != null && !field.FieldType.IsInstanceOfType(fieldValue))
+			{
+				this.SerializationLog.WriteWarning("Actual Type '{0}' of object value in field '{1}' does not match reflected FieldType '{2}'. Trying to convert...'", 
+					fieldValue != null ? Log.Type(fieldValue.GetType()) : "unknown", 
+					fieldName, 
+					Log.Type(field.FieldType));
+				this.SerializationLog.PushIndent();
+				object castVal;
+				try
+				{
+					castVal = Convert.ChangeType(fieldValue, field.FieldType, System.Globalization.CultureInfo.InvariantCulture);
+					this.SerializationLog.Write("...succeeded! Assigning value '{0}'", castVal);
+					field.SetValue(obj, castVal);
+				}
+				catch (Exception)
+				{
+					this.SerializationLog.WriteWarning("...failed! Discarding value '{0}'", fieldValue);
+				}
+				this.SerializationLog.PopIndent();
+			}
+			else
+			{
+				if (fieldValue == null && field.FieldType.IsValueType) fieldValue = field.FieldType.CreateInstanceOf();
+				field.SetValue(obj, fieldValue);
+			}
+		}
+
 		/// <summary>
 		/// Logs an error that occured during <see cref="Duality.Serialization.ISerializable">custom serialization</see>.
 		/// </summary>

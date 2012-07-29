@@ -1008,7 +1008,6 @@ namespace DualityEditor
 		private void OnSelectionChanged(object sender, ObjectSelection.Category changedCategoryFallback)
 		{
 			//if (this.selectionCurrent == this.selectionPrevious) return;
-			if (this.selectionCurrent == this.selectionPrevious) Log.Editor.WriteWarning("equal sel: {0}", this.selectionCurrent);
 			if (sender == null) sender = this;
 
 			this.selectionChanging = true;
