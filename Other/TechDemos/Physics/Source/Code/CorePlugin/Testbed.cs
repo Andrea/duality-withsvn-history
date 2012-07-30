@@ -249,6 +249,7 @@ namespace PhysicsTestbed
 			else if (e.Key == Key.Number5)	this.SwitchToScene(GameRes.Data.Examples.Mass_Scene);
 			else if (e.Key == Key.Number6)	this.SwitchToScene(GameRes.Data.Examples.Landscape_Scene);
 			else if (e.Key == Key.Number7)	this.SwitchToScene(GameRes.Data.Examples.Trigger_Scene);
+			else if (e.Key == Key.Number8)	this.SwitchToScene(GameRes.Data.Examples.Handling_Scene);
 			else if (e.Key == Key.Space)
 			{
 				if (Time.TimeMult > 0.0f)

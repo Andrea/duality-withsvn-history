@@ -27,6 +27,8 @@ namespace GameRes
 			public static Duality.ContentRef<Duality.Resources.Scene> Basic_Scene { get { if (_Basic_Scene.IsExplicitNull) _Basic_Scene = Duality.ContentProvider.RequestContent<Duality.Resources.Scene>(@"Data\Examples\Basic.Scene.res"); return _Basic_Scene; }}
 			private static Duality.ContentRef<Duality.Resources.Scene> _Friction_Scene;
 			public static Duality.ContentRef<Duality.Resources.Scene> Friction_Scene { get { if (_Friction_Scene.IsExplicitNull) _Friction_Scene = Duality.ContentProvider.RequestContent<Duality.Resources.Scene>(@"Data\Examples\Friction.Scene.res"); return _Friction_Scene; }}
+			private static Duality.ContentRef<Duality.Resources.Scene> _Handling_Scene;
+			public static Duality.ContentRef<Duality.Resources.Scene> Handling_Scene { get { if (_Handling_Scene.IsExplicitNull) _Handling_Scene = Duality.ContentProvider.RequestContent<Duality.Resources.Scene>(@"Data\Examples\Handling.Scene.res"); return _Handling_Scene; }}
 			private static Duality.ContentRef<Duality.Resources.Scene> _Landscape_Scene;
 			public static Duality.ContentRef<Duality.Resources.Scene> Landscape_Scene { get { if (_Landscape_Scene.IsExplicitNull) _Landscape_Scene = Duality.ContentProvider.RequestContent<Duality.Resources.Scene>(@"Data\Examples\Landscape.Scene.res"); return _Landscape_Scene; }}
 			private static Duality.ContentRef<Duality.Resources.Scene> _Mass_Scene;
@@ -40,6 +42,7 @@ namespace GameRes
 			public static void LoadAll() {
 				Basic_Scene.MakeAvailable();
 				Friction_Scene.MakeAvailable();
+				Handling_Scene.MakeAvailable();
 				Landscape_Scene.MakeAvailable();
 				Mass_Scene.MakeAvailable();
 				Restitution_Scene.MakeAvailable();
@@ -67,6 +70,13 @@ namespace GameRes
 				ShadowLevelBg_Material.MakeAvailable();
 				ShadowLevelBg_Pixmap.MakeAvailable();
 				ShadowLevelBg_Texture.MakeAvailable();
+			}
+		}
+		public static class Misc {
+			private static Duality.ContentRef<Duality.Resources.Prefab> _HitParticle_Prefab;
+			public static Duality.ContentRef<Duality.Resources.Prefab> HitParticle_Prefab { get { if (_HitParticle_Prefab.IsExplicitNull) _HitParticle_Prefab = Duality.ContentProvider.RequestContent<Duality.Resources.Prefab>(@"Data\Misc\HitParticle.Prefab.res"); return _HitParticle_Prefab; }}
+			public static void LoadAll() {
+				HitParticle_Prefab.MakeAvailable();
 			}
 		}
 		public static class Sprites {
@@ -135,6 +145,7 @@ namespace GameRes
 			Bodies.LoadAll();
 			Examples.LoadAll();
 			LevelGraphics.LoadAll();
+			Misc.LoadAll();
 			Sprites.LoadAll();
 			BigFont_Font.MakeAvailable();
 			SmallFont_Font.MakeAvailable();

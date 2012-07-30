@@ -4,9 +4,29 @@
         <name>GamePlugin.core</name>
     </assembly>
     <members>
+        <member name="T:PhysicsTestbed.Trigger">
+            <summary>
+            A simple Component that reacts to collisions.
+            </summary>
+        </member>
+        <member name="P:PhysicsTestbed.Trigger.Triggered">
+            <summary>
+            [GET] Returns whether or not the Trigger is currently triggered.
+            </summary>
+        </member>
+        <member name="P:PhysicsTestbed.Trigger.SensorsOnly">
+            <summary>
+            [GET / SET] Specifies whether the Trigger reacty only to its own sensor shapes.
+            </summary>
+        </member>
         <member name="T:PhysicsTestbed.PhysicsTestbedCorePlugin">
             <summary>
             Defines a Duality core plugin.
+            </summary>
+        </member>
+        <member name="T:PhysicsTestbed.TriggerDebugRenderer">
+            <summary>
+            This component uses a SpriteRenderers ColorTint to display the state of a Trigger.
             </summary>
         </member>
         <member name="T:PhysicsTestbed.Testbed">
@@ -25,24 +45,14 @@
             [GET / SET] The current Testbed's description. May be formatted.
             </summary>
         </member>
-        <member name="T:PhysicsTestbed.Trigger">
+        <member name="T:PhysicsTestbed.FadeoutEffect">
             <summary>
-            A simple Component that reacts to collisions.
+            A simple fadeout effect
             </summary>
         </member>
-        <member name="P:PhysicsTestbed.Trigger.Triggered">
+        <member name="T:PhysicsTestbed.CollisionVisualizer">
             <summary>
-            [GET] Returns whether or not the Trigger is currently triggered.
-            </summary>
-        </member>
-        <member name="P:PhysicsTestbed.Trigger.SensorsOnly">
-            <summary>
-            [GET / SET] Specifies whether the Trigger reacty only to its own sensor shapes.
-            </summary>
-        </member>
-        <member name="T:PhysicsTestbed.TriggerDebugRenderer">
-            <summary>
-            This component uses a SpriteRenderers ColorTint to display the state of a Trigger.
+            This Component visualizes collisions.
             </summary>
         </member>
     </members>

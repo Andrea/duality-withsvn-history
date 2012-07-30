@@ -200,19 +200,19 @@ namespace Duality
 			{
 				this.pos = PhysicsConvert.ToDualityUnit(impulse.Points[pointIndex].rA);
 				this.normal = impulse.Normal;
-				this.normalImpulse = PhysicsConvert.ToDualityUnit(impulse.Points[pointIndex].NormalImpulse * Time.SPFMult);
-				this.tangentImpulse = PhysicsConvert.ToDualityUnit(impulse.Points[pointIndex].TangentImpulse * Time.SPFMult);
-				this.normalMass = impulse.Points[pointIndex].NormalMass;
-				this.tangentMass = impulse.Points[pointIndex].TangentMass;
+				this.normalImpulse = PhysicsConvert.ToDualityUnit(PhysicsConvert.ToDualityUnit(impulse.Points[pointIndex].NormalImpulse * Time.SPFMult));
+				this.tangentImpulse = PhysicsConvert.ToDualityUnit(PhysicsConvert.ToDualityUnit(impulse.Points[pointIndex].TangentImpulse * Time.SPFMult));
+				this.normalMass = PhysicsConvert.ToDualityUnit(impulse.Points[pointIndex].NormalMass);
+				this.tangentMass = PhysicsConvert.ToDualityUnit(impulse.Points[pointIndex].TangentMass);
 			}
 			else if (localBody == impulse.BodyB)
 			{
 				this.pos = PhysicsConvert.ToDualityUnit(impulse.Points[pointIndex].rB);
 				this.normal = -impulse.Normal;
-				this.normalImpulse = PhysicsConvert.ToDualityUnit(impulse.Points[pointIndex].NormalImpulse * Time.SPFMult);
-				this.tangentImpulse = PhysicsConvert.ToDualityUnit(impulse.Points[pointIndex].TangentImpulse * Time.SPFMult);
-				this.normalMass = impulse.Points[pointIndex].NormalMass;
-				this.tangentMass = impulse.Points[pointIndex].TangentMass;
+				this.normalImpulse = PhysicsConvert.ToDualityUnit(PhysicsConvert.ToDualityUnit(impulse.Points[pointIndex].NormalImpulse * Time.SPFMult));
+				this.tangentImpulse = PhysicsConvert.ToDualityUnit(PhysicsConvert.ToDualityUnit(impulse.Points[pointIndex].TangentImpulse * Time.SPFMult));
+				this.normalMass = PhysicsConvert.ToDualityUnit(impulse.Points[pointIndex].NormalMass);
+				this.tangentMass = PhysicsConvert.ToDualityUnit(impulse.Points[pointIndex].TangentMass);
 			}
 			else
 				throw new ArgumentException("Local body is not part of the collision", "localBody");

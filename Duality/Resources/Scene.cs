@@ -72,7 +72,7 @@ namespace Duality.Resources
 				}
 				return current.Res;
 			}
-			set 
+			set
 			{
 				if (current.ResWeak != value)
 				{

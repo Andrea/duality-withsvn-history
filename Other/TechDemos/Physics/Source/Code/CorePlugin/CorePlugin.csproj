@@ -48,6 +48,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CorePlugin.cs" />
+    <Compile Include="FadeoutEffect.cs" />
+    <Compile Include="CollisionVisualizer.cs" />
     <Compile Include="TriggerDebugRenderer.cs" />
     <Compile Include="Trigger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
