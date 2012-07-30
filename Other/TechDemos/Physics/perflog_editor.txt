@@ -1,0 +1,17 @@
+Name                             : Total value (ms)   Total impact (ms)  Samples            Avg. value (ms)
+Duality_Render                   : 30531.24           1.66               7647               3.99
+Duality_Render_CollectDrawcalls  : 29166.84           1.59               7647               3.81
+Duality_Update                   : 3286.76            0.18               18343              0.18
+Duality_Update_Physics           : 1526.83            0.08               7394               0.21
+Duality_Update_Scene             : 1462.96            0.08               18343              0.08
+Duality_Render_ProcessDrawcalls  : 1013.64            0.06               7647               0.13
+Duality_Update_Physics_Solve     : 637.07             0.03               7394               0.09
+Duality_Update_Physics_Contacts  : 449.18             0.02               7394               0.06
+Duality_Update_Physics_Continous : 361.67             0.02               7394               0.05
+Duality_Render_OptimizeDrawcalls : 83.16              0.00               7647               0.01
+Duality_Update_Audio             : 83.14              0.00               18343              0.00
+Duality_Log                      : 7.75               0.00               19                 0.41
+Duality_Update_Physics_AddRemove : 5.39               0.00               7394               0.00
+Duality_Update_Physics_Controller: 2.79               0.00               7394               0.00
+Duality_Render_PostProcessing    : 0.00               0.00               1                  0.00
+Camera_MainCam_Render            : 0.00               0.00               0                  NaN

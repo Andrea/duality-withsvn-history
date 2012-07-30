@@ -282,8 +282,8 @@ namespace Duality.Resources
 			{
 				if (physicsTime > 0.0f)
 				{
-					float timeCoverage = Time.MainTimer - physicsTime;
-					physicsTime = Time.MainTimer;
+					float timeCoverage = Time.GameTimer - physicsTime;
+					physicsTime = Time.GameTimer;
 					physicsAcc += timeCoverage;
 					int iterations = 0;
 					if (physicsAcc > Time.MsPFMult)
@@ -306,7 +306,7 @@ namespace Duality.Resources
 					}
 				}
 				else
-					physicsTime = Time.MainTimer;
+					physicsTime = Time.GameTimer;
 			}
 			else
 			{
@@ -314,7 +314,7 @@ namespace Duality.Resources
 				FarseerPhysics.Settings.VelocityThreshold = PhysicsConvert.ToPhysicalUnit(Time.TimeMult * DualityApp.AppData.PhysicsVelocityThreshold / Time.SPFMult);
 				physicsWorld.Step(Time.TimeMult * Time.SPFMult);
 				physicsAcc = PhysicsAccStart;
-				physicsTime = Time.MainTimer;
+				physicsTime = Time.GameTimer;
 				physUpdate = true;
 				Performance.timeUpdatePhysics.EndMeasure();
 			}

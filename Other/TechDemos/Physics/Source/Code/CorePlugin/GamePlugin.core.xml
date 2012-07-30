@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GamePlugin.core</name>
+    </assembly>
+    <members>
+        <member name="T:PhysicsTestbed.PhysicsTestbedCorePlugin">
+            <summary>
+            Defines a Duality core plugin.
+            </summary>
+        </member>
+        <member name="T:PhysicsTestbed.Testbed">
+            <summary>
+            Displays information about the current testbed Scene and provides sandbox 
+            functionality, such as dragging objects via mouse cursor, etc.
+            </summary>
+        </member>
+        <member name="P:PhysicsTestbed.Testbed.Name">
+            <summary>
+            [GET / SET] The current Testbed's name. May be formatted.
+            </summary>
+        </member>
+        <member name="P:PhysicsTestbed.Testbed.Description">
+            <summary>
+            [GET / SET] The current Testbed's description. May be formatted.
+            </summary>
+        </member>
+        <member name="T:PhysicsTestbed.Trigger">
+            <summary>
+            A simple Component that reacts to collisions.
+            </summary>
+        </member>
+        <member name="P:PhysicsTestbed.Trigger.Triggered">
+            <summary>
+            [GET] Returns whether or not the Trigger is currently triggered.
+            </summary>
+        </member>
+        <member name="P:PhysicsTestbed.Trigger.SensorsOnly">
+            <summary>
+            [GET / SET] Specifies whether the Trigger reacty only to its own sensor shapes.
+            </summary>
+        </member>
+        <member name="T:PhysicsTestbed.TriggerDebugRenderer">
+            <summary>
+            This component uses a SpriteRenderers ColorTint to display the state of a Trigger.
+            </summary>
+        </member>
+    </members>
+</doc>
