@@ -250,6 +250,8 @@ namespace PhysicsTestbed
 			else if (e.Key == Key.Number6)	this.SwitchToScene(GameRes.Data.Examples.Landscape_Scene);
 			else if (e.Key == Key.Number7)	this.SwitchToScene(GameRes.Data.Examples.Trigger_Scene);
 			else if (e.Key == Key.Number8)	this.SwitchToScene(GameRes.Data.Examples.Handling_Scene);
+			else if (e.Key == Key.Number9)	this.SwitchToScene(GameRes.Data.Examples.Joints_Scene);
+			else if (e.Key == Key.Escape)	DualityApp.Terminate();
 			else if (e.Key == Key.Space)
 			{
 				if (Time.TimeMult > 0.0f)

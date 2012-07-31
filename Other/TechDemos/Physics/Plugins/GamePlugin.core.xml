@@ -19,14 +19,24 @@
             [GET / SET] Specifies whether the Trigger reacty only to its own sensor shapes.
             </summary>
         </member>
-        <member name="T:PhysicsTestbed.PhysicsTestbedCorePlugin">
-            <summary>
-            Defines a Duality core plugin.
-            </summary>
-        </member>
         <member name="T:PhysicsTestbed.TriggerDebugRenderer">
             <summary>
             This component uses a SpriteRenderers ColorTint to display the state of a Trigger.
+            </summary>
+        </member>
+        <member name="T:PhysicsTestbed.FadeoutEffect">
+            <summary>
+            A simple fadeout effect
+            </summary>
+        </member>
+        <member name="T:PhysicsTestbed.CollisionVisualizer">
+            <summary>
+            This Component visualizes collisions.
+            </summary>
+        </member>
+        <member name="T:PhysicsTestbed.PhysicsTestbedCorePlugin">
+            <summary>
+            Defines a Duality core plugin.
             </summary>
         </member>
         <member name="T:PhysicsTestbed.Testbed">
@@ -43,16 +53,6 @@
         <member name="P:PhysicsTestbed.Testbed.Description">
             <summary>
             [GET / SET] The current Testbed's description. May be formatted.
-            </summary>
-        </member>
-        <member name="T:PhysicsTestbed.FadeoutEffect">
-            <summary>
-            A simple fadeout effect
-            </summary>
-        </member>
-        <member name="T:PhysicsTestbed.CollisionVisualizer">
-            <summary>
-            This Component visualizes collisions.
             </summary>
         </member>
     </members>

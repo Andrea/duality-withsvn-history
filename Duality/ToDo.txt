@@ -13,10 +13,6 @@
 	-->	"Did you know..?" screen?
 
 
--->	Create a physics sandbox for presentation
-	-->	Example: Collision Detection / Sensors / Reaction
-	-->	Example: One for each Joint + One complex Joint scenario (car?)
-
 --> Reconsider "events" in Duality.
 	-->	Are they really necessary?
 	-->	Do they lead to difficult design on the user-side?

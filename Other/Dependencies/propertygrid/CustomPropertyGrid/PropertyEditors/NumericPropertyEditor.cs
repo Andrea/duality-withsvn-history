@@ -63,7 +63,7 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 				this.val = 0m;
 			else
 			{
-				this.val = values.Where(o => o != null).Average(o => Convert.ToDecimal(o));
+				this.val = values.Any(o => o != null) ? values.Where(o => o != null).Average(o => Convert.ToDecimal(o)) : 0m;
 				this.valMultiple = values.Any(o => o == null) || !values.All(o => Convert.ToDecimal(o) == this.val);
 			}
 

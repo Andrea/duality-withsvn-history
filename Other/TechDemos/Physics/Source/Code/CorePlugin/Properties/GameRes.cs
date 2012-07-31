@@ -29,6 +29,8 @@ namespace GameRes
 			public static Duality.ContentRef<Duality.Resources.Scene> Friction_Scene { get { if (_Friction_Scene.IsExplicitNull) _Friction_Scene = Duality.ContentProvider.RequestContent<Duality.Resources.Scene>(@"Data\Examples\Friction.Scene.res"); return _Friction_Scene; }}
 			private static Duality.ContentRef<Duality.Resources.Scene> _Handling_Scene;
 			public static Duality.ContentRef<Duality.Resources.Scene> Handling_Scene { get { if (_Handling_Scene.IsExplicitNull) _Handling_Scene = Duality.ContentProvider.RequestContent<Duality.Resources.Scene>(@"Data\Examples\Handling.Scene.res"); return _Handling_Scene; }}
+			private static Duality.ContentRef<Duality.Resources.Scene> _Joints_Scene;
+			public static Duality.ContentRef<Duality.Resources.Scene> Joints_Scene { get { if (_Joints_Scene.IsExplicitNull) _Joints_Scene = Duality.ContentProvider.RequestContent<Duality.Resources.Scene>(@"Data\Examples\Joints.Scene.res"); return _Joints_Scene; }}
 			private static Duality.ContentRef<Duality.Resources.Scene> _Landscape_Scene;
 			public static Duality.ContentRef<Duality.Resources.Scene> Landscape_Scene { get { if (_Landscape_Scene.IsExplicitNull) _Landscape_Scene = Duality.ContentProvider.RequestContent<Duality.Resources.Scene>(@"Data\Examples\Landscape.Scene.res"); return _Landscape_Scene; }}
 			private static Duality.ContentRef<Duality.Resources.Scene> _Mass_Scene;
@@ -43,6 +45,7 @@ namespace GameRes
 				Basic_Scene.MakeAvailable();
 				Friction_Scene.MakeAvailable();
 				Handling_Scene.MakeAvailable();
+				Joints_Scene.MakeAvailable();
 				Landscape_Scene.MakeAvailable();
 				Mass_Scene.MakeAvailable();
 				Restitution_Scene.MakeAvailable();
