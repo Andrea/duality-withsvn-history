@@ -13,6 +13,18 @@
 	-->	"Did you know..?" screen?
 
 
+-->	Issue: Registering events at MouseInput / KeyboardInput is instance-local.
+	This doesn't work with multiple CamViews. Need a static version that always
+	represents the current input.
+	-->	The current design feels pretty good actually.. The grouping is nice. Here:
+		DualityApp.Mouse.ButtonDown vs DualityApp.MouseDown
+		DualityApp.Keyboard.KeyDown vs DualityApp.KeyDown
+	-->	Can that design be kept? Alternatives?
+		-->	Yes! Just create an internal pseudo-static instance of IMouseInput and IKeyboardInput
+			that is returned on get {}.
+		-->	This instance dynamically redirects the actual inputs ( set {} ) data and events to
+			the pseudo-static billboard one.
+
 --> Reconsider "events" in Duality.
 	-->	Are they really necessary?
 	-->	Do they lead to difficult design on the user-side?

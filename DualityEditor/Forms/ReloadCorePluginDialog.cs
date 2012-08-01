@@ -122,6 +122,10 @@ namespace DualityEditor.Forms
 				}
 			}
 		}
+		public bool IsReloadingPlugins
+		{
+			get { return this.state != ReloaderState.Idle; }
+		}
 
 
 		public ReloadCorePluginDialog(MainForm owner)

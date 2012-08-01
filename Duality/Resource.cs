@@ -40,8 +40,8 @@ namespace Duality
 		/// <summary>
 		/// The path of this Resource.
 		/// </summary>
-		[NonSerialized]	protected	string	path		= null;
-		[NonSerialized]	private		bool	disposed	= false;
+		[NonSerialized]	protected	string			path		= null;
+		[NonSerialized]	private		DisposeState	disposed	= DisposeState.Active;
 
 		/// <summary>
 		/// [GET] Returns whether the Resource has been disposed. 
@@ -50,7 +50,7 @@ namespace Duality
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public bool Disposed
 		{
-			get { return this.disposed; }
+			get { return this.disposed == DisposeState.Disposed; }
 		}
 		/// <summary>
 		/// [GET] The path where this Resource has been originally loaded from or was first saved to.
@@ -128,7 +128,7 @@ namespace Duality
 		/// <param name="saveAsPath">The path to which this Resource is saved to. If null, the Resources <see cref="Path"/> is used as destination.</param>
 		public void Save(string saveAsPath = null)
 		{
-			if (this.disposed) throw new ApplicationException("Can't save Ressource that already has been disposed.");
+			if (this.disposed != DisposeState.Active) throw new ApplicationException("Can't save Ressource that already has been disposed.");
 			if (saveAsPath == null) saveAsPath = this.path;
 
 #if DEBUG
@@ -252,10 +252,11 @@ namespace Duality
 		}
 		private void Dispose(bool manually)
 		{
-			if (!this.disposed)
+			if (this.disposed == DisposeState.Active)
 			{
+				this.disposed = DisposeState.Disposing;
 				this.OnDisposing(manually);
-				this.disposed = true;
+				this.disposed = DisposeState.Disposed;
 			}
 		}
 		/// <summary>

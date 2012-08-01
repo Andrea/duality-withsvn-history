@@ -1475,7 +1475,7 @@ namespace DualityEditor
 		private void Scene_Leaving(object sender, EventArgs e)
 		{
 			this.Deselect(this, ObjectSelection.Category.All);
-			if (!this.sandboxStateChange) this.SandboxStop();
+			if (!this.sandboxStateChange && !this.corePluginReloader.IsReloadingPlugins) this.SandboxStop();
 		}
 
 		private void actionRunApp_Click(object sender, EventArgs e)

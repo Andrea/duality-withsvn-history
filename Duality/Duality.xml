@@ -13849,5 +13849,10 @@
             [GET / SET] The maximum angular impulse to apply to the RigidBody. A negative value equals infinity.
             </summary>
         </member>
+        <member name="T:Duality.DisposeState">
+            <summary>
+            Describes the state of object disposal.
+            </summary>
+        </member>
     </members>
 </doc>

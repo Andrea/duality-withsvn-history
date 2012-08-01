@@ -29,7 +29,7 @@ namespace Duality
 		private		List<Component>				compList	= new List<Component>();
 		private		string						name		= string.Format("obj{0}", MathF.Rnd.Next());
 		private		bool						active		= true;
-		private		bool						disposed	= false;
+		private		DisposeState				disposed	= DisposeState.Active;
 
 		// Built-in heavily used component lookup
 		private	Components.Transform		compTransform	= null;
@@ -79,7 +79,7 @@ namespace Duality
 		/// <seealso cref="Active"/>
 		public bool ActiveSingle
 		{
-			get { return this.active && !this.disposed; }
+			get { return this.active && this.disposed == DisposeState.Active; }
 			set 
 			{ 
 				if (this.active != value)
@@ -223,7 +223,7 @@ namespace Duality
 		/// </summary>
 		public bool Disposed
 		{
-			get { return this.disposed; }
+			get { return this.disposed == DisposeState.Disposed; }
 		}							//	G
 
 		/// <summary>
@@ -668,8 +668,10 @@ namespace Duality
 		/// <seealso cref="DisposeLater"/>
 		public void Dispose()
 		{
-			if (!this.disposed)
+			if (this.disposed == DisposeState.Active)
 			{
+				this.disposed = DisposeState.Disposing;
+
 				// Delete Components
 				for (int i = this.compList.Count - 1; i >= 0; i--) this.compList[i].Dispose();
 				// Delete child objects
@@ -677,7 +679,7 @@ namespace Duality
 				// Remove from parent
 				if (this.parent != null) this.Parent = null;
 
-				this.disposed = true;
+				this.disposed = DisposeState.Disposed;
 			}
 		}
 		/// <summary>

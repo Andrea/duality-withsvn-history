@@ -343,9 +343,9 @@ namespace Duality
 		}
 
 
-		internal	GameObject	gameobj		= null;
-		private		bool		disposed	= false;
-		private		bool		active		= true;
+		internal	GameObject		gameobj		= null;
+		private		DisposeState	disposed	= DisposeState.Active;
+		private		bool			active		= true;
 
 		
 		/// <summary>
@@ -366,7 +366,7 @@ namespace Duality
 		/// <seealso cref="Active"/>
 		public bool ActiveSingle
 		{
-			get { return this.active && !this.disposed; }
+			get { return this.active && this.disposed == DisposeState.Active; }
 			set 
 			{
 				if (this.active != value)
@@ -392,7 +392,7 @@ namespace Duality
 		/// </summary>
 		public bool Disposed
 		{
-			get { return this.disposed; }
+			get { return this.disposed == DisposeState.Disposed; }
 		}
 		/// <summary>
 		/// [GET / SET] The <see cref="GameObject"/> to which this Component belongs.
@@ -414,12 +414,14 @@ namespace Duality
 		/// <seealso cref="DisposeLater"/>
 		public void Dispose()
 		{
-			if (!this.disposed)
+			if (this.disposed == DisposeState.Active)
 			{
+				this.disposed = DisposeState.Disposing;
+
 				// Remove from GameObject
 				if (this.gameobj != null) this.gameobj.RemoveComponent(this);
 
-				this.disposed = true;
+				this.disposed = DisposeState.Disposed;
 			}
 		}
 		/// <summary>

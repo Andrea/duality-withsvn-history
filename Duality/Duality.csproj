@@ -115,6 +115,7 @@
     <Compile Include="Components\SoundListener.cs" />
     <Compile Include="Graphics\Canvas.cs" />
     <Compile Include="Helpers\ExtMethodsBitmap.cs" />
+    <Compile Include="Helpers\DisposeState.cs" />
     <Compile Include="Helpers\PhysicsConvert.cs" />
     <Compile Include="Helpers\EditorHint.cs" />
     <Compile Include="Helpers\ExtMethodsIEnumerable.cs" />
