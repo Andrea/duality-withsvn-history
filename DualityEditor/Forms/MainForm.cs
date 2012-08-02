@@ -382,6 +382,19 @@ namespace DualityEditor
 			this.OnLeaveSandbox();
 			this.sandboxStateChange = false;
 		}
+		private void SandboxLeaveScene()
+		{
+			if (this.sandboxStateChange) return;
+			//if (this.corePluginReloader.IsReloadingPlugins) return;
+
+			// Force later Scene reload by disposing it
+			string curPath = null;
+			if (!String.IsNullOrEmpty(Scene.Current.Path))
+			{
+				curPath = Scene.CurrentPath;
+				Scene.Current.Dispose();
+			}
+		}
 		public void SandboxSceneStartFreeze()
 		{
 			this.sandboxSceneFreeze = true;
@@ -1475,7 +1488,7 @@ namespace DualityEditor
 		private void Scene_Leaving(object sender, EventArgs e)
 		{
 			this.Deselect(this, ObjectSelection.Category.All);
-			if (!this.sandboxStateChange && !this.corePluginReloader.IsReloadingPlugins) this.SandboxStop();
+			this.SandboxLeaveScene();
 		}
 
 		private void actionRunApp_Click(object sender, EventArgs e)

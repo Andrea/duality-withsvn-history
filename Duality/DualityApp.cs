@@ -74,8 +74,8 @@ namespace Duality
 		private	static	GraphicsMode			targetMode			= null;
 		private	static	HashSet<GraphicsMode>	availModes			= new HashSet<GraphicsMode>(new GraphicsModeComparer());
 		private	static	GraphicsMode			defaultMode			= null;
-		private	static	IMouseInput				mouse				= null;
-		private	static	IKeyboardInput			keyboard			= null;
+		private	static	StaticMouseInput		mouse				= new StaticMouseInput();
+		private	static	StaticKeyboardInput		keyboard			= new StaticKeyboardInput();
 		private	static	SoundDevice				sound				= null;
 		private	static	ExecutionEnvironment	environment			= ExecutionEnvironment.Unknown;
 		private	static	ExecutionContext		execContext			= ExecutionContext.Terminated;
@@ -127,7 +127,7 @@ namespace Duality
 		public static IMouseInput Mouse
 		{
 			get { return mouse; }
-			internal set { mouse = value; }
+			internal set { mouse.RealInput = value; }
 		}
 		/// <summary>
 		/// [GET] Provides access to keyboard user input
@@ -135,7 +135,7 @@ namespace Duality
 		public static IKeyboardInput Keyboard
 		{
 			get { return keyboard; }
-			internal set { keyboard = value; }
+			internal set { keyboard.RealInput = value; }
 		}
 		/// <summary>
 		/// [GET] Provides access to the main <see cref="SoundDevice"/>.

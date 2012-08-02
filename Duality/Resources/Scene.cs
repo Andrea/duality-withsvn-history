@@ -76,8 +76,11 @@ namespace Duality.Resources
 			{
 				if (current.ResWeak != value)
 				{
-					OnLeaving();
+					if (!current.IsExplicitNull) 
+						OnLeaving();
+
 					current.Res = value ?? new Scene();
+
 					OnEntered();
 				}
 				else
