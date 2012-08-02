@@ -631,7 +631,7 @@ namespace Duality.Components.Physics
 			for (int i = 0; i < this.body.FixtureList.Count; i++)
 			{
 				Fixture f = this.body.FixtureList[i];
-				if (f.TestPoint(ref fsWorldCoord)) return this.shapes[i];
+				if (f.TestPoint(ref fsWorldCoord)) return f.UserData as ShapeInfo;
 			}
 			return null;
 		}
@@ -651,7 +651,7 @@ namespace Duality.Components.Physics
 			for (int i = 0; i < this.body.FixtureList.Count; i++)
 			{
 				Fixture f = this.body.FixtureList[i];
-				if (f.TestPoint(ref fsWorldCoord)) picked.Add(this.shapes[i]);
+				if (f.TestPoint(ref fsWorldCoord)) picked.Add(f.UserData as ShapeInfo);
 			}
 
 			return picked;
@@ -674,6 +674,7 @@ namespace Duality.Components.Physics
 			for (int i = 0; i < this.body.FixtureList.Count; i++)
 			{
 				Fixture f = this.body.FixtureList[i];
+				ShapeInfo s = f.UserData as ShapeInfo;
 
 				FarseerPhysics.Collision.AABB fAABB;
 				FarseerPhysics.Common.Transform transform;
@@ -682,7 +683,7 @@ namespace Duality.Components.Physics
 				
 				if (fsWorldAABB.Contains(ref fAABB))
 				{
-					picked.Add(this.shapes[i]);
+					picked.Add(s);
 					continue;
 				}
 				else if (!FarseerPhysics.Collision.AABB.TestOverlap(ref fsWorldAABB, ref fAABB))
@@ -692,13 +693,13 @@ namespace Duality.Components.Physics
 				fAABBIntersect.LowerBound = Vector2.ComponentMax(fAABB.LowerBound, fsWorldAABB.LowerBound);
 				fAABBIntersect.UpperBound = Vector2.ComponentMin(fAABB.UpperBound, fsWorldAABB.UpperBound);
 
-				Vector2 fsWorldCoordStep = PhysicsConvert.ToPhysicalUnit(new Vector2(MathF.Max(this.shapes[i].AABB.W, 1.0f), MathF.Max(this.shapes[i].AABB.H, 1.0f)) * 0.05f);
+				Vector2 fsWorldCoordStep = PhysicsConvert.ToPhysicalUnit(new Vector2(MathF.Max(s.AABB.W, 1.0f), MathF.Max(s.AABB.H, 1.0f)) * 0.05f);
 				Vector2 fsTemp = fAABBIntersect.LowerBound;
 				do
 				{
 					if (f.TestPoint(ref fsTemp))
 					{
-						picked.Add(this.shapes[i]);
+						picked.Add(s);
 						break;
 					}
 

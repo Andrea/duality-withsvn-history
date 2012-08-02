@@ -17,7 +17,6 @@ namespace EditorBase
 	public partial class ObjectInspector : DockContent
 	{
 		private	int							runtimeId			= 0;
-		private	int							stolenSelCount		= 0;
 		private	float						lastAutoRefresh		= 0.0f;
 		private	ObjectSelection.Category	selSchedMouseCat	= ObjectSelection.Category.None;
 		private	ObjectSelection				selSchedMouse		= null;
@@ -211,14 +210,11 @@ namespace EditorBase
 						TypeShare = ObjectSelection.GetTypeShareLevel(e.Current.Exclusive(cat), v.DisplayedSelection) };
 				var sortedQuery = 
 					from o in objViews
-					orderby o.PerfectFit descending, o.Empty ascending, o.TypeShare ascending, o.View.stolenSelCount ascending
+					orderby o.PerfectFit descending, o.Empty ascending, o.TypeShare ascending
 					select o;
 				var targetItem = sortedQuery.FirstOrDefault();
 				if (targetItem == null) return;
 				target = targetItem.View;
-
-				// If the target view showed something else first, increase its stolen counter
-				if (!targetItem.PerfectFit) target.stolenSelCount++;
 
 				// If a mouse button is pressed, reschedule the selection for later - there might be a drag in progress
 				if (Control.MouseButtons != System.Windows.Forms.MouseButtons.None)

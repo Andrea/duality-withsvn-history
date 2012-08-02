@@ -59,12 +59,10 @@ namespace EditorBase.DataConverters
 		}
 		public override bool Convert(ConvertOperation convert)
 		{
-			List<Component> dropdata = new List<Component>();
-			var matSelectionQuery = convert.Perform<Component>();
-			if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery);
+			List<Component> availData = convert.Perform<Component>().ToList();
 
 			// Generate objects
-			foreach (Component cmp in dropdata)
+			foreach (Component cmp in availData)
 			{
 				if (convert.IsObjectHandled(cmp)) continue;
 
@@ -76,10 +74,10 @@ namespace EditorBase.DataConverters
 					// Come up with a suitable name
 					if (convert.Result.OfType<string>().Any()) // Somebody left a string in the results? Perfect.
 						gameObj.Name = convert.Result.OfType<string>().First();
-					else if (dropdata.OfType<SpriteRenderer>().Any()) // Try to use a Material name
-						gameObj.Name = dropdata.OfType<SpriteRenderer>().First().SharedMaterial.Name;
-					else if (dropdata.OfType<SoundEmitter>().Any() && dropdata.OfType<SoundEmitter>().First().Sources.Any()) // Try to use a Sound name
-						gameObj.Name = dropdata.OfType<SoundEmitter>().First().Sources[0].Sound.Name;
+					else if (availData.OfType<SpriteRenderer>().Any()) // Try to use a Material name
+						gameObj.Name = availData.OfType<SpriteRenderer>().First().SharedMaterial.Name;
+					else if (availData.OfType<SoundEmitter>().Any() && availData.OfType<SoundEmitter>().First().Sources.Any()) // Try to use a Sound name
+						gameObj.Name = availData.OfType<SoundEmitter>().First().Sources[0].Sound.Name;
 					else // Use default name
 						gameObj.Name = "GameObject";
 				}
@@ -108,16 +106,12 @@ namespace EditorBase.DataConverters
 		}
 		public override bool Convert(ConvertOperation convert)
 		{
-			List<ContentRef<Sound>> dropdata = new List<ContentRef<Sound>>();
-			var matSelectionQuery = convert.Perform<Sound>();
-			if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
+			List<Sound> availData = convert.Perform<Sound>().ToList();
 
 			// Generate objects
-			foreach (ContentRef<Sound> sndRef in dropdata)
+			foreach (Sound snd in availData)
 			{
-				if (convert.IsObjectHandled(sndRef.Res)) continue;
-				if (!sndRef.IsAvailable) continue;
-				Sound snd = sndRef.Res;
+				if (convert.IsObjectHandled(snd)) continue;
 
 				GameObject gameobj = convert.Result.OfType<GameObject>().FirstOrDefault();
 				SoundEmitter emitter = convert.Result.OfType<SoundEmitter>().FirstOrDefault();
@@ -130,7 +124,7 @@ namespace EditorBase.DataConverters
 				emitter.Sources.Add(source);
 
 				convert.AddResult(emitter);
-				convert.MarkObjectHandled(sndRef.Res);
+				convert.MarkObjectHandled(snd);
 			}
 
 			return false;
@@ -146,16 +140,12 @@ namespace EditorBase.DataConverters
 		}
 		public override bool Convert(ConvertOperation convert)
 		{
-			List<ContentRef<Material>> dropdata = new List<ContentRef<Material>>();
-			var matSelectionQuery = convert.Perform<Material>();
-			if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
+			List<Material> availData = convert.Perform<Material>().ToList();
 
 			// Generate objects
-			foreach (ContentRef<Material> matRef in dropdata)
+			foreach (Material mat in availData)
 			{
-				if (convert.IsObjectHandled(matRef.Res)) continue;
-				if (!matRef.IsAvailable) continue;
-				Material mat = matRef.Res;
+				if (convert.IsObjectHandled(mat)) continue;
 				Texture mainTex = mat.MainTexture.Res;
 				GameObject gameobj = convert.Result.OfType<GameObject>().FirstOrDefault();
 
@@ -165,7 +155,7 @@ namespace EditorBase.DataConverters
 					SpriteRenderer sprite = convert.Result.OfType<SpriteRenderer>().FirstOrDefault();
 					if (sprite == null && gameobj != null) sprite = gameobj.GetComponent<SpriteRenderer>();
 					if (sprite == null) sprite = new SpriteRenderer();
-					sprite.SharedMaterial = matRef;
+					sprite.SharedMaterial = mat;
 					if (mainTex != null) sprite.Rect = Rect.AlignCenter(0.0f, 0.0f, mainTex.PxWidth, mainTex.PxHeight);
 					convert.AddResult(sprite);
 				}
@@ -174,14 +164,14 @@ namespace EditorBase.DataConverters
 					AnimSpriteRenderer sprite = convert.Result.OfType<AnimSpriteRenderer>().FirstOrDefault();
 					if (sprite == null && gameobj != null) sprite = gameobj.GetComponent<AnimSpriteRenderer>();
 					if (sprite == null) sprite = new AnimSpriteRenderer();
-					sprite.SharedMaterial = matRef;
+					sprite.SharedMaterial = mat;
 					sprite.Rect = Rect.AlignCenter(0.0f, 0.0f, mainTex.PxWidth / mainTex.AnimCols, mainTex.PxHeight / mainTex.AnimRows);
 					sprite.AnimDuration = 5.0f;
 					sprite.AnimFrameCount = mainTex.AnimFrames;
 					convert.AddResult(sprite);
 				}
 
-				convert.MarkObjectHandled(matRef.Res);
+				convert.MarkObjectHandled(mat);
 			}
 
 			return false;
@@ -197,16 +187,12 @@ namespace EditorBase.DataConverters
 		}
 		public override bool Convert(ConvertOperation convert)
 		{
-			List<ContentRef<Font>> dropdata = new List<ContentRef<Font>>();
-			var matSelectionQuery = convert.Perform<Font>();
-			if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
+			List<Font> availData = convert.Perform<Font>().ToList();
 
 			// Generate objects
-			foreach (ContentRef<Font> fontRef in dropdata)
+			foreach (Font font in availData)
 			{
-				if (convert.IsObjectHandled(fontRef.Res)) continue;
-				if (!fontRef.IsAvailable) continue;
-				Font font = fontRef.Res;
+				if (convert.IsObjectHandled(font)) continue;
 
 				GameObject gameobj = convert.Result.OfType<GameObject>().FirstOrDefault();
 				TextRenderer renderer = convert.Result.OfType<TextRenderer>().FirstOrDefault();
@@ -214,18 +200,18 @@ namespace EditorBase.DataConverters
 				if (renderer == null) renderer = new TextRenderer();
 				convert.AddResult(font.Name); // Leave a name string in the result to pick up for the GameObject constructor
 					
-				if (!renderer.Text.Fonts.Contains(fontRef))
+				if (!renderer.Text.Fonts.Contains(font))
 				{
 					var fonts = renderer.Text.Fonts.ToList();
 					if (fonts[0] == Font.GenericMonospace10) fonts.RemoveAt(0);
-					fonts.Add(fontRef);
+					fonts.Add(font);
 					renderer.Text.Fonts = fonts.ToArray();
 					renderer.Text.ApplySource();
 					renderer.UpdateMetrics();
 				}
 
 				convert.AddResult(renderer);
-				convert.MarkObjectHandled(fontRef.Res);
+				convert.MarkObjectHandled(font);
 			}
 
 			return false;
@@ -283,19 +269,16 @@ namespace EditorBase.DataConverters
 		{
 			bool finishConvertOp = false;
 
-			List<ContentRef<Material>> dropdata = new List<ContentRef<Material>>();
-			var matSelectionQuery = convert.Perform<Material>();
-			if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
+			List<Material> availData = convert.Perform<Material>().ToList();
 
 			// Append objects
-			foreach (ContentRef<Material> matRef in dropdata)
+			foreach (Material mat in availData)
 			{
-				if (convert.IsObjectHandled(matRef.Res)) continue;
-				if (!matRef.IsAvailable) continue;
+				if (convert.IsObjectHandled(mat)) continue;
 
-				convert.AddResult(matRef.Res.Info);
+				convert.AddResult(mat.Info);
 				finishConvertOp = true;
-				convert.MarkObjectHandled(matRef.Res);
+				convert.MarkObjectHandled(mat);
 			}
 
 			return finishConvertOp;
@@ -312,13 +295,10 @@ namespace EditorBase.DataConverters
 		public override bool Convert(ConvertOperation convert)
 		{
 			bool finishConvertOp = false;
-
-			List<BatchInfo> dropdata = new List<BatchInfo>();
-			var matSelectionQuery = convert.Perform<BatchInfo>();
-			if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery);
+			List<BatchInfo> availData = convert.Perform<BatchInfo>().ToList();
 
 			// Generate objects
-			foreach (BatchInfo info in dropdata)
+			foreach (BatchInfo info in availData)
 			{
 				if (convert.IsObjectHandled(info)) continue;
 
@@ -341,50 +321,60 @@ namespace EditorBase.DataConverters
 	{
 		public override bool CanConvertFrom(ConvertOperation convert)
 		{
-			return 
-				convert.AllowedOperations.HasFlag(ConvertOperation.Operation.Convert) && 
-				convert.CanPerform<Texture>();
+			if (convert.AllowedOperations.HasFlag(ConvertOperation.Operation.CreateRes))
+			{
+				return convert.CanPerform<Texture>();
+			}
+			
+			if (convert.AllowedOperations.HasFlag(ConvertOperation.Operation.Convert))
+			{
+				List<Texture> availTex = convert.Perform<Texture>(ConvertOperation.Operation.Convert).ToList();
+				return availTex.Any(t => this.FindMatch(t) != null);
+			}
+
+			return false;
 		}
 		public override bool Convert(ConvertOperation convert)
 		{
 			bool finishConvertOp = false;
-
-			List<ContentRef<Texture>> dropdata = new List<ContentRef<Texture>>();
-			var matSelectionQuery = convert.Perform<Texture>();
-			if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
+			List<Texture> availData = convert.Perform<Texture>().ToList();
 
 			// Generate objects
-			foreach (ContentRef<Texture> texRef in dropdata)
+			foreach (Texture baseRes in availData)
 			{
-				if (convert.IsObjectHandled(texRef.Res)) continue;
-				if (!texRef.IsAvailable) continue;
-				Texture tex = texRef.Res;
+				if (convert.IsObjectHandled(baseRes)) continue;
 
-				// Find Material matching Texture
-				ContentRef<Material> matRef = ContentRef<Material>.Null;
-				if (texRef.IsDefaultContent)
+				// Find target Resource matching the source - or create one.
+				Material targetRes = this.FindMatch(baseRes);
+				if (targetRes == null && convert.AllowedOperations.HasFlag(ConvertOperation.Operation.CreateRes))
 				{
-					var defaultContent = ContentProvider.GetAllDefaultContent();
-					matRef = defaultContent.FirstOrDefault(r => r.Is<Material>() && (r.Res as Material).MainTexture == tex).As<Material>();
-				}
-				else
-				{
-					string matPath = tex.FullName + Material.FileExt;
-					matRef = ContentProvider.RequestContent<Material>(matPath);
-					if (!matRef.IsAvailable && convert.AllowedOperations.HasFlag(ConvertOperation.Operation.CreateRes))
-					{
-						// Auto-Generate Material
-						matRef = Material.CreateFromTexture(tex);
-					}
+					targetRes = Material.CreateFromTexture(baseRes).Res;
 				}
 
-				if (!matRef.IsAvailable) continue;
-				convert.AddResult(matRef.Res);
+				if (targetRes == null) continue;
+				convert.AddResult(targetRes);
 				finishConvertOp = true;
-				convert.MarkObjectHandled(texRef.Res);
+				convert.MarkObjectHandled(baseRes);
 			}
 
 			return finishConvertOp;
+		}
+		private Material FindMatch(Texture baseRes)
+		{
+			if (baseRes == null)
+			{
+				return null;
+			}
+			else if (baseRes.IsDefaultContent)
+			{
+				var defaultContent = ContentProvider.GetAllDefaultContent();
+				return defaultContent.FirstOrDefault(r => r.Is<Material>() && (r.Res as Material).MainTexture == baseRes).As<Material>().Res;
+			}
+			else
+			{
+				string targetPath = baseRes.FullName + Material.FileExt;
+				return ContentProvider.RequestContent<Material>(targetPath).Res;
+			}
 		}
 	}
 	public class TextureFromMaterial : DataConverter
@@ -399,20 +389,17 @@ namespace EditorBase.DataConverters
 		{
 			bool finishConvertOp = false;
 
-			List<ContentRef<Material>> dropdata = new List<ContentRef<Material>>();
-			var matSelectionQuery = convert.Perform<Material>();
-			if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
+			List<Material> availData = convert.Perform<Material>().ToList();
 
 			// Append objects
-			foreach (ContentRef<Material> matRef in dropdata)
+			foreach (Material baseRes in availData)
 			{
-				if (convert.IsObjectHandled(matRef.Res)) continue;
-				if (!matRef.IsAvailable) continue;
+				if (convert.IsObjectHandled(baseRes)) continue;
+				if (!baseRes.MainTexture.IsAvailable) continue;
 
-				if (!matRef.Res.MainTexture.IsAvailable) continue;
-				convert.AddResult(matRef.Res.MainTexture.Res);
+				convert.AddResult(baseRes.MainTexture.Res);
 				finishConvertOp = true;
-				convert.MarkObjectHandled(matRef.Res);
+				convert.MarkObjectHandled(baseRes);
 			}
 
 			return finishConvertOp;
@@ -422,50 +409,60 @@ namespace EditorBase.DataConverters
 	{
 		public override bool CanConvertFrom(ConvertOperation convert)
 		{
-			return 
-				convert.AllowedOperations.HasFlag(ConvertOperation.Operation.Convert) && 
-				convert.CanPerform<Pixmap>();
+			if (convert.AllowedOperations.HasFlag(ConvertOperation.Operation.CreateRes))
+			{
+				return convert.CanPerform<Pixmap>();
+			}
+			
+			if (convert.AllowedOperations.HasFlag(ConvertOperation.Operation.Convert))
+			{
+				List<Pixmap> availData = convert.Perform<Pixmap>(ConvertOperation.Operation.Convert).ToList();
+				return availData.Any(t => this.FindMatch(t) != null);
+			}
+
+			return false;
 		}
 		public override bool Convert(ConvertOperation convert)
 		{
 			bool finishConvertOp = false;
-
-			List<ContentRef<Pixmap>> dropdata = new List<ContentRef<Pixmap>>();
-			var matSelectionQuery = convert.Perform<Pixmap>();
-			if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
+			List<Pixmap> availData = convert.Perform<Pixmap>().ToList();
 
 			// Generate objects
-			foreach (ContentRef<Pixmap> pixRef in dropdata)
+			foreach (Pixmap baseRes in availData)
 			{
-				if (convert.IsObjectHandled(pixRef.Res)) continue;
-				if (!pixRef.IsAvailable) continue;
-				Pixmap pix = pixRef.Res;
+				if (convert.IsObjectHandled(baseRes)) continue;
 
-				// Find Material matching Texture
-				ContentRef<Texture> texRef = ContentRef<Texture>.Null;
-				if (pixRef.IsDefaultContent)
+				// Find target Resource matching the source - or create one.
+				Texture targetRes = this.FindMatch(baseRes);
+				if (targetRes == null && convert.AllowedOperations.HasFlag(ConvertOperation.Operation.CreateRes))
 				{
-					var defaultContent = ContentProvider.GetAllDefaultContent();
-					texRef = defaultContent.FirstOrDefault(r => r.Is<Texture>() && (r.Res as Texture).BasePixmap == pix).As<Texture>();
-				}
-				else
-				{
-					string texPath = pix.FullName + Texture.FileExt;
-					texRef = ContentProvider.RequestContent<Texture>(texPath);
-					if (!texRef.IsAvailable && convert.AllowedOperations.HasFlag(ConvertOperation.Operation.CreateRes))
-					{
-						// Auto-Generate Texture
-						texRef = Texture.CreateFromPixmap(pix);
-					}
+					targetRes = Texture.CreateFromPixmap(baseRes).Res;
 				}
 
-				if (!texRef.IsAvailable) continue;
-				convert.AddResult(texRef.Res);
+				if (targetRes == null) continue;
+				convert.AddResult(targetRes);
 				finishConvertOp = true;
-				convert.MarkObjectHandled(pixRef.Res);
+				convert.MarkObjectHandled(baseRes);
 			}
 
 			return finishConvertOp;
+		}
+		private Texture FindMatch(Pixmap baseRes)
+		{
+			if (baseRes == null)
+			{
+				return null;
+			}
+			else if (baseRes.IsDefaultContent)
+			{
+				var defaultContent = ContentProvider.GetAllDefaultContent();
+				return defaultContent.FirstOrDefault(r => r.Is<Texture>() && (r.Res as Texture).BasePixmap == baseRes).As<Texture>().Res;
+			}
+			else
+			{
+				string targetPath = baseRes.FullName + Texture.FileExt;
+				return ContentProvider.RequestContent<Texture>(targetPath).Res;
+			}
 		}
 	}
 	public class PixmapFromTexture : DataConverter
@@ -480,20 +477,17 @@ namespace EditorBase.DataConverters
 		{
 			bool finishConvertOp = false;
 
-			List<ContentRef<Texture>> dropdata = new List<ContentRef<Texture>>();
-			var matSelectionQuery = convert.Perform<Texture>();
-			if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
+			List<Texture> availData = convert.Perform<Texture>().ToList();
 
 			// Append objects
-			foreach (ContentRef<Texture> texRef in dropdata)
+			foreach (Texture baseRes in availData)
 			{
-				if (convert.IsObjectHandled(texRef.Res)) continue;
-				if (!texRef.IsAvailable) continue;
+				if (convert.IsObjectHandled(baseRes)) continue;
+				if (!baseRes.BasePixmap.IsAvailable) continue;
 
-				if (!texRef.Res.BasePixmap.IsAvailable) continue;
-				convert.AddResult(texRef.Res.BasePixmap.Res);
+				convert.AddResult(baseRes.BasePixmap.Res);
 				finishConvertOp = true;
-				convert.MarkObjectHandled(texRef.Res);
+				convert.MarkObjectHandled(baseRes);
 			}
 
 			return finishConvertOp;
@@ -503,50 +497,60 @@ namespace EditorBase.DataConverters
 	{
 		public override bool CanConvertFrom(ConvertOperation convert)
 		{
-			return 
-				convert.AllowedOperations.HasFlag(ConvertOperation.Operation.Convert) && 
-				convert.CanPerform<AudioData>();
+			if (convert.AllowedOperations.HasFlag(ConvertOperation.Operation.CreateRes))
+			{
+				return convert.CanPerform<AudioData>();
+			}
+			
+			if (convert.AllowedOperations.HasFlag(ConvertOperation.Operation.Convert))
+			{
+				List<AudioData> availData = convert.Perform<AudioData>(ConvertOperation.Operation.Convert).ToList();
+				return availData.Any(t => this.FindMatch(t) != null);
+			}
+
+			return false;
 		}
 		public override bool Convert(ConvertOperation convert)
 		{
 			bool finishConvertOp = false;
-
-			List<ContentRef<AudioData>> dropdata = new List<ContentRef<AudioData>>();
-			var matSelectionQuery = convert.Perform<AudioData>();
-			if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
+			List<AudioData> availData = convert.Perform<AudioData>().ToList();
 
 			// Generate objects
-			foreach (ContentRef<AudioData> audRef in dropdata)
+			foreach (AudioData baseRes in availData)
 			{
-				if (convert.IsObjectHandled(audRef.Res)) continue;
-				if (!audRef.IsAvailable) continue;
-				AudioData aud = audRef.Res;
+				if (convert.IsObjectHandled(baseRes)) continue;
 
-				// Find Material matching Texture
-				ContentRef<Sound> sndRef = ContentRef<Sound>.Null;
-				if (audRef.IsDefaultContent)
+				// Find target Resource matching the source - or create one.
+				Sound targetRes = this.FindMatch(baseRes);
+				if (targetRes == null && convert.AllowedOperations.HasFlag(ConvertOperation.Operation.CreateRes))
 				{
-					var defaultContent = ContentProvider.GetAllDefaultContent();
-					sndRef = defaultContent.FirstOrDefault(r => r.Is<Sound>() && (r.Res as Sound).Data.Res == aud).As<Sound>();
-				}
-				else
-				{
-					string sndPath = aud.FullName + Sound.FileExt;
-					sndRef = ContentProvider.RequestContent<Sound>(sndPath);
-					if (!sndRef.IsAvailable && convert.AllowedOperations.HasFlag(ConvertOperation.Operation.CreateRes))
-					{
-						// Auto-Generate Material
-						sndRef = Sound.CreateFromAudioData(aud);
-					}
+					targetRes = Sound.CreateFromAudioData(baseRes).Res;
 				}
 
-				if (!sndRef.IsAvailable) continue;
-				convert.AddResult(sndRef.Res);
+				if (targetRes == null) continue;
+				convert.AddResult(targetRes);
 				finishConvertOp = true;
-				convert.MarkObjectHandled(audRef.Res);
+				convert.MarkObjectHandled(baseRes);
 			}
 
 			return finishConvertOp;
+		}
+		private Sound FindMatch(AudioData baseRes)
+		{
+			if (baseRes == null)
+			{
+				return null;
+			}
+			else if (baseRes.IsDefaultContent)
+			{
+				var defaultContent = ContentProvider.GetAllDefaultContent();
+				return defaultContent.FirstOrDefault(r => r.Is<Sound>() && (r.Res as Sound).Data == baseRes).As<Sound>().Res;
+			}
+			else
+			{
+				string targetPath = baseRes.FullName + Texture.FileExt;
+				return ContentProvider.RequestContent<Sound>(targetPath).Res;
+			}
 		}
 	}
 	public class AudioDataFromSound : DataConverter
@@ -561,20 +565,17 @@ namespace EditorBase.DataConverters
 		{
 			bool finishConvertOp = false;
 
-			List<ContentRef<Sound>> dropdata = new List<ContentRef<Sound>>();
-			var matSelectionQuery = convert.Perform<Sound>();
-			if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
+			List<Sound> availData = convert.Perform<Sound>().ToList();
 
 			// Append objects
-			foreach (ContentRef<Sound> sndRef in dropdata)
+			foreach (Sound baseRes in availData)
 			{
-				if (convert.IsObjectHandled(sndRef.Res)) continue;
-				if (!sndRef.IsAvailable) continue;
+				if (convert.IsObjectHandled(baseRes)) continue;
+				if (!baseRes.Data.IsAvailable) continue;
 
-				if (!sndRef.Res.Data.IsAvailable) continue;
-				convert.AddResult(sndRef.Res.Data.Res);
+				convert.AddResult(baseRes.Data.Res);
 				finishConvertOp = true;
-				convert.MarkObjectHandled(sndRef.Res);
+				convert.MarkObjectHandled(baseRes);
 			}
 
 			return finishConvertOp;

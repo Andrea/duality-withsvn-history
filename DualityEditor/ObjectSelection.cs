@@ -309,7 +309,7 @@ namespace DualityEditor
 				level++;
 				firstType = firstType.BaseType;
 			}
-			return level;
+			return firstType == typeof(object) ? int.MaxValue : level;
 		}
 		public static Category GetAffectedCategories(ObjectSelection first, ObjectSelection second)
 		{

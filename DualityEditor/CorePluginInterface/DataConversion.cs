@@ -188,18 +188,21 @@ namespace DualityEditor.CorePluginInterface
 			//Log.Editor.Write("addresult: {0} {1}", obj != null ? obj.GetType().Name : "", obj);
 		}
 
-		public bool CanPerform<T>()
+		public bool CanPerform<T>(Operation restrictTo = Operation.All)
 		{
-			return this.CanPerform(typeof(T));
+			return this.CanPerform(typeof(T), restrictTo);
 		}
-		public IEnumerable<T> Perform<T>()
+		public IEnumerable<T> Perform<T>(Operation restrictTo = Operation.All)
 		{
-			IEnumerable<object> result = this.Perform(typeof(T)); 
+			IEnumerable<object> result = this.Perform(typeof(T), restrictTo); 
 			IEnumerable<T> castResult = result.OfType<T>();
 			return castResult;
 		}
-		public bool CanPerform(Type target)
+		public bool CanPerform(Type target, Operation restrictTo = Operation.All)
 		{
+			Operation oldAllowedOp = this.allowedOp;
+			this.allowedOp = oldAllowedOp & restrictTo;
+
 			// Convert ContentRef requests to their respective Resource-requests
 			target = ResTypeFromRefType(target);
 
@@ -221,10 +224,14 @@ namespace DualityEditor.CorePluginInterface
 			this.maxComplexity = Math.Max(this.maxComplexity, this.curComplexity);
 			this.curComplexity--;
 
+			this.allowedOp = oldAllowedOp;
 			return result;
 		}
-		public IEnumerable<object> Perform(Type target)
+		public IEnumerable<object> Perform(Type target, Operation restrictTo = Operation.All)
 		{
+			Operation oldAllowedOp = this.allowedOp;
+			this.allowedOp = oldAllowedOp & restrictTo;
+
 			// Convert ContentRef requests to their respective Resource-requests
 			Type originalType = target;
 			target = ResTypeFromRefType(target);
@@ -301,6 +308,8 @@ namespace DualityEditor.CorePluginInterface
 
 			returnValue = returnValue ?? (IEnumerable<object>)Array.CreateInstance(originalType, 0);
 			returnValue = returnValue.Where(originalType.IsInstanceOfType);
+
+			this.allowedOp = oldAllowedOp;
 			return returnValue;
 		}
 

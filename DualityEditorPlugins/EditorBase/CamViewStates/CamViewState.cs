@@ -706,6 +706,12 @@ namespace EditorBase.CamViewStates
 			if (MainForm.Instance.CurrentSandboxState == MainForm.SandboxState.Playing)
 				MainForm.Instance.SandboxSceneStartFreeze();
 
+			// Re-select current selection to give it editor focus when performing an action
+			if (this.action != MouseAction.RectSelection && this.action != MouseAction.None)
+			{
+				//this.SelectObjects(this.allObjSel);
+			}
+
 			// Begin movement
 			if (this.action == MouseAction.MoveObj)
 			{

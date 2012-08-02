@@ -356,8 +356,6 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			if (!this.rect.Contains(e.Location)) return;
 			Cursor.Current = Cursors.IBeam;
 
-			Console.WriteLine(e.Location);
-
 			// Pick char
 			int pickedCharIndex;
 			Point pickLoc = new Point(Math.Min(Math.Max(e.X, rect.X + 2), rect.Right - 2), rect.Y + rect.Height / 2);
