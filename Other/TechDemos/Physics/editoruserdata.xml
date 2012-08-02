@@ -1,7 +1,6 @@
 <PluginUserData>
-  <Plugin_DynamicLighting />
   <Plugin_EditorBase>
-    <CamView_0 toggleParallaxity="True" parallaxRefDist="500" bgColorArgb="3027515" activeState="EditorBase.CamViewStates.SceneEditorCamViewState">
+    <CamView_0 toggleParallaxity="True" parallaxRefDist="500" bgColorArgb="3027515" activeState="EditorBase.CamViewStates.GameViewCamViewState">
       <states>
         <EditorBase.CamViewStates.GameViewCamViewState>
           <activeLayers />

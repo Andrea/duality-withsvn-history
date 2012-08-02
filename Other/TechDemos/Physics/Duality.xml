@@ -3576,6 +3576,11 @@
             The OpenAL buffer handle to the audio data that is used by this Sound.
             </summary>
         </member>
+        <member name="T:Duality.DisposeState">
+            <summary>
+            Describes the state of object disposal.
+            </summary>
+        </member>
         <member name="T:Duality.Components.Physics.RevoluteJointInfo">
             <summary>
             Pins two locally anchored RigidBodies together without constraining rotation.

@@ -89,7 +89,7 @@
                     <lastAngleAbs dataType="Float">0</lastAngleAbs>
                     <OnTransformChanged />
                     <gameobj dataType="ObjectRef">11</gameobj>
-                    <disposed dataType="Bool">false</disposed>
+                    <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                     <active dataType="Bool">true</active>
                   </object>
                   <object dataType="Class" type="Duality.Components.Camera" id="20">
@@ -143,12 +143,12 @@
                       <_version dataType="Int">2</_version>
                     </passes>
                     <gameobj dataType="ObjectRef">11</gameobj>
-                    <disposed dataType="Bool">false</disposed>
+                    <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                     <active dataType="Bool">true</active>
                   </object>
                   <object dataType="Class" type="Duality.Components.SoundListener" id="25">
                     <gameobj dataType="ObjectRef">11</gameobj>
-                    <disposed dataType="Bool">false</disposed>
+                    <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                     <active dataType="Bool">true</active>
                   </object>
                   <object dataType="Class" type="PhysicsTestbed.Testbed" id="26">
@@ -309,7 +309,7 @@
                       <elements dataType="Array" type="Duality.FormattedText+Element[]" id="60" length="0" />
                     </stats>
                     <gameobj dataType="ObjectRef">11</gameobj>
-                    <disposed dataType="Bool">false</disposed>
+                    <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                     <active dataType="Bool">true</active>
                   </object>
                 </values>
@@ -327,7 +327,7 @@
             </compList>
             <name dataType="String">MainCam</name>
             <active dataType="Bool">true</active>
-            <disposed dataType="Bool">false</disposed>
+            <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
             <compTransform dataType="ObjectRef">19</compTransform>
             <EventComponentAdded dataType="Delegate" type="System.EventHandler`1[[Duality.ComponentEventArgs]]" id="63" multi="true">
               <object dataType="MethodInfo" id="64" value="M:Duality.ObjectManagers.GameObjectManager:OnRegisteredObjectComponentAdded(System.Object,Duality.ComponentEventArgs)" />
@@ -961,7 +961,7 @@
                                       </shapes>
                                       <joints />
                                       <gameobj dataType="ObjectRef">72</gameobj>
-                                      <disposed dataType="Bool">false</disposed>
+                                      <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                       <active dataType="Bool">true</active>
                                     </object>
                                     <object dataType="Array" type="System.Delegate[]" id="93" length="1">
@@ -969,7 +969,7 @@
                                     </object>
                                   </OnTransformChanged>
                                   <gameobj dataType="ObjectRef">72</gameobj>
-                                  <disposed dataType="Bool">false</disposed>
+                                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                   <active dataType="Bool">true</active>
                                 </parentTransform>
                                 <posAbs dataType="Struct" type="OpenTK.Vector3">
@@ -1009,7 +1009,7 @@
                                 <lastAngleAbs dataType="Float">0</lastAngleAbs>
                                 <OnTransformChanged />
                                 <gameobj dataType="ObjectRef">75</gameobj>
-                                <disposed dataType="Bool">false</disposed>
+                                <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                 <active dataType="Bool">true</active>
                               </object>
                               <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="94">
@@ -1033,7 +1033,7 @@
                                 <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                                 <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                                 <gameobj dataType="ObjectRef">75</gameobj>
-                                <disposed dataType="Bool">false</disposed>
+                                <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                 <active dataType="Bool">true</active>
                               </object>
                             </values>
@@ -1051,7 +1051,7 @@
                         </compList>
                         <name dataType="String">ShadowLevelBg</name>
                         <active dataType="Bool">true</active>
-                        <disposed dataType="Bool">false</disposed>
+                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                         <compTransform dataType="ObjectRef">80</compTransform>
                         <EventComponentAdded dataType="ObjectRef">63</EventComponentAdded>
                         <EventComponentRemoving dataType="ObjectRef">66</EventComponentRemoving>
@@ -1097,7 +1097,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">72</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">84</object>
@@ -1116,7 +1116,7 @@
                   </compList>
                   <name dataType="String">ShadowLevel</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">81</compTransform>
                   <EventComponentAdded dataType="ObjectRef">63</EventComponentAdded>
                   <EventComponentRemoving dataType="Delegate" type="System.EventHandler`1[[Duality.ComponentEventArgs]]" id="104" multi="true">
@@ -1186,7 +1186,7 @@
             </compList>
             <name dataType="String">StaticWorld</name>
             <active dataType="Bool">true</active>
-            <disposed dataType="Bool">false</disposed>
+            <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
             <compTransform />
             <EventComponentAdded dataType="Delegate" type="System.EventHandler`1[[Duality.ComponentEventArgs]]" id="114" multi="true">
               <object dataType="MethodInfo" id="115" value="M:Duality.Components.Transform:Parent_EventComponentAdded(System.Object,Duality.ComponentEventArgs)" />
@@ -1299,7 +1299,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-442.280975</X>
@@ -1377,7 +1377,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">122</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="144" length="1">
@@ -1385,7 +1385,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">122</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="145">
@@ -1409,7 +1409,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">122</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">140</object>
@@ -1428,7 +1428,7 @@
                   </compList>
                   <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">138</compTransform>
                   <EventComponentAdded dataType="ObjectRef">63</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">66</EventComponentRemoving>
@@ -1517,7 +1517,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-405.7499</X>
@@ -1595,7 +1595,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">148</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="164" length="1">
@@ -1603,7 +1603,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">148</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="165">
@@ -1627,7 +1627,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">148</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">160</object>
@@ -1646,7 +1646,7 @@
                   </compList>
                   <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">158</compTransform>
                   <EventComponentAdded dataType="ObjectRef">63</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">66</EventComponentRemoving>
@@ -1741,7 +1741,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">178.6254</X>
@@ -1896,7 +1896,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">168</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="189" length="1">
@@ -1904,7 +1904,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">168</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="190">
@@ -1928,7 +1928,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">168</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">180</object>
@@ -1947,7 +1947,7 @@
                   </compList>
                   <name dataType="String">RoundSquare</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">178</compTransform>
                   <EventComponentAdded dataType="ObjectRef">63</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">66</EventComponentRemoving>
@@ -2042,7 +2042,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-395.226227</X>
@@ -2357,7 +2357,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">193</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="226" length="1">
@@ -2365,7 +2365,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">193</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="227">
@@ -2389,7 +2389,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">193</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">205</object>
@@ -2408,7 +2408,7 @@
                   </compList>
                   <name dataType="String">Complex</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">203</compTransform>
                   <EventComponentAdded dataType="ObjectRef">63</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">66</EventComponentRemoving>
@@ -2507,7 +2507,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-125.178413</X>
@@ -2598,7 +2598,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">230</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="249" length="1">
@@ -2606,7 +2606,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">230</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="250">
@@ -2630,7 +2630,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">230</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">244</object>
@@ -2649,7 +2649,7 @@
                   </compList>
                   <name dataType="String">Square</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">242</compTransform>
                   <EventComponentAdded dataType="ObjectRef">63</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">66</EventComponentRemoving>
@@ -2738,7 +2738,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">404.394562</X>
@@ -2816,7 +2816,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">253</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="270" length="1">
@@ -2824,7 +2824,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">253</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="271">
@@ -2848,7 +2848,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">253</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">266</object>
@@ -2867,7 +2867,7 @@
                   </compList>
                   <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">264</compTransform>
                   <EventComponentAdded dataType="ObjectRef">63</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">66</EventComponentRemoving>
@@ -2951,7 +2951,7 @@
             </compList>
             <name dataType="String">Dynamics</name>
             <active dataType="Bool">true</active>
-            <disposed dataType="Bool">false</disposed>
+            <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
             <compTransform />
             <EventComponentAdded dataType="Delegate" type="System.EventHandler`1[[Duality.ComponentEventArgs]]" id="278" multi="true">
               <object dataType="ObjectRef">115</object>
@@ -3034,7 +3034,7 @@
             </compList>
             <name dataType="String">Text</name>
             <active dataType="Bool">true</active>
-            <disposed dataType="Bool">false</disposed>
+            <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
             <compTransform />
             <EventComponentAdded dataType="ObjectRef">63</EventComponentAdded>
             <EventComponentRemoving dataType="ObjectRef">66</EventComponentRemoving>

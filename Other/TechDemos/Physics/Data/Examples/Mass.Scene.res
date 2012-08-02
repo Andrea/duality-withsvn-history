@@ -23,7 +23,6 @@
       <allObj dataType="Class" type="System.Collections.Generic.List`1[[Duality.GameObject]]" id="9">
         <_items dataType="Array" type="Duality.GameObject[]" id="10" length="256">
           <object dataType="Class" type="Duality.GameObject" id="11">
-            <name dataType="String">MainCam</name>
             <prefabLink />
             <parent />
             <children />
@@ -90,7 +89,7 @@
                     <lastAngleAbs dataType="Float">0</lastAngleAbs>
                     <OnTransformChanged />
                     <gameobj dataType="ObjectRef">11</gameobj>
-                    <disposed dataType="Bool">false</disposed>
+                    <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                     <active dataType="Bool">true</active>
                   </object>
                   <object dataType="Class" type="Duality.Components.Camera" id="20">
@@ -144,12 +143,12 @@
                       <_version dataType="Int">2</_version>
                     </passes>
                     <gameobj dataType="ObjectRef">11</gameobj>
-                    <disposed dataType="Bool">false</disposed>
+                    <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                     <active dataType="Bool">true</active>
                   </object>
                   <object dataType="Class" type="Duality.Components.SoundListener" id="25">
                     <gameobj dataType="ObjectRef">11</gameobj>
-                    <disposed dataType="Bool">false</disposed>
+                    <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                     <active dataType="Bool">true</active>
                   </object>
                   <object dataType="Class" type="PhysicsTestbed.Testbed" id="26">
@@ -306,7 +305,7 @@
                       <elements dataType="Array" type="Duality.FormattedText+Element[]" id="58" length="0" />
                     </stats>
                     <gameobj dataType="ObjectRef">11</gameobj>
-                    <disposed dataType="Bool">false</disposed>
+                    <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                     <active dataType="Bool">true</active>
                   </object>
                 </values>
@@ -322,8 +321,9 @@
               <_size dataType="Int">4</_size>
               <_version dataType="Int">4</_version>
             </compList>
+            <name dataType="String">MainCam</name>
             <active dataType="Bool">true</active>
-            <disposed dataType="Bool">false</disposed>
+            <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
             <compTransform dataType="ObjectRef">19</compTransform>
             <EventComponentAdded dataType="Delegate" type="System.EventHandler`1[[Duality.ComponentEventArgs]]" id="61" multi="true">
               <object dataType="MethodInfo" id="62" value="M:Duality.ObjectManagers.GameObjectManager:OnRegisteredObjectComponentAdded(System.Object,Duality.ComponentEventArgs)" />
@@ -344,13 +344,11 @@
             <EventCollisionSolve />
           </object>
           <object dataType="Class" type="Duality.GameObject" id="67">
-            <name dataType="String">StaticWorld</name>
             <prefabLink />
             <parent />
             <children dataType="Class" type="System.Collections.Generic.List`1[[Duality.GameObject]]" id="68">
               <_items dataType="Array" type="Duality.GameObject[]" id="69" length="32">
                 <object dataType="Class" type="Duality.GameObject" id="70">
-                  <name dataType="String">Wall</name>
                   <prefabLink />
                   <parent dataType="ObjectRef">67</parent>
                   <children />
@@ -468,7 +466,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">70</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="84" length="1">
@@ -476,7 +474,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">70</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="85">
@@ -520,7 +518,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">70</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">79</object>
@@ -537,8 +535,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Wall</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">76</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -547,7 +546,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="90">
-                  <name dataType="String">Wall</name>
                   <prefabLink />
                   <parent dataType="ObjectRef">67</parent>
                   <children />
@@ -665,7 +663,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">90</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="101" length="1">
@@ -673,7 +671,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">90</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="102">
@@ -697,7 +695,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">90</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">96</object>
@@ -714,8 +712,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Wall</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">94</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -724,7 +723,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="105">
-                  <name dataType="String">Wall</name>
                   <prefabLink />
                   <parent dataType="ObjectRef">67</parent>
                   <children />
@@ -842,7 +840,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">105</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="116" length="1">
@@ -850,7 +848,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">105</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="117">
@@ -874,7 +872,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">105</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">111</object>
@@ -891,8 +889,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Wall</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">109</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -901,7 +900,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="120">
-                  <name dataType="String">Wall</name>
                   <prefabLink />
                   <parent dataType="ObjectRef">67</parent>
                   <children />
@@ -1019,7 +1017,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">120</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="131" length="1">
@@ -1027,7 +1025,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">120</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="132">
@@ -1051,7 +1049,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">120</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">126</object>
@@ -1068,8 +1066,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Wall</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">124</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -1078,7 +1077,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="135">
-                  <name dataType="String">Wall</name>
                   <prefabLink />
                   <parent dataType="ObjectRef">67</parent>
                   <children />
@@ -1196,7 +1194,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">135</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="146" length="1">
@@ -1204,7 +1202,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">135</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="147">
@@ -1228,7 +1226,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">135</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">141</object>
@@ -1245,8 +1243,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Wall</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">139</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -1297,8 +1296,9 @@
               <_size dataType="Int">0</_size>
               <_version dataType="Int">0</_version>
             </compList>
+            <name dataType="String">StaticWorld</name>
             <active dataType="Bool">true</active>
-            <disposed dataType="Bool">false</disposed>
+            <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
             <compTransform />
             <EventComponentAdded dataType="Delegate" type="System.EventHandler`1[[Duality.ComponentEventArgs]]" id="155" multi="true">
               <object dataType="MethodInfo" id="156" value="M:Duality.Components.Transform:Parent_EventComponentAdded(System.Object,Duality.ComponentEventArgs)" />
@@ -1348,13 +1348,11 @@
             <EventCollisionSolve />
           </object>
           <object dataType="Class" type="Duality.GameObject" id="168">
-            <name dataType="String">Dynamics</name>
             <prefabLink />
             <parent />
             <children dataType="Class" type="System.Collections.Generic.List`1[[Duality.GameObject]]" id="169">
               <_items dataType="Array" type="Duality.GameObject[]" id="170" length="256">
                 <object dataType="Class" type="Duality.GameObject" id="171">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="172">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -1473,7 +1471,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-274.087433</X>
@@ -1551,7 +1549,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">171</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="198" length="1">
@@ -1559,7 +1557,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">171</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="199">
@@ -1583,7 +1581,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">171</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">194</object>
@@ -1600,8 +1598,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">192</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -1610,7 +1609,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="202">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="203">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -1717,7 +1715,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-157.2959</X>
@@ -1795,7 +1793,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">202</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="222" length="1">
@@ -1803,7 +1801,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">202</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="223">
@@ -1827,7 +1825,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">202</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">218</object>
@@ -1844,8 +1842,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">216</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -1854,7 +1853,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="226">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="227">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -1961,7 +1959,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-54.4073944</X>
@@ -2039,7 +2037,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">226</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="245" length="1">
@@ -2047,7 +2045,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">226</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="246">
@@ -2071,7 +2069,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">226</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">241</object>
@@ -2088,8 +2086,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">239</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -2098,7 +2097,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="249">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="250">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -2205,7 +2203,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">23.354454</X>
@@ -2283,7 +2281,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">249</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="268" length="1">
@@ -2291,7 +2289,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">249</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="269">
@@ -2315,7 +2313,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">249</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">264</object>
@@ -2332,8 +2330,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">262</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -2342,7 +2341,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="272">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="273">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -2456,7 +2454,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">213.118408</X>
@@ -2534,7 +2532,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">272</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="294" length="1">
@@ -2542,7 +2540,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">272</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="295">
@@ -2566,7 +2564,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">272</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">290</object>
@@ -2583,8 +2581,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">288</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -2593,7 +2592,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="298">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="299">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -2700,7 +2698,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">120.038628</X>
@@ -2778,7 +2776,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">298</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="317" length="1">
@@ -2786,7 +2784,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">298</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="318">
@@ -2810,7 +2808,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">298</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">313</object>
@@ -2827,8 +2825,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">311</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -2837,7 +2836,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="321">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="322">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -2915,7 +2913,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-199.9042</X>
@@ -2993,7 +2991,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">321</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="338" length="1">
@@ -3001,7 +2999,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">321</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="339">
@@ -3025,7 +3023,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">321</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">334</object>
@@ -3042,8 +3040,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">332</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -3052,7 +3051,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="342">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="343">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -3118,7 +3116,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-166.266861</X>
@@ -3196,7 +3194,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">342</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="357" length="1">
@@ -3204,7 +3202,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">342</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="358">
@@ -3228,7 +3226,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">342</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">353</object>
@@ -3245,8 +3243,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">351</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -3255,7 +3254,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="361">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="362">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -3321,7 +3319,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-31.4515152</X>
@@ -3399,7 +3397,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">361</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="377" length="1">
@@ -3407,7 +3405,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">361</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="378">
@@ -3431,7 +3429,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">361</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">373</object>
@@ -3448,8 +3446,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">371</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -3458,7 +3457,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="381">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="382">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -3524,7 +3522,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-31.439209</X>
@@ -3602,7 +3600,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">381</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="396" length="1">
@@ -3610,7 +3608,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">381</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="397">
@@ -3634,7 +3632,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">381</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">392</object>
@@ -3651,8 +3649,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">390</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -3661,7 +3660,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="400">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="401">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -3727,7 +3725,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-168.894821</X>
@@ -3805,7 +3803,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">400</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="415" length="1">
@@ -3813,7 +3811,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">400</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="416">
@@ -3837,7 +3835,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">400</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">411</object>
@@ -3854,8 +3852,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">409</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -3864,7 +3863,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="419">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="420">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -3930,7 +3928,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-69.99465</X>
@@ -4008,7 +4006,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">419</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="434" length="1">
@@ -4016,7 +4014,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">419</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="435">
@@ -4040,7 +4038,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">419</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">430</object>
@@ -4057,8 +4055,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">428</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -4067,7 +4066,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="438">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="439">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -4133,7 +4131,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">26.3273983</X>
@@ -4211,7 +4209,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">438</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="453" length="1">
@@ -4219,7 +4217,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">438</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="454">
@@ -4243,7 +4241,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">438</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">449</object>
@@ -4260,8 +4258,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">447</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -4270,7 +4269,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="457">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="458">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -4336,7 +4334,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-20.7873</X>
@@ -4414,7 +4412,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">457</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="472" length="1">
@@ -4422,7 +4420,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">457</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="473">
@@ -4446,7 +4444,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">457</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">468</object>
@@ -4463,8 +4461,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">466</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -4473,7 +4472,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="476">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="477">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -4539,7 +4537,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">173.550186</X>
@@ -4617,7 +4615,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">476</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="491" length="1">
@@ -4625,7 +4623,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">476</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="492">
@@ -4649,7 +4647,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">476</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">487</object>
@@ -4666,8 +4664,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">485</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -4676,7 +4675,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="495">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="496">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -4742,7 +4740,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">68.44453</X>
@@ -4820,7 +4818,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">495</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="510" length="1">
@@ -4828,7 +4826,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">495</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="511">
@@ -4852,7 +4850,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">495</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">506</object>
@@ -4869,8 +4867,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">504</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -4879,7 +4878,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="514">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="515">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -4961,7 +4959,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">171.993149</X>
@@ -5039,7 +5037,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">514</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="531" length="1">
@@ -5047,7 +5045,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">514</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="532">
@@ -5071,7 +5069,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">514</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">527</object>
@@ -5088,8 +5086,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">525</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -5098,7 +5097,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="535">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="536">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -5180,7 +5178,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">78.09937</X>
@@ -5258,7 +5256,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">535</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="551" length="1">
@@ -5266,7 +5264,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">535</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="552">
@@ -5290,7 +5288,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">535</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">547</object>
@@ -5307,8 +5305,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">545</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -5317,7 +5316,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="555">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="556">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -5383,7 +5381,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">223.601166</X>
@@ -5461,7 +5459,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">555</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="570" length="1">
@@ -5469,7 +5467,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">555</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="571">
@@ -5493,7 +5491,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">555</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">566</object>
@@ -5510,8 +5508,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">564</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -5520,7 +5519,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="574">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="575">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -5586,7 +5584,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-236.2789</X>
@@ -5664,7 +5662,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">574</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="589" length="1">
@@ -5672,7 +5670,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">574</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="590">
@@ -5696,7 +5694,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">574</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">585</object>
@@ -5713,8 +5711,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">583</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -5723,7 +5722,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="593">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="594">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -5789,7 +5787,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-224.669037</X>
@@ -5867,7 +5865,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">593</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="608" length="1">
@@ -5875,7 +5873,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">593</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="609">
@@ -5899,7 +5897,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">593</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">604</object>
@@ -5916,8 +5914,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">602</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -5926,7 +5925,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="612">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="613">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -5992,7 +5990,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-198.38916</X>
@@ -6070,7 +6068,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">612</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="627" length="1">
@@ -6078,7 +6076,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">612</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="628">
@@ -6102,7 +6100,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">612</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">623</object>
@@ -6119,8 +6117,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">621</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -6129,7 +6128,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="631">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="632">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -6195,7 +6193,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-151.624451</X>
@@ -6273,7 +6271,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">631</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="646" length="1">
@@ -6281,7 +6279,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">631</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="647">
@@ -6305,7 +6303,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">631</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">642</object>
@@ -6322,8 +6320,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">640</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -6332,7 +6331,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="650">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="651">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -6398,7 +6396,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-236.694061</X>
@@ -6476,7 +6474,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">650</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="665" length="1">
@@ -6484,7 +6482,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">650</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="666">
@@ -6508,7 +6506,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">650</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">661</object>
@@ -6525,8 +6523,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">659</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -6535,7 +6534,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="669">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="670">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -6601,7 +6599,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">54.6835938</X>
@@ -6679,7 +6677,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">669</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="684" length="1">
@@ -6687,7 +6685,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">669</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="685">
@@ -6711,7 +6709,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">669</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">680</object>
@@ -6728,8 +6726,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">678</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -6738,7 +6737,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="688">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="689">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -6804,7 +6802,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-68.24093</X>
@@ -6882,7 +6880,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">688</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="703" length="1">
@@ -6890,7 +6888,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">688</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="704">
@@ -6914,7 +6912,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">688</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">699</object>
@@ -6931,8 +6929,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">697</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -6941,7 +6940,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="707">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="708">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -7007,7 +7005,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-63.8633957</X>
@@ -7085,7 +7083,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">707</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="722" length="1">
@@ -7093,7 +7091,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">707</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="723">
@@ -7117,7 +7115,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">707</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">718</object>
@@ -7134,8 +7132,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">716</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -7144,7 +7143,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="726">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="727">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -7210,7 +7208,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-100.653366</X>
@@ -7288,7 +7286,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">726</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="741" length="1">
@@ -7296,7 +7294,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">726</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="742">
@@ -7320,7 +7318,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">726</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">737</object>
@@ -7337,8 +7335,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">735</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -7347,7 +7346,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="745">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="746">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -7413,7 +7411,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-26.1945114</X>
@@ -7491,7 +7489,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">745</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="760" length="1">
@@ -7499,7 +7497,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">745</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="761">
@@ -7523,7 +7521,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">745</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">756</object>
@@ -7540,8 +7538,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">754</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -7550,7 +7549,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="764">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="765">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -7616,7 +7614,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">10.5954361</X>
@@ -7694,7 +7692,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">764</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="779" length="1">
@@ -7702,7 +7700,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">764</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="780">
@@ -7726,7 +7724,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">764</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">775</object>
@@ -7743,8 +7741,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">773</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -7753,7 +7752,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="783">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="784">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -7835,7 +7833,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">62.1494064</X>
@@ -7913,7 +7911,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">783</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="800" length="1">
@@ -7921,7 +7919,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">783</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="801">
@@ -7945,7 +7943,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">783</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">796</object>
@@ -7962,8 +7960,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">794</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -7972,7 +7971,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="804">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="805">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -8054,7 +8052,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">94.2119</X>
@@ -8132,7 +8130,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">804</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="820" length="1">
@@ -8140,7 +8138,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">804</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="821">
@@ -8164,7 +8162,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">804</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">816</object>
@@ -8181,8 +8179,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">814</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -8191,7 +8190,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="824">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="825">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -8273,7 +8271,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">174.147461</X>
@@ -8351,7 +8349,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">824</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="840" length="1">
@@ -8359,7 +8357,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">824</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="841">
@@ -8383,7 +8381,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">824</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">836</object>
@@ -8400,8 +8398,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">834</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -8410,7 +8409,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="844">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="845">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -8492,7 +8490,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">206.209747</X>
@@ -8570,7 +8568,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">844</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="860" length="1">
@@ -8578,7 +8576,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">844</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="861">
@@ -8602,7 +8600,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">844</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">856</object>
@@ -8619,8 +8617,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">854</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -8629,7 +8628,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="864">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="865">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -8705,7 +8703,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-228.301331</X>
@@ -8783,7 +8781,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">864</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="881" length="1">
@@ -8791,7 +8789,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">864</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="882">
@@ -8815,7 +8813,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">864</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">877</object>
@@ -8832,8 +8830,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">875</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -8842,7 +8841,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="885">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="886">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -8918,7 +8916,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">136.4612</X>
@@ -8996,7 +8994,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">885</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="902" length="1">
@@ -9004,7 +9002,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">885</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="903">
@@ -9028,7 +9026,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">885</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">898</object>
@@ -9045,8 +9043,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">896</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -9055,7 +9054,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="906">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="907">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -9131,7 +9129,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">179.40387</X>
@@ -9209,7 +9207,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">906</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="923" length="1">
@@ -9217,7 +9215,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">906</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="924">
@@ -9241,7 +9239,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">906</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">919</object>
@@ -9258,8 +9256,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">917</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -9268,7 +9267,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="927">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="928">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -9344,7 +9342,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">344.141052</X>
@@ -9422,7 +9420,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">927</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="944" length="1">
@@ -9430,7 +9428,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">927</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="945">
@@ -9454,7 +9452,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">927</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">940</object>
@@ -9471,8 +9469,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">938</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -9481,7 +9480,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="948">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="949">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -9547,7 +9545,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-134.730469</X>
@@ -9625,7 +9623,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">948</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="963" length="1">
@@ -9633,7 +9631,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">948</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="964">
@@ -9657,7 +9655,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">948</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">959</object>
@@ -9674,8 +9672,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">957</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -9684,7 +9683,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="967">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="968">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -9750,7 +9748,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-260.093628</X>
@@ -9828,7 +9826,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">967</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="982" length="1">
@@ -9836,7 +9834,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">967</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="983">
@@ -9860,7 +9858,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">967</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">978</object>
@@ -9877,8 +9875,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">976</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -9887,7 +9886,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="986">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="987">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -9953,7 +9951,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-119.062759</X>
@@ -10031,7 +10029,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">986</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1001" length="1">
@@ -10039,7 +10037,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">986</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1002">
@@ -10063,7 +10061,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">986</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">997</object>
@@ -10080,8 +10078,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">995</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -10090,7 +10089,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1005">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1006">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -10156,7 +10154,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-261.1575</X>
@@ -10234,7 +10232,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1005</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1020" length="1">
@@ -10242,7 +10240,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1005</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1021">
@@ -10266,7 +10264,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1005</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1016</object>
@@ -10283,8 +10281,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1014</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -10293,7 +10292,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1024">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1025">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -10359,7 +10357,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-181.730835</X>
@@ -10437,7 +10435,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1024</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1039" length="1">
@@ -10445,7 +10443,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1024</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1040">
@@ -10469,7 +10467,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1024</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1035</object>
@@ -10486,8 +10484,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1033</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -10496,7 +10495,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1043">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1044">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -10562,7 +10560,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-189.914291</X>
@@ -10640,7 +10638,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1043</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1058" length="1">
@@ -10648,7 +10646,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1043</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1059">
@@ -10672,7 +10670,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1043</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1054</object>
@@ -10689,8 +10687,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1052</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -10699,7 +10698,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1062">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1063">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -10781,7 +10779,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">147.9353</X>
@@ -10859,7 +10857,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1062</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1078" length="1">
@@ -10867,7 +10865,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1062</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1079">
@@ -10891,7 +10889,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1062</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1074</object>
@@ -10908,8 +10906,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1072</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -10918,7 +10917,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1082">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1083">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -10984,7 +10982,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">0.088508606</X>
@@ -11062,7 +11060,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1082</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1097" length="1">
@@ -11070,7 +11068,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1082</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1098">
@@ -11094,7 +11092,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1082</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1093</object>
@@ -11111,8 +11109,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1091</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -11121,7 +11120,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1101">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1102">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -11187,7 +11185,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">207.1746</X>
@@ -11265,7 +11263,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1101</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1116" length="1">
@@ -11273,7 +11271,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1101</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1117">
@@ -11297,7 +11295,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1101</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1112</object>
@@ -11314,8 +11312,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1110</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -11324,7 +11323,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1120">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1121">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -11390,7 +11388,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-136.482941</X>
@@ -11468,7 +11466,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1120</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1135" length="1">
@@ -11476,7 +11474,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1120</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1136">
@@ -11500,7 +11498,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1120</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1131</object>
@@ -11517,8 +11515,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1129</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -11527,7 +11526,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1139">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1140">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -11593,7 +11591,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-160.133224</X>
@@ -11671,7 +11669,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1139</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1154" length="1">
@@ -11679,7 +11677,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1139</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1155">
@@ -11703,7 +11701,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1139</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1150</object>
@@ -11720,8 +11718,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1148</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -11730,7 +11729,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1158">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1159">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -11796,7 +11794,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-139.985077</X>
@@ -11874,7 +11872,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1158</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1173" length="1">
@@ -11882,7 +11880,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1158</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1174">
@@ -11906,7 +11904,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1158</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1169</object>
@@ -11923,8 +11921,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1167</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -11933,7 +11932,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1177">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1178">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -11999,7 +11997,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-73.4961853</X>
@@ -12077,7 +12075,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1177</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1192" length="1">
@@ -12085,7 +12083,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1177</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1193">
@@ -12109,7 +12107,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1177</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1188</object>
@@ -12126,8 +12124,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1186</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -12136,7 +12135,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1196">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1197">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -12202,7 +12200,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-41.9603271</X>
@@ -12280,7 +12278,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1196</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1211" length="1">
@@ -12288,7 +12286,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1196</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1212">
@@ -12312,7 +12310,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1196</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1207</object>
@@ -12329,8 +12327,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1205</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -12339,7 +12338,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1215">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1216">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -12405,7 +12403,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">35.1264877</X>
@@ -12483,7 +12481,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1215</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1230" length="1">
@@ -12491,7 +12489,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1215</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1231">
@@ -12515,7 +12513,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1215</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1226</object>
@@ -12532,8 +12530,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1224</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -12542,7 +12541,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1234">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1235">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -12608,7 +12606,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">49.1427231</X>
@@ -12686,7 +12684,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1234</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1249" length="1">
@@ -12694,7 +12692,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1234</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1250">
@@ -12718,7 +12716,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1234</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1245</object>
@@ -12735,8 +12733,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1243</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -12745,7 +12744,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1253">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1254">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -12811,7 +12809,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-33.13718</X>
@@ -12889,7 +12887,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1253</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1268" length="1">
@@ -12897,7 +12895,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1253</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1269">
@@ -12921,7 +12919,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1253</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1264</object>
@@ -12938,8 +12936,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1262</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -12948,7 +12947,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1272">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1273">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -13030,7 +13028,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-103.084007</X>
@@ -13108,7 +13106,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1272</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1289" length="1">
@@ -13116,7 +13114,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1272</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1290">
@@ -13140,7 +13138,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1272</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1285</object>
@@ -13157,8 +13155,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1283</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -13167,7 +13166,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1293">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1294">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -13249,7 +13247,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-59.79044</X>
@@ -13327,7 +13325,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1293</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1310" length="1">
@@ -13335,7 +13333,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1293</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1311">
@@ -13359,7 +13357,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1293</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1306</object>
@@ -13376,8 +13374,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1304</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -13386,7 +13385,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1314">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1315">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -13468,7 +13466,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-101.156647</X>
@@ -13546,7 +13544,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1314</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1331" length="1">
@@ -13554,7 +13552,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1314</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1332">
@@ -13578,7 +13576,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1314</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1327</object>
@@ -13595,8 +13593,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1325</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -13605,7 +13604,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1335">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1336">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -13671,7 +13669,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">140.497681</X>
@@ -13749,7 +13747,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1335</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1351" length="1">
@@ -13757,7 +13755,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1335</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1352">
@@ -13781,7 +13779,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1335</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1347</object>
@@ -13798,8 +13796,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1345</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -13808,7 +13807,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1355">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1356">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -13874,7 +13872,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-290.315155</X>
@@ -13952,7 +13950,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1355</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1371" length="1">
@@ -13960,7 +13958,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1355</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1372">
@@ -13984,7 +13982,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1355</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1367</object>
@@ -14001,8 +13999,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1365</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -14011,7 +14010,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1375">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1376">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -14077,7 +14075,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-103.466461</X>
@@ -14155,7 +14153,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1375</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1391" length="1">
@@ -14163,7 +14161,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1375</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1392">
@@ -14187,7 +14185,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1375</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1387</object>
@@ -14204,8 +14202,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1385</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -14214,7 +14213,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1395">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1396">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -14280,7 +14278,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">296.302032</X>
@@ -14358,7 +14356,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1395</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1411" length="1">
@@ -14366,7 +14364,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1395</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1412">
@@ -14390,7 +14388,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1395</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1407</object>
@@ -14407,8 +14405,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1405</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -14417,7 +14416,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1415">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1416">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -14483,7 +14481,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-313.554626</X>
@@ -14561,7 +14559,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1415</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1431" length="1">
@@ -14569,7 +14567,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1415</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1432">
@@ -14593,7 +14591,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1415</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1427</object>
@@ -14610,8 +14608,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1425</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -14620,7 +14619,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1435">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1436">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -14686,7 +14684,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-285.740082</X>
@@ -14764,7 +14762,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1435</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1451" length="1">
@@ -14772,7 +14770,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1435</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1452">
@@ -14796,7 +14794,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1435</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1447</object>
@@ -14813,8 +14811,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1445</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -14823,7 +14822,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1455">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1456">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -14889,7 +14887,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-260.703827</X>
@@ -14967,7 +14965,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1455</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1471" length="1">
@@ -14975,7 +14973,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1455</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1472">
@@ -14999,7 +14997,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1455</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1467</object>
@@ -15016,8 +15014,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1465</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -15026,7 +15025,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1475">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1476">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -15092,7 +15090,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">224.625916</X>
@@ -15170,7 +15168,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1475</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1491" length="1">
@@ -15178,7 +15176,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1475</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1492">
@@ -15202,7 +15200,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1475</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1487</object>
@@ -15219,8 +15217,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1485</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -15229,7 +15228,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1495">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1496">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -15295,7 +15293,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-42.7991867</X>
@@ -15373,7 +15371,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1495</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1511" length="1">
@@ -15381,7 +15379,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1495</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1512">
@@ -15405,7 +15403,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1495</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1507</object>
@@ -15422,8 +15420,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1505</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -15432,7 +15431,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1515">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1516">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -15498,7 +15496,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-270.7126</X>
@@ -15576,7 +15574,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1515</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1531" length="1">
@@ -15584,7 +15582,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1515</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1532">
@@ -15608,7 +15606,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1515</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1527</object>
@@ -15625,8 +15623,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1525</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -15635,7 +15634,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1535">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1536">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -15701,7 +15699,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-195.415161</X>
@@ -15779,7 +15777,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1535</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1551" length="1">
@@ -15787,7 +15785,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1535</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1552">
@@ -15811,7 +15809,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1535</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1547</object>
@@ -15828,8 +15826,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1545</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -15838,7 +15837,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1555">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1556">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -15904,7 +15902,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-344.05545</X>
@@ -15982,7 +15980,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1555</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1571" length="1">
@@ -15990,7 +15988,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1555</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1572">
@@ -16014,7 +16012,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1555</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1567</object>
@@ -16031,8 +16029,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1565</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -16041,7 +16040,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1575">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1576">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -16107,7 +16105,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-124.859955</X>
@@ -16185,7 +16183,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1575</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1591" length="1">
@@ -16193,7 +16191,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1575</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1592">
@@ -16217,7 +16215,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1575</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1587</object>
@@ -16234,8 +16232,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1585</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -16244,7 +16243,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1595">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1596">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -16310,7 +16308,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-6.009775</X>
@@ -16388,7 +16386,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1595</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1611" length="1">
@@ -16396,7 +16394,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1595</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1612">
@@ -16420,7 +16418,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1595</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1607</object>
@@ -16437,8 +16435,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1605</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -16447,7 +16446,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1615">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1616">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -16513,7 +16511,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-87.46835</X>
@@ -16591,7 +16589,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1615</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1631" length="1">
@@ -16599,7 +16597,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1615</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1632">
@@ -16623,7 +16621,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1615</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1627</object>
@@ -16640,8 +16638,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1625</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -16650,7 +16649,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1635">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1636">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -16732,7 +16730,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">139.151749</X>
@@ -16810,7 +16808,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1635</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1652" length="1">
@@ -16818,7 +16816,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1635</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1653">
@@ -16842,7 +16840,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1635</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1648</object>
@@ -16859,8 +16857,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1646</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -16869,7 +16868,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1656">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1657">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -16935,7 +16933,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-229.579529</X>
@@ -17013,7 +17011,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1656</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1672" length="1">
@@ -17021,7 +17019,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1656</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1673">
@@ -17045,7 +17043,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1656</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1668</object>
@@ -17062,8 +17060,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1666</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -17072,7 +17071,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1676">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1677">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -17148,7 +17146,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-179.5822</X>
@@ -17226,7 +17224,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1676</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1694" length="1">
@@ -17234,7 +17232,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1676</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1695">
@@ -17258,7 +17256,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1676</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1690</object>
@@ -17275,8 +17273,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1688</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -17285,7 +17284,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1698">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1699">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -17367,7 +17365,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">146.111313</X>
@@ -17445,7 +17443,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1698</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1715" length="1">
@@ -17453,7 +17451,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1698</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1716">
@@ -17477,7 +17475,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1698</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1711</object>
@@ -17494,8 +17492,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1709</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -17504,7 +17503,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1719">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1720">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -17586,7 +17584,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">92.722</X>
@@ -17664,7 +17662,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1719</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1736" length="1">
@@ -17672,7 +17670,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1719</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1737">
@@ -17696,7 +17694,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1719</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1732</object>
@@ -17713,8 +17711,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1730</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -17723,7 +17722,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1740">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1741">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -17789,7 +17787,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-39.0127258</X>
@@ -17867,7 +17865,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1740</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1756" length="1">
@@ -17875,7 +17873,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1740</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1757">
@@ -17899,7 +17897,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1740</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1752</object>
@@ -17916,8 +17914,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1750</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -17926,7 +17925,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1760">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1761">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -18008,7 +18006,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">30.80466</X>
@@ -18086,7 +18084,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1760</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1777" length="1">
@@ -18094,7 +18092,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1760</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1778">
@@ -18118,7 +18116,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1760</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1773</object>
@@ -18135,8 +18133,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1771</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -18145,7 +18144,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1781">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1782">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -18211,7 +18209,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-200.669739</X>
@@ -18289,7 +18287,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1781</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1797" length="1">
@@ -18297,7 +18295,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1781</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1798">
@@ -18321,7 +18319,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1781</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1793</object>
@@ -18338,8 +18336,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1791</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -18348,7 +18347,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1801">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1802">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -18430,7 +18428,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">113.862747</X>
@@ -18508,7 +18506,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1801</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1818" length="1">
@@ -18516,7 +18514,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1801</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1819">
@@ -18540,7 +18538,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1801</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1814</object>
@@ -18557,8 +18555,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1812</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -18567,7 +18566,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1822">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1823">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -18649,7 +18647,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">60.02354</X>
@@ -18727,7 +18725,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1822</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1839" length="1">
@@ -18735,7 +18733,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1822</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1840">
@@ -18759,7 +18757,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1822</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1835</object>
@@ -18776,8 +18774,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1833</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -18786,7 +18785,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1843">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1844">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -18868,7 +18866,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">43.19339</X>
@@ -18946,7 +18944,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1843</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1860" length="1">
@@ -18954,7 +18952,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1843</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1861">
@@ -18978,7 +18976,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1843</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1856</object>
@@ -18995,8 +18993,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1854</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -19005,7 +19004,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1864">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1865">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -19081,7 +19079,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">36.5161438</X>
@@ -19159,7 +19157,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1864</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1881" length="1">
@@ -19167,7 +19165,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1864</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1882">
@@ -19191,7 +19189,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1864</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1877</object>
@@ -19208,8 +19206,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1875</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -19218,7 +19217,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1885">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1886">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -19300,7 +19298,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">15.6789627</X>
@@ -19378,7 +19376,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1885</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1902" length="1">
@@ -19386,7 +19384,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1885</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1903">
@@ -19410,7 +19408,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1885</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1898</object>
@@ -19427,8 +19425,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1896</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -19437,7 +19436,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1906">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1907">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -19513,7 +19511,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">67.3351</X>
@@ -19591,7 +19589,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1906</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1923" length="1">
@@ -19599,7 +19597,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1906</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1924">
@@ -19623,7 +19621,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1906</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1919</object>
@@ -19640,8 +19638,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1917</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -19650,7 +19649,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1927">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1928">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -19716,7 +19714,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-44.26985</X>
@@ -19794,7 +19792,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1927</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1943" length="1">
@@ -19802,7 +19800,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1927</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1944">
@@ -19826,7 +19824,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1927</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1939</object>
@@ -19843,8 +19841,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1937</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -19853,7 +19852,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1947">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1948">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -19929,7 +19927,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">85.2301559</X>
@@ -20007,7 +20005,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1947</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1964" length="1">
@@ -20015,7 +20013,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1947</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1965">
@@ -20039,7 +20037,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1947</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1960</object>
@@ -20056,8 +20054,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1958</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -20066,7 +20065,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1968">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1969">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -20142,7 +20140,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">82.5452652</X>
@@ -20220,7 +20218,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1968</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="1985" length="1">
@@ -20228,7 +20226,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1968</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="1986">
@@ -20252,7 +20250,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1968</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">1981</object>
@@ -20269,8 +20267,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">1979</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -20279,7 +20278,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="1989">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="1990">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -20361,7 +20359,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">56.120285</X>
@@ -20439,7 +20437,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">1989</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2006" length="1">
@@ -20447,7 +20445,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">1989</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2007">
@@ -20471,7 +20469,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">1989</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2002</object>
@@ -20488,8 +20486,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2000</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -20498,7 +20497,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2010">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2011">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -20564,7 +20562,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-252.926743</X>
@@ -20642,7 +20640,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2010</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2026" length="1">
@@ -20650,7 +20648,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2010</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2027">
@@ -20674,7 +20672,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2010</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2022</object>
@@ -20691,8 +20689,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2020</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -20701,7 +20700,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2030">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2031">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -20767,7 +20765,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-118.728683</X>
@@ -20845,7 +20843,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2030</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2046" length="1">
@@ -20853,7 +20851,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2030</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2047">
@@ -20877,7 +20875,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2030</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2042</object>
@@ -20894,8 +20892,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2040</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -20904,7 +20903,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2050">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2051">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -20980,7 +20978,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">13.1034813</X>
@@ -21058,7 +21056,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2050</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2068" length="1">
@@ -21066,7 +21064,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2050</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2069">
@@ -21090,7 +21088,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2050</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2064</object>
@@ -21107,8 +21105,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2062</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -21117,7 +21116,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2072">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2073">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -21183,7 +21181,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-81.0598</X>
@@ -21261,7 +21259,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2072</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2088" length="1">
@@ -21269,7 +21267,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2072</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2089">
@@ -21293,7 +21291,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2072</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2084</object>
@@ -21310,8 +21308,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2082</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -21320,7 +21319,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2092">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2093">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -21396,7 +21394,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">101.491638</X>
@@ -21474,7 +21472,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2092</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2109" length="1">
@@ -21482,7 +21480,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2092</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2110">
@@ -21506,7 +21504,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2092</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2105</object>
@@ -21523,8 +21521,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2103</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -21533,7 +21532,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2113">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2114">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -21599,7 +21597,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-167.15741</X>
@@ -21677,7 +21675,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2113</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2129" length="1">
@@ -21685,7 +21683,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2113</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2130">
@@ -21709,7 +21707,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2113</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2125</object>
@@ -21726,8 +21724,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2123</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -21736,7 +21735,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2133">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2134">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -21802,7 +21800,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-211.506927</X>
@@ -21880,7 +21878,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2133</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2149" length="1">
@@ -21888,7 +21886,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2133</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2150">
@@ -21912,7 +21910,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2133</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2145</object>
@@ -21929,8 +21927,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2143</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -21939,7 +21938,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2153">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2154">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -22005,7 +22003,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">104.7953</X>
@@ -22083,7 +22081,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2153</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2169" length="1">
@@ -22091,7 +22089,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2153</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2170">
@@ -22115,7 +22113,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2153</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2165</object>
@@ -22132,8 +22130,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2163</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -22142,7 +22141,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2173">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2174">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -22224,7 +22222,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">125.987694</X>
@@ -22302,7 +22300,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2173</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2190" length="1">
@@ -22310,7 +22308,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2173</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2191">
@@ -22334,7 +22332,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2173</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2186</object>
@@ -22351,8 +22349,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2184</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -22361,7 +22360,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2194">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2195">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -22427,7 +22425,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-66.41548</X>
@@ -22505,7 +22503,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2194</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2210" length="1">
@@ -22513,7 +22511,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2194</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2211">
@@ -22537,7 +22535,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2194</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2206</object>
@@ -22554,8 +22552,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2204</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -22564,7 +22563,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2214">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2215">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -22630,7 +22628,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-108.46431</X>
@@ -22708,7 +22706,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2214</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2230" length="1">
@@ -22716,7 +22714,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2214</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2231">
@@ -22740,7 +22738,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2214</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2226</object>
@@ -22757,8 +22755,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2224</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -22767,7 +22766,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2234">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2235">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -22833,7 +22831,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-140.000214</X>
@@ -22911,7 +22909,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2234</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2250" length="1">
@@ -22919,7 +22917,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2234</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2251">
@@ -22943,7 +22941,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2234</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2246</object>
@@ -22960,8 +22958,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2244</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -22970,7 +22969,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2254">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2255">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -23036,7 +23034,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">315.1706</X>
@@ -23114,7 +23112,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2254</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2270" length="1">
@@ -23122,7 +23120,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2254</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2271">
@@ -23146,7 +23144,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2254</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2266</object>
@@ -23163,8 +23161,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2264</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -23173,7 +23172,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2274">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2275">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -23255,7 +23253,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">285.690643</X>
@@ -23333,7 +23331,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2274</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2291" length="1">
@@ -23341,7 +23339,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2274</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2292">
@@ -23365,7 +23363,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2274</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2287</object>
@@ -23382,8 +23380,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2285</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -23392,7 +23391,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2295">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2296">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -23468,7 +23466,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-2.12929058</X>
@@ -23546,7 +23544,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2295</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2312" length="1">
@@ -23554,7 +23552,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2295</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2313">
@@ -23578,7 +23576,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2295</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2308</object>
@@ -23595,8 +23593,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2306</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -23605,7 +23604,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2316">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2317">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -23681,7 +23679,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">260.8255</X>
@@ -23759,7 +23757,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2316</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2333" length="1">
@@ -23767,7 +23765,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2316</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2334">
@@ -23791,7 +23789,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2316</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2329</object>
@@ -23808,8 +23806,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2327</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -23818,7 +23817,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2337">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2338">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -23900,7 +23898,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">192.8751</X>
@@ -23978,7 +23976,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2337</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2354" length="1">
@@ -23986,7 +23984,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2337</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2355">
@@ -24010,7 +24008,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2337</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2350</object>
@@ -24027,8 +24025,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2348</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -24037,7 +24036,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2358">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2359">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -24113,7 +24111,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">329.203583</X>
@@ -24191,7 +24189,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2358</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2376" length="1">
@@ -24199,7 +24197,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2358</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2377">
@@ -24223,7 +24221,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2358</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2372</object>
@@ -24240,8 +24238,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2370</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -24250,7 +24249,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2380">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2381">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -24332,7 +24330,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">107.494247</X>
@@ -24410,7 +24408,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2380</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2397" length="1">
@@ -24418,7 +24416,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2380</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2398">
@@ -24442,7 +24440,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2380</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2393</object>
@@ -24459,8 +24457,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2391</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -24469,7 +24468,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2401">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2402">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -24545,7 +24543,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">0.7246704</X>
@@ -24623,7 +24621,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2401</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2419" length="1">
@@ -24631,7 +24629,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2401</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2420">
@@ -24655,7 +24653,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2401</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2415</object>
@@ -24672,8 +24670,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2413</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -24682,7 +24681,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2423">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2424">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -24758,7 +24756,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">253.283966</X>
@@ -24836,7 +24834,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2423</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2440" length="1">
@@ -24844,7 +24842,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2423</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2441">
@@ -24868,7 +24866,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2423</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2436</object>
@@ -24885,8 +24883,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2434</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -24895,7 +24894,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2444">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2445">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -24977,7 +24975,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-2.18722343</X>
@@ -25055,7 +25053,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2444</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2461" length="1">
@@ -25063,7 +25061,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2444</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2462">
@@ -25087,7 +25085,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2444</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2457</object>
@@ -25104,8 +25102,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2455</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -25114,7 +25113,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2465">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2466">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -25180,7 +25178,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">140.4335</X>
@@ -25258,7 +25256,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2465</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2481" length="1">
@@ -25266,7 +25264,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2465</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2482">
@@ -25290,7 +25288,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2465</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2477</object>
@@ -25307,8 +25305,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2475</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -25317,7 +25316,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2485">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2486">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -25399,7 +25397,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">206.990967</X>
@@ -25477,7 +25475,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2485</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2502" length="1">
@@ -25485,7 +25483,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2485</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2503">
@@ -25509,7 +25507,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2485</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2498</object>
@@ -25526,8 +25524,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2496</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -25536,7 +25535,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2506">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2507">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -25612,7 +25610,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">227.7114</X>
@@ -25690,7 +25688,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2506</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2523" length="1">
@@ -25698,7 +25696,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2506</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2524">
@@ -25722,7 +25720,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2506</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2519</object>
@@ -25739,8 +25737,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2517</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -25749,7 +25748,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2527">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2528">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -25831,7 +25829,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">120.355354</X>
@@ -25909,7 +25907,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2527</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2544" length="1">
@@ -25917,7 +25915,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2527</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2545">
@@ -25941,7 +25939,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2527</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2540</object>
@@ -25958,8 +25956,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2538</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -25968,7 +25967,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2548">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2549">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -26050,7 +26048,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">172.567566</X>
@@ -26128,7 +26126,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2548</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2565" length="1">
@@ -26136,7 +26134,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2548</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2566">
@@ -26160,7 +26158,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2548</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2561</object>
@@ -26177,8 +26175,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2559</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -26187,7 +26186,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2569">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2570">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -26269,7 +26267,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">202.02681</X>
@@ -26347,7 +26345,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2569</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2586" length="1">
@@ -26355,7 +26353,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2569</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2587">
@@ -26379,7 +26377,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2569</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2582</object>
@@ -26396,8 +26394,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2580</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -26406,7 +26405,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2590">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2591">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -26488,7 +26486,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">175.737183</X>
@@ -26566,7 +26564,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2590</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2607" length="1">
@@ -26574,7 +26572,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2590</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2608">
@@ -26598,7 +26596,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2590</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2603</object>
@@ -26615,8 +26613,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2601</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -26625,7 +26624,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2611">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2612">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -26707,7 +26705,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">206.82074</X>
@@ -26785,7 +26783,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2611</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2628" length="1">
@@ -26793,7 +26791,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2611</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2629">
@@ -26817,7 +26815,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2611</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2624</object>
@@ -26834,8 +26832,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2622</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -26844,7 +26843,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2632">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2633">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -26926,7 +26924,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">74.77549</X>
@@ -27004,7 +27002,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2632</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2649" length="1">
@@ -27012,7 +27010,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2632</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2650">
@@ -27036,7 +27034,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2632</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2645</object>
@@ -27053,8 +27051,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2643</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -27063,7 +27062,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2653">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2654">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -27145,7 +27143,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">173.607</X>
@@ -27223,7 +27221,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2653</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2670" length="1">
@@ -27231,7 +27229,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2653</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2671">
@@ -27255,7 +27253,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2653</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2666</object>
@@ -27272,8 +27270,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2664</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -27282,7 +27281,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2674">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2675">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -27358,7 +27356,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">358.5732</X>
@@ -27436,7 +27434,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2674</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2692" length="1">
@@ -27444,7 +27442,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2674</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2693">
@@ -27468,7 +27466,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2674</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2688</object>
@@ -27485,8 +27483,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2686</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -27495,7 +27494,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2696">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2697">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -27577,7 +27575,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">336.282928</X>
@@ -27655,7 +27653,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2696</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2713" length="1">
@@ -27663,7 +27661,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2696</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2714">
@@ -27687,7 +27685,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2696</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2709</object>
@@ -27704,8 +27702,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2707</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -27714,7 +27713,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2717">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2718">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -27796,7 +27794,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">298.725342</X>
@@ -27874,7 +27872,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2717</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2734" length="1">
@@ -27882,7 +27880,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2717</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2735">
@@ -27906,7 +27904,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2717</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2730</object>
@@ -27923,8 +27921,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2728</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -27933,7 +27932,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2738">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2739">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -28009,7 +28007,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">364.25058</X>
@@ -28087,7 +28085,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2738</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2755" length="1">
@@ -28095,7 +28093,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2738</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2756">
@@ -28119,7 +28117,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2738</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2751</object>
@@ -28136,8 +28134,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2749</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -28146,7 +28145,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2759">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2760">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -28228,7 +28226,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">324.295258</X>
@@ -28306,7 +28304,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2759</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2776" length="1">
@@ -28314,7 +28312,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2759</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2777">
@@ -28338,7 +28336,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2759</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2772</object>
@@ -28355,8 +28353,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2770</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -28365,7 +28364,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2780">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2781">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -28447,7 +28445,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">311.9265</X>
@@ -28525,7 +28523,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2780</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2797" length="1">
@@ -28533,7 +28531,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2780</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2798">
@@ -28557,7 +28555,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2780</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2793</object>
@@ -28574,8 +28572,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2791</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -28584,7 +28583,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2801">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2802">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -28666,7 +28664,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">234.188126</X>
@@ -28744,7 +28742,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2801</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2818" length="1">
@@ -28752,7 +28750,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2801</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2819">
@@ -28776,7 +28774,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2801</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2814</object>
@@ -28793,8 +28791,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2812</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -28803,7 +28802,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2822">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2823">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -28885,7 +28883,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">278.905334</X>
@@ -28963,7 +28961,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2822</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2839" length="1">
@@ -28971,7 +28969,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2822</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2840">
@@ -28995,7 +28993,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2822</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2835</object>
@@ -29012,8 +29010,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2833</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -29022,7 +29021,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2843">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2844">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -29104,7 +29102,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">264.077637</X>
@@ -29182,7 +29180,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2843</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2860" length="1">
@@ -29190,7 +29188,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2843</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2861">
@@ -29214,7 +29212,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2843</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2856</object>
@@ -29231,8 +29229,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2854</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -29241,7 +29240,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2864">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2865">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -29323,7 +29321,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">285.266937</X>
@@ -29401,7 +29399,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2864</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2881" length="1">
@@ -29409,7 +29407,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2864</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2882">
@@ -29433,7 +29431,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2864</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2877</object>
@@ -29450,8 +29448,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2875</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -29460,7 +29459,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2885">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2886">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -29542,7 +29540,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">235.3381</X>
@@ -29620,7 +29618,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2885</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2902" length="1">
@@ -29628,7 +29626,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2885</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2903">
@@ -29652,7 +29650,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2885</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2898</object>
@@ -29669,8 +29667,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2896</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -29679,7 +29678,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2906">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2907">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -29761,7 +29759,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">249.083588</X>
@@ -29839,7 +29837,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2906</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2923" length="1">
@@ -29847,7 +29845,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2906</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2924">
@@ -29871,7 +29869,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2906</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2919</object>
@@ -29888,8 +29886,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2917</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -29898,7 +29897,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2927">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2928">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -29980,7 +29978,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">289.2323</X>
@@ -30058,7 +30056,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2927</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2944" length="1">
@@ -30066,7 +30064,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2927</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2945">
@@ -30090,7 +30088,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2927</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2940</object>
@@ -30107,8 +30105,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2938</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -30117,7 +30116,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2948">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2949">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -30199,7 +30197,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">262.351929</X>
@@ -30277,7 +30275,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2948</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2965" length="1">
@@ -30285,7 +30283,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2948</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2966">
@@ -30309,7 +30307,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2948</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2961</object>
@@ -30326,8 +30324,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2959</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -30336,7 +30335,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2969">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2970">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -30402,7 +30400,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-348.252</X>
@@ -30480,7 +30478,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2969</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="2985" length="1">
@@ -30488,7 +30486,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2969</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="2986">
@@ -30512,7 +30510,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2969</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">2981</object>
@@ -30529,8 +30527,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2979</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -30539,7 +30538,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="2989">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="2990">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -30605,7 +30603,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-353.344757</X>
@@ -30683,7 +30681,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">2989</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="3005" length="1">
@@ -30691,7 +30689,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">2989</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="3006">
@@ -30715,7 +30713,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">2989</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">3001</object>
@@ -30732,8 +30730,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">2999</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -30742,7 +30741,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="3009">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="3010">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -30808,7 +30806,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-362.553162</X>
@@ -30886,7 +30884,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">3009</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="3025" length="1">
@@ -30894,7 +30892,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">3009</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="3026">
@@ -30918,7 +30916,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">3009</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">3021</object>
@@ -30935,8 +30933,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">3019</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -30945,7 +30944,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="3029">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="3030">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -31011,7 +31009,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-293.96524</X>
@@ -31089,7 +31087,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">3029</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="3045" length="1">
@@ -31097,7 +31095,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">3029</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="3046">
@@ -31121,7 +31119,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">3029</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">3041</object>
@@ -31138,8 +31136,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">3039</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -31148,7 +31147,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="3049">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="3050">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -31214,7 +31212,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-315.8529</X>
@@ -31292,7 +31290,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">3049</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="3065" length="1">
@@ -31300,7 +31298,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">3049</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="3066">
@@ -31324,7 +31322,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">3049</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">3061</object>
@@ -31341,8 +31339,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">3059</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -31351,7 +31350,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="3069">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="3070">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -31417,7 +31415,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-159.410309</X>
@@ -31495,7 +31493,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">3069</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="3085" length="1">
@@ -31503,7 +31501,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">3069</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="3086">
@@ -31527,7 +31525,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">3069</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">3081</object>
@@ -31544,8 +31542,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">3079</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -31554,7 +31553,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="3089">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="3090">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -31620,7 +31618,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-331.331024</X>
@@ -31698,7 +31696,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">3089</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="3105" length="1">
@@ -31706,7 +31704,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">3089</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="3106">
@@ -31730,7 +31728,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">3089</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">3101</object>
@@ -31747,8 +31745,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">3099</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -31757,7 +31756,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="3109">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="3110">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -31833,7 +31831,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="All" value="21" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-284.4086</X>
@@ -31911,7 +31909,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">3109</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="3127" length="1">
@@ -31919,7 +31917,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">3109</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="3128">
@@ -31943,7 +31941,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">3109</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">3123</object>
@@ -31960,8 +31958,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">3121</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -31970,7 +31969,6 @@
                   <EventCollisionSolve />
                 </object>
                 <object dataType="Class" type="Duality.GameObject" id="3131">
-                  <name dataType="String">Circle</name>
                   <prefabLink dataType="Class" type="Duality.Resources.PrefabLink" id="3132">
                     <prefab dataType="Struct" type="Duality.ContentRef`1[[Duality.Resources.Prefab]]">
                       <contentPath dataType="String">Data\Bodies\Circle.Prefab.res</contentPath>
@@ -32036,7 +32034,7 @@
                           </scale>
                           <deriveAngle dataType="Bool">true</deriveAngle>
                           <ignoreParent dataType="Bool">false</ignoreParent>
-                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                           <parentTransform />
                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                             <X dataType="Float">-313.938049</X>
@@ -32114,7 +32112,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">3131</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="3147" length="1">
@@ -32122,7 +32120,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">3131</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="3148">
@@ -32146,7 +32144,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">3131</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">3143</object>
@@ -32163,8 +32161,9 @@
                     <_size dataType="Int">3</_size>
                     <_version dataType="Int">3</_version>
                   </compList>
+                  <name dataType="String">Circle</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">3141</compTransform>
                   <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>
@@ -32298,8 +32297,9 @@
               <_size dataType="Int">0</_size>
               <_version dataType="Int">0</_version>
             </compList>
+            <name dataType="String">Dynamics</name>
             <active dataType="Bool">true</active>
-            <disposed dataType="Bool">false</disposed>
+            <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
             <compTransform />
             <EventComponentAdded dataType="Delegate" type="System.EventHandler`1[[Duality.ComponentEventArgs]]" id="3155" multi="true">
               <object dataType="ObjectRef">156</object>
@@ -33336,7 +33336,6 @@
             <EventCollisionSolve />
           </object>
           <object dataType="Class" type="Duality.GameObject" id="3449">
-            <name dataType="String">Text</name>
             <prefabLink />
             <parent />
             <children dataType="Class" type="System.Collections.Generic.List`1[[Duality.GameObject]]" id="3450">
@@ -33361,8 +33360,9 @@
               <_size dataType="Int">0</_size>
               <_version dataType="Int">0</_version>
             </compList>
+            <name dataType="String">Text</name>
             <active dataType="Bool">true</active>
-            <disposed dataType="Bool">false</disposed>
+            <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
             <compTransform />
             <EventComponentAdded dataType="ObjectRef">61</EventComponentAdded>
             <EventComponentRemoving dataType="ObjectRef">64</EventComponentRemoving>

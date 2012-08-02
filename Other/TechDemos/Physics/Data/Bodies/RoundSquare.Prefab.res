@@ -2,7 +2,6 @@
 <root>
   <object dataType="Class" type="Duality.Resources.Prefab" id="1">
     <objTree dataType="Class" type="Duality.GameObject" id="2">
-      <name dataType="String">RoundSquare</name>
       <prefabLink />
       <parent />
       <children />
@@ -184,7 +183,7 @@
                   </shapes>
                   <joints />
                   <gameobj dataType="ObjectRef">2</gameobj>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <active dataType="Bool">true</active>
                 </object>
                 <object dataType="Array" type="System.Delegate[]" id="21" length="1">
@@ -192,7 +191,7 @@
                 </object>
               </OnTransformChanged>
               <gameobj dataType="ObjectRef">2</gameobj>
-              <disposed dataType="Bool">false</disposed>
+              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
               <active dataType="Bool">true</active>
             </object>
             <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="22">
@@ -216,7 +215,7 @@
               <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
               <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
               <gameobj dataType="ObjectRef">2</gameobj>
-              <disposed dataType="Bool">false</disposed>
+              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
               <active dataType="Bool">true</active>
             </object>
             <object dataType="ObjectRef">12</object>
@@ -233,8 +232,9 @@
         <_size dataType="Int">3</_size>
         <_version dataType="Int">3</_version>
       </compList>
+      <name dataType="String">RoundSquare</name>
       <active dataType="Bool">true</active>
-      <disposed dataType="Bool">false</disposed>
+      <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
       <compTransform dataType="ObjectRef">9</compTransform>
       <EventComponentAdded />
       <EventComponentRemoving />

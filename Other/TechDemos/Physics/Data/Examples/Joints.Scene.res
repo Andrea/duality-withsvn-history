@@ -89,7 +89,7 @@
                     <lastAngleAbs dataType="Float">0</lastAngleAbs>
                     <OnTransformChanged />
                     <gameobj dataType="ObjectRef">11</gameobj>
-                    <disposed dataType="Bool">false</disposed>
+                    <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                     <active dataType="Bool">true</active>
                   </object>
                   <object dataType="Class" type="Duality.Components.Camera" id="20">
@@ -143,12 +143,12 @@
                       <_version dataType="Int">2</_version>
                     </passes>
                     <gameobj dataType="ObjectRef">11</gameobj>
-                    <disposed dataType="Bool">false</disposed>
+                    <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                     <active dataType="Bool">true</active>
                   </object>
                   <object dataType="Class" type="Duality.Components.SoundListener" id="25">
                     <gameobj dataType="ObjectRef">11</gameobj>
-                    <disposed dataType="Bool">false</disposed>
+                    <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                     <active dataType="Bool">true</active>
                   </object>
                   <object dataType="Class" type="PhysicsTestbed.Testbed" id="26">
@@ -330,7 +330,7 @@
                       <elements dataType="Array" type="Duality.FormattedText+Element[]" id="63" length="0" />
                     </stats>
                     <gameobj dataType="ObjectRef">11</gameobj>
-                    <disposed dataType="Bool">false</disposed>
+                    <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                     <active dataType="Bool">true</active>
                   </object>
                 </values>
@@ -348,7 +348,7 @@
             </compList>
             <name dataType="String">MainCam</name>
             <active dataType="Bool">true</active>
-            <disposed dataType="Bool">false</disposed>
+            <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
             <compTransform dataType="ObjectRef">19</compTransform>
             <EventComponentAdded dataType="Delegate" type="System.EventHandler`1[[Duality.ComponentEventArgs]]" id="66" multi="true">
               <object dataType="MethodInfo" id="67" value="M:Duality.ObjectManagers.GameObjectManager:OnRegisteredObjectComponentAdded(System.Object,Duality.ComponentEventArgs)" />
@@ -491,7 +491,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">75</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="89" length="1">
@@ -499,7 +499,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">75</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="90">
@@ -543,7 +543,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">75</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">84</object>
@@ -562,7 +562,7 @@
                   </compList>
                   <name dataType="String">Wall</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">81</compTransform>
                   <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -688,7 +688,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">95</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="106" length="1">
@@ -696,7 +696,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">95</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="107">
@@ -720,7 +720,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">95</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">101</object>
@@ -739,7 +739,7 @@
                   </compList>
                   <name dataType="String">Wall</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">99</compTransform>
                   <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -865,7 +865,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">110</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="121" length="1">
@@ -873,7 +873,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">110</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="122">
@@ -897,7 +897,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">110</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">116</object>
@@ -916,7 +916,7 @@
                   </compList>
                   <name dataType="String">Wall</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">114</compTransform>
                   <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -1042,7 +1042,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">125</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="136" length="1">
@@ -1050,7 +1050,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">125</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="137">
@@ -1074,7 +1074,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">125</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">131</object>
@@ -1093,7 +1093,7 @@
                   </compList>
                   <name dataType="String">Wall</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">129</compTransform>
                   <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -1219,7 +1219,7 @@
                               </shapes>
                               <joints />
                               <gameobj dataType="ObjectRef">140</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="151" length="1">
@@ -1227,7 +1227,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">140</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="152">
@@ -1251,7 +1251,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">140</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">146</object>
@@ -1270,7 +1270,7 @@
                   </compList>
                   <name dataType="String">Wall</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">144</compTransform>
                   <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -2442,7 +2442,7 @@
                                                                                                                                                           </object>
                                                                                                                                                         </OnTransformChanged>
                                                                                                                                                         <gameobj dataType="ObjectRef">280</gameobj>
-                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                       </object>
                                                                                                                                                       <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="287">
@@ -2466,7 +2466,7 @@
                                                                                                                                                         <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                                                                                                                                                         <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                                                                                                                                                         <gameobj dataType="ObjectRef">280</gameobj>
-                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                       </object>
                                                                                                                                                       <object dataType="ObjectRef">273</object>
@@ -2485,7 +2485,7 @@
                                                                                                                                                 </compList>
                                                                                                                                                 <name dataType="String">Wall</name>
                                                                                                                                                 <active dataType="Bool">true</active>
-                                                                                                                                                <disposed dataType="Bool">false</disposed>
+                                                                                                                                                <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                 <compTransform dataType="ObjectRef">284</compTransform>
                                                                                                                                                 <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                                                                                                                                                 <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -2493,7 +2493,7 @@
                                                                                                                                                 <EventCollisionEnd />
                                                                                                                                                 <EventCollisionSolve />
                                                                                                                                               </gameobj>
-                                                                                                                                              <disposed dataType="Bool">false</disposed>
+                                                                                                                                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                               <active dataType="Bool">true</active>
                                                                                                                                             </colB>
                                                                                                                                             <collide dataType="Bool">false</collide>
@@ -2638,7 +2638,7 @@
                                                                                                                                                                     <_version dataType="Int">1</_version>
                                                                                                                                                                   </joints>
                                                                                                                                                                   <gameobj dataType="ObjectRef">295</gameobj>
-                                                                                                                                                                  <disposed dataType="Bool">false</disposed>
+                                                                                                                                                                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                                   <active dataType="Bool">true</active>
                                                                                                                                                                 </colA>
                                                                                                                                                                 <colB />
@@ -2690,7 +2690,7 @@
                                                                                                                                                           </scale>
                                                                                                                                                           <deriveAngle dataType="Bool">true</deriveAngle>
                                                                                                                                                           <ignoreParent dataType="Bool">false</ignoreParent>
-                                                                                                                                                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                                                                                                                                                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                                                                                                                                                           <parentTransform />
                                                                                                                                                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                                                                                                                                                             <X dataType="Float">0</X>
@@ -2735,7 +2735,7 @@
                                                                                                                                                             </object>
                                                                                                                                                           </OnTransformChanged>
                                                                                                                                                           <gameobj dataType="ObjectRef">295</gameobj>
-                                                                                                                                                          <disposed dataType="Bool">false</disposed>
+                                                                                                                                                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                           <active dataType="Bool">true</active>
                                                                                                                                                         </object>
                                                                                                                                                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="322">
@@ -2759,7 +2759,7 @@
                                                                                                                                                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                                                                                                                                                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                                                                                                                                                           <gameobj dataType="ObjectRef">295</gameobj>
-                                                                                                                                                          <disposed dataType="Bool">false</disposed>
+                                                                                                                                                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                           <active dataType="Bool">true</active>
                                                                                                                                                         </object>
                                                                                                                                                         <object dataType="ObjectRef">309</object>
@@ -2778,7 +2778,7 @@
                                                                                                                                                   </compList>
                                                                                                                                                   <name dataType="String">Square</name>
                                                                                                                                                   <active dataType="Bool">true</active>
-                                                                                                                                                  <disposed dataType="Bool">false</disposed>
+                                                                                                                                                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                   <compTransform dataType="ObjectRef">319</compTransform>
                                                                                                                                                   <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                                                                                                                                                   <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -2909,7 +2909,7 @@
                                                                                                                                                                     <_version dataType="Int">1</_version>
                                                                                                                                                                   </joints>
                                                                                                                                                                   <gameobj dataType="ObjectRef">325</gameobj>
-                                                                                                                                                                  <disposed dataType="Bool">false</disposed>
+                                                                                                                                                                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                                   <active dataType="Bool">true</active>
                                                                                                                                                                 </colA>
                                                                                                                                                                 <colB />
@@ -2955,7 +2955,7 @@
                                                                                                                                                           </scale>
                                                                                                                                                           <deriveAngle dataType="Bool">true</deriveAngle>
                                                                                                                                                           <ignoreParent dataType="Bool">false</ignoreParent>
-                                                                                                                                                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                                                                                                                                                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                                                                                                                                                           <parentTransform />
                                                                                                                                                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                                                                                                                                                             <X dataType="Float">150</X>
@@ -3000,7 +3000,7 @@
                                                                                                                                                             </object>
                                                                                                                                                           </OnTransformChanged>
                                                                                                                                                           <gameobj dataType="ObjectRef">325</gameobj>
-                                                                                                                                                          <disposed dataType="Bool">false</disposed>
+                                                                                                                                                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                           <active dataType="Bool">true</active>
                                                                                                                                                         </object>
                                                                                                                                                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="351">
@@ -3024,7 +3024,7 @@
                                                                                                                                                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                                                                                                                                                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                                                                                                                                                           <gameobj dataType="ObjectRef">325</gameobj>
-                                                                                                                                                          <disposed dataType="Bool">false</disposed>
+                                                                                                                                                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                           <active dataType="Bool">true</active>
                                                                                                                                                         </object>
                                                                                                                                                         <object dataType="ObjectRef">338</object>
@@ -3043,7 +3043,7 @@
                                                                                                                                                   </compList>
                                                                                                                                                   <name dataType="String">Square</name>
                                                                                                                                                   <active dataType="Bool">true</active>
-                                                                                                                                                  <disposed dataType="Bool">false</disposed>
+                                                                                                                                                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                   <compTransform dataType="ObjectRef">348</compTransform>
                                                                                                                                                   <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                                                                                                                                                   <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -3170,7 +3170,7 @@
                                                                                                                                                                     <_version dataType="Int">1</_version>
                                                                                                                                                                   </joints>
                                                                                                                                                                   <gameobj dataType="ObjectRef">354</gameobj>
-                                                                                                                                                                  <disposed dataType="Bool">false</disposed>
+                                                                                                                                                                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                                   <active dataType="Bool">true</active>
                                                                                                                                                                 </colA>
                                                                                                                                                                 <colB />
@@ -3216,7 +3216,7 @@
                                                                                                                                                           </scale>
                                                                                                                                                           <deriveAngle dataType="Bool">true</deriveAngle>
                                                                                                                                                           <ignoreParent dataType="Bool">false</ignoreParent>
-                                                                                                                                                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                                                                                                                                                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                                                                                                                                                           <parentTransform />
                                                                                                                                                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                                                                                                                                                             <X dataType="Float">-150</X>
@@ -3261,7 +3261,7 @@
                                                                                                                                                             </object>
                                                                                                                                                           </OnTransformChanged>
                                                                                                                                                           <gameobj dataType="ObjectRef">354</gameobj>
-                                                                                                                                                          <disposed dataType="Bool">false</disposed>
+                                                                                                                                                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                           <active dataType="Bool">true</active>
                                                                                                                                                         </object>
                                                                                                                                                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="380">
@@ -3285,7 +3285,7 @@
                                                                                                                                                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                                                                                                                                                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                                                                                                                                                           <gameobj dataType="ObjectRef">354</gameobj>
-                                                                                                                                                          <disposed dataType="Bool">false</disposed>
+                                                                                                                                                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                           <active dataType="Bool">true</active>
                                                                                                                                                         </object>
                                                                                                                                                         <object dataType="ObjectRef">367</object>
@@ -3304,7 +3304,7 @@
                                                                                                                                                   </compList>
                                                                                                                                                   <name dataType="String">Square</name>
                                                                                                                                                   <active dataType="Bool">true</active>
-                                                                                                                                                  <disposed dataType="Bool">false</disposed>
+                                                                                                                                                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                   <compTransform dataType="ObjectRef">377</compTransform>
                                                                                                                                                   <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                                                                                                                                                   <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -3832,7 +3832,7 @@
                                                                                                                                                                                                 </scale>
                                                                                                                                                                                                 <deriveAngle dataType="Bool">true</deriveAngle>
                                                                                                                                                                                                 <ignoreParent dataType="Bool">false</ignoreParent>
-                                                                                                                                                                                                <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                                                                                                                                                                                                <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                                                                                                                                                                                                 <parentTransform dataType="Class" type="Duality.Components.Transform" id="449">
                                                                                                                                                                                                   <pos dataType="Struct" type="OpenTK.Vector3">
                                                                                                                                                                                                     <X dataType="Float">-307</X>
@@ -3847,7 +3847,7 @@
                                                                                                                                                                                                   </scale>
                                                                                                                                                                                                   <deriveAngle dataType="Bool">true</deriveAngle>
                                                                                                                                                                                                   <ignoreParent dataType="Bool">false</ignoreParent>
-                                                                                                                                                                                                  <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                                                                                                                                                                                                  <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                                                                                                                                                                                                   <parentTransform />
                                                                                                                                                                                                   <posAbs dataType="Struct" type="OpenTK.Vector3">
                                                                                                                                                                                                     <X dataType="Float">-307</X>
@@ -3892,7 +3892,7 @@
                                                                                                                                                                                                     </object>
                                                                                                                                                                                                   </OnTransformChanged>
                                                                                                                                                                                                   <gameobj dataType="ObjectRef">432</gameobj>
-                                                                                                                                                                                                  <disposed dataType="Bool">false</disposed>
+                                                                                                                                                                                                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                                                                   <active dataType="Bool">true</active>
                                                                                                                                                                                                 </parentTransform>
                                                                                                                                                                                                 <posAbs dataType="Struct" type="OpenTK.Vector3">
@@ -3932,7 +3932,7 @@
                                                                                                                                                                                                 <lastAngleAbs dataType="Float">-12.5663719</lastAngleAbs>
                                                                                                                                                                                                 <OnTransformChanged />
                                                                                                                                                                                                 <gameobj dataType="ObjectRef">443</gameobj>
-                                                                                                                                                                                                <disposed dataType="Bool">false</disposed>
+                                                                                                                                                                                                <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                                                                 <active dataType="Bool">true</active>
                                                                                                                                                                                               </object>
                                                                                                                                                                                               <object dataType="Class" type="Duality.Components.Renderers.TextRenderer" id="452">
@@ -3977,7 +3977,7 @@
                                                                                                                                                                                                 <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                                                                                                                                                                                                 <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                                                                                                                                                                                                 <gameobj dataType="ObjectRef">443</gameobj>
-                                                                                                                                                                                                <disposed dataType="Bool">false</disposed>
+                                                                                                                                                                                                <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                                                                 <active dataType="Bool">true</active>
                                                                                                                                                                                               </object>
                                                                                                                                                                                             </values>
@@ -3995,7 +3995,7 @@
                                                                                                                                                                                         </compList>
                                                                                                                                                                                         <name dataType="String">CargoText</name>
                                                                                                                                                                                         <active dataType="Bool">true</active>
-                                                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                                                         <compTransform dataType="ObjectRef">448</compTransform>
                                                                                                                                                                                         <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                                                                                                                                                                                         <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -4041,7 +4041,7 @@
                                                                                                                                                                                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                                                                                                                                                                                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                                                                                                                                                                                           <gameobj dataType="ObjectRef">432</gameobj>
-                                                                                                                                                                                          <disposed dataType="Bool">false</disposed>
+                                                                                                                                                                                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                                                           <active dataType="Bool">true</active>
                                                                                                                                                                                         </object>
                                                                                                                                                                                         <object dataType="ObjectRef">409</object>
@@ -4060,7 +4060,7 @@
                                                                                                                                                                                   </compList>
                                                                                                                                                                                   <name dataType="String">Complex</name>
                                                                                                                                                                                   <active dataType="Bool">true</active>
-                                                                                                                                                                                  <disposed dataType="Bool">false</disposed>
+                                                                                                                                                                                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                                                   <compTransform dataType="ObjectRef">449</compTransform>
                                                                                                                                                                                   <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                                                                                                                                                                                   <EventComponentRemoving dataType="Delegate" type="System.EventHandler`1[[Duality.ComponentEventArgs]]" id="468" multi="true">
@@ -4081,7 +4081,7 @@
                                                                                                                                                                                   <EventCollisionEnd />
                                                                                                                                                                                   <EventCollisionSolve />
                                                                                                                                                                                 </gameobj>
-                                                                                                                                                                                <disposed dataType="Bool">false</disposed>
+                                                                                                                                                                                <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                                                 <active dataType="Bool">true</active>
                                                                                                                                                                               </colA>
                                                                                                                                                                               <colB dataType="ObjectRef">401</colB>
@@ -4250,7 +4250,7 @@
                                                                                                                                                                                           </scale>
                                                                                                                                                                                           <deriveAngle dataType="Bool">true</deriveAngle>
                                                                                                                                                                                           <ignoreParent dataType="Bool">false</ignoreParent>
-                                                                                                                                                                                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                                                                                                                                                                                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                                                                                                                                                                                           <parentTransform />
                                                                                                                                                                                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                                                                                                                                                                                             <X dataType="Float">-189</X>
@@ -4295,7 +4295,7 @@
                                                                                                                                                                                             </object>
                                                                                                                                                                                           </OnTransformChanged>
                                                                                                                                                                                           <gameobj dataType="ObjectRef">480</gameobj>
-                                                                                                                                                                                          <disposed dataType="Bool">false</disposed>
+                                                                                                                                                                                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                                                           <active dataType="Bool">true</active>
                                                                                                                                                                                         </object>
                                                                                                                                                                                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="499">
@@ -4319,7 +4319,7 @@
                                                                                                                                                                                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                                                                                                                                                                                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                                                                                                                                                                                           <gameobj dataType="ObjectRef">480</gameobj>
-                                                                                                                                                                                          <disposed dataType="Bool">false</disposed>
+                                                                                                                                                                                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                                                           <active dataType="Bool">true</active>
                                                                                                                                                                                         </object>
                                                                                                                                                                                         <object dataType="ObjectRef">474</object>
@@ -4338,7 +4338,7 @@
                                                                                                                                                                                   </compList>
                                                                                                                                                                                   <name dataType="String">Circle</name>
                                                                                                                                                                                   <active dataType="Bool">true</active>
-                                                                                                                                                                                  <disposed dataType="Bool">false</disposed>
+                                                                                                                                                                                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                                                   <compTransform dataType="ObjectRef">496</compTransform>
                                                                                                                                                                                   <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                                                                                                                                                                                   <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -4346,7 +4346,7 @@
                                                                                                                                                                                   <EventCollisionEnd />
                                                                                                                                                                                   <EventCollisionSolve />
                                                                                                                                                                                 </gameobj>
-                                                                                                                                                                                <disposed dataType="Bool">false</disposed>
+                                                                                                                                                                                <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                                                 <active dataType="Bool">true</active>
                                                                                                                                                                               </colB>
                                                                                                                                                                               <collide dataType="Bool">false</collide>
@@ -4360,7 +4360,7 @@
                                                                                                                                                                           <_version dataType="Int">5</_version>
                                                                                                                                                                         </joints>
                                                                                                                                                                         <gameobj dataType="ObjectRef">386</gameobj>
-                                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                                       </colA>
                                                                                                                                                                       <colB dataType="Class" type="Duality.Components.Physics.RigidBody" id="502">
@@ -4505,7 +4505,7 @@
                                                                                                                                                                                   </scale>
                                                                                                                                                                                   <deriveAngle dataType="Bool">true</deriveAngle>
                                                                                                                                                                                   <ignoreParent dataType="Bool">false</ignoreParent>
-                                                                                                                                                                                  <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                                                                                                                                                                                  <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                                                                                                                                                                                   <parentTransform />
                                                                                                                                                                                   <posAbs dataType="Struct" type="OpenTK.Vector3">
                                                                                                                                                                                     <X dataType="Float">-97.99899</X>
@@ -4550,7 +4550,7 @@
                                                                                                                                                                                     </object>
                                                                                                                                                                                   </OnTransformChanged>
                                                                                                                                                                                   <gameobj dataType="ObjectRef">508</gameobj>
-                                                                                                                                                                                  <disposed dataType="Bool">false</disposed>
+                                                                                                                                                                                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                                                   <active dataType="Bool">true</active>
                                                                                                                                                                                 </object>
                                                                                                                                                                                 <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="525">
@@ -4574,7 +4574,7 @@
                                                                                                                                                                                   <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                                                                                                                                                                                   <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                                                                                                                                                                                   <gameobj dataType="ObjectRef">508</gameobj>
-                                                                                                                                                                                  <disposed dataType="Bool">false</disposed>
+                                                                                                                                                                                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                                                   <active dataType="Bool">true</active>
                                                                                                                                                                                 </object>
                                                                                                                                                                                 <object dataType="ObjectRef">502</object>
@@ -4593,7 +4593,7 @@
                                                                                                                                                                           </compList>
                                                                                                                                                                           <name dataType="String">Circle</name>
                                                                                                                                                                           <active dataType="Bool">true</active>
-                                                                                                                                                                          <disposed dataType="Bool">false</disposed>
+                                                                                                                                                                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                                           <compTransform dataType="ObjectRef">522</compTransform>
                                                                                                                                                                           <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                                                                                                                                                                           <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -4601,7 +4601,7 @@
                                                                                                                                                                           <EventCollisionEnd />
                                                                                                                                                                           <EventCollisionSolve />
                                                                                                                                                                         </gameobj>
-                                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                                       </colB>
                                                                                                                                                                       <collide dataType="Bool">false</collide>
@@ -4650,7 +4650,7 @@
                                                                                                                                                                       </scale>
                                                                                                                                                                       <deriveAngle dataType="Bool">true</deriveAngle>
                                                                                                                                                                       <ignoreParent dataType="Bool">false</ignoreParent>
-                                                                                                                                                                      <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                                                                                                                                                                      <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                                                                                                                                                                       <parentTransform dataType="Class" type="Duality.Components.Transform" id="535">
                                                                                                                                                                         <pos dataType="Struct" type="OpenTK.Vector3">
                                                                                                                                                                           <X dataType="Float">-146</X>
@@ -4665,7 +4665,7 @@
                                                                                                                                                                         </scale>
                                                                                                                                                                         <deriveAngle dataType="Bool">true</deriveAngle>
                                                                                                                                                                         <ignoreParent dataType="Bool">false</ignoreParent>
-                                                                                                                                                                        <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                                                                                                                                                                        <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                                                                                                                                                                         <parentTransform />
                                                                                                                                                                         <posAbs dataType="Struct" type="OpenTK.Vector3">
                                                                                                                                                                           <X dataType="Float">-146</X>
@@ -4710,7 +4710,7 @@
                                                                                                                                                                           </object>
                                                                                                                                                                         </OnTransformChanged>
                                                                                                                                                                         <gameobj dataType="ObjectRef">386</gameobj>
-                                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                                       </parentTransform>
                                                                                                                                                                       <posAbs dataType="Struct" type="OpenTK.Vector3">
@@ -4750,7 +4750,7 @@
                                                                                                                                                                       <lastAngleAbs dataType="Float">-12.5663719</lastAngleAbs>
                                                                                                                                                                       <OnTransformChanged />
                                                                                                                                                                       <gameobj dataType="ObjectRef">530</gameobj>
-                                                                                                                                                                      <disposed dataType="Bool">false</disposed>
+                                                                                                                                                                      <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                                       <active dataType="Bool">true</active>
                                                                                                                                                                     </object>
                                                                                                                                                                     <object dataType="Class" type="Duality.Components.Renderers.TextRenderer" id="538">
@@ -4791,7 +4791,7 @@
                                                                                                                                                                       <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                                                                                                                                                                       <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                                                                                                                                                                       <gameobj dataType="ObjectRef">530</gameobj>
-                                                                                                                                                                      <disposed dataType="Bool">false</disposed>
+                                                                                                                                                                      <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                                       <active dataType="Bool">true</active>
                                                                                                                                                                     </object>
                                                                                                                                                                   </values>
@@ -4809,7 +4809,7 @@
                                                                                                                                                               </compList>
                                                                                                                                                               <name dataType="String">CarText</name>
                                                                                                                                                               <active dataType="Bool">true</active>
-                                                                                                                                                              <disposed dataType="Bool">false</disposed>
+                                                                                                                                                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                               <compTransform dataType="ObjectRef">534</compTransform>
                                                                                                                                                               <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                                                                                                                                                               <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -4855,7 +4855,7 @@
                                                                                                                                                                 <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                                                                                                                                                                 <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                                                                                                                                                                 <gameobj dataType="ObjectRef">386</gameobj>
-                                                                                                                                                                <disposed dataType="Bool">false</disposed>
+                                                                                                                                                                <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                                 <active dataType="Bool">true</active>
                                                                                                                                                               </object>
                                                                                                                                                               <object dataType="ObjectRef">401</object>
@@ -4874,7 +4874,7 @@
                                                                                                                                                         </compList>
                                                                                                                                                         <name dataType="String">Square</name>
                                                                                                                                                         <active dataType="Bool">true</active>
-                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                         <compTransform dataType="ObjectRef">535</compTransform>
                                                                                                                                                         <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                                                                                                                                                         <EventComponentRemoving dataType="Delegate" type="System.EventHandler`1[[Duality.ComponentEventArgs]]" id="552" multi="true">
@@ -4916,7 +4916,7 @@
                                                                                                                                                   </compList>
                                                                                                                                                   <name dataType="String">Car</name>
                                                                                                                                                   <active dataType="Bool">true</active>
-                                                                                                                                                  <disposed dataType="Bool">false</disposed>
+                                                                                                                                                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                   <compTransform />
                                                                                                                                                   <EventComponentAdded dataType="Delegate" type="System.EventHandler`1[[Duality.ComponentEventArgs]]" id="561" multi="true">
                                                                                                                                                     <object dataType="MethodInfo" id="562" value="M:Duality.Components.Transform:Parent_EventComponentAdded(System.Object,Duality.ComponentEventArgs)" />
@@ -5031,7 +5031,7 @@
                                                                                                                                                           </scale>
                                                                                                                                                           <deriveAngle dataType="Bool">true</deriveAngle>
                                                                                                                                                           <ignoreParent dataType="Bool">false</ignoreParent>
-                                                                                                                                                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="None" value="0" />
+                                                                                                                                                          <changes dataType="Enum" type="Duality.Components.Transform+DirtyFlags" name="Pos, Scale" value="17" />
                                                                                                                                                           <parentTransform />
                                                                                                                                                           <posAbs dataType="Struct" type="OpenTK.Vector3">
                                                                                                                                                             <X dataType="Float">174.496323</X>
@@ -5109,7 +5109,7 @@
                                                                                                                                                               </shapes>
                                                                                                                                                               <joints />
                                                                                                                                                               <gameobj dataType="ObjectRef">570</gameobj>
-                                                                                                                                                              <disposed dataType="Bool">false</disposed>
+                                                                                                                                                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                               <active dataType="Bool">true</active>
                                                                                                                                                             </object>
                                                                                                                                                             <object dataType="Array" type="System.Delegate[]" id="586" length="1">
@@ -5117,7 +5117,7 @@
                                                                                                                                                             </object>
                                                                                                                                                           </OnTransformChanged>
                                                                                                                                                           <gameobj dataType="ObjectRef">570</gameobj>
-                                                                                                                                                          <disposed dataType="Bool">false</disposed>
+                                                                                                                                                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                           <active dataType="Bool">true</active>
                                                                                                                                                         </object>
                                                                                                                                                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="587">
@@ -5141,7 +5141,7 @@
                                                                                                                                                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                                                                                                                                                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                                                                                                                                                           <gameobj dataType="ObjectRef">570</gameobj>
-                                                                                                                                                          <disposed dataType="Bool">false</disposed>
+                                                                                                                                                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                           <active dataType="Bool">true</active>
                                                                                                                                                         </object>
                                                                                                                                                         <object dataType="ObjectRef">582</object>
@@ -5160,7 +5160,7 @@
                                                                                                                                                   </compList>
                                                                                                                                                   <name dataType="String">Circle</name>
                                                                                                                                                   <active dataType="Bool">true</active>
-                                                                                                                                                  <disposed dataType="Bool">false</disposed>
+                                                                                                                                                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                   <compTransform dataType="ObjectRef">580</compTransform>
                                                                                                                                                   <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                                                                                                                                                   <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -5435,7 +5435,7 @@
                                                                                                                                             </compList>
                                                                                                                                             <name dataType="String">Dynamics</name>
                                                                                                                                             <active dataType="Bool">true</active>
-                                                                                                                                            <disposed dataType="Bool">false</disposed>
+                                                                                                                                            <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                             <compTransform />
                                                                                                                                             <EventComponentAdded dataType="Delegate" type="System.EventHandler`1[[Duality.ComponentEventArgs]]" id="595" multi="true">
                                                                                                                                               <object dataType="ObjectRef">562</object>
@@ -5558,7 +5558,7 @@
                                                                                                                                                           </object>
                                                                                                                                                         </OnTransformChanged>
                                                                                                                                                         <gameobj dataType="ObjectRef">609</gameobj>
-                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                       </object>
                                                                                                                                                       <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="616">
@@ -5582,7 +5582,7 @@
                                                                                                                                                         <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                                                                                                                                                         <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                                                                                                                                                         <gameobj dataType="ObjectRef">609</gameobj>
-                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                       </object>
                                                                                                                                                       <object dataType="ObjectRef">169</object>
@@ -5601,7 +5601,7 @@
                                                                                                                                                 </compList>
                                                                                                                                                 <name dataType="String">Square</name>
                                                                                                                                                 <active dataType="Bool">true</active>
-                                                                                                                                                <disposed dataType="Bool">false</disposed>
+                                                                                                                                                <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                 <compTransform dataType="ObjectRef">613</compTransform>
                                                                                                                                                 <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                                                                                                                                                 <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -5681,7 +5681,7 @@
                                                                                                                                                           </object>
                                                                                                                                                         </OnTransformChanged>
                                                                                                                                                         <gameobj dataType="ObjectRef">619</gameobj>
-                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                       </object>
                                                                                                                                                       <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="626">
@@ -5705,7 +5705,7 @@
                                                                                                                                                         <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                                                                                                                                                         <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                                                                                                                                                         <gameobj dataType="ObjectRef">619</gameobj>
-                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                       </object>
                                                                                                                                                       <object dataType="ObjectRef">177</object>
@@ -5724,7 +5724,7 @@
                                                                                                                                                 </compList>
                                                                                                                                                 <name dataType="String">Square</name>
                                                                                                                                                 <active dataType="Bool">true</active>
-                                                                                                                                                <disposed dataType="Bool">false</disposed>
+                                                                                                                                                <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                 <compTransform dataType="ObjectRef">623</compTransform>
                                                                                                                                                 <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                                                                                                                                                 <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -5804,7 +5804,7 @@
                                                                                                                                                           </object>
                                                                                                                                                         </OnTransformChanged>
                                                                                                                                                         <gameobj dataType="ObjectRef">629</gameobj>
-                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                       </object>
                                                                                                                                                       <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="636">
@@ -5828,7 +5828,7 @@
                                                                                                                                                         <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                                                                                                                                                         <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                                                                                                                                                         <gameobj dataType="ObjectRef">629</gameobj>
-                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                       </object>
                                                                                                                                                       <object dataType="ObjectRef">185</object>
@@ -5847,7 +5847,7 @@
                                                                                                                                                 </compList>
                                                                                                                                                 <name dataType="String">Square</name>
                                                                                                                                                 <active dataType="Bool">true</active>
-                                                                                                                                                <disposed dataType="Bool">false</disposed>
+                                                                                                                                                <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                 <compTransform dataType="ObjectRef">633</compTransform>
                                                                                                                                                 <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                                                                                                                                                 <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -5927,7 +5927,7 @@
                                                                                                                                                           </object>
                                                                                                                                                         </OnTransformChanged>
                                                                                                                                                         <gameobj dataType="ObjectRef">639</gameobj>
-                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                       </object>
                                                                                                                                                       <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="646">
@@ -5951,7 +5951,7 @@
                                                                                                                                                         <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                                                                                                                                                         <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                                                                                                                                                         <gameobj dataType="ObjectRef">639</gameobj>
-                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                       </object>
                                                                                                                                                       <object dataType="ObjectRef">193</object>
@@ -5970,7 +5970,7 @@
                                                                                                                                                 </compList>
                                                                                                                                                 <name dataType="String">Square</name>
                                                                                                                                                 <active dataType="Bool">true</active>
-                                                                                                                                                <disposed dataType="Bool">false</disposed>
+                                                                                                                                                <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                 <compTransform dataType="ObjectRef">643</compTransform>
                                                                                                                                                 <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                                                                                                                                                 <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -6050,7 +6050,7 @@
                                                                                                                                                           </object>
                                                                                                                                                         </OnTransformChanged>
                                                                                                                                                         <gameobj dataType="ObjectRef">649</gameobj>
-                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                       </object>
                                                                                                                                                       <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="656">
@@ -6074,7 +6074,7 @@
                                                                                                                                                         <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                                                                                                                                                         <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                                                                                                                                                         <gameobj dataType="ObjectRef">649</gameobj>
-                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                       </object>
                                                                                                                                                       <object dataType="ObjectRef">201</object>
@@ -6093,7 +6093,7 @@
                                                                                                                                                 </compList>
                                                                                                                                                 <name dataType="String">Square</name>
                                                                                                                                                 <active dataType="Bool">true</active>
-                                                                                                                                                <disposed dataType="Bool">false</disposed>
+                                                                                                                                                <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                 <compTransform dataType="ObjectRef">653</compTransform>
                                                                                                                                                 <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                                                                                                                                                 <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -6173,7 +6173,7 @@
                                                                                                                                                           </object>
                                                                                                                                                         </OnTransformChanged>
                                                                                                                                                         <gameobj dataType="ObjectRef">659</gameobj>
-                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                       </object>
                                                                                                                                                       <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="666">
@@ -6197,7 +6197,7 @@
                                                                                                                                                         <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                                                                                                                                                         <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                                                                                                                                                         <gameobj dataType="ObjectRef">659</gameobj>
-                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                       </object>
                                                                                                                                                       <object dataType="ObjectRef">209</object>
@@ -6216,7 +6216,7 @@
                                                                                                                                                 </compList>
                                                                                                                                                 <name dataType="String">Square</name>
                                                                                                                                                 <active dataType="Bool">true</active>
-                                                                                                                                                <disposed dataType="Bool">false</disposed>
+                                                                                                                                                <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                 <compTransform dataType="ObjectRef">663</compTransform>
                                                                                                                                                 <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                                                                                                                                                 <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -6296,7 +6296,7 @@
                                                                                                                                                           </object>
                                                                                                                                                         </OnTransformChanged>
                                                                                                                                                         <gameobj dataType="ObjectRef">669</gameobj>
-                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                       </object>
                                                                                                                                                       <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="676">
@@ -6320,7 +6320,7 @@
                                                                                                                                                         <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                                                                                                                                                         <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                                                                                                                                                         <gameobj dataType="ObjectRef">669</gameobj>
-                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                       </object>
                                                                                                                                                       <object dataType="ObjectRef">217</object>
@@ -6339,7 +6339,7 @@
                                                                                                                                                 </compList>
                                                                                                                                                 <name dataType="String">Square</name>
                                                                                                                                                 <active dataType="Bool">true</active>
-                                                                                                                                                <disposed dataType="Bool">false</disposed>
+                                                                                                                                                <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                 <compTransform dataType="ObjectRef">673</compTransform>
                                                                                                                                                 <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                                                                                                                                                 <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -6419,7 +6419,7 @@
                                                                                                                                                           </object>
                                                                                                                                                         </OnTransformChanged>
                                                                                                                                                         <gameobj dataType="ObjectRef">679</gameobj>
-                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                       </object>
                                                                                                                                                       <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="686">
@@ -6443,7 +6443,7 @@
                                                                                                                                                         <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                                                                                                                                                         <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                                                                                                                                                         <gameobj dataType="ObjectRef">679</gameobj>
-                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                       </object>
                                                                                                                                                       <object dataType="ObjectRef">225</object>
@@ -6462,7 +6462,7 @@
                                                                                                                                                 </compList>
                                                                                                                                                 <name dataType="String">Square</name>
                                                                                                                                                 <active dataType="Bool">true</active>
-                                                                                                                                                <disposed dataType="Bool">false</disposed>
+                                                                                                                                                <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                 <compTransform dataType="ObjectRef">683</compTransform>
                                                                                                                                                 <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                                                                                                                                                 <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -6542,7 +6542,7 @@
                                                                                                                                                           </object>
                                                                                                                                                         </OnTransformChanged>
                                                                                                                                                         <gameobj dataType="ObjectRef">689</gameobj>
-                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                       </object>
                                                                                                                                                       <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="696">
@@ -6566,7 +6566,7 @@
                                                                                                                                                         <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                                                                                                                                                         <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                                                                                                                                                         <gameobj dataType="ObjectRef">689</gameobj>
-                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                       </object>
                                                                                                                                                       <object dataType="ObjectRef">233</object>
@@ -6585,7 +6585,7 @@
                                                                                                                                                 </compList>
                                                                                                                                                 <name dataType="String">Square</name>
                                                                                                                                                 <active dataType="Bool">true</active>
-                                                                                                                                                <disposed dataType="Bool">false</disposed>
+                                                                                                                                                <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                 <compTransform dataType="ObjectRef">693</compTransform>
                                                                                                                                                 <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                                                                                                                                                 <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -6665,7 +6665,7 @@
                                                                                                                                                           </object>
                                                                                                                                                         </OnTransformChanged>
                                                                                                                                                         <gameobj dataType="ObjectRef">699</gameobj>
-                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                       </object>
                                                                                                                                                       <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="706">
@@ -6689,7 +6689,7 @@
                                                                                                                                                         <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                                                                                                                                                         <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                                                                                                                                                         <gameobj dataType="ObjectRef">699</gameobj>
-                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                       </object>
                                                                                                                                                       <object dataType="ObjectRef">241</object>
@@ -6708,7 +6708,7 @@
                                                                                                                                                 </compList>
                                                                                                                                                 <name dataType="String">Square</name>
                                                                                                                                                 <active dataType="Bool">true</active>
-                                                                                                                                                <disposed dataType="Bool">false</disposed>
+                                                                                                                                                <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                 <compTransform dataType="ObjectRef">703</compTransform>
                                                                                                                                                 <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                                                                                                                                                 <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -6788,7 +6788,7 @@
                                                                                                                                                           </object>
                                                                                                                                                         </OnTransformChanged>
                                                                                                                                                         <gameobj dataType="ObjectRef">709</gameobj>
-                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                       </object>
                                                                                                                                                       <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="716">
@@ -6812,7 +6812,7 @@
                                                                                                                                                         <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                                                                                                                                                         <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                                                                                                                                                         <gameobj dataType="ObjectRef">709</gameobj>
-                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                       </object>
                                                                                                                                                       <object dataType="ObjectRef">249</object>
@@ -6831,7 +6831,7 @@
                                                                                                                                                 </compList>
                                                                                                                                                 <name dataType="String">Square</name>
                                                                                                                                                 <active dataType="Bool">true</active>
-                                                                                                                                                <disposed dataType="Bool">false</disposed>
+                                                                                                                                                <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                 <compTransform dataType="ObjectRef">713</compTransform>
                                                                                                                                                 <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                                                                                                                                                 <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -6911,7 +6911,7 @@
                                                                                                                                                           </object>
                                                                                                                                                         </OnTransformChanged>
                                                                                                                                                         <gameobj dataType="ObjectRef">719</gameobj>
-                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                       </object>
                                                                                                                                                       <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="726">
@@ -6935,7 +6935,7 @@
                                                                                                                                                         <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                                                                                                                                                         <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                                                                                                                                                         <gameobj dataType="ObjectRef">719</gameobj>
-                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                       </object>
                                                                                                                                                       <object dataType="ObjectRef">257</object>
@@ -6954,7 +6954,7 @@
                                                                                                                                                 </compList>
                                                                                                                                                 <name dataType="String">Square</name>
                                                                                                                                                 <active dataType="Bool">true</active>
-                                                                                                                                                <disposed dataType="Bool">false</disposed>
+                                                                                                                                                <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                 <compTransform dataType="ObjectRef">723</compTransform>
                                                                                                                                                 <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                                                                                                                                                 <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -7028,7 +7028,7 @@
                                                                                                                                                         <lastAngleAbs dataType="Float">-12.5663719</lastAngleAbs>
                                                                                                                                                         <OnTransformChanged />
                                                                                                                                                         <gameobj dataType="ObjectRef">729</gameobj>
-                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                       </object>
                                                                                                                                                       <object dataType="Class" type="Duality.Components.Renderers.TextRenderer" id="734">
@@ -7069,7 +7069,7 @@
                                                                                                                                                         <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                                                                                                                                                         <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                                                                                                                                                         <gameobj dataType="ObjectRef">729</gameobj>
-                                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                         <active dataType="Bool">true</active>
                                                                                                                                                       </object>
                                                                                                                                                     </values>
@@ -7087,7 +7087,7 @@
                                                                                                                                                 </compList>
                                                                                                                                                 <name dataType="String">BridgeText</name>
                                                                                                                                                 <active dataType="Bool">true</active>
-                                                                                                                                                <disposed dataType="Bool">false</disposed>
+                                                                                                                                                <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                 <compTransform dataType="ObjectRef">733</compTransform>
                                                                                                                                                 <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                                                                                                                                                 <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -7115,7 +7115,7 @@
                                                                                                                                           </compList>
                                                                                                                                           <name dataType="String">Hanging Bridge</name>
                                                                                                                                           <active dataType="Bool">true</active>
-                                                                                                                                          <disposed dataType="Bool">false</disposed>
+                                                                                                                                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                           <compTransform />
                                                                                                                                           <EventComponentAdded dataType="Delegate" type="System.EventHandler`1[[Duality.ComponentEventArgs]]" id="747" multi="true">
                                                                                                                                             <object dataType="ObjectRef">562</object>
@@ -7267,7 +7267,7 @@
                                                                                                                                                     </object>
                                                                                                                                                   </OnTransformChanged>
                                                                                                                                                   <gameobj dataType="ObjectRef">290</gameobj>
-                                                                                                                                                  <disposed dataType="Bool">false</disposed>
+                                                                                                                                                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                   <active dataType="Bool">true</active>
                                                                                                                                                 </object>
                                                                                                                                                 <object dataType="Array" type="System.Delegate[]" id="777" length="1">
@@ -7320,7 +7320,7 @@
                                                                                                                                                 <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                                                                                                                                                 <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                                                                                                                                                 <gameobj dataType="ObjectRef">290</gameobj>
-                                                                                                                                                <disposed dataType="Bool">false</disposed>
+                                                                                                                                                <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                                 <active dataType="Bool">true</active>
                                                                                                                                               </object>
                                                                                                                                               <object dataType="ObjectRef">265</object>
@@ -7339,7 +7339,7 @@
                                                                                                                                         </compList>
                                                                                                                                         <name dataType="String">Square</name>
                                                                                                                                         <active dataType="Bool">true</active>
-                                                                                                                                        <disposed dataType="Bool">false</disposed>
+                                                                                                                                        <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                         <compTransform dataType="ObjectRef">774</compTransform>
                                                                                                                                         <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                                                                                                                                         <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -7347,7 +7347,7 @@
                                                                                                                                         <EventCollisionEnd />
                                                                                                                                         <EventCollisionSolve />
                                                                                                                                       </gameobj>
-                                                                                                                                      <disposed dataType="Bool">false</disposed>
+                                                                                                                                      <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                                       <active dataType="Bool">true</active>
                                                                                                                                     </colA>
                                                                                                                                     <colB dataType="ObjectRef">257</colB>
@@ -7362,7 +7362,7 @@
                                                                                                                                 <_version dataType="Int">4</_version>
                                                                                                                               </joints>
                                                                                                                               <gameobj dataType="ObjectRef">719</gameobj>
-                                                                                                                              <disposed dataType="Bool">false</disposed>
+                                                                                                                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                               <active dataType="Bool">true</active>
                                                                                                                             </colA>
                                                                                                                             <colB dataType="ObjectRef">249</colB>
@@ -7377,7 +7377,7 @@
                                                                                                                         <_version dataType="Int">4</_version>
                                                                                                                       </joints>
                                                                                                                       <gameobj dataType="ObjectRef">709</gameobj>
-                                                                                                                      <disposed dataType="Bool">false</disposed>
+                                                                                                                      <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                                       <active dataType="Bool">true</active>
                                                                                                                     </colA>
                                                                                                                     <colB dataType="ObjectRef">241</colB>
@@ -7392,7 +7392,7 @@
                                                                                                                 <_version dataType="Int">4</_version>
                                                                                                               </joints>
                                                                                                               <gameobj dataType="ObjectRef">699</gameobj>
-                                                                                                              <disposed dataType="Bool">false</disposed>
+                                                                                                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                               <active dataType="Bool">true</active>
                                                                                                             </colA>
                                                                                                             <colB dataType="ObjectRef">233</colB>
@@ -7407,7 +7407,7 @@
                                                                                                         <_version dataType="Int">4</_version>
                                                                                                       </joints>
                                                                                                       <gameobj dataType="ObjectRef">689</gameobj>
-                                                                                                      <disposed dataType="Bool">false</disposed>
+                                                                                                      <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                                       <active dataType="Bool">true</active>
                                                                                                     </colA>
                                                                                                     <colB dataType="ObjectRef">225</colB>
@@ -7422,7 +7422,7 @@
                                                                                                 <_version dataType="Int">4</_version>
                                                                                               </joints>
                                                                                               <gameobj dataType="ObjectRef">679</gameobj>
-                                                                                              <disposed dataType="Bool">false</disposed>
+                                                                                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                               <active dataType="Bool">true</active>
                                                                                             </colA>
                                                                                             <colB dataType="ObjectRef">217</colB>
@@ -7437,7 +7437,7 @@
                                                                                         <_version dataType="Int">4</_version>
                                                                                       </joints>
                                                                                       <gameobj dataType="ObjectRef">669</gameobj>
-                                                                                      <disposed dataType="Bool">false</disposed>
+                                                                                      <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                                       <active dataType="Bool">true</active>
                                                                                     </colA>
                                                                                     <colB dataType="ObjectRef">209</colB>
@@ -7452,7 +7452,7 @@
                                                                                 <_version dataType="Int">4</_version>
                                                                               </joints>
                                                                               <gameobj dataType="ObjectRef">659</gameobj>
-                                                                              <disposed dataType="Bool">false</disposed>
+                                                                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                               <active dataType="Bool">true</active>
                                                                             </colA>
                                                                             <colB dataType="ObjectRef">201</colB>
@@ -7467,7 +7467,7 @@
                                                                         <_version dataType="Int">4</_version>
                                                                       </joints>
                                                                       <gameobj dataType="ObjectRef">649</gameobj>
-                                                                      <disposed dataType="Bool">false</disposed>
+                                                                      <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                                       <active dataType="Bool">true</active>
                                                                     </colA>
                                                                     <colB dataType="ObjectRef">193</colB>
@@ -7482,7 +7482,7 @@
                                                                 <_version dataType="Int">4</_version>
                                                               </joints>
                                                               <gameobj dataType="ObjectRef">639</gameobj>
-                                                              <disposed dataType="Bool">false</disposed>
+                                                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                               <active dataType="Bool">true</active>
                                                             </colA>
                                                             <colB dataType="ObjectRef">185</colB>
@@ -7497,7 +7497,7 @@
                                                         <_version dataType="Int">4</_version>
                                                       </joints>
                                                       <gameobj dataType="ObjectRef">629</gameobj>
-                                                      <disposed dataType="Bool">false</disposed>
+                                                      <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                                       <active dataType="Bool">true</active>
                                                     </colA>
                                                     <colB dataType="ObjectRef">177</colB>
@@ -7512,7 +7512,7 @@
                                                 <_version dataType="Int">4</_version>
                                               </joints>
                                               <gameobj dataType="ObjectRef">619</gameobj>
-                                              <disposed dataType="Bool">false</disposed>
+                                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                               <active dataType="Bool">true</active>
                                             </colA>
                                             <colB dataType="ObjectRef">169</colB>
@@ -7527,7 +7527,7 @@
                                         <_version dataType="Int">4</_version>
                                       </joints>
                                       <gameobj dataType="ObjectRef">609</gameobj>
-                                      <disposed dataType="Bool">false</disposed>
+                                      <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                                       <active dataType="Bool">true</active>
                                     </colA>
                                     <colB dataType="ObjectRef">161</colB>
@@ -7543,7 +7543,7 @@
                                 <_version dataType="Int">1</_version>
                               </joints>
                               <gameobj dataType="ObjectRef">155</gameobj>
-                              <disposed dataType="Bool">false</disposed>
+                              <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                               <active dataType="Bool">true</active>
                             </object>
                             <object dataType="Array" type="System.Delegate[]" id="786" length="1">
@@ -7551,7 +7551,7 @@
                             </object>
                           </OnTransformChanged>
                           <gameobj dataType="ObjectRef">155</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.SpriteRenderer" id="787">
@@ -7575,7 +7575,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">155</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="ObjectRef">161</object>
@@ -7594,7 +7594,7 @@
                   </compList>
                   <name dataType="String">Wall</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">159</compTransform>
                   <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -7646,7 +7646,7 @@
             </compList>
             <name dataType="String">StaticWorld</name>
             <active dataType="Bool">true</active>
-            <disposed dataType="Bool">false</disposed>
+            <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
             <compTransform />
             <EventComponentAdded dataType="Delegate" type="System.EventHandler`1[[Duality.ComponentEventArgs]]" id="794" multi="true">
               <object dataType="ObjectRef">562</object>
@@ -7780,7 +7780,7 @@
                           <lastAngleAbs dataType="Float">-12.5663719</lastAngleAbs>
                           <OnTransformChanged />
                           <gameobj dataType="ObjectRef">813</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.TextRenderer" id="818">
@@ -7821,7 +7821,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">813</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                       </values>
@@ -7839,7 +7839,7 @@
                   </compList>
                   <name dataType="String">FixedRevoluteJoint</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">817</compTransform>
                   <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -7912,7 +7912,7 @@
                           <lastAngleAbs dataType="Float">-12.5663719</lastAngleAbs>
                           <OnTransformChanged />
                           <gameobj dataType="ObjectRef">826</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.TextRenderer" id="831">
@@ -7953,7 +7953,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">826</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                       </values>
@@ -7971,7 +7971,7 @@
                   </compList>
                   <name dataType="String">FixedPrismaticJoint</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">830</compTransform>
                   <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -8044,7 +8044,7 @@
                           <lastAngleAbs dataType="Float">-12.5663719</lastAngleAbs>
                           <OnTransformChanged />
                           <gameobj dataType="ObjectRef">839</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                         <object dataType="Class" type="Duality.Components.Renderers.TextRenderer" id="844">
@@ -8085,7 +8085,7 @@
                           <renderFlags dataType="Enum" type="Duality.RendererFlags" name="Default" value="3" />
                           <visibilityGroup dataType="Enum" type="Duality.VisibilityFlag" name="Group0" value="1" />
                           <gameobj dataType="ObjectRef">839</gameobj>
-                          <disposed dataType="Bool">false</disposed>
+                          <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                           <active dataType="Bool">true</active>
                         </object>
                       </values>
@@ -8103,7 +8103,7 @@
                   </compList>
                   <name dataType="String">FixedDistanceJoint</name>
                   <active dataType="Bool">true</active>
-                  <disposed dataType="Bool">false</disposed>
+                  <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
                   <compTransform dataType="ObjectRef">843</compTransform>
                   <EventComponentAdded dataType="ObjectRef">66</EventComponentAdded>
                   <EventComponentRemoving dataType="ObjectRef">69</EventComponentRemoving>
@@ -8130,7 +8130,7 @@
             </compList>
             <name dataType="String">Text</name>
             <active dataType="Bool">true</active>
-            <disposed dataType="Bool">false</disposed>
+            <disposed dataType="Enum" type="Duality.DisposeState" name="Active" value="0" />
             <compTransform />
             <EventComponentAdded dataType="Delegate" type="System.EventHandler`1[[Duality.ComponentEventArgs]]" id="857" multi="true">
               <object dataType="ObjectRef">562</object>
