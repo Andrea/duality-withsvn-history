@@ -24,6 +24,10 @@ namespace DualityEditor
 		public const string SourceCodeCorePluginFile		= @"Source\Code\CorePlugin\CorePlugin.cs";
 		public const string SourceCodeComponentExampleFile	= @"Source\Code\CorePlugin\YourCustomComponentType.cs";
 		public const string SourceCodeEditorPluginFile		= @"Source\Code\EditorPlugin\EditorPlugin.cs";
+
+		public static readonly string GlobalUserDirectory = Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Duality"));
+		public static readonly string GlobalProjectTemplateDirectory = Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Duality"), "ProjectTemplates");
+
 		public static string CurrentProjectName
 		{
 			get { return Path.GetFileName(Path.GetDirectoryName(Path.GetFullPath(EditorHelper.DataDirectory))); }

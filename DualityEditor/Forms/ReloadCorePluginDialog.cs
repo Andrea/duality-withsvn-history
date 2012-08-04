@@ -157,7 +157,7 @@ namespace DualityEditor.Forms
 			//this.owner.MainContextControl.Context.MakeCurrent(null);
 
 			this.progressTimer.Start();
-			this.owner.SetTaskbarOverlayIcon(GeneralRes.Icon_Cog, GeneralRes.TaskBarOverlay_ReloadCorePlugin_Desc);
+			this.owner.SetTaskbarOverlayIcon(GeneralRes.IconCog, GeneralRes.TaskBarOverlay_ReloadCorePlugin_Desc);
 
 			this.workerInterface = new WorkerInterface();
 			this.workerInterface.MainForm = this.owner;

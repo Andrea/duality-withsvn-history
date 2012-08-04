@@ -152,7 +152,7 @@ namespace DualityEditor
 				Directory.CreateDirectory(EditorHelper.DataDirectory);
 				using (FileStream s = File.OpenWrite(Path.Combine(EditorHelper.DataDirectory, "WorkingFolderIcon.ico")))
 				{
-					EditorRes.GeneralRes.Icon_WorkingFolder.Save(s);
+					EditorRes.GeneralRes.IconWorkingFolder.Save(s);
 				}
 				using (StreamWriter w = new StreamWriter(Path.Combine(EditorHelper.DataDirectory, "desktop.ini")))
 				{
@@ -276,11 +276,17 @@ namespace DualityEditor
 
 		public void InitMenus()
 		{
+			ToolStripMenuItem fileItem = this.RequestMenu(EditorRes.GeneralRes.MenuName_File);
+			ToolStripMenuItem newProjectItem = this.RequestMenu(Path.Combine(EditorRes.GeneralRes.MenuName_File, EditorRes.GeneralRes.MenuItemName_NewProject));
+
 			ToolStripMenuItem helpItem = this.RequestMenu(EditorRes.GeneralRes.MenuName_Help);
 			ToolStripMenuItem aboutItem = this.RequestMenu(Path.Combine(EditorRes.GeneralRes.MenuName_Help, EditorRes.GeneralRes.MenuItemName_About));
 
 			helpItem.Alignment = ToolStripItemAlignment.Right;
 			aboutItem.Click += this.aboutItem_Click;
+
+			newProjectItem.Image = EditorRes.GeneralRes.ImageAppCreate;
+			newProjectItem.Click += this.newProjectItem_Click;
 		}
 		public ToolStripMenuItem RequestMenu(string menuPath)
 		{
@@ -1532,6 +1538,13 @@ namespace DualityEditor
 		{
 			AboutBox about = new AboutBox();
 			about.ShowDialog(this);
+		}
+		private void newProjectItem_Click(object sender, EventArgs e)
+		{
+			NewProjectDialog newProject = new NewProjectDialog();
+			newProject.ShowDialog(this);
+
+			// Open new project
 		}
 
 		private void inputFilter_MouseLeave(object sender, EventArgs e)

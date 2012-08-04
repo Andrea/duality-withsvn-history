@@ -151,17 +151,23 @@
   <data name="HelpInfo_NotAvailable_Desc" xml:space="preserve">
     <value>No information available.</value>
   </data>
-  <data name="Icon_Cog" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="IconCog" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>cog.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Icon_WorkingFolder" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="IconWorkingFolder" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>WorkingFolderIcon.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ImageAppCreate" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\application_create.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Language" xml:space="preserve">
     <value>English</value>
   </data>
   <data name="MenuItemName_About" xml:space="preserve">
     <value>About</value>
+  </data>
+  <data name="MenuItemName_NewProject" xml:space="preserve">
+    <value>New Project...</value>
   </data>
   <data name="MenuName_File" xml:space="preserve">
     <value>File</value>
