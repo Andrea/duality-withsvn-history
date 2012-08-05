@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.IO;
 using System.Reflection;
@@ -504,32 +505,7 @@ namespace DualityEditor
 				{
 					gamePluginZip.ExtractAll(EditorHelper.SourceCodeDirectory, ExtractExistingFileAction.DoNotOverwrite);
 				}
-				// If Visual Studio is available, don't use the express version
-				if (EditorHelper.IsJITDebuggerAvailable())
-				{
-					string solution = File.ReadAllText(EditorHelper.SourceCodeSolutionFile);
-					File.WriteAllText(EditorHelper.SourceCodeSolutionFile, solution.Replace("# Visual C# Express 2010", "# Visual Studio 2010"), Encoding.UTF8);
-				}
-
-				// Replace class names
-				string namespaceName = EditorHelper.GenerateClassNameFromPath(EditorHelper.CurrentProjectName);
-				string pluginNameCore = namespaceName + "CorePlugin";
-				string pluginNameEditor = namespaceName + "EditorPlugin";
-
-				string file_CorePlugin_cs = File.ReadAllText(EditorHelper.SourceCodeCorePluginFile);
-				string file_ComponentExample_cs = File.ReadAllText(EditorHelper.SourceCodeComponentExampleFile);
-				string file_EditorPlugin_cs = File.ReadAllText(EditorHelper.SourceCodeEditorPluginFile);
-
-				file_ComponentExample_cs = file_ComponentExample_cs.Replace("<Namespace>", namespaceName);
-				file_CorePlugin_cs = file_CorePlugin_cs.Replace("<Namespace>", namespaceName);
-				file_EditorPlugin_cs = file_EditorPlugin_cs.Replace("<Namespace>", namespaceName);
-
-				file_CorePlugin_cs = file_CorePlugin_cs.Replace("<PluginClassName>", pluginNameCore);
-				file_EditorPlugin_cs = file_EditorPlugin_cs.Replace("<PluginClassName>", pluginNameEditor);
-
-				File.WriteAllText(EditorHelper.SourceCodeComponentExampleFile, file_ComponentExample_cs, Encoding.UTF8);
-				File.WriteAllText(EditorHelper.SourceCodeCorePluginFile, file_CorePlugin_cs, Encoding.UTF8);
-				File.WriteAllText(EditorHelper.SourceCodeEditorPluginFile, file_EditorPlugin_cs, Encoding.UTF8);
+				this.InitSourceCode();
 			}
 			
 			// Replace exec path in user files, since VS doesn't support relative paths there..
@@ -563,6 +539,104 @@ namespace DualityEditor
 
 			// Keep auto-generated files up-to-date
 			File.WriteAllText(EditorHelper.SourceCodeGameResFile, EditorHelper.GenerateGameResSrcFile());
+		}
+		public void InitSourceCode()
+		{
+			// If Visual Studio is available, don't use the express version
+			if (File.Exists(EditorHelper.SourceCodeSolutionFile) && EditorHelper.IsJITDebuggerAvailable())
+			{
+				string solution = File.ReadAllText(EditorHelper.SourceCodeSolutionFile);
+				File.WriteAllText(EditorHelper.SourceCodeSolutionFile, solution.Replace("# Visual C# Express 2010", "# Visual Studio 2010"), Encoding.UTF8);
+			}
+			
+			string projectClassName = EditorHelper.GenerateClassNameFromPath(EditorHelper.CurrentProjectName);
+			string newRootNamespaceCore = projectClassName;
+			string newRootNamespaceEditor = newRootNamespaceCore + ".Editor";
+			string pluginNameCore = projectClassName + "CorePlugin";
+			string pluginNameEditor = projectClassName + "EditorPlugin";
+			string oldRootNamespaceCore = null;
+			string oldRootNamespaceEditor = null;
+
+			// Update root namespaces
+			if (File.Exists(EditorHelper.SourceCodeProjectCorePluginFile))
+			{
+				XmlDocument projXml = new XmlDocument();
+				projXml.Load(EditorHelper.SourceCodeProjectCorePluginFile);
+				foreach (XmlElement element in projXml.GetElementsByTagName("RootNamespace").OfType<XmlElement>())
+				{
+					if (oldRootNamespaceCore == null) oldRootNamespaceCore = element.InnerText;
+					element.InnerText = newRootNamespaceCore;
+				}
+				projXml.Save(EditorHelper.SourceCodeProjectCorePluginFile);
+			}
+
+			if (File.Exists(EditorHelper.SourceCodeProjectEditorPluginFile))
+			{
+				XmlDocument projXml = new XmlDocument();
+				projXml.Load(EditorHelper.SourceCodeProjectEditorPluginFile);
+				foreach (XmlElement element in projXml.GetElementsByTagName("RootNamespace").OfType<XmlElement>())
+				{
+					if (oldRootNamespaceEditor == null) oldRootNamespaceEditor = element.InnerText;
+					element.InnerText = newRootNamespaceEditor;
+				}
+				projXml.Save(EditorHelper.SourceCodeProjectEditorPluginFile);
+			}
+
+			// Guess old plugin class names
+			string oldPluginNameCore = oldRootNamespaceCore + "CorePlugin";
+			string oldPluginNameEditor = oldRootNamespaceCore + "EditorPlugin";
+
+			// Replace namespace names: Core
+			string regExpr = @"^(\s*namespace\s*)(.*)(" + oldRootNamespaceCore + @")(.*)(\s*{)";
+			string regExprReplace = @"$1$2" + newRootNamespaceCore + @"$4$5";
+			foreach (string filePath in Directory.GetFiles(EditorHelper.SourceCodeProjectCorePluginDir, "*.cs", SearchOption.AllDirectories))
+			{
+				string fileContent = File.ReadAllText(filePath);
+				fileContent = Regex.Replace(fileContent, regExpr, regExprReplace, RegexOptions.Multiline);
+				File.WriteAllText(filePath, fileContent, Encoding.UTF8);
+			}
+
+			// Replace namespace names: Editor
+			regExpr = @"^(\s*namespace\s*)(.*)(" + oldRootNamespaceEditor + @")(.*)(\s*{)";
+			regExprReplace = @"$1$2" + newRootNamespaceEditor + @"$4$5";
+			foreach (string filePath in Directory.GetFiles(EditorHelper.SourceCodeProjectEditorPluginDir, "*.cs", SearchOption.AllDirectories))
+			{
+				string fileContent = File.ReadAllText(filePath);
+				fileContent = Regex.Replace(fileContent, regExpr, regExprReplace, RegexOptions.Multiline);
+				File.WriteAllText(filePath, fileContent, Encoding.UTF8);
+			}
+
+			// Replace class names: Core
+			if (File.Exists(EditorHelper.SourceCodeCorePluginFile))
+			{
+				string fileContent = File.ReadAllText(EditorHelper.SourceCodeCorePluginFile);
+
+				regExpr = @"(\bclass\b)(.*)(" + oldPluginNameCore + @")(.*)(\s*{)";
+				regExprReplace = @"$1$2" + pluginNameCore + @"$4$5";
+				fileContent = Regex.Replace(fileContent, regExpr, regExprReplace, RegexOptions.Multiline);
+
+				regExpr = @"(\bclass\b)(.*)(" + @"__CorePluginClassName__" + @")(.*)(\s*{)";
+				regExprReplace = @"$1$2" + pluginNameCore + @"$4$5";
+				fileContent = Regex.Replace(fileContent, regExpr, regExprReplace, RegexOptions.Multiline);
+
+				File.WriteAllText(EditorHelper.SourceCodeCorePluginFile, fileContent, Encoding.UTF8);
+			}
+
+			// Replace class names: Editor
+			if (File.Exists(EditorHelper.SourceCodeEditorPluginFile))
+			{
+				string fileContent = File.ReadAllText(EditorHelper.SourceCodeEditorPluginFile);
+
+				regExpr = @"(\bclass\b)(.*)(" + oldPluginNameEditor + @")(.*)(\s*{)";
+				regExprReplace = @"$1$2" + pluginNameEditor + @"$4$5";
+				fileContent = Regex.Replace(fileContent, regExpr, regExprReplace, RegexOptions.Multiline);
+
+				regExpr = @"(\bclass\b)(.*)(" + @"__EditorPluginClassName__" + @")(.*)(\s*{)";
+				regExprReplace = @"$1$2" + pluginNameEditor + @"$4$5";
+				fileContent = Regex.Replace(fileContent, regExpr, regExprReplace, RegexOptions.Multiline);
+
+				File.WriteAllText(EditorHelper.SourceCodeEditorPluginFile, fileContent, Encoding.UTF8);
+			}
 		}
 
 		public void NotifyObjPrefabApplied(object sender, ObjectSelection obj)

@@ -112,6 +112,9 @@
     <Compile Include="Controls\DualitorPropertyGrid.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Controls\ExplorerListView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Controls\TreeModels\FileSystem\ModelItems.cs" />
     <Compile Include="Controls\TreeModels\FileSystem\FolderBrowserTreeModel.cs" />
     <Compile Include="Controls\PropertyEditors\IColorDataPropertyEditor.cs" />

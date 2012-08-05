@@ -358,6 +358,26 @@ namespace Duality
 			return lowerExt == FileExt;
 		}
 		/// <summary>
+		/// Returns all Resource files that are located in the specified directory. This doesn't affect
+		/// any actual content- or load states.
+		/// </summary>
+		/// <param name="folderPath"></param>
+		/// <returns></returns>
+		public static List<string> GetResourceFiles(string folderPath = null)
+		{
+			if (string.IsNullOrEmpty(folderPath)) folderPath = "Data";
+			List<string> result = new List<string>();
+			GetResourceFiles(ref result, folderPath);
+			return result;
+		}
+		private static void GetResourceFiles(ref List<string> result, string folderPath)
+		{
+			foreach (string file in Directory.GetFiles(folderPath))
+				if (!Resource.IsResourceFile(file)) result.Add(file);
+			foreach (string dir in Directory.GetDirectories(folderPath))
+				GetResourceFiles(ref result, folderPath);
+		}
+		/// <summary>
 		/// Returns the Resource file extension for a specific Resource Type.
 		/// </summary>
 		/// <param name="resType">The Resource Type to return the file extension from.</param>

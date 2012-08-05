@@ -13,16 +13,21 @@
 
 	
 -->	Dualitor: New Project Wizard, Project Templates
+	-->	Fixed templates: "Current" and "Empty"
 	-->	Project Template: Zip file containing:
 		--> Full Duality directory, including Data, Source and Plugins..
 		-->	..but without most of the main directory contents (Duality binaries, xml doc, etc.)
 			-->	Those will be copied from the current Dualitor instance
 			-->	The plugin directory contents will be examined and updated if applying
-		-->	Also contains project template description files that will be deleted upon creation
-			-->	Template icon / name / description
+	-->	Create a Project
+		-->	Extract Template
+		-->	Apply updates and binaries (see above)
+		-->	Replace "Template" namespace in Source Code
+		-->	Replace "Template" namespace in all data files
+		-->	Recompile soluion file
+		-->	Open project
 	-->	Auto-open the new project
 	-->	Auto-install unknown templates
-	-->	Fixed templates: "Current" and "Empty"
 
 
 --> Reconsider "events" in Duality.

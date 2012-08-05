@@ -3378,6 +3378,14 @@
             <param name="filePath"></param>
             <returns></returns>
         </member>
+        <member name="M:Duality.Resource.GetResourceFiles(System.String)">
+            <summary>
+            Returns all Resource files that are located in the specified directory. This doesn't affect
+            any actual content- or load states.
+            </summary>
+            <param name="folderPath"></param>
+            <returns></returns>
+        </member>
         <member name="M:Duality.Resource.GetFileExtByType(System.Type)">
             <summary>
             Returns the Resource file extension for a specific Resource Type.

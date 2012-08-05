@@ -1,10 +1,63 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
+
 using Duality.EditorHints;
 
 namespace Duality.Serialization.MetaFormat
 {
+	public static class MetaFormatHelper
+	{
+		public static void FilePerformAction(string filePath, Action<DataNode> action, bool updateContent = true)
+		{
+			List<DataNode> data = new List<DataNode>();
+
+			// Load data
+			using (FileStream fileStream = File.OpenRead(filePath))
+			{
+				using (var formatter = Formatter.CreateMeta(fileStream))
+				{
+					DataNode dataNode;
+					try
+					{
+						while ((dataNode = formatter.ReadObject() as DataNode) != null)
+							data.Add(dataNode);
+					}
+					catch (EndOfStreamException) {}
+					catch (Exception e)
+					{
+						Log.Editor.WriteError("Can't perform meta format action on {0} because an error occured in the process: \n{1}",
+							filePath,
+							Log.Exception(e));
+						return;
+					}
+				}
+			}
+
+			// Process data
+			foreach (DataNode dataNode in data)
+				action(dataNode);
+
+			// Save data
+			using (FileStream fileStream = File.Open(filePath, FileMode.Create))
+			{
+				using (var formatter = Formatter.CreateMeta(fileStream))
+				{
+					foreach (DataNode dataNode in data)
+						formatter.WriteObject(dataNode);
+				}
+			}
+
+			// Assure reloading the modified resource
+			if (updateContent && PathHelper.IsPathLocatedIn(filePath, "."))
+			{
+				string dataPath = PathHelper.MakeFilePathRelative(filePath, ".");
+				ContentProvider.UnregisterContent(dataPath);
+			}
+		}
+	}
+
 	/// <summary>
 	/// Describes a single serialization data node.
 	/// </summary>
@@ -110,6 +163,21 @@ namespace Duality.Serialization.MetaFormat
 		{
 			return this.subNodes.Sum(n => n.ReplaceTypeStrings(oldTypeString, newTypeString));
 		}
+
+		protected bool PerformReplaceTypeString(ref string typeString, string oldTypeString, string newTypeString)
+		{
+			if (typeString == oldTypeString)
+			{
+				typeString = newTypeString;
+				return true;
+			}
+			else if (typeString.StartsWith(oldTypeString) && (typeString[oldTypeString.Length] == '.' || typeString[oldTypeString.Length] == '+'))
+			{
+				typeString = newTypeString + typeString.Remove(0, oldTypeString.Length);
+				return true;
+			}
+			return false;
+		}
 	}
 	/// <summary>
 	/// Describes a serialization primitive data node.
@@ -196,14 +264,15 @@ namespace Duality.Serialization.MetaFormat
 			this.valueName = name;
 			this.value = value;
 		}
+		protected override void GetTypeStrings(ref List<string> list, bool deep)
+		{
+			list.Add(this.enumType);
+			base.GetTypeStrings(ref list, deep);
+		}
 		public override int ReplaceTypeStrings(string oldTypeString, string newTypeString)
 		{
 			int count = base.ReplaceTypeStrings(oldTypeString, newTypeString);
-			if (this.enumType == oldTypeString)
-			{
-				this.enumType = newTypeString;
-				count++;
-			}
+			if (this.PerformReplaceTypeString(ref this.enumType, oldTypeString, newTypeString)) count++;
 			return count;
 		}
 	}
@@ -252,11 +321,7 @@ namespace Duality.Serialization.MetaFormat
 		public override int ReplaceTypeStrings(string oldTypeString, string newTypeString)
 		{
 			int count = base.ReplaceTypeStrings(oldTypeString, newTypeString);
-			if (this.typeString == oldTypeString)
-			{
-				this.typeString = newTypeString;
-				count++;
-			}
+			if (this.PerformReplaceTypeString(ref this.typeString, oldTypeString, newTypeString)) count++;
 			return count;
 		}
 	}
@@ -457,13 +522,8 @@ namespace Duality.Serialization.MetaFormat
 			int count = base.ReplaceTypeStrings(oldTypeString, newTypeString);
 			for (int i = 0; i < this.layout.Fields.Length; i++)
 			{
-				if (this.layout.Fields[i].typeString == oldTypeString)
-				{
-					TypeDataLayout.FieldDataInfo field = this.layout.Fields[i];
-					field.typeString = newTypeString;
-					this.layout.Fields[i] = field;
+				if (this.PerformReplaceTypeString(ref this.layout.Fields[i].typeString, oldTypeString, newTypeString))
 					count++;
-				}
 			}
 			return count;
 		}

@@ -28,13 +28,12 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NewProjectDialog));
 			this.folderView = new Aga.Controls.Tree.TreeViewAdv();
 			this.folderViewControlIcon = new Aga.Controls.Tree.NodeControls.NodeStateIcon();
 			this.folderViewControlName = new Aga.Controls.Tree.NodeControls.NodeTextBox();
-			this.templateView = new System.Windows.Forms.ListView();
-			this.columnName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.columnDesc = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.imageListTemplateView = new System.Windows.Forms.ImageList(this.components);
 			this.splitFolderTemplate = new System.Windows.Forms.SplitContainer();
 			this.buttonCancel = new System.Windows.Forms.Button();
 			this.buttonOk = new System.Windows.Forms.Button();
@@ -50,6 +49,9 @@
 			this.buttonBrowseTemplate = new System.Windows.Forms.Button();
 			this.pictureBoxLogo = new System.Windows.Forms.PictureBox();
 			this.labelHeader = new System.Windows.Forms.Label();
+			this.templateView = new DualityEditor.Controls.ExplorerListView();
+			this.columnName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.columnDesc = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			((System.ComponentModel.ISupportInitialize)(this.splitFolderTemplate)).BeginInit();
 			this.splitFolderTemplate.Panel1.SuspendLayout();
 			this.splitFolderTemplate.Panel2.SuspendLayout();
@@ -95,35 +97,11 @@
 			this.folderViewControlName.LeftMargin = 3;
 			this.folderViewControlName.ParentColumn = null;
 			// 
-			// templateView
+			// imageListTemplateView
 			// 
-			this.templateView.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(196)))), ((int)(((byte)(196)))), ((int)(((byte)(196)))));
-			this.templateView.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.templateView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnName,
-            this.columnDesc});
-			this.templateView.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.templateView.FullRowSelect = true;
-			this.templateView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-			this.templateView.Location = new System.Drawing.Point(0, 0);
-			this.templateView.MultiSelect = false;
-			this.templateView.Name = "templateView";
-			this.templateView.ShowItemToolTips = true;
-			this.templateView.Size = new System.Drawing.Size(324, 176);
-			this.templateView.Sorting = System.Windows.Forms.SortOrder.Ascending;
-			this.templateView.TabIndex = 1;
-			this.templateView.TileSize = new System.Drawing.Size(100, 34);
-			this.templateView.UseCompatibleStateImageBehavior = false;
-			this.templateView.View = System.Windows.Forms.View.Tile;
-			this.templateView.Resize += new System.EventHandler(this.templateView_Resize);
-			// 
-			// columnName
-			// 
-			this.columnName.Text = "Name";
-			// 
-			// columnDesc
-			// 
-			this.columnDesc.Text = "Description";
+			this.imageListTemplateView.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
+			this.imageListTemplateView.ImageSize = new System.Drawing.Size(32, 32);
+			this.imageListTemplateView.TransparentColor = System.Drawing.Color.Transparent;
 			// 
 			// splitFolderTemplate
 			// 
@@ -136,10 +114,12 @@
 			// splitFolderTemplate.Panel1
 			// 
 			this.splitFolderTemplate.Panel1.Controls.Add(this.folderView);
+			this.splitFolderTemplate.Panel1MinSize = 150;
 			// 
 			// splitFolderTemplate.Panel2
 			// 
 			this.splitFolderTemplate.Panel2.Controls.Add(this.templateView);
+			this.splitFolderTemplate.Panel2MinSize = 250;
 			this.splitFolderTemplate.Size = new System.Drawing.Size(486, 176);
 			this.splitFolderTemplate.SplitterDistance = 158;
 			this.splitFolderTemplate.TabIndex = 2;
@@ -302,6 +282,39 @@
 			this.labelHeader.Text = "Create new Duality Project";
 			this.labelHeader.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
+			// templateView
+			// 
+			this.templateView.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(196)))), ((int)(((byte)(196)))), ((int)(((byte)(196)))));
+			this.templateView.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.templateView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnName,
+            this.columnDesc});
+			this.templateView.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.templateView.FullRowSelect = true;
+			this.templateView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+			this.templateView.LargeImageList = this.imageListTemplateView;
+			this.templateView.Location = new System.Drawing.Point(0, 0);
+			this.templateView.MultiSelect = false;
+			this.templateView.Name = "templateView";
+			this.templateView.ShowItemToolTips = true;
+			this.templateView.Size = new System.Drawing.Size(324, 176);
+			this.templateView.Sorting = System.Windows.Forms.SortOrder.Ascending;
+			this.templateView.StateImageList = this.imageListTemplateView;
+			this.templateView.TabIndex = 1;
+			this.templateView.TileSize = new System.Drawing.Size(100, 48);
+			this.templateView.UseCompatibleStateImageBehavior = false;
+			this.templateView.View = System.Windows.Forms.View.Tile;
+			this.templateView.SelectedIndexChanged += new System.EventHandler(this.templateView_SelectedIndexChanged);
+			this.templateView.Resize += new System.EventHandler(this.templateView_Resize);
+			// 
+			// columnName
+			// 
+			this.columnName.Text = "Name";
+			// 
+			// columnDesc
+			// 
+			this.columnDesc.Text = "Description";
+			// 
 			// NewProjectDialog
 			// 
 			this.AcceptButton = this.buttonOk;
@@ -345,7 +358,7 @@
 		#endregion
 
 		private Aga.Controls.Tree.TreeViewAdv folderView;
-		private System.Windows.Forms.ListView templateView;
+		private DualityEditor.Controls.ExplorerListView templateView;
 		private System.Windows.Forms.ColumnHeader columnName;
 		private System.Windows.Forms.ColumnHeader columnDesc;
 		private System.Windows.Forms.SplitContainer splitFolderTemplate;
@@ -365,5 +378,6 @@
 		private Aga.Controls.Tree.NodeControls.NodeTextBox folderViewControlName;
 		private System.Windows.Forms.PictureBox pictureBoxLogo;
 		private System.Windows.Forms.Label labelHeader;
+		private System.Windows.Forms.ImageList imageListTemplateView;
 	}
 }

@@ -363,69 +363,6 @@ namespace ResourceHacker
 			foreach (DataTreeNode dataNode in this.rootData)
 				action(dataNode.Data);
 		}
-		protected void FilePerformAction(string filePath, Action<DataNode> action, bool updateContent = true)
-		{
-			List<DataNode> data = new List<DataNode>();
-
-			// Load data
-			using (FileStream fileStream = File.OpenRead(filePath))
-			{
-				using (var formatter = Formatter.CreateMeta(fileStream))
-				{
-					DataNode dataNode;
-					try
-					{
-						while ((dataNode = formatter.ReadObject() as DataNode) != null)
-							data.Add(dataNode);
-					}
-					catch (EndOfStreamException) {}
-					catch (Exception e)
-					{
-						Log.Editor.WriteError("Can't perform batch action on {0} because an error occured in the process: \n{1}",
-							filePath,
-							Log.Exception(e));
-						return;
-					}
-				}
-			}
-
-			// Process data
-			foreach (DataNode dataNode in data)
-				action(dataNode);
-
-			// Save data
-			using (FileStream fileStream = File.Open(filePath, FileMode.Create))
-			{
-				using (var formatter = Formatter.CreateMeta(fileStream))
-				{
-					foreach (DataNode dataNode in data)
-						formatter.WriteObject(dataNode);
-				}
-			}
-
-			// Assure reloading the modified resource
-			if (updateContent && PathHelper.IsPathLocatedIn(filePath, "."))
-			{
-				string dataPath = PathHelper.MakeFilePathRelative(filePath, ".");
-				ContentProvider.UnregisterContent(dataPath);
-			}
-		}
-		protected IEnumerable<string> EnumerateBatchActionFiles(string folderPath)
-		{
-			string[] files = Directory.GetFiles(folderPath);
-			foreach (string file in files)
-			{
-				if (!Resource.IsResourceFile(file)) continue;
-				yield return file;
-			}
-
-			string[] dirs = Directory.GetDirectories(folderPath);
-			foreach (string dir in dirs)
-			{
-				foreach (string s in this.EnumerateBatchActionFiles(dir))
-					yield return s;
-			}
-		}
 
 		private void actionOpen_Click(object sender, EventArgs e)
 		{
@@ -548,7 +485,7 @@ namespace ResourceHacker
 			BatchActionTaskData data = state.Data as BatchActionTaskData;
 
 			// Retrieve files to perform action on
-			string[] files = this.EnumerateBatchActionFiles(data.FolderPath).ToArray();
+			List<string> files = Resource.GetResourceFiles(data.FolderPath);
 			state.Progress += 0.05f; yield return null;
 
 			// Perform action on files
@@ -556,9 +493,9 @@ namespace ResourceHacker
 			{
 				state.StateDesc = file; yield return null;
 
-				this.FilePerformAction(file, data.Action, false);
+				MetaFormatHelper.FilePerformAction(file, data.Action, false);
 
-				state.Progress += 0.9f / files.Length; yield return null;
+				state.Progress += 0.9f / files.Count; yield return null;
 			}
 
 			// Assure reloading the modified resources

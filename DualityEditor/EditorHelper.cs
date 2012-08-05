@@ -15,22 +15,29 @@ namespace DualityEditor
 	{
 		public const string DataDirectory				= @"Data";
 		public const string SourceDirectory				= @"Source";
-		public const string SourceMediaDirectory		= @"Source\Media";
-		public const string SourceCodeDirectory			= @"Source\Code";
-		public const string SourceCodeSolutionFile				= @"Source\Code\ProjectPlugins.sln";
-		public const string SourceCodeProjectCorePluginFile		= @"Source\Code\CorePlugin\CorePlugin.csproj";
-		public const string SourceCodeProjectEditorPluginFile	= @"Source\Code\EditorPlugin\EditorPlugin.csproj";
-		public const string SourceCodeGameResFile			= @"Source\Code\CorePlugin\Properties\GameRes.cs";
-		public const string SourceCodeCorePluginFile		= @"Source\Code\CorePlugin\CorePlugin.cs";
-		public const string SourceCodeComponentExampleFile	= @"Source\Code\CorePlugin\YourCustomComponentType.cs";
-		public const string SourceCodeEditorPluginFile		= @"Source\Code\EditorPlugin\EditorPlugin.cs";
+		public const string SourceMediaDirectory		= SourceDirectory + @"\Media";
+		public const string SourceCodeDirectory			= SourceDirectory + @"\Code";
+		public const string SourceCodeProjectCorePluginDir		= SourceCodeDirectory + @"\CorePlugin";
+		public const string SourceCodeProjectEditorPluginDir	= SourceCodeDirectory + @"\EditorPlugin";
+		public const string SourceCodeSolutionFile				= SourceCodeDirectory + @"\ProjectPlugins.sln";
+		public const string SourceCodeProjectCorePluginFile		= SourceCodeProjectCorePluginDir + @"\CorePlugin.csproj";
+		public const string SourceCodeProjectEditorPluginFile	= SourceCodeProjectEditorPluginDir + @"\EditorPlugin.csproj";
+		public const string SourceCodeGameResFile			= SourceCodeProjectCorePluginDir + @"\Properties\GameRes.cs";
+		public const string SourceCodeCorePluginFile		= SourceCodeProjectCorePluginDir + @"\CorePlugin.cs";
+		public const string SourceCodeComponentExampleFile	= SourceCodeProjectCorePluginDir + @"\YourCustomComponentType.cs";
+		public const string SourceCodeEditorPluginFile		= SourceCodeProjectEditorPluginDir + @"\EditorPlugin.cs";
 
 		public static readonly string GlobalUserDirectory = Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Duality"));
 		public static readonly string GlobalProjectTemplateDirectory = Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Duality"), "ProjectTemplates");
 
 		public static string CurrentProjectName
 		{
-			get { return Path.GetFileName(Path.GetDirectoryName(Path.GetFullPath(EditorHelper.DataDirectory))); }
+			get
+			{
+				string dataFullPath = Path.GetFullPath(EditorHelper.DataDirectory).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+				string dataDir = Path.GetDirectoryName(dataFullPath);
+				return Path.GetFileName(dataDir);
+			}
 		}
 
 		public static bool CopyDirectory(string sourcePath, string targetPath)
@@ -146,6 +153,7 @@ namespace DualityEditor
 		private static string GenerateGameResSrcFile_ScanDir(string dirPath, int indent, out string className)
 		{
 			if (!PathHelper.IsPathVisible(dirPath)) { className = null; return ""; }
+			dirPath = dirPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 
 			StringBuilder dirContent = new StringBuilder();
 			string indentStr = new string('\t', indent);
