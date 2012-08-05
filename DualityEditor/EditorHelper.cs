@@ -3,17 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Xml;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using System.Drawing;
 using Microsoft.Win32;
+using Microsoft.Build.Execution;
+
+using Ionic.Zip;
 
 using Duality;
+using Duality.Serialization.MetaFormat;
 
 namespace DualityEditor
 {
 	public static class EditorHelper
 	{
 		public const string DataDirectory				= @"Data";
+		public const string PluginDirectory				= @"Plugins";
 		public const string SourceDirectory				= @"Source";
 		public const string SourceMediaDirectory		= SourceDirectory + @"\Media";
 		public const string SourceCodeDirectory			= SourceDirectory + @"\Code";
@@ -40,16 +47,24 @@ namespace DualityEditor
 			}
 		}
 
-		public static bool CopyDirectory(string sourcePath, string targetPath)
+		public static bool CopyDirectory(string sourcePath, string targetPath, bool overwrite = false, Predicate<string> filter = null)
 		{
 			if (!Directory.Exists(sourcePath)) return false;
-			if (Directory.Exists(targetPath)) return false;
+			if (!overwrite && Directory.Exists(targetPath)) return false;
 
-			Directory.CreateDirectory(targetPath);
+			if (!Directory.Exists(targetPath)) 
+				Directory.CreateDirectory(targetPath);
+
 			foreach (string file in Directory.GetFiles(sourcePath))
-				File.Copy(file, Path.Combine(targetPath, Path.GetFileName(file)));
+			{
+				if (filter != null && !filter(file)) continue;
+				File.Copy(file, Path.Combine(targetPath, Path.GetFileName(file)), overwrite);
+			}
 			foreach (string subDir in Directory.GetDirectories(sourcePath))
-				CopyDirectory(subDir, Path.Combine(targetPath, Path.GetFileName(subDir)));
+			{
+				if (filter != null && !filter(subDir)) continue;
+				CopyDirectory(subDir, Path.Combine(targetPath, Path.GetFileName(subDir)), overwrite);
+			}
 
 			return true;
 		}
@@ -257,6 +272,94 @@ namespace DualityEditor
 		}
 
 
+		public static string CreateNewProject(string projName, string projFolder, ProjectTemplateInfo template)
+		{
+			// Create project folder
+			projFolder = Path.Combine(projFolder, projName);
+			if (!Directory.Exists(projFolder)) Directory.CreateDirectory(projFolder);
+
+			// Extract template
+			if (template.SpecialTag == ProjectTemplateInfo.SpecialInfo.None)
+			{
+				template.ExtractTo(projFolder);
+
+				// Update main directory
+				foreach (string srcFile in Directory.GetFiles(Environment.CurrentDirectory, "*", SearchOption.TopDirectoryOnly))
+				{
+					if (Path.GetFileName(srcFile) == "appdata.dat") continue;
+					if (Path.GetFileName(srcFile) == "defaultuserdata.dat") continue;
+					string dstFile = Path.Combine(projFolder, Path.GetFileName(srcFile));
+					File.Copy(srcFile, dstFile, true);
+				}
+
+				// Update plugin directory
+				foreach (string dstFile in Directory.GetFiles(Path.Combine(projFolder, EditorHelper.PluginDirectory), "*", SearchOption.AllDirectories))
+				{
+					string srcFile = Path.Combine(EditorHelper.PluginDirectory, Path.GetFileName(dstFile));
+					if (File.Exists(srcFile)) File.Copy(srcFile, dstFile, true);
+				}
+			}
+			else if (template.SpecialTag == ProjectTemplateInfo.SpecialInfo.Current)
+			{
+				MainForm.Instance.SaveAllProjectData();
+				CopyDirectory(Environment.CurrentDirectory, projFolder, true);
+			}
+			else
+			{
+				CopyDirectory(Environment.CurrentDirectory, projFolder, true, delegate(string path)
+				{
+					bool isDir = Directory.Exists(path);
+					string fullPath = Path.GetFullPath(path);
+					if (isDir)
+					{
+						return 
+							fullPath != Path.GetFullPath(EditorHelper.DataDirectory) &&
+							fullPath != Path.GetFullPath(EditorHelper.SourceDirectory);
+					}
+					else
+					{
+						string fileName = Path.GetFileName(fullPath);
+						return fileName != "appdata.dat" && fileName != "defaultuserdata.dat";
+					}
+				});
+			}
+
+			// Adjust current directory for further operations
+			string oldPath = Environment.CurrentDirectory;
+			Environment.CurrentDirectory = projFolder;
+
+			// Initialize content
+			if (Directory.Exists(EditorHelper.DataDirectory))
+			{
+				// Read content source code data (needed to rename classes / namespaces)
+				string oldRootNamespaceNameCore;
+				string newRootNamespaceNameCore;
+				MainForm.Instance.ReadPluginSourceCodeContentData(out oldRootNamespaceNameCore, out newRootNamespaceNameCore);
+
+				// Rename classes / namespaces
+				List<string> resFiles = Resource.GetResourceFiles(EditorHelper.DataDirectory);
+				foreach (string resFile in resFiles)
+				{
+					MetaFormatHelper.FilePerformAction(resFile, d => d.ReplaceTypeStrings(oldRootNamespaceNameCore, newRootNamespaceNameCore), false);
+				}
+			}
+
+			// Initialize source code
+			MainForm.Instance.InitPluginSourceCode(); // Force re-init to update namespaces, etc.
+			MainForm.Instance.UpdatePluginSourceCode();
+
+			// Compile plugins
+			var buildProperties = new Dictionary<string, string>();
+			buildProperties["Configuration"] = "Release";
+			var buildRequest = new BuildRequestData(EditorHelper.SourceCodeSolutionFile, buildProperties, null, new string[] { "Build" }, null);
+			var buildParameters = new BuildParameters();
+			var buildResult = BuildManager.DefaultBuildManager.Build(buildParameters, buildRequest);
+
+			Environment.CurrentDirectory = oldPath;
+			return Path.Combine(projFolder, "DualityEditor.exe");
+		}
+
+
 
 		private const int GW_HWNDNEXT = 2; // The next window is below the specified window
 		private const int GW_HWNDPREV = 3; // The previous window is above
@@ -293,6 +396,126 @@ namespace DualityEditor
 			}
 
 			return result;
+		}
+	}
+
+	public class ProjectTemplateInfo
+	{
+		public enum SpecialInfo
+		{
+			None,
+			Empty,
+			Current
+		}
+
+		private string	file;
+		private	Bitmap	icon;
+		private	string	name;
+		private	string	desc;
+		private	SpecialInfo	specialTag;
+
+		public string FilePath
+		{
+			get { return this.file; }
+			set { this.file = value; }
+		}
+		public Bitmap Icon
+		{
+			get { return this.icon; }
+			set { this.icon = value; }
+		}
+		public string Name
+		{
+			get { return this.name; }
+			set { this.name = value; }
+		}
+		public string Description
+		{
+			get { return this.desc; }
+			set { this.desc = value; }
+		}
+		public SpecialInfo SpecialTag
+		{
+			get { return this.specialTag; }
+			set { this.specialTag = value; }
+		}
+
+		public ProjectTemplateInfo() {}
+		public ProjectTemplateInfo(string templatePath)
+		{
+			if (string.IsNullOrEmpty(templatePath)) throw new ArgumentNullException("templatePath");
+			if (Path.GetExtension(templatePath) != ".zip") throw new ArgumentException("The specified template path is expected to be a .zip file.", "templatePath");
+			if (!File.Exists(templatePath)) throw new FileNotFoundException("Template file does not exist", templatePath);
+
+			using (FileStream str = File.OpenRead(templatePath)) { this.InitFrom(str); }
+			this.file = templatePath;
+		}
+		public ProjectTemplateInfo(Stream templateStream)
+		{
+			this.InitFrom(templateStream);
+		}
+
+		public void ExtractTo(string dir)
+		{
+			if (string.IsNullOrWhiteSpace(this.file) || !File.Exists(this.file)) 
+				throw new InvalidOperationException("Can't extract Project Template, because the template file is missing");
+
+			using (ZipFile templateZip = ZipFile.Read(this.file))
+			{
+				templateZip.ExtractAll(dir, ExtractExistingFileAction.OverwriteSilently);
+			}
+			if (File.Exists(Path.Combine(dir, "TemplateIcon.png"))) File.Delete(Path.Combine(dir, "TemplateIcon.png"));
+			if (File.Exists(Path.Combine(dir, "TemplateInfo.xml"))) File.Delete(Path.Combine(dir, "TemplateInfo.xml"));
+		}
+		public void InitFrom(Stream templateStream)
+		{
+			if (templateStream == null) throw new ArgumentNullException("templateStream");
+
+			this.file = null;
+			this.name = "Unknown";
+			this.specialTag = SpecialInfo.None;
+
+			using (ZipFile templateZip = ZipFile.Read(templateStream))
+			{
+				ZipEntry entryInfo = templateZip.FirstOrDefault(z => !z.IsDirectory && z.FileName == "TemplateInfo.xml");
+				ZipEntry entryIcon = templateZip.FirstOrDefault(z => !z.IsDirectory && z.FileName == "TemplateIcon.png");
+
+				if (entryIcon != null)
+				{
+					using (MemoryStream str = new MemoryStream())
+					{
+						entryIcon.Extract(str);
+						str.Seek(0, SeekOrigin.Begin);
+						this.icon = new Bitmap(str);
+					}
+				}
+
+				if (entryInfo != null)
+				{
+					string xmlSource = null;
+					using (MemoryStream str = new MemoryStream())
+					{
+						entryInfo.Extract(str);
+						str.Seek(0, SeekOrigin.Begin);
+							
+						using (StreamReader reader = new StreamReader(str))
+						{
+							xmlSource = reader.ReadToEnd();
+						}
+					}
+
+					XmlDocument xmlDoc = new XmlDocument();
+					xmlDoc.LoadXml(xmlSource);
+
+					XmlElement elemName = xmlDoc.DocumentElement["name"];
+					if (elemName != null) this.name = elemName.InnerText;
+
+					XmlElement elemDesc = xmlDoc.DocumentElement["description"];
+					if (elemDesc != null) this.desc = elemDesc.InnerText;
+				}
+			}
+
+			return;
 		}
 	}
 }

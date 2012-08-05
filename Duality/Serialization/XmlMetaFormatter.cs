@@ -324,7 +324,8 @@ namespace Duality.Serialization
 
 			// Prepare object reference
 			this.idManager.Inject(result, objId);
-
+			
+			// Read custom object data
 			if (custom)
 			{
 				CustomSerialIO customIO = new CustomSerialIO();
@@ -337,7 +338,8 @@ namespace Duality.Serialization
 					value.Parent = result;
 				}
 			}
-			else
+			// Red non-custom object data
+			else if (!this.reader.IsEmptyElement)
 			{
 				// Read fields
 				bool scopeChanged;

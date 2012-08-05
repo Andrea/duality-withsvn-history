@@ -367,15 +367,12 @@ namespace Duality
 		{
 			if (string.IsNullOrEmpty(folderPath)) folderPath = "Data";
 			List<string> result = new List<string>();
-			GetResourceFiles(ref result, folderPath);
+			foreach (string file in Directory.GetFiles(folderPath, "*", SearchOption.AllDirectories))
+			{
+				if (Resource.IsResourceFile(file))
+					result.Add(file);
+			}
 			return result;
-		}
-		private static void GetResourceFiles(ref List<string> result, string folderPath)
-		{
-			foreach (string file in Directory.GetFiles(folderPath))
-				if (!Resource.IsResourceFile(file)) result.Add(file);
-			foreach (string dir in Directory.GetDirectories(folderPath))
-				GetResourceFiles(ref result, folderPath);
 		}
 		/// <summary>
 		/// Returns the Resource file extension for a specific Resource Type.

@@ -403,8 +403,8 @@ namespace Duality
 				Log.Core.Write("DualityApp terminated");
 			}
 
-			logfile.Close();
-			logfileRtf.save(logfilePath + ".rtf");
+			if (logfile != null) logfile.Close();
+			if (logfileRtf != null) logfileRtf.save(logfilePath + ".rtf");
 
 			initialized = false;
 			execContext = ExecutionContext.Terminated;
@@ -972,7 +972,7 @@ namespace Duality
 		private	string	userName		= "Unknown";
 		private	int		gfxWidth		= 800;
 		private	int		gfxHeight		= 600;
-		private	bool	gfxFullScreen	= true;
+		private	bool	gfxFullScreen	= false;
 		private	float	sfxEffectVol	= 1.0f;
 		private	float	sfxSpeechVol	= 1.0f;
 		private	float	sfxMusicVol		= 1.0f;

@@ -192,5 +192,19 @@ namespace Duality
 			}
 			else return false;
 		}
+		/// <summary>
+		/// Returns whether the specified path is considered a valid file or folder path.
+		/// Does not check whether the file or folder actually exists, only if the path can
+		/// be validly used to address one.
+		/// </summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
+		[System.Diagnostics.DebuggerStepThrough]
+		public static bool IsPathValid(string path)
+		{
+			bool valid = false;
+			try { new FileInfo(path); valid = true; } catch (Exception) {}
+			return valid;
+		}
 	}
 }

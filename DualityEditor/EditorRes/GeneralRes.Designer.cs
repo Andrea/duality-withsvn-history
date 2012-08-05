@@ -170,6 +170,20 @@ namespace DualityEditor.EditorRes {
             }
         }
         
+        public static System.Drawing.Bitmap ImageTemplateCurrent {
+            get {
+                object obj = ResourceManager.GetObject("ImageTemplateCurrent", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap ImageTemplateEmpty {
+            get {
+                object obj = ResourceManager.GetObject("ImageTemplateEmpty", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die English ähnelt.
         /// </summary>
@@ -396,11 +410,56 @@ namespace DualityEditor.EditorRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Install new Template? ähnelt.
+        /// </summary>
+        public static string Msg_InstallNewTemplate_Caption {
+            get {
+                return ResourceManager.GetString("Msg_InstallNewTemplate_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die The Template you selected is not located inside your global Template directory. Do you wish to send it there for future usage? ähnelt.
+        /// </summary>
+        public static string Msg_InstallNewTemplate_Desc {
+            get {
+                return ResourceManager.GetString("Msg_InstallNewTemplate_Desc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Project Templates (*.zip)|*.zip ähnelt.
+        /// </summary>
+        public static string OpenTemplateDialog_Filters {
+            get {
+                return ResourceManager.GetString("OpenTemplateDialog_Filters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Select Project Template.. ähnelt.
+        /// </summary>
+        public static string OpenTemplateDialog_Title {
+            get {
+                return ResourceManager.GetString("OpenTemplateDialog_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die {0} objects ähnelt.
         /// </summary>
         public static string PropertyGrid_N_Objects {
             get {
                 return ResourceManager.GetString("PropertyGrid_N_Objects", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Select the folder in which a new project will be created below. ähnelt.
+        /// </summary>
+        public static string SelectNewProjectFolderDialog_Desc {
+            get {
+                return ResourceManager.GetString("SelectNewProjectFolderDialog_Desc", resourceCulture);
             }
         }
         
@@ -428,6 +487,42 @@ namespace DualityEditor.EditorRes {
         public static string TaskChangeDataFormat_Desc {
             get {
                 return ResourceManager.GetString("TaskChangeDataFormat_Desc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Creates a new project by cloning the current one. ähnelt.
+        /// </summary>
+        public static string Template_Current_Desc {
+            get {
+                return ResourceManager.GetString("Template_Current_Desc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Current Project ähnelt.
+        /// </summary>
+        public static string Template_Current_Name {
+            get {
+                return ResourceManager.GetString("Template_Current_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die A project without any content. ähnelt.
+        /// </summary>
+        public static string Template_Empty_Desc {
+            get {
+                return ResourceManager.GetString("Template_Empty_Desc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Empty Project ähnelt.
+        /// </summary>
+        public static string Template_Empty_Name {
+            get {
+                return ResourceManager.GetString("Template_Empty_Name", resourceCulture);
             }
         }
     }

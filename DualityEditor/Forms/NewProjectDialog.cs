@@ -13,8 +13,6 @@ using Aga.Controls;
 using Aga.Controls.Tree;
 using Aga.Controls.Tree.NodeControls;
 
-using Ionic.Zip;
-
 using Duality;
 
 using DualityEditor.Controls.TreeModels.FileSystem;
@@ -23,102 +21,17 @@ namespace DualityEditor.Forms
 {
 	public partial class NewProjectDialog : Form
 	{
-		private class TemplateEntry
-		{
-			private string	file;
-			private	Bitmap	icon;
-			private	string	name;
-			private	string	desc;
-
-			public string FilePath
-			{
-				get { return this.file; }
-				set { this.file = value; }
-			}
-			public Bitmap Icon
-			{
-				get { return this.icon; }
-				set { this.icon = value; }
-			}
-			public string Name
-			{
-				get { return this.name; }
-				set { this.name = value; }
-			}
-			public string Description
-			{
-				get { return this.desc; }
-				set { this.desc = value; }
-			}
-
-			public TemplateEntry() {}
-			public TemplateEntry(string templatePath)
-			{
-				if (string.IsNullOrEmpty(templatePath)) throw new ArgumentNullException("templatePath");
-				if (Path.GetExtension(templatePath) != ".zip") throw new ArgumentException("The specified template path is expected to be a .zip file.", "templatePath");
-				if (!File.Exists(templatePath)) throw new FileNotFoundException("Template file does not exist", templatePath);
-
-				using (FileStream str = File.OpenRead(templatePath)) { this.InitFrom(str); }
-				this.file = templatePath;
-			}
-			public TemplateEntry(Stream templateStream)
-			{
-				this.InitFrom(templateStream);
-			}
-
-			public void InitFrom(Stream templateStream)
-			{
-				if (templateStream == null) throw new ArgumentNullException("templateStream");
-
-				this.file = null;
-				this.name = "Unknown";
-
-				using (ZipFile templateZip = ZipFile.Read(templateStream))
-				{
-					ZipEntry entryInfo = templateZip.FirstOrDefault(z => !z.IsDirectory && z.FileName == "TemplateInfo.xml");
-					ZipEntry entryIcon = templateZip.FirstOrDefault(z => !z.IsDirectory && z.FileName == "TemplateIcon.png");
-
-					if (entryIcon != null)
-					{
-						using (MemoryStream str = new MemoryStream())
-						{
-							entryIcon.Extract(str);
-							str.Seek(0, SeekOrigin.Begin);
-							this.icon = new Bitmap(str);
-						}
-					}
-
-					if (entryInfo != null)
-					{
-						string xmlSource = null;
-						using (MemoryStream str = new MemoryStream())
-						{
-							entryInfo.Extract(str);
-							str.Seek(0, SeekOrigin.Begin);
-							
-							using (StreamReader reader = new StreamReader(str))
-							{
-								xmlSource = reader.ReadToEnd();
-							}
-						}
-
-						XmlDocument xmlDoc = new XmlDocument();
-						xmlDoc.LoadXml(xmlSource);
-
-						XmlElement elemName = xmlDoc.DocumentElement["name"];
-						if (elemName != null) this.name = elemName.InnerText;
-
-						XmlElement elemDesc = xmlDoc.DocumentElement["description"];
-						if (elemDesc != null) this.desc = elemDesc.InnerText;
-					}
-				}
-
-				return;
-			}
-		}
-
 		private	FolderBrowserTreeModel	folderModel				= null;
 		private	string					selectedTemplatePath	= null;
+		private	ProjectTemplateInfo		selectedTemplate		= null;
+		private	ProjectTemplateInfo		templateEmpty			= null;
+		private	ProjectTemplateInfo		templateCurrent			= null;
+		private	string					resultEditorBinary		= null;
+
+		public string ResultEditorBinary
+		{
+			get { return this.resultEditorBinary; }
+		}
 
 		public NewProjectDialog()
 		{
@@ -128,10 +41,22 @@ namespace DualityEditor.Forms
 			this.folderModel = new FolderBrowserTreeModel(EditorHelper.GlobalProjectTemplateDirectory);
 			this.folderModel.Filter = s => Directory.Exists(s); // Only show directories
 			this.folderView.Model = this.folderModel;
-
 			this.folderViewControlName.DrawText += this.folderViewControlName_DrawText;
 
 			this.selectedTemplatePath = this.folderModel.BasePath;
+
+			// Create hardcoded templates
+			this.templateEmpty = new ProjectTemplateInfo();
+			this.templateEmpty.Icon = EditorRes.GeneralRes.ImageTemplateEmpty;
+			this.templateEmpty.Name = EditorRes.GeneralRes.Template_Empty_Name;
+			this.templateEmpty.Description = EditorRes.GeneralRes.Template_Empty_Desc;
+			this.templateEmpty.SpecialTag = ProjectTemplateInfo.SpecialInfo.Empty;
+
+			this.templateCurrent = new ProjectTemplateInfo();
+			this.templateCurrent.Icon = EditorRes.GeneralRes.ImageTemplateCurrent;
+			this.templateCurrent.Name = EditorRes.GeneralRes.Template_Current_Name;
+			this.templateCurrent.Description = EditorRes.GeneralRes.Template_Current_Desc;
+			this.templateCurrent.SpecialTag = ProjectTemplateInfo.SpecialInfo.Current;
 
 			// Hilde folder selector, if empty
 			if (Directory.GetDirectories(this.folderModel.BasePath).Length == 0)
@@ -139,6 +64,8 @@ namespace DualityEditor.Forms
 				this.folderView.Enabled = false;
 				this.splitFolderTemplate.Panel1Collapsed = true;
 			}
+
+			this.UpdateTemplateList();
 		}
 
 		protected void UpdateTemplateList()
@@ -147,13 +74,14 @@ namespace DualityEditor.Forms
 			this.templateView.Items.Clear();
 			this.imageListTemplateView.Images.Clear();
 
+			// Scan for template files
 			string[] templateFiles = Directory.GetFiles(this.selectedTemplatePath, "*.zip", SearchOption.TopDirectoryOnly);
-			List<TemplateEntry> templateEntries = new List<TemplateEntry>();
+			List<ProjectTemplateInfo> templateEntries = new List<ProjectTemplateInfo>();
 			foreach (string templateFile in templateFiles)
 			{
 				try
 				{
-					TemplateEntry entry = new TemplateEntry(templateFile);
+					ProjectTemplateInfo entry = new ProjectTemplateInfo(templateFile);
 					templateEntries.Add(entry);
 				}
 				catch (Exception e)
@@ -162,20 +90,48 @@ namespace DualityEditor.Forms
 				}
 			}
 
-			foreach (TemplateEntry entry in templateEntries)
+			// Add hardcoded templates
+			if (this.selectedTemplatePath == this.folderModel.BasePath)
+			{
+				templateEntries.Insert(0, this.templateCurrent);
+				templateEntries.Insert(0, this.templateEmpty);
+			}
+
+			// Add template entries to view
+			foreach (ProjectTemplateInfo entry in templateEntries)
 			{
 				Bitmap icon = entry.Icon;
-				if (icon.Size != this.imageListTemplateView.ImageSize)
-					icon = icon.Rescale(this.imageListTemplateView.ImageSize.Width, this.imageListTemplateView.ImageSize.Height);
-				this.imageListTemplateView.Images.Add(entry.FilePath, icon);
+				if (icon != null)
+				{
+					if (icon.Size != this.imageListTemplateView.ImageSize)
+						icon = icon.Rescale(this.imageListTemplateView.ImageSize.Width, this.imageListTemplateView.ImageSize.Height);
+					this.imageListTemplateView.Images.Add(entry.FilePath ?? entry.Name, icon);
+				}
 
-				ListViewItem item = new ListViewItem(new string[] { entry.Name, entry.Description }, entry.FilePath);
+				ListViewItem item = new ListViewItem(new string[] { entry.Name, entry.Description }, entry.FilePath ?? entry.Name);
 				item.Tag = entry;
 				item.ToolTipText = entry.Description;
 				this.templateView.Items.Add(item);
 			}
 
+			this.templateView.Sort();
 			this.templateView.EndUpdate();
+		}
+		protected void UpdateInputValid()
+		{
+			bool validInput = true;
+
+			validInput = validInput && !string.IsNullOrWhiteSpace(this.textBoxName.Text) && PathHelper.IsPathValid(this.textBoxFolder.Text);
+			validInput = validInput && this.selectedTemplate != null;
+			validInput = validInput && !string.IsNullOrWhiteSpace(this.textBoxName.Text) && PathHelper.IsPathValid(this.textBoxName.Text);
+
+			if (validInput)
+			{
+				string targetDir = Path.Combine(this.textBoxFolder.Text, this.textBoxName.Text);
+				validInput = validInput && !Directory.Exists(targetDir) && !File.Exists(targetDir);
+			}
+
+			this.buttonOk.Enabled = validInput;
 		}
 
 		private void folderViewControlName_DrawText(object sender, DrawEventArgs e)
@@ -189,10 +145,13 @@ namespace DualityEditor.Forms
 		}
 		private void templateView_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			TemplateEntry entry = this.templateView.SelectedItems.Count > 0 ? this.templateView.SelectedItems[0].Tag as TemplateEntry : null;
+			ProjectTemplateInfo entry = this.templateView.SelectedItems.Count > 0 ? this.templateView.SelectedItems[0].Tag as ProjectTemplateInfo : null;
 			if (entry == null) return;
 			
-			this.textBoxTemplate.Text = entry.FilePath;
+			if (entry.FilePath == null)
+				this.textBoxTemplate.Text = entry.Name;
+			else
+				this.textBoxTemplate.Text = entry.FilePath;
 		}
 		private void buttonCancel_Click(object sender, EventArgs e)
 		{
@@ -201,35 +160,84 @@ namespace DualityEditor.Forms
 		}
 		private void buttonOk_Click(object sender, EventArgs e)
 		{
-			this.DialogResult = DialogResult.OK;
-
-			// Do stuff
-
 			// Ask if the selected template should be copied to the template directory, if not located there (auto-install)
+			if (this.selectedTemplate.SpecialTag == ProjectTemplateInfo.SpecialInfo.None && 
+				!PathHelper.IsPathLocatedIn(this.selectedTemplate.FilePath, EditorHelper.GlobalProjectTemplateDirectory))
+			{
+				DialogResult result = MessageBox.Show(
+					EditorRes.GeneralRes.Msg_InstallNewTemplate_Desc,
+					EditorRes.GeneralRes.Msg_InstallNewTemplate_Caption,
+					MessageBoxButtons.YesNoCancel,
+					MessageBoxIcon.Question);
+				if (result == System.Windows.Forms.DialogResult.Cancel) return;
+				if (result == System.Windows.Forms.DialogResult.Yes)
+				{
+					File.Copy(
+						this.selectedTemplate.FilePath, 
+						Path.Combine(EditorHelper.GlobalProjectTemplateDirectory, Path.GetFileName(this.selectedTemplate.FilePath)));
+				}
+			}
 
+			// Create a new project
+			this.resultEditorBinary = EditorHelper.CreateNewProject(this.textBoxName.Text, this.textBoxFolder.Text, this.selectedTemplate);
+
+			// Close successfully
+			this.DialogResult = this.resultEditorBinary != null ? DialogResult.OK : DialogResult.Cancel;
 			this.Close();
 		}
 
 		private void buttonBrowseTemplate_Click(object sender, EventArgs e)
 		{
+			OpenFileDialog fileDialog = new OpenFileDialog();
+			fileDialog.CheckFileExists = true;
+			fileDialog.CheckPathExists = true;
+			fileDialog.Multiselect = false;
+			fileDialog.Title = EditorRes.GeneralRes.OpenTemplateDialog_Title;
+			fileDialog.RestoreDirectory = true;
+			fileDialog.InitialDirectory = Environment.CurrentDirectory;
+			fileDialog.AddExtension = true;
+			fileDialog.Filter = EditorRes.GeneralRes.OpenTemplateDialog_Filters;
 
+			DialogResult result = fileDialog.ShowDialog();
+			if (result == DialogResult.OK)
+			{
+				this.textBoxTemplate.Text = Path.GetFullPath(fileDialog.FileName);
+			}
 		}
 		private void buttonBrowseFolder_Click(object sender, EventArgs e)
 		{
-
+			FolderBrowserDialog folderDialog = new FolderBrowserDialog();
+			folderDialog.ShowNewFolderButton = true;
+			folderDialog.SelectedPath = Environment.CurrentDirectory;
+			folderDialog.Description =EditorRes.GeneralRes.SelectNewProjectFolderDialog_Desc;
+			
+			DialogResult result = folderDialog.ShowDialog();
+			if (result == DialogResult.OK)
+			{
+				this.textBoxFolder.Text = Path.GetFullPath(folderDialog.SelectedPath);
+			}
 		}
 
 		private void textBoxTemplate_TextChanged(object sender, EventArgs e)
 		{
-
+			if (this.textBoxTemplate.Text == this.templateEmpty.Name)
+				this.selectedTemplate = this.templateEmpty;
+			else if (this.textBoxTemplate.Text == this.templateCurrent.Name)
+				this.selectedTemplate = this.templateCurrent;
+			else
+			{
+				try { this.selectedTemplate = new ProjectTemplateInfo(this.textBoxTemplate.Text); } 
+				catch (Exception) { this.selectedTemplate = null; }
+			}
+			this.UpdateInputValid();
 		}
 		private void textBoxName_TextChanged(object sender, EventArgs e)
 		{
-
+			this.UpdateInputValid();
 		}
 		private void textBoxFolder_TextChanged(object sender, EventArgs e)
 		{
-
+			this.UpdateInputValid();
 		}
 
 		private void folderView_SelectionChanged(object sender, EventArgs e)

@@ -459,9 +459,34 @@
               Sucht eine lokalisierte Zeichenfolge, die Importing file &apos;{0}&apos; would overwrite an already imported file. Do you want to continue? ähnelt.
             </summary>
         </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.Msg_InstallNewTemplate_Caption">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Install new Template? ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.Msg_InstallNewTemplate_Desc">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die The Template you selected is not located inside your global Template directory. Do you wish to send it there for future usage? ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.OpenTemplateDialog_Filters">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Project Templates (*.zip)|*.zip ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.OpenTemplateDialog_Title">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Select Project Template.. ähnelt.
+            </summary>
+        </member>
         <member name="P:DualityEditor.EditorRes.GeneralRes.PropertyGrid_N_Objects">
             <summary>
               Sucht eine lokalisierte Zeichenfolge, die {0} objects ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.SelectNewProjectFolderDialog_Desc">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Select the folder in which a new project will be created below. ähnelt.
             </summary>
         </member>
         <member name="P:DualityEditor.EditorRes.GeneralRes.TaskBarOverlay_ReloadCorePlugin_Desc">
@@ -477,6 +502,26 @@
         <member name="P:DualityEditor.EditorRes.GeneralRes.TaskChangeDataFormat_Desc">
             <summary>
               Sucht eine lokalisierte Zeichenfolge, die The project data format has been changed to {0}. Existing Resource files will be converted shortly. ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.Template_Current_Desc">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Creates a new project by cloning the current one. ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.Template_Current_Name">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Current Project ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.Template_Empty_Desc">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die A project without any content. ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.Template_Empty_Name">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Empty Project ähnelt.
             </summary>
         </member>
         <member name="F:DualityEditor.MainForm.components">

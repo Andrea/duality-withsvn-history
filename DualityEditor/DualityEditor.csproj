@@ -71,6 +71,7 @@
     <Reference Include="Ionic.Zip">
       <HintPath>.\Ionic.Zip.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Build" />
     <Reference Include="OpenTK, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Duality\OpenTK.dll</HintPath>
@@ -102,6 +103,9 @@
     </Compile>
     <Compile Include="Controls\ColorSlider.cs">
       <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\CueTextbox.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\EnumFlagCheckedListBox.cs">
       <SubType>Component</SubType>
@@ -274,6 +278,8 @@
     <Content Include="DualityIconB.ico" />
     <Content Include="DualityIconC.ico" />
     <Content Include="EditorRes\WorkingFolderIcon.ico" />
+    <None Include="Resources\template_empty.png" />
+    <None Include="Resources\template_current.png" />
     <None Include="Resources\DualityIcon48.png" />
     <None Include="Resources\DualityIcon256.png" />
     <None Include="Resources\application_create.png" />

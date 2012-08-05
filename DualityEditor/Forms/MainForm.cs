@@ -72,6 +72,7 @@ namespace DualityEditor
 		private	ObjectSelection	selectionCurrent	= ObjectSelection.Null;
 		private	ObjectSelection	selectionPrevious	= ObjectSelection.Null;
 		private	bool			selectionChanging	= false;
+		private	bool			nonUserClosing		= false;
 
 		private	Dictionary<string,ToolStripMenuItem>	menuRegistry	= new Dictionary<string,ToolStripMenuItem>();
 
@@ -316,6 +317,14 @@ namespace DualityEditor
 			return item;
 		}
 
+		public void CloseNonUser()
+		{
+			// Because FormClosingEventArgs.CloseReason is UserClosing on this.Close()
+			this.nonUserClosing = true;
+			this.Close();
+			this.nonUserClosing = false;
+		}
+
 		public void SandboxPlay()
 		{
 			if (this.sandboxState == SandboxState.Playing) return;
@@ -496,17 +505,10 @@ namespace DualityEditor
 				this.SaveAllProjectDataTriggered(this, EventArgs.Empty);
 		}
 
-		public void UpdateSourceCode()
+		public void UpdatePluginSourceCode()
 		{
-			// Initially generate source code
-			if (!File.Exists(EditorHelper.SourceCodeSolutionFile))
-			{
-				using (ZipFile gamePluginZip = ZipFile.Read(ReflectionHelper.GetEmbeddedResourceStream(typeof(MainForm).Assembly,  @"Resources\GamePluginTemplate.zip")))
-				{
-					gamePluginZip.ExtractAll(EditorHelper.SourceCodeDirectory, ExtractExistingFileAction.DoNotOverwrite);
-				}
-				this.InitSourceCode();
-			}
+			// Initially generate source code, if not existing yet
+			if (!File.Exists(EditorHelper.SourceCodeSolutionFile)) this.InitPluginSourceCode();
 			
 			// Replace exec path in user files, since VS doesn't support relative paths there..
 			{
@@ -540,8 +542,33 @@ namespace DualityEditor
 			// Keep auto-generated files up-to-date
 			File.WriteAllText(EditorHelper.SourceCodeGameResFile, EditorHelper.GenerateGameResSrcFile());
 		}
-		public void InitSourceCode()
+		public void ReadPluginSourceCodeContentData(out string rootNamespace, out string desiredRootNamespace)
 		{
+			rootNamespace = null;
+			desiredRootNamespace = EditorHelper.GenerateClassNameFromPath(EditorHelper.CurrentProjectName);
+
+			// Read root namespaces
+			if (File.Exists(EditorHelper.SourceCodeProjectCorePluginFile))
+			{
+				XmlDocument projXml = new XmlDocument();
+				projXml.Load(EditorHelper.SourceCodeProjectCorePluginFile);
+				foreach (XmlElement element in projXml.GetElementsByTagName("RootNamespace").OfType<XmlElement>())
+				{
+					if (rootNamespace == null) rootNamespace = element.InnerText;
+				}
+			}
+		}
+		public void InitPluginSourceCode()
+		{
+			// Create solution file if not existing yet
+			if (!File.Exists(EditorHelper.SourceCodeSolutionFile))
+			{
+				using (ZipFile gamePluginZip = ZipFile.Read(ReflectionHelper.GetEmbeddedResourceStream(typeof(MainForm).Assembly,  @"Resources\GamePluginTemplate.zip")))
+				{
+					gamePluginZip.ExtractAll(EditorHelper.SourceCodeDirectory, ExtractExistingFileAction.DoNotOverwrite);
+				}
+			}
+
 			// If Visual Studio is available, don't use the express version
 			if (File.Exists(EditorHelper.SourceCodeSolutionFile) && EditorHelper.IsJITDebuggerAvailable())
 			{
@@ -585,25 +612,33 @@ namespace DualityEditor
 			// Guess old plugin class names
 			string oldPluginNameCore = oldRootNamespaceCore + "CorePlugin";
 			string oldPluginNameEditor = oldRootNamespaceCore + "EditorPlugin";
+			string regExpr;
+			string regExprReplace;
 
 			// Replace namespace names: Core
-			string regExpr = @"^(\s*namespace\s*)(.*)(" + oldRootNamespaceCore + @")(.*)(\s*{)";
-			string regExprReplace = @"$1$2" + newRootNamespaceCore + @"$4$5";
-			foreach (string filePath in Directory.GetFiles(EditorHelper.SourceCodeProjectCorePluginDir, "*.cs", SearchOption.AllDirectories))
+			if (Directory.Exists(EditorHelper.SourceCodeProjectCorePluginDir))
 			{
-				string fileContent = File.ReadAllText(filePath);
-				fileContent = Regex.Replace(fileContent, regExpr, regExprReplace, RegexOptions.Multiline);
-				File.WriteAllText(filePath, fileContent, Encoding.UTF8);
+				regExpr = @"^(\s*namespace\s*)(.*)(" + oldRootNamespaceCore + @")(.*)(\s*{)";
+				regExprReplace = @"$1$2" + newRootNamespaceCore + @"$4$5";
+				foreach (string filePath in Directory.GetFiles(EditorHelper.SourceCodeProjectCorePluginDir, "*.cs", SearchOption.AllDirectories))
+				{
+					string fileContent = File.ReadAllText(filePath);
+					fileContent = Regex.Replace(fileContent, regExpr, regExprReplace, RegexOptions.Multiline);
+					File.WriteAllText(filePath, fileContent, Encoding.UTF8);
+				}
 			}
 
 			// Replace namespace names: Editor
-			regExpr = @"^(\s*namespace\s*)(.*)(" + oldRootNamespaceEditor + @")(.*)(\s*{)";
-			regExprReplace = @"$1$2" + newRootNamespaceEditor + @"$4$5";
-			foreach (string filePath in Directory.GetFiles(EditorHelper.SourceCodeProjectEditorPluginDir, "*.cs", SearchOption.AllDirectories))
+			if (Directory.Exists(EditorHelper.SourceCodeProjectEditorPluginDir))
 			{
-				string fileContent = File.ReadAllText(filePath);
-				fileContent = Regex.Replace(fileContent, regExpr, regExprReplace, RegexOptions.Multiline);
-				File.WriteAllText(filePath, fileContent, Encoding.UTF8);
+				regExpr = @"^(\s*namespace\s*)(.*)(" + oldRootNamespaceEditor + @")(.*)(\s*{)";
+				regExprReplace = @"$1$2" + newRootNamespaceEditor + @"$4$5";
+				foreach (string filePath in Directory.GetFiles(EditorHelper.SourceCodeProjectEditorPluginDir, "*.cs", SearchOption.AllDirectories))
+				{
+					string fileContent = File.ReadAllText(filePath);
+					fileContent = Regex.Replace(fileContent, regExpr, regExprReplace, RegexOptions.Multiline);
+					File.WriteAllText(filePath, fileContent, Encoding.UTF8);
+				}
 			}
 
 			// Replace class names: Core
@@ -611,6 +646,7 @@ namespace DualityEditor
 			{
 				string fileContent = File.ReadAllText(EditorHelper.SourceCodeCorePluginFile);
 
+				// Replace class name
 				regExpr = @"(\bclass\b)(.*)(" + oldPluginNameCore + @")(.*)(\s*{)";
 				regExprReplace = @"$1$2" + pluginNameCore + @"$4$5";
 				fileContent = Regex.Replace(fileContent, regExpr, regExprReplace, RegexOptions.Multiline);
@@ -627,12 +663,18 @@ namespace DualityEditor
 			{
 				string fileContent = File.ReadAllText(EditorHelper.SourceCodeEditorPluginFile);
 
+				// Replace class name
 				regExpr = @"(\bclass\b)(.*)(" + oldPluginNameEditor + @")(.*)(\s*{)";
 				regExprReplace = @"$1$2" + pluginNameEditor + @"$4$5";
 				fileContent = Regex.Replace(fileContent, regExpr, regExprReplace, RegexOptions.Multiline);
 
 				regExpr = @"(\bclass\b)(.*)(" + @"__EditorPluginClassName__" + @")(.*)(\s*{)";
 				regExprReplace = @"$1$2" + pluginNameEditor + @"$4$5";
+				fileContent = Regex.Replace(fileContent, regExpr, regExprReplace, RegexOptions.Multiline);
+				
+				// Repalce Id property
+				regExpr = @"(\boverride\s*string\s*Id\s*{\s*get\s*{\s*return\s*" + '"' + @")(.*)(" + '"' + @"\s*;\s*}\s*})";
+				regExprReplace = @"$1" + pluginNameEditor + @"$3";
 				fileContent = Regex.Replace(fileContent, regExpr, regExprReplace, RegexOptions.Multiline);
 
 				File.WriteAllText(EditorHelper.SourceCodeEditorPluginFile, fileContent, Encoding.UTF8);
@@ -1237,32 +1279,36 @@ namespace DualityEditor
 		{
 			base.OnFormClosing(e);
 
-			var unsavedResTemp = this.UnsavedResources.ToArray();
-			if (unsavedResTemp.Any())
+			// Safety messageboxes are only displayed when the close operation is triggered by the user.
+			if (!this.nonUserClosing)
 			{
-				string unsavedResText = unsavedResTemp.Take(5).ToString(r => r.FullName, "\n");
-				if (unsavedResTemp.Count() > 5) 
-					unsavedResText += "\n" + string.Format(EditorRes.GeneralRes.Msg_ConfirmQuitUnsaved_Desc_More, unsavedResTemp.Count() - 5);
-				DialogResult result = MessageBox.Show(
-					string.Format(EditorRes.GeneralRes.Msg_ConfirmQuitUnsaved_Desc, "\n\n" + unsavedResText + "\n\n"), 
-					EditorRes.GeneralRes.Msg_ConfirmQuitUnsaved_Caption, 
-					MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
-				if (result == DialogResult.Yes)
+				var unsavedResTemp = this.UnsavedResources.ToArray();
+				if (unsavedResTemp.Any())
 				{
-					this.SandboxStop();
-					this.SaveAllProjectData();
+					string unsavedResText = unsavedResTemp.Take(5).ToString(r => r.FullName, "\n");
+					if (unsavedResTemp.Count() > 5) 
+						unsavedResText += "\n" + string.Format(EditorRes.GeneralRes.Msg_ConfirmQuitUnsaved_Desc_More, unsavedResTemp.Count() - 5);
+					DialogResult result = MessageBox.Show(
+						string.Format(EditorRes.GeneralRes.Msg_ConfirmQuitUnsaved_Desc, "\n\n" + unsavedResText + "\n\n"), 
+						EditorRes.GeneralRes.Msg_ConfirmQuitUnsaved_Caption, 
+						MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
+					if (result == DialogResult.Yes)
+					{
+						this.SandboxStop();
+						this.SaveAllProjectData();
+					}
+					else if (result == DialogResult.Cancel)
+						e.Cancel = true;
 				}
-				else if (result == DialogResult.Cancel)
-					e.Cancel = true;
-			}
-			else
-			{
-				DialogResult result = MessageBox.Show(
-					EditorRes.GeneralRes.Msg_ConfirmQuit_Desc, 
-					EditorRes.GeneralRes.Msg_ConfirmQuit_Caption, 
-					MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-				if (result == DialogResult.No)
-					e.Cancel = true;
+				else
+				{
+					DialogResult result = MessageBox.Show(
+						EditorRes.GeneralRes.Msg_ConfirmQuit_Desc, 
+						EditorRes.GeneralRes.Msg_ConfirmQuit_Caption, 
+						MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+					if (result == DialogResult.No)
+						e.Cancel = true;
+				}
 			}
 
 			if (!e.Cancel)
@@ -1302,7 +1348,7 @@ namespace DualityEditor
 			base.OnDeactivate(e);
 			// Update source code, in case the user is switching to his IDE without hitting the "open source code" button again
 			if (DualityApp.ExecContext != DualityApp.ExecutionContext.Terminated)
-				this.UpdateSourceCode();
+				this.UpdatePluginSourceCode();
 		}
 
 		private void PushDataDirEvent(FileSystemEventArgs e)
@@ -1592,7 +1638,7 @@ namespace DualityEditor
 		}
 		private void actionOpenCode_Click(object sender, EventArgs e)
 		{
-			this.UpdateSourceCode();
+			this.UpdatePluginSourceCode();
 			System.Diagnostics.Process.Start(EditorHelper.SourceCodeSolutionFile);
 		}
 		private void actionRunSandbox_Click(object sender, EventArgs e)
@@ -1616,9 +1662,20 @@ namespace DualityEditor
 		private void newProjectItem_Click(object sender, EventArgs e)
 		{
 			NewProjectDialog newProject = new NewProjectDialog();
-			newProject.ShowDialog(this);
+			DialogResult result = newProject.ShowDialog(this);
 
-			// Open new project
+			// Project successfully created?
+			if (result == DialogResult.OK)
+			{
+				// Open new project
+				var startInfo = new System.Diagnostics.ProcessStartInfo(newProject.ResultEditorBinary);
+				startInfo.WorkingDirectory = Path.GetDirectoryName(startInfo.FileName);
+				startInfo.UseShellExecute = false;
+				System.Diagnostics.Process.Start(startInfo);
+
+				// Don't need this DualityEditor anymore - close it!
+				this.CloseNonUser();
+			}
 		}
 
 		private void inputFilter_MouseLeave(object sender, EventArgs e)

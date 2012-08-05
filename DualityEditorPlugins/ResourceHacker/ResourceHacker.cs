@@ -366,10 +366,12 @@ namespace ResourceHacker
 
 		private void actionOpen_Click(object sender, EventArgs e)
 		{
+			this.openFileDialog.InitialDirectory = Path.GetFullPath(EditorHelper.DataDirectory);
 			this.openFileDialog.ShowDialog(this);
 		}
 		private void actionSave_Click(object sender, EventArgs e)
 		{
+			this.saveFileDialog.InitialDirectory = Path.GetFullPath(EditorHelper.DataDirectory);
 			this.saveFileDialog.ShowDialog(this);
 		}
 		private void openFileDialog_FileOk(object sender, CancelEventArgs e)

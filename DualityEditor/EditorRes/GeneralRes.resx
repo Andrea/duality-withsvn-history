@@ -160,6 +160,12 @@
   <data name="ImageAppCreate" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\application_create.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="ImageTemplateCurrent" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\template_current.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ImageTemplateEmpty" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\template_empty.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Language" xml:space="preserve">
     <value>English</value>
   </data>
@@ -235,8 +241,23 @@
   <data name="Msg_ImportConfirmOverwrite_Text" xml:space="preserve">
     <value>Importing file '{0}' would overwrite an already imported file. Do you want to continue?</value>
   </data>
+  <data name="Msg_InstallNewTemplate_Caption" xml:space="preserve">
+    <value>Install new Template?</value>
+  </data>
+  <data name="Msg_InstallNewTemplate_Desc" xml:space="preserve">
+    <value>The Template you selected is not located inside your global Template directory. Do you wish to send it there for future usage?</value>
+  </data>
+  <data name="OpenTemplateDialog_Filters" xml:space="preserve">
+    <value>Project Templates (*.zip)|*.zip</value>
+  </data>
+  <data name="OpenTemplateDialog_Title" xml:space="preserve">
+    <value>Select Project Template..</value>
+  </data>
   <data name="PropertyGrid_N_Objects" xml:space="preserve">
     <value>{0} objects</value>
+  </data>
+  <data name="SelectNewProjectFolderDialog_Desc" xml:space="preserve">
+    <value>Select the folder in which a new project will be created below.</value>
   </data>
   <data name="TaskBarOverlay_ReloadCorePlugin_Desc" xml:space="preserve">
     <value>Reloading core plugins...</value>
@@ -246,5 +267,17 @@
   </data>
   <data name="TaskChangeDataFormat_Desc" xml:space="preserve">
     <value>The project data format has been changed to {0}. Existing Resource files will be converted shortly.</value>
+  </data>
+  <data name="Template_Current_Desc" xml:space="preserve">
+    <value>Creates a new project by cloning the current one.</value>
+  </data>
+  <data name="Template_Current_Name" xml:space="preserve">
+    <value>Current Project</value>
+  </data>
+  <data name="Template_Empty_Desc" xml:space="preserve">
+    <value>A project without any content.</value>
+  </data>
+  <data name="Template_Empty_Name" xml:space="preserve">
+    <value>Empty Project</value>
   </data>
 </root>
