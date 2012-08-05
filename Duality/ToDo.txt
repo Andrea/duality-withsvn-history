@@ -6,11 +6,23 @@
 	-->	??? Ingame GUI & GUI Editor
 
 -->	Dualitor: PerformanceMonitor
--->	Dualitor: New Project Wizard, Project Templates
 -->	Dualitor: Component Wizard
 -->	Dualitor: Improve User learning curve
 	-->	More Advisor information?
 	-->	"Did you know..?" screen?
+
+	
+-->	Dualitor: New Project Wizard, Project Templates
+	-->	Project Template: Zip file containing:
+		--> Full Duality directory, including Data, Source and Plugins..
+		-->	..but without most of the main directory contents (Duality binaries, xml doc, etc.)
+			-->	Those will be copied from the current Dualitor instance
+			-->	The plugin directory contents will be examined and updated if applying
+		-->	Also contains project template description files that will be deleted upon creation
+			-->	Template icon / name / description
+	-->	Auto-open the new project
+	-->	Auto-install unknown templates
+	-->	Fixed templates: "Current" and "Empty"
 
 
 --> Reconsider "events" in Duality.

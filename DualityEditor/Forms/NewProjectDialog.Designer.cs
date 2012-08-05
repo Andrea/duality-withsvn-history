@@ -30,6 +30,8 @@
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NewProjectDialog));
 			this.folderView = new Aga.Controls.Tree.TreeViewAdv();
+			this.folderViewControlIcon = new Aga.Controls.Tree.NodeControls.NodeStateIcon();
+			this.folderViewControlName = new Aga.Controls.Tree.NodeControls.NodeTextBox();
 			this.templateView = new System.Windows.Forms.ListView();
 			this.columnName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnDesc = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -46,12 +48,13 @@
 			this.labelProjectTemplate = new System.Windows.Forms.Label();
 			this.textBoxTemplate = new System.Windows.Forms.TextBox();
 			this.buttonBrowseTemplate = new System.Windows.Forms.Button();
-			this.folderViewControlIcon = new Aga.Controls.Tree.NodeControls.NodeStateIcon();
-			this.folderViewControlName = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+			this.pictureBoxLogo = new System.Windows.Forms.PictureBox();
+			this.labelHeader = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.splitFolderTemplate)).BeginInit();
 			this.splitFolderTemplate.Panel1.SuspendLayout();
 			this.splitFolderTemplate.Panel2.SuspendLayout();
 			this.splitFolderTemplate.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// folderView
@@ -73,10 +76,24 @@
 			this.folderView.NodeControls.Add(this.folderViewControlName);
 			this.folderView.NodeFilter = null;
 			this.folderView.SelectedNode = null;
-			this.folderView.Size = new System.Drawing.Size(158, 201);
+			this.folderView.Size = new System.Drawing.Size(158, 176);
 			this.folderView.TabIndex = 0;
 			this.folderView.Text = "Installed Templates";
 			this.folderView.SelectionChanged += new System.EventHandler(this.folderView_SelectionChanged);
+			// 
+			// folderViewControlIcon
+			// 
+			this.folderViewControlIcon.DataPropertyName = "Icon";
+			this.folderViewControlIcon.LeftMargin = 1;
+			this.folderViewControlIcon.ParentColumn = null;
+			this.folderViewControlIcon.ScaleMode = Aga.Controls.Tree.ImageScaleMode.Clip;
+			// 
+			// folderViewControlName
+			// 
+			this.folderViewControlName.DataPropertyName = "Name";
+			this.folderViewControlName.IncrementalSearchEnabled = true;
+			this.folderViewControlName.LeftMargin = 3;
+			this.folderViewControlName.ParentColumn = null;
 			// 
 			// templateView
 			// 
@@ -92,7 +109,7 @@
 			this.templateView.MultiSelect = false;
 			this.templateView.Name = "templateView";
 			this.templateView.ShowItemToolTips = true;
-			this.templateView.Size = new System.Drawing.Size(324, 201);
+			this.templateView.Size = new System.Drawing.Size(324, 176);
 			this.templateView.Sorting = System.Windows.Forms.SortOrder.Ascending;
 			this.templateView.TabIndex = 1;
 			this.templateView.TileSize = new System.Drawing.Size(100, 34);
@@ -113,7 +130,7 @@
 			this.splitFolderTemplate.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.splitFolderTemplate.Location = new System.Drawing.Point(-1, -1);
+			this.splitFolderTemplate.Location = new System.Drawing.Point(-1, 60);
 			this.splitFolderTemplate.Name = "splitFolderTemplate";
 			// 
 			// splitFolderTemplate.Panel1
@@ -123,7 +140,7 @@
 			// splitFolderTemplate.Panel2
 			// 
 			this.splitFolderTemplate.Panel2.Controls.Add(this.templateView);
-			this.splitFolderTemplate.Size = new System.Drawing.Size(486, 201);
+			this.splitFolderTemplate.Size = new System.Drawing.Size(486, 176);
 			this.splitFolderTemplate.SplitterDistance = 158;
 			this.splitFolderTemplate.TabIndex = 2;
 			// 
@@ -218,15 +235,16 @@
 			// 
 			// labelDialogDesc
 			// 
-			this.labelDialogDesc.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+			this.labelDialogDesc.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.labelDialogDesc.Location = new System.Drawing.Point(12, 208);
+			this.labelDialogDesc.Location = new System.Drawing.Point(68, 24);
 			this.labelDialogDesc.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
 			this.labelDialogDesc.Name = "labelDialogDesc";
-			this.labelDialogDesc.Size = new System.Drawing.Size(460, 30);
+			this.labelDialogDesc.Size = new System.Drawing.Size(407, 30);
 			this.labelDialogDesc.TabIndex = 11;
-			this.labelDialogDesc.Text = "This dialog will create a new Duality project. Select a suitable project template" +
-    " and specify a destination where the project will be created.";
+			this.labelDialogDesc.Text = "After selecting a suitable project template, destination and name, a new project " +
+    "folder will be automatically created.";
+			this.labelDialogDesc.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// labelProjectTemplate
 			// 
@@ -260,19 +278,29 @@
 			this.buttonBrowseTemplate.UseVisualStyleBackColor = true;
 			this.buttonBrowseTemplate.Click += new System.EventHandler(this.buttonBrowseTemplate_Click);
 			// 
-			// folderViewControlIcon
+			// pictureBoxLogo
 			// 
-			this.folderViewControlIcon.DataPropertyName = "Icon";
-			this.folderViewControlIcon.LeftMargin = 1;
-			this.folderViewControlIcon.ParentColumn = null;
-			this.folderViewControlIcon.ScaleMode = Aga.Controls.Tree.ImageScaleMode.Clip;
+			this.pictureBoxLogo.Image = global::DualityEditor.Properties.Resources.DualityIcon48;
+			this.pictureBoxLogo.Location = new System.Drawing.Point(9, 6);
+			this.pictureBoxLogo.Margin = new System.Windows.Forms.Padding(0);
+			this.pictureBoxLogo.Name = "pictureBoxLogo";
+			this.pictureBoxLogo.Size = new System.Drawing.Size(48, 48);
+			this.pictureBoxLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+			this.pictureBoxLogo.TabIndex = 15;
+			this.pictureBoxLogo.TabStop = false;
 			// 
-			// folderViewControlName
+			// labelHeader
 			// 
-			this.folderViewControlName.DataPropertyName = "Name";
-			this.folderViewControlName.IncrementalSearchEnabled = true;
-			this.folderViewControlName.LeftMargin = 3;
-			this.folderViewControlName.ParentColumn = null;
+			this.labelHeader.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.labelHeader.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.labelHeader.Location = new System.Drawing.Point(68, 3);
+			this.labelHeader.Margin = new System.Windows.Forms.Padding(0);
+			this.labelHeader.Name = "labelHeader";
+			this.labelHeader.Size = new System.Drawing.Size(407, 22);
+			this.labelHeader.TabIndex = 16;
+			this.labelHeader.Text = "Create new Duality Project";
+			this.labelHeader.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// NewProjectDialog
 			// 
@@ -282,6 +310,8 @@
 			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(212)))), ((int)(((byte)(212)))), ((int)(((byte)(212)))));
 			this.CancelButton = this.buttonCancel;
 			this.ClientSize = new System.Drawing.Size(484, 362);
+			this.Controls.Add(this.labelHeader);
+			this.Controls.Add(this.pictureBoxLogo);
 			this.Controls.Add(this.buttonBrowseTemplate);
 			this.Controls.Add(this.textBoxTemplate);
 			this.Controls.Add(this.labelProjectTemplate);
@@ -306,6 +336,7 @@
 			this.splitFolderTemplate.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitFolderTemplate)).EndInit();
 			this.splitFolderTemplate.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -332,5 +363,7 @@
 		private System.Windows.Forms.Button buttonBrowseTemplate;
 		private Aga.Controls.Tree.NodeControls.NodeStateIcon folderViewControlIcon;
 		private Aga.Controls.Tree.NodeControls.NodeTextBox folderViewControlName;
+		private System.Windows.Forms.PictureBox pictureBoxLogo;
+		private System.Windows.Forms.Label labelHeader;
 	}
 }

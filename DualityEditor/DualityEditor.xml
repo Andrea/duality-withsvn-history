@@ -198,6 +198,23 @@
             The Plugins ID. This should be unique.
             </summary>
         </member>
+        <member name="F:DualityEditor.Forms.NewProjectDialog.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:DualityEditor.Forms.NewProjectDialog.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:DualityEditor.Forms.NewProjectDialog.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
         <member name="F:DualityEditor.Forms.ReloadCorePluginDialog.components">
             <summary>
             Required designer variable.
@@ -482,23 +499,6 @@
         <member name="T:DualityEditor.Controls.FlagCheckedListBoxItem">
             <summary>
             Represents an item in the checklistbox
-            </summary>
-        </member>
-        <member name="F:DualityEditor.Forms.NewProjectDialog.components">
-            <summary>
-            Required designer variable.
-            </summary>
-        </member>
-        <member name="M:DualityEditor.Forms.NewProjectDialog.Dispose(System.Boolean)">
-            <summary>
-            Clean up any resources being used.
-            </summary>
-            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        </member>
-        <member name="M:DualityEditor.Forms.NewProjectDialog.InitializeComponent">
-            <summary>
-            Required method for Designer support - do not modify
-            the contents of this method with the code editor.
             </summary>
         </member>
     </members>

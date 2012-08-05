@@ -271,6 +271,8 @@
     <Content Include="DualityIconB.ico" />
     <Content Include="DualityIconC.ico" />
     <Content Include="EditorRes\WorkingFolderIcon.ico" />
+    <None Include="Resources\DualityIcon48.png" />
+    <None Include="Resources\DualityIcon256.png" />
     <None Include="Resources\application_create.png" />
     <None Include="Resources\page_gear.png" />
     <None Include="Resources\page_code.png" />
