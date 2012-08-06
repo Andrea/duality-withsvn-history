@@ -57,6 +57,8 @@ namespace EditorBase.PropertyEditors
 			GameObject[] values = this.GetValue().Cast<GameObject>().ToArray();
 
 			this.BeginUpdate();
+			GameObject lastCmp = this.gameObj;
+			bool lastMultiple = this.multiple;
 			if (!values.Any())
 			{
 				this.gameObj = null;
@@ -70,6 +72,7 @@ namespace EditorBase.PropertyEditors
 				this.GeneratePreviewImage();
 			}
 			this.EndUpdate();
+			if (lastCmp != this.gameObj || lastMultiple != this.multiple) this.Invalidate();
 		}
 		protected void GeneratePreviewImage()
 		{

@@ -28,6 +28,7 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 		{
 			base.PerformGetValue();
 			this.BeginUpdate();
+			CheckState lastState = this.state;
 			object[] values = this.GetValue().ToArray();
 
 			// Apply values to editors
@@ -43,6 +44,7 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 			}
 
 			this.EndUpdate();
+			if (this.state != lastState) this.Invalidate();
 		}
 		public override void PerformSetValue()
 		{

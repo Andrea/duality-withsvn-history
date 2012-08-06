@@ -158,7 +158,7 @@ namespace EditorBase
 		{
 			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game && 
 				this.buttonAutoRefresh.Checked && 
-				Time.MainTimer - this.lastAutoRefresh > 500.0f)
+				Time.MainTimer - this.lastAutoRefresh > 100.0f)
 			{
 				this.lastAutoRefresh = Time.MainTimer;
 				this.propertyGrid.UpdateFromObjects();

@@ -41,6 +41,7 @@ namespace AdamsLair.PropertyGrid
 			public List<string> stringListField;
 			public FlaggedEnumTest enumField1;
 			public EnumTest enumField2;
+			private System.Diagnostics.Stopwatch w = System.Diagnostics.Stopwatch.StartNew();
 
 			public int IPropWithAVeryLongName
 			{
@@ -85,6 +86,26 @@ namespace AdamsLair.PropertyGrid
 			public bool BoolTwo { get; set; }
 			public List<Test2> StructList { get; set; }
 			public Dictionary<string,int> SomeDict { get; set; }
+			public TimeSpan ElapsedTime
+			{
+				get { return this.w.Elapsed; }
+			}
+			public string ElapsedTimeString
+			{
+				get { return this.w.Elapsed.ToString(); }
+			}
+			public long ElapsedTicks
+			{
+				get { return this.w.ElapsedTicks; }
+			}
+			public long ElapsedMs
+			{
+				get { return this.w.ElapsedMilliseconds; }
+			}
+			public double ElapsedMsHighPrecision
+			{
+				get { return this.w.Elapsed.TotalMilliseconds; }
+			}
 		}
 		private struct Test2
 		{
@@ -159,6 +180,10 @@ namespace AdamsLair.PropertyGrid
 				this.propertyGrid1.Enabled = false;
 				this.propertyGrid1.ReadOnly = false;
 			}
+		}
+		private void buttonRefresh_Click(object sender, EventArgs e)
+		{
+			this.propertyGrid1.UpdateFromObjects();
 		}
 	}
 }

@@ -14,6 +14,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		private const string ClipboardDataFormat = "ComboBoxEditorTemplateData";
 
 		private	object				selectedObject	= null;
+		private	string				selectedObjStr	= "";
 		private	bool				pressed			= false;
 		private	DateTime			mouseClosed		= DateTime.MinValue;
 		private	int					dropdownHeight	= 100;
@@ -27,8 +28,13 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			set
 			{
 				if (this.IsDropDownOpened) return; // Don't override while the user is selecting
+				string lastObjStr = this.selectedObjStr;
+
 				this.selectedObject = value;
+				this.selectedObjStr = this.DefaultValueStringGenerator(this.selectedObject);
 				if (this.dropdown != null) this.dropdown.SelectedItem = this.selectedObject;
+
+				if (lastObjStr != this.selectedObjStr) this.EmitInvalidate();
 			}
 		}
 		public bool IsDropDownOpened
@@ -78,7 +84,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			else if (this.hovered || this.focused)
 				comboState = ButtonState.Hot;
 
-			ControlRenderer.DrawComboButton(e.Graphics, this.rect, comboState, this.selectedObject != null ? this.selectedObject.ToString() : "null");
+			ControlRenderer.DrawComboButton(e.Graphics, this.rect, comboState, this.selectedObjStr);
 		}
 		public override void OnLostFocus(EventArgs e)
 		{
@@ -146,7 +152,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 				if (this.selectedObject != null)
 				{
 					DataObject data = new DataObject();
-					data.SetText(this.selectedObject.ToString());
+					data.SetText(this.selectedObjStr);
 					data.SetData(ClipboardDataFormat, this.selectedObject);
 					Clipboard.SetDataObject(data);
 				}
@@ -172,8 +178,12 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 					}
 					if (pasteObjProxy != null)
 					{
-						if (this.selectedObject != pasteObjProxy) this.EmitEdited();
-						this.selectedObject = pasteObjProxy;
+						if (this.selectedObject != pasteObjProxy)
+						{
+							this.selectedObject = pasteObjProxy;
+							this.selectedObjStr = this.DefaultValueStringGenerator(this.selectedObject);
+							this.EmitEdited();
+						}
 						success = true;
 					}
 				}
@@ -228,6 +238,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			if (this.selectedObject != this.dropdown.SelectedItem)
 			{
 				this.selectedObject = this.dropdown.SelectedItem;
+				this.selectedObjStr = this.DefaultValueStringGenerator(this.selectedObject);
 				this.EmitEdited();
 			}
 		}
@@ -239,6 +250,11 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		{
 			this.HideDropDown();
 			this.mouseClosed = DateTime.Now;
+		}
+
+		protected string DefaultValueStringGenerator(object obj)
+		{
+			return this.selectedObject != null ? this.selectedObject.ToString() : "null";
 		}
 	}
 }

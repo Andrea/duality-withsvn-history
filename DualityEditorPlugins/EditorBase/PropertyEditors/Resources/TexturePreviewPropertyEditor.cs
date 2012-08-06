@@ -119,6 +119,7 @@ namespace EditorBase.PropertyEditors
 		public override void PerformGetValue()
 		{
 			base.PerformGetValue();
+			Texture lastValue = this.value;
 			Texture[] values = this.GetValue().Cast<Texture>().ToArray();
 			this.value = values.NotNull().FirstOrDefault() as Texture;
 			this.ClearFramePreviews();
@@ -137,6 +138,7 @@ namespace EditorBase.PropertyEditors
 				this.subImageSelector.Maximum = -1;
 			}
 			this.UpdateGeometry();
+			if (this.value != lastValue) this.Invalidate();
 		}
 
 		protected override void OnPaint(PaintEventArgs e)

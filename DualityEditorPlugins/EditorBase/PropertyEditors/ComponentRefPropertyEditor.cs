@@ -58,6 +58,8 @@ namespace EditorBase.PropertyEditors
 			Component[] values = this.GetValue().Cast<Component>().ToArray();
 
 			this.BeginUpdate();
+			Component lastCmp = this.component;
+			bool lastMultiple = this.multiple;
 			if (!values.Any())
 			{
 				this.component = null;
@@ -71,6 +73,7 @@ namespace EditorBase.PropertyEditors
 				this.GeneratePreviewImage();
 			}
 			this.EndUpdate();
+			if (lastCmp != this.component || lastMultiple != this.multiple) this.Invalidate();
 		}
 		protected void GeneratePreviewImage()
 		{

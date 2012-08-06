@@ -72,6 +72,8 @@ namespace EditorBase.PropertyEditors
 			IContentRef[] values = this.GetValue().Cast<IContentRef>().ToArray();
 
 			this.BeginUpdate();
+			string lastPath = this.contentPath;
+			bool lastMultiple = this.multiple;
 			if (!values.Any())
 			{
 				this.contentPath = null;
@@ -85,6 +87,7 @@ namespace EditorBase.PropertyEditors
 				this.GeneratePreviewImage();
 			}
 			this.EndUpdate();
+			if (lastPath != this.contentPath || lastMultiple != this.multiple) this.Invalidate();
 		}
 		protected void GeneratePreviewImage()
 		{

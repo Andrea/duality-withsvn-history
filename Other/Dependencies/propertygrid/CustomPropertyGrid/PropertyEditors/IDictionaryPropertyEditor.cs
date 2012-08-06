@@ -45,11 +45,13 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 			{
 				Type keyType = this.GetKeyType();
 				this.addKeyEditor = this.ParentGrid.CreateEditor(keyType, this);
+				this.addKeyEditor.Hints |= HintFlags.HasButton | HintFlags.ButtonEnabled;
+				this.addKeyEditor.ButtonIcon = EmbeddedResources.Resources.ImageAdd;
 				this.addKeyEditor.EditedType = keyType;
 				this.addKeyEditor.PropertyName = "Add Entry";
 				this.addKeyEditor.Getter = this.AddKeyValueGetter;
 				this.addKeyEditor.Setter = this.AddKeyValueSetter;
-				this.addKeyEditor.EditingFinished += this.AddKeyEditingFinished;
+				this.addKeyEditor.ButtonPressed += this.AddKeyButtonPressed;
 
 				this.PerformGetValue();
 			}
@@ -192,7 +194,6 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 				PropertyEditor child = this.Children.Last();
 				this.RemovePropertyEditor(child);
 			}
-			this.Invalidate();
 			this.EndUpdate();
 		}
 		protected override bool IsChildReadOnly(PropertyEditor childEditor)
@@ -210,7 +211,7 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 		{
 			this.addKey = keys.FirstOrDefault();
 		}
-		protected void AddKeyEditingFinished(object sender, EventArgs e)
+		protected void AddKeyButtonPressed(object sender, EventArgs e)
 		{
 			if (this.addKey == null) return;
 

@@ -495,7 +495,6 @@ namespace AdamsLair.PropertyGrid
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			base.OnPaint(e);
-
 			e.Graphics.FillRectangle(new SolidBrush(this.BackColor), this.ClientRectangle);
 
 			GraphicsState originalState = e.Graphics.Save();

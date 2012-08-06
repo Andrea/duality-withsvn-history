@@ -162,7 +162,7 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 				}
 				elementEditor.Getter = this.CreateElementValueGetter(indexer, i - this.internalEditors + this.offset);
 				elementEditor.Setter = this.CreateElementValueSetter(indexer, i - this.internalEditors + this.offset);
-				elementEditor.PropertyName = "[Element " + (i - this.internalEditors + this.offset) + "]";
+				elementEditor.PropertyName = "[" + (i - this.internalEditors + this.offset) + "]";
 				//elementEditor.Hints |= HintFlags.HasButton | HintFlags.ButtonEnabled;
 			}
 			// Remove overflowing editors
@@ -172,7 +172,6 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 				//child.ButtonPressed -= elementEditor_ButtonPressed;
 				this.RemovePropertyEditor(child);
 			}
-			this.Invalidate();
 			this.EndUpdate();
 		}
 		protected override bool IsChildReadOnly(PropertyEditor childEditor)

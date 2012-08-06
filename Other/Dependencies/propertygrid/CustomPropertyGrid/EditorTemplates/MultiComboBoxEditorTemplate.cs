@@ -14,6 +14,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		private const string ClipboardDataFormat = "MultiComboBoxEditorTemplateData";
 
 		private	List<object>			selectedObjects	= new List<object>();
+		private	string					selectedObjStr	= "";
 		private	bool					pressed			= false;
 		private	DateTime				mouseClosed		= DateTime.MinValue;
 		private	int						dropdownHeight	= 100;
@@ -27,12 +28,17 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			set
 			{
 				if (this.IsDropDownOpened) return; // Don't override while the user is selecting
+				string lastObjStr = this.selectedObjStr;
+
 				this.selectedObjects = value.ToList();
+				this.selectedObjStr = this.DefaultValueStringGenerator(this.selectedObjects);
 				if (this.dropdown != null)
 				{
 					for (int i = 0; i < this.dropdown.Items.Count; i++)
 						this.dropdown.SetItemChecked(i, value.Contains(this.dropdown.Items[i]));
 				}
+
+				if (lastObjStr != this.selectedObjStr) this.EmitInvalidate();
 			}
 		}
 		public bool IsDropDownOpened
@@ -82,7 +88,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			else if (this.hovered || this.focused)
 				comboState = ButtonState.Hot;
 
-			ControlRenderer.DrawComboButton(e.Graphics, this.rect, comboState, DefaultValueStringGenerator(this.selectedObjects));
+			ControlRenderer.DrawComboButton(e.Graphics, this.rect, comboState, this.selectedObjStr);
 		}
 		public override void OnLostFocus(EventArgs e)
 		{
@@ -132,7 +138,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			else if (e.Control && e.KeyCode == Keys.C)
 			{
 				DataObject data = new DataObject();
-				data.SetText(DefaultValueStringGenerator(this.selectedObjects));
+				data.SetText(this.selectedObjStr);
 				data.SetData(ClipboardDataFormat, this.selectedObjects);
 				Clipboard.SetDataObject(data);
 				e.Handled = true;
@@ -154,6 +160,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 				if (pasteObjProxy != null && pasteObjProxy.Count > 0)
 				{
 					this.selectedObjects = pasteObjProxy;
+					this.selectedObjStr = this.DefaultValueStringGenerator(this.selectedObjects);
 					this.EmitEdited();
 					success = true;
 				}
@@ -209,6 +216,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 				this.dropdown.CheckedItems.Cast<object>().Any(o => !this.selectedObjects.Contains(o)))
 			{
 				this.selectedObjects = this.dropdown.CheckedItems.Cast<object>().ToList();
+				this.selectedObjStr = this.DefaultValueStringGenerator(this.selectedObjects);
 				this.EmitEdited();
 			}
 		}

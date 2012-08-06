@@ -14,6 +14,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		private const string ClipboardDataFormat = "BitmaskEditorTemplateData";
 
 		private	ulong					bitmask			= 0;
+		private	string					bitmaskStr		= "";
 		private	bool					pressed			= false;
 		private	DateTime				mouseClosed		= DateTime.MinValue;
 		private	int						dropdownHeight	= 100;
@@ -27,8 +28,13 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			set
 			{
 				if (this.IsDropDownOpened) return; // Don't override while the user is selecting
+				string lastObjStr = this.bitmaskStr;
+
 				this.bitmask = value;
-				if (this.dropdown != null) this.dropdown.BitmaskValue = this.bitmask;;
+				this.bitmaskStr = this.DefaultValueStringGenerator(this.bitmask);
+				if (this.dropdown != null) this.dropdown.BitmaskValue = this.bitmask;
+
+				if (lastObjStr != this.bitmaskStr) this.EmitInvalidate();
 			}
 		}
 		public bool IsDropDownOpened
@@ -74,7 +80,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			else if (this.hovered || this.focused)
 				comboState = ButtonState.Hot;
 
-			ControlRenderer.DrawComboButton(e.Graphics, this.rect, comboState, DefaultValueStringGenerator(this.bitmask));
+			ControlRenderer.DrawComboButton(e.Graphics, this.rect, comboState, this.bitmaskStr);
 		}
 		public override void OnLostFocus(EventArgs e)
 		{
@@ -124,7 +130,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			else if (e.Control && e.KeyCode == Keys.C)
 			{
 				DataObject data = new DataObject();
-				data.SetText(DefaultValueStringGenerator(this.bitmask));
+				data.SetText(this.bitmaskStr);
 				data.SetData(ClipboardDataFormat, this.bitmask);
 				Clipboard.SetDataObject(data);
 				e.Handled = true;
@@ -155,6 +161,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 				if (success)
 				{
 					this.bitmask = pasteValue;
+					this.bitmaskStr = this.DefaultValueStringGenerator(this.bitmask);
 					this.EmitEdited();
 				}
 				else
@@ -213,6 +220,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			if (this.bitmask != this.dropdown.BitmaskValue)
 			{
 				this.bitmask = this.dropdown.BitmaskValue;
+				this.bitmaskStr = this.DefaultValueStringGenerator(this.bitmask);
 				this.EmitEdited();
 			}
 		}

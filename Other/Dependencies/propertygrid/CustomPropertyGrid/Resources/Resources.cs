@@ -22,7 +22,8 @@ namespace AdamsLair.PropertyGrid.EmbeddedResources
 		public readonly	static Bitmap ExpandNodeOpenedNormal	= new Bitmap(typeof(Resources).Assembly.GetManifestResourceStream(Folder + "ExpandNodeOpenedNormal.png"));
 		public readonly	static Bitmap ExpandNodeOpenedHot		= new Bitmap(typeof(Resources).Assembly.GetManifestResourceStream(Folder + "ExpandNodeOpenedHot.png"));
 		public readonly	static Bitmap ExpandNodeOpenedPressed	= new Bitmap(typeof(Resources).Assembly.GetManifestResourceStream(Folder + "ExpandNodeOpenedPressed.png"));
-		
+		public readonly static Font DefaultFont = SystemFonts.DefaultFont;
+
 		public readonly static string PropertyName_Default		= "Properties";
 		public readonly static string PropertyGrid_N_Objects	= "{0} Objects";
 	}

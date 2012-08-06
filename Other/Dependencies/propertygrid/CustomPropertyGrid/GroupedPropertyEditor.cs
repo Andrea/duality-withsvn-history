@@ -102,7 +102,7 @@ namespace AdamsLair.PropertyGrid
 				if (this.headerIcon == null || this.headerIcon.SourceImage != value)
 				{
 					this.headerIcon = value != null ? new IconImage(value) : null;
-					this.Invalidate();
+					this.Invalidate(this.headerRect);
 				}
 			}
 		}
@@ -112,7 +112,7 @@ namespace AdamsLair.PropertyGrid
 			set
 			{
 				this.headerColor = value;
-				this.Invalidate();
+				this.Invalidate(this.headerRect);
 			}
 		}
 		public GroupHeaderStyle HeaderStyle
@@ -120,8 +120,11 @@ namespace AdamsLair.PropertyGrid
 			get { return this.headerStyle; }
 			set
 			{
-				this.headerStyle = value;
-				this.Invalidate();
+				if (this.headerStyle != value)
+				{
+					this.headerStyle = value;
+					this.Invalidate(this.headerRect);
+				}
 			}
 		}
 		public string HeaderValueText
@@ -132,7 +135,7 @@ namespace AdamsLair.PropertyGrid
 				if (this.headerValueText != value)
 				{
 					this.headerValueText = value;
-					this.Invalidate();
+					this.Invalidate(this.headerRect);
 				}
 			}
 		}

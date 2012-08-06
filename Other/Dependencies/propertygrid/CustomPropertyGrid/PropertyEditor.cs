@@ -66,8 +66,8 @@ namespace AdamsLair.PropertyGrid
 			Default = HasPropertyName
 		}
 
-		protected	static	readonly	Font	FontNormal	= SystemFonts.DefaultFont;
-		protected	static	readonly	Font	FontBold	= new Font(SystemFonts.DefaultFont, FontStyle.Bold);
+		protected	static	readonly	Font	FontNormal	= EmbeddedResources.Resources.DefaultFont;
+		protected	static	readonly	Font	FontBold	= new Font(EmbeddedResources.Resources.DefaultFont, FontStyle.Bold);
 
 		private	PropertyGrid	parentGrid		= null;
 		private	PropertyEditor	parentEditor	= null;
@@ -197,8 +197,11 @@ namespace AdamsLair.PropertyGrid
 			get { return this.propertyName; }
 			set 
 			{
-				this.propertyName = value;
-				this.Invalidate();
+				if (this.propertyName != value)
+				{
+					this.propertyName = value;
+					this.Invalidate();
+				}
 			}
 		}
 		public string PropertyDesc
@@ -363,10 +366,7 @@ namespace AdamsLair.PropertyGrid
 			this.ButtonIcon = null;
 		}
 
-		public virtual void PerformGetValue()
-		{
-			this.Invalidate();
-		}
+		public virtual void PerformGetValue() {}
 		public virtual void PerformSetValue()
 		{
 			if (this.ReadOnly) return;
@@ -405,11 +405,12 @@ namespace AdamsLair.PropertyGrid
 		{
 			if (this.parentGrid == null) return;
 			Point editorLoc = this.parentGrid.GetEditorLocation(this, true);
-			this.parentGrid.Invalidate(new Rectangle(
+			Rectangle invalidateRect = new Rectangle(
 				editorLoc.X + rect.X,
 				editorLoc.Y + rect.Y,
 				rect.Width,
-				rect.Height));
+				rect.Height);
+			this.parentGrid.Invalidate(invalidateRect);
 		}
 		public void Focus()
 		{

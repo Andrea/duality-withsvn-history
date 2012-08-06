@@ -653,7 +653,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 
 			if (icon == null && !string.IsNullOrEmpty(text))
 			{
-				DrawStringLine(g, text, SystemFonts.DefaultFont, innerRect, colorText, StringAlignment.Center);
+				DrawStringLine(g, text, EmbeddedResources.Resources.DefaultFont, innerRect, colorText, StringAlignment.Center);
 			}
 			else if (string.IsNullOrEmpty(text))
 			{
@@ -667,7 +667,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 			}
 			else
 			{
-				Region[] charRegions = MeasureStringLine(g, text, new [] { new CharacterRange(0, text.Length) }, SystemFonts.DefaultFont, innerRect);
+				Region[] charRegions = MeasureStringLine(g, text, new [] { new CharacterRange(0, text.Length) }, EmbeddedResources.Resources.DefaultFont, innerRect);
 				SizeF textSize = charRegions[0].GetBounds(g).Size;
 				Size iconTextSize;
 				Rectangle textRect;
@@ -686,7 +686,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 					innerRect.Height);
 
 				g.DrawImageUnscaled(icon, iconRect);
-				DrawStringLine(g, text, SystemFonts.DefaultFont, textRect, colorText);
+				DrawStringLine(g, text, EmbeddedResources.Resources.DefaultFont, textRect, colorText);
 			}
 
 			g.Restore(graphicsState);
@@ -726,7 +726,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 
 			if (icon == null && !string.IsNullOrEmpty(text))
 			{
-				DrawStringLine(g, text, SystemFonts.DefaultFont, innerRect, colorText);
+				DrawStringLine(g, text, EmbeddedResources.Resources.DefaultFont, innerRect, colorText);
 			}
 			else if (string.IsNullOrEmpty(text))
 			{
@@ -740,7 +740,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 			}
 			else
 			{
-				Region[] charRegions = MeasureStringLine(g, text, new [] { new CharacterRange(0, text.Length) }, SystemFonts.DefaultFont, innerRect);
+				Region[] charRegions = MeasureStringLine(g, text, new [] { new CharacterRange(0, text.Length) }, EmbeddedResources.Resources.DefaultFont, innerRect);
 				SizeF textSize = charRegions[0].GetBounds(g).Size;
 				Size iconTextSize;
 				Rectangle textRect;
@@ -759,7 +759,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 					innerRect.Height);
 
 				g.DrawImageUnscaled(icon, iconRect);
-				DrawStringLine(g, text, SystemFonts.DefaultFont, textRect, colorText);
+				DrawStringLine(g, text, EmbeddedResources.Resources.DefaultFont, textRect, colorText);
 			}
 
 			g.Restore(graphicsState);

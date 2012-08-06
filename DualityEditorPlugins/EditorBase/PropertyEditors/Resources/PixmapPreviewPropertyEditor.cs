@@ -75,10 +75,12 @@ namespace EditorBase.PropertyEditors
 		public override void PerformGetValue()
 		{
 			base.PerformGetValue();
+			Pixmap lastValue = this.value;
 			Pixmap[] values = this.GetValue().Cast<Pixmap>().ToArray();
 			this.value = values.NotNull().FirstOrDefault() as Pixmap;
 			this.GeneratePreviewImage();
 			this.AdjustPreviewHeight(false);
+			if (this.value != lastValue) this.Invalidate();
 		}
 		protected override void OnPaint(PaintEventArgs e)
 		{

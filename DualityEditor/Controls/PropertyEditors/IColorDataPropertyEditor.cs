@@ -43,6 +43,7 @@ namespace DualityEditor.Controls.PropertyEditors
 			IColorData[] values = this.GetValue().Cast<IColorData>().ToArray();
 
 			this.BeginUpdate();
+			int oldValue = this.value != null ? this.value.ToIntRgba() : -1;
 			if (!values.Any())
 			{
 				this.value = ColorRgba.TransparentBlack;
@@ -54,6 +55,7 @@ namespace DualityEditor.Controls.PropertyEditors
 				// No visual appearance of "multiple values" yet - need one?
 			}
 			this.EndUpdate();
+			if (oldValue != (this.value != null ? this.value.ToIntRgba() : -1)) this.Invalidate();
 		}
 
 		public void ShowColorDialog()

@@ -61,9 +61,11 @@ namespace EditorBase.PropertyEditors
 		public override void PerformGetValue()
 		{
 			base.PerformGetValue();
+			AudioData lastValue = this.value;
 			AudioData[] values = this.GetValue().Cast<AudioData>().ToArray();
 			this.value = values.NotNull().FirstOrDefault() as AudioData;
 			this.GeneratePreviewImage();
+			if (this.value != lastValue) this.Invalidate();
 		}
 		protected override void OnPaint(PaintEventArgs e)
 		{
