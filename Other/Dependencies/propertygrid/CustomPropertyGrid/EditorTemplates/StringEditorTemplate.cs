@@ -23,6 +23,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			get { return this.text; }
 			set
 			{
+				if (this.Focused && !this.SelectedAll) return; // Don't override while the user is typing
 				if (this.text != value)
 				{
 					int textLen = this.text != null ? this.text.Length : 0;

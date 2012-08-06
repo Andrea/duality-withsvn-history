@@ -104,7 +104,7 @@ namespace Duality
 		/// <returns>The absolute value of the number.</returns>
 		public static float Abs(float v)
 		{
-			return System.Math.Abs(v);
+			return v < 0 ? -v : v;
 		}
 		/// <summary>
 		/// Returns the absolute value of a <see cref="System.Int32"/>.
@@ -113,7 +113,7 @@ namespace Duality
 		/// <returns>The absolute value of the number.</returns>
 		public static int Abs(int v)
 		{
-			return System.Math.Abs(v);
+			return v < 0 ? -v : v;
 		}
 
 		/// <summary>
@@ -207,7 +207,7 @@ namespace Duality
 		/// <returns>-1 if negative, 1 if positive and 0 if zero.</returns>
 		public static float Sign(float v)
 		{
-			return System.Math.Sign(v);
+			return v < 0.0f ? -1.0f : (v > 0.0f ? 1.0f : 0.0f);
 		}
 		/// <summary>
 		/// Returns the sign of a value.
@@ -216,7 +216,7 @@ namespace Duality
 		/// <returns>-1 if negative, 1 if positive and 0 if zero.</returns>
 		public static int Sign(int v)
 		{
-			return System.Math.Sign(v);
+			return v < 0 ? -1 : (v > 0 ? 1 : 0);
 		}
 
 		/// <summary>
@@ -249,7 +249,7 @@ namespace Duality
 		/// <returns>The lowest value.</returns>
 		public static float Min(float v1, float v2)
 		{
-			return System.Math.Min(v1, v2);
+			return v1 < v2 ? v1 : v2;
 		}
 		/// <summary>
 		/// Returns the lowest of three values.
@@ -260,7 +260,10 @@ namespace Duality
 		/// <returns>The lowest value.</returns>
 		public static float Min(float v1, float v2, float v3)
 		{
-			return System.Math.Min(System.Math.Min(v1, v2), v3);
+			float min = v1;
+			if (v2 < min) min = v2;
+			if (v3 < min) min = v3;
+			return min;
 		}
 		/// <summary>
 		/// Returns the lowest of four values.
@@ -272,7 +275,11 @@ namespace Duality
 		/// <returns>The lowest value.</returns>
 		public static float Min(float v1, float v2, float v3, float v4)
 		{
-			return System.Math.Min(System.Math.Min(System.Math.Min(v1, v2), v3), v4);
+			float min = v1;
+			if (v2 < min) min = v2;
+			if (v3 < min) min = v3;
+			if (v4 < min) min = v4;
+			return min;
 		}
 		/// <summary>
 		/// Returns the lowest of any number of values.
@@ -281,7 +288,12 @@ namespace Duality
 		/// <returns>The lowest value.</returns>
 		public static float Min(params float[] v)
 		{
-			return v.Min();
+			float min = v[0];
+			for (int i = 1; i < v.Length; i++)
+			{
+				if (v[i] < min) min = v[i];
+			}
+			return min;
 		}
 		/// <summary>
 		/// Returns the lower of two values.
@@ -291,7 +303,7 @@ namespace Duality
 		/// <returns>The lowest value.</returns>
 		public static int Min(int v1, int v2)
 		{
-			return System.Math.Min(v1, v2);
+			return v1 < v2 ? v1 : v2;
 		}
 		/// <summary>
 		/// Returns the lowest of three values.
@@ -302,7 +314,10 @@ namespace Duality
 		/// <returns>The lowest value.</returns>
 		public static int Min(int v1, int v2, int v3)
 		{
-			return System.Math.Min(System.Math.Min(v1, v2), v3);
+			int min = v1;
+			if (v2 < min) min = v2;
+			if (v3 < min) min = v3;
+			return min;
 		}
 		/// <summary>
 		/// Returns the lowest of four values.
@@ -314,7 +329,11 @@ namespace Duality
 		/// <returns>The lowest value.</returns>
 		public static int Min(int v1, int v2, int v3, int v4)
 		{
-			return System.Math.Min(System.Math.Min(System.Math.Min(v1, v2), v3), v4);
+			int min = v1;
+			if (v2 < min) min = v2;
+			if (v3 < min) min = v3;
+			if (v4 < min) min = v4;
+			return min;
 		}
 		/// <summary>
 		/// Returns the lowest of any number of values.
@@ -323,7 +342,12 @@ namespace Duality
 		/// <returns>The lowest value.</returns>
 		public static int Min(params int[] v)
 		{
-			return v.Min();
+			int min = v[0];
+			for (int i = 1; i < v.Length; i++)
+			{
+				if (v[i] < min) min = v[i];
+			}
+			return min;
 		}
 		
 		/// <summary>
@@ -334,7 +358,7 @@ namespace Duality
 		/// <returns>The highest value.</returns>
 		public static float Max(float v1, float v2)
 		{
-			return System.Math.Max(v1, v2);
+			return v1 > v2 ? v1 : v2;
 		}
 		/// <summary>
 		/// Returns the highest of three values.
@@ -345,7 +369,10 @@ namespace Duality
 		/// <returns>The highest value.</returns>
 		public static float Max(float v1, float v2, float v3)
 		{
-			return System.Math.Max(System.Math.Max(v1, v2), v3);
+			float max = v1;
+			if (v2 > max) max = v2;
+			if (v3 > max) max = v3;
+			return max;
 		}
 		/// <summary>
 		/// Returns the highest of four values.
@@ -357,7 +384,11 @@ namespace Duality
 		/// <returns>The highest value.</returns>
 		public static float Max(float v1, float v2, float v3, float v4)
 		{
-			return System.Math.Max(System.Math.Max(System.Math.Max(v1, v2), v3), v4);
+			float max = v1;
+			if (v2 > max) max = v2;
+			if (v3 > max) max = v3;
+			if (v4 > max) max = v4;
+			return max;
 		}
 		/// <summary>
 		/// Returns the highest of any number of values.
@@ -366,7 +397,12 @@ namespace Duality
 		/// <returns>The highest value.</returns>
 		public static float Max(params float[] v)
 		{
-			return v.Max();
+			float max = v[0];
+			for (int i = 1; i < v.Length; i++)
+			{
+				if (v[i] > max) max = v[i];
+			}
+			return max;
 		}
 		/// <summary>
 		/// Returns the higher of two values.
@@ -376,7 +412,7 @@ namespace Duality
 		/// <returns>The highest value.</returns>
 		public static int Max(int v1, int v2)
 		{
-			return System.Math.Max(v1, v2);
+			return v1 > v2 ? v1 : v2;
 		}
 		/// <summary>
 		/// Returns the highest of three values.
@@ -387,7 +423,10 @@ namespace Duality
 		/// <returns>The highest value.</returns>
 		public static int Max(int v1, int v2, int v3)
 		{
-			return System.Math.Max(System.Math.Max(v1, v2), v3);
+			int max = v1;
+			if (v2 > max) max = v2;
+			if (v3 > max) max = v3;
+			return max;
 		}
 		/// <summary>
 		/// Returns the highest of four values.
@@ -399,7 +438,11 @@ namespace Duality
 		/// <returns>The highest value.</returns>
 		public static int Max(int v1, int v2, int v3, int v4)
 		{
-			return System.Math.Max(System.Math.Max(System.Math.Max(v1, v2), v3), v4);
+			int max = v1;
+			if (v2 > max) max = v2;
+			if (v3 > max) max = v3;
+			if (v4 > max) max = v4;
+			return max;
 		}
 		/// <summary>
 		/// Returns the highest of any number of values.
@@ -408,7 +451,12 @@ namespace Duality
 		/// <returns>The highest value.</returns>
 		public static int Max(params int[] v)
 		{
-			return v.Max();
+			int max = v[0];
+			for (int i = 1; i < v.Length; i++)
+			{
+				if (v[i] > max) max = v[i];
+			}
+			return max;
 		}
 
 		/// <summary>
@@ -420,7 +468,7 @@ namespace Duality
 		/// <returns>The clamped value.</returns>
 		public static float Clamp(float v, float min, float max)
 		{
-			return System.Math.Max(min, System.Math.Min(v, max));
+			return v < min ? min : (v > max ? max : v);
 		}
 		/// <summary>
 		/// Clamps a value between minimum and maximum.
@@ -431,7 +479,7 @@ namespace Duality
 		/// <returns>The clamped value.</returns>
 		public static int Clamp(int v, int min, int max)
 		{
-			return System.Math.Max(min, System.Math.Min(v, max));
+			return v < min ? min : (v > max ? max : v);
 		}
 
 		/// <summary>

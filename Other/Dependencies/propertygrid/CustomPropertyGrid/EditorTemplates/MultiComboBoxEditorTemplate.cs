@@ -26,6 +26,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			get { return this.selectedObjects; }
 			set
 			{
+				if (this.IsDropDownOpened) return; // Don't override while the user is selecting
 				this.selectedObjects = value.ToList();
 				if (this.dropdown != null)
 				{

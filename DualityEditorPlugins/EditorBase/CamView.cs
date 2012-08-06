@@ -685,6 +685,8 @@ namespace EditorBase
 		}
 		private void glControl_GotFocus(object sender, EventArgs e)
 		{
+			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Terminated) return;
+
 			if (this.camObj.GetComponent<SoundListener>() != null)
 				this.camObj.GetComponent<SoundListener>().MakeCurrent();
 

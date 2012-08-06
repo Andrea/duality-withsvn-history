@@ -668,6 +668,34 @@ namespace Duality.Resources
 		}
 
 		/// <summary>
+		/// Does a safe (null-checked, clamped) texture <see cref="Atlas"/> lookup.
+		/// </summary>
+		/// <param name="index"></param>
+		/// <param name="uv"></param>
+		public void LookupAtlas(int index, out Rect uv)
+		{
+			if (this.atlas == null)
+			{
+				uv.X = uv.Y = 0.0f;
+				uv.W = uv.H = 1.0f;
+			}
+			else
+			{
+				uv = this.atlas[MathF.Clamp(index, 0, this.atlas.Count - 1)];
+			}
+		}
+		/// <summary>
+		/// Does a safe (null-checked, clamped) texture <see cref="Atlas"/> lookup.
+		/// </summary>
+		/// <param name="index"></param>
+		public Rect LookupAtlas(int index)
+		{
+			Rect result;
+			this.LookupAtlas(index, out result);
+			return result;
+		}
+
+		/// <summary>
 		/// Processes the specified size based on the Textures <see cref="SizeMode"/>.
 		/// </summary>
 		/// <param name="width"></param>

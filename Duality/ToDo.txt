@@ -12,6 +12,14 @@
 	-->	"Did you know..?" screen?
 
 
+-->	Improve PropertyGrid Performance when updating
+	-->	Currently, PerformGetValue forces an Invalidate() on the PropertyEditor
+	-->	Remove that and implement a manual PerformGetValue() whenever
+		the actual value changes.
+	-->	In each update, most of the values don't change, yet drawing stuff takes time.
+	-->	Increase sandbox auto-update frequency
+
+
 --> Reconsider "events" in Duality.
 	-->	Are they really necessary?
 	-->	Do they lead to difficult design on the user-side?

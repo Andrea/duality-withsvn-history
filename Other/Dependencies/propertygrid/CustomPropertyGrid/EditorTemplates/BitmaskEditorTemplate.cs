@@ -26,6 +26,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			get { return this.bitmask; }
 			set
 			{
+				if (this.IsDropDownOpened) return; // Don't override while the user is selecting
 				this.bitmask = value;
 				if (this.dropdown != null) this.dropdown.BitmaskValue = this.bitmask;;
 			}

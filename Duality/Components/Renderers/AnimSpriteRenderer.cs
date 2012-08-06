@@ -49,7 +49,6 @@ namespace Duality.Components.Renderers
 		private	float		animDuration		= 0.0f;
 		private	LoopMode	animLoopMode		= LoopMode.Loop;
 		private	float		animTime			= 0.0f;
-		private	int			animCycle			= 0;
 
 		private	VertexFormat.VertexC1P3T4A1[]	verticesSmooth	= null;
 
@@ -138,7 +137,6 @@ namespace Duality.Components.Renderers
 				{
 					int n = (int)(this.animTime / this.animDuration);
 					this.animTime -= this.animDuration * n;
-					this.animCycle += n;
 				}
 			}
 			else if (this.animLoopMode == LoopMode.Once)
@@ -147,27 +145,14 @@ namespace Duality.Components.Renderers
 			}
 			else if (this.animLoopMode == LoopMode.PingPong)
 			{
-				if (this.animCycle % 2 == 0)
+				float frameTime = this.animDuration / this.animFrameCount;
+				float pingpongDuration = (this.animDuration - frameTime) * 2.0f;
+
+				this.animTime += Time.TimeMult * Time.SPFMult;
+				if (this.animTime > pingpongDuration)
 				{
-					this.animTime += Time.TimeMult * Time.SPFMult;
-					if (this.animTime > this.animDuration)
-					{
-						int n = (int)(this.animTime / this.animDuration);
-						if (n % 2 == 1) this.animTime = this.animDuration;
-						else this.animTime = 0.0f;
-						this.animCycle += n;
-					}
-				}
-				else
-				{
-					this.animTime -= Time.TimeMult * Time.SPFMult;
-					if (this.animTime < 0.0f)
-					{
-						int n = (int)((this.animDuration - this.animTime) / this.animDuration);
-						if (n % 2 == 1) this.animTime = 0.0f;
-						else this.animTime = this.animDuration;
-						this.animCycle += n;
-					}
+					int n = (int)(this.animTime / pingpongDuration);
+					this.animTime -= pingpongDuration * n;
 				}
 			}
 		}
@@ -250,51 +235,60 @@ namespace Duality.Components.Renderers
 			int nextAnimFrame = 0;
 			curAnimFrameFade = 0.0f;
 
-			if (mainTex != null)
+			if (isAnimated)
 			{
-				if (isAnimated)
-				{
-					float frameTemp = this.animFrameCount * this.animTime / this.animDuration;
-					curAnimFrame = this.animFirstFrame + MathF.Clamp((int)frameTemp, 0, this.animFrameCount - 1);
-					curAnimFrame = MathF.Clamp(curAnimFrame, 0, mainTex.Atlas.Count - 1);
+				// Calculate currently visible frame
+				float frameTemp = this.animFrameCount * this.animTime / this.animDuration;
+				curAnimFrame = (int)frameTemp;
 
-					if (smoothShaderInput)
+				// Handle extended frame range for ping pong mode
+				if (this.animLoopMode == LoopMode.PingPong)
+				{
+					if (curAnimFrame >= this.animFrameCount)
+						curAnimFrame = (this.animFrameCount - 1) * 2 - curAnimFrame;
+				}
+
+				// Translate and clamp selected animation frame, then do a UV lookup in the texture atlas
+				mainTex.LookupAtlas(this.animFirstFrame + MathF.Clamp(curAnimFrame, 0, this.animFrameCount - 1), out uvRect);
+
+				// Calculate second frame and fade value
+				if (smoothShaderInput)
+				{
+					curAnimFrameFade = frameTemp - (int)frameTemp;
+					if (this.animLoopMode == LoopMode.Loop)
 					{
-						if (this.animLoopMode == LoopMode.Loop)
+						nextAnimFrame = MathF.NormalizeVar(curAnimFrame + 1, 0, this.animFrameCount);
+					}
+					else if (this.animLoopMode == LoopMode.Once)
+					{
+						nextAnimFrame = curAnimFrame + 1;
+					}
+					else if (this.animLoopMode == LoopMode.PingPong)
+					{
+						if ((int)frameTemp < this.animFrameCount)
 						{
-							nextAnimFrame = MathF.NormalizeVar(curAnimFrame + 1, this.animFirstFrame, this.animFirstFrame + this.animFrameCount);
-							nextAnimFrame = MathF.Clamp(nextAnimFrame, 0, mainTex.Atlas.Count - 1);
-							curAnimFrameFade = frameTemp - (int)frameTemp;
+							nextAnimFrame = curAnimFrame + 1;
+							if (nextAnimFrame >= this.animFrameCount)
+								nextAnimFrame = (this.animFrameCount - 1) * 2 - nextAnimFrame;
 						}
-						else if (this.animLoopMode == LoopMode.Once)
+						else
 						{
-							nextAnimFrame = MathF.Clamp(curAnimFrame + 1, this.animFirstFrame, this.animFirstFrame + this.animFrameCount - 1);
-							nextAnimFrame = MathF.Clamp(nextAnimFrame, 0, mainTex.Atlas.Count - 1);
-							curAnimFrameFade = frameTemp - (int)frameTemp;
-						}
-						else if (this.animLoopMode == LoopMode.PingPong)
-						{
-							if (this.animCycle % 2 == 0)
-							{
-								nextAnimFrame = MathF.Clamp(curAnimFrame + 1, this.animFirstFrame, this.animFirstFrame + this.animFrameCount - 1);
-								nextAnimFrame = MathF.Clamp(nextAnimFrame, 0, mainTex.Atlas.Count - 1);
-								curAnimFrameFade = frameTemp - (int)frameTemp;
-							}
-							else
-							{
-								nextAnimFrame = MathF.Clamp(curAnimFrame - 1, this.animFirstFrame, this.animFirstFrame + this.animFrameCount - 1);
-								nextAnimFrame = MathF.Clamp(nextAnimFrame, 0, mainTex.Atlas.Count - 1);
-								curAnimFrameFade = 1.0f + MathF.Min((int)frameTemp, this.animFrameCount - 1) - frameTemp;
-							}
+							nextAnimFrame = curAnimFrame - 1;
+							if (nextAnimFrame < 0)
+								nextAnimFrame = -nextAnimFrame;
 						}
 					}
 
-					uvRect = mainTex.Atlas[curAnimFrame];
-					uvRectNext = mainTex.Atlas[nextAnimFrame];
+					// Translate and clamp selected animation frame, then do a UV lookup in the texture atlas
+					mainTex.LookupAtlas(this.animFirstFrame + MathF.Clamp(nextAnimFrame, 0, this.animFrameCount - 1), out uvRectNext);
 				}
 				else
-					uvRect = uvRectNext = new Rect(mainTex.UVRatio.X, mainTex.UVRatio.Y);
+					uvRectNext = uvRect;
+
+
 			}
+			else if (mainTex != null)
+				uvRect = uvRectNext = new Rect(mainTex.UVRatio.X, mainTex.UVRatio.Y);
 			else
 				uvRect = uvRectNext = new Rect(1.0f, 1.0f);
 		}
@@ -328,7 +322,6 @@ namespace Duality.Components.Renderers
 		{
 			base.CopyToInternal(target, provider);
 			AnimSpriteRenderer t = target as AnimSpriteRenderer;
-			t.animCycle = this.animCycle;
 			t.animDuration = this.animDuration;
 			t.animFirstFrame = this.animFirstFrame;
 			t.animFrameCount = this.animFrameCount;

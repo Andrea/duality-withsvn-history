@@ -1285,7 +1285,7 @@ namespace DualityEditor
 				var unsavedResTemp = this.UnsavedResources.ToArray();
 				if (unsavedResTemp.Any())
 				{
-					string unsavedResText = unsavedResTemp.Take(5).ToString(r => r.FullName, "\n");
+					string unsavedResText = unsavedResTemp.Take(5).ToString(r => r.GetType().GetTypeCSCodeName(true) + " " + r.FullName, "\n");
 					if (unsavedResTemp.Count() > 5) 
 						unsavedResText += "\n" + string.Format(EditorRes.GeneralRes.Msg_ConfirmQuitUnsaved_Desc_More, unsavedResTemp.Count() - 5);
 					DialogResult result = MessageBox.Show(
