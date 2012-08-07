@@ -12,6 +12,10 @@
 	-->	"Did you know..?" screen?
 
 
+-->	When copying or moving files in the project view, assure they're not
+	in a modified state. Pop up a MessageBox to ask whether they should be saved
+	before (Yes / No / Cancel)
+	
 --> Reconsider "events" in Duality.
 	-->	Are they really necessary?
 	-->	Do they lead to difficult design on the user-side?
