@@ -27,7 +27,7 @@ namespace DualityEditor.CorePluginInterface
 			//System.Diagnostics.Stopwatch w2 = new System.Diagnostics.Stopwatch();
 			//w.Restart();
 
-			var generators = CorePluginHelper.RequestPreviewGenerators().ToArray();
+			var generators = CorePluginRegistry.RequestPreviewGenerators().ToArray();
 			generators.StableSort((g1, g2) => g2.Priority - g1.Priority);
 
 			ConvertOperation convert = new ConvertOperation(new[] { obj }, ConvertOperation.Operation.Convert);
@@ -79,7 +79,7 @@ namespace DualityEditor.CorePluginInterface
 	{
 		public virtual int Priority
 		{
-			get { return CorePluginHelper.Priority_General; }
+			get { return CorePluginRegistry.Priority_General; }
 		}
 		public Type ObjectType
 		{

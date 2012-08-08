@@ -103,9 +103,9 @@ namespace EditorBase
 			}
 			public void UpdateIcon()
 			{
-				this.Image = CorePluginHelper.RequestTypeImage(typeof(GameObject), obj.PrefabLink == null ? 
-					CorePluginHelper.ImageContext_Icon : 
-					CorePluginHelper.ImageContext_Icon + (obj.PrefabLink.Prefab.IsAvailable ? "_Link" : "_Link_Broken"));
+				this.Image = CorePluginRegistry.RequestTypeImage(typeof(GameObject), obj.PrefabLink == null ? 
+					CorePluginRegistry.ImageContext_Icon : 
+					CorePluginRegistry.ImageContext_Icon + (obj.PrefabLink.Prefab.IsAvailable ? "_Link" : "_Link_Broken"));
 			}
 		}
 		public class ComponentNode : NodeBase
@@ -133,13 +133,13 @@ namespace EditorBase
 
 			public static Image GetTypeImage(Type type)
 			{
-				Image result = CorePluginHelper.RequestTypeImage(type, CorePluginHelper.ImageContext_Icon);
+				Image result = CorePluginRegistry.RequestTypeImage(type, CorePluginRegistry.ImageContext_Icon);
 				if (result == null) result = PluginRes.EditorBaseRes.IconCmpUnknown;
 				return result;
 			}
 			public static string[] GetTypeCategory(Type type)
 			{
-				string[] result = CorePluginHelper.RequestTypeCategory(type, CorePluginHelper.CategoryContext_General);
+				string[] result = CorePluginRegistry.RequestTypeCategory(type, CorePluginRegistry.CategoryContext_General);
 				if (result == null) result = new string[] { type.Assembly.FullName.Split(',')[0].Replace(".core", "") };
 				return result;
 			}
@@ -572,12 +572,12 @@ namespace EditorBase
 		}
 		protected IEditorAction GetResourceOpenAction(GameObject obj)
 		{
-			var actions = CorePluginHelper.RequestEditorActions<GameObject>(CorePluginHelper.ActionContext_OpenRes, new[] { obj });
+			var actions = CorePluginRegistry.RequestEditorActions<GameObject>(CorePluginRegistry.ActionContext_OpenRes, new[] { obj });
 			return actions == null ? null : actions.FirstOrDefault();
 		}
 		protected IEditorAction GetResourceOpenAction(Component cmp)
 		{
-			var actions = CorePluginHelper.RequestEditorActions(cmp.GetType(), CorePluginHelper.ActionContext_OpenRes, new[] { cmp });
+			var actions = CorePluginRegistry.RequestEditorActions(cmp.GetType(), CorePluginRegistry.ActionContext_OpenRes, new[] { cmp });
 			return actions == null ? null : actions.FirstOrDefault();
 		}
 
@@ -1275,9 +1275,9 @@ namespace EditorBase
 			{
 				this.toolStripSeparatorCustomActions.Visible = true;
 				int baseIndex = this.contextMenuNode.Items.IndexOf(this.toolStripSeparatorCustomActions);
-				var customActions = CorePluginHelper.RequestEditorActions(
+				var customActions = CorePluginRegistry.RequestEditorActions(
 					mainResType, 
-					CorePluginHelper.ActionContext_ContextMenu, 
+					CorePluginRegistry.ActionContext_ContextMenu, 
 					selObjData)
 					.ToArray();
 				foreach (var actionEntry in customActions)
@@ -1295,7 +1295,7 @@ namespace EditorBase
 				this.toolStripSeparatorCustomActions.Visible = false;
 
 			// Reset "New" menu to original state
-			this.gameObjectToolStripMenuItem.Image = CorePluginHelper.RequestTypeImage(typeof(GameObject), CorePluginHelper.ImageContext_Icon);
+			this.gameObjectToolStripMenuItem.Image = CorePluginRegistry.RequestTypeImage(typeof(GameObject), CorePluginRegistry.ImageContext_Icon);
 			this.newGameObjectSeparator.Visible = gameObjSelect;
 
 			List<ToolStripItem> oldItems = new List<ToolStripItem>(this.newToolStripMenuItem.DropDownItems.OfType<ToolStripItem>());

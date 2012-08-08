@@ -46,7 +46,7 @@ namespace Duality
 			if (baseDirIsFile) return false;
 
 			path = Path.GetFullPath(path);
-			baseDir = Path.GetFullPath(baseDir);
+			baseDir = Path.GetDirectoryName(Path.GetFullPath(baseDir));
 			do
 			{
 				path = Path.GetDirectoryName(path);

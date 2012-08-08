@@ -239,11 +239,11 @@ namespace EditorBase
 			{
 				Image result = null;
 				if (type == typeof(Duality.Resources.Prefab))
-					result = CorePluginHelper.RequestTypeImage(type, (resLink.IsAvailable && (resLink.Res as Duality.Resources.Prefab).ContainsData) ? 
-						CorePluginHelper.ImageContext_Icon + "_Full" : 
-						CorePluginHelper.ImageContext_Icon);
+					result = CorePluginRegistry.RequestTypeImage(type, (resLink.IsAvailable && (resLink.Res as Duality.Resources.Prefab).ContainsData) ? 
+						CorePluginRegistry.ImageContext_Icon + "_Full" : 
+						CorePluginRegistry.ImageContext_Icon);
 				else
-					result = CorePluginHelper.RequestTypeImage(type, CorePluginHelper.ImageContext_Icon);
+					result = CorePluginRegistry.RequestTypeImage(type, CorePluginRegistry.ImageContext_Icon);
 
 				if (result == null) result = PluginRes.EditorBaseRes.IconResUnknown;
 
@@ -255,7 +255,7 @@ namespace EditorBase
 			}
 			public static string[] GetTypeCategory(Type type)
 			{
-				string[] result = CorePluginHelper.RequestTypeCategory(type, CorePluginHelper.CategoryContext_General);
+				string[] result = CorePluginRegistry.RequestTypeCategory(type, CorePluginRegistry.CategoryContext_General);
 				if (result == null) result = new string[] { type.Assembly.FullName.Split(',')[0].Replace(".core", "") };
 				return result;
 			}
@@ -265,6 +265,7 @@ namespace EditorBase
 		private	Dictionary<string,NodeBase>	pathIdToNode	= new Dictionary<string,NodeBase>();
 		private	TreeModel					folderModel		= null;
 		private	NodeBase					lastEditedNode	= null;
+		private System.Drawing.Font			treeFontItalic	= null;
 
 		private	NodeBase	flashNode		= null;
 		private	float		flashDuration	= 0.0f;
@@ -282,6 +283,8 @@ namespace EditorBase
 		public ProjectFolderView()
 		{
 			this.InitializeComponent();
+
+			this.treeFontItalic = new System.Drawing.Font(this.folderView.Font, FontStyle.Italic);
 
 			this.folderView.DefaultToolTipProvider = this;
 			this.folderModel = new TreeModel();
@@ -308,6 +311,8 @@ namespace EditorBase
 			MainForm.Instance.ResourceDeleted += this.EditorForm_ResourceDeleted;
 			MainForm.Instance.ResourceModified += this.EditorForm_ResourceModified;
 			MainForm.Instance.ResourceRenamed += this.EditorForm_ResourceRenamed;
+			MainForm.Instance.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
+			Resource.ResourceSaved += this.Resource_ResourceSaved;
 		}
 		protected override void OnClosed(EventArgs e)
 		{
@@ -317,6 +322,8 @@ namespace EditorBase
 			MainForm.Instance.ResourceDeleted -= this.EditorForm_ResourceDeleted;
 			MainForm.Instance.ResourceModified -= this.EditorForm_ResourceModified;
 			MainForm.Instance.ResourceRenamed -= this.EditorForm_ResourceRenamed;
+			MainForm.Instance.ObjectPropertyChanged -= this.EditorForm_ObjectPropertyChanged;
+			Resource.ResourceSaved -= this.Resource_ResourceSaved;
 		}
 
 		public void FlashNode(NodeBase node)
@@ -661,7 +668,7 @@ namespace EditorBase
 			if (resNode == null) return null;
 
 			// Determine applying open actions
-			var actions = CorePluginHelper.RequestEditorActions(resNode.ResType, CorePluginHelper.ActionContext_OpenRes, new[] { resNode.ResLink.Res });
+			var actions = CorePluginRegistry.RequestEditorActions(resNode.ResType, CorePluginRegistry.ActionContext_OpenRes, new[] { resNode.ResLink.Res });
 
 			// Perform first open action
 			return actions.FirstOrDefault();
@@ -1009,12 +1016,17 @@ namespace EditorBase
 		private void nodeTextBoxName_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawEventArgs e)
 		{
 			NodeBase node = e.Node.Tag as NodeBase;
+			ResourceNode resNode = node as ResourceNode;
 
 			// Readonly nodes
 			if (node.ReadOnly)
 				e.TextColor = Color.FromArgb(192, 0, 0, 32);
 			else
 				e.TextColor = Color.Black;
+
+			// Unsaved nodes
+			if (resNode != null && MainForm.Instance.IsResourceUnsaved(resNode.ResLink))
+				e.Font = this.treeFontItalic;
 
 			// Flashing
 			if (node == this.flashNode && !e.Context.Bounds.IsEmpty)
@@ -1229,9 +1241,9 @@ namespace EditorBase
 			{
 				this.toolStripSeparatorCustomActions.Visible = true;
 				int baseIndex = this.contextMenuNode.Items.IndexOf(this.toolStripSeparatorCustomActions);
-				var customActions = CorePluginHelper.RequestEditorActions(
+				var customActions = CorePluginRegistry.RequestEditorActions(
 					mainResType, 
-					CorePluginHelper.ActionContext_ContextMenu, 
+					CorePluginRegistry.ActionContext_ContextMenu, 
 					selResData.Select(resRef => resRef.Res))
 					.ToArray();
 				foreach (var actionEntry in customActions)
@@ -1467,6 +1479,16 @@ namespace EditorBase
 
 			// Perform previously scheduled selection
 			this.PerformScheduleSelect(Path.GetFullPath(e.Path));
+		}
+		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
+		{
+			// If a Resources modified state changes, invalidate
+			if (e.Objects.Resources.Any()) this.folderView.Invalidate();
+		}
+		private void Resource_ResourceSaved(object sender, ResourceEventArgs e)
+		{
+			// If a Resources modified state changes, invalidate
+			this.folderView.Invalidate();
 		}
 
 		HelpInfo IHelpProvider.ProvideHoverHelp(Point localPos, ref bool captured)

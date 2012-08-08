@@ -17,7 +17,7 @@ namespace EditorBase.DataConverters
 	{
 		public override int Priority
 		{
-			get { return CorePluginHelper.Priority_Specialized; }
+			get { return CorePluginRegistry.Priority_Specialized; }
 		}
 
 		public override bool CanConvertFrom(ConvertOperation convert)
@@ -221,7 +221,7 @@ namespace EditorBase.DataConverters
 	{
 		public override int Priority
 		{
-			get { return CorePluginHelper.Priority_Specialized; }
+			get { return CorePluginRegistry.Priority_Specialized; }
 		}
 
 		public override bool CanConvertFrom(ConvertOperation convert)

@@ -139,95 +139,101 @@ namespace EditorBase
 			base.LoadPlugin();
 
 			// Register core resource lookups
-			CorePluginHelper.RegisterTypeImage(typeof(DrawTechnique), EditorBaseRes.IconResDrawTechnique, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(FragmentShader), EditorBaseRes.IconResFragmentShader, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(Material), EditorBaseRes.IconResMaterial, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(Pixmap), EditorBaseRes.IconResPixmap, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(Prefab), EditorBaseRes.IconResPrefabFull, CorePluginHelper.ImageContext_Icon + "_Full");
-			CorePluginHelper.RegisterTypeImage(typeof(Prefab), EditorBaseRes.IconResPrefabEmpty, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(RenderTarget), EditorBaseRes.IconResRenderTarget, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(ShaderProgram), EditorBaseRes.IconResShaderProgram, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(Texture), EditorBaseRes.IconResTexture, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(VertexShader), EditorBaseRes.IconResVertexShader, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(Scene), EditorBaseRes.IconResScene, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(AudioData), EditorBaseRes.IconResAudioData, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(Sound), EditorBaseRes.IconResSound, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(Font), EditorBaseRes.IconResFont, CorePluginHelper.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(DrawTechnique), EditorBaseRes.IconResDrawTechnique, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(FragmentShader), EditorBaseRes.IconResFragmentShader, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(Material), EditorBaseRes.IconResMaterial, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(Pixmap), EditorBaseRes.IconResPixmap, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(Prefab), EditorBaseRes.IconResPrefabFull, CorePluginRegistry.ImageContext_Icon + "_Full");
+			CorePluginRegistry.RegisterTypeImage(typeof(Prefab), EditorBaseRes.IconResPrefabEmpty, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(RenderTarget), EditorBaseRes.IconResRenderTarget, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(ShaderProgram), EditorBaseRes.IconResShaderProgram, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(Texture), EditorBaseRes.IconResTexture, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(VertexShader), EditorBaseRes.IconResVertexShader, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(Scene), EditorBaseRes.IconResScene, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(AudioData), EditorBaseRes.IconResAudioData, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(Sound), EditorBaseRes.IconResSound, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(Font), EditorBaseRes.IconResFont, CorePluginRegistry.ImageContext_Icon);
 
-			CorePluginHelper.RegisterTypeImage(typeof(GameObject), EditorBaseRes.IconGameObj, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(GameObject), EditorBaseRes.IconGameObjLink, CorePluginHelper.ImageContext_Icon + "_Link");
-			CorePluginHelper.RegisterTypeImage(typeof(GameObject), EditorBaseRes.IconGameObjLinkBroken, CorePluginHelper.ImageContext_Icon + "_Link_Broken");
-			CorePluginHelper.RegisterTypeImage(typeof(Component), EditorBaseRes.IconCmpUnknown, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(SpriteRenderer), EditorBaseRes.IconCmpSpriteRenderer, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(AnimSpriteRenderer), EditorBaseRes.IconCmpSpriteRenderer, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(TextRenderer), EditorBaseRes.IconResFont, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(Transform), EditorBaseRes.IconCmpTransform, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(Camera), EditorBaseRes.IconCmpCamera, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(SoundEmitter), EditorBaseRes.IconResSound, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(SoundListener), EditorBaseRes.IconCmpSoundListener, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(RigidBody), EditorBaseRes.IconCmpRectCollider, CorePluginHelper.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(GameObject), EditorBaseRes.IconGameObj, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(GameObject), EditorBaseRes.IconGameObjLink, CorePluginRegistry.ImageContext_Icon + "_Link");
+			CorePluginRegistry.RegisterTypeImage(typeof(GameObject), EditorBaseRes.IconGameObjLinkBroken, CorePluginRegistry.ImageContext_Icon + "_Link_Broken");
+			CorePluginRegistry.RegisterTypeImage(typeof(Component), EditorBaseRes.IconCmpUnknown, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(SpriteRenderer), EditorBaseRes.IconCmpSpriteRenderer, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(AnimSpriteRenderer), EditorBaseRes.IconCmpSpriteRenderer, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(TextRenderer), EditorBaseRes.IconResFont, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(Transform), EditorBaseRes.IconCmpTransform, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(Camera), EditorBaseRes.IconCmpCamera, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(SoundEmitter), EditorBaseRes.IconResSound, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(SoundListener), EditorBaseRes.IconCmpSoundListener, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(RigidBody), EditorBaseRes.IconCmpRectCollider, CorePluginRegistry.ImageContext_Icon);
 
-			CorePluginHelper.RegisterTypeCategory(typeof(Transform), "", CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(SpriteRenderer), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(AnimSpriteRenderer), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(TextRenderer), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(Camera), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(SoundEmitter), GeneralRes.Category_Sound, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(SoundListener), GeneralRes.Category_Sound, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(RigidBody), GeneralRes.Category_Physics, CorePluginHelper.CategoryContext_General);
+			CorePluginRegistry.RegisterTypeCategory(typeof(Transform), "", CorePluginRegistry.CategoryContext_General);
+			CorePluginRegistry.RegisterTypeCategory(typeof(SpriteRenderer), GeneralRes.Category_Graphics, CorePluginRegistry.CategoryContext_General);
+			CorePluginRegistry.RegisterTypeCategory(typeof(AnimSpriteRenderer), GeneralRes.Category_Graphics, CorePluginRegistry.CategoryContext_General);
+			CorePluginRegistry.RegisterTypeCategory(typeof(TextRenderer), GeneralRes.Category_Graphics, CorePluginRegistry.CategoryContext_General);
+			CorePluginRegistry.RegisterTypeCategory(typeof(Camera), GeneralRes.Category_Graphics, CorePluginRegistry.CategoryContext_General);
+			CorePluginRegistry.RegisterTypeCategory(typeof(SoundEmitter), GeneralRes.Category_Sound, CorePluginRegistry.CategoryContext_General);
+			CorePluginRegistry.RegisterTypeCategory(typeof(SoundListener), GeneralRes.Category_Sound, CorePluginRegistry.CategoryContext_General);
+			CorePluginRegistry.RegisterTypeCategory(typeof(RigidBody), GeneralRes.Category_Physics, CorePluginRegistry.CategoryContext_General);
 
-			CorePluginHelper.RegisterTypeCategory(typeof(Scene), "", CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(Prefab), "", CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(Pixmap), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(Texture), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(Material), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(Font), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(RenderTarget), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(DrawTechnique), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(ShaderProgram), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(VertexShader), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(FragmentShader), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(AudioData), GeneralRes.Category_Sound, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(Sound), GeneralRes.Category_Sound, CorePluginHelper.CategoryContext_General);
+			CorePluginRegistry.RegisterTypeCategory(typeof(Scene), "", CorePluginRegistry.CategoryContext_General);
+			CorePluginRegistry.RegisterTypeCategory(typeof(Prefab), "", CorePluginRegistry.CategoryContext_General);
+			CorePluginRegistry.RegisterTypeCategory(typeof(Pixmap), GeneralRes.Category_Graphics, CorePluginRegistry.CategoryContext_General);
+			CorePluginRegistry.RegisterTypeCategory(typeof(Texture), GeneralRes.Category_Graphics, CorePluginRegistry.CategoryContext_General);
+			CorePluginRegistry.RegisterTypeCategory(typeof(Material), GeneralRes.Category_Graphics, CorePluginRegistry.CategoryContext_General);
+			CorePluginRegistry.RegisterTypeCategory(typeof(Font), GeneralRes.Category_Graphics, CorePluginRegistry.CategoryContext_General);
+			CorePluginRegistry.RegisterTypeCategory(typeof(RenderTarget), GeneralRes.Category_Graphics, CorePluginRegistry.CategoryContext_General);
+			CorePluginRegistry.RegisterTypeCategory(typeof(DrawTechnique), GeneralRes.Category_Graphics, CorePluginRegistry.CategoryContext_General);
+			CorePluginRegistry.RegisterTypeCategory(typeof(ShaderProgram), GeneralRes.Category_Graphics, CorePluginRegistry.CategoryContext_General);
+			CorePluginRegistry.RegisterTypeCategory(typeof(VertexShader), GeneralRes.Category_Graphics, CorePluginRegistry.CategoryContext_General);
+			CorePluginRegistry.RegisterTypeCategory(typeof(FragmentShader), GeneralRes.Category_Graphics, CorePluginRegistry.CategoryContext_General);
+			CorePluginRegistry.RegisterTypeCategory(typeof(AudioData), GeneralRes.Category_Sound, CorePluginRegistry.CategoryContext_General);
+			CorePluginRegistry.RegisterTypeCategory(typeof(Sound), GeneralRes.Category_Sound, CorePluginRegistry.CategoryContext_General);
 
 			// Register conversion actions
-			CorePluginHelper.RegisterEditorAction(new EditorAction<Pixmap>				(EditorBaseRes.ActionName_CreateTexture,		EditorBaseRes.IconResTexture,		p => Texture.CreateFromPixmap(p),	EditorBaseRes.ActionDesc_CreateTexture),		CorePluginHelper.ActionContext_ContextMenu);
-			CorePluginHelper.RegisterEditorAction(new EditorAction<Texture>				(EditorBaseRes.ActionName_CreateMaterial,		EditorBaseRes.IconResMaterial,		t => Material.CreateFromTexture(t), EditorBaseRes.ActionDesc_CreateMaterial),		CorePluginHelper.ActionContext_ContextMenu);
-			CorePluginHelper.RegisterEditorAction(new EditorAction<AudioData>			(EditorBaseRes.ActionName_CreateSound,			EditorBaseRes.IconResSound,			a => Sound.CreateFromAudioData(a),	EditorBaseRes.ActionDesc_CreateSound),			CorePluginHelper.ActionContext_ContextMenu);
-			CorePluginHelper.RegisterEditorAction(new EditorGroupAction<AbstractShader>	(EditorBaseRes.ActionName_CreateShaderProgram,	EditorBaseRes.IconResShaderProgram, this.ActionShaderCreateProgram,		EditorBaseRes.ActionDesc_CreateShaderProgram),	CorePluginHelper.ActionContext_ContextMenu);
+			CorePluginRegistry.RegisterEditorAction(new EditorAction<Pixmap>				(EditorBaseRes.ActionName_CreateTexture,		EditorBaseRes.IconResTexture,		p => Texture.CreateFromPixmap(p),	EditorBaseRes.ActionDesc_CreateTexture),		CorePluginRegistry.ActionContext_ContextMenu);
+			CorePluginRegistry.RegisterEditorAction(new EditorAction<Texture>				(EditorBaseRes.ActionName_CreateMaterial,		EditorBaseRes.IconResMaterial,		t => Material.CreateFromTexture(t), EditorBaseRes.ActionDesc_CreateMaterial),		CorePluginRegistry.ActionContext_ContextMenu);
+			CorePluginRegistry.RegisterEditorAction(new EditorAction<AudioData>			(EditorBaseRes.ActionName_CreateSound,			EditorBaseRes.IconResSound,			a => Sound.CreateFromAudioData(a),	EditorBaseRes.ActionDesc_CreateSound),			CorePluginRegistry.ActionContext_ContextMenu);
+			CorePluginRegistry.RegisterEditorAction(new EditorGroupAction<AbstractShader>	(EditorBaseRes.ActionName_CreateShaderProgram,	EditorBaseRes.IconResShaderProgram, this.ActionShaderCreateProgram,		EditorBaseRes.ActionDesc_CreateShaderProgram),	CorePluginRegistry.ActionContext_ContextMenu);
 
 			// Register open actions
-			CorePluginHelper.RegisterEditorAction(new EditorAction<Pixmap>			(null, null, this.ActionPixmapOpenRes,			EditorBaseRes.ActionDesc_OpenResourceExternal), CorePluginHelper.ActionContext_OpenRes);
-			CorePluginHelper.RegisterEditorAction(new EditorAction<AudioData>		(null, null, this.ActionAudioDataOpenRes,		EditorBaseRes.ActionDesc_OpenResourceExternal), CorePluginHelper.ActionContext_OpenRes);
-			CorePluginHelper.RegisterEditorAction(new EditorAction<AbstractShader>	(null, null, this.ActionAbstractShaderOpenRes,	EditorBaseRes.ActionDesc_OpenResourceExternal), CorePluginHelper.ActionContext_OpenRes);
-			CorePluginHelper.RegisterEditorAction(new EditorAction<Prefab>			(null, null, this.ActionPrefabOpenRes,			EditorBaseRes.ActionDesc_InstantiatePrefab),	CorePluginHelper.ActionContext_OpenRes);
-			CorePluginHelper.RegisterEditorAction(new EditorAction<Scene>			(null, null, this.ActionSceneOpenRes,			EditorBaseRes.ActionDesc_OpenScene),			CorePluginHelper.ActionContext_OpenRes);
-			CorePluginHelper.RegisterEditorAction(new EditorAction<GameObject>		(null, null, this.ActionGameObjectOpenRes,		EditorBaseRes.ActionDesc_FocusGameObject,		g => g.Transform != null),			CorePluginHelper.ActionContext_OpenRes);
-			CorePluginHelper.RegisterEditorAction(new EditorAction<Component>		(null, null, this.ActionComponentOpenRes,		EditorBaseRes.ActionDesc_FocusGameObject,		c => c.GameObj.Transform != null),	CorePluginHelper.ActionContext_OpenRes);
+			CorePluginRegistry.RegisterEditorAction(new EditorAction<Pixmap>			(null, null, this.ActionPixmapOpenRes,			EditorBaseRes.ActionDesc_OpenResourceExternal), CorePluginRegistry.ActionContext_OpenRes);
+			CorePluginRegistry.RegisterEditorAction(new EditorAction<AudioData>		(null, null, this.ActionAudioDataOpenRes,		EditorBaseRes.ActionDesc_OpenResourceExternal), CorePluginRegistry.ActionContext_OpenRes);
+			CorePluginRegistry.RegisterEditorAction(new EditorAction<AbstractShader>	(null, null, this.ActionAbstractShaderOpenRes,	EditorBaseRes.ActionDesc_OpenResourceExternal), CorePluginRegistry.ActionContext_OpenRes);
+			CorePluginRegistry.RegisterEditorAction(new EditorAction<Prefab>			(null, null, this.ActionPrefabOpenRes,			EditorBaseRes.ActionDesc_InstantiatePrefab),	CorePluginRegistry.ActionContext_OpenRes);
+			CorePluginRegistry.RegisterEditorAction(new EditorAction<Scene>			(null, null, this.ActionSceneOpenRes,			EditorBaseRes.ActionDesc_OpenScene),			CorePluginRegistry.ActionContext_OpenRes);
+			CorePluginRegistry.RegisterEditorAction(new EditorAction<GameObject>		(null, null, this.ActionGameObjectOpenRes,		EditorBaseRes.ActionDesc_FocusGameObject,		g => g.Transform != null),			CorePluginRegistry.ActionContext_OpenRes);
+			CorePluginRegistry.RegisterEditorAction(new EditorAction<Component>		(null, null, this.ActionComponentOpenRes,		EditorBaseRes.ActionDesc_FocusGameObject,		c => c.GameObj.Transform != null),	CorePluginRegistry.ActionContext_OpenRes);
 
 			// Register data converters
-			CorePluginHelper.RegisterDataConverter<GameObject>(new DataConverters.GameObjFromPrefab());
-			CorePluginHelper.RegisterDataConverter<GameObject>(new DataConverters.GameObjFromComponents());
-			CorePluginHelper.RegisterDataConverter<Component>(new DataConverters.ComponentFromSound());
-			CorePluginHelper.RegisterDataConverter<Component>(new DataConverters.ComponentFromMaterial());
-			CorePluginHelper.RegisterDataConverter<Component>(new DataConverters.ComponentFromFont());
-			CorePluginHelper.RegisterDataConverter<BatchInfo>(new DataConverters.BatchInfoFromMaterial());
-			CorePluginHelper.RegisterDataConverter<Material>(new DataConverters.MaterialFromBatchInfo());
-			CorePluginHelper.RegisterDataConverter<Material>(new DataConverters.MaterialFromTexture());
-			CorePluginHelper.RegisterDataConverter<Texture>(new DataConverters.TextureFromMaterial());
-			CorePluginHelper.RegisterDataConverter<Texture>(new DataConverters.TextureFromPixmap());
-			CorePluginHelper.RegisterDataConverter<Pixmap>(new DataConverters.PixmapFromTexture());
-			CorePluginHelper.RegisterDataConverter<Sound>(new DataConverters.SoundFromAudioData());
-			CorePluginHelper.RegisterDataConverter<AudioData>(new DataConverters.AudioDataFromSound());
-			CorePluginHelper.RegisterDataConverter<Prefab>(new DataConverters.PrefabFromGameObject());
+			CorePluginRegistry.RegisterDataConverter<GameObject>(new DataConverters.GameObjFromPrefab());
+			CorePluginRegistry.RegisterDataConverter<GameObject>(new DataConverters.GameObjFromComponents());
+			CorePluginRegistry.RegisterDataConverter<Component>(new DataConverters.ComponentFromSound());
+			CorePluginRegistry.RegisterDataConverter<Component>(new DataConverters.ComponentFromMaterial());
+			CorePluginRegistry.RegisterDataConverter<Component>(new DataConverters.ComponentFromFont());
+			CorePluginRegistry.RegisterDataConverter<BatchInfo>(new DataConverters.BatchInfoFromMaterial());
+			CorePluginRegistry.RegisterDataConverter<Material>(new DataConverters.MaterialFromBatchInfo());
+			CorePluginRegistry.RegisterDataConverter<Material>(new DataConverters.MaterialFromTexture());
+			CorePluginRegistry.RegisterDataConverter<Texture>(new DataConverters.TextureFromMaterial());
+			CorePluginRegistry.RegisterDataConverter<Texture>(new DataConverters.TextureFromPixmap());
+			CorePluginRegistry.RegisterDataConverter<Pixmap>(new DataConverters.PixmapFromTexture());
+			CorePluginRegistry.RegisterDataConverter<Sound>(new DataConverters.SoundFromAudioData());
+			CorePluginRegistry.RegisterDataConverter<AudioData>(new DataConverters.AudioDataFromSound());
+			CorePluginRegistry.RegisterDataConverter<Prefab>(new DataConverters.PrefabFromGameObject());
 
 			// Register preview generators
-			CorePluginHelper.RegisterPreviewGenerator(new PreviewGenerators.PixmapPreviewGenerator());
-			CorePluginHelper.RegisterPreviewGenerator(new PreviewGenerators.AudioDataPreviewGenerator());
-			CorePluginHelper.RegisterPreviewGenerator(new PreviewGenerators.FontPreviewGenerator());
+			CorePluginRegistry.RegisterPreviewGenerator(new PreviewGenerators.PixmapPreviewGenerator());
+			CorePluginRegistry.RegisterPreviewGenerator(new PreviewGenerators.AudioDataPreviewGenerator());
+			CorePluginRegistry.RegisterPreviewGenerator(new PreviewGenerators.FontPreviewGenerator());
+
+			// Register file importers
+			CorePluginRegistry.RegisterFileImporter(new PixmapFileImporter());
+			CorePluginRegistry.RegisterFileImporter(new AudioDataFileImporter());
+			CorePluginRegistry.RegisterFileImporter(new ShaderFileImporter());
+			CorePluginRegistry.RegisterFileImporter(new FontFileImporter());
 
 			// Register PropertyEditor provider
-			CorePluginHelper.RegisterPropertyEditorProvider(new PropertyEditors.PropertyEditorProvider());
+			CorePluginRegistry.RegisterPropertyEditorProvider(new PropertyEditors.PropertyEditorProvider());
 		}
 		protected override void InitPlugin(MainForm main)
 		{
@@ -256,12 +262,6 @@ namespace EditorBase
 			this.menuItemLogView.Click += this.menuItemLogView_Click;
 			this.menuItemAppData.Click += this.menuItemAppData_Click;
 			this.menuItemUserData.Click += this.menuItemUserData_Click;
-
-			// Register file importers
-			main.RegisterFileImporter(new PixmapFileImporter());
-			main.RegisterFileImporter(new AudioDataFileImporter());
-			main.RegisterFileImporter(new ShaderFileImporter());
-			main.RegisterFileImporter(new FontFileImporter());
 
 			main.ResourceModified += this.main_ResourceModified;
 			main.ObjectPropertyChanged += this.main_ObjectPropertyChanged;

@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 
 using Duality;
+using DualityEditor.CorePluginInterface;
 
 namespace DualityEditor
 {
@@ -81,7 +82,7 @@ namespace DualityEditor
 		public static HelpInfo FromMember(MemberInfo member)
 		{
 			if (member == null) return null;
-			XmlCodeDoc.Entry doc = CorePluginHelper.RequestXmlCodeDoc(member);
+			XmlCodeDoc.Entry doc = CorePluginRegistry.RequestXmlCodeDoc(member);
 
 			if (doc != null)
 			{

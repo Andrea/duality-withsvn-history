@@ -217,7 +217,7 @@ namespace DualityEditor.CorePluginInterface
 			if (!result && this.data.ContainsComponentRefs(target)) result = true;
 			if (!result)
 			{
-				result = CorePluginHelper.RequestDataConverters(target).Any(s => !this.usedConverters.Contains(s) && s.CanConvertFrom(this));
+				result = CorePluginRegistry.RequestDataConverters(target).Any(s => !this.usedConverters.Contains(s) && s.CanConvertFrom(this));
 			}
 
 			if (result) this.checkedTypes.Remove(target);
@@ -274,7 +274,7 @@ namespace DualityEditor.CorePluginInterface
 			// No result yet? Search suitable converters
 			if (!fittingDataFound)
 			{
-				var converterQuery = CorePluginHelper.RequestDataConverters(target);
+				var converterQuery = CorePluginRegistry.RequestDataConverters(target);
 				List<ConvComplexityEntry> converters = new List<ConvComplexityEntry>();
 				foreach (var c in converterQuery)
 				{
@@ -327,7 +327,7 @@ namespace DualityEditor.CorePluginInterface
 	{
 		public virtual int Priority
 		{
-			get { return CorePluginHelper.Priority_General; }
+			get { return CorePluginRegistry.Priority_General; }
 		}
 
 		public abstract bool CanConvertFrom(ConvertOperation convert);

@@ -5,6 +5,7 @@ using AdamsLair.PropertyGrid;
 
 using Duality;
 using DualityEditor;
+using DualityEditor.CorePluginInterface;
 
 namespace EditorBase.PropertyEditors
 {
@@ -41,7 +42,7 @@ namespace EditorBase.PropertyEditors
 		{
 			base.OnEditedTypeChanged();
 
-			System.Drawing.Bitmap iconBitmap = CorePluginHelper.RequestTypeImage(this.EditedType, CorePluginHelper.ImageContext_Icon) as System.Drawing.Bitmap;
+			System.Drawing.Bitmap iconBitmap = CorePluginRegistry.RequestTypeImage(this.EditedType, CorePluginRegistry.ImageContext_Icon) as System.Drawing.Bitmap;
 			Duality.ColorFormat.ColorHsva avgClr = iconBitmap != null ? iconBitmap.GetAverageColor().ToHsva() : Duality.ColorFormat.ColorHsva.TransparentBlack;
 
 			this.PropertyName = this.EditedType.GetTypeCSCodeName(true);

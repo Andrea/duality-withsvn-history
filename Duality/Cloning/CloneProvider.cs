@@ -133,7 +133,7 @@ namespace Duality.Cloning
 		/// <param name="baseObj"></param>
 		/// <param name="targetObj"></param>
 		/// <param name="fields"></param>
-		public void CopyObjectTo<T>(T baseObj, T targetObj, FieldInfo[] fields = null)
+		public void CopyObjectTo<T>(T baseObj, T targetObj, IEnumerable<FieldInfo> fields = null)
 		{
 			if (fields == null)
 			{
@@ -175,7 +175,7 @@ namespace Duality.Cloning
 
 		private bool DoesUnwrapType(Type type)
 		{
-			bool unwrap = !type.IsShallowType();
+			bool unwrap = !type.IsDeepByValueType();
 			if (this.explicitUnwrap != null)
 			{
 				unwrap = unwrap && type.IsValueType;
@@ -209,7 +209,7 @@ namespace Duality.Cloning
 			}
 
 			// Shallow types, cloned by assignment
-			if (objType.IsShallowType())
+			if (objType.IsDeepByValueType())
 			{
 				return baseObj;
 			}

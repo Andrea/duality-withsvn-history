@@ -7,15 +7,7 @@
 
 -->	Dualitor: PerformanceMonitor
 -->	Dualitor: Component Wizard
--->	Dualitor: Improve User learning curve
-	-->	More Advisor information?
-	-->	"Did you know..?" screen?
 
-
--->	When copying or moving files in the project view, assure they're not
-	in a modified state. Pop up a MessageBox to ask whether they should be saved
-	before (Yes / No / Cancel)
-	
 --> Reconsider "events" in Duality.
 	-->	Are they really necessary?
 	-->	Do they lead to difficult design on the user-side?
@@ -23,6 +15,25 @@
 	-->	Cons
 
 -->	Implement some simple Font effects?
+
+
+-->	Auto-Rename ContentRefs everywhere when moving or renaming Resources or folders
+	-->	Trigger by ProcessDataDirEvents() rename events
+	-->	Walk all Resources in the Data folder (!)
+		-->	Don't auto-save, just mark as unsaved.
+			-->	Except the current Scene when in sandbox mode.
+			--> Can't just flag it, because it will be discarded on stop.
+			-->	Can't save it, because it's modified already in an unwanted manner
+			-->	However, it has been saved before running sandbox
+			-->	Solution: Do a hard overwrite without affecting any content management.
+				-->	Resource.LoadResource<Scene>(..)	doesn't register stuff
+				-->	Resource.Save(Stream)				doesn't register stuff
+		-->	Probably open a ProcessBigTaskDialog
+	-->	Don't bother doing a rename in source code
+
+-->	Auto-Reselect the current objects when entering sandbox mode
+	-->	Because it's just annoying it doesn't already.
+
 
 
 -->	Example Project: Super Mario style platformer

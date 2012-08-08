@@ -4,6 +4,7 @@ using Duality;
 using Duality.Resources;
 
 using DualityEditor;
+using DualityEditor.CorePluginInterface;
 
 namespace EditorBase
 {
@@ -36,7 +37,11 @@ namespace EditorBase
 		{
 			AudioData a = r as AudioData;
 			a.LoadOggVorbisData(srcFile);
-			a.Save();
+		}
+		public void NotifySrcRenamed(Resource r, string srcFileOld, string srcFileNew)
+		{
+			AudioData a = r as AudioData;
+			if (a.SourcePath == srcFileOld) a.SourcePath = srcFileNew;
 		}
 	}
 }

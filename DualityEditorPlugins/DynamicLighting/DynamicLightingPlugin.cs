@@ -22,17 +22,17 @@ namespace DynamicLighting
 		protected override void LoadPlugin()
 		{
 			base.LoadPlugin();
-			CorePluginHelper.RegisterTypeImage(typeof(LightingTechnique), DynLightRes.IconResLightingTechnique, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(LightingSpriteRenderer), DynLightRes.IconCmpLightingSpriteRenderer, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(LightingAnimSpriteRenderer), DynLightRes.IconCmpLightingSpriteRenderer, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(Light), DynLightRes.IconLight, CorePluginHelper.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(LightingTechnique), DynLightRes.IconResLightingTechnique, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(LightingSpriteRenderer), DynLightRes.IconCmpLightingSpriteRenderer, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(LightingAnimSpriteRenderer), DynLightRes.IconCmpLightingSpriteRenderer, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(Light), DynLightRes.IconLight, CorePluginRegistry.ImageContext_Icon);
 
-			CorePluginHelper.RegisterTypeCategory(typeof(LightingTechnique), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(LightingSpriteRenderer), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(LightingAnimSpriteRenderer), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
-			CorePluginHelper.RegisterTypeCategory(typeof(Light), GeneralRes.Category_Graphics, CorePluginHelper.CategoryContext_General);
+			CorePluginRegistry.RegisterTypeCategory(typeof(LightingTechnique), GeneralRes.Category_Graphics, CorePluginRegistry.CategoryContext_General);
+			CorePluginRegistry.RegisterTypeCategory(typeof(LightingSpriteRenderer), GeneralRes.Category_Graphics, CorePluginRegistry.CategoryContext_General);
+			CorePluginRegistry.RegisterTypeCategory(typeof(LightingAnimSpriteRenderer), GeneralRes.Category_Graphics, CorePluginRegistry.CategoryContext_General);
+			CorePluginRegistry.RegisterTypeCategory(typeof(Light), GeneralRes.Category_Graphics, CorePluginRegistry.CategoryContext_General);
 
-			CorePluginHelper.RegisterDataConverter<Component>(new LightingRendererFromMaterial());
+			CorePluginRegistry.RegisterDataConverter<Component>(new LightingRendererFromMaterial());
 		}
 	}
 
@@ -40,7 +40,7 @@ namespace DynamicLighting
 	{
 		public override int Priority
 		{
-			get { return CorePluginHelper.Priority_Specialized; }
+			get { return CorePluginRegistry.Priority_Specialized; }
 		}
 		public override bool CanConvertFrom(ConvertOperation convert)
 		{

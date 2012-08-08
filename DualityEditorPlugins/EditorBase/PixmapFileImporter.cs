@@ -4,6 +4,7 @@ using Duality;
 using Duality.Resources;
 
 using DualityEditor;
+using DualityEditor.CorePluginInterface;
 
 namespace EditorBase
 {
@@ -36,7 +37,11 @@ namespace EditorBase
 		{
 			Pixmap p = r as Pixmap;
 			p.LoadPixelData(srcFile);
-			p.Save();
+		}
+		public void NotifySrcRenamed(Resource r, string srcFileOld, string srcFileNew)
+		{
+			Pixmap p = r as Pixmap;
+			if (p.SourcePath == srcFileOld) p.SourcePath = srcFileNew;
 		}
 	}
 }

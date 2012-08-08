@@ -20,7 +20,7 @@ namespace Duality
 		private	static	Dictionary<Type,SerializeType>	serializeTypeCache	= new Dictionary<Type,SerializeType>();
 		private	static	Dictionary<string,Type>			typeResolveCache	= new Dictionary<string,Type>();
 		private	static	Dictionary<string,MemberInfo>	memberResolveCache	= new Dictionary<string,MemberInfo>();
-		private	static	Dictionary<Type,bool>			shallowTypeCache	= new Dictionary<Type,bool>();
+		private	static	Dictionary<Type,bool>			deepByValTypeCache	= new Dictionary<Type,bool>();
 
 		/// <summary>
 		/// Equals <c>BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic</c>.
@@ -151,22 +151,114 @@ namespace Duality
 		/// </summary>
 		/// <param name="flags"></param>
 		/// <returns></returns>
-		public static FieldInfo[] GetAllFields(this Type type, BindingFlags flags)
+		public static List<FieldInfo> GetAllFields(this Type type, BindingFlags flags)
 		{
 			List<FieldInfo> result = new List<FieldInfo>();
 
 			do { result.AddRange(type.GetFields(flags | BindingFlags.DeclaredOnly)); }
 			while ((type = type.BaseType) != null);
 
-			return result.ToArray();
+			return result;
+		}
+		/// <summary>
+		/// Visits all fields of an object and all its sub-objects. This is likely to be a very expensive operation.
+		/// </summary>
+		/// <param name="type"></param>
+		/// <param name="visitor">An object field visitor. Returns a new value for the visited object.</param>
+		public static void VisitObjectsDeep<T>(object obj, Func<T,T> visitor)
+		{
+			VisitObjectsDeep<T>(obj, visitor, new HashSet<object>(), new Dictionary<Type,bool>());
+		}
+		private static object VisitObjectsDeep<T>(object obj, Func<T,T> visitor, HashSet<object> visitedGraph, Dictionary<Type,bool> exploreTypeCache)
+		{
+			if (obj == null) return obj;
+			if (visitedGraph.Contains(obj)) return obj;
+			Type objType = obj.GetType();
+
+			// Visit object
+			if (objType.IsClass) visitedGraph.Add(obj);
+			if (obj is T) obj = visitor((T)obj);
+
+			// Check if object type should be explored
+			bool explore = false;
+			if (!exploreTypeCache.TryGetValue(objType, out explore))
+			{
+				explore = VisitObjectsDeep_ExploreType(typeof(T), objType);
+				exploreTypeCache[objType] = explore;
+			}
+			if (!explore) return obj;
+
+			// Arrays
+			if (objType.IsArray)
+			{
+				Array baseArray = (Array)obj;
+				Type elemType = objType.GetElementType();
+				int length = baseArray.Length;
+
+				// Explore elements
+				for (int i = 0; i < length; ++i)
+					baseArray.SetValue(VisitObjectsDeep<T>(baseArray.GetValue(i), visitor, visitedGraph, exploreTypeCache), i);
+			}
+			// Complex objects
+			else if (!objType.IsPrimitiveExt())
+			{
+				// Explore fields
+				foreach (FieldInfo field in objType.GetAllFields(BindInstanceAll))
+					field.SetValue(obj, VisitObjectsDeep<T>(field.GetValue(obj), visitor, visitedGraph, exploreTypeCache));
+			}
+
+			return obj;
+		}
+		private static bool VisitObjectsDeep_ExploreType(Type baseType, Type type, HashSet<Type> visitedTypes = null)
+		{
+			if (baseType.IsAssignableFrom(type)) return true;
+			if (type.IsPrimitiveExt()) return false;
+			if (visitedTypes == null) visitedTypes = new HashSet<Type>();
+			if (visitedTypes.Contains(type)) return false;
+			visitedTypes.Add(type);
+
+			// Check element type
+			if (type.IsArray) return VisitObjectsDeep_ExploreType(baseType, type.GetElementType(), visitedTypes);
+
+			// Check referred fields
+			return type.GetAllFields(BindInstanceAll).Any(f => VisitObjectsDeep_ExploreType(baseType, f.FieldType, visitedTypes));
 		}
 
 		/// <summary>
-		/// Returns whether the specified type can be cloned by assignment.
+		/// Returns whether the specified type doesn't contain any non-byvalue contents and thus can be cloned by assignment. 
+		/// This is typically the case for any primitive types or types being constructed only of primitive and shallow types.
 		/// </summary>
 		/// <param name="baseObj"></param>
 		/// <returns></returns>
-		public static bool IsShallowType(this Type type)
+		public static bool IsDeepByValueType(this Type type)
+		{
+			if (type.IsPrimitiveExt()) return true;
+			if (type.IsClass) return false;
+
+			bool deepByValType;
+			if (deepByValTypeCache.TryGetValue(type, out deepByValType))
+				return deepByValType;
+			else
+			{
+				deepByValType = true;
+				foreach (FieldInfo field in type.GetAllFields(ReflectionHelper.BindInstanceAll))
+				{
+					if (!IsDeepByValueType(field.FieldType))
+					{
+						deepByValType = false;
+						break;
+					}
+				}
+				deepByValTypeCache[type] = deepByValType;
+				return deepByValType;
+			}
+		}
+		/// <summary>
+		/// Returns whether the specified type is primitive or similar (like enums, srtings, decimals, etc.).
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public static bool IsPrimitiveExt(this Type type)
 		{
 			if (type.IsPrimitive) return true;
 			if (type.IsEnum) return true;
@@ -174,26 +266,8 @@ namespace Duality
 			if (type == typeof(decimal)) return true;
 			if (typeof(MemberInfo).IsAssignableFrom(type)) return true;
 			if (typeof(IContentRef).IsAssignableFrom(type)) return true;
-			if (type.IsClass) return false;
 
-			bool shallowType;
-			if (shallowTypeCache.TryGetValue(type, out shallowType))
-				return shallowType;
-			else
-			{
-				shallowType = true;
-				FieldInfo[] fields = type.GetAllFields(ReflectionHelper.BindInstanceAll);
-				foreach (FieldInfo field in fields)
-				{
-					if (!IsShallowType(field.FieldType))
-					{
-						shallowType = false;
-						break;
-					}
-				}
-				shallowTypeCache[type] = shallowType;
-				return shallowType;
-			}
+			return false;
 		}
 
 		
@@ -270,7 +344,7 @@ namespace Duality
 			serializeTypeCache.Clear();
 			typeResolveCache.Clear();
 			memberResolveCache.Clear();
-			shallowTypeCache.Clear();
+			deepByValTypeCache.Clear();
 		}
 		/// <summary>
 		/// Resolves a Type based on its <see cref="GetTypeId">type id</see>.

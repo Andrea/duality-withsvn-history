@@ -356,8 +356,8 @@ namespace AdamsLair.PropertyGrid
 					this.deferredSizeUpdate = true;
 				else
 					this.AutoScrollMinSize = new Size(0, this.mainEditor.Height);
-				this.Invalidate();
 			}
+			this.Invalidate();
 		}
 		private void mainEditor_ValueChanged(object sender, PropertyEditorValueEventArgs e)
 		{

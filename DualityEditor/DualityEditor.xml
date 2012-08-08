@@ -21,30 +21,6 @@
             the contents of this method with the code editor.
             </summary>
         </member>
-        <member name="T:DualityEditor.RecycleBin">
-            <summary>
-            Send files directly to the recycle bin.
-            </summary>
-        </member>
-        <member name="M:DualityEditor.RecycleBin.Send(System.String,DualityEditor.NativeMethods.FileOperationFlags)">
-            <summary>
-            Send file to recycle bin
-            </summary>
-            <param name="path">Location of directory or file to recycle</param>
-            <param name="flags">FileOperationFlags to add in addition to FOF_ALLOWUNDO</param>
-        </member>
-        <member name="M:DualityEditor.RecycleBin.Send(System.String)">
-            <summary>
-            Send file to recycle bin.  Display dialog, display warning if files are too big to fit (FOF_WANTNUKEWARNING)
-            </summary>
-            <param name="path">Location of directory or file to recycle</param>
-        </member>
-        <member name="M:DualityEditor.RecycleBin.SendSilent(System.String)">
-            <summary>
-            Send file silently to recycle bin.  Surpress dialog, surpress errors, delete if too large.
-            </summary>
-            <param name="path">Location of directory or file to recycle</param>
-        </member>
         <member name="F:DualityEditor.Forms.AppRunningDialog.components">
             <summary>
             Required designer variable.
@@ -76,67 +52,6 @@
             <summary>
             Erforderliche Methode für die Designerunterstützung.
             Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
-            </summary>
-        </member>
-        <member name="T:DualityEditor.NativeMethods.FileOperationFlags">
-            <summary>
-            Possible flags for the SHFileOperation method.
-            </summary>
-        </member>
-        <member name="F:DualityEditor.NativeMethods.FileOperationFlags.FOF_SILENT">
-            <summary>
-            Do not show a dialog during the process
-            </summary>
-        </member>
-        <member name="F:DualityEditor.NativeMethods.FileOperationFlags.FOF_NOCONFIRMATION">
-            <summary>
-            Do not ask the user to confirm selection
-            </summary>
-        </member>
-        <member name="F:DualityEditor.NativeMethods.FileOperationFlags.FOF_ALLOWUNDO">
-            <summary>
-            Delete the file to the recycle bin.  (Required flag to send a file to the bin
-            </summary>
-        </member>
-        <member name="F:DualityEditor.NativeMethods.FileOperationFlags.FOF_SIMPLEPROGRESS">
-            <summary>
-            Do not show the names of the files or folders that are being recycled.
-            </summary>
-        </member>
-        <member name="F:DualityEditor.NativeMethods.FileOperationFlags.FOF_NOERRORUI">
-            <summary>
-            Surpress errors, if any occur during the process.
-            </summary>
-        </member>
-        <member name="F:DualityEditor.NativeMethods.FileOperationFlags.FOF_WANTNUKEWARNING">
-            <summary>
-            Warn if files are too big to fit in the recycle bin and will need
-            to be deleted completely.
-            </summary>
-        </member>
-        <member name="T:DualityEditor.NativeMethods.FileOperationType">
-            <summary>
-            File Operation Function Type for SHFileOperation
-            </summary>
-        </member>
-        <member name="F:DualityEditor.NativeMethods.FileOperationType.FO_MOVE">
-            <summary>
-            Move the objects
-            </summary>
-        </member>
-        <member name="F:DualityEditor.NativeMethods.FileOperationType.FO_COPY">
-            <summary>
-            Copy the objects
-            </summary>
-        </member>
-        <member name="F:DualityEditor.NativeMethods.FileOperationType.FO_DELETE">
-            <summary>
-            Delete (or recycle) the objects
-            </summary>
-        </member>
-        <member name="F:DualityEditor.NativeMethods.FileOperationType.FO_RENAME">
-            <summary>
-            Rename the object(s)
             </summary>
         </member>
         <member name="F:DualityEditor.Forms.ColorPickerDialog.components">
@@ -524,6 +439,96 @@
               Sucht eine lokalisierte Zeichenfolge, die Empty Project ähnelt.
             </summary>
         </member>
+        <member name="T:DualityEditor.Controls.FlagCheckedListBoxItem">
+            <summary>
+            Represents an item in the checklistbox
+            </summary>
+        </member>
+        <member name="T:DualityEditor.NativeMethods.FileOperationFlags">
+            <summary>
+            Possible flags for the SHFileOperation method.
+            </summary>
+        </member>
+        <member name="F:DualityEditor.NativeMethods.FileOperationFlags.FOF_SILENT">
+            <summary>
+            Do not show a dialog during the process
+            </summary>
+        </member>
+        <member name="F:DualityEditor.NativeMethods.FileOperationFlags.FOF_NOCONFIRMATION">
+            <summary>
+            Do not ask the user to confirm selection
+            </summary>
+        </member>
+        <member name="F:DualityEditor.NativeMethods.FileOperationFlags.FOF_ALLOWUNDO">
+            <summary>
+            Delete the file to the recycle bin.  (Required flag to send a file to the bin
+            </summary>
+        </member>
+        <member name="F:DualityEditor.NativeMethods.FileOperationFlags.FOF_SIMPLEPROGRESS">
+            <summary>
+            Do not show the names of the files or folders that are being recycled.
+            </summary>
+        </member>
+        <member name="F:DualityEditor.NativeMethods.FileOperationFlags.FOF_NOERRORUI">
+            <summary>
+            Surpress errors, if any occur during the process.
+            </summary>
+        </member>
+        <member name="F:DualityEditor.NativeMethods.FileOperationFlags.FOF_WANTNUKEWARNING">
+            <summary>
+            Warn if files are too big to fit in the recycle bin and will need
+            to be deleted completely.
+            </summary>
+        </member>
+        <member name="T:DualityEditor.NativeMethods.FileOperationType">
+            <summary>
+            File Operation Function Type for SHFileOperation
+            </summary>
+        </member>
+        <member name="F:DualityEditor.NativeMethods.FileOperationType.FO_MOVE">
+            <summary>
+            Move the objects
+            </summary>
+        </member>
+        <member name="F:DualityEditor.NativeMethods.FileOperationType.FO_COPY">
+            <summary>
+            Copy the objects
+            </summary>
+        </member>
+        <member name="F:DualityEditor.NativeMethods.FileOperationType.FO_DELETE">
+            <summary>
+            Delete (or recycle) the objects
+            </summary>
+        </member>
+        <member name="F:DualityEditor.NativeMethods.FileOperationType.FO_RENAME">
+            <summary>
+            Rename the object(s)
+            </summary>
+        </member>
+        <member name="T:DualityEditor.RecycleBin">
+            <summary>
+            Send files directly to the recycle bin.
+            </summary>
+        </member>
+        <member name="M:DualityEditor.RecycleBin.Send(System.String,DualityEditor.NativeMethods.FileOperationFlags)">
+            <summary>
+            Send file to recycle bin
+            </summary>
+            <param name="path">Location of directory or file to recycle</param>
+            <param name="flags">FileOperationFlags to add in addition to FOF_ALLOWUNDO</param>
+        </member>
+        <member name="M:DualityEditor.RecycleBin.Send(System.String)">
+            <summary>
+            Send file to recycle bin.  Display dialog, display warning if files are too big to fit (FOF_WANTNUKEWARNING)
+            </summary>
+            <param name="path">Location of directory or file to recycle</param>
+        </member>
+        <member name="M:DualityEditor.RecycleBin.SendSilent(System.String)">
+            <summary>
+            Send file silently to recycle bin.  Surpress dialog, surpress errors, delete if too large.
+            </summary>
+            <param name="path">Location of directory or file to recycle</param>
+        </member>
         <member name="F:DualityEditor.MainForm.components">
             <summary>
             Erforderliche Designervariable.
@@ -539,11 +544,6 @@
             <summary>
             Erforderliche Methode für die Designerunterstützung.
             Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
-            </summary>
-        </member>
-        <member name="T:DualityEditor.Controls.FlagCheckedListBoxItem">
-            <summary>
-            Represents an item in the checklistbox
             </summary>
         </member>
     </members>

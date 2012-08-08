@@ -4,6 +4,7 @@ using Duality;
 using Duality.Resources;
 
 using DualityEditor;
+using DualityEditor.CorePluginInterface;
 
 namespace EditorBase
 {
@@ -55,7 +56,6 @@ namespace EditorBase
 			AbstractShader s = r as AbstractShader;
 			s.LoadSource(srcFile);
 			s.Compile();
-			s.Save();
 
 			// Recompile ShaderPrograms depending on this
 			foreach (ShaderProgram p in ContentProvider.GetAvailContent<ShaderProgram>())
@@ -64,6 +64,11 @@ namespace EditorBase
 				p.AttachShaders();
 				p.Compile();
 			}
+		}
+		public void NotifySrcRenamed(Resource r, string srcFileOld, string srcFileNew)
+		{
+			AbstractShader s = r as AbstractShader;
+			if (s.SourcePath == srcFileOld) s.SourcePath = srcFileNew;
 		}
 	}
 }

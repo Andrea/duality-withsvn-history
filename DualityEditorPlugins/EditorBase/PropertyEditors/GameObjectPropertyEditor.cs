@@ -9,6 +9,7 @@ using ButtonState = AdamsLair.PropertyGrid.Renderer.ButtonState;
 
 using Duality;
 using DualityEditor;
+using DualityEditor.CorePluginInterface;
 
 namespace EditorBase.PropertyEditors
 {
@@ -313,7 +314,7 @@ namespace EditorBase.PropertyEditors
 			if (e.KeyCode == Keys.Return)
 			{
 				GameObject[] values = this.GetValue().Cast<GameObject>().ToArray();
-				var actions = CorePluginHelper.RequestEditorActions<GameObject>(CorePluginHelper.ActionContext_OpenRes, values);
+				var actions = CorePluginRegistry.RequestEditorActions<GameObject>(CorePluginRegistry.ActionContext_OpenRes, values);
 				var action = actions.FirstOrDefault();
 				if (action != null)
 				{

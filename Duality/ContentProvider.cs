@@ -673,6 +673,12 @@ namespace Duality
 		{
 			if (String.IsNullOrEmpty(dir)) return;
 
+			// Assure we're ending with directory separator chars.
+			if (dir[dir.Length - 1] == Path.AltDirectorySeparatorChar) dir = dir.Remove(dir.Length - 1, 1);
+			if (dir[dir.Length - 1] != Path.DirectorySeparatorChar) dir += Path.DirectorySeparatorChar;
+			if (newDir[newDir.Length - 1] == Path.AltDirectorySeparatorChar) newDir = newDir.Remove(newDir.Length - 1, 1);
+			if (newDir[newDir.Length - 1] != Path.DirectorySeparatorChar) newDir += Path.DirectorySeparatorChar;
+
 			List<string> renameList = new List<string>(
 				from p in resLibrary.Keys
 				where !p.Contains(':') && PathHelper.IsPathLocatedIn(p, dir)
@@ -680,9 +686,7 @@ namespace Duality
 
 			foreach (string p in renameList)
 			{
-				RenameContent(p, p.Replace(
-					dir + Path.DirectorySeparatorChar,
-					newDir + Path.DirectorySeparatorChar));
+				RenameContent(p, p.Replace(dir, newDir));
 			}
 		}
 

@@ -6,6 +6,7 @@ using Duality.Serialization.MetaFormat;
 using DualityEditor;
 using DualityEditor.Forms;
 using DualityEditor.EditorRes;
+using DualityEditor.CorePluginInterface;
 
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -51,16 +52,16 @@ namespace ResourceHacker
 		{
 			base.LoadPlugin();
 			
-			CorePluginHelper.RegisterTypeImage(typeof(DataNode), PluginRes.ResourceHackerRes.IconPrimitive, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(ArrayNode), PluginRes.ResourceHackerRes.IconArray, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(StructNode), PluginRes.ResourceHackerRes.IconObject, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(ObjectRefNode), PluginRes.ResourceHackerRes.IconObjectRef, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(TypeDataLayoutNode), PluginRes.ResourceHackerRes.IconClass, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(MemberInfoNode), PluginRes.ResourceHackerRes.IconMethod, CorePluginHelper.ImageContext_Icon);
-			CorePluginHelper.RegisterTypeImage(typeof(DelegateNode), PluginRes.ResourceHackerRes.IconDelegate, CorePluginHelper.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(DataNode), PluginRes.ResourceHackerRes.IconPrimitive, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(ArrayNode), PluginRes.ResourceHackerRes.IconArray, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(StructNode), PluginRes.ResourceHackerRes.IconObject, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(ObjectRefNode), PluginRes.ResourceHackerRes.IconObjectRef, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(TypeDataLayoutNode), PluginRes.ResourceHackerRes.IconClass, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(MemberInfoNode), PluginRes.ResourceHackerRes.IconMethod, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(DelegateNode), PluginRes.ResourceHackerRes.IconDelegate, CorePluginRegistry.ImageContext_Icon);
 
 			// Register PropertyEditor provider
-			CorePluginHelper.RegisterPropertyEditorProvider(new PropertyEditors.PropertyEditorProvider());
+			CorePluginRegistry.RegisterPropertyEditorProvider(new PropertyEditors.PropertyEditorProvider());
 		}
 		protected override void InitPlugin(MainForm main)
 		{

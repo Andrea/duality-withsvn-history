@@ -4394,7 +4394,7 @@
             <param name="obj"></param>
             <returns></returns>
         </member>
-        <member name="M:Duality.Cloning.CloneProvider.CopyObjectTo``1(``0,``0,System.Reflection.FieldInfo[])">
+        <member name="M:Duality.Cloning.CloneProvider.CopyObjectTo``1(``0,``0,System.Collections.Generic.IEnumerable{System.Reflection.FieldInfo})">
             <summary>
             Copies the base objects data to the specified target object.
             </summary>
@@ -7181,11 +7181,26 @@
             <param name="flags"></param>
             <returns></returns>
         </member>
-        <member name="M:Duality.ReflectionHelper.IsShallowType(System.Type)">
+        <member name="M:Duality.ReflectionHelper.VisitObjectsDeep``1(System.Object,System.Func{``0,``0})">
             <summary>
-            Returns whether the specified type can be cloned by assignment.
+            Visits all fields of an object and all its sub-objects. This is likely to be a very expensive operation.
+            </summary>
+            <param name="type"></param>
+            <param name="visitor">An object field visitor. Returns a new value for the visited object.</param>
+        </member>
+        <member name="M:Duality.ReflectionHelper.IsDeepByValueType(System.Type)">
+            <summary>
+            Returns whether the specified type doesn't contain any non-byvalue contents and thus can be cloned by assignment. 
+            This is typically the case for any primitive types or types being constructed only of primitive and shallow types.
             </summary>
             <param name="baseObj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ReflectionHelper.IsPrimitiveExt(System.Type)">
+            <summary>
+            Returns whether the specified type is primitive or similar (like enums, srtings, decimals, etc.).
+            </summary>
+            <param name="type"></param>
             <returns></returns>
         </member>
         <member name="M:Duality.ReflectionHelper.ClearTypeCache">

@@ -11,6 +11,7 @@ using PropertyGrid = AdamsLair.PropertyGrid.PropertyGrid;
 
 using Duality;
 using DualityEditor;
+using DualityEditor.CorePluginInterface;
 
 namespace EditorBase
 {
@@ -72,7 +73,7 @@ namespace EditorBase
 		{
 			base.OnShown(e);
 
-			this.propertyGrid.RegisterEditorProvider(CorePluginHelper.RequestPropertyEditorProviders());
+			this.propertyGrid.RegisterEditorProvider(CorePluginRegistry.RequestPropertyEditorProviders());
 			this.UpdateButtons();
 
 			// Add the global selection event once
@@ -273,7 +274,7 @@ namespace EditorBase
 			objView.Show(this.DockHandler.Pane, DockAlignment.Bottom, 0.5d);
 			
 			// Need it before showing because of instant-selection
-			objView.propertyGrid.RegisterEditorProvider(CorePluginHelper.RequestPropertyEditorProviders());
+			objView.propertyGrid.RegisterEditorProvider(CorePluginRegistry.RequestPropertyEditorProviders());
 			objView.propertyGrid.SelectObjects(this.propertyGrid.Selection);
 			objView.gridExpandState.ApplyTo(objView.propertyGrid.MainEditor);
 		}

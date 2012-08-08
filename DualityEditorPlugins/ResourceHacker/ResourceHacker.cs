@@ -13,6 +13,7 @@ using Duality.Serialization.MetaFormat;
 
 using DualityEditor;
 using DualityEditor.Forms;
+using DualityEditor.CorePluginInterface;
 
 using Aga.Controls.Tree;
 using WeifenLuo.WinFormsUI.Docking;
@@ -79,11 +80,11 @@ namespace ResourceHacker
 			}
 			public static Image GetIcon(DataNode data)
 			{
-				Image result = CorePluginHelper.RequestTypeImage(data.GetType(), CorePluginHelper.ImageContext_Icon);
+				Image result = CorePluginRegistry.RequestTypeImage(data.GetType(), CorePluginRegistry.ImageContext_Icon);
 				if (result != null) 
 					return result;
 				else 
-					return CorePluginHelper.RequestTypeImage(typeof(DataNode), CorePluginHelper.ImageContext_Icon);
+					return CorePluginRegistry.RequestTypeImage(typeof(DataNode), CorePluginRegistry.ImageContext_Icon);
 			}
 		}
 		protected class PrimitiveTreeNode : DataTreeNode
@@ -234,7 +235,7 @@ namespace ResourceHacker
 
 		protected override void OnShown(EventArgs e)
 		{
-			this.propertyGrid.RegisterEditorProvider(CorePluginHelper.RequestPropertyEditorProviders());
+			this.propertyGrid.RegisterEditorProvider(CorePluginRegistry.RequestPropertyEditorProviders());
 			base.OnShown(e);
 		}
 

@@ -9,9 +9,9 @@ using AdamsLair.PropertyGrid;
 using Duality;
 using DualityEditor.CorePluginInterface;
 
-namespace DualityEditor
+namespace DualityEditor.CorePluginInterface
 {
-	public static class CorePluginHelper
+	public static class CorePluginRegistry
 	{
 		public const int Priority_None			= 0;
 		public const int Priority_General		= 20;
@@ -72,6 +72,14 @@ namespace DualityEditor
 			public PreviewGeneratorEntry(IPreviewGenerator generator)
 			{
 				this.generator = generator;
+			}
+		}
+		private struct FileImporterEntry : IResEntry
+		{
+			public	IFileImporter	importer;
+			public FileImporterEntry(IFileImporter importer)
+			{
+				this.importer = importer;
 			}
 		}
 		#endregion
@@ -251,6 +259,19 @@ namespace DualityEditor
 		public static IEnumerable<IPreviewGenerator> RequestPreviewGenerators()
 		{
 			return RequestAllCorePluginRes<PreviewGeneratorEntry>(typeof(object), false, null).Select(e => e.generator);
+		}
+
+		public static void RegisterFileImporter(IFileImporter importer)
+		{
+			RegisterCorePluginRes(typeof(object), new FileImporterEntry(importer));
+		}
+		public static IFileImporter RequestFileImporter(Predicate<IFileImporter> predicate = null)
+		{
+			return RequestCorePluginRes<FileImporterEntry>(typeof(object), false, e => predicate(e.importer)).importer;
+		}
+		public static IEnumerable<IFileImporter> RequestFileImporters(Predicate<IFileImporter> predicate = null)
+		{
+			return RequestAllCorePluginRes<FileImporterEntry>(typeof(object), false, e => predicate(e.importer)).Select(e => e.importer);
 		}
 
 		public static void RegisterXmlCodeDoc(XmlCodeDoc doc)

@@ -4,6 +4,7 @@ using Duality;
 using Duality.Resources;
 
 using DualityEditor;
+using DualityEditor.CorePluginInterface;
 
 namespace EditorBase
 {
@@ -39,7 +40,11 @@ namespace EditorBase
 			Font f = r as Font;
 			f.LoadCustomFamilyData(srcFile);
 			f.ReloadData();
-			f.Save();
+		}
+		public void NotifySrcRenamed(Resource r, string srcFileOld, string srcFileNew)
+		{
+			Font f = r as Font;
+			if (f.SourcePath == srcFileOld) f.SourcePath = srcFileNew;
 		}
 	}
 }
