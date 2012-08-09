@@ -1767,6 +1767,7 @@ namespace DualityEditor
 			{
 				// Because changes we'll do will be discarded when leaving the sandbox we'll need to
 				// do it the hard way - manually load an save the file.
+				state.StateDesc = "Current Scene"; yield return null;
 				Scene curScene = Resource.LoadResource<Scene>(Scene.CurrentPath);
 				fileCounter = async_RenameContentRefs_Perform(curScene, renameData);
 				totalCounter += fileCounter;
@@ -1774,10 +1775,19 @@ namespace DualityEditor
 			}
 
 			// Rename in actual content
+			var availContent = ContentProvider.GetAvailContent<Resource>();
+			var reloadContent = new List<IContentRef>();
 			List<string> resFiles = Resource.GetResourceFiles();
 			foreach (string file in resFiles)
 			{
+				if (file == Scene.CurrentPath) continue;
 				state.StateDesc = file; yield return null;
+
+				// Loaded for the first time? Schedule for later reload.
+				bool reload = !availContent.Any(r => r.Path == file);
+				// Keep in mind that this operation is performed while Duality content was
+				// in an inconsistent state. Loading Resources now may lead to wrong data.
+				// Because the ContentRefs might be wrong right now.
 
 				// Load content
 				var cr = ContentProvider.RequestContent(file);
@@ -1786,8 +1796,21 @@ namespace DualityEditor
 				// Perform rename and flag unsaved
 				fileCounter = async_RenameContentRefs_Perform(cr.Res, renameData);
 				totalCounter += fileCounter;
-				if (fileCounter > 0) this.FlagResourceUnsaved(cr.Res);
-				state.Progress += 0.9f / resFiles.Count; yield return null;
+				if (fileCounter > 0)
+				{
+					if (!reload)
+						this.FlagResourceUnsaved(cr.Res);
+					else
+						reloadContent.Add(cr);
+				}
+				state.Progress += 0.45f / resFiles.Count; yield return null;
+			}
+
+			// Perform Resource unload where scheduled
+			foreach (IContentRef cr in reloadContent)
+			{
+				cr.Res.Save();
+				ContentProvider.UnregisterContent(cr.Path);
 			}
 		}
 		private int async_RenameContentRefs_Perform(object obj, List<ResourceRenamedEventArgs> args)

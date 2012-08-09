@@ -413,7 +413,7 @@ namespace Duality.Resources
 			{
 				foreach (var pair in this.textures.ToArray())
 				{
-					this.textures[pair.Key] = pair.Value.Res;
+					this.textures[pair.Key] = pair.Value.IsAvailable ? pair.Value.Res : pair.Value;
 				}
 			}
 		}
