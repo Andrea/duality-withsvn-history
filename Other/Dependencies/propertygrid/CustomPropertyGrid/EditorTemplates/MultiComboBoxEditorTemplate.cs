@@ -161,6 +161,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 				{
 					this.selectedObjects = pasteObjProxy;
 					this.selectedObjStr = this.DefaultValueStringGenerator(this.selectedObjects);
+					this.EmitInvalidate();
 					this.EmitEdited();
 					success = true;
 				}
@@ -217,6 +218,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			{
 				this.selectedObjects = this.dropdown.CheckedItems.Cast<object>().ToList();
 				this.selectedObjStr = this.DefaultValueStringGenerator(this.selectedObjects);
+				this.EmitInvalidate();
 				this.EmitEdited();
 			}
 		}

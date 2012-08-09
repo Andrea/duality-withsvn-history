@@ -162,6 +162,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 				{
 					this.bitmask = pasteValue;
 					this.bitmaskStr = this.DefaultValueStringGenerator(this.bitmask);
+					this.EmitInvalidate();
 					this.EmitEdited();
 				}
 				else
@@ -221,6 +222,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			{
 				this.bitmask = this.dropdown.BitmaskValue;
 				this.bitmaskStr = this.DefaultValueStringGenerator(this.bitmask);
+				this.EmitInvalidate();
 				this.EmitEdited();
 			}
 		}

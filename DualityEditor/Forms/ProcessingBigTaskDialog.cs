@@ -56,13 +56,27 @@ namespace DualityEditor.Forms
 		}
 
 
-		Thread					worker			= null;
-		WorkerInterface			workerInterface	= null;
-		MainForm				owner			= null;
-		TaskAction				task			= null;
-		object					data			= null;
-		string					taskCaption		= "Performing Task...";
-		string					taskDesc		= "A task is being performed. Please wait.";
+		private	Thread			worker				= null;
+		private	WorkerInterface	workerInterface		= null;
+		private	MainForm		owner				= null;
+		private	TaskAction		task				= null;
+		private	object			data				= null;
+		private	string			taskCaption			= "Performing Task...";
+		private	string			taskDesc			= "A task is being performed. Please wait.";
+		private	bool			mainThreadRequired	= true;
+
+		public bool MainThreadRequired
+		{
+			get { return this.mainThreadRequired; }
+			set
+			{
+				// May only change during init.
+				if (this.worker == null)
+				{
+					this.mainThreadRequired = value;
+				}
+			}
+		}
 
 
 		public ProcessingBigTaskDialog(string caption, string desc, TaskAction task, object data) : this(MainForm.Instance, caption, desc, task, data) {}
@@ -106,17 +120,10 @@ namespace DualityEditor.Forms
 			this.owner.SetTaskbarProgressState(Windows7Taskbar.ThumbnailProgressState.NoProgress);
 			this.owner.SetTaskbarOverlayIcon(null, null);
 		}
-		private void UpdateStateDescFromWorker()
-		{
-			if (this.stateDescLabel.Text == this.workerInterface.StateDesc) return;
-			// Safely invoke a GUI update
-			this.owner.BeginInvoke((Action)delegate() { this.stateDescLabel.Text = this.workerInterface.StateDesc; });
-		}
 
 		private void progressTimer_Tick(object sender, EventArgs e)
 		{
-			this.UpdateStateDescFromWorker();
-
+			this.stateDescLabel.Text = this.workerInterface.StateDesc;
 			this.progressBar.Value = (int)Math.Round(this.workerInterface.Progress * 100.0f);
 			this.owner.SetTaskbarProgressState(Windows7Taskbar.ThumbnailProgressState.Normal);
 			this.owner.SetTaskbarProgress(this.progressBar.Value);
@@ -148,19 +155,29 @@ namespace DualityEditor.Forms
 			workInterface.Progress = 0.0f;
 			try 
 			{
-				// Wait a little so the main thread has time for drawing the GUI.
-				Thread.Sleep(20);
-
-				// Perform task on the main thread - which is necessary because OpenGL and friends don't like multithreading.
-				// In order to keep the GUI updated, the task is split into chunks. After each chunk, GUI events can be processed.
-				var taskEnumerator = workInterface.Task(workInterface).GetEnumerator();
-				DateTime lastCheck = DateTime.Now;
-				while ((bool)workInterface.MainForm.Invoke((Func<bool>)taskEnumerator.MoveNext))
+				// All work is performed here.
+				if (!workInterface.owner.MainThreadRequired)
 				{
-					TimeSpan lastTime = DateTime.Now - lastCheck;
+					var taskEnumerator = workInterface.Task(workInterface).GetEnumerator();
+					while (taskEnumerator.MoveNext()) {}
+				}
+				// All work is actually performed in the main thread.
+				else
+				{
 					// Wait a little so the main thread has time for drawing the GUI.
-					Thread.Sleep((int)Math.Min(20, lastTime.TotalMilliseconds));
-					lastCheck = DateTime.Now;
+					Thread.Sleep(20);
+
+					// Perform task on the main thread - which is necessary because OpenGL and friends don't like multithreading.
+					// In order to keep the GUI updated, the task is split into chunks. After each chunk, GUI events can be processed.
+					var taskEnumerator = workInterface.Task(workInterface).GetEnumerator();
+					DateTime lastCheck = DateTime.Now;
+					while ((bool)workInterface.MainForm.Invoke((Func<bool>)taskEnumerator.MoveNext))
+					{
+						TimeSpan lastTime = DateTime.Now - lastCheck;
+						// Wait a little so the main thread has time for drawing the GUI.
+						Thread.Sleep((int)Math.Min(20, lastTime.TotalMilliseconds));
+						lastCheck = DateTime.Now;
+					}
 				}
 
 				// Assume the task finished completely

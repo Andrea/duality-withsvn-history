@@ -472,6 +472,7 @@ namespace ResourceHacker
 						string.Format(PluginRes.ResourceHackerRes.TaskBatchRenameType_Desc, dialog.SearchFor, dialog.ReplaceWith), 
 						this.async_PerformBatchAction,
 						new BatchActionTaskData(folderDialog.SelectedPath, n => replaced += n.ReplaceTypeStrings(dialog.SearchFor, dialog.ReplaceWith)));
+					taskDialog.MainThreadRequired = false;
 					taskDialog.ShowDialog();
 
 					MessageBox.Show(

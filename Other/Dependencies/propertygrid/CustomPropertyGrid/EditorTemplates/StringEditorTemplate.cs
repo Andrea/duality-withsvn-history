@@ -98,6 +98,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			this.cursorIndex = begin;
 
 			this.UpdateScroll();
+			this.EmitInvalidate();
 			this.EmitEdited();
 		}
 		public void InsertText(string insertText)
@@ -124,6 +125,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			this.selectionLength = 0;
 
 			this.UpdateScroll();
+			this.EmitInvalidate();
 			this.EmitEdited();
 		}
 		public void ShowCursor()
@@ -228,6 +230,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 				{
 					this.text = this.text.Remove(this.cursorIndex, 1);
 					this.UpdateScroll();
+					this.EmitInvalidate();
 					this.EmitEdited();
 				}
 				else
@@ -241,6 +244,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 					this.text = this.text.Remove(this.cursorIndex - 1, 1);
 					this.cursorIndex--;
 					this.UpdateScroll();
+					this.EmitInvalidate();
 					this.EmitEdited();
 				}
 				else

@@ -14,6 +14,7 @@ using OpenTK;
 using Duality;
 using Duality.ObjectManagers;
 using Duality.Resources;
+using Duality.Serialization.MetaFormat;
 
 using DualityEditor.Forms;
 using DualityEditor.CorePluginInterface;
@@ -1396,10 +1397,15 @@ namespace DualityEditor
 							!this.editorJustSavedRes.Contains(Path.GetFullPath(e.FullPath)) && 
 							ContentProvider.IsContentRegistered(args.Path))
 						{
-							if ((args.Content.Is<Scene>() && Scene.Current == args.Content.Res) || this.IsResourceUnsaved(e.FullPath))
+							bool isCurrentScene = args.Content.Is<Scene>() && Scene.Current == args.Content.Res;
+							if (isCurrentScene || this.IsResourceUnsaved(e.FullPath))
 							{
 								if (this.DisplayConfirmReloadResource(e.FullPath))
+								{
+									string curScenePath = Scene.CurrentPath;
 									ContentProvider.UnregisterContent(args.Path);
+									if (isCurrentScene) Scene.Current = ContentProvider.RequestContent<Scene>(curScenePath).Res;
+								}
 							}
 							else
 								ContentProvider.UnregisterContent(args.Path);
@@ -1732,9 +1738,11 @@ namespace DualityEditor
 			{
 				state.StateDesc = file; yield return null;
 
+				//var data = MetaFormatHelper.FileReadAll(file);	// Removed again so we don't need to handle "unsaved resources".
 				var cr = ContentProvider.RequestContent(file);
 				state.Progress += 0.45f / resFiles.Count; yield return null;
 
+				//MetaFormatHelper.FileSaveAll(file, data);
 				cr.Res.Save(file);
 				state.Progress += 0.45f / resFiles.Count; yield return null;
 			}
@@ -1780,7 +1788,7 @@ namespace DualityEditor
 			List<string> resFiles = Resource.GetResourceFiles();
 			foreach (string file in resFiles)
 			{
-				if (file == Scene.CurrentPath) continue;
+				if (file == Scene.CurrentPath && this.sandboxState != SandboxState.Inactive) continue;
 				state.StateDesc = file; yield return null;
 
 				// Loaded for the first time? Schedule for later reload.

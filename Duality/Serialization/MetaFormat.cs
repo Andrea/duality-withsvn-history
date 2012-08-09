@@ -9,7 +9,7 @@ namespace Duality.Serialization.MetaFormat
 {
 	public static class MetaFormatHelper
 	{
-		public static void FilePerformAction(string filePath, Action<DataNode> action, bool updateContent = true)
+		public static List<DataNode> FileReadAll(string filePath)
 		{
 			List<DataNode> data = new List<DataNode>();
 
@@ -30,16 +30,15 @@ namespace Duality.Serialization.MetaFormat
 						Log.Editor.WriteError("Can't perform meta format action on {0} because an error occured in the process: \n{1}",
 							filePath,
 							Log.Exception(e));
-						return;
+						return data;
 					}
 				}
 			}
 
-			// Process data
-			foreach (DataNode dataNode in data)
-				action(dataNode);
-
-			// Save data
+			return data;
+		}
+		public static void FileSaveAll(string filePath, List<DataNode> data)
+		{
 			using (FileStream fileStream = File.Open(filePath, FileMode.Create))
 			{
 				using (var formatter = Formatter.CreateMeta(fileStream))
@@ -48,6 +47,18 @@ namespace Duality.Serialization.MetaFormat
 						formatter.WriteObject(dataNode);
 				}
 			}
+		}
+		public static void FilePerformAction(string filePath, Action<DataNode> action, bool updateContent = true)
+		{
+			// Load data
+			List<DataNode> data = FileReadAll(filePath);
+
+			// Process data
+			foreach (DataNode dataNode in data)
+				action(dataNode);
+
+			// Save data
+			FileSaveAll(filePath, data);
 
 			// Assure reloading the modified resource
 			if (updateContent && PathHelper.IsPathLocatedIn(filePath, "."))
