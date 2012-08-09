@@ -17,19 +17,13 @@
 -->	Implement some simple Font effects?
 
 
--->	Auto-Rename ContentRefs everywhere when moving or renaming Resources or folders
-	-->	Trigger by ProcessDataDirEvents() rename events
-	-->	Walk all Resources in the Data folder (!)
-		-->	Don't auto-save, just mark as unsaved.
-			-->	Except the current Scene when in sandbox mode.
-			--> Can't just flag it, because it will be discarded on stop.
-			-->	Can't save it, because it's modified already in an unwanted manner
-			-->	However, it has been saved before running sandbox
-			-->	Solution: Do a hard overwrite without affecting any content management.
-				-->	Resource.LoadResource<Scene>(..)	doesn't register stuff
-				-->	Resource.Save(Stream)				doesn't register stuff
-		-->	Probably open a ProcessBigTaskDialog
-	-->	Don't bother doing a rename in source code
+-->	Problem with ProcessXYDirEvents: It's kind of asynchronous but expects to be not.
+	-->	Don't rely on the collection not being modified. Take the first element and remove it. Then process it.
+	-->	Don't do multi-pass processing. Perform event condensing right before processing an individual event
+	-->	Should we show dialogues from there? They're blocking, but INSIDE ShowDialogue, ANOTHER AppStillIdle will be triggered..
+		-->	Set event processing flag and don't do it more than one time at once?
+		-->	Reconsider this. There must be a good solution.
+	-->	If solved, implement auto-rename (testing still todo)
 
 -->	Auto-Reselect the current objects when entering sandbox mode
 	-->	Because it's just annoying it doesn't already.

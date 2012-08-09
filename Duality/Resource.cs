@@ -354,8 +354,7 @@ namespace Duality
 		/// <returns></returns>
 		public static bool IsResourceFile(string filePath)
 		{
-			string lowerExt = System.IO.Path.GetExtension(filePath).ToLower();
-			return lowerExt == FileExt;
+			return System.IO.Path.GetExtension(filePath).ToLower() == FileExt;
 		}
 		/// <summary>
 		/// Returns all Resource files that are located in the specified directory. This doesn't affect
@@ -367,7 +366,7 @@ namespace Duality
 		{
 			if (string.IsNullOrEmpty(folderPath)) folderPath = "Data";
 			List<string> result = new List<string>();
-			foreach (string file in Directory.GetFiles(folderPath, "*", SearchOption.AllDirectories))
+			foreach (string file in Directory.GetFiles(folderPath, "*" + Resource.FileExt, SearchOption.AllDirectories))
 			{
 				if (Resource.IsResourceFile(file))
 					result.Add(file);

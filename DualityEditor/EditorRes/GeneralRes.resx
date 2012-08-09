@@ -268,6 +268,12 @@
   <data name="TaskChangeDataFormat_Desc" xml:space="preserve">
     <value>The project data format has been changed to {0}. Existing Resource files will be converted shortly.</value>
   </data>
+  <data name="TaskRenameContentRefs_Caption" xml:space="preserve">
+    <value>Relocating ContentRefs...</value>
+  </data>
+  <data name="TaskRenameContentRefs_Desc" xml:space="preserve">
+    <value>One or more Resources have been moved or renamed. Duality is searching for references to these Resources in order to update them.</value>
+  </data>
   <data name="Template_Current_Desc" xml:space="preserve">
     <value>Creates a new project by cloning the current one.</value>
   </data>

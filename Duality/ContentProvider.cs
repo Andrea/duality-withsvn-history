@@ -53,6 +53,10 @@ namespace Duality
 		/// </summary>
 		bool IsDefaultContent { get; }
 		/// <summary>
+		/// [GET] Returns whether the Resource has been generated at runtime and cannot be retrieved via content path.
+		/// </summary>
+		bool IsRuntimeResource { get; }
+		/// <summary>
 		/// [GET] The name of the referenced Resource.
 		/// </summary>
 		string Name { get; }
@@ -224,7 +228,7 @@ namespace Duality
 			get { return this.contentPath != null && this.contentPath.Contains(':'); }
 		}
 		/// <summary>
-		/// [GET] Returns whether the Resource has been generated at runtime and  cannot be retrieved via content path.
+		/// [GET] Returns whether the Resource has been generated at runtime and cannot be retrieved via content path.
 		/// </summary>
 		public bool IsRuntimeResource
 		{

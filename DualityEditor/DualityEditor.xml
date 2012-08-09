@@ -76,6 +76,84 @@
             Adds items to the checklistbox based on the members of the enum
             </summary>
         </member>
+        <member name="F:DualityEditor.MainForm.components">
+            <summary>
+            Erforderliche Designervariable.
+            </summary>
+        </member>
+        <member name="M:DualityEditor.MainForm.Dispose(System.Boolean)">
+            <summary>
+            Verwendete Ressourcen bereinigen.
+            </summary>
+            <param name="disposing">True, wenn verwaltete Ressourcen gelöscht werden sollen; andernfalls False.</param>
+        </member>
+        <member name="M:DualityEditor.MainForm.InitializeComponent">
+            <summary>
+            Erforderliche Methode für die Designerunterstützung.
+            Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
+            </summary>
+        </member>
+        <member name="T:DualityEditor.NativeMethods.FileOperationFlags">
+            <summary>
+            Possible flags for the SHFileOperation method.
+            </summary>
+        </member>
+        <member name="F:DualityEditor.NativeMethods.FileOperationFlags.FOF_SILENT">
+            <summary>
+            Do not show a dialog during the process
+            </summary>
+        </member>
+        <member name="F:DualityEditor.NativeMethods.FileOperationFlags.FOF_NOCONFIRMATION">
+            <summary>
+            Do not ask the user to confirm selection
+            </summary>
+        </member>
+        <member name="F:DualityEditor.NativeMethods.FileOperationFlags.FOF_ALLOWUNDO">
+            <summary>
+            Delete the file to the recycle bin.  (Required flag to send a file to the bin
+            </summary>
+        </member>
+        <member name="F:DualityEditor.NativeMethods.FileOperationFlags.FOF_SIMPLEPROGRESS">
+            <summary>
+            Do not show the names of the files or folders that are being recycled.
+            </summary>
+        </member>
+        <member name="F:DualityEditor.NativeMethods.FileOperationFlags.FOF_NOERRORUI">
+            <summary>
+            Surpress errors, if any occur during the process.
+            </summary>
+        </member>
+        <member name="F:DualityEditor.NativeMethods.FileOperationFlags.FOF_WANTNUKEWARNING">
+            <summary>
+            Warn if files are too big to fit in the recycle bin and will need
+            to be deleted completely.
+            </summary>
+        </member>
+        <member name="T:DualityEditor.NativeMethods.FileOperationType">
+            <summary>
+            File Operation Function Type for SHFileOperation
+            </summary>
+        </member>
+        <member name="F:DualityEditor.NativeMethods.FileOperationType.FO_MOVE">
+            <summary>
+            Move the objects
+            </summary>
+        </member>
+        <member name="F:DualityEditor.NativeMethods.FileOperationType.FO_COPY">
+            <summary>
+            Copy the objects
+            </summary>
+        </member>
+        <member name="F:DualityEditor.NativeMethods.FileOperationType.FO_DELETE">
+            <summary>
+            Delete (or recycle) the objects
+            </summary>
+        </member>
+        <member name="F:DualityEditor.NativeMethods.FileOperationType.FO_RENAME">
+            <summary>
+            Rename the object(s)
+            </summary>
+        </member>
         <member name="M:DualityEditor.EditorPlugin.LoadPlugin">
             <summary>
             This method is called as soon as the plugins assembly is loaded. Initializes the plugins internal data.
@@ -419,6 +497,16 @@
               Sucht eine lokalisierte Zeichenfolge, die The project data format has been changed to {0}. Existing Resource files will be converted shortly. ähnelt.
             </summary>
         </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.TaskRenameContentRefs_Caption">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Relocating ContentRefs... ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.TaskRenameContentRefs_Desc">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die One or more Resources have been moved or renamed. Duality is searching for references to these Resources in order to update them. ähnelt.
+            </summary>
+        </member>
         <member name="P:DualityEditor.EditorRes.GeneralRes.Template_Current_Desc">
             <summary>
               Sucht eine lokalisierte Zeichenfolge, die Creates a new project by cloning the current one. ähnelt.
@@ -437,72 +525,6 @@
         <member name="P:DualityEditor.EditorRes.GeneralRes.Template_Empty_Name">
             <summary>
               Sucht eine lokalisierte Zeichenfolge, die Empty Project ähnelt.
-            </summary>
-        </member>
-        <member name="T:DualityEditor.Controls.FlagCheckedListBoxItem">
-            <summary>
-            Represents an item in the checklistbox
-            </summary>
-        </member>
-        <member name="T:DualityEditor.NativeMethods.FileOperationFlags">
-            <summary>
-            Possible flags for the SHFileOperation method.
-            </summary>
-        </member>
-        <member name="F:DualityEditor.NativeMethods.FileOperationFlags.FOF_SILENT">
-            <summary>
-            Do not show a dialog during the process
-            </summary>
-        </member>
-        <member name="F:DualityEditor.NativeMethods.FileOperationFlags.FOF_NOCONFIRMATION">
-            <summary>
-            Do not ask the user to confirm selection
-            </summary>
-        </member>
-        <member name="F:DualityEditor.NativeMethods.FileOperationFlags.FOF_ALLOWUNDO">
-            <summary>
-            Delete the file to the recycle bin.  (Required flag to send a file to the bin
-            </summary>
-        </member>
-        <member name="F:DualityEditor.NativeMethods.FileOperationFlags.FOF_SIMPLEPROGRESS">
-            <summary>
-            Do not show the names of the files or folders that are being recycled.
-            </summary>
-        </member>
-        <member name="F:DualityEditor.NativeMethods.FileOperationFlags.FOF_NOERRORUI">
-            <summary>
-            Surpress errors, if any occur during the process.
-            </summary>
-        </member>
-        <member name="F:DualityEditor.NativeMethods.FileOperationFlags.FOF_WANTNUKEWARNING">
-            <summary>
-            Warn if files are too big to fit in the recycle bin and will need
-            to be deleted completely.
-            </summary>
-        </member>
-        <member name="T:DualityEditor.NativeMethods.FileOperationType">
-            <summary>
-            File Operation Function Type for SHFileOperation
-            </summary>
-        </member>
-        <member name="F:DualityEditor.NativeMethods.FileOperationType.FO_MOVE">
-            <summary>
-            Move the objects
-            </summary>
-        </member>
-        <member name="F:DualityEditor.NativeMethods.FileOperationType.FO_COPY">
-            <summary>
-            Copy the objects
-            </summary>
-        </member>
-        <member name="F:DualityEditor.NativeMethods.FileOperationType.FO_DELETE">
-            <summary>
-            Delete (or recycle) the objects
-            </summary>
-        </member>
-        <member name="F:DualityEditor.NativeMethods.FileOperationType.FO_RENAME">
-            <summary>
-            Rename the object(s)
             </summary>
         </member>
         <member name="T:DualityEditor.RecycleBin">
@@ -529,21 +551,9 @@
             </summary>
             <param name="path">Location of directory or file to recycle</param>
         </member>
-        <member name="F:DualityEditor.MainForm.components">
+        <member name="T:DualityEditor.Controls.FlagCheckedListBoxItem">
             <summary>
-            Erforderliche Designervariable.
-            </summary>
-        </member>
-        <member name="M:DualityEditor.MainForm.Dispose(System.Boolean)">
-            <summary>
-            Verwendete Ressourcen bereinigen.
-            </summary>
-            <param name="disposing">True, wenn verwaltete Ressourcen gelöscht werden sollen; andernfalls False.</param>
-        </member>
-        <member name="M:DualityEditor.MainForm.InitializeComponent">
-            <summary>
-            Erforderliche Methode für die Designerunterstützung.
-            Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
+            Represents an item in the checklistbox
             </summary>
         </member>
     </members>

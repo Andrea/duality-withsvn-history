@@ -13396,6 +13396,11 @@
             [GET] Returns whether the referenced Resource is part of Duality's embedded default content.
             </summary>
         </member>
+        <member name="P:Duality.IContentRef.IsRuntimeResource">
+            <summary>
+            [GET] Returns whether the Resource has been generated at runtime and cannot be retrieved via content path.
+            </summary>
+        </member>
         <member name="P:Duality.IContentRef.Name">
             <summary>
             [GET] The name of the referenced Resource.
@@ -13525,7 +13530,7 @@
         </member>
         <member name="P:Duality.ContentRef`1.IsRuntimeResource">
             <summary>
-            [GET] Returns whether the Resource has been generated at runtime and  cannot be retrieved via content path.
+            [GET] Returns whether the Resource has been generated at runtime and cannot be retrieved via content path.
             </summary>
         </member>
         <member name="P:Duality.ContentRef`1.Name">

@@ -491,6 +491,24 @@ namespace DualityEditor.EditorRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Relocating ContentRefs... ähnelt.
+        /// </summary>
+        public static string TaskRenameContentRefs_Caption {
+            get {
+                return ResourceManager.GetString("TaskRenameContentRefs_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die One or more Resources have been moved or renamed. Duality is searching for references to these Resources in order to update them. ähnelt.
+        /// </summary>
+        public static string TaskRenameContentRefs_Desc {
+            get {
+                return ResourceManager.GetString("TaskRenameContentRefs_Desc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Creates a new project by cloning the current one. ähnelt.
         /// </summary>
         public static string Template_Current_Desc {

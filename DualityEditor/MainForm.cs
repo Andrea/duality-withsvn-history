@@ -1435,14 +1435,16 @@ namespace DualityEditor
 					ResourceRenamedEventArgs args = new ResourceRenamedEventArgs(re.FullPath, re.OldFullPath);
 					if (Resource.IsResourceFile(e.FullPath) || args.IsDirectory)
 					{
-
 						// Rename content registerations
 						if (args.IsDirectory)	ContentProvider.RenameContentTree(args.OldPath, args.Path);
 						else					ContentProvider.RenameContent(args.OldPath, args.Path);
 
-						// If we just renamed the currently loaded scene, relocate it.
-						// Doesn't trigger if done properly from inside the editor.
-						if (Scene.CurrentPath == re.OldFullPath) Scene.Current = Resource.LoadResource<Scene>(re.FullPath);
+						// Rename actual ContentRefs inside all existing content
+						//ProcessingBigTaskDialog taskDialog = new ProcessingBigTaskDialog(this, 
+						//    EditorRes.GeneralRes.TaskRenameContentRefs_Caption, 
+						//    EditorRes.GeneralRes.TaskRenameContentRefs_Desc, 
+						//    this.async_RenameContentRefs, args);
+						//taskDialog.ShowDialog(this);
 
 						if (this.ResourceRenamed != null) this.ResourceRenamed(this, args);
 					}
@@ -1500,7 +1502,7 @@ namespace DualityEditor
 		{
 			this.OnBeforeReloadCorePlugins();
 		}
-
+		
 		private void Application_Idle(object sender, EventArgs e)
 		{
 			this.ProcessSourceDirEvents();
@@ -1664,29 +1666,113 @@ namespace DualityEditor
 
 		private System.Collections.IEnumerable async_ChangeDataFormat(ProcessingBigTaskDialog.WorkerInterface state)
 		{
+			state.StateDesc = "DualityApp Data"; yield return null;
 			DualityApp.LoadAppData();
 			DualityApp.LoadUserData();
 			DualityApp.LoadMetaData();
 			state.Progress += 0.05f; yield return null;
-
-			ContentProvider.ClearContent();
-			string[] resFiles = Directory.GetFiles("Data", "*" + Resource.FileExt, SearchOption.AllDirectories);
-			foreach (string file in resFiles)
-			{
-				state.StateDesc = file; yield return null;
-
-				var cr = ContentProvider.RequestContent(file);
-				state.Progress += 0.45f / resFiles.Length; yield return null;
-
-				cr.Res.Save(file);
-				state.Progress += 0.45f / resFiles.Length; yield return null;
-			}
-			ContentProvider.ClearContent();
 					
 			DualityApp.SaveAppData();
 			DualityApp.SaveUserData();
 			DualityApp.SaveMetaData();
 			state.Progress += 0.05f; yield return null;
+
+			List<string> resFiles = Resource.GetResourceFiles();
+			foreach (string file in resFiles)
+			{
+				state.StateDesc = file; yield return null;
+
+				var cr = ContentProvider.RequestContent(file);
+				state.Progress += 0.45f / resFiles.Count; yield return null;
+
+				cr.Res.Save(file);
+				state.Progress += 0.45f / resFiles.Count; yield return null;
+			}
+		}
+		private System.Collections.IEnumerable async_RenameContentRefs(ProcessingBigTaskDialog.WorkerInterface state)
+		{
+			ResourceRenamedEventArgs args = state.Data as ResourceRenamedEventArgs;
+			int totalCounter = 0;
+			int fileCounter = 0;
+			
+			// Rename in static application data
+			state.StateDesc = "DualityApp Data"; yield return null;
+			DualityApp.LoadAppData();
+			DualityApp.LoadUserData();
+			DualityApp.LoadMetaData();
+			state.Progress += 0.04f; yield return null;
+
+			totalCounter += async_RenameContentRefs_Perform(DualityApp.AppData, args);
+			totalCounter += async_RenameContentRefs_Perform(DualityApp.UserData, args);
+			totalCounter += async_RenameContentRefs_Perform(DualityApp.MetaData, args);
+			state.Progress += 0.02f; yield return null;
+
+			DualityApp.SaveAppData();
+			DualityApp.SaveUserData();
+			DualityApp.SaveMetaData();
+			state.Progress += 0.04f; yield return null;
+
+			// Special case: Current Scene in sandbox mode
+			if (this.sandboxState != SandboxState.Inactive)
+			{
+				// Because changes we'll do will be discarded when leaving the sandbox we'll need to
+				// do it the hard way - manually load an save the file.
+				Scene curScene = Resource.LoadResource<Scene>(Scene.CurrentPath);
+				fileCounter = async_RenameContentRefs_Perform(curScene, args);
+				totalCounter += fileCounter;
+				if (fileCounter > 0) curScene.Save(Scene.CurrentPath);
+			}
+
+			// Rename in actual content
+			List<string> resFiles = Resource.GetResourceFiles();
+			foreach (string file in resFiles)
+			{
+				state.StateDesc = file; yield return null;
+
+				// Load content
+				var cr = ContentProvider.RequestContent(file);
+				state.Progress += 0.45f / resFiles.Count; yield return null;
+
+				// Perform rename and flag unsaved
+				fileCounter = async_RenameContentRefs_Perform(cr.Res, args);
+				totalCounter += fileCounter;
+				if (fileCounter > 0) this.FlagResourceUnsaved(cr.Res);
+				state.Progress += 0.45f / resFiles.Count; yield return null;
+			}
+
+			Log.Editor.Write("Successfully renamed '{0}' to '{1}'. {2} content references have been found and replaced.",
+				args.OldPath,
+				args.Path,
+				totalCounter);
+		}
+		private int async_RenameContentRefs_Perform(object obj, ResourceRenamedEventArgs args)
+		{
+			int counter = 0;
+			if (args.IsDirectory)
+			{
+				ReflectionHelper.VisitObjectsDeep<IContentRef>(obj, r => 
+				{
+					if (!r.IsDefaultContent && PathHelper.IsPathLocatedIn(r.Path, args.OldPath))
+					{
+						r.Path = r.Path.Replace(args.OldPath, args.Path);
+						counter++;
+					}
+					return r; 
+				});
+			}
+			else
+			{
+				ReflectionHelper.VisitObjectsDeep<IContentRef>(obj, r => 
+				{
+					if (!r.IsDefaultContent && r.Path == args.OldPath)
+					{
+						r.Path = args.Path;
+						counter++;
+					}
+					return r; 
+				});
+			}
+			return counter;
 		}
 	}
 }
