@@ -1791,7 +1791,7 @@ namespace DualityEditor
 
 				// Load content
 				var cr = ContentProvider.RequestContent(file);
-				state.Progress += 0.45f / resFiles.Count; yield return null;
+				state.Progress += 0.35f / resFiles.Count; yield return null;
 
 				// Perform rename and flag unsaved
 				fileCounter = async_RenameContentRefs_Perform(cr.Res, renameData);
@@ -1803,14 +1803,16 @@ namespace DualityEditor
 					else
 						reloadContent.Add(cr);
 				}
-				state.Progress += 0.45f / resFiles.Count; yield return null;
+				state.Progress += 0.35f / resFiles.Count; yield return null;
 			}
 
 			// Perform Resource unload where scheduled
+			state.StateDesc = "Saving Resources.."; yield return null;
 			foreach (IContentRef cr in reloadContent)
 			{
 				cr.Res.Save();
 				ContentProvider.UnregisterContent(cr.Path);
+				state.Progress += 0.2f / reloadContent.Count; yield return null;
 			}
 		}
 		private int async_RenameContentRefs_Perform(object obj, List<ResourceRenamedEventArgs> args)
