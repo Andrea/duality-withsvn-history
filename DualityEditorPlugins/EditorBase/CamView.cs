@@ -648,7 +648,7 @@ namespace EditorBase
 
 		private void glControl_MouseDown(object sender, MouseEventArgs e)
 		{
-			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
+			if (this.activeState.EngineUserInput && DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
 			{
 				MouseButton inputButton = e.Button.ToOpenTKSingle();
 				this.inputMouseButtons |= e.Button.ToOpenTK();
@@ -657,7 +657,7 @@ namespace EditorBase
 		}
 		private void glControl_MouseUp(object sender, MouseEventArgs e)
 		{
-			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
+			if (this.activeState.EngineUserInput && DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
 			{
 				MouseButton inputButton = e.Button.ToOpenTKSingle();
 				this.inputMouseButtons &= ~e.Button.ToOpenTK();
@@ -666,7 +666,7 @@ namespace EditorBase
 		}
 		private void glControl_MouseWheel(object sender, MouseEventArgs e)
 		{
-			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
+			if (this.activeState.EngineUserInput && DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
 			{
 				this.inputMouseWheel += e.Delta;
 				if (this.inputMouseWheelChanged != null) this.inputMouseWheelChanged(this, new MouseWheelEventArgs(e.X, e.Y, this.inputMouseWheel, e.Delta));
@@ -674,7 +674,7 @@ namespace EditorBase
 		}
 		private void glControl_MouseMove(object sender, MouseEventArgs e)
 		{
-			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
+			if (this.activeState.EngineUserInput && DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
 			{
 				int lastX = this.inputMouseX;
 				int lastY = this.inputMouseY;
@@ -694,12 +694,12 @@ namespace EditorBase
 		}
 		private void glControl_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
 		{
-			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game) 
+			if (this.activeState.EngineUserInput && DualityApp.ExecContext == DualityApp.ExecutionContext.Game) 
 				e.IsInputKey = true;
 		}
 		private void glControl_KeyDown(object sender, KeyEventArgs e)
 		{
-			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
+			if (this.activeState.EngineUserInput && DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
 			{
 				Key inputKey = e.KeyCode.ToOpenTKSingle();
 				bool wasPressed = this.inputKeyPressed[(int)inputKey];
@@ -713,7 +713,7 @@ namespace EditorBase
 		}
 		private void glControl_KeyUp(object sender, KeyEventArgs e)
 		{
-			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
+			if (this.activeState.EngineUserInput && DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
 			{
 				Key inputKey = e.KeyCode.ToOpenTKSingle();
 				this.inputKeyPressed = this.inputKeyPressed.And(e.KeyCode.ToOpenTK().Not());

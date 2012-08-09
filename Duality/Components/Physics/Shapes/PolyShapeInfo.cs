@@ -94,12 +94,12 @@ namespace Duality.Components.Physics
 			});
 
 			// Shrink a little bit
-			for (int i = 0; i < sortedVertices.Length; i++)
-			{
-				Vector2 rel = (sortedVertices[i] - centroid);
-				float len = rel.Length;
-				sortedVertices[i] = centroid + rel.Normalized * MathF.Max(0.0f, len - 1.5f);
-			}
+			//for (int i = 0; i < sortedVertices.Length; i++)
+			//{
+			//    Vector2 rel = (sortedVertices[i] - centroid);
+			//    float len = rel.Length;
+			//    sortedVertices[i] = centroid + rel.Normalized * MathF.Max(0.0f, len - 1.5f);
+			//}
 
 			// Submit vertices
 			FarseerPhysics.Common.Vertices v = new FarseerPhysics.Common.Vertices(sortedVertices.Length);

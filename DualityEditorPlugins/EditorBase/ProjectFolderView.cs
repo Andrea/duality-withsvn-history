@@ -1015,6 +1015,7 @@ namespace EditorBase
 
 		private void nodeTextBoxName_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawEventArgs e)
 		{
+			if (MainForm.Instance == null) return;
 			NodeBase node = e.Node.Tag as NodeBase;
 			ResourceNode resNode = node as ResourceNode;
 

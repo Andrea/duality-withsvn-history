@@ -133,6 +133,7 @@ namespace EditorBase.CamViewStates
 		private	Camera.Pass		camPassBg			= null;
 		private	Camera.Pass		camPassEdWorld		= null;
 		private Camera.Pass		camPassEdScreen		= null;
+		private	bool			engineUserInput		= false;
 		private	bool			actionAllowed		= true;
 		private	Point			actionBeginLoc		= Point.Empty;
 		private Vector3			actionBeginLocSpace	= Vector3.Zero;
@@ -170,6 +171,11 @@ namespace EditorBase.CamViewStates
 		public bool IsActive
 		{
 			get { return this.view != null && this.view.ViewState == this; }
+		}
+		public bool EngineUserInput
+		{
+			get { return this.engineUserInput; }
+			protected set { this.engineUserInput = value; }
 		}
 		public bool MouseActionAllowed
 		{

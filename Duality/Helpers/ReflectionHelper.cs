@@ -196,15 +196,35 @@ namespace Duality
 				int length = baseArray.Length;
 
 				// Explore elements
-				for (int i = 0; i < length; ++i)
-					baseArray.SetValue(VisitObjectsDeep<T>(baseArray.GetValue(i), visitor, visitedGraph, exploreTypeCache), i);
+				if (!elemType.IsClass || typeof(T).IsAssignableFrom(elemType))
+				{
+					for (int i = 0; i < length; ++i)
+					{
+						object val = baseArray.GetValue(i);
+						val = VisitObjectsDeep<T>(val, visitor, visitedGraph, exploreTypeCache);
+						baseArray.SetValue(val, i);
+					}
+				}
+				else
+				{
+					for (int i = 0; i < length; ++i)
+					{
+						object val = baseArray.GetValue(i);
+						VisitObjectsDeep<T>(val, visitor, visitedGraph, exploreTypeCache);
+					}
+				}
 			}
 			// Complex objects
 			else if (!objType.IsPrimitiveExt())
 			{
 				// Explore fields
-				foreach (FieldInfo field in objType.GetAllFields(BindInstanceAll))
-					field.SetValue(obj, VisitObjectsDeep<T>(field.GetValue(obj), visitor, visitedGraph, exploreTypeCache));
+				var fields = objType.GetAllFields(BindInstanceAll);
+				foreach (FieldInfo field in fields)
+				{
+					object val = field.GetValue(obj);
+					val = VisitObjectsDeep<T>(val, visitor, visitedGraph, exploreTypeCache);
+					if (!objType.IsClass || typeof(T).IsAssignableFrom(field.FieldType)) field.SetValue(obj, val);
+				}
 			}
 
 			return obj;

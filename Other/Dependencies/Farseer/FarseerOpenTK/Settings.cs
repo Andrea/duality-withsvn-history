@@ -128,7 +128,7 @@ namespace FarseerPhysics
         /// A small length used as a collision and constraint tolerance. Usually it is
         /// chosen to be numerically significant, but visually insignificant.
         /// </summary>
-        public const float LinearSlop = 0.005f;
+        public const float LinearSlop = 0.001f; // was 0.005f
 
         /// <summary>
         /// A small angle used as a collision and constraint tolerance. Usually it is

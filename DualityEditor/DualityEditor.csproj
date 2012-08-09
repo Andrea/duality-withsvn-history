@@ -278,6 +278,7 @@
     <Content Include="DualityIconB.ico" />
     <Content Include="DualityIconC.ico" />
     <Content Include="EditorRes\WorkingFolderIcon.ico" />
+    <None Include="Resources\working_bigtask.png" />
     <None Include="Resources\template_empty.png" />
     <None Include="Resources\template_current.png" />
     <None Include="Resources\DualityIcon48.png" />

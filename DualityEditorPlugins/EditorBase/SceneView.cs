@@ -272,7 +272,7 @@ namespace EditorBase
 		{
 			this.objectView.BeginUpdate();
 			TreeNodeAdv viewNode = null;
-			foreach (NodeBase node in nodes)
+			foreach (NodeBase node in nodes.NotNull())
 			{
 				viewNode = this.objectView.FindNode(this.objectModel.GetPath(node));
 				if (viewNode != null) viewNode.IsSelected = select;

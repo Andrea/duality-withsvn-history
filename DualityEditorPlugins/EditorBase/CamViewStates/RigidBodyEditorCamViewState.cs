@@ -204,12 +204,18 @@ namespace EditorBase.CamViewStates
 		protected override void OnBeginAction(CamViewState.MouseAction action)
 		{
 			base.OnBeginAction(action);
-			if (this.selectedBody != null) this.selectedBody.BeginUpdateBodyShape();
+			bool shapeAction = 
+				action != MouseAction.RectSelection && 
+				action != MouseAction.None;
+			if (this.selectedBody != null && shapeAction) this.selectedBody.BeginUpdateBodyShape();
 		}
 		protected override void OnEndAction(CamViewState.MouseAction action)
 		{
 			base.OnEndAction(action);
-			if (this.selectedBody != null) this.selectedBody.EndUpdateBodyShape();
+			bool shapeAction = 
+				action != MouseAction.RectSelection && 
+				action != MouseAction.None;
+			if (this.selectedBody != null && shapeAction) this.selectedBody.EndUpdateBodyShape();
 		}
 
 		protected void UpdateToolbar()

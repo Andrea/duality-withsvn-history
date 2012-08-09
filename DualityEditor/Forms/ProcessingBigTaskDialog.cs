@@ -26,7 +26,7 @@ namespace DualityEditor.Forms
 			public float Progress
 			{
 				get { return this.progress; }
-				set { this.progress = value; }
+				set { this.progress = Math.Min(Math.Max(value, 0.0f), 1.0f); }
 			}
 			public string StateDesc
 			{
@@ -93,10 +93,10 @@ namespace DualityEditor.Forms
 			this.workerInterface.Task = this.task;
 			this.workerInterface.Data = this.data;
 
-			this.progressTimer.Start();
-
 			this.worker = new Thread(WorkerThreadProc);
 			this.worker.Start(this.workerInterface);
+
+			this.progressTimer.Start();
 		}
 		protected override void OnClosed(EventArgs e)
 		{
@@ -106,13 +106,17 @@ namespace DualityEditor.Forms
 			this.owner.SetTaskbarProgressState(Windows7Taskbar.ThumbnailProgressState.NoProgress);
 			this.owner.SetTaskbarOverlayIcon(null, null);
 		}
-		private void UpdateStateDesc()
+		private void UpdateStateDescFromWorker()
 		{
-			this.stateDescLabel.Text = this.workerInterface.StateDesc;
+			if (this.stateDescLabel.Text == this.workerInterface.StateDesc) return;
+			// Safely invoke a GUI update
+			this.owner.BeginInvoke((Action)delegate() { this.stateDescLabel.Text = this.workerInterface.StateDesc; });
 		}
 
 		private void progressTimer_Tick(object sender, EventArgs e)
 		{
+			this.UpdateStateDescFromWorker();
+
 			this.progressBar.Value = (int)Math.Round(this.workerInterface.Progress * 100.0f);
 			this.owner.SetTaskbarProgressState(Windows7Taskbar.ThumbnailProgressState.Normal);
 			this.owner.SetTaskbarProgress(this.progressBar.Value);
@@ -144,16 +148,22 @@ namespace DualityEditor.Forms
 			workInterface.Progress = 0.0f;
 			try 
 			{
+				// Wait a little so the main thread has time for drawing the GUI.
+				Thread.Sleep(20);
+
+				// Perform task on the main thread - which is necessary because OpenGL and friends don't like multithreading.
+				// In order to keep the GUI updated, the task is split into chunks. After each chunk, GUI events can be processed.
 				var taskEnumerator = workInterface.Task(workInterface).GetEnumerator();
 				DateTime lastCheck = DateTime.Now;
 				while ((bool)workInterface.MainForm.Invoke((Func<bool>)taskEnumerator.MoveNext))
 				{
 					TimeSpan lastTime = DateTime.Now - lastCheck;
-					workInterface.MainForm.Invoke((Action)workInterface.owner.UpdateStateDesc);
+					// Wait a little so the main thread has time for drawing the GUI.
 					Thread.Sleep((int)Math.Min(20, lastTime.TotalMilliseconds));
 					lastCheck = DateTime.Now;
 				}
 
+				// Assume the task finished completely
 				workInterface.Progress = 1.0f;
 			}
 			catch (Exception e)

@@ -171,5 +171,12 @@ namespace DualityEditor.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        internal static System.Drawing.Bitmap working_bigtask {
+            get {
+                object obj = ResourceManager.GetObject("working_bigtask", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

@@ -45,6 +45,10 @@ namespace Duality
 			bool baseDirIsFile = File.Exists(baseDir);
 			if (baseDirIsFile) return false;
 
+			if (baseDir[baseDir.Length - 1] != Path.DirectorySeparatorChar &&
+				baseDir[baseDir.Length - 1] != Path.AltDirectorySeparatorChar)
+				baseDir += Path.DirectorySeparatorChar;
+
 			path = Path.GetFullPath(path);
 			baseDir = Path.GetDirectoryName(Path.GetFullPath(baseDir));
 			do

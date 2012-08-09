@@ -17,6 +17,7 @@ namespace EditorBase.CamViewStates
 		{
 			this.CameraActionAllowed = false;
 			this.MouseActionAllowed = false;
+			this.EngineUserInput = true;
 		}
 
 		protected internal override void OnEnterState()

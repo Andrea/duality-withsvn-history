@@ -507,7 +507,7 @@ namespace ResourceHacker
 				string dataPath = PathHelper.MakeFilePathRelative(data.FolderPath, ".");
 				ContentProvider.UnregisterContentTree(dataPath);
 			}
-			state.Progress += 0.05f; yield return null;
+			state.Progress += 0.05f;
 		}
 	}
 }

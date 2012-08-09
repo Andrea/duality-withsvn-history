@@ -1314,26 +1314,60 @@ namespace DualityEditor
 			return success;
 		}
 
-		private void CondenseDelCreateEvents(string basePath, List<FileSystemEventArgs> dirEventList)
+		private FileSystemEventArgs FetchFileSystemEvent(List<FileSystemEventArgs> dirEventList, string basePath)
 		{
-			// If there's a delete-create combination with identical names, condense to rename
-			for (int i = dirEventList.Count - 1; i >= 0; i--)
+			if (dirEventList.Count == 0) return null;
+
+			FileSystemEventArgs	current	= dirEventList[0];
+			dirEventList.RemoveAt(0);
+
+			// Discard or pack rename-rename
+			if (current.ChangeType == WatcherChangeTypes.Renamed)
 			{
-				FileSystemEventArgs del = dirEventList[i];
-				if (del.ChangeType != WatcherChangeTypes.Deleted) continue;
-				string delName = Path.GetFileName(del.FullPath);
+				RenamedEventArgs rename = current as RenamedEventArgs;
 
-				FileSystemEventArgs create = dirEventList.FirstOrDefault(e => 
-					e.ChangeType == WatcherChangeTypes.Created && 
-					Path.GetFileName(e.FullPath) == delName);
-				if (create == null) continue;
+				while (rename != null)
+				{
+					RenamedEventArgs renameB = dirEventList.OfType<RenamedEventArgs>().FirstOrDefault(e => 
+						Path.GetFileName(e.OldFullPath) == Path.GetFileName(rename.FullPath));
+					if (renameB != null)
+					{
+						dirEventList.Remove(renameB);
+						rename = new RenamedEventArgs(WatcherChangeTypes.Renamed, basePath, renameB.Name, rename.OldName);
+						current = rename;
+					}
+					else break;
+				}
 
-				RenamedEventArgs rename = new RenamedEventArgs(WatcherChangeTypes.Renamed, basePath, create.Name, del.Name);
-				dirEventList.RemoveAt(i);	// Remove delete event
-				dirEventList.Remove(create);	// Remove create event
-				dirEventList.Add(rename);	// Add rename event
-				i = MathF.Min(dirEventList.Count, i + 2); // Assure we're not missing something
+				// Discard useless renames
+				if (rename.OldFullPath == rename.FullPath) return null;
 			}
+
+			// Pack del-create to rename
+			if (current.ChangeType == WatcherChangeTypes.Created || current.ChangeType == WatcherChangeTypes.Deleted)
+			{
+				FileSystemEventArgs del		= current.ChangeType == WatcherChangeTypes.Deleted ? current : null;
+				FileSystemEventArgs create	= current.ChangeType == WatcherChangeTypes.Created ? current : null;
+
+				if (del != null)
+				{
+					create = dirEventList.FirstOrDefault(e => 
+						e.ChangeType == WatcherChangeTypes.Created && 
+						Path.GetFileName(e.FullPath) == Path.GetFileName(del.FullPath));
+					dirEventList.Remove(create);
+				}
+				else if (create != null)
+				{
+					del = dirEventList.FirstOrDefault(e => 
+						e.ChangeType == WatcherChangeTypes.Deleted && 
+						Path.GetFileName(e.FullPath) == Path.GetFileName(create.FullPath));
+					dirEventList.Remove(del);
+				}
+
+				if (del != null && create != null) return new RenamedEventArgs(WatcherChangeTypes.Renamed, basePath, create.Name, del.Name);
+			}
+			
+			return current;
 		}
 		private void PushDataDirEvent(FileSystemEventArgs e)
 		{
@@ -1343,11 +1377,14 @@ namespace DualityEditor
 		}
 		private void ProcessDataDirEvents()
 		{
-			this.CondenseDelCreateEvents(this.dataDirWatcher.Path, this.dataDirEventBuffer);
+			List<ResourceRenamedEventArgs> renameEventBuffer = null;
 
 			// Process events
-			foreach (FileSystemEventArgs e in this.dataDirEventBuffer)
+			while (this.dataDirEventBuffer.Count > 0)
 			{
+				FileSystemEventArgs e = this.FetchFileSystemEvent(this.dataDirEventBuffer, this.dataDirWatcher.Path);
+				if (e == null) continue;
+
 				if (e.ChangeType == WatcherChangeTypes.Changed)
 				{
 					// Is it a Resource file or just something else?
@@ -1439,18 +1476,27 @@ namespace DualityEditor
 						if (args.IsDirectory)	ContentProvider.RenameContentTree(args.OldPath, args.Path);
 						else					ContentProvider.RenameContent(args.OldPath, args.Path);
 
-						// Rename actual ContentRefs inside all existing content
-						//ProcessingBigTaskDialog taskDialog = new ProcessingBigTaskDialog(this, 
-						//    EditorRes.GeneralRes.TaskRenameContentRefs_Caption, 
-						//    EditorRes.GeneralRes.TaskRenameContentRefs_Desc, 
-						//    this.async_RenameContentRefs, args);
-						//taskDialog.ShowDialog(this);
+						// Buffer rename event to perform the global rename for all at once.
+						if (renameEventBuffer == null) renameEventBuffer = new List<ResourceRenamedEventArgs>();
+						renameEventBuffer.Add(args);
 
 						if (this.ResourceRenamed != null) this.ResourceRenamed(this, args);
 					}
 				}
 			}
-			this.dataDirEventBuffer.Clear();
+
+			// If required, perform a global rename operation in all existing content
+			if (renameEventBuffer != null)
+			{
+				// Don't do it now - schedule it for the main event loop so we don't block here.
+				this.BeginInvoke((Action)delegate() {
+					ProcessingBigTaskDialog taskDialog = new ProcessingBigTaskDialog(this, 
+						EditorRes.GeneralRes.TaskRenameContentRefs_Caption, 
+						EditorRes.GeneralRes.TaskRenameContentRefs_Desc, 
+						this.async_RenameContentRefs, renameEventBuffer);
+					taskDialog.ShowDialog(this);
+				});
+			}
 		}
 		private void PushSourceDirEvent(FileSystemEventArgs e)
 		{
@@ -1460,11 +1506,12 @@ namespace DualityEditor
 		}
 		private void ProcessSourceDirEvents()
 		{
-			this.CondenseDelCreateEvents(this.sourceDirWatcher.Path, this.sourceDirEventBuffer);
-
 			// Process events
-			foreach (FileSystemEventArgs e in this.sourceDirEventBuffer)
+			while (this.sourceDirEventBuffer.Count > 0)
 			{
+				FileSystemEventArgs e = this.FetchFileSystemEvent(this.sourceDirEventBuffer, this.sourceDirWatcher.Path);
+				if (e == null) continue;
+
 				if (e.ChangeType == WatcherChangeTypes.Changed)
 				{
 					if (File.Exists(e.FullPath)) this.reimportSchedule.Add(e.FullPath);
@@ -1484,7 +1531,6 @@ namespace DualityEditor
 					if (this.SrcFileRenamed != null) this.SrcFileRenamed(this, e);
 				}
 			}
-			this.sourceDirEventBuffer.Clear();
 		}
 
 		private void corePluginWatcher_Changed(object sender, FileSystemEventArgs e)
@@ -1505,9 +1551,13 @@ namespace DualityEditor
 		
 		private void Application_Idle(object sender, EventArgs e)
 		{
-			this.ProcessSourceDirEvents();
-			this.ProcessDataDirEvents();
-			this.editorJustSavedRes.Clear();
+			// Process file / source events, if no modal dialog is open.
+			if (this.Visible && this.CanFocus)
+			{
+				this.ProcessSourceDirEvents();
+				this.ProcessDataDirEvents();
+				this.editorJustSavedRes.Clear();
+			}
 
 			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
 			while (this.AppStillIdle)
@@ -1691,7 +1741,7 @@ namespace DualityEditor
 		}
 		private System.Collections.IEnumerable async_RenameContentRefs(ProcessingBigTaskDialog.WorkerInterface state)
 		{
-			ResourceRenamedEventArgs args = state.Data as ResourceRenamedEventArgs;
+			var renameData = state.Data as List<ResourceRenamedEventArgs>;
 			int totalCounter = 0;
 			int fileCounter = 0;
 			
@@ -1702,9 +1752,9 @@ namespace DualityEditor
 			DualityApp.LoadMetaData();
 			state.Progress += 0.04f; yield return null;
 
-			totalCounter += async_RenameContentRefs_Perform(DualityApp.AppData, args);
-			totalCounter += async_RenameContentRefs_Perform(DualityApp.UserData, args);
-			totalCounter += async_RenameContentRefs_Perform(DualityApp.MetaData, args);
+			totalCounter += async_RenameContentRefs_Perform(DualityApp.AppData, renameData);
+			totalCounter += async_RenameContentRefs_Perform(DualityApp.UserData, renameData);
+			totalCounter += async_RenameContentRefs_Perform(DualityApp.MetaData, renameData);
 			state.Progress += 0.02f; yield return null;
 
 			DualityApp.SaveAppData();
@@ -1718,7 +1768,7 @@ namespace DualityEditor
 				// Because changes we'll do will be discarded when leaving the sandbox we'll need to
 				// do it the hard way - manually load an save the file.
 				Scene curScene = Resource.LoadResource<Scene>(Scene.CurrentPath);
-				fileCounter = async_RenameContentRefs_Perform(curScene, args);
+				fileCounter = async_RenameContentRefs_Perform(curScene, renameData);
 				totalCounter += fileCounter;
 				if (fileCounter > 0) curScene.Save(Scene.CurrentPath);
 			}
@@ -1734,44 +1784,38 @@ namespace DualityEditor
 				state.Progress += 0.45f / resFiles.Count; yield return null;
 
 				// Perform rename and flag unsaved
-				fileCounter = async_RenameContentRefs_Perform(cr.Res, args);
+				fileCounter = async_RenameContentRefs_Perform(cr.Res, renameData);
 				totalCounter += fileCounter;
 				if (fileCounter > 0) this.FlagResourceUnsaved(cr.Res);
-				state.Progress += 0.45f / resFiles.Count; yield return null;
+				state.Progress += 0.9f / resFiles.Count; yield return null;
 			}
-
-			Log.Editor.Write("Successfully renamed '{0}' to '{1}'. {2} content references have been found and replaced.",
-				args.OldPath,
-				args.Path,
-				totalCounter);
 		}
-		private int async_RenameContentRefs_Perform(object obj, ResourceRenamedEventArgs args)
+		private int async_RenameContentRefs_Perform(object obj, List<ResourceRenamedEventArgs> args)
 		{
 			int counter = 0;
-			if (args.IsDirectory)
+			ReflectionHelper.VisitObjectsDeep<IContentRef>(obj, r => 
 			{
-				ReflectionHelper.VisitObjectsDeep<IContentRef>(obj, r => 
+				if (r.IsDefaultContent) return r;
+				if (r.IsExplicitNull) return r;
+				if (string.IsNullOrEmpty(r.Path)) return r;
+
+				foreach (ResourceRenamedEventArgs e in args)
 				{
-					if (!r.IsDefaultContent && PathHelper.IsPathLocatedIn(r.Path, args.OldPath))
+					if (e.IsResource && r.Path == e.OldPath)
 					{
-						r.Path = r.Path.Replace(args.OldPath, args.Path);
+						r.Path = e.Path;
 						counter++;
+						break;
 					}
-					return r; 
-				});
-			}
-			else
-			{
-				ReflectionHelper.VisitObjectsDeep<IContentRef>(obj, r => 
-				{
-					if (!r.IsDefaultContent && r.Path == args.OldPath)
+					else if (e.IsDirectory && PathHelper.IsPathLocatedIn(r.Path, e.OldPath))
 					{
-						r.Path = args.Path;
+						r.Path = r.Path.Replace(e.OldPath, e.Path);
 						counter++;
+						break;
 					}
-					return r; 
-				});
-			}
+				}
+				return r; 
+			});
 			return counter;
 		}
 	}
