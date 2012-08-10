@@ -198,6 +198,7 @@ namespace DualityEditor
 			this.pluginWatcher.EnableRaisingEvents = true;
 
 			Scene.Leaving += this.Scene_Leaving;
+			Scene.Entered += this.Scene_Entered;
 			Scene.Current = new Scene();
 
 			this.dataDirWatcher.Path = EditorHelper.DataDirectory;
@@ -1597,8 +1598,23 @@ namespace DualityEditor
 		}
 		private void Scene_Leaving(object sender, EventArgs e)
 		{
-			this.Deselect(this, ObjectSelection.Category.All);
+			if (this.selectionCurrent.GameObjects.Any() || this.selectionCurrent.Components.Any())
+				this.Deselect(this, ObjectSelection.Category.GameObjCmp);
 			this.SandboxLeaveScene();
+		}
+		private void Scene_Entered(object sender, EventArgs e)
+		{
+			// Try to restore last GameObject / Component selection
+			var objQuery = this.selectionPrevious.GameObjects.Select(g => Scene.Current.AllObjects.FirstOrDefault(sg => sg.FullName == g.FullName)).NotNull();
+			var cmpQuery = this.selectionPrevious.Components.Select(delegate (Component c)
+			{
+				GameObject cmpObj = Scene.Current.AllObjects.FirstOrDefault(sg => sg.FullName == c.GameObj.FullName);
+				if (cmpObj == null) return null;
+				return cmpObj.GetComponent(c.GetType());
+			}).NotNull();
+			// Append restored selection to current one.
+			ObjectSelection objSel = new ObjectSelection(((IEnumerable<object>)objQuery).Concat(cmpQuery));
+			if (objSel.ObjectCount > 0) this.Select(this, objSel, SelectMode.Append);
 		}
 
 		private void actionRunApp_Click(object sender, EventArgs e)
@@ -1788,7 +1804,6 @@ namespace DualityEditor
 			List<string> resFiles = Resource.GetResourceFiles();
 			foreach (string file in resFiles)
 			{
-				if (file == Scene.CurrentPath && this.sandboxState != SandboxState.Inactive) continue;
 				state.StateDesc = file; yield return null;
 
 				// Loaded for the first time? Schedule for later reload.

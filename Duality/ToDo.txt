@@ -17,10 +17,6 @@
 -->	Implement some simple Font effects?
 
 
--->	Auto-Reselect the current objects when entering sandbox mode
-	-->	Because it's just annoying it doesn't already.
-
-
 
 -->	Example Project: Super Mario style platformer
 	-->	Tile-based
