@@ -21,7 +21,7 @@ namespace EditorBase.PropertyEditors
 		private	AudioData	value				= null;
 		private	Bitmap		prevImage			= null;
 		private	float		prevImageLum		= 0.0f;
-		private	AudioData	prevImageValue		= null;
+		private	int			prevImageValue		= 0;
 
 		public override object DisplayedValue
 		{
@@ -41,8 +41,9 @@ namespace EditorBase.PropertyEditors
 		
 		protected void GeneratePreviewImage()
 		{
-			if (this.prevImageValue == this.value) return;
-			this.prevImageValue = this.value;
+			int ovLen = this.value != null ? this.value.OggVorbisData.Length : 0;
+			if (this.prevImageValue == ovLen) return;
+			this.prevImageValue = ovLen;
 
 			if (this.prevImage != null) this.prevImage.Dispose();
 			this.prevImage = null;
@@ -56,6 +57,8 @@ namespace EditorBase.PropertyEditors
 					this.prevImageLum = avgColor.GetLuminance();
 				}
 			}
+
+			this.Invalidate();
 		}
 
 		public override void PerformGetValue()

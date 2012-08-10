@@ -80,18 +80,18 @@ namespace EditorBase
 			DualityEditorApp.SelectionChanged -= GlobalUpdateSelection;
 			DualityEditorApp.SelectionChanged += GlobalUpdateSelection;
 
-			DualityEditorApp.AfterUpdateDualityApp += this.EditorForm_AfterUpdateDualityApp;
+			DualityEditorApp.UpdatingEngine += this.EditorForm_AfterUpdateDualityApp;
 			DualityEditorApp.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
-			DualityEditorApp.ResourceModified += this.EditorForm_ResourceModified;
+			FileEventManager.ResourceModified += this.EditorForm_ResourceModified;
 			DualityEditorApp.Terminating += this.DualityEditorApp_Terminating;
 		}
 		protected override void OnClosed(EventArgs e)
 		{
 			base.OnClosed(e);
 
-			DualityEditorApp.AfterUpdateDualityApp -= this.EditorForm_AfterUpdateDualityApp;
+			DualityEditorApp.UpdatingEngine -= this.EditorForm_AfterUpdateDualityApp;
 			DualityEditorApp.ObjectPropertyChanged -= this.EditorForm_ObjectPropertyChanged;
-			DualityEditorApp.ResourceModified -= this.EditorForm_ResourceModified;
+			FileEventManager.ResourceModified -= this.EditorForm_ResourceModified;
 			DualityEditorApp.Terminating -= this.DualityEditorApp_Terminating;
 		}
 		protected override void OnGotFocus(EventArgs e)
@@ -167,8 +167,8 @@ namespace EditorBase
 		}
 		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
 		{
-			if (!e.PrefabApplied && (sender is PropertyEditor) && (sender as PropertyEditor).ParentGrid == this.propertyGrid) return;
-			if (!e.PrefabApplied && sender is PropertyGrid) return;
+			if (!e.CompleteChange && (sender is PropertyEditor) && (sender as PropertyEditor).ParentGrid == this.propertyGrid) return;
+			if (!e.CompleteChange && sender is PropertyGrid) return;
 
 			// Update values if anything changed that relates to the grids current selection
 			if (e.Objects.Components.GameObject().Any(o => this.propertyGrid.Selection.Contains(o)) ||
@@ -180,7 +180,7 @@ namespace EditorBase
 			if (!e.IsResource) return;
 			if (this.propertyGrid.Selection.Contains(e.Content.Res))
 			{
-				// To force updating all probably generated previews, r-select everything
+				// To force updating all probably generated previews, reselect everything
 				object[] obj = this.propertyGrid.Selection.ToArray();
 				this.propertyGrid.SelectObject(null);
 				this.propertyGrid.SelectObjects(obj, false, 100);

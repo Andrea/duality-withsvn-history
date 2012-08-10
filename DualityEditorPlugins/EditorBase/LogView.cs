@@ -33,7 +33,7 @@ namespace EditorBase
 
 			this.UpdateView();
 			Log.LogData.NewEntry += this.LogData_NewEntry;
-			DualityEditorApp.EnteringSandbox += this.EditorForm_EnteringSandbox;
+			Sandbox.Entering += this.Sandbox_Entering;
 		}
 		protected override void OnClosed(EventArgs e)
 		{
@@ -42,7 +42,7 @@ namespace EditorBase
 			this.DockPanel.ActiveAutoHideContentChanged -= this.DockPanel_ActiveAutoHideContentChanged;
 
 			Log.LogData.NewEntry -= this.LogData_NewEntry;
-			DualityEditorApp.EnteringSandbox -= this.EditorForm_EnteringSandbox;
+			Sandbox.Entering -= this.Sandbox_Entering;
 		}
 		
 		internal void SaveUserData(System.Xml.XmlElement node)
@@ -227,7 +227,7 @@ namespace EditorBase
 			if (this.DockState.IsAutoHide() && this.DockPanel.ActiveAutoHideContent != this) return;
 			this.AddSingleEntry(e.Entry);
 		}
-		private void EditorForm_EnteringSandbox(object sender, EventArgs e)
+		private void Sandbox_Entering(object sender, EventArgs e)
 		{
 			if (this.checkAutoClear.Checked) this.actionClear_ButtonClick(sender, e);
 		}

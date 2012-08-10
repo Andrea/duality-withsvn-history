@@ -29,12 +29,6 @@ namespace DualityEditor
 		Append,
 		Toggle
 	}
-	public enum SandboxState
-	{
-		Inactive,
-		Playing,
-		Paused
-	}
 
 	public static class DualityEditorApp
 	{
@@ -47,51 +41,20 @@ namespace DualityEditor
 		private	static Dictionary<Type,List<Type>>	availTypeDict	= new Dictionary<Type,List<Type>>();
 		private	static ReloadCorePluginDialog		corePluginReloader	= null;
 		private	static bool							needsRecovery		= false;
-		private	static Control						hoveredControl		= null;
-		private	static IHelpProvider				hoveredHelpProvider	= null;
-		private	static bool							hoveredHelpCaptured	= false;
 		private	static GameObjectManager			editorObjects		= new GameObjectManager();
 		private	static bool							dualityAppSuspended	= true;
-		private	static bool							sandboxStateChange	= false;
-		private	static bool							sandboxSceneFreeze	= false;
 		private	static List<Resource>				unsavedResources	= new List<Resource>();
-		
-		private static FileSystemWatcher			pluginWatcher			= null;
-		private static FileSystemWatcher			dataDirWatcher			= null;
-		private static FileSystemWatcher			sourceDirWatcher		= null;
-		private	static HashSet<string>				reimportSchedule		= new HashSet<string>();
-		private	static List<string>					editorJustSavedRes		= new List<string>();
-		private	static List<FileSystemEventArgs>	dataDirEventBuffer		= new List<FileSystemEventArgs>();
-		private	static List<FileSystemEventArgs>	sourceDirEventBuffer	= new List<FileSystemEventArgs>();
-
-		private	static HelpStack		helpStack			= new HelpStack();
-		private	static bool				needHelpStackUpdate	= false;
-		private	static SandboxState		sandboxState		= SandboxState.Inactive;
-		private	static ObjectSelection	selectionCurrent	= ObjectSelection.Null;
-		private	static ObjectSelection	selectionPrevious	= ObjectSelection.Null;
-		private	static bool				selectionChanging	= false;
+		private	static ObjectSelection				selectionCurrent	= ObjectSelection.Null;
+		private	static ObjectSelection				selectionPrevious	= ObjectSelection.Null;
+		private	static bool							selectionChanging	= false;
 
 
-		public	static	event	EventHandler	Terminating						= null;
-		public	static	event	EventHandler	BeforeReloadCorePlugins			= null;
-		public	static	event	EventHandler	AfterReloadCorePlugins			= null;
-		public	static	event	EventHandler	BeforeUpdateDualityApp			= null;
-		public	static	event	EventHandler	AfterUpdateDualityApp			= null;
-		public	static	event	EventHandler	SaveAllProjectDataTriggered		= null;
-		public	static	event	EventHandler	EnteringSandbox					= null;
-		public	static	event	EventHandler	LeaveSandbox					= null;
-		public	static	event	EventHandler	PausedSandbox					= null;
-		public	static	event	EventHandler	UnpausingSandbox				= null;
-		public	static	event	EventHandler	SandboxStateChanged				= null;
+		public	static	event	EventHandler	Terminating			= null;
+		public	static	event	EventHandler	Idling				= null;
+		public	static	event	EventHandler	UpdatingEngine		= null;
+		public	static	event	EventHandler	SaveAllTriggered	= null;
 		public	static	event	EventHandler<SelectionChangedEventArgs>			SelectionChanged		= null;
 		public	static	event	EventHandler<ObjectPropertyChangedEventArgs>	ObjectPropertyChanged	= null;
-		public	static	event	EventHandler<ResourceEventArgs>					ResourceCreated			= null;
-		public	static	event	EventHandler<ResourceEventArgs>					ResourceDeleted			= null;
-		public	static	event	EventHandler<ResourceEventArgs>					ResourceModified		= null;
-		public	static	event	EventHandler<ResourceRenamedEventArgs>			ResourceRenamed			= null;
-		public	static	event	EventHandler<FileSystemEventArgs>				SrcFileDeleted			= null;
-		public	static	event	EventHandler<FileSystemEventArgs>				SrcFileModified			= null;
-		public	static	event	EventHandler<FileSystemEventArgs>				SrcFileRenamed			= null;
 		
 
 		public static MainForm MainForm
@@ -110,17 +73,9 @@ namespace DualityEditor
 		{
 			get { return selectionChanging; }
 		}
-		public static HelpStack Help
-		{
-			get { return helpStack; }
-		}
 		public static GLControl MainContextControl
 		{
 			get { return mainContextControl; }
-		}
-		public static SandboxState SandboxState
-		{
-			get { return sandboxState; }
 		}
 		public static IEnumerable<EditorPlugin> Plugins
 		{
@@ -145,6 +100,7 @@ namespace DualityEditor
 			DualityEditorApp.needsRecovery = recover;
 			DualityEditorApp.mainForm = mainForm;
 
+			// Create working directories, if not existing yet.
 			if (!Directory.Exists(EditorHelper.DataDirectory))
 			{
 				Directory.CreateDirectory(EditorHelper.DataDirectory);
@@ -175,75 +131,40 @@ namespace DualityEditor
 			if (!Directory.Exists(EditorHelper.SourceMediaDirectory)) Directory.CreateDirectory(EditorHelper.SourceMediaDirectory);
 			if (!Directory.Exists(EditorHelper.SourceCodeDirectory)) Directory.CreateDirectory(EditorHelper.SourceCodeDirectory);
 
+			// Initialize Duality
 			DualityApp.Init(DualityApp.ExecutionEnvironment.Editor, DualityApp.ExecutionContext.Editor, new[] {"logfile", "logfile_editor"});
 			InitMainGLContext();
 			ContentProvider.InitDefaultContent();
-			LoadXmlCodeDoc();
 			LoadPlugins();
 			LoadUserData();
 			InitPlugins();
 
+			// Set up core plugin reloader
 			corePluginReloader = new ReloadCorePluginDialog(mainForm);
-			corePluginReloader.BeforeBeginReload	+= corePluginReloader_BeforeBeginReload;
-			corePluginReloader.AfterEndReload		+= corePluginReloader_AfterEndReload;
-
-			Scene.Leaving += Scene_Leaving;
-			Scene.Entered += Scene_Entered;
-			Scene.Current = new Scene();
 			
-			pluginWatcher = new FileSystemWatcher();
-			pluginWatcher.SynchronizingObject = mainForm;
-			pluginWatcher.EnableRaisingEvents = false;
-			pluginWatcher.Filter = "*.dll";
-			pluginWatcher.IncludeSubdirectories = true;
-			pluginWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.CreationTime;
-			pluginWatcher.Path = EditorHelper.PluginDirectory;
-			pluginWatcher.Changed += new FileSystemEventHandler(corePluginWatcher_Changed);
-			pluginWatcher.Created += new FileSystemEventHandler(corePluginWatcher_Changed);
-			pluginWatcher.EnableRaisingEvents = true;
-			
-			dataDirWatcher = new FileSystemWatcher();
-			dataDirWatcher.SynchronizingObject = mainForm;
-			dataDirWatcher.EnableRaisingEvents = false;
-			dataDirWatcher.IncludeSubdirectories = true;
-			dataDirWatcher.Path = EditorHelper.DataDirectory;
-			dataDirWatcher.Created += delegate(object sender, FileSystemEventArgs e) { PushDataDirEvent(e); };
-			dataDirWatcher.Changed += delegate(object sender, FileSystemEventArgs e) { PushDataDirEvent(e); };
-			dataDirWatcher.Deleted += delegate(object sender, FileSystemEventArgs e) { PushDataDirEvent(e); };
-			dataDirWatcher.Renamed += delegate(object sender, RenamedEventArgs e) { PushDataDirEvent(e); };
-			dataDirWatcher.EnableRaisingEvents = true;
-			
-			sourceDirWatcher = new FileSystemWatcher();
-			sourceDirWatcher.SynchronizingObject = mainForm;
-			sourceDirWatcher.EnableRaisingEvents = false;
-			sourceDirWatcher.IncludeSubdirectories = true;
-			sourceDirWatcher.Path = EditorHelper.SourceDirectory;
-			sourceDirWatcher.Created += delegate(object sender, FileSystemEventArgs e) { PushSourceDirEvent(e); };
-			sourceDirWatcher.Changed += delegate(object sender, FileSystemEventArgs e) { PushSourceDirEvent(e); };
-			sourceDirWatcher.Deleted += delegate(object sender, FileSystemEventArgs e) { PushSourceDirEvent(e); };
-			sourceDirWatcher.Renamed += delegate(object sender, RenamedEventArgs e) { PushSourceDirEvent(e); };
-			sourceDirWatcher.EnableRaisingEvents = true;
-
-			dualityAppSuspended = false;
-			Application.Idle += Application_Idle;
-			Resource.ResourceSaved += Resource_ResourceSaved;
-
-			// Hook message filter
-			InputEventMessageFilter inputFilter = new InputEventMessageFilter();
-			inputFilter.MouseMove += inputFilter_MouseMove;
-			inputFilter.MouseLeave += inputFilter_MouseLeave;
-			inputFilter.KeyDown += inputFilter_KeyDown;
-			inputFilter.MouseUp += inputFilter_MouseUp;
-			Application.AddMessageFilter(inputFilter);
-
+			// Register events
 			mainForm.Activated += mainForm_Activated;
 			mainForm.Deactivate += mainForm_Deactivate;
+			Scene.Leaving += Scene_Leaving;
+			Scene.Entered += Scene_Entered;
+			Application.Idle += Application_Idle;
+			Resource.ResourceSaved += Resource_ResourceSaved;
+			FileEventManager.PluginChanged += FileEventManager_PluginChanged;
+
+			// Initialize secondary editor components
+			Sandbox.Init();
+			HelpSystem.Init();
+			FileEventManager.Init();
+
+			// Enter an empty Scene and allow the engine to run
+			Scene.Current = new Scene();
+			dualityAppSuspended = false;
 		}
 		public static bool Terminate(bool byUser)
 		{
 			bool cancel = false;
 
-			// Safety messageboxes are only displayed when the close operation is triggered by the user.
+			// Display safety message boxes if the close operation is triggered by the user.
 			if (byUser)
 			{
 				var unsavedResTemp = DualityEditorApp.UnsavedResources.ToArray();
@@ -258,7 +179,7 @@ namespace DualityEditor
 						MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
 					if (result == DialogResult.Yes)
 					{
-						DualityEditorApp.SandboxStop();
+						Sandbox.Stop();
 						DualityEditorApp.SaveAllProjectData();
 					}
 					else if (result == DialogResult.Cancel)
@@ -275,10 +196,17 @@ namespace DualityEditor
 				}
 			}
 
+			// Not cancelling? Then actually start terminating.
 			if (!cancel)
 			{
 				if (Terminating != null) Terminating(null, EventArgs.Empty);
-				DualityEditorApp.SandboxStop();
+
+				// Initialize secondary editor components
+				FileEventManager.Terminate();
+				HelpSystem.Terminate();
+				Sandbox.Terminate();
+
+				// Terminate Duality
 				DualityEditorApp.SaveUserData();
 				DualityApp.Terminate();
 			}
@@ -501,105 +429,6 @@ namespace DualityEditor
 			DualityApp.TargetMode = mainContextControl.Context.GraphicsMode;
 		}
 
-		public static void SandboxPlay()
-		{
-			if (sandboxState == SandboxState.Playing) return;
-			sandboxStateChange = true;
-			if (sandboxState == SandboxState.Paused)
-			{
-				OnUnpausingSandbox();
-				sandboxState = SandboxState.Playing;
-				DualityApp.ExecContext = DualityApp.ExecutionContext.Game;
-			}
-			else
-			{
-				OnEnteringSandbox();
-
-				// Save the current scene
-				SaveCurrentScene();
-				
-				// Force later Scene reload by disposing it
-				string curPath = null;
-				if (!String.IsNullOrEmpty(Scene.Current.Path))
-				{
-					curPath = Scene.CurrentPath;
-					Scene.Current.Dispose();
-				}
-
-				sandboxState = SandboxState.Playing;
-				DualityApp.ExecContext = DualityApp.ExecutionContext.Game;
-
-				// (Re)Load Scene.
-				if (curPath != null)
-					Scene.Current = ContentProvider.RequestContent<Scene>(curPath).Res;
-			}
-
-			OnSandboxStateChanged();
-			sandboxStateChange = false;
-		}
-		public static void SandboxPause()
-		{
-			if (sandboxState == SandboxState.Paused) return;
-			sandboxStateChange = true;
-
-			sandboxState = SandboxState.Paused;
-			DualityApp.ExecContext = DualityApp.ExecutionContext.Editor;
-
-			OnPausedSandbox();
-			OnSandboxStateChanged();
-			sandboxStateChange = false;
-		}
-		public static void SandboxStop()
-		{
-			if (sandboxState == SandboxState.Inactive) return;
-			sandboxStateChange = true;
-
-			// Force later Scene reload by disposing it
-			string curPath = null;
-			if (!String.IsNullOrEmpty(Scene.Current.Path))
-			{
-				curPath = Scene.CurrentPath;
-				Scene.Current.Dispose();
-			}
-
-			sandboxState = SandboxState.Inactive;
-			DualityApp.ExecContext = DualityApp.ExecutionContext.Editor;
-			
-			// (Re)Load Scene
-			if (curPath != null)
-				Scene.Current = ContentProvider.RequestContent<Scene>(curPath).Res;
-
-			OnLeaveSandbox();
-			OnSandboxStateChanged();
-			sandboxStateChange = false;
-		}
-		private static void SandboxLeaveScene()
-		{
-			if (sandboxStateChange) return;
-			//if (corePluginReloader.IsReloadingPlugins) return;
-
-			// Force later Scene reload by disposing it
-			string curPath = null;
-			if (!String.IsNullOrEmpty(Scene.Current.Path))
-			{
-				curPath = Scene.CurrentPath;
-				Scene.Current.Dispose();
-			}
-		}
-		public static void SandboxSceneStartFreeze()
-		{
-			sandboxSceneFreeze = true;
-		}
-		public static void SandboxSceneStopFreeze()
-		{
-			sandboxSceneFreeze = false;
-		}
-		public static void SetCurrentDualityAppInput(IMouseInput mouse, IKeyboardInput keyboard)
-		{
-			DualityApp.Mouse = mouse;
-			DualityApp.Keyboard = keyboard;
-		}
-
 		public static void Select(object sender, ObjectSelection sel, SelectMode mode = SelectMode.Set)
 		{
 			selectionPrevious = selectionCurrent;
@@ -645,7 +474,7 @@ namespace DualityEditor
 		{
 			foreach (Resource res in UnsavedResources.ToArray()) // The Property does some safety checks
 			{
-				if (res == Scene.Current && sandboxState != SandboxState.Inactive) continue;
+				if (res == Scene.Current && Sandbox.IsActive) continue;
 				res.Save();
 			}
 			unsavedResources.Clear();
@@ -673,78 +502,13 @@ namespace DualityEditor
 		}
 		public static void SaveAllProjectData()
 		{
-			if (!IsResourceUnsaved(Scene.Current) && sandboxState == SandboxState.Inactive) SaveCurrentScene();
+			if (!IsResourceUnsaved(Scene.Current) && !Sandbox.IsActive) SaveCurrentScene();
 			SaveResources();
 
-			if (SaveAllProjectDataTriggered != null)
-				SaveAllProjectDataTriggered(null, EventArgs.Empty);
+			if (SaveAllTriggered != null)
+				SaveAllTriggered(null, EventArgs.Empty);
 		}
 		
-		private static void UpdateHelpStack()
-		{
-			foreach (Form f in EditorHelper.GetZSortedAppWindows())
-			{
-				if (!f.Visible) continue;
-				if (!new Rectangle(f.Location, f.Size).Contains(Cursor.Position)) continue;
-
-				Point localPos = f.PointToClient(Cursor.Position);
-				hoveredControl = f.GetChildAtPointDeep(localPos, GetChildAtPointSkip.Invisible | GetChildAtPointSkip.Transparent);
-				break;
-			}
-
-			Control c;
-			HelpInfo help;
-
-			// An IHelpProvider has captured the mouse: Ask what to do with it.
-			if (hoveredHelpCaptured)
-			{
-				c = hoveredHelpProvider as Control;
-				help = hoveredHelpProvider.ProvideHoverHelp(c.PointToClient(Cursor.Position), ref hoveredHelpCaptured);
-
-				// Update provider's help info
-				Help.UpdateFromProvider(hoveredHelpProvider, help);
-
-				// If still in charge: Return early.
-				if (hoveredHelpCaptured) return;
-			}
-
-			// No IHelpProvider in charge: Find one that provides help
-			help = null;
-			IHelpProvider lastHelpProvider = hoveredHelpProvider;
-			foreach (IHelpProvider hp in hoveredControl.GetControlAncestors<IHelpProvider>())
-			{
-				c = hp as Control;
-				help = hp.ProvideHoverHelp(c.PointToClient(Cursor.Position), ref hoveredHelpCaptured);
-				hoveredHelpProvider = hp;
-				if (help != null || hoveredHelpCaptured) break;
-			}
-
-			// Update help system based on the result.
-			if (lastHelpProvider != hoveredHelpProvider)
-				Help.UpdateFromProvider(lastHelpProvider, hoveredHelpProvider, help);
-			else if (hoveredHelpProvider != null)
-				Help.UpdateFromProvider(hoveredHelpProvider, help);
-		}
-		private static bool PerformHelpAction()
-		{
-			bool success = false;
-
-			// Ask Help Provider for help
-			if (Help.ActiveHelpProvider != null)
-			{
-				success = success | Help.ActiveHelpProvider.PerformHelpAction(Help.ActiveHelp);
-			}
-
-			// No reaction? Just open the reference then.
-			if (!success && File.Exists("DDoc.chm") && !System.Diagnostics.Process.GetProcessesByName("hh").Any())
-			{
-				System.Diagnostics.Process.Start("HH.exe", Path.GetFullPath("DDoc.chm"));
-				success = true;
-			}
-
-			return success;
-		}
-
 		public static void UpdatePluginSourceCode()
 		{
 			// Initially generate source code, if not existing yet
@@ -935,18 +699,6 @@ namespace DualityEditor
 			return plugins.OfType<T>().FirstOrDefault();
 		}
 
-		public static void LoadXmlCodeDoc()
-		{
-			LoadXmlCodeDoc("Duality.xml");
-			foreach (string xmlDocFile in Directory.EnumerateFiles("Plugins", "*.core.xml", SearchOption.AllDirectories))
-				LoadXmlCodeDoc(xmlDocFile);
-		}
-		public static void LoadXmlCodeDoc(string file)
-		{
-			XmlCodeDoc xmlDoc = new XmlCodeDoc(file);
-			CorePluginRegistry.RegisterXmlCodeDoc(xmlDoc);
-		}
-
 		public static bool DisplayConfirmBreakPrefabLink(ObjectSelection obj = null)
 		{
 			if (obj == null) obj = DualityEditorApp.Selection;
@@ -976,317 +728,15 @@ namespace DualityEditor
 			return true;
 		}
 
-		private static bool IsResPathIgnored(string filePath)
+		private static void OnIdling()
 		{
-			return IsPathIgnored(filePath);
+			if (Idling != null)
+				Idling(null, EventArgs.Empty);
 		}
-		private static bool IsSourcePathIgnored(string filePath)
+		private static void OnUpdatingEngine()
 		{
-			return IsPathIgnored(filePath);
-		}
-		private static bool IsPathIgnored(string filePath)
-		{
-			if (!File.Exists(filePath) && !Directory.Exists(filePath)) return false;
-			if (!PathHelper.IsPathVisible(filePath)) return true;
-			if (filePath.Contains(@"/.svn/") || filePath.Contains(@"\.svn\")) return true;
-			return false;
-		}
-		
-		private static FileSystemEventArgs FetchFileSystemEvent(List<FileSystemEventArgs> dirEventList, string basePath)
-		{
-			if (dirEventList.Count == 0) return null;
-
-			FileSystemEventArgs	current	= dirEventList[0];
-			dirEventList.RemoveAt(0);
-
-			// Discard or pack rename-rename
-			if (current.ChangeType == WatcherChangeTypes.Renamed)
-			{
-				RenamedEventArgs rename = current as RenamedEventArgs;
-
-				while (rename != null)
-				{
-					RenamedEventArgs renameB = dirEventList.OfType<RenamedEventArgs>().FirstOrDefault(e => 
-						Path.GetFileName(e.OldFullPath) == Path.GetFileName(rename.FullPath));
-					if (renameB != null)
-					{
-						dirEventList.Remove(renameB);
-						rename = new RenamedEventArgs(WatcherChangeTypes.Renamed, basePath, renameB.Name, rename.OldName);
-						current = rename;
-					}
-					else break;
-				}
-
-				// Discard useless renames
-				if (rename.OldFullPath == rename.FullPath) return null;
-			}
-
-			// Pack del-create to rename
-			if (current.ChangeType == WatcherChangeTypes.Created || current.ChangeType == WatcherChangeTypes.Deleted)
-			{
-				FileSystemEventArgs del		= current.ChangeType == WatcherChangeTypes.Deleted ? current : null;
-				FileSystemEventArgs create	= current.ChangeType == WatcherChangeTypes.Created ? current : null;
-
-				if (del != null)
-				{
-					create = dirEventList.FirstOrDefault(e => 
-						e.ChangeType == WatcherChangeTypes.Created && 
-						Path.GetFileName(e.FullPath) == Path.GetFileName(del.FullPath));
-					dirEventList.Remove(create);
-				}
-				else if (create != null)
-				{
-					del = dirEventList.FirstOrDefault(e => 
-						e.ChangeType == WatcherChangeTypes.Deleted && 
-						Path.GetFileName(e.FullPath) == Path.GetFileName(create.FullPath));
-					dirEventList.Remove(del);
-				}
-
-				if (del != null && create != null) return new RenamedEventArgs(WatcherChangeTypes.Renamed, basePath, create.Name, del.Name);
-			}
-			
-			return current;
-		}
-		private static void PushDataDirEvent(FileSystemEventArgs e)
-		{
-			if (IsResPathIgnored(e.FullPath)) return;
-			dataDirEventBuffer.RemoveAll(f => f.FullPath == e.FullPath && f.ChangeType == e.ChangeType);
-			dataDirEventBuffer.Add(e);
-		}
-		private static void ProcessDataDirEvents()
-		{
-			List<ResourceRenamedEventArgs> renameEventBuffer = null;
-
-			// Process events
-			while (dataDirEventBuffer.Count > 0)
-			{
-				FileSystemEventArgs e = FetchFileSystemEvent(dataDirEventBuffer, dataDirWatcher.Path);
-				if (e == null) continue;
-
-				if (e.ChangeType == WatcherChangeTypes.Changed)
-				{
-					// Is it a Resource file or just something else?
-					ResourceEventArgs args = new ResourceEventArgs(e.FullPath);
-					if (Resource.IsResourceFile(e.FullPath) || args.IsDirectory)
-					{
-						// Unregister outdated resources, if modified outside the editor
-						if (!args.IsDirectory &&
-							!editorJustSavedRes.Contains(Path.GetFullPath(e.FullPath)) && 
-							ContentProvider.IsContentRegistered(args.Path))
-						{
-							bool isCurrentScene = args.Content.Is<Scene>() && Scene.Current == args.Content.Res;
-							if (isCurrentScene || IsResourceUnsaved(e.FullPath))
-							{
-								DialogResult result = MessageBox.Show(
-									String.Format(EditorRes.GeneralRes.Msg_ConfirmReloadResource_Text, e.FullPath), 
-									EditorRes.GeneralRes.Msg_ConfirmReloadResource_Caption, 
-									MessageBoxButtons.YesNo,
-									MessageBoxIcon.Exclamation);
-								if (result == DialogResult.Yes)
-								{
-									string curScenePath = Scene.CurrentPath;
-									ContentProvider.UnregisterContent(args.Path);
-									if (isCurrentScene) Scene.Current = ContentProvider.RequestContent<Scene>(curScenePath).Res;
-								}
-							}
-							else
-								ContentProvider.UnregisterContent(args.Path);
-						}
-
-						// When modifying prefabs, apply changes to all linked objects
-						if (args.IsResource && args.Content.Is<Prefab>())
-						{
-							ContentRef<Prefab> prefabRef = args.Content.As<Prefab>();
-							List<PrefabLink> appliedLinks = PrefabLink.ApplyAllLinks(Scene.Current.AllObjects, p => p.Prefab == prefabRef);
-							List<GameObject> changedObjects = new List<GameObject>(appliedLinks.Select(p => p.Obj));
-							NotifyObjPrefabApplied(null, new ObjectSelection(changedObjects));
-						}
-
-						if (ResourceModified != null) ResourceModified(null, args);
-					}
-				}
-				else if (e.ChangeType == WatcherChangeTypes.Created)
-				{
-					if (File.Exists(e.FullPath))
-					{
-						// Register newly detected ressource file
-						if (Resource.IsResourceFile(e.FullPath))
-						{
-							if (ResourceCreated != null)
-								ResourceCreated(null, new ResourceEventArgs(e.FullPath));
-						}
-						// Import non-ressource file
-						else
-						{
-							bool abort = false;
-
-							if (FileImportProvider.IsImportFileExisting(e.FullPath))
-							{
-								DialogResult result = MessageBox.Show(
-									String.Format(EditorRes.GeneralRes.Msg_ImportConfirmOverwrite_Text, e.FullPath), 
-									EditorRes.GeneralRes.Msg_ImportConfirmOverwrite_Caption, 
-									MessageBoxButtons.YesNo, 
-									MessageBoxIcon.Warning);
-								abort = result == DialogResult.No;
-							}
-
-							if (!abort)
-							{
-								bool importedSuccessfully = FileImportProvider.ImportFile(e.FullPath);
-								if (!importedSuccessfully)
-								{
-									MessageBox.Show(
-										String.Format(EditorRes.GeneralRes.Msg_CantImport_Text, e.FullPath), 
-										EditorRes.GeneralRes.Msg_CantImport_Caption, 
-										MessageBoxButtons.OK, 
-										MessageBoxIcon.Error);
-								}
-								abort = !importedSuccessfully;
-							}
-						}
-					}
-					else if (Directory.Exists(e.FullPath))
-					{
-						// Register newly detected ressource directory
-						if (ResourceCreated != null)
-							ResourceCreated(null, new ResourceEventArgs(e.FullPath));
-					}
-				}
-				else if (e.ChangeType == WatcherChangeTypes.Deleted)
-				{
-					// Is it a Resource file or just something else?
-					ResourceEventArgs args = new ResourceEventArgs(e.FullPath);
-					if (Resource.IsResourceFile(e.FullPath) || args.IsDirectory)
-					{
-
-						// Unregister no-more existing resources
-						if (args.IsDirectory)	ContentProvider.UnregisterContentTree(args.Path);
-						else					ContentProvider.UnregisterContent(args.Path);
-
-						if (ResourceDeleted != null)
-							ResourceDeleted(null, args);
-					}
-				}
-				else if (e.ChangeType == WatcherChangeTypes.Renamed)
-				{
-					// Is it a Resource file or just something else?
-					RenamedEventArgs re = e as RenamedEventArgs;
-					ResourceRenamedEventArgs args = new ResourceRenamedEventArgs(re.FullPath, re.OldFullPath);
-					if (Resource.IsResourceFile(e.FullPath) || args.IsDirectory)
-					{
-						// Rename content registerations
-						if (args.IsDirectory)	ContentProvider.RenameContentTree(args.OldPath, args.Path);
-						else					ContentProvider.RenameContent(args.OldPath, args.Path);
-
-						// Buffer rename event to perform the global rename for all at once.
-						if (renameEventBuffer == null) renameEventBuffer = new List<ResourceRenamedEventArgs>();
-						renameEventBuffer.Add(args);
-
-						if (ResourceRenamed != null) ResourceRenamed(null, args);
-					}
-				}
-			}
-
-			// If required, perform a global rename operation in all existing content
-			if (renameEventBuffer != null)
-			{
-				// Don't do it now - schedule it for the main form event loop so we don't block here.
-				mainForm.BeginInvoke((Action)delegate() {
-					ProcessingBigTaskDialog taskDialog = new ProcessingBigTaskDialog( 
-						EditorRes.GeneralRes.TaskRenameContentRefs_Caption, 
-						EditorRes.GeneralRes.TaskRenameContentRefs_Desc, 
-						async_RenameContentRefs, renameEventBuffer);
-					taskDialog.ShowDialog(mainForm);
-				});
-			}
-		}
-		private static void PushSourceDirEvent(FileSystemEventArgs e)
-		{
-			if (IsSourcePathIgnored(e.FullPath)) return;
-			sourceDirEventBuffer.RemoveAll(f => f.FullPath == e.FullPath && f.ChangeType == e.ChangeType);
-			sourceDirEventBuffer.Add(e);
-		}
-		private static void ProcessSourceDirEvents()
-		{
-			// Process events
-			while (sourceDirEventBuffer.Count > 0)
-			{
-				FileSystemEventArgs e = FetchFileSystemEvent(sourceDirEventBuffer, sourceDirWatcher.Path);
-				if (e == null) continue;
-
-				if (e.ChangeType == WatcherChangeTypes.Changed)
-				{
-					if (File.Exists(e.FullPath)) reimportSchedule.Add(e.FullPath);
-					if (SrcFileModified != null) SrcFileModified(null, e);
-				}
-				else if (e.ChangeType == WatcherChangeTypes.Created)
-				{
-				}
-				else if (e.ChangeType == WatcherChangeTypes.Deleted)
-				{
-					if (SrcFileDeleted != null) SrcFileDeleted(null, e);
-				}
-				else if (e.ChangeType == WatcherChangeTypes.Renamed)
-				{
-					RenamedEventArgs rename = e as RenamedEventArgs;
-					FileImportProvider.NotifyFileRenamed(rename.OldFullPath, rename.FullPath);
-					if (SrcFileRenamed != null) SrcFileRenamed(null, e);
-				}
-			}
-		}
-
-		private static void OnBeforeReloadCorePlugins()
-		{
-			dualityAppSuspended = true;
-
-			Log.Editor.Write("Core plugin reloader initialized");
-			Log.Editor.PushIndent();
-			if (BeforeReloadCorePlugins != null)
-				BeforeReloadCorePlugins(null, EventArgs.Empty);
-		}
-		private static void OnAfterReloadCorePlugins()
-		{
-			dualityAppSuspended = false;
-
-			if (AfterReloadCorePlugins != null)
-				AfterReloadCorePlugins(null, EventArgs.Empty);
-			Log.Editor.PopIndent();
-			Log.Editor.Write("Core plugin reloader finished");
-		}
-		private static void OnBeforeUpdateDualityApp()
-		{
-			if (BeforeUpdateDualityApp != null)
-				BeforeUpdateDualityApp(null, EventArgs.Empty);
-		}
-		private static void OnAfterUpdateDualityApp()
-		{
-			if (AfterUpdateDualityApp != null)
-				AfterUpdateDualityApp(null, EventArgs.Empty);
-		}
-		private static void OnEnteringSandbox()
-		{
-			if (EnteringSandbox != null)
-				EnteringSandbox(null, EventArgs.Empty);
-		}
-		private static void OnLeaveSandbox()
-		{
-			if (LeaveSandbox != null)
-				LeaveSandbox(null, EventArgs.Empty);
-		}
-		private static void OnPausedSandbox()
-		{
-			if (PausedSandbox != null)
-				PausedSandbox(null, EventArgs.Empty);
-		}
-		private static void OnUnpausingSandbox()
-		{
-			if (UnpausingSandbox != null)
-				UnpausingSandbox(null, EventArgs.Empty);
-		}
-		private static void OnSandboxStateChanged()
-		{
-			if (SandboxStateChanged != null)
-				SandboxStateChanged(null, EventArgs.Empty);
+			if (UpdatingEngine != null)
+				UpdatingEngine(null, EventArgs.Empty);
 		}
 		private static void OnSelectionChanged(object sender, ObjectSelection.Category changedCategoryFallback)
 		{
@@ -1301,7 +751,7 @@ namespace DualityEditor
 		private static void OnObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs args)
 		{
 			// If a linked GameObject was modified, update its prefab link changelist
-			if (!args.PrefabApplied && (args.Objects.GameObjects.Any() || args.Objects.Components.Any()))
+			if (!args.CompleteChange && (args.Objects.GameObjects.Any() || args.Objects.Components.Any()))
 			{
 				HashSet<PrefabLink> changedLinks = new HashSet<PrefabLink>();
 				foreach (object o in args.Objects.Objects)
@@ -1334,7 +784,7 @@ namespace DualityEditor
 			{
 				foreach (Resource res in args.Objects.Resources)
 				{
-					if (sandboxState != SandboxState.Inactive && res is Scene && (res as Scene).IsCurrent) continue;
+					if (Sandbox.IsActive && res is Scene && (res as Scene).IsCurrent) continue;
 					FlagResourceUnsaved(res);
 				}
 			}
@@ -1386,19 +836,9 @@ namespace DualityEditor
 		
 		private static void Application_Idle(object sender, EventArgs e)
 		{
-			// Process file / source events, if no modal dialog is open.
+			// Trigger idle event if no modal dialog is open.
 			if (mainForm.Visible && mainForm.CanFocus)
-			{
-				ProcessSourceDirEvents();
-				ProcessDataDirEvents();
-				editorJustSavedRes.Clear();
-			}
-
-			// Perform scheduled help stack updates
-			if (needHelpStackUpdate)
-			{
-				UpdateHelpStack();
-			}
+				OnIdling();
 
 			// Update Duality engine
 			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
@@ -1407,16 +847,15 @@ namespace DualityEditor
 				watch.Restart();
 				if (!dualityAppSuspended)
 				{
-					OnBeforeUpdateDualityApp();
 					try
 					{
-						DualityApp.EditorUpdate(editorObjects, sandboxSceneFreeze);
+						DualityApp.EditorUpdate(editorObjects, Sandbox.IsFreezed);
 					}
 					catch (Exception exception)
 					{
 						Log.Editor.WriteError("An error occured during a core update: {0}", Log.Exception(exception));
 					}
-					OnAfterUpdateDualityApp();
+					OnUpdatingEngine();
 				}
 
 				// Assure we'll at least wait 16 ms until updating again.
@@ -1435,7 +874,6 @@ namespace DualityEditor
 		{
 			if (selectionCurrent.GameObjects.Any() || selectionCurrent.Components.Any())
 				Deselect(null, ObjectSelection.Category.GameObjCmp);
-			SandboxLeaveScene();
 		}
 		private static void Scene_Entered(object sender, EventArgs e)
 		{
@@ -1455,7 +893,6 @@ namespace DualityEditor
 		{
 			if (e.Path == null) return; // Ignore Resources without a path.
 			if (e.IsDefaultContent) return; // Ignore default content
-			editorJustSavedRes.Add(Path.GetFullPath(e.Path));
 			FlagResourceSaved(e.Content.Res);
 		}
 		
@@ -1473,20 +910,6 @@ namespace DualityEditor
 			{
 				corePluginReloader.State = ReloadCorePluginDialog.ReloaderState.ReloadPlugins;
 			}
-
-			// Perform scheduled source file reimports
-			if (reimportSchedule.Count > 0)
-			{
-				// Hacky: Wait a little for the files to be accessable again (Might be used by another process)
-				System.Threading.Thread.Sleep(50);
-
-				foreach (string file in reimportSchedule)
-				{
-					if (!File.Exists(file)) continue;
-					FileImportProvider.ReimportFile(file);
-				}
-				reimportSchedule.Clear();
-			}
 		}
 		private static void mainForm_Deactivate(object sender, EventArgs e)
 		{
@@ -1495,144 +918,12 @@ namespace DualityEditor
 				DualityEditorApp.UpdatePluginSourceCode();
 		}
 
-		private static void corePluginWatcher_Changed(object sender, FileSystemEventArgs e)
+		private static void FileEventManager_PluginChanged(object sender, FileSystemEventArgs e)
 		{
 			string pluginStr = Path.Combine("Plugins", e.Name);
 			if (!corePluginReloader.ReloadSchedule.Contains(pluginStr))
 				corePluginReloader.ReloadSchedule.Add(pluginStr);
 			corePluginReloader.State = ReloadCorePluginDialog.ReloaderState.WaitForPlugins;
-		}
-		private static void corePluginReloader_AfterEndReload(object sender, EventArgs e)
-		{
-			OnAfterReloadCorePlugins();
-		}
-		private static void corePluginReloader_BeforeBeginReload(object sender, EventArgs e)
-		{
-			OnBeforeReloadCorePlugins();
-		}
-
-		private static void inputFilter_MouseLeave(object sender, EventArgs e)
-		{
-			needHelpStackUpdate = true;
-		}
-		private static void inputFilter_MouseMove(object sender, EventArgs e)
-		{
-			if (Control.MouseButtons != MouseButtons.None) return;
-			needHelpStackUpdate = true;
-		}
-		private static void inputFilter_MouseUp(object sender, EventArgs e)
-		{
-			if (Control.MouseButtons == MouseButtons.None)
-				needHelpStackUpdate = true;
-		}
-		private static void inputFilter_KeyDown(object sender, KeyEventArgs e)
-		{
-			if (e.KeyCode == Keys.F1)
-				e.Handled = e.Handled || PerformHelpAction();
-		}
-
-		private static System.Collections.IEnumerable async_RenameContentRefs(ProcessingBigTaskDialog.WorkerInterface state)
-		{
-			var renameData = state.Data as List<ResourceRenamedEventArgs>;
-			int totalCounter = 0;
-			int fileCounter = 0;
-			
-			// Rename in static application data
-			state.StateDesc = "DualityApp Data"; yield return null;
-			DualityApp.LoadAppData();
-			DualityApp.LoadUserData();
-			DualityApp.LoadMetaData();
-			state.Progress += 0.04f; yield return null;
-
-			totalCounter += async_RenameContentRefs_Perform(DualityApp.AppData, renameData);
-			totalCounter += async_RenameContentRefs_Perform(DualityApp.UserData, renameData);
-			totalCounter += async_RenameContentRefs_Perform(DualityApp.MetaData, renameData);
-			state.Progress += 0.02f; yield return null;
-
-			DualityApp.SaveAppData();
-			DualityApp.SaveUserData();
-			DualityApp.SaveMetaData();
-			state.Progress += 0.04f; yield return null;
-
-			// Special case: Current Scene in sandbox mode
-			if (sandboxState != SandboxState.Inactive)
-			{
-				// Because changes we'll do will be discarded when leaving the sandbox we'll need to
-				// do it the hard way - manually load an save the file.
-				state.StateDesc = "Current Scene"; yield return null;
-				Scene curScene = Resource.LoadResource<Scene>(Scene.CurrentPath);
-				fileCounter = async_RenameContentRefs_Perform(curScene, renameData);
-				totalCounter += fileCounter;
-				if (fileCounter > 0) curScene.Save(Scene.CurrentPath);
-			}
-
-			// Rename in actual content
-			var availContent = ContentProvider.GetAvailContent<Resource>();
-			var reloadContent = new List<IContentRef>();
-			List<string> resFiles = Resource.GetResourceFiles();
-			foreach (string file in resFiles)
-			{
-				state.StateDesc = file; yield return null;
-
-				// Loaded for the first time? Schedule for later reload.
-				bool reload = !availContent.Any(r => r.Path == file);
-				// Keep in mind that this operation is performed while Duality content was
-				// in an inconsistent state. Loading Resources now may lead to wrong data.
-				// Because the ContentRefs might be wrong right now.
-
-				// Load content
-				var cr = ContentProvider.RequestContent(file);
-				state.Progress += 0.35f / resFiles.Count; yield return null;
-
-				// Perform rename and flag unsaved
-				fileCounter = async_RenameContentRefs_Perform(cr.Res, renameData);
-				totalCounter += fileCounter;
-				if (fileCounter > 0)
-				{
-					if (!reload)
-						FlagResourceUnsaved(cr.Res);
-					else
-						reloadContent.Add(cr);
-				}
-				state.Progress += 0.35f / resFiles.Count; yield return null;
-			}
-
-			// Perform Resource unload where scheduled
-			state.StateDesc = "Saving Resources.."; yield return null;
-			foreach (IContentRef cr in reloadContent)
-			{
-				cr.Res.Save();
-				ContentProvider.UnregisterContent(cr.Path);
-				state.Progress += 0.2f / reloadContent.Count; yield return null;
-			}
-		}
-		private static int async_RenameContentRefs_Perform(object obj, List<ResourceRenamedEventArgs> args)
-		{
-			int counter = 0;
-			ReflectionHelper.VisitObjectsDeep<IContentRef>(obj, r => 
-			{
-				if (r.IsDefaultContent) return r;
-				if (r.IsExplicitNull) return r;
-				if (string.IsNullOrEmpty(r.Path)) return r;
-
-				foreach (ResourceRenamedEventArgs e in args)
-				{
-					if (e.IsResource && r.Path == e.OldPath)
-					{
-						r.Path = e.Path;
-						counter++;
-						break;
-					}
-					else if (e.IsDirectory && PathHelper.IsPathLocatedIn(r.Path, e.OldPath))
-					{
-						r.Path = r.Path.Replace(e.OldPath, e.Path);
-						counter++;
-						break;
-					}
-				}
-				return r; 
-			});
-			return counter;
 		}
 	}
 }

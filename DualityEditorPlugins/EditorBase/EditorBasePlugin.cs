@@ -263,7 +263,7 @@ namespace EditorBase
 			this.menuItemAppData.Click += this.menuItemAppData_Click;
 			this.menuItemUserData.Click += this.menuItemUserData_Click;
 
-			DualityEditorApp.ResourceModified += this.main_ResourceModified;
+			FileEventManager.ResourceModified += this.main_ResourceModified;
 			DualityEditorApp.ObjectPropertyChanged += this.main_ObjectPropertyChanged;
 		}
 		
@@ -500,6 +500,8 @@ namespace EditorBase
 		}
 		private void OnResourceModified(ContentRef<Resource> resRef)
 		{
+			List<object> changedObj = null;
+
 			// If a font has been modified, update all TextRenderers
 			if (resRef.Is<Font>())
 			{
@@ -507,6 +509,9 @@ namespace EditorBase
 				{
 					r.Text.ApplySource();
 					r.UpdateMetrics();
+
+					if (changedObj == null) changedObj = new List<object>();
+					changedObj.Add(r);
 				}
 			}
 			// If its a Pixmap, reload all associated Textures
@@ -518,6 +523,9 @@ namespace EditorBase
 					if (tex.Res.BasePixmap.Res == resRef.Res)
 					{
 						tex.Res.ReloadData();
+
+						if (changedObj == null) changedObj = new List<object>();
+						changedObj.Add(tex.Res);
 					}
 				}
 			}
@@ -530,6 +538,9 @@ namespace EditorBase
 					if (rt.Res.Targets.Any(target => target.Res == resRef.Res as Texture))
 					{
 						rt.Res.SetupOpenGLRes();
+
+						if (changedObj == null) changedObj = new List<object>();
+						changedObj.Add(rt.Res);
 					}
 				}
 			}
@@ -545,9 +556,15 @@ namespace EditorBase
 						bool wasCompiled = sp.Res.Compiled;
 						sp.Res.AttachShaders();
 						if (wasCompiled) sp.Res.Compile();
+
+						if (changedObj == null) changedObj = new List<object>();
+						changedObj.Add(sp.Res);
 					}
 				}
 			}
+
+			if (changedObj != null)
+				DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(changedObj as IEnumerable<object>));
 		}
 
 		public static void SortToolStripTypeItems(ToolStripItemCollection items)

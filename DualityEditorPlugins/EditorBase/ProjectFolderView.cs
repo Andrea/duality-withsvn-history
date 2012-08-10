@@ -307,10 +307,10 @@ namespace EditorBase
 			base.OnShown(e);
 			this.InitRessources();
 			DualityEditorApp.SelectionChanged += this.EditorForm_SelectionChanged;
-			DualityEditorApp.ResourceCreated += this.EditorForm_ResourceCreated;
-			DualityEditorApp.ResourceDeleted += this.EditorForm_ResourceDeleted;
-			DualityEditorApp.ResourceModified += this.EditorForm_ResourceModified;
-			DualityEditorApp.ResourceRenamed += this.EditorForm_ResourceRenamed;
+			FileEventManager.ResourceCreated += this.EditorForm_ResourceCreated;
+			FileEventManager.ResourceDeleted += this.EditorForm_ResourceDeleted;
+			FileEventManager.ResourceModified += this.EditorForm_ResourceModified;
+			FileEventManager.ResourceRenamed += this.EditorForm_ResourceRenamed;
 			DualityEditorApp.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
 			Resource.ResourceSaved += this.Resource_ResourceSaved;
 		}
@@ -318,10 +318,10 @@ namespace EditorBase
 		{
 			base.OnClosed(e);
 			DualityEditorApp.SelectionChanged -= this.EditorForm_SelectionChanged;
-			DualityEditorApp.ResourceCreated -= this.EditorForm_ResourceCreated;
-			DualityEditorApp.ResourceDeleted -= this.EditorForm_ResourceDeleted;
-			DualityEditorApp.ResourceModified -= this.EditorForm_ResourceModified;
-			DualityEditorApp.ResourceRenamed -= this.EditorForm_ResourceRenamed;
+			FileEventManager.ResourceCreated -= this.EditorForm_ResourceCreated;
+			FileEventManager.ResourceDeleted -= this.EditorForm_ResourceDeleted;
+			FileEventManager.ResourceModified -= this.EditorForm_ResourceModified;
+			FileEventManager.ResourceRenamed -= this.EditorForm_ResourceRenamed;
 			DualityEditorApp.ObjectPropertyChanged -= this.EditorForm_ObjectPropertyChanged;
 			Resource.ResourceSaved -= this.Resource_ResourceSaved;
 		}

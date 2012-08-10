@@ -489,8 +489,8 @@ namespace EditorBase.CamViewStates
 			this.UpdateCursorImage();
 			this.View.LocalGLControl.Invalidate();
 
-			if (DualityEditorApp.SandboxState == SandboxState.Playing)
-				DualityEditorApp.SandboxPause();
+			if (Sandbox.State == SandboxState.Playing)
+				Sandbox.Pause();
 			DualityEditorApp.Deselect(this, ObjectSelection.Category.Other);
 		}
 		private void LeaveCursorState()
@@ -540,7 +540,7 @@ namespace EditorBase.CamViewStates
 			if (e.Objects.Objects.Any(o => o is Transform || o is RigidBody || o is ShapeInfo))
 			{
 				// Applying its Prefab invalidates a Collider's ShapeInfos: Deselect them.
-				if (e.PrefabApplied)
+				if (e.CompleteChange)
 					DualityEditorApp.Deselect(this, ObjectSelection.Category.Other);
 				else
 				{

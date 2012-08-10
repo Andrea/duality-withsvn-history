@@ -195,7 +195,8 @@ namespace DualityEditor
 		{
 			var gameobjQuery = this.GameObjects.Concat(this.GameObjects.ChildrenDeep());
 			var componentQuery = this.GameObjects.GetComponentsDeep<Component>();
-			this.obj = new List<object>(gameobjQuery.AsEnumerable<object>().Concat(componentQuery.AsEnumerable<object>()).Distinct());
+			var gameObjComponentQuery = gameobjQuery.AsEnumerable<object>().Concat(componentQuery.AsEnumerable<object>()).Distinct();
+			this.obj = new List<object>(gameObjComponentQuery.Concat(this.Resources).Concat(this.OtherObjects));
 			this.UpdateCategories();
 		}
 

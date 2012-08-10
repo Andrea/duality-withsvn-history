@@ -20,10 +20,10 @@ namespace EditorBase.PropertyEditors
 		protected const int SmallHeight = 64 + HeaderHeight;
 		protected const int BigHeight = 256 + HeaderHeight;
 
-		private	Pixmap		value				= null;
-		private	Bitmap		prevImage			= null;
-		private	float		prevImageLum		= 0.0f;
-		private	Pixmap		prevImageValue		= null;
+		private	Pixmap			value				= null;
+		private	Bitmap			prevImage			= null;
+		private	float			prevImageLum		= 0.0f;
+		private	Pixmap.Layer	prevImageValue		= null;
 		private	Rectangle	rectHeader			= Rectangle.Empty;
 		private	Rectangle	rectPreview			= Rectangle.Empty;
 		private	Rectangle	rectLabelName		= Rectangle.Empty;
@@ -46,8 +46,10 @@ namespace EditorBase.PropertyEditors
 		
 		protected void GeneratePreviewImage()
 		{
-			if (this.prevImageValue == this.value) return;
-			this.prevImageValue = this.value;
+			Pixmap.Layer layer = this.value != null ? this.value.MainLayer : null;
+
+			if (this.prevImageValue == layer) return;
+			this.prevImageValue = layer;
 
 			if (this.prevImage != null) this.prevImage.Dispose();
 			this.prevImage = null;
@@ -62,6 +64,8 @@ namespace EditorBase.PropertyEditors
 					this.prevImageLum = avgColor.GetLuminance();
 				}
 			}
+
+			this.Invalidate();
 		}
 		protected void AdjustPreviewHeight(bool toggle)
 		{

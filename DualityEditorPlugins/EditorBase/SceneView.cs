@@ -215,9 +215,9 @@ namespace EditorBase
 
 			DualityEditorApp.SelectionChanged += this.EditorForm_SelectionChanged;
 			DualityEditorApp.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
-			DualityEditorApp.ResourceCreated += this.EditorForm_ResourceCreated;
-			DualityEditorApp.ResourceDeleted += this.EditorForm_ResourceDeleted;
-			DualityEditorApp.ResourceRenamed += this.EditorForm_ResourceRenamed;
+			FileEventManager.ResourceCreated += this.EditorForm_ResourceCreated;
+			FileEventManager.ResourceDeleted += this.EditorForm_ResourceDeleted;
+			FileEventManager.ResourceRenamed += this.EditorForm_ResourceRenamed;
 
 			Scene.Entered += this.Scene_Entered;
 			Scene.Leaving += this.Scene_Leaving;
@@ -234,9 +234,9 @@ namespace EditorBase
 
 			DualityEditorApp.SelectionChanged -= this.EditorForm_SelectionChanged;
 			DualityEditorApp.ObjectPropertyChanged -= this.EditorForm_ObjectPropertyChanged;
-			DualityEditorApp.ResourceCreated -= this.EditorForm_ResourceCreated;
-			DualityEditorApp.ResourceDeleted -= this.EditorForm_ResourceDeleted;
-			DualityEditorApp.ResourceRenamed -= this.EditorForm_ResourceRenamed;
+			FileEventManager.ResourceCreated -= this.EditorForm_ResourceCreated;
+			FileEventManager.ResourceDeleted -= this.EditorForm_ResourceDeleted;
+			FileEventManager.ResourceRenamed -= this.EditorForm_ResourceRenamed;
 
 			Scene.Entered -= this.Scene_Entered;
 			Scene.Leaving -= this.Scene_Leaving;
@@ -647,7 +647,7 @@ namespace EditorBase
 
 		protected bool DisplayConfirmDeleteSelectedObjects()
 		{
-			if (DualityEditorApp.SandboxState == SandboxState.Playing) return true;
+			if (Sandbox.State == SandboxState.Playing) return true;
 			DialogResult result = MessageBox.Show(
 				PluginRes.EditorBaseRes.SceneView_MsgBox_ConfirmDeleteSelectedObjects_Text, 
 				PluginRes.EditorBaseRes.SceneView_MsgBox_ConfirmDeleteSelectedObjects_Caption, 
@@ -678,7 +678,7 @@ namespace EditorBase
 			this.toolStripLabelSceneName.Text = (!sceneAvail || Scene.Current.IsRuntimeResource) ? 
 				PluginRes.EditorBaseRes.SceneNameNotYetSaved : 
 				Scene.Current.Name;
-			this.toolStripButtonSaveScene.Enabled = DualityEditorApp.SandboxState == SandboxState.Inactive;
+			this.toolStripButtonSaveScene.Enabled = !Sandbox.IsActive;
 		}
 		
 		private void textBoxFilter_TextChanged(object sender, EventArgs e)
@@ -1419,7 +1419,7 @@ namespace EditorBase
 		}
 		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
 		{
-			if (e.PrefabApplied || (e.HasProperty(ReflectionInfo.Property_GameObject_PrefabLink) && 
+			if (e.CompleteChange || (e.HasProperty(ReflectionInfo.Property_GameObject_PrefabLink) && 
 									e.Objects.GameObjects.Any(o => o.PrefabLink == null)))
 				this.UpdatePrefabLinkStatus();
 

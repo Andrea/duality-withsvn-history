@@ -17,14 +17,6 @@
 -->	Implement some simple Font effects?
 
 
--->	Editor Refactoring: Kill the MainForm-Blob
-	-->	Extract editor-general stuff and move to DualityEditorApp (static), just like DualityApp
-	-->	Move sub-categories of stuff to other static classes
-		-->	GlobalSelection		(selection stuff)
-		-->	FileSystemManager	(file system watchers and event processing)
-		-->	Sandbox				(sandbox stuff)
-		-->	HelpSystem			(help-related stuff)
-
 
 -->	Example Project: Super Mario style platformer
 	-->	Tile-based

@@ -534,11 +534,6 @@
             </summary>
             <param name="path">Location of directory or file to recycle</param>
         </member>
-        <member name="T:DualityEditor.Controls.FlagCheckedListBoxItem">
-            <summary>
-            Represents an item in the checklistbox
-            </summary>
-        </member>
         <member name="F:DualityEditor.Forms.MainForm.components">
             <summary>
             Erforderliche Designervariable.
@@ -554,6 +549,11 @@
             <summary>
             Erforderliche Methode für die Designerunterstützung.
             Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
+            </summary>
+        </member>
+        <member name="T:DualityEditor.Controls.FlagCheckedListBoxItem">
+            <summary>
+            Represents an item in the checklistbox
             </summary>
         </member>
     </members>

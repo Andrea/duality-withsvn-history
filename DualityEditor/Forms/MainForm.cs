@@ -129,9 +129,9 @@ namespace DualityEditor.Forms
 		}
 		private void UpdateToolbar()
 		{
-			this.actionRunSandbox.Enabled	= DualityEditorApp.SandboxState != SandboxState.Playing;
-			this.actionStopSandbox.Enabled	= DualityEditorApp.SandboxState != SandboxState.Inactive;
-			this.actionPauseSandbox.Enabled	= DualityEditorApp.SandboxState == SandboxState.Playing;
+			this.actionRunSandbox.Enabled	= Sandbox.State != SandboxState.Playing;
+			this.actionStopSandbox.Enabled	= Sandbox.State != SandboxState.Inactive;
+			this.actionPauseSandbox.Enabled	= Sandbox.State == SandboxState.Playing;
 
 			if (Duality.Serialization.Formatter.DefaultMethod == Duality.Serialization.FormattingMethod.Xml)
 			{
@@ -154,12 +154,12 @@ namespace DualityEditor.Forms
 			base.OnShown(e);
 			this.WindowState = FormWindowState.Maximized;
 
-			DualityEditorApp.SandboxStateChanged += this.DualityEditorApp_SandboxStateChanged;
+			Sandbox.StateChanged += this.Sandbox_StateChanged;
 		}
 		protected override void OnClosed(EventArgs e)
 		{
 			base.OnClosed(e);
-			DualityEditorApp.SandboxStateChanged -= this.DualityEditorApp_SandboxStateChanged;
+			Sandbox.StateChanged -= this.Sandbox_StateChanged;
 		}
 		protected override void OnFormClosing(FormClosingEventArgs e)
 		{
@@ -193,15 +193,15 @@ namespace DualityEditor.Forms
 		}
 		private void actionRunSandbox_Click(object sender, EventArgs e)
 		{
-			DualityEditorApp.SandboxPlay();
+			Sandbox.Play();
 		}
 		private void actionPauseSandbox_Click(object sender, EventArgs e)
 		{
-			DualityEditorApp.SandboxPause();
+			Sandbox.Pause();
 		}
 		private void actionStopSandbox_Click(object sender, EventArgs e)
 		{
-			DualityEditorApp.SandboxStop();
+			Sandbox.Stop();
 		}
 
 		private void aboutItem_Click(object sender, EventArgs e)
@@ -257,7 +257,7 @@ namespace DualityEditor.Forms
 			this.selectFormattingMethod.ShowDropDown();
 		}
 		
-		private void DualityEditorApp_SandboxStateChanged(object sender, EventArgs e)
+		private void Sandbox_StateChanged(object sender, EventArgs e)
 		{
 			this.UpdateToolbar();
 		}
@@ -276,7 +276,7 @@ namespace DualityEditor.Forms
 			state.Progress += 0.05f; yield return null;
 
 			// Special case: Current Scene in sandbox mode
-			if (DualityEditorApp.SandboxState != SandboxState.Inactive)
+			if (Sandbox.IsActive)
 			{
 				// Because changes we'll do will be discarded when leaving the sandbox we'll need to
 				// do it the hard way - manually load an save the file.
@@ -288,7 +288,7 @@ namespace DualityEditor.Forms
 			List<string> resFiles = Resource.GetResourceFiles();
 			foreach (string file in resFiles)
 			{
-				if (DualityEditorApp.SandboxState != SandboxState.Inactive && file == Scene.CurrentPath) continue; // Skip current Scene in Sandbox
+				if (Sandbox.IsActive && file == Scene.CurrentPath) continue; // Skip current Scene in Sandbox
 				state.StateDesc = file; yield return null;
 
 				//var data = MetaFormatHelper.FileReadAll(file);	// Removed again so we don't need to handle "unsaved resources".

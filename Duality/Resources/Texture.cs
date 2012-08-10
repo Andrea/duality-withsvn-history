@@ -302,9 +302,9 @@ namespace Duality.Resources
 			get { return this.pxHeight; }
 		}	//	G
 		/// <summary>
-		/// [GET] The Textures internal id value
+		/// [GET] The Textures internal id value. You shouldn't need to use this value normally.
 		/// </summary>
-		internal int OglTexId
+		public int OglTexId
 		{
 			get { return this.glTexId; }
 		}	//	G

@@ -251,7 +251,7 @@ namespace EditorBase
 			this.SetCurrentState(stateType);
 
 			// Register DualityApp updater for camera steering behaviour
-			DualityEditorApp.ResourceModified += this.EditorForm_ResourceModified;
+			FileEventManager.ResourceModified += this.EditorForm_ResourceModified;
 			DualityEditorApp.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
 			Scene.Leaving += this.Scene_Leaving;
 			Scene.GameObjectUnregistered += this.Scene_GameObjectUnregistered;
@@ -272,7 +272,7 @@ namespace EditorBase
 			if (this.camObj != null && !this.camInternal) DualityEditorApp.EditorObjects.UnregisterObj(this.camObj);
 			if (this.nativeCamObj != null) this.nativeCamObj.Dispose();
 
-			DualityEditorApp.ResourceModified -= this.EditorForm_ResourceModified;
+			FileEventManager.ResourceModified -= this.EditorForm_ResourceModified;
 			DualityEditorApp.ObjectPropertyChanged -= this.EditorForm_ObjectPropertyChanged;
 			Scene.Leaving -= this.Scene_Leaving;
 			Scene.GameObjectUnregistered -= this.Scene_GameObjectUnregistered;
@@ -584,7 +584,7 @@ namespace EditorBase
 		{
 			DualityApp.TargetMode = this.MainContextControl.Context.GraphicsMode;
 			DualityApp.TargetResolution = new OpenTK.Vector2(this.glControl.Width, this.glControl.Height);
-			if (this.ContainsFocus) DualityEditorApp.SetCurrentDualityAppInput(this, this);
+			if (this.ContainsFocus) Sandbox.SetEngineInput(this, this);
 		}
 		public ICmpRenderer PickRendererAt(int x, int y)
 		{

@@ -26,7 +26,7 @@ namespace EditorBase.PropertyEditors
 		private	Bitmap			prevImage			= null;
 		private	List<Bitmap>	prevImageFrame		= new List<Bitmap>();
 		private	float			prevImageLum		= 0.0f;
-		private	Texture			prevImageValue		= null;
+		private	Pixmap.Layer	prevImageValue		= null;
 		private	Rectangle	rectHeader			= Rectangle.Empty;
 		private	Rectangle	rectPreview			= Rectangle.Empty;
 		private	Rectangle	rectLabelName		= Rectangle.Empty;
@@ -62,8 +62,12 @@ namespace EditorBase.PropertyEditors
 		
 		protected void GeneratePreviewImage()
 		{
-			if (this.prevImageValue == this.value) return;
-			this.prevImageValue = this.value;
+			// Need some way to determine actual texture content.. this isn't optimal but works in most cases.
+			Pixmap basePx = this.value != null ? this.value.BasePixmap.Res : null;
+			Pixmap.Layer basePxLayer = basePx != null ? basePx.MainLayer : null;
+
+			if (this.prevImageValue == basePxLayer) return;
+			this.prevImageValue = basePxLayer;
 
 			if (this.prevImage != null) this.prevImage.Dispose();
 			this.prevImage = null;
@@ -79,6 +83,8 @@ namespace EditorBase.PropertyEditors
 					this.prevImageLum = avgColor.GetLuminance();
 				}
 			}
+
+			this.Invalidate();
 		}
 		protected void ClearFramePreviews()
 		{

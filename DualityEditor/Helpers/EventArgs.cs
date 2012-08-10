@@ -78,7 +78,7 @@ namespace DualityEditor
 		private	ObjectSelection		obj;
 		private	List<PropertyInfo>	propInfos;
 		private	List<string>		propNames;
-		private	bool				prefabApplied;
+		private	bool				completeChange;
 
 		public ObjectSelection Objects
 		{
@@ -92,29 +92,29 @@ namespace DualityEditor
 		{
 			get { return this.propNames; }
 		}
-		public bool PrefabApplied
+		public bool CompleteChange
 		{
-			get { return this.prefabApplied; }
+			get { return this.completeChange; }
 		}
 
-		public ObjectPropertyChangedEventArgs(ObjectSelection obj, IEnumerable<PropertyInfo> infos, bool prefabApplied)
+		public ObjectPropertyChangedEventArgs(ObjectSelection obj, IEnumerable<PropertyInfo> infos, bool completeChange)
 		{
 			this.obj = obj;
 			this.propInfos = new List<PropertyInfo>(infos);
 			this.propNames = new List<string>(infos.Select(i => i.Name));
-			this.prefabApplied = prefabApplied;
+			this.completeChange = completeChange || this.propInfos.Count == 0;
 
-			if (this.prefabApplied) 
+			if (this.completeChange) 
 				this.obj = this.obj.HierarchyExpand();
 		}
 
 		public bool HasProperty(PropertyInfo info)
 		{
-			return this.prefabApplied || this.propInfos.Any(i => ReflectionHelper.MemberInfoEquals(i, info));
+			return this.completeChange || this.propInfos.Any(i => ReflectionHelper.MemberInfoEquals(i, info));
 		}
 		public bool HasProperty(string name)
 		{
-			return this.prefabApplied || this.propNames.Contains(name);
+			return this.completeChange || this.propNames.Contains(name);
 		}
 
 		public bool HasAnyProperty(params PropertyInfo[] info)

@@ -56,14 +56,6 @@ namespace EditorBase
 			AbstractShader s = r as AbstractShader;
 			s.LoadSource(srcFile);
 			s.Compile();
-
-			// Recompile ShaderPrograms depending on this
-			foreach (ShaderProgram p in ContentProvider.GetAvailContent<ShaderProgram>())
-			{
-				if (p.Vertex.Res != s && p.Fragment.Res != s) continue;
-				p.AttachShaders();
-				p.Compile();
-			}
 		}
 		public void NotifySrcRenamed(Resource r, string srcFileOld, string srcFileNew)
 		{

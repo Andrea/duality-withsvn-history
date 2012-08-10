@@ -72,6 +72,7 @@ namespace DualityEditor.CorePluginInterface
 			IFileImporter importer = CorePluginRegistry.RequestFileImporter(i => i.CanImportFile(filePath));
 			if (importer == null) return;
 
+			List<Resource> reimported = null;
 			foreach (Resource r in ContentProvider.GetAvailContent<Resource>())
 			{
 				if (!importer.IsUsingSrcFile(r, filePath)) continue;
@@ -79,12 +80,18 @@ namespace DualityEditor.CorePluginInterface
 				{
 					importer.ReimportFile(r, filePath);
 					DualityEditorApp.FlagResourceUnsaved(r);
+
+					if (reimported == null) reimported = new List<Resource>();
+					reimported.Add(r);
 				}
 				catch (Exception) 
 				{
 					Log.Editor.WriteError("Can't re-import file '{0}'", filePath);
 				}
 			}
+
+			if (reimported != null)
+				DualityEditorApp.NotifyObjPropChanged(null, new ObjectSelection((IEnumerable<object>)reimported));
 		}
 		public static void NotifyFileRenamed(string filePathOld, string filePathNew)
 		{

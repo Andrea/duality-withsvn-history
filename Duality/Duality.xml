@@ -8150,7 +8150,7 @@
         </member>
         <member name="P:Duality.Resources.Texture.OglTexId">
             <summary>
-            [GET] The Textures internal id value
+            [GET] The Textures internal id value. You shouldn't need to use this value normally.
             </summary>
         </member>
         <member name="P:Duality.Resources.Texture.UVRatio">

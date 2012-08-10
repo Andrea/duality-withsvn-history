@@ -261,7 +261,7 @@ namespace EditorBase.CamViewStates
 			this.View.LocalGLControl.KeyUp		+= this.LocalGLControl_KeyUp;
 			this.View.LocalGLControl.LostFocus	+= this.LocalGLControl_LostFocus;
 			this.View.ParallaxRefDistChanged	+= this.View_ParallaxRefDistChanged;
-			DualityEditorApp.AfterUpdateDualityApp += this.EditorForm_AfterUpdateDualityApp;
+			DualityEditorApp.UpdatingEngine += this.EditorForm_AfterUpdateDualityApp;
 			DualityEditorApp.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
 
 			Scene.Leaving += this.Scene_Changed;
@@ -285,7 +285,7 @@ namespace EditorBase.CamViewStates
 			this.View.LocalGLControl.KeyUp		-= this.LocalGLControl_KeyUp;
 			this.View.LocalGLControl.LostFocus	-= this.LocalGLControl_LostFocus;
 			this.View.ParallaxRefDistChanged	-= this.View_ParallaxRefDistChanged;
-			DualityEditorApp.AfterUpdateDualityApp -= this.EditorForm_AfterUpdateDualityApp;
+			DualityEditorApp.UpdatingEngine -= this.EditorForm_AfterUpdateDualityApp;
 			
 			Scene.Leaving -= this.Scene_Changed;
 			Scene.Entered -= this.Scene_Changed;
@@ -599,7 +599,7 @@ namespace EditorBase.CamViewStates
 		public virtual List<SelObj> CloneObjects(IEnumerable<SelObj> objEnum) { return new List<SelObj>(); }
 		protected bool DisplayConfirmDeleteSelectedObjects()
 		{
-			if (DualityEditorApp.SandboxState == SandboxState.Playing) return true;
+			if (Sandbox.State == SandboxState.Playing) return true;
 			DialogResult result = MessageBox.Show(
 				PluginRes.EditorBaseRes.SceneView_MsgBox_ConfirmDeleteSelectedObjects_Text, 
 				PluginRes.EditorBaseRes.SceneView_MsgBox_ConfirmDeleteSelectedObjects_Caption, 
@@ -709,8 +709,8 @@ namespace EditorBase.CamViewStates
 
 			this.camVel = Vector3.Zero;
 
-			if (DualityEditorApp.SandboxState == SandboxState.Playing)
-				DualityEditorApp.SandboxSceneStartFreeze();
+			if (Sandbox.State == SandboxState.Playing)
+				Sandbox.Freeze();
 
 			// Re-select current selection to give it editor focus when performing an action
 			if (this.action != MouseAction.RectSelection && this.action != MouseAction.None)
@@ -752,8 +752,8 @@ namespace EditorBase.CamViewStates
 				this.activeRectSel = new ObjectSelection();
 			}
 
-			if (DualityEditorApp.SandboxState == SandboxState.Playing)
-				DualityEditorApp.SandboxSceneStopFreeze();
+			if (Sandbox.State == SandboxState.Playing)
+				Sandbox.UnFreeze();
 
 			this.OnEndAction(this.action);
 			this.action = MouseAction.None;
