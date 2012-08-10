@@ -100,8 +100,8 @@ namespace EditorBase.CamViewStates
 			// Register events
 			this.View.LocalGLControl.KeyDown += this.LocalGLControl_KeyDown;
 			this.View.CurrentCameraChanged += this.View_CurrentCameraChanged;
-			MainForm.Instance.SelectionChanged		+= this.EditorForm_SelectionChanged;
-			MainForm.Instance.ObjectPropertyChanged	+= this.EditorForm_ObjectPropertyChanged;
+			DualityEditorApp.SelectionChanged		+= this.EditorForm_SelectionChanged;
+			DualityEditorApp.ObjectPropertyChanged	+= this.EditorForm_ObjectPropertyChanged;
 
 			// Initial update
 			this.View_CurrentCameraChanged(this, new CamView.CameraChangedEventArgs(null, this.View.CameraComponent));
@@ -121,8 +121,8 @@ namespace EditorBase.CamViewStates
 			// Unregister events
 			this.View.CurrentCameraChanged -= this.View_CurrentCameraChanged;
 			this.View.LocalGLControl.KeyDown -= this.LocalGLControl_KeyDown;
-			MainForm.Instance.SelectionChanged		-= this.EditorForm_SelectionChanged;
-			MainForm.Instance.ObjectPropertyChanged	-= this.EditorForm_ObjectPropertyChanged;
+			DualityEditorApp.SelectionChanged		-= this.EditorForm_SelectionChanged;
+			DualityEditorApp.ObjectPropertyChanged	-= this.EditorForm_ObjectPropertyChanged;
 
 			// Cleanup GUI
 			this.toolstrip.Dispose();
@@ -154,10 +154,10 @@ namespace EditorBase.CamViewStates
 			if (this.selectedBody != null) this.selectedBody.SynchronizeBodyShape();
 
 			// Notify property changes
-			MainForm.Instance.NotifyObjPropChanged(this,
+			DualityEditorApp.NotifyObjPropChanged(this,
 				new ObjectSelection(this.selectedBody),
 				ReflectionInfo.Property_RigidBody_Shapes);
-			MainForm.Instance.NotifyObjPropChanged(this, new ObjectSelection(selShapeArray.Select(s => s.ActualObject)));
+			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(selShapeArray.Select(s => s.ActualObject)));
 		}
 		protected override void OnCursorSpacePosChanged()
 		{
@@ -181,7 +181,7 @@ namespace EditorBase.CamViewStates
 				polyShape.Vertices = vertices.ToArray();
 				selPolyShape.UpdatePolyStats();
 
-				MainForm.Instance.NotifyObjPropChanged(this,
+				DualityEditorApp.NotifyObjPropChanged(this,
 					new ObjectSelection(this.selectedBody),
 					ReflectionInfo.Property_RigidBody_Shapes);
 			}
@@ -196,7 +196,7 @@ namespace EditorBase.CamViewStates
 				polyShape.Vertices = vertices.ToArray();
 				selPolyShape.UpdateLoopStats();
 
-				MainForm.Instance.NotifyObjPropChanged(this,
+				DualityEditorApp.NotifyObjPropChanged(this,
 					new ObjectSelection(this.selectedBody),
 					ReflectionInfo.Property_RigidBody_Shapes);
 			}
@@ -413,7 +413,7 @@ namespace EditorBase.CamViewStates
 			return result;
 		}
 
-		public override void SelectObjects(IEnumerable<CamViewState.SelObj> selObjEnum, MainForm.SelectMode mode = MainForm.SelectMode.Set)
+		public override void SelectObjects(IEnumerable<CamViewState.SelObj> selObjEnum, SelectMode mode = SelectMode.Set)
 		{
 			base.SelectObjects(selObjEnum, mode);
 			if (!selObjEnum.Any()) return;
@@ -426,24 +426,24 @@ namespace EditorBase.CamViewStates
 				SelShape[] selShapeArray = distinctShapeQuery.ToArray();
 
 				// First, select the associated Collider
-				MainForm.Instance.Select(this, new ObjectSelection(selShapeArray[0].Body), MainForm.SelectMode.Set);
+				DualityEditorApp.Select(this, new ObjectSelection(selShapeArray[0].Body), SelectMode.Set);
 				// Then, select actual ShapeInfos
-				MainForm.Instance.Select(this, new ObjectSelection(selShapeArray.Select(s => s.ActualObject)), mode);
+				DualityEditorApp.Select(this, new ObjectSelection(selShapeArray.Select(s => s.ActualObject)), mode);
 			}
 
 			// Change collider selection
 			else if (selObjEnum.OfType<SelBody>().Any())
 			{
 				// Deselect ShapeInfos
-				MainForm.Instance.Deselect(this, ObjectSelection.Category.Other);
+				DualityEditorApp.Deselect(this, ObjectSelection.Category.Other);
 				// Select Collider
-				MainForm.Instance.Select(this, new ObjectSelection(selObjEnum.OfType<SelBody>().Select(s => s.ActualObject)), mode);
+				DualityEditorApp.Select(this, new ObjectSelection(selObjEnum.OfType<SelBody>().Select(s => s.ActualObject)), mode);
 			}
 		}
 		public override void ClearSelection()
 		{
 			base.ClearSelection();
-			MainForm.Instance.Deselect(this, ObjectSelection.Category.GameObjCmp | ObjectSelection.Category.Other);
+			DualityEditorApp.Deselect(this, ObjectSelection.Category.GameObjCmp | ObjectSelection.Category.Other);
 		}
 		public override void DeleteObjects(IEnumerable<CamViewState.SelObj> objEnum)
 		{
@@ -455,8 +455,8 @@ namespace EditorBase.CamViewStates
 					ShapeInfo shape = selShape.ActualObject as ShapeInfo;
 					this.selectedBody.RemoveShape(shape);
 				}
-				MainForm.Instance.Deselect(this, ObjectSelection.Category.Other);
-				MainForm.Instance.NotifyObjPropChanged(this,
+				DualityEditorApp.Deselect(this, ObjectSelection.Category.Other);
+				DualityEditorApp.NotifyObjPropChanged(this,
 					new ObjectSelection(this.selectedBody),
 					ReflectionInfo.Property_RigidBody_Shapes);
 			}
@@ -489,9 +489,9 @@ namespace EditorBase.CamViewStates
 			this.UpdateCursorImage();
 			this.View.LocalGLControl.Invalidate();
 
-			if (MainForm.Instance.CurrentSandboxState == MainForm.SandboxState.Playing)
-				MainForm.Instance.SandboxPause();
-			MainForm.Instance.Deselect(this, ObjectSelection.Category.Other);
+			if (DualityEditorApp.SandboxState == SandboxState.Playing)
+				DualityEditorApp.SandboxPause();
+			DualityEditorApp.Deselect(this, ObjectSelection.Category.Other);
 		}
 		private void LeaveCursorState()
 		{
@@ -522,7 +522,7 @@ namespace EditorBase.CamViewStates
 		}
 		protected RigidBody QuerySelectedCollider()
 		{
-			return MainForm.Instance.Selection.Components.OfType<RigidBody>().FirstOrDefault();
+			return DualityEditorApp.Selection.Components.OfType<RigidBody>().FirstOrDefault();
 		}
 		protected bool RendererFilter(ICmpRenderer r)
 		{
@@ -541,7 +541,7 @@ namespace EditorBase.CamViewStates
 			{
 				// Applying its Prefab invalidates a Collider's ShapeInfos: Deselect them.
 				if (e.PrefabApplied)
-					MainForm.Instance.Deselect(this, ObjectSelection.Category.Other);
+					DualityEditorApp.Deselect(this, ObjectSelection.Category.Other);
 				else
 				{
 					foreach (SelPolyShape sps in this.allObjSel.OfType<SelPolyShape>()) sps.UpdatePolyStats();
@@ -559,7 +559,7 @@ namespace EditorBase.CamViewStates
 			// Collider selection changed
 			if ((e.AffectedCategories & ObjectSelection.Category.GameObjCmp) != ObjectSelection.Category.None)
 			{
-				MainForm.Instance.Deselect(this, ObjectSelection.Category.Other);
+				DualityEditorApp.Deselect(this, ObjectSelection.Category.Other);
 				this.selectedBody = this.QuerySelectedCollider();
 			}
 			// Other selection changed
@@ -623,7 +623,7 @@ namespace EditorBase.CamViewStates
 					CircleShapeInfo newShape = new CircleShapeInfo(16.0f, localPos, 1.0f);
 					this.selectedBody.AddShape(newShape);
 
-					MainForm.Instance.NotifyObjPropChanged(this,
+					DualityEditorApp.NotifyObjPropChanged(this,
 						new ObjectSelection(this.selectedBody),
 						ReflectionInfo.Property_RigidBody_Shapes);
 
@@ -671,7 +671,7 @@ namespace EditorBase.CamViewStates
 					if (success)
 					{
 						this.createPolyIndex++;
-						MainForm.Instance.NotifyObjPropChanged(this,
+						DualityEditorApp.NotifyObjPropChanged(this,
 							new ObjectSelection(this.selectedBody),
 							ReflectionInfo.Property_RigidBody_Shapes);
 					}
@@ -695,7 +695,7 @@ namespace EditorBase.CamViewStates
 							selPolyShape.UpdatePolyStats();
 						}
 
-						MainForm.Instance.NotifyObjPropChanged(this,
+						DualityEditorApp.NotifyObjPropChanged(this,
 							new ObjectSelection(this.selectedBody),
 							ReflectionInfo.Property_RigidBody_Shapes);
 					}
@@ -735,7 +735,7 @@ namespace EditorBase.CamViewStates
 					if (success)
 					{
 						this.createPolyIndex++;
-						MainForm.Instance.NotifyObjPropChanged(this,
+						DualityEditorApp.NotifyObjPropChanged(this,
 							new ObjectSelection(this.selectedBody),
 							ReflectionInfo.Property_RigidBody_Shapes);
 					}
@@ -759,7 +759,7 @@ namespace EditorBase.CamViewStates
 							selPolyShape.UpdateLoopStats();
 						}
 
-						MainForm.Instance.NotifyObjPropChanged(this,
+						DualityEditorApp.NotifyObjPropChanged(this,
 							new ObjectSelection(this.selectedBody),
 							ReflectionInfo.Property_RigidBody_Shapes);
 					}
@@ -800,7 +800,7 @@ namespace EditorBase.CamViewStates
 			//        if (success)
 			//        {
 			//            this.createPolyIndex++;
-			//            MainForm.Instance.NotifyObjPropChanged(this,
+			//            DualityEditorApp.NotifyObjPropChanged(this,
 			//                new ObjectSelection(this.selectedCollider),
 			//                ReflectionInfo.Property_RigidBody_Shapes);
 
@@ -820,7 +820,7 @@ namespace EditorBase.CamViewStates
 			//            else
 			//                selEdgeShape.UpdateEdgeStats();
 
-			//            MainForm.Instance.NotifyObjPropChanged(this,
+			//            DualityEditorApp.NotifyObjPropChanged(this,
 			//                new ObjectSelection(this.selectedCollider),
 			//                ReflectionInfo.Property_RigidBody_Shapes);
 			//        }

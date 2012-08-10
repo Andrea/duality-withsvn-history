@@ -223,7 +223,7 @@ namespace EditorBase.CamViewLayers
 		}
 		private RigidBody QuerySelectedCollider()
 		{
-			return MainForm.Instance.Selection.Components.OfType<RigidBody>().FirstOrDefault();
+			return DualityEditorApp.Selection.Components.OfType<RigidBody>().FirstOrDefault();
 		}
 	}
 }

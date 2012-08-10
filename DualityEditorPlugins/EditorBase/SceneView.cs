@@ -213,11 +213,11 @@ namespace EditorBase
 			base.OnShown(e);
 			this.InitObjects();
 
-			MainForm.Instance.SelectionChanged += this.EditorForm_SelectionChanged;
-			MainForm.Instance.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
-			MainForm.Instance.ResourceCreated += this.EditorForm_ResourceCreated;
-			MainForm.Instance.ResourceDeleted += this.EditorForm_ResourceDeleted;
-			MainForm.Instance.ResourceRenamed += this.EditorForm_ResourceRenamed;
+			DualityEditorApp.SelectionChanged += this.EditorForm_SelectionChanged;
+			DualityEditorApp.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
+			DualityEditorApp.ResourceCreated += this.EditorForm_ResourceCreated;
+			DualityEditorApp.ResourceDeleted += this.EditorForm_ResourceDeleted;
+			DualityEditorApp.ResourceRenamed += this.EditorForm_ResourceRenamed;
 
 			Scene.Entered += this.Scene_Entered;
 			Scene.Leaving += this.Scene_Leaving;
@@ -232,11 +232,11 @@ namespace EditorBase
 		{
 			base.OnClosed(e);
 
-			MainForm.Instance.SelectionChanged -= this.EditorForm_SelectionChanged;
-			MainForm.Instance.ObjectPropertyChanged -= this.EditorForm_ObjectPropertyChanged;
-			MainForm.Instance.ResourceCreated -= this.EditorForm_ResourceCreated;
-			MainForm.Instance.ResourceDeleted -= this.EditorForm_ResourceDeleted;
-			MainForm.Instance.ResourceRenamed -= this.EditorForm_ResourceRenamed;
+			DualityEditorApp.SelectionChanged -= this.EditorForm_SelectionChanged;
+			DualityEditorApp.ObjectPropertyChanged -= this.EditorForm_ObjectPropertyChanged;
+			DualityEditorApp.ResourceCreated -= this.EditorForm_ResourceCreated;
+			DualityEditorApp.ResourceDeleted -= this.EditorForm_ResourceDeleted;
+			DualityEditorApp.ResourceRenamed -= this.EditorForm_ResourceRenamed;
 
 			Scene.Entered -= this.Scene_Entered;
 			Scene.Leaving -= this.Scene_Leaving;
@@ -458,7 +458,7 @@ namespace EditorBase
 
 			// Ask user if he really wants to delete stuff
 			if (!this.DisplayConfirmDeleteSelectedObjects()) return;
-			if (!MainForm.Instance.DisplayConfirmBreakPrefabLink(new ObjectSelection(objList.AsEnumerable<object>().Concat(cmpList)))) return;
+			if (!DualityEditorApp.DisplayConfirmBreakPrefabLink(new ObjectSelection(objList.AsEnumerable<object>().Concat(cmpList)))) return;
 
 			// Delete objects
 			this.objectView.BeginUpdate();
@@ -535,7 +535,7 @@ namespace EditorBase
 			dragObjViewNode.IsSelected = true;
 			this.objectView.EnsureVisible(dragObjViewNode);
 
-			MainForm.Instance.NotifyObjPropChanged(this, new ObjectSelection(baseObj));
+			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(baseObj));
 		}
 		protected bool OpenResource(TreeNodeAdv node)
 		{
@@ -647,7 +647,7 @@ namespace EditorBase
 
 		protected bool DisplayConfirmDeleteSelectedObjects()
 		{
-			if (MainForm.Instance.CurrentSandboxState == MainForm.SandboxState.Playing) return true;
+			if (DualityEditorApp.SandboxState == SandboxState.Playing) return true;
 			DialogResult result = MessageBox.Show(
 				PluginRes.EditorBaseRes.SceneView_MsgBox_ConfirmDeleteSelectedObjects_Text, 
 				PluginRes.EditorBaseRes.SceneView_MsgBox_ConfirmDeleteSelectedObjects_Caption, 
@@ -678,7 +678,7 @@ namespace EditorBase
 			this.toolStripLabelSceneName.Text = (!sceneAvail || Scene.Current.IsRuntimeResource) ? 
 				PluginRes.EditorBaseRes.SceneNameNotYetSaved : 
 				Scene.Current.Name;
-			this.toolStripButtonSaveScene.Enabled = MainForm.Instance.CurrentSandboxState == MainForm.SandboxState.Inactive;
+			this.toolStripButtonSaveScene.Enabled = DualityEditorApp.SandboxState == SandboxState.Inactive;
 		}
 		
 		private void textBoxFilter_TextChanged(object sender, EventArgs e)
@@ -711,16 +711,16 @@ namespace EditorBase
 					where (vn.Tag is GameObjectNode) && (vn.Tag as GameObjectNode).Obj != null
 					select (vn.Tag as GameObjectNode).Obj;
 
-			if (!MainForm.Instance.IsSelectionChanging)
+			if (!DualityEditorApp.IsSelectionChanging)
 			{
 				var selObj = selGameObj.Union<object>(selComponent);
 				if (selObj.Any())
 				{
-					if (!selGameObj.Any() || !selComponent.Any()) MainForm.Instance.Deselect(this, ObjectSelection.Category.GameObjCmp);
-					MainForm.Instance.Select(this, new ObjectSelection(selObj));
+					if (!selGameObj.Any() || !selComponent.Any()) DualityEditorApp.Deselect(this, ObjectSelection.Category.GameObjCmp);
+					DualityEditorApp.Select(this, new ObjectSelection(selObj));
 				}
 				else
-					MainForm.Instance.Deselect(this, ObjectSelection.Category.GameObjCmp);
+					DualityEditorApp.Deselect(this, ObjectSelection.Category.GameObjCmp);
 			}
 		}
 		private void objectView_KeyDown(object sender, KeyEventArgs e)
@@ -895,7 +895,7 @@ namespace EditorBase
 							this.objectView.EnsureVisible(viewNode);
 						}
 
-						MainForm.Instance.NotifyObjPropChanged(this, new ObjectSelection(dropObj));
+						DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(dropObj));
 					}
 				}
 				else if (convertOp.CanPerform<GameObject>())
@@ -919,7 +919,7 @@ namespace EditorBase
 							this.objectView.EnsureVisible(viewNode);
 						}
 
-						MainForm.Instance.NotifyObjPropChanged(this, new ObjectSelection(dropObj));
+						DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(dropObj));
 					}
 				}
 			}
@@ -1010,7 +1010,7 @@ namespace EditorBase
 			if (objNode != null)
 			{
 				objNode.Obj.Name = objNode.Text;
-				MainForm.Instance.NotifyObjPropChanged(this, new ObjectSelection(objNode.Obj), ReflectionInfo.Property_GameObject_Name);
+				DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(objNode.Obj), ReflectionInfo.Property_GameObject_Name);
 			}
 		}
 		private void timerFlashItem_Tick(object sender, EventArgs e)
@@ -1135,7 +1135,7 @@ namespace EditorBase
 			Component[] draggedComp = this.tempDropData as Component[];
 			GameObject dropObj = (this.tempDropTarget is GameObjectNode) ? (this.tempDropTarget as GameObjectNode).Obj : null;
 
-			if (!MainForm.Instance.DisplayConfirmBreakPrefabLink(new ObjectSelection(this.tempDropData as IEnumerable<object>))) return;
+			if (!DualityEditorApp.DisplayConfirmBreakPrefabLink(new ObjectSelection(this.tempDropData as IEnumerable<object>))) return;
 
 			if (draggedObj != null)
 			{
@@ -1185,7 +1185,7 @@ namespace EditorBase
 					dragObjViewNode.IsSelected = true;
 					this.objectView.EnsureVisible(dragObjViewNode);
 				}
-				MainForm.Instance.NotifyObjPropChanged(this, new ObjectSelection(draggedObj), ReflectionInfo.Property_GameObject_Parent);
+				DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(draggedObj), ReflectionInfo.Property_GameObject_Parent);
 			}
 			else if (draggedComp != null)
 			{
@@ -1225,7 +1225,7 @@ namespace EditorBase
 					dragObjViewNode.IsSelected = true;
 					this.objectView.EnsureVisible(dragObjViewNode);
 				}
-				MainForm.Instance.NotifyObjPropChanged(this, new ObjectSelection(cmpList), ReflectionInfo.Property_Component_GameObj);
+				DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(cmpList), ReflectionInfo.Property_Component_GameObj);
 			}
 		}
 
@@ -1391,12 +1391,12 @@ namespace EditorBase
 
 		private void toolStripButtonCreateScene_Click(object sender, EventArgs e)
 		{
-			MainForm.Instance.SaveCurrentScene(true);
+			DualityEditorApp.SaveCurrentScene(true);
 			Scene.Current = null;
 		}
 		private void toolStripButtonSaveScene_Click(object sender, EventArgs e)
 		{
-			MainForm.Instance.SaveCurrentScene(false);
+			DualityEditorApp.SaveCurrentScene(false);
 			this.UpdateSceneLabel();
 		}
 

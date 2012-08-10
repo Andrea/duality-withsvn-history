@@ -23,11 +23,11 @@ namespace EditorBase.PropertyEditors
 			base.OnPropertySet(property, targets);
 
 			var colShapes = targets.OfType<ShapeInfo>().ToArray();
-			MainForm.Instance.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(colShapes), property);
+			DualityEditorApp.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(colShapes), property);
 
 			var colliders = colShapes.Select(c => c.Parent).ToArray();
 			foreach (var c in colliders) c.AwakeBody();
-			MainForm.Instance.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(colliders), ReflectionInfo.Property_RigidBody_Shapes);
+			DualityEditorApp.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(colliders), ReflectionInfo.Property_RigidBody_Shapes);
 		}
 	}
 }

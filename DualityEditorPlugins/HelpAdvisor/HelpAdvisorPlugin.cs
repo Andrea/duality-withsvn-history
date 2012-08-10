@@ -68,7 +68,7 @@ namespace HelpAdvisor
 
 			if (!this.isLoading)
 			{
-				this.helpAdvisor.Show(MainForm.Instance.MainDockPanel);
+				this.helpAdvisor.Show(DualityEditorApp.MainForm.MainDockPanel);
 				if (this.helpAdvisor.Pane != null)
 				{
 					this.helpAdvisor.Pane.Activate();

@@ -78,7 +78,7 @@ namespace EditorBase.PropertyEditors
 						}
 					}
 
-					MainForm.Instance.NotifyObjPropChanged(this,
+					DualityEditorApp.NotifyObjPropChanged(this,
 						new ObjectSelection(values),
 						ReflectionInfo.Property_SoundEmitter_Sources);
 					this.PerformGetValue();

@@ -261,8 +261,8 @@ namespace EditorBase.CamViewStates
 			this.View.LocalGLControl.KeyUp		+= this.LocalGLControl_KeyUp;
 			this.View.LocalGLControl.LostFocus	+= this.LocalGLControl_LostFocus;
 			this.View.ParallaxRefDistChanged	+= this.View_ParallaxRefDistChanged;
-			MainForm.Instance.AfterUpdateDualityApp += this.EditorForm_AfterUpdateDualityApp;
-			MainForm.Instance.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
+			DualityEditorApp.AfterUpdateDualityApp += this.EditorForm_AfterUpdateDualityApp;
+			DualityEditorApp.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
 
 			Scene.Leaving += this.Scene_Changed;
 			Scene.Entered += this.Scene_Changed;
@@ -285,7 +285,7 @@ namespace EditorBase.CamViewStates
 			this.View.LocalGLControl.KeyUp		-= this.LocalGLControl_KeyUp;
 			this.View.LocalGLControl.LostFocus	-= this.LocalGLControl_LostFocus;
 			this.View.ParallaxRefDistChanged	-= this.View_ParallaxRefDistChanged;
-			MainForm.Instance.AfterUpdateDualityApp -= this.EditorForm_AfterUpdateDualityApp;
+			DualityEditorApp.AfterUpdateDualityApp -= this.EditorForm_AfterUpdateDualityApp;
 			
 			Scene.Leaving -= this.Scene_Changed;
 			Scene.Entered -= this.Scene_Changed;
@@ -591,7 +591,7 @@ namespace EditorBase.CamViewStates
 		{
 			return new List<SelObj>();
 		}
-		public virtual void SelectObjects(IEnumerable<SelObj> selObjEnum, MainForm.SelectMode mode = MainForm.SelectMode.Set) {}
+		public virtual void SelectObjects(IEnumerable<SelObj> selObjEnum, SelectMode mode = SelectMode.Set) {}
 		public virtual void ClearSelection() {}
 		protected virtual void PostPerformAction(IEnumerable<SelObj> selObjEnum, MouseAction action) {}
 
@@ -599,7 +599,7 @@ namespace EditorBase.CamViewStates
 		public virtual List<SelObj> CloneObjects(IEnumerable<SelObj> objEnum) { return new List<SelObj>(); }
 		protected bool DisplayConfirmDeleteSelectedObjects()
 		{
-			if (MainForm.Instance.CurrentSandboxState == MainForm.SandboxState.Playing) return true;
+			if (DualityEditorApp.SandboxState == SandboxState.Playing) return true;
 			DialogResult result = MessageBox.Show(
 				PluginRes.EditorBaseRes.SceneView_MsgBox_ConfirmDeleteSelectedObjects_Text, 
 				PluginRes.EditorBaseRes.SceneView_MsgBox_ConfirmDeleteSelectedObjects_Caption, 
@@ -709,8 +709,8 @@ namespace EditorBase.CamViewStates
 
 			this.camVel = Vector3.Zero;
 
-			if (MainForm.Instance.CurrentSandboxState == MainForm.SandboxState.Playing)
-				MainForm.Instance.SandboxSceneStartFreeze();
+			if (DualityEditorApp.SandboxState == SandboxState.Playing)
+				DualityEditorApp.SandboxSceneStartFreeze();
 
 			// Re-select current selection to give it editor focus when performing an action
 			if (this.action != MouseAction.RectSelection && this.action != MouseAction.None)
@@ -752,8 +752,8 @@ namespace EditorBase.CamViewStates
 				this.activeRectSel = new ObjectSelection();
 			}
 
-			if (MainForm.Instance.CurrentSandboxState == MainForm.SandboxState.Playing)
-				MainForm.Instance.SandboxSceneStopFreeze();
+			if (DualityEditorApp.SandboxState == SandboxState.Playing)
+				DualityEditorApp.SandboxSceneStopFreeze();
 
 			this.OnEndAction(this.action);
 			this.action = MouseAction.None;
@@ -865,7 +865,7 @@ namespace EditorBase.CamViewStates
 		}
 		private void UpdateRectSelection(Point mouseLoc)
 		{
-			if (MainForm.Instance.IsSelectionChanging) return; // Prevent Recursion in case SelectObjects triggers UpdateAction.
+			if (DualityEditorApp.IsSelectionChanging) return; // Prevent Recursion in case SelectObjects triggers UpdateAction.
 
 			bool shift = (Control.ModifierKeys & Keys.Shift) != Keys.None;
 			bool ctrl = (Control.ModifierKeys & Keys.Control) != Keys.None;
@@ -891,7 +891,7 @@ namespace EditorBase.CamViewStates
 				if (this.activeRectSel.ObjectCount > 0)
 				{
 					ObjectSelection added = (this.activeRectSel - oldRectSel) + (oldRectSel - this.activeRectSel);
-					this.SelectObjects(added.Objects.OfType<SelObj>(), shift ? MainForm.SelectMode.Append : MainForm.SelectMode.Toggle);
+					this.SelectObjects(added.Objects.OfType<SelObj>(), shift ? SelectMode.Append : SelectMode.Toggle);
 				}
 			}
 			else if (this.activeRectSel.ObjectCount > 0)
@@ -1154,7 +1154,7 @@ namespace EditorBase.CamViewStates
 				}
 				else if (e.KeyCode == Keys.F)
 				{
-					this.view.FocusOnObject(MainForm.Instance.Selection.MainGameObject);
+					this.view.FocusOnObject(DualityEditorApp.Selection.MainGameObject);
 				}
 				else
 				{
@@ -1178,7 +1178,7 @@ namespace EditorBase.CamViewStates
 		}
 		private void LocalGLControl_LostFocus(object sender, EventArgs e)
 		{
-			if (MainForm.Instance == null) return;
+			if (DualityEditorApp.MainForm == null) return;
 
 			this.camAction = CameraAction.None;
 			this.EndAction();

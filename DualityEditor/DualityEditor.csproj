@@ -139,6 +139,7 @@
     <Compile Include="CorePluginInterface\DataConversion.cs" />
     <Compile Include="CorePluginInterface\EditorAction.cs" />
     <Compile Include="CorePluginInterface\PreviewProvider.cs" />
+    <Compile Include="DualityEditorApp.cs" />
     <Compile Include="Helpers\CursorHelper.cs" />
     <Compile Include="Helpers\EditorHelper.cs">
       <SubType>Code</SubType>
@@ -183,10 +184,10 @@
     <Compile Include="Forms\ProcessingBigTaskDialog.Designer.cs">
       <DependentUpon>ProcessingBigTaskDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="MainForm.cs">
+    <Compile Include="Forms\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainForm.Designer.cs">
+    <Compile Include="Forms\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="EditorPlugin.cs" />
@@ -234,7 +235,7 @@
     <EmbeddedResource Include="Forms\ProcessingBigTaskDialog.resx">
       <DependentUpon>ProcessingBigTaskDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MainForm.resx">
+    <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ReloadCorePluginDialog.resx">

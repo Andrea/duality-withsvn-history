@@ -85,7 +85,7 @@ namespace ResourceHacker
 
 			if (!this.isLoading)
 			{
-				this.resHacker.Show(MainForm.Instance.MainDockPanel);
+				this.resHacker.Show(DualityEditorApp.MainForm.MainDockPanel);
 				if (this.resHacker.Pane != null)
 				{
 					this.resHacker.Pane.Activate();

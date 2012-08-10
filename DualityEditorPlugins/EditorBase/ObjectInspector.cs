@@ -77,22 +77,22 @@ namespace EditorBase
 			this.UpdateButtons();
 
 			// Add the global selection event once
-			MainForm.Instance.SelectionChanged -= GlobalUpdateSelection;
-			MainForm.Instance.SelectionChanged += GlobalUpdateSelection;
+			DualityEditorApp.SelectionChanged -= GlobalUpdateSelection;
+			DualityEditorApp.SelectionChanged += GlobalUpdateSelection;
 
-			MainForm.Instance.AfterUpdateDualityApp += this.EditorForm_AfterUpdateDualityApp;
-			MainForm.Instance.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
-			MainForm.Instance.ResourceModified += this.EditorForm_ResourceModified;
-			MainForm.Instance.FormClosing += this.EditorForm_FormClosing;
+			DualityEditorApp.AfterUpdateDualityApp += this.EditorForm_AfterUpdateDualityApp;
+			DualityEditorApp.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
+			DualityEditorApp.ResourceModified += this.EditorForm_ResourceModified;
+			DualityEditorApp.Terminating += this.DualityEditorApp_Terminating;
 		}
 		protected override void OnClosed(EventArgs e)
 		{
 			base.OnClosed(e);
 
-			MainForm.Instance.AfterUpdateDualityApp -= this.EditorForm_AfterUpdateDualityApp;
-			MainForm.Instance.ObjectPropertyChanged -= this.EditorForm_ObjectPropertyChanged;
-			MainForm.Instance.ResourceModified -= this.EditorForm_ResourceModified;
-			MainForm.Instance.FormClosing -= this.EditorForm_FormClosing;
+			DualityEditorApp.AfterUpdateDualityApp -= this.EditorForm_AfterUpdateDualityApp;
+			DualityEditorApp.ObjectPropertyChanged -= this.EditorForm_ObjectPropertyChanged;
+			DualityEditorApp.ResourceModified -= this.EditorForm_ResourceModified;
+			DualityEditorApp.Terminating -= this.DualityEditorApp_Terminating;
 		}
 		protected override void OnGotFocus(EventArgs e)
 		{
@@ -191,9 +191,9 @@ namespace EditorBase
 				this.propertyGrid.UpdateFromObjects(100);
 			}
 		}
-		private void EditorForm_FormClosing(object sender, FormClosingEventArgs e)
+		private void DualityEditorApp_Terminating(object sender, EventArgs e)
 		{
-			if (this.runtimeId == -1 && !e.Cancel) this.Close();
+			if (this.runtimeId == -1) this.Close();
 		}
 		private static void GlobalUpdateSelection(object sender, SelectionChangedEventArgs e)
 		{
@@ -270,7 +270,7 @@ namespace EditorBase
 			this.CopyTo(objView);
 			objView.buttonLock.Checked = true;
 
-			DockPanel mainDoc = MainForm.Instance.MainDockPanel;
+			DockPanel mainDoc = DualityEditorApp.MainForm.MainDockPanel;
 			objView.Show(this.DockHandler.Pane, DockAlignment.Bottom, 0.5d);
 			
 			// Need it before showing because of instant-selection

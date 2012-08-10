@@ -39,13 +39,13 @@ namespace HelpAdvisor
 		protected override void OnShown(EventArgs e)
 		{
 			base.OnShown(e);
-			MainForm.Instance.Help.ActiveHelpChanged += this.Help_ActiveHelpChanged;
+			DualityEditorApp.Help.ActiveHelpChanged += this.Help_ActiveHelpChanged;
 			this.UpdateHelp();
 		}
 		protected override void OnClosed(EventArgs e)
 		{
 			base.OnClosed(e);
-			MainForm.Instance.Help.ActiveHelpChanged -= this.Help_ActiveHelpChanged;
+			DualityEditorApp.Help.ActiveHelpChanged -= this.Help_ActiveHelpChanged;
 		}
 		protected override void OnPaint(PaintEventArgs e)
 		{
@@ -87,7 +87,7 @@ namespace HelpAdvisor
 
 		public void UpdateHelp()
 		{
-			this.newHelp = MainForm.Instance.Help.ActiveHelp ?? advisorHelp;
+			this.newHelp = DualityEditorApp.Help.ActiveHelp ?? advisorHelp;
 			this.commitTimer.Stop();
 			this.commitTimer.Start();
 

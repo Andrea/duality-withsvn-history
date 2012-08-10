@@ -79,7 +79,7 @@ namespace DualityEditor.Forms
 		}
 
 
-		public ProcessingBigTaskDialog(string caption, string desc, TaskAction task, object data) : this(MainForm.Instance, caption, desc, task, data) {}
+		public ProcessingBigTaskDialog(string caption, string desc, TaskAction task, object data) : this(DualityEditorApp.MainForm, caption, desc, task, data) {}
 		public ProcessingBigTaskDialog(MainForm owner, string caption, string desc, TaskAction task, object data)
 		{
 			this.InitializeComponent();

@@ -18,9 +18,10 @@ namespace DualityEditor.Forms
 			base.OnShown(e);
 			this.mainFormLoader.RunWorkerAsync(this);
 		}
-		protected MainForm CreateMainForm()
+		protected MainForm InitEditor()
 		{
-			MainForm main = new MainForm(this.recover);
+			MainForm main = new MainForm();
+			DualityEditorApp.Init(main, this.recover);
 			return main;
 		}
 
@@ -29,7 +30,7 @@ namespace DualityEditor.Forms
 			SplashScreen screen = e.Argument as SplashScreen;
 
 			System.Threading.Thread.Sleep(50); // Assures the screen had time to display correctly
-			object result = screen.Invoke(new Func<MainForm>(screen.CreateMainForm));
+			object result = screen.Invoke(new Func<MainForm>(screen.InitEditor));
 
 			e.Result = result;
 		}

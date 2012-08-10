@@ -14,7 +14,7 @@ namespace EditorBase.PropertyEditors
 		protected override void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)
 		{
 			DualityApp.AppData = targets.Cast<DualityAppData>().NotNull().FirstOrDefault();
-			MainForm.Instance.NotifyObjPropChanged(this, new ObjectSelection(targets), property);
+			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(targets), property);
 		}
 	}
 	public class DualityUserDataPropertyEditor : MemberwisePropertyEditor
@@ -22,7 +22,7 @@ namespace EditorBase.PropertyEditors
 		protected override void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)
 		{
 			DualityApp.UserData = targets.Cast<DualityUserData>().NotNull().FirstOrDefault();
-			MainForm.Instance.NotifyObjPropChanged(this, new ObjectSelection(targets), property);
+			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(targets), property);
 		}
 	}
 }

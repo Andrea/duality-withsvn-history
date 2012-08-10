@@ -78,7 +78,7 @@ namespace DualityEditor.CorePluginInterface
 				try
 				{
 					importer.ReimportFile(r, filePath);
-					MainForm.Instance.FlagResourceUnsaved(r);
+					DualityEditorApp.FlagResourceUnsaved(r);
 				}
 				catch (Exception) 
 				{
@@ -100,7 +100,7 @@ namespace DualityEditor.CorePluginInterface
 				try
 				{
 					importer.NotifySrcRenamed(r, filePathOld, filePathNew);
-					MainForm.Instance.FlagResourceUnsaved(r);
+					DualityEditorApp.FlagResourceUnsaved(r);
 				}
 				catch (Exception) 
 				{

@@ -188,7 +188,7 @@ namespace EditorBase
 		}
 		public GLControl MainContextControl
 		{
-			get { return MainForm.Instance.MainContextControl; }
+			get { return DualityEditorApp.MainContextControl; }
 		}
 		public ToolStrip ToolbarCamera
 		{
@@ -214,7 +214,7 @@ namespace EditorBase
 			this.toolbarCamera.Renderer = new DualityEditor.Controls.ToolStrip.DualitorToolStripProfessionalRenderer();
 			
 			var camViewStateTypeQuery = 
-				from t in MainForm.Instance.GetAvailDualityEditorTypes(typeof(CamViewState))
+				from t in DualityEditorApp.GetAvailDualityEditorTypes(typeof(CamViewState))
 				where !t.IsAbstract
 				select t;
 			foreach (Type t in camViewStateTypeQuery)
@@ -225,7 +225,7 @@ namespace EditorBase
 			}
 
 			var camViewLayerTypeQuery = 
-				from t in MainForm.Instance.GetAvailDualityEditorTypes(typeof(CamViewLayer))
+				from t in DualityEditorApp.GetAvailDualityEditorTypes(typeof(CamViewLayer))
 				where !t.IsAbstract
 				select t;
 			foreach (Type t in camViewLayerTypeQuery)
@@ -251,8 +251,8 @@ namespace EditorBase
 			this.SetCurrentState(stateType);
 
 			// Register DualityApp updater for camera steering behaviour
-			MainForm.Instance.ResourceModified += this.EditorForm_ResourceModified;
-			MainForm.Instance.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
+			DualityEditorApp.ResourceModified += this.EditorForm_ResourceModified;
+			DualityEditorApp.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
 			Scene.Leaving += this.Scene_Leaving;
 			Scene.GameObjectUnregistered += this.Scene_GameObjectUnregistered;
 			Scene.RegisteredObjectComponentRemoved += this.Scene_RegisteredObjectComponentRemoved;
@@ -269,11 +269,11 @@ namespace EditorBase
 		{
 			base.OnClosed(e);
 
-			if (this.camObj != null && !this.camInternal) MainForm.Instance.EditorObjects.UnregisterObj(this.camObj);
+			if (this.camObj != null && !this.camInternal) DualityEditorApp.EditorObjects.UnregisterObj(this.camObj);
 			if (this.nativeCamObj != null) this.nativeCamObj.Dispose();
 
-			MainForm.Instance.ResourceModified -= this.EditorForm_ResourceModified;
-			MainForm.Instance.ObjectPropertyChanged -= this.EditorForm_ObjectPropertyChanged;
+			DualityEditorApp.ResourceModified -= this.EditorForm_ResourceModified;
+			DualityEditorApp.ObjectPropertyChanged -= this.EditorForm_ObjectPropertyChanged;
 			Scene.Leaving -= this.Scene_Leaving;
 			Scene.GameObjectUnregistered -= this.Scene_GameObjectUnregistered;
 			Scene.RegisteredObjectComponentRemoved -= this.Scene_RegisteredObjectComponentRemoved;
@@ -326,7 +326,7 @@ namespace EditorBase
 			this.layerSelector.DropDownItems.Clear();
 
 			IEnumerable<Type> camViewStateTypeQuery = 
-				from t in MainForm.Instance.GetAvailDualityEditorTypes(typeof(CamViewLayer))
+				from t in DualityEditorApp.GetAvailDualityEditorTypes(typeof(CamViewLayer))
 				where !t.IsAbstract
 				select t;
 
@@ -363,7 +363,7 @@ namespace EditorBase
 			c.FarZ = 100000.0f;
 
 			this.nativeCamObj.Transform.Pos = new Vector3(0.0f, 0.0f, -c.ParallaxRefDist);
-			MainForm.Instance.EditorObjects.RegisterObj(this.nativeCamObj);
+			DualityEditorApp.EditorObjects.RegisterObj(this.nativeCamObj);
 		}
 
 		public void SetCurrentCamera(Camera c)
@@ -373,7 +373,7 @@ namespace EditorBase
 
 			Camera prev = this.camComp;
 			if (this.camObj != null && !this.camInternal)
-				MainForm.Instance.EditorObjects.UnregisterObj(this.camObj);
+				DualityEditorApp.EditorObjects.UnregisterObj(this.camObj);
 
 			if (c.GameObj == this.nativeCamObj)
 			{
@@ -387,7 +387,7 @@ namespace EditorBase
 				this.camInternal = false;
 				this.camObj = c.GameObj;
 				this.camComp = c;
-				MainForm.Instance.EditorObjects.RegisterObj(this.camObj);
+				DualityEditorApp.EditorObjects.RegisterObj(this.camObj);
 				this.camSelector.SelectedIndex = this.camSelector.Items.IndexOf(c);
 			}
 
@@ -553,7 +553,7 @@ namespace EditorBase
 		public void OnCamTransformChanged()
 		{
 			//if (this.camInternal) return;
-			MainForm.Instance.NotifyObjPropChanged(
+			DualityEditorApp.NotifyObjPropChanged(
 				this, new ObjectSelection(this.camObj.Transform),
 				ReflectionInfo.Property_Transform_RelativeVel,
 				ReflectionInfo.Property_Transform_RelativeAngleVel,
@@ -584,7 +584,7 @@ namespace EditorBase
 		{
 			DualityApp.TargetMode = this.MainContextControl.Context.GraphicsMode;
 			DualityApp.TargetResolution = new OpenTK.Vector2(this.glControl.Width, this.glControl.Height);
-			if (this.ContainsFocus) MainForm.Instance.SetCurrentDualityAppInput(this, this);
+			if (this.ContainsFocus) DualityEditorApp.SetCurrentDualityAppInput(this, this);
 		}
 		public ICmpRenderer PickRendererAt(int x, int y)
 		{
@@ -631,7 +631,7 @@ namespace EditorBase
 		{
 			if (!this.camInternal)
 			{
-				MainForm.Instance.NotifyObjPropChanged(
+				DualityEditorApp.NotifyObjPropChanged(
 					this, new ObjectSelection(this.camComp),
 					ReflectionInfo.Property_Camera_ParallaxRefDist);
 			}
@@ -778,7 +778,7 @@ namespace EditorBase
 				0);
 			if (!this.camInternal)
 			{
-				MainForm.Instance.NotifyObjPropChanged(
+				DualityEditorApp.NotifyObjPropChanged(
 					this, new ObjectSelection(this.camComp),
 					ReflectionInfo.Property_Camera_ClearColor);
 			}

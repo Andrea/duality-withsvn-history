@@ -306,23 +306,23 @@ namespace EditorBase
 		{
 			base.OnShown(e);
 			this.InitRessources();
-			MainForm.Instance.SelectionChanged += this.EditorForm_SelectionChanged;
-			MainForm.Instance.ResourceCreated += this.EditorForm_ResourceCreated;
-			MainForm.Instance.ResourceDeleted += this.EditorForm_ResourceDeleted;
-			MainForm.Instance.ResourceModified += this.EditorForm_ResourceModified;
-			MainForm.Instance.ResourceRenamed += this.EditorForm_ResourceRenamed;
-			MainForm.Instance.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
+			DualityEditorApp.SelectionChanged += this.EditorForm_SelectionChanged;
+			DualityEditorApp.ResourceCreated += this.EditorForm_ResourceCreated;
+			DualityEditorApp.ResourceDeleted += this.EditorForm_ResourceDeleted;
+			DualityEditorApp.ResourceModified += this.EditorForm_ResourceModified;
+			DualityEditorApp.ResourceRenamed += this.EditorForm_ResourceRenamed;
+			DualityEditorApp.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
 			Resource.ResourceSaved += this.Resource_ResourceSaved;
 		}
 		protected override void OnClosed(EventArgs e)
 		{
 			base.OnClosed(e);
-			MainForm.Instance.SelectionChanged -= this.EditorForm_SelectionChanged;
-			MainForm.Instance.ResourceCreated -= this.EditorForm_ResourceCreated;
-			MainForm.Instance.ResourceDeleted -= this.EditorForm_ResourceDeleted;
-			MainForm.Instance.ResourceModified -= this.EditorForm_ResourceModified;
-			MainForm.Instance.ResourceRenamed -= this.EditorForm_ResourceRenamed;
-			MainForm.Instance.ObjectPropertyChanged -= this.EditorForm_ObjectPropertyChanged;
+			DualityEditorApp.SelectionChanged -= this.EditorForm_SelectionChanged;
+			DualityEditorApp.ResourceCreated -= this.EditorForm_ResourceCreated;
+			DualityEditorApp.ResourceDeleted -= this.EditorForm_ResourceDeleted;
+			DualityEditorApp.ResourceModified -= this.EditorForm_ResourceModified;
+			DualityEditorApp.ResourceRenamed -= this.EditorForm_ResourceRenamed;
+			DualityEditorApp.ObjectPropertyChanged -= this.EditorForm_ObjectPropertyChanged;
 			Resource.ResourceSaved -= this.Resource_ResourceSaved;
 		}
 
@@ -794,12 +794,12 @@ namespace EditorBase
 			// Note: Removed this. They'll now just grab their resource if available as soon as they need their data.
 
 			// Adjust editor-wide selection
-			if (!MainForm.Instance.IsSelectionChanging)
+			if (!DualityEditorApp.IsSelectionChanging)
 			{
 				if (selRes.Length > 0)
-					MainForm.Instance.Select(this, new ObjectSelection(selRes));
+					DualityEditorApp.Select(this, new ObjectSelection(selRes));
 				else
-					MainForm.Instance.Deselect(this, ObjectSelection.Category.Resource);
+					DualityEditorApp.Deselect(this, ObjectSelection.Category.Resource);
 			}
 		}
 		private void folderView_KeyDown(object sender, KeyEventArgs e)
@@ -938,12 +938,12 @@ namespace EditorBase
 
 						// Inject GameObject to Prefab
 						prefab.Inject(draggedObj);
-						MainForm.Instance.NotifyObjPropChanged(this, new ObjectSelection(prefab));
+						DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(prefab));
 
 						// Establish PrefabLink & clear previously existing changes
 						if (draggedObj.PrefabLink != null) draggedObj.PrefabLink.ClearChanges();
 						draggedObj.LinkToPrefab(prefab);
-						MainForm.Instance.NotifyObjPropChanged(this, new ObjectSelection(draggedObj), ReflectionInfo.Property_GameObject_PrefabLink);
+						DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(draggedObj), ReflectionInfo.Property_GameObject_PrefabLink);
 					}
 				}
 				// See if we can retrieve Resources from data
@@ -1015,7 +1015,6 @@ namespace EditorBase
 
 		private void nodeTextBoxName_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawEventArgs e)
 		{
-			if (MainForm.Instance == null) return;
 			NodeBase node = e.Node.Tag as NodeBase;
 			ResourceNode resNode = node as ResourceNode;
 
@@ -1026,7 +1025,7 @@ namespace EditorBase
 				e.TextColor = Color.Black;
 
 			// Unsaved nodes
-			if (resNode != null && MainForm.Instance.IsResourceUnsaved(resNode.ResLink))
+			if (resNode != null && DualityEditorApp.IsResourceUnsaved(resNode.ResLink))
 				e.Font = this.treeFontItalic;
 
 			// Flashing

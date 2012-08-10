@@ -76,23 +76,6 @@
             Adds items to the checklistbox based on the members of the enum
             </summary>
         </member>
-        <member name="F:DualityEditor.MainForm.components">
-            <summary>
-            Erforderliche Designervariable.
-            </summary>
-        </member>
-        <member name="M:DualityEditor.MainForm.Dispose(System.Boolean)">
-            <summary>
-            Verwendete Ressourcen bereinigen.
-            </summary>
-            <param name="disposing">True, wenn verwaltete Ressourcen gelöscht werden sollen; andernfalls False.</param>
-        </member>
-        <member name="M:DualityEditor.MainForm.InitializeComponent">
-            <summary>
-            Erforderliche Methode für die Designerunterstützung.
-            Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
-            </summary>
-        </member>
         <member name="T:DualityEditor.NativeMethods.FileOperationFlags">
             <summary>
             Possible flags for the SHFileOperation method.
@@ -159,7 +142,7 @@
             This method is called as soon as the plugins assembly is loaded. Initializes the plugins internal data.
             </summary>
         </member>
-        <member name="M:DualityEditor.EditorPlugin.InitPlugin(DualityEditor.MainForm)">
+        <member name="M:DualityEditor.EditorPlugin.InitPlugin(DualityEditor.Forms.MainForm)">
             <summary>
             This method is called when all plugins and the editors user data and layout are loaded. May initialize GUI.
             </summary>
@@ -554,6 +537,23 @@
         <member name="T:DualityEditor.Controls.FlagCheckedListBoxItem">
             <summary>
             Represents an item in the checklistbox
+            </summary>
+        </member>
+        <member name="F:DualityEditor.Forms.MainForm.components">
+            <summary>
+            Erforderliche Designervariable.
+            </summary>
+        </member>
+        <member name="M:DualityEditor.Forms.MainForm.Dispose(System.Boolean)">
+            <summary>
+            Verwendete Ressourcen bereinigen.
+            </summary>
+            <param name="disposing">True, wenn verwaltete Ressourcen gelöscht werden sollen; andernfalls False.</param>
+        </member>
+        <member name="M:DualityEditor.Forms.MainForm.InitializeComponent">
+            <summary>
+            Erforderliche Methode für die Designerunterstützung.
+            Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
             </summary>
         </member>
     </members>

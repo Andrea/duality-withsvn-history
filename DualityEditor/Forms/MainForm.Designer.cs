@@ -1,4 +1,4 @@
-﻿namespace DualityEditor
+﻿namespace DualityEditor.Forms
 {
 	partial class MainForm
 	{
@@ -51,9 +51,6 @@
 			this.RightToolStripPanel = new System.Windows.Forms.ToolStripPanel();
 			this.LeftToolStripPanel = new System.Windows.Forms.ToolStripPanel();
 			this.ContentPanel = new System.Windows.Forms.ToolStripContentPanel();
-			this.pluginWatcher = new System.IO.FileSystemWatcher();
-			this.dataDirWatcher = new System.IO.FileSystemWatcher();
-			this.sourceDirWatcher = new System.IO.FileSystemWatcher();
 			this.mainToolStrip = new System.Windows.Forms.ToolStrip();
 			this.actionSaveAll = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -68,9 +65,6 @@
 			this.selectFormattingMethod = new System.Windows.Forms.ToolStripSplitButton();
 			this.formatBinary = new System.Windows.Forms.ToolStripMenuItem();
 			this.formatXml = new System.Windows.Forms.ToolStripMenuItem();
-			((System.ComponentModel.ISupportInitialize)(this.pluginWatcher)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.dataDirWatcher)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.sourceDirWatcher)).BeginInit();
 			this.mainToolStrip.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -175,29 +169,6 @@
 			// ContentPanel
 			// 
 			this.ContentPanel.Size = new System.Drawing.Size(916, 639);
-			// 
-			// pluginWatcher
-			// 
-			this.pluginWatcher.EnableRaisingEvents = true;
-			this.pluginWatcher.Filter = "*.dll";
-			this.pluginWatcher.IncludeSubdirectories = true;
-			this.pluginWatcher.NotifyFilter = ((System.IO.NotifyFilters)((System.IO.NotifyFilters.LastWrite | System.IO.NotifyFilters.CreationTime)));
-			this.pluginWatcher.Path = "Plugins";
-			this.pluginWatcher.SynchronizingObject = this;
-			this.pluginWatcher.Changed += new System.IO.FileSystemEventHandler(this.corePluginWatcher_Changed);
-			this.pluginWatcher.Created += new System.IO.FileSystemEventHandler(this.corePluginWatcher_Changed);
-			// 
-			// dataDirWatcher
-			// 
-			this.dataDirWatcher.EnableRaisingEvents = true;
-			this.dataDirWatcher.IncludeSubdirectories = true;
-			this.dataDirWatcher.SynchronizingObject = this;
-			// 
-			// sourceDirWatcher
-			// 
-			this.sourceDirWatcher.EnableRaisingEvents = true;
-			this.sourceDirWatcher.IncludeSubdirectories = true;
-			this.sourceDirWatcher.SynchronizingObject = this;
 			// 
 			// mainToolStrip
 			// 
@@ -349,9 +320,6 @@
 			this.MainMenuStrip = this.mainMenuStrip;
 			this.Name = "MainForm";
 			this.Text = "Dualitor";
-			((System.ComponentModel.ISupportInitialize)(this.pluginWatcher)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.dataDirWatcher)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.sourceDirWatcher)).EndInit();
 			this.mainToolStrip.ResumeLayout(false);
 			this.mainToolStrip.PerformLayout();
 			this.ResumeLayout(false);
@@ -368,9 +336,6 @@
 		private System.Windows.Forms.ToolStripPanel RightToolStripPanel;
 		private System.Windows.Forms.ToolStripPanel LeftToolStripPanel;
 		private System.Windows.Forms.ToolStripContentPanel ContentPanel;
-		private System.IO.FileSystemWatcher pluginWatcher;
-		private System.IO.FileSystemWatcher dataDirWatcher;
-		private System.IO.FileSystemWatcher sourceDirWatcher;
 		private System.Windows.Forms.ToolStrip mainToolStrip;
 		private System.Windows.Forms.ToolStripButton actionRunApp;
 		private System.Windows.Forms.ToolStripButton actionDebugApp;

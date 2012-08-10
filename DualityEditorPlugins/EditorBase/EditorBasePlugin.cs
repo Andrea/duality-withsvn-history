@@ -263,8 +263,8 @@ namespace EditorBase
 			this.menuItemAppData.Click += this.menuItemAppData_Click;
 			this.menuItemUserData.Click += this.menuItemUserData_Click;
 
-			main.ResourceModified += this.main_ResourceModified;
-			main.ObjectPropertyChanged += this.main_ObjectPropertyChanged;
+			DualityEditorApp.ResourceModified += this.main_ResourceModified;
+			DualityEditorApp.ObjectPropertyChanged += this.main_ObjectPropertyChanged;
 		}
 		
 		public ProjectFolderView RequestProjectView()
@@ -277,7 +277,7 @@ namespace EditorBase
 
 			if (!this.isLoading)
 			{
-				this.projectView.Show(MainForm.Instance.MainDockPanel);
+				this.projectView.Show(DualityEditorApp.MainForm.MainDockPanel);
 				if (this.projectView.Pane != null)
 				{
 					this.projectView.Pane.Activate();
@@ -297,7 +297,7 @@ namespace EditorBase
 
 			if (!this.isLoading)
 			{
-				this.sceneView.Show(MainForm.Instance.MainDockPanel);
+				this.sceneView.Show(DualityEditorApp.MainForm.MainDockPanel);
 				if (this.sceneView.Pane != null)
 				{
 					this.sceneView.Pane.Activate();
@@ -317,7 +317,7 @@ namespace EditorBase
 
 			if (!this.isLoading)
 			{
-				this.logView.Show(MainForm.Instance.MainDockPanel);
+				this.logView.Show(DualityEditorApp.MainForm.MainDockPanel);
 				if (this.logView.Pane != null)
 				{
 					this.logView.Pane.Activate();
@@ -335,7 +335,7 @@ namespace EditorBase
 
 			if (!this.isLoading && !dontShow)
 			{
-				objView.Show(MainForm.Instance.MainDockPanel);
+				objView.Show(DualityEditorApp.MainForm.MainDockPanel);
 				if (objView.Pane != null)
 				{
 					objView.Pane.Activate();
@@ -352,7 +352,7 @@ namespace EditorBase
 
 			if (!this.isLoading)
 			{
-				cam.Show(MainForm.Instance.MainDockPanel);
+				cam.Show(DualityEditorApp.MainForm.MainDockPanel);
 				if (cam.Pane != null)
 				{
 					cam.Pane.Activate();
@@ -384,11 +384,11 @@ namespace EditorBase
 		}
 		private void menuItemAppData_Click(object sender, EventArgs e)
 		{
-			MainForm.Instance.Select(this, new ObjectSelection(DualityApp.AppData));
+			DualityEditorApp.Select(this, new ObjectSelection(DualityApp.AppData));
 		}
 		private void menuItemUserData_Click(object sender, EventArgs e)
 		{
-			MainForm.Instance.Select(this, new ObjectSelection(DualityApp.UserData));
+			DualityEditorApp.Select(this, new ObjectSelection(DualityApp.UserData));
 		}
 
 		private void ActionShaderCreateProgram(IEnumerable<AbstractShader> shaderEnum)
@@ -449,7 +449,7 @@ namespace EditorBase
 			{
 				GameObject newObj = prefab.Instantiate();
 				Duality.Resources.Scene.Current.RegisterObj(newObj);
-				MainForm.Instance.Select(this, new ObjectSelection(newObj));
+				DualityEditorApp.Select(this, new ObjectSelection(newObj));
 			}
 			catch (Exception exception)
 			{

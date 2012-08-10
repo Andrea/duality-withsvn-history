@@ -42,7 +42,7 @@ namespace EditorBase.PropertyEditors
 			if (anyReload)
 			{
 				this.PerformGetValue();
-				MainForm.Instance.NotifyObjPropChanged(this, new ObjectSelection(fntArr));
+				DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(fntArr));
 			}
 			(this.ParentEditor as FontPropertyEditor).UpdatePreview();
 		}

@@ -316,7 +316,7 @@ namespace DualityEditor.Forms
 						string xmlDocFile = workInterface.ReloadSched[0].Replace(".dll", ".xml");
 						if (File.Exists(xmlDocFile))
 						{
-							workInterface.MainForm.Invoke((Action<string>)workInterface.MainForm.LoadXmlCodeDoc, xmlDocFile);
+							workInterface.MainForm.Invoke((Action<string>)DualityEditorApp.LoadXmlCodeDoc, xmlDocFile);
 						}
 						workInterface.ReloadSched.RemoveAt(0);
 						workInterface.Progress += 0.05f / (float)count;

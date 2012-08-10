@@ -134,11 +134,11 @@ namespace EditorBase.CamViewStates
 			this.View.LocalGLControl.DragLeave	+= this.LocalGLControl_DragLeave;
 			this.View.LocalGLControl.DragOver	+= this.LocalGLControl_DragOver;
 
-			MainForm.Instance.SelectionChanged		+= this.EditorForm_SelectionChanged;
-			MainForm.Instance.ObjectPropertyChanged	+= this.EditorForm_ObjectPropertyChanged;
+			DualityEditorApp.SelectionChanged		+= this.EditorForm_SelectionChanged;
+			DualityEditorApp.ObjectPropertyChanged	+= this.EditorForm_ObjectPropertyChanged;
 
 			// Initial selection update
-			ObjectSelection current = MainForm.Instance.Selection;
+			ObjectSelection current = DualityEditorApp.Selection;
 			this.allObjSel = current.GameObjects.Select(g => new SelGameObj(g) as SelObj).ToList();
 			{
 				var selectedGameObj = current.GameObjects;
@@ -161,8 +161,8 @@ namespace EditorBase.CamViewStates
 			this.View.LocalGLControl.DragLeave	-= this.LocalGLControl_DragLeave;
 			this.View.LocalGLControl.DragOver	-= this.LocalGLControl_DragOver;
 
-			MainForm.Instance.SelectionChanged		-= this.EditorForm_SelectionChanged;
-			MainForm.Instance.ObjectPropertyChanged	-= this.EditorForm_ObjectPropertyChanged;
+			DualityEditorApp.SelectionChanged		-= this.EditorForm_SelectionChanged;
+			DualityEditorApp.ObjectPropertyChanged	-= this.EditorForm_ObjectPropertyChanged;
 
 			this.View.LocalGLControl.Cursor = CursorHelper.Arrow;
 		}
@@ -204,26 +204,26 @@ namespace EditorBase.CamViewStates
 		public override void ClearSelection()
 		{
 			base.ClearSelection();
-			MainForm.Instance.Deselect(this, ObjectSelection.Category.GameObjCmp);
+			DualityEditorApp.Deselect(this, ObjectSelection.Category.GameObjCmp);
 		}
-		public override void SelectObjects(IEnumerable<CamViewState.SelObj> selObjEnum, MainForm.SelectMode mode = MainForm.SelectMode.Set)
+		public override void SelectObjects(IEnumerable<CamViewState.SelObj> selObjEnum, SelectMode mode = SelectMode.Set)
 		{
 			base.SelectObjects(selObjEnum, mode);
-			MainForm.Instance.Select(this, new ObjectSelection(selObjEnum.Select(s => s.ActualObject)), mode);
+			DualityEditorApp.Select(this, new ObjectSelection(selObjEnum.Select(s => s.ActualObject)), mode);
 		}
 		protected override void PostPerformAction(IEnumerable<CamViewState.SelObj> selObjEnum, CamViewState.MouseAction action)
 		{
 			base.PostPerformAction(selObjEnum, action);
 			if (action == MouseAction.MoveObj)
 			{
-				MainForm.Instance.NotifyObjPropChanged(
+				DualityEditorApp.NotifyObjPropChanged(
 					this,
 					new ObjectSelection(selObjEnum.Select(s => (s.ActualObject as GameObject).Transform)),
 					ReflectionInfo.Property_Transform_RelativePos);
 			}
 			else if (action == MouseAction.RotateObj)
 			{
-				MainForm.Instance.NotifyObjPropChanged(
+				DualityEditorApp.NotifyObjPropChanged(
 					this,
 					new ObjectSelection(selObjEnum.Select(s => (s.ActualObject as GameObject).Transform)),
 					ReflectionInfo.Property_Transform_RelativePos,
@@ -231,7 +231,7 @@ namespace EditorBase.CamViewStates
 			}
 			else if (action == MouseAction.ScaleObj)
 			{
-				MainForm.Instance.NotifyObjPropChanged(
+				DualityEditorApp.NotifyObjPropChanged(
 					this,
 					new ObjectSelection(selObjEnum.Select(s => (s.ActualObject as GameObject).Transform)),
 					ReflectionInfo.Property_Transform_RelativePos,
@@ -246,7 +246,7 @@ namespace EditorBase.CamViewStates
 
 			// Ask user if he really wants to delete stuff
 			if (!this.DisplayConfirmDeleteSelectedObjects()) return;
-			if (!MainForm.Instance.DisplayConfirmBreakPrefabLink(new ObjectSelection(objList))) return;
+			if (!DualityEditorApp.DisplayConfirmBreakPrefabLink(new ObjectSelection(objList))) return;
 
 			// Delete objects
 			foreach (GameObject o in objList)
@@ -306,7 +306,7 @@ namespace EditorBase.CamViewStates
 				Scene.Current.UnregisterObj(gameObj);
 				gameObj.Dispose();
 			}
-			MainForm.Instance.Select(this, this.selBeforeDrag);
+			DualityEditorApp.Select(this, this.selBeforeDrag);
 		}
 		private void LocalGLControl_DragEnter(object sender, DragEventArgs e)
 		{
@@ -360,7 +360,7 @@ namespace EditorBase.CamViewStates
 				}
 
 				// Select them & begin action
-				this.selBeforeDrag = MainForm.Instance.Selection;
+				this.selBeforeDrag = DualityEditorApp.Selection;
 				this.SelectObjects(dragObj.Select(g => new SelGameObj(g) as SelObj));
 				this.BeginAction(MouseAction.MoveObj);
 

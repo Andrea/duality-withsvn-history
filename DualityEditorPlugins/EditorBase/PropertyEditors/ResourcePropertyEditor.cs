@@ -36,7 +36,7 @@ namespace EditorBase.PropertyEditors
 		}
 		protected override void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)
 		{
-			MainForm.Instance.NotifyObjPropChanged(this, new ObjectSelection(targets), property);
+			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(targets), property);
 		}
 		protected override void OnEditedTypeChanged()
 		{

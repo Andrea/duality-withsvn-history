@@ -33,7 +33,7 @@ namespace EditorBase
 
 			this.UpdateView();
 			Log.LogData.NewEntry += this.LogData_NewEntry;
-			MainForm.Instance.EnteringSandbox += this.EditorForm_EnteringSandbox;
+			DualityEditorApp.EnteringSandbox += this.EditorForm_EnteringSandbox;
 		}
 		protected override void OnClosed(EventArgs e)
 		{
@@ -42,7 +42,7 @@ namespace EditorBase
 			this.DockPanel.ActiveAutoHideContentChanged -= this.DockPanel_ActiveAutoHideContentChanged;
 
 			Log.LogData.NewEntry -= this.LogData_NewEntry;
-			MainForm.Instance.EnteringSandbox -= this.EditorForm_EnteringSandbox;
+			DualityEditorApp.EnteringSandbox -= this.EditorForm_EnteringSandbox;
 		}
 		
 		internal void SaveUserData(System.Xml.XmlElement node)

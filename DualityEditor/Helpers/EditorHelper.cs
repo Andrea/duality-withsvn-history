@@ -301,7 +301,7 @@ namespace DualityEditor
 			}
 			else if (template.SpecialTag == ProjectTemplateInfo.SpecialInfo.Current)
 			{
-				MainForm.Instance.SaveAllProjectData();
+				DualityEditorApp.SaveAllProjectData();
 				CopyDirectory(Environment.CurrentDirectory, projFolder, true);
 			}
 			else
@@ -334,7 +334,7 @@ namespace DualityEditor
 				// Read content source code data (needed to rename classes / namespaces)
 				string oldRootNamespaceNameCore;
 				string newRootNamespaceNameCore;
-				MainForm.Instance.ReadPluginSourceCodeContentData(out oldRootNamespaceNameCore, out newRootNamespaceNameCore);
+				DualityEditorApp.ReadPluginSourceCodeContentData(out oldRootNamespaceNameCore, out newRootNamespaceNameCore);
 
 				// Rename classes / namespaces
 				List<string> resFiles = Resource.GetResourceFiles(EditorHelper.DataDirectory);
@@ -345,8 +345,8 @@ namespace DualityEditor
 			}
 
 			// Initialize source code
-			MainForm.Instance.InitPluginSourceCode(); // Force re-init to update namespaces, etc.
-			MainForm.Instance.UpdatePluginSourceCode();
+			DualityEditorApp.InitPluginSourceCode(); // Force re-init to update namespaces, etc.
+			DualityEditorApp.UpdatePluginSourceCode();
 
 			// Compile plugins
 			var buildProperties = new Dictionary<string, string>();
