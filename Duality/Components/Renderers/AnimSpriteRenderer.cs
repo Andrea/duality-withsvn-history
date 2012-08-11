@@ -1,5 +1,6 @@
 ﻿using System;
 
+using Duality.EditorHints;
 using Duality.ColorFormat;
 using Duality.Resources;
 
@@ -60,10 +61,11 @@ namespace Duality.Components.Renderers
 		/// Animation indices are looked up in the <see cref="Duality.Resources.Texture.Atlas"/> map
 		/// of the <see cref="Duality.Resources.Texture"/> that is used.
 		/// </remarks>
+		[EditorHintRange(0, int.MaxValue)]
 		public int AnimFirstFrame
 		{
 			get { return this.animFirstFrame; }
-			set { this.animFirstFrame = value; }
+			set { this.animFirstFrame = MathF.Max(0, value); }
 		}
 		/// <summary>
 		/// [GET / SET] The number of continous frames to use for the animation.
@@ -72,26 +74,29 @@ namespace Duality.Components.Renderers
 		/// Animation indices are looked up in the <see cref="Duality.Resources.Texture.Atlas"/> map
 		/// of the <see cref="Duality.Resources.Texture"/> that is used.
 		/// </remarks>
+		[EditorHintRange(0, int.MaxValue)]
 		public int AnimFrameCount
 		{
 			get { return this.animFrameCount; }
-			set { this.animFrameCount = value; }
+			set { this.animFrameCount = MathF.Max(0, value); }
 		}
 		/// <summary>
 		/// [GET / SET] The time a single animation cycle needs to complete, in seconds.
 		/// </summary>
+		[EditorHintRange(0.0f, float.MaxValue)]
 		public float AnimDuration
 		{
 			get { return this.animDuration; }
-			set { this.animDuration = value; }
+			set { this.animDuration = MathF.Max(0.0f, value); }
 		}
 		/// <summary>
 		/// [GET / SET] The animations current play time, i.e. the current state of the animation.
 		/// </summary>
+		[EditorHintRange(0.0f, float.MaxValue)]
 		public float AnimTime
 		{
 			get { return this.animTime; }
-			set { this.animTime = value; }
+			set { this.animTime = MathF.Max(0.0f, value); }
 		}
 		/// <summary>
 		/// [GET / SET] The animations loop behaviour.
@@ -259,10 +264,6 @@ namespace Duality.Components.Renderers
 					{
 						nextAnimFrame = MathF.NormalizeVar(curAnimFrame + 1, 0, this.animFrameCount);
 					}
-					else if (this.animLoopMode == LoopMode.Once)
-					{
-						nextAnimFrame = curAnimFrame + 1;
-					}
 					else if (this.animLoopMode == LoopMode.PingPong)
 					{
 						if ((int)frameTemp < this.animFrameCount)
@@ -277,6 +278,10 @@ namespace Duality.Components.Renderers
 							if (nextAnimFrame < 0)
 								nextAnimFrame = -nextAnimFrame;
 						}
+					}
+					else
+					{
+						nextAnimFrame = curAnimFrame + 1;
 					}
 
 					// Translate and clamp selected animation frame, then do a UV lookup in the texture atlas

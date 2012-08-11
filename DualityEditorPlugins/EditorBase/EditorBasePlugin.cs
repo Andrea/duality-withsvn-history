@@ -384,11 +384,11 @@ namespace EditorBase
 		}
 		private void menuItemAppData_Click(object sender, EventArgs e)
 		{
-			DualityEditorApp.Select(this, new ObjectSelection(DualityApp.AppData));
+			DualityEditorApp.Select(this, new ObjectSelection(new [] { DualityApp.AppData }));
 		}
 		private void menuItemUserData_Click(object sender, EventArgs e)
 		{
-			DualityEditorApp.Select(this, new ObjectSelection(DualityApp.UserData));
+			DualityEditorApp.Select(this, new ObjectSelection(new [] { DualityApp.UserData }));
 		}
 
 		private void ActionShaderCreateProgram(IEnumerable<AbstractShader> shaderEnum)
@@ -563,8 +563,9 @@ namespace EditorBase
 				}
 			}
 
+			// Notify a change that isn't critical regarding persistence (don't flag stuff unsaved)
 			if (changedObj != null)
-				DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(changedObj as IEnumerable<object>));
+				DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(changedObj as IEnumerable<object>), false);
 		}
 
 		public static void SortToolStripTypeItems(ToolStripItemCollection items)

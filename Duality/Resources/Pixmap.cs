@@ -563,6 +563,11 @@ namespace Duality.Resources
 					pos.Y	= i / this.width;
 					pos.X	= i - (pos.Y * this.width);
 
+					mixClr[0] = 0;
+					mixClr[1] = 0;
+					mixClr[2] = 0;
+					mixClr[3] = 0;
+
 					nPos[0] = (pos.X + ((pos.Y - 1) * this.width));
 					nPos[1] = (pos.X + ((pos.Y + 1) * this.width));
 					nPos[2] = ((pos.X - 1) + (pos.Y * this.width));
@@ -592,7 +597,7 @@ namespace Duality.Resources
 						mixClr[3] += nMult[j];
 					}
 
-					if (mixClr != null)
+					if (mixClr[3] > 0)
 					{
 						this.data[i].R = (byte)Math.Round((float)mixClr[0] / (float)mixClr[3]);
 						this.data[i].G = (byte)Math.Round((float)mixClr[1] / (float)mixClr[3]);
@@ -1111,10 +1116,7 @@ namespace Duality.Resources
 			if (String.IsNullOrEmpty(this.sourcePath) || !File.Exists(this.sourcePath))
 				this.MainLayer = null;
 			else
-			{
 				this.MainLayer = new Layer(imagePath);
-				this.MainLayer.ColorTransparentPixels();
-			}
 		}
 
 		protected override void OnCopyTo(Resource r, Duality.Cloning.CloneProvider provider)

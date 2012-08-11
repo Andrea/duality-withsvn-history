@@ -479,10 +479,20 @@ namespace DualityEditor
 			}
 			unsavedResources.Clear();
 		}
+		public static void FlagResourceUnsaved(IEnumerable<Resource> res)
+		{
+			foreach (Resource r in res)
+				FlagResourceUnsaved(r);
+		}
 		public static void FlagResourceUnsaved(Resource res)
 		{
 			if (unsavedResources.Contains(res)) return;
 			unsavedResources.Add(res);
+		}
+		public static void FlagResourceSaved(IEnumerable<Resource> res)
+		{
+			foreach (Resource r in res)
+				FlagResourceSaved(r);
 		}
 		public static void FlagResourceSaved(Resource res)
 		{
@@ -687,11 +697,15 @@ namespace DualityEditor
 
 		public static void NotifyObjPrefabApplied(object sender, ObjectSelection obj)
 		{
-			OnObjectPropertyChanged(sender, new ObjectPropertyChangedEventArgs(obj, new PropertyInfo[0], true));
+			OnObjectPropertyChanged(sender, new PrefabAppliedEventArgs(obj));
 		}
 		public static void NotifyObjPropChanged(object sender, ObjectSelection obj, params PropertyInfo[] info)
 		{
-			OnObjectPropertyChanged(sender, new ObjectPropertyChangedEventArgs(obj, info, false));
+			OnObjectPropertyChanged(sender, new ObjectPropertyChangedEventArgs(obj, info));
+		}
+		public static void NotifyObjPropChanged(object sender, ObjectSelection obj, bool persistenceCritical, params PropertyInfo[] info)
+		{
+			OnObjectPropertyChanged(sender, new ObjectPropertyChangedEventArgs(obj, info, persistenceCritical));
 		}
 
 		public static T GetPlugin<T>() where T : EditorPlugin
@@ -750,60 +764,74 @@ namespace DualityEditor
 		}
 		private static void OnObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs args)
 		{
-			// If a linked GameObject was modified, update its prefab link changelist
-			if (!args.CompleteChange && (args.Objects.GameObjects.Any() || args.Objects.Components.Any()))
+			if (args.PersistenceCritical)
 			{
-				HashSet<PrefabLink> changedLinks = new HashSet<PrefabLink>();
-				foreach (object o in args.Objects.Objects)
+				// If a linked GameObject was modified, update its prefab link changelist
+				if (!(args is PrefabAppliedEventArgs) && (args.Objects.GameObjects.Any() || args.Objects.Components.Any()))
 				{
-					Component cmp = o as Component;
-					GameObject obj = o as GameObject;
-					if (cmp == null && obj == null) continue;
-
-					PrefabLink link = obj != null ? obj.AffectedByPrefabLink : cmp.GameObj.AffectedByPrefabLink;
-					if (link == null) continue;
-					if (cmp != null && !link.AffectsObject(cmp)) continue;
-					if (obj != null && !link.AffectsObject(obj)) continue;
-
-					// Handle property changes regarding affected prefab links change lists
-					foreach (PropertyInfo info in args.PropInfos)
+					HashSet<PrefabLink> changedLinks = new HashSet<PrefabLink>();
+					foreach (object o in args.Objects.Objects)
 					{
-						if (PushPrefabLinkPropertyChange(link, o, info))
-							changedLinks.Add(link);
+						Component cmp = o as Component;
+						GameObject obj = o as GameObject;
+						if (cmp == null && obj == null) continue;
+
+						PrefabLink link = obj != null ? obj.AffectedByPrefabLink : cmp.GameObj.AffectedByPrefabLink;
+						if (link == null) continue;
+						if (cmp != null && !link.AffectsObject(cmp)) continue;
+						if (obj != null && !link.AffectsObject(obj)) continue;
+
+						// Handle property changes regarding affected prefab links change lists
+						foreach (PropertyInfo info in args.PropInfos)
+						{
+							if (PushPrefabLinkPropertyChange(link, o, info))
+								changedLinks.Add(link);
+						}
+					}
+
+					foreach (PrefabLink link in changedLinks)
+					{
+						NotifyObjPropChanged(null, new ObjectSelection(new[] { link.Obj }), ReflectionInfo.Property_GameObject_PrefabLink);
 					}
 				}
 
-				foreach (PrefabLink link in changedLinks)
+				// When modifying prefabs, apply changes to all linked objects
+				if (args.Objects.Resources.OfType<Prefab>().Any())
 				{
-					NotifyObjPropChanged(null, new ObjectSelection(link.Obj), ReflectionInfo.Property_GameObject_PrefabLink);
+					foreach (Prefab prefab in args.Objects.Resources.OfType<Prefab>())
+					{
+						List<PrefabLink> appliedLinks = PrefabLink.ApplyAllLinks(Scene.Current.AllObjects, p => p.Prefab == prefab);
+						List<GameObject> changedObjects = new List<GameObject>(appliedLinks.Select(p => p.Obj));
+						DualityEditorApp.NotifyObjPrefabApplied(null, new ObjectSelection(changedObjects));
+					}
 				}
-			}
 
-			// If a Resource's Properties are modified, mark Resource for saving
-			if (args.Objects.ResourceCount > 0)
-			{
-				foreach (Resource res in args.Objects.Resources)
+				// If a Resource's Properties are modified, mark Resource for saving
+				if (args.Objects.ResourceCount > 0)
 				{
-					if (Sandbox.IsActive && res is Scene && (res as Scene).IsCurrent) continue;
-					FlagResourceUnsaved(res);
+					foreach (Resource res in args.Objects.Resources)
+					{
+						if (Sandbox.IsActive && res is Scene && (res as Scene).IsCurrent) continue;
+						FlagResourceUnsaved(res);
+					}
 				}
-			}
 
-			// If a GameObjects's Property is modified, mark current Scene for saving
-			if (args.Objects.GameObjects.Any(g => Scene.Current.AllObjects.Contains(g)) ||
-				args.Objects.Components.Any(c => Scene.Current.AllObjects.Contains(c.GameObj)))
-			{
-				FlagResourceUnsaved(Scene.Current);
-			}
+				// If a GameObjects's Property is modified, mark current Scene for saving
+				if (args.Objects.GameObjects.Any(g => Scene.Current.AllObjects.Contains(g)) ||
+					args.Objects.Components.Any(c => Scene.Current.AllObjects.Contains(c.GameObj)))
+				{
+					FlagResourceUnsaved(Scene.Current);
+				}
 
-			// If DualityAppData or DualityUserData is modified, save it
-			if (args.Objects.OtherObjectCount > 0)
-			{
-				// This is probably not the best idea for generalized behaviour, but sufficient for now
-				if (args.Objects.OtherObjects.Any(o => o is DualityAppData))
-					DualityApp.SaveAppData();
-				else if (args.Objects.OtherObjects.Any(o => o is DualityUserData))
-					DualityApp.SaveUserData();
+				// If DualityAppData or DualityUserData is modified, save it
+				if (args.Objects.OtherObjectCount > 0)
+				{
+					// This is probably not the best idea for generalized behaviour, but sufficient for now
+					if (args.Objects.OtherObjects.Any(o => o is DualityAppData))
+						DualityApp.SaveAppData();
+					else if (args.Objects.OtherObjects.Any(o => o is DualityUserData))
+						DualityApp.SaveUserData();
+				}
 			}
 
 			// Fire the actual event
@@ -823,7 +851,7 @@ namespace DualityEditor
 				if (obj.PrefabLink == link && (parentLink = link.ParentLink) != null)
 				{
 					parentLink.PushChange(obj, info, obj.PrefabLink.Clone());
-					NotifyObjPropChanged(null, new ObjectSelection(parentLink.Obj), info);
+					NotifyObjPropChanged(null, new ObjectSelection(new[] { parentLink.Obj }), info);
 				}
 				return false;
 			}
@@ -872,8 +900,7 @@ namespace DualityEditor
 		}
 		private static void Scene_Leaving(object sender, EventArgs e)
 		{
-			if (selectionCurrent.GameObjects.Any() || selectionCurrent.Components.Any())
-				Deselect(null, ObjectSelection.Category.GameObjCmp);
+			Deselect(null, ObjectSelection.Category.GameObjCmp);
 		}
 		private static void Scene_Entered(object sender, EventArgs e)
 		{
@@ -885,6 +912,7 @@ namespace DualityEditor
 				if (cmpObj == null) return null;
 				return cmpObj.GetComponent(c.GetType());
 			}).NotNull();
+
 			// Append restored selection to current one.
 			ObjectSelection objSel = new ObjectSelection(((IEnumerable<object>)objQuery).Concat(cmpQuery));
 			if (objSel.ObjectCount > 0) Select(null, objSel, SelectMode.Append);

@@ -211,14 +211,13 @@ namespace DualityEditor
 
 				if (e.ChangeType == WatcherChangeTypes.Changed)
 				{
-					// Is it a Resource file or just something else?
 					ResourceEventArgs args = new ResourceEventArgs(e.FullPath);
-					if (Resource.IsResourceFile(e.FullPath) || args.IsDirectory)
+					bool justSaved = editorJustSavedRes.Contains(Path.GetFullPath(e.FullPath));
+					// Ignore stuff saved by the editor itself
+					if (!justSaved && (Resource.IsResourceFile(e.FullPath) || args.IsDirectory))
 					{
 						// Unregister outdated resources, if modified outside the editor
-						if (!args.IsDirectory &&
-							!editorJustSavedRes.Contains(Path.GetFullPath(e.FullPath)) && 
-							ContentProvider.IsContentRegistered(args.Path))
+						if (!args.IsDirectory && ContentProvider.IsContentRegistered(args.Path))
 						{
 							bool isCurrentScene = args.Content.Is<Scene>() && Scene.Current == args.Content.Res;
 							if (isCurrentScene || DualityEditorApp.IsResourceUnsaved(e.FullPath))
@@ -237,15 +236,6 @@ namespace DualityEditor
 							}
 							else
 								ContentProvider.UnregisterContent(args.Path);
-						}
-
-						// When modifying prefabs, apply changes to all linked objects
-						if (args.IsResource && args.Content.Is<Prefab>())
-						{
-							ContentRef<Prefab> prefabRef = args.Content.As<Prefab>();
-							List<PrefabLink> appliedLinks = PrefabLink.ApplyAllLinks(Scene.Current.AllObjects, p => p.Prefab == prefabRef);
-							List<GameObject> changedObjects = new List<GameObject>(appliedLinks.Select(p => p.Obj));
-							DualityEditorApp.NotifyObjPrefabApplied(null, new ObjectSelection(changedObjects));
 						}
 
 						if (ResourceModified != null) ResourceModified(null, args);

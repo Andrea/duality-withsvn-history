@@ -31,6 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DualityDebugging, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -42,6 +43,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BitmalView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="BitmalView.Designer.cs">
+      <DependentUpon>BitmalView.cs</DependentUpon>
+    </Compile>
     <Compile Include="BitmapForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -49,6 +56,11 @@
       <DependentUpon>BitmapForm.cs</DependentUpon>
     </Compile>
     <Compile Include="BitmapVisualizer.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="TextureAtlasVisualizer.cs" />
     <Compile Include="TextureVisualizer.cs" />
     <Compile Include="PixmapVisualizer.cs" />
@@ -61,9 +73,19 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="BitmalView.resx">
+      <DependentUpon>BitmalView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="BitmapForm.resx">
       <DependentUpon>BitmapForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\disk.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

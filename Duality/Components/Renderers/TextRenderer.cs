@@ -180,7 +180,11 @@ namespace Duality.Components.Renderers
 		
 		void ICmpInitializable.OnInit(InitContext context)
 		{
-			if (context == InitContext.Loaded) this.UpdateMetrics();
+			if (context == InitContext.Loaded)
+			{
+				this.text.ApplySource();
+				this.UpdateMetrics();
+			}
 		}
 		void ICmpInitializable.OnShutdown(ShutdownContext context) {}
 

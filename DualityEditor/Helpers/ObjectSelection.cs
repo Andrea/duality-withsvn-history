@@ -132,7 +132,9 @@ namespace DualityEditor
 			this.obj = new List<object>(obj.NotNull());
 			this.UpdateCategories();
 		}
-		public ObjectSelection(params object[] obj) : this(obj as IEnumerable<object>) {}
+		public ObjectSelection(params GameObject[] obj) : this(obj as IEnumerable<object>) {}
+		public ObjectSelection(params Component[] obj) : this(obj as IEnumerable<object>) {}
+		public ObjectSelection(params Resource[] obj) : this(obj as IEnumerable<object>) {}
 		
 		protected void LocalExclusive(Category singleCat)
 		{

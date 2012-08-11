@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Linq;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 using AdamsLair.PropertyGrid;
@@ -356,6 +357,7 @@ namespace EditorBase.PropertyEditors
 		private void OnPrefabLinkApplyPressed()
 		{
 			GameObject[] values = this.GetValue().Cast<GameObject>().Where(o => o.PrefabLink != null).ToArray();
+			var prefabs = new List<Duality.Resources.Prefab>();
 			foreach (GameObject o in values)
 			{
 				if (o.PrefabLink != null && o.PrefabLink.Prefab.IsAvailable)
@@ -364,13 +366,15 @@ namespace EditorBase.PropertyEditors
 
 					// Inject GameObject to Prefab
 					prefab.Inject(o);
-					prefab.Save();
+					prefabs.Add(prefab);
 
 					// Establish PrefabLink & clear previously existing changes
 					if (o.PrefabLink != null) o.PrefabLink.ClearChanges();
 					o.LinkToPrefab(prefab);
 				}
 			}
+			DualityEditorApp.FlagResourceUnsaved(prefabs);
+			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(prefabs));
 			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionInfo.Property_GameObject_PrefabLink);
 		}
 		private void OnPrefabLinkBreakPressed()

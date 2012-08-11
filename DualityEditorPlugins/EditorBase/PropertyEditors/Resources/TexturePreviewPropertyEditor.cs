@@ -27,6 +27,7 @@ namespace EditorBase.PropertyEditors
 		private	List<Bitmap>	prevImageFrame		= new List<Bitmap>();
 		private	float			prevImageLum		= 0.0f;
 		private	Pixmap.Layer	prevImageValue		= null;
+		private	int				prevImageAtlasLen	= -1;
 		private	Rectangle	rectHeader			= Rectangle.Empty;
 		private	Rectangle	rectPreview			= Rectangle.Empty;
 		private	Rectangle	rectLabelName		= Rectangle.Empty;
@@ -65,9 +66,11 @@ namespace EditorBase.PropertyEditors
 			// Need some way to determine actual texture content.. this isn't optimal but works in most cases.
 			Pixmap basePx = this.value != null ? this.value.BasePixmap.Res : null;
 			Pixmap.Layer basePxLayer = basePx != null ? basePx.MainLayer : null;
+			int atlasLen = this.value != null && this.value.Atlas != null ? this.value.Atlas.Count : 0;
 
-			if (this.prevImageValue == basePxLayer) return;
+			if (this.prevImageValue == basePxLayer && this.prevImageAtlasLen == atlasLen) return;
 			this.prevImageValue = basePxLayer;
+			this.prevImageAtlasLen = atlasLen;
 
 			if (this.prevImage != null) this.prevImage.Dispose();
 			this.prevImage = null;

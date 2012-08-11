@@ -79,6 +79,7 @@ namespace DualityEditor
 		private	List<PropertyInfo>	propInfos;
 		private	List<string>		propNames;
 		private	bool				completeChange;
+		private	bool				persistCritical;
 
 		public ObjectSelection Objects
 		{
@@ -96,16 +97,21 @@ namespace DualityEditor
 		{
 			get { return this.completeChange; }
 		}
-
-		public ObjectPropertyChangedEventArgs(ObjectSelection obj, IEnumerable<PropertyInfo> infos, bool completeChange)
+		public bool PersistenceCritical
 		{
+			get { return this.persistCritical; }
+		}
+
+		public ObjectPropertyChangedEventArgs(ObjectSelection obj, bool persistenceCritical = true) : this(obj, null, persistenceCritical) {}
+		public ObjectPropertyChangedEventArgs(ObjectSelection obj, IEnumerable<PropertyInfo> infos, bool persistenceCritical = true)
+		{
+			if (infos == null) infos = new PropertyInfo[0];
+
 			this.obj = obj;
 			this.propInfos = new List<PropertyInfo>(infos);
 			this.propNames = new List<string>(infos.Select(i => i.Name));
-			this.completeChange = completeChange || this.propInfos.Count == 0;
-
-			if (this.completeChange) 
-				this.obj = this.obj.HierarchyExpand();
+			this.completeChange = this.propInfos.Count == 0;
+			this.persistCritical = persistenceCritical;
 		}
 
 		public bool HasProperty(PropertyInfo info)
@@ -125,6 +131,11 @@ namespace DualityEditor
 		{
 			return name.Any(this.HasProperty);
 		}
+	}
+
+	public class PrefabAppliedEventArgs : ObjectPropertyChangedEventArgs
+	{
+		public PrefabAppliedEventArgs(ObjectSelection obj) : base(obj.HierarchyExpand(), new PropertyInfo[0]) {}
 	}
 
 	public class ResourceRenamedEventArgs : ResourceEventArgs

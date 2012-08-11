@@ -34,7 +34,6 @@ namespace DualityEditor.Forms
 			this.actionDebugApp.Enabled = EditorHelper.IsJITDebuggerAvailable();
 
 			this.InitMenus();
-			this.UpdateToolbar();
 		}
 		private void ApplyDockPanelSkin()
 		{
@@ -153,6 +152,7 @@ namespace DualityEditor.Forms
 		{
 			base.OnShown(e);
 			this.WindowState = FormWindowState.Maximized;
+			this.UpdateToolbar();
 
 			Sandbox.StateChanged += this.Sandbox_StateChanged;
 		}
