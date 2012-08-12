@@ -114,6 +114,15 @@ namespace DualityEditor
 			this.persistCritical = persistenceCritical;
 		}
 
+		public bool HasObject(object obj)
+		{
+			return this.obj.Objects.Contains(obj);
+		}
+		public bool HasAnyObject(IEnumerable<object> objEnum)
+		{
+			return objEnum.Any(o => this.obj.Objects.Contains(o));
+		}
+
 		public bool HasProperty(PropertyInfo info)
 		{
 			return this.completeChange || this.propInfos.Any(i => ReflectionHelper.MemberInfoEquals(i, info));

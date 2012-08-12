@@ -353,6 +353,7 @@ namespace EditorBase.PropertyEditors
 
 			DualityEditorApp.NotifyObjPrefabApplied(this, new ObjectSelection(values));
 			this.PerformGetValue();
+			this.ParentGrid.Invalidate();
 		}
 		private void OnPrefabLinkApplyPressed()
 		{
@@ -376,6 +377,8 @@ namespace EditorBase.PropertyEditors
 			DualityEditorApp.FlagResourceUnsaved(prefabs);
 			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(prefabs));
 			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionInfo.Property_GameObject_PrefabLink);
+
+			this.ParentGrid.Invalidate();
 		}
 		private void OnPrefabLinkBreakPressed()
 		{
@@ -386,6 +389,7 @@ namespace EditorBase.PropertyEditors
 
 			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionInfo.Property_GameObject_PrefabLink);
 			this.PerformGetValue();
+			this.ParentGrid.Invalidate();
 		}
 
 		HelpInfo IHelpProvider.ProvideHoverHelp(Point localPos, ref bool captured)

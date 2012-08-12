@@ -128,7 +128,7 @@ namespace FarseerPhysics
         /// A small length used as a collision and constraint tolerance. Usually it is
         /// chosen to be numerically significant, but visually insignificant.
         /// </summary>
-        public const float LinearSlop = 0.001f; // was 0.005f
+        public const float LinearSlop = 0.005f; // was 0.005f
 
         /// <summary>
         /// A small angle used as a collision and constraint tolerance. Usually it is
@@ -141,7 +141,7 @@ namespace FarseerPhysics
         /// this smaller means polygons will have an insufficient buffer for continuous collision.
         /// Making it larger may create artifacts for vertex collision.
         /// </summary>
-        public const float PolygonRadius = (2.0f * LinearSlop);
+        public const float PolygonRadius = (0.5f * LinearSlop); // was (2.0f * LinearSlop);
 
         // Dynamics
 

@@ -1027,6 +1027,8 @@ namespace EditorBase.CamViewStates
 
 		private void LocalGLControl_Paint(object sender, PaintEventArgs e)
 		{
+			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Terminated) return;
+
 			// Retrieve OpenGL context
  			try { this.View.MainContextControl.Context.MakeCurrent(this.View.LocalGLControl.WindowInfo); } catch (Exception) { return; }
 			this.View.MakeDualityTarget();

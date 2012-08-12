@@ -314,9 +314,13 @@ namespace DualityEditor
 						if (args.IsDirectory)	ContentProvider.RenameContentTree(args.OldPath, args.Path);
 						else					ContentProvider.RenameContent(args.OldPath, args.Path);
 
-						// Buffer rename event to perform the global rename for all at once.
-						if (renameEventBuffer == null) renameEventBuffer = new List<ResourceRenamedEventArgs>();
-						renameEventBuffer.Add(args);
+						// Ignore empty directories
+						if (!args.IsDirectory || Directory.EnumerateFiles(args.Path, "*", SearchOption.AllDirectories).Any())
+						{
+							// Buffer rename event to perform the global rename for all at once.
+							if (renameEventBuffer == null) renameEventBuffer = new List<ResourceRenamedEventArgs>();
+							renameEventBuffer.Add(args);
+						}
 
 						if (ResourceRenamed != null) ResourceRenamed(null, args);
 					}
@@ -449,6 +453,15 @@ namespace DualityEditor
 				fileCounter = async_RenameContentRefs_Perform(curScene, renameData);
 				totalCounter += fileCounter;
 				if (fileCounter > 0) curScene.Save(Scene.CurrentPath);
+			}
+			// Special case: Current Scene NOT in sandbox mode, but still unsaved
+			else if (Scene.Current.IsRuntimeResource)
+			{
+				state.StateDesc = "Current Scene"; yield return null;
+				fileCounter = async_RenameContentRefs_Perform(Scene.Current, renameData);
+				if (fileCounter > 0)
+					DualityEditorApp.NotifyObjPropChanged(null, new ObjectSelection(Scene.Current.AllObjects));
+				totalCounter += fileCounter;
 			}
 
 			// Rename in actual content

@@ -443,7 +443,8 @@ namespace EditorBase.CamViewStates
 		public override void ClearSelection()
 		{
 			base.ClearSelection();
-			DualityEditorApp.Deselect(this, ObjectSelection.Category.GameObjCmp | ObjectSelection.Category.Other);
+			//DualityEditorApp.Deselect(this, ObjectSelection.Category.GameObjCmp | ObjectSelection.Category.Other);
+			DualityEditorApp.Deselect(this, ObjectSelection.Category.Other);
 		}
 		public override void DeleteObjects(IEnumerable<CamViewState.SelObj> objEnum)
 		{
@@ -540,7 +541,7 @@ namespace EditorBase.CamViewStates
 			if (e.Objects.Objects.Any(o => o is Transform || o is RigidBody || o is ShapeInfo))
 			{
 				// Applying its Prefab invalidates a Collider's ShapeInfos: Deselect them.
-				if (e.CompleteChange)
+				if (e is PrefabAppliedEventArgs)
 					DualityEditorApp.Deselect(this, ObjectSelection.Category.Other);
 				else
 				{
@@ -555,6 +556,9 @@ namespace EditorBase.CamViewStates
 		private void EditorForm_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if (e.SameObjects) return;
+			if (!e.AffectedCategories.HasFlag(ObjectSelection.Category.GameObjCmp) &&
+				!e.AffectedCategories.HasFlag(ObjectSelection.Category.Other))
+				return;
 
 			// Collider selection changed
 			if ((e.AffectedCategories & ObjectSelection.Category.GameObjCmp) != ObjectSelection.Category.None)

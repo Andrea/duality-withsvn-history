@@ -900,7 +900,8 @@ namespace DualityEditor
 		}
 		private static void Scene_Leaving(object sender, EventArgs e)
 		{
-			Deselect(null, ObjectSelection.Category.GameObjCmp);
+			if (selectionCurrent.Categories.HasFlag(ObjectSelection.Category.GameObjCmp))
+				Deselect(null, ObjectSelection.Category.GameObjCmp);
 		}
 		private static void Scene_Entered(object sender, EventArgs e)
 		{
