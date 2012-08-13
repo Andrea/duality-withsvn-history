@@ -100,7 +100,7 @@ namespace DualityEditor.Controls.TreeModels.FileSystem
 				List<BaseItem> items = new List<BaseItem>();
 				BaseItem parent = treePath.LastNode as BaseItem;
 				string path = parent != null ? parent.ItemPath : this.basePath;
-				if (!string.IsNullOrEmpty(path))
+				if (!string.IsNullOrEmpty(path) && Directory.Exists(path))
 				{
 					try
 					{

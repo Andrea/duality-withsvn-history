@@ -59,7 +59,7 @@ namespace DualityEditor.Forms
 			this.templateCurrent.SpecialTag = ProjectTemplateInfo.SpecialInfo.Current;
 
 			// Hilde folder selector, if empty
-			if (Directory.GetDirectories(this.folderModel.BasePath).Length == 0)
+			if (!Directory.Exists(this.folderModel.BasePath) || Directory.GetDirectories(this.folderModel.BasePath).Length == 0)
 			{
 				this.folderView.Enabled = false;
 				this.splitFolderTemplate.Panel1Collapsed = true;
@@ -75,7 +75,7 @@ namespace DualityEditor.Forms
 			this.imageListTemplateView.Images.Clear();
 
 			// Scan for template files
-			string[] templateFiles = Directory.GetFiles(this.selectedTemplatePath, "*.zip", SearchOption.TopDirectoryOnly);
+			string[] templateFiles = Directory.Exists(this.selectedTemplatePath) ? Directory.GetFiles(this.selectedTemplatePath, "*.zip", SearchOption.TopDirectoryOnly) : new string[0];
 			List<ProjectTemplateInfo> templateEntries = new List<ProjectTemplateInfo>();
 			foreach (string templateFile in templateFiles)
 			{
@@ -172,6 +172,8 @@ namespace DualityEditor.Forms
 				if (result == System.Windows.Forms.DialogResult.Cancel) return;
 				if (result == System.Windows.Forms.DialogResult.Yes)
 				{
+					if (!Directory.Exists(EditorHelper.GlobalProjectTemplateDirectory))
+						Directory.CreateDirectory(EditorHelper.GlobalProjectTemplateDirectory);
 					File.Copy(
 						this.selectedTemplate.FilePath, 
 						Path.Combine(EditorHelper.GlobalProjectTemplateDirectory, Path.GetFileName(this.selectedTemplate.FilePath)));
