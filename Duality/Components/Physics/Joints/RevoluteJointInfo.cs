@@ -132,7 +132,7 @@ namespace Duality.Components.Physics
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public float MotorTorque
 		{
-			get { return this.joint == null ? 0.0f : (this.joint as RevoluteJoint).MotorTorque * Time.SPFMult; }
+			get { return this.joint == null ? 0.0f : PhysicsConvert.ToDualityUnit((this.joint as RevoluteJoint).MotorTorque) * MathF.RadAngle360 * Time.SPFMult; }
 		}
 
 
@@ -150,7 +150,7 @@ namespace Duality.Components.Physics
 			j.LocalAnchorA = GetFarseerPoint(this.BodyA, this.localAnchorA);
 			j.MotorEnabled = this.motorEnabled;
 			j.MotorSpeed = -this.motorSpeed / Time.SPFMult;
-			j.MaxMotorTorque = this.maxMotorTorque / Time.SPFMult;
+			j.MaxMotorTorque = PhysicsConvert.ToPhysicalUnit(this.maxMotorTorque) / (MathF.RadAngle360 * Time.SPFMult);
 			j.LimitEnabled = this.limitEnabled;
 			j.LowerLimit = -this.upperLimit;
 			j.UpperLimit = -this.lowerLimit;

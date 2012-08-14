@@ -366,7 +366,7 @@ namespace Duality
 		/// <seealso cref="Active"/>
 		public bool ActiveSingle
 		{
-			get { return this.active && this.disposed == DisposeState.Active; }
+			get { return this.active && this.disposed != DisposeState.Disposed; }
 			set 
 			{
 				if (this.active != value)

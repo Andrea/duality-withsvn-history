@@ -991,10 +991,7 @@ namespace Duality.Components.Physics
 			if (context == ShutdownContext.Deactivate)
 				this.Shutdown();
 			else if (context == ShutdownContext.RemovingFromGameObject)
-			{
 				this.GameObj.Transform.OnTransformChanged -= this.OnTransformChanged;
-				this.Shutdown();
-			}
 			else if (context == ShutdownContext.Saving)
 				this.RemoveDisposedJoints();
 		}

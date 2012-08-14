@@ -166,12 +166,12 @@ namespace Duality.Resources
 		}
 		private static void OnRegisteredObjectComponentRemoved(ComponentEventArgs args)
 		{
-			if (RegisteredObjectComponentRemoved != null) RegisteredObjectComponentRemoved(current, args);
 			if (args.Component.Active)
 			{
 				ICmpInitializable cInit = args.Component as ICmpInitializable;
 				if (cInit != null) cInit.OnShutdown(Component.ShutdownContext.Deactivate);
 			}
+			if (RegisteredObjectComponentRemoved != null) RegisteredObjectComponentRemoved(current, args);
 		}
 
 		private	Vector2				globalGravity	= Vector2.UnitY * 33.0f;

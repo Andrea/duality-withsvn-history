@@ -319,6 +319,15 @@ namespace EditorBase
 			while (nodeTree.Nodes.Count > 0) this.InsertNodeSorted(nodeTree.Nodes[0], this.objectModel.Root);
 			this.RegisterNodeTree(this.objectModel.Root);
 			this.objectView.EndUpdate();
+
+			// If there is a selection, apply it. We lost all local selection data due to the reset.
+			if (DualityEditorApp.Selection.GameObjects.Any() || DualityEditorApp.Selection.Components.Any())
+			{
+				IEnumerable<NodeBase> selObjQuery;
+				selObjQuery = DualityEditorApp.Selection.GameObjects.Select(o => this.FindNode(o));
+				selObjQuery = selObjQuery.Concat(DualityEditorApp.Selection.Components.Select(o => this.FindNode(o)));
+				this.SelectNodes(selObjQuery, true);
+			}
 		}
 		protected void ClearObjects()
 		{

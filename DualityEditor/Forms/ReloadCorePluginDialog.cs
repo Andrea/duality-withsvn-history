@@ -205,20 +205,32 @@ namespace DualityEditor.Forms
 				if (this.workerInterface.Error != null)
 				{
 					this.progressTimer.Stop();
-
-					this.owner.SetTaskbarProgressState(Windows7Taskbar.ThumbnailProgressState.Error);
-					MessageBox.Show(this, 
-						String.Format(GeneralRes.Msg_ErrorReloadCorePlugin_Desc, "\n", Log.Exception(this.workerInterface.Error)), 
-						GeneralRes.Msg_ErrorReloadCorePlugin_Caption, 
-						MessageBoxButtons.OK, MessageBoxIcon.Error);
-
+					try
+					{
+						this.owner.SetTaskbarProgressState(Windows7Taskbar.ThumbnailProgressState.Error);
+						MessageBox.Show(this, 
+							String.Format(GeneralRes.Msg_ErrorReloadCorePlugin_Desc, "\n", Log.Exception(this.workerInterface.Error)), 
+							GeneralRes.Msg_ErrorReloadCorePlugin_Caption, 
+							MessageBoxButtons.OK, MessageBoxIcon.Error);
+					}
+					catch (Exception exception)
+					{
+						Log.Editor.WriteError("An error occured after finishing a Core plugin reload operation: {0}", Log.Exception(exception));
+					}
 					this.Close();
 				}
 				else if (this.workerInterface.Finished)
 				{
 					this.progressTimer.Stop();
-					// Re-Apply temporarily saved Scene
-					Scene.Current = this.workerInterface.TempScene;
+					try
+					{
+						// Re-Apply temporarily saved Scene
+						Scene.Current = this.workerInterface.TempScene;
+					}
+					catch (Exception exception)
+					{
+						Log.Editor.WriteError("An error occured after finishing a Core plugin reload operation: {0}", Log.Exception(exception));
+					}
 					this.Close();
 				}
 			}
