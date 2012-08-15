@@ -727,8 +727,14 @@ namespace Duality
 
 		private static Resource LoadContent(string path)
 		{
-			Resource res = Resource.LoadResource<Resource>(path);
-			if (res != null) RegisterContent(path, res);
+			// Load the Resource and register it
+			Resource res = Resource.LoadResource<Resource>(path, r => 
+			{ 
+				// Registering takes place in the callback - before initializing the Resource, because
+				// that may result in requesting more Resources and an infinite loop if two Resources request
+				// each other in their initialization code.
+				if (r != null) RegisterContent(path, r);
+			});
 			return res;
 		}
 	}

@@ -182,9 +182,16 @@ namespace FarseerPhysics.Dynamics
             Body bodyA = fixtureA.Body;
             Body bodyB = fixtureB.Body;
 
-            if (EndContact != null && contact.IsTouching())
+            if (contact.IsTouching())
             {
-                EndContact(contact);
+                //Report the separation to both participants:
+                if (bodyA != null) bodyA.OnSeparation(fixtureA, fixtureB);
+
+                //Reverse the order of the reported fixtures. The first fixture is always the one that the
+                //user subscribed to.
+                if (bodyB != null) bodyB.OnSeparation(fixtureB, fixtureA);
+
+                if (EndContact != null) EndContact(contact);
             }
 
             // Remove from the world.

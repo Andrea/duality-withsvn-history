@@ -293,15 +293,16 @@ namespace Duality
 		/// Results in returning null if the loaded Resource's Type isn't assignable to T.
 		/// </typeparam>
 		/// <param name="path">The path to load the Resource from.</param>
+		/// <param name="loadCallback">An optional callback that is invoked right after loading the Resource, but before initializing it.</param>
 		/// <returns>The Resource that has been loaded.</returns>
-		public static T LoadResource<T>(string path) where T : Resource
+		public static T LoadResource<T>(string path, Action<T> loadCallback = null) where T : Resource
 		{
 			if (!File.Exists(path)) return null;
 
 			T newContent;
 			using (FileStream str = File.OpenRead(path))
 			{
-				newContent = LoadResource<T>(str, path);
+				newContent = LoadResource<T>(str, path, loadCallback);
 			}
 			return newContent;
 		}
@@ -315,8 +316,9 @@ namespace Duality
 		/// </typeparam>
 		/// <param name="str">The stream to load the Resource from.</param>
 		/// <param name="resPath">The path that is assumed as the loaded Resource's origin.</param>
+		/// <param name="loadCallback">An optional callback that is invoked right after loading the Resource, but before initializing it.</param>
 		/// <returns>The Resource that has been loaded.</returns>
-		public static T LoadResource<T>(Stream str, string resPath = null) where T : Resource
+		public static T LoadResource<T>(Stream str, string resPath = null, Action<T> loadCallback = null) where T : Resource
 		{
 			Log.Core.Write("Loading Ressource '{0}'...", resPath);
 			Log.Core.PushIndent();
@@ -332,6 +334,7 @@ namespace Duality
 				if (res == null) throw new ApplicationException("Loading Resource failed");
 
 				res.path = resPath;
+				if (loadCallback != null) loadCallback(res as T); // Callback before initializing.
 				res.OnLoaded();
 				newContent = res as T;
 			}

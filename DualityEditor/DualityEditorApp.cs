@@ -84,7 +84,7 @@ namespace DualityEditor
 		}
 		public static IEnumerable<Resource> UnsavedResources
 		{
-			get { return unsavedResources.Where(r => !r.Disposed && !r.IsDefaultContent && !string.IsNullOrEmpty(r.Path)); }
+			get { return unsavedResources.Where(r => !r.Disposed && !r.IsDefaultContent && !r.IsRuntimeResource && (r != Scene.Current || !Sandbox.IsActive)); }
 		}
 		private static bool AppStillIdle
 		{
@@ -474,10 +474,7 @@ namespace DualityEditor
 		public static void SaveResources()
 		{
 			foreach (Resource res in UnsavedResources.ToArray()) // The Property does some safety checks
-			{
-				if (res == Scene.Current && Sandbox.IsActive) continue;
 				res.Save();
-			}
 			unsavedResources.Clear();
 		}
 		public static void FlagResourceUnsaved(IEnumerable<Resource> res)

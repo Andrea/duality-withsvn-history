@@ -253,6 +253,7 @@ namespace EditorBase
 			// Register DualityApp updater for camera steering behaviour
 			FileEventManager.ResourceModified += this.EditorForm_ResourceModified;
 			DualityEditorApp.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
+			Scene.Entered += this.Scene_Entered;
 			Scene.Leaving += this.Scene_Leaving;
 			Scene.GameObjectUnregistered += this.Scene_GameObjectUnregistered;
 			Scene.RegisteredObjectComponentRemoved += this.Scene_RegisteredObjectComponentRemoved;
@@ -794,7 +795,11 @@ namespace EditorBase
 		{
 			this.glControl.Invalidate();
 		}
-
+		
+		private void Scene_Entered(object sender, EventArgs e)
+		{
+			this.glControl.Invalidate();
+		}
 		private void Scene_Leaving(object sender, EventArgs e)
 		{
 			if (!this.camInternal) this.SetCurrentCamera(null);

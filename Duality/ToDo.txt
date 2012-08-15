@@ -18,6 +18,10 @@
 
 
 
+-->	Bug: Texture IDs scrambled when starting the editor (dual CamView) and moving the cursor around, then entering FirstLevel
+	(No Resource loads triggered before)
+
+
 -->	Example Project: Super Mario style platformer
 	-->	Tile-based
 	-->	Will need something to edit tilemaps and probably a distinct Tileset Resource

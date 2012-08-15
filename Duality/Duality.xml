@@ -3346,7 +3346,7 @@
             </summary>
             <returns>A <see cref="T:Duality.ContentRef`1"/> referring to this Resource.</returns>
         </member>
-        <member name="M:Duality.Resource.LoadResource``1(System.String)">
+        <member name="M:Duality.Resource.LoadResource``1(System.String,System.Action{``0})">
             <summary>
             Loads the Resource that is located at the specified path. You usually don't need this method. 
             Consider requesting the Resource from the <see cref="T:Duality.ContentProvider"/> instead.
@@ -3356,9 +3356,10 @@
             Results in returning null if the loaded Resource's Type isn't assignable to T.
             </typeparam>
             <param name="path">The path to load the Resource from.</param>
+            <param name="loadCallback">An optional callback that is invoked right after loading the Resource, but before initializing it.</param>
             <returns>The Resource that has been loaded.</returns>
         </member>
-        <member name="M:Duality.Resource.LoadResource``1(System.IO.Stream,System.String)">
+        <member name="M:Duality.Resource.LoadResource``1(System.IO.Stream,System.String,System.Action{``0})">
             <summary>
             Loads the Resource from the specified <see cref="T:System.IO.Stream"/>. You usually don't need this method. 
             Consider requesting the Resource from the <see cref="T:Duality.ContentProvider"/> instead.
@@ -3369,6 +3370,7 @@
             </typeparam>
             <param name="str">The stream to load the Resource from.</param>
             <param name="resPath">The path that is assumed as the loaded Resource's origin.</param>
+            <param name="loadCallback">An optional callback that is invoked right after loading the Resource, but before initializing it.</param>
             <returns>The Resource that has been loaded.</returns>
         </member>
         <member name="M:Duality.Resource.IsResourceFile(System.String)">
