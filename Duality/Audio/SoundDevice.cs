@@ -149,7 +149,7 @@ namespace Duality
 			while (true)
 			{
 				int newSrc = AL.GenSource();
-				if (!this.CheckErrors(true))
+				if (!DualityApp.CheckOpenALErrors(true))
 					this.alSourcePool.Push(newSrc);
 				else
 					break;
@@ -266,8 +266,6 @@ namespace Duality
 				this.sounds[i].Update();
 				if (this.sounds[i].Disposed) this.sounds.RemoveAt(i);
 			}
-			this.CheckErrors();
-
 			this.sounds.Sort((obj1, obj2) => obj2.Priority - obj1.Priority);
 
 			Performance.timeUpdateAudio.EndMeasure();
@@ -353,30 +351,6 @@ namespace Duality
 			AL.DistanceModel(ALDistanceModel.LinearDistanceClamped);
 			AL.DopplerFactor(DualityApp.AppData.SoundDopplerFactor);
 			AL.SpeedOfSound(DualityApp.AppData.SpeedOfSound);
-		}
-
-		/// <summary>
-		/// Checks for errors that might have occured during audio processing.
-		/// </summary>
-		/// <param name="silent">If true, errors aren't logged.</param>
-		/// <returns>True, if an error occured, false if not.</returns>
-		public bool CheckErrors(bool silent = false)
-		{
-			ALError error;
-			bool found = false;
-			while ((error = AL.GetError()) != ALError.NoError)
-			{
-				if (!silent)
-				{
-					Log.Core.WriteError(
-						"Internal OpenAL error, code {0} at {1}", 
-						error,
-						Log.CurrentMethod(1));
-				}
-				found = true;
-			}
-			if (found && !silent && System.Diagnostics.Debugger.IsAttached) System.Diagnostics.Debugger.Break();
-			return found;
 		}
 	}
 }

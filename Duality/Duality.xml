@@ -281,6 +281,20 @@
             </code>
             </example>
         </member>
+        <member name="M:Duality.DualityApp.CheckOpenALErrors(System.Boolean)">
+            <summary>
+            Checks for errors that might have occured during audio processing.
+            </summary>
+            <param name="silent">If true, errors aren't logged.</param>
+            <returns>True, if an error occured, false if not.</returns>
+        </member>
+        <member name="M:Duality.DualityApp.CheckOpenGLErrors(System.Boolean)">
+            <summary>
+            Checks for errors that might have occured during video processing.
+            </summary>
+            <param name="silent">If true, errors aren't logged.</param>
+            <returns>True, if an error occured, false if not.</returns>
+        </member>
         <member name="E:Duality.DualityApp.UserDataChanged">
             <summary>
             Called when the games UserData changes
@@ -3162,13 +3176,6 @@
             <param name="attachTo">The GameObject to which the sound will be attached.</param>
             <param name="relativePos">The position of the sound relative to the GameObject.</param>
             <returns>A new SoundInstance representing the currentply playing sound.</returns>
-        </member>
-        <member name="M:Duality.SoundDevice.CheckErrors(System.Boolean)">
-            <summary>
-            Checks for errors that might have occured during audio processing.
-            </summary>
-            <param name="silent">If true, errors aren't logged.</param>
-            <returns>True, if an error occured, false if not.</returns>
         </member>
         <member name="P:Duality.SoundDevice.Context">
             <summary>

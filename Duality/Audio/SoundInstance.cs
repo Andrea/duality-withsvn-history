@@ -714,7 +714,7 @@ namespace Duality
 				lock (sndInst.strLock)
 				{
 					if (sndInst.Disposed) return;
-					DualityApp.Sound.CheckErrors();
+					DualityApp.CheckOpenALErrors();
 
 					ALSourceState stateTemp = ALSourceState.Stopped;
 					if (sndInst.alSource > AlSource_NotAvailable) stateTemp = AL.GetSourceState(sndInst.alSource);
@@ -814,7 +814,7 @@ namespace Duality
 						// If the source stopped unintentionally, restart it. (See above)
 						AL.SourcePlay(sndInst.alSource);
 					}
-					DualityApp.Sound.CheckErrors();
+					DualityApp.CheckOpenALErrors();
 				}
 				Thread.Sleep(8);
 			}

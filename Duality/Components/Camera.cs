@@ -876,11 +876,13 @@ namespace Duality.Components
 		{
 			if (this.pickingLast == Time.FrameCount) return false;
 			this.pickingLast = Time.FrameCount;
+			DualityApp.CheckOpenGLErrors();
 
 			// Render picking map
 			this.picking = 1;
 			this.Render();
 			GL.Finish();
+			DualityApp.CheckOpenGLErrors();
 			this.picking = 0;
 
 			// Move data to local buffer
@@ -889,12 +891,15 @@ namespace Duality.Components
 			if (pxByteNum > this.pickingBuffer.Length) Array.Resize(ref this.pickingBuffer, Math.Max(this.pickingBuffer.Length * 2, pxByteNum));
 
 			ContentRef<RenderTarget> lastTex = RenderTarget.BoundRT;
+			int lastReadBuffer;
+			GL.GetInteger(GetPName.ReadBuffer, out lastReadBuffer);
 			RenderTarget.Bind(this.pickingRT);
 			GL.ReadBuffer(ReadBufferMode.ColorAttachment0);
 			GL.ReadPixels(0, 0, this.pickingTex.PxWidth, this.pickingTex.PxHeight, PixelFormat.Rgba, PixelType.UnsignedByte, this.pickingBuffer);
-			GL.ReadBuffer(ReadBufferMode.Back);
 			RenderTarget.Bind(lastTex);
+			GL.ReadBuffer((ReadBufferMode)lastReadBuffer);
 
+			DualityApp.CheckOpenGLErrors();
 			return true;
 		}
 		/// <summary>

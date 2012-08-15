@@ -604,7 +604,11 @@ namespace Duality.Resources
 		/// <param name="sizeMode">Specifies behaviour in case the source data has non-power-of-two dimensions.</param>
 		public void LoadData(ContentRef<Pixmap> basePixmap, SizeMode sizeMode)
 		{
-			if (this.glTexId == 0) this.glTexId = GL.GenTexture();
+			if (this.glTexId == 0)
+			{
+				this.glTexId = GL.GenTexture();
+				Log.Core.Write("Load {0}: {1}", this.basePixmap.Name, this.glTexId);
+			}
 			this.needsReload = false;
 			this.basePixmap = basePixmap;
 			this.oglSizeMode = sizeMode;
@@ -744,7 +748,11 @@ namespace Duality.Resources
 		/// </summary>
 		protected void SetupOpenGLRes()
 		{
-			if (this.glTexId == 0) this.glTexId = GL.GenTexture();
+			if (this.glTexId == 0)
+			{
+				this.glTexId = GL.GenTexture();
+				Log.Core.Write("Setup {0}: {1}", this.basePixmap.Name, this.glTexId);
+			}
 
 			int lastTexId;
 			GL.GetInteger(GetPName.TextureBinding2D, out lastTexId);
@@ -778,6 +786,7 @@ namespace Duality.Resources
 			if (DualityApp.ExecContext != DualityApp.ExecutionContext.Terminated &&
 				this.glTexId != 0)
 			{
+				Log.Core.Write("Delete {0}: {1}", this.basePixmap.Name, this.glTexId);
 				GL.DeleteTexture(this.glTexId);
 				this.glTexId = 0;
 			}

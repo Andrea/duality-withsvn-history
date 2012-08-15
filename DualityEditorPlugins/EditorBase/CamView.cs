@@ -592,9 +592,12 @@ namespace EditorBase
 			x = MathF.Clamp(x, 0, this.glControl.Width - 1);
 			y = MathF.Clamp(y, 0, this.glControl.Height - 1);
 
+			DualityApp.CheckOpenGLErrors();
 			this.MainContextControl.Context.MakeCurrent(this.glControl.WindowInfo);
 			this.MakeDualityTarget();
-			return this.camComp.PickRendererAt(x, y);
+			var result = this.camComp.PickRendererAt(x, y);
+			DualityApp.CheckOpenGLErrors();
+			return result;
 		}
 		public HashSet<ICmpRenderer> PickRenderersIn(int x, int y, int w, int h)
 		{
@@ -603,9 +606,12 @@ namespace EditorBase
 			w = MathF.Clamp(w, 1, this.glControl.Width - x);
 			h = MathF.Clamp(h, 1, this.glControl.Height - y);
 
+			DualityApp.CheckOpenGLErrors();
 			this.MainContextControl.Context.MakeCurrent(this.glControl.WindowInfo);
 			this.MakeDualityTarget();
-			return this.camComp.PickRenderersIn(x, y, w, h);
+			var result = this.camComp.PickRenderersIn(x, y, w, h);
+			DualityApp.CheckOpenGLErrors();
+			return result;
 		}
 		public float GetScaleAtZ(float z)
 		{

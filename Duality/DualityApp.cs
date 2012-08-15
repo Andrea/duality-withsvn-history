@@ -6,6 +6,8 @@ using System.IO;
 
 using OpenTK;
 using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL;
+using OpenTK.Audio.OpenAL;
 
 using DW.RtfWriter;
 
@@ -426,6 +428,8 @@ namespace Duality
 			Scene.Current.Update();
 			sound.Update();
 			OnAfterUpdate();
+			CheckOpenALErrors();
+			CheckOpenGLErrors();
 			RunCleanup();
 
 			Performance.timeUpdate.EndMeasure();
@@ -487,6 +491,8 @@ namespace Duality
 			}
 			sound.Update();
 			OnAfterUpdate();
+			CheckOpenALErrors();
+			CheckOpenGLErrors();
 			RunCleanup();
 
 			Performance.timeUpdate.EndMeasure();
@@ -867,6 +873,54 @@ namespace Duality
 		private static void CurrentDomain_AssemblyLoad(object sender, AssemblyLoadEventArgs args)
 		{
 			Log.Core.Write("Assembly loaded: {0}", args.LoadedAssembly.FullName.Split(',')[0]);
+		}
+		
+
+		/// <summary>
+		/// Checks for errors that might have occured during audio processing.
+		/// </summary>
+		/// <param name="silent">If true, errors aren't logged.</param>
+		/// <returns>True, if an error occured, false if not.</returns>
+		public static bool CheckOpenALErrors(bool silent = false)
+		{
+			ALError error;
+			bool found = false;
+			while ((error = AL.GetError()) != ALError.NoError)
+			{
+				if (!silent)
+				{
+					Log.Core.WriteError(
+						"Internal OpenAL error, code {0} at {1}", 
+						error,
+						Log.CurrentMethod(1));
+				}
+				found = true;
+			}
+			if (found && !silent && System.Diagnostics.Debugger.IsAttached) System.Diagnostics.Debugger.Break();
+			return found;
+		}
+		/// <summary>
+		/// Checks for errors that might have occured during video processing.
+		/// </summary>
+		/// <param name="silent">If true, errors aren't logged.</param>
+		/// <returns>True, if an error occured, false if not.</returns>
+		public static bool CheckOpenGLErrors(bool silent = false)
+		{
+			ErrorCode error;
+			bool found = false;
+			while ((error = GL.GetError()) != ErrorCode.NoError)
+			{
+				if (!silent)
+				{
+					Log.Core.WriteError(
+						"Internal OpenGL error, code {0} at {1}", 
+						error,
+						Log.CurrentMethod(1));
+				}
+				found = true;
+			}
+			if (found && !silent && System.Diagnostics.Debugger.IsAttached) System.Diagnostics.Debugger.Break();
+			return found;
 		}
 	}
 
