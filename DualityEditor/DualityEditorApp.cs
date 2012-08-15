@@ -47,6 +47,7 @@ namespace DualityEditor
 		private	static ObjectSelection				selectionCurrent	= ObjectSelection.Null;
 		private	static ObjectSelection				selectionPrevious	= ObjectSelection.Null;
 		private	static bool							selectionChanging	= false;
+		private	static ObjectSelection				selectionTempScene	= ObjectSelection.Null;	// GameObjCmp sel inbetween scene switches
 
 
 		public	static	event	EventHandler	Terminating			= null;
@@ -901,13 +902,14 @@ namespace DualityEditor
 		private static void Scene_Leaving(object sender, EventArgs e)
 		{
 			if (selectionCurrent.Categories.HasFlag(ObjectSelection.Category.GameObjCmp))
-				Deselect(null, ObjectSelection.Category.GameObjCmp);
+				selectionTempScene = selectionCurrent.Exclusive(ObjectSelection.Category.GameObjCmp);
+			Deselect(null, ObjectSelection.Category.GameObjCmp);
 		}
 		private static void Scene_Entered(object sender, EventArgs e)
 		{
 			// Try to restore last GameObject / Component selection
-			var objQuery = selectionPrevious.GameObjects.Select(g => Scene.Current.AllObjects.FirstOrDefault(sg => sg.FullName == g.FullName)).NotNull();
-			var cmpQuery = selectionPrevious.Components.Select(delegate (Component c)
+			var objQuery = selectionTempScene.GameObjects.Select(g => Scene.Current.AllObjects.FirstOrDefault(sg => sg.FullName == g.FullName)).NotNull();
+			var cmpQuery = selectionTempScene.Components.Select(delegate (Component c)
 			{
 				GameObject cmpObj = Scene.Current.AllObjects.FirstOrDefault(sg => sg.FullName == c.GameObj.FullName);
 				if (cmpObj == null) return null;

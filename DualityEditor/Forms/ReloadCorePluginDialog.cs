@@ -303,7 +303,11 @@ namespace DualityEditor.Forms
 					try
 					{
 						Scene.Current.Save(strScene);
-						ContentProvider.UnregisterPluginContent();
+						foreach (Resource r in ContentProvider.EnumeratePluginContent().ToArray())
+						{
+							if (DualityEditorApp.IsResourceUnsaved(r)) r.Save();
+							ContentProvider.UnregisterContent(r.Path);
+						}
 					}
 					catch (Exception e)
 					{

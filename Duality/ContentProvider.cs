@@ -637,13 +637,9 @@ namespace Duality
 			foreach (IContentRef content in affectedContent)
 				UnregisterContent(content.Path, dispose);
 		}
-		internal static void UnregisterPluginContent(bool dispose = true)
+		internal static IEnumerable<Resource> EnumeratePluginContent()
 		{
-			foreach (Resource res in resLibrary.Values.ToArray())
-			{
-				if (res is Prefab || res.GetType().Assembly != typeof(ContentProvider).Assembly)
-					UnregisterContent(res.Path, dispose);
-			}
+			return resLibrary.Values.Where(res => res is Prefab || res.GetType().Assembly != typeof(ContentProvider).Assembly);
 		}
 
 		/// <summary>
