@@ -56,7 +56,7 @@ namespace Duality.Components.Physics
 		private	Category	colWith			= Category.All;
 		private	List<ShapeInfo>	shapes		= null;
 		private	List<JointInfo>	joints		= null;
-		[NonSerialized]	private	bool			initialized		= false;
+		[NonSerialized]	private	InitState		bodyInitState	= InitState.Disposed;
 		[NonSerialized]	private	bool			schedUpdateBody	= false;
 		[NonSerialized]	private	bool			isUpdatingBody	= false;
 		[NonSerialized]	private	Body			body			= null;
@@ -786,15 +786,15 @@ namespace Duality.Components.Physics
 		private void CleanupBody()
 		{
 			if (this.body == null) return;
-
-			this.body.Collision -= this.body_OnCollision;
-			this.body.Separation -= this.body_OnSeparation;
-			this.body.PostSolve -= this.body_PostSolve;
 			
 			if (this.shapes != null)
 			{
 				foreach (ShapeInfo info in this.shapes) info.DestroyFixture(this.body);
 			}
+			
+			this.body.Collision -= this.body_OnCollision;
+			this.body.Separation -= this.body_OnSeparation;
+			this.body.PostSolve -= this.body_PostSolve;
 
 			this.body.Dispose();
 			this.body = null;
@@ -857,7 +857,8 @@ namespace Duality.Components.Physics
 
 		private void Initialize()
 		{
-			if (this.initialized) return;
+			if (this.bodyInitState != InitState.Disposed) return;
+			this.bodyInitState = InitState.Initializing;
 
 			this.InitBody();
 			// Initialize joints
@@ -866,26 +867,35 @@ namespace Duality.Components.Physics
 				foreach (JointInfo info in this.joints) info.UpdateJoint();
 			}
 
-			this.initialized = true;
+			this.bodyInitState = InitState.Initialized;
 		}
 		private void Shutdown()
 		{
-			if (!this.initialized) return;
+			if (this.bodyInitState != InitState.Initialized) return;
+			this.bodyInitState = InitState.Disposing;
 			
 			this.CleanupJoints();
 			this.CleanupBody();
 
-			this.initialized = false;
+			this.bodyInitState = InitState.Disposed;
 		}
 
 		private bool body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
 		{
-			this.eventBuffer.Add(new ColEvent(ColEvent.EventType.Collision, fixtureA, fixtureB, null));
+			ColEvent e = new ColEvent(ColEvent.EventType.Collision, fixtureA, fixtureB, null);
+			if (this.bodyInitState == InitState.Disposing)
+				this.ProcessSingleCollisionEvent(e);
+			else
+				this.eventBuffer.Add(e);
 			return true;
 		}
 		private void body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
 		{
-			this.eventBuffer.Add(new ColEvent(ColEvent.EventType.Separation, fixtureA, fixtureB, null));
+			ColEvent e = new ColEvent(ColEvent.EventType.Separation, fixtureA, fixtureB, null);
+			if (this.bodyInitState == InitState.Disposing)
+				this.ProcessSingleCollisionEvent(e);
+			else
+				this.eventBuffer.Add(e);
 		}
         private void body_PostSolve(Contact contact, ContactConstraint impulse)
         {
@@ -902,6 +912,31 @@ namespace Duality.Components.Physics
 				}
             }
         }
+		private void ProcessCollisionEvents()
+		{
+			foreach (ColEvent e in this.eventBuffer)
+				this.ProcessSingleCollisionEvent(e);
+			this.eventBuffer.Clear();
+		}
+		private void ProcessSingleCollisionEvent(ColEvent colEvent)
+		{
+			// Ignore disposed fixtures / bodies
+			if (colEvent.FixtureA.Body == null) return;
+			if (colEvent.FixtureB.Body == null) return;
+
+			RigidBodyCollisionEventArgs args = new RigidBodyCollisionEventArgs(
+				(colEvent.FixtureB.Body.UserData as RigidBody).GameObj,
+				colEvent.Data,
+				colEvent.FixtureA.UserData as ShapeInfo,
+				colEvent.FixtureB.UserData as ShapeInfo);
+
+			if (colEvent.Type == ColEvent.EventType.Collision)
+				this.gameobj.NotifyCollisionBegin(this, args);
+			else if (colEvent.Type == ColEvent.EventType.Separation)
+				this.gameobj.NotifyCollisionEnd(this, args);
+			else if (colEvent.Type == ColEvent.EventType.PostSolve)
+				this.gameobj.NotifyCollisionSolve(this, args);
+		}
 		
 		void ICmpUpdatable.OnUpdate()
 		{
@@ -934,26 +969,7 @@ namespace Duality.Components.Physics
 			}
 
 			// Process events
-			foreach (ColEvent e in this.eventBuffer)
-			{
-				// Ignore disposed fixtures / bodies
-				if (e.FixtureA.Body == null) continue;
-				if (e.FixtureB.Body == null) continue;
-
-				RigidBodyCollisionEventArgs args = new RigidBodyCollisionEventArgs(
-					(e.FixtureB.Body.UserData as RigidBody).GameObj,
-					e.Data,
-					e.FixtureA.UserData as ShapeInfo,
-					e.FixtureB.UserData as ShapeInfo);
-
-				if (e.Type == ColEvent.EventType.Collision)
-					this.gameobj.NotifyCollisionBegin(this, args);
-				else if (e.Type == ColEvent.EventType.Separation)
-					this.gameobj.NotifyCollisionEnd(this, args);
-				else if (e.Type == ColEvent.EventType.PostSolve)
-					this.gameobj.NotifyCollisionSolve(this, args);
-			}
-			this.eventBuffer.Clear();
+			this.ProcessCollisionEvents();
 		}
 		void ICmpEditorUpdatable.OnUpdate()
 		{
@@ -1001,7 +1017,7 @@ namespace Duality.Components.Physics
 			base.CopyToInternal(target, provider);
 			RigidBody c = target as RigidBody;
 
-			bool wasInitialized = c.initialized;
+			bool wasInitialized = c.bodyInitState == InitState.Initialized;
 			if (wasInitialized) c.Shutdown();
 
 			// Reset shape and joint data before applying new

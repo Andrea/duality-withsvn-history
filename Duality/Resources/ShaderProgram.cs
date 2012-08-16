@@ -194,6 +194,8 @@ namespace Duality.Resources
 		/// <param name="f"></param>
 		public void AttachShaders(ContentRef<VertexShader> v, ContentRef<FragmentShader> f)
 		{
+			DualityApp.GuardSingleThreadState();
+
 			if (this.glProgramId == 0)	this.glProgramId = GL.CreateProgram();
 			else						this.DetachShaders();
 
@@ -221,6 +223,8 @@ namespace Duality.Resources
 		/// </summary>
 		public void Compile()
 		{
+			DualityApp.GuardSingleThreadState();
+
 			if (this.glProgramId == 0) return;
 			if (this.compiled) return;
 

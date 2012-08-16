@@ -293,6 +293,8 @@ namespace Duality.Resources
 		/// </summary>
 		public void Compile()
 		{
+			DualityApp.GuardSingleThreadState();
+
 			if (this.compiled) return;
 			if (String.IsNullOrEmpty(this.source)) return;
 			if (this.glShaderId == 0) this.glShaderId = GL.CreateShader(this.OglShaderType);
@@ -368,11 +370,13 @@ namespace Duality.Resources
 		
 		internal void AttachTo(int glProgId)
 		{
+			DualityApp.GuardSingleThreadState();
 			if (!this.compiled) this.Compile();
 			GL.AttachShader(glProgId, this.glShaderId);
 		}
 		internal void DetachFrom(int glProgId)
 		{
+			DualityApp.GuardSingleThreadState();
 			GL.DetachShader(glProgId, this.glShaderId);
 		}
 

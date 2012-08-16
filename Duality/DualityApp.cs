@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.IO;
+using System.Threading;
 
 using OpenTK;
 using OpenTK.Graphics;
@@ -65,6 +66,7 @@ namespace Duality
 			Editor
 		}
 
+		private	static	Thread					mainThread			= null;
 		private	static	bool					initialized			= false;
 		private	static	bool					isUpdating			= false;
 		private	static	bool					runFromEditor		= false;
@@ -283,6 +285,9 @@ namespace Duality
 		public static void Init(ExecutionEnvironment env = ExecutionEnvironment.Unknown, ExecutionContext context = ExecutionContext.Unknown, string[] args = null)
 		{
 			if (initialized) return;
+
+			// Set main thread
+			mainThread = Thread.CurrentThread;
 
 			// Process command line options
 			if (args != null)
@@ -922,6 +927,29 @@ namespace Duality
 			if (found && !silent && System.Diagnostics.Debugger.IsAttached) System.Diagnostics.Debugger.Break();
 			return found;
 		}
+
+		/// <summary>
+		/// Guards the calling method agains being called from a thread that is not the main thread.
+		/// Use this only at critical code segments that are likely to be called from somewhere else than the main thread
+		/// but aren't allowed to.
+		/// </summary>
+		/// <param name="silent"></param>
+		/// <returns>True if everyhing is allright. False if the guarded state has been violated.</returns>
+		[System.Diagnostics.DebuggerStepThrough]
+		public static bool GuardSingleThreadState(bool silent = false)
+		{
+			if (Thread.CurrentThread != mainThread)
+			{
+				if (!silent)
+				{
+					Log.Core.WriteError(
+						"Method {0} isn't allowed to be called from a Thread that is not the main Thread.", 
+						Log.CurrentMethod(1));
+				}
+				return false;
+			}
+			return true;
+		}
 	}
 
 	/// <summary>
@@ -939,6 +967,7 @@ namespace Duality
 		private	float				soundDopplerFactor	= 1.0f;
 		private	float				physicsVelThreshold	= PhysicsConvert.ToDualityUnit(0.5f * Time.SPFMult);
 		private	bool				physicsFixedTime	= true;
+		private	object				customData			= null;
 
 		/// <summary>
 		/// [GET / SET] The name of your application / game. It will also be used as a window title by the launcher app.
@@ -1016,6 +1045,14 @@ namespace Duality
 			get { return this.physicsFixedTime; }
 			set { this.physicsFixedTime = value; }
 		}
+		/// <summary>
+		/// [GET / SET] Use this property to store custom application data.
+		/// </summary>
+		public object CustomData
+		{
+			get { return this.customData; }
+			set { this.customData = value; }
+		}
 	}
 
 	/// <summary>
@@ -1033,6 +1070,7 @@ namespace Duality
 		private	float	sfxSpeechVol	= 1.0f;
 		private	float	sfxMusicVol		= 1.0f;
 		private	float	sfxMasterVol	= 1.0f;
+		private	object	customData		= null;
 
 		/// <summary>
 		/// [GET / SET] The player's name. This may be his main character's name or simply remain unused.
@@ -1099,6 +1137,14 @@ namespace Duality
 		{
 			get { return this.sfxMasterVol; }
 			set { this.sfxMasterVol = value; }
+		}
+		/// <summary>
+		/// [GET / SET] Use this property to store custom user data.
+		/// </summary>
+		public object CustomData
+		{
+			get { return this.customData; }
+			set { this.customData = value; }
 		}
 	}
 

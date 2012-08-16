@@ -209,6 +209,7 @@ namespace DualityEditor
 
 				// Terminate Duality
 				DualityEditorApp.SaveUserData();
+				DualityApp.SaveAppData();
 				DualityApp.Terminate();
 			}
 
@@ -463,19 +464,31 @@ namespace DualityEditor
 		public static void SaveCurrentScene(bool skipYetUnsaved = true)
 		{
 			if (!String.IsNullOrEmpty(Scene.Current.Path))
-				Scene.Current.Save();
+			{
+				if (IsResourceUnsaved(Scene.Current))
+				{
+					Scene.Current.Save();
+					DualityApp.AppData.Version++;
+				}
+			}
 			else if (!skipYetUnsaved)
 			{
 				string basePath = Path.Combine(EditorHelper.DataDirectory, "Scene");
 				string path = PathHelper.GetFreePath(basePath, Scene.FileExt);
 				Scene.Current.Save(path);
+				DualityApp.AppData.Version++;
 			}
 		}
 		public static void SaveResources()
 		{
+			bool anySaved = false;
 			foreach (Resource res in UnsavedResources.ToArray()) // The Property does some safety checks
+			{
 				res.Save();
+				anySaved = true;
+			}
 			unsavedResources.Clear();
+			if (anySaved) DualityApp.AppData.Version++;
 		}
 		public static void FlagResourceUnsaved(IEnumerable<Resource> res)
 		{
@@ -952,6 +965,7 @@ namespace DualityEditor
 			if (!corePluginReloader.ReloadSchedule.Contains(pluginStr))
 				corePluginReloader.ReloadSchedule.Add(pluginStr);
 			corePluginReloader.State = ReloadCorePluginDialog.ReloaderState.WaitForPlugins;
+			DualityApp.AppData.Version++;
 		}
 	}
 }

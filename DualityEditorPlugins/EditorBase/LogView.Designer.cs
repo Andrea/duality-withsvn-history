@@ -28,6 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LogView));
 			this.nodeStateIcon = new Aga.Controls.Tree.NodeControls.NodeStateIcon();
 			this.nodeTextBoxName = new Aga.Controls.Tree.NodeControls.NodeTextBox();
@@ -43,6 +44,7 @@
 			this.buttonGame = new System.Windows.Forms.ToolStripButton();
 			this.actionClear = new System.Windows.Forms.ToolStripSplitButton();
 			this.checkAutoClear = new System.Windows.Forms.ToolStripMenuItem();
+			this.updateTimer = new System.Windows.Forms.Timer(this.components);
 			this.toolStrip.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -210,6 +212,10 @@
 			this.checkAutoClear.Size = new System.Drawing.Size(174, 22);
 			this.checkAutoClear.Text = "Auto-Clear on Play";
 			// 
+			// updateTimer
+			// 
+			this.updateTimer.Tick += new System.EventHandler(this.updateTimer_Tick);
+			// 
 			// LogView
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -246,5 +252,6 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 		private System.Windows.Forms.ToolStripSplitButton actionClear;
 		private System.Windows.Forms.ToolStripMenuItem checkAutoClear;
+		private System.Windows.Forms.Timer updateTimer;
 	}
 }

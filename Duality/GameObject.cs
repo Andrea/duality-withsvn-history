@@ -29,7 +29,7 @@ namespace Duality
 		private		List<Component>				compList	= new List<Component>();
 		private		string						name		= string.Format("obj{0}", MathF.Rnd.Next());
 		private		bool						active		= true;
-		private		DisposeState				disposed	= DisposeState.Active;
+		private		InitState					initState	= InitState.Initialized;
 
 		// Built-in heavily used component lookup
 		private	Components.Transform		compTransform	= null;
@@ -79,7 +79,7 @@ namespace Duality
 		/// <seealso cref="Active"/>
 		public bool ActiveSingle
 		{
-			get { return this.active && this.disposed != DisposeState.Disposed; }
+			get { return this.active && this.initState.IsActive(); }
 			set 
 			{ 
 				if (this.active != value)
@@ -223,7 +223,7 @@ namespace Duality
 		/// </summary>
 		public bool Disposed
 		{
-			get { return this.disposed == DisposeState.Disposed; }
+			get { return this.initState == InitState.Disposed; }
 		}							//	G
 
 		/// <summary>
@@ -668,9 +668,9 @@ namespace Duality
 		/// <seealso cref="DisposeLater"/>
 		public void Dispose()
 		{
-			if (this.disposed == DisposeState.Active)
+			if (this.initState == InitState.Initialized)
 			{
-				this.disposed = DisposeState.Disposing;
+				this.initState = InitState.Disposing;
 
 				// Delete Components
 				for (int i = this.compList.Count - 1; i >= 0; i--) this.compList[i].Dispose();
@@ -679,7 +679,7 @@ namespace Duality
 				// Remove from parent
 				if (this.parent != null) this.Parent = null;
 
-				this.disposed = DisposeState.Disposed;
+				this.initState = InitState.Disposed;
 			}
 		}
 		/// <summary>
@@ -720,7 +720,7 @@ namespace Duality
 			// Copy "pure" data
 			target.name			= this.name;
 			target.active		= this.active;
-			target.disposed		= this.disposed;
+			target.initState		= this.initState;
 
 			// Prepass: Create & Register all necessary GameObjects and Components
 			this.PrepassCopyData(target, provider);

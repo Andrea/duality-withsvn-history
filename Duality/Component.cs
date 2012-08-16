@@ -344,7 +344,7 @@ namespace Duality
 
 
 		internal	GameObject		gameobj		= null;
-		private		DisposeState	disposed	= DisposeState.Active;
+		private		InitState		initState	= InitState.Initialized;
 		private		bool			active		= true;
 
 		
@@ -366,7 +366,7 @@ namespace Duality
 		/// <seealso cref="Active"/>
 		public bool ActiveSingle
 		{
-			get { return this.active && this.disposed != DisposeState.Disposed; }
+			get { return this.active && this.initState.IsActive(); }
 			set 
 			{
 				if (this.active != value)
@@ -392,7 +392,7 @@ namespace Duality
 		/// </summary>
 		public bool Disposed
 		{
-			get { return this.disposed == DisposeState.Disposed; }
+			get { return this.initState == InitState.Disposed; }
 		}
 		/// <summary>
 		/// [GET / SET] The <see cref="GameObject"/> to which this Component belongs.
@@ -414,14 +414,14 @@ namespace Duality
 		/// <seealso cref="DisposeLater"/>
 		public void Dispose()
 		{
-			if (this.disposed == DisposeState.Active)
+			if (this.initState == InitState.Initialized)
 			{
-				this.disposed = DisposeState.Disposing;
+				this.initState = InitState.Disposing;
 
 				// Remove from GameObject
 				if (this.gameobj != null) this.gameobj.RemoveComponent(this);
 
-				this.disposed = DisposeState.Disposed;
+				this.initState = InitState.Disposed;
 			}
 		}
 		/// <summary>
@@ -460,7 +460,7 @@ namespace Duality
 		{
 			// Copy "pure" data
 			target.active	= this.active;
-			target.disposed	= this.disposed;
+			target.initState	= this.initState;
 		}
 		/// <summary>
 		/// This method Performs the <see cref="CopyTo"/> operation for custom Component Types.

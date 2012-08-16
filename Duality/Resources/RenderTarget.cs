@@ -259,6 +259,8 @@ namespace Duality.Resources
 		/// </summary>
 		public void FreeOpenGLRes()
 		{
+			DualityApp.GuardSingleThreadState();
+
 			if (this.glFboId != 0)
 			{
 				GL.Ext.DeleteFramebuffers(1, ref this.glFboId);
@@ -290,6 +292,7 @@ namespace Duality.Resources
 		/// </summary>
 		public void SetupOpenGLRes()
 		{
+			DualityApp.GuardSingleThreadState();
 			if (this.targetInfo == null || this.targetInfo.Count == 0) return;
 
 			this.samples = this.multisample ? Math.Min(MaxRenderTargetSamples, DualityApp.TargetMode.Samples) : 0;

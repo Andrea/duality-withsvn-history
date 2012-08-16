@@ -295,6 +295,15 @@
             <param name="silent">If true, errors aren't logged.</param>
             <returns>True, if an error occured, false if not.</returns>
         </member>
+        <member name="M:Duality.DualityApp.GuardSingleThreadState(System.Boolean)">
+            <summary>
+            Guards the calling method agains being called from a thread that is not the main thread.
+            Use this only at critical code segments that are likely to be called from somewhere else than the main thread
+            but aren't allowed to.
+            </summary>
+            <param name="silent"></param>
+            <returns>True if everyhing is allright. False if the guarded state has been violated.</returns>
+        </member>
         <member name="E:Duality.DualityApp.UserDataChanged">
             <summary>
             Called when the games UserData changes
@@ -501,6 +510,11 @@
             to frame timing restrictions. To check whether fixed-timestep physics is currently active, use <see cref="P:Duality.Resources.Scene.PhysicsFixedTime"/>
             </summary>
         </member>
+        <member name="P:Duality.DualityAppData.CustomData">
+            <summary>
+            [GET / SET] Use this property to store custom application data.
+            </summary>
+        </member>
         <member name="T:Duality.DualityUserData">
             <summary>
             Provides information about user settings for this Duality application / game.
@@ -547,6 +561,11 @@
         <member name="P:Duality.DualityUserData.SfxMasterVol">
             <summary>
             [GET / SET] Volume master factor for sound in general. This is applied automatically by the <see cref="T:Duality.SoundDevice"/>.
+            </summary>
+        </member>
+        <member name="P:Duality.DualityUserData.CustomData">
+            <summary>
+            [GET / SET] Use this property to store custom user data.
             </summary>
         </member>
         <member name="T:Duality.DualityMetaData">
@@ -3591,11 +3610,6 @@
         <member name="P:Duality.Resources.Sound.AlBuffer">
             <summary>
             The OpenAL buffer handle to the audio data that is used by this Sound.
-            </summary>
-        </member>
-        <member name="T:Duality.DisposeState">
-            <summary>
-            Describes the state of object disposal.
             </summary>
         </member>
         <member name="T:Duality.Components.Physics.RevoluteJointInfo">
@@ -13912,6 +13926,39 @@
             <summary>
             [GET / SET] The maximum angular impulse to apply to the RigidBody. A negative value equals infinity.
             </summary>
+        </member>
+        <member name="T:Duality.InitState">
+            <summary>
+            Describes the state of object activation or disposal.
+            </summary>
+        </member>
+        <member name="F:Duality.InitState.Initializing">
+            <summary>
+            The object is currently initializing.
+            </summary>
+        </member>
+        <member name="F:Duality.InitState.Initialized">
+            <summary>
+            The object has been fully initialized and is fully operational.
+            </summary>
+        </member>
+        <member name="F:Duality.InitState.Disposing">
+            <summary>
+            The object is currently disposing.
+            </summary>
+        </member>
+        <member name="F:Duality.InitState.Disposed">
+            <summary>
+            The object has been fully disposed and can be considered "dead".
+            </summary>
+        </member>
+        <member name="M:Duality.ExtMethodsInitState.IsActive(Duality.InitState)">
+            <summary>
+            Returns whether the current <see cref="T:Duality.InitState"/> can be considered active. This is true
+            after initialization and during disposal.
+            </summary>
+            <param name="state"></param>
+            <returns></returns>
         </member>
     </members>
 </doc>

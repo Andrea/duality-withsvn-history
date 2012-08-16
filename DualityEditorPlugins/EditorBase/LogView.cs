@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,7 @@ namespace EditorBase
 	public partial class LogView : DockContent
 	{
 		private	DateTime	clearTime	= DateTime.MinValue;
+		private	List<DataLogOutput.LogEntry>	updateBuffer	= new List<DataLogOutput.LogEntry>();
 
 		public LogView()
 		{
@@ -175,7 +177,13 @@ namespace EditorBase
 			if (entry.Source == Log.Game && !this.buttonGame.Checked) return false;
 			return true;
 		}
-
+		
+		private void updateTimer_Tick(object sender, EventArgs e)
+		{
+			foreach (var entry in this.updateBuffer) this.AddSingleEntry(entry);
+			this.updateBuffer.Clear();
+			this.updateTimer.Enabled = false;
+		}
 		private void buttonCore_CheckedChanged(object sender, EventArgs e)
 		{
 			if (!this.Visible) return;
@@ -213,8 +221,9 @@ namespace EditorBase
 		}
 		private void LogData_NewEntry(object sender, DataLogOutput.LogEntryEventArgs e)
 		{
-			// Make it Thread-Safe:
-			if (this.IsHandleCreated) this.Invoke((EventHandler<DataLogOutput.LogEntryEventArgs>)this.LogData_NewEntry_Handler, sender, e);
+			if (this.DockState.IsAutoHide() && this.DockPanel.ActiveAutoHideContent != this) return;
+			this.updateBuffer.Add(e.Entry);
+			this.updateTimer.Enabled = true;
 		}
 		private void DockPanel_ActiveAutoHideContentChanged(object sender, EventArgs e)
 		{
@@ -222,11 +231,6 @@ namespace EditorBase
 			this.UpdateView();
 		}
 
-		private void LogData_NewEntry_Handler(object sender, DataLogOutput.LogEntryEventArgs e)
-		{
-			if (this.DockState.IsAutoHide() && this.DockPanel.ActiveAutoHideContent != this) return;
-			this.AddSingleEntry(e.Entry);
-		}
 		private void Sandbox_Entering(object sender, EventArgs e)
 		{
 			if (this.checkAutoClear.Checked) this.actionClear_ButtonClick(sender, e);

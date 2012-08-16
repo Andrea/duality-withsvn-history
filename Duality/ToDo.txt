@@ -16,28 +16,7 @@
 
 -->	Implement some simple Font effects?
 
-
-
--->	Bug: Farseer Body doesn't fire separation / collision events when disabling or disposing the body
-	as it is done when reloading core plugins at runtime or editing shapes. See if it is possible to fix
-	that without breaking stuff.
-
-
--->	Example Project: Super Mario style platformer
-	-->	Tile-based
-	-->	Will need something to edit tilemaps and probably a distinct Tileset Resource
-	-->	Component: TilemapRenderer
-	-->	Component: TilemapCollider
-	-->	Resource: Tileset
-		-->	References Material to use
-		-->	Defines tile data
-			-->	Collision Group (0 == dont collide)
-			-->	Collision mask (Top, Bottom, Left, Right) (?)
-			-->	Is AutoTile?
-			-->	etc.
-	-->	CamViewState: Tile Editor (?)
-	-->	Is there a way to generalize all this enough to make dynamically lit tilemap rendering
-		blend into existing design  smoothly?
+-->	Testing, Testing, Testing! Only a dead bug is a good bug.
 
 
 

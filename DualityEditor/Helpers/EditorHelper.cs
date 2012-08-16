@@ -13,6 +13,7 @@ using Microsoft.Build.Execution;
 using Ionic.Zip;
 
 using Duality;
+using Duality.Serialization;
 using Duality.Serialization.MetaFormat;
 
 namespace DualityEditor
@@ -341,6 +342,33 @@ namespace DualityEditor
 				foreach (string resFile in resFiles)
 				{
 					MetaFormatHelper.FilePerformAction(resFile, d => d.ReplaceTypeStrings(oldRootNamespaceNameCore, newRootNamespaceNameCore), false);
+				}
+			}
+
+			// Initialize AppData
+			if (File.Exists(DualityApp.AppDataPath))
+			{
+				DualityAppData data;
+				try
+				{
+					using (FileStream str = File.OpenRead(DualityApp.AppDataPath))
+					{
+						using (var formatter = Formatter.Create(str))
+						{
+							data = formatter.ReadObject() as DualityAppData ?? new DualityAppData();
+						}
+					}
+				}
+				catch (Exception) { data = new DualityAppData(); }
+				data.AppName = projName;
+				data.AuthorName = Environment.UserName;
+				data.Version = 0;
+				using (FileStream str = File.Open(DualityApp.AppDataPath, FileMode.Create))
+				{
+					using (var formatter = Formatter.Create(str, FormattingMethod.Binary))
+					{
+						formatter.WriteObject(data);
+					}
 				}
 			}
 

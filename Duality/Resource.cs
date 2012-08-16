@@ -40,8 +40,8 @@ namespace Duality
 		/// <summary>
 		/// The path of this Resource.
 		/// </summary>
-		[NonSerialized]	protected	string			path		= null;
-		[NonSerialized]	private		DisposeState	disposed	= DisposeState.Active;
+		[NonSerialized]	protected	string		path		= null;
+		[NonSerialized]	private		InitState	initState	= InitState.Initialized;
 
 		/// <summary>
 		/// [GET] Returns whether the Resource has been disposed. 
@@ -50,7 +50,7 @@ namespace Duality
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public bool Disposed
 		{
-			get { return this.disposed == DisposeState.Disposed; }
+			get { return this.initState == InitState.Disposed; }
 		}
 		/// <summary>
 		/// [GET] The path where this Resource has been originally loaded from or was first saved to.
@@ -128,7 +128,7 @@ namespace Duality
 		/// <param name="saveAsPath">The path to which this Resource is saved to. If null, the Resources <see cref="Path"/> is used as destination.</param>
 		public void Save(string saveAsPath = null)
 		{
-			if (this.disposed != DisposeState.Active) throw new ApplicationException("Can't save Ressource that already has been disposed.");
+			if (this.initState != InitState.Initialized) throw new ApplicationException("Can't save Ressource that already has been disposed.");
 			if (saveAsPath == null) saveAsPath = this.path;
 
 #if DEBUG
@@ -252,11 +252,11 @@ namespace Duality
 		}
 		private void Dispose(bool manually)
 		{
-			if (this.disposed == DisposeState.Active)
+			if (this.initState == InitState.Initialized)
 			{
-				this.disposed = DisposeState.Disposing;
+				this.initState = InitState.Disposing;
 				this.OnDisposing(manually);
-				this.disposed = DisposeState.Disposed;
+				this.initState = InitState.Disposed;
 			}
 		}
 		/// <summary>
