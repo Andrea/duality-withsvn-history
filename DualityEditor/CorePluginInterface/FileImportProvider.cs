@@ -15,7 +15,6 @@ namespace DualityEditor.CorePluginInterface
 
 		bool IsUsingSrcFile(Resource r, string srcFile);
 		void ReimportFile(Resource r, string srcFile);
-		void NotifySrcRenamed(Resource r, string srcFileOld, string srcFileNew);
 	}
 
 	public static class FileImportProvider
@@ -106,7 +105,7 @@ namespace DualityEditor.CorePluginInterface
 				if (!importer.IsUsingSrcFile(r, filePathOld)) continue;
 				try
 				{
-					importer.NotifySrcRenamed(r, filePathOld, filePathNew);
+					if (r.SourcePath == filePathOld) r.SourcePath = filePathNew;
 					DualityEditorApp.FlagResourceUnsaved(r);
 				}
 				catch (Exception) 
@@ -114,6 +113,45 @@ namespace DualityEditor.CorePluginInterface
 					Log.Editor.WriteError("There was an error internally renaming a source file '{0}' to '{1}'", filePathOld, filePathNew);
 				}
 			}
+		}
+		
+		public static void OpenSourceFile(Resource r, string srcFileExt, Action<string> saveSrcToAction)
+		{
+			// Default content: Use temporary location
+			if (r.Path.Contains(':'))
+			{
+				string tmpLoc = Path.Combine(Path.GetTempPath(), r.Path.Replace(':', '_')) + srcFileExt;
+				saveSrcToAction(tmpLoc);
+				System.Diagnostics.Process.Start(tmpLoc);
+			}
+			// Other content: Use permanent src file location
+			else
+			{
+				string srcFilePath = r.SourcePath;
+				if (String.IsNullOrEmpty(srcFilePath) || !File.Exists(srcFilePath))
+				{
+					srcFilePath = GenerateSourceFilePath(r, srcFileExt);
+					Directory.CreateDirectory(Path.GetDirectoryName(srcFilePath));
+					r.SourcePath = srcFilePath;
+				}
+
+				if (srcFilePath != null)
+				{
+					saveSrcToAction(srcFilePath);
+					System.Diagnostics.Process.Start(srcFilePath);
+				}
+			}
+		}
+		public static string GenerateSourceFilePath(Resource r, string srcFileExt)
+		{
+			string filePath = PathHelper.MakeFilePathRelative(r.Path, EditorHelper.DataDirectory);
+			string fileDir = Path.GetDirectoryName(filePath);
+			if (filePath.Contains(".."))
+			{
+				filePath = Path.GetFileName(filePath);
+				fileDir = ".";
+			}
+			return PathHelper.GetFreePath(Path.Combine(Path.Combine(EditorHelper.SourceMediaDirectory, fileDir), r.Name), srcFileExt);
 		}
 
 		private static void PrepareImportFilePaths(string filePath, out string srcFilePath, out string targetName, out string targetDir)

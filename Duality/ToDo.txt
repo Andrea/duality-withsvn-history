@@ -6,7 +6,6 @@
 	-->	??? Ingame GUI & GUI Editor
 
 -->	Dualitor: PerformanceMonitor
--->	Dualitor: Component Wizard
 
 --> Reconsider "events" in Duality.
 	-->	Are they really necessary?
@@ -19,9 +18,62 @@
 -->	Testing, Testing, Testing! Only a dead bug is a good bug.
 
 
+-->	Dualitor: Add "Locked"-Option for GameObjects. This is a pure design-time option
+	-->	Display Locked-State in Scene View. Special Color? Darker? Greyed out?
+		-->	Maybe also activate / deactivate locked state in Scene View?
+		-->	CheckButton with a lock on it or something, reacts to the current Selection.
+	-->	Can't be selected / picked it in SceneEditor and RigidBodyEditor, it's just ignored.
+	-->	If it IS selected, edit everything as normal
+
+	-->	Maybe also add a "show / hide" method? Works the same as "lock / unlock", also purely in the Scene View
+		because there should be a clear separation to actual object properties.
+
+	-->	How to store this data? Introduce DesignTimeData class and introduce a mapping in DualityEditorApp
+	-->	Can check whether it is default. If it is, remove it from the mapping.
+	-->	Can check whether its object is destroyed. If it is, remove it from the mapping.
+	-->	If DesignTimeData is requested without one being registered for that object, create a new one.
+	-->	When modifying DesignTimeData of an object, it notifies DualityEditorApp about the change.
+	-->	It should contain basic properties and a registry for additional, custom data.
+	-->	DesignTimeData isn't saved. When closing the editor, it's gone. However, it stays when switching Scenes, etc.
+
+
+-->	Dualitor: Add PropertyGrid Debug mode
+	-->	Show even private Members
+	-->	Provide "IsDebugMode" info in PropertyGrid and ProviderContext, because some PropertyEditors might want to opt-out in debug mode
+	-->	Consider whether this should be implemented in PropertyGrid-project or Dualitor
+
+
+-->	Dualitor: Add ActionButtonPropertyEditor and auto-use it in MemberwisePropertyEditor
+	-->	It's possible to flag a method as editor action via EditorHintFlags
+	-->	This method becomes an additional ActionButtonPropertyEditor
+	-->	Which is itself a GroupedPropertyEditor with an execute-button
+	-->	Parameters to use are child-Properties
+	-->	Add this whole functionality in PropertyGrid-Project itself?
+		-->	Can't. It requires EditorHintFlags.
+		-->	Also, this here will prove / assure PropertyGrids customization support
+
+
+-->	Dualitor: Component Wizard
+	-->	See below for dialog concept
+	-->	Implement in a separate plugin so it is possible to opt-out.
+	-->	Work based on a "Parse and Write C# Code" approach
+		-->	CodeDomProvider.Parse Method
+		-->	CodeDomProvider.GenerateCodeFromCompileUnit Method
+		-->	Unfortunately, DotNet doesn't implement the parse method.
+		-->	Use NRefactory instead?
+			-->	Pro: Seems to be really, really good at what it does
+			-->	Pro: Could provide really cool "Here, let me edit your code for you" features
+			-->	Con: It's huge.
+		-->	Test this approach before by replacing all currently existing C# code interaction with it
+			-->	Measure how fast it is. Is it performant enough?
+			-->	Compare to current solution.
+	-->	Use MsBuild to auto-rebuild core plugins (not the whole solution)
+	-->	Also provide editing for existing Components (Rightclick ..> Edit)
+		-->	Shortcut-Shortcut: Rightclick --> Add Property...
+
 
 		
-		
+	
 		
 -->	Concept for "Component Wizard" dialog / editor:
 	Das bezieht sich natürlich nicht auf deinen Grundgedanken sondern auf die Implikationen, welche das Bild das ich vom Feature Request insgesamt gewonnen habe mit sich bringt. Insofern würd ich erstmal sagen "Nein, so in der Form halte ich das für keine gute Idee", was aber nichts am Problem ändert das dein Feature hätte lösen sollen. Folgendes wäre ein alternativer Ansatz, den ich mir gut vorstellen könnte:

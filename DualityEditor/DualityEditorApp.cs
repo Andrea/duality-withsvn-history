@@ -38,7 +38,7 @@ namespace DualityEditor
 		private	static MainForm						mainForm			= null;
 		private	static GLControl					mainContextControl	= null;
 		private	static List<EditorPlugin>			plugins				= new List<EditorPlugin>();
-		private	static Dictionary<Type,List<Type>>	availTypeDict	= new Dictionary<Type,List<Type>>();
+		private	static Dictionary<Type,List<Type>>	availTypeDict		= new Dictionary<Type,List<Type>>();
 		private	static ReloadCorePluginDialog		corePluginReloader	= null;
 		private	static bool							needsRecovery		= false;
 		private	static GameObjectManager			editorObjects		= new GameObjectManager();

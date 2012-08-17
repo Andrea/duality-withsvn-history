@@ -38,10 +38,5 @@ namespace EditorBase
 			AudioData a = r as AudioData;
 			a.LoadOggVorbisData(srcFile);
 		}
-		public void NotifySrcRenamed(Resource r, string srcFileOld, string srcFileNew)
-		{
-			AudioData a = r as AudioData;
-			if (a.SourcePath == srcFileOld) a.SourcePath = srcFileNew;
-		}
 	}
 }

@@ -78,44 +78,6 @@ namespace DualityEditor
 				.GetValueNames().Contains("DbgManagedDebugger");
 		}
 
-		public static void OpenResourceSrcFile(Resource r, string srcFileExt, Action<string> saveSrcToAction)
-		{
-			// Default content: Use temporary location
-			if (r.Path.Contains(':'))
-			{
-				string tmpLoc = Path.Combine(Path.GetTempPath(), r.Path.Replace(':', '_')) + srcFileExt;
-				saveSrcToAction(tmpLoc);
-				System.Diagnostics.Process.Start(tmpLoc);
-			}
-			// Other content: Use permanent src file location
-			else
-			{
-				string srcFilePath = r.SourcePath;
-				if (String.IsNullOrEmpty(srcFilePath) || !File.Exists(srcFilePath))
-				{
-					srcFilePath = EditorHelper.GenerateResourceSrcFilePath(r, srcFileExt);
-					Directory.CreateDirectory(Path.GetDirectoryName(srcFilePath));
-					r.SourcePath = srcFilePath;
-				}
-
-				if (srcFilePath != null)
-				{
-					saveSrcToAction(srcFilePath);
-					System.Diagnostics.Process.Start(srcFilePath);
-				}
-			}
-		}
-		public static string GenerateResourceSrcFilePath(Resource r, string srcFileExt)
-		{
-			string filePath = PathHelper.MakeFilePathRelative(r.Path, EditorHelper.DataDirectory);
-			string fileDir = Path.GetDirectoryName(filePath);
-			if (filePath.Contains(".."))
-			{
-				filePath = Path.GetFileName(filePath);
-				fileDir = ".";
-			}
-			return PathHelper.GetFreePath(Path.Combine(Path.Combine(EditorHelper.SourceMediaDirectory, fileDir), r.Name), srcFileExt);
-		}
 
 		public static string GenerateGameResSrcFile()
 		{
@@ -125,7 +87,8 @@ namespace DualityEditor
 				gameRes = sr.ReadToEnd();
 			}
 			string mainClassName;
-			return gameRes.Replace("CONTENT", GenerateGameResSrcFile_ScanDir(DataDirectory, 1, out mainClassName));
+			string result = gameRes.Replace("CONTENT", GenerateGameResSrcFile_ScanDir(DataDirectory, 1, out mainClassName));
+			return result;
 		}
 		private static string GenerateGameResSrcFile_ScanFile(string filePath, int indent, out string propName)
 		{

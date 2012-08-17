@@ -50,17 +50,13 @@ namespace DynamicLighting
 		}
 		public override bool Convert(ConvertOperation convert)
 		{
-			List<ContentRef<Material>> dropdata = new List<ContentRef<Material>>();
-			var matSelectionQuery = convert.Perform<Material>();
-			if (matSelectionQuery != null) dropdata.AddRange(matSelectionQuery.Ref());
+			List<Material> availData = convert.Perform<Material>().ToList();
 
 			// Generate objects
-			foreach (ContentRef<Material> matRef in dropdata)
+			foreach (Material mat in availData)
 			{
-				if (convert.IsObjectHandled(matRef.Res)) continue;
-				if (!matRef.IsAvailable) continue;
+				if (convert.IsObjectHandled(mat)) continue;
 
-				Material mat = matRef.Res;
 				DrawTechnique tech = mat.Technique.Res;
 				LightingTechnique lightTech = tech as LightingTechnique;
 				if (tech == null) continue;
@@ -79,7 +75,7 @@ namespace DynamicLighting
 					LightingSpriteRenderer sprite = convert.Result.OfType<LightingSpriteRenderer>().FirstOrDefault();
 					if (sprite == null && gameobj != null) sprite = gameobj.GetComponent<LightingSpriteRenderer>();
 					if (sprite == null) sprite = new LightingSpriteRenderer();
-					sprite.SharedMaterial = matRef;
+					sprite.SharedMaterial = mat;
 					if (mainTex != null) sprite.Rect = Rect.AlignCenter(0.0f, 0.0f, mainTex.PxWidth, mainTex.PxHeight);
 					convert.AddResult(sprite);
 				}
@@ -88,14 +84,14 @@ namespace DynamicLighting
 					LightingAnimSpriteRenderer sprite = convert.Result.OfType<LightingAnimSpriteRenderer>().FirstOrDefault();
 					if (sprite == null && gameobj != null) sprite = gameobj.GetComponent<LightingAnimSpriteRenderer>();
 					if (sprite == null) sprite = new LightingAnimSpriteRenderer();
-					sprite.SharedMaterial = matRef;
+					sprite.SharedMaterial = mat;
 					sprite.Rect = Rect.AlignCenter(0.0f, 0.0f, mainTex.PxWidth / mainTex.AnimCols, mainTex.PxHeight / mainTex.AnimRows);
 					sprite.AnimDuration = 5.0f;
 					sprite.AnimFrameCount = mainTex.AnimFrames;
 					convert.AddResult(sprite);
 				}
 
-				convert.MarkObjectHandled(matRef.Res);
+				convert.MarkObjectHandled(mat);
 			}
 
 			return false;

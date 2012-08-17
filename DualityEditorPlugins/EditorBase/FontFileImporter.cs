@@ -41,10 +41,5 @@ namespace EditorBase
 			f.LoadCustomFamilyData(srcFile);
 			f.ReloadData();
 		}
-		public void NotifySrcRenamed(Resource r, string srcFileOld, string srcFileNew)
-		{
-			Font f = r as Font;
-			if (f.SourcePath == srcFileOld) f.SourcePath = srcFileNew;
-		}
 	}
 }

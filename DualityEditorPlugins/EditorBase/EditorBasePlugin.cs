@@ -193,17 +193,17 @@ namespace EditorBase
 			// Register conversion actions
 			CorePluginRegistry.RegisterEditorAction(new EditorAction<Pixmap>				(EditorBaseRes.ActionName_CreateTexture,		EditorBaseRes.IconResTexture,		p => Texture.CreateFromPixmap(p),	EditorBaseRes.ActionDesc_CreateTexture),		CorePluginRegistry.ActionContext_ContextMenu);
 			CorePluginRegistry.RegisterEditorAction(new EditorAction<Texture>				(EditorBaseRes.ActionName_CreateMaterial,		EditorBaseRes.IconResMaterial,		t => Material.CreateFromTexture(t), EditorBaseRes.ActionDesc_CreateMaterial),		CorePluginRegistry.ActionContext_ContextMenu);
-			CorePluginRegistry.RegisterEditorAction(new EditorAction<AudioData>			(EditorBaseRes.ActionName_CreateSound,			EditorBaseRes.IconResSound,			a => Sound.CreateFromAudioData(a),	EditorBaseRes.ActionDesc_CreateSound),			CorePluginRegistry.ActionContext_ContextMenu);
+			CorePluginRegistry.RegisterEditorAction(new EditorAction<AudioData>				(EditorBaseRes.ActionName_CreateSound,			EditorBaseRes.IconResSound,			a => Sound.CreateFromAudioData(a),	EditorBaseRes.ActionDesc_CreateSound),			CorePluginRegistry.ActionContext_ContextMenu);
 			CorePluginRegistry.RegisterEditorAction(new EditorGroupAction<AbstractShader>	(EditorBaseRes.ActionName_CreateShaderProgram,	EditorBaseRes.IconResShaderProgram, this.ActionShaderCreateProgram,		EditorBaseRes.ActionDesc_CreateShaderProgram),	CorePluginRegistry.ActionContext_ContextMenu);
 
 			// Register open actions
 			CorePluginRegistry.RegisterEditorAction(new EditorAction<Pixmap>			(null, null, this.ActionPixmapOpenRes,			EditorBaseRes.ActionDesc_OpenResourceExternal), CorePluginRegistry.ActionContext_OpenRes);
-			CorePluginRegistry.RegisterEditorAction(new EditorAction<AudioData>		(null, null, this.ActionAudioDataOpenRes,		EditorBaseRes.ActionDesc_OpenResourceExternal), CorePluginRegistry.ActionContext_OpenRes);
+			CorePluginRegistry.RegisterEditorAction(new EditorAction<AudioData>			(null, null, this.ActionAudioDataOpenRes,		EditorBaseRes.ActionDesc_OpenResourceExternal), CorePluginRegistry.ActionContext_OpenRes);
 			CorePluginRegistry.RegisterEditorAction(new EditorAction<AbstractShader>	(null, null, this.ActionAbstractShaderOpenRes,	EditorBaseRes.ActionDesc_OpenResourceExternal), CorePluginRegistry.ActionContext_OpenRes);
 			CorePluginRegistry.RegisterEditorAction(new EditorAction<Prefab>			(null, null, this.ActionPrefabOpenRes,			EditorBaseRes.ActionDesc_InstantiatePrefab),	CorePluginRegistry.ActionContext_OpenRes);
-			CorePluginRegistry.RegisterEditorAction(new EditorAction<Scene>			(null, null, this.ActionSceneOpenRes,			EditorBaseRes.ActionDesc_OpenScene),			CorePluginRegistry.ActionContext_OpenRes);
+			CorePluginRegistry.RegisterEditorAction(new EditorAction<Scene>				(null, null, this.ActionSceneOpenRes,			EditorBaseRes.ActionDesc_OpenScene),			CorePluginRegistry.ActionContext_OpenRes);
 			CorePluginRegistry.RegisterEditorAction(new EditorAction<GameObject>		(null, null, this.ActionGameObjectOpenRes,		EditorBaseRes.ActionDesc_FocusGameObject,		g => g.Transform != null),			CorePluginRegistry.ActionContext_OpenRes);
-			CorePluginRegistry.RegisterEditorAction(new EditorAction<Component>		(null, null, this.ActionComponentOpenRes,		EditorBaseRes.ActionDesc_FocusGameObject,		c => c.GameObj.Transform != null),	CorePluginRegistry.ActionContext_OpenRes);
+			CorePluginRegistry.RegisterEditorAction(new EditorAction<Component>			(null, null, this.ActionComponentOpenRes,		EditorBaseRes.ActionDesc_FocusGameObject,		c => c.GameObj.Transform != null),	CorePluginRegistry.ActionContext_OpenRes);
 
 			// Register data converters
 			CorePluginRegistry.RegisterDataConverter<GameObject>(new DataConverters.GameObjFromPrefab());
@@ -431,17 +431,17 @@ namespace EditorBase
 		private void ActionPixmapOpenRes(Pixmap pixmap)
 		{
 			if (pixmap == null) return;
-			EditorHelper.OpenResourceSrcFile(pixmap, ".png", pixmap.SavePixelData);
+			FileImportProvider.OpenSourceFile(pixmap, ".png", pixmap.SavePixelData);
 		}
 		private void ActionAudioDataOpenRes(AudioData audio)
 		{
 			if (audio == null) return;
-			EditorHelper.OpenResourceSrcFile(audio, ".ogg", audio.SaveOggVorbisData);
+			FileImportProvider.OpenSourceFile(audio, ".ogg", audio.SaveOggVorbisData);
 		}
 		private void ActionAbstractShaderOpenRes(AbstractShader shader)
 		{
 			if (shader == null) return;
-			EditorHelper.OpenResourceSrcFile(shader, shader is FragmentShader ? ".frag" : ".vert", shader.SaveSource);
+			FileImportProvider.OpenSourceFile(shader, shader is FragmentShader ? ".frag" : ".vert", shader.SaveSource);
 		}
 		private void ActionPrefabOpenRes(Prefab prefab)
 		{

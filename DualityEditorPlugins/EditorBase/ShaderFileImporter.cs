@@ -57,10 +57,5 @@ namespace EditorBase
 			s.LoadSource(srcFile);
 			s.Compile();
 		}
-		public void NotifySrcRenamed(Resource r, string srcFileOld, string srcFileNew)
-		{
-			AbstractShader s = r as AbstractShader;
-			if (s.SourcePath == srcFileOld) s.SourcePath = srcFileNew;
-		}
 	}
 }
