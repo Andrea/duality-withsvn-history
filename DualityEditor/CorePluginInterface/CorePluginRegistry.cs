@@ -298,7 +298,7 @@ namespace DualityEditor.CorePluginInterface
 		{
 			var removeQuery = 
 				from p in designTimeData
-				where p.Value.ParentObject.Disposed || p.Value == DesignTimeObjectData.Default
+				where p.Value.IsDefault
 				select p.Value.ParentObject;
 			foreach (GameObject obj in removeQuery.ToArray())
 				designTimeData.Remove(obj.Id);

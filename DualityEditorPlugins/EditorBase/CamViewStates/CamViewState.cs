@@ -84,7 +84,7 @@ namespace EditorBase.CamViewStates
 				if (action == MouseAction.MoveObj) return true;
 				return false;
 			}
-			public virtual void DrawActionGizmo(Canvas canvas, MouseAction action, Point beginLoc, Point curLoc) {}
+			public virtual void DrawActionGizmo(Canvas canvas, MouseAction action, Vector2 curLoc) {}
 			
 			public override bool Equals(object obj)
 			{
@@ -424,8 +424,18 @@ namespace EditorBase.CamViewStates
 			if (this.action != MouseAction.None)
 			{
 				canvas.PushState();
-				foreach (SelObj selShape in this.actionObjSel)
-					selShape.DrawActionGizmo(canvas, this.Action, this.camActionBeginLoc, cursorPos);
+				if (this.actionObjSel.Count != 1)
+				{
+					foreach (SelObj selShape in this.actionObjSel)
+					{
+						Vector3 selPosScreen = this.View.GetScreenCoord(selShape.Pos);
+						selShape.DrawActionGizmo(canvas, this.Action, selPosScreen.Xy);
+					}
+				}
+				else
+				{
+					this.actionObjSel[0].DrawActionGizmo(canvas, this.Action, new Vector2(cursorPos.X + 30, cursorPos.Y + 10));
+				}
 				canvas.PopState();
 			}
 

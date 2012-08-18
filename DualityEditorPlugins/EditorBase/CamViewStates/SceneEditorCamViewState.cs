@@ -79,32 +79,34 @@ namespace EditorBase.CamViewStates
 				if (action == MouseAction.ScaleObj) return true;
 				return false;
 			}
-			public override void DrawActionGizmo(Canvas canvas, MouseAction action, Point beginLoc, Point curLoc)
+			public override void DrawActionGizmo(Canvas canvas, MouseAction action, Vector2 curLoc)
 			{
-				base.DrawActionGizmo(canvas, action, beginLoc, curLoc);
+				base.DrawActionGizmo(canvas, action, curLoc);
+				curLoc.X = MathF.Round(curLoc.X);
+				curLoc.Y = MathF.Round(curLoc.Y);
 				if (action == MouseAction.MoveObj)
 				{
-					canvas.DrawText(string.Format("X:{0,7:0}", this.gameObj.Transform.RelativePos.X), curLoc.X + 30, curLoc.Y + 10);
-					canvas.DrawText(string.Format("Y:{0,7:0}", this.gameObj.Transform.RelativePos.Y), curLoc.X + 30, curLoc.Y + 18);
-					canvas.DrawText(string.Format("Z:{0,7:0}", this.gameObj.Transform.RelativePos.Z), curLoc.X + 30, curLoc.Y + 26);
+					canvas.DrawText(string.Format("X:{0,7:0}", this.gameObj.Transform.RelativePos.X), curLoc.X, curLoc.Y);
+					canvas.DrawText(string.Format("Y:{0,7:0}", this.gameObj.Transform.RelativePos.Y), curLoc.X, curLoc.Y + 8);
+					canvas.DrawText(string.Format("Z:{0,7:0}", this.gameObj.Transform.RelativePos.Z), curLoc.X, curLoc.Y + 16);
 				}
 				else if (action == MouseAction.ScaleObj)
 				{
 					if (this.gameObj.Transform.RelativeScale.X == this.gameObj.Transform.RelativeScale.Y &&
 						this.gameObj.Transform.RelativeScale.X == this.gameObj.Transform.RelativeScale.Z)
 					{
-						canvas.DrawText(string.Format("Scale:{0,5:0.00}", this.gameObj.Transform.RelativeScale.X), curLoc.X + 30, curLoc.Y + 10);
+						canvas.DrawText(string.Format("Scale:{0,5:0.00}", this.gameObj.Transform.RelativeScale.X), curLoc.X, curLoc.Y);
 					}
 					else
 					{
-						canvas.DrawText(string.Format("Scale X:{0,5:0.00}", this.gameObj.Transform.RelativeScale.X), curLoc.X + 30, curLoc.Y + 10);
-						canvas.DrawText(string.Format("Scale Y:{0,5:0.00}", this.gameObj.Transform.RelativeScale.Y), curLoc.X + 30, curLoc.Y + 18);
-						canvas.DrawText(string.Format("Scale Z:{0,5:0.00}", this.gameObj.Transform.RelativeScale.Z), curLoc.X + 30, curLoc.Y + 26);
+						canvas.DrawText(string.Format("Scale X:{0,5:0.00}", this.gameObj.Transform.RelativeScale.X), curLoc.X, curLoc.Y);
+						canvas.DrawText(string.Format("Scale Y:{0,5:0.00}", this.gameObj.Transform.RelativeScale.Y), curLoc.X, curLoc.Y + 8);
+						canvas.DrawText(string.Format("Scale Z:{0,5:0.00}", this.gameObj.Transform.RelativeScale.Z), curLoc.X, curLoc.Y + 16);
 					}
 				}
 				else if (action == MouseAction.RotateObj)
 				{
-					canvas.DrawText(string.Format("Angle:{0,5:0}", MathF.RadToDeg(this.gameObj.Transform.RelativeAngle)), curLoc.X + 30, curLoc.Y + 10);
+					canvas.DrawText(string.Format("Angle:{0,5:0}", MathF.RadToDeg(this.gameObj.Transform.RelativeAngle)), curLoc.X, curLoc.Y);
 				}
 			}
 		}

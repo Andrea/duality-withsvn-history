@@ -17,9 +17,6 @@
 
 -->	Testing, Testing, Testing! Only a dead bug is a good bug.
 
--->	Solve performance mystery with GrassBlueSkyBg (See Release mode Performance test)
-	-->	Good FPS as long as sprites are scaled small?
-	-->	Huge drop as soon as they intersect screen border?
 
 
 -->	Dualitor: Add "Locked"-Option for GameObjects. This is a pure design-time option

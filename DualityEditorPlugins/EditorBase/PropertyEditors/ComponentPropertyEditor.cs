@@ -63,6 +63,13 @@ namespace EditorBase.PropertyEditors
 			base.OnPropertySet(property, targets);
 			DualityEditorApp.NotifyObjPropChanged(this.ParentGrid, new DualityEditor.ObjectSelection(targets), property);
 		}
+		protected override void OnFieldSet(FieldInfo property, IEnumerable<object> targets)
+		{
+			base.OnFieldSet(property, targets);
+			// This is a bad workaround for having a purely Property-based change event system: Simply notify "something" changed.
+			// Change to something better in the future.
+			DualityEditorApp.NotifyObjPropChanged(this.ParentGrid, new DualityEditor.ObjectSelection(targets));
+		}
 		protected override void OnActiveChanged()
 		{
 			base.OnActiveChanged();

@@ -570,7 +570,7 @@ namespace Duality.Components
 			}
 			public bool CanAppend(IDrawBatch other)
 			{
-				return 
+				return
 					other.VertexMode == this.vertexMode && 
 					other is DrawBatch<T> &&
 					IsVertexModeAppendable(this.VertexMode) &&
@@ -636,6 +636,7 @@ namespace Duality.Components
 		[NonSerialized]	private	VisibilityFlag		deviceVisibility	= VisibilityFlag.All;
 		[NonSerialized]	private	bool				deviceCacheValid	= false;
 		[NonSerialized]	private	Vector3				deviceCachePos		= Vector3.Zero;
+		[NonSerialized]	private	bool				deviceScreenOverlay	= false;
 		[NonSerialized]	private	int					picking				= 0;
 		[NonSerialized]	private	List<ICmpRenderer>	pickingMap			= null;
 		[NonSerialized]	private	RenderTarget		pickingRT			= null;
@@ -837,11 +838,12 @@ namespace Duality.Components
 
 				this.deviceVisibility = this.visibilityMask & VisibilityFlag.AllWorld;
 				this.devicePass = null;
+				this.deviceScreenOverlay = false;
 				// Setup matrices
-				this.SetupMatrices(false);
+				this.SetupMatrices();
 				// Render Scene
 				this.CollectDrawcalls();
-				this.ProcessDrawcalls(false);
+				this.ProcessDrawcalls();
 				RenderTarget.Bind(RenderTarget.None);
 			}
 			else
@@ -853,11 +855,13 @@ namespace Duality.Components
 				{
 					this.deviceVisibility = this.visibilityMask & t.VisibilityMask;
 					this.devicePass = t;
+					this.deviceScreenOverlay = this.devicePass.MatrixMode == RenderMatrix.OrthoScreen || this.devicePass.Input != null;
 					this.RenderSinglePass(t);
 				}
 				this.deviceVisibility = this.visibilityMask;
 				this.devicePass = null;
-				this.SetupMatrices(false); // Reset matrices for projection calculations during update
+				this.deviceScreenOverlay = false;
+				this.SetupMatrices(); // Reset matrices for projection calculations during update
 				RenderTarget.Bind(RenderTarget.None);
 
 				Performance.timeRender.EndMeasure();
@@ -996,9 +1000,8 @@ namespace Duality.Components
 		/// <returns></returns>
 		public Vector3 GetSpaceCoord(Vector3 screenPos)
 		{
-			Vector3 dummy = screenPos;
-			float scale = 1.0f;
-			this.DrawDevice.PreprocessCoords(ref dummy, ref scale);
+			Vector3 gameObjPos = this.GameObj.Transform.Pos;
+			float scale = this.parallaxRefDist / (this.parallaxRefDist >= 0.0f ? Math.Max(screenPos.Z - gameObjPos.Z, this.nearZ) : -DefaultParallaxRefDist);
 
 			Vector2 targetSize = this.SceneTargetSize;
 			screenPos = new Vector3(
@@ -1029,8 +1032,12 @@ namespace Duality.Components
 		/// <returns></returns>
 		public Vector3 GetScreenCoord(Vector3 spacePos)
 		{
-			float scale = 1.0f;
-			this.DrawDevice.PreprocessCoords(ref spacePos, ref scale);
+			Vector3 gameObjPos = this.GameObj.Transform.Pos;
+			Vector3.Subtract(ref spacePos, ref gameObjPos, out spacePos);
+			float scale = this.parallaxRefDist / (this.parallaxRefDist >= 0.0f ? Math.Max(spacePos.Z, this.nearZ) : -DefaultParallaxRefDist);
+			spacePos.X *= scale;
+			spacePos.Y *= scale;
+
 			MathF.TransformCoord(ref spacePos.X, ref spacePos.Y, -this.GameObj.Transform.Angle);
 
 			Vector2 targetSize = this.SceneTargetSize;
@@ -1068,17 +1075,16 @@ namespace Duality.Components
 
 			if (p.Input == null)
 			{
-				bool screenOverlay = p.MatrixMode == RenderMatrix.OrthoScreen;
 				// Setup matrices
-				this.SetupMatrices(screenOverlay);
+				this.SetupMatrices();
 				// Render Scene
 				this.CollectDrawcalls();
 				p.NotifyCollectDrawcalls(this.DrawDevice);
-				this.ProcessDrawcalls(screenOverlay);
+				this.ProcessDrawcalls();
 			}
 			else
 			{
-				this.SetupMatrices(true);
+				this.SetupMatrices();
 
 				Texture mainTex = p.Input.MainTexture.Res;
 				Vector2 uvRatio = mainTex != null ? mainTex.UVRatio : Vector2.One;
@@ -1098,7 +1104,7 @@ namespace Duality.Components
 					new VertexP3T2(targetRect.MinX,	targetRect.MaxY,	0.0f,	0.0f,		uvRatio.Y));
 
 				Performance.timePostProcessing.BeginMeasure();
-				this.ProcessDrawcalls(true);
+				this.ProcessDrawcalls();
 				Performance.timePostProcessing.EndMeasure();
 			}
 		}
@@ -1128,13 +1134,14 @@ namespace Duality.Components
 				Performance.timeCollectDrawcalls.EndMeasure();
 			}
 		}
-		private void ProcessDrawcalls(bool screenOverlay)
+		private void ProcessDrawcalls()
 		{
-			if (screenOverlay)
+			if (this.deviceScreenOverlay)
 			{
 				// Prepare Rendering
 				GL.Enable(EnableCap.ScissorTest);
-				GL.Disable(EnableCap.DepthTest);
+				GL.Enable(EnableCap.DepthTest);
+				GL.DepthFunc(DepthFunction.Always);
 			}
 			else
 			{
@@ -1150,19 +1157,21 @@ namespace Duality.Components
 			GL.LoadMatrix(ref this.matProjection);
 			if (RenderTarget.BoundRT.IsAvailable)
 			{
-				if (screenOverlay) GL.Translate(0.0f, RenderTarget.BoundRT.Res.Height * 0.5f, 0.0f);
+				if (this.deviceScreenOverlay) GL.Translate(0.0f, RenderTarget.BoundRT.Res.Height * 0.5f, 0.0f);
 				GL.Scale(1.0f, -1.0f, 1.0f);
-				if (screenOverlay) GL.Translate(0.0f, -RenderTarget.BoundRT.Res.Height * 0.5f, 0.0f);
+				if (this.deviceScreenOverlay) GL.Translate(0.0f, -RenderTarget.BoundRT.Res.Height * 0.5f, 0.0f);
 			}
 
 			// Process drawcalls
-			this.OptimizeBatches(screenOverlay);
+			this.OptimizeBatches(this.deviceScreenOverlay);
 			this.BeginBatchRendering();
 
+			int drawCalls = 0;
 			// Z-Independent: Sorted as needed by batch optimizer
-			this.RenderBatches(this.drawBuffer);
+			drawCalls += this.RenderBatches(this.drawBuffer);
 			// Z-Sorted: Back to Front
-			this.RenderBatches(this.drawBufferZSort);
+			drawCalls += this.RenderBatches(this.drawBufferZSort);
+			//Log.Core.Write("{0} Drawcalls: {1}", screenOverlay, drawCalls);
 
 			this.FinishBatchRendering();
 			this.drawBuffer.Clear();
@@ -1188,7 +1197,7 @@ namespace Duality.Components
 		{
 			this.zSortAccuracy = 10000000.0f / Math.Max(1.0f, Math.Abs(this.farZ - this.nearZ));
 		}
-		private void SetupMatrices(bool screenOverlay)
+		private void SetupMatrices()
 		{
 			ContentRef<RenderTarget> rt = RenderTarget.BoundRT.Res;
 			Vector2 refSize = rt.IsAvailable ? new Vector2(rt.Res.Width, rt.Res.Height) : DualityApp.TargetResolution;
@@ -1209,15 +1218,15 @@ namespace Duality.Components
 				}
 			}
 
-			this.GenerateModelView(out this.matModelView, screenOverlay);
-			this.GenerateProjection(rt.IsAvailable ? new Rect(refSize) : new Rect(DualityApp.TargetResolution), out this.matProjection, screenOverlay);
+			this.GenerateModelView(out this.matModelView);
+			this.GenerateProjection(rt.IsAvailable ? new Rect(refSize) : new Rect(DualityApp.TargetResolution), out this.matProjection);
 			this.matFinal = this.matModelView * this.matProjection;
-			this.overlayMatrices = screenOverlay;
+			this.overlayMatrices = this.deviceScreenOverlay;
 		}
-		private void GenerateModelView(out Matrix4 mvMat, bool screenOverlay)
+		private void GenerateModelView(out Matrix4 mvMat)
 		{
 			mvMat = Matrix4.Identity;
-			if (screenOverlay) return;
+			if (this.deviceScreenOverlay) return;
 
 			// Translate objects contrary to the camera
 			// Removed: Do this in software now for parallax support
@@ -1226,9 +1235,9 @@ namespace Duality.Components
 			// Rotate them according to the camera angle
 			mvMat *= Matrix4.CreateRotationZ(-this.GameObj.Transform.Angle);
 		}
-		private void GenerateProjection(Rect orthoAbs, out Matrix4 projMat, bool screenOverlay)
+		private void GenerateProjection(Rect orthoAbs, out Matrix4 projMat)
 		{
-			if (screenOverlay)
+			if (this.deviceScreenOverlay)
 			{
 				Matrix4.CreateOrthographicOffCenter(
 					orthoAbs.X,
@@ -1271,11 +1280,7 @@ namespace Duality.Components
 			// Non-ZSorted
 			if (this.drawBuffer.Count > 1)
 			{
-				// When rendering the screen overlay, use z sorting everywhere - there's no depth buffering!
-				if (screenOverlay)
-					this.drawBuffer.StableSort(this.DrawBatchComparerZSort);
-				else
-					this.drawBuffer.StableSort(this.DrawBatchComparer);
+				this.drawBuffer.StableSort(this.DrawBatchComparer);
 				this.drawBuffer = this.OptimizeBatches(this.drawBuffer);
 			}
 
@@ -1317,10 +1322,11 @@ namespace Duality.Components
 			if (this.hndlPrimaryVBO == 0) GL.GenBuffers(1, out this.hndlPrimaryVBO);
 			GL.BindBuffer(BufferTarget.ArrayBuffer, this.hndlPrimaryVBO);
 		}
-		private void RenderBatches(List<IDrawBatch> buffer)
+		private int RenderBatches(List<IDrawBatch> buffer)
 		{
 			if (this.picking == 0) Performance.timeProcessDrawcalls.BeginMeasure();
 
+			int drawCalls = 0;
 			List<IDrawBatch> batchesSharingVBO = new List<IDrawBatch>();
 			IDrawBatch lastBatchRendered = null;
 
@@ -1339,12 +1345,14 @@ namespace Duality.Components
 				{
 					int vertexOffset = 0;
 					batchesSharingVBO[0].UploadToVBO(batchesSharingVBO);
+					drawCalls++;
 
 					foreach (IDrawBatch renderBatch in batchesSharingVBO)
 					{
 						renderBatch.SetupVBO();
 						renderBatch.Render(this.DrawDevice, ref vertexOffset, ref lastBatchRendered);
 						renderBatch.FinishVBO();
+						drawCalls++;
 					}
 
 					batchesSharingVBO.Clear();
@@ -1358,6 +1366,7 @@ namespace Duality.Components
 				lastBatchRendered.FinishRendering();
 
 			if (this.picking == 0) Performance.timeProcessDrawcalls.EndMeasure();
+			return drawCalls;
 		}
 		private void FinishBatchRendering()
 		{
@@ -1389,7 +1398,7 @@ namespace Duality.Components
 		}
 		bool IDrawDevice.IsScreenOverlay
 		{
-			get { return this.devicePass != null ? this.devicePass.MatrixMode == RenderMatrix.OrthoScreen : false; }
+			get { return this.deviceScreenOverlay; }
 		}
 		Vector2 IDrawDevice.TargetSize
 		{
@@ -1453,13 +1462,14 @@ namespace Duality.Components
 			this.DrawDevice.PreprocessCoords(ref c, ref scaleTemp);
 
 			// Apply final (modelview and projection) matrix
-			Vector3.Transform(ref c, ref this.matFinal, out c);
+			Vector3 oldPosTemp = c;
+			Vector3.Transform(ref oldPosTemp, ref this.matFinal, out c);
 
 			// Apply projection matrices XY rotation and scale to bounding radius
 			boundRad *= scaleTemp;
 			Vector2 boundRadVec = new Vector2(
-				boundRad * this.matProjection.Row0.X - boundRad * this.matProjection.Row1.X,
-				boundRad * this.matProjection.Row0.Y - boundRad * this.matProjection.Row1.Y);
+				boundRad * Math.Abs(this.matFinal.Row0.X) + boundRad * Math.Abs(this.matFinal.Row1.X),
+				boundRad * Math.Abs(this.matFinal.Row0.Y) + boundRad * Math.Abs(this.matFinal.Row1.Y));
 
 			return 
 				c.Z >= -1.0f &&
@@ -1482,13 +1492,14 @@ namespace Duality.Components
 			this.DrawDevice.PreprocessCoords(r, ref posTemp, ref scaleTemp);
 
 			// Apply final (modelview and projection) matrix
-			Vector3.Transform(ref posTemp, ref this.matFinal, out posTemp);
+			Vector3 oldPosTemp = posTemp;
+			Vector3.Transform(ref oldPosTemp, ref this.matFinal, out posTemp);
 
 			// Apply projection matrices XY rotation and scale to bounding radius
 			float boundRad = r.BoundRadius * scaleTemp;
 			Vector2 boundRadVec = new Vector2(
-				boundRad * this.matProjection.Row0.X - boundRad * this.matProjection.Row1.X,
-				boundRad * this.matProjection.Row0.Y - boundRad * this.matProjection.Row1.Y);
+				boundRad * Math.Abs(this.matFinal.Row0.X) + boundRad * Math.Abs(this.matFinal.Row1.X),
+				boundRad * Math.Abs(this.matFinal.Row0.Y) + boundRad * Math.Abs(this.matFinal.Row1.Y));
 
 			return 
 				posTemp.Z >= -1.0f &&
@@ -1517,8 +1528,9 @@ namespace Duality.Components
 				material.Technique.Res.PreprocessBatch<T>(this, material, ref vertexMode, ref vertices);
 				if (vertices == null || vertices.Length == 0) return;
 			}
-
-			bool zSort = material.Technique.Res.NeedsZSort;
+			
+			// When rendering the screen overlay, use z sorting everywhere - there's no depth buffering!
+			bool zSort = this.deviceScreenOverlay || material.Technique.Res.NeedsZSort;
 			List<IDrawBatch> buffer = zSort ? this.drawBufferZSort : this.drawBuffer;
 			float zSortIndex = zSort ? DrawBatch<T>.CalcZSortIndex(vertices) : 0.0f;
 

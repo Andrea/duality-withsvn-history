@@ -4259,6 +4259,11 @@
             This class houses several performance counters and performance measurement utility
             </summary>
         </member>
+        <member name="P:Duality.Performance.FrameTime">
+            <summary>
+            [GET] Time in milliseconds the last frame took.
+            </summary>
+        </member>
         <member name="P:Duality.Performance.UpdateTime">
             <summary>
             [GET] Time in milliseconds the last DualityApp.Update() call took

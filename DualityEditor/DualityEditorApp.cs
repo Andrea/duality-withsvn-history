@@ -920,10 +920,10 @@ namespace DualityEditor
 		private static void Scene_Entered(object sender, EventArgs e)
 		{
 			// Try to restore last GameObject / Component selection
-			var objQuery = selectionTempScene.GameObjects.Select(g => Scene.Current.AllObjects.FirstOrDefault(sg => sg.FullName == g.FullName)).NotNull();
+			var objQuery = selectionTempScene.GameObjects.Select(g => Scene.Current.AllObjects.FirstOrDefault(sg => sg.Id == g.Id)).NotNull();
 			var cmpQuery = selectionTempScene.Components.Select(delegate (Component c)
 			{
-				GameObject cmpObj = Scene.Current.AllObjects.FirstOrDefault(sg => sg.FullName == c.GameObj.FullName);
+				GameObject cmpObj = Scene.Current.AllObjects.FirstOrDefault(sg => sg.Id == c.GameObj.Id);
 				if (cmpObj == null) return null;
 				return cmpObj.GetComponent(c.GetType());
 			}).NotNull();

@@ -180,8 +180,11 @@ namespace EditorBase
 		
 		private void updateTimer_Tick(object sender, EventArgs e)
 		{
-			foreach (var entry in this.updateBuffer) this.AddSingleEntry(entry);
-			this.updateBuffer.Clear();
+			while (this.updateBuffer.Count > 0)
+			{
+				this.AddSingleEntry(this.updateBuffer[0]);
+				this.updateBuffer.RemoveAt(0);
+			}
 			this.updateTimer.Enabled = false;
 		}
 		private void buttonCore_CheckedChanged(object sender, EventArgs e)

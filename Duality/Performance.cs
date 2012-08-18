@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System;
 
+using OpenTK;
+
 namespace Duality
 {
 	/// <summary>
@@ -95,6 +97,7 @@ namespace Duality
 			}
 		}
 
+		internal	static	Counter	timeFrame				= new Counter("Duality_Frame");
 		internal	static	Counter	timeUpdate				= new Counter("Duality_Update");
 		internal	static	Counter	timeUpdateScene				= new Counter("Duality_Update_Scene");
 		internal	static	Counter	timeUpdateAudio				= new Counter("Duality_Update_Audio");
@@ -115,7 +118,14 @@ namespace Duality
 		internal	static	Counter	timeLog					= new Counter("Duality_Log");
 
 		private	static	Dictionary<string,Counter>	counterMap	= new Dictionary<string,Counter>();
-
+		
+		/// <summary>
+		/// [GET] Time in milliseconds the last frame took.
+		/// </summary>
+		public static float FrameTime
+		{
+			get { return timeFrame.LastValue; }
+		}
 		/// <summary>
 		/// [GET] Time in milliseconds the last DualityApp.Update() call took
 		/// </summary>
@@ -208,15 +218,38 @@ namespace Duality
 			return counterMap.Where(p => p.Value.WasUsed).Select(p => new KeyValuePair<string,float>(p.Key, p.Value.LastValue)).ToArray();
 		}
 
-		public static void DrawAllMeasures(Canvas canvas, float x = 10.0f, float y = 10.0f)
+		public static void DrawAllMeasures(Canvas canvas, float x = 10.0f, float y = 10.0f, bool background = true)
 		{
+			if (background)
+			{
+				Vector2 totalSize = Vector2.Zero;
+				Vector2 padding = new Vector2(canvas.CurrentState.TextFont.Res.Height, canvas.CurrentState.TextFont.Res.Height) * 0.5f;
+				foreach (var m in GetAllMeasures())
+				{
+					if (m.Value < 0.005f) continue;
+					string text = string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}: {1:F}", m.Key, m.Value);
+					Vector2 size = canvas.MeasureText(text);
+					totalSize.X = MathF.Max(totalSize.X, size.X);
+					totalSize.Y += canvas.CurrentState.TextFont.Res.Height;
+				}
+				ColorFormat.ColorRgba clr = canvas.CurrentState.MaterialDirect.MainColor * canvas.CurrentState.ColorTint;
+				float alpha = (float)clr.A / 255.0f;
+				float lum = clr.GetLuminance();
+				canvas.PushState();
+				canvas.CurrentState.SetMaterial(new Resources.BatchInfo(
+					Resources.DrawTechnique.Alpha, 
+					(lum > 0.5f ? ColorFormat.ColorRgba.Black : ColorFormat.ColorRgba.White).WithAlpha(alpha * 0.65f)));
+				canvas.CurrentState.ColorTint = ColorFormat.ColorRgba.White;
+				canvas.FillRect(x - padding.X, y - padding.Y, totalSize.X + padding.X * 2, totalSize.Y + padding.Y * 2);
+				canvas.PopState();
+			}
+
 			float yOff = 0.0f;
 			foreach (var m in GetAllMeasures())
 			{
 				if (m.Value < 0.005f) continue;
-				canvas.DrawText(string.Format(System.Globalization.CultureInfo.InvariantCulture, 
-					"{0}: {1:F}", m.Key, m.Value), 
-					x, y + yOff);
+				string text = string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}: {1:F}", m.Key, m.Value);
+				canvas.DrawText(text, x, y + yOff);
 				yOff += canvas.CurrentState.TextFont.Res.Height;
 			}
 		}

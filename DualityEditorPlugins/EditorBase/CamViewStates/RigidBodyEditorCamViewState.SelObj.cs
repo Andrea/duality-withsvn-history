@@ -144,17 +144,19 @@ namespace EditorBase.CamViewStates
 				if (action == MouseAction.RotateObj) return false;
 				return base.IsActionAvailable(action);
 			}
-			public override void DrawActionGizmo(Canvas canvas, MouseAction action, Point beginLoc, Point curLoc)
+			public override void DrawActionGizmo(Canvas canvas, MouseAction action, Vector2 curLoc)
 			{
-				base.DrawActionGizmo(canvas, action, beginLoc, curLoc);
+				base.DrawActionGizmo(canvas, action, curLoc);
+				curLoc.X = MathF.Round(curLoc.X);
+				curLoc.Y = MathF.Round(curLoc.Y);
 				if (action == MouseAction.MoveObj)
 				{
-					canvas.DrawText(string.Format("Center X:{0,7:0.00}", this.circle.Position.X), curLoc.X + 30, curLoc.Y + 10);
-					canvas.DrawText(string.Format("Center Y:{0,7:0.00}", this.circle.Position.Y), curLoc.X + 30, curLoc.Y + 18);
+					canvas.DrawText(string.Format("Center X:{0,7:0.00}", this.circle.Position.X), curLoc.X, curLoc.Y);
+					canvas.DrawText(string.Format("Center Y:{0,7:0.00}", this.circle.Position.Y), curLoc.X, curLoc.Y + 8);
 				}
 				else if (action == MouseAction.ScaleObj)
 				{
-					canvas.DrawText(string.Format("Radius:{0,7:0.00}", this.circle.Radius), curLoc.X + 30, curLoc.Y + 10);
+					canvas.DrawText(string.Format("Radius:{0,7:0.00}", this.circle.Radius), curLoc.X, curLoc.Y);
 				}
 			}
 		}
@@ -211,29 +213,31 @@ namespace EditorBase.CamViewStates
 				this.UpdatePolyStats();
 			}
 
-			public override void DrawActionGizmo(Canvas canvas, MouseAction action, Point beginLoc, Point curLoc)
+			public override void DrawActionGizmo(Canvas canvas, MouseAction action, Vector2 curLoc)
 			{
-				base.DrawActionGizmo(canvas, action, beginLoc, curLoc);
+				base.DrawActionGizmo(canvas, action, curLoc);
+				curLoc.X = MathF.Round(curLoc.X);
+				curLoc.Y = MathF.Round(curLoc.Y);
 				if (action == MouseAction.MoveObj)
 				{
-				    canvas.DrawText(string.Format("Center X:{0,7:0.00}", this.center.X), curLoc.X + 30, curLoc.Y + 10);
-				    canvas.DrawText(string.Format("Center Y:{0,7:0.00}", this.center.Y), curLoc.X + 30, curLoc.Y + 18);
+				    canvas.DrawText(string.Format("Center X:{0,7:0.00}", this.center.X), curLoc.X, curLoc.Y);
+				    canvas.DrawText(string.Format("Center Y:{0,7:0.00}", this.center.Y), curLoc.X, curLoc.Y + 8);
 				}
 				else if (action == MouseAction.ScaleObj)
 				{
 					if (MathF.Abs(this.scale.X - this.scale.Y) >= 0.01f)
 					{
-						canvas.DrawText(string.Format("Scale X:{0,7:0.00}", this.scale.X), curLoc.X + 30, curLoc.Y + 10);
-						canvas.DrawText(string.Format("Scale Y:{0,7:0.00}", this.scale.Y), curLoc.X + 30, curLoc.Y + 18);
+						canvas.DrawText(string.Format("Scale X:{0,7:0.00}", this.scale.X), curLoc.X, curLoc.Y);
+						canvas.DrawText(string.Format("Scale Y:{0,7:0.00}", this.scale.Y), curLoc.X, curLoc.Y + 8);
 					}
 					else
 					{
-						canvas.DrawText(string.Format("Scale:{0,7:0.00}", this.scale.X), curLoc.X + 30, curLoc.Y + 10);
+						canvas.DrawText(string.Format("Scale:{0,7:0.00}", this.scale.X), curLoc.X, curLoc.Y);
 					}
 				}
 				else if (action == MouseAction.RotateObj)
 				{
-					canvas.DrawText(string.Format("Angle:{0,6:0.0}", MathF.RadToDeg(this.angle)), curLoc.X + 30, curLoc.Y + 10);
+					canvas.DrawText(string.Format("Angle:{0,6:0.0}", MathF.RadToDeg(this.angle)), curLoc.X, curLoc.Y);
 				}
 			}
 
@@ -347,29 +351,31 @@ namespace EditorBase.CamViewStates
 				this.UpdateLoopStats();
 			}
 
-			public override void DrawActionGizmo(Canvas canvas, MouseAction action, Point beginLoc, Point curLoc)
+			public override void DrawActionGizmo(Canvas canvas, MouseAction action, Vector2 curLoc)
 			{
-				base.DrawActionGizmo(canvas, action, beginLoc, curLoc);
+				base.DrawActionGizmo(canvas, action, curLoc);
+				curLoc.X = MathF.Round(curLoc.X);
+				curLoc.Y = MathF.Round(curLoc.Y);
 				if (action == MouseAction.MoveObj)
 				{
-				    canvas.DrawText(string.Format("Center X:{0,7:0.00}", this.center.X), curLoc.X + 30, curLoc.Y + 10);
-				    canvas.DrawText(string.Format("Center Y:{0,7:0.00}", this.center.Y), curLoc.X + 30, curLoc.Y + 18);
+				    canvas.DrawText(string.Format("Center X:{0,7:0.00}", this.center.X), curLoc.X, curLoc.Y);
+				    canvas.DrawText(string.Format("Center Y:{0,7:0.00}", this.center.Y), curLoc.X, curLoc.Y + 8);
 				}
 				else if (action == MouseAction.ScaleObj)
 				{
 					if (MathF.Abs(this.scale.X - this.scale.Y) >= 0.01f)
 					{
-						canvas.DrawText(string.Format("Scale X:{0,7:0.00}", this.scale.X), curLoc.X + 30, curLoc.Y + 10);
-						canvas.DrawText(string.Format("Scale Y:{0,7:0.00}", this.scale.Y), curLoc.X + 30, curLoc.Y + 18);
+						canvas.DrawText(string.Format("Scale X:{0,7:0.00}", this.scale.X), curLoc.X, curLoc.Y);
+						canvas.DrawText(string.Format("Scale Y:{0,7:0.00}", this.scale.Y), curLoc.X, curLoc.Y + 8);
 					}
 					else
 					{
-						canvas.DrawText(string.Format("Scale:{0,7:0.00}", this.scale.X), curLoc.X + 30, curLoc.Y + 10);
+						canvas.DrawText(string.Format("Scale:{0,7:0.00}", this.scale.X), curLoc.X, curLoc.Y);
 					}
 				}
 				else if (action == MouseAction.RotateObj)
 				{
-					canvas.DrawText(string.Format("Angle:{0,6:0.0}", MathF.RadToDeg(this.angle)), curLoc.X + 30, curLoc.Y + 10);
+					canvas.DrawText(string.Format("Angle:{0,6:0.0}", MathF.RadToDeg(this.angle)), curLoc.X, curLoc.Y);
 				}
 			}
 
