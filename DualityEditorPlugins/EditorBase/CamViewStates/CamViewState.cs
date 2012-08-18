@@ -1214,6 +1214,8 @@ namespace EditorBase.CamViewStates
 			{
 				this.OnCursorSpacePosChanged();
 			}
+
+			this.view.LocalGLControl.Invalidate();
 		}
 		private void Scene_Changed(object sender, EventArgs e)
 		{

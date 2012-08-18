@@ -244,6 +244,10 @@
     <None Include="PluginRes\layers.png" />
     <None Include="PluginRes\iconCmpEdgeCollider.png" />
     <None Include="PluginRes\iconCmpLoopCollider.png" />
+    <None Include="PluginRes\eye_cross.png" />
+    <None Include="PluginRes\iconGameObjInactive.png" />
+    <None Include="PluginRes\iconGameObjLinkBrokenInactive.png" />
+    <None Include="PluginRes\iconGameObjLinkInactive.png" />
     <Content Include="PluginRes\projectview.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

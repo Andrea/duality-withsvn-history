@@ -10,6 +10,7 @@ using Duality.Components.Physics;
 
 using DualityEditor;
 using DualityEditor.Forms;
+using DualityEditor.CorePluginInterface;
 
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -987,8 +988,10 @@ namespace EditorBase.CamViewLayers
 
 		private IEnumerable<RigidBody> QueryVisibleColliders()
 		{
+			var allColliders = Scene.Current.AllObjects.GetComponents<RigidBody>(true);
+			allColliders = allColliders.Where(r => !CorePluginRegistry.RequestDesignTimeData(r.GameObj).IsHidden);
+
 			this.View.MakeDualityTarget();
-			IEnumerable<RigidBody> allColliders = Scene.Current.AllObjects.GetComponents<RigidBody>(true);
 			IDrawDevice device = this.View.CameraComponent.DrawDevice;
 			return allColliders.Where(c => device.IsCoordInView(c.GameObj.Transform.Pos, c.BoundRadius));
 		}

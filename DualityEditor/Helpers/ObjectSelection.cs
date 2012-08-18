@@ -193,6 +193,21 @@ namespace DualityEditor
 			this.obj = new List<object>(this.obj.Except(common).Union(added));
 			this.UpdateCategories();
 		}
+		protected void LocalClearDisposed()
+		{
+			this.LocalClear(o => 
+			{
+				if (o == null) return true;
+
+				IManageableObject manObj = o as IManageableObject;
+				if (manObj != null && manObj.Disposed) return true;
+
+				Resource resObj = o as Resource;
+				if (resObj != null && resObj.Disposed) return true;
+
+				return false;
+			});
+		}
 		protected void LocalHierarchyExpand()
 		{
 			var gameobjQuery = this.GameObjects.Concat(this.GameObjects.ChildrenDeep());
@@ -240,6 +255,12 @@ namespace DualityEditor
 		{
 			ObjectSelection result = new ObjectSelection(this);
 			result.LocalToggle(other);
+			return result;
+		}
+		public ObjectSelection ClearDisposed()
+		{
+			ObjectSelection result = new ObjectSelection(this);
+			result.LocalClearDisposed();
 			return result;
 		}
 		public ObjectSelection HierarchyExpand()

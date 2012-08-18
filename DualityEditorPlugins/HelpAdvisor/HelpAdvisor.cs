@@ -80,15 +80,21 @@ namespace HelpAdvisor
 		public void UpdateHelp()
 		{
 			this.newHelp = HelpSystem.ActiveHelp ?? advisorHelp;
-			this.commitTimer.Stop();
-			this.commitTimer.Start();
+
+			if (this.newHelp == null || this.currentHelp == null || 
+				this.newHelp.Topic != this.currentHelp.Topic || 
+				this.newHelp.Description != this.currentHelp.Description)
+			{
+				this.commitTimer.Stop();
+				this.commitTimer.Start();
+			}
 
 			if (this.currentHelp == null) this.currentHelp = this.newHelp;
 			if (this.lastHelp == null) this.lastHelp = this.currentHelp;
 		}
 		private void CommitHelp()
 		{
-			if (newHelp.Topic != this.currentHelp.Topic || newHelp.Description != this.currentHelp.Description)
+			if (this.newHelp.Topic != this.currentHelp.Topic || this.newHelp.Description != this.currentHelp.Description)
 			{
 				this.lastHelp = this.currentHelp;
 				this.currentHelp = newHelp;

@@ -103,9 +103,10 @@ namespace EditorBase
 			}
 			public void UpdateIcon()
 			{
-				this.Image = CorePluginRegistry.RequestTypeImage(typeof(GameObject), obj.PrefabLink == null ? 
+				string context = this.obj.PrefabLink == null ? 
 					CorePluginRegistry.ImageContext_Icon : 
-					CorePluginRegistry.ImageContext_Icon + (obj.PrefabLink.Prefab.IsAvailable ? "_Link" : "_Link_Broken"));
+					CorePluginRegistry.ImageContext_Icon + (this.obj.PrefabLink.Prefab.IsAvailable ? "_Link" : "_Link_Broken");
+				this.Image = CorePluginRegistry.RequestTypeImage(typeof(GameObject), context);
 			}
 		}
 		public class ComponentNode : NodeBase
@@ -201,10 +202,12 @@ namespace EditorBase
 			this.objectView.Model = this.objectModel;
 
 			this.nodeTextBoxName.ToolTipProvider = this.nodeStateIcon.ToolTipProvider = new ToolTipProvider();
-			this.nodeTextBoxName.DrawText += new EventHandler<Aga.Controls.Tree.NodeControls.DrawEventArgs>(nodeTextBoxName_DrawText);
+			this.nodeTextBoxName.DrawText += this.nodeTextBoxName_DrawText;
 			this.nodeTextBoxName.EditorShowing += new CancelEventHandler(nodeTextBoxName_EditorShowing);
 			this.nodeTextBoxName.EditorHided += new EventHandler(nodeTextBoxName_EditorHided);
 			this.nodeTextBoxName.ChangesApplied += new EventHandler(nodeTextBoxName_ChangesApplied);
+
+			this.nodeStateIcon.DrawIcon += this.nodeStateIcon_DrawIcon;
 
 			this.toolStrip.Renderer = new DualityEditor.Controls.ToolStrip.DualitorToolStripProfessionalRenderer();
 		}
@@ -962,32 +965,54 @@ namespace EditorBase
 			NodeBase dropNodeParent			= (dropViewNodeParent != null) ? dropViewNodeParent.Tag as NodeBase : null;
 			return dropNodeParent;
 		}
-
-		private void nodeTextBoxName_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawEventArgs e)
+		
+		private void nodeStateIcon_DrawIcon(object sender, Aga.Controls.Tree.NodeControls.DrawIconEventArgs e)
 		{
+			if (e.Context.Bounds.IsEmpty) return;
 			NodeBase node = e.Node.Tag as NodeBase;
 
-			if (!e.Context.Bounds.IsEmpty)
-			{
-				// Prefab-linked entities
-				if (node.LinkState == NodeBase.PrefabLinkState.Active)
-					e.TextColor = Color.Blue;
-				else if (node.LinkState == NodeBase.PrefabLinkState.Broken)
-					e.TextColor = Color.DarkRed;
-				else
-					e.TextColor = Color.Black;
+			ComponentNode cmpNode = node as ComponentNode;
+			GameObjectNode objNode = (cmpNode != null ? cmpNode.Parent : node) as GameObjectNode;
+			DesignTimeObjectData data = objNode != null ? CorePluginRegistry.RequestDesignTimeData(objNode.Obj) : null;
+			bool lockedOrHidden = data != null ? data.IsLocked || data.IsHidden : false;
 
-				// Flashing
-				if (node == this.flashNode)
-				{
-					float intLower = this.flashIntensity;
-					Color hlBase = Color.FromArgb(224, 64, 32);
-					Color hlLower = Color.FromArgb(
-						(int)(this.objectView.BackColor.R * (1.0f - intLower) + hlBase.R * intLower),
-						(int)(this.objectView.BackColor.G * (1.0f - intLower) + hlBase.G * intLower),
-						(int)(this.objectView.BackColor.B * (1.0f - intLower) + hlBase.B * intLower));
-					e.BackgroundBrush = new SolidBrush(hlLower);
-				}
+			if (lockedOrHidden) e.IconColorMatrix = new System.Drawing.Imaging.ColorMatrix(new[] {
+				new float[] {	0.3f,	0.3f,	0.3f,	0.0f,	0.0f	},
+				new float[] {	0.59f,	0.59f,	0.59f,	0.0f,	0.0f	},
+				new float[] {	0.11f,	0.11f,	0.11f,	0.0f,	0.0f	},
+				new float[] {	0.0f,	0.0f,	0.0f,	1.0f,	0.0f	},
+				new float[] {	0.0f,	0.0f,	0.0f,	0.0f,	1.0f	}});
+		}
+		private void nodeTextBoxName_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawTextEventArgs e)
+		{
+			if (e.Context.Bounds.IsEmpty) return;
+			NodeBase node = e.Node.Tag as NodeBase;
+
+			ComponentNode cmpNode = node as ComponentNode;
+			GameObjectNode objNode = (cmpNode != null ? cmpNode.Parent : node) as GameObjectNode;
+			DesignTimeObjectData data = objNode != null ? CorePluginRegistry.RequestDesignTimeData(objNode.Obj) : null;
+			bool lockedOrHidden = data != null ? data.IsLocked || data.IsHidden : false;
+
+			// Prefab-linked entities
+			if (lockedOrHidden)
+				e.TextColor = Color.FromArgb(96, 96, 96);
+			else if (node.LinkState == NodeBase.PrefabLinkState.Active)
+				e.TextColor = Color.Blue;
+			else if (node.LinkState == NodeBase.PrefabLinkState.Broken)
+				e.TextColor = Color.DarkRed;
+			else
+				e.TextColor = Color.Black;
+
+			// Flashing
+			if (node == this.flashNode)
+			{
+				float intLower = this.flashIntensity;
+				Color hlBase = Color.FromArgb(224, 64, 32);
+				Color hlLower = Color.FromArgb(
+					(int)(this.objectView.BackColor.R * (1.0f - intLower) + hlBase.R * intLower),
+					(int)(this.objectView.BackColor.G * (1.0f - intLower) + hlBase.G * intLower),
+					(int)(this.objectView.BackColor.B * (1.0f - intLower) + hlBase.B * intLower));
+				e.BackgroundBrush = new SolidBrush(hlLower);
 			}
 		}
 		private void nodeTextBoxName_EditorShowing(object sender, CancelEventArgs e)
@@ -1000,7 +1025,11 @@ namespace EditorBase
 			}
 
 			NodeBase node = this.objectView.SelectedNode.Tag as NodeBase;
-			if (!(node is GameObjectNode)) e.Cancel = true;
+			GameObjectNode objNode = node as GameObjectNode;
+			if (objNode == null) e.Cancel = true;
+
+			DesignTimeObjectData data = CorePluginRegistry.RequestDesignTimeData(objNode.Obj);
+			if (data.IsLocked) e.Cancel = true;
 
 			if (!e.Cancel)
 			{
@@ -1259,6 +1288,9 @@ namespace EditorBase
 			this.renameToolStripMenuItem.Visible = !noSelect;
 			this.cloneToolStripMenuItem.Visible = !noSelect && gameObjSelect;
 			this.deleteToolStripMenuItem.Visible = !noSelect;
+			this.toolStripSeparatorGameObject.Visible = gameObjSelect;
+			this.lockedToolStripMenuItem.Visible = gameObjSelect;
+			this.contextMenuNode_UpdateLockHideItem();
 
 			this.renameToolStripMenuItem.Enabled = singleSelect;
 			
@@ -1358,6 +1390,46 @@ namespace EditorBase
 				this.newToolStripMenuItem.DropDownItems.AddRange(newItems.ToArray());
 			}
 		}
+		private void contextMenuNode_Closing(object sender, ToolStripDropDownClosingEventArgs e)
+		{
+			var hoverItem = this.contextMenuNode.GetItemAt(this.contextMenuNode.PointToClient(Cursor.Position));
+			if (e.CloseReason == ToolStripDropDownCloseReason.ItemClicked && hoverItem == this.lockedToolStripMenuItem)
+				e.Cancel = true;
+		}
+		private void contextMenuNode_UpdateLockHideItem()
+		{
+			var selNodeData =
+				from vn in this.objectView.SelectedNodes
+				where vn.Tag is GameObjectNode
+				select CorePluginRegistry.RequestDesignTimeData((vn.Tag as GameObjectNode).Obj);
+			bool locked = false;
+			bool hidden = false;
+			foreach (var data in selNodeData)
+			{
+				if (data.IsLocked) locked = true;
+				if (data.IsHidden) hidden = true;
+				if (locked && hidden) break;
+			}
+
+			if (hidden)
+			{
+				this.lockedToolStripMenuItem.Text = PluginRes.EditorBaseRes.SceneView_Item_Hidden;
+				this.lockedToolStripMenuItem.ToolTipText = PluginRes.EditorBaseRes.SceneView_Item_Hidden_Tooltip;
+				this.lockedToolStripMenuItem.Image = EditorBase.Properties.Resources.eye_cross;
+			}
+			else if (locked)
+			{
+				this.lockedToolStripMenuItem.Text = PluginRes.EditorBaseRes.SceneView_Item_Locked;
+				this.lockedToolStripMenuItem.ToolTipText = PluginRes.EditorBaseRes.SceneView_Item_Locked_Tooltip;
+				this.lockedToolStripMenuItem.Image = EditorBase.Properties.Resources.lockIcon;
+			}
+			else
+			{
+				this.lockedToolStripMenuItem.Text = PluginRes.EditorBaseRes.SceneView_Item_LockHide;
+				this.lockedToolStripMenuItem.ToolTipText = PluginRes.EditorBaseRes.SceneView_Item_LockHide_Tooltip;
+				this.lockedToolStripMenuItem.Image = null;
+			}
+		}
 
 		private void cloneToolStripMenuItem_Click(object sender, EventArgs e)
 		{
@@ -1370,6 +1442,47 @@ namespace EditorBase
 		private void renameToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			this.nodeTextBoxName.BeginEdit();
+		}
+		private void lockedToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			var selNode =(
+				from vn in this.objectView.SelectedNodes
+				where vn.Tag is GameObjectNode
+				select vn.Tag as GameObjectNode).ToArray();
+			var selNodeData = selNode.Select(n => CorePluginRegistry.RequestDesignTimeData(n.Obj)).ToArray();
+			bool locked = true;
+			bool hidden = true;
+			foreach (var data in selNodeData)
+			{
+				if (!data.IsLocked) locked = false;
+				if (!data.IsHidden) hidden = false;
+				if (!locked && !hidden) break;
+			}
+			foreach (var data in selNodeData)
+			{
+				if (hidden)
+				{
+					data.IsLocked = false;
+					data.IsHidden = false;
+				}
+				else if (locked)
+				{
+					data.IsLocked = true;
+					data.IsHidden = true;
+				}
+				else
+				{
+					data.IsLocked = true;
+					data.IsHidden = false;
+				}
+			}
+
+			foreach (var gameObjNode in selNode) gameObjNode.UpdateIcon();
+			this.contextMenuNode_UpdateLockHideItem();
+			this.objectView.Invalidate();
+
+			// Emit a PropertyChanged event for DesignTimeData.
+			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(selNodeData));
 		}
 
 		private void gameObjectToolStripMenuItem_Click(object sender, EventArgs e)

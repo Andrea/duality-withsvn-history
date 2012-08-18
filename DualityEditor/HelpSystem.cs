@@ -149,7 +149,7 @@ namespace DualityEditor
 			if (needStackUpdate)
 			{
 				// Schedule help stack update in main form
-				DualityEditorApp.MainForm.BeginInvoke((Action)UpdateHelpStack);
+				UpdateHelpStack();
 				needStackUpdate = false;
 			}
 		}

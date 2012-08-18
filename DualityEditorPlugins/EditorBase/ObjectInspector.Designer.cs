@@ -103,7 +103,7 @@
 			this.buttonLock.CheckOnClick = true;
 			this.buttonLock.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.buttonLock.Enabled = false;
-			this.buttonLock.Image = global::EditorBase.Properties.Resources._lock;
+			this.buttonLock.Image = global::EditorBase.Properties.Resources.lockIcon;
 			this.buttonLock.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonLock.Name = "buttonLock";
 			this.buttonLock.Size = new System.Drawing.Size(23, 22);

@@ -60,13 +60,6 @@ namespace EditorBase.Properties {
             }
         }
         
-        internal static System.Drawing.Bitmap _lock {
-            get {
-                object obj = ResourceManager.GetObject("lock", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
         internal static System.Drawing.Bitmap AddScene {
             get {
                 object obj = ResourceManager.GetObject("AddScene", resourceCulture);
@@ -109,6 +102,13 @@ namespace EditorBase.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap eye_cross {
+            get {
+                object obj = ResourceManager.GetObject("eye_cross", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap folder {
             get {
                 object obj = ResourceManager.GetObject("folder", resourceCulture);
@@ -140,6 +140,13 @@ namespace EditorBase.Properties {
         internal static System.Drawing.Bitmap layers {
             get {
                 object obj = ResourceManager.GetObject("layers", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap lockIcon {
+            get {
+                object obj = ResourceManager.GetObject("lockIcon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

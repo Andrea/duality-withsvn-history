@@ -26,6 +26,7 @@ namespace DualityEditor.CorePluginInterface
 			public static bool operator ==(DataContainer a, DataContainer b)
 			{
 				if (object.ReferenceEquals(a, b)) return true;
+				if (object.ReferenceEquals(a, null) || object.ReferenceEquals(b, null)) return false;
 
 				if (a.hidden != b.hidden) return false;
 				if (a.locked != b.locked) return false;

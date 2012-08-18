@@ -92,6 +92,8 @@
     <Compile Include="Tree\Input\ReorderColumnState.cs" />
     <Compile Include="Tree\ListModel.cs" />
     <Compile Include="Tree\NodeControls\EditEventArgs.cs" />
+    <Compile Include="Tree\NodeControls\DrawIconEventArgs.cs" />
+    <Compile Include="Tree\NodeControls\DrawEventArgs.cs" />
     <Compile Include="Tree\NodeControls\LabelEventArgs.cs" />
     <Compile Include="Tree\NodeControls\NodeIntegerTextBox.cs">
       <SubType>Component</SubType>
@@ -108,7 +110,7 @@
     <Compile Include="Tree\NodeControls\InteractiveControl.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Tree\NodeControls\DrawEventArgs.cs" />
+    <Compile Include="Tree\NodeControls\DrawTextEventArgs.cs" />
     <Compile Include="Tree\NodeControls\NodeEventArgs.cs" />
     <Compile Include="Tree\SortedTreeModel.cs" />
     <Compile Include="Tree\TreeModelBase.cs" />

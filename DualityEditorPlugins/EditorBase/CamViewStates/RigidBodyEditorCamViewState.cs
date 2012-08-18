@@ -13,6 +13,7 @@ using Duality.ColorFormat;
 using Font = Duality.Resources.Font;
 
 using DualityEditor;
+using DualityEditor.CorePluginInterface;
 using DualityEditor.Forms;
 
 using OpenTK;
@@ -231,7 +232,9 @@ namespace EditorBase.CamViewStates
 			RigidBody pickedCollider = null;
 			ShapeInfo pickedShape = null;
 
-			RigidBody[] visibleColliders = this.QueryVisibleColliders().ToArray();
+			RigidBody[] visibleColliders = this.QueryVisibleColliders()
+				.Where(r => !CorePluginRegistry.RequestDesignTimeData(r.GameObj).IsLocked)
+				.ToArray();
 			visibleColliders.StableSort(delegate(RigidBody c1, RigidBody c2) 
 			{ 
 				return MathF.RoundToInt(1000.0f * (c1.GameObj.Transform.Pos.Z - c2.GameObj.Transform.Pos.Z));
@@ -264,7 +267,9 @@ namespace EditorBase.CamViewStates
 			RigidBody pickedCollider = null;
 			ShapeInfo pickedShape = null;
 
-			RigidBody[] visibleColliders = this.QueryVisibleColliders().ToArray();
+			RigidBody[] visibleColliders = this.QueryVisibleColliders()
+				.Where(r => !CorePluginRegistry.RequestDesignTimeData(r.GameObj).IsLocked)
+				.ToArray();
 			visibleColliders.StableSort(delegate(RigidBody c1, RigidBody c2) 
 			{ 
 				return MathF.RoundToInt(1000.0f * (c1.GameObj.Transform.Pos.Z - c2.GameObj.Transform.Pos.Z));
@@ -516,8 +521,10 @@ namespace EditorBase.CamViewStates
 
 		protected IEnumerable<RigidBody> QueryVisibleColliders()
 		{
+			var allColliders = Scene.Current.AllObjects.GetComponents<RigidBody>(true);
+			allColliders = allColliders.Where(r => !CorePluginRegistry.RequestDesignTimeData(r.GameObj).IsHidden);
+
 			this.View.MakeDualityTarget();
-			IEnumerable<RigidBody> allColliders = Scene.Current.AllObjects.GetComponents<RigidBody>(true);
 			IDrawDevice device = this.View.CameraComponent.DrawDevice;
 			return allColliders.Where(c => device.IsCoordInView(c.GameObj.Transform.Pos, c.BoundRadius));
 		}
@@ -527,7 +534,11 @@ namespace EditorBase.CamViewStates
 		}
 		protected bool RendererFilter(ICmpRenderer r)
 		{
-			return (r as Component).GameObj.GetComponent<RigidBody>() != null && (r as Component).Active;
+			GameObject obj = (r as Component).GameObj;
+			if (obj.RigidBody == null || !(r as Component).Active) return false;
+
+			DesignTimeObjectData data = CorePluginRegistry.RequestDesignTimeData(obj);
+			return !data.IsHidden;
 		}
 		
 		private void View_CurrentCameraChanged(object sender, CamView.CameraChangedEventArgs e)

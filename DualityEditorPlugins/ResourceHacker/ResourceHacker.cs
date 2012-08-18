@@ -391,7 +391,7 @@ namespace ResourceHacker
 			DataTreeNode selNode = viewSelNode != null ? viewSelNode.Tag as DataTreeNode : null;
 			this.propertyGrid.SelectObject(selNode != null ? selNode.Data : null);
 		}
-		private void nodeTextBoxObjId_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawEventArgs e)
+		private void nodeTextBoxObjId_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawTextEventArgs e)
 		{
 			DataTreeNode node = e.Node.Tag as DataTreeNode;
 			ObjectRefTreeNode objRefNode = node as ObjectRefTreeNode;
@@ -407,7 +407,7 @@ namespace ResourceHacker
 			else
 				e.TextColor = Color.Black;
 		}
-		private void nodeTextBoxType_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawEventArgs e)
+		private void nodeTextBoxType_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawTextEventArgs e)
 		{
 			DataTreeNode node = e.Node.Tag as DataTreeNode;
 			ObjectTreeNode objNode = node as ObjectTreeNode;
@@ -416,11 +416,11 @@ namespace ResourceHacker
 			else
 				e.TextColor = Color.Black;
 		}
-		private void nodeTextBoxName_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawEventArgs e)
+		private void nodeTextBoxName_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawTextEventArgs e)
 		{
 			e.TextColor = Color.Black;
 		}
-		private void nodeTextBoxValue_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawEventArgs e)
+		private void nodeTextBoxValue_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawTextEventArgs e)
 		{
 			e.TextColor = Color.Black;
 		}

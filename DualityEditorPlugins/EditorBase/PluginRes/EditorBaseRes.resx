@@ -394,6 +394,24 @@
   <data name="SceneView_Help_Doubleclick" xml:space="preserve">
     <value>Doubleclick: {0}</value>
   </data>
+  <data name="SceneView_Item_Hidden" xml:space="preserve">
+    <value>Hidden</value>
+  </data>
+  <data name="SceneView_Item_Hidden_Tooltip" xml:space="preserve">
+    <value>The object is currently locked and hidden. Click to show and unlock.</value>
+  </data>
+  <data name="SceneView_Item_Locked" xml:space="preserve">
+    <value>Locked</value>
+  </data>
+  <data name="SceneView_Item_Locked_Tooltip" xml:space="preserve">
+    <value>The object is currently locked. Click to hide or unlock.</value>
+  </data>
+  <data name="SceneView_Item_LockHide" xml:space="preserve">
+    <value>Lock / Hide</value>
+  </data>
+  <data name="SceneView_Item_LockHide_Tooltip" xml:space="preserve">
+    <value>Click to lock or hide the object while editing.</value>
+  </data>
   <data name="SceneView_MsgBox_ConfirmDeleteSelectedObjects_Caption" xml:space="preserve">
     <value>Delete selected objects?</value>
   </data>

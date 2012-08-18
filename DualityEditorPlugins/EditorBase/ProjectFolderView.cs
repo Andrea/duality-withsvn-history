@@ -290,8 +290,8 @@ namespace EditorBase
 			this.folderModel = new TreeModel();
 			this.folderView.Model = this.folderModel;
 
-			this.nodeTextBoxType.DrawText += new EventHandler<Aga.Controls.Tree.NodeControls.DrawEventArgs>(nodeTextBoxType_DrawText);
-			this.nodeTextBoxName.DrawText += new EventHandler<Aga.Controls.Tree.NodeControls.DrawEventArgs>(nodeTextBoxName_DrawText);
+			this.nodeTextBoxType.DrawText += this.nodeTextBoxType_DrawText;
+			this.nodeTextBoxName.DrawText += this.nodeTextBoxName_DrawText;
 			this.nodeTextBoxName.EditorShowing += new CancelEventHandler(nodeTextBoxName_EditorShowing);
 			this.nodeTextBoxName.EditorHided += new EventHandler(nodeTextBoxName_EditorHided);
 			this.nodeTextBoxName.ChangesApplied += new EventHandler(nodeTextBoxName_ChangesApplied);
@@ -1013,7 +1013,7 @@ namespace EditorBase
 			return dropNodeParent;
 		}
 
-		private void nodeTextBoxName_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawEventArgs e)
+		private void nodeTextBoxName_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawTextEventArgs e)
 		{
 			NodeBase node = e.Node.Tag as NodeBase;
 			ResourceNode resNode = node as ResourceNode;
@@ -1072,7 +1072,7 @@ namespace EditorBase
 			this.InsertNodeSorted(node, parentNode);
 			this.RegisterNodeTree(node);
 		}
-		private void nodeTextBoxType_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawEventArgs e)
+		private void nodeTextBoxType_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawTextEventArgs e)
 		{
 			e.TextColor = Color.FromArgb(128, 0, 0, 0);
 			e.BackgroundBrush = null;

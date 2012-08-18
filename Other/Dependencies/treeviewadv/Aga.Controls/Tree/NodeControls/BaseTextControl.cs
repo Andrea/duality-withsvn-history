@@ -148,7 +148,7 @@ namespace Aga.Controls.Tree.NodeControls
 			Font font = context.Font;
 			if (DrawTextMustBeFired(node))
 			{
-				DrawEventArgs args = new DrawEventArgs(node, this, context, label);
+				DrawTextEventArgs args = new DrawTextEventArgs(node, this, context, label);
 				args.Font = context.Font;
 				OnDrawText(args);
 				font = args.Font;
@@ -242,7 +242,7 @@ namespace Aga.Controls.Tree.NodeControls
 
 			if (DrawTextMustBeFired(node))
 			{
-				DrawEventArgs args = new DrawEventArgs(node, this, context, text);
+				DrawTextEventArgs args = new DrawTextEventArgs(node, this, context, text);
 				args.Text = label;
 				args.TextColor = textColor;
 				args.BackgroundBrush = backgroundBrush;
@@ -298,8 +298,8 @@ namespace Aga.Controls.Tree.NodeControls
 		/// <summary>
 		/// Fires when control is going to draw a text. Can be used to change text or back color
 		/// </summary>
-		public event EventHandler<DrawEventArgs> DrawText;
-		protected virtual void OnDrawText(DrawEventArgs args)
+		public event EventHandler<DrawTextEventArgs> DrawText;
+		protected virtual void OnDrawText(DrawTextEventArgs args)
 		{
 			TreeViewAdv tree = args.Node.Tree;
 			if (tree != null)

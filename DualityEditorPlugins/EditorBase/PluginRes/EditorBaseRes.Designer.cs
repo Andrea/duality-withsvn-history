@@ -815,6 +815,60 @@ namespace EditorBase.PluginRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Hidden ähnelt.
+        /// </summary>
+        public static string SceneView_Item_Hidden {
+            get {
+                return ResourceManager.GetString("SceneView_Item_Hidden", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die The object is currently locked and hidden. Click to show and unlock. ähnelt.
+        /// </summary>
+        public static string SceneView_Item_Hidden_Tooltip {
+            get {
+                return ResourceManager.GetString("SceneView_Item_Hidden_Tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Locked ähnelt.
+        /// </summary>
+        public static string SceneView_Item_Locked {
+            get {
+                return ResourceManager.GetString("SceneView_Item_Locked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die The object is currently locked. Click to hide or unlock. ähnelt.
+        /// </summary>
+        public static string SceneView_Item_Locked_Tooltip {
+            get {
+                return ResourceManager.GetString("SceneView_Item_Locked_Tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Lock / Hide ähnelt.
+        /// </summary>
+        public static string SceneView_Item_LockHide {
+            get {
+                return ResourceManager.GetString("SceneView_Item_LockHide", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Click to lock or hide the object while editing. ähnelt.
+        /// </summary>
+        public static string SceneView_Item_LockHide_Tooltip {
+            get {
+                return ResourceManager.GetString("SceneView_Item_LockHide_Tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Delete selected objects? ähnelt.
         /// </summary>
         public static string SceneView_MsgBox_ConfirmDeleteSelectedObjects_Caption {

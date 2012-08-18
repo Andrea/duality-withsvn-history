@@ -135,9 +135,13 @@ namespace EditorBase.CamViewStates
 			this.View.LocalGLControl.DragEnter	+= this.LocalGLControl_DragEnter;
 			this.View.LocalGLControl.DragLeave	+= this.LocalGLControl_DragLeave;
 			this.View.LocalGLControl.DragOver	+= this.LocalGLControl_DragOver;
+			this.View.CurrentCameraChanged		+= this.View_CurrentCameraChanged;
 
 			DualityEditorApp.SelectionChanged		+= this.EditorForm_SelectionChanged;
 			DualityEditorApp.ObjectPropertyChanged	+= this.EditorForm_ObjectPropertyChanged;
+
+			// Initial Camera update
+			this.View_CurrentCameraChanged(this, new CamView.CameraChangedEventArgs(null, this.View.CameraComponent));
 
 			// Initial selection update
 			ObjectSelection current = DualityEditorApp.Selection;
@@ -158,10 +162,16 @@ namespace EditorBase.CamViewStates
 		internal protected override void OnLeaveState()
 		{
 			base.OnLeaveState();
+
+			// Cleanup
+			this.View_CurrentCameraChanged(this, new CamView.CameraChangedEventArgs(this.View.CameraComponent, null));
+
+			// Unregister events
 			this.View.LocalGLControl.DragDrop	-= this.LocalGLControl_DragDrop;
 			this.View.LocalGLControl.DragEnter	-= this.LocalGLControl_DragEnter;
 			this.View.LocalGLControl.DragLeave	-= this.LocalGLControl_DragLeave;
 			this.View.LocalGLControl.DragOver	-= this.LocalGLControl_DragOver;
+			this.View.CurrentCameraChanged		-= this.View_CurrentCameraChanged;
 
 			DualityEditorApp.SelectionChanged		-= this.EditorForm_SelectionChanged;
 			DualityEditorApp.ObjectPropertyChanged	-= this.EditorForm_ObjectPropertyChanged;
@@ -194,13 +204,18 @@ namespace EditorBase.CamViewStates
 		public override CamViewState.SelObj PickSelObjAt(int x, int y)
 		{
 			Component picked = this.View.PickRendererAt(x, y) as Component;
+			if (picked != null && CorePluginRegistry.RequestDesignTimeData(picked.GameObj).IsLocked) picked = null;
 			if (picked != null) return new SelGameObj(picked.GameObj);
 			return null;
 		}
 		public override List<CamViewState.SelObj> PickSelObjIn(int x, int y, int w, int h)
 		{
 			HashSet<ICmpRenderer> picked = this.View.PickRenderersIn(x, y, w, h);
-			return picked.OfType<Component>().Select(r => new SelGameObj(r.GameObj) as SelObj).ToList();
+			return picked
+				.OfType<Component>()
+				.Where(r => !CorePluginRegistry.RequestDesignTimeData(r.GameObj).IsLocked)
+				.Select(r => new SelGameObj(r.GameObj) as SelObj)
+				.ToList();
 		}
 
 		public override void ClearSelection()
@@ -339,6 +354,11 @@ namespace EditorBase.CamViewStates
 
 			if (this.SelObjAction != MouseAction.None) this.EndAction();
 		}
+		private void View_CurrentCameraChanged(object sender, CamView.CameraChangedEventArgs e)
+		{
+			if (e.PreviousCamera != null) e.PreviousCamera.RemoveEditorRendererFilter(this.RendererFilter);
+			if (e.NextCamera != null) e.NextCamera.AddEditorRendererFilter(this.RendererFilter);
+		}
 		private void DragBeginAction(DragEventArgs e)
 		{
 			DataObject data = e.Data as DataObject;
@@ -414,6 +434,12 @@ namespace EditorBase.CamViewStates
 		private bool IsAffectedByParent(GameObject child, GameObject parent)
 		{
 			return child.IsChildOf(parent) && child.Transform != null && parent.Transform != null && !child.Transform.IgnoreParent;
+		}
+		private bool RendererFilter(ICmpRenderer r)
+		{
+			GameObject obj = (r as Component).GameObj;
+			DesignTimeObjectData data = CorePluginRegistry.RequestDesignTimeData(obj);
+			return !data.IsHidden;
 		}
 
 		HelpInfo IHelpProvider.ProvideHoverHelp(Point localPos, ref bool captured)

@@ -19,25 +19,6 @@
 
 
 
--->	Dualitor: Add "Locked"-Option for GameObjects. This is a pure design-time option
-	-->	Display Locked-State in Scene View. Special Color? Darker? Greyed out?
-		-->	Maybe also activate / deactivate locked state in Scene View?
-		-->	CheckButton with a lock on it or something, reacts to the current Selection.
-	-->	Can't be selected / picked it in SceneEditor and RigidBodyEditor, it's just ignored.
-	-->	If it IS selected, edit everything as normal
-
-	-->	Maybe also add a "show / hide" method? Works the same as "lock / unlock", also purely in the Scene View
-		because there should be a clear separation to actual object properties.
-
-	-->	How to store this data? Introduce DesignTimeData class and introduce a mapping in DualityEditorApp
-	-->	Can check whether it is default. If it is, remove it from the mapping.
-	-->	Can check whether its object is destroyed. If it is, remove it from the mapping.
-	-->	If DesignTimeData is requested without one being registered for that object, create a new one.
-	-->	When modifying DesignTimeData of an object, it notifies DualityEditorApp about the change.
-	-->	It should contain basic properties and a registry for additional, custom data.
-	-->	DesignTimeData isn't saved. When closing the editor, it's gone. However, it stays when switching Scenes, etc.
-
-
 -->	Dualitor: Add PropertyGrid Debug mode
 	-->	Show even private Members
 	-->	Provide "IsDebugMode" info in PropertyGrid and ProviderContext, because some PropertyEditors might want to opt-out in debug mode

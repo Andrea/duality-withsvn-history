@@ -134,7 +134,7 @@ namespace DualityEditor.Forms
 			this.buttonOk.Enabled = validInput;
 		}
 
-		private void folderViewControlName_DrawText(object sender, DrawEventArgs e)
+		private void folderViewControlName_DrawText(object sender, DrawTextEventArgs e)
 		{
 			e.TextColor = Color.Black;
 		}

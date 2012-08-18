@@ -47,7 +47,7 @@ namespace DualityEditor
 		private	static ObjectSelection				selectionCurrent	= ObjectSelection.Null;
 		private	static ObjectSelection				selectionPrevious	= ObjectSelection.Null;
 		private	static bool							selectionChanging	= false;
-		private	static ObjectSelection				selectionTempScene	= ObjectSelection.Null;	// GameObjCmp sel inbetween scene switches
+		private	static Dictionary<Guid,Type>		selectionTempScene	= null;	// GameObjCmp sel inbetween scene switches
 
 
 		public	static	event	EventHandler	Terminating			= null;
@@ -880,10 +880,10 @@ namespace DualityEditor
 				OnIdling();
 
 			// Update Duality engine
-			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
+			//System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
 			while (AppStillIdle)
 			{
-				watch.Restart();
+				//watch.Restart();
 				if (!dualityAppSuspended)
 				{
 					try
@@ -897,16 +897,16 @@ namespace DualityEditor
 					OnUpdatingEngine();
 				}
 
-				// Assure we'll at least wait 16 ms until updating again.
-				while (watch.Elapsed.TotalSeconds < 0.016666d) 
-				{
-					// Go to sleep if we'd have to wait too long
-					if (watch.Elapsed.TotalSeconds < 0.012d)
-						System.Threading.Thread.Sleep(1);
-					// App wants to do something? Stop waiting.
-					else if (!AppStillIdle)
-						break;
-				}
+				//// Assure we'll at least wait 16 ms until updating again.
+				//while (watch.Elapsed.TotalSeconds < 0.016666d) 
+				//{
+				//    // Go to sleep if we'd have to wait too long
+				//    if (watch.Elapsed.TotalSeconds < 0.012d)
+				//        System.Threading.Thread.Sleep(1);
+				//    // App wants to do something? Stop waiting.
+				//    else if (!AppStillIdle)
+				//        break;
+				//}
 			}
 		}
 		private static void Scene_Leaving(object sender, EventArgs e)
@@ -914,23 +914,41 @@ namespace DualityEditor
 			CorePluginRegistry.CleanupDesignTimeData();
 
 			if (selectionCurrent.Categories.HasFlag(ObjectSelection.Category.GameObjCmp))
-				selectionTempScene = selectionCurrent.Exclusive(ObjectSelection.Category.GameObjCmp);
+			{
+				if (selectionTempScene == null)
+					selectionTempScene = new Dictionary<Guid,Type>();
+				else
+					selectionTempScene.Clear();
+
+				foreach (GameObject obj in selectionCurrent.GameObjects)
+					selectionTempScene.Add(obj.Id, null);
+				foreach (Component cmp in selectionCurrent.Components.Where(c => c.GameObj != null))
+					selectionTempScene.Add(cmp.GameObj.Id, cmp.GetType());
+			}
 			Deselect(null, ObjectSelection.Category.GameObjCmp);
 		}
 		private static void Scene_Entered(object sender, EventArgs e)
 		{
-			// Try to restore last GameObject / Component selection
-			var objQuery = selectionTempScene.GameObjects.Select(g => Scene.Current.AllObjects.FirstOrDefault(sg => sg.Id == g.Id)).NotNull();
-			var cmpQuery = selectionTempScene.Components.Select(delegate (Component c)
+			if (selectionTempScene != null)
 			{
-				GameObject cmpObj = Scene.Current.AllObjects.FirstOrDefault(sg => sg.Id == c.GameObj.Id);
-				if (cmpObj == null) return null;
-				return cmpObj.GetComponent(c.GetType());
-			}).NotNull();
+				// Try to restore last GameObject / Component selection
+				List<object> objList = new List<object>();
+				foreach (var pair in selectionTempScene)
+				{
+					GameObject obj = Scene.Current.AllObjects.FirstOrDefault(sg => sg.Id == pair.Key);
+					if (obj == null) continue;
 
-			// Append restored selection to current one.
-			ObjectSelection objSel = new ObjectSelection(((IEnumerable<object>)objQuery).Concat(cmpQuery));
-			if (objSel.ObjectCount > 0) Select(null, objSel, SelectMode.Append);
+					Component cmp = pair.Value != null ? obj.GetComponent(pair.Value) : null;
+
+					if (cmp != null)
+						objList.Add(cmp);
+					else if (obj != null)
+						objList.Add(obj);
+				}
+
+				// Append restored selection to current one.
+				if (objList.Count > 0) Select(null, new ObjectSelection(objList), SelectMode.Append);
+			}
 		}
 		private static void Resource_ResourceSaved(object sender, Duality.ResourceEventArgs e)
 		{
