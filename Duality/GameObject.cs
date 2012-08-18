@@ -4,6 +4,7 @@ using System.Linq;
 
 using Duality.Resources;
 using Duality.Cloning;
+using Duality.EditorHints;
 
 using ICloneable = Duality.Cloning.ICloneable;
 
@@ -23,6 +24,7 @@ namespace Duality
 	public sealed class GameObject : IManageableObject, ICloneable
 	{
 		internal	PrefabLink					prefabLink	= null;
+		private		Guid						identifier	= Guid.NewGuid();
 		private		GameObject					parent		= null;
 		private		List<GameObject>			children	= null;
 		private		Dictionary<Type,Component>	compMap		= new Dictionary<Type,Component>();
@@ -121,6 +123,14 @@ namespace Duality
 		{
 			get { return (this.parent != null) ? this.parent.FullName + '/' + this.name : this.name; }
 		}						//	G
+		/// <summary>
+		/// [GET] The GameObjects persistent globally unique identifier.
+		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
+		public Guid Id
+		{
+			get { return this.identifier; }
+		}								//	G
 		/// <summary>
 		/// [GET] Returns the number of parents this object has when travelling upwards the scene graph hierarchy.
 		/// </summary>
@@ -716,6 +726,8 @@ namespace Duality
 		void ICloneable.CopyDataTo(object targetObj, CloneProvider provider)
 		{
 			GameObject target = targetObj as GameObject;
+
+			// Note: Do not copy the identifier!
 
 			// Copy "pure" data
 			target.name			= this.name;

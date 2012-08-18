@@ -1038,11 +1038,9 @@ namespace EditorBase.CamViewStates
 				this.View.CameraComponent.Passes.Add(this.camPassBg);
 				this.View.CameraComponent.Passes.Add(this.camPassEdWorld);
 				this.View.CameraComponent.Passes.Add(this.camPassEdScreen);
-				DualityApp.CheckOpenGLErrors();
 
 				this.OnRenderState();
 
-				DualityApp.CheckOpenGLErrors();
 				this.View.CameraComponent.Passes.Remove(this.camPassBg);
 				this.View.CameraComponent.Passes.Remove(this.camPassEdWorld);
 				this.View.CameraComponent.Passes.Remove(this.camPassEdScreen);

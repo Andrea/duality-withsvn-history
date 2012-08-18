@@ -7,6 +7,7 @@ using OpenTK;
 
 using Duality.Resources;
 using Duality.Cloning;
+using Duality.EditorHints;
 
 using ICloneable = Duality.Cloning.ICloneable;
 

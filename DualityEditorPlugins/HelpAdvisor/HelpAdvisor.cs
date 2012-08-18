@@ -16,8 +16,6 @@ namespace HelpAdvisor
 		private	HelpInfo	newHelp		= null;
 		private	HelpInfo	currentHelp	= null;
 		private	HelpInfo	lastHelp	= null;
-		private	Timer		animTimer	= new Timer();
-		private	Timer		commitTimer	= new Timer();
 		private	DateTime	changeTime	= DateTime.Now;
 
 		private float AnimProgress
@@ -28,12 +26,6 @@ namespace HelpAdvisor
 		public HelpAdvisor()
 		{
 			this.InitializeComponent();
-			this.animTimer.Enabled = false;
-			this.animTimer.Interval = 15;
-			this.animTimer.Tick += this.animTimer_Tick;
-			this.commitTimer.Enabled = false;
-			this.commitTimer.Interval = 1;
-			this.commitTimer.Tick += this.commitTimer_Tick;
 		}
 
 		protected override void OnShown(EventArgs e)

@@ -90,8 +90,9 @@ namespace DualityEditor.CorePluginInterface
 		public const string ActionContext_ContextMenu		= "ContextMenu";
 		public const string ActionContext_OpenRes			= "OpenRes";
 
-		private	static	Dictionary<string,List<IResEntry>>	corePluginRes	= new Dictionary<string,List<IResEntry>>();
-		private	static	XmlCodeDoc							corePluginDoc	= new XmlCodeDoc();
+		private	static	XmlCodeDoc								corePluginDoc	= new XmlCodeDoc();
+		private	static	Dictionary<string,List<IResEntry>>		corePluginRes	= new Dictionary<string,List<IResEntry>>();
+		private	static	Dictionary<Guid,DesignTimeObjectData>	designTimeData	= new Dictionary<Guid,DesignTimeObjectData>();
 
 
 		private static void RegisterCorePluginRes(Type type, IResEntry res)
@@ -281,6 +282,26 @@ namespace DualityEditor.CorePluginInterface
 		public static XmlCodeDoc.Entry RequestXmlCodeDoc(MemberInfo info)
 		{
 			return corePluginDoc.GetMemberDoc(info);
+		}
+
+		public static DesignTimeObjectData RequestDesignTimeData(GameObject obj)
+		{
+			DesignTimeObjectData data;
+			if (!designTimeData.TryGetValue(obj.Id, out data))
+			{
+				data = new DesignTimeObjectData(obj, DesignTimeObjectData.Default);
+				designTimeData[obj.Id] = data;
+			}
+			return data;
+		}
+		internal static void CleanupDesignTimeData()
+		{
+			var removeQuery = 
+				from p in designTimeData
+				where p.Value.ParentObject.Disposed || p.Value == DesignTimeObjectData.Default
+				select p.Value.ParentObject;
+			foreach (GameObject obj in removeQuery.ToArray())
+				designTimeData.Remove(obj.Id);
 		}
 	}
 }

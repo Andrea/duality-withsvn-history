@@ -28,9 +28,12 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HelpAdvisor));
 			this.labelTopic = new System.Windows.Forms.Label();
 			this.labelDescription = new System.Windows.Forms.Label();
+			this.animTimer = new System.Windows.Forms.Timer(this.components);
+			this.commitTimer = new System.Windows.Forms.Timer(this.components);
 			this.SuspendLayout();
 			// 
 			// labelTopic
@@ -59,6 +62,15 @@
 			this.labelDescription.Size = new System.Drawing.Size(232, 33);
 			this.labelDescription.TabIndex = 1;
 			// 
+			// animTimer
+			// 
+			this.animTimer.Interval = 15;
+			this.animTimer.Tick += new System.EventHandler(this.animTimer_Tick);
+			// 
+			// commitTimer
+			// 
+			this.commitTimer.Tick += new System.EventHandler(this.commitTimer_Tick);
+			// 
 			// HelpAdvisor
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -81,5 +93,7 @@
 
 		private System.Windows.Forms.Label labelTopic;
 		private System.Windows.Forms.Label labelDescription;
+		private System.Windows.Forms.Timer animTimer;
+		private System.Windows.Forms.Timer commitTimer;
 	}
 }

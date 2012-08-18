@@ -147,7 +147,11 @@ namespace DualityEditor
 		private static void DualityEditorApp_Idling(object sender, EventArgs e)
 		{
 			if (needStackUpdate)
-				UpdateHelpStack();
+			{
+				// Schedule help stack update in main form
+				DualityEditorApp.MainForm.BeginInvoke((Action)UpdateHelpStack);
+				needStackUpdate = false;
+			}
 		}
 
 		private static void inputFilter_MouseLeave(object sender, EventArgs e)

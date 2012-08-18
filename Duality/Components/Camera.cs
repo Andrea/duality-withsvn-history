@@ -876,13 +876,11 @@ namespace Duality.Components
 		{
 			if (this.pickingLast == Time.FrameCount) return false;
 			this.pickingLast = Time.FrameCount;
-			DualityApp.CheckOpenGLErrors();
 
 			// Render picking map
 			this.picking = 1;
 			this.Render();
 			GL.Finish();
-			DualityApp.CheckOpenGLErrors();
 			this.picking = 0;
 
 			// Move data to local buffer
@@ -891,15 +889,12 @@ namespace Duality.Components
 			if (pxByteNum > this.pickingBuffer.Length) Array.Resize(ref this.pickingBuffer, Math.Max(this.pickingBuffer.Length * 2, pxByteNum));
 
 			ContentRef<RenderTarget> lastTex = RenderTarget.BoundRT;
-			int lastReadBuffer;
-			GL.GetInteger(GetPName.ReadBuffer, out lastReadBuffer);
 			RenderTarget.Bind(this.pickingRT);
 			GL.ReadBuffer(ReadBufferMode.ColorAttachment0);
 			GL.ReadPixels(0, 0, this.pickingTex.PxWidth, this.pickingTex.PxHeight, PixelFormat.Rgba, PixelType.UnsignedByte, this.pickingBuffer);
 			RenderTarget.Bind(lastTex);
-			GL.ReadBuffer((ReadBufferMode)lastReadBuffer);
+			GL.ReadBuffer(ReadBufferMode.Back);
 
-			DualityApp.CheckOpenGLErrors();
 			return true;
 		}
 		/// <summary>
@@ -910,6 +905,9 @@ namespace Duality.Components
 		/// <returns>The <see cref="Duality.ICmpRenderer"/> that owns the pixel.</returns>
 		public ICmpRenderer PickRendererAt(int x, int y)
 		{
+			if (x < 0 || x >= DualityApp.TargetResolution.X) return null;
+			if (y < 0 || y >= DualityApp.TargetResolution.Y) return null;
+			
 			this.RenderPickingMap();
 
 			x = MathF.Clamp(x, 0, this.pickingTex.PxWidth - 1);
@@ -940,12 +938,17 @@ namespace Duality.Components
 		/// <returns>A set of all <see cref="Duality.ICmpRenderer">ICmpRenderers</see> that have been picked.</returns>
 		public HashSet<ICmpRenderer> PickRenderersIn(int x, int y, int w, int h)
 		{
+			Rect dstRect = new Rect(x, y, w, h);
+			Rect srcRect = new Rect(DualityApp.TargetResolution);
+			if (!dstRect.Intersects(srcRect)) return new HashSet<ICmpRenderer>();
+			dstRect = dstRect.Intersection(srcRect);
+
 			this.RenderPickingMap();
 
-			x = Math.Max(x, 0);
-			y = Math.Max(y, 0);
-			w = Math.Min(w, this.pickingTex.PxWidth - x);
-			h = Math.Min(h, this.pickingTex.PxHeight - y);
+			x = Math.Max((int)dstRect.X, 0);
+			y = Math.Max((int)dstRect.Y, 0);
+			w = Math.Min((int)dstRect.W, this.pickingTex.PxWidth - x);
+			h = Math.Min((int)dstRect.H, this.pickingTex.PxHeight - y);
 
 			HashSet<ICmpRenderer> result = new HashSet<ICmpRenderer>();
 			int rendererIdLast = 0;

@@ -911,6 +911,8 @@ namespace DualityEditor
 		}
 		private static void Scene_Leaving(object sender, EventArgs e)
 		{
+			CorePluginRegistry.CleanupDesignTimeData();
+
 			if (selectionCurrent.Categories.HasFlag(ObjectSelection.Category.GameObjCmp))
 				selectionTempScene = selectionCurrent.Exclusive(ObjectSelection.Category.GameObjCmp);
 			Deselect(null, ObjectSelection.Category.GameObjCmp);

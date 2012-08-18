@@ -434,7 +434,7 @@ namespace Duality
 			sound.Update();
 			OnAfterUpdate();
 			CheckOpenALErrors();
-			CheckOpenGLErrors();
+			//CheckOpenGLErrors();
 			RunCleanup();
 
 			Performance.timeUpdate.EndMeasure();
@@ -497,7 +497,7 @@ namespace Duality
 			sound.Update();
 			OnAfterUpdate();
 			CheckOpenALErrors();
-			CheckOpenGLErrors();
+			//CheckOpenGLErrors();
 			RunCleanup();
 
 			Performance.timeUpdate.EndMeasure();
@@ -905,7 +905,8 @@ namespace Duality
 			return found;
 		}
 		/// <summary>
-		/// Checks for errors that might have occured during video processing.
+		/// Checks for errors that might have occured during video processing. You should avoid calling this method due to performance reasons.
+		/// Only use it on suspect.
 		/// </summary>
 		/// <param name="silent">If true, errors aren't logged.</param>
 		/// <returns>True, if an error occured, false if not.</returns>

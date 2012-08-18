@@ -290,7 +290,8 @@
         </member>
         <member name="M:Duality.DualityApp.CheckOpenGLErrors(System.Boolean)">
             <summary>
-            Checks for errors that might have occured during video processing.
+            Checks for errors that might have occured during video processing. You should avoid calling this method due to performance reasons.
+            Only use it on suspect.
             </summary>
             <param name="silent">If true, errors aren't logged.</param>
             <returns>True, if an error occured, false if not.</returns>
@@ -12931,6 +12932,11 @@
             </summary>
             <example>For an object called <c>Wheel</c> inside an object called <c>Car</c>, this would return <c>Car/Wheel</c>.</example>
         </member>
+        <member name="P:Duality.GameObject.Id">
+            <summary>
+            [GET] The GameObjects persistent globally unique identifier.
+            </summary>
+        </member>
         <member name="P:Duality.GameObject.HierarchyLevel">
             <summary>
             [GET] Returns the number of parents this object has when travelling upwards the scene graph hierarchy.
@@ -13186,6 +13192,39 @@
             <summary>
             [GET] The preferred number of displayed decimal places
             </summary>
+        </member>
+        <member name="T:Duality.InitState">
+            <summary>
+            Describes the state of object activation or disposal.
+            </summary>
+        </member>
+        <member name="F:Duality.InitState.Initializing">
+            <summary>
+            The object is currently initializing.
+            </summary>
+        </member>
+        <member name="F:Duality.InitState.Initialized">
+            <summary>
+            The object has been fully initialized and is fully operational.
+            </summary>
+        </member>
+        <member name="F:Duality.InitState.Disposing">
+            <summary>
+            The object is currently disposing.
+            </summary>
+        </member>
+        <member name="F:Duality.InitState.Disposed">
+            <summary>
+            The object has been fully disposed and can be considered "dead".
+            </summary>
+        </member>
+        <member name="M:Duality.ExtMethodsInitState.IsActive(Duality.InitState)">
+            <summary>
+            Returns whether the current <see cref="T:Duality.InitState"/> can be considered active. This is true
+            after initialization and during disposal.
+            </summary>
+            <param name="state"></param>
+            <returns></returns>
         </member>
         <member name="T:Duality.Components.Physics.RopeJointInfo">
             <summary>
@@ -13926,39 +13965,6 @@
             <summary>
             [GET / SET] The maximum angular impulse to apply to the RigidBody. A negative value equals infinity.
             </summary>
-        </member>
-        <member name="T:Duality.InitState">
-            <summary>
-            Describes the state of object activation or disposal.
-            </summary>
-        </member>
-        <member name="F:Duality.InitState.Initializing">
-            <summary>
-            The object is currently initializing.
-            </summary>
-        </member>
-        <member name="F:Duality.InitState.Initialized">
-            <summary>
-            The object has been fully initialized and is fully operational.
-            </summary>
-        </member>
-        <member name="F:Duality.InitState.Disposing">
-            <summary>
-            The object is currently disposing.
-            </summary>
-        </member>
-        <member name="F:Duality.InitState.Disposed">
-            <summary>
-            The object has been fully disposed and can be considered "dead".
-            </summary>
-        </member>
-        <member name="M:Duality.ExtMethodsInitState.IsActive(Duality.InitState)">
-            <summary>
-            Returns whether the current <see cref="T:Duality.InitState"/> can be considered active. This is true
-            after initialization and during disposal.
-            </summary>
-            <param name="state"></param>
-            <returns></returns>
         </member>
     </members>
 </doc>
