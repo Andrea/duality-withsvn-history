@@ -4,12 +4,14 @@ using System.Linq;
 using System.Drawing;
 
 using Duality;
+using Duality.Serialization;
 
 namespace DualityEditor.CorePluginInterface
 {
 	public class DesignTimeObjectData
 	{
-		private class DataContainer : IEquatable<DataContainer>
+		[Serializable]
+		internal class DataContainer : IEquatable<DataContainer>
 		{
 			public	bool	hidden	= false;
 			public	bool	locked	= false;
@@ -74,15 +76,23 @@ namespace DualityEditor.CorePluginInterface
 			}
 		}
 
-		public static readonly DesignTimeObjectData Default = new DesignTimeObjectData(null);
+		public static readonly DesignTimeObjectData Default = new DesignTimeObjectData();
 
-		private	GameObject		obj		= null;
+		private	Guid			objId	= Guid.Empty;
 		private DataContainer	data	= null;
 		private	bool			dirty	= false;
 
-		public GameObject ParentObject
+		internal DataContainer Data
 		{
-			get { return this.obj; }
+			get { return this.data; }
+		}
+		internal bool IsDirty
+		{
+			get { return this.dirty; }
+		}
+		public Guid ParentObjectId
+		{
+			get { return this.objId; }
 		}
 		public bool IsHidden
 		{
@@ -118,14 +128,21 @@ namespace DualityEditor.CorePluginInterface
 		}
 
 
-		public DesignTimeObjectData(GameObject parent)
+		private DesignTimeObjectData() : this(Guid.Empty) {}
+		internal DesignTimeObjectData(Guid parentId, DataContainer data, bool dirty)
 		{
-			this.obj = parent;
+			this.objId = parentId;
+			this.data = data;
+			this.dirty = dirty;
+		}
+		public DesignTimeObjectData(Guid parentId)
+		{
+			this.objId = parentId;
 			this.data = new DataContainer();
 		}
-		public DesignTimeObjectData(GameObject parent, DesignTimeObjectData baseData)
+		public DesignTimeObjectData(Guid parentId, DesignTimeObjectData baseData)
 		{
-			this.obj = parent;
+			this.objId = parentId;
 			this.data = baseData.data;
 			this.dirty = true;
 		}
@@ -156,12 +173,130 @@ namespace DualityEditor.CorePluginInterface
 			this.data.custom.Remove(typeof(T));
 		}
 
+		internal bool TryShareData(DesignTimeObjectData other)
+		{
+			if (object.ReferenceEquals(this.data, other.data)) return true;
+			if (this.data == other.data)
+			{
+				other.data = this.data;
+				this.dirty = true;
+				other.dirty = true;
+				return true;
+			}
+			return false;
+		}
 		private void CleanDirty()
 		{
 			if (!this.dirty) return;
 			if (this.data == null)	this.data = new DataContainer();
 			else					this.data = new DataContainer(this.data);
 			this.dirty = false;
+		}
+	}
+
+	[Serializable]
+	internal class DesignTimeObjectDataManager : ISerializable
+	{
+		private static readonly int GuidByteLength = Guid.Empty.ToByteArray().Length;
+		private	const int Version_First	= 1;
+
+		private	Dictionary<Guid,DesignTimeObjectData>	dataStore	= new Dictionary<Guid,DesignTimeObjectData>();
+		
+		
+		public DesignTimeObjectData RequestDesignTimeData(Guid objId)
+		{
+			DesignTimeObjectData data;
+			if (!this.dataStore.TryGetValue(objId, out data))
+			{
+				data = new DesignTimeObjectData(objId, DesignTimeObjectData.Default);
+				this.dataStore[objId] = data;
+			}
+			return data;
+		}
+		public void CleanupDesignTimeData()
+		{
+			// Remove trivial / default data
+			var removeQuery = 
+				from p in this.dataStore
+				where p.Value.IsDefault
+				select p.Value.ParentObjectId;
+			foreach (Guid objId in removeQuery.ToArray())
+				this.dataStore.Remove(objId);
+		}
+		public void OptimizeDesignTimeData()
+		{
+			// Optimize data by sharing
+			var shareValues = this.dataStore.Values.ToList();
+			while (shareValues.Count > 0)
+			{
+				DesignTimeObjectData data = shareValues[shareValues.Count - 1];
+				foreach (DesignTimeObjectData other in shareValues)
+				{
+					data.TryShareData(other);
+				}
+				shareValues.RemoveAt(shareValues.Count - 1);
+			}
+		}
+
+		void ISerializable.WriteData(IDataWriter writer)
+		{
+			this.CleanupDesignTimeData();
+			this.OptimizeDesignTimeData();
+
+			Guid[] guidArray = dataStore.Keys.ToArray();
+			byte[] data = new byte[guidArray.Length * GuidByteLength];
+			for (int i = 0; i < guidArray.Length; i++)
+			{
+				Array.Copy(
+					guidArray[i].ToByteArray(), 0, 
+					data, i * GuidByteLength, GuidByteLength);
+			}
+			DesignTimeObjectData.DataContainer[] objData = dataStore.Values.Select(d => d.Data).ToArray();
+			bool[] objDataDirty = dataStore.Values.Select(d => d.IsDirty).ToArray();
+
+			writer.WriteValue("version", Version_First);
+			writer.WriteValue("dataStoreKeys", data);
+			writer.WriteValue("dataStoreValues", objData);
+			writer.WriteValue("dataStoreDirtyFlag", objDataDirty);
+		}
+		void ISerializable.ReadData(IDataReader reader)
+		{
+			int version;
+			reader.ReadValue("version", out version);
+			
+			if (this.dataStore == null)
+				this.dataStore = new Dictionary<Guid,DesignTimeObjectData>();
+			else
+				this.dataStore.Clear();
+
+			if (version == Version_First)
+			{
+				byte[] data;
+				DesignTimeObjectData.DataContainer[] objData;
+				bool[] objDataDirty;
+				reader.ReadValue("dataStoreKeys", out data);
+				reader.ReadValue("dataStoreValues", out objData);
+				reader.ReadValue("dataStoreDirtyFlag", out objDataDirty);
+
+				Guid[] guidArray = new Guid[data.Length / GuidByteLength];
+				byte[] guidData = new byte[GuidByteLength];
+				for (int i = 0; i < guidArray.Length; i++)
+				{
+					Array.Copy(
+						data, i * GuidByteLength,
+						guidData, 0, GuidByteLength);
+					guidArray[i] = new Guid(guidData);
+				}
+
+				for (int i = 0; i < objData.Length; i++)
+				{
+					this.dataStore.Add(guidArray[i], new DesignTimeObjectData(guidArray[i], objData[i], objDataDirty[i]));
+				}
+			}
+			else
+			{
+				// Unknown format
+			}
 		}
 	}
 }

@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Drawing;
+using System.IO;
 
 using AdamsLair.PropertyGrid;
 
 using Duality;
+using Duality.Resources;
+using Duality.Serialization;
+
 using DualityEditor.CorePluginInterface;
 
 namespace DualityEditor.CorePluginInterface
@@ -92,7 +96,21 @@ namespace DualityEditor.CorePluginInterface
 
 		private	static	XmlCodeDoc								corePluginDoc	= new XmlCodeDoc();
 		private	static	Dictionary<string,List<IResEntry>>		corePluginRes	= new Dictionary<string,List<IResEntry>>();
-		private	static	Dictionary<Guid,DesignTimeObjectData>	designTimeData	= new Dictionary<Guid,DesignTimeObjectData>();
+		private	static	DesignTimeObjectDataManager				designTimeData	= new DesignTimeObjectDataManager();
+		
+
+		internal static void Init()
+		{
+			Scene.Leaving += Scene_Leaving;
+		}
+		internal static void Terminate()
+		{
+			Scene.Leaving -= Scene_Leaving;
+		}
+		private static void Scene_Leaving(object sender, EventArgs e)
+		{
+			designTimeData.CleanupDesignTimeData();
+		}
 
 
 		private static void RegisterCorePluginRes(Type type, IResEntry res)
@@ -284,24 +302,62 @@ namespace DualityEditor.CorePluginInterface
 			return corePluginDoc.GetMemberDoc(info);
 		}
 
+		public static DesignTimeObjectData RequestDesignTimeData(Guid objId)
+		{
+			return designTimeData.RequestDesignTimeData(objId);
+		}
 		public static DesignTimeObjectData RequestDesignTimeData(GameObject obj)
 		{
-			DesignTimeObjectData data;
-			if (!designTimeData.TryGetValue(obj.Id, out data))
-			{
-				data = new DesignTimeObjectData(obj, DesignTimeObjectData.Default);
-				designTimeData[obj.Id] = data;
-			}
-			return data;
+			return designTimeData.RequestDesignTimeData(obj.Id);
 		}
-		internal static void CleanupDesignTimeData()
+		internal static void SaveDesignTimeData(string filePath)
 		{
-			var removeQuery = 
-				from p in designTimeData
-				where p.Value.IsDefault
-				select p.Value.ParentObject;
-			foreach (GameObject obj in removeQuery.ToArray())
-				designTimeData.Remove(obj.Id);
+			Log.Editor.Write("Saving designtime object data data...");
+			Log.Editor.PushIndent();
+
+			try
+			{
+				using (FileStream str = File.Create(filePath))
+				{
+					using (var formatter = Formatter.Create(str, FormattingMethod.Binary))
+					{
+						formatter.SerializationLog = Log.Editor;
+						formatter.WriteObject(designTimeData);
+					}
+				}
+			}
+			catch (Exception e) { Log.Editor.WriteError(Log.Exception(e)); }
+
+			Log.Editor.PopIndent();
+		}
+		internal static void LoadDesignTimeData(string filePath)
+		{
+			Log.Editor.Write("Loading designtime object data data...");
+			Log.Editor.PushIndent();
+
+			designTimeData = null;
+			if (File.Exists(filePath))
+			{
+				try
+				{
+					using (FileStream str = File.OpenRead(filePath))
+					{
+						using (var formatter = Formatter.Create(str, FormattingMethod.Binary))
+						{
+							formatter.SerializationLog = Log.Editor;
+							designTimeData = formatter.ReadObject() as DesignTimeObjectDataManager;
+						}
+					}
+				}
+				catch (Exception e) { Log.Editor.WriteError(Log.Exception(e)); }
+			}
+
+			if (designTimeData == null)
+			{
+				designTimeData = new DesignTimeObjectDataManager();
+			}
+
+			Log.Editor.PopIndent();
 		}
 	}
 }

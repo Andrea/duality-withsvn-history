@@ -20,12 +20,6 @@
 
 
 
--->	Dualitor: Save DesignTimeData maybe?
-	-->	Use a distinct file that everyone can detect and delete if needed (designtimedata.dat, next to appdata.dat)
-	-->	Save on editor shutdown, load on begin
-	-->	Can load using default serialization system (not a Resource)
-	-->	Log in editorlog
-
 -->	Dualitor: Add PropertyGrid Debug mode
 	-->	Show even private Members
 	-->	Provide "IsDebugMode" info in PropertyGrid and ProviderContext, because some PropertyEditors might want to opt-out in debug mode

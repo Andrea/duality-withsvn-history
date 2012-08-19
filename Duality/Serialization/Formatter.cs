@@ -206,6 +206,7 @@ namespace Duality.Serialization
 		{
 			this.AddSurrogate(new Surrogates.BitmapSurrogate());
 			this.AddSurrogate(new Surrogates.DictionarySurrogate());
+			this.AddSurrogate(new Surrogates.GuidSurrogate());
 		}
 		~Formatter()
 		{

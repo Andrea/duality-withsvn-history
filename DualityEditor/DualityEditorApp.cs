@@ -10,6 +10,7 @@ using System.Xml;
 using System.Text.RegularExpressions;
 
 using Duality;
+using Duality.Serialization;
 using Duality.Resources;
 using Duality.ObjectManagers;
 
@@ -32,6 +33,7 @@ namespace DualityEditor
 
 	public static class DualityEditorApp
 	{
+		private	const	string	DesignTimeDataFile		= "designtimedata.dat";
 		private	const	string	UserDataFile			= "editoruserdata.xml";
 		private	const	string	UserDataDockSeparator	= "<!-- DockPanel Data -->";
 		
@@ -138,6 +140,7 @@ namespace DualityEditor
 			ContentProvider.InitDefaultContent();
 			LoadPlugins();
 			LoadUserData();
+			LoadDesignTimeObjectData();
 			InitPlugins();
 
 			// Set up core plugin reloader
@@ -153,6 +156,7 @@ namespace DualityEditor
 			FileEventManager.PluginChanged += FileEventManager_PluginChanged;
 
 			// Initialize secondary editor components
+			CorePluginRegistry.Init();
 			Sandbox.Init();
 			HelpSystem.Init();
 			FileEventManager.Init();
@@ -206,9 +210,11 @@ namespace DualityEditor
 				FileEventManager.Terminate();
 				HelpSystem.Terminate();
 				Sandbox.Terminate();
+				CorePluginRegistry.Terminate();
 
 				// Terminate Duality
 				DualityEditorApp.SaveUserData();
+				DualityEditorApp.SaveDesignTimeObjectData();
 				DualityApp.SaveAppData();
 				DualityApp.Terminate();
 			}
@@ -321,6 +327,10 @@ namespace DualityEditor
 
 			Log.Editor.PopIndent();
 		}
+		private static void SaveDesignTimeObjectData()
+		{
+			CorePluginRegistry.SaveDesignTimeData(DesignTimeDataFile);
+		}
 		private static void LoadUserData()
 		{
 			if (!File.Exists(UserDataFile)) return;
@@ -386,6 +396,10 @@ namespace DualityEditor
 			}
 
 			Log.Editor.PopIndent();
+		}
+		private static void LoadDesignTimeObjectData()
+		{
+			CorePluginRegistry.LoadDesignTimeData(DesignTimeDataFile);
 		}
 		private static IDockContent DeserializeDockContent(string persistName)
 		{
@@ -911,8 +925,6 @@ namespace DualityEditor
 		}
 		private static void Scene_Leaving(object sender, EventArgs e)
 		{
-			CorePluginRegistry.CleanupDesignTimeData();
-
 			if (selectionCurrent.Categories.HasFlag(ObjectSelection.Category.GameObjCmp))
 			{
 				if (selectionTempScene == null)

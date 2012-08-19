@@ -52,7 +52,7 @@ namespace Duality.Serialization
 	/// <typeparam name="T">
 	/// The base <see cref="System.Type"/> of objects this surrogate can replace.
 	/// </typeparam>
-	public abstract class Surrogate<T> : ISurrogate, ISerializable where T : class
+	public abstract class Surrogate<T> : ISurrogate, ISerializable
 	{
 		private T realObj;
 		
