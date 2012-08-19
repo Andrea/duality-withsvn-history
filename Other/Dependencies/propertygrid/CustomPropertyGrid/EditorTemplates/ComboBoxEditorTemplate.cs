@@ -88,7 +88,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		}
 		public override void OnLostFocus(EventArgs e)
 		{
-			if (this.focused) this.EmitEditingFinished();			
+			if (this.focused) this.EmitEditingFinished(this.selectedObject, FinishReason.LostFocus);			
 			base.OnLostFocus(e);
 		}
 		public override void OnMouseMove(MouseEventArgs e)
@@ -183,7 +183,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 							this.selectedObject = pasteObjProxy;
 							this.selectedObjStr = this.DefaultValueStringGenerator(this.selectedObject);
 							this.EmitInvalidate();
-							this.EmitEdited();
+							this.EmitEdited(this.selectedObject);
 						}
 						success = true;
 					}
@@ -241,7 +241,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 				this.selectedObject = this.dropdown.SelectedItem;
 				this.selectedObjStr = this.DefaultValueStringGenerator(this.selectedObject);
 				this.EmitInvalidate();
-				this.EmitEdited();
+				this.EmitEdited(this.selectedObject);
 			}
 		}
 		private void dropdown_RequestClose(object sender, EventArgs e)

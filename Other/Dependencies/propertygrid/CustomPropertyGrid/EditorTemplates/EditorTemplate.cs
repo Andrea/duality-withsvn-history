@@ -17,8 +17,8 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		protected	bool		focused		= false;
 
 		public event EventHandler Invalidate = null;
-		public event EventHandler Edited = null;
-		public event EventHandler EditingFinished = null;
+		public event EventHandler<PropertyEditorValueEventArgs> Edited = null;
+		public event EventHandler<PropertyEditingFinishedEventArgs> EditingFinished = null;
 
 		public virtual Rectangle Rect
 		{
@@ -77,15 +77,15 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			if (this.Invalidate != null)
 				this.Invalidate(this, EventArgs.Empty);
 		}
-		protected void EmitEdited()
+		protected void EmitEdited(object value)
 		{
 			if (this.Edited != null)
-				this.Edited(this, EventArgs.Empty);
+				this.Edited(this, new PropertyEditorValueEventArgs(this.parent, value));
 		}
-		protected void EmitEditingFinished()
+		protected void EmitEditingFinished(object value, FinishReason reason)
 		{
 			if (this.EditingFinished != null)
-				this.EditingFinished(this, EventArgs.Empty);
+				this.EditingFinished(this, new PropertyEditingFinishedEventArgs(this.parent, value, reason));
 		}
 	}
 }

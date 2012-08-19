@@ -222,9 +222,9 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 		{
 			this.Invalidate();
 		}
-		private void numEditor_EditingFinished(object sender, EventArgs e)
+		private void numEditor_EditingFinished(object sender, PropertyEditingFinishedEventArgs e)
 		{
-			this.OnEditingFinished();
+			this.OnEditingFinished(e.Reason);
 			this.PerformGetValue();
 		}
 	}

@@ -75,12 +75,16 @@ namespace AdamsLair.PropertyGrid
 			{
 				base.InitContent();
 
+				BindingFlags flags = BindingFlags.Instance | BindingFlags.Public;
+				if (this.ParentGrid.ShowNonPublic)
+					flags |= BindingFlags.NonPublic;
+
 				// Generate and add property editors for the current type
 				this.BeginUpdate();
 				this.BeforeAutoCreateEditors();
 				// Properties
 				{
-					PropertyInfo[] propArr = this.EditedType.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+					PropertyInfo[] propArr = this.EditedType.GetProperties(flags);
 					var propQuery = 
 						from p in propArr
 						where p.CanRead && p.GetIndexParameters().Length == 0 && this.IsAutoCreateMember(p)
@@ -93,7 +97,7 @@ namespace AdamsLair.PropertyGrid
 				}
 				// Fields
 				{
-					FieldInfo[] fieldArr = this.EditedType.GetFields(BindingFlags.Instance | BindingFlags.Public);
+					FieldInfo[] fieldArr = this.EditedType.GetFields(flags);
 					var fieldQuery =
 						from f in fieldArr
 						where this.IsAutoCreateMember(f)
@@ -333,7 +337,7 @@ namespace AdamsLair.PropertyGrid
 		}
 		protected bool DefaultMemberAffectsOthers(MemberInfo info)
 		{
-			return false;
+			return this.ParentGrid.ShowNonPublic;
 		}
 		protected PropertyEditor DefaultMemberEditorCreator(MemberInfo info)
 		{

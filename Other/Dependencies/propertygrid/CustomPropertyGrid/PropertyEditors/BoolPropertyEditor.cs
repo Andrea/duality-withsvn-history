@@ -62,7 +62,7 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 			this.PerformSetValue();
 			this.OnValueChanged();
 			this.PerformGetValue();
-			this.OnEditingFinished();
+			this.OnEditingFinished(FinishReason.LeapValue);
 		}
 		protected void SetState(bool value)
 		{
@@ -71,7 +71,7 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 			this.PerformSetValue();
 			this.OnValueChanged();
 			this.PerformGetValue();
-			this.OnEditingFinished();
+			this.OnEditingFinished(FinishReason.LeapValue);
 		}
 
 		protected internal override void OnPaint(PaintEventArgs e)
@@ -115,11 +115,6 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 			bool lastHovered = this.hovered;
 			this.hovered = !this.ReadOnly && this.ClientRectangle.Contains(e.Location);
 			if (lastHovered != this.hovered) this.Invalidate();
-
-			if (this.pressed)
-			{
-				this.ParentGrid.DoDragDrop(new DataObject(), DragDropEffects.All | DragDropEffects.Link);
-			}
 		}
 		protected internal override void OnMouseLeave(EventArgs e)
 		{

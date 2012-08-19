@@ -99,7 +99,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 
 			this.UpdateScroll();
 			this.EmitInvalidate();
-			this.EmitEdited();
+			this.EmitEdited(this.text);
 		}
 		public void InsertText(string insertText)
 		{
@@ -126,7 +126,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 
 			this.UpdateScroll();
 			this.EmitInvalidate();
-			this.EmitEdited();
+			this.EmitEdited(this.text);
 		}
 		public void ShowCursor()
 		{
@@ -200,7 +200,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		}
 		public override void OnLostFocus(EventArgs e)
 		{
-			if (this.focused) this.EmitEditingFinished();			
+			if (this.focused) this.EmitEditingFinished(this.text, FinishReason.LostFocus);			
 			base.OnLostFocus(e);
 			if (this.cursorTimer != null)
 			{
@@ -221,7 +221,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		{
 			if (e.KeyCode == Keys.Return)
 			{
-				this.EmitEditingFinished();
+				this.EmitEditingFinished(this.text, FinishReason.UserAccept);
 				e.Handled = true;
 			}
 			else if (e.KeyCode == Keys.Delete)
@@ -231,7 +231,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 					this.text = this.text.Remove(this.cursorIndex, 1);
 					this.UpdateScroll();
 					this.EmitInvalidate();
-					this.EmitEdited();
+					this.EmitEdited(this.text);
 				}
 				else
 					this.DeleteSelection();
@@ -245,7 +245,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 					this.cursorIndex--;
 					this.UpdateScroll();
 					this.EmitInvalidate();
-					this.EmitEdited();
+					this.EmitEdited(this.text);
 				}
 				else
 					this.DeleteSelection();

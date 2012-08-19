@@ -192,6 +192,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 
 			// Expand text rect, because DrawString stops too soon
 			textRect.Width += DrawStringWidthAdd;
+			textRect.Height = Math.Max(textRect.Height, font.Height);
 
 			bool manualEllipsis = trimming == StringTrimming.EllipsisCharacter || trimming == StringTrimming.EllipsisWord;
 			if (trimming == StringTrimming.EllipsisCharacter)	trimming = StringTrimming.Character;
@@ -224,6 +225,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 		{
 			// Expand text rect, because DrawString stops too soon
 			textRect.Width += DrawStringWidthAdd;
+			textRect.Height = Math.Max(textRect.Height, font.Height);
 
 			// Assume manual ellipsis
 			textRect.Width -= 5;
@@ -243,6 +245,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 			
 			// Expand text rect, because DrawString stops too soon
 			textRect.Width += DrawStringWidthAdd;
+			textRect.Height = Math.Max(textRect.Height, font.Height);
 
 			// Assume manual ellipsis
 			textRect.Width -= 5;

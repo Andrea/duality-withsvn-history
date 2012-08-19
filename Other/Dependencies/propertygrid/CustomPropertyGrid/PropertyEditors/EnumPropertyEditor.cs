@@ -146,7 +146,7 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 			this.PerformSetValue();
 			this.OnValueChanged();
 			this.PerformGetValue();
-			this.OnEditingFinished();
+			this.OnEditingFinished(FinishReason.LeapValue);
 		}
 	}
 }

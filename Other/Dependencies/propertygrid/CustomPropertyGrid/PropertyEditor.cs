@@ -45,6 +45,30 @@ namespace AdamsLair.PropertyGrid
 			this.value = value;
 		}
 	}
+
+	public enum FinishReason
+	{
+		Unknown,
+
+		LostFocus,
+		LeapValue,
+		UserAccept
+	}
+
+	public class PropertyEditingFinishedEventArgs : PropertyEditorValueEventArgs
+	{
+		private	FinishReason	reason	= FinishReason.Unknown;
+
+		public FinishReason Reason
+		{
+			get { return this.reason; }
+		}
+
+		public PropertyEditingFinishedEventArgs(PropertyEditor editor, object value, FinishReason reason) : base(editor, value)
+		{
+			this.reason = reason;
+		}
+	}
 	
 	public abstract class PropertyEditor
 	{
@@ -94,8 +118,8 @@ namespace AdamsLair.PropertyGrid
 
 		public event EventHandler	SizeChanged		= null;
 		public event EventHandler	ButtonPressed	= null;
-		public event EventHandler<PropertyEditorValueEventArgs>	EditingFinished = null;
-		public event EventHandler<PropertyEditorValueEventArgs>	ValueChanged	= null;
+		public event EventHandler<PropertyEditingFinishedEventArgs>	EditingFinished = null;
+		public event EventHandler<PropertyEditorValueEventArgs>		ValueChanged	= null;
 
 
 		public PropertyGrid ParentGrid
@@ -608,7 +632,7 @@ namespace AdamsLair.PropertyGrid
 			if (this.ValueChanged != null)
 				this.ValueChanged(sender, args);
 		}
-		protected virtual void OnEditingFinished(object sender, PropertyEditorValueEventArgs args)
+		protected virtual void OnEditingFinished(object sender, PropertyEditingFinishedEventArgs args)
 		{
 			if (this.EditingFinished != null)
 				this.EditingFinished(sender, args);
@@ -623,9 +647,9 @@ namespace AdamsLair.PropertyGrid
 		{
 			this.OnValueChanged(this, new PropertyEditorValueEventArgs(this, this.DisplayedValue));
 		}
-		protected void OnEditingFinished()
+		protected void OnEditingFinished(FinishReason reason)
 		{
-			this.OnEditingFinished(this, new PropertyEditorValueEventArgs(this, this.DisplayedValue));
+			this.OnEditingFinished(this, new PropertyEditingFinishedEventArgs(this, this.DisplayedValue, reason));
 		}
 	}
 }

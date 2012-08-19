@@ -126,9 +126,9 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 			this.OnValueChanged();
 			this.PerformGetValue();
 		}
-		private void stringEditor_EditingFinished(object sender, EventArgs e)
+		private void stringEditor_EditingFinished(object sender, PropertyEditingFinishedEventArgs e)
 		{
-			this.OnEditingFinished();
+			this.OnEditingFinished(e.Reason);
 		}
 	}
 }

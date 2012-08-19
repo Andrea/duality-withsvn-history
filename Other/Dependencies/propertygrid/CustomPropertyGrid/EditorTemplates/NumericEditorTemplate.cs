@@ -168,7 +168,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		}
 		public override void OnLostFocus(EventArgs e)
 		{
-			if (this.focused && !this.stringEditor.Focused) this.EmitEditingFinished();			
+			if (this.focused && !this.stringEditor.Focused) this.EmitEditingFinished(this.value, FinishReason.LostFocus);			
 			base.OnLostFocus(e);
 			this.stringEditor.OnLostFocus(e);
 		}
@@ -193,13 +193,13 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 				else if (e.Control && e.KeyCode == Keys.Up)
 				{
 					this.Value += this.increment;
-					this.EmitEdited();
+					this.EmitEdited(this.value);
 					e.Handled = true;
 				}
 				else if (e.Control && e.KeyCode == Keys.Down)
 				{
 					this.Value -= this.increment;
-					this.EmitEdited();
+					this.EmitEdited(this.value);
 					e.Handled = true;
 				}
 			}
@@ -209,7 +209,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			if (e.KeyCode == Keys.ControlKey)
 			{
 				this.EmitInvalidate();
-				this.EmitEditingFinished();
+				this.EmitEditingFinished(this.value, FinishReason.LeapValue);
 			}
 		}
 		public void OnMouseDown(MouseEventArgs e)
@@ -235,7 +235,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 				this.gripDragPos = Point.Empty;
 				this.gripDragVal = 0m;
 				this.EmitInvalidate();
-				this.EmitEditingFinished();
+				this.EmitEditingFinished(this.value, FinishReason.LeapValue);
 			}
 		}
 		public override void OnMouseMove(MouseEventArgs e)
@@ -250,7 +250,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			if (this.gripPressed)
 			{
 				this.Value = this.gripDragVal - this.increment * Math.Round((e.Location.Y - this.gripDragPos.Y) / 3m);
-				this.EmitEdited();
+				this.EmitEdited(this.value);
 			}
 		}
 		public override void OnMouseLeave(EventArgs e)
@@ -314,15 +314,15 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		{
 			this.SetValueFromText();
 			if (this.isTextValid)
-				this.EmitEdited();
+				this.EmitEdited(this.value);
 			else
 				this.EmitInvalidate();
 		}
-		void stringEditor_EditingFinished(object sender, EventArgs e)
+		void stringEditor_EditingFinished(object sender, PropertyEditingFinishedEventArgs e)
 		{
 			this.Select();
 			if (!this.isTextValid || this.isValueClamped) System.Media.SystemSounds.Beep.Play();
-			if (this.isTextValid) this.EmitEditingFinished();
+			if (this.isTextValid) this.EmitEditingFinished(this.value, e.Reason);
 			this.SetTextFromValue();
 			this.EmitInvalidate();
 		}

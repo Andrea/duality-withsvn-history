@@ -92,7 +92,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		}
 		public override void OnLostFocus(EventArgs e)
 		{
-			if (this.focused) this.EmitEditingFinished();			
+			if (this.focused) this.EmitEditingFinished(this.selectedObjects, FinishReason.LostFocus);			
 			base.OnLostFocus(e);
 		}
 		public override void OnMouseMove(MouseEventArgs e)
@@ -162,7 +162,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 					this.selectedObjects = pasteObjProxy;
 					this.selectedObjStr = this.DefaultValueStringGenerator(this.selectedObjects);
 					this.EmitInvalidate();
-					this.EmitEdited();
+					this.EmitEdited(this.selectedObjects);
 					success = true;
 				}
 				if (!success) System.Media.SystemSounds.Beep.Play();
@@ -219,7 +219,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 				this.selectedObjects = this.dropdown.CheckedItems.Cast<object>().ToList();
 				this.selectedObjStr = this.DefaultValueStringGenerator(this.selectedObjects);
 				this.EmitInvalidate();
-				this.EmitEdited();
+				this.EmitEdited(this.selectedObjects);
 			}
 		}
 		private void popupControl_Closed(object sender, ToolStripDropDownClosedEventArgs e)

@@ -84,7 +84,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 		}
 		public override void OnLostFocus(EventArgs e)
 		{
-			if (this.focused) this.EmitEditingFinished();			
+			if (this.focused) this.EmitEditingFinished(this.BitmaskValue, FinishReason.LostFocus);			
 			base.OnLostFocus(e);
 		}
 		public override void OnMouseMove(MouseEventArgs e)
@@ -163,7 +163,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 					this.bitmask = pasteValue;
 					this.bitmaskStr = this.DefaultValueStringGenerator(this.bitmask);
 					this.EmitInvalidate();
-					this.EmitEdited();
+					this.EmitEdited(this.bitmask);
 				}
 				else
 					System.Media.SystemSounds.Beep.Play();
@@ -223,7 +223,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 				this.bitmask = this.dropdown.BitmaskValue;
 				this.bitmaskStr = this.DefaultValueStringGenerator(this.bitmask);
 				this.EmitInvalidate();
-				this.EmitEdited();
+				this.EmitEdited(this.bitmask);
 			}
 		}
 		private void popupControl_Closed(object sender, ToolStripDropDownClosedEventArgs e)

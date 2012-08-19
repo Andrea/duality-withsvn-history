@@ -52,6 +52,7 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 				this.addKeyEditor.Getter = this.AddKeyValueGetter;
 				this.addKeyEditor.Setter = this.AddKeyValueSetter;
 				this.addKeyEditor.ButtonPressed += this.AddKeyButtonPressed;
+				this.addKeyEditor.EditingFinished += this.AddKeyEditingFinished;
 
 				this.PerformGetValue();
 			}
@@ -61,6 +62,12 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 		public override void ClearContent()
 		{
 			base.ClearContent();
+			if (this.addKeyEditor != null)
+			{
+				this.addKeyEditor.ButtonPressed -= this.AddKeyButtonPressed;
+				this.addKeyEditor.EditingFinished -= this.AddKeyEditingFinished;
+				this.addKeyEditor = null;
+			}
 			this.offset = 0;
 		}
 
@@ -239,6 +246,11 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 			}
 			this.addKey = null;
 			this.PerformGetValue();
+		}
+		protected void AddKeyEditingFinished(object sender, PropertyEditingFinishedEventArgs e)
+		{
+			if (e.Reason == FinishReason.UserAccept)
+				AddKeyButtonPressed(sender, e);
 		}
 		protected IEnumerable<object> OffsetValueGetter()
 		{

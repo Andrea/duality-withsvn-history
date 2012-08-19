@@ -186,6 +186,7 @@ namespace AdamsLair.PropertyGrid
 		private	PropertyEditor		mainEditor			= null;
 		private	PropertyEditor		focusEditor			= null;
 		private	List<object>		selectedObjects		= new List<object>();
+		private	bool				showNonPublic		= true;
 		private	bool				readOnly			= false;
 		private	Timer				updateTimer			= null;
 		private	int					updateTimerChangeMs	= 0;
@@ -210,6 +211,22 @@ namespace AdamsLair.PropertyGrid
 				{
 					this.readOnly = value;
 					if (this.mainEditor != null) this.UpdatePropertyEditor();
+				}
+			}
+		}
+		public bool ShowNonPublic
+		{
+			get { return this.showNonPublic; }
+			set
+			{
+				if (this.showNonPublic != value)
+				{
+					this.showNonPublic = value;
+					if (this.mainEditor != null)
+					{
+						this.DisposePropertyEditor();
+						this.UpdateFromObjects();
+					}
 				}
 			}
 		}
