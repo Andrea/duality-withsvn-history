@@ -27,11 +27,6 @@
 	-->	Consider not showing Components in the Scene View. Optionally, that is.
 	-->	Sandbox.Play in unsaved Scenes should result in a MessageBox asking whether to save the Scene before.
 
--->	Dualitor: Add PropertyGrid Debug mode
-	-->	Show even private Members
-	-->	Provide "IsDebugMode" info in PropertyGrid and ProviderContext, because some PropertyEditors might want to opt-out in debug mode
-	-->	Consider whether this should be implemented in PropertyGrid-project or Dualitor
-
 
 -->	Dualitor: Add ActionButtonPropertyEditor and auto-use it in MemberwisePropertyEditor
 	-->	It's possible to flag a method as editor action via EditorHintFlags

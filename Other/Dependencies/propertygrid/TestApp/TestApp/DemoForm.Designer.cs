@@ -33,6 +33,8 @@
 			this.radioDisabled = new System.Windows.Forms.RadioButton();
 			this.radioReadOnly = new System.Windows.Forms.RadioButton();
 			this.buttonRefresh = new System.Windows.Forms.Button();
+			this.checkBoxSmallMode = new System.Windows.Forms.CheckBox();
+			this.checkBoxNonPublic = new System.Windows.Forms.CheckBox();
 			this.SuspendLayout();
 			// 
 			// propertyGrid1
@@ -46,14 +48,15 @@
 			this.propertyGrid1.Location = new System.Drawing.Point(12, 12);
 			this.propertyGrid1.Name = "propertyGrid1";
 			this.propertyGrid1.ReadOnly = false;
-			this.propertyGrid1.Size = new System.Drawing.Size(248, 288);
+			this.propertyGrid1.Size = new System.Drawing.Size(514, 294);
+			this.propertyGrid1.SmallMode = false;
 			this.propertyGrid1.TabIndex = 0;
 			// 
 			// radioEnabled
 			// 
 			this.radioEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.radioEnabled.AutoSize = true;
-			this.radioEnabled.Location = new System.Drawing.Point(12, 335);
+			this.radioEnabled.Location = new System.Drawing.Point(12, 341);
 			this.radioEnabled.Name = "radioEnabled";
 			this.radioEnabled.Size = new System.Drawing.Size(64, 17);
 			this.radioEnabled.TabIndex = 3;
@@ -66,7 +69,7 @@
 			// 
 			this.radioDisabled.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.radioDisabled.AutoSize = true;
-			this.radioDisabled.Location = new System.Drawing.Point(160, 335);
+			this.radioDisabled.Location = new System.Drawing.Point(160, 341);
 			this.radioDisabled.Name = "radioDisabled";
 			this.radioDisabled.Size = new System.Drawing.Size(66, 17);
 			this.radioDisabled.TabIndex = 4;
@@ -79,7 +82,7 @@
 			// 
 			this.radioReadOnly.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.radioReadOnly.AutoSize = true;
-			this.radioReadOnly.Location = new System.Drawing.Point(82, 335);
+			this.radioReadOnly.Location = new System.Drawing.Point(82, 341);
 			this.radioReadOnly.Name = "radioReadOnly";
 			this.radioReadOnly.Size = new System.Drawing.Size(72, 17);
 			this.radioReadOnly.TabIndex = 5;
@@ -91,7 +94,7 @@
 			// buttonRefresh
 			// 
 			this.buttonRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.buttonRefresh.Location = new System.Drawing.Point(12, 306);
+			this.buttonRefresh.Location = new System.Drawing.Point(12, 312);
 			this.buttonRefresh.Name = "buttonRefresh";
 			this.buttonRefresh.Size = new System.Drawing.Size(75, 23);
 			this.buttonRefresh.TabIndex = 6;
@@ -99,11 +102,37 @@
 			this.buttonRefresh.UseVisualStyleBackColor = true;
 			this.buttonRefresh.Click += new System.EventHandler(this.buttonRefresh_Click);
 			// 
+			// checkBoxSmallMode
+			// 
+			this.checkBoxSmallMode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.checkBoxSmallMode.AutoSize = true;
+			this.checkBoxSmallMode.Location = new System.Drawing.Point(232, 342);
+			this.checkBoxSmallMode.Name = "checkBoxSmallMode";
+			this.checkBoxSmallMode.Size = new System.Drawing.Size(81, 17);
+			this.checkBoxSmallMode.TabIndex = 7;
+			this.checkBoxSmallMode.Text = "Small Mode";
+			this.checkBoxSmallMode.UseVisualStyleBackColor = true;
+			this.checkBoxSmallMode.CheckedChanged += new System.EventHandler(this.checkBoxSmallMode_CheckedChanged);
+			// 
+			// checkBoxNonPublic
+			// 
+			this.checkBoxNonPublic.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.checkBoxNonPublic.AutoSize = true;
+			this.checkBoxNonPublic.Location = new System.Drawing.Point(319, 342);
+			this.checkBoxNonPublic.Name = "checkBoxNonPublic";
+			this.checkBoxNonPublic.Size = new System.Drawing.Size(78, 17);
+			this.checkBoxNonPublic.TabIndex = 8;
+			this.checkBoxNonPublic.Text = "Non-Public";
+			this.checkBoxNonPublic.UseVisualStyleBackColor = true;
+			this.checkBoxNonPublic.CheckedChanged += new System.EventHandler(this.checkBoxNonPublic_CheckedChanged);
+			// 
 			// DemoForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(272, 364);
+			this.ClientSize = new System.Drawing.Size(538, 370);
+			this.Controls.Add(this.checkBoxNonPublic);
+			this.Controls.Add(this.checkBoxSmallMode);
 			this.Controls.Add(this.buttonRefresh);
 			this.Controls.Add(this.radioReadOnly);
 			this.Controls.Add(this.radioDisabled);
@@ -123,6 +152,8 @@
 		private System.Windows.Forms.RadioButton radioDisabled;
 		private System.Windows.Forms.RadioButton radioReadOnly;
 		private System.Windows.Forms.Button buttonRefresh;
+		private System.Windows.Forms.CheckBox checkBoxSmallMode;
+		private System.Windows.Forms.CheckBox checkBoxNonPublic;
 	}
 }
 

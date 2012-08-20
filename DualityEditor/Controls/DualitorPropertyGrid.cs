@@ -87,13 +87,26 @@ namespace DualityEditor.Controls
 
 		protected bool EditorMemberPredicate(MemberInfo info)
 		{
+			if (this.ShowNonPublic)
+			{
+				if (info.DeclaringType.Assembly != typeof(DualityApp).Assembly) return true;
+
+				FieldInfo field = info as FieldInfo;
+				if (field != null && !field.IsPublic) return false;
+
+				PropertyInfo property = info as PropertyInfo;
+				if (property != null && property.GetGetMethod(false) == null && property.GetSetMethod(false) == null) return false;
+			}
+
 			EditorHintFlagsAttribute flagsAttrib = info.GetEditorHint<EditorHintFlagsAttribute>();
-			return flagsAttrib == null || (flagsAttrib.Flags & MemberFlags.Invisible) == MemberFlags.None;
+			if (flagsAttrib != null && (flagsAttrib.Flags & MemberFlags.Invisible) != MemberFlags.None) return false;
+
+			return true;
 		}
 		protected bool EditorMemberAffectsOthers(MemberInfo info)
 		{
 			EditorHintFlagsAttribute flagsAttrib = info.GetEditorHint<EditorHintFlagsAttribute>();
-			return flagsAttrib != null && (flagsAttrib.Flags & MemberFlags.AffectsOthers) != MemberFlags.None;
+			return this.ShowNonPublic || (flagsAttrib != null && (flagsAttrib.Flags & MemberFlags.AffectsOthers) != MemberFlags.None);
 		}
 
 		HelpInfo IHelpProvider.ProvideHoverHelp(Point localPos, ref bool captured)

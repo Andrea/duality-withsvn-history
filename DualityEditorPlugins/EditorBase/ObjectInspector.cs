@@ -105,6 +105,7 @@ namespace EditorBase
 			node.SetAttribute("autoRefresh", this.buttonAutoRefresh.Checked.ToString(CultureInfo.InvariantCulture));
 			node.SetAttribute("locked", this.buttonLock.Checked.ToString(CultureInfo.InvariantCulture));
 			node.SetAttribute("titleText", this.Text);
+			node.SetAttribute("debug", this.buttonDebug.Checked.ToString(CultureInfo.InvariantCulture));
 		}
 		internal void LoadUserData(System.Xml.XmlElement node)
 		{
@@ -114,6 +115,8 @@ namespace EditorBase
 				this.buttonAutoRefresh.Checked = tryParseBool;
 			if (bool.TryParse(node.GetAttribute("locked"), out tryParseBool))
 				this.buttonLock.Checked = tryParseBool;
+			if (bool.TryParse(node.GetAttribute("debug"), out tryParseBool))
+				this.buttonDebug.Checked = tryParseBool;
 			this.Text = node.GetAttribute("titleText");
 		}
 
@@ -285,6 +288,10 @@ namespace EditorBase
 				this.lastAutoRefresh = Time.MainTimer;
 				this.propertyGrid.UpdateFromObjects(100);
 			}
+		}
+		private void buttonDebug_CheckedChanged(object sender, EventArgs e)
+		{
+			this.propertyGrid.ShowNonPublic = this.buttonDebug.Checked;
 		}
 	}
 }

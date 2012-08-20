@@ -185,5 +185,13 @@ namespace AdamsLair.PropertyGrid
 		{
 			this.propertyGrid1.UpdateFromObjects();
 		}
+		private void checkBoxSmallMode_CheckedChanged(object sender, EventArgs e)
+		{
+			this.propertyGrid1.SmallMode = this.checkBoxSmallMode.Checked;
+		}
+		private void checkBoxNonPublic_CheckedChanged(object sender, EventArgs e)
+		{
+			this.propertyGrid1.ShowNonPublic = this.checkBoxNonPublic.Checked;
+		}
 	}
 }

@@ -35,9 +35,11 @@
 			this.timerSelectSched = new System.Windows.Forms.Timer(this.components);
 			this.toolStrip = new System.Windows.Forms.ToolStrip();
 			this.buttonAutoRefresh = new System.Windows.Forms.ToolStripButton();
+			this.buttonDebug = new System.Windows.Forms.ToolStripButton();
 			this.buttonClone = new System.Windows.Forms.ToolStripButton();
 			this.buttonLock = new System.Windows.Forms.ToolStripButton();
 			this.propertyGrid = new DualityEditor.Controls.DualitorPropertyGrid();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.toolStrip.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -68,6 +70,8 @@
 			this.toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.buttonAutoRefresh,
+            this.buttonDebug,
+            this.toolStripSeparator1,
             this.buttonClone,
             this.buttonLock});
 			this.toolStrip.Location = new System.Drawing.Point(0, 0);
@@ -86,6 +90,19 @@
 			this.buttonAutoRefresh.Size = new System.Drawing.Size(23, 22);
 			this.buttonAutoRefresh.Text = "Auto-Refresh in Sandbox";
 			this.buttonAutoRefresh.CheckedChanged += new System.EventHandler(this.buttonAutoRefresh_CheckedChanged);
+			// 
+			// buttonDebug
+			// 
+			this.buttonDebug.AutoToolTip = false;
+			this.buttonDebug.CheckOnClick = true;
+			this.buttonDebug.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonDebug.Image = global::EditorBase.Properties.Resources.bug;
+			this.buttonDebug.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonDebug.Name = "buttonDebug";
+			this.buttonDebug.Size = new System.Drawing.Size(23, 22);
+			this.buttonDebug.Text = "Debug Mode";
+			this.buttonDebug.ToolTipText = "Debug Mode: Show non-public members.";
+			this.buttonDebug.CheckedChanged += new System.EventHandler(this.buttonDebug_CheckedChanged);
 			// 
 			// buttonClone
 			// 
@@ -119,8 +136,15 @@
 			this.propertyGrid.Margin = new System.Windows.Forms.Padding(0);
 			this.propertyGrid.Name = "propertyGrid";
 			this.propertyGrid.ReadOnly = false;
+			this.propertyGrid.ShowNonPublic = false;
 			this.propertyGrid.Size = new System.Drawing.Size(231, 407);
+			this.propertyGrid.SmallMode = false;
 			this.propertyGrid.TabIndex = 0;
+			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
 			// 
 			// ObjectInspector
 			// 
@@ -153,5 +177,7 @@
 		private System.Windows.Forms.ToolStripButton buttonAutoRefresh;
 		private System.Windows.Forms.ToolStripButton buttonClone;
 		private System.Windows.Forms.ToolStripButton buttonLock;
+		private System.Windows.Forms.ToolStripButton buttonDebug;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 	}
 }

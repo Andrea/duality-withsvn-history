@@ -96,6 +96,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 	{
 		private const int DrawStringWidthAdd = 5;
 
+		private bool								smallMode			= false;
 		private	Size								expandNodeSize		= Size.Empty;
 		private	Dictionary<ExpandNodeState,Bitmap>	expandNodeImages	= null;
 		private	Size								checkBoxSize		= Size.Empty;
@@ -103,6 +104,11 @@ namespace AdamsLair.PropertyGrid.Renderer
 		private	IconImage	dropDownIcon	= new IconImage(Resources.DropDownIcon);
 
 
+		public bool SmallMode
+		{
+			get { return this.smallMode; }
+			internal set { this.smallMode = value; }
+		}
 		public Size CheckBoxSize
 		{
 			get
@@ -124,6 +130,20 @@ namespace AdamsLair.PropertyGrid.Renderer
 				return expandNodeSize;
 			}
 		}
+		public Font DefaultFont
+		{
+			get
+			{
+				return this.smallMode ? EmbeddedResources.Resources.DefaultFontSmall : EmbeddedResources.Resources.DefaultFont;
+			}
+		}
+		public Font DefaultFontBold
+		{
+			get
+			{
+				return this.smallMode ? EmbeddedResources.Resources.DefaultFontBoldSmall : EmbeddedResources.Resources.DefaultFontBold;
+			}
+		}
 		public Color ColorHightlight { get; set; }
 		public Color ColorVeryDarkBackground { get; set; }
 		public Color ColorDarkBackground { get; set; }
@@ -135,8 +155,9 @@ namespace AdamsLair.PropertyGrid.Renderer
 		public Color ColorGrayText { get; set; }
 
 
-		public ControlRenderer()
+		public ControlRenderer(bool smallMode)
 		{
+			this.smallMode = smallMode;
 			this.ResetColors();
 		}
 		public void ResetColors()
@@ -191,6 +212,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 			if (text == null) return;
 
 			// Expand text rect, because DrawString stops too soon
+			textRect.Y += GetFontYOffset(font);
 			textRect.Width += DrawStringWidthAdd;
 			textRect.Height = Math.Max(textRect.Height, font.Height);
 
@@ -279,6 +301,11 @@ namespace AdamsLair.PropertyGrid.Renderer
 			}}
 
 			return -1;
+		}
+		private int GetFontYOffset(Font font)
+		{
+			int fontOffset = font.Height - 2 * (int)(font.Height * 0.5f);
+			return fontOffset - 1;
 		}
 
 		public Rectangle DrawTextBoxBorder(Graphics g, Rectangle rect, TextBoxState state, TextBoxStyle style, Color backColor)
@@ -415,6 +442,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 				Region[] charRegions = MeasureStringLine(g, text, charRanges, font, textRectScrolled);
 				RectangleF selectionRect = charRegions.Length > 0 ? charRegions[0].GetBounds(g) : RectangleF.Empty;
 				selectionRect.Inflate(0, 2);
+				selectionRect.Y += GetFontYOffset(font);
 				if (selPos == 0)
 				{
 					selectionRect.X -= 2;
@@ -656,7 +684,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 
 			if (icon == null && !string.IsNullOrEmpty(text))
 			{
-				DrawStringLine(g, text, EmbeddedResources.Resources.DefaultFont, innerRect, colorText, StringAlignment.Center);
+				DrawStringLine(g, text, this.DefaultFont, innerRect, colorText, StringAlignment.Center);
 			}
 			else if (string.IsNullOrEmpty(text))
 			{
@@ -670,7 +698,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 			}
 			else
 			{
-				Region[] charRegions = MeasureStringLine(g, text, new [] { new CharacterRange(0, text.Length) }, EmbeddedResources.Resources.DefaultFont, innerRect);
+				Region[] charRegions = MeasureStringLine(g, text, new [] { new CharacterRange(0, text.Length) }, this.DefaultFont, innerRect);
 				SizeF textSize = charRegions[0].GetBounds(g).Size;
 				Size iconTextSize;
 				Rectangle textRect;
@@ -689,7 +717,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 					innerRect.Height);
 
 				g.DrawImageUnscaled(icon, iconRect);
-				DrawStringLine(g, text, EmbeddedResources.Resources.DefaultFont, textRect, colorText);
+				DrawStringLine(g, text, this.DefaultFont, textRect, colorText);
 			}
 
 			g.Restore(graphicsState);
@@ -729,7 +757,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 
 			if (icon == null && !string.IsNullOrEmpty(text))
 			{
-				DrawStringLine(g, text, EmbeddedResources.Resources.DefaultFont, innerRect, colorText);
+				DrawStringLine(g, text, this.DefaultFont, innerRect, colorText);
 			}
 			else if (string.IsNullOrEmpty(text))
 			{
@@ -743,7 +771,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 			}
 			else
 			{
-				Region[] charRegions = MeasureStringLine(g, text, new [] { new CharacterRange(0, text.Length) }, EmbeddedResources.Resources.DefaultFont, innerRect);
+				Region[] charRegions = MeasureStringLine(g, text, new [] { new CharacterRange(0, text.Length) }, this.DefaultFont, innerRect);
 				SizeF textSize = charRegions[0].GetBounds(g).Size;
 				Size iconTextSize;
 				Rectangle textRect;
@@ -762,7 +790,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 					innerRect.Height);
 
 				g.DrawImageUnscaled(icon, iconRect);
-				DrawStringLine(g, text, EmbeddedResources.Resources.DefaultFont, textRect, colorText);
+				DrawStringLine(g, text, this.DefaultFont, textRect, colorText);
 			}
 
 			g.Restore(graphicsState);

@@ -90,9 +90,6 @@ namespace AdamsLair.PropertyGrid
 			Default = HasPropertyName
 		}
 
-		protected	static	readonly	Font	FontNormal	= EmbeddedResources.Resources.DefaultFont;
-		protected	static	readonly	Font	FontBold	= new Font(EmbeddedResources.Resources.DefaultFont, FontStyle.Bold);
-
 		private	PropertyGrid	parentGrid		= null;
 		private	PropertyEditor	parentEditor	= null;
 		private	Type			editedType		= null;
@@ -214,6 +211,21 @@ namespace AdamsLair.PropertyGrid
 					this.editedMember = value;
 					this.OnEditedMemberChanged();
 				}
+			}
+		}
+		public bool IsNonPublic
+		{
+			get
+			{
+				if (this.editedMember == null) return false;
+
+				FieldInfo field = this.editedMember as FieldInfo;
+				if (field != null) return !field.IsPublic;
+
+				PropertyInfo property = this.editedMember as PropertyInfo;
+				if (property != null) return property.GetGetMethod(false) == null && property.GetSetMethod(false) == null;
+
+				return false;
 			}
 		}
 		public string PropertyName
@@ -466,7 +478,7 @@ namespace AdamsLair.PropertyGrid
 			{
 				Size buttonSize = this.buttonIcon != null ? this.buttonIcon.Size : new Size(10, 10);
 				this.buttonRect.Height = this.Size.Height;
-				this.buttonRect.Width = Math.Min(this.size.Height - 2, buttonSize.Height + 2);
+				this.buttonRect.Width = Math.Min(this.size.Height, buttonSize.Height + 2);
 				this.buttonRect.X = this.Size.Width - buttonRect.Width - 1;
 				this.buttonRect.Y = 0;
 			}
@@ -532,7 +544,11 @@ namespace AdamsLair.PropertyGrid
 		protected void PaintNameLabel(Graphics g)
 		{
 			if ((this.hints & HintFlags.HasPropertyName) == HintFlags.None) return;
-			ControlRenderer.DrawStringLine(g, this.propertyName, this.IsValueModified ? FontBold : FontNormal, this.nameLabelRect, this.Enabled ? ControlRenderer.ColorText : ControlRenderer.ColorGrayText);
+			ControlRenderer.DrawStringLine(g, 
+				this.propertyName, 
+				this.IsValueModified ? ControlRenderer.DefaultFontBold : ControlRenderer.DefaultFont, 
+				this.nameLabelRect, 
+				this.Enabled && !this.IsNonPublic ? ControlRenderer.ColorText : ControlRenderer.ColorGrayText);
 		}
 		internal protected virtual void OnPaint(PaintEventArgs e)
 		{

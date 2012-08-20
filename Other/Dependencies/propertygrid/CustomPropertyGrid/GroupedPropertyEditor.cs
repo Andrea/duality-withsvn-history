@@ -323,7 +323,7 @@ namespace AdamsLair.PropertyGrid
 
 			clientRect.Width += buttonRect.Width;
 			buttonRect.Height = Math.Min(buttonRect.Height, this.headerHeight);
-			buttonRect.Width = Math.Min(buttonRect.Width, this.headerHeight - 2);
+			buttonRect.Width = Math.Min(buttonRect.Width, this.headerHeight);
 			buttonRect.X = this.Size.Width - buttonRect.Width - 1;
 			buttonRect.Y = this.headerHeight / 2 - buttonRect.Height / 2;
 
@@ -489,8 +489,16 @@ namespace AdamsLair.PropertyGrid
 			if (this.headerIcon != null)
 				g.DrawImage(this.Enabled ? this.headerIcon.Normal : this.headerIcon.Disabled, iconRect);
 
-			ControlRenderer.DrawStringLine(g, this.PropertyName, this.IsValueModified ? FontBold : FontNormal, nameTextRect, this.Enabled ? ControlRenderer.ColorText : ControlRenderer.ColorGrayText);
-			ControlRenderer.DrawStringLine(g, this.headerValueText, this.IsValueModified ? FontBold : FontNormal, valueTextRect, this.Enabled ? ControlRenderer.ColorText : ControlRenderer.ColorGrayText);
+			ControlRenderer.DrawStringLine(g, 
+				this.PropertyName, 
+				this.IsValueModified ? ControlRenderer.DefaultFontBold : ControlRenderer.DefaultFont, 
+				nameTextRect, 
+				this.Enabled && !this.IsNonPublic ? ControlRenderer.ColorText : ControlRenderer.ColorGrayText);
+			ControlRenderer.DrawStringLine(g, 
+				this.headerValueText, 
+				this.IsValueModified ? ControlRenderer.DefaultFontBold : ControlRenderer.DefaultFont, 
+				valueTextRect, 
+				this.Enabled ? ControlRenderer.ColorText : ControlRenderer.ColorGrayText);
 		}
 		protected void PaintIndentExpandButton(Graphics g, GroupedPropertyEditor childGroup, int curY)
 		{
@@ -945,6 +953,8 @@ namespace AdamsLair.PropertyGrid
 		{
 			base.OnParentEditorChanged();
 			if (!this.headerColor.HasValue) this.headerColor = ControlRenderer.ColorBackground;
+			if (this.HeaderHeight == DefaultHeaderHeight)
+				this.HeaderHeight = 5 + (int)Math.Round((float)this.ControlRenderer.DefaultFont.Height);
 		}
 		protected override void OnSizeChanged()
 		{

@@ -28,7 +28,12 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 			this.stringEditor.Edited += this.stringEditor_Edited;
 			this.stringEditor.EditingFinished += this.stringEditor_EditingFinished;
 
-			this.Height = 18;
+			//this.Height = 18;
+		}
+		protected override void OnParentEditorChanged()
+		{
+			base.OnParentEditorChanged();
+			this.Height = 5 + (int)Math.Round((float)this.ControlRenderer.DefaultFont.Height);
 		}
 
 		public override void PerformGetValue()
@@ -102,9 +107,9 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 			base.UpdateGeometry();
 			this.stringEditor.Rect = new Rectangle(
 				this.ClientRectangle.X + 1,
-				this.ClientRectangle.Y + 1,
+				this.ClientRectangle.Y + (this.ParentGrid.SmallMode ? 0 : 1),
 				this.ClientRectangle.Width - 2,
-				this.ClientRectangle.Height - 1);
+				this.ClientRectangle.Height - (this.ParentGrid.SmallMode ? 0 : 1));
 		}
 		protected internal override void OnReadOnlyChanged()
 		{

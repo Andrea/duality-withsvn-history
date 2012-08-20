@@ -140,7 +140,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			int cursorPixelPos = ControlRenderer.GetCharPosTextField(
 				this.rect,
 				this.text,
-				EmbeddedResources.Resources.DefaultFont,
+				ControlRenderer.DefaultFont,
 				TextBoxStyle.Sunken,
 				this.cursorIndex,
 				this.scroll);
@@ -176,7 +176,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 				e.Graphics, 
 				rect, 
 				text, 
-				EmbeddedResources.Resources.DefaultFont, 
+				ControlRenderer.DefaultFont, 
 				ControlRenderer.ColorText, 
 				multiple ? ControlRenderer.ColorMultiple : ControlRenderer.ColorVeryLightBackground,
 				textBoxState, 
@@ -368,7 +368,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 			pickedCharIndex = ControlRenderer.PickCharTextField( 
 				this.rect, 
 				this.text,
-				EmbeddedResources.Resources.DefaultFont,
+				ControlRenderer.DefaultFont,
 				TextBoxStyle.Sunken,
 				pickLoc,
 				this.scroll);
@@ -400,7 +400,7 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 				pickedCharIndex = ControlRenderer.PickCharTextField(
 					this.rect, 
 					this.text,
-					EmbeddedResources.Resources.DefaultFont,
+					ControlRenderer.DefaultFont,
 					TextBoxStyle.Sunken,
 					pickLoc,
 					this.scroll);

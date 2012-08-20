@@ -21,7 +21,12 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 
 		public BoolPropertyEditor()
 		{
-			this.Height = 16;
+			//this.Height = 16;
+		}
+		protected override void OnParentEditorChanged()
+		{
+			base.OnParentEditorChanged();
+			this.Height = Math.Max(13, 3 + (int)Math.Round((float)this.ControlRenderer.DefaultFont.Height));
 		}
 
 		public override void PerformGetValue()
@@ -59,6 +64,7 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 			else
 				this.state = CheckState.Checked;
 
+			this.Invalidate();
 			this.PerformSetValue();
 			this.OnValueChanged();
 			this.PerformGetValue();
@@ -68,6 +74,7 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 		{
 			this.state = value ? CheckState.Checked : CheckState.Unchecked;
 
+			this.Invalidate();
 			this.PerformSetValue();
 			this.OnValueChanged();
 			this.PerformGetValue();
@@ -106,7 +113,7 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 			Size boxSize = ControlRenderer.CheckBoxSize;
 			Point boxLoc = new Point(
 				this.ClientRectangle.X + 2,
-				this.ClientRectangle.Y + this.ClientRectangle.Height / 2 - boxSize.Height / 2 - 1);
+				this.ClientRectangle.Y + this.ClientRectangle.Height / 2 - boxSize.Height / 2);
 			ControlRenderer.DrawCheckBox(e.Graphics, boxLoc, boxState);
 		}
 		protected internal override void OnMouseMove(MouseEventArgs e)
