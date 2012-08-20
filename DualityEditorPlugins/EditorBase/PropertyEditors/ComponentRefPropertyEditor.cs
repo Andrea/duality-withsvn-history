@@ -50,7 +50,7 @@ namespace EditorBase.PropertyEditors
 			this.PerformSetValue();
 			this.OnValueChanged();
 			this.PerformGetValue();
-			this.OnEditingFinished();
+			this.OnEditingFinished(FinishReason.LeapValue);
 		}
 		public override void PerformGetValue()
 		{
@@ -113,7 +113,7 @@ namespace EditorBase.PropertyEditors
 					this.PerformSetValue();
 					this.OnValueChanged();
 					this.PerformGetValue();
-					this.OnEditingFinished();
+					this.OnEditingFinished(FinishReason.LeapValue);
 				}
 			}
 			else if (convert.CanPerform(typeof(GameObject)))
@@ -126,7 +126,7 @@ namespace EditorBase.PropertyEditors
 					this.PerformSetValue();
 					this.OnValueChanged();
 					this.PerformGetValue();
-					this.OnEditingFinished();
+					this.OnEditingFinished(FinishReason.LeapValue);
 				}
 			}
 		}

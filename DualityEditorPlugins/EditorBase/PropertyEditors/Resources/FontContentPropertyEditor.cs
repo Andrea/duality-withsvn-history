@@ -24,7 +24,7 @@ namespace EditorBase.PropertyEditors
 			}
 			return base.AutoCreateMemberEditor(info);
 		}
-		protected override void OnEditingFinished(object sender, PropertyEditorValueEventArgs args)
+		protected override void OnEditingFinished(object sender, PropertyEditingFinishedEventArgs args)
 		{
 			base.OnEditingFinished(sender, args);
 

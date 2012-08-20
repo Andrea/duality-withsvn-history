@@ -68,7 +68,7 @@ namespace DualityEditor.Controls.PropertyEditors
 			this.PerformSetValue();
 			this.OnValueChanged();
 			this.PerformGetValue();
-			this.OnEditingFinished();
+			this.OnEditingFinished(result == DialogResult.OK ? FinishReason.UserAccept : FinishReason.LostFocus);
 		}
 		private void dialog_ColorEdited(object sender, EventArgs e)
 		{
@@ -146,7 +146,7 @@ namespace DualityEditor.Controls.PropertyEditors
 					this.PerformSetValue();
 					this.OnValueChanged();
 					this.PerformGetValue();
-					this.OnEditingFinished();
+					this.OnEditingFinished(FinishReason.LeapValue);
 				}
 				else
 					System.Media.SystemSounds.Beep.Play();
@@ -229,7 +229,7 @@ namespace DualityEditor.Controls.PropertyEditors
 				this.PerformSetValue();
 				this.OnValueChanged();
 				this.PerformGetValue();
-				this.OnEditingFinished();
+				this.OnEditingFinished(FinishReason.LeapValue);
 			}
 		}
 

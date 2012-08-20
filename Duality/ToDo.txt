@@ -19,6 +19,13 @@
 
 
 
+-->	TrommlBomml Feedback
+	-->	If editoruserdata.xml doesn't exist, provide a default user data.
+	-->	Change the default path for new projects to something useful. Probably "User Documents"?
+	-->	Add CamViewLayer "Grid", might be active by default. Probably highlight origin coordiante (0,0,0)
+	-->	Sandbox.Play should result in focusing a CamView, preferring one with GameView. If none is available, request one.
+	-->	Consider not showing Components in the Scene View. Optionally, that is.
+	-->	Sandbox.Play in unsaved Scenes should result in a MessageBox asking whether to save the Scene before.
 
 -->	Dualitor: Add PropertyGrid Debug mode
 	-->	Show even private Members

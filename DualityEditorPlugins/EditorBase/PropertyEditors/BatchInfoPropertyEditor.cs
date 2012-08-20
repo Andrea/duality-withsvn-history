@@ -786,7 +786,7 @@ namespace EditorBase.PropertyEditors
 					this.SetValue(refQuery.FirstOrDefault());
 					this.OnValueChanged();
 					this.PerformGetValue();
-					this.OnEditingFinished();
+					this.OnEditingFinished(FinishReason.LeapValue);
 				}
 				else
 					System.Media.SystemSounds.Beep.Play();
