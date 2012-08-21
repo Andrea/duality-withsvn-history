@@ -356,6 +356,24 @@ namespace DualityEditor.EditorRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Save current Scene? ähnelt.
+        /// </summary>
+        public static string Msg_EnterSandboxUnsavedScene_Caption {
+            get {
+                return ResourceManager.GetString("Msg_EnterSandboxUnsavedScene_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die You are about to enter Sandbox mode although the current Scene is temporary, so it won&apos;t be restored when leaving Sandbox mode. Do you want to make it restorable by saving it before? ähnelt.
+        /// </summary>
+        public static string Msg_EnterSandboxUnsavedScene_Desc {
+            get {
+                return ResourceManager.GetString("Msg_EnterSandboxUnsavedScene_Desc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Failed to perform task ähnelt.
         /// </summary>
         public static string Msg_ErrorPerformBigTask_Caption {

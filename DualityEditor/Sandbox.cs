@@ -54,9 +54,22 @@ namespace DualityEditor
 			Scene.Leaving -= Scene_Leaving;
 		}
 
-		public static void Play()
+		public static bool Play()
 		{
-			if (state == SandboxState.Playing) return;
+			if (state == SandboxState.Playing) return true;
+
+			// If the current Scene is unsaved when entering sandbox mode, ask whether this should be done before
+			if (Scene.Current.IsRuntimeResource)
+			{
+				DialogResult result = MessageBox.Show(DualityEditorApp.MainForm,
+					EditorRes.GeneralRes.Msg_EnterSandboxUnsavedScene_Desc,
+					EditorRes.GeneralRes.Msg_EnterSandboxUnsavedScene_Caption,
+					MessageBoxButtons.YesNoCancel,
+					MessageBoxIcon.Question);
+				if (result == DialogResult.Cancel) return false;
+				if (result == DialogResult.Yes) DualityEditorApp.SaveCurrentScene(false);
+			}
+
 			stateChange = true;
 			if (state == SandboxState.Paused)
 			{
@@ -89,6 +102,7 @@ namespace DualityEditor
 
 			OnSandboxStateChanged();
 			stateChange = false;
+			return true;
 		}
 		public static void Pause()
 		{

@@ -3884,6 +3884,16 @@
             </summary>
             <returns>The object that has been read.</returns>
         </member>
+        <member name="T:Duality.Serialization.Surrogates.GuidSurrogate">
+            <summary>
+            De/Serializes a <see cref="T:System.Guid"/>.
+            </summary>
+        </member>
+        <member name="T:Duality.Serialization.Surrogates.GuidArraySurrogate">
+            <summary>
+            De/Serializes an array of <see cref="T:System.Guid"/> objects.
+            </summary>
+        </member>
         <member name="T:Duality.Serialization.FormattingMethod">
             <summary>
             Represents a set of data formatting methods.
@@ -13969,16 +13979,6 @@
         <member name="P:Duality.Components.Physics.AngleJointInfo.MaxImpulse">
             <summary>
             [GET / SET] The maximum angular impulse to apply to the RigidBody. A negative value equals infinity.
-            </summary>
-        </member>
-        <member name="T:Duality.Serialization.Surrogates.GuidSurrogate">
-            <summary>
-            De/Serializes a <see cref="T:System.Guid"/>.
-            </summary>
-        </member>
-        <member name="T:Duality.Serialization.Surrogates.GuidArraySurrogate">
-            <summary>
-            De/Serializes an array of <see cref="T:System.Guid"/> objects.
             </summary>
         </member>
     </members>

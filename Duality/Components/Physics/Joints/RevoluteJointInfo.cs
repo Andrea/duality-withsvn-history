@@ -150,7 +150,7 @@ namespace Duality.Components.Physics
 			j.LocalAnchorA = GetFarseerPoint(this.BodyA, this.localAnchorA);
 			j.MotorEnabled = this.motorEnabled;
 			j.MotorSpeed = -this.motorSpeed / Time.SPFMult;
-			j.MaxMotorTorque = PhysicsConvert.ToPhysicalUnit(this.maxMotorTorque) / (MathF.RadAngle360 * Time.SPFMult);
+			j.MaxMotorTorque = PhysicsConvert.ToPhysicalUnit(this.maxMotorTorque) / Time.SPFMult;
 			j.LimitEnabled = this.limitEnabled;
 			j.LowerLimit = -this.upperLimit;
 			j.UpperLimit = -this.lowerLimit;

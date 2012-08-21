@@ -405,6 +405,16 @@
               Sucht eine lokalisierte Zeichenfolge, die The currently active Resource &apos;{0}&apos; has been modified externally. Do you want to reload it from file? Any unsaved changes might be lost. ähnelt.
             </summary>
         </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.Msg_EnterSandboxUnsavedScene_Caption">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Save current Scene? ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.Msg_EnterSandboxUnsavedScene_Desc">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die You are about to enter Sandbox mode although the current Scene is temporary, so it won&apos;t be restored when leaving Sandbox mode. Do you want to make it restorable by saving it before? ähnelt.
+            </summary>
+        </member>
         <member name="P:DualityEditor.EditorRes.GeneralRes.Msg_ErrorPerformBigTask_Caption">
             <summary>
               Sucht eine lokalisierte Zeichenfolge, die Failed to perform task ähnelt.

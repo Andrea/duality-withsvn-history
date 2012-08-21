@@ -477,7 +477,7 @@ namespace DualityEditor
 
 		public static void SaveCurrentScene(bool skipYetUnsaved = true)
 		{
-			if (!String.IsNullOrEmpty(Scene.Current.Path))
+			if (!Scene.Current.IsRuntimeResource)
 			{
 				if (IsResourceUnsaved(Scene.Current))
 				{

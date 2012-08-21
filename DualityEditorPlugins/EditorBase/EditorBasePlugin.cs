@@ -263,6 +263,7 @@ namespace EditorBase
 			this.menuItemAppData.Click += this.menuItemAppData_Click;
 			this.menuItemUserData.Click += this.menuItemUserData_Click;
 
+			Sandbox.Entering += this.Sandbox_Entering;
 			FileEventManager.ResourceModified += this.main_ResourceModified;
 			DualityEditorApp.ObjectPropertyChanged += this.main_ObjectPropertyChanged;
 		}
@@ -344,9 +345,9 @@ namespace EditorBase
 			}
 			return objView;
 		}
-		public CamView RequestCamView()
+		public CamView RequestCamView(string initStateTypeName = null)
 		{
-			CamView cam = new CamView(this.camViews.Count);
+			CamView cam = new CamView(this.camViews.Count, initStateTypeName);
 			this.camViews.Add(cam);
 			cam.FormClosed += delegate(object sender, FormClosedEventArgs e) { this.camViews.Remove(sender as CamView); };
 
@@ -496,6 +497,20 @@ namespace EditorBase
 			{
 				foreach (var r in e.Objects.Resources)
 					this.OnResourceModified(r);
+			}
+		}
+		private void Sandbox_Entering(object sender, EventArgs e)
+		{
+			CamView gameView = null;
+			if (this.camViews.Count == 0)
+			{
+				gameView = this.RequestCamView();
+				gameView.SetCurrentState(typeof(CamViewStates.GameViewCamViewState));
+			}
+			else
+			{
+				gameView = this.camViews.FirstOrDefault(v => v.ViewState.GetType() == typeof(CamViewStates.GameViewCamViewState));
+				gameView.LocalGLControl.Focus();
 			}
 		}
 		private void OnResourceModified(ContentRef<Resource> resRef)

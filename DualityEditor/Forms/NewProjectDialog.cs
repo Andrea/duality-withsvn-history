@@ -210,7 +210,7 @@ namespace DualityEditor.Forms
 		{
 			FolderBrowserDialog folderDialog = new FolderBrowserDialog();
 			folderDialog.ShowNewFolderButton = true;
-			folderDialog.SelectedPath = Environment.CurrentDirectory;
+			folderDialog.SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 			folderDialog.Description =EditorRes.GeneralRes.SelectNewProjectFolderDialog_Desc;
 			
 			DialogResult result = folderDialog.ShowDialog();

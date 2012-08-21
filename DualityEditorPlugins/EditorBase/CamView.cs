@@ -115,11 +115,12 @@ namespace EditorBase
 		private	Camera				camComp			= null;
 		private	bool				camInternal		= false;
 		private	CamViewState		activeState		= null;
-		private	List<CamViewLayer>	activeLayers	= new List<CamViewLayer>();
+		private	List<CamViewLayer>	activeLayers	= null;
 		private	List<Type>			lockedLayers	= new List<Type>();
 		private	ColorPickerDialog	bgColorDialog	= new ColorPickerDialog();
 		private	GameObject			nativeCamObj	= null;
 		private	string				loadTempState	= null;
+		private	string[]			loadTempLayers	= null;
 
 		private	Dictionary<Type,CamViewLayer>	availLayers	= new Dictionary<Type,CamViewLayer>();
 		private	Dictionary<Type,CamViewState>	availStates	= new Dictionary<Type,CamViewState>();
@@ -203,9 +204,10 @@ namespace EditorBase
 			get { return this.activeLayers; }
 		}
 
-		public CamView(int runtimeId)
+		public CamView(int runtimeId, string initStateTypeName = null)
 		{
 			this.InitializeComponent();
+			this.loadTempState = initStateTypeName;
 			this.bgColorDialog.OldColor = Color.FromArgb(64, 64, 64);
 			this.bgColorDialog.SelectedColor = this.bgColorDialog.OldColor;
 			this.bgColorDialog.AlphaEnabled = false;
@@ -241,14 +243,35 @@ namespace EditorBase
 
 			this.InitGLControl();
 			this.InitNativeCamera();
-			this.InitCameraSelector();
-			this.InitStateSelector();
-			this.InitLayerSelector();
+			if (this.camSelector.Items.Count == 0)				this.InitCameraSelector();
+			if (this.stateSelector.Items.Count == 0)			this.InitStateSelector();
+			if (this.layerSelector.DropDownItems.Count == 0)	this.InitLayerSelector();
 			this.SetCurrentCamera(null);
 
-			// Initialize state
-			Type stateType = ReflectionHelper.ResolveType(this.loadTempState, false) ?? typeof(SceneEditorCamViewState);
-			this.SetCurrentState(stateType);
+			// Initialize from loaded state id, if not done yet manually
+			if (this.activeState == null)
+			{
+				Type stateType = ReflectionHelper.ResolveType(this.loadTempState, false) ?? typeof(SceneEditorCamViewState);
+				this.SetCurrentState(stateType);
+				this.loadTempState = null;
+			}
+			else
+			{
+				// If we set the state explicitly before, we'll still need to fire its enter event. See SetCurrentState.
+				this.activeState.OnEnterState();
+			}
+
+			// Initialize from loaded layer ids, if not done yet manually
+			if (this.activeLayers == null)
+			{
+				this.SetActiveLayers(this.loadTempLayers.Select(ts => ReflectionHelper.ResolveType(ts, false)).NotNull());
+			}
+			else
+			{
+				// Fire activate events for layers we explicitly set before
+				foreach (var layer in this.activeLayers)
+					layer.OnActivateLayer();
+			}
 
 			// Register DualityApp updater for camera steering behaviour
 			FileEventManager.ResourceModified += this.EditorForm_ResourceModified;
@@ -337,7 +360,7 @@ namespace EditorBase
 				ToolStripMenuItem layerItem = new ToolStripMenuItem(layerEntry.LayerName);
 				layerItem.Tag = layerEntry;
 				layerItem.ToolTipText = layerEntry.LayerDesc;
-				layerItem.Checked = this.activeLayers.Any(l => l.GetType() == layerEntry.LayerType);
+				layerItem.Checked = this.activeLayers != null && this.activeLayers.Any(l => l.GetType() == layerEntry.LayerType);
 				layerItem.Enabled = !this.lockedLayers.Contains(layerEntry.LayerType);
 				this.layerSelector.DropDownItems.Add(layerItem);
 			}
@@ -409,12 +432,19 @@ namespace EditorBase
 
 			this.activeState = state;
 			if (this.activeState != null)
+			{
+				if (this.stateSelector.Items.Count == 0) this.InitStateSelector();
 				this.stateSelector.SelectedIndex = this.stateSelector.Items.IndexOf(this.stateSelector.Items.Cast<StateEntry>().FirstOrDefault(e => e.StateType == this.activeState.GetType()));
+			}
 			else
 				this.stateSelector.SelectedIndex = -1;
 
-			if (this.activeState != null) this.activeState.OnEnterState();
-			this.glControl.Invalidate();
+			// No glControl yet? We're not initialized properly and this is the initial state. Enter the state later.
+			if (this.glControl != null)
+			{
+				if (this.activeState != null) this.activeState.OnEnterState();
+				this.glControl.Invalidate();
+			}
 		}
 
 		public void SetActiveLayers(params Type[] layerTypes)
@@ -423,6 +453,8 @@ namespace EditorBase
 		}
 		public void SetActiveLayers(IEnumerable<Type> layerTypes)
 		{
+			if (this.activeLayers == null) this.activeLayers = new List<CamViewLayer>();
+
 			// Deactivate unused layers
 			for (int i = this.activeLayers.Count - 1; i >= 0; i--)
 			{
@@ -436,15 +468,19 @@ namespace EditorBase
 		}
 		public void ActivateLayer(CamViewLayer layer)
 		{
-			if (activeLayers == null) return;
+			if (this.activeLayers == null) this.activeLayers = new List<CamViewLayer>();
 			if (this.activeLayers.Contains(layer)) return;
 			if (this.activeLayers.Any(l => l.GetType() == layer.GetType())) return;
 			if (this.lockedLayers.Contains(layer.GetType())) return;
 
 			this.activeLayers.Add(layer);
 			layer.View = this;
-			layer.OnActivateLayer();
-			this.glControl.Invalidate();
+			// No glControl yet? We're not initialized properly and this is the initial state. Enter the state later.
+			if (this.glControl != null)
+			{
+				layer.OnActivateLayer();
+				this.glControl.Invalidate();
+			}
 		}
 		public void ActivateLayer(Type layerType)
 		{
@@ -452,7 +488,7 @@ namespace EditorBase
 		}
 		public void DeactivateLayer(CamViewLayer layer)
 		{
-			if (activeLayers == null) return;
+			if (this.activeLayers == null) this.activeLayers = new List<CamViewLayer>();
 			if (!this.activeLayers.Contains(layer)) return;
 			if (this.lockedLayers.Contains(layer.GetType())) return;
 
@@ -491,6 +527,7 @@ namespace EditorBase
 
 			if (this.activeState != null) 
 				node.SetAttribute("activeState", this.activeState.GetType().GetTypeId());
+			node.SetAttribute("activeLayers", this.activeLayers.ToString(l => l.GetType().GetTypeId(), ", "));
 
 			var stateListNode = node.OwnerDocument.CreateElement("states");
 			foreach (var pair in this.availStates)
@@ -527,6 +564,12 @@ namespace EditorBase
 			}
 
 			this.loadTempState = node.GetAttribute("activeState");
+
+			string activeLayers = node.GetAttribute("activeLayers");
+			if (activeLayers == null)
+				this.loadTempLayers = null;
+			else
+				this.loadTempLayers = activeLayers.Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries);
 
 			var stateListNode = node.ChildNodes.OfType<XmlElement>().FirstOrDefault(e => e.Name == "states");
 			if (stateListNode != null)

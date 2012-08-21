@@ -223,6 +223,12 @@
   <data name="Msg_ConfirmReloadResource_Text" xml:space="preserve">
     <value>The currently active Resource '{0}' has been modified externally. Do you want to reload it from file? Any unsaved changes might be lost.</value>
   </data>
+  <data name="Msg_EnterSandboxUnsavedScene_Caption" xml:space="preserve">
+    <value>Save current Scene?</value>
+  </data>
+  <data name="Msg_EnterSandboxUnsavedScene_Desc" xml:space="preserve">
+    <value>You are about to enter Sandbox mode although the current Scene is temporary, so it won't be restored when leaving Sandbox mode. Do you want to make it restorable by saving it before?</value>
+  </data>
   <data name="Msg_ErrorPerformBigTask_Caption" xml:space="preserve">
     <value>Failed to perform task</value>
   </data>
