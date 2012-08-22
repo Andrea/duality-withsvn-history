@@ -171,6 +171,10 @@ namespace Duality
 		/// </summary>
 		float FarZ { get; }
 		/// <summary>
+		/// [GET] The devices view space bounding circle radius.
+		/// </summary>
+		float ViewBoundingRadius { get; }
+		/// <summary>
 		/// [GET] Returns whether the drawing device is currently rendering in screen overlay mode
 		/// </summary>
 		bool IsScreenOverlay { get; }

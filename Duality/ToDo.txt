@@ -35,6 +35,23 @@
 		-->	Also, this here will prove / assure PropertyGrids customization support
 
 
+-->	AnimSpriteRenderer
+	-->	Feature: CustomFrameSequence (supported by existing anim modes)
+	-->	Feature: Queue anim mode, treating the CustomFrameSequence as queue and
+		interpreting the AnimationDuration as a single frame's time.
+
+
+-->	Dualitor: Upgrade LogView with a Console (or separate both?)
+	-->	Can parse single-line commands
+	-->	Expression Result is printed in the console (!= logged), if not defined otherwise.
+	-->	Use expression trees, Reflection or actually compile code?
+	-->	Executed on a Console-internal dynamic object (Expando-Object or similar)
+		-->	Can define and use custom Methods and Properties
+			-->	See also: http://www.rickardnilsson.net/post/2012/01/01/csharp-repl-and-interactive-interpreter.aspx
+		-->	Some predefined commands are always available and can't be overwritten
+		-->	When accessing Properties that do not exist, try to intepret them as GameObjects / Components / Resources
+
+
 -->	Dualitor: Component Wizard
 	-->	See below for dialog concept
 	-->	Implement in a separate plugin so it is possible to opt-out.

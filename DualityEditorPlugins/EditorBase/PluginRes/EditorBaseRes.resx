@@ -421,4 +421,10 @@
   <data name="SceneView_PrefabLink" xml:space="preserve">
     <value>Linked to: {0}</value>
   </data>
+  <data name="CamViewLayer_Grid_Desc" xml:space="preserve">
+    <value>Displays a uniform spatial grid</value>
+  </data>
+  <data name="CamViewLayer_Grid_Name" xml:space="preserve">
+    <value>Grid</value>
+  </data>
 </root>

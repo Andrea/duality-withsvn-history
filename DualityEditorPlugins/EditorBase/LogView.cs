@@ -82,6 +82,7 @@ namespace EditorBase
 			bool updateCaret = this.textLog.SelectionStart == this.textLog.Text.Length;
 			int lastSelectionStart = this.textLog.SelectionStart;
 			int lastSelectionLength = this.textLog.SelectionLength;
+			this.textLog.DeselectAll();
 
 			this.textLog.Clear();
 			StringBuilder builder = new StringBuilder();
@@ -96,16 +97,14 @@ namespace EditorBase
 
 				if (entry.Type != prevEntry.Type || i == acceptedData.Length - 1 || entry.Type != nextEntry.Type)
 				{
-					int beginIndex = this.textLog.Text.Length;
-					this.textLog.AppendText(builder.ToString());
-					this.textLog.SelectionStart = beginIndex;
-					this.textLog.SelectionLength = this.textLog.Text.Length - beginIndex;
-
 					if (entry.Type == LogMessageType.Error)
 						this.textLog.SelectionColor = Color.FromArgb(215, 64, 64);
 					else if (entry.Type == LogMessageType.Warning)
 						this.textLog.SelectionColor = Color.FromArgb(215, 135, 0);
+					else
+						this.textLog.SelectionColor = this.textLog.ForeColor;
 
+					this.textLog.AppendText(builder.ToString());
 					builder.Clear();
 				}
 			}
@@ -122,20 +121,19 @@ namespace EditorBase
 			bool updateCaret = this.textLog.SelectionStart == this.textLog.Text.Length;
 			int lastSelectionStart = this.textLog.SelectionStart;
 			int lastSelectionLength = this.textLog.SelectionLength;
+			this.textLog.DeselectAll();
 
 			StringBuilder builder = new StringBuilder();
 			this.GenerateEntryText(entry, builder);
-
-			int beginIndex = this.textLog.Text.Length;
-			this.textLog.AppendText(builder.ToString());
-			this.textLog.SelectionStart = beginIndex;
-			this.textLog.SelectionLength = this.textLog.Text.Length - beginIndex;
 
 			if (entry.Type == LogMessageType.Error)
 				this.textLog.SelectionColor = Color.FromArgb(215, 64, 64);
 			else if (entry.Type == LogMessageType.Warning)
 				this.textLog.SelectionColor = Color.FromArgb(215, 135, 0);
+			else
+				this.textLog.SelectionColor = this.textLog.ForeColor;
 
+			this.textLog.AppendText(builder.ToString());
 			this.textLog.SelectionStart = lastSelectionStart;
 			this.textLog.SelectionLength = lastSelectionLength;
 

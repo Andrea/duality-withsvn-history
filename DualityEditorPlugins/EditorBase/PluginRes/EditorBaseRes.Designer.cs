@@ -259,6 +259,24 @@ namespace EditorBase.PluginRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Displays a uniform spatial grid ähnelt.
+        /// </summary>
+        public static string CamViewLayer_Grid_Desc {
+            get {
+                return ResourceManager.GetString("CamViewLayer_Grid_Desc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Grid ähnelt.
+        /// </summary>
+        public static string CamViewLayer_Grid_Name {
+            get {
+                return ResourceManager.GetString("CamViewLayer_Grid_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Displays the physical constraints of a RigidBody Component ähnelt.
         /// </summary>
         public static string CamViewLayer_RigidBodyJoint_Desc {
