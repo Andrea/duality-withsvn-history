@@ -84,7 +84,7 @@ namespace EditorBase.CamViewStates
 				if (action == MouseAction.MoveObj) return true;
 				return false;
 			}
-			public virtual void DrawActionGizmo(Canvas canvas, MouseAction action, Vector2 curLoc) {}
+			public virtual void DrawActionGizmo(Canvas canvas, MouseAction action, Vector2 curLoc, bool performing) {}
 			
 			public override bool Equals(object obj)
 			{
@@ -170,7 +170,7 @@ namespace EditorBase.CamViewStates
 		}
 		public bool IsActive
 		{
-			get { return this.view != null && this.view.ViewState == this; }
+			get { return this.view != null && this.view.ActiveState == this; }
 		}
 		public bool EngineUserInput
 		{
@@ -209,25 +209,25 @@ namespace EditorBase.CamViewStates
 				}
 			}
 		}
-		protected bool CameraTransformChanged
-		{
-			get { return this.camTransformChanged; }
-		}
-		protected bool MouseoverSelect
+		public bool MouseoverSelect
 		{
 			get { return this.mouseoverSelect; }
 		}
-		protected SelObj MouseoverObject
+		public SelObj MouseoverObject
 		{
 			get { return this.mouseoverObject; }
 		}
-		protected MouseAction MouseoverAction
+		public MouseAction MouseoverAction
 		{
 			get { return this.mouseoverAction; }
 		}
-		protected MouseAction Action
+		public MouseAction Action
 		{
 			get { return this.action; }
+		}
+		protected bool CameraTransformChanged
+		{
+			get { return this.camTransformChanged; }
 		}
 
 		internal protected virtual void OnEnterState()
@@ -424,18 +424,26 @@ namespace EditorBase.CamViewStates
 			if (this.action != MouseAction.None)
 			{
 				canvas.PushState();
-				if (this.actionObjSel.Count != 1)
+				if (this.actionObjSel.Count == 1)
 				{
-					foreach (SelObj selShape in this.actionObjSel)
-					{
-						Vector3 selPosScreen = this.View.GetScreenCoord(selShape.Pos);
-						selShape.DrawActionGizmo(canvas, this.Action, selPosScreen.Xy);
-					}
+					this.actionObjSel[0].DrawActionGizmo(canvas, this.Action, new Vector2(cursorPos.X + 30, cursorPos.Y + 10), true);
 				}
-				else
-				{
-					this.actionObjSel[0].DrawActionGizmo(canvas, this.Action, new Vector2(cursorPos.X + 30, cursorPos.Y + 10));
-				}
+				//else if (this.actionObjSel.Count > 1)
+				//{
+				//    foreach (SelObj selObj in this.actionObjSel)
+				//    {
+				//        Vector3 selPosScreen = this.View.GetScreenCoord(selObj.Pos);
+				//        selObj.DrawActionGizmo(canvas, this.Action, selPosScreen.Xy, true);
+				//    }
+				//}
+				canvas.PopState();
+			}
+			// Draw hovered objects action gizmo
+			else if (this.mouseoverAction != MouseAction.None && (this.mouseoverObject != null || this.actionObjSel.Count == 1))
+			{
+				canvas.PushState();
+				SelObj obj = this.mouseoverObject ?? this.actionObjSel[0];
+				obj.DrawActionGizmo(canvas, this.mouseoverAction, new Vector2(cursorPos.X + 30, cursorPos.Y + 10), false);
 				canvas.PopState();
 			}
 
@@ -467,13 +475,15 @@ namespace EditorBase.CamViewStates
 			// Draw camera action hints
 			if (!handled)
 			{
+				int textYOff = -20;
+				string[] text = null;
 				if (this.camAction == CameraAction.TurnCam)
 				{
 					canvas.DrawLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, this.camActionBeginLoc.Y);
 
 					if (MathF.Abs(this.camAngleVel) > 0.0f)
 					{
-						canvas.DrawText(string.Format("Cam Angle: {0,3:0}°", MathF.RadToDeg(this.view.CameraObj.Transform.Angle)), 10, viewSize.Height - 20);
+						text = new string[] { string.Format("Cam Angle: {0,3:0}°", MathF.RadToDeg(this.view.CameraObj.Transform.Angle)) };
 						handled = true;
 					}
 				}
@@ -482,16 +492,26 @@ namespace EditorBase.CamViewStates
 					if (this.camAction == CameraAction.MoveCam)
 					{
 						canvas.DrawLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, cursorPos.Y);
-						canvas.DrawText(string.Format("Cam X:{0,7:0}", this.view.CameraObj.Transform.Pos.X), 10, viewSize.Height - 36);
-						canvas.DrawText(string.Format("Cam Y:{0,7:0}", this.view.CameraObj.Transform.Pos.Y), 10, viewSize.Height - 28);
-						canvas.DrawText(string.Format("Cam Z:{0,7:0}", this.view.CameraObj.Transform.Pos.Z), 10, viewSize.Height - 20);
+						text = new string[]
+						{
+							string.Format("Cam X:{0,7:0}", this.view.CameraObj.Transform.Pos.X),
+							string.Format("Cam Y:{0,7:0}", this.view.CameraObj.Transform.Pos.Y),
+							string.Format("Cam Z:{0,7:0}", this.view.CameraObj.Transform.Pos.Z)
+						};
+						textYOff -= canvas.CurrentState.TextFont.Res.Height * 2;
 						handled = true;
 					}
 					else if (this.camVel.Z != 0.0f)
 					{
-						canvas.DrawText(string.Format("Cam Z:{0,7:0}", this.view.CameraObj.Transform.Pos.Z), 10, viewSize.Height - 20);
+						text = new string[] { string.Format("Cam Z:{0,7:0}", this.view.CameraObj.Transform.Pos.Z) };
 						handled = true;
 					}
+				}
+
+				if (text != null)
+				{
+					canvas.DrawTextBackground(text, 10, viewSize.Height + textYOff);
+					canvas.DrawText(text, 10, viewSize.Height + textYOff);
 				}
 			}
 
@@ -499,10 +519,18 @@ namespace EditorBase.CamViewStates
 			if (!handled)
 			{
 				MouseAction actionHint = this.action != MouseAction.None ? this.action : this.mouseoverAction;
-				if (actionHint == MouseAction.MoveObj)				canvas.DrawText(PluginRes.EditorBaseRes.CamView_Action_Move, 10, viewSize.Height - 20);
-				else if (actionHint == MouseAction.RotateObj)		canvas.DrawText(PluginRes.EditorBaseRes.CamView_Action_Rotate, 10, viewSize.Height - 20);
-				else if (actionHint == MouseAction.ScaleObj)		canvas.DrawText(PluginRes.EditorBaseRes.CamView_Action_Scale, 10, viewSize.Height - 20);
-				else if (this.action == MouseAction.RectSelection)	canvas.DrawText(PluginRes.EditorBaseRes.CamView_Action_Select_Active, 10, viewSize.Height - 20);
+				string text = null;
+
+				if (actionHint == MouseAction.MoveObj)				text = PluginRes.EditorBaseRes.CamView_Action_Move;
+				else if (actionHint == MouseAction.RotateObj)		text = PluginRes.EditorBaseRes.CamView_Action_Rotate;
+				else if (actionHint == MouseAction.ScaleObj)		text = PluginRes.EditorBaseRes.CamView_Action_Scale;
+				else if (this.action == MouseAction.RectSelection)	text = PluginRes.EditorBaseRes.CamView_Action_Select_Active;
+
+				if (text != null)
+				{
+					canvas.DrawTextBackground(text, 10, viewSize.Height - 20);
+					canvas.DrawText(text, 10, viewSize.Height - 20);
+				}
 
 				if (actionHint != MouseAction.None) handled = true;
 			}
@@ -624,7 +652,7 @@ namespace EditorBase.CamViewStates
 		}
 		protected void SaveActiveLayers()
 		{
-			this.lastActiveLayers = this.view.ActiveViewLayers.Select(l => l.GetType()).ToList();
+			this.lastActiveLayers = this.view.ActiveLayers.Select(l => l.GetType()).ToList();
 		}
 		protected void RestoreActiveLayers()
 		{
@@ -868,10 +896,11 @@ namespace EditorBase.CamViewStates
 					this.View.LocalGLControl.Cursor = CursorHelper.ArrowActionScale;
 				else
 					this.View.LocalGLControl.Cursor = CursorHelper.Arrow;
-
-				// Redraw
-				this.View.LocalGLControl.Invalidate();
 			}
+			
+			// Redraw if action gizmos might be visible
+			if (this.actionAllowed)
+				this.View.LocalGLControl.Invalidate();
 		}
 		private void UpdateRectSelection(Point mouseLoc)
 		{
@@ -1003,7 +1032,7 @@ namespace EditorBase.CamViewStates
 		
 		protected void CollectLayerDrawcalls(Canvas canvas)
 		{
-			var layers = this.View.ActiveViewLayers.ToArray();
+			var layers = this.View.ActiveLayers.ToArray();
 			layers.StableSort((a, b) => a.Priority - b.Priority);
 			foreach (var layer in layers)
 			{
@@ -1014,7 +1043,7 @@ namespace EditorBase.CamViewStates
 		}
 		protected void CollectLayerOverlayDrawcalls(Canvas canvas)
 		{
-			var layers = this.View.ActiveViewLayers.ToArray();
+			var layers = this.View.ActiveLayers.ToArray();
 			layers.StableSort((a, b) => a.Priority - b.Priority);
 			foreach (var layer in layers)
 			{
@@ -1025,7 +1054,7 @@ namespace EditorBase.CamViewStates
 		}
 		protected void CollectLayerBackgroundDrawcalls(Canvas canvas)
 		{
-			var layers = this.View.ActiveViewLayers.ToArray();
+			var layers = this.View.ActiveLayers.ToArray();
 			layers.StableSort((a, b) => a.Priority - b.Priority);
 			foreach (var layer in layers)
 			{

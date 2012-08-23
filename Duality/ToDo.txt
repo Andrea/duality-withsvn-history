@@ -21,7 +21,6 @@
 
 -->	TrommlBomml Feedback
 	-->	If editoruserdata.xml doesn't exist, provide a default user data.
-	-->	Add CamViewLayer "Grid", might be active by default. Probably highlight origin coordiante (0,0,0)
 	-->	Consider not showing Components in the Scene View. Optionally, that is.
 
 

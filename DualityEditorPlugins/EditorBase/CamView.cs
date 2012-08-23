@@ -120,7 +120,6 @@ namespace EditorBase
 		private	ColorPickerDialog	bgColorDialog	= new ColorPickerDialog();
 		private	GameObject			nativeCamObj	= null;
 		private	string				loadTempState	= null;
-		private	string[]			loadTempLayers	= null;
 
 		private	Dictionary<Type,CamViewLayer>	availLayers	= new Dictionary<Type,CamViewLayer>();
 		private	Dictionary<Type,CamViewState>	availStates	= new Dictionary<Type,CamViewState>();
@@ -195,11 +194,11 @@ namespace EditorBase
 		{
 			get { return this.toolbarCamera; }
 		}
-		public CamViewState ViewState
+		public CamViewState ActiveState
 		{
 			get { return this.activeState; }
 		}
-		public IEnumerable<CamViewLayer> ActiveViewLayers
+		public IEnumerable<CamViewLayer> ActiveLayers
 		{
 			get { return this.activeLayers; }
 		}
@@ -259,18 +258,6 @@ namespace EditorBase
 			{
 				// If we set the state explicitly before, we'll still need to fire its enter event. See SetCurrentState.
 				this.activeState.OnEnterState();
-			}
-
-			// Initialize from loaded layer ids, if not done yet manually
-			if (this.activeLayers == null)
-			{
-				this.SetActiveLayers(this.loadTempLayers.Select(ts => ReflectionHelper.ResolveType(ts, false)).NotNull());
-			}
-			else
-			{
-				// Fire activate events for layers we explicitly set before
-				foreach (var layer in this.activeLayers)
-					layer.OnActivateLayer();
 			}
 
 			// Register DualityApp updater for camera steering behaviour
@@ -527,7 +514,6 @@ namespace EditorBase
 
 			if (this.activeState != null) 
 				node.SetAttribute("activeState", this.activeState.GetType().GetTypeId());
-			node.SetAttribute("activeLayers", this.activeLayers.ToString(l => l.GetType().GetTypeId(), ", "));
 
 			var stateListNode = node.OwnerDocument.CreateElement("states");
 			foreach (var pair in this.availStates)
@@ -564,12 +550,6 @@ namespace EditorBase
 			}
 
 			this.loadTempState = node.GetAttribute("activeState");
-
-			string activeLayers = node.GetAttribute("activeLayers");
-			if (activeLayers == null)
-				this.loadTempLayers = null;
-			else
-				this.loadTempLayers = activeLayers.Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries);
 
 			var stateListNode = node.ChildNodes.OfType<XmlElement>().FirstOrDefault(e => e.Name == "states");
 			if (stateListNode != null)

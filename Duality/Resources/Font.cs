@@ -965,7 +965,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// Measures the size of a text rendered using this Font.
 		/// </summary>
-		/// <param name="text">The text tu measure.</param>
+		/// <param name="text">The text to measure.</param>
 		/// <returns>The size of the measured text.</returns>
 		public Vector2 MeasureText(string text)
 		{
@@ -988,6 +988,25 @@ namespace Duality.Resources
 
 			textSize.X = MathF.Round(textSize.X);
 			textSize.Y = MathF.Round(textSize.Y);
+			return textSize;
+		}
+		/// <summary>
+		/// Measures the size of a multiline text rendered using this Font.
+		/// </summary>
+		/// <param name="text">The text to measure.</param>
+		/// <returns>The size of the measured text.</returns>
+		public Vector2 MeasureText(string[] text)
+		{
+			Vector2 textSize = Vector2.Zero;
+			if (text == null) return textSize;
+
+			for (int i = 0; i < text.Length; i++)
+			{
+				Vector2 lineSize = this.MeasureText(text[i]);
+				textSize.X = MathF.Max(textSize.X, lineSize.X);
+				textSize.Y += this.Height;
+			}
+
 			return textSize;
 		}
 		/// <summary>

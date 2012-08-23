@@ -1157,7 +1157,7 @@ namespace Duality
 		}
 
 		/// <summary>
-		/// Draws the specified text string.
+		/// Draws the specified text.
 		/// </summary>
 		/// <param name="text"></param>
 		/// <param name="x"></param>
@@ -1165,6 +1165,19 @@ namespace Duality
 		/// <param name="z"></param>
 		public void DrawText(string text, float x, float y, float z = 0.0f)
 		{
+			this.DrawText(new string[] { text }, x, y, z);
+		}
+		/// <summary>
+		/// Draws the specified text.
+		/// </summary>
+		/// <param name="text"></param>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="z"></param>
+		public void DrawText(string[] text, float x, float y, float z = 0.0f)
+		{
+			if (text == null || text.Length == 0) return;
+
 			Vector3 pos = new Vector3(x, y, z);
 			float scale = 1.0f;
 			device.PreprocessCoords(ref pos, ref scale);
@@ -1173,13 +1186,21 @@ namespace Duality
 			Vector2 shapeHandle = pos.Xy;
 			VertexC1P3T2[] vertices = null;
 			Font font = this.CurrentState.TextFont.Res;
-
-			font.EmitTextVertices(text, ref vertices, pos.X, pos.Y, pos.Z, this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor, 0.0f, scale);
-
-			this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
+			
 			BatchInfo customMat = new BatchInfo(this.CurrentState.MaterialDirect);
 			customMat.MainTexture = font.Material.MainTexture;
-			device.AddVertices(customMat, VertexMode.Quads, vertices);
+
+			Vector2 size = Vector2.Zero;
+			for (int i = 0; i < text.Length; i++)
+			{
+				font.EmitTextVertices(text[i], ref vertices, pos.X, pos.Y, pos.Z, this.CurrentState.ColorTint * this.CurrentState.MaterialDirect.MainColor, 0.0f, scale);
+
+				this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
+				device.AddVertices(customMat, VertexMode.Quads, vertices);
+
+				pos.Y += font.Height * scale;
+				vertices = null;
+			}
 		}
 		/// <summary>
 		/// Draws the specified formatted text.
@@ -1222,11 +1243,74 @@ namespace Duality
 		}
 
 		/// <summary>
+		/// Draws a simple background rectangle for the specified text. Its color is automatically determined
+		/// based on the current state in order to generate an optimal contrast to the text.
+		/// </summary>
+		/// <param name="text"></param>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="z"></param>
+		public void DrawTextBackground(string text, float x, float y, float z = 0.0f, float backAlpha = 0.65f)
+		{
+			this.DrawTextBackground(this.MeasureText(text), x, y, z, backAlpha);
+		}
+		/// <summary>
+		/// Draws a simple background rectangle for the specified text. Its color is automatically determined
+		/// based on the current state in order to generate an optimal contrast to the text.
+		/// </summary>
+		/// <param name="text"></param>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="z"></param>
+		public void DrawTextBackground(string[] text, float x, float y, float z = 0.0f, float backAlpha = 0.65f)
+		{
+			this.DrawTextBackground(this.MeasureText(text), x, y, z, backAlpha);
+		}
+		/// <summary>
+		/// Draws a simple background rectangle for the specified text. Its color is automatically determined
+		/// based on the current state in order to generate an optimal contrast to the text.
+		/// </summary>
+		/// <param name="text"></param>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="z"></param>
+		public void DrawTextBackground(FormattedText text, float x, float y, float z = 0.0f, float backAlpha = 0.65f)
+		{
+			this.DrawTextBackground(text.Measure().Size, x, y, z, backAlpha);
+		}
+		private void DrawTextBackground(Vector2 totalSize, float x, float y, float z, float backAlpha)
+		{
+			Vector2 padding = new Vector2(this.CurrentState.TextFont.Res.Height, this.CurrentState.TextFont.Res.Height) * 0.35f;
+
+			ColorFormat.ColorRgba clr = this.CurrentState.MaterialDirect.MainColor * this.CurrentState.ColorTint;
+			float alpha = (float)clr.A / 255.0f;
+			float lum = clr.GetLuminance();
+
+			this.PushState();
+			this.CurrentState.SetMaterial(new Resources.BatchInfo(
+				Resources.DrawTechnique.Alpha, 
+				(lum > 0.5f ? ColorFormat.ColorRgba.Black : ColorFormat.ColorRgba.White).WithAlpha(alpha * backAlpha)));
+			this.CurrentState.ColorTint = ColorFormat.ColorRgba.White;
+			this.FillRect(x - padding.X, y - padding.Y, totalSize.X + padding.X * 2, totalSize.Y + padding.Y * 2);
+			this.PopState();
+		}
+
+		/// <summary>
 		/// Measures the specified text using the currently used <see cref="Duality.Resources.Font"/>.
 		/// </summary>
 		/// <param name="text"></param>
 		/// <returns></returns>
 		public Vector2 MeasureText(string text)
+		{
+			Font font = this.CurrentState.TextFont.Res;
+			return font.MeasureText(text);
+		}
+		/// <summary>
+		/// Measures the specified text using the currently used <see cref="Duality.Resources.Font"/>.
+		/// </summary>
+		/// <param name="text"></param>
+		/// <returns></returns>
+		public Vector2 MeasureText(string[] text)
 		{
 			Font font = this.CurrentState.TextFont.Res;
 			return font.MeasureText(text);

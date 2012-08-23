@@ -104,7 +104,7 @@ namespace EditorBase.CamViewLayers
 				//	EdgeShapeInfo edge = s as EdgeShapeInfo;
 					LoopShapeInfo loop = s as LoopShapeInfo;
 
-					float shapeAlpha = colliderAlpha * (selectedBody == null || this.View.ViewState.SelectedObjects.Any(sel => sel.ActualObject == s) ? 1.0f : 0.5f);
+					float shapeAlpha = colliderAlpha * (selectedBody == null || this.View.ActiveState.SelectedObjects.Any(sel => sel.ActualObject == s) ? 1.0f : 0.5f);
 					float densityRelative = MathF.Abs(maxDensity - minDensity) < 0.01f ? 1.0f : s.Density / avgDensity;
 					ColorRgba clr = s.IsSensor ? this.ShapeSensorColor : this.ShapeColor;
 					ColorRgba fontClr = this.View.FgColor;

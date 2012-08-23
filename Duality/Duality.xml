@@ -9971,7 +9971,16 @@
         </member>
         <member name="M:Duality.Canvas.DrawText(System.String,System.Single,System.Single,System.Single)">
             <summary>
-            Draws the specified text string.
+            Draws the specified text.
+            </summary>
+            <param name="text"></param>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawText(System.String[],System.Single,System.Single,System.Single)">
+            <summary>
+            Draws the specified text.
             </summary>
             <param name="text"></param>
             <param name="x"></param>
@@ -9988,7 +9997,44 @@
             <param name="z"></param>
             <param name="iconMat"></param>
         </member>
+        <member name="M:Duality.Canvas.DrawTextBackground(System.String,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a simple background rectangle for the specified text. Its color is automatically determined
+            based on the current state in order to generate an optimal contrast to the text.
+            </summary>
+            <param name="text"></param>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawTextBackground(System.String[],System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a simple background rectangle for the specified text. Its color is automatically determined
+            based on the current state in order to generate an optimal contrast to the text.
+            </summary>
+            <param name="text"></param>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+        </member>
+        <member name="M:Duality.Canvas.DrawTextBackground(Duality.FormattedText,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Draws a simple background rectangle for the specified text. Its color is automatically determined
+            based on the current state in order to generate an optimal contrast to the text.
+            </summary>
+            <param name="text"></param>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+        </member>
         <member name="M:Duality.Canvas.MeasureText(System.String)">
+            <summary>
+            Measures the specified text using the currently used <see cref="T:Duality.Resources.Font"/>.
+            </summary>
+            <param name="text"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.Canvas.MeasureText(System.String[])">
             <summary>
             Measures the specified text using the currently used <see cref="T:Duality.Resources.Font"/>.
             </summary>
@@ -12180,7 +12226,14 @@
             <summary>
             Measures the size of a text rendered using this Font.
             </summary>
-            <param name="text">The text tu measure.</param>
+            <param name="text">The text to measure.</param>
+            <returns>The size of the measured text.</returns>
+        </member>
+        <member name="M:Duality.Resources.Font.MeasureText(System.String[])">
+            <summary>
+            Measures the size of a multiline text rendered using this Font.
+            </summary>
+            <param name="text">The text to measure.</param>
             <returns>The size of the measured text.</returns>
         </member>
         <member name="M:Duality.Resources.Font.FitText(System.String,System.Single,System.Boolean)">
