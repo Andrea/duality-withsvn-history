@@ -130,6 +130,13 @@ namespace EditorBase.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap iconCmpUnknown {
+            get {
+                object obj = ResourceManager.GetObject("iconCmpUnknown", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap iconGameObj {
             get {
                 object obj = ResourceManager.GetObject("iconGameObj", resourceCulture);

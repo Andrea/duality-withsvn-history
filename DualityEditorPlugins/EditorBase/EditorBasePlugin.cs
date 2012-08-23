@@ -102,6 +102,12 @@ namespace EditorBase
 				node.AppendChild(logViewElem);
 				this.logView.SaveUserData(logViewElem);
 			}
+			if (this.sceneView != null)
+			{
+				System.Xml.XmlElement sceneViewElem = doc.CreateElement("SceneView_0");
+				node.AppendChild(sceneViewElem);
+				this.sceneView.SaveUserData(sceneViewElem);
+			}
 		}
 		protected override void LoadUserData(System.Xml.XmlElement node)
 		{
@@ -129,6 +135,15 @@ namespace EditorBase
 				{
 					System.Xml.XmlElement logViewElem = logViewElemQuery[0] as System.Xml.XmlElement;
 					this.logView.LoadUserData(logViewElem);
+				}
+			}
+			if (this.sceneView != null)
+			{
+				System.Xml.XmlNodeList sceneViewElemQuery = node.GetElementsByTagName("SceneView_0");
+				if (sceneViewElemQuery.Count > 0)
+				{
+					System.Xml.XmlElement sceneViewElem = sceneViewElemQuery[0] as System.Xml.XmlElement;
+					this.sceneView.LoadUserData(sceneViewElem);
 				}
 			}
 			this.isLoading = false;

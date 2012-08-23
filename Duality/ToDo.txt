@@ -21,7 +21,6 @@
 
 -->	TrommlBomml Feedback
 	-->	If editoruserdata.xml doesn't exist, provide a default user data.
-	-->	Consider not showing Components in the Scene View. Optionally, that is.
 
 
 -->	Dualitor: Add ActionButtonPropertyEditor and auto-use it in MemberwisePropertyEditor

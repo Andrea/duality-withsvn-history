@@ -4,6 +4,8 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using System.IO;
+using System.Globalization;
+using System.Xml;
 using CancelEventHandler = System.ComponentModel.CancelEventHandler;
 using CancelEventArgs = System.ComponentModel.CancelEventArgs;
 
@@ -160,6 +162,8 @@ namespace EditorBase
 		private	Dictionary<Node,bool>	tempNodeVisibilityCache	= new Dictionary<Node,bool>();
 		private	string					tempUpperFilter			= null;
 		private bool	tempScheduleSelectionChange	= false;
+		private bool	tempIsInitializingObjects	= false;
+		private bool	tempIsClearingObjects		= false;
 
 		
 		public IEnumerable<NodeBase> SelectedNodes
@@ -249,6 +253,18 @@ namespace EditorBase
 			Scene.RegisteredObjectComponentRemoved -= this.Scene_RegisteredObjectComponentRemoved;
 		}
 
+		internal void SaveUserData(XmlElement node)
+		{
+			node.SetAttribute("showComponents", this.buttonShowComponents.Checked.ToString(CultureInfo.InvariantCulture));
+		}
+		internal void LoadUserData(XmlElement node)
+		{
+			bool tryParseBool;
+
+			if (bool.TryParse(node.GetAttribute("showComponents"), out tryParseBool))
+				this.buttonShowComponents.Checked = tryParseBool;
+		}
+
 		public void FlashNode(NodeBase node)
 		{
 			if (node == null) return;
@@ -313,6 +329,9 @@ namespace EditorBase
 
 		protected void InitObjects()
 		{
+			if (this.tempIsInitializingObjects) return;
+			this.tempIsInitializingObjects = true;
+
 			this.UpdateSceneLabel();
 
 			Node nodeTree = this.ScanScene(Scene.Current);
@@ -331,13 +350,20 @@ namespace EditorBase
 				selObjQuery = selObjQuery.Concat(DualityEditorApp.Selection.Components.Select(o => this.FindNode(o)));
 				this.SelectNodes(selObjQuery, true);
 			}
+
+			this.tempIsInitializingObjects = false;
 		}
 		protected void ClearObjects()
 		{
+			if (this.tempIsClearingObjects) return;
+			this.tempIsClearingObjects = true;
+
 			this.objectView.BeginUpdate();
 			this.objectModel.Nodes.Clear();
 			this.objToNode.Clear();
 			this.objectView.EndUpdate();
+
+			this.tempIsClearingObjects = false;
 		}
 		protected void RegisterNodeTree(Node node)
 		{
@@ -377,6 +403,7 @@ namespace EditorBase
 		protected ComponentNode ScanComponent(Component cmp)
 		{
 			if (cmp == null) return null;
+			if (!this.buttonShowComponents.Checked) return null;
 			ComponentNode thisNode = new ComponentNode(cmp);
 			return thisNode;
 		}
@@ -714,6 +741,9 @@ namespace EditorBase
 		}
 		private void objectView_SelectionChanged(object sender, EventArgs e)
 		{
+			if (this.tempIsInitializingObjects) return;
+			if (this.tempIsClearingObjects) return;
+
 			var selComponent =
 					from vn in this.objectView.SelectedNodes
 					where (vn.Tag is ComponentNode) && (vn.Tag as ComponentNode).Component != null
@@ -1511,15 +1541,20 @@ namespace EditorBase
 			action.Perform(selObjData);
 		}
 
-		private void toolStripButtonCreateScene_Click(object sender, EventArgs e)
+		private void buttonCreateScene_Click(object sender, EventArgs e)
 		{
 			DualityEditorApp.SaveCurrentScene(true);
 			Scene.Current = null;
 		}
-		private void toolStripButtonSaveScene_Click(object sender, EventArgs e)
+		private void buttonSaveScene_Click(object sender, EventArgs e)
 		{
 			DualityEditorApp.SaveCurrentScene(false);
 			this.UpdateSceneLabel();
+		}
+		private void buttonShowComponents_CheckedChanged(object sender, EventArgs e)
+		{
+			this.ClearObjects();
+			this.InitObjects();
 		}
 
 		private void EditorForm_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1581,6 +1616,7 @@ namespace EditorBase
 		}
 		private void Scene_RegisteredObjectComponentAdded(object sender, ComponentEventArgs e)
 		{
+			if (!this.buttonShowComponents.Checked) return;
 			ComponentNode newObjNode = this.ScanComponent(e.Component);
 			Node parentNode = e.Component.GameObj != null ? this.FindNode(e.Component.GameObj) : this.objectModel.Root;
 			this.InsertNodeSorted(newObjNode, parentNode);
@@ -1588,6 +1624,7 @@ namespace EditorBase
 		}
 		private void Scene_RegisteredObjectComponentRemoved(object sender, ComponentEventArgs e)
 		{
+			if (!this.buttonShowComponents.Checked) return;
 			ComponentNode oldObjNode = this.FindNode(e.Component);
 			if (oldObjNode == null) return;
 

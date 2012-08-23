@@ -31,8 +31,6 @@
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SceneView));
 			this.toolStrip = new System.Windows.Forms.ToolStrip();
-			this.toolStripButtonCreateScene = new System.Windows.Forms.ToolStripButton();
-			this.toolStripButtonSaveScene = new System.Windows.Forms.ToolStripButton();
 			this.toolStripLabelSceneName = new System.Windows.Forms.ToolStripLabel();
 			this.contextMenuNode = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.toolStripSeparatorCustomActions = new System.Windows.Forms.ToolStripSeparator();
@@ -40,8 +38,6 @@
 			this.gameObjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.newGameObjectSeparator = new System.Windows.Forms.ToolStripSeparator();
 			this.toolStripSeparatorNew = new System.Windows.Forms.ToolStripSeparator();
-			this.cloneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.renameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparatorGameObject = new System.Windows.Forms.ToolStripSeparator();
 			this.lockedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -57,6 +53,12 @@
 			this.objectView = new Aga.Controls.Tree.TreeViewAdv();
 			this.nodeStateIcon = new Aga.Controls.Tree.NodeControls.NodeStateIcon();
 			this.nodeTextBoxName = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+			this.cloneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.buttonShowComponents = new System.Windows.Forms.ToolStripButton();
+			this.toolStripButtonCreateScene = new System.Windows.Forms.ToolStripButton();
+			this.toolStripButtonSaveScene = new System.Windows.Forms.ToolStripButton();
 			this.toolStrip.SuspendLayout();
 			this.contextMenuNode.SuspendLayout();
 			this.contextMenuDragMoveCopy.SuspendLayout();
@@ -69,6 +71,8 @@
 			this.toolStrip.GripMargin = new System.Windows.Forms.Padding(0);
 			this.toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.buttonShowComponents,
+            this.toolStripSeparator2,
             this.toolStripButtonCreateScene,
             this.toolStripButtonSaveScene,
             this.toolStripLabelSceneName});
@@ -76,26 +80,6 @@
 			this.toolStrip.Name = "toolStrip";
 			this.toolStrip.Size = new System.Drawing.Size(206, 25);
 			this.toolStrip.TabIndex = 0;
-			// 
-			// toolStripButtonCreateScene
-			// 
-			this.toolStripButtonCreateScene.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.toolStripButtonCreateScene.Image = global::EditorBase.Properties.Resources.AddScene;
-			this.toolStripButtonCreateScene.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.toolStripButtonCreateScene.Name = "toolStripButtonCreateScene";
-			this.toolStripButtonCreateScene.Size = new System.Drawing.Size(23, 22);
-			this.toolStripButtonCreateScene.Text = "Create new Scene";
-			this.toolStripButtonCreateScene.Click += new System.EventHandler(this.toolStripButtonCreateScene_Click);
-			// 
-			// toolStripButtonSaveScene
-			// 
-			this.toolStripButtonSaveScene.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.toolStripButtonSaveScene.Image = global::EditorBase.Properties.Resources.disk;
-			this.toolStripButtonSaveScene.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.toolStripButtonSaveScene.Name = "toolStripButtonSaveScene";
-			this.toolStripButtonSaveScene.Size = new System.Drawing.Size(23, 22);
-			this.toolStripButtonSaveScene.Text = "Save Scene";
-			this.toolStripButtonSaveScene.Click += new System.EventHandler(this.toolStripButtonSaveScene_Click);
 			// 
 			// toolStripLabelSceneName
 			// 
@@ -119,14 +103,14 @@
             this.toolStripSeparatorGameObject,
             this.lockedToolStripMenuItem});
 			this.contextMenuNode.Name = "contextMenuNode";
-			this.contextMenuNode.Size = new System.Drawing.Size(153, 154);
+			this.contextMenuNode.Size = new System.Drawing.Size(150, 132);
 			this.contextMenuNode.Closing += new System.Windows.Forms.ToolStripDropDownClosingEventHandler(this.contextMenuNode_Closing);
 			this.contextMenuNode.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuNode_Opening);
 			// 
 			// toolStripSeparatorCustomActions
 			// 
 			this.toolStripSeparatorCustomActions.Name = "toolStripSeparatorCustomActions";
-			this.toolStripSeparatorCustomActions.Size = new System.Drawing.Size(149, 6);
+			this.toolStripSeparatorCustomActions.Size = new System.Drawing.Size(146, 6);
 			this.toolStripSeparatorCustomActions.Visible = false;
 			// 
 			// newToolStripMenuItem
@@ -135,7 +119,7 @@
             this.gameObjectToolStripMenuItem,
             this.newGameObjectSeparator});
 			this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-			this.newToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.newToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
 			this.newToolStripMenuItem.Text = "New";
 			this.newToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.newToolStripMenuItem_DropDownItemClicked);
 			// 
@@ -154,42 +138,24 @@
 			// toolStripSeparatorNew
 			// 
 			this.toolStripSeparatorNew.Name = "toolStripSeparatorNew";
-			this.toolStripSeparatorNew.Size = new System.Drawing.Size(149, 6);
-			// 
-			// cloneToolStripMenuItem
-			// 
-			this.cloneToolStripMenuItem.Image = global::EditorBase.Properties.Resources.page_copy;
-			this.cloneToolStripMenuItem.Name = "cloneToolStripMenuItem";
-			this.cloneToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-			this.cloneToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-			this.cloneToolStripMenuItem.Text = "Clone";
-			this.cloneToolStripMenuItem.Click += new System.EventHandler(this.cloneToolStripMenuItem_Click);
-			// 
-			// deleteToolStripMenuItem
-			// 
-			this.deleteToolStripMenuItem.Image = global::EditorBase.Properties.Resources.cross;
-			this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-			this.deleteToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-			this.deleteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-			this.deleteToolStripMenuItem.Text = "Delete";
-			this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
+			this.toolStripSeparatorNew.Size = new System.Drawing.Size(146, 6);
 			// 
 			// renameToolStripMenuItem
 			// 
 			this.renameToolStripMenuItem.Name = "renameToolStripMenuItem";
-			this.renameToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.renameToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
 			this.renameToolStripMenuItem.Text = "Rename";
 			this.renameToolStripMenuItem.Click += new System.EventHandler(this.renameToolStripMenuItem_Click);
 			// 
 			// toolStripSeparatorGameObject
 			// 
 			this.toolStripSeparatorGameObject.Name = "toolStripSeparatorGameObject";
-			this.toolStripSeparatorGameObject.Size = new System.Drawing.Size(149, 6);
+			this.toolStripSeparatorGameObject.Size = new System.Drawing.Size(146, 6);
 			// 
 			// lockedToolStripMenuItem
 			// 
 			this.lockedToolStripMenuItem.Name = "lockedToolStripMenuItem";
-			this.lockedToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.lockedToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
 			this.lockedToolStripMenuItem.Text = "Lock / Hide";
 			this.lockedToolStripMenuItem.ToolTipText = "Locks or hides the object in the editor";
 			this.lockedToolStripMenuItem.Click += new System.EventHandler(this.lockedToolStripMenuItem_Click);
@@ -321,6 +287,62 @@
 			this.nodeTextBoxName.LeftMargin = 3;
 			this.nodeTextBoxName.ParentColumn = null;
 			// 
+			// toolStripSeparator2
+			// 
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+			// 
+			// cloneToolStripMenuItem
+			// 
+			this.cloneToolStripMenuItem.Image = global::EditorBase.Properties.Resources.page_copy;
+			this.cloneToolStripMenuItem.Name = "cloneToolStripMenuItem";
+			this.cloneToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+			this.cloneToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+			this.cloneToolStripMenuItem.Text = "Clone";
+			this.cloneToolStripMenuItem.Click += new System.EventHandler(this.cloneToolStripMenuItem_Click);
+			// 
+			// deleteToolStripMenuItem
+			// 
+			this.deleteToolStripMenuItem.Image = global::EditorBase.Properties.Resources.cross;
+			this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
+			this.deleteToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Delete;
+			this.deleteToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+			this.deleteToolStripMenuItem.Text = "Delete";
+			this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
+			// 
+			// buttonShowComponents
+			// 
+			this.buttonShowComponents.Checked = true;
+			this.buttonShowComponents.CheckOnClick = true;
+			this.buttonShowComponents.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.buttonShowComponents.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonShowComponents.Image = global::EditorBase.Properties.Resources.iconCmpUnknown;
+			this.buttonShowComponents.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonShowComponents.Name = "buttonShowComponents";
+			this.buttonShowComponents.Size = new System.Drawing.Size(23, 22);
+			this.buttonShowComponents.Text = "Show Components";
+			this.buttonShowComponents.CheckedChanged += new System.EventHandler(this.buttonShowComponents_CheckedChanged);
+			// 
+			// toolStripButtonCreateScene
+			// 
+			this.toolStripButtonCreateScene.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.toolStripButtonCreateScene.Image = global::EditorBase.Properties.Resources.AddScene;
+			this.toolStripButtonCreateScene.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.toolStripButtonCreateScene.Name = "toolStripButtonCreateScene";
+			this.toolStripButtonCreateScene.Size = new System.Drawing.Size(23, 22);
+			this.toolStripButtonCreateScene.Text = "Create new Scene";
+			this.toolStripButtonCreateScene.Click += new System.EventHandler(this.buttonCreateScene_Click);
+			// 
+			// toolStripButtonSaveScene
+			// 
+			this.toolStripButtonSaveScene.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.toolStripButtonSaveScene.Image = global::EditorBase.Properties.Resources.disk;
+			this.toolStripButtonSaveScene.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.toolStripButtonSaveScene.Name = "toolStripButtonSaveScene";
+			this.toolStripButtonSaveScene.Size = new System.Drawing.Size(23, 22);
+			this.toolStripButtonSaveScene.Text = "Save Scene";
+			this.toolStripButtonSaveScene.Click += new System.EventHandler(this.buttonSaveScene_Click);
+			// 
 			// SceneView
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -380,5 +402,7 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparatorCustomActions;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparatorGameObject;
 		private System.Windows.Forms.ToolStripMenuItem lockedToolStripMenuItem;
+		private System.Windows.Forms.ToolStripButton buttonShowComponents;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 	}
 }
