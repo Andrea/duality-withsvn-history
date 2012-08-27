@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 using Duality.EditorHints;
 using Duality.ColorFormat;
@@ -42,7 +44,12 @@ namespace Duality.Components.Renderers
 			/// A fixed, single frame is displayed. Which one depends on the one you set in the editor or
 			/// in source code.
 			/// </summary>
-			FixedSingle
+			FixedSingle,
+			/// <summary>
+			/// The <see cref="CustomFrameSequence"/> is interpreted and processed as a queue where <see cref="AnimDuration"/>
+			/// is the time a single frame takes.
+			/// </summary>
+			Queue
 		}
 
 		private	int			animFirstFrame		= 0;
@@ -50,12 +57,18 @@ namespace Duality.Components.Renderers
 		private	float		animDuration		= 0.0f;
 		private	LoopMode	animLoopMode		= LoopMode.Loop;
 		private	float		animTime			= 0.0f;
+		private	List<int>	customFrameSequence	= null;
 
+		[NonSerialized] private int		curAnimFrame		= 0;
+		[NonSerialized] private int		nextAnimFrame		= 0;
+		[NonSerialized] private float	curAnimFrameFade	= 0.0f;
+
+		[NonSerialized]
 		private	VertexFormat.VertexC1P3T4A1[]	verticesSmooth	= null;
 
 
 		/// <summary>
-		/// [GET / SET] The index of the first frame to display. 
+		/// [GET / SET] The index of the first frame to display. Ignored if <see cref="CustomFrameSequence"/> is set.
 		/// </summary>
 		/// <remarks>
 		/// Animation indices are looked up in the <see cref="Duality.Resources.Texture.Atlas"/> map
@@ -68,7 +81,7 @@ namespace Duality.Components.Renderers
 			set { this.animFirstFrame = MathF.Max(0, value); }
 		}
 		/// <summary>
-		/// [GET / SET] The number of continous frames to use for the animation.
+		/// [GET / SET] The number of continous frames to use for the animation. Ignored if <see cref="CustomFrameSequence"/> is set.
 		/// </summary>
 		/// <remarks>
 		/// Animation indices are looked up in the <see cref="Duality.Resources.Texture.Atlas"/> map
@@ -107,8 +120,23 @@ namespace Duality.Components.Renderers
 			set { this.animLoopMode = value; }
 		}
 		/// <summary>
+		/// [GET / SET] A custom sequence of frame indices that will be used instead of the default range
+		/// specified by <see cref="AnimFirstFrame"/> and <see cref="AnimFrameCount"/>. Unused if set to null.
+		/// </summary>
+		/// <remarks>
+		/// Animation indices are looked up in the <see cref="Duality.Resources.Texture.Atlas"/> map
+		/// of the <see cref="Duality.Resources.Texture"/> that is used.
+		/// </remarks>
+		[EditorHintFlags(MemberFlags.ForceWriteback)]
+		public List<int> CustomFrameSequence
+		{
+			get { return this.customFrameSequence; }
+			set { this.customFrameSequence = value; }
+		}
+		/// <summary>
 		/// [GET] Whether the animation is currently running, i.e. if there is anything animated right now.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
 		public bool IsAnimationRunning
 		{
 			get
@@ -123,18 +151,135 @@ namespace Duality.Components.Renderers
 						return true;
 					case LoopMode.Once:
 						return this.animTime < this.animDuration;
+					case LoopMode.Queue:
+						return this.customFrameSequence != null && this.customFrameSequence.Count > 1;
 					default:
 						return false;
 				}
 			}
+		}
+		/// <summary>
+		/// [GET] The currently visible animation frames index.
+		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
+		public int CurrentFrame
+		{
+			get { return this.curAnimFrame; }
+		}
+		/// <summary>
+		/// [GET] The next visible animation frames index.
+		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
+		public int NextFrame
+		{
+			get { return this.nextAnimFrame; }
+		}
+		/// <summary>
+		/// [GET] The current animation frames progress where zero means "just entered the current frame"
+		/// and one means "about to leave the current frame". This value is also used for smooth animation blending.
+		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
+		public float CurrentFrameProgress
+		{
+			get { return this.curAnimFrameFade; }
 		}
 
 
 		public AnimSpriteRenderer() {}
 		public AnimSpriteRenderer(Rect rect, ContentRef<Material> mainMat) : base(rect, mainMat) {}
 		
+		/// <summary>
+		/// Updates the <see cref="CurrentFrame"/>, <see cref="NextFrame"/> and <see cref="CurrentFrameProgress"/> properties immediately.
+		/// This is called implicitly once each frame before drawing, so you don't normally call this. However, when changing animation
+		/// parameters and requiring updated animation frame data immediately, this could be helpful.
+		/// </summary>
+		public void UpdateVisibleFrames()
+		{
+			int actualFrameBegin = this.customFrameSequence != null ? 0 : this.animFirstFrame;
+			int actualFrameCount = this.customFrameSequence != null ? this.customFrameSequence.Count : this.animFrameCount;
+
+			// Calculate visible frames
+			this.curAnimFrame = 0;
+			this.nextAnimFrame = 0;
+			this.curAnimFrameFade = 0.0f;
+			if (actualFrameCount > 0 && this.animDuration > 0)
+			{
+				// Queued behavior
+				if (this.animLoopMode == LoopMode.Queue)
+				{
+					this.curAnimFrameFade = MathF.Clamp(this.animTime / this.animDuration, 0.0f, 1.0f);
+					this.curAnimFrame = 0;
+					this.nextAnimFrame = 1;
+				}
+				// Non-queued behavior
+				else
+				{
+					// Calculate currently visible frame
+					float frameTemp = actualFrameCount * this.animTime / this.animDuration;
+					this.curAnimFrame = (int)frameTemp;
+
+					// Handle extended frame range for ping pong mode
+					if (this.animLoopMode == LoopMode.PingPong)
+					{
+						if (this.curAnimFrame >= actualFrameCount)
+							this.curAnimFrame = (actualFrameCount - 1) * 2 - this.curAnimFrame;
+					}
+
+					// Normalize current frame when exceeding anim duration
+					this.curAnimFrame = MathF.NormalizeVar(this.curAnimFrame, 0, actualFrameCount);
+
+					// Calculate second frame and fade value
+					this.curAnimFrameFade = frameTemp - (int)frameTemp;
+					if (this.animLoopMode == LoopMode.Loop)
+					{
+						this.nextAnimFrame = MathF.NormalizeVar(this.curAnimFrame + 1, 0, actualFrameCount);
+					}
+					else if (this.animLoopMode == LoopMode.PingPong)
+					{
+						if ((int)frameTemp < actualFrameCount)
+						{
+							this.nextAnimFrame = this.curAnimFrame + 1;
+							if (this.nextAnimFrame >= actualFrameCount)
+								this.nextAnimFrame = (actualFrameCount - 1) * 2 - this.nextAnimFrame;
+						}
+						else
+						{
+							this.nextAnimFrame = this.curAnimFrame - 1;
+							if (this.nextAnimFrame < 0)
+								this.nextAnimFrame = -this.nextAnimFrame;
+						}
+					}
+					else
+					{
+						this.nextAnimFrame = this.curAnimFrame + 1;
+					}
+				}
+			}
+			this.curAnimFrame	= actualFrameBegin + MathF.Clamp(this.curAnimFrame, 0, actualFrameCount - 1);
+			this.nextAnimFrame	= actualFrameBegin + MathF.Clamp(this.nextAnimFrame, 0, actualFrameCount - 1);
+
+			// Map to custom sequence
+			if (this.customFrameSequence != null)
+			{
+				if (this.customFrameSequence.Count > 0)
+				{
+					this.curAnimFrame	= this.customFrameSequence[this.curAnimFrame];
+					this.nextAnimFrame	= this.customFrameSequence[this.nextAnimFrame];
+				}
+				else
+				{
+					this.curAnimFrame	= 0;
+					this.nextAnimFrame	= 0;
+				}
+			}
+		}
+
 		void ICmpUpdatable.OnUpdate()
 		{
+			int actualFrameBegin = this.customFrameSequence != null ? 0 : this.animFirstFrame;
+			int actualFrameCount = this.customFrameSequence != null ? this.customFrameSequence.Count : this.animFrameCount;
+
+			// Advance animation timer
 			if (this.animLoopMode == LoopMode.Loop)
 			{
 				this.animTime += Time.TimeMult * Time.SPFMult;
@@ -150,7 +295,7 @@ namespace Duality.Components.Renderers
 			}
 			else if (this.animLoopMode == LoopMode.PingPong)
 			{
-				float frameTime = this.animDuration / this.animFrameCount;
+				float frameTime = this.animDuration / actualFrameCount;
 				float pingpongDuration = (this.animDuration - frameTime) * 2.0f;
 
 				this.animTime += Time.TimeMult * Time.SPFMult;
@@ -160,6 +305,26 @@ namespace Duality.Components.Renderers
 					this.animTime -= pingpongDuration * n;
 				}
 			}
+			else if (this.animLoopMode == LoopMode.Queue)
+			{
+				this.animTime += Time.TimeMult * Time.SPFMult;
+				if (this.animTime > this.animDuration)
+				{
+					int n = (int)(this.animTime / this.animDuration);
+					this.animTime -= this.animDuration * n;
+
+					if (this.customFrameSequence != null)
+					{
+						while (n > 0 && this.customFrameSequence.Count > 1)
+						{
+							this.customFrameSequence.RemoveAt(0);
+							n--;
+						}
+					}
+				}
+			}
+
+			this.UpdateVisibleFrames();
 		}
 		void ICmpInitializable.OnInit(Component.InitContext context)
 		{
@@ -233,64 +398,16 @@ namespace Duality.Components.Renderers
 			vertices[3].Color = mainClr;
 			vertices[3].Attrib = curAnimFrameFade;
 		}
-		protected void CalcAnimData(Texture mainTex, DrawTechnique tech, bool smoothShaderInput, out Rect uvRect, out Rect uvRectNext, out float curAnimFrameFade)
+		protected void GetAnimData(Texture mainTex, DrawTechnique tech, bool smoothShaderInput, out Rect uvRect, out Rect uvRectNext)
 		{
-			bool isAnimated = this.animFrameCount > 0 && this.animDuration > 0 && mainTex != null && mainTex.Atlas != null;
-			int curAnimFrame = 0;
-			int nextAnimFrame = 0;
-			curAnimFrameFade = 0.0f;
-
-			if (isAnimated)
+			this.UpdateVisibleFrames();
+			if (mainTex != null && mainTex.Atlas != null)
 			{
-				// Calculate currently visible frame
-				float frameTemp = this.animFrameCount * this.animTime / this.animDuration;
-				curAnimFrame = (int)frameTemp;
-
-				// Handle extended frame range for ping pong mode
-				if (this.animLoopMode == LoopMode.PingPong)
-				{
-					if (curAnimFrame >= this.animFrameCount)
-						curAnimFrame = (this.animFrameCount - 1) * 2 - curAnimFrame;
-				}
-
-				// Translate and clamp selected animation frame, then do a UV lookup in the texture atlas
-				mainTex.LookupAtlas(this.animFirstFrame + MathF.Clamp(curAnimFrame, 0, this.animFrameCount - 1), out uvRect);
-
-				// Calculate second frame and fade value
+				mainTex.LookupAtlas(this.curAnimFrame, out uvRect);
 				if (smoothShaderInput)
-				{
-					curAnimFrameFade = frameTemp - (int)frameTemp;
-					if (this.animLoopMode == LoopMode.Loop)
-					{
-						nextAnimFrame = MathF.NormalizeVar(curAnimFrame + 1, 0, this.animFrameCount);
-					}
-					else if (this.animLoopMode == LoopMode.PingPong)
-					{
-						if ((int)frameTemp < this.animFrameCount)
-						{
-							nextAnimFrame = curAnimFrame + 1;
-							if (nextAnimFrame >= this.animFrameCount)
-								nextAnimFrame = (this.animFrameCount - 1) * 2 - nextAnimFrame;
-						}
-						else
-						{
-							nextAnimFrame = curAnimFrame - 1;
-							if (nextAnimFrame < 0)
-								nextAnimFrame = -nextAnimFrame;
-						}
-					}
-					else
-					{
-						nextAnimFrame = curAnimFrame + 1;
-					}
-
-					// Translate and clamp selected animation frame, then do a UV lookup in the texture atlas
-					mainTex.LookupAtlas(this.animFirstFrame + MathF.Clamp(nextAnimFrame, 0, this.animFrameCount - 1), out uvRectNext);
-				}
+					mainTex.LookupAtlas(this.nextAnimFrame, out uvRectNext);
 				else
 					uvRectNext = uvRect;
-
-
 			}
 			else if (mainTex != null)
 				uvRect = uvRectNext = new Rect(mainTex.UVRatio.X, mainTex.UVRatio.Y);
@@ -304,11 +421,10 @@ namespace Duality.Components.Renderers
 			ColorRgba mainClr = this.RetrieveMainColor();
 			DrawTechnique tech = this.RetrieveDrawTechnique();
 
-			float curAnimFrameFade;
 			Rect uvRect;
 			Rect uvRectNext;
 			bool smoothShaderInput = tech != null && tech.PreferredVertexFormat == DrawTechnique.VertexType_C1P3T4A1;
-			this.CalcAnimData(mainTex, tech, smoothShaderInput, out uvRect, out uvRectNext, out curAnimFrameFade);
+			this.GetAnimData(mainTex, tech, smoothShaderInput, out uvRect, out uvRectNext);
 
 			if (!smoothShaderInput)
 			{
@@ -318,7 +434,7 @@ namespace Duality.Components.Renderers
 			}
 			else
 			{
-				this.PrepareVerticesSmooth(ref this.verticesSmooth, device, curAnimFrameFade, mainClr, uvRect, uvRectNext);
+				this.PrepareVerticesSmooth(ref this.verticesSmooth, device, this.curAnimFrameFade, mainClr, uvRect, uvRectNext);
 				if (this.customMat != null)	device.AddVertices(this.customMat, VertexMode.Quads, this.verticesSmooth);
 				else						device.AddVertices(this.sharedMat, VertexMode.Quads, this.verticesSmooth);
 			}
@@ -332,6 +448,7 @@ namespace Duality.Components.Renderers
 			t.animFrameCount = this.animFrameCount;
 			t.animLoopMode = this.animLoopMode;
 			t.animTime = this.animTime;
+			t.customFrameSequence = this.customFrameSequence != null ? this.customFrameSequence.ToList() : null;
 		}
 	}
 }

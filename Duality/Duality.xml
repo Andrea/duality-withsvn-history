@@ -12513,9 +12513,16 @@
             Renders an animated sprite to represent the <see cref="T:Duality.GameObject"/>.
             </summary>
         </member>
+        <member name="M:Duality.Components.Renderers.AnimSpriteRenderer.UpdateVisibleFrames">
+            <summary>
+            Updates the <see cref="P:Duality.Components.Renderers.AnimSpriteRenderer.CurrentFrame"/>, <see cref="P:Duality.Components.Renderers.AnimSpriteRenderer.NextFrame"/> and <see cref="P:Duality.Components.Renderers.AnimSpriteRenderer.CurrentFrameProgress"/> properties immediately.
+            This is called implicitly once each frame before drawing, so you don't normally call this. However, when changing animation
+            parameters and requiring updated animation frame data immediately, this could be helpful.
+            </summary>
+        </member>
         <member name="P:Duality.Components.Renderers.AnimSpriteRenderer.AnimFirstFrame">
             <summary>
-            [GET / SET] The index of the first frame to display. 
+            [GET / SET] The index of the first frame to display. Ignored if <see cref="P:Duality.Components.Renderers.AnimSpriteRenderer.CustomFrameSequence"/> is set.
             </summary>
             <remarks>
             Animation indices are looked up in the <see cref="P:Duality.Resources.Texture.Atlas"/> map
@@ -12524,7 +12531,7 @@
         </member>
         <member name="P:Duality.Components.Renderers.AnimSpriteRenderer.AnimFrameCount">
             <summary>
-            [GET / SET] The number of continous frames to use for the animation.
+            [GET / SET] The number of continous frames to use for the animation. Ignored if <see cref="P:Duality.Components.Renderers.AnimSpriteRenderer.CustomFrameSequence"/> is set.
             </summary>
             <remarks>
             Animation indices are looked up in the <see cref="P:Duality.Resources.Texture.Atlas"/> map
@@ -12546,9 +12553,35 @@
             [GET / SET] The animations loop behaviour.
             </summary>
         </member>
+        <member name="P:Duality.Components.Renderers.AnimSpriteRenderer.CustomFrameSequence">
+            <summary>
+            [GET / SET] A custom sequence of frame indices that will be used instead of the default range
+            specified by <see cref="P:Duality.Components.Renderers.AnimSpriteRenderer.AnimFirstFrame"/> and <see cref="P:Duality.Components.Renderers.AnimSpriteRenderer.AnimFrameCount"/>. Unused if set to null.
+            </summary>
+            <remarks>
+            Animation indices are looked up in the <see cref="P:Duality.Resources.Texture.Atlas"/> map
+            of the <see cref="T:Duality.Resources.Texture"/> that is used.
+            </remarks>
+        </member>
         <member name="P:Duality.Components.Renderers.AnimSpriteRenderer.IsAnimationRunning">
             <summary>
             [GET] Whether the animation is currently running, i.e. if there is anything animated right now.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Renderers.AnimSpriteRenderer.CurrentFrame">
+            <summary>
+            [GET] The currently visible animation frames index.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Renderers.AnimSpriteRenderer.NextFrame">
+            <summary>
+            [GET] The next visible animation frames index.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Renderers.AnimSpriteRenderer.CurrentFrameProgress">
+            <summary>
+            [GET] The current animation frames progress where zero means "just entered the current frame"
+            and one means "about to leave the current frame". This value is also used for smooth animation blending.
             </summary>
         </member>
         <member name="T:Duality.Components.Renderers.AnimSpriteRenderer.LoopMode">
@@ -12582,6 +12615,12 @@
             <summary>
             A fixed, single frame is displayed. Which one depends on the one you set in the editor or
             in source code.
+            </summary>
+        </member>
+        <member name="F:Duality.Components.Renderers.AnimSpriteRenderer.LoopMode.Queue">
+            <summary>
+            The <see cref="P:Duality.Components.Renderers.AnimSpriteRenderer.CustomFrameSequence"/> is interpreted and processed as a queue where <see cref="P:Duality.Components.Renderers.AnimSpriteRenderer.AnimDuration"/>
+            is the time a single frame takes.
             </summary>
         </member>
         <member name="T:Duality.Components.Physics.DistanceJointInfo">

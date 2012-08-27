@@ -210,11 +210,10 @@ namespace DynamicLighting
 			ColorRgba mainClr = this.RetrieveMainColor();
 			DrawTechnique tech = this.RetrieveDrawTechnique();
 
-			float curAnimFrameFade;
 			Rect uvRect;
 			Rect uvRectNext;
 			bool smoothShaderInput = tech != null && tech.PreferredVertexFormat == VertexC1P3T4A4A1.VertexTypeIndex;
-			this.CalcAnimData(mainTex, tech, smoothShaderInput, out uvRect, out uvRectNext, out curAnimFrameFade);
+			this.GetAnimData(mainTex, tech, smoothShaderInput, out uvRect, out uvRectNext);
 
 			if (!smoothShaderInput)
 			{
@@ -224,7 +223,7 @@ namespace DynamicLighting
 			}
 			else
 			{
-				this.PrepareVerticesLightSmooth(ref this.verticesLightSmooth, device, curAnimFrameFade, mainClr, uvRect, uvRectNext, tech);
+				this.PrepareVerticesLightSmooth(ref this.verticesLightSmooth, device, this.CurrentFrameProgress, mainClr, uvRect, uvRectNext, tech);
 				if (this.customMat != null)	device.AddVertices(this.customMat, VertexMode.Quads, this.verticesLightSmooth);
 				else						device.AddVertices(this.sharedMat, VertexMode.Quads, this.verticesLightSmooth);
 			}

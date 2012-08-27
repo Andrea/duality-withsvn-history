@@ -19,9 +19,6 @@
 
 
 
--->	TrommlBomml Feedback
-	-->	If editoruserdata.xml doesn't exist, provide a default user data.
-
 
 -->	Dualitor: Add ActionButtonPropertyEditor and auto-use it in MemberwisePropertyEditor
 	-->	It's possible to flag a method as editor action via EditorHintFlags
@@ -31,12 +28,6 @@
 	-->	Add this whole functionality in PropertyGrid-Project itself?
 		-->	Can't. It requires EditorHintFlags.
 		-->	Also, this here will prove / assure PropertyGrids customization support
-
-
--->	AnimSpriteRenderer
-	-->	Feature: CustomFrameSequence (supported by existing anim modes)
-	-->	Feature: Queue anim mode, treating the CustomFrameSequence as queue and
-		interpreting the AnimationDuration as a single frame's time.
 
 
 -->	Dualitor: Upgrade LogView with a Console (or separate both?)

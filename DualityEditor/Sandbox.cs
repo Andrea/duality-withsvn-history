@@ -59,7 +59,7 @@ namespace DualityEditor
 			if (state == SandboxState.Playing) return true;
 
 			// If the current Scene is unsaved when entering sandbox mode, ask whether this should be done before
-			if (Scene.Current.IsRuntimeResource)
+			if (Scene.Current.IsRuntimeResource && state == SandboxState.Inactive)
 			{
 				DialogResult result = MessageBox.Show(DualityEditorApp.MainForm,
 					EditorRes.GeneralRes.Msg_EnterSandboxUnsavedScene_Desc,
