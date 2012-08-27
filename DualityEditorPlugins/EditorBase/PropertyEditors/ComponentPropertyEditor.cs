@@ -47,6 +47,12 @@ namespace EditorBase.PropertyEditors
 				return l != null && l.HasChange(c, info as PropertyInfo);
 			});
 		}
+		protected override bool IsChildNonPublic(PropertyEditor childEditor)
+		{
+			if (base.IsChildNonPublic(childEditor)) return true;
+			if (childEditor.EditedMember is FieldInfo) return true; // Discourage use of fields in Components
+			return false;
+		}
 		protected override void OnUpdateFromObjects(object[] values)
 		{
 			base.OnUpdateFromObjects(values);

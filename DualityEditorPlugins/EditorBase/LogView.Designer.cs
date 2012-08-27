@@ -79,7 +79,6 @@
 			this.textLog.Size = new System.Drawing.Size(515, 328);
 			this.textLog.TabIndex = 0;
 			this.textLog.Text = "";
-			this.textLog.WordWrap = false;
 			// 
 			// toolStrip
 			// 

@@ -213,21 +213,6 @@ namespace AdamsLair.PropertyGrid
 				}
 			}
 		}
-		public bool IsNonPublic
-		{
-			get
-			{
-				if (this.editedMember == null) return false;
-
-				FieldInfo field = this.editedMember as FieldInfo;
-				if (field != null) return !field.IsPublic;
-
-				PropertyInfo property = this.editedMember as PropertyInfo;
-				if (property != null) return property.GetGetMethod(false) == null && property.GetSetMethod(false) == null;
-
-				return false;
-			}
-		}
 		public string PropertyName
 		{
 			get { return this.propertyName; }
@@ -257,6 +242,10 @@ namespace AdamsLair.PropertyGrid
 		public bool IsValueModified
 		{
 			get { return this.parentEditor == null ? false : this.parentEditor.IsChildValueModified(this); }
+		}
+		public bool IsNonPublic
+		{
+			get { return this.parentEditor == null ? false : this.parentEditor.IsChildNonPublic(this); }
 		}
 		public Func<IEnumerable<object>> Getter
 		{
@@ -503,6 +492,7 @@ namespace AdamsLair.PropertyGrid
 		
 		protected virtual bool IsChildReadOnly(PropertyEditor childEditor) { return this.ReadOnly; }
 		protected virtual bool IsChildValueModified(PropertyEditor childEditor) { return false; }
+		protected virtual bool IsChildNonPublic(PropertyEditor childEditor) { return false; }
 
 		protected void PaintBackground(Graphics g)
 		{

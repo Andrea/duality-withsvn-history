@@ -321,6 +321,11 @@
             It is also called in an editor environment.
             </summary>
         </member>
+        <member name="E:Duality.DualityApp.PluginReady">
+            <summary>
+            Fired whenever a core plugin has been initialized. This is the case after loading or reloading one.
+            </summary>
+        </member>
         <member name="P:Duality.DualityApp.TargetResolution">
             <summary>
             [GET / SET] The size of the current rendering surface (full screen, a single window, etc.) in pixels. Setting this will not actually change
@@ -4222,6 +4227,11 @@
             <param name="source"></param>
             <param name="type"></param>
             <returns></returns>
+        </member>
+        <member name="T:Duality.CorePluginEventArgs">
+            <summary>
+            Provides event arguments related to <see cref="T:Duality.CorePlugin"/> instances.
+            </summary>
         </member>
         <member name="T:Duality.ObjectManagerEventArgs`1">
             <summary>

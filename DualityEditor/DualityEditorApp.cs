@@ -135,6 +135,7 @@ namespace DualityEditor
 			if (!Directory.Exists(EditorHelper.SourceCodeDirectory)) Directory.CreateDirectory(EditorHelper.SourceCodeDirectory);
 
 			// Initialize Duality
+			DualityApp.PluginReady += DualityApp_PluginReady;
 			DualityApp.Init(DualityApp.ExecutionEnvironment.Editor, DualityApp.ExecutionContext.Editor, new[] {"logfile", "logfile_editor"});
 			InitMainGLContext();
 			ContentProvider.InitDefaultContent();
@@ -205,6 +206,8 @@ namespace DualityEditor
 			if (!cancel)
 			{
 				if (Terminating != null) Terminating(null, EventArgs.Empty);
+
+				DualityApp.PluginReady -= DualityApp_PluginReady;
 
 				// Initialize secondary editor components
 				FileEventManager.Terminate();
@@ -737,6 +740,31 @@ namespace DualityEditor
 		{
 			return plugins.OfType<T>().FirstOrDefault();
 		}
+		public static void AnalyzeCorePlugin(CorePlugin plugin)
+		{
+			Log.Editor.Write("Analyzing Core Plugin: {0}", plugin.AssemblyName);
+			Log.Editor.PushIndent();
+
+			// Query Component types
+			var cmpTypeQuery = from Type t in plugin.PluginAssembly.GetExportedTypes()
+							   where typeof(Component).IsAssignableFrom(t)
+							   select t;
+			foreach (var cmpType in cmpTypeQuery)
+			{
+				// Scan for public fields
+				FieldInfo[] fields = cmpType.GetFields(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance);
+				if (fields.Length > 0)
+				{
+					Log.Editor.WriteWarning(
+						"Found public fields in Component class '{0}': {1}. " + 
+						"The usage of public fields is strongly discouraged in Component classes. Consider using properties instead.",
+						cmpType.GetTypeCSCodeName(true),
+						fields.ToString(f => Log.FieldInfo(f, false), ", "));
+				}
+			}
+
+			Log.Editor.PopIndent();
+		}
 
 		public static bool DisplayConfirmBreakPrefabLink(ObjectSelection obj = null)
 		{
@@ -998,6 +1026,10 @@ namespace DualityEditor
 				corePluginReloader.ReloadSchedule.Add(pluginStr);
 			corePluginReloader.State = ReloadCorePluginDialog.ReloaderState.WaitForPlugins;
 			DualityApp.AppData.Version++;
+		}
+		private static void DualityApp_PluginReady(object sender, CorePluginEventArgs e)
+		{
+			AnalyzeCorePlugin(e.Plugin);
 		}
 	}
 }

@@ -105,6 +105,10 @@ namespace Duality
 		/// It is also called in an editor environment.
 		/// </summary>
 		public static event EventHandler Terminating		= null;
+		/// <summary>
+		/// Fired whenever a core plugin has been initialized. This is the case after loading or reloading one.
+		/// </summary>
+		public static event EventHandler<CorePluginEventArgs> PluginReady	= null;
 
 
 		/// <summary>
@@ -729,7 +733,11 @@ namespace Duality
 		}
 		private static void InitPlugins()
 		{
-			foreach (CorePlugin plugin in plugins.Values) plugin.InitPlugin();
+			foreach (CorePlugin plugin in plugins.Values)
+			{
+				plugin.InitPlugin();
+				OnPluginReady(plugin);
+			}
 		}
 		private static void UnloadPlugins()
 		{
@@ -770,7 +778,11 @@ namespace Duality
 			Scene.Current.Dispose();
 
 			// Init plugin
-			if (initialized) plugin.InitPlugin();
+			if (initialized)
+			{
+				plugin.InitPlugin();
+				OnPluginReady(plugin);
+			}
 		}
 		internal static bool IsLeafPlugin(string pluginFileName)
 		{
@@ -835,6 +847,11 @@ namespace Duality
 		private static void OnAfterUpdate()
 		{
 			foreach (CorePlugin plugin in plugins.Values) plugin.OnAfterUpdate();
+		}
+		private static void OnPluginReady(CorePlugin plugin)
+		{
+			if (PluginReady != null)
+				PluginReady(null, new CorePluginEventArgs(plugin));
 		}
 		private static void OnExecContextChanged(ExecutionContext previousContext)
 		{

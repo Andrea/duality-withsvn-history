@@ -3,6 +3,22 @@
 namespace Duality
 {
 	/// <summary>
+	/// Provides event arguments related to <see cref="Duality.CorePlugin"/> instances.
+	/// </summary>
+	public class CorePluginEventArgs : EventArgs
+	{
+		private	CorePlugin	plugin;
+		public CorePlugin Plugin
+		{
+			get { return this.plugin; }
+		}
+		public CorePluginEventArgs(CorePlugin plugin)
+		{
+			this.plugin = plugin;
+		}
+	}
+
+	/// <summary>
 	/// Provides event arguments regarding the objects registered in an <see cref="ObjectManager{T}"/>.
 	/// </summary>
 	/// <typeparam name="T"></typeparam>

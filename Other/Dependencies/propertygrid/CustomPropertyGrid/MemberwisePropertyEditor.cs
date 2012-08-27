@@ -237,6 +237,19 @@ namespace AdamsLair.PropertyGrid
 		}
 
 		protected virtual void BeforeAutoCreateEditors() {}
+		protected override bool IsChildNonPublic(PropertyEditor childEditor)
+		{
+			if (base.IsChildNonPublic(childEditor)) return true;
+			if (childEditor.EditedMember == null) return false;
+
+			FieldInfo field = childEditor.EditedMember as FieldInfo;
+			if (field != null) return !field.IsPublic;
+
+			PropertyInfo property = childEditor.EditedMember as PropertyInfo;
+			if (property != null) return property.GetGetMethod(false) == null && property.GetSetMethod(false) == null;
+
+			return false;
+		}
 		protected virtual bool IsAutoCreateMember(MemberInfo info)
 		{
 			return this.memberPredicate(info);

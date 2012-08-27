@@ -89,15 +89,24 @@ namespace DualityEditor.Controls
 		{
 			if (this.ShowNonPublic)
 			{
+				// Show member, if not declared inside Duality itself
 				if (info.DeclaringType.Assembly != typeof(DualityApp).Assembly) return true;
 
+				// Reject non-public fields
 				FieldInfo field = info as FieldInfo;
 				if (field != null && !field.IsPublic) return false;
 
+				// Reject non-public properties
 				PropertyInfo property = info as PropertyInfo;
 				if (property != null && property.GetGetMethod(false) == null && property.GetSetMethod(false) == null) return false;
 			}
+			else
+			{
+				// Don't show fields of a Component - we don't want to encourage using them, since Duality basically works with Properties.
+				if (info is FieldInfo && typeof(Component).IsAssignableFrom(info.DeclaringType)) return false;
+			}
 
+			// Reject invisible members
 			EditorHintFlagsAttribute flagsAttrib = info.GetEditorHint<EditorHintFlagsAttribute>();
 			if (flagsAttrib != null && (flagsAttrib.Flags & MemberFlags.Invisible) != MemberFlags.None) return false;
 
