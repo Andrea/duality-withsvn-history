@@ -525,7 +525,7 @@ namespace EditorBase
 			else
 			{
 				gameView = this.camViews.FirstOrDefault(v => v.ActiveState.GetType() == typeof(CamViewStates.GameViewCamViewState));
-				gameView.LocalGLControl.Focus();
+				if (gameView != null) gameView.Focus();
 			}
 		}
 		private void OnResourceModified(ContentRef<Resource> resRef)
