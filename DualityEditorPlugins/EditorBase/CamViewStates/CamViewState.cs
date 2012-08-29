@@ -1255,37 +1255,49 @@ namespace EditorBase.CamViewStates
 				else if (ctrlPressed && e.KeyCode == Keys.Left)
 				{
 					this.drawCamGizmoState = CameraAction.Move;
-					this.View.CameraObj.Transform.MoveByAbs(-Vector3.UnitX);
+					Vector3 pos = this.View.CameraObj.Transform.Pos;
+					pos.X = MathF.Round(pos.X - 1.0f);
+					this.View.CameraObj.Transform.Pos = pos;
 					this.InvalidateView();
 				}
 				else if (ctrlPressed && e.KeyCode == Keys.Right)
 				{
 					this.drawCamGizmoState = CameraAction.Move;
-					this.View.CameraObj.Transform.MoveByAbs(Vector3.UnitX);
+					Vector3 pos = this.View.CameraObj.Transform.Pos;
+					pos.X = MathF.Round(pos.X + 1.0f);
+					this.View.CameraObj.Transform.Pos = pos;
 					this.InvalidateView();
 				}
 				else if (ctrlPressed && e.KeyCode == Keys.Up)
 				{
 					this.drawCamGizmoState = CameraAction.Move;
-					this.View.CameraObj.Transform.MoveByAbs(-Vector3.UnitY);
+					Vector3 pos = this.View.CameraObj.Transform.Pos;
+					pos.Y = MathF.Round(pos.Y - 1.0f);
+					this.View.CameraObj.Transform.Pos = pos;
 					this.InvalidateView();
 				}
 				else if (ctrlPressed && e.KeyCode == Keys.Down)
 				{
 					this.drawCamGizmoState = CameraAction.Move;
-					this.View.CameraObj.Transform.MoveByAbs(Vector3.UnitY);
+					Vector3 pos = this.View.CameraObj.Transform.Pos;
+					pos.Y = MathF.Round(pos.Y + 1.0f);
+					this.View.CameraObj.Transform.Pos = pos;
 					this.InvalidateView();
 				}
 				else if (ctrlPressed && e.KeyCode == Keys.Add)
 				{
 					this.drawCamGizmoState = CameraAction.Move;
-					this.View.CameraObj.Transform.MoveByAbs(Vector3.UnitZ);
+					Vector3 pos = this.View.CameraObj.Transform.Pos;
+					pos.Z = MathF.Round(pos.Z + 1.0f);
+					this.View.CameraObj.Transform.Pos = pos;
 					this.InvalidateView();
 				}
 				else if (ctrlPressed && e.KeyCode == Keys.Subtract)
 				{
 					this.drawCamGizmoState = CameraAction.Move;
-					this.View.CameraObj.Transform.MoveByAbs(-Vector3.UnitZ);
+					Vector3 pos = this.View.CameraObj.Transform.Pos;
+					pos.Z = MathF.Round(pos.Z - 1.0f);
+					this.View.CameraObj.Transform.Pos = pos;
 					this.InvalidateView();
 				}
 			}
