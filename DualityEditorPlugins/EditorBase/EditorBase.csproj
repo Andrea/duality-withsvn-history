@@ -250,6 +250,9 @@
     <None Include="PluginRes\iconGameObjInactive.png" />
     <None Include="PluginRes\iconGameObjLinkBrokenInactive.png" />
     <None Include="PluginRes\iconGameObjLinkInactive.png" />
+    <None Include="PluginRes\magifier_zoom_out.png" />
+    <None Include="PluginRes\magnifier_one.png" />
+    <None Include="PluginRes\magnifier_zoom_in.png" />
     <Content Include="PluginRes\projectview.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -57,7 +57,7 @@ namespace EditorBase.CamViewStates
 				this.body = obj;
 			}
 
-			public override bool IsActionAvailable(MouseAction action)
+			public override bool IsActionAvailable(ObjectAction action)
 			{
 				return false;
 			}
@@ -85,11 +85,11 @@ namespace EditorBase.CamViewStates
 				this.shape = shape;
 			}
 
-			public override bool IsActionAvailable(MouseAction action)
+			public override bool IsActionAvailable(ObjectAction action)
 			{
-				if (action == MouseAction.MoveObj) return true;
-				if (action == MouseAction.RotateObj) return true;
-				if (action == MouseAction.ScaleObj) return true;
+				if (action == ObjectAction.Move) return true;
+				if (action == ObjectAction.Rotate) return true;
+				if (action == ObjectAction.Scale) return true;
 				return false;
 			}
 
@@ -139,12 +139,12 @@ namespace EditorBase.CamViewStates
 				this.circle = shape;
 			}
 
-			public override bool IsActionAvailable(MouseAction action)
+			public override bool IsActionAvailable(ObjectAction action)
 			{
-				if (action == MouseAction.RotateObj) return false;
+				if (action == ObjectAction.Rotate) return false;
 				return base.IsActionAvailable(action);
 			}
-			public override void DrawActionGizmo(Canvas canvas, MouseAction action, Vector2 curLoc, bool performing)
+			public override void DrawActionGizmo(Canvas canvas, ObjectAction action, Vector2 curLoc, bool performing)
 			{
 				base.DrawActionGizmo(canvas, action, curLoc, performing);
 				curLoc.X = MathF.Round(curLoc.X);
@@ -152,14 +152,14 @@ namespace EditorBase.CamViewStates
 
 				string[] text = null;
 
-				if (action == MouseAction.MoveObj)
+				if (action == ObjectAction.Move)
 				{
 					text = new string[] {
 						string.Format("Center X:{0,7:0.00}", this.circle.Position.X),
 						string.Format("Center Y:{0,7:0.00}", this.circle.Position.Y)
 					};
 				}
-				else if (action == MouseAction.ScaleObj)
+				else if (action == ObjectAction.Scale)
 				{
 					text = new string[] { string.Format("Radius:{0,7:0.00}", this.circle.Radius) };
 				}
@@ -224,21 +224,21 @@ namespace EditorBase.CamViewStates
 				this.UpdatePolyStats();
 			}
 
-			public override void DrawActionGizmo(Canvas canvas, MouseAction action, Vector2 curLoc, bool performing)
+			public override void DrawActionGizmo(Canvas canvas, ObjectAction action, Vector2 curLoc, bool performing)
 			{
 				base.DrawActionGizmo(canvas, action, curLoc, performing);
 				curLoc.X = MathF.Round(curLoc.X);
 				curLoc.Y = MathF.Round(curLoc.Y);
 
 				string[] text = null;
-				if (action == MouseAction.MoveObj)
+				if (action == ObjectAction.Move)
 				{
 					text = new string[] {
 						string.Format("Center X:{0,7:0.00}", this.center.X),
 						string.Format("Center Y:{0,7:0.00}", this.center.Y)
 					};
 				}
-				else if (action == MouseAction.ScaleObj)
+				else if (action == ObjectAction.Scale)
 				{
 					if (MathF.Abs(this.scale.X - this.scale.Y) >= 0.01f)
 					{
@@ -252,7 +252,7 @@ namespace EditorBase.CamViewStates
 						text = new string[] { string.Format("Scale:{0,7:0.00}", this.scale.X) };
 					}
 				}
-				else if (action == MouseAction.RotateObj)
+				else if (action == ObjectAction.Rotate)
 				{
 					text = new string[] { string.Format("Angle:{0,6:0.0}", MathF.RadToDeg(this.angle)) };
 				}
@@ -374,21 +374,21 @@ namespace EditorBase.CamViewStates
 				this.UpdateLoopStats();
 			}
 
-			public override void DrawActionGizmo(Canvas canvas, MouseAction action, Vector2 curLoc, bool performing)
+			public override void DrawActionGizmo(Canvas canvas, ObjectAction action, Vector2 curLoc, bool performing)
 			{
 				base.DrawActionGizmo(canvas, action, curLoc, performing);
 				curLoc.X = MathF.Round(curLoc.X);
 				curLoc.Y = MathF.Round(curLoc.Y);
 
 				string[] text = null;
-				if (action == MouseAction.MoveObj)
+				if (action == ObjectAction.Move)
 				{
 					text = new string[] {
 						string.Format("Center X:{0,7:0.00}", this.center.X),
 						string.Format("Center Y:{0,7:0.00}", this.center.Y)
 					};
 				}
-				else if (action == MouseAction.ScaleObj)
+				else if (action == ObjectAction.Scale)
 				{
 					if (MathF.Abs(this.scale.X - this.scale.Y) >= 0.01f)
 					{
@@ -402,7 +402,7 @@ namespace EditorBase.CamViewStates
 						text = new string[] { string.Format("Scale:{0,7:0.00}", this.scale.X) };
 					}
 				}
-				else if (action == MouseAction.RotateObj)
+				else if (action == ObjectAction.Rotate)
 				{
 					text = new string[] { string.Format("Angle:{0,6:0.0}", MathF.RadToDeg(this.angle)) };
 				}

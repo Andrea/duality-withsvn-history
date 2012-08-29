@@ -110,7 +110,6 @@ namespace DualityEditor
 			HelpInfo info = FromMember(typeof(GameObject)) ?? new HelpInfo();
 
 			info.topic = obj.FullName;
-			info.desc = obj.GetComponents<Component>().ToString(c => c.GetType().GetTypeKeyword(), "\n");
 
 			return info;
 		}

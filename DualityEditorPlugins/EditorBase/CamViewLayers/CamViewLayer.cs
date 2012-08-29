@@ -47,5 +47,11 @@ namespace EditorBase.CamViewLayers
 		internal protected virtual void OnCollectDrawcalls(Canvas canvas) {}
 		internal protected virtual void OnCollectOverlayDrawcalls(Canvas canvas) {}
 		internal protected virtual void OnCollectBackgroundDrawcalls(Canvas canvas) {}
+
+		public void InvalidateView()
+		{
+			if (this.View == null || this.View.LocalGLControl == null) return;
+			this.View.LocalGLControl.Invalidate();
+		}
 	}
 }

@@ -46,6 +46,7 @@ namespace Duality.Components.Renderers
 		protected	BatchInfo				customMat	= null;
 		protected	ColorRgba				colorTint	= ColorRgba.White;
 		protected	UVMode					rectMode	= UVMode.Stretch;
+		protected	int						offset		= 0;
 		[NonSerialized]
 		protected	VertexFormat.VertexC1P3T2[]	vertices	= null;
 
@@ -96,6 +97,15 @@ namespace Duality.Components.Renderers
 		{
 			get { return this.rectMode; }
 			set { this.rectMode = value; }
+		}
+		/// <summary>
+		/// [GET / SET] A virtual Z offset that affects the order in which objects are drawn. If you want to assure an object is drawn after another one,
+		/// just assign a higher Offset value to the background object.
+		/// </summary>
+		public int Offset
+		{
+			get { return this.offset; }
+			set { this.offset = value; }
 		}
 
 
@@ -157,28 +167,28 @@ namespace Duality.Components.Renderers
 
 			vertices[0].Pos.X = posTemp.X + edge1.X;
 			vertices[0].Pos.Y = posTemp.Y + edge1.Y;
-			vertices[0].Pos.Z = posTemp.Z;
+			vertices[0].Pos.Z = posTemp.Z + this.offset * 0.001f;
 			vertices[0].TexCoord.X = uvRect.X;
 			vertices[0].TexCoord.Y = uvRect.Y;
 			vertices[0].Color = mainClr;
 
 			vertices[1].Pos.X = posTemp.X + edge2.X;
 			vertices[1].Pos.Y = posTemp.Y + edge2.Y;
-			vertices[1].Pos.Z = posTemp.Z;
+			vertices[1].Pos.Z = posTemp.Z + this.offset * 0.001f;
 			vertices[1].TexCoord.X = uvRect.X;
 			vertices[1].TexCoord.Y = uvRect.MaxY;
 			vertices[1].Color = mainClr;
 
 			vertices[2].Pos.X = posTemp.X + edge3.X;
 			vertices[2].Pos.Y = posTemp.Y + edge3.Y;
-			vertices[2].Pos.Z = posTemp.Z;
+			vertices[2].Pos.Z = posTemp.Z + this.offset * 0.001f;
 			vertices[2].TexCoord.X = uvRect.MaxX;
 			vertices[2].TexCoord.Y = uvRect.MaxY;
 			vertices[2].Color = mainClr;
 				
 			vertices[3].Pos.X = posTemp.X + edge4.X;
 			vertices[3].Pos.Y = posTemp.Y + edge4.Y;
-			vertices[3].Pos.Z = posTemp.Z;
+			vertices[3].Pos.Z = posTemp.Z + this.offset * 0.001f;
 			vertices[3].TexCoord.X = uvRect.MaxX;
 			vertices[3].TexCoord.Y = uvRect.Y;
 			vertices[3].Color = mainClr;

@@ -42,23 +42,23 @@ namespace DualityEditor
 
 		public object MainObject
 		{
-			get { return this.obj.Count == 0 ? null : this.obj[0]; }
+			get { return this.obj.FirstOrDefault(); }
 		}
 		public GameObject MainGameObject
 		{
-			get { return this.obj.Count == 0 ? null : obj[0] as GameObject; }
+			get { return this.GameObjects.FirstOrDefault(); }
 		}
 		public Component MainComponent
 		{
-			get { return this.obj.Count == 0 ? null : obj[0] as Component; }
+			get { return this.Components.FirstOrDefault(); }
 		}
 		public Resource MainResource
 		{
-			get { return this.obj.Count == 0 ? null : obj[0] as Resource; }
+			get { return this.Resources.FirstOrDefault(); }
 		}
 		public object MainOtherObject
 		{
-			get { return this.OtherObjects.First(); }
+			get { return this.OtherObjects.FirstOrDefault(); }
 		}
 
 		public IEnumerable<object> Objects

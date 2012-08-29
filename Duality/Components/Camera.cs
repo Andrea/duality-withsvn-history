@@ -931,7 +931,12 @@ namespace Duality.Components
 				return null;
 			}
 			else if (rendererId != 0)
-				return this.pickingMap[rendererId - 1];
+			{
+				if ((this.pickingMap[rendererId - 1] as Component).Disposed)
+					return null;
+				else
+					return this.pickingMap[rendererId - 1];
+			}
 			else
 				return null;
 		}
@@ -973,7 +978,7 @@ namespace Duality.Components
 						{
 							if (rendererId - 1 > this.pickingMap.Count)
 								Log.Core.WriteWarning("Unexpected picking result: {0}", ColorRgba.FromIntArgb(rendererId));
-							else if (rendererId != 0)
+							else if (rendererId != 0 && !(this.pickingMap[rendererId - 1] as Component).Disposed)
 								result.Add(this.pickingMap[rendererId - 1]);
 							rendererIdLast = rendererId;
 						}

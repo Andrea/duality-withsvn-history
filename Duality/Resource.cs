@@ -414,7 +414,8 @@ namespace Duality
 		{
 			while (finalizeSched.Count > 0)
 			{
-				finalizeSched[finalizeSched.Count - 1].Dispose(false);
+				if (finalizeSched[finalizeSched.Count - 1] != null)
+					finalizeSched[finalizeSched.Count - 1].Dispose(false);
 				finalizeSched.RemoveAt(finalizeSched.Count - 1);
 			}
 		}

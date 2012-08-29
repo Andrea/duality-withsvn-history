@@ -82,7 +82,7 @@ namespace DynamicLighting
 
 			vertices[0].pos.X = posTemp.X + edge1.X;
 			vertices[0].pos.Y = posTemp.Y + edge1.Y;
-			vertices[0].pos.Z = posTemp.Z;
+			vertices[0].pos.Z = posTemp.Z + this.offset * 0.001f;
 			vertices[0].texCoord.X = uvRect.X;
 			vertices[0].texCoord.Y = uvRect.Y;
 			vertices[0].texCoord.Z = uvRectNext.X;
@@ -93,7 +93,7 @@ namespace DynamicLighting
 
 			vertices[1].pos.X = posTemp.X + edge2.X;
 			vertices[1].pos.Y = posTemp.Y + edge2.Y;
-			vertices[1].pos.Z = posTemp.Z;
+			vertices[1].pos.Z = posTemp.Z + this.offset * 0.001f;
 			vertices[1].texCoord.X = uvRect.X;
 			vertices[1].texCoord.Y = uvRect.MaxY;
 			vertices[1].texCoord.Z = uvRectNext.X;
@@ -104,7 +104,7 @@ namespace DynamicLighting
 
 			vertices[2].pos.X = posTemp.X + edge3.X;
 			vertices[2].pos.Y = posTemp.Y + edge3.Y;
-			vertices[2].pos.Z = posTemp.Z;
+			vertices[2].pos.Z = posTemp.Z + this.offset * 0.001f;
 			vertices[2].texCoord.X = uvRect.MaxX;
 			vertices[2].texCoord.Y = uvRect.MaxY;
 			vertices[2].texCoord.Z = uvRectNext.MaxX;
@@ -115,7 +115,7 @@ namespace DynamicLighting
 				
 			vertices[3].pos.X = posTemp.X + edge4.X;
 			vertices[3].pos.Y = posTemp.Y + edge4.Y;
-			vertices[3].pos.Z = posTemp.Z;
+			vertices[3].pos.Z = posTemp.Z + this.offset * 0.001f;
 			vertices[3].texCoord.X = uvRect.MaxX;
 			vertices[3].texCoord.Y = uvRect.Y;
 			vertices[3].texCoord.Z = uvRectNext.MaxX;

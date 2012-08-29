@@ -146,7 +146,7 @@ namespace EditorBase.CamViewStates
 				handled = true;
 			}
 		}
-		protected override void PostPerformAction(IEnumerable<CamViewState.SelObj> selObjEnum, CamViewState.MouseAction action)
+		protected override void PostPerformAction(IEnumerable<CamViewState.SelObj> selObjEnum, CamViewState.ObjectAction action)
 		{
 			base.PostPerformAction(selObjEnum, action);
 			SelShape[] selShapeArray = selObjEnum.OfType<SelShape>().ToArray();
@@ -202,20 +202,20 @@ namespace EditorBase.CamViewStates
 					ReflectionInfo.Property_RigidBody_Shapes);
 			}
 		}
-		protected override void OnBeginAction(CamViewState.MouseAction action)
+		protected override void OnBeginAction(CamViewState.ObjectAction action)
 		{
 			base.OnBeginAction(action);
 			bool shapeAction = 
-				action != MouseAction.RectSelection && 
-				action != MouseAction.None;
+				action != ObjectAction.RectSelect && 
+				action != ObjectAction.None;
 			if (this.selectedBody != null && shapeAction) this.selectedBody.BeginUpdateBodyShape();
 		}
-		protected override void OnEndAction(CamViewState.MouseAction action)
+		protected override void OnEndAction(CamViewState.ObjectAction action)
 		{
 			base.OnEndAction(action);
 			bool shapeAction = 
-				action != MouseAction.RectSelection && 
-				action != MouseAction.None;
+				action != ObjectAction.RectSelect && 
+				action != ObjectAction.None;
 			if (this.selectedBody != null && shapeAction) this.selectedBody.EndUpdateBodyShape();
 		}
 
@@ -493,7 +493,7 @@ namespace EditorBase.CamViewStates
 			this.View.LocalGLControl.MouseDown += this.LocalGLControl_MouseDown;
 			this.UpdateToolbar();
 			this.UpdateCursorImage();
-			this.View.LocalGLControl.Invalidate();
+			this.InvalidateView();
 
 			if (Sandbox.State == SandboxState.Playing)
 				Sandbox.Pause();
@@ -506,7 +506,7 @@ namespace EditorBase.CamViewStates
 			this.selectedBody.EndUpdateBodyShape();
 			this.View.LocalGLControl.MouseDown -= this.LocalGLControl_MouseDown;
 			this.UpdateToolbar();
-			this.View.LocalGLControl.Invalidate();
+			this.InvalidateView();
 		}
 		private void UpdateCursorImage()
 		{
@@ -593,7 +593,7 @@ namespace EditorBase.CamViewStates
 
 			this.UpdateSelectionStats();
 			this.UpdateToolbar();
-			this.View.LocalGLControl.Invalidate();
+			this.InvalidateView();
 		}
 
 		private void toolCreateCircle_Clicked(object sender, EventArgs e)
@@ -644,7 +644,7 @@ namespace EditorBase.CamViewStates
 
 					this.LeaveCursorState();
 					this.SelectObjects(new[] { SelShape.Create(newShape) });
-					this.BeginAction(MouseAction.ScaleObj);
+					this.BeginAction(ObjectAction.Scale);
 				}
 				else if (e.Button == MouseButtons.Right)
 				{

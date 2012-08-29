@@ -31,13 +31,14 @@
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CamView));
 			this.stateSelector = new System.Windows.Forms.ToolStripComboBox();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-			this.toggleParallaxity = new System.Windows.Forms.ToolStripButton();
 			this.parallaxRefDist = new DualityEditor.Controls.ToolStrip.ToolStripNumericUpDown();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-			this.showBgColorDialog = new System.Windows.Forms.ToolStripButton();
 			this.camSelector = new System.Windows.Forms.ToolStripComboBox();
 			this.toolbarCamera = new System.Windows.Forms.ToolStrip();
 			this.layerSelector = new System.Windows.Forms.ToolStripDropDownButton();
+			this.buttonResetZoom = new System.Windows.Forms.ToolStripButton();
+			this.toggleParallaxity = new System.Windows.Forms.ToolStripButton();
+			this.showBgColorDialog = new System.Windows.Forms.ToolStripButton();
 			this.toolbarCamera.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -47,6 +48,7 @@
 			this.stateSelector.FlatStyle = System.Windows.Forms.FlatStyle.Standard;
 			this.stateSelector.Name = "stateSelector";
 			this.stateSelector.Size = new System.Drawing.Size(121, 25);
+			this.stateSelector.ToolTipText = "Select the editing state of this View";
 			this.stateSelector.DropDown += new System.EventHandler(this.stateSelector_DropDown);
 			this.stateSelector.DropDownClosed += new System.EventHandler(this.stateSelector_DropDownClosed);
 			this.stateSelector.SelectedIndexChanged += new System.EventHandler(this.stateSelector_SelectedIndexChanged);
@@ -55,20 +57,6 @@
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
 			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-			// 
-			// toggleParallaxity
-			// 
-			this.toggleParallaxity.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-			this.toggleParallaxity.Checked = true;
-			this.toggleParallaxity.CheckOnClick = true;
-			this.toggleParallaxity.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.toggleParallaxity.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.toggleParallaxity.Image = ((System.Drawing.Image)(resources.GetObject("toggleParallaxity.Image")));
-			this.toggleParallaxity.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.toggleParallaxity.Name = "toggleParallaxity";
-			this.toggleParallaxity.Size = new System.Drawing.Size(23, 22);
-			this.toggleParallaxity.Text = "Toggle Perspective";
-			this.toggleParallaxity.CheckStateChanged += new System.EventHandler(this.toggleParallaxity_CheckStateChanged);
 			// 
 			// parallaxRefDist
 			// 
@@ -85,6 +73,7 @@
 			this.parallaxRefDist.NumericWidth = 75;
 			this.parallaxRefDist.Size = new System.Drawing.Size(128, 22);
 			this.parallaxRefDist.Text = "RefDist";
+			this.parallaxRefDist.ToolTipText = "Adjust the Cameras reference distance";
 			this.parallaxRefDist.Value = new decimal(new int[] {
             500,
             0,
@@ -99,17 +88,6 @@
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
 			this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
 			// 
-			// showBgColorDialog
-			// 
-			this.showBgColorDialog.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-			this.showBgColorDialog.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.showBgColorDialog.Image = ((System.Drawing.Image)(resources.GetObject("showBgColorDialog.Image")));
-			this.showBgColorDialog.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.showBgColorDialog.Name = "showBgColorDialog";
-			this.showBgColorDialog.Size = new System.Drawing.Size(23, 22);
-			this.showBgColorDialog.Text = "Change Background Color";
-			this.showBgColorDialog.Click += new System.EventHandler(this.showBgColorDialog_Click);
-			// 
 			// camSelector
 			// 
 			this.camSelector.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
@@ -117,6 +95,7 @@
 			this.camSelector.FlatStyle = System.Windows.Forms.FlatStyle.Standard;
 			this.camSelector.Name = "camSelector";
 			this.camSelector.Size = new System.Drawing.Size(121, 25);
+			this.camSelector.ToolTipText = "Select the Camera object to display in this View";
 			this.camSelector.DropDown += new System.EventHandler(this.camSelector_DropDown);
 			this.camSelector.DropDownClosed += new System.EventHandler(this.camSelector_DropDownClosed);
 			this.camSelector.SelectedIndexChanged += new System.EventHandler(this.camSelector_SelectedIndexChanged);
@@ -129,6 +108,7 @@
             this.stateSelector,
             this.layerSelector,
             this.toolStripSeparator1,
+            this.buttonResetZoom,
             this.toggleParallaxity,
             this.parallaxRefDist,
             this.toolStripSeparator2,
@@ -150,6 +130,42 @@
 			this.layerSelector.Text = "Select visible Layers";
 			this.layerSelector.DropDownOpening += new System.EventHandler(this.layerSelector_DropDownOpening);
 			this.layerSelector.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.layerSelector_DropDownItemClicked);
+			// 
+			// buttonResetZoom
+			// 
+			this.buttonResetZoom.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.buttonResetZoom.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonResetZoom.Image = global::EditorBase.Properties.Resources.magnifier_one;
+			this.buttonResetZoom.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonResetZoom.Name = "buttonResetZoom";
+			this.buttonResetZoom.Size = new System.Drawing.Size(23, 22);
+			this.buttonResetZoom.Text = "Reset Camera Z";
+			this.buttonResetZoom.Click += new System.EventHandler(this.buttonResetZoom_Click);
+			// 
+			// toggleParallaxity
+			// 
+			this.toggleParallaxity.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.toggleParallaxity.Checked = true;
+			this.toggleParallaxity.CheckOnClick = true;
+			this.toggleParallaxity.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.toggleParallaxity.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.toggleParallaxity.Image = ((System.Drawing.Image)(resources.GetObject("toggleParallaxity.Image")));
+			this.toggleParallaxity.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.toggleParallaxity.Name = "toggleParallaxity";
+			this.toggleParallaxity.Size = new System.Drawing.Size(23, 22);
+			this.toggleParallaxity.Text = "Toggle Perspective";
+			this.toggleParallaxity.CheckStateChanged += new System.EventHandler(this.toggleParallaxity_CheckStateChanged);
+			// 
+			// showBgColorDialog
+			// 
+			this.showBgColorDialog.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.showBgColorDialog.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.showBgColorDialog.Image = ((System.Drawing.Image)(resources.GetObject("showBgColorDialog.Image")));
+			this.showBgColorDialog.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.showBgColorDialog.Name = "showBgColorDialog";
+			this.showBgColorDialog.Size = new System.Drawing.Size(23, 22);
+			this.showBgColorDialog.Text = "Change Background Color";
+			this.showBgColorDialog.Click += new System.EventHandler(this.showBgColorDialog_Click);
 			// 
 			// CamView
 			// 
@@ -183,6 +199,7 @@
 		private System.Windows.Forms.ToolStripComboBox camSelector;
 		private System.Windows.Forms.ToolStrip toolbarCamera;
 		private System.Windows.Forms.ToolStripDropDownButton layerSelector;
+		private System.Windows.Forms.ToolStripButton buttonResetZoom;
 
 	}
 }

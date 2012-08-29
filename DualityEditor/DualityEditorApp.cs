@@ -864,7 +864,7 @@ namespace DualityEditor
 					{
 						List<PrefabLink> appliedLinks = PrefabLink.ApplyAllLinks(Scene.Current.AllObjects, p => p.Prefab == prefab);
 						List<GameObject> changedObjects = new List<GameObject>(appliedLinks.Select(p => p.Obj));
-						DualityEditorApp.NotifyObjPrefabApplied(null, new ObjectSelection(changedObjects));
+						NotifyObjPrefabApplied(null, new ObjectSelection(changedObjects));
 					}
 				}
 
@@ -878,11 +878,11 @@ namespace DualityEditor
 					}
 				}
 
-				// If a GameObjects's Property is modified, mark current Scene for saving
+				// If a GameObjects's Property is modified, notify changes to the current Scene
 				if (args.Objects.GameObjects.Any(g => Scene.Current.AllObjects.Contains(g)) ||
 					args.Objects.Components.Any(c => Scene.Current.AllObjects.Contains(c.GameObj)))
 				{
-					FlagResourceUnsaved(Scene.Current);
+					NotifyObjPropChanged(sender, new ObjectSelection(Scene.Current));
 				}
 
 				// If DualityAppData or DualityUserData is modified, save it

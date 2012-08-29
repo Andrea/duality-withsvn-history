@@ -120,9 +120,7 @@ namespace EditorBase.CamViewLayers
 		protected internal override void OnCollectOverlayDrawcalls(Canvas canvas)
 		{
 			base.OnCollectOverlayDrawcalls(canvas);
-			bool noAction = this.View.ActiveState.Action == CamViewState.MouseAction.None && (
-				this.View.ActiveState.MouseoverAction == CamViewState.MouseAction.None ||
-				this.View.ActiveState.MouseoverAction == CamViewState.MouseAction.RectSelection);
+			bool noAction = this.View.ActiveState.VisibleAction == CamViewState.ObjectAction.None;
 
 			Point cursorPos = this.View.LocalGLControl.PointToClient(Cursor.Position);
 			if (noAction &&
@@ -146,11 +144,11 @@ namespace EditorBase.CamViewLayers
 		
 		private void LocalGLControl_MouseLeave(object sender, EventArgs e)
 		{
-			this.View.LocalGLControl.Invalidate();
+			this.InvalidateView();
 		}
 		private void LocalGLControl_MouseMove(object sender, MouseEventArgs e)
 		{
-			this.View.LocalGLControl.Invalidate();
+			this.InvalidateView();
 		}
 	}
 }

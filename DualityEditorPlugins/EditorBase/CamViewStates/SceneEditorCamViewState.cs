@@ -17,7 +17,7 @@ using OpenTK;
 
 namespace EditorBase.CamViewStates
 {
-	public class SceneEditorCamViewState : CamViewState, IHelpProvider
+	public class SceneEditorCamViewState : CamViewState
 	{
 		public class SelGameObj : SelObj
 		{
@@ -72,21 +72,21 @@ namespace EditorBase.CamViewStates
 				this.gameObj = obj;
 			}
 
-			public override bool IsActionAvailable(MouseAction action)
+			public override bool IsActionAvailable(ObjectAction action)
 			{
-				if (action == MouseAction.MoveObj) return true;
-				if (action == MouseAction.RotateObj) return true;
-				if (action == MouseAction.ScaleObj) return true;
+				if (action == ObjectAction.Move) return true;
+				if (action == ObjectAction.Rotate) return true;
+				if (action == ObjectAction.Scale) return true;
 				return false;
 			}
-			public override void DrawActionGizmo(Canvas canvas, MouseAction action, Vector2 curLoc, bool performing)
+			public override void DrawActionGizmo(Canvas canvas, ObjectAction action, Vector2 curLoc, bool performing)
 			{
 				base.DrawActionGizmo(canvas, action, curLoc, performing);
 				curLoc.X = MathF.Round(curLoc.X);
 				curLoc.Y = MathF.Round(curLoc.Y);
 
 				string[] text = null;
-				if (action == MouseAction.MoveObj)
+				if (action == ObjectAction.Move)
 				{
 					text = new string[] {
 						string.Format("X:{0,7:0}", this.gameObj.Transform.RelativePos.X),
@@ -94,7 +94,7 @@ namespace EditorBase.CamViewStates
 						string.Format("Z:{0,7:0}", this.gameObj.Transform.RelativePos.Z)
 					};
 				}
-				else if (action == MouseAction.ScaleObj)
+				else if (action == ObjectAction.Scale)
 				{
 					if (this.gameObj.Transform.RelativeScale.X == this.gameObj.Transform.RelativeScale.Y &&
 						this.gameObj.Transform.RelativeScale.X == this.gameObj.Transform.RelativeScale.Z)
@@ -112,7 +112,7 @@ namespace EditorBase.CamViewStates
 						};
 					}
 				}
-				else if (action == MouseAction.RotateObj)
+				else if (action == ObjectAction.Rotate)
 				{
 					text = new string[] {
 						string.Format("Angle:{0,5:0}", MathF.RadToDeg(this.gameObj.Transform.RelativeAngle))
@@ -202,7 +202,7 @@ namespace EditorBase.CamViewStates
 		protected override void OnCollectStateOverlayDrawcalls(Canvas canvas)
 		{
 			base.OnCollectStateOverlayDrawcalls(canvas);
-			if (this.SelObjAction == MouseAction.None && this.DragMustWait && !this.dragLastLoc.IsEmpty)
+			if (this.SelObjAction == ObjectAction.None && this.DragMustWait && !this.dragLastLoc.IsEmpty)
 			{
 				canvas.CurrentState.ColorTint = ColorRgba.White.WithAlpha(this.DragMustWaitProgress);
 				canvas.FillCircle(
@@ -244,17 +244,17 @@ namespace EditorBase.CamViewStates
 			base.SelectObjects(selObjEnum, mode);
 			DualityEditorApp.Select(this, new ObjectSelection(selObjEnum.Select(s => s.ActualObject)), mode);
 		}
-		protected override void PostPerformAction(IEnumerable<CamViewState.SelObj> selObjEnum, CamViewState.MouseAction action)
+		protected override void PostPerformAction(IEnumerable<CamViewState.SelObj> selObjEnum, CamViewState.ObjectAction action)
 		{
 			base.PostPerformAction(selObjEnum, action);
-			if (action == MouseAction.MoveObj)
+			if (action == ObjectAction.Move)
 			{
 				DualityEditorApp.NotifyObjPropChanged(
 					this,
 					new ObjectSelection(selObjEnum.Select(s => (s.ActualObject as GameObject).Transform)),
 					ReflectionInfo.Property_Transform_RelativePos);
 			}
-			else if (action == MouseAction.RotateObj)
+			else if (action == ObjectAction.Rotate)
 			{
 				DualityEditorApp.NotifyObjPropChanged(
 					this,
@@ -262,7 +262,7 @@ namespace EditorBase.CamViewStates
 					ReflectionInfo.Property_Transform_RelativePos,
 					ReflectionInfo.Property_Transform_RelativeAngle);
 			}
-			else if (action == MouseAction.ScaleObj)
+			else if (action == ObjectAction.Scale)
 			{
 				DualityEditorApp.NotifyObjPropChanged(
 					this,
@@ -312,23 +312,23 @@ namespace EditorBase.CamViewStates
 		private void LocalGLControl_DragOver(object sender, DragEventArgs e)
 		{
 			if (e.Effect == DragDropEffects.None) return;
-			if (this.SelObjAction == MouseAction.None && !this.DragMustWait)
+			if (this.SelObjAction == ObjectAction.None && !this.DragMustWait)
 				this.DragBeginAction(e);
 			
 			Point clientCoord = this.View.LocalGLControl.PointToClient(new Point(e.X, e.Y));
 			if (Math.Abs(clientCoord.X - this.dragLastLoc.X) > 20 || Math.Abs(clientCoord.Y - this.dragLastLoc.Y) > 20)
 				this.dragTime = DateTime.Now;
 			this.dragLastLoc = clientCoord;
-			this.View.LocalGLControl.Invalidate();
+			this.InvalidateView();
 
-			if (this.SelObjAction != MouseAction.None) this.UpdateAction();
+			if (this.SelObjAction != ObjectAction.None) this.UpdateAction();
 		}
 		private void LocalGLControl_DragLeave(object sender, EventArgs e)
 		{
 			this.dragLastLoc = Point.Empty;
 			this.dragTime = DateTime.Now;
-			this.View.LocalGLControl.Invalidate();
-			if (this.SelObjAction == MouseAction.None) return;
+			this.InvalidateView();
+			if (this.SelObjAction == ObjectAction.None) return;
 			
 			this.EndAction();
 
@@ -359,16 +359,16 @@ namespace EditorBase.CamViewStates
 		}
 		private void LocalGLControl_DragDrop(object sender, DragEventArgs e)
 		{
-			if (this.SelObjAction == MouseAction.None)
+			if (this.SelObjAction == ObjectAction.None)
 			{
 				this.DragBeginAction(e);
-				if (this.SelObjAction != MouseAction.None) this.UpdateAction();
+				if (this.SelObjAction != ObjectAction.None) this.UpdateAction();
 			}
 			
 			this.dragLastLoc = Point.Empty;
 			this.dragTime = DateTime.Now;
 
-			if (this.SelObjAction != MouseAction.None) this.EndAction();
+			if (this.SelObjAction != ObjectAction.None) this.EndAction();
 		}
 		private void View_CurrentCameraChanged(object sender, CamView.CameraChangedEventArgs e)
 		{
@@ -383,8 +383,12 @@ namespace EditorBase.CamViewStates
 			{
 				List<GameObject> dragObj = dragObjQuery.ToList();
 
+				bool lockZ = this.View.CameraComponent.ParallaxRefDist <= 0.0f;
 				Point mouseLoc = this.View.LocalGLControl.PointToClient(new Point(e.X, e.Y));
-				Vector3 spaceCoord = this.View.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, this.View.CameraObj.Transform.Pos.Z + this.View.CameraComponent.ParallaxRefDist));
+				Vector3 spaceCoord = this.View.GetSpaceCoord(new Vector3(
+					mouseLoc.X, 
+					mouseLoc.Y, 
+					lockZ ? 0.0f : this.View.CameraObj.Transform.Pos.Z + MathF.Abs(this.View.CameraComponent.ParallaxRefDist)));
 
 				// Setup GameObjects
 				foreach (GameObject newObj in dragObj)
@@ -400,7 +404,7 @@ namespace EditorBase.CamViewStates
 				// Select them & begin action
 				this.selBeforeDrag = DualityEditorApp.Selection;
 				this.SelectObjects(dragObj.Select(g => new SelGameObj(g) as SelObj));
-				this.BeginAction(MouseAction.MoveObj);
+				this.BeginAction(ObjectAction.Move);
 
 				// Get focused
 				this.View.LocalGLControl.Focus();
@@ -444,7 +448,7 @@ namespace EditorBase.CamViewStates
 
 			this.UpdateSelectionStats();
 			this.OnCursorSpacePosChanged();
-			this.View.LocalGLControl.Invalidate();
+			this.InvalidateView();
 		}
 
 		private bool IsAffectedByParent(GameObject child, GameObject parent)
@@ -456,26 +460,6 @@ namespace EditorBase.CamViewStates
 			GameObject obj = (r as Component).GameObj;
 			DesignTimeObjectData data = CorePluginRegistry.RequestDesignTimeData(obj);
 			return !data.IsHidden;
-		}
-
-		HelpInfo IHelpProvider.ProvideHoverHelp(Point localPos, ref bool captured)
-		{
-			HelpInfo result = null;
-			GameObject[] selObj = this.allObjSel.Select(s => s.ActualObject as GameObject).ToArray();
-			GameObject mouseoverGameObj = this.MouseoverObject != null ? this.MouseoverObject.ActualObject as GameObject : null;
-
-			if (this.MouseoverObject != null && this.MouseoverSelect)
-				result = HelpInfo.FromGameObject(mouseoverGameObj);
-			else if (this.MouseoverAction != MouseAction.None && this.MouseoverAction != MouseAction.RectSelection && selObj.Contains(mouseoverGameObj))
-				result = HelpInfo.FromGameObject(mouseoverGameObj);
-			else if (this.MouseoverAction != MouseAction.None && this.MouseoverAction != MouseAction.RectSelection && selObj.Length == 1)
-				result = HelpInfo.FromSelection(new ObjectSelection(selObj));
-
-			return result;
-		}
-		bool IHelpProvider.PerformHelpAction(HelpInfo info)
-		{
-			return this.DefaultPerformHelpAction(info);
 		}
 	}
 }

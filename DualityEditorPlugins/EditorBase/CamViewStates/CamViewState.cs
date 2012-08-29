@@ -19,7 +19,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace EditorBase.CamViewStates
 {
-	public abstract class CamViewState
+	public abstract class CamViewState : IHelpProvider
 	{
 		[Flags]
 		public enum AxisLock
@@ -35,16 +35,16 @@ namespace EditorBase.CamViewStates
 		public enum CameraAction
 		{
 			None,
-			MoveCam,
-			TurnCam
+			Move,
+			Rotate
 		}
-		public enum MouseAction
+		public enum ObjectAction
 		{
 			None,
-			RectSelection,
-			MoveObj,
-			RotateObj,
-			ScaleObj
+			RectSelect,
+			Move,
+			Rotate,
+			Scale
 		}
 		public abstract class SelObj : IEquatable<SelObj>
 		{
@@ -79,12 +79,12 @@ namespace EditorBase.CamViewStates
 				get { return this.ActualObject == null; }
 			}
 
-			public virtual bool IsActionAvailable(MouseAction action)
+			public virtual bool IsActionAvailable(ObjectAction action)
 			{
-				if (action == MouseAction.MoveObj) return true;
+				if (action == ObjectAction.Move) return true;
 				return false;
 			}
-			public virtual void DrawActionGizmo(Canvas canvas, MouseAction action, Vector2 curLoc, bool performing) {}
+			public virtual void DrawActionGizmo(Canvas canvas, ObjectAction action, Vector2 curLoc, bool performing) {}
 			
 			public override bool Equals(object obj)
 			{
@@ -137,13 +137,15 @@ namespace EditorBase.CamViewStates
 		private	bool			actionAllowed		= true;
 		private	Point			actionBeginLoc		= Point.Empty;
 		private Vector3			actionBeginLocSpace	= Vector3.Zero;
-		private MouseAction		action				= MouseAction.None;
+		private ObjectAction		action				= ObjectAction.None;
 		private	Vector3			selectionCenter		= Vector3.Zero;
 		private	float			selectionRadius		= 0.0f;
 		private	ObjectSelection	activeRectSel		= new ObjectSelection();
-		private	MouseAction		mouseoverAction		= MouseAction.None;
+		private	ObjectAction		mouseoverAction		= ObjectAction.None;
 		private	SelObj			mouseoverObject		= null;
 		private	bool			mouseoverSelect		= false;
+		private	CameraAction	drawCamGizmoState	= CameraAction.None;
+		private	ObjectAction	drawSelGizmoState	= ObjectAction.None;
 		private	List<Type>		lastActiveLayers	= new List<Type>();
 		protected	List<SelObj>	actionObjSel	= new List<SelObj>();
 		protected	List<SelObj>	allObjSel		= new List<SelObj>();
@@ -158,7 +160,7 @@ namespace EditorBase.CamViewStates
 		{
 			get { return this.lockedAxes; }
 		}
-		public MouseAction SelObjAction
+		public ObjectAction SelObjAction
 		{
 			get { return this.action; }
 		}
@@ -185,10 +187,10 @@ namespace EditorBase.CamViewStates
 				this.actionAllowed = value;
 				if (!this.actionAllowed)
 				{
-					this.mouseoverAction = MouseAction.None;
+					this.mouseoverAction = ObjectAction.None;
 					this.mouseoverObject = null;
 					this.mouseoverSelect = false;
-					if (this.action != MouseAction.None)
+					if (this.action != ObjectAction.None)
 					{
 						this.EndAction();
 						this.UpdateAction();
@@ -205,7 +207,7 @@ namespace EditorBase.CamViewStates
 				if (!this.camActionAllowed && this.camAction != CameraAction.None)
 				{
 					this.camAction = CameraAction.None;
-					this.view.LocalGLControl.Invalidate();
+					this.InvalidateView();
 				}
 			}
 		}
@@ -217,13 +219,24 @@ namespace EditorBase.CamViewStates
 		{
 			get { return this.mouseoverObject; }
 		}
-		public MouseAction MouseoverAction
+		public ObjectAction MouseoverAction
 		{
 			get { return this.mouseoverAction; }
 		}
-		public MouseAction Action
+		public ObjectAction Action
 		{
 			get { return this.action; }
+		}
+		public ObjectAction VisibleAction
+		{
+			get
+			{
+				return 
+					(this.drawSelGizmoState != ObjectAction.None ? this.drawSelGizmoState : 
+					(this.action != ObjectAction.None ? this.action :
+					(this.mouseoverAction != ObjectAction.RectSelect ? this.mouseoverAction :
+					ObjectAction.None)));
+			}
 		}
 		protected bool CameraTransformChanged
 		{
@@ -337,7 +350,7 @@ namespace EditorBase.CamViewStates
 			// Draw indirectly selected object overlay
 			canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Solid, ColorRgba.Mix(this.View.FgColor, this.View.BgColor, 0.75f)));
 			this.DrawSelectionMarkers(canvas, this.indirectObjSel);
-			if (this.mouseoverObject != null && (this.mouseoverAction == MouseAction.RectSelection || this.mouseoverSelect) && !transformObjSel.Contains(this.mouseoverObject)) 
+			if (this.mouseoverObject != null && (this.mouseoverAction == ObjectAction.RectSelect || this.mouseoverSelect) && !transformObjSel.Contains(this.mouseoverObject)) 
 				this.DrawSelectionMarkers(canvas, new [] { this.mouseoverObject });
 
 			// Draw selected object overlay
@@ -370,8 +383,8 @@ namespace EditorBase.CamViewStates
 			}
 
 			// Draw scale action dots
-			bool canMove = this.actionObjSel.Any(s => s.IsActionAvailable(MouseAction.MoveObj));
-			bool canScale = (canMove && this.actionObjSel.Count > 1) || this.actionObjSel.Any(s => s.IsActionAvailable(MouseAction.ScaleObj));
+			bool canMove = this.actionObjSel.Any(s => s.IsActionAvailable(ObjectAction.Move));
+			bool canScale = (canMove && this.actionObjSel.Count > 1) || this.actionObjSel.Any(s => s.IsActionAvailable(ObjectAction.Scale));
 			if (canScale)
 			{
 				float dotR = 3.0f / this.View.GetScaleAtZ(this.selectionCenter.Z);
@@ -409,6 +422,7 @@ namespace EditorBase.CamViewStates
 			this.CollectLayerOverlayDrawcalls(canvas);
 
 			Point cursorPos = this.View.LocalGLControl.PointToClient(Cursor.Position);
+			ObjectAction visibleObjectAction = this.VisibleAction;
 			canvas.PushState();
 
 			// Draw camera movement indicators
@@ -417,33 +431,30 @@ namespace EditorBase.CamViewStates
 				canvas.PushState();
 				canvas.CurrentState.ColorTint = ColorRgba.White.WithAlpha(0.5f);
 				canvas.FillCircle(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, 3);
+				if (this.camAction == CameraAction.Move)
+					canvas.DrawLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, cursorPos.Y);
+				else if (this.camAction == CameraAction.Rotate)
+					canvas.DrawLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, this.camActionBeginLoc.Y);
 				canvas.PopState();
 			}
 			
-			// Draw selected objects action gizmo
-			if (this.action != MouseAction.None)
+			// Draw hovered / selected objects action gizmo
+			if (visibleObjectAction != ObjectAction.None && (this.mouseoverObject != null || this.actionObjSel.Count == 1))
 			{
 				canvas.PushState();
-				if (this.actionObjSel.Count == 1)
+				Vector2 pos;
+				SelObj obj;
+				if (this.mouseoverObject != null || this.mouseoverAction == visibleObjectAction)
 				{
-					this.actionObjSel[0].DrawActionGizmo(canvas, this.Action, new Vector2(cursorPos.X + 30, cursorPos.Y + 10), true);
+					obj = this.mouseoverObject ?? this.actionObjSel[0];
+					pos = new Vector2(cursorPos.X + 30, cursorPos.Y + 10);
 				}
-				//else if (this.actionObjSel.Count > 1)
-				//{
-				//    foreach (SelObj selObj in this.actionObjSel)
-				//    {
-				//        Vector3 selPosScreen = this.View.GetScreenCoord(selObj.Pos);
-				//        selObj.DrawActionGizmo(canvas, this.Action, selPosScreen.Xy, true);
-				//    }
-				//}
-				canvas.PopState();
-			}
-			// Draw hovered objects action gizmo
-			else if (this.mouseoverAction != MouseAction.None && (this.mouseoverObject != null || this.actionObjSel.Count == 1))
-			{
-				canvas.PushState();
-				SelObj obj = this.mouseoverObject ?? this.actionObjSel[0];
-				obj.DrawActionGizmo(canvas, this.mouseoverAction, new Vector2(cursorPos.X + 30, cursorPos.Y + 10), false);
+				else
+				{
+					obj = this.actionObjSel[0];
+					pos = this.View.GetScreenCoord(this.actionObjSel[0].Pos).Xy;
+				}
+				obj.DrawActionGizmo(canvas, visibleObjectAction, pos, false);
 				canvas.PopState();
 			}
 
@@ -452,7 +463,7 @@ namespace EditorBase.CamViewStates
 			this.DrawStatusText(canvas, ref handled);
 
 			// Draw rect selection
-			if (this.action == MouseAction.RectSelection)
+			if (this.action == ObjectAction.RectSelect)
 				canvas.DrawRect(this.actionBeginLoc.X, this.actionBeginLoc.Y, cursorPos.X - this.actionBeginLoc.X, cursorPos.Y - this.actionBeginLoc.Y);
 
 			#if DEBUG
@@ -471,27 +482,26 @@ namespace EditorBase.CamViewStates
 		{
 			Point cursorPos = this.View.LocalGLControl.PointToClient(Cursor.Position);
 			Size viewSize = this.View.LocalGLControl.ClientSize;
+			CameraAction visibleCamAction = this.drawCamGizmoState != CameraAction.None ? this.drawCamGizmoState : this.camAction;
+			ObjectAction visibleObjectAction = this.VisibleAction;
 
 			// Draw camera action hints
 			if (!handled)
 			{
 				int textYOff = -20;
 				string[] text = null;
-				if (this.camAction == CameraAction.TurnCam)
+				if (visibleCamAction == CameraAction.Rotate)
 				{
-					canvas.DrawLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, this.camActionBeginLoc.Y);
-
 					if (MathF.Abs(this.camAngleVel) > 0.0f)
 					{
 						text = new string[] { string.Format("Cam Angle: {0,3:0}°", MathF.RadToDeg(this.view.CameraObj.Transform.Angle)) };
 						handled = true;
 					}
 				}
-				else if (this.camAction == CameraAction.MoveCam || this.camVel.Z != 0.0f)
+				else if (visibleCamAction == CameraAction.Move || this.camVel.Z != 0.0f)
 				{
-					if (this.camAction == CameraAction.MoveCam)
+					if (visibleCamAction == CameraAction.Move)
 					{
-						canvas.DrawLine(this.camActionBeginLoc.X, this.camActionBeginLoc.Y, cursorPos.X, cursorPos.Y);
 						text = new string[]
 						{
 							string.Format("Cam X:{0,7:0}", this.view.CameraObj.Transform.Pos.X),
@@ -518,13 +528,12 @@ namespace EditorBase.CamViewStates
 			// Draw action hints
 			if (!handled)
 			{
-				MouseAction actionHint = this.action != MouseAction.None ? this.action : this.mouseoverAction;
 				string text = null;
 
-				if (actionHint == MouseAction.MoveObj)				text = PluginRes.EditorBaseRes.CamView_Action_Move;
-				else if (actionHint == MouseAction.RotateObj)		text = PluginRes.EditorBaseRes.CamView_Action_Rotate;
-				else if (actionHint == MouseAction.ScaleObj)		text = PluginRes.EditorBaseRes.CamView_Action_Scale;
-				else if (this.action == MouseAction.RectSelection)	text = PluginRes.EditorBaseRes.CamView_Action_Select_Active;
+				if (visibleObjectAction == ObjectAction.Move)				text = PluginRes.EditorBaseRes.CamView_Action_Move;
+				else if (visibleObjectAction == ObjectAction.Rotate)		text = PluginRes.EditorBaseRes.CamView_Action_Rotate;
+				else if (visibleObjectAction == ObjectAction.Scale)			text = PluginRes.EditorBaseRes.CamView_Action_Scale;
+				else if (visibleObjectAction == ObjectAction.RectSelect)	text = PluginRes.EditorBaseRes.CamView_Action_Select_Active;
 
 				if (text != null)
 				{
@@ -532,7 +541,7 @@ namespace EditorBase.CamViewStates
 					canvas.DrawText(text, 10, viewSize.Height - 20);
 				}
 
-				if (actionHint != MouseAction.None) handled = true;
+				if (visibleObjectAction != ObjectAction.None) handled = true;
 			}
 		}
 		protected virtual void OnRenderState()
@@ -547,12 +556,17 @@ namespace EditorBase.CamViewStates
 
 			this.camTransformChanged = false;
 
-			if (this.camAction == CameraAction.MoveCam)
+			if (this.camAction == CameraAction.Move)
 			{
 				Vector3 moveVec = new Vector3(
-					0.125f * MathF.Sign(cursorPos.X - this.camActionBeginLoc.X) * MathF.Pow(MathF.Abs(cursorPos.X - this.camActionBeginLoc.X), 1.25f),
-					0.125f * MathF.Sign(cursorPos.Y - this.camActionBeginLoc.Y) * MathF.Pow(MathF.Abs(cursorPos.Y - this.camActionBeginLoc.Y), 1.25f),
+					cursorPos.X - this.camActionBeginLoc.X,
+					cursorPos.Y - this.camActionBeginLoc.Y,
 					this.camVel.Z);
+
+				const float BaseSpeedCursorLen = 25.0f;
+				const float BaseSpeed = 2.0f;
+				moveVec.X = BaseSpeed * MathF.Sign(moveVec.X) * MathF.Pow(MathF.Abs(moveVec.X) / BaseSpeedCursorLen, 1.5f);
+				moveVec.Y = BaseSpeed * MathF.Sign(moveVec.Y) * MathF.Pow(MathF.Abs(moveVec.Y) / BaseSpeedCursorLen, 1.5f);
 
 				MathF.TransformCoord(ref moveVec.X, ref moveVec.Y, camObj.Transform.Angle);
 				this.camVel = moveVec;
@@ -571,7 +585,7 @@ namespace EditorBase.CamViewStates
 			}
 			
 
-			if (this.camAction == CameraAction.TurnCam)
+			if (this.camAction == CameraAction.Rotate)
 			{
 				float turnDir = 
 					0.000125f * MathF.Sign(cursorPos.X - this.camActionBeginLoc.X) * 
@@ -598,27 +612,33 @@ namespace EditorBase.CamViewStates
 				camObj.Transform.TurnBy(this.camAngleVel);
 
 				this.View.OnCamTransformChanged();
-				this.View.LocalGLControl.Invalidate();
+				this.InvalidateView();
 			}
 			
 			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
 			{
 				this.UpdateSelectionStats();
-				this.View.LocalGLControl.Invalidate();
+				this.InvalidateView();
 			}
 		}
-		protected virtual void OnBeginAction(MouseAction action) {}
-		protected virtual void OnEndAction(MouseAction action) {}
+		protected virtual void OnBeginAction(ObjectAction action) {}
+		protected virtual void OnEndAction(ObjectAction action) {}
 
 		protected virtual void OnSceneChanged()
 		{
 			if (this.mouseoverObject != null && this.mouseoverObject.IsInvalid) this.mouseoverObject = null;
 
-			this.View.LocalGLControl.Invalidate();
+			this.InvalidateView();
 		}
 		protected virtual void OnCursorSpacePosChanged()
 		{
 			this.UpdateAction();
+		}
+
+		public void InvalidateView()
+		{
+			if (this.View == null || this.View.LocalGLControl == null) return;
+			this.View.LocalGLControl.Invalidate();
 		}
 
 		public virtual SelObj PickSelObjAt(int x, int y)
@@ -631,10 +651,81 @@ namespace EditorBase.CamViewStates
 		}
 		public virtual void SelectObjects(IEnumerable<SelObj> selObjEnum, SelectMode mode = SelectMode.Set) {}
 		public virtual void ClearSelection() {}
-		protected virtual void PostPerformAction(IEnumerable<SelObj> selObjEnum, MouseAction action) {}
+		protected virtual void PostPerformAction(IEnumerable<SelObj> selObjEnum, ObjectAction action) {}
 
 		public virtual void DeleteObjects(IEnumerable<SelObj> objEnum) {}
 		public virtual List<SelObj> CloneObjects(IEnumerable<SelObj> objEnum) { return new List<SelObj>(); }
+		public void MoveSelectionBy(Vector3 move)
+		{
+			if (move == Vector3.Zero) return;
+
+			foreach (SelObj s in this.actionObjSel)
+				s.Pos += move;
+
+			this.drawSelGizmoState = ObjectAction.Move;
+			this.PostPerformAction(this.actionObjSel, ObjectAction.Move);
+			this.UpdateSelectionStats();
+			this.InvalidateView();
+		}
+		public void RotateSelectionBy(float rotation)
+		{
+			if (rotation == 0.0f) return;
+
+			foreach (SelObj s in this.actionObjSel)
+			{
+				Vector3 posRelCenter = s.Pos - this.selectionCenter;
+				Vector3 posRelCenterTarget = posRelCenter;
+				MathF.TransformCoord(ref posRelCenterTarget.X, ref posRelCenterTarget.Y, rotation);
+
+				s.Pos = this.selectionCenter + posRelCenterTarget;
+				s.Angle += rotation;
+			}
+
+			this.drawSelGizmoState = ObjectAction.Rotate;
+			this.PostPerformAction(this.actionObjSel, ObjectAction.Rotate);
+			this.UpdateSelectionStats();
+			this.InvalidateView();
+		}
+		public void ScaleSelectionBy(float scale)
+		{
+			if (scale == 1.0f) return;
+
+			float lastRadius = this.selectionRadius;
+			foreach (SelObj s in this.actionObjSel)
+			{
+				Vector3 scaleVec = new Vector3(scale, scale, scale);
+				Vector3 posRelCenter = s.Pos - this.selectionCenter;
+				Vector3 posRelCenterTarget;
+				Vector3.Multiply(ref posRelCenter, ref scaleVec, out posRelCenterTarget);
+
+				s.Pos = this.selectionCenter + posRelCenterTarget;
+				s.Scale *= scaleVec;
+			}
+			this.drawSelGizmoState = ObjectAction.Scale;
+			this.PostPerformAction(this.actionObjSel, ObjectAction.Scale);
+
+			this.UpdateSelectionStats();
+
+			// If scaling didn't change the total bounding radius, the selected object doesn't support it properly - roll back!
+			if (lastRadius == this.selectionRadius)
+			{
+				float invScale = 1.0f / scale;
+				foreach (SelObj s in this.actionObjSel)
+				{
+					Vector3 scaleVec = new Vector3(invScale, invScale, invScale);
+					Vector3 posRelCenter = s.Pos - this.selectionCenter;
+					Vector3 posRelCenterTarget;
+					Vector3.Multiply(ref posRelCenter, ref scaleVec, out posRelCenterTarget);
+
+					s.Pos = this.selectionCenter + posRelCenterTarget;
+					s.Scale *= scaleVec;
+				}
+				this.PostPerformAction(this.actionObjSel, ObjectAction.Scale);
+				this.UpdateSelectionStats();
+			}
+
+			this.InvalidateView();
+		}
 		protected bool DisplayConfirmDeleteSelectedObjects()
 		{
 			if (Sandbox.State == SandboxState.Playing) return true;
@@ -737,9 +828,9 @@ namespace EditorBase.CamViewStates
 			return vec;
 		}
 		
-		protected void BeginAction(MouseAction action)
+		protected void BeginAction(ObjectAction action)
 		{
-			if (action == MouseAction.None) return;
+			if (action == ObjectAction.None) return;
 			Point mouseLoc = this.View.LocalGLControl.PointToClient(Cursor.Position);
 
 			this.actionBeginLoc = mouseLoc;
@@ -750,30 +841,24 @@ namespace EditorBase.CamViewStates
 			if (Sandbox.State == SandboxState.Playing)
 				Sandbox.Freeze();
 
-			// Re-select current selection to give it editor focus when performing an action
-			if (this.action != MouseAction.RectSelection && this.action != MouseAction.None)
-			{
-				//this.SelectObjects(this.allObjSel);
-			}
-
 			// Begin movement
-			if (this.action == MouseAction.MoveObj)
+			if (this.action == ObjectAction.Move)
 			{
 				this.actionBeginLocSpace = this.View.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, this.selectionCenter.Z));
 				this.actionBeginLocSpace.Z = this.View.CameraObj.Transform.Pos.Z;
 			}
 			// Begin rotation
-			else if (this.action == MouseAction.RotateObj)
+			else if (this.action == ObjectAction.Rotate)
 			{
 				this.actionBeginLocSpace = this.View.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, this.selectionCenter.Z));
 			}
 			// Begin scale
-			else if (this.action == MouseAction.ScaleObj)
+			else if (this.action == ObjectAction.Scale)
 			{
 				this.actionBeginLocSpace = this.View.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, this.selectionCenter.Z));
 			}
 			// Begin rect selection
-			else if (this.action == MouseAction.RectSelection)
+			else if (this.action == ObjectAction.RectSelect)
 			{
 				this.actionBeginLocSpace = this.View.GetSpaceCoord(new Vector2(mouseLoc.X, mouseLoc.Y));
 			}
@@ -782,10 +867,10 @@ namespace EditorBase.CamViewStates
 		}
 		protected void EndAction()
 		{
-			if (this.action == MouseAction.None) return;
+			if (this.action == ObjectAction.None) return;
 			Point mouseLoc = this.View.LocalGLControl.PointToClient(Cursor.Position);
 
-			if (this.action == MouseAction.RectSelection)
+			if (this.action == ObjectAction.RectSelect)
 			{
 				this.activeRectSel = new ObjectSelection();
 			}
@@ -794,24 +879,24 @@ namespace EditorBase.CamViewStates
 				Sandbox.UnFreeze();
 
 			this.OnEndAction(this.action);
-			this.action = MouseAction.None;
+			this.action = ObjectAction.None;
 		}
 		protected void UpdateAction()
 		{
 			Point mouseLoc = this.View.LocalGLControl.PointToClient(Cursor.Position);
 
-			if (this.action == MouseAction.RectSelection)
+			if (this.action == ObjectAction.RectSelect)
 				this.UpdateRectSelection(mouseLoc);
-			else if (this.action == MouseAction.MoveObj)
+			else if (this.action == ObjectAction.Move)
 				this.UpdateObjMove(mouseLoc);
-			else if (this.action == MouseAction.RotateObj)
+			else if (this.action == ObjectAction.Rotate)
 				this.UpdateObjRotate(mouseLoc);
-			else if (this.action == MouseAction.ScaleObj)
+			else if (this.action == ObjectAction.Scale)
 				this.UpdateObjScale(mouseLoc);
 			else
 				this.UpdateMouseover(mouseLoc);
 
-			if (this.action != MouseAction.None)
+			if (this.action != ObjectAction.None)
 				this.UpdateSelectionStats();
 		}
 		protected void UpdateSelectionStats()
@@ -832,7 +917,7 @@ namespace EditorBase.CamViewStates
 		{
 			bool lastMouseoverSelect = this.mouseoverSelect;
 			SelObj lastMouseoverObject = this.mouseoverObject;
-			MouseAction lastMouseoverAction = this.mouseoverAction;
+			ObjectAction lastMouseoverAction = this.mouseoverAction;
 
 			if (this.actionAllowed)
 			{
@@ -853,33 +938,33 @@ namespace EditorBase.CamViewStates
 				bool ctrl = (Control.ModifierKeys & Keys.Control) != Keys.None;
 
 				bool anySelection = this.actionObjSel.Count > 0;
-				bool canMove = this.actionObjSel.Any(s => s.IsActionAvailable(MouseAction.MoveObj));
-				bool canRotate = (canMove && this.actionObjSel.Count > 1) || this.actionObjSel.Any(s => s.IsActionAvailable(MouseAction.RotateObj));
-				bool canScale = (canMove && this.actionObjSel.Count > 1) || this.actionObjSel.Any(s => s.IsActionAvailable(MouseAction.ScaleObj));
+				bool canMove = this.actionObjSel.Any(s => s.IsActionAvailable(ObjectAction.Move));
+				bool canRotate = (canMove && this.actionObjSel.Count > 1) || this.actionObjSel.Any(s => s.IsActionAvailable(ObjectAction.Rotate));
+				bool canScale = (canMove && this.actionObjSel.Count > 1) || this.actionObjSel.Any(s => s.IsActionAvailable(ObjectAction.Scale));
 
 				// Select which action to propose
 				this.mouseoverSelect = false;
 				if (shift || ctrl)
-					this.mouseoverAction = MouseAction.RectSelection;
+					this.mouseoverAction = ObjectAction.RectSelect;
 				else if (anySelection && !tooSmall && mouseOverBoundary && mouseAtCenterAxis && this.selectionRadius > 0.0f && canScale)
-					this.mouseoverAction = MouseAction.ScaleObj;
+					this.mouseoverAction = ObjectAction.Scale;
 				else if (anySelection && !tooSmall && mouseOverBoundary && canRotate)
-					this.mouseoverAction = MouseAction.RotateObj;
+					this.mouseoverAction = ObjectAction.Rotate;
 				else if (anySelection && mouseInsideBoundary && canMove)
-					this.mouseoverAction = MouseAction.MoveObj;
-				else if (this.mouseoverObject != null && this.mouseoverObject.IsActionAvailable(MouseAction.MoveObj))
+					this.mouseoverAction = ObjectAction.Move;
+				else if (this.mouseoverObject != null && this.mouseoverObject.IsActionAvailable(ObjectAction.Move))
 				{
-					this.mouseoverAction = MouseAction.MoveObj; 
+					this.mouseoverAction = ObjectAction.Move; 
 					this.mouseoverSelect = true;
 				}
 				else
-					this.mouseoverAction = MouseAction.RectSelection;
+					this.mouseoverAction = ObjectAction.RectSelect;
 			}
 			else
 			{
 				this.mouseoverObject = null;
 				this.mouseoverSelect = false;
-				this.mouseoverAction = MouseAction.None;
+				this.mouseoverAction = ObjectAction.None;
 			}
 
 			// If mouseover changed..
@@ -888,11 +973,11 @@ namespace EditorBase.CamViewStates
 				this.mouseoverAction != lastMouseoverAction)
 			{
 				// Adjust mouse cursor based on proposed action
-				if (this.mouseoverAction == MouseAction.MoveObj)
+				if (this.mouseoverAction == ObjectAction.Move)
 					this.View.LocalGLControl.Cursor = CursorHelper.ArrowActionMove;
-				else if (this.mouseoverAction == MouseAction.RotateObj)
+				else if (this.mouseoverAction == ObjectAction.Rotate)
 					this.View.LocalGLControl.Cursor = CursorHelper.ArrowActionRotate;
-				else if (this.mouseoverAction == MouseAction.ScaleObj)
+				else if (this.mouseoverAction == ObjectAction.Scale)
 					this.View.LocalGLControl.Cursor = CursorHelper.ArrowActionScale;
 				else
 					this.View.LocalGLControl.Cursor = CursorHelper.Arrow;
@@ -900,7 +985,7 @@ namespace EditorBase.CamViewStates
 			
 			// Redraw if action gizmos might be visible
 			if (this.actionAllowed)
-				this.View.LocalGLControl.Invalidate();
+				this.InvalidateView();
 		}
 		private void UpdateRectSelection(Point mouseLoc)
 		{
@@ -938,7 +1023,7 @@ namespace EditorBase.CamViewStates
 			else
 				this.ClearSelection();
 
-			this.View.LocalGLControl.Invalidate();
+			this.InvalidateView();
 		}
 		private void UpdateObjMove(Point mouseLoc)
 		{
@@ -947,15 +1032,11 @@ namespace EditorBase.CamViewStates
 			Vector3 movement = spaceCoord - this.actionBeginLocSpace;
 			movement.Z = zMovement;
 			movement = this.ApplyAxisLock(movement);
-			if (movement != Vector3.Zero)
-			{
-				foreach (SelObj s in this.actionObjSel) s.Pos += movement;
-				this.PostPerformAction(this.actionObjSel, this.action);
-			}
-			this.UpdateSelectionStats();
+
+			this.MoveSelectionBy(movement);
+
 			this.actionBeginLocSpace = spaceCoord;
 			this.actionBeginLocSpace.Z = this.View.CameraObj.Transform.Pos.Z;
-			this.View.LocalGLControl.Invalidate();
 		}
 		private void UpdateObjRotate(Point mouseLoc)
 		{
@@ -963,23 +1044,10 @@ namespace EditorBase.CamViewStates
 			float lastAngle = MathF.Angle(this.selectionCenter.X, this.selectionCenter.Y, this.actionBeginLocSpace.X, this.actionBeginLocSpace.Y);
 			float curAngle = MathF.Angle(this.selectionCenter.X, this.selectionCenter.Y, spaceCoord.X, spaceCoord.Y);
 			float rotation = curAngle - lastAngle;
-			if (rotation != 0.0f)
-			{
-				foreach (SelObj s in this.actionObjSel)
-				{
-					Vector3 posRelCenter = s.Pos - this.selectionCenter;
-					Vector3 posRelCenterTarget = posRelCenter;
-					MathF.TransformCoord(ref posRelCenterTarget.X, ref posRelCenterTarget.Y, rotation);
-					//posRelCenterTarget = this.LockAxis(posRelCenterTarget, this.actionAxisLock, 1.0f);
 
-					s.Pos = this.selectionCenter + posRelCenterTarget;
-					s.Angle += rotation;
-				}
-				this.PostPerformAction(this.actionObjSel, this.action);
-			}
-			this.UpdateSelectionStats();
+			this.RotateSelectionBy(rotation);
+
 			this.actionBeginLocSpace = spaceCoord;
-			this.View.LocalGLControl.Invalidate();
 		}
 		private void UpdateObjScale(Point mouseLoc)
 		{
@@ -989,45 +1057,11 @@ namespace EditorBase.CamViewStates
 			float lastRadius = this.selectionRadius;
 			float curRadius = (this.selectionCenter - spaceCoord).Length;
 			float scale = MathF.Clamp(curRadius / lastRadius, 0.0001f, 10000.0f);
-			if (scale != 1.0f)
-			{
-				foreach (SelObj s in this.actionObjSel)
-				{
-					Vector3 scaleVec = new Vector3(scale, scale, scale);
-					//scaleVec = this.LockAxis(scaleVec, this.actionAxisLock, 1.0f);
-					Vector3 posRelCenter = s.Pos - this.selectionCenter;
-					Vector3 posRelCenterTarget;
-					Vector3.Multiply(ref posRelCenter, ref scaleVec, out posRelCenterTarget);
-
-					s.Pos = this.selectionCenter + posRelCenterTarget;
-					s.Scale *= scaleVec;
-				}
-				this.PostPerformAction(this.actionObjSel, this.action);
-			}
-
-			this.UpdateSelectionStats();
-
-			// If scaling didn't change the total bounding radius, the selected object doesn't support it properly - roll back!
-			if (lastRadius == this.selectionRadius)
-			{
-				float invScale = 1.0f / scale;
-				foreach (SelObj s in this.actionObjSel)
-				{
-					Vector3 scaleVec = new Vector3(invScale, invScale, invScale);
-					//scaleVec = this.LockAxis(scaleVec, this.actionAxisLock, 1.0f);
-					Vector3 posRelCenter = s.Pos - this.selectionCenter;
-					Vector3 posRelCenterTarget;
-					Vector3.Multiply(ref posRelCenter, ref scaleVec, out posRelCenterTarget);
-
-					s.Pos = this.selectionCenter + posRelCenterTarget;
-					s.Scale *= scaleVec;
-				}
-				this.PostPerformAction(this.actionObjSel, this.action);
-				this.UpdateSelectionStats();
-			}
+			
+			this.ScaleSelectionBy(scale);
 
 			this.actionBeginLocSpace = spaceCoord;
-			this.View.LocalGLControl.Invalidate();
+			this.InvalidateView();
 		}
 		
 		protected void CollectLayerDrawcalls(Canvas canvas)
@@ -1093,26 +1127,28 @@ namespace EditorBase.CamViewStates
 		}
 		private void LocalGLControl_MouseMove(object sender, MouseEventArgs e)
 		{
+			this.drawCamGizmoState = CameraAction.None;
+			this.drawSelGizmoState = ObjectAction.None;
 			this.OnCursorSpacePosChanged();
 		}
 		private void LocalGLControl_MouseUp(object sender, MouseEventArgs e)
 		{
-			if (this.action == MouseAction.RectSelection && this.actionBeginLoc == e.Location)
+			if (this.action == ObjectAction.RectSelect && this.actionBeginLoc == e.Location)
 				this.UpdateRectSelection(e.Location);
 
 			if (e.Button == MouseButtons.Left)
 				this.EndAction();
 
-			if (this.camAction == CameraAction.MoveCam && e.Button == MouseButtons.Middle)
+			if (this.camAction == CameraAction.Move && e.Button == MouseButtons.Middle)
 				this.camAction = CameraAction.None;
-			else if (this.camAction == CameraAction.TurnCam && e.Button == MouseButtons.Right)
+			else if (this.camAction == CameraAction.Rotate && e.Button == MouseButtons.Right)
 				this.camAction = CameraAction.None;
 
-			this.View.LocalGLControl.Invalidate();
+			this.InvalidateView();
 		}
 		private void LocalGLControl_MouseDown(object sender, MouseEventArgs e)
 		{
-			if (this.action == MouseAction.None)
+			if (this.action == ObjectAction.None)
 			{
 				if (e.Button == MouseButtons.Left)
 				{
@@ -1131,12 +1167,12 @@ namespace EditorBase.CamViewStates
 				this.camActionBeginLoc = e.Location;
 				if (e.Button == MouseButtons.Middle)
 				{
-					this.camAction = CameraAction.MoveCam;
+					this.camAction = CameraAction.Move;
 					this.camActionBeginLocSpace = this.View.CameraObj.Transform.RelativePos;
 				}
 				else if (e.Button == MouseButtons.Right)
 				{
-					this.camAction = CameraAction.TurnCam;
+					this.camAction = CameraAction.Rotate;
 					this.camActionBeginLocSpace = new Vector3(this.View.CameraObj.Transform.RelativeAngle, 0.0f, 0.0f);
 				}
 			}
@@ -1154,9 +1190,11 @@ namespace EditorBase.CamViewStates
 						(e.Y * 2.0f / this.View.LocalGLControl.Height) - 1.0f);
 					MathF.TransformCoord(ref curTemp.X, ref curTemp.Y, camObj.Transform.RelativeAngle);
 
-					if (MathF.Sign(e.Delta) == MathF.Sign(curVel))
-						curVel *= 0.0125f * MathF.Abs(e.Delta);
-					curVel += 0.075f * e.Delta;
+					if (MathF.Sign(e.Delta) != MathF.Sign(curVel))
+						curVel = 0.0f;
+					else
+						curVel *= 1.5f;
+					curVel += 0.01f * e.Delta;
 					curVel = MathF.Sign(curVel) * MathF.Min(MathF.Abs(curVel), 500.0f);
 
 					Vector3 movVec = new Vector3(
@@ -1176,29 +1214,29 @@ namespace EditorBase.CamViewStates
 		{
 			this.OnCursorSpacePosChanged();
 
-			this.mouseoverAction = MouseAction.None;
+			this.mouseoverAction = ObjectAction.None;
 			this.mouseoverObject = null;
 			this.mouseoverSelect = false;
 
-			this.View.LocalGLControl.Invalidate();
+			this.InvalidateView();
 		}
 		private void LocalGLControl_KeyDown(object sender, KeyEventArgs e)
 		{
+			bool ctrlPressed = e.Control;
 			if (this.actionAllowed)
 			{
-				if (e.KeyCode == Keys.Delete)
-				{
-					this.DeleteObjects(this.actionObjSel);
-				}
+				if (e.KeyCode == Keys.Delete) this.DeleteObjects(this.actionObjSel);
 				else if (e.KeyCode == Keys.C && (Control.ModifierKeys & Keys.Control) != Keys.None)
 				{
 					List<SelObj> cloneList = this.CloneObjects(this.actionObjSel);
 					this.SelectObjects(cloneList);
 				}
-				else if (e.KeyCode == Keys.F)
-				{
-					this.view.FocusOnObject(DualityEditorApp.Selection.MainGameObject);
-				}
+				else if (!ctrlPressed && e.KeyCode == Keys.Left)		this.MoveSelectionBy(-Vector3.UnitX);
+				else if (!ctrlPressed && e.KeyCode == Keys.Right)		this.MoveSelectionBy(Vector3.UnitX);
+				else if (!ctrlPressed && e.KeyCode == Keys.Up)			this.MoveSelectionBy(-Vector3.UnitY);
+				else if (!ctrlPressed && e.KeyCode == Keys.Down)		this.MoveSelectionBy(Vector3.UnitY);
+				else if (!ctrlPressed && e.KeyCode == Keys.Add)			this.MoveSelectionBy(Vector3.UnitZ);
+				else if (!ctrlPressed && e.KeyCode == Keys.Subtract)	this.MoveSelectionBy(-Vector3.UnitZ);
 				else
 				{
 					bool axisLockChanged = false;
@@ -1206,7 +1244,49 @@ namespace EditorBase.CamViewStates
 					if (e.KeyCode == Keys.Y) { this.lockedAxes |= AxisLock.Y; axisLockChanged = true; }
 					if (e.KeyCode == Keys.Z) { this.lockedAxes |= AxisLock.Z; axisLockChanged = true; }
 
-					if (axisLockChanged) this.View.LocalGLControl.Invalidate();
+					if (axisLockChanged) this.InvalidateView();
+				}
+			}
+
+			if (this.camActionAllowed)
+			{
+				if (e.KeyCode == Keys.F)
+					this.view.FocusOnObject(DualityEditorApp.Selection.MainGameObject);
+				else if (ctrlPressed && e.KeyCode == Keys.Left)
+				{
+					this.drawCamGizmoState = CameraAction.Move;
+					this.View.CameraObj.Transform.MoveByAbs(-Vector3.UnitX);
+					this.InvalidateView();
+				}
+				else if (ctrlPressed && e.KeyCode == Keys.Right)
+				{
+					this.drawCamGizmoState = CameraAction.Move;
+					this.View.CameraObj.Transform.MoveByAbs(Vector3.UnitX);
+					this.InvalidateView();
+				}
+				else if (ctrlPressed && e.KeyCode == Keys.Up)
+				{
+					this.drawCamGizmoState = CameraAction.Move;
+					this.View.CameraObj.Transform.MoveByAbs(-Vector3.UnitY);
+					this.InvalidateView();
+				}
+				else if (ctrlPressed && e.KeyCode == Keys.Down)
+				{
+					this.drawCamGizmoState = CameraAction.Move;
+					this.View.CameraObj.Transform.MoveByAbs(Vector3.UnitY);
+					this.InvalidateView();
+				}
+				else if (ctrlPressed && e.KeyCode == Keys.Add)
+				{
+					this.drawCamGizmoState = CameraAction.Move;
+					this.View.CameraObj.Transform.MoveByAbs(Vector3.UnitZ);
+					this.InvalidateView();
+				}
+				else if (ctrlPressed && e.KeyCode == Keys.Subtract)
+				{
+					this.drawCamGizmoState = CameraAction.Move;
+					this.View.CameraObj.Transform.MoveByAbs(-Vector3.UnitZ);
+					this.InvalidateView();
 				}
 			}
 		}
@@ -1217,7 +1297,7 @@ namespace EditorBase.CamViewStates
 			if (e.KeyCode == Keys.Y) { this.lockedAxes &= ~AxisLock.Y; axisLockChanged = true; }
 			if (e.KeyCode == Keys.Z) { this.lockedAxes &= ~AxisLock.Z; axisLockChanged = true; }
 
-			if (axisLockChanged) this.View.LocalGLControl.Invalidate();
+			if (axisLockChanged) this.InvalidateView();
 		}
 		private void LocalGLControl_LostFocus(object sender, EventArgs e)
 		{
@@ -1226,7 +1306,7 @@ namespace EditorBase.CamViewStates
 			this.camAction = CameraAction.None;
 			this.EndAction();
 			this.lockedAxes = AxisLock.None;
-			this.View.LocalGLControl.Invalidate();
+			this.InvalidateView();
 		}
 		private void View_ParallaxRefDistChanged(object sender, EventArgs e)
 		{
@@ -1244,7 +1324,7 @@ namespace EditorBase.CamViewStates
 				this.OnCursorSpacePosChanged();
 			}
 
-			this.view.LocalGLControl.Invalidate();
+			this.InvalidateView();
 		}
 		private void Scene_Changed(object sender, EventArgs e)
 		{
@@ -1273,6 +1353,32 @@ namespace EditorBase.CamViewStates
 			canvas.CurrentState.TextFont = Duality.Resources.Font.GenericMonospace8;
 
 			this.OnCollectStateBackgroundDrawcalls(canvas);
+		}
+
+		public virtual HelpInfo ProvideHoverHelp(Point localPos, ref bool captured)
+		{
+			if (this.actionAllowed && this.SelectedObjects.Any())
+			{
+				return HelpInfo.FromText("Object Action Shortcuts", 
+					"Press Delete to remove the selected objects.\n" +
+					"Press Ctrl + C to clone the selected objects.\n" +
+					"Press Arrow Keys, Add or Subtract to move the selected objects by a fixed step.\n" +
+					"Press F to focus on the current selection.\n" +
+					"Hold X, Y or Z to limit an action to one or two axes.\n");
+			}
+			else if (this.camActionAllowed)
+			{
+				return HelpInfo.FromText("Camera Control Shortcuts", 
+					"Hold or scroll the Mouse Wheel to move.\n" +
+					"Hold the Right Mouse button to rotate.\n" +
+					"Press Ctrl + Arrow Keys, Add or Subtract to move by a fixed step.\n");
+			}
+
+			return null;
+		}
+		public virtual bool PerformHelpAction(HelpInfo info)
+		{
+			return this.DefaultPerformHelpAction(info);
 		}
 	}
 }

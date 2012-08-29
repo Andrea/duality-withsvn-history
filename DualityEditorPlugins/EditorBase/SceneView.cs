@@ -336,10 +336,13 @@ namespace EditorBase
 
 			Node nodeTree = this.ScanScene(Scene.Current);
 
+
 			this.objectView.BeginUpdate();
-			this.ClearObjects();
-			while (nodeTree.Nodes.Count > 0) this.InsertNodeSorted(nodeTree.Nodes[0], this.objectModel.Root);
-			this.RegisterNodeTree(this.objectModel.Root);
+			{
+				this.ClearObjects();
+				while (nodeTree.Nodes.Count > 0) this.InsertNodeSorted(nodeTree.Nodes[0], this.objectModel.Root);
+				this.RegisterNodeTree(this.objectModel.Root);
+			}
 			this.objectView.EndUpdate();
 
 			// If there is a selection, apply it. We lost all local selection data due to the reset.
@@ -1560,15 +1563,32 @@ namespace EditorBase
 		}
 		private void buttonShowComponents_CheckedChanged(object sender, EventArgs e)
 		{
+			// Save expand data
+			HashSet<object> expandedMap = new HashSet<object>();
+			this.objectView.SaveNodesExpanded(this.objectView.Root, expandedMap, NodeIdFuncCoreObject);
+
 			this.ClearObjects();
 			this.InitObjects();
+
+			// Restore expand data
+			this.objectView.RestoreNodesExpanded(this.objectView.Root, expandedMap, NodeIdFuncCoreObject);
+		}
+		private object NodeIdFuncCoreObject(TreeNodeAdv node)
+		{
+			GameObjectNode objNode = node.Tag as GameObjectNode;
+			if (objNode != null) return objNode.Obj;
+
+			ComponentNode cmpNode = node.Tag as ComponentNode;
+			if (cmpNode != null) return cmpNode.Component;
+
+			return node.Tag;
 		}
 
 		private void EditorForm_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if (sender == this) return;
 			if ((e.AffectedCategories & ObjectSelection.Category.GameObjCmp) == ObjectSelection.Category.None) return;
-			if (e.SameObjects);
+			if (e.SameObjects) return;
 
 			IEnumerable<NodeBase> removedObjQuery;
 			removedObjQuery = e.Removed.GameObjects.Select(o => this.FindNode(o));
@@ -1661,7 +1681,7 @@ namespace EditorBase
 			HelpInfo result = null;
 			Point globalPos = this.PointToScreen(localPos);
 
-			// Hovering "Create Resource" menu
+			// Hovering "Create Object" menu
 			if (this.contextMenuNode.Visible)
 			{
 				ToolStripItem item = this.newToolStripMenuItem.DropDown.GetItemAtDeep(globalPos);
@@ -1673,7 +1693,7 @@ namespace EditorBase
 				}
 				captured = true;
 			}
-			// Hovering Resource nodes
+			// Hovering Object nodes
 			else
 			{
 				Point treeLocalPos = this.objectView.PointToClient(globalPos);

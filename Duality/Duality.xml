@@ -9232,6 +9232,12 @@
             [GET / SET] Specifies how the sprites uv-Coordinates are calculated.
             </summary>
         </member>
+        <member name="P:Duality.Components.Renderers.SpriteRenderer.Offset">
+            <summary>
+            [GET / SET] A virtual Z offset that affects the order in which objects are drawn. If you want to assure an object is drawn after another one,
+            just assign a higher Offset value to the background object.
+            </summary>
+        </member>
         <member name="T:Duality.Components.Renderers.SpriteRenderer.UVMode">
             <summary>
             SPecifies, how the sprites uv-Coordinates are calculated.

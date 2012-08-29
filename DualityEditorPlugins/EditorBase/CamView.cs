@@ -591,6 +591,7 @@ namespace EditorBase
 			this.camSelector.Enabled = value;
 			this.showBgColorDialog.Enabled = value;
 			this.layerSelector.Enabled = value;
+			this.buttonResetZoom.Enabled = value;
 		}
 
 		public void FocusOnObject(GameObject obj)
@@ -601,7 +602,7 @@ namespace EditorBase
 			targetPos.Z = MathF.Min(this.camObj.Transform.Pos.Z, targetPos.Z);
 			this.camObj.Transform.Pos = targetPos;
 			this.OnCamTransformChanged();
-			this.LocalGLControl.Invalidate();
+			this.glControl.Invalidate();
 		}
 
 		public void MakeDualityTarget()
@@ -714,6 +715,8 @@ namespace EditorBase
 		{
 			if (this.activeState.EngineUserInput && DualityApp.ExecContext == DualityApp.ExecutionContext.Game) 
 				e.IsInputKey = true;
+			else if (e.KeyCode == Keys.Left || e.KeyCode == Keys.Right || e.KeyCode == Keys.Up || e.KeyCode == Keys.Down)
+				e.IsInputKey = true;
 		}
 		private void glControl_KeyDown(object sender, KeyEventArgs e)
 		{
@@ -800,6 +803,11 @@ namespace EditorBase
 					this, new ObjectSelection(this.camComp),
 					ReflectionInfo.Property_Camera_ClearColor);
 			}
+			this.glControl.Invalidate();
+		}
+		private void buttonResetZoom_Click(object sender, EventArgs e)
+		{
+			this.camObj.Transform.Pos = new Vector3(this.camObj.Transform.Pos.Xy, -MathF.Abs(this.camComp.ParallaxRefDist));
 			this.glControl.Invalidate();
 		}
 		
@@ -893,26 +901,18 @@ namespace EditorBase
 			Point glLocalPos = this.glControl.PointToClient(globalPos);
 			if (this.glControl.ClientRectangle.Contains(glLocalPos))
 			{
-				if (this.activeState is IHelpProvider)
-				{
-					IHelpProvider stateHelper = this.activeState as IHelpProvider;
-					result = stateHelper.ProvideHoverHelp(glLocalPos, ref captured);
-				}
+				if (this.activeState != null)
+					result = this.activeState.ProvideHoverHelp(glLocalPos, ref captured);
 			}
 
 			return result;
 		}
 		bool IHelpProvider.PerformHelpAction(HelpInfo info)
 		{
-			if (this.activeState is IHelpProvider)
-			{
-				IHelpProvider stateHelper = this.activeState as IHelpProvider;
-				return stateHelper.PerformHelpAction(info);
-			}
+			if (this.activeState != null)
+				return this.activeState.PerformHelpAction(info);
 			else
-			{
 				return this.DefaultPerformHelpAction(info);
-			}
 		}
 
 		int IMouseInput.X

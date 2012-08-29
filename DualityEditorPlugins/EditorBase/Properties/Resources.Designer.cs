@@ -207,6 +207,27 @@ namespace EditorBase.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap magifier_zoom_out {
+            get {
+                object obj = ResourceManager.GetObject("magifier_zoom_out", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap magnifier_one {
+            get {
+                object obj = ResourceManager.GetObject("magnifier_one", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap magnifier_zoom_in {
+            get {
+                object obj = ResourceManager.GetObject("magnifier_zoom_in", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap page_copy {
             get {
                 object obj = ResourceManager.GetObject("page_copy", resourceCulture);
