@@ -556,8 +556,12 @@ namespace EditorBase
 			// Select new node
 			TreeNodeAdv dragObjViewNode;
 			dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(this.FindNode(newObj)));
-			dragObjViewNode.IsSelected = true;
-			this.objectView.EnsureVisible(dragObjViewNode);
+			if (dragObjViewNode != null)
+			{
+				dragObjViewNode.IsSelected = true;
+				this.objectView.EnsureVisible(dragObjViewNode);
+				this.nodeTextBoxName.BeginEdit();
+			}
 		}
 		protected void CreateComponent(TreeNodeAdv baseNode, Type cmpType)
 		{
@@ -571,8 +575,11 @@ namespace EditorBase
 			// Select new node
 			TreeNodeAdv dragObjViewNode;
 			dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(this.FindNode(newCmp)));
-			dragObjViewNode.IsSelected = true;
-			this.objectView.EnsureVisible(dragObjViewNode);
+			if (dragObjViewNode != null)
+			{
+				dragObjViewNode.IsSelected = true;
+				this.objectView.EnsureVisible(dragObjViewNode);
+			}
 
 			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(baseObj));
 		}

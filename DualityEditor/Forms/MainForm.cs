@@ -164,7 +164,7 @@ namespace DualityEditor.Forms
 		protected override void OnFormClosing(FormClosingEventArgs e)
 		{
 			base.OnFormClosing(e);
-			e.Cancel = !DualityEditorApp.Terminate(!this.nonUserClosing);
+			e.Cancel = !DualityEditorApp.Terminate(!this.nonUserClosing && !DualityEditorApp.IsReloadingPlugins);
 		}
 
 		private void actionRunApp_Click(object sender, EventArgs e)

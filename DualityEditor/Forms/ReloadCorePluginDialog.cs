@@ -298,22 +298,41 @@ namespace DualityEditor.Forms
 				StreamWriter strDataWriter = new StreamWriter(strData);
 				strDataWriter.WriteLine(Scene.CurrentPath);
 				strDataWriter.Flush();
-				workInterface.MainForm.Invoke((Action)delegate()
+				if (fullRestart)
 				{
-					try
+					workInterface.MainForm.Invoke((Action)delegate()
 					{
-						Scene.Current.Save(strScene);
-						foreach (Resource r in ContentProvider.EnumeratePluginContent().ToArray())
+						try
 						{
-							if (DualityEditorApp.IsResourceUnsaved(r)) r.Save();
-							ContentProvider.UnregisterContent(r.Path);
+							DualityEditorApp.SaveAllProjectData();
+							Scene.Current.Save(strScene);
 						}
-					}
-					catch (Exception e)
+						catch (Exception e)
+						{
+							Log.Editor.WriteError("Error saving current Data backup: {0}", Log.Exception(e));
+						}
+					});
+				}
+				else
+				{
+					workInterface.MainForm.Invoke((Action)delegate()
 					{
-						Log.Editor.WriteError("Error saving current Scene backup: {0}", Log.Exception(e));
-					}
-				});
+						try
+						{
+							DualityEditorApp.SaveAllProjectData();
+							Scene.Current.Save(strScene);
+							foreach (Resource r in ContentProvider.EnumeratePluginContent().ToArray())
+							{
+								if (DualityEditorApp.IsResourceUnsaved(r)) r.Save();
+								ContentProvider.UnregisterContent(r.Path);
+							}
+						}
+						catch (Exception e)
+						{
+							Log.Editor.WriteError("Error saving current Data backup: {0}", Log.Exception(e));
+						}
+					});
+				}
 				workInterface.Progress += 0.4f;
 				Thread.Sleep(20);
 			
@@ -351,7 +370,10 @@ namespace DualityEditor.Forms
 					// Close old form and wait for it to be closed
 					workInterface.Shutdown = true;
 					workInterface.MainForm.Invoke(new CloseMainFormDelegate(CloseMainForm), workInterface.MainForm);
-					Application.Exit();
+					while (workInterface.MainForm.Visible)
+					{
+						Thread.Sleep(20);
+					}
 
 					Process newEditor = Process.Start(Application.ExecutablePath, "recover" + (debug ? " debug" : ""));
 					return;
@@ -379,7 +401,7 @@ namespace DualityEditor.Forms
 		private delegate void CloseMainFormDelegate(MainForm form);
 		private static void CloseMainForm(MainForm form)
 		{
-			form.Close();
+			Application.Exit();
 		}
 	}
 }

@@ -19,6 +19,8 @@
 
 
 
+-->	Dualitor: Editor-wide Undo history, global Ctrl-Z and Ctrl-Y
+
 
 -->	Dualitor: Add ActionButtonPropertyEditor and auto-use it in MemberwisePropertyEditor
 	-->	It's possible to flag a method as editor action via EditorHintFlags

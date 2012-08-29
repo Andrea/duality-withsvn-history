@@ -76,6 +76,15 @@ namespace DualityEditor
 		{
 			get { return selectionChanging; }
 		}
+		public static bool IsReloadingPlugins
+		{
+			get 
+			{
+				return 
+					corePluginReloader.State == ReloadCorePluginDialog.ReloaderState.ReloadPlugins ||
+					corePluginReloader.State == ReloadCorePluginDialog.ReloaderState.RecoverFromRestart;
+			}
+		}
 		public static GLControl MainContextControl
 		{
 			get { return mainContextControl; }
