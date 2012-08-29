@@ -226,7 +226,10 @@ namespace Duality.Components.Renderers
 					}
 
 					// Normalize current frame when exceeding anim duration
-					this.curAnimFrame = MathF.NormalizeVar(this.curAnimFrame, 0, actualFrameCount);
+					if (this.animLoopMode == LoopMode.Once)
+						this.curAnimFrame = MathF.Clamp(this.curAnimFrame, 0, actualFrameCount - 1);
+					else
+						this.curAnimFrame = MathF.NormalizeVar(this.curAnimFrame, 0, actualFrameCount);
 
 					// Calculate second frame and fade value
 					this.curAnimFrameFade = frameTemp - (int)frameTemp;
