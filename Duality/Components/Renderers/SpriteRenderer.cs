@@ -107,6 +107,14 @@ namespace Duality.Components.Renderers
 			get { return this.offset; }
 			set { this.offset = value; }
 		}
+		/// <summary>
+		/// [GET] The internal Z-Offset added to the renderers vertices based on its <see cref="Offset"/> value.
+		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
+		public float VertexZOffset
+		{
+			get { return this.offset * 0.01f; }
+		}
 
 
 		public SpriteRenderer() {}
@@ -167,28 +175,28 @@ namespace Duality.Components.Renderers
 
 			vertices[0].Pos.X = posTemp.X + edge1.X;
 			vertices[0].Pos.Y = posTemp.Y + edge1.Y;
-			vertices[0].Pos.Z = posTemp.Z + this.offset * 0.001f;
+			vertices[0].Pos.Z = posTemp.Z + this.VertexZOffset;
 			vertices[0].TexCoord.X = uvRect.X;
 			vertices[0].TexCoord.Y = uvRect.Y;
 			vertices[0].Color = mainClr;
 
 			vertices[1].Pos.X = posTemp.X + edge2.X;
 			vertices[1].Pos.Y = posTemp.Y + edge2.Y;
-			vertices[1].Pos.Z = posTemp.Z + this.offset * 0.001f;
+			vertices[1].Pos.Z = posTemp.Z + this.VertexZOffset;
 			vertices[1].TexCoord.X = uvRect.X;
 			vertices[1].TexCoord.Y = uvRect.MaxY;
 			vertices[1].Color = mainClr;
 
 			vertices[2].Pos.X = posTemp.X + edge3.X;
 			vertices[2].Pos.Y = posTemp.Y + edge3.Y;
-			vertices[2].Pos.Z = posTemp.Z + this.offset * 0.001f;
+			vertices[2].Pos.Z = posTemp.Z + this.VertexZOffset;
 			vertices[2].TexCoord.X = uvRect.MaxX;
 			vertices[2].TexCoord.Y = uvRect.MaxY;
 			vertices[2].Color = mainClr;
 				
 			vertices[3].Pos.X = posTemp.X + edge4.X;
 			vertices[3].Pos.Y = posTemp.Y + edge4.Y;
-			vertices[3].Pos.Z = posTemp.Z + this.offset * 0.001f;
+			vertices[3].Pos.Z = posTemp.Z + this.VertexZOffset;
 			vertices[3].TexCoord.X = uvRect.MaxX;
 			vertices[3].TexCoord.Y = uvRect.Y;
 			vertices[3].Color = mainClr;

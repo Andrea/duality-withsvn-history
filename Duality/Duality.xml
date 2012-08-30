@@ -9238,6 +9238,11 @@
             just assign a higher Offset value to the background object.
             </summary>
         </member>
+        <member name="P:Duality.Components.Renderers.SpriteRenderer.VertexZOffset">
+            <summary>
+            [GET] The internal Z-Offset added to the renderers vertices based on its <see cref="P:Duality.Components.Renderers.SpriteRenderer.Offset"/> value.
+            </summary>
+        </member>
         <member name="T:Duality.Components.Renderers.SpriteRenderer.UVMode">
             <summary>
             SPecifies, how the sprites uv-Coordinates are calculated.

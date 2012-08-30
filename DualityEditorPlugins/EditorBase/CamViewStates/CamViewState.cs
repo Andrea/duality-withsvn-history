@@ -788,12 +788,12 @@ namespace EditorBase.CamViewStates
 					posTemp = selObj.Pos + 
 						radTemp * right * MathF.Sin(selObj.Angle - camAngle) - 
 						radTemp * down * MathF.Cos(selObj.Angle - camAngle);
-					canvas.DrawLine(selObj.Pos.X, selObj.Pos.Y, selObj.Pos.Z - 0.1f, posTemp.X, posTemp.Y, posTemp.Z - 0.1f);
+					canvas.DrawLine(selObj.Pos.X, selObj.Pos.Y, selObj.Pos.Z - 1.0f, posTemp.X, posTemp.Y, posTemp.Z - 1.0f);
 				}
 
 				// Draw boundary
 				if (selObj.ShowBoundRadius && radTemp > 0.0f)
-					canvas.DrawCircle(selObj.Pos.X, selObj.Pos.Y, selObj.Pos.Z - 0.1f, radTemp);
+					canvas.DrawCircle(selObj.Pos.X, selObj.Pos.Y, selObj.Pos.Z - 1.0f, radTemp);
 			}
 		}
 		protected void DrawLockedAxes(Canvas canvas, float x, float y, float z, float r)
