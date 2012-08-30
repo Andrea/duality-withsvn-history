@@ -25,6 +25,7 @@ namespace Duality
 			private	BatchInfo			batchInfo;
 			private	ColorRgba			color;
 			private	ContentRef<Font>	font;
+			private	float				zOffset;
 			private	bool		invariantTextScale;
 			private	float		transformAngle;
 			private	Vector2		transformScale;
@@ -70,6 +71,14 @@ namespace Duality
 				set { this.color = value; }
 			}
 			/// <summary>
+			/// [GET / SET] A Z-Offset value that is added to each emitted vertices Z coordinate after all projection calculations have been done.
+			/// </summary>
+			public float ZOffset
+			{
+				get { return this.zOffset; }
+				set { this.zOffset = value; }
+			}
+			/// <summary>
 			/// [GET / SET] The angle by which all shapes are transformed.
 			/// </summary>
 			public float TransformAngle
@@ -105,6 +114,7 @@ namespace Duality
 				this.font = other.font;
 				this.color = other.color;
 				this.invariantTextScale = other.invariantTextScale;
+				this.zOffset = other.zOffset;
 				this.transformAngle = other.transformAngle;
 				this.transformHandle = other.transformHandle;
 				this.transformScale = other.transformScale;
@@ -128,6 +138,7 @@ namespace Duality
 				this.font = Font.GenericMonospace10;
 				this.color = ColorRgba.White;
 				this.invariantTextScale = false;
+				this.zOffset = 0.0f;
 				this.transformAngle = 0.0f;
 				this.transformHandle = Vector2.Zero;
 				this.transformScale = Vector2.One;
@@ -173,6 +184,7 @@ namespace Duality
 					MathF.TransformDotVec(ref pos, ref this.curTX, ref this.curTY);
 					pos.X += shapeHandle.X;
 					pos.Y += shapeHandle.Y;
+					pos.Z += this.zOffset;
 					vertexData[i].Pos = pos;
 				}
 			}

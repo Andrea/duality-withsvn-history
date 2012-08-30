@@ -10120,6 +10120,11 @@
             [GET / SET] The color tint to use for drawing.
             </summary>
         </member>
+        <member name="P:Duality.Canvas.State.ZOffset">
+            <summary>
+            [GET / SET] A Z-Offset value that is added to each emitted vertices Z coordinate after all projection calculations have been done.
+            </summary>
+        </member>
         <member name="P:Duality.Canvas.State.TransformAngle">
             <summary>
             [GET / SET] The angle by which all shapes are transformed.

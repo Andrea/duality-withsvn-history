@@ -761,6 +761,7 @@ namespace EditorBase.CamViewStates
 			MathF.TransformDotVec(ref right, ref catDotX, ref catDotY);
 			MathF.TransformDotVec(ref down, ref catDotX, ref catDotY);
 
+			canvas.CurrentState.ZOffset = -1.0f;
 			foreach (SelObj selObj in obj)
 			{
 				if (!selObj.HasTransform) continue;
@@ -788,13 +789,14 @@ namespace EditorBase.CamViewStates
 					posTemp = selObj.Pos + 
 						radTemp * right * MathF.Sin(selObj.Angle - camAngle) - 
 						radTemp * down * MathF.Cos(selObj.Angle - camAngle);
-					canvas.DrawLine(selObj.Pos.X, selObj.Pos.Y, selObj.Pos.Z - 1.0f, posTemp.X, posTemp.Y, posTemp.Z - 1.0f);
+					canvas.DrawLine(selObj.Pos.X, selObj.Pos.Y, selObj.Pos.Z, posTemp.X, posTemp.Y, posTemp.Z);
 				}
 
 				// Draw boundary
 				if (selObj.ShowBoundRadius && radTemp > 0.0f)
-					canvas.DrawCircle(selObj.Pos.X, selObj.Pos.Y, selObj.Pos.Z - 1.0f, radTemp);
+					canvas.DrawCircle(selObj.Pos.X, selObj.Pos.Y, selObj.Pos.Z, radTemp);
 			}
+			canvas.CurrentState.ZOffset = 0.0f;
 		}
 		protected void DrawLockedAxes(Canvas canvas, float x, float y, float z, float r)
 		{
