@@ -372,7 +372,10 @@ namespace EditorBase
 				if (cam.Pane != null)
 				{
 					cam.Pane.Activate();
-					cam.Focus();
+					if (cam.LocalGLControl != null)
+						cam.LocalGLControl.Focus();
+					else
+						cam.Focus();
 				}
 			}
 			return cam;
@@ -525,7 +528,7 @@ namespace EditorBase
 			else
 			{
 				gameView = this.camViews.FirstOrDefault(v => v.ActiveState.GetType() == typeof(CamViewStates.GameViewCamViewState));
-				if (gameView != null) gameView.Focus();
+				if (gameView != null && gameView.LocalGLControl != null) gameView.LocalGLControl.Focus();
 			}
 		}
 		private void OnResourceModified(ContentRef<Resource> resRef)
