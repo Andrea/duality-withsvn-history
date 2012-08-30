@@ -31,6 +31,14 @@ namespace DualityEditor
 		Toggle
 	}
 
+	public enum AutosaveFrequency
+	{
+		Disabled,
+		TenMinutes,
+		ThirtyMinutes,
+		OneHour
+	}
+
 	public static class DualityEditorApp
 	{
 		private	const	string	DesignTimeDataFile		= "designtimedata.dat";
@@ -50,6 +58,9 @@ namespace DualityEditor
 		private	static ObjectSelection				selectionPrevious	= ObjectSelection.Null;
 		private	static bool							selectionChanging	= false;
 		private	static Dictionary<Guid,Type>		selectionTempScene	= null;	// GameObjCmp sel inbetween scene switches
+		private	static bool							backupsEnabled		= true;
+		private	static AutosaveFrequency			autosaveFrequency	= AutosaveFrequency.ThirtyMinutes;
+		private	static DateTime						autosaveLast		= DateTime.Now;
 
 
 		public	static	event	EventHandler	Terminating			= null;
@@ -96,6 +107,16 @@ namespace DualityEditor
 		public static IEnumerable<Resource> UnsavedResources
 		{
 			get { return unsavedResources.Where(r => !r.Disposed && !r.IsDefaultContent && !r.IsRuntimeResource && (r != Scene.Current || !Sandbox.IsActive)); }
+		}
+		public static bool BackupsEnabled
+		{
+			get { return backupsEnabled; }
+			set { backupsEnabled = value; }
+		}
+		public static AutosaveFrequency Autosaves
+		{
+			get { return autosaveFrequency; }
+			set { autosaveFrequency = value; }
 		}
 		private static bool AppStillIdle
 		{
@@ -163,6 +184,7 @@ namespace DualityEditor
 			Scene.Entered += Scene_Entered;
 			Application.Idle += Application_Idle;
 			Resource.ResourceSaved += Resource_ResourceSaved;
+			Resource.ResourceSaving += Resource_ResourceSaving;
 			FileEventManager.PluginChanged += FileEventManager_PluginChanged;
 
 			// Initialize secondary editor components
@@ -216,7 +238,16 @@ namespace DualityEditor
 			{
 				if (Terminating != null) Terminating(null, EventArgs.Empty);
 
+				// Unregister events
 				DualityApp.PluginReady -= DualityApp_PluginReady;
+				mainForm.Activated -= mainForm_Activated;
+				mainForm.Deactivate -= mainForm_Deactivate;
+				Scene.Leaving -= Scene_Leaving;
+				Scene.Entered -= Scene_Entered;
+				Application.Idle -= Application_Idle;
+				Resource.ResourceSaved -= Resource_ResourceSaved;
+				Resource.ResourceSaving -= Resource_ResourceSaving;
+				FileEventManager.PluginChanged -= FileEventManager_PluginChanged;
 
 				// Initialize secondary editor components
 				FileEventManager.Terminate();
@@ -321,8 +352,12 @@ namespace DualityEditor
 				StreamWriter writer = new StreamWriter(str);
 				// --- Save custom user data here ---
 				XmlDocument xmlDoc = new XmlDocument();
-				XmlElement rootElement = xmlDoc.CreateElement("PluginUserData");
+				XmlElement rootElement = xmlDoc.CreateElement("UserData");
 				xmlDoc.AppendChild(rootElement);
+				XmlElement editorAppElement = xmlDoc.CreateElement("EditorApp");
+				rootElement.AppendChild(editorAppElement);
+				editorAppElement.SetAttribute("backups", backupsEnabled.ToString(System.Globalization.CultureInfo.InvariantCulture));
+				editorAppElement.SetAttribute("autosaves", autosaveFrequency.ToString());
 				foreach (EditorPlugin plugin in plugins)
 				{
 					XmlElement pluginXmlElement = xmlDoc.CreateElement("Plugin_" + plugin.Id);
@@ -377,12 +412,19 @@ namespace DualityEditor
 				Log.Editor.PopIndent();
 
 				// --- Read custom user data from StringBuilder here ---
-				Log.Editor.Write("Loading plugin user data...");
+				Log.Editor.Write("Loading editor user data...");
 				Log.Editor.PushIndent();
 				XmlDocument xmlDoc = new XmlDocument();
 				try
 				{
 					xmlDoc.LoadXml(editorData.ToString());
+					System.Xml.XmlNodeList editorAppElemQuery = xmlDoc.DocumentElement.GetElementsByTagName("EditorApp");
+					if (editorAppElemQuery.Count > 0)
+					{
+						XmlElement editorAppElement = editorAppElemQuery[0] as System.Xml.XmlElement;
+						bool.TryParse(editorAppElement.GetAttribute("backups"), out backupsEnabled);
+						Enum.TryParse<AutosaveFrequency>(editorAppElement.GetAttribute("autosaves"), out autosaveFrequency);
+					}
 					foreach (XmlElement child in xmlDoc.DocumentElement)
 					{
 						if (child.Name.StartsWith("Plugin_"))
@@ -554,6 +596,33 @@ namespace DualityEditor
 
 			if (SaveAllTriggered != null)
 				SaveAllTriggered(null, EventArgs.Empty);
+
+			autosaveLast = DateTime.Now;
+		}
+
+		public static void BackupResource(string path)
+		{
+			if (path.Contains(':')) return;
+			if (!File.Exists(path)) return;
+			if (!PathHelper.IsPathLocatedIn(path, EditorHelper.DataDirectory)) return;
+
+			// We don't want to screw anything up by trying to backup stuff, so just catch and log everything.
+			try
+			{
+				string pathName = Path.GetFileName(path);
+				string pathNameWithoutExt = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(pathName));
+				string pathExt = pathName.Remove(0, pathNameWithoutExt.Length);
+				string fileBackupDir = Path.Combine(EditorHelper.BackupDirectory, PathHelper.MakeFilePathRelative(path, EditorHelper.DataDirectory));
+				string fileBackupName = DateTime.Now.ToString("yyyy-MM-dd T HH-mm", System.Globalization.CultureInfo.InvariantCulture) + pathExt;
+
+				// Copy the file to the backup directory
+				if (!Directory.Exists(fileBackupDir)) Directory.CreateDirectory(fileBackupDir);
+				File.Copy(path, Path.Combine(fileBackupDir, fileBackupName), true);
+			}
+			catch (Exception e)
+			{
+				Log.Editor.WriteError("Backup of file '{0}' failed: {1}", path, Log.Exception(e));
+			}
 		}
 		
 		public static void UpdatePluginSourceCode()
@@ -926,9 +995,24 @@ namespace DualityEditor
 		
 		private static void Application_Idle(object sender, EventArgs e)
 		{
+			Application.Idle -= Application_Idle;
+
 			// Trigger idle event if no modal dialog is open.
 			if (mainForm.Visible && mainForm.CanFocus)
 				OnIdling();
+
+			// Trigger autosave after a while
+			if (autosaveFrequency != AutosaveFrequency.Disabled)
+			{
+				TimeSpan timeSinceLastAutosave = DateTime.Now - autosaveLast;
+				if ((autosaveFrequency == AutosaveFrequency.OneHour && timeSinceLastAutosave.TotalMinutes > 60) ||
+					(autosaveFrequency == AutosaveFrequency.ThirtyMinutes && timeSinceLastAutosave.TotalMinutes > 30) ||
+					(autosaveFrequency == AutosaveFrequency.TenMinutes && timeSinceLastAutosave.TotalMinutes > 10))
+				{
+					SaveAllProjectData();
+					autosaveLast = DateTime.Now;
+				}
+			}
 
 			// Update Duality engine
 			//System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
@@ -959,6 +1043,8 @@ namespace DualityEditor
 				//        break;
 				//}
 			}
+
+			Application.Idle += Application_Idle;
 		}
 		private static void Scene_Leaving(object sender, EventArgs e)
 		{
@@ -1004,6 +1090,14 @@ namespace DualityEditor
 			if (e.Path == null) return; // Ignore Resources without a path.
 			if (e.IsDefaultContent) return; // Ignore default content
 			FlagResourceSaved(e.Content.Res);
+		}
+		private static void Resource_ResourceSaving(object sender, Duality.ResourceEventArgs e)
+		{
+			if (e.Path == null) return; // Ignore Resources without a path.
+			if (e.IsDefaultContent) return; // Ignore default content
+
+			// Do a backup before overwriting the file
+			if (backupsEnabled) BackupResource(e.Path);
 		}
 		
 		private static void mainForm_Activated(object sender, EventArgs e)

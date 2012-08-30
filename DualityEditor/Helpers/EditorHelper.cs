@@ -21,6 +21,7 @@ namespace DualityEditor
 	public static class EditorHelper
 	{
 		public const string DataDirectory				= @"Data";
+		public const string BackupDirectory				= @"Backup";
 		public const string PluginDirectory				= @"Plugins";
 		public const string SourceDirectory				= @"Source";
 		public const string SourceMediaDirectory		= SourceDirectory + @"\Media";

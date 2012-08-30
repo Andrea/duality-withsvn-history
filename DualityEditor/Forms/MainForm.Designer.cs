@@ -62,6 +62,13 @@
 			this.actionRunSandbox = new System.Windows.Forms.ToolStripButton();
 			this.actionPauseSandbox = new System.Windows.Forms.ToolStripButton();
 			this.actionStopSandbox = new System.Windows.Forms.ToolStripButton();
+			this.splitButtonBackupSettings = new System.Windows.Forms.ToolStripSplitButton();
+			this.checkBackups = new System.Windows.Forms.ToolStripMenuItem();
+			this.menuAutosave = new System.Windows.Forms.ToolStripMenuItem();
+			this.optionAutosaveDisabled = new System.Windows.Forms.ToolStripMenuItem();
+			this.optionAutosaveTenMinutes = new System.Windows.Forms.ToolStripMenuItem();
+			this.optionAutosaveThirtyMinutes = new System.Windows.Forms.ToolStripMenuItem();
+			this.optionAutoSaveOneHour = new System.Windows.Forms.ToolStripMenuItem();
 			this.selectFormattingMethod = new System.Windows.Forms.ToolStripSplitButton();
 			this.formatBinary = new System.Windows.Forms.ToolStripMenuItem();
 			this.formatXml = new System.Windows.Forms.ToolStripMenuItem();
@@ -185,6 +192,7 @@
             this.actionRunSandbox,
             this.actionPauseSandbox,
             this.actionStopSandbox,
+            this.splitButtonBackupSettings,
             this.selectFormattingMethod});
 			this.mainToolStrip.Location = new System.Drawing.Point(0, 24);
 			this.mainToolStrip.Name = "mainToolStrip";
@@ -276,17 +284,83 @@
 			this.actionStopSandbox.Text = "Leave Sandbox";
 			this.actionStopSandbox.Click += new System.EventHandler(this.actionStopSandbox_Click);
 			// 
+			// splitButtonBackupSettings
+			// 
+			this.splitButtonBackupSettings.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.splitButtonBackupSettings.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.splitButtonBackupSettings.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.checkBackups,
+            this.menuAutosave});
+			this.splitButtonBackupSettings.Image = global::DualityEditor.Properties.Resources.drive_disk;
+			this.splitButtonBackupSettings.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.splitButtonBackupSettings.Name = "splitButtonBackupSettings";
+			this.splitButtonBackupSettings.Size = new System.Drawing.Size(32, 22);
+			this.splitButtonBackupSettings.Text = "Backup Settings";
+			this.splitButtonBackupSettings.DropDownOpening += new System.EventHandler(this.splitButtonBackupSettings_DropDownOpening);
+			this.splitButtonBackupSettings.Click += new System.EventHandler(this.splitButtonBackupSettings_Click);
+			// 
+			// checkBackups
+			// 
+			this.checkBackups.Checked = true;
+			this.checkBackups.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.checkBackups.Name = "checkBackups";
+			this.checkBackups.Size = new System.Drawing.Size(152, 22);
+			this.checkBackups.Text = "Backups";
+			this.checkBackups.ToolTipText = "If active, Duality will backup each file before saving it.";
+			this.checkBackups.Click += new System.EventHandler(this.checkBackups_Clicked);
+			// 
+			// menuAutosave
+			// 
+			this.menuAutosave.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.optionAutosaveDisabled,
+            this.optionAutosaveTenMinutes,
+            this.optionAutosaveThirtyMinutes,
+            this.optionAutoSaveOneHour});
+			this.menuAutosave.Name = "menuAutosave";
+			this.menuAutosave.Size = new System.Drawing.Size(152, 22);
+			this.menuAutosave.Text = "Autosave";
+			// 
+			// optionAutosaveDisabled
+			// 
+			this.optionAutosaveDisabled.Name = "optionAutosaveDisabled";
+			this.optionAutosaveDisabled.Size = new System.Drawing.Size(152, 22);
+			this.optionAutosaveDisabled.Text = "Disabled";
+			this.optionAutosaveDisabled.Click += new System.EventHandler(this.optionAutosaveDisabled_Clicked);
+			// 
+			// optionAutosaveTenMinutes
+			// 
+			this.optionAutosaveTenMinutes.Name = "optionAutosaveTenMinutes";
+			this.optionAutosaveTenMinutes.Size = new System.Drawing.Size(152, 22);
+			this.optionAutosaveTenMinutes.Text = "10 Minutes";
+			this.optionAutosaveTenMinutes.Click += new System.EventHandler(this.optionAutosaveTenMinutes_Clicked);
+			// 
+			// optionAutosaveThirtyMinutes
+			// 
+			this.optionAutosaveThirtyMinutes.Checked = true;
+			this.optionAutosaveThirtyMinutes.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.optionAutosaveThirtyMinutes.Name = "optionAutosaveThirtyMinutes";
+			this.optionAutosaveThirtyMinutes.Size = new System.Drawing.Size(152, 22);
+			this.optionAutosaveThirtyMinutes.Text = "30 Minutes";
+			this.optionAutosaveThirtyMinutes.Click += new System.EventHandler(this.optionAutosaveThirtyMinutes_Clicked);
+			// 
+			// optionAutoSaveOneHour
+			// 
+			this.optionAutoSaveOneHour.Name = "optionAutoSaveOneHour";
+			this.optionAutoSaveOneHour.Size = new System.Drawing.Size(152, 22);
+			this.optionAutoSaveOneHour.Text = "1 Hour";
+			this.optionAutoSaveOneHour.Click += new System.EventHandler(this.optionAutoSaveOneHour_Clicked);
+			// 
 			// selectFormattingMethod
 			// 
 			this.selectFormattingMethod.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-			this.selectFormattingMethod.AutoToolTip = false;
+			this.selectFormattingMethod.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.selectFormattingMethod.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.formatBinary,
             this.formatXml});
 			this.selectFormattingMethod.Image = ((System.Drawing.Image)(resources.GetObject("selectFormattingMethod.Image")));
 			this.selectFormattingMethod.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.selectFormattingMethod.Name = "selectFormattingMethod";
-			this.selectFormattingMethod.Size = new System.Drawing.Size(144, 22);
+			this.selectFormattingMethod.Size = new System.Drawing.Size(32, 22);
 			this.selectFormattingMethod.Text = "Project Data Format";
 			this.selectFormattingMethod.Click += new System.EventHandler(this.selectFormattingMethod_Click);
 			// 
@@ -294,7 +368,7 @@
 			// 
 			this.formatBinary.Image = global::DualityEditor.Properties.Resources.page_gear;
 			this.formatBinary.Name = "formatBinary";
-			this.formatBinary.Size = new System.Drawing.Size(107, 22);
+			this.formatBinary.Size = new System.Drawing.Size(152, 22);
 			this.formatBinary.Text = "Binary";
 			this.formatBinary.Click += new System.EventHandler(this.formatBinary_Click);
 			// 
@@ -302,7 +376,7 @@
 			// 
 			this.formatXml.Image = global::DualityEditor.Properties.Resources.page_code;
 			this.formatXml.Name = "formatXml";
-			this.formatXml.Size = new System.Drawing.Size(107, 22);
+			this.formatXml.Size = new System.Drawing.Size(152, 22);
 			this.formatXml.Text = "Xml";
 			this.formatXml.Click += new System.EventHandler(this.formatXml_Click);
 			// 
@@ -350,6 +424,13 @@
 		private System.Windows.Forms.ToolStripSplitButton selectFormattingMethod;
 		private System.Windows.Forms.ToolStripMenuItem formatBinary;
 		private System.Windows.Forms.ToolStripMenuItem formatXml;
+		private System.Windows.Forms.ToolStripSplitButton splitButtonBackupSettings;
+		private System.Windows.Forms.ToolStripMenuItem checkBackups;
+		private System.Windows.Forms.ToolStripMenuItem menuAutosave;
+		private System.Windows.Forms.ToolStripMenuItem optionAutosaveDisabled;
+		private System.Windows.Forms.ToolStripMenuItem optionAutosaveTenMinutes;
+		private System.Windows.Forms.ToolStripMenuItem optionAutosaveThirtyMinutes;
+		private System.Windows.Forms.ToolStripMenuItem optionAutoSaveOneHour;
 	}
 }
 

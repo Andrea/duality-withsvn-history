@@ -288,6 +288,8 @@ namespace EditorBase.CamViewStates
 			    o.Dispose(); 
 			    Scene.Current.UnregisterObj(o); 
 			}
+
+			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(Scene.Current));
 		}
 		public override List<SelObj> CloneObjects(IEnumerable<SelObj> objEnum)
 		{
@@ -306,6 +308,8 @@ namespace EditorBase.CamViewStates
 				Scene.Current.RegisterObj(clone); 
 				clones.Add(new SelGameObj(clone));
 			}
+
+			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(Scene.Current));
 			return clones;
 		}
 

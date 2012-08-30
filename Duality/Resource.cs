@@ -32,6 +32,7 @@ namespace Duality
 		public static event EventHandler<ResourceEventArgs>	ResourceDisposed = null;
 		public static event EventHandler<ResourceEventArgs>	ResourceLoaded = null;
 		public static event EventHandler<ResourceEventArgs>	ResourceSaved = null;
+		public static event EventHandler<ResourceEventArgs>	ResourceSaving = null;
 		
 		/// <summary>
 		/// The path of the file from which the Resource has been originally imported or initialized.
@@ -131,13 +132,7 @@ namespace Duality
 			if (this.initState != InitState.Initialized) throw new ApplicationException("Can't save Ressource that already has been disposed.");
 			if (saveAsPath == null) saveAsPath = this.path;
 
-#if DEBUG
-			if (!PathHelper.IsPathLocatedIn(saveAsPath, "Data"))
-			{
-				Log.Editor.WriteWarning("Saving Resource '{0}' outside of data folder.. is this really intended? Target path: {1}", this.FullName, saveAsPath);
-				if (System.Diagnostics.Debugger.IsAttached) System.Diagnostics.Debugger.Break();
-			}
-#endif
+			this.CheckedOnSaving();
 
 			// We're saving a new Ressource for the first time: Register it in the library
 			if (this.path == null)
@@ -146,12 +141,16 @@ namespace Duality
 				ContentProvider.RegisterContent(this.path, this);
 			}
 
+			string streamName;
 			string dirName = System.IO.Path.GetDirectoryName(saveAsPath);
 			if (!string.IsNullOrEmpty(dirName) && !Directory.Exists(dirName)) Directory.CreateDirectory(dirName);
 			using (FileStream str = File.Open(saveAsPath, FileMode.Create))
 			{
-				this.Save(str);
+				this.WriteToStream(str, out streamName);
 			}
+			this.CheckedOnSaved();
+
+			Log.Core.Write("Resource saved: {0}", streamName);
 		}
 		/// <summary>
 		/// Saves the Resource to the specified stream.
@@ -159,15 +158,16 @@ namespace Duality
 		/// <param name="str"></param>
 		public void Save(Stream str)
 		{
-			this.OnSaving();
-			using (var formatter = Formatter.Create(str))
-			{
-				formatter.AddFieldBlocker(NonSerializedResourceBlocker);
-				formatter.WriteObject(this);
-			}
-			this.OnSaved();
-
 			string streamName;
+
+			this.CheckedOnSaving();
+			this.WriteToStream(str, out streamName);
+			this.CheckedOnSaved();
+
+			Log.Core.Write("Resource saved: {0}", streamName);
+		}
+		private void WriteToStream(Stream str, out string streamName)
+		{
 			if (str is FileStream)
 			{
 				FileStream fileStream = str as FileStream;
@@ -178,7 +178,38 @@ namespace Duality
 			}
 			else
 				streamName = str.ToString();
-			Log.Core.Write("Resource saved: {0}", streamName);
+
+			using (var formatter = Formatter.Create(str))
+			{
+				formatter.AddFieldBlocker(NonSerializedResourceBlocker);
+				formatter.WriteObject(this);
+			}
+		}
+		private bool CheckedOnSaving()
+		{
+			try
+			{
+				this.OnSaving();
+				return true;
+			}
+			catch (Exception e)
+			{
+				Log.Core.WriteError("OnSaving() of {0} failed: {1}", this, Log.Exception(e));
+				return false;
+			}
+		}
+		private bool CheckedOnSaved()
+		{
+			try
+			{
+				this.OnSaved();
+				return true;
+			}
+			catch (Exception e)
+			{
+				Log.Core.WriteError("OnSaved() of {0} failed: {1}", this, Log.Exception(e));
+				return false;
+			}
 		}
 
 		/// <summary>
@@ -220,7 +251,11 @@ namespace Duality
 		/// <summary>
 		/// Called when this Resource is now beginning to be saved.
 		/// </summary>
-		protected virtual void OnSaving() {}
+		protected virtual void OnSaving()
+		{
+			if (ResourceSaving != null)
+				ResourceSaving(this, new ResourceEventArgs(this));
+		}
 		/// <summary>
 		/// Called when this Resource has just been saved.
 		/// </summary>

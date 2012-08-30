@@ -435,23 +435,21 @@ namespace Duality.Serialization
 
 		internal static void InitDefaultMethod()
 		{
-			string anyResource = Directory.GetFiles(".", "*" + Resource.FileExt, SearchOption.AllDirectories).FirstOrDefault();
-			if (anyResource == null)
-			{
-				if (DualityApp.ExecEnvironment == DualityApp.ExecutionEnvironment.Editor)
-					defaultMethod = FormattingMethod.Xml;
-				else
-					defaultMethod = FormattingMethod.Binary;
-			}
+			if (DualityApp.ExecEnvironment == DualityApp.ExecutionEnvironment.Editor)
+				defaultMethod = FormattingMethod.Xml;
 			else
+				defaultMethod = FormattingMethod.Binary;
+
+			foreach (string anyResource in Directory.GetFiles(".", "*" + Resource.FileExt, SearchOption.AllDirectories))
 			{
 				using (FileStream stream = File.OpenRead(anyResource))
 				{
-					bool isXml = XmlFormatterBase.IsXmlStream(stream);
-					if (isXml)
-						defaultMethod = FormattingMethod.Xml;
-					else
-						defaultMethod = FormattingMethod.Binary;
+					try
+					{
+						defaultMethod = XmlFormatterBase.IsXmlStream(stream) ? FormattingMethod.Xml : FormattingMethod.Binary;
+						break;
+					}
+					catch (Exception) {}
 				}
 			}
 		}

@@ -472,6 +472,8 @@ namespace EditorBase
 				this.objectView.EnsureVisible(dragObjViewNode);
 			}
 			this.objectView.EndUpdate();
+
+			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(Scene.Current));
 		}
 		protected void DeleteNodes(IEnumerable<TreeNodeAdv> nodes)
 		{
@@ -516,6 +518,8 @@ namespace EditorBase
 				c.Dispose();
 			}
 			this.objectView.EndUpdate();
+
+			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(Scene.Current));
 		}
 		protected Component CheckComponentsRemovable(List<Component> cmpList, List<GameObject> ignoreGameObjList)
 		{
@@ -557,14 +561,20 @@ namespace EditorBase
 			this.objectView.ClearSelection();
 
 			// Select new node
-			TreeNodeAdv dragObjViewNode;
-			dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(this.FindNode(newObj)));
-			if (dragObjViewNode != null)
+			GameObjectNode objNode = this.FindNode(newObj);
+			if (objNode != null)
 			{
-				dragObjViewNode.IsSelected = true;
-				this.objectView.EnsureVisible(dragObjViewNode);
-				this.nodeTextBoxName.BeginEdit();
+				TreeNodeAdv dragObjViewNode;
+				dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(objNode));
+				if (dragObjViewNode != null)
+				{
+					dragObjViewNode.IsSelected = true;
+					this.objectView.EnsureVisible(dragObjViewNode);
+					this.nodeTextBoxName.BeginEdit();
+				}
 			}
+
+			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(Scene.Current));
 		}
 		protected void CreateComponent(TreeNodeAdv baseNode, Type cmpType)
 		{
@@ -577,11 +587,15 @@ namespace EditorBase
 
 			// Select new node
 			TreeNodeAdv dragObjViewNode;
-			dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(this.FindNode(newCmp)));
-			if (dragObjViewNode != null)
+			NodeBase newNode = (NodeBase)this.FindNode(newCmp) ?? baseObjNode;
+			if (newNode != null)
 			{
-				dragObjViewNode.IsSelected = true;
-				this.objectView.EnsureVisible(dragObjViewNode);
+				dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(newNode));
+				if (dragObjViewNode != null)
+				{
+					dragObjViewNode.IsSelected = true;
+					this.objectView.EnsureVisible(dragObjViewNode);
+				}
 			}
 
 			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(baseObj));

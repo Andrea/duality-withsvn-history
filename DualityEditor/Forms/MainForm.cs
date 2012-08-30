@@ -33,6 +33,9 @@ namespace DualityEditor.Forms
 
 			this.actionDebugApp.Enabled = EditorHelper.IsJITDebuggerAvailable();
 
+			this.splitButtonBackupSettings.DropDown.Closing += this.splitButtonBackupSettings_Closing;
+			this.menuAutosave.DropDown.Closing += this.menuAutosave_Closing;
+
 			this.InitMenus();
 		}
 		private void ApplyDockPanelSkin()
@@ -135,14 +138,12 @@ namespace DualityEditor.Forms
 			if (Duality.Serialization.Formatter.DefaultMethod == Duality.Serialization.FormattingMethod.Xml)
 			{
 				this.selectFormattingMethod.Image = this.formatXml.Image;
-				this.selectFormattingMethod.ToolTipText = this.formatXml.Text;
 				this.formatXml.Checked = true;
 				this.formatBinary.Checked = false;
 			}
 			else
 			{
 				this.selectFormattingMethod.Image = this.formatBinary.Image;
-				this.selectFormattingMethod.ToolTipText = this.formatBinary.Text;
 				this.formatXml.Checked = false;
 				this.formatBinary.Checked = true;
 			}
@@ -299,6 +300,56 @@ namespace DualityEditor.Forms
 				cr.Res.Save(file);
 				state.Progress += 0.45f / resFiles.Count; yield return null;
 			}
+		}
+
+		private void checkBackups_Clicked(object sender, EventArgs e)
+		{
+			DualityEditorApp.BackupsEnabled = !DualityEditorApp.BackupsEnabled;
+			this.UpdateSplitButtonBackupSettings();
+		}
+		private void optionAutosaveDisabled_Clicked(object sender, EventArgs e)
+		{
+			DualityEditorApp.Autosaves = DualityEditorApp.Autosaves != AutosaveFrequency.Disabled ? AutosaveFrequency.Disabled : AutosaveFrequency.ThirtyMinutes;
+			this.UpdateSplitButtonBackupSettings();
+		}
+		private void optionAutosaveTenMinutes_Clicked(object sender, EventArgs e)
+		{
+			DualityEditorApp.Autosaves = DualityEditorApp.Autosaves != AutosaveFrequency.TenMinutes ? AutosaveFrequency.TenMinutes : AutosaveFrequency.Disabled;
+			this.UpdateSplitButtonBackupSettings();
+		}
+		private void optionAutosaveThirtyMinutes_Clicked(object sender, EventArgs e)
+		{
+			DualityEditorApp.Autosaves = DualityEditorApp.Autosaves != AutosaveFrequency.ThirtyMinutes ? AutosaveFrequency.ThirtyMinutes : AutosaveFrequency.Disabled;
+			this.UpdateSplitButtonBackupSettings();
+		}
+		private void optionAutoSaveOneHour_Clicked(object sender, EventArgs e)
+		{
+			DualityEditorApp.Autosaves = DualityEditorApp.Autosaves != AutosaveFrequency.OneHour ? AutosaveFrequency.OneHour : AutosaveFrequency.Disabled;
+			this.UpdateSplitButtonBackupSettings();
+		}
+		private void splitButtonBackupSettings_DropDownOpening(object sender, EventArgs e)
+		{
+			this.UpdateSplitButtonBackupSettings();
+		}
+		private void splitButtonBackupSettings_Closing(object sender, ToolStripDropDownClosingEventArgs e)
+		{
+			if (e.CloseReason == ToolStripDropDownCloseReason.ItemClicked) e.Cancel = true;
+		}
+		private void splitButtonBackupSettings_Click(object sender, EventArgs e)
+		{
+			this.splitButtonBackupSettings.ShowDropDown();
+		}
+		private void menuAutosave_Closing(object sender, ToolStripDropDownClosingEventArgs e)
+		{
+			if (e.CloseReason == ToolStripDropDownCloseReason.ItemClicked) e.Cancel = true;
+		}
+		private void UpdateSplitButtonBackupSettings()
+		{
+			this.checkBackups.Checked = DualityEditorApp.BackupsEnabled;
+			this.optionAutosaveDisabled.Checked = DualityEditorApp.Autosaves == AutosaveFrequency.Disabled;
+			this.optionAutosaveTenMinutes.Checked = DualityEditorApp.Autosaves == AutosaveFrequency.TenMinutes;
+			this.optionAutosaveThirtyMinutes.Checked = DualityEditorApp.Autosaves == AutosaveFrequency.ThirtyMinutes;
+			this.optionAutoSaveOneHour.Checked = DualityEditorApp.Autosaves == AutosaveFrequency.OneHour;
 		}
 	}
 }

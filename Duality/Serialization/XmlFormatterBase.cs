@@ -381,7 +381,7 @@ namespace Duality.Serialization
 		{
 			if (!stream.CanRead) throw new InvalidOperationException("The specified stream is not readable.");
 			if (!stream.CanSeek) throw new InvalidOperationException("The specified stream is not seekable. XML check aborted to maintain stream state.");
-			if (stream.Length == 0) throw new InvalidOperationException("The specified stream is not empty.");
+			if (stream.Length == 0) throw new InvalidOperationException("The specified stream is empty.");
 			long oldPos = stream.Position;
 
 			bool isXml = true;
