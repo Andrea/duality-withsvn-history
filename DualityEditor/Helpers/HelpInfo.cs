@@ -14,52 +14,48 @@ namespace DualityEditor
 	public interface IHelpProvider
 	{
 		HelpInfo ProvideHoverHelp(Point localPos, ref bool captured);
-		bool PerformHelpAction(HelpInfo info);
 	}
-	public static class ExtMethodsIHelpProvider
+
+	public delegate bool HelpAction(HelpInfo info);
+
+	public interface IHelpInfoReader
 	{
-		public static bool DefaultPerformHelpAction(this IHelpProvider provider, HelpInfo info)
-		{
-			MemberInfo member = !string.IsNullOrEmpty(info.Id) ? ReflectionHelper.ResolveMember(info.Id, false) : null;
-			if (member != null)
-			{
-				string memberHtmlName;
-				if (member is FieldInfo && member.DeclaringType.IsEnum)
-					memberHtmlName = member.DeclaringType.GetMemberId();
-				else
-					memberHtmlName = info.Id;
-				memberHtmlName = memberHtmlName.Replace('.', '_').Replace(':', '_').Replace('+', '_');
-				
-				string ddocPath = Path.GetFullPath("DDoc.chm");
-				string cmdLine = string.Format("{0}::/html/{1}.htm", ddocPath, memberHtmlName);
-
-				Process[] proc = Process.GetProcessesByName("hh");
-				if (proc.Length > 0) proc[0].CloseMainWindow();
-				Process.Start("HH.exe", cmdLine);
-				return true;
-			}
-			
-			return false;
-		}
+		string Id { get; }
+		string Topic { get; }
+		string Description { get; }
+		HelpAction PerformHelpAction { get; }
 	}
 
-	public class HelpInfo
+	public class HelpInfo : IHelpInfoReader
 	{
 		private	string	id;
 		private	string	topic;
 		private	string	desc;
+		private	HelpAction	helpAction	= DefaultPerformHelpAction;
 		
 		public string Id
 		{
 			get { return this.id; }
+			set { this.id = value; }
 		}
 		public string Topic
 		{
 			get { return this.topic; }
+			set { this.topic = value; }
 		}
 		public string Description
 		{
 			get { return this.desc; }
+			set { this.desc = value; }
+		}
+		public HelpAction PerformHelpAction
+		{
+			get { return this.helpAction; }
+			set
+			{
+				if (value == null) value = DefaultPerformHelpAction;
+				this.helpAction = value;
+			}
 		}
 
 		private HelpInfo() {}
@@ -142,6 +138,30 @@ namespace DualityEditor
 		public static HelpInfo CreateNotAvailable(string topic)
 		{
 			return FromText(topic ?? "Unknown", DualityEditor.EditorRes.GeneralRes.HelpInfo_NotAvailable_Desc);
+		}
+
+		public static bool DefaultPerformHelpAction(HelpInfo info)
+		{
+			MemberInfo member = !string.IsNullOrEmpty(info.Id) ? ReflectionHelper.ResolveMember(info.Id, false) : null;
+			if (member != null)
+			{
+				string memberHtmlName;
+				if (member is FieldInfo && member.DeclaringType.IsEnum)
+					memberHtmlName = member.DeclaringType.GetMemberId();
+				else
+					memberHtmlName = info.Id;
+				memberHtmlName = memberHtmlName.Replace('.', '_').Replace(':', '_').Replace('+', '_');
+				
+				string ddocPath = Path.GetFullPath("DDoc.chm");
+				string cmdLine = string.Format("{0}::/html/{1}.htm", ddocPath, memberHtmlName);
+
+				Process[] proc = Process.GetProcessesByName("hh");
+				if (proc.Length > 0) proc[0].CloseMainWindow();
+				Process.Start("HH.exe", cmdLine);
+				return true;
+			}
+			
+			return false;
 		}
 	}
 

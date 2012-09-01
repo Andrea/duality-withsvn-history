@@ -21,6 +21,7 @@ namespace DualityEditor
 	public static class Sandbox
 	{
 		private	static bool			stateChange	= false;
+		private	static int			singleSteps	= 0;
 		private	static int			sceneFreeze	= 0;
 		private	static SandboxState	state		= SandboxState.Inactive;
 
@@ -59,7 +60,7 @@ namespace DualityEditor
 			if (state == SandboxState.Playing) return true;
 
 			// If the current Scene is unsaved when entering sandbox mode, ask whether this should be done before
-			if (Scene.Current.IsRuntimeResource && state == SandboxState.Inactive)
+			if (state == SandboxState.Inactive && Scene.Current.IsRuntimeResource && !Scene.Current.IsEmpty)
 			{
 				DialogResult result = MessageBox.Show(DualityEditorApp.MainForm,
 					EditorRes.GeneralRes.Msg_EnterSandboxUnsavedScene_Desc,
@@ -106,7 +107,7 @@ namespace DualityEditor
 		}
 		public static void Pause()
 		{
-			if (state == SandboxState.Paused) return;
+			if (state != SandboxState.Playing) return;
 			stateChange = true;
 
 			state = SandboxState.Paused;
@@ -129,6 +130,7 @@ namespace DualityEditor
 				Scene.Current.Dispose();
 			}
 
+			Time.TimeScale = 1.0f; // Reset time scale
 			state = SandboxState.Inactive;
 			DualityApp.ExecContext = DualityApp.ExecutionContext.Editor;
 			
@@ -139,6 +141,18 @@ namespace DualityEditor
 			OnLeaveSandbox();
 			OnSandboxStateChanged();
 			stateChange = false;
+		}
+		public static void Step()
+		{
+			singleSteps++;
+		}
+		public static void Faster()
+		{
+			Time.TimeScale *= 2.0f;
+		}
+		public static void Slower()
+		{
+			Time.TimeScale /= 2.0f;
 		}
 		public static void Freeze()
 		{
@@ -152,6 +166,16 @@ namespace DualityEditor
 		{
 			DualityApp.Mouse = mouse;
 			DualityApp.Keyboard = keyboard;
+		}
+
+		internal static bool TakeSingleStep()
+		{
+			if (singleSteps > 0)
+			{
+				singleSteps--;
+				return true;
+			}
+			return false;
 		}
 
 		private static void OnEnteringSandbox()

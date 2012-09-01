@@ -280,9 +280,5 @@ namespace EditorBase.PropertyEditors
 
 			return null;
 		}
-		bool IHelpProvider.PerformHelpAction(HelpInfo info)
-		{
-			return (this as IHelpProvider).DefaultPerformHelpAction(info);
-		}
 	}
 }

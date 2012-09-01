@@ -16,7 +16,6 @@
 -->	Implement some simple Font effects?
 
 -->	Testing, Testing, Testing! Only a dead bug is a good bug.
-	-->	Darkrels "total Scene destruction" bug. KILL IT WITH FIRE.
 
 
 

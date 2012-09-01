@@ -403,9 +403,5 @@ namespace EditorBase.PropertyEditors
 
 			return result;
 		}
-		bool IHelpProvider.PerformHelpAction(HelpInfo info)
-		{
-			return (this as IHelpProvider).DefaultPerformHelpAction(info);
-		}
 	}
 }

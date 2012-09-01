@@ -169,17 +169,44 @@
   <data name="Language" xml:space="preserve">
     <value>English</value>
   </data>
+  <data name="MenuItemInfo_DebugGame" xml:space="preserve">
+    <value>If you're using a professional version of Visual Studio, this action will run the Duality launcher and trigger a debug event that allows you to attach the debugger to your game before anything happens. You can achieve the same by clicking the "Run" button of your Core Plugin in Visual Studio itself.</value>
+  </data>
+  <data name="MenuItemInfo_NewProject" xml:space="preserve">
+    <value>Duality always works locally in a project folder. The New Project dialog will help you setting up a new one for your project.</value>
+  </data>
+  <data name="MenuItemInfo_OpenProjectSource" xml:space="preserve">
+    <value>The project source code is where your game logic happens. To help you get started, Duality will create and open a suitable Visual Studio solution for you.</value>
+  </data>
+  <data name="MenuItemInfo_RunGame" xml:space="preserve">
+    <value>Want to see how your game looks like in its release version? This will save all project data and run the external Duality launcher.</value>
+  </data>
+  <data name="MenuItemInfo_SaveAll" xml:space="preserve">
+    <value>This will save all project data, i.e. all existing Resources. If you take a look at the Project View, you might notice that some Resources are written italic - these are the ones that have been changed without being saved yet.</value>
+  </data>
   <data name="MenuItemName_About" xml:space="preserve">
     <value>About</value>
   </data>
   <data name="MenuItemName_NewProject" xml:space="preserve">
     <value>New Project...</value>
   </data>
+  <data name="MenuItemName_Quit" xml:space="preserve">
+    <value>Quit</value>
+  </data>
+  <data name="MenuItemName_SandboxFaster" xml:space="preserve">
+    <value>Increase Speed</value>
+  </data>
+  <data name="MenuItemName_SandboxSlower" xml:space="preserve">
+    <value>Decrease Speed</value>
+  </data>
   <data name="MenuName_File" xml:space="preserve">
     <value>File</value>
   </data>
   <data name="MenuName_Help" xml:space="preserve">
     <value>Help</value>
+  </data>
+  <data name="MenuName_Run" xml:space="preserve">
+    <value>Run</value>
   </data>
   <data name="MenuName_Settings" xml:space="preserve">
     <value>Settings</value>

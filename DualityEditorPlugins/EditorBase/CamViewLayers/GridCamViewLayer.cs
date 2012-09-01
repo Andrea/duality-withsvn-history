@@ -121,9 +121,10 @@ namespace EditorBase.CamViewLayers
 		{
 			base.OnCollectOverlayDrawcalls(canvas);
 			bool noAction = this.View.ActiveState.VisibleAction == CamViewState.ObjectAction.None;
+			bool mouseover = this.View.ActiveState.Mouseover;
 
 			Point cursorPos = this.View.LocalGLControl.PointToClient(Cursor.Position);
-			if (noAction &&
+			if (noAction && mouseover &&
 				cursorPos.X > 0 && cursorPos.X < this.View.LocalGLControl.ClientSize.Width &&
 				cursorPos.Y > 0 && cursorPos.Y < this.View.LocalGLControl.ClientSize.Height)
 			{

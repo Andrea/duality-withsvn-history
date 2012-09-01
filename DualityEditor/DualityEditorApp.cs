@@ -1021,15 +1021,21 @@ namespace DualityEditor
 				//watch.Restart();
 				if (!dualityAppSuspended)
 				{
+					bool fixedSingleStep = Sandbox.TakeSingleStep();
+					DualityApp.ExecutionContext lastContext = DualityApp.ExecContext;
+					if (fixedSingleStep) DualityApp.ExecContext = DualityApp.ExecutionContext.Game;
+
 					try
 					{
-						DualityApp.EditorUpdate(editorObjects, Sandbox.IsFreezed);
+						DualityApp.EditorUpdate(editorObjects, Sandbox.IsFreezed, fixedSingleStep && Sandbox.State != SandboxState.Playing);
 					}
 					catch (Exception exception)
 					{
 						Log.Editor.WriteError("An error occured during a core update: {0}", Log.Exception(exception));
 					}
 					OnUpdatingEngine();
+
+					DualityApp.ExecContext = lastContext;
 				}
 
 				//// Assure we'll at least wait 16 ms until updating again.

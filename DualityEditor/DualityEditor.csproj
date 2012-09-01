@@ -284,6 +284,14 @@
     <Content Include="DualityIconB.ico" />
     <Content Include="DualityIconC.ico" />
     <Content Include="EditorRes\WorkingFolderIcon.ico" />
+    <None Include="Resources\control_rewind_blue.png" />
+    <None Include="Resources\control_fastforward_blue.png" />
+    <None Include="Resources\control_fastforward_green.png" />
+    <None Include="Resources\control_rewind_green.png" />
+    <None Include="Resources\control_step_green.png" />
+    <None Include="Resources\control_playpause_green.png" />
+    <None Include="Resources\control_step_blue.png" />
+    <None Include="Resources\control_playpause_blue.png" />
     <None Include="Resources\drive_disk.png" />
     <None Include="Resources\working_bigtask.png" />
     <None Include="Resources\template_empty.png" />

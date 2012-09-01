@@ -12,8 +12,9 @@ namespace DualityEditor.Controls.ToolStrip
 		}
 		protected override void OnRenderSeparator(ToolStripSeparatorRenderEventArgs e)
 		{
-			//base.OnRenderSeparator(e);
-			if (e.Vertical)
+			if (e.ToolStrip.IsDropDown)
+				base.OnRenderSeparator(e);
+			else if (e.Vertical)
 			{
 				int size = e.ToolStrip.Height * 3 / 4;
 				int midX = e.Item.Width / 2;

@@ -667,7 +667,7 @@ namespace EditorBase
 
 		private void glControl_MouseDown(object sender, MouseEventArgs e)
 		{
-			if (this.activeState.EngineUserInput && DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
+			if (this.activeState.EngineUserInput)
 			{
 				MouseButton inputButton = e.Button.ToOpenTKSingle();
 				this.inputMouseButtons |= e.Button.ToOpenTK();
@@ -676,7 +676,7 @@ namespace EditorBase
 		}
 		private void glControl_MouseUp(object sender, MouseEventArgs e)
 		{
-			if (this.activeState.EngineUserInput && DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
+			if (this.activeState.EngineUserInput)
 			{
 				MouseButton inputButton = e.Button.ToOpenTKSingle();
 				this.inputMouseButtons &= ~e.Button.ToOpenTK();
@@ -685,7 +685,7 @@ namespace EditorBase
 		}
 		private void glControl_MouseWheel(object sender, MouseEventArgs e)
 		{
-			if (this.activeState.EngineUserInput && DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
+			if (this.activeState.EngineUserInput)
 			{
 				this.inputMouseWheel += e.Delta;
 				if (this.inputMouseWheelChanged != null) this.inputMouseWheelChanged(this, new MouseWheelEventArgs(e.X, e.Y, this.inputMouseWheel, e.Delta));
@@ -693,7 +693,7 @@ namespace EditorBase
 		}
 		private void glControl_MouseMove(object sender, MouseEventArgs e)
 		{
-			if (this.activeState.EngineUserInput && DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
+			if (this.activeState.EngineUserInput)
 			{
 				int lastX = this.inputMouseX;
 				int lastY = this.inputMouseY;
@@ -713,14 +713,30 @@ namespace EditorBase
 		}
 		private void glControl_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
 		{
-			if (this.activeState.EngineUserInput && DualityApp.ExecContext == DualityApp.ExecutionContext.Game) 
-				e.IsInputKey = true;
-			else if (e.KeyCode == Keys.Left || e.KeyCode == Keys.Right || e.KeyCode == Keys.Up || e.KeyCode == Keys.Down)
-				e.IsInputKey = true;
+			if (this.activeState.EngineUserInput) 
+				e.IsInputKey = // Special key blacklist: Do not forward to game
+					e.KeyCode != Keys.F1 &&
+					e.KeyCode != Keys.F2 &&
+					e.KeyCode != Keys.F3 &&
+					e.KeyCode != Keys.F4 &&
+					e.KeyCode != Keys.F5 &&
+					e.KeyCode != Keys.F6 &&
+					e.KeyCode != Keys.F7 &&
+					e.KeyCode != Keys.F8 &&
+					e.KeyCode != Keys.F9 &&
+					e.KeyCode != Keys.F10 &&
+					e.KeyCode != Keys.F11 &&
+					e.KeyCode != Keys.F12;
+			else
+				e.IsInputKey = // Special key whitelist: Do forward to CamViewState
+					e.KeyCode == Keys.Left || 
+					e.KeyCode == Keys.Right || 
+					e.KeyCode == Keys.Up || 
+					e.KeyCode == Keys.Down;
 		}
 		private void glControl_KeyDown(object sender, KeyEventArgs e)
 		{
-			if (this.activeState.EngineUserInput && DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
+			if (this.activeState.EngineUserInput)
 			{
 				Key inputKey = e.KeyCode.ToOpenTKSingle();
 				bool wasPressed = this.inputKeyPressed[(int)inputKey];
@@ -734,7 +750,7 @@ namespace EditorBase
 		}
 		private void glControl_KeyUp(object sender, KeyEventArgs e)
 		{
-			if (this.activeState.EngineUserInput && DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
+			if (this.activeState.EngineUserInput)
 			{
 				Key inputKey = e.KeyCode.ToOpenTKSingle();
 				this.inputKeyPressed = this.inputKeyPressed.And(e.KeyCode.ToOpenTK().Not());
@@ -906,13 +922,6 @@ namespace EditorBase
 			}
 
 			return result;
-		}
-		bool IHelpProvider.PerformHelpAction(HelpInfo info)
-		{
-			if (this.activeState != null)
-				return this.activeState.PerformHelpAction(info);
-			else
-				return this.DefaultPerformHelpAction(info);
 		}
 
 		int IMouseInput.X

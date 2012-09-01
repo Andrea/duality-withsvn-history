@@ -102,6 +102,13 @@ namespace DualityEditor.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap control_step_blue {
+            get {
+                object obj = ResourceManager.GetObject("control_step_blue", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap control_stop_blue {
             get {
                 object obj = ResourceManager.GetObject("control_stop_blue", resourceCulture);

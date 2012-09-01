@@ -315,6 +315,31 @@
               Sucht eine lokalisierte Zeichenfolge, die English ähnelt.
             </summary>
         </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.MenuItemInfo_DebugGame">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die If you&apos;re using a professional version of Visual Studio, this action will run the Duality launcher and trigger a debug event that allows you to attach the debugger to your game before anything happens. You can achieve the same by clicking the &quot;Run&quot; button of your Core Plugin in Visual Studio itself. ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.MenuItemInfo_NewProject">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Duality always works locally in a project folder. The New Project dialog will help you setting up a new one for your project. ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.MenuItemInfo_OpenProjectSource">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die The project source code is where your game logic happens. To help you get started, Duality will create and open a suitable Visual Studio solution for you. ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.MenuItemInfo_RunGame">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Want to see how your game looks like in its release version? This will save all project data and run the external Duality launcher. ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.MenuItemInfo_SaveAll">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die This will save all project data, i.e. all existing Resources. If you take a look at the Project View, you might notice that some Resources are written italic - these are the ones that have been changed without being saved yet. ähnelt.
+            </summary>
+        </member>
         <member name="P:DualityEditor.EditorRes.GeneralRes.MenuItemName_About">
             <summary>
               Sucht eine lokalisierte Zeichenfolge, die About ähnelt.
@@ -325,6 +350,21 @@
               Sucht eine lokalisierte Zeichenfolge, die New Project... ähnelt.
             </summary>
         </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.MenuItemName_Quit">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Quit ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.MenuItemName_SandboxFaster">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Increase Speed ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.MenuItemName_SandboxSlower">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Decrease Speed ähnelt.
+            </summary>
+        </member>
         <member name="P:DualityEditor.EditorRes.GeneralRes.MenuName_File">
             <summary>
               Sucht eine lokalisierte Zeichenfolge, die File ähnelt.
@@ -333,6 +373,11 @@
         <member name="P:DualityEditor.EditorRes.GeneralRes.MenuName_Help">
             <summary>
               Sucht eine lokalisierte Zeichenfolge, die Help ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.MenuName_Run">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Run ähnelt.
             </summary>
         </member>
         <member name="P:DualityEditor.EditorRes.GeneralRes.MenuName_Settings">

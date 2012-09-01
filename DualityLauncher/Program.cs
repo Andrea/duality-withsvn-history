@@ -69,17 +69,28 @@ namespace DualityLauncher
 			System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 			System.Threading.Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.InvariantCulture;
 
+			bool debugging = System.Diagnostics.Debugger.IsAttached;
+
 			DualityApp.Init(DualityApp.ExecutionEnvironment.Launcher, DualityApp.ExecutionContext.Game, args);
 			using (DualityLauncher launcherWindow = new DualityLauncher(
 				DualityApp.UserData.GfxWidth, 
 				DualityApp.UserData.GfxHeight, 
 				DualityApp.DefaultMode, 
 				DualityApp.AppData.AppName,
-				(DualityApp.UserData.GfxFullScreen && !System.Diagnostics.Debugger.IsAttached) ? GameWindowFlags.Fullscreen : GameWindowFlags.Default))
+				(DualityApp.UserData.GfxMode == ScreenMode.Fullscreen && !debugging) ? GameWindowFlags.Fullscreen : GameWindowFlags.Default))
 			{
 				// Retrieve icon from executable file and set it as window icon
 				string executablePath = System.IO.Path.GetFileName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
 				launcherWindow.Icon = System.Drawing.Icon.ExtractAssociatedIcon(executablePath);
+
+				// Go into native fullscreen mode
+				if (DualityApp.UserData.GfxMode == ScreenMode.Native && !debugging)
+					launcherWindow.WindowState = WindowState.Fullscreen;
+
+				if (DualityApp.UserData.GfxMode == ScreenMode.FixedWindow)
+					launcherWindow.WindowBorder = WindowBorder.Fixed;
+				else if (DualityApp.UserData.GfxMode == ScreenMode.Window)
+					launcherWindow.WindowBorder = WindowBorder.Resizable;
 
 				// Initialize default content
 				launcherWindow.MakeCurrent();
@@ -95,7 +106,7 @@ namespace DualityLauncher
 				Scene.Current = DualityApp.AppData.StartScene.Res;
 
 				// Run the DualityApp
-				launcherWindow.VSync = System.Diagnostics.Debugger.IsAttached ? VSyncMode.Off : VSyncMode.On; // Don't limit frame rate when debugging.
+				launcherWindow.VSync = debugging ? VSyncMode.Off : VSyncMode.On; // Don't limit frame rate when debugging.
 				launcherWindow.Run();
 			}
 			DualityApp.Terminate();

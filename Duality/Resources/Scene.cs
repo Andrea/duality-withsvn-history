@@ -29,7 +29,6 @@ namespace Duality.Resources
 
 		private	static	World				physicsWorld	= new World(Vector2.Zero);
 		private	static	float				physicsAcc		= 0.0f;
-		private	static	float				physicsTime		= 0.0f;
 		private	static	bool				physicsLowFps	= false;
 		private	static	ContentRef<Scene>	current			= ContentRef<Scene>.Null;
 		private	static	bool				curAutoGen		= false;
@@ -247,6 +246,14 @@ namespace Duality.Resources
 		{
 			get { return current.ResWeak == this; }
 		}
+		/// <summary>
+		/// [GET] Returns whether this Scene is completely empty.
+		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
+		public bool IsEmpty
+		{
+			get { return !this.objectManager.AllObjects.Any(); }
+		}
 
 		/// <summary>
 		/// Creates a new, empty scene which does not contain any <see cref="GameObject">GameObjects</see>.
@@ -262,7 +269,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// Renders the Scene
 		/// </summary>
-		public void Render()
+		internal void Render()
 		{
 			if (!this.IsCurrent) throw new InvalidOperationException("Can't render non-current Scene!");
 
@@ -274,7 +281,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// Updates the Scene
 		/// </summary>
-		public void Update()
+		internal void Update()
 		{
 			if (!this.IsCurrent) throw new InvalidOperationException("Can't update non-current Scene!");
 
@@ -283,33 +290,26 @@ namespace Duality.Resources
 			float physBegin = Time.MainTimer;
 			if (Scene.PhysicsFixedTime)
 			{
-				if (physicsTime > 0.0f)
+				physicsAcc += Time.MsPFMult * Time.TimeMult;
+				int iterations = 0;
+				if (physicsAcc >= Time.MsPFMult)
 				{
-					float timeCoverage = Time.GameTimer - physicsTime;
-					physicsTime = Time.GameTimer;
-					physicsAcc += timeCoverage;
-					int iterations = 0;
-					if (physicsAcc > Time.MsPFMult)
+					Performance.timeUpdatePhysics.BeginMeasure();
+					float timeUpdateBegin = Time.MainTimer;
+					while (physicsAcc >= Time.MsPFMult)
 					{
-						Performance.timeUpdatePhysics.BeginMeasure();
-						float timeUpdateBegin = Time.MainTimer;
-						while (physicsAcc > Time.MsPFMult)
-						{
-							// Catch up on updating progress
-							FarseerPhysics.Settings.VelocityThreshold = PhysicsConvert.ToPhysicalUnit(DualityApp.AppData.PhysicsVelocityThreshold / Time.SPFMult);
-							physicsWorld.Step(Time.SPFMult);
-							physicsAcc -= Time.MsPFMult;
-							iterations++;
+						// Catch up on updating progress
+						FarseerPhysics.Settings.VelocityThreshold = PhysicsConvert.ToPhysicalUnit(DualityApp.AppData.PhysicsVelocityThreshold / Time.SPFMult);
+						physicsWorld.Step(Time.SPFMult);
+						physicsAcc -= Time.MsPFMult;
+						iterations++;
 							
-							float timeSpent = Time.MainTimer - timeUpdateBegin;
-							if (timeSpent >= Time.MsPFMult * 10.0f) break; // Emergency exit
-						}
-						physUpdate = true;
-						Performance.timeUpdatePhysics.EndMeasure();
+						float timeSpent = Time.MainTimer - timeUpdateBegin;
+						if (timeSpent >= Time.MsPFMult * 10.0f) break; // Emergency exit
 					}
+					physUpdate = true;
+					Performance.timeUpdatePhysics.EndMeasure();
 				}
-				else
-					physicsTime = Time.GameTimer;
 			}
 			else
 			{
@@ -317,7 +317,6 @@ namespace Duality.Resources
 				FarseerPhysics.Settings.VelocityThreshold = PhysicsConvert.ToPhysicalUnit(Time.TimeMult * DualityApp.AppData.PhysicsVelocityThreshold / Time.SPFMult);
 				physicsWorld.Step(Time.TimeMult * Time.SPFMult);
 				physicsAcc = PhysicsAccStart;
-				physicsTime = Time.GameTimer;
 				physUpdate = true;
 				Performance.timeUpdatePhysics.EndMeasure();
 			}
@@ -348,11 +347,9 @@ namespace Duality.Resources
 		/// <summary>
 		/// Updates the Scene in the editor.
 		/// </summary>
-		public void EditorUpdate()
+		internal void EditorUpdate()
 		{
 			if (!this.IsCurrent) throw new InvalidOperationException("Can't update non-current Scene!");
-			
-			ResetPhysics();
 
 			Performance.timeUpdateScene.BeginMeasure();
 			GameObject[] activeObj = this.objectManager.ActiveObjects.ToArray();
@@ -478,7 +475,6 @@ namespace Duality.Resources
 		private static void ResetPhysics()
 		{
 			physicsLowFps = false;
-			physicsTime = 0.0f;
 			physicsAcc = PhysicsAccStart;
 		}
 

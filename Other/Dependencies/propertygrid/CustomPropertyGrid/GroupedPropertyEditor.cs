@@ -359,12 +359,12 @@ namespace AdamsLair.PropertyGrid
 			}
 		}
 		
-		protected void OnEditorAdded(PropertyEditor e)
+		protected virtual void OnEditorAdded(PropertyEditor e)
 		{
 			if (this.EditorAdded != null)
 				this.EditorAdded(this, new PropertyEditorEventArgs(e));
 		}
-		protected void OnEditorRemoving(PropertyEditor e)
+		protected virtual void OnEditorRemoving(PropertyEditor e)
 		{
 			if (this.EditorRemoving != null)
 				this.EditorRemoving(this, new PropertyEditorEventArgs(e));

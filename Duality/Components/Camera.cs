@@ -717,16 +717,10 @@ namespace Duality.Components
 			get { return this.passes; }
 			set 
 			{ 
-				if (value == null || value.Count < 1) value = new List<Pass>();
-				this.passes.Clear();
-				for (int i = 0; i < value.Count; i++)
-				{
-					if (value[i] == null) value[i] = new Pass();
-					if (i == 0)
-						this.passes.Add(new Pass(value[i], null));
-					else
-						this.passes.Add(new Pass(value[i], value[i].Input ?? new BatchInfo()));
-				}
+				if (value != null)
+					this.passes = value.Select(v => v ?? new Pass()).ToList();
+				else
+					this.passes = new List<Pass>();
 			}
 		}
 

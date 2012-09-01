@@ -106,7 +106,7 @@ namespace Duality
 			timeFreeze = false;
 		}
 
-		internal static void FrameTick()
+		internal static void FrameTick(bool forceFixedStep = false)
 		{
 			// Initial timer start
 			if (!watch.IsRunning) watch.Restart();
@@ -117,7 +117,7 @@ namespace Duality
 			frameCount++;
 
 			mainTimer = (float)watch.Elapsed.TotalMilliseconds;
-			lastDelta = MathF.Min(mainTimer - frameBegin, MsPFMult * 2); // Don't skip more than 2 frames / fall below 30 fps
+			lastDelta = forceFixedStep ? MsPFMult : MathF.Min(mainTimer - frameBegin, MsPFMult * 2); // Don't skip more than 2 frames / fall below 30 fps
 			frameBegin = mainTimer;
 
 			gameTimer += timeFreeze ? 0.0f : lastDelta * timeScale;

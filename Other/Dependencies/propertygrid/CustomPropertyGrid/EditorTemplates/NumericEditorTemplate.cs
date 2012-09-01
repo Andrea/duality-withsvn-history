@@ -249,8 +249,11 @@ namespace AdamsLair.PropertyGrid.EditorTemplates
 
 			if (this.gripPressed)
 			{
+				decimal lastVal = this.value;
+
 				this.Value = this.gripDragVal - this.increment * Math.Round((e.Location.Y - this.gripDragPos.Y) / 3m);
-				this.EmitEdited(this.value);
+
+				if (lastVal != this.value) this.EmitEdited(this.value);
 			}
 		}
 		public override void OnMouseLeave(EventArgs e)

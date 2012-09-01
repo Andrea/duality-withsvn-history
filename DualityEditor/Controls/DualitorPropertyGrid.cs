@@ -201,9 +201,5 @@ namespace DualityEditor.Controls
 
 			return null;
 		}
-		bool IHelpProvider.PerformHelpAction(HelpInfo info)
-		{
-			return (this as IHelpProvider).DefaultPerformHelpAction(info);
-		}
 	}
 }

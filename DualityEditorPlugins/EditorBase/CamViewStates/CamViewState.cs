@@ -137,13 +137,14 @@ namespace EditorBase.CamViewStates
 		private	bool			actionAllowed		= true;
 		private	Point			actionBeginLoc		= Point.Empty;
 		private Vector3			actionBeginLocSpace	= Vector3.Zero;
-		private ObjectAction		action				= ObjectAction.None;
+		private ObjectAction	action				= ObjectAction.None;
 		private	Vector3			selectionCenter		= Vector3.Zero;
 		private	float			selectionRadius		= 0.0f;
 		private	ObjectSelection	activeRectSel		= new ObjectSelection();
-		private	ObjectAction		mouseoverAction		= ObjectAction.None;
+		private	ObjectAction	mouseoverAction		= ObjectAction.None;
 		private	SelObj			mouseoverObject		= null;
 		private	bool			mouseoverSelect		= false;
+		private	bool			mouseover			= false;
 		private	CameraAction	drawCamGizmoState	= CameraAction.None;
 		private	ObjectAction	drawSelGizmoState	= ObjectAction.None;
 		private	List<Type>		lastActiveLayers	= new List<Type>();
@@ -211,9 +212,9 @@ namespace EditorBase.CamViewStates
 				}
 			}
 		}
-		public bool MouseoverSelect
+		public bool Mouseover
 		{
-			get { return this.mouseoverSelect; }
+			get { return this.mouseover; }
 		}
 		public SelObj MouseoverObject
 		{
@@ -441,7 +442,6 @@ namespace EditorBase.CamViewStates
 			// Draw hovered / selected objects action gizmo
 			if (visibleObjectAction != ObjectAction.None && (this.mouseoverObject != null || this.actionObjSel.Count == 1))
 			{
-				canvas.PushState();
 				Vector2 pos;
 				SelObj obj;
 				if (this.mouseoverObject != null || this.mouseoverAction == visibleObjectAction)
@@ -454,8 +454,14 @@ namespace EditorBase.CamViewStates
 					obj = this.actionObjSel[0];
 					pos = this.View.GetScreenCoord(this.actionObjSel[0].Pos).Xy;
 				}
-				obj.DrawActionGizmo(canvas, visibleObjectAction, pos, false);
-				canvas.PopState();
+
+				// If the SelObj is valid, draw the gizmo
+				if (obj.ActualObject != null)
+				{
+					canvas.PushState();
+					obj.DrawActionGizmo(canvas, visibleObjectAction, pos, false);
+					canvas.PopState();
+				}
 			}
 
 			// Draw current state text
@@ -1129,8 +1135,7 @@ namespace EditorBase.CamViewStates
 		}
 		private void LocalGLControl_MouseMove(object sender, MouseEventArgs e)
 		{
-			this.drawCamGizmoState = CameraAction.None;
-			this.drawSelGizmoState = ObjectAction.None;
+			this.mouseover = true;
 			this.OnCursorSpacePosChanged();
 		}
 		private void LocalGLControl_MouseUp(object sender, MouseEventArgs e)
@@ -1150,6 +1155,9 @@ namespace EditorBase.CamViewStates
 		}
 		private void LocalGLControl_MouseDown(object sender, MouseEventArgs e)
 		{
+			this.drawCamGizmoState = CameraAction.None;
+			this.drawSelGizmoState = ObjectAction.None;
+
 			if (this.action == ObjectAction.None)
 			{
 				if (e.Button == MouseButtons.Left)
@@ -1181,6 +1189,9 @@ namespace EditorBase.CamViewStates
 		}
 		private void LocalGLControl_MouseWheel(object sender, MouseEventArgs e)
 		{
+			this.drawCamGizmoState = CameraAction.None;
+			this.drawSelGizmoState = ObjectAction.None;
+
 			if (e.Delta != 0)
 			{
 				if (this.View.ParallaxActive)
@@ -1219,6 +1230,7 @@ namespace EditorBase.CamViewStates
 			this.mouseoverAction = ObjectAction.None;
 			this.mouseoverObject = null;
 			this.mouseoverSelect = false;
+			this.mouseover = false;
 
 			this.InvalidateView();
 		}
@@ -1389,10 +1401,6 @@ namespace EditorBase.CamViewStates
 			}
 
 			return null;
-		}
-		public virtual bool PerformHelpAction(HelpInfo info)
-		{
-			return this.DefaultPerformHelpAction(info);
 		}
 	}
 }

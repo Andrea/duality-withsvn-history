@@ -28,7 +28,7 @@ namespace DualityEditor
 			add { stack.ActiveHelpChanged += value; }
 			remove { stack.ActiveHelpChanged -= value; }
 		}
-		public static HelpInfo ActiveHelp
+		public static IHelpInfoReader ActiveHelp
 		{
 			get { return stack.ActiveHelp; }
 		}
@@ -129,9 +129,9 @@ namespace DualityEditor
 			bool success = false;
 
 			// Ask Help Provider for help
-			if (stack.ActiveHelpProvider != null)
+			if (stack.ActiveHelp != null)
 			{
-				success = success | stack.ActiveHelpProvider.PerformHelpAction(stack.ActiveHelp);
+				success = success | stack.ActiveHelp.PerformHelpAction(stack.ActiveHelp);
 			}
 
 			// No reaction? Just open the reference then.

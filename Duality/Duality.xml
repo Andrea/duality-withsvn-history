@@ -521,6 +521,31 @@
             [GET / SET] Use this property to store custom application data.
             </summary>
         </member>
+        <member name="T:Duality.ScreenMode">
+            <summary>
+            Describes the way a Duality window is set up.
+            </summary>
+        </member>
+        <member name="F:Duality.ScreenMode.Window">
+            <summary>
+            Duality runs in windowed mode. The window can be resized by the user.
+            </summary>
+        </member>
+        <member name="F:Duality.ScreenMode.FixedWindow">
+            <summary>
+            Duality runs in windowed mode. The window has a fixed size.
+            </summary>
+        </member>
+        <member name="F:Duality.ScreenMode.Native">
+            <summary>
+            Duality runs in fullscreen mode, using whatever screen resolution is currently active on the users desktop.
+            </summary>
+        </member>
+        <member name="F:Duality.ScreenMode.Fullscreen">
+            <summary>
+            Duality runs in fullscreen mode and changes desktop resolution whenever necesary.
+            </summary>
+        </member>
         <member name="T:Duality.DualityUserData">
             <summary>
             Provides information about user settings for this Duality application / game.
@@ -542,11 +567,9 @@
             [GET / SET] Height of the game's display area.
             </summary>
         </member>
-        <member name="P:Duality.DualityUserData.GfxFullScreen">
+        <member name="P:Duality.DualityUserData.GfxMode">
             <summary>
-            [GET / SET] Whether or not the game is launched in fullscreen mode. Not all display area sizes are available in fullscreen
-            and some of them might look distorted when applied to a display they do not fit on. To be sure, you should let the user decide
-            which screen resolution to use when in fullscreen.
+            [GET / SET] Describes the way the game window is set up.
             </summary>
         </member>
         <member name="P:Duality.DualityUserData.SfxEffectVol">
@@ -8838,6 +8861,11 @@
             [GET] Returns whether this Scene is <see cref="P:Duality.Resources.Scene.Current"/>.
             </summary>
         </member>
+        <member name="P:Duality.Resources.Scene.IsEmpty">
+            <summary>
+            [GET] Returns whether this Scene is completely empty.
+            </summary>
+        </member>
         <member name="T:Duality.IKeyboardInput">
             <summary>
             Provides access to user keyboard input
@@ -9275,6 +9303,17 @@
             <summary>
             Provides helper methods for handling <see cref="T:System.IO.Path">Paths</see>.
             </summary>
+        </member>
+        <member name="M:Duality.PathHelper.Combine(System.String[])">
+            <summary>
+            Combines several path tokens sequencially.
+            </summary>
+            <param name="paths"></param>
+            <returns>
+            A combined version of all path tokens.
+            If only one token is specified, it is returned unchanged.
+            If no tokens are specified, null is returned.
+            </returns>
         </member>
         <member name="M:Duality.PathHelper.GetFreePath(System.String,System.String)">
             <summary>

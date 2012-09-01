@@ -64,14 +64,28 @@ namespace EditorBase.PropertyEditors
 			else
 				this.Active = (values.First(o => o is Component) as Component).ActiveSingle;
 		}
+		protected override void OnValueChanged(object sender, PropertyEditorValueEventArgs args)
+		{
+			base.OnValueChanged(sender, args);
+
+			// Find the direct descendant editor on the path to the changed one
+			PropertyEditor directChild = args.Editor;
+			while (directChild != null && !this.HasPropertyEditor(directChild))
+				directChild = directChild.ParentEditor;
+
+			// If an editor has changed that was NOT a direct descendant, invoke its setter to trigger OnPropertySet / OnFieldSet.
+			// Always remember: If we don't emit a PropertyChanged event, PrefabLinks won't update their change lists!
+			if (directChild != null && directChild != args.Editor && directChild.EditedMember != null)
+				directChild.PerformSetValue();
+		}
 		protected override void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)
 		{
 			base.OnPropertySet(property, targets);
 			DualityEditorApp.NotifyObjPropChanged(this.ParentGrid, new DualityEditor.ObjectSelection(targets), property);
 		}
-		protected override void OnFieldSet(FieldInfo property, IEnumerable<object> targets)
+		protected override void OnFieldSet(FieldInfo field, IEnumerable<object> targets)
 		{
-			base.OnFieldSet(property, targets);
+			base.OnFieldSet(field, targets);
 			// This is a bad workaround for having a purely Property-based change event system: Simply notify "something" changed.
 			// Change to something better in the future.
 			DualityEditorApp.NotifyObjPropChanged(this.ParentGrid, new DualityEditor.ObjectSelection(targets));

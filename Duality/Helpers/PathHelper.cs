@@ -9,6 +9,26 @@ namespace Duality
 	public static class PathHelper
 	{
 		/// <summary>
+		/// Combines several path tokens sequencially.
+		/// </summary>
+		/// <param name="paths"></param>
+		/// <returns>
+		/// A combined version of all path tokens.
+		/// If only one token is specified, it is returned unchanged.
+		/// If no tokens are specified, null is returned.
+		/// </returns>
+		public static string Combine(params string[] paths)
+		{
+			if (paths == null || paths.Length == 0) return null;
+			if (paths.Length == 1) return paths[0];
+			if (paths.Length == 2) return Path.Combine(paths[0], paths[1]);
+			string result = paths[0];
+			for (int i = 1; i < paths.Length; i++)
+				result = Path.Combine(result, paths[i]);
+			return result;
+		}
+
+		/// <summary>
 		/// Returns a path that isn't taken yet.
 		/// </summary>
 		/// <param name="pathBase">The path to use as base for finding a available path.</param>

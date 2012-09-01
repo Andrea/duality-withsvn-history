@@ -13,9 +13,9 @@ namespace HelpAdvisor
 	{
 		private static	HelpInfo	advisorHelp = HelpInfo.FromText(HelpAdvisorRes.HelpInfo_Advisor_Topic, HelpAdvisorRes.HelpInfo_Advisor_Desc);
 
-		private	HelpInfo	newHelp		= null;
-		private	HelpInfo	currentHelp	= null;
-		private	HelpInfo	lastHelp	= null;
+		private	IHelpInfoReader	newHelp		= null;
+		private	IHelpInfoReader	currentHelp	= null;
+		private	IHelpInfoReader	lastHelp	= null;
 		private	DateTime	changeTime	= DateTime.Now;
 
 		private float AnimProgress

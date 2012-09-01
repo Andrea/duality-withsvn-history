@@ -479,23 +479,23 @@ namespace Duality
 			Resource.RunCleanup();
 		}
 
-		internal static void EditorUpdate(GameObjectManager updateObjects, bool freezeScene)
+		internal static void EditorUpdate(GameObjectManager updateObjects, bool freezeScene, bool forceFixedStep)
 		{
 			isUpdating = true;
 			Performance.timeUpdate.BeginMeasure();
-			
-			Time.FrameTick();
+
+			Time.FrameTick(forceFixedStep);
 			Performance.FrameTick();
 			OnBeforeUpdate();
-			if (execContext == ExecutionContext.Editor)
-			{
-				Scene.Current.EditorUpdate();
-				foreach (GameObject obj in updateObjects.ActiveObjects) obj.Update();
-			}
-			else if (execContext == ExecutionContext.Game)
+			if (execContext == ExecutionContext.Game)
 			{
 				if (!freezeScene)	Scene.Current.Update();
 				else				Scene.Current.EditorUpdate();
+				foreach (GameObject obj in updateObjects.ActiveObjects) obj.Update();
+			}
+			else if (execContext == ExecutionContext.Editor)
+			{
+				Scene.Current.EditorUpdate();
 				foreach (GameObject obj in updateObjects.ActiveObjects) obj.Update();
 			}
 			sound.Update();
@@ -984,7 +984,7 @@ namespace Duality
 		private	float				speedOfSound		= 360.0f;
 		private	float				soundDopplerFactor	= 1.0f;
 		private	float				physicsVelThreshold	= PhysicsConvert.ToDualityUnit(0.5f * Time.SPFMult);
-		private	bool				physicsFixedTime	= true;
+		private	bool				physicsFixedTime	= false;
 		private	object				customData			= null;
 
 		/// <summary>
@@ -1074,21 +1074,44 @@ namespace Duality
 	}
 
 	/// <summary>
+	/// Describes the way a Duality window is set up.
+	/// </summary>
+	public enum ScreenMode
+	{
+		/// <summary>
+		/// Duality runs in windowed mode. The window can be resized by the user.
+		/// </summary>
+		Window,
+		/// <summary>
+		/// Duality runs in windowed mode. The window has a fixed size.
+		/// </summary>
+		FixedWindow,
+		/// <summary>
+		/// Duality runs in fullscreen mode, using whatever screen resolution is currently active on the users desktop.
+		/// </summary>
+		Native,
+		/// <summary>
+		/// Duality runs in fullscreen mode and changes desktop resolution whenever necesary.
+		/// </summary>
+		Fullscreen
+	}
+
+	/// <summary>
 	/// Provides information about user settings for this Duality application / game.
 	/// It is persistent beyond installing or deleting this Duality game.
 	/// </summary>
 	[Serializable]
 	public class DualityUserData
 	{
-		private	string	userName		= "Unknown";
-		private	int		gfxWidth		= 800;
-		private	int		gfxHeight		= 600;
-		private	bool	gfxFullScreen	= false;
-		private	float	sfxEffectVol	= 1.0f;
-		private	float	sfxSpeechVol	= 1.0f;
-		private	float	sfxMusicVol		= 1.0f;
-		private	float	sfxMasterVol	= 1.0f;
-		private	object	customData		= null;
+		private	string		userName		= "Unknown";
+		private	int			gfxWidth		= 800;
+		private	int			gfxHeight		= 600;
+		private	ScreenMode	gfxMode			= ScreenMode.Window;
+		private	float		sfxEffectVol	= 1.0f;
+		private	float		sfxSpeechVol	= 1.0f;
+		private	float		sfxMusicVol		= 1.0f;
+		private	float		sfxMasterVol	= 1.0f;
+		private	object		customData		= null;
 
 		/// <summary>
 		/// [GET / SET] The player's name. This may be his main character's name or simply remain unused.
@@ -1115,14 +1138,12 @@ namespace Duality
 			set { this.gfxHeight = value; }
 		}
 		/// <summary>
-		/// [GET / SET] Whether or not the game is launched in fullscreen mode. Not all display area sizes are available in fullscreen
-		/// and some of them might look distorted when applied to a display they do not fit on. To be sure, you should let the user decide
-		/// which screen resolution to use when in fullscreen.
+		/// [GET / SET] Describes the way the game window is set up.
 		/// </summary>
-		public bool GfxFullScreen
+		public ScreenMode GfxMode
 		{
-			get { return this.gfxFullScreen; }
-			set { this.gfxFullScreen = value; }
+			get { return this.gfxMode; }
+			set { this.gfxMode = value; }
 		}
 		/// <summary>
 		/// [GET / SET] Volume factor of sound effects. This is applied automatically by the <see cref="SoundDevice"/> based on the <see cref="SoundType"/>.

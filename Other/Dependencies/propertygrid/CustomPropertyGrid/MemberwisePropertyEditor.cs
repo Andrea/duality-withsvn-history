@@ -233,6 +233,7 @@ namespace AdamsLair.PropertyGrid
 				}
 			}
 
+			this.OnValueChanged();
 			this.PerformGetValue();
 		}
 

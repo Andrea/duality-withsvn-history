@@ -194,6 +194,51 @@ namespace DualityEditor.EditorRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die If you&apos;re using a professional version of Visual Studio, this action will run the Duality launcher and trigger a debug event that allows you to attach the debugger to your game before anything happens. You can achieve the same by clicking the &quot;Run&quot; button of your Core Plugin in Visual Studio itself. ähnelt.
+        /// </summary>
+        public static string MenuItemInfo_DebugGame {
+            get {
+                return ResourceManager.GetString("MenuItemInfo_DebugGame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Duality always works locally in a project folder. The New Project dialog will help you setting up a new one for your project. ähnelt.
+        /// </summary>
+        public static string MenuItemInfo_NewProject {
+            get {
+                return ResourceManager.GetString("MenuItemInfo_NewProject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die The project source code is where your game logic happens. To help you get started, Duality will create and open a suitable Visual Studio solution for you. ähnelt.
+        /// </summary>
+        public static string MenuItemInfo_OpenProjectSource {
+            get {
+                return ResourceManager.GetString("MenuItemInfo_OpenProjectSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Want to see how your game looks like in its release version? This will save all project data and run the external Duality launcher. ähnelt.
+        /// </summary>
+        public static string MenuItemInfo_RunGame {
+            get {
+                return ResourceManager.GetString("MenuItemInfo_RunGame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die This will save all project data, i.e. all existing Resources. If you take a look at the Project View, you might notice that some Resources are written italic - these are the ones that have been changed without being saved yet. ähnelt.
+        /// </summary>
+        public static string MenuItemInfo_SaveAll {
+            get {
+                return ResourceManager.GetString("MenuItemInfo_SaveAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die About ähnelt.
         /// </summary>
         public static string MenuItemName_About {
@@ -212,6 +257,33 @@ namespace DualityEditor.EditorRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Quit ähnelt.
+        /// </summary>
+        public static string MenuItemName_Quit {
+            get {
+                return ResourceManager.GetString("MenuItemName_Quit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Increase Speed ähnelt.
+        /// </summary>
+        public static string MenuItemName_SandboxFaster {
+            get {
+                return ResourceManager.GetString("MenuItemName_SandboxFaster", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Decrease Speed ähnelt.
+        /// </summary>
+        public static string MenuItemName_SandboxSlower {
+            get {
+                return ResourceManager.GetString("MenuItemName_SandboxSlower", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die File ähnelt.
         /// </summary>
         public static string MenuName_File {
@@ -226,6 +298,15 @@ namespace DualityEditor.EditorRes {
         public static string MenuName_Help {
             get {
                 return ResourceManager.GetString("MenuName_Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Run ähnelt.
+        /// </summary>
+        public static string MenuName_Run {
+            get {
+                return ResourceManager.GetString("MenuName_Run", resourceCulture);
             }
         }
         

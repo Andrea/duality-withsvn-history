@@ -1522,10 +1522,6 @@ namespace EditorBase
 
 			return result;
 		}
-		bool IHelpProvider.PerformHelpAction(HelpInfo info)
-		{
-			return this.DefaultPerformHelpAction(info);
-		}
 
 		string IToolTipProvider.GetToolTip(TreeNodeAdv viewNode, Aga.Controls.Tree.NodeControls.NodeControl nodeControl)
 		{

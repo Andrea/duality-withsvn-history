@@ -9,19 +9,33 @@ using System.Reflection;
 using Duality;
 using Duality.Resources;
 
+using DualityEditor.EditorRes;
+
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace DualityEditor.Forms
 {
-	public partial class MainForm : Form
+	public partial class MainForm : Form, IHelpProvider
 	{
-		private	bool	nonUserClosing	= false;
-		private	Dictionary<string,ToolStripMenuItem>	menuRegistry	= new Dictionary<string,ToolStripMenuItem>();
+		private	bool				nonUserClosing	= false;
+		private	ToolStripMenuItem	activeMenu		= null;
+		private	Dictionary<string,ToolStripItem>	menuRegistry	= new Dictionary<string,ToolStripItem>();
+
+		// Hardcoded main menu items
+		private ToolStripMenuItem	menuRunSandboxPlay		= null;
+		private ToolStripMenuItem	menuRunSandboxPause		= null;
+		private ToolStripMenuItem	menuRunSandboxStop		= null;
+		private ToolStripMenuItem	menuRunSandboxPlayPause	= null;
+		private ToolStripMenuItem	menuRunSandboxStep		= null;
+		private ToolStripMenuItem	menuRunSandboxFaster	= null;
+		private ToolStripMenuItem	menuRunSandboxSlower	= null;
+
 
 		public DockPanel MainDockPanel
 		{
 			get { return this.dockPanel; }
 		}
+
 
 
 		internal MainForm()
@@ -91,49 +105,182 @@ namespace DualityEditor.Forms
 		}
 		public void InitMenus()
 		{
-			ToolStripMenuItem fileItem = this.RequestMenu(EditorRes.GeneralRes.MenuName_File);
-			ToolStripMenuItem newProjectItem = this.RequestMenu(Path.Combine(EditorRes.GeneralRes.MenuName_File, EditorRes.GeneralRes.MenuItemName_NewProject));
+			ToolStripMenuItem fileItem =	this.RequestMenu(GeneralRes.MenuName_File);
+			ToolStripMenuItem viewItem =	this.RequestMenu(GeneralRes.MenuName_View);
+			ToolStripMenuItem newProjectItem =	this.RequestMenu(GeneralRes.MenuName_File, GeneralRes.MenuItemName_NewProject);
+												this.RequestSeparator(GeneralRes.MenuName_File, "SaveSeparator");
+			ToolStripMenuItem saveAllItem =		this.RequestMenu(GeneralRes.MenuName_File, this.actionSaveAll.Text);
+												this.RequestSeparator(GeneralRes.MenuName_File, "CodeSeparator");
+			ToolStripMenuItem openCodeItem =	this.RequestMenu(GeneralRes.MenuName_File, this.actionOpenCode.Text);
+												this.RequestSeparator(GeneralRes.MenuName_File, "EndSeparator");
+			ToolStripMenuItem quitItem =		this.RequestMenu(GeneralRes.MenuName_File, GeneralRes.MenuItemName_Quit);
+			ToolStripMenuItem runItem =		this.RequestMenu(GeneralRes.MenuName_Run);
+			ToolStripMenuItem runGameItem =		this.RequestMenu(GeneralRes.MenuName_Run, this.actionRunApp.Text);
+			ToolStripMenuItem debugGameItem	=	this.RequestMenu(GeneralRes.MenuName_Run, this.actionDebugApp.Text);
+												this.RequestSeparator(GeneralRes.MenuName_Run, "SandboxSeparator");
+			this.menuRunSandboxPlay	=			this.RequestMenu(GeneralRes.MenuName_Run, this.actionRunSandbox.Text);
+			this.menuRunSandboxStep =			this.RequestMenu(GeneralRes.MenuName_Run, this.actionStepSandbox.Text);
+			this.menuRunSandboxPause =			this.RequestMenu(GeneralRes.MenuName_Run, this.actionPauseSandbox.Text);
+			this.menuRunSandboxStop =			this.RequestMenu(GeneralRes.MenuName_Run, this.actionStopSandbox.Text);
+												this.RequestSeparator(GeneralRes.MenuName_Run, "SandboxDebugSeparator");
+			this.menuRunSandboxSlower =			this.RequestMenu(GeneralRes.MenuName_Run, GeneralRes.MenuItemName_SandboxSlower);
+			this.menuRunSandboxFaster =			this.RequestMenu(GeneralRes.MenuName_Run, GeneralRes.MenuItemName_SandboxFaster);
+			ToolStripMenuItem helpItem =	this.RequestMenu(GeneralRes.MenuName_Help);
+			ToolStripMenuItem aboutItem =		this.RequestMenu(GeneralRes.MenuName_Help, GeneralRes.MenuItemName_About);
 
-			ToolStripMenuItem helpItem = this.RequestMenu(EditorRes.GeneralRes.MenuName_Help);
-			ToolStripMenuItem aboutItem = this.RequestMenu(Path.Combine(EditorRes.GeneralRes.MenuName_Help, EditorRes.GeneralRes.MenuItemName_About));
-
+			// ---------- Help ----------
 			helpItem.Alignment = ToolStripItemAlignment.Right;
 			aboutItem.Click += this.aboutItem_Click;
 
+			// ---------- File ----------
 			newProjectItem.Image = EditorRes.GeneralRes.ImageAppCreate;
 			newProjectItem.Click += this.newProjectItem_Click;
+			newProjectItem.Tag = HelpInfo.FromText(newProjectItem.Text, GeneralRes.MenuItemInfo_NewProject);
+
+			saveAllItem.Image = this.actionSaveAll.Image;
+			saveAllItem.ShortcutKeys = Keys.Control | Keys.S;
+			saveAllItem.Click += this.actionSaveAll_Click;
+			saveAllItem.Tag = HelpInfo.FromText(saveAllItem.Text, GeneralRes.MenuItemInfo_SaveAll);
+
+			openCodeItem.Image = this.actionOpenCode.Image;
+			openCodeItem.Click += this.actionOpenCode_Click;
+			openCodeItem.Tag = HelpInfo.FromText(openCodeItem.Text, GeneralRes.MenuItemInfo_OpenProjectSource);
+
+			runGameItem.Image = this.actionRunApp.Image;
+			runGameItem.Click += this.actionRunApp_Click;
+			runGameItem.ShortcutKeys = Keys.Alt | Keys.F5;
+			runGameItem.Tag = HelpInfo.FromText(runGameItem.Text, GeneralRes.MenuItemInfo_RunGame);
+
+			debugGameItem.Image = this.actionDebugApp.Image;
+			debugGameItem.Click += this.actionDebugApp_Click;
+			debugGameItem.Enabled = this.actionDebugApp.Enabled;
+			debugGameItem.ShortcutKeys = Keys.Alt | Keys.F6;
+			debugGameItem.Tag = HelpInfo.FromText(debugGameItem.Text, GeneralRes.MenuItemInfo_DebugGame);
+
+			quitItem.Click += this.quitItem_Click;
+			quitItem.ShortcutKeys = Keys.Alt | Keys.F4;
+
+			// ---------- Run ----------
+			this.menuRunSandboxPlay.Image = this.actionRunSandbox.Image;
+			this.menuRunSandboxPlay.Click += this.actionRunSandbox_Click;
+			this.menuRunSandboxPlay.ShortcutKeys = Keys.F5;
+
+			this.menuRunSandboxStep.Image = this.actionStepSandbox.Image;
+			this.menuRunSandboxStep.Click += this.actionStepSandbox_Click;
+			this.menuRunSandboxStep.ShortcutKeys = Keys.F6;
+
+			this.menuRunSandboxPause.Image = this.actionPauseSandbox.Image;
+			this.menuRunSandboxPause.Click += this.actionPauseSandbox_Click;
+			this.menuRunSandboxPause.ShortcutKeys = Keys.F7;
+
+			this.menuRunSandboxStop.Image = this.actionStopSandbox.Image;
+			this.menuRunSandboxStop.Click += this.actionStopSandbox_Click;
+			this.menuRunSandboxStop.ShortcutKeys = Keys.F8;
+
+			this.menuRunSandboxSlower.Click += this.menuRunSandboxSlower_Click;
+			this.menuRunSandboxSlower.ShortcutKeys = Keys.F9;
+
+			this.menuRunSandboxFaster.Click += this.menuRunSandboxFaster_Click;
+			this.menuRunSandboxFaster.ShortcutKeys = Keys.F10;
+
+			// Attach help data to toolstrip actions
+			this.actionOpenCode.Tag = HelpInfo.FromText(this.actionOpenCode.Text, GeneralRes.MenuItemInfo_OpenProjectSource);
+			this.actionSaveAll.Tag = HelpInfo.FromText(this.actionSaveAll.Text, GeneralRes.MenuItemInfo_SaveAll);
+			this.actionRunApp.Tag = HelpInfo.FromText(this.actionRunApp.Text, GeneralRes.MenuItemInfo_RunGame);
+			this.actionDebugApp.Tag = HelpInfo.FromText(this.actionDebugApp.Text, GeneralRes.MenuItemInfo_DebugGame);
 		}
-		public ToolStripMenuItem RequestMenu(string menuPath)
+		public void RequestSeparator(params string[] menuNames)
 		{
-			menuPath = menuPath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+			this.RequestMenu<ToolStripSeparator>(menuNames);
+		}
+		public ToolStripMenuItem RequestMenu(params string[] menuNames)
+		{
+			return this.RequestMenu<ToolStripMenuItem>(menuNames);
+		}
+		public T RequestMenu<T>(params string[] menuNames) where T : ToolStripItem, new()
+		{
+			if (menuNames == null || menuNames.Length < 1) throw new ArgumentException("You need to specify at least one menu name");
+
+			string menuPath = PathHelper.Combine(menuNames).Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);;
 			string menuId = menuPath.ToUpper();
-			ToolStripMenuItem item;
+
+			int lastDirSeparator = menuPath.LastIndexOf(Path.DirectorySeparatorChar);
+			string menuLastName;
+			if (lastDirSeparator != -1)
+				menuLastName = menuPath.Substring(lastDirSeparator + 1, menuPath.Length - (lastDirSeparator + 1));
+			else
+				menuLastName = menuPath;
+
+			ToolStripItem item;
 			if (!this.menuRegistry.TryGetValue(menuId, out item))
 			{
-				int lastDirSeparator = menuPath.LastIndexOf(Path.DirectorySeparatorChar);
-				if (lastDirSeparator != -1)
+				var parent = this.RequestMenuParent(menuPath);
+
+				if (typeof(ToolStripSeparator).IsAssignableFrom(typeof(T)) &&
+					parent.Count > 1 && parent[parent.Count - 1] is ToolStripSeparator)
 				{
-					string parentPath = menuPath.Substring(0, lastDirSeparator);
-					string menuName = menuPath.Substring(lastDirSeparator + 1, menuPath.Length - (lastDirSeparator + 1));
-					ToolStripMenuItem parentItem = this.RequestMenu(parentPath);
-					item = new ToolStripMenuItem(menuName);
-					parentItem.DropDownItems.Add(item);
+					// Reuse existing separator items
+					item = parent[parent.Count - 1] as T;
 				}
 				else
 				{
-					item = new ToolStripMenuItem(menuPath);
-					this.mainMenuStrip.Items.Add(item);
-				}
+					// Create new item
+					item = new T();
+					item.Name = menuId;
+					item.Text = menuLastName;
 
-				this.menuRegistry[menuId] = item;
+					// If its a separator, hide it by default because its not surrounded yet
+					if (item is ToolStripSeparator)
+						item.Visible = false;
+					// Is there a separator that we could show?
+					else if (parent.Count > 1 && parent[parent.Count - 1] is ToolStripSeparator)
+						parent[parent.Count - 1].Visible = true;
+					
+					// Register new item
+					parent.Add(item);
+					this.menuRegistry[menuId] = item;
+
+					// If its a main menu, register dropdown events
+					if (item is ToolStripMenuItem && parent == this.mainMenuStrip.Items)
+					{
+						ToolStripMenuItem mainMenuItem = item as ToolStripMenuItem;
+						mainMenuItem.DropDownOpened += mainMenuItem_DropDownOpened;
+						mainMenuItem.DropDownClosed += mainMenuItem_DropDownClosed;
+					}
+				}
 			}
-			return item;
+
+			return item as T;
+		}
+		private ToolStripItemCollection RequestMenuParent(string menuPath)
+		{
+			int lastDirSeparator = menuPath.LastIndexOf(Path.DirectorySeparatorChar);
+			if (lastDirSeparator != -1)
+			{
+				// Create parent menus
+				string parentPath = menuPath.Substring(0, lastDirSeparator);
+				ToolStripMenuItem parentItem = this.RequestMenu(parentPath);
+				return parentItem.DropDownItems;
+			}
+			else
+			{
+				// No parents? Return base collection
+				return this.mainMenuStrip.Items;
+			}
 		}
 		private void UpdateToolbar()
 		{
 			this.actionRunSandbox.Enabled	= Sandbox.State != SandboxState.Playing;
+			this.actionStepSandbox.Enabled	= Sandbox.State != SandboxState.Playing;
 			this.actionStopSandbox.Enabled	= Sandbox.State != SandboxState.Inactive;
 			this.actionPauseSandbox.Enabled	= Sandbox.State == SandboxState.Playing;
+
+			this.menuRunSandboxPlay.Enabled = this.actionRunSandbox.Enabled;
+			this.menuRunSandboxStep.Enabled = this.actionStepSandbox.Enabled;
+			this.menuRunSandboxStop.Enabled = this.actionStopSandbox.Enabled;
+			this.menuRunSandboxPause.Enabled = this.actionPauseSandbox.Enabled;
+			this.menuRunSandboxSlower.Enabled = Sandbox.State != SandboxState.Inactive;
+			this.menuRunSandboxFaster.Enabled = Sandbox.State != SandboxState.Inactive;
 
 			if (Duality.Serialization.Formatter.DefaultMethod == Duality.Serialization.FormattingMethod.Xml)
 			{
@@ -196,6 +343,16 @@ namespace DualityEditor.Forms
 		{
 			Sandbox.Play();
 		}
+		private void actionStepSandbox_Click(object sender, EventArgs e)
+		{
+			if (Sandbox.State == SandboxState.Paused)
+				Sandbox.Step();
+			else if (Sandbox.State == SandboxState.Inactive)
+			{
+				if (Sandbox.Play())
+					Sandbox.Pause();
+			}
+		}
 		private void actionPauseSandbox_Click(object sender, EventArgs e)
 		{
 			Sandbox.Pause();
@@ -203,6 +360,14 @@ namespace DualityEditor.Forms
 		private void actionStopSandbox_Click(object sender, EventArgs e)
 		{
 			Sandbox.Stop();
+		}
+		private void menuRunSandboxSlower_Click(object sender, EventArgs e)
+		{
+			Sandbox.Slower();
+		}
+		private void menuRunSandboxFaster_Click(object sender, EventArgs e)
+		{
+			Sandbox.Faster();
 		}
 
 		private void aboutItem_Click(object sender, EventArgs e)
@@ -343,6 +508,18 @@ namespace DualityEditor.Forms
 		{
 			if (e.CloseReason == ToolStripDropDownCloseReason.ItemClicked) e.Cancel = true;
 		}
+		private void quitItem_Click(object sender, EventArgs e)
+		{
+			Application.Exit();
+		}
+		private void mainMenuItem_DropDownClosed(object sender, EventArgs e)
+		{
+			this.activeMenu = null;
+		}
+		private void mainMenuItem_DropDownOpened(object sender, EventArgs e)
+		{
+			this.activeMenu = sender as ToolStripMenuItem;
+		}
 		private void UpdateSplitButtonBackupSettings()
 		{
 			this.checkBackups.Checked = DualityEditorApp.BackupsEnabled;
@@ -350,6 +527,32 @@ namespace DualityEditor.Forms
 			this.optionAutosaveTenMinutes.Checked = DualityEditorApp.Autosaves == AutosaveFrequency.TenMinutes;
 			this.optionAutosaveThirtyMinutes.Checked = DualityEditorApp.Autosaves == AutosaveFrequency.ThirtyMinutes;
 			this.optionAutoSaveOneHour.Checked = DualityEditorApp.Autosaves == AutosaveFrequency.OneHour;
+		}
+
+		HelpInfo IHelpProvider.ProvideHoverHelp(Point localPos, ref bool captured)
+		{
+			HelpInfo result = null;
+			Point globalPos = this.PointToScreen(localPos);
+
+			// Hovering an opened menu
+			if (this.activeMenu != null)
+			{
+				ToolStripItem	item		= this.mainMenuStrip.GetItemAtDeep(globalPos);
+				object			itemTag		= item != null ? item.Tag : null;
+
+				result = itemTag as HelpInfo;
+				captured = true;
+			}
+			else
+			{
+				ToolStripItem	item		= this.mainToolStrip.GetItemAtDeep(globalPos);
+				object			itemTag		= item != null ? item.Tag : null;
+				
+				result = itemTag as HelpInfo;
+				captured = false;
+			}
+
+			return result;
 		}
 	}
 }

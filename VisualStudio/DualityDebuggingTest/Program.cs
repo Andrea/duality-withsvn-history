@@ -24,21 +24,15 @@ namespace DualityDebuggingTest
 				DualityApp.UserData.GfxHeight, 
 				DualityApp.DefaultMode, 
 				DualityApp.AppData.AppName,
-				(DualityApp.UserData.GfxFullScreen && !System.Diagnostics.Debugger.IsAttached) ? GameWindowFlags.Fullscreen : GameWindowFlags.Default))
+				GameWindowFlags.Default))
 			{
-				// Retrieve icon from executable file and set it as window icon
-				string executablePath = System.IO.Path.GetFileName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
-				launcherWindow.Icon = System.Drawing.Icon.ExtractAssociatedIcon(executablePath);
-
 				// Initialize default content
 				launcherWindow.MakeCurrent();
 				DualityApp.TargetResolution = new Vector2(launcherWindow.Width, launcherWindow.Height);
 				DualityApp.TargetMode = launcherWindow.Context.GraphicsMode;
 				ContentProvider.InitDefaultContent();
 
-				// Run the DualityApp
-				launcherWindow.VSync = VSyncMode.On;
-				//launcherWindow.Run();
+				// Run tests
 				BitmapDebuggerVisualizer.TestShow(Pixmap.DualityLogo256.Res);
 				BitmapDebuggerVisualizer.TestShow(Pixmap.DualityLogo256.Res.MainLayer);
 				BitmapDebuggerVisualizer.TestShow(Texture.DualityLogo256.Res);
