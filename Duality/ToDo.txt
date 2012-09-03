@@ -19,6 +19,13 @@
 	-->	Find Darkrels crash bug and KILL IT WITH FIRE.
 
 
+-->	BUG: Duality doesn't seem to handle it well anymore if there are Components whose classes do not exist anymore.
+	-->	Might be the cause for Darkrels data loss bug
+	-->	Reproduce errors in a test environment, debug it and make it more robust
+	-->	Target: Scene loads completely and the Component instances have been safely removed
+		-->	Basically what PerformSanitaryCheck should be doing already but maybe doesn't do anymore..?
+		-->	Hasn't been tested for long.
+
 
 -->	Dualitor: Editor-wide Undo history, global Ctrl-Z and Ctrl-Y
 
