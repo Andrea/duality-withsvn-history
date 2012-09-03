@@ -260,6 +260,17 @@ namespace EditorBase
 				return result;
 			}
 		}
+		private struct ScheduleSelectEntry
+		{
+			public string Path;
+			public bool BeginRename;
+
+			public ScheduleSelectEntry(string path, bool rename)
+			{
+				this.Path = path;
+				this.BeginRename = rename;
+			}
+		}
 
 
 		private	Dictionary<string,NodeBase>	pathIdToNode	= new Dictionary<string,NodeBase>();
@@ -271,7 +282,7 @@ namespace EditorBase
 		private	float		flashDuration	= 0.0f;
 		private	float		flashIntensity	= 0.0f;
 
-		private	List<string>	scheduleSelectPath	= new List<string>();
+		private	List<ScheduleSelectEntry>	scheduleSelectPath	= new List<ScheduleSelectEntry>();
 
 		private	Dictionary<Node,bool>	tempNodeVisibilityCache	= new Dictionary<Node,bool>();
 		private	string					tempUpperFilter			= null;
@@ -355,15 +366,27 @@ namespace EditorBase
 			}
 			return false;
 		}
-		public void ScheduleSelect(string filePath)
+		public void ScheduleSelect(string filePath, bool rename = false)
 		{
 			filePath = Path.GetFullPath(filePath);
-			if (!this.SelectNode(this.NodeFromPath(filePath))) this.scheduleSelectPath.Add(filePath);
+			if (!this.SelectNode(this.NodeFromPath(filePath)))
+			{
+				this.scheduleSelectPath.Add(new ScheduleSelectEntry(filePath, rename));
+			}
+			else if (rename)
+			{
+				this.nodeTextBoxName.BeginEdit();
+			}
 		}
 		protected void PerformScheduleSelect(string incomingFilePath)
 		{
-			if (!this.scheduleSelectPath.Contains(incomingFilePath)) return;
-			if (this.SelectNode(this.NodeFromPath(incomingFilePath))) this.scheduleSelectPath.Remove(incomingFilePath);
+			if (!this.scheduleSelectPath.Any(e => e.Path == incomingFilePath)) return;
+			if (this.SelectNode(this.NodeFromPath(incomingFilePath)))
+			{
+				ScheduleSelectEntry entry = this.scheduleSelectPath.First(e => e.Path == incomingFilePath);
+				this.scheduleSelectPath.Remove(entry);
+				if (entry.BeginRename) this.nodeTextBoxName.BeginEdit();
+			}
 		}
 
 		protected void ApplyNodeFilter()
@@ -648,7 +671,7 @@ namespace EditorBase
 			resInstance.Save(resPath);
 
 			this.folderView.ClearSelection();
-			this.ScheduleSelect(resPath);
+			this.ScheduleSelect(resPath, true);
 
 			return resInstance.GetContentRef();
 		}
@@ -1382,31 +1405,36 @@ namespace EditorBase
 		}
 		private void EditorForm_ResourceCreated(object sender, ResourceEventArgs e)
 		{
-			// Register newly detected ressource file
-			if (File.Exists(e.Path) && Resource.IsResourceFile(e.Path))
-			{
-				NodeBase newNode = this.ScanFile(e.Path);
+			bool alreadyAdded = this.NodeFromPath(e.Path) != null; // Don't add Resources that are already present.
 
-				Node parentNode = this.NodeFromPath(Path.GetDirectoryName(e.Path));
-				if (parentNode == null) parentNode = this.folderModel.Root;
+			if (!alreadyAdded)
+			{
+				// Register newly detected ressource file
+				if (File.Exists(e.Path) && Resource.IsResourceFile(e.Path))
+				{
+					NodeBase newNode = this.ScanFile(e.Path);
+
+					Node parentNode = this.NodeFromPath(Path.GetDirectoryName(e.Path));
+					if (parentNode == null) parentNode = this.folderModel.Root;
 					
-				this.InsertNodeSorted(newNode, parentNode);
-				this.RegisterNodeTree(newNode);
-				newNode.NotifyVisible();
-			}
-			// Add new directory tree
-			else if (e.IsDirectory)
-			{
-				// Actually, only add the directory itsself. Each file will trigger its own ResourceCreated event
-				DirectoryNode newNode = new DirectoryNode(e.Path);
-				//NodeBase newNode = this.ScanDirectory(e.Path);
+					this.InsertNodeSorted(newNode, parentNode);
+					this.RegisterNodeTree(newNode);
+					newNode.NotifyVisible();
+				}
+				// Add new directory tree
+				else if (e.IsDirectory)
+				{
+					// Actually, only add the directory itsself. Each file will trigger its own ResourceCreated event
+					DirectoryNode newNode = new DirectoryNode(e.Path);
+					//NodeBase newNode = this.ScanDirectory(e.Path);
 
-				Node parentNode = this.NodeFromPath(Path.GetDirectoryName(e.Path));
-				if (parentNode == null) parentNode = this.folderModel.Root;
+					Node parentNode = this.NodeFromPath(Path.GetDirectoryName(e.Path));
+					if (parentNode == null) parentNode = this.folderModel.Root;
 
-				this.InsertNodeSorted(newNode, parentNode);
-				this.RegisterNodeTree(newNode);
-				newNode.NotifyVisible();
+					this.InsertNodeSorted(newNode, parentNode);
+					this.RegisterNodeTree(newNode);
+					newNode.NotifyVisible();
+				}
 			}
 
 			// Perform previously scheduled selection

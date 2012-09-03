@@ -529,7 +529,7 @@ namespace DualityEditor
 			OnSelectionChanged(sender, ObjectSelection.Category.None);
 		}
 
-		public static void SaveCurrentScene(bool skipYetUnsaved = true)
+		public static string SaveCurrentScene(bool skipYetUnsaved = true)
 		{
 			if (!Scene.Current.IsRuntimeResource)
 			{
@@ -546,6 +546,7 @@ namespace DualityEditor
 				Scene.Current.Save(path);
 				DualityApp.AppData.Version++;
 			}
+			return Scene.Current.Path;
 		}
 		public static void SaveResources()
 		{

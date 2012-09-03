@@ -69,7 +69,8 @@ namespace EditorBase.PropertyEditors
 		}
 		protected void AdjustPreviewHeight(bool toggle)
 		{
-			int targetHeight = MathF.Clamp(this.prevImage.Height + 2 + this.rectHeader.Height, SmallHeight, BigHeight);
+			int prevImageHeight = this.prevImage != null ? this.prevImage.Height : 0;
+			int targetHeight = MathF.Clamp(prevImageHeight + 2 + this.rectHeader.Height, SmallHeight, BigHeight);
 			if (!toggle || this.Height != targetHeight)
 				this.Height = targetHeight;
 			else

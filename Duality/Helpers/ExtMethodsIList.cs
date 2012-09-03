@@ -58,10 +58,11 @@ namespace Duality
 		/// <param name="collection">List to perform the sort operation on.</param>
 		/// <param name="val">Object to compare the lists contents to.</param>
 		/// <returns></returns>
-		public static int IndexOfFirst<T>(this IList<T> collection, T val) where T : class
+		public static int IndexOfFirst<T>(this IList<T> collection, T val)
 		{
+			var cmp = EqualityComparer<T>.Default;
 			for (int i = 0; i < collection.Count; i++)
-				if (collection[i] == val) return i;
+				if (cmp.Equals(collection[i], val)) return i;
 			return -1;
 		}
 		/// <summary>
@@ -71,7 +72,7 @@ namespace Duality
 		/// <param name="collection">List to perform the sort operation on.</param>
 		/// <param name="pred">The predicate to use on the lists contents.</param>
 		/// <returns></returns>
-		public static int IndexOfFirst<T>(this IList<T> collection, Predicate<T> pred) where T : class
+		public static int IndexOfFirst<T>(this IList<T> collection, Predicate<T> pred)
 		{
 			for (int i = 0; i < collection.Count; i++)
 				if (pred(collection[i])) return i;
@@ -84,10 +85,11 @@ namespace Duality
 		/// <param name="collection">List to perform the sort operation on.</param>
 		/// <param name="val">Object to compare the lists contents to.</param>
 		/// <returns></returns>
-		public static int IndexOfLast<T>(this IList<T> collection, T val) where T : class
+		public static int IndexOfLast<T>(this IList<T> collection, T val)
 		{
+			var cmp = EqualityComparer<T>.Default;
 			for (int i = collection.Count - 1; i >= 0; i--)
-				if (collection[i] == val) return i;
+				if (cmp.Equals(collection[i], val)) return i;
 			return -1;
 		}
 		/// <summary>
@@ -97,7 +99,7 @@ namespace Duality
 		/// <param name="collection">List to perform the sort operation on.</param>
 		/// <param name="pred">The predicate to use on the lists contents.</param>
 		/// <returns></returns>
-		public static int IndexOfLast<T>(this IList<T> collection, Predicate<T> pred) where T : class
+		public static int IndexOfLast<T>(this IList<T> collection, Predicate<T> pred)
 		{
 			for (int i = collection.Count - 1; i >= 0; i--)
 				if (pred(collection[i])) return i;

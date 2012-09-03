@@ -808,10 +808,50 @@ namespace Duality
 		/// </summary>
 		internal void PerformSanitaryCheck()
 		{
-			for (int i = this.compList.Count - 1;  i >= 0; i--)
-				if (this.compList[i] == null) this.compList.RemoveAt(i);
-			foreach (Type key in this.compMap.Keys.ToArray())
-				if (this.compMap[key] == null) this.compMap.Remove(key);
+			// Check Componen List
+			if (this.compList != null)
+			{
+				for (int i = this.compList.Count - 1;  i >= 0; i--)
+				{
+					if (this.compList[i] == null)
+					{
+						this.compList.RemoveAt(i);
+						Log.Core.WriteWarning(
+							"Missing Component in GameObject '{1}'. This should never happen and is likely the cause of malformed data", 
+							this);
+					}
+				}
+			}
+			else
+			{
+				this.compList = new List<Component>();
+				Log.Core.WriteWarning(
+					"GameObject '{0}' didn't have a Component list. This should never happen and is likely the cause of malformed data", 
+					this);
+			}
+
+			// Check Component Map
+			if (this.compMap != null)
+			{
+				foreach (Type key in this.compMap.Keys.ToArray())
+				{
+					if (this.compMap[key] == null)
+					{
+						this.compMap.Remove(key);
+						Log.Core.WriteWarning(
+							"Missing Component '{0}' in GameObject '{1}'. This should never happen and is likely the cause of malformed data", 
+							key,
+							this);
+					}
+				}
+			}
+			else
+			{
+				this.compMap = new Dictionary<Type,Component>();
+				Log.Core.WriteWarning(
+					"GameObject '{0}' didn't have a Component map. This should never happen and is likely the cause of malformed data", 
+					this);
+			}
 		}
 		internal void OnLoaded(bool deep = false)
 		{

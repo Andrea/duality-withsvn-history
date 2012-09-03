@@ -1572,8 +1572,18 @@ namespace EditorBase
 		}
 		private void buttonSaveScene_Click(object sender, EventArgs e)
 		{
-			DualityEditorApp.SaveCurrentScene(false);
+			bool isNewScene = Scene.Current.IsRuntimeResource;
+			string scenePath = DualityEditorApp.SaveCurrentScene(false);
 			this.UpdateSceneLabel();
+
+			if (isNewScene)
+			{
+				ProjectFolderView projectView = EditorBasePlugin.Instance.RequestProjectView();
+				if (projectView != null)
+				{
+					projectView.ScheduleSelect(scenePath, true);
+				}
+			}
 		}
 		private void buttonShowComponents_CheckedChanged(object sender, EventArgs e)
 		{

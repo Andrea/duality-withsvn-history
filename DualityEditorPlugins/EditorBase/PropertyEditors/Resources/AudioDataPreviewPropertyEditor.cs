@@ -41,7 +41,7 @@ namespace EditorBase.PropertyEditors
 		
 		protected void GeneratePreviewImage()
 		{
-			int ovLen = this.value != null ? this.value.OggVorbisData.Length : 0;
+			int ovLen = this.value != null && this.value.OggVorbisData != null ? this.value.OggVorbisData.Length : 0;
 			if (this.prevImageValue == ovLen) return;
 			this.prevImageValue = ovLen;
 
