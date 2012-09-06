@@ -817,7 +817,7 @@ namespace Duality
 					{
 						this.compList.RemoveAt(i);
 						Log.Core.WriteWarning(
-							"Missing Component in GameObject '{1}'. This should never happen and is likely the cause of malformed data", 
+							"Missing Component in GameObject '{0}'. This should never happen and is likely the cause of malformed data", 
 							this);
 					}
 				}

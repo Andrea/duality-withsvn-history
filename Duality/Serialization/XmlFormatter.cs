@@ -359,13 +359,14 @@ namespace Duality.Serialization
 				if (dataType == DataType.Type)
 				{
 					string typeString = this.reader.GetAttribute("value");
-					Type type = ReflectionHelper.ResolveType(typeString);
-					result = type;
+					result = ReflectionHelper.ResolveType(typeString, false);
+					if (result == null) this.LogCantResolveTypeError(objId, typeString);
 				}
 				else
 				{
 					string memberString = this.reader.GetAttribute("value");
-					result = ReflectionHelper.ResolveMember(memberString);
+					result = ReflectionHelper.ResolveMember(memberString, false);
+					if (result == null) this.LogCantResolveMemberError(objId, memberString);
 				}
 			}
 			catch (Exception e)
@@ -377,7 +378,7 @@ namespace Duality.Serialization
 					Log.Type(dataType.ToActualType()),
 					Log.Exception(e));
 			}
-			
+
 			// Prepare object reference
 			this.idManager.Inject(result, objId);
 

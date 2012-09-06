@@ -480,13 +480,14 @@ namespace Duality.Serialization
 					if (dataType == DataType.Type)
 					{
 						string typeString = this.reader.ReadString();
-						Type type = ReflectionHelper.ResolveType(typeString);
-						result = type;
+						result = ReflectionHelper.ResolveType(typeString, false);
+						if (result == null) this.LogCantResolveTypeError(objId, typeString);
 					}
 					else
 					{
 						string memberString = this.reader.ReadString();
-						result = ReflectionHelper.ResolveMember(memberString);
+						result = ReflectionHelper.ResolveMember(memberString, false);
+						if (result == null) this.LogCantResolveMemberError(objId, memberString);
 					}
 				}
 			}

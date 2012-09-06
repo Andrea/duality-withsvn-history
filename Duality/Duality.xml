@@ -1623,6 +1623,13 @@
             <param name="objId">The object id of the affected object.</param>
             <param name="typeString">The <see cref="M:Duality.ReflectionHelper.GetTypeId(System.Type)">type string</see> that couldn't be resolved.</param>
         </member>
+        <member name="M:Duality.Serialization.Formatter.LogCantResolveMemberError(System.UInt32,System.String)">
+            <summary>
+            Logs an error that occured trying to resolve a <see cref="!:System.MemberInfo"/> by its <see cref="M:Duality.ReflectionHelper.GetMemberId(System.Reflection.MemberInfo)">id string</see>.
+            </summary>
+            <param name="objId">The object id of the affected object.</param>
+            <param name="memberString">The <see cref="M:Duality.ReflectionHelper.GetMemberId(System.Reflection.MemberInfo)">id string</see> that couldn't be resolved.</param>
+        </member>
         <member name="M:Duality.Serialization.Formatter.Create(System.IO.Stream,Duality.Serialization.FormattingMethod)">
             <summary>
             Creates a new Formatter using the specified stream for I/O.
