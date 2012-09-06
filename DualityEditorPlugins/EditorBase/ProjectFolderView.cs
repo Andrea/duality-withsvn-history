@@ -652,7 +652,7 @@ namespace EditorBase
 			Directory.CreateDirectory(dirPath);
 
 			this.folderView.ClearSelection();
-			this.ScheduleSelect(dirPath);
+			this.ScheduleSelect(dirPath, true);
 		}
 		protected IContentRef CreateResource(Type type, TreeNodeAdv baseNode, string desiredName = null)
 		{
