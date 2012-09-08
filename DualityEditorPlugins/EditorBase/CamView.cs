@@ -120,6 +120,7 @@ namespace EditorBase
 		private	ColorPickerDialog	bgColorDialog	= new ColorPickerDialog();
 		private	GameObject			nativeCamObj	= null;
 		private	string				loadTempState	= null;
+		private	InputEventMessageRedirector	waitForInputFilter	= null;
 
 		private	Dictionary<Type,CamViewLayer>	availLayers	= new Dictionary<Type,CamViewLayer>();
 		private	Dictionary<Type,CamViewState>	availStates	= new Dictionary<Type,CamViewState>();
@@ -285,6 +286,7 @@ namespace EditorBase
 
 			FileEventManager.ResourceModified -= this.EditorForm_ResourceModified;
 			DualityEditorApp.ObjectPropertyChanged -= this.EditorForm_ObjectPropertyChanged;
+			Scene.Entered -= this.Scene_Entered;
 			Scene.Leaving -= this.Scene_Leaving;
 			Scene.GameObjectUnregistered -= this.Scene_GameObjectUnregistered;
 			Scene.RegisteredObjectComponentRemoved -= this.Scene_RegisteredObjectComponentRemoved;
@@ -299,6 +301,18 @@ namespace EditorBase
 			// Get rid of a possibly existing old glControl
 			if (this.glControl != null)
 			{
+				this.glControl.MouseEnter -= this.glControl_MouseEnter;
+				this.glControl.MouseLeave -= this.glControl_MouseLeave;
+				this.glControl.MouseDown -= this.glControl_MouseDown;
+				this.glControl.MouseUp -= this.glControl_MouseUp;
+				this.glControl.MouseWheel -= this.glControl_MouseWheel;
+				this.glControl.MouseMove -= this.glControl_MouseMove;
+				this.glControl.GotFocus -= this.glControl_GotFocus;
+				this.glControl.PreviewKeyDown -= glControl_PreviewKeyDown;
+				this.glControl.KeyDown -= this.glControl_KeyDown;
+				this.glControl.KeyUp -= this.glControl_KeyUp;
+				this.glControl.Resize -= this.glControl_Resize;
+
 				this.glControl.Dispose();
 				this.Controls.Remove(this.glControl);
 			}
@@ -310,6 +324,8 @@ namespace EditorBase
 			this.glControl.Name = "glControl";
 			this.glControl.VSync = false;
 			this.glControl.AllowDrop = true;
+			this.glControl.MouseEnter += this.glControl_MouseEnter;
+			this.glControl.MouseLeave += this.glControl_MouseLeave;
 			this.glControl.MouseDown += this.glControl_MouseDown;
 			this.glControl.MouseUp += this.glControl_MouseUp;
 			this.glControl.MouseWheel += this.glControl_MouseWheel;
@@ -594,15 +610,18 @@ namespace EditorBase
 			this.buttonResetZoom.Enabled = value;
 		}
 
-		public void FocusOnObject(GameObject obj)
+		public void FocusOnPos(Vector3 targetPos)
 		{
-			if (obj == null || obj.Transform == null) return;
 			if (!this.activeState.CameraActionAllowed) return;
-			Vector3 targetPos = obj.Transform.Pos - Vector3.UnitZ * this.camComp.ParallaxRefDist;
-			targetPos.Z = MathF.Min(this.camObj.Transform.Pos.Z, targetPos.Z);
+			targetPos -= Vector3.UnitZ * MathF.Abs(this.camComp.ParallaxRefDist);
+			//targetPos.Z = MathF.Min(this.camObj.Transform.Pos.Z, targetPos.Z);
 			this.camObj.Transform.Pos = targetPos;
 			this.OnCamTransformChanged();
 			this.glControl.Invalidate();
+		}
+		public void FocusOnObject(GameObject obj)
+		{
+			this.FocusOnPos((obj == null || obj.Transform == null) ? Vector3.Zero : obj.Transform.Pos);
 		}
 
 		public void MakeDualityTarget()
@@ -664,7 +683,46 @@ namespace EditorBase
 			if (this.CurrentCameraChanged != null)
 				this.CurrentCameraChanged(this, new CameraChangedEventArgs(prev, next));
 		}
-
+		
+		
+		private void InstallFocusHook()
+		{
+			// Hook global message filter
+			if (this.waitForInputFilter == null)
+			{
+				this.waitForInputFilter = new InputEventMessageRedirector(this.glControl, this.FocusHoolFilter,
+					InputEventMessageRedirector.MessageType.MouseWheel, 
+					InputEventMessageRedirector.MessageType.KeyDown);
+				Application.AddMessageFilter(this.waitForInputFilter);
+			}
+		}
+		private void RemoveFocusHook()
+		{
+			// Remove global message filter
+			if (this.waitForInputFilter != null)
+			{
+				Application.RemoveMessageFilter(this.waitForInputFilter);
+				this.waitForInputFilter = null;
+			}
+		}
+		private bool FocusHoolFilter(InputEventMessageRedirector.MessageType type, EventArgs e)
+		{
+			if (Sandbox.State == SandboxState.Playing)
+			{
+				// Don't capture keys in sandbox mode. They're likely to be needed in the current Game View
+				if (type == InputEventMessageRedirector.MessageType.KeyDown) return false;
+			}
+			
+			return true;
+		}
+		private void glControl_MouseLeave(object sender, EventArgs e)
+		{
+			this.RemoveFocusHook();
+		}
+		private void glControl_MouseEnter(object sender, EventArgs e)
+		{
+			this.InstallFocusHook();
+		}
 		private void glControl_MouseDown(object sender, MouseEventArgs e)
 		{
 			if (this.activeState.EngineUserInput)
@@ -685,6 +743,8 @@ namespace EditorBase
 		}
 		private void glControl_MouseWheel(object sender, MouseEventArgs e)
 		{
+			if (!this.glControl.Focused) this.glControl.Focus();
+
 			if (this.activeState.EngineUserInput)
 			{
 				this.inputMouseWheel += e.Delta;
@@ -704,12 +764,15 @@ namespace EditorBase
 		}
 		private void glControl_GotFocus(object sender, EventArgs e)
 		{
-			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Terminated) return;
+			this.RemoveFocusHook();
 
-			if (this.camObj.GetComponent<SoundListener>() != null)
-				this.camObj.GetComponent<SoundListener>().MakeCurrent();
+			if (DualityApp.ExecContext != DualityApp.ExecutionContext.Terminated)
+			{
+				if (this.camObj.GetComponent<SoundListener>() != null)
+					this.camObj.GetComponent<SoundListener>().MakeCurrent();
 
-			this.activeState.SelectObjects(this.activeState.SelectedObjects);
+				this.activeState.SelectObjects(this.activeState.SelectedObjects);
+			}
 		}
 		private void glControl_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
 		{
@@ -736,6 +799,8 @@ namespace EditorBase
 		}
 		private void glControl_KeyDown(object sender, KeyEventArgs e)
 		{
+			if (!this.glControl.Focused) this.glControl.Focus();
+
 			if (this.activeState.EngineUserInput)
 			{
 				Key inputKey = e.KeyCode.ToOpenTKSingle();
@@ -839,6 +904,7 @@ namespace EditorBase
 		
 		private void Scene_Entered(object sender, EventArgs e)
 		{
+			if (Sandbox.State == SandboxState.Inactive) this.FocusOnPos(Vector3.Zero);
 			this.glControl.Invalidate();
 		}
 		private void Scene_Leaving(object sender, EventArgs e)

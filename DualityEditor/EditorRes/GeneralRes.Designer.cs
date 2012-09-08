@@ -140,6 +140,20 @@ namespace DualityEditor.EditorRes {
             }
         }
         
+        public static System.Drawing.Bitmap CursorHandGrab {
+            get {
+                object obj = ResourceManager.GetObject("CursorHandGrab", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap CursorHandGrabbing {
+            get {
+                object obj = ResourceManager.GetObject("CursorHandGrabbing", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die No information available. ähnelt.
         /// </summary>

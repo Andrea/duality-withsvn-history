@@ -7586,6 +7586,11 @@
             <param name="size"></param>
             <returns></returns>
         </member>
+        <member name="M:Duality.Components.Physics.RigidBody.AwakeAll">
+            <summary>
+            Awakes all currently existing RigidBodies.
+            </summary>
+        </member>
         <member name="P:Duality.Components.Physics.RigidBody.BodyType">
             <summary>
             [GET / SET] The type of the physical body.
@@ -8770,6 +8775,11 @@
             </summary>
             <param name="device"></param>
             <returns></returns>
+        </member>
+        <member name="M:Duality.Resources.Scene.AwakePhysics">
+            <summary>
+            Awakes all currently existing physical objects.
+            </summary>
         </member>
         <member name="P:Duality.Resources.Scene.PhysicsAlpha">
             <summary>

@@ -11,9 +11,13 @@ namespace DualityEditor
 		public static readonly Cursor ArrowActionMove;
 		public static readonly Cursor ArrowActionRotate;
 		public static readonly Cursor ArrowActionScale;
+		public static readonly Cursor HandGrab;
+		public static readonly Cursor HandGrabbing;
 
 		static CursorHelper()
 		{
+			HandGrab			= CreateCursor(EditorRes.GeneralRes.CursorHandGrab, 8, 8);
+			HandGrabbing		= CreateCursor(EditorRes.GeneralRes.CursorHandGrabbing, 8, 8);
 			Arrow				= CreateCursor(EditorRes.GeneralRes.CursorArrow, 0, 0);
 			ArrowAction			= CreateCursor(EditorRes.GeneralRes.CursorArrowAction, 0, 0);
 			ArrowActionMove		= CreateCursor(EditorRes.GeneralRes.CursorArrowActionMove, 0, 0);

@@ -616,7 +616,7 @@ namespace Duality
 		private	string				sourceText		= null;
 		private	Icon[]				icons			= null;
 		private	FlowArea[]			flowAreas		= null;
-		private	ContentRef<Font>[]	fonts			= null;
+		private	ContentRef<Font>[]	fonts			= new ContentRef<Font>[] { Font.GenericMonospace10 };
 		private	int					maxWidth		= 0;
 		private	int					maxHeight		= 0;
 		private	WrapMode			wrapMode		= WrapMode.Word;
@@ -660,7 +660,14 @@ namespace Duality
 		public ContentRef<Font>[] Fonts
 		{
 			get { return this.fonts; }
-			set { this.fonts = value; }
+			set
+			{
+				if (this.fonts != value)
+				{
+					if (value == null || value.Length == 0) value = new ContentRef<Font>[] { Font.GenericMonospace10 };
+					this.fonts = value;
+				}
+			}
 		}
 		/// <summary>
 		/// [GET / SET] The maximum width of the displayed text block. Zero deactivates maximum width.

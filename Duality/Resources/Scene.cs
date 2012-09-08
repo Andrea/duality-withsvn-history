@@ -235,7 +235,15 @@ namespace Duality.Resources
 			set
 			{
 				this.globalGravity = value;
-				if (this.IsCurrent) physicsWorld.Gravity = PhysicsConvert.ToPhysicalUnit(value / Time.SPFMult);
+				if (this.IsCurrent)
+				{
+					physicsWorld.Gravity = PhysicsConvert.ToPhysicalUnit(value / Time.SPFMult);
+					foreach (Body b in physicsWorld.BodyList)
+					{
+						if (b.IgnoreGravity || b.BodyType != BodyType.Dynamic) continue;
+						b.Awake = true;
+					}
+				}
 			}
 		}
 		/// <summary>
@@ -476,6 +484,14 @@ namespace Duality.Resources
 		{
 			physicsLowFps = false;
 			physicsAcc = PhysicsAccStart;
+		}
+		/// <summary>
+		/// Awakes all currently existing physical objects.
+		/// </summary>
+		public static void AwakePhysics()
+		{
+			foreach (Body b in physicsWorld.BodyList)
+				b.Awake = true;
 		}
 
 		private void objectManager_Registered(object sender, ObjectManagerEventArgs<GameObject> e)

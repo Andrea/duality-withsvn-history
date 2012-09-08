@@ -1105,6 +1105,13 @@ namespace Duality.Components.Physics
 
 			return picked;
 		}
+		/// <summary>
+		/// Awakes all currently existing RigidBodies.
+		/// </summary>
+		public static void AwakeAll()
+		{
+			Scene.AwakePhysics();
+		}
 	}
 	
 	/// <summary>

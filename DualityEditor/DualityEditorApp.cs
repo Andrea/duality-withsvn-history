@@ -183,6 +183,7 @@ namespace DualityEditor
 			Scene.Leaving += Scene_Leaving;
 			Scene.Entered += Scene_Entered;
 			Application.Idle += Application_Idle;
+			Resource.ResourceDisposed += Resource_ResourceDisposed;
 			Resource.ResourceSaved += Resource_ResourceSaved;
 			Resource.ResourceSaving += Resource_ResourceSaving;
 			FileEventManager.PluginChanged += FileEventManager_PluginChanged;
@@ -1106,7 +1107,13 @@ namespace DualityEditor
 			// Do a backup before overwriting the file
 			if (backupsEnabled) BackupResource(e.Path);
 		}
-		
+		private static void Resource_ResourceDisposed(object sender, ResourceEventArgs e)
+		{
+			// Deselect disposed Resources
+			if (selectionCurrent.Resources.Contains(e.Content.Res))
+				Deselect(sender, new ObjectSelection(e.Content.Res));
+		}
+
 		private static void mainForm_Activated(object sender, EventArgs e)
 		{
 			// Core plugin reload

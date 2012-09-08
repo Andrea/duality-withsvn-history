@@ -16,8 +16,17 @@
 -->	Implement some simple Font effects?
 
 -->	Testing, Testing, Testing! Only a dead bug is a good bug.
-	-->	Find Darkrels crash bug and KILL IT WITH FIRE.
 
+
+
+-->	Dualitor: "Stop and Apply" function for Sandbox
+	-->	While the Sandbox is active, it tracks which Properties have been actively modified
+		-->	(Scene change flushes the record)
+	-->	When clicking "Stop and Apply", the modified Properties are applied to the unmodified Scene.
+
+--> Dualitor: Deploy dialog that is able to generate a "download version" of the game.
+	-->	Should the editor be included?
+	-->	Should the game's source be included?
 
 -->	Dualitor: Editor-wide Undo history, global Ctrl-Z and Ctrl-Y
 

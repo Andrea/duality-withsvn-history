@@ -49,7 +49,14 @@ namespace Duality.Components.Renderers
 		public FormattedText Text
 		{
 			get { return this.text; }
-			set { this.text = value; }
+			set
+			{
+				if (this.text != value)
+				{
+					this.text = value;
+					this.UpdateMetrics();
+				}
+			}
 		}
 		/// <summary>
 		/// [GET / SET] A color by which the displayed text is tinted.
@@ -118,7 +125,7 @@ namespace Duality.Components.Renderers
 			MathF.TransformDotVec(ref textOffset, ref xDot, ref yDot);
 			posTemp.X += textOffset.X;
 			posTemp.Y += textOffset.Y;
-			if (this.text.Fonts.All(r => !r.IsAvailable || r.Res.GlyphRenderHint == Font.RenderHint.Monochrome))
+			if (this.text.Fonts != null && this.text.Fonts.All(r => !r.IsAvailable || r.Res.GlyphRenderHint == Font.RenderHint.Monochrome))
 			{
 				posTemp.X = MathF.Round(posTemp.X);
 				posTemp.Y = MathF.Round(posTemp.Y);
