@@ -225,6 +225,10 @@ namespace EditorBase.CamViewStates
 		{
 			get { return this.mouseoverObject; }
 		}
+		public CameraAction CamAction
+		{
+			get { return this.camAction; }
+		}
 		public ObjectAction MouseoverAction
 		{
 			get { return this.mouseoverAction; }
@@ -515,17 +519,14 @@ namespace EditorBase.CamViewStates
 			{
 				int textYOff = -20;
 				string[] text = null;
-				if (visibleCamAction == CameraAction.Rotate)
+				if (visibleCamAction == CameraAction.Rotate || visibleCamAction == CameraAction.RotateScene)
 				{
-					if (MathF.Abs(this.camAngleVel) > 0.0f)
-					{
-						text = new string[] { string.Format("Cam Angle: {0,3:0}°", MathF.RadToDeg(this.view.CameraObj.Transform.Angle)) };
-						handled = true;
-					}
+					text = new string[] { string.Format("Cam Angle: {0,3:0}°", MathF.RadToDeg(this.view.CameraObj.Transform.Angle)) };
+					handled = true;
 				}
-				else if (visibleCamAction == CameraAction.Move || this.camVel.Z != 0.0f)
+				else if (visibleCamAction == CameraAction.Move || visibleCamAction == CameraAction.DragScene || this.camVel.Z != 0.0f)
 				{
-					if (visibleCamAction == CameraAction.Move)
+					if (visibleCamAction == CameraAction.Move || visibleCamAction == CameraAction.DragScene)
 					{
 						text = new string[]
 						{
@@ -594,7 +595,7 @@ namespace EditorBase.CamViewStates
 
 				Vector2 targetVel = -(curPos - lastPos) / this.View.GetScaleAtZ(refZ);
 				MathF.TransformCoord(ref targetVel.X, ref targetVel.Y, camObj.Transform.Angle);
-				this.camVel = (this.camVel + new Vector3(targetVel)) * 0.5f;
+				this.camVel = (this.camVel * 0.75f + new Vector3(targetVel) * 0.25f);
 				this.camTransformChanged = true;
 			}
 			else if (this.camAction == CameraAction.RotateScene)
@@ -607,7 +608,7 @@ namespace EditorBase.CamViewStates
 				float targetVel = (curPos - lastPos).X * MathF.RadAngle360 / 1000.0f;
 				targetVel *= (curPos.Y - center.Y) / center.Y;
 
-				this.camAngleVel = (this.camAngleVel + targetVel) * 0.5f;
+				this.camAngleVel = (this.camAngleVel * 0.75f + targetVel * 0.25f);
 				this.camTransformChanged = true;
 			}
 			else if (this.camAction == CameraAction.Move)
@@ -1196,6 +1197,9 @@ namespace EditorBase.CamViewStates
 		}
 		private void LocalGLControl_MouseUp(object sender, MouseEventArgs e)
 		{
+			this.drawCamGizmoState = CameraAction.None;
+			this.drawSelGizmoState = ObjectAction.None;
+
 			if (this.camBeginDragScene)
 			{
 				this.camAction = CameraAction.None;
@@ -1362,7 +1366,10 @@ namespace EditorBase.CamViewStates
 				}
 				else if (e.KeyCode == Keys.F)
 				{
-					this.view.FocusOnObject(DualityEditorApp.Selection.MainGameObject);
+					if (DualityEditorApp.Selection.MainGameObject != null)
+						this.view.FocusOnObject(DualityEditorApp.Selection.MainGameObject);
+					else
+						this.view.ResetCamera();
 				}
 				else if (ctrlPressed && e.KeyCode == Keys.Left)
 				{

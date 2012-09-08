@@ -610,6 +610,11 @@ namespace EditorBase
 			this.buttonResetZoom.Enabled = value;
 		}
 
+		public void ResetCamera()
+		{
+			this.FocusOnPos(Vector3.Zero);
+			this.camObj.Transform.Angle = 0.0f;
+		}
 		public void FocusOnPos(Vector3 targetPos)
 		{
 			if (!this.activeState.CameraActionAllowed) return;
@@ -904,7 +909,7 @@ namespace EditorBase
 		
 		private void Scene_Entered(object sender, EventArgs e)
 		{
-			if (Sandbox.State == SandboxState.Inactive) this.FocusOnPos(Vector3.Zero);
+			if (!Sandbox.IsActive && !Sandbox.IsChangingState) this.ResetCamera();
 			this.glControl.Invalidate();
 		}
 		private void Scene_Leaving(object sender, EventArgs e)

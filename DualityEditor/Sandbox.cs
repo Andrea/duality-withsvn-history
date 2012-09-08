@@ -43,6 +43,10 @@ namespace DualityEditor
 		{
 			get { return sceneFreeze > 0; }
 		}
+		public static bool IsChangingState
+		{
+			get { return stateChange; }
+		}
 		
 		
 		internal static void Init()
