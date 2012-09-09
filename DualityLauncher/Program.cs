@@ -31,14 +31,24 @@ namespace DualityLauncher
 			
 			if (!System.Diagnostics.Debugger.IsAttached) // Don't limit frame rate when debugging.
 			{
-				// Assure we'll at least wait 16 ms until updating again.
+				//// Assure we'll at least wait 16 ms until updating again.
+				//if (this.frameLimiterWatch.IsRunning)
+				//{
+				//    while (this.frameLimiterWatch.Elapsed.TotalSeconds < 0.016d) 
+				//    {
+				//        // Go to sleep if we'd have to wait too long
+				//        if (this.frameLimiterWatch.Elapsed.TotalSeconds < 0.01d)
+				//            System.Threading.Thread.Sleep(1);
+				//    }
+				//}
+
+				// Give the processor a rest if we have the time, don't use 100% CPU
 				if (this.frameLimiterWatch.IsRunning)
 				{
-					while (this.frameLimiterWatch.Elapsed.TotalSeconds < 0.016d) 
+					while (this.frameLimiterWatch.Elapsed.TotalSeconds < 0.01d) 
 					{
-						// Go to sleep if we'd have to wait too long
-						if (this.frameLimiterWatch.Elapsed.TotalSeconds < 0.01d)
-							System.Threading.Thread.Sleep(1);
+						// Sleep a little
+						System.Threading.Thread.Sleep(1);
 					}
 				}
 				this.frameLimiterWatch.Restart();
@@ -69,9 +79,9 @@ namespace DualityLauncher
 			System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 			System.Threading.Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.InvariantCulture;
 
+			DualityApp.Init(DualityApp.ExecutionEnvironment.Launcher, DualityApp.ExecutionContext.Game, args);
 			bool debugging = System.Diagnostics.Debugger.IsAttached;
 
-			DualityApp.Init(DualityApp.ExecutionEnvironment.Launcher, DualityApp.ExecutionContext.Game, args);
 			using (DualityLauncher launcherWindow = new DualityLauncher(
 				DualityApp.UserData.GfxWidth, 
 				DualityApp.UserData.GfxHeight, 

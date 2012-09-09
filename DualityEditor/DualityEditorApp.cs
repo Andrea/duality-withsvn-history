@@ -1040,15 +1040,13 @@ namespace DualityEditor
 					DualityApp.ExecContext = lastContext;
 				}
 
-				// Assure we'll at least wait 16 ms until updating again.
-				while (watch.Elapsed.TotalSeconds < 0.016666d) 
+				// Give the processor a rest if we have the time, don't use 100% CPU
+				while (watch.Elapsed.TotalSeconds < 0.01d)
 				{
-				    // Go to sleep if we'd have to wait too long
-				    if (watch.Elapsed.TotalSeconds < 0.012d)
-				        System.Threading.Thread.Sleep(1);
+				    // Sleep a little
+				    System.Threading.Thread.Sleep(1);
 				    // App wants to do something? Stop waiting.
-				    else if (!AppStillIdle)
-				        break;
+				    if (!AppStillIdle) break;
 				}
 			}
 
