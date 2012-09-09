@@ -1017,10 +1017,10 @@ namespace DualityEditor
 			}
 
 			// Update Duality engine
-			//System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
+			var watch = new System.Diagnostics.Stopwatch();
 			while (AppStillIdle)
 			{
-				//watch.Restart();
+				watch.Restart();
 				if (!dualityAppSuspended)
 				{
 					bool fixedSingleStep = Sandbox.TakeSingleStep();
@@ -1040,16 +1040,16 @@ namespace DualityEditor
 					DualityApp.ExecContext = lastContext;
 				}
 
-				//// Assure we'll at least wait 16 ms until updating again.
-				//while (watch.Elapsed.TotalSeconds < 0.016666d) 
-				//{
-				//    // Go to sleep if we'd have to wait too long
-				//    if (watch.Elapsed.TotalSeconds < 0.012d)
-				//        System.Threading.Thread.Sleep(1);
-				//    // App wants to do something? Stop waiting.
-				//    else if (!AppStillIdle)
-				//        break;
-				//}
+				// Assure we'll at least wait 16 ms until updating again.
+				while (watch.Elapsed.TotalSeconds < 0.016666d) 
+				{
+				    // Go to sleep if we'd have to wait too long
+				    if (watch.Elapsed.TotalSeconds < 0.012d)
+				        System.Threading.Thread.Sleep(1);
+				    // App wants to do something? Stop waiting.
+				    else if (!AppStillIdle)
+				        break;
+				}
 			}
 
 			Application.Idle += Application_Idle;
