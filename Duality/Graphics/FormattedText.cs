@@ -463,7 +463,8 @@ namespace Duality
 					this.vertTextIndex[this.fontIndex] += fittingText.Length * 4;
 					this.offset.X += textElemSize.X;
 					this.lineWidth += textElemSizeTrimmed.X;
-					this.lineHeight = Math.Max(this.lineHeight, this.font.Height);
+					this.lineHeight = Math.Max(this.lineHeight, this.font.LineSpacing);
+					this.lineBaseLine = Math.Max(this.lineBaseLine, this.font.BaseLine);
 				}
 				else if (elem is TextElement && this.font == null)
 				{
@@ -472,7 +473,8 @@ namespace Duality
 				else if (elem is IconElement)
 				{
 					IconElement iconElem = elem as IconElement;
-					Icon icon = iconElem.IconIndex >= 0 && iconElem.IconIndex < this.parent.icons.Length ? this.parent.icons[iconElem.IconIndex] : new Icon();
+					bool iconValid = this.parent.icons != null && iconElem.IconIndex >= 0 && iconElem.IconIndex < this.parent.icons.Length;
+					Icon icon = iconValid ? this.parent.icons[iconElem.IconIndex] : new Icon();
 
 					// Word Wrap
 					if (this.parent.maxWidth > 0)
@@ -501,9 +503,9 @@ namespace Duality
 					FontChangeElement fontChangeElem = elem as FontChangeElement;
 					this.fontIndex = fontChangeElem.FontIndex;
 
-					ContentRef<Font> font = this.fontIndex >= 0 && this.fontIndex < this.parent.fonts.Length ? this.parent.fonts[this.fontIndex] : ContentRef<Font>.Null;
+					bool fontValid = this.parent.fonts != null && this.fontIndex >= 0 && this.fontIndex < this.parent.fonts.Length;
+					ContentRef<Font> font = fontValid ? this.parent.fonts[this.fontIndex] : ContentRef<Font>.Null;
 					this.font = font.Res;
-					if (font.IsAvailable) this.lineBaseLine = Math.Max(this.lineBaseLine, font.Res.BaseLine);
 					this.elemIndex++;
 				}
 				else if (elem is ColorChangeElement)
@@ -565,8 +567,8 @@ namespace Duality
 			private void PeekLineStats()
 			{
 				// First pass: Determine line width, height & base line
-				this.lineBaseLine = this.font != null ? this.font.BaseLine : 0;
-				this.lineHeight = this.font != null ? this.font.Height : 0;
+				this.lineBaseLine = 0; //this.font != null ? this.font.BaseLine : 0;
+				this.lineHeight = 0; //this.font != null ? this.font.LineSpacing : 0;
 				this.lineBeginX = 0.0f;
 				this.lineWidth = 0.0f;
 				this.lineAvailWidth = this.parent.maxWidth;
@@ -585,8 +587,8 @@ namespace Duality
 				{
 					this.lineBeginX = this.GetFlowAreaMinXAt((int)this.offset.Y, (int)this.lineHeight);
 					this.lineAvailWidth = this.GetFlowAreaMaxXAt((int)this.offset.Y, (int)this.lineHeight) - this.lineBeginX;
-					this.lineBaseLine = this.font != null ? this.font.BaseLine : 0;
-					this.lineHeight = this.font != null ? this.font.Height : 0;
+					this.lineBaseLine = 0;//this.font != null ? this.font.BaseLine : 0;
+					this.lineHeight = 0;//this.font != null ? this.font.LineSpacing : 0;
 					this.lineWidth = 0.0f;
 					this.offset.X = this.lineBeginX;
 
@@ -626,6 +628,10 @@ namespace Duality
 		private	int					iconCount		= 0;
 		private	Element[]			elements		= null;
 
+		[NonSerialized] private bool				updateVertexCache	= true;
+		[NonSerialized] private VertexC1P3T2[][]	vertTextCache		= null;
+		[NonSerialized] private VertexC1P3T2[]		vertIconsCache		= null;
+
 
 		/// <summary>
 		/// [GET / SET] The source text that is used, containing all format strings as well as the displayed text.
@@ -637,24 +643,27 @@ namespace Duality
 		}
 		/// <summary>
 		/// [GET / SET] A set of icons that is available in the text.
+		/// If you modify this value without re-assigning it, be sure to call <see cref="UpdateVertexCache"/>.
 		/// </summary>
 		[EditorHintFlags(MemberFlags.ForceWriteback)]
 		public Icon[] Icons
 		{
 			get { return this.icons; }
-			set { this.icons = value; }
+			set { this.icons = value; this.updateVertexCache = true; }
 		}
 		/// <summary>
 		/// [GET / SET] A set of flow areas to be considered in word wrap.
+		/// If you modify this value without re-assigning it, be sure to call <see cref="UpdateVertexCache"/>.
 		/// </summary>
 		[EditorHintFlags(MemberFlags.ForceWriteback)]
 		public FlowArea[] FlowAreas
 		{
 			get { return this.flowAreas; }
-			set { this.flowAreas = value; }
+			set { this.flowAreas = value; this.updateVertexCache = true; }
 		}
 		/// <summary>
 		/// [GET / SET] A set of <see cref="Duality.Resources.Font">Fonts</see> that is available in the text.
+		/// If you modify this value without re-assigning it, be sure to call <see cref="UpdateVertexCache"/>.
 		/// </summary>
 		[EditorHintFlags(MemberFlags.ForceWriteback)]
 		public ContentRef<Font>[] Fonts
@@ -666,6 +675,7 @@ namespace Duality
 				{
 					if (value == null || value.Length == 0) value = new ContentRef<Font>[] { Font.GenericMonospace10 };
 					this.fonts = value;
+					this.updateVertexCache = true;
 				}
 			}
 		}
@@ -675,7 +685,7 @@ namespace Duality
 		public int MaxWidth
 		{
 			get { return this.maxWidth; }
-			set { this.maxWidth = value; }
+			set { this.maxWidth = value; this.updateVertexCache = true; }
 		}
 		/// <summary>
 		/// [GET / SET] The maximum height of the displayed text block. Zero deactivates maximum height.
@@ -683,7 +693,7 @@ namespace Duality
 		public int MaxHeight
 		{
 			get { return this.maxHeight; }
-			set { this.maxHeight = value; }
+			set { this.maxHeight = value; this.updateVertexCache = true; }
 		}
 		/// <summary>
 		/// [GET / SET] The word wrapping behaviour to use.
@@ -691,7 +701,7 @@ namespace Duality
 		public WrapMode WordWrap
 		{
 			get { return this.wrapMode; }
-			set { this.wrapMode = value; }
+			set { this.wrapMode = value; this.updateVertexCache = true; }
 		}
 
 		/// <summary>
@@ -747,6 +757,7 @@ namespace Duality
 		{
 			if (text == null) text = this.sourceText;
 
+			this.updateVertexCache = true;
 			this.sourceText = text;
 			this.iconCount = 0;
 
@@ -993,14 +1004,45 @@ namespace Duality
 		/// <param name="vertIcons">A set of icon vertices.</param>
 		public void EmitVertices(ref VertexC1P3T2[][] vertText, ref VertexC1P3T2[] vertIcons)
 		{
+			this.ValidateVertexCache();
+			
+			// Allocate memory
+			if (vertIcons == null || vertIcons.Length != this.vertIconsCache.Length) vertIcons = new VertexC1P3T2[this.vertIconsCache.Length];
+			if (vertText == null || vertText.Length != this.vertTextCache.Length) vertText = new VertexC1P3T2[this.vertTextCache.Length][];
+			for (int i = 0; i < this.vertTextCache.Length; i++)
+			{
+				if (vertText[i] == null || vertText[i].Length != this.vertTextCache[i].Length)
+					vertText[i] = new VertexC1P3T2[this.vertTextCache[i].Length];
+			}
+
+			// Copy actual data
+			Array.Copy(this.vertIconsCache, vertIcons, this.vertIconsCache.Length);
+			for (int i = 0; i < this.vertTextCache.Length; i++)
+				Array.Copy(this.vertTextCache[i], vertText[i], this.vertTextCache[i].Length);
+		}
+
+		/// <summary>
+		/// Updates the vertex cache that is used to optimize calls to <see cref="EmitVertices"/>. However, this is normally done automatically.
+		/// </summary>
+		public void UpdateVertexCache()
+		{
+			this.updateVertexCache = true;
+		}
+		private void ValidateVertexCache()
+		{
+			if (this.vertTextCache != null && this.vertIconsCache != null && !this.updateVertexCache) return;
+			this.updateVertexCache = false;
+
 			int fontNum = this.fonts != null ? this.fonts.Length : 0;
 
 			// Setting up vertex buffers
-			if (vertIcons == null || vertIcons.Length != this.iconCount * 4) vertIcons = new VertexC1P3T2[this.iconCount * 4];
-			if (vertText == null || vertText.Length != fontNum) vertText = new VertexC1P3T2[fontNum][];
-			for (int i = 0; i < vertText.Length; i++)
-				if (vertText[i] == null || vertText[i].Length != (this.fontGlyphCount.Length > i ? this.fontGlyphCount[i] * 4 : 0)) 
-					vertText[i] = new VertexC1P3T2[this.fontGlyphCount.Length > i ? this.fontGlyphCount[i] * 4 : 0];
+			if (this.vertIconsCache == null || this.vertIconsCache.Length != this.iconCount * 4)
+				this.vertIconsCache = new VertexC1P3T2[this.iconCount * 4];
+			if (this.vertTextCache == null || this.vertTextCache.Length != fontNum) 
+				this.vertTextCache = new VertexC1P3T2[fontNum][];
+			for (int i = 0; i < this.vertTextCache.Length; i++)
+				if (this.vertTextCache[i] == null || this.vertTextCache[i].Length != (this.fontGlyphCount.Length > i ? this.fontGlyphCount[i] * 4 : 0)) 
+					this.vertTextCache[i] = new VertexC1P3T2[this.fontGlyphCount.Length > i ? this.fontGlyphCount[i] * 4 : 0];
 
 			// Rendering
 			RenderState state = new RenderState(this);
@@ -1019,7 +1061,7 @@ namespace Duality
 						state.CurrentElemOffset.X, 
 						state.CurrentElemOffset.Y + state.LineBaseLine - state.Font.BaseLine, 
 						state.Color);
-					Array.Copy(textElemVert, 0, vertText[state.FontIndex], state.CurrentElemTextVertexIndex, textElemVert.Length);
+					Array.Copy(textElemVert, 0, this.vertTextCache[state.FontIndex], state.CurrentElemTextVertexIndex, textElemVert.Length);
 					vertTextLen[state.FontIndex] = state.CurrentElemTextVertexIndex + textElemVert.Length;
 				}
 				else if (elem is IconElement)
@@ -1029,29 +1071,29 @@ namespace Duality
 					Vector2 iconSize = icon.size;
 					Rect iconUvRect = icon.uvRect;
 
-					vertIcons[state.CurrentElemIconVertexIndex + 0].Pos.X = state.CurrentElemOffset.X;
-					vertIcons[state.CurrentElemIconVertexIndex + 0].Pos.Y = state.CurrentElemOffset.Y + state.LineBaseLine - iconSize.Y;
-					vertIcons[state.CurrentElemIconVertexIndex + 0].Pos.Z = 0;
-					vertIcons[state.CurrentElemIconVertexIndex + 0].Color = state.Color;
-					vertIcons[state.CurrentElemIconVertexIndex + 0].TexCoord = iconUvRect.TopLeft;
+					this.vertIconsCache[state.CurrentElemIconVertexIndex + 0].Pos.X = state.CurrentElemOffset.X;
+					this.vertIconsCache[state.CurrentElemIconVertexIndex + 0].Pos.Y = state.CurrentElemOffset.Y + state.LineBaseLine - iconSize.Y;
+					this.vertIconsCache[state.CurrentElemIconVertexIndex + 0].Pos.Z = 0;
+					this.vertIconsCache[state.CurrentElemIconVertexIndex + 0].Color = state.Color;
+					this.vertIconsCache[state.CurrentElemIconVertexIndex + 0].TexCoord = iconUvRect.TopLeft;
 
-					vertIcons[state.CurrentElemIconVertexIndex + 1].Pos.X = state.CurrentElemOffset.X + iconSize.X;
-					vertIcons[state.CurrentElemIconVertexIndex + 1].Pos.Y = state.CurrentElemOffset.Y + state.LineBaseLine - iconSize.Y;
-					vertIcons[state.CurrentElemIconVertexIndex + 1].Pos.Z = 0;
-					vertIcons[state.CurrentElemIconVertexIndex + 1].Color = state.Color;
-					vertIcons[state.CurrentElemIconVertexIndex + 1].TexCoord = iconUvRect.TopRight;
+					this.vertIconsCache[state.CurrentElemIconVertexIndex + 1].Pos.X = state.CurrentElemOffset.X + iconSize.X;
+					this.vertIconsCache[state.CurrentElemIconVertexIndex + 1].Pos.Y = state.CurrentElemOffset.Y + state.LineBaseLine - iconSize.Y;
+					this.vertIconsCache[state.CurrentElemIconVertexIndex + 1].Pos.Z = 0;
+					this.vertIconsCache[state.CurrentElemIconVertexIndex + 1].Color = state.Color;
+					this.vertIconsCache[state.CurrentElemIconVertexIndex + 1].TexCoord = iconUvRect.TopRight;
 
-					vertIcons[state.CurrentElemIconVertexIndex + 2].Pos.X = state.CurrentElemOffset.X + iconSize.X;
-					vertIcons[state.CurrentElemIconVertexIndex + 2].Pos.Y = state.CurrentElemOffset.Y + state.LineBaseLine;
-					vertIcons[state.CurrentElemIconVertexIndex + 2].Pos.Z = 0;
-					vertIcons[state.CurrentElemIconVertexIndex + 2].Color = state.Color;
-					vertIcons[state.CurrentElemIconVertexIndex + 2].TexCoord = iconUvRect.BottomRight;
+					this.vertIconsCache[state.CurrentElemIconVertexIndex + 2].Pos.X = state.CurrentElemOffset.X + iconSize.X;
+					this.vertIconsCache[state.CurrentElemIconVertexIndex + 2].Pos.Y = state.CurrentElemOffset.Y + state.LineBaseLine;
+					this.vertIconsCache[state.CurrentElemIconVertexIndex + 2].Pos.Z = 0;
+					this.vertIconsCache[state.CurrentElemIconVertexIndex + 2].Color = state.Color;
+					this.vertIconsCache[state.CurrentElemIconVertexIndex + 2].TexCoord = iconUvRect.BottomRight;
 
-					vertIcons[state.CurrentElemIconVertexIndex + 3].Pos.X = state.CurrentElemOffset.X;
-					vertIcons[state.CurrentElemIconVertexIndex + 3].Pos.Y = state.CurrentElemOffset.Y + state.LineBaseLine;
-					vertIcons[state.CurrentElemIconVertexIndex + 3].Pos.Z = 0;
-					vertIcons[state.CurrentElemIconVertexIndex + 3].Color = state.Color;
-					vertIcons[state.CurrentElemIconVertexIndex + 3].TexCoord = iconUvRect.BottomLeft;
+					this.vertIconsCache[state.CurrentElemIconVertexIndex + 3].Pos.X = state.CurrentElemOffset.X;
+					this.vertIconsCache[state.CurrentElemIconVertexIndex + 3].Pos.Y = state.CurrentElemOffset.Y + state.LineBaseLine;
+					this.vertIconsCache[state.CurrentElemIconVertexIndex + 3].Pos.Z = 0;
+					this.vertIconsCache[state.CurrentElemIconVertexIndex + 3].Color = state.Color;
+					this.vertIconsCache[state.CurrentElemIconVertexIndex + 3].TexCoord = iconUvRect.BottomLeft;
 
 					vertIconLen = state.CurrentElemIconVertexIndex + 4;
 				}
@@ -1059,11 +1101,11 @@ namespace Duality
 
 			for (int i = 0; i < fontNum; i++)
 			{
-				if (vertText[i].Length > vertTextLen[i])
-					Array.Resize(ref vertText[i], vertTextLen[i]);
+				if (this.vertTextCache[i].Length > vertTextLen[i])
+					Array.Resize(ref this.vertTextCache[i], vertTextLen[i]);
 			}
-			if (vertIcons.Length > vertIconLen)
-				Array.Resize(ref vertIcons, vertIconLen);
+			if (this.vertIconsCache.Length > vertIconLen)
+				Array.Resize(ref this.vertIconsCache, vertIconLen);
 		}
 		
 		/// <summary>
@@ -1192,21 +1234,20 @@ namespace Duality
 					TextElement textElem = elem as TextElement;
 					elemSize = state.Font.MeasureText(state.CurrentElemText);
 					elemOffset = new Vector2(state.CurrentElemOffset.X, state.CurrentElemOffset.Y + state.LineBaseLine - state.Font.Ascent);
-					hasBounds = elemSize != Vector2.Zero;
 				}
-				else if (elem is IconElement)
+				else if (elem is IconElement && this.icons != null)
 				{
 					IconElement iconElem = elem as IconElement;
-					elemSize = this.icons[iconElem.IconIndex].size;
+					bool iconValid = iconElem.IconIndex > 0 && iconElem.IconIndex < this.icons.Length;
+					elemSize = iconValid ? this.icons[iconElem.IconIndex].size : Vector2.Zero;
 					elemOffset = new Vector2(state.CurrentElemOffset.X, state.CurrentElemOffset.Y + state.LineBaseLine - elemSize.Y);
-					hasBounds = true;
 				}
 				else
 				{
 					elemSize = Vector2.Zero;
 					elemOffset = Vector2.Zero;
-					hasBounds = false;
 				}
+				hasBounds = elemSize != Vector2.Zero;
 
 				if (elemIndexChanged) elementBounds.Add(Rect.Empty);
 				if (hasBounds && elementBounds[elementBounds.Count - 1] == Rect.Empty)

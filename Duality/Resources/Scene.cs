@@ -333,11 +333,11 @@ namespace Duality.Resources
 			// Apply Farseers internal measurements to Duality
 			if (physUpdate)
 			{
-				Performance.timeUpdatePhysicsAddRemove.SetMeasure(1000.0f * physicsWorld.AddRemoveTime / System.Diagnostics.Stopwatch.Frequency);
-				Performance.timeUpdatePhysicsContacts.SetMeasure(1000.0f * physicsWorld.ContactsUpdateTime / System.Diagnostics.Stopwatch.Frequency);
-				Performance.timeUpdatePhysicsContinous.SetMeasure(1000.0f * physicsWorld.ContinuousPhysicsTime / System.Diagnostics.Stopwatch.Frequency);
-				Performance.timeUpdatePhysicsController.SetMeasure(1000.0f * physicsWorld.ControllersUpdateTime / System.Diagnostics.Stopwatch.Frequency);
-				Performance.timeUpdatePhysicsSolve.SetMeasure(1000.0f * physicsWorld.SolveUpdateTime / System.Diagnostics.Stopwatch.Frequency);
+				Performance.timeUpdatePhysicsAddRemove.Set(1000.0f * physicsWorld.AddRemoveTime / System.Diagnostics.Stopwatch.Frequency);
+				Performance.timeUpdatePhysicsContacts.Set(1000.0f * physicsWorld.ContactsUpdateTime / System.Diagnostics.Stopwatch.Frequency);
+				Performance.timeUpdatePhysicsContinous.Set(1000.0f * physicsWorld.ContinuousPhysicsTime / System.Diagnostics.Stopwatch.Frequency);
+				Performance.timeUpdatePhysicsController.Set(1000.0f * physicsWorld.ControllersUpdateTime / System.Diagnostics.Stopwatch.Frequency);
+				Performance.timeUpdatePhysicsSolve.Set(1000.0f * physicsWorld.SolveUpdateTime / System.Diagnostics.Stopwatch.Frequency);
 			}
 
 			// Update low fps physics state

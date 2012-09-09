@@ -237,6 +237,7 @@ namespace Duality.Components.Renderers
 			t.rect		= this.rect;
 			t.colorTint	= this.colorTint;
 			t.rectMode	= this.rectMode;
+			t.offset	= this.offset;
 		}
 	}
 }

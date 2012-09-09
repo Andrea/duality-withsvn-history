@@ -244,6 +244,60 @@ namespace DualityEditor.EditorRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Increases the Sandboxes game speed. This will not cause it to update more often, but simulate a higher timestep in each update. ähnelt.
+        /// </summary>
+        public static string MenuItemInfo_SandboxFaster {
+            get {
+                return ResourceManager.GetString("MenuItemInfo_SandboxFaster", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Pausing the Sandbox will suspend any game updates. Until being unpaused, the Sandbox will behave as if it wasn&apos;t there. ähnelt.
+        /// </summary>
+        public static string MenuItemInfo_SandboxPause {
+            get {
+                return ResourceManager.GetString("MenuItemInfo_SandboxPause", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Unlike &quot;Run Game&quot;, entering the Sandbox mode doesn&apos;t rely on the Duality Launcher and will instead run the game directly inside the editor. This allows you to test and debug your game in real time while at the same time providing full editing functionality. Note that you&apos;ll have to focus a Cam View in &quot;Game View&quot; mode in order to pass on keyboard and mouse input to the game. ähnelt.
+        /// </summary>
+        public static string MenuItemInfo_SandboxPlay {
+            get {
+                return ResourceManager.GetString("MenuItemInfo_SandboxPlay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Decreases the Sandboxes game speed. This will not cause it to update less often, but simulate a lower timestep in each update. ähnelt.
+        /// </summary>
+        public static string MenuItemInfo_SandboxSlower {
+            get {
+                return ResourceManager.GetString("MenuItemInfo_SandboxSlower", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die A Sandbox step will cause the game to advance exactly one standard frame. ähnelt.
+        /// </summary>
+        public static string MenuItemInfo_SandboxStep {
+            get {
+                return ResourceManager.GetString("MenuItemInfo_SandboxStep", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die When leaving the Sandbox mode, the current Scene will be reset to its original state. ähnelt.
+        /// </summary>
+        public static string MenuItemInfo_SandboxStop {
+            get {
+                return ResourceManager.GetString("MenuItemInfo_SandboxStop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die This will save all project data, i.e. all existing Resources. If you take a look at the Project View, you might notice that some Resources are written italic - these are the ones that have been changed without being saved yet. ähnelt.
         /// </summary>
         public static string MenuItemInfo_SaveAll {

@@ -4359,6 +4359,31 @@
             [GET] Time in milliseconds the last frame used for postprocessing.
             </summary>
         </member>
+        <member name="P:Duality.Performance.PickingTime">
+            <summary>
+            [GET] Time in milliseconds the last frame used for visual picking operations.
+            </summary>
+        </member>
+        <member name="P:Duality.Performance.StatNumDrawcalls">
+            <summary>
+            [GET] The number of drawcalls that have been emitted last frame.
+            </summary>
+        </member>
+        <member name="P:Duality.Performance.StatNumRawBatches">
+            <summary>
+            [GET] The number of raw, submitted batches without merging.
+            </summary>
+        </member>
+        <member name="P:Duality.Performance.StatNumMergedBatches">
+            <summary>
+            [GET] The number of batches before optimization.
+            </summary>
+        </member>
+        <member name="P:Duality.Performance.StatNumOptimizedBatches">
+            <summary>
+            [GET] The number of batches after optimization.
+            </summary>
+        </member>
         <member name="T:Duality.Cloning.ISurrogate">
             <summary>
             Clones an object instead of letting it clone itsself or using a Reflection-driven approach.
@@ -5902,9 +5927,9 @@
             [GET] Returns whether this Renderer visually stretches infinitely on the XY-plane.
             </summary>
         </member>
-        <member name="M:Duality.Components.Renderers.TextRenderer.UpdateMetrics">
+        <member name="M:Duality.Components.Renderers.TextRenderer.UpdateText">
             <summary>
-            Updates the texts <see cref="P:Duality.Components.Renderers.TextRenderer.Metrics"/>. Should be called anytime the text changes.
+            Updates the texts <see cref="P:Duality.Components.Renderers.TextRenderer.Metrics"/> and other internal data. Should be called everytime the text changes.
             </summary>
         </member>
         <member name="P:Duality.Components.Renderers.TextRenderer.Align">
@@ -5914,7 +5939,7 @@
         </member>
         <member name="P:Duality.Components.Renderers.TextRenderer.Text">
             <summary>
-            [GET / SET] The text to display.
+            [GET / SET] The text to display. If you change this without re-assigning it, be sure to call <see cref="M:Duality.Components.Renderers.TextRenderer.UpdateText"/>.
             </summary>
         </member>
         <member name="P:Duality.Components.Renderers.TextRenderer.ColorTint">
@@ -10381,6 +10406,11 @@
             <param name="vertText">One set of vertices for each Font that is available to this ForattedText.</param>
             <param name="vertIcons">A set of icon vertices.</param>
         </member>
+        <member name="M:Duality.FormattedText.UpdateVertexCache">
+            <summary>
+            Updates the vertex cache that is used to optimize calls to <see cref="M:Duality.FormattedText.EmitVertices(Duality.VertexFormat.VertexC1P3T2[][]@,Duality.VertexFormat.VertexC1P3T2[]@,System.Single,System.Single,System.Single)"/>. However, this is normally done automatically.
+            </summary>
+        </member>
         <member name="M:Duality.FormattedText.RenderToBitmap(System.String,System.Drawing.Image,System.Single,System.Single,System.Drawing.Image)">
             <summary>
             Renders a text to the specified target Image.
@@ -10409,16 +10439,19 @@
         <member name="P:Duality.FormattedText.Icons">
             <summary>
             [GET / SET] A set of icons that is available in the text.
+            If you modify this value without re-assigning it, be sure to call <see cref="M:Duality.FormattedText.UpdateVertexCache"/>.
             </summary>
         </member>
         <member name="P:Duality.FormattedText.FlowAreas">
             <summary>
             [GET / SET] A set of flow areas to be considered in word wrap.
+            If you modify this value without re-assigning it, be sure to call <see cref="M:Duality.FormattedText.UpdateVertexCache"/>.
             </summary>
         </member>
         <member name="P:Duality.FormattedText.Fonts">
             <summary>
             [GET / SET] A set of <see cref="T:Duality.Resources.Font">Fonts</see> that is available in the text.
+            If you modify this value without re-assigning it, be sure to call <see cref="M:Duality.FormattedText.UpdateVertexCache"/>.
             </summary>
         </member>
         <member name="P:Duality.FormattedText.MaxWidth">
@@ -12436,6 +12469,11 @@
             [GET / SET] Additional spacing between each character. This is usually one tenth of the Fonts <see cref="P:Duality.Resources.Font.Size"/>.
             </summary>
         </member>
+        <member name="P:Duality.Resources.Font.LineHeightFactor">
+            <summary>
+            [GET / SET] A factor for the Fonts <see cref="P:Duality.Resources.Font.Height"/> value that affects line spacings but not actual glyph sizes.
+            </summary>
+        </member>
         <member name="P:Duality.Resources.Font.MonoSpace">
             <summary>
             [GET / SET] Whether this is considered a monospace Font. If true, each character occupies exactly the same space.
@@ -12470,6 +12508,11 @@
         <member name="P:Duality.Resources.Font.Height">
             <summary>
             [GET] The Fonts height.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Font.LineSpacing">
+            <summary>
+            [GET] The y offset in pixels between two lines.
             </summary>
         </member>
         <member name="P:Duality.Resources.Font.Ascent">

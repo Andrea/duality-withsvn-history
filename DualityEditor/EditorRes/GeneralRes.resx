@@ -187,6 +187,24 @@
   <data name="MenuItemInfo_RunGame" xml:space="preserve">
     <value>Want to see how your game looks like in its release version? This will save all project data and run the external Duality launcher.</value>
   </data>
+  <data name="MenuItemInfo_SandboxFaster" xml:space="preserve">
+    <value>Increases the Sandboxes game speed. This will not cause it to update more often, but simulate a higher timestep in each update.</value>
+  </data>
+  <data name="MenuItemInfo_SandboxPause" xml:space="preserve">
+    <value>Pausing the Sandbox will suspend any game updates. Until being unpaused, the Sandbox will behave as if it wasn't there.</value>
+  </data>
+  <data name="MenuItemInfo_SandboxPlay" xml:space="preserve">
+    <value>Unlike "Run Game", entering the Sandbox mode doesn't rely on the Duality Launcher and will instead run the game directly inside the editor. This allows you to test and debug your game in real time while at the same time providing full editing functionality. Note that you'll have to focus a Cam View in "Game View" mode in order to pass on keyboard and mouse input to the game.</value>
+  </data>
+  <data name="MenuItemInfo_SandboxSlower" xml:space="preserve">
+    <value>Decreases the Sandboxes game speed. This will not cause it to update less often, but simulate a lower timestep in each update.</value>
+  </data>
+  <data name="MenuItemInfo_SandboxStep" xml:space="preserve">
+    <value>A Sandbox step will cause the game to advance exactly one standard frame.</value>
+  </data>
+  <data name="MenuItemInfo_SandboxStop" xml:space="preserve">
+    <value>When leaving the Sandbox mode, the current Scene will be reset to its original state.</value>
+  </data>
   <data name="MenuItemInfo_SaveAll" xml:space="preserve">
     <value>This will save all project data, i.e. all existing Resources. If you take a look at the Project View, you might notice that some Resources are written italic - these are the ones that have been changed without being saved yet.</value>
   </data>

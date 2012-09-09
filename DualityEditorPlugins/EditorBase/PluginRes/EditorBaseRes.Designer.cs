@@ -205,6 +205,105 @@ namespace EditorBase.PluginRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Camera Control Shortcuts ähnelt.
+        /// </summary>
+        public static string CamView_Help_CamActions {
+            get {
+                return ResourceManager.GetString("CamView_Help_CamActions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Press F to focus the world origin. ähnelt.
+        /// </summary>
+        public static string CamView_Help_CamActions_Focus {
+            get {
+                return ResourceManager.GetString("CamView_Help_CamActions_Focus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Use Mouse Wheel and Right Mouse button to move. ähnelt.
+        /// </summary>
+        public static string CamView_Help_CamActions_Move {
+            get {
+                return ResourceManager.GetString("CamView_Help_CamActions_Move", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Hold Space for alternative camera movement. ähnelt.
+        /// </summary>
+        public static string CamView_Help_CamActions_MoveAlternate {
+            get {
+                return ResourceManager.GetString("CamView_Help_CamActions_MoveAlternate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Press Ctrl + Arrow Keys, Add or Subtract to move by a fixed step. ähnelt.
+        /// </summary>
+        public static string CamView_Help_CamActions_MoveStep {
+            get {
+                return ResourceManager.GetString("CamView_Help_CamActions_MoveStep", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Object Action Shortcuts ähnelt.
+        /// </summary>
+        public static string CamView_Help_ObjActions {
+            get {
+                return ResourceManager.GetString("CamView_Help_ObjActions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Hold X, Y or Z to limit an action to one or two axes. ähnelt.
+        /// </summary>
+        public static string CamView_Help_ObjActions_AxisLock {
+            get {
+                return ResourceManager.GetString("CamView_Help_ObjActions_AxisLock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Press Ctrl + C to clone the selected objects. ähnelt.
+        /// </summary>
+        public static string CamView_Help_ObjActions_Clone {
+            get {
+                return ResourceManager.GetString("CamView_Help_ObjActions_Clone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Press Delete to remove the selected objects. ähnelt.
+        /// </summary>
+        public static string CamView_Help_ObjActions_Delete {
+            get {
+                return ResourceManager.GetString("CamView_Help_ObjActions_Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Press F to focus on the current selection. ähnelt.
+        /// </summary>
+        public static string CamView_Help_ObjActions_Focus {
+            get {
+                return ResourceManager.GetString("CamView_Help_ObjActions_Focus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Press Arrow Keys, Add or Subtract to move the selected objects by a fixed step. ähnelt.
+        /// </summary>
+        public static string CamView_Help_ObjActions_MoveStep {
+            get {
+                return ResourceManager.GetString("CamView_Help_ObjActions_MoveStep", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Angle: {0:F}° ähnelt.
         /// </summary>
         public static string CamView_Status_Angle {

@@ -77,6 +77,7 @@ namespace Duality.Resources
 			tmp = new Font();
 			tmp.Family = FontFamily.GenericMonospace.Name;
 			tmp.Size = 8;
+			tmp.CharSpacing = 0;
 			tmp.GlyphRenderHint = RenderHint.Monochrome;
 			tmp.MonoSpace = true;
 			tmp.ReloadData();
@@ -85,6 +86,7 @@ namespace Duality.Resources
 			tmp = new Font();
 			tmp.Family = FontFamily.GenericMonospace.Name;
 			tmp.Size = 10;
+			tmp.CharSpacing = 0;
 			tmp.GlyphRenderHint = RenderHint.Monochrome;
 			tmp.MonoSpace = true;
 			tmp.ReloadData();
@@ -183,16 +185,17 @@ namespace Duality.Resources
 		}
 
 		
-		private	string		familyName		= FontFamily.GenericMonospace.Name;
-		private	float		size			= 10.0f;
-		private	FontStyle	style			= FontStyle.Regular;
-		private	ColorRgba	color			= ColorRgba.White;
-		private	ColorRgba	bgColor			= ColorRgba.TransparentWhite;
-		private	RenderHint	hint			= RenderHint.AntiAlias;
-		private	float		spacing			= 0.0f;
-		private	bool		monospace		= false;
-		private	bool		kerning			= false;
-		private	bool		filtering		= false;
+		private	string		familyName			= FontFamily.GenericMonospace.Name;
+		private	float		size				= 10.0f;
+		private	FontStyle	style				= FontStyle.Regular;
+		private	ColorRgba	color				= ColorRgba.White;
+		private	ColorRgba	bgColor				= ColorRgba.TransparentWhite;
+		private	RenderHint	hint				= RenderHint.AntiAlias;
+		private	float		spacing				= 0.0f;
+		private	float		lineHeightFactor	= 1.0f;
+		private	bool		monospace			= false;
+		private	bool		kerning				= false;
+		private	bool		filtering			= false;
 		// Embedded custom font family
 		private	byte[]		customFamilyData	= null;
 		// Data that is automatically acquired while loading the font
@@ -233,9 +236,14 @@ namespace Duality.Resources
 			get { return this.size; }
 			set 
 			{ 
-				this.size = Math.Max(1.0f, value);
-				this.UpdateCharSpacing();
-				this.needsReload = true;
+				if (this.size != value)
+				{
+					this.size = Math.Max(1.0f, value);
+					this.UpdateInternalFont();
+
+					this.spacing = this.internalFont.Size / 10.0f;
+					this.needsReload = true;
+				}
 			}
 		}
 		/// <summary>
@@ -283,7 +291,7 @@ namespace Duality.Resources
 			set
 			{
 				this.hint = value;
-				this.UpdateCharSpacing();
+				this.UpdateInternalFont();
 				this.needsReload = true;
 			}
 		}
@@ -302,6 +310,15 @@ namespace Duality.Resources
 		{
 			get { return this.spacing; }
 			set { this.spacing = value; }
+		}
+		/// <summary>
+		/// [GET / SET] A factor for the Fonts <see cref="Height"/> value that affects line spacings but not actual glyph sizes.
+		/// </summary>
+		[EditorHintFlags(MemberFlags.AffectsOthers)]
+		public float LineHeightFactor
+		{
+			get { return this.lineHeightFactor; }
+			set { this.lineHeightFactor = value; }
 		}
 		/// <summary>
 		/// [GET / SET] Whether this is considered a monospace Font. If true, each character occupies exactly the same space.
@@ -357,6 +374,13 @@ namespace Duality.Resources
 		public int Height
 		{
 			get { return this.internalFont.Height; }
+		}
+		/// <summary>
+		/// [GET] The y offset in pixels between two lines.
+		/// </summary>
+		public int LineSpacing
+		{
+			get { return MathF.RoundToInt(this.internalFont.Height * this.lineHeightFactor); }
 		}
 		/// <summary>
 		/// [GET] The Fonts ascent value.
@@ -441,11 +465,6 @@ namespace Duality.Resources
 			File.WriteAllBytes(path, this.customFamilyData);
 		}
 
-		private void UpdateCharSpacing()
-		{
-			this.UpdateInternalFont();
-			this.spacing = this.internalFont.Size / 10.0f;
-		}
 		private void UpdateInternalFont()
 		{
 			FontFamily family = GetFontFamily(this.familyName);
@@ -482,7 +501,7 @@ namespace Duality.Resources
 			int rows;
 			cols = rows = (int)Math.Ceiling(Math.Sqrt(SupportedChars.Length));
 
-			Pixmap.Layer pixelLayer = new Pixmap.Layer(MathF.RoundToInt(cols * this.internalFont.Size), MathF.RoundToInt(rows * this.internalFont.Height));
+			Pixmap.Layer pixelLayer = new Pixmap.Layer(MathF.RoundToInt(cols * this.internalFont.Size), MathF.RoundToInt(rows * (this.internalFont.Height + 1)));
 			Pixmap.Layer glyphTemp;
 			Pixmap.Layer glyphTempTypo;
 			Bitmap bm;
@@ -506,7 +525,7 @@ namespace Duality.Resources
 					SizeF charSize = measureGraphics.MeasureString(str, this.internalFont, pixelLayer.Width, formatDef);
 
 					// Render a single glyph
-					bm = new Bitmap((int)Math.Ceiling(Math.Max(1, charSize.Width)), this.internalFont.Height);
+					bm = new Bitmap((int)Math.Ceiling(Math.Max(1, charSize.Width)), this.internalFont.Height + 1);
 					using (Graphics glyphGraphics = Graphics.FromImage(bm))
 					{
 						glyphGraphics.Clear(Color.Transparent);
@@ -523,7 +542,7 @@ namespace Duality.Resources
 							this.bodyAscent += glyphTempBounds.Height;
 						
 						// Render a single glyph in typographic mode
-						bm = new Bitmap((int)Math.Ceiling(Math.Max(1, charSize.Width)), this.internalFont.Height);
+						bm = new Bitmap((int)Math.Ceiling(Math.Max(1, charSize.Width)), this.internalFont.Height + 1);
 						using (Graphics glyphGraphics = Graphics.FromImage(bm))
 						{
 							glyphGraphics.Clear(Color.Transparent);
@@ -540,7 +559,7 @@ namespace Duality.Resources
 					if (x + glyphTemp.Width + 2 > pixelLayer.Width)
 					{
 						x = 0;
-						y += this.internalFont.Height + 2;
+						y += (this.internalFont.Height + 1) + 2;
 					}
 					
 					// Memorize atlas coordinates & glyph data
@@ -556,7 +575,7 @@ namespace Duality.Resources
 					atlas[i].X = (float)x / (float)pixelLayer.Width;
 					atlas[i].Y = (float)y / (float)pixelLayer.Height;
 					atlas[i].W = (float)glyphTemp.Width / (float)pixelLayer.Width;
-					atlas[i].H = (float)this.internalFont.Height / (float)pixelLayer.Height;
+					atlas[i].H = (float)(this.internalFont.Height + 1) / (float)pixelLayer.Height;
 
 					// Draw it onto the font surface
 					glyphTemp.DrawOnto(pixelLayer, BlendMode.Solid, x, y);
@@ -815,38 +834,35 @@ namespace Duality.Resources
 			{
 				this.ProcessTextAdv(text, i, out glyphData, out uvRect, out glyphXAdv, out glyphXOff);
 
-				vertices[i * 4 + 0].Pos.X = curOffset + glyphXOff;
-				vertices[i * 4 + 0].Pos.Y = 0.0f;
+				Vector2 glyphPos;
+				glyphPos.X = MathF.Round(curOffset + glyphXOff);
+				glyphPos.Y = MathF.Round(0.0f);
+
+				vertices[i * 4 + 0].Pos.X = glyphPos.X;
+				vertices[i * 4 + 0].Pos.Y = glyphPos.Y;
 				vertices[i * 4 + 0].Pos.Z = 0.0f;
 				vertices[i * 4 + 0].TexCoord = uvRect.TopLeft;
 				vertices[i * 4 + 0].Color = ColorRgba.White;
 
-				vertices[i * 4 + 1].Pos.X = curOffset + glyphXOff + glyphData.width;
-				vertices[i * 4 + 1].Pos.Y = 0.0f;
+				vertices[i * 4 + 1].Pos.X = glyphPos.X + glyphData.width;
+				vertices[i * 4 + 1].Pos.Y = glyphPos.Y;
 				vertices[i * 4 + 1].Pos.Z = 0.0f;
 				vertices[i * 4 + 1].TexCoord = uvRect.TopRight;
 				vertices[i * 4 + 1].Color = ColorRgba.White;
 
-				vertices[i * 4 + 2].Pos.X = curOffset + glyphXOff + glyphData.width;
-				vertices[i * 4 + 2].Pos.Y = glyphData.height;
+				vertices[i * 4 + 2].Pos.X = glyphPos.X + glyphData.width;
+				vertices[i * 4 + 2].Pos.Y = glyphPos.Y + glyphData.height;
 				vertices[i * 4 + 2].Pos.Z = 0.0f;
 				vertices[i * 4 + 2].TexCoord = uvRect.BottomRight;
 				vertices[i * 4 + 2].Color = ColorRgba.White;
 
-				vertices[i * 4 + 3].Pos.X = curOffset + glyphXOff;
-				vertices[i * 4 + 3].Pos.Y = glyphData.height;
+				vertices[i * 4 + 3].Pos.X = glyphPos.X;
+				vertices[i * 4 + 3].Pos.Y = glyphPos.Y + glyphData.height;
 				vertices[i * 4 + 3].Pos.Z = 0.0f;
 				vertices[i * 4 + 3].TexCoord = uvRect.BottomLeft;
 				vertices[i * 4 + 3].Color = ColorRgba.White;
 
 				curOffset += glyphXAdv;
-			}
-
-			//if (this.GlyphRenderHint == RenderHint.Monochrome || !this.filtering)
-			for (int i = 0; i < vertices.Length; i++)
-			{
-				vertices[i].Pos.X = MathF.Round(vertices[i].Pos.X);
-				vertices[i].Pos.Y = MathF.Round(vertices[i].Pos.Y);
 			}
 		}
 		
@@ -1004,7 +1020,7 @@ namespace Duality.Resources
 			{
 				Vector2 lineSize = this.MeasureText(text[i]);
 				textSize.X = MathF.Max(textSize.X, lineSize.X);
-				textSize.Y += this.Height;
+				textSize.Y += i == 0 ? this.Height : this.LineSpacing;
 			}
 
 			return textSize;

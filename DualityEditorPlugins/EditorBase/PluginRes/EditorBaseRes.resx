@@ -427,4 +427,37 @@
   <data name="CamViewLayer_Grid_Name" xml:space="preserve">
     <value>Grid</value>
   </data>
+  <data name="CamView_Help_CamActions" xml:space="preserve">
+    <value>Camera Control Shortcuts</value>
+  </data>
+  <data name="CamView_Help_CamActions_Focus" xml:space="preserve">
+    <value>Press F to focus the world origin.</value>
+  </data>
+  <data name="CamView_Help_CamActions_Move" xml:space="preserve">
+    <value>Use Mouse Wheel and Right Mouse button to move.</value>
+  </data>
+  <data name="CamView_Help_CamActions_MoveAlternate" xml:space="preserve">
+    <value>Hold Space for alternative camera movement.</value>
+  </data>
+  <data name="CamView_Help_CamActions_MoveStep" xml:space="preserve">
+    <value>Press Ctrl + Arrow Keys, Add or Subtract to move by a fixed step.</value>
+  </data>
+  <data name="CamView_Help_ObjActions" xml:space="preserve">
+    <value>Object Action Shortcuts</value>
+  </data>
+  <data name="CamView_Help_ObjActions_AxisLock" xml:space="preserve">
+    <value>Hold X, Y or Z to limit an action to one or two axes.</value>
+  </data>
+  <data name="CamView_Help_ObjActions_Clone" xml:space="preserve">
+    <value>Press Ctrl + C to clone the selected objects.</value>
+  </data>
+  <data name="CamView_Help_ObjActions_Delete" xml:space="preserve">
+    <value>Press Delete to remove the selected objects.</value>
+  </data>
+  <data name="CamView_Help_ObjActions_Focus" xml:space="preserve">
+    <value>Press F to focus on the current selection.</value>
+  </data>
+  <data name="CamView_Help_ObjActions_MoveStep" xml:space="preserve">
+    <value>Press Arrow Keys, Add or Subtract to move the selected objects by a fixed step.</value>
+  </data>
 </root>

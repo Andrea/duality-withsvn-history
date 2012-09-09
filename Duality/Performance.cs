@@ -19,11 +19,13 @@ namespace Duality
 			private	Stopwatch	watch		= new Stopwatch();
 			private	float		value		= 0.0f;
 			private	float		lastValue	= 0.0f;
+			private	bool		isInt		= false;
 			private	bool		used		= true;
 			private	bool		lastUsed	= true;
-			private	bool		neverRemove	= true;
 			// Profiling report data
 			private	double		accumValue		= 0.0d;
+			private	float		accumMaxValue	= float.MinValue;
+			private	float		accumMinValue	= float.MaxValue;
 			private	int			accumSamples	= 0;
 
 
@@ -31,13 +33,13 @@ namespace Duality
 			{
 				get { return this.name; }
 			}
-			public bool NeverRemove
-			{
-				get { return this.neverRemove; }
-			}
 			public bool WasUsed
 			{
 				get { return this.lastUsed; }
+			}
+			public bool IsIntCounter
+			{
+				get { return this.isInt; }
 			}
 			public float LastValue
 			{
@@ -48,9 +50,17 @@ namespace Duality
 			{
 				get { return this.accumValue; }
 			}
-			internal double ProfileAverage
+			internal float ProfileAverage
 			{
-				get { return this.accumValue / this.accumSamples; }
+				get { return (float)(this.accumValue / this.accumSamples); }
+			}
+			internal float ProfileMinimum
+			{
+				get { return this.accumMinValue; }
+			}
+			internal float ProfileMaximum
+			{
+				get { return this.accumMaxValue; }
 			}
 			internal int ProfileAccumSamples
 			{
@@ -58,10 +68,10 @@ namespace Duality
 			}
 
 
-			public Counter(string name, bool timeout = false)
+			public Counter(string name, bool isInt = false)
 			{
 				this.name = name;
-				this.neverRemove = !timeout;
+				this.isInt = isInt;
 			}
 
 			public void BeginMeasure()
@@ -71,9 +81,15 @@ namespace Duality
 			public void EndMeasure()
 			{
 				this.value += this.watch.ElapsedTicks * 1000.0f / Stopwatch.Frequency;
+				this.isInt = false;
 				this.used = true;
 			}
-			public void SetMeasure(float value)
+			public void Add(float value)
+			{
+				this.value += value;
+				this.used = true;
+			}
+			public void Set(float value)
 			{
 				this.value = value;
 				this.used = true;
@@ -92,6 +108,8 @@ namespace Duality
 				if (this.used)
 				{
 					this.accumSamples++;
+					this.accumMaxValue = MathF.Max(this.value, this.accumMaxValue);
+					this.accumMinValue = MathF.Min(this.value, this.accumMinValue);
 					this.accumValue += this.value;
 				}
 			}
@@ -114,6 +132,11 @@ namespace Duality
 		internal	static	Counter	timeOptimizeDrawcalls		= new Counter("Duality_Render_OptimizeDrawcalls");
 		internal	static	Counter	timeProcessDrawcalls		= new Counter("Duality_Render_ProcessDrawcalls");
 		internal	static	Counter	timePostProcessing			= new Counter("Duality_Render_PostProcessing");
+		internal	static	Counter	timeVisualPicking			= new Counter("Duality_Render_Picking");
+		internal	static	Counter	statNumDrawcalls			= new Counter("Duality_Render_StatNumDrawcalls", true);
+		internal	static	Counter	statNumRawBatches			= new Counter("Duality_Render_StatNumRawBatches", true);
+		internal	static	Counter	statNumMergedBatches		= new Counter("Duality_Render_StatNumMergedBatches", true);
+		internal	static	Counter	statNumOptimizedBatches		= new Counter("Duality_Render_StatNumOptimizedBatches", true);
 
 		internal	static	Counter	timeLog					= new Counter("Duality_Log");
 
@@ -189,13 +212,48 @@ namespace Duality
 		{
 			get { return timePostProcessing.LastValue; }
 		}
+		/// <summary>
+		/// [GET] Time in milliseconds the last frame used for visual picking operations.
+		/// </summary>
+		public static float PickingTime
+		{
+			get { return timeVisualPicking.LastValue; }
+		}
+		/// <summary>
+		/// [GET] The number of drawcalls that have been emitted last frame.
+		/// </summary>
+		public static int StatNumDrawcalls
+		{
+			get { return MathF.RoundToInt(statNumDrawcalls.LastValue); }
+		}
+		/// <summary>
+		/// [GET] The number of raw, submitted batches without merging.
+		/// </summary>
+		public static int StatNumRawBatches
+		{
+			get { return MathF.RoundToInt(statNumRawBatches.LastValue); }
+		}
+		/// <summary>
+		/// [GET] The number of batches before optimization.
+		/// </summary>
+		public static int StatNumMergedBatches
+		{
+			get { return MathF.RoundToInt(statNumMergedBatches.LastValue); }
+		}
+		/// <summary>
+		/// [GET] The number of batches after optimization.
+		/// </summary>
+		public static int StatNumOptimizedBatches
+		{
+			get { return MathF.RoundToInt(statNumOptimizedBatches.LastValue); }
+		}
 		
 		public static void BeginMeasure(string counter)
 		{
 			Counter c;
 			if (!counterMap.TryGetValue(counter, out c))
 			{
-				c = new Counter(counter, true);
+				c = new Counter(counter);
 				counterMap[counter] = c;
 			}
 			c.BeginMeasure();
@@ -215,14 +273,46 @@ namespace Duality
 		}
 		public static KeyValuePair<string,float>[] GetAllMeasures()
 		{
-			return counterMap.Where(p => p.Value.WasUsed).Select(p => new KeyValuePair<string,float>(p.Key, p.Value.LastValue)).ToArray();
+			return GetUsedCounters()
+				.Where(p => !p.IsIntCounter)
+				.Select(p => new KeyValuePair<string,float>(p.Name, p.LastValue))
+				.ToArray();
+		}
+		public static void AddToStat(string counter, int value)
+		{
+			Counter c;
+			if (!counterMap.TryGetValue(counter, out c))
+			{
+				c = new Counter(counter, true);
+				counterMap[counter] = c;
+			}
+			c.Add(value);
+		}
+		public static int GetStat(string counter)
+		{
+			Counter c;
+			if (counterMap.TryGetValue(counter, out c))
+				return MathF.RoundToInt(c.LastValue);
+			else
+				return 0;
+		}
+		public static KeyValuePair<string,int>[] GetAllStats()
+		{
+			return GetUsedCounters()
+				.Where(p => p.IsIntCounter)
+				.Select(p => new KeyValuePair<string,int>(p.Name, MathF.RoundToInt(p.LastValue)))
+				.ToArray();
+		}
+		private static IEnumerable<Counter> GetUsedCounters()
+		{
+			return counterMap.Values.Where(p => p.WasUsed);
 		}
 
 		public static void DrawAllMeasures(Canvas canvas, float x = 10.0f, float y = 10.0f, bool background = true)
 		{
-			string[] text = GetAllMeasures()
-				.Where(m => m.Value >= 0.005f)
-				.Select(m => string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}: {1:F}", m.Key, m.Value))
+			string[] text = GetUsedCounters()
+				.Where(m => m.LastValue >= 0.005f)
+				.Select(m => string.Format(System.Globalization.CultureInfo.InvariantCulture, m.IsIntCounter ? "{0}: {1}" : "{0}: {1:F}", m.Name, m.IsIntCounter ? MathF.Round(m.LastValue) : m.LastValue))
 				.ToArray();
 
 			if (background)
@@ -240,36 +330,74 @@ namespace Duality
 		{
 			using (StreamWriter writer = new StreamWriter(stream))
 			{
-				Counter[] counters = counterMap.Values.ToArray();
-				counters.StableSort((a, b) => (int)(100.0d * (b.ProfileAccumValue - a.ProfileAccumValue)));
-
-				int maxNameLen = counters.Max(c => c.Name.Length);
-				int maxSamples = counters.Max(c => c.ProfileAccumSamples);
+				Counter[] timeCounters = counterMap.Values.Where(c => !c.IsIntCounter).ToArray();
+				Counter[] statCounters = counterMap.Values.Where(c => c.IsIntCounter).ToArray();
+				timeCounters.StableSort((a, b) => (int)(100.0d * (b.ProfileAccumValue - a.ProfileAccumValue)));
+				statCounters.StableSort((a, b) => StringComparer.InvariantCulture.Compare(a.Name, b.Name));
 				
-				// Write header
+				int maxNameLen;
+				int maxSamples;
+				maxNameLen = timeCounters.Max(c => c.Name.Length);
+				maxSamples = timeCounters.Max(c => c.ProfileAccumSamples);
+				
+				// Write time header
 				writer.Write("Name".PadRight(maxNameLen));
 				writer.Write(": ");
+				writer.Write("Samples".PadRight(18));
+				writer.Write(" ");
 				writer.Write("Total value (ms)".PadRight(18));
 				writer.Write(" ");
 				writer.Write("Total impact (ms)".PadRight(18));
 				writer.Write(" ");
-				writer.Write("Samples".PadRight(18));
-				writer.Write(" ");
 				writer.Write("Avg. value (ms)");
 				writer.WriteLine();
 
-				// Write data
-				foreach (Counter c in counters)
+				// Write time data
+				foreach (Counter c in timeCounters)
 				{
 					writer.Write(c.Name.PadRight(maxNameLen));
 					writer.Write(": ");
+					writer.Write(string.Format("{0}", c.ProfileAccumSamples).PadRight(18));
+					writer.Write(" ");
 					writer.Write(string.Format("{0:F2}", c.ProfileAccumValue).PadRight(18));
 					writer.Write(" ");
 					writer.Write(string.Format("{0:F2}", c.ProfileAccumValue / (double)maxSamples).PadRight(18));
 					writer.Write(" ");
-					writer.Write(string.Format("{0}", c.ProfileAccumSamples).PadRight(18));
-					writer.Write(" ");
 					writer.Write(string.Format("{0:F2}", c.ProfileAverage));
+					writer.WriteLine();
+				}
+
+				writer.WriteLine();
+				writer.WriteLine("-----------------------------------------------------------------");
+				writer.WriteLine();
+
+				maxNameLen = statCounters.Max(c => c.Name.Length);
+				maxSamples = statCounters.Max(c => c.ProfileAccumSamples);
+				
+				// Write stat header
+				writer.Write("Name".PadRight(maxNameLen));
+				writer.Write(": ");
+				writer.Write("Samples".PadRight(15));
+				writer.Write(" ");
+				writer.Write("Min. value".PadRight(15));
+				writer.Write(" ");
+				writer.Write("Avg. value".PadRight(15));
+				writer.Write(" ");
+				writer.Write("Max. value");
+				writer.WriteLine();
+
+				// Write stat data
+				foreach (Counter c in statCounters)
+				{
+					writer.Write(c.Name.PadRight(maxNameLen));
+					writer.Write(": ");
+					writer.Write(string.Format("{0}", c.ProfileAccumSamples).PadRight(15));
+					writer.Write(" ");
+					writer.Write(string.Format("{0}", MathF.RoundToInt(c.ProfileMinimum)).PadRight(15));
+					writer.Write(" ");
+					writer.Write(string.Format("{0}", MathF.RoundToInt(c.ProfileAverage)).PadRight(15));
+					writer.Write(" ");
+					writer.Write(string.Format("{0}", MathF.RoundToInt(c.ProfileMaximum)));
 					writer.WriteLine();
 				}
 			}
@@ -289,8 +417,6 @@ namespace Duality
 		{
 			foreach (Counter c in counterMap.Values.ToArray())
 			{
-				// Remove unused counters
-				if (!c.WasUsed && !c.NeverRemove) counterMap.Remove(c.Name);
 				// Gather profiling data
 				c.SampleProfile();
 				// Reset counter values

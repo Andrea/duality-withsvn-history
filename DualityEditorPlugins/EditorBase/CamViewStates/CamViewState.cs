@@ -17,6 +17,8 @@ using DualityEditor.Forms;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
+using EditorBase.PluginRes;
+
 namespace EditorBase.CamViewStates
 {
 	public abstract class CamViewState : IHelpProvider
@@ -534,7 +536,7 @@ namespace EditorBase.CamViewStates
 							string.Format("Cam Y:{0,7:0}", this.view.CameraObj.Transform.Pos.Y),
 							string.Format("Cam Z:{0,7:0}", this.view.CameraObj.Transform.Pos.Z)
 						};
-						textYOff -= canvas.CurrentState.TextFont.Res.Height * 2;
+						textYOff -= canvas.CurrentState.TextFont.Res.LineSpacing * 2;
 						handled = true;
 					}
 					else if (this.camVel.Z != 0.0f)
@@ -1498,21 +1500,20 @@ namespace EditorBase.CamViewStates
 		{
 			if (this.actionAllowed && this.SelectedObjects.Any())
 			{
-				return HelpInfo.FromText("Object Action Shortcuts", 
-					"Press Delete to remove the selected objects.\n" +
-					"Press Ctrl + C to clone the selected objects.\n" +
-					"Press Arrow Keys, Add or Subtract to move the selected objects by a fixed step.\n" +
-					"Press F to focus on the current selection.\n" +
-					"Hold X, Y or Z to limit an action to one or two axes.\n");
+				return HelpInfo.FromText(EditorBaseRes.CamView_Help_ObjActions, 
+					EditorBaseRes.CamView_Help_ObjActions_Delete + "\n" +
+					EditorBaseRes.CamView_Help_ObjActions_Clone + "\n" +
+					EditorBaseRes.CamView_Help_ObjActions_MoveStep + "\n" +
+					EditorBaseRes.CamView_Help_ObjActions_Focus + "\n" +
+					EditorBaseRes.CamView_Help_ObjActions_AxisLock);
 			}
 			else if (this.camActionAllowed)
 			{
-				return HelpInfo.FromText("Camera Control Shortcuts", 
-					"Hold or scroll the Mouse Wheel to move.\n" +
-					"Hold the Right Mouse button to rotate.\n" +
-					"Hold Space for alternative camera movement.\n" +
-					"Press Ctrl + Arrow Keys, Add or Subtract to move by a fixed step.\n" +
-					"Press F to focus the world origin.\n");
+				return HelpInfo.FromText(EditorBaseRes.CamView_Help_CamActions, 
+					EditorBaseRes.CamView_Help_CamActions_Move + "\n" +
+					EditorBaseRes.CamView_Help_CamActions_MoveAlternate + "\n" +
+					EditorBaseRes.CamView_Help_CamActions_MoveStep + "\n" +
+					EditorBaseRes.CamView_Help_CamActions_Focus);
 			}
 
 			return null;

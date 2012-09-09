@@ -647,6 +647,7 @@ namespace Duality.Components
 		[NonSerialized]	private	Texture				pickingTex			= null;
 		[NonSerialized]	private	int					pickingLast			= -1;
 		[NonSerialized]	private	byte[]				pickingBuffer		= new byte[4 * 256 * 256];
+		[NonSerialized]	private	int					numRawBatches		= 0;
 		[NonSerialized]	private	List<IDrawBatch>	drawBuffer			= new List<IDrawBatch>();
 		[NonSerialized]	private	List<IDrawBatch>	drawBufferZSort		= new List<IDrawBatch>();
 		[NonSerialized]	private	List<Predicate<ICmpRenderer>>	editorRenderFilter	= new List<Predicate<ICmpRenderer>>();
@@ -878,6 +879,7 @@ namespace Duality.Components
 		{
 			if (this.pickingLast == Time.FrameCount) return false;
 			this.pickingLast = Time.FrameCount;
+			Performance.timeVisualPicking.BeginMeasure();
 
 			// Render picking map
 			this.picking = 1;
@@ -897,6 +899,7 @@ namespace Duality.Components
 			RenderTarget.Bind(lastTex);
 			GL.ReadBuffer(ReadBufferMode.Back);
 
+			Performance.timeVisualPicking.EndMeasure();
 			return true;
 		}
 		/// <summary>
@@ -1170,11 +1173,13 @@ namespace Duality.Components
 			this.BeginBatchRendering();
 
 			int drawCalls = 0;
-			// Z-Independent: Sorted as needed by batch optimizer
-			drawCalls += this.RenderBatches(this.drawBuffer);
-			// Z-Sorted: Back to Front
-			drawCalls += this.RenderBatches(this.drawBufferZSort);
-			//Log.Core.Write("{0} Drawcalls: {1}", screenOverlay, drawCalls);
+			{
+				// Z-Independent: Sorted as needed by batch optimizer
+				drawCalls += this.RenderBatches(this.drawBuffer);
+				// Z-Sorted: Back to Front
+				drawCalls += this.RenderBatches(this.drawBufferZSort);
+			}
+			Performance.statNumDrawcalls.Add(drawCalls);
 
 			this.FinishBatchRendering();
 			this.drawBuffer.Clear();
@@ -1278,6 +1283,7 @@ namespace Duality.Components
 		}
 		private void OptimizeBatches(bool screenOverlay)
 		{
+			int batchCountBefore = this.drawBuffer.Count + this.drawBufferZSort.Count;
 			if (this.picking == 0) Performance.timeOptimizeDrawcalls.BeginMeasure();
 
 			// Non-ZSorted
@@ -1296,6 +1302,12 @@ namespace Duality.Components
 			}
 
 			if (this.picking == 0) Performance.timeOptimizeDrawcalls.EndMeasure();
+			int batchCountAfter = this.drawBuffer.Count + this.drawBufferZSort.Count;
+
+			Performance.statNumRawBatches.Add(this.numRawBatches);
+			Performance.statNumMergedBatches.Add(batchCountBefore);
+			Performance.statNumOptimizedBatches.Add(batchCountAfter);
+			this.numRawBatches = 0;
 		}
 		private List<IDrawBatch> OptimizeBatches(List<IDrawBatch> sortedBuffer)
 		{
@@ -1549,6 +1561,7 @@ namespace Duality.Components
 			{
 				buffer.Add(new DrawBatch<T>(material, vertexMode, vertices, zSortIndex));
 			}
+			++this.numRawBatches;
 		}
 		void IDrawDevice.AddVertices<T>(ContentRef<Material> material, VertexMode vertexMode, params T[] vertices)
 		{

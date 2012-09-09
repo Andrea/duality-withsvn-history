@@ -164,30 +164,40 @@ namespace DualityEditor.Forms
 			this.menuRunSandboxPlay.Image = this.actionRunSandbox.Image;
 			this.menuRunSandboxPlay.Click += this.actionRunSandbox_Click;
 			this.menuRunSandboxPlay.ShortcutKeys = Keys.F5;
+			this.menuRunSandboxPlay.Tag = HelpInfo.FromText(this.menuRunSandboxPlay.Text, GeneralRes.MenuItemInfo_SandboxPlay);
 
 			this.menuRunSandboxStep.Image = this.actionStepSandbox.Image;
 			this.menuRunSandboxStep.Click += this.actionStepSandbox_Click;
 			this.menuRunSandboxStep.ShortcutKeys = Keys.F6;
+			this.menuRunSandboxStep.Tag = HelpInfo.FromText(this.menuRunSandboxStep.Text, GeneralRes.MenuItemInfo_SandboxStep);
 
 			this.menuRunSandboxPause.Image = this.actionPauseSandbox.Image;
 			this.menuRunSandboxPause.Click += this.actionPauseSandbox_Click;
 			this.menuRunSandboxPause.ShortcutKeys = Keys.F7;
+			this.menuRunSandboxPause.Tag = HelpInfo.FromText(this.menuRunSandboxPause.Text, GeneralRes.MenuItemInfo_SandboxPause);
 
 			this.menuRunSandboxStop.Image = this.actionStopSandbox.Image;
 			this.menuRunSandboxStop.Click += this.actionStopSandbox_Click;
 			this.menuRunSandboxStop.ShortcutKeys = Keys.F8;
+			this.menuRunSandboxStop.Tag = HelpInfo.FromText(this.menuRunSandboxStop.Text, GeneralRes.MenuItemInfo_SandboxStop);
 
 			this.menuRunSandboxSlower.Click += this.menuRunSandboxSlower_Click;
 			this.menuRunSandboxSlower.ShortcutKeys = Keys.F9;
+			this.menuRunSandboxSlower.Tag = HelpInfo.FromText(this.menuRunSandboxSlower.Text, GeneralRes.MenuItemInfo_SandboxSlower);
 
 			this.menuRunSandboxFaster.Click += this.menuRunSandboxFaster_Click;
 			this.menuRunSandboxFaster.ShortcutKeys = Keys.F10;
+			this.menuRunSandboxFaster.Tag = HelpInfo.FromText(this.menuRunSandboxFaster.Text, GeneralRes.MenuItemInfo_SandboxFaster);
 
 			// Attach help data to toolstrip actions
 			this.actionOpenCode.Tag = HelpInfo.FromText(this.actionOpenCode.Text, GeneralRes.MenuItemInfo_OpenProjectSource);
 			this.actionSaveAll.Tag = HelpInfo.FromText(this.actionSaveAll.Text, GeneralRes.MenuItemInfo_SaveAll);
 			this.actionRunApp.Tag = HelpInfo.FromText(this.actionRunApp.Text, GeneralRes.MenuItemInfo_RunGame);
 			this.actionDebugApp.Tag = HelpInfo.FromText(this.actionDebugApp.Text, GeneralRes.MenuItemInfo_DebugGame);
+			this.actionRunSandbox.Tag = HelpInfo.FromText(this.actionRunSandbox.Text, GeneralRes.MenuItemInfo_SandboxPlay);
+			this.actionStepSandbox.Tag = HelpInfo.FromText(this.actionStepSandbox.Text, GeneralRes.MenuItemInfo_SandboxStep);
+			this.actionPauseSandbox.Tag = HelpInfo.FromText(this.actionPauseSandbox.Text, GeneralRes.MenuItemInfo_SandboxPause);
+			this.actionStopSandbox.Tag = HelpInfo.FromText(this.actionStopSandbox.Text, GeneralRes.MenuItemInfo_SandboxStop);
 		}
 		public void RequestSeparator(params string[] menuNames)
 		{

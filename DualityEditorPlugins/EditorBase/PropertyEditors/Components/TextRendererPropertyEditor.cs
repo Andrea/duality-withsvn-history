@@ -13,7 +13,7 @@ namespace EditorBase.PropertyEditors
 			if (ReflectionHelper.MemberInfoEquals(property, ReflectionInfo.Property_TextRenderer_Text))
 			{
 				foreach (TextRenderer r in targets.Cast<TextRenderer>().NotNull())
-					r.UpdateMetrics();
+					r.UpdateText();
 			}
 			base.OnPropertySet(property, targets);
 		}

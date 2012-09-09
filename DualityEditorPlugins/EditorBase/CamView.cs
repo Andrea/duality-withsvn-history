@@ -692,6 +692,8 @@ namespace EditorBase
 		
 		private void InstallFocusHook()
 		{
+			if (this.glControl.Focused) return;
+
 			// Hook global message filter
 			if (this.waitForInputFilter == null)
 			{

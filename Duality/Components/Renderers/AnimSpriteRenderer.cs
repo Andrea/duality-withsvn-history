@@ -279,6 +279,8 @@ namespace Duality.Components.Renderers
 
 		void ICmpUpdatable.OnUpdate()
 		{
+			if (!this.IsAnimationRunning) return;
+
 			int actualFrameBegin = this.customFrameSequence != null ? 0 : this.animFirstFrame;
 			int actualFrameCount = this.customFrameSequence != null ? this.customFrameSequence.Count : this.animFrameCount;
 

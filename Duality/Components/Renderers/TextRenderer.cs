@@ -40,11 +40,11 @@ namespace Duality.Components.Renderers
 			set
 			{
 				this.align = value;
-				this.UpdateMetrics();
+				this.UpdateText();
 			}
 		}
 		/// <summary>
-		/// [GET / SET] The text to display.
+		/// [GET / SET] The text to display. If you change this without re-assigning it, be sure to call <see cref="UpdateText"/>.
 		/// </summary>
 		public FormattedText Text
 		{
@@ -54,7 +54,7 @@ namespace Duality.Components.Renderers
 				if (this.text != value)
 				{
 					this.text = value;
-					this.UpdateMetrics();
+					this.UpdateText();
 				}
 			}
 		}
@@ -97,13 +97,13 @@ namespace Duality.Components.Renderers
 		public TextRenderer() 
 		{
 			this.text.Fonts = new[] { Font.GenericMonospace10 };
-			this.UpdateMetrics();
+			this.UpdateText();
 		}
 
 		/// <summary>
-		/// Updates the texts <see cref="Metrics"/>. Should be called anytime the text changes.
+		/// Updates the texts <see cref="Metrics"/> and other internal data. Should be called everytime the text changes.
 		/// </summary>
-		public void UpdateMetrics()
+		public void UpdateText()
 		{
 			this.metrics = this.text.Measure();
 			this.textRect = Rect.Align(this.align, 0.0f, 0.0f, 
@@ -125,7 +125,7 @@ namespace Duality.Components.Renderers
 			MathF.TransformDotVec(ref textOffset, ref xDot, ref yDot);
 			posTemp.X += textOffset.X;
 			posTemp.Y += textOffset.Y;
-			if (this.text.Fonts != null && this.text.Fonts.All(r => !r.IsAvailable || r.Res.GlyphRenderHint == Font.RenderHint.Monochrome))
+			if (this.text.Fonts != null && this.text.Fonts.Any(r => r.IsAvailable && r.Res.GlyphRenderHint == Font.RenderHint.Monochrome))
 			{
 				posTemp.X = MathF.Round(posTemp.X);
 				posTemp.Y = MathF.Round(posTemp.Y);
@@ -147,12 +147,12 @@ namespace Duality.Components.Renderers
 				MathF.TransformDotVec(ref textHeight, ref xDot, ref yDot);
 				MathF.TransformDotVec(ref textMaxHeight, ref xDot, ref yDot);
 
-				device.AddVertices(new BatchInfo(DrawTechnique.Alpha, this.colorTint.WithAlpha(128)), VertexMode.LineLoop,
+				device.AddVertices(new BatchInfo(DrawTechnique.Alpha, ColorRgba.Green.WithAlpha(128)), VertexMode.LineLoop,
 					new VertexFormat.VertexP3(posTemp),
 					new VertexFormat.VertexP3(posTemp + textWidth),
 					new VertexFormat.VertexP3(posTemp + textWidth + textHeight),
 					new VertexFormat.VertexP3(posTemp + textHeight));
-				device.AddVertices(new BatchInfo(DrawTechnique.Alpha, (ColorRgba.Red * this.colorTint).WithAlpha(128)), VertexMode.LineLoop,
+				device.AddVertices(new BatchInfo(DrawTechnique.Alpha, ColorRgba.Red.WithAlpha(128)), VertexMode.LineLoop,
 					new VertexFormat.VertexP3(posTemp),
 					new VertexFormat.VertexP3(posTemp + textMaxWidth),
 					new VertexFormat.VertexP3(posTemp + textMaxWidth + textMaxHeight),
@@ -190,7 +190,7 @@ namespace Duality.Components.Renderers
 			if (context == InitContext.Loaded)
 			{
 				this.text.ApplySource();
-				this.UpdateMetrics();
+				this.UpdateText();
 			}
 		}
 		void ICmpInitializable.OnShutdown(ShutdownContext context) {}
@@ -203,7 +203,8 @@ namespace Duality.Components.Renderers
 			t.text		= this.text.Clone();
 			t.colorTint	= this.colorTint;
 			t.customMat	= this.customMat != null ? new BatchInfo(this.customMat) : null;
-			t.UpdateMetrics();
+			t.iconMat	= this.iconMat;
+			t.UpdateText();
 		}
 	}
 }

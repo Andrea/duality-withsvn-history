@@ -83,7 +83,7 @@ namespace EditorBase.CamViewLayers
 
 	            vertices[vertOff + x * 2 + 0].Pos.X = pos;
 	            vertices[vertOff + x * 2 + 0].Pos.Y = -viewBoundRad;
-	            vertices[vertOff + x * 2 + 0].Pos.Z = posTemp.Z + 0;
+	            vertices[vertOff + x * 2 + 0].Pos.Z = posTemp.Z + 1;
 
 	            vertices[vertOff + x * 2 + 1] = vertices[vertOff + x * 2 + 0];
 	            vertices[vertOff + x * 2 + 1].Pos.Y = viewBoundRad;
@@ -105,7 +105,7 @@ namespace EditorBase.CamViewLayers
 
 	            vertices[vertOff + y * 2 + 0].Pos.X = -viewBoundRad;
 	            vertices[vertOff + y * 2 + 0].Pos.Y = pos;
-	            vertices[vertOff + y * 2 + 0].Pos.Z = posTemp.Z + 0;
+	            vertices[vertOff + y * 2 + 0].Pos.Z = posTemp.Z + 1;
 
 	            vertices[vertOff + y * 2 + 1] = vertices[vertOff + y * 2 + 0];
 	            vertices[vertOff + y * 2 + 1].Pos.X = viewBoundRad;

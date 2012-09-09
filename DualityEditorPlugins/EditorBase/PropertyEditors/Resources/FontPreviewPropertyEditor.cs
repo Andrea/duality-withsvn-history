@@ -60,6 +60,7 @@ namespace EditorBase.PropertyEditors
 					this.prevImageLum = avgColor.GetLuminance();
 				}
 			}
+			this.Invalidate();
 		}
 
 		public override void PerformGetValue()

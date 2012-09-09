@@ -52,7 +52,7 @@ namespace DualityDebugging
 		private void actionSave_Click(object sender, EventArgs e)
 		{
 			SaveFileDialog dialog = new SaveFileDialog();
-			dialog.Filter = "Bitmap (*.bmp)|*.bmp|PNG Image (*.png)|*.png|Jpeg Image (*.jpg)|*.jpg|TIFF Image (*.tiff)|*.tiff";
+			dialog.Filter = "PNG Image (*.png)|*.png|Jpeg Image (*.jpg)|*.jpg|TIFF Image (*.tiff)|*.tiff";
 			if (dialog.ShowDialog() == DialogResult.OK)
 			{
 				this.bitmapView.Bitmap.Save(dialog.FileName);

@@ -354,12 +354,13 @@ namespace EditorBase
 			return result;
 		}
 
-		public bool SelectNode(NodeBase node, bool select = true)
+		public bool SelectNode(NodeBase node, bool select = true, bool exclusive = false)
 		{
 			if (node == null) return false;
 			TreeNodeAdv viewNode = this.folderView.FindNode(this.folderModel.GetPath(node));
 			if (viewNode != null)
 			{
+				if (exclusive) this.folderView.ClearSelection();
 				viewNode.IsSelected = select;
 				this.folderView.EnsureVisible(viewNode);
 				return true;
@@ -380,10 +381,12 @@ namespace EditorBase
 		}
 		protected void PerformScheduleSelect(string incomingFilePath)
 		{
-			if (!this.scheduleSelectPath.Any(e => e.Path == incomingFilePath)) return;
-			if (this.SelectNode(this.NodeFromPath(incomingFilePath)))
+			ScheduleSelectEntry entry = this.scheduleSelectPath.FirstOrDefault(e => e.Path == incomingFilePath);
+			if (entry.Path != incomingFilePath) return;
+
+			NodeBase selNode = this.NodeFromPath(incomingFilePath);
+			if (this.SelectNode(selNode, true, entry.BeginRename))
 			{
-				ScheduleSelectEntry entry = this.scheduleSelectPath.First(e => e.Path == incomingFilePath);
 				this.scheduleSelectPath.Remove(entry);
 				if (entry.BeginRename) this.nodeTextBoxName.BeginEdit();
 			}

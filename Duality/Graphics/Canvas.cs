@@ -1210,7 +1210,7 @@ namespace Duality
 				this.CurrentState.TransformVertices(vertices, shapeHandle, scale);
 				device.AddVertices(customMat, VertexMode.Quads, vertices);
 
-				pos.Y += font.Height * scale;
+				pos.Y += font.LineSpacing * scale;
 				vertices = null;
 			}
 		}
