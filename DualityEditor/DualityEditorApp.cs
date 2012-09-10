@@ -56,6 +56,7 @@ namespace DualityEditor
 		private	static List<Resource>				unsavedResources	= new List<Resource>();
 		private	static ObjectSelection				selectionCurrent	= ObjectSelection.Null;
 		private	static ObjectSelection				selectionPrevious	= ObjectSelection.Null;
+		private	static ObjectSelection.Category		selectionActiveCat	= ObjectSelection.Category.None;
 		private	static bool							selectionChanging	= false;
 		private	static Dictionary<Guid,Type>		selectionTempScene	= null;	// GameObjCmp sel inbetween scene switches
 		private	static bool							backupsEnabled		= true;
@@ -82,6 +83,10 @@ namespace DualityEditor
 		public static ObjectSelection Selection
 		{
 			get { return selectionCurrent; }
+		}
+		public static ObjectSelection.Category SelectionActiveCategory
+		{
+			get { return selectionActiveCat; }
 		}
 		public static bool IsSelectionChanging
 		{
@@ -890,6 +895,7 @@ namespace DualityEditor
 			//if (selectionCurrent == selectionPrevious) return;
 			selectionChanging = true;
 
+			selectionActiveCat = changedCategoryFallback;
 			if (SelectionChanged != null)
 				SelectionChanged(sender, new SelectionChangedEventArgs(selectionCurrent, selectionPrevious, changedCategoryFallback));
 

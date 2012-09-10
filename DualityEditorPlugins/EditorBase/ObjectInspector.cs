@@ -84,6 +84,9 @@ namespace EditorBase
 			DualityEditorApp.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
 			FileEventManager.ResourceModified += this.EditorForm_ResourceModified;
 			DualityEditorApp.Terminating += this.DualityEditorApp_Terminating;
+
+			// Select something initially
+			this.UpdateSelection(DualityEditorApp.Selection, DualityEditorApp.SelectionActiveCategory);
 		}
 		protected override void OnClosed(EventArgs e)
 		{
@@ -211,10 +214,11 @@ namespace EditorBase
 						View = v, 
 						Empty = v.EmptySelection,
 						PerfectFit = v.EmptySelection || (cat & v.DisplayedCategory) != ObjectSelection.Category.None,
-						TypeShare = ObjectSelection.GetTypeShareLevel(e.Current.Exclusive(cat), v.DisplayedSelection) };
+						TypeShare = ObjectSelection.GetTypeShareLevel(e.Current.Exclusive(cat), v.DisplayedSelection),
+						NumSameCatViews = EditorBasePlugin.Instance.ObjViews.Count(o => o.AcceptsSelection(e.Current) && o.DisplayedCategory == v.DisplayedCategory) };
 				var sortedQuery = 
 					from o in objViews
-					orderby o.PerfectFit descending, o.Empty ascending, o.TypeShare ascending
+					orderby o.PerfectFit descending, o.Empty ascending, o.NumSameCatViews descending, o.TypeShare ascending
 					select o;
 				var targetItem = sortedQuery.FirstOrDefault();
 				if (targetItem == null) return;
