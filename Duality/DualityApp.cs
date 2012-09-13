@@ -385,7 +385,11 @@ namespace Duality
 		/// If true, this is handled as an unexpected termination, such as because of an exception that
 		/// from which the application can't recover.
 		/// </param>
-		public static void Terminate(bool unexpected = false)
+		public static void Terminate()
+		{
+			Terminate(false);
+		}
+		internal static void Terminate(bool unexpected)
 		{
 			if (!initialized) return;
 
@@ -395,18 +399,20 @@ namespace Duality
 			}
 			else
 			{
-				if (environment == ExecutionEnvironment.Editor && execContext == ExecutionContext.Game)
-				{
-					Scene.Current.Dispose();
-					Log.Core.Write("DualityApp Sandbox terminated");
-					return;
-				}
-
 				if (isUpdating)
 				{
 					terminateScheduled = true;
 					return;
 				}
+
+				if (environment == ExecutionEnvironment.Editor && execContext == ExecutionContext.Game)
+				{
+					Scene.Current.Dispose();
+					Log.Core.Write("DualityApp Sandbox terminated");
+					terminateScheduled = false;
+					return;
+				}
+
 				if (execContext != ExecutionContext.Editor)
 				{
 					OnTerminating();
@@ -509,6 +515,8 @@ namespace Duality
 
 			Performance.timeUpdate.EndMeasure();
 			isUpdating = false;
+
+			if (terminateScheduled) Terminate();
 		}
 		
 		/// <summary>

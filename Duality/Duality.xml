@@ -194,7 +194,7 @@
             Usually these are just the ones from the host application, passed on.
             </param>
         </member>
-        <member name="M:Duality.DualityApp.Terminate(System.Boolean)">
+        <member name="M:Duality.DualityApp.Terminate">
             <summary>
             Terminates this DualityApp. This does not end the current Process, but it isn't recommended to
             attemp performing any Duality operations after it has been terminated.
