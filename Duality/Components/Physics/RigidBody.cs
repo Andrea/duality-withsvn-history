@@ -982,6 +982,7 @@ namespace Duality.Components.Physics
 		private void OnTransformChanged(object sender, TransformChangedEventArgs e)
 		{
 			if (sender == this) return;
+			if (this.body == null) return;
 			Transform t = e.Component as Transform;
 
 			if ((e.Changes & Transform.DirtyFlags.Pos) != Transform.DirtyFlags.None)
