@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 using Duality;
 using Duality.Resources;
@@ -79,8 +81,11 @@ namespace DualityLauncher
 			System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 			System.Threading.Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.InvariantCulture;
 
+			bool debugging = System.Diagnostics.Debugger.IsAttached || args.Contains(DualityApp.CmdArgDebug);
+			bool editor = args.Contains(DualityApp.CmdArgEditor);
+			if (debugging || editor) ShowConsole();
+
 			DualityApp.Init(DualityApp.ExecutionEnvironment.Launcher, DualityApp.ExecutionContext.Game, args);
-			bool debugging = System.Diagnostics.Debugger.IsAttached;
 
 			using (DualityLauncher launcherWindow = new DualityLauncher(
 				DualityApp.UserData.GfxWidth, 
@@ -121,5 +126,16 @@ namespace DualityLauncher
 			}
 			DualityApp.Terminate();
 		}
+
+		private static bool hasConsole = false;
+		public static void ShowConsole()
+		{
+			if (hasConsole) return;
+			AllocConsole();
+			hasConsole = true;
+		}
+
+		[DllImport("kernel32.dll")]
+		private static extern Int32 AllocConsole();
 	}
 }

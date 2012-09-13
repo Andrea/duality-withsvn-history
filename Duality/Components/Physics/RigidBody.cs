@@ -914,8 +914,9 @@ namespace Duality.Components.Physics
         }
 		private void ProcessCollisionEvents()
 		{
-			foreach (ColEvent e in this.eventBuffer)
-				this.ProcessSingleCollisionEvent(e);
+			// Don't use foreach here in case someone decides to add something at the end while iterating..
+			for (int i = 0; i < this.eventBuffer.Count; i++)
+				this.ProcessSingleCollisionEvent(this.eventBuffer[i]);
 			this.eventBuffer.Clear();
 		}
 		private void ProcessSingleCollisionEvent(ColEvent colEvent)

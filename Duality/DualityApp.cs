@@ -66,6 +66,9 @@ namespace Duality
 			Editor
 		}
 
+		public const string CmdArgDebug = "debug";
+		public const string CmdArgEditor = "editor";
+
 		private	static	Thread					mainThread			= null;
 		private	static	bool					initialized			= false;
 		private	static	bool					isUpdating			= false;
@@ -301,9 +304,9 @@ namespace Duality
 				else logArgIndex = -1;
 
 				// Enter debug mode
-				if (args.Contains("debug")) System.Diagnostics.Debugger.Launch();
+				if (args.Contains(CmdArgDebug)) System.Diagnostics.Debugger.Launch();
 				// Run from editor
-				if (args.Contains("editor")) runFromEditor = true;
+				if (args.Contains(CmdArgEditor)) runFromEditor = true;
 				// Set logfile path
 				if (logArgIndex != -1) logfilePath = args[logArgIndex];
 			}
