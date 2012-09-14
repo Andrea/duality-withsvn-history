@@ -673,8 +673,12 @@ namespace EditorBase
 			Resource resInstance = ReflectionHelper.CreateInstanceOf(type) as Resource;
 			resInstance.Save(resPath);
 
+			// Schedule path for later selection - as soon as it actually exists.
 			this.folderView.ClearSelection();
 			this.ScheduleSelect(resPath, true);
+
+			// Skip the global rename action for this path once, because there clearly aren't any referencs to a new Resource.
+			FileEventManager.SkipGlobalRenameAction(resPath);
 
 			return resInstance.GetContentRef();
 		}
