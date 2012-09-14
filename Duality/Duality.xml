@@ -12886,6 +12886,17 @@
             <seealso cref="T:Duality.Resources.Scene"/>
             <seealso cref="T:Duality.Resources.PrefabLink"/>
         </member>
+        <member name="M:Duality.GameObject.#ctor">
+            <summary>
+            Creates a new, empty GameObject.
+            </summary>
+        </member>
+        <member name="M:Duality.GameObject.#ctor(System.String)">
+            <summary>
+            Creates a new, empty GameObject with a specific name.
+            </summary>
+            <param name="name"></param>
+        </member>
         <member name="M:Duality.GameObject.#ctor(Duality.ContentRef{Duality.Resources.Prefab})">
             <summary>
             Creates a GameObject based on a specific <see cref="T:Duality.Resources.Prefab"/>.

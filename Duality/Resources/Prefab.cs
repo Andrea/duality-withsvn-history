@@ -82,7 +82,10 @@ namespace Duality.Resources
 		/// <returns>A new GameObject instance of this Prefab.</returns>
 		public GameObject Instantiate()
 		{
-			return new GameObject(new ContentRef<Prefab>(this));
+			if (this.objTree == null)
+				return new GameObject();
+			else
+				return new GameObject(new ContentRef<Prefab>(this));
 		}
 		/// <summary>
 		/// Copies this Prefabs data to a GameObject without linking itsself to it.
@@ -90,6 +93,7 @@ namespace Duality.Resources
 		/// <param name="obj">The GameObject to which the Prefabs data is copied.</param>
 		public void CopyTo(GameObject obj)
 		{
+			if (this.objTree == null) return;
 			this.objTree.CopyTo(obj);
 		}
 

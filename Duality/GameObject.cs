@@ -294,7 +294,18 @@ namespace Duality
 		public event EventHandler<CollisionEventArgs>	EventCollisionSolve		= null;
 
 
+		/// <summary>
+		/// Creates a new, empty GameObject.
+		/// </summary>
 		public GameObject() {}
+		/// <summary>
+		/// Creates a new, empty GameObject with a specific name.
+		/// </summary>
+		/// <param name="name"></param>
+		public GameObject(string name)
+		{
+			this.name = name;
+		}
 		/// <summary>
 		/// Creates a GameObject based on a specific <see cref="Duality.Resources.Prefab"/>.
 		/// </summary>
@@ -302,6 +313,7 @@ namespace Duality
 		/// <seealso cref="Duality.Resources.Prefab"/>
 		public GameObject(ContentRef<Prefab> prefab)
 		{
+			if (!prefab.IsAvailable) return;
 			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
 			{
 				prefab.Res.CopyTo(this);
@@ -732,7 +744,7 @@ namespace Duality
 			// Copy "pure" data
 			target.name			= this.name;
 			target.active		= this.active;
-			target.initState		= this.initState;
+			target.initState	= this.initState;
 
 			// Prepass: Create & Register all necessary GameObjects and Components
 			this.PrepassCopyData(target, provider);

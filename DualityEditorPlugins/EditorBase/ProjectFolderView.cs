@@ -974,6 +974,9 @@ namespace EditorBase
 						if (draggedObj.PrefabLink != null) draggedObj.PrefabLink.ClearChanges();
 						draggedObj.LinkToPrefab(prefab);
 						DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(draggedObj), ReflectionInfo.Property_GameObject_PrefabLink);
+
+						// Update the Prefab icon
+						targetResNode.UpdateImage();
 					}
 				}
 				// See if we can retrieve Resources from data
