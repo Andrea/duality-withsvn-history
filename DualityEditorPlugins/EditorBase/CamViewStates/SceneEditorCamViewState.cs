@@ -395,6 +395,7 @@ namespace EditorBase.CamViewStates
 					lockZ ? 0.0f : this.View.CameraObj.Transform.Pos.Z + MathF.Abs(this.View.CameraComponent.ParallaxRefDist)));
 
 				// Setup GameObjects
+				bool anyAngleChanged = this.View.CameraObj.Transform.Angle != 0.0f;
 				foreach (GameObject newObj in dragObj)
 				{
 					if (newObj.Transform != null)
@@ -412,6 +413,23 @@ namespace EditorBase.CamViewStates
 
 				// Get focused
 				this.View.LocalGLControl.Focus();
+
+				// Notify about changed properties
+				if (anyAngleChanged)
+				{
+					DualityEditorApp.NotifyObjPropChanged(
+						this,
+						new ObjectSelection(dragObj.Transform()),
+						ReflectionInfo.Property_Transform_RelativePos,
+						ReflectionInfo.Property_Transform_RelativeAngle);
+				}
+				else
+				{
+					DualityEditorApp.NotifyObjPropChanged(
+						this,
+						new ObjectSelection(dragObj.Transform()),
+						ReflectionInfo.Property_Transform_RelativePos);
+				}
 
 				e.Effect = e.AllowedEffect;
 			}
