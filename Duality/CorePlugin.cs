@@ -34,12 +34,6 @@ namespace Duality
 
 			this.OnDisposePlugin();
 
-			Type[] oldResTypes = (
-				from t in this.assembly.GetExportedTypes()
-				where typeof(Resource).IsAssignableFrom(t)
-				select t).ToArray();
-			foreach (Type oldResType in oldResTypes) ContentProvider.UnregisterAllContent(oldResType);
-
 			this.disposed = true;
 		}
 		/// <summary>

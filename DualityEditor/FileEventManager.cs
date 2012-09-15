@@ -30,19 +30,19 @@ namespace DualityEditor
 		private static FileSystemWatcher			sourceDirWatcher		= null;
 		private	static HashSet<string>				reimportSchedule		= new HashSet<string>();
 		private	static List<string>					editorJustSavedRes		= new List<string>();
-		private	static List<string>					skipGlobalRename		= new List<string>();
 		private	static List<FileSystemEventArgs>	dataDirEventBuffer		= new List<FileSystemEventArgs>();
 		private	static List<FileSystemEventArgs>	sourceDirEventBuffer	= new List<FileSystemEventArgs>();
 
 
-		public	static	event	EventHandler<ResourceEventArgs>			ResourceCreated			= null;
-		public	static	event	EventHandler<ResourceEventArgs>			ResourceDeleted			= null;
-		public	static	event	EventHandler<ResourceEventArgs>			ResourceModified		= null;
-		public	static	event	EventHandler<ResourceRenamedEventArgs>	ResourceRenamed			= null;
-		public	static	event	EventHandler<FileSystemEventArgs>		SrcFileDeleted			= null;
-		public	static	event	EventHandler<FileSystemEventArgs>		SrcFileModified			= null;
-		public	static	event	EventHandler<FileSystemEventArgs>		SrcFileRenamed			= null;
-		public	static	event	EventHandler<FileSystemEventArgs>		PluginChanged			= null;
+		public	static	event	EventHandler<ResourceEventArgs>				ResourceCreated		= null;
+		public	static	event	EventHandler<ResourceEventArgs>				ResourceDeleted		= null;
+		public	static	event	EventHandler<ResourceEventArgs>				ResourceModified	= null;
+		public	static	event	EventHandler<ResourceRenamedEventArgs>		ResourceRenamed		= null;
+		public	static	event	EventHandler<FileSystemEventArgs>			SrcFileDeleted		= null;
+		public	static	event	EventHandler<FileSystemEventArgs>			SrcFileModified		= null;
+		public	static	event	EventHandler<FileSystemEventArgs>			SrcFileRenamed		= null;
+		public	static	event	EventHandler<FileSystemEventArgs>			PluginChanged		= null;
+		public	static	event	EventHandler<BeginGlobalRenameEventArgs>	BeginGlobalRename	= null;
 		
 		
 		internal static void Init()
@@ -118,29 +118,6 @@ namespace DualityEditor
 			sourceDirWatcher.SynchronizingObject = null;
 			sourceDirWatcher.Dispose();
 			sourceDirWatcher = null;
-		}
-
-
-		/// <summary>
-		/// Skips a global rename action that would normally execute following a rename event of the specified file.
-		/// Calling this method will only skip it once. It is intended to be used for newly created Resources that
-		/// aren't referenced anywhere yet.
-		/// </summary>
-		/// <param name="filePath"></param>
-		public static void SkipGlobalRenameAction(string filePath)
-		{
-			filePath = Path.GetFullPath(filePath);
-			if (!skipGlobalRename.Contains(filePath))
-				skipGlobalRename.Add(filePath);
-		}
-		/// <summary>
-		/// Revokes a previous call to <see cref="SkipGlobalRenameAction"/>.
-		/// </summary>
-		/// <param name="filePath"></param>
-		public static void RevokeSkipGlobalRenameAction(string filePath)
-		{
-			filePath = Path.GetFullPath(filePath);
-			skipGlobalRename.Remove(filePath);
 		}
 
 
@@ -338,10 +315,16 @@ namespace DualityEditor
 						if (args.IsDirectory)	ContentProvider.RenameContentTree(args.OldPath, args.Path);
 						else					ContentProvider.RenameContent(args.OldPath, args.Path);
 
-						// Ignore empty directories and skipped paths
-						bool isEmptyDir = args.IsDirectory && !Directory.EnumerateFiles(args.Path, "*", SearchOption.AllDirectories).Any();
-						bool isSkippedPath = skipGlobalRename.Remove(Path.GetFullPath(args.OldPath));
-						if (!isEmptyDir && !isSkippedPath)
+						// Query skipped paths
+						bool isSkippedPath = false;
+						if (BeginGlobalRename != null)
+						{
+							BeginGlobalRenameEventArgs beginGlobalRenameArgs = new BeginGlobalRenameEventArgs(args.Path, args.OldPath);
+							BeginGlobalRename(null, beginGlobalRenameArgs);
+							isSkippedPath = beginGlobalRenameArgs.Cancel;
+						}
+
+						if (!isSkippedPath)
 						{
 							// Buffer rename event to perform the global rename for all at once.
 							if (renameEventBuffer == null) renameEventBuffer = new List<ResourceRenamedEventArgs>();

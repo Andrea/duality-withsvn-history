@@ -61,6 +61,7 @@ namespace Duality
 		/// <param name="instanceType">The Type to create an instance of.</param>
 		/// <param name="noConstructor">If true, the instance will be generated without invoking any constructor.</param>
 		/// <returns>An instance of the Type. Null, if instanciation wasn't possible.</returns>
+		[System.Diagnostics.DebuggerStepThrough]
 		public static object CreateInstanceOf(this Type instanceType, bool noConstructor = false)
 		{
 			try

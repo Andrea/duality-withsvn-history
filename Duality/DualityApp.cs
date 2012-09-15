@@ -783,10 +783,15 @@ namespace Duality
 			// Register newly loaded plugin
 			plugins[plugin.AssemblyName] = plugin;
 			
-			Log.Core.PopIndent();
+			// Discard plugin-related data
 			availTypeDict.Clear();
 			ReflectionHelper.ClearTypeCache();
-			Scene.Current.Dispose();
+			if (!Scene.Current.IsEmpty)
+				Scene.Current.Dispose();
+			foreach (Resource r in ContentProvider.EnumeratePluginContent().ToArray())
+				ContentProvider.UnregisterContent(r.Path);
+
+			Log.Core.PopIndent();
 
 			// Init plugin
 			if (initialized)

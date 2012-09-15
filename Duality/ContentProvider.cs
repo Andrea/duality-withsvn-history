@@ -639,7 +639,7 @@ namespace Duality
 		}
 		internal static IEnumerable<Resource> EnumeratePluginContent()
 		{
-			return resLibrary.Values.Where(res => res is Prefab || res.GetType().Assembly != typeof(ContentProvider).Assembly);
+			return resLibrary.Values.Where(res => res is Prefab || res is Scene || res.GetType().Assembly != typeof(ContentProvider).Assembly);
 		}
 
 		/// <summary>

@@ -230,20 +230,6 @@
             Der Haupteinstiegspunkt für die Anwendung.
             </summary>
         </member>
-        <member name="M:DualityEditor.FileEventManager.SkipGlobalRenameAction(System.String)">
-            <summary>
-            Skips a global rename action that would normally execute following a rename event of the specified file.
-            Calling this method will only skip it once. It is intended to be used for newly created Resources that
-            aren't referenced anywhere yet.
-            </summary>
-            <param name="filePath"></param>
-        </member>
-        <member name="M:DualityEditor.FileEventManager.RevokeSkipGlobalRenameAction(System.String)">
-            <summary>
-            Revokes a previous call to <see cref="M:DualityEditor.FileEventManager.SkipGlobalRenameAction(System.String)"/>.
-            </summary>
-            <param name="filePath"></param>
-        </member>
         <member name="F:DualityEditor.CorePluginInterface.ConvertOperation.Operation.Convert">
             <summary>
             A simple conversion operation that does not affect any data.

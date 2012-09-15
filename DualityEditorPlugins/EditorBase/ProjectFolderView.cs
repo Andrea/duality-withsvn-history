@@ -37,7 +37,7 @@ namespace EditorBase
 				get { return this.nodePath; }
 				set
 				{
-					if (this.nodePath != value && !this.readOnly)
+					if (this.nodePath != value)
 					{
 						string oldPath = this.nodePath;
 						this.nodePath = value;
@@ -70,7 +70,7 @@ namespace EditorBase
 			}
 			public void ApplyPathToName()
 			{
-				this.Text = this.GetNameFromPath(this.nodePath, this.nodePath.Contains(':'));
+				this.Text = this.GetNameFromPath(this.nodePath);
 			}
 			public bool ApplyNameToPath()
 			{
@@ -82,10 +82,9 @@ namespace EditorBase
 				conflictingPath = null;
 				return false;
 			}
-
-			protected virtual string GetNameFromPath(string path, bool defaultContentPath)
+			public virtual string GetNameFromPath(string path)
 			{
-				if (defaultContentPath)
+				if (path.Contains(':'))
 				{
 					string[] pathSplit = path.Split(new[] {':'}, StringSplitOptions.RemoveEmptyEntries);
 					return pathSplit[pathSplit.Length - 1];
@@ -95,6 +94,7 @@ namespace EditorBase
 					return path;
 				}
 			}
+
 			protected virtual void OnNodePathChanged(string oldPath)
 			{
 
@@ -135,19 +135,23 @@ namespace EditorBase
 					Directory.Move(oldPath, newPath);
 
 				this.NodePath = newPath;
-				foreach (NodeBase node in this.Nodes)
-				{
-					node.NodePath = newPath + node.NodePath.Remove(0, oldPath.Length);
-				}
 				return true;
 			}
-
-			protected override string GetNameFromPath(string path, bool defaultContentPath)
+			public override string GetNameFromPath(string path)
 			{
-				if (!defaultContentPath)
+				if (!path.Contains(':'))
 					return Path.GetFileName(path);
 				else
-					return base.GetNameFromPath(path, defaultContentPath);
+					return base.GetNameFromPath(path);
+			}
+
+			protected override void OnNodePathChanged(string oldPath)
+			{
+				base.OnNodePathChanged(oldPath);
+				foreach (NodeBase node in this.Nodes)
+				{
+					node.NodePath = this.NodePath + node.NodePath.Remove(0, oldPath.Length);
+				}
 			}
 		}
 		public class ResourceNode : NodeBase
@@ -197,29 +201,38 @@ namespace EditorBase
 				string oldFileName = Path.GetFileName(oldPath);
 				string newPathBase = oldPath.Remove(oldPath.Length - oldFileName.Length, oldFileName.Length);
 				string newPath = newPathBase + this.Text + Resource.GetFileExtByType(this.resType);
+				bool equalsCaseInsensitive = newPath.ToUpper() == oldPath.ToUpper();
 
-				if (File.Exists(newPath) && newPath.ToUpper() != oldPath.ToUpper())
+				if (File.Exists(newPath) && !equalsCaseInsensitive)
 				{
 					conflictingPath = newPath;
 					return false;
 				}
 
-				File.Move(oldPath, newPath);
+				if (equalsCaseInsensitive)
+				{
+					string tempPath = newPath + "_sSJencn83rhfSHhfn3ns456omvmvs28fndDN84ns";
+					File.Move(oldPath, tempPath);
+					File.Move(tempPath, newPath);
+				}
+				else
+					File.Move(oldPath, newPath);
+
 				this.NodePath = newPath;
 				return true;
 			}
-
-			protected override string GetNameFromPath(string path, bool defaultContentPath)
+			public override string GetNameFromPath(string path)
 			{
-				if (!defaultContentPath)
+				if (!path.Contains(':'))
 				{
 					string fileName = Path.GetFileNameWithoutExtension(path);
 					string[] fileNameSplit = fileName.Split('.');
 					return fileNameSplit[0];
 				}
 				else
-					return base.GetNameFromPath(path, defaultContentPath);
+					return base.GetNameFromPath(path);
 			}
+
 			protected override void OnNodePathChanged(string oldPath)
 			{
 				base.OnNodePathChanged(oldPath);
@@ -282,7 +295,8 @@ namespace EditorBase
 		private	float		flashDuration	= 0.0f;
 		private	float		flashIntensity	= 0.0f;
 
-		private	List<ScheduleSelectEntry>	scheduleSelectPath	= new List<ScheduleSelectEntry>();
+		private	List<ScheduleSelectEntry>	scheduleSelectPath		= new List<ScheduleSelectEntry>();
+		private	List<string>				skipGlobalRenamePath	= new List<string>();
 
 		private	Dictionary<Node,bool>	tempNodeVisibilityCache	= new Dictionary<Node,bool>();
 		private	string					tempUpperFilter			= null;
@@ -318,10 +332,11 @@ namespace EditorBase
 			base.OnShown(e);
 			this.InitRessources();
 			DualityEditorApp.SelectionChanged += this.EditorForm_SelectionChanged;
-			FileEventManager.ResourceCreated += this.EditorForm_ResourceCreated;
-			FileEventManager.ResourceDeleted += this.EditorForm_ResourceDeleted;
-			FileEventManager.ResourceModified += this.EditorForm_ResourceModified;
-			FileEventManager.ResourceRenamed += this.EditorForm_ResourceRenamed;
+			FileEventManager.ResourceCreated += this.FileEventManager_ResourceCreated;
+			FileEventManager.ResourceDeleted += this.FileEventManager_ResourceDeleted;
+			FileEventManager.ResourceModified += this.FileEventManager_ResourceModified;
+			FileEventManager.ResourceRenamed += this.FileEventManager_ResourceRenamed;
+			FileEventManager.BeginGlobalRename += this.FileEventManager_BeginGlobalRename;
 			DualityEditorApp.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
 			Resource.ResourceSaved += this.Resource_ResourceSaved;
 		}
@@ -329,10 +344,11 @@ namespace EditorBase
 		{
 			base.OnClosed(e);
 			DualityEditorApp.SelectionChanged -= this.EditorForm_SelectionChanged;
-			FileEventManager.ResourceCreated -= this.EditorForm_ResourceCreated;
-			FileEventManager.ResourceDeleted -= this.EditorForm_ResourceDeleted;
-			FileEventManager.ResourceModified -= this.EditorForm_ResourceModified;
-			FileEventManager.ResourceRenamed -= this.EditorForm_ResourceRenamed;
+			FileEventManager.ResourceCreated -= this.FileEventManager_ResourceCreated;
+			FileEventManager.ResourceDeleted -= this.FileEventManager_ResourceDeleted;
+			FileEventManager.ResourceModified -= this.FileEventManager_ResourceModified;
+			FileEventManager.ResourceRenamed -= this.FileEventManager_ResourceRenamed;
+			FileEventManager.BeginGlobalRename -= this.FileEventManager_BeginGlobalRename;
 			DualityEditorApp.ObjectPropertyChanged -= this.EditorForm_ObjectPropertyChanged;
 			Resource.ResourceSaved -= this.Resource_ResourceSaved;
 		}
@@ -370,7 +386,7 @@ namespace EditorBase
 		public void ScheduleSelect(string filePath, bool rename = false)
 		{
 			filePath = Path.GetFullPath(filePath);
-			if (!this.SelectNode(this.NodeFromPath(filePath)))
+			if (!this.SelectNode(this.NodeFromPath(filePath), true, rename))
 			{
 				this.scheduleSelectPath.Add(new ScheduleSelectEntry(filePath, rename));
 			}
@@ -653,6 +669,9 @@ namespace EditorBase
 			string dirPath = PathHelper.GetFreePath(Path.Combine(basePath, PluginRes.EditorBaseRes.NewFolderName), "");
 
 			Directory.CreateDirectory(dirPath);
+			
+			// Skip the global rename action for this path once, because it's empty and clearly unreferenced..
+			this.SkipGlobalRenameEventFor(dirPath);
 
 			this.folderView.ClearSelection();
 			this.ScheduleSelect(dirPath, true);
@@ -676,9 +695,9 @@ namespace EditorBase
 			// Schedule path for later selection - as soon as it actually exists.
 			this.folderView.ClearSelection();
 			this.ScheduleSelect(resPath, true);
-
+			
 			// Skip the global rename action for this path once, because there clearly aren't any referencs to a new Resource.
-			FileEventManager.SkipGlobalRenameAction(resPath);
+			this.SkipGlobalRenameEventFor(resPath);
 
 			return resInstance.GetContentRef();
 		}
@@ -761,6 +780,17 @@ namespace EditorBase
 			return result == DialogResult.Yes;
 		}
 
+		protected void SkipGlobalRenameEventFor(string path)
+		{
+			path = Path.GetFullPath(path);
+			if (!this.skipGlobalRenamePath.Contains(path))
+				this.skipGlobalRenamePath.Add(path);
+		}
+		protected void RevokeGlobalRenameEventFor(string path)
+		{
+			path = Path.GetFullPath(path);
+			this.skipGlobalRenamePath.Remove(path);
+		}
 		protected string GetInsertActionTargetBasePath(NodeBase baseNode)
 		{
 			string baseTargetPath = (baseNode != null) ? baseNode.NodePath : EditorHelper.DataDirectory;
@@ -1090,6 +1120,13 @@ namespace EditorBase
 		private void nodeTextBoxName_ChangesApplied(object sender, EventArgs e)
 		{
 			NodeBase node = this.lastEditedNode;
+			string oldName = node.GetNameFromPath(node.NodePath);
+			if (oldName == node.Text)
+			{
+				this.RevokeGlobalRenameEventFor(node.NodePath);
+				return;
+			}
+
 			Node parentNode = node.Parent;
 			this.UnregisterNodeTree(node);
 			node.Parent.Nodes.Remove(node);
@@ -1413,7 +1450,12 @@ namespace EditorBase
 					this.ScheduleSelect(r.Path);
 			}
 		}
-		private void EditorForm_ResourceCreated(object sender, ResourceEventArgs e)
+		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
+		{
+			// If a Resources modified state changes, invalidate
+			if (e.Objects.Resources.Any()) this.folderView.Invalidate();
+		}
+		private void FileEventManager_ResourceCreated(object sender, ResourceEventArgs e)
 		{
 			bool alreadyAdded = this.NodeFromPath(e.Path) != null; // Don't add Resources that are already present.
 
@@ -1450,7 +1492,7 @@ namespace EditorBase
 			// Perform previously scheduled selection
 			this.PerformScheduleSelect(Path.GetFullPath(e.Path));
 		}
-		private void EditorForm_ResourceDeleted(object sender, ResourceEventArgs e)
+		private void FileEventManager_ResourceDeleted(object sender, ResourceEventArgs e)
 		{
 			// Remove lost ressource file
 			NodeBase node = this.NodeFromPath(e.Path);
@@ -1460,7 +1502,7 @@ namespace EditorBase
 				node.Parent.Nodes.Remove(node);
 			}
 		}
-		private void EditorForm_ResourceModified(object sender, ResourceEventArgs e)
+		private void FileEventManager_ResourceModified(object sender, ResourceEventArgs e)
 		{
 			// If a Prefab has been modified, update its appearance
 			if (e.IsResource && e.Content.Is<Duality.Resources.Prefab>())
@@ -1469,7 +1511,7 @@ namespace EditorBase
 				if (modifiedNode != null) modifiedNode.UpdateImage();
 			}
 		}
-		private void EditorForm_ResourceRenamed(object sender, ResourceRenamedEventArgs e)
+		private void FileEventManager_ResourceRenamed(object sender, ResourceRenamedEventArgs e)
 		{
 			NodeBase node = this.NodeFromPath(e.OldPath);
 			bool registerRes = false;
@@ -1518,10 +1560,10 @@ namespace EditorBase
 			// Perform previously scheduled selection
 			this.PerformScheduleSelect(Path.GetFullPath(e.Path));
 		}
-		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
+		private void FileEventManager_BeginGlobalRename(object sender, BeginGlobalRenameEventArgs e)
 		{
-			// If a Resources modified state changes, invalidate
-			if (e.Objects.Resources.Any()) this.folderView.Invalidate();
+			if (this.skipGlobalRenamePath.Remove(Path.GetFullPath(e.OldPath)))
+				e.Cancel = true;
 		}
 		private void Resource_ResourceSaved(object sender, ResourceEventArgs e)
 		{

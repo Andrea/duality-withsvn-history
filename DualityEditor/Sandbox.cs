@@ -211,6 +211,7 @@ namespace DualityEditor
 		private static void Scene_Leaving(object sender, EventArgs e)
 		{
 			if (stateChange) return;
+			if (state == SandboxState.Inactive) return;
 
 			// Force later Scene reload by disposing it
 			string curPath = null;

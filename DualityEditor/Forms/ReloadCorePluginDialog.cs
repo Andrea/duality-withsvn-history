@@ -298,41 +298,19 @@ namespace DualityEditor.Forms
 				StreamWriter strDataWriter = new StreamWriter(strData);
 				strDataWriter.WriteLine(Scene.CurrentPath);
 				strDataWriter.Flush();
-				if (fullRestart)
+				workInterface.MainForm.Invoke((Action)delegate()
 				{
-					workInterface.MainForm.Invoke((Action)delegate()
+					try
 					{
-						try
-						{
-							DualityEditorApp.SaveAllProjectData();
-							Scene.Current.Save(strScene);
-						}
-						catch (Exception e)
-						{
-							Log.Editor.WriteError("Error saving current Data backup: {0}", Log.Exception(e));
-						}
-					});
-				}
-				else
-				{
-					workInterface.MainForm.Invoke((Action)delegate()
+						// Save all data
+						DualityEditorApp.SaveAllProjectData();
+						Scene.Current.Save(strScene);
+					}
+					catch (Exception e)
 					{
-						try
-						{
-							DualityEditorApp.SaveAllProjectData();
-							Scene.Current.Save(strScene);
-							foreach (Resource r in ContentProvider.EnumeratePluginContent().ToArray())
-							{
-								if (DualityEditorApp.IsResourceUnsaved(r)) r.Save();
-								ContentProvider.UnregisterContent(r.Path);
-							}
-						}
-						catch (Exception e)
-						{
-							Log.Editor.WriteError("Error saving current Data backup: {0}", Log.Exception(e));
-						}
-					});
-				}
+						Log.Editor.WriteError("Error saving current Data backup: {0}", Log.Exception(e));
+					}
+				});
 				workInterface.Progress += 0.4f;
 				Thread.Sleep(20);
 			
