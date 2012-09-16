@@ -368,7 +368,7 @@ namespace EditorBase.DataConverters
 			else if (baseRes.IsDefaultContent)
 			{
 				var defaultContent = ContentProvider.GetAllDefaultContent();
-				return defaultContent.FirstOrDefault(r => r.Is<Material>() && (r.Res as Material).MainTexture == baseRes).As<Material>().Res;
+				return defaultContent.Res().OfType<Material>().FirstOrDefault(r => r.MainTexture == baseRes);
 			}
 			else
 			{
@@ -456,7 +456,7 @@ namespace EditorBase.DataConverters
 			else if (baseRes.IsDefaultContent)
 			{
 				var defaultContent = ContentProvider.GetAllDefaultContent();
-				return defaultContent.FirstOrDefault(r => r.Is<Texture>() && (r.Res as Texture).BasePixmap == baseRes).As<Texture>().Res;
+				return defaultContent.Res().OfType<Texture>().FirstOrDefault(r => r.BasePixmap == baseRes);
 			}
 			else
 			{
@@ -544,7 +544,7 @@ namespace EditorBase.DataConverters
 			else if (baseRes.IsDefaultContent)
 			{
 				var defaultContent = ContentProvider.GetAllDefaultContent();
-				return defaultContent.FirstOrDefault(r => r.Is<Sound>() && (r.Res as Sound).Data == baseRes).As<Sound>().Res;
+				return defaultContent.Res().OfType<Sound>().FirstOrDefault(r => r.Data == baseRes);
 			}
 			else
 			{

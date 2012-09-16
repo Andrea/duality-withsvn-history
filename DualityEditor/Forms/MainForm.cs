@@ -328,14 +328,14 @@ namespace DualityEditor.Forms
 		private void actionRunApp_Click(object sender, EventArgs e)
 		{
 			DualityEditorApp.SaveAllProjectData();
-			System.Diagnostics.Process appProc = System.Diagnostics.Process.Start("DualityLauncher.exe", "editor");
+			System.Diagnostics.Process appProc = System.Diagnostics.Process.Start(EditorHelper.LauncherExecFile, DualityApp.CmdArgEditor);
 			AppRunningDialog runningDialog = new AppRunningDialog(appProc);
 			runningDialog.ShowDialog(this);
 		}
 		private void actionDebugApp_Click(object sender, EventArgs e)
 		{
 			DualityEditorApp.SaveAllProjectData();
-			System.Diagnostics.Process appProc = System.Diagnostics.Process.Start("DualityLauncher.exe", "editor debug");
+			System.Diagnostics.Process appProc = System.Diagnostics.Process.Start(EditorHelper.LauncherExecFile, DualityApp.CmdArgEditor + " " + DualityApp.CmdArgDebug);
 			AppRunningDialog runningDialog = new AppRunningDialog(appProc);
 			runningDialog.ShowDialog(this);
 		}

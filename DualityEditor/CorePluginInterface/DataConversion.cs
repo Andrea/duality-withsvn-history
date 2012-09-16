@@ -206,7 +206,11 @@ namespace DualityEditor.CorePluginInterface
 			// Convert ContentRef requests to their respective Resource-requests
 			target = ResTypeFromRefType(target);
 
-			if (this.checkedTypes.Contains(target)) return false;
+			if (this.checkedTypes.Contains(target))
+			{
+				this.allowedOp = oldAllowedOp;
+				return false;
+			}
 			this.curComplexity++;
 			this.checkedTypes.Add(target);
 			
@@ -220,7 +224,7 @@ namespace DualityEditor.CorePluginInterface
 				result = CorePluginRegistry.RequestDataConverters(target).Any(s => !this.usedConverters.Contains(s) && s.CanConvertFrom(this));
 			}
 
-			if (result) this.checkedTypes.Remove(target);
+			if (result || this.allowedOp != oldAllowedOp) this.checkedTypes.Remove(target);
 			this.maxComplexity = Math.Max(this.maxComplexity, this.curComplexity);
 			this.curComplexity--;
 

@@ -460,4 +460,10 @@
   <data name="CamView_Help_ObjActions_MoveStep" xml:space="preserve">
     <value>Press Arrow Keys, Add or Subtract to move the selected objects by a fixed step.</value>
   </data>
+  <data name="IconSpeakerBlack" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>IconSpeakerBlack.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="IconSpeakerWhite" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>IconSpeakerWhite.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

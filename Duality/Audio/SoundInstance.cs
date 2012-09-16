@@ -84,6 +84,7 @@ namespace Duality
 		private	float			fadeTarget		= 1.0f;
 		private	float			fadeTimeSec		= 1.0f;
 		private	float			pauseFade		= 1.0f;
+		private	float			fadeWaitEnd		= 0.0f;
 
 		// Streaming
 		private	bool			strStreamed		= false;
@@ -599,12 +600,6 @@ namespace Duality
 						this.dirtyState |= DirtyFlag.Vol;
 					}
 				}
-				if (fadeOut && (this.paused || this.curFade == 0.0f))
-				{
-					this.Dispose();
-					DualityApp.Sound.UnregisterPlaying(this.snd, this.is3D);
-					return;
-				}
 
 				// Special paused-fading
 				if (this.paused && this.pauseFade > 0.0f)
@@ -702,6 +697,21 @@ namespace Duality
 						AL.SourcePlay(this.alSource);
 					} 
 				}
+				
+				// Remove faded out sources
+				if (fadeOut && volTemp <= 0.0f)
+				{
+					this.fadeWaitEnd += Time.TimeMult * Time.MsPFMult;
+					// After fading out entirely, wait 50 ms before actually stopping the source to prevent unpleasant audio tick / glitch noises
+					if (this.fadeWaitEnd > 50.0f)
+					{
+						this.Dispose();
+						DualityApp.Sound.UnregisterPlaying(this.snd, this.is3D);
+						return;
+					}
+				}
+				else
+					this.fadeWaitEnd = 0.0f;
 			}
 		}
 

@@ -386,6 +386,7 @@ namespace AdamsLair.PropertyGrid
 			if (this.mainEditor == null) return;
 
 			this.mainEditor.SizeChanged -= this.mainEditor_SizeChanged;
+			this.mainEditor.Dispose();
 			this.mainEditor = null;
 			this.focusEditor = null;
 

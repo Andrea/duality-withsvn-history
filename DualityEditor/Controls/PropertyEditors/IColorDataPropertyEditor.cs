@@ -230,6 +230,7 @@ namespace DualityEditor.Controls.PropertyEditors
 				this.OnValueChanged();
 				this.PerformGetValue();
 				this.OnEditingFinished(FinishReason.LeapValue);
+				e.Effect = e.AllowedEffect;
 			}
 		}
 

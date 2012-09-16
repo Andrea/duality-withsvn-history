@@ -133,6 +133,9 @@ namespace Duality
 		internal	static	Counter	timeProcessDrawcalls		= new Counter("Duality_Render_ProcessDrawcalls");
 		internal	static	Counter	timePostProcessing			= new Counter("Duality_Render_PostProcessing");
 		internal	static	Counter	timeVisualPicking			= new Counter("Duality_Render_Picking");
+
+		internal	static	Counter	statNumPlaying2D			= new Counter("Duality_Audio_StatNumPlaying2D", true);
+		internal	static	Counter	statNumPlaying3D			= new Counter("Duality_Audio_StatNumPlaying3D", true);
 		internal	static	Counter	statNumDrawcalls			= new Counter("Duality_Render_StatNumDrawcalls", true);
 		internal	static	Counter	statNumRawBatches			= new Counter("Duality_Render_StatNumRawBatches", true);
 		internal	static	Counter	statNumMergedBatches		= new Counter("Duality_Render_StatNumMergedBatches", true);
@@ -246,6 +249,20 @@ namespace Duality
 		public static int StatNumOptimizedBatches
 		{
 			get { return MathF.RoundToInt(statNumOptimizedBatches.LastValue); }
+		}
+		/// <summary>
+		/// [GET] The number of currently playing 2d sounds.
+		/// </summary>
+		public static int StatNumPlaying2D
+		{
+			get { return MathF.RoundToInt(statNumPlaying2D.LastValue); }
+		}
+		/// <summary>
+		/// [GET] The number of currently playing 3d sounds.
+		/// </summary>
+		public static int StatNumPlaying3D
+		{
+			get { return MathF.RoundToInt(statNumPlaying3D.LastValue); }
 		}
 		
 		public static void BeginMeasure(string counter)

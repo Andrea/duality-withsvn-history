@@ -176,6 +176,12 @@ namespace AdamsLair.PropertyGrid
 
 			this.ClearContent();
 		}
+		protected override void OnDisposing(bool manually)
+		{
+			base.OnDisposing(manually);
+			foreach (PropertyEditor child in this.propertyEditors)
+				child.Dispose();
+		}
 
 		public virtual void InitContent()
 		{

@@ -715,6 +715,20 @@ namespace EditorBase.PluginRes {
             }
         }
         
+        public static System.Drawing.Bitmap IconSpeakerBlack {
+            get {
+                object obj = ResourceManager.GetObject("IconSpeakerBlack", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap IconSpeakerWhite {
+            get {
+                object obj = ResourceManager.GetObject("IconSpeakerWhite", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Application Data ähnelt.
         /// </summary>

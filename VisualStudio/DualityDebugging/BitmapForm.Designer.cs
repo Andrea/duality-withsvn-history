@@ -35,7 +35,7 @@
 			this.checkBlue = new System.Windows.Forms.ToolStripButton();
 			this.checkGreen = new System.Windows.Forms.ToolStripButton();
 			this.checkRed = new System.Windows.Forms.ToolStripButton();
-			this.bitmapView = new DualityDebugging.BitmalView();
+			this.bitmapView = new DualityDebugging.BitmapView();
 			this.actionSave = new System.Windows.Forms.ToolStripButton();
 			this.toolStrip.SuspendLayout();
 			this.SuspendLayout();
@@ -163,7 +163,7 @@
 
 		#endregion
 
-		private BitmalView bitmapView;
+		private BitmapView bitmapView;
 		private System.Windows.Forms.ToolStrip toolStrip;
 		private System.Windows.Forms.ToolStripButton checkAlpha;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;

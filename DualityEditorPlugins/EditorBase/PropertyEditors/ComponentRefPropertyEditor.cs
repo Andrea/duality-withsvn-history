@@ -70,15 +70,19 @@ namespace EditorBase.PropertyEditors
 				this.component = first;
 				this.multiple = (values.Any(o => o == null) || values.Any(o => o != first));
 
-				this.GeneratePreviewImage();
+				this.GeneratePreview();
 			}
 			this.EndUpdate();
 			if (lastCmp != this.component || lastMultiple != this.multiple) this.Invalidate();
 		}
-		protected void GeneratePreviewImage()
+		protected void GeneratePreview()
 		{
 			if (this.prevImageObj == this.component) return;
 			this.prevImageObj = this.component;
+			
+			this.StopPreviewSound();
+			if (this.prevSound != null) this.prevSound.Dispose();
+			this.prevSound = null;
 
 			if (this.prevImage != null) this.prevImage.Dispose();
 			this.prevImage = null;
@@ -93,6 +97,8 @@ namespace EditorBase.PropertyEditors
 					var avgColor = this.prevImage.GetAverageColor();
 					this.prevImageLum = avgColor.GetLuminance();
 				}
+
+				this.prevSound = PreviewProvider.GetPreviewSound(this.component);
 			}
 		}
 		

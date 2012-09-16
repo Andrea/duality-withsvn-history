@@ -206,6 +206,7 @@
       <DependentUpon>SplashScreen.cs</DependentUpon>
     </Compile>
     <Compile Include="Helpers\HelpInfo.cs" />
+    <Compile Include="Helpers\ExtMethodsGraphics.cs" />
     <Compile Include="Helpers\MessageFilter.cs" />
     <Compile Include="Helpers\ExtMethodsToolStrip.cs" />
     <Compile Include="Helpers\ExtMethodsMouseButtons.cs" />

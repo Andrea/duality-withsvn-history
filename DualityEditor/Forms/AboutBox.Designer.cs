@@ -34,7 +34,8 @@
 			this.labelWebsite = new System.Windows.Forms.Label();
 			this.labelDevWebsite = new System.Windows.Forms.Label();
 			this.linkLabelWebsite = new System.Windows.Forms.LinkLabel();
-			this.labelInfo = new System.Windows.Forms.Label();
+			this.labelVersion = new System.Windows.Forms.Label();
+			this.labelVersionData = new System.Windows.Forms.Label();
 			this.tableLayoutPanel.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -43,15 +44,16 @@
 			this.tableLayoutPanel.ColumnCount = 4;
 			this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-			this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tableLayoutPanel.Controls.Add(this.linkLabelDevWebsite, 1, 2);
 			this.tableLayoutPanel.Controls.Add(this.panel1, 0, 0);
 			this.tableLayoutPanel.Controls.Add(this.buttonOk, 3, 3);
 			this.tableLayoutPanel.Controls.Add(this.labelWebsite, 0, 1);
 			this.tableLayoutPanel.Controls.Add(this.labelDevWebsite, 0, 2);
 			this.tableLayoutPanel.Controls.Add(this.linkLabelWebsite, 1, 1);
-			this.tableLayoutPanel.Controls.Add(this.labelInfo, 2, 1);
+			this.tableLayoutPanel.Controls.Add(this.labelVersion, 2, 1);
+			this.tableLayoutPanel.Controls.Add(this.labelVersionData, 3, 1);
 			this.tableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel.Location = new System.Drawing.Point(5, 5);
 			this.tableLayoutPanel.Name = "tableLayoutPanel";
@@ -60,17 +62,17 @@
 			this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 9.090909F));
 			this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 9.090909F));
 			this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayoutPanel.Size = new System.Drawing.Size(506, 298);
+			this.tableLayoutPanel.Size = new System.Drawing.Size(504, 279);
 			this.tableLayoutPanel.TabIndex = 0;
 			// 
 			// linkLabelDevWebsite
 			// 
 			this.linkLabelDevWebsite.AutoSize = true;
 			this.linkLabelDevWebsite.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.linkLabelDevWebsite.Location = new System.Drawing.Point(110, 251);
+			this.linkLabelDevWebsite.Location = new System.Drawing.Point(110, 235);
 			this.linkLabelDevWebsite.Margin = new System.Windows.Forms.Padding(3);
 			this.linkLabelDevWebsite.Name = "linkLabelDevWebsite";
-			this.linkLabelDevWebsite.Size = new System.Drawing.Size(176, 18);
+			this.linkLabelDevWebsite.Size = new System.Drawing.Size(176, 17);
 			this.linkLabelDevWebsite.TabIndex = 6;
 			this.linkLabelDevWebsite.TabStop = true;
 			this.linkLabelDevWebsite.Text = "http://www.fetzenet.de";
@@ -88,12 +90,13 @@
 			this.panel1.Location = new System.Drawing.Point(0, 0);
 			this.panel1.Margin = new System.Windows.Forms.Padding(0);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(506, 224);
+			this.panel1.Size = new System.Drawing.Size(504, 209);
 			this.panel1.TabIndex = 0;
 			// 
 			// buttonOk
 			// 
-			this.buttonOk.Location = new System.Drawing.Point(431, 272);
+			this.buttonOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.buttonOk.Location = new System.Drawing.Point(429, 256);
 			this.buttonOk.Margin = new System.Windows.Forms.Padding(0);
 			this.buttonOk.Name = "buttonOk";
 			this.buttonOk.Size = new System.Drawing.Size(75, 23);
@@ -106,10 +109,10 @@
 			// 
 			this.labelWebsite.AutoSize = true;
 			this.labelWebsite.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.labelWebsite.Location = new System.Drawing.Point(3, 227);
+			this.labelWebsite.Location = new System.Drawing.Point(3, 212);
 			this.labelWebsite.Margin = new System.Windows.Forms.Padding(3);
 			this.labelWebsite.Name = "labelWebsite";
-			this.labelWebsite.Size = new System.Drawing.Size(101, 18);
+			this.labelWebsite.Size = new System.Drawing.Size(101, 17);
 			this.labelWebsite.TabIndex = 3;
 			this.labelWebsite.Text = "Project Website:";
 			this.labelWebsite.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -118,10 +121,10 @@
 			// 
 			this.labelDevWebsite.AutoSize = true;
 			this.labelDevWebsite.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.labelDevWebsite.Location = new System.Drawing.Point(3, 251);
+			this.labelDevWebsite.Location = new System.Drawing.Point(3, 235);
 			this.labelDevWebsite.Margin = new System.Windows.Forms.Padding(3);
 			this.labelDevWebsite.Name = "labelDevWebsite";
-			this.labelDevWebsite.Size = new System.Drawing.Size(101, 18);
+			this.labelDevWebsite.Size = new System.Drawing.Size(101, 17);
 			this.labelDevWebsite.TabIndex = 4;
 			this.labelDevWebsite.Text = "Developer Website:";
 			this.labelDevWebsite.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -130,36 +133,51 @@
 			// 
 			this.linkLabelWebsite.AutoSize = true;
 			this.linkLabelWebsite.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.linkLabelWebsite.Location = new System.Drawing.Point(110, 227);
+			this.linkLabelWebsite.Location = new System.Drawing.Point(110, 212);
 			this.linkLabelWebsite.Margin = new System.Windows.Forms.Padding(3);
 			this.linkLabelWebsite.Name = "linkLabelWebsite";
-			this.linkLabelWebsite.Size = new System.Drawing.Size(176, 18);
+			this.linkLabelWebsite.Size = new System.Drawing.Size(176, 17);
 			this.linkLabelWebsite.TabIndex = 5;
 			this.linkLabelWebsite.TabStop = true;
 			this.linkLabelWebsite.Text = "https://code.google.com/p/duality/";
 			this.linkLabelWebsite.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.linkLabelWebsite.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelWebsite_LinkClicked);
 			// 
-			// labelInfo
+			// labelVersion
 			// 
-			this.labelInfo.AutoSize = true;
-			this.tableLayoutPanel.SetColumnSpan(this.labelInfo, 2);
-			this.labelInfo.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.labelInfo.Location = new System.Drawing.Point(292, 227);
-			this.labelInfo.Margin = new System.Windows.Forms.Padding(3);
-			this.labelInfo.Name = "labelInfo";
-			this.tableLayoutPanel.SetRowSpan(this.labelInfo, 2);
-			this.labelInfo.Size = new System.Drawing.Size(211, 42);
-			this.labelInfo.TabIndex = 7;
-			this.labelInfo.Text = "The Duality Editor is a visual editor for the Duality game development framework." +
-				"";
-			this.labelInfo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.labelVersion.AutoSize = true;
+			this.labelVersion.Cursor = System.Windows.Forms.Cursors.Hand;
+			this.labelVersion.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.labelVersion.Location = new System.Drawing.Point(292, 212);
+			this.labelVersion.Margin = new System.Windows.Forms.Padding(3);
+			this.labelVersion.Name = "labelVersion";
+			this.tableLayoutPanel.SetRowSpan(this.labelVersion, 2);
+			this.labelVersion.Size = new System.Drawing.Size(96, 40);
+			this.labelVersion.TabIndex = 7;
+			this.labelVersion.Text = "Core Version: \r\nEditor Version: \r\nLauncher Version: ";
+			this.labelVersion.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.labelVersion.Click += new System.EventHandler(this.labelVersion_Click);
+			// 
+			// labelVersionData
+			// 
+			this.labelVersionData.AutoSize = true;
+			this.labelVersionData.Cursor = System.Windows.Forms.Cursors.Hand;
+			this.labelVersionData.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.labelVersionData.Location = new System.Drawing.Point(394, 212);
+			this.labelVersionData.Margin = new System.Windows.Forms.Padding(3);
+			this.labelVersionData.Name = "labelVersionData";
+			this.tableLayoutPanel.SetRowSpan(this.labelVersionData, 2);
+			this.labelVersionData.Size = new System.Drawing.Size(107, 40);
+			this.labelVersionData.TabIndex = 8;
+			this.labelVersionData.Text = "{0}\r\n{1}\r\n{2}";
+			this.labelVersionData.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.labelVersionData.Click += new System.EventHandler(this.labelVersion_Click);
 			// 
 			// AboutBox
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(516, 308);
+			this.ClientSize = new System.Drawing.Size(514, 289);
 			this.Controls.Add(this.tableLayoutPanel);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.MaximizeBox = false;
@@ -185,7 +203,8 @@
 		private System.Windows.Forms.Label labelWebsite;
 		private System.Windows.Forms.Label labelDevWebsite;
 		private System.Windows.Forms.LinkLabel linkLabelWebsite;
-		private System.Windows.Forms.Label labelInfo;
+		private System.Windows.Forms.Label labelVersion;
+		private System.Windows.Forms.Label labelVersionData;
 
 	}
 }

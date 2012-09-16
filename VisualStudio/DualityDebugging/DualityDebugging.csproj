@@ -43,11 +43,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BitmalView.cs">
+    <Compile Include="BitmapView.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="BitmalView.Designer.cs">
-      <DependentUpon>BitmalView.cs</DependentUpon>
+    <Compile Include="BitmapView.Designer.cs">
+      <DependentUpon>BitmapView.cs</DependentUpon>
     </Compile>
     <Compile Include="BitmapForm.cs">
       <SubType>Form</SubType>
@@ -73,8 +73,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="BitmalView.resx">
-      <DependentUpon>BitmalView.cs</DependentUpon>
+    <EmbeddedResource Include="BitmapView.resx">
+      <DependentUpon>BitmapView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="BitmapForm.resx">
       <DependentUpon>BitmapForm.cs</DependentUpon>

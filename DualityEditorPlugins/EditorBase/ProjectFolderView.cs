@@ -32,6 +32,18 @@ namespace EditorBase
 			private	string	nodePath		= null;
 			private	bool	readOnly		= false;
 
+			public IEnumerable<NodeBase> NodesDeep
+			{
+				get
+				{
+					foreach (NodeBase n in this.Nodes.OfType<NodeBase>())
+					{
+						yield return n;
+						foreach (NodeBase c in n.NodesDeep)
+							yield return c;
+					}
+				}
+			}
 			public string NodePath
 			{
 				get { return this.nodePath; }
@@ -134,6 +146,16 @@ namespace EditorBase
 				else
 					Directory.Move(oldPath, newPath);
 
+				// Between performing the move event and it being received by the FileEventManager there will be a
+				// short window of inconsistency where the existing Resource is still registered under its old name
+				// but the file is already renamed to the new name. To prevent loading the Resource twice, we'll pre-register
+				// it under its new name.
+				foreach (ResourceNode resNode in this.NodesDeep.OfType<ResourceNode>())
+				{
+					if (resNode.ResLink.ResWeak != null)
+						ContentProvider.RegisterContent(resNode.NodePath.Replace(oldPath, newPath), resNode.ResLink.ResWeak);
+				}
+
 				this.NodePath = newPath;
 				return true;
 			}
@@ -218,6 +240,12 @@ namespace EditorBase
 				else
 					File.Move(oldPath, newPath);
 
+				// Between performing the move event and it being received by the FileEventManager there will be a
+				// short window of inconsistency where the existing Resource is still registered under its old name
+				// but the file is already renamed to the new name. To prevent loading the Resource twice, we'll pre-register
+				// it under its new name.
+				if (this.res.ResWeak != null) ContentProvider.RegisterContent(newPath, this.res.ResWeak);
+
 				this.NodePath = newPath;
 				return true;
 			}
@@ -246,7 +274,7 @@ namespace EditorBase
 
 			public static Type TypeFromContent(IContentRef content)
 			{
-				return content.Res.GetType();
+				return content.ResType;
 			}
 			public static Image GetTypeImage(Type type, IContentRef resLink)
 			{

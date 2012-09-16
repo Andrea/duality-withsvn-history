@@ -3396,6 +3396,12 @@
             Disposes the Resource.
             </summary>
         </member>
+        <member name="M:Duality.Resource.DisposeLater">
+            <summary>
+            Schedules this Resource for disposal. It is guaranteed to be executed until the next update cycle starts.
+            </summary>
+            <seealso cref="M:Duality.Resource.Dispose"/>
+        </member>
         <member name="M:Duality.Resource.OnDisposing(System.Boolean)">
             <summary>
             Called when beginning to dispose the Resource.
@@ -4382,6 +4388,16 @@
         <member name="P:Duality.Performance.StatNumOptimizedBatches">
             <summary>
             [GET] The number of batches after optimization.
+            </summary>
+        </member>
+        <member name="P:Duality.Performance.StatNumPlaying2D">
+            <summary>
+            [GET] The number of currently playing 2d sounds.
+            </summary>
+        </member>
+        <member name="P:Duality.Performance.StatNumPlaying3D">
+            <summary>
+            [GET] The number of currently playing 3d sounds.
             </summary>
         </member>
         <member name="T:Duality.Cloning.ISurrogate">
@@ -13951,7 +13967,8 @@
         </member>
         <member name="M:Duality.ContentProvider.RenameContent(System.String,System.String)">
             <summary>
-            Changes the path key under which a specific Resource can be found.
+            Changes the path key under which a specific Resource can be found. If the target path is registered already, it will be replaced.
+            If the source path isn't registered / is unknown, the operation will fail.
             </summary>
             <param name="path">The Resources current path key.</param>
             <param name="newPath">The Resources new path key.</param>

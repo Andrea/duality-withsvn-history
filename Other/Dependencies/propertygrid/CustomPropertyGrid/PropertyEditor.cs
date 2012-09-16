@@ -70,7 +70,7 @@ namespace AdamsLair.PropertyGrid
 		}
 	}
 	
-	public abstract class PropertyEditor
+	public abstract class PropertyEditor : IDisposable
 	{
 		[Flags]
 		public enum HintFlags
@@ -99,6 +99,7 @@ namespace AdamsLair.PropertyGrid
 		private	object			configureData	= null;
 		private	bool			forceWriteBack	= false;
 		private	bool			updatingFromObj	= false;
+		private	bool			disposed		= false;
 		private	HintFlags		hints			= HintFlags.Default;
 		private	Size			size			= new Size(0, 20);
 		private	Rectangle		clientRect		= Rectangle.Empty;
@@ -189,6 +190,10 @@ namespace AdamsLair.PropertyGrid
 			}
 		}
 		
+		public bool Disposed
+		{
+			get { return this.disposed; }
+		}
 		public Type EditedType
 		{
 			get { return this.editedType; }
@@ -390,6 +395,23 @@ namespace AdamsLair.PropertyGrid
 		{
 			this.ButtonIcon = null;
 		}
+		~PropertyEditor()
+		{
+			this.Dispose(false);
+		}
+		public void Dispose()
+		{
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		private void Dispose(bool manually)
+		{
+			if (this.disposed) return;
+
+			this.OnDisposing(manually);
+			this.disposed = true;
+		}
+		protected virtual void OnDisposing(bool manually) {}
 
 		public virtual void PerformGetValue() {}
 		public virtual void PerformSetValue()

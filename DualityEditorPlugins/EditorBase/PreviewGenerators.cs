@@ -16,10 +16,10 @@ namespace EditorBase.PreviewGenerators
 {
 	public class PixmapPreviewGenerator : PreviewGenerator<Pixmap>
 	{
-		public override Bitmap Perform(Pixmap pixmap, PreviewSettings settings)
+		public override void Perform(Pixmap pixmap, PreviewImageQuery query)
 		{
-			int desiredWidth = settings.DesiredWidth;
-			int desiredHeight = settings.DesiredHeight;
+			int desiredWidth = query.DesiredWidth;
+			int desiredHeight = query.DesiredHeight;
 
 			Pixmap.Layer layer = pixmap.MainLayer;
 			float widthRatio = (float)layer.Width / (float)layer.Height;
@@ -34,28 +34,24 @@ namespace EditorBase.PreviewGenerators
 				if (layer.Width != desiredWidth || layer.Height != desiredHeight)
 					layer = layer.CloneRescale(desiredWidth, desiredHeight, Pixmap.FilterMethod.Linear);
 			}
-			else if (settings.SizeMode == PreviewSizeMode.FixedBoth)
+			else if (query.SizeMode == PreviewSizeMode.FixedBoth)
 				layer = layer.CloneRescale(desiredWidth, desiredHeight, Pixmap.FilterMethod.Linear);
-			else if (settings.SizeMode == PreviewSizeMode.FixedWidth)
+			else if (query.SizeMode == PreviewSizeMode.FixedWidth)
 				layer = layer.CloneRescale(desiredWidth, MathF.RoundToInt(desiredWidth / widthRatio), Pixmap.FilterMethod.Linear);
-			else if (settings.SizeMode == PreviewSizeMode.FixedHeight)
+			else if (query.SizeMode == PreviewSizeMode.FixedHeight)
 				layer = layer.CloneRescale(MathF.RoundToInt(widthRatio * desiredHeight), desiredHeight, Pixmap.FilterMethod.Linear);
 			else
 				layer = layer.Clone();
 
-			return layer.ToBitmap();
-		}
-		public override bool CanPerformOn(Pixmap obj, PreviewSettings settings)
-		{
-			return true;
+			query.Result = layer.ToBitmap();
 		}
 	}
 	public class AudioDataPreviewGenerator : PreviewGenerator<AudioData>
 	{
-		public override Bitmap Perform(AudioData audio, PreviewSettings settings)
+		public override void Perform(AudioData audio, PreviewImageQuery query)
 		{
-			int desiredWidth = settings.DesiredWidth;
-			int desiredHeight = settings.DesiredHeight;
+			int desiredWidth = query.DesiredWidth;
+			int desiredHeight = query.DesiredHeight;
 			int oggHash = audio.OggVorbisData.GetCombinedHashCode();
 			int oggLen = audio.OggVorbisData.Length;
 			Duality.OggVorbis.PcmData pcm = Duality.OggVorbis.OV.LoadFromMemory(audio.OggVorbisData, 1000000); //41236992
@@ -97,19 +93,28 @@ namespace EditorBase.PreviewGenerators
 				}
 			}
 
-			return result;
+			query.Result = result;
 		}
-		public override bool CanPerformOn(AudioData obj, PreviewSettings settings)
+		public override void Perform(AudioData obj, PreviewSoundQuery query)
 		{
-			return true;
+			base.Perform(obj, query);
+			query.Result = new Sound(obj);
+		}
+	}
+	public class SoundPreviewGenerator : PreviewGenerator<Sound>
+	{
+		public override void Perform(Sound obj, PreviewSoundQuery query)
+		{
+			base.Perform(obj, query);
+			query.Result = obj;
 		}
 	}
 	public class FontPreviewGenerator : PreviewGenerator<Font>
 	{
-		public override Bitmap Perform(Font font, PreviewSettings settings)
+		public override void Perform(Font font, PreviewImageQuery query)
 		{
-			int desiredWidth = settings.DesiredWidth;
-			int desiredHeight = settings.DesiredHeight;
+			int desiredWidth = query.DesiredWidth;
+			int desiredHeight = query.DesiredHeight;
 			const string text = "/acThe quick brown fox jumps over the lazy dog.";
 			FormattedText formatText = new FormattedText();
 			formatText.MaxWidth = Math.Max(1, desiredWidth - 10);
@@ -123,11 +128,7 @@ namespace EditorBase.PreviewGenerators
 			formatText.RenderToBitmap(text, textLayer, 5, 0);
 
 			textLayer.Resize(desiredWidth, desiredHeight, Alignment.Left);
-			return textLayer.ToBitmap();
-		}
-		public override bool CanPerformOn(Font obj, PreviewSettings settings)
-		{
-			return true;
+			query.Result = textLayer.ToBitmap();
 		}
 	}
 }

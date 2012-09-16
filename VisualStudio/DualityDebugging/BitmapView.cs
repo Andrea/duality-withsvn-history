@@ -14,7 +14,7 @@ using Duality.ColorFormat;
 
 namespace DualityDebugging
 {
-	public partial class BitmalView : UserControl
+	public partial class BitmapView : UserControl
 	{
 		private	Bitmap		bmp			= null;
 		private	bool		useAlpha	= true;
@@ -71,7 +71,7 @@ namespace DualityDebugging
 			}
 		}
 
-		public BitmalView()
+		public BitmapView()
 		{
 			InitializeComponent();
 			this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);

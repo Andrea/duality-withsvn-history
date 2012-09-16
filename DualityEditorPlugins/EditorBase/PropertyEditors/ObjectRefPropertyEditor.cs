@@ -11,8 +11,11 @@ using ButtonState = AdamsLair.PropertyGrid.Renderer.ButtonState;
 using BorderStyle = AdamsLair.PropertyGrid.Renderer.BorderStyle;
 
 using Duality;
+using Duality.Resources;
 using DualityEditor;
 using DualityEditor.CorePluginInterface;
+
+using EditorBase.PluginRes;
 
 namespace EditorBase.PropertyEditors
 {
@@ -26,6 +29,7 @@ namespace EditorBase.PropertyEditors
 		protected	Rectangle	rectPanel			= Rectangle.Empty;
 		protected	Rectangle	rectButtonReset		= Rectangle.Empty;
 		protected	Rectangle	rectButtonShow		= Rectangle.Empty;
+		protected	Rectangle	rectPrevSound		= Rectangle.Empty;
 		protected	bool		buttonResetHovered	= false;
 		protected	bool		buttonResetPressed	= false;
 		protected	bool		buttonShowHovered	= false;
@@ -34,6 +38,8 @@ namespace EditorBase.PropertyEditors
 		protected	Point		panelDragBegin		= Point.Empty;
 		protected	Bitmap		prevImage			= null;
 		protected	float		prevImageLum		= 0.0f;
+		protected	Sound		prevSound			= null;
+		protected	SoundInstance	prevSoundInst	= null;
 
 		public abstract string ReferenceName { get; }
 		public abstract bool ReferenceBroken { get; }
@@ -46,6 +52,24 @@ namespace EditorBase.PropertyEditors
 
 		public abstract void ShowReferencedContent();
 		public abstract void ResetReference();
+
+		public void PlayPreviewSound()
+		{
+			if (this.prevSound == null) return;
+			if (this.prevSoundInst != null) return;
+
+			this.prevSoundInst = DualityApp.Sound.PlaySound(this.prevSound);
+			this.prevSoundInst.Looped = true;
+			this.Invalidate();
+		}
+		public void StopPreviewSound()
+		{
+			if (this.prevSoundInst == null) return;
+			
+			this.prevSoundInst.FadeOut(0.25f);
+			this.prevSoundInst = null;
+			this.Invalidate();
+		}
 
 		protected abstract void SerializeToData(DataObject data);
 		protected abstract void DeserializeFromData(DataObject data);
@@ -62,6 +86,7 @@ namespace EditorBase.PropertyEditors
 			else if (this.multiple) bgColorBright = Color.Bisque;
 			else if (linkBroken) bgColorBright = Color.FromArgb(255, 128, 128);
 
+			bool darkBg = false;
 			Rectangle rectImage = new Rectangle(this.rectPanel.X + 2, this.rectPanel.Y + 2, this.rectPanel.Width - 4, this.rectPanel.Height - 4);
 			if (this.prevImage == null)
 			{
@@ -98,8 +123,29 @@ namespace EditorBase.PropertyEditors
 				bgImageBrush.TranslateTransform(rectImage.X, rectImage.Y);
 				e.Graphics.FillRectangle(bgImageBrush, rectImage);
 
+				darkBg = this.prevImageLum > 0.5f;
 				if (this.ReadOnly || !this.Enabled)
+				{
 					e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(128, SystemColors.Control)), rectImage);
+					darkBg = (this.prevImageLum + SystemColors.Control.GetLuminance()) * 0.5f < 0.5f;
+				}
+			}
+			
+			if (this.prevSound != null)
+			{
+				if (this.prevSoundInst != null)
+				{
+					e.Graphics.DrawImage(darkBg ? EditorBaseRes.IconSpeakerWhite : EditorBaseRes.IconSpeakerBlack, 
+						this.rectPrevSound.X, 
+						this.rectPrevSound.Y);
+				}
+				else
+				{
+					e.Graphics.DrawImageAlpha(darkBg ? EditorBaseRes.IconSpeakerWhite : EditorBaseRes.IconSpeakerBlack, 
+						0.5f,
+						this.rectPrevSound.X, 
+						this.rectPrevSound.Y);
+				}
 			}
 
 			StringFormat format = StringFormat.GenericDefault;
@@ -122,9 +168,9 @@ namespace EditorBase.PropertyEditors
 			if (this.prevImage != null)
 			{
 				e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(192, bgColorBright)), 
-					rectText.X + rectText.Width / 2 - textSize.Width / 2 - 2, 
+					rectText.X + rectText.Width / 2 - textSize.Width / 2 - 1, 
 					rectText.Y + rectText.Height / 2 - textSize.Height / 2 - 2, 
-					textSize.Width + 2, 
+					textSize.Width + 1, 
 					textSize.Height + 2);
 			}
 			e.Graphics.DrawString(
@@ -204,8 +250,13 @@ namespace EditorBase.PropertyEditors
 
 			if (lastButtonResetHovered != this.buttonResetHovered || 
 				lastButtonShowHovered != this.buttonShowHovered || 
-				lastPanelHovered != this.panelHovered) 
+				lastPanelHovered != this.panelHovered)
 				this.Invalidate();
+
+			if (this.rectPrevSound.Contains(e.Location))
+				this.PlayPreviewSound();
+			else
+				this.StopPreviewSound();
 			
 			if (this.panelDragBegin != Point.Empty)
 			{
@@ -227,6 +278,7 @@ namespace EditorBase.PropertyEditors
 			this.buttonShowHovered = false;
 			this.panelHovered = false;
 			this.panelDragBegin = Point.Empty;
+			this.StopPreviewSound();
 		}
 		protected override void OnMouseDown(MouseEventArgs e)
 		{
@@ -298,6 +350,12 @@ namespace EditorBase.PropertyEditors
 
 			DataObject data = e.Data as DataObject;
 			this.DeserializeFromData(data);
+			e.Effect = e.AllowedEffect;
+		}
+		protected override void OnDisposing(bool manually)
+		{
+			base.OnDisposing(manually);
+			this.StopPreviewSound();
 		}
 
 		protected override void UpdateGeometry()
@@ -342,6 +400,13 @@ namespace EditorBase.PropertyEditors
 					this.ClientRectangle.Width - buttonWidth * 2,
 					this.ClientRectangle.Height);
 			}
+
+			this.rectPrevSound = new Rectangle(this.rectPanel.Right - 17, this.rectPanel.Y + 1, 16, 16);
+		}
+		
+		private void prevSoundTimer_Tick(object sender, EventArgs e)
+		{
+			this.PlayPreviewSound();
 		}
 	}
 }

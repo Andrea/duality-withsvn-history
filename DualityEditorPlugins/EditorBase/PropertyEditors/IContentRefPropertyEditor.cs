@@ -84,15 +84,19 @@ namespace EditorBase.PropertyEditors
 				this.contentPath = first.Path;
 				this.multiple = (values.Any(o => o == null) || values.Any(o => o.Path != first.Path));
 
-				this.GeneratePreviewImage();
+				this.GeneratePreview();
 			}
 			this.EndUpdate();
 			if (lastPath != this.contentPath || lastMultiple != this.multiple) this.Invalidate();
 		}
-		protected void GeneratePreviewImage()
+		protected void GeneratePreview()
 		{
 			if (this.prevImagePath == this.contentPath) return;
 			this.prevImagePath = this.contentPath;
+			
+			this.StopPreviewSound();
+			if (this.prevSound != null) this.prevSound.Dispose();
+			this.prevSound = null;
 
 			if (this.prevImage != null) this.prevImage.Dispose();
 			this.prevImage = null;
@@ -108,6 +112,8 @@ namespace EditorBase.PropertyEditors
 					var avgColor = this.prevImage.GetAverageColor();
 					this.prevImageLum = avgColor.GetLuminance();
 				}
+
+				this.prevSound = PreviewProvider.GetPreviewSound(res);
 			}
 		}
 		

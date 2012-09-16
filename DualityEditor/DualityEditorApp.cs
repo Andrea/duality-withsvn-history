@@ -648,7 +648,7 @@ namespace DualityEditor
 					userDoc = new XmlDocument();
 					userDoc.Load(userFileCore);
 					foreach (XmlElement element in userDoc.GetElementsByTagName("StartProgram").OfType<XmlElement>())
-						element.InnerText = Path.GetFullPath("DualityLauncher.exe");
+						element.InnerText = Path.GetFullPath(EditorHelper.LauncherExecFile);
 					foreach (XmlElement element in userDoc.GetElementsByTagName("StartWorkingDirectory").OfType<XmlElement>())
 						element.InnerText = Path.GetFullPath(".");
 					userDoc.Save(userFileCore);

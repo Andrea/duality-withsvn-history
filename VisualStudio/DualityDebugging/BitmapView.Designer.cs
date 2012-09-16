@@ -1,6 +1,6 @@
 ﻿namespace DualityDebugging
 {
-	partial class BitmalView
+	partial class BitmapView
 	{
 		/// <summary> 
 		/// Erforderliche Designervariable.

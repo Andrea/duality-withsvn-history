@@ -44,20 +44,23 @@ namespace EditorBase.PropertyEditors
 		
 		protected override void OnDragOver(DragEventArgs e)
 		{
-			bool handled = false;
+			base.OnDragOver(e);
+			if (e.Effect != DragDropEffects.None) return;
+
 			DataObject dragDropData = e.Data as DataObject;
 			if (!this.ReadOnly && dragDropData != null && new ConvertOperation(dragDropData, ConvertOperation.Operation.All).CanPerform<Sound>())
 			{
 				// Accept drop
 				e.Effect = e.AllowedEffect;
-				handled = true;
 			}
-
-			if (!handled) base.OnDragOver(e);
 		}
 		protected override void OnDragDrop(DragEventArgs e)
 		{
-			bool handled = false;
+			// Check children first. Only accept the drop if they don't
+			e.Effect = DragDropEffects.None;
+			base.OnDragDrop(e);
+			if (e.Effect != DragDropEffects.None) return;
+
 			DataObject dragDropData = e.Data as DataObject;
 			if (!this.ReadOnly && dragDropData != null)
 			{
@@ -82,11 +85,8 @@ namespace EditorBase.PropertyEditors
 						new ObjectSelection(values),
 						ReflectionInfo.Property_SoundEmitter_Sources);
 					this.PerformGetValue();
-					handled = true;
 				}
 			}
-
-			if (!handled) base.OnDragDrop(e);
 		}
 
 		protected void UpdateSourceEditors(IEnumerable<SoundEmitter> values)

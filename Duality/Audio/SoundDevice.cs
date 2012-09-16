@@ -199,8 +199,10 @@ namespace Duality
 		public int GetNumPlaying(ContentRef<Sound> snd)
 		{
 			int curNumSoundRes;
-			if (!snd.IsAvailable || !this.resPlaying.TryGetValue(snd.Path, out curNumSoundRes)) curNumSoundRes = 0;
-			return curNumSoundRes;
+			if (!snd.IsAvailable || snd.IsRuntimeResource || !this.resPlaying.TryGetValue(snd.Path, out curNumSoundRes))
+				return 0;
+			else
+				return curNumSoundRes;
 		}
 		/// <summary>
 		/// Requests an OpenAL source handle.
@@ -221,7 +223,7 @@ namespace Duality
 			if (is3D)	this.numPlaying3D++;
 			else		this.numPlaying2D++;
 
-			if (snd.IsAvailable)
+			if (snd.IsAvailable && !snd.IsRuntimeResource)
 			{
 				if (!this.resPlaying.ContainsKey(snd.Path))
 					this.resPlaying.Add(snd.Path, 1);
@@ -244,9 +246,11 @@ namespace Duality
 		/// <param name="is3D">Whether the instance is 3d or not.</param>
 		public void UnregisterPlaying(ContentRef<Sound> snd, bool is3D)
 		{
-			if (is3D)				this.numPlaying3D--;
-			else					this.numPlaying2D--;
-			if (snd.IsAvailable)	this.resPlaying[snd.Path]--;
+			if (is3D)	this.numPlaying3D--;
+			else		this.numPlaying2D--;
+
+			if (snd.IsAvailable && !snd.IsRuntimeResource)
+				this.resPlaying[snd.Path]--;
 		}
 		
 		/// <summary>
@@ -269,6 +273,8 @@ namespace Duality
 			this.sounds.Sort((obj1, obj2) => obj2.Priority - obj1.Priority);
 
 			Performance.timeUpdateAudio.EndMeasure();
+			Performance.statNumPlaying2D.Add(this.numPlaying2D);
+			Performance.statNumPlaying3D.Add(this.numPlaying3D);
 		}
 		private void UpdateListener()
 		{

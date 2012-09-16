@@ -643,7 +643,8 @@ namespace Duality
 		}
 
 		/// <summary>
-		/// Changes the path key under which a specific Resource can be found.
+		/// Changes the path key under which a specific Resource can be found. If the target path is registered already, it will be replaced.
+		/// If the source path isn't registered / is unknown, the operation will fail.
 		/// </summary>
 		/// <param name="path">The Resources current path key.</param>
 		/// <param name="newPath">The Resources new path key.</param>
