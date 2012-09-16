@@ -39,7 +39,7 @@ namespace DualityEditor.CorePluginInterface
 
 			var generators = (
 				from g in CorePluginRegistry.RequestPreviewGenerators()
-				orderby g.Priority descending, query.SourceFits(g.ObjectType) descending
+				orderby query.SourceFits(g.ObjectType) descending, g.Priority descending
 				select g).ToArray();
 
 			foreach (IPreviewGenerator gen in generators)
