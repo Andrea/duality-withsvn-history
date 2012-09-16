@@ -8785,6 +8785,12 @@
             </summary>
             <param name="scene">The source Scene.</param>
         </member>
+        <member name="M:Duality.Resources.Scene.Consume(Duality.ContentRef{Duality.Resources.Scene})">
+            <summary>
+            Appends the specified Scene's contents to this Scene and consumes the specified Scene.
+            </summary>
+            <param name="scene">The source Scene.</param>
+        </member>
         <member name="M:Duality.Resources.Scene.RegisterObj(Duality.GameObject)">
             <summary>
             Registers a GameObject and all of its children.
@@ -8793,7 +8799,7 @@
         </member>
         <member name="M:Duality.Resources.Scene.RegisterObj(System.Collections.Generic.IEnumerable{Duality.GameObject})">
             <summary>
-            Registers a set of GameObjects ad all of their children.
+            Registers a set of GameObjects and all of their children.
             </summary>
             <param name="objEnum"></param>
         </member>
@@ -8805,7 +8811,7 @@
         </member>
         <member name="M:Duality.Resources.Scene.UnregisterObj(System.Collections.Generic.IEnumerable{Duality.GameObject})">
             <summary>
-            Unregisters a set of GameObjects ad all of their children.
+            Unregisters a set of GameObjects and all of their children.
             </summary>
             <param name="objEnum"></param>
         </member>

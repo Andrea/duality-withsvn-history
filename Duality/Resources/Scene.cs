@@ -400,6 +400,19 @@ namespace Duality.Resources
 			if (!scene.IsAvailable) return;
 			this.objectManager.RegisterObj(scene.Res.RootObjects.Select(o => o.Clone()));
 		}
+		/// <summary>
+		/// Appends the specified Scene's contents to this Scene and consumes the specified Scene.
+		/// </summary>
+		/// <param name="scene">The source Scene.</param>
+		public void Consume(ContentRef<Scene> scene)
+		{
+			if (!scene.IsAvailable) return;
+			Scene otherScene = scene.Res;
+			var otherObj = otherScene.RootObjects.ToArray();
+			otherScene.Clear();
+			this.objectManager.RegisterObj(otherObj);
+			otherScene.Dispose();
+		}
 
 		/// <summary>
 		/// Registers a GameObject and all of its children.
@@ -410,7 +423,7 @@ namespace Duality.Resources
 			this.objectManager.RegisterObj(obj);
 		}
 		/// <summary>
-		/// Registers a set of GameObjects ad all of their children.
+		/// Registers a set of GameObjects and all of their children.
 		/// </summary>
 		/// <param name="objEnum"></param>
 		public void RegisterObj(IEnumerable<GameObject> objEnum)
@@ -426,7 +439,7 @@ namespace Duality.Resources
 			this.objectManager.UnregisterObj(obj);
 		}
 		/// <summary>
-		/// Unregisters a set of GameObjects ad all of their children.
+		/// Unregisters a set of GameObjects and all of their children.
 		/// </summary>
 		/// <param name="objEnum"></param>
 		public void UnregisterObj(IEnumerable<GameObject> objEnum)
