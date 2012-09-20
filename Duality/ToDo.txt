@@ -19,6 +19,9 @@
 
 
 
+--> Duality: Update Time class to use doubles internally due to float precision issues
+	-->	Don't expose double values, that doesn't seem necessary and would break the overall float math design
+
 --> Dualitor: StartScreen Tab
 
 -->	Dualitor: "Stop and Apply" function for Sandbox
