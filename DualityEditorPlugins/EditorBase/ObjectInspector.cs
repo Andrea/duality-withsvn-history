@@ -18,7 +18,7 @@ namespace EditorBase
 	public partial class ObjectInspector : DockContent
 	{
 		private	int							runtimeId			= 0;
-		private	float						lastAutoRefresh		= 0.0f;
+		private	double						lastAutoRefresh		= 0.0d;
 		private	ObjectSelection.Category	selSchedMouseCat	= ObjectSelection.Category.None;
 		private	ObjectSelection				selSchedMouse		= null;
 		private	ObjectSelection				displaySel			= null;
@@ -165,9 +165,9 @@ namespace EditorBase
 		{
 			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game && 
 				this.buttonAutoRefresh.Checked && 
-				Time.MainTimer - this.lastAutoRefresh > 100.0f)
+				Time.MainTimer.TotalMilliseconds - this.lastAutoRefresh > 100.0f)
 			{
-				this.lastAutoRefresh = Time.MainTimer;
+				this.lastAutoRefresh = Time.MainTimer.TotalMilliseconds;
 				this.propertyGrid.UpdateFromObjects();
 			}
 		}
@@ -289,7 +289,7 @@ namespace EditorBase
 		{
 			if (this.buttonAutoRefresh.Checked)
 			{
-				this.lastAutoRefresh = Time.MainTimer;
+				this.lastAutoRefresh = Time.MainTimer.TotalMilliseconds;
 				this.propertyGrid.UpdateFromObjects(100);
 			}
 		}

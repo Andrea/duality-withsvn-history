@@ -250,9 +250,9 @@ namespace Duality
 		public void WriteTimed(int delayMs, string timerId, string format, params object[] obj)
 		{
 			float last;
-			if (!this.timedLast.TryGetValue(timerId, out last) || Time.MainTimer - last > delayMs)
+			if (!this.timedLast.TryGetValue(timerId, out last) || Time.MainTimer.TotalMilliseconds - last > delayMs)
 			{
-				this.timedLast[timerId] = Time.MainTimer;
+				this.timedLast[timerId] = (float)Time.MainTimer.TotalMilliseconds;
 				this.Write(LogMessageType.Message, String.Format(System.Globalization.CultureInfo.InvariantCulture, format, obj));
 			}
 		}
@@ -266,9 +266,9 @@ namespace Duality
 		public void WriteWarningTimed(int delayMs, string timerId, string format, params object[] obj)
 		{
 			float last;
-			if (!this.timedLast.TryGetValue(timerId, out last) || Time.MainTimer - last > delayMs)
+			if (!this.timedLast.TryGetValue(timerId, out last) || Time.MainTimer.TotalMilliseconds - last > delayMs)
 			{
-				this.timedLast[timerId] = Time.MainTimer;
+				this.timedLast[timerId] = (float)Time.MainTimer.TotalMilliseconds;
 				this.Write(LogMessageType.Warning, String.Format(System.Globalization.CultureInfo.InvariantCulture, format, obj));
 			}
 		}
@@ -282,9 +282,9 @@ namespace Duality
 		public void WriteErrorTimed(int delayMs, string timerId, string format, params object[] obj)
 		{
 			float last;
-			if (!this.timedLast.TryGetValue(timerId, out last) || Time.MainTimer - last > delayMs)
+			if (!this.timedLast.TryGetValue(timerId, out last) || Time.MainTimer.TotalMilliseconds - last > delayMs)
 			{
-				this.timedLast[timerId] = Time.MainTimer;
+				this.timedLast[timerId] = (float)Time.MainTimer.TotalMilliseconds;
 				this.Write(LogMessageType.Error, String.Format(System.Globalization.CultureInfo.InvariantCulture, format, obj));
 			}
 		}

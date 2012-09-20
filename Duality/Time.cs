@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 
 namespace Duality
 {
@@ -18,10 +19,10 @@ namespace Duality
 		/// </summary>
 		public const	float	SPFMult		= 1.0f / 60.0f;
 
+		private	static	DateTime	startup		= DateTime.Now;
 		private	static	Stopwatch	watch		= new Stopwatch();
-		private	static	float		mainTimer	= 0.0f;
-		private	static	float		gameTimer	= 0.0f;
-		private	static	float		frameBegin	= 0.0f;
+		private	static	TimeSpan	gameTimer	= TimeSpan.Zero;
+		private	static	double		frameBegin	= 0.0d;
 		private	static	float		lastDelta	= 0.0f;
 		private	static	float		timeMult	= 0.0f;
 		private	static	float		timeScale	= 1.0f;
@@ -29,43 +30,44 @@ namespace Duality
 		private	static	int			frameCount	= 0;
 		private	static	int			fps			= 0;
 		private	static	int			fps_frames	= 0;
-		private	static	float		fps_last	= 0.0f;
+		private	static	double		fps_last	= 0.0d;
 
 		/// <summary>
-		/// [GET] Returns the number of milliseconds that have passed in real time.
+		/// [GET] Returns the date and time of engine startup.
 		/// </summary>
-		public static float MainTimer
+		public static DateTime StartupTime
 		{
-			get { return watch.ElapsedMilliseconds; }
+			get { return startup; }
 		}	//	G
 		/// <summary>
-		/// [GET] MainTimer value at the beginning of the current frame
+		/// [GET] Returns the real time that has passed since engine startup.
 		/// </summary>
-		public static float FrameBegin
+		public static TimeSpan MainTimer
 		{
-			get { return frameBegin; }
-		}	//	G
+			get { return watch.Elapsed; }
+		}		//	G
 		/// <summary>
 		/// [GET] Time in milliseconds the last frame took
 		/// </summary>
 		public static float LastDelta
 		{
 			get { return lastDelta; }
-		}	//	G
+		}		//	G
 		/// <summary>
 		/// [GET] Frames per Second
 		/// </summary>
 		public static float Fps
 		{
 			get { return fps; }
-		}			//	G
+		}				//	G
 		/// <summary>
-		/// [GET] Returns the number of milliseconds that have passed in game time.
+		/// [GET] Returns the game time that has passed since engine startup. Since it's game time, this timer will stop
+		/// when pausing or freezing and also run slower or faster according to <see cref="TimeScale"/>.
 		/// </summary>
-		public static float GameTimer
+		public static TimeSpan GameTimer
 		{
 			get { return gameTimer; }
-		}	//	G
+		}		//	G
 		/// <summary>
 		/// [GET] Multiply any frame-independend movement or change with this factor.
 		/// It also applies the time scale you set.
@@ -73,7 +75,7 @@ namespace Duality
 		public static float TimeMult
 		{
 			get { return timeMult; }
-		}		//	G
+		}			//	G
 		/// <summary>
 		/// [GET / SET] Specifies how fast game time runs compared to real time i.e. how
 		/// fast the game runs. May be used for slow motion effects.
@@ -82,14 +84,14 @@ namespace Duality
 		{
 			get { return timeScale; }
 			set { timeScale = value; }
-		}	//	GS
+		}		//	GS
 		/// <summary>
 		/// [GET] The number of frames passed since startup
 		/// </summary>
 		public static int FrameCount
 		{
 			get { return frameCount; }
-		}		//	G
+		}			//	G
 
 		/// <summary>
 		/// Freezes game time. This will cause the GameTimer to stop and TimeMult to equal zero.
@@ -116,12 +118,19 @@ namespace Duality
 
 			frameCount++;
 
-			mainTimer = (float)watch.Elapsed.TotalMilliseconds;
-			lastDelta = forceFixedStep ? MsPFMult : MathF.Min(mainTimer - frameBegin, MsPFMult * 2); // Don't skip more than 2 frames / fall below 30 fps
+			double mainTimer = Time.MainTimer.TotalMilliseconds;
+			lastDelta = forceFixedStep ? MsPFMult : MathF.Min((float)(mainTimer - frameBegin), MsPFMult * 2); // Don't skip more than 2 frames / fall below 30 fps
 			frameBegin = mainTimer;
 
-			gameTimer += timeFreeze ? 0.0f : lastDelta * timeScale;
-			timeMult = timeFreeze ? 0.0f : timeScale * lastDelta / MsPFMult;
+			if (!timeFreeze)
+			{
+				gameTimer += TimeSpan.FromMilliseconds(lastDelta * timeScale);
+				timeMult = timeScale * lastDelta / MsPFMult;
+			}
+			else
+			{
+				timeMult = 0.0f;
+			}
 
 			fps_frames++;
 			if (mainTimer - fps_last >= 1000.0f)

@@ -295,7 +295,7 @@ namespace Duality.Resources
 
 			// Update physics
 			bool physUpdate = false;
-			float physBegin = Time.MainTimer;
+			double physBegin = Time.MainTimer.TotalMilliseconds;
 			if (Scene.PhysicsFixedTime)
 			{
 				physicsAcc += Time.MsPFMult * Time.TimeMult;
@@ -303,7 +303,7 @@ namespace Duality.Resources
 				if (physicsAcc >= Time.MsPFMult)
 				{
 					Performance.timeUpdatePhysics.BeginMeasure();
-					float timeUpdateBegin = Time.MainTimer;
+					double timeUpdateBegin = Time.MainTimer.TotalMilliseconds;
 					while (physicsAcc >= Time.MsPFMult)
 					{
 						// Catch up on updating progress
@@ -312,7 +312,7 @@ namespace Duality.Resources
 						physicsAcc -= Time.MsPFMult;
 						iterations++;
 							
-						float timeSpent = Time.MainTimer - timeUpdateBegin;
+						double timeSpent = Time.MainTimer.TotalMilliseconds - timeUpdateBegin;
 						if (timeSpent >= Time.MsPFMult * 10.0f) break; // Emergency exit
 					}
 					physUpdate = true;
@@ -328,7 +328,7 @@ namespace Duality.Resources
 				physUpdate = true;
 				Performance.timeUpdatePhysics.EndMeasure();
 			}
-			float physTime = Time.MainTimer - physBegin;
+			double physTime = Time.MainTimer.TotalMilliseconds - physBegin;
 
 			// Apply Farseers internal measurements to Duality
 			if (physUpdate)

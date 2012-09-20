@@ -5463,14 +5463,14 @@
             Unfreezes game time. TimeMult resumes to its normal value and GameTimer starts running again.
             </summary>
         </member>
-        <member name="P:Duality.Time.MainTimer">
+        <member name="P:Duality.Time.StartupTime">
             <summary>
-            [GET] Returns the number of milliseconds that have passed in real time.
+            [GET] Returns the date and time of engine startup.
             </summary>
         </member>
-        <member name="P:Duality.Time.FrameBegin">
+        <member name="P:Duality.Time.MainTimer">
             <summary>
-            [GET] MainTimer value at the beginning of the current frame
+            [GET] Returns the real time that has passed since engine startup.
             </summary>
         </member>
         <member name="P:Duality.Time.LastDelta">
@@ -5485,7 +5485,8 @@
         </member>
         <member name="P:Duality.Time.GameTimer">
             <summary>
-            [GET] Returns the number of milliseconds that have passed in game time.
+            [GET] Returns the game time that has passed since engine startup. Since it's game time, this timer will stop
+            when pausing or freezing and also run slower or faster according to <see cref="P:Duality.Time.TimeScale"/>.
             </summary>
         </member>
         <member name="P:Duality.Time.TimeMult">
