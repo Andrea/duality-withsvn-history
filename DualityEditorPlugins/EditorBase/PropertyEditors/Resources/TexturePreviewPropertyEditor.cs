@@ -147,7 +147,7 @@ namespace EditorBase.PropertyEditors
 				this.subImageSelector.Maximum = -1;
 			}
 			this.UpdateGeometry();
-			if (this.value != lastValue) this.Invalidate();
+			this.Invalidate();
 		}
 
 		protected override void OnPaint(PaintEventArgs e)
