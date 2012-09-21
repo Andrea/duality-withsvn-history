@@ -133,7 +133,7 @@ namespace EditorBase.PropertyEditors
 			this.value = values.NotNull().FirstOrDefault() as Texture;
 			this.ClearFramePreviews();
 			this.GeneratePreviewImage();
-			this.AdjustPreviewHeight(false);
+			if (lastValue != this.value) this.AdjustPreviewHeight(false);
 
 			if (this.value != null && this.value.Atlas != null)
 			{

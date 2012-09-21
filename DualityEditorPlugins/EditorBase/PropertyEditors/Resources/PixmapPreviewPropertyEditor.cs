@@ -84,8 +84,11 @@ namespace EditorBase.PropertyEditors
 			Pixmap[] values = this.GetValue().Cast<Pixmap>().ToArray();
 			this.value = values.NotNull().FirstOrDefault() as Pixmap;
 			this.GeneratePreviewImage();
-			this.AdjustPreviewHeight(false);
-			if (this.value != lastValue) this.Invalidate();
+			if (this.value != lastValue)
+			{
+				this.AdjustPreviewHeight(false);
+				this.Invalidate();
+			}
 		}
 		protected override void OnPaint(PaintEventArgs e)
 		{
