@@ -257,5 +257,42 @@ namespace Duality.Cloning
 			CloneProvider provider = new CloneProvider();
 			provider.CopyObjectTo(baseObj, targetObj);
 		}
+
+		internal static void PerformReflectionFallback<T>(string copyMethodName, T baseObj, T targetObj, CloneProvider provider)
+		{
+			if (copyMethodName == null) throw new ArgumentNullException("copyMethodName");
+			if (baseObj == null) throw new ArgumentNullException("baseObj");
+			if (targetObj == null) throw new ArgumentNullException("targetObj");
+
+			// Use explicit unwrapping: Only unwrap (deep-copy) collection types, shallow-copy others.
+			provider.SetExplicitUnwrap(typeof(System.Collections.ICollection));
+
+			// Travel up the inheritance hierarchy
+			// Don't fallback for types from the Duality Assembly. Those are required to do explicit copying.
+			Type curType = baseObj.GetType();
+			while (curType.Assembly != typeof(DualityApp).Assembly && typeof(T).IsAssignableFrom(curType))
+			{
+				// Retrieve OnCopyTo method, if declared in this specific class (local override)
+				MethodInfo localOnCopyTo = curType.GetMethod(
+					copyMethodName, 
+					BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly, 
+					null, 
+					new[] { typeof(T), typeof(CloneProvider) }, 
+					null);
+				// Apply default behaviour to any class that doesn't have its own OnCopyTo override
+				if (localOnCopyTo == null)
+				{
+					provider.CopyObjectTo(
+						baseObj, 
+						targetObj, 
+						curType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+				}
+
+				curType = curType.BaseType;
+			}
+
+			// Deactivate explicit unwrapping again
+			provider.SetExplicitUnwrap((Type[])null);
+		}
 	}
 }

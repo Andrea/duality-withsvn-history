@@ -235,18 +235,28 @@ namespace Duality
 		}
 		void ICloneable.CopyDataTo(object targetObj, CloneProvider provider)
 		{
-			this.OnCopyTo(targetObj as Resource, provider);
-		}
+			Resource target = targetObj as Resource;
 
+			// CopyTo for all basic Resource types
+			this.OnCopyTo(target, provider);
+			// CopyTo for custom Resources - defaults to reflection
+			this.OnCopyTo(target, provider);
+		}
+		
 		/// <summary>
-		/// Deep-copies this Resource to the specified target Resource. The target Resource's Type must
-		/// match this Resource's Type.
+		/// This method Performs the <see cref="CopyTo"/> operation for custom Resource Types.
+		/// It uses reflection to copy each field that is declared inside a Duality plugin automatically.
+		/// However, you may override this method to specify your own behaviour or simply speed things
+		/// up a bit by not using Reflection.
 		/// </summary>
-		/// <param name="r">The target Resource to copy this Resource's data to</param>
-		protected virtual void OnCopyTo(Resource r, CloneProvider provider)
+		/// <param name="target">The target Resource where this Resources data is copied to.</param>
+		protected virtual void OnCopyTo(Resource target, CloneProvider provider)
 		{
-			r.path			= null; //this.path;
-			r.sourcePath	= null;
+			target.path			= null; //this.path;
+			target.sourcePath	= null;
+
+			// If any derived Resource type doesn't override OnCopyTo, use a reflection-driven default behavior.
+			CloneProvider.PerformReflectionFallback("OnCopyTo", this, target, provider);
 		}
 		/// <summary>
 		/// Called when this Resource is now beginning to be saved.

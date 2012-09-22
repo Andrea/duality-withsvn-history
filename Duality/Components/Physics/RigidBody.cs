@@ -1014,9 +1014,9 @@ namespace Duality.Components.Physics
 				this.RemoveDisposedJoints();
 		}
 
-		internal override void CopyToInternal(Component target, Duality.Cloning.CloneProvider provider)
+		protected override void OnCopyTo(Component target, Duality.Cloning.CloneProvider provider)
 		{
-			base.CopyToInternal(target, provider);
+			base.OnCopyTo(target, provider);
 			RigidBody c = target as RigidBody;
 
 			bool wasInitialized = c.bodyInitState == InitState.Initialized;

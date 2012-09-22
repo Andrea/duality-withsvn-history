@@ -19,7 +19,40 @@
 
 
 
-
+-->	Tilemaps
+	-->	Implement as a standard plugin.
+		-->	Not every type of project needs tilemaps and they're nicely self-contained.
+		-->	Also, some projects might need custom tilemaps, such as a dynamically lit one.
+	-->	Resource: Tileset
+		-->	References an Atlas Texture, detect tiles by Atlas
+			-->	What about additional texture layers for data such as normalmaps, specularmaps, etc.?
+			-->	Reference a Material instead, it allows multiple layers and custom data
+		-->	Tile Size derived from Atlas
+		-->	Stores tile data
+			-->	Collision data (Bitmask of 4 edge vertices, each may be blocking or free)
+			-->	AutoTile features
+			-->	Additional custom data
+				-->	Object tag?
+	-->	Component: Tilemap
+		-->	Stores tilemap data
+		-->	Renders the tilemap
+			-->	As usual, support ColorTint and a custom Material (BatchInfo)
+			-->	Cache vertex data, do it in a single drawcall, perform rectangular culling
+				-->	See Rpg Project / ZweiDe
+		-->	If active and a RigidBody Component is present, automatically generates / updates the RigidBodies shape consisting of LoopShapes.
+			-->	Enforce static RigidBody
+			-->	Allow additional, custom shapes.
+				-->	Just don't affect any shapes that haven't been created by the Tilemap.
+	-->	Dualitor: Tileset Editor
+		-->	Separate Editor
+		-->	New: Ability to select a set of tiles which is a global Selection event
+			and allows tile data property editing in the PropertyGrid
+			-->	How to init / edit additional custom data (Editor doesn't know what to do with a null Object tag)?
+			-->	A Tilemap could 
+		-->	See Rpg Project
+	-->	Dualitor: Tilemap Editor
+		-->	CamViewState
+		-->	See Rpg Project
 
 
 

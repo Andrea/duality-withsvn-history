@@ -796,9 +796,9 @@ namespace Duality.Components
 			this.passes.Add(worldPass);
 			this.passes.Add(overlayPass);
 		}
-		internal override void CopyToInternal(Component target, Duality.Cloning.CloneProvider provider)
+		protected override void OnCopyTo(Component target, Duality.Cloning.CloneProvider provider)
 		{
-			base.CopyToInternal(target, provider);
+			base.OnCopyTo(target, provider);
 			Camera t = target as Camera;
 			t.nearZ				= this.nearZ;
 			t.farZ				= this.farZ;

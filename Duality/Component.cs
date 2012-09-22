@@ -452,45 +452,25 @@ namespace Duality
 			CloneProvider.DeepCopyTo(this, target);
 		}
 		/// <summary>
-		/// Note: Since PrefabLinks may contain references to object-local values,
-		/// all objects fields should either be overwritten or left untouched.
-		/// DO NOT modify any referenced objects. Instead, discard them and create new.
-		/// </summary>
-		/// <param name="target"></param>
-		internal virtual void CopyToInternal(Component target, CloneProvider provider)
-		{
-			// Copy "pure" data
-			target.active	= this.active;
-			target.initState	= this.initState;
-		}
-		/// <summary>
 		/// This method Performs the <see cref="CopyTo"/> operation for custom Component Types.
 		/// It uses reflection to copy each field that is declared inside a Duality plugin automatically.
 		/// However, you may override this method to specify your own behaviour or simply speed things
 		/// up a bit by not using Reflection.
 		/// </summary>
+		/// <remarks>
+		/// Note: Since PrefabLinks may contain references to object-local values,
+		/// all objects fields should either be overwritten or left untouched.
+		/// DO NOT modify any referenced objects. Instead, discard them and create new.
+		/// </remarks>
 		/// <param name="target">The target Component where this Components data is copied to.</param>
 		protected virtual void OnCopyTo(Component target, CloneProvider provider)
 		{
-			provider.SetExplicitUnwrap(typeof(System.Collections.ICollection));
+			// Copy "pure" data
+			target.active	= this.active;
+			target.initState	= this.initState;
 
-			// Travel up the inheritance hierarchy until we hit an object located here
-			Type curType = this.GetType();
-			while (curType.Assembly != Assembly.GetExecutingAssembly())
-			{
-				// Apply default behaviour to any class that doesn't have an OnCopyTo override
-				if (curType.GetMethod("OnCopyTo", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly, null, new[] { typeof(Component), typeof(CloneProvider) }, null) == null)
-				{
-					provider.CopyObjectTo(
-						this, 
-						target, 
-						curType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
-				}
-
-				curType = curType.BaseType;
-			}
-
-			provider.SetExplicitUnwrap((Type[])null);
+			// If any derived Component type doesn't override OnCopyTo, use a reflection-driven default behavior.
+			CloneProvider.PerformReflectionFallback("OnCopyTo", this, target, provider);
 		}
 
 		object ICloneable.CreateTargetObject(CloneProvider provider)
@@ -499,12 +479,7 @@ namespace Duality
 		}
 		void ICloneable.CopyDataTo(object targetObj, CloneProvider provider)
 		{
-			Component target = targetObj as Component;
-
-			// CopyTo for all basic Component types
-			this.CopyToInternal(target, provider);
-			// CopyTo for custom Components - defaults to reflection
-			this.OnCopyTo(target, provider);
+			this.OnCopyTo(targetObj as Component, provider);
 		}
 
 		/// <summary>

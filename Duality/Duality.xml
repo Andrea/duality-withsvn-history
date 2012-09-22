@@ -768,14 +768,6 @@
             </summary>
             <param name="target">The target Component to copy to.</param>
         </member>
-        <member name="M:Duality.Component.CopyToInternal(Duality.Component,Duality.Cloning.CloneProvider)">
-            <summary>
-            Note: Since PrefabLinks may contain references to object-local values,
-            all objects fields should either be overwritten or left untouched.
-            DO NOT modify any referenced objects. Instead, discard them and create new.
-            </summary>
-            <param name="target"></param>
-        </member>
         <member name="M:Duality.Component.OnCopyTo(Duality.Component,Duality.Cloning.CloneProvider)">
             <summary>
             This method Performs the <see cref="M:Duality.Component.CopyTo(Duality.Component)"/> operation for custom Component Types.
@@ -783,6 +775,11 @@
             However, you may override this method to specify your own behaviour or simply speed things
             up a bit by not using Reflection.
             </summary>
+            <remarks>
+            Note: Since PrefabLinks may contain references to object-local values,
+            all objects fields should either be overwritten or left untouched.
+            DO NOT modify any referenced objects. Instead, discard them and create new.
+            </remarks>
             <param name="target">The target Component where this Components data is copied to.</param>
         </member>
         <member name="M:Duality.Component.RequiresComponent(System.Type)">
@@ -3371,10 +3368,12 @@
         </member>
         <member name="M:Duality.Resource.OnCopyTo(Duality.Resource,Duality.Cloning.CloneProvider)">
             <summary>
-            Deep-copies this Resource to the specified target Resource. The target Resource's Type must
-            match this Resource's Type.
+            This method Performs the <see cref="M:Duality.Resource.CopyTo(Duality.Resource)"/> operation for custom Resource Types.
+            It uses reflection to copy each field that is declared inside a Duality plugin automatically.
+            However, you may override this method to specify your own behaviour or simply speed things
+            up a bit by not using Reflection.
             </summary>
-            <param name="r">The target Resource to copy this Resource's data to</param>
+            <param name="target">The target Resource where this Resources data is copied to.</param>
         </member>
         <member name="M:Duality.Resource.OnSaving">
             <summary>

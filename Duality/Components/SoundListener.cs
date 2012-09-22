@@ -9,9 +9,9 @@ namespace Duality.Components
 	[RequiredComponent(typeof(Transform))]
 	public sealed class SoundListener : Component, ICmpInitializable
 	{
-		internal override void CopyToInternal(Component target, Duality.Cloning.CloneProvider provider)
+		protected override void OnCopyTo(Component target, Duality.Cloning.CloneProvider provider)
 		{
-			base.CopyToInternal(target, provider);
+			base.OnCopyTo(target, provider);
 			SoundListener c = target as SoundListener;
 		}
 

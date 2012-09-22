@@ -839,9 +839,9 @@ namespace Duality.Components
 			this.CheckValidTransform();
 		}
 
-		internal override void CopyToInternal(Component target, Duality.Cloning.CloneProvider provider)
+		protected override void OnCopyTo(Component target, Duality.Cloning.CloneProvider provider)
 		{
-			base.CopyToInternal(target, provider);
+			base.OnCopyTo(target, provider);
 			Transform t = target as Transform;
 
 			t.deriveAngle	= this.deriveAngle;

@@ -195,9 +195,9 @@ namespace Duality.Components.Renderers
 		}
 		void ICmpInitializable.OnShutdown(ShutdownContext context) {}
 
-		internal override void CopyToInternal(Component target, Duality.Cloning.CloneProvider provider)
+		protected override void OnCopyTo(Component target, Duality.Cloning.CloneProvider provider)
 		{
-			base.CopyToInternal(target, provider);
+			base.OnCopyTo(target, provider);
 			TextRenderer t = target as TextRenderer;
 			t.align		= this.align;
 			t.text		= this.text.Clone();

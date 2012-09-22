@@ -65,9 +65,9 @@ namespace Duality.Components
 			return device.IsRendererInView(this);
 		}
 
-		internal override void CopyToInternal(Component target, Duality.Cloning.CloneProvider provider)
+		protected override void OnCopyTo(Component target, Duality.Cloning.CloneProvider provider)
 		{
-			base.CopyToInternal(target, provider);
+			base.OnCopyTo(target, provider);
 			Renderer t = target as Renderer;
 			t.renderFlags		= this.renderFlags;
 			t.visibilityGroup	= this.visibilityGroup;
