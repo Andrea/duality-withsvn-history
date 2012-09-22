@@ -139,7 +139,7 @@ namespace EditorBase
 		private	event		EventHandler<KeyboardKeyEventArgs>	inputKeyDown	= null;
 		private	event		EventHandler<KeyboardKeyEventArgs>	inputKeyUp		= null;
 
-		public event EventHandler ParallaxRefDistChanged	= null;
+		public event EventHandler FocusDistChanged	= null;
 		public event EventHandler<CameraChangedEventArgs> CurrentCameraChanged	= null;
 
 		public ColorRgba BgColor
@@ -161,19 +161,19 @@ namespace EditorBase
 			get { return this.camComp.FarZ; }
 			set { this.camComp.FarZ = value; }
 		}
-		public float ParallaxRefDist
+		public float FocusDist
 		{
-			get { return (float)this.parallaxRefDist.Value; }
-			set { this.parallaxRefDist.Value = Math.Min(Math.Max((decimal)value, this.parallaxRefDist.Minimum), this.parallaxRefDist.Maximum); }
+			get { return (float)this.focusDist.Value; }
+			set { this.focusDist.Value = Math.Min(Math.Max((decimal)value, this.focusDist.Minimum), this.focusDist.Maximum); }
 		}
-		public float ParallaxRefDistIncrement
+		public float FocusDistIncrement
 		{
-			get { return (float)this.parallaxRefDist.Increment; }
+			get { return (float)this.focusDist.Increment; }
 		}
-		public bool ParallaxActive
+		public bool PerspectiveActive
 		{
-			get { return this.toggleParallaxity.Checked; }
-			set { this.toggleParallaxity.Checked = value; }
+			get { return this.togglePerspective.Checked; }
+			set { this.togglePerspective.Checked = value; }
 		}
 		public Camera CameraComponent
 		{
@@ -270,8 +270,8 @@ namespace EditorBase
 			Scene.RegisteredObjectComponentRemoved += this.Scene_RegisteredObjectComponentRemoved;
 
 			// Update Camera values according to GUI (which carries loaded or default settings)
-			this.parallaxRefDist_ValueChanged(this.parallaxRefDist, null);
-			this.toggleParallaxity_CheckStateChanged(this.toggleParallaxity, null);
+			this.focusDist_ValueChanged(this.focusDist, null);
+			this.togglePerspective_CheckStateChanged(this.togglePerspective, null);
 			this.bgColorDialog_ValueChanged(this.bgColorDialog, null);
 
 			// Update camera transform properties & GUI
@@ -389,7 +389,7 @@ namespace EditorBase
 			c.ClearColor = ColorRgba.DarkGrey;
 			c.FarZ = 100000.0f;
 
-			this.nativeCamObj.Transform.Pos = new Vector3(0.0f, 0.0f, -c.ParallaxRefDist);
+			this.nativeCamObj.Transform.Pos = new Vector3(0.0f, 0.0f, -c.FocusDist);
 			DualityEditorApp.EditorObjects.RegisterObj(this.nativeCamObj);
 		}
 
@@ -524,8 +524,8 @@ namespace EditorBase
 
 		internal void SaveUserData(XmlElement node)
 		{
-			node.SetAttribute("toggleParallaxity", this.toggleParallaxity.Checked.ToString(CultureInfo.InvariantCulture));
-			node.SetAttribute("parallaxRefDist", this.nativeCamObj.Camera.ParallaxRefDist.ToString(CultureInfo.InvariantCulture));
+			node.SetAttribute("togglePerspective", this.togglePerspective.Checked.ToString(CultureInfo.InvariantCulture));
+			node.SetAttribute("focusDist", this.nativeCamObj.Camera.FocusDist.ToString(CultureInfo.InvariantCulture));
 			node.SetAttribute("bgColorArgb", this.nativeCamObj.Camera.ClearColor.ToIntArgb().ToString(CultureInfo.InvariantCulture));
 
 			if (this.activeState != null) 
@@ -555,10 +555,10 @@ namespace EditorBase
 			decimal tryParseDecimal;
 			int tryParseInt;
 
-			if (bool.TryParse(node.GetAttribute("toggleParallaxity"), out tryParseBool))
-				this.toggleParallaxity.Checked = tryParseBool;
-			if (decimal.TryParse(node.GetAttribute("parallaxRefDist"), out tryParseDecimal))
-				this.parallaxRefDist.Value = Math.Abs(tryParseDecimal);
+			if (bool.TryParse(node.GetAttribute("togglePerspective"), out tryParseBool))
+				this.togglePerspective.Checked = tryParseBool;
+			if (decimal.TryParse(node.GetAttribute("focusDist"), out tryParseDecimal))
+				this.focusDist.Value = Math.Abs(tryParseDecimal);
 			if (int.TryParse(node.GetAttribute("bgColorArgb"), out tryParseInt))
 			{
 				this.bgColorDialog.OldColor = Color.FromArgb(tryParseInt);
@@ -602,8 +602,8 @@ namespace EditorBase
 		}
 		public void SetToolbarCamSettingsEnabled(bool value)
 		{
-			this.toggleParallaxity.Enabled = value;
-			this.parallaxRefDist.Enabled = value;
+			this.togglePerspective.Enabled = value;
+			this.focusDist.Enabled = value;
 			this.camSelector.Enabled = value;
 			this.showBgColorDialog.Enabled = value;
 			this.layerSelector.Enabled = value;
@@ -618,7 +618,7 @@ namespace EditorBase
 		public void FocusOnPos(Vector3 targetPos)
 		{
 			if (!this.activeState.CameraActionAllowed) return;
-			targetPos -= Vector3.UnitZ * MathF.Abs(this.camComp.ParallaxRefDist);
+			targetPos -= Vector3.UnitZ * MathF.Abs(this.camComp.FocusDist);
 			//targetPos.Z = MathF.Min(this.camObj.Transform.Pos.Z, targetPos.Z);
 			this.camObj.Transform.Pos = targetPos;
 			this.OnCamTransformChanged();
@@ -670,18 +670,18 @@ namespace EditorBase
 			return this.camComp.GetScreenCoord(spaceCoord);
 		}
 
-		private void OnParallaxRefDistChanged()
+		private void OnFocusDistChanged()
 		{
 			if (!this.camInternal)
 			{
 				DualityEditorApp.NotifyObjPropChanged(
 					this, new ObjectSelection(this.camComp),
-					ReflectionInfo.Property_Camera_ParallaxRefDist);
+					ReflectionInfo.Property_Camera_FocusDist);
 			}
 			this.glControl.Invalidate();
 
-			if (this.ParallaxRefDistChanged != null)
-				this.ParallaxRefDistChanged(this, EventArgs.Empty);
+			if (this.FocusDistChanged != null)
+				this.FocusDistChanged(this, EventArgs.Empty);
 		}
 		private void OnCurrentCameraChanged(Camera prev, Camera next)
 		{
@@ -834,38 +834,38 @@ namespace EditorBase
 			this.glControl.Invalidate();
 		}
 
-		private void toggleParallaxity_CheckStateChanged(object sender, EventArgs e)
+		private void togglePerspective_CheckStateChanged(object sender, EventArgs e)
 		{
 			if (this.camComp == null) return;
 
-			this.camComp.ParallaxRefDist = this.toggleParallaxity.Checked ? (float)this.parallaxRefDist.Value : -(float)this.parallaxRefDist.Value;
-			this.OnParallaxRefDistChanged();
+			this.camComp.FocusDist = this.togglePerspective.Checked ? (float)this.focusDist.Value : -(float)this.focusDist.Value;
+			this.OnFocusDistChanged();
 		}
-		private void parallaxRefDist_ValueChanged(object sender, EventArgs e)
+		private void focusDist_ValueChanged(object sender, EventArgs e)
 		{
 			if (this.camComp == null) return;
 
-			if (this.parallaxRefDist.Value < 30m)
-				this.parallaxRefDist.Increment = 1m;
-			else if (this.parallaxRefDist.Value < 150m)
-				this.parallaxRefDist.Increment = 5m;
-			else if (this.parallaxRefDist.Value < 300m)
-				this.parallaxRefDist.Increment = 10m;
-			else if (this.parallaxRefDist.Value < 1500m)
-				this.parallaxRefDist.Increment = 50m;
-			else if (this.parallaxRefDist.Value < 3000m)
-				this.parallaxRefDist.Increment = 100m;
-			else if (this.parallaxRefDist.Value < 15000m)
-				this.parallaxRefDist.Increment = 500m;
-			else if (this.parallaxRefDist.Value < 30000m)
-				this.parallaxRefDist.Increment = 1000m;
-			else if (this.parallaxRefDist.Value < 150000m)
-				this.parallaxRefDist.Increment = 5000m;
+			if (this.focusDist.Value < 30m)
+				this.focusDist.Increment = 1m;
+			else if (this.focusDist.Value < 150m)
+				this.focusDist.Increment = 5m;
+			else if (this.focusDist.Value < 300m)
+				this.focusDist.Increment = 10m;
+			else if (this.focusDist.Value < 1500m)
+				this.focusDist.Increment = 50m;
+			else if (this.focusDist.Value < 3000m)
+				this.focusDist.Increment = 100m;
+			else if (this.focusDist.Value < 15000m)
+				this.focusDist.Increment = 500m;
+			else if (this.focusDist.Value < 30000m)
+				this.focusDist.Increment = 1000m;
+			else if (this.focusDist.Value < 150000m)
+				this.focusDist.Increment = 5000m;
 			else
-				this.parallaxRefDist.Increment = 10000m;
+				this.focusDist.Increment = 10000m;
 
-			this.camComp.ParallaxRefDist = this.toggleParallaxity.Checked ? (float)this.parallaxRefDist.Value : -(float)this.parallaxRefDist.Value;
-			this.OnParallaxRefDistChanged();
+			this.camComp.FocusDist = this.togglePerspective.Checked ? (float)this.focusDist.Value : -(float)this.focusDist.Value;
+			this.OnFocusDistChanged();
 		}
 		private void showBgColorDialog_Click(object sender, EventArgs e)
 		{
@@ -895,7 +895,7 @@ namespace EditorBase
 		}
 		private void buttonResetZoom_Click(object sender, EventArgs e)
 		{
-			this.camObj.Transform.Pos = new Vector3(this.camObj.Transform.Pos.Xy, -MathF.Abs(this.camComp.ParallaxRefDist));
+			this.camObj.Transform.Pos = new Vector3(this.camObj.Transform.Pos.Xy, -MathF.Abs(this.camComp.FocusDist));
 			this.glControl.Invalidate();
 		}
 		
@@ -906,6 +906,7 @@ namespace EditorBase
 		}
 		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
 		{
+			if (!e.Objects.Resources.Any()) return;
 			this.glControl.Invalidate();
 		}
 		

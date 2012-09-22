@@ -387,12 +387,12 @@ namespace EditorBase.CamViewStates
 			{
 				List<GameObject> dragObj = dragObjQuery.ToList();
 
-				bool lockZ = this.View.CameraComponent.ParallaxRefDist <= 0.0f;
+				bool lockZ = this.View.CameraComponent.FocusDist <= 0.0f;
 				Point mouseLoc = this.View.LocalGLControl.PointToClient(new Point(e.X, e.Y));
 				Vector3 spaceCoord = this.View.GetSpaceCoord(new Vector3(
 					mouseLoc.X, 
 					mouseLoc.Y, 
-					lockZ ? 0.0f : this.View.CameraObj.Transform.Pos.Z + MathF.Abs(this.View.CameraComponent.ParallaxRefDist)));
+					lockZ ? 0.0f : this.View.CameraObj.Transform.Pos.Z + MathF.Abs(this.View.CameraComponent.FocusDist)));
 
 				// Setup GameObjects
 				bool anyAngleChanged = this.View.CameraObj.Transform.Angle != 0.0f;

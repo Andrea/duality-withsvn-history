@@ -154,10 +154,10 @@ namespace Duality
 		/// </summary>
 		float RefAngle { get; }
 		/// <summary>
-		/// [GET] Reference distance for calculating the parallax effect. An object this far away from
+		/// [GET] Reference distance for calculating the perspective effect. An object this far away from
 		/// the Camera will appear in its original size.
 		/// </summary>
-		float ParallaxRefDist { get; }
+		float FocusDist { get; }
 		/// <summary>
 		/// [GET] A bitmask flagging all visibility groups that are considered visible to this drawing device.
 		/// </summary>
@@ -186,14 +186,14 @@ namespace Duality
 
 		/// <summary>
 		/// Processes the specified world space position and scale values and transforms them to the IDrawDevices view space.
-		/// This usually also applies a parallax effect, if applicable.
+		/// This usually also applies a perspective effect, if applicable.
 		/// </summary>
 		/// <param name="pos">The position to process.</param>
 		/// <param name="scale">The scale factor to process.</param>
 		void PreprocessCoords(ref Vector3 pos, ref float scale);
 		/// <summary>
 		/// Processes the specified world space position and scale values and transforms them to the IDrawDevices view space.
-		/// This usually also applies a parallax effect, if applicable.
+		/// This usually also applies a perspective effect, if applicable.
 		/// </summary>
 		/// <param name="r">The <see cref="Duality.ICmpRenderer"/> to which the data belongs.</param>
 		/// <param name="pos">The position to process.</param>
@@ -619,14 +619,14 @@ namespace Duality.Components
 		}
 
 		/// <summary>
-		/// The default reference distance for parallax rendering.
+		/// The default reference distance for perspective rendering.
 		/// </summary>
-		public const float DefaultParallaxRefDist	= 500.0f;
+		public const float DefaultFocusDist	= 500.0f;
 
 		private	float	nearZ				= 0.0f;
 		private	float	farZ				= 10000.0f;
 		private	float	zSortAccuracy		= 0.0f;
-		private	float	parallaxRefDist		= DefaultParallaxRefDist;
+		private	float	focusDist			= DefaultFocusDist;
 		private	VisibilityFlag	visibilityMask	= VisibilityFlag.All;
 		private	List<Pass>	passes			= new List<Pass>();
 
@@ -674,15 +674,15 @@ namespace Duality.Components
 			set { this.farZ = value; this.UpdateZSortAccuracy(); }
 		}
 		/// <summary>
-		/// [GET / SET] Reference distance for calculating the parallax effect. An object this far away from
-		/// the Camera will appear in its original size.
+		/// [GET / SET] Reference distance for calculating the view perspective. An object this far away from
+		/// the Camera will appear in its original size and without offset.
 		/// </summary>
 		[EditorHintDecimalPlaces(1)]
 		[EditorHintIncrement(10.0f)]
-		public float ParallaxRefDist
+		public float FocusDist
 		{
-			get { return this.parallaxRefDist; }
-			set { this.parallaxRefDist = value; }
+			get { return this.focusDist; }
+			set { this.focusDist = value; }
 		}
 		/// <summary>
 		/// [GET / SET] A bitmask flagging all visibility groups that are considered visible to this drawing device.
@@ -802,7 +802,7 @@ namespace Duality.Components
 			Camera t = target as Camera;
 			t.nearZ				= this.nearZ;
 			t.farZ				= this.farZ;
-			t.parallaxRefDist	= this.parallaxRefDist;
+			t.focusDist	= this.focusDist;
 			t.visibilityMask	= this.visibilityMask;
 			t.passes			= this.passes != null ? new List<Pass>(this.passes.Select(p => new Pass(p))) : null;
 		}
@@ -1007,7 +1007,7 @@ namespace Duality.Components
 		public Vector3 GetSpaceCoord(Vector3 screenPos)
 		{
 			Vector3 gameObjPos = this.GameObj.Transform.Pos;
-			float scale = this.parallaxRefDist / (this.parallaxRefDist >= 0.0f ? Math.Max(screenPos.Z - gameObjPos.Z, this.nearZ) : -DefaultParallaxRefDist);
+			float scale = this.GetScaleAtZ(screenPos.Z);
 
 			Vector2 targetSize = this.SceneTargetSize;
 			screenPos = new Vector3(
@@ -1040,7 +1040,7 @@ namespace Duality.Components
 		{
 			Vector3 gameObjPos = this.GameObj.Transform.Pos;
 			Vector3.Subtract(ref spacePos, ref gameObjPos, out spacePos);
-			float scale = this.parallaxRefDist / (this.parallaxRefDist >= 0.0f ? Math.Max(spacePos.Z, this.nearZ) : -DefaultParallaxRefDist);
+			float scale = this.GetScaleAtZ(spacePos.Z);
 			spacePos.X *= scale;
 			spacePos.Y *= scale;
 
@@ -1237,7 +1237,7 @@ namespace Duality.Components
 			if (this.deviceScreenOverlay) return;
 
 			// Translate objects contrary to the camera
-			// Removed: Do this in software now for parallax support
+			// Removed: Do this in software now for custom perspective / parallax support
 			// modelViewMat *= Matrix4.CreateTranslation(-this.GameObj.Transform.Pos);
 
 			// Rotate them according to the camera angle
@@ -1439,7 +1439,7 @@ namespace Duality.Components
 				Vector3 gameObjPos = this.GameObj.Transform.Pos;
 				Vector3.Subtract(ref pos, ref gameObjPos, out pos);
 			}
-			float scaleTemp = this.parallaxRefDist / (this.parallaxRefDist >= 0.0f ? Math.Max(pos.Z, this.nearZ) : -DefaultParallaxRefDist);
+			float scaleTemp = this.focusDist / (this.focusDist >= 0.0f ? Math.Max(pos.Z, this.nearZ) : -DefaultFocusDist);
 			pos.X *= scaleTemp;
 			pos.Y *= scaleTemp;
 			scale *= scaleTemp;
@@ -1456,16 +1456,16 @@ namespace Duality.Components
 				Vector3 gameObjPos = this.GameObj.Transform.Pos;
 				Vector3.Subtract(ref pos, ref gameObjPos, out pos);
 			}
-			if ((r.RenderFlags & (RendererFlags.ParallaxPos | RendererFlags.ParallaxScale)) != RendererFlags.None)
+			if ((r.RenderFlags & (RendererFlags.PerspectivePos | RendererFlags.PerspectiveScale)) != RendererFlags.None)
 			{
-				float scaleTemp = this.parallaxRefDist / (this.parallaxRefDist >= 0.0f ? Math.Max(pos.Z, this.nearZ) : -DefaultParallaxRefDist);
-				if ((r.RenderFlags & RendererFlags.ParallaxPos) != RendererFlags.None)
-				{
-					pos.X *= scaleTemp;
-					pos.Y *= scaleTemp;
-				}
-				if ((r.RenderFlags & RendererFlags.ParallaxScale) != RendererFlags.None) 
-					scale *= scaleTemp;
+			    float scaleTemp = this.focusDist / (this.focusDist >= 0.0f ? Math.Max(pos.Z, this.nearZ) : -DefaultFocusDist);
+			    if ((r.RenderFlags & RendererFlags.PerspectivePos) != RendererFlags.None)
+			    {
+			        pos.X *= scaleTemp;
+			        pos.Y *= scaleTemp;
+			    }
+			    if ((r.RenderFlags & RendererFlags.PerspectiveScale) != RendererFlags.None) 
+			        scale *= scaleTemp;
 			}
 		}
 		bool IDrawDevice.IsCoordInView(Vector3 c, float boundRad)

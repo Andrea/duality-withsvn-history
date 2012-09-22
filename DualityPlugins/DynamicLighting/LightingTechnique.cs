@@ -18,7 +18,7 @@ namespace DynamicLighting
 			base.PrepareRendering(device, material);
 
 			Vector3 camPos = device.RefCoord;
-			float camRefDist = MathF.Abs(device.ParallaxRefDist);
+			float camRefDist = MathF.Abs(device.FocusDist);
 
 			material.SetUniform("_camRefDist", camRefDist);
 			material.SetUniform("_camWorldPos", camPos.X, camPos.Y, camPos.Z);

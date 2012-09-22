@@ -56,7 +56,7 @@ namespace Duality
 		public static readonly PropertyInfo	Property_Camera_VisibilityMask;
 		public static readonly PropertyInfo	Property_Camera_Passes;
 		public static readonly PropertyInfo	Property_Camera_ClearColor;
-		public static readonly PropertyInfo	Property_Camera_ParallaxRefDist;
+		public static readonly PropertyInfo	Property_Camera_FocusDist;
 
 		public static readonly PropertyInfo	Property_Camera_RenderPass_Input;
 		public static readonly PropertyInfo	Property_Camera_RenderPass_Output;
@@ -207,7 +207,7 @@ namespace Duality
 			Property_Camera_SceneTargetSize		= camera.GetProperty("SceneTargetSize");
 			Property_Camera_VisibilityMask		= camera.GetProperty("VisibilityMask");
 			Property_Camera_Passes				= camera.GetProperty("Passes");
-			Property_Camera_ParallaxRefDist		= camera.GetProperty("ParallaxRefDist");
+			Property_Camera_FocusDist			= camera.GetProperty("FocusDist");
 			Property_Camera_ClearColor			= camera.GetProperty("ClearColor");
 
 			Type cameraRenderPass = typeof(Camera.Pass);

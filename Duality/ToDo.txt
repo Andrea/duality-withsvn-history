@@ -19,6 +19,25 @@
 
 
 
+-->	Alternate Camera Perspectives
+	-->	Change hardcoded "Parallax / Flat" to an enum (Find better names)
+		-->	Flat
+			-->	Z means nothing (except sorting)
+			-->	Ortho projection, no perspective adjustments at all
+			-->	Adjust culling to not cutoff negative relative Z values
+		-->	Parallax
+			-->	Z means "into the screen"
+			-->	The current parallax mode, distance affects scale and position
+		-->	Rpg / "Isometric"
+			-->	Z means "downwards"
+			-->	"Oldschool Rpg"-like
+			-->	Adjust culling to not cutoff negative relative Z values
+	-->	Get rid of "RenderMatrix" struct for Renderpasses, replace with new Perspective struct.
+		-->	Each pass may have its own perspective mode, yay!
+	-->	Update CamView to select a perspective mode
+		-->	Assure editing in all perspective modes works well
+		-->	Mouse wheel controls Camera Z only in Parallax mode, controls FocusDist in other modes.
+
 -->	Tilemaps
 	-->	Implement as a standard plugin.
 		-->	Not every type of project needs tilemaps and they're nicely self-contained.

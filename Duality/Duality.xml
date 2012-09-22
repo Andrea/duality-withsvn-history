@@ -1317,19 +1317,19 @@
             No flags set.
             </summary>
         </member>
-        <member name="F:Duality.RendererFlags.ParallaxPos">
+        <member name="F:Duality.RendererFlags.PerspectivePos">
             <summary>
-            The Renderers position is processed based on its depth to achieve a parallax effect.
+            The Renderers position is processed based on its depth to achieve a perspective effect.
             </summary>
         </member>
-        <member name="F:Duality.RendererFlags.ParallaxScale">
+        <member name="F:Duality.RendererFlags.PerspectiveScale">
             <summary>
-            The Renderers scale is processed based on its depth to achieve a parallax effect.
+            The Renderers scale is processed based on its depth to achieve a perspective effect.
             </summary>
         </member>
-        <member name="F:Duality.RendererFlags.Parallax">
+        <member name="F:Duality.RendererFlags.Perspective">
             <summary>
-            The Renderers position and scale are processed based on its depth to achieve a parallax effect.
+            The Renderers position and scale are processed based on its depth to achieve a perspective effect.
             </summary>
         </member>
         <member name="F:Duality.RendererFlags.All">
@@ -6931,7 +6931,7 @@
         <member name="M:Duality.IDrawDevice.PreprocessCoords(OpenTK.Vector3@,System.Single@)">
             <summary>
             Processes the specified world space position and scale values and transforms them to the IDrawDevices view space.
-            This usually also applies a parallax effect, if applicable.
+            This usually also applies a perspective effect, if applicable.
             </summary>
             <param name="pos">The position to process.</param>
             <param name="scale">The scale factor to process.</param>
@@ -6939,7 +6939,7 @@
         <member name="M:Duality.IDrawDevice.PreprocessCoords(Duality.ICmpRenderer,OpenTK.Vector3@,System.Single@)">
             <summary>
             Processes the specified world space position and scale values and transforms them to the IDrawDevices view space.
-            This usually also applies a parallax effect, if applicable.
+            This usually also applies a perspective effect, if applicable.
             </summary>
             <param name="r">The <see cref="T:Duality.ICmpRenderer"/> to which the data belongs.</param>
             <param name="pos">The position to process.</param>
@@ -6989,9 +6989,9 @@
             [GET] Reference angle for rendering i.e. the angle of the drawing device's Camera.
             </summary>
         </member>
-        <member name="P:Duality.IDrawDevice.ParallaxRefDist">
+        <member name="P:Duality.IDrawDevice.FocusDist">
             <summary>
-            [GET] Reference distance for calculating the parallax effect. An object this far away from
+            [GET] Reference distance for calculating the perspective effect. An object this far away from
             the Camera will appear in its original size.
             </summary>
         </member>
@@ -7030,9 +7030,9 @@
             A Camera is responsible for rendering the current <see cref="T:Duality.Resources.Scene"/>.
             </summary>
         </member>
-        <member name="F:Duality.Components.Camera.DefaultParallaxRefDist">
+        <member name="F:Duality.Components.Camera.DefaultFocusDist">
             <summary>
-            The default reference distance for parallax rendering.
+            The default reference distance for perspective rendering.
             </summary>
         </member>
         <member name="M:Duality.Components.Camera.Render">
@@ -7112,10 +7112,10 @@
             [GET / SET] The highest Z value that can be displayed by the device.
             </summary>
         </member>
-        <member name="P:Duality.Components.Camera.ParallaxRefDist">
+        <member name="P:Duality.Components.Camera.FocusDist">
             <summary>
-            [GET / SET] Reference distance for calculating the parallax effect. An object this far away from
-            the Camera will appear in its original size.
+            [GET / SET] Reference distance for calculating the view perspective. An object this far away from
+            the Camera will appear in its original size and without offset.
             </summary>
         </member>
         <member name="P:Duality.Components.Camera.VisibilityMask">

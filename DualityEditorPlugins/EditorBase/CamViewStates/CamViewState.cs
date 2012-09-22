@@ -285,7 +285,7 @@ namespace EditorBase.CamViewStates
 			this.View.LocalGLControl.KeyDown	+= this.LocalGLControl_KeyDown;
 			this.View.LocalGLControl.KeyUp		+= this.LocalGLControl_KeyUp;
 			this.View.LocalGLControl.LostFocus	+= this.LocalGLControl_LostFocus;
-			this.View.ParallaxRefDistChanged	+= this.View_ParallaxRefDistChanged;
+			this.View.FocusDistChanged	+= this.View_FocusDistChanged;
 			DualityEditorApp.UpdatingEngine += this.EditorForm_AfterUpdateDualityApp;
 			DualityEditorApp.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
 
@@ -309,7 +309,7 @@ namespace EditorBase.CamViewStates
 			this.View.LocalGLControl.KeyDown	-= this.LocalGLControl_KeyDown;
 			this.View.LocalGLControl.KeyUp		-= this.LocalGLControl_KeyUp;
 			this.View.LocalGLControl.LostFocus	-= this.LocalGLControl_LostFocus;
-			this.View.ParallaxRefDistChanged	-= this.View_ParallaxRefDistChanged;
+			this.View.FocusDistChanged	-= this.View_FocusDistChanged;
 			DualityEditorApp.UpdatingEngine -= this.EditorForm_AfterUpdateDualityApp;
 			
 			Scene.Leaving -= this.Scene_Changed;
@@ -593,7 +593,7 @@ namespace EditorBase.CamViewStates
 
 				float refZ = (this.SelectedObjects.Any() && camObj.Transform.Pos.Z < this.selectionCenter.Z - cam.NearZ) ? this.selectionCenter.Z : 0.0f;
 				if (camObj.Transform.Pos.Z >= refZ - cam.NearZ)
-					refZ = camObj.Transform.Pos.Z + MathF.Abs(cam.ParallaxRefDist);
+					refZ = camObj.Transform.Pos.Z + MathF.Abs(cam.FocusDist);
 
 				Vector2 targetVel = (-(curPos - lastPos) / this.View.GetScaleAtZ(refZ)) / Time.TimeMult;
 				MathF.TransformCoord(ref targetVel.X, ref targetVel.Y, camObj.Transform.Angle);
@@ -618,7 +618,7 @@ namespace EditorBase.CamViewStates
 				{
 					float refZ = (this.SelectedObjects.Any() && camObj.Transform.Pos.Z < this.selectionCenter.Z - cam.NearZ) ? this.selectionCenter.Z : 0.0f;
 					if (camObj.Transform.Pos.Z >= refZ - cam.NearZ)
-						refZ = camObj.Transform.Pos.Z + MathF.Abs(cam.ParallaxRefDist);
+						refZ = camObj.Transform.Pos.Z + MathF.Abs(cam.FocusDist);
 					moveVec = new Vector3(moveVec.Xy * 0.5f / this.View.GetScaleAtZ(refZ), moveVec.Z);
 				}
 
@@ -1289,7 +1289,7 @@ namespace EditorBase.CamViewStates
 
 			if (e.Delta != 0)
 			{
-				if (this.View.ParallaxActive)
+				if (this.View.PerspectiveActive)
 				{
 					GameObject camObj = this.View.CameraObj;
 					float curVel = this.camVel.Length * MathF.Sign(this.camVel.Z);
@@ -1314,7 +1314,7 @@ namespace EditorBase.CamViewStates
 				}
 				else
 				{
-					this.View.ParallaxRefDist = this.View.ParallaxRefDist + this.View.ParallaxRefDistIncrement * e.Delta / 40;
+					this.View.FocusDist = this.View.FocusDist + this.View.FocusDistIncrement * e.Delta / 40;
 				}
 			}
 		}
@@ -1448,7 +1448,7 @@ namespace EditorBase.CamViewStates
 			this.lockedAxes = AxisLock.None;
 			this.InvalidateView();
 		}
-		private void View_ParallaxRefDistChanged(object sender, EventArgs e)
+		private void View_FocusDistChanged(object sender, EventArgs e)
 		{
 			this.OnCursorSpacePosChanged();
 		}
@@ -1463,8 +1463,6 @@ namespace EditorBase.CamViewStates
 			{
 				this.OnCursorSpacePosChanged();
 			}
-
-			this.InvalidateView();
 		}
 		private void Scene_Changed(object sender, EventArgs e)
 		{

@@ -232,26 +232,26 @@ namespace Duality
 		None				= 0x00000000,
 
 		/// <summary>
-		/// The Renderers position is processed based on its depth to achieve a parallax effect.
+		/// The Renderers position is processed based on its depth to achieve a perspective effect.
 		/// </summary>
-		ParallaxPos			= 0x00000001,
+		PerspectivePos		= 0x00000001,
 		/// <summary>
-		/// The Renderers scale is processed based on its depth to achieve a parallax effect.
+		/// The Renderers scale is processed based on its depth to achieve a perspective effect.
 		/// </summary>
-		ParallaxScale		= 0x00000002,
+		PerspectiveScale	= 0x00000002,
 		/// <summary>
-		/// The Renderers position and scale are processed based on its depth to achieve a parallax effect.
+		/// The Renderers position and scale are processed based on its depth to achieve a perspective effect.
 		/// </summary>
-		Parallax			= ParallaxPos | ParallaxScale,
+		Perspective			= PerspectivePos | PerspectiveScale,
 
 		/// <summary>
 		/// All flags set.
 		/// </summary>
-		All					= Parallax,
+		All					= Perspective,
 		/// <summary>
 		/// The default flag combination.
 		/// </summary>
-		Default				= Parallax
+		Default				= Perspective
 	}
 
 	/// <summary>
