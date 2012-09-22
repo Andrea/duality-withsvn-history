@@ -19,7 +19,9 @@
 
 
 
--->	Alternate Camera Perspectives
+
+
+-->	Idea: Alternate Camera Perspectives
 	-->	Change hardcoded "Parallax / Flat" to an enum (Find better names)
 		-->	Flat
 			-->	Z means nothing (except sorting)
@@ -40,7 +42,7 @@
 		-->	Assure editing in all perspective modes works well
 		-->	Mouse wheel controls Camera Z only in Parallax mode, controls FocusDist in other modes.
 
--->	Tilemaps
+-->	Idea: Tilemaps
 	-->	Implement as a standard plugin.
 		-->	Not every type of project needs tilemaps and they're nicely self-contained.
 		-->	Also, some projects might need custom tilemaps, such as a dynamically lit one.
@@ -60,13 +62,9 @@
 			-->	As usual, support ColorTint and a custom Material (BatchInfo)
 			-->	Cache vertex data, do it in a single drawcall, perform rectangular culling
 				-->	See Rpg Project / ZweiDe
-			-->	Needs to be configurable on how to output vertex data
-				-->	TopDown
-					-->	Vertices are emitted in the XY plane
-					-->	Height Offsets go into the Z axis of a tile
-				-->	Rpg / "Isometric"
-					-->	Vertices are emitted in the XZ plane
-					-->	Height Offsets go into the Y axis of a tile
+			-->	Will be insufficient for correct spatial representation
+				-->	Insufficient for dynamic lighting
+				-->	Will not interact with sprites - they'll either be in front of the whole map or behind it. But that's okay.
 		-->	If active and a RigidBody Component is present, automatically generates / updates the RigidBodies shape consisting of LoopShapes.
 			-->	Enforce static RigidBody
 			-->	Allow additional, custom shapes.
