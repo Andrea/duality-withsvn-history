@@ -62,9 +62,13 @@
 			-->	As usual, support ColorTint and a custom Material (BatchInfo)
 			-->	Cache vertex data, do it in a single drawcall, perform rectangular culling
 				-->	See Rpg Project / ZweiDe
-			-->	Will be insufficient for correct spatial representation
+			-->	Just behave like the SpriteRenderer and act as an expanded point / based on a single PreprocessCoords call
+				-->	Will be insufficient for correct spatial representation
 				-->	Insufficient for dynamic lighting
 				-->	Will not interact with sprites - they'll either be in front of the whole map or behind it. But that's okay.
+					-->	To introduce different depth layers, the user might just instantiate multiple tilemap objects and stack them together. 
+					-->	No matter what kind of projection he uses (Flat / Isometric), there's always the possibility to deactivate 
+						perspective simulation on the tilemap, so stacking is entirely possible without visual caveats.
 		-->	If active and a RigidBody Component is present, automatically generates / updates the RigidBodies shape consisting of LoopShapes.
 			-->	Enforce static RigidBody
 			-->	Allow additional, custom shapes.
