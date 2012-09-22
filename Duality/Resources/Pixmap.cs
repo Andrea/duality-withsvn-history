@@ -921,8 +921,9 @@ namespace Duality.Resources
 				ColorRgba[]	tempDestData	= new ColorRgba[w * h];
 				if (filter == FilterMethod.Nearest)
 				{
-					//for (int i = 0; i < tempDestData.Length; i++)
-					System.Threading.Tasks.Parallel.For(0, tempDestData.Length, i =>
+					// Don't use Parallel.For here, the overhead is too big and the compiler 
+					// does a great job optimizing this piece of code without, so don't get in the way.
+					for (int i = 0; i < tempDestData.Length; i++)
 					{
 						int y = i / w;
 						int x = i - (y * w);
@@ -930,11 +931,8 @@ namespace Duality.Resources
 						int xTmp	= (x * this.width) / w;
 						int yTmp	= (y * this.height) / h;
 						int nTmp	= xTmp + (yTmp * this.width);
-						tempDestData[i].R = this.data[nTmp].R;
-						tempDestData[i].G = this.data[nTmp].G;
-						tempDestData[i].B = this.data[nTmp].B;
-						tempDestData[i].A = this.data[nTmp].A;
-					});
+						tempDestData[i] = this.data[nTmp];
+					}
 				}
 				else if (filter == FilterMethod.Linear)
 				{
@@ -944,20 +942,24 @@ namespace Duality.Resources
 						int y = i / w;
 						int x = i - (y * w);
 
-						float	xRatio	= ((float)(x * this.width) / (float)w) + ((w != this.width) ? ((w > this.width) ? -1.0f : 1.0f) : 0.0f) * 0.5f;
-						float	yRatio	= ((float)(y * this.height) / (float)h) + ((h != this.height) ? ((h > this.height) ? -1.0f : 1.0f) : 0.0f) * 0.5f;
-						int		xTmp	= (int)Math.Floor(xRatio);
-						int		yTmp	= (int)Math.Floor(yRatio);
-						bool	xLim1	= (xTmp < 0);
-						bool	yLim1	= (yTmp < 0);
-						bool	xLim2	= (xTmp >= this.width - 1);
-						bool	yLim2	= (yTmp >= this.height - 1);
-						int		nTmp0	= xTmp + (xLim1 ? 1 : 0) + ((yTmp + (yLim1 ? 1 : 0)) * this.width);
-						int		nTmp1	= xTmp + (xLim2 ? 0 : 1) + ((yTmp + (yLim1 ? 1 : 0)) * this.width);
-						int		nTmp2	= xTmp + (xLim1 ? 1 : 0) + ((yTmp + (yLim2 ? 0 : 1)) * this.width);
-						int		nTmp3	= xTmp + (xLim2 ? 0 : 1) + ((yTmp + (yLim2 ? 0 : 1)) * this.width);
+						float	xRatio	= ((float)(x * this.width) / (float)w) + 0.5f;
+						float	yRatio	= ((float)(y * this.height) / (float)h) + 0.5f;
+						int		xTmp	= (int)xRatio;
+						int		yTmp	= (int)yRatio;
 						xRatio -= xTmp;
 						yRatio -= yTmp;
+
+						int		xTmp2	= xTmp + 1;
+						int		yTmp2	= yTmp + 1;
+						xTmp = xTmp < this.width ? xTmp : this.width - 1;
+						yTmp = (yTmp < this.height ? yTmp : this.height - 1) * this.width;
+						xTmp2 = xTmp2 < this.width ? xTmp2 : this.width - 1;
+						yTmp2 = (yTmp2 < this.height ? yTmp2 : this.height - 1) * this.width;
+
+						int		nTmp0	= xTmp + yTmp;
+						int		nTmp1	= xTmp2 + yTmp;
+						int		nTmp2	= xTmp + yTmp2;
+						int		nTmp3	= xTmp2 + yTmp2;
 
 						tempDestData[i].R = 
 							(byte)

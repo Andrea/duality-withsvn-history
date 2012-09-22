@@ -623,7 +623,13 @@ namespace Duality.Resources
 					(this.pxWidth != this.oglWidth || this.pxHeight != this.oglHeight))
 				{
 					if (this.oglSizeMode == SizeMode.Enlarge)
-						pixelData = pixelData.CloneResize(this.oglWidth, this.oglHeight);
+					{
+						Pixmap.Layer oldData = pixelData;
+						pixelData = oldData.CloneResize(this.oglWidth, this.oglHeight);
+						// Fill border pixels manually - that's cheaper than ColorTransparentPixels here.
+						oldData.DrawOnto(pixelData, BlendMode.Solid, this.pxWidth, 0, 1, this.pxHeight, this.pxWidth - 1, 0);
+						oldData.DrawOnto(pixelData, BlendMode.Solid, 0, this.pxHeight, this.pxWidth, 1, 0, this.pxHeight - 1);
+					}
 					else
 						pixelData = pixelData.CloneRescale(this.oglWidth, this.oglHeight, Pixmap.FilterMethod.Linear);
 				}

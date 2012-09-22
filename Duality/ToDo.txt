@@ -19,21 +19,25 @@
 
 
 
---> Dualitor: StartScreen Tab
 
--->	Dualitor: "Stop and Apply" function for Sandbox
+
+
+
+
+--> Idea: StartScreen Tab
+
+-->	Idea: "Stop and Apply" function for Sandbox
 	-->	While the Sandbox is active, it tracks which Properties have been actively modified
 		-->	(Scene change flushes the record)
 	-->	When clicking "Stop and Apply", the modified Properties are applied to the unmodified Scene.
 
---> Dualitor: Deploy dialog that is able to generate a "download version" of the game.
+--> Idea: Deploy dialog that is able to generate a "download version" of the game.
 	-->	Should the editor be included?
 	-->	Should the game's source be included?
 
--->	Dualitor: Editor-wide Undo history, global Ctrl-Z and Ctrl-Y
+-->	Idea: Editor-wide Undo history, global Ctrl-Z and Ctrl-Y
 
-
--->	Dualitor: Add ActionButtonPropertyEditor and auto-use it in MemberwisePropertyEditor
+-->	Idea: Add ActionButtonPropertyEditor and auto-use it in MemberwisePropertyEditor
 	-->	It's possible to flag a method as editor action via EditorHintFlags
 	-->	This method becomes an additional ActionButtonPropertyEditor
 	-->	Which is itself a GroupedPropertyEditor with an execute-button
@@ -42,8 +46,7 @@
 		-->	Can't. It requires EditorHintFlags.
 		-->	Also, this here will prove / assure PropertyGrids customization support
 
-
--->	Dualitor: Upgrade LogView with a Console (or separate both?)
+-->	Idea: Upgrade LogView with a Console (or separate both?)
 	-->	Can parse single-line commands
 	-->	Expression Result is printed in the console (!= logged), if not defined otherwise.
 	-->	Use expression trees, Reflection or actually compile code?
@@ -53,8 +56,7 @@
 		-->	Some predefined commands are always available and can't be overwritten
 		-->	When accessing Properties that do not exist, try to intepret them as GameObjects / Components / Resources
 
-
--->	Dualitor: Component Wizard
+-->	Idea: Component Wizard
 	-->	See below for dialog concept
 	-->	Implement in a separate plugin so it is possible to opt-out.
 	-->	Work based on a "Parse and Write C# Code" approach

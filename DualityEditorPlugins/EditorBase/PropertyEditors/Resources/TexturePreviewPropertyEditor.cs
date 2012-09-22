@@ -133,7 +133,8 @@ namespace EditorBase.PropertyEditors
 			this.value = values.NotNull().FirstOrDefault() as Texture;
 			this.ClearFramePreviews();
 			this.GeneratePreviewImage();
-			if (lastValue != this.value) this.AdjustPreviewHeight(false);
+			if (lastValue != this.value)
+				this.AdjustPreviewHeight(false);
 
 			if (this.value != null && this.value.Atlas != null)
 			{
@@ -147,7 +148,10 @@ namespace EditorBase.PropertyEditors
 				this.subImageSelector.Maximum = -1;
 			}
 			this.UpdateGeometry();
-			this.Invalidate();
+			if (this.value != lastValue)
+				this.Invalidate();
+			else
+				this.Invalidate(this.rectHeader);
 		}
 
 		protected override void OnPaint(PaintEventArgs e)
