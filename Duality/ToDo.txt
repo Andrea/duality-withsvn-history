@@ -23,17 +23,19 @@
 	-->	Change hardcoded "Parallax / Flat" to an enum (Find better names)
 		-->	Flat
 			-->	Z means nothing (except sorting)
+				-->	Adjust culling to not cutoff negative relative Z values
 			-->	Ortho projection, no perspective adjustments at all
-			-->	Adjust culling to not cutoff negative relative Z values
 		-->	Parallax
 			-->	Z means "into the screen"
 			-->	The current parallax mode, distance affects scale and position
 		-->	Rpg / "Isometric"
-			-->	Z means "downwards"
+			-->	Z means "north"
+				-->	PreprocessCoords Code to achieve that (before being relative to the camera):
+					pos.Y += pos.Z;
+					pos.Z -= pos.Y;
+				-->	Need to update GetSpaceCoord / GetScreenCoord too.
+				-->	Adjust culling to not cutoff negative relative Z values
 			-->	"Oldschool Rpg"-like
-			-->	Adjust culling to not cutoff negative relative Z values
-	-->	Get rid of "RenderMatrix" struct for Renderpasses, replace with new Perspective struct.
-		-->	Each pass may have its own perspective mode, yay!
 	-->	Update CamView to select a perspective mode
 		-->	Assure editing in all perspective modes works well
 		-->	Mouse wheel controls Camera Z only in Parallax mode, controls FocusDist in other modes.
@@ -58,6 +60,13 @@
 			-->	As usual, support ColorTint and a custom Material (BatchInfo)
 			-->	Cache vertex data, do it in a single drawcall, perform rectangular culling
 				-->	See Rpg Project / ZweiDe
+			-->	Needs to be configurable on how to output vertex data
+				-->	TopDown
+					-->	Vertices are emitted in the XY plane
+					-->	Height Offsets go into the Z axis of a tile
+				-->	Rpg / "Isometric"
+					-->	Vertices are emitted in the XZ plane
+					-->	Height Offsets go into the Y axis of a tile
 		-->	If active and a RigidBody Component is present, automatically generates / updates the RigidBodies shape consisting of LoopShapes.
 			-->	Enforce static RigidBody
 			-->	Allow additional, custom shapes.

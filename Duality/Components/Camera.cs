@@ -1458,14 +1458,14 @@ namespace Duality.Components
 			}
 			if ((r.RenderFlags & (RendererFlags.PerspectivePos | RendererFlags.PerspectiveScale)) != RendererFlags.None)
 			{
-			    float scaleTemp = this.focusDist / (this.focusDist >= 0.0f ? Math.Max(pos.Z, this.nearZ) : -DefaultFocusDist);
-			    if ((r.RenderFlags & RendererFlags.PerspectivePos) != RendererFlags.None)
-			    {
-			        pos.X *= scaleTemp;
-			        pos.Y *= scaleTemp;
-			    }
-			    if ((r.RenderFlags & RendererFlags.PerspectiveScale) != RendererFlags.None) 
-			        scale *= scaleTemp;
+				float scaleTemp = this.focusDist / (this.focusDist >= 0.0f ? Math.Max(pos.Z, this.nearZ) : -DefaultFocusDist);
+				if ((r.RenderFlags & RendererFlags.PerspectivePos) != RendererFlags.None)
+				{
+				    pos.X *= scaleTemp;
+				    pos.Y *= scaleTemp;
+				}
+				if ((r.RenderFlags & RendererFlags.PerspectiveScale) != RendererFlags.None) 
+				    scale *= scaleTemp;
 			}
 		}
 		bool IDrawDevice.IsCoordInView(Vector3 c, float boundRad)
