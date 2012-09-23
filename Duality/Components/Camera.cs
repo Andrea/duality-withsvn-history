@@ -192,27 +192,12 @@ namespace Duality
 		/// <param name="scale">The scale factor to process.</param>
 		void PreprocessCoords(ref Vector3 pos, ref float scale);
 		/// <summary>
-		/// Processes the specified world space position and scale values and transforms them to the IDrawDevices view space.
-		/// This usually also applies a perspective effect, if applicable.
-		/// </summary>
-		/// <param name="r">The <see cref="Duality.ICmpRenderer"/> to which the data belongs.</param>
-		/// <param name="pos">The position to process.</param>
-		/// <param name="scale">The scale factor to process.</param>
-		void PreprocessCoords(ICmpRenderer r, ref Vector3 pos, ref float scale);
-		/// <summary>
 		/// Returns whether the specified world-space position is visible in the drawing devices view space.
 		/// </summary>
 		/// <param name="c">The position to test.</param>
 		/// <param name="boundRad">The visual bounding radius to assume for the specified position.</param>
 		/// <returns>True, if the position or a portion of its bounding circle is visible, false if not.</returns>
 		bool IsCoordInView(Vector3 c, float boundRad = 1.0f);
-		/// <summary>
-		/// Returns whether the specified ICmpRenderer is visible in the drawing devices view space. This doesn't yet mean, it's
-		/// visible - the ICmpRenderer or IDrawDevice can still decide, not to display.
-		/// </summary>
-		/// <param name="r">The ICmpRenderer to test.</param>
-		/// <returns>True, if the ICmpRenderer or a portion of its bounding circle is inside the view space, false if not.</returns>
-		bool IsRendererInView(ICmpRenderer r);
 
 		/// <summary>
 		/// Adds a parameterized set of vertices to the drawing devices rendering schedule.
@@ -1444,30 +1429,6 @@ namespace Duality.Components
 			pos.Y *= scaleTemp;
 			scale *= scaleTemp;
 		}
-		void IDrawDevice.PreprocessCoords(ICmpRenderer r, ref Vector3 pos, ref float scale)
-		{
-			if (this.overlayMatrices) return;
-			if (this.deviceCacheValid)
-			{
-				Vector3.Subtract(ref pos, ref this.deviceCachePos, out pos);
-			}
-			else
-			{
-				Vector3 gameObjPos = this.GameObj.Transform.Pos;
-				Vector3.Subtract(ref pos, ref gameObjPos, out pos);
-			}
-			if ((r.RenderFlags & (RendererFlags.PerspectivePos | RendererFlags.PerspectiveScale)) != RendererFlags.None)
-			{
-				float scaleTemp = this.focusDist / (this.focusDist >= 0.0f ? Math.Max(pos.Z, this.nearZ) : -DefaultFocusDist);
-				if ((r.RenderFlags & RendererFlags.PerspectivePos) != RendererFlags.None)
-				{
-				    pos.X *= scaleTemp;
-				    pos.Y *= scaleTemp;
-				}
-				if ((r.RenderFlags & RendererFlags.PerspectiveScale) != RendererFlags.None) 
-				    scale *= scaleTemp;
-			}
-		}
 		bool IDrawDevice.IsCoordInView(Vector3 c, float boundRad)
 		{
 			if (c.Z <= this.GameObj.Transform.Pos.Z) return false;
@@ -1493,36 +1454,6 @@ namespace Duality.Components
 				c.Y >= -1.0f - boundRadVec.Y &&
 				c.X <= 1.0f + boundRadVec.X &&
 				c.Y <= 1.0f + boundRadVec.Y;
-		}
-		bool IDrawDevice.IsRendererInView(ICmpRenderer r)
-		{
-			// Retrieve center vertex coord
-			Vector3 posTemp = r.SpaceCoord;
-
-			if (r.IsInfiniteXY) return posTemp.Z >= this.GameObj.Transform.Pos.Z;
-			if (posTemp.Z <= this.GameObj.Transform.Pos.Z) return false;
-
-			// Process center vertex coord
-			float scaleTemp = 1.0f;
-			this.DrawDevice.PreprocessCoords(r, ref posTemp, ref scaleTemp);
-
-			// Apply final (modelview and projection) matrix
-			Vector3 oldPosTemp = posTemp;
-			Vector3.Transform(ref oldPosTemp, ref this.matFinal, out posTemp);
-
-			// Apply projection matrices XY rotation and scale to bounding radius
-			float boundRad = r.BoundRadius * scaleTemp;
-			Vector2 boundRadVec = new Vector2(
-				boundRad * Math.Abs(this.matFinal.Row0.X) + boundRad * Math.Abs(this.matFinal.Row1.X),
-				boundRad * Math.Abs(this.matFinal.Row0.Y) + boundRad * Math.Abs(this.matFinal.Row1.Y));
-
-			return 
-				posTemp.Z >= -1.0f &&
-				posTemp.Z <= 1.0f &&
-				posTemp.X >= -1.0f - boundRadVec.X &&
-				posTemp.Y >= -1.0f - boundRadVec.Y &&
-				posTemp.X <= 1.0f + boundRadVec.X &&
-				posTemp.Y <= 1.0f + boundRadVec.Y;
 		}
 		void IDrawDevice.AddVertices<T>(BatchInfo material, VertexMode vertexMode, params T[] vertices)
 		{

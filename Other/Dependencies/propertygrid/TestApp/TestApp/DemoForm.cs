@@ -13,7 +13,7 @@ namespace AdamsLair.PropertyGrid
 	{
 		#region Some Test / Demo classes
 		[Flags]
-		private enum FlaggedEnumTest
+		private enum FlaggedEnumTest : uint
 		{
 			One	= 0x1,
 			Two	= 0x2,

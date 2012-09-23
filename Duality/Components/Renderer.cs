@@ -14,17 +14,8 @@ namespace Duality.Components
 	[RequiredComponent(typeof(Transform))]
 	public abstract class Renderer : Component, ICmpRenderer
 	{
-		private	RendererFlags	renderFlags		= RendererFlags.Default;
 		private	VisibilityFlag	visibilityGroup	= VisibilityFlag.Group0;
 
-		/// <summary>
-		/// [GET / SET] The <see cref="RendererFlags">appearance flags</see> of this Renderer.
-		/// </summary>
-		public RendererFlags RenderFlags
-		{
-			get { return this.renderFlags; }
-			set { this.renderFlags = value; }
-		}
 		/// <summary>
 		/// [GET / SET] A bitmask that informs about the set of visibility groups to which this Renderer
 		/// belongs. Usually, a Renderer is considered visible to a <see cref="Duality.Components.Camera"/> if they
@@ -40,11 +31,6 @@ namespace Duality.Components
 		/// </summary>
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public abstract float BoundRadius { get; }
-		/// <summary>
-		/// [GET] Returns whether this Renderer visually stretches infinitely on the XY-plane.
-		/// </summary>
-		[EditorHintFlags(MemberFlags.Invisible)]
-		public virtual bool IsInfiniteXY { get { return false; } }
 
 		/// <summary>
 		/// Performs the Renderers drawing operation.
@@ -58,24 +44,18 @@ namespace Duality.Components
 		/// </summary>
 		/// <param name="device"></param>
 		/// <returns></returns>
-		public bool IsVisible(IDrawDevice device)
+		public virtual bool IsVisible(IDrawDevice device)
 		{
 			if ((this.visibilityGroup & device.VisibilityMask) == VisibilityFlag.None) return false;
 			if ((device.VisibilityMask & VisibilityFlag.ScreenOverlay) != (this.visibilityGroup & VisibilityFlag.ScreenOverlay)) return false;
-			return device.IsRendererInView(this);
+			return device.IsCoordInView(this.gameobj.Transform.Pos, this.BoundRadius);
 		}
 
 		protected override void OnCopyTo(Component target, Duality.Cloning.CloneProvider provider)
 		{
 			base.OnCopyTo(target, provider);
 			Renderer t = target as Renderer;
-			t.renderFlags		= this.renderFlags;
 			t.visibilityGroup	= this.visibilityGroup;
-		}
-
-		Vector3 ICmpRenderer.SpaceCoord
-		{
-			get { return this.gameobj.Transform.Pos; }
 		}
 	}
 }

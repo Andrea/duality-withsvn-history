@@ -40,7 +40,7 @@ namespace DynamicLighting
 			Vector3 pos = this.GameObj.Transform.Pos;
 			Vector3 posTemp = pos;
 			float scaleTemp = 1.0f;
-			device.PreprocessCoords(this, ref posTemp, ref scaleTemp);
+			device.PreprocessCoords(ref posTemp, ref scaleTemp);
 
 			Vector2 xDot, yDot;
 			float rotation = this.GameObj.Transform.Angle;
@@ -131,7 +131,7 @@ namespace DynamicLighting
 			Vector3 pos = this.GameObj.Transform.Pos;
 			Vector3 posTemp = pos;
 			float scaleTemp = 1.0f;
-			device.PreprocessCoords(this, ref posTemp, ref scaleTemp);
+			device.PreprocessCoords(ref posTemp, ref scaleTemp);
 
 			Vector2 xDot, yDot;
 			float rotation = this.GameObj.Transform.Angle;

@@ -13,7 +13,7 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 	{
 		public override object DisplayedValue
 		{
-			get { return Enum.ToObject(this.EditedType, this.BitmaskValue); }
+			get { return Enum.ToObject(this.EditedType, Convert.ChangeType(this.BitmaskValue, Enum.GetUnderlyingType(this.EditedType))); }
 		}
 		protected override void OnEditedTypeChanged()
 		{

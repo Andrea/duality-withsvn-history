@@ -115,7 +115,7 @@ namespace Duality.Components.Renderers
 		{
 			Vector3 posTemp = this.gameobj.Transform.Pos;
 			float scaleTemp = 1.0f;
-			device.PreprocessCoords(this, ref posTemp, ref scaleTemp);
+			device.PreprocessCoords(ref posTemp, ref scaleTemp);
 
 			Vector2 xDot, yDot;
 			MathF.GetTransformDotVec(this.GameObj.Transform.Angle, this.gameobj.Transform.Scale.Xy * scaleTemp, out xDot, out yDot);

@@ -1260,24 +1260,9 @@
             </summary>
             <param name="device">The <see cref="T:Duality.IDrawDevice"/> to which the object is drawn.</param>
         </member>
-        <member name="P:Duality.ICmpRenderer.RenderFlags">
-            <summary>
-            [GET] The <see cref="T:Duality.RendererFlags">appearance flags</see> of this Renderer.
-            </summary>
-        </member>
-        <member name="P:Duality.ICmpRenderer.IsInfiniteXY">
-            <summary>
-            [GET] Returns whether this Renderer visually stretches infinitely on the XY-plane.
-            </summary>
-        </member>
         <member name="P:Duality.ICmpRenderer.BoundRadius">
             <summary>
-            [GET] The Renderers bounding radius, originating from its <see cref="P:Duality.ICmpRenderer.SpaceCoord"/>.
-            </summary>
-        </member>
-        <member name="P:Duality.ICmpRenderer.SpaceCoord">
-            <summary>
-            [GET] The Renderers center location in space.
+            [GET] The Renderers bounding radius, originating from its <see cref="!:SpaceCoord"/>.
             </summary>
         </member>
         <member name="T:Duality.ICmpCollisionListener">
@@ -1306,41 +1291,6 @@
             </summary>
             <param name="sender"></param>
             <param name="args"></param>
-        </member>
-        <member name="T:Duality.RendererFlags">
-            <summary>
-            Bitmask for special <see cref="T:Duality.ICmpRenderer"/> traits.
-            </summary>
-        </member>
-        <member name="F:Duality.RendererFlags.None">
-            <summary>
-            No flags set.
-            </summary>
-        </member>
-        <member name="F:Duality.RendererFlags.PerspectivePos">
-            <summary>
-            The Renderers position is processed based on its depth to achieve a perspective effect.
-            </summary>
-        </member>
-        <member name="F:Duality.RendererFlags.PerspectiveScale">
-            <summary>
-            The Renderers scale is processed based on its depth to achieve a perspective effect.
-            </summary>
-        </member>
-        <member name="F:Duality.RendererFlags.Perspective">
-            <summary>
-            The Renderers position and scale are processed based on its depth to achieve a perspective effect.
-            </summary>
-        </member>
-        <member name="F:Duality.RendererFlags.All">
-            <summary>
-            All flags set.
-            </summary>
-        </member>
-        <member name="F:Duality.RendererFlags.Default">
-            <summary>
-            The default flag combination.
-            </summary>
         </member>
         <member name="T:Duality.RequiredComponentAttribute">
             <summary>
@@ -5921,11 +5871,6 @@
             <param name="device"></param>
             <returns></returns>
         </member>
-        <member name="P:Duality.Components.Renderer.RenderFlags">
-            <summary>
-            [GET / SET] The <see cref="T:Duality.RendererFlags">appearance flags</see> of this Renderer.
-            </summary>
-        </member>
         <member name="P:Duality.Components.Renderer.VisibilityGroup">
             <summary>
             [GET / SET] A bitmask that informs about the set of visibility groups to which this Renderer
@@ -5936,11 +5881,6 @@
         <member name="P:Duality.Components.Renderer.BoundRadius">
             <summary>
             [GET] The Renderers bounding radius, originating from the <see cref="T:Duality.GameObject">GameObjects</see> position.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Renderer.IsInfiniteXY">
-            <summary>
-            [GET] Returns whether this Renderer visually stretches infinitely on the XY-plane.
             </summary>
         </member>
         <member name="M:Duality.Components.Renderers.TextRenderer.UpdateText">
@@ -6936,15 +6876,6 @@
             <param name="pos">The position to process.</param>
             <param name="scale">The scale factor to process.</param>
         </member>
-        <member name="M:Duality.IDrawDevice.PreprocessCoords(Duality.ICmpRenderer,OpenTK.Vector3@,System.Single@)">
-            <summary>
-            Processes the specified world space position and scale values and transforms them to the IDrawDevices view space.
-            This usually also applies a perspective effect, if applicable.
-            </summary>
-            <param name="r">The <see cref="T:Duality.ICmpRenderer"/> to which the data belongs.</param>
-            <param name="pos">The position to process.</param>
-            <param name="scale">The scale factor to process.</param>
-        </member>
         <member name="M:Duality.IDrawDevice.IsCoordInView(OpenTK.Vector3,System.Single)">
             <summary>
             Returns whether the specified world-space position is visible in the drawing devices view space.
@@ -6952,14 +6883,6 @@
             <param name="c">The position to test.</param>
             <param name="boundRad">The visual bounding radius to assume for the specified position.</param>
             <returns>True, if the position or a portion of its bounding circle is visible, false if not.</returns>
-        </member>
-        <member name="M:Duality.IDrawDevice.IsRendererInView(Duality.ICmpRenderer)">
-            <summary>
-            Returns whether the specified ICmpRenderer is visible in the drawing devices view space. This doesn't yet mean, it's
-            visible - the ICmpRenderer or IDrawDevice can still decide, not to display.
-            </summary>
-            <param name="r">The ICmpRenderer to test.</param>
-            <returns>True, if the ICmpRenderer or a portion of its bounding circle is inside the view space, false if not.</returns>
         </member>
         <member name="M:Duality.IDrawDevice.AddVertices``1(Duality.ContentRef{Duality.Resources.Material},Duality.VertexMode,``0[])">
             <summary>

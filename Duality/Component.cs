@@ -85,21 +85,9 @@ namespace Duality
 	public interface ICmpRenderer
 	{
 		/// <summary>
-		/// [GET] The <see cref="RendererFlags">appearance flags</see> of this Renderer.
-		/// </summary>
-		RendererFlags RenderFlags { get; }
-		/// <summary>
-		/// [GET] Returns whether this Renderer visually stretches infinitely on the XY-plane.
-		/// </summary>
-		bool IsInfiniteXY { get; }
-		/// <summary>
 		/// [GET] The Renderers bounding radius, originating from its <see cref="SpaceCoord"/>.
 		/// </summary>
 		float BoundRadius { get; }
-		/// <summary>
-		/// [GET] The Renderers center location in space.
-		/// </summary>
-		Vector3 SpaceCoord { get; }
 
 		/// <summary>
 		/// Determines whether or not this renderer is visible to the specified <see cref="IDrawDevice"/>.
@@ -218,40 +206,6 @@ namespace Duality
 			else
 				throw new ArgumentException("Local body is not part of the collision", "localBody");
 		}
-	}
-	
-	/// <summary>
-	/// Bitmask for special <see cref="ICmpRenderer"/> traits.
-	/// </summary>
-	[Flags]
-	public enum RendererFlags : uint
-	{
-		/// <summary>
-		/// No flags set.
-		/// </summary>
-		None				= 0x00000000,
-
-		/// <summary>
-		/// The Renderers position is processed based on its depth to achieve a perspective effect.
-		/// </summary>
-		PerspectivePos		= 0x00000001,
-		/// <summary>
-		/// The Renderers scale is processed based on its depth to achieve a perspective effect.
-		/// </summary>
-		PerspectiveScale	= 0x00000002,
-		/// <summary>
-		/// The Renderers position and scale are processed based on its depth to achieve a perspective effect.
-		/// </summary>
-		Perspective			= PerspectivePos | PerspectiveScale,
-
-		/// <summary>
-		/// All flags set.
-		/// </summary>
-		All					= Perspective,
-		/// <summary>
-		/// The default flag combination.
-		/// </summary>
-		Default				= Perspective
 	}
 
 	/// <summary>
