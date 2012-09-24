@@ -8,6 +8,12 @@ using Duality.EditorHints;
 using Duality.Resources;
 using Duality.ColorFormat;
 
+//	Note:
+//
+//	Rewrite dynamic lighting to not reverse-engineer a vertices world position in the shader code.
+//	-->	Instead, add an additional worldPosition attribute to the vertex format.
+//	-->	This is the only way to allow flexible lighting when using different perspective modes.
+
 namespace DynamicLighting
 {
 	/// <summary>

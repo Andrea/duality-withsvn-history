@@ -20,6 +20,12 @@
 
 
 
+-->	Why is the CamView so slow / stuttering sometimes?
+	-->	Happens especially when there is more than one active
+	-->	Add an OnPaint-Counter to determine how often it is redrawn
+	-->	Add a picking-Counter as well
+	-->	Display App Idle state
+	-->	Is OnIdling doing something expensive?
 
 -->	Idea: Alternate Camera Perspectives
 	-->	Change hardcoded "Parallax / Flat" to an enum (Find better names)
@@ -41,6 +47,10 @@
 	-->	Update CamView to select a perspective mode
 		-->	Assure editing in all perspective modes works well
 		-->	Mouse wheel controls Camera Z only in Parallax mode, controls FocusDist in other modes.
+	-->	Maybe update selection markers in the editor to be on one Z-plane regardless of perspective mode.
+	-->	Rewrite dynamic lighting to not reverse-engineer a vertices world position in the shader code.
+		-->	Instead, add an additional worldPosition attribute to the vertex format.
+		-->	This is the only way to allow flexible lighting when using different perspective modes.
 
 -->	Idea: Tilemaps
 	-->	Implement as a standard plugin.
@@ -83,6 +93,10 @@
 	-->	Dualitor: Tilemap Editor
 		-->	CamViewState
 		-->	See Rpg Project
+
+-->	Goal: Be able to setup a game like "Nullpunkt" or "RpgProject" without big problems
+	-->	Dynamically lit topdown space game
+	-->	Dynamically lit isometric tilemap game
 
 
 

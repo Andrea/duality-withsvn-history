@@ -121,20 +121,6 @@
     <value>160, 17</value>
   </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="togglePerspective.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAHMSURBVDhPlZN5SwJRFMX7Zn2OiggiIigoiEhJWiilzDIr
-        tAW1Jtpot32PDPwzCC0LHZtGzSWoPsHp3jdNpWbLwJvhPeZ37n3nvFdS8o/HYDB0GI3GUh3h+Z9wgmDb
-        TMLqS8C8rKJzUQWv/QrzTzz6CJT8aUhnWUwepsRai1suLqCDegWu6tpPwX2gwUNrKhqcd4UC+aAucHj5
-        jMDNq4BtSw+wzN2jqi/Ec80PHdT3yS1z1e4lbb8d84qA/cEXtLuj6JqWUW4OQpjILwYl/xNmL7KQjrNw
-        H6fhonZHdnkkxdcgyfAFnlBpCQk4x0TdpJlzEiCjvKcZYdb4/iNce49wUIF803IELGsJqprBNIHekww8
-        R2lMMLyThHMrAfuqiqaJyIdpBRF+upwRTo/vpeDcptbJC3bcshDLcb1AoE1SqM2EVvEddKzHMbiion9R
-        QZcURbXtWnTw7QFq9cqizRFfHI6NOOxUleOyEsyRtXtkEVtRgebJKOwrDwIcIKF+gnspOjPBPbMxmLxR
-        cj/P+a/nuHEsgoFlBVY+JAsKOmdiIm+TJyIyN01puRc9//Wjd6gbvkXtUBg1g2GxX867giAGy7qv/nZ5
-        frpdxa7uGyf9u9b+sEiyAAAAAElFTkSuQmCC
-</value>
-  </data>
   <data name="showBgColorDialog.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8

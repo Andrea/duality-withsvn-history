@@ -24,6 +24,7 @@ namespace DynamicLighting
 		public Vector4 texCoord;
 		public Vector4 attrib;
 		public float attrib2;
+		// Add Vector3 for lighting world position, see note in Light.cs
 
 		public OpenTK.Vector3 Pos
 		{

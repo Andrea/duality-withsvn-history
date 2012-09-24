@@ -6802,6 +6802,27 @@
             vertex modes and remove obsolete or inefficient ones.
             </summary>
         </member>
+        <member name="T:Duality.PerspectiveMode">
+            <summary>
+            Specifies the perspective effect that is applied when rendering the world.
+            </summary>
+        </member>
+        <member name="F:Duality.PerspectiveMode.Flat">
+            <summary>
+            No perspective effect is applied. Z points into the screen and is only used for object sorting.
+            </summary>
+        </member>
+        <member name="F:Duality.PerspectiveMode.Parallax">
+            <summary>
+            Objects that are far away appear smaller. Z points into the screen and is used for scaling and sorting.
+            </summary>
+        </member>
+        <member name="F:Duality.PerspectiveMode.Isometric">
+            <summary>
+            Like <see cref="F:Duality.PerspectiveMode.Flat"/>, but Z points "downwards" while objects are sorted from "north" to "south" based on
+            their Y value.
+            </summary>
+        </member>
         <member name="T:Duality.RenderMatrix">
             <summary>
             Specifies a matrix setup used in a <see cref="T:Duality.Components.Camera.Pass"/>.
@@ -6999,7 +7020,8 @@
         </member>
         <member name="M:Duality.Components.Camera.GetSpaceCoord(OpenTK.Vector3)">
             <summary>
-            Transforms screen space coordinates to world space coordinates.
+            Transforms screen space coordinates to world space coordinates. The screen positions Z coordinate is
+            interpreted as the target world Z coordinate.
             </summary>
             <param name="screenPos"></param>
             <returns></returns>
@@ -7037,8 +7059,13 @@
         </member>
         <member name="P:Duality.Components.Camera.FocusDist">
             <summary>
-            [GET / SET] Reference distance for calculating the view perspective. An object this far away from
-            the Camera will appear in its original size and without offset.
+            [GET / SET] Reference distance for calculating the view projection. When using <see cref="F:Duality.PerspectiveMode.Parallax"/>, 
+            an object this far away from the Camera will always appear in its original size and without offset.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Camera.Perspective">
+            <summary>
+            [GET / SET] Specified the perspective effect that is applied when rendering the world.
             </summary>
         </member>
         <member name="P:Duality.Components.Camera.VisibilityMask">

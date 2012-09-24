@@ -139,7 +139,7 @@ namespace EditorBase
 		private	event		EventHandler<KeyboardKeyEventArgs>	inputKeyDown	= null;
 		private	event		EventHandler<KeyboardKeyEventArgs>	inputKeyUp		= null;
 
-		public event EventHandler FocusDistChanged	= null;
+		public event EventHandler PerspectiveChanged	= null;
 		public event EventHandler<CameraChangedEventArgs> CurrentCameraChanged	= null;
 
 		public ColorRgba BgColor
@@ -170,10 +170,10 @@ namespace EditorBase
 		{
 			get { return (float)this.focusDist.Increment; }
 		}
-		public bool PerspectiveActive
+		public PerspectiveMode PerspectiveMode
 		{
-			get { return this.togglePerspective.Checked; }
-			set { this.togglePerspective.Checked = value; }
+			get { return this.camComp.Perspective; }
+			set { this.camComp.Perspective = value; }
 		}
 		public Camera CameraComponent
 		{
@@ -271,10 +271,13 @@ namespace EditorBase
 
 			// Update Camera values according to GUI (which carries loaded or default settings)
 			this.focusDist_ValueChanged(this.focusDist, null);
-			this.togglePerspective_CheckStateChanged(this.togglePerspective, null);
 			this.bgColorDialog_ValueChanged(this.bgColorDialog, null);
+			if (this.flatToolStripMenuItem.Checked) this.flatToolStripMenuItem_Click(this.flatToolStripMenuItem, null);
+			if (this.parallaxToolStripMenuItem.Checked) this.parallaxToolStripMenuItem_Click(this.parallaxToolStripMenuItem, null);
+			if (this.isometricToolStripMenuItem.Checked) this.isometricToolStripMenuItem_Click(this.isometricToolStripMenuItem, null);
 
 			// Update camera transform properties & GUI
+			this.OnPerspectiveChanged();
 			this.OnCamTransformChanged();
 		}
 		protected override void OnClosed(EventArgs e)
@@ -524,7 +527,7 @@ namespace EditorBase
 
 		internal void SaveUserData(XmlElement node)
 		{
-			node.SetAttribute("togglePerspective", this.togglePerspective.Checked.ToString(CultureInfo.InvariantCulture));
+			node.SetAttribute("perspective", this.nativeCamObj.Camera.Perspective.ToString());
 			node.SetAttribute("focusDist", this.nativeCamObj.Camera.FocusDist.ToString(CultureInfo.InvariantCulture));
 			node.SetAttribute("bgColorArgb", this.nativeCamObj.Camera.ClearColor.ToIntArgb().ToString(CultureInfo.InvariantCulture));
 
@@ -551,12 +554,19 @@ namespace EditorBase
 		}
 		internal void LoadUserData(XmlElement node)
 		{
-			bool tryParseBool;
 			decimal tryParseDecimal;
 			int tryParseInt;
+			PerspectiveMode tryParsePerspective;
 
-			if (bool.TryParse(node.GetAttribute("togglePerspective"), out tryParseBool))
-				this.togglePerspective.Checked = tryParseBool;
+			if (Enum.TryParse<PerspectiveMode>(node.GetAttribute("perspective"), out tryParsePerspective))
+			{
+				if (tryParsePerspective == Duality.PerspectiveMode.Flat)
+					this.flatToolStripMenuItem.Checked = true;
+				else if (tryParsePerspective == Duality.PerspectiveMode.Parallax)
+					this.parallaxToolStripMenuItem.Checked = true;
+				else if (tryParsePerspective == Duality.PerspectiveMode.Isometric)
+					this.isometricToolStripMenuItem.Checked = true;
+			}
 			if (decimal.TryParse(node.GetAttribute("focusDist"), out tryParseDecimal))
 				this.focusDist.Value = Math.Abs(tryParseDecimal);
 			if (int.TryParse(node.GetAttribute("bgColorArgb"), out tryParseInt))
@@ -602,7 +612,7 @@ namespace EditorBase
 		}
 		public void SetToolbarCamSettingsEnabled(bool value)
 		{
-			this.togglePerspective.Enabled = value;
+			this.perspectiveDropDown.Enabled = value;
 			this.focusDist.Enabled = value;
 			this.camSelector.Enabled = value;
 			this.showBgColorDialog.Enabled = value;
@@ -670,7 +680,7 @@ namespace EditorBase
 			return this.camComp.GetScreenCoord(spaceCoord);
 		}
 
-		private void OnFocusDistChanged()
+		private void OnPerspectiveChanged()
 		{
 			if (!this.camInternal)
 			{
@@ -680,8 +690,8 @@ namespace EditorBase
 			}
 			this.glControl.Invalidate();
 
-			if (this.FocusDistChanged != null)
-				this.FocusDistChanged(this, EventArgs.Empty);
+			if (this.PerspectiveChanged != null)
+				this.PerspectiveChanged(this, EventArgs.Empty);
 		}
 		private void OnCurrentCameraChanged(Camera prev, Camera next)
 		{
@@ -834,13 +844,6 @@ namespace EditorBase
 			this.glControl.Invalidate();
 		}
 
-		private void togglePerspective_CheckStateChanged(object sender, EventArgs e)
-		{
-			if (this.camComp == null) return;
-
-			this.camComp.FocusDist = this.togglePerspective.Checked ? (float)this.focusDist.Value : -(float)this.focusDist.Value;
-			this.OnFocusDistChanged();
-		}
 		private void focusDist_ValueChanged(object sender, EventArgs e)
 		{
 			if (this.camComp == null) return;
@@ -864,8 +867,8 @@ namespace EditorBase
 			else
 				this.focusDist.Increment = 10000m;
 
-			this.camComp.FocusDist = this.togglePerspective.Checked ? (float)this.focusDist.Value : -(float)this.focusDist.Value;
-			this.OnFocusDistChanged();
+			this.camComp.FocusDist = (float)this.focusDist.Value;
+			this.OnPerspectiveChanged();
 		}
 		private void showBgColorDialog_Click(object sender, EventArgs e)
 		{
@@ -981,6 +984,27 @@ namespace EditorBase
 		private void layerSelector_Closing(object sender, ToolStripDropDownClosingEventArgs e)
 		{
 			if (e.CloseReason == ToolStripDropDownCloseReason.ItemClicked) e.Cancel = true;
+		}
+		private void perspectiveDropDown_DropDownOpening(object sender, EventArgs e)
+		{
+			this.flatToolStripMenuItem.Checked = this.camComp.Perspective == Duality.PerspectiveMode.Flat;
+			this.parallaxToolStripMenuItem.Checked = this.camComp.Perspective == Duality.PerspectiveMode.Parallax;
+			this.isometricToolStripMenuItem.Checked = this.camComp.Perspective == Duality.PerspectiveMode.Isometric;
+		}
+		private void flatToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			this.camComp.Perspective = Duality.PerspectiveMode.Flat;
+			this.OnPerspectiveChanged();
+		}
+		private void parallaxToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			this.camComp.Perspective = Duality.PerspectiveMode.Parallax;
+			this.OnPerspectiveChanged();
+		}
+		private void isometricToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			this.camComp.Perspective = Duality.PerspectiveMode.Isometric;
+			this.OnPerspectiveChanged();
 		}
 
 		HelpInfo IHelpProvider.ProvideHoverHelp(Point localPos, ref bool captured)

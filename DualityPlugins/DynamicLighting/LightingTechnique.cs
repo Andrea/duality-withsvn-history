@@ -20,6 +20,7 @@ namespace DynamicLighting
 			Vector3 camPos = device.RefCoord;
 			float camRefDist = MathF.Abs(device.FocusDist);
 
+			// Don't pass RefDist, see note in Light.cs
 			material.SetUniform("_camRefDist", camRefDist);
 			material.SetUniform("_camWorldPos", camPos.X, camPos.Y, camPos.Z);
 

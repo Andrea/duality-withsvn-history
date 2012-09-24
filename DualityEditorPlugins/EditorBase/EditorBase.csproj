@@ -189,6 +189,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <None Include="PluginRes\shape_perspective.png" />
     <None Include="Resources\speaker.png" />
     <None Include="Resources\arrow_right_accelerate.png" />
     <None Include="Resources\arrow_refresh.png" />

@@ -249,6 +249,13 @@ namespace EditorBase.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap shape_perspective {
+            get {
+                object obj = ResourceManager.GetObject("shape_perspective", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap speaker {
             get {
                 object obj = ResourceManager.GetObject("speaker", resourceCulture);

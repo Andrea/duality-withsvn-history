@@ -79,6 +79,7 @@ namespace DynamicLighting
 
 			if (vertices == null || vertices.Length != 4) vertices = new VertexC1P3T2A4[4];
 
+			// Directly pass World Position with each vertex, see note in Light.cs
 			vertices[0].pos.X = posTemp.X + edge1.X;
 			vertices[0].pos.Y = posTemp.Y + edge1.Y;
 			vertices[0].pos.Z = posTemp.Z + this.VertexZOffset;

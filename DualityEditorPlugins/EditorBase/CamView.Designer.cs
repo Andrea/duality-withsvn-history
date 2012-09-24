@@ -37,8 +37,11 @@
 			this.toolbarCamera = new System.Windows.Forms.ToolStrip();
 			this.layerSelector = new System.Windows.Forms.ToolStripDropDownButton();
 			this.buttonResetZoom = new System.Windows.Forms.ToolStripButton();
-			this.togglePerspective = new System.Windows.Forms.ToolStripButton();
+			this.perspectiveDropDown = new System.Windows.Forms.ToolStripDropDownButton();
 			this.showBgColorDialog = new System.Windows.Forms.ToolStripButton();
+			this.flatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.parallaxToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.isometricToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolbarCamera.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -109,7 +112,7 @@
             this.layerSelector,
             this.toolStripSeparator1,
             this.buttonResetZoom,
-            this.togglePerspective,
+            this.perspectiveDropDown,
             this.focusDist,
             this.toolStripSeparator2,
             this.showBgColorDialog,
@@ -142,19 +145,20 @@
 			this.buttonResetZoom.Text = "Reset Camera Z";
 			this.buttonResetZoom.Click += new System.EventHandler(this.buttonResetZoom_Click);
 			// 
-			// togglePerspective
+			// perspectiveDropDown
 			// 
-			this.togglePerspective.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-			this.togglePerspective.Checked = true;
-			this.togglePerspective.CheckOnClick = true;
-			this.togglePerspective.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.togglePerspective.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.togglePerspective.Image = ((System.Drawing.Image)(resources.GetObject("togglePerspective.Image")));
-			this.togglePerspective.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.togglePerspective.Name = "togglePerspective";
-			this.togglePerspective.Size = new System.Drawing.Size(23, 22);
-			this.togglePerspective.Text = "Toggle Perspective";
-			this.togglePerspective.CheckStateChanged += new System.EventHandler(this.togglePerspective_CheckStateChanged);
+			this.perspectiveDropDown.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.perspectiveDropDown.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.perspectiveDropDown.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.flatToolStripMenuItem,
+            this.parallaxToolStripMenuItem,
+            this.isometricToolStripMenuItem});
+			this.perspectiveDropDown.Image = global::EditorBase.Properties.Resources.shape_perspective;
+			this.perspectiveDropDown.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.perspectiveDropDown.Name = "perspectiveDropDown";
+			this.perspectiveDropDown.Size = new System.Drawing.Size(29, 22);
+			this.perspectiveDropDown.Text = "Select Perspective Mode";
+			this.perspectiveDropDown.DropDownOpening += new System.EventHandler(this.perspectiveDropDown_DropDownOpening);
 			// 
 			// showBgColorDialog
 			// 
@@ -166,6 +170,27 @@
 			this.showBgColorDialog.Size = new System.Drawing.Size(23, 22);
 			this.showBgColorDialog.Text = "Change Background Color";
 			this.showBgColorDialog.Click += new System.EventHandler(this.showBgColorDialog_Click);
+			// 
+			// flatToolStripMenuItem
+			// 
+			this.flatToolStripMenuItem.Name = "flatToolStripMenuItem";
+			this.flatToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.flatToolStripMenuItem.Text = "Flat";
+			this.flatToolStripMenuItem.Click += new System.EventHandler(this.flatToolStripMenuItem_Click);
+			// 
+			// parallaxToolStripMenuItem
+			// 
+			this.parallaxToolStripMenuItem.Name = "parallaxToolStripMenuItem";
+			this.parallaxToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.parallaxToolStripMenuItem.Text = "Parallax";
+			this.parallaxToolStripMenuItem.Click += new System.EventHandler(this.parallaxToolStripMenuItem_Click);
+			// 
+			// isometricToolStripMenuItem
+			// 
+			this.isometricToolStripMenuItem.Name = "isometricToolStripMenuItem";
+			this.isometricToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.isometricToolStripMenuItem.Text = "Isometric";
+			this.isometricToolStripMenuItem.Click += new System.EventHandler(this.isometricToolStripMenuItem_Click);
 			// 
 			// CamView
 			// 
@@ -192,7 +217,6 @@
 
 		private System.Windows.Forms.ToolStripComboBox stateSelector;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-		private System.Windows.Forms.ToolStripButton togglePerspective;
 		private DualityEditor.Controls.ToolStrip.ToolStripNumericUpDown focusDist;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 		private System.Windows.Forms.ToolStripButton showBgColorDialog;
@@ -200,6 +224,10 @@
 		private System.Windows.Forms.ToolStrip toolbarCamera;
 		private System.Windows.Forms.ToolStripDropDownButton layerSelector;
 		private System.Windows.Forms.ToolStripButton buttonResetZoom;
+		private System.Windows.Forms.ToolStripDropDownButton perspectiveDropDown;
+		private System.Windows.Forms.ToolStripMenuItem flatToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem parallaxToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem isometricToolStripMenuItem;
 
 	}
 }

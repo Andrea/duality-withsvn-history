@@ -285,7 +285,7 @@ namespace EditorBase.CamViewStates
 			this.View.LocalGLControl.KeyDown	+= this.LocalGLControl_KeyDown;
 			this.View.LocalGLControl.KeyUp		+= this.LocalGLControl_KeyUp;
 			this.View.LocalGLControl.LostFocus	+= this.LocalGLControl_LostFocus;
-			this.View.FocusDistChanged	+= this.View_FocusDistChanged;
+			this.View.PerspectiveChanged	+= this.View_FocusDistChanged;
 			DualityEditorApp.UpdatingEngine += this.EditorForm_AfterUpdateDualityApp;
 			DualityEditorApp.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
 
@@ -309,7 +309,7 @@ namespace EditorBase.CamViewStates
 			this.View.LocalGLControl.KeyDown	-= this.LocalGLControl_KeyDown;
 			this.View.LocalGLControl.KeyUp		-= this.LocalGLControl_KeyUp;
 			this.View.LocalGLControl.LostFocus	-= this.LocalGLControl_LostFocus;
-			this.View.FocusDistChanged	-= this.View_FocusDistChanged;
+			this.View.PerspectiveChanged	-= this.View_FocusDistChanged;
 			DualityEditorApp.UpdatingEngine -= this.EditorForm_AfterUpdateDualityApp;
 			
 			Scene.Leaving -= this.Scene_Changed;
@@ -595,7 +595,8 @@ namespace EditorBase.CamViewStates
 				if (camObj.Transform.Pos.Z >= refZ - cam.NearZ)
 					refZ = camObj.Transform.Pos.Z + MathF.Abs(cam.FocusDist);
 
-				Vector2 targetVel = (-(curPos - lastPos) / this.View.GetScaleAtZ(refZ)) / Time.TimeMult;
+				Vector2 targetOff = (-(curPos - lastPos) / this.View.GetScaleAtZ(refZ));
+				Vector2 targetVel = targetOff / Time.TimeMult;
 				MathF.TransformCoord(ref targetVel.X, ref targetVel.Y, camObj.Transform.Angle);
 				this.camVel += (new Vector3(targetVel) - this.camVel) * Time.TimeMult;
 				this.camTransformChanged = true;
@@ -1289,7 +1290,7 @@ namespace EditorBase.CamViewStates
 
 			if (e.Delta != 0)
 			{
-				if (this.View.PerspectiveActive)
+				if (this.View.PerspectiveMode == PerspectiveMode.Parallax)
 				{
 					GameObject camObj = this.View.CameraObj;
 					float curVel = this.camVel.Length * MathF.Sign(this.camVel.Z);

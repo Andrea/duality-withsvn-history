@@ -33,6 +33,26 @@ namespace Duality
 	}
 
 	/// <summary>
+	/// Specifies the perspective effect that is applied when rendering the world.
+	/// </summary>
+	public enum PerspectiveMode
+	{
+		/// <summary>
+		/// No perspective effect is applied. Z points into the screen and is only used for object sorting.
+		/// </summary>
+		Flat,
+		/// <summary>
+		/// Objects that are far away appear smaller. Z points into the screen and is used for scaling and sorting.
+		/// </summary>
+		Parallax,
+		/// <summary>
+		/// Like <see cref="Flat"/>, but Z points "downwards" while objects are sorted from "north" to "south" based on
+		/// their Y value.
+		/// </summary>
+		Isometric
+	}
+
+	/// <summary>
 	/// Specifies a matrix setup used in a <see cref="Duality.Components.Camera.Pass"/>.
 	/// </summary>
 	public enum RenderMatrix
@@ -612,6 +632,7 @@ namespace Duality.Components
 		private	float	farZ				= 10000.0f;
 		private	float	zSortAccuracy		= 0.0f;
 		private	float	focusDist			= DefaultFocusDist;
+		private	PerspectiveMode	perspective	= PerspectiveMode.Parallax;
 		private	VisibilityFlag	visibilityMask	= VisibilityFlag.All;
 		private	List<Pass>	passes			= new List<Pass>();
 
@@ -659,15 +680,24 @@ namespace Duality.Components
 			set { this.farZ = value; this.UpdateZSortAccuracy(); }
 		}
 		/// <summary>
-		/// [GET / SET] Reference distance for calculating the view perspective. An object this far away from
-		/// the Camera will appear in its original size and without offset.
+		/// [GET / SET] Reference distance for calculating the view projection. When using <see cref="PerspectiveMode.Parallax"/>, 
+		/// an object this far away from the Camera will always appear in its original size and without offset.
 		/// </summary>
 		[EditorHintDecimalPlaces(1)]
 		[EditorHintIncrement(10.0f)]
+		[EditorHintRange(0.0f,float.MaxValue)]
 		public float FocusDist
 		{
 			get { return this.focusDist; }
-			set { this.focusDist = value; }
+			set { this.focusDist = MathF.Max(value, 0.01f); }
+		}
+		/// <summary>
+		/// [GET / SET] Specified the perspective effect that is applied when rendering the world.
+		/// </summary>
+		public PerspectiveMode Perspective
+		{
+			get { return this.perspective; }
+			set { this.perspective = value; }
 		}
 		/// <summary>
 		/// [GET / SET] A bitmask flagging all visibility groups that are considered visible to this drawing device.
@@ -979,33 +1009,76 @@ namespace Duality.Components
 		/// <returns></returns>
 		public float GetScaleAtZ(float z)
 		{
-			Vector3 dummy = new Vector3(0, 0, z);
-			float scale = 1.0f;
-			this.DrawDevice.PreprocessCoords(ref dummy, ref scale);
-			return scale;
+			if (this.perspective == PerspectiveMode.Parallax)
+			{
+				Vector3 gameObjPos = this.GameObj.Transform.Pos;
+				return this.focusDist / Math.Max(z - gameObjPos.Z, this.nearZ);
+			}
+			else
+				return this.focusDist / DefaultFocusDist;
 		}
 		/// <summary>
-		/// Transforms screen space coordinates to world space coordinates.
+		/// Transforms screen space coordinates to world space coordinates. The screen positions Z coordinate is
+		/// interpreted as the target world Z coordinate.
 		/// </summary>
 		/// <param name="screenPos"></param>
 		/// <returns></returns>
 		public Vector3 GetSpaceCoord(Vector3 screenPos)
 		{
+			float targetZ = screenPos.Z;
+
+			// Since screenPos.Z is expected to be a world coordinate, first make that relative
 			Vector3 gameObjPos = this.GameObj.Transform.Pos;
-			float scale = this.GetScaleAtZ(screenPos.Z);
+			screenPos.Z -= gameObjPos.Z;
 
 			Vector2 targetSize = this.SceneTargetSize;
-			screenPos = new Vector3(
-				(screenPos.X - targetSize.X / 2) / scale,
-				(screenPos.Y - targetSize.Y / 2) / scale,
-				screenPos.Z);
+			screenPos.X -= targetSize.X / 2;
+			screenPos.Y -= targetSize.Y / 2;
 
 			MathF.TransformCoord(ref screenPos.X, ref screenPos.Y, this.GameObj.Transform.Angle);
+			
+			// Revert active perspective effect
+			float scaleTemp;
+			if (this.perspective == PerspectiveMode.Flat)
+			{
+				// Scale globally
+				scaleTemp = DefaultFocusDist / this.focusDist;
+				screenPos.X *= scaleTemp;
+				screenPos.Y *= scaleTemp;
+			}
+			else if (this.perspective == PerspectiveMode.Parallax)
+			{
+				// Scale distance-based
+				scaleTemp = Math.Max(screenPos.Z, this.nearZ) / this.focusDist;
+				screenPos.X *= scaleTemp;
+				screenPos.Y *= scaleTemp;
+			}
+			else if (this.perspective == PerspectiveMode.Isometric)
+			{
+				// Scale globally
+				scaleTemp = DefaultFocusDist / this.focusDist;
+				screenPos.X *= scaleTemp;
+				screenPos.Y *= scaleTemp;
+				
+				// Revert isometric projection
+				screenPos.Z += screenPos.Y;
+				screenPos.Y -= screenPos.Z;
+				screenPos.Z += this.focusDist;
+			}
+			
+			// Make coordinates absolte
+			screenPos.X += gameObjPos.X;
+			screenPos.Y += gameObjPos.Y;
+			screenPos.Z += gameObjPos.Z;
 
-			return new Vector3(
-				screenPos.X + this.GameObj.Transform.Pos.X,
-				screenPos.Y + this.GameObj.Transform.Pos.Y,
-				screenPos.Z);
+			// For isometric projection, assure we'll meet the target Z value.
+			if (this.perspective == PerspectiveMode.Isometric)
+			{
+				screenPos.Y += screenPos.Z - targetZ;
+				screenPos.Z = targetZ;
+			}
+
+			return screenPos;
 		}
 		/// <summary>
 		/// Transforms screen space coordinates to world space coordinates.
@@ -1023,18 +1096,49 @@ namespace Duality.Components
 		/// <returns></returns>
 		public Vector3 GetScreenCoord(Vector3 spacePos)
 		{
+			// Make coordinates relative to the Camera
 			Vector3 gameObjPos = this.GameObj.Transform.Pos;
-			Vector3.Subtract(ref spacePos, ref gameObjPos, out spacePos);
-			float scale = this.GetScaleAtZ(spacePos.Z);
-			spacePos.X *= scale;
-			spacePos.Y *= scale;
+			spacePos.X -= gameObjPos.X;
+			spacePos.Y -= gameObjPos.Y;
+			spacePos.Z -= gameObjPos.Z;
+
+			// Apply active perspective effect
+			float scaleTemp;
+			if (this.perspective == PerspectiveMode.Flat)
+			{
+				// Scale globally
+				scaleTemp = this.focusDist / DefaultFocusDist;
+				spacePos.X *= scaleTemp;
+				spacePos.Y *= scaleTemp;
+			}
+			else if (this.perspective == PerspectiveMode.Parallax)
+			{
+				// Scale distance-based
+				scaleTemp = this.focusDist / Math.Max(spacePos.Z, this.nearZ);
+				spacePos.X *= scaleTemp;
+				spacePos.Y *= scaleTemp;
+			}
+			else if (this.perspective == PerspectiveMode.Isometric)
+			{
+				// Apply isometric projection
+				spacePos.Z -= this.focusDist;
+				spacePos.Y += spacePos.Z;
+				spacePos.Z -= spacePos.Y;
+
+				// Scale globally
+				scaleTemp = this.focusDist / DefaultFocusDist;
+				spacePos.X *= scaleTemp;
+				spacePos.Y *= scaleTemp;
+			}
 
 			MathF.TransformCoord(ref spacePos.X, ref spacePos.Y, -this.GameObj.Transform.Angle);
 
 			Vector2 targetSize = this.SceneTargetSize;
 			spacePos.X += targetSize.X / 2;
 			spacePos.Y += targetSize.Y / 2;
-
+			
+			// Since the result Z value is expected to be a world coordinate, make it absolute
+			spacePos.Z += gameObjPos.Z;
 			return spacePos;
 		}
 		/// <summary>
@@ -1415,23 +1519,62 @@ namespace Duality.Components
 		void IDrawDevice.PreprocessCoords(ref Vector3 pos, ref float scale)
 		{
 			if (this.overlayMatrices) return;
+			
+			// Make coordinates relative to the Camera
 			if (this.deviceCacheValid)
 			{
-				Vector3.Subtract(ref pos, ref this.deviceCachePos, out pos);
+				pos.X -= this.deviceCachePos.X;
+				pos.Y -= this.deviceCachePos.Y;
+				pos.Z -= this.deviceCachePos.Z;
 			}
 			else
 			{
 				Vector3 gameObjPos = this.GameObj.Transform.Pos;
-				Vector3.Subtract(ref pos, ref gameObjPos, out pos);
+				pos.X -= gameObjPos.X;
+				pos.Y -= gameObjPos.Y;
+				pos.Z -= gameObjPos.Z;
 			}
-			float scaleTemp = this.focusDist / (this.focusDist >= 0.0f ? Math.Max(pos.Z, this.nearZ) : -DefaultFocusDist);
-			pos.X *= scaleTemp;
-			pos.Y *= scaleTemp;
-			scale *= scaleTemp;
+
+			// Apply active perspective effect
+			float scaleTemp;
+			if (this.perspective == PerspectiveMode.Flat)
+			{
+				// Scale globally
+				scaleTemp = this.focusDist / DefaultFocusDist;
+				pos.X *= scaleTemp;
+				pos.Y *= scaleTemp;
+				scale *= scaleTemp;
+			}
+			else if (this.perspective == PerspectiveMode.Parallax)
+			{
+				// Scale distance-based
+				scaleTemp = this.focusDist / Math.Max(pos.Z, this.nearZ);
+				pos.X *= scaleTemp;
+				pos.Y *= scaleTemp;
+				scale *= scaleTemp;
+			}
+			else if (this.perspective == PerspectiveMode.Isometric)
+			{
+				// Assure that objects at focus distance don't have an offset.
+				pos.Z -= this.focusDist;
+				// Apply Z to Y because of isometric perspective
+				pos.Y += pos.Z;
+				// Sort from "north" to "south" by applying Y to Z.
+				pos.Z -= pos.Y;
+
+				// Make sure nothing is culled away due to its Z value
+				pos.Z += (this.farZ + this.nearZ) / 2;
+
+				// Scale globally
+				scaleTemp = this.focusDist / DefaultFocusDist;
+				pos.X *= scaleTemp;
+				pos.Y *= scaleTemp;
+				scale *= scaleTemp;
+			}
 		}
 		bool IDrawDevice.IsCoordInView(Vector3 c, float boundRad)
 		{
-			if (c.Z <= this.GameObj.Transform.Pos.Z) return false;
+			if (c.Z <= this.GameObj.Transform.Pos.Z && this.perspective != PerspectiveMode.Isometric) return false;
 
 			// Retrieve center vertex coord
 			float scaleTemp = 1.0f;
