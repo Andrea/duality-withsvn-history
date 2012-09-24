@@ -6817,12 +6817,6 @@
             Objects that are far away appear smaller. Z points into the screen and is used for scaling and sorting.
             </summary>
         </member>
-        <member name="F:Duality.PerspectiveMode.Isometric">
-            <summary>
-            Like <see cref="F:Duality.PerspectiveMode.Flat"/>, but Z points "downwards" while objects are sorted from "north" to "south" based on
-            their Y value.
-            </summary>
-        </member>
         <member name="T:Duality.RenderMatrix">
             <summary>
             Specifies a matrix setup used in a <see cref="T:Duality.Components.Camera.Pass"/>.

@@ -52,6 +52,29 @@ namespace EditorBase
 				this.nextCam = next;
 			}
 		}
+		private class CamEntry
+		{
+			private Camera cam;
+
+			public Camera Camera
+			{
+				get { return this.cam; }
+			}
+			public string CameraName
+			{
+				get { return this.cam.GameObj.FullName; }
+			}
+
+			public CamEntry(Camera cam)
+			{
+				this.cam = cam;
+			}
+
+			public override string ToString()
+			{
+				return this.CameraName;
+			}
+		}
 		private class StateEntry
 		{
 			private Type stateType;
@@ -120,7 +143,9 @@ namespace EditorBase
 		private	ColorPickerDialog	bgColorDialog	= new ColorPickerDialog();
 		private	GameObject			nativeCamObj	= null;
 		private	string				loadTempState	= null;
+		private	string				loadTempPerspective	= null;
 		private	InputEventMessageRedirector	waitForInputFilter	= null;
+		private	ToolStripItem		activeToolItem	= null;
 
 		private	Dictionary<Type,CamViewLayer>	availLayers	= new Dictionary<Type,CamViewLayer>();
 		private	Dictionary<Type,CamViewState>	availStates	= new Dictionary<Type,CamViewState>();
@@ -248,6 +273,15 @@ namespace EditorBase
 			if (this.layerSelector.DropDownItems.Count == 0)	this.InitLayerSelector();
 			this.SetCurrentCamera(null);
 
+			// Initialize PerspectiveMode Selector
+			foreach (string perspectiveName in Enum.GetNames(typeof(PerspectiveMode)))
+			{
+				ToolStripMenuItem perspectiveItem = new ToolStripMenuItem(perspectiveName);
+				var perspectiveField = typeof(PerspectiveMode).GetField(perspectiveName, ReflectionHelper.BindAll);
+				perspectiveItem.Tag = HelpInfo.FromMember(perspectiveField);
+				this.perspectiveDropDown.DropDownItems.Add(perspectiveItem);
+			}
+
 			// Initialize from loaded state id, if not done yet manually
 			if (this.activeState == null)
 			{
@@ -272,9 +306,17 @@ namespace EditorBase
 			// Update Camera values according to GUI (which carries loaded or default settings)
 			this.focusDist_ValueChanged(this.focusDist, null);
 			this.bgColorDialog_ValueChanged(this.bgColorDialog, null);
-			if (this.flatToolStripMenuItem.Checked) this.flatToolStripMenuItem_Click(this.flatToolStripMenuItem, null);
-			if (this.parallaxToolStripMenuItem.Checked) this.parallaxToolStripMenuItem_Click(this.parallaxToolStripMenuItem, null);
-			if (this.isometricToolStripMenuItem.Checked) this.isometricToolStripMenuItem_Click(this.isometricToolStripMenuItem, null);
+			if (this.loadTempPerspective != null)
+			{
+				foreach (var item in this.perspectiveDropDown.DropDownItems.OfType<ToolStripMenuItem>())
+				{
+					if (item.Text == this.loadTempPerspective)
+					{
+						this.perspectiveDropDown_DropDownItemClicked(this.perspectiveDropDown, new ToolStripItemClickedEventArgs(item));
+						break;
+					}
+				}
+			}
 
 			// Update camera transform properties & GUI
 			this.OnPerspectiveChanged();
@@ -375,10 +417,10 @@ namespace EditorBase
 		private void InitCameraSelector()
 		{
 			this.camSelector.Items.Clear();
-			this.camSelector.Items.Add(this.nativeCamObj.Camera);
+			this.camSelector.Items.Add(new CamEntry(this.nativeCamObj.Camera));
 
 			foreach (Camera c in Scene.Current.AllObjects.GetComponents<Camera>().OrderBy(c => c.GameObj.FullName))
-				this.camSelector.Items.Add(c);
+				this.camSelector.Items.Add(new CamEntry(c));
 		}
 		private void InitNativeCamera()
 		{
@@ -394,6 +436,15 @@ namespace EditorBase
 
 			this.nativeCamObj.Transform.Pos = new Vector3(0.0f, 0.0f, -c.FocusDist);
 			DualityEditorApp.EditorObjects.RegisterObj(this.nativeCamObj);
+		}
+		private int GetCameraSelectorIndex(Camera c)
+		{
+			for (int i = 0; i < this.camSelector.Items.Count; i++)
+			{
+				if ((this.camSelector.Items[i] as CamEntry).Camera == c)
+					return i;
+			}
+			return -1;
 		}
 
 		public void SetCurrentCamera(Camera c)
@@ -418,7 +469,7 @@ namespace EditorBase
 				this.camObj = c.GameObj;
 				this.camComp = c;
 				DualityEditorApp.EditorObjects.RegisterObj(this.camObj);
-				this.camSelector.SelectedIndex = this.camSelector.Items.IndexOf(c);
+				this.camSelector.SelectedIndex = this.GetCameraSelectorIndex(c);
 			}
 
 			this.OnCurrentCameraChanged(prev, this.camComp);
@@ -556,17 +607,7 @@ namespace EditorBase
 		{
 			decimal tryParseDecimal;
 			int tryParseInt;
-			PerspectiveMode tryParsePerspective;
 
-			if (Enum.TryParse<PerspectiveMode>(node.GetAttribute("perspective"), out tryParsePerspective))
-			{
-				if (tryParsePerspective == Duality.PerspectiveMode.Flat)
-					this.flatToolStripMenuItem.Checked = true;
-				else if (tryParsePerspective == Duality.PerspectiveMode.Parallax)
-					this.parallaxToolStripMenuItem.Checked = true;
-				else if (tryParsePerspective == Duality.PerspectiveMode.Isometric)
-					this.isometricToolStripMenuItem.Checked = true;
-			}
 			if (decimal.TryParse(node.GetAttribute("focusDist"), out tryParseDecimal))
 				this.focusDist.Value = Math.Abs(tryParseDecimal);
 			if (int.TryParse(node.GetAttribute("bgColorArgb"), out tryParseInt))
@@ -575,6 +616,7 @@ namespace EditorBase
 				this.bgColorDialog.SelectedColor = this.bgColorDialog.OldColor;
 			}
 
+			this.loadTempPerspective = node.GetAttribute("perspective");
 			this.loadTempState = node.GetAttribute("activeState");
 
 			var stateListNode = node.ChildNodes.OfType<XmlElement>().FirstOrDefault(e => e.Name == "states");
@@ -931,29 +973,35 @@ namespace EditorBase
 		{
 			if (this.camObj == e.Object) this.SetCurrentCamera(null);
 		}
-
+		
 		private void camSelector_DropDown(object sender, EventArgs e)
 		{
+			this.activeToolItem = this.camSelector;
 			this.InitCameraSelector();
 		}
 		private void camSelector_DropDownClosed(object sender, EventArgs e)
 		{
+			if (this.activeToolItem == this.camSelector)
+				this.activeToolItem = null;
 			if (this.camSelector.SelectedIndex == -1)
 			{
-				this.camSelector.SelectedIndex = this.camSelector.Items.IndexOf(this.camComp);
+				this.camSelector.SelectedIndex = this.GetCameraSelectorIndex(this.camComp);
 				return;
 			}
 		}
 		private void camSelector_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			this.SetCurrentCamera(this.camSelector.SelectedItem as Camera);
+			this.SetCurrentCamera((this.camSelector.SelectedItem as CamEntry).Camera);
 		}
 		private void stateSelector_DropDown(object sender, EventArgs e)
 		{
+			this.activeToolItem = this.stateSelector;
 			this.InitStateSelector();
 		}
 		private void stateSelector_DropDownClosed(object sender, EventArgs e)
 		{
+			if (this.activeToolItem == this.stateSelector)
+				this.activeToolItem = null;
 			if (this.stateSelector.SelectedIndex == -1)
 			{
 				this.stateSelector.SelectedIndex = this.activeState != null ? this.stateSelector.Items.IndexOf(this.stateSelector.Items.Cast<StateEntry>().FirstOrDefault(sce => sce.StateType == this.activeState.GetType())) : -1;
@@ -967,6 +1015,7 @@ namespace EditorBase
 		}
 		private void layerSelector_DropDownOpening(object sender, EventArgs e)
 		{
+			this.activeToolItem = this.layerSelector;
 			this.InitLayerSelector();
 		}
 		private void layerSelector_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -985,38 +1034,57 @@ namespace EditorBase
 		{
 			if (e.CloseReason == ToolStripDropDownCloseReason.ItemClicked) e.Cancel = true;
 		}
+		private void layerSelector_DropDownClosed(object sender, EventArgs e)
+		{
+			if (this.activeToolItem == this.layerSelector)
+				this.activeToolItem = null;
+		}
 		private void perspectiveDropDown_DropDownOpening(object sender, EventArgs e)
 		{
-			this.flatToolStripMenuItem.Checked = this.camComp.Perspective == Duality.PerspectiveMode.Flat;
-			this.parallaxToolStripMenuItem.Checked = this.camComp.Perspective == Duality.PerspectiveMode.Parallax;
-			this.isometricToolStripMenuItem.Checked = this.camComp.Perspective == Duality.PerspectiveMode.Isometric;
+			this.activeToolItem = this.perspectiveDropDown;
+			foreach (var item in this.perspectiveDropDown.DropDownItems.OfType<ToolStripMenuItem>())
+			{
+				item.Checked = (item.Text == this.camComp.Perspective.ToString());
+			}
 		}
-		private void flatToolStripMenuItem_Click(object sender, EventArgs e)
+		private void perspectiveDropDown_DropDownClosed(object sender, EventArgs e)
 		{
-			this.camComp.Perspective = Duality.PerspectiveMode.Flat;
-			this.OnPerspectiveChanged();
+			if (this.activeToolItem == this.perspectiveDropDown)
+				this.activeToolItem = null;
 		}
-		private void parallaxToolStripMenuItem_Click(object sender, EventArgs e)
+		private void perspectiveDropDown_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
 		{
-			this.camComp.Perspective = Duality.PerspectiveMode.Parallax;
-			this.OnPerspectiveChanged();
-		}
-		private void isometricToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			this.camComp.Perspective = Duality.PerspectiveMode.Isometric;
-			this.OnPerspectiveChanged();
+			PerspectiveMode perspective;
+			if (Enum.TryParse(e.ClickedItem.Text, out perspective))
+			{
+				this.camComp.Perspective = perspective;
+				this.OnPerspectiveChanged();
+			}
 		}
 
 		HelpInfo IHelpProvider.ProvideHoverHelp(Point localPos, ref bool captured)
 		{
 			HelpInfo result = null;
 			Point globalPos = this.PointToScreen(localPos);
+			
+			ToolStripItem	item	= this.toolbarCamera.GetItemAtDeep(globalPos);
+			object			itemTag	= item != null ? item.Tag : null;
 
-			Point glLocalPos = this.glControl.PointToClient(globalPos);
-			if (this.glControl.ClientRectangle.Contains(glLocalPos))
+			// Hovering a menu
+			if (item != null || this.activeToolItem != null)
 			{
-				if (this.activeState != null)
-					result = this.activeState.ProvideHoverHelp(glLocalPos, ref captured);
+				result = itemTag as HelpInfo;
+				captured = (this.activeToolItem != null);
+			}
+			// Hovering the viewport
+			else
+			{
+				Point glLocalPos = this.glControl.PointToClient(globalPos);
+				if (this.glControl.ClientRectangle.Contains(glLocalPos))
+				{
+					if (this.activeState != null)
+						result = this.activeState.ProvideHoverHelp(glLocalPos, ref captured);
+				}
 			}
 
 			return result;

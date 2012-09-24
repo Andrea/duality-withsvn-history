@@ -49,7 +49,7 @@ namespace Duality
 		/// Like <see cref="Flat"/>, but Z points "downwards" while objects are sorted from "north" to "south" based on
 		/// their Y value.
 		/// </summary>
-		Isometric
+		//Isometric
 	}
 
 	/// <summary>
@@ -1053,30 +1053,30 @@ namespace Duality.Components
 				screenPos.X *= scaleTemp;
 				screenPos.Y *= scaleTemp;
 			}
-			else if (this.perspective == PerspectiveMode.Isometric)
-			{
-				// Scale globally
-				scaleTemp = DefaultFocusDist / this.focusDist;
-				screenPos.X *= scaleTemp;
-				screenPos.Y *= scaleTemp;
+			//else if (this.perspective == PerspectiveMode.Isometric)
+			//{
+			//    // Scale globally
+			//    scaleTemp = DefaultFocusDist / this.focusDist;
+			//    screenPos.X *= scaleTemp;
+			//    screenPos.Y *= scaleTemp;
 				
-				// Revert isometric projection
-				screenPos.Z += screenPos.Y;
-				screenPos.Y -= screenPos.Z;
-				screenPos.Z += this.focusDist;
-			}
+			//    // Revert isometric projection
+			//    screenPos.Z += screenPos.Y;
+			//    screenPos.Y -= screenPos.Z;
+			//    screenPos.Z += this.focusDist;
+			//}
 			
 			// Make coordinates absolte
 			screenPos.X += gameObjPos.X;
 			screenPos.Y += gameObjPos.Y;
 			screenPos.Z += gameObjPos.Z;
 
-			// For isometric projection, assure we'll meet the target Z value.
-			if (this.perspective == PerspectiveMode.Isometric)
-			{
-				screenPos.Y += screenPos.Z - targetZ;
-				screenPos.Z = targetZ;
-			}
+			//// For isometric projection, assure we'll meet the target Z value.
+			//if (this.perspective == PerspectiveMode.Isometric)
+			//{
+			//    screenPos.Y += screenPos.Z - targetZ;
+			//    screenPos.Z = targetZ;
+			//}
 
 			return screenPos;
 		}
@@ -1118,18 +1118,18 @@ namespace Duality.Components
 				spacePos.X *= scaleTemp;
 				spacePos.Y *= scaleTemp;
 			}
-			else if (this.perspective == PerspectiveMode.Isometric)
-			{
-				// Apply isometric projection
-				spacePos.Z -= this.focusDist;
-				spacePos.Y += spacePos.Z;
-				spacePos.Z -= spacePos.Y;
+			//else if (this.perspective == PerspectiveMode.Isometric)
+			//{
+			//    // Apply isometric projection
+			//    spacePos.Z -= this.focusDist;
+			//    spacePos.Y += spacePos.Z;
+			//    spacePos.Z -= spacePos.Y;
 
-				// Scale globally
-				scaleTemp = this.focusDist / DefaultFocusDist;
-				spacePos.X *= scaleTemp;
-				spacePos.Y *= scaleTemp;
-			}
+			//    // Scale globally
+			//    scaleTemp = this.focusDist / DefaultFocusDist;
+			//    spacePos.X *= scaleTemp;
+			//    spacePos.Y *= scaleTemp;
+			//}
 
 			MathF.TransformCoord(ref spacePos.X, ref spacePos.Y, -this.GameObj.Transform.Angle);
 
@@ -1553,28 +1553,28 @@ namespace Duality.Components
 				pos.Y *= scaleTemp;
 				scale *= scaleTemp;
 			}
-			else if (this.perspective == PerspectiveMode.Isometric)
-			{
-				// Assure that objects at focus distance don't have an offset.
-				pos.Z -= this.focusDist;
-				// Apply Z to Y because of isometric perspective
-				pos.Y += pos.Z;
-				// Sort from "north" to "south" by applying Y to Z.
-				pos.Z -= pos.Y;
+			//else if (this.perspective == PerspectiveMode.Isometric)
+			//{
+			//    // Assure that objects at focus distance don't have an offset.
+			//    pos.Z -= this.focusDist;
+			//    // Apply Z to Y because of isometric perspective
+			//    pos.Y += pos.Z;
+			//    // Sort from "north" to "south" by applying Y to Z.
+			//    pos.Z -= pos.Y;
 
-				// Make sure nothing is culled away due to its Z value
-				pos.Z += (this.farZ + this.nearZ) / 2;
+			//    // Make sure nothing is culled away due to its Z value
+			//    pos.Z += (this.farZ + this.nearZ) / 2;
 
-				// Scale globally
-				scaleTemp = this.focusDist / DefaultFocusDist;
-				pos.X *= scaleTemp;
-				pos.Y *= scaleTemp;
-				scale *= scaleTemp;
-			}
+			//    // Scale globally
+			//    scaleTemp = this.focusDist / DefaultFocusDist;
+			//    pos.X *= scaleTemp;
+			//    pos.Y *= scaleTemp;
+			//    scale *= scaleTemp;
+			//}
 		}
 		bool IDrawDevice.IsCoordInView(Vector3 c, float boundRad)
 		{
-			if (c.Z <= this.GameObj.Transform.Pos.Z && this.perspective != PerspectiveMode.Isometric) return false;
+			if (c.Z <= this.GameObj.Transform.Pos.Z/* && this.perspective != PerspectiveMode.Isometric*/) return false;
 
 			// Retrieve center vertex coord
 			float scaleTemp = 1.0f;

@@ -497,7 +497,7 @@ namespace EditorBase.CamViewStates
 			if (this.action == ObjectAction.RectSelect)
 				canvas.DrawRect(this.actionBeginLoc.X, this.actionBeginLoc.Y, cursorPos.X - this.actionBeginLoc.X, cursorPos.Y - this.actionBeginLoc.Y);
 
-			#if DEBUG
+			#if FALSE//DEBUG
 			canvas.CurrentState.ColorTint = ColorRgba.White.WithAlpha(0.35f);
 			Performance.DrawAllMeasures(canvas);
 			#endif

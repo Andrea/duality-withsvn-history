@@ -39,9 +39,6 @@
 			this.buttonResetZoom = new System.Windows.Forms.ToolStripButton();
 			this.perspectiveDropDown = new System.Windows.Forms.ToolStripDropDownButton();
 			this.showBgColorDialog = new System.Windows.Forms.ToolStripButton();
-			this.flatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.parallaxToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.isometricToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolbarCamera.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -131,6 +128,7 @@
 			this.layerSelector.Name = "layerSelector";
 			this.layerSelector.Size = new System.Drawing.Size(29, 22);
 			this.layerSelector.Text = "Select visible Layers";
+			this.layerSelector.DropDownClosed += new System.EventHandler(this.layerSelector_DropDownClosed);
 			this.layerSelector.DropDownOpening += new System.EventHandler(this.layerSelector_DropDownOpening);
 			this.layerSelector.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.layerSelector_DropDownItemClicked);
 			// 
@@ -149,16 +147,14 @@
 			// 
 			this.perspectiveDropDown.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
 			this.perspectiveDropDown.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.perspectiveDropDown.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.flatToolStripMenuItem,
-            this.parallaxToolStripMenuItem,
-            this.isometricToolStripMenuItem});
 			this.perspectiveDropDown.Image = global::EditorBase.Properties.Resources.shape_perspective;
 			this.perspectiveDropDown.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.perspectiveDropDown.Name = "perspectiveDropDown";
 			this.perspectiveDropDown.Size = new System.Drawing.Size(29, 22);
 			this.perspectiveDropDown.Text = "Select Perspective Mode";
+			this.perspectiveDropDown.DropDownClosed += new System.EventHandler(this.perspectiveDropDown_DropDownClosed);
 			this.perspectiveDropDown.DropDownOpening += new System.EventHandler(this.perspectiveDropDown_DropDownOpening);
+			this.perspectiveDropDown.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.perspectiveDropDown_DropDownItemClicked);
 			// 
 			// showBgColorDialog
 			// 
@@ -170,27 +166,6 @@
 			this.showBgColorDialog.Size = new System.Drawing.Size(23, 22);
 			this.showBgColorDialog.Text = "Change Background Color";
 			this.showBgColorDialog.Click += new System.EventHandler(this.showBgColorDialog_Click);
-			// 
-			// flatToolStripMenuItem
-			// 
-			this.flatToolStripMenuItem.Name = "flatToolStripMenuItem";
-			this.flatToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-			this.flatToolStripMenuItem.Text = "Flat";
-			this.flatToolStripMenuItem.Click += new System.EventHandler(this.flatToolStripMenuItem_Click);
-			// 
-			// parallaxToolStripMenuItem
-			// 
-			this.parallaxToolStripMenuItem.Name = "parallaxToolStripMenuItem";
-			this.parallaxToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-			this.parallaxToolStripMenuItem.Text = "Parallax";
-			this.parallaxToolStripMenuItem.Click += new System.EventHandler(this.parallaxToolStripMenuItem_Click);
-			// 
-			// isometricToolStripMenuItem
-			// 
-			this.isometricToolStripMenuItem.Name = "isometricToolStripMenuItem";
-			this.isometricToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-			this.isometricToolStripMenuItem.Text = "Isometric";
-			this.isometricToolStripMenuItem.Click += new System.EventHandler(this.isometricToolStripMenuItem_Click);
 			// 
 			// CamView
 			// 
@@ -225,9 +200,6 @@
 		private System.Windows.Forms.ToolStripDropDownButton layerSelector;
 		private System.Windows.Forms.ToolStripButton buttonResetZoom;
 		private System.Windows.Forms.ToolStripDropDownButton perspectiveDropDown;
-		private System.Windows.Forms.ToolStripMenuItem flatToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem parallaxToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem isometricToolStripMenuItem;
 
 	}
 }

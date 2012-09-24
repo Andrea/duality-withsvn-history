@@ -544,15 +544,16 @@ namespace DualityEditor.Forms
 			HelpInfo result = null;
 			Point globalPos = this.PointToScreen(localPos);
 
-			// Hovering an opened menu
+			// Hovering a menu
 			if (this.activeMenu != null)
 			{
 				ToolStripItem	item		= this.mainMenuStrip.GetItemAtDeep(globalPos);
 				object			itemTag		= item != null ? item.Tag : null;
-
+				
 				result = itemTag as HelpInfo;
 				captured = true;
 			}
+			// Hovering toolstrip stuff
 			else
 			{
 				ToolStripItem	item		= this.mainToolStrip.GetItemAtDeep(globalPos);
