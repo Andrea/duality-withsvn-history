@@ -1067,7 +1067,7 @@ namespace Duality
 				else if (elem is IconElement)
 				{
 					IconElement iconElem = elem as IconElement;
-					Icon icon = iconElem.IconIndex > 0 && iconElem.IconIndex < this.icons.Length ? this.icons[iconElem.IconIndex] : new Icon();
+					Icon icon = iconElem.IconIndex >= 0 && iconElem.IconIndex < this.icons.Length ? this.icons[iconElem.IconIndex] : new Icon();
 					Vector2 iconSize = icon.size;
 					Rect iconUvRect = icon.uvRect;
 
@@ -1139,10 +1139,11 @@ namespace Duality
 					else if (elem is IconElement)
 					{
 						IconElement iconElem = elem as IconElement;
-						Icon icon = iconElem.IconIndex > 0 && iconElem.IconIndex < this.icons.Length ? this.icons[iconElem.IconIndex] : new Icon();
+						Icon icon = iconElem.IconIndex >= 0 && iconElem.IconIndex < this.icons.Length ? this.icons[iconElem.IconIndex] : new Icon();
 						Vector2 iconSize = icon.size;
 						Rect iconUvRect = icon.uvRect;
 						Vector2 dataCoord = iconUvRect.Pos * new Vector2(icons.Width, icons.Height);
+						Vector2 dataSize = iconUvRect.Size * new Vector2(icons.Width, icons.Height);
 						
 						var attrib = new System.Drawing.Imaging.ImageAttributes();
 						attrib.SetColorMatrix(new System.Drawing.Imaging.ColorMatrix(new[] {
@@ -1152,11 +1153,11 @@ namespace Duality
 							new[] {0, 0, 0, state.Color.A / 255.0f} }));
 						g.DrawImage(icons,
 							new System.Drawing.Rectangle(
-								MathF.RoundToInt(state.CurrentElemOffset.X), 
-								MathF.RoundToInt(state.CurrentElemOffset.Y + state.LineBaseLine - iconSize.Y), 
+								MathF.RoundToInt(x + state.CurrentElemOffset.X), 
+								MathF.RoundToInt(y + state.CurrentElemOffset.Y + state.LineBaseLine - iconSize.Y), 
 								MathF.RoundToInt(iconSize.X), 
 								MathF.RoundToInt(iconSize.Y)),
-							dataCoord.X, dataCoord.Y, iconSize.X, iconSize.Y,
+							dataCoord.X, dataCoord.Y, dataSize.X, dataSize.Y,
 							System.Drawing.GraphicsUnit.Pixel,
 							attrib);
 					}
@@ -1189,19 +1190,28 @@ namespace Duality
 				else if (elem is IconElement)
 				{
 					IconElement iconElem = elem as IconElement;
-					Icon icon = iconElem.IconIndex > 0 && iconElem.IconIndex < this.icons.Length ? this.icons[iconElem.IconIndex] : new Icon();
+					Icon icon = iconElem.IconIndex >= 0 && iconElem.IconIndex < this.icons.Length ? this.icons[iconElem.IconIndex] : new Icon();
 					Vector2 iconSize = icon.size;
 					Rect iconUvRect = icon.uvRect;
 					Vector2 dataCoord = iconUvRect.Pos * new Vector2(icons.Width, icons.Height);
+					Vector2 dataSize = iconUvRect.Size * new Vector2(icons.Width, icons.Height);
 					
-					icons.DrawOnto(target,
-						BlendMode.Alpha,
-						MathF.RoundToInt(state.CurrentElemOffset.X), 
-						MathF.RoundToInt(state.CurrentElemOffset.Y + state.LineBaseLine - iconSize.Y), 
-						MathF.RoundToInt(iconSize.X), 
-						MathF.RoundToInt(iconSize.Y),
+					Pixmap.Layer iconLayer = icons.CloneSubImage(
 						MathF.RoundToInt(dataCoord.X), 
 						MathF.RoundToInt(dataCoord.Y),
+						MathF.RoundToInt(dataSize.X), 
+						MathF.RoundToInt(dataSize.Y));
+					iconLayer.Rescale(
+						MathF.RoundToInt(iconSize.X), 
+						MathF.RoundToInt(iconSize.Y));
+					iconLayer.DrawOnto(target,
+						BlendMode.Alpha,
+						MathF.RoundToInt(x + state.CurrentElemOffset.X), 
+						MathF.RoundToInt(y + state.CurrentElemOffset.Y + state.LineBaseLine - iconSize.Y), 
+						iconLayer.Width, 
+						iconLayer.Height,
+						0, 
+						0,
 						state.Color);
 
 				}
@@ -1233,14 +1243,16 @@ namespace Duality
 				{
 					TextElement textElem = elem as TextElement;
 					elemSize = state.Font.MeasureText(state.CurrentElemText);
-					elemOffset = new Vector2(state.CurrentElemOffset.X, state.CurrentElemOffset.Y + state.LineBaseLine - state.Font.Ascent);
+					elemOffset = new Vector2(state.CurrentElemOffset.X, state.CurrentElemOffset.Y/* + state.LineBaseLine - state.Font.Ascent*/);
+					//if (elemSize.Y != 0.0f) elemSize.Y -= state.LineBaseLine - state.Font.Ascent;
 				}
 				else if (elem is IconElement && this.icons != null)
 				{
 					IconElement iconElem = elem as IconElement;
 					bool iconValid = iconElem.IconIndex > 0 && iconElem.IconIndex < this.icons.Length;
 					elemSize = iconValid ? this.icons[iconElem.IconIndex].size : Vector2.Zero;
-					elemOffset = new Vector2(state.CurrentElemOffset.X, state.CurrentElemOffset.Y + state.LineBaseLine - elemSize.Y);
+					elemOffset = new Vector2(state.CurrentElemOffset.X, state.CurrentElemOffset.Y/* + state.LineBaseLine - elemSize.Y*/);
+					//if (elemSize.Y != 0.0f) elemSize.Y -= state.LineBaseLine - elemSize.Y;
 				}
 				else
 				{

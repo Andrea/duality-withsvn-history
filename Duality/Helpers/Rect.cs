@@ -319,7 +319,7 @@ namespace Duality
 		/// <returns>A new Rect with the specified adjustments.</returns>
 		public Rect ExpandToContain(float x, float y, float w, float h)
 		{
-			return this.ExpandToContain(x, y).ExpandToContain(x + w, y + h);
+			return this.ExpandToContain(x, y).ExpandToContain(x + w - 1, y + h - 1);
 		}
 		/// <summary>
 		/// Returns a new version of this Rect that has been expanded to contain
@@ -329,7 +329,7 @@ namespace Duality
 		/// <returns>A new Rect with the specified adjustments.</returns>
 		public Rect ExpandToContain(Rect other)
 		{
-			return this.ExpandToContain(other.X, other.Y).ExpandToContain(other.X + other.W, other.Y + other.H);
+			return this.ExpandToContain(other.X, other.Y).ExpandToContain(other.X + other.W - 1, other.Y + other.H - 1);
 		}
 		/// <summary>
 		/// Returns a new version of this Rect that has been expanded to contain

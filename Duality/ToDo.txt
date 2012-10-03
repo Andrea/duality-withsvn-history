@@ -20,6 +20,12 @@
 
 
 
+-->	Idea: Bitmap Fonts
+	-->	Let a Font specify an optional base Texture. It is used as a fixed Bitmap Font
+	-->	Method: MakeBitmapFont(), saves the internal Texture, assigns it, triggers a reload and returns a ContentRef to the new Texture
+	-->	Editor Action: Convert to Bitmap Font
+	-->	Editor automatism: Reload Bitmap Fonts when their base Texture changed.
+
 -->	Why is the CamView so slow / stuttering sometimes?
 	-->	Happens especially when there is more than one active
 	-->	Add an OnPaint-Counter to determine how often it is redrawn
