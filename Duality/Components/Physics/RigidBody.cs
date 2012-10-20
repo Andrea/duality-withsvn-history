@@ -177,7 +177,7 @@ namespace Duality.Components.Physics
 		[EditorHintRange(0.0f, 1.0f)]
 		public float Friction
 		{
-			get { return this.shapes == null ? 0.0f : this.shapes.Average(s => s.Friction); }
+			get { return this.shapes == null || this.shapes.Count == 0 ? 0.0f : this.shapes.Average(s => s.Friction); }
 			set
 			{
 				if (this.shapes != null)
@@ -194,7 +194,7 @@ namespace Duality.Components.Physics
 		[EditorHintRange(0.0f, 1.0f)]
 		public float Restitution
 		{
-			get { return this.shapes == null ? 0.0f : this.shapes.Average(s => s.Restitution); }
+			get { return this.shapes == null || this.shapes.Count == 0 ? 0.0f : this.shapes.Average(s => s.Restitution); }
 			set
 			{
 				if (this.shapes != null)

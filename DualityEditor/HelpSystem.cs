@@ -93,11 +93,18 @@ namespace DualityEditor
 
 			Control c;
 			HelpInfo help;
+			
+			// Get rid of disposed Controls
+			c = hoveredHelpProvider as Control;
+			if (c == null || c.IsDisposed)
+			{
+				hoveredHelpProvider = null;
+				hoveredHelpCaptured = false;
+			}
 
 			// An IHelpProvider has captured the mouse: Ask what to do with it.
 			if (hoveredHelpCaptured)
 			{
-				c = hoveredHelpProvider as Control;
 				help = hoveredHelpProvider.ProvideHoverHelp(c.PointToClient(Cursor.Position), ref hoveredHelpCaptured);
 
 				// Update provider's help info
