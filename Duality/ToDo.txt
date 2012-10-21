@@ -41,6 +41,10 @@
 	-->	Don're require VertexFormats to be registered somewhere. Instead, just create the declaration on-demand
 		and do any required operations in the base class.
 
+-->	Remove OggVorbis-Dependency entirely
+	-->	Instead, use OggVorbis code from DragonOgg library directly in Duality.
+	-->	Less dependencies is always better. Plus, this one won't rely on unmanaged external code.
+
 -->	Idea: Tilemaps
 	-->	Implement as a standard plugin.
 		-->	Not every type of project needs tilemaps and they're nicely self-contained.
