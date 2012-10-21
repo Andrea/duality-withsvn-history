@@ -33,6 +33,14 @@
 	-->	Display App Idle state
 	-->	Is OnIdling doing something expensive?
 
+-->	Refactor: VertexFormat
+	-->	Remove all Drawcall-Code from VertexFormats
+	-->	Introduce VertexDeclaration class that holds data about a VertexFormat in an abstract way
+	-->	Each VertexFormat returns a VertexDeclaration through the interface
+	-->	TypeIndex should also go there and be managed automatically
+	-->	Don're require VertexFormats to be registered somewhere. Instead, just create the declaration on-demand
+		and do any required operations in the base class.
+
 -->	Idea: Tilemaps
 	-->	Implement as a standard plugin.
 		-->	Not every type of project needs tilemaps and they're nicely self-contained.
