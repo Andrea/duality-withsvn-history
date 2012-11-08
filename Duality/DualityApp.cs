@@ -311,17 +311,6 @@ namespace Duality
 				if (logArgIndex != -1) logfilePath = args[logArgIndex];
 			}
 
-			// Determine available and default graphics modes
-			foreach (int samplecount in new[] { 0, 2, 4, 6, 8, 16, 32, 48, 64 })
-			{
-				GraphicsMode mode = new GraphicsMode(32, 24, 0, samplecount);
-				if (!availModes.Contains(mode))
-				{
-					availModes.Add(mode);
-					defaultMode = mode;
-				}
-			}
-
 			environment = env;
 			execContext = context;
 
@@ -363,6 +352,23 @@ namespace Duality
 			LoadAppData();
 			LoadUserData();
 			LoadMetaData();
+			
+			// Determine available and default graphics modes
+			int[] aaLevels = new int[] { 0, 2, 4, 6, 8, 16, 32, 48, 64 };
+			foreach (int samplecount in aaLevels)
+			{
+				GraphicsMode mode = new GraphicsMode(32, 24, 0, samplecount);
+				if (!availModes.Contains(mode)) availModes.Add(mode);
+			}
+			int highestAALevel = availModes.Max(m => m.Samples);
+			int targetAALevel = highestAALevel;
+			switch (userData.AntialiasingQuality)
+			{
+				case AAQuality.High:	targetAALevel = highestAALevel;		break;
+				case AAQuality.Medium:	targetAALevel = highestAALevel / 4; break;
+				case AAQuality.Low:		targetAALevel = highestAALevel / 8; break;
+			}
+			defaultMode = availModes.LastOrDefault(m => m.Samples <= targetAALevel) ?? availModes.Last();
 
 			// Initial changed event
 			OnAppDataChanged();
@@ -645,7 +651,7 @@ namespace Duality
 				string path = AppDataPath;
 				using (FileStream str = File.Open(path, FileMode.Create))
 				{
-					using (var formatter = Formatter.Create(str, FormattingMethod.Binary))
+					using (var formatter = Formatter.Create(str, FormattingMethod.Xml))
 					{
 						formatter.WriteObject(appData);
 					}
@@ -671,7 +677,7 @@ namespace Duality
 
 				using (FileStream str = File.Open(path, FileMode.Create))
 				{
-					using (var formatter = Formatter.Create(str, FormattingMethod.Binary))
+					using (var formatter = Formatter.Create(str, FormattingMethod.Xml))
 					{
 						formatter.WriteObject(userData);
 					}
@@ -696,7 +702,7 @@ namespace Duality
 
 				using (FileStream str = File.Open(path, FileMode.Create))
 				{
-					using (var formatter = Formatter.Create(str, FormattingMethod.Binary))
+					using (var formatter = Formatter.Create(str, FormattingMethod.Xml))
 					{
 						formatter.AddFieldBlocker(Resource.NonSerializedResourceBlocker);
 						formatter.WriteObject(metaData);
@@ -983,466 +989,6 @@ namespace Duality
 				return false;
 			}
 			return true;
-		}
-	}
-
-	/// <summary>
-	/// Provides general information about this Duality application / game.
-	/// </summary>
-	[Serializable]
-	public class DualityAppData
-	{
-		private	string				appName				= "Duality Application";
-		private	string				authorName			= "Unknown";
-		private	string				websiteUrl			= "http://www.fetzenet.de";
-		private	uint				version				= 0;
-		private	ContentRef<Scene>	startScene			= ContentRef<Scene>.Null;
-		private	float				speedOfSound		= 360.0f;
-		private	float				soundDopplerFactor	= 1.0f;
-		private	float				physicsVelThreshold	= PhysicsConvert.ToDualityUnit(0.5f * Time.SPFMult);
-		private	bool				physicsFixedTime	= false;
-		private	object				customData			= null;
-
-		/// <summary>
-		/// [GET / SET] The name of your application / game. It will also be used as a window title by the launcher app.
-		/// </summary>
-		public string AppName
-		{
-			get { return this.appName; }
-			set { this.appName = value; }
-		}
-		/// <summary>
-		/// [GET / SET] The author name of your application. Might be your or your team's name or -nickname.
-		/// </summary>
-		public string AuthorName
-		{
-			get { return this.authorName; }
-			set { this.authorName = value; }
-		}
-		/// <summary>
-		/// [GET / SET] The address of this game's official website or similar.
-		/// </summary>
-		public string WebsiteUrl
-		{
-			get { return this.websiteUrl; }
-			set { this.websiteUrl = value; }
-		}
-		/// <summary>
-		/// [GET / SET] The current application / game version.
-		/// </summary>
-		public uint Version
-		{
-			get { return this.version; }
-			set { this.version = value; }
-		}
-		/// <summary>
-		/// [GET / SET] A reference to the start <see cref="Duality.Resources.Scene"/>. It is used by the launcher app to
-		/// determine which Scene to load initially.
-		/// </summary>
-		public ContentRef<Scene> StartScene
-		{
-			get { return this.startScene; }
-			set { this.startScene = value; }
-		}
-		/// <summary>
-		/// [GET / SET] The speed of sound. While this is technically a unitless value, you might assume something like "meters per second".
-		/// It is used to calculate the doppler effect of <see cref="SoundInstance">SoundInstances</see> that are moving relative to the
-		/// <see cref="Duality.Components.SoundListener"/>.
-		/// </summary>
-		public float SpeedOfSound
-		{
-			get { return this.speedOfSound; }
-			set { this.speedOfSound = value; }
-		}
-		/// <summary>
-		/// [GET / SET] A factor by which the strength of the doppler effect is multiplied.
-		/// </summary>
-		public float SoundDopplerFactor
-		{
-			get { return this.soundDopplerFactor; }
-			set { this.soundDopplerFactor = value; }
-		}
-		/// <summary>
-		/// [GET / SET] Any velocity below this value will be resolved using inelastic equations i.e. won't lead to "bouncing".
-		/// </summary>
-		public float PhysicsVelocityThreshold
-		{
-			get { return this.physicsVelThreshold; }
-			set { this.physicsVelThreshold = value; }
-		}
-		/// <summary>
-		/// [GET / SET] Does the physics simulation use fixed time steps? However, this setting may be overwritten dynamically due
-		/// to frame timing restrictions. To check whether fixed-timestep physics is currently active, use <see cref="Duality.Resources.Scene.PhysicsFixedTime"/>
-		/// </summary>
-		public bool PhysicsFixedTime
-		{
-			get { return this.physicsFixedTime; }
-			set { this.physicsFixedTime = value; }
-		}
-		/// <summary>
-		/// [GET / SET] Use this property to store custom application data.
-		/// </summary>
-		public object CustomData
-		{
-			get { return this.customData; }
-			set { this.customData = value; }
-		}
-	}
-
-	/// <summary>
-	/// Describes the way a Duality window is set up.
-	/// </summary>
-	public enum ScreenMode
-	{
-		/// <summary>
-		/// Duality runs in windowed mode. The window can be resized by the user.
-		/// </summary>
-		Window,
-		/// <summary>
-		/// Duality runs in windowed mode. The window has a fixed size.
-		/// </summary>
-		FixedWindow,
-		/// <summary>
-		/// Duality runs in fullscreen mode, using whatever screen resolution is currently active on the users desktop.
-		/// </summary>
-		Native,
-		/// <summary>
-		/// Duality runs in fullscreen mode and changes desktop resolution whenever necesary.
-		/// </summary>
-		Fullscreen
-	}
-
-	/// <summary>
-	/// Provides information about user settings for this Duality application / game.
-	/// It is persistent beyond installing or deleting this Duality game.
-	/// </summary>
-	[Serializable]
-	public class DualityUserData
-	{
-		private	string		userName		= "Unknown";
-		private	int			gfxWidth		= 800;
-		private	int			gfxHeight		= 600;
-		private	ScreenMode	gfxMode			= ScreenMode.Window;
-		private	float		sfxEffectVol	= 1.0f;
-		private	float		sfxSpeechVol	= 1.0f;
-		private	float		sfxMusicVol		= 1.0f;
-		private	float		sfxMasterVol	= 1.0f;
-		private	object		customData		= null;
-
-		/// <summary>
-		/// [GET / SET] The player's name. This may be his main character's name or simply remain unused.
-		/// </summary>
-		public string UserName
-		{
-			get { return this.userName; }
-			set { this.userName = value; }
-		}
-		/// <summary>
-		/// [GET / SET] Width of the game's display area.
-		/// </summary>
-		public int GfxWidth
-		{
-			get { return this.gfxWidth; }
-			set { this.gfxWidth = value; }
-		}
-		/// <summary>
-		/// [GET / SET] Height of the game's display area.
-		/// </summary>
-		public int GfxHeight
-		{
-			get { return this.gfxHeight; }
-			set { this.gfxHeight = value; }
-		}
-		/// <summary>
-		/// [GET / SET] Describes the way the game window is set up.
-		/// </summary>
-		public ScreenMode GfxMode
-		{
-			get { return this.gfxMode; }
-			set { this.gfxMode = value; }
-		}
-		/// <summary>
-		/// [GET / SET] Volume factor of sound effects. This is applied automatically by the <see cref="SoundDevice"/> based on the <see cref="SoundType"/>.
-		/// </summary>
-		public float SfxEffectVol
-		{
-			get { return this.sfxEffectVol; }
-			set { this.sfxEffectVol = value; }
-		}
-		/// <summary>
-		/// [GET / SET] Volume factor of speech / vocals. This is applied automatically by the <see cref="SoundDevice"/> based on the <see cref="SoundType"/>.
-		/// </summary>
-		public float SfxSpeechVol
-		{
-			get { return this.sfxSpeechVol; }
-			set { this.sfxSpeechVol = value; }
-		}
-		/// <summary>
-		/// [GET / SET] Volume factor of music. This is applied automatically by the <see cref="SoundDevice"/> based on the <see cref="SoundType"/>.
-		/// </summary>
-		public float SfxMusicVol
-		{
-			get { return this.sfxMusicVol; }
-			set { this.sfxMusicVol = value; }
-		}
-		/// <summary>
-		/// [GET / SET] Volume master factor for sound in general. This is applied automatically by the <see cref="SoundDevice"/>.
-		/// </summary>
-		public float SfxMasterVol
-		{
-			get { return this.sfxMasterVol; }
-			set { this.sfxMasterVol = value; }
-		}
-		/// <summary>
-		/// [GET / SET] Use this property to store custom user data.
-		/// </summary>
-		public object CustomData
-		{
-			get { return this.customData; }
-			set { this.customData = value; }
-		}
-	}
-
-	/// <summary>
-	/// Provides custom information about the Duality environment in which this application / game runs.
-	/// It is persistent beyond installing or deleting a specific Duality game and is shared among all Duality
-	/// games. Developers can use the DualityMetaData API to share player-related game information, such as
-	/// stats, player descisions, tasks, progress, etc.
-	/// </summary>
-	[Serializable]
-	public class DualityMetaData
-	{
-		/// <summary>
-		/// An array of valid path separators for meta data.
-		/// </summary>
-		public static readonly char[] Separator = "/\\".ToCharArray();
-
-		[Serializable]
-		private class Entry
-		{
-			public Dictionary<string,Entry> children;
-			public string value;
-
-			public Entry()
-			{
-				this.children = null;
-				this.value = null;
-			}
-			public Entry(Entry cc)
-			{
-				this.value = cc.value;
-				this.children = new Dictionary<string,Entry>();
-
-				foreach (var pair in cc.children)
-					this.children[pair.Key] = new Entry(pair.Value);
-			}
-			public Entry(string value)
-			{
-				this.value = value;
-				this.children = null;
-			}
-
-			public Entry ReadValueEntry(string key)
-			{
-				if (String.IsNullOrEmpty(key)) return this;
-				if (this.children == null || this.children.Count == 0) return null;
-
-				int sepIndex = key.IndexOfAny(Separator);
-				string singleKey;
-				if (sepIndex != -1)
-				{
-					singleKey = key.Substring(0, sepIndex);
-					key = key.Substring(sepIndex + 1, key.Length - sepIndex - 1);
-				}
-				else
-				{
-					singleKey = key;
-					key = null;
-				}
-
-				Entry valEntry;
-				if (this.children.TryGetValue(singleKey, out valEntry))
-					return valEntry.ReadValueEntry(key);
-				else
-					return null;
-			}
-			public string ReadValue(string key)
-			{
-				Entry valEntry = this.ReadValueEntry(key);
-				return valEntry != null ? valEntry.value : null;
-			}
-			public void WriteValue(string key, string value)
-			{
-				if (String.IsNullOrEmpty(key))
-				{
-					this.value = value;
-					return;
-				}
-
-				int sepIndex = key.IndexOfAny(Separator);
-				string singleKey;
-				if (sepIndex != -1)
-				{
-					singleKey = key.Substring(0, sepIndex);
-					key = key.Substring(sepIndex + 1, key.Length - sepIndex - 1);
-				}
-				else
-				{
-					singleKey = key;
-					key = null;
-				}
-
-				Entry valEntry;
-				if (this.children == null || !this.children.TryGetValue(singleKey, out valEntry))
-				{
-					if (this.children == null) this.children = new Dictionary<string,Entry>();
-					valEntry = new Entry();
-					this.children[singleKey] = valEntry;
-				}
-				valEntry.WriteValue(key, value);
-			}
-		}
-
-		private Entry   rootEntry       = new Entry();
-
-		/// <summary>
-		/// [GET / SET] The string value that is located at the specified key (path). Keys are organized hierarchially and behave
-		/// like file paths. Use the normal path separator chars to address keys in keys.
-		/// </summary>
-		/// <param name="key">The key that defines where to look for the value.</param>
-		/// <returns>The string value associated with the specified key.</returns>
-		/// <example>
-		/// The following code reads and writes the value of <c>MainNode / SubNode / SomeKey</c>:
-		/// <code>
-		/// string value = DualityApp.MetaData["MainNode/SubNode/SomeKey"];
-		/// DualityApp.MetaData["MainNode/SubNode/SomeKey"] = "Some other value";
-		/// </code>
-		/// </example>
-		/// <seealso cref="ReadValue(string)"/>
-		/// <seealso cref="ReadValueAs{T}(string, out T)"/>
-		public string this[string key]
-		{
-			get { return this.ReadValue(key); }
-			set { this.WriteValue(key, value); }
-		}
-
-		/// <summary>
-		/// Reads the specified key's string value. Keys are organized hierarchially and behave
-		/// like file paths. Use the normal path separator chars to address keys in keys.
-		/// </summary>
-		/// <param name="key">The key that defines where to look for the value.</param>
-		/// <returns>The string value associated with the specified key.</returns>
-		/// <example>
-		/// The following code reads the value of <c>MainNode / SubNode / SomeKey</c>:
-		/// <code>
-		/// string value = DualityApp.MetaData.ReadValue("MainNode/SubNode/SomeKey");
-		/// </code>
-		/// </example>
-		/// <seealso cref="ReadValueAs{T}(string, out T)"/>
-		public string ReadValue(string key)
-		{
-			return this.rootEntry.ReadValue(key);
-		}
-		/// <summary>
-		/// Reads the specified key's string value and tries to parse it.
-		/// </summary>
-		/// <typeparam name="T">The desired value type</typeparam>
-		/// <param name="key">The key that defines where to look for the value.</param>
-		/// <param name="value">The parsed value based on the string that is associated with the specified key.</param>
-		/// <returns>True, if successful, false if not.</returns>
-		/// <seealso cref="ReadValue(string)"/>
-		/// <example>
-		/// The following code writes and reads an int value:
-		/// <code>
-		/// DualityApp.MetaData.WriteValue("SomeKey", 42);
-		/// int value =  DualityApp.MetaData.ReadValueAs{int}("SomeKey");
-		/// </code>
-		/// </example>
-		public bool ReadValueAs<T>(string key, out T value)
-		{
-			string valStr = this.ReadValue(key);
-			try
-			{
-				value = (T)Convert.ChangeType(valStr, typeof(T), System.Globalization.CultureInfo.InvariantCulture);
-				return true;
-			}
-			catch (Exception)
-			{
-				value = default(T);
-				return false;
-			}
-		}
-		/// <summary>
-		/// Reads all the <see cref="KeyValuePair{T,U}"/>s that are children of the specified key.
-		/// </summary>
-		/// <param name="key">The key of which to return child values.</param>
-		/// <returns>An enumeration of <see cref="KeyValuePair{T,U}"/>s.</returns>
-		/// <example>
-		/// The following code creates a small hierarchy and reads a part of it out again:
-		/// <code>
-		/// DualityApp.MetaData["MainNode/SubNode/SomeKey"] = "42";
-		/// DualityApp.MetaData["MainNode/SubNode/SomeOtherKey"] = "43";
-		/// DualityApp.MetaData["MainNode/SubNode/SomeOtherKey2"] = "44";
-		/// DualityApp.MetaData["MainNode/SubNode2"] = "Something";
-		/// 
-		/// var pairs = DualityApp.MetaData.ReadSubValues("MainNode/SubNode");
-		/// foreach (var pair in pairs)
-		/// {
-		///     Log.Core.Write("{0}: {1}", pair.Key, pair.Value);
-		/// }
-		/// </code>
-		/// The expected output is:
-		/// <code>
-		/// SomeKey: 42
-		/// SomeOtherKey: 43
-		/// SomeOtherKey2: 44
-		/// </code>
-		/// </example>
-		public IEnumerable<KeyValuePair<string,string>> ReadSubValues(string key)
-		{
-			Entry parentEntry = this.rootEntry.ReadValueEntry(key);
-			if (parentEntry == null) yield break;
-
-			foreach (var pair in parentEntry.children)
-				yield return new KeyValuePair<string,string>(pair.Key, pair.Value.value);
-		}
-		/// <summary>
-		/// Writes the specified string value to the specified key. Keys are organized hierarchially and behave
-		/// like file paths. Use the normal path separator chars to address keys in keys.
-		/// </summary>
-		/// <param name="key">The key that defines to write the value to.</param>
-		/// <param name="value">The value to write</param>
-		/// <seealso cref="WriteValue{T}(string, T)"/>
-		public void WriteValue(string key, string value)
-		{
-			this.rootEntry.WriteValue(key, value);
-		}
-		/// <summary>
-		/// Writes the specified value to the specified key. Keys are organized hierarchially and behave
-		/// like file paths. Use the normal path separator chars to address keys in keys.
-		/// </summary>
-		/// <typeparam name="T">The value's Type.</typeparam>
-		/// <param name="key">The key that defines to write the value to.</param>
-		/// <param name="value">The value to write</param>
-		/// <seealso cref="WriteValue(string, string)"/>
-		public void WriteValue<T>(string key, T value)
-		{
-			string valStr = value as string;
-			if (valStr != null)
-			{
-				this.WriteValue(key, valStr);
-				return;
-			}
-
-			IFormattable valFormattable = value as IFormattable;
-			if (valFormattable != null)
-			{
-				this.WriteValue(key, valFormattable.ToString(null, System.Globalization.CultureInfo.InvariantCulture));
-				return;
-			}
-
-			this.WriteValue(key, value.ToString());
-			return;
 		}
 	}
 }

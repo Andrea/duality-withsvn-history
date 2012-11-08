@@ -114,6 +114,9 @@
     <Compile Include="Components\SoundEmitter.cs" />
     <Compile Include="Components\SoundListener.cs" />
     <Compile Include="Graphics\Canvas.cs" />
+    <Compile Include="Helpers\DualityAppData.cs" />
+    <Compile Include="Helpers\DualityMetaData.cs" />
+    <Compile Include="Helpers\DualityUserData.cs" />
     <Compile Include="Helpers\ExtMethodsBitmap.cs" />
     <Compile Include="Helpers\InitState.cs" />
     <Compile Include="Helpers\PhysicsConvert.cs" />

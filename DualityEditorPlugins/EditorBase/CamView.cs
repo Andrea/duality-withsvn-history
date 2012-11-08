@@ -683,7 +683,6 @@ namespace EditorBase
 
 		public void MakeDualityTarget()
 		{
-			DualityApp.TargetMode = this.MainContextControl.Context.GraphicsMode;
 			DualityApp.TargetResolution = new OpenTK.Vector2(this.glControl.Width, this.glControl.Height);
 			if (this.ContainsFocus) Sandbox.SetEngineInput(this, this);
 		}
