@@ -360,15 +360,16 @@ namespace Duality
 				GraphicsMode mode = new GraphicsMode(32, 24, 0, samplecount);
 				if (!availModes.Contains(mode)) availModes.Add(mode);
 			}
-			int highestAALevel = availModes.Max(m => m.Samples);
+			int highestAALevel = MathF.RoundToInt(MathF.Log(MathF.Max(availModes.Max(m => m.Samples), 1.0f), 2.0f));
 			int targetAALevel = highestAALevel;
 			switch (userData.AntialiasingQuality)
 			{
 				case AAQuality.High:	targetAALevel = highestAALevel;		break;
-				case AAQuality.Medium:	targetAALevel = highestAALevel / 4; break;
-				case AAQuality.Low:		targetAALevel = highestAALevel / 8; break;
+				case AAQuality.Medium:	targetAALevel = highestAALevel / 2; break;
+				case AAQuality.Low:		targetAALevel = highestAALevel / 4; break;
 			}
-			defaultMode = availModes.LastOrDefault(m => m.Samples <= targetAALevel) ?? availModes.Last();
+			int targetSampleCount = MathF.RoundToInt(MathF.Pow(2.0f, targetAALevel));
+			defaultMode = availModes.LastOrDefault(m => m.Samples <= targetSampleCount) ?? availModes.Last();
 
 			// Initial changed event
 			OnAppDataChanged();
