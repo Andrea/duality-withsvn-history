@@ -236,10 +236,6 @@ namespace Duality
 		void ICloneable.CopyDataTo(object targetObj, CloneProvider provider)
 		{
 			Resource target = targetObj as Resource;
-
-			// CopyTo for all basic Resource types
-			this.OnCopyTo(target, provider);
-			// CopyTo for custom Resources - defaults to reflection
 			this.OnCopyTo(target, provider);
 		}
 		
