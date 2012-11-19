@@ -5,7 +5,6 @@
 	/// </summary>
 	public interface ICloneable
 	{
-		object CreateTargetObject(CloneProvider provider);
 		void CopyDataTo(object targetObj, CloneProvider provider);
 	}
 }

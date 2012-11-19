@@ -135,10 +135,6 @@ namespace Duality.Components.Physics
 			return newObj;
 		}
 
-		object Cloning.ICloneable.CreateTargetObject(Cloning.CloneProvider provider)
-		{
-			return this.GetType().CreateInstanceOf() ?? this.GetType().CreateInstanceOf(true);
-		}
 		void Cloning.ICloneable.CopyDataTo(object targetObj, Cloning.CloneProvider provider)
 		{
 			JointInfo targetJoint = targetObj as JointInfo;

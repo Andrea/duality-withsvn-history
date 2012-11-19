@@ -731,10 +731,6 @@ namespace Duality
 			CloneProvider.DeepCopyTo(this, target);
 		}
 
-		object ICloneable.CreateTargetObject(CloneProvider provider)
-		{
-			return new GameObject();
-		}
 		void ICloneable.CopyDataTo(object targetObj, CloneProvider provider)
 		{
 			GameObject target = targetObj as GameObject;

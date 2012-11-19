@@ -426,11 +426,6 @@ namespace Duality
 			// If any derived Component type doesn't override OnCopyTo, use a reflection-driven default behavior.
 			CloneProvider.PerformReflectionFallback("OnCopyTo", this, target, provider);
 		}
-
-		object ICloneable.CreateTargetObject(CloneProvider provider)
-		{
-			return this.GetType().CreateInstanceOf();
-		}
 		void ICloneable.CopyDataTo(object targetObj, CloneProvider provider)
 		{
 			this.OnCopyTo(targetObj as Component, provider);

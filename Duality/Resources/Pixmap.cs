@@ -999,10 +999,6 @@ namespace Duality.Resources
 				return tempDestData;
 			}
 
-			object Cloning.ICloneable.CreateTargetObject(Cloning.CloneProvider provider)
-			{
-				return new Layer();
-			}
 			void Cloning.ICloneable.CopyDataTo(object targetObj, Cloning.CloneProvider provider)
 			{
 				Layer targetLayer = targetObj as Layer;

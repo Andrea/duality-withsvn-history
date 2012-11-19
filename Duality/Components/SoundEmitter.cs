@@ -158,11 +158,6 @@ namespace Duality.Components
 				return true;
 			}
 
-			
-			object ICloneable.CreateTargetObject(Cloning.CloneProvider provider)
-			{
-				return new Source();
-			}
 			void ICloneable.CopyDataTo(object targetObj, Cloning.CloneProvider provider)
 			{
 				Source newSrc = targetObj as Source;

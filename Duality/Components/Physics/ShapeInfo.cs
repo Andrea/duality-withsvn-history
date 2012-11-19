@@ -159,10 +159,6 @@ namespace Duality.Components.Physics
 			return Cloning.CloneProvider.DeepClone(this);
 		}
 
-		object Cloning.ICloneable.CreateTargetObject(Cloning.CloneProvider provider)
-		{
-			return this.GetType().CreateInstanceOf() ?? this.GetType().CreateInstanceOf(true);
-		}
 		void Cloning.ICloneable.CopyDataTo(object targetObj, Cloning.CloneProvider provider)
 		{
 			ShapeInfo targetShape = targetObj as ShapeInfo;

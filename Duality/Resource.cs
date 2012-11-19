@@ -229,10 +229,6 @@ namespace Duality
 		{
 			CloneProvider.DeepCopyTo(this, r);
 		}
-		object ICloneable.CreateTargetObject(CloneProvider provider)
-		{
-			return this.GetType().CreateInstanceOf();
-		}
 		void ICloneable.CopyDataTo(object targetObj, CloneProvider provider)
 		{
 			Resource target = targetObj as Resource;

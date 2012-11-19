@@ -4291,11 +4291,6 @@
             [GET / SET] The object that is cloned
             </summary>
         </member>
-        <member name="P:Duality.Cloning.ISurrogate.SurrogateObject">
-            <summary>
-            [GET] Returns a clonable object that represents the <see cref="P:Duality.Cloning.ISurrogate.RealObject"/>.
-            </summary>
-        </member>
         <member name="P:Duality.Cloning.ISurrogate.Priority">
             <summary>
             [GET] If more than one registered ISurrogate is capable of cloning a given object type, the one

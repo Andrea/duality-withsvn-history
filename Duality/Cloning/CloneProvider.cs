@@ -152,7 +152,7 @@ namespace Duality.Cloning
 				if (surrogate != null)
 				{
 					surrogate.RealObject = baseObj;
-					surrogate.SurrogateObject.CopyDataTo(targetObj, this);
+					surrogate.CopyDataTo(targetObj, this);
 					return;
 				}
 
@@ -191,7 +191,7 @@ namespace Duality.Cloning
 			// IClonables
 			if (baseObj is ICloneable)
 			{
-				object copy = (baseObj as ICloneable).CreateTargetObject(this);
+				object copy = objType.CreateInstanceOf() ?? objType.CreateInstanceOf(true);
 				if (objType.IsClass) this.RegisterObjectClone(baseObj, copy);
 				(baseObj as ICloneable).CopyDataTo(copy, this);
 				return copy;
@@ -202,9 +202,9 @@ namespace Duality.Cloning
 			if (surrogate != null)
 			{
 				surrogate.RealObject = baseObj;
-				object copy = surrogate.SurrogateObject.CreateTargetObject(this);
+				object copy = surrogate.CreateTargetObject(this);
 				if (objType.IsClass) this.RegisterObjectClone(baseObj, copy);
-				surrogate.SurrogateObject.CopyDataTo(copy, this);
+				surrogate.CopyDataTo(copy, this);
 				return copy;
 			}
 

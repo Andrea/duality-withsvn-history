@@ -13,10 +13,6 @@ namespace Duality.Cloning
 		/// </summary>
 		object RealObject { get; set; }
 		/// <summary>
-		/// [GET] Returns a clonable object that represents the <see cref="RealObject"/>.
-		/// </summary>
-		ICloneable SurrogateObject { get; }
-		/// <summary>
 		/// [GET] If more than one registered ISurrogate is capable of cloning a given object type, the one
 		/// with the highest priority is picked.
 		/// </summary>
@@ -28,6 +24,9 @@ namespace Duality.Cloning
 		/// <param name="t">The <see cref="System.Type"/> of the object in question.</param>
 		/// <returns>True, if this surrogate is able to clone such object, false if not.</returns>
 		bool MatchesType(Type t);
+
+		object CreateTargetObject(CloneProvider provider);
+		void CopyDataTo(object targetObj, CloneProvider provider);
 	}
 	/// <summary>
 	/// Default base class for <see cref="ISurrogate">Serialization Surrogates</see>. It implements both
@@ -37,7 +36,7 @@ namespace Duality.Cloning
 	/// <typeparam name="T">
 	/// The base <see cref="System.Type"/> of objects this surrogate can replace.
 	/// </typeparam>
-	public abstract class Surrogate<T> : ISurrogate, ICloneable
+	public abstract class Surrogate<T> : ISurrogate
 	{
 		private T realObj;
 		
@@ -45,10 +44,6 @@ namespace Duality.Cloning
 		{
 			get { return this.realObj; }
 			set { this.realObj = (T)value; }
-		}
-		ICloneable ISurrogate.SurrogateObject
-		{
-			get { return this; }
 		}
 		
 		/// <summary>
@@ -85,11 +80,11 @@ namespace Duality.Cloning
 		}
 		public abstract void CopyDataTo(T targetObj, CloneProvider provider);
 
-		object ICloneable.CreateTargetObject(CloneProvider provider)
+		object ISurrogate.CreateTargetObject(CloneProvider provider)
 		{
 			return this.CreateTargetObject(provider);
 		}
-		void ICloneable.CopyDataTo(object targetObj, CloneProvider provider)
+		void ISurrogate.CopyDataTo(object targetObj, CloneProvider provider)
 		{
 			this.CopyDataTo((T)targetObj, provider);
 		}
