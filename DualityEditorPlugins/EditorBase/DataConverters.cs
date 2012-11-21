@@ -245,9 +245,12 @@ namespace EditorBase.DataConverters
 				foreach (GameObject draggedObj in draggedObjArray)
 				{
 					if (convert.IsObjectHandled(draggedObj)) continue;
+
 					// Create Prefab
 					Prefab prefab = new Prefab(draggedObj);
 					prefab.SourcePath = draggedObj.Name; // Dummy "source path" that may be used as indicator where to save the Resource later.
+
+					// Mark GameObject as handled
 					convert.MarkObjectHandled(draggedObj);						
 					convert.AddResult(prefab);
 					finishConvertOp = true;

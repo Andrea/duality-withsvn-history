@@ -1028,9 +1028,8 @@ namespace EditorBase
 						prefab.Inject(draggedObj);
 						DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(prefab));
 
-						// Establish PrefabLink & clear previously existing changes
-						if (draggedObj.PrefabLink != null) draggedObj.PrefabLink.ClearChanges();
-						draggedObj.LinkToPrefab(prefab);
+						// Establish PrefabLink
+						if (draggedObj.PrefabLink == null) draggedObj.LinkToPrefab(prefab);
 						DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(draggedObj), ReflectionInfo.Property_GameObject_PrefabLink);
 
 						// Update the Prefab icon
@@ -1069,6 +1068,21 @@ namespace EditorBase
 
 							this.ScheduleSelect(resPath);
 						}
+
+						// If we happened to generate a Prefab, link possible existing GameObjects to it
+						List<Prefab> prefabList = resList.OfType<Prefab>().ToList();
+						if (prefabList.Count > 0)
+						{
+							GameObject[] gameObjArray = data.GetGameObjectRefs();
+							for (int i = 0; i < gameObjArray.Length; i++)
+							{
+								GameObject obj = gameObjArray[i];
+								Prefab prefab = prefabList[i >= prefabList.Count ? prefabList.Count - 1 : i];
+								if (obj.PrefabLink == null) obj.LinkToPrefab(prefab);
+							}
+							DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(gameObjArray), ReflectionInfo.Property_GameObject_PrefabLink);
+						}
+
 					}
 				}
 			}

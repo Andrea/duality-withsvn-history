@@ -758,8 +758,8 @@ namespace Duality
 				{
 					GameObject thisChild	= this.children[i];
 					GameObject targetChild	= provider.GetRegisteredObjectClone(thisChild);
-					provider.CopyObjectTo(thisChild, targetChild);
 					targetChild.Parent = target;
+					provider.CopyObjectTo(thisChild, targetChild);
 				}
 			}
 

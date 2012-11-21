@@ -304,9 +304,10 @@ namespace Duality.Resources
 			// Lower prefab links later
 			if (deep)
 			{
-				foreach (GameObject child in this.obj.Children)
+				foreach (GameObject child in this.obj.ChildrenDeep.ToArray())
 				{
-					if (child.PrefabLink != null) child.PrefabLink.Apply(true);
+					if (child.PrefabLink != null && child.PrefabLink.ParentLink == this)
+						child.PrefabLink.Apply(true);
 				}
 			}
 		}

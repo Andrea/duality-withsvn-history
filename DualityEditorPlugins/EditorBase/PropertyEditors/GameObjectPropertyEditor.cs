@@ -369,8 +369,7 @@ namespace EditorBase.PropertyEditors
 					prefab.Inject(o);
 					prefabs.Add(prefab);
 
-					// Establish PrefabLink & clear previously existing changes
-					if (o.PrefabLink != null) o.PrefabLink.ClearChanges();
+					// Establish PrefabLink
 					o.LinkToPrefab(prefab);
 				}
 			}
