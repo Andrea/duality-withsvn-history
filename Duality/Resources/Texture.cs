@@ -107,6 +107,7 @@ namespace Duality.Resources
 		private	static	int				activeTexUnit	= 0;
 		private	static	Texture[]		curBound		= null;
 		private	static	TextureUnit[]	texUnits		= null;
+		private	static	float			maxAnisoLevel	= 0;
 
 		/// <summary>
 		/// [GET] The currently bound primary Texture.
@@ -159,6 +160,8 @@ namespace Duality.Resources
 		private static void Init()
 		{
 			if (initialized) return;
+
+			GL.GetFloat((GetPName)ExtTextureFilterAnisotropic.MaxTextureMaxAnisotropyExt, out maxAnisoLevel);
 			
 			int numTexUnits;
 			GL.GetInteger(GetPName.MaxTextureImageUnits, out numTexUnits);
@@ -754,6 +757,7 @@ namespace Duality.Resources
 		protected void SetupOpenGLRes()
 		{
 			DualityApp.GuardSingleThreadState();
+			if (!initialized) Init();
 			if (this.glTexId == 0) this.glTexId = GL.GenTexture();
 
 			int lastTexId;
@@ -765,6 +769,9 @@ namespace Duality.Resources
 			GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)this.filterMag);
 			GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)this.wrapX);
 			GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)this.wrapY);
+
+			// Anisotropic filtering
+			//GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName) ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, maxAnisoLevel);
 
 			// If needed, care for Mipmaps
 			GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.GenerateMipmap, this.Mipmaps ? 1 : 0);

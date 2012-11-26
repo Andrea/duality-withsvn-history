@@ -19,6 +19,12 @@
 
 
 
+-->	Maintenance: Don't expose OpenTK enums in Texture class. Instead, define Duality enums:
+	-->	DownscaleFilter:	Nearest, Bilinear, Trilinear, Anisotropic
+	-->	UpscaleFilter:		Nearest, Bilinear
+	-->	WrapMode:			Clamp, Repeat, Mirror
+	-->	PixelFormat:		Rgba, Rgb, LuminanceAlpha, Alpha, Luminance, Depth, RgbaF
+
 -->	Usability: Instead of preventing to create Components whose requirements aren't met,
 	auto-create the requirements when adding them. Don't limit the user - work for him!
 
