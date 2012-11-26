@@ -19,6 +19,8 @@
 
 
 
+-->	Usability: Instead of preventing to create Components whose requirements aren't met,
+	auto-create the requirements when adding them. Don't limit the user - work for him!
 
 -->	Idea: Bitmap Fonts
 	-->	Let a Font specify an optional base Texture. It is used as a fixed Bitmap Font
@@ -60,6 +62,7 @@
 			-->	Additional custom data
 				-->	Object tag?
 	-->	Component: Tilemap
+		-->	Maybe split it? Tilemap, TilemapRenderer
 		-->	Stores tilemap data
 		-->	Renders the tilemap
 			-->	As usual, support ColorTint and a custom Material (BatchInfo)
