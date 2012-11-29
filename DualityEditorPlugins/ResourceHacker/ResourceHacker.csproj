@@ -155,8 +155,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>mkdir  "$(SolutionDir)DualityEditor\bin\$(ConfigurationName)\Plugins"
-copy "$(TargetPath)" "$(SolutionDir)DualityEditor\bin\$(ConfigurationName)\Plugins"
-copy "$(TargetDir)Aga.Controls.dll" "$(SolutionDir)DualityEditor\bin\$(ConfigurationName)\Plugins"</PostBuildEvent>
+copy "$(TargetPath)" "$(SolutionDir)DualityEditor\bin\$(ConfigurationName)\Plugins"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
