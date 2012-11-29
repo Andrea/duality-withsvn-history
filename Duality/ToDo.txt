@@ -34,13 +34,6 @@
 	-->	Editor Action: Convert to Bitmap Font
 	-->	Editor automatism: Reload Bitmap Fonts when their base Texture changed.
 
--->	Why is the CamView so slow / stuttering sometimes?
-	-->	Happens especially when there is more than one active
-	-->	Add an OnPaint-Counter to determine how often it is redrawn
-	-->	Add a picking-Counter as well
-	-->	Display App Idle state
-	-->	Is OnIdling doing something expensive?
-
 -->	Refactor: VertexFormat
 	-->	Remove all Drawcall-Code from VertexFormats
 	-->	Introduce VertexDeclaration class that holds data about a VertexFormat in an abstract way

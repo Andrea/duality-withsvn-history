@@ -500,7 +500,12 @@ namespace DualityEditor
 		public static void InitMainGLContext()
 		{
 			if (mainContextControl != null) return;
+
+			// Since we'll be using only one context, we don't need sharing
+			OpenTK.Graphics.GraphicsContext.ShareContexts = false;
+
 			mainContextControl = new GLControl(DualityApp.DefaultMode);
+			mainContextControl.VSync = false;
 			mainContextControl.MakeCurrent();
 			DualityApp.TargetMode = mainContextControl.Context.GraphicsMode;
 		}

@@ -6872,9 +6872,9 @@
             [GET] The devices view space bounding circle radius.
             </summary>
         </member>
-        <member name="P:Duality.IDrawDevice.IsScreenOverlay">
+        <member name="P:Duality.IDrawDevice.DepthWrite">
             <summary>
-            [GET] Returns whether the drawing device is currently rendering in screen overlay mode
+            [GET] Returns whether the drawing device allows writing to the depth buffer
             </summary>
         </member>
         <member name="P:Duality.IDrawDevice.TargetSize">

@@ -398,7 +398,7 @@ namespace Duality.Resources
 
 			// Setup BlendType
 			if (lastTechnique == null || this.blendType != lastTechnique.blendType)
-				this.SetupBlendType(this.blendType, !device.IsScreenOverlay);
+				this.SetupBlendType(this.blendType, !device.DepthWrite);
 
 			// Bind Shader
 			ContentRef<ShaderProgram> selShader = this.SelectShader();

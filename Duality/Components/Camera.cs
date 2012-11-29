@@ -107,8 +107,8 @@ namespace Duality
 
 		// Compound groups
 		All = uint.MaxValue,
-		AllWorld = All & (~ScreenOverlay),
-		AllOverlay = All
+		AllFlags = ScreenOverlay,
+		AllGroups = All & (~AllFlags)
 	}
 
 	/// <summary>
@@ -195,9 +195,9 @@ namespace Duality
 		/// </summary>
 		float ViewBoundingRadius { get; }
 		/// <summary>
-		/// [GET] Returns whether the drawing device is currently rendering in screen overlay mode
+		/// [GET] Returns whether the drawing device allows writing to the depth buffer
 		/// </summary>
-		bool IsScreenOverlay { get; }
+		bool DepthWrite { get; }
 		/// <summary>
 		/// [GET] The size of the surface this drawing device operates on.
 		/// </summary>
@@ -287,7 +287,7 @@ namespace Duality.Components
 			private ClearFlags					clearFlags		= ClearFlags.All;
 			private RenderMatrix				matrixMode		= RenderMatrix.PerspectiveWorld;
 			private	bool						fitOutput		= false;
-			private	VisibilityFlag				visibilityMask	= VisibilityFlag.AllWorld;
+			private	VisibilityFlag				visibilityMask	= VisibilityFlag.AllGroups;
 			private	BatchInfo					input			= null;
 			private	ContentRef<RenderTarget>	output			= ContentRef<RenderTarget>.Null;
 
@@ -806,7 +806,7 @@ namespace Duality.Components
 			Pass overlayPass = new Pass();
 			overlayPass.MatrixMode = RenderMatrix.OrthoScreen;
 			overlayPass.ClearFlags = ClearFlags.None;
-			overlayPass.VisibilityMask = VisibilityFlag.AllOverlay;
+			overlayPass.VisibilityMask = VisibilityFlag.AllGroups | VisibilityFlag.ScreenOverlay;
 
 			this.passes.Add(worldPass);
 			this.passes.Add(overlayPass);
@@ -850,7 +850,7 @@ namespace Duality.Components
 				GL.ClearColor(System.Drawing.Color.Black);
 				GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-				this.deviceVisibility = this.visibilityMask & VisibilityFlag.AllWorld;
+				this.deviceVisibility = this.visibilityMask & VisibilityFlag.AllGroups;
 				this.devicePass = null;
 				this.deviceScreenOverlay = false;
 				// Setup matrices
@@ -1205,6 +1205,9 @@ namespace Duality.Components
 		}
 		private void CollectDrawcalls()
 		{
+			// If no visibility groups are met, don't bother looking for renderers
+			if ((this.deviceVisibility & VisibilityFlag.AllGroups) == VisibilityFlag.None) return;
+
 			// Query renderers
 			IEnumerable<ICmpRenderer> rendererQuery = Scene.Current.QueryVisibleRenderers(this.DrawDevice);
 			foreach (Predicate<ICmpRenderer> p in this.editorRenderFilter) rendererQuery = rendererQuery.Where(r => p(r));
@@ -1258,7 +1261,7 @@ namespace Duality.Components
 			}
 
 			// Process drawcalls
-			this.OptimizeBatches(this.deviceScreenOverlay);
+			this.OptimizeBatches();
 			this.BeginBatchRendering();
 
 			int drawCalls = 0;
@@ -1370,7 +1373,7 @@ namespace Duality.Components
 		{
 			return MathF.RoundToInt((second.ZSortIndex - first.ZSortIndex) * this.zSortAccuracy);
 		}
-		private void OptimizeBatches(bool screenOverlay)
+		private void OptimizeBatches()
 		{
 			int batchCountBefore = this.drawBuffer.Count + this.drawBufferZSort.Count;
 			if (this.picking == 0) Performance.timeOptimizeDrawcalls.BeginMeasure();
@@ -1500,7 +1503,7 @@ namespace Duality.Components
 		{
 			get { return this.deviceVisibility; }
 		}
-		bool IDrawDevice.IsScreenOverlay
+		bool IDrawDevice.DepthWrite
 		{
 			get { return this.deviceScreenOverlay; }
 		}

@@ -18,8 +18,8 @@ namespace EditorBase.PropertyEditors
 				e.EditedType = (info as PropertyInfo).PropertyType;
 				// ToDo: Use actual user-definable visibility groups
 				List<BitmaskItem> items = Enumerable.Range(0, 31).Select(i => new BitmaskItem(1UL << i, "Group " + i)).ToList();
-				items.Insert(0, new BitmaskItem(0, "None"));
-				items.Add(new BitmaskItem((1UL << 32) - 1, "All"));
+				items.Insert(0, new BitmaskItem((ulong)VisibilityFlag.None, "None"));
+				items.Add(new BitmaskItem((ulong)VisibilityFlag.AllGroups, "All"));
 				e.Items = items;
 				this.ParentGrid.ConfigureEditor(e);
 				return e;
