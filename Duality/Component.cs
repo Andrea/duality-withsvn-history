@@ -85,7 +85,7 @@ namespace Duality
 	public interface ICmpRenderer
 	{
 		/// <summary>
-		/// [GET] The Renderers bounding radius, originating from its <see cref="SpaceCoord"/>.
+		/// [GET] The Renderers bounding radius.
 		/// </summary>
 		float BoundRadius { get; }
 

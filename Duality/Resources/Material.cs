@@ -513,6 +513,9 @@ namespace Duality.Resources
 		/// <param name="uniformVal"></param>
 		public void SetUniform(string name, int index, float uniformVal)
 		{
+			if (this.uniforms != null)
+				this.CleanDirty(DirtyFlag.Uniforms);
+
 			float[] uniformArr = this.GetUniform(name);
 			if (uniformArr == null)
 			{

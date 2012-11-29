@@ -422,7 +422,7 @@ namespace Duality.Serialization
 			this.log.WriteError("Can't resolve Type '{0}' in object Id {1}. Type not found.", typeString, objId);
 		}
 		/// <summary>
-		/// Logs an error that occured trying to resolve a <see cref="System.MemberInfo"/> by its <see cref="ReflectionHelper.GetMemberId">id string</see>.
+		/// Logs an error that occured trying to resolve a <see cref="System.Reflection.MemberInfo"/> by its <see cref="ReflectionHelper.GetMemberId">id string</see>.
 		/// </summary>
 		/// <param name="objId">The object id of the affected object.</param>
 		/// <param name="memberString">The <see cref="ReflectionHelper.GetMemberId">id string</see> that couldn't be resolved.</param>

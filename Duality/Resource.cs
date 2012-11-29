@@ -290,7 +290,7 @@ namespace Duality
 		/// <summary>
 		/// Schedules this Resource for disposal. It is guaranteed to be executed until the next update cycle starts.
 		/// </summary>
-		/// <seealso cref="Dispose"/>
+		/// <seealso cref="Dispose()"/>
 		public void DisposeLater()
 		{
 			DualityApp.DisposeLater(this);
