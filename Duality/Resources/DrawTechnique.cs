@@ -4,6 +4,7 @@ using System.Linq;
 
 using Duality.VertexFormat;
 using Duality.EditorHints;
+using Duality.ColorFormat;
 
 using OpenTK.Graphics.OpenGL;
 
@@ -227,10 +228,6 @@ namespace Duality.Resources
 		/// </summary>
 		public	const	int		VertexType_Unknown	= -1;
 		/// <summary>
-		/// <see cref="Duality.VertexFormat.VertexP3"/> format.
-		/// </summary>
-		public	const	int		VertexType_P3		= 0;
-		/// <summary>
 		/// <see cref="Duality.VertexFormat.VertexC1P3"/> format.
 		/// </summary>
 		public	const	int		VertexType_C1P3		= 1;
@@ -242,10 +239,6 @@ namespace Duality.Resources
 		/// <see cref="Duality.VertexFormat.VertexC1P3T4A1"/> format.
 		/// </summary>
 		public	const	int		VertexType_C1P3T4A1	= 3;
-		/// <summary>
-		/// <see cref="Duality.VertexFormat.VertexP3T2"/> format.
-		/// </summary>
-		public	const	int		VertexType_P3T2		= 4;
 
 		private static Dictionary<string,int>	vertexTypeIndexMap	= new Dictionary<string,int>();
 		public static IEnumerable<KeyValuePair<string,int>> VertexTypeIndices
@@ -257,11 +250,9 @@ namespace Duality.Resources
 		{
 			vertexTypeIndexMap.Clear();
 			vertexTypeIndexMap["Unknown"]					= VertexType_Unknown;
-			vertexTypeIndexMap[typeof(VertexP3).Name]		= VertexType_P3;
 			vertexTypeIndexMap[typeof(VertexC1P3).Name]		= VertexType_C1P3;
 			vertexTypeIndexMap[typeof(VertexC1P3T2).Name]	= VertexType_C1P3T2;
 			vertexTypeIndexMap[typeof(VertexC1P3T4A1).Name] = VertexType_C1P3T4A1;
-			vertexTypeIndexMap[typeof(VertexP3T2).Name]		= VertexType_P3T2;
 		}
 		public static int RequestVertexTypeIndex(string name)
 		{
@@ -395,7 +386,7 @@ namespace Duality.Resources
 				if (!this.NeedsPreprocess) material = new BatchInfo(material);
 				this.PrepareRendering(device, material);
 			}
-
+			
 			// Setup BlendType
 			if (lastTechnique == null || this.blendType != lastTechnique.blendType)
 				this.SetupBlendType(this.blendType, !device.DepthWrite);
@@ -464,6 +455,7 @@ namespace Duality.Resources
 		{
 			this.SetupBlendType(BlendMode.Reset);
 			ShaderProgram.Bind(ContentRef<ShaderProgram>.Null);
+			Texture.ResetBinding();
 		}
 
 		/// <summary>

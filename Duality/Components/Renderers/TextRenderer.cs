@@ -148,15 +148,15 @@ namespace Duality.Components.Renderers
 				MathF.TransformDotVec(ref textMaxHeight, ref xDot, ref yDot);
 
 				device.AddVertices(new BatchInfo(DrawTechnique.Alpha, ColorRgba.Green.WithAlpha(128)), VertexMode.LineLoop,
-					new VertexFormat.VertexP3(posTemp),
-					new VertexFormat.VertexP3(posTemp + textWidth),
-					new VertexFormat.VertexP3(posTemp + textWidth + textHeight),
-					new VertexFormat.VertexP3(posTemp + textHeight));
+					new VertexFormat.VertexC1P3(posTemp),
+					new VertexFormat.VertexC1P3(posTemp + textWidth),
+					new VertexFormat.VertexC1P3(posTemp + textWidth + textHeight),
+					new VertexFormat.VertexC1P3(posTemp + textHeight));
 				device.AddVertices(new BatchInfo(DrawTechnique.Alpha, ColorRgba.Red.WithAlpha(128)), VertexMode.LineLoop,
-					new VertexFormat.VertexP3(posTemp),
-					new VertexFormat.VertexP3(posTemp + textMaxWidth),
-					new VertexFormat.VertexP3(posTemp + textMaxWidth + textMaxHeight),
-					new VertexFormat.VertexP3(posTemp + textMaxHeight));
+					new VertexFormat.VertexC1P3(posTemp),
+					new VertexFormat.VertexC1P3(posTemp + textMaxWidth),
+					new VertexFormat.VertexC1P3(posTemp + textMaxWidth + textMaxHeight),
+					new VertexFormat.VertexC1P3(posTemp + textMaxHeight));
 			}
 
 			ColorRgba matColor = this.customMat != null ? this.customMat.MainColor : ColorRgba.White;

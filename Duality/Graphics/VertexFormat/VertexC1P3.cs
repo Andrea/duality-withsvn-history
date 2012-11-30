@@ -28,6 +28,11 @@ namespace Duality.VertexFormat
 			get { return this.Pos; }
 			set { this.Pos = value; }
 		}
+		ColorRgba IVertexData.Color
+		{
+			get { return this.Color; }
+			set { this.Color = value; }
+		}
 		int IVertexData.TypeIndex
 		{
 			get { return VertexTypeIndex; }
@@ -35,10 +40,10 @@ namespace Duality.VertexFormat
 		
 		void IVertexData.SetupVBO(Resources.BatchInfo mat)
 		{
-			if (mat.Technique != Duality.Resources.DrawTechnique.Picking) GL.EnableClientState(ArrayCap.ColorArray);
+			GL.EnableClientState(ArrayCap.ColorArray);
 			GL.EnableClientState(ArrayCap.VertexArray);
 
-			if (mat.Technique != Duality.Resources.DrawTechnique.Picking) GL.ColorPointer(4, ColorPointerType.UnsignedByte, Size, (IntPtr)OffsetColor);
+			GL.ColorPointer(4, ColorPointerType.UnsignedByte, Size, (IntPtr)OffsetColor);
 			GL.VertexPointer(3, VertexPointerType.Float, Size, (IntPtr)OffsetPos);
 		}
 		void IVertexData.UploadToVBO<T>(T[] vertexData)

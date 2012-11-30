@@ -506,19 +506,30 @@ namespace Duality.Components
 			}
 			public void UploadToVBO(List<IDrawBatch> batches)
 			{
-				// Check how many vertices we got
-				int totalVertexNum = batches.Sum(t => t.VertexCount);
+				T[] vertexData = null;
 
-				// Collect vertex data in one array
-				int curVertexPos = 0;
-				T[] vertexData = new T[totalVertexNum];
-				int[] batchBeginIndices = new int[batches.Count];
-				for (int i = 0; i < batches.Count; i++)
+				if (batches.Count == 1)
 				{
-					DrawBatch<T> b = batches[i] as DrawBatch<T>;
-					Array.Copy(b.vertices, 0, vertexData, curVertexPos, b.vertexCount);
-					batchBeginIndices[i] = curVertexPos;
-					curVertexPos += b.vertexCount;
+					// Only one batch? Don't bother copying data
+					DrawBatch<T> b = batches[0] as DrawBatch<T>;
+					vertexData = b.vertices;
+				}
+				else
+				{
+					// Check how many vertices we got
+					int totalVertexNum = batches.Sum(t => t.VertexCount);
+
+					// Collect vertex data in one array
+					int curVertexPos = 0;
+					vertexData = new T[totalVertexNum];
+					int[] batchBeginIndices = new int[batches.Count];
+					for (int i = 0; i < batches.Count; i++)
+					{
+						DrawBatch<T> b = batches[i] as DrawBatch<T>;
+						Array.Copy(b.vertices, 0, vertexData, curVertexPos, b.vertexCount);
+						batchBeginIndices[i] = curVertexPos;
+						curVertexPos += b.vertexCount;
+					}
 				}
 
 				// Submit vertex data to GPU
@@ -1193,10 +1204,10 @@ namespace Duality.Components
 
 				IDrawDevice device = this.DrawDevice;
 				device.AddVertices(p.Input, VertexMode.Quads,
-					new VertexP3T2(targetRect.MinX,	targetRect.MinY,	0.0f,	0.0f,		0.0f),
-					new VertexP3T2(targetRect.MaxX,	targetRect.MinY,	0.0f,	uvRatio.X,	0.0f),
-					new VertexP3T2(targetRect.MaxX,	targetRect.MaxY,	0.0f,	uvRatio.X,	uvRatio.Y),
-					new VertexP3T2(targetRect.MinX,	targetRect.MaxY,	0.0f,	0.0f,		uvRatio.Y));
+					new VertexC1P3T2(targetRect.MinX,	targetRect.MinY,	0.0f,	0.0f,		0.0f),
+					new VertexC1P3T2(targetRect.MaxX,	targetRect.MinY,	0.0f,	uvRatio.X,	0.0f),
+					new VertexC1P3T2(targetRect.MaxX,	targetRect.MaxY,	0.0f,	uvRatio.X,	uvRatio.Y),
+					new VertexC1P3T2(targetRect.MinX,	targetRect.MaxY,	0.0f,	0.0f,		uvRatio.Y));
 
 				Performance.timePostProcessing.BeginMeasure();
 				this.ProcessDrawcalls();
@@ -1608,10 +1619,13 @@ namespace Duality.Components
 
 			if (this.picking != 0)
 			{
-				if (material.Textures == null)
-					material = new BatchInfo(DrawTechnique.Picking, new ColorRgba((this.picking << 8) | 0xFF), Texture.White);
-				else
-					material = new BatchInfo(DrawTechnique.Picking, new ColorRgba((this.picking << 8) | 0xFF), material.Textures);
+				ColorRgba clr = new ColorRgba((this.picking << 8) | 0xFF);
+				for (int i = 0; i < vertices.Length; ++i)
+					vertices[i].Color = clr;
+
+				material = new BatchInfo(material);
+				material.Technique = DrawTechnique.Picking;
+				if (material.Textures == null) material.MainTexture = Texture.White;
 			}
 			
 			if (material.Technique.Res.NeedsPreprocess)

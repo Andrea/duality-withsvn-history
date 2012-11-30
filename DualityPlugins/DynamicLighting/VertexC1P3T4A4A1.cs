@@ -31,6 +31,11 @@ namespace DynamicLighting
 			get { return this.pos; }
 			set { this.pos = value; }
 		}
+		ColorRgba IVertexData.Color
+		{
+			get { return this.clr; }
+			set { this.clr = value; }
+		}
 		public int TypeIndex
 		{
 			get { return vertexTypeIndex; }
@@ -38,11 +43,11 @@ namespace DynamicLighting
 		
 		void IVertexData.SetupVBO(BatchInfo mat)
 		{
-			if (mat.Technique != DrawTechnique.Picking) GL.EnableClientState(ArrayCap.ColorArray);
+			GL.EnableClientState(ArrayCap.ColorArray);
 			GL.EnableClientState(ArrayCap.VertexArray);
 			GL.EnableClientState(ArrayCap.TextureCoordArray);
 
-			if (mat.Technique != DrawTechnique.Picking) GL.ColorPointer(4, ColorPointerType.UnsignedByte, Size, (IntPtr)OffsetColor);
+			GL.ColorPointer(4, ColorPointerType.UnsignedByte, Size, (IntPtr)OffsetColor);
 			GL.VertexPointer(3, VertexPointerType.Float, Size, (IntPtr)OffsetPos);
 			GL.TexCoordPointer(4, TexCoordPointerType.Float, Size, (IntPtr)OffsetTex0);
 

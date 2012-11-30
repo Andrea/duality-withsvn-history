@@ -1262,6 +1262,11 @@
             [GET] The vertices position.
             </summary>
         </member>
+        <member name="P:Duality.VertexFormat.IVertexData.Color">
+            <summary>
+            [GET] The vertices color.
+            </summary>
+        </member>
         <member name="F:Duality.VertexFormat.VertexC1P3T2.OffsetColor">
             <summary>
             Byte offset for the color.
@@ -5919,36 +5924,6 @@
             [GET / SET] The target distance between local and world anchor
             </summary>
         </member>
-        <member name="T:Duality.VertexFormat.VertexP3T2">
-            <summary>
-            Vertex data providing each vertex a position (3x4 byte) and texture coordinate (2x4 byte)
-            </summary>
-        </member>
-        <member name="F:Duality.VertexFormat.VertexP3T2.OffsetPos">
-            <summary>
-            Byte offset for the position.
-            </summary>
-        </member>
-        <member name="F:Duality.VertexFormat.VertexP3T2.OffsetTex0">
-            <summary>
-            Byte offset for the texture coordinate.
-            </summary>
-        </member>
-        <member name="F:Duality.VertexFormat.VertexP3T2.Size">
-            <summary>
-            Total size in bytes.
-            </summary>
-        </member>
-        <member name="F:Duality.VertexFormat.VertexP3T2.Pos">
-            <summary>
-            The vertices position.
-            </summary>
-        </member>
-        <member name="F:Duality.VertexFormat.VertexP3T2.TexCoord">
-            <summary>
-            The vertices texture coordinate.
-            </summary>
-        </member>
         <member name="T:Duality.Serialization.DataType">
             <summary>
             This enum is used by Dualitys serializers to distinguish between certain kinds of data.
@@ -6377,11 +6352,6 @@
             Unknown format.
             </summary>
         </member>
-        <member name="F:Duality.Resources.DrawTechnique.VertexType_P3">
-            <summary>
-            <see cref="T:Duality.VertexFormat.VertexP3"/> format.
-            </summary>
-        </member>
         <member name="F:Duality.Resources.DrawTechnique.VertexType_C1P3">
             <summary>
             <see cref="T:Duality.VertexFormat.VertexC1P3"/> format.
@@ -6395,11 +6365,6 @@
         <member name="F:Duality.Resources.DrawTechnique.VertexType_C1P3T4A1">
             <summary>
             <see cref="T:Duality.VertexFormat.VertexC1P3T4A1"/> format.
-            </summary>
-        </member>
-        <member name="F:Duality.Resources.DrawTechnique.VertexType_P3T2">
-            <summary>
-            <see cref="T:Duality.VertexFormat.VertexP3T2"/> format.
             </summary>
         </member>
         <member name="M:Duality.Resources.DrawTechnique.#ctor">
@@ -11514,26 +11479,6 @@
         <member name="P:Duality.Components.Physics.PrismaticJointInfo.ReferenceAngle">
             <summary>
             [GET / SET] The reference angle that is used to constrain the bodies angle.
-            </summary>
-        </member>
-        <member name="T:Duality.VertexFormat.VertexP3">
-            <summary>
-            Vertex data providing each vertex a position (3x4 byte).
-            </summary>
-        </member>
-        <member name="F:Duality.VertexFormat.VertexP3.OffsetPos">
-            <summary>
-            Byte offset for the position.
-            </summary>
-        </member>
-        <member name="F:Duality.VertexFormat.VertexP3.Size">
-            <summary>
-            Total size in bytes.
-            </summary>
-        </member>
-        <member name="F:Duality.VertexFormat.VertexP3.Pos">
-            <summary>
-            The vertices position.
             </summary>
         </member>
         <member name="T:Duality.Serialization.Surrogates.BitmapSurrogate">

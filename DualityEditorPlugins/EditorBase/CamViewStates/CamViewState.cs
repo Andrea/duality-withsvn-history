@@ -842,10 +842,10 @@ namespace EditorBase.CamViewStates
 					canvas.DrawDevice.PreprocessCoords(ref posTemp, ref scaleTemp);
 					posTemp.Z = 0.0f;
 					canvas.DrawDevice.AddVertices(canvas.CurrentState.Material, VertexMode.Lines,
-						new VertexP3(posTemp - right * 10.0f),
-						new VertexP3(posTemp + right * 10.0f),
-						new VertexP3(posTemp - down * 10.0f),
-						new VertexP3(posTemp + down * 10.0f));
+						new VertexC1P3(posTemp - right * 10.0f),
+						new VertexC1P3(posTemp + right * 10.0f),
+						new VertexC1P3(posTemp - down * 10.0f),
+						new VertexC1P3(posTemp + down * 10.0f));
 				}
 
 				// Draw angle marker
@@ -986,7 +986,7 @@ namespace EditorBase.CamViewStates
 			SelObj lastMouseoverObject = this.mouseoverObject;
 			ObjectAction lastMouseoverAction = this.mouseoverAction;
 
-			if (this.actionAllowed && !this.camBeginDragScene)
+			if (this.actionAllowed && !this.camBeginDragScene && this.camAction == CameraAction.None)
 			{
 				// Determine object at mouse position
 				this.mouseoverObject = this.PickSelObjAt(mouseLoc.X, mouseLoc.Y);

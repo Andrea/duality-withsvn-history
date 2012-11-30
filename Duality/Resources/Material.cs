@@ -429,11 +429,6 @@ namespace Duality.Resources
 		public void SetupForRendering(IDrawDevice device, BatchInfo lastInfo)
 		{
 			if (object.ReferenceEquals(this, lastInfo)) return;
-
-			// Setup main color
-			GL.Color4(this.mainColor.R, this.mainColor.G, this.mainColor.B, this.mainColor.A);
-
-			// Setup technique
 			this.technique.Res.SetupForRendering(device, this, (lastInfo == null) ? null : lastInfo.technique.Res);
 		}
 		/// <summary>
@@ -443,7 +438,6 @@ namespace Duality.Resources
 		/// </summary>
 		public void FinishRendering()
 		{
-			Texture.ResetBinding();
 			this.technique.Res.FinishRendering();
 		}
 

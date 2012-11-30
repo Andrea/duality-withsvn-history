@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using Duality.ColorFormat;
 
 namespace Duality.VertexFormat
 {
@@ -39,5 +40,9 @@ namespace Duality.VertexFormat
 		/// [GET] The vertices position.
 		/// </summary>
 		Vector3 Pos { get; set; }
+		/// <summary>
+		/// [GET] The vertices color.
+		/// </summary>
+		ColorRgba Color { get; set; }
 	}
 }
