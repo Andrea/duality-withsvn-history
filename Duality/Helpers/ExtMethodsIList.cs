@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Duality
 {
@@ -35,19 +36,36 @@ namespace Duality
 		/// <param name="comparison">The comparison to use.</param>
 		public static void StableSort<T>(this IList<T> list, Comparison<T> comparison)
 		{
-			if (comparison == null) throw new ArgumentNullException( "comparison" );
+			if (list.Count < 2) return;
 
-			int count = list.Count;
-			for (int j = 1; j < count; j++)
+			int middle = list.Count / 2;
+			IList<T> left = new T[middle];
+			for (int i = 0; i < middle; i++)
 			{
-				T key = list[j];
+				left[i] = list[i];
+			}
+			IList<T> right = new T[list.Count - middle];
+			for (int i = 0; i < list.Count - middle; i++)
+			{
+				right[i] = list[i + middle];
+			}
+			StableSort(left, comparison);
+			StableSort(right, comparison);
 
-				int i = j - 1;
-				for (; i >= 0 && comparison( list[i], key ) > 0; i--)
+			int leftptr = 0;
+			int rightptr = 0;
+			for (int k = 0 ; k < list.Count; k++)
+			{
+				if (rightptr == right.Count || ((leftptr < left.Count ) && comparison(left[leftptr], right[rightptr]) <= 0))
 				{
-					list[i + 1] = list[i];
+					list[ k ] = left[leftptr];
+					leftptr++;
 				}
-				list[i + 1] = key;
+				else if (leftptr == left.Count || ((rightptr < right.Count ) && comparison(right[rightptr], left[leftptr]) <= 0))
+				{
+					list[k] = right[rightptr];
+					rightptr++;
+				}
 			}
 		}
 
