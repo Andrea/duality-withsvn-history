@@ -236,6 +236,7 @@ namespace Duality.Resources
 		private	Dictionary<string,ContentRef<Texture>>	textures	= null;
 		private	Dictionary<string,float[]>				uniforms	= null;
 		private	DirtyFlag	dirtyFlag	= DirtyFlag.None;
+		private	int	hashCode = 0;
 		
 		/// <summary>
 		/// [GET / SET] The <see cref="Duality.Resources.DrawTechnique"/> that is used.
@@ -243,7 +244,7 @@ namespace Duality.Resources
 		public ContentRef<DrawTechnique> Technique
 		{
 			get { return this.technique; }
-			set { this.technique = value; }
+			set { this.technique = value; this.InvalidateHashCode(); }
 		}
 		/// <summary>
 		/// [GET / SET] The main color, typically used for coloring displayed vertices.
@@ -251,7 +252,7 @@ namespace Duality.Resources
 		public ColorRgba MainColor
 		{
 			get { return this.mainColor; }
-			set { this.mainColor = value; }
+			set { this.mainColor = value; this.InvalidateHashCode(); }
 		}
 		/// <summary>
 		/// [GET / SET] The set of <see cref="Duality.Resources.Texture">Textures</see> to use.
@@ -273,6 +274,7 @@ namespace Duality.Resources
 						this.textures.Add(pair.Key, pair.Value);
 					}
 				}
+				this.InvalidateHashCode();
 				this.dirtyFlag &= ~DirtyFlag.Textures;
 			}
 		}
@@ -295,6 +297,7 @@ namespace Duality.Resources
 				else
 					this.CleanDirty(DirtyFlag.Textures);
 				this.textures[ShaderVarInfo.VarName_MainTex] = value;
+				this.InvalidateHashCode();
 			}
 		}
 		/// <summary>
@@ -317,6 +320,7 @@ namespace Duality.Resources
 						this.uniforms.Add(pair.Key, pair.Value);
 					}
 				}
+				this.InvalidateHashCode();
 				this.dirtyFlag &= ~DirtyFlag.Uniforms;
 			}
 		}
@@ -348,6 +352,7 @@ namespace Duality.Resources
 		{
 			this.textures = new Dictionary<string,ContentRef<Texture>>();
 			this.textures.Add(ShaderVarInfo.VarName_MainTex, mainTex);
+			this.InvalidateHashCode();
 		}
 		/// <summary>
 		/// Creates a new complex BatchInfo.
@@ -362,6 +367,7 @@ namespace Duality.Resources
 			this.mainColor = mainColor;
 			this.Textures = textures;
 			this.Uniforms = uniforms;
+			this.InvalidateHashCode();
 		}
 		
 		/// <summary>
@@ -374,6 +380,7 @@ namespace Duality.Resources
 			info.mainColor = this.mainColor;
 			info.textures = this.textures;
 			info.uniforms = this.uniforms;
+			info.hashCode = this.hashCode;
 			info.dirtyFlag |= DirtyFlag.All;
 		}
 		/// <summary>
@@ -416,6 +423,7 @@ namespace Duality.Resources
 					this.textures[pair.Key] = pair.Value.IsAvailable ? pair.Value.Res : pair.Value;
 				}
 			}
+			this.InvalidateHashCode();
 		}
 
 		/// <summary>
@@ -469,6 +477,8 @@ namespace Duality.Resources
 				this.textures.Remove(name);
 			else
 				this.textures[name] = tex;
+
+			this.InvalidateHashCode();
 		}
 		/// <summary>
 		/// Gets a uniform by name. Returns a null reference if the name doesn't exist.
@@ -498,6 +508,8 @@ namespace Duality.Resources
 				this.uniforms.Remove(name);
 			else
 				this.uniforms[name] = uniform;
+
+			this.InvalidateHashCode();
 		}
 		/// <summary>
 		/// Sets a uniform value
@@ -522,6 +534,8 @@ namespace Duality.Resources
 				this.SetUniform(name, uniformArr);
 			}
 			uniformArr[index] = uniformVal;
+
+			this.InvalidateHashCode();
 		}
 
 		/// <summary>
@@ -536,6 +550,7 @@ namespace Duality.Resources
 			if (object.ReferenceEquals(first, second)) return true;
 			if (object.ReferenceEquals(first, null)) return false;
 			if (object.ReferenceEquals(second, null)) return false;
+			if (first.GetHashCode() != second.GetHashCode()) return false;
 
 			if (first.mainColor != second.mainColor) return false;
 			if (first.technique.Res != second.technique.Res) return false;
@@ -577,6 +592,53 @@ namespace Duality.Resources
 			return !(first == second);
 		}
 		
+		private void InvalidateHashCode()
+		{
+			this.hashCode = 0;
+		}
+		private void UpdateHashCode()
+		{
+			unchecked // Overflow is fine, just wrap
+			{
+				this.hashCode = 17;
+				this.hashCode = this.hashCode * 23 + this.mainColor.GetHashCode();
+				this.hashCode = this.hashCode * 23 + this.technique.GetHashCode();
+				this.hashCode = this.hashCode * 23 + this.GetTextureHashCode();
+				this.hashCode = this.hashCode * 23 + this.GetUniformHashCode();
+			}
+		}
+		private int GetTextureHashCode()
+		{
+			if (this.textures == null) return 0;
+			int texHash = 17;
+			unchecked
+			{
+				foreach (var pair in this.textures)
+				{
+					texHash = texHash * 23 + pair.Key.GetHashCode();
+					texHash = texHash * 23 + pair.Value.GetHashCode();
+				}
+			}
+			return texHash;
+		}
+		private int GetUniformHashCode()
+		{
+			if (this.uniforms == null) return 0;
+			int uniformHash = 17;
+			unchecked
+			{
+				foreach (var pair in this.uniforms)
+				{
+					uniformHash = uniformHash * 23 + pair.Key.GetHashCode();
+					for (int i = 0; i < pair.Value.Length; i++)
+					{
+						uniformHash = uniformHash * 23 + pair.Value[i].GetHashCode();
+					}
+				}
+			}
+			return uniformHash;
+		}
+
 		public override string ToString()
 		{
 			ContentRef<Texture> inputTex = this.MainTexture;
@@ -586,46 +648,8 @@ namespace Duality.Resources
 		}
 		public override int GetHashCode()
 		{
-			unchecked // Overflow is fine, just wrap
-			{
-				int hash = 17;
-				hash = hash * 23 + this.mainColor.GetHashCode();
-				hash = hash * 23 + this.GetTechniqueHashCode();
-				hash = hash * 23 + this.GetTextureHashCode();
-				hash = hash * 23 + this.GetUniformHashCode();
-				return hash;
-			}
-		}
-		public int GetTechniqueHashCode()
-		{
-			return this.technique.IsAvailable ? this.technique.Res.GetHashCode() : 0;
-		}
-		public int GetTextureHashCode()
-		{
-			if (this.textures == null) return 0;
-			int texHash = 17;
-			unchecked
-			{
-				foreach (var tex in this.textures.Values)
-				{
-					if (!tex.IsAvailable) continue;
-					texHash = texHash * 23 + tex.Res.GetHashCode();
-				}
-			}
-			return texHash;
-		}
-		public int GetUniformHashCode()
-		{
-			if (this.uniforms == null) return 0;
-			int uniformHash = 17;
-			unchecked
-			{
-				foreach (var val in this.uniforms.Values)
-				{
-					uniformHash = uniformHash * 23 + val.GetHashCode();
-				}
-			}
-			return uniformHash;
+			if (this.hashCode == 0) this.UpdateHashCode();
+			return this.hashCode;
 		}
 		public override bool Equals(object obj)
 		{

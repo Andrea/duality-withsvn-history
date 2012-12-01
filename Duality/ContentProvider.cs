@@ -369,9 +369,9 @@ namespace Duality
 		}
 		public override int GetHashCode()
 		{
-			if (this.contentInstance != null) return this.contentInstance.GetHashCode();
-			else if (this.contentPath != null) return this.contentPath.GetHashCode();
-			else return base.GetHashCode();
+			if (this.contentPath != null) return this.contentPath.GetHashCode();
+			else if (this.contentInstance != null) return this.contentInstance.GetHashCode();
+			else return 0;
 		}
 		public bool Equals(ContentRef<T> other)
 		{

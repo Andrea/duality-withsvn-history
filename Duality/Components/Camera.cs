@@ -483,9 +483,7 @@ namespace Duality.Components
 				if (!this.material.Technique.Res.NeedsZSort)
 				{
 					int vTypeSI = vertices[0].TypeIndex;
-					int matHash = 
-						(this.material.GetTechniqueHashCode() & 2047) << 0 |	// 11 Bit Technique
-						(this.material.GetTextureHashCode() & 4095) << 11;		// 12 Bit Used Textures
+					int matHash = this.material.GetHashCode() % (1 << 23);
 
 					// Bit significancy is used to achieve sorting by multiple traits at once.
 					// The higher a traits bit significancy, the higher its priority when sorting.
