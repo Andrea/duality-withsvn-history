@@ -153,7 +153,7 @@ namespace DualityEditor
 					w.WriteLine("NoSharing=0");
 					w.WriteLine("IconFile=WorkingFolderIcon.ico");
 					w.WriteLine("IconIndex=0");
-					w.WriteLine("InfoTip=This is DualityEditors working folder");
+					w.WriteLine("InfoTip=This is Dualitors working folder");
 				}
 
 				DirectoryInfo dirInfo = new DirectoryInfo(EditorHelper.DataDirectory);
