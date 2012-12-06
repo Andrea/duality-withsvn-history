@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 using DualityEditor.Forms;
 
@@ -8,11 +9,27 @@ namespace DualityEditor
 {
 	public abstract class EditorPlugin
 	{
+		private	Assembly	assembly	= null;
+		private	string		asmName		= null;
+
 		/// <summary>
 		/// The Plugins ID. This should be unique.
 		/// </summary>
 		public abstract string Id { get; }
-
+		public Assembly PluginAssembly
+		{
+			get { return this.assembly; }
+		}
+		public string AssemblyName
+		{
+			get { return this.asmName; }
+		}
+		
+		protected EditorPlugin()
+		{
+			this.assembly = this.GetType().Assembly;
+			this.asmName = this.assembly.FullName.Split(',')[0];
+		}
 		/// <summary>
 		/// This method is called as soon as the plugins assembly is loaded. Initializes the plugins internal data.
 		/// </summary>

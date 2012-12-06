@@ -170,6 +170,9 @@ namespace DualityEditor
 			if (!Directory.Exists(EditorHelper.SourceMediaDirectory)) Directory.CreateDirectory(EditorHelper.SourceMediaDirectory);
 			if (!Directory.Exists(EditorHelper.SourceCodeDirectory)) Directory.CreateDirectory(EditorHelper.SourceCodeDirectory);
 
+			// Register Assembly Resolve hook for inter-Plugin dependency handling
+			AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+
 			// Initialize Duality
 			DualityApp.PluginReady += DualityApp_PluginReady;
 			DualityApp.Init(DualityApp.ExecutionEnvironment.Editor, DualityApp.ExecutionContext.Editor, new[] {"logfile", "logfile_editor"});
@@ -1157,6 +1160,16 @@ namespace DualityEditor
 		private static void DualityApp_PluginReady(object sender, CorePluginEventArgs e)
 		{
 			AnalyzeCorePlugin(e.Plugin);
+		}
+		private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+		{
+			// If this method gets called, assume we are searching for a dynamically loaded plugin assembly
+			string assemblyNameStub = args.Name.Split(',')[0];
+			EditorPlugin plugin = plugins.FirstOrDefault(p => assemblyNameStub == p.AssemblyName);
+			if (plugin != null)
+				return plugin.PluginAssembly;
+			else
+				return null;
 		}
 	}
 }
