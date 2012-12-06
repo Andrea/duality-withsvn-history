@@ -447,7 +447,7 @@ namespace Duality
 		/// <returns>True, if the Component requirement is met, false if not.</returns>
 		public bool IsComponentRequirementMet(Component evenWhenRemovingThis = null)
 		{
-			Type[] reqTypes = this.GetRequiredComponents();
+			var reqTypes = this.GetRequiredComponents();
 			return reqTypes.All(r => this.GameObj.GetComponents(r).Any(c => c != evenWhenRemovingThis));
 		}
 		/// <summary>
@@ -458,7 +458,7 @@ namespace Duality
 		/// <returns>True, if the Component requirement is met, false if not.</returns>
 		public bool IsComponentRequirementMet(GameObject isMetInObj, IEnumerable<Component> whenAddingThose = null)
 		{
-			Type[] reqTypes = this.GetRequiredComponents();
+			var reqTypes = this.GetRequiredComponents();
 			foreach (Type r in reqTypes)
 			{
 				if (isMetInObj.GetComponent(r) == null)
@@ -474,7 +474,7 @@ namespace Duality
 		/// Returns all Component Types this Component requires.
 		/// </summary>
 		/// <returns>An array of required Component Types.</returns>
-		public Type[] GetRequiredComponents()
+		public List<Type> GetRequiredComponents()
 		{
 			return GetRequiredComponents(this.GetType());
 		}
@@ -506,15 +506,31 @@ namespace Duality
 		/// Returns all required Component Types of a specified Component Type.
 		/// </summary>
 		/// <param name="cmpType">The Component Type that might require other Component Types.</param>
+		/// <param name="recursive">If true, also indirect requirements are returned.</param>
 		/// <returns>An array of Component Types to require.</returns>
-		public static Type[] GetRequiredComponents(Type cmpType)
+		public static List<Type> GetRequiredComponents(Type cmpType, bool recursive = false)
 		{
 			RequiredComponentAttribute[] attribs = 
 				cmpType.GetCustomAttributes(typeof(RequiredComponentAttribute), true).
 				Cast<RequiredComponentAttribute>().
 				ToArray();
 
-			return attribs.Select(a => a.RequiredComponentType).ToArray();
+			if (!recursive)
+				return attribs.Select(a => a.RequiredComponentType).ToList();
+			else
+			{
+				List<Type> result = null;
+				foreach (RequiredComponentAttribute a in attribs)
+				{
+					Type t = a.RequiredComponentType;
+					if (result == null)
+						result = GetRequiredComponents(t, recursive);
+					else
+						result.AddRange(GetRequiredComponents(t, recursive));
+					result.Add(t);
+				}
+				return result ?? new List<Type>();
+			}
 		}
 	}
 }

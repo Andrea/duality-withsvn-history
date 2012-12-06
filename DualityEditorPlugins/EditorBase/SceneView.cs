@@ -143,7 +143,7 @@ namespace EditorBase
 			public static string[] GetTypeCategory(Type type)
 			{
 				string[] result = CorePluginRegistry.RequestTypeCategory(type, CorePluginRegistry.CategoryContext_General);
-				if (result == null) result = new string[] { type.Assembly.FullName.Split(',')[0].Replace(".core", "") };
+				if (result == null) result = type.Namespace.Split('.');
 				return result;
 			}
 		}
@@ -582,6 +582,11 @@ namespace EditorBase
 		{
 			GameObjectNode baseObjNode = baseNode == null ? null : baseNode.Tag as GameObjectNode;
 			GameObject baseObj = baseObjNode == null ? null : baseObjNode.Obj;
+
+			// Add dependencies
+			foreach (Type required in Component.GetRequiredComponents(cmpType, true))
+				baseObj.AddComponent(required);
+			// Add Component
 			Component newCmp = baseObj.AddComponent(cmpType);
 
 			// Deselect previous
@@ -1395,8 +1400,6 @@ namespace EditorBase
 				List<ToolStripItem> newItems = new List<ToolStripItem>();
 				foreach (Type cmpType in this.QueryComponentTypes())
 				{
-					bool hasRequirements = Component.GetRequiredComponents(cmpType).All(t => targetObj.GetComponent(t) != null);
-
 					// Generalte category item
 					string[] category = ComponentNode.GetTypeCategory(cmpType);
 					ToolStripMenuItem categoryItem = this.newToolStripMenuItem;
@@ -1424,7 +1427,6 @@ namespace EditorBase
 
 					ToolStripMenuItem cmpTypeItem = new ToolStripMenuItem(cmpType.Name, ComponentNode.GetTypeImage(cmpType));
 					cmpTypeItem.Tag = cmpType;
-					cmpTypeItem.Enabled = hasRequirements;
 					if (categoryItem == this.newToolStripMenuItem)
 						newItems.Add(cmpTypeItem);
 					else
