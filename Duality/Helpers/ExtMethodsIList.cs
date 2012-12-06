@@ -38,11 +38,11 @@ namespace Duality
 		public static void StableSort<T>(this IList<T> list, Comparison<T> comparison)
 		{
 			// System.Threading.Tasks.Parallel is not a good idea in WinForms because it triggers the message loop.
-			// Don't use it when unsure about whether or not we're in WinForms
-			if (list.Count >= 512 && DualityApp.ExecEnvironment == DualityApp.ExecutionEnvironment.Launcher)
-				StableSort_Parallel(list, comparison);
-			else
-				StableSort_Sequential(list, comparison);
+			// Thus, parallel merge sorting isn't used anymore. Maybe it could be re-activated later.
+			//if (list.Count >= 512 && DualityApp.ExecEnvironment == DualityApp.ExecutionEnvironment.Launcher)
+			//	StableSort_Parallel(list, comparison);
+			//else
+			StableSort_Sequential(list, comparison);
 		}
 		private static void StableSort_Parallel<T>(IList<T> list, Comparison<T> comparison)
 		{
