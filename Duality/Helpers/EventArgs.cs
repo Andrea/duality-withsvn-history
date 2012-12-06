@@ -19,26 +19,6 @@ namespace Duality
 	}
 
 	/// <summary>
-	/// Provides event arguments regarding the objects registered in an <see cref="ObjectManager{T}"/>.
-	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	public class ObjectManagerEventArgs<T> : EventArgs where T : IManageableObject
-	{
-		private	T	obj;
-		/// <summary>
-		/// [GET] The managed object affected by the event.
-		/// </summary>
-		public T Object
-		{
-			get { return this.obj; }
-		}
-		public ObjectManagerEventArgs(T obj)
-		{
-			this.obj = obj;
-		}
-	}
-
-	/// <summary>
 	/// Provides event arguments for <see cref="Duality.Component"/>-related events.
 	/// </summary>
 	public class ComponentEventArgs : EventArgs
@@ -58,9 +38,28 @@ namespace Duality
 	}
 
 	/// <summary>
+	/// Provides event arguments for <see cref="Duality.GameObject"/>-related events.
+	/// </summary>
+	public class GameObjectEventArgs : EventArgs
+	{
+		private	GameObject	obj;
+		/// <summary>
+		/// [GET] The affected GameObject.
+		/// </summary>
+		public GameObject Object
+		{
+			get { return this.obj; }
+		}
+		public GameObjectEventArgs(GameObject obj)
+		{
+			this.obj = obj;
+		}
+	}
+
+	/// <summary>
 	/// Provides event arguments for a <see cref="GameObject">GameObjects</see> "<see cref="GameObject.Parent"/> changed" events.
 	/// </summary>
-	public class GameObjectParentChangedEventArgs : EventArgs
+	public class GameObjectParentChangedEventArgs : GameObjectEventArgs
 	{
 		private	GameObject	oldParent;
 		private	GameObject	newParent;
@@ -80,7 +79,7 @@ namespace Duality
 			get { return this.newParent; }
 		}
 
-		public GameObjectParentChangedEventArgs(GameObject oldParent, GameObject newParent)
+		public GameObjectParentChangedEventArgs(GameObject obj, GameObject oldParent, GameObject newParent) : base(obj)
 		{
 			this.oldParent = oldParent;
 			this.newParent = newParent;

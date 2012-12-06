@@ -230,8 +230,9 @@ namespace EditorBase
 			Scene.Leaving += this.Scene_Leaving;
 			Scene.GameObjectRegistered += this.Scene_GameObjectRegistered;
 			Scene.GameObjectUnregistered += this.Scene_GameObjectUnregistered;
-			Scene.RegisteredObjectComponentAdded += this.Scene_RegisteredObjectComponentAdded;
-			Scene.RegisteredObjectComponentRemoved += this.Scene_RegisteredObjectComponentRemoved;
+			Scene.GameObjectParentChanged += this.Scene_GameObjectParentChanged;
+			Scene.ComponentAdded += this.Scene_ComponentAdded;
+			Scene.ComponentRemoved += this.Scene_ComponentRemoved;
 
 			if (Scene.Current != null) this.Scene_Entered(this, null);
 		}
@@ -249,8 +250,9 @@ namespace EditorBase
 			Scene.Leaving -= this.Scene_Leaving;
 			Scene.GameObjectRegistered -= this.Scene_GameObjectRegistered;
 			Scene.GameObjectUnregistered -= this.Scene_GameObjectUnregistered;
-			Scene.RegisteredObjectComponentAdded -= this.Scene_RegisteredObjectComponentAdded;
-			Scene.RegisteredObjectComponentRemoved -= this.Scene_RegisteredObjectComponentRemoved;
+			Scene.GameObjectParentChanged -= this.Scene_GameObjectParentChanged;
+			Scene.ComponentAdded -= this.Scene_ComponentAdded;
+			Scene.ComponentRemoved -= this.Scene_ComponentRemoved;
 		}
 
 		internal void SaveUserData(XmlElement node)
@@ -1235,16 +1237,6 @@ namespace EditorBase
 				{
 					if (dragObj.Parent == dropObj) continue;
 
-					GameObjectNode dragObjNode = this.FindNode(dragObj);
-					Node parent = dragObjNode.Parent;
-
-					// Remove node
-					TreeNodeAdv dragObjViewNode;
-					HashSet<object> expandedMap = new HashSet<object>();
-					dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(dragObjNode));
-					this.objectView.SaveNodesExpanded(dragObjViewNode, expandedMap);
-					parent.Nodes.Remove(dragObjNode);
-
 					// Save transform data
 					OpenTK.Vector3 oldPos = OpenTK.Vector3.Zero;
 					OpenTK.Vector3 oldScale = OpenTK.Vector3.Zero;
@@ -1267,13 +1259,9 @@ namespace EditorBase
 						dragObj.Transform.Scale = oldScale;
 					}
 
-					// Re-add node
-					parent = dragObj.Parent == null ? this.objectModel.Root : this.FindNode(dragObj.Parent);
-					this.InsertNodeSorted(dragObjNode, parent);
-					dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(dragObjNode));
-					this.objectView.RestoreNodesExpanded(dragObjViewNode, expandedMap);
-
 					// Select node
+					GameObjectNode dragObjNode = this.FindNode(dragObj);
+					TreeNodeAdv dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(dragObjNode));
 					dragObjViewNode.IsSelected = true;
 					this.objectView.EnsureVisible(dragObjViewNode);
 				}
@@ -1290,34 +1278,36 @@ namespace EditorBase
 					this.FlashNode(this.FindNode(conflictComp));
 					System.Media.SystemSounds.Beep.Play();
 				}
-
-				foreach (Component dragObj in cmpList)
+				else
 				{
-					if (dragObj.GameObj == dropObj) continue;
+					foreach (Component dragObj in cmpList)
+					{
+						if (dragObj.GameObj == dropObj) continue;
 					
-					ComponentNode dragObjNode;
-					TreeNodeAdv dragObjViewNode;
+						ComponentNode dragObjNode;
+						TreeNodeAdv dragObjViewNode;
 
-					// Save node data
-					HashSet<object> expandedMap = new HashSet<object>();
-					dragObjNode = this.FindNode(dragObj);
-					dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(dragObjNode));
-					this.objectView.SaveNodesExpanded(dragObjViewNode, expandedMap);
+						// Save node data
+						HashSet<object> expandedMap = new HashSet<object>();
+						dragObjNode = this.FindNode(dragObj);
+						dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(dragObjNode));
+						this.objectView.SaveNodesExpanded(dragObjViewNode, expandedMap);
 
-					// Set parent
-					dragObj.GameObj.RemoveComponent(dragObj.GetType());
-					dropObj.AddComponent(dragObj);
+						// Set parent
+						dragObj.GameObj.RemoveComponent(dragObj.GetType());
+						dropObj.AddComponent(dragObj);
 
-					// Restore node data
-					dragObjNode = this.FindNode(dragObj);
-					dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(dragObjNode));
-					this.objectView.RestoreNodesExpanded(dragObjViewNode, expandedMap);
+						// Restore node data
+						dragObjNode = this.FindNode(dragObj);
+						dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(dragObjNode));
+						this.objectView.RestoreNodesExpanded(dragObjViewNode, expandedMap);
 
-					// Select node
-					dragObjViewNode.IsSelected = true;
-					this.objectView.EnsureVisible(dragObjViewNode);
+						// Select node
+						dragObjViewNode.IsSelected = true;
+						this.objectView.EnsureVisible(dragObjViewNode);
+					}
+					DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(cmpList), ReflectionInfo.Property_Component_GameObj);
 				}
-				DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(cmpList), ReflectionInfo.Property_Component_GameObj);
 			}
 		}
 
@@ -1665,7 +1655,7 @@ namespace EditorBase
 			this.InitObjects();
 			this.UpdateSceneLabel();
 		}
-		private void Scene_RegisteredObjectComponentAdded(object sender, ComponentEventArgs e)
+		private void Scene_ComponentAdded(object sender, ComponentEventArgs e)
 		{
 			if (!this.buttonShowComponents.Checked) return;
 			ComponentNode newObjNode = this.ScanComponent(e.Component);
@@ -1673,7 +1663,7 @@ namespace EditorBase
 			this.InsertNodeSorted(newObjNode, parentNode);
 			this.RegisterNodeTree(newObjNode);
 		}
-		private void Scene_RegisteredObjectComponentRemoved(object sender, ComponentEventArgs e)
+		private void Scene_ComponentRemoved(object sender, ComponentEventArgs e)
 		{
 			if (!this.buttonShowComponents.Checked) return;
 			ComponentNode oldObjNode = this.FindNode(e.Component);
@@ -1683,7 +1673,7 @@ namespace EditorBase
 			parentNode.Nodes.Remove(oldObjNode);
 			this.UnregisterNodeTree(oldObjNode);
 		}
-		private void Scene_GameObjectUnregistered(object sender, ObjectManagerEventArgs<GameObject> e)
+		private void Scene_GameObjectUnregistered(object sender, GameObjectEventArgs e)
 		{
 			GameObjectNode oldObjNode = this.FindNode(e.Object);
 			if (oldObjNode == null) return;
@@ -1692,12 +1682,33 @@ namespace EditorBase
 			parentNode.Nodes.Remove(oldObjNode);
 			this.UnregisterNodeTree(oldObjNode);
 		}
-		private void Scene_GameObjectRegistered(object sender, ObjectManagerEventArgs<GameObject> e)
+		private void Scene_GameObjectRegistered(object sender, GameObjectEventArgs e)
 		{
 			GameObjectNode newObjNode = this.ScanGameObject(e.Object, false);
 			Node parentNode = e.Object.Parent != null ? this.FindNode(e.Object.Parent) : this.objectModel.Root;
 			this.InsertNodeSorted(newObjNode, parentNode);
 			this.RegisterNodeTree(newObjNode);
+		}
+		private void Scene_GameObjectParentChanged(object sender, GameObjectParentChangedEventArgs e)
+		{
+			// Find the moved node
+			GameObjectNode dragObjNode = this.FindNode(e.Object);
+			Node parent = dragObjNode.Parent;
+
+			// Remove node
+			TreeNodeAdv dragObjViewNode;
+			HashSet<object> expandedMap = new HashSet<object>();
+			dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(dragObjNode));
+			bool wasSelected = dragObjViewNode.IsSelected;
+			this.objectView.SaveNodesExpanded(dragObjViewNode, expandedMap);
+			parent.Nodes.Remove(dragObjNode);
+
+			// Re-add node
+			parent = e.Object.Parent == null ? this.objectModel.Root : this.FindNode(e.Object.Parent);
+			this.InsertNodeSorted(dragObjNode, parent);
+			dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(dragObjNode));
+			dragObjViewNode.IsSelected = wasSelected;
+			this.objectView.RestoreNodesExpanded(dragObjViewNode, expandedMap);
 		}
 
 		HelpInfo IHelpProvider.ProvideHoverHelp(Point localPos, ref bool captured)

@@ -9,6 +9,7 @@ using FarseerPhysics.Dynamics;
 using Duality.EditorHints;
 using Duality.Components;
 using Duality.ObjectManagers;
+using Duality.Serialization;
 
 namespace Duality.Resources
 {
@@ -19,7 +20,7 @@ namespace Duality.Resources
 	/// on you own design.
 	/// </summary>
 	[Serializable]
-	public sealed class Scene : Resource
+	public sealed class Scene : Resource, ISerializable
 	{
 		/// <summary>
 		/// A Scene resources file extension.
@@ -103,21 +104,25 @@ namespace Duality.Resources
 		/// </summary>
 		public static event EventHandler Entered;
 		/// <summary>
+		/// Fired when a <see cref="GameObject">GameObjects</see> parent object has been changed in the current Scene.
+		/// </summary>
+		public static event EventHandler<GameObjectParentChangedEventArgs> GameObjectParentChanged;
+		/// <summary>
 		/// Fired when a <see cref="GameObject"/> has been registered in the current Scene.
 		/// </summary>
-		public static event EventHandler<ObjectManagerEventArgs<GameObject>> GameObjectRegistered;
+		public static event EventHandler<GameObjectEventArgs> GameObjectRegistered;
 		/// <summary>
 		/// Fired when a <see cref="GameObject"/> has been unregistered from the current Scene.
 		/// </summary>
-		public static event EventHandler<ObjectManagerEventArgs<GameObject>> GameObjectUnregistered;
+		public static event EventHandler<GameObjectEventArgs> GameObjectUnregistered;
 		/// <summary>
 		/// Fired when a <see cref="Component"/> has been added to a <see cref="GameObject"/> that is registered in the current Scene.
 		/// </summary>
-		public static event EventHandler<ComponentEventArgs> RegisteredObjectComponentAdded;
+		public static event EventHandler<ComponentEventArgs> ComponentAdded;
 		/// <summary>
 		/// Fired when a <see cref="Component"/> has been removed from a <see cref="GameObject"/> that is registered in the current Scene.
 		/// </summary>
-		public static event EventHandler<ComponentEventArgs> RegisteredObjectComponentRemoved;
+		public static event EventHandler<ComponentEventArgs> ComponentRemoved;
 
 		private static void OnLeaving()
 		{
@@ -144,39 +149,43 @@ namespace Duality.Resources
 			}
 			if (Entered != null) Entered(current, null);
 		}
-		private static void OnGameObjectRegistered(ObjectManagerEventArgs<GameObject> args)
+		private static void OnGameObjectParentChanged(GameObjectParentChangedEventArgs args)
+		{
+			if (GameObjectParentChanged != null) GameObjectParentChanged(current, args);
+		}
+		private static void OnGameObjectRegistered(GameObjectEventArgs args)
 		{
 			args.Object.OnActivate();
 			if (GameObjectRegistered != null) GameObjectRegistered(current, args);
 		}
-		private static void OnGameObjectUnregistered(ObjectManagerEventArgs<GameObject> args)
+		private static void OnGameObjectUnregistered(GameObjectEventArgs args)
 		{
 			if (GameObjectUnregistered != null) GameObjectUnregistered(current, args);
 			args.Object.OnDeactivate();
 		}
-		private static void OnRegisteredObjectComponentAdded(ComponentEventArgs args)
+		private static void OnComponentAdded(ComponentEventArgs args)
 		{
 			if (args.Component.Active)
 			{
 				ICmpInitializable cInit = args.Component as ICmpInitializable;
 				if (cInit != null) cInit.OnInit(Component.InitContext.Activate);
 			}
-			if (RegisteredObjectComponentAdded != null) RegisteredObjectComponentAdded(current, args);
+			if (ComponentAdded != null) ComponentAdded(current, args);
 		}
-		private static void OnRegisteredObjectComponentRemoved(ComponentEventArgs args)
+		private static void OnComponentRemoved(ComponentEventArgs args)
 		{
 			if (args.Component.Active)
 			{
 				ICmpInitializable cInit = args.Component as ICmpInitializable;
 				if (cInit != null) cInit.OnShutdown(Component.ShutdownContext.Deactivate);
 			}
-			if (RegisteredObjectComponentRemoved != null) RegisteredObjectComponentRemoved(current, args);
+			if (ComponentRemoved != null) ComponentRemoved(current, args);
 		}
 
-		private	Vector2				globalGravity	= Vector2.UnitY * 33.0f;
-		private	GameObjectManager	objectManager	= new GameObjectManager();
-		[NonSerialized]	private	ObjectManager<Camera>	cameraManager	= new ObjectManager<Camera>();
-		[NonSerialized]	private	RendererManager			rendererManager	= new RendererManager();
+		private	Vector2					globalGravity	= Vector2.UnitY * 33.0f;
+		private	GameObjectManager		objectManager	= new GameObjectManager();
+		private	ObjectManager<Camera>	cameraManager	= new ObjectManager<Camera>();
+		private	RendererManager			rendererManager	= new RendererManager();
 
 		/// <summary>
 		/// [GET] Enumerates all registered objects.
@@ -268,10 +277,7 @@ namespace Duality.Resources
 		/// </summary>
 		public Scene()
 		{
-			this.objectManager.Registered += this.objectManager_Registered;
-			this.objectManager.Unregistered += this.objectManager_Unregistered;
-			this.objectManager.RegisteredObjectComponentAdded += this.objectManager_RegisteredObjectComponentAdded;
-			this.objectManager.RegisteredObjectComponentRemoved += this.objectManager_RegisteredObjectComponentRemoved;
+			this.RegisterManagerEvents();
 		}
 
 		/// <summary>
@@ -428,7 +434,7 @@ namespace Duality.Resources
 		/// <param name="objEnum"></param>
 		public void RegisterObj(IEnumerable<GameObject> objEnum)
 		{
-			foreach (GameObject obj in objEnum.ToArray()) this.RegisterObj(obj);
+			this.objectManager.RegisterObj(objEnum);
 		}
 		/// <summary>
 		/// Unregisters a GameObject and all of its children
@@ -444,7 +450,7 @@ namespace Duality.Resources
 		/// <param name="objEnum"></param>
 		public void UnregisterObj(IEnumerable<GameObject> objEnum)
 		{
-			foreach (GameObject obj in objEnum.ToArray()) this.UnregisterObj(obj);
+			this.objectManager.UnregisterObj(objEnum);
 		}
 
 		/// <summary>
@@ -484,13 +490,21 @@ namespace Duality.Resources
 			if (cmp is Camera)			this.cameraManager.UnregisterObj(cmp as Camera);
 			if (cmp is ICmpRenderer)	this.rendererManager.UnregisterObj(cmp);
 		}
-		private void RebuildManagers()
+		private void RegisterManagerEvents()
 		{
-			this.cameraManager.Clear();
-			this.rendererManager.Clear();
-
-			foreach (GameObject obj in this.objectManager.AllObjects)
-				this.AddToManagers(obj);
+			this.objectManager.Registered		+= this.objectManager_Registered;
+			this.objectManager.Unregistered		+= this.objectManager_Unregistered;
+			this.objectManager.ParentChanged	+= this.objectManager_ParentChanged;
+			this.objectManager.ComponentAdded	+= this.objectManager_ComponentAdded;
+			this.objectManager.ComponentRemoved += this.objectManager_ComponentRemoved;
+		}
+		private void UnregisterManagerEvents()
+		{
+			this.objectManager.Registered		-= this.objectManager_Registered;
+			this.objectManager.Unregistered		-= this.objectManager_Unregistered;
+			this.objectManager.ParentChanged	-= this.objectManager_ParentChanged;
+			this.objectManager.ComponentAdded	-= this.objectManager_ComponentAdded;
+			this.objectManager.ComponentRemoved -= this.objectManager_ComponentRemoved;
 		}
 
 		private static void ResetPhysics()
@@ -507,25 +521,29 @@ namespace Duality.Resources
 				b.Awake = true;
 		}
 
-		private void objectManager_Registered(object sender, ObjectManagerEventArgs<GameObject> e)
+		private void objectManager_Registered(object sender, GameObjectEventArgs e)
 		{
 			this.AddToManagers(e.Object);
 			if (this.IsCurrent) OnGameObjectRegistered(e);
 		}
-		private void objectManager_Unregistered(object sender, ObjectManagerEventArgs<GameObject> e)
+		private void objectManager_Unregistered(object sender, GameObjectEventArgs e)
 		{
 			this.RemoveFromManagers(e.Object);
 			if (this.IsCurrent) OnGameObjectUnregistered(e);
 		}
-		private void objectManager_RegisteredObjectComponentAdded(object sender, ComponentEventArgs e)
+		private void objectManager_ParentChanged(object sender, GameObjectParentChangedEventArgs e)
+		{
+			if (this.IsCurrent) OnGameObjectParentChanged(e);
+		}
+		private void objectManager_ComponentAdded(object sender, ComponentEventArgs e)
 		{
 			this.AddToManagers(e.Component);
-			if (this.IsCurrent) OnRegisteredObjectComponentAdded(e);
+			if (this.IsCurrent) OnComponentAdded(e);
 		}
-		private void objectManager_RegisteredObjectComponentRemoved(object sender, ComponentEventArgs e)
+		private void objectManager_ComponentRemoved(object sender, ComponentEventArgs e)
 		{
 			this.RemoveFromManagers(e.Component);
-			if (this.IsCurrent) OnRegisteredObjectComponentRemoved(e);
+			if (this.IsCurrent) OnComponentRemoved(e);
 		}
 
 		protected override void OnCopyTo(Resource r, Duality.Cloning.CloneProvider provider)
@@ -549,11 +567,6 @@ namespace Duality.Resources
 		}
 		protected override void OnLoaded()
 		{
-			foreach (GameObject obj in this.objectManager.AllObjects)
-				obj.PerformSanitaryCheck();
-
-			this.RebuildManagers();
-
 			base.OnLoaded();
 
 			this.ApplyPrefabLinks();
@@ -571,6 +584,38 @@ namespace Duality.Resources
 			GameObject[] obj = this.objectManager.AllObjects.ToArray();
 			this.objectManager.Clear();
 			foreach (GameObject g in obj) g.DisposeLater();
+		}
+
+		void ISerializable.WriteData(IDataWriter writer)
+		{
+			GameObject[] allObjects = this.objectManager.AllObjects.ToArray();
+			writer.WriteValue("globalGravity", this.globalGravity);
+			writer.WriteValue("allObjects", allObjects);
+			writer.WriteValue("sourcePath", this.sourcePath);
+		}
+		void ISerializable.ReadData(IDataReader reader)
+		{
+			GameObject[] allObjects = null;
+			reader.ReadValue("globalGravity", out this.globalGravity);
+			reader.ReadValue("allObjects", out allObjects);
+			reader.ReadValue("sourcePath", out this.sourcePath);
+			
+			this.UnregisterManagerEvents();
+			{
+				this.cameraManager.Clear();
+				this.rendererManager.Clear();
+				this.objectManager.Clear();
+				if (allObjects != null)
+				{
+					foreach (GameObject obj in allObjects) obj.PerformSanitaryCheck();
+					foreach (GameObject obj in allObjects)
+					{
+						this.objectManager.RegisterObj(obj);
+						this.AddToManagers(obj);
+					}
+				}
+			}
+			this.RegisterManagerEvents();
 		}
 	}
 }

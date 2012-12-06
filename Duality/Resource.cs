@@ -130,12 +130,17 @@ namespace Duality
 		public void Save(string saveAsPath = null)
 		{
 			if (this.initState != InitState.Initialized) throw new ApplicationException("Can't save Ressource that already has been disposed.");
-			if (saveAsPath == null) saveAsPath = this.path;
+			if (string.IsNullOrWhiteSpace(saveAsPath))
+			{
+				saveAsPath = this.path;
+				if (string.IsNullOrWhiteSpace(saveAsPath))
+					throw new ArgumentException("Can't save Resource to an undefined path.", "saveAsPath");
+			}
 
 			this.CheckedOnSaving();
 
 			// We're saving a new Ressource for the first time: Register it in the library
-			if (this.path == null)
+			if (string.IsNullOrWhiteSpace(this.path))
 			{
 				this.path = saveAsPath;
 				ContentProvider.RegisterContent(this.path, this);

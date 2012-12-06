@@ -271,27 +271,31 @@ namespace Duality
 			get { return this.GetComponent<Components.Physics.RigidBody>(); }
 		}
 		
-
+		
+		/// <summary>
+		/// Fired when this GameObjects parent has changed
+		/// </summary>
+		public event EventHandler<GameObjectParentChangedEventArgs>	EventParentChanged		= null;
 		/// <summary>
 		/// Fired when a Component has been added to the GameObject
 		/// </summary>
-		public event EventHandler<ComponentEventArgs>	EventComponentAdded		= null;
+		public event EventHandler<ComponentEventArgs>				EventComponentAdded		= null;
 		/// <summary>
 		/// Fired when a Component is about to be removed from the GameObject
 		/// </summary>
-		public event EventHandler<ComponentEventArgs>	EventComponentRemoving	= null;
+		public event EventHandler<ComponentEventArgs>				EventComponentRemoving	= null;
 		/// <summary>
 		/// Fired when this GameObject starts to collide with another GameObject.
 		/// </summary>
-		public event EventHandler<CollisionEventArgs>	EventCollisionBegin		= null;
+		public event EventHandler<CollisionEventArgs>				EventCollisionBegin		= null;
 		/// <summary>
 		/// Fired when this GameObject stops to collide with another GameObject.
 		/// </summary>
-		public event EventHandler<CollisionEventArgs>	EventCollisionEnd		= null;
+		public event EventHandler<CollisionEventArgs>				EventCollisionEnd		= null;
 		/// <summary>
 		/// Fired each time a collision between this GameObject and another has been solved.
 		/// </summary>
-		public event EventHandler<CollisionEventArgs>	EventCollisionSolve		= null;
+		public event EventHandler<CollisionEventArgs>				EventCollisionSolve		= null;
 
 
 		/// <summary>
@@ -816,7 +820,7 @@ namespace Duality
 		/// </summary>
 		internal void PerformSanitaryCheck()
 		{
-			// Check Componen List
+			// Check Component List
 			if (this.compList != null)
 			{
 				for (int i = this.compList.Count - 1;  i >= 0; i--)
@@ -932,6 +936,10 @@ namespace Duality
 				ICmpGameObjectListener cParent = c as ICmpGameObjectListener;
 				if (cParent != null) cParent.OnGameObjectParentChanged(oldParent, this.parent);
 			}
+
+			// Public event
+			if (this.EventParentChanged != null)
+				this.EventParentChanged(this, new GameObjectParentChangedEventArgs(this, oldParent, newParent));
 		}
 		private void OnComponentAdded(Component cmp)
 		{

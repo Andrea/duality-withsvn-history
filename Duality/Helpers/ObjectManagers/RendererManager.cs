@@ -8,7 +8,6 @@ namespace Duality.ObjectManagers
 	/// Manages a set of <see cref="Duality.Components.Renderer">Renderers</see> and exposes suitable object enumerations as well as un/registeration events.
 	/// If a registered object has been disposed, it will be automatically unregistered.
 	/// </summary>
-	[Serializable]
 	public class RendererManager : ObjectManager<Component>
 	{
 		/// <summary>

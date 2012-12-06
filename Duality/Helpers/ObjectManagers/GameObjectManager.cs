@@ -8,7 +8,6 @@ namespace Duality.ObjectManagers
 	/// Manages a set of <see cref="GameObject">GameObject</see> and exposes suitable object enumerations as well as un/registeration events.
 	/// If a registered object has been disposed, it will be automatically unregistered.
 	/// </summary>
-	[Serializable]
 	public class GameObjectManager : ObjectManager<GameObject>
 	{
 		/// <summary>
@@ -31,15 +30,27 @@ namespace Duality.ObjectManagers
 				return this.ActiveObjects.Where(o => o.Parent == null);
 			}
 		}
-
+		
+		/// <summary>
+		/// Fired when a GameObject is registered
+		/// </summary>
+		public event EventHandler<GameObjectEventArgs>	Registered;
+		/// <summary>
+		/// Fired when a GameObject is unregistered
+		/// </summary>
+		public event EventHandler<GameObjectEventArgs>	Unregistered;
+		/// <summary>
+		/// Fired when a registered GameObjects parent has changed
+		/// </summary>
+		public event EventHandler<GameObjectParentChangedEventArgs>	ParentChanged;
 		/// <summary>
 		/// Fired when a <see cref="Duality.Component"/> is added to an already registered GameObject.
 		/// </summary>
-		public event EventHandler<ComponentEventArgs> RegisteredObjectComponentAdded;
+		public event EventHandler<ComponentEventArgs> ComponentAdded;
 		/// <summary>
 		/// Fired when a <see cref="Duality.Component"/> is removed from an already registered GameObject.
 		/// </summary>
-		public event EventHandler<ComponentEventArgs> RegisteredObjectComponentRemoved;
+		public event EventHandler<ComponentEventArgs> ComponentRemoved;
 		
 		/// <summary>
 		/// Registers a GameObject and all of its children.
@@ -48,6 +59,7 @@ namespace Duality.ObjectManagers
 		public override void RegisterObj(GameObject obj)
 		{
 			base.RegisterObj(obj);
+			this.OnRegistered(obj);
 			foreach (GameObject child in obj.Children)
 			{
 				this.RegisterObj(child);
@@ -63,31 +75,58 @@ namespace Duality.ObjectManagers
 			{
 				this.UnregisterObj(child);
 			}
+			this.OnUnregistered(obj);
 			base.UnregisterObj(obj);
 		}
+		/// <summary>
+		/// Unregisters all GameObjects.
+		/// </summary>
+		public override void Clear()
+		{
+			foreach (GameObject obj in this.allObj)
+				this.OnUnregistered(obj);
+			base.Clear();
+		}
+		
+		private void RegisterEvents(GameObject obj)
+		{
+			obj.EventParentChanged		+= this.OnParentChanged;
+			obj.EventComponentAdded		+= this.OnComponentAdded;
+			obj.EventComponentRemoving	+= this.OnComponentRemoved;
+		}
+		private void UnregisterEvents(GameObject obj)
+		{
+			obj.EventParentChanged		-= this.OnParentChanged;
+			obj.EventComponentAdded		-= this.OnComponentAdded;
+			obj.EventComponentRemoving	-= this.OnComponentRemoved;
+		}
 
-		protected override void OnRegistered(GameObject obj)
+		private void OnRegistered(GameObject obj)
 		{
-			base.OnRegistered(obj);
-			obj.EventComponentAdded		+= this.OnRegisteredObjectComponentAdded;
-			obj.EventComponentRemoving	+= this.OnRegisteredObjectComponentRemoved;
+			this.RegisterEvents(obj);
+			if (this.Registered != null)
+				this.Registered(this, new GameObjectEventArgs(obj));
 		}
-		protected override void OnUnregistered(GameObject obj)
+		private void OnUnregistered(GameObject obj)
 		{
-			base.OnUnregistered(obj);
-			obj.EventComponentAdded		-= this.OnRegisteredObjectComponentAdded;
-			obj.EventComponentRemoving	-= this.OnRegisteredObjectComponentRemoved;
+			this.UnregisterEvents(obj);
+			if (this.Unregistered != null)
+				this.Unregistered(this, new GameObjectEventArgs(obj));
 		}
-
-		private void OnRegisteredObjectComponentAdded(object sender, ComponentEventArgs e)
+		private void OnParentChanged(object sender, GameObjectParentChangedEventArgs e)
 		{
-			if (this.RegisteredObjectComponentAdded != null)
-				this.RegisteredObjectComponentAdded(sender, e);
+			if (this.ParentChanged != null)
+				this.ParentChanged(sender, e);
 		}
-		private void OnRegisteredObjectComponentRemoved(object sender, ComponentEventArgs e)
+		private void OnComponentAdded(object sender, ComponentEventArgs e)
 		{
-			if (this.RegisteredObjectComponentRemoved != null)
-				this.RegisteredObjectComponentRemoved(sender, e);
+			if (this.ComponentAdded != null)
+				this.ComponentAdded(sender, e);
+		}
+		private void OnComponentRemoved(object sender, ComponentEventArgs e)
+		{
+			if (this.ComponentRemoved != null)
+				this.ComponentRemoved(sender, e);
 		}
 	}
 }

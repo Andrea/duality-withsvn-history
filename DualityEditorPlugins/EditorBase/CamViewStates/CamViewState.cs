@@ -293,8 +293,8 @@ namespace EditorBase.CamViewStates
 			Scene.Entered += this.Scene_Changed;
 			Scene.GameObjectRegistered += this.Scene_Changed;
 			Scene.GameObjectUnregistered += this.Scene_Changed;
-			Scene.RegisteredObjectComponentAdded += this.Scene_Changed;
-			Scene.RegisteredObjectComponentRemoved += this.Scene_Changed;
+			Scene.ComponentAdded += this.Scene_Changed;
+			Scene.ComponentRemoved += this.Scene_Changed;
 
 			if (Scene.Current != null) this.Scene_Changed(this, EventArgs.Empty);
 		}
@@ -316,8 +316,8 @@ namespace EditorBase.CamViewStates
 			Scene.Entered -= this.Scene_Changed;
 			Scene.GameObjectRegistered -= this.Scene_Changed;
 			Scene.GameObjectUnregistered -= this.Scene_Changed;
-			Scene.RegisteredObjectComponentAdded -= this.Scene_Changed;
-			Scene.RegisteredObjectComponentRemoved -= this.Scene_Changed;
+			Scene.ComponentAdded -= this.Scene_Changed;
+			Scene.ComponentRemoved -= this.Scene_Changed;
 
 			this.SaveActiveLayers();
 		}
@@ -471,7 +471,7 @@ namespace EditorBase.CamViewStates
 				SelObj obj;
 				if (this.mouseoverObject != null || this.mouseoverAction == visibleObjectAction)
 				{
-					obj = this.mouseoverObject ?? this.actionObjSel[0];
+					obj = (this.mouseoverObject != null && this.mouseoverSelect) ? this.mouseoverObject : this.actionObjSel[0];
 					pos = new Vector2(cursorPos.X + 30, cursorPos.Y + 10);
 				}
 				else

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using Duality.Serialization;
+
 namespace Duality
 {
 	/// <summary>
@@ -29,19 +31,9 @@ namespace Duality
 	/// If a registered object has been disposed, it will be automatically unregistered.
 	/// </summary>
 	/// <typeparam name="T">The object type that is managed here.</typeparam>
-	[Serializable]
 	public class ObjectManager<T> where T : IManageableObject
 	{
-		protected	List<T>	allObj		= new List<T>();
-
-		/// <summary>
-		/// Fired when a new object has been registered.
-		/// </summary>
-		public event EventHandler<ObjectManagerEventArgs<T>> Registered;
-		/// <summary>
-		/// Fired when a registered object has been unregistered.
-		/// </summary>
-		public event EventHandler<ObjectManagerEventArgs<T>> Unregistered;
+		protected	List<T>	allObj	= new List<T>();
 
 		/// <summary>
 		/// [GET] Enumerates all registered objects.
@@ -69,9 +61,8 @@ namespace Duality
 		/// <summary>
 		/// Unregisters all objects.
 		/// </summary>
-		public void Clear()
+		public virtual void Clear()
 		{
-			this.allObj.ForEach(this.OnUnregistered);
 			this.allObj.Clear();
 		}
 		/// <summary>
@@ -82,7 +73,6 @@ namespace Duality
 		{
 			if (this.allObj.Contains(obj)) return;
 			this.allObj.Add(obj);
-			this.OnRegistered(obj);
 		}
 		/// <summary>
 		/// Registers a set of objects
@@ -99,7 +89,6 @@ namespace Duality
 		public virtual void UnregisterObj(T obj)
 		{
 			this.allObj.Remove(obj);
-			this.OnUnregistered(obj);
 		}
 		/// <summary>
 		/// Unregisters a set of objects
@@ -108,25 +97,6 @@ namespace Duality
 		public void UnregisterObj(IEnumerable<T> objEnum)
 		{
 			foreach (T obj in objEnum.ToArray()) this.UnregisterObj(obj);
-		}
-
-		/// <summary>
-		/// Called when the specified object has been registered
-		/// </summary>
-		/// <param name="obj"></param>
-		protected virtual void OnRegistered(T obj) 
-		{
-			if (this.Registered != null)
-				this.Registered(this, new ObjectManagerEventArgs<T>(obj));
-		}
-		/// <summary>
-		/// Called when the specified object has been unregistered.
-		/// </summary>
-		/// <param name="obj"></param>
-		protected virtual void OnUnregistered(T obj)
-		{
-			if (this.Unregistered != null)
-				this.Unregistered(this, new ObjectManagerEventArgs<T>(obj));
 		}
 	}
 }

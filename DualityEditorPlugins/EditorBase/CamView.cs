@@ -301,7 +301,7 @@ namespace EditorBase
 			Scene.Entered += this.Scene_Entered;
 			Scene.Leaving += this.Scene_Leaving;
 			Scene.GameObjectUnregistered += this.Scene_GameObjectUnregistered;
-			Scene.RegisteredObjectComponentRemoved += this.Scene_RegisteredObjectComponentRemoved;
+			Scene.ComponentRemoved += this.Scene_ComponentRemoved;
 
 			// Update Camera values according to GUI (which carries loaded or default settings)
 			this.focusDist_ValueChanged(this.focusDist, null);
@@ -334,7 +334,7 @@ namespace EditorBase
 			Scene.Entered -= this.Scene_Entered;
 			Scene.Leaving -= this.Scene_Leaving;
 			Scene.GameObjectUnregistered -= this.Scene_GameObjectUnregistered;
-			Scene.RegisteredObjectComponentRemoved -= this.Scene_RegisteredObjectComponentRemoved;
+			Scene.ComponentRemoved -= this.Scene_ComponentRemoved;
 
 			this.SetCurrentState((CamViewState)null);
 		}
@@ -964,11 +964,11 @@ namespace EditorBase
 			if (!this.camInternal) this.SetCurrentCamera(null);
 			this.glControl.Invalidate();
 		}
-		private void Scene_RegisteredObjectComponentRemoved(object sender, ComponentEventArgs e)
+		private void Scene_ComponentRemoved(object sender, ComponentEventArgs e)
 		{
 			if (this.camComp == e.Component) this.SetCurrentCamera(null);
 		}
-		private void Scene_GameObjectUnregistered(object sender, ObjectManagerEventArgs<GameObject> e)
+		private void Scene_GameObjectUnregistered(object sender, GameObjectEventArgs e)
 		{
 			if (this.camObj == e.Object) this.SetCurrentCamera(null);
 		}

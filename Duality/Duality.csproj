@@ -119,6 +119,7 @@
     <Compile Include="Helpers\DualityUserData.cs" />
     <Compile Include="Helpers\ExtMethodsBitmap.cs" />
     <Compile Include="Helpers\InitState.cs" />
+    <Compile Include="Helpers\ObjectManagers\ObjectManager.cs" />
     <Compile Include="Helpers\PhysicsConvert.cs" />
     <Compile Include="Helpers\EditorHint.cs" />
     <Compile Include="Helpers\ExtMethodsIEnumerable.cs" />
@@ -152,7 +153,6 @@
     <Compile Include="Helpers\ObjectManagers\GameObjectManager.cs" />
     <Compile Include="Log\DataLogOutput.cs" />
     <Compile Include="Log\Log.cs" />
-    <Compile Include="Helpers\ObjectManagers\ObjectManager.cs" />
     <Compile Include="Helpers\MathF.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helpers\Rect.cs" />

@@ -4147,17 +4147,6 @@
             Provides event arguments related to <see cref="T:Duality.CorePlugin"/> instances.
             </summary>
         </member>
-        <member name="T:Duality.ObjectManagerEventArgs`1">
-            <summary>
-            Provides event arguments regarding the objects registered in an <see cref="T:Duality.ObjectManager`1"/>.
-            </summary>
-            <typeparam name="T"></typeparam>
-        </member>
-        <member name="P:Duality.ObjectManagerEventArgs`1.Object">
-            <summary>
-            [GET] The managed object affected by the event.
-            </summary>
-        </member>
         <member name="T:Duality.ComponentEventArgs">
             <summary>
             Provides event arguments for <see cref="T:Duality.Component"/>-related events.
@@ -4166,6 +4155,16 @@
         <member name="P:Duality.ComponentEventArgs.Component">
             <summary>
             [GET] The affected Component.
+            </summary>
+        </member>
+        <member name="T:Duality.GameObjectEventArgs">
+            <summary>
+            Provides event arguments for <see cref="T:Duality.GameObject"/>-related events.
+            </summary>
+        </member>
+        <member name="P:Duality.GameObjectEventArgs.Object">
+            <summary>
+            [GET] The affected GameObject.
             </summary>
         </member>
         <member name="T:Duality.GameObjectParentChangedEventArgs">
@@ -5044,28 +5043,6 @@
             </summary>
             <param name="objEnum"></param>
         </member>
-        <member name="M:Duality.ObjectManager`1.OnRegistered(`0)">
-            <summary>
-            Called when the specified object has been registered
-            </summary>
-            <param name="obj"></param>
-        </member>
-        <member name="M:Duality.ObjectManager`1.OnUnregistered(`0)">
-            <summary>
-            Called when the specified object has been unregistered.
-            </summary>
-            <param name="obj"></param>
-        </member>
-        <member name="E:Duality.ObjectManager`1.Registered">
-            <summary>
-            Fired when a new object has been registered.
-            </summary>
-        </member>
-        <member name="E:Duality.ObjectManager`1.Unregistered">
-            <summary>
-            Fired when a registered object has been unregistered.
-            </summary>
-        </member>
         <member name="P:Duality.ObjectManager`1.AllObjects">
             <summary>
             [GET] Enumerates all registered objects.
@@ -5088,6 +5065,11 @@
             </summary>
             <param name="obj"></param>
         </member>
+        <member name="M:Duality.ObjectManagers.GameObjectManager.Clear">
+            <summary>
+            Unregisters all GameObjects.
+            </summary>
+        </member>
         <member name="P:Duality.ObjectManagers.GameObjectManager.RootObjects">
             <summary>
             [GET] Enumerates all root GameObjects, i.e. all GameObjects without a parent object.
@@ -5098,12 +5080,27 @@
             [GET] Enumerates all <see cref="P:Duality.ObjectManagers.GameObjectManager.RootObjects"/> that are currently active.
             </summary>
         </member>
-        <member name="E:Duality.ObjectManagers.GameObjectManager.RegisteredObjectComponentAdded">
+        <member name="E:Duality.ObjectManagers.GameObjectManager.Registered">
+            <summary>
+            Fired when a GameObject is registered
+            </summary>
+        </member>
+        <member name="E:Duality.ObjectManagers.GameObjectManager.Unregistered">
+            <summary>
+            Fired when a GameObject is unregistered
+            </summary>
+        </member>
+        <member name="E:Duality.ObjectManagers.GameObjectManager.ParentChanged">
+            <summary>
+            Fired when a registered GameObjects parent has changed
+            </summary>
+        </member>
+        <member name="E:Duality.ObjectManagers.GameObjectManager.ComponentAdded">
             <summary>
             Fired when a <see cref="T:Duality.Component"/> is added to an already registered GameObject.
             </summary>
         </member>
-        <member name="E:Duality.ObjectManagers.GameObjectManager.RegisteredObjectComponentRemoved">
+        <member name="E:Duality.ObjectManagers.GameObjectManager.ComponentRemoved">
             <summary>
             Fired when a <see cref="T:Duality.Component"/> is removed from an already registered GameObject.
             </summary>
@@ -8693,6 +8690,11 @@
             Fired right after entering the (now) current Scene.
             </summary>
         </member>
+        <member name="E:Duality.Resources.Scene.GameObjectParentChanged">
+            <summary>
+            Fired when a <see cref="T:Duality.GameObject">GameObjects</see> parent object has been changed in the current Scene.
+            </summary>
+        </member>
         <member name="E:Duality.Resources.Scene.GameObjectRegistered">
             <summary>
             Fired when a <see cref="T:Duality.GameObject"/> has been registered in the current Scene.
@@ -8703,12 +8705,12 @@
             Fired when a <see cref="T:Duality.GameObject"/> has been unregistered from the current Scene.
             </summary>
         </member>
-        <member name="E:Duality.Resources.Scene.RegisteredObjectComponentAdded">
+        <member name="E:Duality.Resources.Scene.ComponentAdded">
             <summary>
             Fired when a <see cref="T:Duality.Component"/> has been added to a <see cref="T:Duality.GameObject"/> that is registered in the current Scene.
             </summary>
         </member>
-        <member name="E:Duality.Resources.Scene.RegisteredObjectComponentRemoved">
+        <member name="E:Duality.Resources.Scene.ComponentRemoved">
             <summary>
             Fired when a <see cref="T:Duality.Component"/> has been removed from a <see cref="T:Duality.GameObject"/> that is registered in the current Scene.
             </summary>
@@ -13195,6 +13197,11 @@
             </summary>
             <remarks>Note that a GameObject may contain multiple Colliders in which case the return value of this property may be any of them.</remarks>
             <seealso cref="T:Duality.Components.Physics.RigidBody"/>
+        </member>
+        <member name="E:Duality.GameObject.EventParentChanged">
+            <summary>
+            Fired when this GameObjects parent has changed
+            </summary>
         </member>
         <member name="E:Duality.GameObject.EventComponentAdded">
             <summary>
