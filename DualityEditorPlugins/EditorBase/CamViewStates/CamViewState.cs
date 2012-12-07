@@ -291,6 +291,7 @@ namespace EditorBase.CamViewStates
 
 			Scene.Leaving += this.Scene_Changed;
 			Scene.Entered += this.Scene_Changed;
+			Scene.GameObjectParentChanged += this.Scene_Changed;
 			Scene.GameObjectRegistered += this.Scene_Changed;
 			Scene.GameObjectUnregistered += this.Scene_Changed;
 			Scene.ComponentAdded += this.Scene_Changed;
@@ -311,9 +312,11 @@ namespace EditorBase.CamViewStates
 			this.View.LocalGLControl.LostFocus	-= this.LocalGLControl_LostFocus;
 			this.View.PerspectiveChanged	-= this.View_FocusDistChanged;
 			DualityEditorApp.UpdatingEngine -= this.EditorForm_AfterUpdateDualityApp;
+			DualityEditorApp.ObjectPropertyChanged -= this.EditorForm_ObjectPropertyChanged;
 			
 			Scene.Leaving -= this.Scene_Changed;
 			Scene.Entered -= this.Scene_Changed;
+			Scene.GameObjectParentChanged -= this.Scene_Changed;
 			Scene.GameObjectRegistered -= this.Scene_Changed;
 			Scene.GameObjectUnregistered -= this.Scene_Changed;
 			Scene.ComponentAdded -= this.Scene_Changed;
