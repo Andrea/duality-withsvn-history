@@ -69,10 +69,11 @@ namespace Duality
 		/// Registers a single object
 		/// </summary>
 		/// <param name="obj"></param>
-		public virtual void RegisterObj(T obj)
+		public virtual bool RegisterObj(T obj)
 		{
-			if (this.allObj.Contains(obj)) return;
+			if (this.allObj.Contains(obj)) return false;
 			this.allObj.Add(obj);
+			return true;
 		}
 		/// <summary>
 		/// Registers a set of objects
@@ -86,9 +87,9 @@ namespace Duality
 		/// Unregisters a single object
 		/// </summary>
 		/// <param name="obj"></param>
-		public virtual void UnregisterObj(T obj)
+		public virtual bool UnregisterObj(T obj)
 		{
-			this.allObj.Remove(obj);
+			return this.allObj.Remove(obj);
 		}
 		/// <summary>
 		/// Unregisters a set of objects

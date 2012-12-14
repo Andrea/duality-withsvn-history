@@ -60,6 +60,7 @@ namespace EditorBase.DataConverters
 		public override bool Convert(ConvertOperation convert)
 		{
 			List<Component> availData = convert.Perform<Component>().ToList();
+			availData.Sort((Component a, Component b) => a.RequiresComponent(b.GetType()) ? 1 : 0);
 
 			// Generate objects
 			foreach (Component cmp in availData)
@@ -86,8 +87,11 @@ namespace EditorBase.DataConverters
 				foreach (Type t in cmp.GetRequiredComponents())
 					gameObj.AddComponent(t);
 
+				// Make sure no other Component of this Type is already added
+				gameObj.RemoveComponent(cmp.GetType());
+
 				// Add Component
-				gameObj.AddComponent(cmp);
+				gameObj.AddComponent(cmp.GameObj == null ? cmp : cmp.Clone());
 
 				convert.AddResult(gameObj);
 				convert.MarkObjectHandled(cmp);
