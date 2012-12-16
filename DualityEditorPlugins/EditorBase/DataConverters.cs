@@ -379,8 +379,22 @@ namespace EditorBase.DataConverters
 			}
 			else
 			{
+				// First try a direct approach
 				string targetPath = baseRes.FullName + Material.FileExt;
-				return ContentProvider.RequestContent<Material>(targetPath).Res;
+				Material match = ContentProvider.RequestContent<Material>(targetPath).Res;
+				if (match != null) return match;
+
+				// If that fails, search for other matches
+				List<string> resFilePaths = Resource.GetResourceFiles();
+				foreach (string resFile in resFilePaths)
+				{
+					if (!resFile.EndsWith(Material.FileExt)) continue;
+					match = ContentProvider.RequestContent<Material>(resFile).Res;
+					if (match != null && match.MainTexture == baseRes) return match;
+				}
+
+				// Give up.
+				return null;
 			}
 		}
 	}
@@ -467,8 +481,22 @@ namespace EditorBase.DataConverters
 			}
 			else
 			{
+				// First try a direct approach
 				string targetPath = baseRes.FullName + Texture.FileExt;
-				return ContentProvider.RequestContent<Texture>(targetPath).Res;
+				Texture match = ContentProvider.RequestContent<Texture>(targetPath).Res;
+				if (match != null) return match;
+
+				// If that fails, search for other matches
+				List<string> resFilePaths = Resource.GetResourceFiles();
+				foreach (string resFile in resFilePaths)
+				{
+					if (!resFile.EndsWith(Texture.FileExt)) continue;
+					match = ContentProvider.RequestContent<Texture>(resFile).Res;
+					if (match != null && match.BasePixmap == baseRes) return match;
+				}
+
+				// Give up.
+				return null;
 			}
 		}
 	}
@@ -555,8 +583,22 @@ namespace EditorBase.DataConverters
 			}
 			else
 			{
-				string targetPath = baseRes.FullName + Texture.FileExt;
-				return ContentProvider.RequestContent<Sound>(targetPath).Res;
+				// First try a direct approach
+				string targetPath = baseRes.FullName + Sound.FileExt;
+				Sound match = ContentProvider.RequestContent<Sound>(targetPath).Res;
+				if (match != null) return match;
+
+				// If that fails, search for other matches
+				List<string> resFilePaths = Resource.GetResourceFiles();
+				foreach (string resFile in resFilePaths)
+				{
+					if (!resFile.EndsWith(Sound.FileExt)) continue;
+					match = ContentProvider.RequestContent<Sound>(resFile).Res;
+					if (match != null && match.Data == baseRes) return match;
+				}
+
+				// Give up.
+				return null;
 			}
 		}
 	}
