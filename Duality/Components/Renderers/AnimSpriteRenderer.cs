@@ -406,7 +406,7 @@ namespace Duality.Components.Renderers
 		protected void GetAnimData(Texture mainTex, DrawTechnique tech, bool smoothShaderInput, out Rect uvRect, out Rect uvRectNext)
 		{
 			this.UpdateVisibleFrames();
-			if (mainTex != null && mainTex.Atlas != null)
+			if (mainTex != null)
 			{
 				mainTex.LookupAtlas(this.curAnimFrame, out uvRect);
 				if (smoothShaderInput)

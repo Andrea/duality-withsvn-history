@@ -106,7 +106,7 @@ namespace EditorBase.PreviewGenerators
 		public override void Perform(Sound obj, PreviewSoundQuery query)
 		{
 			base.Perform(obj, query);
-			query.Result = obj;
+			query.Result = obj.Clone() as Sound;
 		}
 	}
 	public class FontPreviewGenerator : PreviewGenerator<Font>

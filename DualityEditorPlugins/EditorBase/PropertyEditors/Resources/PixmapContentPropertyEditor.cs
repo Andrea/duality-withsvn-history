@@ -11,9 +11,9 @@ using DualityEditor.Controls.PropertyEditors;
 
 namespace EditorBase.PropertyEditors
 {
-	public class TextureContentPropertyEditor : ResourcePropertyEditor
+	public class PixmapContentPropertyEditor : ResourcePropertyEditor
 	{
-		public TextureContentPropertyEditor()
+		public PixmapContentPropertyEditor()
 		{
 			this.Hints = HintFlags.None;
 			this.HeaderHeight = 0;
@@ -24,21 +24,12 @@ namespace EditorBase.PropertyEditors
 		protected override void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)
 		{
 			base.OnPropertySet(property, targets);
-			Texture[] texArr = targets.Cast<Texture>().ToArray();
-			bool anyReload = false;
-			foreach (Texture tex in texArr)
-			{
-				if (tex.NeedsReload) 
-				{
-					tex.ReloadData();
-					anyReload = true;
-				}
-			}
-
-			if (anyReload)
+			if (ReflectionHelper.MemberInfoEquals(property, ReflectionInfo.Property_Pixmap_AnimCols) ||
+				ReflectionHelper.MemberInfoEquals(property, ReflectionInfo.Property_Pixmap_AnimRows) ||
+				ReflectionHelper.MemberInfoEquals(property, ReflectionInfo.Property_Pixmap_Atlas))
 			{
 				this.PerformGetValue();
-				(this.ParentEditor as TexturePropertyEditor).UpdatePreview();
+				(this.ParentEditor as PixmapPropertyEditor).UpdatePreview();
 			}
 		}
 	}

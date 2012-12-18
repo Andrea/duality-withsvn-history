@@ -250,9 +250,6 @@ namespace Duality.Resources
 		private	TextureWrapMode			wrapX		= TextureWrapMode.ClampToEdge;
 		private	TextureWrapMode			wrapY		= TextureWrapMode.ClampToEdge;
 		private	PixelInternalFormat		pixelformat	= PixelInternalFormat.Rgba;
-		private	List<Rect>				atlas		= null;
-		private	int						animCols	= 0;
-		private	int						animRows	= 0;
 		private	bool					sizeRelative	= false;
 		[NonSerialized]	private	int		pxWidth		= 0;
 		[NonSerialized]	private	int		pxHeight	= 0;
@@ -260,18 +257,10 @@ namespace Duality.Resources
 		[NonSerialized]	private	float	pxDiameter	= 0.0f;
 		[NonSerialized]	private	int		oglWidth	= 0;
 		[NonSerialized]	private	int		oglHeight	= 0;
-		[NonSerialized]	private	Vector2	curUVRatio	= new Vector2(1.0f, 1.0f);
+		[NonSerialized]	private	Vector2	uvRatio		= new Vector2(1.0f, 1.0f);
 		[NonSerialized] private	bool	needsReload	= false;
 
 
-		/// <summary>
-		/// [GET] The Textures diameter
-		/// </summary>
-		[EditorHintFlags(MemberFlags.Invisible)]
-		public float PxDiameter
-		{
-			get { return this.pxDiameter; }
-		}	//	G
 		/// <summary>
 		/// [GET] The Textures internal width as uploaded to video memory
 		/// </summary>
@@ -295,7 +284,7 @@ namespace Duality.Resources
 		public int PxWidth
 		{
 			get { return this.pxWidth; }
-		}	//	G
+		}		//	G
 		/// <summary>
 		/// [GET] The Textures height after taking relative sizes into account
 		/// </summary>
@@ -303,11 +292,11 @@ namespace Duality.Resources
 		public int PxHeight
 		{
 			get { return this.pxHeight; }
-		}	//	G
+		}		//	G
 		/// <summary>
 		/// [GET] The Textures internal id value. You shouldn't need to use this value normally.
 		/// </summary>
-		public int OglTexId
+		internal int OglTexId
 		{
 			get { return this.glTexId; }
 		}	//	G
@@ -317,20 +306,20 @@ namespace Duality.Resources
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public Vector2 UVRatio
 		{
-			get { return this.curUVRatio; }
+			get { return this.uvRatio; }
 		}	//	G
 		/// <summary>
-		/// Returns whether or not the texture uses mipmaps.
+		/// [GET] Returns whether or not the texture uses mipmaps.
 		/// </summary>
 		[EditorHintFlags(MemberFlags.Invisible)]
-		public bool Mipmaps
+		public bool HasMipmaps
 		{
 			get { return 
 				this.filterMin == TextureMinFilter.LinearMipmapLinear ||
 				this.filterMin == TextureMinFilter.LinearMipmapNearest ||
 				this.filterMin == TextureMinFilter.NearestMipmapLinear ||
 				this.filterMin == TextureMinFilter.NearestMipmapNearest; }
-		}		//	G
+		}	//	G
 		/// <summary>
 		/// Indicates that the textures parameters have been changed in a way that might make it
 		/// necessary to reload its data before using it next time.
@@ -360,7 +349,8 @@ namespace Duality.Resources
 			}
 		}						//	GS
 		/// <summary>
-		/// [GET / SET] Whether the specified size is interpreted as factor for the <see cref="DualityApp.TargetResolution"/>.
+		/// [GET / SET] If true, <see cref="Size"/> will be multiplied with <see cref="DualityApp.TargetResolution"/> to determine the actual texture size.
+		/// This essentially makes the Textures size relative to the current screen resolution.
 		/// </summary>
 		[EditorHintFlags(MemberFlags.AffectsOthers)]
 		public bool SizeRelative
@@ -442,44 +432,29 @@ namespace Duality.Resources
 			set { if (this.basePixmap.Res != value.Res) { this.basePixmap = value; this.needsReload = true; } }
 		}		//	GS
 		/// <summary>
-		/// [GET / SET] The Textures atlas array, distinguishing different areas in texture coordinates
-		/// </summary>
-		[EditorHintFlags(MemberFlags.ForceWriteback)]
-		public List<Rect> Atlas
-		{
-			get { return this.atlas; }
-			set { this.atlas = value; }
-		}					//	GS
-		/// <summary>
-		/// [GET / SET] Information about different animation frames contained in this Texture.
-		/// Setting this will lead to an auto-generated atlas map according to the animation.
-		/// </summary>
-		[EditorHintFlags(MemberFlags.AffectsOthers)]
-		[EditorHintRange(0, 1024)]
-		public int AnimCols
-		{
-			get { return this.animCols; }
-			set { this.GenerateAnimAtlas(value, value == 0 ? 0 : this.animRows); }
-		}						//	GS
-		/// <summary>
-		/// [GET / SET] Information about different animation frames contained in this Texture.
-		/// Setting this will lead to an auto-generated atlas map according to the animation.
-		/// </summary>
-		[EditorHintFlags(MemberFlags.AffectsOthers)]
-		[EditorHintRange(0, 1024)]
-		public int AnimRows
-		{
-			get { return this.animRows; }
-			set { this.GenerateAnimAtlas(value == 0 ? 0 : this.animCols, value); }
-		}						//	GS
-		/// <summary>
 		/// [GET] Total number of animation frames in this Texture
 		/// </summary>
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public int AnimFrames
 		{
-			get { return this.animRows * this.animCols; }
-		}					//	G
+			get { return this.basePixmap.Res != null ? this.basePixmap.Res.AnimFrames : 0; }
+		}	//	G
+		/// <summary>
+		/// [GET] The number of animation frame rows in this Texture
+		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
+		public int AnimRows
+		{
+			get { return this.basePixmap.Res != null ? this.basePixmap.Res.AnimRows : 0; }
+		}		//	G
+		/// <summary>
+		/// [GET] The number of animation frame cols in this Texture
+		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
+		public int AnimCols
+		{
+			get { return this.basePixmap.Res != null ? this.basePixmap.Res.AnimCols : 0; }
+		}		//	G
 
 
 		public Texture() {}
@@ -535,53 +510,6 @@ namespace Duality.Resources
 			this.oglSizeMode = sizeMode;
 			this.AdjustSize(width, height);
 			this.SetupOpenGLRes();
-		}
-
-		/// <summary>
-		/// Generates a <see cref="Atlas">texture atlas</see> for sprite animations but leaves
-		/// previously existing atlas entries as they are, if possible. An automatically generated
-		/// texture atlas will always occupy the first indices, followed by custom atlas entries.
-		/// </summary>
-		/// <param name="cols">The number of columns in an animated sprite Texture</param>
-		/// <param name="rows">The number of rows in an animated sprite Texture</param>
-		public void GenerateAnimAtlas(int cols, int rows)
-		{
-			// Remove previously existing animation atlas data
-			int frames = this.animCols * this.animRows;
-			if (this.atlas != null) this.atlas.RemoveRange(0, Math.Min(frames, this.atlas.Count));
-
-			// Set up animation frame data
-			if (cols == 0 && rows == 0)
-			{
-				this.animCols = this.animRows = 0;
-				if (this.atlas != null && this.atlas.Count == 0) this.atlas = null;
-				return;
-			}
-			this.animCols = Math.Max(cols, 1);
-			this.animRows = Math.Max(rows, 1);
-
-			// Set up new atlas data
-			frames = this.animCols * this.animRows;
-			if (frames > 0)
-			{
-				if (this.atlas == null) this.atlas = new List<Rect>(frames);
-				int i = 0;
-				Vector2 frameSize = new Vector2(this.curUVRatio.X / this.animCols, this.curUVRatio.Y / this.animRows);
-				for (int y = 0; y < this.animRows; y++)
-				{
-					for (int x = 0; x < this.animCols; x++)
-					{
-						this.atlas.Insert(i, new Rect(
-							x * frameSize.X,
-							y * frameSize.Y,
-							frameSize.X,
-							frameSize.Y));
-						i++;
-					}
-				}
-			}
-			else if (this.atlas.Count == 0)
-				this.atlas = null;
 		}
 
 		/// <summary>
@@ -650,9 +578,6 @@ namespace Duality.Resources
 			}
 
 			GL.BindTexture(TextureTarget.Texture2D, lastTexId);
-
-			// Regenerate animation info in case, the current UVRatio changed
-			this.GenerateAnimAtlas(this.animCols, this.animRows);
 		}
 
 		/// <summary>
@@ -686,14 +611,23 @@ namespace Duality.Resources
 		/// <param name="uv"></param>
 		public void LookupAtlas(int index, out Rect uv)
 		{
-			if (this.atlas == null)
+			Pixmap basePx = this.basePixmap.Res;
+			if (basePx == null)
 			{
 				uv.X = uv.Y = 0.0f;
-				uv.W = uv.H = 1.0f;
+				uv.W = this.uvRatio.X;
+				uv.H = this.uvRatio.Y;
 			}
 			else
 			{
-				uv = this.atlas[MathF.Clamp(index, 0, this.atlas.Count - 1)];
+				basePx.LookupAtlas(index, out uv);
+				Vector2 scale;
+				scale.X = this.uvRatio.X / this.pxWidth;
+				scale.Y = this.uvRatio.Y / this.pxHeight;
+				uv.X *= scale.X;
+				uv.W *= scale.X;
+				uv.Y *= scale.Y;
+				uv.H *= scale.Y;
 			}
 		}
 		/// <summary>
@@ -731,7 +665,7 @@ namespace Duality.Resources
 			{
 				this.oglWidth = this.pxWidth;
 				this.oglHeight = this.pxHeight;
-				this.curUVRatio = Vector2.One;
+				this.uvRatio = Vector2.One;
 			}
 			else
 			{
@@ -741,14 +675,14 @@ namespace Duality.Resources
 				{
 					if (this.oglSizeMode == SizeMode.Enlarge)
 					{
-						this.curUVRatio.X = (float)this.pxWidth / (float)this.oglWidth;
-						this.curUVRatio.Y = (float)this.pxHeight / (float)this.oglHeight;
+						this.uvRatio.X = (float)this.pxWidth / (float)this.oglWidth;
+						this.uvRatio.Y = (float)this.pxHeight / (float)this.oglHeight;
 					}
 					else
-						this.curUVRatio = Vector2.One;
+						this.uvRatio = Vector2.One;
 				}
 				else
-					this.curUVRatio = Vector2.One;
+					this.uvRatio = Vector2.One;
 			}
 		}
 		/// <summary>
@@ -774,7 +708,7 @@ namespace Duality.Resources
 			//GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName) ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, maxAnisoLevel);
 
 			// If needed, care for Mipmaps
-			GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.GenerateMipmap, this.Mipmaps ? 1 : 0);
+			GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.GenerateMipmap, this.HasMipmaps ? 1 : 0);
 
 			// Setup pixel format
 			GL.TexImage2D(TextureTarget.Texture2D, 0,
@@ -812,7 +746,6 @@ namespace Duality.Resources
 			c.wrapX = this.wrapX;
 			c.wrapY = this.wrapY;
 			c.pixelformat = this.pixelformat;
-			c.atlas = this.atlas == null ? null : new List<Rect>(this.atlas);
 			c.LoadData(this.basePixmap, this.oglSizeMode);
 		}
 	}

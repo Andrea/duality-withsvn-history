@@ -85,7 +85,7 @@ namespace Duality.Resources
 				// Generate Mipmaps for last bound
 				for (int i = 0; i < curBound.targetInfo.Count; i++)
 				{
-					if (curBound.targetInfo[i].target.Res.Mipmaps)
+					if (curBound.targetInfo[i].target.Res.HasMipmaps)
 					{
 						GL.Ext.BindFramebuffer(FramebufferTarget.FramebufferExt, 0);
 

@@ -208,13 +208,23 @@ namespace Duality
 			int hash = (int)2166136261;
 
 			for (int i = 0; i < list.Count; i++)
-					hash = (hash ^ list[i]) * p;
+				hash = (hash ^ list[i]) * p;
 
-			hash += hash << 13;
-			hash ^= hash >> 7;
-			hash += hash << 3;
-			hash ^= hash >> 17;
-			hash += hash << 5;
+			return hash;
+		} }
+		/// <summary>
+		/// Returns the combined hash code of the specified list.
+		/// </summary>
+		/// <param name="list"></param>
+		/// <returns></returns>
+		public static int GetCombinedHashCode<T>(this IList<T> list)
+		{ unchecked {
+			const int p = 16777619;
+			int hash = (int)2166136261;
+
+			for (int i = 0; i < list.Count; i++)
+				hash = (hash ^ list[i].GetHashCode()) * p;
+			
 			return hash;
 		} }
 	}

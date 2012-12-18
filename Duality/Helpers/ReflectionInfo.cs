@@ -97,6 +97,9 @@ namespace Duality
 
 		public static readonly PropertyInfo	Property_Pixmap_PixelData;
 		public static readonly PropertyInfo	Property_Pixmap_PixelDataBasePath;
+		public static readonly PropertyInfo	Property_Pixmap_AnimCols;
+		public static readonly PropertyInfo	Property_Pixmap_AnimRows;
+		public static readonly PropertyInfo	Property_Pixmap_Atlas;
 
 		public static readonly PropertyInfo	Property_Texture_PxWidth;
 		public static readonly PropertyInfo	Property_Texture_PxHeight;
@@ -106,10 +109,6 @@ namespace Duality
 		public static readonly PropertyInfo	Property_Texture_UVRatio;
 		public static readonly PropertyInfo	Property_Texture_Mipmaps;
 		public static readonly PropertyInfo	Property_Texture_NeedsReload;
-		public static readonly PropertyInfo	Property_Texture_AnimCols;
-		public static readonly PropertyInfo	Property_Texture_AnimRows;
-		public static readonly PropertyInfo	Property_Texture_AnimFrames;
-		public static readonly PropertyInfo	Property_Texture_Atlas;
 
 		public static readonly PropertyInfo	Property_RenderTarget_Targets;
 
@@ -250,6 +249,9 @@ namespace Duality
 			Type pixmap = typeof(Pixmap);
 			Property_Pixmap_PixelData			= pixmap.GetProperty("PixelData");
 			Property_Pixmap_PixelDataBasePath	= pixmap.GetProperty("PixelDataBasePath");
+			Property_Pixmap_AnimCols			= pixmap.GetProperty("AnimCols");
+			Property_Pixmap_AnimRows			= pixmap.GetProperty("AnimRows");
+			Property_Pixmap_Atlas				= pixmap.GetProperty("Atlas");
 
 			Type texture = typeof(Texture);
 			Property_Texture_PxWidth		= texture.GetProperty("PxWidth");
@@ -260,10 +262,6 @@ namespace Duality
 			Property_Texture_UVRatio		= texture.GetProperty("UVRatio");
 			Property_Texture_Mipmaps		= texture.GetProperty("Mipmaps");
 			Property_Texture_NeedsReload	= texture.GetProperty("NeedsReload");
-			Property_Texture_AnimCols		= texture.GetProperty("AnimCols");
-			Property_Texture_AnimRows		= texture.GetProperty("AnimRows");
-			Property_Texture_AnimFrames		= texture.GetProperty("AnimFrames");
-			Property_Texture_Atlas			= texture.GetProperty("Atlas");
 
 			Type renderTarget = typeof(RenderTarget);
 			Property_RenderTarget_Targets	= renderTarget.GetProperty("Targets");

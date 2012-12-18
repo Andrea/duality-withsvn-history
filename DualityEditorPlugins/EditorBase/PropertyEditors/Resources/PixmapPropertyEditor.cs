@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Linq;
 
 namespace EditorBase.PropertyEditors
 {
@@ -21,17 +22,18 @@ namespace EditorBase.PropertyEditors
 			preview.Getter = this.GetValue;
 			this.ParentGrid.ConfigureEditor(preview);
 			this.AddPropertyEditor(preview);
-			ResourcePropertyEditor content = new ResourcePropertyEditor();
+			PixmapContentPropertyEditor content = new PixmapContentPropertyEditor();
 			content.EditedType = this.EditedType;
 			content.Getter = this.GetValue;
 			content.Setter = this.SetValues;
-			content.Hints = HintFlags.None;
-			content.HeaderHeight = 0;
-			content.HeaderValueText = null;
 			content.PreventFocus = true;
 			this.ParentGrid.ConfigureEditor(content);
 			this.AddPropertyEditor(content);
-			content.Expanded = true;
+		}
+
+		public void UpdatePreview()
+		{
+			this.Children.OfType<PixmapPreviewPropertyEditor>().First().PerformGetValue();
 		}
 	}
 }

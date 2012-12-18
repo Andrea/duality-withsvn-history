@@ -56,12 +56,13 @@
       <DependentUpon>BitmapForm.cs</DependentUpon>
     </Compile>
     <Compile Include="BitmapVisualizer.cs" />
+    <Compile Include="TextureAtlasVisualizer.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="TextureAtlasVisualizer.cs" />
+    <Compile Include="PixmapAtlasVisualizer.cs" />
     <Compile Include="TextureVisualizer.cs" />
     <Compile Include="PixmapVisualizer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -85,8 +85,9 @@ namespace EditorBase
 			FileEventManager.ResourceModified += this.EditorForm_ResourceModified;
 			DualityEditorApp.Terminating += this.DualityEditorApp_Terminating;
 
-			// Select something initially
-			this.UpdateSelection(DualityEditorApp.Selection, DualityEditorApp.SelectionActiveCategory);
+			// Select something initially, if not done yet
+			if (this.propertyGrid.Selection.Count() == 0)
+				this.UpdateSelection(DualityEditorApp.Selection, DualityEditorApp.SelectionActiveCategory);
 		}
 		protected override void OnClosed(EventArgs e)
 		{

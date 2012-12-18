@@ -599,6 +599,7 @@ namespace DualityEditor
 		}
 		public static bool IsResourceUnsaved(IContentRef res)
 		{
+			if (res.IsDefaultContent) return false;
 			return res.ResWeak != null ? IsResourceUnsaved(res.ResWeak) : IsResourceUnsaved(res.Path);
 		}
 		public static bool IsResourceUnsaved(string resPath)

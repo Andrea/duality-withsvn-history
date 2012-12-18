@@ -702,10 +702,10 @@ namespace Duality.Resources
 						this.glyphs[i].width /= 2;
 						this.glyphs[i].offsetX /= 2;
 					}
-					atlas[i].X = (float)x / (float)pixelLayer.Width;
-					atlas[i].Y = (float)y / (float)pixelLayer.Height;
-					atlas[i].W = (float)glyphTemp.Width / (float)pixelLayer.Width;
-					atlas[i].H = (float)(this.internalFont.Height + 1) / (float)pixelLayer.Height;
+					atlas[i].X = x;
+					atlas[i].Y = y;
+					atlas[i].W = glyphTemp.Width;
+					atlas[i].H = (this.internalFont.Height + 1);
 
 					// Draw it onto the font surface
 					glyphTemp.DrawOnto(pixelLayer, BlendMode.Solid, x, y);
@@ -735,11 +735,11 @@ namespace Duality.Resources
 			bool useNearest = this.hint == RenderHint.Monochrome || !this.filtering;
 
 			this.pixelData = new Pixmap(pixelLayer);
+			this.pixelData.Atlas = new List<Rect>(atlas);
 			this.texture = new Texture(this.pixelData, 
 				Texture.SizeMode.Enlarge, 
 				useNearest ? OpenTK.Graphics.OpenGL.TextureMagFilter.Nearest : OpenTK.Graphics.OpenGL.TextureMagFilter.Linear,
 				useNearest ? OpenTK.Graphics.OpenGL.TextureMinFilter.Nearest : OpenTK.Graphics.OpenGL.TextureMinFilter.LinearMipmapLinear);
-			this.texture.Atlas = new List<Rect>(atlas.Select(r => r.Transform(this.texture.UVRatio)));
 
 			this.mat = new Material(this.hint == RenderHint.Monochrome ? DrawTechnique.Mask : DrawTechnique.Alpha, ColorRgba.White, this.texture);
 		}
@@ -771,8 +771,8 @@ namespace Duality.Resources
 		/// <returns>The Bitmap that has been retrieved, or null if the glyph is not supported.</returns>
 		public Pixmap.Layer GetGlyphBitmap(char glyph)
 		{
-			Rect targetRect = this.texture.Atlas[CharLookup[(int)glyph]];
-			targetRect = targetRect.Transform(this.pixelData.Width / this.texture.UVRatio.X, this.pixelData.Height / this.texture.UVRatio.Y);
+			Rect targetRect;
+			this.pixelData.LookupAtlas(CharLookup[(int)glyph], out targetRect);
 			Pixmap.Layer subImg = new Pixmap.Layer(
 				MathF.RoundToInt(targetRect.W), 
 				MathF.RoundToInt(targetRect.H));
@@ -1148,7 +1148,7 @@ namespace Duality.Resources
 		private void ProcessTextAdv(string text, int index, out GlyphData glyphData, out Rect uvRect, out float glyphXAdv, out float glyphXOff)
 		{
 			char glyph = text[index];
-			uvRect = this.texture.Atlas[CharLookup[(int)glyph]];
+			this.texture.LookupAtlas(CharLookup[(int)glyph], out uvRect);
 
 			this.GetGlyphData(glyph, out glyphData);
 			glyphXOff = -glyphData.offsetX;

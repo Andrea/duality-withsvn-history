@@ -10,6 +10,8 @@ using Duality.ColorFormat;
 using Duality.EditorHints;
 using Duality.Serialization;
 
+using OpenTK;
+
 namespace Duality.Resources
 {
 	/// <summary>
@@ -1009,7 +1011,10 @@ namespace Duality.Resources
 		}
 
 
-		private	List<Layer>	layers = new List<Layer>();
+		private	List<Layer>	layers		= new List<Layer>();
+		private	List<Rect>	atlas		= null;
+		private	int			animCols	= 0;
+		private	int			animRows	= 0;
 		
 		/// <summary>
 		/// [GET / SET] The main pixel data <see cref="Duality.Resources.Pixmap.Layer"/>.
@@ -1058,6 +1063,45 @@ namespace Duality.Resources
 		{
 			get { return this.MainLayer != null ? this.MainLayer.Height : 0; }
 		}
+		/// <summary>
+		/// [GET / SET] The Pixmaps atlas array, distinguishing different areas in pixel coordinates
+		/// </summary>
+		[EditorHintFlags(MemberFlags.ForceWriteback)]
+		public List<Rect> Atlas
+		{
+			get { return this.atlas; }
+			set { this.atlas = value; }
+		}					//	GS
+		/// <summary>
+		/// [GET / SET] Information about different animation frames contained in this Pixmap.
+		/// Setting this will lead to an auto-generated atlas map according to the animation.
+		/// </summary>
+		[EditorHintFlags(MemberFlags.AffectsOthers)]
+		[EditorHintRange(0, 1024)]
+		public int AnimCols
+		{
+			get { return this.animCols; }
+			set { this.GenerateAnimAtlas(value, value == 0 ? 0 : this.animRows); }
+		}						//	GS
+		/// <summary>
+		/// [GET / SET] Information about different animation frames contained in this Pixmap.
+		/// Setting this will lead to an auto-generated atlas map according to the animation.
+		/// </summary>
+		[EditorHintFlags(MemberFlags.AffectsOthers)]
+		[EditorHintRange(0, 1024)]
+		public int AnimRows
+		{
+			get { return this.animRows; }
+			set { this.GenerateAnimAtlas(value == 0 ? 0 : this.animCols, value); }
+		}						//	GS
+		/// <summary>
+		/// [GET] Total number of animation frames in this Pixmap
+		/// </summary>
+		[EditorHintFlags(MemberFlags.Invisible)]
+		public int AnimFrames
+		{
+			get { return this.animRows * this.animCols; }
+		}					//	G
  
 		/// <summary>
 		/// Creates a new, empty Pixmap.
@@ -1117,11 +1161,89 @@ namespace Duality.Resources
 				this.MainLayer = new Layer(imagePath);
 		}
 
+		/// <summary>
+		/// Generates a <see cref="Atlas">pixmap atlas</see> for sprite animations but leaves
+		/// previously existing atlas entries as they are, if possible. An automatically generated
+		/// pixmap atlas will always occupy the first indices, followed by custom atlas entries.
+		/// </summary>
+		/// <param name="cols">The number of columns in an animated sprite Pixmap</param>
+		/// <param name="rows">The number of rows in an animated sprite Pixmap</param>
+		public void GenerateAnimAtlas(int cols, int rows)
+		{
+			// Remove previously existing animation atlas data
+			int frames = this.animCols * this.animRows;
+			if (this.atlas != null) this.atlas.RemoveRange(0, Math.Min(frames, this.atlas.Count));
+
+			// Set up animation frame data
+			if (cols == 0 && rows == 0)
+			{
+				this.animCols = this.animRows = 0;
+				if (this.atlas != null && this.atlas.Count == 0) this.atlas = null;
+				return;
+			}
+			this.animCols = Math.Max(cols, 1);
+			this.animRows = Math.Max(rows, 1);
+
+			// Set up new atlas data
+			frames = this.animCols * this.animRows;
+			if (frames > 0)
+			{
+				if (this.atlas == null) this.atlas = new List<Rect>(frames);
+				int i = 0;
+				Vector2 frameSize = new Vector2((float)this.Width / this.animCols, (float)this.Height / this.animRows);
+				for (int y = 0; y < this.animRows; y++)
+				{
+					for (int x = 0; x < this.animCols; x++)
+					{
+						this.atlas.Insert(i, new Rect(
+							x * frameSize.X,
+							y * frameSize.Y,
+							frameSize.X,
+							frameSize.Y));
+						i++;
+					}
+				}
+			}
+			else if (this.atlas.Count == 0)
+				this.atlas = null;
+		}
+		/// <summary>
+		/// Does a safe (null-checked, clamped) pixmap <see cref="Atlas"/> lookup.
+		/// </summary>
+		/// <param name="index"></param>
+		/// <param name="region"></param>
+		public void LookupAtlas(int index, out Rect region)
+		{
+			if (this.atlas == null)
+			{
+				region.X = region.Y = 0.0f;
+				region.W = this.Width;
+				region.H = this.Height;
+			}
+			else
+			{
+				region = this.atlas[MathF.Clamp(index, 0, this.atlas.Count - 1)];
+			}
+		}
+		/// <summary>
+		/// Does a safe (null-checked, clamped) pixmap <see cref="Atlas"/> lookup.
+		/// </summary>
+		/// <param name="index"></param>
+		public Rect LookupAtlas(int index)
+		{
+			Rect result;
+			this.LookupAtlas(index, out result);
+			return result;
+		}
+
 		protected override void OnCopyTo(Resource r, Duality.Cloning.CloneProvider provider)
 		{
 			base.OnCopyTo(r, provider);
 			Pixmap c = r as Pixmap;
 			c.layers = this.layers != null ? new List<Layer>(this.layers.Select(l => l.Clone())) : null;
+			c.atlas = this.atlas == null ? null : new List<Rect>(this.atlas);
+			c.animCols = this.animCols;
+			c.animRows = this.animRows;
 		}
 
 		void ISerializable.WriteData(IDataWriter writer)
@@ -1142,7 +1264,9 @@ namespace Duality.Resources
 				writer.WriteValue("layerCount", 0);
 
 			writer.WriteValue("dataBasePath", this.sourcePath);
-
+			writer.WriteValue("atlas", this.atlas);
+			writer.WriteValue("animCols", this.animCols);
+			writer.WriteValue("animRows", this.animRows);
 		}
 		void ISerializable.ReadData(IDataReader reader)
 		{
@@ -1186,6 +1310,9 @@ namespace Duality.Resources
 			}
 
 			reader.ReadValue("dataBasePath", out this.sourcePath);
+			reader.ReadValue("atlas", out this.atlas);
+			reader.ReadValue("animCols", out this.animCols);
+			reader.ReadValue("animRows", out this.animRows);
 		}
 	}
 }

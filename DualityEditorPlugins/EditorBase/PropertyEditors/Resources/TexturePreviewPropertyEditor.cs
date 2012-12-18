@@ -16,7 +16,7 @@ using DualityEditor.CorePluginInterface;
 
 namespace EditorBase.PropertyEditors
 {
-	public partial class TexturePreviewPropertyEditor : PropertyEditor
+	public class TexturePreviewPropertyEditor : PropertyEditor
 	{
 		protected const int HeaderHeight = 30;
 		protected const int SmallHeight = 64 + HeaderHeight;
@@ -27,7 +27,7 @@ namespace EditorBase.PropertyEditors
 		private	List<Bitmap>	prevImageFrame		= new List<Bitmap>();
 		private	float			prevImageLum		= 0.0f;
 		private	Pixmap.Layer	prevImageValue		= null;
-		private	int				prevImageAtlasLen	= -1;
+		private	int				prevImageAtlasHash	= -1;
 		private	Rectangle	rectHeader			= Rectangle.Empty;
 		private	Rectangle	rectPreview			= Rectangle.Empty;
 		private	Rectangle	rectLabelName		= Rectangle.Empty;
@@ -66,11 +66,11 @@ namespace EditorBase.PropertyEditors
 			// Need some way to determine actual texture content.. this isn't optimal but works in most cases.
 			Pixmap basePx = this.value != null ? this.value.BasePixmap.Res : null;
 			Pixmap.Layer basePxLayer = basePx != null ? basePx.MainLayer : null;
-			int atlasLen = this.value != null && this.value.Atlas != null ? this.value.Atlas.Count : 0;
+			int atlasHash = basePx != null && basePx.Atlas != null ? basePx.Atlas.GetCombinedHashCode() : 0;
 
-			if (this.prevImageValue == basePxLayer && this.prevImageAtlasLen == atlasLen) return;
+			if (this.prevImageValue == basePxLayer && this.prevImageAtlasHash == atlasHash) return;
 			this.prevImageValue = basePxLayer;
-			this.prevImageAtlasLen = atlasLen;
+			this.prevImageAtlasHash = atlasHash;
 
 			if (this.prevImage != null) this.prevImage.Dispose();
 			this.prevImage = null;
@@ -102,14 +102,14 @@ namespace EditorBase.PropertyEditors
 			if (frameIndex == -1) return this.prevImage;
 
 			if (this.prevImage == null) return null;
-			if (this.value.Atlas == null) return null;
 			if (!this.value.BasePixmap.IsAvailable) return null;
+			if (this.value.BasePixmap.Res.Atlas == null) return null;
 
 			while (this.prevImageFrame.Count <= frameIndex) this.prevImageFrame.Add(null);
 			if (this.prevImageFrame[frameIndex] == null)
 			{
-				Rect uvRect = this.value.Atlas[frameIndex];
-				Rect pxRect = uvRect.Transform(this.value.OglWidth, this.value.OglHeight);
+				Rect pxRect;
+				this.value.BasePixmap.Res.LookupAtlas(frameIndex, out pxRect);
 				Pixmap.Layer subImage = this.value.BasePixmap.Res.MainLayer.CloneSubImage((int)pxRect.X, (int)pxRect.Y, (int)pxRect.W, (int)pxRect.H);
 				this.prevImageFrame[frameIndex] = subImage.ToBitmap();
 			}
@@ -136,10 +136,10 @@ namespace EditorBase.PropertyEditors
 			if (lastValue != this.value)
 				this.AdjustPreviewHeight(false);
 
-			if (this.value != null && this.value.Atlas != null)
+			if (this.value != null && this.value.BasePixmap.Res != null && this.value.BasePixmap.Res.Atlas != null)
 			{
 				this.subImageSelector.ReadOnly = false;
-				this.subImageSelector.Maximum = this.value.Atlas.Count - 1;
+				this.subImageSelector.Maximum = this.value.BasePixmap.Res.Atlas.Count - 1;
 			}
 			else
 			{

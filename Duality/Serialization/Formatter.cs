@@ -121,6 +121,8 @@ namespace Duality.Serialization
 				object read = this.ReadValue(name);
 				if (read is U)
 					return (U)read;
+				else if (read == null)
+					return default(U);
 				else
 				{
 					try { return (U)Convert.ChangeType(read, typeof(U), System.Globalization.CultureInfo.InvariantCulture); }
