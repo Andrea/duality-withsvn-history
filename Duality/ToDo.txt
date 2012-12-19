@@ -25,9 +25,6 @@
 	-->	WrapMode:			Clamp, Repeat, Mirror
 	-->	PixelFormat:		Rgba, Rgb, LuminanceAlpha, Alpha, Luminance, Depth, RgbaF
 
--->	Usability: Instead of preventing to create Components whose requirements aren't met,
-	auto-create the requirements when adding them. Don't limit the user - work for him!
-
 -->	Idea: Bitmap Fonts
 	-->	Let a Font specify an optional base Texture. It is used as a fixed Bitmap Font
 	-->	Method: MakeBitmapFont(), saves the internal Texture, assigns it, triggers a reload and returns a ContentRef to the new Texture

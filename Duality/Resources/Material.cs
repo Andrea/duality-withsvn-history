@@ -598,26 +598,20 @@ namespace Duality.Resources
 		}
 		private void UpdateHashCode()
 		{
-			unchecked // Overflow is fine, just wrap
-			{
-				this.hashCode = 17;
-				this.hashCode = this.hashCode * 23 + this.mainColor.GetHashCode();
-				this.hashCode = this.hashCode * 23 + this.technique.GetHashCode();
-				this.hashCode = this.hashCode * 23 + this.GetTextureHashCode();
-				this.hashCode = this.hashCode * 23 + this.GetUniformHashCode();
-			}
+			this.hashCode = MathF.CombineHashCode(17,
+				this.mainColor.GetHashCode(),
+				this.technique.GetHashCode(),
+				this.GetTextureHashCode(),
+				this.GetUniformHashCode());
 		}
 		private int GetTextureHashCode()
 		{
 			if (this.textures == null) return 0;
 			int texHash = 17;
-			unchecked
+			foreach (var pair in this.textures)
 			{
-				foreach (var pair in this.textures)
-				{
-					texHash = texHash * 23 + pair.Key.GetHashCode();
-					texHash = texHash * 23 + pair.Value.GetHashCode();
-				}
+				MathF.CombineHashCode(ref texHash, pair.Key.GetHashCode());
+				MathF.CombineHashCode(ref texHash, pair.Value.GetHashCode());
 			}
 			return texHash;
 		}
@@ -625,16 +619,11 @@ namespace Duality.Resources
 		{
 			if (this.uniforms == null) return 0;
 			int uniformHash = 17;
-			unchecked
+			foreach (var pair in this.uniforms)
 			{
-				foreach (var pair in this.uniforms)
-				{
-					uniformHash = uniformHash * 23 + pair.Key.GetHashCode();
-					for (int i = 0; i < pair.Value.Length; i++)
-					{
-						uniformHash = uniformHash * 23 + pair.Value[i].GetHashCode();
-					}
-				}
+				MathF.CombineHashCode(ref uniformHash, pair.Key.GetHashCode());
+				for (int i = 0; i < pair.Value.Length; i++)
+					MathF.CombineHashCode(ref uniformHash, pair.Value[i].GetHashCode());
 			}
 			return uniformHash;
 		}

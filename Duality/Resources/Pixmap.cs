@@ -250,6 +250,9 @@ namespace Duality.Resources
 			/// <returns></returns>
 			public Bitmap ToBitmap()
 			{
+				if (this.width == 0 || this.height == 0)
+					return new Bitmap(1, 1);
+
 				int[] argbValues = this.GetPixelDataIntArgb();
 				Bitmap bm = new Bitmap(this.width, this.height);
 				BitmapData data = bm.LockBits(

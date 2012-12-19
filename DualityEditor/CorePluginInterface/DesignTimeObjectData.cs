@@ -61,12 +61,12 @@ namespace DualityEditor.CorePluginInterface
 			public override int GetHashCode()
 			{
 				int hash = 17;
-				hash = hash * 23 + this.hidden.GetHashCode();
-				hash = hash * 23 + this.locked.GetHashCode();
+				MathF.CombineHashCode(hash, this.hidden.GetHashCode());
+				MathF.CombineHashCode(hash, this.locked.GetHashCode());
 				if (this.custom != null)
 				{
 					foreach (var pair in this.custom)
-						hash = hash * 23 + pair.Value.GetHashCode();
+						MathF.CombineHashCode(hash, pair.Value.GetHashCode());
 				}
 				return hash;
 			}

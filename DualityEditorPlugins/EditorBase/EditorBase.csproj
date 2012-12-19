@@ -109,6 +109,7 @@
     <Compile Include="PropertyEditors\Resources\FontPreviewPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Resources\FontContentPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Resources\DrawTechniquePropertyEditor.cs" />
+    <Compile Include="PropertyEditors\Resources\ImagePreviewPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Resources\PixmapContentPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Resources\TextureContentPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Resources\TexturePreviewPropertyEditor.cs" />

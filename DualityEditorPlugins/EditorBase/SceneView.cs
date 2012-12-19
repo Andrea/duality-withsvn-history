@@ -550,7 +550,7 @@ namespace EditorBase
 			}
 			return firstReqComp;
 		}
-		protected void CreateGameObject(TreeNodeAdv baseNode)
+		protected GameObject CreateGameObject(TreeNodeAdv baseNode)
 		{
 			GameObjectNode baseObjNode = baseNode == null ? null : baseNode.Tag as GameObjectNode;
 			GameObject baseObj = baseObjNode == null ? null : baseObjNode.Obj;
@@ -559,53 +559,30 @@ namespace EditorBase
 			newObj.Parent = baseObj;
 			Scene.Current.RegisterObj(newObj);
 
-			// Deselect previous
-			this.objectView.ClearSelection();
-
-			// Select new node
-			GameObjectNode objNode = this.FindNode(newObj);
-			if (objNode != null)
-			{
-				TreeNodeAdv dragObjViewNode;
-				dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(objNode));
-				if (dragObjViewNode != null)
-				{
-					dragObjViewNode.IsSelected = true;
-					this.objectView.EnsureVisible(dragObjViewNode);
-					this.nodeTextBoxName.BeginEdit();
-				}
-			}
-
 			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(Scene.Current));
+			return newObj;
 		}
-		protected void CreateComponent(TreeNodeAdv baseNode, Type cmpType)
+		protected Component CreateComponent(TreeNodeAdv baseNode, Type cmpType)
 		{
 			GameObjectNode baseObjNode = baseNode == null ? null : baseNode.Tag as GameObjectNode;
 			GameObject baseObj = baseObjNode == null ? null : baseObjNode.Obj;
 
+			// There is no GameObject? Create one!
+			if (baseObj == null)
+			{
+				baseObj = this.CreateGameObject(baseNode);
+				baseObjNode = this.FindNode(baseObj);
+			}
+
 			// Add dependencies
 			foreach (Type required in Component.GetRequiredComponents(cmpType, true))
 				baseObj.AddComponent(required);
+
 			// Add Component
 			Component newCmp = baseObj.AddComponent(cmpType);
 
-			// Deselect previous
-			this.objectView.ClearSelection();
-
-			// Select new node
-			TreeNodeAdv dragObjViewNode;
-			NodeBase newNode = (NodeBase)this.FindNode(newCmp) ?? baseObjNode;
-			if (newNode != null)
-			{
-				dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(newNode));
-				if (dragObjViewNode != null)
-				{
-					dragObjViewNode.IsSelected = true;
-					this.objectView.EnsureVisible(dragObjViewNode);
-				}
-			}
-
 			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(baseObj));
+			return newCmp;
 		}
 		protected bool OpenResource(TreeNodeAdv node)
 		{
@@ -1386,55 +1363,49 @@ namespace EditorBase
 
 			// Reset "New" menu to original state
 			this.gameObjectToolStripMenuItem.Image = CorePluginRegistry.RequestTypeImage(typeof(GameObject), CorePluginRegistry.ImageContext_Icon);
-			this.newGameObjectSeparator.Visible = gameObjSelect;
-
 			List<ToolStripItem> oldItems = new List<ToolStripItem>(this.newToolStripMenuItem.DropDownItems.OfType<ToolStripItem>());
 			this.newToolStripMenuItem.DropDownItems.Clear();
 			foreach (ToolStripItem item in oldItems.Skip(2)) item.Dispose();
 			this.newToolStripMenuItem.DropDownItems.AddRange(oldItems.Take(2).ToArray());
 
 			// Populate the "New" menu
-			if (gameObjSelect)
+			List<ToolStripItem> newItems = new List<ToolStripItem>();
+			foreach (Type cmpType in this.QueryComponentTypes())
 			{
-				GameObject targetObj = selNodeData.OfType<GameObjectNode>().First().Obj;
-				List<ToolStripItem> newItems = new List<ToolStripItem>();
-				foreach (Type cmpType in this.QueryComponentTypes())
+				// Generalte category item
+				string[] category = ComponentNode.GetTypeCategory(cmpType);
+				ToolStripMenuItem categoryItem = this.newToolStripMenuItem;
+				for (int i = 0; i < category.Length; i++)
 				{
-					// Generalte category item
-					string[] category = ComponentNode.GetTypeCategory(cmpType);
-					ToolStripMenuItem categoryItem = this.newToolStripMenuItem;
-					for (int i = 0; i < category.Length; i++)
-					{
-						ToolStripMenuItem subCatItem;
-						if (categoryItem == this.newToolStripMenuItem)
-							subCatItem = newItems.FirstOrDefault(item => item.Name == category[i]) as ToolStripMenuItem;
-						else
-							subCatItem = categoryItem.DropDownItems.Find(category[i], false).FirstOrDefault() as ToolStripMenuItem;
-
-						if (subCatItem == null)
-						{
-							subCatItem = new ToolStripMenuItem(category[i]);
-							subCatItem.Name = category[i];
-							subCatItem.Tag = cmpType.Assembly;
-							subCatItem.DropDownItemClicked += this.newToolStripMenuItem_DropDownItemClicked;
-							if (categoryItem == this.newToolStripMenuItem)
-								newItems.Add(subCatItem);
-							else
-								categoryItem.DropDownItems.Add(subCatItem);
-						}
-						categoryItem = subCatItem;
-					}
-
-					ToolStripMenuItem cmpTypeItem = new ToolStripMenuItem(cmpType.Name, ComponentNode.GetTypeImage(cmpType));
-					cmpTypeItem.Tag = cmpType;
+					ToolStripMenuItem subCatItem;
 					if (categoryItem == this.newToolStripMenuItem)
-						newItems.Add(cmpTypeItem);
+						subCatItem = newItems.FirstOrDefault(item => item.Name == category[i]) as ToolStripMenuItem;
 					else
-						categoryItem.DropDownItems.Add(cmpTypeItem);
+						subCatItem = categoryItem.DropDownItems.Find(category[i], false).FirstOrDefault() as ToolStripMenuItem;
+
+					if (subCatItem == null)
+					{
+						subCatItem = new ToolStripMenuItem(category[i]);
+						subCatItem.Name = category[i];
+						subCatItem.Tag = cmpType.Assembly;
+						subCatItem.DropDownItemClicked += this.newToolStripMenuItem_DropDownItemClicked;
+						if (categoryItem == this.newToolStripMenuItem)
+							newItems.Add(subCatItem);
+						else
+							categoryItem.DropDownItems.Add(subCatItem);
+					}
+					categoryItem = subCatItem;
 				}
-				EditorBasePlugin.SortToolStripTypeItems(newItems);
-				this.newToolStripMenuItem.DropDownItems.AddRange(newItems.ToArray());
+
+				ToolStripMenuItem cmpTypeItem = new ToolStripMenuItem(cmpType.Name, ComponentNode.GetTypeImage(cmpType));
+				cmpTypeItem.Tag = cmpType;
+				if (categoryItem == this.newToolStripMenuItem)
+					newItems.Add(cmpTypeItem);
+				else
+					categoryItem.DropDownItems.Add(cmpTypeItem);
 			}
+			EditorBasePlugin.SortToolStripTypeItems(newItems);
+			this.newToolStripMenuItem.DropDownItems.AddRange(newItems.ToArray());
 		}
 		private void contextMenuNode_Closing(object sender, ToolStripDropDownClosingEventArgs e)
 		{
@@ -1533,14 +1504,49 @@ namespace EditorBase
 
 		private void gameObjectToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			this.CreateGameObject(this.objectView.SelectedNode);
+			// Create the GameObject
+			GameObject obj = this.CreateGameObject(this.objectView.SelectedNode);
+			GameObjectNode objNode = this.FindNode(obj);
+
+			// Deselect previous
+			this.objectView.ClearSelection();
+
+			// Select new node
+			if (objNode != null)
+			{
+				TreeNodeAdv dragObjViewNode;
+				dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(objNode));
+				if (dragObjViewNode != null)
+				{
+					dragObjViewNode.IsSelected = true;
+					this.objectView.EnsureVisible(dragObjViewNode);
+					this.nodeTextBoxName.BeginEdit();
+				}
+			}
 		}
 		private void newToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
 		{
 			if (e.ClickedItem == this.gameObjectToolStripMenuItem) return;
 			if (e.ClickedItem.Tag as Type == null) return;
+
+			// Create the Component
 			Type clickedType = e.ClickedItem.Tag as Type;
-			this.CreateComponent(this.objectView.SelectedNode, clickedType);
+			Component cmp = this.CreateComponent(this.objectView.SelectedNode, clickedType);
+			ComponentNode cmpNode = this.FindNode(cmp);
+			
+			// Deselect previous
+			this.objectView.ClearSelection();
+
+			// Select new node
+			if (cmpNode != null)
+			{
+				TreeNodeAdv dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(cmpNode));
+				if (dragObjViewNode != null)
+				{
+					dragObjViewNode.IsSelected = true;
+					this.objectView.EnsureVisible(dragObjViewNode);
+				}
+			}
 		}
 		private void customObjectActionItem_Click(object sender, EventArgs e)
 		{

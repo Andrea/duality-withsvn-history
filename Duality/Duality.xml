@@ -11359,6 +11359,21 @@
             <param name="first"></param>
             <param name="second"></param>
         </member>
+        <member name="M:Duality.MathF.CombineHashCode(System.Int32@,System.Int32)">
+            <summary>
+            Combines two hash codes.
+            </summary>
+            <param name="baseHash"></param>
+            <param name="otherHash"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.MathF.CombineHashCode(System.Int32[])">
+            <summary>
+            Combines any number of hash codes.
+            </summary>
+            <param name="hashes"></param>
+            <returns></returns>
+        </member>
         <member name="P:Duality.MathF.Rnd">
             <summary>
             [GET / SET] Global random number generator. Is never null.

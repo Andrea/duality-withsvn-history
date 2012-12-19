@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
+using System.Linq;
 
 using AdamsLair.PropertyGrid;
 
@@ -33,6 +34,9 @@ namespace EditorBase.PropertyEditors
 		protected override void OnUpdateFromObjects(object[] values)
 		{
 			base.OnUpdateFromObjects(values);
+
+			Resource[] resValues = values.OfType<Resource>().ToArray();
+			if (resValues.Length == 1) this.HeaderValueText = resValues[0].FullName;
 		}
 		protected override void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)
 		{

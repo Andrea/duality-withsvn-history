@@ -218,14 +218,21 @@ namespace Duality.Resources
 			// Non-Streamed Audio
 			else
 			{
-				if (this.alBuffer <= AlBuffer_NotAvailable) this.alBuffer = AL.GenBuffer();
-				PcmData pcm = OV.LoadFromMemory(this.data);
-				AL.BufferData(
-					this.alBuffer,
-					pcm.channelCount == 1 ? ALFormat.Mono16 : ALFormat.Stereo16,
-					pcm.data.ToArray(), 
-					(int)pcm.data.Length, 
-					pcm.sampleRate);
+				if (this.alBuffer <= AlBuffer_NotAvailable)
+				{
+					this.alBuffer = AL.GenBuffer();
+					PcmData pcm = OV.LoadFromMemory(this.data);
+					AL.BufferData(
+						this.alBuffer,
+						pcm.channelCount == 1 ? ALFormat.Mono16 : ALFormat.Stereo16,
+						pcm.data.ToArray(), 
+						(int)pcm.data.Length, 
+						pcm.sampleRate);
+				}
+				else
+				{
+					// Buffer already there? Do nothing.
+				}
 			}
 		}
 		
