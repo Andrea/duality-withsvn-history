@@ -60,7 +60,7 @@ namespace EditorBase.CamViewLayers
 
 	        float stepTemp = 4.0f * this.gridSize * MathF.Max(0.25f, MathF.Pow(2.0f, -MathF.Round(1.0f - MathF.Log(1.0f / scaleTemp, 2.0f))));
 	        float scaledStep = stepTemp * scaleTemp;
-	        float viewBoundRad = device.ViewBoundingRadius;
+	        float viewBoundRad = device.TargetSize.Length * 0.5f;
 	        int lineCount = (2 + (int)MathF.Ceiling(viewBoundRad * 2 / scaledStep)) * 4;
 
 	        ColorRgba gridColor = this.View.FgColor.WithAlpha(alphaTemp);

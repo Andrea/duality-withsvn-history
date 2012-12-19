@@ -73,8 +73,8 @@ namespace Duality.Resources
 						GL.ReadBuffer((ReadBufferMode)((int)ReadBufferMode.ColorAttachment0 + i));
 						GL.DrawBuffer((DrawBufferMode)((int)DrawBufferMode.ColorAttachment0 + i));
 						GL.Ext.BlitFramebuffer(
-							0, 0, curBound.targetInfo[i].target.Res.OglWidth, curBound.targetInfo[i].target.Res.OglHeight,
-							0, 0, curBound.targetInfo[i].target.Res.OglWidth, curBound.targetInfo[i].target.Res.OglHeight,
+							0, 0, curBound.targetInfo[i].target.Res.TexelWidth, curBound.targetInfo[i].target.Res.TexelHeight,
+							0, 0, curBound.targetInfo[i].target.Res.TexelWidth, curBound.targetInfo[i].target.Res.TexelHeight,
 							ClearBufferMask.ColorBufferBit, (ExtFramebufferBlit)(int)BlitFramebufferFilter.Nearest);
 					}
 					GL.ReadBuffer(ReadBufferMode.Back);
@@ -214,14 +214,14 @@ namespace Duality.Resources
 		/// </summary>
 		public int Width
 		{
-			get { return this.targetInfo.FirstOrDefault().target.IsAvailable ? this.targetInfo.FirstOrDefault().target.Res.PxWidth : 0; }
+			get { return this.targetInfo.FirstOrDefault().target.IsAvailable ? this.targetInfo.FirstOrDefault().target.Res.PixelWidth : 0; }
 		}
 		/// <summary>
 		/// [GET] Height of this RenderTarget. This values is derived by its <see cref="Targets"/>.
 		/// </summary>
 		public int Height
 		{
-			get { return this.targetInfo.FirstOrDefault().target.IsAvailable ? this.targetInfo.FirstOrDefault().target.Res.PxHeight : 0; }
+			get { return this.targetInfo.FirstOrDefault().target.IsAvailable ? this.targetInfo.FirstOrDefault().target.Res.PixelHeight : 0; }
 		}
 		/// <summary>
 		/// [GET] UVRatio of this RenderTarget. This values is derived by its <see cref="Targets"/>.
@@ -317,8 +317,8 @@ namespace Duality.Resources
 						TextureTarget.Texture2D, 
 						this.targetInfo[i].target.Res.OglTexId, 
 						0);
-					oglWidth = this.targetInfo[i].target.Res.OglWidth;
-					oglHeight = this.targetInfo[i].target.Res.OglHeight;
+					oglWidth = this.targetInfo[i].target.Res.TexelWidth;
+					oglHeight = this.targetInfo[i].target.Res.TexelHeight;
 				}
 
 				// Generate Depth Renderbuffer
@@ -359,8 +359,8 @@ namespace Duality.Resources
 						TextureTarget.Texture2D, 
 						this.targetInfo[i].target.Res.OglTexId, 
 						0);
-					oglWidth = this.targetInfo[i].target.Res.OglWidth;
-					oglHeight = this.targetInfo[i].target.Res.OglHeight;
+					oglWidth = this.targetInfo[i].target.Res.TexelWidth;
+					oglHeight = this.targetInfo[i].target.Res.TexelHeight;
 				}
 
 				// Check status

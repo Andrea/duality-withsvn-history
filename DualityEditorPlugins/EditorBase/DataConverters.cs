@@ -160,7 +160,7 @@ namespace EditorBase.DataConverters
 					if (sprite == null && gameobj != null) sprite = gameobj.GetComponent<SpriteRenderer>();
 					if (sprite == null) sprite = new SpriteRenderer();
 					sprite.SharedMaterial = mat;
-					if (mainTex != null) sprite.Rect = Rect.AlignCenter(0.0f, 0.0f, mainTex.PxWidth, mainTex.PxHeight);
+					if (mainTex != null) sprite.Rect = Rect.AlignCenter(0.0f, 0.0f, mainTex.PixelWidth, mainTex.PixelHeight);
 					convert.AddResult(sprite);
 				}
 				else
@@ -169,7 +169,7 @@ namespace EditorBase.DataConverters
 					if (sprite == null && gameobj != null) sprite = gameobj.GetComponent<AnimSpriteRenderer>();
 					if (sprite == null) sprite = new AnimSpriteRenderer();
 					sprite.SharedMaterial = mat;
-					sprite.Rect = Rect.AlignCenter(0.0f, 0.0f, mainTex.PxWidth / mainTex.AnimCols, mainTex.PxHeight / mainTex.AnimRows);
+					sprite.Rect = Rect.AlignCenter(0.0f, 0.0f, mainTex.PixelWidth / mainTex.AnimCols, mainTex.PixelHeight / mainTex.AnimRows);
 					sprite.AnimDuration = 5.0f;
 					sprite.AnimFrameCount = mainTex.AnimFrames;
 					convert.AddResult(sprite);

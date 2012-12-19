@@ -112,13 +112,6 @@ namespace Duality
 			get { return this.snd; }
 		}	//	G
 		/// <summary>
-		/// [GET] Internal handle of the SoundInstances OpenAL source.
-		/// </summary>
-		public int AlSource
-		{
-			get { return this.alSource; }
-		}					//	G
-		/// <summary>
 		/// [GET] The <see cref="GameObject"/> that this SoundInstance is attached to.
 		/// </summary>
 		public GameObject AttachedTo

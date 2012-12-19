@@ -69,7 +69,7 @@ namespace EditorBase.PropertyEditors
 				return PreviewProvider.GetPreviewImage(
 					this.value, 
 					this.ClientRectangle.Width - 2, 
-					Math.Min(BigHeight - 2, this.value.PxHeight), 
+					Math.Min(BigHeight - 2, this.value.PixelHeight), 
 					PreviewSizeMode.FixedHeight);
 			}
 			else
@@ -115,12 +115,12 @@ namespace EditorBase.PropertyEditors
 				this.rectLabelHeight, 
 				!this.Enabled ? ControlRenderer.ColorGrayText : ControlRenderer.ColorText);
 			ControlRenderer.DrawStringLine(e.Graphics, 
-				this.value != null ? this.value.PxWidth.ToString() : " - ", 
+				this.value != null ? this.value.PixelWidth.ToString() : " - ", 
 				SystemFonts.DefaultFont, 
 				this.rectLabelWidthVal, 
 				!this.Enabled ? ControlRenderer.ColorGrayText : ControlRenderer.ColorText);
 			ControlRenderer.DrawStringLine(e.Graphics, 
-				this.value != null ? this.value.PxHeight.ToString() : " - ", 
+				this.value != null ? this.value.PixelHeight.ToString() : " - ", 
 				SystemFonts.DefaultFont, 
 				this.rectLabelHeightVal, 
 				!this.Enabled ? ControlRenderer.ColorGrayText : ControlRenderer.ColorText);
@@ -136,12 +136,12 @@ namespace EditorBase.PropertyEditors
 				this.rectLabelOglHeight, 
 				!this.Enabled ? ControlRenderer.ColorGrayText : ControlRenderer.ColorText);
 			ControlRenderer.DrawStringLine(e.Graphics, 
-				this.value != null ? this.value.OglWidth.ToString() : " - ", 
+				this.value != null ? this.value.TexelWidth.ToString() : " - ", 
 				SystemFonts.DefaultFont, 
 				this.rectLabelOglWidthVal, 
 				!this.Enabled ? ControlRenderer.ColorGrayText : ControlRenderer.ColorText);
 			ControlRenderer.DrawStringLine(e.Graphics, 
-				this.value != null ? this.value.OglHeight.ToString() : " - ", 
+				this.value != null ? this.value.TexelHeight.ToString() : " - ", 
 				SystemFonts.DefaultFont, 
 				this.rectLabelOglHeightVal, 
 				!this.Enabled ? ControlRenderer.ColorGrayText : ControlRenderer.ColorText);

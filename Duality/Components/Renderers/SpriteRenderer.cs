@@ -211,11 +211,11 @@ namespace Duality.Components.Renderers
 			if (mainTex != null)
 			{
 				if (this.rectMode == UVMode.WrapBoth)
-					uvRect = new Rect(mainTex.UVRatio.X * this.rect.W / mainTex.PxWidth, mainTex.UVRatio.Y * this.rect.H / mainTex.PxHeight);
+					uvRect = new Rect(mainTex.UVRatio.X * this.rect.W / mainTex.PixelWidth, mainTex.UVRatio.Y * this.rect.H / mainTex.PixelHeight);
 				else if (this.rectMode == UVMode.WrapHorizontal)
-					uvRect = new Rect(mainTex.UVRatio.X * this.rect.W / mainTex.PxWidth, mainTex.UVRatio.Y);
+					uvRect = new Rect(mainTex.UVRatio.X * this.rect.W / mainTex.PixelWidth, mainTex.UVRatio.Y);
 				else if (this.rectMode == UVMode.WrapVertical)
-					uvRect = new Rect(mainTex.UVRatio.X, mainTex.UVRatio.Y * this.rect.H / mainTex.PxHeight);
+					uvRect = new Rect(mainTex.UVRatio.X, mainTex.UVRatio.Y * this.rect.H / mainTex.PixelHeight);
 				else
 					uvRect = new Rect(mainTex.UVRatio.X, mainTex.UVRatio.Y);
 			}

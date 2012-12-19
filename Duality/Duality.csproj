@@ -107,6 +107,7 @@
     <Compile Include="Components\Physics\Joints\FixedDistanceJointInfo.cs" />
     <Compile Include="Components\Physics\Joints\WeldJointInfo.cs" />
     <Compile Include="CorePlugin.cs" />
+    <Compile Include="Graphics\DrawDevice.cs" />
     <Compile Include="Helpers\Alignment.cs" />
     <Compile Include="Graphics\ColorFormat\ColorHsva.cs" />
     <Compile Include="Components\Renderers\AnimSpriteRenderer.cs" />

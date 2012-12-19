@@ -197,7 +197,7 @@ namespace Duality.Resources
 		/// The OpenAL buffer handle to the audio data that is used by this Sound.
 		/// </summary>
 		[EditorHintFlags(MemberFlags.Invisible)]
-		public int AlBuffer
+		internal int AlBuffer
 		{
 			get { return this.audioData.IsAvailable ? this.audioData.Res.AlBuffer : AudioData.AlBuffer_NotAvailable; }
 		}

@@ -244,7 +244,7 @@ namespace Duality.Resources
 		
 		private	ContentRef<Pixmap>		basePixmap	= ContentRef<Pixmap>.Null;
 		private	Vector2					size		= Vector2.Zero;
-		private	SizeMode				oglSizeMode	= SizeMode.Default;
+		private	SizeMode				texSizeMode	= SizeMode.Default;
 		private	TextureMagFilter		filterMag	= TextureMagFilter.Linear;
 		private	TextureMinFilter		filterMin	= TextureMinFilter.LinearMipmapLinear;
 		private	TextureWrapMode			wrapX		= TextureWrapMode.ClampToEdge;
@@ -255,44 +255,44 @@ namespace Duality.Resources
 		[NonSerialized]	private	int		pxHeight	= 0;
 		[NonSerialized]	private	int		glTexId		= 0;
 		[NonSerialized]	private	float	pxDiameter	= 0.0f;
-		[NonSerialized]	private	int		oglWidth	= 0;
-		[NonSerialized]	private	int		oglHeight	= 0;
+		[NonSerialized]	private	int		texWidth	= 0;
+		[NonSerialized]	private	int		texHeight	= 0;
 		[NonSerialized]	private	Vector2	uvRatio		= new Vector2(1.0f, 1.0f);
 		[NonSerialized] private	bool	needsReload	= false;
 
 
 		/// <summary>
-		/// [GET] The Textures internal width as uploaded to video memory
+		/// [GET] The Textures internal texel width
 		/// </summary>
 		[EditorHintFlags(MemberFlags.Invisible)]
-		public int OglWidth
+		public int TexelWidth
 		{
-			get { return this.oglWidth; }
-		}		//	G
+			get { return this.texWidth; }
+		}	//	G
 		/// <summary>
-		/// [GET] The Textures internal height as uploaded to video memory
+		/// [GET] The Textures internal texel height
 		/// </summary>
 		[EditorHintFlags(MemberFlags.Invisible)]
-		public int OglHeight
+		public int TexelHeight
 		{
-			get { return this.oglHeight; }
-		}		//	G
+			get { return this.texHeight; }
+		}	//	G
 		/// <summary>
-		/// [GET] The Textures width after taking relative sizes into account
+		/// [GET] The Textures original pixel width
 		/// </summary>
 		[EditorHintFlags(MemberFlags.Invisible)]
-		public int PxWidth
+		public int PixelWidth
 		{
 			get { return this.pxWidth; }
-		}		//	G
+		}	//	G
 		/// <summary>
-		/// [GET] The Textures height after taking relative sizes into account
+		/// [GET] The Textures original pixel height
 		/// </summary>
 		[EditorHintFlags(MemberFlags.Invisible)]
-		public int PxHeight
+		public int PixelHeight
 		{
 			get { return this.pxHeight; }
-		}		//	G
+		}	//	G
 		/// <summary>
 		/// [GET] The Textures internal id value. You shouldn't need to use this value normally.
 		/// </summary>
@@ -321,7 +321,7 @@ namespace Duality.Resources
 				this.filterMin == TextureMinFilter.NearestMipmapNearest; }
 		}	//	G
 		/// <summary>
-		/// Indicates that the textures parameters have been changed in a way that might make it
+		/// Indicates that the textures parameters have been changed in a way that will make it
 		/// necessary to reload its data before using it next time.
 		/// </summary>
 		[EditorHintFlags(MemberFlags.Invisible)]
@@ -330,7 +330,7 @@ namespace Duality.Resources
 			get { return this.needsReload; }
 		}  //  G
 		/// <summary>
-		/// [GET / SET] The Textures (original, unadjusted) size
+		/// [GET / SET] The Textures size. Readonly, when created from a <see cref="BasePixmap"/>.
 		/// </summary>
 		[EditorHintFlags(MemberFlags.AffectsOthers)]
 		[EditorHintRange(0, int.MaxValue)]
@@ -410,14 +410,14 @@ namespace Duality.Resources
 		/// [GET / SET] Handles how the Textures base Pixmap is adjusted in order to fit GPU texture size requirements (Power of Two dimensions)
 		/// </summary>
 		[EditorHintFlags(MemberFlags.AffectsOthers)]
-		public SizeMode OglSizeMode
+		public SizeMode TexSizeMode
 		{
-			get { return this.oglSizeMode; }
+			get { return this.texSizeMode; }
 			set 
 			{ 
-				if (this.oglSizeMode != value) 
+				if (this.texSizeMode != value) 
 				{ 
-					this.oglSizeMode = value; 
+					this.texSizeMode = value; 
 					this.AdjustSize(this.size.X, this.size.Y);
 					this.needsReload = true;
 				}
@@ -507,7 +507,7 @@ namespace Duality.Resources
 			this.wrapX = wrapX;
 			this.wrapY = wrapY;
 			this.pixelformat = format;
-			this.oglSizeMode = sizeMode;
+			this.texSizeMode = sizeMode;
 			this.AdjustSize(width, height);
 			this.SetupOpenGLRes();
 		}
@@ -518,7 +518,7 @@ namespace Duality.Resources
 		/// </summary>
 		public void ReloadData()
 		{
-			this.LoadData(this.basePixmap, this.oglSizeMode);
+			this.LoadData(this.basePixmap, this.texSizeMode);
 		}
 		/// <summary>
 		/// Loads the specified <see cref="Duality.Resources.Pixmap">Pixmaps</see> pixel data.
@@ -526,7 +526,7 @@ namespace Duality.Resources
 		/// <param name="basePixmap">The <see cref="Duality.Resources.Pixmap"/> that is used as pixel data source.</param>
 		public void LoadData(ContentRef<Pixmap> basePixmap)
 		{
-			this.LoadData(basePixmap, this.oglSizeMode);
+			this.LoadData(basePixmap, this.texSizeMode);
 		}
 		/// <summary>
 		/// Loads the specified <see cref="Duality.Resources.Pixmap">Pixmaps</see> pixel data.
@@ -539,7 +539,7 @@ namespace Duality.Resources
 			if (this.glTexId == 0) this.glTexId = GL.GenTexture();
 			this.needsReload = false;
 			this.basePixmap = basePixmap;
-			this.oglSizeMode = sizeMode;
+			this.texSizeMode = sizeMode;
 
 			int lastTexId;
 			GL.GetInteger(GetPName.TextureBinding2D, out lastTexId);
@@ -550,19 +550,19 @@ namespace Duality.Resources
 			{
 				this.AdjustSize(pixelData.Width, pixelData.Height);
 				this.SetupOpenGLRes();
-				if (this.oglSizeMode != SizeMode.NonPowerOfTwo &&
-					(this.pxWidth != this.oglWidth || this.pxHeight != this.oglHeight))
+				if (this.texSizeMode != SizeMode.NonPowerOfTwo &&
+					(this.pxWidth != this.texWidth || this.pxHeight != this.texHeight))
 				{
-					if (this.oglSizeMode == SizeMode.Enlarge)
+					if (this.texSizeMode == SizeMode.Enlarge)
 					{
 						Pixmap.Layer oldData = pixelData;
-						pixelData = oldData.CloneResize(this.oglWidth, this.oglHeight);
+						pixelData = oldData.CloneResize(this.texWidth, this.texHeight);
 						// Fill border pixels manually - that's cheaper than ColorTransparentPixels here.
 						oldData.DrawOnto(pixelData, BlendMode.Solid, this.pxWidth, 0, 1, this.pxHeight, this.pxWidth - 1, 0);
 						oldData.DrawOnto(pixelData, BlendMode.Solid, 0, this.pxHeight, this.pxWidth, 1, 0, this.pxHeight - 1);
 					}
 					else
-						pixelData = pixelData.CloneRescale(this.oglWidth, this.oglHeight, Pixmap.FilterMethod.Linear);
+						pixelData = pixelData.CloneRescale(this.texWidth, this.texHeight, Pixmap.FilterMethod.Linear);
 				}
 
 				// Load pixel data to video memory
@@ -592,7 +592,7 @@ namespace Duality.Resources
 			GL.GetInteger(GetPName.TextureBinding2D, out lastTexId);
 			GL.BindTexture(TextureTarget.Texture2D, this.glTexId);
 			
-			byte[] data = new byte[this.oglWidth * this.oglHeight * 4];
+			byte[] data = new byte[this.texWidth * this.texHeight * 4];
 			GL.GetTexImage(TextureTarget.Texture2D, 0, 
 				GLPixelFormat.Rgba, PixelType.UnsignedByte, 
 				data);
@@ -600,7 +600,7 @@ namespace Duality.Resources
 			GL.BindTexture(TextureTarget.Texture2D, lastTexId);
 
 			Pixmap.Layer result = new Pixmap.Layer();
-			result.SetPixelDataRgba(data, this.oglWidth, this.oglHeight);
+			result.SetPixelDataRgba(data, this.texWidth, this.texHeight);
 			return result;
 		}
 
@@ -661,22 +661,22 @@ namespace Duality.Resources
 			}
 			this.pxDiameter = MathF.Distance(this.pxWidth, this.pxHeight);
 
-			if (this.oglSizeMode == SizeMode.NonPowerOfTwo)
+			if (this.texSizeMode == SizeMode.NonPowerOfTwo)
 			{
-				this.oglWidth = this.pxWidth;
-				this.oglHeight = this.pxHeight;
+				this.texWidth = this.pxWidth;
+				this.texHeight = this.pxHeight;
 				this.uvRatio = Vector2.One;
 			}
 			else
 			{
-				this.oglWidth = MathF.NextPowerOfTwo(this.pxWidth);
-				this.oglHeight = MathF.NextPowerOfTwo(this.pxHeight);
-				if (this.pxWidth != this.oglWidth || this.pxHeight != this.oglHeight)
+				this.texWidth = MathF.NextPowerOfTwo(this.pxWidth);
+				this.texHeight = MathF.NextPowerOfTwo(this.pxHeight);
+				if (this.pxWidth != this.texWidth || this.pxHeight != this.texHeight)
 				{
-					if (this.oglSizeMode == SizeMode.Enlarge)
+					if (this.texSizeMode == SizeMode.Enlarge)
 					{
-						this.uvRatio.X = (float)this.pxWidth / (float)this.oglWidth;
-						this.uvRatio.Y = (float)this.pxHeight / (float)this.oglHeight;
+						this.uvRatio.X = (float)this.pxWidth / (float)this.texWidth;
+						this.uvRatio.Y = (float)this.pxHeight / (float)this.texHeight;
 					}
 					else
 						this.uvRatio = Vector2.One;
@@ -712,7 +712,7 @@ namespace Duality.Resources
 
 			// Setup pixel format
 			GL.TexImage2D(TextureTarget.Texture2D, 0,
-				this.pixelformat, this.oglWidth, this.oglHeight, 0,
+				this.pixelformat, this.texWidth, this.texHeight, 0,
 				GLPixelFormat.Bgra, PixelType.UnsignedByte, IntPtr.Zero);
 
 			if (lastTexId != this.glTexId) GL.BindTexture(TextureTarget.Texture2D, lastTexId);
@@ -720,7 +720,7 @@ namespace Duality.Resources
 
 		protected override void OnLoaded()
 		{
-			this.LoadData(this.basePixmap, this.oglSizeMode);
+			this.LoadData(this.basePixmap, this.texSizeMode);
 			base.OnLoaded();
 		}
 		protected override void OnDisposing(bool manually)
@@ -746,7 +746,7 @@ namespace Duality.Resources
 			c.wrapX = this.wrapX;
 			c.wrapY = this.wrapY;
 			c.pixelformat = this.pixelformat;
-			c.LoadData(this.basePixmap, this.oglSizeMode);
+			c.LoadData(this.basePixmap, this.texSizeMode);
 		}
 	}
 }

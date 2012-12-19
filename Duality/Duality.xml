@@ -6173,11 +6173,6 @@
             this SoundInstance.
             </summary>
         </member>
-        <member name="P:Duality.SoundInstance.AlSource">
-            <summary>
-            [GET] Internal handle of the SoundInstances OpenAL source.
-            </summary>
-        </member>
         <member name="P:Duality.SoundInstance.AttachedTo">
             <summary>
             [GET] The <see cref="T:Duality.GameObject"/> that this SoundInstance is attached to.
@@ -6676,88 +6671,9 @@
             [GET] Returns whether the shader variable will be visible in the editor.
             </summary>
         </member>
-        <member name="T:Duality.VertexMode">
+        <member name="T:Duality.Components.Camera">
             <summary>
-            Specifies the way in which incoming vertex data is interpreted in order to generate geometry.
-            We're not using OpenTK.Graphics.OpenGL.BeginMode in order to keep the abstraction layer that
-            is introduced by <see cref="T:Duality.IDrawDevice"/> consistent. Also, we're able to limit the supported
-            vertex modes and remove obsolete or inefficient ones.
-            </summary>
-        </member>
-        <member name="T:Duality.PerspectiveMode">
-            <summary>
-            Specifies the perspective effect that is applied when rendering the world.
-            </summary>
-        </member>
-        <member name="F:Duality.PerspectiveMode.Flat">
-            <summary>
-            No perspective effect is applied. Z points into the screen and is only used for object sorting.
-            </summary>
-        </member>
-        <member name="F:Duality.PerspectiveMode.Parallax">
-            <summary>
-            Objects that are far away appear smaller. Z points into the screen and is used for scaling and sorting.
-            </summary>
-        </member>
-        <member name="T:Duality.RenderMatrix">
-            <summary>
-            Specifies a matrix setup used in a <see cref="T:Duality.Components.Camera.Pass"/>.
-            </summary>
-        </member>
-        <member name="F:Duality.VisibilityFlag.ScreenOverlay">
-            <summary>
-            Special flag. This flag is set when rendering screen overlays.
-            </summary>
-        </member>
-        <member name="T:Duality.BlendMode">
-            <summary>
-            Enumerates different behviours on how to blend color data onto existing background color.
-            </summary>
-            <seealso cref="T:Duality.Resources.DrawTechnique"/>
-        </member>
-        <member name="F:Duality.BlendMode.Reset">
-            <summary>
-            When passing this to a method, this value can be used to indicate "Restore to default settings".
-            </summary>
-        </member>
-        <member name="F:Duality.BlendMode.Solid">
-            <summary>
-            Incoming color overwrites background color completely. Doesn't need Z-Sorting.
-            </summary>
-        </member>
-        <member name="F:Duality.BlendMode.Mask">
-            <summary>
-            Incoming color overwrites background color but leaves out areas with low alpha. Doesn't need Z-Sorting.
-            </summary>
-        </member>
-        <member name="F:Duality.BlendMode.Add">
-            <summary>
-            Incoming color is multiplied by its alpha value and then added to background color. Needs Z-Sorting.
-            </summary>
-        </member>
-        <member name="F:Duality.BlendMode.Alpha">
-            <summary>
-            Incoming color overwrites background color weighted by its alpha value. Needs Z-Sorting.
-            </summary>
-        </member>
-        <member name="F:Duality.BlendMode.Multiply">
-            <summary>
-            Incoming color scales background color. Needs Z-Sorting.
-            </summary>
-        </member>
-        <member name="F:Duality.BlendMode.Light">
-            <summary>
-            Incoming color is multiplied and then added to background color. Needs Z-Sorting.
-            </summary>
-        </member>
-        <member name="F:Duality.BlendMode.Invert">
-            <summary>
-            Incoming color inverts background color. Needs Z-Sorting.
-            </summary>
-        </member>
-        <member name="F:Duality.BlendMode.Count">
-            <summary>
-            The total number of available BlendModes.
+            A Camera is responsible for rendering the current <see cref="T:Duality.Resources.Scene"/>.
             </summary>
         </member>
         <member name="T:Duality.IDrawDevice">
@@ -6830,11 +6746,6 @@
             [GET] The highest Z value that can be displayed by the device.
             </summary>
         </member>
-        <member name="P:Duality.IDrawDevice.ViewBoundingRadius">
-            <summary>
-            [GET] The devices view space bounding circle radius.
-            </summary>
-        </member>
         <member name="P:Duality.IDrawDevice.DepthWrite">
             <summary>
             [GET] Returns whether the drawing device allows writing to the depth buffer
@@ -6843,11 +6754,6 @@
         <member name="P:Duality.IDrawDevice.TargetSize">
             <summary>
             [GET] The size of the surface this drawing device operates on.
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Camera">
-            <summary>
-            A Camera is responsible for rendering the current <see cref="T:Duality.Resources.Scene"/>.
             </summary>
         </member>
         <member name="F:Duality.Components.Camera.DefaultFocusDist">
@@ -8070,24 +7976,24 @@
             [GET] All Textures that are currently bound
             </summary>
         </member>
-        <member name="P:Duality.Resources.Texture.OglWidth">
+        <member name="P:Duality.Resources.Texture.TexelWidth">
             <summary>
-            [GET] The Textures internal width as uploaded to video memory
+            [GET] The Textures internal texel width
             </summary>
         </member>
-        <member name="P:Duality.Resources.Texture.OglHeight">
+        <member name="P:Duality.Resources.Texture.TexelHeight">
             <summary>
-            [GET] The Textures internal height as uploaded to video memory
+            [GET] The Textures internal texel height
             </summary>
         </member>
-        <member name="P:Duality.Resources.Texture.PxWidth">
+        <member name="P:Duality.Resources.Texture.PixelWidth">
             <summary>
-            [GET] The Textures width after taking relative sizes into account
+            [GET] The Textures original pixel width
             </summary>
         </member>
-        <member name="P:Duality.Resources.Texture.PxHeight">
+        <member name="P:Duality.Resources.Texture.PixelHeight">
             <summary>
-            [GET] The Textures height after taking relative sizes into account
+            [GET] The Textures original pixel height
             </summary>
         </member>
         <member name="P:Duality.Resources.Texture.OglTexId">
@@ -8107,13 +8013,13 @@
         </member>
         <member name="P:Duality.Resources.Texture.NeedsReload">
             <summary>
-            Indicates that the textures parameters have been changed in a way that might make it
+            Indicates that the textures parameters have been changed in a way that will make it
             necessary to reload its data before using it next time.
             </summary>
         </member>
         <member name="P:Duality.Resources.Texture.Size">
             <summary>
-            [GET / SET] The Textures (original, unadjusted) size
+            [GET / SET] The Textures size. Readonly, when created from a <see cref="P:Duality.Resources.Texture.BasePixmap"/>.
             </summary>
         </member>
         <member name="P:Duality.Resources.Texture.SizeRelative">
@@ -8147,7 +8053,7 @@
             [GET / SET] The Textures pixel format
             </summary>
         </member>
-        <member name="P:Duality.Resources.Texture.OglSizeMode">
+        <member name="P:Duality.Resources.Texture.TexSizeMode">
             <summary>
             [GET / SET] Handles how the Textures base Pixmap is adjusted in order to fit GPU texture size requirements (Power of Two dimensions)
             </summary>
@@ -14198,6 +14104,87 @@
         <member name="P:Duality.Components.Physics.AngleJointInfo.MaxImpulse">
             <summary>
             [GET / SET] The maximum angular impulse to apply to the RigidBody. A negative value equals infinity.
+            </summary>
+        </member>
+        <member name="T:Duality.VertexMode">
+            <summary>
+            Specifies the way in which incoming vertex data is interpreted in order to generate geometry.
+            </summary>
+        </member>
+        <member name="T:Duality.PerspectiveMode">
+            <summary>
+            Specifies the perspective effect that is applied when rendering the world.
+            </summary>
+        </member>
+        <member name="F:Duality.PerspectiveMode.Flat">
+            <summary>
+            No perspective effect is applied. Z points into the screen and is only used for object sorting.
+            </summary>
+        </member>
+        <member name="F:Duality.PerspectiveMode.Parallax">
+            <summary>
+            Objects that are far away appear smaller. Z points into the screen and is used for scaling and sorting.
+            </summary>
+        </member>
+        <member name="T:Duality.RenderMatrix">
+            <summary>
+            Specifies a rendering matrix setup.
+            </summary>
+        </member>
+        <member name="T:Duality.BlendMode">
+            <summary>
+            Enumerates different behviours on how to blend color data onto existing background color.
+            </summary>
+            <seealso cref="T:Duality.Resources.DrawTechnique"/>
+        </member>
+        <member name="F:Duality.BlendMode.Reset">
+            <summary>
+            When passing this to a method, this value can be used to indicate "Restore to default settings".
+            </summary>
+        </member>
+        <member name="F:Duality.BlendMode.Solid">
+            <summary>
+            Incoming color overwrites background color completely. Doesn't need Z-Sorting.
+            </summary>
+        </member>
+        <member name="F:Duality.BlendMode.Mask">
+            <summary>
+            Incoming color overwrites background color but leaves out areas with low alpha. Doesn't need Z-Sorting.
+            </summary>
+        </member>
+        <member name="F:Duality.BlendMode.Add">
+            <summary>
+            Incoming color is multiplied by its alpha value and then added to background color. Needs Z-Sorting.
+            </summary>
+        </member>
+        <member name="F:Duality.BlendMode.Alpha">
+            <summary>
+            Incoming color overwrites background color weighted by its alpha value. Needs Z-Sorting.
+            </summary>
+        </member>
+        <member name="F:Duality.BlendMode.Multiply">
+            <summary>
+            Incoming color scales background color. Needs Z-Sorting.
+            </summary>
+        </member>
+        <member name="F:Duality.BlendMode.Light">
+            <summary>
+            Incoming color is multiplied and then added to background color. Needs Z-Sorting.
+            </summary>
+        </member>
+        <member name="F:Duality.BlendMode.Invert">
+            <summary>
+            Incoming color inverts background color. Needs Z-Sorting.
+            </summary>
+        </member>
+        <member name="F:Duality.BlendMode.Count">
+            <summary>
+            The total number of available BlendModes.
+            </summary>
+        </member>
+        <member name="F:Duality.VisibilityFlag.ScreenOverlay">
+            <summary>
+            Special flag. This flag is set when rendering screen overlays.
             </summary>
         </member>
     </members>

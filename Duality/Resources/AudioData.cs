@@ -115,7 +115,7 @@ namespace Duality.Resources
 		/// [GET] The OpenAL buffer handle of this AudioData.
 		/// </summary>
 		[EditorHintFlags(MemberFlags.Invisible)]
-		public int AlBuffer
+		internal int AlBuffer
 		{
 			get 
 			{ 
