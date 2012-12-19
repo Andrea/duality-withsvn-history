@@ -33,7 +33,7 @@ namespace EditorBase.CamViewStates
 		protected override void OnRenderState()
 		{
 			// Render game pov
-			if (!Scene.Current.Cameras.Any())	Camera.RenderVoid();
+			if (!Scene.Current.Cameras.Any())	DrawDevice.RenderVoid();
 			else								DualityApp.Render();
 		}
 	}

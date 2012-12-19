@@ -19,6 +19,8 @@
 
 
 
+--> Debug: Velocity calculation in Transform components does not account for parent movement or rotation
+
 -->	Idea: Bitmap Fonts
 	-->	Let a Font specify an optional base Texture. It is used as a fixed Bitmap Font
 	-->	Method: MakeBitmapFont(), saves the internal Texture, assigns it, triggers a reload and returns a ContentRef to the new Texture

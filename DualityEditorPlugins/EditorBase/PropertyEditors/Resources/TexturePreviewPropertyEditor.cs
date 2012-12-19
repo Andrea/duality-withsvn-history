@@ -55,7 +55,7 @@ namespace EditorBase.PropertyEditors
 			Pixmap basePx = this.value != null ? this.value.BasePixmap.Res : null;
 			Pixmap.Layer basePxLayer = basePx != null ? basePx.MainLayer : null;
 			int hash = basePx != null && basePx.Atlas != null ? basePx.Atlas.GetCombinedHashCode() : 0;
-			MathF.CombineHashCode(ref hash, basePxLayer.GetHashCode());
+			MathF.CombineHashCode(ref hash, basePxLayer != null ? basePxLayer.GetHashCode() : 0);
 			return hash;
 		}
 		protected override Bitmap GeneratePreviewFrame(int frameIndex)

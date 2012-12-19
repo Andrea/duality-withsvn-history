@@ -17,37 +17,8 @@ namespace Duality.Components
 	/// </summary>
 	[Serializable]
 	[RequiredComponent(typeof(Transform))]
-	public sealed class Camera : Component, IDrawDevice, ICmpInitializable
+	public sealed class Camera : Component, ICmpInitializable
 	{
-		/// <summary>
-		/// A Bitmask describing which components of the current (or back-)buffer to clear before rendering.
-		/// </summary>
-		[Flags]
-		public enum ClearFlags
-		{
-			/// <summary>
-			/// Nothing.
-			/// </summary>
-			None	= 0x0,
-
-			/// <summary>
-			/// The buffers color components.
-			/// </summary>
-			Color	= 0x1,
-			/// <summary>
-			/// The buffers depth component.
-			/// </summary>
-			Depth	= 0x2,
-
-			/// <summary>
-			/// The default set of flags.
-			/// </summary>
-			Default	= Color | Depth,
-			/// <summary>
-			/// All flags set.
-			/// </summary>
-			All		= Color | Depth
-		}
 		/// <summary>
 		/// Describes a single pass in the overall rendering process.
 		/// </summary>
@@ -56,7 +27,7 @@ namespace Duality.Components
 		{
 			private ColorRgba					clearColor		= ColorRgba.TransparentBlack;
 			private float						clearDepth		= 1.0f;
-			private ClearFlags					clearFlags		= ClearFlags.All;
+			private ClearFlag					clearFlags		= ClearFlag.All;
 			private RenderMatrix				matrixMode		= RenderMatrix.PerspectiveWorld;
 			private	bool						fitOutput		= false;
 			private	VisibilityFlag				visibilityMask	= VisibilityFlag.AllGroups;
@@ -87,14 +58,6 @@ namespace Duality.Components
 				set { this.output = value; }
 			}
 			/// <summary>
-			/// Specifies whether this passes output shall be scaled in order to fit the specified outputs dimensions.
-			/// </summary>
-			public bool FitOutput
-			{
-				get { return this.fitOutput; }
-				set { this.fitOutput = value; }
-			}
-			/// <summary>
 			/// [GET / SET] The clear color to apply when clearing the color buffer
 			/// </summary>
 			public ColorRgba ClearColor
@@ -113,7 +76,7 @@ namespace Duality.Components
 			/// <summary>
 			/// [GET / SET] Specifies which buffers to clean before rendering this pass
 			/// </summary>
-			public ClearFlags ClearFlags
+			public ClearFlag ClearFlags
 			{
 				get { return this.clearFlags; }
 				set { this.clearFlags = value; }
@@ -187,256 +150,21 @@ namespace Duality.Components
 			}
 		}
 
-		private interface IDrawBatch
-		{
-			int SortIndex { get; }
-			float ZSortIndex { get; }
-			int VertexCount { get; }
-			VertexMode VertexMode { get; }
-			BatchInfo Material { get; }
-			int VertexTypeIndex { get; }
-
-			void UploadToVBO(List<IDrawBatch> batches);
-			void SetupVBO();
-			void FinishVBO();
-			void Render(IDrawDevice device, ref int vertexOffset, ref IDrawBatch lastBatchRendered);
-			void FinishRendering();
-
-			bool CanShareVBO(IDrawBatch other);
-			bool CanAppendJIT<T>(float invZSortAccuracy, float zSortIndex, BatchInfo material, VertexMode vertexMode) where T : struct, IVertexData;
-			void AppendJIT(object vertexData);
-			bool CanAppend(IDrawBatch other);
-			void Append(IDrawBatch other);
-		}
-		private class DrawBatch<T> : IDrawBatch where T : struct, IVertexData
-		{
-			private	T[]			vertices	= null;
-			private	int			vertexCount	= 0;
-			private	int			sortIndex	= 0;
-			private	float		zSortIndex	= 0.0f;
-			private	VertexMode	vertexMode	= VertexMode.Points;
-			private	BatchInfo	material	= null;
-
-			public int SortIndex
-			{
-				get { return this.sortIndex; }
-			}
-			public float ZSortIndex
-			{
-				get { return this.zSortIndex; }
-			}
-			public int VertexCount
-			{
-				get { return this.vertexCount; }
-			}
-			public VertexMode VertexMode
-			{
-				get { return this.vertexMode; }
-			}
-			public int VertexTypeIndex
-			{
-				get { return this.vertices[0].TypeIndex; }
-			}
-			public BatchInfo Material
-			{
-				get { return this.material; }
-			}
-
-			public DrawBatch(BatchInfo material, VertexMode vertexMode, T[] vertices, float zSortIndex)
-			{
-				if (vertices == null || vertices.Length == 0) throw new ArgumentException("A zero-vertex DrawBatch is invalid.");
-				
-				this.material = material;
-				this.vertexMode = vertexMode;
-				this.vertices = vertices;
-				this.vertexCount = vertices.Length;
-				this.zSortIndex = zSortIndex;
-
-				if (!this.material.Technique.Res.NeedsZSort)
-				{
-					int vTypeSI = vertices[0].TypeIndex;
-					int matHash = this.material.GetHashCode() % (1 << 23);
-
-					// Bit significancy is used to achieve sorting by multiple traits at once.
-					// The higher a traits bit significancy, the higher its priority when sorting.
-					this.sortIndex = 
-						(((int)vertexMode & 15) << 0) |		//							  XXXX	4 Bit	Vertex Mode		Offset 4
-						((matHash & 8388607) << 4) |		//	   XXXXXXXXXXXXXXXXXXXXXXXaaaa	23 Bit	Material		Offset 27
-						((vTypeSI & 15) << 27);				//	XXXbbbbbbbbbbbbbbbbbbbbbbbaaaa	4 Bit	Vertex Type		Offset 31
-
-					// Keep an eye on this. If for example two material hash codes randomly have the same 23 lower bits, they
-					// will be sorted as if equal, resulting in blocking batch aggregation.
-				}
-			}
-
-			public void SetupVBO()
-			{
-				// Set up VBO
-				this.vertices[0].SetupVBO(this.material);
-			}
-			public void UploadToVBO(List<IDrawBatch> batches)
-			{
-				T[] vertexData = null;
-
-				if (batches.Count == 1)
-				{
-					// Only one batch? Don't bother copying data
-					DrawBatch<T> b = batches[0] as DrawBatch<T>;
-					vertexData = b.vertices;
-				}
-				else
-				{
-					// Check how many vertices we got
-					int totalVertexNum = batches.Sum(t => t.VertexCount);
-
-					// Collect vertex data in one array
-					int curVertexPos = 0;
-					vertexData = new T[totalVertexNum];
-					int[] batchBeginIndices = new int[batches.Count];
-					for (int i = 0; i < batches.Count; i++)
-					{
-						DrawBatch<T> b = batches[i] as DrawBatch<T>;
-						Array.Copy(b.vertices, 0, vertexData, curVertexPos, b.vertexCount);
-						batchBeginIndices[i] = curVertexPos;
-						curVertexPos += b.vertexCount;
-					}
-				}
-
-				// Submit vertex data to GPU
-				this.vertices[0].UploadToVBO(vertexData);
-			}
-			public void FinishVBO()
-			{
-				// Finish VBO
-				this.vertices[0].FinishVBO(this.material);
-			}
-			public void Render(IDrawDevice device, ref int vertexOffset, ref IDrawBatch lastBatchRendered)
-			{
-				if (lastBatchRendered == null || lastBatchRendered.Material != this.material)
-				    this.material.SetupForRendering(device, lastBatchRendered == null ? null : lastBatchRendered.Material);
-
-				GL.DrawArrays((BeginMode)this.vertexMode, vertexOffset, this.vertexCount);
-
-				vertexOffset += this.vertexCount;
-				lastBatchRendered = this;
-			}
-			public void FinishRendering()
-			{
-				this.material.FinishRendering();
-			}
-
-			public bool CanShareVBO(IDrawBatch other)
-			{
-				return other is DrawBatch<T>;
-			}
-			public bool CanAppendJIT<U>(float invZSortAccuracy, float zSortIndex, BatchInfo material, VertexMode vertexMode) where U : struct, IVertexData
-			{
-				if (invZSortAccuracy > 0.0f && this.material.Technique.Res.NeedsZSort)
-				{
-					if (Math.Abs(zSortIndex - this.ZSortIndex) > invZSortAccuracy) return false;
-				}
-				return 
-					vertexMode == this.vertexMode && 
-					this is DrawBatch<U> &&
-					IsVertexModeAppendable(this.VertexMode) &&
-					material == this.material;
-			}
-			public void AppendJIT(object vertexData)
-			{
-				this.AppendJIT((T[])vertexData);
-			}
-			public void AppendJIT(T[] vertexData)
-			{
-				if (this.vertexCount + vertexData.Length > this.vertices.Length)
-				{
-					int newArrSize = MathF.Max(16, this.vertexCount * 2, this.vertexCount + vertexData.Length);
-					Array.Resize<T>(ref this.vertices, newArrSize);
-				}
-				Array.Copy(vertexData, 0, this.vertices, this.vertexCount, vertexData.Length);
-				this.vertexCount += vertexData.Length;
-				
-				if (this.material.Technique.Res.NeedsZSort)
-					this.zSortIndex = CalcZSortIndex(this.vertices, this.vertexCount);
-			}
-			public bool CanAppend(IDrawBatch other)
-			{
-				return
-					other.VertexMode == this.vertexMode && 
-					other is DrawBatch<T> &&
-					IsVertexModeAppendable(this.VertexMode) &&
-					other.Material == this.material;
-			}
-			public void Append(IDrawBatch other)
-			{
-				this.Append((DrawBatch<T>)other);
-			}
-			public void Append(DrawBatch<T> other)
-			{
-				if (this.vertexCount + other.vertexCount > this.vertices.Length)
-				{
-					int newArrSize = MathF.Max(16, this.vertexCount * 2, this.vertexCount + other.vertexCount);
-					Array.Resize<T>(ref this.vertices, newArrSize);
-				}
-				Array.Copy(other.vertices, 0, this.vertices, this.vertexCount, other.vertexCount);
-				this.vertexCount += other.vertexCount;
-				
-				if (this.material.Technique.Res.NeedsZSort)
-					this.zSortIndex = CalcZSortIndex(this.vertices, this.vertexCount);
-			}
-
-			public static bool IsVertexModeAppendable(VertexMode mode)
-			{
-				return 
-					mode == VertexMode.Lines || 
-					mode == VertexMode.Points || 
-					mode == VertexMode.Quads || 
-					mode == VertexMode.Triangles;
-			}
-			public static float CalcZSortIndex(T[] vertices, int count = -1)
-			{
-				if (count < 0) count = vertices.Length;
-				float zSortIndex = 0.0f;
-				for (int i = 0; i < count; i++)
-				{
-					zSortIndex += vertices[i].Pos.Z;
-				}
-				return zSortIndex / count;
-			}
-		}
-
-		/// <summary>
-		/// The default reference distance for perspective rendering.
-		/// </summary>
-		public const float DefaultFocusDist	= 500.0f;
 
 		private	float	nearZ				= 0.0f;
 		private	float	farZ				= 10000.0f;
 		private	float	zSortAccuracy		= 0.0f;
-		private	float	focusDist			= DefaultFocusDist;
+		private	float	focusDist			= Duality.DrawDevice.DefaultFocusDist;
 		private	PerspectiveMode	perspective	= PerspectiveMode.Parallax;
 		private	VisibilityFlag	visibilityMask	= VisibilityFlag.All;
 		private	List<Pass>	passes			= new List<Pass>();
 
-		[NonSerialized]	private	Matrix4	matModelView		= Matrix4.Identity;
-		[NonSerialized]	private	Matrix4	matProjection		= Matrix4.Identity;
-		[NonSerialized]	private	Matrix4	matFinal			= Matrix4.Identity;
-		[NonSerialized]	private	bool	overlayMatrices		= false;
-
-		[NonSerialized]	private	uint				hndlPrimaryVBO		= 0;
-		[NonSerialized]	private	Pass				devicePass			= null;
-		[NonSerialized]	private	VisibilityFlag		deviceVisibility	= VisibilityFlag.All;
-		[NonSerialized]	private	bool				deviceCacheValid	= false;
-		[NonSerialized]	private	Vector3				deviceCachePos		= Vector3.Zero;
-		[NonSerialized]	private	bool				deviceScreenOverlay	= false;
-		[NonSerialized]	private	int					picking				= 0;
-		[NonSerialized]	private	List<ICmpRenderer>	pickingMap			= null;
-		[NonSerialized]	private	RenderTarget		pickingRT			= null;
-		[NonSerialized]	private	Texture				pickingTex			= null;
-		[NonSerialized]	private	int					pickingLast			= -1;
-		[NonSerialized]	private	byte[]				pickingBuffer		= new byte[4 * 256 * 256];
-		[NonSerialized]	private	int					numRawBatches		= 0;
-		[NonSerialized]	private	List<IDrawBatch>	drawBuffer			= new List<IDrawBatch>();
-		[NonSerialized]	private	List<IDrawBatch>	drawBufferZSort		= new List<IDrawBatch>();
+		[NonSerialized]	private	DrawDevice			drawDevice		= null;
+		[NonSerialized]	private	List<ICmpRenderer>	pickingMap		= null;
+		[NonSerialized]	private	RenderTarget		pickingRT		= null;
+		[NonSerialized]	private	Texture				pickingTex		= null;
+		[NonSerialized]	private	int					pickingLast		= -1;
+		[NonSerialized]	private	byte[]				pickingBuffer	= new byte[4 * 256 * 256];
 		[NonSerialized]	private	List<Predicate<ICmpRenderer>>	editorRenderFilter	= new List<Predicate<ICmpRenderer>>();
 
 		
@@ -448,7 +176,7 @@ namespace Duality.Components
 		public float NearZ
 		{
 			get { return this.nearZ; }
-			set { this.nearZ = value; this.UpdateZSortAccuracy(); }
+			set { this.nearZ = value; }
 		}
 		/// <summary>
 		/// [GET / SET] The highest Z value that can be displayed by the device.
@@ -458,7 +186,7 @@ namespace Duality.Components
 		public float FarZ
 		{
 			get { return this.farZ; }
-			set { this.farZ = value; this.UpdateZSortAccuracy(); }
+			set { this.farZ = value; }
 		}
 		/// <summary>
 		/// [GET / SET] Reference distance for calculating the view projection. When using <see cref="PerspectiveMode.Parallax"/>, 
@@ -495,13 +223,13 @@ namespace Duality.Components
 		{
 			get
 			{
-				Pass clearPass = this.passes.FirstOrDefault(p => (p.ClearFlags & ClearFlags.Color) != ClearFlags.None);
+				Pass clearPass = this.passes.FirstOrDefault(p => (p.ClearFlags & ClearFlag.Color) != ClearFlag.None);
 				if (clearPass == null) return ColorRgba.TransparentBlack;
 				return clearPass.ClearColor;
 			}
 			set
 			{
-				Pass clearPass = this.passes.FirstOrDefault(p => (p.ClearFlags & ClearFlags.Color) != ClearFlags.None);
+				Pass clearPass = this.passes.FirstOrDefault(p => (p.ClearFlags & ClearFlag.Color) != ClearFlag.None);
 				if (clearPass != null) clearPass.ClearColor = value;
 			}
 		}
@@ -527,7 +255,7 @@ namespace Duality.Components
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public IDrawDevice DrawDevice
 		{
-			get { return this; }
+			get { return this.drawDevice; }
 		}
 		/// <summary>
 		/// [GET] The drawing devices target size for rendering the Scene.
@@ -580,13 +308,13 @@ namespace Duality.Components
 
 		public Camera()
 		{
-			this.UpdateZSortAccuracy();
+			this.drawDevice = new DrawDevice();
 
 			// Set up default rendering
 			Pass worldPass = new Pass();
 			Pass overlayPass = new Pass();
 			overlayPass.MatrixMode = RenderMatrix.OrthoScreen;
-			overlayPass.ClearFlags = ClearFlags.None;
+			overlayPass.ClearFlags = ClearFlag.None;
 			overlayPass.VisibilityMask = VisibilityFlag.AllGroups | VisibilityFlag.ScreenOverlay;
 
 			this.passes.Add(worldPass);
@@ -614,56 +342,22 @@ namespace Duality.Components
 		public void Render()
 		{
 			this.MakeAvailable();
-			this.deviceCacheValid = true;
-			this.deviceCachePos = this.GameObj.Transform.Pos;
+			this.UpdateDeviceConfig();
 
-			if (this.picking != 0)
+			Performance.BeginMeasure("Camera_" + this.gameobj.Name + "_Render");
+			Performance.timeRender.BeginMeasure();
+
+			foreach (Pass t in this.passes)
 			{
-				this.SetupPickingRT();
-				RenderTarget.Bind(this.pickingRT);
-				
-				Vector2 refSize = new Vector2(this.pickingRT.Width, this.pickingRT.Height);
-				Rect viewportAbs = new Rect(refSize);
-				GL.Viewport((int)viewportAbs.X, (int)refSize.Y - (int)viewportAbs.H - (int)viewportAbs.Y, (int)viewportAbs.W, (int)viewportAbs.H);
-				GL.Scissor((int)viewportAbs.X, (int)refSize.Y - (int)viewportAbs.H - (int)viewportAbs.Y, (int)viewportAbs.W, (int)viewportAbs.H);
-
-				GL.ClearDepth(1.0d);
-				GL.ClearColor(System.Drawing.Color.Black);
-				GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-				this.deviceVisibility = this.visibilityMask & VisibilityFlag.AllGroups;
-				this.devicePass = null;
-				this.deviceScreenOverlay = false;
-				// Setup matrices
-				this.SetupMatrices();
-				// Render Scene
-				this.CollectDrawcalls();
-				this.ProcessDrawcalls();
-				RenderTarget.Bind(RenderTarget.None);
+				this.RenderSinglePass(t);
 			}
-			else
-			{
-				Performance.BeginMeasure("Camera_" + this.gameobj.Name + "_Render");
-				Performance.timeRender.BeginMeasure();
+			RenderTarget.Bind(RenderTarget.None);
+			this.drawDevice.VisibilityMask = this.visibilityMask;
+			this.drawDevice.RenderMode = RenderMatrix.PerspectiveWorld;
+			this.drawDevice.UpdateMatrices(); // Reset matrices for projection calculations during update
 
-				foreach (Pass t in this.passes)
-				{
-					this.deviceVisibility = this.visibilityMask & t.VisibilityMask;
-					this.devicePass = t;
-					this.deviceScreenOverlay = this.devicePass.MatrixMode == RenderMatrix.OrthoScreen || this.devicePass.Input != null;
-					this.RenderSinglePass(t);
-				}
-				this.deviceVisibility = this.visibilityMask;
-				this.devicePass = null;
-				this.deviceScreenOverlay = false;
-				this.SetupMatrices(); // Reset matrices for projection calculations during update
-				RenderTarget.Bind(RenderTarget.None);
-
-				Performance.timeRender.EndMeasure();
-				Performance.EndMeasure("Camera_" + this.gameobj.Name + "_Render");
-			}
-
-			this.deviceCacheValid = false;
+			Performance.timeRender.EndMeasure();
+			Performance.EndMeasure("Camera_" + this.gameobj.Name + "_Render");
 		}
 		/// <summary>
 		/// Renders a picking map of the current <see cref="Duality.Resources.Scene"/>.
@@ -678,10 +372,26 @@ namespace Duality.Components
 			Performance.timeVisualPicking.BeginMeasure();
 
 			// Render picking map
-			this.picking = 1;
-			this.Render();
-			GL.Finish();
-			this.picking = 0;
+			{
+				this.MakeAvailable();
+				this.UpdateDeviceConfig();
+				this.SetupPickingRT();
+
+				// Setup DrawDevice
+				this.drawDevice.PickingIndex = 1;
+				this.drawDevice.Target = this.pickingRT;
+				this.drawDevice.VisibilityMask = this.visibilityMask & VisibilityFlag.AllGroups;
+				this.drawDevice.RenderMode = RenderMatrix.PerspectiveWorld;
+
+				// Render Scene
+				this.drawDevice.BeginRendering(ClearFlag.All, ColorRgba.Black, 1.0f);
+				this.CollectDrawcalls();
+				this.drawDevice.EndRendering();
+				this.drawDevice.PickingIndex = 0;
+
+				GL.Finish();
+				RenderTarget.Bind(RenderTarget.None);
+			}
 
 			// Move data to local buffer
 			int pxNum = this.pickingTex.PixelWidth * this.pickingTex.PixelHeight;
@@ -790,13 +500,8 @@ namespace Duality.Components
 		/// <returns></returns>
 		public float GetScaleAtZ(float z)
 		{
-			if (this.perspective == PerspectiveMode.Parallax)
-			{
-				Vector3 gameObjPos = this.GameObj.Transform.Pos;
-				return this.focusDist / Math.Max(z - gameObjPos.Z, this.nearZ);
-			}
-			else
-				return this.focusDist / DefaultFocusDist;
+			this.UpdateDeviceConfig();
+			return this.drawDevice.GetScaleAtZ(z);
 		}
 		/// <summary>
 		/// Transforms screen space coordinates to world space coordinates. The screen positions Z coordinate is
@@ -806,60 +511,8 @@ namespace Duality.Components
 		/// <returns></returns>
 		public Vector3 GetSpaceCoord(Vector3 screenPos)
 		{
-			float targetZ = screenPos.Z;
-
-			// Since screenPos.Z is expected to be a world coordinate, first make that relative
-			Vector3 gameObjPos = this.GameObj.Transform.Pos;
-			screenPos.Z -= gameObjPos.Z;
-
-			Vector2 targetSize = this.SceneTargetSize;
-			screenPos.X -= targetSize.X / 2;
-			screenPos.Y -= targetSize.Y / 2;
-
-			MathF.TransformCoord(ref screenPos.X, ref screenPos.Y, this.GameObj.Transform.Angle);
-			
-			// Revert active perspective effect
-			float scaleTemp;
-			if (this.perspective == PerspectiveMode.Flat)
-			{
-				// Scale globally
-				scaleTemp = DefaultFocusDist / this.focusDist;
-				screenPos.X *= scaleTemp;
-				screenPos.Y *= scaleTemp;
-			}
-			else if (this.perspective == PerspectiveMode.Parallax)
-			{
-				// Scale distance-based
-				scaleTemp = Math.Max(screenPos.Z, this.nearZ) / this.focusDist;
-				screenPos.X *= scaleTemp;
-				screenPos.Y *= scaleTemp;
-			}
-			//else if (this.perspective == PerspectiveMode.Isometric)
-			//{
-			//    // Scale globally
-			//    scaleTemp = DefaultFocusDist / this.focusDist;
-			//    screenPos.X *= scaleTemp;
-			//    screenPos.Y *= scaleTemp;
-				
-			//    // Revert isometric projection
-			//    screenPos.Z += screenPos.Y;
-			//    screenPos.Y -= screenPos.Z;
-			//    screenPos.Z += this.focusDist;
-			//}
-			
-			// Make coordinates absolte
-			screenPos.X += gameObjPos.X;
-			screenPos.Y += gameObjPos.Y;
-			screenPos.Z += gameObjPos.Z;
-
-			//// For isometric projection, assure we'll meet the target Z value.
-			//if (this.perspective == PerspectiveMode.Isometric)
-			//{
-			//    screenPos.Y += screenPos.Z - targetZ;
-			//    screenPos.Z = targetZ;
-			//}
-
-			return screenPos;
+			this.UpdateDeviceConfig();
+			return this.drawDevice.GetSpaceCoord(screenPos);
 		}
 		/// <summary>
 		/// Transforms screen space coordinates to world space coordinates.
@@ -868,7 +521,8 @@ namespace Duality.Components
 		/// <returns></returns>
 		public Vector3 GetSpaceCoord(Vector2 screenPos)
 		{
-			return this.GetSpaceCoord(new Vector3(screenPos));
+			this.UpdateDeviceConfig();
+			return this.drawDevice.GetSpaceCoord(screenPos);
 		}
 		/// <summary>
 		/// Transforms world space coordinates to screen space coordinates.
@@ -877,50 +531,8 @@ namespace Duality.Components
 		/// <returns></returns>
 		public Vector3 GetScreenCoord(Vector3 spacePos)
 		{
-			// Make coordinates relative to the Camera
-			Vector3 gameObjPos = this.GameObj.Transform.Pos;
-			spacePos.X -= gameObjPos.X;
-			spacePos.Y -= gameObjPos.Y;
-			spacePos.Z -= gameObjPos.Z;
-
-			// Apply active perspective effect
-			float scaleTemp;
-			if (this.perspective == PerspectiveMode.Flat)
-			{
-				// Scale globally
-				scaleTemp = this.focusDist / DefaultFocusDist;
-				spacePos.X *= scaleTemp;
-				spacePos.Y *= scaleTemp;
-			}
-			else if (this.perspective == PerspectiveMode.Parallax)
-			{
-				// Scale distance-based
-				scaleTemp = this.focusDist / Math.Max(spacePos.Z, this.nearZ);
-				spacePos.X *= scaleTemp;
-				spacePos.Y *= scaleTemp;
-			}
-			//else if (this.perspective == PerspectiveMode.Isometric)
-			//{
-			//    // Apply isometric projection
-			//    spacePos.Z -= this.focusDist;
-			//    spacePos.Y += spacePos.Z;
-			//    spacePos.Z -= spacePos.Y;
-
-			//    // Scale globally
-			//    scaleTemp = this.focusDist / DefaultFocusDist;
-			//    spacePos.X *= scaleTemp;
-			//    spacePos.Y *= scaleTemp;
-			//}
-
-			MathF.TransformCoord(ref spacePos.X, ref spacePos.Y, -this.GameObj.Transform.Angle);
-
-			Vector2 targetSize = this.SceneTargetSize;
-			spacePos.X += targetSize.X / 2;
-			spacePos.Y += targetSize.Y / 2;
-			
-			// Since the result Z value is expected to be a world coordinate, make it absolute
-			spacePos.Z += gameObjPos.Z;
-			return spacePos;
+			this.UpdateDeviceConfig();
+			return this.drawDevice.GetScreenCoord(spacePos);
 		}
 		/// <summary>
 		/// Transforms world space coordinates to screen space coordinates.
@@ -929,48 +541,42 @@ namespace Duality.Components
 		/// <returns></returns>
 		public Vector3 GetScreenCoord(Vector2 spacePos)
 		{
-			return this.GetScreenCoord(new Vector3(spacePos));
+			this.UpdateDeviceConfig();
+			return this.drawDevice.GetScreenCoord(spacePos);
 		}
 
+		private void UpdateDeviceConfig()
+		{
+			this.drawDevice.RefCoord = this.gameobj.Transform.Pos;
+			this.drawDevice.RefAngle = this.gameobj.Transform.Angle;
+			this.drawDevice.NearZ = this.nearZ;
+			this.drawDevice.FarZ = this.farZ;
+			this.drawDevice.FocusDist = this.focusDist;
+			this.drawDevice.Perspective = this.perspective;
+		}
 		private void RenderSinglePass(Pass p)
 		{
-			RenderTarget.Bind(p.Output);
-			
-			Vector2 refSize = p.Output.IsAvailable ? new Vector2(p.Output.Res.Width, p.Output.Res.Height) : DualityApp.TargetResolution;
-			Rect viewportAbs = new Rect(refSize);
-			GL.Viewport((int)viewportAbs.X, (int)refSize.Y - (int)viewportAbs.H - (int)viewportAbs.Y, (int)viewportAbs.W, (int)viewportAbs.H);
-			GL.Scissor((int)viewportAbs.X, (int)refSize.Y - (int)viewportAbs.H - (int)viewportAbs.Y, (int)viewportAbs.W, (int)viewportAbs.H);
-
-			// Clear buffers
-			ClearBufferMask glClearMask = 0;
-			if ((p.ClearFlags & ClearFlags.Color) != ClearFlags.None) glClearMask |= ClearBufferMask.ColorBufferBit;
-			if ((p.ClearFlags & ClearFlags.Depth) != ClearFlags.None) glClearMask |= ClearBufferMask.DepthBufferBit;
-			GL.ClearColor((OpenTK.Graphics.Color4)p.ClearColor);
-			GL.ClearDepth((double)p.ClearDepth); // The "float version" is from OpenGL 4.1..
-			GL.Clear(glClearMask);
+			this.drawDevice.VisibilityMask = this.visibilityMask & p.VisibilityMask;
+			this.drawDevice.RenderMode = p.MatrixMode;
+			this.drawDevice.Target = p.Output;
 
 			if (p.Input == null)
 			{
-				// Setup matrices
-				this.SetupMatrices();
 				// Render Scene
+				this.drawDevice.BeginRendering(p.ClearFlags, p.ClearColor, p.ClearDepth);
 				this.CollectDrawcalls();
 				p.NotifyCollectDrawcalls(this.DrawDevice);
-				this.ProcessDrawcalls();
+				this.drawDevice.EndRendering();
 			}
 			else
 			{
-				this.SetupMatrices();
+				Performance.timePostProcessing.BeginMeasure();
+				this.drawDevice.BeginRendering(p.ClearFlags, p.ClearColor, p.ClearDepth);
 
 				Texture mainTex = p.Input.MainTexture.Res;
 				Vector2 uvRatio = mainTex != null ? mainTex.UVRatio : Vector2.One;
 				Vector2 inputSize = mainTex != null ? new Vector2(mainTex.PixelWidth, mainTex.PixelHeight) : Vector2.One;
-				Rect targetRect = new Rect(p.FitOutput ? refSize : inputSize);
-				if (!p.FitOutput)
-				{
-					targetRect.X = MathF.Round(refSize.X * 0.5f - inputSize.X * 0.5f);
-					targetRect.Y = MathF.Round(refSize.Y * 0.5f - inputSize.Y * 0.5f);
-				}
+				Rect targetRect = new Rect(this.drawDevice.TargetSize);
 
 				IDrawDevice device = this.DrawDevice;
 				device.AddVertices(p.Input, VertexMode.Quads,
@@ -979,28 +585,27 @@ namespace Duality.Components
 					new VertexC1P3T2(targetRect.MaxX,	targetRect.MaxY,	0.0f,	uvRatio.X,	uvRatio.Y),
 					new VertexC1P3T2(targetRect.MinX,	targetRect.MaxY,	0.0f,	0.0f,		uvRatio.Y));
 
-				Performance.timePostProcessing.BeginMeasure();
-				this.ProcessDrawcalls();
+				this.drawDevice.EndRendering();
 				Performance.timePostProcessing.EndMeasure();
 			}
 		}
 		private void CollectDrawcalls()
 		{
 			// If no visibility groups are met, don't bother looking for renderers
-			if ((this.deviceVisibility & VisibilityFlag.AllGroups) == VisibilityFlag.None) return;
+			if ((this.drawDevice.VisibilityMask & VisibilityFlag.AllGroups) == VisibilityFlag.None) return;
 
 			// Query renderers
 			IEnumerable<ICmpRenderer> rendererQuery = Scene.Current.QueryVisibleRenderers(this.DrawDevice);
 			foreach (Predicate<ICmpRenderer> p in this.editorRenderFilter) rendererQuery = rendererQuery.Where(r => p(r));
 
 			// Collect drawcalls
-			if (this.picking != 0)
+			if (this.drawDevice.PickingIndex != 0)
 			{
 				this.pickingMap = new List<ICmpRenderer>(rendererQuery);
 				foreach (ICmpRenderer r in this.pickingMap)
 				{
-					r.Draw(this);
-					this.picking++;
+					r.Draw(this.drawDevice);
+					this.drawDevice.PickingIndex++;
 				}
 			}
 			else
@@ -1008,55 +613,10 @@ namespace Duality.Components
 				Performance.timeCollectDrawcalls.BeginMeasure();
 
 				foreach (ICmpRenderer r in rendererQuery)
-					r.Draw(this);
+					r.Draw(this.drawDevice);
 
 				Performance.timeCollectDrawcalls.EndMeasure();
 			}
-		}
-		private void ProcessDrawcalls()
-		{
-			if (this.deviceScreenOverlay)
-			{
-				// Prepare Rendering
-				GL.Enable(EnableCap.ScissorTest);
-				GL.Enable(EnableCap.DepthTest);
-				GL.DepthFunc(DepthFunction.Always);
-			}
-			else
-			{
-				// Prepare Rendering
-				GL.Enable(EnableCap.ScissorTest);
-				GL.Enable(EnableCap.DepthTest);
-				GL.DepthFunc(DepthFunction.Lequal);
-			}
-
-			GL.MatrixMode(MatrixMode.Modelview);
-			GL.LoadMatrix(ref this.matModelView);
-			GL.MatrixMode(MatrixMode.Projection);
-			GL.LoadMatrix(ref this.matProjection);
-			if (RenderTarget.BoundRT.IsAvailable)
-			{
-				if (this.deviceScreenOverlay) GL.Translate(0.0f, RenderTarget.BoundRT.Res.Height * 0.5f, 0.0f);
-				GL.Scale(1.0f, -1.0f, 1.0f);
-				if (this.deviceScreenOverlay) GL.Translate(0.0f, -RenderTarget.BoundRT.Res.Height * 0.5f, 0.0f);
-			}
-
-			// Process drawcalls
-			this.OptimizeBatches();
-			this.BeginBatchRendering();
-
-			int drawCalls = 0;
-			{
-				// Z-Independent: Sorted as needed by batch optimizer
-				drawCalls += this.RenderBatches(this.drawBuffer);
-				// Z-Sorted: Back to Front
-				drawCalls += this.RenderBatches(this.drawBufferZSort);
-			}
-			Performance.statNumDrawcalls.Add(drawCalls);
-
-			this.FinishBatchRendering();
-			this.drawBuffer.Clear();
-			this.drawBufferZSort.Clear();
 		}
 		private void SetupPickingRT()
 		{
@@ -1074,193 +634,6 @@ namespace Duality.Components
 			}
 		}
 
-		private void UpdateZSortAccuracy()
-		{
-			this.zSortAccuracy = 10000000.0f / Math.Max(1.0f, Math.Abs(this.farZ - this.nearZ));
-		}
-		private void SetupMatrices()
-		{
-			ContentRef<RenderTarget> rt = RenderTarget.BoundRT.Res;
-			Vector2 refSize = rt.IsAvailable ? new Vector2(rt.Res.Width, rt.Res.Height) : DualityApp.TargetResolution;
-
-			// If we're expecting a crunched image, also crunch the picking pass
-			if (this.picking != 0)
-			{
-				foreach (Pass t in this.passes)
-				{
-					if (t.Output == null && t.FitOutput)
-					{
-						Vector2 targetSize = t.Input == null || !t.Input.MainTexture.IsAvailable ? 
-							DualityApp.TargetResolution : 
-							new Vector2(t.Input.MainTexture.Res.PixelWidth, t.Input.MainTexture.Res.PixelHeight);
-						refSize = targetSize;
-						break;
-					}
-				}
-			}
-
-			this.GenerateModelView(out this.matModelView);
-			this.GenerateProjection(rt.IsAvailable ? new Rect(refSize) : new Rect(DualityApp.TargetResolution), out this.matProjection);
-			this.matFinal = this.matModelView * this.matProjection;
-			this.overlayMatrices = this.deviceScreenOverlay;
-		}
-		private void GenerateModelView(out Matrix4 mvMat)
-		{
-			mvMat = Matrix4.Identity;
-			if (this.deviceScreenOverlay) return;
-
-			// Translate objects contrary to the camera
-			// Removed: Do this in software now for custom perspective / parallax support
-			// modelViewMat *= Matrix4.CreateTranslation(-this.GameObj.Transform.Pos);
-
-			// Rotate them according to the camera angle
-			mvMat *= Matrix4.CreateRotationZ(-this.GameObj.Transform.Angle);
-		}
-		private void GenerateProjection(Rect orthoAbs, out Matrix4 projMat)
-		{
-			if (this.deviceScreenOverlay)
-			{
-				Matrix4.CreateOrthographicOffCenter(
-					orthoAbs.X,
-					orthoAbs.X + orthoAbs.W, 
-					orthoAbs.Y + orthoAbs.H, 
-					orthoAbs.Y, 
-					this.nearZ, 
-					this.farZ,
-					out projMat);
-				// Flip Z direction from "out of the screen" to "into the screen".
-				projMat.M33 = -projMat.M33;
-			}
-			else
-			{
-				Matrix4.CreateOrthographicOffCenter(
-					orthoAbs.X - orthoAbs.W * 0.5f, 
-					orthoAbs.X + orthoAbs.W * 0.5f, 
-					orthoAbs.Y + orthoAbs.H * 0.5f, 
-					orthoAbs.Y - orthoAbs.H * 0.5f, 
-					this.nearZ, 
-					this.farZ,
-					out projMat);
-				// Flip Z direction from "out of the screen" to "into the screen".
-				projMat.M33 = -projMat.M33;
-			}
-		}
-
-		private int DrawBatchComparer(IDrawBatch first, IDrawBatch second)
-		{
-			return first.SortIndex - second.SortIndex;
-		}
-		private int DrawBatchComparerZSort(IDrawBatch first, IDrawBatch second)
-		{
-			return MathF.RoundToInt((second.ZSortIndex - first.ZSortIndex) * this.zSortAccuracy);
-		}
-		private void OptimizeBatches()
-		{
-			int batchCountBefore = this.drawBuffer.Count + this.drawBufferZSort.Count;
-			if (this.picking == 0) Performance.timeOptimizeDrawcalls.BeginMeasure();
-
-			// Non-ZSorted
-			if (this.drawBuffer.Count > 1)
-			{
-				this.drawBuffer.StableSort(this.DrawBatchComparer);
-				this.drawBuffer = this.OptimizeBatches(this.drawBuffer);
-			}
-
-			// Z-Sorted
-			if (this.drawBufferZSort.Count > 1)
-			{
-				// Stable sort assures maintaining draw order for batches of equal ZOrderIndex
-				this.drawBufferZSort.StableSort(this.DrawBatchComparerZSort);
-				this.drawBufferZSort = this.OptimizeBatches(this.drawBufferZSort);
-			}
-
-			if (this.picking == 0) Performance.timeOptimizeDrawcalls.EndMeasure();
-			int batchCountAfter = this.drawBuffer.Count + this.drawBufferZSort.Count;
-
-			Performance.statNumRawBatches.Add(this.numRawBatches);
-			Performance.statNumMergedBatches.Add(batchCountBefore);
-			Performance.statNumOptimizedBatches.Add(batchCountAfter);
-			this.numRawBatches = 0;
-		}
-		private List<IDrawBatch> OptimizeBatches(List<IDrawBatch> sortedBuffer)
-		{
-			List<IDrawBatch> optimized = new List<IDrawBatch>(sortedBuffer.Count);
-			IDrawBatch current = sortedBuffer[0];
-			IDrawBatch next;
-			optimized.Add(current);
-			for (int i = 1; i < sortedBuffer.Count; i++)
-			{
-				next = sortedBuffer[i];
-
-				if (current.CanAppend(next))
-				{
-					current.Append(next);
-				}
-				else
-				{
-					current = next;
-					optimized.Add(current);
-				}
-			}
-
-			return optimized;
-		}
-		private void BeginBatchRendering()
-		{
-			if (this.hndlPrimaryVBO == 0) GL.GenBuffers(1, out this.hndlPrimaryVBO);
-			GL.BindBuffer(BufferTarget.ArrayBuffer, this.hndlPrimaryVBO);
-		}
-		private int RenderBatches(List<IDrawBatch> buffer)
-		{
-			if (this.picking == 0) Performance.timeProcessDrawcalls.BeginMeasure();
-
-			int drawCalls = 0;
-			List<IDrawBatch> batchesSharingVBO = new List<IDrawBatch>();
-			IDrawBatch lastBatchRendered = null;
-
-			IDrawBatch lastBatch = null;
-			for (int i = 0; i < buffer.Count; i++)
-			{
-				IDrawBatch currentBatch = buffer[i];
-				IDrawBatch nextBatch = (i < buffer.Count - 1) ? buffer[i + 1] : null;
-
-				if (lastBatch == null || lastBatch.CanShareVBO(currentBatch))
-				{
-					batchesSharingVBO.Add(currentBatch);
-				}
-
-				if (batchesSharingVBO.Count > 0 && (nextBatch == null || !currentBatch.CanShareVBO(nextBatch)))
-				{
-					int vertexOffset = 0;
-					batchesSharingVBO[0].UploadToVBO(batchesSharingVBO);
-					drawCalls++;
-
-					foreach (IDrawBatch renderBatch in batchesSharingVBO)
-					{
-						renderBatch.SetupVBO();
-						renderBatch.Render(this.DrawDevice, ref vertexOffset, ref lastBatchRendered);
-						renderBatch.FinishVBO();
-						drawCalls++;
-					}
-
-					batchesSharingVBO.Clear();
-					lastBatch = null;
-				}
-				else
-					lastBatch = currentBatch;
-			}
-
-			if (lastBatchRendered != null)
-				lastBatchRendered.FinishRendering();
-
-			if (this.picking == 0) Performance.timeProcessDrawcalls.EndMeasure();
-			return drawCalls;
-		}
-		private void FinishBatchRendering()
-		{
-			GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-		}
-
 		internal void AddEditorRendererFilter(Predicate<ICmpRenderer> filter)
 		{
 			if (this.editorRenderFilter.Contains(filter)) return;
@@ -1271,190 +644,20 @@ namespace Duality.Components
 			this.editorRenderFilter.Remove(filter);
 		}
 
-		#region IDrawDevice implementation
-		Vector3 IDrawDevice.RefCoord
+		void ICmpInitializable.OnInit(Component.InitContext context)
 		{
-			get { return this.deviceCacheValid ? this.deviceCachePos : this.gameobj.Transform.Pos; }
-		}
-		float IDrawDevice.RefAngle
-		{
-			get { return this.gameobj.Transform.Angle; }
-		}
-		VisibilityFlag IDrawDevice.VisibilityMask
-		{
-			get { return this.deviceVisibility; }
-		}
-		bool IDrawDevice.DepthWrite
-		{
-			get { return !this.deviceScreenOverlay; }
-		}
-		Vector2 IDrawDevice.TargetSize
-		{
-			get
+			if (context == InitContext.Activate)
 			{
-				if (this.devicePass == null || !this.devicePass.Output.IsAvailable)
-					return this.SceneTargetSize;
-
-				RenderTarget target = this.devicePass.Output.Res;
-				return new Vector2(target.Width, target.Height);
+				if (this.drawDevice == null || this.drawDevice.Disposed)
+					this.drawDevice = new DrawDevice();
 			}
 		}
-
-		void IDrawDevice.PreprocessCoords(ref Vector3 pos, ref float scale)
-		{
-			if (this.overlayMatrices) return;
-			
-			// Make coordinates relative to the Camera
-			if (this.deviceCacheValid)
-			{
-				pos.X -= this.deviceCachePos.X;
-				pos.Y -= this.deviceCachePos.Y;
-				pos.Z -= this.deviceCachePos.Z;
-			}
-			else
-			{
-				Vector3 gameObjPos = this.GameObj.Transform.Pos;
-				pos.X -= gameObjPos.X;
-				pos.Y -= gameObjPos.Y;
-				pos.Z -= gameObjPos.Z;
-			}
-
-			// Apply active perspective effect
-			float scaleTemp;
-			if (this.perspective == PerspectiveMode.Flat)
-			{
-				// Scale globally
-				scaleTemp = this.focusDist / DefaultFocusDist;
-				pos.X *= scaleTemp;
-				pos.Y *= scaleTemp;
-				scale *= scaleTemp;
-			}
-			else if (this.perspective == PerspectiveMode.Parallax)
-			{
-				// Scale distance-based
-				scaleTemp = this.focusDist / Math.Max(pos.Z, this.nearZ);
-				pos.X *= scaleTemp;
-				pos.Y *= scaleTemp;
-				scale *= scaleTemp;
-			}
-			//else if (this.perspective == PerspectiveMode.Isometric)
-			//{
-			//    // Assure that objects at focus distance don't have an offset.
-			//    pos.Z -= this.focusDist;
-			//    // Apply Z to Y because of isometric perspective
-			//    pos.Y += pos.Z;
-			//    // Sort from "north" to "south" by applying Y to Z.
-			//    pos.Z -= pos.Y;
-
-			//    // Make sure nothing is culled away due to its Z value
-			//    pos.Z += (this.farZ + this.nearZ) / 2;
-
-			//    // Scale globally
-			//    scaleTemp = this.focusDist / DefaultFocusDist;
-			//    pos.X *= scaleTemp;
-			//    pos.Y *= scaleTemp;
-			//    scale *= scaleTemp;
-			//}
-		}
-		bool IDrawDevice.IsCoordInView(Vector3 c, float boundRad)
-		{
-			if (c.Z <= this.GameObj.Transform.Pos.Z/* && this.perspective != PerspectiveMode.Isometric*/) return false;
-
-			// Retrieve center vertex coord
-			float scaleTemp = 1.0f;
-			this.DrawDevice.PreprocessCoords(ref c, ref scaleTemp);
-
-			// Apply final (modelview and projection) matrix
-			Vector3 oldPosTemp = c;
-			Vector3.Transform(ref oldPosTemp, ref this.matFinal, out c);
-
-			// Apply projection matrices XY rotation and scale to bounding radius
-			boundRad *= scaleTemp;
-			Vector2 boundRadVec = new Vector2(
-				boundRad * Math.Abs(this.matFinal.Row0.X) + boundRad * Math.Abs(this.matFinal.Row1.X),
-				boundRad * Math.Abs(this.matFinal.Row0.Y) + boundRad * Math.Abs(this.matFinal.Row1.Y));
-
-			return 
-				c.Z >= -1.0f &&
-				c.Z <= 1.0f &&
-				c.X >= -1.0f - boundRadVec.X &&
-				c.Y >= -1.0f - boundRadVec.Y &&
-				c.X <= 1.0f + boundRadVec.X &&
-				c.Y <= 1.0f + boundRadVec.Y;
-		}
-		void IDrawDevice.AddVertices<T>(BatchInfo material, VertexMode vertexMode, params T[] vertices)
-		{
-			if (material == null || material.Technique == null || !material.Technique.IsAvailable) return;
-			if (vertices == null || vertices.Length == 0) return;
-
-			if (this.picking != 0)
-			{
-				ColorRgba clr = new ColorRgba((this.picking << 8) | 0xFF);
-				for (int i = 0; i < vertices.Length; ++i)
-					vertices[i].Color = clr;
-
-				material = new BatchInfo(material);
-				material.Technique = DrawTechnique.Picking;
-				if (material.Textures == null) material.MainTexture = Texture.White;
-			}
-			
-			if (material.Technique.Res.NeedsPreprocess)
-			{
-				material = new BatchInfo(material);
-				material.Technique.Res.PreprocessBatch<T>(this, material, ref vertexMode, ref vertices);
-				if (vertices == null || vertices.Length == 0) return;
-			}
-			
-			// When rendering the screen overlay, use z sorting everywhere - there's no depth buffering!
-			bool zSort = this.deviceScreenOverlay || material.Technique.Res.NeedsZSort;
-			List<IDrawBatch> buffer = zSort ? this.drawBufferZSort : this.drawBuffer;
-			float zSortIndex = zSort ? DrawBatch<T>.CalcZSortIndex(vertices) : 0.0f;
-
-			if (buffer.Count > 0 && buffer[buffer.Count - 1].CanAppendJIT<T>(	
-					zSort ? 1.0f / this.zSortAccuracy : 0.0f, 
-					zSortIndex, 
-					material, 
-					vertexMode))
-			{
-				buffer[buffer.Count - 1].AppendJIT(vertices);
-			}
-			else
-			{
-				buffer.Add(new DrawBatch<T>(material, vertexMode, vertices, zSortIndex));
-			}
-			++this.numRawBatches;
-		}
-		void IDrawDevice.AddVertices<T>(ContentRef<Material> material, VertexMode vertexMode, params T[] vertices)
-		{
-			if (!material.IsAvailable) return;
-			(this as IDrawDevice).AddVertices<T>(material.Res.InfoDirect, vertexMode, vertices);
-		}
-		#endregion
-
-		public static void RenderVoid()
-		{
-			RenderTarget.Bind(ContentRef<RenderTarget>.Null);
-			
-			Vector2 refSize = DualityApp.TargetResolution;
-			Rect viewportAbs = new Rect(refSize);
-			GL.Viewport((int)viewportAbs.X, (int)refSize.Y - (int)viewportAbs.H - (int)viewportAbs.Y, (int)viewportAbs.W, (int)viewportAbs.H);
-			GL.Scissor((int)viewportAbs.X, (int)refSize.Y - (int)viewportAbs.H - (int)viewportAbs.Y, (int)viewportAbs.W, (int)viewportAbs.H);
-
-			GL.ClearDepth(1.0d);
-			GL.ClearColor((OpenTK.Graphics.Color4)ColorRgba.TransparentBlack);
-			GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-		}
-
-		void ICmpInitializable.OnInit(Component.InitContext context) {}
 		void ICmpInitializable.OnShutdown(Component.ShutdownContext context)
 		{
 			if (context == ShutdownContext.Deactivate)
 			{
-				if (this.hndlPrimaryVBO != 0)
-				{
-					GL.DeleteBuffers(1, ref this.hndlPrimaryVBO);
-					this.hndlPrimaryVBO = 0;
-				}
+				this.drawDevice.Dispose();
+				this.drawDevice = null;
 			}
 		}
 	}

@@ -6676,91 +6676,6 @@
             A Camera is responsible for rendering the current <see cref="T:Duality.Resources.Scene"/>.
             </summary>
         </member>
-        <member name="T:Duality.IDrawDevice">
-            <summary>
-            Defines a general interface for drawing devices. Its main duty is to accept and collect parameterized vertex data.
-            </summary>
-        </member>
-        <member name="M:Duality.IDrawDevice.PreprocessCoords(OpenTK.Vector3@,System.Single@)">
-            <summary>
-            Processes the specified world space position and scale values and transforms them to the IDrawDevices view space.
-            This usually also applies a perspective effect, if applicable.
-            </summary>
-            <param name="pos">The position to process.</param>
-            <param name="scale">The scale factor to process.</param>
-        </member>
-        <member name="M:Duality.IDrawDevice.IsCoordInView(OpenTK.Vector3,System.Single)">
-            <summary>
-            Returns whether the specified world-space position is visible in the drawing devices view space.
-            </summary>
-            <param name="c">The position to test.</param>
-            <param name="boundRad">The visual bounding radius to assume for the specified position.</param>
-            <returns>True, if the position or a portion of its bounding circle is visible, false if not.</returns>
-        </member>
-        <member name="M:Duality.IDrawDevice.AddVertices``1(Duality.ContentRef{Duality.Resources.Material},Duality.VertexMode,``0[])">
-            <summary>
-            Adds a parameterized set of vertices to the drawing devices rendering schedule.
-            </summary>
-            <typeparam name="T">The type of vertex data to add.</typeparam>
-            <param name="material">The <see cref="T:Duality.Resources.Material"/> to use for rendering the vertices.</param>
-            <param name="vertexMode">The vertices drawing mode.</param>
-            <param name="vertices">The vertex data to add.</param>
-        </member>
-        <member name="M:Duality.IDrawDevice.AddVertices``1(Duality.Resources.BatchInfo,Duality.VertexMode,``0[])">
-            <summary>
-            Adds a parameterized set of vertices to the drawing devices rendering schedule.
-            </summary>
-            <typeparam name="T">The type of vertex data to add.</typeparam>
-            <param name="material">The <see cref="T:Duality.Resources.BatchInfo"/> to use for rendering the vertices.</param>
-            <param name="vertexMode">The vertices drawing mode.</param>
-            <param name="vertices">The vertex data to add.</param>
-        </member>
-        <member name="P:Duality.IDrawDevice.RefCoord">
-            <summary>
-            [GET] Reference coordinate for rendering i.e. the position of the drawing device's Camera.
-            </summary>
-        </member>
-        <member name="P:Duality.IDrawDevice.RefAngle">
-            <summary>
-            [GET] Reference angle for rendering i.e. the angle of the drawing device's Camera.
-            </summary>
-        </member>
-        <member name="P:Duality.IDrawDevice.FocusDist">
-            <summary>
-            [GET] Reference distance for calculating the perspective effect. An object this far away from
-            the Camera will appear in its original size.
-            </summary>
-        </member>
-        <member name="P:Duality.IDrawDevice.VisibilityMask">
-            <summary>
-            [GET] A bitmask flagging all visibility groups that are considered visible to this drawing device.
-            </summary>
-        </member>
-        <member name="P:Duality.IDrawDevice.NearZ">
-            <summary>
-            [GET] The lowest Z value that can be displayed by the device.
-            </summary>
-        </member>
-        <member name="P:Duality.IDrawDevice.FarZ">
-            <summary>
-            [GET] The highest Z value that can be displayed by the device.
-            </summary>
-        </member>
-        <member name="P:Duality.IDrawDevice.DepthWrite">
-            <summary>
-            [GET] Returns whether the drawing device allows writing to the depth buffer
-            </summary>
-        </member>
-        <member name="P:Duality.IDrawDevice.TargetSize">
-            <summary>
-            [GET] The size of the surface this drawing device operates on.
-            </summary>
-        </member>
-        <member name="F:Duality.Components.Camera.DefaultFocusDist">
-            <summary>
-            The default reference distance for perspective rendering.
-            </summary>
-        </member>
         <member name="M:Duality.Components.Camera.Render">
             <summary>
             Renders the current <see cref="T:Duality.Resources.Scene"/>.
@@ -6890,36 +6805,6 @@
             [GET] The Cameras view space bounding circle radius.
             </summary>
         </member>
-        <member name="T:Duality.Components.Camera.ClearFlags">
-            <summary>
-            A Bitmask describing which components of the current (or back-)buffer to clear before rendering.
-            </summary>
-        </member>
-        <member name="F:Duality.Components.Camera.ClearFlags.None">
-            <summary>
-            Nothing.
-            </summary>
-        </member>
-        <member name="F:Duality.Components.Camera.ClearFlags.Color">
-            <summary>
-            The buffers color components.
-            </summary>
-        </member>
-        <member name="F:Duality.Components.Camera.ClearFlags.Depth">
-            <summary>
-            The buffers depth component.
-            </summary>
-        </member>
-        <member name="F:Duality.Components.Camera.ClearFlags.Default">
-            <summary>
-            The default set of flags.
-            </summary>
-        </member>
-        <member name="F:Duality.Components.Camera.ClearFlags.All">
-            <summary>
-            All flags set.
-            </summary>
-        </member>
         <member name="T:Duality.Components.Camera.Pass">
             <summary>
             Describes a single pass in the overall rendering process.
@@ -6940,11 +6825,6 @@
         <member name="P:Duality.Components.Camera.Pass.Output">
             <summary>
             The output to render to in this pass. If this is null, the screen is used as rendering target.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Camera.Pass.FitOutput">
-            <summary>
-            Specifies whether this passes output shall be scaled in order to fit the specified outputs dimensions.
             </summary>
         </member>
         <member name="P:Duality.Components.Camera.Pass.ClearColor">
@@ -14056,56 +13936,6 @@
             Makes this <see cref="T:Duality.GameObject"/> the 3d sound listener.
             </summary>
         </member>
-        <member name="T:Duality.Components.Physics.FixedAngleJointInfo">
-            <summary>
-            Constrains the Collider to a fixed angle
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedAngleJointInfo.TargetAngle">
-            <summary>
-            [GET / SET] The Colliders target angle.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedAngleJointInfo.BiasFactor">
-            <summary>
-            [GET / SET] The bias factor determines how strong the joint reacts to the difference between target and actual angle.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedAngleJointInfo.Softness">
-            <summary>
-            [GET / SET] The softness of the joint determines how easy it is to turn it away from its ideal angle.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.FixedAngleJointInfo.MaxImpulse">
-            <summary>
-            [GET / SET] The maximum angular impulse to apply to the RigidBody. A negative value equals infinity.
-            </summary>
-        </member>
-        <member name="T:Duality.Components.Physics.AngleJointInfo">
-            <summary>
-            Constrains two RigidBodies to a fixed relative angle
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.AngleJointInfo.TargetAngle">
-            <summary>
-            [GET / SET] The Colliders target angle.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.AngleJointInfo.BiasFactor">
-            <summary>
-            [GET / SET] The bias factor determines how strong the joint reacts to the difference between target and actual angle.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.AngleJointInfo.Softness">
-            <summary>
-            [GET / SET] The softness of the joint determines how easy it is to turn it away from its ideal angle.
-            </summary>
-        </member>
-        <member name="P:Duality.Components.Physics.AngleJointInfo.MaxImpulse">
-            <summary>
-            [GET / SET] The maximum angular impulse to apply to the RigidBody. A negative value equals infinity.
-            </summary>
-        </member>
         <member name="T:Duality.VertexMode">
             <summary>
             Specifies the way in which incoming vertex data is interpreted in order to generate geometry.
@@ -14182,9 +14012,220 @@
             The total number of available BlendModes.
             </summary>
         </member>
+        <member name="T:Duality.ClearFlag">
+            <summary>
+            A Bitmask describing which components of the current rendering buffer to clear.
+            </summary>
+        </member>
+        <member name="F:Duality.ClearFlag.None">
+            <summary>
+            Nothing.
+            </summary>
+        </member>
+        <member name="F:Duality.ClearFlag.Color">
+            <summary>
+            The buffers color components.
+            </summary>
+        </member>
+        <member name="F:Duality.ClearFlag.Depth">
+            <summary>
+            The buffers depth component.
+            </summary>
+        </member>
+        <member name="F:Duality.ClearFlag.Default">
+            <summary>
+            The default set of flags.
+            </summary>
+        </member>
+        <member name="F:Duality.ClearFlag.All">
+            <summary>
+            All flags set.
+            </summary>
+        </member>
         <member name="F:Duality.VisibilityFlag.ScreenOverlay">
             <summary>
             Special flag. This flag is set when rendering screen overlays.
+            </summary>
+        </member>
+        <member name="T:Duality.IDrawDevice">
+            <summary>
+            Defines a general interface for drawing devices. Its main duty is to accept and collect parameterized vertex data.
+            </summary>
+        </member>
+        <member name="M:Duality.IDrawDevice.PreprocessCoords(OpenTK.Vector3@,System.Single@)">
+            <summary>
+            Processes the specified world space position and scale values and transforms them to the IDrawDevices view space.
+            This usually also applies a perspective effect, if applicable.
+            </summary>
+            <param name="pos">The position to process.</param>
+            <param name="scale">The scale factor to process.</param>
+        </member>
+        <member name="M:Duality.IDrawDevice.IsCoordInView(OpenTK.Vector3,System.Single)">
+            <summary>
+            Returns whether the specified world-space position is visible in the drawing devices view space.
+            </summary>
+            <param name="c">The position to test.</param>
+            <param name="boundRad">The visual bounding radius to assume for the specified position.</param>
+            <returns>True, if the position or a portion of its bounding circle is visible, false if not.</returns>
+        </member>
+        <member name="M:Duality.IDrawDevice.AddVertices``1(Duality.ContentRef{Duality.Resources.Material},Duality.VertexMode,``0[])">
+            <summary>
+            Adds a parameterized set of vertices to the drawing devices rendering schedule.
+            </summary>
+            <typeparam name="T">The type of vertex data to add.</typeparam>
+            <param name="material">The <see cref="T:Duality.Resources.Material"/> to use for rendering the vertices.</param>
+            <param name="vertexMode">The vertices drawing mode.</param>
+            <param name="vertices">The vertex data to add.</param>
+        </member>
+        <member name="M:Duality.IDrawDevice.AddVertices``1(Duality.Resources.BatchInfo,Duality.VertexMode,``0[])">
+            <summary>
+            Adds a parameterized set of vertices to the drawing devices rendering schedule.
+            </summary>
+            <typeparam name="T">The type of vertex data to add.</typeparam>
+            <param name="material">The <see cref="T:Duality.Resources.BatchInfo"/> to use for rendering the vertices.</param>
+            <param name="vertexMode">The vertices drawing mode.</param>
+            <param name="vertices">The vertex data to add.</param>
+        </member>
+        <member name="P:Duality.IDrawDevice.RefCoord">
+            <summary>
+            [GET] Reference coordinate for rendering i.e. the position of the drawing device's Camera.
+            </summary>
+        </member>
+        <member name="P:Duality.IDrawDevice.RefAngle">
+            <summary>
+            [GET] Reference angle for rendering i.e. the angle of the drawing device's Camera.
+            </summary>
+        </member>
+        <member name="P:Duality.IDrawDevice.FocusDist">
+            <summary>
+            [GET] Reference distance for calculating the perspective effect. An object this far away from
+            the Camera will appear in its original size.
+            </summary>
+        </member>
+        <member name="P:Duality.IDrawDevice.VisibilityMask">
+            <summary>
+            [GET] A bitmask flagging all visibility groups that are considered visible to this drawing device.
+            </summary>
+        </member>
+        <member name="P:Duality.IDrawDevice.NearZ">
+            <summary>
+            [GET] The lowest Z value that can be displayed by the device.
+            </summary>
+        </member>
+        <member name="P:Duality.IDrawDevice.FarZ">
+            <summary>
+            [GET] The highest Z value that can be displayed by the device.
+            </summary>
+        </member>
+        <member name="P:Duality.IDrawDevice.DepthWrite">
+            <summary>
+            [GET] Returns whether the drawing device allows writing to the depth buffer
+            </summary>
+        </member>
+        <member name="P:Duality.IDrawDevice.TargetSize">
+            <summary>
+            [GET] The size of the surface this drawing device operates on.
+            </summary>
+        </member>
+        <member name="F:Duality.DrawDevice.DefaultFocusDist">
+            <summary>
+            The default reference distance for perspective rendering.
+            </summary>
+        </member>
+        <member name="M:Duality.DrawDevice.Dispose">
+            <summary>
+            Disposes the DrawDevice.
+            </summary>
+        </member>
+        <member name="M:Duality.DrawDevice.GetScaleAtZ(System.Single)">
+            <summary>
+            Returns the scale factor of objects that are located at the specified (world space) z-Coordinate.
+            </summary>
+            <param name="z"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.DrawDevice.GetSpaceCoord(OpenTK.Vector3)">
+            <summary>
+            Transforms screen space coordinates to world space coordinates. The screen positions Z coordinate is
+            interpreted as the target world Z coordinate.
+            </summary>
+            <param name="screenPos"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.DrawDevice.GetSpaceCoord(OpenTK.Vector2)">
+            <summary>
+            Transforms screen space coordinates to world space coordinates.
+            </summary>
+            <param name="screenPos"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.DrawDevice.GetScreenCoord(OpenTK.Vector3)">
+            <summary>
+            Transforms world space coordinates to screen space coordinates.
+            </summary>
+            <param name="spacePos"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.DrawDevice.GetScreenCoord(OpenTK.Vector2)">
+            <summary>
+            Transforms world space coordinates to screen space coordinates.
+            </summary>
+            <param name="spacePos"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Duality.DrawDevice.Perspective">
+            <summary>
+            [GET / SET] Specified the perspective effect that is applied when rendering the world.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Physics.FixedAngleJointInfo">
+            <summary>
+            Constrains the Collider to a fixed angle
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedAngleJointInfo.TargetAngle">
+            <summary>
+            [GET / SET] The Colliders target angle.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedAngleJointInfo.BiasFactor">
+            <summary>
+            [GET / SET] The bias factor determines how strong the joint reacts to the difference between target and actual angle.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedAngleJointInfo.Softness">
+            <summary>
+            [GET / SET] The softness of the joint determines how easy it is to turn it away from its ideal angle.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.FixedAngleJointInfo.MaxImpulse">
+            <summary>
+            [GET / SET] The maximum angular impulse to apply to the RigidBody. A negative value equals infinity.
+            </summary>
+        </member>
+        <member name="T:Duality.Components.Physics.AngleJointInfo">
+            <summary>
+            Constrains two RigidBodies to a fixed relative angle
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.AngleJointInfo.TargetAngle">
+            <summary>
+            [GET / SET] The Colliders target angle.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.AngleJointInfo.BiasFactor">
+            <summary>
+            [GET / SET] The bias factor determines how strong the joint reacts to the difference between target and actual angle.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.AngleJointInfo.Softness">
+            <summary>
+            [GET / SET] The softness of the joint determines how easy it is to turn it away from its ideal angle.
+            </summary>
+        </member>
+        <member name="P:Duality.Components.Physics.AngleJointInfo.MaxImpulse">
+            <summary>
+            [GET / SET] The maximum angular impulse to apply to the RigidBody. A negative value equals infinity.
             </summary>
         </member>
     </members>

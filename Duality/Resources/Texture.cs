@@ -545,9 +545,11 @@ namespace Duality.Resources
 			GL.GetInteger(GetPName.TextureBinding2D, out lastTexId);
 			GL.BindTexture(TextureTarget.Texture2D, this.glTexId);
 
-			Pixmap.Layer pixelData = this.basePixmap.IsAvailable ? this.basePixmap.Res.MainLayer : null;
-			if (pixelData != null)
+			if (!this.basePixmap.IsExplicitNull)
 			{
+				Pixmap.Layer pixelData = this.basePixmap.IsAvailable ? this.basePixmap.Res.MainLayer : null;
+				if (pixelData == null) pixelData = Pixmap.White.Res.MainLayer;
+
 				this.AdjustSize(pixelData.Width, pixelData.Height);
 				this.SetupOpenGLRes();
 				if (this.texSizeMode != SizeMode.NonPowerOfTwo &&

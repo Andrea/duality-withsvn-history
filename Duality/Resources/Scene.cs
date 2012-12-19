@@ -20,7 +20,7 @@ namespace Duality.Resources
 	/// on you own design.
 	/// </summary>
 	[Serializable]
-	public sealed class Scene : Resource, ISerializable
+	public sealed class Scene : Resource
 	{
 		/// <summary>
 		/// A Scene resources file extension.
@@ -183,9 +183,10 @@ namespace Duality.Resources
 		}
 
 		private	Vector2					globalGravity	= Vector2.UnitY * 33.0f;
-		private	GameObjectManager		objectManager	= new GameObjectManager();
-		private	ObjectManager<Camera>	cameraManager	= new ObjectManager<Camera>();
-		private	RendererManager			rendererManager	= new RendererManager();
+		private	GameObject[]			serializeObj	= null;
+		[NonSerialized] private	GameObjectManager		objectManager	= new GameObjectManager();
+		[NonSerialized] private	ObjectManager<Camera>	cameraManager	= new ObjectManager<Camera>();
+		[NonSerialized] private	RendererManager			rendererManager	= new RendererManager();
 
 		/// <summary>
 		/// [GET] Enumerates all registered objects.
@@ -558,15 +559,45 @@ namespace Duality.Resources
 			base.OnSaving();
 			foreach (GameObject obj in this.objectManager.AllObjects)
 				obj.OnSaving();
+
+			this.serializeObj = this.objectManager.AllObjects.ToArray();
+			this.UnregisterManagerEvents();
+			this.cameraManager.Clear();
+			this.rendererManager.Clear();
+			this.objectManager.Clear();
 		}
 		protected override void OnSaved()
 		{
+			if (this.serializeObj != null)
+			{
+				foreach (GameObject obj in this.serializeObj)
+				{
+					this.objectManager.RegisterObj(obj);
+					this.AddToManagers(obj);
+				}
+				this.RegisterManagerEvents();
+				this.serializeObj = null;
+			}
+
 			base.OnSaved();
 			foreach (GameObject obj in this.objectManager.AllObjects)
 				obj.OnSaved();
 		}
 		protected override void OnLoaded()
 		{
+			if (this.serializeObj != null)
+			{
+				this.UnregisterManagerEvents();
+				foreach (GameObject obj in this.serializeObj) obj.PerformSanitaryCheck();
+				foreach (GameObject obj in this.serializeObj)
+				{
+					this.objectManager.RegisterObj(obj);
+					this.AddToManagers(obj);
+				}
+				this.RegisterManagerEvents();
+				this.serializeObj = null;
+			}
+
 			base.OnLoaded();
 
 			this.ApplyPrefabLinks();
@@ -584,38 +615,6 @@ namespace Duality.Resources
 			GameObject[] obj = this.objectManager.AllObjects.ToArray();
 			this.objectManager.Clear();
 			foreach (GameObject g in obj) g.DisposeLater();
-		}
-
-		void ISerializable.WriteData(IDataWriter writer)
-		{
-			GameObject[] allObjects = this.objectManager.AllObjects.ToArray();
-			writer.WriteValue("globalGravity", this.globalGravity);
-			writer.WriteValue("allObjects", allObjects);
-			writer.WriteValue("sourcePath", this.sourcePath);
-		}
-		void ISerializable.ReadData(IDataReader reader)
-		{
-			GameObject[] allObjects = null;
-			reader.ReadValue("globalGravity", out this.globalGravity);
-			reader.ReadValue("allObjects", out allObjects);
-			reader.ReadValue("sourcePath", out this.sourcePath);
-			
-			this.UnregisterManagerEvents();
-			{
-				this.cameraManager.Clear();
-				this.rendererManager.Clear();
-				this.objectManager.Clear();
-				if (allObjects != null)
-				{
-					foreach (GameObject obj in allObjects) obj.PerformSanitaryCheck();
-					foreach (GameObject obj in allObjects)
-					{
-						this.objectManager.RegisterObj(obj);
-						this.AddToManagers(obj);
-					}
-				}
-			}
-			this.RegisterManagerEvents();
 		}
 	}
 }

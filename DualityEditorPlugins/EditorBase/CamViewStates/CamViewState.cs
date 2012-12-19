@@ -262,14 +262,14 @@ namespace EditorBase.CamViewStates
 			// Create re-usable render passes for editor gizmos
 			this.camPassBg = new Camera.Pass();
 			this.camPassBg.MatrixMode = RenderMatrix.OrthoScreen;
-			this.camPassBg.ClearFlags = Camera.ClearFlags.None;
+			this.camPassBg.ClearFlags = ClearFlag.None;
 			this.camPassBg.VisibilityMask = VisibilityFlag.ScreenOverlay;
 			this.camPassEdWorld = new Camera.Pass();
-			this.camPassEdWorld.ClearFlags = Camera.ClearFlags.None;
+			this.camPassEdWorld.ClearFlags = ClearFlag.None;
 			this.camPassEdWorld.VisibilityMask = VisibilityFlag.None;
 			this.camPassEdScreen = new Camera.Pass();
 			this.camPassEdScreen.MatrixMode = RenderMatrix.OrthoScreen;
-			this.camPassEdScreen.ClearFlags = Camera.ClearFlags.None;
+			this.camPassEdScreen.ClearFlags = ClearFlag.None;
 			this.camPassEdScreen.VisibilityMask = VisibilityFlag.ScreenOverlay;
 
 			this.camPassBg.CollectDrawcalls			+= this.camPassBg_CollectDrawcalls;

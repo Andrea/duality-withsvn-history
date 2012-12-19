@@ -19,7 +19,7 @@ namespace Duality.Resources
 	/// </summary>
 	/// <seealso cref="Duality.Resources.Texture"/>
 	[Serializable]
-	public class Pixmap : Resource, ISerializable
+	public class Pixmap : Resource
 	{
 		/// <summary>
 		/// A Pixmap resources file extension.
@@ -111,7 +111,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// Represents a pixel data layer.
 		/// </summary>
-		public class Layer : Duality.Cloning.ICloneable
+		public class Layer : Duality.Cloning.ICloneable, ISerializable
 		{
 			private	int	width;
 			private	int height;
@@ -1011,6 +1011,30 @@ namespace Duality.Resources
 				targetLayer.height = this.height;
 				targetLayer.data = this.data == null ? null : this.data.Clone() as ColorRgba[];
 			}
+			void ISerializable.WriteData(IDataWriter writer)
+			{
+				writer.WriteValue("version", ResFormat_Version_LayerPng);
+
+				using (MemoryStream str = new MemoryStream(1024 * 64))
+				{
+					this.ToBitmap().Save(str, System.Drawing.Imaging.ImageFormat.Png);
+					writer.WriteValue("pixelData", str.ToArray());
+				}
+			}
+			void ISerializable.ReadData(IDataReader reader)
+			{
+				int version;
+				try { reader.ReadValue("version", out version); }
+				catch (Exception) { version = ResFormat_Version_Unknown; }
+
+				if (version == ResFormat_Version_LayerPng)
+				{
+					byte[] dataBlock;
+					reader.ReadValue("pixelData", out dataBlock);
+					Bitmap bm = dataBlock != null ? new Bitmap(new MemoryStream(dataBlock)) : null;
+					if (bm != null) this.FromBitmap(bm);
+				}
+			}
 		}
 
 
@@ -1247,75 +1271,6 @@ namespace Duality.Resources
 			c.atlas = this.atlas == null ? null : new List<Rect>(this.atlas);
 			c.animCols = this.animCols;
 			c.animRows = this.animRows;
-		}
-
-		void ISerializable.WriteData(IDataWriter writer)
-		{
-			writer.WriteValue("version", ResFormat_Version_LayerPng);
-
-			if (this.layers != null)
-			{
-				writer.WriteValue("layerCount", this.layers.Count);
-				for (int i = 0; i < this.layers.Count; i++)
-				{
-					MemoryStream str = new MemoryStream(1024 * 64);
-					this.layers[i].ToBitmap().Save(str, System.Drawing.Imaging.ImageFormat.Png);
-					writer.WriteValue("layer" + i.ToString(), str.ToArray());
-				}
-			}
-			else
-				writer.WriteValue("layerCount", 0);
-
-			writer.WriteValue("dataBasePath", this.sourcePath);
-			writer.WriteValue("atlas", this.atlas);
-			writer.WriteValue("animCols", this.animCols);
-			writer.WriteValue("animRows", this.animRows);
-		}
-		void ISerializable.ReadData(IDataReader reader)
-		{
-			int version;
-			try { reader.ReadValue("version", out version); }
-			catch (Exception) { version = ResFormat_Version_Unknown; }
-
-			if (this.layers == null) this.layers = new List<Layer>();
-
-			Bitmap bm;
-			if (version == ResFormat_Version_Bitmap)
-			{
-				reader.ReadValue("data", out bm);
-				this.layers.Clear();
-				this.MainLayer = new Layer(bm);
-			}
-			else if (version == ResFormat_Version_Png)
-			{
-				byte[] dataBlock;
-				reader.ReadValue("data", out dataBlock);
-				bm = dataBlock != null ? new Bitmap(new MemoryStream(dataBlock)) : null;
-				this.layers.Clear();
-				this.MainLayer = new Layer(bm);
-			}
-			else if (version == ResFormat_Version_LayerPng)
-			{
-				int layerCount;
-				reader.ReadValue("layerCount", out layerCount);
-				this.layers.Clear();
-				for (int i = 0; i < layerCount; i++)
-				{
-					byte[] dataBlock;
-					reader.ReadValue("layer" + i.ToString(), out dataBlock);
-					bm = dataBlock != null ? new Bitmap(new MemoryStream(dataBlock)) : null;
-					this.layers.Add(new Layer(bm));
-				}
-			}
-			else
-			{
-				this.layers.Clear();
-			}
-
-			reader.ReadValue("dataBasePath", out this.sourcePath);
-			reader.ReadValue("atlas", out this.atlas);
-			reader.ReadValue("animCols", out this.animCols);
-			reader.ReadValue("animRows", out this.animRows);
 		}
 	}
 }

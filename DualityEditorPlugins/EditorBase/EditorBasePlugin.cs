@@ -280,8 +280,11 @@ namespace EditorBase
 			this.menuItemUserData.Click += this.menuItemUserData_Click;
 
 			Sandbox.Entering += this.Sandbox_Entering;
-			FileEventManager.ResourceModified += this.main_ResourceModified;
-			DualityEditorApp.ObjectPropertyChanged += this.main_ObjectPropertyChanged;
+			FileEventManager.ResourceModified += this.FileEventManager_ResourceChanged;
+		//	FileEventManager.ResourceCreated += this.FileEventManager_ResourceChanged;
+		//	FileEventManager.ResourceDeleted += this.FileEventManager_ResourceChanged;
+		//	FileEventManager.ResourceRenamed += this.FileEventManager_ResourceChanged;
+			DualityEditorApp.ObjectPropertyChanged += this.DualityEditorApp_ObjectPropertyChanged;
 		}
 		
 		public ProjectFolderView RequestProjectView()
@@ -506,11 +509,11 @@ namespace EditorBase
 			this.ActionGameObjectOpenRes(obj);
 		}
 
-		private void main_ResourceModified(object sender, ResourceEventArgs e)
+		private void FileEventManager_ResourceChanged(object sender, ResourceEventArgs e)
 		{
 			if (e.IsResource) this.OnResourceModified(e.Content);
 		}
-		private void main_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
+		private void DualityEditorApp_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
 		{
 			if (e.Objects.ResourceCount > 0)
 			{
@@ -551,10 +554,11 @@ namespace EditorBase
 			// If its a Pixmap, reload all associated Textures
 			else if (resRef.Is<Pixmap>())
 			{
+				ContentRef<Pixmap> pixRef = resRef.As<Pixmap>();
 				foreach (ContentRef<Texture> tex in ContentProvider.GetAvailContent<Texture>())
 				{
 					if (!tex.IsAvailable) continue;
-					if (tex.Res.BasePixmap.Res == resRef.Res)
+					if (tex.Res.BasePixmap == pixRef)
 					{
 						tex.Res.ReloadData();
 
@@ -566,10 +570,11 @@ namespace EditorBase
 			// If its a Texture, update all associated RenderTargets
 			else if (resRef.Is<Texture>())
 			{
+				ContentRef<Texture> texRef = resRef.As<Texture>();
 				foreach (ContentRef<RenderTarget> rt in ContentProvider.GetAvailContent<RenderTarget>())
 				{
 					if (!rt.IsAvailable) continue;
-					if (rt.Res.Targets.Any(target => target.Res == resRef.Res as Texture))
+					if (rt.Res.Targets.Contains(texRef))
 					{
 						rt.Res.SetupOpenGLRes();
 
@@ -581,11 +586,13 @@ namespace EditorBase
 			// If its some kind of shader, update all associated ShaderPrograms
 			else if (resRef.Is<AbstractShader>())
 			{
+				ContentRef<FragmentShader> fragRef = resRef.As<FragmentShader>();
+				ContentRef<VertexShader> vertRef = resRef.As<VertexShader>();
 				foreach (ContentRef<ShaderProgram> sp in ContentProvider.GetAvailContent<ShaderProgram>())
 				{
 					if (!sp.IsAvailable) continue;
-					if (sp.Res.Fragment.Res == resRef.Res as FragmentShader ||
-						sp.Res.Vertex.Res == resRef.Res as VertexShader)
+					if (sp.Res.Fragment == fragRef ||
+						sp.Res.Vertex == vertRef)
 					{
 						bool wasCompiled = sp.Res.Compiled;
 						sp.Res.AttachShaders();

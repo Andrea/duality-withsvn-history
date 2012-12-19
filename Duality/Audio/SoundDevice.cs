@@ -32,7 +32,7 @@ namespace Duality
 		/// <summary>
 		/// [GET] The underlying OpenTK AudioContext.
 		/// </summary>
-		public AudioContext Context
+		internal AudioContext Context
 		{
 			get { return this.context; }
 		}

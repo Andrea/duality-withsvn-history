@@ -22,6 +22,11 @@ namespace EditorBase.PreviewGenerators
 			int desiredHeight = query.DesiredHeight;
 
 			Pixmap.Layer layer = pixmap.MainLayer;
+			if (layer == null)
+			{
+				query.Result = new Bitmap(1, 1);
+				return;
+			}
 			float widthRatio = (float)layer.Width / (float)layer.Height;
 
 			if (pixmap.Width * pixmap.Height > 4096 * 4096)
