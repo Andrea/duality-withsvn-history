@@ -7,19 +7,11 @@
 
 -->	Dualitor: PerformanceMonitor
 
---> Reconsider "events" in Duality.
-	-->	Are they really necessary?
-	-->	Do they lead to difficult design on the user-side?
-	-->	Pros
-	-->	Cons
-
 -->	Implement some simple Font effects?
 
 -->	Testing, Testing, Testing! Only a dead bug is a good bug.
 
 
-
---> Debug: Velocity calculation in Transform components does not account for parent movement or rotation
 
 -->	Idea: Bitmap Fonts
 	-->	Let a Font specify an optional base Texture. It is used as a fixed Bitmap Font
@@ -140,6 +132,21 @@
 	-->	UpscaleFilter:		Nearest, Bilinear
 	-->	WrapMode:			Clamp, Repeat, Mirror
 	-->	PixelFormat:		Rgba, Rgb, LuminanceAlpha, Alpha, Luminance, Depth, RgbaF
+
+--> Reconsider "events" in Duality.
+	-->	Are they really necessary?
+		-->	In some cases: Yes. Whenever an object needs to react directly to something.
+		-->	RigidBody needs EventTransformChanged
+		-->	Transform should be able to directly react to parent changes and such
+	-->	They are NonSerialized by design.
+		-->	Serializing events introduces a whole lot of problems, because
+			every registered object will be dragged into the serialization process
+		-->	GameObjectManagers do not belong there. Editor-Stuff doesn't either.
+		-->	Users may easily double-register by accident, if they are persistent.
+			It's harder to work with them that way.
+	-->	GameObject events shouldn't be about Components
+		-->	User Components can't do this, so don't do it on the engine side as well.
+		-->	GameObjects should also not care about Component listener stuff. Same reason.
 
 
 		

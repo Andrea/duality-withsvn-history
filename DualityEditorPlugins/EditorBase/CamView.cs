@@ -684,7 +684,15 @@ namespace EditorBase
 		public void MakeDualityTarget()
 		{
 			DualityApp.TargetResolution = new OpenTK.Vector2(this.glControl.Width, this.glControl.Height);
-			if (this.ContainsFocus) Sandbox.SetEngineInput(this, this);
+			if (this.ContainsFocus)
+			{
+				Sandbox.SetEngineInput(this, this);
+				if (DualityApp.ExecContext != DualityApp.ExecutionContext.Terminated)
+				{
+					if (this.camObj.GetComponent<SoundListener>() != null)
+						this.camObj.GetComponent<SoundListener>().MakeCurrent();
+				}
+			}
 		}
 		public ICmpRenderer PickRendererAt(int x, int y)
 		{
@@ -748,7 +756,7 @@ namespace EditorBase
 			// Hook global message filter
 			if (this.waitForInputFilter == null)
 			{
-				this.waitForInputFilter = new InputEventMessageRedirector(this.glControl, this.FocusHoolFilter,
+				this.waitForInputFilter = new InputEventMessageRedirector(this.glControl, this.FocusHookFilter,
 					InputEventMessageRedirector.MessageType.MouseWheel, 
 					InputEventMessageRedirector.MessageType.KeyDown);
 				Application.AddMessageFilter(this.waitForInputFilter);
@@ -763,7 +771,7 @@ namespace EditorBase
 				this.waitForInputFilter = null;
 			}
 		}
-		private bool FocusHoolFilter(InputEventMessageRedirector.MessageType type, EventArgs e)
+		private bool FocusHookFilter(InputEventMessageRedirector.MessageType type, EventArgs e)
 		{
 			if (Sandbox.State == SandboxState.Playing)
 			{
@@ -825,12 +833,7 @@ namespace EditorBase
 			this.RemoveFocusHook();
 
 			if (DualityApp.ExecContext != DualityApp.ExecutionContext.Terminated)
-			{
-				if (this.camObj.GetComponent<SoundListener>() != null)
-					this.camObj.GetComponent<SoundListener>().MakeCurrent();
-
 				this.activeState.SelectObjects(this.activeState.SelectedObjects);
-			}
 		}
 		private void glControl_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
 		{

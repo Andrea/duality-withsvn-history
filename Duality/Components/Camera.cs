@@ -29,7 +29,6 @@ namespace Duality.Components
 			private float						clearDepth		= 1.0f;
 			private ClearFlag					clearFlags		= ClearFlag.All;
 			private RenderMatrix				matrixMode		= RenderMatrix.PerspectiveWorld;
-			private	bool						fitOutput		= false;
 			private	VisibilityFlag				visibilityMask	= VisibilityFlag.AllGroups;
 			private	BatchInfo					input			= null;
 			private	ContentRef<RenderTarget>	output			= ContentRef<RenderTarget>.Null;
@@ -103,7 +102,6 @@ namespace Duality.Components
 			{
 				this.input = copyFrom.input;
 				this.output = copyFrom.output;
-				this.fitOutput = copyFrom.fitOutput;
 				this.clearColor = copyFrom.clearColor;
 				this.clearDepth = copyFrom.clearDepth;
 				this.clearFlags = copyFrom.clearFlags;
@@ -116,7 +114,6 @@ namespace Duality.Components
 			{
 				this.input = inputOverride;
 				this.output = copyFrom.output;
-				this.fitOutput = copyFrom.fitOutput;
 				this.clearColor = copyFrom.clearColor;
 				this.clearDepth = copyFrom.clearDepth;
 				this.clearFlags = copyFrom.clearFlags;
@@ -153,7 +150,6 @@ namespace Duality.Components
 
 		private	float	nearZ				= 0.0f;
 		private	float	farZ				= 10000.0f;
-		private	float	zSortAccuracy		= 0.0f;
 		private	float	focusDist			= Duality.DrawDevice.DefaultFocusDist;
 		private	PerspectiveMode	perspective	= PerspectiveMode.Parallax;
 		private	VisibilityFlag	visibilityMask	= VisibilityFlag.All;
@@ -576,7 +572,12 @@ namespace Duality.Components
 				Texture mainTex = p.Input.MainTexture.Res;
 				Vector2 uvRatio = mainTex != null ? mainTex.UVRatio : Vector2.One;
 				Vector2 inputSize = mainTex != null ? new Vector2(mainTex.PixelWidth, mainTex.PixelHeight) : Vector2.One;
-				Rect targetRect = new Rect(this.drawDevice.TargetSize);
+				Rect targetRect;
+				if (DualityApp.ExecEnvironment == DualityApp.ExecutionEnvironment.Editor &&
+					!this.drawDevice.Target.IsAvailable)
+					targetRect = Rect.AlignCenter(this.drawDevice.TargetSize.X * 0.5f, this.drawDevice.TargetSize.Y * 0.5f, inputSize.X, inputSize.Y);
+				else
+					targetRect = new Rect(this.drawDevice.TargetSize);
 
 				IDrawDevice device = this.DrawDevice;
 				device.AddVertices(p.Input, VertexMode.Quads,

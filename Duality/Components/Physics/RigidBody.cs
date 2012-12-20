@@ -860,6 +860,7 @@ namespace Duality.Components.Physics
 			if (this.bodyInitState != InitState.Disposed) return;
 			this.bodyInitState = InitState.Initializing;
 
+			this.GameObj.Transform.EventTransformChanged += this.OnTransformChanged;
 			this.InitBody();
 			// Initialize joints
 			if (this.joints != null)
@@ -876,6 +877,7 @@ namespace Duality.Components.Physics
 			
 			this.CleanupJoints();
 			this.CleanupBody();
+			this.GameObj.Transform.EventTransformChanged -= this.OnTransformChanged;
 
 			this.bodyInitState = InitState.Disposed;
 		}
@@ -932,13 +934,29 @@ namespace Duality.Components.Physics
 				colEvent.FixtureB.UserData as ShapeInfo);
 
 			if (colEvent.Type == ColEvent.EventType.Collision)
-				this.gameobj.NotifyCollisionBegin(this, args);
+				this.NotifyCollisionBegin(args);
 			else if (colEvent.Type == ColEvent.EventType.Separation)
-				this.gameobj.NotifyCollisionEnd(this, args);
+				this.NotifyCollisionEnd(args);
 			else if (colEvent.Type == ColEvent.EventType.PostSolve)
-				this.gameobj.NotifyCollisionSolve(this, args);
+				this.NotifyCollisionSolve(args);
 		}
 		
+		private void NotifyCollisionBegin(CollisionEventArgs args)
+		{
+			foreach (ICmpCollisionListener c in this.gameobj.GetComponents<ICmpCollisionListener>(true))
+				c.OnCollisionBegin(this, args);
+		}
+		private void NotifyCollisionEnd(CollisionEventArgs args)
+		{
+			foreach (ICmpCollisionListener c in this.gameobj.GetComponents<ICmpCollisionListener>(true))
+				c.OnCollisionEnd(this, args);
+		}
+		private void NotifyCollisionSolve(CollisionEventArgs args)
+		{
+			foreach (ICmpCollisionListener c in this.gameobj.GetComponents<ICmpCollisionListener>(true))
+				c.OnCollisionSolve(this, args);
+		}
+
 		void ICmpUpdatable.OnUpdate()
 		{
 			// Synchronize physical body / perform shape updates, etc.
@@ -999,8 +1017,6 @@ namespace Duality.Components.Physics
 		{
 			if (context == InitContext.Activate)
 				this.Initialize();
-			else if (context == InitContext.AddToGameObject)
-				this.GameObj.Transform.OnTransformChanged += this.OnTransformChanged;
 			else if (context == InitContext.Loaded)
 				this.RemoveDisposedJoints();
 		}
@@ -1008,8 +1024,6 @@ namespace Duality.Components.Physics
 		{
 			if (context == ShutdownContext.Deactivate)
 				this.Shutdown();
-			else if (context == ShutdownContext.RemovingFromGameObject)
-				this.GameObj.Transform.OnTransformChanged -= this.OnTransformChanged;
 			else if (context == ShutdownContext.Saving)
 				this.RemoveDisposedJoints();
 		}

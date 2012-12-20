@@ -34,7 +34,11 @@ namespace Duality
 		private		InitState					initState	= InitState.Initialized;
 
 		// Built-in heavily used component lookup
-		private	Components.Transform		compTransform	= null;
+		private		Components.Transform		compTransform	= null;
+		
+		[NonSerialized] private EventHandler<GameObjectParentChangedEventArgs>	eventParentChanged		= null;
+		[NonSerialized] private EventHandler<ComponentEventArgs>				eventComponentAdded		= null;
+		[NonSerialized] private EventHandler<ComponentEventArgs>				eventComponentRemoving	= null;
 
 
 		/// <summary>
@@ -275,27 +279,27 @@ namespace Duality
 		/// <summary>
 		/// Fired when this GameObjects parent has changed
 		/// </summary>
-		public event EventHandler<GameObjectParentChangedEventArgs>	EventParentChanged		= null;
+		public event EventHandler<GameObjectParentChangedEventArgs>	EventParentChanged
+		{
+			add { this.eventParentChanged += value; }
+			remove { this.eventParentChanged -= value; }
+		}
 		/// <summary>
 		/// Fired when a Component has been added to the GameObject
 		/// </summary>
-		public event EventHandler<ComponentEventArgs>				EventComponentAdded		= null;
+		public event EventHandler<ComponentEventArgs>				EventComponentAdded
+		{
+			add { this.eventComponentAdded += value; }
+			remove { this.eventComponentAdded -= value; }
+		}
 		/// <summary>
 		/// Fired when a Component is about to be removed from the GameObject
 		/// </summary>
-		public event EventHandler<ComponentEventArgs>				EventComponentRemoving	= null;
-		/// <summary>
-		/// Fired when this GameObject starts to collide with another GameObject.
-		/// </summary>
-		public event EventHandler<CollisionEventArgs>				EventCollisionBegin		= null;
-		/// <summary>
-		/// Fired when this GameObject stops to collide with another GameObject.
-		/// </summary>
-		public event EventHandler<CollisionEventArgs>				EventCollisionEnd		= null;
-		/// <summary>
-		/// Fired each time a collision between this GameObject and another has been solved.
-		/// </summary>
-		public event EventHandler<CollisionEventArgs>				EventCollisionSolve		= null;
+		public event EventHandler<ComponentEventArgs>				EventComponentRemoving
+		{
+			add { this.eventComponentRemoving += value; }
+			remove { this.eventComponentRemoving -= value; }
+		}
 
 
 		/// <summary>
@@ -460,7 +464,10 @@ namespace Duality
 		/// <seealso cref="GetComponents(System.Type,bool)"/>
 		public IEnumerable<T> GetComponents<T>(bool activeOnly = false) where T : class
 		{
-			return this.compList.Where(c => c.Active || !activeOnly).OfType<T>();
+			if (activeOnly)
+				return this.compList.Where(c => c.Active).OfType<T>();
+			else
+				return this.compList.OfType<T>();
 		}
 
 		/// <summary>
@@ -508,7 +515,10 @@ namespace Duality
 		/// <seealso cref="GetComponents{T}(bool)"/>
 		public IEnumerable<Component> GetComponents(Type t, bool activeOnly = false)
 		{
-			return this.compList.Where(c => (c.Active || !activeOnly) && t.IsInstanceOfType(c));
+			if (activeOnly)
+				return this.compList.Where(c => c.Active && t.IsInstanceOfType(c));
+			else
+				return this.compList.Where(c => t.IsInstanceOfType(c));
 		}
 
 		/// <summary>
@@ -938,8 +948,8 @@ namespace Duality
 			}
 
 			// Public event
-			if (this.EventParentChanged != null)
-				this.EventParentChanged(this, new GameObjectParentChangedEventArgs(this, oldParent, newParent));
+			if (this.eventParentChanged != null)
+				this.eventParentChanged(this, new GameObjectParentChangedEventArgs(this, oldParent, newParent));
 		}
 		private void OnComponentAdded(Component cmp)
 		{
@@ -954,8 +964,8 @@ namespace Duality
 			}
 
 			// Public event
-			if (this.EventComponentAdded != null)
-				this.EventComponentAdded(this, new ComponentEventArgs(cmp));
+			if (this.eventComponentAdded != null)
+				this.eventComponentAdded(this, new ComponentEventArgs(cmp));
 		}
 		private void OnComponentRemoving(Component cmp)
 		{
@@ -970,74 +980,8 @@ namespace Duality
 			}
 
 			// Public event
-			if (this.EventComponentRemoving != null)
-				this.EventComponentRemoving(this, new ComponentEventArgs(cmp));
-		}
-
-		/// <summary>
-		/// Notifies the GameObject about a collision that has begun.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="args"></param>
-		public void NotifyCollisionBegin(Component sender, CollisionEventArgs args)
-		{
-			if (sender == null) throw new ArgumentNullException("sender");
-			
-			// Notify Components
-			foreach (Component c in this.compList)
-			{
-				if (!c.Active) continue;
-				ICmpCollisionListener cTemp = c as ICmpCollisionListener;
-				if (cTemp != null) cTemp.OnCollisionBegin(sender, args);
-			}
-
-			// Public event
-			if (this.EventCollisionBegin != null)
-				this.EventCollisionBegin(this, args);
-		}
-		/// <summary>
-		/// Notifies the GameObject about a collision that has ended.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="args"></param>
-		public void NotifyCollisionEnd(Component sender, CollisionEventArgs args)
-		{
-			if (sender == null) throw new ArgumentNullException("sender");
-			
-			// Notify Components
-			for (int i = 0; i < this.compList.Count; i++)
-			{
-				Component c = this.compList[i];
-
-				if (!c.Active) continue;
-				ICmpCollisionListener cTemp = c as ICmpCollisionListener;
-				if (cTemp != null) cTemp.OnCollisionEnd(sender, args);
-			}
-
-			// Public event
-			if (this.EventCollisionEnd != null)
-				this.EventCollisionEnd(this, args);
-		}
-		/// <summary>
-		/// Notifies the GameObject about a collision that has been solved.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="args"></param>
-		public void NotifyCollisionSolve(Component sender, CollisionEventArgs args)
-		{
-			if (sender == null) throw new ArgumentNullException("sender");
-			
-			// Notify Components
-			foreach (Component c in this.compList)
-			{
-				if (!c.Active) continue;
-				ICmpCollisionListener cTemp = c as ICmpCollisionListener;
-				if (cTemp != null) cTemp.OnCollisionSolve(sender, args);
-			}
-
-			// Public event
-			if (this.EventCollisionSolve != null)
-				this.EventCollisionSolve(this, args);
+			if (this.eventComponentRemoving != null)
+				this.eventComponentRemoving(this, new ComponentEventArgs(cmp));
 		}
 
 		public override string ToString()

@@ -561,23 +561,11 @@ namespace Duality.Resources
 				obj.OnSaving();
 
 			this.serializeObj = this.objectManager.AllObjects.ToArray();
-			this.UnregisterManagerEvents();
-			this.cameraManager.Clear();
-			this.rendererManager.Clear();
-			this.objectManager.Clear();
 		}
 		protected override void OnSaved()
 		{
 			if (this.serializeObj != null)
-			{
-				foreach (GameObject obj in this.serializeObj)
-				{
-					this.objectManager.RegisterObj(obj);
-					this.AddToManagers(obj);
-				}
-				this.RegisterManagerEvents();
 				this.serializeObj = null;
-			}
 
 			base.OnSaved();
 			foreach (GameObject obj in this.objectManager.AllObjects)

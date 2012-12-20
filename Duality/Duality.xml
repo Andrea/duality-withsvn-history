@@ -12885,27 +12885,6 @@
             Sanitary check in case something failed deserializing
             </summary>
         </member>
-        <member name="M:Duality.GameObject.NotifyCollisionBegin(Duality.Component,Duality.CollisionEventArgs)">
-            <summary>
-            Notifies the GameObject about a collision that has begun.
-            </summary>
-            <param name="sender"></param>
-            <param name="args"></param>
-        </member>
-        <member name="M:Duality.GameObject.NotifyCollisionEnd(Duality.Component,Duality.CollisionEventArgs)">
-            <summary>
-            Notifies the GameObject about a collision that has ended.
-            </summary>
-            <param name="sender"></param>
-            <param name="args"></param>
-        </member>
-        <member name="M:Duality.GameObject.NotifyCollisionSolve(Duality.Component,Duality.CollisionEventArgs)">
-            <summary>
-            Notifies the GameObject about a collision that has been solved.
-            </summary>
-            <param name="sender"></param>
-            <param name="args"></param>
-        </member>
         <member name="P:Duality.GameObject.Parent">
             <summary>
             [GET / SET] This GameObject's parent object in the scene graph.
@@ -13037,21 +13016,6 @@
         <member name="E:Duality.GameObject.EventComponentRemoving">
             <summary>
             Fired when a Component is about to be removed from the GameObject
-            </summary>
-        </member>
-        <member name="E:Duality.GameObject.EventCollisionBegin">
-            <summary>
-            Fired when this GameObject starts to collide with another GameObject.
-            </summary>
-        </member>
-        <member name="E:Duality.GameObject.EventCollisionEnd">
-            <summary>
-            Fired when this GameObject stops to collide with another GameObject.
-            </summary>
-        </member>
-        <member name="E:Duality.GameObject.EventCollisionSolve">
-            <summary>
-            Fired each time a collision between this GameObject and another has been solved.
             </summary>
         </member>
         <member name="T:Duality.ExtMethodsIList">
