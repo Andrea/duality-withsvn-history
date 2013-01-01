@@ -643,6 +643,7 @@ namespace Duality.Resources
 
 				StringFormat formatDef = StringFormat.GenericDefault;
 				formatDef.LineAlignment = StringAlignment.Near;
+				formatDef.FormatFlags = 0;
 				StringFormat formatTypo = StringFormat.GenericTypographic;
 				formatTypo.LineAlignment = StringAlignment.Near;
 

@@ -394,8 +394,8 @@ namespace DualityEditor
 		}
 		private static void Resource_ResourceSaved(object sender, Duality.ResourceEventArgs e)
 		{
-			if (e.Path == null) return; // Ignore Resources without a path.
-			if (e.IsDefaultContent) return; // Ignore default content
+			if (string.IsNullOrEmpty(e.Path)) return;	// Ignore Resources without a path.
+			if (e.IsDefaultContent) return;				// Ignore default content
 			editorJustSavedRes.Add(Path.GetFullPath(e.Path));
 		}
 		

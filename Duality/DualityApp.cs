@@ -507,7 +507,12 @@ namespace Duality
 			{
 				if (!freezeScene)	Scene.Current.Update();
 				else				Scene.Current.EditorUpdate();
-				foreach (GameObject obj in updateObjects.ActiveObjects) obj.Update();
+
+				foreach (GameObject obj in updateObjects.ActiveObjects)
+				{
+					if (!freezeScene && Scene.Current.AllObjects.Contains(obj)) continue;
+					obj.Update();
+				}
 			}
 			else if (execContext == ExecutionContext.Editor)
 			{

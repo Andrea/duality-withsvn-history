@@ -129,9 +129,9 @@ namespace Duality.Components.Renderers
 			{
 				posTemp.X = MathF.Round(posTemp.X);
 				posTemp.Y = MathF.Round(posTemp.Y);
-				if (MathF.RoundToInt(DualityApp.TargetResolution.X) != (MathF.RoundToInt(DualityApp.TargetResolution.X) / 2) * 2)
+				if (MathF.RoundToInt(device.TargetSize.X) != (MathF.RoundToInt(device.TargetSize.X) / 2) * 2)
 					posTemp.X += 0.5f;
-				if (MathF.RoundToInt(DualityApp.TargetResolution.Y) != (MathF.RoundToInt(DualityApp.TargetResolution.Y) / 2) * 2)
+				if (MathF.RoundToInt(device.TargetSize.Y) != (MathF.RoundToInt(device.TargetSize.Y) / 2) * 2)
 					posTemp.Y += 0.5f;
 			}
 
