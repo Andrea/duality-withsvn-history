@@ -63,10 +63,12 @@ namespace Duality
 		int IMouseInput.X
 		{
 			get { return this.realInput != null ? this.realInput.X : 0; }
+			set { if (this.realInput != null) this.realInput.X = value; }
 		}
 		int IMouseInput.Y
 		{
 			get { return this.realInput != null ? this.realInput.Y : 0; }
+			set { if (this.realInput != null) this.realInput.Y = value; }
 		}
 		int IMouseInput.Wheel
 		{

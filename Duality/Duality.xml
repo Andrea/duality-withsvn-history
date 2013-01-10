@@ -1078,12 +1078,12 @@
         </member>
         <member name="P:Duality.IMouseInput.X">
             <summary>
-            [GET] The current viewport-local cursor X position.
+            [GET / SET] The current viewport-local cursor X position.
             </summary>
         </member>
         <member name="P:Duality.IMouseInput.Y">
             <summary>
-            [GET] The current viewport-local cursor Y position.
+            [GET / SET] The current viewport-local cursor Y position.
             </summary>
         </member>
         <member name="P:Duality.IMouseInput.Wheel">

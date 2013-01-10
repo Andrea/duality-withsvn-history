@@ -9,13 +9,13 @@ namespace Duality
 	public interface IMouseInput
 	{
 		/// <summary>
-		/// [GET] The current viewport-local cursor X position.
+		/// [GET / SET] The current viewport-local cursor X position.
 		/// </summary>
-		int X { get; }
+		int X { get; set; }
 		/// <summary>
-		/// [GET] The current viewport-local cursor Y position.
+		/// [GET / SET] The current viewport-local cursor Y position.
 		/// </summary>
-		int Y { get; }
+		int Y { get; set; }
 		/// <summary>
 		/// [GET] The current mouse wheel value
 		/// </summary>

@@ -1095,10 +1095,24 @@ namespace EditorBase
 		int IMouseInput.X
 		{
 			get { return this.inputMouseX; }
+			set
+			{
+				if (this.activeState.EngineUserInput && this.glControl.Focused)
+				{
+					Cursor.Position = this.glControl.PointToScreen(new Point(value, this.glControl.PointToClient(Cursor.Position).Y));
+				}
+			}
 		}
 		int IMouseInput.Y
 		{
 			get { return this.inputMouseY; }
+			set
+			{
+				if (this.activeState.EngineUserInput && this.glControl.Focused)
+				{
+					Cursor.Position = this.glControl.PointToScreen(new Point(this.glControl.PointToClient(Cursor.Position).X, value));
+				}
+			}
 		}
 		int IMouseInput.Wheel
 		{

@@ -2,9 +2,12 @@
 using System.Linq;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
+using System.Drawing;
 
 using Duality;
 using Duality.Resources;
+
 using OpenTK;
 using OpenTK.Graphics;
 
@@ -67,12 +70,27 @@ namespace DualityLauncher
 		protected override void OnMouseEnter(EventArgs e)
 		{
 			base.OnMouseEnter(e);
-			if (!System.Diagnostics.Debugger.IsAttached) System.Windows.Forms.Cursor.Hide();
+			if (!System.Diagnostics.Debugger.IsAttached) Cursor.Hide();
 		}
 		protected override void OnMouseLeave(EventArgs e)
 		{
 			base.OnMouseLeave(e);
-			if (!System.Diagnostics.Debugger.IsAttached) System.Windows.Forms.Cursor.Show();
+			if (!System.Diagnostics.Debugger.IsAttached) Cursor.Show();
+		}
+
+		private void SetMouseDeviceX(int x)
+		{
+			if (!this.Focused) return;
+			Point targetPos = this.PointToScreen(new Point(x, this.PointToClient(Cursor.Position).Y));
+			Cursor.Position = targetPos;
+			return;
+		}
+		private void SetMouseDeviceY(int y)
+		{
+			if (!this.Focused) return;
+			Point targetPos = this.PointToScreen(new Point(this.PointToClient(Cursor.Position).X, y));
+			Cursor.Position = targetPos;
+			return;
 		}
 
 		[STAThread]
@@ -114,7 +132,7 @@ namespace DualityLauncher
 				ContentProvider.InitDefaultContent();
 
 				// Input setup
-				DualityApp.Mouse = new WindowMouseInput(launcherWindow.Mouse);
+				DualityApp.Mouse = new WindowMouseInput(launcherWindow.Mouse, launcherWindow.SetMouseDeviceX, launcherWindow.SetMouseDeviceY);
 				DualityApp.Keyboard = new WindowKeyboardInput(launcherWindow.Keyboard);
 
 				// Load the starting Scene
