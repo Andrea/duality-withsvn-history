@@ -7140,7 +7140,7 @@
         </member>
         <member name="M:Duality.Components.Physics.RigidBody.ApplyLocalForce(OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
-            Applies a Transform-local force to the specified point.
+            Applies a Transform-local force to the specified local point.
             </summary>
             <param name="force"></param>
             <param name="applyAt"></param>
@@ -7153,7 +7153,7 @@
         </member>
         <member name="M:Duality.Components.Physics.RigidBody.ApplyWorldForce(OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
-            Applies a world force to the specified point.
+            Applies a world force to the specified world point.
             </summary>
             <param name="force"></param>
             <param name="applyAt"></param>

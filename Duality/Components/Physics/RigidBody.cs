@@ -571,18 +571,21 @@ namespace Duality.Components.Physics
 		public void ApplyLocalForce(Vector2 force)
 		{
 			if (this.body == null) return;
-			this.ApplyWorldForce(this.gameobj.Transform.GetWorldVector(new Vector3(force)).Xy, this.body.LocalCenter);
+			this.ApplyWorldForce(
+				this.gameobj.Transform.GetWorldVector(force), 
+				this.gameobj.Transform.GetWorldPoint(this.body.LocalCenter));
 		}
 		/// <summary>
-		/// Applies a Transform-local force to the specified point.
+		/// Applies a Transform-local force to the specified local point.
 		/// </summary>
 		/// <param name="force"></param>
 		/// <param name="applyAt"></param>
 		public void ApplyLocalForce(Vector2 force, Vector2 applyAt)
 		{
+			if (this.body == null) return;
 			this.ApplyWorldForce(
-				this.gameobj.Transform.GetWorldVector(new Vector3(force)).Xy,
-				this.gameobj.Transform.GetWorldPoint(new Vector3(applyAt)).Xy);
+				this.gameobj.Transform.GetWorldVector(force), 
+				this.gameobj.Transform.GetWorldPoint(applyAt));
 		}
 		/// <summary>
 		/// Applies a world force to the objects mass center.
@@ -591,13 +594,12 @@ namespace Duality.Components.Physics
 		public void ApplyWorldForce(Vector2 force)
 		{
 			if (this.body == null) return;
-			if (Scene.PhysicsFixedTime) force *= Time.TimeMult;
-			this.body.ApplyForce(
-				PhysicsConvert.ToPhysicalUnit(force) / Time.SPFMult, 
-				this.body.GetWorldPoint(this.body.LocalCenter));
+			this.ApplyWorldForce(
+				force, 
+				this.gameobj.Transform.GetWorldPoint(this.body.LocalCenter));
 		}
 		/// <summary>
-		/// Applies a world force to the specified point.
+		/// Applies a world force to the specified world point.
 		/// </summary>
 		/// <param name="force"></param>
 		/// <param name="applyAt"></param>
@@ -605,7 +607,9 @@ namespace Duality.Components.Physics
 		{
 			if (this.body == null) return;
 			if (Scene.PhysicsFixedTime) force *= Time.TimeMult;
-			this.body.ApplyForce(PhysicsConvert.ToPhysicalUnit(force) / Time.SPFMult, PhysicsConvert.ToPhysicalUnit(applyAt));
+			this.body.ApplyForce(
+				PhysicsConvert.ToPhysicalUnit(force) / Time.SPFMult, 
+				PhysicsConvert.ToPhysicalUnit(applyAt));
 		}
 
 		/// <summary>
