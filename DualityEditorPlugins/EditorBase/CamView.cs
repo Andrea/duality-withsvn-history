@@ -150,6 +150,7 @@ namespace EditorBase
 		private	Dictionary<Type,CamViewLayer>	availLayers	= new Dictionary<Type,CamViewLayer>();
 		private	Dictionary<Type,CamViewState>	availStates	= new Dictionary<Type,CamViewState>();
 
+		private	bool	inputMouseCapture	= false;
 		private	int		inputMouseX			= 0;
 		private	int		inputMouseY			= 0;
 		private	int		inputMouseWheel		= 0;
@@ -791,6 +792,7 @@ namespace EditorBase
 		}
 		private void glControl_MouseDown(object sender, MouseEventArgs e)
 		{
+			this.inputMouseCapture = true;
 			if (this.activeState.EngineUserInput)
 			{
 				MouseButton inputButton = e.Button.ToOpenTKSingle();
@@ -831,6 +833,7 @@ namespace EditorBase
 		private void glControl_GotFocus(object sender, EventArgs e)
 		{
 			this.RemoveFocusHook();
+			this.inputMouseCapture = true;
 
 			if (DualityApp.ExecContext != DualityApp.ExecutionContext.Terminated)
 				this.activeState.SelectObjects(this.activeState.SelectedObjects);
@@ -861,6 +864,11 @@ namespace EditorBase
 		private void glControl_KeyDown(object sender, KeyEventArgs e)
 		{
 			if (!this.glControl.Focused) this.glControl.Focus();
+
+			if (e.KeyCode == Keys.Escape || e.KeyCode == Keys.Tab)
+			{
+				this.inputMouseCapture = false;
+			}
 
 			if (this.activeState.EngineUserInput)
 			{
@@ -1097,7 +1105,7 @@ namespace EditorBase
 			get { return this.inputMouseX; }
 			set
 			{
-				if (this.activeState.EngineUserInput && this.glControl.Focused)
+				if (this.activeState.EngineUserInput && this.glControl.Focused && this.inputMouseCapture)
 				{
 					Cursor.Position = this.glControl.PointToScreen(new Point(value, this.glControl.PointToClient(Cursor.Position).Y));
 				}
@@ -1108,7 +1116,7 @@ namespace EditorBase
 			get { return this.inputMouseY; }
 			set
 			{
-				if (this.activeState.EngineUserInput && this.glControl.Focused)
+				if (this.activeState.EngineUserInput && this.glControl.Focused && this.inputMouseCapture)
 				{
 					Cursor.Position = this.glControl.PointToScreen(new Point(this.glControl.PointToClient(Cursor.Position).X, value));
 				}

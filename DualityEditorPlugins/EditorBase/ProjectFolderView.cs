@@ -297,7 +297,7 @@ namespace EditorBase
 			public static string[] GetTypeCategory(Type type)
 			{
 				string[] result = CorePluginRegistry.RequestTypeCategory(type, CorePluginRegistry.CategoryContext_General);
-				if (result == null) result = new string[] { type.Assembly.FullName.Split(',')[0].Replace(".core", "") };
+				if (result == null) result = type.Namespace.Split('.');
 				return result;
 			}
 		}
