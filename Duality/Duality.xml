@@ -8826,6 +8826,11 @@
             Low quality. Favors performance.
             </summary>
         </member>
+        <member name="F:Duality.AAQuality.Off">
+            <summary>
+            No hardware anti-aliasing is used at all.
+            </summary>
+        </member>
         <member name="T:Duality.DualityUserData">
             <summary>
             Provides information about user settings for this Duality application / game.
@@ -14009,6 +14014,42 @@
             <summary>
             Defines a general interface for drawing devices. Its main duty is to accept and collect parameterized vertex data.
             </summary>
+        </member>
+        <member name="M:Duality.IDrawDevice.GetScaleAtZ(System.Single)">
+            <summary>
+            Returns the scale factor of objects that are located at the specified (world space) z-Coordinate.
+            </summary>
+            <param name="z"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.IDrawDevice.GetSpaceCoord(OpenTK.Vector3)">
+            <summary>
+            Transforms screen space coordinates to world space coordinates. The screen positions Z coordinate is
+            interpreted as the target world Z coordinate.
+            </summary>
+            <param name="screenPos"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.IDrawDevice.GetSpaceCoord(OpenTK.Vector2)">
+            <summary>
+            Transforms screen space coordinates to world space coordinates.
+            </summary>
+            <param name="screenPos"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.IDrawDevice.GetScreenCoord(OpenTK.Vector3)">
+            <summary>
+            Transforms world space coordinates to screen space coordinates.
+            </summary>
+            <param name="spacePos"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.IDrawDevice.GetScreenCoord(OpenTK.Vector2)">
+            <summary>
+            Transforms world space coordinates to screen space coordinates.
+            </summary>
+            <param name="spacePos"></param>
+            <returns></returns>
         </member>
         <member name="M:Duality.IDrawDevice.PreprocessCoords(OpenTK.Vector3@,System.Single@)">
             <summary>

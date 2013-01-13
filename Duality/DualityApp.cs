@@ -367,6 +367,7 @@ namespace Duality
 				case AAQuality.High:	targetAALevel = highestAALevel;		break;
 				case AAQuality.Medium:	targetAALevel = highestAALevel / 2; break;
 				case AAQuality.Low:		targetAALevel = highestAALevel / 4; break;
+				case AAQuality.Off:		targetAALevel = 0;					break;
 			}
 			int targetSampleCount = MathF.RoundToInt(MathF.Pow(2.0f, targetAALevel));
 			defaultMode = availModes.LastOrDefault(m => m.Samples <= targetSampleCount) ?? availModes.Last();

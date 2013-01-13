@@ -227,6 +227,39 @@ namespace Duality
 		Vector2 TargetSize { get; }
 		
 
+		
+		/// <summary>
+		/// Returns the scale factor of objects that are located at the specified (world space) z-Coordinate.
+		/// </summary>
+		/// <param name="z"></param>
+		/// <returns></returns>
+		float GetScaleAtZ(float z);
+		/// <summary>
+		/// Transforms screen space coordinates to world space coordinates. The screen positions Z coordinate is
+		/// interpreted as the target world Z coordinate.
+		/// </summary>
+		/// <param name="screenPos"></param>
+		/// <returns></returns>
+		Vector3 GetSpaceCoord(Vector3 screenPos);
+		/// <summary>
+		/// Transforms screen space coordinates to world space coordinates.
+		/// </summary>
+		/// <param name="screenPos"></param>
+		/// <returns></returns>
+		Vector3 GetSpaceCoord(Vector2 screenPos);
+		/// <summary>
+		/// Transforms world space coordinates to screen space coordinates.
+		/// </summary>
+		/// <param name="spacePos"></param>
+		/// <returns></returns>
+		Vector3 GetScreenCoord(Vector3 spacePos);
+		/// <summary>
+		/// Transforms world space coordinates to screen space coordinates.
+		/// </summary>
+		/// <param name="spacePos"></param>
+		/// <returns></returns>
+		Vector3 GetScreenCoord(Vector2 spacePos);
+
 		/// <summary>
 		/// Processes the specified world space position and scale values and transforms them to the IDrawDevices view space.
 		/// This usually also applies a perspective effect, if applicable.

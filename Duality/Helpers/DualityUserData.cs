@@ -44,7 +44,11 @@ namespace Duality
 		/// <summary>
 		/// Low quality. Favors performance.
 		/// </summary>
-		Low
+		Low,
+		/// <summary>
+		/// No hardware anti-aliasing is used at all.
+		/// </summary>
+		Off
 	}
 
 	/// <summary>
