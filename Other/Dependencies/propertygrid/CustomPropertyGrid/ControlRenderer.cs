@@ -88,6 +88,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 	public enum BorderStyle
 	{
 		Simple,
+		Focus,
 		ContentBox,
 		Sunken
 	}
@@ -532,7 +533,7 @@ namespace AdamsLair.PropertyGrid.Renderer
 			Color darkColor = this.ColorDarkBackground;
 			Color lightColor = this.ColorLightBackground;
 			
-			if (style == BorderStyle.Simple)
+			if (style == BorderStyle.Simple || style == BorderStyle.Focus)
 				darkColor = this.ColorVeryDarkBackground;
 			else if (style == BorderStyle.Sunken)
 			{
@@ -550,6 +551,11 @@ namespace AdamsLair.PropertyGrid.Renderer
 			}
 			else if (style == BorderStyle.Simple)
 			{
+				g.DrawRectangle(darkPen, rect.X, rect.Y, rect.Width - 1, rect.Height - 1);
+			}
+			else if (style == BorderStyle.Focus)
+			{
+				darkPen.DashStyle = DashStyle.Dot;
 				g.DrawRectangle(darkPen, rect.X, rect.Y, rect.Width - 1, rect.Height - 1);
 			}
 			else if (style == BorderStyle.Sunken)

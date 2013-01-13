@@ -26,7 +26,7 @@ namespace AdamsLair.PropertyGrid
 		private	IconImage				headerIcon		= null;
 		private	Color?					headerColor		= null;
 		private	GroupHeaderStyle		headerStyle		= GroupHeaderStyle.Flat;
-		private	Rectangle				headerRect			= Rectangle.Empty;
+		private	Rectangle				headerRect		= Rectangle.Empty;
 		private	Rectangle				expandCheckRect		= Rectangle.Empty;
 		private	bool					expandCheckHovered	= false;
 		private	bool					expandCheckPressed	= false;
@@ -485,7 +485,12 @@ namespace AdamsLair.PropertyGrid
 
 
 			bool focusBg = this.Focused || (this is IPopupControlHost && (this as IPopupControlHost).IsDropDownOpened);
-			ControlRenderer.DrawGroupHeaderBackground(g, this.headerRect, focusBg ? this.headerColor.Value.ScaleBrightness(0.85f) : this.headerColor.Value, this.headerStyle);
+			bool focusBgColor = this.headerStyle == GroupHeaderStyle.Flat || this.headerStyle == GroupHeaderStyle.Simple;
+			ControlRenderer.DrawGroupHeaderBackground(g, this.headerRect, focusBg && focusBgColor ? this.headerColor.Value.ScaleBrightness(0.85f) : this.headerColor.Value, this.headerStyle);
+			if (focusBg && !focusBgColor)
+			{
+				ControlRenderer.DrawBorder(g, this.headerRect, Renderer.BorderStyle.Simple, BorderState.Normal);
+			}
 			
 			if (!parentExpand && (this.Hints & HintFlags.HasExpandCheck) != HintFlags.None)
 				ControlRenderer.DrawCheckBox(g, this.expandCheckRect.Location, expandState);
@@ -849,6 +854,18 @@ namespace AdamsLair.PropertyGrid
 					e.X - editorLoc.X, 
 					e.Y - editorLoc.Y, 
 					e.Delta));
+			}
+			else if ( // Double-Click expand, if we're certain it's not handled elsewhere
+				this.CanExpand && 
+				(this.Hints & HintFlags.ExpandEnabled) != HintFlags.None && 
+				(this.Hints & HintFlags.HasExpandCheck) != HintFlags.None && 
+				!this.expandCheckHovered && 
+				!this.activeCheckHovered && 
+				this.headerRect.Contains(e.Location) && 
+				!this.ButtonRectangle.Contains(e.Location))
+			{
+				this.Invalidate();
+				this.OnExpandCheckPressed();
 			}
 		}
 

@@ -162,8 +162,10 @@ namespace EditorBase.PropertyEditors
 		{
 			base.OnPaint(e);
 
-			ControlRenderer.DrawGroupHeaderBackground(e.Graphics, this.rectHeader, this.Focused ? SystemColors.Control.ScaleBrightness(0.85f) : SystemColors.Control, GroupHeaderStyle.Emboss);
-			ControlRenderer.DrawGroupHeaderBackground(e.Graphics, this.rectPrefab, this.Focused ? SystemColors.Control.ScaleBrightness(0.8f) : SystemColors.Control.ScaleBrightness(0.95f), GroupHeaderStyle.SmoothSunken);
+			ControlRenderer.DrawGroupHeaderBackground(e.Graphics, this.rectHeader, SystemColors.Control, GroupHeaderStyle.Emboss);
+			ControlRenderer.DrawGroupHeaderBackground(e.Graphics, this.rectPrefab, SystemColors.Control.ScaleBrightness(0.95f), GroupHeaderStyle.SmoothSunken);
+			if (this.Focused)
+				ControlRenderer.DrawBorder(e.Graphics, this.ClientRectangle, AdamsLair.PropertyGrid.Renderer.BorderStyle.Simple, BorderState.Normal);
 
 			CheckBoxState activeState = CheckBoxState.UncheckedDisabled;
 			if (!this.ReadOnly && this.Enabled)

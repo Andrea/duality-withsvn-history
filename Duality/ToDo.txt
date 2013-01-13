@@ -13,6 +13,17 @@
 
 
 
+-->	Usability: Introduce complete Camera config in CamView
+	-->	Button for selecting the internal Cam Object
+	-->	Button for copying the selected Cams state to the current Cam Object
+	-->	The Cam Component needs to be saved completely
+-->	Usability: Component PropertyEditor context menu
+	-->	Right-click on it or click a small button located at the right header ending
+	-->	Remove Component, etc.
+-->	Usability: When no Component icon is defined, derive Component color from name instead of icon hue
+
+
+
 -->	Idea: Bitmap Fonts
 	-->	Let a Font specify an optional base Texture. It is used as a fixed Bitmap Font
 	-->	Method: MakeBitmapFont(), saves the internal Texture, assigns it, triggers a reload and returns a ContentRef to the new Texture

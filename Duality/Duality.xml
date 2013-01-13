@@ -851,12 +851,6 @@
             </summary>
             <param name="value"></param>
         </member>
-        <member name="M:Duality.Components.Transform.TurnByAbs(System.Single)">
-            <summary>
-            Turns the object by the given absolute radian angle. This will affect the Transforms <see cref="P:Duality.Components.Transform.AngleVel">angular velocity</see> value.
-            </summary>
-            <param name="value"></param>
-        </member>
         <member name="M:Duality.Components.Transform.TurnTo(System.Single)">
             <summary>
             Turns the object to the given relative radian angle. This will affect the Transforms <see cref="P:Duality.Components.Transform.AngleVel">angular velocity</see> value.
