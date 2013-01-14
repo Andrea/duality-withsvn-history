@@ -253,6 +253,12 @@
   <data name="Msg_ConfirmBreakPrefabLink_Desc" xml:space="preserve">
     <value>This action will break the objects Prefab Link. Proceed?</value>
   </data>
+  <data name="Msg_ConfirmDeleteSelectedObjects_Caption" xml:space="preserve">
+    <value>Delete selected objects?</value>
+  </data>
+  <data name="Msg_ConfirmDeleteSelectedObjects_Text" xml:space="preserve">
+    <value>Do you really want to delete the selected objects?</value>
+  </data>
   <data name="Msg_ConfirmQuitUnsaved_Caption" xml:space="preserve">
     <value>Really quit?</value>
   </data>

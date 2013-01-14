@@ -5,6 +5,8 @@ using System.Linq;
 using AdamsLair.PropertyGrid;
 
 using Duality;
+using Duality.ColorFormat;
+
 using DualityEditor;
 using DualityEditor.CorePluginInterface;
 
@@ -46,12 +48,21 @@ namespace EditorBase.PropertyEditors
 		{
 			base.OnEditedTypeChanged();
 
-			System.Drawing.Bitmap iconBitmap = CorePluginRegistry.RequestTypeImage(this.EditedType, CorePluginRegistry.ImageContext_Icon) as System.Drawing.Bitmap;
-			Duality.ColorFormat.ColorHsva avgClr = iconBitmap != null ? iconBitmap.GetAverageColor().ToHsva() : Duality.ColorFormat.ColorHsva.TransparentBlack;
+			System.Drawing.Bitmap iconBitmap = CorePluginRegistry.RequestTypeImage(this.EditedType) as System.Drawing.Bitmap;
+			ColorHsva avgClr = iconBitmap != null ? 
+				iconBitmap.GetAverageColor().ToHsva() : 
+				Duality.ColorFormat.ColorHsva.TransparentWhite;
+			if (avgClr.S <= 0.05f)
+			{
+				avgClr = new ColorHsva(
+					0.001f * (float)(this.EditedType.Name.GetHashCode() % 1000), 
+					1.0f, 
+					0.5f);
+			}
 
 			this.PropertyName = this.EditedType.GetTypeCSCodeName(true);
 			this.HeaderIcon = iconBitmap;
-			this.HeaderColor = ExtMethodsSystemDrawingColor.ColorFromHSV(avgClr.H, 0.2f + avgClr.S * 0.2f, 0.85f);
+			this.HeaderColor = ExtMethodsSystemDrawingColor.ColorFromHSV(avgClr.H, 0.2f, 0.8f);
 
 			this.Hints &= ~HintFlags.HasButton;
 			this.Hints &= ~HintFlags.ButtonEnabled;

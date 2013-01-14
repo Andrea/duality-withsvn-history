@@ -7498,6 +7498,13 @@
             </summary>
             <param name="obj">The GameObject to which the Prefabs data is copied.</param>
         </member>
+        <member name="M:Duality.Resources.Prefab.CopyTo(System.Collections.Generic.IEnumerable{System.Int32},Duality.Component)">
+            <summary>
+            Copies a subset of this Prefabs data to a specific Component.
+            </summary>
+            <param name="baseObjAddress">The GameObject IndexPath to locate the source Component</param>
+            <param name="target">The Component to which the Prefabs data is copied.</param>
+        </member>
         <member name="M:Duality.Resources.Prefab.HasGameObject(System.Collections.Generic.IEnumerable{System.Int32})">
             <summary>
             Returns whether this Prefab contains a <see cref="T:Duality.GameObject"/> with the specified <see cref="M:Duality.GameObject.IndexPathOfChild(Duality.GameObject)">index path</see>.
@@ -7635,6 +7642,11 @@
         <member name="M:Duality.Resources.PrefabLink.ClearChanges">
             <summary>
             Clears the change list.
+            </summary>
+        </member>
+        <member name="M:Duality.Resources.PrefabLink.ClearChanges(Duality.GameObject,System.Type,System.Reflection.PropertyInfo)">
+            <summary>
+            Clears the change list for certain objects
             </summary>
         </member>
         <member name="M:Duality.Resources.PrefabLink.AffectsObject(Duality.Component)">

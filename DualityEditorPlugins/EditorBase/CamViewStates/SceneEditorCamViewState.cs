@@ -278,8 +278,9 @@ namespace EditorBase.CamViewStates
 			if (objList.Count == 0) return;
 
 			// Ask user if he really wants to delete stuff
-			if (!this.DisplayConfirmDeleteSelectedObjects()) return;
-			if (!DualityEditorApp.DisplayConfirmBreakPrefabLink(new ObjectSelection(objList))) return;
+			ObjectSelection objSel = new ObjectSelection(objList);
+			if (!DualityEditorApp.DisplayConfirmDeleteObjects(objSel)) return;
+			if (!DualityEditorApp.DisplayConfirmBreakPrefabLink(objSel)) return;
 
 			// Delete objects
 			foreach (GameObject o in objList)

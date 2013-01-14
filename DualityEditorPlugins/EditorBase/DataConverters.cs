@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 
 using Duality;
 using Duality.Components;
@@ -383,10 +384,13 @@ namespace EditorBase.DataConverters
 				string targetPath = baseRes.FullName + Material.FileExt;
 				Material match = ContentProvider.RequestContent<Material>(targetPath).Res;
 				if (match != null) return match;
-
+				
 				// If that fails, search for other matches
+				string targetName = baseRes.Name + Material.FileExt;
 				List<string> resFilePaths = Resource.GetResourceFiles();
-				foreach (string resFile in resFilePaths)
+				var resNameMatch = resFilePaths.Where(p => Path.GetFileName(p) == targetName);
+				var resQuery = resNameMatch.Concat(resFilePaths).Distinct();
+				foreach (string resFile in resQuery)
 				{
 					if (!resFile.EndsWith(Material.FileExt)) continue;
 					match = ContentProvider.RequestContent<Material>(resFile).Res;
@@ -487,8 +491,11 @@ namespace EditorBase.DataConverters
 				if (match != null) return match;
 
 				// If that fails, search for other matches
+				string targetName = baseRes.Name + Texture.FileExt;
 				List<string> resFilePaths = Resource.GetResourceFiles();
-				foreach (string resFile in resFilePaths)
+				var resNameMatch = resFilePaths.Where(p => Path.GetFileName(p) == targetName);
+				var resQuery = resNameMatch.Concat(resFilePaths).Distinct();
+				foreach (string resFile in resQuery)
 				{
 					if (!resFile.EndsWith(Texture.FileExt)) continue;
 					match = ContentProvider.RequestContent<Texture>(resFile).Res;
@@ -589,8 +596,11 @@ namespace EditorBase.DataConverters
 				if (match != null) return match;
 
 				// If that fails, search for other matches
+				string targetName = baseRes.Name + Sound.FileExt;
 				List<string> resFilePaths = Resource.GetResourceFiles();
-				foreach (string resFile in resFilePaths)
+				var resNameMatch = resFilePaths.Where(p => Path.GetFileName(p) == targetName);
+				var resQuery = resNameMatch.Concat(resFilePaths).Distinct();
+				foreach (string resFile in resQuery)
 				{
 					if (!resFile.EndsWith(Sound.FileExt)) continue;
 					match = ContentProvider.RequestContent<Sound>(resFile).Res;

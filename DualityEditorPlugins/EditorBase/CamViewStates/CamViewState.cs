@@ -794,16 +794,6 @@ namespace EditorBase.CamViewStates
 
 			this.InvalidateView();
 		}
-		protected bool DisplayConfirmDeleteSelectedObjects()
-		{
-			if (Sandbox.State == SandboxState.Playing) return true;
-			DialogResult result = MessageBox.Show(
-				PluginRes.EditorBaseRes.SceneView_MsgBox_ConfirmDeleteSelectedObjects_Text, 
-				PluginRes.EditorBaseRes.SceneView_MsgBox_ConfirmDeleteSelectedObjects_Caption, 
-				MessageBoxButtons.YesNo, 
-				MessageBoxIcon.Question);
-			return result == DialogResult.Yes;
-		}
 		
 		protected void SetDefaultActiveLayers(params Type[] activeLayers)
 		{

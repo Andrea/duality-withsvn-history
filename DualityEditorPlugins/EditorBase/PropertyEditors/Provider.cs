@@ -73,7 +73,7 @@ namespace EditorBase.PropertyEditors
 			else if (typeof(DrawTechnique).IsAssignableFrom(baseType))			e = new DrawTechniquePropertyEditor();
 
 			// -------- General area --------
-			else if (typeof(ShapeInfo).IsAssignableFrom(baseType))	e = new RigidBodyShapePropertyEditor();
+			else if (typeof(ShapeInfo).IsAssignableFrom(baseType))				e = new RigidBodyShapePropertyEditor();
 			else if (typeof(Component).IsAssignableFrom(baseType) && compRef)	e = new ComponentRefPropertyEditor();
 			else if (typeof(Component).IsAssignableFrom(baseType) && !compRef)	e = new ComponentPropertyEditor();
 			else if (typeof(Resource).IsAssignableFrom(baseType))				e = new ResourcePropertyEditor();

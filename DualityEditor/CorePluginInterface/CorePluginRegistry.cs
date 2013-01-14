@@ -214,22 +214,24 @@ namespace DualityEditor.CorePluginInterface
 		}
 
 
-		public static void RegisterTypeImage(Type type, Image image, string context)
+		public static void RegisterTypeImage(Type type, Image image, string context = ImageContext_Icon)
 		{
 			RegisterCorePluginRes(type, new ImageResEntry(image, context));
 		}
-		public static Image RequestTypeImage(Type type, string context)
+		public static Image RequestTypeImage(Type type, string context = ImageContext_Icon)
 		{
 			return RequestCorePluginRes<ImageResEntry>(type, false, e => e.context == context).img;
 		}
 
-		public static void RegisterTypeCategory(Type type, string category, string context)
+		public static void RegisterTypeCategory(Type type, string category, string context = CategoryContext_General)
 		{
 			RegisterCorePluginRes(type, new CategoryEntry(category, context));
 		}
-		public static string[] RequestTypeCategory(Type type, string context)
+		public static string[] RequestTypeCategory(Type type, string context = CategoryContext_General)
 		{
-			return RequestCorePluginRes<CategoryEntry>(type, false, e => e.context == context).categoryTree;
+			string[] tree = RequestCorePluginRes<CategoryEntry>(type, false, e => e.context == context).categoryTree;
+			if (tree == null) tree = type.Namespace.Split('.');
+			return tree;
 		}
 
 		public static void RegisterPropertyEditorProvider(IPropertyEditorProvider provider)

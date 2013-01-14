@@ -136,15 +136,7 @@ namespace EditorBase
 
 			public static Image GetTypeImage(Type type)
 			{
-				Image result = CorePluginRegistry.RequestTypeImage(type, CorePluginRegistry.ImageContext_Icon);
-				if (result == null) result = PluginRes.EditorBaseRes.IconCmpUnknown;
-				return result;
-			}
-			public static string[] GetTypeCategory(Type type)
-			{
-				string[] result = CorePluginRegistry.RequestTypeCategory(type, CorePluginRegistry.CategoryContext_General);
-				if (result == null) result = type.Namespace.Split('.');
-				return result;
+				return CorePluginRegistry.RequestTypeImage(type) ?? PluginRes.EditorBaseRes.IconCmpUnknown;
 			}
 		}
 
@@ -503,8 +495,9 @@ namespace EditorBase
 			if (objList.Count == 0 && cmpList.Count == 0) return;
 
 			// Ask user if he really wants to delete stuff
-			if (!this.DisplayConfirmDeleteSelectedObjects()) return;
-			if (!DualityEditorApp.DisplayConfirmBreakPrefabLink(new ObjectSelection(objList.AsEnumerable<object>().Concat(cmpList)))) return;
+			ObjectSelection objSel = new ObjectSelection(objList.AsEnumerable<object>().Concat(cmpList));
+			if (!DualityEditorApp.DisplayConfirmDeleteObjects(objSel)) return;
+			if (!DualityEditorApp.DisplayConfirmBreakPrefabLink(objSel)) return;
 
 			// Delete objects
 			this.objectView.BeginUpdate();
@@ -571,6 +564,7 @@ namespace EditorBase
 			if (baseObj == null)
 			{
 				baseObj = this.CreateGameObject(baseNode);
+				baseObj.Name = cmpType.Name;
 				baseObjNode = this.FindNode(baseObj);
 			}
 
@@ -692,16 +686,6 @@ namespace EditorBase
 			}
 		}
 
-		protected bool DisplayConfirmDeleteSelectedObjects()
-		{
-			if (Sandbox.State == SandboxState.Playing) return true;
-			DialogResult result = MessageBox.Show(
-				PluginRes.EditorBaseRes.SceneView_MsgBox_ConfirmDeleteSelectedObjects_Text, 
-				PluginRes.EditorBaseRes.SceneView_MsgBox_ConfirmDeleteSelectedObjects_Caption, 
-				MessageBoxButtons.YesNo, 
-				MessageBoxIcon.Question);
-			return result == DialogResult.Yes;
-		}
 		protected void UpdatePrefabLinkStatus()
 		{
 			bool anyLinkStateChanged = false;
@@ -1362,7 +1346,7 @@ namespace EditorBase
 				this.toolStripSeparatorCustomActions.Visible = false;
 
 			// Reset "New" menu to original state
-			this.gameObjectToolStripMenuItem.Image = CorePluginRegistry.RequestTypeImage(typeof(GameObject), CorePluginRegistry.ImageContext_Icon);
+			this.gameObjectToolStripMenuItem.Image = CorePluginRegistry.RequestTypeImage(typeof(GameObject));
 			List<ToolStripItem> oldItems = new List<ToolStripItem>(this.newToolStripMenuItem.DropDownItems.OfType<ToolStripItem>());
 			this.newToolStripMenuItem.DropDownItems.Clear();
 			foreach (ToolStripItem item in oldItems.Skip(2)) item.Dispose();
@@ -1373,7 +1357,7 @@ namespace EditorBase
 			foreach (Type cmpType in this.QueryComponentTypes())
 			{
 				// Generalte category item
-				string[] category = ComponentNode.GetTypeCategory(cmpType);
+				string[] category = CorePluginRegistry.RequestTypeCategory(cmpType);
 				ToolStripMenuItem categoryItem = this.newToolStripMenuItem;
 				for (int i = 0; i < category.Length; i++)
 				{

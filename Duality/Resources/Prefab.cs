@@ -96,6 +96,21 @@ namespace Duality.Resources
 			if (this.objTree == null) return;
 			this.objTree.CopyTo(obj);
 		}
+		/// <summary>
+		/// Copies a subset of this Prefabs data to a specific Component.
+		/// </summary>
+		/// <param name="baseObjAddress">The GameObject IndexPath to locate the source Component</param>
+		/// <param name="target">The Component to which the Prefabs data is copied.</param>
+		public void CopyTo(IEnumerable<int> baseObjAddress, Component target)
+		{
+			if (this.objTree == null) return;
+
+			GameObject baseObj = this.objTree.ChildAtIndexPath(baseObjAddress);
+			if (baseObj == null) return;
+
+			Component baseCmp = baseObj.GetComponent(target.GetType(), true);
+			baseCmp.CopyTo(target);
+		}
 
 		/// <summary>
 		/// Returns whether this Prefab contains a <see cref="GameObject"/> with the specified <see cref="GameObject.IndexPathOfChild">index path</see>.
@@ -440,7 +455,7 @@ namespace Duality.Resources
 		private void PopChange(IEnumerable<int> indexPath, PropertyInfo prop)
 		{
 			if (this.changes == null || this.changes.Count == 0) return;
-			for (int i = 0; i < this.changes.Count; i++)
+			for (int i = this.changes.Count - 1; i >= 0; i--)
 			{
 				if (this.changes[i].prop == prop && this.changes[i].childIndex.SequenceEqual(indexPath))
 				{
@@ -481,6 +496,22 @@ namespace Duality.Resources
 		public void ClearChanges()
 		{
 			if (this.changes != null) this.changes.Clear();
+		}
+		/// <summary>
+		/// Clears the change list for certain objects
+		/// </summary>
+		public void ClearChanges(GameObject targetObj, Type cmpType, PropertyInfo prop)
+		{
+			if (this.changes == null || this.changes.Count == 0) return;
+
+			IEnumerable<int> indexPath = targetObj != null ? this.obj.IndexPathOfChild(targetObj) : null;
+			for (int i = this.changes.Count - 1; i >= 0; i--)
+			{
+				if (indexPath != null && !this.changes[i].childIndex.SequenceEqual(indexPath)) continue;
+				if (cmpType != null && !cmpType.IsAssignableFrom(this.changes[i].componentType)) continue;
+				if (prop != null && prop != this.changes[i].prop) continue;
+				this.changes.RemoveAt(i);
+			}
 		}
 
 		/// <summary>

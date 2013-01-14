@@ -205,7 +205,7 @@ namespace EditorBase
 			public ResourceNode(IContentRef res) : base(res.Path, null, res.Path.Contains(':'))
 			{
 				this.res = res;
-				this.resType = TypeFromContent(res);
+				this.resType = res.ResType;
 				this.ApplyPathToName();
 			}
 
@@ -272,33 +272,24 @@ namespace EditorBase
 				this.UpdateImage();
 			}
 
-			public static Type TypeFromContent(IContentRef content)
+			public static Image GetTypeImage(Type type, IContentRef resLink = null)
 			{
-				return content.ResType;
-			}
-			public static Image GetTypeImage(Type type, IContentRef resLink)
-			{
+				if (resLink == null) resLink = ContentRef<Resource>.Null;
+
 				Image result = null;
 				if (type == typeof(Duality.Resources.Prefab))
-					result = CorePluginRegistry.RequestTypeImage(type, (resLink.IsAvailable && (resLink.Res as Duality.Resources.Prefab).ContainsData) ? 
+				{
+					bool prefabHasContent = (resLink.IsAvailable && (resLink.Res as Duality.Resources.Prefab).ContainsData);
+					result = CorePluginRegistry.RequestTypeImage(type, prefabHasContent ? 
 						CorePluginRegistry.ImageContext_Icon + "_Full" : 
 						CorePluginRegistry.ImageContext_Icon);
+				}
 				else
-					result = CorePluginRegistry.RequestTypeImage(type, CorePluginRegistry.ImageContext_Icon);
+				{
+					result = CorePluginRegistry.RequestTypeImage(type);
+				}
 
-				if (result == null) result = PluginRes.EditorBaseRes.IconResUnknown;
-
-				return result;
-			}
-			public static Image GetTypeImage(Type type)
-			{
-				return GetTypeImage(type, ContentRef<Resource>.Null);
-			}
-			public static string[] GetTypeCategory(Type type)
-			{
-				string[] result = CorePluginRegistry.RequestTypeCategory(type, CorePluginRegistry.CategoryContext_General);
-				if (result == null) result = type.Namespace.Split('.');
-				return result;
+				return result ?? PluginRes.EditorBaseRes.IconResUnknown;
 			}
 		}
 		private struct ScheduleSelectEntry
@@ -1383,7 +1374,7 @@ namespace EditorBase
 			foreach (Type resType in this.QueryResourceTypes())
 			{
 				// Generate category item
-				string[] category = ResourceNode.GetTypeCategory(resType);
+				string[] category = CorePluginRegistry.RequestTypeCategory(resType);
 				ToolStripMenuItem categoryItem = this.newToolStripMenuItem;
 				for (int i = 0; i < category.Length; i++)
 				{

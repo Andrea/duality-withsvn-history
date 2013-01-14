@@ -22,15 +22,15 @@ namespace DynamicLighting
 		protected override void LoadPlugin()
 		{
 			base.LoadPlugin();
-			CorePluginRegistry.RegisterTypeImage(typeof(LightingTechnique), DynLightRes.IconResLightingTechnique, CorePluginRegistry.ImageContext_Icon);
-			CorePluginRegistry.RegisterTypeImage(typeof(LightingSpriteRenderer), DynLightRes.IconCmpLightingSpriteRenderer, CorePluginRegistry.ImageContext_Icon);
-			CorePluginRegistry.RegisterTypeImage(typeof(LightingAnimSpriteRenderer), DynLightRes.IconCmpLightingSpriteRenderer, CorePluginRegistry.ImageContext_Icon);
-			CorePluginRegistry.RegisterTypeImage(typeof(Light), DynLightRes.IconLight, CorePluginRegistry.ImageContext_Icon);
+			CorePluginRegistry.RegisterTypeImage(typeof(LightingTechnique),				DynLightRes.IconResLightingTechnique);
+			CorePluginRegistry.RegisterTypeImage(typeof(LightingSpriteRenderer),		DynLightRes.IconCmpLightingSpriteRenderer);
+			CorePluginRegistry.RegisterTypeImage(typeof(LightingAnimSpriteRenderer),	DynLightRes.IconCmpLightingSpriteRenderer);
+			CorePluginRegistry.RegisterTypeImage(typeof(Light),							DynLightRes.IconLight);
 
-			CorePluginRegistry.RegisterTypeCategory(typeof(LightingTechnique), GeneralRes.Category_Graphics, CorePluginRegistry.CategoryContext_General);
-			CorePluginRegistry.RegisterTypeCategory(typeof(LightingSpriteRenderer), GeneralRes.Category_Graphics, CorePluginRegistry.CategoryContext_General);
-			CorePluginRegistry.RegisterTypeCategory(typeof(LightingAnimSpriteRenderer), GeneralRes.Category_Graphics, CorePluginRegistry.CategoryContext_General);
-			CorePluginRegistry.RegisterTypeCategory(typeof(Light), GeneralRes.Category_Graphics, CorePluginRegistry.CategoryContext_General);
+			CorePluginRegistry.RegisterTypeCategory(typeof(LightingTechnique),			GeneralRes.Category_Graphics);
+			CorePluginRegistry.RegisterTypeCategory(typeof(LightingSpriteRenderer),		GeneralRes.Category_Graphics);
+			CorePluginRegistry.RegisterTypeCategory(typeof(LightingAnimSpriteRenderer), GeneralRes.Category_Graphics);
+			CorePluginRegistry.RegisterTypeCategory(typeof(Light),						GeneralRes.Category_Graphics);
 
 			CorePluginRegistry.RegisterDataConverter<Component>(new LightingRendererFromMaterial());
 		}

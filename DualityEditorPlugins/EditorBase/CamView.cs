@@ -865,7 +865,7 @@ namespace EditorBase
 		{
 			if (!this.glControl.Focused) this.glControl.Focus();
 
-			if (e.KeyCode == Keys.Escape || e.KeyCode == Keys.Tab)
+			if (e.KeyCode == Keys.Escape || e.KeyCode == Keys.Tab || e.KeyCode == Keys.Alt)
 			{
 				this.inputMouseCapture = false;
 			}

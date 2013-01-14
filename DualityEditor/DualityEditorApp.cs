@@ -861,6 +861,16 @@ namespace DualityEditor
 			Log.Editor.PopIndent();
 		}
 
+		public static bool DisplayConfirmDeleteObjects(ObjectSelection obj = null)
+		{
+			if (Sandbox.State == SandboxState.Playing) return true;
+			DialogResult result = MessageBox.Show(
+				EditorRes.GeneralRes.Msg_ConfirmDeleteSelectedObjects_Text, 
+				EditorRes.GeneralRes.Msg_ConfirmDeleteSelectedObjects_Caption, 
+				MessageBoxButtons.YesNo, 
+				MessageBoxIcon.Question);
+			return result == DialogResult.Yes;
+		}
 		public static bool DisplayConfirmBreakPrefabLink(ObjectSelection obj = null)
 		{
 			if (obj == null) obj = DualityEditorApp.Selection;

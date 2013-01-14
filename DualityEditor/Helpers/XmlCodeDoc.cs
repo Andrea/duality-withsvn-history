@@ -157,6 +157,7 @@ namespace DualityEditor
 					if (summaryNode != null)
 					{
 						string summary = summaryNode.InnerXml;
+						summary = Regex.Replace(summary, "[\n\r\t\\s]+", " ", RegexOptions.Multiline);
 						summary = Regex.Replace(summary, "<c>(.*?)<\\/c>", m => m.Groups[1].Value.Trim('"'));
 						summary = Regex.Replace(summary, "<code>(.*?)<\\/code>", m => m.Groups[1].Value.Trim('"'));
 						summary = Regex.Replace(summary, "<see cref=(\"[^\"]*\")>(.*?)<\\/see>", m => m.Groups[2].Value.Trim('"'));
@@ -165,12 +166,13 @@ namespace DualityEditor
 							MemberInfo info = ResolveDocStyleMember(m.Groups[1].Value.Trim('"'));
 							return info != null ? info.Name : m.Groups[1].Value; 
 						});
-						summary = Regex.Replace(summary, "[\n\r\t\\s]+", " ", RegexOptions.Multiline);
+						summary = Regex.Replace(summary, "[ ]{2,}", " ");
 						memberEntry.Summary = summary.Trim();
 					}
 					if (remarksNode != null)
 					{
 						string remarks = remarksNode.InnerXml;
+						remarks = Regex.Replace(remarks, "[\n\r\t\\s]+", " ", RegexOptions.Multiline);
 						remarks = Regex.Replace(remarks, "<c>(.*?)<\\/c>", m => m.Groups[1].Value.Trim('"'));
 						remarks = Regex.Replace(remarks, "<code>(.*?)<\\/code>", m => m.Groups[1].Value.Trim('"'));
 						remarks = Regex.Replace(remarks, "<see cref=(\"[^\"]*\")>(.*?)<\\/see>", m => m.Groups[2].Value.Trim('"'));
@@ -179,7 +181,7 @@ namespace DualityEditor
 							MemberInfo info = ResolveDocStyleMember(m.Groups[1].Value.Trim('"'));
 							return info != null ? info.Name : m.Groups[1].Value; 
 						});
-						remarks = Regex.Replace(remarks, "[\n\r\t\\s]+", " ", RegexOptions.Multiline);
+						remarks = Regex.Replace(remarks, "[ ]{2,}", " ");
 						memberEntry.Remarks = remarks.Trim();
 					}
 

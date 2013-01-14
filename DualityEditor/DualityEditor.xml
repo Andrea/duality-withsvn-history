@@ -445,6 +445,16 @@
               Sucht eine lokalisierte Zeichenfolge, die This action will break the objects Prefab Link. Proceed? ähnelt.
             </summary>
         </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.Msg_ConfirmDeleteSelectedObjects_Caption">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Delete selected objects? ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.Msg_ConfirmDeleteSelectedObjects_Text">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Do you really want to delete the selected objects? ähnelt.
+            </summary>
+        </member>
         <member name="P:DualityEditor.EditorRes.GeneralRes.Msg_ConfirmQuit_Caption">
             <summary>
               Sucht eine lokalisierte Zeichenfolge, die Really quit? ähnelt.

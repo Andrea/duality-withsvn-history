@@ -80,11 +80,7 @@ namespace ResourceHacker
 			}
 			public static Image GetIcon(DataNode data)
 			{
-				Image result = CorePluginRegistry.RequestTypeImage(data.GetType(), CorePluginRegistry.ImageContext_Icon);
-				if (result != null) 
-					return result;
-				else 
-					return CorePluginRegistry.RequestTypeImage(typeof(DataNode), CorePluginRegistry.ImageContext_Icon);
+				return CorePluginRegistry.RequestTypeImage(data.GetType()) ?? CorePluginRegistry.RequestTypeImage(typeof(DataNode));
 			}
 		}
 		protected class PrimitiveTreeNode : DataTreeNode
