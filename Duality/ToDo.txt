@@ -7,20 +7,7 @@
 
 -->	Dualitor: PerformanceMonitor
 
--->	Implement some simple Font effects?
-
--->	Testing, Testing, Testing! Only a dead bug is a good bug.
-
-
-
--->	Usability: Introduce complete Camera config in CamView
-	-->	Button for selecting the internal Cam Object
-	-->	Button for copying the selected Cams state to the current Cam Object
-	-->	The Cam Component needs to be saved completely
--->	Usability: Component PropertyEditor context menu
-	-->	Right-click on it or click a small button located at the right header ending
-	-->	Remove Component, etc.
--->	Usability: When no Component icon is defined, derive Component color from name instead of icon hue
+--> Address the issues from the Issue Tracker: https://code.google.com/p/duality/issues/list
 
 
 
@@ -29,10 +16,6 @@
 	-->	Method: MakeBitmapFont(), saves the internal Texture, assigns it, triggers a reload and returns a ContentRef to the new Texture
 	-->	Editor Action: Convert to Bitmap Font
 	-->	Editor automatism: Reload Bitmap Fonts when their base Texture changed.
-
--->	Remove OggVorbis-Dependency entirely
-	-->	Instead, use OggVorbis code from DragonOgg library directly in Duality.
-	-->	Less dependencies is always better. Plus, this one won't rely on unmanaged external code.
 
 -->	Idea: Tilemaps
 	-->	Implement as a standard plugin.
@@ -71,11 +54,6 @@
 		-->	CamViewState
 		-->	See Rpg Project
 
--->	Goal: Be able to setup a game like "Nullpunkt" or "RpgProject" without big problems
-	-->	Dynamically lit topdown space game
-	-->	Dynamically lit isometric tilemap game
-
-
 
 
 --> Idea: StartScreen Tab
@@ -85,12 +63,6 @@
 		-->	(Scene change flushes the record)
 	-->	When clicking "Stop and Apply", the modified Properties are applied to the unmodified Scene.
 
---> Idea: Deploy dialog that is able to generate a "download version" of the game.
-	-->	Should the editor be included?
-	-->	Should the game's source be included?
-
--->	Idea: Editor-wide Undo history, global Ctrl-Z and Ctrl-Y
-
 -->	Idea: Add ActionButtonPropertyEditor and auto-use it in MemberwisePropertyEditor
 	-->	It's possible to flag a method as editor action via EditorHintFlags
 	-->	This method becomes an additional ActionButtonPropertyEditor
@@ -99,16 +71,6 @@
 	-->	Add this whole functionality in PropertyGrid-Project itself?
 		-->	Can't. It requires EditorHintFlags.
 		-->	Also, this here will prove / assure PropertyGrids customization support
-
--->	Idea: Upgrade LogView with a Console (or separate both?)
-	-->	Can parse single-line commands
-	-->	Expression Result is printed in the console (!= logged), if not defined otherwise.
-	-->	Use expression trees, Reflection or actually compile code?
-	-->	Executed on a Console-internal dynamic object (Expando-Object or similar)
-		-->	Can define and use custom Methods and Properties
-			-->	See also: http://www.rickardnilsson.net/post/2012/01/01/csharp-repl-and-interactive-interpreter.aspx
-		-->	Some predefined commands are always available and can't be overwritten
-		-->	When accessing Properties that do not exist, try to intepret them as GameObjects / Components / Resources
 
 -->	Idea: Component Wizard
 	-->	See below for dialog concept
