@@ -1356,7 +1356,7 @@ namespace EditorBase
 			List<ToolStripItem> newItems = new List<ToolStripItem>();
 			foreach (Type cmpType in this.QueryComponentTypes())
 			{
-				// Generalte category item
+				// Generate category item
 				string[] category = CorePluginRegistry.RequestTypeCategory(cmpType);
 				ToolStripMenuItem categoryItem = this.newToolStripMenuItem;
 				for (int i = 0; i < category.Length; i++)
@@ -1374,9 +1374,9 @@ namespace EditorBase
 						subCatItem.Tag = cmpType.Assembly;
 						subCatItem.DropDownItemClicked += this.newToolStripMenuItem_DropDownItemClicked;
 						if (categoryItem == this.newToolStripMenuItem)
-							newItems.Add(subCatItem);
+							EditorBasePlugin.InsertToolStripTypeItem(newItems, subCatItem);
 						else
-							categoryItem.DropDownItems.Add(subCatItem);
+							EditorBasePlugin.InsertToolStripTypeItem(categoryItem.DropDownItems, subCatItem);
 					}
 					categoryItem = subCatItem;
 				}
@@ -1384,11 +1384,11 @@ namespace EditorBase
 				ToolStripMenuItem cmpTypeItem = new ToolStripMenuItem(cmpType.Name, ComponentNode.GetTypeImage(cmpType));
 				cmpTypeItem.Tag = cmpType;
 				if (categoryItem == this.newToolStripMenuItem)
-					newItems.Add(cmpTypeItem);
+					EditorBasePlugin.InsertToolStripTypeItem(newItems, cmpTypeItem);
 				else
-					categoryItem.DropDownItems.Add(cmpTypeItem);
+					EditorBasePlugin.InsertToolStripTypeItem(categoryItem.DropDownItems, cmpTypeItem);
 			}
-			EditorBasePlugin.SortToolStripTypeItems(newItems);
+
 			this.newToolStripMenuItem.DropDownItems.AddRange(newItems.ToArray());
 		}
 		private void contextMenuNode_Closing(object sender, ToolStripDropDownClosingEventArgs e)

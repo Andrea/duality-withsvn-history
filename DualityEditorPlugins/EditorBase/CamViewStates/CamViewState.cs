@@ -23,16 +23,13 @@ namespace EditorBase.CamViewStates
 {
 	public abstract class CamViewState : IHelpProvider
 	{
-		[Flags]
-		public enum AxisLock
+		public enum LockedAxis
 		{
-			None	= 0x0,
+			None,
 
-			X		= 0x1,
-			Y		= 0x2,
-			Z		= 0x4,
-
-			All		= X | Y | Z
+			X,
+			Y,
+			Z
 		}
 		public enum CameraAction
 		{
@@ -128,7 +125,6 @@ namespace EditorBase.CamViewStates
 
 
 		private	CamView			view					= null;
-		private	AxisLock		lockedAxes				= AxisLock.None;
 		private Vector3			camVel					= Vector3.Zero;
 		private	float			camAngleVel				= 0.0f;
 		private	Point			camActionBeginLoc		= Point.Empty;
@@ -144,6 +140,8 @@ namespace EditorBase.CamViewStates
 		private	bool			actionAllowed		= true;
 		private	Point			actionBeginLoc		= Point.Empty;
 		private Vector3			actionBeginLocSpace	= Vector3.Zero;
+		private Vector3			actionLastLocSpace	= Vector3.Zero;
+		private	LockedAxis		actionLockedAxis	= LockedAxis.None;
 		private ObjectAction	action				= ObjectAction.None;
 		private	Vector3			selectionCenter		= Vector3.Zero;
 		private	float			selectionRadius		= 0.0f;
@@ -159,14 +157,11 @@ namespace EditorBase.CamViewStates
 		protected	List<SelObj>	allObjSel		= new List<SelObj>();
 		protected	List<SelObj>	indirectObjSel	= new List<SelObj>();
 
+
 		public CamView View
 		{
 			get { return this.view; }
 			internal set { this.view = value; }
-		}
-		public AxisLock LockedAxes
-		{
-			get { return this.lockedAxes; }
 		}
 		public ObjectAction SelObjAction
 		{
@@ -254,6 +249,7 @@ namespace EditorBase.CamViewStates
 		{
 			get { return this.camTransformChanged; }
 		}
+
 
 		internal protected virtual void OnEnterState()
 		{
@@ -858,34 +854,27 @@ namespace EditorBase.CamViewStates
 		}
 		protected void DrawLockedAxes(Canvas canvas, float x, float y, float z, float r)
 		{
+			Vector3 refPos = canvas.DrawDevice.RefCoord;
+			float nearZ = canvas.DrawDevice.NearZ;
+
 			canvas.PushState();
-			if ((this.LockedAxes & AxisLock.X) != AxisLock.None)
+			if (this.actionLockedAxis == LockedAxis.X)
 			{
 				canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Solid, ColorRgba.Mix(this.View.FgColor, ColorRgba.Red, 0.5f)));
 				canvas.DrawLine(x - r, y, z, x + r, y, z);
 			}
-			if ((this.LockedAxes & AxisLock.Y) != AxisLock.None)
+			if (this.actionLockedAxis == LockedAxis.Y)
 			{
 				canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Solid, ColorRgba.Mix(this.View.FgColor, ColorRgba.Green, 0.5f)));
 				canvas.DrawLine(x, y - r, z, x, y + r, z);
 			}
-			if ((this.LockedAxes & AxisLock.Z) != AxisLock.None)
+			if (this.actionLockedAxis == LockedAxis.Z)
 			{
 				canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Solid, ColorRgba.Mix(this.View.FgColor, ColorRgba.Blue, 0.5f)));
-				canvas.DrawLine(x, y, z - r, x, y, z);
+				canvas.DrawLine(x, y, MathF.Max(z - r, refPos.Z + nearZ + 10), x, y, z);
 				canvas.DrawLine(x, y, z, x, y, z + r);
 			}
 			canvas.PopState();
-		}
-		
-		protected Vector3 ApplyAxisLock(Vector3 vec, float lockedVal = 0.0f)
-		{
-			AxisLock lockAxes = this.lockedAxes;
-			if (lockAxes == AxisLock.None) return vec;
-			if ((lockAxes & AxisLock.X) == AxisLock.None) vec.X = lockedVal;
-			if ((lockAxes & AxisLock.Y) == AxisLock.None) vec.Y = lockedVal;
-			if ((lockAxes & AxisLock.Z) == AxisLock.None) vec.Z = lockedVal;
-			return vec;
 		}
 		
 		protected void BeginAction(ObjectAction action)
@@ -893,35 +882,22 @@ namespace EditorBase.CamViewStates
 			if (action == ObjectAction.None) return;
 			Point mouseLoc = this.View.LocalGLControl.PointToClient(Cursor.Position);
 
-			this.actionBeginLoc = mouseLoc;
-			this.action = action;
-
 			this.camVel = Vector3.Zero;
+
+			this.action = action;
+			this.actionBeginLoc = mouseLoc;
+			this.actionBeginLocSpace = this.View.GetSpaceCoord(new Vector3(
+				mouseLoc.X, 
+				mouseLoc.Y, 
+				(this.action == ObjectAction.RectSelect) ? 0.0f : this.selectionCenter.Z));
+
+			if (this.action == ObjectAction.Move)
+				this.actionBeginLocSpace.Z = this.View.CameraObj.Transform.Pos.Z;
+
+			this.actionLastLocSpace = this.actionBeginLocSpace;
 
 			if (Sandbox.State == SandboxState.Playing)
 				Sandbox.Freeze();
-
-			// Begin movement
-			if (this.action == ObjectAction.Move)
-			{
-				this.actionBeginLocSpace = this.View.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, this.selectionCenter.Z));
-				this.actionBeginLocSpace.Z = this.View.CameraObj.Transform.Pos.Z;
-			}
-			// Begin rotation
-			else if (this.action == ObjectAction.Rotate)
-			{
-				this.actionBeginLocSpace = this.View.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, this.selectionCenter.Z));
-			}
-			// Begin scale
-			else if (this.action == ObjectAction.Scale)
-			{
-				this.actionBeginLocSpace = this.View.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, this.selectionCenter.Z));
-			}
-			// Begin rect selection
-			else if (this.action == ObjectAction.RectSelect)
-			{
-				this.actionBeginLocSpace = this.View.GetSpaceCoord(new Vector2(mouseLoc.X, mouseLoc.Y));
-			}
 
 			this.OnBeginAction(this.action);
 		}
@@ -1004,7 +980,7 @@ namespace EditorBase.CamViewStates
 
 				// Select which action to propose
 				this.mouseoverSelect = false;
-				if (shift || ctrl)
+				if (ctrl)
 					this.mouseoverAction = ObjectAction.RectSelect;
 				else if (anySelection && !tooSmall && mouseOverBoundary && mouseAtCenterAxis && this.selectionRadius > 0.0f && canScale)
 					this.mouseoverAction = ObjectAction.Scale;
@@ -1012,6 +988,8 @@ namespace EditorBase.CamViewStates
 					this.mouseoverAction = ObjectAction.Rotate;
 				else if (anySelection && mouseInsideBoundary && canMove)
 					this.mouseoverAction = ObjectAction.Move;
+				else if (shift) // Lower prio than Ctrl, because Shift also modifies mouse actions
+					this.mouseoverAction = ObjectAction.RectSelect;
 				else if (this.mouseoverObject != null && this.mouseoverObject.IsActionAvailable(ObjectAction.Move))
 				{
 					this.mouseoverAction = ObjectAction.Move; 
@@ -1087,27 +1065,28 @@ namespace EditorBase.CamViewStates
 		}
 		private void UpdateObjMove(Point mouseLoc)
 		{
-			float zMovement = this.View.CameraObj.Transform.Pos.Z - this.actionBeginLocSpace.Z;
-			Vector3 spaceCoord = this.View.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, this.selectionCenter.Z + zMovement));
-			Vector3 movement = spaceCoord - this.actionBeginLocSpace;
-			movement.Z = zMovement;
-			movement = this.ApplyAxisLock(movement);
+			float zMovement = this.View.CameraObj.Transform.Pos.Z - this.actionLastLocSpace.Z;
+			Vector3 target = this.View.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, this.selectionCenter.Z + zMovement));
+			Vector3 movLock = this.actionBeginLocSpace - this.actionLastLocSpace;
+			Vector3 mov = target - this.actionLastLocSpace;
+			mov.Z = zMovement;
 
-			this.MoveSelectionBy(movement);
+			mov = this.ApplyAxisLock(mov, movLock, target + (Vector3.UnitZ * this.View.CameraObj.Transform.Pos.Z) - this.actionBeginLocSpace);
 
-			this.actionBeginLocSpace = spaceCoord;
-			this.actionBeginLocSpace.Z = this.View.CameraObj.Transform.Pos.Z;
+			this.MoveSelectionBy(mov);
+
+			this.actionLastLocSpace += mov;
 		}
 		private void UpdateObjRotate(Point mouseLoc)
 		{
 			Vector3 spaceCoord = this.View.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, this.selectionCenter.Z));
-			float lastAngle = MathF.Angle(this.selectionCenter.X, this.selectionCenter.Y, this.actionBeginLocSpace.X, this.actionBeginLocSpace.Y);
+			float lastAngle = MathF.Angle(this.selectionCenter.X, this.selectionCenter.Y, this.actionLastLocSpace.X, this.actionLastLocSpace.Y);
 			float curAngle = MathF.Angle(this.selectionCenter.X, this.selectionCenter.Y, spaceCoord.X, spaceCoord.Y);
 			float rotation = curAngle - lastAngle;
 
 			this.RotateSelectionBy(rotation);
 
-			this.actionBeginLocSpace = spaceCoord;
+			this.actionLastLocSpace = spaceCoord;
 		}
 		private void UpdateObjScale(Point mouseLoc)
 		{
@@ -1120,8 +1099,40 @@ namespace EditorBase.CamViewStates
 			
 			this.ScaleSelectionBy(scale);
 
-			this.actionBeginLocSpace = spaceCoord;
+			this.actionLastLocSpace = spaceCoord;
 			this.InvalidateView();
+		}
+		private Vector3 ApplyAxisLock(Vector3 baseVec, Vector3 lockedVec, Vector3 beginToTarget)
+		{
+			bool shift = (Control.ModifierKeys & Keys.Shift) != Keys.None;
+			if (!shift)
+			{
+				this.actionLockedAxis = LockedAxis.None;
+				return baseVec;
+			}
+			else
+			{
+				float xWeight = MathF.Abs(Vector3.Dot(beginToTarget.Normalized, Vector3.UnitX));
+				float yWeight = MathF.Abs(Vector3.Dot(beginToTarget.Normalized, Vector3.UnitY));
+				float zWeight = MathF.Abs(Vector3.Dot(beginToTarget.Normalized, Vector3.UnitZ));
+				
+				if (xWeight >= yWeight && xWeight >= zWeight)
+				{
+					this.actionLockedAxis = LockedAxis.X;
+					return new Vector3(baseVec.X, lockedVec.Y, lockedVec.Z);
+				}
+				else if (yWeight >= xWeight && yWeight >= zWeight)
+				{
+					this.actionLockedAxis = LockedAxis.Y;
+					return new Vector3(lockedVec.X, baseVec.Y, lockedVec.Z);
+				}
+				else if (zWeight >= yWeight && zWeight >= xWeight)
+				{
+					this.actionLockedAxis = LockedAxis.Z;
+					return new Vector3(lockedVec.X, lockedVec.Y, baseVec.Z);
+				}
+				return lockedVec;
+			}
 		}
 		
 		protected void CollectLayerDrawcalls(Canvas canvas)
@@ -1340,15 +1351,7 @@ namespace EditorBase.CamViewStates
 				else if (!ctrlPressed && e.KeyCode == Keys.Down)		this.MoveSelectionBy(Vector3.UnitY);
 				else if (!ctrlPressed && e.KeyCode == Keys.Add)			this.MoveSelectionBy(Vector3.UnitZ);
 				else if (!ctrlPressed && e.KeyCode == Keys.Subtract)	this.MoveSelectionBy(-Vector3.UnitZ);
-				else
-				{
-					bool axisLockChanged = false;
-					if (e.KeyCode == Keys.X) { this.lockedAxes |= AxisLock.X; axisLockChanged = true; }
-					if (e.KeyCode == Keys.Y) { this.lockedAxes |= AxisLock.Y; axisLockChanged = true; }
-					if (e.KeyCode == Keys.Z) { this.lockedAxes |= AxisLock.Z; axisLockChanged = true; }
-
-					if (axisLockChanged) this.InvalidateView();
-				}
+				else if (e.KeyCode == Keys.ShiftKey)					this.UpdateAction();
 			}
 
 			if (this.camActionAllowed)
@@ -1418,11 +1421,6 @@ namespace EditorBase.CamViewStates
 		}
 		private void LocalGLControl_KeyUp(object sender, KeyEventArgs e)
 		{
-			bool axisLockChanged = false;
-			if (e.KeyCode == Keys.X) { this.lockedAxes &= ~AxisLock.X; axisLockChanged = true; }
-			if (e.KeyCode == Keys.Y) { this.lockedAxes &= ~AxisLock.Y; axisLockChanged = true; }
-			if (e.KeyCode == Keys.Z) { this.lockedAxes &= ~AxisLock.Z; axisLockChanged = true; }
-			
 			if (e.KeyCode == Keys.Space)
 			{
 				this.camBeginDragScene = false;
@@ -1430,8 +1428,11 @@ namespace EditorBase.CamViewStates
 				this.View.LocalGLControl.Cursor = CursorHelper.Arrow;
 				this.UpdateAction();
 			}
-
-			if (axisLockChanged) this.InvalidateView();
+			else if (e.KeyCode == Keys.ShiftKey)
+			{
+				this.actionLockedAxis = LockedAxis.None;
+				this.UpdateAction();
+			}
 		}
 		private void LocalGLControl_LostFocus(object sender, EventArgs e)
 		{
@@ -1439,7 +1440,6 @@ namespace EditorBase.CamViewStates
 
 			this.camAction = CameraAction.None;
 			this.EndAction();
-			this.lockedAxes = AxisLock.None;
 			this.InvalidateView();
 		}
 		private void View_FocusDistChanged(object sender, EventArgs e)

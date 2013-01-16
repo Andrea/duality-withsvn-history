@@ -609,41 +609,51 @@ namespace EditorBase
 				DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(changedObj as IEnumerable<object>), false);
 		}
 
-		public static void SortToolStripTypeItems(ToolStripItemCollection items)
+		public static void InsertToolStripTypeItem(System.Collections.IList items, ToolStripItem newItem)
 		{
-			var menuSubItems = items.Cast<ToolStripItem>().ToArray();
-			SortToolStripTypeItems(menuSubItems);
-			items.Clear();
-			items.AddRange(menuSubItems);
-		}
-		public static void SortToolStripTypeItems(IList<ToolStripItem> items)
-		{
-			items.StableSort(delegate(ToolStripItem item1, ToolStripItem item2)
+			ToolStripItem item2 = newItem;
+			ToolStripMenuItem menuItem2 = item2 as ToolStripMenuItem;
+			for (int i = 0; i < items.Count; i++)
 			{
+				ToolStripItem item1 = items[i] as ToolStripItem;
 				ToolStripMenuItem menuItem1 = item1 as ToolStripMenuItem;
-				ToolStripMenuItem menuItem2 = item2 as ToolStripMenuItem;
+				if (item1 == null)
+					continue;
 
+				bool item1IsType = item1.Tag is Type;
+				bool item2IsType = item2.Tag is Type;
 				System.Reflection.Assembly assembly1 = item1.Tag is Type ? (item1.Tag as Type).Assembly : item1.Tag as System.Reflection.Assembly;
 				System.Reflection.Assembly assembly2 = item2.Tag is Type ? (item2.Tag as Type).Assembly : item2.Tag as System.Reflection.Assembly;
-				int score1 = assembly1 == typeof(DualityApp).Assembly ? 1 : 0;
-				int score2 = assembly2 == typeof(DualityApp).Assembly ? 1 : 0;
-				int result = score2 - score1;
-				if (result != 0) return result;
+				int result = 
+					(assembly2 == typeof(DualityApp).Assembly ? 1 : 0) - 
+					(assembly1 == typeof(DualityApp).Assembly ? 1 : 0);
+				if (result > 0)
+				{
+					items.Insert(i, newItem);
+					return;
+				}
+				else if (result != 0) continue;
 
 				result = 
-					(menuItem1 != null ? Math.Sign(menuItem1.DropDownItems.Count) : 0) - 
-					(menuItem2 != null ? Math.Sign(menuItem2.DropDownItems.Count) : 0);
-				if (result != 0) return result;
+					(item2IsType ? 1 : 0) - 
+					(item1IsType ? 1 : 0);
+				if (result > 0)
+				{
+					items.Insert(i, newItem);
+					return;
+				}
+				else if (result != 0) continue;
 
-				result = System.String.CompareOrdinal(item1.Text, item2.Text);
-				return result;
-			});
-
-			foreach (ToolStripItem item in items)
-			{
-				ToolStripMenuItem menuItem = item as ToolStripMenuItem;
-				if (menuItem != null && menuItem.HasDropDownItems) SortToolStripTypeItems(menuItem.DropDownItems);
+				result = string.Compare(item1.Text, item2.Text);
+				if (result > 0)
+				{
+					items.Insert(i, newItem);
+					return;
+				}
+				else if (result != 0) continue;
 			}
+
+			items.Add(newItem);
 		}
 	}
 }

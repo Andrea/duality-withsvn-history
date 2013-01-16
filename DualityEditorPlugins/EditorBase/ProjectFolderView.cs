@@ -1391,9 +1391,9 @@ namespace EditorBase
 						subCatItem.Tag = resType.Assembly;
 						subCatItem.DropDownItemClicked += this.newToolStripMenuItem_DropDownItemClicked;
 						if (categoryItem == this.newToolStripMenuItem)
-							newItems.Add(subCatItem);
+							EditorBasePlugin.InsertToolStripTypeItem(newItems, subCatItem);
 						else
-							categoryItem.DropDownItems.Add(subCatItem);
+							EditorBasePlugin.InsertToolStripTypeItem(categoryItem.DropDownItems, subCatItem);
 					}
 					categoryItem = subCatItem;
 				}
@@ -1401,11 +1401,10 @@ namespace EditorBase
 				ToolStripMenuItem resTypeItem = new ToolStripMenuItem(resType.Name, ResourceNode.GetTypeImage(resType));
 				resTypeItem.Tag = resType;
 				if (categoryItem == this.newToolStripMenuItem)
-					newItems.Add(resTypeItem);
+					EditorBasePlugin.InsertToolStripTypeItem(newItems, resTypeItem);
 				else
-					categoryItem.DropDownItems.Add(resTypeItem);
+					EditorBasePlugin.InsertToolStripTypeItem(categoryItem.DropDownItems, resTypeItem);
 			}
-			EditorBasePlugin.SortToolStripTypeItems(newItems);
 			this.newToolStripMenuItem.DropDownItems.AddRange(newItems.ToArray());
 		}
 
