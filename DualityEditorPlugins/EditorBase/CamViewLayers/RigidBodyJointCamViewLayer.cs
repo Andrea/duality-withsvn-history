@@ -31,7 +31,7 @@ namespace EditorBase.CamViewLayers
 		{
 			get
 			{
-				float fgLum = this.View.FgColor.GetLuminance();
+				float fgLum = this.FgColor.GetLuminance();
 				if (fgLum > 0.5f)
 					return new ColorRgba(144, 192, 240);
 				else
@@ -42,7 +42,7 @@ namespace EditorBase.CamViewLayers
 		{
 			get
 			{
-				float fgLum = this.View.FgColor.GetLuminance();
+				float fgLum = this.FgColor.GetLuminance();
 				if (fgLum > 0.5f)
 					return new ColorRgba(176, 240, 112);
 				else
@@ -53,7 +53,7 @@ namespace EditorBase.CamViewLayers
 		{
 			get
 			{
-				float fgLum = this.View.FgColor.GetLuminance();
+				float fgLum = this.FgColor.GetLuminance();
 				if (fgLum > 0.5f)
 					return new ColorRgba(240, 144, 112);
 				else
@@ -991,9 +991,7 @@ namespace EditorBase.CamViewLayers
 			var allColliders = Scene.Current.AllObjects.GetComponents<RigidBody>(true);
 			allColliders = allColliders.Where(r => !CorePluginRegistry.RequestDesignTimeData(r.GameObj).IsHidden);
 
-			this.View.MakeDualityTarget();
-			IDrawDevice device = this.View.CameraComponent.DrawDevice;
-			return allColliders.Where(c => device.IsCoordInView(c.GameObj.Transform.Pos, c.BoundRadius));
+			return allColliders.Where(c => this.IsCoordInView(c.GameObj.Transform.Pos, c.BoundRadius));
 		}
 		private RigidBody QuerySelectedCollider()
 		{

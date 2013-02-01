@@ -1293,7 +1293,7 @@ namespace EditorBase
 			bool gameObjSelect = selNodeData.Any(n => n is GameObjectNode);
 
 			this.newToolStripMenuItem.Visible = (singleSelect && gameObjSelect) || noSelect;
-			this.toolStripSeparatorNew.Visible = this.newToolStripMenuItem.Visible;
+			this.toolStripSeparatorNew.Visible = !multiSelect && gameObjSelect && !noSelect;
 
 			this.renameToolStripMenuItem.Visible = !noSelect;
 			this.cloneToolStripMenuItem.Visible = !noSelect && gameObjSelect;
@@ -1303,7 +1303,7 @@ namespace EditorBase
 			this.contextMenuNode_UpdateLockHideItem();
 
 			this.renameToolStripMenuItem.Enabled = singleSelect;
-			
+
 			// Provide custom actions
 			Type mainResType = null;
 			if (selObjData.Any())

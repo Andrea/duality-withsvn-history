@@ -33,7 +33,7 @@ namespace EditorBase.CamViewLayers
 		{
 			get
 			{
-				float fgLum = this.View.FgColor.GetLuminance();
+				float fgLum = this.FgColor.GetLuminance();
 				if (fgLum > 0.5f)
 					return ColorRgba.Mix(new ColorRgba(255, 0, 255), ColorRgba.VeryLightGrey, 0.5f);
 				else
@@ -44,7 +44,7 @@ namespace EditorBase.CamViewLayers
 		{
 			get
 			{
-				float fgLum = this.View.FgColor.GetLuminance();
+				float fgLum = this.FgColor.GetLuminance();
 				if (fgLum > 0.5f)
 					return ColorRgba.Mix(ColorRgba.Blue, ColorRgba.VeryLightGrey, 0.5f);
 				else
@@ -55,7 +55,7 @@ namespace EditorBase.CamViewLayers
 		{
 			get
 			{
-				float fgLum = this.View.FgColor.GetLuminance();
+				float fgLum = this.FgColor.GetLuminance();
 				if (fgLum > 0.5f)
 					return ColorRgba.Mix(new ColorRgba(255, 128, 0), ColorRgba.VeryLightGrey, 0.5f);
 				else
@@ -66,7 +66,7 @@ namespace EditorBase.CamViewLayers
 		{
 			get
 			{
-				float fgLum = this.View.FgColor.GetLuminance();
+				float fgLum = this.FgColor.GetLuminance();
 				if (fgLum > 0.5f)
 					return ColorRgba.Mix(ColorRgba.Red, ColorRgba.VeryLightGrey, 0.5f);
 				else
@@ -107,7 +107,7 @@ namespace EditorBase.CamViewLayers
 					float shapeAlpha = colliderAlpha * (selectedBody == null || this.View.ActiveState.SelectedObjects.Any(sel => sel.ActualObject == s) ? 1.0f : 0.5f);
 					float densityRelative = MathF.Abs(maxDensity - minDensity) < 0.01f ? 1.0f : s.Density / avgDensity;
 					ColorRgba clr = s.IsSensor ? this.ShapeSensorColor : this.ShapeColor;
-					ColorRgba fontClr = this.View.FgColor;
+					ColorRgba fontClr = this.FgColor;
 					Vector2 center = Vector2.Zero;
 
 					if (!c.IsAwake) clr = clr.ToHsva().WithSaturation(0.0f).ToRgba();
@@ -220,9 +220,7 @@ namespace EditorBase.CamViewLayers
 			var allColliders = Scene.Current.AllObjects.GetComponents<RigidBody>(true);
 			allColliders = allColliders.Where(r => !CorePluginRegistry.RequestDesignTimeData(r.GameObj).IsHidden);
 
-			this.View.MakeDualityTarget();
-			IDrawDevice device = this.View.CameraComponent.DrawDevice;
-			return allColliders.Where(c => device.IsCoordInView(c.GameObj.Transform.Pos, c.BoundRadius));
+			return allColliders.Where(c => this.IsCoordInView(c.GameObj.Transform.Pos, c.BoundRadius));
 		}
 		private RigidBody QuerySelectedCollider()
 		{

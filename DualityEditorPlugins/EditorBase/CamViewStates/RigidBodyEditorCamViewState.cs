@@ -99,13 +99,10 @@ namespace EditorBase.CamViewStates
 			this.View.ResumeLayout(true);
 
 			// Register events
-			this.View.LocalGLControl.KeyDown += this.LocalGLControl_KeyDown;
-			this.View.CurrentCameraChanged += this.View_CurrentCameraChanged;
 			DualityEditorApp.SelectionChanged		+= this.EditorForm_SelectionChanged;
 			DualityEditorApp.ObjectPropertyChanged	+= this.EditorForm_ObjectPropertyChanged;
 
 			// Initial update
-			this.View_CurrentCameraChanged(this, new CamView.CameraChangedEventArgs(null, this.View.CameraComponent));
 			this.selectedBody = this.QuerySelectedCollider();
 			this.UpdateSelectionStats();
 			this.UpdateToolbar();
@@ -116,12 +113,7 @@ namespace EditorBase.CamViewStates
 		{
 			base.OnLeaveState();
 
-			// Cleanup
-			this.View_CurrentCameraChanged(this, new CamView.CameraChangedEventArgs(this.View.CameraComponent, null));
-
 			// Unregister events
-			this.View.CurrentCameraChanged -= this.View_CurrentCameraChanged;
-			this.View.LocalGLControl.KeyDown -= this.LocalGLControl_KeyDown;
 			DualityEditorApp.SelectionChanged		-= this.EditorForm_SelectionChanged;
 			DualityEditorApp.ObjectPropertyChanged	-= this.EditorForm_ObjectPropertyChanged;
 
@@ -140,9 +132,8 @@ namespace EditorBase.CamViewStates
 
 			if (!handled && this.mouseState != CursorState.Normal)
 			{
-				Size viewSize = this.View.LocalGLControl.ClientSize;
-				if (this.mouseState == CursorState.CreateCircle)		canvas.DrawText(PluginRes.EditorBaseRes.ColliderEditor_CreateCircle, 10, viewSize.Height - 20);
-				else if (this.mouseState == CursorState.CreatePolygon)	canvas.DrawText(PluginRes.EditorBaseRes.ColliderEditor_CreatePolygon, 10, viewSize.Height - 20);
+				if (this.mouseState == CursorState.CreateCircle)		canvas.DrawText(PluginRes.EditorBaseRes.ColliderEditor_CreateCircle, 10, this.ClientSize.Height - 20);
+				else if (this.mouseState == CursorState.CreatePolygon)	canvas.DrawText(PluginRes.EditorBaseRes.ColliderEditor_CreatePolygon, 10, this.ClientSize.Height - 20);
 				handled = true;
 			}
 		}
@@ -160,13 +151,12 @@ namespace EditorBase.CamViewStates
 				ReflectionInfo.Property_RigidBody_Shapes);
 			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(selShapeArray.Select(s => s.ActualObject)));
 		}
-		protected override void OnCursorSpacePosChanged()
+		protected override void OnMouseMove(MouseEventArgs e)
 		{
-			base.OnCursorSpacePosChanged();
+			base.OnMouseMove(e);
 
-			Point mouseLoc = this.View.LocalGLControl.PointToClient(Cursor.Position);
 			Transform selTransform = this.selectedBody != null && this.selectedBody.GameObj != null ? this.selectedBody.GameObj.Transform : null;
-			Vector3 spaceCoord = selTransform != null ? this.View.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, selTransform.Pos.Z)) : Vector3.Zero;
+			Vector3 spaceCoord = selTransform != null ? this.GetSpaceCoord(new Vector3(e.X, e.Y, selTransform.Pos.Z)) : Vector3.Zero;
 			Vector2 localPos = selTransform != null ? selTransform.GetLocalPoint(spaceCoord).Xy : Vector2.Zero;
 
 			if (this.mouseState != CursorState.Normal) this.UpdateCursorImage();
@@ -181,6 +171,9 @@ namespace EditorBase.CamViewStates
 
 				polyShape.Vertices = vertices.ToArray();
 				selPolyShape.UpdatePolyStats();
+				
+				// Update the body directly after modifying it
+				this.selectedBody.SynchronizeBodyShape();
 
 				DualityEditorApp.NotifyObjPropChanged(this,
 					new ObjectSelection(this.selectedBody),
@@ -196,6 +189,9 @@ namespace EditorBase.CamViewStates
 
 				polyShape.Vertices = vertices.ToArray();
 				selPolyShape.UpdateLoopStats();
+				
+				// Update the body directly after modifying it
+				this.selectedBody.SynchronizeBodyShape();
 
 				DualityEditorApp.NotifyObjPropChanged(this,
 					new ObjectSelection(this.selectedBody),
@@ -242,7 +238,7 @@ namespace EditorBase.CamViewStates
 
 			foreach (RigidBody c in visibleColliders)
 			{
-				Vector3 worldCoord = this.View.GetSpaceCoord(new Vector3(x, y, c.GameObj.Transform.Pos.Z));
+				Vector3 worldCoord = this.GetSpaceCoord(new Vector3(x, y, c.GameObj.Transform.Pos.Z));
 
 				// Do a physical picking operation
 				pickedShape = this.PickShape(c, worldCoord.Xy);
@@ -278,8 +274,8 @@ namespace EditorBase.CamViewStates
 			// Pick a collider
 			foreach (RigidBody c in visibleColliders)
 			{
-				Vector3 worldCoord = this.View.GetSpaceCoord(new Vector3(x, y, c.GameObj.Transform.Pos.Z));
-				float scale = this.View.GetScaleAtZ(c.GameObj.Transform.Pos.Z);
+				Vector3 worldCoord = this.GetSpaceCoord(new Vector3(x, y, c.GameObj.Transform.Pos.Z));
+				float scale = this.GetScaleAtZ(c.GameObj.Transform.Pos.Z);
 				pickedShape = this.PickShapes(c, worldCoord.Xy, new Vector2(w / scale, h / scale)).FirstOrDefault();
 				if (pickedShape != null)
 				{
@@ -293,8 +289,8 @@ namespace EditorBase.CamViewStates
 			// Pick shapes
 			if (pickedCollider != null)
 			{
-				Vector3 worldCoord = this.View.GetSpaceCoord(new Vector3(x, y, pickedCollider.GameObj.Transform.Pos.Z));
-				float scale = this.View.GetScaleAtZ(pickedCollider.GameObj.Transform.Pos.Z);
+				Vector3 worldCoord = this.GetSpaceCoord(new Vector3(x, y, pickedCollider.GameObj.Transform.Pos.Z));
+				float scale = this.GetScaleAtZ(pickedCollider.GameObj.Transform.Pos.Z);
 				List<ShapeInfo> picked = this.PickShapes(pickedCollider, worldCoord.Xy, new Vector2(w / scale, h / scale));
 				if (picked.Count > 0) result.AddRange(picked.Select(s => SelShape.Create(s) as SelObj));
 			}
@@ -490,10 +486,9 @@ namespace EditorBase.CamViewStates
 			this.createPolyIndex = 0;
 			this.selectedBody.BeginUpdateBodyShape();
 			this.MouseActionAllowed = false;
-			this.View.LocalGLControl.MouseDown += this.LocalGLControl_MouseDown;
 			this.UpdateToolbar();
 			this.UpdateCursorImage();
-			this.InvalidateView();
+			this.Invalidate();
 
 			if (Sandbox.State == SandboxState.Playing)
 				Sandbox.Pause();
@@ -504,18 +499,17 @@ namespace EditorBase.CamViewStates
 			this.mouseState = CursorState.Normal;
 			this.MouseActionAllowed = true;
 			this.selectedBody.EndUpdateBodyShape();
-			this.View.LocalGLControl.MouseDown -= this.LocalGLControl_MouseDown;
 			this.UpdateToolbar();
-			this.InvalidateView();
+			this.Invalidate();
 		}
 		private void UpdateCursorImage()
 		{
 			switch (this.mouseState)
 			{
-				default:						this.View.LocalGLControl.Cursor = CursorHelper.Arrow;	break;
-				case CursorState.CreatePolygon:	this.View.LocalGLControl.Cursor = ArrowCreatePolygon;	break;
-				case CursorState.CreateLoop:	this.View.LocalGLControl.Cursor = ArrowCreateLoop;		break;
-				case CursorState.CreateCircle:	this.View.LocalGLControl.Cursor = ArrowCreateCircle;	break;
+				default:						this.Cursor = CursorHelper.Arrow;	break;
+				case CursorState.CreatePolygon:	this.Cursor = ArrowCreatePolygon;	break;
+				case CursorState.CreateLoop:	this.Cursor = ArrowCreateLoop;		break;
+				case CursorState.CreateCircle:	this.Cursor = ArrowCreateCircle;	break;
 			}
 		}
 
@@ -524,9 +518,7 @@ namespace EditorBase.CamViewStates
 			var allColliders = Scene.Current.AllObjects.GetComponents<RigidBody>(true);
 			allColliders = allColliders.Where(r => !CorePluginRegistry.RequestDesignTimeData(r.GameObj).IsHidden);
 
-			this.View.MakeDualityTarget();
-			IDrawDevice device = this.View.CameraComponent.DrawDevice;
-			return allColliders.Where(c => device.IsCoordInView(c.GameObj.Transform.Pos, c.BoundRadius));
+			return allColliders.Where(c => this.IsCoordInView(c.GameObj.Transform.Pos, c.BoundRadius));
 		}
 		protected RigidBody QuerySelectedCollider()
 		{
@@ -540,80 +532,18 @@ namespace EditorBase.CamViewStates
 			DesignTimeObjectData data = CorePluginRegistry.RequestDesignTimeData(obj);
 			return !data.IsHidden;
 		}
-		
-		private void View_CurrentCameraChanged(object sender, CamView.CameraChangedEventArgs e)
+
+		protected override void OnCurrentCameraChanged(CamView.CameraChangedEventArgs e)
 		{
+			base.OnCurrentCameraChanged(e);
+
 			if (e.PreviousCamera != null) e.PreviousCamera.RemoveEditorRendererFilter(this.RendererFilter);
 			if (e.NextCamera != null) e.NextCamera.AddEditorRendererFilter(this.RendererFilter);
 		}
-	
-		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
+		protected override void OnKeyDown(KeyEventArgs e)
 		{
-			if (e.Objects.Objects.Any(o => o is Transform || o is RigidBody || o is ShapeInfo))
-			{
-				// Applying its Prefab invalidates a Collider's ShapeInfos: Deselect them.
-				if (e is PrefabAppliedEventArgs)
-					DualityEditorApp.Deselect(this, ObjectSelection.Category.Other);
-				else
-				{
-					foreach (SelPolyShape sps in this.allObjSel.OfType<SelPolyShape>()) sps.UpdatePolyStats();
-				//	foreach (SelEdgeShape sps in this.allObjSel.OfType<SelEdgeShape>()) sps.UpdateEdgeStats();
-					foreach (SelLoopShape sps in this.allObjSel.OfType<SelLoopShape>()) sps.UpdateLoopStats();
-					this.UpdateSelectionStats();
-				}
-				this.UpdateToolbar();
-			}
-		}
-		private void EditorForm_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if (e.SameObjects) return;
-			if (!e.AffectedCategories.HasFlag(ObjectSelection.Category.GameObjCmp) &&
-				!e.AffectedCategories.HasFlag(ObjectSelection.Category.Other))
-				return;
+			base.OnKeyDown(e);
 
-			// Collider selection changed
-			if ((e.AffectedCategories & ObjectSelection.Category.GameObjCmp) != ObjectSelection.Category.None)
-			{
-				DualityEditorApp.Deselect(this, ObjectSelection.Category.Other);
-				this.selectedBody = this.QuerySelectedCollider();
-			}
-			// Other selection changed
-			if ((e.AffectedCategories & ObjectSelection.Category.Other) != ObjectSelection.Category.None)
-			{
-				if (e.Current.Objects.OfType<ShapeInfo>().Any())
-					this.allObjSel = e.Current.Objects.OfType<ShapeInfo>().Select(s => SelShape.Create(s) as SelObj).ToList();
-				else
-					this.allObjSel = new List<SelObj>();
-
-				// Update indirect object selection
-				this.indirectObjSel.Clear();
-				// Update (parent-free) action object selection
-				this.actionObjSel = this.allObjSel.ToList();
-			}
-
-			this.UpdateSelectionStats();
-			this.UpdateToolbar();
-			this.InvalidateView();
-		}
-
-		private void toolCreateCircle_Clicked(object sender, EventArgs e)
-		{
-			if (this.selectedBody == null) return;
-			this.EnterCursorState(CursorState.CreateCircle);
-		}
-		private void toolCreatePoly_Clicked(object sender, EventArgs e)
-		{
-			if (this.selectedBody == null) return;
-			this.EnterCursorState(CursorState.CreatePolygon);
-		}
-		private void toolCreateLoop_Clicked(object sender, EventArgs e)
-		{
-			if (this.selectedBody == null) return;
-			this.EnterCursorState(CursorState.CreateLoop);
-		}
-		
-		private void LocalGLControl_KeyDown(object sender, KeyEventArgs e)
-		{
 			if (Control.ModifierKeys == Keys.None)
 			{
 				if (e.KeyCode == Keys.C && this.toolCreateCircle.Enabled)
@@ -624,10 +554,15 @@ namespace EditorBase.CamViewStates
 					this.toolCreateLoop_Clicked(this, EventArgs.Empty);
 			}
 		}
-		private void LocalGLControl_MouseDown(object sender, MouseEventArgs e)
+		protected override void OnMouseDown(MouseEventArgs e)
 		{
-			Transform selTransform = this.selectedBody.GameObj.Transform;
-			Vector3 spaceCoord = this.View.GetSpaceCoord(new Vector3(e.X, e.Y, selTransform.Pos.Z));
+			base.OnMouseDown(e);
+			
+			GameObject selGameObj = this.selectedBody != null ? this.selectedBody.GameObj : null;
+			Transform selTransform = selGameObj != null ? selGameObj.Transform : null;
+			if (selTransform == null) return;
+
+			Vector3 spaceCoord = this.GetSpaceCoord(new Vector3(e.X, e.Y, selTransform.Pos.Z));
 			Vector2 localPos = selTransform.GetLocalPoint(spaceCoord).Xy;
 
 			if (this.mouseState == CursorState.CreateCircle)
@@ -660,7 +595,7 @@ namespace EditorBase.CamViewStates
 					bool success = false;
 					if (!this.allObjSel.Any(sel => sel is SelPolyShape))
 					{
-						PolyShapeInfo newShape = new PolyShapeInfo(new Vector2[] { localPos, localPos + Vector2.UnitX, localPos + Vector2.One }, 1.0f);
+						PolyShapeInfo newShape = new PolyShapeInfo(new Vector2[] { localPos, localPos, localPos }, 1.0f);
 						this.selectedBody.AddShape(newShape);
 						this.SelectObjects(new[] { SelShape.Create(newShape) });
 						success = true;
@@ -844,6 +779,71 @@ namespace EditorBase.CamViewStates
 			//    }
 			//    #endregion
 			//}
+		}
+	
+		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
+		{
+			if (e.Objects.Objects.Any(o => o is Transform || o is RigidBody || o is ShapeInfo))
+			{
+				// Applying its Prefab invalidates a Collider's ShapeInfos: Deselect them.
+				if (e is PrefabAppliedEventArgs)
+					DualityEditorApp.Deselect(this, ObjectSelection.Category.Other);
+				else
+				{
+					foreach (SelPolyShape sps in this.allObjSel.OfType<SelPolyShape>()) sps.UpdatePolyStats();
+				//	foreach (SelEdgeShape sps in this.allObjSel.OfType<SelEdgeShape>()) sps.UpdateEdgeStats();
+					foreach (SelLoopShape sps in this.allObjSel.OfType<SelLoopShape>()) sps.UpdateLoopStats();
+					this.UpdateSelectionStats();
+				}
+				this.UpdateToolbar();
+			}
+		}
+		private void EditorForm_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (e.SameObjects) return;
+			if (!e.AffectedCategories.HasFlag(ObjectSelection.Category.GameObjCmp) &&
+				!e.AffectedCategories.HasFlag(ObjectSelection.Category.Other))
+				return;
+
+			// Collider selection changed
+			if ((e.AffectedCategories & ObjectSelection.Category.GameObjCmp) != ObjectSelection.Category.None)
+			{
+				DualityEditorApp.Deselect(this, ObjectSelection.Category.Other);
+				this.selectedBody = this.QuerySelectedCollider();
+			}
+			// Other selection changed
+			if ((e.AffectedCategories & ObjectSelection.Category.Other) != ObjectSelection.Category.None)
+			{
+				if (e.Current.Objects.OfType<ShapeInfo>().Any())
+					this.allObjSel = e.Current.Objects.OfType<ShapeInfo>().Select(s => SelShape.Create(s) as SelObj).ToList();
+				else
+					this.allObjSel = new List<SelObj>();
+
+				// Update indirect object selection
+				this.indirectObjSel.Clear();
+				// Update (parent-free) action object selection
+				this.actionObjSel = this.allObjSel.ToList();
+			}
+
+			this.UpdateSelectionStats();
+			this.UpdateToolbar();
+			this.Invalidate();
+		}
+
+		private void toolCreateCircle_Clicked(object sender, EventArgs e)
+		{
+			if (this.selectedBody == null) return;
+			this.EnterCursorState(CursorState.CreateCircle);
+		}
+		private void toolCreatePoly_Clicked(object sender, EventArgs e)
+		{
+			if (this.selectedBody == null) return;
+			this.EnterCursorState(CursorState.CreatePolygon);
+		}
+		private void toolCreateLoop_Clicked(object sender, EventArgs e)
+		{
+			if (this.selectedBody == null) return;
+			this.EnterCursorState(CursorState.CreateLoop);
 		}
 	}
 }

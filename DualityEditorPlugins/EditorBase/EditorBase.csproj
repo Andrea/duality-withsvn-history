@@ -62,6 +62,7 @@
     <Compile Include="CamView.Designer.cs">
       <DependentUpon>CamView.cs</DependentUpon>
     </Compile>
+    <Compile Include="CamViewClient.cs" />
     <Compile Include="CamViewLayers\CamViewLayer.cs" />
     <Compile Include="CamViewLayers\BackPlateCamViewLayer.cs" />
     <Compile Include="CamViewLayers\GridCamViewLayer.cs" />

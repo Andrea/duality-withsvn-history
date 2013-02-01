@@ -213,10 +213,6 @@ namespace EditorBase
 		{
 			get { return this.glControl; }
 		}
-		public GLControl MainContextControl
-		{
-			get { return DualityEditorApp.MainContextControl; }
-		}
 		public ToolStrip ToolbarCamera
 		{
 			get { return this.toolbarCamera; }
@@ -364,7 +360,7 @@ namespace EditorBase
 			}
 
 			// Create a new glControl
-			this.glControl = new GLControl(this.MainContextControl.GraphicsMode);
+			this.glControl = new GLControl(DualityEditorApp.MainContextControl.GraphicsMode);
 			this.glControl.BackColor = Color.Black;
 			this.glControl.Dock = DockStyle.Fill;
 			this.glControl.Name = "glControl";
@@ -682,53 +678,6 @@ namespace EditorBase
 			this.FocusOnPos((obj == null || obj.Transform == null) ? Vector3.Zero : obj.Transform.Pos);
 		}
 
-		public void MakeDualityTarget()
-		{
-			DualityApp.TargetResolution = new OpenTK.Vector2(this.glControl.Width, this.glControl.Height);
-			if (this.ContainsFocus)
-			{
-				Sandbox.SetEngineInput(this, this);
-				if (DualityApp.ExecContext != DualityApp.ExecutionContext.Terminated)
-				{
-					if (this.camObj.GetComponent<SoundListener>() != null)
-						this.camObj.GetComponent<SoundListener>().MakeCurrent();
-				}
-			}
-		}
-		public ICmpRenderer PickRendererAt(int x, int y)
-		{
-			this.MainContextControl.Context.MakeCurrent(this.glControl.WindowInfo);
-			this.MakeDualityTarget();
-			var result = this.camComp.PickRendererAt(x, y);
-			return result;
-		}
-		public HashSet<ICmpRenderer> PickRenderersIn(int x, int y, int w, int h)
-		{
-			this.MainContextControl.Context.MakeCurrent(this.glControl.WindowInfo);
-			this.MakeDualityTarget();
-			var result = this.camComp.PickRenderersIn(x, y, w, h);
-			return result;
-		}
-		public float GetScaleAtZ(float z)
-		{
-			this.MakeDualityTarget();
-			return this.camComp.GetScaleAtZ(z);
-		}
-		public Vector3 GetSpaceCoord(Vector3 screenCoord)
-		{
-			this.MakeDualityTarget();
-			return this.camComp.GetSpaceCoord(screenCoord);
-		}
-		public Vector3 GetSpaceCoord(Vector2 screenCoord)
-		{
-			this.MakeDualityTarget();
-			return this.camComp.GetSpaceCoord(screenCoord);
-		}
-		public Vector3 GetScreenCoord(Vector3 spaceCoord)
-		{
-			this.MakeDualityTarget();
-			return this.camComp.GetScreenCoord(spaceCoord);
-		}
 
 		private void OnPerspectiveChanged()
 		{
@@ -785,10 +734,16 @@ namespace EditorBase
 		private void glControl_MouseLeave(object sender, EventArgs e)
 		{
 			this.RemoveFocusHook();
+
+			if (this.activeLayers.Any(l => l.MouseTracking))
+				this.glControl.Invalidate();
 		}
 		private void glControl_MouseEnter(object sender, EventArgs e)
 		{
 			this.InstallFocusHook();
+
+			if (this.activeLayers.Any(l => l.MouseTracking))
+				this.glControl.Invalidate();
 		}
 		private void glControl_MouseDown(object sender, MouseEventArgs e)
 		{
@@ -829,6 +784,9 @@ namespace EditorBase
 				this.inputMouseY = e.Y;
 				if (this.inputMouseMove != null) this.inputMouseMove(this, new MouseMoveEventArgs(e.X, e.Y, e.X - lastX, e.Y - lastY));
 			}
+
+			if (this.activeLayers.Any(l => l.MouseTracking))
+				this.glControl.Invalidate();
 		}
 		private void glControl_GotFocus(object sender, EventArgs e)
 		{

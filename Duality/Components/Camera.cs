@@ -540,6 +540,17 @@ namespace Duality.Components
 			this.UpdateDeviceConfig();
 			return this.drawDevice.GetScreenCoord(spacePos);
 		}
+		/// <summary>
+		/// Returns whether the specified world-space position is visible in the Cameras view space.
+		/// </summary>
+		/// <param name="c">The position to test.</param>
+		/// <param name="boundRad">The visual bounding radius to assume for the specified position.</param>
+		/// <returns>True, if the position or a portion of its bounding circle is visible, false if not.</returns>
+		public bool IsCoordInView(Vector3 c, float boundRad = 1.0f)
+		{
+			this.UpdateDeviceConfig();
+			return this.drawDevice.IsCoordInView(c, boundRad);
+		}
 
 		private void UpdateDeviceConfig()
 		{

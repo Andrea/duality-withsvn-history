@@ -6738,6 +6738,14 @@
             <param name="spacePos"></param>
             <returns></returns>
         </member>
+        <member name="M:Duality.Components.Camera.IsCoordInView(OpenTK.Vector3,System.Single)">
+            <summary>
+            Returns whether the specified world-space position is visible in the Cameras view space.
+            </summary>
+            <param name="c">The position to test.</param>
+            <param name="boundRad">The visual bounding radius to assume for the specified position.</param>
+            <returns>True, if the position or a portion of its bounding circle is visible, false if not.</returns>
+        </member>
         <member name="P:Duality.Components.Camera.NearZ">
             <summary>
             [GET / SET] The lowest Z value that can be displayed by the device.

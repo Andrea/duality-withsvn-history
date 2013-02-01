@@ -147,17 +147,9 @@ namespace EditorBase.CamViewStates
 		internal protected override void OnEnterState()
 		{
 			base.OnEnterState();
-			this.View.LocalGLControl.DragDrop	+= this.LocalGLControl_DragDrop;
-			this.View.LocalGLControl.DragEnter	+= this.LocalGLControl_DragEnter;
-			this.View.LocalGLControl.DragLeave	+= this.LocalGLControl_DragLeave;
-			this.View.LocalGLControl.DragOver	+= this.LocalGLControl_DragOver;
-			this.View.CurrentCameraChanged		+= this.View_CurrentCameraChanged;
 
 			DualityEditorApp.SelectionChanged		+= this.EditorForm_SelectionChanged;
 			DualityEditorApp.ObjectPropertyChanged	+= this.EditorForm_ObjectPropertyChanged;
-
-			// Initial Camera update
-			this.View_CurrentCameraChanged(this, new CamView.CameraChangedEventArgs(null, this.View.CameraComponent));
 
 			// Initial selection update
 			ObjectSelection current = DualityEditorApp.Selection;
@@ -179,20 +171,8 @@ namespace EditorBase.CamViewStates
 		{
 			base.OnLeaveState();
 
-			// Cleanup
-			this.View_CurrentCameraChanged(this, new CamView.CameraChangedEventArgs(this.View.CameraComponent, null));
-
-			// Unregister events
-			this.View.LocalGLControl.DragDrop	-= this.LocalGLControl_DragDrop;
-			this.View.LocalGLControl.DragEnter	-= this.LocalGLControl_DragEnter;
-			this.View.LocalGLControl.DragLeave	-= this.LocalGLControl_DragLeave;
-			this.View.LocalGLControl.DragOver	-= this.LocalGLControl_DragOver;
-			this.View.CurrentCameraChanged		-= this.View_CurrentCameraChanged;
-
 			DualityEditorApp.SelectionChanged		-= this.EditorForm_SelectionChanged;
 			DualityEditorApp.ObjectPropertyChanged	-= this.EditorForm_ObjectPropertyChanged;
-
-			this.View.LocalGLControl.Cursor = CursorHelper.Arrow;
 		}
 		protected override void OnSceneChanged()
 		{
@@ -219,14 +199,14 @@ namespace EditorBase.CamViewStates
 
 		public override CamViewState.SelObj PickSelObjAt(int x, int y)
 		{
-			Component picked = this.View.PickRendererAt(x, y) as Component;
+			Component picked = this.PickRendererAt(x, y) as Component;
 			if (picked != null && CorePluginRegistry.RequestDesignTimeData(picked.GameObj).IsLocked) picked = null;
 			if (picked != null) return new SelGameObj(picked.GameObj);
 			return null;
 		}
 		public override List<CamViewState.SelObj> PickSelObjIn(int x, int y, int w, int h)
 		{
-			HashSet<ICmpRenderer> picked = this.View.PickRenderersIn(x, y, w, h);
+			HashSet<ICmpRenderer> picked = this.PickRenderersIn(x, y, w, h);
 			return picked
 				.OfType<Component>()
 				.Where(r => !CorePluginRegistry.RequestDesignTimeData(r.GameObj).IsLocked)
@@ -314,40 +294,10 @@ namespace EditorBase.CamViewStates
 			return clones;
 		}
 
-		private void LocalGLControl_DragOver(object sender, DragEventArgs e)
+		protected override void OnDragEnter(DragEventArgs e)
 		{
-			if (e.Effect == DragDropEffects.None) return;
-			if (this.SelObjAction == ObjectAction.None && !this.DragMustWait)
-				this.DragBeginAction(e);
-			
-			Point clientCoord = this.View.LocalGLControl.PointToClient(new Point(e.X, e.Y));
-			if (Math.Abs(clientCoord.X - this.dragLastLoc.X) > 20 || Math.Abs(clientCoord.Y - this.dragLastLoc.Y) > 20)
-				this.dragTime = DateTime.Now;
-			this.dragLastLoc = clientCoord;
-			this.InvalidateView();
+			base.OnDragEnter(e);
 
-			if (this.SelObjAction != ObjectAction.None) this.UpdateAction();
-		}
-		private void LocalGLControl_DragLeave(object sender, EventArgs e)
-		{
-			this.dragLastLoc = Point.Empty;
-			this.dragTime = DateTime.Now;
-			this.InvalidateView();
-			if (this.SelObjAction == ObjectAction.None) return;
-			
-			this.EndAction();
-
-			// Destroy temporarily instantiated objects
-			foreach (SelObj obj in this.allObjSel)
-			{
-				GameObject gameObj = obj.ActualObject as GameObject;
-				Scene.Current.UnregisterObj(gameObj);
-				gameObj.Dispose();
-			}
-			DualityEditorApp.Select(this, this.selBeforeDrag);
-		}
-		private void LocalGLControl_DragEnter(object sender, DragEventArgs e)
-		{
 			DataObject data = e.Data as DataObject;
 			if (new ConvertOperation(data, ConvertOperation.Operation.All).CanPerform<GameObject>())
 			{
@@ -362,8 +312,46 @@ namespace EditorBase.CamViewStates
 				this.dragTime = DateTime.Now;
 			}
 		}
-		private void LocalGLControl_DragDrop(object sender, DragEventArgs e)
+		protected override void OnDragLeave(EventArgs e)
 		{
+			base.OnDragLeave(e);
+
+			this.dragLastLoc = Point.Empty;
+			this.dragTime = DateTime.Now;
+			this.Invalidate();
+			if (this.SelObjAction == ObjectAction.None) return;
+			
+			this.EndAction();
+
+			// Destroy temporarily instantiated objects
+			foreach (SelObj obj in this.allObjSel)
+			{
+				GameObject gameObj = obj.ActualObject as GameObject;
+				Scene.Current.UnregisterObj(gameObj);
+				gameObj.Dispose();
+			}
+			DualityEditorApp.Select(this, this.selBeforeDrag);
+		}
+		protected override void OnDragOver(DragEventArgs e)
+		{
+			base.OnDragOver(e);
+
+			if (e.Effect == DragDropEffects.None) return;
+			if (this.SelObjAction == ObjectAction.None && !this.DragMustWait)
+				this.DragBeginAction(e);
+			
+			Point clientCoord = this.PointToClient(new Point(e.X, e.Y));
+			if (Math.Abs(clientCoord.X - this.dragLastLoc.X) > 20 || Math.Abs(clientCoord.Y - this.dragLastLoc.Y) > 20)
+				this.dragTime = DateTime.Now;
+			this.dragLastLoc = clientCoord;
+			this.Invalidate();
+
+			if (this.SelObjAction != ObjectAction.None) this.UpdateAction();
+		}
+		protected override void OnDragDrop(DragEventArgs e)
+		{
+			base.OnDragDrop(e);
+
 			if (this.SelObjAction == ObjectAction.None)
 			{
 				this.DragBeginAction(e);
@@ -375,8 +363,10 @@ namespace EditorBase.CamViewStates
 
 			if (this.SelObjAction != ObjectAction.None) this.EndAction();
 		}
-		private void View_CurrentCameraChanged(object sender, CamView.CameraChangedEventArgs e)
+		protected override void OnCurrentCameraChanged(CamView.CameraChangedEventArgs e)
 		{
+			base.OnCurrentCameraChanged(e);
+
 			if (e.PreviousCamera != null) e.PreviousCamera.RemoveEditorRendererFilter(this.RendererFilter);
 			if (e.NextCamera != null) e.NextCamera.AddEditorRendererFilter(this.RendererFilter);
 		}
@@ -388,21 +378,21 @@ namespace EditorBase.CamViewStates
 			{
 				List<GameObject> dragObj = dragObjQuery.ToList();
 
-				bool lockZ = this.View.CameraComponent.FocusDist <= 0.0f;
-				Point mouseLoc = this.View.LocalGLControl.PointToClient(new Point(e.X, e.Y));
-				Vector3 spaceCoord = this.View.GetSpaceCoord(new Vector3(
+				bool lockZ = this.CameraComponent.FocusDist <= 0.0f;
+				Point mouseLoc = this.PointToClient(new Point(e.X, e.Y));
+				Vector3 spaceCoord = this.GetSpaceCoord(new Vector3(
 					mouseLoc.X, 
 					mouseLoc.Y, 
-					lockZ ? 0.0f : this.View.CameraObj.Transform.Pos.Z + MathF.Abs(this.View.CameraComponent.FocusDist)));
+					lockZ ? 0.0f : this.CameraObj.Transform.Pos.Z + MathF.Abs(this.CameraComponent.FocusDist)));
 
 				// Setup GameObjects
-				bool anyAngleChanged = this.View.CameraObj.Transform.Angle != 0.0f;
+				bool anyAngleChanged = this.CameraObj.Transform.Angle != 0.0f;
 				foreach (GameObject newObj in dragObj)
 				{
 					if (newObj.Transform != null)
 					{
 						newObj.Transform.Pos = spaceCoord;
-						newObj.Transform.Angle += this.View.CameraObj.Transform.Angle;
+						newObj.Transform.Angle += this.CameraObj.Transform.Angle;
 					}
 					Scene.Current.RegisterObj(newObj);
 				}
@@ -413,7 +403,7 @@ namespace EditorBase.CamViewStates
 				this.BeginAction(ObjectAction.Move);
 
 				// Get focused
-				this.View.LocalGLControl.Focus();
+				this.Focus();
 
 				// Notify about changed properties
 				if (anyAngleChanged)
@@ -470,8 +460,8 @@ namespace EditorBase.CamViewStates
 			}
 
 			this.UpdateSelectionStats();
-			this.OnCursorSpacePosChanged();
-			this.InvalidateView();
+			this.UpdateAction();
+			this.Invalidate();
 		}
 
 		private bool IsAffectedByParent(GameObject child, GameObject parent)

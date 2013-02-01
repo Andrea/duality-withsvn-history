@@ -964,6 +964,8 @@ namespace Duality.Components.Physics
 
 		void ICmpUpdatable.OnUpdate()
 		{
+			this.CheckValidTransform();
+
 			// Synchronize physical body / perform shape updates, etc.
 			this.RemoveDisposedJoints();
 			this.SynchronizeBodyShape();
@@ -994,12 +996,18 @@ namespace Duality.Components.Physics
 
 			// Process events
 			this.ProcessCollisionEvents();
+
+			this.CheckValidTransform();
 		}
 		void ICmpEditorUpdatable.OnUpdate()
 		{
+			this.CheckValidTransform();
+
 			// Synchronize physical body / perform shape updates, etc.
 			this.RemoveDisposedJoints();
 			this.SynchronizeBodyShape();
+
+			this.CheckValidTransform();
 		}
 
 		private void OnTransformChanged(object sender, TransformChangedEventArgs e)
@@ -1132,6 +1140,21 @@ namespace Duality.Components.Physics
 		public static void AwakeAll()
 		{
 			Scene.AwakePhysics();
+		}
+
+
+		
+		[System.Diagnostics.Conditional("DEBUG")]
+		internal void CheckValidTransform()
+		{
+			if (this.body == null) return;
+
+			MathF.CheckValidValue(this.body.Position.X);
+			MathF.CheckValidValue(this.body.Position.Y);
+			MathF.CheckValidValue(this.body.Rotation);
+			MathF.CheckValidValue(this.body.LinearVelocity.X);
+			MathF.CheckValidValue(this.body.LinearVelocity.Y);
+			MathF.CheckValidValue(this.body.AngularVelocity);
 		}
 	}
 	

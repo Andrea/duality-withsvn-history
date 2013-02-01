@@ -1275,6 +1275,9 @@ namespace Duality
 				Vector2 ab = vertices[b] - vertices[a];
 				Vector2 bc = vertices[c] - vertices[b];
 
+				if (ab == Vector2.Zero) return false;
+				if (bc == Vector2.Zero) return false;
+
 				float dot_product = Vector2.Dot(ab.PerpendicularLeft, bc);
 				if (dot_product > 0.0f) pos = true;
 				else if (dot_product < 0.0f) neg = true;
@@ -1335,6 +1338,33 @@ namespace Duality
 				}
 			}
 			return result;
+		}
+
+		[System.Diagnostics.Conditional("DEBUG")]
+		internal static void CheckValidValue(ref float value)
+		{
+			if (float.IsNaN(value))
+			{
+				Duality.Log.Core.WriteError("Invalid transform value (NaN)");
+				value = 0.0f;
+			}
+			else if (float.IsInfinity(value))
+			{
+				Duality.Log.Core.WriteError("Invalid transform value (Infinity)");
+				value = 0.0f;
+			}
+		}
+		[System.Diagnostics.Conditional("DEBUG")]
+		internal static void CheckValidValue(float value)
+		{
+			if (float.IsNaN(value))
+			{
+				Duality.Log.Core.WriteError("Invalid transform value (NaN)");
+			}
+			else if (float.IsInfinity(value))
+			{
+				Duality.Log.Core.WriteError("Invalid transform value (Infinity)");
+			}
 		}
 	}
 }

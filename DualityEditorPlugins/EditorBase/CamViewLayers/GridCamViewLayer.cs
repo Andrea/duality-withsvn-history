@@ -31,19 +31,11 @@ namespace EditorBase.CamViewLayers
 	    {
 	        get { return base.Priority - 10; }
 	    }
+		public override bool MouseTracking
+		{
+			get { return true; }
+		}
 
-		protected internal override void OnActivateLayer()
-		{
-			base.OnActivateLayer();
-			this.View.LocalGLControl.MouseMove += this.LocalGLControl_MouseMove;
-			this.View.LocalGLControl.MouseLeave += this.LocalGLControl_MouseLeave;
-		}
-		protected internal override void OnDeactivateLayer()
-		{
-			base.OnDeactivateLayer();
-			this.View.LocalGLControl.MouseMove -= this.LocalGLControl_MouseMove;
-			this.View.LocalGLControl.MouseLeave -= this.LocalGLControl_MouseLeave;
-		}
 	    protected internal override void OnCollectDrawcalls(Canvas canvas)
 	    {
 	        base.OnCollectDrawcalls(canvas);
@@ -63,7 +55,7 @@ namespace EditorBase.CamViewLayers
 	        float viewBoundRad = device.TargetSize.Length * 0.5f;
 	        int lineCount = (2 + (int)MathF.Ceiling(viewBoundRad * 2 / scaledStep)) * 4;
 
-	        ColorRgba gridColor = this.View.FgColor.WithAlpha(alphaTemp);
+	        ColorRgba gridColor = this.FgColor.WithAlpha(alphaTemp);
 	        VertexC1P3[] vertices = new VertexC1P3[lineCount * 4];
 			
 	        float beginPos;
@@ -123,12 +115,12 @@ namespace EditorBase.CamViewLayers
 			bool noAction = this.View.ActiveState.VisibleAction == CamViewState.ObjectAction.None;
 			bool mouseover = this.View.ActiveState.Mouseover;
 
-			Point cursorPos = this.View.LocalGLControl.PointToClient(Cursor.Position);
+			Point cursorPos = this.PointToClient(Cursor.Position);
 			if (noAction && mouseover &&
-				cursorPos.X > 0 && cursorPos.X < this.View.LocalGLControl.ClientSize.Width &&
-				cursorPos.Y > 0 && cursorPos.Y < this.View.LocalGLControl.ClientSize.Height)
+				cursorPos.X > 0 && cursorPos.X < this.ClientSize.Width &&
+				cursorPos.Y > 0 && cursorPos.Y < this.ClientSize.Height)
 			{
-				var cursorSpacePos = this.View.GetSpaceCoord(new Vector2(cursorPos.X, cursorPos.Y));
+				var cursorSpacePos = this.GetSpaceCoord(new Vector2(cursorPos.X, cursorPos.Y));
 
 				cursorPos.X += 30;
 				cursorPos.Y += 10;
@@ -141,15 +133,6 @@ namespace EditorBase.CamViewLayers
 				canvas.DrawTextBackground(text, cursorPos.X, cursorPos.Y);
 				canvas.DrawText(text, cursorPos.X, cursorPos.Y);
 			}
-		}
-		
-		private void LocalGLControl_MouseLeave(object sender, EventArgs e)
-		{
-			this.InvalidateView();
-		}
-		private void LocalGLControl_MouseMove(object sender, MouseEventArgs e)
-		{
-			this.InvalidateView();
 		}
 	}
 }

@@ -894,53 +894,39 @@ namespace Duality.Components
 		}
 
 		[System.Diagnostics.Conditional("DEBUG")]
-		private void CheckValidTransform()
+		internal void CheckValidTransform()
 		{
-			CheckValidValue(ref this.pos.X);
-			CheckValidValue(ref this.pos.Y);
-			CheckValidValue(ref this.pos.Z);
-			CheckValidValue(ref this.vel.X);
-			CheckValidValue(ref this.vel.Y);
-			CheckValidValue(ref this.vel.Z);
-			CheckValidValue(ref this.scale.X);
-			CheckValidValue(ref this.scale.Y);
-			CheckValidValue(ref this.scale.Z);
-			CheckValidValue(ref this.angle);
-			CheckValidValue(ref this.angleVel);
-			CheckValidValue(ref this.tempVel.X);
-			CheckValidValue(ref this.tempVel.Y);
-			CheckValidValue(ref this.tempVel.Z);
-			CheckValidValue(ref this.tempAngleVel);
-			
-			CheckValidValue(ref this.posAbs.X);
-			CheckValidValue(ref this.posAbs.Y);
-			CheckValidValue(ref this.posAbs.Z);
-			CheckValidValue(ref this.velAbs.X);
-			CheckValidValue(ref this.velAbs.Y);
-			CheckValidValue(ref this.velAbs.Z);
-			CheckValidValue(ref this.scaleAbs.X);
-			CheckValidValue(ref this.scaleAbs.Y);
-			CheckValidValue(ref this.scaleAbs.Z);
-			CheckValidValue(ref this.angleAbs);
-			CheckValidValue(ref this.angleVelAbs);
-			CheckValidValue(ref this.tempVelAbs.X);
-			CheckValidValue(ref this.tempVelAbs.Y);
-			CheckValidValue(ref this.tempVelAbs.Z);
-			CheckValidValue(ref this.tempAngleVelAbs);
-		}
-		[System.Diagnostics.Conditional("DEBUG")]
-		private static void CheckValidValue(ref float value)
-		{
-			if (float.IsNaN(value))
-			{
-				Log.Core.WriteError("Invalid transform value (NaN)");
-				value = 0.0f;
-			}
-			else if (float.IsInfinity(value))
-			{
-				Log.Core.WriteError("Invalid transform value (Infinity)");
-				value = 0.0f;
-			}
+			MathF.CheckValidValue(ref this.pos.X);
+			MathF.CheckValidValue(ref this.pos.Y);
+			MathF.CheckValidValue(ref this.pos.Z);
+			MathF.CheckValidValue(ref this.vel.X);
+			MathF.CheckValidValue(ref this.vel.Y);
+			MathF.CheckValidValue(ref this.vel.Z);
+			MathF.CheckValidValue(ref this.scale.X);
+			MathF.CheckValidValue(ref this.scale.Y);
+			MathF.CheckValidValue(ref this.scale.Z);
+			MathF.CheckValidValue(ref this.angle);
+			MathF.CheckValidValue(ref this.angleVel);
+			MathF.CheckValidValue(ref this.tempVel.X);
+			MathF.CheckValidValue(ref this.tempVel.Y);
+			MathF.CheckValidValue(ref this.tempVel.Z);
+			MathF.CheckValidValue(ref this.tempAngleVel);
+
+			MathF.CheckValidValue(ref this.posAbs.X);
+			MathF.CheckValidValue(ref this.posAbs.Y);
+			MathF.CheckValidValue(ref this.posAbs.Z);
+			MathF.CheckValidValue(ref this.velAbs.X);
+			MathF.CheckValidValue(ref this.velAbs.Y);
+			MathF.CheckValidValue(ref this.velAbs.Z);
+			MathF.CheckValidValue(ref this.scaleAbs.X);
+			MathF.CheckValidValue(ref this.scaleAbs.Y);
+			MathF.CheckValidValue(ref this.scaleAbs.Z);
+			MathF.CheckValidValue(ref this.angleAbs);
+			MathF.CheckValidValue(ref this.angleVelAbs);
+			MathF.CheckValidValue(ref this.tempVelAbs.X);
+			MathF.CheckValidValue(ref this.tempVelAbs.Y);
+			MathF.CheckValidValue(ref this.tempVelAbs.Z);
+			MathF.CheckValidValue(ref this.tempAngleVelAbs);
 		}
 	}
 }

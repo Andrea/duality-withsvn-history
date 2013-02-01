@@ -61,7 +61,12 @@ namespace Duality.Components.Physics
 			var farseerVert = this.CreateVertices(Vector2.One);
 			if (farseerVert == null) return null;
 
-			return body.CreateFixture(new PolygonShape(farseerVert, 1.0f), this);
+			this.Parent.CheckValidTransform();
+
+			Fixture f = body.CreateFixture(new PolygonShape(farseerVert, 1.0f), this);
+
+			this.Parent.CheckValidTransform();
+			return f;
 		}
 		internal override void UpdateFixture(bool updateShape = false)
 		{
@@ -73,8 +78,12 @@ namespace Duality.Components.Physics
 			if (this.Parent.GameObj != null && this.Parent.GameObj.Transform != null)
 				scale = this.Parent.GameObj.Transform.Scale.Xy;
 
+			this.Parent.CheckValidTransform();
+
 			PolygonShape poly = this.fixture.Shape as PolygonShape;
 			poly.Set(this.CreateVertices(scale));
+
+			this.Parent.CheckValidTransform();
 		}
 		private FarseerPhysics.Common.Vertices CreateVertices(Vector2 scale)
 		{
