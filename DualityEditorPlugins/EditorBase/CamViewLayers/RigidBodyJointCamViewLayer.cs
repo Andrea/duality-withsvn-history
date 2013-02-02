@@ -995,7 +995,9 @@ namespace EditorBase.CamViewLayers
 		}
 		private RigidBody QuerySelectedCollider()
 		{
-			return DualityEditorApp.Selection.Components.OfType<RigidBody>().FirstOrDefault();
+			return 
+				DualityEditorApp.Selection.Components.OfType<RigidBody>().FirstOrDefault() ?? 
+				DualityEditorApp.Selection.GameObjects.GetComponents<RigidBody>().FirstOrDefault();
 		}
 	}
 }

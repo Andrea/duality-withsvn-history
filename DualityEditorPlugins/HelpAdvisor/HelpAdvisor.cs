@@ -57,14 +57,18 @@ namespace HelpAdvisor
 			Color lastColor = Color.FromArgb((int)((1.0f - this.AnimProgress) * 255.0f), lastColorBase);
 			Color curColor = Color.FromArgb((int)(this.AnimProgress * 255.0f), curColorBase);
 
-			e.Graphics.DrawString(this.lastHelp.Topic, this.labelTopic.Font, new SolidBrush(lastColor), topicRect, format);
-			e.Graphics.DrawString(this.currentHelp.Topic, this.labelTopic.Font, new SolidBrush(curColor), topicRect, format);
+			if (this.lastHelp != null)
+				e.Graphics.DrawString(this.lastHelp.Topic, this.labelTopic.Font, new SolidBrush(lastColor), topicRect, format);
+			if (this.currentHelp != null)
+				e.Graphics.DrawString(this.currentHelp.Topic, this.labelTopic.Font, new SolidBrush(curColor), topicRect, format);
 
 			format.LineAlignment = StringAlignment.Near;
 			format.FormatFlags = 0;
 
-			e.Graphics.DrawString(this.lastHelp.Description, this.labelDescription.Font, new SolidBrush(lastColor), descRect, format);
-			e.Graphics.DrawString(this.currentHelp.Description, this.labelDescription.Font, new SolidBrush(curColor), descRect, format);
+			if (this.lastHelp != null)
+				e.Graphics.DrawString(this.lastHelp.Description, this.labelDescription.Font, new SolidBrush(lastColor), descRect, format);
+			if (this.currentHelp != null)
+				e.Graphics.DrawString(this.currentHelp.Description, this.labelDescription.Font, new SolidBrush(curColor), descRect, format);
 		}
 		private void animTimer_Tick(object sender, EventArgs e)
 		{

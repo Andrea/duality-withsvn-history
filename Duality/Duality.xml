@@ -5541,54 +5541,6 @@
             <param name="format"></param>
             <param name="obj"></param>
         </member>
-        <member name="M:Duality.Log.WriteOnce(System.String,System.Object[])">
-            <summary>
-            Writes a new log entry once. If the same message is attempted to be written again, it will be ignored.
-            </summary>
-            <param name="format"></param>
-            <param name="obj"></param>
-        </member>
-        <member name="M:Duality.Log.WriteWarningOnce(System.String,System.Object[])">
-            <summary>
-            Writes a warning new log entry once. If the same message is attempted to be written again, it will be ignored.
-            </summary>
-            <param name="format"></param>
-            <param name="obj"></param>
-        </member>
-        <member name="M:Duality.Log.WriteErrorOnce(System.String,System.Object[])">
-            <summary>
-            Writes a error new log entry once. If the same message is attempted to be written again, it will be ignored.
-            </summary>
-            <param name="format"></param>
-            <param name="obj"></param>
-        </member>
-        <member name="M:Duality.Log.WriteTimed(System.Int32,System.String,System.String,System.Object[])">
-            <summary>
-            Writes a new log entry, but a maximum of one entry per fixed amount of time.
-            </summary>
-            <param name="delayMs">The time span in which only one message is written.</param>
-            <param name="timerId">The id of the timer that is used for measuring the time span. Simply use any string id that seems to fit.</param>
-            <param name="format"></param>
-            <param name="obj"></param>
-        </member>
-        <member name="M:Duality.Log.WriteWarningTimed(System.Int32,System.String,System.String,System.Object[])">
-            <summary>
-            Writes a new warning log entry, but a maximum of one entry per fixed amount of time.
-            </summary>
-            <param name="delayMs">The time span in which only one message is written.</param>
-            <param name="timerId">The id of the timer that is used for measuring the time span. Simply use any string id that seems to fit.</param>
-            <param name="format"></param>
-            <param name="obj"></param>
-        </member>
-        <member name="M:Duality.Log.WriteErrorTimed(System.Int32,System.String,System.String,System.Object[])">
-            <summary>
-            Writes a new error log entry, but a maximum of one entry per fixed amount of time.
-            </summary>
-            <param name="delayMs">The time span in which only one message is written.</param>
-            <param name="timerId">The id of the timer that is used for measuring the time span. Simply use any string id that seems to fit.</param>
-            <param name="format"></param>
-            <param name="obj"></param>
-        </member>
         <member name="M:Duality.Log.CurrentStackFrame(System.Int32)">
             <summary>
             Retrieves the current stack frame.
@@ -12388,17 +12340,17 @@
         </member>
         <member name="P:Duality.DataLogOutput.LogEntry.Source">
             <summary>
-            The <see cref="T:Duality.Log"/> from which this entry originates.
+            [GET] The <see cref="T:Duality.Log"/> from which this entry originates.
             </summary>
         </member>
         <member name="P:Duality.DataLogOutput.LogEntry.Type">
             <summary>
-            The message's type.
+            [GET] The message's type.
             </summary>
         </member>
         <member name="P:Duality.DataLogOutput.LogEntry.Message">
             <summary>
-            The log entry's message.
+            [GET] The log entry's message.
             </summary>
         </member>
         <member name="P:Duality.DataLogOutput.LogEntry.Indent">
@@ -12409,6 +12361,16 @@
         <member name="P:Duality.DataLogOutput.LogEntry.Timestamp">
             <summary>
             [GET] The messages timestamp.
+            </summary>
+        </member>
+        <member name="P:Duality.DataLogOutput.LogEntry.FrameIndex">
+            <summary>
+            [GET] The value of <see cref="P:Duality.Time.FrameCount"/> when the message was logged.
+            </summary>
+        </member>
+        <member name="P:Duality.DataLogOutput.LogEntry.Trace">
+            <summary>
+            [GET] A stack trace from where the log entry was made. Only available in an editor environment.
             </summary>
         </member>
         <member name="T:Duality.Components.Renderers.AnimSpriteRenderer">

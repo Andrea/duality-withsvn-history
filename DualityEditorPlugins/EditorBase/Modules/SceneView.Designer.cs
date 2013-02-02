@@ -164,14 +164,14 @@
 			// gameObjectToolStripMenuItem
 			// 
 			this.gameObjectToolStripMenuItem.Name = "gameObjectToolStripMenuItem";
-			this.gameObjectToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.gameObjectToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
 			this.gameObjectToolStripMenuItem.Text = "GameObject";
 			this.gameObjectToolStripMenuItem.Click += new System.EventHandler(this.gameObjectToolStripMenuItem_Click);
 			// 
 			// newGameObjectSeparator
 			// 
 			this.newGameObjectSeparator.Name = "newGameObjectSeparator";
-			this.newGameObjectSeparator.Size = new System.Drawing.Size(149, 6);
+			this.newGameObjectSeparator.Size = new System.Drawing.Size(137, 6);
 			// 
 			// toolStripSeparatorNew
 			// 

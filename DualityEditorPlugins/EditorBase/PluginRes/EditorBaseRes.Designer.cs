@@ -737,6 +737,24 @@ namespace EditorBase.PluginRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Errors ähnelt.
+        /// </summary>
+        public static string LogView_Errors {
+            get {
+                return ResourceManager.GetString("LogView_Errors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Warnings ähnelt.
+        /// </summary>
+        public static string LogView_Warnings {
+            get {
+                return ResourceManager.GetString("LogView_Warnings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Can&apos;t remove {0} because it is required by the &apos;{1}&apos; Component. ähnelt.
         /// </summary>
         public static string MenuItemDesc_CantRemoveComponent {

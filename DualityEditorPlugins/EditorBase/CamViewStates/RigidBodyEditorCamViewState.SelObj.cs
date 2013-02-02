@@ -13,38 +13,37 @@ namespace EditorBase.CamViewStates
 	{
 		public class SelBody : SelObj
 		{
-			private	RigidBody	body;
+			private	GameObject	bodyObj;
 
 			public override object ActualObject
 			{
-				get { return this.body == null || this.body.Disposed ? null : this.body; }
+				get { return this.bodyObj == null || this.bodyObj.Disposed ? null : this.bodyObj; }
 			}
 			public override bool HasTransform
 			{
-				get { return this.body != null && !this.body.Disposed && this.body.GameObj.Transform != null; }
+				get { return this.bodyObj != null && !this.bodyObj.Disposed && this.bodyObj.Transform != null; }
 			}
 			public override Vector3 Pos
 			{
-				get { return this.body.GameObj.Transform.Pos; }
+				get { return this.bodyObj.Transform.Pos; }
 				set { }
 			}
 			public override float Angle
 			{
-				get { return this.body.GameObj.Transform.Angle; }
+				get { return this.bodyObj.Transform.Angle; }
 				set { }
 			}
 			public override Vector3 Scale
 			{
-				get { return this.body.GameObj.Transform.Scale; }
+				get { return this.bodyObj.Transform.Scale; }
 				set { }
 			}
 			public override float BoundRadius
 			{
 				get
 				{
-					ICmpRenderer r = this.body.GameObj.Renderer;
-					if (r == null) return CamView.DefaultDisplayBoundRadius;
-					else return r.BoundRadius;
+					ICmpRenderer r = this.bodyObj.Renderer;
+					return r == null ? CamView.DefaultDisplayBoundRadius : r.BoundRadius;
 				}
 			}
 			public override bool ShowPos
@@ -54,7 +53,7 @@ namespace EditorBase.CamViewStates
 
 			public SelBody(RigidBody obj)
 			{
-				this.body = obj;
+				this.bodyObj = obj != null ? obj.GameObj : null;
 			}
 
 			public override bool IsActionAvailable(ObjectAction action)

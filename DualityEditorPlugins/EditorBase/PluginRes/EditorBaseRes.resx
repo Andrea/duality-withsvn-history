@@ -472,4 +472,10 @@
   <data name="MenuItemName_ResetComponent" xml:space="preserve">
     <value>Reset</value>
   </data>
+  <data name="LogView_Errors" xml:space="preserve">
+    <value>Errors</value>
+  </data>
+  <data name="LogView_Warnings" xml:space="preserve">
+    <value>Warnings</value>
+  </data>
 </root>

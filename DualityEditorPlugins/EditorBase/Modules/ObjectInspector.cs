@@ -279,7 +279,10 @@ namespace EditorBase
 			objView.buttonLock.Checked = true;
 
 			DockPanel mainDoc = DualityEditorApp.MainForm.MainDockPanel;
-			objView.Show(this.DockHandler.Pane, DockAlignment.Bottom, 0.5d);
+			if (this.DockHandler.DockState.IsAutoHide())
+				objView.Show(this.DockPanel, this.DockHandler.DockState);
+			else
+				objView.Show(this.DockHandler.Pane, DockAlignment.Bottom, 0.5d);
 			
 			// Need it before showing because of instant-selection
 			objView.propertyGrid.RegisterEditorProvider(CorePluginRegistry.RequestPropertyEditorProviders());

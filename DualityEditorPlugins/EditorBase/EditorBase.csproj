@@ -37,6 +37,7 @@
     <Reference Include="CustomPropertyGrid">
       <HintPath>..\..\DualityEditor\CustomPropertyGrid.dll</HintPath>
     </Reference>
+    <Reference Include="EditorBase.editor, Version=1.0.4781.23020, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="OpenTK, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Duality\OpenTK.dll</HintPath>
@@ -47,6 +48,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.XML" />
@@ -56,13 +58,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CamView.cs">
+    <Compile Include="Modules\CamView.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CamView.Designer.cs">
+    <Compile Include="Modules\CamView.Designer.cs">
       <DependentUpon>CamView.cs</DependentUpon>
     </Compile>
-    <Compile Include="CamViewClient.cs" />
+    <Compile Include="Modules\CamViewClient.cs" />
     <Compile Include="CamViewLayers\CamViewLayer.cs" />
     <Compile Include="CamViewLayers\BackPlateCamViewLayer.cs" />
     <Compile Include="CamViewLayers\GridCamViewLayer.cs" />
@@ -71,19 +73,22 @@
     <Compile Include="CamViewStates\CamViewState.cs" />
     <Compile Include="CamViewStates\RigidBodyEditorCamViewState.SelObj.cs" />
     <Compile Include="EditorBasePlugin.cs" />
-    <Compile Include="AudioDataFileImporter.cs" />
-    <Compile Include="FontFileImporter.cs">
+    <Compile Include="Importers\AudioDataFileImporter.cs" />
+    <Compile Include="Importers\FontFileImporter.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CamViewStates\GameViewCamViewState.cs" />
     <Compile Include="CamViewStates\RigidBodyEditorCamViewState.cs" />
     <Compile Include="CamViewStates\SceneEditorCamViewState.cs" />
     <Compile Include="DataConverters.cs" />
+    <Compile Include="Modules\LogEntryList.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="PreviewGenerators.cs" />
-    <Compile Include="LogView.cs">
+    <Compile Include="Modules\LogView.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="LogView.Designer.cs">
+    <Compile Include="Modules\LogView.Designer.cs">
       <DependentUpon>LogView.cs</DependentUpon>
     </Compile>
     <Compile Include="PropertyEditors\BatchInfoPropertyEditor.cs" />
@@ -120,19 +125,19 @@
     <Compile Include="PropertyEditors\Resources\PixmapPropertyEditor.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ShaderFileImporter.cs" />
-    <Compile Include="PixmapFileImporter.cs" />
-    <Compile Include="ObjectInspector.cs">
+    <Compile Include="Importers\ShaderFileImporter.cs" />
+    <Compile Include="Importers\PixmapFileImporter.cs" />
+    <Compile Include="Modules\ObjectInspector.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ObjectInspector.Designer.cs">
+    <Compile Include="Modules\ObjectInspector.Designer.cs">
       <DependentUpon>ObjectInspector.cs</DependentUpon>
     </Compile>
     <Compile Include="PropertyEditors\Provider.cs" />
-    <Compile Include="SceneView.cs">
+    <Compile Include="Modules\SceneView.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SceneView.Designer.cs">
+    <Compile Include="Modules\SceneView.Designer.cs">
       <DependentUpon>SceneView.cs</DependentUpon>
     </Compile>
     <Compile Include="PluginRes\EditorBaseRes.Designer.cs">
@@ -140,10 +145,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>EditorBaseRes.resx</DependentUpon>
     </Compile>
-    <Compile Include="ProjectFolderView.cs">
+    <Compile Include="Modules\ProjectFolderView.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ProjectFolderView.Designer.cs">
+    <Compile Include="Modules\ProjectFolderView.Designer.cs">
       <DependentUpon>ProjectFolderView.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -164,17 +169,17 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="CamView.resx">
+    <EmbeddedResource Include="Modules\CamView.resx">
       <DependentUpon>CamView.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="LogView.resx">
+    <EmbeddedResource Include="Modules\LogView.resx">
       <DependentUpon>LogView.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ObjectInspector.resx">
+    <EmbeddedResource Include="Modules\ObjectInspector.resx">
       <DependentUpon>ObjectInspector.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SceneView.resx">
+    <EmbeddedResource Include="Modules\SceneView.resx">
       <DependentUpon>SceneView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PluginRes\EditorBaseRes.resx">
@@ -182,21 +187,22 @@
       <LastGenOutput>EditorBaseRes.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="ProjectFolderView.resx">
+    <EmbeddedResource Include="Modules\ProjectFolderView.resx">
       <DependentUpon>ProjectFolderView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
     <None Include="PluginRes\DropdownSettingsBlack.png" />
     <None Include="PluginRes\shape_perspective.png" />
-    <None Include="Resources\speaker.png" />
-    <None Include="Resources\arrow_right_accelerate.png" />
-    <None Include="Resources\arrow_refresh.png" />
+    <None Include="PluginRes\speaker.png" />
+    <None Include="PluginRes\arrow_right_accelerate.png" />
+    <None Include="PluginRes\arrow_refresh.png" />
     <None Include="PluginRes\wrench.ico" />
     <None Include="PluginRes\sceneview.ico" />
     <None Include="PluginRes\WorkingFolderIcon16.png" />

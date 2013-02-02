@@ -427,7 +427,7 @@ namespace EditorBase.CamViewStates
 				SelShape[] selShapeArray = distinctShapeQuery.ToArray();
 
 				// First, select the associated Collider
-				DualityEditorApp.Select(this, new ObjectSelection(selShapeArray[0].Body), SelectMode.Set);
+				DualityEditorApp.Select(this, new ObjectSelection(selShapeArray[0].Body.GameObj), SelectMode.Set);
 				// Then, select actual ShapeInfos
 				DualityEditorApp.Select(this, new ObjectSelection(selShapeArray.Select(s => s.ActualObject)), mode);
 			}
@@ -522,7 +522,9 @@ namespace EditorBase.CamViewStates
 		}
 		protected RigidBody QuerySelectedCollider()
 		{
-			return DualityEditorApp.Selection.Components.OfType<RigidBody>().FirstOrDefault();
+			return 
+				DualityEditorApp.Selection.Components.OfType<RigidBody>().FirstOrDefault() ?? 
+				DualityEditorApp.Selection.GameObjects.GetComponents<RigidBody>().FirstOrDefault();
 		}
 		protected bool RendererFilter(ICmpRenderer r)
 		{

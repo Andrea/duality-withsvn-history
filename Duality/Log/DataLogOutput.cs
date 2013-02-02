@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Reflection;
 
 namespace Duality
 {
@@ -34,23 +36,25 @@ namespace Duality
 			private	string			msg;
 			private	int				indent;
 			private	DateTime		timestamp;
+			private	int				frameIndex;
+			private	StackTrace		trace;
 
 			/// <summary>
-			/// The <see cref="Log"/> from which this entry originates.
+			/// [GET] The <see cref="Log"/> from which this entry originates.
 			/// </summary>
 			public Log Source
 			{
 				get { return this.source; }
 			}
 			/// <summary>
-			/// The message's type.
+			/// [GET] The message's type.
 			/// </summary>
 			public LogMessageType Type
 			{
 				get { return this.type; }
 			}
 			/// <summary>
-			/// The log entry's message.
+			/// [GET] The log entry's message.
 			/// </summary>
 			public string Message
 			{
@@ -70,14 +74,30 @@ namespace Duality
 			{
 				get { return this.timestamp; }
 			}
+			/// <summary>
+			/// [GET] The value of <see cref="Time.FrameCount"/> when the message was logged.
+			/// </summary>
+			public int FrameIndex
+			{
+				get { return this.frameIndex; }
+			}
+			/// <summary>
+			/// [GET] A stack trace from where the log entry was made. Only available in an editor environment.
+			/// </summary>
+			public StackTrace Trace
+			{
+				get { return this.trace; }
+			}
 
-			public LogEntry(Log source, LogMessageType type, string msg)
+			public LogEntry(Log source, LogMessageType type, string msg, StackTrace trace = null)
 			{
 				this.source = source;
 				this.type = type;
 				this.msg = msg;
 				this.indent = source.Indent;
 				this.timestamp = DateTime.Now;
+				this.frameIndex = Time.FrameCount;
+				this.trace = trace;
 			}
 		}
 
@@ -101,7 +121,17 @@ namespace Duality
 		/// <param name="msg">The message to write.</param>
 		public void Write(Log source, LogMessageType type, string msg)
 		{
-			LogEntry entry = new LogEntry(source, type, msg);
+			LogEntry entry;
+			if (DualityApp.ExecEnvironment == DualityApp.ExecutionEnvironment.Editor)
+			{
+				StackTrace trace = null;
+				try { trace = new StackTrace(true); } catch (Exception) {}
+				entry = new LogEntry(source, type, msg, trace);
+			}
+			else
+			{
+				entry = new LogEntry(source, type, msg);
+			}
 			data.Add(entry);
 			this.OnNewEntry(entry);
 		}
