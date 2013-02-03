@@ -163,6 +163,10 @@ namespace EditorBase
 		{
 			this.logEntryList.DisplayMinTime = DateTime.Now;
 		}
+		private void logEntryList_Enter(object sender, EventArgs e)
+		{
+			this.MarkAsRead();
+		}
 
 		private void Sandbox_Entering(object sender, EventArgs e)
 		{

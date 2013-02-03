@@ -87,7 +87,7 @@ namespace EditorBase
 		private	DataLogOutput	boundOutput		= null;
 		private	Color			baseColor		= SystemColors.Control;
 		private	bool			scrolledToEnd	= true;
-		
+
 
 		public IEnumerable<ViewEntry> Entries
 		{

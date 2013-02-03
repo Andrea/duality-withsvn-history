@@ -216,6 +216,7 @@
 			this.logEntryList.ScrollOffset = 0;
 			this.logEntryList.Size = new System.Drawing.Size(683, 359);
 			this.logEntryList.TabIndex = 2;
+			this.logEntryList.Enter += new System.EventHandler(this.logEntryList_Enter);
 			// 
 			// LogView
 			// 
