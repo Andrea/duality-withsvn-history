@@ -23,6 +23,7 @@ namespace EditorBase
 		{
 			this.InitializeComponent();
 
+			this.splitContainer.SplitterDistance = 1000;
 			this.SetStyle(ControlStyles.Opaque, true);
 			this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 
@@ -57,6 +58,11 @@ namespace EditorBase
 			this.MarkAsRead();
 			this.logEntryList.Focus();
 		}
+		protected override void OnDockStateChanged(EventArgs e)
+		{
+			base.OnDockStateChanged(e);
+			if (!this.DockHandler.DockState.IsAutoHide()) this.MarkAsRead();
+		}
 		private void DockPanel_ActiveAutoHideContentChanged(object sender, EventArgs e)
 		{
 			if (this.DockPanel.ActiveAutoHideContent == this)
@@ -74,6 +80,7 @@ namespace EditorBase
 			node.SetAttribute("showEditor", this.buttonEditor.Checked.ToString(CultureInfo.InvariantCulture));
 			node.SetAttribute("showGame", this.buttonGame.Checked.ToString(CultureInfo.InvariantCulture));
 			node.SetAttribute("autoClear", this.checkAutoClear.Checked.ToString(CultureInfo.InvariantCulture));
+			node.SetAttribute("pauseOnError", this.buttonPauseOnError.Checked.ToString(CultureInfo.InvariantCulture));
 		}
 		internal void LoadUserData(System.Xml.XmlElement node)
 		{
@@ -93,6 +100,8 @@ namespace EditorBase
 				this.buttonGame.Checked = tryParseBool;
 			if (bool.TryParse(node.GetAttribute("autoClear"), out tryParseBool))
 				this.checkAutoClear.Checked = tryParseBool;
+			if (bool.TryParse(node.GetAttribute("pauseOnError"), out tryParseBool))
+				this.buttonPauseOnError.Checked = tryParseBool;
 		}
 
 		private void MarkAsRead()
@@ -159,13 +168,28 @@ namespace EditorBase
 			if (!this.Visible) return;
 			this.logEntryList.SetFilterFlag(LogEntryList.MessageFilter.TypeError, this.buttonErrors.Checked);
 		}
+		private void buttonPauseOnError_CheckedChanged(object sender, EventArgs e) {}
 		private void actionClear_ButtonClick(object sender, EventArgs e)
 		{
 			this.logEntryList.DisplayMinTime = DateTime.Now;
+			this.MarkAsRead();
 		}
 		private void logEntryList_Enter(object sender, EventArgs e)
 		{
 			this.MarkAsRead();
+		}
+		private void logEntryList_SelectionChanged(object sender, EventArgs e)
+		{
+			if (this.logEntryList.SelectedEntry != null)
+			{
+				//this.splitContainer.Panel2Collapsed = false;
+				this.textBoxEntry.Text = this.logEntryList.SelectedEntry.LogEntry.Message;
+			}
+			else
+			{
+				//this.splitContainer.Panel2Collapsed = true;
+				this.textBoxEntry.Clear();
+			}
 		}
 
 		private void Sandbox_Entering(object sender, EventArgs e)
@@ -174,16 +198,22 @@ namespace EditorBase
 		}
 		private void LogData_NewEntry(object sender, DataLogOutput.LogEntryEventArgs e)
 		{
-			if (e.Entry.Type == LogMessageType.Warning)
+			bool isHidden = this.DockHandler.DockState.IsAutoHide() && !this.ContainsFocus;
+
+			if (isHidden)
 			{
-				this.unseenWarnings++;
-			}
-			else if (e.Entry.Type == LogMessageType.Error)
-			{
-				if (this.unseenErrors == 0) System.Media.SystemSounds.Hand.Play();
-				this.unseenErrors++;
+				if (e.Entry.Type == LogMessageType.Warning)
+				{
+					this.unseenWarnings++;
+				}
+				else if (e.Entry.Type == LogMessageType.Error)
+				{
+					if (this.unseenErrors == 0 || this.buttonPauseOnError.Checked) System.Media.SystemSounds.Hand.Play();
+					this.unseenErrors++;
+				}
 			}
 
+			if (this.buttonPauseOnError.Checked && Sandbox.IsActive && !Sandbox.IsChangingState) Sandbox.Pause();
 			this.UpdateTabText();
 		}
 	}

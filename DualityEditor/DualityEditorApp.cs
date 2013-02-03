@@ -1063,7 +1063,7 @@ namespace DualityEditor
 					}
 					OnUpdatingEngine();
 
-					DualityApp.ExecContext = lastContext;
+					if (fixedSingleStep) DualityApp.ExecContext = lastContext;
 				}
 
 				// Give the processor a rest if we have the time, don't use 100% CPU

@@ -87,6 +87,12 @@ namespace EditorBase
 		private	DataLogOutput	boundOutput		= null;
 		private	Color			baseColor		= SystemColors.Control;
 		private	bool			scrolledToEnd	= true;
+		private	bool			lastSelected	= true;
+		private	ViewEntry		hoveredEntry	= null;
+		private	ViewEntry		selectedEntry	= null;
+
+
+		public event EventHandler SelectionChanged = null;
 
 
 		public IEnumerable<ViewEntry> Entries
@@ -96,6 +102,18 @@ namespace EditorBase
 		public IEnumerable<ViewEntry> DisplayedEntries
 		{
 			get { return this.entryList.Where(e => e.Matches(this.displayMinTime, this.displayFilter)); }
+		}
+		public ViewEntry SelectedEntry
+		{
+			get { return this.selectedEntry; }
+			set
+			{
+				if (this.selectedEntry != value)
+				{
+					this.selectedEntry = value;
+					this.OnSelectionChanged();
+				}
+			}
 		}
 
 		public int ScrollOffset
@@ -226,6 +244,18 @@ namespace EditorBase
 		{
 			this.ScrollOffset = this.GetEntryOffset(entry) + offsetY;
 		}
+		public void EnsureVisible(ViewEntry entry)
+		{
+			int offset = this.GetEntryOffset(entry);
+			if (offset - this.ScrollOffset <= entry.Height)
+			{
+				this.ScrollOffset = offset - entry.Height;
+			}
+			else if (offset - this.ScrollOffset >= this.ClientSize.Height - entry.Height)
+			{
+				this.ScrollOffset = offset - this.ClientSize.Height + entry.Height;
+			}
+		}
 		public int GetEntryOffset(ViewEntry entry)
 		{
 			int totalHeight = 0;
@@ -247,6 +277,22 @@ namespace EditorBase
 			return null;
 		}
 
+		private void UpdateScrolledToEnd()
+		{
+			this.scrolledToEnd = -this.AutoScrollPosition.Y + this.ClientRectangle.Height >= this.AutoScrollMinSize.Height - 5;
+		}
+		private void UpdateHoveredEntry(Point mouseLoc)
+		{
+			ViewEntry lastHovered = this.hoveredEntry;
+
+			if (mouseLoc.IsEmpty || !this.ClientRectangle.Contains(mouseLoc))
+				this.hoveredEntry = null;
+			else
+				this.hoveredEntry = this.GetEntryAt(mouseLoc.Y + this.ScrollOffset);
+
+			if (lastHovered != this.hoveredEntry)
+				this.Invalidate();
+		}
 		private void UpdateContentSize()
 		{
 			this.AutoScrollMinSize = new Size(0, this.GetEntryOffset(null));
@@ -254,12 +300,19 @@ namespace EditorBase
 		private void OnContentChanged()
 		{
 			this.UpdateContentSize();
+			this.UpdateHoveredEntry(this.PointToClient(Cursor.Position));
+			if (this.lastSelected)
+				this.SelectedEntry = this.DisplayedEntries.LastOrDefault();
+			else if (!this.DisplayedEntries.Contains(this.SelectedEntry))
+				this.SelectedEntry = null;
 			this.Invalidate();
 		}
-		protected override void OnScroll(ScrollEventArgs se)
+		private void OnSelectionChanged()
 		{
-			base.OnScroll(se);
-			this.scrolledToEnd = -this.AutoScrollPosition.Y + this.ClientRectangle.Height >= this.AutoScrollMinSize.Height - 5;
+			this.Invalidate();
+			this.lastSelected = this.SelectedEntry == this.DisplayedEntries.LastOrDefault();
+			if (this.SelectionChanged != null)
+				this.SelectionChanged(this, EventArgs.Empty);
 		}
 		protected override void OnPaint(PaintEventArgs e)
 		{
@@ -362,6 +415,31 @@ namespace EditorBase
 							new Rectangle(timeTextRect.X + 5, timeTextRect.Y, timeTextRect.Width - (showTimestamp ? 50 + 10 : 0), timeTextRect.Height), 
 							messageFormatTimestamp);
 					}
+
+					if (this.selectedEntry == entry)
+					{
+						e.Graphics.DrawRectangle(
+							new Pen(Color.FromArgb(64, this.ForeColor)), 
+							entryRect.X + 1,
+							entryRect.Y + 1,
+							entryRect.Width - 3,
+							entryRect.Height - 3);
+						e.Graphics.DrawRectangle(
+							new Pen(Color.FromArgb(192, this.ForeColor)), 
+							entryRect.X,
+							entryRect.Y,
+							entryRect.Width - 1,
+							entryRect.Height - 1);
+					}
+					else if (this.hoveredEntry == entry)
+					{
+						e.Graphics.DrawRectangle(
+							new Pen(Color.FromArgb(128, this.ForeColor)), 
+							entryRect.X,
+							entryRect.Y,
+							entryRect.Width - 1,
+							entryRect.Height - 1);
+					}
 				}
 
 				offsetY += entryHeight;
@@ -371,8 +449,62 @@ namespace EditorBase
 		}
 		protected override void OnSizeChanged(EventArgs e)
 		{
+			bool wasAtEnd = this.IsScrolledToEnd;
 			base.OnSizeChanged(e);
 			this.OnContentChanged();
+			if (wasAtEnd) this.ScrollToEnd();
+		}
+		protected override void OnScroll(ScrollEventArgs se)
+		{
+			base.OnScroll(se);
+			this.UpdateScrolledToEnd();
+			this.UpdateHoveredEntry(this.PointToClient(Cursor.Position));
+		}
+		protected override void OnMouseWheel(MouseEventArgs e)
+		{
+			base.OnMouseWheel(e);
+			this.UpdateScrolledToEnd();
+			this.UpdateHoveredEntry(this.PointToClient(Cursor.Position));
+		}
+		protected override void OnMouseMove(MouseEventArgs e)
+		{
+			base.OnMouseMove(e);
+			this.UpdateHoveredEntry(e.Location);
+		}
+		protected override void OnMouseLeave(EventArgs e)
+		{
+			base.OnMouseLeave(e);
+			this.UpdateHoveredEntry(Point.Empty);
+		}
+		protected override void OnMouseClick(MouseEventArgs e)
+		{
+			base.OnMouseClick(e);
+			this.SelectedEntry = this.hoveredEntry;
+		}
+		protected override void OnPreviewKeyDown(PreviewKeyDownEventArgs e)
+		{
+			base.OnPreviewKeyDown(e);
+			e.IsInputKey = // Special key whitelist
+				e.KeyCode == Keys.Up || 
+				e.KeyCode == Keys.Down;
+		}
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			base.OnKeyDown(e);
+			if (e.KeyCode == Keys.Back || e.KeyCode == Keys.Delete)
+				this.SelectedEntry = null;
+			else if (e.KeyCode == Keys.Down && this.DisplayedEntries.Any())
+			{
+				ViewEntry[] visEntries = this.DisplayedEntries.ToArray();
+				this.SelectedEntry = visEntries[MathF.Clamp(visEntries.IndexOfFirst(this.SelectedEntry) + 1, 0, visEntries.Length - 1)];
+				this.EnsureVisible(this.SelectedEntry);
+			}
+			else if (e.KeyCode == Keys.Up && this.DisplayedEntries.Any())
+			{
+				ViewEntry[] visEntries = this.DisplayedEntries.ToArray();
+				this.SelectedEntry = visEntries[MathF.Clamp(visEntries.IndexOfFirst(this.SelectedEntry) - 1, 0, visEntries.Length - 1)];
+				this.EnsureVisible(this.SelectedEntry);
+			}
 		}
 
 		private void boundOutput_NewEntry(object sender, DataLogOutput.LogEntryEventArgs e)

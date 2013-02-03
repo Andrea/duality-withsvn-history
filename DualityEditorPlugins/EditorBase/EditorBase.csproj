@@ -198,6 +198,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <None Include="PluginRes\bell.png" />
     <None Include="PluginRes\DropdownSettingsBlack.png" />
     <None Include="PluginRes\shape_perspective.png" />
     <None Include="PluginRes\speaker.png" />

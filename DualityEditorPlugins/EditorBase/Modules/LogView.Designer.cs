@@ -42,8 +42,15 @@
 			this.buttonGame = new System.Windows.Forms.ToolStripButton();
 			this.actionClear = new System.Windows.Forms.ToolStripSplitButton();
 			this.checkAutoClear = new System.Windows.Forms.ToolStripMenuItem();
+			this.buttonPauseOnError = new System.Windows.Forms.ToolStripButton();
+			this.textBoxEntry = new System.Windows.Forms.TextBox();
+			this.splitContainer = new System.Windows.Forms.SplitContainer();
 			this.logEntryList = new EditorBase.LogEntryList();
 			this.toolStrip.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
+			this.splitContainer.Panel1.SuspendLayout();
+			this.splitContainer.Panel2.SuspendLayout();
+			this.splitContainer.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// nodeStateIcon
@@ -75,7 +82,8 @@
             this.buttonCore,
             this.buttonEditor,
             this.buttonGame,
-            this.actionClear});
+            this.actionClear,
+            this.buttonPauseOnError});
 			this.toolStrip.Location = new System.Drawing.Point(0, 0);
 			this.toolStrip.Name = "toolStrip";
 			this.toolStrip.Size = new System.Drawing.Size(683, 25);
@@ -197,11 +205,61 @@
 			this.checkAutoClear.Size = new System.Drawing.Size(143, 22);
 			this.checkAutoClear.Text = "Clear on Play";
 			// 
+			// buttonPauseOnError
+			// 
+			this.buttonPauseOnError.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.buttonPauseOnError.Checked = true;
+			this.buttonPauseOnError.CheckOnClick = true;
+			this.buttonPauseOnError.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.buttonPauseOnError.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonPauseOnError.Image = global::EditorBase.Properties.Resources.bell;
+			this.buttonPauseOnError.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonPauseOnError.Name = "buttonPauseOnError";
+			this.buttonPauseOnError.Size = new System.Drawing.Size(23, 22);
+			this.buttonPauseOnError.Text = "Pause on Error";
+			this.buttonPauseOnError.CheckedChanged += new System.EventHandler(this.buttonPauseOnError_CheckedChanged);
+			// 
+			// textBoxEntry
+			// 
+			this.textBoxEntry.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(92)))), ((int)(((byte)(92)))), ((int)(((byte)(92)))));
+			this.textBoxEntry.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.textBoxEntry.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.textBoxEntry.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.textBoxEntry.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(212)))), ((int)(((byte)(212)))), ((int)(((byte)(212)))));
+			this.textBoxEntry.Location = new System.Drawing.Point(0, 0);
+			this.textBoxEntry.Multiline = true;
+			this.textBoxEntry.Name = "textBoxEntry";
+			this.textBoxEntry.ReadOnly = true;
+			this.textBoxEntry.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textBoxEntry.Size = new System.Drawing.Size(681, 79);
+			this.textBoxEntry.TabIndex = 3;
+			this.textBoxEntry.WordWrap = false;
+			// 
+			// splitContainer
+			// 
+			this.splitContainer.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(162)))), ((int)(((byte)(162)))), ((int)(((byte)(162)))));
+			this.splitContainer.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.splitContainer.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
+			this.splitContainer.Location = new System.Drawing.Point(0, 25);
+			this.splitContainer.Name = "splitContainer";
+			this.splitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+			// 
+			// splitContainer.Panel1
+			// 
+			this.splitContainer.Panel1.Controls.Add(this.logEntryList);
+			this.splitContainer.Panel1MinSize = 50;
+			// 
+			// splitContainer.Panel2
+			// 
+			this.splitContainer.Panel2.Controls.Add(this.textBoxEntry);
+			this.splitContainer.Panel2MinSize = 20;
+			this.splitContainer.Size = new System.Drawing.Size(683, 170);
+			this.splitContainer.SplitterDistance = 85;
+			this.splitContainer.TabIndex = 4;
+			// 
 			// logEntryList
 			// 
-			this.logEntryList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
 			this.logEntryList.AutoScroll = true;
 			this.logEntryList.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(196)))), ((int)(((byte)(196)))), ((int)(((byte)(196)))));
 			this.logEntryList.BaseColor = System.Drawing.Color.FromArgb(((int)(((byte)(162)))), ((int)(((byte)(162)))), ((int)(((byte)(162)))));
@@ -211,19 +269,22 @@
             | EditorBase.LogEntryList.MessageFilter.TypeWarning) 
             | EditorBase.LogEntryList.MessageFilter.TypeError)));
 			this.logEntryList.DisplayMinTime = new System.DateTime(((long)(0)));
-			this.logEntryList.Location = new System.Drawing.Point(0, 24);
+			this.logEntryList.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.logEntryList.Location = new System.Drawing.Point(0, 0);
 			this.logEntryList.Name = "logEntryList";
 			this.logEntryList.ScrollOffset = 0;
-			this.logEntryList.Size = new System.Drawing.Size(683, 359);
+			this.logEntryList.SelectedEntry = null;
+			this.logEntryList.Size = new System.Drawing.Size(681, 83);
 			this.logEntryList.TabIndex = 2;
+			this.logEntryList.SelectionChanged += new System.EventHandler(this.logEntryList_SelectionChanged);
 			this.logEntryList.Enter += new System.EventHandler(this.logEntryList_Enter);
 			// 
 			// LogView
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(683, 383);
-			this.Controls.Add(this.logEntryList);
+			this.ClientSize = new System.Drawing.Size(683, 195);
+			this.Controls.Add(this.splitContainer);
 			this.Controls.Add(this.toolStrip);
 			this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
@@ -233,6 +294,11 @@
 			this.Text = "Log View";
 			this.toolStrip.ResumeLayout(false);
 			this.toolStrip.PerformLayout();
+			this.splitContainer.Panel1.ResumeLayout(false);
+			this.splitContainer.Panel2.ResumeLayout(false);
+			this.splitContainer.Panel2.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
+			this.splitContainer.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -254,5 +320,8 @@
 		private System.Windows.Forms.ToolStripSplitButton actionClear;
 		private System.Windows.Forms.ToolStripMenuItem checkAutoClear;
 		private LogEntryList logEntryList;
+		private System.Windows.Forms.ToolStripButton buttonPauseOnError;
+		private System.Windows.Forms.TextBox textBoxEntry;
+		private System.Windows.Forms.SplitContainer splitContainer;
 	}
 }
