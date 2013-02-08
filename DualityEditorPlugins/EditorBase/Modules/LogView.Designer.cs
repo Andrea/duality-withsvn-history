@@ -214,6 +214,7 @@
 			this.buttonPauseOnError.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.buttonPauseOnError.Image = global::EditorBase.Properties.Resources.bell;
 			this.buttonPauseOnError.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonPauseOnError.Margin = new System.Windows.Forms.Padding(1, 1, 1, 2);
 			this.buttonPauseOnError.Name = "buttonPauseOnError";
 			this.buttonPauseOnError.Size = new System.Drawing.Size(23, 22);
 			this.buttonPauseOnError.Text = "Pause on Error";
@@ -234,6 +235,7 @@
 			this.textBoxEntry.Size = new System.Drawing.Size(681, 79);
 			this.textBoxEntry.TabIndex = 3;
 			this.textBoxEntry.WordWrap = false;
+			this.textBoxEntry.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBoxEntry_KeyDown);
 			// 
 			// splitContainer
 			// 

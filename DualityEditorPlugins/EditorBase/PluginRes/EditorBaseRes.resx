@@ -478,4 +478,13 @@
   <data name="LogView_Warnings" xml:space="preserve">
     <value>Warnings</value>
   </data>
+  <data name="LogView_ContextMenu_CopyAllItems" xml:space="preserve">
+    <value>Copy All</value>
+  </data>
+  <data name="LogView_ContextMenu_CopyItem" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="LogView_ContextMenu_ShowSource" xml:space="preserve">
+    <value>Show Source</value>
+  </data>
 </root>

@@ -12368,11 +12368,6 @@
             [GET] The value of <see cref="P:Duality.Time.FrameCount"/> when the message was logged.
             </summary>
         </member>
-        <member name="P:Duality.DataLogOutput.LogEntry.Trace">
-            <summary>
-            [GET] A stack trace from where the log entry was made. Only available in an editor environment.
-            </summary>
-        </member>
         <member name="T:Duality.Components.Renderers.AnimSpriteRenderer">
             <summary>
             Renders an animated sprite to represent the <see cref="T:Duality.GameObject"/>.

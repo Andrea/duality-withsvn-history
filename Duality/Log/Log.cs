@@ -377,11 +377,12 @@ namespace Duality
 			string eSite = e.TargetSite != null ? MemberInfo(e.TargetSite) : null;
 
 			return string.Format(System.Globalization.CultureInfo.InvariantCulture, 
-				"{0}{1}: {2}\nCallStack:\n{3}",
+				"{0}{1}: {2}{4}CallStack:{4}{3}",
 				eName,
 				eSite != null ? " at " + eSite : "",
 				e.Message,
-				e.StackTrace);
+				e.StackTrace,
+				Environment.NewLine);
 		}
 	}
 

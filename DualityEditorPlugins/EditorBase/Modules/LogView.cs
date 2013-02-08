@@ -216,5 +216,17 @@ namespace EditorBase
 			if (this.buttonPauseOnError.Checked && Sandbox.IsActive && !Sandbox.IsChangingState) Sandbox.Pause();
 			this.UpdateTabText();
 		}
+		private void textBoxEntry_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.A && e.Control)
+			{
+				this.textBoxEntry.SelectAll();
+			}
+			else if (e.KeyCode == Keys.Back || e.KeyCode == Keys.Delete)
+			{
+				this.textBoxEntry.DeselectAll();
+				this.textBoxEntry.SelectionStart = 0;
+			}
+		}
 	}
 }

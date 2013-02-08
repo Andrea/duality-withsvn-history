@@ -37,7 +37,6 @@ namespace Duality
 			private	int				indent;
 			private	DateTime		timestamp;
 			private	int				frameIndex;
-			private	StackTrace		trace;
 
 			/// <summary>
 			/// [GET] The <see cref="Log"/> from which this entry originates.
@@ -81,15 +80,8 @@ namespace Duality
 			{
 				get { return this.frameIndex; }
 			}
-			/// <summary>
-			/// [GET] A stack trace from where the log entry was made. Only available in an editor environment.
-			/// </summary>
-			public StackTrace Trace
-			{
-				get { return this.trace; }
-			}
 
-			public LogEntry(Log source, LogMessageType type, string msg, StackTrace trace = null)
+			public LogEntry(Log source, LogMessageType type, string msg)
 			{
 				this.source = source;
 				this.type = type;
@@ -97,7 +89,6 @@ namespace Duality
 				this.indent = source.Indent;
 				this.timestamp = DateTime.Now;
 				this.frameIndex = Time.FrameCount;
-				this.trace = trace;
 			}
 		}
 
@@ -122,16 +113,7 @@ namespace Duality
 		public void Write(Log source, LogMessageType type, string msg)
 		{
 			LogEntry entry;
-			if (DualityApp.ExecEnvironment == DualityApp.ExecutionEnvironment.Editor)
-			{
-				StackTrace trace = null;
-				try { trace = new StackTrace(true); } catch (Exception) {}
-				entry = new LogEntry(source, type, msg, trace);
-			}
-			else
-			{
-				entry = new LogEntry(source, type, msg);
-			}
+			entry = new LogEntry(source, type, msg);
 			data.Add(entry);
 			this.OnNewEntry(entry);
 		}

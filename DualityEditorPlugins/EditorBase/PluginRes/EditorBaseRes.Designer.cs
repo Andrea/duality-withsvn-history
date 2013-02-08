@@ -737,6 +737,33 @@ namespace EditorBase.PluginRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Copy All ähnelt.
+        /// </summary>
+        public static string LogView_ContextMenu_CopyAllItems {
+            get {
+                return ResourceManager.GetString("LogView_ContextMenu_CopyAllItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Copy ähnelt.
+        /// </summary>
+        public static string LogView_ContextMenu_CopyItem {
+            get {
+                return ResourceManager.GetString("LogView_ContextMenu_CopyItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Show Source ähnelt.
+        /// </summary>
+        public static string LogView_ContextMenu_ShowSource {
+            get {
+                return ResourceManager.GetString("LogView_ContextMenu_ShowSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Errors ähnelt.
         /// </summary>
         public static string LogView_Errors {

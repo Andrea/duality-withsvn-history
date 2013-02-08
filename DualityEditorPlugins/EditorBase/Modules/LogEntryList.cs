@@ -6,6 +6,9 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.IO;
+using System.Reflection;
+using System.Diagnostics;
 
 using Duality;
 using DualityEditor;
@@ -78,18 +81,37 @@ namespace EditorBase
 				if (this.log.Source == Log.Game && (filter & MessageFilter.SourceGame) == MessageFilter.None) return false;
 				return true;
 			}
+			public void GetFullText(StringBuilder appendTo)
+			{
+				appendTo.Append(this.log.Source.Prefix);
+				switch (this.log.Type)
+				{
+					case LogMessageType.Message:	appendTo.Append("Info:    "); break;
+					case LogMessageType.Warning:	appendTo.Append("Warning: "); break;
+					case LogMessageType.Error:		appendTo.Append("Error:   "); break;
+				}
+				appendTo.Append(' ', this.log.Indent * 4);
+				appendTo.Append(this.log.Message);
+			}
+			public string GetFullText()
+			{
+				StringBuilder builder = new StringBuilder();
+				this.GetFullText(builder);
+				return builder.ToString();
+			}
 		}
 
 
-		private	List<ViewEntry>	entryList		= new List<ViewEntry>();
-		private	MessageFilter	displayFilter	= MessageFilter.All;
-		private	DateTime		displayMinTime	= DateTime.MinValue;
-		private	DataLogOutput	boundOutput		= null;
-		private	Color			baseColor		= SystemColors.Control;
-		private	bool			scrolledToEnd	= true;
-		private	bool			lastSelected	= true;
-		private	ViewEntry		hoveredEntry	= null;
-		private	ViewEntry		selectedEntry	= null;
+		private	List<ViewEntry>		entryList		= new List<ViewEntry>();
+		private	MessageFilter		displayFilter	= MessageFilter.All;
+		private	DateTime			displayMinTime	= DateTime.MinValue;
+		private	DataLogOutput		boundOutput		= null;
+		private	Color				baseColor		= SystemColors.Control;
+		private	bool				scrolledToEnd	= true;
+		private	bool				lastSelected	= true;
+		private	ViewEntry			hoveredEntry	= null;
+		private	ViewEntry			selectedEntry	= null;
+		private	ContextMenuStrip	entryMenu		= null;
 
 
 		public event EventHandler SelectionChanged = null;
@@ -176,6 +198,10 @@ namespace EditorBase
 			this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
 			this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 			this.SetStyle(ControlStyles.ResizeRedraw, true);
+
+			this.entryMenu = new ContextMenuStrip();
+			this.entryMenu.Items.Add(PluginRes.EditorBaseRes.LogView_ContextMenu_CopyItem, null, this.entryMenu_CopyItem_Click);
+			this.entryMenu.Items.Add(PluginRes.EditorBaseRes.LogView_ContextMenu_CopyAllItems, null, this.entryMenu_CopyAllItems_Click);
 		}
 
 		public void Clear()
@@ -314,6 +340,7 @@ namespace EditorBase
 			if (this.SelectionChanged != null)
 				this.SelectionChanged(this, EventArgs.Empty);
 		}
+
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			base.OnPaint(e);
@@ -416,7 +443,7 @@ namespace EditorBase
 							messageFormatTimestamp);
 					}
 
-					if (this.selectedEntry == entry)
+					if (this.selectedEntry == entry && this.Focused)
 					{
 						e.Graphics.DrawRectangle(
 							new Pen(Color.FromArgb(64, this.ForeColor)), 
@@ -480,6 +507,19 @@ namespace EditorBase
 		{
 			base.OnMouseClick(e);
 			this.SelectedEntry = this.hoveredEntry;
+
+			if (e.Button == MouseButtons.Right && this.SelectedEntry != null)
+			{
+				this.entryMenu.Show(this, e.Location);
+			}
+		}
+		protected override void OnMouseDoubleClick(MouseEventArgs e)
+		{
+			base.OnMouseDoubleClick(e);
+			if (this.SelectedEntry != null)
+			{
+				this.entryMenu_CopyItem_Click(this, EventArgs.Empty);
+			}
 		}
 		protected override void OnPreviewKeyDown(PreviewKeyDownEventArgs e)
 		{
@@ -492,7 +532,17 @@ namespace EditorBase
 		{
 			base.OnKeyDown(e);
 			if (e.KeyCode == Keys.Back || e.KeyCode == Keys.Delete)
+			{
 				this.SelectedEntry = null;
+			}
+			else if (e.KeyCode == Keys.Return)
+			{
+				this.entryMenu_CopyItem_Click(this, EventArgs.Empty);
+			}
+			else if (e.KeyCode == Keys.C && e.Control && this.SelectedEntry != null)
+			{
+				this.entryMenu_CopyItem_Click(this, EventArgs.Empty);
+			}
 			else if (e.KeyCode == Keys.Down && this.DisplayedEntries.Any())
 			{
 				ViewEntry[] visEntries = this.DisplayedEntries.ToArray();
@@ -512,6 +562,20 @@ namespace EditorBase
 			bool wasAtEnd = this.IsScrolledToEnd;
 			this.AddEntry(e.Entry);
 			if (wasAtEnd) this.ScrollToEnd();
+		}
+		private void entryMenu_CopyAllItems_Click(object sender, EventArgs e)
+		{
+			StringBuilder completeLog = new StringBuilder();
+			foreach (ViewEntry entry in this.DisplayedEntries)
+			{
+				entry.GetFullText(completeLog);
+				completeLog.AppendLine();
+			}
+			Clipboard.SetText(completeLog.ToString());
+		}
+		private void entryMenu_CopyItem_Click(object sender, EventArgs e)
+		{
+			Clipboard.SetText(this.SelectedEntry.GetFullText());
 		}
 	}
 }

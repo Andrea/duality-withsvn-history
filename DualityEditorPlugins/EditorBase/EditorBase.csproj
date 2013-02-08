@@ -37,7 +37,6 @@
     <Reference Include="CustomPropertyGrid">
       <HintPath>..\..\DualityEditor\CustomPropertyGrid.dll</HintPath>
     </Reference>
-    <Reference Include="EditorBase.editor, Version=1.0.4781.23020, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="OpenTK, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Duality\OpenTK.dll</HintPath>
