@@ -198,23 +198,7 @@ namespace EditorBase
 		}
 		private void LogData_NewEntry(object sender, DataLogOutput.LogEntryEventArgs e)
 		{
-			bool isHidden = this.DockHandler.DockState.IsAutoHide() && !this.ContainsFocus;
-
-			if (isHidden)
-			{
-				if (e.Entry.Type == LogMessageType.Warning)
-				{
-					this.unseenWarnings++;
-				}
-				else if (e.Entry.Type == LogMessageType.Error)
-				{
-					if (this.unseenErrors == 0 || this.buttonPauseOnError.Checked) System.Media.SystemSounds.Hand.Play();
-					this.unseenErrors++;
-				}
-			}
-
-			if (e.Entry.Type == LogMessageType.Error && this.buttonPauseOnError.Checked && Sandbox.IsActive && !Sandbox.IsChangingState) Sandbox.Pause();
-			this.UpdateTabText();
+			this.InvokeEx(c => c.OnNewEntry(e));
 		}
 		private void textBoxEntry_KeyDown(object sender, KeyEventArgs e)
 		{
@@ -227,6 +211,28 @@ namespace EditorBase
 				this.textBoxEntry.DeselectAll();
 				this.textBoxEntry.SelectionStart = 0;
 			}
+		}
+		
+		private void OnNewEntry(DataLogOutput.LogEntryEventArgs e)
+		{
+			bool isHidden = this.DockHandler.DockState.IsAutoHide() && !this.ContainsFocus;
+			bool pause = e.Entry.Type == LogMessageType.Error && this.buttonPauseOnError.Checked && Sandbox.IsActive && !Sandbox.IsChangingState;
+
+			if (isHidden)
+			{
+				if (e.Entry.Type == LogMessageType.Warning)
+				{
+					this.unseenWarnings++;
+				}
+				else if (e.Entry.Type == LogMessageType.Error)
+				{
+					if (this.unseenErrors == 0 || pause) System.Media.SystemSounds.Hand.Play();
+					this.unseenErrors++;
+				}
+			}
+
+			if (pause) Sandbox.Pause();
+			this.UpdateTabText();
 		}
 	}
 }

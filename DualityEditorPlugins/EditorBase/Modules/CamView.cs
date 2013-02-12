@@ -136,7 +136,6 @@ namespace EditorBase
 		private	GLControl			glControl		= null;
 		private	GameObject			camObj			= null;
 		private	Camera				camComp			= null;
-		private	bool				camInternal		= false;
 		private	CamViewState		activeState		= null;
 		private	List<CamViewLayer>	activeLayers	= null;
 		private	List<Type>			lockedLayers	= new List<Type>();
@@ -293,8 +292,9 @@ namespace EditorBase
 			}
 
 			// Register DualityApp updater for camera steering behaviour
-			FileEventManager.ResourceModified += this.EditorForm_ResourceModified;
-			DualityEditorApp.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
+			FileEventManager.ResourceModified += this.FileEventManager_ResourceModified;
+			DualityEditorApp.ObjectPropertyChanged += this.DualityEditorApp_ObjectPropertyChanged;
+			DualityEditorApp.UpdatingEngine += this.DualityEditorApp_UpdatingEngine;
 			Scene.Entered += this.Scene_Entered;
 			Scene.Leaving += this.Scene_Leaving;
 			Scene.GameObjectUnregistered += this.Scene_GameObjectUnregistered;
@@ -323,11 +323,11 @@ namespace EditorBase
 		{
 			base.OnClosed(e);
 
-			if (this.camObj != null && !this.camInternal) DualityEditorApp.EditorObjects.UnregisterObj(this.camObj);
 			if (this.nativeCamObj != null) this.nativeCamObj.Dispose();
 
-			FileEventManager.ResourceModified -= this.EditorForm_ResourceModified;
-			DualityEditorApp.ObjectPropertyChanged -= this.EditorForm_ObjectPropertyChanged;
+			FileEventManager.ResourceModified -= this.FileEventManager_ResourceModified;
+			DualityEditorApp.ObjectPropertyChanged -= this.DualityEditorApp_ObjectPropertyChanged;
+			DualityEditorApp.UpdatingEngine -= this.DualityEditorApp_UpdatingEngine;
 			Scene.Entered -= this.Scene_Entered;
 			Scene.Leaving -= this.Scene_Leaving;
 			Scene.GameObjectUnregistered -= this.Scene_GameObjectUnregistered;
@@ -450,22 +450,17 @@ namespace EditorBase
 			if (c == this.camComp) return;
 
 			Camera prev = this.camComp;
-			if (this.camObj != null && !this.camInternal)
-				DualityEditorApp.EditorObjects.UnregisterObj(this.camObj);
 
 			if (c.GameObj == this.nativeCamObj)
 			{
-				this.camInternal = true;
 				this.camObj = this.nativeCamObj;
 				this.camComp = this.camObj.Camera;
 				this.camSelector.SelectedIndex = 0;
 			}
 			else
 			{
-				this.camInternal = false;
 				this.camObj = c.GameObj;
 				this.camComp = c;
-				DualityEditorApp.EditorObjects.RegisterObj(this.camObj);
 				this.camSelector.SelectedIndex = this.GetCameraSelectorIndex(c);
 			}
 
@@ -681,7 +676,7 @@ namespace EditorBase
 
 		private void OnPerspectiveChanged()
 		{
-			if (!this.camInternal)
+			if (this.camObj != this.nativeCamObj)
 			{
 				DualityEditorApp.NotifyObjPropChanged(
 					this, new ObjectSelection(this.camComp),
@@ -898,7 +893,7 @@ namespace EditorBase
 				this.bgColorDialog.SelectedColor.G,
 				this.bgColorDialog.SelectedColor.B,
 				0);
-			if (!this.camInternal)
+			if (this.camObj != this.nativeCamObj)
 			{
 				DualityEditorApp.NotifyObjPropChanged(
 					this, new ObjectSelection(this.camComp),
@@ -912,15 +907,20 @@ namespace EditorBase
 			this.glControl.Invalidate();
 		}
 		
-		private void EditorForm_ResourceModified(object sender, ResourceEventArgs e)
+		private void FileEventManager_ResourceModified(object sender, ResourceEventArgs e)
 		{
 			if (!e.IsResource) return;
 			this.glControl.Invalidate();
 		}
-		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
+		private void DualityEditorApp_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
 		{
 			if (!e.Objects.Resources.Any()) return;
 			this.glControl.Invalidate();
+		}
+		private void DualityEditorApp_UpdatingEngine(object sender, EventArgs e)
+		{
+			if (this.camObj != null && this.camObj != this.nativeCamObj)
+				DualityEditorApp.UpdateGameObject(this.camObj);
 		}
 		
 		private void Scene_Entered(object sender, EventArgs e)
@@ -930,7 +930,7 @@ namespace EditorBase
 		}
 		private void Scene_Leaving(object sender, EventArgs e)
 		{
-			if (!this.camInternal) this.SetCurrentCamera(null);
+			if (this.camObj != this.nativeCamObj) this.SetCurrentCamera(null);
 			this.glControl.Invalidate();
 		}
 		private void Scene_ComponentRemoved(object sender, ComponentEventArgs e)

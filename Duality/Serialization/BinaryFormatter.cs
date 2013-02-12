@@ -521,7 +521,7 @@ namespace Duality.Serialization
 			// Create the delegate without target and fix it later, so we can register its object id before loading its target object
 			MethodInfo	method	= this.ReadObject() as MethodInfo;
 			object		target	= null;
-			Delegate	del		= delType != null ? Delegate.CreateDelegate(delType, target, method) : null;
+			Delegate	del		= delType != null && method != null ? Delegate.CreateDelegate(delType, target, method) : null;
 
 			// Prepare object reference
 			this.idManager.Inject(del, objId);

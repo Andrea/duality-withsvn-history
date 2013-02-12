@@ -52,6 +52,7 @@ namespace DualityEditor
 		private	static ReloadCorePluginDialog		corePluginReloader	= null;
 		private	static bool							needsRecovery		= false;
 		private	static GameObjectManager			editorObjects		= new GameObjectManager();
+		private	static HashSet<GameObject>			updateObjects		= new HashSet<GameObject>();
 		private	static bool							dualityAppSuspended	= true;
 		private	static List<Resource>				unsavedResources	= new List<Resource>();
 		private	static ObjectSelection				selectionCurrent	= ObjectSelection.Null;
@@ -196,6 +197,10 @@ namespace DualityEditor
 			Resource.ResourceSaved += Resource_ResourceSaved;
 			Resource.ResourceSaving += Resource_ResourceSaving;
 			FileEventManager.PluginChanged += FileEventManager_PluginChanged;
+			editorObjects.Registered += editorObjects_Registered;
+			editorObjects.Unregistered += editorObjects_Unregistered;
+			editorObjects.ComponentAdded += editorObjects_ComponentAdded;
+			editorObjects.ComponentRemoved += editorObjects_ComponentRemoved;
 
 			// Initialize secondary editor components
 			CorePluginRegistry.Init();
@@ -512,6 +517,11 @@ namespace DualityEditor
 			mainContextControl.VSync = false;
 			mainContextControl.MakeCurrent();
 			DualityApp.TargetMode = mainContextControl.Context.GraphicsMode;
+		}
+
+		public static void UpdateGameObject(GameObject obj)
+		{
+			updateObjects.Add(obj);
 		}
 
 		public static void Select(object sender, ObjectSelection sel, SelectMode mode = SelectMode.Set)
@@ -1055,7 +1065,11 @@ namespace DualityEditor
 
 					try
 					{
-						DualityApp.EditorUpdate(editorObjects, Sandbox.IsFreezed, fixedSingleStep && Sandbox.State != SandboxState.Playing);
+						DualityApp.EditorUpdate(
+							editorObjects.ActiveObjects.Concat(updateObjects), 
+							Sandbox.IsFreezed, 
+							fixedSingleStep && Sandbox.State != SandboxState.Playing);
+						updateObjects.Clear();
 					}
 					catch (Exception exception)
 					{
@@ -1158,6 +1172,31 @@ namespace DualityEditor
 			// Update source code, in case the user is switching to his IDE without hitting the "open source code" button again
 			if (DualityApp.ExecContext != DualityApp.ExecutionContext.Terminated)
 				DualityEditorApp.UpdatePluginSourceCode();
+		}
+
+		private static void editorObjects_Registered(object sender, GameObjectEventArgs e)
+		{
+			e.Object.OnActivate();
+		}
+		private static void editorObjects_Unregistered(object sender, GameObjectEventArgs e)
+		{
+			e.Object.OnDeactivate();
+		}
+		private static void editorObjects_ComponentAdded(object sender, ComponentEventArgs e)
+		{
+			if (e.Component.Active)
+			{
+				ICmpInitializable cInit = e.Component as ICmpInitializable;
+				if (cInit != null) cInit.OnInit(Component.InitContext.Activate);
+			}
+		}
+		private static void editorObjects_ComponentRemoved(object sender, ComponentEventArgs e)
+		{
+			if (e.Component.Active)
+			{
+				ICmpInitializable cInit = e.Component as ICmpInitializable;
+				if (cInit != null) cInit.OnShutdown(Component.ShutdownContext.Deactivate);
+			}
 		}
 
 		private static void FileEventManager_PluginChanged(object sender, FileSystemEventArgs e)

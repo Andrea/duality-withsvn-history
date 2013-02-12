@@ -304,8 +304,6 @@ namespace Duality.Components
 
 		public Camera()
 		{
-			this.drawDevice = new DrawDevice();
-
 			// Set up default rendering
 			Pass worldPass = new Pass();
 			Pass overlayPass = new Pass();
@@ -552,6 +550,17 @@ namespace Duality.Components
 			return this.drawDevice.IsCoordInView(c, boundRad);
 		}
 
+		private void SetupDevice()
+		{
+			if (this.drawDevice != null && !this.drawDevice.Disposed) return;
+			this.drawDevice = new DrawDevice();
+		}
+		private void ReleaseDevice()
+		{
+			if (this.drawDevice == null) return;
+			this.drawDevice.Dispose();
+			this.drawDevice = null;
+		}
 		private void UpdateDeviceConfig()
 		{
 			this.drawDevice.RefCoord = this.gameobj.Transform.Pos;
@@ -660,16 +669,14 @@ namespace Duality.Components
 		{
 			if (context == InitContext.Activate)
 			{
-				if (this.drawDevice == null || this.drawDevice.Disposed)
-					this.drawDevice = new DrawDevice();
+				this.SetupDevice();
 			}
 		}
 		void ICmpInitializable.OnShutdown(Component.ShutdownContext context)
 		{
 			if (context == ShutdownContext.Deactivate)
 			{
-				this.drawDevice.Dispose();
-				this.drawDevice = null;
+				this.ReleaseDevice();
 			}
 		}
 	}

@@ -496,7 +496,7 @@ namespace Duality
 			Resource.RunCleanup();
 		}
 
-		internal static void EditorUpdate(GameObjectManager updateObjects, bool freezeScene, bool forceFixedStep)
+		internal static void EditorUpdate(IEnumerable<GameObject> updateObjects, bool freezeScene, bool forceFixedStep)
 		{
 			isUpdating = true;
 			Performance.timeUpdate.BeginMeasure();
@@ -509,7 +509,7 @@ namespace Duality
 				if (!freezeScene)	Scene.Current.Update();
 				else				Scene.Current.EditorUpdate();
 
-				foreach (GameObject obj in updateObjects.ActiveObjects)
+				foreach (GameObject obj in updateObjects)
 				{
 					if (!freezeScene && Scene.Current.AllObjects.Contains(obj)) continue;
 					obj.Update();
@@ -518,7 +518,7 @@ namespace Duality
 			else if (execContext == ExecutionContext.Editor)
 			{
 				Scene.Current.EditorUpdate();
-				foreach (GameObject obj in updateObjects.ActiveObjects) obj.Update();
+				foreach (GameObject obj in updateObjects) obj.Update();
 			}
 			sound.Update();
 			OnAfterUpdate();

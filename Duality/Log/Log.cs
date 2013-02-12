@@ -71,12 +71,10 @@ namespace Duality
 		}
 
 
-		private HashSet<string>				onceWritten = new HashSet<string>();
-		private	Dictionary<string,float>	timedLast	= new Dictionary<string,float>();
-		private	List<ILogOutput>			strOut		= null;
-		private	SharedState					state		= null;
-		private	string						name		= "Log";
-		private string						prefix		= "[Log] ";
+		private	List<ILogOutput>	strOut		= null;
+		private	SharedState			state		= null;
+		private	string				name		= "Log";
+		private string				prefix		= "[Log] ";
 
 		/// <summary>
 		/// [GET] The Log's name
@@ -135,15 +133,6 @@ namespace Duality
 		public void UnregisterOutput(ILogOutput writer)
 		{
 			this.strOut.Remove(writer);
-		}
-
-		/// <summary>
-		/// Resets the Logs timing and "written once" counters. Outputs will remain attached.
-		/// </summary>
-		public void Reset()
-		{
-			this.onceWritten.Clear();
-			this.timedLast.Clear();
 		}
 
 		/// <summary>

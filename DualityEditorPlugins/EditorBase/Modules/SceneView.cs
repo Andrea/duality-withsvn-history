@@ -1048,10 +1048,15 @@ namespace EditorBase
 
 			NodeBase node = this.objectView.SelectedNode.Tag as NodeBase;
 			GameObjectNode objNode = node as GameObjectNode;
-			if (objNode == null) e.Cancel = true;
-
-			DesignTimeObjectData data = CorePluginRegistry.RequestDesignTimeData(objNode.Obj);
-			if (data.IsLocked) e.Cancel = true;
+			if (objNode == null)
+			{
+				e.Cancel = true;
+			}
+			else
+			{
+				DesignTimeObjectData data = CorePluginRegistry.RequestDesignTimeData(objNode.Obj);
+				if (data.IsLocked) e.Cancel = true;
+			}
 
 			if (!e.Cancel)
 			{
@@ -1295,7 +1300,7 @@ namespace EditorBase
 			this.newToolStripMenuItem.Visible = (singleSelect && gameObjSelect) || noSelect;
 			this.toolStripSeparatorNew.Visible = !multiSelect && gameObjSelect && !noSelect;
 
-			this.renameToolStripMenuItem.Visible = !noSelect;
+			this.renameToolStripMenuItem.Visible = !noSelect && gameObjSelect;
 			this.cloneToolStripMenuItem.Visible = !noSelect && gameObjSelect;
 			this.deleteToolStripMenuItem.Visible = !noSelect;
 			this.toolStripSeparatorGameObject.Visible = gameObjSelect;
@@ -1516,20 +1521,21 @@ namespace EditorBase
 			// Create the Component
 			Type clickedType = e.ClickedItem.Tag as Type;
 			Component cmp = this.CreateComponent(this.objectView.SelectedNode, clickedType);
-			ComponentNode cmpNode = this.FindNode(cmp);
-			
-			// Deselect previous
-			this.objectView.ClearSelection();
 
-			// Select new node
+			NodeBase cmpNode = (NodeBase)this.FindNode(cmp) ?? this.FindNode(cmp.GameObj);
 			if (cmpNode != null)
 			{
+				// Deselect previous
+				this.objectView.ClearSelection();
+
+				// Select new node
 				TreeNodeAdv dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(cmpNode));
 				if (dragObjViewNode != null)
 				{
 					dragObjViewNode.IsSelected = true;
 					this.objectView.EnsureVisible(dragObjViewNode);
 				}
+				return;
 			}
 		}
 		private void customObjectActionItem_Click(object sender, EventArgs e)

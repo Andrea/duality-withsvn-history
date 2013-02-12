@@ -5505,11 +5505,6 @@
             </summary>
             <param name="writer"></param>
         </member>
-        <member name="M:Duality.Log.Reset">
-            <summary>
-            Resets the Logs timing and "written once" counters. Outputs will remain attached.
-            </summary>
-        </member>
         <member name="M:Duality.Log.PushIndent">
             <summary>
             Increases the current log entry indent.
@@ -7050,64 +7045,64 @@
         </member>
         <member name="M:Duality.Components.Physics.RigidBody.ApplyLocalImpulse(System.Single)">
             <summary>
-            Applies a Transform-local angular impulse to the object.
+            Applies a Transform-local angular impulse to the object. You don't usually need to apply <see cref="P:Duality.Time.TimeMult"/> here because it is inteded to be a one-time force impact.
             </summary>
             <param name="angularImpulse"></param>
         </member>
         <member name="M:Duality.Components.Physics.RigidBody.ApplyLocalImpulse(OpenTK.Vector2)">
             <summary>
-            Applies a Transform-local impulse to the objects mass center.
+            Applies a Transform-local impulse to the objects mass center. You don't usually need to apply <see cref="P:Duality.Time.TimeMult"/> here because it is inteded to be a one-time force impact.
             </summary>
             <param name="impulse"></param>
         </member>
         <member name="M:Duality.Components.Physics.RigidBody.ApplyLocalImpulse(OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
-            Applies a Transform-local impulse to the specified point.
+            Applies a Transform-local impulse to the specified point. You don't usually need to apply <see cref="P:Duality.Time.TimeMult"/> here because it is inteded to be a one-time force impact.
             </summary>
             <param name="impulse"></param>
             <param name="applyAt"></param>
         </member>
         <member name="M:Duality.Components.Physics.RigidBody.ApplyWorldImpulse(OpenTK.Vector2)">
             <summary>
-            Applies a world impulse to the objects mass center.
+            Applies a world impulse to the objects mass center. You don't usually need to apply <see cref="P:Duality.Time.TimeMult"/> here because it is inteded to be a one-time force impact.
             </summary>
             <param name="impulse"></param>
         </member>
         <member name="M:Duality.Components.Physics.RigidBody.ApplyWorldImpulse(OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
-            Applies a world impulse to the specified point.
+            Applies a world impulse to the specified point. You don't usually need to apply <see cref="P:Duality.Time.TimeMult"/> here because it is inteded to be a one-time force impact.
             </summary>
             <param name="impulse"></param>
             <param name="applyAt"></param>
         </member>
         <member name="M:Duality.Components.Physics.RigidBody.ApplyLocalForce(System.Single)">
             <summary>
-            Applies a Transform-local angular force to the object.
+            Applies a Transform-local angular force to the object. You don't need to apply <see cref="P:Duality.Time.TimeMult"/> here, the physics simulation takes care of this.
             </summary>
             <param name="angularForce"></param>
         </member>
         <member name="M:Duality.Components.Physics.RigidBody.ApplyLocalForce(OpenTK.Vector2)">
             <summary>
-            Applies a Transform-local force to the objects mass center.
+            Applies a Transform-local force to the objects mass center. You don't need to apply <see cref="P:Duality.Time.TimeMult"/> here, the physics simulation takes care of this.
             </summary>
             <param name="force"></param>
         </member>
         <member name="M:Duality.Components.Physics.RigidBody.ApplyLocalForce(OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
-            Applies a Transform-local force to the specified local point.
+            Applies a Transform-local force to the specified local point. You don't need to apply <see cref="P:Duality.Time.TimeMult"/> here, the physics simulation takes care of this.
             </summary>
             <param name="force"></param>
             <param name="applyAt"></param>
         </member>
         <member name="M:Duality.Components.Physics.RigidBody.ApplyWorldForce(OpenTK.Vector2)">
             <summary>
-            Applies a world force to the objects mass center.
+            Applies a world force to the objects mass center. You don't need to apply <see cref="P:Duality.Time.TimeMult"/> here, the physics simulation takes care of this.
             </summary>
             <param name="force"></param>
         </member>
         <member name="M:Duality.Components.Physics.RigidBody.ApplyWorldForce(OpenTK.Vector2,OpenTK.Vector2)">
             <summary>
-            Applies a world force to the specified world point.
+            Applies a world force to the specified world point. You don't need to apply <see cref="P:Duality.Time.TimeMult"/> here, the physics simulation takes care of this.
             </summary>
             <param name="force"></param>
             <param name="applyAt"></param>

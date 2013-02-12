@@ -281,8 +281,8 @@ namespace EditorBase.CamViewStates
 			this.LocalGLControl.DragOver	+= this.LocalGLControl_DragOver;
 			this.View.PerspectiveChanged	+= this.View_FocusDistChanged;
 			this.View.CurrentCameraChanged	+= this.View_CurrentCameraChanged;
-			DualityEditorApp.UpdatingEngine += this.EditorForm_AfterUpdateDualityApp;
-			DualityEditorApp.ObjectPropertyChanged += this.EditorForm_ObjectPropertyChanged;
+			DualityEditorApp.UpdatingEngine += this.DualityEditorApp_UpdatingEngine;
+			DualityEditorApp.ObjectPropertyChanged += this.DualityEditorApp_ObjectPropertyChanged;
 
 			Scene.Leaving += this.Scene_Changed;
 			Scene.Entered += this.Scene_Changed;
@@ -316,8 +316,8 @@ namespace EditorBase.CamViewStates
 			this.LocalGLControl.DragOver	-= this.LocalGLControl_DragOver;
 			this.View.PerspectiveChanged			-= this.View_FocusDistChanged;
 			this.View.CurrentCameraChanged			-= this.View_CurrentCameraChanged;
-			DualityEditorApp.UpdatingEngine			-= this.EditorForm_AfterUpdateDualityApp;
-			DualityEditorApp.ObjectPropertyChanged	-= this.EditorForm_ObjectPropertyChanged;
+			DualityEditorApp.UpdatingEngine			-= this.DualityEditorApp_UpdatingEngine;
+			DualityEditorApp.ObjectPropertyChanged	-= this.DualityEditorApp_ObjectPropertyChanged;
 			
 			Scene.Leaving -= this.Scene_Changed;
 			Scene.Entered -= this.Scene_Changed;
@@ -1498,11 +1498,11 @@ namespace EditorBase.CamViewStates
 		{
 			this.OnCurrentCameraChanged(e);
 		}
-		private void EditorForm_AfterUpdateDualityApp(object sender, EventArgs e)
+		private void DualityEditorApp_UpdatingEngine(object sender, EventArgs e)
 		{
 			this.OnUpdateState();
 		}
-		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
+		private void DualityEditorApp_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
 		{
 			if (e.HasAnyProperty(ReflectionInfo.Property_Transform_RelativePos, ReflectionInfo.Property_Transform_RelativeAngle) &&
 				e.Objects.Components.Any(c => c.GameObj == this.CameraObj))

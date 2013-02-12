@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Drawing;
 
@@ -35,6 +37,19 @@ namespace DualityEditor
 				c = c.Parent;
 			}
 			yield break;
+		}
+
+		public static U InvokeEx<T,U>(this T control, Func<T, U> func) where T : Control
+		{
+			return control.InvokeRequired ? (U)control.Invoke(func, control) : func(control);
+		}
+		public static void InvokeEx<T>(this T control, Action<T> func) where T : Control
+		{
+			control.InvokeEx(c => { func(c); return c; });
+		}
+		public static void InvokeEx<T>(this T control, Action action) where T : Control
+		{
+			control.InvokeEx(c => action());
 		}
 	}
 	public static class ExtMethodsDockState

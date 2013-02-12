@@ -340,6 +340,12 @@ namespace EditorBase
 			if (this.SelectionChanged != null)
 				this.SelectionChanged(this, EventArgs.Empty);
 		}
+		private void OnNewEntry(DataLogOutput.LogEntryEventArgs e)
+		{
+			bool wasAtEnd = this.IsScrolledToEnd;
+			this.AddEntry(e.Entry);
+			if (wasAtEnd) this.ScrollToEnd();
+		}
 
 		protected override void OnPaint(PaintEventArgs e)
 		{
@@ -559,9 +565,7 @@ namespace EditorBase
 
 		private void boundOutput_NewEntry(object sender, DataLogOutput.LogEntryEventArgs e)
 		{
-			bool wasAtEnd = this.IsScrolledToEnd;
-			this.AddEntry(e.Entry);
-			if (wasAtEnd) this.ScrollToEnd();
+			this.InvokeEx(c => c.OnNewEntry(e));
 		}
 		private void entryMenu_CopyAllItems_Click(object sender, EventArgs e)
 		{
