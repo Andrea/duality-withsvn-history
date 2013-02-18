@@ -710,7 +710,7 @@ namespace DualityEditor
 			// Create solution file if not existing yet
 			if (!File.Exists(EditorHelper.SourceCodeSolutionFile))
 			{
-				using (ZipFile gamePluginZip = ZipFile.Read(ReflectionHelper.GetEmbeddedResourceStream(typeof(MainForm).Assembly,  @"Resources\GamePluginTemplate.zip")))
+				using (ZipFile gamePluginZip = ZipFile.Read(EditorRes.GeneralRes.GamePluginTemplate))
 				{
 					gamePluginZip.ExtractAll(EditorHelper.SourceCodeDirectory, ExtractExistingFileAction.DoNotOverwrite);
 				}

@@ -57,11 +57,11 @@ namespace Duality.Resources
 		{
 			AudioData tmp;
 
-			tmp = new AudioData(ReflectionHelper.GetEmbeddedResourceStream(Assembly.GetExecutingAssembly(), @"Resources\Default\Beep.ogg"));
+			tmp = new AudioData(DefaultRes.Beep);
 			ContentProvider.RegisterContent(ContentPath_Beep, tmp);
-			tmp = new AudioData(ReflectionHelper.GetEmbeddedResourceStream(Assembly.GetExecutingAssembly(), @"Resources\Default\DroneLoop.ogg"));
+			tmp = new AudioData(DefaultRes.DroneLoop);
 			ContentProvider.RegisterContent(ContentPath_DroneLoop, tmp);
-			tmp = new AudioData(ReflectionHelper.GetEmbeddedResourceStream(Assembly.GetExecutingAssembly(), @"Resources\Default\LogoJingle.ogg"));
+			tmp = new AudioData(DefaultRes.LogoJingle);
 			ContentProvider.RegisterContent(ContentPath_LogoJingle, tmp);
 
 			Beep		= ContentProvider.RequestContent<AudioData>(ContentPath_Beep);

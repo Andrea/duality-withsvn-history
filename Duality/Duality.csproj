@@ -161,6 +161,11 @@
     <Compile Include="Resource.cs" />
     <Compile Include="Resources\AbstractShader.cs" />
     <Compile Include="Resources\AudioData.cs" />
+    <Compile Include="Resources\DefaultRes.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DefaultRes.resx</DependentUpon>
+    </Compile>
     <Compile Include="Resources\DrawTechnique.cs" />
     <Compile Include="Resources\FragmentShader.cs" />
     <Compile Include="Resources\Font.cs" />
@@ -216,6 +221,10 @@
     <Content Include="wrap_oal.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <EmbeddedResource Include="Resources\DefaultRes.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>DefaultRes.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\Default\DualityLogo256.png" />
     <EmbeddedResource Include="Resources\Default\DualityLogoB256.png" />
   </ItemGroup>

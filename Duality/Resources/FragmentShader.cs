@@ -52,15 +52,15 @@ namespace Duality.Resources
 			FragmentShader tmp;
 
 			tmp = new FragmentShader();
-			tmp.LoadSource(ReflectionHelper.GetEmbeddedResourceStream(typeof(FragmentShader).Assembly, @"Resources\Default\Minimal.frag"));
+			tmp.SetSource(DefaultRes.MinimalFrag);
 			ContentProvider.RegisterContent(ContentPath_Minimal, tmp);
 
 			tmp = new FragmentShader();
-			tmp.LoadSource(ReflectionHelper.GetEmbeddedResourceStream(typeof(FragmentShader).Assembly, @"Resources\Default\Picking.frag"));
+			tmp.SetSource(DefaultRes.PickingFrag);
 			ContentProvider.RegisterContent(ContentPath_Picking, tmp);
 
 			tmp = new FragmentShader();
-			tmp.LoadSource(ReflectionHelper.GetEmbeddedResourceStream(typeof(FragmentShader).Assembly, @"Resources\Default\SmoothAnim.frag"));
+			tmp.SetSource(DefaultRes.SmoothAnimFrag);
 			ContentProvider.RegisterContent(ContentPath_SmoothAnim, tmp);
 
 			Minimal		= ContentProvider.RequestContent<FragmentShader>(ContentPath_Minimal);

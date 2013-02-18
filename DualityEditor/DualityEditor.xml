@@ -305,6 +305,20 @@
               Sucht eine lokalisierte Zeichenfolge, die Sound ähnelt.
             </summary>
         </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.GameResTemplate">
+             <summary>
+               Sucht eine lokalisierte Zeichenfolge, die /*
+             * A set of static helper classes that provide easy runtime access to the games resources.
+             * This file is auto-generated. Any changes made to it are lost as soon as Duality decides
+             * to regenerate it.
+             */
+            namespace GameRes
+            {
+            CONTENT
+            }
+             ähnelt.
+             </summary>
+        </member>
         <member name="P:DualityEditor.EditorRes.GeneralRes.HelpInfo_NotAvailable_Desc">
             <summary>
               Sucht eine lokalisierte Zeichenfolge, die No information available. ähnelt.
@@ -385,6 +399,16 @@
               Sucht eine lokalisierte Zeichenfolge, die Quit ähnelt.
             </summary>
         </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.MenuItemName_Redo">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Redo: {0} ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.MenuItemName_RedoEmpty">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Redo ähnelt.
+            </summary>
+        </member>
         <member name="P:DualityEditor.EditorRes.GeneralRes.MenuItemName_SandboxFaster">
             <summary>
               Sucht eine lokalisierte Zeichenfolge, die Increase Speed ähnelt.
@@ -393,6 +417,21 @@
         <member name="P:DualityEditor.EditorRes.GeneralRes.MenuItemName_SandboxSlower">
             <summary>
               Sucht eine lokalisierte Zeichenfolge, die Decrease Speed ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.MenuItemName_Undo">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Undo: {0} ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.MenuItemName_UndoEmpty">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Undo ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.MenuName_Edit">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Edit ähnelt.
             </summary>
         </member>
         <member name="P:DualityEditor.EditorRes.GeneralRes.MenuName_File">

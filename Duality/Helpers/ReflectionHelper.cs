@@ -36,7 +36,8 @@ namespace Duality
 		public const BindingFlags BindAll = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
 		/// <summary>
-		/// Returns a Stream to an Assemblies embedded resource.
+		/// Returns a Stream to an Assemblies embedded resource. You don't normally need to use this and should retrieve 
+		/// embedded Resources using .resx Resource Managers instead, if you want type safety and compile time error checking.
 		/// </summary>
 		/// <param name="asm">The Assembly that embeds the desired resource.</param>
 		/// <param name="fileName">The name of the desired file.</param>

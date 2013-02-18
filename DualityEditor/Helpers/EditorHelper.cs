@@ -83,11 +83,7 @@ namespace DualityEditor
 
 		public static string GenerateGameResSrcFile()
 		{
-			string gameRes;
-			using (StreamReader sr = new StreamReader(ReflectionHelper.GetEmbeddedResourceStream(typeof(EditorHelper).Assembly,  @"Resources\GameResTemplate.txt")))
-			{
-				gameRes = sr.ReadToEnd();
-			}
+			string gameRes = EditorRes.GeneralRes.GameResTemplate;
 			string mainClassName;
 			string result = gameRes.Replace("CONTENT", GenerateGameResSrcFile_ScanDir(DataDirectory, 1, out mainClassName));
 			return result;

@@ -154,6 +154,31 @@ namespace DualityEditor.EditorRes {
             }
         }
         
+        public static byte[] GamePluginTemplate {
+            get {
+                object obj = ResourceManager.GetObject("GamePluginTemplate", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die /*
+        /// * A set of static helper classes that provide easy runtime access to the games resources.
+        /// * This file is auto-generated. Any changes made to it are lost as soon as Duality decides
+        /// * to regenerate it.
+        /// */
+        ///namespace GameRes
+        ///{
+        ///CONTENT
+        ///}
+        /// ähnelt.
+        /// </summary>
+        public static string GameResTemplate {
+            get {
+                return ResourceManager.GetString("GameResTemplate", resourceCulture);
+            }
+        }
+        
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die No information available. ähnelt.
         /// </summary>
@@ -334,6 +359,24 @@ namespace DualityEditor.EditorRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Redo: {0} ähnelt.
+        /// </summary>
+        public static string MenuItemName_Redo {
+            get {
+                return ResourceManager.GetString("MenuItemName_Redo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Redo ähnelt.
+        /// </summary>
+        public static string MenuItemName_RedoEmpty {
+            get {
+                return ResourceManager.GetString("MenuItemName_RedoEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Increase Speed ähnelt.
         /// </summary>
         public static string MenuItemName_SandboxFaster {
@@ -348,6 +391,33 @@ namespace DualityEditor.EditorRes {
         public static string MenuItemName_SandboxSlower {
             get {
                 return ResourceManager.GetString("MenuItemName_SandboxSlower", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Undo: {0} ähnelt.
+        /// </summary>
+        public static string MenuItemName_Undo {
+            get {
+                return ResourceManager.GetString("MenuItemName_Undo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Undo ähnelt.
+        /// </summary>
+        public static string MenuItemName_UndoEmpty {
+            get {
+                return ResourceManager.GetString("MenuItemName_UndoEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Edit ähnelt.
+        /// </summary>
+        public static string MenuName_Edit {
+            get {
+                return ResourceManager.GetString("MenuName_Edit", resourceCulture);
             }
         }
         

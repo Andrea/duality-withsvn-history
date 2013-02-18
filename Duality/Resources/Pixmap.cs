@@ -78,10 +78,10 @@ namespace Duality.Resources
 			Bitmap bm;
 			Pixmap tmp;
 
-			bm = new Bitmap(ReflectionHelper.GetEmbeddedResourceStream(Assembly.GetExecutingAssembly(), @"Resources\Default\DualityLogo256.png"));
+			bm = new Bitmap(DefaultRes.DualityLogo256);
 			tmp = new Pixmap(bm);
 			ContentProvider.RegisterContent(ContentPath_DualityLogo256, tmp);
-			bm = new Bitmap(ReflectionHelper.GetEmbeddedResourceStream(Assembly.GetExecutingAssembly(), @"Resources\Default\DualityLogoB256.png"));
+			bm = new Bitmap(DefaultRes.DualityLogoB256);
 			tmp = new Pixmap(bm);
 			ContentProvider.RegisterContent(ContentPath_DualityLogoB256, tmp);
 			bm = new Bitmap(1, 1); bm.SetPixel(0, 0, Color.FromArgb(255, 255, 255, 255));

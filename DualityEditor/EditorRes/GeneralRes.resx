@@ -134,25 +134,31 @@
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="CursorArrow" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\CursorArrow.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>CursorArrow.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="CursorArrowAction" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\CursorArrowAction.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>CursorArrowAction.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="CursorArrowActionMove" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\CursorArrowActionMove.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>CursorArrowActionMove.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="CursorArrowActionRotate" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\CursorArrowActionRotate.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>CursorArrowActionRotate.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="CursorArrowActionScale" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\CursorArrowActionScale.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>CursorArrowActionScale.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="CursorHandGrab" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\CursorHandGrab.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>CursorHandGrab.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="CursorHandGrabbing" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\CursorHandGrabbing.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>CursorHandGrabbing.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GamePluginTemplate" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>GamePluginTemplate.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="GameResTemplate" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>GameResTemplate.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="HelpInfo_NotAvailable_Desc" xml:space="preserve">
     <value>No information available.</value>
@@ -164,13 +170,13 @@
     <value>WorkingFolderIcon.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="ImageAppCreate" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\application_create.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>application_create.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="ImageTemplateCurrent" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\template_current.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>template_current.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="ImageTemplateEmpty" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\template_empty.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>template_empty.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Language" xml:space="preserve">
     <value>English</value>
@@ -217,11 +223,26 @@
   <data name="MenuItemName_Quit" xml:space="preserve">
     <value>Quit</value>
   </data>
+  <data name="MenuItemName_Redo" xml:space="preserve">
+    <value>Redo: {0}</value>
+  </data>
+  <data name="MenuItemName_RedoEmpty" xml:space="preserve">
+    <value>Redo</value>
+  </data>
   <data name="MenuItemName_SandboxFaster" xml:space="preserve">
     <value>Increase Speed</value>
   </data>
   <data name="MenuItemName_SandboxSlower" xml:space="preserve">
     <value>Decrease Speed</value>
+  </data>
+  <data name="MenuItemName_Undo" xml:space="preserve">
+    <value>Undo: {0}</value>
+  </data>
+  <data name="MenuItemName_UndoEmpty" xml:space="preserve">
+    <value>Undo</value>
+  </data>
+  <data name="MenuName_Edit" xml:space="preserve">
+    <value>Edit</value>
   </data>
   <data name="MenuName_File" xml:space="preserve">
     <value>File</value>
