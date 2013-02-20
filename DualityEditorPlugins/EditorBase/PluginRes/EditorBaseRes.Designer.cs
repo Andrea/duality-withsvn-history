@@ -1086,5 +1086,59 @@ namespace EditorBase.PluginRes {
                 return ResourceManager.GetString("SceneView_PrefabLink", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Move &apos;{0}&apos; ähnelt.
+        /// </summary>
+        public static string UndoRedo_MoveCamViewObj {
+            get {
+                return ResourceManager.GetString("UndoRedo_MoveCamViewObj", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Move {0} objects ähnelt.
+        /// </summary>
+        public static string UndoRedo_MoveCamViewObjMulti {
+            get {
+                return ResourceManager.GetString("UndoRedo_MoveCamViewObjMulti", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Rotate &apos;{0}&apos; ähnelt.
+        /// </summary>
+        public static string UndoRedo_RotateCamViewObj {
+            get {
+                return ResourceManager.GetString("UndoRedo_RotateCamViewObj", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Rotate {0} objects ähnelt.
+        /// </summary>
+        public static string UndoRedo_RotateCamViewObjMulti {
+            get {
+                return ResourceManager.GetString("UndoRedo_RotateCamViewObjMulti", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Scale &apos;{0}&apos; ähnelt.
+        /// </summary>
+        public static string UndoRedo_ScaleCamViewObj {
+            get {
+                return ResourceManager.GetString("UndoRedo_ScaleCamViewObj", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Scale {0} objects ähnelt.
+        /// </summary>
+        public static string UndoRedo_ScaleCamViewObjMulti {
+            get {
+                return ResourceManager.GetString("UndoRedo_ScaleCamViewObjMulti", resourceCulture);
+            }
+        }
     }
 }

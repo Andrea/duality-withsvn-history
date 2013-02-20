@@ -12,6 +12,7 @@ using Duality.ColorFormat;
 using DualityEditor;
 using DualityEditor.Forms;
 using DualityEditor.CorePluginInterface;
+using DualityEditor.UndoRedoActions;
 
 using OpenTK;
 
@@ -262,50 +263,16 @@ namespace EditorBase.CamViewStates
 			if (!DualityEditorApp.DisplayConfirmDeleteObjects(objSel)) return;
 			if (!DualityEditorApp.DisplayConfirmBreakPrefabLink(objSel)) return;
 
-			//UndoRedoManager.Do(
-			//    objList.Count != 1 ? string.Format("Delete {0} GameObjects", objList.Count) : string.Format("Delete {0}", objList[0].FullName), 
-			//    Scene.Current, 
-			//    (Scene s) => 
-			//    {
-			//        // Delete objects
-			//        foreach (GameObject o in objList)
-			//        { 
-			//            if (o.Disposed) continue;
-			//            o.Dispose(); 
-			//            s.UnregisterObj(o); 
-			//        }
-			//        DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(s));
-			//    });
-			
-			// Delete objects
-			foreach (GameObject o in objList)
-			{ 
-				if (o.Disposed) continue;
-				o.Dispose(); 
-				Scene.Current.UnregisterObj(o); 
-			}
-			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(Scene.Current));
+			UndoRedoManager.Do(new DeleteGameObjectAction(objList));
 		}
 		public override List<SelObj> CloneObjects(IEnumerable<SelObj> objEnum)
 		{
 			var objList = objEnum.Select(s => s.ActualObject as GameObject).ToList();
 
-			List<SelObj> clones = new List<SelObj>();
-			foreach (GameObject o in objList)
-			{ 
-				if (o.Disposed) continue;
-				GameObject clone = o.Clone();
+			CloneGameObjectAction cloneAction = new CloneGameObjectAction(objList);
+			UndoRedoManager.Do(cloneAction);
 
-				// Prevent physics from getting crazy.
-				if (clone.Transform != null && clone.RigidBody != null)
-					clone.Transform.Pos += Vector3.UnitX * 0.001f;
-
-				Scene.Current.RegisterObj(clone); 
-				clones.Add(new SelGameObj(clone));
-			}
-
-			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(Scene.Current));
-			return clones;
+			return cloneAction.Result.Select(o => new SelGameObj(o) as SelObj).ToList();
 		}
 
 		protected override void OnDragEnter(DragEventArgs e)

@@ -551,6 +551,11 @@ namespace Duality.Resources
 		{
 			base.OnCopyTo(r, provider);
 			Scene s = r as Scene;
+
+			// Apply general properties
+			s.globalGravity = this.globalGravity;
+
+			// Copy objects
 			s.objectManager.Clear();
 			s.objectManager.RegisterObj(this.RootObjects.Select(o => provider.RequestObjectClone(o)));
 		}

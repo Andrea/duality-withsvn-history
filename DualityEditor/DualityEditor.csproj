@@ -221,6 +221,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helpers\RecycleBin.cs" />
     <Compile Include="Helpers\XmlCodeDoc.cs" />
+    <Compile Include="UndoRedoActions\DeleteGameObjectAction.cs" />
+    <Compile Include="UndoRedoActions\CloneGameObjectAction.cs" />
     <Compile Include="UndoRedoManager.cs">
       <SubType>Code</SubType>
     </Compile>

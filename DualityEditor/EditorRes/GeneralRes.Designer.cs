@@ -812,5 +812,41 @@ namespace DualityEditor.EditorRes {
                 return ResourceManager.GetString("Template_Empty_Name", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Clone &apos;{0}&apos; ähnelt.
+        /// </summary>
+        public static string UndoRedo_CloneGameObject {
+            get {
+                return ResourceManager.GetString("UndoRedo_CloneGameObject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Clone {0} GameObjects ähnelt.
+        /// </summary>
+        public static string UndoRedo_CloneGameObjectMulti {
+            get {
+                return ResourceManager.GetString("UndoRedo_CloneGameObjectMulti", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Delete &apos;{0}&apos; ähnelt.
+        /// </summary>
+        public static string UndoRedo_DeleteGameObject {
+            get {
+                return ResourceManager.GetString("UndoRedo_DeleteGameObject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Delete {0} GameObjects ähnelt.
+        /// </summary>
+        public static string UndoRedo_DeleteGameObjectMulti {
+            get {
+                return ResourceManager.GetString("UndoRedo_DeleteGameObjectMulti", resourceCulture);
+            }
+        }
     }
 }

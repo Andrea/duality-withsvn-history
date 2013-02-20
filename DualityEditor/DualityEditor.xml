@@ -644,6 +644,26 @@
               Sucht eine lokalisierte Zeichenfolge, die Empty Project ähnelt.
             </summary>
         </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_CloneGameObject">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Clone &apos;{0}&apos; ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_CloneGameObjectMulti">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Clone {0} GameObjects ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_DeleteGameObject">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Delete &apos;{0}&apos; ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_DeleteGameObjectMulti">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Delete {0} GameObjects ähnelt.
+            </summary>
+        </member>
         <member name="T:DualityEditor.RecycleBin">
             <summary>
             Send files directly to the recycle bin.

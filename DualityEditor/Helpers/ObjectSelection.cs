@@ -372,14 +372,11 @@ namespace DualityEditor
 
 		public static bool operator ==(ObjectSelection first, ObjectSelection second)
 		{
-			if (object.ReferenceEquals(first, null) && object.ReferenceEquals(second, null)) return true;
+			if (object.ReferenceEquals(first, second)) return true;
 			if (object.ReferenceEquals(first, null) || object.ReferenceEquals(second, null)) return false;
 
 			if (first.cat != second.cat) return false;
-			if (first.obj.Count != second.obj.Count) return false;
-			if (first.obj.Any(o => !second.obj.Contains(o))) return false;
-
-			return true;
+			return first.obj.SetEqual(second.obj);
 		}
 		public static bool operator !=(ObjectSelection first, ObjectSelection second)
 		{

@@ -376,4 +376,16 @@
   <data name="Template_Empty_Name" xml:space="preserve">
     <value>Empty Project</value>
   </data>
+  <data name="UndoRedo_CloneGameObject" xml:space="preserve">
+    <value>Clone '{0}'</value>
+  </data>
+  <data name="UndoRedo_CloneGameObjectMulti" xml:space="preserve">
+    <value>Clone {0} GameObjects</value>
+  </data>
+  <data name="UndoRedo_DeleteGameObject" xml:space="preserve">
+    <value>Delete '{0}'</value>
+  </data>
+  <data name="UndoRedo_DeleteGameObjectMulti" xml:space="preserve">
+    <value>Delete {0} GameObjects</value>
+  </data>
 </root>

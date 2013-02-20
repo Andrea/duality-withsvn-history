@@ -1219,6 +1219,22 @@
             <seealso cref="M:Duality.DualityMetaData.ReadValue(System.String)"/>
             <seealso cref="M:Duality.DualityMetaData.ReadValueAs``1(System.String,``0@)"/>
         </member>
+        <member name="T:Duality.Cloning.CloneProviderContext">
+            <summary>
+            Describes the context of a cloning operation
+            </summary>
+        </member>
+        <member name="F:Duality.Cloning.CloneProviderContext.Default">
+            <summary>
+            A standard cloning operation.
+            </summary>
+        </member>
+        <member name="P:Duality.Cloning.CloneProviderContext.PreserveIdentity">
+            <summary>
+            [GET] Should the operation preserve each objects identity? If false, specific identity-preserving data
+            field such as Guid or Id fields will be copied as well. This might result in duplicate IDs.
+            </summary>
+        </member>
         <member name="T:Duality.VertexFormat.VertexC1P3T2">
             <summary>
             Vertex data providing each vertex a position (3x4 byte), color (1x4 byte) and texture coordinate (2x4 byte)
@@ -13949,6 +13965,27 @@
             <param name="rnd">The random number generator to use. Defaults to <see cref="P:Duality.MathF.Rnd"/>, if null.</param>
             <returns></returns>
         </member>
+        <member name="M:Duality.ExtMethodsIEnumerable.SetEqual``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEqualityComparer{``0})">
+            <summary>
+            Returns whether two sets of objects equal each other. This is the case if both sets contain an equal number of elements
+            and for each element in one set, there is a matching element in the other.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="first"></param>
+            <param name="second"></param>
+            <param name="comparer"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Duality.ExtMethodsIEnumerable.SetEqual``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Returns whether two sets of objects equal each other. This is the case if both sets contain an equal number of elements
+            and for each element in one set, there is a matching element in the other.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="first"></param>
+            <param name="second"></param>
+            <returns></returns>
+        </member>
         <member name="T:Duality.Components.SoundListener">
             <summary>
             Makes this <see cref="T:Duality.GameObject"/> the 3d sound listener.
@@ -14280,22 +14317,6 @@
         <member name="P:Duality.Components.Physics.AngleJointInfo.MaxImpulse">
             <summary>
             [GET / SET] The maximum angular impulse to apply to the RigidBody. A negative value equals infinity.
-            </summary>
-        </member>
-        <member name="T:Duality.Cloning.CloneProviderContext">
-            <summary>
-            Describes the context of a cloning operation
-            </summary>
-        </member>
-        <member name="F:Duality.Cloning.CloneProviderContext.Default">
-            <summary>
-            A standard cloning operation.
-            </summary>
-        </member>
-        <member name="P:Duality.Cloning.CloneProviderContext.PreserveIdentity">
-            <summary>
-            [GET] Should the operation preserve each objects identity? If false, specific identity-preserving data
-            field such as Guid or Id fields will be copied as well. This might result in duplicate IDs.
             </summary>
         </member>
     </members>

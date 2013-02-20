@@ -1615,8 +1615,7 @@ namespace EditorBase
 		}
 		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
 		{
-			bool affectsScene = e.HasAnyObject(Scene.Current.AllObjects);
-			if (e is PrefabAppliedEventArgs || (affectsScene && e.HasProperty(ReflectionInfo.Property_GameObject_PrefabLink)))
+			if (e is PrefabAppliedEventArgs || (e.HasProperty(ReflectionInfo.Property_GameObject_PrefabLink) && e.HasAnyObject(Scene.Current.AllObjects)))
 				this.UpdatePrefabLinkStatus();
 
 			if (e.HasProperty(ReflectionInfo.Property_GameObject_Name))

@@ -18,6 +18,7 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
 using EditorBase.PluginRes;
+using EditorBase.UndoRedoActions;
 
 namespace EditorBase.CamViewStates
 {
@@ -743,71 +744,41 @@ namespace EditorBase.CamViewStates
 		{
 			if (move == Vector3.Zero) return;
 
-			foreach (SelObj s in this.actionObjSel)
-				s.Pos += move;
+			UndoRedoManager.Do(new MoveCamViewObjAction(
+				this.actionObjSel, 
+				obj => this.PostPerformAction(obj, ObjectAction.Move), 
+				move));
 
 			this.drawSelGizmoState = ObjectAction.Move;
-			this.PostPerformAction(this.actionObjSel, ObjectAction.Move);
 			this.UpdateSelectionStats();
 			this.Invalidate();
 		}
 		public void RotateSelectionBy(float rotation)
 		{
 			if (rotation == 0.0f) return;
-
-			foreach (SelObj s in this.actionObjSel)
-			{
-				Vector3 posRelCenter = s.Pos - this.selectionCenter;
-				Vector3 posRelCenterTarget = posRelCenter;
-				MathF.TransformCoord(ref posRelCenterTarget.X, ref posRelCenterTarget.Y, rotation);
-
-				s.Pos = this.selectionCenter + posRelCenterTarget;
-				s.Angle += rotation;
-			}
+			
+			UndoRedoManager.Do(new RotateCamViewObjAction(
+				this.actionObjSel, 
+				obj => this.PostPerformAction(obj, ObjectAction.Rotate), 
+				rotation));
 
 			this.drawSelGizmoState = ObjectAction.Rotate;
-			this.PostPerformAction(this.actionObjSel, ObjectAction.Rotate);
 			this.UpdateSelectionStats();
 			this.Invalidate();
 		}
 		public void ScaleSelectionBy(float scale)
 		{
 			if (scale == 1.0f) return;
-
+			
 			float lastRadius = this.selectionRadius;
-			foreach (SelObj s in this.actionObjSel)
-			{
-				Vector3 scaleVec = new Vector3(scale, scale, scale);
-				Vector3 posRelCenter = s.Pos - this.selectionCenter;
-				Vector3 posRelCenterTarget;
-				Vector3.Multiply(ref posRelCenter, ref scaleVec, out posRelCenterTarget);
 
-				s.Pos = this.selectionCenter + posRelCenterTarget;
-				s.Scale *= scaleVec;
-			}
+			UndoRedoManager.Do(new ScaleCamViewObjAction(
+				this.actionObjSel, 
+				obj => this.PostPerformAction(obj, ObjectAction.Scale), 
+				scale));
+
 			this.drawSelGizmoState = ObjectAction.Scale;
-			this.PostPerformAction(this.actionObjSel, ObjectAction.Scale);
-
 			this.UpdateSelectionStats();
-
-			// If scaling didn't change the total bounding radius, the selected object doesn't support it properly - roll back!
-			if (lastRadius == this.selectionRadius)
-			{
-				float invScale = 1.0f / scale;
-				foreach (SelObj s in this.actionObjSel)
-				{
-					Vector3 scaleVec = new Vector3(invScale, invScale, invScale);
-					Vector3 posRelCenter = s.Pos - this.selectionCenter;
-					Vector3 posRelCenterTarget;
-					Vector3.Multiply(ref posRelCenter, ref scaleVec, out posRelCenterTarget);
-
-					s.Pos = this.selectionCenter + posRelCenterTarget;
-					s.Scale *= scaleVec;
-				}
-				this.PostPerformAction(this.actionObjSel, ObjectAction.Scale);
-				this.UpdateSelectionStats();
-			}
-
 			this.Invalidate();
 		}
 		

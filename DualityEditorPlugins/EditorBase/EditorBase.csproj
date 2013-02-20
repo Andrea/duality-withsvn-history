@@ -156,6 +156,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="UndoRedoActions\CamViewObjAction.cs" />
+    <Compile Include="UndoRedoActions\ScaleCamViewObjAction.cs" />
+    <Compile Include="UndoRedoActions\RotateCamViewObjAction.cs" />
+    <Compile Include="UndoRedoActions\MoveCamViewObjAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\DualityEditor\DualityEditor.csproj">

@@ -271,5 +271,59 @@ namespace Duality
 				yield return colArray[index];
 			}
 		}
+
+		/// <summary>
+		/// Returns whether two sets of objects equal each other. This is the case if both sets contain an equal number of elements
+		/// and for each element in one set, there is a matching element in the other.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="first"></param>
+		/// <param name="second"></param>
+		/// <param name="comparer"></param>
+		/// <returns></returns>
+		public static bool SetEqual<T>(this IEnumerable<T> first, IEnumerable<T> second, IEqualityComparer<T> comparer)
+		{
+			if (object.ReferenceEquals(first, second)) return true;
+			if (object.ReferenceEquals(first, null) || object.ReferenceEquals(second, null)) return false;
+
+			int count = first.Count();
+			if (count != second.Count()) return false;
+			
+			if (count < 25)
+			{
+				return first.All(o => second.Contains(o, comparer));
+			}
+			else
+			{
+				var cnt = new Dictionary<T,int>(comparer);
+				foreach (T s in first)
+				{
+					if (cnt.ContainsKey(s))
+						cnt[s]++;
+					else
+						cnt.Add(s, 1);
+				}
+				foreach (T s in second)
+				{
+					if (cnt.ContainsKey(s))
+						cnt[s]--;
+					else
+						return false;
+				}
+				return cnt.Values.All(c => c == 0);
+			}
+		}
+		/// <summary>
+		/// Returns whether two sets of objects equal each other. This is the case if both sets contain an equal number of elements
+		/// and for each element in one set, there is a matching element in the other.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="first"></param>
+		/// <param name="second"></param>
+		/// <returns></returns>
+		public static bool SetEqual<T>(this IEnumerable<T> first, IEnumerable<T> second)
+		{
+			return SetEqual<T>(first, second, EqualityComparer<T>.Default);
+		}
 	}
 }

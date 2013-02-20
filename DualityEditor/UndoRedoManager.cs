@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 
 using Duality;
-using Duality.Cloning;
 using Duality.Resources;
+using Duality.Cloning;
 
 namespace DualityEditor
 {
@@ -13,11 +13,17 @@ namespace DualityEditor
 	{
 		private static List<UndoRedoAction> actionStack = new List<UndoRedoAction>();
 		private static int actionIndex = -1;
+		private	static int maxActions = 50;
 
 
 		public static event EventHandler StackChanged = null;
 
 
+		public static int MaxUndoActions
+		{
+			get { return maxActions; }
+			set { maxActions = value; }
+		}
 		public static bool CanUndo
 		{
 			get { return PrevAction != null; }
@@ -76,30 +82,34 @@ namespace DualityEditor
 			}
 			else
 			{
+			//	Deactivated Undo/Redo for now
+			//	actionStack.Add(action);
+			//	actionIndex++;
 				action.Do();
-				actionStack.Add(action);
-				actionIndex++;
 			}
+
+			if (actionStack.Count > maxActions)
+			{
+				actionIndex -= actionStack.Count - maxActions;
+				actionStack.RemoveRange(0, actionStack.Count - maxActions);
+			}
+
 			OnStackChanged();
-		}
-		public static void Do<T>(string name, T affectedResource, Action<T> action) where T : Resource
-		{
-			Do(new GenericUndoRedoAction<T>(name, affectedResource, action));
 		}
 		public static void Redo()
 		{
 			UndoRedoAction action = NextAction;
 			if (action == null) return;
-			action.Do();
 			actionIndex++;
+			action.Do();
 			OnStackChanged();
 		}
 		public static void Undo()
 		{
 			UndoRedoAction action = PrevAction;
 			if (action == null) return;
-			action.Undo();
 			actionIndex--;
+			action.Undo();
 			OnStackChanged();
 		}
 
@@ -124,6 +134,8 @@ namespace DualityEditor
 
 	public abstract class UndoRedoAction : IUndoRedoActionInfo
 	{
+		protected static readonly CloneProviderContext BackupCloneContext = new CloneProviderContext(false);
+
 		public abstract string Name { get; }
 		public virtual HelpInfo Help
 		{
@@ -137,64 +149,5 @@ namespace DualityEditor
 		public virtual void Append(UndoRedoAction action) {}
 		public abstract void Do();
 		public abstract void Undo();
-	}
-
-	public class GenericUndoRedoAction<T> : UndoRedoAction where T : Resource
-	{
-		private static readonly CloneProviderContext CloneContext = new CloneProviderContext(false);
-
-		private	ContentRef<T>	affectedResource;
-		private	Resource		resUndoBackup;
-		private	Resource		resRedoBackup;
-		private	Action<T>		action;
-		private	string			name;
-
-
-		public override string Name
-		{
-			get { return this.name; }
-		}
-
-
-		public GenericUndoRedoAction(string name, T affectedResource, Action<T> action)
-		{
-			if (name == null)				throw new ArgumentNullException("name");
-			if (affectedResource == null)	throw new ArgumentNullException("affectedResource");
-			if (affectedResource.Disposed)	throw new ObjectDisposedException(affectedResource.FullName);
-			if (action == null)				throw new ArgumentNullException("action");
-
-			this.name = name;
-			this.affectedResource = affectedResource;
-			this.action = action;
-		}
-
-		public override void Do()
-		{
-			T res = this.affectedResource.Res;
-
-			if (this.resRedoBackup == null)
-			{
-				if (this.resUndoBackup == null)
-					this.resUndoBackup = CloneProvider.DeepClone(res, CloneContext);
-				this.action(res);
-			}
-			else
-			{
-				CloneProvider.DeepCopyTo(this.resRedoBackup, res, CloneContext);
-				DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(res));
-			}
-		}
-		public override void Undo()
-		{
-			if (this.resUndoBackup == null) throw new InvalidOperationException("Can't undo an action that hasn't been done yet");
-
-			T res = this.affectedResource.Res;
-
-			if (this.resRedoBackup == null)
-				this.resRedoBackup = Duality.Cloning.CloneProvider.DeepClone(res, CloneContext);
-			CloneProvider.DeepCopyTo(this.resUndoBackup, res, CloneContext);
-
-			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(res));
-		}
 	}
 }
