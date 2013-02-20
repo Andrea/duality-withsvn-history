@@ -221,6 +221,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helpers\RecycleBin.cs" />
     <Compile Include="Helpers\XmlCodeDoc.cs" />
+    <Compile Include="UndoRedoManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <EmbeddedResource Include="EditorRes\GeneralRes.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>GeneralRes.Designer.cs</LastGenOutput>
@@ -285,6 +288,8 @@
     <Content Include="DualityIconB.ico" />
     <Content Include="DualityIconC.ico" />
     <Content Include="EditorRes\WorkingFolderIcon.ico" />
+    <None Include="EditorRes\arrow_undo.png" />
+    <None Include="EditorRes\arrow_redo.png" />
     <None Include="EditorRes\CursorHandGrabbing.png" />
     <None Include="EditorRes\CursorHandGrab.png" />
     <None Include="EditorRes\control_step_blue.png" />

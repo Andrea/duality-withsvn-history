@@ -78,6 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cloning\CloneProvider.cs" />
+    <Compile Include="Cloning\CloneProviderContext.cs" />
     <Compile Include="Cloning\ICloneable.cs" />
     <Compile Include="Cloning\ISurrogate.cs" />
     <Compile Include="Cloning\Surrogates\BitmapSurrogate.cs" />

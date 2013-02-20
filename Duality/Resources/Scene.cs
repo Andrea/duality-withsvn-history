@@ -551,8 +551,8 @@ namespace Duality.Resources
 		{
 			base.OnCopyTo(r, provider);
 			Scene s = r as Scene;
-			s.Clear();
-			s.Append(this);
+			s.objectManager.Clear();
+			s.objectManager.RegisterObj(this.RootObjects.Select(o => provider.RequestObjectClone(o)));
 		}
 		protected override void OnSaving()
 		{

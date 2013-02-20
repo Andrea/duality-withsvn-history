@@ -4404,6 +4404,11 @@
             is used instead.
             </summary>
         </member>
+        <member name="P:Duality.Cloning.CloneProvider.Context">
+            <summary>
+            [GET] Provides information about the context in which the operation is performed.
+            </summary>
+        </member>
         <member name="T:Duality.VertexFormat.VertexC1P3T4A1">
             <summary>
             Vertex data providing each vertex a position (3x4 byte), color (1x4 byte), two texture coordinates (4x4 byte)
@@ -12600,6 +12605,83 @@
             [GET / SET] The minimum distance between both RigidBodies.
             </summary>
         </member>
+        <member name="T:Duality.Resources.DefaultRes">
+            <summary>
+              Eine stark typisierte Ressourcenklasse zum Suchen von lokalisierten Zeichenfolgen usw.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.DefaultRes.ResourceManager">
+            <summary>
+              Gibt die zwischengespeicherte ResourceManager-Instanz zurück, die von dieser Klasse verwendet wird.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.DefaultRes.Culture">
+            <summary>
+              Überschreibt die CurrentUICulture-Eigenschaft des aktuellen Threads für alle
+              Ressourcenzuordnungen, die diese stark typisierte Ressourcenklasse verwenden.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.DefaultRes.MinimalFrag">
+             <summary>
+               Sucht eine lokalisierte Zeichenfolge, die uniform sampler2D mainTex;
+            
+            void main()
+            {
+            	gl_FragColor = gl_Color * texture2D(mainTex, gl_TexCoord[0].st);
+            } ähnelt.
+             </summary>
+        </member>
+        <member name="P:Duality.Resources.DefaultRes.MinimalVert">
+             <summary>
+               Sucht eine lokalisierte Zeichenfolge, die void main()
+            {
+            	gl_Position = ftransform();
+            	gl_TexCoord[0] = gl_MultiTexCoord0;
+            	gl_FrontColor = gl_Color;
+            } ähnelt.
+             </summary>
+        </member>
+        <member name="P:Duality.Resources.DefaultRes.PickingFrag">
+             <summary>
+               Sucht eine lokalisierte Zeichenfolge, die uniform sampler2D mainTex;
+            
+            void main()
+            {
+            	gl_FragColor = vec4(gl_Color.rgb, step(0.5, texture2D(mainTex, gl_TexCoord[0].st).a));
+            } ähnelt.
+             </summary>
+        </member>
+        <member name="P:Duality.Resources.DefaultRes.SmoothAnimFrag">
+             <summary>
+               Sucht eine lokalisierte Zeichenfolge, die uniform sampler2D mainTex;
+            varying float animBlendVar;
+            
+            void main()
+            {
+            	// Retrieve frames
+            	vec4 texClrOld = texture2D(mainTex, gl_TexCoord[0].st);
+            	vec4 texClrNew = texture2D(mainTex, gl_TexCoord[0].pq);
+            
+            	// This code prevents nasty artifacts when blending between differently masked frames
+            	float accOldNew = (texClrOld.w - texClrNew.w) / (texClrOld.w + texClrNew.w);
+            	accOldNew *= mix(min(min(animBlendVar, 1.0 - animBlendVar) * 4.0, 1.0), 1.0, abs(accOldNew));
+            	texClrNew.xyz = mix(texClrNew.xyz, [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+             </summary>
+        </member>
+        <member name="P:Duality.Resources.DefaultRes.SmoothAnimVert">
+             <summary>
+               Sucht eine lokalisierte Zeichenfolge, die attribute float animBlend;
+            varying float animBlendVar;
+            
+            void main()
+            {
+            	gl_Position = ftransform();
+            	gl_TexCoord[0] = gl_MultiTexCoord0;
+            	gl_FrontColor = gl_Color;
+            	animBlendVar = animBlend;
+            } ähnelt.
+             </summary>
+        </member>
         <member name="T:Duality.NonSerializedResourceAttribute">
             <summary>
             Indicates that a field will be assumed null when serializing it as part of a Resource serialization.
@@ -14200,82 +14282,21 @@
             [GET / SET] The maximum angular impulse to apply to the RigidBody. A negative value equals infinity.
             </summary>
         </member>
-        <member name="T:Duality.Resources.DefaultRes">
+        <member name="T:Duality.Cloning.CloneProviderContext">
             <summary>
-              Eine stark typisierte Ressourcenklasse zum Suchen von lokalisierten Zeichenfolgen usw.
+            Describes the context of a cloning operation
             </summary>
         </member>
-        <member name="P:Duality.Resources.DefaultRes.ResourceManager">
+        <member name="F:Duality.Cloning.CloneProviderContext.Default">
             <summary>
-              Gibt die zwischengespeicherte ResourceManager-Instanz zurück, die von dieser Klasse verwendet wird.
+            A standard cloning operation.
             </summary>
         </member>
-        <member name="P:Duality.Resources.DefaultRes.Culture">
+        <member name="P:Duality.Cloning.CloneProviderContext.PreserveIdentity">
             <summary>
-              Überschreibt die CurrentUICulture-Eigenschaft des aktuellen Threads für alle
-              Ressourcenzuordnungen, die diese stark typisierte Ressourcenklasse verwenden.
+            [GET] Should the operation preserve each objects identity? If false, specific identity-preserving data
+            field such as Guid or Id fields will be copied as well. This might result in duplicate IDs.
             </summary>
-        </member>
-        <member name="P:Duality.Resources.DefaultRes.MinimalFrag">
-             <summary>
-               Sucht eine lokalisierte Zeichenfolge, die uniform sampler2D mainTex;
-            
-            void main()
-            {
-            	gl_FragColor = gl_Color * texture2D(mainTex, gl_TexCoord[0].st);
-            } ähnelt.
-             </summary>
-        </member>
-        <member name="P:Duality.Resources.DefaultRes.MinimalVert">
-             <summary>
-               Sucht eine lokalisierte Zeichenfolge, die void main()
-            {
-            	gl_Position = ftransform();
-            	gl_TexCoord[0] = gl_MultiTexCoord0;
-            	gl_FrontColor = gl_Color;
-            } ähnelt.
-             </summary>
-        </member>
-        <member name="P:Duality.Resources.DefaultRes.PickingFrag">
-             <summary>
-               Sucht eine lokalisierte Zeichenfolge, die uniform sampler2D mainTex;
-            
-            void main()
-            {
-            	gl_FragColor = vec4(gl_Color.rgb, step(0.5, texture2D(mainTex, gl_TexCoord[0].st).a));
-            } ähnelt.
-             </summary>
-        </member>
-        <member name="P:Duality.Resources.DefaultRes.SmoothAnimFrag">
-             <summary>
-               Sucht eine lokalisierte Zeichenfolge, die uniform sampler2D mainTex;
-            varying float animBlendVar;
-            
-            void main()
-            {
-            	// Retrieve frames
-            	vec4 texClrOld = texture2D(mainTex, gl_TexCoord[0].st);
-            	vec4 texClrNew = texture2D(mainTex, gl_TexCoord[0].pq);
-            
-            	// This code prevents nasty artifacts when blending between differently masked frames
-            	float accOldNew = (texClrOld.w - texClrNew.w) / (texClrOld.w + texClrNew.w);
-            	accOldNew *= mix(min(min(animBlendVar, 1.0 - animBlendVar) * 4.0, 1.0), 1.0, abs(accOldNew));
-            	texClrNew.xyz = mix(texClrNew.xyz, [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
-             </summary>
-        </member>
-        <member name="P:Duality.Resources.DefaultRes.SmoothAnimVert">
-             <summary>
-               Sucht eine lokalisierte Zeichenfolge, die attribute float animBlend;
-            varying float animBlendVar;
-            
-            void main()
-            {
-            	gl_Position = ftransform();
-            	gl_TexCoord[0] = gl_MultiTexCoord0;
-            	gl_FrontColor = gl_Color;
-            	animBlendVar = animBlend;
-            } ähnelt.
-             </summary>
         </member>
     </members>
 </doc>

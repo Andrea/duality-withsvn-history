@@ -25,10 +25,11 @@ namespace DualityEditor.Forms
 		private ToolStripMenuItem	menuRunSandboxPlay		= null;
 		private ToolStripMenuItem	menuRunSandboxPause		= null;
 		private ToolStripMenuItem	menuRunSandboxStop		= null;
-		private ToolStripMenuItem	menuRunSandboxPlayPause	= null;
 		private ToolStripMenuItem	menuRunSandboxStep		= null;
 		private ToolStripMenuItem	menuRunSandboxFaster	= null;
 		private ToolStripMenuItem	menuRunSandboxSlower	= null;
+		private ToolStripMenuItem	menuEditUndo			= null;
+		private ToolStripMenuItem	menuEditRedo			= null;
 
 
 		public DockPanel MainDockPanel
@@ -106,7 +107,6 @@ namespace DualityEditor.Forms
 		public void InitMenus()
 		{
 			ToolStripMenuItem fileItem =	this.RequestMenu(GeneralRes.MenuName_File);
-			ToolStripMenuItem viewItem =	this.RequestMenu(GeneralRes.MenuName_View);
 			ToolStripMenuItem newProjectItem =	this.RequestMenu(GeneralRes.MenuName_File, GeneralRes.MenuItemName_NewProject);
 												this.RequestSeparator(GeneralRes.MenuName_File, "SaveSeparator");
 			ToolStripMenuItem saveAllItem =		this.RequestMenu(GeneralRes.MenuName_File, this.actionSaveAll.Text);
@@ -114,6 +114,10 @@ namespace DualityEditor.Forms
 			ToolStripMenuItem openCodeItem =	this.RequestMenu(GeneralRes.MenuName_File, this.actionOpenCode.Text);
 												this.RequestSeparator(GeneralRes.MenuName_File, "EndSeparator");
 			ToolStripMenuItem quitItem =		this.RequestMenu(GeneralRes.MenuName_File, GeneralRes.MenuItemName_Quit);
+			ToolStripMenuItem editItem =	this.RequestMenu(GeneralRes.MenuName_Edit);
+			this.menuEditUndo =					this.RequestMenu(GeneralRes.MenuName_Edit, GeneralRes.MenuItemName_Undo);
+			this.menuEditRedo =					this.RequestMenu(GeneralRes.MenuName_Edit, GeneralRes.MenuItemName_Redo);
+			ToolStripMenuItem viewItem =	this.RequestMenu(GeneralRes.MenuName_View);
 			ToolStripMenuItem runItem =		this.RequestMenu(GeneralRes.MenuName_Run);
 			ToolStripMenuItem runGameItem =		this.RequestMenu(GeneralRes.MenuName_Run, this.actionRunApp.Text);
 			ToolStripMenuItem debugGameItem	=	this.RequestMenu(GeneralRes.MenuName_Run, this.actionDebugApp.Text);
@@ -127,10 +131,6 @@ namespace DualityEditor.Forms
 			this.menuRunSandboxFaster =			this.RequestMenu(GeneralRes.MenuName_Run, GeneralRes.MenuItemName_SandboxFaster);
 			ToolStripMenuItem helpItem =	this.RequestMenu(GeneralRes.MenuName_Help);
 			ToolStripMenuItem aboutItem =		this.RequestMenu(GeneralRes.MenuName_Help, GeneralRes.MenuItemName_About);
-
-			// ---------- Help ----------
-			helpItem.Alignment = ToolStripItemAlignment.Right;
-			aboutItem.Click += this.aboutItem_Click;
 
 			// ---------- File ----------
 			newProjectItem.Image = EditorRes.GeneralRes.ImageAppCreate;
@@ -160,6 +160,15 @@ namespace DualityEditor.Forms
 			quitItem.Click += this.quitItem_Click;
 			quitItem.ShortcutKeys = Keys.Alt | Keys.F4;
 
+			// ---------- Edit ----------
+			this.menuEditUndo.ShortcutKeys = Keys.Z | Keys.Control;
+			this.menuEditUndo.Click += this.menuEditUndo_Click;
+			this.menuEditUndo.Image = GeneralRes.arrow_undo;
+
+			this.menuEditRedo.ShortcutKeys = Keys.Y | Keys.Control;
+			this.menuEditRedo.Click += this.menuEditRedo_Click;
+			this.menuEditRedo.Image = GeneralRes.arrow_redo;
+
 			// ---------- Run ----------
 			this.menuRunSandboxPlay.Image = this.actionRunSandbox.Image;
 			this.menuRunSandboxPlay.Click += this.actionRunSandbox_Click;
@@ -188,6 +197,10 @@ namespace DualityEditor.Forms
 			this.menuRunSandboxFaster.Click += this.menuRunSandboxFaster_Click;
 			this.menuRunSandboxFaster.ShortcutKeys = Keys.F10;
 			this.menuRunSandboxFaster.Tag = HelpInfo.FromText(this.menuRunSandboxFaster.Text, GeneralRes.MenuItemInfo_SandboxFaster);
+			
+			// ---------- Help ----------
+			helpItem.Alignment = ToolStripItemAlignment.Right;
+			aboutItem.Click += this.aboutItem_Click;
 
 			// Attach help data to toolstrip actions
 			this.actionOpenCode.Tag = HelpInfo.FromText(this.actionOpenCode.Text, GeneralRes.MenuItemInfo_OpenProjectSource);
@@ -199,6 +212,7 @@ namespace DualityEditor.Forms
 			this.actionPauseSandbox.Tag = HelpInfo.FromText(this.actionPauseSandbox.Text, GeneralRes.MenuItemInfo_SandboxPause);
 			this.actionStopSandbox.Tag = HelpInfo.FromText(this.actionStopSandbox.Text, GeneralRes.MenuItemInfo_SandboxStop);
 		}
+
 		public void RequestSeparator(params string[] menuNames)
 		{
 			this.RequestMenu<ToolStripSeparator>(menuNames);
@@ -313,6 +327,10 @@ namespace DualityEditor.Forms
 			this.UpdateToolbar();
 
 			Sandbox.StateChanged += this.Sandbox_StateChanged;
+			UndoRedoManager.StackChanged += this.UndoRedoManager_StackChanged;
+
+			// Initially update Undo / Redo menu
+			this.UndoRedoManager_StackChanged(null, EventArgs.Empty);
 		}
 		protected override void OnClosed(EventArgs e)
 		{
@@ -380,6 +398,14 @@ namespace DualityEditor.Forms
 			Sandbox.Faster();
 		}
 
+		private void menuEditUndo_Click(object sender, EventArgs e)
+		{
+			UndoRedoManager.Undo();
+		}
+		private void menuEditRedo_Click(object sender, EventArgs e)
+		{
+			UndoRedoManager.Redo();
+		}
 		private void aboutItem_Click(object sender, EventArgs e)
 		{
 			AboutBox about = new AboutBox();
@@ -436,6 +462,19 @@ namespace DualityEditor.Forms
 		private void Sandbox_StateChanged(object sender, EventArgs e)
 		{
 			this.UpdateToolbar();
+		}
+		private void UndoRedoManager_StackChanged(object sender, EventArgs e)
+		{
+			IUndoRedoActionInfo prevInfo = UndoRedoManager.PrevActionInfo;
+			IUndoRedoActionInfo nextInfo = UndoRedoManager.NextActionInfo;
+
+			this.menuEditUndo.Enabled = UndoRedoManager.CanUndo;
+			this.menuEditUndo.Text = prevInfo != null ? string.Format(GeneralRes.MenuItemName_Undo, prevInfo.Name) : GeneralRes.MenuItemName_UndoEmpty;
+			this.menuEditUndo.Tag = prevInfo != null ? prevInfo.Help : null;
+
+			this.menuEditRedo.Enabled = UndoRedoManager.CanRedo;
+			this.menuEditRedo.Text = nextInfo != null ? string.Format(GeneralRes.MenuItemName_Redo, nextInfo.Name) : GeneralRes.MenuItemName_RedoEmpty;
+			this.menuEditRedo.Tag = nextInfo != null ? nextInfo.Help : null;
 		}
 
 		private System.Collections.IEnumerable async_ChangeDataFormat(ProcessingBigTaskDialog.WorkerInterface state)

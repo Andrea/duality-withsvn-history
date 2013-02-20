@@ -749,7 +749,9 @@ namespace Duality
 		{
 			GameObject target = targetObj as GameObject;
 
-			// Note: Do not copy the identifier!
+			// Copy the identifier only when not caring about identity data.
+			if (!provider.Context.PreserveIdentity)
+				target.identifier = this.identifier;
 
 			// Copy "pure" data
 			target.name			= this.name;

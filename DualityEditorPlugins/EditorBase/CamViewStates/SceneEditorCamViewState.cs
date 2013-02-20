@@ -262,14 +262,28 @@ namespace EditorBase.CamViewStates
 			if (!DualityEditorApp.DisplayConfirmDeleteObjects(objSel)) return;
 			if (!DualityEditorApp.DisplayConfirmBreakPrefabLink(objSel)) return;
 
+			//UndoRedoManager.Do(
+			//    objList.Count != 1 ? string.Format("Delete {0} GameObjects", objList.Count) : string.Format("Delete {0}", objList[0].FullName), 
+			//    Scene.Current, 
+			//    (Scene s) => 
+			//    {
+			//        // Delete objects
+			//        foreach (GameObject o in objList)
+			//        { 
+			//            if (o.Disposed) continue;
+			//            o.Dispose(); 
+			//            s.UnregisterObj(o); 
+			//        }
+			//        DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(s));
+			//    });
+			
 			// Delete objects
 			foreach (GameObject o in objList)
 			{ 
-			    if (o.Disposed) continue;
-			    o.Dispose(); 
-			    Scene.Current.UnregisterObj(o); 
+				if (o.Disposed) continue;
+				o.Dispose(); 
+				Scene.Current.UnregisterObj(o); 
 			}
-
 			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(Scene.Current));
 		}
 		public override List<SelObj> CloneObjects(IEnumerable<SelObj> objEnum)

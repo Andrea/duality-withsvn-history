@@ -12,6 +12,7 @@ namespace Duality.Cloning
 		private Dictionary<object, object>	objToClone		= new Dictionary<object,object>();
 		private	List<ISurrogate>			surrogates		= new List<ISurrogate>();
 		private	Type[]						explicitUnwrap	= null;
+		private	CloneProviderContext		context			= CloneProviderContext.Default;
 		
 
 		/// <summary>
@@ -24,10 +25,18 @@ namespace Duality.Cloning
 		{
 			get { return this.surrogates; }
 		}
+		/// <summary>
+		/// [GET] Provides information about the context in which the operation is performed.
+		/// </summary>
+		public CloneProviderContext Context
+		{
+			get { return this.context; }
+		}
 		
 
-		public CloneProvider()
+		public CloneProvider(CloneProviderContext context = null)
 		{
+			if (context != null) this.context = context;
 			this.AddSurrogate(new DelegateSurrogate());
 			this.AddSurrogate(new DictionarySurrogate());
 			this.AddSurrogate(new BitmapSurrogate());
@@ -247,14 +256,14 @@ namespace Duality.Cloning
 			}
 		}
 
-		public static T DeepClone<T>(T baseObj)
+		public static T DeepClone<T>(T baseObj, CloneProviderContext context = null)
 		{
-			CloneProvider provider = new CloneProvider();
+			CloneProvider provider = new CloneProvider(context);
 			return (T)provider.RequestObjectClone(baseObj);
 		}
-		public static void DeepCopyTo<T>(T baseObj, T targetObj)
+		public static void DeepCopyTo<T>(T baseObj, T targetObj, CloneProviderContext context = null)
 		{
-			CloneProvider provider = new CloneProvider();
+			CloneProvider provider = new CloneProvider(context);
 			provider.CopyObjectTo(baseObj, targetObj);
 		}
 
