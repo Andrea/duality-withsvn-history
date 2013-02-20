@@ -207,6 +207,7 @@ namespace DualityEditor
 			Sandbox.Init();
 			HelpSystem.Init();
 			FileEventManager.Init();
+			UndoRedoManager.Init();
 
 			// Enter an empty Scene and allow the engine to run
 			Scene.Current = new Scene();
@@ -265,6 +266,7 @@ namespace DualityEditor
 				FileEventManager.PluginChanged -= FileEventManager_PluginChanged;
 
 				// Initialize secondary editor components
+				UndoRedoManager.Terminate();
 				FileEventManager.Terminate();
 				HelpSystem.Terminate();
 				Sandbox.Terminate();

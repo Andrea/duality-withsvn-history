@@ -5,6 +5,7 @@ using System.Text;
 
 using Duality;
 using Duality.Cloning;
+using Duality.Resources;
 
 namespace DualityEditor
 {
@@ -15,6 +16,7 @@ namespace DualityEditor
 
 
 		public static event EventHandler StackChanged = null;
+
 
 		public static bool CanUndo
 		{
@@ -39,6 +41,20 @@ namespace DualityEditor
 		private static UndoRedoAction NextAction
 		{
 			get { return actionIndex + 1 < actionStack.Count && actionIndex + 1 >= 0 ? actionStack[actionIndex + 1] : null; }
+		}
+
+		
+		internal static void Init()
+		{
+			// Register events
+			Scene.Leaving += Scene_Changed;
+			Scene.Entered += Scene_Changed;
+		}
+		internal static void Terminate()
+		{
+			// Unregister events
+			Scene.Leaving -= Scene_Changed;
+			Scene.Entered -= Scene_Changed;
 		}
 
 
@@ -91,6 +107,12 @@ namespace DualityEditor
 		{
 			if (StackChanged != null)
 				StackChanged(null, EventArgs.Empty);
+		}
+
+		private static void Scene_Changed(object sender, EventArgs e)
+		{
+			// Maybe reimplement later to only remove Scene-related actions?
+			Clear();
 		}
 	}
 
