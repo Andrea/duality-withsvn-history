@@ -11,24 +11,24 @@ using DualityEditor.EditorRes;
 
 namespace DualityEditor.UndoRedoActions
 {
-	public class DeleteGameObjectAction : UndoRedoAction
+	public class DeleteComponentAction : UndoRedoAction
 	{
-		private	GameObject[]	targetObj		= null;
+		private	Component[]		targetObj		= null;
 		private	GameObject[]	backupParentObj	= null;
-		private GameObject[]	backupObj		= null;
+		private Component[]		backupObj		= null;
 
 		public override string Name
 		{
 			get { return this.targetObj.Length == 1 ? 
-				string.Format(GeneralRes.UndoRedo_DeleteGameObject, this.targetObj[0].Name) :
-				string.Format(GeneralRes.UndoRedo_DeleteGameObjectMulti, this.targetObj.Length); }
+				string.Format(GeneralRes.UndoRedo_DeleteComponent, this.targetObj[0].GetType().Name) :
+				string.Format(GeneralRes.UndoRedo_DeleteComponentMulti, this.targetObj.Length); }
 		}
 		public override bool IsVoid
 		{
 			get { return this.targetObj == null || this.targetObj.Length == 0; }
 		}
 
-		public DeleteGameObjectAction(IEnumerable<GameObject> obj)
+		public DeleteComponentAction(IEnumerable<Component> obj)
 		{
 			if (obj == null) throw new ArgumentNullException("obj");
 			this.targetObj = obj.Where(o => o != null && !o.Disposed).ToArray();
@@ -38,30 +38,28 @@ namespace DualityEditor.UndoRedoActions
 		{
 			if (this.backupObj == null)
 			{
-				this.backupObj = new GameObject[this.targetObj.Length];
+				this.backupObj = new Component[this.targetObj.Length];
 				this.backupParentObj = new GameObject[this.targetObj.Length];
 				for (int i = 0; i < this.backupObj.Length; i++)
 				{
 					this.backupObj[i] = CloneProvider.DeepClone(this.targetObj[i], BackupCloneContext);
-					this.backupParentObj[i] = this.targetObj[i].Parent;
+					this.backupParentObj[i] = this.targetObj[i].GameObj;
 				}
 			}
 
-			foreach (GameObject obj in this.targetObj)
+			foreach (Component obj in this.targetObj)
 			{
 				obj.Dispose();
-				Scene.Current.UnregisterObj(obj); 
 			}
 			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(Scene.Current));
 		}
 		public override void Undo()
 		{
 			if (this.backupObj == null) throw new InvalidOperationException("Can't undo what hasn't been done yet");
-			for (int i = 0; i < this.backupObj.Length; i++)
+			for (int i = this.backupObj.Length - 1; i >= 0; i--)
 			{
 				CloneProvider.DeepCopyTo(this.backupObj[i], this.targetObj[i], BackupCloneContext);
-				Scene.Current.RegisterObj(this.targetObj[i]);
-				this.targetObj[i].Parent = this.backupParentObj[i];
+				this.targetObj[i].GameObj = this.backupParentObj[i];
 			}
 			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(Scene.Current));
 		}

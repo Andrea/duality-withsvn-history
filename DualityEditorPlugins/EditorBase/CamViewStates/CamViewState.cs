@@ -143,6 +143,7 @@ namespace EditorBase.CamViewStates
 		private Vector3			actionLastLocSpace	= Vector3.Zero;
 		private	LockedAxis		actionLockedAxis	= LockedAxis.None;
 		private ObjectAction	action				= ObjectAction.None;
+		private	bool			selectionStatsValid	= false;
 		private	Vector3			selectionCenter		= Vector3.Zero;
 		private	float			selectionRadius		= 0.0f;
 		private	ObjectSelection	activeRectSel		= new ObjectSelection();
@@ -364,6 +365,9 @@ namespace EditorBase.CamViewStates
 
 		protected virtual void OnCollectStateDrawcalls(Canvas canvas)
 		{
+			// Assure we know how to display the current selection
+			this.ValidateSelectionStats();
+
 			// Collect the views layer drawcalls
 			this.CollectLayerDrawcalls(canvas);
 
@@ -599,6 +603,8 @@ namespace EditorBase.CamViewStates
 			
 			if (this.camAction == CameraAction.DragScene)
 			{
+				this.ValidateSelectionStats();
+
 				Vector2 curPos = new Vector2(cursorPos.X, cursorPos.Y);
 				Vector2 lastPos = new Vector2(this.camActionBeginLoc.X, this.camActionBeginLoc.Y);
 				this.camActionBeginLoc = new Point((int)curPos.X, (int)curPos.Y);
@@ -694,7 +700,7 @@ namespace EditorBase.CamViewStates
 			
 			if (DualityApp.ExecContext == DualityApp.ExecutionContext.Game)
 			{
-				this.UpdateSelectionStats();
+				this.InvalidateSelectionStats();
 				this.Invalidate();
 			}
 		}
@@ -750,7 +756,7 @@ namespace EditorBase.CamViewStates
 				move));
 
 			this.drawSelGizmoState = ObjectAction.Move;
-			this.UpdateSelectionStats();
+			this.InvalidateSelectionStats();
 			this.Invalidate();
 		}
 		public void RotateSelectionBy(float rotation)
@@ -763,14 +769,12 @@ namespace EditorBase.CamViewStates
 				rotation));
 
 			this.drawSelGizmoState = ObjectAction.Rotate;
-			this.UpdateSelectionStats();
+			this.InvalidateSelectionStats();
 			this.Invalidate();
 		}
 		public void ScaleSelectionBy(float scale)
 		{
 			if (scale == 1.0f) return;
-			
-			float lastRadius = this.selectionRadius;
 
 			UndoRedoManager.Do(new ScaleCamViewObjAction(
 				this.actionObjSel, 
@@ -778,7 +782,7 @@ namespace EditorBase.CamViewStates
 				scale));
 
 			this.drawSelGizmoState = ObjectAction.Scale;
-			this.UpdateSelectionStats();
+			this.InvalidateSelectionStats();
 			this.Invalidate();
 		}
 		
@@ -874,6 +878,8 @@ namespace EditorBase.CamViewStates
 			if (action == ObjectAction.None) return;
 			Point mouseLoc = this.PointToClient(Cursor.Position);
 
+			this.ValidateSelectionStats();
+
 			this.camVel = Vector3.Zero;
 
 			this.action = action;
@@ -925,10 +931,16 @@ namespace EditorBase.CamViewStates
 				this.UpdateMouseover(mouseLoc);
 
 			if (this.action != ObjectAction.None)
-				this.UpdateSelectionStats();
+				this.InvalidateSelectionStats();
 		}
-		protected void UpdateSelectionStats()
+		protected void InvalidateSelectionStats()
 		{
+			this.selectionStatsValid = false;
+		}
+		private void ValidateSelectionStats()
+		{
+			if (this.selectionStatsValid) return;
+			
 			List<SelObj> transformObjSel = this.allObjSel.Where(s => s.HasTransform).ToList();
 
 			this.selectionCenter = Vector3.Zero;
@@ -940,6 +952,8 @@ namespace EditorBase.CamViewStates
 
 			foreach (SelObj s in transformObjSel)
 				this.selectionRadius = MathF.Max(this.selectionRadius, s.BoundRadius + (s.Pos - this.selectionCenter).Length);
+
+			this.selectionStatsValid = true;
 		}
 		protected void UpdateMouseover(Point mouseLoc)
 		{
@@ -949,6 +963,8 @@ namespace EditorBase.CamViewStates
 
 			if (this.actionAllowed && !this.camBeginDragScene && this.camAction == CameraAction.None)
 			{
+				this.ValidateSelectionStats();
+
 				// Determine object at mouse position
 				this.mouseoverObject = this.PickSelObjAt(mouseLoc.X, mouseLoc.Y);
 
@@ -1057,6 +1073,8 @@ namespace EditorBase.CamViewStates
 		}
 		private void UpdateObjMove(Point mouseLoc)
 		{
+			this.ValidateSelectionStats();
+
 			float zMovement = this.CameraObj.Transform.Pos.Z - this.actionLastLocSpace.Z;
 			Vector3 target = this.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, this.selectionCenter.Z + zMovement));
 			Vector3 movLock = this.actionBeginLocSpace - this.actionLastLocSpace;
@@ -1071,6 +1089,8 @@ namespace EditorBase.CamViewStates
 		}
 		private void UpdateObjRotate(Point mouseLoc)
 		{
+			this.ValidateSelectionStats();
+
 			Vector3 spaceCoord = this.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, this.selectionCenter.Z));
 			float lastAngle = MathF.Angle(this.selectionCenter.X, this.selectionCenter.Y, this.actionLastLocSpace.X, this.actionLastLocSpace.Y);
 			float curAngle = MathF.Angle(this.selectionCenter.X, this.selectionCenter.Y, spaceCoord.X, spaceCoord.Y);
@@ -1082,6 +1102,7 @@ namespace EditorBase.CamViewStates
 		}
 		private void UpdateObjScale(Point mouseLoc)
 		{
+			this.ValidateSelectionStats();
 			if (this.selectionRadius == 0.0f) return;
 
 			Vector3 spaceCoord = this.GetSpaceCoord(new Vector3(mouseLoc.X, mouseLoc.Y, this.selectionCenter.Z));
@@ -1337,7 +1358,12 @@ namespace EditorBase.CamViewStates
 			bool ctrlPressed = e.Control;
 			if (this.actionAllowed)
 			{
-				if (e.KeyCode == Keys.Delete) this.DeleteObjects(this.actionObjSel);
+				if (e.KeyCode == Keys.Delete)
+				{
+					List<SelObj> deleteList = this.actionObjSel.ToList();
+					this.ClearSelection();
+					this.DeleteObjects(deleteList);
+				}
 				else if (e.KeyCode == Keys.C && (Control.ModifierKeys & Keys.Control) != Keys.None)
 				{
 					List<SelObj> cloneList = this.CloneObjects(this.actionObjSel);

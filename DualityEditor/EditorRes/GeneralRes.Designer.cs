@@ -834,6 +834,24 @@ namespace DualityEditor.EditorRes {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Delete &apos;{0}&apos; ähnelt.
         /// </summary>
+        public static string UndoRedo_DeleteComponent {
+            get {
+                return ResourceManager.GetString("UndoRedo_DeleteComponent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Delete {0} Components ähnelt.
+        /// </summary>
+        public static string UndoRedo_DeleteComponentMulti {
+            get {
+                return ResourceManager.GetString("UndoRedo_DeleteComponentMulti", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Delete &apos;{0}&apos; ähnelt.
+        /// </summary>
         public static string UndoRedo_DeleteGameObject {
             get {
                 return ResourceManager.GetString("UndoRedo_DeleteGameObject", resourceCulture);

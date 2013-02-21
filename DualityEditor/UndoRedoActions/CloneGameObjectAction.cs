@@ -24,6 +24,10 @@ namespace DualityEditor.UndoRedoActions
 				string.Format(GeneralRes.UndoRedo_CloneGameObject, this.targetObj[0].Name) :
 				string.Format(GeneralRes.UndoRedo_CloneGameObjectMulti, this.targetObj.Length); }
 		}
+		public override bool IsVoid
+		{
+			get { return this.targetObj == null || this.targetObj.Length == 0; }
+		}
 		public IEnumerable<GameObject> Result
 		{
 			get { return this.resultObj; }

@@ -27,6 +27,10 @@ namespace EditorBase.UndoRedoActions
 				string.Format(EditorBaseRes.UndoRedo_MoveCamViewObj, this.targetObj[0].ActualObject) :
 				string.Format(EditorBaseRes.UndoRedo_MoveCamViewObjMulti, this.targetObj.Length); }
 		}
+		public override bool IsVoid
+		{
+			get { return base.IsVoid || this.moveBy == Vector3.Zero; }
+		}
 
 		public MoveCamViewObjAction(IEnumerable<CamViewState.SelObj> obj, PostPerformAction postPerform, Vector3 moveBy) : base(obj, postPerform)
 		{

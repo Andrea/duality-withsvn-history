@@ -10,6 +10,31 @@
 --> Address the issues from the Issue Tracker: https://code.google.com/p/duality/issues/list
 
 
+-->	UndoRedo
+	-->	SceneView
+		-->	Create Components
+		-->	Create GameObjects
+		-->	Move Components
+		-->	Move GameObjects
+		-->	DragDrop
+	-->	CamView
+		-->	SceneEditor
+			-->	DragDrop
+		-->	RigidBodyEditor
+			-->	Delete Shapes
+			-->	Clone Shapes
+			-->	Create Shapes
+	-->	ObjectInspector
+		-->	Provide some functionality in PropertyGrid for hooking any SetValue call
+			and wrapping that up in a Duality-specific UndoRedoAction
+		-->	Edit Properties
+	-->	ProjectView
+		-->	Create / Import Resources
+		-->	Delete Resources
+		-->	Paste Resources
+	-->	General
+		-->	IEditorAction stuff from CorePluginInterface
+
 
 -->	Idea: Bitmap Fonts
 	-->	Let a Font specify an optional base Texture. It is used as a fixed Bitmap Font

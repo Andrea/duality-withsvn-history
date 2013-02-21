@@ -505,4 +505,7 @@
   <data name="UndoRedo_ScaleCamViewObjMulti" xml:space="preserve">
     <value>Scale {0} objects</value>
   </data>
+  <data name="UndoRedo_DeleteObjects" xml:space="preserve">
+    <value>Delete {0} objects</value>
+  </data>
 </root>

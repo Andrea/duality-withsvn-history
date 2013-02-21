@@ -22,7 +22,11 @@ namespace EditorBase.UndoRedoActions
 
 		protected	CamViewState.SelObj[]	targetObj	= null;
 		protected	PostPerformAction		postPerform = null;
-
+		
+		public override bool IsVoid
+		{
+			get { return this.targetObj == null || this.targetObj.Length == 0; }
+		}
 
 		public CamViewObjAction(IEnumerable<CamViewState.SelObj> obj, PostPerformAction postPerform)
 		{

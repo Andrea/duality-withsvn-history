@@ -1088,6 +1088,15 @@ namespace EditorBase.PluginRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Delete {0} objects ähnelt.
+        /// </summary>
+        public static string UndoRedo_DeleteObjects {
+            get {
+                return ResourceManager.GetString("UndoRedo_DeleteObjects", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Move &apos;{0}&apos; ähnelt.
         /// </summary>
         public static string UndoRedo_MoveCamViewObj {

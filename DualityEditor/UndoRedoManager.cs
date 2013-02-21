@@ -7,6 +7,8 @@ using Duality;
 using Duality.Resources;
 using Duality.Cloning;
 
+using DualityEditor.UndoRedoActions;
+
 namespace DualityEditor
 {
 	public static class UndoRedoManager
@@ -22,7 +24,7 @@ namespace DualityEditor
 		public static int MaxUndoActions
 		{
 			get { return maxActions; }
-			set { maxActions = value; }
+			set { maxActions = MathF.Max(value, 1); }
 		}
 		public static bool CanUndo
 		{
@@ -70,8 +72,13 @@ namespace DualityEditor
 			actionIndex = -1;
 			OnStackChanged();
 		}
+		public static void Do(string macroName, params UndoRedoAction[] macro)
+		{
+			Do(new UndoRedoMacroAction(macroName, macro));
+		}
 		public static void Do(UndoRedoAction action)
 		{
+			if (action.IsVoid) return;
 			if (actionStack.Count - actionIndex - 1 > 0)
 				actionStack.RemoveRange(actionIndex + 1, actionStack.Count - actionIndex - 1);
 
@@ -82,7 +89,7 @@ namespace DualityEditor
 			}
 			else
 			{
-			//	Deactivated Undo/Redo for now
+			//	Deactivate UndoRedo for now
 			//	actionStack.Add(action);
 			//	actionIndex++;
 				action.Do();
@@ -137,6 +144,10 @@ namespace DualityEditor
 		protected static readonly CloneProviderContext BackupCloneContext = new CloneProviderContext(false);
 
 		public abstract string Name { get; }
+		public virtual bool IsVoid
+		{
+			get { return false; }
+		}
 		public virtual HelpInfo Help
 		{
 			get { return null; }

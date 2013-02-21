@@ -28,6 +28,10 @@ namespace EditorBase.UndoRedoActions
 				string.Format(EditorBaseRes.UndoRedo_RotateCamViewObj, this.targetObj[0].ActualObject) :
 				string.Format(EditorBaseRes.UndoRedo_RotateCamViewObjMulti, this.targetObj.Length); }
 		}
+		public override bool IsVoid
+		{
+			get { return base.IsVoid || this.turnBy == 0.0f; }
+		}
 
 		public RotateCamViewObjAction(IEnumerable<CamViewState.SelObj> obj, PostPerformAction postPerform, float turnBy) : base(obj, postPerform)
 		{

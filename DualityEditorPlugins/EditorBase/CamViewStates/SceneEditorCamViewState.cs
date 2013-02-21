@@ -166,7 +166,7 @@ namespace EditorBase.CamViewStates
 				var parentlessGameObj = current.GameObjects.Where(g => !current.GameObjects.Any(g2 => g.IsChildOf(g2))).ToList();
 				this.actionObjSel = parentlessGameObj.Select(g => new SelGameObj(g) as SelObj).Where(s => s.HasTransform).ToList();
 			}
-			this.UpdateSelectionStats();
+			this.InvalidateSelectionStats();
 		}
 		internal protected override void OnLeaveState()
 		{
@@ -178,7 +178,7 @@ namespace EditorBase.CamViewStates
 		protected override void OnSceneChanged()
 		{
 			base.OnSceneChanged();
-			this.UpdateSelectionStats();
+			this.InvalidateSelectionStats();
 		}
 		protected override void OnCollectStateOverlayDrawcalls(Canvas canvas)
 		{
@@ -410,7 +410,7 @@ namespace EditorBase.CamViewStates
 		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
 		{
 			if (e.Objects.Components.Any(c => c is Transform || c is Renderer))
-				this.UpdateSelectionStats();
+				this.InvalidateSelectionStats();
 		}
 		private void EditorForm_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
@@ -440,7 +440,7 @@ namespace EditorBase.CamViewStates
 				this.actionObjSel.AddRange(addedParentFreeGameObj.Select(g => new SelGameObj(g) as SelObj).Where(s => s.HasTransform));
 			}
 
-			this.UpdateSelectionStats();
+			this.InvalidateSelectionStats();
 			this.UpdateAction();
 			this.Invalidate();
 		}

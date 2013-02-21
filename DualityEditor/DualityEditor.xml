@@ -654,6 +654,16 @@
               Sucht eine lokalisierte Zeichenfolge, die Clone {0} GameObjects ähnelt.
             </summary>
         </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_DeleteComponent">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Delete &apos;{0}&apos; ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_DeleteComponentMulti">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Delete {0} Components ähnelt.
+            </summary>
+        </member>
         <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_DeleteGameObject">
             <summary>
               Sucht eine lokalisierte Zeichenfolge, die Delete &apos;{0}&apos; ähnelt.

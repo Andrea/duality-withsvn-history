@@ -104,7 +104,7 @@ namespace EditorBase.CamViewStates
 
 			// Initial update
 			this.selectedBody = this.QuerySelectedCollider();
-			this.UpdateSelectionStats();
+			this.InvalidateSelectionStats();
 			this.UpdateToolbar();
 
 			this.View.LockLayer(typeof(CamViewLayers.RigidBodyShapeCamViewLayer));
@@ -795,7 +795,7 @@ namespace EditorBase.CamViewStates
 					foreach (SelPolyShape sps in this.allObjSel.OfType<SelPolyShape>()) sps.UpdatePolyStats();
 				//	foreach (SelEdgeShape sps in this.allObjSel.OfType<SelEdgeShape>()) sps.UpdateEdgeStats();
 					foreach (SelLoopShape sps in this.allObjSel.OfType<SelLoopShape>()) sps.UpdateLoopStats();
-					this.UpdateSelectionStats();
+					this.InvalidateSelectionStats();
 				}
 				this.UpdateToolbar();
 			}
@@ -827,7 +827,7 @@ namespace EditorBase.CamViewStates
 				this.actionObjSel = this.allObjSel.ToList();
 			}
 
-			this.UpdateSelectionStats();
+			this.InvalidateSelectionStats();
 			this.UpdateToolbar();
 			this.Invalidate();
 		}

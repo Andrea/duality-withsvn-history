@@ -28,6 +28,10 @@ namespace EditorBase.UndoRedoActions
 				string.Format(EditorBaseRes.UndoRedo_ScaleCamViewObj, this.targetObj[0].ActualObject) :
 				string.Format(EditorBaseRes.UndoRedo_ScaleCamViewObjMulti, this.targetObj.Length); }
 		}
+		public override bool IsVoid
+		{
+			get { return base.IsVoid || this.scaleBy == 1.0f; }
+		}
 
 		public ScaleCamViewObjAction(IEnumerable<CamViewState.SelObj> obj, PostPerformAction postPerform, float scaleBy) : base(obj, postPerform)
 		{
@@ -45,7 +49,7 @@ namespace EditorBase.UndoRedoActions
 			moveAction.backupPos = this.backupPos;
 			moveAction.backupScale = this.backupScale;
 			moveAction.Do();
-			this.scaleBy += moveAction.scaleBy;
+			this.scaleBy *= moveAction.scaleBy;
 		}
 		public override void Do()
 		{

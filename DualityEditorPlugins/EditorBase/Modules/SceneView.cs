@@ -14,9 +14,13 @@ using Aga.Controls.Tree;
 
 using Duality;
 using Duality.Resources;
+
 using DualityEditor;
 using DualityEditor.Forms;
 using DualityEditor.CorePluginInterface;
+using DualityEditor.UndoRedoActions;
+
+using EditorBase.PluginRes;
 
 namespace EditorBase
 {
@@ -450,24 +454,26 @@ namespace EditorBase
 			var objArray = objQuery.ToArray();
 			
 			this.objectView.BeginUpdate();
-			foreach (GameObject o in objArray)
+			// Deselect original nodes
+			foreach (GameObject obj in objArray)
 			{ 
-				GameObject clonedObj = o.Clone();
-				Scene.Current.RegisterObj(clonedObj);
-
-				// Deselect original node
 				TreeNodeAdv dragObjViewNode;
-				dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(this.FindNode(o)));
+				dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(this.FindNode(obj)));
 				dragObjViewNode.IsSelected = false;
+			}
 
-				// Select new node
+			CloneGameObjectAction cloneAction = new CloneGameObjectAction(objArray);
+			UndoRedoManager.Do(cloneAction);
+
+			// Select new nodes
+			foreach (GameObject clonedObj in cloneAction.Result)
+			{ 
+				TreeNodeAdv dragObjViewNode;
 				dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(this.FindNode(clonedObj)));
 				dragObjViewNode.IsSelected = true;
 				this.objectView.EnsureVisible(dragObjViewNode);
 			}
 			this.objectView.EndUpdate();
-
-			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(Scene.Current));
 		}
 		protected void DeleteNodes(IEnumerable<TreeNodeAdv> nodes)
 		{
@@ -501,20 +507,11 @@ namespace EditorBase
 
 			// Delete objects
 			this.objectView.BeginUpdate();
-			foreach (GameObject o in objList)
-			{ 
-				if (o.Disposed) continue;
-				o.Dispose(); 
-				Scene.Current.UnregisterObj(o); 
-			}
-			foreach (Component c in cmpList)
-			{
-				if (c.Disposed) continue;
-				c.Dispose();
-			}
+			UndoRedoManager.Do(
+				string.Format(EditorBaseRes.UndoRedo_DeleteObjects, objList.Count + cmpList.Count),
+				new DeleteGameObjectAction(objList), 
+				new DeleteComponentAction(cmpList));
 			this.objectView.EndUpdate();
-
-			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(Scene.Current));
 		}
 		protected Component CheckComponentsRemovable(List<Component> cmpList, List<GameObject> ignoreGameObjList)
 		{
