@@ -13,9 +13,20 @@ namespace DualityEditor
 {
 	public static class UndoRedoManager
 	{
-		private static List<UndoRedoAction> actionStack = new List<UndoRedoAction>();
-		private static int actionIndex = -1;
-		private	static int maxActions = 50;
+		public enum MacroDeriveName
+		{
+			UseGeneric,
+			FromFirst,
+			FromLast
+		}
+
+		private static	List<UndoRedoAction>	actionStack			= new List<UndoRedoAction>();
+		private static	int						actionIndex			= -1;
+		private	static	string					macroName			= null;
+		private	static	int						macroBeginCount		= 0;
+		private static	List<UndoRedoAction>	macroList			= new List<UndoRedoAction>();
+		private	static	int						maxActions			= 50;
+		private	static	bool					lastActionFinished	= false;
 
 
 		public static event EventHandler StackChanged = null;
@@ -57,12 +68,14 @@ namespace DualityEditor
 			// Register events
 			Scene.Leaving += Scene_Changed;
 			Scene.Entered += Scene_Changed;
+			Sandbox.StateChanged += Scene_Changed;
 		}
 		internal static void Terminate()
 		{
 			// Unregister events
 			Scene.Leaving -= Scene_Changed;
 			Scene.Entered -= Scene_Changed;
+			Sandbox.StateChanged -= Scene_Changed;
 		}
 
 
@@ -70,6 +83,7 @@ namespace DualityEditor
 		{
 			actionStack.Clear();
 			actionIndex = -1;
+			lastActionFinished = false;
 			OnStackChanged();
 		}
 		public static void Do(string macroName, params UndoRedoAction[] macro)
@@ -78,30 +92,12 @@ namespace DualityEditor
 		}
 		public static void Do(UndoRedoAction action)
 		{
-			if (action.IsVoid) return;
-			if (actionStack.Count - actionIndex - 1 > 0)
-				actionStack.RemoveRange(actionIndex + 1, actionStack.Count - actionIndex - 1);
-
-			UndoRedoAction prev = PrevAction;
-			if (prev != null && prev.CanAppend(action))
-			{
-				prev.Append(action);
-			}
-			else
-			{
-			//	Deactivate UndoRedo for now
-			//	actionStack.Add(action);
-			//	actionIndex++;
-				action.Do();
-			}
-
-			if (actionStack.Count > maxActions)
-			{
-				actionIndex -= actionStack.Count - maxActions;
-				actionStack.RemoveRange(0, actionStack.Count - maxActions);
-			}
-
-			OnStackChanged();
+			AppendAction(action, true);
+		}
+		public static void Finish()
+		{
+			if (macroBeginCount != 0) return;
+			lastActionFinished = true;
 		}
 		public static void Redo()
 		{
@@ -118,6 +114,75 @@ namespace DualityEditor
 			actionIndex--;
 			action.Undo();
 			OnStackChanged();
+		}
+
+		private static void AppendAction(UndoRedoAction action, bool performAction)
+		{
+			if (action.IsVoid) return;
+			if (macroBeginCount > 0)
+			{
+				if (performAction) action.Do();
+				macroList.Add(action);
+				return;
+			}
+
+			bool hadNext = false;
+			if (actionStack.Count - actionIndex - 1 > 0)
+			{
+				actionStack.RemoveRange(actionIndex + 1, actionStack.Count - actionIndex - 1);
+				hadNext = true;
+			}
+
+			UndoRedoAction prev = PrevAction;
+			if (!lastActionFinished && !hadNext && prev != null && prev.CanAppend(action))
+			{
+				prev.Append(action);
+			}
+			else
+			{
+				lastActionFinished = false;
+				if (!Sandbox.IsActive && false) // UndoRedo is inactive for now
+				{
+					actionStack.Add(action);
+					actionIndex++;
+				}
+				if (performAction) action.Do();
+			}
+
+			if (actionStack.Count > maxActions)
+			{
+				actionIndex -= actionStack.Count - maxActions;
+				actionStack.RemoveRange(0, actionStack.Count - maxActions);
+			}
+
+			OnStackChanged();
+		}
+
+		public static void BeginMacro(string name = null)
+		{
+			if (macroBeginCount == 0 && name != null) macroName = name;
+			macroBeginCount++;
+		}
+		public static void EndMacro(string name)
+		{
+			if (macroBeginCount == 0) throw new InvalidOperationException("Attempting to end a non-existent macro recording");
+
+			macroBeginCount--;
+			if (macroBeginCount == 0)
+			{
+				AppendAction(new UndoRedoMacroAction(name ?? macroName, macroList), false);
+				macroList.Clear();
+			}
+		}
+		public static void EndMacro(MacroDeriveName name = MacroDeriveName.UseGeneric)
+		{
+			string nameStr = null;
+			if (macroList.Count > 0)
+			{
+				if (name == MacroDeriveName.FromFirst) nameStr = macroList.First().Name;
+				if (name == MacroDeriveName.FromLast) nameStr = macroList.Last().Name;
+			}
+			EndMacro(nameStr);
 		}
 
 		private static void OnStackChanged()

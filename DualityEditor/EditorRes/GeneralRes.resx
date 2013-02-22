@@ -377,21 +377,54 @@
     <value>Empty Project</value>
   </data>
   <data name="UndoRedo_CloneGameObject" xml:space="preserve">
-    <value>Clone '{0}'</value>
+    <value>Clone {0}</value>
   </data>
   <data name="UndoRedo_CloneGameObjectMulti" xml:space="preserve">
     <value>Clone {0} GameObjects</value>
   </data>
   <data name="UndoRedo_DeleteGameObject" xml:space="preserve">
-    <value>Delete '{0}'</value>
+    <value>Delete {0}</value>
   </data>
   <data name="UndoRedo_DeleteGameObjectMulti" xml:space="preserve">
     <value>Delete {0} GameObjects</value>
   </data>
   <data name="UndoRedo_DeleteComponent" xml:space="preserve">
-    <value>Delete '{0}'</value>
+    <value>Delete {0}</value>
   </data>
   <data name="UndoRedo_DeleteComponentMulti" xml:space="preserve">
     <value>Delete {0} Components</value>
+  </data>
+  <data name="UndoRedo_CreateComponent" xml:space="preserve">
+    <value>Create {0}</value>
+  </data>
+  <data name="UndoRedo_CreateComponentMulti" xml:space="preserve">
+    <value>Create {0} Components</value>
+  </data>
+  <data name="UndoRedo_CreateGameObject" xml:space="preserve">
+    <value>Create {0}</value>
+  </data>
+  <data name="UndoRedo_CreateGameObjectMulti" xml:space="preserve">
+    <value>Create {0} GameObjects</value>
+  </data>
+  <data name="UndoRedo_Macro" xml:space="preserve">
+    <value>Macro: {0} Actions</value>
+  </data>
+  <data name="UndoRedo_SetComponentParent" xml:space="preserve">
+    <value>Re-Parent {0}</value>
+  </data>
+  <data name="UndoRedo_SetComponentParentMulti" xml:space="preserve">
+    <value>Re-Parent {0} Components</value>
+  </data>
+  <data name="UndoRedo_SetGameObjectName" xml:space="preserve">
+    <value>Rename {0}</value>
+  </data>
+  <data name="UndoRedo_SetGameObjectNameMulti" xml:space="preserve">
+    <value>Rename {0} GameObjects</value>
+  </data>
+  <data name="UndoRedo_SetGameObjectParent" xml:space="preserve">
+    <value>Re-Parent {0}</value>
+  </data>
+  <data name="UndoRedo_SetGameObjectParentMulti" xml:space="preserve">
+    <value>Re-Parent {0} GameObjects</value>
   </data>
 </root>

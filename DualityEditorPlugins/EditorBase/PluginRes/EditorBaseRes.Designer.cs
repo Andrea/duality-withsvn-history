@@ -1097,7 +1097,25 @@ namespace EditorBase.PluginRes {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Move &apos;{0}&apos; ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Drop {0} ähnelt.
+        /// </summary>
+        public static string UndoRedo_DropGameObjectInScene {
+            get {
+                return ResourceManager.GetString("UndoRedo_DropGameObjectInScene", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Drop {0} GameObjects ähnelt.
+        /// </summary>
+        public static string UndoRedo_DropGameObjectInSceneMulti {
+            get {
+                return ResourceManager.GetString("UndoRedo_DropGameObjectInSceneMulti", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Move {0} ähnelt.
         /// </summary>
         public static string UndoRedo_MoveCamViewObj {
             get {
@@ -1115,7 +1133,7 @@ namespace EditorBase.PluginRes {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Rotate &apos;{0}&apos; ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Rotate {0} ähnelt.
         /// </summary>
         public static string UndoRedo_RotateCamViewObj {
             get {
@@ -1133,7 +1151,7 @@ namespace EditorBase.PluginRes {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Scale &apos;{0}&apos; ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Scale {0} ähnelt.
         /// </summary>
         public static string UndoRedo_ScaleCamViewObj {
             get {

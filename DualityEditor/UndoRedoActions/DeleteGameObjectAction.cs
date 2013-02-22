@@ -11,28 +11,21 @@ using DualityEditor.EditorRes;
 
 namespace DualityEditor.UndoRedoActions
 {
-	public class DeleteGameObjectAction : UndoRedoAction
+	public class DeleteGameObjectAction : GameObjectAction
 	{
-		private	GameObject[]	targetObj		= null;
 		private	GameObject[]	backupParentObj	= null;
-		private GameObject[]	backupObj		= null;
+		private	GameObject[]	backupObj		= null;
 
-		public override string Name
+		protected override string NameBase
 		{
-			get { return this.targetObj.Length == 1 ? 
-				string.Format(GeneralRes.UndoRedo_DeleteGameObject, this.targetObj[0].Name) :
-				string.Format(GeneralRes.UndoRedo_DeleteGameObjectMulti, this.targetObj.Length); }
+			get { return GeneralRes.UndoRedo_DeleteGameObject; }
 		}
-		public override bool IsVoid
+		protected override string NameBaseMulti
 		{
-			get { return this.targetObj == null || this.targetObj.Length == 0; }
+			get { return GeneralRes.UndoRedo_DeleteGameObjectMulti; }
 		}
 
-		public DeleteGameObjectAction(IEnumerable<GameObject> obj)
-		{
-			if (obj == null) throw new ArgumentNullException("obj");
-			this.targetObj = obj.Where(o => o != null && !o.Disposed).ToArray();
-		}
+		public DeleteGameObjectAction(IEnumerable<GameObject> obj) : base(obj) {}
 
 		public override void Do()
 		{

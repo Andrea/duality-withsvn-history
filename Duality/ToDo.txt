@@ -11,15 +11,8 @@
 
 
 -->	UndoRedo
-	-->	SceneView
-		-->	Create Components
-		-->	Create GameObjects
-		-->	Move Components
-		-->	Move GameObjects
-		-->	DragDrop
+	-->	Debugging
 	-->	CamView
-		-->	SceneEditor
-			-->	DragDrop
 		-->	RigidBodyEditor
 			-->	Delete Shapes
 			-->	Clone Shapes
@@ -28,6 +21,7 @@
 		-->	Provide some functionality in PropertyGrid for hooking any SetValue call
 			and wrapping that up in a Duality-specific UndoRedoAction
 		-->	Edit Properties
+		-->	PrefabLink Stuff
 	-->	ProjectView
 		-->	Create / Import Resources
 		-->	Delete Resources

@@ -11,35 +11,28 @@ using DualityEditor.EditorRes;
 
 namespace DualityEditor.UndoRedoActions
 {
-	public class DeleteComponentAction : UndoRedoAction
+	public class DeleteComponentAction : ComponentAction
 	{
-		private	Component[]		targetObj		= null;
 		private	GameObject[]	backupParentObj	= null;
 		private Component[]		backupObj		= null;
-
-		public override string Name
+		
+		protected override string NameBase
 		{
-			get { return this.targetObj.Length == 1 ? 
-				string.Format(GeneralRes.UndoRedo_DeleteComponent, this.targetObj[0].GetType().Name) :
-				string.Format(GeneralRes.UndoRedo_DeleteComponentMulti, this.targetObj.Length); }
+			get { return GeneralRes.UndoRedo_DeleteComponent; }
 		}
-		public override bool IsVoid
+		protected override string NameBaseMulti
 		{
-			get { return this.targetObj == null || this.targetObj.Length == 0; }
+			get { return GeneralRes.UndoRedo_DeleteComponentMulti; }
 		}
 
-		public DeleteComponentAction(IEnumerable<Component> obj)
-		{
-			if (obj == null) throw new ArgumentNullException("obj");
-			this.targetObj = obj.Where(o => o != null && !o.Disposed).ToArray();
-		}
+		public DeleteComponentAction(IEnumerable<Component> obj) : base(obj) {}
 
 		public override void Do()
 		{
 			if (this.backupObj == null)
 			{
-				this.backupObj = new Component[this.targetObj.Length];
-				this.backupParentObj = new GameObject[this.targetObj.Length];
+				this.backupObj = new Component[this.targetObj.Count];
+				this.backupParentObj = new GameObject[this.targetObj.Count];
 				for (int i = 0; i < this.backupObj.Length; i++)
 				{
 					this.backupObj[i] = CloneProvider.DeepClone(this.targetObj[i], BackupCloneContext);
@@ -60,6 +53,7 @@ namespace DualityEditor.UndoRedoActions
 			{
 				CloneProvider.DeepCopyTo(this.backupObj[i], this.targetObj[i], BackupCloneContext);
 				this.targetObj[i].GameObj = this.backupParentObj[i];
+				DebugCheckParent(this.targetObj[i], this.backupParentObj[i]);
 			}
 			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(Scene.Current));
 		}

@@ -646,7 +646,7 @@
         </member>
         <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_CloneGameObject">
             <summary>
-              Sucht eine lokalisierte Zeichenfolge, die Clone &apos;{0}&apos; ähnelt.
+              Sucht eine lokalisierte Zeichenfolge, die Clone {0} ähnelt.
             </summary>
         </member>
         <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_CloneGameObjectMulti">
@@ -654,9 +654,29 @@
               Sucht eine lokalisierte Zeichenfolge, die Clone {0} GameObjects ähnelt.
             </summary>
         </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_CreateComponent">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Create {0} ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_CreateComponentMulti">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Create {0} Components ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_CreateGameObject">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Create {0} ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_CreateGameObjectMulti">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Create {0} GameObjects ähnelt.
+            </summary>
+        </member>
         <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_DeleteComponent">
             <summary>
-              Sucht eine lokalisierte Zeichenfolge, die Delete &apos;{0}&apos; ähnelt.
+              Sucht eine lokalisierte Zeichenfolge, die Delete {0} ähnelt.
             </summary>
         </member>
         <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_DeleteComponentMulti">
@@ -666,12 +686,47 @@
         </member>
         <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_DeleteGameObject">
             <summary>
-              Sucht eine lokalisierte Zeichenfolge, die Delete &apos;{0}&apos; ähnelt.
+              Sucht eine lokalisierte Zeichenfolge, die Delete {0} ähnelt.
             </summary>
         </member>
         <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_DeleteGameObjectMulti">
             <summary>
               Sucht eine lokalisierte Zeichenfolge, die Delete {0} GameObjects ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_Macro">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Macro: {0} Actions ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_SetComponentParent">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Re-Parent {0} ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_SetComponentParentMulti">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Re-Parent {0} Components ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_SetGameObjectName">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Rename {0} ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_SetGameObjectNameMulti">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Rename {0} GameObjects ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_SetGameObjectParent">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Re-Parent {0} ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_SetGameObjectParentMulti">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Re-Parent {0} GameObjects ähnelt.
             </summary>
         </member>
         <member name="T:DualityEditor.RecycleBin">

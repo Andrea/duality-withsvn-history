@@ -914,6 +914,8 @@ namespace EditorBase.CamViewStates
 
 			this.OnEndAction(this.action);
 			this.action = ObjectAction.None;
+
+			UndoRedoManager.Finish();
 		}
 		protected void UpdateAction()
 		{
@@ -1376,6 +1378,7 @@ namespace EditorBase.CamViewStates
 				else if (!ctrlPressed && e.KeyCode == Keys.Add)			this.MoveSelectionBy(Vector3.UnitZ);
 				else if (!ctrlPressed && e.KeyCode == Keys.Subtract)	this.MoveSelectionBy(-Vector3.UnitZ);
 				else if (e.KeyCode == Keys.ShiftKey)					this.UpdateAction();
+				else if (e.KeyCode == Keys.ControlKey)					this.UpdateAction();
 			}
 
 			if (this.camActionAllowed)
@@ -1459,6 +1462,8 @@ namespace EditorBase.CamViewStates
 				this.actionLockedAxis = LockedAxis.None;
 				this.UpdateAction();
 			}
+			else if (e.KeyCode == Keys.ControlKey)
+				this.UpdateAction();
 
 			this.OnKeyUp(e);
 		}

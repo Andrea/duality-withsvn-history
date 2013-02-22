@@ -14,6 +14,8 @@ using DualityEditor.Forms;
 using DualityEditor.CorePluginInterface;
 using DualityEditor.UndoRedoActions;
 
+using EditorBase.UndoRedoActions;
+
 using OpenTK;
 
 namespace EditorBase.CamViewStates
@@ -343,6 +345,8 @@ namespace EditorBase.CamViewStates
 			this.dragTime = DateTime.Now;
 
 			if (this.SelObjAction != ObjectAction.None) this.EndAction();
+
+			UndoRedoManager.EndMacro();
 		}
 		protected override void OnCurrentCameraChanged(CamView.CameraChangedEventArgs e)
 		{
@@ -367,41 +371,19 @@ namespace EditorBase.CamViewStates
 					lockZ ? 0.0f : this.CameraObj.Transform.Pos.Z + MathF.Abs(this.CameraComponent.FocusDist)));
 
 				// Setup GameObjects
-				bool anyAngleChanged = this.CameraObj.Transform.Angle != 0.0f;
-				foreach (GameObject newObj in dragObj)
-				{
-					if (newObj.Transform != null)
-					{
-						newObj.Transform.Pos = spaceCoord;
-						newObj.Transform.Angle += this.CameraObj.Transform.Angle;
-					}
-					Scene.Current.RegisterObj(newObj);
-				}
+				CreateGameObjectAction createAction = new CreateGameObjectAction(null, dragObj);
+				DropGameObjectInSceneAction dropAction = new DropGameObjectInSceneAction(dragObj, spaceCoord, this.CameraObj.Transform.Angle);
+				UndoRedoManager.BeginMacro(dropAction.Name);
+				UndoRedoManager.Do(createAction);
+				UndoRedoManager.Do(dropAction);
 
 				// Select them & begin action
 				this.selBeforeDrag = DualityEditorApp.Selection;
-				this.SelectObjects(dragObj.Select(g => new SelGameObj(g) as SelObj));
+				this.SelectObjects(createAction.Result.Select(g => new SelGameObj(g) as SelObj));
 				this.BeginAction(ObjectAction.Move);
 
 				// Get focused
 				this.Focus();
-
-				// Notify about changed properties
-				if (anyAngleChanged)
-				{
-					DualityEditorApp.NotifyObjPropChanged(
-						this,
-						new ObjectSelection(dragObj.Transform()),
-						ReflectionInfo.Property_Transform_RelativePos,
-						ReflectionInfo.Property_Transform_RelativeAngle);
-				}
-				else
-				{
-					DualityEditorApp.NotifyObjPropChanged(
-						this,
-						new ObjectSelection(dragObj.Transform()),
-						ReflectionInfo.Property_Transform_RelativePos);
-				}
 
 				e.Effect = e.AllowedEffect;
 			}

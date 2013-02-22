@@ -488,24 +488,30 @@
     <value>Show Source</value>
   </data>
   <data name="UndoRedo_MoveCamViewObj" xml:space="preserve">
-    <value>Move '{0}'</value>
+    <value>Move {0}</value>
   </data>
   <data name="UndoRedo_MoveCamViewObjMulti" xml:space="preserve">
     <value>Move {0} objects</value>
   </data>
   <data name="UndoRedo_RotateCamViewObj" xml:space="preserve">
-    <value>Rotate '{0}'</value>
+    <value>Rotate {0}</value>
   </data>
   <data name="UndoRedo_RotateCamViewObjMulti" xml:space="preserve">
     <value>Rotate {0} objects</value>
   </data>
   <data name="UndoRedo_ScaleCamViewObj" xml:space="preserve">
-    <value>Scale '{0}'</value>
+    <value>Scale {0}</value>
   </data>
   <data name="UndoRedo_ScaleCamViewObjMulti" xml:space="preserve">
     <value>Scale {0} objects</value>
   </data>
   <data name="UndoRedo_DeleteObjects" xml:space="preserve">
     <value>Delete {0} objects</value>
+  </data>
+  <data name="UndoRedo_DropGameObjectInScene" xml:space="preserve">
+    <value>Drop {0}</value>
+  </data>
+  <data name="UndoRedo_DropGameObjectInSceneMulti" xml:space="preserve">
+    <value>Drop {0} GameObjects</value>
   </data>
 </root>

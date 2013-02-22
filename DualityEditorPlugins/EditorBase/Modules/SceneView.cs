@@ -507,10 +507,10 @@ namespace EditorBase
 
 			// Delete objects
 			this.objectView.BeginUpdate();
-			UndoRedoManager.Do(
-				string.Format(EditorBaseRes.UndoRedo_DeleteObjects, objList.Count + cmpList.Count),
-				new DeleteGameObjectAction(objList), 
-				new DeleteComponentAction(cmpList));
+			UndoRedoManager.BeginMacro(string.Format(EditorBaseRes.UndoRedo_DeleteObjects, objList.Count + cmpList.Count));
+			UndoRedoManager.Do(new DeleteGameObjectAction(objList));
+			UndoRedoManager.Do(new DeleteComponentAction(cmpList));
+			UndoRedoManager.EndMacro();
 			this.objectView.EndUpdate();
 		}
 		protected Component CheckComponentsRemovable(List<Component> cmpList, List<GameObject> ignoreGameObjList)
@@ -540,40 +540,40 @@ namespace EditorBase
 			}
 			return firstReqComp;
 		}
-		protected GameObject CreateGameObject(TreeNodeAdv baseNode)
+		protected GameObject CreateGameObject(TreeNodeAdv baseNode, string objName = null)
 		{
+			if (objName == null) objName = typeof(GameObject).Name;
+
 			GameObjectNode baseObjNode = baseNode == null ? null : baseNode.Tag as GameObjectNode;
 			GameObject baseObj = baseObjNode == null ? null : baseObjNode.Obj;
 			GameObject newObj = new GameObject();
-			newObj.Name = "GameObject";
-			newObj.Parent = baseObj;
-			Scene.Current.RegisterObj(newObj);
+			newObj.Name = objName;
 
-			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(Scene.Current));
-			return newObj;
+			CreateGameObjectAction action = new CreateGameObjectAction(baseObj, newObj);
+			UndoRedoManager.Do(action);
+
+			return action.Result.FirstOrDefault();
 		}
 		protected Component CreateComponent(TreeNodeAdv baseNode, Type cmpType)
 		{
 			GameObjectNode baseObjNode = baseNode == null ? null : baseNode.Tag as GameObjectNode;
 			GameObject baseObj = baseObjNode == null ? null : baseObjNode.Obj;
 
+			UndoRedoManager.BeginMacro();
+
 			// There is no GameObject? Create one!
 			if (baseObj == null)
 			{
-				baseObj = this.CreateGameObject(baseNode);
-				baseObj.Name = cmpType.Name;
+				baseObj = this.CreateGameObject(baseNode, cmpType.Name);
 				baseObjNode = this.FindNode(baseObj);
 			}
 
-			// Add dependencies
-			foreach (Type required in Component.GetRequiredComponents(cmpType, true))
-				baseObj.AddComponent(required);
+			// Create Components
+			CreateComponentAction action = new CreateComponentAction(baseObj, cmpType.CreateInstanceOf() as Component);
+			UndoRedoManager.Do(action);
+			UndoRedoManager.EndMacro(UndoRedoManager.MacroDeriveName.FromFirst);
 
-			// Add Component
-			Component newCmp = baseObj.AddComponent(cmpType);
-
-			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(baseObj));
-			return newCmp;
+			return action.Result.LastOrDefault();
 		}
 		protected bool OpenResource(TreeNodeAdv node)
 		{
@@ -905,28 +905,25 @@ namespace EditorBase
 					var componentQuery = convertOp.Perform<Component>();
 					if (componentQuery != null)
 					{
-						List<TreeNodeAdv> newNodes = new List<TreeNodeAdv>();
-						foreach (Component newComponent in componentQuery)
+						// Create Components
+						CreateComponentAction action = new CreateComponentAction(dropObj, componentQuery.Where(c => c.GameObj == null));
+						UndoRedoManager.Do(action);
+
+						bool selCleared = false;
+						foreach (Component newComponent in action.Result)
 						{
-							if (newComponent.GameObj != null) continue;
-
-							// Make sure all requirements are met
-							foreach (Type t in newComponent.GetRequiredComponents())
-								dropObj.AddComponent(t);
-
-							dropObj.AddComponent(newComponent);
-							if (newComponent.GameObj == dropObj)
-								newNodes.Add(this.objectView.FindNode(this.objectModel.GetPath(this.FindNode(newComponent))));
-						}
-
-						if (newNodes.Count > 0) this.objectView.ClearSelection();
-						foreach (TreeNodeAdv viewNode in newNodes)
-						{
+							NodeBase dataNode = this.FindNode(newComponent);
+							if (dataNode == null) continue;
+							TreeNodeAdv viewNode = this.objectView.FindNode(this.objectModel.GetPath(dataNode));
+							if (viewNode == null) continue;
+							if (!selCleared)
+							{
+								this.objectView.ClearSelection();
+								selCleared = true;
+							}
 							viewNode.IsSelected = true;
 							this.objectView.EnsureVisible(viewNode);
 						}
-
-						DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(dropObj));
 					}
 				}
 				else if (convertOp.CanPerform<GameObject>())
@@ -935,22 +932,24 @@ namespace EditorBase
 					var gameObjQuery = convertOp.Perform<GameObject>();
 					if (gameObjQuery != null)
 					{
-						List<TreeNodeAdv> newNodes = new List<TreeNodeAdv>();
-						foreach (GameObject newObj in gameObjQuery)
-						{
-							newObj.Parent = dropObj;
-							Scene.Current.RegisterObj(newObj);
-							newNodes.Add(this.objectView.FindNode(this.objectModel.GetPath(this.FindNode(newObj))));
-						}
+						CreateGameObjectAction action = new CreateGameObjectAction(dropObj, gameObjQuery);
+						UndoRedoManager.Do(action);
 
-						if (newNodes.Count > 0) this.objectView.ClearSelection();
-						foreach (TreeNodeAdv viewNode in newNodes)
+						bool selCleared = false;
+						foreach (GameObject newObj in action.Result)
 						{
+							NodeBase dataNode = this.FindNode(newObj);
+							if (dataNode == null) continue;
+							TreeNodeAdv viewNode = this.objectView.FindNode(this.objectModel.GetPath(dataNode));
+							if (viewNode == null) continue;
+							if (!selCleared)
+							{
+								this.objectView.ClearSelection();
+								selCleared = true;
+							}
 							viewNode.IsSelected = true;
 							this.objectView.EnsureVisible(viewNode);
 						}
-
-						DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(dropObj));
 					}
 				}
 			}
@@ -1071,8 +1070,7 @@ namespace EditorBase
 			GameObjectNode objNode = node as GameObjectNode;
 			if (objNode != null)
 			{
-				objNode.Obj.Name = objNode.Text;
-				DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(objNode.Obj), ReflectionInfo.Property_GameObject_Name);
+				UndoRedoManager.Do(new SetGameObjectNameAction(objNode.Text, new[] { objNode.Obj }));
 			}
 		}
 		private void timerFlashItem_Tick(object sender, EventArgs e)
@@ -1098,94 +1096,42 @@ namespace EditorBase
 
 			if (draggedObj != null)
 			{
+				UndoRedoManager.BeginMacro();
+				CloneGameObjectAction cloneAction = new CloneGameObjectAction(draggedObj);
+				UndoRedoManager.Do(cloneAction);
+				UndoRedoManager.Do(new SetGameObjectParentAction(dropObj, cloneAction.Result));
+				UndoRedoManager.EndMacro(UndoRedoManager.MacroDeriveName.FromFirst);
+				
+				// Deselect dragged nodes
 				foreach (GameObject dragObj in draggedObj)
 				{
-					GameObjectNode dragObjNode = this.FindNode(dragObj);
-					Node parent = dragObjNode.Parent;
-
-					// Save transform data
-					OpenTK.Vector3 oldPos = OpenTK.Vector3.Zero;
-					OpenTK.Vector3 oldScale = OpenTK.Vector3.Zero;
-					float oldAngle = 0.0f;
-					if (dragObj.Transform != null)
-					{
-						oldPos = dragObj.Transform.Pos;
-						oldAngle = dragObj.Transform.Angle;
-						oldScale = dragObj.Transform.Scale;
-					}
-
-					// Clone, register and set parent
-					GameObject dragObjClone = dragObj.Clone();
-					dragObjClone.Parent = dropObj;
-					Scene.Current.RegisterObj(dragObjClone);
-
-					// Restore transform data
-					if (dragObj.Transform != null)
-					{
-						dragObj.Transform.Pos = oldPos;
-						dragObj.Transform.Angle = oldAngle;
-						dragObj.Transform.Scale = oldScale;
-					}
-
-					TreeNodeAdv dragObjViewNode;
-					// Deselect dragged node
-					dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(this.FindNode(dragObj)));
+					TreeNodeAdv dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(this.FindNode(dragObj)));
 					dragObjViewNode.IsSelected = false;
-
-					// Select new node
-					dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(this.FindNode(dragObjClone)));
+				}
+				// Select new nodes
+				foreach (GameObject dragObjClone in cloneAction.Result)
+				{
+					TreeNodeAdv dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(this.FindNode(dragObjClone)));
 					dragObjViewNode.IsSelected = true;
 					this.objectView.EnsureVisible(dragObjViewNode);
 				}
 			}
 			else if (draggedComp != null)
 			{
+				// Clone Components
+				CreateComponentAction cloneAction = new CreateComponentAction(dropObj, draggedComp.Select(c => c.Clone()));
+				UndoRedoManager.Do(cloneAction);
+				
+				// Deselect dragged nodes
 				foreach (Component dragObj in draggedComp)
 				{
-					if (dragObj.GameObj == dropObj) continue;
-					
-					ComponentNode dragObjNode;
-					TreeNodeAdv dragObjViewNode;
-
-					// Save node data
-					HashSet<object> expandedMap = new HashSet<object>();
-					dragObjNode = this.FindNode(dragObj);
-					dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(dragObjNode));
-					this.objectView.SaveNodesExpanded(dragObjViewNode, expandedMap);
-
-					// Save transform data
-					OpenTK.Vector3 oldPos = OpenTK.Vector3.Zero;
-					OpenTK.Vector3 oldScale = OpenTK.Vector3.Zero;
-					float oldAngle = 0.0f;
-					if (dragObj is Duality.Components.Transform)
-					{
-						oldPos = (dragObj as Duality.Components.Transform).Pos;
-						oldAngle = (dragObj as Duality.Components.Transform).Angle;
-						oldScale = (dragObj as Duality.Components.Transform).Scale;
-					}
-
-					// Clone & add Component
-					Component dragObjClone = dragObj.Clone();
-					dropObj.AddComponent(dragObjClone);
-
-					// Restore transform data
-					if (dragObjClone is Duality.Components.Transform)
-					{
-						(dragObjClone as Duality.Components.Transform).Pos = oldPos;
-						(dragObjClone as Duality.Components.Transform).Angle = oldAngle;
-						(dragObjClone as Duality.Components.Transform).Scale = oldScale;
-					}
-					
-					// Deselect dragged node
-					dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(this.FindNode(dragObj)));
+					TreeNodeAdv dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(this.FindNode(dragObj)));
 					dragObjViewNode.IsSelected = false;
-
-					// Restore node data
-					dragObjNode = this.FindNode(dragObjClone);
-					dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(dragObjNode));
-					this.objectView.RestoreNodesExpanded(dragObjViewNode, expandedMap);
-
-					// Select node
+				}
+				// Select new nodes
+				foreach (Component dragObjClone in cloneAction.Result)
+				{
+					TreeNodeAdv dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(this.FindNode(dragObjClone)));
 					dragObjViewNode.IsSelected = true;
 					this.objectView.EnsureVisible(dragObjViewNode);
 				}
@@ -1201,43 +1147,21 @@ namespace EditorBase
 
 			if (draggedObj != null)
 			{
+				// Set parent
+				UndoRedoManager.Do(new SetGameObjectParentAction(dropObj, draggedObj));
+
+				// Select nodes
 				foreach (GameObject dragObj in draggedObj)
 				{
-					if (dragObj.Parent == dropObj) continue;
-
-					// Save transform data
-					OpenTK.Vector3 oldPos = OpenTK.Vector3.Zero;
-					OpenTK.Vector3 oldScale = OpenTK.Vector3.Zero;
-					float oldAngle = 0.0f;
-					if (dragObj.Transform != null)
-					{
-						oldPos = dragObj.Transform.Pos;
-						oldAngle = dragObj.Transform.Angle;
-						oldScale = dragObj.Transform.Scale;
-					}
-
-					// Set parent
-					dragObj.Parent = dropObj;
-
-					// Restore transform data
-					if (dragObj.Transform != null)
-					{
-						dragObj.Transform.Pos = oldPos;
-						dragObj.Transform.Angle = oldAngle;
-						dragObj.Transform.Scale = oldScale;
-					}
-
-					// Select node
 					GameObjectNode dragObjNode = this.FindNode(dragObj);
 					TreeNodeAdv dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(dragObjNode));
 					dragObjViewNode.IsSelected = true;
 					this.objectView.EnsureVisible(dragObjViewNode);
 				}
-				DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(draggedObj), ReflectionInfo.Property_GameObject_Parent);
 			}
 			else if (draggedComp != null)
 			{
-				List<Component> cmpList = new List<Component>(draggedComp);
+				List<Component> cmpList = draggedComp.ToList();
 
 				// Check which Components may be removed and which not
 				Component conflictComp = this.CheckComponentsRemovable(cmpList, null);
@@ -1248,33 +1172,17 @@ namespace EditorBase
 				}
 				else
 				{
+					// Set parent
+					UndoRedoManager.Do(new SetComponentParentAction(dropObj, cmpList));
+
+					// Select nodes
 					foreach (Component dragObj in cmpList)
 					{
-						if (dragObj.GameObj == dropObj) continue;
-					
-						ComponentNode dragObjNode;
-						TreeNodeAdv dragObjViewNode;
-
-						// Save node data
-						HashSet<object> expandedMap = new HashSet<object>();
-						dragObjNode = this.FindNode(dragObj);
-						dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(dragObjNode));
-						this.objectView.SaveNodesExpanded(dragObjViewNode, expandedMap);
-
-						// Set parent
-						dragObj.GameObj.RemoveComponent(dragObj.GetType());
-						dropObj.AddComponent(dragObj);
-
-						// Restore node data
-						dragObjNode = this.FindNode(dragObj);
-						dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(dragObjNode));
-						this.objectView.RestoreNodesExpanded(dragObjViewNode, expandedMap);
-
-						// Select node
+						ComponentNode dragObjNode = this.FindNode(dragObj);
+						TreeNodeAdv dragObjViewNode = this.objectView.FindNode(this.objectModel.GetPath(dragObjNode));
 						dragObjViewNode.IsSelected = true;
 						this.objectView.EnsureVisible(dragObjViewNode);
 					}
-					DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(cmpList), ReflectionInfo.Property_Component_GameObj);
 				}
 			}
 		}

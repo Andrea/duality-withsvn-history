@@ -224,6 +224,13 @@
     <Compile Include="UndoRedoActions\DeleteGameObjectAction.cs" />
     <Compile Include="UndoRedoActions\CloneGameObjectAction.cs" />
     <Compile Include="UndoRedoActions\DeleteComponentAction.cs" />
+    <Compile Include="UndoRedoActions\CreateGameObjectAction.cs" />
+    <Compile Include="UndoRedoActions\CreateComponentAction.cs" />
+    <Compile Include="UndoRedoActions\GameObjectAction.cs" />
+    <Compile Include="UndoRedoActions\ComponentAction.cs" />
+    <Compile Include="UndoRedoActions\SetGameObjectNameAction.cs" />
+    <Compile Include="UndoRedoActions\SetComponentParentAction.cs" />
+    <Compile Include="UndoRedoActions\SetGameObjectParentAction.cs" />
     <Compile Include="UndoRedoActions\UndoRedoMacroAction.cs" />
     <Compile Include="UndoRedoManager.cs">
       <SubType>Code</SubType>

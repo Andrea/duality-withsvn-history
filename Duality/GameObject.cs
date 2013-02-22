@@ -709,7 +709,7 @@ namespace Duality
 				this.initState = InitState.Disposing;
 
 				// Delete Components
-				for (int i = this.compList.Count - 1; i >= 0; i--) this.compList[i].Dispose();
+				//for (int i = this.compList.Count - 1; i >= 0; i--) this.compList[i].Dispose();
 				// Delete child objects
 				if (this.children != null) for (int i = this.children.Count - 1; i >= 0; i--) this.children[i].Dispose();
 				// Remove from parent

@@ -947,7 +947,10 @@ namespace DualityEditor
 						GameObject obj = o as GameObject;
 						if (cmp == null && obj == null) continue;
 
-						PrefabLink link = obj != null ? obj.AffectedByPrefabLink : cmp.GameObj.AffectedByPrefabLink;
+						PrefabLink link = null;
+						if (obj != null) link = obj.AffectedByPrefabLink;
+						else if (cmp != null && cmp.GameObj != null) link = cmp.GameObj.AffectedByPrefabLink;
+
 						if (link == null) continue;
 						if (cmp != null && !link.AffectsObject(cmp)) continue;
 						if (obj != null && !link.AffectsObject(obj)) continue;

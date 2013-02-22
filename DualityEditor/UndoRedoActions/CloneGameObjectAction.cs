@@ -13,49 +13,48 @@ using OpenTK;
 
 namespace DualityEditor.UndoRedoActions
 {
-	public class CloneGameObjectAction : UndoRedoAction
+	public class CloneGameObjectAction : GameObjectAction
 	{
-		private	GameObject[]	targetObj		= null;
-		private GameObject[]	resultObj		= null;
+		private	GameObject[]	targetParentObj	= null;
+		private	GameObject[]	resultObj		= null;
 
-		public override string Name
+		protected override string NameBase
 		{
-			get { return this.targetObj.Length == 1 ? 
-				string.Format(GeneralRes.UndoRedo_CloneGameObject, this.targetObj[0].Name) :
-				string.Format(GeneralRes.UndoRedo_CloneGameObjectMulti, this.targetObj.Length); }
+			get { return GeneralRes.UndoRedo_CloneGameObject; }
 		}
-		public override bool IsVoid
+		protected override string NameBaseMulti
 		{
-			get { return this.targetObj == null || this.targetObj.Length == 0; }
+			get { return GeneralRes.UndoRedo_CloneGameObjectMulti; }
 		}
 		public IEnumerable<GameObject> Result
 		{
 			get { return this.resultObj; }
 		}
 
-		public CloneGameObjectAction(IEnumerable<GameObject> obj)
-		{
-			if (obj == null) throw new ArgumentNullException("obj");
-			this.targetObj = obj.Where(o => o != null && !o.Disposed).ToArray();
-		}
+		public CloneGameObjectAction(IEnumerable<GameObject> obj) : base(obj) {}
 
 		public override void Do()
 		{
 			if (this.resultObj == null)
 			{
 				this.resultObj = new GameObject[this.targetObj.Length];
+				this.targetParentObj = new GameObject[this.targetObj.Length];
 				for (int i = 0; i < this.targetObj.Length; i++)
-					this.resultObj[i] = this.targetObj[i].Clone();
+				{
+					this.resultObj[i] = CloneProvider.DeepClone(this.targetObj[i]);
+					this.targetParentObj[i] = this.targetObj[i].Parent;
+				}
 			}
 			else
 			{
 				for (int i = 0; i < this.targetObj.Length; i++)
-					this.targetObj[i].CopyTo(this.resultObj[i]);
+					CloneProvider.DeepCopyTo(this.targetObj[i], this.resultObj[i]);
 			}
 
 			for (int i = 0; i < this.targetObj.Length; i++)
 			{
 				GameObject clone = this.resultObj[i];
+				clone.Parent = this.targetParentObj[i];
 
 				// Prevent physics from getting crazy.
 				if (clone.Transform != null && clone.RigidBody != null)

@@ -374,7 +374,8 @@ namespace Duality
 				this.initState = InitState.Disposing;
 
 				// Remove from GameObject
-				if (this.gameobj != null) this.gameobj.RemoveComponent(this);
+				if (this.gameobj != null) 
+					this.gameobj.RemoveComponent(this);
 
 				this.initState = InitState.Disposed;
 			}
@@ -508,29 +509,40 @@ namespace Duality
 		/// <param name="cmpType">The Component Type that might require other Component Types.</param>
 		/// <param name="recursive">If true, also indirect requirements are returned.</param>
 		/// <returns>An array of Component Types to require.</returns>
-		public static List<Type> GetRequiredComponents(Type cmpType, bool recursive = false)
+		public static List<Type> GetRequiredComponents(Type cmpType)
 		{
 			RequiredComponentAttribute[] attribs = 
 				cmpType.GetCustomAttributes(typeof(RequiredComponentAttribute), true).
 				Cast<RequiredComponentAttribute>().
 				ToArray();
 
-			if (!recursive)
-				return attribs.Select(a => a.RequiredComponentType).ToList();
-			else
+			List<Type> result = null;
+			foreach (RequiredComponentAttribute a in attribs)
 			{
-				List<Type> result = null;
-				foreach (RequiredComponentAttribute a in attribs)
-				{
-					Type t = a.RequiredComponentType;
-					if (result == null)
-						result = GetRequiredComponents(t, recursive);
-					else
-						result.AddRange(GetRequiredComponents(t, recursive));
-					result.Add(t);
-				}
-				return result ?? new List<Type>();
+				Type reqType = a.RequiredComponentType;
+				if (result == null)
+					result = GetRequiredComponents(reqType);
+				else
+					result.AddRange(GetRequiredComponents(reqType).Where(t => !result.Contains(t)));
+				result.Add(reqType);
 			}
+			return result ?? new List<Type>();
+		}
+	}
+
+	public class ComponentTypeComparer : IEqualityComparer<Component>
+	{
+		public static readonly ComponentTypeComparer Default = new ComponentTypeComparer();
+
+		public bool Equals(Component x, Component y)
+		{
+			if (x == y) return true;
+			if (x == null || y == null) return false;
+			return x.GetType() == y.GetType();
+		}
+		public int GetHashCode(Component obj)
+		{
+			return obj != null ? obj.GetType().GetHashCode() : 0;
 		}
 	}
 }

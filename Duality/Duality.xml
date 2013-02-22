@@ -574,7 +574,7 @@
             <param name="requiredType">The Component Type that might be required.</param>
             <returns>True, if there is a requirement, false if not</returns>
         </member>
-        <member name="M:Duality.Component.GetRequiredComponents(System.Type,System.Boolean)">
+        <member name="M:Duality.Component.GetRequiredComponents(System.Type)">
             <summary>
             Returns all required Component Types of a specified Component Type.
             </summary>

@@ -673,7 +673,7 @@ namespace Duality.Components
 				}
 				else
 					this.parentTransform = null;
-				this.UpdateAbs();
+				this.UpdateRel();
 			}
 		}
 		void ICmpInitializable.OnShutdown(ShutdownContext context)
@@ -689,7 +689,7 @@ namespace Duality.Components
 				}
 
 				this.parentTransform = null;
-				this.UpdateAbs();
+				this.UpdateRel();
 			}
 		}
 		private void Parent_EventComponentAdded(object sender, ComponentEventArgs e)

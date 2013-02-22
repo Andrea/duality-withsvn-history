@@ -814,7 +814,7 @@ namespace DualityEditor.EditorRes {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Clone &apos;{0}&apos; ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Clone {0} ähnelt.
         /// </summary>
         public static string UndoRedo_CloneGameObject {
             get {
@@ -832,7 +832,43 @@ namespace DualityEditor.EditorRes {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Delete &apos;{0}&apos; ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Create {0} ähnelt.
+        /// </summary>
+        public static string UndoRedo_CreateComponent {
+            get {
+                return ResourceManager.GetString("UndoRedo_CreateComponent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Create {0} Components ähnelt.
+        /// </summary>
+        public static string UndoRedo_CreateComponentMulti {
+            get {
+                return ResourceManager.GetString("UndoRedo_CreateComponentMulti", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Create {0} ähnelt.
+        /// </summary>
+        public static string UndoRedo_CreateGameObject {
+            get {
+                return ResourceManager.GetString("UndoRedo_CreateGameObject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Create {0} GameObjects ähnelt.
+        /// </summary>
+        public static string UndoRedo_CreateGameObjectMulti {
+            get {
+                return ResourceManager.GetString("UndoRedo_CreateGameObjectMulti", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Delete {0} ähnelt.
         /// </summary>
         public static string UndoRedo_DeleteComponent {
             get {
@@ -850,7 +886,7 @@ namespace DualityEditor.EditorRes {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Delete &apos;{0}&apos; ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Delete {0} ähnelt.
         /// </summary>
         public static string UndoRedo_DeleteGameObject {
             get {
@@ -864,6 +900,69 @@ namespace DualityEditor.EditorRes {
         public static string UndoRedo_DeleteGameObjectMulti {
             get {
                 return ResourceManager.GetString("UndoRedo_DeleteGameObjectMulti", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Macro: {0} Actions ähnelt.
+        /// </summary>
+        public static string UndoRedo_Macro {
+            get {
+                return ResourceManager.GetString("UndoRedo_Macro", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Re-Parent {0} ähnelt.
+        /// </summary>
+        public static string UndoRedo_SetComponentParent {
+            get {
+                return ResourceManager.GetString("UndoRedo_SetComponentParent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Re-Parent {0} Components ähnelt.
+        /// </summary>
+        public static string UndoRedo_SetComponentParentMulti {
+            get {
+                return ResourceManager.GetString("UndoRedo_SetComponentParentMulti", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Rename {0} ähnelt.
+        /// </summary>
+        public static string UndoRedo_SetGameObjectName {
+            get {
+                return ResourceManager.GetString("UndoRedo_SetGameObjectName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Rename {0} GameObjects ähnelt.
+        /// </summary>
+        public static string UndoRedo_SetGameObjectNameMulti {
+            get {
+                return ResourceManager.GetString("UndoRedo_SetGameObjectNameMulti", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Re-Parent {0} ähnelt.
+        /// </summary>
+        public static string UndoRedo_SetGameObjectParent {
+            get {
+                return ResourceManager.GetString("UndoRedo_SetGameObjectParent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Re-Parent {0} GameObjects ähnelt.
+        /// </summary>
+        public static string UndoRedo_SetGameObjectParentMulti {
+            get {
+                return ResourceManager.GetString("UndoRedo_SetGameObjectParentMulti", resourceCulture);
             }
         }
     }

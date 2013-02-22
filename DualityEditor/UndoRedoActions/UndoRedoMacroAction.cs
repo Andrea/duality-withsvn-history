@@ -25,7 +25,7 @@ namespace DualityEditor.UndoRedoActions
 			get { return this.macro == null || this.macro.Length == 0; }
 		}
 
-		public UndoRedoMacroAction(string name, params UndoRedoAction[] macro)
+		public UndoRedoMacroAction(string name, IEnumerable<UndoRedoAction> macro)
 		{
 			if (macro == null) throw new ArgumentNullException("macro");
 			this.macro = macro.Where(o => o != null && !o.IsVoid).ToArray();
@@ -33,8 +33,9 @@ namespace DualityEditor.UndoRedoActions
 			if (this.macro.Length == 1)
 				this.name = this.macro[0].Name;
 			else
-				this.name = name;
+				this.name = name ?? string.Format(GeneralRes.UndoRedo_Macro, this.macro.Length);
 		}
+		public UndoRedoMacroAction(string name, params UndoRedoAction[] macro) : this(name, macro as IEnumerable<UndoRedoAction>) {}
 
 		public override void Do()
 		{
