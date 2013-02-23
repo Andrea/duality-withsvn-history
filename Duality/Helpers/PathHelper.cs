@@ -230,5 +230,35 @@ namespace Duality
 			try { new FileInfo(path); valid = true; } catch (Exception) {}
 			return valid;
 		}
+
+		/// <summary>
+		/// Deep-Copies the source directory to the target path.
+		/// </summary>
+		/// <param name="sourcePath"></param>
+		/// <param name="targetPath"></param>
+		/// <param name="overwrite"></param>
+		/// <param name="filter"></param>
+		/// <returns></returns>
+		public static bool CopyDirectory(string sourcePath, string targetPath, bool overwrite = false, Predicate<string> filter = null)
+		{
+			if (!Directory.Exists(sourcePath)) return false;
+			if (!overwrite && Directory.Exists(targetPath)) return false;
+
+			if (!Directory.Exists(targetPath)) 
+				Directory.CreateDirectory(targetPath);
+
+			foreach (string file in Directory.GetFiles(sourcePath))
+			{
+				if (filter != null && !filter(file)) continue;
+				File.Copy(file, Path.Combine(targetPath, Path.GetFileName(file)), overwrite);
+			}
+			foreach (string subDir in Directory.GetDirectories(sourcePath))
+			{
+				if (filter != null && !filter(subDir)) continue;
+				CopyDirectory(subDir, Path.Combine(targetPath, Path.GetFileName(subDir)), overwrite, filter);
+			}
+
+			return true;
+		}
 	}
 }

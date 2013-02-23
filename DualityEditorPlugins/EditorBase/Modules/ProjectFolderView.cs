@@ -1224,7 +1224,7 @@ namespace EditorBase
 				if (File.Exists(srcPath) && !File.Exists(dstPath))
 					File.Copy(srcPath, dstPath);
 				else if (Directory.Exists(srcPath) && !Directory.Exists(dstPath))
-					EditorHelper.CopyDirectory(srcPath, dstPath);
+					PathHelper.CopyDirectory(srcPath, dstPath);
 				else
 					errorMove = true;
 						
@@ -1274,7 +1274,7 @@ namespace EditorBase
 					if (File.Exists(srcPath) && !File.Exists(dstPath))
 						File.Copy(srcPath, dstPath);
 					else if (Directory.Exists(srcPath) && !Directory.Exists(dstPath))
-						EditorHelper.CopyDirectory(srcPath, dstPath);
+						PathHelper.CopyDirectory(srcPath, dstPath);
 					else
 						errorMove = true;
 				}

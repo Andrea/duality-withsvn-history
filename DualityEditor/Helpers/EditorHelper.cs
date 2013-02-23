@@ -50,27 +50,6 @@ namespace DualityEditor
 			}
 		}
 
-		public static bool CopyDirectory(string sourcePath, string targetPath, bool overwrite = false, Predicate<string> filter = null)
-		{
-			if (!Directory.Exists(sourcePath)) return false;
-			if (!overwrite && Directory.Exists(targetPath)) return false;
-
-			if (!Directory.Exists(targetPath)) 
-				Directory.CreateDirectory(targetPath);
-
-			foreach (string file in Directory.GetFiles(sourcePath))
-			{
-				if (filter != null && !filter(file)) continue;
-				File.Copy(file, Path.Combine(targetPath, Path.GetFileName(file)), overwrite);
-			}
-			foreach (string subDir in Directory.GetDirectories(sourcePath))
-			{
-				if (filter != null && !filter(subDir)) continue;
-				CopyDirectory(subDir, Path.Combine(targetPath, Path.GetFileName(subDir)), overwrite);
-			}
-
-			return true;
-		}
 		public static bool IsJITDebuggerAvailable()
 		{
 			return Registry.LocalMachine
@@ -264,11 +243,11 @@ namespace DualityEditor
 			else if (template.SpecialTag == ProjectTemplateInfo.SpecialInfo.Current)
 			{
 				DualityEditorApp.SaveAllProjectData();
-				CopyDirectory(Environment.CurrentDirectory, projFolder, true);
+				PathHelper.CopyDirectory(Environment.CurrentDirectory, projFolder, true);
 			}
 			else
 			{
-				CopyDirectory(Environment.CurrentDirectory, projFolder, true, delegate(string path)
+				PathHelper.CopyDirectory(Environment.CurrentDirectory, projFolder, true, delegate(string path)
 				{
 					bool isDir = Directory.Exists(path);
 					string fullPath = Path.GetFullPath(path);

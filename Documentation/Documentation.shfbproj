@@ -20,8 +20,9 @@
     <Language>en-US</Language>
     <DocumentationSources>
       <DocumentationSource sourceFile="..\Duality\bin\x86\Release\Duality.dll" />
-<DocumentationSource sourceFile="..\Duality\bin\x86\Release\Duality.xml" /></DocumentationSources>
-    <HelpFileFormat>HtmlHelp1, Website</HelpFileFormat>
+      <DocumentationSource sourceFile="..\Duality\bin\x86\Release\Duality.xml" />
+    </DocumentationSources>
+    <HelpFileFormat>HtmlHelp1</HelpFileFormat>
     <HelpTitle>Duality Documentation</HelpTitle>
     <SyntaxFilters>CSharp</SyntaxFilters>
     <MissingTags>AutoDocumentCtors, AutoDocumentDispose</MissingTags>
