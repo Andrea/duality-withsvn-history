@@ -80,7 +80,7 @@ namespace NightlyBuilder
 			// Copy the results to the target directory
 			Console.WriteLine("================================ Copy to Target ===============================");
 			{
-				Console.WriteLine("Creating target directory {0}", config.TargetDir);
+				Console.WriteLine("Creating target directory '{0}'", config.TargetDir);
 				if (Directory.Exists(config.TargetDir))
 					Directory.Delete(config.TargetDir, true);
 				CopyDirectory(config.BuildResultDir, config.TargetDir, true, path => 
@@ -124,7 +124,7 @@ namespace NightlyBuilder
 			// Cleanup
 			Console.WriteLine("=================================== Cleanup ===================================");
 			{
-				Console.WriteLine("Deleting target directory {0}", config.TargetDir);
+				Console.WriteLine("Deleting target directory '{0}'", config.TargetDir);
 				if (Directory.Exists(config.TargetDir))
 					Directory.Delete(config.TargetDir, true);
 			}
