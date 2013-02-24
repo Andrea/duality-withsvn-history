@@ -119,6 +119,13 @@
     <Compile Include="Controls\ExplorerListView.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\ToolStrip\DualitorToolStripRenderer.cs" />
+    <Compile Include="Controls\ToolStrip\ToolStripCheckBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ToolStrip\ToolStripNumericUpDown.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Controls\TreeModels\FileSystem\ModelItems.cs" />
     <Compile Include="Controls\TreeModels\FileSystem\FolderBrowserTreeModel.cs" />
     <Compile Include="Controls\PropertyEditors\IColorDataPropertyEditor.cs" />
@@ -128,13 +135,6 @@
     <Compile Include="Controls\PropertyEditors\VectorPropertyEditor.cs" />
     <Compile Include="Controls\PropertyEditors\Provider.cs" />
     <Compile Include="Controls\PropertyEditors\Vector2PropertyEditor.cs" />
-    <Compile Include="Controls\ToolStrip\DualitorToolStripRenderer.cs" />
-    <Compile Include="Controls\ToolStrip\ToolStripCheckBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Controls\ToolStrip\ToolStripNumericUpDown.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="CorePluginInterface\CorePluginRegistry.cs" />
     <Compile Include="CorePluginInterface\DataConversion.cs" />
     <Compile Include="CorePluginInterface\EditorAction.cs" />

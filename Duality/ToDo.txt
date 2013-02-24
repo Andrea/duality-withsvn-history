@@ -10,18 +10,51 @@
 --> Address the issues from the Issue Tracker: https://code.google.com/p/duality/issues/list
 
 
+
 -->	UndoRedo
 	-->	ObjectInspector
-		-->	Provide some functionality in PropertyGrid for hooking any SetValue call
-			and wrapping that up in a Duality-specific UndoRedoAction
+		-->	Approach #1: Centralized PropertyEditor.SetValue hook
+			-->	Works like a charm at first glance
+			-->	Breaks as soon as the PropertyEditor changes state, because SetValue
+				depends on the parent editors GetValue result
+			-->	State: FAILED
+		-->	Approach #2: Centralized SetProperty / SetField hook
+			-->	Works in a very basic version, fires proper events
+			-->	Breaks as soon as there are subsequent calls, such as struct Writebacks
+				or custom PropertyChanged events (RigidBodyShape)
+			-->	State: FAILED
+		-->	Approach #3: Modified #1, fixed target objects
+			-->	Restructure CustomPropertyGrid code and remove the dynamic parent dependency
+				when invoking value setters.
+				-->	PropertyEditor.SetValue should always provide "IEnumerable<object> targets",
+					only the protected / public version doesn't and invokes the internal one using
+					GetValue.
+				-->	Thus, all value setters have a target object parameter. All PropertyEditors will
+					have to be updated.
+				-->	Implement the PropertyEditor.SetValue hook again, this time with the target object
+					parameter which can be backed up in the UndoRedoAction. 
+				-->	This will fix the problem of approach #1
+			-->	The problem of approach #2 will still occur on anything happening in OnValueChanged,
+				for example subsequent calls to value setters (ComponentProprtyEditor).
+				Further restructuring will be necessary.
+				-->	Make OnValueChanged() private and automatically invoke it somewhere in the base class.
+					It always occurs directly after calling PerformSetValue() or SetValues(..)
+				-->	The Setter hook will receive a Setter delegate as parameter that is actually not the
+					PropertyEditor setter function itself, but a member function that will first invoke
+					the actual setter and then call OnValueChanged()
+					-->	Which will fail due to the fact that during UndoRedo, the whole PropertyEditor
+						event structure might already been destroyed and unable to process.
+			-->	State: FAILED
+		-->	Approach #4: ?
+			-->	The main problem of #3 is ComponentPropertyEditor, because it hooks itself on its
+				OnValueChanged method in order to invoke additional setters. This is a problem, because
+				OnValueChanged is a GUI event and ComponentPropertyEditor uses it to change actual Data
+			-->	Take that away, #3 would work. The goal should be to actually take that away.
+			-->	????
 		-->	Edit Properties
 		-->	Special Editors
 			-->	PrefabLink
 			-->	Add Joint
-	-->	ProjectView
-		-->	Create / Import Resources
-		-->	Delete Resources
-		-->	Paste Resources
 	-->	General
 		-->	IEditorAction stuff from CorePluginInterface
 

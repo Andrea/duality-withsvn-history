@@ -427,4 +427,7 @@
   <data name="UndoRedo_SetGameObjectParentMulti" xml:space="preserve">
     <value>Re-Parent {0} GameObjects</value>
   </data>
+  <data name="UndoRedo_EditProperty" xml:space="preserve">
+    <value>Edit {0}</value>
+  </data>
 </root>

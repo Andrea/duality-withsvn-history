@@ -46,8 +46,8 @@ namespace EditorBase.CamViewStates
 			}
 			public override Vector3 Scale
 			{
-				get { return this.gameObj.Transform.Scale; }
-				set { this.gameObj.Transform.Scale = value; }
+				get { return Vector3.One * this.gameObj.Transform.Scale; }
+				set { this.gameObj.Transform.Scale = value.Length / MathF.Sqrt(3.0f); }
 			}
 			public override float BoundRadius
 			{
@@ -57,7 +57,7 @@ namespace EditorBase.CamViewStates
 					if (r == null)
 					{
 						if (this.gameObj.Transform != null)
-							return CamView.DefaultDisplayBoundRadius * this.gameObj.Transform.Scale.Xy.Length;
+							return CamView.DefaultDisplayBoundRadius * this.gameObj.Transform.Scale;
 						else
 							return CamView.DefaultDisplayBoundRadius;
 					}
@@ -99,21 +99,9 @@ namespace EditorBase.CamViewStates
 				}
 				else if (action == ObjectAction.Scale)
 				{
-					if (this.gameObj.Transform.RelativeScale.X == this.gameObj.Transform.RelativeScale.Y &&
-						this.gameObj.Transform.RelativeScale.X == this.gameObj.Transform.RelativeScale.Z)
-					{
-						text = new string[] {
-							string.Format("Scale:{0,5:0.00}", this.gameObj.Transform.RelativeScale.X)
-						};
-					}
-					else
-					{
-						text = new string[] {
-							string.Format("Scale X:{0,5:0.00}", this.gameObj.Transform.RelativeScale.X),
-							string.Format("Scale Y:{0,5:0.00}", this.gameObj.Transform.RelativeScale.Y),
-							string.Format("Scale Z:{0,5:0.00}", this.gameObj.Transform.RelativeScale.Z)
-						};
-					}
+					text = new string[] {
+						string.Format("Scale:{0,5:0.00}", this.gameObj.Transform.RelativeScale)
+					};
 				}
 				else if (action == ObjectAction.Rotate)
 				{

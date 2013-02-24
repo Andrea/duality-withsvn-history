@@ -721,15 +721,6 @@ namespace EditorBase.PropertyEditors
 			base.OnDragDrop(e);
 		}
 
-		protected override void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)
-		{
-			base.OnPropertySet(property, targets);
-			// BatchInfos aren't usually referenced, they're nested. Make sure the change notification is passed on.
-			this.SetValues(targets);
-			// Run a GetValue-pass to make sure automatic changes are applied if necessary.
-			this.PerformGetValue();
-		}
-
 		private void UniformList_EditorAdded(object sender, PropertyEditorEventArgs e)
 		{
 			this.ParentGrid.ConfigureEditor(e.Editor, new[] { new EditorHintIncrementAttribute(0.1f) });

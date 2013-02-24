@@ -694,6 +694,11 @@
               Sucht eine lokalisierte Zeichenfolge, die Delete {0} GameObjects ähnelt.
             </summary>
         </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_EditProperty">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Edit {0} ähnelt.
+            </summary>
+        </member>
         <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_Macro">
             <summary>
               Sucht eine lokalisierte Zeichenfolge, die Macro: {0} Actions ähnelt.

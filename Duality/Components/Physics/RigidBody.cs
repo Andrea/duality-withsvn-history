@@ -302,8 +302,8 @@ namespace Duality.Components.Physics
 				foreach (ShapeInfo info in this.shapes.Skip(1))
 					boundRect = boundRect.ExpandToContain(info.AABB);
 
-				Vector2 scale = this.GameObj.Transform.Scale.Xy;
-				return boundRect.Transform(scale).BoundingRadius;
+				float scale = this.GameObj.Transform.Scale;
+				return boundRect.Transform(scale, scale).BoundingRadius;
 			}
 		}
 		/// <summary>

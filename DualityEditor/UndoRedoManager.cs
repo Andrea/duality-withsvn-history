@@ -125,6 +125,11 @@ namespace DualityEditor
 				macroList.Add(action);
 				return;
 			}
+		//	if (Sandbox.IsActive) UndoRedo is inactive for now.
+			{
+				if (performAction) action.Do();
+				return;
+			}
 
 			bool hadNext = false;
 			if (actionStack.Count - actionIndex - 1 > 0)
@@ -141,11 +146,8 @@ namespace DualityEditor
 			else
 			{
 				lastActionFinished = false;
-				if (!Sandbox.IsActive && false) // UndoRedo is inactive for now
-				{
-					actionStack.Add(action);
-					actionIndex++;
-				}
+				actionStack.Add(action);
+				actionIndex++;
 				if (performAction) action.Do();
 			}
 
@@ -170,7 +172,10 @@ namespace DualityEditor
 			macroBeginCount--;
 			if (macroBeginCount == 0)
 			{
-				AppendAction(new UndoRedoMacroAction(name ?? macroName, macroList), false);
+				if (macroList.Count == 1)
+					AppendAction(macroList[0], false);
+				else
+					AppendAction(new UndoRedoMacroAction(name ?? macroName, macroList), false);
 				macroList.Clear();
 			}
 		}

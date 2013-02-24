@@ -145,14 +145,14 @@ namespace Duality.Components.Physics
 		{
 			if (c == null) return PhysicsConvert.ToPhysicalUnit(dualityPoint);
 
-			Vector2 scale = (c.GameObj != null && c.GameObj.Transform != null) ? c.GameObj.Transform.Scale.Xy : Vector2.One;
+			float scale = (c.GameObj != null && c.GameObj.Transform != null) ? c.GameObj.Transform.Scale : 1.0f;
 			return PhysicsConvert.ToPhysicalUnit(dualityPoint * scale);
 		}
 		protected static Vector2 GetDualityPoint(RigidBody c, Vector2 farseerPoint)
 		{
 			if (c == null) return PhysicsConvert.ToDualityUnit(farseerPoint);
 
-			Vector2 scale = (c.GameObj != null && c.GameObj.Transform != null) ? c.GameObj.Transform.Scale.Xy : Vector2.One;
+			float scale = (c.GameObj != null && c.GameObj.Transform != null) ? c.GameObj.Transform.Scale : 1.0f;
 			return PhysicsConvert.ToDualityUnit(farseerPoint / scale);
 		}
 	}

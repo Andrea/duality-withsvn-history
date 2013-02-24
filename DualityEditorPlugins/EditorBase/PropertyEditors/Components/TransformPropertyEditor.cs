@@ -52,7 +52,7 @@ namespace EditorBase.PropertyEditors
 				this.AddPropertyEditor(this.editorVel);
 				this.editorVel.EndUpdate();
 			}
-			this.editorScale = this.ParentGrid.CreateEditor(typeof(Vector3), this);
+			this.editorScale = this.ParentGrid.CreateEditor(typeof(float), this);
 			if (this.editorScale != null)
 			{
 				this.editorScale.BeginUpdate();
@@ -184,10 +184,10 @@ namespace EditorBase.PropertyEditors
 		}
 		protected void ScaleSetter(IEnumerable<object> values)
 		{
-			IEnumerator<Vector3> valuesEnum = values.Cast<Vector3>().GetEnumerator();
+			IEnumerator<float> valuesEnum = values.Cast<float>().GetEnumerator();
 			Transform[] targetArray = this.GetValue().Cast<Transform>().ToArray();
 
-			Vector3 curValue = Vector3.Zero;
+			float curValue = 1.0f;
 			if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
 			foreach (Transform target in targetArray)
 			{

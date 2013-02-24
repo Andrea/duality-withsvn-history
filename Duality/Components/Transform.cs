@@ -31,7 +31,7 @@ namespace Duality.Components
 
 		private	Vector3	pos			= Vector3.Zero;
 		private	float	angle		= 0.0f;
-		private	Vector3	scale		= Vector3.One;
+		private	float	scale		= 1.0f;
 		private	bool	deriveAngle		= true;
 		private	bool	ignoreParent	= false;
 		private	DirtyFlags	changes	= DirtyFlags.None;
@@ -40,7 +40,7 @@ namespace Duality.Components
 		private	Transform	parentTransform	= null;
 		private	Vector3		posAbs			= Vector3.Zero;
 		private	float		angleAbs		= 0.0f;
-		private	Vector3		scaleAbs		= Vector3.One;
+		private	float		scaleAbs		= 1.0f;
 		// Auto-calculated values
 		private	Vector3		vel				= Vector3.Zero;
 		private	Vector3		velAbs			= Vector3.Zero;
@@ -108,14 +108,12 @@ namespace Duality.Components
 		/// <summary>
 		/// [GET / SET] The objects scale relative to its parent object.
 		/// </summary>
-		public Vector3 RelativeScale
+		public float RelativeScale
 		{
 			get { return this.scale; }
 			set
 			{
-				this.scale.X = MathF.Max(value.X, MinScale);
-				this.scale.Y = MathF.Max(value.Y, MinScale);
-				this.scale.Z = MathF.Max(value.Z, MinScale);
+				this.scale = MathF.Max(value, MinScale);
 				this.changes |= DirtyFlags.Scale; 
 				this.UpdateAbs();
 			}
@@ -188,7 +186,7 @@ namespace Duality.Components
 				{
 					this.pos = this.posAbs;
 					Vector3.Subtract(ref this.pos, ref this.parentTransform.posAbs, out this.pos);
-					Vector3.Divide(ref this.pos, ref this.parentTransform.scaleAbs, out this.pos);
+					Vector3.Divide(ref this.pos, this.parentTransform.scaleAbs, out this.pos);
 					MathF.TransformCoord(ref this.pos.X, ref this.pos.Y, -this.parentTransform.angleAbs);
 				}
 				else
@@ -239,20 +237,16 @@ namespace Duality.Components
 		/// <summary>
 		/// [GET / SET] The objects scale.
 		/// </summary>
-		public Vector3 Scale
+		public float Scale
 		{
 			get { return this.scaleAbs; }
 			set 
 			{ 
-				this.scaleAbs.X = MathF.Max(value.X, MinScale);
-				this.scaleAbs.Y = MathF.Max(value.Y, MinScale);
-				this.scaleAbs.Z = MathF.Max(value.Z, MinScale);
+				this.scaleAbs = MathF.Max(value, MinScale);
 
 				if (this.parentTransform != null)
 				{
-					this.scale.X = this.scaleAbs.X / this.parentTransform.scaleAbs.X;
-					this.scale.Y = this.scaleAbs.Y / this.parentTransform.scaleAbs.Y;
-					this.scale.Z = this.scaleAbs.Z / this.parentTransform.scaleAbs.Z;
+					this.scale = this.scaleAbs / this.parentTransform.scaleAbs;
 				}
 				else
 				{
@@ -301,7 +295,7 @@ namespace Duality.Components
 		{
 			Vector3 world;
 
-			Vector3.Multiply(ref local, ref this.scaleAbs, out world);
+			Vector3.Multiply(ref local, this.scaleAbs, out world);
 			MathF.TransformCoord(ref world.X, ref world.Y, this.angleAbs);
 			Vector3.Add(ref world, ref this.posAbs, out world);
 
@@ -327,7 +321,7 @@ namespace Duality.Components
 			
 			Vector3.Subtract(ref world, ref this.posAbs, out local);
 			MathF.TransformCoord(ref local.X, ref local.Y, -this.angleAbs);
-			Vector3.Divide(ref local, ref this.scaleAbs, out local);
+			Vector3.Divide(ref local, this.scaleAbs, out local);
 
 			return local;
 		}
@@ -350,7 +344,7 @@ namespace Duality.Components
 		{
 			Vector3 world;
 
-			Vector3.Multiply(ref local, ref this.scaleAbs, out world);
+			Vector3.Multiply(ref local, this.scaleAbs, out world);
 			MathF.TransformCoord(ref world.X, ref world.Y, this.angleAbs);
 
 			return world;
@@ -376,7 +370,7 @@ namespace Duality.Components
 			Vector3 local = world;
 			
 			MathF.TransformCoord(ref local.X, ref local.Y, -this.angleAbs);
-			Vector3.Divide(ref local, ref this.scaleAbs, out local);
+			Vector3.Divide(ref local, this.scaleAbs, out local);
 
 			return local;
 		}
@@ -465,12 +459,12 @@ namespace Duality.Components
 			{
 				this.pos = this.posAbs;
 				Vector3.Subtract(ref this.pos, ref this.parentTransform.posAbs, out this.pos);
-				Vector3.Divide(ref this.pos, ref this.parentTransform.scaleAbs, out this.pos);
+				Vector3.Divide(ref this.pos, this.parentTransform.scaleAbs, out this.pos);
 				MathF.TransformCoord(ref this.pos.X, ref this.pos.Y, -this.parentTransform.angleAbs);
 
 				this.tempVel = this.tempVelAbs;
 				Vector3.Subtract(ref this.tempVel, ref this.parentTransform.tempVelAbs, out this.tempVel);
-				Vector3.Divide(ref this.tempVel, ref this.parentTransform.scaleAbs, out this.tempVel);
+				Vector3.Divide(ref this.tempVel, this.parentTransform.scaleAbs, out this.tempVel);
 				MathF.TransformCoord(ref this.tempVel.X, ref this.tempVel.Y, -this.parentTransform.angleAbs);
 			}
 			else
@@ -561,7 +555,7 @@ namespace Duality.Components
 		/// <param name="scale"></param>
 		/// <param name="angle"></param>
 		/// <param name="angleVel"></param>
-		public void SetTransform(Vector3 pos, Vector3 scale, float angle)
+		public void SetTransform(Vector3 pos, float scale, float angle)
 		{
 			this.posAbs = pos;
 			this.angleAbs = angle;
@@ -579,7 +573,7 @@ namespace Duality.Components
 		/// <param name="scale"></param>
 		/// <param name="angle"></param>
 		/// <param name="angleVel"></param>
-		public void SetRelativeTransform(Vector3 pos, Vector3 scale, float angle)
+		public void SetRelativeTransform(Vector3 pos, float scale, float angle)
 		{
 			this.pos = pos;
 			this.angle = angle;
@@ -751,13 +745,13 @@ namespace Duality.Components
 					if (updateTempVel) this.tempAngleVelAbs = this.tempAngleVel;
 				}
 
-				Vector3.Multiply(ref this.scale, ref this.parentTransform.scaleAbs, out this.scaleAbs);
+				this.scaleAbs = this.scale * this.parentTransform.scaleAbs;
 
 				Vector2 parentAngleAbsDotX;
 				Vector2 parentAngleAbsDotY;
 				MathF.GetTransformDotVec(this.parentTransform.angleAbs, out parentAngleAbsDotX, out parentAngleAbsDotY);
 
-				Vector3.Multiply(ref this.pos, ref this.parentTransform.scaleAbs, out this.posAbs);
+				Vector3.Multiply(ref this.pos, this.parentTransform.scaleAbs, out this.posAbs);
 				MathF.TransformDotVec(ref this.posAbs, ref parentAngleAbsDotX, ref parentAngleAbsDotY);
 				Vector3.Add(ref this.posAbs, ref this.parentTransform.posAbs, out this.posAbs);
 
@@ -767,7 +761,7 @@ namespace Duality.Components
 					Vector2.Multiply(ref parentTurnVelAdjust, this.parentTransform.tempAngleVelAbs, out parentTurnVelAdjust);
 					MathF.TransformDotVec(ref parentTurnVelAdjust, ref parentAngleAbsDotX, ref parentAngleAbsDotY);
 
-					Vector3.Multiply(ref this.tempVel, ref this.parentTransform.scaleAbs, out this.tempVelAbs);
+					Vector3.Multiply(ref this.tempVel, this.parentTransform.scaleAbs, out this.tempVelAbs);
 					MathF.TransformDotVec(ref this.tempVelAbs, ref parentAngleAbsDotX, ref parentAngleAbsDotY);
 					Vector3.Add(ref this.tempVelAbs, ref this.parentTransform.tempVelAbs, out this.tempVelAbs);
 
@@ -836,7 +830,7 @@ namespace Duality.Components
 					if (updateTempVel) this.tempAngleVel = this.tempAngleVelAbs;
 				}
 
-				Vector3.Divide(ref this.scaleAbs, ref this.parentTransform.scaleAbs, out this.scale);
+				this.scale = this.scaleAbs / this.parentTransform.scaleAbs;
 				
 				Vector2 parentAngleAbsDotX;
 				Vector2 parentAngleAbsDotY;
@@ -844,7 +838,7 @@ namespace Duality.Components
 
 				Vector3.Subtract(ref this.posAbs, ref this.parentTransform.posAbs, out this.pos);
 				MathF.TransformDotVec(ref this.pos, ref parentAngleAbsDotX, ref parentAngleAbsDotY);
-				Vector3.Divide(ref this.pos, ref this.parentTransform.scaleAbs, out this.pos);
+				Vector3.Divide(ref this.pos, this.parentTransform.scaleAbs, out this.pos);
 
 				if (updateTempVel)
 				{
@@ -854,7 +848,7 @@ namespace Duality.Components
 					
 					Vector3.Subtract(ref this.tempVelAbs, ref this.parentTransform.tempVelAbs, out this.tempVel);
 					MathF.TransformDotVec(ref this.tempVel, ref parentAngleAbsDotX, ref parentAngleAbsDotY);
-					Vector3.Divide(ref this.tempVel, ref this.parentTransform.scaleAbs, out this.tempVel);
+					Vector3.Divide(ref this.tempVel, this.parentTransform.scaleAbs, out this.tempVel);
 
 					this.tempVel.X -= parentTurnVelAdjust.X;
 					this.tempVel.Y -= parentTurnVelAdjust.Y;
@@ -902,9 +896,7 @@ namespace Duality.Components
 			MathF.CheckValidValue(ref this.vel.X);
 			MathF.CheckValidValue(ref this.vel.Y);
 			MathF.CheckValidValue(ref this.vel.Z);
-			MathF.CheckValidValue(ref this.scale.X);
-			MathF.CheckValidValue(ref this.scale.Y);
-			MathF.CheckValidValue(ref this.scale.Z);
+			MathF.CheckValidValue(ref this.scale);
 			MathF.CheckValidValue(ref this.angle);
 			MathF.CheckValidValue(ref this.angleVel);
 			MathF.CheckValidValue(ref this.tempVel.X);
@@ -918,9 +910,7 @@ namespace Duality.Components
 			MathF.CheckValidValue(ref this.velAbs.X);
 			MathF.CheckValidValue(ref this.velAbs.Y);
 			MathF.CheckValidValue(ref this.velAbs.Z);
-			MathF.CheckValidValue(ref this.scaleAbs.X);
-			MathF.CheckValidValue(ref this.scaleAbs.Y);
-			MathF.CheckValidValue(ref this.scaleAbs.Z);
+			MathF.CheckValidValue(ref this.scaleAbs);
 			MathF.CheckValidValue(ref this.angleAbs);
 			MathF.CheckValidValue(ref this.angleVelAbs);
 			MathF.CheckValidValue(ref this.tempVelAbs.X);

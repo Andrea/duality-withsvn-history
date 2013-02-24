@@ -95,7 +95,7 @@ namespace EditorBase.CamViewLayers
 				float minDensity = c.Shapes.Min(s => s.Density);
 				float avgDensity = (maxDensity + minDensity) * 0.5f;
 				Vector3 colliderPos = c.GameObj.Transform.Pos;
-				Vector2 colliderScale = c.GameObj.Transform.Scale.Xy;
+				float colliderScale = c.GameObj.Transform.Scale;
 				int index = 0;
 				foreach (ShapeInfo s in c.Shapes)
 				{
@@ -115,7 +115,6 @@ namespace EditorBase.CamViewLayers
 
 					if (circle != null)
 					{
-						float uniformScale = colliderScale.Length / MathF.Sqrt(2.0f);
 						Vector2 circlePos = circle.Position * colliderScale;
 						MathF.TransformCoord(ref circlePos.X, ref circlePos.Y, c.GameObj.Transform.Angle);
 
@@ -124,13 +123,13 @@ namespace EditorBase.CamViewLayers
 							colliderPos.X + circlePos.X,
 							colliderPos.Y + circlePos.Y,
 							colliderPos.Z - 0.01f, 
-							circle.Radius * uniformScale);
+							circle.Radius * colliderScale);
 						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha(shapeAlpha)));
 						canvas.DrawCircle(
 							colliderPos.X + circlePos.X,
 							colliderPos.Y + circlePos.Y,
 							colliderPos.Z - 0.01f, 
-							circle.Radius * uniformScale);
+							circle.Radius * colliderScale);
 
 						center = circlePos;
 					}
@@ -140,12 +139,12 @@ namespace EditorBase.CamViewLayers
 						for (int i = 0; i < polyVert.Length; i++)
 						{
 							center += polyVert[i];
-							Vector2.Multiply(ref polyVert[i], ref colliderScale, out polyVert[i]);
+							Vector2.Multiply(ref polyVert[i], colliderScale, out polyVert[i]);
 							MathF.TransformCoord(ref polyVert[i].X, ref polyVert[i].Y, c.GameObj.Transform.Angle);
 							polyVert[i] += colliderPos.Xy;
 						}
 						center /= polyVert.Length;
-						Vector2.Multiply(ref center, ref colliderScale, out center);
+						Vector2.Multiply(ref center, colliderScale, out center);
 						MathF.TransformCoord(ref center.X, ref center.Y, c.GameObj.Transform.Angle);
 
 						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha((0.25f + densityRelative * 0.25f) * shapeAlpha)));
@@ -159,12 +158,12 @@ namespace EditorBase.CamViewLayers
 						for (int i = 0; i < loopVert.Length; i++)
 						{
 							center += loopVert[i];
-							Vector2.Multiply(ref loopVert[i], ref colliderScale, out loopVert[i]);
+							Vector2.Multiply(ref loopVert[i], colliderScale, out loopVert[i]);
 							MathF.TransformCoord(ref loopVert[i].X, ref loopVert[i].Y, c.GameObj.Transform.Angle);
 							loopVert[i] += colliderPos.Xy;
 						}
 						center /= loopVert.Length;
-						Vector2.Multiply(ref center, ref colliderScale, out center);
+						Vector2.Multiply(ref center, colliderScale, out center);
 						MathF.TransformCoord(ref center.X, ref center.Y, c.GameObj.Transform.Angle);
 
 						canvas.CurrentState.SetMaterial(new BatchInfo(DrawTechnique.Alpha, clr.WithAlpha(shapeAlpha)));

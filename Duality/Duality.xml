@@ -863,7 +863,7 @@
             </summary>
             <param name="value"></param>
         </member>
-        <member name="M:Duality.Components.Transform.SetTransform(OpenTK.Vector3,OpenTK.Vector3,System.Single)">
+        <member name="M:Duality.Components.Transform.SetTransform(OpenTK.Vector3,System.Single,System.Single)">
             <summary>
             Updates the Transforms data all at once.
             </summary>
@@ -873,7 +873,7 @@
             <param name="angle"></param>
             <param name="angleVel"></param>
         </member>
-        <member name="M:Duality.Components.Transform.SetRelativeTransform(OpenTK.Vector3,OpenTK.Vector3,System.Single)">
+        <member name="M:Duality.Components.Transform.SetRelativeTransform(OpenTK.Vector3,System.Single,System.Single)">
             <summary>
             Updates the Transforms data all at once.
             </summary>

@@ -58,7 +58,7 @@ namespace Duality.Components.Physics
 
 		protected override Fixture CreateFixture(Body body)
 		{
-			var farseerVert = this.CreateVertices(Vector2.One);
+			var farseerVert = this.CreateVertices(1.0f);
 			if (farseerVert == null) return null;
 
 			this.Parent.CheckValidTransform();
@@ -74,9 +74,9 @@ namespace Duality.Components.Physics
 			if (this.fixture == null) return;
 			if (this.Parent == null) return;
 				
-			Vector2 scale = Vector2.One;
+			float scale = 1.0f;
 			if (this.Parent.GameObj != null && this.Parent.GameObj.Transform != null)
-				scale = this.Parent.GameObj.Transform.Scale.Xy;
+				scale = this.Parent.GameObj.Transform.Scale;
 
 			this.Parent.CheckValidTransform();
 
@@ -85,7 +85,7 @@ namespace Duality.Components.Physics
 
 			this.Parent.CheckValidTransform();
 		}
-		private FarseerPhysics.Common.Vertices CreateVertices(Vector2 scale)
+		private FarseerPhysics.Common.Vertices CreateVertices(float scale)
 		{
 			if (!MathF.IsPolygonConvex(this.vertices)) return null;
 
@@ -115,8 +115,8 @@ namespace Duality.Components.Physics
 			for (int i = 0; i < sortedVertices.Length; i++)
 			{
 				v.Add(new Vector2(
-					PhysicsConvert.ToPhysicalUnit(sortedVertices[i].X * scale.X), 
-					PhysicsConvert.ToPhysicalUnit(sortedVertices[i].Y * scale.Y)));
+					PhysicsConvert.ToPhysicalUnit(sortedVertices[i].X * scale), 
+					PhysicsConvert.ToPhysicalUnit(sortedVertices[i].Y * scale)));
 			}
 			return v;
 		}

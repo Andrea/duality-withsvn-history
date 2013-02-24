@@ -59,7 +59,7 @@ namespace Duality.Components.Physics
 		protected override Fixture CreateFixture(Body body)
 		{
 			if (!body.IsStatic) return null; // Loop shapes aren't allowed on nonstatic bodies.
-			return body.CreateFixture(new LoopShape(this.CreateVertices(Vector2.One)), this);
+			return body.CreateFixture(new LoopShape(this.CreateVertices(1.0f)), this);
 		}
 		internal override void UpdateFixture(bool updateShape = false)
 		{
@@ -74,22 +74,22 @@ namespace Duality.Components.Physics
 			if (this.fixture == null) return;
 			if (this.Parent == null) return;
 				
-			Vector2 scale = Vector2.One;
+			float scale = 1.0f;
 			if (this.Parent.GameObj != null && this.Parent.GameObj.Transform != null)
-				scale = this.Parent.GameObj.Transform.Scale.Xy;
+				scale = this.Parent.GameObj.Transform.Scale;
 
 			LoopShape poly = this.fixture.Shape as LoopShape;
 			poly.Vertices = this.CreateVertices(scale);
 		}
-		private FarseerPhysics.Common.Vertices CreateVertices(Vector2 scale)
+		private FarseerPhysics.Common.Vertices CreateVertices(float scale)
 		{
 			Vector2[] vertices = this.vertices.ToArray();
 			FarseerPhysics.Common.Vertices farseerVert = new FarseerPhysics.Common.Vertices(vertices.Length);
 			for (int i = 0; i < vertices.Length; i++)
 			{
 				farseerVert.Add(new Vector2(
-					PhysicsConvert.ToPhysicalUnit(vertices[i].X * scale.X), 
-					PhysicsConvert.ToPhysicalUnit(vertices[i].Y * scale.Y)));
+					PhysicsConvert.ToPhysicalUnit(vertices[i].X * scale), 
+					PhysicsConvert.ToPhysicalUnit(vertices[i].Y * scale)));
 			}
 			return farseerVert;
 		}

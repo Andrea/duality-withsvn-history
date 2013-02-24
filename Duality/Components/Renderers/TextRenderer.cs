@@ -29,7 +29,7 @@ namespace Duality.Components.Renderers
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public override float BoundRadius
 		{
-			get { return this.textRect.Transform(this.gameobj.Transform.Scale.Xy).BoundingRadius; }
+			get { return this.textRect.Transform(this.gameobj.Transform.Scale, this.gameobj.Transform.Scale).BoundingRadius; }
 		}
 		/// <summary>
 		/// [GET / SET] The text blocks alignment relative to the <see cref="GameObject"/>.
@@ -118,7 +118,7 @@ namespace Duality.Components.Renderers
 			device.PreprocessCoords(ref posTemp, ref scaleTemp);
 
 			Vector2 xDot, yDot;
-			MathF.GetTransformDotVec(this.GameObj.Transform.Angle, this.gameobj.Transform.Scale.Xy * scaleTemp, out xDot, out yDot);
+			MathF.GetTransformDotVec(this.GameObj.Transform.Angle, this.gameobj.Transform.Scale * scaleTemp, out xDot, out yDot);
 
 			Rect rect = Rect.Align(this.align, 0.0f, 0.0f, MathF.Max(this.text.MaxWidth, this.metrics.Size.X), this.metrics.Size.Y);
 			Vector2 textOffset = rect.TopLeft;

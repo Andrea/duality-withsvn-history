@@ -935,6 +935,7 @@ namespace DualityEditor
 		}
 		private static void OnObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs args)
 		{
+			//Console.WriteLine("OnObjectPropertyChanged: {0}\n\t{1}", args.PropNames.ToString(", "), args.Objects.Objects.ToString(", "));
 			if (args.PersistenceCritical)
 			{
 				// If a linked GameObject was modified, update its prefab link changelist

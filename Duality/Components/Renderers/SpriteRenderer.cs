@@ -53,7 +53,7 @@ namespace Duality.Components.Renderers
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public override float BoundRadius
 		{
-			get { return this.rect.Transform(this.gameobj.Transform.Scale.Xy).BoundingRadius; }
+			get { return this.rect.Transform(this.gameobj.Transform.Scale, this.gameobj.Transform.Scale).BoundingRadius; }
 		}
 		/// <summary>
 		/// [GET / SET] The rectangular area the sprite occupies. Relative to the <see cref="GameObject"/>.
@@ -160,7 +160,7 @@ namespace Duality.Components.Renderers
 			Vector2 xDot, yDot;
 			MathF.GetTransformDotVec(this.GameObj.Transform.Angle, scaleTemp, out xDot, out yDot);
 
-			Rect rectTemp = this.rect.Transform(this.gameobj.Transform.Scale.Xy);
+			Rect rectTemp = this.rect.Transform(this.gameobj.Transform.Scale, this.gameobj.Transform.Scale);
 			Vector2 edge1 = rectTemp.TopLeft;
 			Vector2 edge2 = rectTemp.BottomLeft;
 			Vector2 edge3 = rectTemp.BottomRight;

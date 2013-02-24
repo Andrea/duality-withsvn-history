@@ -108,8 +108,8 @@ namespace DualityEditor
 			if (infos == null) infos = new PropertyInfo[0];
 
 			this.obj = obj;
-			this.propInfos = new List<PropertyInfo>(infos);
-			this.propNames = new List<string>(infos.Select(i => i.Name));
+			this.propInfos = infos.ToList();
+			this.propNames = this.propInfos.Select(i => i.Name).ToList();
 			this.completeChange = this.propInfos.Count == 0;
 			this.persistCritical = persistenceCritical;
 		}

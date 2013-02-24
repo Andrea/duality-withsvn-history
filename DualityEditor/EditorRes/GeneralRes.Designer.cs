@@ -904,6 +904,15 @@ namespace DualityEditor.EditorRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Edit {0} ähnelt.
+        /// </summary>
+        public static string UndoRedo_EditProperty {
+            get {
+                return ResourceManager.GetString("UndoRedo_EditProperty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Macro: {0} Actions ähnelt.
         /// </summary>
         public static string UndoRedo_Macro {

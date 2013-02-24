@@ -35,7 +35,7 @@ namespace EditorBase.CamViewStates
 			}
 			public override Vector3 Scale
 			{
-				get { return this.bodyObj.Transform.Scale; }
+				get { return Vector3.One * this.bodyObj.Transform.Scale; }
 				set { }
 			}
 			public override float BoundRadius
@@ -130,7 +130,7 @@ namespace EditorBase.CamViewStates
 			}
 			public override float BoundRadius
 			{
-				get { return this.circle.Radius * this.Body.GameObj.Transform.Scale.Xy.Length / MathF.Sqrt(2.0f); }
+				get { return this.circle.Radius * this.Body.GameObj.Transform.Scale; }
 			}
 
 			public SelCircleShape(CircleShapeInfo shape) : base(shape)
@@ -214,7 +214,7 @@ namespace EditorBase.CamViewStates
 			}
 			public override float BoundRadius
 			{
-				get { return this.boundRad * this.Body.GameObj.Transform.Scale.Xy.Length / MathF.Sqrt(2.0f); }
+				get { return this.boundRad * this.Body.GameObj.Transform.Scale; }
 			}
 
 			public SelPolyShape(PolyShapeInfo shape) : base(shape)
@@ -364,7 +364,7 @@ namespace EditorBase.CamViewStates
 			}
 			public override float BoundRadius
 			{
-				get { return this.boundRad * this.Body.GameObj.Transform.Scale.Xy.Length / MathF.Sqrt(2.0f); }
+				get { return this.boundRad * this.Body.GameObj.Transform.Scale; }
 			}
 
 			public SelLoopShape(LoopShapeInfo shape) : base(shape)

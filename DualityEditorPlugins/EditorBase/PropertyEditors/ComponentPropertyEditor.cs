@@ -83,7 +83,11 @@ namespace EditorBase.PropertyEditors
 			// If an editor has changed that was NOT a direct descendant, invoke its setter to trigger OnPropertySet / OnFieldSet.
 			// Always remember: If we don't emit a PropertyChanged event, PrefabLinks won't update their change lists!
 			if (directChild != null && directChild != args.Editor && directChild.EditedMember != null)
+			{
+			//	Is all this really wants to do fire all the PropertyChanged events? Why not do that directly here?
+			//	Console.WriteLine("OnValueChanged: {0}", directChild.PropertyName);
 				directChild.PerformSetValue();
+			}
 		}
 		protected override void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)
 		{

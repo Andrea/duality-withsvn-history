@@ -63,14 +63,13 @@ namespace Duality.Components.Physics
 			if (this.fixture == null) return;
 			if (this.Parent == null) return;
 
-			Vector2 scale = Vector2.One;
+			float scale = 1.0f;
 			if (this.Parent.GameObj != null && this.Parent.GameObj.Transform != null)
-				scale = this.Parent.GameObj.Transform.Scale.Xy;
-			float uniformScale = scale.Length / MathF.Sqrt(2.0f);
+				scale = this.Parent.GameObj.Transform.Scale;
 
 			CircleShape circle = this.fixture.Shape as CircleShape;
-			circle.Radius = PhysicsConvert.ToPhysicalUnit(this.radius * uniformScale);
-			circle.Position = PhysicsConvert.ToPhysicalUnit(new Vector2(this.position.X * scale.X, this.position.Y * scale.Y));
+			circle.Radius = PhysicsConvert.ToPhysicalUnit(this.radius * scale);
+			circle.Position = PhysicsConvert.ToPhysicalUnit(new Vector2(this.position.X * scale, this.position.Y * scale));
 		}
 
 		protected override void OnCopyTo(ShapeInfo target)
