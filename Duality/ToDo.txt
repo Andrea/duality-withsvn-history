@@ -11,17 +11,13 @@
 
 
 -->	UndoRedo
-	-->	Debugging
-	-->	CamView
-		-->	RigidBodyEditor
-			-->	Delete Shapes
-			-->	Clone Shapes
-			-->	Create Shapes
 	-->	ObjectInspector
 		-->	Provide some functionality in PropertyGrid for hooking any SetValue call
 			and wrapping that up in a Duality-specific UndoRedoAction
 		-->	Edit Properties
-		-->	PrefabLink Stuff
+		-->	Special Editors
+			-->	PrefabLink
+			-->	Add Joint
 	-->	ProjectView
 		-->	Create / Import Resources
 		-->	Delete Resources

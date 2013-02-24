@@ -16,6 +16,8 @@ using DualityEditor;
 using DualityEditor.CorePluginInterface;
 using DualityEditor.Forms;
 
+using EditorBase.UndoRedoActions;
+
 using OpenTK;
 
 namespace EditorBase.CamViewStates
@@ -37,6 +39,7 @@ namespace EditorBase.CamViewStates
 		}
 
 		private	CursorState			mouseState			= CursorState.Normal;
+		private	bool				createAction		= false;
 		private	int					createPolyIndex		= 0;
 		private	RigidBody			selectedBody		= null;
 		private	ToolStrip			toolstrip			= null;
@@ -212,7 +215,15 @@ namespace EditorBase.CamViewStates
 			bool shapeAction = 
 				action != ObjectAction.RectSelect && 
 				action != ObjectAction.None;
-			if (this.selectedBody != null && shapeAction) this.selectedBody.EndUpdateBodyShape();
+			if (this.selectedBody != null && shapeAction)
+			{
+				this.selectedBody.EndUpdateBodyShape();
+			}
+			if (this.createAction)
+			{
+				this.createAction = false;
+				UndoRedoManager.EndMacro(UndoRedoManager.MacroDeriveName.FromFirst);
+			}
 		}
 
 		protected void UpdateToolbar()
@@ -451,16 +462,10 @@ namespace EditorBase.CamViewStates
 		{
 			if (objEnum.OfType<SelShape>().Any())
 			{
-				SelShape[] selShapes = objEnum.OfType<SelShape>().ToArray();
-				foreach (SelShape selShape in selShapes)
-				{
-					ShapeInfo shape = selShape.ActualObject as ShapeInfo;
-					this.selectedBody.RemoveShape(shape);
-				}
+				ShapeInfo[] selShapes = objEnum.OfType<SelShape>().Select(s => s.ActualObject as ShapeInfo).ToArray();
+
 				DualityEditorApp.Deselect(this, ObjectSelection.Category.Other);
-				DualityEditorApp.NotifyObjPropChanged(this,
-					new ObjectSelection(this.selectedBody),
-					ReflectionInfo.Property_RigidBody_Shapes);
+				UndoRedoManager.Do(new DeleteRigidBodyShapeAction(selShapes));
 			}
 		}
 		public override List<CamViewState.SelObj> CloneObjects(IEnumerable<CamViewState.SelObj> objEnum)
@@ -468,14 +473,10 @@ namespace EditorBase.CamViewStates
 			List<SelObj> result = new List<SelObj>();
 			if (objEnum.OfType<SelShape>().Any())
 			{
-				SelShape[] selShapes = objEnum.OfType<SelShape>().ToArray();
-				foreach (SelShape selShape in selShapes)
-				{
-					ShapeInfo shape = selShape.ActualObject as ShapeInfo;
-					shape = shape.Clone();
-					this.selectedBody.AddShape(shape);
-					result.Add(SelShape.Create(shape));
-				}
+				ShapeInfo[] selShapes = objEnum.OfType<SelShape>().Select(s => (s.ActualObject as ShapeInfo).Clone()).ToArray();
+				CreateRigidBodyShapeAction cloneAction = new CreateRigidBodyShapeAction(this.selectedBody, selShapes);
+				UndoRedoManager.Do(cloneAction);
+				result.AddRange(cloneAction.Result.Select(s => SelShape.Create(s)));
 			}
 			return result;
 		}
@@ -572,13 +573,12 @@ namespace EditorBase.CamViewStates
 				#region CreateCircle
 				if (e.Button == MouseButtons.Left)
 				{
-					CircleShapeInfo newShape = new CircleShapeInfo(16.0f, localPos, 1.0f);
-					this.selectedBody.AddShape(newShape);
+					CircleShapeInfo newShape = new CircleShapeInfo(1.0f, localPos, 1.0f);
 
-					DualityEditorApp.NotifyObjPropChanged(this,
-						new ObjectSelection(this.selectedBody),
-						ReflectionInfo.Property_RigidBody_Shapes);
+					UndoRedoManager.BeginMacro();
+					UndoRedoManager.Do(new CreateRigidBodyShapeAction(this.selectedBody, newShape));
 
+					this.createAction = true;
 					this.LeaveCursorState();
 					this.SelectObjects(new[] { SelShape.Create(newShape) });
 					this.BeginAction(ObjectAction.Scale);
@@ -598,7 +598,7 @@ namespace EditorBase.CamViewStates
 					if (!this.allObjSel.Any(sel => sel is SelPolyShape))
 					{
 						PolyShapeInfo newShape = new PolyShapeInfo(new Vector2[] { localPos, localPos, localPos }, 1.0f);
-						this.selectedBody.AddShape(newShape);
+						UndoRedoManager.Do(new CreateRigidBodyShapeAction(this.selectedBody, newShape));
 						this.SelectObjects(new[] { SelShape.Create(newShape) });
 						success = true;
 					}
@@ -665,7 +665,7 @@ namespace EditorBase.CamViewStates
 					if (!this.allObjSel.Any(sel => sel is SelLoopShape))
 					{
 						LoopShapeInfo newShape = new LoopShapeInfo(new Vector2[] { localPos, localPos + Vector2.UnitX, localPos + Vector2.One });
-						this.selectedBody.AddShape(newShape);
+						UndoRedoManager.Do(new CreateRigidBodyShapeAction(this.selectedBody, newShape));
 						this.SelectObjects(new[] { SelShape.Create(newShape) });
 						success = true;
 					}
@@ -785,6 +785,14 @@ namespace EditorBase.CamViewStates
 	
 		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
 		{
+			if (this.selectedBody != null)
+			{
+				if (this.selectedBody.Disposed || this.selectedBody.GameObj == null || this.selectedBody.GameObj.Disposed)
+				{
+					this.ClearSelection();
+					return;
+				}
+			}
 			if (e.Objects.Objects.Any(o => o is Transform || o is RigidBody || o is ShapeInfo))
 			{
 				// Applying its Prefab invalidates a Collider's ShapeInfos: Deselect them.
@@ -796,6 +804,7 @@ namespace EditorBase.CamViewStates
 				//	foreach (SelEdgeShape sps in this.allObjSel.OfType<SelEdgeShape>()) sps.UpdateEdgeStats();
 					foreach (SelLoopShape sps in this.allObjSel.OfType<SelLoopShape>()) sps.UpdateLoopStats();
 					this.InvalidateSelectionStats();
+					this.Invalidate();
 				}
 				this.UpdateToolbar();
 			}

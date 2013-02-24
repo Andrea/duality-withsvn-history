@@ -73,9 +73,9 @@ namespace Duality.Components.Physics
 			circle.Position = PhysicsConvert.ToPhysicalUnit(new Vector2(this.position.X * scale.X, this.position.Y * scale.Y));
 		}
 
-		protected override void CopyTo(ShapeInfo target)
+		protected override void OnCopyTo(ShapeInfo target)
 		{
-			base.CopyTo(target);
+			base.OnCopyTo(target);
 			CircleShapeInfo c = target as CircleShapeInfo;
 			c.radius = this.radius;
 			c.position = this.position;

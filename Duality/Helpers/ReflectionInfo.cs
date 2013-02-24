@@ -80,6 +80,9 @@ namespace Duality
 		public static readonly PropertyInfo	Property_ShapeInfo_Restitution;
 		public static readonly PropertyInfo	Property_ShapeInfo_Density;
 
+		public static readonly PropertyInfo	Property_JointInfo_BodyA;
+		public static readonly PropertyInfo	Property_JointInfo_BodyB;
+
 		public static readonly PropertyInfo	Property_Resource_Disposed;
 		public static readonly PropertyInfo	Property_Resource_Path;
 		public static readonly PropertyInfo	Property_Resource_Name;
@@ -226,6 +229,10 @@ namespace Duality
 			Property_ShapeInfo_Friction	= colliderShapeInfo.GetProperty("Friction");
 			Property_ShapeInfo_Restitution	= colliderShapeInfo.GetProperty("Restitution");
 			Property_ShapeInfo_Density		= colliderShapeInfo.GetProperty("Density");
+
+			Type colliderJointInfo = typeof(JointInfo);
+			Property_JointInfo_BodyA		= colliderJointInfo.GetProperty("BodyA");
+			Property_JointInfo_BodyB		= colliderJointInfo.GetProperty("BodyB");
 
 			Type resource = typeof(Resource);
 			Property_Resource_Disposed			= resource.GetProperty("Disposed");

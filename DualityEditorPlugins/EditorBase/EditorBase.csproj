@@ -157,7 +157,10 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="UndoRedoActions\CamViewObjAction.cs" />
+    <Compile Include="UndoRedoActions\DeleteRigidBodyShapeAction.cs" />
     <Compile Include="UndoRedoActions\DropGameObjectInSceneAction.cs" />
+    <Compile Include="UndoRedoActions\CreateRigidBodyShapeAction.cs" />
+    <Compile Include="UndoRedoActions\RigidBodyShapeAction.cs" />
     <Compile Include="UndoRedoActions\ScaleCamViewObjAction.cs" />
     <Compile Include="UndoRedoActions\RotateCamViewObjAction.cs" />
     <Compile Include="UndoRedoActions\MoveCamViewObjAction.cs" />

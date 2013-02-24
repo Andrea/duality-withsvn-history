@@ -273,22 +273,20 @@ namespace Duality.Components.Physics
 			get { return this.body != null ? PhysicsConvert.ToDualityUnit(this.body.LocalCenter) : Vector2.Zero; }
 		}
 		/// <summary>
-		/// [GET / SET] Enumerates all <see cref="ShapeInfo">primitive shapes</see> which this body consists of.
+		/// [GET] Enumerates all <see cref="ShapeInfo">primitive shapes</see> which this body consists of.
 		/// </summary>
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public IEnumerable<ShapeInfo> Shapes
 		{
 			get { return this.shapes; }
-			set { this.SetShapes(value); }
 		}
 		/// <summary>
-		/// [GET / SET] Enumerates all <see cref="JointInfo">joints</see> that are connected to this Collider.
+		/// [GET] Enumerates all <see cref="JointInfo">joints</see> that are connected to this Collider.
 		/// </summary>
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public IEnumerable<JointInfo> Joints
 		{
 		    get { return this.joints; }
-			set { this.SetJoints(value); }
 		}
 		/// <summary>
 		/// [GET] The physical bodys bounding radius.
@@ -373,40 +371,6 @@ namespace Duality.Components.Physics
 			}
 			this.shapes.Clear();
 		}
-		/// <summary>
-		/// Sets the Colliders shape.
-		/// </summary>
-		/// <param name="shapes"></param>
-		public void SetShapes(IEnumerable<ShapeInfo> shapes)
-		{
-			if (shapes == null) throw new ArgumentNullException("shapes");
-
-			// Clone shape collection
-			shapes = shapes.Select(c => c.Clone()).ToArray();
-			
-			// Destroy old shapes
-			if (this.shapes != null)
-			{
-				var oldShapes = this.shapes.ToArray();
-				this.shapes.Clear();
-				foreach (ShapeInfo shape in oldShapes)
-				{
-					if (this.body != null) shape.DestroyFixture(this.body);
-					shape.Parent = null;
-				}
-			}
-
-			// Generate new shapes
-			if (this.shapes == null) this.shapes = new List<ShapeInfo>();
-			foreach (ShapeInfo shape in shapes)
-			{
-				if (shape == null) continue;
-
-				this.shapes.Add(shape);
-				shape.Parent = this;
-			}
-			this.FlagBodyShape();
-		}
 		
 		/// <summary>
 		/// Removes an existing joint from the Collider.
@@ -468,38 +432,6 @@ namespace Duality.Components.Physics
 		{
 			if (this.joints == null) return;
 			while (this.joints.Count > 0) this.RemoveJoint(this.joints[0]);
-		}
-		/// <summary>
-		/// Sets the Colliders joint configuration. This may also affect other Colliders!
-		/// </summary>
-		/// <param name="joints"></param>
-		public void SetJoints(IEnumerable<JointInfo> joints)
-		{
-			JointInfo[] jointArray = joints != null ? joints.ToArray() : null;
-			
-			// Remove joints that are not in the new collection
-			if (this.joints != null)
-			{
-				for (int i = this.joints.Count - 1; i >= 0; i--)
-				{
-					if (jointArray != null && jointArray.Contains(this.joints[i])) continue;
-					this.RemoveJoint(this.joints[i]);
-				}
-			}
-
-			// Add joints that are not in the old collection
-			if (jointArray != null)
-			{
-				for (int i = 0; i < jointArray.Length; i++)
-				{
-					if (this.joints != null && this.joints.Contains(jointArray[i])) continue;
-					JointInfo joint = jointArray[i];
-					if (joint.BodyA != null)
-						joint.BodyA.AddJoint(joint, joint.BodyB); // Allow reverse-add.
-					else
-						this.AddJoint(joint, null);
-				}
-			}
 		}
 
 		/// <summary>
@@ -1055,10 +987,6 @@ namespace Duality.Components.Physics
 			bool wasInitialized = c.bodyInitState == InitState.Initialized;
 			if (wasInitialized) c.Shutdown();
 
-			// Reset shape and joint data before applying new
-			c.shapes = null;
-			c.joints = null;
-
 			c.bodyType = this.bodyType;
 			c.linearDamp = this.linearDamp;
 			c.angularDamp = this.angularDamp;
@@ -1067,19 +995,87 @@ namespace Duality.Components.Physics
 			c.continous = this.continous;
 			c.colCat = this.colCat;
 
-			if (this.shapes != null) c.SetShapes(this.shapes);
-			if (this.joints != null) c.SetJoints(this.joints.Select(j => 
+			// Copy Shapes
+			if (this.shapes != null)
+			{
+				for (int i = 0; i < this.shapes.Count; i++)
 				{
-					// If there is a clone registered, just return the clone. Don't process a joint twice.
-					if (provider.IsOriginalObject(j)) return provider.GetRegisteredObjectClone(j);
+					ShapeInfo thisShape = this.shapes[i];
+					ShapeInfo otherShape = null;
+					if (c.shapes != null && c.shapes.Count > i)
+					{
+						otherShape = c.shapes[i];
+						if (otherShape.GetType() != thisShape.GetType())
+						{
+							if (c.body != null) otherShape.DestroyFixture(c.body);
+							otherShape.Parent = null;
+							c.shapes[i] = provider.RequestObjectClone(thisShape);
+							c.shapes[i].Parent = c;
+						}
+						else
+						{
+							provider.CopyObjectTo(thisShape, otherShape);
+						}
+					}
+					else
+					{
+						if (c.shapes == null) c.shapes = new List<ShapeInfo>();
+						c.shapes.Add(provider.RequestObjectClone(thisShape));
+						c.shapes.Last().Parent = c;
+					}
+				}
+				c.FlagBodyShape();
+			}
+			else
+			{
+				c.ClearShapes();
+			}
 
-					JointInfo j2 = j.Clone();
-					j2.BodyA = provider.GetRegisteredObjectClone(j.BodyA);
-					j2.BodyB = provider.GetRegisteredObjectClone(j.BodyB);
-					provider.RegisterObjectClone(j, j2);
+			// Copy Joints
+			if (this.joints != null)
+			{
+				for (int i = 0; i < this.joints.Count; i++)
+				{
+					JointInfo thisJoint = this.joints[i];
+					JointInfo otherJoint = null;
+					if (c.joints != null && c.joints.Count > i)
+					{
+						otherJoint = c.joints[i];
+						if (otherJoint.GetType() != thisJoint.GetType())
+						{
+							c.RemoveJoint(otherJoint);
 
-					return j2;
-				}));
+							JointInfo newJoint = provider.RequestObjectClone(thisJoint);
+							newJoint.BodyA = provider.GetRegisteredObjectClone(thisJoint.BodyA);
+							newJoint.BodyB = provider.GetRegisteredObjectClone(thisJoint.BodyB);
+							c.AddJoint(newJoint, newJoint.BodyA == c ? newJoint.BodyB : newJoint.BodyA);
+						}
+						else
+						{
+							if (otherJoint.BodyA != null) otherJoint.BodyA.RemoveJoint(otherJoint);
+							if (otherJoint.BodyB != null) otherJoint.BodyB.RemoveJoint(otherJoint);
+
+							provider.CopyObjectTo(thisJoint, otherJoint);
+
+							JointInfo newJoint = otherJoint;
+							newJoint.BodyA = provider.GetRegisteredObjectClone(thisJoint.BodyA);
+							newJoint.BodyB = provider.GetRegisteredObjectClone(thisJoint.BodyB);
+							c.AddJoint(newJoint, newJoint.BodyA == c ? newJoint.BodyB : newJoint.BodyA);
+						}
+					}
+					else
+					{
+						JointInfo newJoint = provider.RequestObjectClone(thisJoint);
+						newJoint.BodyA = provider.GetRegisteredObjectClone(thisJoint.BodyA);
+						newJoint.BodyB = provider.GetRegisteredObjectClone(thisJoint.BodyB);
+						c.AddJoint(newJoint, newJoint.BodyA == c ? newJoint.BodyB : newJoint.BodyA);
+					}
+				}
+			}
+			else
+			{
+				c.ClearJoints();
+			}
 
 			if (wasInitialized) c.Initialize();
 		}

@@ -121,9 +121,9 @@ namespace Duality.Components.Physics
 			return v;
 		}
 
-		protected override void CopyTo(ShapeInfo target)
+		protected override void OnCopyTo(ShapeInfo target)
 		{
-			base.CopyTo(target);
+			base.OnCopyTo(target);
 			PolyShapeInfo c = target as PolyShapeInfo;
 			c.vertices = this.vertices != null ? (Vector2[])this.vertices.Clone() : null;
 		}

@@ -142,7 +142,7 @@ namespace Duality.Components.Physics
 		/// Copies this ShapeInfos data to another one. It is assumed that both are of the same type.
 		/// </summary>
 		/// <param name="target"></param>
-		protected virtual void CopyTo(ShapeInfo target)
+		protected virtual void OnCopyTo(ShapeInfo target)
 		{
 			// Don't copy the parent!
 			target.density = this.density;
@@ -158,11 +158,15 @@ namespace Duality.Components.Physics
 		{
 			return Cloning.CloneProvider.DeepClone(this);
 		}
+		public void CopyTo(ShapeInfo other)
+		{
+			Cloning.CloneProvider.DeepCopyTo(this, other);
+		}
 
 		void Cloning.ICloneable.CopyDataTo(object targetObj, Cloning.CloneProvider provider)
 		{
 			ShapeInfo targetShape = targetObj as ShapeInfo;
-			this.CopyTo(targetShape);
+			this.OnCopyTo(targetShape);
 		}
 	}
 }

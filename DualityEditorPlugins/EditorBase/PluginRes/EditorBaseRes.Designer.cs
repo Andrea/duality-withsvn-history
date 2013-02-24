@@ -1088,11 +1088,47 @@ namespace EditorBase.PluginRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Create {0} ähnelt.
+        /// </summary>
+        public static string UndoRedo_CreateRigidBodyShape {
+            get {
+                return ResourceManager.GetString("UndoRedo_CreateRigidBodyShape", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Create {0} Shapes ähnelt.
+        /// </summary>
+        public static string UndoRedo_CreateRigidBodyShapeMulti {
+            get {
+                return ResourceManager.GetString("UndoRedo_CreateRigidBodyShapeMulti", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Delete {0} objects ähnelt.
         /// </summary>
         public static string UndoRedo_DeleteObjects {
             get {
                 return ResourceManager.GetString("UndoRedo_DeleteObjects", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Delete {0} ähnelt.
+        /// </summary>
+        public static string UndoRedo_DeleteRigidBodyShape {
+            get {
+                return ResourceManager.GetString("UndoRedo_DeleteRigidBodyShape", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Delete {0} Shapes ähnelt.
+        /// </summary>
+        public static string UndoRedo_DeleteRigidBodyShapeMulti {
+            get {
+                return ResourceManager.GetString("UndoRedo_DeleteRigidBodyShapeMulti", resourceCulture);
             }
         }
         

@@ -256,6 +256,7 @@ namespace EditorBase.PropertyEditors
 				}
 
 				this.PerformGetValue();
+				this.OnPropertySet(ReflectionInfo.Property_JointInfo_BodyA, targetArray);
 			};
 		}
 	}
