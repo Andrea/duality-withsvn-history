@@ -52,6 +52,16 @@
 			-->	Take that away, #3 would work. The goal should be to actually take that away.
 			-->	????
 				-->	Cleanup PropertyEditors Stuff? Way too much events and SetValue-passing, etc.
+      --> State: REVIEW
+    --> Approach #5: ?
+      --> Don't do it GUI based, like #1, #3 and #4. Do it on a pure data layer like #2.
+      --> During a (GUI-based) set operation, record all set properties and fields, including
+          all of their custom processing and / or event firing in UndoRedoActions.
+          --> Be able to record it: OnValueChanged() stuff needs to happen DURING the set operation,
+              not after it. Restructure.
+      --> Merging those records needs to be possible. Macros should be mergable (optionally)
+          if their sequences of UndoRedoActions are completely mergable and do not differ in length.
+      --> State: REVIEW
 		-->	Edit Properties
 		-->	Special Editors
 			-->	PrefabLink
