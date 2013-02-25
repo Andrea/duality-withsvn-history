@@ -51,6 +51,7 @@
 				OnValueChanged is a GUI event and ComponentPropertyEditor uses it to change actual Data
 			-->	Take that away, #3 would work. The goal should be to actually take that away.
 			-->	????
+				-->	Cleanup PropertyEditors Stuff? Way too much events and SetValue-passing, etc.
 		-->	Edit Properties
 		-->	Special Editors
 			-->	PrefabLink

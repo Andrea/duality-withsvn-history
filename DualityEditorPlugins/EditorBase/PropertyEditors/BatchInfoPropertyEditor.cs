@@ -12,7 +12,7 @@ using OpenTK;
 
 using Duality;
 using Duality.Resources;
-using Duality.EditorHints;
+using Duality.EditorHints; 
 
 using DualityEditor;
 using DualityEditor.CorePluginInterface;
@@ -224,7 +224,14 @@ namespace EditorBase.PropertyEditors
 				}
 			}
 		}
-
+		protected override void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)
+		{
+			base.OnPropertySet(property, targets);
+			// BatchInfos aren't usually referenced, they're nested. Make sure the change notification is passed on.
+			this.SetValues(targets);
+			// Run a GetValue-pass to make sure automatic changes are applied if necessary.
+			this.PerformGetValue();
+		}
 		protected PropertyEditor CreateUniformEditor(ShaderVarInfo varInfo)
 		{
 			PropertyEditor oldEditor;
