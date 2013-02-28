@@ -121,43 +121,53 @@ namespace DualityEditor
 			if (action.IsVoid) return;
 			if (macroBeginCount > 0)
 			{
-				if (performAction) action.Do();
-				macroList.Add(action);
-				return;
-			}
-		//	if (Sandbox.IsActive) UndoRedo is inactive for now.
-			{
-				if (performAction) action.Do();
-				return;
-			}
-
-			bool hadNext = false;
-			if (actionStack.Count - actionIndex - 1 > 0)
-			{
-				actionStack.RemoveRange(actionIndex + 1, actionStack.Count - actionIndex - 1);
-				hadNext = true;
-			}
-
-			UndoRedoAction prev = PrevAction;
-			if (!lastActionFinished && !hadNext && prev != null && prev.CanAppend(action))
-			{
-				prev.Append(action);
+				UndoRedoAction prev = macroList.Count > 0 ? macroList[macroList.Count - 1] : null;
+				if (prev != null && prev.CanAppend(action))
+				{
+					prev.Append(action, performAction);
+				}
+				else
+				{
+					macroList.Add(action);
+					if (performAction) action.Do();
+				}
 			}
 			else
 			{
-				lastActionFinished = false;
-				actionStack.Add(action);
-				actionIndex++;
-				if (performAction) action.Do();
-			}
+			//	if (Sandbox.IsActive)	UndoRedo is inactive for now
+				{
+					if (performAction) action.Do();
+					return;
+				}
 
-			if (actionStack.Count > maxActions)
-			{
-				actionIndex -= actionStack.Count - maxActions;
-				actionStack.RemoveRange(0, actionStack.Count - maxActions);
-			}
+				bool hadNext = false;
+				if (actionStack.Count - actionIndex - 1 > 0)
+				{
+					actionStack.RemoveRange(actionIndex + 1, actionStack.Count - actionIndex - 1);
+					hadNext = true;
+				}
 
-			OnStackChanged();
+				UndoRedoAction prev = PrevAction;
+				if (!lastActionFinished && !hadNext && prev != null && prev.CanAppend(action))
+				{
+					prev.Append(action, performAction);
+				}
+				else
+				{
+					lastActionFinished = false;
+					actionStack.Add(action);
+					actionIndex++;
+					if (performAction) action.Do();
+				}
+
+				if (actionStack.Count > maxActions)
+				{
+					actionIndex -= actionStack.Count - maxActions;
+					actionStack.RemoveRange(0, actionStack.Count - maxActions);
+				}
+
+				OnStackChanged();
+			}
 		}
 
 		public static void BeginMacro(string name = null)
@@ -227,7 +237,7 @@ namespace DualityEditor
 		{
 			return false;
 		}
-		public virtual void Append(UndoRedoAction action) {}
+		public virtual void Append(UndoRedoAction action, bool performAction) {}
 		public abstract void Do();
 		public abstract void Undo();
 	}

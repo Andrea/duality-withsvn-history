@@ -42,13 +42,16 @@ namespace EditorBase.UndoRedoActions
 		{
 			return action is ScaleCamViewObjAction && base.CanAppend(action);
 		}
-		public override void Append(UndoRedoAction action)
+		public override void Append(UndoRedoAction action, bool performAction)
 		{
-			base.Append(action);
+			base.Append(action, performAction);
 			ScaleCamViewObjAction moveAction = action as ScaleCamViewObjAction;
-			moveAction.backupPos = this.backupPos;
-			moveAction.backupScale = this.backupScale;
-			moveAction.Do();
+			if (performAction)
+			{
+				moveAction.backupPos = this.backupPos;
+				moveAction.backupScale = this.backupScale;
+				moveAction.Do();
+			}
 			this.scaleBy *= moveAction.scaleBy;
 		}
 		public override void Do()

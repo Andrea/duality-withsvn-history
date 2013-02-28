@@ -47,7 +47,6 @@ namespace EditorBase.PropertyEditors
 			if (this.ReadOnly) return;
 			this.gameObj = null;
 			this.PerformSetValue();
-			this.OnValueChanged();
 			this.PerformGetValue();
 			this.OnEditingFinished(FinishReason.LeapValue);
 		}
@@ -116,7 +115,6 @@ namespace EditorBase.PropertyEditors
 					GameObject[] refArray = refQuery.Cast<GameObject>().ToArray();
 					this.gameObj = (refArray != null && refArray.Length > 0) ? refArray[0] : null;
 					this.PerformSetValue();
-					this.OnValueChanged();
 					this.PerformGetValue();
 					this.OnEditingFinished(FinishReason.LeapValue);
 				}

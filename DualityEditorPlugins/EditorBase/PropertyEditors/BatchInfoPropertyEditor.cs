@@ -217,10 +217,7 @@ namespace EditorBase.PropertyEditors
 				{
 					this.SetValues(batchInfos);
 					if (!this.IsUpdatingFromObject)
-					{
-						this.OnValueChanged();
 						this.PerformGetValue();
-					}
 				}
 			}
 		}
@@ -782,7 +779,6 @@ namespace EditorBase.PropertyEditors
 				if (convert.CanPerform<BatchInfo>() && (refQuery = convert.Perform<BatchInfo>()) != null)
 				{
 					this.SetValue(refQuery.FirstOrDefault());
-					this.OnValueChanged();
 					this.PerformGetValue();
 					this.OnEditingFinished(FinishReason.LeapValue);
 				}

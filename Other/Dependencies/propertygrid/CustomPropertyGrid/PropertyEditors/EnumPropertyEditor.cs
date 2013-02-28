@@ -149,7 +149,6 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 			this.val = (Enum)Enum.Parse(this.EditedType, this.stringSelector.SelectedObject.ToString());
 			this.Invalidate();
 			this.PerformSetValue();
-			this.OnValueChanged();
 			this.PerformGetValue();
 			this.OnEditingFinished(FinishReason.LeapValue);
 		}

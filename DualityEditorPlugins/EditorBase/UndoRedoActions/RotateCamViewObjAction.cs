@@ -42,13 +42,16 @@ namespace EditorBase.UndoRedoActions
 		{
 			return action is RotateCamViewObjAction && base.CanAppend(action);
 		}
-		public override void Append(UndoRedoAction action)
+		public override void Append(UndoRedoAction action, bool performAction)
 		{
-			base.Append(action);
+			base.Append(action, performAction);
 			RotateCamViewObjAction moveAction = action as RotateCamViewObjAction;
-			moveAction.backupPos = this.backupPos;
-			moveAction.backupAngle = this.backupAngle;
-			moveAction.Do();
+			if (performAction)
+			{
+				moveAction.backupPos = this.backupPos;
+				moveAction.backupAngle = this.backupAngle;
+				moveAction.Do();
+			}
 			this.turnBy += moveAction.turnBy;
 		}
 		public override void Do()

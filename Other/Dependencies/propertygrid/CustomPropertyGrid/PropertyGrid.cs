@@ -405,13 +405,11 @@ namespace AdamsLair.PropertyGrid
 		}
 		private void mainEditor_ValueChanged(object sender, PropertyEditorValueEventArgs e)
 		{
-			if (this.ValueChanged != null)
-				this.ValueChanged(this, e);
+			this.OnValueChanged(e);
 		}
 		private void mainEditor_EditingFinished(object sender, PropertyEditorValueEventArgs e)
 		{
-			if (this.EditingFinished != null)
-				this.EditingFinished(this, e);
+			this.OnEditingFinished(e);
 		}
 
 		public void RegisterEditorProvider(IPropertyEditorProvider provider)
@@ -440,6 +438,18 @@ namespace AdamsLair.PropertyGrid
 		public virtual object CreateObjectInstance(Type objectType)
 		{
 			return ReflectionHelper.CreateInstanceOf(objectType);
+		}
+		internal protected virtual void PrepareSetValue() {}
+		internal protected virtual void PostSetValue() {}
+		protected virtual void OnValueChanged(PropertyEditorValueEventArgs e)
+		{
+			if (this.ValueChanged != null)
+				this.ValueChanged(this, e);
+		}
+		protected virtual void OnEditingFinished(PropertyEditorValueEventArgs e)
+		{
+			if (this.EditingFinished != null)
+				this.EditingFinished(this, e);
 		}
 
 		public void Focus(PropertyEditor editor)

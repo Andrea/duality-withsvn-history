@@ -432,10 +432,15 @@ namespace AdamsLair.PropertyGrid
 		protected void SetValues(IEnumerable<object> objEnum)
 		{
 			if (this.setter == null) return;
+			this.parentGrid.PrepareSetValue();
+
 			if (this.converterSet != null && objEnum != null)
 				this.setter(objEnum.Select(this.converterSet));
 			else
 				this.setter(objEnum);
+			this.OnValueChanged();
+
+			this.parentGrid.PostSetValue();
 		}
 		protected void SetValue(object obj)
 		{

@@ -66,7 +66,6 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 
 			this.Invalidate();
 			this.PerformSetValue();
-			this.OnValueChanged();
 			this.PerformGetValue();
 			this.OnEditingFinished(FinishReason.LeapValue);
 		}
@@ -76,7 +75,6 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 
 			this.Invalidate();
 			this.PerformSetValue();
-			this.OnValueChanged();
 			this.PerformGetValue();
 			this.OnEditingFinished(FinishReason.LeapValue);
 		}

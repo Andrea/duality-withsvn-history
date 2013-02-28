@@ -46,16 +46,14 @@ namespace Duality.Components.Renderers
 		/// <summary>
 		/// [GET / SET] The text to display. If you change this without re-assigning it, be sure to call <see cref="UpdateText"/>.
 		/// </summary>
+		[EditorHintFlags(MemberFlags.ForceWriteback)]
 		public FormattedText Text
 		{
 			get { return this.text; }
 			set
 			{
-				if (this.text != value)
-				{
-					this.text = value;
-					this.UpdateText();
-				}
+				this.text = value;
+				this.UpdateText();
 			}
 		}
 		/// <summary>

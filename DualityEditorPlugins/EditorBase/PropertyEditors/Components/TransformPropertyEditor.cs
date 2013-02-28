@@ -148,25 +148,32 @@ namespace EditorBase.PropertyEditors
 		}
 		protected void PosSetter(IEnumerable<object> values)
 		{
-			IEnumerator<Vector3> valuesEnum = values.Cast<Vector3>().GetEnumerator();
-			Transform[] targetArray = this.GetValue().Cast<Transform>().ToArray();
-
-			Vector3 curValue = Vector3.Zero;
-			if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
-			foreach (Transform target in targetArray)
+			if (this.showRelative)
 			{
-				if (target != null)
-				{
-					if (this.showRelative)
-						target.RelativePos = curValue;
-					else
-						target.Pos = curValue;						
-				}
+				this.MemberPropertySetter(ReflectionInfo.Property_Transform_RelativePos, this.GetValue(), values);
+			}
+			else
+			{
+				IEnumerator<Vector3> valuesEnum = values.Cast<Vector3>().GetEnumerator();
+				Transform[] targetArray = this.GetValue().Cast<Transform>().ToArray();
+				object[] targetValues = new object[targetArray.Length];
+
+				Vector3 curValue = Vector3.Zero;
 				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
+				for (int i = 0; i < targetArray.Length; i++)
+				{
+					Transform parent = 
+						targetArray[i] != null && 
+						targetArray[i].GameObj != null && 
+						targetArray[i].GameObj.Parent != null ? targetArray[i].GameObj.Parent.Transform : null;
+					targetValues[i] = parent != null ? parent.GetLocalPoint(curValue) : curValue;
+					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
+				}
+				this.MemberPropertySetter(ReflectionInfo.Property_Transform_RelativePos, this.GetValue(), targetValues);
 			}
 
-			this.OnPropertySet(ReflectionInfo.Property_Transform_RelativePos, targetArray);
-			this.OnUpdateFromObjects(this.GetValue().ToArray());
+			this.OnPropertySet(ReflectionInfo.Property_Transform_RelativePos, values);
+			this.PerformGetValue();
 		}
 		protected IEnumerable<object> VelGetter()
 		{
@@ -184,25 +191,32 @@ namespace EditorBase.PropertyEditors
 		}
 		protected void ScaleSetter(IEnumerable<object> values)
 		{
-			IEnumerator<float> valuesEnum = values.Cast<float>().GetEnumerator();
-			Transform[] targetArray = this.GetValue().Cast<Transform>().ToArray();
-
-			float curValue = 1.0f;
-			if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
-			foreach (Transform target in targetArray)
+			if (this.showRelative)
 			{
-				if (target != null)
-				{
-					if (this.showRelative)
-						target.RelativeScale = curValue;
-					else
-						target.Scale = curValue;						
-				}
+				this.MemberPropertySetter(ReflectionInfo.Property_Transform_RelativeScale, this.GetValue(), values);
+			}
+			else
+			{
+				IEnumerator<float> valuesEnum = values.Cast<float>().GetEnumerator();
+				Transform[] targetArray = this.GetValue().Cast<Transform>().ToArray();
+				object[] targetValues = new object[targetArray.Length];
+
+				float curValue = 1.0f;
 				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
+				for (int i = 0; i < targetArray.Length; i++)
+				{
+					Transform parent = 
+						targetArray[i] != null && 
+						targetArray[i].GameObj != null && 
+						targetArray[i].GameObj.Parent != null ? targetArray[i].GameObj.Parent.Transform : null;
+					targetValues[i] = parent != null ? curValue / parent.Scale : curValue;
+					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
+				}
+				this.MemberPropertySetter(ReflectionInfo.Property_Transform_RelativeScale, this.GetValue(), targetValues);
 			}
 
-			this.OnPropertySet(ReflectionInfo.Property_Transform_RelativeScale, targetArray);
-			this.OnUpdateFromObjects(this.GetValue().ToArray());
+			this.OnPropertySet(ReflectionInfo.Property_Transform_RelativeScale, values);
+			this.PerformGetValue();
 		}
 		protected IEnumerable<object> AngleGetter()
 		{
@@ -213,25 +227,32 @@ namespace EditorBase.PropertyEditors
 		}
 		protected void AngleSetter(IEnumerable<object> values)
 		{
-			IEnumerator<float> valuesEnum = values.Cast<float>().GetEnumerator();
-			Transform[] targetArray = this.GetValue().Cast<Transform>().ToArray();
-
-			float curValue = 0.0f;
-			if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
-			foreach (Transform target in targetArray)
+			if (this.showRelative)
 			{
-				if (target != null)
-				{
-					if (this.showRelative)
-						target.RelativeAngle = MathF.DegToRad(curValue);
-					else
-						target.Angle = MathF.DegToRad(curValue);						
-				}
+				this.MemberPropertySetter(ReflectionInfo.Property_Transform_RelativeAngle, this.GetValue(), values);
+			}
+			else
+			{
+				IEnumerator<float> valuesEnum = values.Cast<float>().GetEnumerator();
+				Transform[] targetArray = this.GetValue().Cast<Transform>().ToArray();
+				object[] targetValues = new object[targetArray.Length];
+
+				float curValue = 1.0f;
 				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
+				for (int i = 0; i < targetArray.Length; i++)
+				{
+					Transform parent = 
+						targetArray[i] != null && 
+						targetArray[i].GameObj != null && 
+						targetArray[i].GameObj.Parent != null ? targetArray[i].GameObj.Parent.Transform : null;
+					targetValues[i] = parent != null ? curValue - parent.Angle : curValue;
+					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
+				}
+				this.MemberPropertySetter(ReflectionInfo.Property_Transform_RelativeAngle, this.GetValue(), targetValues);
 			}
 
-			this.OnPropertySet(ReflectionInfo.Property_Transform_RelativeAngle, targetArray);
-			this.OnUpdateFromObjects(this.GetValue().ToArray());
+			this.OnPropertySet(ReflectionInfo.Property_Transform_RelativeAngle, values);
+			this.PerformGetValue();
 		}
 		protected IEnumerable<object> AngleVelGetter()
 		{

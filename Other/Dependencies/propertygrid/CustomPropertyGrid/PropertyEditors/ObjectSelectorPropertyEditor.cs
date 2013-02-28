@@ -147,7 +147,6 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 			this.val = (this.objSelector.SelectedObject as ObjectItem).Value;
 			this.Invalidate();
 			this.PerformSetValue();
-			this.OnValueChanged();
 			this.PerformGetValue();
 			this.OnEditingFinished(FinishReason.LeapValue);
 		}

@@ -66,7 +66,6 @@ namespace DualityEditor.Controls.PropertyEditors
 
 			this.value = (result == DialogResult.OK) ? this.dialog.SelectedColor.ToDualityRgba() : this.dialog.OldColor.ToDualityRgba();
 			this.PerformSetValue();
-			this.OnValueChanged();
 			this.PerformGetValue();
 			this.OnEditingFinished(result == DialogResult.OK ? FinishReason.UserAccept : FinishReason.LostFocus);
 		}
@@ -74,7 +73,6 @@ namespace DualityEditor.Controls.PropertyEditors
 		{
 			this.value = this.dialog.SelectedColor.ToDualityRgba();
 			this.PerformSetValue();
-			this.OnValueChanged();
 			this.PerformGetValue();
 		}
 
@@ -144,7 +142,6 @@ namespace DualityEditor.Controls.PropertyEditors
 				{
 					this.value = data.GetIColorData<IColorData>().FirstOrDefault();
 					this.PerformSetValue();
-					this.OnValueChanged();
 					this.PerformGetValue();
 					this.OnEditingFinished(FinishReason.LeapValue);
 				}
@@ -227,7 +224,6 @@ namespace DualityEditor.Controls.PropertyEditors
 			{
 				this.value = data.GetIColorData<IColorData>().FirstOrDefault();
 				this.PerformSetValue();
-				this.OnValueChanged();
 				this.PerformGetValue();
 				this.OnEditingFinished(FinishReason.LeapValue);
 				e.Effect = e.AllowedEffect;

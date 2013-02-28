@@ -220,7 +220,6 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 
 			this.val = this.numEditor.Value;
 			this.PerformSetValue();
-			this.OnValueChanged();
 			this.PerformGetValue();
 		}
 		private void numEditor_Invalidate(object sender, EventArgs e)

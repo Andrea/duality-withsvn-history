@@ -175,11 +175,5 @@ namespace EditorBase.PropertyEditors
 			else
 				this.HeaderValueText = "null";
 		}
-		protected override void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)
-		{
-			base.OnPropertySet(property, targets);
-			if (ReflectionHelper.MemberInfoEquals(property, ReflectionInfo.Property_SoundEmitter_Source_Sound))
-				this.PerformGetValue();
-		}
 	}
 }

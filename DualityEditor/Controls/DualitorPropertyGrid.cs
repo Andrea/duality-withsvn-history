@@ -11,6 +11,8 @@ using PropertyGrid = AdamsLair.PropertyGrid.PropertyGrid;
 using Duality;
 using Duality.EditorHints;
 
+using DualityEditor.UndoRedoActions;
+
 namespace DualityEditor.Controls
 {
 	public class DualitorPropertyGrid : PropertyGrid, IHelpProvider
@@ -59,6 +61,8 @@ namespace DualityEditor.Controls
 				MemberwisePropertyEditor memberEditor = editor as MemberwisePropertyEditor;
 				memberEditor.MemberPredicate = this.EditorMemberPredicate;
 				memberEditor.MemberAffectsOthers = this.EditorMemberAffectsOthers;
+				memberEditor.MemberPropertySetter = this.EditorMemberPropertySetter;
+				memberEditor.MemberFieldSetter = this.EditorMemberFieldSetter;
 			}
 
 			var flagsAttrib = editor.EditedMember.GetEditorHint<EditorHintFlagsAttribute>(hintOverride);
@@ -84,8 +88,23 @@ namespace DualityEditor.Controls
 				if (placesAttrib != null) numEditor.DecimalPlaces = placesAttrib.Places;
 			}
 		}
+		protected override void PrepareSetValue()
+		{
+			base.PrepareSetValue();
+			UndoRedoManager.BeginMacro();
+		}
+		protected override void PostSetValue()
+		{
+			base.PostSetValue();
+			UndoRedoManager.EndMacro(UndoRedoManager.MacroDeriveName.FromFirst);
+		}
+		protected override void OnEditingFinished(PropertyEditorValueEventArgs e)
+		{
+			base.OnEditingFinished(e);
+			UndoRedoManager.Finish();
+		}
 
-		protected bool EditorMemberPredicate(MemberInfo info)
+		private bool EditorMemberPredicate(MemberInfo info)
 		{
 			if (this.ShowNonPublic)
 			{
@@ -112,10 +131,18 @@ namespace DualityEditor.Controls
 
 			return true;
 		}
-		protected bool EditorMemberAffectsOthers(MemberInfo info)
+		private bool EditorMemberAffectsOthers(MemberInfo info)
 		{
 			EditorHintFlagsAttribute flagsAttrib = info.GetEditorHint<EditorHintFlagsAttribute>();
 			return this.ShowNonPublic || (flagsAttrib != null && (flagsAttrib.Flags & MemberFlags.AffectsOthers) != MemberFlags.None);
+		}
+		private void EditorMemberPropertySetter(PropertyInfo property, IEnumerable<object> targetObjects, IEnumerable<object> values)
+		{
+			UndoRedoManager.Do(new EditPropertyAction(this, property, targetObjects, values));
+		}
+		private void EditorMemberFieldSetter(FieldInfo field, IEnumerable<object> targetObjects, IEnumerable<object> values)
+		{
+			UndoRedoManager.Do(new EditFieldAction(this, field, targetObjects, values));
 		}
 
 		HelpInfo IHelpProvider.ProvideHoverHelp(Point localPos, ref bool captured)

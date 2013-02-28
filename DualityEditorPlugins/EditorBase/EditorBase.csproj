@@ -92,15 +92,10 @@
     </Compile>
     <Compile Include="PropertyEditors\BatchInfoPropertyEditor.cs" />
     <Compile Include="PropertyEditors\ComponentPropertyEditor.cs" />
-    <Compile Include="PropertyEditors\Components\CameraRenderPassPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Components\RigidBodyPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Components\RigidBodyShapePropertyEditor.cs" />
-    <Compile Include="PropertyEditors\Components\RendererPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Components\SoundEmitterPropertyEditor.cs" />
-    <Compile Include="PropertyEditors\Components\TextRendererPropertyEditor.cs" />
     <Compile Include="PropertyEditors\Components\TransformPropertyEditor.cs" />
-    <Compile Include="PropertyEditors\DualityAppDataPropertyEditor.cs" />
-    <Compile Include="PropertyEditors\FormattedTextPropertyEditor.cs" />
     <Compile Include="PropertyEditors\GameObjectOverviewPropertyEditor.cs" />
     <Compile Include="PropertyEditors\GameObjectPropertyEditor.cs" />
     <Compile Include="PropertyEditors\IContentRefPropertyEditor.cs" />

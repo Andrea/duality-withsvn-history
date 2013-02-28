@@ -69,7 +69,6 @@ namespace DualityEditor.Controls.PropertyEditors
 					}
 				}
 				this.SetValues(values);
-				this.OnValueChanged();
 			}
 			this.PerformGetValue();
 		}
@@ -91,7 +90,6 @@ namespace DualityEditor.Controls.PropertyEditors
 					}
 				}
 				this.SetValues(values);
-				this.OnValueChanged();
 			}
 			this.PerformGetValue();
 		}

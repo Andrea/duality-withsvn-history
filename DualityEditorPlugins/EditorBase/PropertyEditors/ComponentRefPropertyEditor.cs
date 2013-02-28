@@ -48,7 +48,6 @@ namespace EditorBase.PropertyEditors
 			if (this.ReadOnly) return;
 			this.component = null;
 			this.PerformSetValue();
-			this.OnValueChanged();
 			this.PerformGetValue();
 			this.OnEditingFinished(FinishReason.LeapValue);
 		}
@@ -117,7 +116,6 @@ namespace EditorBase.PropertyEditors
 					Component[] refArray = refQuery.Cast<Component>().ToArray();
 					this.component = (refArray != null && refArray.Length > 0) ? refArray[0] : null;
 					this.PerformSetValue();
-					this.OnValueChanged();
 					this.PerformGetValue();
 					this.OnEditingFinished(FinishReason.LeapValue);
 				}
@@ -130,7 +128,6 @@ namespace EditorBase.PropertyEditors
 				{
 					this.component = cmp;
 					this.PerformSetValue();
-					this.OnValueChanged();
 					this.PerformGetValue();
 					this.OnEditingFinished(FinishReason.LeapValue);
 				}

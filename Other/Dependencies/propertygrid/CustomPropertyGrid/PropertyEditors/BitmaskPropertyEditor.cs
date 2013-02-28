@@ -151,7 +151,6 @@ namespace AdamsLair.PropertyGrid.PropertyEditors
 			this.val = this.bitmaskSelector.BitmaskValue;
 			this.Invalidate();
 			this.PerformSetValue();
-			this.OnValueChanged();
 			this.PerformGetValue();
 			this.OnEditingFinished(FinishReason.LeapValue);
 		}

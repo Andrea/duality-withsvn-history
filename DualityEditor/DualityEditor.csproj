@@ -228,6 +228,8 @@
     <Compile Include="UndoRedoActions\CreateComponentAction.cs" />
     <Compile Include="UndoRedoActions\GameObjectAction.cs" />
     <Compile Include="UndoRedoActions\ComponentAction.cs" />
+    <Compile Include="UndoRedoActions\EditPropertyAction.cs" />
+    <Compile Include="UndoRedoActions\EditFieldAction.cs" />
     <Compile Include="UndoRedoActions\SetGameObjectNameAction.cs" />
     <Compile Include="UndoRedoActions\SetComponentParentAction.cs" />
     <Compile Include="UndoRedoActions\SetGameObjectParentAction.cs" />

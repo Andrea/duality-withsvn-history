@@ -97,6 +97,7 @@ namespace DualityEditor.Controls.PropertyEditors
 			base.OnLostFocus(e);
 			this.LeaveFocusIndexState(this.focusEditor, -2);
 			this.focusEditor = -2;
+			this.OnEditingFinished(FinishReason.LostFocus);
 		}
 		protected override void OnKeyPress(KeyPressEventArgs e)
 		{
@@ -154,8 +155,8 @@ namespace DualityEditor.Controls.PropertyEditors
 					if (data.GetDataPresent(this.DisplayedValue.GetType()))
 					{
 						this.SetValue(data.GetData(this.DisplayedValue.GetType()));
-						this.OnValueChanged();
 						this.PerformGetValue();
+						this.OnEditingFinished(FinishReason.LeapValue);
 						this.SetFocusEditorIndex(-1, true);
 						success = true;
 					}
@@ -176,8 +177,8 @@ namespace DualityEditor.Controls.PropertyEditors
 						if (success)
 						{
 							this.PerformSetValue();
-							this.OnValueChanged();
 							this.PerformGetValue();
+							this.OnEditingFinished(FinishReason.LeapValue);
 							this.SetFocusEditorIndex(-1, true);
 						}
 					}

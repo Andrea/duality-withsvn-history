@@ -10,10 +10,15 @@ namespace AdamsLair.PropertyGrid
 {
 	public class MemberwisePropertyEditor : GroupedPropertyEditor
 	{
+		public delegate void PropertyValueSetter(PropertyInfo property, IEnumerable<object> targetObjects, IEnumerable<object> values);
+		public delegate void FieldValueSetter(FieldInfo field, IEnumerable<object> targetObjects, IEnumerable<object> values);
+
 		private	bool	buttonIsCreate	= false;
-		private	Predicate<MemberInfo>			memberPredicate		= null;
-		private	Predicate<MemberInfo>			memberAffectsOthers	= null;
-		private	Func<MemberInfo,PropertyEditor>	memberEditorCreator	= null;
+		private	Predicate<MemberInfo>			memberPredicate			= null;
+		private	Predicate<MemberInfo>			memberAffectsOthers		= null;
+		private	Func<MemberInfo,PropertyEditor>	memberEditorCreator		= null;
+		private	PropertyValueSetter				memberPropertySetter	= null;
+		private	FieldValueSetter				memberFieldSetter		= null;
 
 		public override object DisplayedValue
 		{
@@ -58,6 +63,24 @@ namespace AdamsLair.PropertyGrid
 				}
 			}
 		}
+		public PropertyValueSetter MemberPropertySetter
+		{
+			get { return this.memberPropertySetter; }
+			set
+			{
+				if (value == null) value = DefaultPropertySetter;
+				this.memberPropertySetter = value;
+			}
+		}
+		public FieldValueSetter MemberFieldSetter
+		{
+			get { return this.memberFieldSetter; }
+			set
+			{
+				if (value == null) value = DefaultFieldSetter;
+				this.memberFieldSetter = value;
+			}
+		}
 
 
 		public MemberwisePropertyEditor()
@@ -66,6 +89,8 @@ namespace AdamsLair.PropertyGrid
 			this.memberEditorCreator = this.DefaultMemberEditorCreator;
 			this.memberPredicate = this.DefaultMemberPredicate;
 			this.memberAffectsOthers = this.DefaultMemberAffectsOthers;
+			this.memberPropertySetter = DefaultPropertySetter;
+			this.memberFieldSetter = DefaultFieldSetter;
 		}
 
 		public override void InitContent()
@@ -233,7 +258,6 @@ namespace AdamsLair.PropertyGrid
 				}
 			}
 
-			this.OnValueChanged();
 			this.PerformGetValue();
 		}
 
@@ -288,16 +312,10 @@ namespace AdamsLair.PropertyGrid
 			bool affectsOthers = this.memberAffectsOthers(property);
 			return delegate(IEnumerable<object> values)
 			{
-				IEnumerator<object> valuesEnum = values.GetEnumerator();
 				object[] targetArray = this.GetValue().ToArray();
 
-				object curValue = null;
-				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
-				foreach (object target in targetArray)
-				{
-					if (target != null) property.SetValue(target, curValue, null);
-					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
-				}
+				// Set value
+				this.memberPropertySetter(property, targetArray, values);
 
 				// Fixup struct values by assigning the modified struct copy to its original member
 				if (this.EditedType.IsValueType || this.ForceWriteBack) this.SetValues((IEnumerable<object>)targetArray);
@@ -314,16 +332,10 @@ namespace AdamsLair.PropertyGrid
 			bool affectsOthers = this.memberAffectsOthers(field);
 			return delegate(IEnumerable<object> values)
 			{
-				IEnumerator<object> valuesEnum = values.GetEnumerator();
 				object[] targetArray = this.GetValue().ToArray();
 
-				object curValue = null;
-				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
-				foreach (object target in targetArray)
-				{
-					if (target != null) field.SetValue(target, curValue);
-					if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
-				}
+				// Set value
+				this.memberFieldSetter(field, targetArray, values);
 
 				// Fixup struct values by assigning the modified struct copy to its original member
 				if (this.EditedType.IsValueType || this.ForceWriteBack) this.SetValues((IEnumerable<object>)targetArray);
@@ -336,14 +348,8 @@ namespace AdamsLair.PropertyGrid
 			};
 		}
 
-		protected virtual void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)
-		{
-
-		}
-		protected virtual void OnFieldSet(FieldInfo property, IEnumerable<object> targets)
-		{
-
-		}
+		protected virtual void OnPropertySet(PropertyInfo property, IEnumerable<object> targets) {}
+		protected virtual void OnFieldSet(FieldInfo property, IEnumerable<object> targets) {}
 
 		protected bool DefaultMemberPredicate(MemberInfo info)
 		{
@@ -356,6 +362,30 @@ namespace AdamsLair.PropertyGrid
 		protected PropertyEditor DefaultMemberEditorCreator(MemberInfo info)
 		{
 			return null;
+		}
+		protected static void DefaultPropertySetter(PropertyInfo property, IEnumerable<object> targetObjects, IEnumerable<object> values)
+		{
+			IEnumerator<object> valuesEnum = values.GetEnumerator();
+			object curValue = null;
+
+			if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
+			foreach (object target in targetObjects)
+			{
+				if (target != null) property.SetValue(target, curValue, null);
+				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
+			}
+		}
+		protected static void DefaultFieldSetter(FieldInfo field, IEnumerable<object> targetObjects, IEnumerable<object> values)
+		{
+			IEnumerator<object> valuesEnum = values.GetEnumerator();
+			object curValue = null;
+
+			if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
+			foreach (object target in targetObjects)
+			{
+				if (target != null) field.SetValue(target, curValue);
+				if (valuesEnum.MoveNext()) curValue = valuesEnum.Current;
+			}
 		}
 
 		private static int GetTypeHierarchyLevel(Type t)

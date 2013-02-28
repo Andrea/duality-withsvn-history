@@ -37,6 +37,29 @@ namespace DualityEditor.UndoRedoActions
 		}
 		public UndoRedoMacroAction(string name, params UndoRedoAction[] macro) : this(name, macro as IEnumerable<UndoRedoAction>) {}
 
+		public override bool CanAppend(UndoRedoAction action)
+		{
+			UndoRedoMacroAction castAction = action as UndoRedoMacroAction;
+
+			if (castAction == null) return false;
+			if (castAction.macro.Length != this.macro.Length) return false;
+			for (int i = 0; i < this.macro.Length; i++)
+			{
+				if (!this.macro[i].CanAppend(castAction.macro[i])) return false;
+			}
+
+			return true;
+		}
+		public override void Append(UndoRedoAction action, bool performAction)
+		{
+			base.Append(action, performAction);
+			UndoRedoMacroAction castAction = action as UndoRedoMacroAction;
+			
+			for (int i = 0; i < this.macro.Length; i++)
+			{
+				this.macro[i].Append(castAction.macro[i], performAction);
+			}
+		}
 		public override void Do()
 		{
 			foreach (UndoRedoAction action in this.macro)
