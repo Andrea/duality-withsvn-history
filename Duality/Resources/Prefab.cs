@@ -161,7 +161,7 @@ namespace Duality.Resources
 	/// <seealso cref="Prefab"/>
 	/// <seealso cref="GameObject"/>
 	[Serializable]
-	public sealed class PrefabLink
+	public sealed class PrefabLink : Duality.Cloning.ICloneable
 	{
 		[Serializable]
 		private struct VarMod
@@ -170,13 +170,6 @@ namespace Duality.Resources
 			public	Type			componentType;
 			public	List<int>		childIndex;
 			public	object			val;
-
-			public VarMod Clone()
-			{
-				VarMod newVarMod = this;
-				newVarMod.childIndex = new List<int>(this.childIndex);
-				return newVarMod;
-			}
 		}
 
 		private	ContentRef<Prefab>	prefab;
@@ -277,14 +270,10 @@ namespace Duality.Resources
 		/// <returns>A cloned version of this PrefabLink</returns>
 		public PrefabLink Clone(GameObject newObj, ContentRef<Prefab> newPrefab)
 		{
-			PrefabLink newLink = new PrefabLink(newObj, newPrefab);
-			if (this.changes != null)
-			{
-				newLink.changes = new List<VarMod>(this.changes.Count);
-				for (int i = 0; i < this.changes.Count; i++)
-					newLink.changes.Add(this.changes[i].Clone());
-			}
-			return newLink;
+			PrefabLink clone = this.Clone();
+			clone.obj = newObj;
+			clone.prefab = newPrefab;
+			return clone;
 		}
 		/// <summary>
 		/// Clones the PrefabLink, but targets a different GameObject.
@@ -293,7 +282,9 @@ namespace Duality.Resources
 		/// <returns>A cloned version of this PrefabLink</returns>
 		public PrefabLink Clone(GameObject newObj)
 		{
-			return this.Clone(newObj, this.prefab);
+			PrefabLink clone = this.Clone();
+			clone.obj = newObj;
+			return clone;
 		}
 		/// <summary>
 		/// Clones the PrefabLink.
@@ -301,7 +292,7 @@ namespace Duality.Resources
 		/// <returns>A cloned version of this PrefabLink</returns>
 		public PrefabLink Clone()
 		{
-			return this.Clone(this.obj, this.prefab);
+			return Duality.Cloning.CloneProvider.DeepClone(this);
 		}
 		
 		/// <summary>
@@ -558,6 +549,26 @@ namespace Duality.Resources
 				}
 
 			return appliedLinks;
+		}
+
+		void Cloning.ICloneable.CopyDataTo(object targetObj, Cloning.CloneProvider provider)
+		{
+			PrefabLink castObj = targetObj as PrefabLink;
+
+			castObj.prefab = this.prefab;
+			castObj.obj = this.obj;
+			castObj.changes = null;
+
+			if (this.changes != null)
+			{
+				castObj.changes = new List<VarMod>(this.changes.Count);
+				for (int i = 0; i < this.changes.Count; i++)
+				{
+					VarMod newVarMod = this.changes[i];
+					newVarMod.childIndex = new List<int>(newVarMod.childIndex);
+					castObj.changes.Add(newVarMod);
+				}
+			}
 		}
 	}
 }

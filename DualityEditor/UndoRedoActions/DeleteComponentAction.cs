@@ -44,6 +44,7 @@ namespace DualityEditor.UndoRedoActions
 			{
 				obj.Dispose();
 			}
+			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(this.backupParentObj));
 			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(Scene.Current));
 		}
 		public override void Undo()
@@ -55,6 +56,7 @@ namespace DualityEditor.UndoRedoActions
 				this.targetObj[i].GameObj = this.backupParentObj[i];
 				DebugCheckParent(this.targetObj[i], this.backupParentObj[i]);
 			}
+			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(this.backupParentObj));
 			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(Scene.Current));
 		}
 	}

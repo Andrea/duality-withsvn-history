@@ -430,4 +430,16 @@
   <data name="UndoRedo_EditProperty" xml:space="preserve">
     <value>Edit {0}</value>
   </data>
+  <data name="UndoRedo_ResetComponent" xml:space="preserve">
+    <value>Reset {0}</value>
+  </data>
+  <data name="UndoRedo_ResetComponentMulti" xml:space="preserve">
+    <value>Reset {0} Components</value>
+  </data>
+  <data name="UndoRedo_ResetGameObject" xml:space="preserve">
+    <value>Revert {0}</value>
+  </data>
+  <data name="UndoRedo_ResetGameObjectMulti" xml:space="preserve">
+    <value>Revert {0} GameObjects</value>
+  </data>
 </root>

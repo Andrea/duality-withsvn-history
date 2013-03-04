@@ -11,6 +11,7 @@ using ButtonState = AdamsLair.PropertyGrid.Renderer.ButtonState;
 using Duality;
 using DualityEditor;
 using DualityEditor.CorePluginInterface;
+using DualityEditor.UndoRedoActions;
 
 namespace EditorBase.PropertyEditors
 {
@@ -213,23 +214,26 @@ namespace EditorBase.PropertyEditors
 
 			ControlRenderer.DrawStringLine(e.Graphics, "PrefabLink", headerPrefabFont, this.rectLabelPrefab, !this.prefabLinked ? SystemColors.GrayText : (this.prefabLinkAvailable ? Color.Blue : Color.DarkRed));
 			
-			ButtonState buttonState = ButtonState.Normal;
-			ButtonState buttonStateDefault = ButtonState.Normal;
-			if (!this.ReadOnly && this.Enabled && this.prefabLinked && (this.prefabLinkAvailable || this.curButton == 3))
+			ButtonState buttonState = ButtonState.Disabled;
+			ButtonState buttonStateDefault = ButtonState.Disabled;
+			ButtonState buttonStateDefaultBreak = ButtonState.Disabled;
+			if (!this.ReadOnly && this.Enabled && this.prefabLinked)
 			{
-				if (this.curButtonPressed)		buttonState = ButtonState.Pressed;
-				else if (this.curButtonHovered)	buttonState = ButtonState.Hot;
-				else							buttonState = ButtonState.Normal;
+				if (this.prefabLinkAvailable)
+				{
+					buttonState = ButtonState.Normal;
+					buttonStateDefault = ButtonState.Normal;
+				}
+				buttonStateDefaultBreak = ButtonState.Normal;
 			}
-			else
-			{
-				buttonState = ButtonState.Disabled;
-				buttonStateDefault = ButtonState.Disabled;
-			}
+
+			if (this.curButtonPressed)		buttonState = ButtonState.Pressed;
+			else if (this.curButtonHovered)	buttonState = ButtonState.Hot;
+
 			ControlRenderer.DrawButton(e.Graphics, this.rectButtonPrefabShow, this.curButton == 0 ? buttonState : buttonStateDefault, "Show");
 			ControlRenderer.DrawButton(e.Graphics, this.rectButtonPrefabRevert, this.curButton == 1 ? buttonState : buttonStateDefault, "Revert");
 			ControlRenderer.DrawButton(e.Graphics, this.rectButtonPrefabApply, this.curButton == 2 ? buttonState : buttonStateDefault, "Apply");
-			ControlRenderer.DrawButton(e.Graphics, this.rectButtonPrefabBreak, this.curButton == 3 ? buttonState : buttonStateDefault, "Break");
+			ControlRenderer.DrawButton(e.Graphics, this.rectButtonPrefabBreak, this.curButton == 3 ? buttonState : buttonStateDefaultBreak, "Break");
 		}
 		protected override void OnMouseLeave(EventArgs e)
 		{
@@ -349,11 +353,8 @@ namespace EditorBase.PropertyEditors
 		{
 			GameObject[] values = this.GetValue().Cast<GameObject>().Where(o => o.PrefabLink != null).ToArray();
 
-			// Clear all changes and re-apply Prefabs
-			foreach (GameObject o in values) o.PrefabLink.ClearChanges();
-			Duality.Resources.PrefabLink.ApplyAllLinks(values);
+			UndoRedoManager.Do(new ResetGameObjectAction(values));
 
-			DualityEditorApp.NotifyObjPrefabApplied(this, new ObjectSelection(values));
 			this.PerformGetValue();
 			this.ParentGrid.Invalidate();
 		}
@@ -370,12 +371,8 @@ namespace EditorBase.PropertyEditors
 					// Inject GameObject to Prefab
 					prefab.Inject(o);
 					prefabs.Add(prefab);
-
-					// Establish PrefabLink
-					o.LinkToPrefab(prefab);
 				}
 			}
-			DualityEditorApp.FlagResourceUnsaved(prefabs);
 			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(prefabs));
 			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionInfo.Property_GameObject_PrefabLink);
 

@@ -14,9 +14,9 @@
 -->	UndoRedo
 	-->	ObjectInspector
 		-->	Special Editors
-			-->	PrefabLink
-			-->	RigidBodyShape
-			-->	Add Joint
+			-->	GameObject: PrefabLink
+			-->	RigidBodyJoint
+			-->	RigidBodyAddJoint
 	-->	General
 		-->	IEditorAction stuff from CorePluginInterface
 

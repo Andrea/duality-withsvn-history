@@ -77,6 +77,7 @@ namespace DualityEditor.UndoRedoActions
 				}
 			}
 			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(this.targetParentObj));
+			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(Scene.Current));
 		}
 		public override void Undo()
 		{
@@ -87,6 +88,7 @@ namespace DualityEditor.UndoRedoActions
 				obj.Dispose();
 			}
 			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(this.targetParentObj));
+			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(Scene.Current));
 		}
 	}
 }

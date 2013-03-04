@@ -704,6 +704,26 @@
               Sucht eine lokalisierte Zeichenfolge, die Macro: {0} Actions ähnelt.
             </summary>
         </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_ResetComponent">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Reset {0} ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_ResetComponentMulti">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Reset {0} Components ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_ResetGameObject">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Revert {0} ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_ResetGameObjectMulti">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Revert {0} GameObjects ähnelt.
+            </summary>
+        </member>
         <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_SetComponentParent">
             <summary>
               Sucht eine lokalisierte Zeichenfolge, die Re-Parent {0} ähnelt.

@@ -191,24 +191,7 @@ namespace EditorBase.PropertyEditors
 		}
 		private void contextMenu_ResetComponent(object sender, EventArgs e)
 		{
-			Component[] values = this.GetValue().Cast<Component>().NotNull().ToArray();
-			foreach (Component c in values)
-			{
-				Type cmpType = c.GetType();
-				Duality.Resources.PrefabLink l = c.GameObj.AffectedByPrefabLink;
-				if (l != null)
-				{
-					if (l.Prefab.IsAvailable) l.Prefab.Res.CopyTo(l.Obj.IndexPathOfChild(c.GameObj), c);
-					l.ClearChanges(c.GameObj, cmpType, null);
-				}
-				else
-				{
-					Component resetBase = (cmpType.CreateInstanceOf() ?? cmpType.CreateInstanceOf(true)) as Component;
-					resetBase.CopyTo(c);
-				}
-			}
-			this.PerformGetValue();
-			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(values));
+			UndoRedoManager.Do(new ResetComponentAction(this.GetValue().Cast<Component>()));
 		}
 		private void contextMenu_RemoveComponent(object sender, EventArgs e)
 		{
@@ -220,14 +203,7 @@ namespace EditorBase.PropertyEditors
 			if (!DualityEditorApp.DisplayConfirmBreakPrefabLink(objSel)) return;
 
 			// Delete Components
-			foreach (Component c in values)
-			{
-				if (c.Disposed) continue;
-				c.Dispose();
-			}
-
-			this.ParentEditor.PerformGetValue();
-			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(values.GameObject()));
+			UndoRedoManager.Do(new DeleteComponentAction(values));
 		}
 		private void contextMenu_CustomAction(object sender, EventArgs e)
 		{

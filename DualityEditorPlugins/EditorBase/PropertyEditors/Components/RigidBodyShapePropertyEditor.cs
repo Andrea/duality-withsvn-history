@@ -6,7 +6,9 @@ using AdamsLair.PropertyGrid;
 
 using Duality;
 using Duality.Components.Physics;
+
 using DualityEditor;
+using DualityEditor.UndoRedoActions;
 
 namespace EditorBase.PropertyEditors
 {
@@ -23,11 +25,11 @@ namespace EditorBase.PropertyEditors
 			base.OnPropertySet(property, targets);
 
 			var colShapes = targets.OfType<ShapeInfo>().ToArray();
-			DualityEditorApp.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(colShapes), property);
+			UndoRedoManager.Do(new EditPropertyAction(this.ParentGrid, property, colShapes, null));
 
 			var colliders = colShapes.Select(c => c.Parent).ToArray();
 			foreach (var c in colliders) c.AwakeBody();
-			DualityEditorApp.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(colliders), ReflectionInfo.Property_RigidBody_Shapes);
+			UndoRedoManager.Do(new EditPropertyAction(this.ParentGrid, ReflectionInfo.Property_RigidBody_Shapes, colliders, null));
 		}
 	}
 }

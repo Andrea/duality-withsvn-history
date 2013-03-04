@@ -922,6 +922,42 @@ namespace DualityEditor.EditorRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Reset {0} ähnelt.
+        /// </summary>
+        public static string UndoRedo_ResetComponent {
+            get {
+                return ResourceManager.GetString("UndoRedo_ResetComponent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Reset {0} Components ähnelt.
+        /// </summary>
+        public static string UndoRedo_ResetComponentMulti {
+            get {
+                return ResourceManager.GetString("UndoRedo_ResetComponentMulti", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Revert {0} ähnelt.
+        /// </summary>
+        public static string UndoRedo_ResetGameObject {
+            get {
+                return ResourceManager.GetString("UndoRedo_ResetGameObject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Revert {0} GameObjects ähnelt.
+        /// </summary>
+        public static string UndoRedo_ResetGameObjectMulti {
+            get {
+                return ResourceManager.GetString("UndoRedo_ResetGameObjectMulti", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Re-Parent {0} ähnelt.
         /// </summary>
         public static string UndoRedo_SetComponentParent {
