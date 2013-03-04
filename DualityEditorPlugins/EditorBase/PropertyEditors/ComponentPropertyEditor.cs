@@ -30,13 +30,10 @@ namespace EditorBase.PropertyEditors
 
 		public void PerformSetActive(bool active)
 		{
-			Component[] values = this.GetValue().Cast<Component>().NotNull().ToArray();
-			foreach (Component c in values) c.ActiveSingle = active;
-
-			// Notify ActiveSingle changed
-			DualityEditorApp.NotifyObjPropChanged(this, 
-				new ObjectSelection(values), 
-				ReflectionInfo.Property_Component_ActiveSingle);
+			UndoRedoManager.Do(new EditPropertyAction(this.ParentGrid, 
+				ReflectionInfo.Property_Component_ActiveSingle, 
+				this.GetValue(), 
+				new object[] { active }));
 		}
 
 		protected override bool IsAutoCreateMember(MemberInfo info)

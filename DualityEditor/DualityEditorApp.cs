@@ -16,6 +16,7 @@ using Duality.ObjectManagers;
 
 using DualityEditor.Forms;
 using DualityEditor.CorePluginInterface;
+using DualityEditor.UndoRedoActions;
 
 using OpenTK;
 
@@ -832,14 +833,17 @@ namespace DualityEditor
 
 		public static void NotifyObjPrefabApplied(object sender, ObjectSelection obj)
 		{
+			if (obj.Empty) return;
 			OnObjectPropertyChanged(sender, new PrefabAppliedEventArgs(obj));
 		}
 		public static void NotifyObjPropChanged(object sender, ObjectSelection obj, params PropertyInfo[] info)
 		{
+			if (obj.Empty) return;
 			OnObjectPropertyChanged(sender, new ObjectPropertyChangedEventArgs(obj, info));
 		}
 		public static void NotifyObjPropChanged(object sender, ObjectSelection obj, bool persistenceCritical, params PropertyInfo[] info)
 		{
+			if (obj.Empty) return;
 			OnObjectPropertyChanged(sender, new ObjectPropertyChangedEventArgs(obj, info, persistenceCritical));
 		}
 
@@ -904,10 +908,7 @@ namespace DualityEditor
 				MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 			if (result != DialogResult.Yes) return false;
 
-			foreach (PrefabLink link in linkList) link.Obj.BreakPrefabLink();
-			DualityEditorApp.NotifyObjPropChanged(null, 
-				new ObjectSelection(linkList.Select(l => l.Obj)), 
-				ReflectionInfo.Property_GameObject_PrefabLink);
+			UndoRedoManager.Do(new BreakPrefabLinkAction(linkList.Select(l => l.Obj)));
 
 			return true;
 		}
@@ -935,7 +936,7 @@ namespace DualityEditor
 		}
 		private static void OnObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs args)
 		{
-			//Console.WriteLine("OnObjectPropertyChanged: {0}\n\t{1}", args.PropNames.ToString(", "), args.Objects.Objects.ToString(", "));
+			//Log.Editor.Write("OnObjectPropertyChanged: {0}{2}\t{1}", args.PropNames.ToString(", "), args.Objects.Objects.ToString(", "), Environment.NewLine);
 			if (args.PersistenceCritical)
 			{
 				// If a linked GameObject was modified, update its prefab link changelist

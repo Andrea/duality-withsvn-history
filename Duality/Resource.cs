@@ -249,8 +249,8 @@ namespace Duality
 		/// <param name="target">The target Resource where this Resources data is copied to.</param>
 		protected virtual void OnCopyTo(Resource target, CloneProvider provider)
 		{
-			target.path			= null; //this.path;
-			target.sourcePath	= null;
+			target.path			= provider.Context.PreserveIdentity ? null : this.path;
+			target.sourcePath	= provider.Context.PreserveIdentity ? null : this.sourcePath;
 
 			// If any derived Resource type doesn't override OnCopyTo, use a reflection-driven default behavior.
 			CloneProvider.PerformReflectionFallback("OnCopyTo", this, target, provider);

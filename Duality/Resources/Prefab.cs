@@ -151,7 +151,7 @@ namespace Duality.Resources
 		{
 			base.OnCopyTo(r, provider);
 			Prefab c = r as Prefab;
-			c.objTree = this.objTree.Clone();
+			c.objTree = provider.RequestObjectClone(this.objTree);
 		}
 	}
 

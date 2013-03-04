@@ -12,8 +12,10 @@ using Aga.Controls.Tree;
 
 using Duality;
 using Duality.Resources;
+
 using DualityEditor;
 using DualityEditor.CorePluginInterface;
+using DualityEditor.UndoRedoActions;
 
 namespace EditorBase
 {
@@ -1015,21 +1017,12 @@ namespace EditorBase
 					{
 						GameObject draggedObj = data.GetGameObjectRefs()[0];
 
+						UndoRedoManager.BeginMacro();
 						// Prevent recursion
-						foreach (GameObject child in draggedObj.ChildrenDeep)
-							if (child.PrefabLink != null && child.PrefabLink.Prefab == prefab)
-								child.BreakPrefabLink();
-
-						// Inject GameObject to Prefab
-						prefab.Inject(draggedObj);
-						DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(prefab));
-
-						// Establish PrefabLink
-						if (draggedObj.PrefabLink == null) draggedObj.LinkToPrefab(prefab);
-						DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(draggedObj), ReflectionInfo.Property_GameObject_PrefabLink);
-
-						// Update the Prefab icon
-						targetResNode.UpdateImage();
+						UndoRedoManager.Do(new BreakPrefabLinkAction(draggedObj.ChildrenDeep.Where(c => c.PrefabLink != null && c.PrefabLink.Prefab == prefab)));
+						// Inject GameObject to Prefab & Establish PrefabLink
+						UndoRedoManager.Do(new ApplyToPrefabAction(draggedObj, prefab));
+						UndoRedoManager.EndMacro(UndoRedoManager.MacroDeriveName.FromLast);
 					}
 				}
 				// See if we can retrieve Resources from data
@@ -1066,17 +1059,9 @@ namespace EditorBase
 						}
 
 						// If we happened to generate a Prefab, link possible existing GameObjects to it
-						List<Prefab> prefabList = resList.OfType<Prefab>().ToList();
-						if (prefabList.Count > 0)
+						if (resList.OfType<Prefab>().Any())
 						{
-							GameObject[] gameObjArray = data.GetGameObjectRefs();
-							for (int i = 0; i < gameObjArray.Length; i++)
-							{
-								GameObject obj = gameObjArray[i];
-								Prefab prefab = prefabList[i >= prefabList.Count ? prefabList.Count - 1 : i];
-								if (obj.PrefabLink == null) obj.LinkToPrefab(prefab);
-							}
-							DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(gameObjArray), ReflectionInfo.Property_GameObject_PrefabLink);
+							UndoRedoManager.Do(new ApplyToPrefabAction(data.GetGameObjectRefs(), resList.OfType<Prefab>().Ref()));
 						}
 
 					}
@@ -1490,7 +1475,16 @@ namespace EditorBase
 		private void EditorForm_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
 		{
 			// If a Resources modified state changes, invalidate
-			if (e.Objects.Resources.Any()) this.folderView.Invalidate();
+			if (e.Objects.Resources.Any())
+			{
+				this.folderView.Invalidate();
+				foreach (Prefab prefab in e.Objects.Resources.OfType<Prefab>())
+				{
+					ResourceNode resNode = this.NodeFromPath(prefab.Path) as ResourceNode;
+					if (resNode == null) continue;
+					resNode.UpdateImage();
+				}
+			}
 		}
 		private void FileEventManager_ResourceCreated(object sender, ResourceEventArgs e)
 		{

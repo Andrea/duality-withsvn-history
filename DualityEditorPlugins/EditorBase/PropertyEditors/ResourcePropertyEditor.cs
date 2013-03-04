@@ -9,12 +9,14 @@ using Duality.ColorFormat;
 
 using DualityEditor;
 using DualityEditor.CorePluginInterface;
+using DualityEditor.UndoRedoActions;
 
 namespace EditorBase.PropertyEditors
 {
 	public class ResourcePropertyEditor : MemberwisePropertyEditor
 	{
-		private	bool	preventFocus	= false;
+		private	bool	isInvokingDirectChild	= false;
+		private	bool	preventFocus			= false;
 
 		public override bool CanGetFocus
 		{
@@ -40,10 +42,6 @@ namespace EditorBase.PropertyEditors
 			Resource[] resValues = values.OfType<Resource>().ToArray();
 			if (resValues.Length == 1) this.HeaderValueText = resValues[0].FullName;
 		}
-		protected override void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)
-		{
-			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(targets), property);
-		}
 		protected override void OnEditedTypeChanged()
 		{
 			base.OnEditedTypeChanged();
@@ -66,6 +64,29 @@ namespace EditorBase.PropertyEditors
 
 			this.Hints &= ~HintFlags.HasButton;
 			this.Hints &= ~HintFlags.ButtonEnabled;
+		}
+		protected override void OnValueChanged(object sender, PropertyEditorValueEventArgs args)
+		{
+			base.OnValueChanged(sender, args);
+			if (this.isInvokingDirectChild) return;
+
+			// Find the direct descendant editor on the path to the changed one
+			PropertyEditor directChild = args.Editor;
+			while (directChild != null && !this.HasPropertyEditor(directChild))
+				directChild = directChild.ParentEditor;
+			if (directChild == args.Editor) return;
+
+			// If an editor has changed that was NOT a direct descendant, fire the appropriate notifier events.
+			// Always remember: If we don't emit a PropertyChanged event, PrefabLinks won't update their change lists!
+			if (directChild != null && directChild != args.Editor && directChild.EditedMember != null)
+			{
+				this.isInvokingDirectChild = true;
+				if (directChild.EditedMember is PropertyInfo)
+					UndoRedoManager.Do(new EditPropertyAction(this.ParentGrid, directChild.EditedMember as PropertyInfo, this.GetValue(), null));
+				else if (directChild.EditedMember is FieldInfo)
+					UndoRedoManager.Do(new EditFieldAction(this.ParentGrid, directChild.EditedMember as FieldInfo, this.GetValue(), null));
+				this.isInvokingDirectChild = false;
+			}
 		}
 	}
 }

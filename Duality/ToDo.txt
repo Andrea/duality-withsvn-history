@@ -14,9 +14,10 @@
 -->	UndoRedo
 	-->	ObjectInspector
 		-->	Special Editors
-			-->	GameObject: PrefabLink
 			-->	RigidBodyJoint
 			-->	RigidBodyAddJoint
+			-->	SoundEmitter: Add Source
+			-->	Font: EditingFinished ReloadData
 	-->	General
 		-->	IEditorAction stuff from CorePluginInterface
 

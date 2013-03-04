@@ -134,7 +134,7 @@ namespace DualityEditor
 			}
 			else
 			{
-			//	if (Sandbox.IsActive)	UndoRedo is inactive for now
+			//	if (Sandbox.IsActive)	// UndoRedo is inactive for now
 				{
 					if (performAction) action.Do();
 					return;

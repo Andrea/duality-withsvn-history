@@ -16,6 +16,7 @@ using Duality.Resources;
 
 using DualityEditor;
 using DualityEditor.Forms;
+using DualityEditor.UndoRedoActions;
 
 using EditorBase.CamViewStates;
 using EditorBase.CamViewLayers;
@@ -888,16 +889,24 @@ namespace EditorBase
 		}
 		private void bgColorDialog_ValueChanged(object sender, EventArgs e)
 		{
-			this.camComp.ClearColor = new ColorRgba(
-				this.bgColorDialog.SelectedColor.R,
-				this.bgColorDialog.SelectedColor.G,
-				this.bgColorDialog.SelectedColor.B,
-				0);
 			if (this.camObj != this.nativeCamObj)
 			{
-				DualityEditorApp.NotifyObjPropChanged(
-					this, new ObjectSelection(this.camComp),
-					ReflectionInfo.Property_Camera_ClearColor);
+				UndoRedoManager.Do(new EditPropertyAction(null,
+					ReflectionInfo.Property_Camera_ClearColor,
+					new[] { this.camComp },
+					new[] { new ColorRgba(
+						this.bgColorDialog.SelectedColor.R,
+						this.bgColorDialog.SelectedColor.G,
+						this.bgColorDialog.SelectedColor.B,
+						0) as object }));
+			}
+			else
+			{
+				this.camComp.ClearColor = new ColorRgba(
+					this.bgColorDialog.SelectedColor.R,
+					this.bgColorDialog.SelectedColor.G,
+					this.bgColorDialog.SelectedColor.B,
+					0);
 			}
 			this.glControl.Invalidate();
 		}

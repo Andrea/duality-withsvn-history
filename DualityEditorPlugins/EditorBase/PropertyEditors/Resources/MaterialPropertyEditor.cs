@@ -23,10 +23,5 @@ namespace EditorBase.PropertyEditors
 		{
 			return false;
 		}
-		protected override void OnFieldSet(FieldInfo property, IEnumerable<object> targets)
-		{
-			base.OnFieldSet(property, targets);
-			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(targets), ReflectionInfo.Property_Material_Info);
-		}
 	}
 }

@@ -899,18 +899,19 @@ namespace EditorBase
 						dropObj = (this.tempDropTarget as GameObjectNode).Obj;
 					else
 						dropObj = (this.tempDropTarget as ComponentNode).Component.GameObj;
-					// Make drop target available to converters by adding it to the result set.
-					convertOp.AddResult(dropObj);
 
 					var componentQuery = convertOp.Perform<Component>();
 					if (componentQuery != null)
 					{
 						// Create Components
-						CreateComponentAction action = new CreateComponentAction(dropObj, componentQuery.Where(c => c.GameObj == null));
-						UndoRedoManager.Do(action);
+						CreateComponentAction createAction = new CreateComponentAction(dropObj, componentQuery.Where(c => c.GameObj == null));
+						UndoRedoManager.BeginMacro();
+						UndoRedoManager.Do(new DeleteComponentAction(componentQuery.Select(c => dropObj.GetComponent(c.GetType(), true)).NotNull()));
+						UndoRedoManager.Do(createAction);
+						UndoRedoManager.EndMacro(UndoRedoManager.MacroDeriveName.FromLast);
 
 						bool selCleared = false;
-						foreach (Component newComponent in action.Result)
+						foreach (Component newComponent in createAction.Result)
 						{
 							NodeBase dataNode = this.FindNode(newComponent);
 							if (dataNode == null) continue;

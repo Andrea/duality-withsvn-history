@@ -644,6 +644,26 @@
               Sucht eine lokalisierte Zeichenfolge, die Empty Project ähnelt.
             </summary>
         </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_ApplyToPrefab">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Apply {0} ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_ApplyToPrefabMulti">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Apply  {0} GameObjects ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_BreakPrefabLink">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Unlink {0} ähnelt.
+            </summary>
+        </member>
+        <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_BreakPrefabLinkMulti">
+            <summary>
+              Sucht eine lokalisierte Zeichenfolge, die Unlink  {0} GameObjects ähnelt.
+            </summary>
+        </member>
         <member name="P:DualityEditor.EditorRes.GeneralRes.UndoRedo_CloneGameObject">
             <summary>
               Sucht eine lokalisierte Zeichenfolge, die Clone {0} ähnelt.

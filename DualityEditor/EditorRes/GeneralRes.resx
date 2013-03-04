@@ -442,4 +442,16 @@
   <data name="UndoRedo_ResetGameObjectMulti" xml:space="preserve">
     <value>Revert {0} GameObjects</value>
   </data>
+  <data name="UndoRedo_ApplyToPrefab" xml:space="preserve">
+    <value>Apply {0}</value>
+  </data>
+  <data name="UndoRedo_ApplyToPrefabMulti" xml:space="preserve">
+    <value>Apply  {0} GameObjects</value>
+  </data>
+  <data name="UndoRedo_BreakPrefabLink" xml:space="preserve">
+    <value>Unlink {0}</value>
+  </data>
+  <data name="UndoRedo_BreakPrefabLinkMulti" xml:space="preserve">
+    <value>Unlink  {0} GameObjects</value>
+  </data>
 </root>

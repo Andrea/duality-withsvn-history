@@ -57,13 +57,10 @@ namespace EditorBase.PropertyEditors
 
 		public void PerformSetActive(bool active)
 		{
-			GameObject[] values = this.GetValue().Cast<GameObject>().ToArray();
-			foreach (GameObject o in values) o.ActiveSingle = active;
-
-			// Notify ActiveSingle changed
-			DualityEditorApp.NotifyObjPropChanged(this, 
-				new ObjectSelection(values), 
-				ReflectionInfo.Property_GameObject_ActiveSingle);
+			UndoRedoManager.Do(new EditPropertyAction(this.ParentGrid, 
+				ReflectionInfo.Property_GameObject_ActiveSingle, 
+				this.GetValue(), 
+				new object[] { active }));
 		}
 
 		public override void PerformGetValue()
@@ -351,41 +348,21 @@ namespace EditorBase.PropertyEditors
 		}
 		private void OnPrefabLinkRevertPressed()
 		{
-			GameObject[] values = this.GetValue().Cast<GameObject>().Where(o => o.PrefabLink != null).ToArray();
-
-			UndoRedoManager.Do(new ResetGameObjectAction(values));
+			UndoRedoManager.Do(new ResetGameObjectAction(this.GetValue().Cast<GameObject>()));
 
 			this.PerformGetValue();
 			this.ParentGrid.Invalidate();
 		}
 		private void OnPrefabLinkApplyPressed()
 		{
-			GameObject[] values = this.GetValue().Cast<GameObject>().Where(o => o.PrefabLink != null).ToArray();
-			var prefabs = new List<Duality.Resources.Prefab>();
-			foreach (GameObject o in values)
-			{
-				if (o.PrefabLink != null && o.PrefabLink.Prefab.IsAvailable)
-				{
-					Duality.Resources.Prefab prefab = o.PrefabLink.Prefab.Res;
-
-					// Inject GameObject to Prefab
-					prefab.Inject(o);
-					prefabs.Add(prefab);
-				}
-			}
-			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(prefabs));
-			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionInfo.Property_GameObject_PrefabLink);
+			UndoRedoManager.Do(new ApplyToPrefabAction(this.GetValue().Cast<GameObject>()));
 
 			this.ParentGrid.Invalidate();
 		}
 		private void OnPrefabLinkBreakPressed()
 		{
-			GameObject[] values = this.GetValue().Cast<GameObject>().Where(o => o.PrefabLink != null).ToArray();
+			UndoRedoManager.Do(new BreakPrefabLinkAction(this.GetValue().Cast<GameObject>()));
 
-			// Destroy all PrefabLinks
-			foreach (GameObject o in values) o.BreakPrefabLink();
-
-			DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(values), ReflectionInfo.Property_GameObject_PrefabLink);
 			this.PerformGetValue();
 			this.ParentGrid.Invalidate();
 		}

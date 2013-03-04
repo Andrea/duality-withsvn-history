@@ -814,6 +814,42 @@ namespace DualityEditor.EditorRes {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Apply {0} ähnelt.
+        /// </summary>
+        public static string UndoRedo_ApplyToPrefab {
+            get {
+                return ResourceManager.GetString("UndoRedo_ApplyToPrefab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Apply  {0} GameObjects ähnelt.
+        /// </summary>
+        public static string UndoRedo_ApplyToPrefabMulti {
+            get {
+                return ResourceManager.GetString("UndoRedo_ApplyToPrefabMulti", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Unlink {0} ähnelt.
+        /// </summary>
+        public static string UndoRedo_BreakPrefabLink {
+            get {
+                return ResourceManager.GetString("UndoRedo_BreakPrefabLink", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Unlink  {0} GameObjects ähnelt.
+        /// </summary>
+        public static string UndoRedo_BreakPrefabLinkMulti {
+            get {
+                return ResourceManager.GetString("UndoRedo_BreakPrefabLinkMulti", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Clone {0} ähnelt.
         /// </summary>
         public static string UndoRedo_CloneGameObject {

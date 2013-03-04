@@ -25,7 +25,10 @@ namespace DualityEditor.UndoRedoActions
 			get { return GeneralRes.UndoRedo_ResetGameObjectMulti; }
 		}
 
-		public ResetGameObjectAction(IEnumerable<GameObject> obj) : base(obj) {}
+		public ResetGameObjectAction(IEnumerable<GameObject> obj) : base(obj.Where(
+			o => o != null && 
+			o.PrefabLink != null && 
+			o.PrefabLink.Prefab.IsAvailable)) {}
 
 		public override void Do()
 		{
