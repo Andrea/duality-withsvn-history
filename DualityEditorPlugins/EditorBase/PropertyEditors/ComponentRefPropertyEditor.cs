@@ -20,7 +20,6 @@ namespace EditorBase.PropertyEditors
 	{
 		protected	Type		editedCmpType		= null;
 		protected	Component	component			= null;
-		protected	Component	prevImageObj		= null;
 		
 		public override object DisplayedValue
 		{
@@ -74,10 +73,12 @@ namespace EditorBase.PropertyEditors
 			this.EndUpdate();
 			if (lastCmp != this.component || lastMultiple != this.multiple) this.Invalidate();
 		}
+
 		protected void GeneratePreview()
 		{
-			if (this.prevImageObj == this.component) return;
-			this.prevImageObj = this.component;
+			int prevHash = this.GetPreviewHash();
+			if (this.prevImageHash == prevHash) return;
+			this.prevImageHash = prevHash;
 			
 			this.StopPreviewSound();
 			if (this.prevSound != null) this.prevSound.Dispose();
@@ -99,6 +100,10 @@ namespace EditorBase.PropertyEditors
 
 				this.prevSound = PreviewProvider.GetPreviewSound(this.component);
 			}
+		}
+		protected override int GetPreviewHash()
+		{
+			return this.component != null ? this.component.GetHashCode() : 0;
 		}
 		
 		protected override void SerializeToData(DataObject data)

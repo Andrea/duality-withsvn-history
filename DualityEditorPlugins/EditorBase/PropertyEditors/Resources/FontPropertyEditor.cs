@@ -34,12 +34,5 @@ namespace EditorBase.PropertyEditors
 			this.AddPropertyEditor(content);
 			content.Expanded = true;
 		}
-
-		public void UpdatePreview()
-		{
-			FontPreviewPropertyEditor preview = this.Children.OfType<FontPreviewPropertyEditor>().First();
-			preview.InvalidatePreview();
-			preview.PerformGetValue();
-		}
 	}
 }

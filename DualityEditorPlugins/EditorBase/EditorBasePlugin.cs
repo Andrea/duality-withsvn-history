@@ -16,6 +16,7 @@ using DualityEditor;
 using DualityEditor.Forms;
 using DualityEditor.EditorRes;
 using DualityEditor.CorePluginInterface;
+using DualityEditor.UndoRedoActions;
 
 using EditorBase.PluginRes;
 
@@ -206,9 +207,9 @@ namespace EditorBase
 			CorePluginRegistry.RegisterTypeCategory(typeof(Sound),				GeneralRes.Category_Sound);
 
 			// Register conversion actions
-			CorePluginRegistry.RegisterEditorAction(new EditorAction<Pixmap>				(EditorBaseRes.ActionName_CreateTexture,		EditorBaseRes.IconResTexture,		p => Texture.CreateFromPixmap(p),	EditorBaseRes.ActionDesc_CreateTexture),		CorePluginRegistry.ActionContext_ContextMenu);
-			CorePluginRegistry.RegisterEditorAction(new EditorAction<Texture>				(EditorBaseRes.ActionName_CreateMaterial,		EditorBaseRes.IconResMaterial,		t => Material.CreateFromTexture(t), EditorBaseRes.ActionDesc_CreateMaterial),		CorePluginRegistry.ActionContext_ContextMenu);
-			CorePluginRegistry.RegisterEditorAction(new EditorAction<AudioData>				(EditorBaseRes.ActionName_CreateSound,			EditorBaseRes.IconResSound,			a => Sound.CreateFromAudioData(a),	EditorBaseRes.ActionDesc_CreateSound),			CorePluginRegistry.ActionContext_ContextMenu);
+			CorePluginRegistry.RegisterEditorAction(new EditorAction<Pixmap>				(EditorBaseRes.ActionName_CreateTexture,		EditorBaseRes.IconResTexture,		this.ActionPixmapCreateTexture,		EditorBaseRes.ActionDesc_CreateTexture),		CorePluginRegistry.ActionContext_ContextMenu);
+			CorePluginRegistry.RegisterEditorAction(new EditorAction<Texture>				(EditorBaseRes.ActionName_CreateMaterial,		EditorBaseRes.IconResMaterial,		this.ActionTextureCreateMaterial,	EditorBaseRes.ActionDesc_CreateMaterial),		CorePluginRegistry.ActionContext_ContextMenu);
+			CorePluginRegistry.RegisterEditorAction(new EditorAction<AudioData>				(EditorBaseRes.ActionName_CreateSound,			EditorBaseRes.IconResSound,			this.ActionAudioDataCreateSound,	EditorBaseRes.ActionDesc_CreateSound),			CorePluginRegistry.ActionContext_ContextMenu);
 			CorePluginRegistry.RegisterEditorAction(new EditorGroupAction<AbstractShader>	(EditorBaseRes.ActionName_CreateShaderProgram,	EditorBaseRes.IconResShaderProgram, this.ActionShaderCreateProgram,		EditorBaseRes.ActionDesc_CreateShaderProgram),	CorePluginRegistry.ActionContext_ContextMenu);
 
 			// Register open actions
@@ -414,6 +415,18 @@ namespace EditorBase
 			DualityEditorApp.Select(this, new ObjectSelection(new [] { DualityApp.UserData }));
 		}
 
+		private void ActionPixmapCreateTexture(Pixmap pixmap)
+		{
+			Texture.CreateFromPixmap(pixmap);
+		}
+		private void ActionTextureCreateMaterial(Texture tex)
+		{
+			Material.CreateFromTexture(tex);
+		}
+		private void ActionAudioDataCreateSound(AudioData audio)
+		{
+			Sound.CreateFromAudioData(audio);
+		}
 		private void ActionShaderCreateProgram(IEnumerable<AbstractShader> shaderEnum)
 		{
 			List<VertexShader> vertexShaders = shaderEnum.OfType<VertexShader>().ToList();
@@ -470,9 +483,9 @@ namespace EditorBase
 		{
 			try
 			{
-				GameObject newObj = prefab.Instantiate();
-				Duality.Resources.Scene.Current.RegisterObj(newObj);
-				DualityEditorApp.Select(this, new ObjectSelection(newObj));
+				CreateGameObjectAction undoRedoAction = new CreateGameObjectAction(null, prefab.Instantiate());
+				UndoRedoManager.Do(undoRedoAction);
+				DualityEditorApp.Select(this, new ObjectSelection(undoRedoAction.Result));
 			}
 			catch (Exception exception)
 			{
@@ -539,9 +552,16 @@ namespace EditorBase
 		{
 			List<object> changedObj = null;
 
-			// If a font has been modified, update all TextRenderers
+			// If a font has been modified, reload it and update all TextRenderers
 			if (resRef.Is<Font>())
 			{
+				if (resRef.IsLoaded)
+				{
+					Font fnt = resRef.As<Font>().Res;
+					if (fnt.NeedsReload)
+						fnt.ReloadData();
+				}
+
 				foreach (Duality.Components.Renderers.TextRenderer r in Scene.Current.AllObjects.GetComponents<Duality.Components.Renderers.TextRenderer>())
 				{
 					r.Text.ApplySource();
@@ -570,6 +590,13 @@ namespace EditorBase
 			// If its a Texture, update all associated RenderTargets
 			else if (resRef.Is<Texture>())
 			{
+				if (resRef.IsLoaded)
+				{
+					Texture fnt = resRef.As<Texture>().Res;
+					if (fnt.NeedsReload)
+						fnt.ReloadData();
+				}
+
 				ContentRef<Texture> texRef = resRef.As<Texture>();
 				foreach (ContentRef<RenderTarget> rt in ContentProvider.GetAvailContent<RenderTarget>())
 				{

@@ -11,6 +11,8 @@ using ButtonState = AdamsLair.PropertyGrid.Renderer.ButtonState;
 using BorderStyle = AdamsLair.PropertyGrid.Renderer.BorderStyle;
 
 using Duality;
+using Duality.Resources;
+
 using DualityEditor;
 using DualityEditor.CorePluginInterface;
 
@@ -20,7 +22,6 @@ namespace EditorBase.PropertyEditors
 	{
 		protected	Type		editedResType		= null;
 		protected	string		contentPath			= null;
-		protected	string		prevImagePath		= null;
 		
 		public override object DisplayedValue
 		{
@@ -88,10 +89,12 @@ namespace EditorBase.PropertyEditors
 			this.EndUpdate();
 			if (lastPath != this.contentPath || lastMultiple != this.multiple) this.Invalidate();
 		}
+
 		protected void GeneratePreview()
 		{
-			if (this.prevImagePath == this.contentPath) return;
-			this.prevImagePath = this.contentPath;
+			int prevHash = this.GetPreviewHash();
+			if (this.prevImageHash == prevHash) return;
+			this.prevImageHash = prevHash;
 			
 			this.StopPreviewSound();
 			if (this.prevSound != null) this.prevSound.Dispose();
@@ -114,6 +117,28 @@ namespace EditorBase.PropertyEditors
 
 				this.prevSound = PreviewProvider.GetPreviewSound(res);
 			}
+		}
+		protected override int GetPreviewHash()
+		{
+			if (this.contentPath == null) return 0;
+
+			IContentRef contentRef = new ContentRef<Resource>(null, this.contentPath);
+			if (!contentRef.IsAvailable) return 0;
+
+			ConvertOperation convOp = new ConvertOperation(new[] { contentRef.Res }, ConvertOperation.Operation.Convert);
+			if (convOp.CanPerform<Pixmap>())
+			{
+				Pixmap basePx = convOp.Perform<Pixmap>().FirstOrDefault();
+				Pixmap.Layer basePxLayer = basePx != null ? basePx.MainLayer : null;
+				return basePxLayer != null ? basePxLayer.GetHashCode() : 0;
+			}
+			else if (convOp.CanPerform<AudioData>())
+			{
+				AudioData audioData = convOp.Perform<AudioData>().FirstOrDefault();
+				return (audioData != null && audioData.OggVorbisData != null) ? audioData.OggVorbisData.GetHashCode() : 0;
+			}
+
+			return this.contentPath.GetHashCode();
 		}
 		
 		protected override void SerializeToData(DataObject data)

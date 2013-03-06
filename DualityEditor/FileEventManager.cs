@@ -25,6 +25,7 @@ namespace DualityEditor
 {
 	public static class FileEventManager
 	{
+		private	static DateTime						lastEventProc			= DateTime.Now;
 		private static FileSystemWatcher			pluginWatcher			= null;
 		private static FileSystemWatcher			dataDirWatcher			= null;
 		private static FileSystemWatcher			sourceDirWatcher		= null;
@@ -387,10 +388,14 @@ namespace DualityEditor
 
 		private static void DualityEditorApp_Idle(object sender, EventArgs e)
 		{
-			// Process file / source events, if no modal dialog is open.
-			ProcessSourceDirEvents();
-			ProcessDataDirEvents();
-			editorJustSavedRes.Clear();
+			// Process file / source events regularily, if no modal dialog is open.
+			if ((DateTime.Now - lastEventProc).TotalMilliseconds > 100.0d)
+			{
+				ProcessSourceDirEvents();
+				ProcessDataDirEvents();
+				editorJustSavedRes.Clear();
+				lastEventProc = DateTime.Now;
+			}
 		}
 		private static void Resource_ResourceSaved(object sender, Duality.ResourceEventArgs e)
 		{

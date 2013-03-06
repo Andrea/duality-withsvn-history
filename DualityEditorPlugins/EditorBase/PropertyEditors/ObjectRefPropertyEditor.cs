@@ -38,6 +38,7 @@ namespace EditorBase.PropertyEditors
 		protected	Point		panelDragBegin		= Point.Empty;
 		protected	Bitmap		prevImage			= null;
 		protected	float		prevImageLum		= 0.0f;
+		protected	int			prevImageHash		= -1;
 		protected	Sound		prevSound			= null;
 		protected	SoundInstance	prevSoundInst	= null;
 
@@ -52,6 +53,11 @@ namespace EditorBase.PropertyEditors
 
 		public abstract void ShowReferencedContent();
 		public abstract void ResetReference();
+		
+		protected virtual int GetPreviewHash()
+		{
+			return 0;
+		}
 
 		public void PlayPreviewSound()
 		{

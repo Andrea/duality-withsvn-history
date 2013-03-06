@@ -20,26 +20,5 @@ namespace EditorBase.PropertyEditors
 			this.HeaderValueText = null;
 			this.Expanded = true;
 		}
-
-		protected override void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)
-		{
-			base.OnPropertySet(property, targets);
-			Texture[] texArr = targets.Cast<Texture>().ToArray();
-			bool anyReload = false;
-			foreach (Texture tex in texArr)
-			{
-				if (tex.NeedsReload) 
-				{
-					tex.ReloadData();
-					anyReload = true;
-				}
-			}
-
-			if (anyReload)
-			{
-				this.PerformGetValue();
-				(this.ParentEditor as TexturePropertyEditor).UpdatePreview();
-			}
-		}
 	}
 }

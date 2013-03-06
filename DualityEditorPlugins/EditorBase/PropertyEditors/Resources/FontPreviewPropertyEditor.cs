@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
@@ -9,6 +10,8 @@ using BorderStyle = AdamsLair.PropertyGrid.Renderer.BorderStyle;
 
 using Duality;
 using Font = Duality.Resources.Font;
+
+using DualityEditor;
 using DualityEditor.CorePluginInterface;
 
 namespace EditorBase.PropertyEditors
@@ -37,6 +40,7 @@ namespace EditorBase.PropertyEditors
 		{
 			this.Height = PreferredHeight;
 			this.Hints = HintFlags.None;
+			DualityEditorApp.ObjectPropertyChanged += this.DualityEditorApp_ObjectPropertyChanged;
 		}
 		
 		public void InvalidatePreview()
@@ -91,6 +95,20 @@ namespace EditorBase.PropertyEditors
 				rectPreview, 
 				BorderStyle.Simple, 
 				!this.Enabled ? BorderState.Disabled : BorderState.Normal);
+		}
+		protected override void OnDisposing(bool manually)
+		{
+			base.OnDisposing(manually);
+			DualityEditorApp.ObjectPropertyChanged -= this.DualityEditorApp_ObjectPropertyChanged;
+		}
+
+		private void DualityEditorApp_ObjectPropertyChanged(object sender, ObjectPropertyChangedEventArgs e)
+		{
+			if (e.HasObject(this.prevImageValue))
+			{
+				this.InvalidatePreview();
+				this.PerformGetValue();
+			}
 		}
 	}
 }

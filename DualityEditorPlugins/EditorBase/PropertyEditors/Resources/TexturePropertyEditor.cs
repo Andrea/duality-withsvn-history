@@ -30,10 +30,5 @@ namespace EditorBase.PropertyEditors
 			this.ParentGrid.ConfigureEditor(content);
 			this.AddPropertyEditor(content);
 		}
-
-		public void UpdatePreview()
-		{
-			this.Children.OfType<TexturePreviewPropertyEditor>().First().PerformGetValue();
-		}
 	}
 }

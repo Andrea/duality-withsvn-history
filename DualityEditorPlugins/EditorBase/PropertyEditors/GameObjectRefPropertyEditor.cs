@@ -19,7 +19,6 @@ namespace EditorBase.PropertyEditors
 	public class GameObjectRefPropertyEditor : ObjectRefPropertyEditor
 	{
 		protected	GameObject	gameObj			= null;
-		protected	GameObject	prevImageObj	= null;
 		
 		public override object DisplayedValue
 		{
@@ -73,10 +72,12 @@ namespace EditorBase.PropertyEditors
 			this.EndUpdate();
 			if (lastCmp != this.gameObj || lastMultiple != this.multiple) this.Invalidate();
 		}
+
 		protected void GeneratePreview()
 		{
-			if (this.prevImageObj == this.gameObj) return;
-			this.prevImageObj = this.gameObj;
+			int prevHash = this.GetPreviewHash();
+			if (this.prevImageHash == prevHash) return;
+			this.prevImageHash = prevHash;
 			
 			this.StopPreviewSound();
 			if (this.prevSound != null) this.prevSound.Dispose();
@@ -98,6 +99,10 @@ namespace EditorBase.PropertyEditors
 
 				this.prevSound = PreviewProvider.GetPreviewSound(this.gameObj);
 			}
+		}
+		protected override int GetPreviewHash()
+		{
+			return this.gameObj != null ? this.gameObj.GetHashCode() : 0;
 		}
 		
 		protected override void SerializeToData(DataObject data)

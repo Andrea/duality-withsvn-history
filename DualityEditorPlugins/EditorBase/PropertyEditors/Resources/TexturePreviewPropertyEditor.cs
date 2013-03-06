@@ -12,6 +12,8 @@ using BorderStyle = AdamsLair.PropertyGrid.Renderer.BorderStyle;
 
 using Duality;
 using Duality.Resources;
+
+using DualityEditor;
 using DualityEditor.CorePluginInterface;
 
 namespace EditorBase.PropertyEditors
