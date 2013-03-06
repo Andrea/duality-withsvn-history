@@ -36,7 +36,6 @@ namespace EditorBase.UndoRedoActions
 				for (int i = 0; i < this.backupParentObj.Length; i++)
 					this.backupParentObj[i] = this.targetObj[i].Parent;
 			}
-			else throw new ApplicationException("Blub");
 			
 			foreach (ShapeInfo obj in this.targetObj)
 			{

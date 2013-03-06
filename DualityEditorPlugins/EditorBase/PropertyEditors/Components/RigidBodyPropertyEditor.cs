@@ -12,6 +12,9 @@ using Duality.Components.Physics;
 
 using DualityEditor;
 using DualityEditor.CorePluginInterface;
+using DualityEditor.UndoRedoActions;
+
+using EditorBase.UndoRedoActions;
 
 
 namespace EditorBase.PropertyEditors
@@ -131,12 +134,7 @@ namespace EditorBase.PropertyEditors
 				// Explicitly setting a value to null: Remove corresponding joint
 				if (valuesCast.All(v => v == null))
 				{
-					foreach (RigidBody target in targetArray)
-					{
-						target.RemoveJoint(target.Joints.ElementAt(index));
-					}
-					this.PerformGetValue();
-					DualityEditorApp.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(targetArray), ReflectionInfo.Property_RigidBody_Joints);
+					UndoRedoManager.Do(new DeleteRigidBodyJointAction(targetArray.Select(body => body.Joints.ElementAt(index))));
 				}
 			};
 		}
@@ -214,14 +212,14 @@ namespace EditorBase.PropertyEditors
 			base.OnPropertySet(property, targets);
 
 			var colJoints = targets.OfType<JointInfo>().ToArray();
-			DualityEditorApp.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(colJoints), property);
+			UndoRedoManager.Do(new EditPropertyAction(this.ParentGrid, property, colJoints, null));
 
 			var colliders = 
 				colJoints.Select(c => c.BodyA).Concat(
 				colJoints.Select(c => c.BodyB))
 				.Distinct().NotNull().ToArray();
 			foreach (var c in colliders) c.AwakeBody();
-			DualityEditorApp.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(colliders), ReflectionInfo.Property_RigidBody_Joints);
+			UndoRedoManager.Do(new EditPropertyAction(this.ParentGrid, ReflectionInfo.Property_RigidBody_Joints, colliders, null));
 		}
 
 		protected Func<IEnumerable<object>> CreateOtherColValueGetter()
@@ -245,18 +243,10 @@ namespace EditorBase.PropertyEditors
 		{
 			return delegate(IEnumerable<object> values)
 			{
-				RigidBody[] valueArray = values.Cast<RigidBody>().ToArray();
-				JointInfo[] targetArray = this.GetValue().Cast<JointInfo>().ToArray();
-				RigidBody[] parentCollider = this.parentGetter().Cast<RigidBody>().ToArray();
-
-				for (int i = 0; i < targetArray.Length; i++)
-				{
-					if (targetArray[i] == null) continue;
-					parentCollider[i].AddJoint(targetArray[i], valueArray[i]);
-				}
-
-				this.PerformGetValue();
-				this.OnPropertySet(ReflectionInfo.Property_JointInfo_BodyA, targetArray);
+				UndoRedoManager.Do(new ReparentRigidBodyJointAction(
+					this.GetValue().Cast<JointInfo>(),
+					this.parentGetter().Cast<RigidBody>(),
+					values.Cast<RigidBody>()));
 			};
 		}
 	}
@@ -298,13 +288,8 @@ namespace EditorBase.PropertyEditors
 			Type jointType = this.DisplayedValue as Type;
 			if (jointType == null) return;
 
-			foreach (RigidBody c in this.targetArray)
-			{
-				JointInfo joint = (jointType.CreateInstanceOf() ?? jointType.CreateInstanceOf(true)) as JointInfo;
-				c.AddJoint(joint);
-			}
-			this.ParentEditor.PerformGetValue();
-			DualityEditorApp.NotifyObjPropChanged(this.ParentGrid, new ObjectSelection(targetArray), ReflectionInfo.Property_RigidBody_Joints);
+			IEnumerable<JointInfo> newJoints = Enumerable.Repeat(jointType, this.targetArray.Length).Select(t => (t.CreateInstanceOf() ?? t.CreateInstanceOf(true)) as JointInfo);
+			UndoRedoManager.Do(new CreateRigidBodyJointAction(this.targetArray, newJoints));
 		}
 	}
 }

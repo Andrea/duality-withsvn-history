@@ -25,7 +25,7 @@ namespace Duality.Components
 		{
 			private	ContentRef<Sound>	sound		= ContentRef<Sound>.Null;
 			private	bool				looped		= true;
-			private	bool				paused		= true;
+			private	bool				paused		= false;
 			private	float				volume		= 1.0f;
 			private	float				pitch		= 1.0f;
 			private	Vector3				offset		= Vector3.Zero;

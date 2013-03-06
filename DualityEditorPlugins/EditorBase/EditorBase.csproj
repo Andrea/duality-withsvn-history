@@ -155,6 +155,13 @@
     <Compile Include="UndoRedoActions\DeleteRigidBodyShapeAction.cs" />
     <Compile Include="UndoRedoActions\DropGameObjectInSceneAction.cs" />
     <Compile Include="UndoRedoActions\CreateRigidBodyShapeAction.cs" />
+    <Compile Include="UndoRedoActions\DeleteRigidBodyJointAction.cs" />
+    <Compile Include="UndoRedoActions\CreateRigidBodyJointAction.cs" />
+    <Compile Include="UndoRedoActions\CreateSoundEmitterSourceAction.cs" />
+    <Compile Include="UndoRedoActions\DeleteSoundEmitterSourceAction.cs" />
+    <Compile Include="UndoRedoActions\SoundEmitterSourceAction.cs" />
+    <Compile Include="UndoRedoActions\ReparentRigidBodyJointAction.cs" />
+    <Compile Include="UndoRedoActions\RigidBodyJointAction.cs" />
     <Compile Include="UndoRedoActions\RigidBodyShapeAction.cs" />
     <Compile Include="UndoRedoActions\ScaleCamViewObjAction.cs" />
     <Compile Include="UndoRedoActions\RotateCamViewObjAction.cs" />

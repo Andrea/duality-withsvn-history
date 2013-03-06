@@ -14,10 +14,8 @@
 -->	UndoRedo
 	-->	ObjectInspector
 		-->	Special Editors
-			-->	RigidBodyJoint
-			-->	RigidBodyAddJoint
-			-->	SoundEmitter: Add Source
-			-->	Font: EditingFinished ReloadData
+			-->	Font: OnPropertySet ReloadData
+			-->	Texture: OnPropertySet ReloadData
 	-->	General
 		-->	IEditorAction stuff from CorePluginInterface
 

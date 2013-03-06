@@ -13,6 +13,8 @@ using Duality.Resources;
 using DualityEditor;
 using DualityEditor.CorePluginInterface;
 
+using EditorBase.UndoRedoActions;
+
 namespace EditorBase.PropertyEditors
 {
 	public class SoundEmitterPropertyEditor : ComponentPropertyEditor
@@ -70,21 +72,9 @@ namespace EditorBase.PropertyEditors
 					// Accept drop
 					e.Effect = e.AllowedEffect;
 
-					Sound[] sounds = convert.Perform<Sound>().ToArray();
-					IEnumerable<SoundEmitter> values = this.GetValue().Cast<SoundEmitter>().NotNull();
-
-					foreach (Sound sound in sounds)
-					{
-						foreach (SoundEmitter emit in values)
-						{
-							emit.Sources.Add(new SoundEmitter.Source(sound));
-						}
-					}
-
-					DualityEditorApp.NotifyObjPropChanged(this,
-						new ObjectSelection(values),
-						ReflectionInfo.Property_SoundEmitter_Sources);
-					this.PerformGetValue();
+					UndoRedoManager.Do(new CreateSoundEmitterSourceAction(
+						this.GetValue().Cast<SoundEmitter>(), 
+						convert.Perform<Sound>().Select(s => new SoundEmitter.Source(s))));
 				}
 			}
 		}
@@ -132,24 +122,9 @@ namespace EditorBase.PropertyEditors
 				// Explicitly setting the values to null: Remove corresponding source list entry
 				if (valuesCast.All(v => v == null))
 				{
-					foreach (SoundEmitter target in targetArray)
-					{
-						if (target.Sources[index].Instance != null) target.Sources[index].Instance.Stop();
-						target.Sources.RemoveAt(index);
-					}
-					this.PerformGetValue();
-				}
-				// Otherwise, just set the values
-				else
-				{
-					IEnumerator<SoundEmitter.Source> valuesCastEnum = valuesCast.GetEnumerator();
-					SoundEmitter.Source curValue = null;
-					if (valuesCastEnum.MoveNext()) curValue = valuesCastEnum.Current;
-					foreach (SoundEmitter target in targetArray)
-					{
-						if (target != null) target.Sources[index] = curValue;
-						if (valuesCastEnum.MoveNext()) curValue = valuesCastEnum.Current;
-					}
+					UndoRedoManager.Do(new DeleteSoundEmitterSourceAction(
+						targetArray, 
+						targetArray.Select(e => e.Sources[index])));
 				}
 			};
 		}

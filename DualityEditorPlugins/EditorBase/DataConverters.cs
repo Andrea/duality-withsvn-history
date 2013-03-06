@@ -125,7 +125,6 @@ namespace EditorBase.DataConverters
 				convert.AddResult(snd.Name); // Leave a name string in the result to pick up for the GameObject constructor
 					
 				SoundEmitter.Source source = new SoundEmitter.Source(snd);
-				source.Paused = false;
 				emitter.Sources.Add(source);
 
 				convert.AddResult(emitter);

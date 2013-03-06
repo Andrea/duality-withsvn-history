@@ -24,15 +24,15 @@ namespace EditorBase.PropertyEditors
 			}
 			return base.AutoCreateMemberEditor(info);
 		}
-		protected override void OnEditingFinished(object sender, PropertyEditingFinishedEventArgs args)
+		protected override void OnPropertySet(PropertyInfo property, System.Collections.Generic.IEnumerable<object> targets)
 		{
-			base.OnEditingFinished(sender, args);
+			base.OnPropertySet(property, targets);
 
 			Font[] fntArr = this.GetValue().OfType<Font>().NotNull().ToArray();
 			bool anyReload = false;
 			foreach (Font fnt in fntArr)
 			{
-				if (fnt.NeedsReload) 
+				if (fnt.NeedsReload)
 				{
 					fnt.ReloadData();
 					anyReload = true;
@@ -44,7 +44,7 @@ namespace EditorBase.PropertyEditors
 				this.PerformGetValue();
 				DualityEditorApp.NotifyObjPropChanged(this, new ObjectSelection(fntArr));
 			}
-			(this.ParentEditor as FontPropertyEditor).UpdatePreview();
+		//	(this.ParentEditor as FontPropertyEditor).UpdatePreview();
 		}
 	}
 }

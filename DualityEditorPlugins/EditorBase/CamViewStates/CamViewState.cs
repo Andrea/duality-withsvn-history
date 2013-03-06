@@ -662,7 +662,7 @@ namespace EditorBase.CamViewStates
 				Vector2 lastPos = new Vector2(this.camActionBeginLoc.X, this.camActionBeginLoc.Y);
 				this.camActionBeginLoc = new Point((int)curPos.X, (int)curPos.Y);
 
-				float targetVel = (curPos - lastPos).X * MathF.RadAngle360 / 1000.0f;
+				float targetVel = (curPos - lastPos).X * MathF.RadAngle360 / 250.0f;
 				targetVel *= (curPos.Y - center.Y) / center.Y;
 
 				this.camAngleVel += (targetVel - this.camAngleVel) * Time.TimeMult;

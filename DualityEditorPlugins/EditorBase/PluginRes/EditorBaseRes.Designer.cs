@@ -1090,6 +1090,24 @@ namespace EditorBase.PluginRes {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Create {0} ähnelt.
         /// </summary>
+        public static string UndoRedo_CreateRigidBodyJoint {
+            get {
+                return ResourceManager.GetString("UndoRedo_CreateRigidBodyJoint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Create {0} Joints ähnelt.
+        /// </summary>
+        public static string UndoRedo_CreateRigidBodyJointMulti {
+            get {
+                return ResourceManager.GetString("UndoRedo_CreateRigidBodyJointMulti", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Create {0} ähnelt.
+        /// </summary>
         public static string UndoRedo_CreateRigidBodyShape {
             get {
                 return ResourceManager.GetString("UndoRedo_CreateRigidBodyShape", resourceCulture);
@@ -1106,11 +1124,47 @@ namespace EditorBase.PluginRes {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Delete {0} objects ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Create Source {0} ähnelt.
+        /// </summary>
+        public static string UndoRedo_CreateSoundEmitterSource {
+            get {
+                return ResourceManager.GetString("UndoRedo_CreateSoundEmitterSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Create {0} Sources ähnelt.
+        /// </summary>
+        public static string UndoRedo_CreateSoundEmitterSourceMulti {
+            get {
+                return ResourceManager.GetString("UndoRedo_CreateSoundEmitterSourceMulti", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Delete {0} Objects ähnelt.
         /// </summary>
         public static string UndoRedo_DeleteObjects {
             get {
                 return ResourceManager.GetString("UndoRedo_DeleteObjects", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Delete {0} ähnelt.
+        /// </summary>
+        public static string UndoRedo_DeleteRigidBodyJoint {
+            get {
+                return ResourceManager.GetString("UndoRedo_DeleteRigidBodyJoint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Delete {0} Joints ähnelt.
+        /// </summary>
+        public static string UndoRedo_DeleteRigidBodyJointMulti {
+            get {
+                return ResourceManager.GetString("UndoRedo_DeleteRigidBodyJointMulti", resourceCulture);
             }
         }
         
@@ -1129,6 +1183,24 @@ namespace EditorBase.PluginRes {
         public static string UndoRedo_DeleteRigidBodyShapeMulti {
             get {
                 return ResourceManager.GetString("UndoRedo_DeleteRigidBodyShapeMulti", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Delete Source {0} ähnelt.
+        /// </summary>
+        public static string UndoRedo_DeleteSoundEmitterSource {
+            get {
+                return ResourceManager.GetString("UndoRedo_DeleteSoundEmitterSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Delete {0} Sources ähnelt.
+        /// </summary>
+        public static string UndoRedo_DeleteSoundEmitterSourceMulti {
+            get {
+                return ResourceManager.GetString("UndoRedo_DeleteSoundEmitterSourceMulti", resourceCulture);
             }
         }
         
@@ -1160,11 +1232,29 @@ namespace EditorBase.PluginRes {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Move {0} objects ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Move {0} Objects ähnelt.
         /// </summary>
         public static string UndoRedo_MoveCamViewObjMulti {
             get {
                 return ResourceManager.GetString("UndoRedo_MoveCamViewObjMulti", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Reparent {0} ähnelt.
+        /// </summary>
+        public static string UndoRedo_ReparentRigidBodyJoint {
+            get {
+                return ResourceManager.GetString("UndoRedo_ReparentRigidBodyJoint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Reparent {0} Joints ähnelt.
+        /// </summary>
+        public static string UndoRedo_ReparentRigidBodyJointMulti {
+            get {
+                return ResourceManager.GetString("UndoRedo_ReparentRigidBodyJointMulti", resourceCulture);
             }
         }
         
@@ -1178,7 +1268,7 @@ namespace EditorBase.PluginRes {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Rotate {0} objects ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Rotate {0} Objects ähnelt.
         /// </summary>
         public static string UndoRedo_RotateCamViewObjMulti {
             get {
@@ -1196,7 +1286,7 @@ namespace EditorBase.PluginRes {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Scale {0} objects ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Scale {0} Objects ähnelt.
         /// </summary>
         public static string UndoRedo_ScaleCamViewObjMulti {
             get {
