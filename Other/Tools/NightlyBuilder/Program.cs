@@ -123,27 +123,13 @@ namespace NightlyBuilder
 			Console.WriteLine();
 
 			// Do an SVN Commit of the package
-			Console.WriteLine("================================ SVN Commit Bin ===============================");
+			Console.WriteLine("================================== SVN Commit =================================");
 			{
+				// "svn add --force * --auto-props --parents --depth infinity -q"
+
 				ExecuteCommand(
 					string.Format("svn commit -m \"{0}\"", "Updated Binary Package"),
 					config.PackageDir);
-			}
-			Console.WriteLine("===============================================================================");
-			Console.WriteLine();
-			Console.WriteLine();
-
-			// Do an SVN Commit of the documentation website
-			Console.WriteLine("================================ SVN Commit Doc ===============================");
-			{
-				// Add unversioned files to repository
-				ExecuteCommand(
-					string.Format("svn add --force * --auto-props --parents --depth infinity -q"), 
-					Path.GetDirectoryName(config.DocBuildResultDir));
-				// Commit
-				ExecuteCommand(
-					string.Format("svn commit -m \"{0}\"", "Updated Online Documentation"), 
-					Path.GetDirectoryName(config.DocBuildResultDir));
 			}
 			Console.WriteLine("===============================================================================");
 			Console.WriteLine();

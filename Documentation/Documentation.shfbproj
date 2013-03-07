@@ -22,7 +22,7 @@
       <DocumentationSource sourceFile="..\Duality\bin\x86\Release\Duality.dll" />
       <DocumentationSource sourceFile="..\Duality\bin\x86\Release\Duality.xml" />
     </DocumentationSources>
-    <HelpFileFormat>HtmlHelp1, Website</HelpFileFormat>
+    <HelpFileFormat>HtmlHelp1</HelpFileFormat>
     <HelpTitle>Duality Documentation</HelpTitle>
     <SyntaxFilters>CSharp</SyntaxFilters>
     <MissingTags>AutoDocumentCtors, AutoDocumentDispose</MissingTags>
@@ -54,20 +54,20 @@
     <ComponentConfigurations>
       <ComponentConfig id="Code Block Component" enabled="True">
         <component id="Code Block Component" type="SandcastleBuilder.Components.CodeBlockComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
-<!-- Base path for relative filenames in source attributes (optional) -->
-<basePath value="{@HtmlEncProjectFolder}" />
-<!-- Base output paths for the files (required).  These should match the parent folder of the output path
+          <!-- Base path for relative filenames in source attributes (optional) -->
+          <basePath value="{@HtmlEncProjectFolder}" />
+          <!-- Base output paths for the files (required).  These should match the parent folder of the output path
 					 of the HTML files (see each of the SaveComponent instances in the configuration files). -->
-<outputPaths>
+          <outputPaths>
 				{@HelpFormatOutputPaths}
 			</outputPaths>
-<!-- Allow missing source files (Optional).  If omitted, it will generate errors if referenced source files
+          <!-- Allow missing source files (Optional).  If omitted, it will generate errors if referenced source files
 				 are missing. -->
-<allowMissingSource value="false" />
-<!-- Remove region markers from imported code blocks.  If omitted, region markers in imported code blocks
+          <allowMissingSource value="false" />
+          <!-- Remove region markers from imported code blocks.  If omitted, region markers in imported code blocks
 					 are left alone. -->
-<removeRegionMarkers value="false" />
-<!-- Code colorizer options (required).
+          <removeRegionMarkers value="false" />
+          <!-- Code colorizer options (required).
 					 Attributes:
 							Language syntax configuration file (required)
 							XSLT stylesheet file (required)
@@ -80,8 +80,8 @@
 							Keep XML comment "see" tags within the code (optional)
 							Tab size override (optional, 0 = Use syntax file setting)
 							Use language name as default title (optional) -->
-<colorizer syntaxFile="{@SHFBFolder}Colorizer\highlight.xml" styleFile="{@SHFBFolder}Colorizer\highlight.xsl" stylesheet="{@SHFBFolder}Colorizer\highlight.css" scriptFile="{@SHFBFolder}Colorizer\highlight.js" disabled="{@DisableCodeBlockComponent}" language="cs" numberLines="false" outlining="false" keepSeeTags="false" tabSize="0" defaultTitle="true" />
-</component>
+          <colorizer syntaxFile="{@SHFBFolder}Colorizer\highlight.xml" styleFile="{@SHFBFolder}Colorizer\highlight.xsl" stylesheet="{@SHFBFolder}Colorizer\highlight.css" scriptFile="{@SHFBFolder}Colorizer\highlight.js" disabled="{@DisableCodeBlockComponent}" language="cs" numberLines="false" outlining="false" keepSeeTags="false" tabSize="0" defaultTitle="true" />
+        </component>
       </ComponentConfig>
     </ComponentConfigurations>
     <NamingMethod>MemberName</NamingMethod>
