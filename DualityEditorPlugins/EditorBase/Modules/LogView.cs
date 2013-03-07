@@ -17,6 +17,7 @@ namespace EditorBase
 	{
 		private	int unseenWarnings	= 0;
 		private	int	unseenErrors	= 0;
+		private	List<DataLogOutput.LogEntry> logSchedule = new List<DataLogOutput.LogEntry>();
 
 
 		public LogView()
@@ -198,7 +199,11 @@ namespace EditorBase
 		}
 		private void LogData_NewEntry(object sender, DataLogOutput.LogEntryEventArgs e)
 		{
-			this.InvokeEx(c => c.OnNewEntry(e));
+			// Don't use Invoke or InvokeEx. They will block while the BuildManager is active (why?)
+			// and thus lead to a deadlock when something is logged while it is.
+			this.logSchedule.Add(e.Entry);
+			if (!this.timerLogSchedule.Enabled)
+				this.timerLogSchedule.Enabled = true;
 		}
 		private void textBoxEntry_KeyDown(object sender, KeyEventArgs e)
 		{
@@ -212,19 +217,26 @@ namespace EditorBase
 				this.textBoxEntry.SelectionStart = 0;
 			}
 		}
+		private void timerLogSchedule_Tick(object sender, EventArgs e)
+		{
+			foreach (DataLogOutput.LogEntry entry in this.logSchedule)
+				this.OnNewEntry(entry);
+			this.logSchedule.Clear();
+			this.timerLogSchedule.Enabled = false;
+		}
 		
-		private void OnNewEntry(DataLogOutput.LogEntryEventArgs e)
+		private void OnNewEntry(DataLogOutput.LogEntry e)
 		{
 			bool isHidden = this.DockHandler.DockState.IsAutoHide() && !this.ContainsFocus;
-			bool pause = e.Entry.Type == LogMessageType.Error && this.buttonPauseOnError.Checked && Sandbox.IsActive && !Sandbox.IsChangingState;
+			bool pause = e.Type == LogMessageType.Error && this.buttonPauseOnError.Checked && Sandbox.IsActive && !Sandbox.IsChangingState;
 
 			if (isHidden)
 			{
-				if (e.Entry.Type == LogMessageType.Warning)
+				if (e.Type == LogMessageType.Warning)
 				{
 					this.unseenWarnings++;
 				}
-				else if (e.Entry.Type == LogMessageType.Error)
+				else if (e.Type == LogMessageType.Error)
 				{
 					if (this.unseenErrors == 0 || pause) System.Media.SystemSounds.Hand.Play();
 					this.unseenErrors++;

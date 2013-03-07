@@ -28,6 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LogView));
 			this.nodeStateIcon = new Aga.Controls.Tree.NodeControls.NodeStateIcon();
 			this.nodeTextBoxName = new Aga.Controls.Tree.NodeControls.NodeTextBox();
@@ -46,6 +47,7 @@
 			this.textBoxEntry = new System.Windows.Forms.TextBox();
 			this.splitContainer = new System.Windows.Forms.SplitContainer();
 			this.logEntryList = new EditorBase.LogEntryList();
+			this.timerLogSchedule = new System.Windows.Forms.Timer(this.components);
 			this.toolStrip.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
 			this.splitContainer.Panel1.SuspendLayout();
@@ -281,6 +283,11 @@
 			this.logEntryList.SelectionChanged += new System.EventHandler(this.logEntryList_SelectionChanged);
 			this.logEntryList.Enter += new System.EventHandler(this.logEntryList_Enter);
 			// 
+			// timerLogSchedule
+			// 
+			this.timerLogSchedule.Interval = 50;
+			this.timerLogSchedule.Tick += new System.EventHandler(this.timerLogSchedule_Tick);
+			// 
 			// LogView
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -325,5 +332,6 @@
 		private System.Windows.Forms.ToolStripButton buttonPauseOnError;
 		private System.Windows.Forms.TextBox textBoxEntry;
 		private System.Windows.Forms.SplitContainer splitContainer;
+		private System.Windows.Forms.Timer timerLogSchedule;
 	}
 }

@@ -286,9 +286,9 @@ namespace DualityEditor
 			}
 
 			// Initialize AppData
+			DualityAppData data;
 			if (File.Exists(DualityApp.AppDataPath))
 			{
-				DualityAppData data;
 				try
 				{
 					using (FileStream str = File.OpenRead(DualityApp.AppDataPath))
@@ -300,15 +300,19 @@ namespace DualityEditor
 					}
 				}
 				catch (Exception) { data = new DualityAppData(); }
-				data.AppName = projName;
-				data.AuthorName = Environment.UserName;
-				data.Version = 0;
-				using (FileStream str = File.Open(DualityApp.AppDataPath, FileMode.Create))
+			}
+			else
+			{
+				data = new DualityAppData();
+			}
+			data.AppName = projName;
+			data.AuthorName = Environment.UserName;
+			data.Version = 0;
+			using (FileStream str = File.Open(DualityApp.AppDataPath, FileMode.Create))
+			{
+				using (var formatter = Formatter.Create(str, FormattingMethod.Binary))
 				{
-					using (var formatter = Formatter.Create(str, FormattingMethod.Binary))
-					{
-						formatter.WriteObject(data);
-					}
+					formatter.WriteObject(data);
 				}
 			}
 
