@@ -25,19 +25,9 @@ namespace NightlyBuilder
 			// Do an SVN Revert of the package
 			Console.WriteLine("================================== SVN Revert =================================");
 			{
-				string commandLine = string.Format("svn revert *");
-				Console.WriteLine(commandLine);
-
-				ProcessStartInfo info = new ProcessStartInfo("cmd.exe", "/C " + commandLine);
-				info.UseShellExecute = false;
-				info.RedirectStandardOutput = true;
-				info.WindowStyle = ProcessWindowStyle.Hidden;
-				info.WorkingDirectory = config.PackageDir;
-				Process proc = Process.Start(info);
-				proc.WaitForExit();
-				string output = proc.StandardOutput.ReadToEnd();
-
-				Console.WriteLine(output);
+				ExecuteCommand(
+					string.Format("svn revert *"),
+					config.PackageDir);
 			}
 			Console.WriteLine("===============================================================================");
 			Console.WriteLine();
@@ -133,21 +123,27 @@ namespace NightlyBuilder
 			Console.WriteLine();
 
 			// Do an SVN Commit of the package
-			Console.WriteLine("================================== SVN Commit =================================");
+			Console.WriteLine("================================ SVN Commit Bin ===============================");
 			{
-				string commandLine = string.Format("svn commit -m \"{0}\"", "Updated Binary Package");
-				Console.WriteLine(commandLine);
+				ExecuteCommand(
+					string.Format("svn commit -m \"{0}\"", "Updated Binary Package"),
+					config.PackageDir);
+			}
+			Console.WriteLine("===============================================================================");
+			Console.WriteLine();
+			Console.WriteLine();
 
-				ProcessStartInfo info = new ProcessStartInfo("cmd.exe", "/C " + commandLine);
-				info.UseShellExecute = false;
-				info.RedirectStandardOutput = true;
-				info.WindowStyle = ProcessWindowStyle.Hidden;
-				info.WorkingDirectory = config.PackageDir;
-				Process proc = Process.Start(info);
-				proc.WaitForExit();
-				string output = proc.StandardOutput.ReadToEnd();
-
-				Console.WriteLine(output);
+			// Do an SVN Commit of the documentation website
+			Console.WriteLine("================================ SVN Commit Doc ===============================");
+			{
+				// Add unversioned files to repository
+				ExecuteCommand(
+					string.Format("svn add --force * --auto-props --parents --depth infinity -q"), 
+					Path.GetDirectoryName(config.DocBuildResultDir));
+				// Commit
+				ExecuteCommand(
+					string.Format("svn commit -m \"{0}\"", "Updated Online Documentation"), 
+					Path.GetDirectoryName(config.DocBuildResultDir));
 			}
 			Console.WriteLine("===============================================================================");
 			Console.WriteLine();
@@ -178,6 +174,23 @@ namespace NightlyBuilder
 				if (filter != null && !filter(subDir)) continue;
 				CopyDirectory(subDir, Path.Combine(targetPath, Path.GetFileName(subDir)), overwrite, filter);
 			}
+		}
+		public static void ExecuteCommand(string command, string workingDir = null)
+		{
+			if (workingDir == null) workingDir = Environment.CurrentDirectory;
+			Console.WriteLine(command);
+
+			ProcessStartInfo info = new ProcessStartInfo("cmd.exe", "/C " + command);
+			info.UseShellExecute = false;
+			info.RedirectStandardOutput = true;
+			info.WindowStyle = ProcessWindowStyle.Hidden;
+			info.WorkingDirectory = workingDir;
+			Process proc = Process.Start(info);
+			while (!proc.StandardOutput.EndOfStream)
+			{
+				Console.WriteLine(proc.StandardOutput.ReadLine());
+			}
+			proc.WaitForExit();
 		}
 	}
 }
