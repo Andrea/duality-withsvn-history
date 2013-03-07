@@ -1,0 +1,97 @@
+﻿<html xmlns:MSHelp="http://msdn.microsoft.com/mshelp" xmlns:mshelp="http://msdn.microsoft.com/mshelp">
+  <head>
+    <link rel="SHORTCUT ICON" href="./../icons/favicon.ico" />
+    <style type="text/css">.OH_CodeSnippetContainerTabLeftActive, .OH_CodeSnippetContainerTabLeft,.OH_CodeSnippetContainerTabLeftDisabled { backgroundImageName: tabLeftBG.gif; }.OH_CodeSnippetContainerTabRightActive, .OH_CodeSnippetContainerTabRight,.OH_CodeSnippetContainerTabRightDisabled { backgroundImageName: tabRightBG.gif; }.OH_footer { backgroundImageName: footer_slice.gif; background-position: top; background-repeat: repeat-x; }</style>
+    <link rel="stylesheet" type="text/css" href="./../styles/branding.css" />
+    <link rel="stylesheet" type="text/css" href="./../styles/branding-en-US.css" />
+    <style type="text/css">
+			body
+			{
+			border-left:5px solid #e6e6e6;
+			overflow-x:scroll;
+			overflow-y:scroll;
+			}
+		</style>
+    <script src="./../scripts/branding.js" type="text/javascript">
+      <!---->
+    </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>GameObject Properties</title>
+    <meta name="Language" content="en-us" />
+    <meta name="System.Keywords" content="GameObject class, properties" />
+    <meta name="Microsoft.Help.Id" content="Properties.T:Duality.GameObject" />
+    <meta name="Microsoft.Help.ContentType" content="Reference" />
+    <meta name="BrandingAware" content="'true'" />
+    <meta name="container" content="Duality" />
+    <meta name="file" content="Properties_T_Duality_GameObject" />
+    <meta name="guid" content="Properties_T_Duality_GameObject" />
+    
+    <meta name="SelfBranded" content="true" />
+  </head>
+  <body onload="onLoad()" class="primary-mtps-offline-document">
+    <div class="OH_outerDiv">
+      <div class="OH_outerContent">
+        <table class="TitleTable">
+          <tr>
+            <td class="OH_tdTitleColumn">GameObject Properties</td>
+            <td class="OH_tdRunningTitleColumn">Duality Documentation</td>
+          </tr>
+        </table>
+        <div id="mainSection">
+          <div id="mainBody">
+            <span class="introStyle"></span>The <a href="T_Duality_GameObject.htm" target="">GameObject</a> type exposes the following members.<div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">Properties</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><table id="memberList" class="members"><tr><th class="ps_iconColumn">
+							 
+						</th><th class="ps_nameColumn">Name</th><th class="ps_descriptionColumn">Description</th></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubproperty.gif" alt="Public property" title="Public property" /></td><td><a href="P_Duality_GameObject_Active.htm" target="">Active</a></td><td><div class="summary">
+            [GET / SET] Whether or not the GameObject is currently active. To return true,
+            both the GameObject itsself and all of its parent GameObjects need to be active.
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubproperty.gif" alt="Public property" title="Public property" /></td><td><a href="P_Duality_GameObject_ActiveSingle.htm" target="">ActiveSingle</a></td><td><div class="summary">
+            [GET / SET] Whether or not the GameObject is currently active. Unlike <a href="P_Duality_GameObject_Active.htm" target="">Active</a>,
+            this property ignores parent activation states and depends only on this single GameObject.
+            The scene graph and other Duality instances usually check <a href="P_Duality_GameObject_Active.htm" target="">Active</a>, not ActiveSingle.
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubproperty.gif" alt="Public property" title="Public property" /></td><td><a href="P_Duality_GameObject_AffectedByPrefabLink.htm" target="">AffectedByPrefabLink</a></td><td><div class="summary">
+            [GET] The <a href="T_Duality_Resources_PrefabLink.htm" target="">PrefabLink</a> that connects this object or one or its parent GameObjects to a <a href="T_Duality_Resources_Prefab.htm" target="">Prefab</a>.
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubproperty.gif" alt="Public property" title="Public property" /></td><td><a href="P_Duality_GameObject_Camera.htm" target="">Camera</a></td><td><div class="summary">
+            [GET] The GameObject's <a href="T_Duality_Components_Camera.htm" target="">Camera</a> Component, if existing.
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubproperty.gif" alt="Public property" title="Public property" /></td><td><a href="P_Duality_GameObject_ChildCount.htm" target="">ChildCount</a></td><td><div class="summary">
+            [GET] The number of child GameObjects this object has.
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubproperty.gif" alt="Public property" title="Public property" /></td><td><a href="P_Duality_GameObject_Children.htm" target="">Children</a></td><td><div class="summary">
+            [GET] Enumerates this objects child GameObjects.
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubproperty.gif" alt="Public property" title="Public property" /></td><td><a href="P_Duality_GameObject_ChildrenDeep.htm" target="">ChildrenDeep</a></td><td><div class="summary">
+            [GET] Enumerates all GameObjects that are directly or indirectly parented to this object, i.e. its
+            children, grandchildren, etc.
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubproperty.gif" alt="Public property" title="Public property" /></td><td><a href="P_Duality_GameObject_ComponentCount.htm" target="">ComponentCount</a></td><td><div class="summary">
+            [GET] The number of <a href="T_Duality_Component.htm" target="">Component</a>s this object consists of.
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubproperty.gif" alt="Public property" title="Public property" /></td><td><a href="P_Duality_GameObject_Disposed.htm" target="">Disposed</a></td><td><div class="summary">
+            [GET] Returns whether this GameObject has been disposed. Disposed GameObjects are not to be used and should
+            be treated specifically or as null references by your code.
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubproperty.gif" alt="Public property" title="Public property" /></td><td><a href="P_Duality_GameObject_FullName.htm" target="">FullName</a></td><td><div class="summary">
+            [GET] The path-like hierarchial name of this GameObject.
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubproperty.gif" alt="Public property" title="Public property" /></td><td><a href="P_Duality_GameObject_HierarchyLevel.htm" target="">HierarchyLevel</a></td><td><div class="summary">
+            [GET] Returns the number of parents this object has when travelling upwards the scene graph hierarchy.
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubproperty.gif" alt="Public property" title="Public property" /></td><td><a href="P_Duality_GameObject_Id.htm" target="">Id</a></td><td><div class="summary">
+            [GET] The GameObjects persistent globally unique identifier.
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubproperty.gif" alt="Public property" title="Public property" /></td><td><a href="P_Duality_GameObject_Name.htm" target="">Name</a></td><td><div class="summary">
+            [GET / SET] The name of this GameObject.
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubproperty.gif" alt="Public property" title="Public property" /></td><td><a href="P_Duality_GameObject_Parent.htm" target="">Parent</a></td><td><div class="summary">
+            [GET / SET] This GameObject's parent object in the scene graph.
+            A GameObject usually depends on its parent in some way, such as being
+            positioned relative to it when occupying a position in space.
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubproperty.gif" alt="Public property" title="Public property" /></td><td><a href="P_Duality_GameObject_PrefabLink.htm" target="">PrefabLink</a></td><td><div class="summary">
+            [GET] The <a href="T_Duality_Resources_PrefabLink.htm" target="">PrefabLink</a> that connects this object to a <a href="T_Duality_Resources_Prefab.htm" target="">Prefab</a>.
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubproperty.gif" alt="Public property" title="Public property" /></td><td><a href="P_Duality_GameObject_Renderer.htm" target="">Renderer</a></td><td><div class="summary">
+            [GET] The GameObject's <a href="T_Duality_Components_Renderer.htm" target="">Renderer</a> Component, if existing. 
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubproperty.gif" alt="Public property" title="Public property" /></td><td><a href="P_Duality_GameObject_RigidBody.htm" target="">RigidBody</a></td><td><div class="summary">
+            [GET] The GameObject's <a href="T_Duality_Components_Physics_RigidBody.htm" target="">RigidBody</a> Component, if existing. 
+            </div></td></tr><tr data="public;declared;notNetfw;"><td><img src="./../icons/pubproperty.gif" alt="Public property" title="Public property" /></td><td><a href="P_Duality_GameObject_Transform.htm" target="">Transform</a></td><td><div class="summary">
+            [GET] The GameObject's <a href="T_Duality_Components_Transform.htm" target="">Transform</a> Component, if existing.
+            </div></td></tr></table><a href="#mainBody" target="">Back to Top</a><a name="seeAlsoSection"><!----></a><div class="OH_CollapsibleAreaRegion"><div class="OH_regiontitle">See Also</div><div class="OH_CollapsibleArea_HrDiv"><hr class="OH_CollapsibleArea_Hr" /></div></div><div class="OH_clear"></div><div class="seeAlsoStyle"><a href="T_Duality_GameObject.htm" target="">GameObject Class</a></div><div class="seeAlsoStyle"><a href="N_Duality.htm" target="">Duality Namespace</a></div></div>
+        </div>
+      </div>
+    </div>
+    <div id="OH_footer" class="OH_footer">
+      <p />
+      <div class="OH_feedbacklink">
+        <a href="mailto:?subject=Duality+Documentation+GameObject+Properties+100+EN-US&amp;body=Your%20feedback%20is%20used%20to%20improve%20the%20documentation%20and%20the%20product.%20Your%20e-mail%20address%20will%20not%20be%20used%20for%20any%20other%20purpose%20and%20is%20disposed%20of%20after%20the%20issue%20you%20report%20is%20resolved.%20While%20working%20to%20resolve%20the%20issue%20that%20you%20report%2c%20you%20may%20be%20contacted%20via%20e-mail%20to%20get%20further%20details%20or%20clarification%20on%20the%20feedback%20you%20sent.%20After%20the%20issue%20you%20report%20has%20been%20addressed%2c%20you%20may%20receive%20an%20e-mail%20to%20let%20you%20know%20that%20your%20feedback%20has%20been%20addressed.">Send Feedback</a> on this topic.</div>
+    </div>
+  </body>
+</html>
