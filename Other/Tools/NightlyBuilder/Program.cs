@@ -59,7 +59,7 @@ namespace NightlyBuilder
 				foreach (PropertyInfo prop in configProps)
 				{
 					if (configOverride.Contains(prop))
-						Console.ForegroundColor = ConsoleColor.DarkGreen;
+						Console.ForegroundColor = ConsoleColor.White;
 					Console.WriteLine("  {0}: {1}", prop.Name, prop.GetValue(config, null));
 					Console.ForegroundColor = ConsoleColor.Gray;
 				}
@@ -190,9 +190,12 @@ namespace NightlyBuilder
 					"--> Core Version:     " + versionCore.FileVersion,
 					"--> Editor Version:   " + versionEditor.FileVersion,
 					"--> Launcher Version: " + versionLauncher.FileVersion);
+				string commitMessageFile = Path.Combine(config.PackageDir, "CommitMsg.txt");
+				File.WriteAllText(commitMessageFile, commitMessage);
 				ExecuteCommand(
-					string.Format("svn commit -m \"{0}\"", commitMessage),
+					string.Format("svn commit -F CommitMsg.txt"),
 					config.PackageDir);
+				File.Delete(commitMessageFile);
 			}
 			Console.WriteLine("===============================================================================");
 			Console.WriteLine();
