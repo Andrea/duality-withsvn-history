@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.IO;
 using System.Diagnostics;
+using System.Reflection;
 
 using Microsoft.Win32;
 using Microsoft.Build.Execution;
@@ -21,6 +22,27 @@ namespace NightlyBuilder
 		{
 			ConfigFile config = ConfigFile.Load("BuildConfig.xml");
 			string packagePath = Path.Combine(config.PackageDir, config.PackageName);
+
+			// Parse command line arguments
+			PropertyInfo[] configProps = typeof(ConfigFile).GetProperties();
+			foreach (string arg in args)
+			{
+				string[] token = arg.Split('=');
+				if (token.Length != 2) continue;
+
+				PropertyInfo prop = configProps.FirstOrDefault(p => p.Name.ToLower() == token[0].Trim().ToLower());
+				if (prop == null) continue;
+
+				object value = null;
+				try
+				{
+					value = Convert.ChangeType(token[1].Trim(), prop.PropertyType, System.Globalization.CultureInfo.InvariantCulture);
+				}
+				catch {}
+				if (value == null) continue;
+
+				prop.SetValue(config, value, null);
+			}
 
 			// Do an SVN Revert of the package
 			Console.WriteLine("================================== SVN Revert =================================");
@@ -49,23 +71,26 @@ namespace NightlyBuilder
 			Console.WriteLine();
 
 			// Build the documentation
-			Console.WriteLine("================================== Build Docs =================================");
+			if (!config.NoDocs)
 			{
-				var buildProperties = new Dictionary<string,string>(){ { "Configuration", "Release"} };
-				var buildRequest = new BuildRequestData(config.DocSolutionPath, buildProperties, null, new string[] { "Build" }, null);
-				var buildParameters = new BuildParameters();
-				buildParameters.Loggers = new[] { new ConsoleLogger(LoggerVerbosity.Normal) };
-				var buildResult = BuildManager.DefaultBuildManager.Build(buildParameters, buildRequest);
-				if (buildResult.OverallResult != BuildResultCode.Success)
-					throw new ApplicationException("Documentation Build Failure");
-				File.Copy(
-					Path.Combine(config.DocBuildResultDir, config.DocBuildResultFile), 
-					Path.Combine(config.BuildResultDir, config.DocBuildResultFile),
-					true);
+				Console.WriteLine("================================== Build Docs =================================");
+				{
+					var buildProperties = new Dictionary<string,string>(){ { "Configuration", "Release"} };
+					var buildRequest = new BuildRequestData(config.DocSolutionPath, buildProperties, null, new string[] { "Build" }, null);
+					var buildParameters = new BuildParameters();
+					buildParameters.Loggers = new[] { new ConsoleLogger(LoggerVerbosity.Normal) };
+					var buildResult = BuildManager.DefaultBuildManager.Build(buildParameters, buildRequest);
+					if (buildResult.OverallResult != BuildResultCode.Success)
+						throw new ApplicationException("Documentation Build Failure");
+					File.Copy(
+						Path.Combine(config.DocBuildResultDir, config.DocBuildResultFile), 
+						Path.Combine(config.BuildResultDir, config.DocBuildResultFile),
+						true);
+				}
+				Console.WriteLine("===============================================================================");
+				Console.WriteLine();
+				Console.WriteLine();
 			}
-			Console.WriteLine("===============================================================================");
-			Console.WriteLine();
-			Console.WriteLine();
 
 			// Copy the results to the target directory
 			Console.WriteLine("================================ Copy to Target ===============================");

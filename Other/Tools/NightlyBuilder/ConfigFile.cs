@@ -18,6 +18,7 @@ namespace NightlyBuilder
 		public string TargetDir { get; set; }
 		public string PackageDir { get; set; }
 		public string PackageName { get; set; }
+		public bool NoDocs { get; set; }
 		public List<string> FileCopyBlackList { get; set; }
 
 		public void Save(string filePath)
