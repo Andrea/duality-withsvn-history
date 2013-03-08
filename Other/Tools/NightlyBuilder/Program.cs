@@ -22,9 +22,13 @@ namespace NightlyBuilder
 		{
 			ConfigFile config = ConfigFile.Load("BuildConfig.xml");
 			string packagePath = Path.Combine(config.PackageDir, config.PackageName);
+			FileVersionInfo versionCore = null;
+			FileVersionInfo versionEditor = null;
+			FileVersionInfo versionLauncher = null;
 
 			// Parse command line arguments
 			PropertyInfo[] configProps = typeof(ConfigFile).GetProperties();
+			HashSet<PropertyInfo> configOverride = new HashSet<PropertyInfo>();
 			foreach (string arg in args)
 			{
 				string[] token = arg.Split('=');
@@ -42,7 +46,27 @@ namespace NightlyBuilder
 				if (value == null) continue;
 
 				prop.SetValue(config, value, null);
+				configOverride.Add(prop);
 			}
+
+			// Write some initial data
+			Console.WriteLine("===================================== Init ====================================");
+			{
+				Console.WriteLine("NightlyBuilder launched");
+				Console.WriteLine("Working Dir: {0}", Environment.CurrentDirectory);
+				Console.WriteLine("Command Line: {0}", args.Aggregate("", (acc, arg) => acc + " " + arg));
+				Console.WriteLine("Config:");
+				foreach (PropertyInfo prop in configProps)
+				{
+					if (configOverride.Contains(prop))
+						Console.ForegroundColor = ConsoleColor.DarkGreen;
+					Console.WriteLine("  {0}: {1}", prop.Name, prop.GetValue(config, null));
+					Console.ForegroundColor = ConsoleColor.Gray;
+				}
+			}
+			Console.WriteLine("===============================================================================");
+			Console.WriteLine();
+			Console.WriteLine();
 
 			// Do an SVN Revert of the package
 			Console.WriteLine("================================== SVN Revert =================================");
@@ -65,6 +89,15 @@ namespace NightlyBuilder
 				var buildResult = BuildManager.DefaultBuildManager.Build(buildParameters, buildRequest);
 				if (buildResult.OverallResult != BuildResultCode.Success)
 					throw new ApplicationException("Project Build Failure");
+
+				versionCore = FileVersionInfo.GetVersionInfo(Path.Combine(config.BuildResultDir, "Duality.dll"));
+				versionEditor = FileVersionInfo.GetVersionInfo(Path.Combine(config.BuildResultDir, "DualityEditor.exe"));
+				versionLauncher = FileVersionInfo.GetVersionInfo(Path.Combine(config.BuildResultDir, "DualityLauncher.exe"));
+
+				Console.WriteLine("Build Successful");
+				Console.WriteLine("  Core Version:     {0}", versionCore.FileVersion);
+				Console.WriteLine("  Editor Version:   {0}", versionEditor.FileVersion);
+				Console.WriteLine("  Launcher Version: {0}", versionLauncher.FileVersion);
 			}
 			Console.WriteLine("===============================================================================");
 			Console.WriteLine();
@@ -151,9 +184,14 @@ namespace NightlyBuilder
 			Console.WriteLine("================================== SVN Commit =================================");
 			{
 				// "svn add --force * --auto-props --parents --depth infinity -q"
-
+				
+				string commitMessage = string.Format("Updated Binary Package{0}{1}{0}{2}{0}{3}",
+					Environment.NewLine,
+					"--> Core Version:     " + versionCore.FileVersion,
+					"--> Editor Version:   " + versionEditor.FileVersion,
+					"--> Launcher Version: " + versionLauncher.FileVersion);
 				ExecuteCommand(
-					string.Format("svn commit -m \"{0}\"", "Updated Binary Package"),
+					string.Format("svn commit -m \"{0}\"", commitMessage),
 					config.PackageDir);
 			}
 			Console.WriteLine("===============================================================================");

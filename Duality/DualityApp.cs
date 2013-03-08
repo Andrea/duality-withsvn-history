@@ -10,8 +10,6 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Audio.OpenAL;
 
-using DW.RtfWriter;
-
 using Duality.ObjectManagers;
 using Duality.Resources;
 using Duality.Serialization;
@@ -76,7 +74,6 @@ namespace Duality
 		private	static	bool					terminateScheduled	= false;
 		private	static	string					logfilePath			= "logfile";
 		private	static	StreamWriter			logfile				= null;
-		private	static	RtfDocument				logfileRtf			= null;
 		private	static	Vector2					targetResolution	= Vector2.Zero;
 		private	static	GraphicsMode			targetMode			= null;
 		private	static	HashSet<GraphicsMode>	availModes			= new HashSet<GraphicsMode>(new GraphicsModeComparer());
@@ -318,6 +315,7 @@ namespace Duality
 			try
 			{
 				logfile = new StreamWriter(logfilePath + ".txt");
+				logfile.AutoFlush = true;
 				TextWriterLogOutput logfileOutput = new TextWriterLogOutput(logfile);
 				Log.Game.RegisterOutput(logfileOutput);
 				Log.Core.RegisterOutput(logfileOutput);
@@ -326,18 +324,6 @@ namespace Duality
 			catch (Exception e)
 			{
 				Log.Core.WriteWarning("Text Logfile unavailable: {0}", Log.Exception(e));
-			}
-
-			try
-			{
-				logfileRtf = new RtfDocument(PaperSize.A4, PaperOrientation.Portrait, Lcid.English);
-				Log.Game.RegisterOutput(new RtfDocWriterLogOutput(logfileRtf, new ColorFormat.ColorRgba(230, 255, 220)));
-				Log.Core.RegisterOutput(new RtfDocWriterLogOutput(logfileRtf, new ColorFormat.ColorRgba(220, 220, 255)));
-				Log.Editor.RegisterOutput(new RtfDocWriterLogOutput(logfileRtf, new ColorFormat.ColorRgba(245, 220, 255)));
-			}
-			catch (Exception e)
-			{
-				Log.Core.WriteWarning("Rtf Logfile unavailable: {0}", Log.Exception(e));
 			}
 
 			// Assure Duality is properly terminated in any case and register additional AppDomain events
@@ -434,7 +420,6 @@ namespace Duality
 			}
 
 			if (logfile != null) logfile.Close();
-			if (logfileRtf != null) logfileRtf.save(logfilePath + ".rtf");
 
 			initialized = false;
 			execContext = ExecutionContext.Terminated;

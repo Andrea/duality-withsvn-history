@@ -1803,33 +1803,6 @@
             </summary>
             <param name="node"></param>
         </member>
-        <member name="T:Duality.RtfDocWriterLogOutput">
-            <summary>
-            A <see cref="T:Duality.ILogOutput">Log output</see> that uses a RTF document as message destination.
-            </summary>
-        </member>
-        <member name="T:Duality.ILogOutput">
-            <summary>
-            Represents a single <see cref="T:Duality.Log"/> output and provides actual writing functionality for 
-            </summary>
-        </member>
-        <member name="M:Duality.ILogOutput.Write(Duality.Log,Duality.LogMessageType,System.String)">
-            <summary>
-            Writes a single message to the output.
-            </summary>
-            <param name="source">The <see cref="T:Duality.Log"/> from which the message originates.</param>
-            <param name="type">The type of the log message.</param>
-            <param name="msg">The message to write.</param>
-        </member>
-        <member name="M:Duality.RtfDocWriterLogOutput.Write(Duality.Log,Duality.LogMessageType,System.String)">
-            <summary>
-            Writes a single message to the output.
-            </summary>
-            <param name="source">The <see cref="T:Duality.Log"/> from which the message originates.</param>
-            <param name="type">The type of the log message.</param>
-            <param name="msg">The message to write.</param>
-            <param name="indent">The messages indent value.</param>
-        </member>
         <member name="T:Duality.ColorFormat.ColorRgba">
             <summary>
             Represents a 4-byte Rgba color value.
@@ -2228,6 +2201,19 @@
             <summary>
             A <see cref="T:Duality.ILogOutput">Log output</see> that uses a <see cref="T:System.IO.TextWriter"/> as message destination.
             </summary>
+        </member>
+        <member name="T:Duality.ILogOutput">
+            <summary>
+            Represents a single <see cref="T:Duality.Log"/> output and provides actual writing functionality for 
+            </summary>
+        </member>
+        <member name="M:Duality.ILogOutput.Write(Duality.Log,Duality.LogMessageType,System.String)">
+            <summary>
+            Writes a single message to the output.
+            </summary>
+            <param name="source">The <see cref="T:Duality.Log"/> from which the message originates.</param>
+            <param name="type">The type of the log message.</param>
+            <param name="msg">The message to write.</param>
         </member>
         <member name="M:Duality.TextWriterLogOutput.Write(Duality.Log,Duality.LogMessageType,System.String)">
             <summary>

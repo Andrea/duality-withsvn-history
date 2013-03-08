@@ -67,9 +67,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\OpenTK.GLControl.dll</HintPath>
     </Reference>
-    <Reference Include="RtfWriter">
-      <HintPath>.\RtfWriter.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -178,7 +175,6 @@
     <Compile Include="Resources\Pixmap.cs" />
     <Compile Include="Resources\Prefab.cs" />
     <Compile Include="Resources\VertexShader.cs" />
-    <Compile Include="Log\RtfWriterLogOutput.cs" />
     <Compile Include="Resources\Scene.cs" />
     <Compile Include="Audio\SoundBudgetPad.cs" />
     <Compile Include="Audio\SoundDevice.cs" />
