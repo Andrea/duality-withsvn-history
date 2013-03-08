@@ -67,29 +67,40 @@ namespace EditorBase.DataConverters
 			foreach (Component cmp in availData)
 			{
 				if (convert.IsObjectHandled(cmp)) continue;
+				Type cmpType = cmp.GetType();
 
-				// Create GameObject
-				GameObject gameObj = convert.Result.OfType<GameObject>().FirstOrDefault();
-				if (gameObj == null)
+				// Create or retrieve GameObject
+				GameObject gameObj = null;
 				{
-					gameObj = new GameObject();
-					// Come up with a suitable name
-					if (convert.Result.OfType<string>().Any()) // Somebody left a string in the results? Perfect.
-						gameObj.Name = convert.Result.OfType<string>().First();
-					else if (availData.OfType<SpriteRenderer>().Any()) // Try to use a Material name
-						gameObj.Name = availData.OfType<SpriteRenderer>().First().SharedMaterial.Name;
-					else if (availData.OfType<SoundEmitter>().Any() && availData.OfType<SoundEmitter>().First().Sources.Any()) // Try to use a Sound name
-						gameObj.Name = availData.OfType<SoundEmitter>().First().Sources[0].Sound.Name;
-					else // Use default name
-						gameObj.Name = "GameObject";
+					// First try to get one from the resultset that has an open slot for this kind of Component
+					if (gameObj == null)
+						gameObj = convert.Result.OfType<GameObject>().FirstOrDefault(g => g.GetComponent(cmpType, true) == null);
+					// Still none? Create a new GameObject
+					if (gameObj == null)
+					{
+						gameObj = new GameObject();
+
+						// Come up with a suitable name
+						string nameSuggestion = null;
+						{
+							// Be open for suggestions
+							if (nameSuggestion == null)
+								nameSuggestion = convert.TakeSuggestedResultName(cmp);
+							// Use a standard name
+							if (nameSuggestion == null)
+								nameSuggestion = cmpType.Name;
+						}
+
+						gameObj.Name = nameSuggestion;
+					}
 				}
 
 				// Make sure all requirements are met
-				foreach (Type t in cmp.GetRequiredComponents())
+				foreach (Type t in Component.GetRequiredComponents(cmpType))
 					gameObj.AddComponent(t);
 
 				// Make sure no other Component of this Type is already added
-				gameObj.RemoveComponent(cmp.GetType());
+				gameObj.RemoveComponent(cmpType);
 
 				// Add Component
 				gameObj.AddComponent(cmp.GameObj == null ? cmp : cmp.Clone());
@@ -122,7 +133,7 @@ namespace EditorBase.DataConverters
 				SoundEmitter emitter = convert.Result.OfType<SoundEmitter>().FirstOrDefault();
 				if (emitter == null && gameobj != null) emitter = gameobj.GetComponent<SoundEmitter>();
 				if (emitter == null) emitter = new SoundEmitter();
-				convert.AddResult(snd.Name); // Leave a name string in the result to pick up for the GameObject constructor
+				convert.SuggestResultName(emitter, snd.Name);
 					
 				SoundEmitter.Source source = new SoundEmitter.Source(snd);
 				emitter.Sources.Add(source);
@@ -130,7 +141,6 @@ namespace EditorBase.DataConverters
 				convert.AddResult(emitter);
 				convert.MarkObjectHandled(snd);
 			}
-
 			return false;
 		}
 	}
@@ -144,6 +154,7 @@ namespace EditorBase.DataConverters
 		}
 		public override bool Convert(ConvertOperation convert)
 		{
+			List<object> results = new List<object>();
 			List<Material> availData = convert.Perform<Material>().ToList();
 
 			// Generate objects
@@ -153,7 +164,6 @@ namespace EditorBase.DataConverters
 				Texture mainTex = mat.MainTexture.Res;
 				GameObject gameobj = convert.Result.OfType<GameObject>().FirstOrDefault();
 
-				convert.AddResult(mat.Name); // Leave a name string in the result to pick up for the GameObject constructor
 				if (mainTex == null || mainTex.AnimFrames == 0)
 				{
 					SpriteRenderer sprite = convert.Result.OfType<SpriteRenderer>().FirstOrDefault();
@@ -161,7 +171,8 @@ namespace EditorBase.DataConverters
 					if (sprite == null) sprite = new SpriteRenderer();
 					sprite.SharedMaterial = mat;
 					if (mainTex != null) sprite.Rect = Rect.AlignCenter(0.0f, 0.0f, mainTex.PixelWidth, mainTex.PixelHeight);
-					convert.AddResult(sprite);
+					convert.SuggestResultName(sprite, mat.Name);
+					results.Add(sprite);
 				}
 				else
 				{
@@ -172,12 +183,14 @@ namespace EditorBase.DataConverters
 					sprite.Rect = Rect.AlignCenter(0.0f, 0.0f, mainTex.PixelWidth / mainTex.AnimCols, mainTex.PixelHeight / mainTex.AnimRows);
 					sprite.AnimDuration = 5.0f;
 					sprite.AnimFrameCount = mainTex.AnimFrames;
-					convert.AddResult(sprite);
+					convert.SuggestResultName(sprite, mat.Name);
+					results.Add(sprite);
 				}
 
 				convert.MarkObjectHandled(mat);
 			}
 
+			convert.AddResult(results);
 			return false;
 		}
 	}
@@ -191,6 +204,7 @@ namespace EditorBase.DataConverters
 		}
 		public override bool Convert(ConvertOperation convert)
 		{
+			List<object> results = new List<object>();
 			List<Font> availData = convert.Perform<Font>().ToList();
 
 			// Generate objects
@@ -202,7 +216,7 @@ namespace EditorBase.DataConverters
 				TextRenderer renderer = convert.Result.OfType<TextRenderer>().FirstOrDefault();
 				if (renderer == null && gameobj != null) renderer = gameobj.GetComponent<TextRenderer>();
 				if (renderer == null) renderer = new TextRenderer();
-				convert.AddResult(font.Name); // Leave a name string in the result to pick up for the GameObject constructor
+				convert.SuggestResultName(renderer, font.Name);
 					
 				if (!renderer.Text.Fonts.Contains(font))
 				{
@@ -214,10 +228,11 @@ namespace EditorBase.DataConverters
 					renderer.UpdateText();
 				}
 
-				convert.AddResult(renderer);
+				results.Add(renderer);
 				convert.MarkObjectHandled(font);
 			}
 
+			convert.AddResult(results);
 			return false;
 		}
 	}

@@ -88,6 +88,17 @@ namespace DualityEditor.CorePluginInterface
 				this.Complexity = complexity;
 			}
 		}
+		private struct NameSuggestion
+		{
+			public object Target;
+			public string Name;
+
+			public NameSuggestion(object obj, string name)
+			{
+				this.Target = obj;
+				this.Name = name;
+			}
+		}
 
 		[Flags]
 		public enum Operation
@@ -186,6 +197,30 @@ namespace DualityEditor.CorePluginInterface
 			if (this.result.Contains(obj)) return;
 			this.result.Add(obj);
 			//Log.Editor.Write("addresult: {0} {1}", obj != null ? obj.GetType().Name : "", obj);
+		}
+		public void AddResult(IEnumerable<object> objEnum)
+		{
+			foreach (object obj in objEnum)
+				this.AddResult(obj);
+		}
+		public void AddResult(params object[] objArray)
+		{
+			this.AddResult(objArray as IEnumerable<object>);
+		}
+		
+		public void SuggestResultName(object obj, string name)
+		{
+			if (obj == null) return;
+			if (name == null) return;
+			if (name.Length == 0) return;
+			this.AddResult(new NameSuggestion(obj, name));
+		}
+		public string TakeSuggestedResultName(object obj)
+		{
+			object nameSuggestion = this.result.FirstOrDefault(o => o is NameSuggestion && !this.IsObjectHandled(o) && ((NameSuggestion)o).Target == obj);
+			if (nameSuggestion == null) return null;
+			this.MarkObjectHandled(nameSuggestion);
+			return ((NameSuggestion)nameSuggestion).Name;
 		}
 
 		public bool CanPerform<T>(Operation restrictTo = Operation.All)

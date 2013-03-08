@@ -50,6 +50,7 @@ namespace DynamicLighting
 		}
 		public override bool Convert(ConvertOperation convert)
 		{
+			List<object> results = new List<object>();
 			List<Material> availData = convert.Perform<Material>().ToList();
 
 			// Generate objects
@@ -69,7 +70,6 @@ namespace DynamicLighting
 				Texture mainTex = mat.MainTexture.Res;
 				GameObject gameobj = convert.Result.OfType<GameObject>().FirstOrDefault();
 
-				convert.AddResult(mat.Name); // Leave a name string in the result to pick up for the GameObject constructor
 				if (mainTex == null || mainTex.AnimFrames == 0)
 				{
 					LightingSpriteRenderer sprite = convert.Result.OfType<LightingSpriteRenderer>().FirstOrDefault();
@@ -77,7 +77,8 @@ namespace DynamicLighting
 					if (sprite == null) sprite = new LightingSpriteRenderer();
 					sprite.SharedMaterial = mat;
 					if (mainTex != null) sprite.Rect = Rect.AlignCenter(0.0f, 0.0f, mainTex.PixelWidth, mainTex.PixelHeight);
-					convert.AddResult(sprite);
+					SuggestName(convert, sprite, mat.Name);
+					results.Add(sprite);
 				}
 				else
 				{
@@ -88,12 +89,14 @@ namespace DynamicLighting
 					sprite.Rect = Rect.AlignCenter(0.0f, 0.0f, mainTex.PixelWidth / mainTex.AnimCols, mainTex.PixelHeight / mainTex.AnimRows);
 					sprite.AnimDuration = 5.0f;
 					sprite.AnimFrameCount = mainTex.AnimFrames;
-					convert.AddResult(sprite);
+					SuggestName(convert, sprite, mat.Name);
+					results.Add(sprite);
 				}
-
+				
 				convert.MarkObjectHandled(mat);
 			}
 
+			convert.AddResult(results);
 			return false;
 		}
 	}
