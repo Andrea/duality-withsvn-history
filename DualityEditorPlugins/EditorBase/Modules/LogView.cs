@@ -141,32 +141,26 @@ namespace EditorBase
 
 		private void buttonCore_CheckedChanged(object sender, EventArgs e)
 		{
-			if (!this.Visible) return;
 			this.logEntryList.SetFilterFlag(LogEntryList.MessageFilter.SourceCore, this.buttonCore.Checked);
 		}
 		private void buttonEditor_CheckedChanged(object sender, EventArgs e)
 		{
-			if (!this.Visible) return;
 			this.logEntryList.SetFilterFlag(LogEntryList.MessageFilter.SourceEditor, this.buttonEditor.Checked);
 		}
 		private void buttonGame_CheckedChanged(object sender, EventArgs e)
 		{
-			if (!this.Visible) return;
 			this.logEntryList.SetFilterFlag(LogEntryList.MessageFilter.SourceGame, this.buttonGame.Checked);
 		}
 		private void buttonMessages_CheckedChanged(object sender, EventArgs e)
 		{
-			if (!this.Visible) return;
 			this.logEntryList.SetFilterFlag(LogEntryList.MessageFilter.TypeMessage, this.buttonMessages.Checked);
 		}
 		private void buttonWarnings_CheckedChanged(object sender, EventArgs e)
 		{
-			if (!this.Visible) return;
 			this.logEntryList.SetFilterFlag(LogEntryList.MessageFilter.TypeWarning, this.buttonWarnings.Checked);
 		}
 		private void buttonErrors_CheckedChanged(object sender, EventArgs e)
 		{
-			if (!this.Visible) return;
 			this.logEntryList.SetFilterFlag(LogEntryList.MessageFilter.TypeError, this.buttonErrors.Checked);
 		}
 		private void buttonPauseOnError_CheckedChanged(object sender, EventArgs e) {}

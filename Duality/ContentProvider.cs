@@ -335,7 +335,7 @@ namespace Duality
 		private void RetrieveInstance()
 		{
 			if (!String.IsNullOrEmpty(this.contentPath))
-				this = ContentProvider.RequestContent<T>(this.contentPath);
+				this.contentInstance = ContentProvider.RequestContent<T>(this.contentPath).contentInstance;
 			else if (this.contentInstance != null && !String.IsNullOrEmpty(this.contentInstance.Path))
 				this = ContentProvider.RequestContent<T>(this.contentInstance.Path);
 			else

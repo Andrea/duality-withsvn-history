@@ -352,7 +352,6 @@ namespace EditorBase
 		{
 			base.OnShown(e);
 			this.InitRessources();
-			this.DockPanel.ActiveAutoHideContentChanged += this.DockPanel_ActiveAutoHideContentChanged;
 			DualityEditorApp.SelectionChanged += this.EditorForm_SelectionChanged;
 			FileEventManager.ResourceCreated += this.FileEventManager_ResourceCreated;
 			FileEventManager.ResourceDeleted += this.FileEventManager_ResourceDeleted;
@@ -373,10 +372,6 @@ namespace EditorBase
 			FileEventManager.BeginGlobalRename -= this.FileEventManager_BeginGlobalRename;
 			DualityEditorApp.ObjectPropertyChanged -= this.EditorForm_ObjectPropertyChanged;
 			Resource.ResourceSaved -= this.Resource_ResourceSaved;
-		}
-		private void DockPanel_ActiveAutoHideContentChanged(object sender, EventArgs e)
-		{
-			this.Invalidate();
 		}
 
 		public void FlashNode(NodeBase node)
