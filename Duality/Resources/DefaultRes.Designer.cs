@@ -67,6 +67,13 @@ namespace Duality.Resources {
             }
         }
         
+        internal static System.Drawing.Bitmap Checkerboard256 {
+            get {
+                object obj = ResourceManager.GetObject("Checkerboard256", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static byte[] DroneLoop {
             get {
                 object obj = ResourceManager.GetObject("DroneLoop", resourceCulture);

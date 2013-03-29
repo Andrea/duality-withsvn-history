@@ -208,6 +208,7 @@
     <Compile Include="Audio\OggVorbis\NativeMethods.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Default\Checkerboard256.png" />
     <Content Include="ToDo.txt" />
     <Content Include="OggvorbisDotNet.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -221,6 +222,7 @@
     <EmbeddedResource Include="Resources\DefaultRes.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>DefaultRes.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\Default\DualityLogo256.png" />
     <EmbeddedResource Include="Resources\Default\DualityLogoB256.png" />

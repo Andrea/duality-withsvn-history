@@ -55,14 +55,9 @@ namespace Duality.Resources
 
 		internal static void InitDefaultContent()
 		{
-			AudioData tmp;
-
-			tmp = new AudioData(DefaultRes.Beep);
-			ContentProvider.RegisterContent(ContentPath_Beep, tmp);
-			tmp = new AudioData(DefaultRes.DroneLoop);
-			ContentProvider.RegisterContent(ContentPath_DroneLoop, tmp);
-			tmp = new AudioData(DefaultRes.LogoJingle);
-			ContentProvider.RegisterContent(ContentPath_LogoJingle, tmp);
+			ContentProvider.RegisterContent(ContentPath_Beep, new AudioData(DefaultRes.Beep));
+			ContentProvider.RegisterContent(ContentPath_DroneLoop, new AudioData(DefaultRes.DroneLoop));
+			ContentProvider.RegisterContent(ContentPath_LogoJingle, new AudioData(DefaultRes.LogoJingle));
 
 			Beep		= ContentProvider.RequestContent<AudioData>(ContentPath_Beep);
 			DroneLoop	= ContentProvider.RequestContent<AudioData>(ContentPath_DroneLoop);
@@ -127,7 +122,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// Creates a new, empty AudioData without any data.
 		/// </summary>
-		public AudioData() {}
+		public AudioData() : this(Beep.Res.OggVorbisData.Clone() as byte[]) {}
 		/// <summary>
 		/// Creates a new AudioData based on an <see cref="Duality.OggVorbis.OV">Ogg Vorbis</see> memory chunk.
 		/// </summary>
@@ -165,7 +160,10 @@ namespace Duality.Resources
 			// We're saving this data for the first time
 			if (!this.path.Contains(':') && this.sourcePath == null) this.sourcePath = oggVorbisPath;
 
-			File.WriteAllBytes(oggVorbisPath, this.data);
+			if (this.data != null)
+				File.WriteAllBytes(oggVorbisPath, this.data);
+			else
+				File.WriteAllBytes(oggVorbisPath, Beep.Res.OggVorbisData);
 		}
 		/// <summary>
 		/// Loads new audio data from an <see cref="Duality.OggVorbis.OV">Ogg Vorbis</see> file.

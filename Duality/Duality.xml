@@ -3870,6 +3870,11 @@
             (Virtual) path of the <see cref="P:Duality.Resources.Material.DualityLogoB256"/> Material.
             </summary>
         </member>
+        <member name="F:Duality.Resources.Material.ContentPath_Checkerboard256">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.Material.Checkerboard256"/> Material.
+            </summary>
+        </member>
         <member name="M:Duality.Resources.Material.CreateFromTexture(Duality.ContentRef{Duality.Resources.Texture})">
             <summary>
             Creates a new Material Resource based on the specified Texture, saves it and returns a reference to it.
@@ -3937,6 +3942,11 @@
         <member name="P:Duality.Resources.Material.DualityLogoB256">
             <summary>
             A Material showing the Duality logo, but without the text on it.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Material.Checkerboard256">
+            <summary>
+            A Material showing a black and white checkerboard.
             </summary>
         </member>
         <member name="P:Duality.Resources.Material.Info">
@@ -7672,6 +7682,11 @@
             (Virtual) path of the <see cref="P:Duality.Resources.Texture.White"/> Texture.
             </summary>
         </member>
+        <member name="F:Duality.Resources.Texture.ContentPath_Checkerboard256">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.Texture.Checkerboard256"/> Texture.
+            </summary>
+        </member>
         <member name="F:Duality.Resources.Texture.None">
             <summary>
             Refers to a null reference Texture.
@@ -7786,6 +7801,11 @@
         <member name="P:Duality.Resources.Texture.White">
             <summary>
             [GET] A plain white 1x1 Texture. Can be used as a dummy.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Texture.Checkerboard256">
+            <summary>
+            [GET] A 256x256 black and white checkerboard texture.
             </summary>
         </member>
         <member name="P:Duality.Resources.Texture.BoundTexPrimary">
@@ -11506,6 +11526,11 @@
             (Virtual) path of the <see cref="P:Duality.Resources.Pixmap.White"/> Pixmap.
             </summary>
         </member>
+        <member name="F:Duality.Resources.Pixmap.ContentPath_Checkerboard256">
+            <summary>
+            (Virtual) path of the <see cref="P:Duality.Resources.Pixmap.Checkerboard256"/> Pixmap.
+            </summary>
+        </member>
         <member name="M:Duality.Resources.Pixmap.#ctor">
             <summary>
             Creates a new, empty Pixmap.
@@ -11576,6 +11601,11 @@
         <member name="P:Duality.Resources.Pixmap.White">
             <summary>
             [GET] A plain white 1x1 Pixmap. Can be used as a dummy.
+            </summary>
+        </member>
+        <member name="P:Duality.Resources.Pixmap.Checkerboard256">
+            <summary>
+            [GET] A 256x256 black and white checkerboard image.
             </summary>
         </member>
         <member name="P:Duality.Resources.Pixmap.MainLayer">

@@ -40,6 +40,10 @@ namespace Duality.Resources
 		/// (Virtual) path of the <see cref="White"/> Texture.
 		/// </summary>
 		public const string ContentPath_White			= VirtualContentPath + "White";
+		/// <summary>
+		/// (Virtual) path of the <see cref="Checkerboard256"/> Texture.
+		/// </summary>
+		public const string ContentPath_Checkerboard256	= VirtualContentPath + "Checkerboard256";
 		
 		/// <summary>
 		/// [GET] A Texture showing the Duality logo.
@@ -53,16 +57,22 @@ namespace Duality.Resources
 		/// [GET] A plain white 1x1 Texture. Can be used as a dummy.
 		/// </summary>
 		public static ContentRef<Texture> White				{ get; private set; }
+		/// <summary>
+		/// [GET] A 256x256 black and white checkerboard texture.
+		/// </summary>
+		public static ContentRef<Texture> Checkerboard256	{ get; private set; }
 
 		internal static void InitDefaultContent()
 		{
 			ContentProvider.RegisterContent(ContentPath_DualityLogo256, new Texture(Pixmap.DualityLogo256));
 			ContentProvider.RegisterContent(ContentPath_DualityLogoB256, new Texture(Pixmap.DualityLogoB256));
 			ContentProvider.RegisterContent(ContentPath_White, new Texture(Pixmap.White));
+			ContentProvider.RegisterContent(ContentPath_Checkerboard256, new Texture(Pixmap.Checkerboard256, wrapX: TextureWrapMode.Repeat, wrapY: TextureWrapMode.Repeat));
 
 			DualityLogo256	= ContentProvider.RequestContent<Texture>(ContentPath_DualityLogo256);
 			DualityLogoB256	= ContentProvider.RequestContent<Texture>(ContentPath_DualityLogoB256);
 			White			= ContentProvider.RequestContent<Texture>(ContentPath_White);
+			Checkerboard256	= ContentProvider.RequestContent<Texture>(ContentPath_Checkerboard256);
 		}
 
 
@@ -184,7 +194,7 @@ namespace Duality.Resources
 		{
 			if (!initialized) Init();
 
-			Texture texRes = tex.IsExplicitNull ? null : tex.Res;
+			Texture texRes = tex.IsExplicitNull ? null : (tex.Res ?? Checkerboard256.Res);
 			if (curBound[texUnit] == texRes) return;
 			if (activeTexUnit != texUnit) GL.ActiveTexture(texUnits[texUnit]);
 			activeTexUnit = texUnit;
@@ -457,7 +467,7 @@ namespace Duality.Resources
 		}		//	G
 
 
-		public Texture() {}
+		public Texture() : this(Pixmap.Checkerboard256, wrapX: TextureWrapMode.Repeat, wrapY: TextureWrapMode.Repeat) {}
 		/// <summary>
 		/// Creates a new Texture based on a <see cref="Duality.Resources.Pixmap"/>.
 		/// </summary>

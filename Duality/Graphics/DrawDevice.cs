@@ -884,13 +884,12 @@ namespace Duality
 
 		public void AddVertices<T>(ContentRef<Material> material, VertexMode vertexMode, params T[] vertices) where T : struct, IVertexData
 		{
-			if (!material.IsAvailable) return;
-			this.AddVertices<T>(material.Res.InfoDirect, vertexMode, vertices);
+			this.AddVertices<T>(material.IsAvailable ? material.Res.InfoDirect : Material.Checkerboard256.Res.InfoDirect, vertexMode, vertices);
 		}
 		public void AddVertices<T>(BatchInfo material, VertexMode vertexMode, params T[] vertices) where T : struct, IVertexData
 		{
-			if (material == null || material.Technique == null || !material.Technique.IsAvailable) return;
 			if (vertices == null || vertices.Length == 0) return;
+			if (material == null) material = Material.Checkerboard256.Res.InfoDirect;
 
 			if (this.pickingIndex != 0)
 			{
@@ -902,12 +901,18 @@ namespace Duality
 				material.Technique = DrawTechnique.Picking;
 				if (material.Textures == null) material.MainTexture = Texture.White;
 			}
-			
-			if (material.Technique.Res.NeedsPreprocess)
+			else if (material.Technique == null || !material.Technique.IsAvailable)
+			{
+				material = new BatchInfo(material);
+				material.Technique = DrawTechnique.Invert;
+			}
+			else if (material.Technique.Res.NeedsPreprocess)
 			{
 				material = new BatchInfo(material);
 				material.Technique.Res.PreprocessBatch<T>(this, material, ref vertexMode, ref vertices);
 				if (vertices == null || vertices.Length == 0) return;
+				if (material.Technique == null || !material.Technique.IsAvailable)
+					material.Technique = DrawTechnique.Invert;
 			}
 			
 			// When rendering without depth writing, use z sorting everywhere - there's no real depth buffering!

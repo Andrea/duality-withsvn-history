@@ -461,6 +461,7 @@ namespace Duality.Resources
 		/// <param name="path">The path of the file to which to save the font family data.</param>
 		public void SaveCustomFamilyData(string path = null)
 		{
+			if (this.customFamilyData == null) throw new InvalidOperationException("There is no custom family data defined that could be saved.");
 			if (path == null) path = this.sourcePath;
 
 			// We're saving this Pixmaps pixel data for the first time

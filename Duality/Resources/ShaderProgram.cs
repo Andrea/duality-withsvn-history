@@ -168,7 +168,7 @@ namespace Duality.Resources
 		/// <summary>
 		/// Creates a new, empty ShaderProgram.
 		/// </summary>
-		public ShaderProgram() {}
+		public ShaderProgram() : this(VertexShader.Minimal, FragmentShader.Minimal) {}
 		/// <summary>
 		/// Creates a new ShaderProgram based on a <see cref="VertexShader">Vertex-</see> and a <see cref="FragmentShader"/>.
 		/// </summary>

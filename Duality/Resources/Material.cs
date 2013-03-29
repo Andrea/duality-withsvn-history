@@ -44,6 +44,10 @@ namespace Duality.Resources
 		/// (Virtual) path of the <see cref="DualityLogoB256"/> Material.
 		/// </summary>
 		public const string ContentPath_DualityLogoB256	= VirtualContentPath + "DualityLogoB256";
+		/// <summary>
+		/// (Virtual) path of the <see cref="Checkerboard256"/> Material.
+		/// </summary>
+		public const string ContentPath_Checkerboard256	= VirtualContentPath + "Checkerboard256";
 
 		/// <summary>
 		/// A solid, white Material.
@@ -61,6 +65,10 @@ namespace Duality.Resources
 		/// A Material showing the Duality logo, but without the text on it.
 		/// </summary>
 		public static ContentRef<Material> DualityLogoB256	{ get; private set; }
+		/// <summary>
+		/// A Material showing a black and white checkerboard.
+		/// </summary>
+		public static ContentRef<Material> Checkerboard256	{ get; private set; }
 
 		internal static void InitDefaultContent()
 		{
@@ -68,11 +76,13 @@ namespace Duality.Resources
 			ContentProvider.RegisterContent(ContentPath_InvertWhite, new Material(DrawTechnique.Invert, ColorRgba.White));
 			ContentProvider.RegisterContent(ContentPath_DualityLogo256, new Material(DrawTechnique.Mask, ColorRgba.White, Texture.DualityLogo256));
 			ContentProvider.RegisterContent(ContentPath_DualityLogoB256, new Material(DrawTechnique.Mask, ColorRgba.White, Texture.DualityLogoB256));
+			ContentProvider.RegisterContent(ContentPath_Checkerboard256, new Material(DrawTechnique.Solid, ColorRgba.White, Texture.Checkerboard256));
 
 			SolidWhite		= ContentProvider.RequestContent<Material>(ContentPath_SolidWhite);
 			InvertWhite		= ContentProvider.RequestContent<Material>(ContentPath_InvertWhite);
 			DualityLogo256	= ContentProvider.RequestContent<Material>(ContentPath_DualityLogo256);
 			DualityLogoB256	= ContentProvider.RequestContent<Material>(ContentPath_DualityLogoB256);
+			Checkerboard256	= ContentProvider.RequestContent<Material>(ContentPath_Checkerboard256);
 		}
 
 		/// <summary>
@@ -458,8 +468,10 @@ namespace Duality.Resources
 		{
 			if (this.textures == null) return ContentRef<Texture>.Null;
 			ContentRef<Texture> result;
-			if (!this.textures.TryGetValue(name, out result)) return ContentRef<Texture>.Null;
-			return result;
+			if (!this.textures.TryGetValue(name, out result))
+				return ContentRef<Texture>.Null;
+			else
+				return result;
 		}
 		/// <summary>
 		/// Sets a texture.
