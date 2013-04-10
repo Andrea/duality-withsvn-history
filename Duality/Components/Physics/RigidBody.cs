@@ -994,17 +994,24 @@ namespace Duality.Components.Physics
 			c.ignoreGravity = this.ignoreGravity;
 			c.continous = this.continous;
 			c.colCat = this.colCat;
+			c.colWith = this.colWith;
+			c.explicitMass = this.explicitMass;
+
+			c.linearVel = this.linearVel;
+			c.angularVel = this.angularVel;
+			c.revolutions = this.revolutions;
 
 			// Copy Shapes
 			if (this.shapes != null)
 			{
+				List<ShapeInfo> cShapeList = c.shapes != null ? c.shapes.ToList() : null; // Clone c.shapes, because c.joints will be modified here.
 				for (int i = 0; i < this.shapes.Count; i++)
 				{
 					ShapeInfo thisShape = this.shapes[i];
 					ShapeInfo otherShape = null;
-					if (c.shapes != null && c.shapes.Count > i)
+					if (cShapeList != null && cShapeList.Count > i)
 					{
-						otherShape = c.shapes[i];
+						otherShape = cShapeList[i];
 						if (otherShape.GetType() != thisShape.GetType())
 						{
 							if (c.body != null) otherShape.DestroyFixture(c.body);
@@ -1034,21 +1041,20 @@ namespace Duality.Components.Physics
 			// Copy Joints
 			if (this.joints != null)
 			{
+				List<JointInfo> cJointList = c.joints != null ? c.joints.ToList() : null; // Clone c.joints, because c.joints will be modified here.
 				for (int i = 0; i < this.joints.Count; i++)
 				{
 					JointInfo thisJoint = this.joints[i];
 					JointInfo otherJoint = null;
-					if (c.joints != null && c.joints.Count > i)
+					JointInfo newJoint = null;
+
+					if (cJointList != null && cJointList.Count > i)
 					{
-						otherJoint = c.joints[i];
+						otherJoint = cJointList[i];
 						if (otherJoint.GetType() != thisJoint.GetType())
 						{
 							c.RemoveJoint(otherJoint);
-
-							JointInfo newJoint = provider.RequestObjectClone(thisJoint);
-							newJoint.BodyA = provider.GetRegisteredObjectClone(thisJoint.BodyA);
-							newJoint.BodyB = provider.GetRegisteredObjectClone(thisJoint.BodyB);
-							c.AddJoint(newJoint, newJoint.BodyA == c ? newJoint.BodyB : newJoint.BodyA);
+							newJoint = provider.RequestObjectClone(thisJoint);
 						}
 						else
 						{
@@ -1056,20 +1062,17 @@ namespace Duality.Components.Physics
 							if (otherJoint.BodyB != null) otherJoint.BodyB.RemoveJoint(otherJoint);
 
 							provider.CopyObjectTo(thisJoint, otherJoint);
-
-							JointInfo newJoint = otherJoint;
-							newJoint.BodyA = provider.GetRegisteredObjectClone(thisJoint.BodyA);
-							newJoint.BodyB = provider.GetRegisteredObjectClone(thisJoint.BodyB);
-							c.AddJoint(newJoint, newJoint.BodyA == c ? newJoint.BodyB : newJoint.BodyA);
+							newJoint = otherJoint;
 						}
 					}
 					else
 					{
-						JointInfo newJoint = provider.RequestObjectClone(thisJoint);
-						newJoint.BodyA = provider.GetRegisteredObjectClone(thisJoint.BodyA);
-						newJoint.BodyB = provider.GetRegisteredObjectClone(thisJoint.BodyB);
-						c.AddJoint(newJoint, newJoint.BodyA == c ? newJoint.BodyB : newJoint.BodyA);
+						newJoint = provider.RequestObjectClone(thisJoint);
 					}
+
+					newJoint.BodyA = provider.GetRegisteredObjectClone(thisJoint.BodyA);
+					newJoint.BodyB = provider.GetRegisteredObjectClone(thisJoint.BodyB);
+					newJoint.BodyA.AddJoint(newJoint, newJoint.BodyB);
 				}
 			}
 			else
