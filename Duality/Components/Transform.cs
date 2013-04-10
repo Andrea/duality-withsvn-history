@@ -141,7 +141,12 @@ namespace Duality.Components
 		public bool DeriveAngle
 		{
 			get { return this.deriveAngle; }
-			set { this.deriveAngle = value; this.changes |= DirtyFlags.Angle; this.UpdateAbs(); }
+			set
+			{
+				this.deriveAngle = value;
+				this.changes |= DirtyFlags.Angle;
+				this.UpdateRel();
+			}
 		}
 
 		/// <summary>
@@ -623,7 +628,10 @@ namespace Duality.Components
 		{
 			this.CheckValidTransform();
 
-			this.UpdateAbs();
+			if (this.ignoreParent)
+				this.UpdateRel();
+			else
+				this.UpdateAbs();
 
 			// Clear change flags
 			this.CommitChanges();
@@ -694,7 +702,10 @@ namespace Duality.Components
 				cmpTransform.GameObj.EventComponentAdded -= this.Parent_EventComponentAdded;
 				cmpTransform.GameObj.EventComponentRemoving += this.Parent_EventComponentRemoving;
 				this.parentTransform = cmpTransform;
-				this.UpdateAbs();
+				if (this.ignoreParent)
+					this.UpdateRel();
+				else
+					this.UpdateAbs();
 			}
 		}
 		private void Parent_EventComponentRemoving(object sender, ComponentEventArgs e)
@@ -707,7 +718,10 @@ namespace Duality.Components
 					cmpTransform.GameObj.EventComponentAdded += this.Parent_EventComponentAdded;
 					cmpTransform.GameObj.EventComponentRemoving -= this.Parent_EventComponentRemoving;
 					this.parentTransform = null;
-					this.UpdateAbs();
+					if (this.ignoreParent)
+						this.UpdateRel();
+					else
+						this.UpdateAbs();
 				}
 			}
 		}
@@ -726,11 +740,6 @@ namespace Duality.Components
 					this.tempVelAbs = this.tempVel;
 					this.tempAngleVelAbs = this.tempAngleVel;
 				}
-			}
-			else if (this.ignoreParent)
-			{
-				// Ignore scene graph relations and just keep relative data updated.
-				this.UpdateRel(updateTempVel);
 			}
 			else
 			{

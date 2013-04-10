@@ -227,6 +227,7 @@ namespace EditorBase.PropertyEditors
 		}
 		protected void AngleSetter(IEnumerable<object> values)
 		{
+			values = values.Select(v => (object)MathF.DegToRad((float)v));
 			if (this.showRelative)
 			{
 				this.MemberPropertySetter(ReflectionInfo.Property_Transform_RelativeAngle, this.GetValue(), values);
