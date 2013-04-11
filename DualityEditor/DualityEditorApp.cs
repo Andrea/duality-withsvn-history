@@ -887,7 +887,7 @@ namespace DualityEditor
 				MessageBoxIcon.Question);
 			return result == DialogResult.Yes;
 		}
-		public static bool DisplayConfirmBreakPrefabLink(ObjectSelection obj = null)
+		public static bool DisplayConfirmBreakPrefabLinkStructure(ObjectSelection obj = null)
 		{
 			if (obj == null) obj = DualityEditorApp.Selection;
 
@@ -902,15 +902,17 @@ namespace DualityEditor
 			var linkList = new List<PrefabLink>(linkQueryObj.Concat(linkQueryCmp).Distinct());
 			if (linkList.Count == 0) return true;
 
+			if (!DisplayConfirmBreakPrefabLink()) return false;
+			UndoRedoManager.Do(new BreakPrefabLinkAction(linkList.Select(l => l.Obj)));
+			return true;
+		}
+		public static bool DisplayConfirmBreakPrefabLink()
+		{
 			DialogResult result = MessageBox.Show(
 				EditorRes.GeneralRes.Msg_ConfirmBreakPrefabLink_Desc, 
 				EditorRes.GeneralRes.Msg_ConfirmBreakPrefabLink_Caption, 
 				MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-			if (result != DialogResult.Yes) return false;
-
-			UndoRedoManager.Do(new BreakPrefabLinkAction(linkList.Select(l => l.Obj)));
-
-			return true;
+			return result == DialogResult.Yes;
 		}
 
 		private static void OnIdling()

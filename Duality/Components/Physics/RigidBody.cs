@@ -789,8 +789,8 @@ namespace Duality.Components.Physics
 			for (int i = this.joints.Count - 1; i >= 0; i--)
 			{
 				JointInfo joint = this.joints[i];
-				if ((joint.BodyA != null && joint.BodyA.Disposed) || 
-					(joint.BodyB != null && joint.BodyB.Disposed))
+				if ((joint.BodyA != null && (joint.BodyA.Disposed || joint.BodyA.GameObj.Disposed)) || 
+					(joint.BodyB != null && (joint.BodyB.Disposed || joint.BodyB.GameObj.Disposed)))
 					this.RemoveJoint(joint);
 			}
 		}
@@ -1072,7 +1072,8 @@ namespace Duality.Components.Physics
 
 					newJoint.BodyA = provider.GetRegisteredObjectClone(thisJoint.BodyA);
 					newJoint.BodyB = provider.GetRegisteredObjectClone(thisJoint.BodyB);
-					newJoint.BodyA.AddJoint(newJoint, newJoint.BodyB);
+					if (newJoint.BodyA != null)
+						newJoint.BodyA.AddJoint(newJoint, newJoint.BodyB);
 				}
 			}
 			else

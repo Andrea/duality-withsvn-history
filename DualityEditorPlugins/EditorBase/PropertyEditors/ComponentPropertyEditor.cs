@@ -197,7 +197,7 @@ namespace EditorBase.PropertyEditors
 			// Ask user if he really wants to delete stuff
 			ObjectSelection objSel = new ObjectSelection(values);
 			if (!DualityEditorApp.DisplayConfirmDeleteObjects(objSel)) return;
-			if (!DualityEditorApp.DisplayConfirmBreakPrefabLink(objSel)) return;
+			if (!DualityEditorApp.DisplayConfirmBreakPrefabLinkStructure(objSel)) return;
 
 			// Delete Components
 			UndoRedoManager.Do(new DeleteComponentAction(values));

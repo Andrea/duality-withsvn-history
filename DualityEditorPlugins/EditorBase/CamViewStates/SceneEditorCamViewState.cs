@@ -251,7 +251,7 @@ namespace EditorBase.CamViewStates
 			// Ask user if he really wants to delete stuff
 			ObjectSelection objSel = new ObjectSelection(objList);
 			if (!DualityEditorApp.DisplayConfirmDeleteObjects(objSel)) return;
-			if (!DualityEditorApp.DisplayConfirmBreakPrefabLink(objSel)) return;
+			if (!DualityEditorApp.DisplayConfirmBreakPrefabLinkStructure(objSel)) return;
 
 			UndoRedoManager.Do(new DeleteGameObjectAction(objList));
 		}

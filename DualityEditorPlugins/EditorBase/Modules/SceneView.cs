@@ -503,7 +503,7 @@ namespace EditorBase
 			// Ask user if he really wants to delete stuff
 			ObjectSelection objSel = new ObjectSelection(objList.AsEnumerable<object>().Concat(cmpList));
 			if (!DualityEditorApp.DisplayConfirmDeleteObjects(objSel)) return;
-			if (!DualityEditorApp.DisplayConfirmBreakPrefabLink(objSel)) return;
+			if (!DualityEditorApp.DisplayConfirmBreakPrefabLinkStructure(objSel)) return;
 
 			// Delete objects
 			this.objectView.BeginUpdate();
@@ -1144,7 +1144,7 @@ namespace EditorBase
 			Component[] draggedComp = this.tempDropData as Component[];
 			GameObject dropObj = (this.tempDropTarget is GameObjectNode) ? (this.tempDropTarget as GameObjectNode).Obj : null;
 
-			if (!DualityEditorApp.DisplayConfirmBreakPrefabLink(new ObjectSelection(this.tempDropData as IEnumerable<object>))) return;
+			if (!DualityEditorApp.DisplayConfirmBreakPrefabLinkStructure(new ObjectSelection(this.tempDropData as IEnumerable<object>))) return;
 
 			if (draggedObj != null)
 			{
