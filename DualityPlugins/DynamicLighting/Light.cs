@@ -143,7 +143,7 @@ namespace DynamicLighting
 			if (this.range <= 0.0f) return false;
 			if (this.intensity <= 0.0f) return false;
 
-			float uniformScale = this.GameObj.Transform.Scale.Length / MathF.Sqrt(3);
+			float uniformScale = this.GameObj.Transform.Scale;
 			if (uniformScale <= 0.0f) return false;
 
 			Vector3 pos = this.GameObj.Transform.Pos;
@@ -156,7 +156,7 @@ namespace DynamicLighting
 		{
 			if (!this.IsDirectional)
 			{
-				float uniformScale = this.GameObj.Transform.Scale.Length / MathF.Sqrt(3);
+				float uniformScale = this.GameObj.Transform.Scale;
 				Vector3 pos = this.GameObj.Transform.Pos;
 				float scale = 1.0f;
 				device.PreprocessCoords(ref pos, ref scale);
@@ -242,7 +242,7 @@ namespace DynamicLighting
 				{
 					dir = light.dir;
 					pos = light.GameObj.Transform.Pos;
-					uniformScale = light.GameObj.Transform.Scale.Length / MathF.Sqrt(3);
+					uniformScale = light.GameObj.Transform.Scale;
 
 					MathF.TransformCoord(ref dir.X, ref dir.Y, light.GameObj.Transform.Angle);
 				}
@@ -313,7 +313,7 @@ namespace DynamicLighting
 					float spotExp = light.dir == Vector3.Zero ? 0.0f : MathF.Max(light.spotFocus, 1.0f);
 					
 					Vector3 lightDir = light.dir;
-					float uniformScale = light.GameObj.Transform.Scale.Length / MathF.Sqrt(3);
+					float uniformScale = light.GameObj.Transform.Scale;
 
 					MathF.TransformCoord(ref lightDir.X, ref lightDir.Y, light.GameObj.Transform.Angle);
 

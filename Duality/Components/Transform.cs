@@ -663,7 +663,8 @@ namespace Duality.Components
 		}
 		void ICmpInitializable.OnInit(InitContext context)
 		{
-			if (context == InitContext.Activate)
+			if (context == InitContext.AddToGameObject ||
+				context == InitContext.Loaded)
 			{
 				if (this.gameobj.Parent != null)
 				{
@@ -680,7 +681,7 @@ namespace Duality.Components
 		}
 		void ICmpInitializable.OnShutdown(ShutdownContext context)
 		{
-			if (context == ShutdownContext.Deactivate)
+			if (context == ShutdownContext.RemovingFromGameObject)
 			{
 				if (this.gameobj.Parent != null)
 				{
@@ -702,10 +703,7 @@ namespace Duality.Components
 				cmpTransform.GameObj.EventComponentAdded -= this.Parent_EventComponentAdded;
 				cmpTransform.GameObj.EventComponentRemoving += this.Parent_EventComponentRemoving;
 				this.parentTransform = cmpTransform;
-				if (this.ignoreParent)
-					this.UpdateRel();
-				else
-					this.UpdateAbs();
+				this.UpdateRel();
 			}
 		}
 		private void Parent_EventComponentRemoving(object sender, ComponentEventArgs e)
@@ -718,10 +716,7 @@ namespace Duality.Components
 					cmpTransform.GameObj.EventComponentAdded += this.Parent_EventComponentAdded;
 					cmpTransform.GameObj.EventComponentRemoving -= this.Parent_EventComponentRemoving;
 					this.parentTransform = null;
-					if (this.ignoreParent)
-						this.UpdateRel();
-					else
-						this.UpdateAbs();
+					this.UpdateRel();
 				}
 			}
 		}
@@ -893,7 +888,7 @@ namespace Duality.Components
 			t.angleVel			= this.angleVel;
 			t.angleVelAbs		= this.angleVelAbs;
 
-			t.UpdateRel();
+			t.UpdateAbs();
 		}
 
 		[System.Diagnostics.Conditional("DEBUG")]

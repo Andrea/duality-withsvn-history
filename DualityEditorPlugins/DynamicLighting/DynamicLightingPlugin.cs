@@ -77,7 +77,7 @@ namespace DynamicLighting
 					if (sprite == null) sprite = new LightingSpriteRenderer();
 					sprite.SharedMaterial = mat;
 					if (mainTex != null) sprite.Rect = Rect.AlignCenter(0.0f, 0.0f, mainTex.PixelWidth, mainTex.PixelHeight);
-					SuggestName(convert, sprite, mat.Name);
+					convert.SuggestResultName(sprite, mat.Name);
 					results.Add(sprite);
 				}
 				else
@@ -89,7 +89,7 @@ namespace DynamicLighting
 					sprite.Rect = Rect.AlignCenter(0.0f, 0.0f, mainTex.PixelWidth / mainTex.AnimCols, mainTex.PixelHeight / mainTex.AnimRows);
 					sprite.AnimDuration = 5.0f;
 					sprite.AnimFrameCount = mainTex.AnimFrames;
-					SuggestName(convert, sprite, mat.Name);
+					convert.SuggestResultName(sprite, mat.Name);
 					results.Add(sprite);
 				}
 				
