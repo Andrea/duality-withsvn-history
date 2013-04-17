@@ -11,6 +11,7 @@ using Duality.Components;
 using Duality.Resources;
 
 using DualityEditor;
+using DualityEditor.UndoRedoActions;
 using DualityEditor.CorePluginInterface;
 
 using EditorBase.UndoRedoActions;
@@ -33,6 +34,13 @@ namespace EditorBase.PropertyEditors
 			this.UpdateSourceEditors(this.GetValue().Cast<SoundEmitter>());
 		}
 
+		protected override bool IsChildValueModified(PropertyEditor childEditor)
+		{
+			if (childEditor is SoundEmitterSourcePropertyEditor)
+				return this.IsMemberInPrefabLinkChanges(ReflectionInfo.Property_SoundEmitter_Sources);
+			else
+				return base.IsChildValueModified(childEditor);
+		}
 		protected override bool IsAutoCreateMember(MemberInfo info)
 		{
 			if (ReflectionHelper.MemberInfoEquals(info, ReflectionInfo.Property_SoundEmitter_Sources)) return false;
@@ -99,6 +107,8 @@ namespace EditorBase.PropertyEditors
 				elementEditor.PropertyName = string.Format("Sources[{0}]", i);
 				elementEditor.Getter = this.CreateSourceValueGetter(i);
 				elementEditor.Setter = this.CreateSourceValueSetter(i);
+				elementEditor.ParentEmitter = values;
+				elementEditor.PerformGetValue();
 			}
 			// Remove overflowing editors
 			for (int i = this.soundSourceEditors.Count - 1; i >= visibleElementCount; i--)
@@ -132,6 +142,14 @@ namespace EditorBase.PropertyEditors
 
 	public class SoundEmitterSourcePropertyEditor : MemberwisePropertyEditor
 	{
+		private	SoundEmitter[] parentEmitter = null;
+
+		public IEnumerable<SoundEmitter> ParentEmitter
+		{
+			get { return this.parentEmitter; }
+			set { this.parentEmitter = value.ToArray(); }
+		}
+
 		public SoundEmitterSourcePropertyEditor()
 		{
 			this.EditedType = typeof(SoundEmitter.Source);
@@ -139,6 +157,12 @@ namespace EditorBase.PropertyEditors
 			this.HeaderHeight = 30;
 		}
 
+		protected override void OnPropertySet(PropertyInfo property, IEnumerable<object> targets)
+		{
+			base.OnPropertySet(property, targets);
+			
+			UndoRedoManager.Do(new EditPropertyAction(this.ParentGrid, ReflectionInfo.Property_SoundEmitter_Sources, this.parentEmitter, null));
+		}
 		protected override void OnUpdateFromObjects(object[] values)
 		{
 			base.OnUpdateFromObjects(values);

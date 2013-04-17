@@ -42,9 +42,12 @@ namespace EditorBase.PropertyEditors
 		}
 		protected override bool IsChildValueModified(PropertyEditor childEditor)
 		{
-			MemberInfo info = childEditor.EditedMember;
+			return this.IsMemberInPrefabLinkChanges(childEditor.EditedMember);
+		}
+		protected bool IsMemberInPrefabLinkChanges(MemberInfo info)
+		{
 			if (info == null) return false;
-
+			
 			Component[] values = this.GetValue().Cast<Component>().NotNull().ToArray();
 			return values.Any(delegate (Component c)
 			{
