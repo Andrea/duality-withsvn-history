@@ -867,8 +867,11 @@ namespace Duality.Components.Physics
 			if (colEvent.FixtureA.Body == null) return;
 			if (colEvent.FixtureB.Body == null) return;
 
+			Component otherComponent = colEvent.FixtureB.Body.UserData as Component;
+			GameObject otherObject = otherComponent != null ? otherComponent.GameObj : colEvent.FixtureB.Body.UserData as GameObject;
+
 			RigidBodyCollisionEventArgs args = new RigidBodyCollisionEventArgs(
-				(colEvent.FixtureB.Body.UserData as RigidBody).GameObj,
+				otherObject,
 				colEvent.Data,
 				colEvent.FixtureA.UserData as ShapeInfo,
 				colEvent.FixtureB.UserData as ShapeInfo);
