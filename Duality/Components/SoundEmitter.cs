@@ -151,6 +151,7 @@ namespace Duality.Components
 					this.instance.Pos = this.offset;
 					this.instance.Looped = this.looped;
 					this.instance.Volume = this.volume;
+					this.instance.Pitch = this.pitch;
 					this.instance.Paused = this.paused;
 					this.hasBeenPlayed = true;
 				}

@@ -279,6 +279,7 @@ namespace Duality.Components.Physics
 		public IEnumerable<ShapeInfo> Shapes
 		{
 			get { return this.shapes; }
+			set { this.SetShapes(value); }
 		}
 		/// <summary>
 		/// [GET] Enumerates all <see cref="JointInfo">joints</see> that are connected to this Collider.
@@ -370,6 +371,15 @@ namespace Duality.Components.Physics
 				shape.Parent = null;
 			}
 			this.shapes.Clear();
+		}
+		private void SetShapes(IEnumerable<ShapeInfo> shapes)
+		{
+			if (shapes == this.shapes) return;
+			this.ClearShapes();
+
+			if (shapes == null) return;
+			foreach (ShapeInfo shape in shapes)
+				this.AddShape(shape);
 		}
 		
 		/// <summary>
@@ -1004,42 +1014,9 @@ namespace Duality.Components.Physics
 			c.angularVel = this.angularVel;
 			c.revolutions = this.revolutions;
 
-			// Copy Shapes
-			if (this.shapes != null)
-			{
-				List<ShapeInfo> cShapeList = c.shapes != null ? c.shapes.ToList() : null; // Clone c.shapes, because c.joints will be modified here.
-				for (int i = 0; i < this.shapes.Count; i++)
-				{
-					ShapeInfo thisShape = this.shapes[i];
-					ShapeInfo otherShape = null;
-					if (cShapeList != null && cShapeList.Count > i)
-					{
-						otherShape = cShapeList[i];
-						if (otherShape.GetType() != thisShape.GetType())
-						{
-							if (c.body != null) otherShape.DestroyFixture(c.body);
-							otherShape.Parent = null;
-							c.shapes[i] = provider.RequestObjectClone(thisShape);
-							c.shapes[i].Parent = c;
-						}
-						else
-						{
-							provider.CopyObjectTo(thisShape, otherShape);
-						}
-					}
-					else
-					{
-						if (c.shapes == null) c.shapes = new List<ShapeInfo>();
-						c.shapes.Add(provider.RequestObjectClone(thisShape));
-						c.shapes.Last().Parent = c;
-					}
-				}
-				c.FlagBodyShape();
-			}
-			else
-			{
-				c.ClearShapes();
-			}
+			// Detach and copy Shapes
+			c.shapes = null;
+			c.SetShapes(this.shapes.Select(s => provider.RequestObjectClone(s)));
 
 			// Copy Joints
 			if (this.joints != null)

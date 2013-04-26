@@ -834,6 +834,11 @@ namespace DualityEditor
 		public static void NotifyObjPrefabApplied(object sender, ObjectSelection obj)
 		{
 			if (obj.Empty) return;
+			// For now, applying Prefabs will kill UndoRedo support since OnCopyTo is likely to detach objects
+			// and thus invalidate old UndoRedoActions. This will only affect a small subset of operations, but
+			// as for UndoRedo, it is better to fully support a small feature than poorly support a large feature.
+			// The editor should always act reliable.
+			UndoRedoManager.Clear();
 			OnObjectPropertyChanged(sender, new PrefabAppliedEventArgs(obj));
 		}
 		public static void NotifyObjPropChanged(object sender, ObjectSelection obj, params PropertyInfo[] info)
