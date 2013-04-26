@@ -278,7 +278,7 @@ namespace Duality.Components.Physics
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public IEnumerable<ShapeInfo> Shapes
 		{
-			get { return this.shapes; }
+			get { return this.shapes.ToArray(); }
 			set { this.SetShapes(value); }
 		}
 		/// <summary>
@@ -287,7 +287,8 @@ namespace Duality.Components.Physics
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public IEnumerable<JointInfo> Joints
 		{
-		    get { return this.joints; }
+		    get { return this.joints.ToArray(); }
+			set { this.SetJoints(value); }
 		}
 		/// <summary>
 		/// [GET] The physical bodys bounding radius.
@@ -442,6 +443,34 @@ namespace Duality.Components.Physics
 		{
 			if (this.joints == null) return;
 			while (this.joints.Count > 0) this.RemoveJoint(this.joints[0]);
+		}
+		private void SetJoints(IEnumerable<JointInfo> joints)
+		{
+			JointInfo[] jointArray = joints != null ? joints.ToArray() : null;
+	
+			// Remove joints that are not in the new collection
+			if (this.joints != null)
+			{
+				for (int i = this.joints.Count - 1; i >= 0; i--)
+				{
+					if (jointArray != null && jointArray.Contains(this.joints[i])) continue;
+					this.RemoveJoint(this.joints[i]);
+				}
+			}
+
+			// Add joints that are not in the old collection
+			if (jointArray != null)
+			{
+				for (int i = 0; i < jointArray.Length; i++)
+				{
+					if (this.joints != null && this.joints.Contains(jointArray[i])) continue;
+					JointInfo joint = jointArray[i];
+					if (joint.BodyA != null)
+						joint.BodyA.AddJoint(joint, joint.BodyB); // Allow reverse-add.
+					else
+						this.AddJoint(joint, null);
+				}
+			}
 		}
 
 		/// <summary>
@@ -1016,50 +1045,22 @@ namespace Duality.Components.Physics
 
 			// Detach and copy Shapes
 			c.shapes = null;
-			c.SetShapes(this.shapes.Select(s => provider.RequestObjectClone(s)));
+			if (this.shapes != null) c.SetShapes(this.shapes.Select(s => provider.RequestObjectClone(s)));
 
-			// Copy Joints
-			if (this.joints != null)
+			// Detach and copy Joints
+			c.joints = null;
+			if (this.joints != null) c.SetJoints(this.joints.Select(j => 
 			{
-				List<JointInfo> cJointList = c.joints != null ? c.joints.ToList() : null; // Clone c.joints, because c.joints will be modified here.
-				for (int i = 0; i < this.joints.Count; i++)
-				{
-					JointInfo thisJoint = this.joints[i];
-					JointInfo otherJoint = null;
-					JointInfo newJoint = null;
+				// If there is a clone registered, just return the clone. Don't process a joint twice.
+				if (provider.IsOriginalObject(j)) return provider.GetRegisteredObjectClone(j);
 
-					if (cJointList != null && cJointList.Count > i)
-					{
-						otherJoint = cJointList[i];
-						if (otherJoint.GetType() != thisJoint.GetType())
-						{
-							c.RemoveJoint(otherJoint);
-							newJoint = provider.RequestObjectClone(thisJoint);
-						}
-						else
-						{
-							if (otherJoint.BodyA != null) otherJoint.BodyA.RemoveJoint(otherJoint);
-							if (otherJoint.BodyB != null) otherJoint.BodyB.RemoveJoint(otherJoint);
+				JointInfo j2 = j.Clone();
+				j2.BodyA = provider.GetRegisteredObjectClone(j.BodyA);
+				j2.BodyB = provider.GetRegisteredObjectClone(j.BodyB);
+				provider.RegisterObjectClone(j, j2);
 
-							provider.CopyObjectTo(thisJoint, otherJoint);
-							newJoint = otherJoint;
-						}
-					}
-					else
-					{
-						newJoint = provider.RequestObjectClone(thisJoint);
-					}
-
-					newJoint.BodyA = provider.GetRegisteredObjectClone(thisJoint.BodyA);
-					newJoint.BodyB = provider.GetRegisteredObjectClone(thisJoint.BodyB);
-					if (newJoint.BodyA != null)
-						newJoint.BodyA.AddJoint(newJoint, newJoint.BodyB);
-				}
-			}
-			else
-			{
-				c.ClearJoints();
-			}
+				return j2;
+			}));
 
 			if (wasInitialized) c.Initialize();
 		}

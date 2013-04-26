@@ -299,12 +299,14 @@ namespace EditorBase
 		}
 		public GameObjectNode FindNode(GameObject obj)
 		{
+			if (obj == null) return null;
 			NodeBase result;
 			if (!this.objToNode.TryGetValue(obj, out result)) return null;
 			return result as GameObjectNode;
 		}
 		public ComponentNode FindNode(Component cmp)
 		{
+			if (cmp == null) return null;
 			NodeBase result;
 			if (!this.objToNode.TryGetValue(cmp, out result)) return null;
 			return result as ComponentNode;
@@ -488,8 +490,13 @@ namespace EditorBase
 				from objNode in nodeQuery
 				where objNode is GameObjectNode
 				select (objNode as GameObjectNode).Obj;
-			var cmpList = new List<Component>(cmpQuery);
-			var objList = new List<GameObject>(objQuery);
+			var objList = objQuery.ToList();
+			for (int i = objList.Count - 1; i >= 0; i--)
+			{
+				if (objList.Any(p => objList[i].IsChildOf(p)))
+					objList.RemoveAt(i);
+			}
+			var cmpList = cmpQuery.Where(c => !objList.Any(p => c.GameObj == p || c.GameObj.IsChildOf(p))).ToList();
 			
 			// Check which Components may be removed and which not
 			Component conflictComp = this.CheckComponentsRemovable(cmpList, objList);
@@ -566,6 +573,12 @@ namespace EditorBase
 			{
 				baseObj = this.CreateGameObject(baseNode, cmpType.Name);
 				baseObjNode = this.FindNode(baseObj);
+			}
+			// There already is such Component? Return it.
+			else
+			{
+				Component existingComponent = baseObj.GetComponent(cmpType, true);
+				if (existingComponent != null) return existingComponent;
 			}
 
 			// Create Components
