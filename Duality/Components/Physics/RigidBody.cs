@@ -278,7 +278,7 @@ namespace Duality.Components.Physics
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public IEnumerable<ShapeInfo> Shapes
 		{
-			get { return this.shapes.ToArray(); }
+			get { return this.shapes; }
 			set { this.SetShapes(value); }
 		}
 		/// <summary>
@@ -287,7 +287,7 @@ namespace Duality.Components.Physics
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public IEnumerable<JointInfo> Joints
 		{
-		    get { return this.joints.ToArray(); }
+		    get { return this.joints; }
 			set { this.SetJoints(value); }
 		}
 		/// <summary>

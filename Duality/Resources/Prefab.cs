@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
+using Duality.Cloning;
+
 namespace Duality.Resources
 {
 	/// <summary>
@@ -172,9 +174,19 @@ namespace Duality.Resources
 			public	object			val;
 		}
 
+		private static CloneProvider changeListValueCloneProvider = null;
+
+		static PrefabLink()
+		{
+			changeListValueCloneProvider = new CloneProvider();
+			changeListValueCloneProvider.SetExplicitUnwrap(typeof(System.Collections.ICollection));
+		}
+
+
 		private	ContentRef<Prefab>	prefab;
 		private	GameObject			obj;
 		private	List<VarMod>		changes;
+
 
 		/// <summary>
 		/// [GET] The GameObject this PrefabLink belongs to.
@@ -203,6 +215,7 @@ namespace Duality.Resources
 				return this.obj.Parent != null ? this.obj.Parent.AffectedByPrefabLink : null;
 			}
 		}
+
 
 		private PrefabLink() : this(null, ContentRef<Prefab>.Null) {}
 		/// <summary>
@@ -425,6 +438,10 @@ namespace Duality.Resources
 		{
 			if (!prop.CanWrite || !prop.CanRead) return;
 			object changeVal = prop.GetValue(target, null);
+
+			// Clone the changelist entry value
+			changeVal = changeListValueCloneProvider.RequestObjectClone(changeVal);
+
 			this.PushChange(target, prop, changeVal);
 		}
 		/// <summary>
