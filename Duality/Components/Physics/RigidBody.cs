@@ -358,7 +358,7 @@ namespace Duality.Components.Physics
 			this.shapes.Remove(shape);
 			shape.Parent = null;
 
-			if (this.body != null) shape.DestroyFixture(this.body);
+			if (this.body != null) shape.DestroyFixture(this.body, false);
 		}
 		/// <summary>
 		/// Removes all existing shapes from the Collider.
@@ -368,7 +368,7 @@ namespace Duality.Components.Physics
 			if (this.shapes == null) return;
 			foreach (ShapeInfo shape in this.shapes)
 			{
-				if (this.body != null) shape.DestroyFixture(this.body);
+				if (this.body != null) shape.DestroyFixture(this.body, false);
 				shape.Parent = null;
 			}
 			this.shapes.Clear();
@@ -768,7 +768,8 @@ namespace Duality.Components.Physics
 			
 			if (this.shapes != null)
 			{
-				foreach (ShapeInfo info in this.shapes) info.DestroyFixture(this.body);
+				foreach (ShapeInfo info in this.shapes)
+					info.DestroyFixture(this.body, true);
 			}
 			
 			this.body.Collision -= this.body_OnCollision;

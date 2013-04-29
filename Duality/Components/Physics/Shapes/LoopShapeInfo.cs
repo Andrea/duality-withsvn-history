@@ -66,7 +66,7 @@ namespace Duality.Components.Physics
 			// Loop shapes aren't allowed on nonstatic bodies.
 			if (this.Parent != null && this.Parent.BodyType != BodyType.Static)
 			{
-				this.DestroyFixture(this.Parent.PhysicsBody);
+				this.DestroyFixture(this.Parent.PhysicsBody, false);
 				return;
 			}
 

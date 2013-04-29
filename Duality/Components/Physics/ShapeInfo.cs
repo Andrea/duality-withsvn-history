@@ -101,10 +101,11 @@ namespace Duality.Components.Physics
 			this.density = density;
 		}
 
-		internal void DestroyFixture(Body body)
+		internal void DestroyFixture(Body body, bool isBodyDisposing)
 		{
 			if (this.fixture == null) return;
-			body.DestroyFixture(this.fixture);
+			if (!isBodyDisposing)
+				body.DestroyFixture(this.fixture);
 			this.fixture = null;
 		}
 		protected abstract Fixture CreateFixture(Body body);
@@ -115,7 +116,7 @@ namespace Duality.Components.Physics
 			{
 				if (this.parent != null && this.parent.FlagBodyShape())
 				{
-					this.DestroyFixture(this.parent.PhysicsBody); // Also, kill the changed fixture, so it gets re-registered.
+					this.DestroyFixture(this.parent.PhysicsBody, false); // Also, kill the changed fixture, so it gets re-registered.
 					return;
 				}
 			}
