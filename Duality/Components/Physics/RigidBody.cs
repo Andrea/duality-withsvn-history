@@ -1114,12 +1114,36 @@ namespace Duality.Components.Physics
 		public static List<ShapeInfo> PickShapesGlobal(Vector2 worldCoord, Vector2 size)
 		{
 			List<ShapeInfo> picked = new List<ShapeInfo>();
+			List<RigidBody> potentialBodies = QueryRectGlobal(worldCoord, size);
 
-			RigidBody[] colliderArray = Scene.Current.ActiveObjects.GetComponents<RigidBody>().ToArray();
-			foreach (RigidBody c in colliderArray)
+			foreach (RigidBody c in potentialBodies)
 				picked.AddRange(c.PickShapes(worldCoord, size));
 
 			return picked;
+		}
+		/// <summary>
+		/// Performs a global physical AABB query and returns the <see cref="RigidBody">bodies</see> that
+		/// might be roughly contained or intersected by the specified region.
+		/// </summary>
+		/// <param name="worldCoord"></param>
+		/// <param name="size"></param>
+		/// <returns></returns>
+		public static List<RigidBody> QueryRectGlobal(Vector2 worldCoord, Vector2 size)
+		{
+			List<RigidBody> bodies = new List<RigidBody>();
+			
+			Vector2 fsWorldCoord = PhysicsConvert.ToPhysicalUnit(worldCoord);
+			FarseerPhysics.Collision.AABB fsWorldAABB = new FarseerPhysics.Collision.AABB(fsWorldCoord, PhysicsConvert.ToPhysicalUnit(worldCoord + size));
+			Scene.PhysicsWorld.QueryAABB(fixture =>
+				{
+					ShapeInfo shape = fixture.UserData as ShapeInfo;
+					if (shape != null && shape.Parent != null && shape.Parent.Active)
+						bodies.Add(shape.Parent);
+					return true;
+				},
+				ref fsWorldAABB);
+
+			return bodies;
 		}
 		/// <summary>
 		/// Awakes all currently existing RigidBodies.

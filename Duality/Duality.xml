@@ -7194,6 +7194,15 @@
             <param name="size"></param>
             <returns></returns>
         </member>
+        <member name="M:Duality.Components.Physics.RigidBody.QueryRectGlobal(OpenTK.Vector2,OpenTK.Vector2)">
+            <summary>
+            Performs a global physical AABB query and returns the <see cref="T:Duality.Components.Physics.RigidBody">bodies</see> that
+            might be roughly contained or intersected by the specified region.
+            </summary>
+            <param name="worldCoord"></param>
+            <param name="size"></param>
+            <returns></returns>
+        </member>
         <member name="M:Duality.Components.Physics.RigidBody.AwakeAll">
             <summary>
             Awakes all currently existing RigidBodies.

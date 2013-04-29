@@ -17,6 +17,8 @@ namespace Duality.Components.Physics
 	[Serializable]
 	public sealed class PolyShapeInfo : ShapeInfo
 	{
+		public const int MaxVertices = FarseerPhysics.Settings.MaxPolygonVertices;
+
 		private	Vector2[]	vertices;
 
 		/// <summary>
@@ -88,9 +90,16 @@ namespace Duality.Components.Physics
 		private FarseerPhysics.Common.Vertices CreateVertices(float scale)
 		{
 			if (!MathF.IsPolygonConvex(this.vertices)) return null;
+			
+			// Be sure to not exceed the maximum vertex count
+			Vector2[] sortedVertices = this.vertices.ToArray();
+			if (sortedVertices.Length > MaxVertices)
+			{
+				Array.Resize(ref sortedVertices, MaxVertices);
+				Log.Core.WriteWarning("Maximum Polygon Shape vertex count exceeded: {0} > {1}", this.vertices.Length, MaxVertices);
+			}
 
 			// Sort vertices clockwise before submitting them to Farseer
-			Vector2[] sortedVertices = this.vertices.ToArray();
 			Vector2 centroid = Vector2.Zero;
 			for (int i = 0; i < sortedVertices.Length; i++)
 				centroid += sortedVertices[i];

@@ -129,7 +129,7 @@ namespace Duality.Resources
 			if (Leaving != null) Leaving(current, null);
 			if (current.ResWeak != null)
 			{
-				foreach (GameObject o in current.ResWeak.ActiveObjects) o.OnDeactivate();
+				foreach (GameObject o in current.ResWeak.ActiveObjects.ToArray()) o.OnDeactivate();
 				physicsWorld.Clear();
 				ResetPhysics();
 			}
@@ -144,7 +144,7 @@ namespace Duality.Resources
 				if (DualityApp.ExecEnvironment == DualityApp.ExecutionEnvironment.Editor)
 					current.ResWeak.ApplyPrefabLinks();
 				// Activate GameObjects
-				foreach (GameObject o in current.ResWeak.ActiveObjects)
+				foreach (GameObject o in current.ResWeak.ActiveObjects.ToArray())
 					o.OnActivate();
 			}
 			if (Entered != null) Entered(current, null);

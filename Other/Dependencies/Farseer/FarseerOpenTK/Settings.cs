@@ -42,32 +42,32 @@ namespace FarseerPhysics
         /// NOTE: If you are using a debug view that shows performance counters,
         /// you might want to enable this.
         /// </summary>
-        public static bool EnableDiagnostics = true;
+        public const bool EnableDiagnostics = true;
 
         /// <summary>
         /// The number of velocity iterations used in the solver.
         /// </summary>
-        public static int VelocityIterations = 8;
+        public const int VelocityIterations = 8;
 
         /// <summary>
         /// The number of position iterations used in the solver.
         /// </summary>
-        public static int PositionIterations = 3;
+        public const int PositionIterations = 3;
 
         /// <summary>
         /// Enable/Disable Continuous Collision Detection (CCD)
         /// </summary>
-        public static bool ContinuousPhysics = true;
+        public const bool ContinuousPhysics = true;
 
         /// <summary>
         /// The number of velocity iterations in the TOI solver
         /// </summary>
-        public static int TOIVelocityIterations = 8;
+        public const int TOIVelocityIterations = 8;
 
         /// <summary>
         /// The number of position iterations in the TOI solver
         /// </summary>
-        public static int TOIPositionIterations = 20;
+        public const int TOIPositionIterations = 20;
 
         /// <summary>
         /// Maximum number of sub-steps per contact in continuous physics simulation.
@@ -77,17 +77,17 @@ namespace FarseerPhysics
         /// <summary>
         /// Enable/Disable warmstarting
         /// </summary>
-        public static bool EnableWarmstarting = true;
+        public const bool EnableWarmstarting = true;
 
         /// <summary>
         /// Enable/Disable sleeping
         /// </summary>
-        public static bool AllowSleep = true;
+        public const bool AllowSleep = true;
 
         /// <summary>
         /// The maximum number of vertices on a convex polygon.
         /// </summary>
-        public static int MaxPolygonVertices = 8;
+        public const int MaxPolygonVertices = 8;
 
         /// <summary>
         /// Farseer Physics Engine has a different way of filtering fixtures than Box2d.

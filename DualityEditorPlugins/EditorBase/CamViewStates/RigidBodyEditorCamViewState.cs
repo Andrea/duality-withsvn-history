@@ -600,7 +600,7 @@ namespace EditorBase.CamViewStates
 						PolyShapeInfo newShape = new PolyShapeInfo(new Vector2[] { localPos, localPos, localPos }, 1.0f);
 						UndoRedoManager.Do(new CreateRigidBodyShapeAction(this.selectedBody, newShape));
 						this.SelectObjects(new[] { SelShape.Create(newShape) });
-						success = true;
+						this.createPolyIndex++;
 					}
 					else
 					{
@@ -608,21 +608,33 @@ namespace EditorBase.CamViewStates
 						PolyShapeInfo polyShape = selPolyShape.ActualObject as PolyShapeInfo;
 						if (this.createPolyIndex <= 2 || MathF.IsPolygonConvex(polyShape.Vertices))
 						{
-							List<Vector2> vertices = polyShape.Vertices.ToList();
+							if (polyShape.Vertices.Length < PolyShapeInfo.MaxVertices)
+							{
+								List<Vector2> vertices = polyShape.Vertices.ToList();
 
-							vertices[this.createPolyIndex] = localPos;
-							if (this.createPolyIndex >= vertices.Count - 1)
-								vertices.Add(localPos);
+								vertices[this.createPolyIndex] = localPos;
+								if (this.createPolyIndex >= vertices.Count - 1)
+									vertices.Add(localPos);
 
-							polyShape.Vertices = vertices.ToArray();
-							selPolyShape.UpdatePolyStats();
-							success = true;
+								polyShape.Vertices = vertices.ToArray();
+								selPolyShape.UpdatePolyStats();
+								this.createPolyIndex++;
+							}
+							else
+							{
+								Vector2[] vertices = polyShape.Vertices;
+
+								vertices[this.createPolyIndex] = localPos;
+								polyShape.Vertices = vertices;
+								selPolyShape.UpdatePolyStats();
+
+								this.LeaveCursorState();
+							}
 						}
 					}
 
 					if (success)
 					{
-						this.createPolyIndex++;
 						DualityEditorApp.NotifyObjPropChanged(this,
 							new ObjectSelection(this.selectedBody),
 							ReflectionInfo.Property_RigidBody_Shapes);
