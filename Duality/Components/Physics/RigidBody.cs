@@ -263,14 +263,26 @@ namespace Duality.Components.Physics
 		[EditorHintFlags(MemberFlags.Invisible)]
 		public Vector2 WorldMassCenter
 		{
-			get { return this.body != null ? PhysicsConvert.ToDualityUnit(this.body.WorldCenter) : this.GameObj.Transform.Pos.Xy; }
+			get
+			{
+				return this.body != null ? 
+					PhysicsConvert.ToDualityUnit(this.body.WorldCenter) : 
+					this.GameObj.Transform.Pos.Xy;
+			}
 		}
 		/// <summary>
 		/// [GET] The bodies center of mass in local coordinates.
 		/// </summary>
 		public Vector2 LocalMassCenter
 		{
-			get { return this.body != null ? PhysicsConvert.ToDualityUnit(this.body.LocalCenter) : Vector2.Zero; }
+			get
+			{
+				// Need to apply scale to make it actual Transform-local coordinates
+				// instead of RigidBody-local coordinates.
+				return (this.body != null ? 
+					PhysicsConvert.ToDualityUnit(this.body.LocalCenter) : 
+					Vector2.Zero) / this.gameobj.Transform.Scale;
+			}
 		}
 		/// <summary>
 		/// [GET] Enumerates all <see cref="ShapeInfo">primitive shapes</see> which this body consists of.
